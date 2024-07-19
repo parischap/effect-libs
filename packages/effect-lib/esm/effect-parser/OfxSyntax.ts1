@@ -1,0 +1,225 @@
+import * as Syntax from '@effect/parser/Syntax';
+import * as Monoid from '@effect/typeclass/Monoid';
+import * as EE from '#mjljm/effect-lib/effect/data/Either';
+import * as EO3 from '#mjljm/effect-lib/effect/mydata/Option3';
+import * as ESyntax from '#mjljm/effect-lib/effect/parser/syntax';
+import * as Chunk from 'effect/Chunk';
+import {Either} from 'effect';
+import { pipe } from 'effect';
+import {Option} from 'effect';
+import {ReadonlyArray} from 'effect';
+import * as Struct from 'effect/Struct';
+
+// A REPENSER : se suffisait-il pas de convertir en JSON  puis d'utiliser SCHEMA ?
+interface OfxLine {
+	date: string;
+	amount: number;
+	comment1: string;
+	comment2: string;
+}
+
+interface OfxLineElem {
+	[name: string]: EO3.O3<unknown>; // We need this line for O.struct to work
+	date: EO3.O3<string>;
+	amount: EO3.O3<number>;
+	comment1: EO3.O3<string>;
+	comment2: EO3.O3<string>;
+}
+
+const ofxLineElemMonoid: Monoid.Monoid<OfxLineElem> = Struct.getMonoid({
+	date: EO3.getXorOptionMonoid<string>(),
+	amount: EO3.getXorOptionMonoid<number>(),
+	comment1: EO3.getXorOptionMonoid<string>(),
+	comment2: EO3.getXorOptionMonoid<string>()
+});
+
+const ValueTooManyError = (tag: string) => `Ofx line tag '${tag}' present more than once`;
+const ValueTooFewError = (tag: string) => `Ofx line tag '${tag}' not present`;
+const dateTagString = 'DTPOSTED';
+const amountTagString = 'TRNAMT';
+const comment1TagString = 'NAME';
+const comment2TagString = 'MEMO';
+const ofxLineTagString = 'STMTTRN';
+const ofxLinesTagString = 'BANKTRANLIST';
+const stmtrsTagString = 'STMTRS';
+const stmttrnrsTagString = 'STMTTRNRS';
+const bankmsgsrsv1TagString = 'BANKMSGSRSV1';
+const ofxTagString = 'OFX';
+
+// Grammar rule: spaces are absorbed by the leftmost element except text
+const anyNode: Syntax.Syntax<string, string, string, string> = pipe(
+	Syntax.zipLeft(X.openingTag, X.ignoredWhiteSpaces),
+	Syntax.zip(
+		pipe(
+			Syntax.suspend(() => anyNode),
+			Syntax.zipLeft(X.ignoredWhiteSpaces),
+			Syntax.repeat,
+			Syntax.flatten,
+			Syntax.zip(X.closingTag),
+			Syntax.zipLeft(X.ignoredWhiteSpaces),
+			// X.text absorbs any whitespaces to its left
+			Syntax.orElseEither(() => X.text)
+		)
+	),
+	Syntax.transformEither(
+		(to) =>
+			E.match(
+				to[1],
+				(l) =>
+					to[0] === l[1]
+						? E.right(to[0] + ' ' + l[0] + ' ' + to[0])
+						: E.left(`Closing tag "${l[1]}" does not match with opening tag "${to[0]}"`),
+				(r) => E.right(to[0] + ' ' + r)
+			),
+
+		(from) =>
+			E.right([
+				'' as string,
+				from === '' ? E.left(['' as string, '' as string] as const) : E.right('')
+			] as const)
+	)
+);
+
+const dateValue = pipe(
+	Syntax.string(X.openingTagString(dateTagString), undefined as void),
+	Syntax.zipRight(ESyntax.yyyymmddString),
+	Syntax.zipLeft(X.ignoredWhiteSpaces)
+);
+const amountValue = pipe(
+	Syntax.string(X.openingTagString(amountTagString), undefined as void),
+	Syntax.zipRight(ESyntax.float),
+	Syntax.zipLeft(X.ignoredWhiteSpaces)
+);
+const comment1Value = pipe(
+	Syntax.string(X.openingTagString(comment1TagString), undefined as void),
+	// X.text absorbs any whitespaces to its left
+	Syntax.zipRight(X.text)
+);
+const comment2Value = pipe(
+	Syntax.string(X.openingTagString(comment2TagString), undefined as void),
+	// X.text absorbs any whitespaces to its left
+	Syntax.zipRight(X.text)
+);
+
+// X.text absorbs any whitespaces to its right and left
+const header = X.text;
+
+const ofxLine: Syntax.Syntax<string, string, string, OfxLine> = pipe(
+	dateValue,
+	Syntax.orElseEither(() => amountValue),
+	Syntax.orElseEither(() => comment1Value),
+	Syntax.orElseEither(() => comment2Value),
+	Syntax.orElseEither(() => anyNode),
+	Syntax.repeat,
+	Syntax.between(
+		Syntax.zipLeft(
+			Syntax.string(X.openingTagString(ofxLineTagString), undefined as void),
+			X.ignoredWhiteSpaces
+		),
+		Syntax.zipLeft(
+			Syntax.string(X.closingTagString(ofxLineTagString), undefined as void),
+			X.ignoredWhiteSpaces
+		)
+	),
+	Syntax.transformEither(
+		(to) =>
+			pipe(
+				to,
+				Chunk.filterMap(
+					E.match(
+						(es) => {
+							const comment2Value = E.getRight(es);
+							const rest1 = E.getLeft(es);
+							const comment1Value = O.flatMap(rest1, E.getRight);
+							const rest2 = O.flatMap(rest1, E.getLeft);
+							const amountValue = O.flatMap(rest2, E.getRight);
+							const dateValue = O.flatMap(rest2, E.getLeft);
+							return O.some({
+								date: EO3.fromOption(dateValue),
+								amount: EO3.fromOption(amountValue),
+								comment1: EO3.fromOption(comment1Value),
+								comment2: EO3.fromOption(comment2Value)
+							} as OfxLineElem);
+						},
+						() => O.none() // Other tags don't generate anything
+					)
+				),
+				ofxLineElemMonoid.combineAll,
+				(res) => ({
+					date: EE.fromOption3NoneManyInError(
+						res.date,
+						() => ValueTooFewError(dateTagString),
+						() => ValueTooManyError(dateTagString)
+					),
+					amount: EE.fromOption3NoneManyInError(
+						res.amount,
+						() => ValueTooFewError(amountTagString),
+						() => ValueTooManyError(amountTagString)
+					),
+					comment1: EE.fromOption3ManyInError(
+						res.comment1,
+						() => '',
+						() => ValueTooManyError(comment1TagString)
+					),
+					comment2: EE.fromOption3ManyInError(
+						res.comment2,
+						() => '',
+						() => ValueTooManyError(comment2TagString)
+					)
+				}),
+				E.struct
+			),
+		(from) =>
+			E.right(
+				Chunk.make(
+					E.left(E.right(from.comment2)),
+					E.left(E.left(E.right(from.comment1))),
+					E.left(E.left(E.left(E.right(from.amount)))),
+					E.left(E.left(E.left(E.left(from.date))))
+				) as Chunk.Chunk<
+					E.Either<E.Either<E.Either<E.Either<string, number>, string>, string>, string>
+				>
+			)
+	)
+);
+
+const multiContainer = <A>(child: Syntax.Syntax<string, string, string, A>, tagString: string) =>
+	pipe(
+		child,
+		Syntax.orElseEither(() => anyNode),
+		Syntax.repeat,
+		Syntax.between(
+			Syntax.zipLeft(
+				Syntax.string(X.openingTagString(tagString), undefined as void),
+				X.ignoredWhiteSpaces
+			),
+			Syntax.zipLeft(
+				Syntax.string(X.closingTagString(tagString), undefined as void),
+				X.ignoredWhiteSpaces
+			)
+		),
+		Syntax.transform(
+			(to) => E.lefts(to),
+			(from) => pipe(from, RA.map(E.left), Chunk.unsafeFromIterable)
+		)
+	);
+
+const singleContainer = <A>(child: Syntax.Syntax<string, string, string, A>, tagString: string) =>
+	pipe(
+		multiContainer(child, tagString),
+		Syntax.transformEither(
+			(to) =>
+				pipe(
+					to,
+					RA.get(0),
+					E.fromOption(() => `Exactly one ${tagString} expected`)
+				),
+			(from) => E.right([from])
+		)
+	);
+
+const ofxLines = multiContainer(ofxLine, ofxLinesTagString);
+const stmtrs = singleContainer(ofxLines, stmtrsTagString);
+const stmttrnrs = singleContainer(stmtrs, stmttrnrsTagString);
+const bankmsgsrsv1 = singleContainer(stmttrnrs, bankmsgsrsv1TagString);
+export const ofx = Syntax.zip(header, singleContainer(bankmsgsrsv1, ofxTagString));

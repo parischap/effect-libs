@@ -1,0 +1,123 @@
+import * as E from '@effect/data/Either';
+import { pipe } from '@effect/data/Function';
+import * as O from '@effect/data/Option';
+import * as RA from '@effect/data/ReadonlyArray';
+import * as T from '@effect/data/Tuple';
+import * as RegEx from '@effect/parser/Regex';
+import * as Syntax from '@effect/parser/Syntax';
+import { DateTime } from 'luxon';
+// Combinators
+/**
+ * Flattens the result of zipped string syntaxes
+ *
+ */
+export const flattenZippedStrings = <Input, Error, Output>(
+	self: Syntax.Syntax<Input, Error, Output, readonly [string, string]>
+): Syntax.Syntax<Input, Error, Output, string> =>
+	Syntax.transform(self, RA.join(''), (from) => T.tuple(from[0], from.slice(1)));
+
+/**
+ * Flattens the result of an optional string syntax
+ *
+ */
+export const flattenOptionalString = <Input, Error, Output>(
+	self: Syntax.Syntax<Input, Error, Output, O.Option<string>>
+): Syntax.Syntax<Input, Error, Output, string> =>
+	Syntax.transform(
+		self,
+		O.match(
+			() => '',
+			(v) => v
+		),
+		O.fromNullable
+	);
+
+// Constructors
+/**
+ * Constructs a `Syntax` that parses/prints the specified string and results in
+ * the specified string.
+ *
+ * @since 1.0.0
+ * @category constructors
+ */
+export const stringId = (str: string): Syntax.Syntax<string, string, string, string> =>
+	Syntax.string(str, str);
+
+const optionalSign = pipe(Syntax.charIn(['+', '-']), Syntax.optional, flattenOptionalString);
+const floatingPart = pipe(
+	Syntax.zip(Syntax.charIn('.'), pipe(Syntax.digit, Syntax.repeat1, Syntax.flattenNonEmpty)),
+	flattenZippedStrings
+);
+const unsignedIntegerString = pipe(
+	Syntax.charIn(['1', '2', '3', '4', '5', '6', '7', '8', '9']),
+	Syntax.zip(pipe(Syntax.digit, Syntax.repeat, Syntax.flatten)),
+	flattenZippedStrings,
+	Syntax.orElse(() => Syntax.charIn('0'))
+);
+
+/**
+ * Syntax that represents an integer. Result is a string
+ *
+ */
+export const integerString = pipe(
+	optionalSign,
+	Syntax.zip(unsignedIntegerString),
+	flattenZippedStrings
+);
+
+/**
+ * Syntax that represents an integer. Result is a number
+ *
+ */
+export const integer = pipe(
+	integerString,
+	Syntax.transformEither(
+		(to) => E.right(parseFloat(to)),
+		(from) => (Number.isInteger(from) ? E.right(from.toString()) : E.left('Not an integer'))
+	)
+);
+
+/**
+ * Syntax that represents a float. Result is a string
+ *
+ */
+export const floatString = pipe(
+	optionalSign,
+	Syntax.zip(
+		pipe(
+			unsignedIntegerString,
+			Syntax.zip(pipe(floatingPart, Syntax.optional, flattenOptionalString)),
+			flattenZippedStrings,
+			Syntax.orElse(() => floatingPart)
+		)
+	),
+	flattenZippedStrings
+);
+
+/**
+ * Syntax that represents a float. Result is a number
+ *
+ */
+export const float = pipe(
+	floatString,
+	Syntax.transformEither(
+		(to) => E.right(parseFloat(to)),
+		(from) => (Number.isFinite(from) ? E.right(from.toString()) : E.left('Not a float'))
+	)
+);
+
+/**
+ * Returns a syntax that ensures the given string represents a date in format YYYYMMDD.
+ * Result is a string
+ * TODO: replace atLeast(8) by between(8,8) when between bug has been corrected.
+ */
+export const yyyymmddString = pipe(
+	Syntax.regex(pipe(RegEx.anyDigit, RegEx.atLeast(8)), '8 digits expected'),
+	Syntax.flatten,
+	Syntax.transformEither(
+		(to) =>
+			DateTime.fromFormat(to, 'yyyyMMdd').isValid ? E.right(to) : E.left('Not a valid date'),
+		(from) =>
+			DateTime.fromFormat(from, 'yyyyMMdd').isValid ? E.right(from) : E.left('Not a valid date')
+	)
+);

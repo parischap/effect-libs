@@ -1,0 +1,13 @@
+{
+	"extends": "@parischap/configs/public/tsconfig.base.json",
+	"include": ["esm/**/*.ts", "esm/**/*.mts", "esm/**/*.cts"],
+	"compilerOptions": {
+		"rootDir": "esm",
+		"tsBuildInfoFile": ".tsbuildinfo/src.tsbuildinfo",
+		"declarationDir": "dist/dts",
+		"declarationMap": true,
+		"outDir": "dist/esm",
+		"lib": ["ESNext"],
+		"types": ["node"]
+	}
+}

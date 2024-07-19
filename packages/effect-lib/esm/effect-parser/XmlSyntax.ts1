@@ -1,0 +1,54 @@
+import * as Chunk from '@effect/data/Chunk';
+import * as E from '@effect/data/Either';
+import { pipe } from '@effect/data/Function';
+import * as RA from '@effect/data/ReadonlyArray';
+import * as Syntax from '@effect/parser/Syntax';
+import * as X from '#mjljm/effect-lib/effect/parser/xml-tags';
+
+interface XmlNode {
+	readonly name: string;
+	readonly values: ReadonlyArray<string>;
+	readonly children: ReadonlyArray<XmlNode>;
+}
+
+const xmlNode: Syntax.Syntax<string, string, string, XmlNode> = pipe(
+	Syntax.zipLeft(X.openingTag, X.ignoredWhiteSpaces),
+	Syntax.zip(
+		pipe(
+			Syntax.suspend(() => xmlNode),
+			Syntax.zipLeft(X.ignoredWhiteSpaces),
+			Syntax.orElseEither(() => X.text),
+			Syntax.repeat
+		)
+	),
+	Syntax.zip(X.closingTag),
+	Syntax.transformEither(
+		(to) =>
+			to[0][0] !== to[1]
+				? E.left(`Closing tag "${to[1]}" does not match with opening tag "${to[0][0]}"`)
+				: E.right({
+						name: to[1],
+						children: E.lefts(to[0][1]),
+						values: E.rights(to[0][1])
+				  } as XmlNode),
+		(from) =>
+			E.right([
+				[
+					from.name,
+					pipe(from.children, RA.map(E.left), Chunk.unsafeFromIterable, (cs) =>
+						Chunk.concat(cs, pipe(from.values, RA.map(E.right), Chunk.unsafeFromIterable))
+					)
+				] as const,
+				from.name
+			] as const)
+	),
+	Syntax.orElse(() =>
+		pipe(
+			X.selfClosingTag,
+			Syntax.transform(
+				(to) => ({ name: to, values: [], children: [] } as XmlNode),
+				(from) => from.name
+			)
+		)
+	)
+);

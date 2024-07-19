@@ -1,0 +1,139 @@
+// A REVOIR INTEGRALEMENT. CE TYPE N A PAS LIEU D'ETRE. IL MANQUE JUSTE un autre semi-group sur le type option
+/** Option3 is modelised using type O3<A> = O.Option<O.Option<A>>
+ * It represents a data that is:
+ * - absent: O3.none = O.none
+ * - present once : O3.once(a) = O.some(O.some(a))
+ * - present more than once : O3.many() = O.some(O.none())
+ * This data structure allows us to create a Semigroup for a value that is
+ * either absent, always present 
+// it is allowed exactly once from the case when it is allowed at most once.
+*/
+
+import * as Monoid from '@effect/typeclass/Monoid';
+import * as SG from '@effect/typeclass/Semigroup';
+import { dual, type LazyArg } from 'effect/Function';
+import {Option} from 'effect';
+
+export type O3<out A> = O.Option<O.Option<A>>;
+export type None<out A> = O.None<O.None<A>> | O.None<O.Some<A>>;
+export type Once<out A> = O.Some<O.Some<A>>;
+export type Many<out A> = O.Some<O.None<A>>;
+
+export const none = <A>() => O.none<A>() as None<A>;
+export const once = <A>(a: A) => O.some(O.some(a));
+export const many = () => O.some(O.none());
+
+/**
+ * Determine if an `Option3` is a `None`.
+ *
+ * @param self - The `Option3` to check.
+ *
+ * @category guards
+ * @since 1.0.0
+ */
+export const isNone = <A>(self: O3<A>): self is None<A> => O.isNone(self);
+
+/**
+ * Determine if an `Option3` is a `Once`.
+ *
+ * @param self - The `Option3` to check.
+ *
+ * @category guards
+ * @since 1.0.0
+ */
+export const isOnce = <A>(self: O3<A>): self is Once<A> =>
+	O.match(self, { onNone: () => false, onSome: O.isSome });
+
+/**
+ * Determine if an `Option3` is a `Many`.
+ *
+ * @param self - The `Option3` to check.
+ *
+ * @category guards
+ * @since 1.0.0
+ */
+export const isMany = <A>(self: O3<A>): self is Many<A> =>
+	O.match(self, { onNone: () => false, onSome: O.isNone });
+
+/**
+ *
+ * @category conversions
+ * @since 1.0.0
+ */
+export const fromOption = <A>(fa: O.Option<A>): O3<A> =>
+	O.match(fa, { onNone: () => none(), onSome: once });
+
+/**
+ * @category pattern matching
+ * @since 1.0.0
+ *
+ * @param self - The `Option` to match
+ * @param onNone - The value to be returned if the `Option` is `None`
+ * @param onOnce - The function to be called if the `Option` is `Once`, it will be passed the `Option`'s value and its result will be returned
+ * @param onMany - The value to be returned if the `Option` is `Many`
+ *
+ */
+export const match: {
+	<A, B, D = B, C = B>(options: {
+		readonly onNone: LazyArg<B>;
+		readonly onOnce: (a: A) => C;
+		readonly onMany: LazyArg<D>;
+	}): (self: O3<A>) => B | D | C;
+	<A, B, D = B, C = B>(
+		self: O3<A>,
+		options: {
+			readonly onNone: LazyArg<B>;
+			readonly onOnce: (a: A) => C;
+			readonly onMany: LazyArg<D>;
+		}
+	): B | D | C;
+} = dual(
+	2,
+	<A, B, D = B, C = B>(
+		self: O3<A>,
+		{
+			onNone,
+			onOnce,
+			onMany
+		}: {
+			readonly onNone: LazyArg<B>;
+			readonly onOnce: (a: A) => C;
+			readonly onMany: LazyArg<D>;
+		}
+	): B | D | C => (isNone(self) ? onNone() : isOnce(self) ? onOnce(self.value.value) : onMany())
+);
+
+/**
+ * Semigroup for O3
+ * none + none = none
+ * none + once(a) = once(a)
+ * none + many = many
+ * once(a) + none = once(a)
+ * once(a) + once(a) = many
+ * once(a) + many = many
+ * many + none = many
+ * many + once(a) = many
+ * many + many = many
+ *
+ * @since 1.0.0
+ */
+export const getXorOptionSemigroup = <A>(): SG.Semigroup<O3<A>> =>
+	SG.make((self: O3<A>, that: O3<A>) =>
+		O3.match(self, {
+			// self is none, result is that
+			onNone: () => that,
+			// self is many, result is many
+			onMany: () => many(),
+			// self is once
+			onOnce: (s) => many()
+		})
+	);
+
+/**
+ * Monoid for options that returns a some only if there is one and one only some
+ * in the list to concatenate
+ *
+ * @since 1.0.0
+ */
+export const getXorOptionMonoid = <A>(): Monoid.Monoid<O3<A>> =>
+	Monoid.fromSemigroup(getXorOptionSemigroup(), O.none());

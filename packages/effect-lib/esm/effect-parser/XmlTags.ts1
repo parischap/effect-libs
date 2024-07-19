@@ -1,0 +1,60 @@
+import * as Chunk from '@effect/data/Chunk';
+import { pipe } from '@effect/data/Function';
+import * as RA from '@effect/data/ReadonlyArray';
+import * as Syntax from '@effect/parser/Syntax';
+
+const tagStartString = '<';
+const tagEndString = '>';
+const closingMarkString = '/';
+const tagStart = Syntax.char(tagStartString);
+const tagEnd = Syntax.char(tagEndString);
+
+export const openingTagString = (tag: string) => tagStartString + tag + tagEndString;
+export const closingTagString = (tag: string) =>
+	tagStartString + closingMarkString + tag + tagEndString;
+export const selfClosingTagString = (tag: string) =>
+	tagStartString + tag + closingMarkString + tagEndString;
+
+export const ignoredWhiteSpaces = pipe(
+	Syntax.whitespace,
+	Syntax.repeat,
+	Syntax.asUnit(Chunk.of('') as Chunk.Chunk<string>)
+);
+
+const openingTagStart = tagStart;
+const openingTagEnd = pipe(ignoredWhiteSpaces, Syntax.zipRight(tagEnd));
+
+const closingTagStart = Syntax.string(tagStartString + closingMarkString, undefined as void);
+const closingTagEnd = openingTagEnd;
+
+const selfClosingTagStart = tagStart;
+const selfClosingTagEnd = pipe(
+	ignoredWhiteSpaces,
+	Syntax.zipRight(Syntax.string(closingMarkString + tagEndString, undefined as void))
+);
+
+const tagLabelFirstLetter = pipe(
+	Syntax.letter,
+	Syntax.orElse(() => Syntax.charIn('_'))
+);
+
+const tagLabelNextLetters = pipe(
+	Syntax.alphaNumeric,
+	Syntax.orElse(() => Syntax.charIn(['-', '_', '.'])),
+	Syntax.repeat,
+	Syntax.flatten
+);
+
+const tagLabel = pipe(
+	tagLabelFirstLetter,
+	Syntax.zip(tagLabelNextLetters),
+	Syntax.transform(RA.join(''), (from) => [from[0], from.slice(1)] as const)
+);
+
+export const text = pipe(Syntax.charNotIn(tagStartString), Syntax.repeat1, Syntax.flattenNonEmpty);
+export const openingTag = Syntax.between(tagLabel, openingTagStart, openingTagEnd);
+export const closingTag = Syntax.between(tagLabel, closingTagStart, closingTagEnd);
+export const selfClosingTag = pipe(
+	tagLabel,
+	Syntax.between(selfClosingTagStart, selfClosingTagEnd)
+);

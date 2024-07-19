@@ -1,0 +1,39 @@
+/**
+ * @category utilities
+ */
+/*export type RecordToTargetRecord<
+	T extends Record.ReadonlyRecord<string | symbol, MTypes.AnyPredicate>
+> = {
+	readonly [Key in keyof T]: Target<T[Key]>;
+};*/
+/**
+ * @category utilities
+ */
+/*export type TupleToSourceTuple<T extends ReadonlyArray<MTypes.AnyPredicate>> = {
+	readonly [Key in keyof T]: Source<T[Key]>;
+};*/
+
+/**
+ * @category utilities
+ */
+/*export type RecordToSourceRecord<
+	T extends Record.ReadonlyRecord<string | symbol, MTypes.AnyPredicate>
+> = {
+	readonly [Key in keyof T]: Source<T[Key]>;
+};*/
+
+/**
+ * Creates a tuple refinement from a tuple of predicates or refinements. Predicates are applied but don't generate any type narrowing. Any property of obj not defined in fields is considered satisfied
+ */
+/*export const tuple = <T extends ReadonlyArray<MTypes.AnyPredicate>>(
+	...fields: T
+): Predicate.Refinement<TupleToSourceTuple<T>, TupleToTargetTuple<T>> =>
+	Predicate.all(fields) as never;*/
+
+/**
+ * Creates a struct refinement from a struct of predicates or refinements. Predicates are applied but don't generate any type narrowing. Any property of obj not defined in fields is considered satisfied
+ */
+/*export const struct = <T extends Record.ReadonlyRecord<symbol | string, MTypes.AnyPredicate>>(
+	fields: T
+): Predicate.Refinement<RecordToSourceRecord<T>, RecordToTargetRecord<T>> =>
+	Predicate.struct(fields) as never;*/

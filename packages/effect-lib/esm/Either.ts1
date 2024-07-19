@@ -1,0 +1,65 @@
+import * as EO3 from '#mjljm/effect-lib/effect/mydata/Option3';
+import {Either} from 'effect';
+import { dual } from 'effect/Function';
+/**
+ *
+ * @category conversions
+ * @since 1.0.0
+ */
+export const fromOption3NoneManyInError: {
+	<E1, E2>(onNone: () => E1, onMany: () => E2): <A>(fa: EO3.O3<A>) => E.Either<E1 | E2, A>;
+	<A, E1, E2>(fa: EO3.O3<A>, onNone: () => E1, onMany: () => E2): E.Either<E1 | E2, A>;
+} = dual(
+	3,
+	<A, E1, E2>(fa: EO3.O3<A>, onNone: () => E1, onMany: () => E2): E.Either<E1 | E2, A> =>
+		EO3.match(
+			fa,
+			() => E.left(onNone()),
+			(v) => E.right(v),
+			() => E.left(onMany())
+		)
+);
+
+/**
+ *
+ * @category conversions
+ * @since 1.0.0
+ */
+export const fromOption3NoneInError: {
+	<E1, B>(onNone: () => E1, onMany: () => B): <A>(fa: EO3.O3<A>) => E.Either<E1, A | B>;
+	<A, E1, B>(fa: EO3.O3<A>, onNone: () => E1, onMany: () => B): E.Either<E1, A | B>;
+} = dual(
+	3,
+	<A, E1, B>(fa: EO3.O3<A>, onNone: () => E1, onMany: () => B): E.Either<E1, A | B> =>
+		EO3.match(
+			fa,
+			() => E.left(onNone()),
+			(v) => E.right(v),
+			() => E.right(onMany())
+		)
+);
+
+/**
+ *
+ * @category conversions
+ * @since 1.0.0
+ */
+export const fromOption3ManyInError: {
+	<B, E1>(onNone: () => B, onMany: () => E1): <A>(fa: EO3.O3<A>) => E.Either<E1, A | B>;
+	<A, B, E1>(fa: EO3.O3<A>, onNone: () => B, onMany: () => E1): E.Either<E1, A | B>;
+} = dual(
+	3,
+	<A, B, E1>(fa: EO3.O3<A>, onNone: () => B, onMany: () => E1): E.Either<E1, A | B> =>
+		EO3.match(
+			fa,
+			() => E.right(onNone()),
+			(v) => E.right(v),
+			() => E.left(onMany())
+		)
+);
+
+export const print = <E, A>(e: E.Either<E, A>) => {
+	if (E.isLeft(e)) {
+		console.log(`left: ${JSON.stringify(e.left)}`);
+	} else console.log(`right: ${JSON.stringify(e.right)}`);
+};
