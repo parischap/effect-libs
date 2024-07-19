@@ -6,7 +6,7 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/parischap/effect-libs"
+		"url": "git+https://github.com/parischap/effect-libs.git"
 	},
 	"bugs": {
 		"url": "https://github.com/parischap/effect-libs/issues"
@@ -64,7 +64,7 @@
 	"workspaces": [
 		"packages/*"
 	],
-	"packageManager": "pnpm@9.5.0-beta.1",
+	"packageManager": "pnpm@9.5.0",
 	"pnpm": {
 		"patchedDependencies": {},
 		"overrides": {

@@ -42,8 +42,8 @@ importers:
         specifier: latest
         version: 0.25.0
       '@parischap/configs':
-        specifier: latest
-        version: 0.0.45(@effect/schema@0.68.26)
+        specifier: ^0.0.47
+        version: 0.0.47(@effect/schema@0.68.26)
       '@types/eslint':
         specifier: latest
         version: 8.56.10
@@ -144,6 +144,18 @@ importers:
         specifier: 3.5.6
         version: 3.5.6
 
+  packages/effect-lib/dist:
+    dependencies:
+      '@effect/schema':
+        specifier: 0.68.26
+        version: 0.68.26(effect@3.5.6)
+      '@parischap/js-lib':
+        specifier: workspace:@parischap-dev/js-lib@*
+        version: link:../../js-lib
+      effect:
+        specifier: 3.5.6
+        version: 3.5.6
+
   packages/effect-pretty-print:
     dependencies:
       '@parischap/effect-lib':
@@ -169,6 +181,8 @@ importers:
         version: 3.5.6
 
   packages/js-lib: {}
+
+  packages/js-lib/dist: {}
 
   packages/node-effect-lib:
     dependencies:
@@ -1073,8 +1087,8 @@ packages:
       '@parcel/watcher-win32-ia32': 2.4.1
       '@parcel/watcher-win32-x64': 2.4.1
 
-  /@parischap/configs@0.0.45(@effect/schema@0.68.26):
-    resolution: {integrity: sha512-4OLAPgZwJpf7mc8w/xy03iXZB+jONqUIZPuvdyrKQf5vu2J3Pzi1nl7VTsKzOmeo/HZCpkdl/7BkRpsZr2Zrlw==}
+  /@parischap/configs@0.0.47(@effect/schema@0.68.26):
+    resolution: {integrity: sha512-wdZiU/XuApv6i1w2LUMXwzsWkXG02lH6nytgbVT8zT+VhM/bngy3DWYGBF3zqJsgNg+t+H60cMWPpN9PN6Q+xw==}
     hasBin: true
     dependencies:
       '@effect/platform': 0.59.2(@effect/schema@0.68.26)(effect@3.5.6)

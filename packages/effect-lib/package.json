@@ -29,11 +29,11 @@
 		"transpile-cjs": "babel dist/esm --plugins @babel/transform-export-namespace-from --plugins @babel/transform-modules-commonjs --out-dir dist/cjs --source-maps",
 		"transpile-annotate": "babel dist --plugins annotate-pure-calls --out-dir dist --source-maps",
 		"generate-types": "tsc -b tsconfig.esm.json --emitDeclarationOnly",
-		"cp-static": "shx cp -r public ./dist/public/",
+		"cp-static": "(shx test -d public && shx cp -r public ./dist/public/) || echo 0",
 		"clean-prod": "shx rm -rf dist && shx rm -rf .tsbuildinfo && shx mkdir -p dist",
 		"prodify": "prodify",
 		"prepare-build": "pnpm clean-prod && pnpm cp-static",
-		"build": "pnpm transpile-esm && pnpm transpile-cjs && pnpm transpile-annotate && prodify"
+		"build": "pnpm prepare-build && pnpm transpile-esm && pnpm transpile-cjs && pnpm transpile-annotate && prodify"
 	},
 	"module": "./esm/index.js",
 	"exports": {
