@@ -8,4 +8,6 @@ has_toc: false
 
 effect-libs is a set of open-source libraries to be used in complement to the [Effect](https://effect.website/docs/introduction) library.
 
-The [pretty-print](docs/pretty-print) module may be used by non-Effect users.
+The [pretty-print](docs/pretty-print) module however may be used by non-Effect users.
+
+Each package contains its own documentation.

@@ -33,6 +33,8 @@ Depending on the package manager you use, run one of the following commands in y
   yarn add effect @parischap/js-lib @parischap/effect-lib @parischap/pretty-print
   ```
 
+We use three peerDependencies. The size may seem important. But, in fact, we use little of each peerDependency. Once bundled and tree-shaken, it's not that big any more!
+
 ## API
 
 After reading this introduction, you make take a look at the [API documentation](https://parischap.github.io/effect-libs/docs/pretty-print).

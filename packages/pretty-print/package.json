@@ -11,7 +11,7 @@
 	"bugs": {
 		"url": "https://github.com/parischap/effect-libs/issues"
 	},
-	"homepage": "https://github.com/parischap/effect-libs",
+	"homepage": "https://github.com/parischap/effect-libs/tree/master/packages/pretty-print",
 	"scripts": {
 		"tscheck": "tsc -b tsconfig.check.json --force ",
 		"lint": "eslint .",
