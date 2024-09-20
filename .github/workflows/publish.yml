@@ -1,0 +1,68 @@
+# This workflow is triggered by a new release. Based on the release tag that must be in the form repo@version, it will build the target repo, update the version number of the package.json in this repo and publish the repo to npm. If the repo to build is the top one, the tag must be in the form .@version.
+
+name: publish
+
+on:
+  workflow_dispatch:
+  release:
+    types: [created]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: checkout files
+        uses: actions/checkout@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4.0.0
+        with:
+          run_install: true
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "latest"
+          cache: pnpm
+          registry-url: https://registry.npmjs.org/
+      - name: Get latest release when entering by workflow_dispatch
+        run: |
+          git fetch --prune --unshallow
+          echo "previous_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo '')" >> $GITHUB_ENV
+        if: ${{!github.event.release.tag_name}}
+      - name: Get the target repository and version number
+        id: determine-repo_and_version
+        uses: actions/github-script@v7
+        env:
+          previous_tag: ${{env.previous_tag}}
+        with:
+          script: |
+            const {previous_tag} = process.env
+            const tag = context.payload.release?.tag_name??previous_tag;
+            const pos = tag.lastIndexOf('@');
+            const version = tag.substring(pos + 1);
+            const repo = (pos === -1) ? '.' : 'packages/' + tag.substring(0, pos);
+            return {
+              repo,
+              version,
+              versionValidity: /^(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)$/.test(version)
+            };
+      - id: get-version-validity
+        run: echo "versionValidity=${{fromJson(steps.determine-repo_and_version.outputs.result).versionValidity}}" >> $GITHUB_OUTPUT
+      - name: Fail if version number is ill-formed
+        if: ${{steps.get-version-validity.outputs.versionValidity == 'false'}}
+        run: exit 1
+      - id: get-version
+        run: echo "version=${{fromJson(steps.determine-repo_and_version.outputs.result).version}}" >> $GITHUB_OUTPUT
+      - id: get-repo
+        run: echo "repo=${{fromJson(steps.determine-repo_and_version.outputs.result).repo}}" >> $GITHUB_OUTPUT
+      - name: Update version number in package.json
+        id: update-package-json
+        uses: jaywcjlove/github-action-package@main
+        with:
+          path: "${{steps.get-repo.outputs.repo}}/package.json"
+          version: ${{steps.get-version.outputs.version}}
+      - name: Build and publish
+        working-directory: ${{steps.get-repo.outputs.repo}}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+        run: rm -f tsconfig.json && pnpm build-and-publish

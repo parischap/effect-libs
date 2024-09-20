@@ -1,0 +1,33 @@
+{
+	"folders": [
+		{
+			"name": "js-lib",
+			"path": "packages/js-lib",
+		},
+		{
+			"name": "effect-lib",
+			"path": "packages/effect-lib",
+		},
+		{
+			"name": "effect-date",
+			"path": "packages/effect-date",
+		},
+		{
+			"name": "effect-templater",
+			"path": "packages/effect-templater",
+		},
+		{
+			"name": "node-effect-lib",
+			"path": "packages/node-effect-lib",
+		},
+		{
+			"path": ".",
+		},
+		{
+			"path": "packages/pretty-print",
+		},
+	],
+	"settings": {
+		"typescript.tsdk": "effect-libs\\node_modules\\typescript\\lib",
+	},
+}

@@ -1,0 +1,38 @@
+{
+	"extends": "./tsconfig.base.json",
+	"include": [
+		"**/*.ts",
+		"**/*.mts",
+		"**/*.cts",
+		"**/*.js",
+		"**/*.mjs",
+		"**/*.cjs"
+	],
+	"exclude": [
+		"esm/**/*.ts",
+		"esm/**/*.mts",
+		"esm/**/*.cts",
+		"**/node_modules/**/*.ts",
+		"**/node_modules/**/*.mts",
+		"**/node_modules/**/*.cts",
+		"**/node_modules/**/*.js",
+		"**/node_modules/**/*.mjs",
+		"**/node_modules/**/*.cjs",
+		"dist/**/*.ts",
+		"dist/**/*.mts",
+		"dist/**/*.cts",
+		"dist/**/*.js",
+		"dist/**/*.mjs",
+		"dist/**/*.cjs",
+		"vite.config.ts.timestamp-*.mjs"
+	],
+	"compilerOptions": {
+		"rootDir": ".",
+		"tsBuildInfoFile": ".tsbuildinfo/others.tsbuildinfo",
+		"outDir": "dist/others",
+		"lib": ["ESNext"],
+		"types": ["node"],
+		"allowJs": true,
+		"checkJs": true
+	}
+}
