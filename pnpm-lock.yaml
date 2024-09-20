@@ -40,7 +40,7 @@ importers:
         version: 0.27.0
       '@parischap/configs':
         specifier: latest
-        version: 0.6.3
+        version: 0.6.4
       '@tsconfig/node20':
         specifier: latest
         version: 20.1.4
@@ -877,8 +877,8 @@ packages:
     resolution: {integrity: sha512-HNjmfLQEVRZmHRET336f20H/8kOozUGwk7yajvsonjNxbj2wBTK1WsQuHkD5yYh9RxFGL2EyDHryOihOwUoKDA==}
     engines: {node: '>= 10.0.0'}
 
-  '@parischap/configs@0.6.3':
-    resolution: {integrity: sha512-P0Fpo8ad3dK164qEbb54tmoiqc19LspLu8LaEu77XmunkJCF/+Li2lbLDpUH9bWkbT6nBdtAYKXjUmi78g+VPQ==}
+  '@parischap/configs@0.6.4':
+    resolution: {integrity: sha512-V+GE2yYas0ncKt2WWTNMORNc5tr+Cu+ZyzfZPgz8kWcHIBzf33XMo8Eyg48wNvdyJHBgYEaoFj7kOLD6KJYBMA==}
     hasBin: true
 
   '@parischap/docgen@https://codeload.github.com/parischap/docgenbuilt/tar.gz/15a22fb02cad8d0ddf29282384ba8a4e444c91f7':
@@ -3331,7 +3331,7 @@ snapshots:
       '@parcel/watcher-win32-ia32': 2.4.1
       '@parcel/watcher-win32-x64': 2.4.1
 
-  '@parischap/configs@0.6.3': {}
+  '@parischap/configs@0.6.4': {}
 
   '@parischap/docgen@https://codeload.github.com/parischap/docgenbuilt/tar.gz/15a22fb02cad8d0ddf29282384ba8a4e444c91f7(tsx@4.19.1)(typescript@5.6.2)':
     dependencies:

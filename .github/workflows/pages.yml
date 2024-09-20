@@ -1,6 +1,8 @@
 name: Pages
 on:
   workflow_dispatch:
+  push:
+    branches: [master]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
