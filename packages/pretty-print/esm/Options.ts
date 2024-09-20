@@ -103,7 +103,7 @@ export interface Type {
  * very similar to util.inspect
  *
  * @since 0.0.1
- * @category Utils
+ * @category Instances
  */
 export const singleLine = (colorSet: ColorSet.Type): Type => ({
 	maxDepth: 10,
@@ -114,7 +114,7 @@ export const singleLine = (colorSet: ColorSet.Type): Type => ({
 	circularLabel: pipe('(Circular)', FormattedString.makeWith(colorSet.otherValueColorer)),
 	propertySortOrder: ValueOrder.byStringKey,
 	dedupeRecordProperties: false,
-	byPasser: ByPasser.defaultPrimitivesAndRecords(colorSet),
+	byPasser: ByPasser.bypassToStringed(colorSet),
 	propertyFilter: PropertyFilter.removeNonEnumerables,
 	propertyFormatter: PropertyFormatter.defaultAuto(colorSet),
 	recordFormatter: RecordFormatter.defaultSingleLine(colorSet)
@@ -125,7 +125,7 @@ export const singleLine = (colorSet: ColorSet.Type): Type => ({
  * util.inspect - No colors added
  *
  * @since 0.0.1
- * @category Utils
+ * @category Instances
  */
 export const uncoloredSingleLine = singleLine(ColorSet.uncolored);
 
@@ -134,7 +134,7 @@ export const uncoloredSingleLine = singleLine(ColorSet.uncolored);
  * util.inspect - With colors adapted to the the darkmode
  *
  * @since 0.0.1
- * @category Utils
+ * @category Instances
  */
 export const ansiDarkSingleLine = singleLine(ColorSet.ansiDarkMode);
 
@@ -143,7 +143,7 @@ export const ansiDarkSingleLine = singleLine(ColorSet.ansiDarkMode);
  * indentation in a way very similar to util.inspect
  *
  * @since 0.0.1
- * @category Utils
+ * @category Instances
  */
 export const tabified = (colorSet: ColorSet.Type): Type => ({
 	...singleLine(colorSet),
@@ -155,7 +155,7 @@ export const tabified = (colorSet: ColorSet.Type): Type => ({
  * similar to util.inspect - No colors added
  *
  * @since 0.0.1
- * @category Utils
+ * @category Instances
  */
 export const uncoloredTabified = tabified(ColorSet.uncolored);
 
@@ -164,7 +164,7 @@ export const uncoloredTabified = tabified(ColorSet.uncolored);
  * similar to util.inspect - With colors adapted to the the darkmode
  *
  * @since 0.0.1
- * @category Utils
+ * @category Instances
  */
 export const ansiDarkTabified = tabified(ColorSet.ansiDarkMode);
 
@@ -173,11 +173,11 @@ export const ansiDarkTabified = tabified(ColorSet.ansiDarkMode);
  * tree-like structure in a way very similar to util.inspect
  *
  * @since 0.0.1
- * @category Utils
+ * @category Instances
  */
 export const treeified = (colorSet: ColorSet.Type): Type => ({
 	...singleLine(colorSet),
-	byPasser: ByPasser.defaultPrimitivesAndRecordsWithoutNullables(colorSet),
+	byPasser: ByPasser.bypassToStringedWithoutNullables(colorSet),
 	propertyFormatter: PropertyFormatter.defaultKeyAndValue(colorSet),
 	recordFormatter: RecordFormatter.defaultTreeified(colorSet)
 });
@@ -187,7 +187,7 @@ export const treeified = (colorSet: ColorSet.Type): Type => ({
  * way very similar to util.inspect - No colors added
  *
  * @since 0.0.1
- * @category Utils
+ * @category Instances
  */
 export const uncoloredTreeified = treeified(ColorSet.uncolored);
 
@@ -196,7 +196,7 @@ export const uncoloredTreeified = treeified(ColorSet.uncolored);
  * way very similar to util.inspect - With colors adapted to the the darkmode
  *
  * @since 0.0.1
- * @category Utils
+ * @category Instances
  */
 export const ansiDarkTreeified = treeified(ColorSet.ansiDarkMode);
 
@@ -206,7 +206,7 @@ export const ansiDarkTreeified = treeified(ColorSet.ansiDarkMode);
  * properties strictly exceeds 40 characters
  *
  * @since 0.0.1
- * @category Utils
+ * @category Instances
  */
 export const tabifiedSplitWhenTotalLengthExceeds40 = (colorSet: ColorSet.Type): Type => ({
 	...singleLine(colorSet),
@@ -218,7 +218,7 @@ export const tabifiedSplitWhenTotalLengthExceeds40 = (colorSet: ColorSet.Type): 
  * similar to util.inspect - No colors added
  *
  * @since 0.0.1
- * @category Utils
+ * @category Instances
  */
 export const uncoloredTabifiedSplitWhenTotalLengthExceeds40 = tabifiedSplitWhenTotalLengthExceeds40(
 	ColorSet.uncolored
@@ -229,7 +229,7 @@ export const uncoloredTabifiedSplitWhenTotalLengthExceeds40 = tabifiedSplitWhenT
  * similar to util.inspect - With colors adapted to the the darkmode
  *
  * @since 0.0.1
- * @category Utils
+ * @category Instances
  */
 export const ansiDarkTabifiedSplitWhenTotalLengthExceeds40 = tabifiedSplitWhenTotalLengthExceeds40(
 	ColorSet.ansiDarkMode

@@ -5,9 +5,8 @@
  * process is by-passed). For instance, you may prefer printing Dates as strings rather than as
  * objects.
  *
- * This module defines 4 ByPasser instances. Most of the time you will use
- * `defaultPrimitivesAndRecords`. `defaultPrimitivesAndRecordsWithoutNullables` will come in handy
- * when treeifying.
+ * This module defines 4 ByPasser instances. Most of the time you will use `bypassToStringed`.
+ * `bypassToStringedWithoutNullables` will come in handy when treeifying.
  *
  * You can define your own ByPasser's if the provided ones don't suit your needs. All you have to do
  * is provide a function that matches Type. The easiest way to do so is to call one of the existing
@@ -51,9 +50,9 @@ export interface Type {
  * ByPasser manages colors. It does not provide any special treatment for objects.
  *
  * @since 0.0.1
- * @category Utils
+ * @category Instances
  */
-export const defaultPrimitives = (colorSet: ColorSet.Type): Type =>
+export const defaultInstance = (colorSet: ColorSet.Type): Type =>
 	flow(
 		MMatch.make,
 		MMatch.when(
@@ -101,23 +100,23 @@ export const defaultPrimitives = (colorSet: ColorSet.Type): Type =>
 	);
 
 /**
- * Same as `defaultPrimitives` but nullable values are not printed.
+ * Same as `defaultInstance` but nullable values are not printed.
  *
  * @since 0.0.1
- * @category Utils
+ * @category Instances
  */
-export const defaultPrimitivesWithoutNullables =
+export const defaultInstanceWithoutNullables =
 	(colorSet: ColorSet.Type): Type =>
 	(value, options) =>
 		pipe(
 			value,
 			MMatch.make,
 			MMatch.whenOr(MTypes.isNull, MTypes.isUndefined, () => Option.some(Array.empty())),
-			MMatch.orElse(() => defaultPrimitives(colorSet)(value, options))
+			MMatch.orElse(() => defaultInstance(colorSet)(value, options))
 		);
 
 /**
- * Same as `defaultPrimitives` but records receive the following treatment:
+ * Same as `defaultInstance` but records receive the following treatment:
  *
  * - For functions: returns a some of `options.functionLabel`
  * - For arrays: return a `none`
@@ -126,9 +125,9 @@ export const defaultPrimitivesWithoutNullables =
  *   successful. Returns a `none` otherwise.
  *
  * @since 0.0.1
- * @category Utils
+ * @category Instances
  */
-export const defaultPrimitivesAndRecords =
+export const bypassToStringed =
 	(colorSet: ColorSet.Type): Type =>
 	(value, options) =>
 		pipe(
@@ -139,7 +138,7 @@ export const defaultPrimitivesAndRecords =
 			MMatch.when(
 				MTypes.isRecord,
 				flow(
-					MString.tryToStringToJson,
+					MString.tryToStringToJSON,
 					Option.map(
 						flow(
 							String.split(lineBreakRegExp),
@@ -148,21 +147,21 @@ export const defaultPrimitivesAndRecords =
 					)
 				)
 			),
-			MMatch.orElse(() => defaultPrimitives(colorSet)(value, options))
+			MMatch.orElse(() => defaultInstance(colorSet)(value, options))
 		);
 
 /**
- * Same as `defaultPrimitivesAndRecords` but nullable values are not printed.
+ * Same as `bypassToStringed` but nullable values are not printed.
  *
  * @since 0.0.1
- * @category Utils
+ * @category Instances
  */
-export const defaultPrimitivesAndRecordsWithoutNullables =
+export const bypassToStringedWithoutNullables =
 	(colorSet: ColorSet.Type): Type =>
 	(value, options) =>
 		pipe(
 			value,
 			MMatch.make,
 			MMatch.whenOr(MTypes.isNull, MTypes.isUndefined, () => Option.some(Array.empty())),
-			MMatch.orElse(() => defaultPrimitivesAndRecords(colorSet)(value, options))
+			MMatch.orElse(() => bypassToStringed(colorSet)(value, options))
 		);

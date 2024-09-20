@@ -214,6 +214,16 @@ describe('MString', () => {
 		});
 	});
 
+	describe('tryToStringToJSON', () => {
+		it('Object with default prototype', () => {
+			expect(pipe({ a: 5 }, MString.tryToStringToJSON, Option.isNone)).toBe(true);
+		});
+
+		it('Date object', () => {
+			expect(pipe(new Date(), MString.tryToStringToJSON, Option.isSome)).toBe(true);
+		});
+	});
+
 	describe('takeLeftBut', () => {
 		it('Empty string', () => {
 			expect(pipe('', MString.takeLeftBut(2), String.isEmpty)).toBe(true);

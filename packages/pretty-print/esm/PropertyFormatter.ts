@@ -59,7 +59,7 @@ export const valueOnly: Type = () => Function.identity;
  * Uses the `propertyMarks` and `colorSet` passed as parameter
  *
  * @since 0.0.1
- * @category Utils
+ * @category Instances
  */
 export const keyAndValue =
 	(propertyMarks: PropertyMarks.Type) =>
@@ -122,7 +122,7 @@ export const keyAndValue =
  * Same as `keyAndValue` but uses `PropertyMarks.defaultInstance`
  *
  * @since 0.0.1
- * @category Utils
+ * @category Instances
  */
 export const defaultKeyAndValue = keyAndValue(PropertyMarks.defaultInstance);
 
@@ -149,6 +149,6 @@ export const auto =
  * Same as `auto` but uses `PropertyMarks.defaultInstance`
  *
  * @since 0.0.1
- * @category Utils
+ * @category Instances
  */
 export const defaultAuto = auto(PropertyMarks.defaultInstance);

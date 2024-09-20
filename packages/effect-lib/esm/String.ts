@@ -4,7 +4,7 @@
  * @since 0.0.6
  */
 
-import { Array, Function, Option, Predicate, String, Tuple, flow, pipe } from 'effect';
+import { Array, Option, Predicate, String, Tuple, flow, pipe } from 'effect';
 import * as MFunction from './Function.js';
 import * as MMatch from './Match.js';
 import * as SearchResult from './SearchResult.js';
@@ -152,14 +152,14 @@ export const takeRightFrom =
  * @since 0.0.6
  * @category Utils
  */
-export const tryToStringToJson = (obj: MTypes.AnyRecord): Option.Option<string> => {
-	const tryApplyingFOnObj = (f: MTypes.AnyFunction) => {
-		try {
-			return pipe(f, Function.apply(obj), Option.liftPredicate(MTypes.isString));
-		} catch (_) {
-			return Option.none();
-		}
-	};
+export const tryToStringToJSON = (obj: MTypes.AnyRecord): Option.Option<string> => {
+	const tryApplyingFOnObj = (f: MTypes.AnyFunction) =>
+		pipe(
+			f,
+			Option.liftPredicate(flow(MFunction.parameterNumber, MFunction.strictEquals(0))),
+			Option.map((f) => f.call(obj) as unknown),
+			Option.filter(MTypes.isString)
+		);
 
 	return pipe(
 		obj['toString'],

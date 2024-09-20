@@ -53,7 +53,7 @@ export interface Type {
  * Function that returns a RecordFormatter instance that will always print records on a single line
  *
  * @since 0.0.1
- * @category Utils
+ * @category Instances
  */
 export const singleLine =
 	(recordMarks: RecordMarks.Type) =>
@@ -76,7 +76,7 @@ export const singleLine =
  * Same as `singleLine` but uses the `RecordMarks.defaultSingleLine` instance
  *
  * @since 0.0.1
- * @category Utils
+ * @category Instances
  */
 export const defaultSingleLine: (colorSet: ColorSet.Type) => Type = singleLine(
 	RecordMarks.defaultSingleLine
@@ -86,7 +86,7 @@ export const defaultSingleLine: (colorSet: ColorSet.Type) => Type = singleLine(
  * Function that returns a RecordFormatter instance that will always print records on multiple lines
  *
  * @since 0.0.1
- * @category Utils
+ * @category Instances
  */
 export const multipleLines =
 	(recordMarks: RecordMarks.Type, indentMode: IndentMode.Type) =>
@@ -110,7 +110,7 @@ export const multipleLines =
  * instances
  *
  * @since 0.0.1
- * @category Utils
+ * @category Instances
  */
 export const defaultTabified: (colorSet: ColorSet.Type) => Type = multipleLines(
 	RecordMarks.defaultMultiLine,
@@ -122,7 +122,7 @@ export const defaultTabified: (colorSet: ColorSet.Type) => Type = multipleLines(
  * instances
  *
  * @since 0.0.1
- * @category Utils
+ * @category Instances
  */
 export const defaultTreeified: (colorSet: ColorSet.Type) => Type = multipleLines(
 	RecordMarks.defaultTreeified,
@@ -134,7 +134,7 @@ export const defaultTreeified: (colorSet: ColorSet.Type) => Type = multipleLines
  * `multipleLines` otherwise
  *
  * @since 0.0.1
- * @category Utils
+ * @category Instances
  */
 export const autoBasedOnConstituentNumber =
 	(
@@ -159,7 +159,7 @@ export const autoBasedOnConstituentNumber =
  * `RecordMarks.defaultMultiLine` and `IndentMode.tabify` instances
  *
  * @since 0.0.1
- * @category Utils
+ * @category Instances
  */
 export const defaultAutoBasedOnConstituentNumber: (
 	limit: number
@@ -174,7 +174,7 @@ export const defaultAutoBasedOnConstituentNumber: (
  * characters) is less than or equal to `limit`. Calls `multipleLines` otherwise
  *
  * @since 0.0.1
- * @category Utils
+ * @category Instances
  */
 export const autoBasedOnTotalLength =
 	(
@@ -205,7 +205,7 @@ export const autoBasedOnTotalLength =
  * `RecordMarks.defaultMultiLine` and `IndentMode.tabify` instances
  *
  * @since 0.0.1
- * @category Utils
+ * @category Instances
  */
 export const defaultAutoBasedOnTotalLength: (limit: number) => (colorSet: ColorSet.Type) => Type =
 	autoBasedOnTotalLength(
@@ -219,7 +219,7 @@ export const defaultAutoBasedOnTotalLength: (limit: number) => (colorSet: ColorS
  * characters) is less than or equal to `limit`. Calls `multipleLines` otherwise
  *
  * @since 0.0.1
- * @category Utils
+ * @category Instances
  */
 export const autoBasedOnLongestPropLength =
 	(
@@ -252,7 +252,7 @@ export const autoBasedOnLongestPropLength =
  * `RecordMarks.defaultMultiLine` and `IndentMode.tabify` instances.
  *
  * @since 0.0.1
- * @category Utils
+ * @category Instances
  */
 export const defaultAutoBasedOnLongestPropLength: (
 	limit: number
@@ -267,7 +267,7 @@ export const defaultAutoBasedOnLongestPropLength: (
  * otherwise
  *
  * @since 0.0.1
- * @category Utils
+ * @category Instances
  */
 export const singleLineForArraysMultiLineForOthers =
 	(
@@ -292,7 +292,7 @@ export const singleLineForArraysMultiLineForOthers =
  * `RecordMarks.defaultMultiLine` and `IndentMode.tabify` instances
  *
  * @since 0.0.1
- * @category Utils
+ * @category Instances
  */
 export const defaultSingleLineForArraysMultiLineForOthers: (colorSet: ColorSet.Type) => Type =
 	singleLineForArraysMultiLineForOthers(

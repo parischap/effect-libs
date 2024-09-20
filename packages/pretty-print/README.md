@@ -33,57 +33,24 @@ Depending on the package manager you use, run one of the following commands in y
   yarn add effect @parischap/js-lib @parischap/effect-lib @parischap/pretty-print
   ```
 
-## Basics
+## API
 
-> _You may skip this section and directly jump to the 'Usage' section if you want to make a basic usage of this package._
-
-This package exports a Stringify module with two curried functions:
-
-- Stringify.asLines which returns the printed value as an array of FormattedString's (for the moment, you can consider a FormattedString is the same as a normal string). This can be useful if you need to further format the output lines, e.g add an extra tab at the start of each line... The first argument to the asLines function is an optional `Options` object. The second argument is the value to print. Example:
-
-```ts
-import { Options, Stringify, FormattedString } from "@parischap/pretty-print";
-
-// Create a FormattedString that contains a tab
-const tab = FormattedString.makeWith()("\t");
-// Create a FormattedString that contains a newline
-const newline = FormattedString.makeWith()("\n");
-// Create a stringify function with the uncoloredTabified options. It's useful to create such a function so you don't need to pass the options over and over again each time you need to stringify a value
-const stringify = Stringify.asLines(Options.uncoloredTabified);
-// Stringify value { a: 1, b: 2 } and add a tab at the start of each line of the result,
-const stringified = stringify({ a: 1, b: 2 }).map(FormattedString.prepend(tab));
-// Join the result into a string using the newline string as separator
-const stringResult = FormattedString.join(newline)(stringified).value;
-```
-
-- Stringify.asString which does the same as Stringify.asLines but will join the output into a single string using an optional `lineSep` parameter passed in the `Options` object (if omitted, `lineSep` is taken equal to '\n'). It does basically all that the `asLines` example above did so it is the function that you will most often use. Example:
-
-```ts
-import { Options, Stringify, FormattedString } from "@parischap/pretty-print";
-
-const stringify = Stringify.asString({
-	...Options.uncoloredSingleLine,
-	lineSep: FormattedString.makeWith()("\r"),
-});
-const stringified = stringify(42);
-```
-
-The value to print can be any value, not just objects.
+After reading this introduction, you make take a look at the [API documentation](https://parischap.github.io/effect-libs/docs/pretty-print).
 
 ## Usage
 
-### 1) Using predefined option sets
+In this documentation, the term `record` refers to a non-null `object`, an `array` or a `function`.
 
-The simplest way to use this library is to use one of the predefined option sets.
+### 1) Using predefined option instances
+
+The simplest way to use this library is to use one of the predefined option instances.
 
 #### Uncolored tabified printing
 
 ```ts
 import { Stringify } from "@parischap/pretty-print";
-//import { Options } from '@parischap/pretty-print';
 
-// Options.uncoloredTabifiedSplitWhenTotalLengthExceeds40 is the default option so you could also write Stringify.asString(Options.uncoloredTabifiedSplitWhenTotalLengthExceeds40);
-const uncoloredTabifiedSplitWhenTotalLengthExceeds40 = Stringify.asString();
+const stringify = Stringify.asString();
 
 const toPrint = {
 	a: 1,
@@ -91,21 +58,21 @@ const toPrint = {
 	d: { e: true, f: { a: { k: { z: "foo", y: "bar" }, j: false } }, g: "aa" },
 };
 
-console.log(uncoloredTabifiedSplitWhenTotalLengthExceeds40(toPrint));
+console.log(stringify(toPrint));
 ```
 
 => Output:
 
 ![uncolored-tabified-example](docs/assets/uncolored-tabified.png?sanitize=true)
 
-As its name suggests, the `uncoloredTabifiedSplitWhenTotalLengthExceeds40` option will split an `array` or an `object` on several lines only when its total printable length exceeds 40 characters.
+When you don't pass any Options instance to the asString function, it uses by default the uncoloredTabifiedSplitWhenTotalLengthExceeds40 Options instance. As its name suggests, this instance will split an `array` or an `object` on several lines only when its total printable length exceeds 40 characters.
 
 #### Tabified printing with ANSI colors adapted to a screen in dark mode
 
 ```ts
 import { Options, Stringify } from "@parischap/pretty-print";
 
-const ansiDarkTabifiedSplitWhenTotalLengthExceeds40 = Stringify.asString(
+const stringify = Stringify.asString(
 	Options.ansiDarkTabifiedSplitWhenTotalLengthExceeds40,
 );
 
@@ -115,7 +82,7 @@ const toPrint = {
 	d: { e: true, f: { a: { k: { z: "foo", y: "bar" }, j: false } }, g: "aa" },
 };
 
-console.log(ansiDarkTabifiedSplitWhenTotalLengthExceeds40(toPrint));
+console.log(stringify(toPrint));
 ```
 
 => Output:
@@ -127,7 +94,7 @@ console.log(ansiDarkTabifiedSplitWhenTotalLengthExceeds40(toPrint));
 ```ts
 import { Options, Stringify } from "@parischap/pretty-print";
 
-const ansiDarkTreeified = Stringify.asString(Options.ansiDarkTreeified);
+const stringify = Stringify.asString(Options.ansiDarkTreeified);
 const toPrint = {
 	A: {
 		A1: { A11: null, A12: { A121: null, A122: null, A123: null }, A13: null },
@@ -137,104 +104,145 @@ const toPrint = {
 	B: { B1: null, B2: null },
 };
 
-console.log(ansiDarkTreeified(toPrint));
+console.log(stringify(toPrint));
 ```
 
 => Output:
 
 ![ansi-dark-treeified-example](docs/assets/ansi-dark-treeified.png?sanitize=true)
 
-#### More predefined option sets
+#### More predefined option instances
 
-Here is a recap of all the predefined option sets:
-| Name | Comments |
-| :--- | :--- |
-| uncoloredSingleLine | The value is always displayed on a single line, whatever its length |
-| ansiDarkSingleLine | Same as `uncoloredSingleLine` but with ANSI colors adapted to a screen in darkmode |
-| uncoloredTabified | Same as `uncoloredSingleLine` but each property of an `array` or `object` is always printed on a seperate line, whatever its length |
-| ansiDarkTabified | Same as `uncoloredTabified` but with ANSI colors adapted to a screen in darkmode |
-| uncoloredTabifiedSplitWhenTotalLengthExceeds40 | Same as `uncoloredSingleLine` but `arrays` and `objects` are split on several lines when the total length of their printable characters (i.e without formatting) is strictly superior to 40 |
-| ansiDarkTabifiedSplitWhenTotalLengthExceeds40 | Same as uncoloredTabifiedSplitWhenTotalLengthExceeds40 but with ANSI colors adapted to a screen in darkmode |
-| uncoloredTreeified | Same as `ansiDarkTabified` but the tabs are replaced by tree characters |
-| ansiDarkTreeified | Same as `uncoloredTabified` but the tabs are replaced by tree characters |
+You can find the whole list of predefined Options in the Instances section of the [Options documentation](https://parischap.github.io/effect-libs/pretty-print/Options.ts.html#instances).
 
 ### 2) Defining your own option sets
 
-If you need more options than those offered by the predefined option sets, you can define your own option sets by using the `generator` function of the `Options` module. Note that this is an intermediate solution that gives you more options than the already discussed `Using predefined options sets` section but is only a subset of all available options that we will see in a later section.
+You can view all available options in the [Options Model](https://parischap.github.io/effect-libs/pretty-print/Options.ts.html#type-interface).
 
-The generator function takes a simple parameter whose type is:
+You could create your own Options object from scratch. But it is usually easier to start from one of the existing instances and to overwrite the parts you want to change. For instance, the `singleLine` Options instance does not show any of the properties of an object's prototype. It is defined in the following manner:
 
 ```ts
-type Param = {
-	readonly stringDelimiter?: string;
-	readonly bigIntMark?: string;
-	readonly showNullableValues?: boolean;
-	readonly basicRecordFormatter?: BasicRecordFormatter.All;
-	readonly colorSet?: ColorSet.Type;
+export const singleLine = (colorSet: ColorSet.Type): Type => ({
+	maxDepth: 10,
+	arrayLabel: pipe(
+		"[Array]",
+		FormattedString.makeWith(colorSet.otherValueColorer),
+	),
+	functionLabel: pipe(
+		"(Function)",
+		FormattedString.makeWith(colorSet.otherValueColorer),
+	),
+	objectLabel: pipe(
+		"{Object}",
+		FormattedString.makeWith(colorSet.otherValueColorer),
+	),
+	maxPrototypeDepth: 0,
+	circularLabel: pipe(
+		"(Circular)",
+		FormattedString.makeWith(colorSet.otherValueColorer),
+	),
+	propertySortOrder: ValueOrder.byStringKey,
+	dedupeRecordProperties: false,
+	byPasser: ByPasser.bypassToStringed(colorSet),
+	propertyFilter: PropertyFilter.removeNonEnumerables,
+	propertyFormatter: PropertyFormatter.defaultAuto(colorSet),
+	recordFormatter: RecordFormatter.defaultSingleLine(colorSet),
+});
+```
+
+Let's say we want to show the properties on the prototypes of any record in the object to pretty-print. We would define our own `Options` instance in the following manner:
+
+```ts
+import { Options } from "@parischap/pretty-print";
+
+const ansiDarkSingleLineWithProto: Options.Type = {
+	...Options.ansiDarkSingleLine,
+	maxPrototypeDepth: +Infinity,
 };
 ```
 
-with the following default values:
+Let's say we want to hide enumerable properties and properties whose key is a string:
 
 ```ts
-const defaultValues = {
-	stringDelimiter = "'",
-	bigIntMark = "n",
-	showNullableValues = true,
-	basicRecordFormatter = BasicRecordFormatter.splitWhenTotalLengthExceeds40,
-	colorSet = ColorSet.uncolored,
+import { Options, PropertyFilter } from "@parischap/pretty-print";
+import { pipe } from "effect";
+
+const ansiDarkSingleLineWithSymbolicNonEnums: Options.Type = {
+	...Options.ansiDarkSingleLine,
+	propertyFilter: pipe(
+		PropertyFilter.removeNonEnumerables,
+		PropertyFilter.combine(PropertyFilter.removeStringKeys),
+	),
 };
 ```
 
-Let's explain in more details what each parameter does:
-
-- `stringDelimiter`: the delimiter to display around strings
-- `bigIntMark`: the mark to append to bigint numbers
-- `showNullableValues`: if `true`, `null` and `undefined` are respectively printed as 'null' and 'undefined'; if `false`, they are not printed, which is useful for the tree-mode.
-- `basicRecordFormatter`: this parameter allows you to define in which case you want `objects` and `arrays` displayed on a single line or on multiple lines and, in each case, if you want them displayed array-like or object-like. See module `BasicRecordFormatter.ts` for more information.
-- `colorSet`:a color set defines which color to apply to each part of a stringified value. See module `ColorSet.ts` for more detailed information.
-
-Let's see some examples to better grasp the effect of these parameters. In fact, all the predefined option sets already mentioned are defined from the generator function:
+Let's say we want to change the ByPasser. As you will see in the API, there are four predefined ByPasser instances. The `singleLine` Options instance uses [ByPasser.bypassToStringed](https://parischap.github.io/effect-libs/pretty-print/ByPasser.ts.html#defaultprimitivesandrecords). Let's see what happens if we replace it with [ByPasser.defaultInstance](https://parischap.github.io/effect-libs/pretty-print/ByPasser.ts.html#defaultprimitives) and apply the new Options instance to a Date object:
 
 ```ts
-const uncoloredTabifiedSplitWhenTotalLengthExceeds40 = Options.generator();
-const ansiDarkTabifiedSplitWhenTotalLengthExceeds40 = Options.generator({
-	colorSet: ColorSet.ansiDarkMode,
+import {
+	ByPasser,
+	ColorSet,
+	Options,
+	Stringify,
+} from "@parischap/pretty-print";
+
+const toPrint = new Date(Date.UTC(2024, 8, 20));
+const stringifyByPassToStringed = Stringify.asString({
+	...Options.ansiDarkSingleLine,
 });
-const uncoloredSingleLine = Options.generator({
-	basicRecordFormatter: BasicRecordFormatter.singleLine,
+
+const stringifyAllObjects = Stringify.asString({
+	...Options.ansiDarkSingleLine,
+	byPasser: ByPasser.defaultInstance(ColorSet.ansiDarkMode),
 });
-const ansiDarkSingleLine = Options.generator({
-	basicRecordFormatter: BasicRecordFormatter.singleLine,
-	colorSet: ColorSet.ansiDarkMode,
-});
-const uncoloredTabified = Options.generator({
-	basicRecordFormatter: BasicRecordFormatter.tabified,
-});
-const ansiDarkTabified = Options.generator({
-	basicRecordFormatter: BasicRecordFormatter.tabified,
-	colorSet: ColorSet.ansiDarkMode,
-});
-const uncoloredTreeified = Options.generator({
-	showNullableValues: false,
-	basicRecordFormatter: BasicRecordFormatter.treeified,
-});
-const ansiDarkTreeified = Options.generator({
-	showNullableValues: false,
-	basicRecordFormatter: BasicRecordFormatter.treeified,
-	colorSet: ColorSet.ansiDarkMode,
-});
+
+// As date: Fri Sep 20 2024 02:00:00 GMT+0200 (heure d’été d’Europe centrale)
+console.log(`As date: ${stringifyByPassToStringed(toPrint)}`);
+// As object:
+console.log(`As object: ${stringifyAllObjects(toPrint)}`);
 ```
 
-So you could easily enrich the predefined options with another palette of colors by defining your own ColorSet. You could also use html colors instead of ANSI colors. You could also use different delimiters or marks for arrays and objects by defining your own BasicRecordFormatter (in which case we strongly advise to copy the basicRecordFormatter closest to your needs and make the necessary modifications).
+You may play with all the other options at your disposal.
 
-### 3) Creating your own Options object without using the generator function
+### 3) Getting the result as an array of lines
 
-This is the most complex solution but it will give you in-depth understanding of the stringification process and full control of its parameters.
+Sometimes, you may want to get the result of pretty-printing as an array of lines. This can be useful if you need to further format the output lines, e.g add an extra tab at the start of each line... In this case, you will use the Stringify.asLines function instead of the Stringify.asString function. This function takes the same parameters as the asString function but it returns a [StringifiedValue](https://parischap.github.io/effect-libs/pretty-print/StringifiedValue.ts.html) which is an array of [FormattedString's](https://parischap.github.io/effect-libs/pretty-print/FormattedString.ts.html).
 
-#### A few definitions
+The following example shows how to add a tab at the start of each line of the stringified result:
 
-- `Record`: in this package, we call `record` any value that satisfies the Typescript interface `interface Record { readonly [key: string | symbol]: any;}`. From a javascript perspective, this covers values different from `null` whose `typeof` is either 'object' (which includes arrays) or 'function'.
-- `FormattedString`: a FormattedString is a string whose `printedLength` property does not include formatting characters. Formatting characters may be unicode characters or HTML characters or whatever you like. See module `FormattedString.ts` for more information. We need this module because we need to exclude formatting characters when splitting `records` based on their `printedLength`.
-- `ValueLines`: defined in module `ValueWrapper.ts` as an array of FormattedString's. It represents the output of the stringification process. A value may be stringified in zero, one or more valueLines depending on the options you passed to the stringification function.
-- `ValueWrapper`: Type that represents a value in its stringification context
+```ts
+import { Options, Stringify, FormattedString } from "@parischap/pretty-print";
+import { pipe, Struct } from "effect";
+
+// Create a FormattedString that contains a tab
+const tab = pipe("\t", FormattedString.makeWith());
+// Create a FormattedString that contains a newline
+const newline = pipe("\n", FormattedString.makeWith());
+// Create a stringify function with the uncoloredTabified options.
+const stringify = Stringify.asLines(Options.uncoloredTabified);
+// Stringify value { a: 1, b: 2 } and add a tab at the start of each line of the result,
+const stringified = stringify({ a: 1, b: 2 }).map(FormattedString.prepend(tab));
+// Join the result into a string using the newline string as separator
+const stringResult = pipe(
+	stringified,
+	FormattedString.join(newline),
+	Struct.get("value"),
+);
+```
+
+### 4) Changing the default line separator of the asString function
+
+In fact, the asString function does exactly what we saw in the previous example: it calls the asLines function and joins the result with a FormattedString representing a new line. But you can change the default string used to represent a new line:
+
+```ts
+import { FormattedString, Options, Stringify } from "@parischap/pretty-print";
+import { pipe } from "effect";
+
+// Create a FormattedString that contains a newline
+const newline = pipe("\r\n", FormattedString.makeWith());
+
+const stringify = Stringify.asString({
+	...Options.ansiDarkTabifiedSplitWhenTotalLengthExceeds40,
+	lineSep: newline,
+});
+```

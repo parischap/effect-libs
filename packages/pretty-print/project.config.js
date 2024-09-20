@@ -29,7 +29,7 @@ const packageJson = merge.all([
 		},
 		scripts: {
 			examples:
-				'vite-node examples/uncolored-tabified.ts && vite-node examples/ansi-dark-tabified.ts && vite-node examples/ansi-dark-treeified.ts'
+				'vite-node examples/uncolored-tabified.ts && vite-node examples/ansi-dark-tabified.ts && vite-node examples/ansi-dark-treeified.ts && vite-node examples/date-as-object-or-value.ts'
 		}
 	}
 ]);

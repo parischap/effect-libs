@@ -131,7 +131,7 @@ export const enumerableNonFunctionStringKeys: Type = pipe(
  * that fulfills a predicate
  *
  * @since 0.0.1
- * @category Utils
+ * @category Instances
  */
 export const keepFulfillingKeyPredicate =
 	(predicate: Predicate.Predicate<string>): Type =>
@@ -157,7 +157,7 @@ export const removeNonEnumerablesOnArrays: Type = flow(
  * record
  *
  * @since 0.0.1
- * @category Utils
+ * @category Instances
  */
 export const take =
 	(n: number): Type =>
