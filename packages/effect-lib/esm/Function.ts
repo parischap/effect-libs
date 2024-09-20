@@ -5,6 +5,7 @@
  */
 
 import { Equal, Function, Option, Predicate } from 'effect';
+import { LazyArg } from 'effect/Function';
 import * as MTypes from './types.js';
 
 //const moduleTag = '@parischap/effect-lib/Function/';
@@ -99,3 +100,14 @@ export const once = <A>(f: Function.LazyArg<A>): Function.LazyArg<A> => {
 	};
 	return cached;
 };
+
+/**
+ * Applies `f` to `o`
+ *
+ * @since 0.0.6
+ * @category Utils
+ */
+export const applyAsMethod =
+	(o: MTypes.AnyRecord) =>
+	<A>(self: LazyArg<A>): A =>
+		self.call(o);

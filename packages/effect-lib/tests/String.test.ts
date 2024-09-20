@@ -222,6 +222,12 @@ describe('MString', () => {
 		it('Date object', () => {
 			expect(pipe(new Date(), MString.tryToStringToJSON, Option.isSome)).toBe(true);
 		});
+
+		it('Object with toJSON method', () => {
+			expect(
+				pipe({ toJSON: () => 'foo' }, MString.tryToStringToJSON, Equal.equals(Option.some('foo')))
+			).toBe(true);
+		});
 	});
 
 	describe('takeLeftBut', () => {

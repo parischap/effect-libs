@@ -157,7 +157,7 @@ export const tryToStringToJSON = (obj: MTypes.AnyRecord): Option.Option<string> 
 		pipe(
 			f,
 			Option.liftPredicate(flow(MFunction.parameterNumber, MFunction.strictEquals(0))),
-			Option.map((f) => f.call(obj) as unknown),
+			Option.map(MFunction.applyAsMethod(obj)),
 			Option.filter(MTypes.isString)
 		);
 
