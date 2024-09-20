@@ -156,12 +156,18 @@ importers:
 
   packages/effect-lib/dist:
     dependencies:
+      '@effect/experimental':
+        specifier: ^0.26.6
+        version: 0.26.6(@effect/platform-node@0.60.5(@effect/platform@0.65.5(@effect/schema@0.73.4(effect@3.8.3))(effect@3.8.3))(effect@3.8.3))(@effect/platform@0.65.5(@effect/schema@0.73.4(effect@3.8.3))(effect@3.8.3))(@effect/schema@0.73.4(effect@3.8.3))(effect@3.8.3)(ws@8.18.0)
+      '@effect/typeclass':
+        specifier: ^0.27.3
+        version: 0.27.3(effect@3.8.3)
       '@parischap/js-lib':
-        specifier: ^0.0.4
-        version: 0.0.4
+        specifier: ^0.0.5
+        version: 0.0.5
       effect:
-        specifier: ^3.6.5
-        version: 3.6.5
+        specifier: ^3.8.3
+        version: 3.8.3
 
   packages/effect-templater:
     dependencies:
@@ -890,8 +896,8 @@ packages:
       tsx: ^4.1.0
       typescript: ^5.2.2
 
-  '@parischap/js-lib@0.0.4':
-    resolution: {integrity: sha512-Y9mINk8GXRNttS8yJSJ5COxLDM5uMsE10N604+TFWUjCBYE82pH0o0AZETNqW5edmNnGgsTp6GwAVUnf43MCjA==}
+  '@parischap/js-lib@0.0.5':
+    resolution: {integrity: sha512-8YE8kpV3DnrFKt/osci8j6JrITF0eN79Ip4Tu5qfABBpUxoTEAXsCrvci8gt55dk/wHUkJH0sXWo9nkMN4gaOA==}
 
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
@@ -3342,7 +3348,7 @@ snapshots:
       tsx: 4.19.1
       typescript: 5.6.2
 
-  '@parischap/js-lib@0.0.4': {}
+  '@parischap/js-lib@0.0.5': {}
 
   '@pkgjs/parseargs@0.11.0':
     optional: true
