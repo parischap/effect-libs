@@ -8,4 +8,4 @@ A simple Javascript library not meant to be used on its own. Used as peerDepende
 
 ## Documentation
 
-If you need to, take a look at the [documentation](https://parischap.github.io/effect-libs/docs/js-lib).
+If you need to, take a look at the [API](https://parischap.github.io/effect-libs/docs/js-lib).
