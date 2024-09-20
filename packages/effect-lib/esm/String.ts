@@ -163,8 +163,13 @@ export const tryToStringToJSON = (obj: MTypes.AnyRecord): Option.Option<string> 
 
 	return pipe(
 		obj['toString'],
-		/* eslint-disable-next-line @typescript-eslint/unbound-method */
-		Option.liftPredicate(Predicate.not(MFunction.strictEquals(Object.prototype.toString))),
+		Option.liftPredicate(
+			Predicate.and(
+				MTypes.isFunction,
+				/* eslint-disable-next-line @typescript-eslint/unbound-method */
+				Predicate.not(MFunction.strictEquals(Object.prototype.toString))
+			)
+		),
 		Option.flatMap(tryApplyingFOnObj),
 		Option.orElse(() =>
 			pipe(
