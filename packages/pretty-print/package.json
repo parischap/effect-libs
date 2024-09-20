@@ -53,7 +53,7 @@
 			}
 		},
 		"peerDependencies": {
-			"@parischap/js-lib": "^0.0.4",
+			"@parischap/js-lib": "^0.0.5",
 			"@parischap/effect-lib": "^0.0.6"
 		}
 	},
