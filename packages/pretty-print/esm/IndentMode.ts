@@ -1,4 +1,6 @@
 /**
+ * In this document, the term `record` refers to a non-null object, an array or a function.
+ *
  * An IndentMode is an interface that lets you specify the fillers used when printing a record on
  * multiple lines. It is used by the RecordFormatter module (see RecordFormatter.ts)
  *

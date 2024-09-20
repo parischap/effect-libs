@@ -1,22 +1,22 @@
 /**
+ * In this document, the term `record` refers to a non-null object, an array or a function.
+ *
  * This module implements the pretty-printer options.
  *
  * Several Options instances are provided by this module. But you can define your own ones if
  * needed. All you have to do is provide an object that matches Type.
  *
- * In this document, the term `record` refers to a non-null object, an array or a function.
- *
  * @since 0.0.1
  */
 
-import { Order, pipe } from 'effect';
+import { pipe } from 'effect';
 import * as ByPasser from './ByPasser.js';
 import * as ColorSet from './ColorSet.js';
 import * as FormattedString from './FormattedString.js';
 import * as PropertyFilter from './PropertyFilter.js';
 import * as PropertyFormatter from './PropertyFormatter.js';
 import * as RecordFormatter from './RecordFormatter.js';
-import * as Value from './Value.js';
+import * as ValueOrder from './ValueOrder.js';
 
 /**
  * Interface that represents the pretty-printer options
@@ -64,7 +64,7 @@ export interface Type {
 	 * can be combined if necessary using the Effect Order utilities, e.g:
 	 * `Order.combineAll([Value.byCallability, Value.byType, Value.byStringKey])`
 	 */
-	readonly propertySortOrder: Order.Order<Value.All>;
+	readonly propertySortOrder: ValueOrder.Type;
 
 	/**
 	 * A key with the same name can appear in an object and one or several of its prototypes. This
@@ -112,7 +112,7 @@ export const singleLine = (colorSet: ColorSet.Type): Type => ({
 	objectLabel: pipe('{Object}', FormattedString.makeWith(colorSet.otherValueColorer)),
 	maxPrototypeDepth: 0,
 	circularLabel: pipe('(Circular)', FormattedString.makeWith(colorSet.otherValueColorer)),
-	propertySortOrder: Value.byStringKey,
+	propertySortOrder: ValueOrder.byStringKey,
 	dedupeRecordProperties: false,
 	byPasser: ByPasser.defaultPrimitivesAndRecords(colorSet),
 	propertyFilter: PropertyFilter.removeNonEnumerables,

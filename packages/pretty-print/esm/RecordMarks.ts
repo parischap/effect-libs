@@ -1,4 +1,6 @@
 /**
+ * In this document, the term `record` refers to a non-null object, an array or a function.
+ *
  * A RecordMarks is an interface that lets you specify the marks to print when printing a record. It
  * is used by the RecordFormatter module (see RecordFormatter.ts)
  *

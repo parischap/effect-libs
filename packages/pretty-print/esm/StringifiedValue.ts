@@ -1,10 +1,13 @@
 /**
- * Type that represents the output of the stringification process of a value. A value may be
- * stringified in zero, one or more FormattedString's depending on the options you passed to the
- * stringification function. For instance, a stringified value may result in an empty
- * StringifiedValue array if the value is an empty object or if it is an object whose keys are all
- * filtered out by the options passed to the stringification function or if Options.byPasser returns
- * an empty array, for instance for nullable values.
+ * In this document, the term `record` refers to a non-null object, an array or a function.
+ *
+ * Type that is an alias for an array of FormattedString's (see FormattedString.ts). It represents
+ * the output of the stringification process of a value. A value may be stringified in zero, one or
+ * more FormattedString's depending on the options you passed to the stringification function. For
+ * instance, a stringified value may result in an empty StringifiedValue array if the value is an
+ * empty object or if it is an object whose keys are all filtered out by the options passed to the
+ * stringification function or if Options.byPasser returns an empty array, for instance for nullable
+ * values.
  *
  * @since 0.0.1
  */

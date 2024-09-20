@@ -1,4 +1,6 @@
 /**
+ * In this document, the term `record` refers to a non-null object, an array or a function.
+ *
  * A PropertyFormatter is a function which lets you specify how you want to print the properties of
  * a record. From the stringified representation of the value of a property which it receives, it
  * must return the stringified representation of the whole property (key and value). There are three
@@ -19,8 +21,6 @@
  *
  * You can define your own PropertyFormatter if the provided ones don't suit your needs. All you
  * have to do is provide a function that matches Type.
- *
- * In this document, the term `record` refers to a non-null object, an array or a function.
  *
  * @since 0.0.1
  */

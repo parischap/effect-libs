@@ -1,8 +1,11 @@
 /**
+ * In this document, the term `record` refers to a non-null object, an array or a function.
+ *
  * This module implements a type that represents a set of colors to be applied to the different
  * parts of a stringified value.
  *
- * In this document, the term `record` refers to a non-null object, an array or a function.
+ * This module implements several ColorSet instances. You can define your own if the provided ones
+ * don't suit your needs. All you have to do is provide a function that matches Type.
  *
  * @since 0.0.1
  */

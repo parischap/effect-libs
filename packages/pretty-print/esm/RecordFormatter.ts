@@ -1,4 +1,6 @@
 /**
+ * In this document, the term `record` refers to a non-null object, an array or a function.
+ *
  * A RecordFormatter is a function that lets you specify how to format a record. From the
  * stringified representation of the properties of a record which it receives, it must return the
  * stringified representation of the whole record. It can take care of aspects like printing on a
@@ -19,8 +21,6 @@
  *
  * You can define your own RecordFormatter's if the provided ones don't suit your needs. All you
  * have to do is provide a function that matches Type.
- *
- * In this document, the term `record` refers to a non-null object, an array or a function.
  *
  * @since 0.0.1
  */

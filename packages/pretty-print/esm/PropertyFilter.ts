@@ -1,12 +1,12 @@
 /**
+ * In this document, the term `record` refers to a non-null object, an array or a function.
+ *
  * A PropertyFilter is a function which lets you specify which properties of a record you want to
  * print. PropertyFilter's can be combined.
  *
  * Several PropertyFilter instances are provided by this module (removeNonFunctions,
  * removeNonEnumerables...). But you can define your own PropertyFilter's if the provided ones don't
  * suit your needs. All you have to do is provide a function that matches Type.
- *
- * In this document, the term `record` refers to a non-null object, an array or a function.
  *
  * @since 0.0.1
  */

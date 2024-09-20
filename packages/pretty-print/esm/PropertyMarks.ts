@@ -1,6 +1,8 @@
 /**
+ * In this document, the term `record` refers to a non-null object, an array or a function.
+ *
  * A PropertyMarks is an interface that lets you specify the marks to print when printing a
- * property. It is used by the PropertyFormatter module (see PropertyFormatter.ts)
+ * propertyn of a record. It is used by the PropertyFormatter module (see PropertyFormatter.ts)
  *
  * This module export one PropertyMarks instance. You can define your own if necessary.
  *

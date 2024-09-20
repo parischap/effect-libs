@@ -1,7 +1,13 @@
 /**
- * Type that represents a value in its stringification context
- *
  * In this document, the term `record` refers to a non-null object, an array or a function.
+ *
+ * Type that represents a value in its stringification context. A Value instance is created for the
+ * initial value to stringify and, if that value is a record, a Value instance is also created for
+ * each property and nested property of that record.
+ *
+ * Value's can be ordered by ValueOrder instances (see ValueOrder.ts)
+ *
+ * As an end user, you should never have to create a Value instance.
  *
  * @since 0.0.1
  */
@@ -17,7 +23,6 @@ import {
 	Inspectable,
 	Number,
 	Option,
-	Order,
 	Predicate,
 	Struct,
 	Types,
@@ -25,7 +30,7 @@ import {
 	pipe
 } from 'effect';
 import * as FormattedString from './FormattedString.js';
-import type * as Options from './Options.js';
+import * as Options from './Options.js';
 import type * as StringifiedValue from './StringifiedValue.js';
 import type * as StringifiedValues from './StringifiedValues.js';
 
@@ -240,60 +245,6 @@ export const isFunction = (self: All): self is FunctionType =>
  */
 export const isPrimitive = (self: All): self is PrimitiveType =>
 	pipe(self, Struct.get('value'), MTypes.isPrimitive);
-
-/**
- * `Value` order based on `prototypalDepth`, lowest depth first
- *
- * @since 0.0.1
- * @category Ordering
- */
-export const byPrototypalDepth: Order.Order<All> = Order.mapInput(
-	Order.number,
-	Struct.get('protoDepth')
-);
-/**
- * `Value` order based on `stringKey`
- *
- * @since 0.0.1
- * @category Ordering
- */
-export const byStringKey: Order.Order<All> = Order.mapInput(Order.string, Struct.get('stringKey'));
-
-/**
- * `Value` order based on the callability of the underlying value property (non functions first,
- * then functions)
- *
- * @since 0.0.1
- * @category Ordering
- */
-export const byCallability: Order.Order<All> = Order.mapInput(
-	Order.boolean,
-	Struct.get('hasFunctionValue')
-);
-
-/**
- * `Value` order based on the type of the key of the underlying value property (symbolic keys first,
- * then string keys)
- *
- * @since 0.0.1
- * @category Ordering
- */
-export const byType: Order.Order<All> = Order.mapInput(
-	Order.reverse(Order.boolean),
-	Struct.get('hasSymbolicKey')
-);
-
-/**
- * `Value` order based on the enumerability of the key of the underlying value property
- * (non-enumerable keys first, then enumerable keys)
- *
- * @since 0.0.1
- * @category Ordering
- */
-export const byEnumerability: Order.Order<All> = Order.mapInput(
-	Order.boolean,
-	Struct.get('hasEnumerableKey')
-);
 
 /**
  * Constructs a `Value` from an initial value to stringify and the chosen stringification options

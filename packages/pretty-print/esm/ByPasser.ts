@@ -1,4 +1,6 @@
 /**
+ * In this document, the term `record` refers to a non-null object, an array or a function.
+ *
  * A ByPasser is a function that lets you decide how to print certain values (the stringification
  * process is by-passed). For instance, you may prefer printing Dates as strings rather than as
  * objects.
@@ -11,8 +13,6 @@
  * is provide a function that matches Type. The easiest way to do so is to call one of the existing
  * ByPasser instances for the part you want to keep and write your own code for the part you want to
  * change.
- *
- * In this document, the term `record` refers to a non-null object, an array or a function.
  *
  * @since 0.0.1
  */

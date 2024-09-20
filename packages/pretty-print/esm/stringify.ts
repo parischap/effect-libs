@@ -1,6 +1,6 @@
 /**
- * This module allows you to pretty-print a value either as a StringifiedValue (see
- * StringifiedValue.ts) or as a string
+ * This module implements two functions to pretty-print a value either as a StringifiedValue (see
+ * StringifiedValue.ts) or as a string. It is the main module of this package.
  *
  * @since 0.0.1
  */

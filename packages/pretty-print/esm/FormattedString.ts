@@ -1,10 +1,14 @@
 /**
- * A string that may contain format characters, e.g css styles or unicode characters. It contains a
- * printedLength property that is the length of the printable characters, i.e excluding all
- * formatting characters. Used by the AutoBasedOnConstituentsLength and
- * AutoBasedOnLongestConstituentsLength BasicRecordFormatter's (see BasicRecordFormatter.ts), for
+ * This module implements a string that may contain format characters, e.g css styles or unicode
+ * characters. It contains a printedLength property that is the length of the printable characters,
+ * i.e excluding all formatting characters. Used by the
+ * RecordFormatter.autoBasedOnConstituentsLength and
+ * RecordFormatter.autoBasedOnLongestConstituentsLength instances (see RecordFormatter.ts), for
  * which the limit of the BasicRecordFormatter is compared to the length of the printable
  * characters.
+ *
+ * As an end user, you will only have to creaate FormattedString's if you write your own ByPasser
+ * instances (see ByPasser.ts)
  *
  * @since 0.0.1
  */

@@ -14,3 +14,4 @@ export * as StringifiedValue from './StringifiedValue.js';
 export * as StringifiedValues from './StringifiedValues.js';
 export * as Stringify from './stringify.js';
 export * as Value from './Value.js';
+export * as ValueOrder from './ValueOrder.js';

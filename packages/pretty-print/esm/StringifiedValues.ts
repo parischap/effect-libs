@@ -1,5 +1,6 @@
 /**
- * Type that represents the output of the stringification process of the properties of a record.
+ * Type that is an alias for an array of StringifiedValue's (see StringifiedValue.ts). It represents
+ * the output of the stringification process of the properties of a record.
  *
  * @since 0.0.1
  */

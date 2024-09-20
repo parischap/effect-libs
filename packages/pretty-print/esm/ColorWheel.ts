@@ -1,5 +1,6 @@
 /**
  * This module implements a ColorWheel, i.e an array of colors that repeat themselves indefinitely.
+ * It is used by the ColorSet module (see ColorSet.ts)
  *
  * @since 0.0.1
  */
