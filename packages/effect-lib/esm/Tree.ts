@@ -1,5 +1,5 @@
 /**
- * Type implemented without recursion
+ * Module that implements a Tree. Adapted from FP-TS. Most functions are recursive but some are not.
  *
  * @since 0.0.6
  */
