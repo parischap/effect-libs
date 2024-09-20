@@ -54,7 +54,7 @@
 		},
 		"peerDependencies": {
 			"@parischap/js-lib": "^0.0.6",
-			"@parischap/effect-lib": "^0.1.0"
+			"@parischap/effect-lib": "^0.2.0"
 		}
 	},
 	"dependencies": {
