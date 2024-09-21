@@ -163,8 +163,8 @@ importers:
         specifier: ^0.27.3
         version: 0.27.3(effect@3.8.3)
       '@parischap/js-lib':
-        specifier: ^0.0.6
-        version: 0.0.6
+        specifier: ^0.0.7
+        version: 0.0.7
       effect:
         specifier: ^3.8.3
         version: 3.8.3
@@ -908,6 +908,9 @@ packages:
 
   '@parischap/js-lib@0.0.6':
     resolution: {integrity: sha512-Wp1+CimC2CV1a1t1crzaYnEMyhitZ1aWo2wTOG3g2DUKOrJgzhFEcoE2UbBQouqTbYSl7cvcuTOV3/cB186wUw==}
+
+  '@parischap/js-lib@0.0.7':
+    resolution: {integrity: sha512-5F9pR9zZ3ipXR8Hyxcscn0gBGVLs5+9r+wbfB1TgcMV52fJm8KbYjDiNcxGIQ3yqKunfB3G20a8whrXd4dfkgg==}
 
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
@@ -3370,6 +3373,8 @@ snapshots:
       - ws
 
   '@parischap/js-lib@0.0.6': {}
+
+  '@parischap/js-lib@0.0.7': {}
 
   '@pkgjs/parseargs@0.11.0':
     optional: true
