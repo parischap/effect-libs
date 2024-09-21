@@ -2,7 +2,9 @@
 
 # pretty-print
 
-An [Effect](https://effect.website/docs/introduction) library to pretty-print any value. Can be used similarly to JSON.stringify but with plenty of extra options: treeifying, coloring, sorting, choosing what to display and how to display it... Non-recursive, tested and documented, 100% Typescript, 100% functional, 100% parametrizable.
+An [Effect](https://effect.website/docs/introduction) library to pretty-print any value. Similar to util.inspect but with plenty of extra options: treeifying, coloring, sorting, choosing what to display and how to display it...
+
+Non-recursive, tested and documented, 100% Typescript, 100% functional, 100% parametrizable.
 
 Can also be used by non-effect users.
 
@@ -33,7 +35,7 @@ Depending on the package manager you use, run one of the following commands in y
   yarn add effect @parischap/js-lib @parischap/effect-lib @parischap/pretty-print
   ```
 
-We use three peerDependencies. The size may seem important. But, in fact, we use little of each peerDependency. Once bundled and tree-shaken, it's not that big any more!
+We use three peerDependencies. If you are not an Effect user, the size may seem important. But, in fact, we use little of each peerDependency. Once bundled and tree-shaken, it's not that big any more!
 
 ## API
 
@@ -67,7 +69,7 @@ console.log(stringify(toPrint));
 
 ![uncolored-tabified-example](readme-assets/uncolored-tabified.png?sanitize=true)
 
-When you don't pass any Options instance to the asString function, it uses by default the uncoloredTabifiedSplitWhenTotalLengthExceeds40 Options instance. As its name suggests, this instance will split an `array` or an `object` on several lines only when its total printable length exceeds 40 characters.
+When you don't pass any `Options` instance to the asString function, it uses by default the uncoloredTabifiedSplitWhenTotalLengthExceeds40 `Options` instance. As its name suggests, this instance will split a record on several lines only when its total printable length exceeds 40 characters.
 
 #### Tabified printing with ANSI colors adapted to a screen in dark mode
 
@@ -115,13 +117,13 @@ console.log(stringify(toPrint));
 
 #### More predefined option instances
 
-You can find the whole list of predefined Options in the Instances section of the [Options documentation](https://parischap.github.io/effect-libs/pretty-print/Options.ts.html#instances).
+You can find the whole list of predefined `Options` instances in the Instances section of the [Options](https://parischap.github.io/effect-libs/pretty-print/Options.ts.html#instances) documentation.
 
 ### 2) Defining your own option sets
 
-You can view all available options in the [Options Model](https://parischap.github.io/effect-libs/pretty-print/Options.ts.html#type-interface).
+You can view all available options in the [Options](https://parischap.github.io/effect-libs/pretty-print/Options.ts.html#type-interface) model.
 
-You could create your own Options object from scratch. But it is usually easier to start from one of the existing instances and to overwrite the parts you want to change. For instance, the `singleLine` Options instance does not show any of the properties of an object's prototype. It is defined in the following manner:
+You could create your own `Options` instance from scratch. But it is usually easier to start from one of the existing instances and to overwrite the parts you want to change. For instance, the `singleLine` Options instance does not show any of the properties of an object's prototype. It is defined in the following manner:
 
 ```ts
 export const singleLine = (colorSet: ColorSet.Type): Type => ({
@@ -145,14 +147,14 @@ export const singleLine = (colorSet: ColorSet.Type): Type => ({
 	),
 	propertySortOrder: ValueOrder.byStringKey,
 	dedupeRecordProperties: false,
-	byPasser: ByPasser.bypassToStringed(colorSet),
+	byPasser: ByPasser.objectAsValue(colorSet),
 	propertyFilter: PropertyFilter.removeNonEnumerables,
 	propertyFormatter: PropertyFormatter.defaultAuto(colorSet),
 	recordFormatter: RecordFormatter.defaultSingleLine(colorSet),
 });
 ```
 
-Let's say we want to show the properties on the prototypes of any record in the object to pretty-print. We would define our own `Options` instance in the following manner:
+Let's say we want to show the properties of the prototypes of any record in the value to pretty-print. We would define our own `Options` instance in the following manner:
 
 ```ts
 import { Options } from "@parischap/pretty-print";
@@ -178,7 +180,7 @@ const ansiDarkSingleLineWithSymbolicNonEnums: Options.Type = {
 };
 ```
 
-Let's say we want to change the ByPasser. As you will see in the API, there are four predefined ByPasser instances. The `singleLine` Options instance uses [ByPasser.bypassToStringed](https://parischap.github.io/effect-libs/pretty-print/ByPasser.ts.html#defaultprimitivesandrecords). Let's see what happens if we replace it with [ByPasser.defaultInstance](https://parischap.github.io/effect-libs/pretty-print/ByPasser.ts.html#defaultprimitives) and apply the new Options instance to a Date object:
+Let's say we want to change the ByPasser. As you will see in the API, there are four predefined ByPasser instances. The `singleLine` Options instance uses [ByPasser.objectAsValue](https://parischap.github.io/effect-libs/pretty-print/ByPasser.ts.html#objectAsValue). Let's see what happens if we replace it with [ByPasser.objectAsRecord](https://parischap.github.io/effect-libs/pretty-print/ByPasser.ts.html#objectAsRecord) and apply this new `Options` instance to a Date object:
 
 ```ts
 import {
@@ -189,26 +191,27 @@ import {
 } from "@parischap/pretty-print";
 
 const toPrint = new Date(Date.UTC(2024, 8, 20));
-const stringifyByPassToStringed = Stringify.asString({
+
+const stringifyAsValue = Stringify.asString({
 	...Options.ansiDarkSingleLine,
 });
 
-const stringifyAllObjects = Stringify.asString({
+const stringifyAsRecord = Stringify.asString({
 	...Options.ansiDarkSingleLine,
-	byPasser: ByPasser.defaultInstance(ColorSet.ansiDarkMode),
+	byPasser: ByPasser.objectAsRecord(ColorSet.ansiDarkMode),
 });
 
-// As date: Fri Sep 20 2024 02:00:00 GMT+0200 (heure d’été d’Europe centrale)
-console.log(`As date: ${stringifyByPassToStringed(toPrint)}`);
-// As object:
-console.log(`As object: ${stringifyAllObjects(toPrint)}`);
+// As value: Fri Sep 20 2024 02:00:00 GMT+0200 (heure d’été d’Europe centrale)
+console.log(`As value: ${stringifyAsValue(toPrint)}`);
+// As record:
+console.log(`As record: ${stringifyAsRecord(toPrint)}`);
 ```
 
-You may play with all the other options at your disposal.
+Use the API to play with all the other options at your disposal!
 
 ### 3) Getting the result as an array of lines
 
-Sometimes, you may want to get the result of pretty-printing as an array of lines. This can be useful if you need to further format the output lines, e.g add an extra tab at the start of each line... In this case, you will use the Stringify.asLines function instead of the Stringify.asString function. This function takes the same parameters as the asString function but it returns a [StringifiedValue](https://parischap.github.io/effect-libs/pretty-print/StringifiedValue.ts.html) which is an array of [FormattedString's](https://parischap.github.io/effect-libs/pretty-print/FormattedString.ts.html).
+Sometimes, you may want to get the result of pretty-printing as an array of lines. This can be useful if you need to further format the output lines, e.g add an extra tab at the start of each line... In this case, you will use the [Stringify.asLines](https://parischap.github.io/effect-libs/pretty-print/stringify.ts.html#aslines) function instead of the [Stringify.asString](https://parischap.github.io/effect-libs/pretty-print/stringify.ts.html#asString) function. This function takes the same parameters as the asString function but it returns a [StringifiedValue](https://parischap.github.io/effect-libs/pretty-print/StringifiedValue.ts.html) which is an array of [FormattedString's](https://parischap.github.io/effect-libs/pretty-print/FormattedString.ts.html).
 
 The following example shows how to add a tab at the start of each line of the stringified result:
 
@@ -234,7 +237,7 @@ const stringResult = pipe(
 
 ### 4) Changing the default line separator of the asString function
 
-In fact, the asString function does exactly what we saw in the previous example: it calls the asLines function and joins the result with a FormattedString representing a new line. But you can change the default string used to represent a new line:
+In fact, the [Stringify.asString](https://parischap.github.io/effect-libs/pretty-print/stringify.ts.html#asString) function does exactly what we saw in the previous example: it calls the [Stringify.asLines](https://parischap.github.io/effect-libs/pretty-print/stringify.ts.html#aslines) function and joins the result with a FormattedString representing a new line by adding it to the `Options` instance. But you can change the default string used to represent a new line:
 
 ```ts
 import { FormattedString, Options, Stringify } from "@parischap/pretty-print";

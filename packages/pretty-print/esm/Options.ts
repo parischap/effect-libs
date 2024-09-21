@@ -55,14 +55,8 @@ export interface Type {
 	readonly circularLabel: FormattedString.Type;
 
 	/**
-	 * Order used to sort properties when printing records. If you are not an Effect user,
-	 * `Order.Order<Value.All>` is a function that compares two Value's (see Value.ts) with the
-	 * signature (self: Value.All, that: Value.All)=> -1 | 0 | 1. It must return -1 if self is less
-	 * than that, 0 if self is equal to that and 1 if self is greater than that.
-	 *
-	 * The Value.ts module exports several predefined propertySortOrder's (see Value.ts)L These orders
-	 * can be combined if necessary using the Effect Order utilities, e.g:
-	 * `Order.combineAll([Value.byCallability, Value.byType, Value.byStringKey])`
+	 * `ValueOrder` instance: allows you to specify how to sort properties when printing records (see
+	 * ValueOrder.ts)
 	 */
 	readonly propertySortOrder: ValueOrder.Type;
 
@@ -77,23 +71,26 @@ export interface Type {
 	readonly dedupeRecordProperties: boolean;
 
 	/**
-	 * ByPasser instance that determines which values receive a special stringification process (see
-	 * ByPasser.ts)
+	 * `ByPasser` instance: allows you to specify which values receive a special stringification
+	 * process (see ByPasser.ts)
 	 */
 	readonly byPasser: ByPasser.Type;
 
-	/** PropertyFilter instance that determines which properties are shown (see PropertyFilter.ts) */
+	/**
+	 * `PropertyFilter` instance: allows you to specify which properties are shown when printing
+	 * records (see PropertyFilter.ts)
+	 */
 	readonly propertyFilter: PropertyFilter.Type;
 
 	/**
-	 * PropertyFormatter instance that determines how to format properties of records (see
+	 * `PropertyFormatter` instance: allows you to specify how to format record properties (see
 	 * PropertyFormatter.ts)
 	 */
 	readonly propertyFormatter: PropertyFormatter.Type;
 
 	/**
-	 * RecordFormatter instance that determines how to print a record from its properties (see
-	 * RecordFormatter.ts)
+	 * `RecordFormatter` instance: allows you to specify how to print a record from its stringified
+	 * properties (see RecordFormatter.ts)
 	 */
 	readonly recordFormatter: RecordFormatter.Type;
 }
@@ -114,7 +111,7 @@ export const singleLine = (colorSet: ColorSet.Type): Type => ({
 	circularLabel: pipe('(Circular)', FormattedString.makeWith(colorSet.otherValueColorer)),
 	propertySortOrder: ValueOrder.byStringKey,
 	dedupeRecordProperties: false,
-	byPasser: ByPasser.bypassToStringed(colorSet),
+	byPasser: ByPasser.objectAsValue(colorSet),
 	propertyFilter: PropertyFilter.removeNonEnumerables,
 	propertyFormatter: PropertyFormatter.defaultAuto(colorSet),
 	recordFormatter: RecordFormatter.defaultSingleLine(colorSet)
@@ -177,7 +174,7 @@ export const ansiDarkTabified = tabified(ColorSet.ansiDarkMode);
  */
 export const treeified = (colorSet: ColorSet.Type): Type => ({
 	...singleLine(colorSet),
-	byPasser: ByPasser.bypassToStringedWithoutNullables(colorSet),
+	byPasser: ByPasser.objectAsValueWithoutNullables(colorSet),
 	propertyFormatter: PropertyFormatter.defaultKeyAndValue(colorSet),
 	recordFormatter: RecordFormatter.defaultTreeified(colorSet)
 });

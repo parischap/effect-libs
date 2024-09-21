@@ -8,7 +8,7 @@ const stringifyByPassToStringed = Stringify.asString({
 
 const stringifyAllObjects = Stringify.asString({
 	...Options.ansiDarkSingleLine,
-	byPasser: ByPasser.defaultInstance(ColorSet.ansiDarkMode)
+	byPasser: ByPasser.objectAsRecord(ColorSet.ansiDarkMode)
 });
 
 console.log(`As date: ${stringifyByPassToStringed(toPrint)}`);

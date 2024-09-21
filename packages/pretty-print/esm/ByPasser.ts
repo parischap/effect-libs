@@ -5,8 +5,8 @@
  * process is by-passed). For instance, you may prefer printing Dates as strings rather than as
  * objects.
  *
- * This module defines 4 ByPasser instances. Most of the time you will use `bypassToStringed`.
- * `bypassToStringedWithoutNullables` will come in handy when treeifying.
+ * This module defines 4 ByPasser instances. Most of the time you will use `objectAsValue`.
+ * `objectAsValueWithoutNullables` will come in handy when treeifying.
  *
  * You can define your own ByPasser's if the provided ones don't suit your needs. All you have to do
  * is provide a function that matches Type. The easiest way to do so is to call one of the existing
@@ -52,7 +52,7 @@ export interface Type {
  * @since 0.0.1
  * @category Instances
  */
-export const defaultInstance = (colorSet: ColorSet.Type): Type =>
+export const objectAsRecord = (colorSet: ColorSet.Type): Type =>
 	flow(
 		MMatch.make,
 		MMatch.when(
@@ -100,23 +100,23 @@ export const defaultInstance = (colorSet: ColorSet.Type): Type =>
 	);
 
 /**
- * Same as `defaultInstance` but nullable values are not printed.
+ * Same as `objectAsRecord` but nullable values are not printed.
  *
  * @since 0.0.1
  * @category Instances
  */
-export const defaultInstanceWithoutNullables =
+export const objectAsRecordWithoutNullables =
 	(colorSet: ColorSet.Type): Type =>
 	(value, options) =>
 		pipe(
 			value,
 			MMatch.make,
 			MMatch.whenOr(MTypes.isNull, MTypes.isUndefined, () => Option.some(Array.empty())),
-			MMatch.orElse(() => defaultInstance(colorSet)(value, options))
+			MMatch.orElse(() => objectAsRecord(colorSet)(value, options))
 		);
 
 /**
- * Same as `defaultInstance` but records receive the following treatment:
+ * Same as `objectAsRecord` but records receive the following treatment:
  *
  * - For functions: returns a some of `options.functionLabel`
  * - For arrays: return a `none`
@@ -127,7 +127,7 @@ export const defaultInstanceWithoutNullables =
  * @since 0.0.1
  * @category Instances
  */
-export const bypassToStringed =
+export const objectAsValue =
 	(colorSet: ColorSet.Type): Type =>
 	(value, options) =>
 		pipe(
@@ -147,21 +147,21 @@ export const bypassToStringed =
 					)
 				)
 			),
-			MMatch.orElse(() => defaultInstance(colorSet)(value, options))
+			MMatch.orElse(() => objectAsRecord(colorSet)(value, options))
 		);
 
 /**
- * Same as `bypassToStringed` but nullable values are not printed.
+ * Same as `objectAsValue` but nullable values are not printed.
  *
  * @since 0.0.1
  * @category Instances
  */
-export const bypassToStringedWithoutNullables =
+export const objectAsValueWithoutNullables =
 	(colorSet: ColorSet.Type): Type =>
 	(value, options) =>
 		pipe(
 			value,
 			MMatch.make,
 			MMatch.whenOr(MTypes.isNull, MTypes.isUndefined, () => Option.some(Array.empty())),
-			MMatch.orElse(() => bypassToStringed(colorSet)(value, options))
+			MMatch.orElse(() => objectAsValue(colorSet)(value, options))
 		);
