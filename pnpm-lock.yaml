@@ -241,11 +241,11 @@ importers:
         specifier: ^0.26.6
         version: 0.26.6(@effect/platform-node@0.60.5(@effect/platform@0.65.5(@effect/schema@0.73.4(effect@3.8.3))(effect@3.8.3))(effect@3.8.3))(@effect/platform@0.65.5(@effect/schema@0.73.4(effect@3.8.3))(effect@3.8.3))(@effect/schema@0.73.4(effect@3.8.3))(effect@3.8.3)(ws@8.18.0)
       '@parischap/effect-lib':
-        specifier: ^0.2.0
-        version: 0.2.0(@effect/platform-node@0.60.5(@effect/platform@0.65.5(@effect/schema@0.73.4(effect@3.8.3))(effect@3.8.3))(effect@3.8.3))(@effect/platform@0.65.5(@effect/schema@0.73.4(effect@3.8.3))(effect@3.8.3))(@effect/schema@0.73.4(effect@3.8.3))(@effect/typeclass@0.27.3(effect@3.8.3))(@parischap/js-lib@0.0.6)(effect@3.8.3)(ws@8.18.0)
+        specifier: ^0.2.1
+        version: 0.2.1(@effect/platform-node@0.60.5(@effect/platform@0.65.5(@effect/schema@0.73.4(effect@3.8.3))(effect@3.8.3))(effect@3.8.3))(@effect/platform@0.65.5(@effect/schema@0.73.4(effect@3.8.3))(effect@3.8.3))(@effect/schema@0.73.4(effect@3.8.3))(@effect/typeclass@0.27.3(effect@3.8.3))(@parischap/js-lib@0.0.7)(effect@3.8.3)(ws@8.18.0)
       '@parischap/js-lib':
-        specifier: ^0.0.6
-        version: 0.0.6
+        specifier: ^0.0.7
+        version: 0.0.7
       effect:
         specifier: ^3.8.3
         version: 3.8.3
@@ -899,15 +899,12 @@ packages:
       tsx: ^4.1.0
       typescript: ^5.2.2
 
-  '@parischap/effect-lib@0.2.0':
-    resolution: {integrity: sha512-p9UEzJjvqwewmrc93asWRrjeY1d0yOL+4oH8ufHhWIrv6UMgVHv6RGkCzD2xDWEsIOP4Zvz//53v8LZPiIN/RA==}
+  '@parischap/effect-lib@0.2.1':
+    resolution: {integrity: sha512-40m7l9+jVOCG6TqVAt4v03cWjI/TU/KWTS8syTrtN5+D1icsYvddDwtvCtn+KRWKcTPdARd4x6RokjsGXehh3g==}
     peerDependencies:
       '@effect/typeclass': ^0.27.3
       '@parischap/js-lib': ^0.0.6
       effect: ^3.8.3
-
-  '@parischap/js-lib@0.0.6':
-    resolution: {integrity: sha512-Wp1+CimC2CV1a1t1crzaYnEMyhitZ1aWo2wTOG3g2DUKOrJgzhFEcoE2UbBQouqTbYSl7cvcuTOV3/cB186wUw==}
 
   '@parischap/js-lib@0.0.7':
     resolution: {integrity: sha512-5F9pR9zZ3ipXR8Hyxcscn0gBGVLs5+9r+wbfB1TgcMV52fJm8KbYjDiNcxGIQ3yqKunfB3G20a8whrXd4dfkgg==}
@@ -3358,11 +3355,11 @@ snapshots:
       tsx: 4.19.1
       typescript: 5.6.2
 
-  '@parischap/effect-lib@0.2.0(@effect/platform-node@0.60.5(@effect/platform@0.65.5(@effect/schema@0.73.4(effect@3.8.3))(effect@3.8.3))(effect@3.8.3))(@effect/platform@0.65.5(@effect/schema@0.73.4(effect@3.8.3))(effect@3.8.3))(@effect/schema@0.73.4(effect@3.8.3))(@effect/typeclass@0.27.3(effect@3.8.3))(@parischap/js-lib@0.0.6)(effect@3.8.3)(ws@8.18.0)':
+  '@parischap/effect-lib@0.2.1(@effect/platform-node@0.60.5(@effect/platform@0.65.5(@effect/schema@0.73.4(effect@3.8.3))(effect@3.8.3))(effect@3.8.3))(@effect/platform@0.65.5(@effect/schema@0.73.4(effect@3.8.3))(effect@3.8.3))(@effect/schema@0.73.4(effect@3.8.3))(@effect/typeclass@0.27.3(effect@3.8.3))(@parischap/js-lib@0.0.7)(effect@3.8.3)(ws@8.18.0)':
     dependencies:
       '@effect/experimental': 0.26.6(@effect/platform-node@0.60.5(@effect/platform@0.65.5(@effect/schema@0.73.4(effect@3.8.3))(effect@3.8.3))(effect@3.8.3))(@effect/platform@0.65.5(@effect/schema@0.73.4(effect@3.8.3))(effect@3.8.3))(@effect/schema@0.73.4(effect@3.8.3))(effect@3.8.3)(ws@8.18.0)
       '@effect/typeclass': 0.27.3(effect@3.8.3)
-      '@parischap/js-lib': 0.0.6
+      '@parischap/js-lib': 0.0.7
       effect: 3.8.3
     transitivePeerDependencies:
       - '@effect/platform'
@@ -3371,8 +3368,6 @@ snapshots:
       - ioredis
       - lmdb
       - ws
-
-  '@parischap/js-lib@0.0.6': {}
 
   '@parischap/js-lib@0.0.7': {}
 
