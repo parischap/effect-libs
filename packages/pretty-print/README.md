@@ -65,7 +65,7 @@ console.log(stringify(toPrint));
 
 => Output:
 
-![uncolored-tabified-example](docs/assets/uncolored-tabified.png?sanitize=true)
+![uncolored-tabified-example](readme-assets/uncolored-tabified.png?sanitize=true)
 
 When you don't pass any Options instance to the asString function, it uses by default the uncoloredTabifiedSplitWhenTotalLengthExceeds40 Options instance. As its name suggests, this instance will split an `array` or an `object` on several lines only when its total printable length exceeds 40 characters.
 
@@ -89,7 +89,7 @@ console.log(stringify(toPrint));
 
 => Output:
 
-![ansi-dark-tabified-example](docs/assets/ansi-dark-tabified.png?sanitize=true)
+![ansi-dark-tabified-example](readme-assets/ansi-dark-tabified.png?sanitize=true)
 
 #### Treeified printing with ANSI colors adapted to a screen in dark mode
 
@@ -111,7 +111,7 @@ console.log(stringify(toPrint));
 
 => Output:
 
-![ansi-dark-treeified-example](docs/assets/ansi-dark-treeified.png?sanitize=true)
+![ansi-dark-treeified-example](readme-assets/ansi-dark-treeified.png?sanitize=true)
 
 #### More predefined option instances
 

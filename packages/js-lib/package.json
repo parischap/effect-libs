@@ -6,7 +6,8 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/parischap/effect-libs.git"
+		"url": "git+https://github.com/parischap/effect-libs.git",
+		"directory": "packages/js-lib"
 	},
 	"bugs": {
 		"url": "https://github.com/parischap/effect-libs/issues"
