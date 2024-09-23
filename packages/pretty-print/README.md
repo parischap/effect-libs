@@ -119,7 +119,7 @@ console.log(stringify(toPrint));
 
 You can find the whole list of predefined `Options` instances in the Instances section of the [Options](https://parischap.github.io/effect-libs/pretty-print/Options.ts.html#instances) documentation.
 
-### 2) Defining your own option sets
+### 2) Defining your own Options instances
 
 You can view all available options in the [Options](https://parischap.github.io/effect-libs/pretty-print/Options.ts.html#type-interface) model.
 

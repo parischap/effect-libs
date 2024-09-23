@@ -5,6 +5,8 @@
  * at tree-shaking`, although `tree` and `tree-shaking` are present at the same position, the
  * longest target `tree-shaking` will take precedence.
  *
+ * I can give a length : alignment and padding a max-length no length
+ *
  * @since 0.0.6
  */
 import {
