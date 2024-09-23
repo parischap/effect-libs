@@ -55,12 +55,25 @@
 		},
 		"peerDependencies": {
 			"@parischap/js-lib": "^0.0.7",
-			"@parischap/effect-lib": "^0.2.1"
+			"@parischap/effect-lib": "^0.3.0"
 		}
 	},
-	"dependencies": {
-		"@effect/experimental": "^0.26.6"
-	},
+	"keywords": [
+		"effect",
+		"typescript",
+		"functional-programming",
+		"inspect",
+		"util.inspect",
+		"object",
+		"stringify",
+		"pretty",
+		"tree",
+		"treeify",
+		"print",
+		"console",
+		"visualize",
+		"debug"
+	],
 	"funding": [
 		{
 			"type": "ko-fi",
@@ -75,18 +88,5 @@
 	},
 	"devDependencies": {
 		"@parischap/pretty-print": "link:."
-	},
-	"keywords": [
-		"inspect",
-		"util.inspect",
-		"object",
-		"stringify",
-		"pretty",
-		"tree",
-		"treeify",
-		"print",
-		"console",
-		"visualize",
-		"debug"
-	]
+	}
 }

@@ -24,7 +24,7 @@ const packageJson = merge.all([
 		publishConfig: {
 			peerDependencies: {
 				[`${Configs.constants.scope}/js-lib`]: '^0.0.7',
-				[`${Configs.constants.scope}/effect-lib`]: '^0.2.1'
+				[`${Configs.constants.scope}/effect-lib`]: '^0.3.0'
 			}
 		},
 		scripts: {

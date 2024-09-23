@@ -1,5 +1,5 @@
 /* eslint-disable functional/no-expression-statements */
-import { MString } from '@parischap/effect-lib';
+import { MSearchResult, MString } from '@parischap/effect-lib';
 import { Array, Equal, Option, pipe, String, Utils } from 'effect';
 import { describe, expect, it } from 'vitest';
 
@@ -28,7 +28,9 @@ describe('MString', () => {
 				pipe(
 					'the foo is bar',
 					MString.search('foo', 4),
-					Equal.equals(Option.some(SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' })))
+					Equal.equals(
+						Option.some(MSearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }))
+					)
 				)
 			).toBe(true);
 		});
@@ -38,7 +40,9 @@ describe('MString', () => {
 				pipe(
 					'the foo is foo',
 					MString.search('foo', 4),
-					Equal.equals(Option.some(SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' })))
+					Equal.equals(
+						Option.some(MSearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }))
+					)
 				)
 			).toBe(true);
 		});
@@ -49,7 +53,7 @@ describe('MString', () => {
 					'the foo is foo',
 					MString.search('foo', 5),
 					Equal.equals(
-						Option.some(SearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' }))
+						Option.some(MSearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' }))
 					)
 				)
 			).toBe(true);
@@ -64,7 +68,9 @@ describe('MString', () => {
 				pipe(
 					'the foo is bar',
 					MString.search(/f.o/, 4),
-					Equal.equals(Option.some(SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' })))
+					Equal.equals(
+						Option.some(MSearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }))
+					)
 				)
 			).toBe(true);
 		});
@@ -74,7 +80,9 @@ describe('MString', () => {
 				pipe(
 					'the foo is foo',
 					MString.search(/f.o/, 4),
-					Equal.equals(Option.some(SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' })))
+					Equal.equals(
+						Option.some(MSearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }))
+					)
 				)
 			).toBe(true);
 		});
@@ -85,7 +93,7 @@ describe('MString', () => {
 					'the foo is foo',
 					MString.search(/f.o/, 5),
 					Equal.equals(
-						Option.some(SearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' }))
+						Option.some(MSearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' }))
 					)
 				)
 			).toBe(true);
@@ -93,7 +101,7 @@ describe('MString', () => {
 	});
 
 	describe('searchAll', () => {
-		//const arrayEq = Array.getEquivalence(SearchResult.Equivalence);
+		//const arrayEq = Array.getEquivalence(MSearchResult.Equivalence);
 
 		it('string in empty string', () => {
 			expect(pipe('', MString.searchAll('foo'), Array.isEmptyArray)).toBe(true);
@@ -107,8 +115,8 @@ describe('MString', () => {
 						MString.searchAll('foo'),
 						Equal.equals(
 							Array.make(
-								SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }),
-								SearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' })
+								MSearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }),
+								MSearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' })
 							)
 						)
 					)
@@ -128,8 +136,8 @@ describe('MString', () => {
 						MString.searchAll(/f.o/),
 						Equal.equals(
 							Array.make(
-								SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }),
-								SearchResult.make({ startIndex: 11, endIndex: 14, match: 'fuo' })
+								MSearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }),
+								MSearchResult.make({ startIndex: 11, endIndex: 14, match: 'fuo' })
 							)
 						)
 					)
@@ -149,7 +157,7 @@ describe('MString', () => {
 					'the bar is foo',
 					MString.searchRight('foo'),
 					Equal.equals(
-						Option.some(SearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' }))
+						Option.some(MSearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' }))
 					)
 				)
 			).toBe(true);
@@ -161,7 +169,7 @@ describe('MString', () => {
 					'the foo is foo',
 					MString.searchRight('foo'),
 					Equal.equals(
-						Option.some(SearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' }))
+						Option.some(MSearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' }))
 					)
 				)
 			).toBe(true);
@@ -176,7 +184,9 @@ describe('MString', () => {
 				pipe(
 					'the foo is bar',
 					MString.searchRight(/f.o/),
-					Equal.equals(Option.some(SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' })))
+					Equal.equals(
+						Option.some(MSearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }))
+					)
 				)
 			).toBe(true);
 		});
@@ -187,7 +197,7 @@ describe('MString', () => {
 					'the foo is foo',
 					MString.searchRight(/f.o/),
 					Equal.equals(
-						Option.some(SearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' }))
+						Option.some(MSearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' }))
 					)
 				)
 			).toBe(true);
