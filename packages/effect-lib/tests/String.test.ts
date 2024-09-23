@@ -1,5 +1,5 @@
 /* eslint-disable functional/no-expression-statements */
-import { MString, SearchResult } from '@parischap/effect-lib';
+import { MString } from '@parischap/effect-lib';
 import { Array, Equal, Option, pipe, String, Utils } from 'effect';
 import { describe, expect, it } from 'vitest';
 

@@ -13,7 +13,7 @@ export * as MOption from './Option.js';
 export * as MPortError from './PortError.js';
 export * as MPredicate from './Predicate.js';
 export * as MRecord from './Record.js';
-export * as SearchResult from './SearchResult.js';
+export * as MSearchResult from './SearchResult.js';
 export * as MString from './String.js';
 export * as MStruct from './Struct.js';
 export * as MTree from './Tree.js';

@@ -21,7 +21,7 @@ import {
 	pipe
 } from 'effect';
 import * as MTypes from './types.js';
-import * as ValueContainer from './ValueContainer.js';
+import * as MValueContainer from './ValueContainer.js';
 
 const moduleTag = '@parischap/effect-lib/Cache/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
@@ -67,7 +67,7 @@ export interface Type<in out A, in out B> extends Inspectable.Inspectable, Pipea
 	 *
 	 * @since 0.0.6
 	 */
-	readonly store: MutableHashMap.MutableHashMap<A, Option.Option<ValueContainer.Type<B>>>;
+	readonly store: MutableHashMap.MutableHashMap<A, Option.Option<MValueContainer.Type<B>>>;
 	/**
 	 * A queue used to track the order in which keys were inserted so as to remove the oldest keys
 	 * first in case the cache has bounded capacity
@@ -189,7 +189,7 @@ export const make = <A, B>({
 		lookUp,
 		capacity,
 		lifeSpan,
-		store: MutableHashMap.empty<A, Option.Option<ValueContainer.Type<B>>>(),
+		store: MutableHashMap.empty<A, Option.Option<MValueContainer.Type<B>>>(),
 		keyOrder: MutableQueue.unbounded<A>()
 	});
 
@@ -233,7 +233,7 @@ export const get =
 						MutableHashMap.set(
 							store,
 							a,
-							Option.some(ValueContainer.make({ value: result, storeDate: now }))
+							Option.some(MValueContainer.make({ value: result, storeDate: now }))
 						);
 						if (self.capacity !== undefined) {
 							/* eslint-disable-next-line functional/no-expression-statements */
@@ -280,7 +280,7 @@ export const get =
 								MutableHashMap.set(
 									store,
 									a,
-									Option.some(ValueContainer.make({ value: result, storeDate: now }))
+									Option.some(MValueContainer.make({ value: result, storeDate: now }))
 								);
 								if (self.capacity !== undefined)
 									/* eslint-disable-next-line functional/no-expression-statements */

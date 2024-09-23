@@ -7,12 +7,12 @@
 import { Array, Option, Predicate, String, Tuple, flow, pipe } from 'effect';
 import * as MFunction from './Function.js';
 import * as MMatch from './Match.js';
-import * as SearchResult from './SearchResult.js';
+import * as MSearchResult from './SearchResult.js';
 import * as MTypes from './types.js';
 
 //const moduleTag = '@parischap/effect-lib/String/';
 
-/*const areOverlappingSearchResults = (sR1: SearchResult, sR2: SearchResult) =>
+/*const areOverlappingSearchResults = (sR1: MSearchResult, sR2: MSearchResult) =>
 	sR1.startIndex <= sR2.endIndex && sR1.endIndex >= sR2.startIndex;*/
 
 /**
@@ -39,7 +39,7 @@ export const fromPrimitive = (u: MTypes.Primitive): string =>
 	);
 
 /**
- * Searches for the first occurence of `regexp` in `self` and returns a SearchResult. You can
+ * Searches for the first occurence of `regexp` in `self` and returns a MSearchResult. You can
  * optionnally provide the index from which to start searching.
  *
  * @since 0.0.6
@@ -47,12 +47,12 @@ export const fromPrimitive = (u: MTypes.Primitive): string =>
  */
 export const search =
 	(regexp: RegExp | string, startIndex = 0) =>
-	(self: string): Option.Option<SearchResult.Type> => {
+	(self: string): Option.Option<MSearchResult.Type> => {
 		if (MTypes.isString(regexp)) {
 			const pos = self.indexOf(regexp, startIndex);
 			if (pos === -1) return Option.none();
 			return Option.some(
-				SearchResult.make({ startIndex: pos, endIndex: pos + regexp.length, match: regexp })
+				MSearchResult.make({ startIndex: pos, endIndex: pos + regexp.length, match: regexp })
 			);
 		}
 		const target = self.slice(startIndex);
@@ -61,7 +61,7 @@ export const search =
 		const offsetPos = startIndex + result.index;
 		const match = result[0];
 		return Option.some(
-			SearchResult.make({ startIndex: offsetPos, endIndex: offsetPos + match.length, match })
+			MSearchResult.make({ startIndex: offsetPos, endIndex: offsetPos + match.length, match })
 		);
 	};
 
@@ -73,9 +73,9 @@ export const search =
  */
 export const searchAll =
 	(regexp: RegExp | string) =>
-	(self: string): Array<SearchResult.Type> => {
+	(self: string): Array<MSearchResult.Type> => {
 		/* eslint-disable-next-line functional/prefer-readonly-type -- To preserve refinements */
-		const result: Array<SearchResult.Type> = [];
+		const result: Array<MSearchResult.Type> = [];
 		let searchPos = 0;
 		for (;;) {
 			const searchResultOption = search(regexp, searchPos)(self);
@@ -90,19 +90,19 @@ export const searchAll =
 	};
 
 /**
- * Searches for the last occurence of `regexp` in `self` and returns a SearchResult.
+ * Searches for the last occurence of `regexp` in `self` and returns a MSearchResult.
  *
  * @since 0.0.6
  * @category Utils
  */
 export const searchRight =
 	(regexp: RegExp | string) =>
-	(self: string): Option.Option<SearchResult.Type> => {
+	(self: string): Option.Option<MSearchResult.Type> => {
 		if (MTypes.isString(regexp)) {
 			const pos = self.lastIndexOf(regexp);
 			if (pos === -1) return Option.none();
 			return Option.some(
-				SearchResult.make({ startIndex: pos, endIndex: pos + regexp.length, match: regexp })
+				MSearchResult.make({ startIndex: pos, endIndex: pos + regexp.length, match: regexp })
 			);
 		}
 		return pipe(self, searchAll(regexp), Array.last);

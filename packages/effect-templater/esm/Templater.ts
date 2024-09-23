@@ -4,6 +4,8 @@
  * foremost and longest target takes precedence. For instance, in the template `this bundler is good
  * at tree-shaking`, although `tree` and `tree-shaking` are present at the same position, the
  * longest target `tree-shaking` will take precedence.
+ *
+ * @since 0.0.6
  */
 import {
 	MArray,
@@ -14,10 +16,32 @@ import {
 	MTuple,
 	MTypes
 } from '@parischap/effect-lib';
-import { Array, Cause, Either, Function, Option, Order, String, Tuple, pipe } from 'effect';
+import {
+	Array,
+	Cause,
+	Either,
+	Function,
+	Inspectable,
+	Option,
+	Order,
+	Pipeable,
+	Predicate,
+	String,
+	Tuple,
+	Types,
+	pipe
+} from 'effect';
 import { flow } from 'effect/Function';
 
 const moduleTag = '@parischap/effect-templater/Templater/';
+const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+
+/**
+ * @since 0.0.6
+ * @category Symbol
+ */
+export type TypeId = typeof TypeId;
+
 /**
  * During compilation, a template is split at the boundary of each target. So if there are n targets
  * in the template, we have, after compilation, an array of n blocks, each block containing the text
@@ -28,11 +52,53 @@ const moduleTag = '@parischap/effect-templater/Templater/';
  *
  * @category Models
  */
-export type Type<T extends ReadonlyArray<string>> = readonly [
-	textAndTargetArray: ReadonlyArray<readonly [staticText: string, targetIndex: number]>,
-	finalStaticText: string,
-	targets: T
-];
+export interface Type<out T extends string> extends Inspectable.Inspectable, Pipeable.Pipeable {
+	readonly textAndTargetArray: ReadonlyArray<readonly [staticText: string, targetIndex: number]>;
+	readonly finalStaticText: string;
+	readonly targets: ReadonlyArray<T>;
+	/** @internal */
+	readonly [TypeId]: {
+		readonly _T: Types.Covariant<T>;
+	};
+}
+
+/**
+ * Returns true if `u` is a Templater
+ *
+ * @since 0.0.6
+ * @category Guards
+ */
+export const has = (u: unknown): u is Type<string> => Predicate.hasProperty(u, TypeId);
+
+/** Templater prototype */
+/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+const templaterProto: MTypes.Proto<Type<any>> = {
+	[TypeId]: {
+		_T: MTypes.covariantValue
+	},
+	toJSON<T extends string>(this: Type<T>) {
+		return {
+			_id: moduleTag,
+			textAndTargetArray: Inspectable.toJSON(this.textAndTargetArray),
+			finalStaticText: Inspectable.toJSON(this.finalStaticText),
+			targets: Inspectable.toJSON(this.targets)
+		};
+	},
+	[Inspectable.NodeInspectSymbol]<T extends string>(this: Type<T>) {
+		return this.toJSON();
+	},
+	toString<T extends string>(this: Type<T>) {
+		return Inspectable.format(this.toJSON());
+	},
+	pipe<T extends string>(this: Type<T>) {
+		/* eslint-disable-next-line prefer-rest-params */
+		return Pipeable.pipeArguments(this, arguments);
+	}
+};
+
+/** Constructs a Templater */
+const _make = <T extends string>(params: MTypes.Data<Type<T>>): Type<T> =>
+	MTypes.objectFromDataAndProto(templaterProto, params);
 
 /**
  * Builds a templater
@@ -41,9 +107,9 @@ export type Type<T extends ReadonlyArray<string>> = readonly [
  * @param template A template in which targets will be searched.
  * @param targets An array of strings containing the targets to find.
  */
-export const make = <const T extends ReadonlyArray<string>>(
+export const make = <const T extends string>(
 	template: string,
-	targets: T
+	targets: ReadonlyArray<T>
 ): Type<T> =>
 	pipe(
 		targets,
@@ -52,7 +118,7 @@ export const make = <const T extends ReadonlyArray<string>>(
 		// Suppress overlapping targets keeping the foremost longest one
 		Array.sort(
 			Order.mapInput(
-				MString.searchResultByStartIndexAndReverseEndIndex,
+				M.searchResultByStartIndexAndReverseEndIndex,
 				([_, sR]: readonly [number, MString.SearchResult]) => sR
 			)
 		),
@@ -73,7 +139,7 @@ export const make = <const T extends ReadonlyArray<string>>(
 		}),
 		Tuple.swap,
 		Tuple.appendElement(targets)
-	);
+	) as never;
 
 /**
  * Returns a copy of the original template where the targets have been replaced by the passed array
