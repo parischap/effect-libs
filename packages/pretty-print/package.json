@@ -75,5 +75,18 @@
 	},
 	"devDependencies": {
 		"@parischap/pretty-print": "link:."
-	}
+	},
+	"keywords": [
+		"inspect",
+		"util.inspect",
+		"object",
+		"stringify",
+		"pretty",
+		"tree",
+		"treeify",
+		"print",
+		"console",
+		"visualize",
+		"debug"
+	]
 }
