@@ -104,7 +104,7 @@ export const make = (params: MTypes.Data<Type>): Type =>
 	MTypes.objectFromDataAndProto(searchResultProto, params);
 
 /**
- * Order on a Type based on the startIndex
+ * SearchResult Order based on the startIndex
  *
  * @since 0.0.6
  * @category Ordering
@@ -112,7 +112,7 @@ export const make = (params: MTypes.Data<Type>): Type =>
 export const byStartIndex = Order.mapInput(Order.number, (self: Type) => self.startIndex);
 
 /**
- * Order on a Type based on the endIndex
+ * SearchResult Order based on the endIndex
  *
  * @since 0.0.6
  * @category Ordering
@@ -120,13 +120,19 @@ export const byStartIndex = Order.mapInput(Order.number, (self: Type) => self.st
 export const byEndIndex = Order.mapInput(Order.number, (self: Type) => self.endIndex);
 
 /**
- * Order on a Type based primarily on the startIndex and secondly on the reversed endIndex. So, if
- * two searchResults have the same startIndex, the one with the highest endIndex will be first.
+ * SearchResult Order that gives precedence to the first longest SearchResult.
  *
  * @since 0.0.6
  * @category Ordering
  */
-export const byStartIndexAndReverseEndIndex = Order.combine(
-	byStartIndex,
-	Order.reverse(byEndIndex)
-);
+export const byLongestFirst = Order.combine(byStartIndex, Order.reverse(byEndIndex));
+
+/**
+ * SearchResult Equivalence: with this Equivalence, two SearchResult's are considered equivalent if
+ * they overlap
+ *
+ * @since 0.0.6
+ * @category Equivalence
+ */
+export const overlappingEquivalence: Equivalence.Equivalence<Type> = (self: Type, that: Type) =>
+	self.endIndex >= that.startIndex && self.startIndex <= that.endIndex;

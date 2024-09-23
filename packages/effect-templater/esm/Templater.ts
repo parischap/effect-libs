@@ -119,7 +119,7 @@ export const make = <const T extends string>(
 		// Suppress overlapping targets keeping the foremost longest one
 		Array.sort(
 			Order.mapInput(
-				MSearchResult.byStartIndexAndReverseEndIndex,
+				MSearchResult.byLongestFirst,
 				([_, sR]: readonly [number, MSearchResult.Type]) => sR
 			)
 		),
