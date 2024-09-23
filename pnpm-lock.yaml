@@ -228,12 +228,9 @@ importers:
 
   packages/pretty-print/dist:
     dependencies:
-      '@effect/experimental':
-        specifier: ^0.26.6
-        version: 0.26.6(@effect/platform-node@0.60.5(@effect/platform@0.65.5(@effect/schema@0.73.4(effect@3.8.3))(effect@3.8.3))(effect@3.8.3))(@effect/platform@0.65.5(@effect/schema@0.73.4(effect@3.8.3))(effect@3.8.3))(@effect/schema@0.73.4(effect@3.8.3))(effect@3.8.3)(ws@8.18.0)
       '@parischap/effect-lib':
-        specifier: ^0.2.1
-        version: 0.2.1(@effect/platform-node@0.60.5(@effect/platform@0.65.5(@effect/schema@0.73.4(effect@3.8.3))(effect@3.8.3))(effect@3.8.3))(@effect/platform@0.65.5(@effect/schema@0.73.4(effect@3.8.3))(effect@3.8.3))(@effect/schema@0.73.4(effect@3.8.3))(@effect/typeclass@0.27.3(effect@3.8.3))(@parischap/js-lib@0.0.7)(effect@3.8.3)(ws@8.18.0)
+        specifier: ^0.3.0
+        version: 0.3.0(@effect/typeclass@0.27.3(effect@3.8.3))(@parischap/js-lib@0.0.7)(effect@3.8.3)
       '@parischap/js-lib':
         specifier: ^0.0.7
         version: 0.0.7
@@ -890,11 +887,11 @@ packages:
       tsx: ^4.1.0
       typescript: ^5.2.2
 
-  '@parischap/effect-lib@0.2.1':
-    resolution: {integrity: sha512-40m7l9+jVOCG6TqVAt4v03cWjI/TU/KWTS8syTrtN5+D1icsYvddDwtvCtn+KRWKcTPdARd4x6RokjsGXehh3g==}
+  '@parischap/effect-lib@0.3.0':
+    resolution: {integrity: sha512-crNljPP+R0YrtWdS26BzDTR0Wa2I3rg8CX09j9qa0jcHQAp2toCUQOHWbpa1V3HJiJ/7giBdTfQ9VgYY0ahGUg==}
     peerDependencies:
       '@effect/typeclass': ^0.27.3
-      '@parischap/js-lib': ^0.0.6
+      '@parischap/js-lib': ^0.0.7
       effect: ^3.8.3
 
   '@parischap/js-lib@0.0.7':
@@ -3346,19 +3343,11 @@ snapshots:
       tsx: 4.19.1
       typescript: 5.6.2
 
-  '@parischap/effect-lib@0.2.1(@effect/platform-node@0.60.5(@effect/platform@0.65.5(@effect/schema@0.73.4(effect@3.8.3))(effect@3.8.3))(effect@3.8.3))(@effect/platform@0.65.5(@effect/schema@0.73.4(effect@3.8.3))(effect@3.8.3))(@effect/schema@0.73.4(effect@3.8.3))(@effect/typeclass@0.27.3(effect@3.8.3))(@parischap/js-lib@0.0.7)(effect@3.8.3)(ws@8.18.0)':
+  '@parischap/effect-lib@0.3.0(@effect/typeclass@0.27.3(effect@3.8.3))(@parischap/js-lib@0.0.7)(effect@3.8.3)':
     dependencies:
-      '@effect/experimental': 0.26.6(@effect/platform-node@0.60.5(@effect/platform@0.65.5(@effect/schema@0.73.4(effect@3.8.3))(effect@3.8.3))(effect@3.8.3))(@effect/platform@0.65.5(@effect/schema@0.73.4(effect@3.8.3))(effect@3.8.3))(@effect/schema@0.73.4(effect@3.8.3))(effect@3.8.3)(ws@8.18.0)
       '@effect/typeclass': 0.27.3(effect@3.8.3)
       '@parischap/js-lib': 0.0.7
       effect: 3.8.3
-    transitivePeerDependencies:
-      - '@effect/platform'
-      - '@effect/platform-node'
-      - '@effect/schema'
-      - ioredis
-      - lmdb
-      - ws
 
   '@parischap/js-lib@0.0.7': {}
 
