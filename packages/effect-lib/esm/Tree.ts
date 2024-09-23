@@ -16,6 +16,7 @@ import {
 	MutableList,
 	Option,
 	pipe,
+	Pipeable,
 	Predicate,
 	Struct,
 	Tuple,
@@ -43,7 +44,7 @@ export type Forest<A> = ReadonlyArray<Type<A>>;
  * @since 0.0.6
  * @category Models
  */
-export interface Type<out A> extends Equal.Equal, Inspectable.Inspectable {
+export interface Type<out A> extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
 	/**
 	 * The value
 	 *
@@ -94,35 +95,39 @@ export {
 	_equivalence as Equivalence
 };
 
-/** Type prototype */
+/** Tree prototype */
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-const nonRecursiveTreeProto: MTypes.Proto<Type<any>> = {
+const TreeProto: MTypes.Proto<Type<any>> = {
 	[TypeId]: {
 		_A: MTypes.covariantValue
 	},
-	[Equal.symbol](this: Type<unknown>, that: unknown): boolean {
+	[Equal.symbol]<A>(this: Type<A>, that: unknown): boolean {
 		return has(that) && _equivalence(this, that);
 	},
-	[Hash.symbol](this: Type<unknown>) {
+	[Hash.symbol]<A>(this: Type<A>) {
 		return Hash.cached(this, Hash.hash(this.value));
 	},
-	toJSON(this: Type<unknown>) {
+	toJSON<A>(this: Type<A>) {
 		return {
 			value: Inspectable.toJSON(this.value),
 			forest: Inspectable.toJSON(this.forest)
 		};
 	},
-	[Inspectable.NodeInspectSymbol](this: Type<unknown>) {
+	[Inspectable.NodeInspectSymbol]<A>(this: Type<A>) {
 		return this.toJSON();
 	},
-	toString(this: Type<unknown>) {
+	toString<A>(this: Type<A>) {
 		return Inspectable.format(this.toJSON());
+	},
+	pipe<A>(this: Type<A>) {
+		/* eslint-disable-next-line prefer-rest-params */
+		return Pipeable.pipeArguments(this, arguments);
 	}
 };
 
 /** Constructs a Type */
 const _make = <A>(params: MTypes.Data<Type<A>>): Type<A> =>
-	MTypes.objectFromDataAndProto(nonRecursiveTreeProto, params);
+	MTypes.objectFromDataAndProto(TreeProto, params);
 
 /**
  * Utility type that returns the type of the value of a Tree

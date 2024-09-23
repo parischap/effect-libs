@@ -22,6 +22,7 @@ import {
 	Inspectable,
 	Number,
 	Order,
+	Pipeable,
 	Predicate,
 	String,
 	pipe
@@ -42,7 +43,7 @@ export type TypeId = typeof TypeId;
  * @since 0.0.1
  * @category Models
  */
-export interface Type extends Equal.Equal, Inspectable.Inspectable {
+export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
 	/**
 	 * The underlying string
 	 *
@@ -106,6 +107,10 @@ const formattedStringProto: MTypes.Proto<Type> = {
 	},
 	toString(this: Type) {
 		return Inspectable.format(this.toJSON());
+	},
+	pipe(this: Type) {
+		/* eslint-disable-next-line prefer-rest-params */
+		return Pipeable.pipeArguments(this, arguments);
 	}
 };
 

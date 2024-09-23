@@ -6,7 +6,7 @@
  * @since 0.0.6
  */
 
-import { Inspectable, Option, Predicate, Types, pipe } from 'effect';
+import { Inspectable, Option, Pipeable, Predicate, Types, pipe } from 'effect';
 import * as MPredicate from './Predicate.js';
 import * as MTypes from './types.js';
 
@@ -24,7 +24,8 @@ export type TypeId = typeof TypeId;
  * @category Models
  */
 export interface Type<out Input, out Output, out Rest extends Input = Input>
-	extends Inspectable.Inspectable {
+	extends Inspectable.Inspectable,
+		Pipeable.Pipeable {
 	/**
 	 * The value to match
 	 *
@@ -53,17 +54,23 @@ const matchProto: MTypes.Proto<Type<any, any>> = {
 		_Output: MTypes.covariantValue,
 		_Rest: MTypes.covariantValue
 	},
-	toJSON(this: Type<unknown, unknown>) {
+	toJSON<Input, Output, Rest extends Input>(this: Type<Input, Output, Rest>) {
 		return {
 			value: Inspectable.toJSON(this.value),
 			result: Inspectable.toJSON(this.result)
 		};
 	},
-	[Inspectable.NodeInspectSymbol](this: Type<unknown, unknown>) {
+	[Inspectable.NodeInspectSymbol]<Input, Output, Rest extends Input>(
+		this: Type<Input, Output, Rest>
+	) {
 		return this.toJSON();
 	},
-	toString(this: Type<unknown, unknown>) {
+	toString<Input, Output, Rest extends Input>(this: Type<Input, Output, Rest>) {
 		return Inspectable.format(this.toJSON());
+	},
+	pipe<Input, Output, Rest extends Input>(this: Type<Input, Output, Rest>) {
+		/* eslint-disable-next-line prefer-rest-params */
+		return Pipeable.pipeArguments(this, arguments);
 	}
 };
 

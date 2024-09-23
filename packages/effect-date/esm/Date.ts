@@ -1,3 +1,4 @@
+/** @since 0.0.6 */
 import { MBadArgumentError, MFunction } from '@parischap/effect-lib';
 import { JsPatches } from '@parischap/js-lib';
 import { Array, Either, Function, Number, Option, Struct, pipe } from 'effect';
@@ -61,9 +62,7 @@ const leapYearMonths = [
 	{ nbDaysInMonth: 31, monthStartMs: 28944000000 }
 ];
 
-/**
- * @category models
- */
+/** @category Models */
 export interface YearData {
 	// expressed in given timezone, range: MIN_FULL_YEAR..MAX_FULL_YEAR
 	readonly year: number;
@@ -73,9 +72,7 @@ export interface YearData {
 	readonly yearStartMs: number;
 }
 
-/**
- * @category models
- */
+/** @category Models */
 export interface MonthAndMonthDayData {
 	// expressed in given timezone, range:1..12
 	readonly month: number;
@@ -83,9 +80,7 @@ export interface MonthAndMonthDayData {
 	readonly monthDay: number;
 }
 
-/**
- * @category models
- */
+/** @category Models */
 export interface IsoWeekAndWeekDayData {
 	// expressed in given timezone, range:1..53
 	readonly isoWeek: number;
@@ -93,9 +88,7 @@ export interface IsoWeekAndWeekDayData {
 	readonly weekDay: number;
 }
 
-/**
- * @category models
- */
+/** @category Models */
 export interface Hour12AndMeridiem {
 	// expressed in given timezone, range:0..11
 	readonly hour12: number;
@@ -103,11 +96,9 @@ export interface Hour12AndMeridiem {
 	readonly meridiem: 0 | 12;
 }
 
-/**
- * @category models
- */
+/** @category Models */
 export interface Type {
-	// ms since 1/1/1970 at 00:00:00:000+00:00
+	// milliseconds since 1/1/1970 at 00:00:00:000+00:00
 	readonly timestamp: Option.Option<number>;
 	readonly yearData: Option.Option<YearData>;
 	// expressed in given timezone, range:1..366
@@ -125,7 +116,7 @@ export interface Type {
 	readonly millisecond: Option.Option<number>;
 	// range: -12..14 in hours
 	readonly timeZoneOffset: Option.Option<number>;
-	// time in ms between 1/1/1970 00:00:00:000+z:00 and the day expressed by this date at 00:00:00:000+z:00
+	// time in milliseconds between 1/1/1970 00:00:00:000+z:00 and the day expressed by this date at 00:00:00:000+z:00
 	readonly dayMs: Option.Option<number>;
 	// millisecond equivalent of the hours expressed by this date in the current timezone
 	readonly hourMs: Option.Option<number>;
@@ -137,41 +128,35 @@ export interface Type {
 	readonly timeZoneOffsetMs: Option.Option<number>;
 }
 
-/**
- * returns the number of days in a year
- */
-const getNbDaysInYear = (isLeapYear: boolean): number => (isLeapYear ? 366 : 365);
+/** Returns the number of days in a year */
+const _getNbDaysInYear = (isLeapYear: boolean): number => (isLeapYear ? 366 : 365);
 
 /**
- * Calculates the UTC week day of a timestamp. Calculation is based on the fact that 4/1/1970 was a UTC sunday.
+ * Calculates the UTC week day of a timestamp. Calculation is based on the fact that 4/1/1970 was a
+ * UTC sunday.
  */
-const getWeekDayFromTimestamp = (timestamp: number): number => {
+const _getWeekDayFromTimestamp = (timestamp: number): number => {
 	const weekDay0 = JsPatches.intModulo(7)(Math.floor(timestamp / DAY_MS) - 3);
 	return weekDay0 === 0 ? 7 : weekDay0;
 };
 
 /**
- * Offset in ms between the 1st day of the year at 00:00:00:000 and the first day of the first iso week of the year at 00:00:00:000. No input parameters check!
+ * Offset in ms between the 1st day of the year at 00:00:00:000 and the first day of the first iso
+ * week of the year at 00:00:00:000. No input parameters check!
  */
-const unsafeGetFirstIsoWeekMs = (firstDayOfYearWeekDay: number): number =>
+const _unsafeGetFirstIsoWeekMs = (firstDayOfYearWeekDay: number): number =>
 	(firstDayOfYearWeekDay <= 4 ? 1 - firstDayOfYearWeekDay : 8 - firstDayOfYearWeekDay) * DAY_MS;
 
-/**
- * Determines if an iso year is long (53 weeks) or short (52 weeks). No input parameters check!
- */
-const unsafeIsLongIsoYear = (firstDayOfYearWeekDay: number, isLeapYear: boolean): boolean =>
+/** Determines if an iso year is long (53 weeks) or short (52 weeks). No input parameters check! */
+const _unsafeIsLongIsoYear = (firstDayOfYearWeekDay: number, isLeapYear: boolean): boolean =>
 	firstDayOfYearWeekDay === 4 || (firstDayOfYearWeekDay === 3 && isLeapYear);
 
-/**
- * Calculates the number of iso weeks in a year. No input parameters check!
- */
-const unsafeGetNbIsoWeeksInYear = (firstDayOfYearWeekDay: number, isLeapYear: boolean): number =>
-	unsafeIsLongIsoYear(firstDayOfYearWeekDay, isLeapYear) ? 53 : 52;
+/** Calculates the number of iso weeks in a year. No input parameters check! */
+const _unsafeGetNbIsoWeeksInYear = (firstDayOfYearWeekDay: number, isLeapYear: boolean): number =>
+	_unsafeIsLongIsoYear(firstDayOfYearWeekDay, isLeapYear) ? 53 : 52;
 
-/**
- * Calculates yearData from a year. No input parameters check
- */
-const unsafeCalcYearData = (year: number): YearData => {
+/** Calculates yearData from a year. No input parameters check */
+const _unsafeCalcYearData = (year: number): YearData => {
 	// 2001 is the start of a 400-year period whose last year is bissextile
 	const offset2001 = year - 2001;
 	const q400Years = Math.floor(offset2001 / 400);
@@ -199,10 +184,8 @@ const unsafeCalcYearData = (year: number): YearData => {
 	};
 };
 
-/**
- * Calculates yearData from a year
- */
-const calcYearData = (year: number): Either.Either<YearData, MBadArgumentError.OutOfRange> =>
+/** Calculates yearData from a year */
+const _calcYearData = (year: number): Either.Either<YearData, MBadArgumentError.OutOfRange> =>
 	pipe(
 		year,
 		MBadArgumentError.OutOfRange.check({
@@ -212,12 +195,15 @@ const calcYearData = (year: number): Either.Either<YearData, MBadArgumentError.O
 			moduleTag,
 			functionName: 'setYear'
 		}),
-		Either.map(unsafeCalcYearData)
+		Either.map(_unsafeCalcYearData)
 	);
 
 /**
- * Returns your local time zone offset in hours. Result is cached. So result will become wrong if you change your local timeZoneOffset
- * @category utils
+ * Returns the local time zone offset in hours of the machine on which this code runs. Result is
+ * cached. So result will become wrong if you change the local timeZoneOffset
+ *
+ * @since 0.0.6
+ * @category Utils
  */
 export const localTimeZoneOffset: () => number = MFunction.once(
 	() => new Date(0).getTimezoneOffset() / 60
@@ -225,7 +211,8 @@ export const localTimeZoneOffset: () => number = MFunction.once(
 
 /**
  * Creates an empty Date
- * @category constructors
+ *
+ * @category Constructors
  */
 export const empty = (): Type => ({
 	timestamp: Option.none(),
@@ -247,8 +234,11 @@ export const empty = (): Type => ({
 });
 
 /**
- *  Creates a Date with the specified parameters. Only the year is mandatory. All other values default to their lowest possible value except the timeZoneOffset which defaults to your local timeZoneOffset. No input parameters check
- * @category constructors
+ * Creates a Date with the specified parameters. Only the year is mandatory. All other values
+ * default to their lowest possible value except the timeZoneOffset which defaults to your local
+ * timeZoneOffset. No input parameters check
+ *
+ * @category Constructors
  */
 export const unsafeMake = (
 	year: number,
@@ -271,8 +261,11 @@ export const unsafeMake = (
 	);
 
 /**
- *  Creates a Date with the specified parameters. Only the year is mandatory. All other values default to their lowest possible value except the timeZoneOffset which defaults to your local timeZoneOffset.
- * @category constructors
+ * Creates a Date with the specified parameters. Only the year is mandatory. All other values
+ * default to their lowest possible value except the timeZoneOffset which defaults to your local
+ * timeZoneOffset.
+ *
+ * @category Constructors
  */
 export const make = (
 	year: number,
@@ -296,7 +289,8 @@ export const make = (
 
 /**
  * Creates a Date from a timestamp. No input parameters check
- * @category constructors
+ *
+ * @category Constructors
  */
 export const unsafeMakeFromTimestamp = (timestamp: number, timeZoneOffset: number): Type => {
 	const timeZoneOffsetMs = -timeZoneOffset * HOUR_MS;
@@ -365,7 +359,8 @@ export const unsafeMakeFromTimestamp = (timestamp: number, timeZoneOffset: numbe
 
 /**
  * Creates a Date from a timestamp.
- * @category constructors
+ *
+ * @category Constructors
  */
 export const makeFromTimestamp = (
 	timestamp: number,
@@ -397,12 +392,13 @@ export const makeFromTimestamp = (
 
 /**
  * Returns a copy of self with ordinalDay set to the passed value. No input parameters check
- * @category setters
+ *
+ * @category Setters
  */
 export const unsafeSetYearAndOrdinalDay =
 	(year: number, ordinalDay: number) =>
 	(self: Type): Type => {
-		const yearData = unsafeCalcYearData(year);
+		const yearData = _unsafeCalcYearData(year);
 		return {
 			...self,
 			timestamp: Option.none(),
@@ -416,18 +412,19 @@ export const unsafeSetYearAndOrdinalDay =
 
 /**
  * Returns a copy of self with ordinalDay set to the passed value.
- * @category setters
+ *
+ * @category Setters
  */
 export const setYearAndOrdinalDay =
 	(year: number, ordinalDay: number) =>
 	(self: Type): Either.Either<Type, MBadArgumentError.OutOfRange> =>
 		Either.gen(function* () {
-			const checkedYearData = yield* pipe(calcYearData(year));
+			const checkedYearData = yield* pipe(_calcYearData(year));
 			const checkedOrdinalDay = yield* pipe(
 				ordinalDay,
 				MBadArgumentError.OutOfRange.check({
 					min: 1,
-					max: getNbDaysInYear(checkedYearData.isLeapYear),
+					max: _getNbDaysInYear(checkedYearData.isLeapYear),
 					id: 'ordinalDay',
 					moduleTag,
 					functionName: 'setYearAndOrdinalDay'
@@ -445,13 +442,15 @@ export const setYearAndOrdinalDay =
 		});
 
 /**
- * Returns a copy of self with year, month and monthDay set to the passed values. No input parameters check
- * @category setters
+ * Returns a copy of self with year, month and monthDay set to the passed values. No input
+ * parameters check
+ *
+ * @category Setters
  */
 export const unsafeSetYearMonthAndMonthDay =
 	(year: number, month: number, monthDay: number) =>
 	(self: Type): Type => {
-		const yearData = unsafeCalcYearData(year);
+		const yearData = _unsafeCalcYearData(year);
 		const monthDescriptor = (yearData.isLeapYear ? leapYearMonths : normalYearMonths)[
 			month - 1
 		] as MonthDescriptor;
@@ -473,13 +472,14 @@ export const unsafeSetYearMonthAndMonthDay =
 
 /**
  * Returns a copy of self with year, month and monthDay set to the passed values.
- * @category setters
+ *
+ * @category Setters
  */
 export const setYearMonthAndMonthDay =
 	(year: number, month: number, monthDay: number) =>
 	(self: Type): Either.Either<Type, MBadArgumentError.OutOfRange> =>
 		Either.gen(function* () {
-			const checkedYearData = yield* pipe(calcYearData(year));
+			const checkedYearData = yield* pipe(_calcYearData(year));
 			const checkedMonth = yield* pipe(
 				month,
 				MBadArgumentError.OutOfRange.check({
@@ -523,13 +523,15 @@ export const setYearMonthAndMonthDay =
 		});
 
 /**
- * Returns a copy of self with year, isoWeek and weekDay set to the passed values. No input parameters check
- * @category setters
+ * Returns a copy of self with year, isoWeek and weekDay set to the passed values. No input
+ * parameters check
+ *
+ * @category Setters
  */
 export const unsafeSetYearIsoWeekAndWeekDay =
 	(year: number, isoWeek: number, weekDay: number) =>
 	(self: Type): Type => {
-		const yearData = unsafeCalcYearData(year);
+		const yearData = _unsafeCalcYearData(year);
 
 		return {
 			...self,
@@ -540,7 +542,7 @@ export const unsafeSetYearIsoWeekAndWeekDay =
 			isoWeekAndWeekDayData: Option.some({ isoWeek, weekDay }),
 			dayMs: Option.some(
 				yearData.yearStartMs +
-					unsafeGetFirstIsoWeekMs(getWeekDayFromTimestamp(yearData.yearStartMs)) +
+					_unsafeGetFirstIsoWeekMs(_getWeekDayFromTimestamp(yearData.yearStartMs)) +
 					(isoWeek - 1) * WEEK_MS +
 					(weekDay - 1) * DAY_MS
 			)
@@ -549,19 +551,20 @@ export const unsafeSetYearIsoWeekAndWeekDay =
 
 /**
  * Returns a copy of self with year, isoWeek and weekDay set to the passed values.
- * @category setters
+ *
+ * @category Setters
  */
 export const setYearIsoWeekAndWeekDay =
 	(year: number, isoWeek: number, weekDay: number) =>
 	(self: Type): Either.Either<Type, MBadArgumentError.OutOfRange> =>
 		Either.gen(function* () {
-			const checkedYearData = yield* pipe(calcYearData(year));
-			const firstDayOfYearWeekDay = getWeekDayFromTimestamp(checkedYearData.yearStartMs);
+			const checkedYearData = yield* pipe(_calcYearData(year));
+			const firstDayOfYearWeekDay = _getWeekDayFromTimestamp(checkedYearData.yearStartMs);
 			const checkedIsoWeek = yield* pipe(
 				isoWeek,
 				MBadArgumentError.OutOfRange.check({
 					min: 1,
-					max: unsafeGetNbIsoWeeksInYear(firstDayOfYearWeekDay, checkedYearData.isLeapYear),
+					max: _unsafeGetNbIsoWeeksInYear(firstDayOfYearWeekDay, checkedYearData.isLeapYear),
 					id: 'isoWeek',
 					moduleTag,
 					functionName: 'setYearIsoWeekAndWeekDay'
@@ -589,7 +592,7 @@ export const setYearIsoWeekAndWeekDay =
 				}),
 				dayMs: Option.some(
 					checkedYearData.yearStartMs +
-						unsafeGetFirstIsoWeekMs(firstDayOfYearWeekDay) +
+						_unsafeGetFirstIsoWeekMs(firstDayOfYearWeekDay) +
 						(checkedIsoWeek - 1) * WEEK_MS +
 						(checkedWeekDay - 1) * DAY_MS
 				)
@@ -598,7 +601,8 @@ export const setYearIsoWeekAndWeekDay =
 
 /**
  * Returns a copy of self with hour24 set to the passed value. No input parameters check
- * @category setters
+ *
+ * @category Setters
  */
 export const unsafeSetHour24 =
 	(hour24: number) =>
@@ -612,7 +616,8 @@ export const unsafeSetHour24 =
 
 /**
  * Returns a copy of self with hour24 set to the passed value.
- * @category setters
+ *
+ * @category Setters
  */
 export const setHour24 =
 	(hour24: number) =>
@@ -630,8 +635,10 @@ export const setHour24 =
 		);
 
 /**
- * Returns a copy of self with hour12 and meridiem set to the passed values. No input parameters check
- * @category setters
+ * Returns a copy of self with hour12 and meridiem set to the passed values. No input parameters
+ * check
+ *
+ * @category Setters
  */
 export const unsafeSetHour12AndMeridiem =
 	(hour12: number, meridiem: 0 | 12) =>
@@ -645,7 +652,8 @@ export const unsafeSetHour12AndMeridiem =
 
 /**
  * Returns a copy of self with hour12 and meridiem set to the passed values.
- * @category setters
+ *
+ * @category Setters
  */
 export const setHour12AndMeridiem =
 	(hour12: number, meridiem: 0 | 12) =>
@@ -664,7 +672,8 @@ export const setHour12AndMeridiem =
 
 /**
  * Returns a copy of self with minute set to the passed value. No input parameters check
- * @category setters
+ *
+ * @category Setters
  */
 export const unsafeSetMinute =
 	(minute: number) =>
@@ -677,7 +686,8 @@ export const unsafeSetMinute =
 
 /**
  * Returns a copy of self with minute set to the passed value.
- * @category setters
+ *
+ * @category Setters
  */
 export const setMinute =
 	(minute: number) =>
@@ -696,7 +706,8 @@ export const setMinute =
 
 /**
  * Returns a copy of self with second set to the passed value. No input parameters check
- * @category setters
+ *
+ * @category Setters
  */
 export const unsafeSetSecond =
 	(second: number) =>
@@ -709,7 +720,8 @@ export const unsafeSetSecond =
 
 /**
  * Returns a copy of self with second set to the passed value.
- * @category setters
+ *
+ * @category Setters
  */
 export const setSecond =
 	(second: number) =>
@@ -728,7 +740,8 @@ export const setSecond =
 
 /**
  * Returns a copy of self with millisecond set to the passed value. No input parameters check
- * @category setters
+ *
+ * @category Setters
  */
 export const unsafeSetMillisecond =
 	(millisecond: number) =>
@@ -740,7 +753,8 @@ export const unsafeSetMillisecond =
 
 /**
  * Returns a copy of self with millisecond set to the passed value.
- * @category setters
+ *
+ * @category Setters
  */
 export const setMillisecond =
 	(millisecond: number) =>
@@ -758,8 +772,10 @@ export const setMillisecond =
 		);
 
 /**
- * Returns a copy of self with timeZoneOffset set to the passed value. Timestamp is modified accordingly
- * @category setters
+ * Returns a copy of self with timeZoneOffset set to the passed value. Timestamp is modified
+ * accordingly
+ *
+ * @category Setters
  */
 export const setTimeZoneOffset =
 	(timeZoneOffset: number) =>
@@ -771,8 +787,10 @@ export const setTimeZoneOffset =
 	});
 
 /**
- * Returns a copy of self with hour, minute, second, millisecond and timeZoneOffset set to 0 for those that have not been set yet
- *  * @category setters
+ * Returns a copy of self with hour, minute, second, millisecond and timeZoneOffset set to 0 for
+ * those that have not been set yet
+ *
+ * - @category setters
  */
 export const setUnsetToZero = (self: Type): Type => {
 	return {
@@ -829,7 +847,8 @@ export const setUnsetToZero = (self: Type): Type => {
 
 /**
  * Returns the timestamp of the Date if enough enformation was provided to calculate it
- * @category getters
+ *
+ * @category Getters
  */
 export const getTimeStamp = (self: Type): Either.Either<number, Errors.MissingData> =>
 	pipe(
@@ -853,7 +872,8 @@ export const getTimeStamp = (self: Type): Either.Either<number, Errors.MissingDa
 
 /**
  * Returns the year of the Date if enough enformation was provided to calculate it
- * @category getters
+ *
+ * @category Getters
  */
 export const getYear = (self: Type): Either.Either<number, Errors.MissingData> =>
 	pipe(
@@ -864,7 +884,8 @@ export const getYear = (self: Type): Either.Either<number, Errors.MissingData> =
 
 /**
  * Returns the ordinalDay of the Date if enough enformation was provided to calculate it
- * @category getters
+ *
+ * @category Getters
  */
 export const getOrdinalDay = (self: Type): Either.Either<number, Errors.MissingData> =>
 	pipe(
@@ -875,8 +896,10 @@ export const getOrdinalDay = (self: Type): Either.Either<number, Errors.MissingD
 	);
 
 /**
- * Returns the month and monthDay of the Date if enough enformation was provided to calculate them. If you are only interested in the month or the monthDay, use getMonth or getMonthDay instead.
- * @category getters
+ * Returns the month and monthDay of the Date if enough enformation was provided to calculate them.
+ * If you are only interested in the month or the monthDay, use getMonth or getMonthDay instead.
+ *
+ * @category Getters
  */
 export const getMonthAndMonthDay = (
 	self: Type
@@ -913,22 +936,28 @@ export const getMonthAndMonthDay = (
 	);
 
 /**
- * Returns the month of the Date if enough enformation was provided to calculate it. If you are also interested in the monthDay, use getMonthAndMonthDay instead.
- * @category getters
+ * Returns the month of the Date if enough enformation was provided to calculate it. If you are also
+ * interested in the monthDay, use getMonthAndMonthDay instead.
+ *
+ * @category Getters
  */
 export const getMonth = (self: Type): Either.Either<number, Errors.MissingData> =>
 	pipe(self, getMonthAndMonthDay, Either.map(Struct.get('month')));
 
 /**
- * Returns the monthDay of the Date if enough enformation was provided to calculate it. If you are also interested in the month, use getMonthAndMonthDay instead.
- * @category getters
+ * Returns the monthDay of the Date if enough enformation was provided to calculate it. If you are
+ * also interested in the month, use getMonthAndMonthDay instead.
+ *
+ * @category Getters
  */
 export const getMonthDay = (self: Type): Either.Either<number, Errors.MissingData> =>
 	pipe(self, getMonthAndMonthDay, Either.map(Struct.get('monthDay')));
 
 /**
- * Returns the isoWeek and weekDay of the Date if enough enformation was provided to calculate them. If you are only interested in the isoWeek or the weekDay, use getIsoWeek or getWeekDay instead.
- * @category getters
+ * Returns the isoWeek and weekDay of the Date if enough enformation was provided to calculate them.
+ * If you are only interested in the isoWeek or the weekDay, use getIsoWeek or getWeekDay instead.
+ *
+ * @category Getters
  */
 export const getIsoWeekAndWeekDay = (
 	self: Type
@@ -940,7 +969,7 @@ export const getIsoWeekAndWeekDay = (
 				Option.product(self.dayMs, self.yearData),
 				Option.map(([dayMs, { yearStartMs }]) => {
 					const offset =
-						dayMs - yearStartMs - unsafeGetFirstIsoWeekMs(getWeekDayFromTimestamp(yearStartMs));
+						dayMs - yearStartMs - _unsafeGetFirstIsoWeekMs(_getWeekDayFromTimestamp(yearStartMs));
 					const isoWeek0 = Math.floor(offset / WEEK_MS);
 					return {
 						isoWeek: isoWeek0 + 1,
@@ -953,22 +982,27 @@ export const getIsoWeekAndWeekDay = (
 	);
 
 /**
- * Returns the isoWeek of the Date if enough enformation was provided to calculate it. If you are also interested in the weekDay, use getIsoWeekAndWeekDay instead.
- * @category getters
+ * Returns the isoWeek of the Date if enough enformation was provided to calculate it. If you are
+ * also interested in the weekDay, use getIsoWeekAndWeekDay instead.
+ *
+ * @category Getters
  */
 export const getIsoWeek = (self: Type): Either.Either<number, Errors.MissingData> =>
 	pipe(self, getIsoWeekAndWeekDay, Either.map(Struct.get('isoWeek')));
 
 /**
- * Returns the weekDay of the Date if enough enformation was provided to calculate it. If you are also interested in the isoWeek, use getIsoWeekAndWeekDay instead.
- * @category getters
+ * Returns the weekDay of the Date if enough enformation was provided to calculate it. If you are
+ * also interested in the isoWeek, use getIsoWeekAndWeekDay instead.
+ *
+ * @category Getters
  */
 export const getWeekDay = (self: Type): Either.Either<number, Errors.MissingData> =>
 	pipe(self, getIsoWeekAndWeekDay, Either.map(Struct.get('weekDay')));
 
 /**
  * Returns the hour24 of the Date if enough enformation was provided to calculate it.
- * @category getters
+ *
+ * @category Getters
  */
 export const getHour24 = (self: Type): Either.Either<number, Errors.MissingData> =>
 	pipe(
@@ -977,8 +1011,10 @@ export const getHour24 = (self: Type): Either.Either<number, Errors.MissingData>
 	);
 
 /**
- * Returns the hour12 and meridiem of the Date if enough enformation was provided to calculate them. If you are only interested in the hour12 or the meridiem, use getHour12 or getMeridiem instead.
- * @category getters
+ * Returns the hour12 and meridiem of the Date if enough enformation was provided to calculate them.
+ * If you are only interested in the hour12 or the meridiem, use getHour12 or getMeridiem instead.
+ *
+ * @category Getters
  */
 export const getHour12AndMeridiem = (
 	self: Type
@@ -996,22 +1032,27 @@ export const getHour12AndMeridiem = (
 	);
 
 /**
- * Returns the hour12 of the Date if enough enformation was provided to calculate it. If you are also interested in the meridiem, use getHour12AndMeridiem instead.
- * @category getters
+ * Returns the hour12 of the Date if enough enformation was provided to calculate it. If you are
+ * also interested in the meridiem, use getHour12AndMeridiem instead.
+ *
+ * @category Getters
  */
 export const getHour12 = (self: Type): Either.Either<number, Errors.MissingData> =>
 	pipe(self, getHour12AndMeridiem, Either.map(Struct.get('hour12')));
 
 /**
- * Returns the meridiem of the Date if enough enformation was provided to calculate it. If you are also interested in the hour12, use getHour12AndMeridiem instead.
- * @category getters
+ * Returns the meridiem of the Date if enough enformation was provided to calculate it. If you are
+ * also interested in the hour12, use getHour12AndMeridiem instead.
+ *
+ * @category Getters
  */
 export const getMeridiem = (self: Type): Either.Either<number, Errors.MissingData> =>
 	pipe(self, getHour12AndMeridiem, Either.map(Struct.get('meridiem')));
 
 /**
  * Returns the minute of the Date if enough enformation was provided to calculate it.
- * @category getters
+ *
+ * @category Getters
  */
 export const getMinute = (self: Type): Either.Either<number, Errors.MissingData> =>
 	pipe(
@@ -1021,7 +1062,8 @@ export const getMinute = (self: Type): Either.Either<number, Errors.MissingData>
 
 /**
  * Returns the second of the Date if enough enformation was provided to calculate it.
- * @category getters
+ *
+ * @category Getters
  */
 export const getSecond = (self: Type): Either.Either<number, Errors.MissingData> =>
 	pipe(
@@ -1031,7 +1073,8 @@ export const getSecond = (self: Type): Either.Either<number, Errors.MissingData>
 
 /**
  * Returns the millisecond of the Date if enough enformation was provided to calculate it.
- * @category getters
+ *
+ * @category Getters
  */
 export const getMillisecond = (self: Type): Either.Either<number, Errors.MissingData> =>
 	pipe(
@@ -1041,7 +1084,8 @@ export const getMillisecond = (self: Type): Either.Either<number, Errors.Missing
 
 /**
  * Returns the timeZoneOffset of the Date if it was provided.
- * @category getters
+ *
+ * @category Getters
  */
 export const getTimeZoneOffset = (self: Type): Either.Either<number, Errors.MissingData> =>
 	pipe(
@@ -1051,7 +1095,8 @@ export const getTimeZoneOffset = (self: Type): Either.Either<number, Errors.Miss
 
 /**
  * Adds an offset in ms to the Date.
- * @category utils
+ *
+ * @category Utils
  */
 export const addMillisecondOffset =
 	(offset: number) =>
@@ -1064,7 +1109,8 @@ export const addMillisecondOffset =
 
 /**
  * Adds an offset in seconds to the Date.
- * @category utils
+ *
+ * @category Utils
  */
 export const addSecondOffset =
 	(offset: number) =>
@@ -1073,7 +1119,8 @@ export const addSecondOffset =
 
 /**
  * Adds an offset in minutes to the Date.
- * @category utils
+ *
+ * @category Utils
  */
 export const addMinuteOffset =
 	(offset: number) =>
@@ -1082,7 +1129,8 @@ export const addMinuteOffset =
 
 /**
  * Adds an offset in hours to the Date.
- * @category utils
+ *
+ * @category Utils
  */
 export const addHourOffset =
 	(offset: number) =>
@@ -1091,7 +1139,8 @@ export const addHourOffset =
 
 /**
  * Adds an offset in days to the Date.
- * @category utils
+ *
+ * @category Utils
  */
 export const addDayOffset =
 	(offset: number) =>
@@ -1100,7 +1149,8 @@ export const addDayOffset =
 
 /**
  * Adds an offset in weeks to the Date.
- * @category utils
+ *
+ * @category Utils
  */
 export const addWeekOffset =
 	(offset: number) =>
@@ -1109,7 +1159,8 @@ export const addWeekOffset =
 
 /**
  * Adds an offset in months to the Date.
- * @category utils
+ *
+ * @category Utils
  */
 export const addMonthOffset =
 	(offset: number) =>
@@ -1129,7 +1180,8 @@ export const addMonthOffset =
 
 /**
  * Adds an offset in years to the Date.
- * @category utils
+ *
+ * @category Utils
  */
 export const addYearOffset =
 	(offset: number) =>

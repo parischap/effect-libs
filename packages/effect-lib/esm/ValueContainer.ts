@@ -79,22 +79,22 @@ const valueContainerProto: MTypes.Proto<Type<any>> = {
 	[TypeId]: {
 		_A: MTypes.covariantValue
 	},
-	[Equal.symbol](this: Type<unknown>, that: unknown): boolean {
+	[Equal.symbol]<A>(this: Type<A>, that: unknown): boolean {
 		return has(that) && _equivalence(this, that);
 	},
-	[Hash.symbol](this: Type<unknown>) {
+	[Hash.symbol]<A>(this: Type<A>) {
 		return Hash.cached(this, Hash.hash(this.value));
 	},
-	toJSON(this: Type<unknown>) {
+	toJSON<A>(this: Type<A>) {
 		return {
 			value: Inspectable.toJSON(this.value),
 			storeDate: Inspectable.toJSON(this.storeDate)
 		};
 	},
-	[Inspectable.NodeInspectSymbol](this: Type<unknown>) {
+	[Inspectable.NodeInspectSymbol]<A>(this: Type<A>) {
 		return this.toJSON();
 	},
-	toString(this: Type<unknown>) {
+	toString<A>(this: Type<A>) {
 		return Inspectable.format(this.toJSON());
 	}
 };

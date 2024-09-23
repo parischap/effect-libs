@@ -13,6 +13,7 @@ import {
 	MutableHashMap,
 	MutableQueue,
 	Option,
+	Pipeable,
 	Predicate,
 	Tuple,
 	Types,
@@ -59,7 +60,7 @@ export type LookUp<A, B> = ({
  * @since 0.0.6
  * @category Models
  */
-export interface Type<in out A, in out B> extends Inspectable.Inspectable {
+export interface Type<in out A, in out B> extends Inspectable.Inspectable, Pipeable.Pipeable {
 	/**
 	 * The key/value cache. A None value means the value is currently under calculation. A circular
 	 * flag will be sent if the value needs to be retreived while it is being calculated.
@@ -114,7 +115,7 @@ const cacheProto: MTypes.Proto<Type<any, any>> = {
 		_A: MTypes.invariantValue,
 		_B: MTypes.invariantValue
 	},
-	toJSON(this: Type<unknown, unknown>) {
+	toJSON<A, B>(this: Type<A, B>) {
 		return {
 			_id: moduleTag,
 			store: Inspectable.toJSON(this.store),
@@ -123,11 +124,15 @@ const cacheProto: MTypes.Proto<Type<any, any>> = {
 			lifeSpan: Inspectable.toJSON(this.lifeSpan)
 		};
 	},
-	[Inspectable.NodeInspectSymbol](this: Type<unknown, unknown>) {
+	[Inspectable.NodeInspectSymbol]<A, B>(this: Type<A, B>) {
 		return this.toJSON();
 	},
-	toString(this: Type<unknown, unknown>) {
+	toString<A, B>(this: Type<A, B>) {
 		return Inspectable.format(this.toJSON());
+	},
+	pipe<A, B>(this: Type<A, B>) {
+		/* eslint-disable-next-line prefer-rest-params */
+		return Pipeable.pipeArguments(this, arguments);
 	}
 };
 

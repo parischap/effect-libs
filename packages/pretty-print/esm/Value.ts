@@ -23,6 +23,7 @@ import {
 	Inspectable,
 	Number,
 	Option,
+	Pipeable,
 	Predicate,
 	Struct,
 	Types,
@@ -49,7 +50,10 @@ export type TypeId = typeof TypeId;
  * @since 0.0.1
  * @category Models
  */
-export interface Type<out V extends MTypes.Unknown> extends Equal.Equal, Inspectable.Inspectable {
+export interface Type<out V extends MTypes.Unknown>
+	extends Equal.Equal,
+		Inspectable.Inspectable,
+		Pipeable.Pipeable {
 	/** The value to stringify */
 	readonly value: V;
 	/**
@@ -130,13 +134,13 @@ const valueProto: MTypes.Proto<Type<any>> = {
 	[TypeId]: {
 		_V: MTypes.covariantValue
 	},
-	[Equal.symbol](this: Type<MTypes.Unknown>, that: unknown): boolean {
+	[Equal.symbol]<V extends MTypes.Unknown>(this: Type<V>, that: unknown): boolean {
 		return has(that) && _equivalence(this, that);
 	},
-	[Hash.symbol](this: Type<MTypes.Unknown>) {
+	[Hash.symbol]<V extends MTypes.Unknown>(this: Type<V>) {
 		return Hash.cached(this, Hash.hash(this.value));
 	},
-	toJSON(this: Type<MTypes.Unknown>) {
+	toJSON<V extends MTypes.Unknown>(this: Type<V>) {
 		return {
 			value: Inspectable.toJSON(this.value),
 			depth: Inspectable.toJSON(this.depth),
@@ -153,11 +157,15 @@ const valueProto: MTypes.Proto<Type<any>> = {
 			belongsToArray: Inspectable.toJSON(this.belongsToArray)
 		};
 	},
-	[Inspectable.NodeInspectSymbol](this: Type<MTypes.Unknown>) {
+	[Inspectable.NodeInspectSymbol]<V extends MTypes.Unknown>(this: Type<V>) {
 		return this.toJSON();
 	},
-	toString(this: Type<MTypes.Unknown>) {
+	toString<V extends MTypes.Unknown>(this: Type<V>) {
 		return Inspectable.format(this.toJSON());
+	},
+	pipe<V extends MTypes.Unknown>(this: Type<V>) {
+		/* eslint-disable-next-line prefer-rest-params */
+		return Pipeable.pipeArguments(this, arguments);
 	}
 };
 
