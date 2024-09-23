@@ -6,11 +6,7 @@ const rootPath = resolve();
 const packageName = basename(rootPath);
 const repoName = basename(dirname(dirname(rootPath)));
 const packageJson = merge.all([
-	Configs.packageBase(packageName, repoName),
-	Configs.packageSubRepo,
-	Configs.packageSubRepoTranspiled,
-	Configs.packageSubRepoTranspiledEffect,
-	Configs.packageSubRepoPublic,
+	// Put it in first position so specific keywords come out first
 	{
 		description: 'A functional library to pretty-print and treeify objects',
 		peerDependencies: {
@@ -44,7 +40,12 @@ const packageJson = merge.all([
 			'visualize',
 			'debug'
 		]
-	}
+	},
+	Configs.packageBase(packageName, repoName),
+	Configs.packageSubRepo,
+	Configs.packageSubRepoTranspiled,
+	Configs.packageSubRepoTranspiledEffect,
+	Configs.packageSubRepoPublic
 ]);
 
 export default {
