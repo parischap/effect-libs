@@ -12,6 +12,7 @@ import {
 	MBadArgumentError,
 	MEither,
 	MFunction,
+	MSearchResult,
 	MString,
 	MTuple,
 	MTypes
@@ -118,8 +119,8 @@ export const make = <const T extends string>(
 		// Suppress overlapping targets keeping the foremost longest one
 		Array.sort(
 			Order.mapInput(
-				M.searchResultByStartIndexAndReverseEndIndex,
-				([_, sR]: readonly [number, MString.SearchResult]) => sR
+				MSearchResult.byStartIndexAndReverseEndIndex,
+				([_, sR]: readonly [number, MSearchResult.Type]) => sR
 			)
 		),
 		Array.chop((indexedSearchResults) => {

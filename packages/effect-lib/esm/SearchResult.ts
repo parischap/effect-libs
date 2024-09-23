@@ -121,8 +121,7 @@ export const byEndIndex = Order.mapInput(Order.number, (self: Type) => self.endI
 
 /**
  * Order on a Type based primarily on the startIndex and secondly on the reversed endIndex. So, if
- * two searchResults have the same startIndex, the one with the lowest endIndex will have
- * precedence.
+ * two searchResults have the same startIndex, the one with the highest endIndex will be first.
  *
  * @since 0.0.6
  * @category Ordering
