@@ -19,7 +19,7 @@ import * as Value from './Value.js';
  * @category Utils
  */
 export const asLines = (
-	options: Options.Type = Options.uncoloredTabifiedSplitWhenTotalLengthExceeds40
+	options: Options.Type = Options.uncoloredSplitWhenTotalLengthExceeds40
 ): MTypes.OneArgFunction<unknown, StringifiedValue.Type> =>
 	flow(Value.makeFromValue(options), Value.stringify);
 
@@ -33,7 +33,7 @@ export const asLines = (
 export const asString = (
 	options: Options.Type & {
 		readonly lineSep?: FormattedString.Type;
-	} = Options.uncoloredTabifiedSplitWhenTotalLengthExceeds40
+	} = Options.uncoloredSplitWhenTotalLengthExceeds40
 ): MTypes.OneArgFunction<unknown, string> =>
 	flow(
 		asLines(options),

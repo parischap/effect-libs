@@ -119,12 +119,12 @@ export const keyAndValue =
 		);
 
 /**
- * Same as `keyAndValue` but uses `PropertyMarks.defaultInstance`
+ * Alias for `keyAndValue(PropertyMarks.defaultInstance)`
  *
  * @since 0.0.1
  * @category Instances
  */
-export const defaultKeyAndValue = keyAndValue(PropertyMarks.defaultInstance);
+export const objectLike = keyAndValue(PropertyMarks.defaultInstance);
 
 /**
  * PropertyFormatter instance that uses the `valueOnly` instance for arrays and the `keyAndValue`
@@ -146,9 +146,9 @@ export const auto =
 		);
 
 /**
- * Same as `auto` but uses `PropertyMarks.defaultInstance`
+ * Alias for `auto(PropertyMarks.defaultInstance)`
  *
  * @since 0.0.1
  * @category Instances
  */
-export const defaultAuto = auto(PropertyMarks.defaultInstance);
+export const objectAndArrayLike = auto(PropertyMarks.defaultInstance);

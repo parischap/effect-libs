@@ -62,11 +62,12 @@ export interface Type {
 
 	/**
 	 * A key with the same name can appear in an object and one or several of its prototypes. This
-	 * option allows you to decide if you want to keep all the properties with the same name. If true,
-	 * only the first occurrence of each property with the same name is kept (sorting happens before
-	 * deduping, so you can decide which property will be first by choosing your propertySortOrder
-	 * carefully). If false, all occurrences of the same property are kept. Deduping is only performed
-	 * on records that are not arrays
+	 * option allows you to decide if you want to keep all these properties with the same name. If
+	 * true, only the first occurrence of each property with the same name is kept. Sorting happens
+	 * before deduping, so you can decide which property will be first by choosing your
+	 * propertySortOrder carefully. Usually, you will use `propertySortOrder:
+	 * ValueOrder.byPrototypalDepth`. If false, all occurrences of the same property are kept.
+	 * Deduping is only performed on records that are not arrays
 	 */
 	readonly dedupeRecordProperties: boolean;
 
@@ -97,7 +98,7 @@ export interface Type {
 
 /**
  * Function that returns an `Options` instance that pretty-prints a value on a single line in a way
- * very similar to util.inspect
+ * very similar to util.inspect. It takes a `ColorSet` instance as an argument.
  *
  * @since 0.0.1
  * @category Instances
@@ -113,13 +114,12 @@ export const singleLine = (colorSet: ColorSet.Type): Type => ({
 	dedupeRecordProperties: false,
 	byPasser: ByPasser.objectAsValue(colorSet),
 	propertyFilter: PropertyFilter.removeNonEnumerables,
-	propertyFormatter: PropertyFormatter.defaultAuto(colorSet),
+	propertyFormatter: PropertyFormatter.objectAndArrayLike(colorSet),
 	recordFormatter: RecordFormatter.defaultSingleLine(colorSet)
 });
 
 /**
- * `Options` instance that pretty-prints a value on a single line in a way very similar to
- * util.inspect - No colors added
+ * Alias for `singleLine(ColorSet.uncolored)`
  *
  * @since 0.0.1
  * @category Instances
@@ -127,8 +127,7 @@ export const singleLine = (colorSet: ColorSet.Type): Type => ({
 export const uncoloredSingleLine = singleLine(ColorSet.uncolored);
 
 /**
- * `Options` instance that pretty-prints a value on a single line in a way very similar to
- * util.inspect - With colors adapted to the the darkmode
+ * Alias for `singleLine(ColorSet.ansiDarkMode)`
  *
  * @since 0.0.1
  * @category Instances
@@ -136,8 +135,8 @@ export const uncoloredSingleLine = singleLine(ColorSet.uncolored);
 export const ansiDarkSingleLine = singleLine(ColorSet.ansiDarkMode);
 
 /**
- * Function that returns an `Options` instance that pretty-prints a value on multiple lines with
- * indentation in a way very similar to util.inspect
+ * Function that returns an `Options` instance that pretty-prints a value on multiple indented lines
+ * in a way very similar to util.inspect. It takes a `ColorSet` instance as an argument.
  *
  * @since 0.0.1
  * @category Instances
@@ -148,8 +147,7 @@ export const tabified = (colorSet: ColorSet.Type): Type => ({
 });
 
 /**
- * `Options` instance that pretty-prints a value on multiple lines with indentation in a way very
- * similar to util.inspect - No colors added
+ * Alias for `tabified(ColorSet.uncolored)`
  *
  * @since 0.0.1
  * @category Instances
@@ -157,8 +155,7 @@ export const tabified = (colorSet: ColorSet.Type): Type => ({
 export const uncoloredTabified = tabified(ColorSet.uncolored);
 
 /**
- * `Options` instance that pretty-prints a value on multiple lines with indentation in a way very
- * similar to util.inspect - With colors adapted to the the darkmode
+ * Alias for `tabified(ColorSet.ansiDarkMode)`
  *
  * @since 0.0.1
  * @category Instances
@@ -167,7 +164,8 @@ export const ansiDarkTabified = tabified(ColorSet.ansiDarkMode);
 
 /**
  * Function that returns an `Options` instance that pretty-prints a value on multiple lines with a
- * tree-like structure in a way very similar to util.inspect
+ * tree-like structure in a way very similar to util.inspect. It takes a `ColorSet` instance as an
+ * argument.
  *
  * @since 0.0.1
  * @category Instances
@@ -175,13 +173,12 @@ export const ansiDarkTabified = tabified(ColorSet.ansiDarkMode);
 export const treeified = (colorSet: ColorSet.Type): Type => ({
 	...singleLine(colorSet),
 	byPasser: ByPasser.objectAsValueWithoutNullables(colorSet),
-	propertyFormatter: PropertyFormatter.defaultKeyAndValue(colorSet),
+	propertyFormatter: PropertyFormatter.objectLike(colorSet),
 	recordFormatter: RecordFormatter.defaultTreeified(colorSet)
 });
 
 /**
- * `Options` instance that pretty-prints a value on multiple lines with a tree-like structure in a
- * way very similar to util.inspect - No colors added
+ * Alias for `treeified(ColorSet.uncolored)`
  *
  * @since 0.0.1
  * @category Instances
@@ -189,8 +186,7 @@ export const treeified = (colorSet: ColorSet.Type): Type => ({
 export const uncoloredTreeified = treeified(ColorSet.uncolored);
 
 /**
- * `Options` instance that pretty-prints a value on multiple lines with a tree-like structure in a
- * way very similar to util.inspect - With colors adapted to the the darkmode
+ * Alias for `treeified(ColorSet.ansiDarkMode)`
  *
  * @since 0.0.1
  * @category Instances
@@ -198,36 +194,34 @@ export const uncoloredTreeified = treeified(ColorSet.uncolored);
 export const ansiDarkTreeified = treeified(ColorSet.ansiDarkMode);
 
 /**
- * Function that returns an `Options` instance that pretty-prints a value in a way very similar to
- * util.inspect. Records are printed on a multiple lines when the total length of their stringified
- * properties strictly exceeds 40 characters
+ * Same as `singleLine` but, if the value to pretty-print is a record, it, and any sub-record it
+ * contains, will be printed on multiple indented lines if the total length of its stringified
+ * properties is less than or equal to 40 characters. Record-marks are not included in the count.
  *
  * @since 0.0.1
  * @category Instances
  */
-export const tabifiedSplitWhenTotalLengthExceeds40 = (colorSet: ColorSet.Type): Type => ({
+export const splitWhenTotalLengthExceeds40 = (colorSet: ColorSet.Type): Type => ({
 	...singleLine(colorSet),
-	recordFormatter: RecordFormatter.defaultAutoBasedOnTotalLength(40)(colorSet)
+	recordFormatter: RecordFormatter.defaultSplitOnTotalLength(40)(colorSet)
 });
 
 /**
- * `Options` instance that pretty-prints a value on multiple lines with indentation in a way very
- * similar to util.inspect - No colors added
+ * Alias for `splitWhenTotalLengthExceeds40(ColorSet.uncolored)`
  *
  * @since 0.0.1
  * @category Instances
  */
-export const uncoloredTabifiedSplitWhenTotalLengthExceeds40 = tabifiedSplitWhenTotalLengthExceeds40(
+export const uncoloredSplitWhenTotalLengthExceeds40 = splitWhenTotalLengthExceeds40(
 	ColorSet.uncolored
 );
 
 /**
- * `Options` instance that pretty-prints a value on multiple lines with indentation in a way very
- * similar to util.inspect - With colors adapted to the the darkmode
+ * Alias for `splitWhenTotalLengthExceeds40(ColorSet.ansiDarkMode)`
  *
  * @since 0.0.1
  * @category Instances
  */
-export const ansiDarkTabifiedSplitWhenTotalLengthExceeds40 = tabifiedSplitWhenTotalLengthExceeds40(
+export const ansiDarkSplitWhenTotalLengthExceeds40 = splitWhenTotalLengthExceeds40(
 	ColorSet.ansiDarkMode
 );

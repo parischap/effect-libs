@@ -9,15 +9,15 @@
  *
  * - `singleLine`: records are always printed on a single line.
  * - `multiLine`: records are always printed on multiple lines.
- * - `autoBasedOnConstituentNumber`: records are printed on multiple lines if they have strictly more
- *   than `limit` constituents.
+ * - `splitOnConstituentNumber`: records are printed on multiple lines if they have strictly more than
+ *   `limit` constituents.
  * - `autoBasedOnConstituentsLength`: records are printed on multiple lines if the total length of
  *   their stringified properties (excluding formatting characters) strictly exceeds `limit`.
  * - `autoBasedOnLongestConstituentsLength`: records are printed on multiple lines if the total length
  *   of the longest stringified property (excluding formatting characters) strictly exceeds
  *   `limit`.
- * - `singleLineForArraysMultiLineForOthers`: records that represent arrays are always printed on a
- *   single line, other records are always printed on multiple lines.
+ * - `splitNonArrays`: records that represent arrays are always printed on a single line, other
+ *   records are always printed on multiple lines.
  *
  * You can define your own RecordFormatter's if the provided ones don't suit your needs. All you
  * have to do is provide a function that matches Type.
@@ -73,7 +73,7 @@ export const singleLine =
 		);
 
 /**
- * Same as `singleLine` but uses the `RecordMarks.defaultSingleLine` instance
+ * Alias for `singleLineRecordMarks.defaultSingleLine)`
  *
  * @since 0.0.1
  * @category Instances
@@ -106,8 +106,7 @@ export const multipleLines =
 		);
 
 /**
- * Same as `multipleLines` but uses the `RecordMarks.defaultMultiLine` and the `IndentMode.tabify`
- * instances
+ * Alias for `mulmultipleLines(RecordMarks.defaultMultiLine,IndentMode.tabify)`
  *
  * @since 0.0.1
  * @category Instances
@@ -118,8 +117,7 @@ export const defaultTabified: (colorSet: ColorSet.Type) => Type = multipleLines(
 );
 
 /**
- * Same as `multipleLines` but uses the `RecordMarks.defaultMultiLine` and the `IndentMode.treeify`
- * instances
+ * Alias for `multipleLines(RecordMarks.defaultTreeified,IndentMode.treeify)`
  *
  * @since 0.0.1
  * @category Instances
@@ -136,7 +134,7 @@ export const defaultTreeified: (colorSet: ColorSet.Type) => Type = multipleLines
  * @since 0.0.1
  * @category Instances
  */
-export const autoBasedOnConstituentNumber =
+export const splitOnConstituentNumber =
 	(
 		singleLineRecordMarks: RecordMarks.Type,
 		multipleLinesRecordMarks: RecordMarks.Type,
@@ -155,28 +153,27 @@ export const autoBasedOnConstituentNumber =
 		);
 
 /**
- * Same as `autoBasedOnConstituentNumber` but uses the `RecordMarks.defaultSingleLine`,
- * `RecordMarks.defaultMultiLine` and `IndentMode.tabify` instances
+ * Alias for
+ * `splitOnConstituentNumber(RecordMarks.defaultSingleLine,RecordMarks.defaultMultiLine,IndentMode.tabify)`
  *
  * @since 0.0.1
  * @category Instances
  */
-export const defaultAutoBasedOnConstituentNumber: (
-	limit: number
-) => (colorSet: ColorSet.Type) => Type = autoBasedOnConstituentNumber(
-	RecordMarks.defaultSingleLine,
-	RecordMarks.defaultMultiLine,
-	IndentMode.tabify
-);
+export const defaultSplitOnConstituentNumber: (limit: number) => (colorSet: ColorSet.Type) => Type =
+	splitOnConstituentNumber(
+		RecordMarks.defaultSingleLine,
+		RecordMarks.defaultMultiLine,
+		IndentMode.tabify
+	);
 
 /**
  * Calls `singleLine` if the total length of the properties to print (excluding formatting
- * characters) is less than or equal to `limit`. Calls `multipleLines` otherwise
+ * characters and record marks) is less than or equal to `limit`. Calls `multipleLines` otherwise
  *
  * @since 0.0.1
  * @category Instances
  */
-export const autoBasedOnTotalLength =
+export const splitOnTotalLength =
 	(
 		singleLineRecordMarks: RecordMarks.Type,
 		multipleLinesRecordMarks: RecordMarks.Type,
@@ -201,14 +198,14 @@ export const autoBasedOnTotalLength =
 		);
 
 /**
- * Same as `autoBasedOnTotalLength` but uses the `RecordMarks.defaultSingleLine`,
- * `RecordMarks.defaultMultiLine` and `IndentMode.tabify` instances
+ * Alias for
+ * `splitOnTotalLength(RecordMarks.defaultSingleLine,RecordMarks.defaultMultiLine,IndentMode.tabify)`
  *
  * @since 0.0.1
  * @category Instances
  */
-export const defaultAutoBasedOnTotalLength: (limit: number) => (colorSet: ColorSet.Type) => Type =
-	autoBasedOnTotalLength(
+export const defaultSplitOnTotalLength: (limit: number) => (colorSet: ColorSet.Type) => Type =
+	splitOnTotalLength(
 		RecordMarks.defaultSingleLine,
 		RecordMarks.defaultMultiLine,
 		IndentMode.tabify
@@ -216,12 +213,12 @@ export const defaultAutoBasedOnTotalLength: (limit: number) => (colorSet: ColorS
 
 /**
  * Calls `singleLine` if the length of the longest property to print (excluding formatting
- * characters) is less than or equal to `limit`. Calls `multipleLines` otherwise
+ * characters and record marks) is less than or equal to `limit`. Calls `multipleLines` otherwise
  *
  * @since 0.0.1
  * @category Instances
  */
-export const autoBasedOnLongestPropLength =
+export const splitOnLongestPropLength =
 	(
 		singleLineRecordMarks: RecordMarks.Type,
 		multipleLinesRecordMarks: RecordMarks.Type,
@@ -248,19 +245,18 @@ export const autoBasedOnLongestPropLength =
 		);
 
 /**
- * Same as `autoBasedOnLongestPropLength` but uses the `RecordMarks.defaultSingleLine`,
- * `RecordMarks.defaultMultiLine` and `IndentMode.tabify` instances.
+ * Alias for
+ * `splitOnLongestPropLength(RecordMarks.defaultSingleLine,RecordMarks.defaultMultiLine,IndentMode.tabify)`
  *
  * @since 0.0.1
  * @category Instances
  */
-export const defaultAutoBasedOnLongestPropLength: (
-	limit: number
-) => (colorSet: ColorSet.Type) => Type = autoBasedOnLongestPropLength(
-	RecordMarks.defaultSingleLine,
-	RecordMarks.defaultMultiLine,
-	IndentMode.tabify
-);
+export const defaultSplitOnLongestPropLength: (limit: number) => (colorSet: ColorSet.Type) => Type =
+	splitOnLongestPropLength(
+		RecordMarks.defaultSingleLine,
+		RecordMarks.defaultMultiLine,
+		IndentMode.tabify
+	);
 
 /**
  * Calls `singleLine` for arrays and multipleLines for other records. Calls `multipleLines`
@@ -269,7 +265,7 @@ export const defaultAutoBasedOnLongestPropLength: (
  * @since 0.0.1
  * @category Instances
  */
-export const singleLineForArraysMultiLineForOthers =
+export const splitNonArrays =
 	(
 		singleLineRecordMarks: RecordMarks.Type,
 		multipleLinesRecordMarks: RecordMarks.Type,
@@ -288,15 +284,14 @@ export const singleLineForArraysMultiLineForOthers =
 		);
 
 /**
- * Same as `singleLineForArraysMultiLineForOthers` but uses the `RecordMarks.defaultSingleLine`,
- * `RecordMarks.defaultMultiLine` and `IndentMode.tabify` instances
+ * Alias for
+ * `splitNonArrays(RecordMarks.defaultSingleLine,RecordMarks.defaultMultiLine,IndentMode.tabify)`
  *
  * @since 0.0.1
  * @category Instances
  */
-export const defaultSingleLineForArraysMultiLineForOthers: (colorSet: ColorSet.Type) => Type =
-	singleLineForArraysMultiLineForOthers(
-		RecordMarks.defaultSingleLine,
-		RecordMarks.defaultMultiLine,
-		IndentMode.tabify
-	);
+export const defaultSplitNonArrays: (colorSet: ColorSet.Type) => Type = splitNonArrays(
+	RecordMarks.defaultSingleLine,
+	RecordMarks.defaultMultiLine,
+	IndentMode.tabify
+);
