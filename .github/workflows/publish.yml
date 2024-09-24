@@ -30,6 +30,15 @@ jobs:
           node-version: "latest"
           cache: pnpm
           registry-url: https://registry.npmjs.org/
+      - name: Produce documentation
+        run: pnpm docgen
+      - name: Build pages Jekyll
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./docs
+          destination: ./_site
+      - name: Upload pages artifact
+        uses: actions/upload-pages-artifact@v2
       - name: Get latest release when entering by workflow_dispatch
         run: |
           git fetch --prune --unshallow
@@ -67,15 +76,6 @@ jobs:
         with:
           path: "${{steps.get-repo.outputs.repo}}/package.json"
           version: ${{steps.get-version.outputs.version}}
-      - name: Produce documentation
-        run: pnpm docgen
-      - name: Build pages Jekyll
-        uses: actions/jekyll-build-pages@v1
-        with:
-          source: ./docs
-          destination: ./_site
-      - name: Upload pages artifact
-        uses: actions/upload-pages-artifact@v2
       - name: Build and publish
         working-directory: ${{steps.get-repo.outputs.repo}}
         env:
@@ -96,4 +96,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v2
+        uses: actions/deploy-pages@v4
