@@ -10,6 +10,8 @@ on:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
+permissions: {}
   
 jobs:
   publish:
@@ -81,17 +83,17 @@ jobs:
         run: rm -f tsconfig.json && pnpm build-and-publish
 
   deploy:
-      name: Deploy
-      runs-on: ubuntu-latest
-      timeout-minutes: 10
-      needs: publish
-      permissions:
-        pages: write # To deploy to GitHub Pages
-        id-token: write # To verify the deployment originates from an appropriate source
-      environment:
-        name: github-pages
-        url: \${{ steps.deployment.outputs.page_url }}
-      steps:
-        - name: Deploy to GitHub Pages
-          id: deployment
-          uses: actions/deploy-pages@v2
+    name: Deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: publish
+    permissions:
+      pages: write # To deploy to GitHub Pages
+      id-token: write # To verify the deployment originates from an appropriate source
+    environment:
+      name: github-pages
+      url: \${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
