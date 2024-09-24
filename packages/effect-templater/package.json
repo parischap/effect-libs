@@ -53,9 +53,11 @@
 			}
 		}
 	},
-	"dependencies": {
-		"@effect/experimental": "^0.26.6"
-	},
+	"keywords": [
+		"effect",
+		"typescript",
+		"functional-programming"
+	],
 	"funding": [
 		{
 			"type": "ko-fi",

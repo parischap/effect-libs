@@ -1,8 +1,10 @@
+# This workflow is triggered by a new release. It will create the documentation and push it to github pages
+
 name: Pages
 on:
   workflow_dispatch:
-  push:
-    branches: [master]
+  release:
+    types: [created]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -34,7 +36,7 @@ jobs:
           source: ./docs
           destination: ./_site
       - name: Upload pages artifact
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@v3
 
   deploy:
     name: Deploy
@@ -50,4 +52,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v2
+        uses: actions/deploy-pages@v4

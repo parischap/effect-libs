@@ -31,8 +31,6 @@ export default {
 	[Configs.constants.pnpmWorkspaceFileName]: Configs.pnpmWorkspaceTemplate,
 	[`${Configs.constants.githubFolderName}/${Configs.constants.workflowsFolderName}/publish.yml`]:
 		Configs.githubWorkflowsPublishTemplate,
-	[`${Configs.constants.githubFolderName}/${Configs.constants.workflowsFolderName}/publish-debug.yml`]:
-		Configs.githubWorkflowsPublishDebugTemplate,
 	[`${Configs.constants.githubFolderName}/${Configs.constants.workflowsFolderName}/pages.yml`]:
 		Configs.githubWorkflowsPagesTemplate
 };

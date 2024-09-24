@@ -148,7 +148,15 @@ export const plus = backslash + '+';
  * @since 0.0.4
  * @category Instances
  */
-export const sign = either(plus, '-');
+export const minus = '-';
+
+/**
+ * A regular expression representing a plus or a minus sign
+ *
+ * @since 0.0.4
+ * @category Instances
+ */
+export const sign = either(plus, minus);
 
 /**
  * A regular expression representing a star

@@ -1,4 +1,4 @@
-# This workflow is triggered by a new release. Based on the release tag that must be in the form repo@version, it will build the target repo, update the version number of the package.json in this repo and publish the repo to npm. If the repo to build is the top one, the tag must be in the form .@version.
+# This workflow is triggered by a new release. Based on the release tag that must be in the form version or repo@version, it will create build the target repo, update the version number of the package.json in this repo and publish the repo to npm.
 
 name: publish
 
@@ -6,6 +6,12 @@ on:
   workflow_dispatch:
   release:
     types: [created]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions: {}
 
 jobs:
   publish:

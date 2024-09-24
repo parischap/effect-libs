@@ -1,19 +1,31 @@
 {
-	"name": "@parischap-dev/pretty-print",
-	"type": "module",
-	"sideEffects": [],
-	"author": "Jérôme MARTIN",
-	"license": "MIT",
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/parischap/effect-libs.git",
-		"directory": "packages/pretty-print"
+	"description": "A functional library to pretty-print and treeify objects",
+	"peerDependencies": {
+		"@parischap/js-lib": "workspace:@parischap-dev/js-lib@*",
+		"@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
+		"effect": "^3.8.3"
 	},
-	"bugs": {
-		"url": "https://github.com/parischap/effect-libs/issues"
+	"devDependencies": {
+		"@parischap/pretty-print": "link:."
 	},
-	"homepage": "https://github.com/parischap/effect-libs/tree/master/packages/pretty-print",
+	"publishConfig": {
+		"peerDependencies": {
+			"@parischap/js-lib": "^0.0.7",
+			"@parischap/effect-lib": "^0.3.0"
+		},
+		"main": "./cjs/index.js",
+		"types": "./dts/index.d.ts",
+		"scripts": {},
+		"exports": {
+			".": {
+				"types": "./dts/index.d.ts",
+				"import": "./esm/index.js",
+				"default": "./cjs/index.js"
+			}
+		}
+	},
 	"scripts": {
+		"examples": "vite-node examples/uncolored-tabified.ts && vite-node examples/ansi-dark-tabified.ts && vite-node examples/ansi-dark-treeified.ts && vite-node examples/date-as-object-or-value.ts && vite-node examples/show-prototype.ts",
 		"tscheck": "tsc -b tsconfig.check.json --force ",
 		"lint": "eslint .",
 		"update-config-files": "update-config-files",
@@ -33,35 +45,9 @@
 		"transpile-cjs": "babel dist/esm --plugins @babel/transform-export-namespace-from --plugins @babel/transform-modules-commonjs --out-dir dist/cjs --source-maps",
 		"transpile-annotate": "babel dist --plugins annotate-pure-calls --out-dir dist --source-maps",
 		"build": "pnpm clean-prod && pnpm transpile-esm && pnpm transpile-cjs && pnpm transpile-annotate && cross-env IS_LIBRARY=true prodify && pnpm install-prod",
-		"build-and-publish": "pnpm build && pnpm checks && pnpm publish-to-npm",
-		"examples": "vite-node examples/uncolored-tabified.ts && vite-node examples/ansi-dark-tabified.ts && vite-node examples/ansi-dark-treeified.ts && vite-node examples/date-as-object-or-value.ts && vite-node examples/show-prototype.ts"
-	},
-	"module": "./esm/index.js",
-	"exports": {
-		".": {
-			"import": "./esm/index.ts"
-		}
-	},
-	"publishConfig": {
-		"main": "./cjs/index.js",
-		"types": "./dts/index.d.ts",
-		"scripts": {},
-		"exports": {
-			".": {
-				"types": "./dts/index.d.ts",
-				"import": "./esm/index.js",
-				"default": "./cjs/index.js"
-			}
-		},
-		"peerDependencies": {
-			"@parischap/js-lib": "^0.0.7",
-			"@parischap/effect-lib": "^0.3.0"
-		}
+		"build-and-publish": "pnpm build && pnpm checks && pnpm publish-to-npm"
 	},
 	"keywords": [
-		"effect",
-		"typescript",
-		"functional-programming",
 		"inspect",
 		"util.inspect",
 		"object",
@@ -72,21 +58,35 @@
 		"print",
 		"console",
 		"visualize",
-		"debug"
+		"debug",
+		"effect",
+		"typescript",
+		"functional-programming"
 	],
+	"name": "@parischap-dev/pretty-print",
+	"type": "module",
+	"sideEffects": [],
+	"author": "Jérôme MARTIN",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/parischap/effect-libs.git",
+		"directory": "packages/pretty-print"
+	},
+	"bugs": {
+		"url": "https://github.com/parischap/effect-libs/issues"
+	},
+	"homepage": "https://github.com/parischap/effect-libs/tree/master/packages/pretty-print",
+	"module": "./esm/index.js",
+	"exports": {
+		".": {
+			"import": "./esm/index.ts"
+		}
+	},
 	"funding": [
 		{
 			"type": "ko-fi",
 			"url": "https://ko-fi.com/parischap"
 		}
-	],
-	"description": "A functional library to pretty-print and treeify objects",
-	"peerDependencies": {
-		"@parischap/js-lib": "workspace:@parischap-dev/js-lib@*",
-		"@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
-		"effect": "^3.8.3"
-	},
-	"devDependencies": {
-		"@parischap/pretty-print": "link:."
-	}
+	]
 }
