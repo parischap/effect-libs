@@ -68,7 +68,15 @@ export const makeLine = (self: string): string => `^${self}$`;
  * @since 0.0.4
  * @category Utils
  */
-export const makeEndOfLine = (self: string): string => `${self}$`;
+export const atEnd = (self: string): string => `${self}$`;
+
+/**
+ * Returns a new regular expression where self must be at the start of a line
+ *
+ * @since 0.0.4
+ * @category Utils
+ */
+export const atStart = (self: string): string => `^${self}`;
 
 /**
  * Returns a new regular expression where self will be used as negative lookahead
