@@ -5,6 +5,7 @@
  */
 
 import { Array, Option, Predicate, String, Tuple, flow, pipe } from 'effect';
+import * as MArray from './Array.js';
 import * as MFunction from './Function.js';
 import * as MMatch from './Match.js';
 import * as MSearchResult from './SearchResult.js';
@@ -310,8 +311,8 @@ export const replaceBetween =
  */
 export const match =
 	(regexp: RegExp) =>
-	(self: string): Option.Option<RegExpExecArray> =>
-		pipe(regexp.exec(self), Option.fromNullable);
+	(self: string): Option.Option<string> =>
+		pipe(regexp.exec(self), Option.fromNullable, Option.map(MArray.unsafeGet(0)));
 
 /**
  * Splits `self` in two parts at position `n`. The length of the first string is `n` (characters `0`

@@ -7,9 +7,9 @@
 
 import { MString } from '@parischap/effect-lib';
 import { JsRegExp } from '@parischap/js-lib';
-import { Option } from 'effect';
+import { Option, pipe, Tuple } from 'effect';
 
-const unsignedIntRegExp = new RegExp(JsRegExp.positiveInteger);
+const unsignedIntRegExp = new RegExp(JsRegExp.atStart(JsRegExp.positiveInteger));
 
 /**
  * Type that represents a Transformer. A Transformer instance is an object with a read and write
@@ -38,7 +38,8 @@ export interface Type<in out A> {
 
 export const unsignedInt: Type<number> = {
 	read: (input) => {
-		const readString = MString.match();
+		const readString = pipe(input, MString.match(unsignedIntRegExp));
+		return Tuple.make(0, pipe(input, MString.takeRightBut(readString.length)));
 	},
 	write(value) {
 		return value.toString();

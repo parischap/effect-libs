@@ -11,7 +11,6 @@ import {
 	HashMap,
 	HashSet,
 	Number,
-	Option,
 	Predicate,
 	Struct,
 	flow,
@@ -419,7 +418,6 @@ export class BadFormat extends Data.TaggedError('BadArgument.BadFormat')<BadForm
 			pipe(
 				target,
 				MString.match(expected),
-				Option.map((arr) => arr[0]),
 				Either.fromOption(
 					() =>
 						new BadFormat({

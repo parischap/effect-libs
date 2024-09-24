@@ -357,23 +357,13 @@ describe('MString', () => {
 	describe('match', () => {
 		it('Without global flag', () => {
 			expect(
-				pipe(
-					'Numbers between 1 and 9',
-					MString.match(/\d/),
-					Option.flatMap(Array.get(0)),
-					Equal.equals(Option.some('1'))
-				)
+				pipe('Numbers between 1 and 9', MString.match(/\d/), Equal.equals(Option.some('1')))
 			).toBe(true);
 		});
 
 		it('With global flag', () => {
 			expect(
-				pipe(
-					'Numbers between 1 and 9',
-					MString.match(/\d/g),
-					Option.map(Array.length),
-					Equal.equals(Option.some(1))
-				)
+				pipe('Numbers between 1 and 9', MString.match(/\d/g), Equal.equals(Option.some(1)))
 			).toBe(true);
 		});
 	});
