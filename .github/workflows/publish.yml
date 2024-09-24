@@ -14,7 +14,8 @@ concurrency:
 permissions: {}
   
 jobs:
-  publish:
+  builddoc:
+    name: builddoc
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -38,7 +39,42 @@ jobs:
           source: ./docs
           destination: ./_site
       - name: Upload pages artifact
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@v4
+  
+  deploydoc:
+    name: deploydoc
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: builddoc
+    permissions:
+      pages: write # To deploy to GitHub Pages
+      id-token: write # To verify the deployment originates from an appropriate source
+    environment:
+      name: github-pages
+      url: \${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  publish:
+    name: publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: deploydoc
+    steps:
+      - name: checkout files
+        uses: actions/checkout@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4.0.0
+        with:
+          run_install: true
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "latest"
+          cache: pnpm
+          registry-url: https://registry.npmjs.org/
       - name: Get latest release when entering by workflow_dispatch
         run: |
           git fetch --prune --unshallow
@@ -81,19 +117,3 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
         run: rm -f tsconfig.json && pnpm build-and-publish
-
-  deploy:
-    name: Deploy
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    needs: publish
-    permissions:
-      pages: write # To deploy to GitHub Pages
-      id-token: write # To verify the deployment originates from an appropriate source
-    environment:
-      name: github-pages
-      url: \${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
