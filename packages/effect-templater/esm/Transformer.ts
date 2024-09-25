@@ -5,9 +5,9 @@
  * @since 0.0.1
  */
 
-import { MString } from '@parischap/effect-lib';
+import { MFunction, MNumber, MString, MTuple } from '@parischap/effect-lib';
 import { JsRegExp } from '@parischap/js-lib';
-import { Option, pipe, Tuple } from 'effect';
+import { Option, pipe, String } from 'effect';
 
 const unsignedIntRegExp = new RegExp(JsRegExp.atStart(JsRegExp.positiveInteger));
 
@@ -37,10 +37,17 @@ export interface Type<in out A> {
 }
 
 export const unsignedInt: Type<number> = {
-	read: (input) => {
-		const readString = pipe(input, MString.match(unsignedIntRegExp));
-		return Tuple.make(0, pipe(input, MString.takeRightBut(readString.length)));
-	},
+	read: (input) =>
+		pipe(
+			input,
+			MString.match(unsignedIntRegExp),
+			Option.map(
+				MTuple.makeBothBy(
+					MNumber.unsafeFromString,
+					flow(String.length, MFunction.flip(MString.takeRightBut(input)))
+				)
+			)
+		),
 	write(value) {
 		return value.toString();
 	}

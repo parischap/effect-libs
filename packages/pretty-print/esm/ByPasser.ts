@@ -24,6 +24,15 @@ import * as FormattedString from './FormattedString.js';
 import type * as Options from './Options.js';
 import type * as StringifiedValue from './StringifiedValue.js';
 
+const moduleTag = '@parischap/pretty-print/ByPasser/';
+const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+
+/**
+ * @since 0.0.6
+ * @category Symbol
+ */
+export type TypeId = typeof TypeId;
+
 const lineBreakRegExp = new RegExp(JsRegExp.lineBreak, 'g');
 
 /**

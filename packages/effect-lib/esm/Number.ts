@@ -7,13 +7,13 @@
 import { JsPatches } from '@parischap/js-lib';
 
 /**
- * Constructs an integer from a string. Does not check input format and can return NaN
+ * Constructs an integer from a string in base 10. Does not check input format and can return NaN
  *
  * @since 0.0.6
  * @category Constructors
  */
 
-export const unsafeIntFromString = (s: string): number => parseInt(s);
+export const unsafeIntFromString = (s: string): number => parseInt(s, 10);
 
 /**
  * Constructs a number from a string. Does not check input format and can return NaN
