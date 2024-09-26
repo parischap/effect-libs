@@ -2,14 +2,17 @@
 import { ByPasser, ColorSet, Options, Stringify } from '@parischap/pretty-print';
 
 const toPrint = new Date(Date.UTC(2024, 8, 20));
-const stringifyByPassToStringed = Stringify.asString({
+
+const stringifyAsValue = Stringify.asString({
 	...Options.ansiDarkSingleLine
 });
 
-const stringifyAllObjects = Stringify.asString({
+const stringifyAsRecord = Stringify.asString({
 	...Options.ansiDarkSingleLine,
 	byPasser: ByPasser.objectAsRecord(ColorSet.ansiDarkMode)
 });
 
-console.log(`As date: ${stringifyByPassToStringed(toPrint)}`);
-console.log(`As object: ${stringifyAllObjects(toPrint)}`);
+// As value: Fri Sep 20 2024 02:00:00 GMT+0200 (heure d’été d’Europe centrale)
+console.log(`As value: ${stringifyAsValue(toPrint)}`);
+// As record:
+console.log(`As record: ${stringifyAsRecord(toPrint)}`);

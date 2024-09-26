@@ -6,16 +6,12 @@
  */
 
 import { Equal, Equivalence, Hash, Inspectable, Order, Predicate } from 'effect';
+import * as MInspectable from './Inspectable.js';
 import * as MTypes from './types.js';
 
 const moduleTag = '@parischap/effect-lib/SearchResult/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
-
-/**
- * @since 0.0.6
- * @category Symbol
- */
-export type TypeId = typeof TypeId;
+type TypeId = typeof TypeId;
 
 /**
  * Interface that represents a SearchResult
@@ -47,14 +43,14 @@ export interface Type extends Equal.Equal, Inspectable.Inspectable {
 }
 
 /**
- * Returns true if `u` is a SearchResult
+ * Type guard
  *
  * @since 0.0.6
  * @category Guards
  */
 export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
 
-/** SearchResult equivalence */
+/** Equivalence */
 const _equivalence: Equivalence.Equivalence<Type> = (self: Type, that: Type) =>
 	that.startIndex === self.startIndex &&
 	that.endIndex === self.endIndex &&
@@ -62,7 +58,7 @@ const _equivalence: Equivalence.Equivalence<Type> = (self: Type, that: Type) =>
 
 export {
 	/**
-	 * SearchResult equivalence
+	 * Equivalence
 	 *
 	 * @since 0.0.6
 	 * @category Instances
@@ -70,8 +66,8 @@ export {
 	_equivalence as Equivalence
 };
 
-/** SearchResult prototype */
-const searchResultProto: MTypes.Proto<Type> = {
+/** Prototype */
+const proto: MTypes.Proto<Type> = {
 	[TypeId]: TypeId,
 	[Equal.symbol](this: Type, that: unknown): boolean {
 		return has(that) && _equivalence(this, that);
@@ -79,29 +75,17 @@ const searchResultProto: MTypes.Proto<Type> = {
 	[Hash.symbol](this: Type) {
 		return Hash.cached(this, Hash.structure(this));
 	},
-	toJSON(this: Type) {
-		return {
-			startIndex: Inspectable.toJSON(this.startIndex),
-			endIndex: Inspectable.toJSON(this.endIndex),
-			match: Inspectable.toJSON(this.match)
-		};
-	},
-	[Inspectable.NodeInspectSymbol](this: Type) {
-		return this.toJSON();
-	},
-	toString(this: Type) {
-		return Inspectable.format(this.toJSON());
-	}
+	...MInspectable.BaseProto(moduleTag)
 };
 
 /**
- * Constructs a SearchResult
+ * Constructor
  *
  * @since 0.0.6
  * @category Constructors
  */
 export const make = (params: MTypes.Data<Type>): Type =>
-	MTypes.objectFromDataAndProto(searchResultProto, params);
+	MTypes.objectFromDataAndProto(proto, params);
 
 /**
  * SearchResult Order based on the startIndex
@@ -128,11 +112,9 @@ export const byEndIndex = Order.mapInput(Order.number, (self: Type) => self.endI
 export const byLongestFirst = Order.combine(byStartIndex, Order.reverse(byEndIndex));
 
 /**
- * SearchResult Equivalence: with this Equivalence, two SearchResult's are considered equivalent if
- * they overlap
+ * Equivalence, two SearchResult's are considered equivalent if they overlap
  *
- * @since 0.0.6
- * @category Equivalence
+ * @since 0.0.6 Equivalence
  */
 export const overlappingEquivalence: Equivalence.Equivalence<Type> = (self: Type, that: Type) =>
 	self.endIndex >= that.startIndex && self.startIndex <= that.endIndex;

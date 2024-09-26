@@ -69,6 +69,6 @@
 		"@parischap/js-lib": "workspace:@parischap-dev/js-lib@*",
 		"@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
 		"@parischap/effect-templater": "workspace:@parischap-dev/effect-templater@*",
-		"effect": "^3.8.3"
+		"effect": "^3.8.4"
 	}
 }

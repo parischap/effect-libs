@@ -363,7 +363,7 @@ describe('MString', () => {
 
 		it('With global flag', () => {
 			expect(
-				pipe('Numbers between 1 and 9', MString.match(/\d/g), Equal.equals(Option.some(1)))
+				pipe('Numbers between 1 and 9', MString.match(/\d/g), Equal.equals(Option.some('1')))
 			).toBe(true);
 		});
 	});

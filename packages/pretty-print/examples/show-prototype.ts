@@ -3,16 +3,20 @@ import { Options, Stringify, ValueOrder } from '@parischap/pretty-print';
 import { Order } from 'effect';
 
 const singleLine = Stringify.asString(Options.ansiDarkSingleLine);
-const singleLineWithProto = Stringify.asString({
-	...Options.ansiDarkSingleLine,
-	maxPrototypeDepth: +Infinity
-});
-const dedupedSingleLineWithProto = Stringify.asString({
-	...Options.ansiDarkSingleLine,
-	maxPrototypeDepth: +Infinity,
-	propertySortOrder: Order.combine(ValueOrder.byStringKey, ValueOrder.byPrototypalDepth),
-	dedupeRecordProperties: true
-});
+const singleLineWithProto = Stringify.asString(
+	Options.make({
+		...Options.ansiDarkSingleLine,
+		maxPrototypeDepth: +Infinity
+	})
+);
+const dedupedSingleLineWithProto = Stringify.asString(
+	Options.make({
+		...Options.ansiDarkSingleLine,
+		maxPrototypeDepth: +Infinity,
+		propertySortOrder: Order.combine(ValueOrder.byStringKey, ValueOrder.byPrototypalDepth),
+		dedupeRecordProperties: true
+	})
+);
 
 const proto = {
 	a: 10,

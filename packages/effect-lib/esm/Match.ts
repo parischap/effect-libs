@@ -7,17 +7,14 @@
  */
 
 import { Inspectable, Option, Pipeable, Predicate, Types, pipe } from 'effect';
+import * as MInspectable from './Inspectable.js';
+import * as MPipeable from './Pipeable.js';
 import * as MPredicate from './Predicate.js';
 import * as MTypes from './types.js';
 
 const moduleTag = '@parischap/effect-lib/Match/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
-
-/**
- * @since 0.0.6
- * @category Symbol
- */
-export type TypeId = typeof TypeId;
+type TypeId = typeof TypeId;
 
 /**
  * @since 0.0.6
@@ -46,38 +43,22 @@ export interface Type<out Input, out Output, out Rest extends Input = Input>
 	};
 }
 
-/** Match prototype */
+/** Prototype */
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-const matchProto: MTypes.Proto<Type<any, any>> = {
+const proto: MTypes.Proto<Type<any, any>> = {
 	[TypeId]: {
 		_Input: MTypes.covariantValue,
 		_Output: MTypes.covariantValue,
 		_Rest: MTypes.covariantValue
 	},
-	toJSON<Input, Output, Rest extends Input>(this: Type<Input, Output, Rest>) {
-		return {
-			value: Inspectable.toJSON(this.value),
-			result: Inspectable.toJSON(this.result)
-		};
-	},
-	[Inspectable.NodeInspectSymbol]<Input, Output, Rest extends Input>(
-		this: Type<Input, Output, Rest>
-	) {
-		return this.toJSON();
-	},
-	toString<Input, Output, Rest extends Input>(this: Type<Input, Output, Rest>) {
-		return Inspectable.format(this.toJSON());
-	},
-	pipe<Input, Output, Rest extends Input>(this: Type<Input, Output, Rest>) {
-		/* eslint-disable-next-line prefer-rest-params */
-		return Pipeable.pipeArguments(this, arguments);
-	}
+	...MInspectable.BaseProto(moduleTag),
+	...MPipeable.BaseProto
 };
 
-/** Constructs a Match */
+/** Constructor */
 const _make = <Input, Output, Rest extends Input>(
 	params: MTypes.Data<Type<Input, Output, Rest>>
-): Type<Input, Output, Rest> => MTypes.objectFromDataAndProto(matchProto, params);
+): Type<Input, Output, Rest> => MTypes.objectFromDataAndProto(proto, params);
 
 /**
  * Builds a new matcher

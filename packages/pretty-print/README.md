@@ -35,7 +35,7 @@ Depending on the package manager you use, run one of the following commands in y
   yarn add effect @parischap/js-lib @parischap/effect-lib @parischap/pretty-print
   ```
 
-We use three peerDependencies. If you are not an Effect user, the size may seem important. But, in fact, we use little of each peerDependency. Bundled, tree-shaken, minified, it's only about [18kB](https://bundlephobia.com/package/@parischap/pretty-print). Minified and gzipped, it falls to [4kB](https://bundlephobia.com/package/@parischap/pretty-print)!
+We use three peerDependencies. If you are not an Effect user, the size may seem important. But, in fact, we use little of each peerDependency. Bundled, tree-shaken, minified, it's only about [18kB](https://bundlephobia.com/package/@parischap/pretty-print). Minified and gzipped, it falls to [4kB](https://bundlephobia.com/package/@parischap/pretty-print)! (source bundlephobia)
 
 ## API
 
@@ -128,71 +128,78 @@ You can view all available options in the [Options](https://parischap.github.io/
 You could create your own `Options` instance from scratch. But it is usually easier to start from one of the existing instances and to overwrite the parts you want to change. Most of the time, you will start from the `singleLine` Options instance which is defined in the following manner:
 
 ```ts
-export const singleLine = (colorSet: ColorSet.Type): Type => ({
-	maxDepth: 10,
-	arrayLabel: pipe(
-		"[Array]",
-		FormattedString.makeWith(colorSet.otherValueColorer),
-	),
-	functionLabel: pipe(
-		"(Function)",
-		FormattedString.makeWith(colorSet.otherValueColorer),
-	),
-	objectLabel: pipe(
-		"{Object}",
-		FormattedString.makeWith(colorSet.otherValueColorer),
-	),
-	maxPrototypeDepth: 0,
-	circularLabel: pipe(
-		"(Circular)",
-		FormattedString.makeWith(colorSet.otherValueColorer),
-	),
-	propertySortOrder: ValueOrder.byStringKey,
-	dedupeRecordProperties: false,
-	byPasser: ByPasser.objectAsValue(colorSet),
-	propertyFilter: PropertyFilter.removeNonEnumerables,
-	propertyFormatter: PropertyFormatter.objectAndArrayLike(colorSet),
-	recordFormatter: RecordFormatter.defaultSingleLine(colorSet),
-});
+export const singleLine = (colorSet: ColorSet.Type): Type =>
+	_make({
+		name: colorSet.name + "SingleLine",
+		maxDepth: 10,
+		arrayLabel: pipe(
+			"[Array]",
+			FormattedString.makeWith(colorSet.otherValueColorer),
+		),
+		functionLabel: pipe(
+			"(Function)",
+			FormattedString.makeWith(colorSet.otherValueColorer),
+		),
+		objectLabel: pipe(
+			"{Object}",
+			FormattedString.makeWith(colorSet.otherValueColorer),
+		),
+		maxPrototypeDepth: 0,
+		circularLabel: pipe(
+			"(Circular)",
+			FormattedString.makeWith(colorSet.otherValueColorer),
+		),
+		propertySortOrder: ValueOrder.byStringKey,
+		dedupeRecordProperties: false,
+		byPasser: ByPasser.objectAsValue(colorSet),
+		propertyFilter: PropertyFilter.removeNonEnumerables,
+		propertyFormatter: PropertyFormatter.recordLike(colorSet),
+		recordFormatter: RecordFormatter.singleLine(colorSet),
+	});
 ```
 
 1. Let's see how we would modify it to hide enumerable properties and properties whose key is a string:
 
 ```ts
-import { Options, PropertyFilter } from "@parischap/pretty-print";
+import { PropertyFilter, Options } from "@parischap/pretty-print";
 import { pipe } from "effect";
 
-const ansiDarkSingleLineWithSymbolicNonEnums: Options.Type = {
+const ansiDarkSingleLineWithSymbolicNonEnums: Options.Type = Options.make({
 	...Options.ansiDarkSingleLine,
+
 	propertyFilter: pipe(
 		PropertyFilter.removeNonEnumerables,
 		PropertyFilter.combine(PropertyFilter.removeStringKeys),
 	),
-};
+});
 ```
 
-In this example, we use the [PropertyFilter.combine](https://parischap.github.io/effect-libs/pretty-print/PropertyFilter.ts.html#combine) function to combine the effects of [PropertyFilter.removeNonEnumerables](https://parischap.github.io/effect-libs/pretty-print/PropertyFilter.ts.html#removenonenumerables) and [PropertyFilter.removeStringKeys](https://parischap.github.io/effect-libs/pretty-print/PropertyFilter.ts.html#removenonenumerables). Note that combining order may be important.
+In this example, we use the [PropertyFilter.combine](https://parischap.github.io/effect-libs/pretty-print/PropertyFilter.ts.html#combine) function to combine the effects of [PropertyFilter.removeNonEnumerables](https://parischap.github.io/effect-libs/pretty-print/PropertyFilter.ts.html#removenonenumerables) and [PropertyFilter.removeStringKeys](https://parischap.github.io/effect-libs/pretty-print/PropertyFilter.ts.html#removenonenumerables). Note that combining order may be important even though it is not in this case.
 
-2. Let's walk through a more complex example. In the following code, we will modify `Options.singleLine` to show the properties borne by the prototype of an object and see the effect of sorting and deduping:
+2. Let's walk through a more complex example. In the following code, we will modify `Options.ansiDarkSingleLine` to show the properties borne by the prototype of an object and see the effect of sorting and deduping:
 
 ```ts
 import { Options, Stringify, ValueOrder } from "@parischap/pretty-print";
 import { Order } from "effect";
 
 const singleLine = Stringify.asString(Options.ansiDarkSingleLine);
-const singleLineWithProto = Stringify.asString({
-	...Options.ansiDarkSingleLine,
-	maxPrototypeDepth: +Infinity,
-});
-const dedupedSingleLineWithProto = Stringify.asString({
-	...Options.ansiDarkSingleLine,
-	maxPrototypeDepth: +Infinity,
-	propertySortOrder: Order.combine(
-		ValueOrder.byStringKey,
-		ValueOrder.byPrototypalDepth,
-	),
-	dedupeRecordProperties: true,
-});
+const singleLineWithProto = Stringify.asString(
+	Options.make({
+		...Options.ansiDarkSingleLine,
+		maxPrototypeDepth: +Infinity,
+	}),
+);
+const dedupedSingleLineWithProto = Stringify.asString(
+	Options.make({
+		...Options.ansiDarkSingleLine,
+		maxPrototypeDepth: +Infinity,
+		propertySortOrder: Order.combine(
+			ValueOrder.byStringKey,
+			ValueOrder.byPrototypalDepth,
+		),
+		dedupeRecordProperties: true,
+	}),
+);
 
 const proto = {
 	a: 10,
@@ -208,27 +215,34 @@ const toPrint = Object.assign(Object.create(proto), {
 console.log(singleLine(toPrint));
 // { a: 50, a@: 10, b: 30, c@: 20 }
 console.log(singleLineWithProto(toPrint));
-// { a: 50, b: 30, c@: 20 }
+// { a@: 10, b: 30, c@: 20 }
 console.log(dedupedSingleLineWithProto(toPrint));
 ```
 
-The `singleLine` stringifier is the default stringifier. It does not show properties of prototypes.
+In this example, the `singleLine` stringifier is the default stringifier. It does not show properties of prototypes.
 
-In the `singleLineWithProto` stringifier, we merely add the line `maxPrototypeDepth: +Infinity` to indicate we want to see prototypes to any depth. Note in the result that we now have two `a` properties, of which one is followed by the `@` character to indicate it is borne by the prototype at level 1 in the prototypal chain. If it were at level 2, it would be followed by '@@', and so on, and so forth...
+In the `singleLineWithProto` stringifier, we only add the line `maxPrototypeDepth: +Infinity` to indicate we want to see prototypes of all records to any depth. Note in the result that we now have two `a` properties, of which one is followed by the `@` character to indicate it is borne by the first prototype in the prototypal chain. If it were the second prototype, it would be followed by '@@', ...
 
-Now, it may not be necessary to show these two `a` properties. During execution, the one borne by the prototype will not be used. In the `dedupedSingleLineWithProto` stringifier, we use the [Effect](https://effect.website/docs/introduction) `Order.combine` function to sort our properties first by key (see [ValueOrder.byStringKey](https://parischap.github.io/effect-libs/pretty-print/ValueOrder.ts.html#bystringkey)), then by depth in the proptotypal chain (see [ValueOrder.byPrototypalDepth](https://parischap.github.io/effect-libs/pretty-print/ValueOrder.ts.html#byprototypaldepth)). There remains to set the [Options.dedupeRecordProperties](https://parischap.github.io/effect-libs/pretty-print/Options.ts.html#type-interface) to keep only the first of several properties with the same name. Now, in the result, we see the `a` property borne by the object itself and the `c` property borne by its prototype.
+Now, it may not be necessary to show these two `a` properties. During execution, the one borne by the prototype will not be used. In the `dedupedSingleLineWithProto` stringifier, we use the [Effect](https://effect.website/docs/introduction) `Order.combine` function to sort our properties first by key (see [ValueOrder.byStringKey](https://parischap.github.io/effect-libs/pretty-print/ValueOrder.ts.html#bystringkey)), then by depth in the proptotypal chain (see [ValueOrder.byPrototypalDepth](https://parischap.github.io/effect-libs/pretty-print/ValueOrder.ts.html#byprototypaldepth)). Then we set [Options.dedupeRecordProperties](https://parischap.github.io/effect-libs/pretty-print/Options.ts.html#type-interface) to keep only the first of several properties with the same name. Now, in the result, we see the `a` property borne by the object itself and the `c` property borne by its prototype.
 
 Note: of course, the mark used to show a property is borne by a prototype (`@` by default) can be altered. If you just want to change the mark or the place where it is printed, you can simply define a new [PropertyMarks](https://parischap.github.io/effect-libs/pretty-print/RecordMarks.ts.html#type-interface) instance and modify with it the [PropertyFormatter](https://parischap.github.io/effect-libs/pretty-print/PropertyFormatter.ts.html) given to the `Options` instance:
 
 ```ts
+import {
+	Stringify,
+	PropertyMarks,
+	PropertyFormatter,
+	ColorSet,
+	Options,
+} from "@parischap/pretty-print";
 // Now, properties on prototypes will be prefixed with `_`
 const myPropertyMarks: PropertyMarks.Type = {
-	...PropertyMarks.defaultInstance,
+	...PropertyMarks.object,
 	prototypePrefix: "_",
 	prototypeSuffix: "",
 };
 const myObjectAndArrayLikePropertyFormatter =
-	PropertyFormatter.auto(myPropertyMarks);
+	PropertyFormatter.valueForArraysKeyAndValueForOthers(myPropertyMarks);
 const mySingleLineWithProtoStringifyer = Stringify.asString({
 	...Options.ansiDarkSingleLine,
 	maxPrototypeDepth: +Infinity,
@@ -240,7 +254,7 @@ const mySingleLineWithProtoStringifyer = Stringify.asString({
 
 But you could also define a completely different [PropertyFormatter](https://parischap.github.io/effect-libs/pretty-print/PropertyFormatter.ts.html).
 
-3. Let's see how to set the [ByPasser](https://parischap.github.io/effect-libs/pretty-print/ByPasser.ts.html) which lets you apply a special treatment for certain values. There are four predefined ByPasser instances. As you can see above, the `singleLine` Options instance uses [ByPasser.objectAsValue](https://parischap.github.io/effect-libs/pretty-print/ByPasser.ts.html#objectAsValue). Let's see what happens on a Date object if we replace it with [ByPasser.objectAsRecord](https://parischap.github.io/effect-libs/pretty-print/ByPasser.ts.html#objectAsRecord):
+3. Let's see how to change the [ByPasser](https://parischap.github.io/effect-libs/pretty-print/ByPasser.ts.html) which lets you apply a special treatment for certain values. There are four predefined ByPasser instances. As you can see above, the `singleLine` Options instance uses [ByPasser.objectAsValue](https://parischap.github.io/effect-libs/pretty-print/ByPasser.ts.html#objectAsValue). Let's see what happens on a Date object if we replace it with [ByPasser.objectAsRecord](https://parischap.github.io/effect-libs/pretty-print/ByPasser.ts.html#objectAsRecord):
 
 ```ts
 import {
@@ -269,13 +283,16 @@ console.log(`As record: ${stringifyAsRecord(toPrint)}`);
 
 When printed as a record, the string representation of a Date object is an empty string. A Date object is a special object with no properties. Using the `ByPasser.objectAsValue` instance makes more sense in that case!
 
-4. Finally, what if we want to define an uncoloredSplitWhenTotalLengthExceeds50 stringifier instead of the default `uncoloredSplitWhenTotalLengthExceeds40`. Well, simply write:
+4. Finally, what if we want to define an uncoloredSplitWhenTotalLengthExceeds50 stringifier instead of the predefined `uncoloredSplitWhenTotalLengthExceeds40`. Well, simply write:
 
 ```ts
-const splitWhenTotalLengthExceeds50 = (colorSet: ColorSet.Type): Type => ({
-	...singleLine(colorSet),
-	recordFormatter: RecordFormatter.defaultSplitOnTotalLength(50)(colorSet),
-});
+import { ColorSet, Options, RecordFormatter } from "@parischap/pretty-print";
+
+const splitWhenTotalLengthExceeds50 = (colorSet: ColorSet.Type): Options.Type =>
+	Options.make({
+		...Options.singleLine(colorSet),
+		recordFormatter: RecordFormatter.splitOnTotalLength(40)(colorSet),
+	});
 
 const uncoloredSplitWhenTotalLengthExceeds50 = splitWhenTotalLengthExceeds50(
 	ColorSet.uncolored,

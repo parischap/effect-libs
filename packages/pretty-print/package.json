@@ -3,7 +3,7 @@
 	"peerDependencies": {
 		"@parischap/js-lib": "workspace:@parischap-dev/js-lib@*",
 		"@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
-		"effect": "^3.8.3"
+		"effect": "^3.8.4"
 	},
 	"devDependencies": {
 		"@parischap/pretty-print": "link:."

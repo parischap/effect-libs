@@ -38,12 +38,7 @@ import { flow } from 'effect/Function';
 
 const moduleTag = '@parischap/effect-templater/Templater/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
-
-/**
- * @since 0.0.6
- * @category Symbol
- */
-export type TypeId = typeof TypeId;
+type TypeId = typeof TypeId;
 
 /**
  * During compilation, a template is split at the boundary of each target. So if there are n targets
@@ -66,16 +61,16 @@ export interface Type<out T extends string> extends Inspectable.Inspectable, Pip
 }
 
 /**
- * Returns true if `u` is a Templater
+ * Type guard
  *
  * @since 0.0.6
  * @category Guards
  */
 export const has = (u: unknown): u is Type<string> => Predicate.hasProperty(u, TypeId);
 
-/** Templater prototype */
+/** Prototype */
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-const templaterProto: MTypes.Proto<Type<any>> = {
+const proto: MTypes.Proto<Type<any>> = {
 	[TypeId]: {
 		_T: MTypes.covariantValue
 	},
@@ -99,9 +94,9 @@ const templaterProto: MTypes.Proto<Type<any>> = {
 	}
 };
 
-/** Constructs a Templater */
+/** Constructor */
 const _make = <T extends string>(params: MTypes.Data<Type<T>>): Type<T> =>
-	MTypes.objectFromDataAndProto(templaterProto, params);
+	MTypes.objectFromDataAndProto(proto, params);
 
 /**
  * Builds a templater

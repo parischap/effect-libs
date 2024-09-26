@@ -68,9 +68,9 @@
 	"peerDependencies": {
 		"@parischap/js-lib": "workspace:@parischap-dev/js-lib@*",
 		"@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
-		"@effect/platform": "^0.65.5",
-		"@effect/platform-node": "^0.60.5",
-		"@effect/schema": "^0.73.4",
-		"effect": "^3.8.3"
+		"@effect/platform": "^0.66.2",
+		"@effect/platform-node": "^0.61.3",
+		"@effect/schema": "^0.74.1",
+		"effect": "^3.8.4"
 	}
 }

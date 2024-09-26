@@ -13,7 +13,7 @@
  * @since 0.0.1
  */
 
-import { MTypes } from '@parischap/effect-lib';
+import { MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
 import {
 	Array,
 	Equal,
@@ -30,12 +30,7 @@ import {
 
 const moduleTag = '@parischap/pretty-print/FormattedString/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
-
-/**
- * @since 0.0.1
- * @category Symbol
- */
-export type TypeId = typeof TypeId;
+type TypeId = typeof TypeId;
 
 /**
  * Interface that represents a FormattedString
@@ -61,20 +56,20 @@ export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pip
 }
 
 /**
- * Returns true if `u` is a FormattedString
+ * Type guard
  *
  * @since 0.0.1
  * @category Guards
  */
 export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
 
-/** FormattedString equivalence */
+/** Equivalence */
 const _equivalence: Equivalence.Equivalence<Type> = (self: Type, that: Type) =>
 	that.printedLength === self.printedLength && that.value === self.value;
 
 export {
 	/**
-	 * FormattedString equivalence
+	 * Equivalence
 	 *
 	 * @since 0.0.1
 	 * @category Instances
@@ -82,41 +77,21 @@ export {
 	_equivalence as Equivalence
 };
 
-/** FormattedString prototype */
-const formattedStringProto: MTypes.Proto<Type> = {
+/** Prototype */
+const proto: MTypes.Proto<Type> = {
 	[TypeId]: TypeId,
 	[Equal.symbol](this: Type, that: unknown): boolean {
 		return has(that) && _equivalence(this, that);
 	},
 	[Hash.symbol](this: Type) {
-		return pipe(
-			Hash.hash(this.value),
-			Hash.combine(Hash.hash(this.printedLength)),
-			Hash.cached(this)
-		);
+		return Hash.cached(this, Hash.structure(this));
 	},
-	toJSON(this: Type) {
-		return {
-			_tag: moduleTag,
-			value: Inspectable.toJSON(this.value),
-			printedLength: Inspectable.toJSON(this.printedLength)
-		};
-	},
-	[Inspectable.NodeInspectSymbol](this: Type) {
-		return this.toJSON();
-	},
-	toString(this: Type) {
-		return Inspectable.format(this.toJSON());
-	},
-	pipe(this: Type) {
-		/* eslint-disable-next-line prefer-rest-params */
-		return Pipeable.pipeArguments(this, arguments);
-	}
+	...MInspectable.BaseProto(moduleTag),
+	...MPipeable.BaseProto
 };
 
-/** Constructs a FormattedString */
-const _make = (params: MTypes.Data<Type>): Type =>
-	MTypes.objectFromDataAndProto(formattedStringProto, params);
+/** Constructor */
+const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
 
 /**
  * Builds a FormattedString from a string and an optional coloring function `f`. If `f` is omitted,

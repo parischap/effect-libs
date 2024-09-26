@@ -96,7 +96,7 @@ describe('pretty-print', () => {
 			expect(
 				Stringify.asString({
 					...Options.singleLine(ColorSet.uncolored),
-					recordFormatter: RecordFormatter.defaultSplitOnTotalLength(92)(ColorSet.uncolored)
+					recordFormatter: RecordFormatter.splitOnTotalLength(92)(ColorSet.uncolored)
 				})(testA)
 			).toBe(
 				'{ Symbol(symbol1): 42, a: 1, b: { a: 5, c: [7, 8, { a: 9, h: [11, 12, 13] }] }, d: true, e: (Function) }'
@@ -105,7 +105,7 @@ describe('pretty-print', () => {
 			expect(
 				Stringify.asString({
 					...Options.uncoloredSplitWhenTotalLengthExceeds40,
-					recordFormatter: RecordFormatter.defaultSplitOnTotalLength(91)(ColorSet.uncolored)
+					recordFormatter: RecordFormatter.splitOnTotalLength(91)(ColorSet.uncolored)
 				})(testA)
 			).toBe(
 				'{\n  Symbol(symbol1): 42,\n  a: 1,\n  b: { a: 5, c: [7, 8, { a: 9, h: [11, 12, 13] }] },\n  d: true,\n  e: (Function)\n}'
@@ -116,7 +116,7 @@ describe('pretty-print', () => {
 			expect(
 				Stringify.asString({
 					...Options.uncoloredTabified,
-					recordFormatter: RecordFormatter.defaultSplitOnConstituentNumber(5)(ColorSet.uncolored)
+					recordFormatter: RecordFormatter.splitOnConstituentNumber(5)(ColorSet.uncolored)
 				})(testA)
 			).toBe(
 				'{ Symbol(symbol1): 42, a: 1, b: { a: 5, c: [7, 8, { a: 9, h: [11, 12, 13] }] }, d: true, e: (Function) }'
@@ -125,7 +125,7 @@ describe('pretty-print', () => {
 			expect(
 				Stringify.asString({
 					...Options.uncoloredTabified,
-					recordFormatter: RecordFormatter.defaultSplitOnConstituentNumber(4)(ColorSet.uncolored)
+					recordFormatter: RecordFormatter.splitOnConstituentNumber(4)(ColorSet.uncolored)
 				})(testA)
 			).toBe(
 				'{\n  Symbol(symbol1): 42,\n  a: 1,\n  b: { a: 5, c: [7, 8, { a: 9, h: [11, 12, 13] }] },\n  d: true,\n  e: (Function)\n}'

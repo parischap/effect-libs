@@ -1,9 +1,7 @@
 /* eslint-disable functional/no-expression-statements */
 import { Options, Stringify } from '@parischap/pretty-print';
 
-const ansiDarkSplitWhenTotalLengthExceeds40 = Stringify.asString(
-	Options.ansiDarkSplitWhenTotalLengthExceeds40
-);
+const stringify = Stringify.asString(Options.ansiDarkSplitWhenTotalLengthExceeds40);
 
 const toPrint = {
 	a: 1,
@@ -11,4 +9,4 @@ const toPrint = {
 	d: { e: true, f: { a: { k: { z: 'foo', y: 'bar' }, j: false } }, g: 'aa' }
 };
 
-console.log(ansiDarkSplitWhenTotalLengthExceeds40(toPrint));
+console.log(stringify(toPrint));

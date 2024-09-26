@@ -208,7 +208,7 @@ export type Data<T extends AnyRecord> = {
  */
 export type Proto<T extends AnyRecord> = {
 	readonly [k in keyof T as readonly [k] extends (
-		readonly [symbol | 'toString' | 'toJSON' | 'pipe' | `_${string}`]
+		readonly [symbol | 'toString' | 'toJSON' | 'pipe']
 	) ?
 		k
 	:	never]: T[k];

@@ -1,7 +1,7 @@
 /* eslint-disable functional/no-expression-statements */
 import { Stringify } from '@parischap/pretty-print';
 
-const uncoloredSplitWhenTotalLengthExceeds40 = Stringify.asString();
+const stringify = Stringify.asString();
 
 const toPrint = {
 	a: 1,
@@ -9,4 +9,4 @@ const toPrint = {
 	d: { e: true, f: { a: { k: { z: 'foo', y: 'bar' }, j: false } }, g: 'aa' }
 };
 
-console.log(uncoloredSplitWhenTotalLengthExceeds40(toPrint));
+console.log(stringify(toPrint));

@@ -11,7 +11,17 @@
  *
  * @since 0.0.1
  */
-import { MFunction, MMatch, MOption, MString, MTree, MTuple, MTypes } from '@parischap/effect-lib';
+import {
+	MFunction,
+	MInspectable,
+	MMatch,
+	MOption,
+	MPipeable,
+	MString,
+	MTree,
+	MTuple,
+	MTypes
+} from '@parischap/effect-lib';
 import {
 	Array,
 	Boolean,
@@ -37,12 +47,7 @@ import type * as StringifiedValues from './StringifiedValues.js';
 
 const moduleTag = '@parischap/pretty-print/Value/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
-
-/**
- * @since 0.0.6
- * @category Symbol
- */
-export type TypeId = typeof TypeId;
+type TypeId = typeof TypeId;
 
 /**
  * An interface that represents a Value
@@ -97,7 +102,7 @@ export interface Type<out V extends MTypes.Unknown>
 }
 
 /**
- * Returns true if `u` is a Value
+ * Type guard
  *
  * @since 0.0.1
  * @category Guards
@@ -105,22 +110,21 @@ export interface Type<out V extends MTypes.Unknown>
 export const has = (u: unknown): u is Type<MTypes.Unknown> => Predicate.hasProperty(u, TypeId);
 
 /**
- * Returns a Value equivalence based on the specified equivalence for the value property
+ * Equivalence for the value property
  *
- * @since 0.0.1
- * @category Equivalence
+ * @since 0.0.1 Equivalence
  */
 export const getEquivalence = <V extends MTypes.Unknown>(
 	isEquivalent: Equivalence.Equivalence<V>
 ): Equivalence.Equivalence<Type<V>> =>
 	Equivalence.make((self, that) => isEquivalent(self.value, that.value));
 
-/** Returns a Value equivalence based on the equality of their values */
+/** Equivalence based on the equality of their values */
 const _equivalence = getEquivalence(Equal.equals);
 
 export {
 	/**
-	 * Value equivalence
+	 * Equivalence
 	 *
 	 * @since 0.0.1
 	 * @category Instances
@@ -128,9 +132,9 @@ export {
 	_equivalence as Equivalence
 };
 
-/** Value prototype */
+/** Prototype */
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-const valueProto: MTypes.Proto<Type<any>> = {
+const proto: MTypes.Proto<Type<any>> = {
 	[TypeId]: {
 		_V: MTypes.covariantValue
 	},
@@ -140,38 +144,13 @@ const valueProto: MTypes.Proto<Type<any>> = {
 	[Hash.symbol]<V extends MTypes.Unknown>(this: Type<V>) {
 		return Hash.cached(this, Hash.hash(this.value));
 	},
-	toJSON<V extends MTypes.Unknown>(this: Type<V>) {
-		return {
-			value: Inspectable.toJSON(this.value),
-			depth: Inspectable.toJSON(this.depth),
-			protoDepth: Inspectable.toJSON(this.protoDepth),
-			//options: Inspectable.toJSON(this.options),
-			key: Inspectable.toJSON(this.key),
-			stringKey: Inspectable.toJSON(this.stringKey),
-			hasFunctionValue: Inspectable.toJSON(this.hasFunctionValue),
-			hasSymbolicKey: Inspectable.toJSON(this.hasSymbolicKey),
-			hasEnumerableKey: Inspectable.toJSON(this.hasEnumerableKey),
-			byPassedValue: Inspectable.toJSON(this.byPassedValue),
-			isTooDeep: Inspectable.toJSON(this.isTooDeep),
-			isCycleStart: Inspectable.toJSON(this.isCycleStart),
-			belongsToArray: Inspectable.toJSON(this.belongsToArray)
-		};
-	},
-	[Inspectable.NodeInspectSymbol]<V extends MTypes.Unknown>(this: Type<V>) {
-		return this.toJSON();
-	},
-	toString<V extends MTypes.Unknown>(this: Type<V>) {
-		return Inspectable.format(this.toJSON());
-	},
-	pipe<V extends MTypes.Unknown>(this: Type<V>) {
-		/* eslint-disable-next-line prefer-rest-params */
-		return Pipeable.pipeArguments(this, arguments);
-	}
+	...MInspectable.BaseProto(moduleTag),
+	...MPipeable.BaseProto
 };
 
-/** Constructs a Value */
+/** Constructor */
 const _make = <V extends MTypes.Unknown>(params: MTypes.Data<Type<V>>): Type<V> =>
-	MTypes.objectFromDataAndProto(valueProto, params);
+	MTypes.objectFromDataAndProto(proto, params);
 
 /**
  * Type that represents any Value
@@ -255,7 +234,7 @@ export const isPrimitive = (self: All): self is PrimitiveType =>
 	pipe(self, Struct.get('value'), MTypes.isPrimitive);
 
 /**
- * Constructs a `Value` from an initial value to stringify and the chosen stringification options
+ * Constructor
  *
  * @since 0.0.1
  * @category Constructors
@@ -271,7 +250,9 @@ export const makeFromValue = (options: Options.Type) => (value: unknown) =>
 		hasFunctionValue: false,
 		hasSymbolicKey: false,
 		hasEnumerableKey: false,
-		byPassedValue: MOption.fromOptionOrNullable(options.byPasser(value as MTypes.Unknown, options)),
+		byPassedValue: MOption.fromOptionOrNullable(
+			options.byPasser.action(value as MTypes.Unknown, options)
+		),
 		isTooDeep: Number.greaterThanOrEqualTo(0, options.maxDepth),
 		isCycleStart: false,
 		belongsToArray: false
@@ -325,7 +306,7 @@ const makeFromRecord = (self: RecordType): Properties => {
 						hasFunctionValue: MTypes.isFunction(value),
 						hasSymbolicKey: MTypes.isSymbol(key),
 						hasEnumerableKey: Object.prototype.propertyIsEnumerable.call(currentRecord, key),
-						byPassedValue: MOption.fromOptionOrNullable(options.byPasser(value, options)),
+						byPassedValue: MOption.fromOptionOrNullable(options.byPasser.action(value, options)),
 						isTooDeep: Number.greaterThanOrEqualTo(nextDepth, options.maxDepth),
 						isCycleStart: false,
 						belongsToArray: MTypes.isArray(currentRecord)
@@ -346,7 +327,7 @@ const makeFromRecord = (self: RecordType): Properties => {
 		Array.filter(
 			Predicate.struct({ stringKey: Predicate.not(MFunction.strictEquals('__proto__')) })
 		),
-		options.propertyFilter(self)
+		options.propertyFilter.action(self)
 	);
 };
 
@@ -399,7 +380,7 @@ export const stringify = (self: All): StringifiedValue.Type => {
 			pipe(
 				stringifiedProps,
 				Array.match({
-					onNonEmpty: options.recordFormatter(value),
+					onNonEmpty: options.recordFormatter.action(value),
 
 					onEmpty: () =>
 						pipe(
@@ -442,7 +423,7 @@ export const stringify = (self: All): StringifiedValue.Type => {
 							)
 						)
 				}),
-				options.propertyFormatter(value)
+				options.propertyFormatter.action(value)
 			)
 	);
 	return tree.value;

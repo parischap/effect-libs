@@ -1,32 +1,122 @@
 /**
  * In this document, the term `record` refers to a non-null object, an array or a function.
  *
- * A PropertyFilter is a function which lets you specify which properties of a record you want to
- * print. PropertyFilter's can be combined.
+ * This module implements a type that takes care of filtering properties when printing records.
+ * PropertyFilter's can be combined.
  *
- * Several PropertyFilter instances are provided by this module (removeNonFunctions,
- * removeNonEnumerables...). But you can define your own PropertyFilter's if the provided ones don't
- * suit your needs. All you have to do is provide a function that matches Type.
+ * With the make function, you can define your own instances if the provided ones don't suit your
+ * needs.
  *
  * @since 0.0.1
  */
 
-import { MMatch, MTypes } from '@parischap/effect-lib';
-import { Array, Boolean, flow, Function, pipe, Predicate, Struct } from 'effect';
+import { MInspectable, MMatch, MPipeable, MTypes } from '@parischap/effect-lib';
+import {
+	Array,
+	Boolean,
+	Equal,
+	Equivalence,
+	flow,
+	Function,
+	Hash,
+	Inspectable,
+	pipe,
+	Pipeable,
+	Predicate,
+	Struct
+} from 'effect';
 import type * as Value from './Value.js';
 
+const moduleTag = '@parischap/pretty-print/PropertyFilter/';
+const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+type TypeId = typeof TypeId;
+
 /**
- * Type that represents a PropertyFilter. `value` is the Value (see Value.ts) representing the
- * record whose properties you are filtering and `properties` is an array of Value's representing
- * the properties of that record. Based on these two parameters, the function must return the array
- * of those properties that will be printed.
+ * Type that represents a PropertyFilter.
  *
  * @since 0.0.1
  * @category Models
  */
-export interface Type {
-	(value: Value.RecordType): (properties: Value.Properties) => Value.Properties;
+export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
+	/**
+	 * Name of this PropertyFilter instance. Useful when debugging
+	 *
+	 * @since 0.0.1
+	 */
+	readonly name: string;
+	/**
+	 * Action of this PropertyFilter. `value` is the Value (see Value.ts) representing the record
+	 * whose properties are to be filtered and `properties` is an array of Value's representing the
+	 * properties of that record. Based on these two parameters, the function must return the array of
+	 * those properties that will be printed.
+	 *
+	 * @since 0.0.1
+	 */
+	readonly action: (value: Value.RecordType) => (properties: Value.Properties) => Value.Properties;
+	/** @internal */
+	readonly [TypeId]: TypeId;
 }
+
+/**
+ * Type guard
+ *
+ * @since 0.0.1
+ * @category Guards
+ */
+export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
+
+/** Equivalence */
+const _equivalence: Equivalence.Equivalence<Type> = (self: Type, that: Type) =>
+	that.name === self.name;
+
+export {
+	/**
+	 * Equivalence
+	 *
+	 * @since 0.0.1
+	 * @category Instances
+	 */
+	_equivalence as Equivalence
+};
+
+/** Prototype */
+const proto: MTypes.Proto<Type> = {
+	[TypeId]: TypeId,
+	[Equal.symbol](this: Type, that: unknown): boolean {
+		return has(that) && _equivalence(this, that);
+	},
+	[Hash.symbol](this: Type) {
+		return Hash.cached(this, Hash.hash(this.name));
+	},
+	...MInspectable.BaseProto(moduleTag),
+	toJSON(this: Type) {
+		return this.name === '' ? this : this.name;
+	},
+	...MPipeable.BaseProto
+};
+
+/** Constructor */
+const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
+
+/**
+ * Constructor without a name
+ *
+ * @since 0.0.1
+ * @category Constructors
+ */
+export const make = (params: Omit<MTypes.Data<Type>, 'name'>): Type =>
+	_make({ ...params, name: '' });
+
+/**
+ * Returns a copy of `self` with `name` set to `name`
+ *
+ * @since 0.0.1
+ * @category Utils
+ */
+export const setName =
+	(name: string) =>
+	(self: Type): Type =>
+		_make({ ...self, name: name });
 
 /**
  * Combines two propertyFilters into one. The action of `self` is applied before the action of
@@ -48,8 +138,10 @@ export interface Type {
 export const combine =
 	(that: Type) =>
 	(self: Type): Type =>
-	(value) =>
-		Function.compose(self(value), that(value));
+		_make({
+			name: `${self.name}+${that.name}`,
+			action: (value) => Function.compose(self.action(value), that.action(value))
+		});
 
 /**
  * PropertyFilter instance that keeps all properties
@@ -57,7 +149,7 @@ export const combine =
  * @since 0.0.1
  * @category Instances
  */
-export const keepAll: Type = () => Function.identity;
+export const keepAll: Type = _make({ name: 'keepAll', action: () => Function.identity });
 
 /**
  * PropertyFilter instance that removes properties of records whose value is not a function
@@ -65,8 +157,10 @@ export const keepAll: Type = () => Function.identity;
  * @since 0.0.1
  * @category Instances
  */
-export const removeNonFunctions: Type = () => (props: Value.Properties) =>
-	Array.filter(props, Struct.get('hasFunctionValue'));
+export const removeNonFunctions: Type = _make({
+	name: 'removeNonFunctions',
+	action: () => (props: Value.Properties) => Array.filter(props, Struct.get('hasFunctionValue'))
+});
 
 /**
  * PropertyFilter instance that removes properties of records whose value is a function
@@ -74,8 +168,11 @@ export const removeNonFunctions: Type = () => (props: Value.Properties) =>
  * @since 0.0.1
  * @category Instances
  */
-export const removeFunctions: Type = () => (props: Value.Properties) =>
-	Array.filter(props, Predicate.not(Struct.get('hasFunctionValue')));
+export const removeFunctions: Type = _make({
+	name: 'removeFunctions',
+	action: () => (props: Value.Properties) =>
+		Array.filter(props, Predicate.not(Struct.get('hasFunctionValue')))
+});
 
 /**
  * PropertyFilter instance that removes non-enumerable properties
@@ -83,8 +180,10 @@ export const removeFunctions: Type = () => (props: Value.Properties) =>
  * @since 0.0.1
  * @category Instances
  */
-export const removeNonEnumerables: Type = () => (props: Value.Properties) =>
-	Array.filter(props, Struct.get('hasEnumerableKey'));
+export const removeNonEnumerables: Type = _make({
+	name: 'removeNonEnumerables',
+	action: () => (props: Value.Properties) => Array.filter(props, Struct.get('hasEnumerableKey'))
+});
 
 /**
  * PropertyFilter instance that removes enumerable properties
@@ -92,8 +191,11 @@ export const removeNonEnumerables: Type = () => (props: Value.Properties) =>
  * @since 0.0.1
  * @category Instances
  */
-export const removeEnumerables: Type = () => (props: Value.Properties) =>
-	Array.filter(props, Predicate.not(Struct.get('hasEnumerableKey')));
+export const removeEnumerables: Type = _make({
+	name: 'removeEnumerables',
+	action: () => (props: Value.Properties) =>
+		Array.filter(props, Predicate.not(Struct.get('hasEnumerableKey')))
+});
 
 /**
  * PropertyFilter instance that removes properties with a key of type `string`
@@ -101,8 +203,10 @@ export const removeEnumerables: Type = () => (props: Value.Properties) =>
  * @since 0.0.1
  * @category Instances
  */
-export const removeStringKeys: Type = () => (props: Value.Properties) =>
-	Array.filter(props, Struct.get('hasSymbolicKey'));
+export const removeStringKeys: Type = _make({
+	name: 'removeStringKeys',
+	action: () => (props: Value.Properties) => Array.filter(props, Struct.get('hasSymbolicKey'))
+});
 
 /**
  * PropertyFilter instance that removes properties with a key of type `symbol`
@@ -110,8 +214,11 @@ export const removeStringKeys: Type = () => (props: Value.Properties) =>
  * @since 0.0.1
  * @category Instances
  */
-export const removeSymbolicKeys: Type = () => (props: Value.Properties) =>
-	Array.filter(props, Predicate.not(Struct.get('hasSymbolicKey')));
+export const removeSymbolicKeys: Type = _make({
+	name: 'removeSymbolicKeys',
+	action: () => (props: Value.Properties) =>
+		Array.filter(props, Predicate.not(Struct.get('hasSymbolicKey')))
+});
 
 /**
  * PropertyFilter instance that removes properties which are non-enumerable, whose key is symbolic
@@ -134,9 +241,13 @@ export const enumerableNonFunctionStringKeys: Type = pipe(
  * @category Instances
  */
 export const keepFulfillingKeyPredicate =
+	(name: string) =>
 	(predicate: Predicate.Predicate<string>): Type =>
-	() =>
-		Array.filter(Predicate.struct({ stringKey: predicate, hasSymbolicKey: Boolean.not }));
+		_make({
+			name,
+			action: () =>
+				Array.filter(Predicate.struct({ stringKey: predicate, hasSymbolicKey: Boolean.not }))
+		});
 
 /**
  * PropertyFilter instance that removes non-enumerable properties on arrays but keeps them on other
@@ -145,12 +256,15 @@ export const keepFulfillingKeyPredicate =
  * @since 0.0.1
  * @category Instances
  */
-export const removeNonEnumerablesOnArrays: Type = flow(
-	Struct.get('value'),
-	MMatch.make,
-	MMatch.when(MTypes.isArray, () => Array.filter<Value.All>(Struct.get('hasEnumerableKey'))),
-	MMatch.orElse(() => Function.identity)
-);
+export const removeNonEnumerablesOnArrays: Type = _make({
+	name: 'removeNonEnumerablesOnArrays',
+	action: flow(
+		Struct.get('value'),
+		MMatch.make,
+		MMatch.when(MTypes.isArray, () => Array.filter<Value.All>(Struct.get('hasEnumerableKey'))),
+		MMatch.orElse(() => Function.identity)
+	)
+});
 
 /**
  * Function that returns a PropertyFilter instance that keeps only the `n` first properties of a
@@ -159,7 +273,5 @@ export const removeNonEnumerablesOnArrays: Type = flow(
  * @since 0.0.1
  * @category Instances
  */
-export const take =
-	(n: number): Type =>
-	() =>
-		Array.take(n);
+export const take = (n: number): Type =>
+	_make({ name: `Take ${n} first prop(s)`, action: () => Array.take(n) });

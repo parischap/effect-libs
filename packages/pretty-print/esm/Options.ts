@@ -3,8 +3,8 @@
  *
  * This module implements the pretty-printer options.
  *
- * Several Options instances are provided by this module. But you can define your own ones if
- * needed. All you have to do is provide an object that matches Type.
+ * With the make function, you can define your own instances if the provided ones don't suit your
+ * needs.
  *
  * @since 0.0.1
  */
@@ -18,26 +18,54 @@ import * as PropertyFormatter from './PropertyFormatter.js';
 import * as RecordFormatter from './RecordFormatter.js';
 import * as ValueOrder from './ValueOrder.js';
 
+import { MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
+import { Equal, Equivalence, Hash, Inspectable, Pipeable, Predicate } from 'effect';
+
+const moduleTag = '@parischap/pretty-print/Options/';
+const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+type TypeId = typeof TypeId;
+
 /**
  * Interface that represents the pretty-printer options
  *
  * @since 0.0.1
  * @category Models
  */
-export interface Type {
+export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
+	/**
+	 * Name of this Options instance. Useful when debugging
+	 *
+	 * @since 0.0.1
+	 */
+	readonly name: string;
+
 	/**
 	 * Maximum number of nested records that will be printed. A value inferior or equal to 0 means
 	 * that only primitive values are shown.
+	 *
+	 * @since 0.0.1
 	 */
 	readonly maxDepth: number;
 
-	/** Text to show instead of an array when maxDepth is reached. */
+	/**
+	 * Text to show instead of an array when maxDepth is reached.
+	 *
+	 * @since 0.0.1
+	 */
 	readonly arrayLabel: FormattedString.Type;
 
-	/** Text to show instead of a function when maxDepth is reached. */
+	/**
+	 * Text to show instead of a function when maxDepth is reached.
+	 *
+	 * @since 0.0.1
+	 */
 	readonly functionLabel: FormattedString.Type;
 
-	/** Text to show instead of a non-null object when maxDepth is reached. */
+	/**
+	 * Text to show instead of a non-null object when maxDepth is reached.
+	 *
+	 * @since 0.0.1
+	 */
 	readonly objectLabel: FormattedString.Type;
 
 	/**
@@ -45,18 +73,24 @@ export interface Type {
 	 * maxPrototypeDepth <= 0 means that only properties of the top record are shown.
 	 * maxPrototypeDepth = 1 means that only properties of the top record and its direct prototype are
 	 * shown...
+	 *
+	 * @since 0.0.1
 	 */
 	readonly maxPrototypeDepth: number;
 
 	/**
 	 * Text to show instead of a record that contains a direct or indirect circular reference to
 	 * itself.
+	 *
+	 * @since 0.0.1
 	 */
 	readonly circularLabel: FormattedString.Type;
 
 	/**
 	 * `ValueOrder` instance: allows you to specify how to sort properties when printing records (see
 	 * ValueOrder.ts)
+	 *
+	 * @since 0.0.1
 	 */
 	readonly propertySortOrder: ValueOrder.Type;
 
@@ -68,33 +102,107 @@ export interface Type {
 	 * propertySortOrder carefully. Usually, you will use `propertySortOrder:
 	 * ValueOrder.byPrototypalDepth`. If false, all occurrences of the same property are kept.
 	 * Deduping is only performed on records that are not arrays
+	 *
+	 * @since 0.0.1
 	 */
 	readonly dedupeRecordProperties: boolean;
 
 	/**
 	 * `ByPasser` instance: allows you to specify which values receive a special stringification
 	 * process (see ByPasser.ts)
+	 *
+	 * @since 0.0.1
 	 */
 	readonly byPasser: ByPasser.Type;
 
 	/**
 	 * `PropertyFilter` instance: allows you to specify which properties are shown when printing
 	 * records (see PropertyFilter.ts)
+	 *
+	 * @since 0.0.1
 	 */
 	readonly propertyFilter: PropertyFilter.Type;
 
 	/**
 	 * `PropertyFormatter` instance: allows you to specify how to format record properties (see
 	 * PropertyFormatter.ts)
+	 *
+	 * @since 0.0.1
 	 */
 	readonly propertyFormatter: PropertyFormatter.Type;
 
 	/**
 	 * `RecordFormatter` instance: allows you to specify how to print a record from its stringified
 	 * properties (see RecordFormatter.ts)
+	 *
+	 * @since 0.0.1
 	 */
 	readonly recordFormatter: RecordFormatter.Type;
+
+	/** @internal */
+	readonly [TypeId]: TypeId;
 }
+
+/**
+ * Type guard
+ *
+ * @since 0.0.1
+ * @category Guards
+ */
+export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
+
+/** Equivalence */
+const _equivalence: Equivalence.Equivalence<Type> = (self: Type, that: Type) =>
+	that.name === self.name;
+
+export {
+	/**
+	 * Equivalence
+	 *
+	 * @since 0.0.1
+	 * @category Instances
+	 */
+	_equivalence as Equivalence
+};
+
+/** Prototype */
+const proto: MTypes.Proto<Type> = {
+	[TypeId]: TypeId,
+	[Equal.symbol](this: Type, that: unknown): boolean {
+		return has(that) && _equivalence(this, that);
+	},
+	[Hash.symbol](this: Type) {
+		return Hash.cached(this, Hash.hash(this.name));
+	},
+	...MInspectable.BaseProto(moduleTag),
+	toJSON(this: Type) {
+		return this.name === '' ? this : this.name;
+	},
+	...MPipeable.BaseProto
+};
+
+/** Constructor */
+const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
+
+/**
+ * Constructor without a name
+ *
+ * @since 0.0.1
+ * @category Constructors
+ */
+export const make = (params: Omit<MTypes.Data<Type>, 'name'>): Type =>
+	_make({ ...params, name: '' });
+
+/**
+ * Returns a copy of `self` with `name` set to `name`
+ *
+ * @since 0.0.1
+ * @category Utils
+ */
+export const setName =
+	(name: string) =>
+	(self: Type): Type =>
+		_make({ ...self, name: name });
 
 /**
  * Function that returns an `Options` instance that pretty-prints a value on a single line in a way
@@ -103,20 +211,22 @@ export interface Type {
  * @since 0.0.1
  * @category Instances
  */
-export const singleLine = (colorSet: ColorSet.Type): Type => ({
-	maxDepth: 10,
-	arrayLabel: pipe('[Array]', FormattedString.makeWith(colorSet.otherValueColorer)),
-	functionLabel: pipe('(Function)', FormattedString.makeWith(colorSet.otherValueColorer)),
-	objectLabel: pipe('{Object}', FormattedString.makeWith(colorSet.otherValueColorer)),
-	maxPrototypeDepth: 0,
-	circularLabel: pipe('(Circular)', FormattedString.makeWith(colorSet.otherValueColorer)),
-	propertySortOrder: ValueOrder.byStringKey,
-	dedupeRecordProperties: false,
-	byPasser: ByPasser.objectAsValue(colorSet),
-	propertyFilter: PropertyFilter.removeNonEnumerables,
-	propertyFormatter: PropertyFormatter.objectAndArrayLike(colorSet),
-	recordFormatter: RecordFormatter.defaultSingleLine(colorSet)
-});
+export const singleLine = (colorSet: ColorSet.Type): Type =>
+	_make({
+		name: colorSet.name + 'SingleLine',
+		maxDepth: 10,
+		arrayLabel: pipe('[Array]', FormattedString.makeWith(colorSet.otherValueColorer)),
+		functionLabel: pipe('(Function)', FormattedString.makeWith(colorSet.otherValueColorer)),
+		objectLabel: pipe('{Object}', FormattedString.makeWith(colorSet.otherValueColorer)),
+		maxPrototypeDepth: 0,
+		circularLabel: pipe('(Circular)', FormattedString.makeWith(colorSet.otherValueColorer)),
+		propertySortOrder: ValueOrder.byStringKey,
+		dedupeRecordProperties: false,
+		byPasser: ByPasser.objectAsValue(colorSet),
+		propertyFilter: PropertyFilter.removeNonEnumerables,
+		propertyFormatter: PropertyFormatter.recordLike(colorSet),
+		recordFormatter: RecordFormatter.singleLine(colorSet)
+	});
 
 /**
  * Alias for `singleLine(ColorSet.uncolored)`
@@ -124,7 +234,7 @@ export const singleLine = (colorSet: ColorSet.Type): Type => ({
  * @since 0.0.1
  * @category Instances
  */
-export const uncoloredSingleLine = singleLine(ColorSet.uncolored);
+export const uncoloredSingleLine: Type = singleLine(ColorSet.uncolored);
 
 /**
  * Alias for `singleLine(ColorSet.ansiDarkMode)`
@@ -132,7 +242,7 @@ export const uncoloredSingleLine = singleLine(ColorSet.uncolored);
  * @since 0.0.1
  * @category Instances
  */
-export const ansiDarkSingleLine = singleLine(ColorSet.ansiDarkMode);
+export const ansiDarkSingleLine: Type = singleLine(ColorSet.ansiDarkMode);
 
 /**
  * Function that returns an `Options` instance that pretty-prints a value on multiple indented lines
@@ -141,10 +251,12 @@ export const ansiDarkSingleLine = singleLine(ColorSet.ansiDarkMode);
  * @since 0.0.1
  * @category Instances
  */
-export const tabified = (colorSet: ColorSet.Type): Type => ({
-	...singleLine(colorSet),
-	recordFormatter: RecordFormatter.defaultTabified(colorSet)
-});
+export const tabified = (colorSet: ColorSet.Type): Type =>
+	_make({
+		...singleLine(colorSet),
+		name: colorSet.name + 'Tabified',
+		recordFormatter: RecordFormatter.tabified(colorSet)
+	});
 
 /**
  * Alias for `tabified(ColorSet.uncolored)`
@@ -152,7 +264,7 @@ export const tabified = (colorSet: ColorSet.Type): Type => ({
  * @since 0.0.1
  * @category Instances
  */
-export const uncoloredTabified = tabified(ColorSet.uncolored);
+export const uncoloredTabified: Type = tabified(ColorSet.uncolored);
 
 /**
  * Alias for `tabified(ColorSet.ansiDarkMode)`
@@ -160,7 +272,7 @@ export const uncoloredTabified = tabified(ColorSet.uncolored);
  * @since 0.0.1
  * @category Instances
  */
-export const ansiDarkTabified = tabified(ColorSet.ansiDarkMode);
+export const ansiDarkTabified: Type = tabified(ColorSet.ansiDarkMode);
 
 /**
  * Function that returns an `Options` instance that pretty-prints a value on multiple lines with a
@@ -170,12 +282,14 @@ export const ansiDarkTabified = tabified(ColorSet.ansiDarkMode);
  * @since 0.0.1
  * @category Instances
  */
-export const treeified = (colorSet: ColorSet.Type): Type => ({
-	...singleLine(colorSet),
-	byPasser: ByPasser.objectAsValueWithoutNullables(colorSet),
-	propertyFormatter: PropertyFormatter.objectLike(colorSet),
-	recordFormatter: RecordFormatter.defaultTreeified(colorSet)
-});
+export const treeified = (colorSet: ColorSet.Type): Type =>
+	_make({
+		...singleLine(colorSet),
+		name: colorSet.name + 'Treeified',
+		byPasser: ByPasser.objectAsValueWithoutNullables(colorSet),
+		propertyFormatter: PropertyFormatter.keyAndValueWithObjectMarks(colorSet),
+		recordFormatter: RecordFormatter.treeified(colorSet)
+	});
 
 /**
  * Alias for `treeified(ColorSet.uncolored)`
@@ -183,7 +297,7 @@ export const treeified = (colorSet: ColorSet.Type): Type => ({
  * @since 0.0.1
  * @category Instances
  */
-export const uncoloredTreeified = treeified(ColorSet.uncolored);
+export const uncoloredTreeified: Type = treeified(ColorSet.uncolored);
 
 /**
  * Alias for `treeified(ColorSet.ansiDarkMode)`
@@ -191,7 +305,7 @@ export const uncoloredTreeified = treeified(ColorSet.uncolored);
  * @since 0.0.1
  * @category Instances
  */
-export const ansiDarkTreeified = treeified(ColorSet.ansiDarkMode);
+export const ansiDarkTreeified: Type = treeified(ColorSet.ansiDarkMode);
 
 /**
  * Same as `singleLine` but, if the value to pretty-print is a record, it, and any sub-record it
@@ -201,10 +315,12 @@ export const ansiDarkTreeified = treeified(ColorSet.ansiDarkMode);
  * @since 0.0.1
  * @category Instances
  */
-export const splitWhenTotalLengthExceeds40 = (colorSet: ColorSet.Type): Type => ({
-	...singleLine(colorSet),
-	recordFormatter: RecordFormatter.defaultSplitOnTotalLength(40)(colorSet)
-});
+export const splitWhenTotalLengthExceeds40 = (colorSet: ColorSet.Type): Type =>
+	_make({
+		...singleLine(colorSet),
+		name: colorSet.name + 'SplitWhenTotalLengthExceeds40',
+		recordFormatter: RecordFormatter.splitOnTotalLength(40)(colorSet)
+	});
 
 /**
  * Alias for `splitWhenTotalLengthExceeds40(ColorSet.uncolored)`
@@ -212,7 +328,7 @@ export const splitWhenTotalLengthExceeds40 = (colorSet: ColorSet.Type): Type => 
  * @since 0.0.1
  * @category Instances
  */
-export const uncoloredSplitWhenTotalLengthExceeds40 = splitWhenTotalLengthExceeds40(
+export const uncoloredSplitWhenTotalLengthExceeds40: Type = splitWhenTotalLengthExceeds40(
 	ColorSet.uncolored
 );
 
@@ -222,6 +338,6 @@ export const uncoloredSplitWhenTotalLengthExceeds40 = splitWhenTotalLengthExceed
  * @since 0.0.1
  * @category Instances
  */
-export const ansiDarkSplitWhenTotalLengthExceeds40 = splitWhenTotalLengthExceeds40(
+export const ansiDarkSplitWhenTotalLengthExceeds40: Type = splitWhenTotalLengthExceeds40(
 	ColorSet.ansiDarkMode
 );

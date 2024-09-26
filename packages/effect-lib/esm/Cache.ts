@@ -20,17 +20,14 @@ import {
 	flow,
 	pipe
 } from 'effect';
+import * as MInspectable from './Inspectable.js';
+import * as MPipeable from './Pipeable.js';
 import * as MTypes from './types.js';
 import * as MValueContainer from './ValueContainer.js';
 
 const moduleTag = '@parischap/effect-lib/Cache/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
-
-/**
- * @since 0.0.6
- * @category Symbol
- */
-export type TypeId = typeof TypeId;
+type TypeId = typeof TypeId;
 
 /**
  * Type that represents the lookup function. In addition to the key, the lookup function receives a
@@ -101,44 +98,27 @@ export interface Type<in out A, in out B> extends Inspectable.Inspectable, Pipea
 }
 
 /**
- * Returns true if `u` is a Cache
+ * Type guard
  *
  * @since 0.0.6
  * @category Guards
  */
 export const has = (u: unknown): u is Type<unknown, unknown> => Predicate.hasProperty(u, TypeId);
 
-/** Cache prototype */
+/** Prototype */
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-const cacheProto: MTypes.Proto<Type<any, any>> = {
+const proto: MTypes.Proto<Type<any, any>> = {
 	[TypeId]: {
 		_A: MTypes.invariantValue,
 		_B: MTypes.invariantValue
 	},
-	toJSON<A, B>(this: Type<A, B>) {
-		return {
-			_id: moduleTag,
-			store: Inspectable.toJSON(this.store),
-			keyOrder: Inspectable.toJSON(this.keyOrder),
-			capacity: Inspectable.toJSON(this.capacity),
-			lifeSpan: Inspectable.toJSON(this.lifeSpan)
-		};
-	},
-	[Inspectable.NodeInspectSymbol]<A, B>(this: Type<A, B>) {
-		return this.toJSON();
-	},
-	toString<A, B>(this: Type<A, B>) {
-		return Inspectable.format(this.toJSON());
-	},
-	pipe<A, B>(this: Type<A, B>) {
-		/* eslint-disable-next-line prefer-rest-params */
-		return Pipeable.pipeArguments(this, arguments);
-	}
+	...MInspectable.BaseProto(moduleTag),
+	...MPipeable.BaseProto
 };
 
-/** Constructs a Cache */
+/** Constructor */
 const _make = <A, B>(params: MTypes.Data<Type<A, B>>): Type<A, B> =>
-	MTypes.objectFromDataAndProto(cacheProto, params);
+	MTypes.objectFromDataAndProto(proto, params);
 
 /**
  * Creates a new cache. The lookup function is used to populate the cache. If the capacity is

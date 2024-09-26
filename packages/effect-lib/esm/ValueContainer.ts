@@ -5,16 +5,12 @@
  * @since 0.0.6
  */
 import { Equal, Equivalence, Hash, Inspectable, Predicate, Types } from 'effect';
+import * as MInspectable from './Inspectable.js';
 import * as MTypes from './types.js';
 
 const moduleTag = '@parischap/effect-lib/ValueContainer/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
-
-/**
- * @since 0.0.6
- * @category Symbol
- */
-export type TypeId = typeof TypeId;
+type TypeId = typeof TypeId;
 
 /**
  * Interface that represents a ValueContainer
@@ -42,7 +38,7 @@ export interface Type<out A> extends Equal.Equal, Inspectable.Inspectable {
 }
 
 /**
- * Returns true if `u` is a ValueContainer
+ * Type guard
  *
  * @since 0.0.6
  * @category Guards
@@ -50,22 +46,21 @@ export interface Type<out A> extends Equal.Equal, Inspectable.Inspectable {
 export const has = (u: unknown): u is Type<unknown> => Predicate.hasProperty(u, TypeId);
 
 /**
- * Returns a ValueContainer equivalence based on the specified equivalence for the value property
+ * Equivalence for the value property
  *
- * @since 0.0.6
- * @category Equivalence
+ * @since 0.0.6 Equivalence
  */
 export const getEquivalence = <A>(
 	isEquivalent: Equivalence.Equivalence<A>
 ): Equivalence.Equivalence<Type<A>> =>
 	Equivalence.make((self, that) => isEquivalent(self.value, that.value));
 
-/** Returns a ValueContainer equivalence based on the equality of their values */
+/** Equivalence based on the equality of their values */
 const _equivalence = getEquivalence(Equal.equals);
 
 export {
 	/**
-	 * ValueContainer equivalence
+	 * Equivalence
 	 *
 	 * @since 0.0.6
 	 * @category Instances
@@ -73,9 +68,9 @@ export {
 	_equivalence as Equivalence
 };
 
-/** ValueContainer prototype */
+/** Prototype */
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-const valueContainerProto: MTypes.Proto<Type<any>> = {
+const proto: MTypes.Proto<Type<any>> = {
 	[TypeId]: {
 		_A: MTypes.covariantValue
 	},
@@ -85,25 +80,14 @@ const valueContainerProto: MTypes.Proto<Type<any>> = {
 	[Hash.symbol]<A>(this: Type<A>) {
 		return Hash.cached(this, Hash.hash(this.value));
 	},
-	toJSON<A>(this: Type<A>) {
-		return {
-			value: Inspectable.toJSON(this.value),
-			storeDate: Inspectable.toJSON(this.storeDate)
-		};
-	},
-	[Inspectable.NodeInspectSymbol]<A>(this: Type<A>) {
-		return this.toJSON();
-	},
-	toString<A>(this: Type<A>) {
-		return Inspectable.format(this.toJSON());
-	}
+	...MInspectable.BaseProto(moduleTag)
 };
 
 /**
- * Constructs a ValueContainer
+ * Constructor
  *
  * @since 0.0.6
  * @category Constructors
  */
 export const make = <A>(params: MTypes.Data<Type<A>>): Type<A> =>
-	MTypes.objectFromDataAndProto(valueContainerProto, params);
+	MTypes.objectFromDataAndProto(proto, params);

@@ -4,16 +4,20 @@
  * This module implements a type that represents a set of colors to be applied to the different
  * parts of a stringified value.
  *
- * This module implements several ColorSet instances. You can define your own if the provided ones
- * don't suit your needs. All you have to do is provide a function that matches Type.
+ * With the make function, you can define your own instances if the provided ones don't suit your
+ * needs.
  *
  * @since 0.0.1
  */
 
-import { MTypes } from '@parischap/effect-lib';
+import { MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
 import { JsColor, JsString } from '@parischap/js-lib';
-import { Array, Function } from 'effect';
-import type * as ColorWheel from './ColorWheel.js';
+import { Equal, Equivalence, Function, Hash, Inspectable, Pipeable, Predicate } from 'effect';
+import * as ColorWheel from './ColorWheel.js';
+
+const moduleTag = '@parischap/pretty-print/ColorSet/';
+const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+type TypeId = typeof TypeId;
 
 /**
  * Representation of a function that applies a color to a string. A function that does not apply any
@@ -31,7 +35,13 @@ export interface Colorer extends MTypes.OneArgFunction<string, string> {}
  * @since 0.0.1
  * @category Models
  */
-export interface Type {
+export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
+	/**
+	 * Name of this ColorSet instance. Useful when debugging
+	 *
+	 * @since 0.0.1
+	 */
+	readonly name: string;
 	/**
 	 * Color applied to values of type string
 	 *
@@ -111,7 +121,70 @@ export interface Type {
 	 * @since 0.0.1
 	 */
 	readonly multiLineIndentColorer: Colorer;
+	/** @internal */
+	readonly [TypeId]: TypeId;
 }
+
+/**
+ * Type guard
+ *
+ * @since 0.0.1
+ * @category Guards
+ */
+export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
+
+/** Equivalence */
+const _equivalence: Equivalence.Equivalence<Type> = (self: Type, that: Type) =>
+	that.name === self.name;
+
+export {
+	/**
+	 * Equivalence
+	 *
+	 * @since 0.0.1
+	 * @category Instances
+	 */
+	_equivalence as Equivalence
+};
+
+/** Prototype */
+const proto: MTypes.Proto<Type> = {
+	[TypeId]: TypeId,
+	[Equal.symbol](this: Type, that: unknown): boolean {
+		return has(that) && _equivalence(this, that);
+	},
+	[Hash.symbol](this: Type) {
+		return Hash.cached(this, Hash.hash(this.name));
+	},
+	...MInspectable.BaseProto(moduleTag),
+	toJSON(this: Type) {
+		return this.name === '' ? this : this.name;
+	},
+	...MPipeable.BaseProto
+};
+
+/** Constructor */
+const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
+
+/**
+ * Constructor without a name
+ *
+ * @since 0.0.1
+ * @category Constructors
+ */
+export const make = (params: Omit<MTypes.Data<Type>, 'name'>): Type =>
+	_make({ ...params, name: '' });
+
+/**
+ * Returns a copy of `self` with `name` set to `name`
+ *
+ * @since 0.0.1
+ * @category Utils
+ */
+export const setName =
+	(name: string) =>
+	(self: Type): Type =>
+		_make({ ...self, name: name });
 
 /**
  * Colorset instance for uncolored output (uses the identity function for all parts to be colored)
@@ -119,7 +192,8 @@ export interface Type {
  * @since 0.0.1
  * @category Instances
  */
-export const uncolored: Type = {
+export const uncolored: Type = _make({
+	name: 'uncolored',
 	stringValueColorer: Function.identity,
 	otherValueColorer: Function.identity,
 	symbolValueColorer: Function.identity,
@@ -128,11 +202,11 @@ export const uncolored: Type = {
 	propertyKeyColorerWhenSymbol: Function.identity,
 	propertyKeyColorerWhenOther: Function.identity,
 	propertySeparatorColorer: Function.identity,
-	recordDelimitersColorWheel: Array.empty(),
+	recordDelimitersColorWheel: ColorWheel.empty,
 	keyValueSeparatorColorer: Function.identity,
 	prototypeMarkColorer: Function.identity,
 	multiLineIndentColorer: Function.identity
-};
+});
 
 /**
  * Example colorset for ansi dark mode - Uses functions from the JsColor module
@@ -140,7 +214,8 @@ export const uncolored: Type = {
  * @since 0.0.1
  * @category Instances
  */
-export const ansiDarkMode: Type = {
+export const ansiDarkMode: Type = _make({
+	name: 'ansiDarkMode',
 	stringValueColorer: JsString.colorize(JsColor.green),
 	otherValueColorer: JsString.colorize(JsColor.yellow),
 	symbolValueColorer: JsString.colorize(JsColor.cyan),
@@ -149,16 +224,8 @@ export const ansiDarkMode: Type = {
 	propertyKeyColorerWhenSymbol: JsString.colorize(JsColor.cyan),
 	propertyKeyColorerWhenOther: JsString.colorize(JsColor.red),
 	propertySeparatorColorer: JsString.colorize(JsColor.white),
-	recordDelimitersColorWheel: Array.make(
-		JsString.colorize(JsColor.green),
-		JsString.colorize(JsColor.yellow),
-		JsString.colorize(JsColor.magenta),
-		JsString.colorize(JsColor.cyan),
-		JsString.colorize(JsColor.red),
-		JsString.colorize(JsColor.blue),
-		JsString.colorize(JsColor.white)
-	),
+	recordDelimitersColorWheel: ColorWheel.ansiDarkMode,
 	keyValueSeparatorColorer: JsString.colorize(JsColor.white),
 	prototypeMarkColorer: JsString.colorize(JsColor.green),
 	multiLineIndentColorer: JsString.colorize(JsColor.green)
-};
+});
