@@ -1,7 +1,7 @@
 /**
  * In this document, the term `record` refers to a non-null object, an array or a function.
  *
- * This module implements a type that implements a specific stringification for certain values (the
+ * This module implements a type that defines a specific stringification for certain values (the
  * stringification process is by-passed). For instance, you may prefer printing Dates as strings
  * rather than as objects.
  *

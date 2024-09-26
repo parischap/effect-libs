@@ -1,7 +1,7 @@
 /**
  * In this document, the term `record` refers to a non-null object, an array or a function.
  *
- * This module implements a type that implements the formatting of records. From the stringified
+ * This module implements a type that takes care of the formatting of records. From the stringified
  * representation of the properties of a record which it receives, it must return the stringified
  * representation of the whole record. It can take care of aspects like printing on a single or
  * multiple lines, indentation when printing on multiple lines, adding specific array/object
