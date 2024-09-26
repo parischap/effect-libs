@@ -6,6 +6,7 @@
 
 import { JsRegExp } from '@parischap/js-lib';
 import { Brand, Number } from 'effect';
+import * as MNumber from './Number.js';
 
 const moduleTag = '@parischap/effect-lib/Brand/';
 
@@ -30,14 +31,14 @@ export type SemVer = Brand.Branded<string, SemVerBrand>;
 export const unsafeSemVer = Brand.nominal<SemVer>();
 
 /**
- * Constructs a SemVer but throws an error if the provided string does not match the semver pattern
+ * Constructs a SemVer. Throws an error if the provided string does not match the SemVer pattern
  *
  * @since 0.0.6
  * @category Constructors
  */
 export const SemVer = Brand.refined<SemVer>(
 	(s) => JsRegExp.semVer.test(s),
-	(s) => Brand.error(`SemVer ${s} should have following format: number.number.number`)
+	(s) => Brand.error(`${s} is not a proper SemVer`)
 );
 
 // Brand for emails
@@ -60,7 +61,7 @@ export type Email = Brand.Branded<string, EmailBrand>;
  */
 export const unsafeEmail = Brand.nominal<Email>();
 /**
- * Constructs an Email but throws an error if the provided string does not match the email pattern
+ * Constructs an Email. Throws an error if the provided string does not match the email pattern
  *
  * @since 0.0.6
  * @category Constructors
@@ -71,7 +72,7 @@ export const Email = Brand.refined<Email>(
 );
 
 // Brand for number ranges
-const RangeBrand = `${moduleTag}RangeBrand`;
+const RangeBrand = `${moduleTag}Range`;
 type RangeBrand = typeof RangeBrand;
 
 /**
@@ -83,7 +84,7 @@ type RangeBrand = typeof RangeBrand;
 export type Range = Brand.Branded<number, RangeBrand>;
 
 /**
- * Constrcuts a number belonging to a range without any checks
+ * Constructs a number belonging to a range without any checks
  *
  * @since 0.0.6
  * @category Constructors
@@ -91,7 +92,7 @@ export type Range = Brand.Branded<number, RangeBrand>;
 export const unsafeRange = Brand.nominal<Range>();
 
 /**
- * Constructs a number belonging to the range [minimum, maximum] but throws an error if the provided
+ * Constructs a number belonging to the range [minimum, maximum]. Throws an error if the provided
  * number is not in the range
  *
  * @since 0.0.6
@@ -99,5 +100,35 @@ export const unsafeRange = Brand.nominal<Range>();
  */
 export const Range = (options: { readonly minimum: number; readonly maximum: number }) =>
 	Brand.refined<Range>(Number.between(options), (n) =>
-		Brand.error(`${n} should be between ${options.minimum} and ${options.maximum}`)
+		Brand.error(`${n} should be between ${options.minimum} and ${options.maximum} (inclusive)`)
 	);
+
+// Brand for real numeric values (excluding NaN, +Infinity, -Infinity)
+const NumericBrand = `${moduleTag}Numeric`;
+type NumericBrand = typeof NumericBrand;
+
+/**
+ * Brand for numeric values
+ *
+ * @since 0.3.4
+ * @category Models
+ */
+export type Numeric = Brand.Branded<number, NumericBrand>;
+
+/**
+ * Constructs a numeric value without any checks
+ *
+ * @since 0.3.4
+ * @category Constructors
+ */
+export const unsafeNumeric = Brand.nominal<Numeric>();
+
+/**
+ * Constructs a numeric value
+ *
+ * @since 0.3.4
+ * @category Constructors
+ */
+export const Numeric = Brand.refined<Numeric>(MNumber.isFinite, (n) =>
+	Brand.error(`${n} is not a numeric value`)
+);

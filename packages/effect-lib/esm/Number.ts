@@ -5,6 +5,7 @@
  */
 
 import { JsPatches } from '@parischap/js-lib';
+import { Predicate } from 'effect';
 
 /**
  * Constructs an integer from a string in base 10. Does not check input format and can return NaN
@@ -32,3 +33,21 @@ export const unsafeFromString = (s: string): number => +s;
  */
 
 export const intModulo = JsPatches.intModulo;
+
+/**
+ * Returns true if the provided number is NaN, +Infinity or -Infinity
+ *
+ * @since 0.3.4
+ * @category Utils
+ */
+
+export const isNotFinite = Predicate.not(Number.isFinite);
+
+/**
+ * Returns true if the provided number is not NaN, +Infinity or -Infinity
+ *
+ * @since 0.3.4
+ * @category Utils
+ */
+
+export const isFinite = Number.isFinite;
