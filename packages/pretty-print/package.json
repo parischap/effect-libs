@@ -11,7 +11,7 @@
 	"publishConfig": {
 		"peerDependencies": {
 			"@parischap/js-lib": "^0.0.7",
-			"@parischap/effect-lib": "^0.3.0"
+			"@parischap/effect-lib": "^0.3.2"
 		},
 		"main": "./cjs/index.js",
 		"types": "./dts/index.d.ts",
