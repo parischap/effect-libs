@@ -106,10 +106,10 @@ export const makeWith =
 		});
 
 /**
- * Builds an empty FormattedString
+ * An empty FormattedString
  *
  * @since 0.0.1
- * @category Constructors
+ * @category Instances
  */
 export const empty = makeWith()('');
 

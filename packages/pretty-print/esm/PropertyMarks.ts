@@ -1,8 +1,8 @@
 /**
  * In this document, the term `record` refers to a non-null object, an array or a function.
  *
- * This module implements a type that contains the marks used to print properties of a record. It is
- * used by the PropertyFormatter module (see PropertyFormatter.ts)
+ * This module implements a type that contains the marks used to print the properties of a record.
+ * It is used by the PropertyFormatter module (see PropertyFormatter.ts)
  *
  * With the make function, you can define your own instances if the provided ones don't suit your
  * needs.
