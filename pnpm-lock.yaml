@@ -220,14 +220,14 @@ importers:
   packages/pretty-print/dist:
     dependencies:
       '@parischap/effect-lib':
-        specifier: ^0.3.0
-        version: 0.3.0(@effect/typeclass@0.27.4(effect@3.8.3))(@parischap/js-lib@0.0.7)(effect@3.8.3)
+        specifier: ^0.3.3
+        version: 0.3.3(@effect/typeclass@0.27.4(effect@3.8.4))(@parischap/js-lib@0.0.7)(effect@3.8.4)
       '@parischap/js-lib':
         specifier: ^0.0.7
         version: 0.0.7
       effect:
-        specifier: ^3.8.3
-        version: 3.8.3
+        specifier: ^3.8.4
+        version: 3.8.4
 
 packages:
 
@@ -832,12 +832,12 @@ packages:
       tsx: ^4.1.0
       typescript: ^5.2.2
 
-  '@parischap/effect-lib@0.3.0':
-    resolution: {integrity: sha512-crNljPP+R0YrtWdS26BzDTR0Wa2I3rg8CX09j9qa0jcHQAp2toCUQOHWbpa1V3HJiJ/7giBdTfQ9VgYY0ahGUg==}
+  '@parischap/effect-lib@0.3.3':
+    resolution: {integrity: sha512-ZNGvEncAEX3iq0qliNrWVnRRHnSoPo1meVDtY92v4GLj3rEIPX9fGJTmenIWVZ8H3Pf13E21aarTMnwd1SHjkA==}
     peerDependencies:
-      '@effect/typeclass': ^0.27.3
+      '@effect/typeclass': ^0.27.4
       '@parischap/js-lib': ^0.0.7
-      effect: ^3.8.3
+      effect: ^3.8.4
 
   '@parischap/js-lib@0.0.7':
     resolution: {integrity: sha512-5F9pR9zZ3ipXR8Hyxcscn0gBGVLs5+9r+wbfB1TgcMV52fJm8KbYjDiNcxGIQ3yqKunfB3G20a8whrXd4dfkgg==}
@@ -1459,9 +1459,6 @@ packages:
 
   eastasianwidth@0.2.0:
     resolution: {integrity: sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==}
-
-  effect@3.8.3:
-    resolution: {integrity: sha512-ZHTNRik0mJWK+g12/HHwsouOux0OE2v+qRD7zsEJLtZ1RJdrlxvCpSXdJ+KgOqJ4wigIToDSb5e5HG885uKs/w==}
 
   effect@3.8.4:
     resolution: {integrity: sha512-rOZ1XAi+Fb+fAHoUJ5FnJPSPZEBxVbCl5QWtOWFTgOeFHx0QpbK3pezWvq9OIxQPdwvSkPOw926qrs4xdD9dLA==}
@@ -2946,10 +2943,6 @@ snapshots:
       effect: 3.8.4
       fast-check: 3.21.0
 
-  '@effect/typeclass@0.27.4(effect@3.8.3)':
-    dependencies:
-      effect: 3.8.3
-
   '@effect/typeclass@0.27.4(effect@3.8.4)':
     dependencies:
       effect: 3.8.4
@@ -3257,11 +3250,11 @@ snapshots:
       tsx: 4.19.1
       typescript: 5.6.2
 
-  '@parischap/effect-lib@0.3.0(@effect/typeclass@0.27.4(effect@3.8.3))(@parischap/js-lib@0.0.7)(effect@3.8.3)':
+  '@parischap/effect-lib@0.3.3(@effect/typeclass@0.27.4(effect@3.8.4))(@parischap/js-lib@0.0.7)(effect@3.8.4)':
     dependencies:
-      '@effect/typeclass': 0.27.4(effect@3.8.3)
+      '@effect/typeclass': 0.27.4(effect@3.8.4)
       '@parischap/js-lib': 0.0.7
-      effect: 3.8.3
+      effect: 3.8.4
 
   '@parischap/js-lib@0.0.7': {}
 
@@ -3902,8 +3895,6 @@ snapshots:
       esutils: 2.0.3
 
   eastasianwidth@0.2.0: {}
-
-  effect@3.8.3: {}
 
   effect@3.8.4: {}
 
