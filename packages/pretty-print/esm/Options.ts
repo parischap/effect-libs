@@ -160,7 +160,7 @@ export {
 	 * Equivalence
 	 *
 	 * @since 0.0.1
-	 * @category Instances
+	 * @category Equivalences
 	 */
 	_equivalence as Equivalence
 };

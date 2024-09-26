@@ -79,7 +79,7 @@ export {
 	 * Equivalence
 	 *
 	 * @since 0.0.1
-	 * @category Instances
+	 * @category Equivalences
 	 */
 	_equivalence as Equivalence
 };
@@ -129,8 +129,8 @@ export const setName =
  * @since 0.0.1
  * @category Instances
  */
-export const tabify: Type = _make({
-	name: 'tabifyIndentMode',
+export const tab: Type = _make({
+	name: 'tabIndentMode',
 	initPropFirstLine: '  ',
 	lastPropFirstLine: '  ',
 	initPropTailLines: '  ',
@@ -143,8 +143,8 @@ export const tabify: Type = _make({
  * @since 0.0.1
  * @category Instances
  */
-export const treeify: Type = _make({
-	name: 'treeifyIndentMode',
+export const tree: Type = _make({
+	name: 'treeIndentMode',
 	initPropFirstLine: '├─ ',
 	lastPropFirstLine: '└─ ',
 	initPropTailLines: '│  ',

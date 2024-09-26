@@ -1,6 +1,6 @@
 /**
  * This module implements a type that represents an array of colors that repeat themselves
- * indefinitely. It is used by the ColorWheel module (see ColorWheel.ts).
+ * indefinitely. It is used by the ColorSet module (see ColorSet.ts).
  *
  * With the make function, you can define your own instances if the provided ones don't suit your
  * needs.
@@ -68,7 +68,7 @@ export {
 	 * Equivalence
 	 *
 	 * @since 0.0.1
-	 * @category Instances
+	 * @category Equivalences
 	 */
 	_equivalence as Equivalence
 };
@@ -133,7 +133,7 @@ export const getColor =
  * Empty ColorWheel instance
  *
  * @since 0.0.1
- * @category Utils
+ * @category Instances
  */
 export const empty = _make({
 	name: 'empty',
@@ -144,7 +144,7 @@ export const empty = _make({
  * ColorWheel instance adapted to ansi dark mode
  *
  * @since 0.0.1
- * @category Utils
+ * @category Instances
  */
 
 export const ansiDarkMode = _make({

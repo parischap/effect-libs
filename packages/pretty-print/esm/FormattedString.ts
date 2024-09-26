@@ -1,11 +1,8 @@
 /**
- * This module implements a string that may contain format characters, e.g css styles or unicode
+ * This module implements a string that may contain formatting characters, e.g css styles or unicode
  * characters. It contains a printedLength property that is the length of the printable characters,
- * i.e excluding all formatting characters. Used by the
- * RecordFormatter.autoBasedOnConstituentsLength and
- * RecordFormatter.autoBasedOnLongestConstituentsLength instances (see RecordFormatter.ts), for
- * which the limit of the BasicRecordFormatter is compared to the length of the printable
- * characters.
+ * i.e excluding all formatting characters. Used by the RecordFormatter.splitOnLongestPropLength and
+ * RecordFormatter.splitOnTotalLength instances (see RecordFormatter.ts).
  *
  * As an end user, you will only have to creaate FormattedString's if you write your own ByPasser
  * instances (see ByPasser.ts)
@@ -72,7 +69,7 @@ export {
 	 * Equivalence
 	 *
 	 * @since 0.0.1
-	 * @category Instances
+	 * @category Equivalences
 	 */
 	_equivalence as Equivalence
 };

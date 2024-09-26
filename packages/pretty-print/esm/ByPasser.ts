@@ -5,9 +5,6 @@
  * stringification process is by-passed). For instance, you may prefer printing Dates as strings
  * rather than as objects.
  *
- * This module defines 4 ByPasser instances. Most of the time you will use `objectAsValue`.
- * `objectAsValueWithoutNullables` will come in handy when treeifying.
- *
  * With the make function, you can define your own instances if the provided ones don't suit your
  * needs. The easiest way to do so is to call the action mathod of one of the existing ByPasser
  * instances for the part you want to keep and write your own code for the part you want to change.
@@ -93,7 +90,7 @@ export {
 	 * Equivalence
 	 *
 	 * @since 0.0.1
-	 * @category Instances
+	 * @category Equivalences
 	 */
 	_equivalence as Equivalence
 };
@@ -221,6 +218,8 @@ export const objectAsRecordWithoutNullables = (colorSet: ColorSet.Type): Type =>
  *   Object.prototype.toString) and then the toJSON method. Returns a `some` of the result if
  *   successful. Returns a `none` otherwise.
  *
+ * This is the instance you will use most of the time.
+ *
  * @since 0.0.1
  * @category Instances
  */
@@ -250,7 +249,7 @@ export const objectAsValue = (colorSet: ColorSet.Type): Type =>
 	});
 
 /**
- * Same as `objectAsValue` but nullable values are not printed.
+ * Same as `objectAsValue` but nullable values are not printed. Comes in handy when treeifying.
  *
  * @since 0.0.1
  * @category Instances

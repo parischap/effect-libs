@@ -87,7 +87,7 @@ export {
 	 * Equivalence
 	 *
 	 * @since 0.0.1
-	 * @category Instances
+	 * @category Equivalences
 	 */
 	_equivalence as Equivalence
 };
@@ -199,25 +199,25 @@ export const multiLineMaker =
 		});
 
 /**
- * Alias for `multiLineMaker(RecordMarks.multiLine,IndentMode.tabify)`
+ * Alias for `multiLineMaker(RecordMarks.multiLine,IndentMode.tab)`
  *
  * @since 0.0.1
  * @category Instances
  */
 export const tabified: (colorSet: ColorSet.Type) => Type = multiLineMaker(
 	RecordMarks.multiLine,
-	IndentMode.tabify
+	IndentMode.tab
 );
 
 /**
- * Alias for `multiLineMaker(RecordMarks.none,IndentMode.treeify)`
+ * Alias for `multiLineMaker(RecordMarks.none,IndentMode.tree)`
  *
  * @since 0.0.1
  * @category Instances
  */
 export const treeified: (colorSet: ColorSet.Type) => Type = multiLineMaker(
 	RecordMarks.none,
-	IndentMode.treeify
+	IndentMode.tree
 );
 
 /**
@@ -259,13 +259,13 @@ export const splitOnConstituentNumberMaker =
 
 /**
  * Alias for
- * `splitOnConstituentNumberMaker(RecordMarks.singleLine,RecordMarks.multiLine,IndentMode.tabify)`
+ * `splitOnConstituentNumberMaker(RecordMarks.singleLine,RecordMarks.multiLine,IndentMode.tab)`
  *
  * @since 0.0.1
  * @category Instances
  */
 export const splitOnConstituentNumber: (limit: number) => (colorSet: ColorSet.Type) => Type =
-	splitOnConstituentNumberMaker(RecordMarks.singleLine, RecordMarks.multiLine, IndentMode.tabify);
+	splitOnConstituentNumberMaker(RecordMarks.singleLine, RecordMarks.multiLine, IndentMode.tab);
 
 /**
  * Calls `singleLine` if the total length of the properties to print (excluding formatting
@@ -311,14 +311,13 @@ export const splitOnTotalLengthMaker =
 		});
 
 /**
- * Alias for
- * `splitOnTotalLengthMaker(RecordMarks.singleLine,RecordMarks.multiLine,IndentMode.tabify)`
+ * Alias for `splitOnTotalLengthMaker(RecordMarks.singleLine,RecordMarks.multiLine,IndentMode.tab)`
  *
  * @since 0.0.1
  * @category Instances
  */
 export const splitOnTotalLength: (limit: number) => (colorSet: ColorSet.Type) => Type =
-	splitOnTotalLengthMaker(RecordMarks.singleLine, RecordMarks.multiLine, IndentMode.tabify);
+	splitOnTotalLengthMaker(RecordMarks.singleLine, RecordMarks.multiLine, IndentMode.tab);
 
 /**
  * Calls `singleLine` if the length of the longest property to print (excluding formatting
@@ -367,13 +366,13 @@ export const splitOnLongestPropLengthMaker =
 
 /**
  * Alias for
- * `splitOnLongestPropLengthMaker(RecordMarks.singleLine,RecordMarks.multiLine,IndentMode.tabify)`
+ * `splitOnLongestPropLengthMaker(RecordMarks.singleLine,RecordMarks.multiLine,IndentMode.tab)`
  *
  * @since 0.0.1
  * @category Instances
  */
 export const splitOnLongestPropLength: (limit: number) => (colorSet: ColorSet.Type) => Type =
-	splitOnLongestPropLengthMaker(RecordMarks.singleLine, RecordMarks.multiLine, IndentMode.tabify);
+	splitOnLongestPropLengthMaker(RecordMarks.singleLine, RecordMarks.multiLine, IndentMode.tab);
 
 /**
  * Calls `singleLine` for arrays and multiLine for other records. Calls `multiLine` otherwise
@@ -410,7 +409,7 @@ export const splitNonArraysMaker =
 		});
 
 /**
- * Alias for `splitNonArraysMaker(RecordMarks.singleLine,RecordMarks.multiLine,IndentMode.tabify)`
+ * Alias for `splitNonArraysMaker(RecordMarks.singleLine,RecordMarks.multiLine,IndentMode.tab)`
  *
  * @since 0.0.1
  * @category Instances
@@ -418,5 +417,5 @@ export const splitNonArraysMaker =
 export const splitNonArrays: (colorSet: ColorSet.Type) => Type = splitNonArraysMaker(
 	RecordMarks.singleLine,
 	RecordMarks.multiLine,
-	IndentMode.tabify
+	IndentMode.tab
 );
