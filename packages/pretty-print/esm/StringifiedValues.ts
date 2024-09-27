@@ -18,7 +18,7 @@ import type * as StringifiedValue from './StringifiedValue.js';
  * @since 0.0.1
  * @category Models
  */
-export type Type = ReadonlyArray<StringifiedValue.Type>;
+export interface Type extends ReadonlyArray<StringifiedValue.Type> {}
 
 /**
  * Type that represents a function that transforms a StringifiedValues

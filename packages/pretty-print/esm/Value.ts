@@ -195,7 +195,7 @@ export type PrimitiveType = Type<MTypes.Primitive>;
  * @since 0.0.1
  * @category Models
  */
-export type Properties = ReadonlyArray<All>;
+export interface Properties extends ReadonlyArray<All> {}
 
 /**
  * True if the `value` of `self` represents a record

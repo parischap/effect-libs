@@ -22,7 +22,7 @@ import type * as RecordExtremityMarks from './RecordExtremityMarks.js';
  * @since 0.0.1
  * @category Models
  */
-export type Type = ReadonlyArray<FormattedString.Type>;
+export interface Type extends ReadonlyArray<FormattedString.Type> {}
 
 /**
  * Type that represents a function that transforms a StringifiedValue

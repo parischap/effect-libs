@@ -26,8 +26,7 @@ export interface AnyRecord {
  * @since 0.0.6
  * @category Models
  */
-/* eslint-disable-next-line functional/prefer-readonly-type */
-export type ReturnArray<out T> = Array<T>;
+export interface ReturnArray<out T> extends Array<T> {}
 
 /**
  * Type that represents an array

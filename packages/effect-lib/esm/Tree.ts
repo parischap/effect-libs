@@ -35,7 +35,7 @@ type TypeId = typeof TypeId;
  * @since 0.0.6
  * @category Models
  */
-export type Forest<A> = ReadonlyArray<Type<A>>;
+export interface Forest<A> extends ReadonlyArray<Type<A>> {}
 
 /**
  * @since 0.0.6
