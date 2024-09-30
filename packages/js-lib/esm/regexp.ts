@@ -215,28 +215,28 @@ export const whitespaces = zeroOrMore(`[ ${tab}]`);
 export const digit = backslash + 'd';
 
 /**
- * A regular expression representing a positive integer
+ * A regular expression representing a positive int
  *
  * @since 0.0.4
  * @category Instances
  */
-export const positiveInteger = either('0', '[1-9]' + zeroOrMore(digit));
+export const positiveInt = either('0', '[1-9]' + zeroOrMore(digit));
 
 /**
- * A regular expression representing a possibly signed integer
+ * A regular expression representing a possibly signed int
  *
  * @since 0.0.8
  * @category Instances
  */
-export const possiblySignedInteger = optional(sign + whitespaces) + positiveInteger;
+export const possiblySignedInt = optional(sign + whitespaces) + positiveInt;
 
 /**
- * A regular expression representing a signed integer
+ * A regular expression representing a signed int
  *
  * @since 0.0.8
  * @category Instances
  */
-export const signedInteger = sign + whitespaces + positiveInteger;
+export const signedInt = sign + whitespaces + positiveInt;
 
 const fractionalPart = dot + oneOrMore(digit);
 
@@ -248,8 +248,8 @@ const fractionalPart = dot + oneOrMore(digit);
  */
 export const real =
 	optional(sign + whitespaces) +
-	either(positiveInteger, fractionalPart, positiveInteger + fractionalPart) +
-	optional('e' + possiblySignedInteger);
+	either(positiveInt, fractionalPart, positiveInt + fractionalPart) +
+	optional('e' + possiblySignedInt);
 
 /**
  * A regular expression representing a letter
