@@ -220,7 +220,7 @@ export const digit = backslash + 'd';
  * @since 0.0.4
  * @category Instances
  */
-export const positiveInt = either('0', '[1-9]' + zeroOrMore(digit));
+export const unsignedInt = either('0', '[1-9]' + zeroOrMore(digit));
 
 /**
  * A regular expression representing a possibly signed int
@@ -228,7 +228,7 @@ export const positiveInt = either('0', '[1-9]' + zeroOrMore(digit));
  * @since 0.0.8
  * @category Instances
  */
-export const possiblySignedInt = optional(sign + whitespaces) + positiveInt;
+export const int = optional(sign + whitespaces) + unsignedInt;
 
 /**
  * A regular expression representing a signed int
@@ -236,7 +236,7 @@ export const possiblySignedInt = optional(sign + whitespaces) + positiveInt;
  * @since 0.0.8
  * @category Instances
  */
-export const signedInt = sign + whitespaces + positiveInt;
+export const signedInt = sign + whitespaces + unsignedInt;
 
 const fractionalPart = dot + oneOrMore(digit);
 
@@ -248,8 +248,8 @@ const fractionalPart = dot + oneOrMore(digit);
  */
 export const real =
 	optional(sign + whitespaces) +
-	either(positiveInt, fractionalPart, positiveInt + fractionalPart) +
-	optional('e' + possiblySignedInt);
+	either(unsignedInt, fractionalPart, unsignedInt + fractionalPart) +
+	optional('e' + int);
 
 /**
  * A regular expression representing a letter
