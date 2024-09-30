@@ -191,6 +191,22 @@ export const dot = backslash + '.';
 export const arrowbase = '@';
 
 /**
+ * A regular expression representing a tab
+ *
+ * @since 0.0.8
+ * @category Instances
+ */
+export const tab = backslash + 't';
+
+/**
+ * A regular expression representing several whitespaces
+ *
+ * @since 0.0.8
+ * @category Instances
+ */
+export const whitespaces = zeroOrMore(`[ ${tab}]`);
+
+/**
  * A regular expression representing a digit
  *
  * @since 0.0.4
@@ -205,6 +221,35 @@ export const digit = backslash + 'd';
  * @category Instances
  */
 export const positiveInteger = either('0', '[1-9]' + zeroOrMore(digit));
+
+/**
+ * A regular expression representing a possibly signed integer
+ *
+ * @since 0.0.8
+ * @category Instances
+ */
+export const possiblySignedInteger = optional(sign + whitespaces) + positiveInteger;
+
+/**
+ * A regular expression representing a signed integer
+ *
+ * @since 0.0.8
+ * @category Instances
+ */
+export const signedInteger = sign + whitespaces + positiveInteger;
+
+const fractionalPart = dot + oneOrMore(digit);
+
+/**
+ * A regular expression representing a real number
+ *
+ * @since 0.0.8
+ * @category Instances
+ */
+export const real =
+	optional(sign + whitespaces) +
+	either(positiveInteger, fractionalPart, positiveInteger + fractionalPart) +
+	optional('e' + possiblySignedInteger);
 
 /**
  * A regular expression representing a letter
@@ -229,6 +274,14 @@ export const lowerCaseLetter = '[a-z]';
  * @category Instances
  */
 export const upperCaseLetter = '[A-Z]';
+
+/**
+ * A regular expression representing a lowercase letter
+ *
+ * @since 0.0.8
+ * @category Instances
+ */
+export const lowerCaseLetterOrDigit = '[a-z0-9]';
 
 /**
  * A regular expression representing a word letter
@@ -285,7 +338,8 @@ export const lineBreak = either(optional(CR) + LF, CR);
  * @category Instances
  */
 export const semVer =
-	/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/;
+	/(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?/
+		.source;
 
 /**
  * A regular expression representing an email - Imported from
@@ -297,4 +351,5 @@ export const semVer =
 
 export const email =
 	/* eslint-disable-next-line no-control-regex */
-	/(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
+	/(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/
+		.source;
