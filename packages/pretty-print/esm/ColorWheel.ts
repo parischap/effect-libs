@@ -60,8 +60,7 @@ export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pip
 export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
 
 /** Equivalence */
-const _equivalence: Equivalence.Equivalence<Type> = (self: Type, that: Type) =>
-	that.name === self.name;
+const _equivalence: Equivalence.Equivalence<Type> = (self, that) => that.name === self.name;
 
 export {
 	/**

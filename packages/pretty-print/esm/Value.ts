@@ -112,7 +112,8 @@ export const has = (u: unknown): u is Type<MTypes.Unknown> => Predicate.hasPrope
 /**
  * Equivalence for the value property
  *
- * @since 0.0.1 Equivalence
+ * @since 0.0.1
+ * @category Equivalences
  */
 export const getEquivalence = <V extends MTypes.Unknown>(
 	isEquivalent: Equivalence.Equivalence<V>
