@@ -302,8 +302,7 @@ export const floatingPoint = (dot: string) => {
  * @category Instances
  */
 export const floatingPointWithThousandSep = (dot: string, thousandSep: string) => {
-	const fractionalPart =
-		dot + zeroOrMore(repeatBetween(3, 3)(digit) + thousandSep) + repeatBetween(1, 3)(digit);
+	const fractionalPart = dot + oneOrMore(digit);
 	const unsignedIntWithSep = unsignedIntWithThousandSep(thousandSep);
 	return (
 		optional(sign + whitespaces) +

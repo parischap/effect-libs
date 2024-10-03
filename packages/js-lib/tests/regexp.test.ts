@@ -269,15 +269,11 @@ describe('JsRegExp', () => {
 		});
 
 		it('With separator - With no space in the middle', () => {
-			expect(floatRegExpWithSep.exec('1 001.1001') !== null).toBe(false);
+			expect(floatRegExpWithSep.exec('1001.1001') !== null).toBe(false);
 		});
 
 		it('With separator - With two spaces in the middle', () => {
-			expect(floatRegExpWithSep.exec('1  001.100 1') !== null).toBe(false);
-		});
-
-		it('With separator - With space in the middle', () => {
-			expect(floatRegExpWithSep.exec('1 001.100 1') !== null).toBe(true);
+			expect(floatRegExpWithSep.exec('1  001.1001') !== null).toBe(false);
 		});
 
 		it('With separator - 0', () => {
@@ -289,15 +285,15 @@ describe('JsRegExp', () => {
 		});
 
 		it('With separator - 1001.1001', () => {
-			expect(floatRegExpWithSep.exec('1 001.100 1') !== null).toBe(true);
+			expect(floatRegExpWithSep.exec('1 001.1001') !== null).toBe(true);
 		});
 
 		it('With separator - 10001.10012', () => {
-			expect(floatRegExpWithSep.exec('10 001.100 12') !== null).toBe(true);
+			expect(floatRegExpWithSep.exec('10 001.10012') !== null).toBe(true);
 		});
 
 		it('With separator - 100001.0030011', () => {
-			expect(floatRegExpWithSep.exec('100 001.003 001 1') !== null).toBe(true);
+			expect(floatRegExpWithSep.exec('100 001.0030011') !== null).toBe(true);
 		});
 
 		it('With separator - +1001.11', () => {
@@ -305,7 +301,7 @@ describe('JsRegExp', () => {
 		});
 
 		it('With separator - -.333 23', () => {
-			expect(floatRegExpWithSep.exec('-  .333 23') !== null).toBe(true);
+			expect(floatRegExpWithSep.exec('-  .33323') !== null).toBe(true);
 		});
 	});
 });
