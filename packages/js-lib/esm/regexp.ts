@@ -236,9 +236,7 @@ export const unsignedInt = either('0', '[1-9]' + zeroOrMore(digit));
 export const unsignedIntWithThousandSep = (thousandSep: string) =>
 	either(
 		'0',
-		'[1-9]' +
-			repeatBetween(0, 2)(digit) +
-			zeroOrMore(escape(thousandSep) + repeatBetween(3, 3)(digit))
+		'[1-9]' + repeatBetween(0, 2)(digit) + zeroOrMore(thousandSep + repeatBetween(3, 3)(digit))
 	);
 
 /**
