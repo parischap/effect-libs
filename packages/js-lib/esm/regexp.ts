@@ -30,13 +30,16 @@ export const zeroOrMore = (self: string): string => `(?:${self})*`;
 export const oneOrMore = (self: string): string => `(?:${self})+`;
 
 /**
- * Returns a new regular expression where self may appear between low and high times
+ * Returns a new regular expression where `self` may appear between `low` and `high` times. `low`
+ * and `high` must be positive integers with `high` >= `low`
  *
  * @since 0.0.4
  * @category Utils
  */
-export const repeatBetween = (self: string, low: number, high?: number): string =>
-	`(?:${self}){${low},${high === undefined ? '' : high}}`;
+export const repeatBetween =
+	(low: number, high?: number) =>
+	(self: string): string =>
+		`(?:${self}){${low},${high === undefined ? '' : high}}`;
 
 /**
  * Returns a new regular expression where self is optional
@@ -223,12 +226,39 @@ export const digit = backslash + 'd';
 export const unsignedInt = either('0', '[1-9]' + zeroOrMore(digit));
 
 /**
+ * A regular expression representing a positive int with thousand separator. Works also with
+ * thousandSep='' but prefer `insignedInt` in that case. `thousandSep` must be escaped if it
+ * contains regular expression special characters
+ *
+ * @since 0.0.4
+ * @category Instances
+ */
+export const unsignedIntWithThousandSep = (thousandSep: string) =>
+	either(
+		'0',
+		'[1-9]' +
+			repeatBetween(0, 2)(digit) +
+			zeroOrMore(escape(thousandSep) + repeatBetween(3, 3)(digit))
+	);
+
+/**
  * A regular expression representing a possibly signed int
  *
  * @since 0.0.8
  * @category Instances
  */
 export const int = optional(sign + whitespaces) + unsignedInt;
+
+/**
+ * A regular expression representing a possibly signed int with thousand separator. Works also with
+ * thousandSep='' but prefer `int` in that case. `thousandSep` must be escaped if it contains
+ * regular expression special characters
+ *
+ * @since 0.0.8
+ * @category Instances
+ */
+export const intWithThousandSep = (thousandSep: string) =>
+	optional(sign + whitespaces) + unsignedIntWithThousandSep(thousandSep);
 
 /**
  * A regular expression representing a signed int
@@ -238,18 +268,48 @@ export const int = optional(sign + whitespaces) + unsignedInt;
  */
 export const signedInt = sign + whitespaces + unsignedInt;
 
-const fractionalPart = dot + oneOrMore(digit);
-
 /**
- * A regular expression representing a real number
+ * A regular expression representing a signed int with thousand separator. Works also with
+ * thousandSep='' but prefer `signedInt` in that case. `thousandSep` must be escaped if it contains
+ * regular expression special characters
  *
  * @since 0.0.8
  * @category Instances
  */
-export const real =
-	optional(sign + whitespaces) +
-	either(unsignedInt, fractionalPart, unsignedInt + fractionalPart) +
-	optional('e' + int);
+export const signedIntWithThousandSep = (thousandSep: string) =>
+	sign + whitespaces + unsignedIntWithThousandSep(thousandSep);
+
+/**
+ * A regular expression representing a real number in floating point notation. `dot` must be escaped
+ * if it contains regular expression special characters
+ *
+ * @since 0.0.8
+ * @category Instances
+ */
+export const floatingPoint = (dot: string) => {
+	const fractionalPart = dot + oneOrMore(digit);
+	return (
+		optional(sign + whitespaces) + either(unsignedInt, fractionalPart, unsignedInt + fractionalPart)
+	);
+};
+
+/**
+ * A regular expression representing a real number in floating point notation. Works also with
+ * thousandSep='' but prefer `floatingPoint` in that case. `dot` and `thousandSep` must be escaped
+ * if they contain regular expression special characters
+ *
+ * @since 0.0.8
+ * @category Instances
+ */
+export const floatingPointWithThousandSep = (dot: string, thousandSep: string) => {
+	const fractionalPart =
+		dot + zeroOrMore(repeatBetween(3, 3)(digit) + thousandSep) + repeatBetween(1, 3)(digit);
+	const unsignedIntWithSep = unsignedIntWithThousandSep(thousandSep);
+	return (
+		optional(sign + whitespaces) +
+		either(unsignedIntWithSep, fractionalPart, unsignedIntWithSep + fractionalPart)
+	);
+};
 
 /**
  * A regular expression representing a letter
