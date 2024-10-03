@@ -370,16 +370,71 @@ describe('MString', () => {
 
 	describe('splitAt', () => {
 		it('Empty string', () => {
-			const [before, after] = pipe('', MString.splitAt(0));
-			expect(String.isEmpty(before)).toBe(true);
-			expect(String.isEmpty(after)).toBe(true);
+			expect(
+				Utils.structuralRegion(() => pipe('', MString.splitAt(2), Equal.equals(Array.make('', ''))))
+			).toBe(true);
 		});
 
 		it('Non-empty string', () => {
-			const [before, after] = pipe('beforeafter', MString.splitAt(6));
-			expect(before).toBe('before');
-			expect(after).toBe('after');
-			expect(after).toBe('after');
+			expect(
+				Utils.structuralRegion(() =>
+					pipe('beforeafter', MString.splitAt(6), Equal.equals(Array.make('before', 'after')))
+				)
+			).toBe(true);
 		});
+	});
+
+	describe('splitEquallyRestAtStart', () => {
+		it('Empty string', () =>
+			expect(pipe('', MString.splitEquallyRestAtStart(3), Array.isEmptyArray)).toBe(true));
+
+		it('Non-empty string without rest', () =>
+			expect(
+				Utils.structuralRegion(() =>
+					pipe(
+						'foobarbaz',
+						MString.splitEquallyRestAtStart(3),
+						Equal.equals(Array.make('foo', 'bar', 'baz'))
+					)
+				)
+			).toBe(true));
+
+		it('Non-empty string with rest', () =>
+			expect(
+				Utils.structuralRegion(() =>
+					pipe(
+						'afoobarbaz',
+						MString.splitEquallyRestAtStart(3),
+						Equal.equals(Array.make('a', 'foo', 'bar', 'baz'))
+					)
+				)
+			).toBe(true));
+	});
+
+	describe('splitEquallyRestAtEnd', () => {
+		it('Empty string', () =>
+			expect(pipe('', MString.splitEquallyRestAtEnd(3), Array.isEmptyArray)).toBe(true));
+
+		it('Non-empty string without rest', () =>
+			expect(
+				Utils.structuralRegion(() =>
+					pipe(
+						'foobarbaz',
+						MString.splitEquallyRestAtEnd(3),
+						Equal.equals(Array.make('foo', 'bar', 'baz'))
+					)
+				)
+			).toBe(true));
+
+		it('Non-empty string with rest', () =>
+			expect(
+				Utils.structuralRegion(() =>
+					pipe(
+						'foobarbaza',
+						MString.splitEquallyRestAtEnd(3),
+						Equal.equals(Array.make('foo', 'bar', 'baz', 'a'))
+					)
+				)
+			).toBe(true));
 	});
 });

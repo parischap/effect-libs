@@ -326,3 +326,56 @@ export const splitAt =
 	(n: number) =>
 	(self: string): [left: string, right: string] =>
 		Tuple.make(self.substring(0, n), self.substring(n));
+
+/**
+ * Splits `self` in substrings of `bitSize` characters. The length of the first string, if any, is
+ * comprised between 1 and `bitSize` characters. `bitSize` must be a strictly positive integer.
+ *
+ * @since 0.0.6
+ * @category Utils
+ */
+export const splitEquallyRestAtStart =
+	(bitSize: number) =>
+	(self: string): Array<string> => {
+		let endIndex = self.length;
+		let startIndex: number;
+		/* eslint-disable-next-line functional/prefer-readonly-type */
+		const result: Array<string> = [];
+		while (endIndex > 0) {
+			/* eslint-disable-next-line functional/no-expression-statements */
+			startIndex = endIndex - bitSize;
+			/* eslint-disable-next-line functional/no-expression-statements, functional/immutable-data */
+			result.push(self.substring(startIndex, endIndex));
+			/* eslint-disable-next-line functional/no-expression-statements */
+			endIndex = startIndex;
+		}
+		/* eslint-disable-next-line functional/immutable-data */
+		return result.reverse();
+	};
+
+/**
+ * Splits `self` in substrings of `bitSize` characters. The length of the last string, if any, is
+ * comprised between 1 and `bitSize` characters. `bitSize` must be a strictly positive integer.
+ *
+ * @since 0.0.6
+ * @category Utils
+ */
+export const splitEquallyRestAtEnd =
+	(bitSize: number) =>
+	(self: string): Array<string> => {
+		const l = self.length;
+		let startIndex = 0;
+		let endIndex: number;
+
+		/* eslint-disable-next-line functional/prefer-readonly-type */
+		const result: Array<string> = [];
+		while (startIndex < l) {
+			/* eslint-disable-next-line functional/no-expression-statements */
+			endIndex = startIndex + bitSize;
+			/* eslint-disable-next-line functional/no-expression-statements, functional/immutable-data */
+			result.push(self.substring(startIndex, endIndex));
+			/* eslint-disable-next-line functional/no-expression-statements */
+			startIndex = endIndex;
+		}
+		return result;
+	};
