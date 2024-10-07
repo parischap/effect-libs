@@ -30,16 +30,17 @@ export const zeroOrMore = (self: string): string => `(?:${self})*`;
 export const oneOrMore = (self: string): string => `(?:${self})+`;
 
 /**
- * Returns a new regular expression where `self` may appear between `low` and `high` times. `low`
- * and `high` must be positive integers with `high` >= `low`
+ * Returns a new regular expression where `self` may appear between `low` and `high` times. Both
+ * `low` and `high` must be positive integers with `high` >= `low`. `high` may receive the
+ * `+Infinity` value.
  *
  * @since 0.0.4
  * @category Utils
  */
 export const repeatBetween =
-	(low: number, high?: number) =>
+	(low: number, high: number) =>
 	(self: string): string =>
-		`(?:${self}){${low},${high === undefined ? '' : high}}`;
+		high === 0 ? '' : `(?:${self}){${low},${high === +Infinity ? '' : high}}`;
 
 /**
  * Returns a new regular expression where self is optional
@@ -218,94 +219,98 @@ export const whitespaces = zeroOrMore(`[ ${tab}]`);
 export const digit = backslash + 'd';
 
 /**
- * A regular expression representing a positive int
+ * Possible sign options for regular expressions representing a real number in floating point
+ * notation
  *
  * @since 0.0.4
- * @category Instances
+ * @category Models
  */
-export const unsignedInt = either('0', '[1-9]' + zeroOrMore(digit));
+export enum SignOption {
+	/** No sign allowed */
+	None = 0,
+	/** Sign must be present if value is positive */
+	Mandatory = 1,
+	/** A minus sign may be present */
+	MinusOptional = 2,
+	/** A plus sign and a minus sign may be present */
+	PlusMinusOptional = 3
+}
 
-/**
- * A regular expression representing a positive int with thousand separator. Works also with
- * thousandSep='' but prefer `insignedInt` in that case. `thousandSep` must be escaped if it
- * contains regular expression special characters
- *
- * @since 0.0.4
- * @category Instances
- */
-export const unsignedIntWithThousandSep = (thousandSep: string) =>
-	either(
-		'0',
-		'[1-9]' + repeatBetween(0, 2)(digit) + zeroOrMore(thousandSep + repeatBetween(3, 3)(digit))
-	);
+const _signRegExp = (signOption: SignOption) => {
+	switch (signOption) {
+		case SignOption.None:
+			return '';
+		case SignOption.Mandatory:
+			return either(plus, minus) + whitespaces;
+		case SignOption.MinusOptional:
+			return optional(minus + whitespaces);
+		case SignOption.PlusMinusOptional:
+			return optional(sign + whitespaces);
+		default:
+			throw new Error('Unknown sign option');
+	}
+};
 
-/**
- * A regular expression representing a possibly signed int
- *
- * @since 0.0.8
- * @category Instances
- */
-export const int = optional(sign + whitespaces) + unsignedInt;
-
-/**
- * A regular expression representing a possibly signed int with thousand separator. Works also with
- * thousandSep='' but prefer `int` in that case. `thousandSep` must be escaped if it contains
- * regular expression special characters
- *
- * @since 0.0.8
- * @category Instances
- */
-export const intWithThousandSep = (thousandSep: string) =>
-	optional(sign + whitespaces) + unsignedIntWithThousandSep(thousandSep);
-
-/**
- * A regular expression representing a signed int
- *
- * @since 0.0.8
- * @category Instances
- */
-export const signedInt = sign + whitespaces + unsignedInt;
-
-/**
- * A regular expression representing a signed int with thousand separator. Works also with
- * thousandSep='' but prefer `signedInt` in that case. `thousandSep` must be escaped if it contains
- * regular expression special characters
- *
- * @since 0.0.8
- * @category Instances
- */
-export const signedIntWithThousandSep = (thousandSep: string) =>
-	sign + whitespaces + unsignedIntWithThousandSep(thousandSep);
-
-/**
- * A regular expression representing a real number in floating point notation. `dot` must be escaped
- * if it contains regular expression special characters
- *
- * @since 0.0.8
- * @category Instances
- */
-export const floatingPoint = (dot: string) => {
-	const fractionalPart = dot + oneOrMore(digit);
+const _groupedDecimalDigits = (digitNumber: number, thousandSep: string) => {
+	const groupNumber = Math.floor(digitNumber / 3);
+	const remainingDigits = digitNumber === +Infinity ? 2 : digitNumber - groupNumber * 3;
 	return (
-		optional(sign + whitespaces) + either(unsignedInt, fractionalPart, unsignedInt + fractionalPart)
+		repeatBetween(0, remainingDigits)(digit) +
+		repeatBetween(0, groupNumber)(thousandSep + repeatBetween(3, 3)(digit))
 	);
 };
 
 /**
- * A regular expression representing a real number in floating point notation. Works also with
- * thousandSep='' but prefer `floatingPoint` in that case. `dot` and `thousandSep` must be escaped
- * if they contain regular expression special characters
+ * A regular expression representing a real number in floating point notation with `signOption`
+ * indicating how a sign may be present, `fractionalSep` as separator between the decimal and
+ * fractional parts, `thousandSep` as separator between 3-digit groups in the decimal part,
+ * `maxDecimalDigits` the maximal number of digits in the decimal part and with between
+ * `minFractionalDigits` and `maxFractionalDigits` fractional digits. `maxDecimalDigits` must be a
+ * positive integer (+Infinity is allowed). `fractionalSep` and `thousandSep` must be escaped if
+ * they contain regular expression special characters. `minFractionalDigits` and
+ * `maxFractionalDigits` must be positive integers with `maxFractionalDigits` >=
+ * `minFractionalDigits`. Pass 0 to `maxFractionalDigits`if you want a regular expression
+ * representing an integer. `maxFractionalDigits` may receive the `+Infinity` value. Do not set
+ * maxDecimalDigits and maxFractionalDigits to 0 at the same time unless yopu know whate you are
+ * doing
  *
  * @since 0.0.8
  * @category Instances
  */
-export const floatingPointWithThousandSep = (dot: string, thousandSep: string) => {
-	const fractionalPart = dot + oneOrMore(digit);
-	const unsignedIntWithSep = unsignedIntWithThousandSep(thousandSep);
-	return (
-		optional(sign + whitespaces) +
-		either(unsignedIntWithSep, fractionalPart, unsignedIntWithSep + fractionalPart)
-	);
+export const floatingPoint = (
+	signOption = SignOption.MinusOptional,
+	fractionalSep = dot,
+	thousandSep = '',
+	maxDecimalDigits = +Infinity,
+	minFractionalDigits = 0,
+	maxFractionalDigits = +Infinity,
+	allowENotation = false
+) => {
+	const unsignedIntRegExp =
+		maxDecimalDigits === 0 ? ''
+		: maxDecimalDigits === 1 ? digit
+		: either(
+				'0',
+				'[1-9]' +
+					(thousandSep === '' ?
+						repeatBetween(0, maxDecimalDigits - 1)(digit)
+					:	_groupedDecimalDigits(maxDecimalDigits - 1, thousandSep))
+			);
+
+	const eNotation =
+		allowENotation ?
+			optional('[e|E]' + optional(sign) + either('0', '[1-9]' + zeroOrMore(digit)))
+		:	'';
+	if (maxFractionalDigits === 0) return _signRegExp(signOption) + unsignedIntRegExp + eNotation;
+	const fractionalPart =
+		fractionalSep + repeatBetween(Math.max(1, minFractionalDigits), maxFractionalDigits)(digit);
+	const numberPart =
+		maxDecimalDigits === 0 ? [fractionalPart]
+		: minFractionalDigits === 0 ?
+			[fractionalPart, unsignedIntRegExp + fractionalPart, unsignedIntRegExp]
+		:	[fractionalPart, unsignedIntRegExp + fractionalPart];
+
+	return _signRegExp(signOption) + either(...numberPart) + eNotation;
 };
 
 /**
