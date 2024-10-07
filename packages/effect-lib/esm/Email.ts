@@ -4,12 +4,12 @@
  * @since 0.3.4
  */
 
-import { JsRegExp } from '@parischap/js-lib';
+import { MRegExp } from '@parischap/js-lib';
 import { Brand } from 'effect';
 
 const moduleTag = '@parischap/effect-lib/Email/';
 type moduleTag = typeof moduleTag;
-const wholeLineEmailRegExp = new RegExp(JsRegExp.makeLine(JsRegExp.email));
+const wholeLineEmailRegExp = new RegExp(MRegExp.makeLine(MRegExp.email));
 
 /**
  * Email type

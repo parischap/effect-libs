@@ -4,8 +4,6 @@
  * @since 0.0.6
  */
 
-import { JsPatches } from '@parischap/js-lib';
-
 /**
  * Constructs an integer from a string in base 10. Does not check input format and can return NaN
  *
@@ -32,8 +30,10 @@ export const unsafeFromString = (s: string): number => +s;
  * @category Utils
  */
 
-export const intModulo = JsPatches.intModulo;
-
+export const intModulo =
+	(divisor: number) =>
+	(self: number): number =>
+		self >= 0 ? self % divisor : (self % divisor) + divisor;
 /**
  * Returns true if the provided number is NaN, Infinity, +Infinity or -Infinity
  *

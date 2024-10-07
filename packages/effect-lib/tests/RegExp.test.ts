@@ -1,72 +1,70 @@
 /* eslint-disable functional/no-expression-statements */
-import { JsRegExp } from '@parischap/js-lib';
+import { MRegExp } from '@parischap/effect-lib';
 import { describe, expect, it } from 'vitest';
 
-describe('JsRegExp', () => {
+describe('MRegExp', () => {
 	describe('escape', () => {
 		it('All together', () => {
-			expect(JsRegExp.escape('\\ ^ $ * + ? . ( ) | { } [ ]')).toBe(
+			expect(MRegExp.escape('\\ ^ $ * + ? . ( ) | { } [ ]')).toBe(
 				'\\\\ \\^ \\$ \\* \\+ \\? \\. \\( \\) \\| \\{ \\} \\[ \\]'
 			);
 		});
 	});
 
 	describe('floatingPoint', () => {
-		const floatRegExp = new RegExp(JsRegExp.makeLine(JsRegExp.floatingPoint()));
+		const floatRegExp = new RegExp(MRegExp.makeLine(MRegExp.floatingPoint()));
 		const floatRegExpNone = new RegExp(
-			JsRegExp.makeLine(JsRegExp.floatingPoint(JsRegExp.SignOption.None))
+			MRegExp.makeLine(MRegExp.floatingPoint(MRegExp.SignOption.None))
 		);
 		const floatRegExpMandatory = new RegExp(
-			JsRegExp.makeLine(JsRegExp.floatingPoint(JsRegExp.SignOption.Mandatory))
+			MRegExp.makeLine(MRegExp.floatingPoint(MRegExp.SignOption.Mandatory))
 		);
 		const floatRegExpPlusMinusOptional = new RegExp(
-			JsRegExp.makeLine(JsRegExp.floatingPoint(JsRegExp.SignOption.PlusMinusOptional))
+			MRegExp.makeLine(MRegExp.floatingPoint(MRegExp.SignOption.PlusMinusOptional))
 		);
 
 		const intRegExp = new RegExp(
-			JsRegExp.makeLine(
-				JsRegExp.floatingPoint(JsRegExp.SignOption.None, JsRegExp.dot, '', +Infinity, 0, 0)
+			MRegExp.makeLine(
+				MRegExp.floatingPoint(MRegExp.SignOption.None, MRegExp.dot, '', +Infinity, 0, 0)
 			)
 		);
 
 		const intRegExpWithENotation = new RegExp(
-			JsRegExp.makeLine(
-				JsRegExp.floatingPoint(JsRegExp.SignOption.None, JsRegExp.dot, '', +Infinity, 0, 0, true)
+			MRegExp.makeLine(
+				MRegExp.floatingPoint(MRegExp.SignOption.None, MRegExp.dot, '', +Infinity, 0, 0, true)
 			)
 		);
 
 		const floatRegExp0 = new RegExp(
-			JsRegExp.makeLine(JsRegExp.floatingPoint(JsRegExp.SignOption.None, JsRegExp.dot, '', 0))
+			MRegExp.makeLine(MRegExp.floatingPoint(MRegExp.SignOption.None, MRegExp.dot, '', 0))
 		);
 
 		const floatRegExp1 = new RegExp(
-			JsRegExp.makeLine(JsRegExp.floatingPoint(JsRegExp.SignOption.None, JsRegExp.dot, '', 1))
+			MRegExp.makeLine(MRegExp.floatingPoint(MRegExp.SignOption.None, MRegExp.dot, '', 1))
 		);
 
 		const floatRegExp2 = new RegExp(
-			JsRegExp.makeLine(JsRegExp.floatingPoint(JsRegExp.SignOption.None, JsRegExp.dot, '', 2))
+			MRegExp.makeLine(MRegExp.floatingPoint(MRegExp.SignOption.None, MRegExp.dot, '', 2))
 		);
 
 		const floatRegExp4 = new RegExp(
-			JsRegExp.makeLine(JsRegExp.floatingPoint(JsRegExp.SignOption.None, JsRegExp.dot, '', 4))
+			MRegExp.makeLine(MRegExp.floatingPoint(MRegExp.SignOption.None, MRegExp.dot, '', 4))
 		);
 
 		const floatRegExp02 = new RegExp(
-			JsRegExp.makeLine(
-				JsRegExp.floatingPoint(JsRegExp.SignOption.None, JsRegExp.dot, '', +Infinity, 0, 2)
+			MRegExp.makeLine(
+				MRegExp.floatingPoint(MRegExp.SignOption.None, MRegExp.dot, '', +Infinity, 0, 2)
 			)
 		);
 
 		const floatRegExp022 = new RegExp(
-			JsRegExp.makeLine(
-				JsRegExp.floatingPoint(JsRegExp.SignOption.None, JsRegExp.dot, '', +Infinity, 2, 2)
+			MRegExp.makeLine(
+				MRegExp.floatingPoint(MRegExp.SignOption.None, MRegExp.dot, '', +Infinity, 2, 2)
 			)
 		);
 
 		const floatRegExpWithThousandSep = new RegExp(
-			JsRegExp.makeLine(
-				JsRegExp.floatingPoint(JsRegExp.SignOption.MinusOptional, JsRegExp.dot, ' ')
-			)
+			MRegExp.makeLine(MRegExp.floatingPoint(MRegExp.SignOption.MinusOptional, MRegExp.dot, ' '))
 		);
 
 		it('Minus sign allowed - Matching without sign', () => {

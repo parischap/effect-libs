@@ -4,12 +4,12 @@
  * @since 0.3.4
  */
 
-import { JsRegExp } from '@parischap/js-lib';
+import { MRegExp } from '@parischap/js-lib';
 import { Brand } from 'effect';
 
 const moduleTag = '@parischap/effect-lib/SemVer/';
 type moduleTag = typeof moduleTag;
-const wholeLineSemVerRegExp = new RegExp(JsRegExp.makeLine(JsRegExp.semVer));
+const wholeLineSemVerRegExp = new RegExp(MRegExp.makeLine(MRegExp.semVer));
 
 /**
  * SemVer type

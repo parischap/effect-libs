@@ -1,13 +1,13 @@
 /**
  * Very simple regular expression module
  *
- * @since 0.0.4
+ * @since 0.4.0
  */
 
 /**
  * Returns the regexp as a string
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Utils
  */
 export const toString = (regexp: string | RegExp) =>
@@ -16,7 +16,7 @@ export const toString = (regexp: string | RegExp) =>
 /**
  * Returns a new regular expression where self may appear 0 or more times
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Utils
  */
 export const zeroOrMore = (self: string): string => `(?:${self})*`;
@@ -24,7 +24,7 @@ export const zeroOrMore = (self: string): string => `(?:${self})*`;
 /**
  * Returns a new regular expression where self may appear 1 or more times
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Utils
  */
 export const oneOrMore = (self: string): string => `(?:${self})+`;
@@ -34,7 +34,7 @@ export const oneOrMore = (self: string): string => `(?:${self})+`;
  * `low` and `high` must be positive integers with `high` >= `low`. `high` may receive the
  * `+Infinity` value.
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Utils
  */
 export const repeatBetween =
@@ -45,7 +45,7 @@ export const repeatBetween =
 /**
  * Returns a new regular expression where self is optional
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Utils
  */
 export const optional = (self: string): string => `(?:${self})?`;
@@ -53,7 +53,7 @@ export const optional = (self: string): string => `(?:${self})?`;
 /**
  * Returns a regular expression that will match one of the provided sregular expressions
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Utils
  */
 export const either = (...args: ReadonlyArray<string>): string => `(?:${args.join('|')})`;
@@ -61,7 +61,7 @@ export const either = (...args: ReadonlyArray<string>): string => `(?:${args.joi
 /**
  * Returns a new regular expression where self must fill a whole line
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Utils
  */
 export const makeLine = (self: string): string => `^${self}$`;
@@ -69,7 +69,7 @@ export const makeLine = (self: string): string => `^${self}$`;
 /**
  * Returns a new regular expression where self must be at the end of a line
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Utils
  */
 export const atEnd = (self: string): string => `${self}$`;
@@ -77,7 +77,7 @@ export const atEnd = (self: string): string => `${self}$`;
 /**
  * Returns a new regular expression where self must be at the start of a line
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Utils
  */
 export const atStart = (self: string): string => `^${self}`;
@@ -85,7 +85,7 @@ export const atStart = (self: string): string => `^${self}`;
 /**
  * Returns a new regular expression where self will be used as negative lookahead
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Utils
  */
 export const negativeLookAhead = (self: string): string => `(?!${self})`;
@@ -93,7 +93,7 @@ export const negativeLookAhead = (self: string): string => `(?!${self})`;
 /**
  * Returns a new regular expression where self will be used as ppositive lookahead
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Utils
  */
 export const positiveLookAhead = (self: string): string => `(?=${self})`;
@@ -101,7 +101,7 @@ export const positiveLookAhead = (self: string): string => `(?=${self})`;
 /**
  * Returns a new regular expression where self will be captured
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Utils
  */
 export const capture = (self: string): string => `(${self})`;
@@ -109,7 +109,7 @@ export const capture = (self: string): string => `(${self})`;
 /**
  * Returns a string from self in which all regex special characters are escaped
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Destructor
  */
 export const escape = (self: string) => self.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&');
@@ -117,7 +117,7 @@ export const escape = (self: string) => self.replace(/[/\-\\^$*+?.()|[\]{}]/g, '
 /**
  * A regular expression representing any character
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Instances
  */
 export const anyChar = '.';
@@ -125,7 +125,7 @@ export const anyChar = '.';
 /**
  * A regular expression representing anything but a dot
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Instances
  */
 export const anythingButDot = '[^.]';
@@ -133,7 +133,7 @@ export const anythingButDot = '[^.]';
 /**
  * A regular expression representing a backslash
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Instances
  */
 export const backslash = '\\';
@@ -141,7 +141,7 @@ export const backslash = '\\';
 /**
  * A regular expression representing a dollar sign
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Instances
  */
 export const dollar = backslash + '$';
@@ -149,7 +149,7 @@ export const dollar = backslash + '$';
 /**
  * A regular expression representing a plus sign
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Instances
  */
 export const plus = backslash + '+';
@@ -157,7 +157,7 @@ export const plus = backslash + '+';
 /**
  * A regular expression representing a minus sign
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Instances
  */
 export const minus = '-';
@@ -165,7 +165,7 @@ export const minus = '-';
 /**
  * A regular expression representing a plus or a minus sign
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Instances
  */
 export const sign = either(plus, minus);
@@ -173,7 +173,7 @@ export const sign = either(plus, minus);
 /**
  * A regular expression representing a star
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Instances
  */
 export const star = backslash + '*';
@@ -181,7 +181,7 @@ export const star = backslash + '*';
 /**
  * A regular expression representing a dot
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Instances
  */
 export const dot = backslash + '.';
@@ -189,7 +189,7 @@ export const dot = backslash + '.';
 /**
  * A regular expression representing the arrowbase
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Instances
  */
 export const arrowbase = '@';
@@ -213,7 +213,7 @@ export const whitespaces = zeroOrMore(`[ ${tab}]`);
 /**
  * A regular expression representing a digit
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Instances
  */
 export const digit = backslash + 'd';
@@ -222,7 +222,7 @@ export const digit = backslash + 'd';
  * Possible sign options for regular expressions representing a real number in floating point
  * notation
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Models
  */
 export enum SignOption {
@@ -316,7 +316,7 @@ export const floatingPoint = (
 /**
  * A regular expression representing a letter
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Instances
  */
 export const letter = '[A-Za-z]';
@@ -324,7 +324,7 @@ export const letter = '[A-Za-z]';
 /**
  * A regular expression representing a lowercase letter
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Instances
  */
 export const lowerCaseLetter = '[a-z]';
@@ -332,7 +332,7 @@ export const lowerCaseLetter = '[a-z]';
 /**
  * A regular expression representing an uppercase letter
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Instances
  */
 export const upperCaseLetter = '[A-Z]';
@@ -348,7 +348,7 @@ export const lowerCaseLetterOrDigit = '[a-z0-9]';
 /**
  * A regular expression representing a word letter
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Instances
  */
 export const anyWordLetter = backslash + 'w';
@@ -356,7 +356,7 @@ export const anyWordLetter = backslash + 'w';
 /**
  * A regular expression representing a word
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Instances
  */
 export const anyWord = oneOrMore(anyWordLetter);
@@ -364,7 +364,7 @@ export const anyWord = oneOrMore(anyWordLetter);
 /**
  * A regular expression representing a slash
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Instances
  */
 export const slash = backslash + '/';
@@ -372,7 +372,7 @@ export const slash = backslash + '/';
 /**
  * A regular expression representing a carriage return
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Instances
  */
 export const CR = backslash + 'r';
@@ -380,7 +380,7 @@ export const CR = backslash + 'r';
 /**
  * A regular expression representing a line-feed
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Instances
  */
 export const LF = backslash + 'n';
@@ -388,7 +388,7 @@ export const LF = backslash + 'n';
 /**
  * A regular expression representing a linebreak in all systems
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Instances
  */
 export const lineBreak = either(optional(CR) + LF, CR);
@@ -396,7 +396,7 @@ export const lineBreak = either(optional(CR) + LF, CR);
 /**
  * A regular expression representing a SemVer. Imported from https://semver.org/
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Instances
  */
 export const semVer =
@@ -407,7 +407,7 @@ export const semVer =
  * A regular expression representing an email - Imported from
  * https://stackoverflow.com/questions/201323/how-can-i-validate-an-email-address-using-a-regular-expression
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Instances
  */
 

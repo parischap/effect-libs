@@ -1,13 +1,13 @@
 /**
  * A very simple ANSI colors module
  *
- * @since 0.0.4
+ * @since 0.4.0
  */
 
 /**
  * 8 ANSI original color offsets
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Models
  */
 export enum OriginalColors {
@@ -24,56 +24,56 @@ export enum OriginalColors {
 /**
  * Type that represents a color
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Models
  */
 export interface Type {
 	/**
 	 * Text color
 	 *
-	 * @since 0.0.4
+	 * @since 0.4.0
 	 */
 	readonly color: ReadonlyArray<number>;
 	/**
 	 * Background color
 	 *
-	 * @since 0.0.4
+	 * @since 0.4.0
 	 */
 	readonly bgColor: ReadonlyArray<number>;
 	/**
 	 * True if text must be bold
 	 *
-	 * @since 0.0.4
+	 * @since 0.4.0
 	 */
 	readonly isBold: boolean;
 	/**
 	 * True if text must be underlined
 	 *
-	 * @since 0.0.4
+	 * @since 0.4.0
 	 */
 	readonly isUnderline: boolean;
 	/**
 	 * True if text must blink
 	 *
-	 * @since 0.0.4
+	 * @since 0.4.0
 	 */
 	readonly isBlink: boolean;
 	/**
 	 * True if text must be framed
 	 *
-	 * @since 0.0.4
+	 * @since 0.4.0
 	 */
 	readonly isFramed: boolean;
 	/**
 	 * True if text must be encircled
 	 *
-	 * @since 0.0.4
+	 * @since 0.4.0
 	 */
 	readonly isEncircled: boolean;
 	/**
 	 * True if text must be overlined
 	 *
-	 * @since 0.0.4
+	 * @since 0.4.0
 	 */
 	readonly isOverlined: boolean;
 }
@@ -81,7 +81,7 @@ export interface Type {
 /**
  * Empty color
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Instances
  */
 export const empty: Type = {
@@ -98,7 +98,7 @@ export const empty: Type = {
 /**
  * Creates a simple color from the 8 ANSI original color offsets
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Constructors
  */
 export const simpleFromOriginalColor = (color: OriginalColors): Type => ({
@@ -109,7 +109,7 @@ export const simpleFromOriginalColor = (color: OriginalColors): Type => ({
 /**
  * Black color
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Instances
  */
 export const black = simpleFromOriginalColor(OriginalColors.Black);
@@ -117,7 +117,7 @@ export const black = simpleFromOriginalColor(OriginalColors.Black);
 /**
  * Red color
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Instances
  */
 export const red = simpleFromOriginalColor(OriginalColors.Red);
@@ -125,7 +125,7 @@ export const red = simpleFromOriginalColor(OriginalColors.Red);
 /**
  * Green color
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Instances
  */
 export const green = simpleFromOriginalColor(OriginalColors.Green);
@@ -133,7 +133,7 @@ export const green = simpleFromOriginalColor(OriginalColors.Green);
 /**
  * Yellow color
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Instances
  */
 export const yellow = simpleFromOriginalColor(OriginalColors.Yellow);
@@ -141,7 +141,7 @@ export const yellow = simpleFromOriginalColor(OriginalColors.Yellow);
 /**
  * Blue color
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Instances
  */
 export const blue = simpleFromOriginalColor(OriginalColors.Blue);
@@ -149,7 +149,7 @@ export const blue = simpleFromOriginalColor(OriginalColors.Blue);
 /**
  * Magenta color
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Instances
  */
 export const magenta = simpleFromOriginalColor(OriginalColors.Magenta);
@@ -157,7 +157,7 @@ export const magenta = simpleFromOriginalColor(OriginalColors.Magenta);
 /**
  * Cyan color
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Instances
  */
 export const cyan = simpleFromOriginalColor(OriginalColors.Cyan);
@@ -165,7 +165,7 @@ export const cyan = simpleFromOriginalColor(OriginalColors.Cyan);
 /**
  * White color
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Instances
  */
 export const white = simpleFromOriginalColor(OriginalColors.White);
@@ -173,7 +173,7 @@ export const white = simpleFromOriginalColor(OriginalColors.White);
 /**
  * Creates a bright color from the 8 ANSI original color offsets
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Constructors
  */
 export const brightFromOriginalColor = (color: OriginalColors): Type => ({
@@ -184,7 +184,7 @@ export const brightFromOriginalColor = (color: OriginalColors): Type => ({
 /**
  * Bright black color
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Instances
  */
 export const brightBlack = brightFromOriginalColor(OriginalColors.Black);
@@ -192,7 +192,7 @@ export const brightBlack = brightFromOriginalColor(OriginalColors.Black);
 /**
  * Bright red color
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Instances
  */
 export const brightRed = brightFromOriginalColor(OriginalColors.Red);
@@ -200,7 +200,7 @@ export const brightRed = brightFromOriginalColor(OriginalColors.Red);
 /**
  * Bright green color
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Instances
  */
 export const brightGreen = brightFromOriginalColor(OriginalColors.Green);
@@ -208,7 +208,7 @@ export const brightGreen = brightFromOriginalColor(OriginalColors.Green);
 /**
  * Bright yellow color
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Instances
  */
 export const brightYellow = brightFromOriginalColor(OriginalColors.Yellow);
@@ -216,7 +216,7 @@ export const brightYellow = brightFromOriginalColor(OriginalColors.Yellow);
 /**
  * Bright blue color
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Instances
  */
 export const brightBlue = brightFromOriginalColor(OriginalColors.Blue);
@@ -224,7 +224,7 @@ export const brightBlue = brightFromOriginalColor(OriginalColors.Blue);
 /**
  * Bright magenta color
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Instances
  */
 export const brightMagenta = brightFromOriginalColor(OriginalColors.Magenta);
@@ -232,7 +232,7 @@ export const brightMagenta = brightFromOriginalColor(OriginalColors.Magenta);
 /**
  * Bright cyan color
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Instances
  */
 export const brightCyan = brightFromOriginalColor(OriginalColors.Cyan);
@@ -240,7 +240,7 @@ export const brightCyan = brightFromOriginalColor(OriginalColors.Cyan);
 /**
  * Bright white color
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Instances
  */
 export const brightWhite = brightFromOriginalColor(OriginalColors.White);
@@ -248,7 +248,7 @@ export const brightWhite = brightFromOriginalColor(OriginalColors.White);
 /**
  * Creates a color from the 8-bit color palette
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Constructors
  */
 export const fromPalette = (color: number): Type => ({ ...empty, color: Array.of(38, 5, color) });
@@ -256,7 +256,7 @@ export const fromPalette = (color: number): Type => ({ ...empty, color: Array.of
 /**
  * Creates a color from RGB
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Constructors
  */
 export const fromRGB = (red: number, green: number, blue: number): Type => ({
@@ -267,7 +267,7 @@ export const fromRGB = (red: number, green: number, blue: number): Type => ({
 /**
  * Returns a copy of self with the text color set
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Utils
  */
 export const setSimpleColorFromOriginalColor =
@@ -277,7 +277,7 @@ export const setSimpleColorFromOriginalColor =
 /**
  * Returns a copy of self with the text color set
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Utils
  */
 export const setBrightColorFromOriginalColor =
@@ -287,7 +287,7 @@ export const setBrightColorFromOriginalColor =
 /**
  * Returns a copy of self with the text color set
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Utils
  */
 export const setColorFromPalette =
@@ -297,7 +297,7 @@ export const setColorFromPalette =
 /**
  * Returns a copy of self with the text color set
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Utils
  */
 export const setColorFromRGB =
@@ -307,7 +307,7 @@ export const setColorFromRGB =
 /**
  * Returns a copy of self with the text color unset
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Utils
  */
 export const unsetColor = (self: Type): Type => ({ ...self, color: [] });
@@ -315,7 +315,7 @@ export const unsetColor = (self: Type): Type => ({ ...self, color: [] });
 /**
  * Returns a copy of self with the background color set
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Utils
  */
 export const setSimpleBgColorFromOriginalColor =
@@ -325,7 +325,7 @@ export const setSimpleBgColorFromOriginalColor =
 /**
  * Returns a copy of self with the background color set
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Utils
  */
 export const setBrightBgColorFromOriginalColor =
@@ -335,7 +335,7 @@ export const setBrightBgColorFromOriginalColor =
 /**
  * Returns a copy of self with the background color set
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Utils
  */
 export const setBgColorFromPalette =
@@ -345,7 +345,7 @@ export const setBgColorFromPalette =
 /**
  * Returns a copy of self with the background color set
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Utils
  */
 export const setBgColorFromRGB =
@@ -355,7 +355,7 @@ export const setBgColorFromRGB =
 /**
  * Returns a copy of self with the background color unset
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Utils
  */
 export const unsetBgColor = (self: Type): Type => ({ ...self, bgColor: [] });
@@ -363,7 +363,7 @@ export const unsetBgColor = (self: Type): Type => ({ ...self, bgColor: [] });
 /**
  * Returns a copy of self with the bold flag set
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Utils
  */
 export const setBold = (self: Type): Type => ({ ...self, isBold: true });
@@ -371,7 +371,7 @@ export const setBold = (self: Type): Type => ({ ...self, isBold: true });
 /**
  * Returns a copy of self with the underline flag set
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Utils
  */
 export const setUnderline = (self: Type): Type => ({ ...self, isUnderline: true });
@@ -379,7 +379,7 @@ export const setUnderline = (self: Type): Type => ({ ...self, isUnderline: true 
 /**
  * Returns a copy of self with the blink flag set
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Utils
  */
 export const setBlink = (self: Type): Type => ({ ...self, isBlink: true });
@@ -387,7 +387,7 @@ export const setBlink = (self: Type): Type => ({ ...self, isBlink: true });
 /**
  * Returns a copy of self with the framed flag set
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Utils
  */
 export const setFramed = (self: Type): Type => ({ ...self, isFramed: true });
@@ -395,7 +395,7 @@ export const setFramed = (self: Type): Type => ({ ...self, isFramed: true });
 /**
  * Returns a copy of self with the encircled flag set
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Utils
  */
 export const setEncircled = (self: Type): Type => ({ ...self, isEncircled: true });
@@ -403,7 +403,7 @@ export const setEncircled = (self: Type): Type => ({ ...self, isEncircled: true 
 /**
  * Returns a copy of self with the overlined flag set
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Utils
  */
 export const setOverlined = (self: Type): Type => ({ ...self, isOverlined: true });
@@ -411,7 +411,7 @@ export const setOverlined = (self: Type): Type => ({ ...self, isOverlined: true 
 /**
  * Returns a copy of self with the bold flag unset
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Utils
  */
 export const unsetBold = (self: Type): Type => ({ ...self, isBold: false });
@@ -419,7 +419,7 @@ export const unsetBold = (self: Type): Type => ({ ...self, isBold: false });
 /**
  * Returns a copy of self with the underline flag unset
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Utils
  */
 export const unsetUnderline = (self: Type): Type => ({ ...self, isUnderline: false });
@@ -427,7 +427,7 @@ export const unsetUnderline = (self: Type): Type => ({ ...self, isUnderline: fal
 /**
  * Returns a copy of self with the blink flag unset
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Utils
  */
 export const unsetBlink = (self: Type): Type => ({ ...self, isBlink: false });
@@ -435,7 +435,7 @@ export const unsetBlink = (self: Type): Type => ({ ...self, isBlink: false });
 /**
  * Returns a copy of self with the framed flag unset
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Utils
  */
 export const unsetFramed = (self: Type): Type => ({ ...self, isFramed: false });
@@ -443,7 +443,7 @@ export const unsetFramed = (self: Type): Type => ({ ...self, isFramed: false });
 /**
  * Returns a copy of self with the encircled flag unset
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Utils
  */
 export const unsetEncircled = (self: Type): Type => ({ ...self, isEncircled: false });
@@ -451,7 +451,7 @@ export const unsetEncircled = (self: Type): Type => ({ ...self, isEncircled: fal
 /**
  * Returns a copy of self with the overlined flag unset
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Utils
  */
 export const unsetOverlined = (self: Type): Type => ({ ...self, isOverlined: false });
@@ -459,7 +459,7 @@ export const unsetOverlined = (self: Type): Type => ({ ...self, isOverlined: fal
 /**
  * Applies the color to a string `s` passed as argument
  *
- * @since 0.0.4
+ * @since 0.4.0
  * @category Destructors
  */
 export const applyToString =

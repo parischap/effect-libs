@@ -447,4 +447,17 @@ describe('MString', () => {
 				)
 			).toBe(true));
 	});
+
+	describe('tabify', () => {
+		const simpleTabify = MString.tabify('aa', 3);
+		it('Value 1', () => {
+			expect(simpleTabify('')).toBe('aaaaaa');
+		});
+		it('Value 2', () => {
+			expect(simpleTabify('foo')).toBe('aaaaaafoo');
+		});
+		it('Value 3', () => {
+			expect(simpleTabify('foo\r\nfoo1')).toBe('aaaaaafoo\r\naaaaaafoo1');
+		});
+	});
 });

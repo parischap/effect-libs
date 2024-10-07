@@ -6,8 +6,10 @@
 
 import { Array, Option, Predicate, String, Tuple, flow, pipe } from 'effect';
 import * as MArray from './Array.js';
+import * as MColor from './Color.js';
 import * as MFunction from './Function.js';
 import * as MMatch from './Match.js';
+import * as MRegExp from './RegExp.js';
 import * as MSearchResult from './SearchResult.js';
 import * as MTypes from './types.js';
 
@@ -379,3 +381,34 @@ export const splitEquallyRestAtEnd =
 		}
 		return result;
 	};
+
+/**
+ * Adds string `tabChar` `count` times at the beginning of each new line of `self`
+ *
+ * @since 0.4.0
+ * @category Utils
+ */
+export const tabify =
+	(tabChar: string, count = 1) =>
+	(self: string) => {
+		const tab = tabChar.repeat(count);
+		return tab + self.replace(tabifyRegExp, '$&' + tab);
+	};
+const tabifyRegExp = new RegExp(MRegExp.lineBreak, 'g');
+
+/**
+ * Returns true if `self` contains an eol character
+ *
+ * @since 0.4.0
+ * @category Utils
+ */
+export const isMultiLine = (self: string): boolean => isMultiLineRegExp.test(self);
+const isMultiLineRegExp = new RegExp(MRegExp.lineBreak);
+
+/**
+ * Applies an ANSI color to `self`
+ *
+ * @since 0.4.0
+ * @category Utils
+ */
+export const colorize = (color: MColor.Type) => (self: string) => MColor.applyToString(self)(color);
