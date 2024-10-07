@@ -1,6 +1,6 @@
 /* eslint-disable functional/no-expression-statements */
 import { MSearchResult, MString } from '@parischap/effect-lib';
-import { Array, Equal, Option, pipe, String, Utils } from 'effect';
+import { Array, Chunk, Equal, Option, pipe, String } from 'effect';
 import { describe, expect, it } from 'vitest';
 
 describe('MString', () => {
@@ -109,15 +109,15 @@ describe('MString', () => {
 
 		it('string in string containing two occurences', () => {
 			expect(
-				Utils.structuralRegion(() =>
-					pipe(
-						'the foo is foo',
-						MString.searchAll('foo'),
-						Equal.equals(
-							Array.make(
-								MSearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }),
-								MSearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' })
-							)
+				pipe(
+					'the foo is foo',
+					MString.searchAll('foo'),
+					// Revert from Chunk to Array when Effect 4.0 with structurzl equality comes out
+					Chunk.fromIterable,
+					Equal.equals(
+						Chunk.make(
+							MSearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }),
+							MSearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' })
 						)
 					)
 				)
@@ -130,15 +130,15 @@ describe('MString', () => {
 
 		it('RegExp in string containing two occurences', () => {
 			expect(
-				Utils.structuralRegion(() =>
-					pipe(
-						'the foo is fuo',
-						MString.searchAll(/f.o/),
-						Equal.equals(
-							Array.make(
-								MSearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }),
-								MSearchResult.make({ startIndex: 11, endIndex: 14, match: 'fuo' })
-							)
+				pipe(
+					'the foo is fuo',
+					MString.searchAll(/f.o/),
+					// Revert from Chunk to Array when Effect 4.0 with structurzl equality comes out
+					Chunk.fromIterable,
+					Equal.equals(
+						Chunk.make(
+							MSearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }),
+							MSearchResult.make({ startIndex: 11, endIndex: 14, match: 'fuo' })
 						)
 					)
 				)
@@ -371,14 +371,24 @@ describe('MString', () => {
 	describe('splitAt', () => {
 		it('Empty string', () => {
 			expect(
-				Utils.structuralRegion(() => pipe('', MString.splitAt(2), Equal.equals(Array.make('', ''))))
+				pipe(
+					'',
+					MString.splitAt(2),
+					// Revert from Chunk to Array when Effect 4.0 with structurzl equality comes out
+					Chunk.fromIterable,
+					Equal.equals(Chunk.make('', ''))
+				)
 			).toBe(true);
 		});
 
 		it('Non-empty string', () => {
 			expect(
-				Utils.structuralRegion(() =>
-					pipe('beforeafter', MString.splitAt(6), Equal.equals(Array.make('before', 'after')))
+				pipe(
+					'beforeafter',
+					MString.splitAt(6),
+					// Revert from Chunk to Array when Effect 4.0 with structurzl equality comes out
+					Chunk.fromIterable,
+					Equal.equals(Chunk.make('before', 'after'))
 				)
 			).toBe(true);
 		});
@@ -390,23 +400,23 @@ describe('MString', () => {
 
 		it('Non-empty string without rest', () =>
 			expect(
-				Utils.structuralRegion(() =>
-					pipe(
-						'foobarbaz',
-						MString.splitEquallyRestAtStart(3),
-						Equal.equals(Array.make('foo', 'bar', 'baz'))
-					)
+				pipe(
+					'foobarbaz',
+					MString.splitEquallyRestAtStart(3),
+					// Revert from Chunk to Array when Effect 4.0 with structurzl equality comes out
+					Chunk.fromIterable,
+					Equal.equals(Chunk.make('foo', 'bar', 'baz'))
 				)
 			).toBe(true));
 
 		it('Non-empty string with rest', () =>
 			expect(
-				Utils.structuralRegion(() =>
-					pipe(
-						'afoobarbaz',
-						MString.splitEquallyRestAtStart(3),
-						Equal.equals(Array.make('a', 'foo', 'bar', 'baz'))
-					)
+				pipe(
+					'afoobarbaz',
+					MString.splitEquallyRestAtStart(3),
+					// Revert from Chunk to Array when Effect 4.0 with structurzl equality comes out
+					Chunk.fromIterable,
+					Equal.equals(Chunk.make('a', 'foo', 'bar', 'baz'))
 				)
 			).toBe(true));
 	});
@@ -417,23 +427,23 @@ describe('MString', () => {
 
 		it('Non-empty string without rest', () =>
 			expect(
-				Utils.structuralRegion(() =>
-					pipe(
-						'foobarbaz',
-						MString.splitEquallyRestAtEnd(3),
-						Equal.equals(Array.make('foo', 'bar', 'baz'))
-					)
+				pipe(
+					'foobarbaz',
+					MString.splitEquallyRestAtEnd(3),
+					// Revert from Chunk to Array when Effect 4.0 with structurzl equality comes out
+					Chunk.fromIterable,
+					Equal.equals(Chunk.make('foo', 'bar', 'baz'))
 				)
 			).toBe(true));
 
 		it('Non-empty string with rest', () =>
 			expect(
-				Utils.structuralRegion(() =>
-					pipe(
-						'foobarbaza',
-						MString.splitEquallyRestAtEnd(3),
-						Equal.equals(Array.make('foo', 'bar', 'baz', 'a'))
-					)
+				pipe(
+					'foobarbaza',
+					MString.splitEquallyRestAtEnd(3),
+					// Revert from Chunk to Array when Effect 4.0 with structurzl equality comes out
+					Chunk.fromIterable,
+					Equal.equals(Array.make('foo', 'bar', 'baz', 'a'))
 				)
 			).toBe(true));
 	});
