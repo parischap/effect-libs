@@ -38,7 +38,9 @@ const packageJson = merge.all([
 			'print',
 			'console',
 			'visualize',
-			'debug'
+			'debug',
+			'typescript',
+			'effect'
 		]
 	},
 	Configs.packageBase(packageName, repoName),
