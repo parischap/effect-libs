@@ -4,12 +4,11 @@
  * @since 0.3.4
  */
 
-import { MRegExp } from '@parischap/js-lib';
 import { Brand } from 'effect';
+import * as MRegExp from './RegExp.js';
 
 const moduleTag = '@parischap/effect-lib/SemVer/';
 type moduleTag = typeof moduleTag;
-const wholeLineSemVerRegExp = new RegExp(MRegExp.makeLine(MRegExp.semVer));
 
 /**
  * SemVer type
@@ -35,6 +34,6 @@ export const unsafeFromString = Brand.nominal<Type>();
  * @category Constructors
  */
 export const fromString = Brand.refined<Type>(
-	(s) => wholeLineSemVerRegExp.test(s),
+	(s) => MRegExp.semVerRegExp.test(s),
 	(s) => Brand.error(`'${s}' does not represent a SemVer`)
 );

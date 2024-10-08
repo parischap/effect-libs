@@ -12,8 +12,8 @@
  * @since 0.0.1
  */
 
-import { MInspectable, MMatch, MOption, MPipeable, MString, MTypes } from '@parischap/effect-lib';
-import { MRegExp } from '@parischap/js-lib';
+import { MInspectable, MMatch, MOption, MPipeable, MRegExp, MString, MTypes } from '@parischap/effect-lib';
+
 import {
 	Array,
 	Equal,
@@ -35,8 +35,6 @@ import type * as StringifiedValue from './StringifiedValue.js';
 const moduleTag = '@parischap/pretty-print/ByPasser/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
-
-const lineBreakRegExp = new RegExp(MRegExp.lineBreak, 'g');
 
 /**
  * Type that represents a ByPasser.
@@ -232,7 +230,7 @@ export const objectAsValue = (colorSet: ColorSet.Type): Type =>
 						MString.tryToStringToJSON,
 						Option.map(
 							flow(
-								String.split(lineBreakRegExp),
+								String.split(MRegExp.globalLineBreakRegExp),
 								Array.map(FormattedString.makeWith(colorSet.otherValueColorer))
 							)
 						)

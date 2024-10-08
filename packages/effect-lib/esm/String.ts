@@ -392,9 +392,8 @@ export const tabify =
 	(tabChar: string, count = 1) =>
 	(self: string) => {
 		const tab = tabChar.repeat(count);
-		return tab + self.replace(tabifyRegExp, '$&' + tab);
+		return tab + self.replace(MRegExp.globalLineBreakRegExp, '$&' + tab);
 	};
-const tabifyRegExp = new RegExp(MRegExp.lineBreak, 'g');
 
 /**
  * Returns true if `self` contains an eol character
@@ -402,8 +401,7 @@ const tabifyRegExp = new RegExp(MRegExp.lineBreak, 'g');
  * @since 0.4.0
  * @category Utils
  */
-export const isMultiLine = (self: string): boolean => isMultiLineRegExp.test(self);
-const isMultiLineRegExp = new RegExp(MRegExp.lineBreak);
+export const isMultiLine = (self: string): boolean => MRegExp.globalLineBreakRegExp.test(self);
 
 /**
  * Applies an ANSI color to `self`
