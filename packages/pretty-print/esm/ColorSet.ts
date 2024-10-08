@@ -11,7 +11,7 @@
  */
 
 import { MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
-import { JsColor, JsString } from '@parischap/js-lib';
+import { JsString, MColor } from '@parischap/js-lib';
 import { Equal, Equivalence, Function, Hash, Inspectable, Pipeable, Predicate } from 'effect';
 import * as ColorWheel from './ColorWheel.js';
 
@@ -21,8 +21,8 @@ type TypeId = typeof TypeId;
 
 /**
  * Representation of a function that applies a color to a string. A function that does not apply any
- * color is the identity function. For ANSI colors, you can use the functions exported by the
- * JsColor module of the @parischap/js-lib package or use an external package.
+ * color is the identity function. For ANSI colors, you can use the functions exported by the MColor
+ * module of the @parischap/js-lib package or use an external package.
  *
  * @since 0.0.1
  * @category Models
@@ -133,24 +133,19 @@ export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pip
  */
 export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
 
-/** Equivalence */
-const _equivalence: Equivalence.Equivalence<Type> = (self, that) => that.name === self.name;
-
-export {
-	/**
-	 * Equivalence
-	 *
-	 * @since 0.0.1
-	 * @category Equivalences
-	 */
-	_equivalence as Equivalence
-};
+/**
+ * Equivalence
+ *
+ * @since 0.0.1
+ * @category Equivalences
+ */
+export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.name === self.name;
 
 /** Prototype */
 const proto: MTypes.Proto<Type> = {
 	[TypeId]: TypeId,
 	[Equal.symbol](this: Type, that: unknown): boolean {
-		return has(that) && _equivalence(this, that);
+		return has(that) && equivalence(this, that);
 	},
 	[Hash.symbol](this: Type) {
 		return Hash.cached(this, Hash.hash(this.name));
@@ -208,23 +203,23 @@ export const uncolored: Type = _make({
 });
 
 /**
- * Example colorset for ansi dark mode - Uses functions from the JsColor module
+ * Example colorset for ansi dark mode - Uses functions from the MColor module
  *
  * @since 0.0.1
  * @category Instances
  */
 export const ansiDarkMode: Type = _make({
 	name: 'ansiDarkMode',
-	stringValueColorer: JsString.colorize(JsColor.green),
-	otherValueColorer: JsString.colorize(JsColor.yellow),
-	symbolValueColorer: JsString.colorize(JsColor.cyan),
-	bigIntMarkColorer: JsString.colorize(JsColor.magenta),
-	propertyKeyColorerWhenFunctionValue: JsString.colorize(JsColor.blue),
-	propertyKeyColorerWhenSymbol: JsString.colorize(JsColor.cyan),
-	propertyKeyColorerWhenOther: JsString.colorize(JsColor.red),
-	propertySeparatorColorer: JsString.colorize(JsColor.white),
+	stringValueColorer: JsString.colorize(MColor.green),
+	otherValueColorer: JsString.colorize(MColor.yellow),
+	symbolValueColorer: JsString.colorize(MColor.cyan),
+	bigIntMarkColorer: JsString.colorize(MColor.magenta),
+	propertyKeyColorerWhenFunctionValue: JsString.colorize(MColor.blue),
+	propertyKeyColorerWhenSymbol: JsString.colorize(MColor.cyan),
+	propertyKeyColorerWhenOther: JsString.colorize(MColor.red),
+	propertySeparatorColorer: JsString.colorize(MColor.white),
 	recordDelimitersColorWheel: ColorWheel.ansiDarkMode,
-	keyValueSeparatorColorer: JsString.colorize(JsColor.white),
-	prototypeMarkColorer: JsString.colorize(JsColor.green),
-	multiLineIndentColorer: JsString.colorize(JsColor.green)
+	keyValueSeparatorColorer: JsString.colorize(MColor.white),
+	prototypeMarkColorer: JsString.colorize(MColor.green),
+	multiLineIndentColorer: JsString.colorize(MColor.green)
 });

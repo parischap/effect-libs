@@ -120,18 +120,13 @@ export const getEquivalence = <V extends MTypes.Unknown>(
 ): Equivalence.Equivalence<Type<V>> =>
 	Equivalence.make((self, that) => isEquivalent(self.value, that.value));
 
-/** Equivalence based on the equality of their values */
-const _equivalence = getEquivalence(Equal.equals);
-
-export {
-	/**
-	 * Equivalence
-	 *
-	 * @since 0.0.1
-	 * @category Equivalences
-	 */
-	_equivalence as Equivalence
-};
+/**
+ * Equivalence based on the equality of their values
+ *
+ * @since 0.0.1
+ * @category Equivalences
+ */
+export const equivalence = getEquivalence(Equal.equals);
 
 /** Prototype */
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
@@ -140,7 +135,7 @@ const proto: MTypes.Proto<Type<any>> = {
 		_V: MTypes.covariantValue
 	},
 	[Equal.symbol]<V extends MTypes.Unknown>(this: Type<V>, that: unknown): boolean {
-		return has(that) && _equivalence(this, that);
+		return has(that) && equivalence(this, that);
 	},
 	[Hash.symbol]<V extends MTypes.Unknown>(this: Type<V>) {
 		return Hash.cached(this, Hash.hash(this.value));

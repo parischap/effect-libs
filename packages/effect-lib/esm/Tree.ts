@@ -78,18 +78,13 @@ export const getEquivalence = <A>(
 ): Equivalence.Equivalence<Type<A>> =>
 	Equivalence.make((self, that) => isEquivalent(self.value, that.value));
 
-/** Equivalence based on the equality of their values */
-const _equivalence = getEquivalence(Equal.equals);
-
-export {
-	/**
-	 * Equivalence
-	 *
-	 * @since 0.0.6
-	 * @category Equivalences
-	 */
-	_equivalence as Equivalence
-};
+/**
+ * Equivalence based on the equality of their values
+ *
+ * @since 0.0.6
+ * @category Equivalences
+ */
+export const equivalence = getEquivalence(Equal.equals);
 
 /** Prototype */
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
@@ -98,7 +93,7 @@ const proto: MTypes.Proto<Type<any>> = {
 		_A: MTypes.covariantValue
 	},
 	[Equal.symbol]<A>(this: Type<A>, that: unknown): boolean {
-		return has(that) && _equivalence(this, that);
+		return has(that) && equivalence(this, that);
 	},
 	[Hash.symbol]<A>(this: Type<A>) {
 		return Hash.cached(this, Hash.hash(this.value));

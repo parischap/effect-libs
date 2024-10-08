@@ -8,7 +8,7 @@
  * @since 0.0.1
  */
 import { MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
-import { JsColor, JsString } from '@parischap/js-lib';
+import { JsString, MColor } from '@parischap/js-lib';
 import {
 	Array,
 	Equal,
@@ -59,24 +59,19 @@ export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pip
  */
 export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
 
-/** Equivalence */
-const _equivalence: Equivalence.Equivalence<Type> = (self, that) => that.name === self.name;
-
-export {
-	/**
-	 * Equivalence
-	 *
-	 * @since 0.0.1
-	 * @category Equivalences
-	 */
-	_equivalence as Equivalence
-};
+/**
+ * Equivalence
+ *
+ * @since 0.0.1
+ * @category Equivalences
+ */
+export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.name === self.name;
 
 /** Prototype */
 const proto: MTypes.Proto<Type> = {
 	[TypeId]: TypeId,
 	[Equal.symbol](this: Type, that: unknown): boolean {
-		return has(that) && _equivalence(this, that);
+		return has(that) && equivalence(this, that);
 	},
 	[Hash.symbol](this: Type) {
 		return Hash.cached(this, Hash.hash(this.name));
@@ -149,12 +144,12 @@ export const empty = _make({
 export const ansiDarkMode = _make({
 	name: 'ansiDarkMode',
 	colors: Array.make(
-		JsString.colorize(JsColor.green),
-		JsString.colorize(JsColor.yellow),
-		JsString.colorize(JsColor.magenta),
-		JsString.colorize(JsColor.cyan),
-		JsString.colorize(JsColor.red),
-		JsString.colorize(JsColor.blue),
-		JsString.colorize(JsColor.white)
+		JsString.colorize(MColor.green),
+		JsString.colorize(MColor.yellow),
+		JsString.colorize(MColor.magenta),
+		JsString.colorize(MColor.cyan),
+		JsString.colorize(MColor.red),
+		JsString.colorize(MColor.blue),
+		JsString.colorize(MColor.white)
 	)
 });

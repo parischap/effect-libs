@@ -13,7 +13,7 @@
  */
 
 import { MInspectable, MMatch, MOption, MPipeable, MString, MTypes } from '@parischap/effect-lib';
-import { JsRegExp } from '@parischap/js-lib';
+import { MRegExp } from '@parischap/js-lib';
 import {
 	Array,
 	Equal,
@@ -36,7 +36,7 @@ const moduleTag = '@parischap/pretty-print/ByPasser/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
 
-const lineBreakRegExp = new RegExp(JsRegExp.lineBreak, 'g');
+const lineBreakRegExp = new RegExp(MRegExp.lineBreak, 'g');
 
 /**
  * Type that represents a ByPasser.
@@ -81,24 +81,19 @@ export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pip
  */
 export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
 
-/** Equivalence */
-const _equivalence: Equivalence.Equivalence<Type> = (self, that) => that.name === self.name;
-
-export {
-	/**
-	 * Equivalence
-	 *
-	 * @since 0.0.1
-	 * @category Equivalences
-	 */
-	_equivalence as Equivalence
-};
+/**
+ * Equivalence
+ *
+ * @since 0.0.1
+ * @category Equivalences
+ */
+export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.name === self.name;
 
 /** Prototype */
 const proto: MTypes.Proto<Type> = {
 	[TypeId]: TypeId,
 	[Equal.symbol](this: Type, that: unknown): boolean {
-		return has(that) && _equivalence(this, that);
+		return has(that) && equivalence(this, that);
 	},
 	[Hash.symbol](this: Type) {
 		return Hash.cached(this, Hash.hash(this.name));

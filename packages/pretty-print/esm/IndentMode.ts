@@ -70,24 +70,19 @@ export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pip
  */
 export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
 
-/** Equivalence */
-const _equivalence: Equivalence.Equivalence<Type> = (self, that) => that.name === self.name;
-
-export {
-	/**
-	 * Equivalence
-	 *
-	 * @since 0.0.1
-	 * @category Equivalences
-	 */
-	_equivalence as Equivalence
-};
+/**
+ * Equivalence
+ *
+ * @since 0.0.1
+ * @category Equivalences
+ */
+export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.name === self.name;
 
 /** Prototype */
 const proto: MTypes.Proto<Type> = {
 	[TypeId]: TypeId,
 	[Equal.symbol](this: Type, that: unknown): boolean {
-		return has(that) && _equivalence(this, that);
+		return has(that) && equivalence(this, that);
 	},
 	[Hash.symbol](this: Type) {
 		return Hash.cached(this, Hash.hash(this.name));
