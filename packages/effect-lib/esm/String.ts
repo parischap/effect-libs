@@ -4,19 +4,142 @@
  * @since 0.0.6
  */
 
-import { Array, Option, Predicate, String, Tuple, flow, pipe } from 'effect';
+import {
+	Array,
+	Equal,
+	Equivalence,
+	Hash,
+	Inspectable,
+	Option,
+	Order,
+	Predicate,
+	String,
+	Tuple,
+	flow,
+	pipe
+} from 'effect';
 import * as MArray from './Array.js';
 import * as MColor from './Color.js';
 import * as MFunction from './Function.js';
+import * as MInspectable from './Inspectable.js';
 import * as MMatch from './Match.js';
 import * as MRegExp from './RegExp.js';
-import * as MSearchResult from './SearchResult.js';
 import * as MTypes from './types.js';
 
-//const moduleTag = '@parischap/effect-lib/String/';
+const moduleTag = '@parischap/effect-lib/String/';
 
-/*const areOverlappingSearchResults = (sR1: MSearchResult, sR2: MSearchResult) =>
-	sR1.startIndex <= sR2.endIndex && sR1.endIndex >= sR2.startIndex;*/
+/**
+ * This namespace implements a type that represents the result of the search of a string in another
+ * string.
+ *
+ * @since 0.4.0
+ */
+export namespace SearchResult {
+	const namespaceTag = moduleTag + 'SearchResult/';
+	const TypeId: unique symbol = Symbol.for(namespaceTag) as TypeId;
+	type TypeId = typeof TypeId;
+
+	/**
+	 * Interface that represents a SearchResult
+	 *
+	 * @since 0.0.6
+	 * @category Models
+	 */
+	export interface Type extends Equal.Equal, Inspectable.Inspectable {
+		/**
+		 * The index where the match was found in the target string
+		 *
+		 * @since 0.0.6
+		 */
+		readonly startIndex: number;
+		/**
+		 * The index of the character following the match in the target string
+		 *
+		 * @since 0.0.6
+		 */
+		readonly endIndex: number;
+		/**
+		 * The match
+		 *
+		 * @since 0.0.6
+		 */
+		readonly match: string;
+		/** @internal */
+		readonly [TypeId]: TypeId;
+	}
+
+	/**
+	 * Type guard
+	 *
+	 * @since 0.0.6
+	 * @category Guards
+	 */
+	export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
+
+	/**
+	 * Equivalence
+	 *
+	 * @since 0.0.6
+	 * @category Equivalences
+	 */
+	export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
+		that.startIndex === self.startIndex &&
+		that.endIndex === self.endIndex &&
+		that.match === self.match;
+
+	/** Prototype */
+	const proto: MTypes.Proto<Type> = {
+		[TypeId]: TypeId,
+		[Equal.symbol](this: Type, that: unknown): boolean {
+			return has(that) && equivalence(this, that);
+		},
+		[Hash.symbol](this: Type) {
+			return Hash.cached(this, Hash.structure(this));
+		},
+		...MInspectable.BaseProto(moduleTag)
+	};
+
+	/**
+	 * Constructor
+	 *
+	 * @since 0.0.6
+	 * @category Constructors
+	 */
+	export const make = (params: MTypes.Data<Type>): Type =>
+		MTypes.objectFromDataAndProto(proto, params);
+
+	/**
+	 * SearchResult Order based on the startIndex
+	 *
+	 * @since 0.0.6
+	 * @category Ordering
+	 */
+	export const byStartIndex = Order.mapInput(Order.number, (self: Type) => self.startIndex);
+
+	/**
+	 * SearchResult Order based on the endIndex
+	 *
+	 * @since 0.0.6
+	 * @category Ordering
+	 */
+	export const byEndIndex = Order.mapInput(Order.number, (self: Type) => self.endIndex);
+
+	/**
+	 * SearchResult Order that gives precedence to the first longest SearchResult.
+	 *
+	 * @since 0.0.6
+	 * @category Ordering
+	 */
+	export const byLongestFirst = Order.combine(byStartIndex, Order.reverse(byEndIndex));
+
+	/**
+	 * Equivalence, two SearchResult's are considered equivalent if they overlap
+	 *
+	 * @since 0.0.6 Equivalence
+	 */
+	export const overlappingEquivalence: Equivalence.Equivalence<Type> = (self: Type, that: Type) =>
+		self.endIndex >= that.startIndex && self.startIndex <= that.endIndex;
+}
 
 /**
  * Builds a string from a primitive value other than `null` and `undefined`. and `a`
@@ -42,7 +165,7 @@ export const fromPrimitive = (u: MTypes.Primitive): string =>
 	);
 
 /**
- * Searches for the first occurence of `regexp` in `self` and returns a MSearchResult. You can
+ * Searches for the first occurence of `regexp` in `self` and returns a SearchResult. You can
  * optionnally provide the index from which to start searching.
  *
  * @since 0.0.6
@@ -50,12 +173,12 @@ export const fromPrimitive = (u: MTypes.Primitive): string =>
  */
 export const search =
 	(regexp: RegExp | string, startIndex = 0) =>
-	(self: string): Option.Option<MSearchResult.Type> => {
+	(self: string): Option.Option<SearchResult.Type> => {
 		if (MTypes.isString(regexp)) {
 			const pos = self.indexOf(regexp, startIndex);
 			if (pos === -1) return Option.none();
 			return Option.some(
-				MSearchResult.make({ startIndex: pos, endIndex: pos + regexp.length, match: regexp })
+				SearchResult.make({ startIndex: pos, endIndex: pos + regexp.length, match: regexp })
 			);
 		}
 		const target = self.slice(startIndex);
@@ -64,7 +187,7 @@ export const search =
 		const offsetPos = startIndex + result.index;
 		const match = result[0];
 		return Option.some(
-			MSearchResult.make({ startIndex: offsetPos, endIndex: offsetPos + match.length, match })
+			SearchResult.make({ startIndex: offsetPos, endIndex: offsetPos + match.length, match })
 		);
 	};
 
@@ -76,9 +199,9 @@ export const search =
  */
 export const searchAll =
 	(regexp: RegExp | string) =>
-	(self: string): Array<MSearchResult.Type> => {
+	(self: string): Array<SearchResult.Type> => {
 		/* eslint-disable-next-line functional/prefer-readonly-type -- To preserve refinements */
-		const result: Array<MSearchResult.Type> = [];
+		const result: Array<SearchResult.Type> = [];
 		let searchPos = 0;
 		for (;;) {
 			const searchResultOption = search(regexp, searchPos)(self);
@@ -93,19 +216,19 @@ export const searchAll =
 	};
 
 /**
- * Searches for the last occurence of `regexp` in `self` and returns a MSearchResult.
+ * Searches for the last occurence of `regexp` in `self` and returns a SearchResult.
  *
  * @since 0.0.6
  * @category Utils
  */
 export const searchRight =
 	(regexp: RegExp | string) =>
-	(self: string): Option.Option<MSearchResult.Type> => {
+	(self: string): Option.Option<SearchResult.Type> => {
 		if (MTypes.isString(regexp)) {
 			const pos = self.lastIndexOf(regexp);
 			if (pos === -1) return Option.none();
 			return Option.some(
-				MSearchResult.make({ startIndex: pos, endIndex: pos + regexp.length, match: regexp })
+				SearchResult.make({ startIndex: pos, endIndex: pos + regexp.length, match: regexp })
 			);
 		}
 		return pipe(self, searchAll(regexp), Array.last);
