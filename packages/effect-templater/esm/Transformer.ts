@@ -6,15 +6,15 @@
  */
 
 import {
+	MBrand,
 	MCache,
 	MInspectable,
 	MNumber,
 	MPipeable,
+	MRegExp,
 	MString,
-	MTypes,
-	Real
+	MTypes
 } from '@parischap/effect-lib';
-import { MRegExp } from '@parischap/js-lib';
 import {
 	Array,
 	Brand,
@@ -33,7 +33,6 @@ import {
 	Types
 } from 'effect';
 import * as Error from './Error.js';
-import * as FloatingPointOptions from './FloatingPointOptions.js';
 
 const moduleTag = '@parischap/effect-templater/Transformer/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
@@ -104,7 +103,7 @@ const proto: MTypes.Proto<Type<any>> = {
 	},
 	...MInspectable.BaseProto(moduleTag),
 	toJSON<A>(this: Type<A>) {
-		return this.name === '' ? this : this.name;
+		return this.name;
 	},
 	...MPipeable.BaseProto
 };
@@ -135,7 +134,7 @@ export const string: Type<string> = make({
  * the start of a string
  */
 const floatingPointRegExpCache = MCache.make({
-	lookUp: ({ key }: { readonly key: FloatingPointOptions.Type }) =>
+	lookUp: ({ key }: { readonly key: MRegExp.FloatingPointOptions.Type }) =>
 		Tuple.make(
 			new RegExp(
 				MRegExp.atStart(
@@ -159,35 +158,37 @@ const floatingPointRegExpCache = MCache.make({
  * @since 0.0.1
  * @category Instances
  */
-export const floatingPoint = (options: FloatingPointOptions.Type): Type<Real.Type> => {
+export const floatingPoint = (
+	options: MRegExp.FloatingPointOptions.Type
+): Type<MBrand.Real.Type> => {
 	const digitAndSepLength = options.thousandSep.length + 3;
 
 	const signPartOptions = pipe(
 		options,
-		FloatingPointOptions.withNoDecimalPart,
-		FloatingPointOptions.withNoFractionalPart,
-		FloatingPointOptions.withNoENotation
+		MRegExp.FloatingPointOptions.withNoDecimalPart,
+		MRegExp.FloatingPointOptions.withNoFractionalPart,
+		MRegExp.FloatingPointOptions.withNoENotation
 	);
 
 	const decPartOptions = pipe(
 		options,
-		FloatingPointOptions.withNoSign,
-		FloatingPointOptions.withNoFractionalPart,
-		FloatingPointOptions.withNoENotation
+		MRegExp.FloatingPointOptions.withNoSign,
+		MRegExp.FloatingPointOptions.withNoFractionalPart,
+		MRegExp.FloatingPointOptions.withNoENotation
 	);
 
 	const fracPartOptions = pipe(
 		options,
-		FloatingPointOptions.withNoSign,
-		FloatingPointOptions.withNoDecimalPart
+		MRegExp.FloatingPointOptions.withNoSign,
+		MRegExp.FloatingPointOptions.withNoDecimalPart
 	);
 
-	const signPartRegExp = pipe(floatingPointRegExpCache, MCache.get(signPartOptions));
-	const decPartRegExp = pipe(floatingPointRegExpCache, MCache.get(decPartOptions));
-	const fracPartRegExp = pipe(floatingPointRegExpCache, MCache.get(fracPartOptions));
+	const signPartRegExp = MRegExp.floatingPointAtStartRegExp(signPartOptions);
+	const decPartRegExp = MRegExp.floatingPointAtStartRegExp(decPartOptions);
+	const fracPartRegExp = MRegExp.floatingPointAtStartRegExp(fracPartOptions);
 
 	return make({
-		name: `floatingPoint-${FloatingPointOptions.name(options)}`,
+		name: `floatingPoint-${MRegExp.FloatingPointOptions.name(options)}`,
 
 		read: (input) => {
 			const signPart = pipe(

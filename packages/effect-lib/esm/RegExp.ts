@@ -25,6 +25,7 @@ import * as MTypes from './types.js';
 
 const moduleTag = '@parischap/effect-lib/RegExp/';
 
+/** Cache for regular expressions */
 const regExpCache = MutableHashMap.empty<string, RegExp>();
 
 /**
