@@ -249,10 +249,15 @@ export const whitespaces = zeroOrMore(`[ ${tab}]`);
  */
 export const digit = backslash + 'd';
 
+/**
+ * This namespace implements the possible sign options for regular expressions that represent a real
+ * number.
+ *
+ * @since 0.4.0
+ */
 export namespace SignOption {
 	/**
-	 * Possible sign options for regular expressions representing a real number in floating point
-	 * notation
+	 * Possible sign options for regular expressions that represent a real number
 	 *
 	 * @since 0.4.0
 	 * @category Models
@@ -285,10 +290,21 @@ export namespace SignOption {
 	};
 }
 
+/**
+ * This namespace implements the options to the floatingPoint function.
+ *
+ * @since 0.4.0
+ */
 export namespace FloatingPointOptions {
-	const TypeId: unique symbol = Symbol.for(moduleTag + 'FloatingPointOptions/') as TypeId;
+	const namespaceTag = moduleTag + 'FloatingPointOptions/';
+	const TypeId: unique symbol = Symbol.for(namespaceTag) as TypeId;
 	type TypeId = typeof TypeId;
 
+	/**
+	 * Options to the floatingPoint function.
+	 *
+	 * @since 0.4.0
+	 */
 	export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
 		/**
 		 * Sign option
