@@ -5,17 +5,21 @@
  */
 
 import {
+	Array,
 	Equal,
 	Equivalence,
+	flow,
 	Hash,
 	Inspectable,
 	MutableHashMap,
 	Option,
 	pipe,
 	Pipeable,
-	Predicate
+	Predicate,
+	Tuple
 } from 'effect';
 import * as MInspectable from './Inspectable.js';
+import * as MNumber from './Number.js';
 import * as MPipeable from './Pipeable.js';
 import * as MTypes from './types.js';
 
@@ -439,14 +443,7 @@ export namespace FloatingPointOptions {
 		`${self.signOption}-${self.fractionalSep}-${self.thousandSep}-${self.maxDecimalDigits}-${self.maxFractionalDigits}-${self.allowENotation}`;
 }
 
-const _groupedDecimalDigits = (digitNumber: number, thousandSep: string) => {
-	const groupNumber = Math.floor(digitNumber / 3);
-	const remainingDigits = digitNumber === +Infinity ? 2 : digitNumber - groupNumber * 3;
-	return (
-		repeatBetween(0, remainingDigits)(digit) +
-		repeatBetween(0, groupNumber)(thousandSep + repeatBetween(3, 3)(digit))
-	);
-};
+const _flippedRepeatBetween0AndN = (s: string) => (n: number) => repeatBetween(0, n)(s);
 /**
  * A regular expression string representing a real number with `signOption` indicating how a sign
  * may be present, `fractionalSep` as separator between the decimal and fractional parts,
@@ -463,7 +460,7 @@ const _groupedDecimalDigits = (digitNumber: number, thousandSep: string) => {
  * @since 0.4.0
  * @category Instances
  */
-export const floatingPoint = (options: Partial<FloatingPointOptions.Type>) => {
+export const floatingPoint = (options: Partial<FloatingPointOptions.Type> = {}) => {
 	const {
 		signOption,
 		fractionalSep,
@@ -482,7 +479,21 @@ export const floatingPoint = (options: Partial<FloatingPointOptions.Type>) => {
 				'[1-9]' +
 					(thousandSep === '' ?
 						repeatBetween(0, maxDecimalDigits - 1)(digit)
-					:	_groupedDecimalDigits(maxDecimalDigits - 1, thousandSep))
+					:	pipe(
+							maxDecimalDigits - 1,
+							MNumber.quotientAndRemainder(3),
+							Tuple.mapBoth({
+								onFirst: _flippedRepeatBetween0AndN(thousandSep + repeatBetween(3, 3)(digit)),
+								onSecond: flow(
+									// quotientAndRemainder returns NaN if maxDecimalDigits === +Infinity
+									Option.liftPredicate(MNumber.isFinite),
+									Option.getOrElse(() => 2),
+									_flippedRepeatBetween0AndN(digit)
+								)
+							}),
+							Tuple.swap,
+							Array.join('')
+						))
 			);
 
 	const eNotation =
@@ -504,7 +515,7 @@ export const floatingPoint = (options: Partial<FloatingPointOptions.Type>) => {
 
 const _floatingPointRegExp =
 	(name: string, transformer: (s: string) => string) =>
-	(options: Partial<FloatingPointOptions.Type>) => {
+	(options: Partial<FloatingPointOptions.Type> = {}) => {
 		const withDefaults = FloatingPointOptions.withDefaults(options);
 		return pipe(
 			regExpCache,

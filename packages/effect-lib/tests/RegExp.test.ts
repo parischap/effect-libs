@@ -12,60 +12,65 @@ describe('MRegExp', () => {
 	});
 
 	describe('floatingPoint', () => {
-		const floatRegExp = new RegExp(MRegExp.makeLine(MRegExp.floatingPoint()));
-		const floatRegExpNone = new RegExp(
-			MRegExp.makeLine(MRegExp.floatingPoint(MRegExp.SignOption.None))
-		);
-		const floatRegExpMandatory = new RegExp(
-			MRegExp.makeLine(MRegExp.floatingPoint(MRegExp.SignOption.Mandatory))
-		);
-		const floatRegExpPlusMinusOptional = new RegExp(
-			MRegExp.makeLine(MRegExp.floatingPoint(MRegExp.SignOption.PlusMinusOptional))
-		);
+		const floatRegExp = MRegExp.floatingPointRegExp();
 
-		const intRegExp = new RegExp(
-			MRegExp.makeLine(
-				MRegExp.floatingPoint(MRegExp.SignOption.None, MRegExp.dot, '', +Infinity, 0, 0)
-			)
-		);
+		const floatRegExpNone = MRegExp.floatingPointRegExp({
+			signOption: MRegExp.SignOption.Type.None
+		});
 
-		const intRegExpWithENotation = new RegExp(
-			MRegExp.makeLine(
-				MRegExp.floatingPoint(MRegExp.SignOption.None, MRegExp.dot, '', +Infinity, 0, 0, true)
-			)
-		);
+		const floatRegExpMandatory = MRegExp.floatingPointRegExp({
+			signOption: MRegExp.SignOption.Type.Mandatory
+		});
 
-		const floatRegExp0 = new RegExp(
-			MRegExp.makeLine(MRegExp.floatingPoint(MRegExp.SignOption.None, MRegExp.dot, '', 0))
-		);
+		const floatRegExpPlusMinusOptional = MRegExp.floatingPointRegExp({
+			signOption: MRegExp.SignOption.Type.PlusMinusOptional
+		});
 
-		const floatRegExp1 = new RegExp(
-			MRegExp.makeLine(MRegExp.floatingPoint(MRegExp.SignOption.None, MRegExp.dot, '', 1))
-		);
+		const intRegExp = MRegExp.floatingPointRegExp({
+			signOption: MRegExp.SignOption.Type.None,
+			maxFractionalDigits: 0
+		});
 
-		const floatRegExp2 = new RegExp(
-			MRegExp.makeLine(MRegExp.floatingPoint(MRegExp.SignOption.None, MRegExp.dot, '', 2))
-		);
+		const intRegExpWithENotation = MRegExp.floatingPointRegExp({
+			signOption: MRegExp.SignOption.Type.None,
+			maxFractionalDigits: 0,
+			allowENotation: true
+		});
 
-		const floatRegExp4 = new RegExp(
-			MRegExp.makeLine(MRegExp.floatingPoint(MRegExp.SignOption.None, MRegExp.dot, '', 4))
-		);
+		const floatRegExp0 = MRegExp.floatingPointRegExp({
+			signOption: MRegExp.SignOption.Type.None,
+			maxDecimalDigits: 0
+		});
 
-		const floatRegExp02 = new RegExp(
-			MRegExp.makeLine(
-				MRegExp.floatingPoint(MRegExp.SignOption.None, MRegExp.dot, '', +Infinity, 0, 2)
-			)
-		);
+		const floatRegExp1 = MRegExp.floatingPointRegExp({
+			signOption: MRegExp.SignOption.Type.None,
+			maxDecimalDigits: 1
+		});
 
-		const floatRegExp022 = new RegExp(
-			MRegExp.makeLine(
-				MRegExp.floatingPoint(MRegExp.SignOption.None, MRegExp.dot, '', +Infinity, 2, 2)
-			)
-		);
+		const floatRegExp2 = MRegExp.floatingPointRegExp({
+			signOption: MRegExp.SignOption.Type.None,
+			maxDecimalDigits: 2
+		});
 
-		const floatRegExpWithThousandSep = new RegExp(
-			MRegExp.makeLine(MRegExp.floatingPoint(MRegExp.SignOption.MinusOptional, MRegExp.dot, ' '))
-		);
+		const floatRegExp4 = MRegExp.floatingPointRegExp({
+			signOption: MRegExp.SignOption.Type.None,
+			maxDecimalDigits: 4
+		});
+
+		const floatRegExp02 = MRegExp.floatingPointRegExp({
+			signOption: MRegExp.SignOption.Type.None,
+			maxFractionalDigits: 2
+		});
+
+		const floatRegExp022 = MRegExp.floatingPointRegExp({
+			signOption: MRegExp.SignOption.Type.None,
+			minFractionalDigits: 2,
+			maxFractionalDigits: 2
+		});
+
+		const floatRegExpWithThousandSep = MRegExp.floatingPointRegExp({
+			thousandSep: ' '
+		});
 
 		it('Minus sign allowed - Matching without sign', () => {
 			expect(floatRegExp.exec('123') !== null).toBe(true);
