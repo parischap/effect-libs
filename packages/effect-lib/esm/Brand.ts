@@ -5,6 +5,9 @@
  */
 
 import { Brand, Either, Option } from 'effect';
+import * as MRegExp from './RegExp.js';
+
+const moduleTag = '@parischap/effect-lib/Brand/';
 
 /**
  * Constructor type with refined input
@@ -34,4 +37,36 @@ export interface RefinedConstructor<in B, in out A extends Brand.Brand<string | 
 	 * valid, `false` otherwise.
 	 */
 	readonly is: (a: B) => a is Brand.Brand.Unbranded<A> & A;
+}
+
+export namespace Email {
+	const TypeId: unique symbol = Symbol.for(moduleTag + 'Email/') as TypeId;
+	type TypeId = typeof TypeId;
+	/**
+	 * Email type
+	 *
+	 * @since 0.3.4
+	 * @category Models
+	 */
+	export type Type = Brand.Branded<string, TypeId>;
+
+	/**
+	 * Constructs an Email without any verifications
+	 *
+	 * @since 0.3.4
+	 * @category Constructors
+	 */
+	export const unsafeFromString = Brand.nominal<Type>();
+
+	/**
+	 * Constructs an Email from a string. Throws an error if the provided string does not match the
+	 * `email` pattern
+	 *
+	 * @since 0.3.4
+	 * @category Constructors
+	 */
+	export const fromString = Brand.refined<Type>(
+		(s) => MRegExp.emailRegExp.test(s),
+		(s) => Brand.error(`'${s}' does not represent an Email`)
+	);
 }
