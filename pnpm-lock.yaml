@@ -215,14 +215,11 @@ importers:
   packages/pretty-print/dist:
     dependencies:
       '@parischap/effect-lib':
-        specifier: ^0.3.3
-        version: 0.3.3(@effect/typeclass@0.28.1(effect@3.8.4))(@parischap/js-lib@0.0.7)(effect@3.8.4)
-      '@parischap/js-lib':
-        specifier: ^0.0.7
-        version: 0.0.7
+        specifier: ^0.4.0
+        version: 0.4.0(@effect/typeclass@0.28.1(effect@3.9.1))(effect@3.9.1)
       effect:
-        specifier: ^3.8.4
-        version: 3.8.4
+        specifier: ^3.9.1
+        version: 3.9.1
 
 packages:
 
@@ -908,6 +905,12 @@ packages:
       '@effect/typeclass': ^0.27.4
       '@parischap/js-lib': ^0.0.7
       effect: ^3.8.4
+
+  '@parischap/effect-lib@0.4.0':
+    resolution: {integrity: sha512-frcVDBXUMb3VLUCNrIaWzsrRcP9ZtIwOhjhicjOKjI1tA+F3rGU+intMqcNvueBzFXYYV8dgDwaPRDsu9asKbQ==}
+    peerDependencies:
+      '@effect/typeclass': ^0.28.1
+      effect: ^3.9.1
 
   '@parischap/js-lib@0.0.7':
     resolution: {integrity: sha512-5F9pR9zZ3ipXR8Hyxcscn0gBGVLs5+9r+wbfB1TgcMV52fJm8KbYjDiNcxGIQ3yqKunfB3G20a8whrXd4dfkgg==}
@@ -3440,6 +3443,11 @@ snapshots:
       '@effect/typeclass': 0.28.1(effect@3.8.4)
       '@parischap/js-lib': 0.0.7
       effect: 3.8.4
+
+  '@parischap/effect-lib@0.4.0(@effect/typeclass@0.28.1(effect@3.9.1))(effect@3.9.1)':
+    dependencies:
+      '@effect/typeclass': 0.28.1(effect@3.9.1)
+      effect: 3.9.1
 
   '@parischap/js-lib@0.0.7': {}
 

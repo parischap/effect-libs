@@ -1,4 +1,10 @@
 {
+	"description": "A complement to the official effect library dedicated to date and time",
+	"peerDependencies": {
+		"@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
+		"@parischap/effect-templater": "workspace:@parischap-dev/effect-templater@*",
+		"effect": "^3.9.1"
+	},
 	"name": "@parischap-dev/effect-date",
 	"type": "module",
 	"sideEffects": [],
@@ -63,11 +69,5 @@
 			"type": "ko-fi",
 			"url": "https://ko-fi.com/parischap"
 		}
-	],
-	"description": "A complement to the official effect library dedicated to date and time",
-	"peerDependencies": {
-		"@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
-		"@parischap/effect-templater": "workspace:@parischap-dev/effect-templater@*",
-		"effect": "^3.9.1"
-	}
+	]
 }

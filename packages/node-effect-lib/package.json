@@ -1,4 +1,12 @@
 {
+	"description": "A complement to the official @effect/platform library with add-ons for Node.js",
+	"peerDependencies": {
+		"@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
+		"@effect/platform": "^0.67.1",
+		"@effect/platform-node": "^0.62.1",
+		"@effect/schema": "^0.75.1",
+		"effect": "^3.9.1"
+	},
 	"name": "@parischap-dev/node-effect-lib",
 	"type": "module",
 	"sideEffects": [],
@@ -63,13 +71,5 @@
 			"type": "ko-fi",
 			"url": "https://ko-fi.com/parischap"
 		}
-	],
-	"description": "A complement to the official @effect/platform library with add-ons for Node.js",
-	"peerDependencies": {
-		"@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
-		"@effect/platform": "^0.67.1",
-		"@effect/platform-node": "^0.62.1",
-		"@effect/schema": "^0.75.1",
-		"effect": "^3.9.1"
-	}
+	]
 }

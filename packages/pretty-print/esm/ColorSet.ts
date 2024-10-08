@@ -10,8 +10,7 @@
  * @since 0.0.1
  */
 
-import { MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
-import { JsString, MColor } from '@parischap/js-lib';
+import { MColor, MInspectable, MPipeable, MString, MTypes } from '@parischap/effect-lib';
 import { Equal, Equivalence, Function, Hash, Inspectable, Pipeable, Predicate } from 'effect';
 import * as ColorWheel from './ColorWheel.js';
 
@@ -210,16 +209,16 @@ export const uncolored: Type = _make({
  */
 export const ansiDarkMode: Type = _make({
 	name: 'ansiDarkMode',
-	stringValueColorer: JsString.colorize(MColor.green),
-	otherValueColorer: JsString.colorize(MColor.yellow),
-	symbolValueColorer: JsString.colorize(MColor.cyan),
-	bigIntMarkColorer: JsString.colorize(MColor.magenta),
-	propertyKeyColorerWhenFunctionValue: JsString.colorize(MColor.blue),
-	propertyKeyColorerWhenSymbol: JsString.colorize(MColor.cyan),
-	propertyKeyColorerWhenOther: JsString.colorize(MColor.red),
-	propertySeparatorColorer: JsString.colorize(MColor.white),
+	stringValueColorer: MString.colorize(MColor.green),
+	otherValueColorer: MString.colorize(MColor.yellow),
+	symbolValueColorer: MString.colorize(MColor.cyan),
+	bigIntMarkColorer: MString.colorize(MColor.magenta),
+	propertyKeyColorerWhenFunctionValue: MString.colorize(MColor.blue),
+	propertyKeyColorerWhenSymbol: MString.colorize(MColor.cyan),
+	propertyKeyColorerWhenOther: MString.colorize(MColor.red),
+	propertySeparatorColorer: MString.colorize(MColor.white),
 	recordDelimitersColorWheel: ColorWheel.ansiDarkMode,
-	keyValueSeparatorColorer: JsString.colorize(MColor.white),
-	prototypeMarkColorer: JsString.colorize(MColor.green),
-	multiLineIndentColorer: JsString.colorize(MColor.green)
+	keyValueSeparatorColorer: MString.colorize(MColor.white),
+	prototypeMarkColorer: MString.colorize(MColor.green),
+	multiLineIndentColorer: MString.colorize(MColor.green)
 });

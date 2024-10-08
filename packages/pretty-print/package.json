@@ -9,7 +9,7 @@
 	},
 	"publishConfig": {
 		"peerDependencies": {
-			"@parischap/effect-lib": "^0.3.3"
+			"@parischap/effect-lib": "^0.4.0"
 		},
 		"main": "./cjs/index.js",
 		"types": "./dts/index.d.ts",

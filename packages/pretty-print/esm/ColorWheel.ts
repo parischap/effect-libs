@@ -7,8 +7,7 @@
  *
  * @since 0.0.1
  */
-import { MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
-import { JsString, MColor } from '@parischap/js-lib';
+import { MColor, MInspectable, MPipeable, MString, MTypes } from '@parischap/effect-lib';
 import {
 	Array,
 	Equal,
@@ -144,12 +143,12 @@ export const empty = _make({
 export const ansiDarkMode = _make({
 	name: 'ansiDarkMode',
 	colors: Array.make(
-		JsString.colorize(MColor.green),
-		JsString.colorize(MColor.yellow),
-		JsString.colorize(MColor.magenta),
-		JsString.colorize(MColor.cyan),
-		JsString.colorize(MColor.red),
-		JsString.colorize(MColor.blue),
-		JsString.colorize(MColor.white)
+		MString.colorize(MColor.green),
+		MString.colorize(MColor.yellow),
+		MString.colorize(MColor.magenta),
+		MString.colorize(MColor.cyan),
+		MString.colorize(MColor.red),
+		MString.colorize(MColor.blue),
+		MString.colorize(MColor.white)
 	)
 });

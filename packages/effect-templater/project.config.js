@@ -40,7 +40,12 @@ const packageJson = merge.all([
 	Configs.packageSubRepo,
 	Configs.packageSubRepoTranspiled,
 	Configs.packageSubRepoTranspiledEffect,
-	Configs.packageSubRepoPublic
+	Configs.packageSubRepoPublic,
+	{
+		scripts: {
+			docgen: ''
+		}
+	}
 ]);
 
 export default {

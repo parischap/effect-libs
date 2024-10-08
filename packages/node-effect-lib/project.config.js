@@ -7,11 +7,7 @@ const packageName = basename(rootPath);
 const repoName = basename(dirname(dirname(rootPath)));
 
 const packageJson = merge.all([
-	Configs.packageBase(packageName, repoName),
-	Configs.packageSubRepo,
-	Configs.packageSubRepoTranspiled,
-	Configs.packageSubRepoTranspiledEffect,
-	Configs.packageSubRepoPublic,
+	// Put it in first position so specific keywords come out first
 	{
 		description: 'A complement to the official @effect/platform library with add-ons for Node.js',
 		peerDependencies: {
@@ -20,7 +16,14 @@ const packageJson = merge.all([
 			'@effect/platform-node': Configs.constants.effectPlatformNodeVersion,
 			'@effect/schema': Configs.constants.effectSchemaVersion,
 			effect: Configs.constants.effectVersion
-		},
+		}
+	},
+	Configs.packageBase(packageName, repoName),
+	Configs.packageSubRepo,
+	Configs.packageSubRepoTranspiled,
+	Configs.packageSubRepoTranspiledEffect,
+	Configs.packageSubRepoPublic,
+	{
 		scripts: {
 			docgen: ''
 		}

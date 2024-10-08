@@ -38,7 +38,7 @@
 		"prodify": "prodify",
 		"publish-to-npm": "cd dist && npm publish --access=public && cd ..",
 		"install-prod": "cd dist && pnpm i && cd ..",
-		"docgen": "docgen",
+		"docgen": "",
 		"transpile-esm": "tsc -b tsconfig.esm.json",
 		"transpile-cjs": "babel dist/esm --plugins @babel/transform-export-namespace-from --plugins @babel/transform-modules-commonjs --out-dir dist/cjs --source-maps",
 		"transpile-annotate": "babel dist --plugins annotate-pure-calls --out-dir dist --source-maps",

@@ -7,19 +7,21 @@ const packageName = basename(rootPath);
 const repoName = basename(dirname(dirname(rootPath)));
 
 const packageJson = merge.all([
-	Configs.packageBase(packageName, repoName),
-	Configs.packageSubRepo,
-	Configs.packageSubRepoTranspiled,
-	Configs.packageSubRepoTranspiledEffect,
-	Configs.packageSubRepoPublic,
-
+	// Put it in first position so specific keywords come out first
 	{
 		description: 'A complement to the official effect library dedicated to date and time',
 		peerDependencies: {
 			...Configs.utils.makeWorkspaceDevDep('effect-lib'),
 			...Configs.utils.makeWorkspaceDevDep('effect-templater'),
 			effect: Configs.constants.effectVersion
-		},
+		}
+	},
+	Configs.packageBase(packageName, repoName),
+	Configs.packageSubRepo,
+	Configs.packageSubRepoTranspiled,
+	Configs.packageSubRepoTranspiledEffect,
+	Configs.packageSubRepoPublic,
+	{
 		scripts: {
 			docgen: ''
 		}

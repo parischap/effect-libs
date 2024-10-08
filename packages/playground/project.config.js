@@ -7,11 +7,7 @@ const packageName = basename(rootPath);
 const repoName = basename(dirname(dirname(rootPath)));
 
 const packageJson = merge.all([
-	Configs.packageBase(packageName, repoName),
-	Configs.packageSubRepo,
-	Configs.packageSubRepoBundled,
-	Configs.packageSubRepoBundledEffect,
-	Configs.packageSubRepoPrivate,
+	// Put it in first position so specific keywords come out first
 	{
 		description: 'Playground',
 		dependencies: {
@@ -21,6 +17,16 @@ const packageJson = merge.all([
 		},
 		scripts: {
 			play: 'vite-node esm/index.ts'
+		}
+	},
+	Configs.packageBase(packageName, repoName),
+	Configs.packageSubRepo,
+	Configs.packageSubRepoBundled,
+	Configs.packageSubRepoBundledEffect,
+	Configs.packageSubRepoPrivate,
+	{
+		scripts: {
+			docgen: ''
 		}
 	}
 ]);
