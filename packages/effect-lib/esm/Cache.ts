@@ -9,6 +9,8 @@
 import {
 	Array,
 	Equal,
+	Equivalence,
+	Hash,
 	Inspectable,
 	MutableHashMap,
 	MutableQueue,
@@ -23,11 +25,95 @@ import {
 import * as MInspectable from './Inspectable.js';
 import * as MPipeable from './Pipeable.js';
 import * as MTypes from './types.js';
-import * as MValueContainer from './ValueContainer.js';
 
 const moduleTag = '@parischap/effect-lib/Cache/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
+
+/**
+ * This namespace implements a ValueContainer which is a container for a value to be stored in a
+ * cache.
+ */
+namespace ValueContainer {
+	const namespaceTag = moduleTag + 'ValueContainer/';
+	const TypeId: unique symbol = Symbol.for(namespaceTag) as TypeId;
+	type TypeId = typeof TypeId;
+
+	/**
+	 * Interface that represents a ValueContainer
+	 *
+	 * @since 0.0.6
+	 * @category Models
+	 */
+	export interface Type<out A> extends Equal.Equal, Inspectable.Inspectable {
+		/**
+		 * The value calculated by the LookUp function
+		 *
+		 * @since 0.0.6
+		 */
+		readonly value: A;
+		/**
+		 * The time at which the value was calculated
+		 *
+		 * @since 0.0.6
+		 */
+		readonly storeDate: number;
+		/** @internal */
+		readonly [TypeId]: {
+			readonly _A: Types.Covariant<A>;
+		};
+	}
+
+	/**
+	 * Type guard
+	 *
+	 * @since 0.0.6
+	 * @category Guards
+	 */
+	export const has = (u: unknown): u is Type<unknown> => Predicate.hasProperty(u, TypeId);
+
+	/**
+	 * Equivalence for the value property
+	 *
+	 * @since 0.0.6 Equivalence
+	 */
+	export const getEquivalence = <A>(
+		isEquivalent: Equivalence.Equivalence<A>
+	): Equivalence.Equivalence<Type<A>> =>
+		Equivalence.make((self, that) => isEquivalent(self.value, that.value));
+
+	/**
+	 * Equivalence based on the equality of their values
+	 *
+	 * @since 0.0.6
+	 * @category Equivalences
+	 */
+	export const equivalence = getEquivalence(Equal.equals);
+
+	/** Prototype */
+	/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+	const proto: MTypes.Proto<Type<any>> = {
+		[TypeId]: {
+			_A: MTypes.covariantValue
+		},
+		[Equal.symbol]<A>(this: Type<A>, that: unknown): boolean {
+			return has(that) && equivalence(this, that);
+		},
+		[Hash.symbol]<A>(this: Type<A>) {
+			return Hash.cached(this, Hash.hash(this.value));
+		},
+		...MInspectable.BaseProto(moduleTag)
+	};
+
+	/**
+	 * Constructor
+	 *
+	 * @since 0.0.6
+	 * @category Constructors
+	 */
+	export const make = <A>(params: MTypes.Data<Type<A>>): Type<A> =>
+		MTypes.objectFromDataAndProto(proto, params);
+}
 
 /**
  * Type that represents the lookup function. In addition to the key, the lookup function receives a
@@ -64,7 +150,7 @@ export interface Type<in out A, in out B> extends Inspectable.Inspectable, Pipea
 	 *
 	 * @since 0.0.6
 	 */
-	readonly store: MutableHashMap.MutableHashMap<A, Option.Option<MValueContainer.Type<B>>>;
+	readonly store: MutableHashMap.MutableHashMap<A, Option.Option<ValueContainer.Type<B>>>;
 	/**
 	 * A queue used to track the order in which keys were inserted so as to remove the oldest keys
 	 * first in case the cache has bounded capacity
@@ -169,7 +255,7 @@ export const make = <A, B>({
 		lookUp,
 		capacity,
 		lifeSpan,
-		store: MutableHashMap.empty<A, Option.Option<MValueContainer.Type<B>>>(),
+		store: MutableHashMap.empty<A, Option.Option<ValueContainer.Type<B>>>(),
 		keyOrder: MutableQueue.unbounded<A>()
 	});
 
@@ -213,7 +299,7 @@ export const get =
 						MutableHashMap.set(
 							store,
 							a,
-							Option.some(MValueContainer.make({ value: result, storeDate: now }))
+							Option.some(ValueContainer.make({ value: result, storeDate: now }))
 						);
 						if (self.capacity !== undefined) {
 							/* eslint-disable-next-line functional/no-expression-statements */
@@ -260,7 +346,7 @@ export const get =
 								MutableHashMap.set(
 									store,
 									a,
-									Option.some(MValueContainer.make({ value: result, storeDate: now }))
+									Option.some(ValueContainer.make({ value: result, storeDate: now }))
 								);
 								if (self.capacity !== undefined)
 									/* eslint-disable-next-line functional/no-expression-statements */
