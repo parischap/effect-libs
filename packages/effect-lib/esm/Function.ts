@@ -76,8 +76,9 @@ export const isEquivalentTo =
 export const parameterNumber = (f: MTypes.AnyFunction) => f.length;
 
 /**
- * Function to memoize a function that takes no argument. Useful to initialize a constant only if it
- * is used and, in that case, to calculate it not more than once
+ * Function to memoize a function that takes no argument. Useful to initialize a time-consuming
+ * constant only when it is used (not at startup). Not that any unused constant will be tree-shaken,
+ * so do not use this function if startup time is not an issue.
  *
  * @since 0.0.6
  * @category Utils
