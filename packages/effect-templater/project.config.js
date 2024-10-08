@@ -5,24 +5,44 @@ import { basename, dirname, resolve } from 'node:path';
 const rootPath = resolve();
 const packageName = basename(rootPath);
 const repoName = basename(dirname(dirname(rootPath)));
-
 const packageJson = merge.all([
-	Configs.packageBase(packageName, repoName),
-	Configs.packageSubRepo,
-	Configs.packageSubRepoTranspiled,
-	Configs.packageSubRepoTranspiledEffect,
-	Configs.packageSubRepoPublic,
+	// Put it in first position so specific keywords come out first
 	{
-		description: 'A complement to the official effect library dedicated to templating',
+		description:
+			'A functional library to read from (PHP sscanf equivalent) and write to (PHP sprintf equivalent) a string with type checking',
 		peerDependencies: {
 			...Configs.utils.makeWorkspaceDevDep('js-lib'),
 			...Configs.utils.makeWorkspaceDevDep('effect-lib'),
 			effect: Configs.constants.effectVersion
 		},
+		devDependencies: {
+			[`${Configs.constants.scope}/${packageName}`]: 'link:.'
+		},
+		publishConfig: {
+			peerDependencies: {
+				[`${Configs.constants.scope}/js-lib`]: '^0.0.7',
+				[`${Configs.constants.scope}/effect-lib`]: '^0.3.3'
+			}
+		},
 		scripts: {
-			docgen: ''
-		}
-	}
+			examples: 'vite-node examples/stupid.ts'
+		},
+		keywords: [
+			'printf',
+			'sprintf',
+			'sscanf',
+			'template',
+			'format',
+			'templater',
+			'typescript',
+			'effect'
+		]
+	},
+	Configs.packageBase(packageName, repoName),
+	Configs.packageSubRepo,
+	Configs.packageSubRepoTranspiled,
+	Configs.packageSubRepoTranspiledEffect,
+	Configs.packageSubRepoPublic
 ]);
 
 export default {

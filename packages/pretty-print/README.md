@@ -21,21 +21,21 @@ Depending on the package manager you use, run one of the following commands in y
 - **Using npm:**
 
   ```sh
-  npm install effect @parischap/js-lib @parischap/effect-lib @parischap/pretty-print
+  npm install effect @parischap/effect-lib @parischap/pretty-print
   ```
 
 - **Using pnpm:**
 
   ```sh
-  pnpm add effect @parischap/js-lib @parischap/effect-lib @parischap/pretty-print
+  pnpm add effect @parischap/effect-lib @parischap/pretty-print
   ```
 
 - **Using yarn:**
   ```sh
-  yarn add effect @parischap/js-lib @parischap/effect-lib @parischap/pretty-print
+  yarn add effect @parischap/effect-lib @parischap/pretty-print
   ```
 
-We use three peerDependencies. If you are not an Effect user, the size may seem important. But, in fact, we use little of each peerDependency. Bundled, tree-shaken, minified, it's only about [18kB](https://bundlephobia.com/package/@parischap/pretty-print). Minified and gzipped, it falls to [4kB](https://bundlephobia.com/package/@parischap/pretty-print)! (source bundlephobia)
+We use two peerDependencies. If you are not an Effect user, the size may seem important. But, in fact, we use little of each peerDependency. Bundled, tree-shaken, minified, it's only about [18kB](https://bundlephobia.com/package/@parischap/pretty-print). Minified and gzipped, it falls to [4kB](https://bundlephobia.com/package/@parischap/pretty-print)! (source bundlephobia)
 
 ## API
 

@@ -1,19 +1,31 @@
 {
-	"name": "@parischap-dev/effect-templater",
-	"type": "module",
-	"sideEffects": [],
-	"author": "Jérôme MARTIN",
-	"license": "MIT",
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/parischap/effect-libs.git",
-		"directory": "packages/effect-templater"
+	"description": "A functional library to read from (PHP sscanf equivalent) and write to (PHP sprintf equivalent) a string with type checking",
+	"peerDependencies": {
+		"@parischap/js-lib": "workspace:@parischap-dev/js-lib@*",
+		"@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
+		"effect": "^3.8.4"
 	},
-	"bugs": {
-		"url": "https://github.com/parischap/effect-libs/issues"
+	"devDependencies": {
+		"@parischap/effect-templater": "link:."
 	},
-	"homepage": "https://github.com/parischap/effect-libs/tree/master/packages/effect-templater",
+	"publishConfig": {
+		"peerDependencies": {
+			"@parischap/js-lib": "^0.0.7",
+			"@parischap/effect-lib": "^0.3.3"
+		},
+		"main": "./cjs/index.js",
+		"types": "./dts/index.d.ts",
+		"scripts": {},
+		"exports": {
+			".": {
+				"types": "./dts/index.d.ts",
+				"import": "./esm/index.js",
+				"default": "./cjs/index.js"
+			}
+		}
+	},
 	"scripts": {
+		"examples": "vite-node examples/stupid.ts",
 		"tscheck": "tsc -b tsconfig.check.json --force ",
 		"lint": "eslint .",
 		"update-config-files": "update-config-files",
@@ -28,46 +40,50 @@
 		"prodify": "prodify",
 		"publish-to-npm": "cd dist && npm publish --access=public && cd ..",
 		"install-prod": "cd dist && pnpm i && cd ..",
-		"docgen": "",
+		"docgen": "docgen",
 		"transpile-esm": "tsc -b tsconfig.esm.json",
 		"transpile-cjs": "babel dist/esm --plugins @babel/transform-export-namespace-from --plugins @babel/transform-modules-commonjs --out-dir dist/cjs --source-maps",
 		"transpile-annotate": "babel dist --plugins annotate-pure-calls --out-dir dist --source-maps",
 		"build": "pnpm clean-prod && pnpm transpile-esm && pnpm transpile-cjs && pnpm transpile-annotate && cross-env IS_LIBRARY=true prodify && pnpm install-prod",
 		"build-and-publish": "pnpm build && pnpm checks && pnpm publish-to-npm"
 	},
+	"keywords": [
+		"printf",
+		"sprintf",
+		"sscanf",
+		"template",
+		"format",
+		"templater",
+		"typescript",
+		"effect",
+		"effect",
+		"typescript",
+		"functional-programming"
+	],
+	"name": "@parischap-dev/effect-templater",
+	"type": "module",
+	"sideEffects": [],
+	"author": "Jérôme MARTIN",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/parischap/effect-libs.git",
+		"directory": "packages/effect-templater"
+	},
+	"bugs": {
+		"url": "https://github.com/parischap/effect-libs/issues"
+	},
+	"homepage": "https://github.com/parischap/effect-libs/tree/master/packages/effect-templater",
 	"module": "./esm/index.js",
 	"exports": {
 		".": {
 			"import": "./esm/index.ts"
 		}
 	},
-	"publishConfig": {
-		"main": "./cjs/index.js",
-		"types": "./dts/index.d.ts",
-		"scripts": {},
-		"exports": {
-			".": {
-				"types": "./dts/index.d.ts",
-				"import": "./esm/index.js",
-				"default": "./cjs/index.js"
-			}
-		}
-	},
-	"keywords": [
-		"effect",
-		"typescript",
-		"functional-programming"
-	],
 	"funding": [
 		{
 			"type": "ko-fi",
 			"url": "https://ko-fi.com/parischap"
 		}
-	],
-	"description": "A complement to the official effect library dedicated to templating",
-	"peerDependencies": {
-		"@parischap/js-lib": "workspace:@parischap-dev/js-lib@*",
-		"@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
-		"effect": "^3.8.4"
-	}
+	]
 }

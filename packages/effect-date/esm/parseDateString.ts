@@ -1,5 +1,5 @@
 import { MArray, MString, MTypes } from '@parischap/effect-lib';
-import { JsRegExp } from '@parischap/js-lib';
+import { MRegExp } from '@parischap/js-lib';
 import * as Basis from './Basis.js';
 import * as Errors from './Errors.js';
 import * as MergedToken from './MergedToken.js';
@@ -47,7 +47,7 @@ export const parseDateString = (
 
 		const [formatPattern, tokensInOrder] = pipe(
 			format,
-			JsRegExp.escape,
+			MRegExp.escape,
 			MString.replaceMulti(Token.structWithMergedToken, ({ parsePattern }) => parsePattern)
 		);
 

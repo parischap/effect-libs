@@ -11,7 +11,7 @@ interface MonthDescriptor {
 	readonly monthStartMs: number;
 }
 
-type Months = ReadonlyArray<MonthDescriptor>;
+interface Months extends ReadonlyArray<MonthDescriptor> {}
 
 const MAX_FULL_YEAR_OFFSET = 273_789;
 const MAX_FULL_YEAR = 1970 + MAX_FULL_YEAR_OFFSET;

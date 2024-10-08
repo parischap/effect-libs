@@ -9,16 +9,7 @@
  *
  * @since 0.0.6
  */
-import {
-	MArray,
-	MBadArgumentError,
-	MEither,
-	MFunction,
-	MSearchResult,
-	MString,
-	MTuple,
-	MTypes
-} from '@parischap/effect-lib';
+import { MArray, MEither, MFunction, MString, MTuple, MTypes } from '@parischap/effect-lib';
 import {
 	Array,
 	Cause,
@@ -116,8 +107,8 @@ export const make = <const T extends string>(
 		// Suppress overlapping targets keeping the foremost longest one
 		Array.sort(
 			Order.mapInput(
-				MSearchResult.byLongestFirst,
-				([_, sR]: readonly [number, MSearchResult.Type]) => sR
+				MString.SearchResult.byLongestFirst,
+				([_, sR]: readonly [number, MString.SearchResult.Type]) => sR
 			)
 		),
 		Array.chop((indexedSearchResults) => {
