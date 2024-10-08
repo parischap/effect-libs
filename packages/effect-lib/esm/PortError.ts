@@ -6,7 +6,7 @@
 
 import { Data } from 'effect';
 
-export const moduleTag = '@parischap/effect-lib/PortError/';
+const moduleTag = '@parischap/effect-lib/PortError/';
 
 /**
  * FunctionPort signals an error that occurs while Effectifying a function

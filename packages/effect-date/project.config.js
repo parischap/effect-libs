@@ -16,7 +16,6 @@ const packageJson = merge.all([
 	{
 		description: 'A complement to the official effect library dedicated to date and time',
 		peerDependencies: {
-			...Configs.utils.makeWorkspaceDevDep('js-lib'),
 			...Configs.utils.makeWorkspaceDevDep('effect-lib'),
 			...Configs.utils.makeWorkspaceDevDep('effect-templater'),
 			effect: Configs.constants.effectVersion

@@ -15,7 +15,6 @@ const packageJson = merge.all([
 	{
 		description: 'A complement to the official @effect/platform library with add-ons for Node.js',
 		peerDependencies: {
-			...Configs.utils.makeWorkspaceDevDep('js-lib'),
 			...Configs.utils.makeWorkspaceDevDep('effect-lib'),
 			'@effect/platform': Configs.constants.effectPlatformVersion,
 			'@effect/platform-node': Configs.constants.effectPlatformNodeVersion,

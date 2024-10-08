@@ -11,7 +11,6 @@ const packageJson = merge.all([
 		description:
 			'A functional library to read from (PHP sscanf equivalent) and write to (PHP sprintf equivalent) a string with type checking',
 		peerDependencies: {
-			...Configs.utils.makeWorkspaceDevDep('js-lib'),
 			...Configs.utils.makeWorkspaceDevDep('effect-lib'),
 			effect: Configs.constants.effectVersion
 		},
@@ -20,7 +19,6 @@ const packageJson = merge.all([
 		},
 		publishConfig: {
 			peerDependencies: {
-				[`${Configs.constants.scope}/js-lib`]: '^0.0.7',
 				[`${Configs.constants.scope}/effect-lib`]: '^0.3.3'
 			}
 		},

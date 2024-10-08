@@ -1,6 +1,5 @@
 /** @since 0.0.6 */
 import { MBadArgumentError, MFunction } from '@parischap/effect-lib';
-import { JsPatches } from '@parischap/js-lib';
 import { Array, Either, Function, Number, Option, Struct, pipe } from 'effect';
 import * as Errors from './Errors.js';
 

@@ -15,7 +15,6 @@ const packageJson = merge.all([
 	{
 		description: 'Playground',
 		dependencies: {
-			'@parischap/js-lib': '^0.0.7',
 			'@parischap/effect-lib': '^0.3.3',
 			effect: '^3.8.4',
 			'@parischap/pretty-print': '^0.2.0'

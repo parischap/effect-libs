@@ -52,8 +52,7 @@
 		}
 	},
 	"dependencies": {
-		"@effect/experimental": "^0.27.3",
-		"@parischap/js-lib": "^0.0.7",
+		"@effect/experimental": "^0.28.1",
 		"@parischap/effect-lib": "^0.3.3",
 		"effect": "^3.8.4",
 		"@parischap/pretty-print": "^0.2.0"

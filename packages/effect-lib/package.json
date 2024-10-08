@@ -51,9 +51,6 @@
 				"import": "./esm/index.js",
 				"default": "./cjs/index.js"
 			}
-		},
-		"peerDependencies": {
-			"@parischap/js-lib": "^0.0.7"
 		}
 	},
 	"keywords": [
@@ -69,9 +66,8 @@
 	],
 	"description": "An extension to the official Effect library",
 	"peerDependencies": {
-		"@parischap/js-lib": "workspace:@parischap-dev/js-lib@*",
-		"effect": "^3.8.4",
-		"@effect/typeclass": "^0.27.4"
+		"effect": "^3.9.1",
+		"@effect/typeclass": "^0.28.1"
 	},
 	"devDependencies": {
 		"@parischap/effect-lib": "link:."

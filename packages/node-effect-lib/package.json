@@ -66,11 +66,10 @@
 	],
 	"description": "A complement to the official @effect/platform library with add-ons for Node.js",
 	"peerDependencies": {
-		"@parischap/js-lib": "workspace:@parischap-dev/js-lib@*",
 		"@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
-		"@effect/platform": "^0.66.2",
-		"@effect/platform-node": "^0.61.3",
-		"@effect/schema": "^0.74.1",
-		"effect": "^3.8.4"
+		"@effect/platform": "^0.67.1",
+		"@effect/platform-node": "^0.62.1",
+		"@effect/schema": "^0.75.1",
+		"effect": "^3.9.1"
 	}
 }

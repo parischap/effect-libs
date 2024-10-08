@@ -1,16 +1,14 @@
 {
 	"description": "A functional library to read from (PHP sscanf equivalent) and write to (PHP sprintf equivalent) a string with type checking",
 	"peerDependencies": {
-		"@parischap/js-lib": "workspace:@parischap-dev/js-lib@*",
 		"@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
-		"effect": "^3.8.4"
+		"effect": "^3.9.1"
 	},
 	"devDependencies": {
 		"@parischap/effect-templater": "link:."
 	},
 	"publishConfig": {
 		"peerDependencies": {
-			"@parischap/js-lib": "^0.0.7",
 			"@parischap/effect-lib": "^0.3.3"
 		},
 		"main": "./cjs/index.js",

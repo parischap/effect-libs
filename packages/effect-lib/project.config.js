@@ -15,18 +15,12 @@ const packageJson = merge.all([
 	{
 		description: 'An extension to the official Effect library',
 		peerDependencies: {
-			...Configs.utils.makeWorkspaceDevDep('js-lib'),
 			//'@effect/schema': Configs.constants.effectSchemaVersion,
 			effect: Configs.constants.effectVersion,
 			'@effect/typeclass': Configs.constants.effectTypeClassVersion
 		},
 		devDependencies: {
 			[`${Configs.constants.scope}/${packageName}`]: 'link:.'
-		},
-		publishConfig: {
-			peerDependencies: {
-				[`${Configs.constants.scope}/js-lib`]: '^0.0.7'
-			}
 		}
 	}
 ]);

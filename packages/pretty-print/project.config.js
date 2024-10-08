@@ -10,7 +10,6 @@ const packageJson = merge.all([
 	{
 		description: 'A functional library to pretty-print and treeify objects',
 		peerDependencies: {
-			...Configs.utils.makeWorkspaceDevDep('js-lib'),
 			...Configs.utils.makeWorkspaceDevDep('effect-lib'),
 			effect: Configs.constants.effectVersion
 		},
