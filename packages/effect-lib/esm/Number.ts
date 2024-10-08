@@ -24,7 +24,8 @@ export const unsafeIntFromString = (s: string): number => parseInt(s, 10);
 export const unsafeFromString = (s: string): number => +s;
 
 /**
- * Modulo - Use only with integers - Divisor must be positive.
+ * Modulo - Use only with integers - Divisor must be positive. Unlike javascript remainder operator
+ * (%), this function always returns a positive integer even if self is negative
  *
  * @since 0.0.6
  * @category Utils
@@ -34,6 +35,22 @@ export const intModulo =
 	(divisor: number) =>
 	(self: number): number =>
 		self >= 0 ? self % divisor : (self % divisor) + divisor;
+
+/**
+ * Returns the `quotient` and `remainder` of the division of `self` by `divisor`. `remainder` is
+ * always positive
+ *
+ * @since 0.4.0
+ * @category Utils
+ */
+
+export const quotientAndRemainder =
+	(divisor: number) =>
+	(self: number): [quotient: number, remainder: number] => {
+		const quotient = Math.floor(self / divisor);
+		return [quotient, self - quotient * divisor];
+	};
+
 /**
  * Returns true if the provided number is NaN, Infinity, +Infinity or -Infinity
  *
