@@ -70,3 +70,36 @@ export namespace Email {
 		(s) => Brand.error(`'${s}' does not represent an Email`)
 	);
 }
+
+export namespace SemVer {
+	const TypeId: unique symbol = Symbol.for(moduleTag + 'SemVer/') as TypeId;
+	type TypeId = typeof TypeId;
+
+	/**
+	 * SemVer type
+	 *
+	 * @since 0.3.4
+	 * @category Models
+	 */
+	export type Type = Brand.Branded<string, TypeId>;
+
+	/**
+	 * Constructs a SemVer without any verifications
+	 *
+	 * @since 0.3.4
+	 * @category Constructors
+	 */
+	export const unsafeFromString = Brand.nominal<Type>();
+
+	/**
+	 * Constructs a SemVer from a string. Throws an error if the provided string does not match the
+	 * `semVer` pattern
+	 *
+	 * @since 0.3.4
+	 * @category Constructors
+	 */
+	export const fromString = Brand.refined<Type>(
+		(s) => MRegExp.semVerRegExp.test(s),
+		(s) => Brand.error(`'${s}' does not represent a SemVer`)
+	);
+}
