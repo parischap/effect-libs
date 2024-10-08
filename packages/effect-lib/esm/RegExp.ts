@@ -321,21 +321,24 @@ export namespace FloatingPointOptions {
 		readonly fractionalSep: string;
 		/**
 		 * Thousand separator. Must be escaped if it containes regular expression special characters.
-		 * Use an empty string for no separator.
+		 * Use an empty string for no separator. `fractionalSep` should not contain or be included in
+		 * `thousandSep`.
 		 *
 		 * @since 0.0.1
 		 */
 		readonly thousandSep: string;
 		/**
 		 * Maximum number of decimal digits. Must be a positive integer (+Infinity is allowed). Do not
-		 * set `maxDecimalDigits` and `maxFractionalDigits` to 0 at the same time.
+		 * set `maxDecimalDigits` and `maxFractionalDigits` to 0 at the same time. `thousandSep` should
+		 * not contain or be included in `fractionalSep`.
 		 *
 		 * @since 0.0.1
 		 */
 		readonly maxDecimalDigits: number;
 		/**
 		 * Minimum number of fractional digits. Must be a positive integer less than or equal to
-		 * `maxFractionalDigits`. Use 0 for integers.
+		 * `maxFractionalDigits`. Use 0 for integers. Do not set `maxDecimalDigits` and
+		 * `maxFractionalDigits` to 0 at the same time unless you know what you are doing.
 		 *
 		 * @since 0.0.1
 		 */
@@ -343,7 +346,8 @@ export namespace FloatingPointOptions {
 		/**
 		 * Maximum number of fractional digits. Must be a positive integer greater than or equal to
 		 * `minFractionalDigits` (+Infinity is allowed). Use 0 for integers. Do not set
-		 * `maxDecimalDigits` and `maxFractionalDigits` to 0 at the same time.
+		 * `maxDecimalDigits` and `maxFractionalDigits` to 0 at the same time unless you know what you
+		 * are doing.
 		 *
 		 * @since 0.0.1
 		 */
@@ -462,17 +466,7 @@ export namespace FloatingPointOptions {
 
 const _flippedRepeatBetween0AndN = (s: string) => (n: number) => repeatBetween(0, n)(s);
 /**
- * A regular expression string representing a real number with `signOption` indicating how a sign
- * may be present, `fractionalSep` as separator between the decimal and fractional parts,
- * `thousandSep` as separator between 3-digit groups in the decimal part, `maxDecimalDigits` the
- * maximal number of digits in the decimal part and with between `minFractionalDigits` and
- * `maxFractionalDigits` fractional digits. `maxDecimalDigits` must be a positive integer (+Infinity
- * is allowed). `fractionalSep` and `thousandSep` must be escaped if they contain regular expression
- * special characters. `minFractionalDigits` and `maxFractionalDigits` must be positive integers
- * with `maxFractionalDigits` >= `minFractionalDigits`. Pass 0 to `maxFractionalDigits`if you want a
- * regular expression string representing an integer. `maxFractionalDigits` may receive the
- * `+Infinity` value. Do not set maxDecimalDigits and maxFractionalDigits to 0 at the same time
- * unless yopu know whate you are doing
+ * A regular expression string representing a real number
  *
  * @since 0.4.0
  * @category Instances
