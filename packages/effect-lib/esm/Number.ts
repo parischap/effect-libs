@@ -37,8 +37,8 @@ export const intModulo =
 		self >= 0 ? self % divisor : (self % divisor) + divisor;
 
 /**
- * Returns the `quotient` and `remainder` of the division of `self` by `divisor`. `remainder` is
- * always positive
+ * Returns the `quotient` and `remainder` of the division of `self` by `divisor`. `remainder` always
+ * has the sign of `divisor`.
  *
  * @since 0.4.0
  * @category Utils
