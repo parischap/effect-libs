@@ -18,8 +18,8 @@ export const formatDate = (
 			Array.fromIterable,
 			// We sort the patterns in reverse order so smaller patterns match after larger ones in which they may be included.
 			Array.sort(Order.reverse(Order.string)),
-			(arr) => MRegExp.either(...arr),
-			MRegExp.capture
+			(arr) => MRegExpString.either(...arr),
+			MRegExpString.capture
 		),
 		'g'
 	);

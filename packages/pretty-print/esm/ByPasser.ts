@@ -12,7 +12,15 @@
  * @since 0.0.1
  */
 
-import { MInspectable, MMatch, MOption, MPipeable, MRegExp, MString, MTypes } from '@parischap/effect-lib';
+import {
+	MInspectable,
+	MMatch,
+	MOption,
+	MPipeable,
+	MRegExp,
+	MString,
+	MTypes
+} from '@parischap/effect-lib';
 
 import {
 	Array,
@@ -230,7 +238,8 @@ export const objectAsValue = (colorSet: ColorSet.Type): Type =>
 						MString.tryToStringToJSON,
 						Option.map(
 							flow(
-								String.split(MRegExp.globalLineBreakRegExp),
+								// split resets RegExp.prototype.lastIndex after executing
+								String.split(MRegExp.globalLineBreak),
 								Array.map(FormattedString.makeWith(colorSet.otherValueColorer))
 							)
 						)

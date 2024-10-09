@@ -18,12 +18,12 @@ import {
 	flow,
 	pipe
 } from 'effect';
-import * as MArray from './Array.js';
 import * as MColor from './Color.js';
 import * as MFunction from './Function.js';
 import * as MInspectable from './Inspectable.js';
 import * as MMatch from './Match.js';
 import * as MRegExp from './RegExp.js';
+import * as MRegExpString from './RegExpString.js';
 import * as MTypes from './types.js';
 
 const moduleTag = '@parischap/effect-lib/String/';
@@ -435,9 +435,9 @@ export const replaceBetween =
  * @category Utils
  */
 export const match =
-	(regexp: RegExp) =>
+	(regExp: RegExp) =>
 	(self: string): Option.Option<string> =>
-		pipe(regexp.exec(self), Option.fromNullable, Option.map(MArray.unsafeGet(0)));
+		pipe(regExp, MRegExp.match(self));
 
 /**
  * Splits `self` in two parts at position `n`. The length of the first string is `n` (characters `0`
@@ -515,7 +515,8 @@ export const tabify =
 	(tabChar: string, count = 1) =>
 	(self: string) => {
 		const tab = tabChar.repeat(count);
-		return tab + self.replace(MRegExp.globalLineBreakRegExp, '$&' + tab);
+		// replace resets RegExp.prototype.lastIndex after executing
+		return tab + self.replace(MRegExp.globalLineBreak, '$&' + tab);
 	};
 
 /**
@@ -524,7 +525,7 @@ export const tabify =
  * @since 0.4.0
  * @category Utils
  */
-export const isMultiLine = (self: string): boolean => MRegExp.globalLineBreakRegExp.test(self);
+export const isMultiLine = (self: string): boolean => MRegExp.lineBreak.test(self);
 
 /**
  * Applies an ANSI color to `self`
@@ -533,3 +534,46 @@ export const isMultiLine = (self: string): boolean => MRegExp.globalLineBreakReg
  * @category Utils
  */
 export const colorize = (color: MColor.Type) => (self: string) => MColor.applyToString(self)(color);
+
+/**
+ * Reads a real number from the start of `self`. Returns a `none` if `self` does not start by a real
+ * number
+ *
+ * @since 0.5.0
+ * @category Utils
+ */
+export const readRealNumberFromStart =
+	(options: Partial<MRegExpString.RealNumberOptions.Type> = {}) =>
+	(self: string): Option.Option<string> =>
+		pipe(options, MRegExp.realNumberAtStart, MRegExp.match(self));
+
+/**
+ * Reads a real number from `self`. Returns a `none` if the `self` is not a real number
+ *
+ * @since 0.5.0
+ * @category Utils
+ */
+export const readRealNumber =
+	(options: Partial<MRegExpString.RealNumberOptions.Type> = {}) =>
+	(self: string): Option.Option<string> =>
+		pipe(
+			self,
+			readRealNumberFromStart(options),
+			Option.filter((numString) => numString.length === self.length)
+		);
+
+/**
+ * Returns true if `self` is a SemVer
+ *
+ * @since 0.5.0
+ * @category Predicates
+ */
+export const isSemVer = (self: string): boolean => MRegExp.semVer.test(self);
+
+/**
+ * Returns true if `self` is an email
+ *
+ * @since 0.5.0
+ * @category Predicates
+ */
+export const isEmail = (self: string): boolean => MRegExp.email.test(self);

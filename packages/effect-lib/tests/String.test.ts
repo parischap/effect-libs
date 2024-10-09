@@ -1,5 +1,5 @@
 /* eslint-disable functional/no-expression-statements */
-import { MString } from '@parischap/effect-lib';
+import { MColor, MString } from '@parischap/effect-lib';
 import { Array, Chunk, Equal, Option, pipe, String } from 'effect';
 import { describe, expect, it } from 'vitest';
 
@@ -458,6 +458,47 @@ describe('MString', () => {
 		});
 		it('Value 3', () => {
 			expect(simpleTabify('foo\r\nfoo1')).toBe('aaaaaafoo\r\naaaaaafoo1');
+		});
+	});
+
+	describe('isMultiLine', () => {
+		it('Matching - Windows', () => {
+			expect(MString.isMultiLine('foo\r\nbar')).toBe(true);
+		});
+		it('Matching - Mac Os before X', () => {
+			expect(MString.isMultiLine('foo\rbar')).toBe(true);
+		});
+		it('Matching - UNIX, Mac Os X', () => {
+			expect(MString.isMultiLine('foo\nbar')).toBe(true);
+		});
+		it('Not matching - foo', () => {
+			expect(MString.isMultiLine('foo')).toBe(false);
+		});
+	});
+
+	describe('colorize', () => {
+		it('Simple color', () => {
+			expect(pipe('foo', MString.colorize(MColor.red))).toBe('\x1b[31mfoo\x1b[0m');
+		});
+	});
+
+	describe('readRealNumberFromStart', () => {
+		it('Simple match', () => {
+			expect(
+				pipe('127.13foo', MString.readRealNumberFromStart(), Equal.equals(Option.some('127.13')))
+			).toBe(true);
+		});
+	});
+
+	describe('readRealNumber', () => {
+		it('Matching', () => {
+			expect(pipe('127.13', MString.readRealNumber(), Equal.equals(Option.some('127.13')))).toBe(
+				true
+			);
+		});
+
+		it('Not matching', () => {
+			expect(pipe('127.13foo', MString.readRealNumber(), Equal.equals(Option.none()))).toBe(true);
 		});
 	});
 });

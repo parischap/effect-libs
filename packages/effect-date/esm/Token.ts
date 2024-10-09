@@ -1,5 +1,5 @@
 import { MBadArgumentError, MFunction, MMatch, MNumber, MTuple } from '@parischap/effect-lib';
-import { MRegExp } from '@parischap/js-lib';
+import { MRegExpString } from '@parischap/js-lib';
 import { Array, Either, HashMap, HashSet, Number, Record, String, Tuple, flow, pipe } from 'effect';
 import { compose } from 'effect/Function';
 import * as MergedToken from './MergedToken.js';
@@ -31,11 +31,13 @@ const Descriptor = MFunction.make<Descriptor>;
 const getFullName = (self: Descriptor) => `${self.name}(${self.label})`;
 
 // Regular expressions
-const twoDigits = new RegExp(MRegExp.digit + MRegExp.digit);
-const threeDigits = new RegExp(MRegExp.digit + MRegExp.digit + MRegExp.digit);
-const fourDigits = new RegExp(MRegExp.digit + MRegExp.digit + MRegExp.digit + MRegExp.digit);
-const positiveInt = new RegExp(MRegExp.positiveInt);
-const anyWord = new RegExp(MRegExp.anyWord);
+const twoDigits = new RegExp(MRegExpString.digit + MRegExpString.digit);
+const threeDigits = new RegExp(MRegExpString.digit + MRegExpString.digit + MRegExpString.digit);
+const fourDigits = new RegExp(
+	MRegExpString.digit + MRegExpString.digit + MRegExpString.digit + MRegExpString.digit
+);
+const positiveInt = new RegExp(MRegExpString.positiveInt);
+const anyWord = new RegExp(MRegExpString.anyWord);
 
 /** Returns an error for an unknown locale */
 const localeError = (
@@ -342,7 +344,7 @@ const array = Array.make(
 	Descriptor({
 		name: 'a',
 		label: 'meridiem',
-		parsePattern: new RegExp(MRegExp.anyWordLetter + MRegExp.anyWordLetter),
+		parsePattern: new RegExp(MRegExpString.anyWordLetter + MRegExpString.anyWordLetter),
 		tokenToMergedToken: MFunction.once(() =>
 			flow(String.toUpperCase, disallowedTokenValue(meridiemMap), Either.right)
 		),
@@ -400,7 +402,7 @@ const array = Array.make(
 	Descriptor({
 		name: 'Z',
 		label: 'narrow zone offset',
-		parsePattern: new RegExp(MRegExp.sign + MRegExp.positiveInt),
+		parsePattern: new RegExp(MRegExpString.sign + MRegExpString.positiveInt),
 		tokenToMergedToken: numberFromString,
 		mergedToken: 'timeZoneOffset'
 	}),
@@ -409,7 +411,12 @@ const array = Array.make(
 		name: 'ZZ',
 		label: 'short zone offset',
 		parsePattern: new RegExp(
-			MRegExp.sign + MRegExp.digit + MRegExp.digit + ':' + MRegExp.digit + MRegExp.digit
+			MRegExpString.sign +
+				MRegExpString.digit +
+				MRegExpString.digit +
+				':' +
+				MRegExpString.digit +
+				MRegExpString.digit
 		),
 		tokenToMergedToken: numberFromZoneString,
 		mergedToken: 'timeZoneOffset'
@@ -419,7 +426,11 @@ const array = Array.make(
 		name: 'ZZZ',
 		label: 'techie zone offset',
 		parsePattern: new RegExp(
-			MRegExp.sign + MRegExp.digit + MRegExp.digit + MRegExp.digit + MRegExp.digit
+			MRegExpString.sign +
+				MRegExpString.digit +
+				MRegExpString.digit +
+				MRegExpString.digit +
+				MRegExpString.digit
 		),
 		tokenToMergedToken: numberFromZoneString,
 		mergedToken: 'timeZoneOffset'

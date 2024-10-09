@@ -7,23 +7,22 @@
 
 import {
 	MBrand,
-	MCache,
 	MInspectable,
 	MNumber,
 	MPipeable,
-	MRegExp,
+	MRegExpString,
 	MString,
 	MTypes
 } from '@parischap/effect-lib';
 import {
 	Array,
-	Brand,
 	Either,
 	Equal,
 	Equivalence,
 	flow,
 	Hash,
 	Inspectable,
+	MutableHashMap,
 	Option,
 	pipe,
 	Pipeable,
@@ -117,6 +116,9 @@ const proto: MTypes.Proto<Type<any>> = {
 export const make = <A>(params: MTypes.Data<Type<A>>): Type<A> =>
 	MTypes.objectFromDataAndProto(proto, params);
 
+/** Cache for Transformers */
+const cache = MutableHashMap.empty<string, Type<unknown>>();
+
 /**
  * Transformer instance that reads/writes a string
  *
@@ -130,110 +132,112 @@ export const string: Type<string> = make({
 });
 
 /**
- * Cache instance that stores regular expressions to read real numbers in floating point format from
- * the start of a string
- */
-const floatingPointRegExpCache = MCache.make({
-	lookUp: ({ key }: { readonly key: MRegExp.FloatingPointOptions.Type }) =>
-		Tuple.make(
-			new RegExp(
-				MRegExp.atStart(
-					MRegExp.floatingPoint(
-						key.signOption,
-						key.fractionalSep,
-						key.thousandSep,
-						key.maxDecimalDigits,
-						key.minFractionalDigits,
-						key.maxFractionalDigits
-					)
-				)
-			),
-			true
-		)
-});
-
-/**
- * Transformer instance that reads/writes a real number in floating point format.
+ * Cached transformer instance that reads/writes a real number in floating point format.
  *
  * @since 0.0.1
  * @category Instances
  */
-export const floatingPoint = (
-	options: MRegExp.FloatingPointOptions.Type
+export const realNumber = (
+	options: Partial<MRegExpString.RealNumberOptions.Type>
 ): Type<MBrand.Real.Type> => {
-	const digitAndSepLength = options.thousandSep.length + 3;
+	const withDefaults = MRegExpString.RealNumberOptions.withDefaults(options);
+	const name = `realNumber-${MRegExpString.RealNumberOptions.name(withDefaults)}`;
 
-	const signPartOptions = pipe(
-		options,
-		MRegExp.FloatingPointOptions.withNoDecimalPart,
-		MRegExp.FloatingPointOptions.withNoFractionalPart,
-		MRegExp.FloatingPointOptions.withNoENotation
-	);
+	return pipe(
+		cache,
+		MutableHashMap.get(name),
+		Option.getOrElse(() => {
+			const digitGroupAndSepLength = withDefaults.thousandSep.length + 3;
 
-	const decPartOptions = pipe(
-		options,
-		MRegExp.FloatingPointOptions.withNoSign,
-		MRegExp.FloatingPointOptions.withNoFractionalPart,
-		MRegExp.FloatingPointOptions.withNoENotation
-	);
-
-	const fracPartOptions = pipe(
-		options,
-		MRegExp.FloatingPointOptions.withNoSign,
-		MRegExp.FloatingPointOptions.withNoDecimalPart
-	);
-
-	const signPartRegExp = MRegExp.floatingPointAtStartRegExp(signPartOptions);
-	const decPartRegExp = MRegExp.floatingPointAtStartRegExp(decPartOptions);
-	const fracPartRegExp = MRegExp.floatingPointAtStartRegExp(fracPartOptions);
-
-	return make({
-		name: `floatingPoint-${MRegExp.FloatingPointOptions.name(options)}`,
-
-		read: (input) => {
-			const signPart = pipe(
-				input,
-				MString.match(signPartRegExp),
-				Option.getOrElse(() => '')
+			const signPartOptions = pipe(
+				withDefaults,
+				MRegExpString.RealNumberOptions.withNoDecimalPart,
+				MRegExpString.RealNumberOptions.withNoFractionalPart,
+				MRegExpString.RealNumberOptions.withNoENotation
 			);
 
-			const withoutSign = pipe(input, MString.takeRightBut(signPart.length));
-			const decPart = pipe(
-				withoutSign,
-				MString.match(decPartRegExp),
-				Option.getOrElse(() => '')
+			const decPartOptions = pipe(
+				withDefaults,
+				MRegExpString.RealNumberOptions.withNoSign,
+				MRegExpString.RealNumberOptions.withNoFractionalPart,
+				MRegExpString.RealNumberOptions.withNoENotation
 			);
 
-			const withoutSignAndDecPart = pipe(withoutSign, MString.takeRightBut(decPart.length));
-			const fracPart = pipe(
-				withoutSignAndDecPart,
-				MString.match(fracPartRegExp),
-				Option.getOrElse(() => '')
+			const fracPartOptions = pipe(
+				withDefaults,
+				MRegExpString.RealNumberOptions.withNoSign,
+				MRegExpString.RealNumberOptions.withNoDecimalPart
 			);
 
-			const rest = pipe(withoutSignAndDecPart, MString.takeRightBut(fracPart.length));
+			const signPartRegExp = MRegExpString.realNumberAtStart(signPartOptions);
+			const decPartRegExp = MRegExpString.realNumberAtStart(decPartOptions);
+			const fracPartRegExp = MRegExpString.realNumberAtStart(fracPartOptions);
 
-			const decPartWithoutSep = pipe(
-				decPart,
-				MString.splitEquallyRestAtStart(digitAndSepLength),
-				Array.map(String.takeRight(3)),
-				Array.join('')
-			);
+			return make({
+				name,
 
-			return pipe(
-				signPart + decPartWithoutSep + fracPart,
-				Either.liftPredicate(String.isNonEmpty, () =>
-					Brand.error(`Could not read real number from ${input}`)
-				),
-				Either.map(flow(MNumber.unsafeFromString, Tuple.make, Tuple.appendElement(rest)))
-			);
-		},
-		write: (input) =>
-			pipe(
-				input,
-				MString.fromPrimitive,
-				MString.splitEquallyRestAtStart(3),
-				Array.join(thousandSeparator)
-			) as never
-	});
+				read: (input) => {
+					const signPart = pipe(
+						input,
+						MString.match(signPartRegExp),
+						Option.getOrElse(() => '')
+					);
+
+					const withoutSign = pipe(input, MString.takeRightBut(signPart.length));
+					const decPart = pipe(
+						withoutSign,
+						MString.match(decPartRegExp),
+						Option.getOrElse(() => '')
+					);
+
+					const withoutSignAndDecPart = pipe(withoutSign, MString.takeRightBut(decPart.length));
+					const fracPart = pipe(
+						withoutSignAndDecPart,
+						MString.match(fracPartRegExp),
+						Option.getOrElse(() => '')
+					);
+
+					const rest = pipe(withoutSignAndDecPart, MString.takeRightBut(fracPart.length));
+
+					const decPartWithoutSep = pipe(
+						decPart,
+						Option.liftPredicate(String.isNonEmpty),
+						Option.map(
+							flow(
+								MString.splitEquallyRestAtStart(digitGroupAndSepLength),
+								Array.map(String.takeRight(3)),
+								Array.join('')
+							)
+						),
+						Option.getOrElse(() => '')
+					);
+
+					const fracPartWithJavascriptFracSep = pipe(
+						fracPart,
+						Option.liftPredicate(String.isNonEmpty),
+						Option.map(
+							flow(MString.takeRightBut(withDefaults.fractionalSep.length), MString.prepend('.'))
+						),
+						Option.getOrElse(() => '')
+					);
+
+					return pipe(
+						signPart + decPartWithoutSep + fracPartWithJavascriptFracSep,
+						Either.liftPredicate(
+							String.isNonEmpty,
+							() => new Error.Type({ message: `Could not read real number from ${input}` })
+						),
+						Either.map(flow(MNumber.unsafeFromString, Tuple.make, Tuple.appendElement(rest)))
+					);
+				},
+				write: (input) =>
+					pipe(
+						input,
+						MString.fromPrimitive,
+						MString.splitEquallyRestAtStart(3),
+						Array.join(thousandSeparator)
+					) as never
+			});
+		})
+	) as Type<MBrand.Real.Type>;
 };

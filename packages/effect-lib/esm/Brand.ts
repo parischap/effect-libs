@@ -6,7 +6,7 @@
 
 import { Brand, Either, Number, Option, Predicate } from 'effect';
 import * as MNumber from './Number.js';
-import * as MRegExp from './RegExp.js';
+import * as MString from './String.js';
 
 const moduleTag = '@parischap/effect-lib/Brand/';
 
@@ -72,9 +72,8 @@ export namespace Email {
 	 * @since 0.3.4
 	 * @category Constructors
 	 */
-	export const fromString = Brand.refined<Type>(
-		(s) => MRegExp.emailRegExp.test(s),
-		(s) => Brand.error(`'${s}' does not represent an Email`)
+	export const fromString = Brand.refined<Type>(MString.isEmail, (s) =>
+		Brand.error(`'${s}' does not represent an Email`)
 	);
 }
 
@@ -111,9 +110,8 @@ export namespace SemVer {
 	 * @since 0.3.4
 	 * @category Constructors
 	 */
-	export const fromString = Brand.refined<Type>(
-		(s) => MRegExp.semVerRegExp.test(s),
-		(s) => Brand.error(`'${s}' does not represent a SemVer`)
+	export const fromString = Brand.refined<Type>(MString.isSemVer, (s) =>
+		Brand.error(`'${s}' does not represent a SemVer`)
 	);
 }
 
