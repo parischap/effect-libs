@@ -5,15 +5,6 @@
  */
 
 /**
- * Constructs an integer from a string in base 10. Does not check input format and can return NaN
- *
- * @since 0.0.6
- * @category Constructors
- */
-
-export const unsafeIntFromString = (s: string): number => parseInt(s, 10);
-
-/**
  * Constructs a number from a string. Does not check input format and can return NaN, 'Infinity',
  * '+Infinity', '-Infinity'
  *
@@ -50,6 +41,18 @@ export const quotientAndRemainder =
 		const quotient = Math.floor(self / divisor);
 		return [quotient, self - quotient * divisor];
 	};
+
+/**
+ * Returns the decimal and fractional parts of a number.
+ *
+ * @since 0.4.0
+ * @category Utils
+ */
+
+export const decAndFracParts = (self: number): [decPart: number, fracPart: number] => {
+	const decPart = Math.floor(self) + (self < 0 ? 1 : 0);
+	return [decPart, self - decPart];
+};
 
 /**
  * Returns true if the provided number is NaN, Infinity, +Infinity or -Infinity
