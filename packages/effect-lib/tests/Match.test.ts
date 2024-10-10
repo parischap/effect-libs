@@ -106,6 +106,17 @@ describe('MMatch', () => {
 			expect(testMatch).toBe('b');
 		});
 
+		it('whenIsOr and exhaustive', () => {
+			const testMatch = pipe(
+				TestEnum.B,
+				MMatch.make,
+				MMatch.whenIs(TestEnum.A, () => 'a'),
+				MMatch.whenIsOr(TestEnum.B, TestEnum.C, () => 'b'),
+				MMatch.exhaustive
+			);
+			expect(testMatch).toBe('b');
+		});
+
 		it('orElse', () => {
 			const testMatch = pipe(
 				TestEnum.B,

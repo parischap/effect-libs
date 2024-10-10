@@ -6,7 +6,7 @@
  * @since 0.0.6
  */
 
-import { Inspectable, Option, Pipeable, Predicate, Types, pipe } from 'effect';
+import { Array, Inspectable, Option, Pipeable, Predicate, Types, pipe } from 'effect';
 import * as MInspectable from './Inspectable.js';
 import * as MPipeable from './Pipeable.js';
 import * as MPredicate from './Predicate.js';
@@ -124,7 +124,7 @@ export const when =
  * self if self already has a result. Otherwise, the value of self is compared to the provided value
  * using strict equality. Returns a copy of self if the two values are not equal. Otherwise, returns
  * a copy of self with the result set to the output of a function f called with the value of self as
- * parameter.From a type perspective, the Rest will only be 'refined` if it`s a finite type like an
+ * parameter. From a type perspective, the Rest will only be 'refined` if it`s a finite type like an
  * Enum (but not `number` or `string`)
  *
  * @since 0.0.6
@@ -160,9 +160,62 @@ export const whenIs =
 			result: Option.orElse(self.result, () =>
 				pipe(
 					self.value,
-					Option.some,
-					Option.filter((input: Input): input is A => input === value),
+					Option.liftPredicate((input: Input): input is A => input === value),
 					Option.map(f)
+				)
+			)
+		});
+
+/**
+ * Same as whenIs but you can pass several values to match against.
+ *
+ * @since 0.0.6
+ * @category Utils
+ * @example
+ * 	import { MMatch } from '@parischap/effect-lib';
+ * 	import { pipe } from 'effect';
+ *
+ * 	enum TestEnum {
+ * 		A = `a`,
+ * 		B = `b`,
+ * 		C = `c`
+ * 	}
+ *
+ * 	export const testMatcher = (value: TestEnum) =>
+ * 		pipe(
+ * 			value,
+ * 			MMatch.make,
+ * 			MMatch.whenIs(TestEnum.A, () => `a`),
+ * 			MMatch.whenIs(TestEnum.B, () => `b`),
+ * 			MMatch.whenIs(TestEnum.C, () => `c`),
+ * 			MMatch.exhaustive
+ * 		);
+ */
+export const whenIsOr =
+	<Input extends MTypes.Primitive, Rest extends Input, R extends MTypes.OverTwo<Rest>, Output1>(
+		...args: readonly [...values: R, f: (value: R[number]) => Output1]
+	) =>
+	<Output>(
+		self: Type<Input, Output, Rest>
+	): Type<Input, Output | Output1, Exclude<Rest, R[number]>> =>
+		_make({
+			value: self.value,
+			result: Option.orElse(self.result, () =>
+				pipe(
+					self.value,
+					Option.liftPredicate(
+						Predicate.some(
+							pipe(
+								args.slice(0, -1),
+								Array.map(
+									(value) =>
+										(input: Input): input is R[number] =>
+											input === value
+								)
+							)
+						)
+					),
+					Option.map(args[args.length - 1] as (value: Input) => Output1)
 				)
 			)
 		});
