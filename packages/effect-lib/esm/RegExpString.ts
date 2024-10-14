@@ -4,27 +4,6 @@
  * @since 0.5.0
  */
 
-import {
-	Array,
-	Equal,
-	Equivalence,
-	flow,
-	Function,
-	Hash,
-	Inspectable,
-	Option,
-	pipe,
-	Pipeable,
-	Predicate,
-	Tuple
-} from 'effect';
-import * as MInspectable from './Inspectable.js';
-import * as MNumber from './Number.js';
-import * as MPipeable from './Pipeable.js';
-import * as MTypes from './types.js';
-
-const moduleTag = '@parischap/effect-lib/RegExp/';
-
 /**
  * Creates a string representing a regular expression from a regular expression
  *
@@ -248,268 +227,36 @@ export const whitespaces = zeroOrMore(`[ ${tab}]`);
 export const digit = backslash + 'd';
 
 /**
- * This namespace implements the possible sign options for regular expressions that represent a real
- * number.
- *
- * @since 0.5.0
- */
-export namespace SignOption {
-	/**
-	 * Possible sign options for regular expressions that represent a real number
-	 *
-	 * @since 0.5.0
-	 * @category Models
-	 */
-	export enum Type {
-		/** No sign allowed */
-		None = 0,
-		/** Sign must be present if value is positive */
-		Mandatory = 1,
-		/** A minus sign may be present */
-		MinusOptional = 2,
-		/** A plus sign and a minus sign may be present */
-		PlusMinusOptional = 3
-	}
-
-	/** Converts a SignOption to a regular expression string */
-	export const toRegExp = (signOption: Type): string => {
-		switch (signOption) {
-			case Type.None:
-				return '';
-			case Type.Mandatory:
-				return either(plus, minus) + whitespaces;
-			case Type.MinusOptional:
-				return optional(minus + whitespaces);
-			case Type.PlusMinusOptional:
-				return optional(sign + whitespaces);
-			default:
-				throw new Error('Unknown sign option');
-		}
-	};
-}
-
-/**
- * This namespace implements the options to the realNumber function.
- *
- * @since 0.5.0
- */
-export namespace RealNumberOptions {
-	const namespaceTag = moduleTag + 'RealNumberOptions/';
-	const TypeId: unique symbol = Symbol.for(namespaceTag) as TypeId;
-	type TypeId = typeof TypeId;
-
-	/**
-	 * Options to the realNumber function.
-	 *
-	 * @since 0.5.0
-	 */
-	export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
-		/**
-		 * Sign option
-		 *
-		 * @since 0.0.1
-		 */
-		readonly signOption: SignOption.Type;
-		/**
-		 * Fractional separator. Must be escaped if it containes regular expression special characters.
-		 *
-		 * @since 0.0.1
-		 */
-		readonly fractionalSep: string;
-		/**
-		 * Thousand separator. Must be escaped if it containes regular expression special characters.
-		 * Use an empty string for no separator. `fractionalSep` should not contain or be included in
-		 * `thousandSep`.
-		 *
-		 * @since 0.0.1
-		 */
-		readonly thousandSep: string;
-		/**
-		 * Maximum number of decimal digits. Must be a positive integer (+Infinity is allowed). Do not
-		 * set `maxDecimalDigits` and `maxFractionalDigits` to 0 at the same time. `thousandSep` should
-		 * not contain or be included in `fractionalSep`.
-		 *
-		 * @since 0.0.1
-		 */
-		readonly maxDecimalDigits: number;
-		/**
-		 * Minimum number of fractional digits. Must be a positive integer less than or equal to
-		 * `maxFractionalDigits`. Use 0 for integers. Do not set `maxDecimalDigits` and
-		 * `maxFractionalDigits` to 0 at the same time unless you know what you are doing.
-		 *
-		 * @since 0.0.1
-		 */
-		readonly minFractionalDigits: number;
-		/**
-		 * Maximum number of fractional digits. Must be a positive integer greater than or equal to
-		 * `minFractionalDigits` (+Infinity is allowed). Use 0 for integers. Do not set
-		 * `maxDecimalDigits` and `maxFractionalDigits` to 0 at the same time unless you know what you
-		 * are doing.
-		 *
-		 * @since 0.0.1
-		 */
-		readonly maxFractionalDigits: number;
-		/**
-		 * Whether the number may end with an `e` notation (ex: 1e+5)
-		 *
-		 * @since 0.0.1
-		 */
-		readonly allowENotation: boolean;
-		/** @internal */
-		readonly [TypeId]: TypeId;
-	}
-
-	/**
-	 * Type guard
-	 *
-	 * @since 0.0.1
-	 * @category Guards
-	 */
-	export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
-
-	/**
-	 * Equivalence
-	 *
-	 * @since 0.0.1
-	 * @category Equivalences
-	 */
-	export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
-		that.signOption === self.signOption &&
-		that.fractionalSep === self.fractionalSep &&
-		that.thousandSep === self.thousandSep &&
-		that.maxDecimalDigits === self.maxDecimalDigits &&
-		that.minFractionalDigits === self.minFractionalDigits &&
-		that.maxFractionalDigits === self.maxFractionalDigits &&
-		that.allowENotation === self.allowENotation;
-
-	/** Prototype */
-	const proto: MTypes.Proto<Type> = {
-		[TypeId]: TypeId,
-		[Equal.symbol](this: Type, that: unknown): boolean {
-			return has(that) && equivalence(this, that);
-		},
-		[Hash.symbol](this: Type) {
-			return Hash.cached(this, Hash.structure(this));
-		},
-		...MInspectable.BaseProto(moduleTag),
-		...MPipeable.BaseProto
-	};
-
-	/**
-	 * Constructor
-	 *
-	 * @since 0.0.1
-	 * @category Constructors
-	 */
-	export const make = (params: MTypes.Data<Type>): Type =>
-		MTypes.objectFromDataAndProto(proto, params);
-
-	/** Returns a copy of self where any missing property is filled with its default value */
-	export const withDefaults = (self: Partial<Type>): Type =>
-		make({
-			signOption: SignOption.Type.MinusOptional,
-			fractionalSep: dot,
-			thousandSep: '',
-			maxDecimalDigits: +Infinity,
-			minFractionalDigits: 0,
-			maxFractionalDigits: +Infinity,
-			allowENotation: false,
-			...self
-		});
-
-	/**
-	 * Returns a copy of self where `signOption` is set to MRegExpString.SignOption.None
-	 *
-	 * @since 0.0.1
-	 * @category Utils
-	 */
-	export const withNoSign = (self: Type): Type =>
-		make({ ...self, signOption: SignOption.Type.None });
-
-	/**
-	 * Returns a copy of self where `minFractionalDigits` and `maxFractionalDigits` are set to 0
-	 *
-	 * @since 0.0.1
-	 * @category Utils
-	 */
-	export const withNoFractionalPart = (self: Type): Type =>
-		make({ ...self, minFractionalDigits: 0, maxFractionalDigits: 0 });
-
-	/**
-	 * Returns a copy of self where `maxDecimalDigits` is set to 0
-	 *
-	 * @since 0.0.1
-	 * @category Utils
-	 */
-	export const withNoDecimalPart = (self: Type): Type => make({ ...self, maxDecimalDigits: 0 });
-
-	/**
-	 * Returns a copy of self where `allowENotation` is set to false
-	 *
-	 * @since 0.0.1
-	 * @category Utils
-	 */
-	export const withNoENotation = (self: Type): Type => make({ ...self, allowENotation: false });
-}
-
-/**
- * A regular expression string representing a real number
+ * A regular expression string representing a strictly positive digit
  *
  * @since 0.5.0
  * @category Instances
  */
-export const realNumber = (options: Partial<RealNumberOptions.Type> = {}) => {
-	const {
-		signOption,
-		fractionalSep,
-		thousandSep,
-		maxDecimalDigits,
-		minFractionalDigits,
-		maxFractionalDigits,
-		allowENotation
-	} = RealNumberOptions.withDefaults(options);
+export const non0Digit = '[1-9]';
 
-	const unsignedIntRegExp =
-		maxDecimalDigits === 0 ? ''
-		: maxDecimalDigits === 1 ? digit
-		: either(
-				'0',
-				'[1-9]' +
-					(thousandSep === '' ?
-						repeatBetween(0, maxDecimalDigits - 1)(digit)
-					:	pipe(
-							maxDecimalDigits - 1,
-							MNumber.quotientAndRemainder(3),
-							Tuple.mapBoth({
-								onFirst: Function.flip(repeatAtMost)(thousandSep + repeatBetween(3, 3)(digit)),
-								onSecond: flow(
-									// quotientAndRemainder returns NaN if maxDecimalDigits === +Infinity
-									Option.liftPredicate(MNumber.isFinite),
-									Option.getOrElse(() => 2),
-									Function.flip(repeatAtMost)(digit)
-								)
-							}),
-							Tuple.swap,
-							Array.join('')
-						))
-			);
+/**
+ * A regular expression string representing an unsigned integer
+ *
+ * @since 0.5.0
+ * @category Instances
+ */
+export const unsignedInteger = either('0', non0Digit + zeroOrMore(digit));
 
-	const eNotation =
-		allowENotation ?
-			optional('[e|E]' + optional(sign) + either('0', '[1-9]' + zeroOrMore(digit)))
-		:	'';
-	if (maxFractionalDigits === 0)
-		return SignOption.toRegExp(signOption) + unsignedIntRegExp + eNotation;
-	const fractionalPart =
-		fractionalSep + repeatBetween(Math.max(1, minFractionalDigits), maxFractionalDigits)(digit);
-	const numberPart =
-		maxDecimalDigits === 0 ? [fractionalPart]
-		: minFractionalDigits === 0 ?
-			[fractionalPart, unsignedIntRegExp + fractionalPart, unsignedIntRegExp]
-		:	[fractionalPart, unsignedIntRegExp + fractionalPart];
+/**
+ * A regular expression string representing an unspaced integer
+ *
+ * @since 0.5.0
+ * @category Instances
+ */
+export const unspacedInteger = optional(sign) + unsignedInteger;
 
-	return SignOption.toRegExp(signOption) + either(...numberPart) + eNotation;
-};
+/**
+ * A regular expression string representing an integer
+ *
+ * @since 0.5.0
+ * @category Instances
+ */
+export const integer = optional(sign + whitespaces) + unsignedInteger;
 
 /**
  * A regular expression string representing a letter
