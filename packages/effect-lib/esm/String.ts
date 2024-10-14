@@ -23,7 +23,6 @@ import * as MFunction from './Function.js';
 import * as MInspectable from './Inspectable.js';
 import * as MMatch from './Match.js';
 import * as MRegExp from './RegExp.js';
-import * as MRegExpString from './RegExpString.js';
 import * as MTypes from './types.js';
 
 const moduleTag = '@parischap/effect-lib/String/';
@@ -166,7 +165,8 @@ export const fromPrimitive = (u: MTypes.Primitive): string =>
 
 /**
  * Searches for the first occurence of `regexp` in `self` and returns a SearchResult. You can
- * optionnally provide the index from which to start searching.
+ * optionnally provide the index from which to start searching. 'g' flag needs not be set if you
+ * pass a regular expression.
  *
  * @since 0.0.6
  * @category Utils
@@ -182,6 +182,8 @@ export const search =
 			);
 		}
 		const target = self.slice(startIndex);
+		/* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements */
+		regexp.lastIndex = 0;
 		const result = regexp.exec(target);
 		if (MTypes.isNull(result)) return Option.none();
 		const offsetPos = startIndex + result.index;
@@ -192,7 +194,8 @@ export const search =
 	};
 
 /**
- * Searches for all occurences of `regexp` in `self` and returns an array of SearchResults.
+ * Searches for all occurences of `regexp` in `self` and returns an array of SearchResults. 'g' flag
+ * needs not be set if you pass a regular expression.
  *
  * @since 0.0.6
  * @category Utils
@@ -216,7 +219,8 @@ export const searchAll =
 	};
 
 /**
- * Searches for the last occurence of `regexp` in `self` and returns a SearchResult.
+ * Searches for the last occurence of `regexp` in `self` and returns a SearchResult. 'g' flag needs
+ * not be set if you pass a regular expression.
  *
  * @since 0.0.6
  * @category Utils
@@ -236,7 +240,8 @@ export const searchRight =
 
 /**
  * Looks from the left for the first substring of `self` that matches `regexp` and returns all
- * characters before that substring. If no occurence is found, returns `self`
+ * characters before that substring. If no occurence is found, returns `self`. 'g' flag has no
+ * incidence if you pass a regular expression.
  *
  * @since 0.0.6
  * @category Utils
@@ -253,7 +258,8 @@ export const takeLeftTo =
 
 /**
  * Looks from the right for the first substring of `self` that matches `regexp` and returns all
- * characters after that substring. If no occurence is found, returns `self`.
+ * characters after that substring. If no occurence is found, returns `self`. 'g' flag needs not be
+ * set if you pass a regular expression.
  *
  * @since 0.0.6
  * @category Utils
@@ -536,33 +542,6 @@ export const isMultiLine = (self: string): boolean => MRegExp.lineBreak.test(sel
 export const colorize = (color: MColor.Type) => (self: string) => MColor.applyToString(self)(color);
 
 /**
- * Reads a real number from the start of `self`. Returns a `none` if `self` does not start by a real
- * number
- *
- * @since 0.5.0
- * @category Utils
- */
-export const readRealNumberFromStart =
-	(options: Partial<MRegExpString.RealNumberOptions.Type> = {}) =>
-	(self: string): Option.Option<string> =>
-		pipe(options, MRegExp.realNumberAtStart, MRegExp.match(self));
-
-/**
- * Reads a real number from `self`. Returns a `none` if the `self` is not a real number
- *
- * @since 0.5.0
- * @category Utils
- */
-export const readRealNumber =
-	(options: Partial<MRegExpString.RealNumberOptions.Type> = {}) =>
-	(self: string): Option.Option<string> =>
-		pipe(
-			self,
-			readRealNumberFromStart(options),
-			Option.filter((numString) => numString.length === self.length)
-		);
-
-/**
  * Returns true if `self` is a SemVer
  *
  * @since 0.5.0
@@ -577,3 +556,14 @@ export const isSemVer = (self: string): boolean => MRegExp.semVer.test(self);
  * @category Predicates
  */
 export const isEmail = (self: string): boolean => MRegExp.email.test(self);
+
+/**
+ * Returns true if the length of `self` is `l`
+ *
+ * @since 0.5.0
+ * @category Predicates
+ */
+export const hasLength =
+	(l: number) =>
+	(self: string): boolean =>
+		self.length === l;
