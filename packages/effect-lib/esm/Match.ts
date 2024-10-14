@@ -169,7 +169,7 @@ export const whenIs =
 /**
  * Same as whenIs but you can pass several values to match against.
  *
- * @since 0.0.6
+ * @since 0.2.2
  * @category Utils
  * @example
  * 	import { MMatch } from '@parischap/effect-lib';
