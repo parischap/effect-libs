@@ -6,6 +6,7 @@
 
 import {
 	Array,
+	Boolean,
 	Equal,
 	Equivalence,
 	Function,
@@ -15,11 +16,21 @@ import {
 	Tuple,
 	pipe
 } from 'effect';
-import * as MFunction from './Function.js';
 import * as MMatch from './Match.js';
 import * as MTypes from './types.js';
 
 //const moduleTag = '@parischap/effect-lib/Array/';
+
+/**
+ * Returns true if the length of `self` is `l`
+ *
+ * @since 0.5.0
+ * @category Predicates
+ */
+export const hasLength =
+	(l: number) =>
+	<A>(self: ReadonlyArray<A>): boolean =>
+		self.length === l;
 
 /**
  * Returns true if the provided ReadonlyArray contains duplicates using the provided isEquivalent
@@ -31,12 +42,7 @@ import * as MTypes from './types.js';
 export const hasDuplicatesWith =
 	<A>(isEquivalent: Equivalence.Equivalence<NoInfer<A>>) =>
 	(self: ReadonlyArray<A>): boolean =>
-		pipe(
-			self,
-			Array.dedupeWith(isEquivalent),
-			Array.length,
-			Predicate.not(MFunction.strictEquals(self.length))
-		);
+		pipe(self, Array.dedupeWith(isEquivalent), hasLength(self.length), Boolean.not);
 
 /**
  * Returns true if the provided ReadonlyArray contains duplicates

@@ -4,8 +4,18 @@
  * @since 0.0.6
  */
 
-import { Chunk, Option, Predicate, pipe } from 'effect';
-import * as MFunction from './Function.js';
+import { Boolean, Chunk, Option, Predicate, pipe } from 'effect';
+
+/**
+ * Returns true if the length of `self` is `l`
+ *
+ * @since 0.5.0
+ * @category Predicates
+ */
+export const hasLength =
+	(l: number) =>
+	<A>(self: Chunk.Chunk<A>): boolean =>
+		self.length === l;
 
 /**
  * Returns true if the provided Chunk contains duplicates
@@ -14,7 +24,7 @@ import * as MFunction from './Function.js';
  * @category Utils
  */
 export const hasDuplicates = <A>(self: Chunk.Chunk<A>): boolean =>
-	pipe(self, Chunk.dedupe, Chunk.size, Predicate.not(MFunction.strictEquals(self.length)));
+	pipe(self, Chunk.dedupe, hasLength(self.length), Boolean.not);
 
 /**
  * Returns a Chunk of the indexes of all elements of self matching the predicate
