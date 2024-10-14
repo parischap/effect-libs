@@ -112,3 +112,11 @@ export const applyAsMethod =
 	(o: MTypes.AnyRecord) =>
 	<A>(self: LazyArg<A>): A =>
 		self.call(o);
+
+/**
+ * A function that returns an empty string
+ *
+ * @since 0.2.2
+ * @category Utils
+ */
+export const constEmptyString = () => '';
