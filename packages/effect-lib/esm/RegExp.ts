@@ -4,9 +4,8 @@
  * @since 0.5.0
  */
 
-import { Option, pipe, Tuple } from 'effect';
+import { Option, pipe } from 'effect';
 import * as MArray from './Array.js';
-import * as MCache from './Cache.js';
 import * as MRegExpString from './RegExpString.js';
 
 /**
@@ -29,29 +28,6 @@ export const match =
 	(s: string) =>
 	(self: RegExp): Option.Option<string> =>
 		pipe(self.exec(s), Option.fromNullable, Option.map(MArray.unsafeGet(0)));
-
-/** Cache for regular expression strings representing real numbers in differente formats */
-const _realNumberAtStartCache = MCache.make({
-	lookUp: ({ key }: { readonly key: MRegExpString.RealNumberOptions.Type }) =>
-		pipe(
-			key,
-			MRegExpString.realNumber,
-			MRegExpString.atStart,
-			fromRegExpString,
-			Tuple.make,
-			Tuple.appendElement(true)
-		),
-	capacity: 200
-});
-
-/**
- * A cached regular expression representing a real number at the start of a line
- *
- * @since 0.5.0
- * @category Instances
- */
-export const realNumberAtStart = (options: Partial<MRegExpString.RealNumberOptions.Type> = {}) =>
-	pipe(_realNumberAtStartCache, MCache.get(MRegExpString.RealNumberOptions.withDefaults(options)));
 
 /**
  * A regular expression representing a linebreak in all systems with the `g` flag. ATTENTION: MUST
@@ -86,3 +62,11 @@ export const semVer = pipe(MRegExpString.semVer, MRegExpString.makeLine, fromReg
  * @category Instances
  */
 export const email = pipe(MRegExpString.email, MRegExpString.makeLine, fromRegExpString);
+
+/**
+ * A regular expression representing a strictly positive digit
+ *
+ * @since 0.5.0
+ * @category Instances
+ */
+export const non0Digit = pipe(MRegExpString.non0Digit, fromRegExpString);
