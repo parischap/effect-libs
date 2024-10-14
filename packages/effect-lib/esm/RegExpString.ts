@@ -240,7 +240,7 @@ export const non0Digit = '[1-9]';
  * @since 0.5.0
  * @category Instances
  */
-export const unsignedInteger = either('0', non0Digit + zeroOrMore(digit));
+export const unsignedInt = either('0', non0Digit + zeroOrMore(digit));
 
 /**
  * A regular expression string representing an unspaced integer
@@ -248,7 +248,7 @@ export const unsignedInteger = either('0', non0Digit + zeroOrMore(digit));
  * @since 0.5.0
  * @category Instances
  */
-export const unspacedInteger = optional(sign) + unsignedInteger;
+export const gluedSignedInt = optional(sign) + unsignedInt;
 
 /**
  * A regular expression string representing an integer
@@ -256,7 +256,7 @@ export const unspacedInteger = optional(sign) + unsignedInteger;
  * @since 0.5.0
  * @category Instances
  */
-export const integer = optional(sign + whitespaces) + unsignedInteger;
+export const int = optional(sign + whitespaces) + unsignedInt;
 
 /**
  * A regular expression string representing a letter
