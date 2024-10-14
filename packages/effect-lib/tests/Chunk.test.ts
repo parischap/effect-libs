@@ -4,6 +4,12 @@ import { Chunk, Equal, pipe } from 'effect';
 import { describe, expect, it } from 'vitest';
 
 describe('MChunk', () => {
+	describe('hasLength', () => {
+		it('Simple chunk', () => {
+			expect(pipe(Chunk.make(1, 2, 3), MChunk.hasLength(3))).toBe(true);
+		});
+	});
+
 	describe('hasDuplicates', () => {
 		it('With no duplicates', () => {
 			expect(pipe(Chunk.make(1, 2, 3), MChunk.hasDuplicates)).toBe(false);

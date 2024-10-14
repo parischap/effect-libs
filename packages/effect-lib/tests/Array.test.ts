@@ -4,6 +4,12 @@ import { Array, Equal, Number, Option, pipe, Record, Tuple } from 'effect';
 import { describe, expect, it } from 'vitest';
 
 describe('MArray', () => {
+	describe('hasLength', () => {
+		it('Simple Array', () => {
+			expect(pipe(Array.make(1, 2, 3), MArray.hasLength(3))).toBe(true);
+		});
+	});
+
 	describe('hasDuplicatesWith', () => {
 		it('With no duplicates', () => {
 			expect(pipe(Array.make(1, 2, 3), MArray.hasDuplicatesWith(Number.Equivalence))).toBe(false);

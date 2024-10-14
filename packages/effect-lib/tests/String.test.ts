@@ -482,23 +482,9 @@ describe('MString', () => {
 		});
 	});
 
-	describe('readRealNumberFromStart', () => {
-		it('Simple match', () => {
-			expect(
-				pipe('127.13foo', MString.readRealNumberFromStart(), Equal.equals(Option.some('127.13')))
-			).toBe(true);
-		});
-	});
-
-	describe('readRealNumber', () => {
-		it('Matching', () => {
-			expect(pipe('127.13', MString.readRealNumber(), Equal.equals(Option.some('127.13')))).toBe(
-				true
-			);
-		});
-
-		it('Not matching', () => {
-			expect(pipe('127.13foo', MString.readRealNumber(), Equal.equals(Option.none()))).toBe(true);
+	describe('hasLength', () => {
+		it('Simple string', () => {
+			expect(pipe('foo', MString.hasLength(3))).toBe(true);
 		});
 	});
 });
