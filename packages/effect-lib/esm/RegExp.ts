@@ -69,4 +69,4 @@ export const email = pipe(MRegExpString.email, MRegExpString.makeLine, fromRegEx
  * @since 0.5.0
  * @category Instances
  */
-export const non0Digit = pipe(MRegExpString.non0Digit, fromRegExpString);
+export const nonZeroDigit = pipe(MRegExpString.nonZeroDigit, fromRegExpString);
