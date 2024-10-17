@@ -430,7 +430,7 @@ export const replaceBetween =
 /**
  * A slightly different version of match using RegExp.prototype.exec instead of
  * String.prototype.match. This function will always return only the first match, even if the `g`
- * flag is set.
+ * flag is set. Good to use in a library when you have no control over the RegExp you receive.
  *
  * @since 0.0.6
  * @category Utils
@@ -439,6 +439,17 @@ export const match =
 	(regExp: RegExp) =>
 	(self: string): Option.Option<string> =>
 		pipe(regExp, MRegExp.match(self));
+
+/**
+ * Same as match but also returns capturing groups.
+ *
+ * @since 0.5.0
+ * @category Destructors
+ */
+export const matchAndGroups =
+	(regExp: RegExp) =>
+	(self: string): Option.Option<RegExpExecArray> =>
+		pipe(regExp, MRegExp.matchAndGroups(self));
 
 /**
  * Splits `self` in two parts at position `n`. The length of the first string is `n` (characters `0`

@@ -19,7 +19,7 @@ export const fromRegExpString = (s: string): RegExp => new RegExp(s);
 /**
  * A slightly different version of match using RegExp.prototype.exec instead of
  * String.prototype.match. This function will always return only the first match, even if the `g`
- * flag is set.
+ * flag is set. Good to use in a library when you have no control over the RegExp you receive.
  *
  * @since 0.5.0
  * @category Destructors
@@ -28,6 +28,27 @@ export const match =
 	(s: string) =>
 	(self: RegExp): Option.Option<string> =>
 		pipe(self.exec(s), Option.fromNullable, Option.map(MArray.unsafeGet(0)));
+
+/**
+ * Same as match but also returns capturing groups.
+ *
+ * @since 0.5.0
+ * @category Destructors
+ */
+export const matchAndGroups =
+	(s: string) =>
+	(self: RegExp): Option.Option<RegExpExecArray> =>
+		pipe(
+			self.exec(s),
+			Option.fromNullable,
+			// RegExpExecArray extends from Array<string>. But this is a Typescript bug. When there are optional capturing groups, there can be some undefined elements. So let's make javascript and Typescript coherent.
+			Option.map((arr) => {
+				for (let loop = 1; loop < arr.length; loop++)
+					/* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements*/
+					if (arr[loop] === undefined) arr[loop] = '';
+				return arr;
+			})
+		);
 
 /**
  * A regular expression representing a linebreak in all systems with the `g` flag. ATTENTION: MUST
