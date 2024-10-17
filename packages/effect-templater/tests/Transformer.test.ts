@@ -3,6 +3,406 @@ import { Transformer } from '@parischap/effect-templater';
 import { Chunk, Either, Equal, pipe } from 'effect';
 import { describe, expect, it } from 'vitest';
 
+describe('Transformer.RealOptions', () => {
+	describe('floatingPoint', () => {
+		const tester = Transformer.RealOptions.toTester(Transformer.RealOptions.floatingPoint);
+
+		describe('Reading', () => {
+			it('Empty string', () => {
+				expect(tester('')).toBe(false);
+			});
+
+			it('One space string', () => {
+				expect(tester(' ')).toBe(false);
+			});
+
+			it('With upfront 0', () => {
+				expect(tester('01.1')).toBe(false);
+			});
+
+			it('With upfront space', () => {
+				expect(tester(' 1.1')).toBe(false);
+			});
+
+			it('With comma in the decimal part', () => {
+				expect(tester('1,001.1')).toBe(false);
+			});
+
+			it('With fractional separator but without fractional part', () => {
+				expect(tester('1001,')).toBe(false);
+			});
+
+			it('With thousand sep in the fractional part', () => {
+				expect(tester('1001.100,1')).toBe(false);
+			});
+
+			it('With two fractional separators', () => {
+				expect(tester('1.001.1')).toBe(false);
+			});
+
+			it('0', () => {
+				expect(tester('0')).toBe(true);
+			});
+
+			it('Any integer', () => {
+				expect(tester('1001')).toBe(true);
+			});
+
+			it('Any floating point', () => {
+				expect(tester('1001.1001')).toBe(true);
+			});
+
+			it('Floating point with no decimal part', () => {
+				expect(tester('.1001')).toBe(true);
+			});
+
+			it('Floating point with null decimal part', () => {
+				expect(tester('0.1001')).toBe(true);
+			});
+
+			it('Floating point with trailing zeros in the fractional part', () => {
+				expect(tester('0.100000')).toBe(true);
+			});
+
+			it('Floating point with leading zeros in the fractional part', () => {
+				expect(tester('0.00001')).toBe(true);
+			});
+		});
+	});
+
+	describe('ukFloatingPoint', () => {
+		const tester = Transformer.RealOptions.toTester(Transformer.RealOptions.ukFloatingPoint);
+
+		describe('Reading', () => {
+			it('Empty string', () => {
+				expect(tester('')).toBe(false);
+			});
+
+			it('One space string', () => {
+				expect(tester(' ')).toBe(false);
+			});
+
+			it('With upfront 0', () => {
+				expect(tester('01,001.1')).toBe(false);
+			});
+
+			it('With upfront space', () => {
+				expect(tester(' 1,001.1')).toBe(false);
+			});
+
+			it('With fractional separator but without fractional part', () => {
+				expect(tester('1,001.')).toBe(false);
+			});
+
+			it('With thousand sep in the fractional part', () => {
+				expect(tester('1,001.100,1')).toBe(false);
+			});
+
+			it('With two fractional separators', () => {
+				expect(tester('1,001.1.101')).toBe(false);
+			});
+
+			it('With misplaced thousand separator', () => {
+				expect(tester('1,001,1.1001')).toBe(false);
+			});
+
+			it('0', () => {
+				expect(tester('0')).toBe(true);
+			});
+
+			it('Any integer', () => {
+				expect(tester('1,001,001')).toBe(true);
+			});
+
+			it('Any floating point', () => {
+				expect(tester('121.1001')).toBe(true);
+			});
+
+			it('Floating point with no decimal part', () => {
+				expect(tester('.1001')).toBe(true);
+			});
+
+			it('Floating point with null decimal part', () => {
+				expect(tester('0.1001')).toBe(true);
+			});
+		});
+	});
+
+	describe('germanFloatingPoint', () => {
+		const tester = Transformer.RealOptions.toTester(Transformer.RealOptions.germanFloatingPoint);
+
+		describe('Reading', () => {
+			it('Any floating point', () => {
+				expect(tester('1.001.001,1001')).toBe(true);
+			});
+		});
+	});
+
+	describe('scientificNotation', () => {
+		const tester = Transformer.RealOptions.toTester(Transformer.RealOptions.scientificNotation);
+
+		describe('Reading', () => {
+			it('Empty string', () => {
+				expect(tester('')).toBe(false);
+			});
+
+			it('One space string', () => {
+				expect(tester(' ')).toBe(false);
+			});
+
+			it('With no significand', () => {
+				expect(tester('e10')).toBe(false);
+			});
+
+			it('', () => {
+				expect(tester('10.65e4')).toBe(false);
+			});
+
+			it('With space after e', () => {
+				expect(tester('3.14e 2')).toBe(false);
+			});
+
+			it('With space before e', () => {
+				expect(tester('3.14 e2')).toBe(false);
+			});
+
+			it('With fractional exponent', () => {
+				expect(tester('3.14e-2.3')).toBe(false);
+			});
+
+			it('0.00', () => {
+				expect(tester('0.00')).toBe(true);
+			});
+
+			it('With fractional significand', () => {
+				expect(tester('.13e10')).toBe(true);
+			});
+
+			it('Any number between 0 and 10 without exponent', () => {
+				expect(tester('7.45')).toBe(true);
+			});
+
+			it('Any number between 0 and 10 with unsigned strictly positive exponent', () => {
+				expect(tester('3.15e12')).toBe(true);
+			});
+
+			it('Any number between 0 and 10 with signed strictly positive exponent', () => {
+				expect(tester('3.15e+12')).toBe(true);
+			});
+
+			it('Any number between 0 and 10 with null exponent', () => {
+				expect(tester('3.15e0')).toBe(true);
+			});
+
+			it('Any number between 0 and 10 with strictly negative exponent', () => {
+				expect(tester('3.15e-12')).toBe(true);
+			});
+		});
+
+		describe('frenchFloatingPoint2', () => {
+			const tester = Transformer.RealOptions.toTester(Transformer.RealOptions.frenchFloatingPoint2);
+
+			describe('Reading', () => {
+				it('Empty string', () => {
+					expect(tester('')).toBe(false);
+				});
+
+				it('One space string', () => {
+					expect(tester(' ')).toBe(false);
+				});
+
+				it('With upfront 0', () => {
+					expect(tester('01,10')).toBe(false);
+				});
+
+				it('With upfront space', () => {
+					expect(tester(' 1,13')).toBe(false);
+				});
+
+				it('0', () => {
+					expect(tester('0')).toBe(false);
+				});
+
+				it('Any integer with no fractional digit', () => {
+					expect(tester('1 001')).toBe(false);
+				});
+
+				it('Any integer with one fractional digit', () => {
+					expect(tester('1 001,1')).toBe(false);
+				});
+
+				it('Any integer with three fractional digits', () => {
+					expect(tester('1 001,123')).toBe(false);
+				});
+
+				it('Any integer with two fractional digits but no space sep', () => {
+					expect(tester('1001,12')).toBe(false);
+				});
+
+				it('0,00', () => {
+					expect(tester('0,00')).toBe(true);
+				});
+
+				it('Any integer with two fractional digits', () => {
+					expect(tester('1 001,43')).toBe(true);
+				});
+			});
+		});
+
+		describe('frenchInt', () => {
+			const tester = Transformer.RealOptions.toTester(Transformer.RealOptions.frenchInt);
+
+			describe('Reading', () => {
+				it('Empty string', () => {
+					expect(tester('')).toBe(false);
+				});
+
+				it('One space string', () => {
+					expect(tester(' ')).toBe(false);
+				});
+
+				it('With upfront 0', () => {
+					expect(tester('01')).toBe(false);
+				});
+
+				it('With upfront space', () => {
+					expect(tester(' 1')).toBe(false);
+				});
+
+				it('With comma in the decimal part', () => {
+					expect(tester('1,001')).toBe(false);
+				});
+
+				it('With fractional part', () => {
+					expect(tester('1 001,134')).toBe(false);
+				});
+
+				it('Unsigned integer', () => {
+					expect(tester('1 001')).toBe(true);
+				});
+
+				it('Integer with minus sign', () => {
+					expect(tester('-1 001')).toBe(true);
+				});
+
+				it('Integer with spaced minus sign', () => {
+					expect(tester('- 1 001')).toBe(false);
+				});
+
+				it('Integer with plus sign', () => {
+					expect(tester('+1 001')).toBe(false);
+				});
+			});
+		});
+
+		describe('unsignedFrenchInt', () => {
+			const tester = Transformer.RealOptions.toTester(Transformer.RealOptions.unsignedFrenchInt);
+
+			describe('Reading', () => {
+				it('Empty string', () => {
+					expect(tester('')).toBe(false);
+				});
+
+				it('One space string', () => {
+					expect(tester(' ')).toBe(false);
+				});
+
+				it('With upfront 0', () => {
+					expect(tester('01')).toBe(false);
+				});
+
+				it('With upfront space', () => {
+					expect(tester(' 1')).toBe(false);
+				});
+
+				it('Unsigned integer', () => {
+					expect(tester('1 001')).toBe(true);
+				});
+
+				it('Integer with minus sign', () => {
+					expect(tester('-1 001')).toBe(false);
+				});
+
+				it('Integer with spaced minus sign', () => {
+					expect(tester('- 1 001')).toBe(false);
+				});
+
+				it('Integer with plus sign', () => {
+					expect(tester('+1 001')).toBe(false);
+				});
+			});
+		});
+
+		describe('signedFrenchInt', () => {
+			const tester = Transformer.RealOptions.toTester(Transformer.RealOptions.signedFrenchInt);
+
+			describe('Reading', () => {
+				it('Empty string', () => {
+					expect(tester('')).toBe(false);
+				});
+
+				it('One space string', () => {
+					expect(tester(' ')).toBe(false);
+				});
+
+				it('With upfront 0', () => {
+					expect(tester('01')).toBe(false);
+				});
+
+				it('Unsigned integer', () => {
+					expect(tester('1 001')).toBe(false);
+				});
+
+				it('Integer with minus sign', () => {
+					expect(tester('-1 001')).toBe(true);
+				});
+
+				it('Integer with spaced minus sign', () => {
+					expect(tester('- 1 001')).toBe(false);
+				});
+
+				it('Integer with plus sign', () => {
+					expect(tester('+1 001')).toBe(true);
+				});
+			});
+		});
+
+		describe('plussedFrenchInt', () => {
+			const tester = Transformer.RealOptions.toTester(Transformer.RealOptions.plussedFrenchInt);
+
+			describe('Reading', () => {
+				it('Empty string', () => {
+					expect(tester('')).toBe(false);
+				});
+
+				it('One space string', () => {
+					expect(tester(' ')).toBe(false);
+				});
+
+				it('With upfront 0', () => {
+					expect(tester('01')).toBe(false);
+				});
+
+				it('Unsigned integer', () => {
+					expect(tester('1 001')).toBe(true);
+				});
+
+				it('Integer with minus sign', () => {
+					expect(tester('-1 001')).toBe(true);
+				});
+
+				it('Integer with spaced minus sign', () => {
+					expect(tester('-  001')).toBe(false);
+				});
+
+				it('Integer with plus sign', () => {
+					expect(tester('+1 001')).toBe(true);
+				});
+			});
+		});
+	});
+});
+
 describe('Transformer', () => {
 	describe('string', () => {
 		it('Reading', () => {
@@ -10,7 +410,7 @@ describe('Transformer', () => {
 				pipe(
 					'foo and bar',
 					Transformer.string.read,
-					// Revert from Chunk to Array when Effect 4.0 with structurzl equality comes out
+					// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
 					Either.map(Chunk.fromIterable),
 					Equal.equals(Either.right(Chunk.make('foo and bar', '')))
 				)
@@ -24,369 +424,158 @@ describe('Transformer', () => {
 		});
 	});
 
-	describe('real', () => {
+	describe('ukFloatingPoint', () => {
 		describe('Reading', () => {
-			it('floatingPoint - Empty string', () => {
-				expect(pipe('', Transformer.floatingPoint.read, Either.isLeft)).toBe(true);
+			it('Any positive number', () => {
+				expect(
+					pipe(
+						'1,000,348.3456foo',
+						Transformer.ukFloatingPoint.read,
+						// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
+						Either.map(Chunk.fromIterable),
+						Equal.equals(Either.right(Chunk.make(1_000_348.3456, 'foo')))
+					)
+				).toBe(true);
 			});
 
-			it('floatingPoint - One space string', () => {
-				expect(pipe(' ', Transformer.floatingPoint.read, Either.isLeft)).toBe(true);
+			it('Any negative number', () => {
+				expect(
+					pipe(
+						'-10.3foo',
+						Transformer.floatingPoint.read,
+						// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
+						Either.map(Chunk.fromIterable),
+						Equal.equals(Either.right(Chunk.make(-10.3, 'foo')))
+					)
+				).toBe(true);
 			});
-
-			it('floatingPoint - With upfront 0', () => {
-				expect(pipe('01.1', Transformer.floatingPoint.read, Either.isLeft)).toBe(true);
-			});
-
-			it('floatingPoint - With space in the decimal part', () => {
-				expect(defaultTester('1 001.1') !== null).toBe(false);
-			});
-
-			it('floatingPoint - With fractional separator but without fractional part', () => {
-				expect(defaultTester('1001.') !== null).toBe(false);
-			});
-
-			it('floatingPoint - 0', () => {
-				expect(defaultTester('0') !== null).toBe(true);
-			});
-
-			it('floatingPoint - 101', () => {
-				expect(defaultTester('101') !== null).toBe(true);
-			});
-
-			it('floatingPoint - 101.1', () => {
-				expect(defaultTester('101.1') !== null).toBe(true);
-			});
-
-			it('floatingPoint - 1001.1001', () => {
-				expect(defaultTester('1001.1001') !== null).toBe(true);
-			});
-
-			it('floatingPoint - 1001.10010', () => {
-				expect(defaultTester('1001.10010') !== null).toBe(true);
-			});
-
-			it('floatingPoint - .1001', () => {
-				expect(defaultTester('.1001') !== null).toBe(true);
-			});
-
-			it('Float with separator - Empty string', () => {
-				expect(floatRegExpWithThousandSep('') !== null).toBe(false);
-			});
-
-			it('Float with separator - One space string', () => {
-				expect(floatRegExpWithThousandSep(' ') !== null).toBe(false);
-			});
-
-			it('Float with separator - With upfront 0', () => {
-				expect(floatRegExpWithThousandSep('01') !== null).toBe(false);
-			});
-
-			it('Float with separator - With letter in the fractional part', () => {
-				expect(floatRegExpWithThousandSep('1001.0a1') !== null).toBe(false);
-			});
-
-			it('Float with separator - With space in the fractional part', () => {
-				expect(floatRegExpWithThousandSep('1001.001 001') !== null).toBe(false);
-			});
-
-			it('Float with separator - With no space in the decimal part', () => {
-				expect(floatRegExpWithThousandSep('1001.1001') !== null).toBe(false);
-			});
-
-			it('Float with separator - With two spaces in the decimal part', () => {
-				expect(floatRegExpWithThousandSep('1  001.1001') !== null).toBe(false);
-			});
-
-			it('Float with separator - 0', () => {
-				expect(floatRegExpWithThousandSep('0') !== null).toBe(true);
-			});
-
-			it('Float with separator - 101.101', () => {
-				expect(floatRegExpWithThousandSep('101.101') !== null).toBe(true);
-			});
-
-			it('Float with separator - 1001.1001', () => {
-				expect(floatRegExpWithThousandSep('1 001.1001') !== null).toBe(true);
-			});
-
-			it('Float with separator - 10001.10012', () => {
-				expect(floatRegExpWithThousandSep('10 001.10012') !== null).toBe(true);
-			});
-
-			it('Float with separator - 1000001.0030011', () => {
-				expect(floatRegExpWithThousandSep('1 000 001.0030011') !== null).toBe(true);
-			});
-		});
-
-		const defaultTester = pipe(
-			{},
-			Transformer.RealOptions.withDefaults,
-			Transformer.RealOptions.toStringTester
-		);
-
-		const floatRegExpNoneTester = pipe(
-			{ signOptions: Transformer.RealOptions.SignOptions.None },
-			Transformer.RealOptions.withDefaults,
-			Transformer.RealOptions.toStringTester
-		);
-
-		const floatRegExpMandatoryTester = pipe(
-			{ signOptions: Transformer.RealOptions.SignOptions.Mandatory },
-			Transformer.RealOptions.withDefaults,
-			Transformer.RealOptions.toStringTester
-		);
-
-		const floatRegExpPlusMinusOptional = pipe(
-			{ signOptions: Transformer.RealOptions.SignOptions.PlusMinusOptional },
-			Transformer.RealOptions.withDefaults,
-			Transformer.RealOptions.toStringTester
-		);
-
-		const intRegExp = pipe(
-			{ signOptions: Transformer.RealOptions.SignOptions.None, maxFractionalDigits: 0 },
-			Transformer.RealOptions.withDefaults,
-			Transformer.RealOptions.toStringTester
-		);
-
-		const intRegExpWithENotation = pipe(
-			{
-				signOptions: Transformer.RealOptions.SignOptions.None,
-				maxFractionalDigits: 0,
-				eNotationOptions: Transformer.RealOptions.ENotationOptions.Lowercase
-			},
-			Transformer.RealOptions.withDefaults,
-			Transformer.RealOptions.toStringTester
-		);
-
-		const floatRegExp0 = pipe(
-			{ signOptions: Transformer.RealOptions.SignOptions.None, maxDecimalDigits: 0 },
-			Transformer.RealOptions.withDefaults,
-			Transformer.RealOptions.toStringTester
-		);
-
-		const floatRegExp1 = pipe(
-			{ signOptions: Transformer.RealOptions.SignOptions.None, maxDecimalDigits: 1 },
-			Transformer.RealOptions.withDefaults,
-			Transformer.RealOptions.toStringTester
-		);
-
-		const floatRegExp2 = pipe(
-			{ signOptions: Transformer.RealOptions.SignOptions.None, maxDecimalDigits: 2 },
-			Transformer.RealOptions.withDefaults,
-			Transformer.RealOptions.toStringTester
-		);
-
-		const floatRegExp4 = pipe(
-			{ signOptions: Transformer.RealOptions.SignOptions.None, maxDecimalDigits: 4 },
-			Transformer.RealOptions.withDefaults,
-			Transformer.RealOptions.toStringTester
-		);
-
-		const floatRegExp02 = pipe(
-			{ signOptions: Transformer.RealOptions.SignOptions.None, maxFractionalDigits: 2 },
-			Transformer.RealOptions.withDefaults,
-			Transformer.RealOptions.toStringTester
-		);
-
-		const floatRegExp022 = pipe(
-			{
-				signOptions: Transformer.RealOptions.SignOptions.None,
-				minFractionalDigits: 2,
-				maxFractionalDigits: 2
-			},
-			Transformer.RealOptions.withDefaults,
-			Transformer.RealOptions.toStringTester
-		);
-
-		const floatRegExpWithThousandSep = pipe(
-			{ thousandSep: ' ' },
-			Transformer.RealOptions.withDefaults,
-			Transformer.RealOptions.toStringTester
-		);
-
-		it('Minus sign allowed - Matching without sign', () => {
-			expect(defaultTester('123') !== null).toBe(true);
-		});
-
-		it('Minus sign allowed - Matching with sign', () => {
-			expect(defaultTester('-123') !== null).toBe(true);
-		});
-
-		it('Minus sign allowed - Not matching', () => {
-			expect(defaultTester('+123') !== null).toBe(false);
-		});
-
-		it('No sign allowed - Matching', () => {
-			expect(floatRegExpNoneTester('123') !== null).toBe(true);
-		});
-
-		it('No sign allowed - Not matching with +', () => {
-			expect(floatRegExpNoneTester('+ 123') !== null).toBe(false);
-		});
-
-		it('No sign allowed - Not matching with -', () => {
-			expect(floatRegExpNoneTester('-123') !== null).toBe(false);
-		});
-
-		it('Mandatory sign - Matching with + ', () => {
-			expect(floatRegExpMandatoryTester('+123') !== null).toBe(true);
-		});
-
-		it('Mandatory sign - Matching with - ', () => {
-			expect(floatRegExpMandatoryTester('-  123') !== null).toBe(true);
-		});
-
-		it('Mandatory sign - Not matching', () => {
-			expect(floatRegExpMandatoryTester('123') !== null).toBe(false);
-		});
-
-		it('Plus/minus sign allowed - Matching with + sign', () => {
-			expect(floatRegExpPlusMinusOptional('+123') !== null).toBe(true);
-		});
-
-		it('Plus/minus sign allowed - Matching with - sign', () => {
-			expect(floatRegExpPlusMinusOptional('-123') !== null).toBe(true);
-		});
-
-		it('Plus/minus sign allowed - Matching without sign', () => {
-			expect(floatRegExpPlusMinusOptional('123') !== null).toBe(true);
-		});
-
-		it('Float without decimal digit - Matching', () => {
-			expect(floatRegExp0('.01') !== null).toBe(true);
-		});
-
-		it('Float without decimal digit - Not matching', () => {
-			expect(floatRegExp0('1') !== null).toBe(false);
-		});
-
-		it('Float with at most 1 decimal digit - Matching .01', () => {
-			expect(floatRegExp1('.01') !== null).toBe(true);
-		});
-
-		it('Float with at most 1 decimal digit - Matching 0', () => {
-			expect(floatRegExp1('0') !== null).toBe(true);
-		});
-
-		it('Float with at most 1 decimal digit - Matching 1', () => {
-			expect(floatRegExp1('1') !== null).toBe(true);
-		});
-
-		it('Float with at most 1 decimal digit - Not matching', () => {
-			expect(floatRegExp1('10.04') !== null).toBe(false);
-		});
-
-		it('Float with at most 2 decimal digits - Matching 0', () => {
-			expect(floatRegExp2('0') !== null).toBe(true);
-		});
-
-		it('Float with at most 2 decimal digits - Matching 19.998', () => {
-			expect(floatRegExp2('19.998') !== null).toBe(true);
-		});
-
-		it('Float with at most 2 decimal digits - Not matching', () => {
-			expect(floatRegExp2('1199.04') !== null).toBe(false);
-		});
-
-		it('Float with at most 4 decimal digits - Matching 1', () => {
-			expect(floatRegExp4('1') !== null).toBe(true);
-		});
-
-		it('Float with at most 4 decimal digits - Matching 1001.76', () => {
-			expect(floatRegExp4('1001.76') !== null).toBe(true);
-		});
-
-		it('Float with at most 4 decimal digits - Not matching', () => {
-			expect(floatRegExp4('10001.65') !== null).toBe(false);
-		});
-
-		it('Float with at most 2 fractional digits - Matching', () => {
-			expect(floatRegExp02('1.01') !== null).toBe(true);
-		});
-
-		it('Float with at most 2 fractional digits - Not matching', () => {
-			expect(floatRegExp02('1.011') !== null).toBe(false);
-		});
-
-		it('Float with exactly 2 fractional digits - Matching', () => {
-			expect(floatRegExp022('.01') !== null).toBe(true);
-		});
-
-		it('Float with exactly 2 fractional digits - Not matching .1', () => {
-			expect(floatRegExp022('.1') !== null).toBe(false);
-		});
-
-		it('Float with exactly 2 fractional digits - Not matching .111', () => {
-			expect(floatRegExp022('.111') !== null).toBe(false);
-		});
-
-		it('Integer - Empty string', () => {
-			expect(intRegExp('') !== null).toBe(false);
-		});
-
-		it('Integer - One space string', () => {
-			expect(intRegExp(' ') !== null).toBe(false);
-		});
-
-		it('Integer - With upfront 0', () => {
-			expect(intRegExp('01') !== null).toBe(false);
-		});
-
-		it('Integer - With e notation', () => {
-			expect(intRegExp('1e5') !== null).toBe(false);
-		});
-
-		it('Integer - With decimal part', () => {
-			expect(intRegExp('1001.1') !== null).toBe(false);
-		});
-
-		it('Integer - 0', () => {
-			expect(intRegExp('0') !== null).toBe(true);
-		});
-
-		it('Integer - 101', () => {
-			expect(intRegExp('101') !== null).toBe(true);
-		});
-
-		it('Integer with e notation - Matching 1e5', () => {
-			expect(intRegExpWithENotation('1e5') !== null).toBe(true);
-		});
-
-		it('Integer with e notation - Matching 1e-5', () => {
-			expect(intRegExpWithENotation('1e-5') !== null).toBe(true);
-		});
-
-		it('Integer with e notation - Matching 18', () => {
-			expect(intRegExpWithENotation('18') !== null).toBe(true);
-		});
-
-		it('Integer with e notation - Not matching', () => {
-			expect(intRegExpWithENotation('1 e5') !== null).toBe(false);
 		});
 	});
 
-	/*describe('unsignedInt', () => {
-		const unsignedInt = Transformer.unsignedInt('_');
+	describe('ukFloatingPoint2', () => {
+		describe('Reading', () => {
+			it('Number with one fractional digit', () => {
+				expect(pipe('10.3foo', Transformer.ukFloatingPoint2.read, Either.isLeft)).toBe(true);
+			});
 
-		it('Reading from string not matching', () => {
-			expect(pipe('+107_485foo and bar', unsignedInt.read, Either.isLeft)).toBe(true);
+			it('Any positive number', () => {
+				expect(
+					pipe(
+						'10.30foo',
+						Transformer.ukFloatingPoint2.read,
+						// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
+						Either.map(Chunk.fromIterable),
+						Equal.equals(Either.right(Chunk.make(10.3, 'foo')))
+					)
+				).toBe(true);
+			});
+
+			it('Number with three fractional digits', () => {
+				expect(
+					pipe(
+						'-10.321foo',
+						Transformer.ukFloatingPoint2.read,
+						// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
+						Either.map(Chunk.fromIterable),
+						Equal.equals(Either.right(Chunk.make(-10.32, '1foo')))
+					)
+				).toBe(true);
+			});
 		});
+	});
 
-		it('Reading from matching string', () => {
+	describe('frenchScientificNotation', () => {
+		describe('Reading', () => {
+			it('Number greater than 10', () => {
+				expect(
+					pipe(
+						'10,3foo',
+						Transformer.frenchScientificNotation.read, // Revert from Chunk to Array when Effect 4.0 with structural equality comes out
+						Either.map(Chunk.fromIterable),
+						Equal.equals(Either.right(Chunk.make(1, '0,3foo')))
+					)
+				).toBe(true);
+			});
+
+			it('Positive number without exponent', () => {
+				expect(
+					pipe(
+						'9,30foo',
+						Transformer.frenchScientificNotation.read,
+						// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
+						Either.map(Chunk.fromIterable),
+						Equal.equals(Either.right(Chunk.make(9.3, 'foo')))
+					)
+				).toBe(true);
+			});
+
+			it('Negative number with exponent', () => {
+				expect(
+					pipe(
+						'-5.234e3foo',
+						Transformer.scientificNotation.read,
+						// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
+						Either.map(Chunk.fromIterable),
+						Equal.equals(Either.right(Chunk.make(-5_234, 'foo')))
+					)
+				).toBe(true);
+			});
+		});
+	});
+
+	describe('germanFractional', () => {
+		describe('Reading', () => {
+			it('Number with decimal part', () => {
+				expect(pipe('10,3foo', Transformer.germanFractional.read, Either.isLeft)).toBe(true);
+			});
+
+			it('Positive number', () => {
+				expect(
+					pipe(
+						',3230foo',
+						Transformer.germanFractional.read,
+						// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
+						Either.map(Chunk.fromIterable),
+						Equal.equals(Either.right(Chunk.make(0.323, 'foo')))
+					)
+				).toBe(true);
+			});
+
+			it('Negative number with exponent', () => {
+				expect(
+					pipe(
+						'-,234e3foo',
+						Transformer.germanFractional.read,
+						// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
+						Either.map(Chunk.fromIterable),
+						Equal.equals(Either.right(Chunk.make(-0.234, 'e3foo')))
+					)
+				).toBe(true);
+			});
+		});
+	});
+
+	describe('ukInt', () => {
+		it('Reading', () => {
 			expect(
 				pipe(
-					'107_485foo and bar',
-					unsignedInt.read,
-					// Revert from Chunk to Array when Effect 4.0 with structurzl equality comes out
+					'10foo',
+					Transformer.ukInt.read,
+					// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
 					Either.map(Chunk.fromIterable),
-					Equal.equals(Either.right(Chunk.make(107485, 'foo and bar')))
+					Equal.equals(Either.right(Chunk.make(10, 'foo')))
+				)
+			).toBe(true);
+
+			expect(
+				pipe(
+					'-10.3foo',
+					Transformer.ukInt.read,
+					// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
+					Either.map(Chunk.fromIterable),
+					Equal.equals(Either.right(Chunk.make(-10, '.3foo')))
 				)
 			).toBe(true);
 		});
-
-		it('Writing', () => {
-			expect(unsignedInt.write(MPositiveInt.fromNumber(1003457))).toBe('1_003_457');
-		});
-	});*/
+	});
 });
