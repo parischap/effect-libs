@@ -132,6 +132,14 @@ export const capture = (self: string): string => `(${self})`;
 export const escape = (s: string): string => s.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&');
 
 /**
+ * A regular expression string representing an empty capturing group
+ *
+ * @since 0.5.0
+ * @category Instances
+ */
+export const emptyCapture = capture('');
+
+/**
  * A regular expression string representing any character
  *
  * @since 0.5.0
