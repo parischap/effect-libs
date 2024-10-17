@@ -112,7 +112,7 @@ describe('MString', () => {
 				pipe(
 					'the foo is foo',
 					MString.searchAll('foo'),
-					// Revert from Chunk to Array when Effect 4.0 with structurzl equality comes out
+					// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
 					Chunk.fromIterable,
 					Equal.equals(
 						Chunk.make(
@@ -133,7 +133,7 @@ describe('MString', () => {
 				pipe(
 					'the foo is fuo',
 					MString.searchAll(/f.o/),
-					// Revert from Chunk to Array when Effect 4.0 with structurzl equality comes out
+					// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
 					Chunk.fromIterable,
 					Equal.equals(
 						Chunk.make(
@@ -374,7 +374,7 @@ describe('MString', () => {
 				pipe(
 					'',
 					MString.splitAt(2),
-					// Revert from Chunk to Array when Effect 4.0 with structurzl equality comes out
+					// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
 					Chunk.fromIterable,
 					Equal.equals(Chunk.make('', ''))
 				)
@@ -386,7 +386,7 @@ describe('MString', () => {
 				pipe(
 					'beforeafter',
 					MString.splitAt(6),
-					// Revert from Chunk to Array when Effect 4.0 with structurzl equality comes out
+					// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
 					Chunk.fromIterable,
 					Equal.equals(Chunk.make('before', 'after'))
 				)
@@ -403,7 +403,7 @@ describe('MString', () => {
 				pipe(
 					'foobarbaz',
 					MString.splitEquallyRestAtStart(3),
-					// Revert from Chunk to Array when Effect 4.0 with structurzl equality comes out
+					// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
 					Chunk.fromIterable,
 					Equal.equals(Chunk.make('foo', 'bar', 'baz'))
 				)
@@ -414,7 +414,7 @@ describe('MString', () => {
 				pipe(
 					'afoobarbaz',
 					MString.splitEquallyRestAtStart(3),
-					// Revert from Chunk to Array when Effect 4.0 with structurzl equality comes out
+					// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
 					Chunk.fromIterable,
 					Equal.equals(Chunk.make('a', 'foo', 'bar', 'baz'))
 				)
@@ -430,7 +430,7 @@ describe('MString', () => {
 				pipe(
 					'foobarbaz',
 					MString.splitEquallyRestAtEnd(3),
-					// Revert from Chunk to Array when Effect 4.0 with structurzl equality comes out
+					// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
 					Chunk.fromIterable,
 					Equal.equals(Chunk.make('foo', 'bar', 'baz'))
 				)
@@ -441,7 +441,7 @@ describe('MString', () => {
 				pipe(
 					'foobarbaza',
 					MString.splitEquallyRestAtEnd(3),
-					// Revert from Chunk to Array when Effect 4.0 with structurzl equality comes out
+					// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
 					Chunk.fromIterable,
 					Equal.equals(Chunk.make('foo', 'bar', 'baz', 'a'))
 				)

@@ -24,7 +24,7 @@ describe('MString', () => {
 
 	describe('quotientAndRemainder', () => {
 		it('Positive dividend, positive divisor', () => {
-			// Revert from Chunk to Array when Effect 4.0 with structurzl equality comes out
+			// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
 			expect(
 				pipe(
 					27,
@@ -36,7 +36,7 @@ describe('MString', () => {
 		});
 
 		it('Negative dividend, positive divisor', () => {
-			// Revert from Chunk to Array when Effect 4.0 with structurzl equality comes out
+			// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
 			expect(
 				pipe(
 					-27,
@@ -48,7 +48,7 @@ describe('MString', () => {
 		});
 
 		it('Positive dividend, negative divisor', () => {
-			// Revert from Chunk to Array when Effect 4.0 with structurzl equality comes out
+			// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
 			expect(
 				pipe(
 					27,
@@ -60,7 +60,7 @@ describe('MString', () => {
 		});
 
 		it('Negative dividend, negative divisor', () => {
-			// Revert from Chunk to Array when Effect 4.0 with structurzl equality comes out
+			// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
 			expect(
 				pipe(
 					-27,
