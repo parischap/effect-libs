@@ -4,41 +4,24 @@
  * @since 0.3.4
  */
 
-import { Brand, Either, Number, Option, Predicate } from 'effect';
+import { Brand, Number, Predicate } from 'effect';
 import * as MNumber from './Number.js';
 import * as MString from './String.js';
+import * as MTypes from './types.js';
 
 const moduleTag = '@parischap/effect-lib/Brand/';
 
-/**
- * Constructor type with refined input
- *
- * @since 0.3.4
- * @category Models
- */
-export interface RefinedConstructor<in B, in out A extends Brand.Brand<string | symbol> & B> {
-	readonly [Brand.RefinedConstructorsTypeId]: Brand.RefinedConstructorsTypeId;
-	/**
-	 * Constructs a branded type from a value of type `A`, throwing an error if the provided `A` is
-	 * not valid.
-	 */
-	(args: B): A;
-	/**
-	 * Constructs a branded type from a value of type `A`, returning `Some<A>` if the provided `A` is
-	 * valid, `None` otherwise.
-	 */
-	readonly option: (args: B) => Option.Option<A>;
-	/**
-	 * Constructs a branded type from a value of type `A`, returning `Right<A>` if the provided `A` is
-	 * valid, `Left<BrandError>` otherwise.
-	 */
-	readonly either: (args: B) => Either.Either<A, Brand.Brand.BrandErrors>;
-	/**
-	 * Attempts to refine the provided value of type `A`, returning `true` if the provided `A` is
-	 * valid, `false` otherwise.
-	 */
-	readonly is: (a: B) => a is Brand.Brand.Unbranded<A> & A;
-}
+/** Brand constructor type with refined input */
+
+type RefinedConstructor<B, A extends Brand.Brand<string | symbol> & B> = MTypes.WithArgType<
+	Brand.Brand.Constructor<A>,
+	B
+> & {
+	readonly [k in keyof Brand.Brand.Constructor<A>]: MTypes.WithArgType<
+		Brand.Brand.Constructor<A>[k],
+		B
+	>;
+};
 
 /**
  * This namespace implements an Email brand.
@@ -139,7 +122,7 @@ export namespace Real {
 	 * @since 0.3.4
 	 * @category Constructors
 	 */
-	export const unsafeFromNumber: RefinedConstructor<number, Type> = Brand.nominal<Type>();
+	export const unsafeFromNumber = Brand.nominal<Type>();
 
 	/**
 	 * Constructs a Real from a number. Throws an error if the provided number is not finite
@@ -147,9 +130,8 @@ export namespace Real {
 	 * @since 0.3.4
 	 * @category Constructors
 	 */
-	export const fromNumber: RefinedConstructor<number, Type> = Brand.refined<Type>(
-		MNumber.isFinite,
-		(n) => Brand.error(`'${n}' does not represent a finite real number`)
+	export const fromNumber = Brand.refined<Type>(MNumber.isFinite, (n) =>
+		Brand.error(`'${n}' does not represent a finite real number`)
 	);
 }
 
@@ -177,7 +159,7 @@ export namespace Int {
 	 * @since 0.3.4
 	 * @category Constructors
 	 */
-	export const unsafeFromNumber: RefinedConstructor<number, Type> = Brand.nominal<Type>();
+	export const unsafeFromNumber = Brand.nominal<Type>();
 
 	const _fromNumber = (pred: Predicate.Predicate<number>) =>
 		Brand.refined<Type>(pred, (n) => Brand.error(`'${n}' does not represent a finite integer`));
@@ -188,9 +170,7 @@ export namespace Int {
 	 * @since 0.3.4
 	 * @category Constructors
 	 */
-	export const fromNumber: RefinedConstructor<number, Type> = _fromNumber(
-		Predicate.and(MNumber.isFinite, MNumber.isInt)
-	);
+	export const fromNumber = _fromNumber(Predicate.and(MNumber.isFinite, MNumber.isInt));
 
 	/**
 	 * Constructs an Int from an Real. Throws an error if the provided number is not an integer
@@ -207,20 +187,13 @@ export namespace Int {
  * @since 0.4.0
  */
 export namespace IntRange {
-	const namespaceTag = moduleTag + 'IntRange/';
-	const TypeId: unique symbol = Symbol.for(namespaceTag) as TypeId;
-	type TypeId = typeof TypeId;
-
 	/**
 	 * IntRange type - `Max` must be bigger than `Min`
 	 *
 	 * @since 0.3.4
 	 * @category Models
 	 */
-	export type Type<Min extends number, Max extends number> = Brand.Branded<
-		Int.Type,
-		`${typeof namespaceTag}${Min}-${Max}`
-	>;
+	export type Type<Name extends symbol> = Brand.Branded<Int.Type, Name>;
 
 	/**
 	 * Constructs an IntRange from a number without any verifications
@@ -228,17 +201,14 @@ export namespace IntRange {
 	 * @since 0.3.4
 	 * @category Constructors
 	 */
-	export const unsafeFromNumber = <Min extends number, Max extends number>(
-		_minimum: Min,
-		_maximum: Max
-	): RefinedConstructor<number, Type<Min, Max>> => Brand.nominal<Type<Min, Max>>() as never;
+	export const unsafeFromNumber = <Name extends symbol = never>() => Brand.nominal<Type<Name>>();
 
-	const _fromNumber = <Min extends number, Max extends number>(
-		minimum: Min,
-		maximum: Max,
+	const _fromNumber = <Name extends symbol>(
+		minimum: number,
+		maximum: number,
 		pred: Predicate.Predicate<number>
-	): RefinedConstructor<number, Type<Min, Max>> =>
-		Brand.refined<Type<Min, Max>>(pred, (n) =>
+	) =>
+		Brand.refined<Type<Name>>(pred, (n) =>
 			Brand.error(`'${n}' is not a finite integer in the range [${minimum} - ${maximum}]`)
 		) as never;
 
@@ -249,28 +219,25 @@ export namespace IntRange {
 	 * @since 0.3.4
 	 * @category Constructors
 	 */
-	export const fromNumber = <Min extends number, Max extends number>(
-		minimum: Min,
-		maximum: Max
-	): RefinedConstructor<number, Type<Min, Max>> =>
-		_fromNumber(
+	export const fromNumber = <Name extends symbol>(minimum: number, maximum: number) =>
+		_fromNumber<Name>(
 			minimum,
 			maximum,
 			Predicate.every([MNumber.isFinite, MNumber.isInt, Number.between({ minimum, maximum })])
 		);
 
 	/**
-	 * Constructs an IntRange from an Real. Throws an error if the provided number is not an integer
-	 * or not in the given range
+	 * Constructs an IntRange from a Real. Throws an error if the provided number is not an integer or
+	 * not in the given range
 	 *
 	 * @since 0.3.4
 	 * @category Constructors
 	 */
-	export const fromReal = <Min extends number, Max extends number>(
-		minimum: Min,
-		maximum: Max
-	): RefinedConstructor<Real.Type, Type<Min, Max>> =>
-		_fromNumber(
+	export const fromReal = <Name extends symbol>(
+		minimum: number,
+		maximum: number
+	): RefinedConstructor<Real.Type, Type<Name>> =>
+		_fromNumber<Name>(
 			minimum,
 			maximum,
 			Predicate.and(MNumber.isInt, Number.between({ minimum, maximum }))
@@ -283,11 +250,11 @@ export namespace IntRange {
 	 * @since 0.3.4
 	 * @category Constructors
 	 */
-	export const fromInt = <Min extends number, Max extends number>(
-		minimum: Min,
-		maximum: Max
-	): RefinedConstructor<Int.Type, Type<Min, Max>> =>
-		_fromNumber(minimum, maximum, Number.between({ minimum, maximum }));
+	export const fromInt = <Name extends symbol>(
+		minimum: number,
+		maximum: number
+	): RefinedConstructor<Int.Type, Type<Name>> =>
+		_fromNumber<Name>(minimum, maximum, Number.between({ minimum, maximum }));
 }
 
 /**
@@ -296,13 +263,16 @@ export namespace IntRange {
  * @since 0.4.0
  */
 export namespace PositiveInt {
+	const namespaceTag = moduleTag + 'PositiveInt/';
+	const TypeId: unique symbol = Symbol.for(namespaceTag) as TypeId;
+	type TypeId = typeof TypeId;
 	/**
 	 * Type for positive integers
 	 *
 	 * @since 0.3.4
 	 * @category Instances
 	 */
-	export type Type = IntRange.Type<0, typeof Infinity>;
+	export type Type = IntRange.Type<TypeId>;
 
 	/**
 	 * Constructs a PositiveInt from a number without any verifications
@@ -310,10 +280,7 @@ export namespace PositiveInt {
 	 * @since 0.3.4
 	 * @category Constructors
 	 */
-	export const unsafeFromNumber: RefinedConstructor<number, Type> = IntRange.unsafeFromNumber(
-		0,
-		+Infinity
-	);
+	export const unsafeFromNumber = IntRange.unsafeFromNumber<TypeId>();
 
 	/**
 	 * Constructs a PositiveInt from a number. Throws an error if the provided number is not an
@@ -322,7 +289,7 @@ export namespace PositiveInt {
 	 * @since 0.3.4
 	 * @category Constructors
 	 */
-	export const fromNumber: RefinedConstructor<number, Type> = IntRange.fromNumber(0, +Infinity);
+	export const fromNumber = IntRange.fromNumber<TypeId>(0, +Infinity);
 
 	/**
 	 * Constructs a PositiveInt from a Real. Throws an error if the provided number is not a positive
@@ -331,7 +298,7 @@ export namespace PositiveInt {
 	 * @since 0.3.4
 	 * @category Constructors
 	 */
-	export const fromReal: RefinedConstructor<Real.Type, Type> = IntRange.fromReal(0, +Infinity);
+	export const fromReal = IntRange.fromReal<TypeId>(0, +Infinity);
 
 	/**
 	 * Constructs a PositiveInt from an Int. Throws an error if the provided Int is not positive
@@ -339,5 +306,5 @@ export namespace PositiveInt {
 	 * @since 0.3.4
 	 * @category Constructors
 	 */
-	export const fromInt: RefinedConstructor<Int.Type, Type> = IntRange.fromInt(0, +Infinity);
+	export const fromInt = IntRange.fromInt<TypeId>(0, +Infinity);
 }
