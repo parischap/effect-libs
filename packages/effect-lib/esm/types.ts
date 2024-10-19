@@ -234,6 +234,17 @@ export const objectFromDataAndProto = <P extends AnyRecord, D extends AnyRecord>
 export const objectFromData = <D extends AnyRecord>(data: D): D => Object.assign(data) as D;
 
 /**
+ * Utility type that changes the type of the unique parameter of a OneArgFunction
+ *
+ * @since 0.5.0
+ * @category Utility types
+ */
+export type WithArgType<F, A> =
+	F extends Predicate.Refinement<_, infer R> ? Predicate.Refinement<A, R>
+	: F extends OneArgFunction<any, infer R> ? OneArgFunction<A, R>
+	: F;
+
+/**
  * Utility type that removes all private, symbolic and toString, toJSON keys from a type and makes
  * all remaining properties optional
  *
