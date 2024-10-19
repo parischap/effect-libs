@@ -209,7 +209,7 @@ export namespace RealOptions {
 		);
 
 		/**
-		 * Turns a sign option into a function that take a number and returns a string representing its
+		 * Turns a sign option into a function that takes a number and returns a string representing its
 		 * sign, or an error if the sign cannot be represented with these options.
 		 *
 		 * @since 0.0.1
@@ -318,6 +318,25 @@ export namespace RealOptions {
 
 		export const allowsENotation: Predicate.Predicate<ENotationOptions> = Predicate.not(
 			MFunction.strictEquals(ENotationOptions.None)
+		);
+
+		/**
+		 * Turns an e-notation option into a function that takes an exponent and returns a string
+		 * representing this exponent.
+		 *
+		 * @since 0.0.1
+		 * @category Destructors
+		 */
+		export const toWriter: (self: ENotationOptions) => MTypes.OneArgFunction<number, string> = flow(
+			MMatch.make,
+			MMatch.whenIs(ENotationOptions.None, () => MFunction.constEmptyString),
+			MMatch.whenIs(ENotationOptions.Lowercase, () =>
+				flow(MString.fromNonNullablePrimitive, MString.prepend('e'))
+			),
+			MMatch.whenIs(ENotationOptions.Uppercase, () =>
+				flow(MString.fromNonNullablePrimitive, MString.prepend('E'))
+			),
+			MMatch.exhaustive
 		);
 	}
 	/**
@@ -446,7 +465,7 @@ export namespace RealOptions {
 			thousandsSep: '',
 			maxDecimalDigits: +Infinity,
 			minFractionalDigits: 0,
-			maxFractionalDigits: +Infinity,
+			maxFractionalDigits: 4,
 			eNotationOptions: ENotationOptions.None,
 			...self
 		});
@@ -1035,6 +1054,7 @@ export namespace RealOptions {
 	): MTypes.OneArgFunction<MBrand.Real.Type, Either.Either<string, Error.Type>> => {
 		const allowsENotation = RealOptions.ENotationOptions.allowsENotation(self.eNotationOptions);
 		const signWriter = RealOptions.SignOptions.toWriter(self.signOptions);
+		const eNotationWriter = ENotationOptions.toWriter(self.eNotationOptions);
 		const toppedMaxFractionalDigit = Math.min(MAX_MAX_FRACTIONAL_DIGITS, self.maxFractionalDigits);
 
 		return (input) =>
@@ -1043,60 +1063,89 @@ export namespace RealOptions {
 
 				const absInput = Math.abs(input);
 
-				const corrector =
+				const exponent =
 					absInput === 0 || self.maxDecimalDigits === +Infinity ?
-						1
-					:	Math.pow(10, Math.max(Math.floor(Math.log10(absInput)) + 1 - self.maxDecimalDigits, 0));
-				const validatedCorrector = yield* pipe(
-					corrector,
-					Either.liftPredicate(
-						(c) => c === 1 || allowsENotation,
-						() =>
-							new Error.Type({
-								message: `Number ${input} cannot be displayed with at most ${self.maxDecimalDigits} digits`
-							})
-					)
-				);
+						0
+					:	pipe(
+							absInput,
+							Math.log10,
+							Math.floor,
+							Number.increment,
+							Number.subtract(self.maxDecimalDigits),
+							Number.max(0)
+						);
 
-				return pipe(
+				const validatedExponent =
+					allowsENotation ? exponent : (
+						yield* pipe(
+							exponent,
+							Either.liftPredicate(
+								MFunction.strictEquals(0),
+								() =>
+									new Error.Type({
+										message: `Number ${input} cannot be displayed with at most ${self.maxDecimalDigits} digits`
+									})
+							)
+						)
+					);
+
+				const [dec, frac] = yield* pipe(
 					absInput,
-					Number.unsafeDivide(validatedCorrector),
+					Number.unsafeDivide(Math.pow(10, validatedExponent)),
 					MNumber.decAndFracParts,
 					Tuple.mapBoth({
 						onFirst:
-							self.maxDecimalDigits === 0 ?
-								MFunction.constEmptyString
+							self.maxDecimalDigits <= 0 ?
+								() => Either.right('')
 							:	flow(
 									MString.fromNonNullablePrimitive,
 									MString.splitEquallyRestAtStart(MRegExpString.DIGIT_GROUP_SIZE),
-									Array.join(self.thousandsSep)
+									Array.join(self.thousandsSep),
+									Either.right
 								),
 						onSecond:
-							self.maxFractionalDigits === 0 ?
-								MFunction.constEmptyString
+							self.maxFractionalDigits <= 0 ?
+								() => Either.right('')
 							:	flow(
-									Number.multiply(toppedMaxFractionalDigit),
+									Number.multiply(Math.pow(10, toppedMaxFractionalDigit)),
 									Math.round,
 									MString.fromNonNullablePrimitive,
+									String.padStart(self.maxFractionalDigits, '0'),
 									(frac) =>
 										pipe(
 											frac,
-											String.takeLeft(
-												Math.max(
-													self.minFractionalDigits,
-													pipe(
-														frac,
-														MString.searchRight(MRegExp.nonZeroDigit),
-														Option.map(flow(Struct.get('startIndex'), Number.sum(1))),
-														Option.getOrElse(() => frac.length)
+											MString.searchRight(MRegExp.nonZeroDigit),
+											Option.map(flow(Struct.get('startIndex'), Number.increment)),
+											Option.getOrElse(() => 0),
+											Number.max(self.minFractionalDigits),
+											MMatch.make,
+											MMatch.whenIs(0, () =>
+												self.maxDecimalDigits <= 0 ?
+													Either.left(
+														new Error.Type({
+															message: `Number ${input} cannot be displayed with no decimal digits and at most ${self.maxFractionalDigits} fractional digits.`
+														})
 													)
+												:	Either.right('')
+											),
+											MMatch.orElse(
+												flow(
+													MFunction.flipDual(String.takeLeft)(frac),
+													MString.prepend(self.fractionalSep),
+													Either.right
 												)
 											)
 										)
 								)
 					}),
-					Array.join(self.fractionalSep),
-					MString.prepend(sign)
+					Either.all
+				);
+
+				return pipe(
+					sign,
+					MString.append(dec),
+					MString.append(frac),
+					MString.append(eNotationWriter(exponent))
 				);
 			});
 	};
