@@ -252,9 +252,9 @@ export const digit = backslash + 'd';
 export const nonZeroDigit = '[1-9]';
 
 /**
- * A regular expression string representing a strictly positive integer with at least 'm' and at
- * most `n` digits. `m` and `n` must be strictly positive integers with `n` greater than or equal to
- * `m`. `n` may receive the +Infinity value.
+ * A regular expression string representing a strictly positive integer in base 10 with at least 'm'
+ * and at most `n` digits. `m` and `n` must be strictly positive integers with `n` greater than or
+ * equal to `m`. `n` may receive the +Infinity value.
  *
  * @since 0.5.0
  * @category Instances
@@ -268,9 +268,9 @@ const _all_group_values = strictlyPositiveIntWithNoSep(DIGIT_GROUP_SIZE);
 const _digitGroup: string = pipe(digit, repeatBetween(DIGIT_GROUP_SIZE, DIGIT_GROUP_SIZE));
 
 /**
- * A regular expression string representing a strictly positive integer with at most `n` digits
- * using thousandsSep as thousands separator. `n` must be a strictly positive integer. `n` may
- * receive the +Infinity value. If you want no thousands separator, pass an empty string to
+ * A regular expression string representing a strictly positive integer in base 10 with at most `n`
+ * digits using thousandsSep as thousands separator. `n` must be a strictly positive integer. `n`
+ * may receive the +Infinity value. If you want no thousands separator, pass an empty string to
  * `thousandsSep`.
  */
 export const strictlyPositiveInt = (n = +Infinity, thousandsSep = ''): string => {
@@ -297,9 +297,10 @@ export const strictlyPositiveInt = (n = +Infinity, thousandsSep = ''): string =>
 };
 
 /**
- * A regular expression string representing a positive integer with at most `n` digits using
- * thousandsSep as thousands separator. `n` must be a strictly positive integer. `n` may receive the
- * +Infinity value. If you want no thousands separator, pass an empty string to `thousandsSep`.
+ * A regular expression string representing a positive integer in base 10 with at most `n` digits
+ * using thousandsSep as thousands separator. `n` must be a strictly positive integer. `n` may
+ * receive the +Infinity value. If you want no thousands separator, pass an empty string to
+ * `thousandsSep`.
  *
  * @since 0.5.0
  * @category Instances
@@ -308,15 +309,39 @@ export const positiveInt = (n = +Infinity, thousandsSep = ''): string =>
 	either('0', strictlyPositiveInt(n, thousandsSep));
 
 /**
- * A regular expression string representing an integer with at most `n` digits using thousandsSep as
- * thousands separator. `n` must be a strictly positive integer. `n` may receive the +Infinity
- * value. If you want no thousands separator, pass an empty string to `thousandsSep`.
+ * A regular expression string representing an integer in base 10 with at most `n` digits using
+ * thousandsSep as thousands separator. `n` must be a strictly positive integer. `n` may receive the
+ * +Infinity value. If you want no thousands separator, pass an empty string to `thousandsSep`.
  *
  * @since 0.5.0
  * @category Instances
  */
 export const int = (n = +Infinity, thousandsSep = ''): string =>
 	optional(sign) + positiveInt(n, thousandsSep);
+
+/**
+ * A regular expression string representing an integer in base 2.
+ *
+ * @since 0.5.0
+ * @category Instances
+ */
+export const binaryInt: string = oneOrMore('[0-1]');
+
+/**
+ * A regular expression string representing an integer in base 8.
+ *
+ * @since 0.5.0
+ * @category Instances
+ */
+export const octalInt: string = oneOrMore('[0-7]');
+
+/**
+ * A regular expression string representing an integer in base 16.
+ *
+ * @since 0.5.0
+ * @category Instances
+ */
+export const hexaInt: string = oneOrMore('[0-9A-Fa-f]');
 
 /**
  * A regular expression string representing a letter
