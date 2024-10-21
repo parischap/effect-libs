@@ -165,6 +165,17 @@ export const fromPrimitive = (u: MTypes.Primitive): string =>
 	);
 
 /**
+ * Builds a string from a number using the passed `radix`.
+ *
+ * @since 0.5.0
+ * @category Constructors
+ */
+export const fromNumber =
+	(radix?: number) =>
+	(u: number): string =>
+		u.toString(radix);
+
+/**
  * Searches for the first occurence of `regexp` in `self` and returns a SearchResult. You can
  * optionnally provide the index from which to start searching. 'g' flag needs not be set if you
  * pass a regular expression.
