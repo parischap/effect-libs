@@ -71,8 +71,6 @@ export interface Type<out V extends MTypes.Unknown>
 	 * prototypes to open to reach `value`
 	 */
 	readonly protoDepth: number;
-	/** The options passed to the asLines or asString functions */
-	readonly options: Options.Type;
 	/**
 	 * The key to which `value` is attached (an empty string if `value` is not in a record, the index
 	 * converted to a string if `value` is in an array, the property key if `value` is in an object or
@@ -240,7 +238,6 @@ export const makeFromValue = (options: Options.Type) => (value: unknown) =>
 		value: value as MTypes.Unknown,
 		depth: 0,
 		protoDepth: 0,
-		options,
 		key: '',
 		stringKey: '',
 		hasFunctionValue: false,
@@ -275,57 +272,57 @@ export const setIsCycleStart =
  * @since 0.0.1
  * @category Utils
  */
-const makeFromRecord = (self: RecordType): Properties => {
-	const options = self.options;
-	let currentRecord = self.value;
-	let constituents = Chunk.empty<All>();
-	let currentProtoDepth = 0;
-	const nextDepth = self.depth + 1;
+const makeFromRecord =
+	(options: Options.Type) =>
+	(self: RecordType): Properties => {
+		let currentRecord = self.value;
+		let constituents = Chunk.empty<All>();
+		let currentProtoDepth = 0;
+		const nextDepth = self.depth + 1;
 
-	do {
-		/* eslint-disable-next-line functional/no-expression-statements */
-		constituents = Chunk.appendAll(
+		do {
+			/* eslint-disable-next-line functional/no-expression-statements */
+			constituents = Chunk.appendAll(
+				constituents,
+				pipe(
+					currentRecord,
+					// Record.map does not map on non enumerable properties
+					Reflect.ownKeys,
+					Array.map((key) => {
+						const value = currentRecord[key] as MTypes.Unknown;
+						return _make({
+							value,
+							depth: nextDepth,
+							protoDepth: currentProtoDepth,
+							key,
+							stringKey: MString.fromNonNullablePrimitive(key),
+							hasFunctionValue: MTypes.isFunction(value),
+							hasSymbolicKey: MTypes.isSymbol(key),
+							hasEnumerableKey: Object.prototype.propertyIsEnumerable.call(currentRecord, key),
+							byPassedValue: MOption.fromOptionOrNullable(options.byPasser.action(value, options)),
+							isTooDeep: Number.greaterThanOrEqualTo(nextDepth, options.maxDepth),
+							isCycleStart: false,
+							belongsToArray: MTypes.isArray(currentRecord)
+						});
+					}),
+					Chunk.fromIterable
+				)
+			);
+			const prototype = Reflect.getPrototypeOf(currentRecord);
+			/* eslint-disable-next-line functional/no-expression-statements */
+			if (prototype !== null) currentRecord = prototype;
+			else break;
+		} while (++currentProtoDepth <= options.maxPrototypeDepth);
+
+		return pipe(
 			constituents,
-			pipe(
-				currentRecord,
-				// Record.map does not map on non enumerable properties
-				Reflect.ownKeys,
-				Array.map((key) => {
-					const value = currentRecord[key] as MTypes.Unknown;
-					return _make({
-						value,
-						depth: nextDepth,
-						protoDepth: currentProtoDepth,
-						options,
-						key,
-						stringKey: MString.fromNonNullablePrimitive(key),
-						hasFunctionValue: MTypes.isFunction(value),
-						hasSymbolicKey: MTypes.isSymbol(key),
-						hasEnumerableKey: Object.prototype.propertyIsEnumerable.call(currentRecord, key),
-						byPassedValue: MOption.fromOptionOrNullable(options.byPasser.action(value, options)),
-						isTooDeep: Number.greaterThanOrEqualTo(nextDepth, options.maxDepth),
-						isCycleStart: false,
-						belongsToArray: MTypes.isArray(currentRecord)
-					});
-				}),
-				Chunk.fromIterable
-			)
+			// Removes __proto__ properties if there are some because we have already read that property with getPrototypeOf
+			Array.filter(
+				Predicate.struct({ stringKey: Predicate.not(MFunction.strictEquals('__proto__')) })
+			),
+			options.propertyFilter.action(self)
 		);
-		const prototype = Reflect.getPrototypeOf(currentRecord);
-		/* eslint-disable-next-line functional/no-expression-statements */
-		if (prototype !== null) currentRecord = prototype;
-		else break;
-	} while (++currentProtoDepth <= options.maxPrototypeDepth);
-
-	return pipe(
-		constituents,
-		// Removes __proto__ properties if there are some because we have already read that property with getPrototypeOf
-		Array.filter(
-			Predicate.struct({ stringKey: Predicate.not(MFunction.strictEquals('__proto__')) })
-		),
-		options.propertyFilter.action(self)
-	);
-};
+	};
 
 /**
  * Stringifies the `value` of `self`. Non-recursive.
@@ -333,94 +330,95 @@ const makeFromRecord = (self: RecordType): Properties => {
  * @since 0.0.1
  * @category Utils
  */
-export const stringify = (self: All): StringifiedValue.Type => {
-	const options = self.options;
-	const tree = MTree.nonRecursiveUnfoldAndMap(
-		self,
-		(seed, isCyclic) =>
-			pipe(
-				seed,
-				setIsCycleStart(isCyclic),
-				MTuple.makeBothBy({
-					toFirst: Function.identity,
-					toSecond: flow(
-						Option.liftPredicate(
-							Predicate.struct({
-								value: MTypes.isRecord,
-								byPassedValue: Option.isNone<StringifiedValue.Type>,
-								isTooDeep: Boolean.not,
-								isCycleStart: Boolean.not
-							}) as unknown as Predicate.Refinement<All, RecordType>
-						),
-						Option.map(
-							flow(
-								MMatch.make,
-								MMatch.when(isArray, makeFromRecord),
-								MMatch.orElse(
-									flow(
-										makeFromRecord,
-										Array.sort(options.propertySortOrder),
-										MFunction.fIfTrue({
-											condition: options.dedupeRecordProperties,
-											f: Array.dedupeWith((self, that) => self.key === that.key)
-										})
-									)
-								)
-							)
-						),
-						Option.getOrElse(() => Array.empty<All>())
-					)
-				})
-			),
-		(value, stringifiedProps: StringifiedValues.Type) =>
-			pipe(
-				stringifiedProps,
-				Array.match({
-					onNonEmpty: options.recordFormatter.action(value),
-
-					onEmpty: () =>
-						pipe(
-							value,
-							MMatch.make,
-							MMatch.tryFunction(Struct.get('byPassedValue')),
-							MMatch.orElse(
+export const stringify =
+	(options: Options.Type) =>
+	(self: All): StringifiedValue.Type => {
+		const tree = MTree.nonRecursiveUnfoldAndMap(
+			self,
+			(seed, isCyclic) =>
+				pipe(
+					seed,
+					setIsCycleStart(isCyclic),
+					MTuple.makeBothBy({
+						toFirst: Function.identity,
+						toSecond: flow(
+							Option.liftPredicate(
+								Predicate.struct({
+									value: MTypes.isRecord,
+									byPassedValue: Option.isNone<StringifiedValue.Type>,
+									isTooDeep: Boolean.not,
+									isCycleStart: Boolean.not
+								}) as unknown as Predicate.Refinement<All, RecordType>
+							),
+							Option.map(
 								flow(
 									MMatch.make,
-									MMatch.when(
-										isPrimitive,
+									MMatch.when(isArray, makeFromRecord(options)),
+									MMatch.orElse(
 										flow(
-											Struct.get('value'),
-											MString.fromPrimitive,
-											FormattedString.makeWith(),
-											Array.of
+											makeFromRecord(options),
+											Array.sort(options.propertySortOrder),
+											MFunction.fIfTrue({
+												condition: options.dedupeRecordProperties,
+												f: Array.dedupeWith((self, that) => self.key === that.key)
+											})
 										)
-									),
-									MMatch.unsafeWhen(
-										isRecord,
-										flow(
-											MMatch.make,
-											MMatch.when(
-												Struct.get('isTooDeep'),
-												flow(
-													MMatch.make,
-													MMatch.when(isArray, () => options.arrayLabel),
-													MMatch.when(isFunction, () => options.functionLabel),
-													MMatch.orElse(() => options.objectLabel),
-													Array.of
-												)
-											),
-											MMatch.when(Struct.get('isCycleStart'), () =>
-												Array.of(options.circularLabel)
-											),
-											MMatch.orElse(() => Array.empty<FormattedString.Type>())
+									)
+								)
+							),
+							Option.getOrElse(() => Array.empty<All>())
+						)
+					})
+				),
+			(value, stringifiedProps: StringifiedValues.Type) =>
+				pipe(
+					stringifiedProps,
+					Array.match({
+						onNonEmpty: options.recordFormatter.action(value),
+
+						onEmpty: () =>
+							pipe(
+								value,
+								MMatch.make,
+								MMatch.tryFunction(Struct.get('byPassedValue')),
+								MMatch.orElse(
+									flow(
+										MMatch.make,
+										MMatch.when(
+											isPrimitive,
+											flow(
+												Struct.get('value'),
+												MString.fromPrimitive,
+												FormattedString.makeWith(),
+												Array.of
+											)
+										),
+										MMatch.unsafeWhen(
+											isRecord,
+											flow(
+												MMatch.make,
+												MMatch.when(
+													Struct.get('isTooDeep'),
+													flow(
+														MMatch.make,
+														MMatch.when(isArray, () => options.arrayLabel),
+														MMatch.when(isFunction, () => options.functionLabel),
+														MMatch.orElse(() => options.objectLabel),
+														Array.of
+													)
+												),
+												MMatch.when(Struct.get('isCycleStart'), () =>
+													Array.of(options.circularLabel)
+												),
+												MMatch.orElse(() => Array.empty<FormattedString.Type>())
+											)
 										)
 									)
 								)
 							)
-						)
-				}),
-				options.propertyFormatter.action(value)
-			)
-	);
-	return tree.value;
-};
+					}),
+					options.propertyFormatter.action(value)
+				)
+		);
+		return tree.value;
+	};
