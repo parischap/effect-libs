@@ -71,4 +71,14 @@ describe('MString', () => {
 			).toBe(true);
 		});
 	});
+
+	describe('shift', () => {
+		it('Positive shift', () => {
+			expect(pipe(5.04, MNumber.shift(2))).toBe(504);
+		});
+
+		it('Negative shift', () => {
+			expect(pipe(504, MNumber.shift(-2))).toBe(5.04);
+		});
+	});
 });
