@@ -1,7 +1,7 @@
 /* eslint-disable functional/no-expression-statements */
 import { MBrand } from '@parischap/effect-lib';
 import { Transformer } from '@parischap/effect-templater';
-import { Chunk, Either, Equal, pipe } from 'effect';
+import { Either, Function, pipe } from 'effect';
 import { describe, expect, it } from 'vitest';
 
 describe('Transformer.RealOptions', () => {
@@ -405,638 +405,405 @@ describe('Transformer.RealOptions', () => {
 });
 
 describe('Transformer', () => {
+	const readTester =
+		<A>(transformer: Transformer.Type<A>) =>
+		(input: string): boolean | readonly [value: A, rest: string] =>
+			pipe(
+				input,
+				transformer.read,
+				Either.match({ onLeft: () => false, onRight: Function.identity })
+			);
+
+	const writeTester =
+		<A>(transformer: Transformer.Type<A>) =>
+		(input: A): boolean | string =>
+			pipe(
+				input,
+				transformer.write,
+				Either.match({ onLeft: () => false, onRight: Function.identity })
+			);
+
 	describe('string', () => {
+		const stringReadTester = readTester(Transformer.string);
 		it('Reading', () => {
-			expect(
-				pipe(
-					'foo and bar',
-					Transformer.string.read,
-					// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
-					Either.map(Chunk.fromIterable),
-					Equal.equals(Either.right(Chunk.make('foo and bar', '')))
-				)
-			).toBe(true);
+			expect(stringReadTester('foo and bar')).toStrictEqual(['foo and bar', '']);
 		});
 
+		const stringWriteTester = writeTester(Transformer.string);
 		it('Writing', () => {
-			expect(
-				pipe('foo and bar', Transformer.string.write, Equal.equals(Either.right('foo and bar')))
-			).toBe(true);
+			expect(stringWriteTester('foo and bar')).toBe('foo and bar');
+		});
+	});
+
+	describe('binary', () => {
+		const binaryReadTester = readTester(Transformer.binary);
+		describe('Reading', () => {
+			it('string not representing a binary number', () => {
+				expect(binaryReadTester(' 11foo')).toBe(false);
+			});
+
+			it('string with binary number at start', () => {
+				expect(binaryReadTester('00118foo')).toStrictEqual([3, '8foo']);
+			});
+		});
+
+		const binaryWriteTester = writeTester(Transformer.binary);
+		it('Writing', () => {
+			expect(pipe(15, MBrand.PositiveInt.fromNumber, binaryWriteTester)).toBe('1111');
+		});
+	});
+
+	describe('octal', () => {
+		const octalReadTester = readTester(Transformer.octal);
+		describe('Reading', () => {
+			it('string not representing an octal number', () => {
+				expect(octalReadTester(' 16foo')).toBe(false);
+			});
+
+			it('string with octal number at start', () => {
+				expect(octalReadTester('168foo')).toStrictEqual([14, '8foo']);
+			});
+		});
+
+		const octalWriteTester = writeTester(Transformer.octal);
+		it('Writing', () => {
+			expect(pipe(14, MBrand.PositiveInt.fromNumber, octalWriteTester)).toBe('16');
+		});
+	});
+
+	describe('hexadecimal', () => {
+		const hexadecimalReadTester = readTester(Transformer.hexadecimal);
+		describe('Reading', () => {
+			it('string not representing a hexadecimal number', () => {
+				expect(hexadecimalReadTester(' foo')).toBe(false);
+			});
+
+			it('string with hexadecimal number at start', () => {
+				expect(hexadecimalReadTester('Ffoo')).toStrictEqual([255, 'oo']);
+			});
+		});
+
+		const hexadecimalWriteTester = writeTester(Transformer.hexadecimal);
+		it('Writing', () => {
+			expect(pipe(16, MBrand.PositiveInt.fromNumber, hexadecimalWriteTester)).toBe('10');
 		});
 	});
 
 	describe('floatingPoint', () => {
+		const floatingPointReadTester = readTester(Transformer.floatingPoint);
 		describe('Reading', () => {
 			it('Empty string', () => {
-				expect(pipe('', Transformer.floatingPoint.read, Either.isLeft)).toBe(true);
+				expect(floatingPointReadTester('')).toBe(false);
 			});
 
 			it('One space string', () => {
-				expect(pipe(' foo', Transformer.floatingPoint.read, Either.isLeft)).toBe(true);
+				expect(floatingPointReadTester(' foo')).toBe(false);
 			});
 
 			it('With upfront 0', () => {
-				expect(
-					pipe(
-						'01.1foo',
-						Transformer.floatingPoint.read,
-						// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
-						Either.map(Chunk.fromIterable),
-						Equal.equals(Either.right(Chunk.make(0, '1.1foo')))
-					)
-				).toBe(true);
+				expect(floatingPointReadTester('01.1foo')).toStrictEqual([0, '1.1foo']);
 			});
 
 			it('With upfront space', () => {
-				expect(pipe(' 1.1foo', Transformer.floatingPoint.read, Either.isLeft)).toBe(true);
+				expect(floatingPointReadTester(' 1.1foo')).toBe(false);
 			});
 
 			it('Any positive number', () => {
-				expect(
-					pipe(
-						'1000348.3456foo',
-						Transformer.floatingPoint.read,
-						// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
-						Either.map(Chunk.fromIterable),
-						Equal.equals(Either.right(Chunk.make(1_000_348.3456, 'foo')))
-					)
-				).toBe(true);
+				expect(floatingPointReadTester('1000348.3456foo')).toStrictEqual([1_000_348.3456, 'foo']);
 			});
 
 			it('Any negative number', () => {
-				expect(
-					pipe(
-						'-.3foo',
-						Transformer.floatingPoint.read,
-						// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
-						Either.map(Chunk.fromIterable),
-						Equal.equals(Either.right(Chunk.make(-0.3, 'foo')))
-					)
-				).toBe(true);
+				expect(floatingPointReadTester('-.3foo')).toStrictEqual([-0.3, 'foo']);
 			});
 		});
 
+		const floatingPointWriteTester = writeTester(Transformer.floatingPoint);
 		describe('Writing', () => {
 			it('Any positive number', () => {
-				expect(
-					pipe(
-						10_034_538.76,
-						MBrand.Real.fromNumber,
-						Transformer.floatingPoint.write,
-						Equal.equals(Either.right('10034538.76'))
-					)
-				).toBe(true);
+				expect(pipe(10_034_538.76, MBrand.Real.fromNumber, floatingPointWriteTester)).toBe(
+					'10034538.76'
+				);
 			});
 
 			it('Any negative number', () => {
-				expect(
-					pipe(
-						-1_740.7654,
-						MBrand.Real.fromNumber,
-						Transformer.floatingPoint.write,
-						Equal.equals(Either.right('-1740.7654'))
-					)
-				).toBe(true);
+				expect(pipe(-1_740.7654, MBrand.Real.fromNumber, floatingPointWriteTester)).toBe(
+					'-1740.7654'
+				);
 			});
 
 			it('Any integer', () => {
-				expect(
-					pipe(
-						-8,
-						MBrand.Real.fromNumber,
-						Transformer.floatingPoint.write,
-						Equal.equals(Either.right('-8'))
-					)
-				).toBe(true);
+				expect(pipe(-8, MBrand.Real.fromNumber, floatingPointWriteTester)).toBe('-8');
 			});
 
 			it('Any fractional number', () => {
-				expect(
-					pipe(
-						0.34,
-						MBrand.Real.fromNumber,
-						Transformer.floatingPoint.write,
-						Equal.equals(Either.right('0.34'))
-					)
-				).toBe(true);
+				expect(pipe(0.34, MBrand.Real.fromNumber, floatingPointWriteTester)).toBe('0.34');
 			});
 		});
 	});
 
 	describe('ukFloatingPoint', () => {
+		const ukFloatingPointReadTester = readTester(Transformer.ukFloatingPoint);
 		describe('Reading', () => {
 			it('Any positive number', () => {
-				expect(
-					pipe(
-						'1,000,348.3456foo',
-						Transformer.ukFloatingPoint.read,
-						// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
-						Either.map(Chunk.fromIterable),
-						Equal.equals(Either.right(Chunk.make(1_000_348.3456, 'foo')))
-					)
-				).toBe(true);
+				expect(ukFloatingPointReadTester('1,000,348.3456foo')).toStrictEqual([
+					1_000_348.3456,
+					'foo'
+				]);
 			});
 
 			it('Any negative number', () => {
-				expect(
-					pipe(
-						'-10.3foo',
-						Transformer.floatingPoint.read,
-						// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
-						Either.map(Chunk.fromIterable),
-						Equal.equals(Either.right(Chunk.make(-10.3, 'foo')))
-					)
-				).toBe(true);
+				expect(ukFloatingPointReadTester('-10.3foo')).toStrictEqual([-10.3, 'foo']);
 			});
 		});
 
+		const ukFloatingPointWriteTester = writeTester(Transformer.ukFloatingPoint);
 		describe('Writing', () => {
 			it('Any positive number', () => {
-				expect(
-					pipe(
-						10_034_538.7654,
-						MBrand.Real.fromNumber,
-						Transformer.ukFloatingPoint.write,
-						Equal.equals(Either.right('10,034,538.7654'))
-					)
-				).toBe(true);
+				expect(pipe(10_034_538.7654, MBrand.Real.fromNumber, ukFloatingPointWriteTester)).toBe(
+					'10,034,538.7654'
+				);
 			});
 
 			it('Any negative number', () => {
-				expect(
-					pipe(
-						-18.7654,
-						MBrand.Real.fromNumber,
-						Transformer.ukFloatingPoint.write,
-						Equal.equals(Either.right('-18.7654'))
-					)
-				).toBe(true);
+				expect(pipe(-18.7654, MBrand.Real.fromNumber, ukFloatingPointWriteTester)).toBe('-18.7654');
 			});
 		});
 	});
 
 	describe('ukFloatingPoint2', () => {
+		const ukFloatingPoint2ReadTester = readTester(Transformer.ukFloatingPoint2);
 		describe('Reading', () => {
 			it('Number with one fractional digit', () => {
-				expect(pipe('10.3foo', Transformer.ukFloatingPoint2.read, Either.isLeft)).toBe(true);
+				expect(ukFloatingPoint2ReadTester('10.3foo')).toBe(false);
 			});
 
 			it('Any positive number with 2 fractional digits', () => {
-				expect(
-					pipe(
-						'10.30foo',
-						Transformer.ukFloatingPoint2.read,
-						// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
-						Either.map(Chunk.fromIterable),
-						Equal.equals(Either.right(Chunk.make(10.3, 'foo')))
-					)
-				).toBe(true);
+				expect(ukFloatingPoint2ReadTester('10.30foo')).toStrictEqual([10.3, 'foo']);
 			});
 
 			it('Number with three fractional digits', () => {
-				expect(
-					pipe(
-						'-10.321foo',
-						Transformer.ukFloatingPoint2.read,
-						// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
-						Either.map(Chunk.fromIterable),
-						Equal.equals(Either.right(Chunk.make(-10.32, '1foo')))
-					)
-				).toBe(true);
+				expect(ukFloatingPoint2ReadTester('-10.321foo')).toStrictEqual([-10.32, '1foo']);
 			});
 		});
 
+		const ukFloatingPoint2WriteTester = writeTester(Transformer.ukFloatingPoint2);
 		describe('Writing', () => {
 			it('Any integer', () => {
-				expect(
-					pipe(
-						10_034_538,
-						MBrand.Real.fromNumber,
-						Transformer.ukFloatingPoint2.write,
-						Equal.equals(Either.right('10,034,538.00'))
-					)
-				).toBe(true);
+				expect(pipe(10_034_538, MBrand.Real.fromNumber, ukFloatingPoint2WriteTester)).toBe(
+					'10,034,538.00'
+				);
 			});
 
 			it('Any number with one fractional digit', () => {
-				expect(
-					pipe(
-						-1_740.7,
-						MBrand.Real.fromNumber,
-						Transformer.ukFloatingPoint2.write,
-						Equal.equals(Either.right('-1,740.70'))
-					)
-				).toBe(true);
+				expect(pipe(-1_740.7, MBrand.Real.fromNumber, ukFloatingPoint2WriteTester)).toBe(
+					'-1,740.70'
+				);
 			});
 
 			it('Any number with two fractional digits', () => {
-				expect(
-					pipe(
-						18.73,
-						MBrand.Real.fromNumber,
-						Transformer.ukFloatingPoint2.write,
-						Equal.equals(Either.right('18.73'))
-					)
-				).toBe(true);
+				expect(pipe(18.73, MBrand.Real.fromNumber, ukFloatingPoint2WriteTester)).toBe('18.73');
 			});
 
 			it('Any number with three fractional digits round down', () => {
-				expect(
-					pipe(
-						18_740_543_323.344,
-						MBrand.Real.fromNumber,
-						Transformer.ukFloatingPoint2.write,
-						Equal.equals(Either.right('18,740,543,323.34'))
-					)
-				).toBe(true);
+				expect(pipe(18_740_543_323.344, MBrand.Real.fromNumber, ukFloatingPoint2WriteTester)).toBe(
+					'18,740,543,323.34'
+				);
 			});
 
 			it('Any number with three fractional digits round up', () => {
-				expect(
-					pipe(
-						-194.455,
-						MBrand.Real.fromNumber,
-						Transformer.ukFloatingPoint2.write,
-						Equal.equals(Either.right('-194.46'))
-					)
-				).toBe(true);
+				expect(pipe(-194.455, MBrand.Real.fromNumber, ukFloatingPoint2WriteTester)).toBe('-194.46');
 			});
 		});
 	});
 
 	describe('frenchScientificNotation', () => {
+		const frenchScientificNotationReadTester = readTester(Transformer.frenchScientificNotation);
 		describe('Reading', () => {
 			it('Number greater than 10', () => {
-				expect(
-					pipe(
-						'10,3foo',
-						Transformer.frenchScientificNotation.read, // Revert from Chunk to Array when Effect 4.0 with structural equality comes out
-						Either.map(Chunk.fromIterable),
-						Equal.equals(Either.right(Chunk.make(1, '0,3foo')))
-					)
-				).toBe(true);
+				expect(frenchScientificNotationReadTester('10,3foo')).toStrictEqual([1, '0,3foo']);
 			});
 
 			it('Positive number without exponent', () => {
-				expect(
-					pipe(
-						'9,30foo',
-						Transformer.frenchScientificNotation.read,
-						// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
-						Either.map(Chunk.fromIterable),
-						Equal.equals(Either.right(Chunk.make(9.3, 'foo')))
-					)
-				).toBe(true);
+				expect(frenchScientificNotationReadTester('9,30foo')).toStrictEqual([9.3, 'foo']);
 			});
 
-			it('Negative number with exponent', () => {
-				expect(
-					pipe(
-						'-5,234e3foo',
-						Transformer.frenchScientificNotation.read,
-						// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
-						Either.map(Chunk.fromIterable),
-						Equal.equals(Either.right(Chunk.make(-5_234, 'foo')))
-					)
-				).toBe(true);
+			it('Negative number with positive exponent', () => {
+				expect(frenchScientificNotationReadTester('-5,234e3foo')).toStrictEqual([-5_234, 'foo']);
+			});
+
+			it('Positive number with negative exponent', () => {
+				expect(frenchScientificNotationReadTester('5,234e-3foo')).toStrictEqual([0.005234, 'foo']);
 			});
 		});
 
+		const frenchScientificNotationWriteTester = writeTester(Transformer.frenchScientificNotation);
 		describe('Writing', () => {
 			it('Any integer', () => {
-				expect(
-					pipe(
-						0,
-						MBrand.Real.fromNumber,
-						Transformer.frenchScientificNotation.write,
-						Equal.equals(Either.right('0e0'))
-					)
-				).toBe(true);
+				expect(pipe(0, MBrand.Real.fromNumber, frenchScientificNotationWriteTester)).toBe('0e0');
 			});
 
 			it('Any positive integer', () => {
-				expect(
-					pipe(
-						10_034_538,
-						MBrand.Real.fromNumber,
-						Transformer.frenchScientificNotation.write,
-						Equal.equals(Either.right('1,0035e7'))
-					)
-				).toBe(true);
+				expect(pipe(10_034_538, MBrand.Real.fromNumber, frenchScientificNotationWriteTester)).toBe(
+					'1,0035e7'
+				);
 			});
 
 			it('Any negative integer', () => {
-				expect(
-					pipe(
-						-4.43,
-						MBrand.Real.fromNumber,
-						Transformer.frenchScientificNotation.write,
-						Equal.equals(Either.right('-4,43e0'))
-					)
-				).toBe(true);
+				expect(pipe(-0.0443, MBrand.Real.fromNumber, frenchScientificNotationWriteTester)).toBe(
+					'-4,43e-2'
+				);
 			});
 		});
 	});
 
 	describe('germanFractional', () => {
+		const germanFractionalReadTester = readTester(Transformer.germanFractional);
 		describe('Reading', () => {
 			it('Number with decimal part', () => {
-				expect(pipe('10,3foo', Transformer.germanFractional.read, Either.isLeft)).toBe(true);
+				expect(germanFractionalReadTester('10,3foo')).toBe(false);
 			});
 
 			it('Positive number', () => {
-				expect(
-					pipe(
-						',3230foo',
-						Transformer.germanFractional.read,
-						// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
-						Either.map(Chunk.fromIterable),
-						Equal.equals(Either.right(Chunk.make(0.323, 'foo')))
-					)
-				).toBe(true);
+				expect(germanFractionalReadTester(',3230foo')).toStrictEqual([0.323, 'foo']);
 			});
 
 			it('Negative number with exponent', () => {
-				expect(
-					pipe(
-						'-,234e3foo',
-						Transformer.germanFractional.read,
-						// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
-						Either.map(Chunk.fromIterable),
-						Equal.equals(Either.right(Chunk.make(-0.234, 'e3foo')))
-					)
-				).toBe(true);
+				expect(germanFractionalReadTester('-,234e3foo')).toStrictEqual([-0.234, 'e3foo']);
 			});
 		});
 
+		const germanFractionalWriteTester = writeTester(Transformer.germanFractional);
 		describe('Writing', () => {
 			it('0', () => {
-				expect(
-					pipe(0, MBrand.Real.fromNumber, Transformer.germanFractional.write, Either.isLeft)
-				).toBe(true);
+				expect(pipe(0, MBrand.Real.fromNumber, germanFractionalWriteTester)).toBe(false);
 			});
 
 			it('Number that rounds to 0 with maxFractionalDigits', () => {
-				expect(
-					pipe(0.00004, MBrand.Real.fromNumber, Transformer.germanFractional.write, Either.isLeft)
-				).toBe(true);
+				expect(pipe(0.00004, MBrand.Real.fromNumber, germanFractionalWriteTester)).toBe(false);
 			});
 
 			it('Any integer', () => {
-				expect(
-					pipe(8, MBrand.Real.fromNumber, Transformer.germanFractional.write, Either.isLeft)
-				).toBe(true);
+				expect(pipe(8, MBrand.Real.fromNumber, germanFractionalWriteTester)).toBe(false);
 			});
 
 			it('Any fractional number', () => {
-				expect(
-					pipe(
-						-0.443,
-						MBrand.Real.fromNumber,
-						Transformer.germanFractional.write,
-						Equal.equals(Either.right('-,443'))
-					)
-				).toBe(true);
+				expect(pipe(-0.443, MBrand.Real.fromNumber, germanFractionalWriteTester)).toBe('-,443');
 			});
 		});
 	});
 
 	describe('ukInt', () => {
+		const ukIntReadTester = readTester(Transformer.ukInt);
 		describe('Reading', () => {
 			it('Positive integer', () => {
-				expect(
-					pipe(
-						'10foo',
-						Transformer.ukInt.read,
-						// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
-						Either.map(Chunk.fromIterable),
-						Equal.equals(Either.right(Chunk.make(10, 'foo')))
-					)
-				).toBe(true);
+				expect(ukIntReadTester('10foo')).toStrictEqual([10, 'foo']);
 			});
 
 			it('Negative fractional number', () => {
-				expect(
-					pipe(
-						'-10.3foo',
-						Transformer.ukInt.read,
-						// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
-						Either.map(Chunk.fromIterable),
-						Equal.equals(Either.right(Chunk.make(-10, '.3foo')))
-					)
-				).toBe(true);
+				expect(ukIntReadTester('-10.3foo')).toStrictEqual([-10, '.3foo']);
 			});
 		});
 
+		const ukIntWriteTester = writeTester(Transformer.ukInt);
 		describe('Writing', () => {
 			it('0', () => {
-				expect(
-					pipe(0, MBrand.Int.fromNumber, Transformer.ukInt.write, Equal.equals(Either.right('0')))
-				).toBe(true);
+				expect(pipe(0, MBrand.Int.fromNumber, ukIntWriteTester)).toBe('0');
 			});
 
 			it('Positive number', () => {
-				expect(
-					pipe(
-						1048,
-						MBrand.Int.fromNumber,
-						Transformer.ukInt.write,
-						Equal.equals(Either.right('1,048'))
-					)
-				).toBe(true);
+				expect(pipe(1048, MBrand.Int.fromNumber, ukIntWriteTester)).toBe('1,048');
 			});
 
 			it('Negative number', () => {
-				expect(
-					pipe(
-						-224,
-						MBrand.Int.fromNumber,
-						Transformer.ukInt.write,
-						Equal.equals(Either.right('-224'))
-					)
-				).toBe(true);
+				expect(pipe(-224, MBrand.Int.fromNumber, ukIntWriteTester)).toBe('-224');
 			});
 		});
 	});
 
 	describe('unsignedUkInt', () => {
+		const unsignedUkIntReadTester = readTester(Transformer.unsignedUkInt);
 		describe('Reading', () => {
 			it('Positive integer', () => {
-				expect(
-					pipe(
-						'10foo',
-						Transformer.unsignedUkInt.read,
-						// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
-						Either.map(Chunk.fromIterable),
-						Equal.equals(Either.right(Chunk.make(10, 'foo')))
-					)
-				).toBe(true);
+				expect(unsignedUkIntReadTester('10foo')).toStrictEqual([10, 'foo']);
 			});
 
 			it('Negative fractional number', () => {
-				expect(pipe('-10.3foo', Transformer.unsignedUkInt.read, Either.isLeft)).toBe(true);
+				expect(unsignedUkIntReadTester('-10.3foo')).toBe(false);
 			});
 		});
 
+		const unsignedUkIntWriteTester = writeTester(Transformer.unsignedUkInt);
 		describe('Writing', () => {
 			it('0', () => {
-				expect(
-					pipe(
-						0,
-						MBrand.PositiveInt.fromNumber,
-						Transformer.unsignedUkInt.write,
-						Equal.equals(Either.right('0'))
-					)
-				).toBe(true);
+				expect(pipe(0, MBrand.PositiveInt.fromNumber, unsignedUkIntWriteTester)).toBe('0');
 			});
 
 			it('Positive number', () => {
-				expect(
-					pipe(
-						1048,
-						MBrand.PositiveInt.fromNumber,
-						Transformer.unsignedUkInt.write,
-						Equal.equals(Either.right('1,048'))
-					)
-				).toBe(true);
+				expect(pipe(1048, MBrand.PositiveInt.fromNumber, unsignedUkIntWriteTester)).toBe('1,048');
 			});
 		});
 	});
 
 	describe('signedUkInt', () => {
+		const signedUkIntReadTester = readTester(Transformer.signedUkInt);
 		describe('Reading', () => {
 			it('Positive integer without sign', () => {
-				expect(pipe('10foo', Transformer.signedUkInt.read, Either.isLeft)).toBe(true);
+				expect(signedUkIntReadTester('10foo')).toBe(false);
 			});
 
 			it('Positive integer with sign', () => {
-				expect(
-					pipe(
-						'+10foo',
-						Transformer.signedUkInt.read,
-						// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
-						Either.map(Chunk.fromIterable),
-						Equal.equals(Either.right(Chunk.make(10, 'foo')))
-					)
-				).toBe(true);
+				expect(signedUkIntReadTester('+10foo')).toStrictEqual([10, 'foo']);
 			});
 
-			expect(
-				pipe(
-					'-10.3foo',
-					Transformer.signedUkInt.read,
-					// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
-					Either.map(Chunk.fromIterable),
-					Equal.equals(Either.right(Chunk.make(-10, '.3foo')))
-				)
-			).toBe(true);
+			it('Negative integer', () => {
+				expect(signedUkIntReadTester('-10.3foo')).toStrictEqual([-10, '.3foo']);
+			});
 		});
 
+		const signedUkIntWriteTester = writeTester(Transformer.signedUkInt);
 		describe('Writing', () => {
 			it('0', () => {
-				expect(
-					pipe(
-						0,
-						MBrand.Int.fromNumber,
-						Transformer.signedUkInt.write,
-						Equal.equals(Either.right('+0'))
-					)
-				).toBe(true);
+				expect(pipe(0, MBrand.Int.fromNumber, signedUkIntWriteTester)).toBe('+0');
 			});
 
 			it('Positive number', () => {
-				expect(
-					pipe(
-						1048,
-						MBrand.Int.fromNumber,
-						Transformer.signedUkInt.write,
-						Equal.equals(Either.right('+1,048'))
-					)
-				).toBe(true);
+				expect(pipe(1048, MBrand.Int.fromNumber, signedUkIntWriteTester)).toBe('+1,048');
 			});
 
 			it('Negative number', () => {
-				expect(
-					pipe(
-						-224,
-						MBrand.Int.fromNumber,
-						Transformer.signedUkInt.write,
-						Equal.equals(Either.right('-224'))
-					)
-				).toBe(true);
+				expect(pipe(-224, MBrand.Int.fromNumber, signedUkIntWriteTester)).toBe('-224');
 			});
 		});
 	});
 
 	describe('plussedUkInt', () => {
+		const plussedUkIntReadTester = readTester(Transformer.plussedUkInt);
 		describe('Reading', () => {
 			it('Positive integer without sign', () => {
-				expect(
-					pipe(
-						'10foo',
-						Transformer.plussedUkInt.read,
-						// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
-						Either.map(Chunk.fromIterable),
-						Equal.equals(Either.right(Chunk.make(10, 'foo')))
-					)
-				).toBe(true);
+				expect(plussedUkIntReadTester('10foo')).toStrictEqual([10, 'foo']);
 			});
 
 			it('Positive integer with sign', () => {
-				expect(
-					pipe(
-						'+10foo',
-						Transformer.plussedUkInt.read,
-						// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
-						Either.map(Chunk.fromIterable),
-						Equal.equals(Either.right(Chunk.make(10, 'foo')))
-					)
-				).toBe(true);
+				expect(plussedUkIntReadTester('+10foo')).toStrictEqual([10, 'foo']);
 			});
 
-			expect(
-				pipe(
-					'-10.3foo',
-					Transformer.plussedUkInt.read,
-					// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
-					Either.map(Chunk.fromIterable),
-					Equal.equals(Either.right(Chunk.make(-10, '.3foo')))
-				)
-			).toBe(true);
+			it('Negative integer', () => {
+				expect(plussedUkIntReadTester('-10.3foo')).toStrictEqual([-10, '.3foo']);
+			});
 		});
 
+		const plussedUkIntWriteTester = writeTester(Transformer.plussedUkInt);
 		describe('Writing', () => {
 			it('0', () => {
-				expect(
-					pipe(
-						0,
-						MBrand.Int.fromNumber,
-						Transformer.plussedUkInt.write,
-						Equal.equals(Either.right('0'))
-					)
-				).toBe(true);
+				expect(pipe(0, MBrand.Int.fromNumber, plussedUkIntWriteTester)).toBe('0');
 			});
 
 			it('Positive number', () => {
-				expect(
-					pipe(
-						1048,
-						MBrand.Int.fromNumber,
-						Transformer.plussedUkInt.write,
-						Equal.equals(Either.right('1,048'))
-					)
-				).toBe(true);
+				expect(pipe(1048, MBrand.Int.fromNumber, plussedUkIntWriteTester)).toBe('1,048');
 			});
 
 			it('Negative number', () => {
-				expect(
-					pipe(
-						-224,
-						MBrand.Int.fromNumber,
-						Transformer.plussedUkInt.write,
-						Equal.equals(Either.right('-224'))
-					)
-				).toBe(true);
+				expect(pipe(-224, MBrand.Int.fromNumber, plussedUkIntWriteTester)).toBe('-224');
 			});
 		});
 	});

@@ -142,6 +142,51 @@ export const string: Type<string> = make({
 	write: Either.right
 });
 
+const inBasis = (name: string, regExp: RegExp, radix: number): Type<MBrand.PositiveInt.Type> =>
+	make({
+		name,
+		read: (input) =>
+			pipe(
+				input,
+				MString.match(regExp),
+				Option.map(
+					MTuple.makeBothBy({
+						toFirst: flow(MNumber.unsafeIntFromString(radix), MBrand.PositiveInt.unsafeFromNumber),
+						toSecond: flow(String.length, Function.flip(MString.takeRightBut)(input))
+					})
+				),
+				Either.fromOption(
+					() =>
+						new Error.Type({ message: `Could not read ${name} number from start of '${input}'` })
+				)
+			),
+		write: flow(MString.fromNumber(radix), Either.right)
+	});
+
+/**
+ * Transformer instance that reads/writes a binary number
+ *
+ * @since 0.0.1
+ * @category Instances
+ */
+export const binary = inBasis('binary', MRegExp.binaryIntAtStart, 2);
+
+/**
+ * Transformer instance that reads/writes an octal number
+ *
+ * @since 0.0.1
+ * @category Instances
+ */
+export const octal = inBasis('octal', MRegExp.octalIntAtStart, 8);
+
+/**
+ * Transformer instance that reads/writes an hexadecimal number
+ *
+ * @since 0.0.1
+ * @category Instances
+ */
+export const hexadecimal = inBasis('hexadecimal', MRegExp.hexaIntAtStart, 16);
+
 /**
  * This namespace implements the options to the Transformer real function.
  *
@@ -205,7 +250,8 @@ export namespace RealOptions {
 			MMatch.whenIs(SignOptions.Mandatory, () => MRegExpString.sign),
 			MMatch.whenIs(SignOptions.MinusAllowed, () => MRegExpString.optional(MRegExpString.minus)),
 			MMatch.whenIs(SignOptions.Optional, () => MRegExpString.optional(MRegExpString.sign)),
-			MMatch.exhaustive
+			MMatch.exhaustive,
+			MRegExpString.capture
 		);
 
 		/**
@@ -225,7 +271,7 @@ export namespace RealOptions {
 						Number.greaterThanOrEqualTo(0),
 						(input) =>
 							new Error.Type({
-								message: `Negative number ${input} cannot be displayed with signOption 'None'`
+								message: `Negative number '${input}' cannot be displayed with signOption 'None'`
 							})
 					),
 					Either.map(() => '')
@@ -298,6 +344,13 @@ export namespace RealOptions {
 	 * @since 0.0.1
 	 */
 	export namespace ENotationOptions {
+		const _regExpString = (sign: string): string =>
+			pipe(
+				MRegExpString.int(),
+				MRegExpString.capture,
+				MString.prepend(sign),
+				MRegExpString.optional
+			);
 		/**
 		 * Turns an e-notation option into a regular expression string
 		 *
@@ -306,13 +359,9 @@ export namespace RealOptions {
 		 */
 		export const toRegExpString: (self: ENotationOptions) => string = flow(
 			MMatch.make,
-			MMatch.whenIs(ENotationOptions.None, () => ''),
-			MMatch.whenIs(ENotationOptions.Lowercase, () =>
-				pipe('e', MString.append(MRegExpString.int()), MRegExpString.optional)
-			),
-			MMatch.whenIs(ENotationOptions.Uppercase, () =>
-				pipe('E', MString.append(MRegExpString.int()), MRegExpString.optional)
-			),
+			MMatch.whenIs(ENotationOptions.None, () => MRegExpString.emptyCapture),
+			MMatch.whenIs(ENotationOptions.Lowercase, () => _regExpString('e')),
+			MMatch.whenIs(ENotationOptions.Uppercase, () => _regExpString('E')),
 			MMatch.exhaustive
 		);
 
@@ -365,13 +414,27 @@ export namespace RealOptions {
 		 */
 		readonly thousandsSep: string;
 		/**
-		 * Maximum number of decimal digits. Must be a positive integer (+Infinity is allowed). When
-		 * reading from a string, this is the maximal number of digits that will be read for the decimal
-		 * part. If `eNotationOptions` is set to `ENotationOptions.None`, trying to write more than
-		 * `maxDecimalDigits` to a string will result in an error. If `eNotationOptions` is not set to
-		 * `ENotationOptions.None`, the number to write is multiplied by a 10^(-n) factor so that the
-		 * maxDecimalDigits constraint is respected. And a 10^n exponent will be added to the final
-		 * string. Do not set `maxDecimalDigits` and `maxFractionalDigits` simultaneously to 0.
+		 * Minimum number of decimal digits. Must be a positive integer less or equal to
+		 * `maxDecimalDigits`. When reading from a string, this is the minimal number of digits that
+		 * will be read for the decimal part. If `eNotationOptions` is set to `ENotationOptions.None`,
+		 * trying to write strictly less than `minDecimalDigits` to a string will result in an error. If
+		 * `eNotationOptions` is not set to `ENotationOptions.None`, the number to write is multiplied
+		 * by a 10^(-n) factor so that the [`minDecimalDigits`,`maxDecimalDigits`] constraint is
+		 * respected. And a 10^n exponent will be added to the final string.
+		 *
+		 * @since 0.0.1
+		 */
+		readonly minDecimalDigits: number;
+		/**
+		 * Maximum number of decimal digits. Must be a positive integer greater than or equal to
+		 * `minDecimalDigits` (+Infinity is allowed). When reading from a string, this is the maximal
+		 * number of digits that will be read for the decimal part. If `eNotationOptions` is set to
+		 * `ENotationOptions.None`, trying to write strictly more than `maxDecimalDigits` to a string
+		 * will result in an error. If `eNotationOptions` is not set to `ENotationOptions.None`, the
+		 * number to write is multiplied by a 10^(-n) factor so that the
+		 * [`minDecimalDigits`,`maxDecimalDigits`] constraint is respected. And a 10^n exponent will be
+		 * added to the final string. Do not set `maxDecimalDigits` and `maxFractionalDigits`
+		 * simultaneously to 0.
 		 *
 		 * @since 0.0.1
 		 */
@@ -425,6 +488,7 @@ export namespace RealOptions {
 		that.signOptions === self.signOptions &&
 		that.fractionalSep === self.fractionalSep &&
 		that.thousandsSep === self.thousandsSep &&
+		that.minDecimalDigits === self.minDecimalDigits &&
 		that.maxDecimalDigits === self.maxDecimalDigits &&
 		that.minFractionalDigits === self.minFractionalDigits &&
 		that.maxFractionalDigits === self.maxFractionalDigits &&
@@ -463,6 +527,7 @@ export namespace RealOptions {
 			signOptions: SignOptions.MinusAllowed,
 			fractionalSep: '.',
 			thousandsSep: '',
+			minDecimalDigits: 1,
 			maxDecimalDigits: +Infinity,
 			minFractionalDigits: 0,
 			maxFractionalDigits: 4,
@@ -520,7 +585,8 @@ export namespace RealOptions {
 	 * @since 0.0.1
 	 * @category Utils
 	 */
-	export const withNoDecimalPart = (self: Type): Type => make({ ...self, maxDecimalDigits: 0 });
+	export const withNoDecimalPart = (self: Type): Type =>
+		make({ ...self, minDecimalDigits: 0, maxDecimalDigits: 0 });
 
 	/**
 	 * Returns a copy of `self` that does not allow e-notation
@@ -567,8 +633,8 @@ export namespace RealOptions {
 		make({ ...self, minFractionalDigits: 2, maxFractionalDigits: 2 });
 
 	/**
-	 * Returns a copy of `self` where `maxDecimalDigits` is set to 1 and `eNotationOptions` is set to
-	 * `ENotationOptions.Lowercase`
+	 * Returns a copy of `self` where `minDecimalDigits` and `maxDecimalDigits` are set to 1 and
+	 * `eNotationOptions` is set to `ENotationOptions.Lowercase`
 	 *
 	 * @since 0.0.1
 	 * @category Utils
@@ -855,13 +921,8 @@ export namespace RealOptions {
 	export const name = (self: Type): string =>
 		`${self.signOptions}-${self.fractionalSep}-${self.thousandsSep}-${self.maxDecimalDigits}-${self.minFractionalDigits}-${self.maxFractionalDigits}-${self.eNotationOptions}`;
 
-	/**
-	 * Returns a regular expression string representing `self`
-	 *
-	 * @since 0.0.1
-	 * @category Destructors
-	 */
-	export const toRegExpString = ({
+	/** Returns a regular expression string representing `self` */
+	const toRegExpString = ({
 		signOptions,
 		fractionalSep,
 		thousandsSep,
@@ -870,13 +931,9 @@ export namespace RealOptions {
 		maxFractionalDigits,
 		eNotationOptions
 	}: Type): string => {
-		const sign = pipe(signOptions, SignOptions.toRegExpString, MRegExpString.capture);
+		const sign = SignOptions.toRegExpString(signOptions);
 
-		const eNotation = pipe(
-			eNotationOptions,
-			ENotationOptions.toRegExpString,
-			MRegExpString.capture
-		);
+		const eNotation = ENotationOptions.toRegExpString(eNotationOptions);
 
 		const noDecimalPart = maxDecimalDigits <= 0;
 		const noFractionalPart = maxFractionalDigits <= 0;
@@ -917,7 +974,7 @@ export namespace RealOptions {
 				Tuple.make,
 				Tuple.appendElement(true)
 			),
-		capacity: 200
+		capacity: 30
 	});
 
 	/**
@@ -948,7 +1005,7 @@ export namespace RealOptions {
 					signPart: string,
 					decimalPart: string,
 					fractionalPart: string,
-					eNotationPart: string
+					exponentPart: string
 				],
 				rest: string
 			]
@@ -1011,32 +1068,89 @@ export namespace RealOptions {
 		Either.Either<readonly [value: MBrand.Real.Type, rest: string], Error.Type>
 	> => {
 		const digitGroupAndSepLength = self.thousandsSep.length + MRegExpString.DIGIT_GROUP_SIZE;
-
 		const reader = RealOptions.toStringStartReader(self);
 		const takeGroupFromRight = String.takeRight(MRegExpString.DIGIT_GROUP_SIZE);
+		const acceptsInfinityDecimalDigits = self.maxDecimalDigits === +Infinity;
 
 		return (input) =>
 			pipe(
 				input,
 				reader,
 				Option.map(
-					Tuple.mapFirst(([_, signPart, decimalPart, fractionalPart, eNotationPart]) =>
-						pipe(
+					Tuple.mapFirst(([_, signPart, decimalPart, fractionalPart, exponentPart]) => {
+						const fraction = pipe(
+							fractionalPart,
+							Option.liftPredicate(String.isNonEmpty),
+							// Do not use M.Number shift here. It introduces a small error
+							Option.map(flow(MString.prepend('.'), MNumber.unsafeFromString)),
+							Option.getOrElse(() => 0)
+						);
+
+						const number = pipe(
 							decimalPart,
-							MString.splitEquallyRestAtStart(digitGroupAndSepLength),
-							MArray.modifyTail(takeGroupFromRight),
-							Array.join(''),
-							MString.prepend(signPart),
-							MString.append('.'),
-							MString.append(fractionalPart),
-							MString.append(eNotationPart),
-							MNumber.unsafeFromString,
+							Option.liftPredicate(String.isNonEmpty),
+							Option.map(
+								flow(
+									MString.splitEquallyRestAtStart(digitGroupAndSepLength),
+									MArray.modifyTail(takeGroupFromRight),
+									Array.join(''),
+									MNumber.unsafeIntFromString(10)
+								)
+							),
+							Option.getOrElse(() => 0),
+							Number.sum(fraction)
+						);
+
+						const correctiveExponent =
+							number === 0 || acceptsInfinityDecimalDigits ?
+								0
+							:	pipe(
+									number,
+									Math.log10,
+									Math.floor,
+									Number.increment,
+									Number.subtract(self.maxDecimalDigits),
+									Number.max(0)
+								);
+
+						const validatedExponent =
+							allowsENotation ? exponent : (
+								yield *
+								pipe(
+									exponent,
+									Either.liftPredicate(
+										MFunction.strictEquals(0),
+										() =>
+											new Error.Type({
+												message: `Number ${input} cannot be displayed with at most ${self.maxDecimalDigits} digits`
+											})
+									)
+								)
+							);
+						const exponent =
+							exponentPart === '' ? 0 : pipe(exponentPart, MNumber.unsafeIntFromString(10));
+
+						return pipe(
+							decimalPart,
+							Option.liftPredicate(String.isNonEmpty),
+							Option.map(
+								flow(
+									MString.splitEquallyRestAtStart(digitGroupAndSepLength),
+									MArray.modifyTail(takeGroupFromRight),
+									Array.join(''),
+									MNumber.unsafeIntFromString(10)
+								)
+							),
+							Option.getOrElse(() => 0),
+							Number.sum(fraction),
+							Number.multiply(signPart === '-' ? -1 : 1),
+							MNumber.shift(exponent),
 							MBrand.Real.unsafeFromNumber
-						)
-					)
+						);
+					})
 				),
 				Either.fromOption(
-					() => new Error.Type({ message: `Could not read number from start of ${input}` })
+					() => new Error.Type({ message: `Could not read number from start of '${input}'` })
 				)
 			);
 	};
@@ -1083,7 +1197,7 @@ export namespace RealOptions {
 								MFunction.strictEquals(0),
 								() =>
 									new Error.Type({
-										message: `Number ${input} cannot be displayed with at most ${self.maxDecimalDigits} digits`
+										message: `Number '${input}' cannot be displayed with at most ${self.maxDecimalDigits} digits`
 									})
 							)
 						)
@@ -1091,7 +1205,7 @@ export namespace RealOptions {
 
 				const [dec, frac] = yield* pipe(
 					absInput,
-					Number.unsafeDivide(Math.pow(10, validatedExponent)),
+					MNumber.shift(-validatedExponent),
 					MNumber.decAndFracParts,
 					Tuple.mapBoth({
 						onFirst:
@@ -1107,7 +1221,7 @@ export namespace RealOptions {
 							self.maxFractionalDigits <= 0 ?
 								() => Either.right('')
 							:	flow(
-									Number.multiply(Math.pow(10, toppedMaxFractionalDigit)),
+									MNumber.shift(toppedMaxFractionalDigit),
 									Math.round,
 									MString.fromNonNullablePrimitive,
 									String.padStart(self.maxFractionalDigits, '0'),
@@ -1123,7 +1237,7 @@ export namespace RealOptions {
 												self.maxDecimalDigits <= 0 ?
 													Either.left(
 														new Error.Type({
-															message: `Number ${input} cannot be displayed with no decimal digits and at most ${self.maxFractionalDigits} fractional digits.`
+															message: `Number '${input}' cannot be displayed with no decimal digits and at most ${self.maxFractionalDigits} fractional digits.`
 														})
 													)
 												:	Either.right('')
@@ -1166,7 +1280,7 @@ const _realCache = MCache.make({
 			Tuple.appendElement(true)
 		);
 	},
-	capacity: 200
+	capacity: 30
 });
 
 /**
