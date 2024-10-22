@@ -1,6 +1,6 @@
 /* eslint-disable functional/no-expression-statements */
 import { MNumber } from '@parischap/effect-lib';
-import { Chunk, Equal, pipe } from 'effect';
+import { pipe } from 'effect';
 import { describe, expect, it } from 'vitest';
 
 describe('MString', () => {
@@ -24,51 +24,19 @@ describe('MString', () => {
 
 	describe('quotientAndRemainder', () => {
 		it('Positive dividend, positive divisor', () => {
-			// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
-			expect(
-				pipe(
-					27,
-					MNumber.quotientAndRemainder(5),
-					Chunk.fromIterable,
-					Equal.equals(Chunk.make(5, 2))
-				)
-			).toBe(true);
+			expect(pipe(27, MNumber.quotientAndRemainder(5))).toStrictEqual([5, 2]);
 		});
 
 		it('Negative dividend, positive divisor', () => {
-			// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
-			expect(
-				pipe(
-					-27,
-					MNumber.quotientAndRemainder(5),
-					Chunk.fromIterable,
-					Equal.equals(Chunk.make(-6, 3))
-				)
-			).toBe(true);
+			expect(pipe(-27, MNumber.quotientAndRemainder(5))).toStrictEqual([-6, 3]);
 		});
 
 		it('Positive dividend, negative divisor', () => {
-			// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
-			expect(
-				pipe(
-					27,
-					MNumber.quotientAndRemainder(-5),
-					Chunk.fromIterable,
-					Equal.equals(Chunk.make(-6, -3))
-				)
-			).toBe(true);
+			expect(pipe(27, MNumber.quotientAndRemainder(-5))).toStrictEqual([-6, -3]);
 		});
 
 		it('Negative dividend, negative divisor', () => {
-			// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
-			expect(
-				pipe(
-					-27,
-					MNumber.quotientAndRemainder(-5),
-					Chunk.fromIterable,
-					Equal.equals(Chunk.make(5, -2))
-				)
-			).toBe(true);
+			expect(pipe(-27, MNumber.quotientAndRemainder(-5))).toStrictEqual([5, -2]);
 		});
 	});
 

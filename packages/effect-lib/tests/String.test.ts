@@ -370,27 +370,11 @@ describe('MString', () => {
 
 	describe('splitAt', () => {
 		it('Empty string', () => {
-			expect(
-				pipe(
-					'',
-					MString.splitAt(2),
-					// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
-					Chunk.fromIterable,
-					Equal.equals(Chunk.make('', ''))
-				)
-			).toBe(true);
+			expect(pipe('', MString.splitAt(2))).toStrictEqual(['', '']);
 		});
 
 		it('Non-empty string', () => {
-			expect(
-				pipe(
-					'beforeafter',
-					MString.splitAt(6),
-					// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
-					Chunk.fromIterable,
-					Equal.equals(Chunk.make('before', 'after'))
-				)
-			).toBe(true);
+			expect(pipe('beforeafter', MString.splitAt(6))).toStrictEqual(['before', 'after']);
 		});
 	});
 
@@ -399,26 +383,19 @@ describe('MString', () => {
 			expect(pipe('', MString.splitEquallyRestAtStart(3), Array.isEmptyArray)).toBe(true));
 
 		it('Non-empty string without rest', () =>
-			expect(
-				pipe(
-					'foobarbaz',
-					MString.splitEquallyRestAtStart(3),
-					// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
-					Chunk.fromIterable,
-					Equal.equals(Chunk.make('foo', 'bar', 'baz'))
-				)
-			).toBe(true));
+			expect(pipe('foobarbaz', MString.splitEquallyRestAtStart(3))).toStrictEqual([
+				'foo',
+				'bar',
+				'baz'
+			]));
 
 		it('Non-empty string with rest', () =>
-			expect(
-				pipe(
-					'afoobarbaz',
-					MString.splitEquallyRestAtStart(3),
-					// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
-					Chunk.fromIterable,
-					Equal.equals(Chunk.make('a', 'foo', 'bar', 'baz'))
-				)
-			).toBe(true));
+			expect(pipe('afoobarbaz', MString.splitEquallyRestAtStart(3))).toStrictEqual([
+				'a',
+				'foo',
+				'bar',
+				'baz'
+			]));
 	});
 
 	describe('splitEquallyRestAtEnd', () => {
@@ -426,26 +403,19 @@ describe('MString', () => {
 			expect(pipe('', MString.splitEquallyRestAtEnd(3), Array.isEmptyArray)).toBe(true));
 
 		it('Non-empty string without rest', () =>
-			expect(
-				pipe(
-					'foobarbaz',
-					MString.splitEquallyRestAtEnd(3),
-					// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
-					Chunk.fromIterable,
-					Equal.equals(Chunk.make('foo', 'bar', 'baz'))
-				)
-			).toBe(true));
+			expect(pipe('foobarbaz', MString.splitEquallyRestAtEnd(3))).toStrictEqual([
+				'foo',
+				'bar',
+				'baz'
+			]));
 
 		it('Non-empty string with rest', () =>
-			expect(
-				pipe(
-					'foobarbaza',
-					MString.splitEquallyRestAtEnd(3),
-					// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
-					Chunk.fromIterable,
-					Equal.equals(Chunk.make('foo', 'bar', 'baz', 'a'))
-				)
-			).toBe(true));
+			expect(pipe('foobarbaza', MString.splitEquallyRestAtEnd(3))).toStrictEqual([
+				'foo',
+				'bar',
+				'baz',
+				'a'
+			]));
 	});
 
 	describe('tabify', () => {
