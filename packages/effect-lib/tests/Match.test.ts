@@ -1,6 +1,6 @@
 /* eslint-disable functional/no-expression-statements */
 import { MFunction, MMatch } from '@parischap/effect-lib';
-import { Array, Number, pipe } from 'effect';
+import { Array, Function, Number, pipe } from 'effect';
 import { describe, expect, it } from 'vitest';
 
 describe('MMatch', () => {
@@ -66,7 +66,7 @@ describe('MMatch', () => {
 				MMatch.make,
 				MMatch.tryFunction(Array.get(1)),
 				MMatch.tryFunction(Array.get(5)),
-				MMatch.orElse(() => 0)
+				MMatch.orElse(Function.constant(0))
 			);
 			expect(testMatch).toBe(4);
 		});

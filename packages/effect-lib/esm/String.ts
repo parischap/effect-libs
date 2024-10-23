@@ -8,6 +8,7 @@ import {
 	Array,
 	Equal,
 	Equivalence,
+	Function,
 	Hash,
 	Inspectable,
 	Option,
@@ -283,7 +284,7 @@ export const takeRightFrom =
 			self,
 			searchRight(regexp),
 			Option.map((searchResult) => searchResult.endIndex),
-			Option.getOrElse(() => 0),
+			Option.getOrElse(Function.constant(0)),
 			(pos) => String.slice(pos)(self)
 		);
 
