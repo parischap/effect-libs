@@ -109,3 +109,11 @@ export const isNotInt = (self: number) => !Number.isInteger(self);
  * @category Utils
  */
 export const shift = (n: number) => (self: number) => self * Math.pow(10, n);
+
+/**
+ * Alias to javascript Number.EPSILON
+ *
+ * @since 0.5.0
+ * @category Utils
+ */
+export const EPSILON = Number.EPSILON;
