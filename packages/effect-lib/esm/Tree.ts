@@ -27,7 +27,7 @@ import * as MInspectable from './Inspectable.js';
 import * as MPipeable from './Pipeable.js';
 import * as MTypes from './types.js';
 
-const moduleTag = '@parischap/effect-lib/Type/';
+const moduleTag = '@parischap/effect-lib/Tree/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
 

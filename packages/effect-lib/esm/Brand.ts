@@ -10,6 +10,7 @@ import * as MString from './String.js';
 import * as MTypes from './types.js';
 
 const moduleTag = '@parischap/effect-lib/Brand/';
+const _moduleTag = moduleTag;
 
 /** Brand constructor type with refined input */
 
@@ -29,8 +30,8 @@ type RefinedConstructor<B, A extends Brand.Brand<string | symbol> & B> = MTypes.
  * @since 0.4.0
  */
 export namespace Email {
-	const namespaceTag = moduleTag + 'Email/';
-	const TypeId: unique symbol = Symbol.for(namespaceTag) as TypeId;
+	const moduleTag = _moduleTag + 'Email/';
+	const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 	type TypeId = typeof TypeId;
 	/**
 	 * Email type
@@ -66,8 +67,8 @@ export namespace Email {
  * @since 0.4.0
  */
 export namespace SemVer {
-	const namespaceTag = moduleTag + 'SemVer/';
-	const TypeId: unique symbol = Symbol.for(namespaceTag) as TypeId;
+	const moduleTag = _moduleTag + 'SemVer/';
+	const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 	type TypeId = typeof TypeId;
 
 	/**
@@ -104,8 +105,8 @@ export namespace SemVer {
  * @since 0.4.0
  */
 export namespace Real {
-	const namespaceTag = moduleTag + 'Real/';
-	const TypeId: unique symbol = Symbol.for(namespaceTag) as TypeId;
+	const moduleTag = _moduleTag + 'Real/';
+	const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 	type TypeId = typeof TypeId;
 
 	/**
@@ -141,8 +142,8 @@ export namespace Real {
  * @since 0.4.0
  */
 export namespace Int {
-	const namespaceTag = moduleTag + 'Int/';
-	const TypeId: unique symbol = Symbol.for(namespaceTag) as TypeId;
+	const moduleTag = _moduleTag + 'Int/';
+	const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 	type TypeId = typeof TypeId;
 
 	/**
@@ -263,8 +264,8 @@ export namespace IntRange {
  * @since 0.4.0
  */
 export namespace PositiveInt {
-	const namespaceTag = moduleTag + 'PositiveInt/';
-	const TypeId: unique symbol = Symbol.for(namespaceTag) as TypeId;
+	const moduleTag = _moduleTag + 'PositiveInt/';
+	const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 	type TypeId = typeof TypeId;
 	/**
 	 * Type for positive integers

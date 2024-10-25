@@ -27,6 +27,7 @@ import * as MPipeable from './Pipeable.js';
 import * as MTypes from './types.js';
 
 const moduleTag = '@parischap/effect-lib/Cache/';
+const _moduleTag = moduleTag;
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
 
@@ -35,8 +36,8 @@ type TypeId = typeof TypeId;
  * cache.
  */
 namespace ValueContainer {
-	const namespaceTag = moduleTag + 'ValueContainer/';
-	const TypeId: unique symbol = Symbol.for(namespaceTag) as TypeId;
+	const moduleTag = _moduleTag + 'ValueContainer/';
+	const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 	type TypeId = typeof TypeId;
 
 	/**
