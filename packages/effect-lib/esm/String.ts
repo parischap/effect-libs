@@ -28,6 +28,7 @@ import * as MRegExp from './RegExp.js';
 import * as MTypes from './types.js';
 
 const moduleTag = '@parischap/effect-lib/String/';
+const _moduleTag = moduleTag;
 
 /**
  * This namespace implements a type that represents the result of the search of a string in another
@@ -36,8 +37,8 @@ const moduleTag = '@parischap/effect-lib/String/';
  * @since 0.4.0
  */
 export namespace SearchResult {
-	const namespaceTag = moduleTag + 'SearchResult/';
-	const TypeId: unique symbol = Symbol.for(namespaceTag) as TypeId;
+	const moduleTag = _moduleTag + 'SearchResult/';
+	const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 	type TypeId = typeof TypeId;
 
 	/**
@@ -289,6 +290,52 @@ export const takeRightFrom =
 		);
 
 /**
+ * Takes all characters from `self` except the `n` last characters
+ *
+ * @since 0.0.6
+ * @category Utils
+ */
+export const takeLeftBut =
+	(n: number) =>
+	(self: string): string =>
+		String.takeLeft(self, self.length - n);
+
+/**
+ * Takes all characters from `self` except the `n` first characters
+ *
+ * @since 0.0.6
+ * @category Utils
+ */
+export const takeRightBut =
+	(n: number) =>
+	(self: string): string =>
+		String.takeRight(self, self.length - n);
+
+/**
+ * Same as String.trimStart but the character to remove can be specified
+ *
+ * @since 0.5.0
+ * @category Utils
+ */
+export const trimStart = (charToRemove: string): ((self: string) => string) =>
+	flow(Array.dropWhile(MFunction.strictEquals(charToRemove)), Array.join(''));
+
+/**
+ * Same as String.trimEnd but the character to remove can be specified
+ *
+ * @since 0.5.0
+ * @category Utils
+ */
+export const trimEnd = (charToRemove: string): ((self: string) => string) =>
+	flow(
+		Array.fromIterable,
+		Array.reverse,
+		Array.dropWhile(MFunction.strictEquals(charToRemove)),
+		Array.reverse,
+		Array.join('')
+	);
+
+/**
  * Returns a some of the result of calling the toString method on obj provided it defines one
  * different from Object.prototype.toString. If toString is not defined or not overloaded, it
  * returns a some of the result of calling the toJSON function on obj provided it defines one.
@@ -325,28 +372,6 @@ export const tryToStringToJSON = (obj: MTypes.AnyRecord): Option.Option<string> 
 		)
 	);
 };
-
-/**
- * Takes all characters from `self` except the `n` last characters
- *
- * @since 0.0.6
- * @category Utils
- */
-export const takeLeftBut =
-	(n: number) =>
-	(self: string): string =>
-		String.takeLeft(self, self.length - n);
-
-/**
- * Takes all characters from `self` except the `n` first characters
- *
- * @since 0.0.6
- * @category Utils
- */
-export const takeRightBut =
-	(n: number) =>
-	(self: string): string =>
-		String.takeRight(self, self.length - n);
 
 /**
  * If `self` starts with `s`, returns a some of `self` stripped of `s`. Otherwise, returns a none

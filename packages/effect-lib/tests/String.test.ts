@@ -224,22 +224,6 @@ describe('MString', () => {
 		});
 	});
 
-	describe('tryToStringToJSON', () => {
-		it('Object with default prototype', () => {
-			expect(pipe({ a: 5 }, MString.tryToStringToJSON, Option.isNone)).toBe(true);
-		});
-
-		it('Date object', () => {
-			expect(pipe(new Date(), MString.tryToStringToJSON, Option.isSome)).toBe(true);
-		});
-
-		it('Object with toJSON method', () => {
-			expect(
-				pipe({ toJSON: () => 'foo' }, MString.tryToStringToJSON, Equal.equals(Option.some('foo')))
-			).toBe(true);
-		});
-	});
-
 	describe('takeLeftBut', () => {
 		it('Empty string', () => {
 			expect(pipe('', MString.takeLeftBut(2), String.isEmpty)).toBe(true);
@@ -257,6 +241,50 @@ describe('MString', () => {
 
 		it('Non-empty string', () => {
 			expect(pipe('foo is', MString.takeRightBut(4))).toBe('is');
+		});
+	});
+
+	describe('trimStart', () => {
+		it('Empty string', () => {
+			expect(pipe('', MString.trimStart('0'), String.isEmpty)).toBe(true);
+		});
+
+		it('Non-empty string with the character to remove not at the start', () => {
+			expect(pipe('12034000', MString.trimStart('0'))).toBe('12034000');
+		});
+
+		it('Non-empty string with the character to remove at the start', () => {
+			expect(pipe('0012034000', MString.trimStart('0'))).toBe('12034000');
+		});
+	});
+
+	describe('trimEnd', () => {
+		it('Empty string', () => {
+			expect(pipe('', MString.trimEnd('0'), String.isEmpty)).toBe(true);
+		});
+
+		it('Non-empty string with the character to remove not at the end', () => {
+			expect(pipe('00012034', MString.trimEnd('0'))).toBe('00012034');
+		});
+
+		it('Non-empty string with the character to remove at the end', () => {
+			expect(pipe('0001203400', MString.trimEnd('0'))).toBe('00012034');
+		});
+	});
+
+	describe('tryToStringToJSON', () => {
+		it('Object with default prototype', () => {
+			expect(pipe({ a: 5 }, MString.tryToStringToJSON, Option.isNone)).toBe(true);
+		});
+
+		it('Date object', () => {
+			expect(pipe(new Date(), MString.tryToStringToJSON, Option.isSome)).toBe(true);
+		});
+
+		it('Object with toJSON method', () => {
+			expect(
+				pipe({ toJSON: () => 'foo' }, MString.tryToStringToJSON, Equal.equals(Option.some('foo')))
+			).toBe(true);
 		});
 	});
 
