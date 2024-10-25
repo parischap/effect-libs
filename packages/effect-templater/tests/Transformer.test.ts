@@ -5,7 +5,7 @@ import { Either, Function, pipe } from 'effect';
 import { describe, expect, it } from 'vitest';
 
 describe('Transformer', () => {
-	const readTester =
+	const readTesterMaker =
 		<A>(transformer: Transformer.Type<A>) =>
 		(input: string): boolean | readonly [value: A, rest: string] =>
 			pipe(
@@ -14,7 +14,7 @@ describe('Transformer', () => {
 				Either.match({ onLeft: () => false, onRight: Function.identity })
 			);
 
-	const writeTester =
+	const writeTesterMaker =
 		<A>(transformer: Transformer.Type<A>) =>
 		(input: A): boolean | string =>
 			pipe(
@@ -24,277 +24,143 @@ describe('Transformer', () => {
 			);
 
 	describe('String', () => {
-		const stringReadTester = readTester(Transformer.String.any);
-		it('Reading', () => {
-			expect(stringReadTester('foo and bar')).toStrictEqual(['foo and bar', '']);
+		describe('rest', () => {
+			const readTester = readTesterMaker(Transformer.String.rest);
+			it('Reading', () => {
+				expect(readTester('foo and bar')).toStrictEqual(['foo and bar', '']);
+			});
+
+			const writeTester = writeTesterMaker(Transformer.String.rest);
+			it('Writing', () => {
+				expect(writeTester('foo and bar')).toBe('foo and bar');
+			});
 		});
 
-		const stringWriteTester = writeTester(Transformer.String.any);
-		it('Writing', () => {
-			expect(stringWriteTester('foo and bar')).toBe('foo and bar');
+		describe('fixedLength', () => {
+			describe('4 characters without padding', () => {
+				const transformer = Transformer.String.fixedLength(4, '');
+				const readTester = readTesterMaker(transformer);
+				describe('Reading', () => {
+					it('Input less than 4 characters long', () => {
+						expect(readTester('foo')).toBe(false);
+					});
+					it('Input 4 characters long', () => {
+						expect(readTester('foot')).toStrictEqual(['foot', '']);
+					});
+					it('Input more than 4 characters long', () => {
+						expect(readTester('foo and bar')).toStrictEqual(['foo ', 'and bar']);
+					});
+				});
+
+				const writeTester = writeTesterMaker(transformer);
+				describe('Writing', () => {
+					it('Input less than 4 characters long', () => {
+						expect(writeTester('foo')).toBe(false);
+					});
+					it('Input 4 characters long', () => {
+						expect(writeTester('foot')).toBe('foot');
+					});
+					it('Input more than 4 characters long', () => {
+						expect(writeTester('foo and bar')).toBe(false);
+					});
+				});
+			});
+
+			describe('4 characters with left padding', () => {
+				const transformer = Transformer.String.fixedLength(4, ' ');
+				const readTester = readTesterMaker(transformer);
+				describe('Reading', () => {
+					it('Input less than 4 characters long', () => {
+						expect(readTester('foo')).toBe(false);
+					});
+					it('Input 4 characters long without padding', () => {
+						expect(readTester('foot')).toStrictEqual(['foot', '']);
+					});
+					it('Input more than 4 characters long with padding', () => {
+						expect(readTester('  foo and bar')).toStrictEqual(['fo', 'o and bar']);
+					});
+				});
+
+				const writeTester = writeTesterMaker(transformer);
+				describe('Writing', () => {
+					it('Input less than 4 characters long', () => {
+						expect(writeTester('foo')).toBe(' foo');
+					});
+					it('Input 4 characters long', () => {
+						expect(writeTester('foot')).toBe('foot');
+					});
+					it('Input more than 4 characters long', () => {
+						expect(writeTester('foo and bar')).toBe(false);
+					});
+				});
+			});
+
+			describe('4 characters with right padding', () => {
+				const transformer = Transformer.String.fixedLength(4, '', ' ');
+				const readTester = readTesterMaker(transformer);
+				describe('Reading', () => {
+					it('Input less than 4 characters long', () => {
+						expect(readTester('foo')).toBe(false);
+					});
+					it('Input 4 characters long without padding', () => {
+						expect(readTester('foot')).toStrictEqual(['foot', '']);
+					});
+					it('Input more than 4 characters long with padding', () => {
+						expect(readTester('foo and bar')).toStrictEqual(['foo', 'and bar']);
+					});
+				});
+
+				const writeTester = writeTesterMaker(transformer);
+				describe('Writing', () => {
+					it('Input less than 4 characters long', () => {
+						expect(writeTester('foo')).toBe('foo ');
+					});
+					it('Input 4 characters long', () => {
+						expect(writeTester('foot')).toBe('foot');
+					});
+					it('Input more than 4 characters long', () => {
+						expect(writeTester('foo and bar')).toBe(false);
+					});
+				});
+			});
+
+			describe('4 characters with left and right padding', () => {
+				const transformer = Transformer.String.fixedLength(4, ' ', ' ');
+				const readTester = readTesterMaker(transformer);
+				describe('Reading', () => {
+					it('Input less than 4 characters long', () => {
+						expect(readTester('foo')).toBe(false);
+					});
+					it('Input 4 characters long without padding', () => {
+						expect(readTester('foot')).toStrictEqual(['foot', '']);
+					});
+					it('Input more than 4 characters long with padding', () => {
+						expect(readTester(' fo and bar')).toStrictEqual(['fo', 'and bar']);
+					});
+				});
+
+				const writeTester = writeTesterMaker(transformer);
+				describe('Writing', () => {
+					it('Input less than 4 characters long', () => {
+						expect(writeTester('foo')).toBe(' foo');
+					});
+					it('Input 4 characters long', () => {
+						expect(writeTester('foot')).toBe('foot');
+					});
+					it('Input more than 4 characters long', () => {
+						expect(writeTester('foo and bar')).toBe(false);
+					});
+				});
+			});
 		});
 	});
 
-	describe('Bases', () => {
-		describe('binary', () => {
-			const binaryReadTester = readTester(Transformer.Bases.binary);
-			describe('Reading', () => {
-				it('string not representing a binary number', () => {
-					expect(binaryReadTester(' 11foo')).toBe(false);
-				});
-
-				it('string with binary number at start', () => {
-					expect(binaryReadTester('00118foo')).toStrictEqual([3, '8foo']);
-				});
-			});
-
-			const binaryWriteTester = writeTester(Transformer.Bases.binary);
-			it('Writing', () => {
-				expect(pipe(15, MBrand.PositiveInt.fromNumber, binaryWriteTester)).toBe('1111');
-			});
-		});
-
-		describe('octal', () => {
-			const octalReadTester = readTester(Transformer.Bases.octal);
-			describe('Reading', () => {
-				it('string not representing an octal number', () => {
-					expect(octalReadTester(' 16foo')).toBe(false);
-				});
-
-				it('string with octal number at start', () => {
-					expect(octalReadTester('168foo')).toStrictEqual([14, '8foo']);
-				});
-			});
-
-			const octalWriteTester = writeTester(Transformer.Bases.octal);
-			it('Writing', () => {
-				expect(pipe(14, MBrand.PositiveInt.fromNumber, octalWriteTester)).toBe('16');
-			});
-		});
-
-		describe('hexadecimal', () => {
-			const hexadecimalReadTester = readTester(Transformer.Bases.hexadecimal);
-			describe('Reading', () => {
-				it('string not representing a hexadecimal number', () => {
-					expect(hexadecimalReadTester(' foo')).toBe(false);
-				});
-
-				it('string with hexadecimal number at start', () => {
-					expect(hexadecimalReadTester('Ffoo')).toStrictEqual([255, 'oo']);
-				});
-			});
-
-			const hexadecimalWriteTester = writeTester(Transformer.Bases.hexadecimal);
-			it('Writing', () => {
-				expect(pipe(16, MBrand.PositiveInt.fromNumber, hexadecimalWriteTester)).toBe('10');
-			});
-		});
-	});
-
-	describe('Real', () => {
-		describe('Options', () => {
-			describe('floatingPoint', () => {
-				const tester = Transformer.Real.Options.toTester(Transformer.Real.Options.floatingPoint);
-
-				describe('Reading', () => {
-					it('Empty string', () => {
-						expect(tester('')).toBe(false);
-					});
-
-					it('One space string', () => {
-						expect(tester(' ')).toBe(false);
-					});
-
-					it('With upfront 0', () => {
-						expect(tester('01.1')).toBe(false);
-					});
-
-					it('With upfront space', () => {
-						expect(tester(' 1.1')).toBe(false);
-					});
-
-					it('With comma in the decimal part', () => {
-						expect(tester('1,001.1')).toBe(false);
-					});
-
-					it('With fractional separator but without fractional part', () => {
-						expect(tester('1001.')).toBe(false);
-					});
-
-					it('With thousand sep in the fractional part', () => {
-						expect(tester('1001.100,1')).toBe(false);
-					});
-
-					it('With two fractional separators', () => {
-						expect(tester('1.001.1')).toBe(false);
-					});
-
-					it('0', () => {
-						expect(tester('0')).toBe(true);
-					});
-
-					it('Any integer', () => {
-						expect(tester('1001')).toBe(true);
-					});
-
-					it('Any floating point', () => {
-						expect(tester('1001.1001')).toBe(true);
-					});
-
-					it('Floating point with no decimal part', () => {
-						expect(tester('.1001')).toBe(true);
-					});
-
-					it('Floating point with null decimal part', () => {
-						expect(tester('0.1001')).toBe(true);
-					});
-
-					it('Floating point with trailing zeros in the fractional part', () => {
-						expect(tester('0.1000')).toBe(true);
-					});
-
-					it('Floating point with leading zeros in the fractional part', () => {
-						expect(tester('0.0001')).toBe(true);
-					});
-				});
-			});
-
-			describe('ukFloatingPoint', () => {
-				const tester = Transformer.Real.Options.toTester(Transformer.Real.Options.ukFloatingPoint);
-
-				describe('Reading', () => {
-					it('Empty string', () => {
-						expect(tester('')).toBe(false);
-					});
-
-					it('One space string', () => {
-						expect(tester(' ')).toBe(false);
-					});
-
-					it('With upfront 0', () => {
-						expect(tester('01,001.1')).toBe(false);
-					});
-
-					it('With upfront space', () => {
-						expect(tester(' 1,001.1')).toBe(false);
-					});
-
-					it('With fractional separator but without fractional part', () => {
-						expect(tester('1,001.')).toBe(false);
-					});
-
-					it('With thousand sep in the fractional part', () => {
-						expect(tester('1,001.100,1')).toBe(false);
-					});
-
-					it('With two fractional separators', () => {
-						expect(tester('1,001.1.101')).toBe(false);
-					});
-
-					it('With misplaced thousands separator', () => {
-						expect(tester('1,001,1.1001')).toBe(false);
-					});
-
-					it('0', () => {
-						expect(tester('0')).toBe(true);
-					});
-
-					it('Any integer', () => {
-						expect(tester('1,001,001')).toBe(true);
-					});
-
-					it('Any floating point', () => {
-						expect(tester('121.1001')).toBe(true);
-					});
-
-					it('Floating point with no decimal part', () => {
-						expect(tester('.1001')).toBe(true);
-					});
-
-					it('Floating point with null decimal part', () => {
-						expect(tester('0.1001')).toBe(true);
-					});
-				});
-			});
-
-			describe('germanFloatingPoint', () => {
-				const tester = Transformer.Real.Options.toTester(
-					Transformer.Real.Options.germanFloatingPoint
-				);
-
-				describe('Reading', () => {
-					it('Any floating point', () => {
-						expect(tester('1.001.001,1001')).toBe(true);
-					});
-				});
-			});
-
-			describe('scientificNotation', () => {
-				const tester = Transformer.Real.Options.toTester(
-					Transformer.Real.Options.scientificNotation
-				);
-
-				describe('Reading', () => {
-					it('Empty string', () => {
-						expect(tester('')).toBe(false);
-					});
-
-					it('One space string', () => {
-						expect(tester(' ')).toBe(false);
-					});
-
-					it('With no significand', () => {
-						expect(tester('e10')).toBe(false);
-					});
-
-					it('', () => {
-						expect(tester('10.65e4')).toBe(false);
-					});
-
-					it('With space after e', () => {
-						expect(tester('3.14e 2')).toBe(false);
-					});
-
-					it('With space before e', () => {
-						expect(tester('3.14 e2')).toBe(false);
-					});
-
-					it('With fractional exponent', () => {
-						expect(tester('3.14e-2.3')).toBe(false);
-					});
-
-					it('0.00', () => {
-						expect(tester('0.00')).toBe(false);
-					});
-
-					it('With fractional significand', () => {
-						expect(tester('.13e10')).toBe(false);
-					});
-
-					it('Any number between 0 and 10 without exponent', () => {
-						expect(tester('7.45')).toBe(true);
-					});
-
-					it('Any number between 0 and 10 with unsigned strictly positive exponent', () => {
-						expect(tester('3.15e12')).toBe(true);
-					});
-
-					it('Any number between 0 and 10 with signed strictly positive exponent', () => {
-						expect(tester('3.15e+12')).toBe(true);
-					});
-
-					it('Any number between 0 and 10 with null exponent', () => {
-						expect(tester('3.15e0')).toBe(true);
-					});
-
-					it('Any number between 0 and 10 with strictly negative exponent', () => {
-						expect(tester('3.15e-12')).toBe(true);
-					});
-				});
-
-				describe('frenchFloatingPoint2', () => {
-					const tester = Transformer.Real.Options.toTester(
-						Transformer.Real.Options.frenchFloatingPoint2
+	describe('Number', () => {
+		describe('Option', () => {
+			describe('Real', () => {
+				describe('standard', () => {
+					const tester = Transformer.Number.Option.toTester(
+						Transformer.Number.Option.Real.standard
 					);
 
 					describe('Reading', () => {
@@ -307,45 +173,247 @@ describe('Transformer', () => {
 						});
 
 						it('With upfront 0', () => {
-							expect(tester('01,10')).toBe(false);
+							expect(tester('01.1')).toBe(false);
 						});
 
 						it('With upfront space', () => {
-							expect(tester(' 1,13')).toBe(false);
+							expect(tester(' 1.1')).toBe(false);
+						});
+
+						it('With comma in the decimal part', () => {
+							expect(tester('1,001.1')).toBe(false);
+						});
+
+						it('With fractional separator but without fractional part', () => {
+							expect(tester('1001.')).toBe(false);
+						});
+
+						it('With thousand sep in the fractional part', () => {
+							expect(tester('1001.100,1')).toBe(false);
+						});
+
+						it('With two fractional separators', () => {
+							expect(tester('1.001.1')).toBe(false);
 						});
 
 						it('0', () => {
-							expect(tester('0')).toBe(false);
+							expect(tester('0')).toBe(true);
 						});
 
-						it('Any integer with no fractional digit', () => {
-							expect(tester('1 001')).toBe(false);
+						it('Any integer', () => {
+							expect(tester('1001')).toBe(true);
 						});
 
-						it('Any integer with one fractional digit', () => {
-							expect(tester('1 001,1')).toBe(false);
+						it('Any floating point', () => {
+							expect(tester('1001.1001')).toBe(true);
 						});
 
-						it('Any integer with three fractional digits', () => {
-							expect(tester('1 001,123')).toBe(false);
+						it('Floating point with no decimal part', () => {
+							expect(tester('.1001')).toBe(true);
 						});
 
-						it('Any integer with two fractional digits but no space sep', () => {
-							expect(tester('1001,12')).toBe(false);
+						it('Floating point with null decimal part', () => {
+							expect(tester('0.1001')).toBe(true);
 						});
 
-						it('0,00', () => {
-							expect(tester('0,00')).toBe(true);
+						it('Floating point with trailing zeros in the fractional part', () => {
+							expect(tester('0.1000')).toBe(true);
 						});
 
-						it('Any integer with two fractional digits', () => {
-							expect(tester('1 001,43')).toBe(true);
+						it('Floating point with leading zeros in the fractional part', () => {
+							expect(tester('0.0001')).toBe(true);
 						});
 					});
 				});
 
-				describe('frenchInt', () => {
-					const tester = Transformer.Real.Options.toTester(Transformer.Real.Options.frenchInt);
+				describe('uk', () => {
+					const tester = Transformer.Number.Option.toTester(Transformer.Number.Option.Real.uk);
+
+					describe('Reading', () => {
+						it('Empty string', () => {
+							expect(tester('')).toBe(false);
+						});
+
+						it('One space string', () => {
+							expect(tester(' ')).toBe(false);
+						});
+
+						it('With upfront 0', () => {
+							expect(tester('01,001.1')).toBe(false);
+						});
+
+						it('With upfront space', () => {
+							expect(tester(' 1,001.1')).toBe(false);
+						});
+
+						it('With fractional separator but without fractional part', () => {
+							expect(tester('1,001.')).toBe(false);
+						});
+
+						it('With thousand sep in the fractional part', () => {
+							expect(tester('1,001.100,1')).toBe(false);
+						});
+
+						it('With two fractional separators', () => {
+							expect(tester('1,001.1.101')).toBe(false);
+						});
+
+						it('With misplaced thousands separator', () => {
+							expect(tester('1,001,1.1001')).toBe(false);
+						});
+
+						it('0', () => {
+							expect(tester('0')).toBe(true);
+						});
+
+						it('Any integer', () => {
+							expect(tester('1,001,001')).toBe(true);
+						});
+
+						it('Any floating point', () => {
+							expect(tester('121.1001')).toBe(true);
+						});
+
+						it('Floating point with no decimal part', () => {
+							expect(tester('.1001')).toBe(true);
+						});
+
+						it('Floating point with null decimal part', () => {
+							expect(tester('0.1001')).toBe(true);
+						});
+					});
+				});
+
+				describe('german', () => {
+					const tester = Transformer.Number.Option.toTester(Transformer.Number.Option.Real.german);
+
+					describe('Reading', () => {
+						it('Any floating point', () => {
+							expect(tester('1.001.001,1001')).toBe(true);
+						});
+					});
+				});
+
+				describe('scientific', () => {
+					const tester = Transformer.Number.Option.toTester(
+						Transformer.Number.Option.Real.scientific
+					);
+
+					describe('Reading', () => {
+						it('Empty string', () => {
+							expect(tester('')).toBe(false);
+						});
+
+						it('One space string', () => {
+							expect(tester(' ')).toBe(false);
+						});
+
+						it('With no significand', () => {
+							expect(tester('e10')).toBe(false);
+						});
+
+						it('', () => {
+							expect(tester('10.65e4')).toBe(false);
+						});
+
+						it('With space after e', () => {
+							expect(tester('3.14e 2')).toBe(false);
+						});
+
+						it('With space before e', () => {
+							expect(tester('3.14 e2')).toBe(false);
+						});
+
+						it('With fractional exponent', () => {
+							expect(tester('3.14e-2.3')).toBe(false);
+						});
+
+						it('0.00', () => {
+							expect(tester('0.00')).toBe(false);
+						});
+
+						it('With fractional significand', () => {
+							expect(tester('.13e10')).toBe(false);
+						});
+
+						it('Any number between 0 and 10 without exponent', () => {
+							expect(tester('7.45')).toBe(true);
+						});
+
+						it('Any number between 0 and 10 with unsigned strictly positive exponent', () => {
+							expect(tester('3.15e12')).toBe(true);
+						});
+
+						it('Any number between 0 and 10 with signed strictly positive exponent', () => {
+							expect(tester('3.15e+12')).toBe(true);
+						});
+
+						it('Any number between 0 and 10 with null exponent', () => {
+							expect(tester('3.15e0')).toBe(true);
+						});
+
+						it('Any number between 0 and 10 with strictly negative exponent', () => {
+							expect(tester('3.15e-12')).toBe(true);
+						});
+					});
+
+					describe('french2FractionalDigits', () => {
+						const tester = Transformer.Number.Option.toTester(
+							Transformer.Number.Option.Real.french2FractionalDigits
+						);
+
+						describe('Reading', () => {
+							it('Empty string', () => {
+								expect(tester('')).toBe(false);
+							});
+
+							it('One space string', () => {
+								expect(tester(' ')).toBe(false);
+							});
+
+							it('With upfront 0', () => {
+								expect(tester('01,10')).toBe(false);
+							});
+
+							it('With upfront space', () => {
+								expect(tester(' 1,13')).toBe(false);
+							});
+
+							it('0', () => {
+								expect(tester('0')).toBe(false);
+							});
+
+							it('Any integer with no fractional digit', () => {
+								expect(tester('1 001')).toBe(false);
+							});
+
+							it('Any integer with one fractional digit', () => {
+								expect(tester('1 001,1')).toBe(false);
+							});
+
+							it('Any integer with three fractional digits', () => {
+								expect(tester('1 001,123')).toBe(false);
+							});
+
+							it('Any integer with two fractional digits but no space sep', () => {
+								expect(tester('1001,12')).toBe(false);
+							});
+
+							it('0,00', () => {
+								expect(tester('0,00')).toBe(true);
+							});
+
+							it('Any integer with two fractional digits', () => {
+								expect(tester('1 001,43')).toBe(true);
+							});
+						});
+					});
+				});
+			});
+
+			describe('Int', () => {
+				describe('french', () => {
+					const tester = Transformer.Number.Option.toTester(Transformer.Number.Option.Int.french);
 
 					describe('Reading', () => {
 						it('Empty string', () => {
@@ -390,9 +458,83 @@ describe('Transformer', () => {
 					});
 				});
 
-				describe('unsignedFrenchInt', () => {
-					const tester = Transformer.Real.Options.toTester(
-						Transformer.Real.Options.unsignedFrenchInt
+				describe('signedFrench', () => {
+					const tester = Transformer.Number.Option.toTester(
+						Transformer.Number.Option.Int.signedFrench
+					);
+
+					describe('Reading', () => {
+						it('Empty string', () => {
+							expect(tester('')).toBe(false);
+						});
+
+						it('One space string', () => {
+							expect(tester(' ')).toBe(false);
+						});
+
+						it('With upfront 0', () => {
+							expect(tester('01')).toBe(false);
+						});
+
+						it('Unsigned integer', () => {
+							expect(tester('1 001')).toBe(false);
+						});
+
+						it('Integer with minus sign', () => {
+							expect(tester('-1 001')).toBe(true);
+						});
+
+						it('Integer with spaced minus sign', () => {
+							expect(tester('- 1 001')).toBe(false);
+						});
+
+						it('Integer with plus sign', () => {
+							expect(tester('+1 001')).toBe(true);
+						});
+					});
+				});
+
+				describe('plussedFrench', () => {
+					const tester = Transformer.Number.Option.toTester(
+						Transformer.Number.Option.Int.plussedFrench
+					);
+
+					describe('Reading', () => {
+						it('Empty string', () => {
+							expect(tester('')).toBe(false);
+						});
+
+						it('One space string', () => {
+							expect(tester(' ')).toBe(false);
+						});
+
+						it('With upfront 0', () => {
+							expect(tester('01')).toBe(false);
+						});
+
+						it('Unsigned integer', () => {
+							expect(tester('1 001')).toBe(true);
+						});
+
+						it('Integer with minus sign', () => {
+							expect(tester('-1 001')).toBe(true);
+						});
+
+						it('Integer with spaced minus sign', () => {
+							expect(tester('-  001')).toBe(false);
+						});
+
+						it('Integer with plus sign', () => {
+							expect(tester('+1 001')).toBe(true);
+						});
+					});
+				});
+			});
+
+			describe('PositiveInt', () => {
+				describe('french', () => {
+					const tester = Transformer.Number.Option.toTester(
+						Transformer.Number.Option.PositiveInt.french
 					);
 
 					describe('Reading', () => {
@@ -429,403 +571,365 @@ describe('Transformer', () => {
 						});
 					});
 				});
+			});
+		});
 
-				describe('signedFrenchInt', () => {
-					const tester = Transformer.Real.Options.toTester(
-						Transformer.Real.Options.signedFrenchInt
-					);
+		describe('Real', () => {
+			describe('standard', () => {
+				const readTester = readTesterMaker(Transformer.Number.Real.standard);
+				describe('Reading', () => {
+					it('Empty string', () => {
+						expect(readTester('')).toBe(false);
+					});
 
-					describe('Reading', () => {
-						it('Empty string', () => {
-							expect(tester('')).toBe(false);
-						});
+					it('One space string', () => {
+						expect(readTester(' foo')).toBe(false);
+					});
 
-						it('One space string', () => {
-							expect(tester(' ')).toBe(false);
-						});
+					it('With upfront 0', () => {
+						expect(readTester('01.1foo')).toStrictEqual([0, '1.1foo']);
+					});
 
-						it('With upfront 0', () => {
-							expect(tester('01')).toBe(false);
-						});
+					it('With upfront space', () => {
+						expect(readTester(' 1.1foo')).toBe(false);
+					});
 
-						it('Unsigned integer', () => {
-							expect(tester('1 001')).toBe(false);
-						});
+					it('Any positive number', () => {
+						expect(readTester('1000348.3456foo')).toStrictEqual([1_000_348.3456, 'foo']);
+					});
 
-						it('Integer with minus sign', () => {
-							expect(tester('-1 001')).toBe(true);
-						});
-
-						it('Integer with spaced minus sign', () => {
-							expect(tester('- 1 001')).toBe(false);
-						});
-
-						it('Integer with plus sign', () => {
-							expect(tester('+1 001')).toBe(true);
-						});
+					it('Any negative number', () => {
+						expect(readTester('-.3foo')).toStrictEqual([-0.3, 'foo']);
 					});
 				});
 
-				describe('plussedFrenchInt', () => {
-					const tester = Transformer.Real.Options.toTester(
-						Transformer.Real.Options.plussedFrenchInt
-					);
+				const writeTester = writeTesterMaker(Transformer.Number.Real.standard);
+				describe('Writing', () => {
+					it('Any positive number', () => {
+						expect(pipe(10_034_538.76, MBrand.Real.fromNumber, writeTester)).toBe('10034538.76');
+					});
 
-					describe('Reading', () => {
-						it('Empty string', () => {
-							expect(tester('')).toBe(false);
-						});
+					it('Any negative number', () => {
+						expect(pipe(-1_740.7654, MBrand.Real.fromNumber, writeTester)).toBe('-1740.7654');
+					});
 
-						it('One space string', () => {
-							expect(tester(' ')).toBe(false);
-						});
+					it('Any integer', () => {
+						expect(pipe(-8, MBrand.Real.fromNumber, writeTester)).toBe('-8');
+					});
 
-						it('With upfront 0', () => {
-							expect(tester('01')).toBe(false);
-						});
+					it('Any fractional number', () => {
+						expect(pipe(0.34, MBrand.Real.fromNumber, writeTester)).toBe('0.34');
+					});
+				});
+			});
 
-						it('Unsigned integer', () => {
-							expect(tester('1 001')).toBe(true);
-						});
+			describe('uk', () => {
+				const readTester = readTesterMaker(Transformer.Number.Real.uk);
+				describe('Reading', () => {
+					it('Any positive number', () => {
+						expect(readTester('1,000,348.3456foo')).toStrictEqual([1_000_348.3456, 'foo']);
+					});
 
-						it('Integer with minus sign', () => {
-							expect(tester('-1 001')).toBe(true);
-						});
+					it('Any negative number', () => {
+						expect(readTester('-10.3foo')).toStrictEqual([-10.3, 'foo']);
+					});
+				});
 
-						it('Integer with spaced minus sign', () => {
-							expect(tester('-  001')).toBe(false);
-						});
+				const writeTester = writeTesterMaker(Transformer.Number.Real.uk);
+				describe('Writing', () => {
+					it('Any positive number', () => {
+						expect(pipe(10_034_538.7654, MBrand.Real.fromNumber, writeTester)).toBe(
+							'10,034,538.7654'
+						);
+					});
 
-						it('Integer with plus sign', () => {
-							expect(tester('+1 001')).toBe(true);
-						});
+					it('Any negative number', () => {
+						expect(pipe(-18.7654, MBrand.Real.fromNumber, writeTester)).toBe('-18.7654');
+					});
+				});
+			});
+
+			describe('uk2FractionalDigits', () => {
+				const readTester = readTesterMaker(Transformer.Number.Real.uk2FractionalDigits);
+				describe('Reading', () => {
+					it('Number with one fractional digit', () => {
+						expect(readTester('10.3foo')).toBe(false);
+					});
+
+					it('Any positive number with 2 fractional digits', () => {
+						expect(readTester('10.30foo')).toStrictEqual([10.3, 'foo']);
+					});
+
+					it('Number with three fractional digits', () => {
+						expect(readTester('-10.321foo')).toStrictEqual([-10.32, '1foo']);
+					});
+				});
+
+				const writeTester = writeTesterMaker(Transformer.Number.Real.uk2FractionalDigits);
+				describe('Writing', () => {
+					it('Any integer', () => {
+						expect(pipe(10_034_538, MBrand.Real.fromNumber, writeTester)).toBe('10,034,538.00');
+					});
+
+					it('Any number with one fractional digit', () => {
+						expect(pipe(-1_740.7, MBrand.Real.fromNumber, writeTester)).toBe('-1,740.70');
+					});
+
+					it('Any number with two fractional digits', () => {
+						expect(pipe(18.73, MBrand.Real.fromNumber, writeTester)).toBe('18.73');
+					});
+
+					it('Any number with three fractional digits round down', () => {
+						expect(pipe(18_740_543_323.344, MBrand.Real.fromNumber, writeTester)).toBe(
+							'18,740,543,323.34'
+						);
+					});
+
+					it('Any number with three fractional digits round up', () => {
+						expect(pipe(-194.455, MBrand.Real.fromNumber, writeTester)).toBe('-194.46');
+					});
+				});
+			});
+
+			describe('frenchScientific', () => {
+				const readTester = readTesterMaker(Transformer.Number.Real.frenchScientific);
+				describe('Reading', () => {
+					it('Number greater than 10', () => {
+						expect(readTester('10,3foo')).toStrictEqual([1, '0,3foo']);
+					});
+
+					it('Positive number without exponent', () => {
+						expect(readTester('9,30foo')).toStrictEqual([9.3, 'foo']);
+					});
+
+					it('Negative number with positive exponent', () => {
+						expect(readTester('-5,234e3foo')).toStrictEqual([-5_234, 'foo']);
+					});
+
+					it('Positive number with negative exponent', () => {
+						expect(readTester('5,234e-3foo')).toStrictEqual([0.005234, 'foo']);
+					});
+				});
+
+				const writeTester = writeTesterMaker(Transformer.Number.Real.frenchScientific);
+				describe('Writing', () => {
+					it('Any integer', () => {
+						expect(pipe(0, MBrand.Real.fromNumber, writeTester)).toBe(false);
+					});
+
+					it('Any positive integer', () => {
+						expect(pipe(10_034_538, MBrand.Real.fromNumber, writeTester)).toBe('1,0035e7');
+					});
+
+					it('Any negative integer', () => {
+						expect(pipe(-0.0443, MBrand.Real.fromNumber, writeTester)).toBe('-4,43e-2');
+					});
+				});
+			});
+
+			describe('germanFractional', () => {
+				const readTester = readTesterMaker(Transformer.Number.Real.germanFractional);
+				describe('Reading', () => {
+					it('Number with decimal part', () => {
+						expect(readTester('10,3foo')).toBe(false);
+					});
+
+					it('Positive number', () => {
+						expect(readTester(',3230foo')).toStrictEqual([0.323, 'foo']);
+					});
+
+					it('Negative number with exponent', () => {
+						expect(readTester('-,234e3foo')).toStrictEqual([-0.234, 'e3foo']);
+					});
+				});
+
+				const writeTester = writeTesterMaker(Transformer.Number.Real.germanFractional);
+				describe('Writing', () => {
+					it('0', () => {
+						expect(pipe(0, MBrand.Real.fromNumber, writeTester)).toBe('0');
+					});
+
+					it('Any integer', () => {
+						expect(pipe(8, MBrand.Real.fromNumber, writeTester)).toBe(false);
+					});
+
+					it('Any fractional number', () => {
+						expect(pipe(-0.443, MBrand.Real.fromNumber, writeTester)).toBe('-0,443');
 					});
 				});
 			});
 		});
 
-		describe('floatingPoint', () => {
-			const floatingPointReadTester = readTester(Transformer.Real.floatingPoint);
-			describe('Reading', () => {
-				it('Empty string', () => {
-					expect(floatingPointReadTester('')).toBe(false);
+		describe('Int', () => {
+			describe('uk', () => {
+				const readTester = readTesterMaker(Transformer.Number.Int.uk);
+				describe('Reading', () => {
+					it('Positive integer', () => {
+						expect(readTester('10foo')).toStrictEqual([10, 'foo']);
+					});
+
+					it('Negative fractional number', () => {
+						expect(readTester('-10.3foo')).toStrictEqual([-10, '.3foo']);
+					});
 				});
 
-				it('One space string', () => {
-					expect(floatingPointReadTester(' foo')).toBe(false);
-				});
+				const writeTester = writeTesterMaker(Transformer.Number.Int.uk);
+				describe('Writing', () => {
+					it('0', () => {
+						expect(pipe(0, MBrand.Int.fromNumber, writeTester)).toBe('0');
+					});
 
-				it('With upfront 0', () => {
-					expect(floatingPointReadTester('01.1foo')).toStrictEqual([0, '1.1foo']);
-				});
+					it('Positive number', () => {
+						expect(pipe(1048, MBrand.Int.fromNumber, writeTester)).toBe('1,048');
+					});
 
-				it('With upfront space', () => {
-					expect(floatingPointReadTester(' 1.1foo')).toBe(false);
-				});
-
-				it('Any positive number', () => {
-					expect(floatingPointReadTester('1000348.3456foo')).toStrictEqual([1_000_348.3456, 'foo']);
-				});
-
-				it('Any negative number', () => {
-					expect(floatingPointReadTester('-.3foo')).toStrictEqual([-0.3, 'foo']);
-				});
-			});
-
-			const floatingPointWriteTester = writeTester(Transformer.Real.floatingPoint);
-			describe('Writing', () => {
-				it('Any positive number', () => {
-					expect(pipe(10_034_538.76, MBrand.Real.fromNumber, floatingPointWriteTester)).toBe(
-						'10034538.76'
-					);
-				});
-
-				it('Any negative number', () => {
-					expect(pipe(-1_740.7654, MBrand.Real.fromNumber, floatingPointWriteTester)).toBe(
-						'-1740.7654'
-					);
-				});
-
-				it('Any integer', () => {
-					expect(pipe(-8, MBrand.Real.fromNumber, floatingPointWriteTester)).toBe('-8');
-				});
-
-				it('Any fractional number', () => {
-					expect(pipe(0.34, MBrand.Real.fromNumber, floatingPointWriteTester)).toBe('0.34');
-				});
-			});
-		});
-
-		describe('ukFloatingPoint', () => {
-			const ukFloatingPointReadTester = readTester(Transformer.Real.ukFloatingPoint);
-			describe('Reading', () => {
-				it('Any positive number', () => {
-					expect(ukFloatingPointReadTester('1,000,348.3456foo')).toStrictEqual([
-						1_000_348.3456,
-						'foo'
-					]);
-				});
-
-				it('Any negative number', () => {
-					expect(ukFloatingPointReadTester('-10.3foo')).toStrictEqual([-10.3, 'foo']);
+					it('Negative number', () => {
+						expect(pipe(-224, MBrand.Int.fromNumber, writeTester)).toBe('-224');
+					});
 				});
 			});
 
-			const ukFloatingPointWriteTester = writeTester(Transformer.Real.ukFloatingPoint);
-			describe('Writing', () => {
-				it('Any positive number', () => {
-					expect(pipe(10_034_538.7654, MBrand.Real.fromNumber, ukFloatingPointWriteTester)).toBe(
-						'10,034,538.7654'
-					);
+			describe('signedUk', () => {
+				const readTester = readTesterMaker(Transformer.Number.Int.signedUk);
+				describe('Reading', () => {
+					it('Positive integer without sign', () => {
+						expect(readTester('10foo')).toBe(false);
+					});
+
+					it('Positive integer with sign', () => {
+						expect(readTester('+10foo')).toStrictEqual([10, 'foo']);
+					});
+
+					it('Negative integer', () => {
+						expect(readTester('-10.3foo')).toStrictEqual([-10, '.3foo']);
+					});
 				});
 
-				it('Any negative number', () => {
-					expect(pipe(-18.7654, MBrand.Real.fromNumber, ukFloatingPointWriteTester)).toBe(
-						'-18.7654'
-					);
+				const writeTester = writeTesterMaker(Transformer.Number.Int.signedUk);
+				describe('Writing', () => {
+					it('0', () => {
+						expect(pipe(0, MBrand.Int.fromNumber, writeTester)).toBe('+0');
+					});
+
+					it('Positive number', () => {
+						expect(pipe(1048, MBrand.Int.fromNumber, writeTester)).toBe('+1,048');
+					});
+
+					it('Negative number', () => {
+						expect(pipe(-224, MBrand.Int.fromNumber, writeTester)).toBe('-224');
+					});
 				});
 			});
-		});
 
-		describe('ukFloatingPoint2', () => {
-			const ukFloatingPoint2ReadTester = readTester(Transformer.Real.ukFloatingPoint2);
-			describe('Reading', () => {
-				it('Number with one fractional digit', () => {
-					expect(ukFloatingPoint2ReadTester('10.3foo')).toBe(false);
+			describe('plussedUk', () => {
+				const readTester = readTesterMaker(Transformer.Number.Int.plussedUk);
+				describe('Reading', () => {
+					it('Positive integer without sign', () => {
+						expect(readTester('10foo')).toStrictEqual([10, 'foo']);
+					});
+
+					it('Positive integer with sign', () => {
+						expect(readTester('+10foo')).toStrictEqual([10, 'foo']);
+					});
+
+					it('Negative integer', () => {
+						expect(readTester('-10.3foo')).toStrictEqual([-10, '.3foo']);
+					});
 				});
 
-				it('Any positive number with 2 fractional digits', () => {
-					expect(ukFloatingPoint2ReadTester('10.30foo')).toStrictEqual([10.3, 'foo']);
-				});
+				const writeTester = writeTesterMaker(Transformer.Number.Int.plussedUk);
+				describe('Writing', () => {
+					it('0', () => {
+						expect(pipe(0, MBrand.Int.fromNumber, writeTester)).toBe('0');
+					});
 
-				it('Number with three fractional digits', () => {
-					expect(ukFloatingPoint2ReadTester('-10.321foo')).toStrictEqual([-10.32, '1foo']);
-				});
-			});
+					it('Positive number', () => {
+						expect(pipe(1048, MBrand.Int.fromNumber, writeTester)).toBe('1,048');
+					});
 
-			const ukFloatingPoint2WriteTester = writeTester(Transformer.Real.ukFloatingPoint2);
-			describe('Writing', () => {
-				it('Any integer', () => {
-					expect(pipe(10_034_538, MBrand.Real.fromNumber, ukFloatingPoint2WriteTester)).toBe(
-						'10,034,538.00'
-					);
-				});
-
-				it('Any number with one fractional digit', () => {
-					expect(pipe(-1_740.7, MBrand.Real.fromNumber, ukFloatingPoint2WriteTester)).toBe(
-						'-1,740.70'
-					);
-				});
-
-				it('Any number with two fractional digits', () => {
-					expect(pipe(18.73, MBrand.Real.fromNumber, ukFloatingPoint2WriteTester)).toBe('18.73');
-				});
-
-				it('Any number with three fractional digits round down', () => {
-					expect(
-						pipe(18_740_543_323.344, MBrand.Real.fromNumber, ukFloatingPoint2WriteTester)
-					).toBe('18,740,543,323.34');
-				});
-
-				it('Any number with three fractional digits round up', () => {
-					expect(pipe(-194.455, MBrand.Real.fromNumber, ukFloatingPoint2WriteTester)).toBe(
-						'-194.46'
-					);
+					it('Negative number', () => {
+						expect(pipe(-224, MBrand.Int.fromNumber, writeTester)).toBe('-224');
+					});
 				});
 			});
 		});
 
-		describe('frenchScientificNotation', () => {
-			const frenchScientificNotationReadTester = readTester(
-				Transformer.Real.frenchScientificNotation
-			);
-			describe('Reading', () => {
-				it('Number greater than 10', () => {
-					expect(frenchScientificNotationReadTester('10,3foo')).toStrictEqual([1, '0,3foo']);
+		describe('PositiveInt', () => {
+			describe('binary', () => {
+				const readTester = readTesterMaker(Transformer.Number.PositiveInt.binary);
+				describe('Reading', () => {
+					it('string not representing a binary number', () => {
+						expect(readTester(' 11foo')).toBe(false);
+					});
+
+					it('string with binary number at start', () => {
+						expect(readTester('00118foo')).toStrictEqual([3, '8foo']);
+					});
 				});
 
-				it('Positive number without exponent', () => {
-					expect(frenchScientificNotationReadTester('9,30foo')).toStrictEqual([9.3, 'foo']);
-				});
-
-				it('Negative number with positive exponent', () => {
-					expect(frenchScientificNotationReadTester('-5,234e3foo')).toStrictEqual([-5_234, 'foo']);
-				});
-
-				it('Positive number with negative exponent', () => {
-					expect(frenchScientificNotationReadTester('5,234e-3foo')).toStrictEqual([
-						0.005234,
-						'foo'
-					]);
+				const writeTester = writeTesterMaker(Transformer.Number.PositiveInt.binary);
+				it('Writing', () => {
+					expect(pipe(15, MBrand.PositiveInt.fromNumber, writeTester)).toBe('1111');
 				});
 			});
 
-			const frenchScientificNotationWriteTester = writeTester(
-				Transformer.Real.frenchScientificNotation
-			);
-			describe('Writing', () => {
-				it('Any integer', () => {
-					expect(pipe(0, MBrand.Real.fromNumber, frenchScientificNotationWriteTester)).toBe(false);
+			describe('octal', () => {
+				const readTester = readTesterMaker(Transformer.Number.PositiveInt.octal);
+				describe('Reading', () => {
+					it('string not representing an octal number', () => {
+						expect(readTester(' 16foo')).toBe(false);
+					});
+
+					it('string with octal number at start', () => {
+						expect(readTester('168foo')).toStrictEqual([14, '8foo']);
+					});
 				});
 
-				it('Any positive integer', () => {
-					expect(
-						pipe(10_034_538, MBrand.Real.fromNumber, frenchScientificNotationWriteTester)
-					).toBe('1,0035e7');
-				});
-
-				it('Any negative integer', () => {
-					expect(pipe(-0.0443, MBrand.Real.fromNumber, frenchScientificNotationWriteTester)).toBe(
-						'-4,43e-2'
-					);
-				});
-			});
-		});
-
-		describe('germanFractional', () => {
-			const germanFractionalReadTester = readTester(Transformer.Real.germanFractional);
-			describe('Reading', () => {
-				it('Number with decimal part', () => {
-					expect(germanFractionalReadTester('10,3foo')).toBe(false);
-				});
-
-				it('Positive number', () => {
-					expect(germanFractionalReadTester(',3230foo')).toStrictEqual([0.323, 'foo']);
-				});
-
-				it('Negative number with exponent', () => {
-					expect(germanFractionalReadTester('-,234e3foo')).toStrictEqual([-0.234, 'e3foo']);
+				const writeTester = writeTesterMaker(Transformer.Number.PositiveInt.octal);
+				it('Writing', () => {
+					expect(pipe(14, MBrand.PositiveInt.fromNumber, writeTester)).toBe('16');
 				});
 			});
 
-			const germanFractionalWriteTester = writeTester(Transformer.Real.germanFractional);
-			describe('Writing', () => {
-				it('0', () => {
-					expect(pipe(0, MBrand.Real.fromNumber, germanFractionalWriteTester)).toBe('0');
+			describe('hexadecimal', () => {
+				const readTester = readTesterMaker(Transformer.Number.PositiveInt.hexadecimal);
+				describe('Reading', () => {
+					it('string not representing a hexadecimal number', () => {
+						expect(readTester(' foo')).toBe(false);
+					});
+
+					it('string with hexadecimal number at start', () => {
+						expect(readTester('Ffoo')).toStrictEqual([255, 'oo']);
+					});
 				});
 
-				it('Any integer', () => {
-					expect(pipe(8, MBrand.Real.fromNumber, germanFractionalWriteTester)).toBe(false);
-				});
-
-				it('Any fractional number', () => {
-					expect(pipe(-0.443, MBrand.Real.fromNumber, germanFractionalWriteTester)).toBe('-0,443');
-				});
-			});
-		});
-
-		describe('ukInt', () => {
-			const ukIntReadTester = readTester(Transformer.Real.ukInt);
-			describe('Reading', () => {
-				it('Positive integer', () => {
-					expect(ukIntReadTester('10foo')).toStrictEqual([10, 'foo']);
-				});
-
-				it('Negative fractional number', () => {
-					expect(ukIntReadTester('-10.3foo')).toStrictEqual([-10, '.3foo']);
+				const writeTester = writeTesterMaker(Transformer.Number.PositiveInt.hexadecimal);
+				it('Writing', () => {
+					expect(pipe(16, MBrand.PositiveInt.fromNumber, writeTester)).toBe('10');
 				});
 			});
 
-			const ukIntWriteTester = writeTester(Transformer.Real.ukInt);
-			describe('Writing', () => {
-				it('0', () => {
-					expect(pipe(0, MBrand.Int.fromNumber, ukIntWriteTester)).toBe('0');
+			describe('uk', () => {
+				const readTester = readTesterMaker(Transformer.Number.PositiveInt.uk);
+				describe('Reading', () => {
+					it('Positive integer', () => {
+						expect(readTester('10foo')).toStrictEqual([10, 'foo']);
+					});
+
+					it('Negative fractional number', () => {
+						expect(readTester('-10.3foo')).toBe(false);
+					});
 				});
 
-				it('Positive number', () => {
-					expect(pipe(1048, MBrand.Int.fromNumber, ukIntWriteTester)).toBe('1,048');
-				});
+				const writeTester = writeTesterMaker(Transformer.Number.PositiveInt.uk);
+				describe('Writing', () => {
+					it('0', () => {
+						expect(pipe(0, MBrand.PositiveInt.fromNumber, writeTester)).toBe('0');
+					});
 
-				it('Negative number', () => {
-					expect(pipe(-224, MBrand.Int.fromNumber, ukIntWriteTester)).toBe('-224');
-				});
-			});
-		});
-
-		describe('unsignedUkInt', () => {
-			const unsignedUkIntReadTester = readTester(Transformer.Real.unsignedUkInt);
-			describe('Reading', () => {
-				it('Positive integer', () => {
-					expect(unsignedUkIntReadTester('10foo')).toStrictEqual([10, 'foo']);
-				});
-
-				it('Negative fractional number', () => {
-					expect(unsignedUkIntReadTester('-10.3foo')).toBe(false);
-				});
-			});
-
-			const unsignedUkIntWriteTester = writeTester(Transformer.Real.unsignedUkInt);
-			describe('Writing', () => {
-				it('0', () => {
-					expect(pipe(0, MBrand.PositiveInt.fromNumber, unsignedUkIntWriteTester)).toBe('0');
-				});
-
-				it('Positive number', () => {
-					expect(pipe(1048, MBrand.PositiveInt.fromNumber, unsignedUkIntWriteTester)).toBe('1,048');
-				});
-			});
-		});
-
-		describe('signedUkInt', () => {
-			const signedUkIntReadTester = readTester(Transformer.Real.signedUkInt);
-			describe('Reading', () => {
-				it('Positive integer without sign', () => {
-					expect(signedUkIntReadTester('10foo')).toBe(false);
-				});
-
-				it('Positive integer with sign', () => {
-					expect(signedUkIntReadTester('+10foo')).toStrictEqual([10, 'foo']);
-				});
-
-				it('Negative integer', () => {
-					expect(signedUkIntReadTester('-10.3foo')).toStrictEqual([-10, '.3foo']);
-				});
-			});
-
-			const signedUkIntWriteTester = writeTester(Transformer.Real.signedUkInt);
-			describe('Writing', () => {
-				it('0', () => {
-					expect(pipe(0, MBrand.Int.fromNumber, signedUkIntWriteTester)).toBe('+0');
-				});
-
-				it('Positive number', () => {
-					expect(pipe(1048, MBrand.Int.fromNumber, signedUkIntWriteTester)).toBe('+1,048');
-				});
-
-				it('Negative number', () => {
-					expect(pipe(-224, MBrand.Int.fromNumber, signedUkIntWriteTester)).toBe('-224');
-				});
-			});
-		});
-
-		describe('plussedUkInt', () => {
-			const plussedUkIntReadTester = readTester(Transformer.Real.plussedUkInt);
-			describe('Reading', () => {
-				it('Positive integer without sign', () => {
-					expect(plussedUkIntReadTester('10foo')).toStrictEqual([10, 'foo']);
-				});
-
-				it('Positive integer with sign', () => {
-					expect(plussedUkIntReadTester('+10foo')).toStrictEqual([10, 'foo']);
-				});
-
-				it('Negative integer', () => {
-					expect(plussedUkIntReadTester('-10.3foo')).toStrictEqual([-10, '.3foo']);
-				});
-			});
-
-			const plussedUkIntWriteTester = writeTester(Transformer.Real.plussedUkInt);
-			describe('Writing', () => {
-				it('0', () => {
-					expect(pipe(0, MBrand.Int.fromNumber, plussedUkIntWriteTester)).toBe('0');
-				});
-
-				it('Positive number', () => {
-					expect(pipe(1048, MBrand.Int.fromNumber, plussedUkIntWriteTester)).toBe('1,048');
-				});
-
-				it('Negative number', () => {
-					expect(pipe(-224, MBrand.Int.fromNumber, plussedUkIntWriteTester)).toBe('-224');
+					it('Positive number', () => {
+						expect(pipe(1048, MBrand.PositiveInt.fromNumber, writeTester)).toBe('1,048');
+					});
 				});
 			});
 		});
