@@ -103,7 +103,7 @@ export const once = <A>(f: Function.LazyArg<A>): Function.LazyArg<A> => {
 };
 
 /**
- * Applies `f` to `o`
+ * Applies `self` to `o`
  *
  * @since 0.0.6
  * @category Utils
