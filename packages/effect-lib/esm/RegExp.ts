@@ -14,7 +14,10 @@ import * as MRegExpString from './RegExpString.js';
  * @since 0.5.0
  * @category Constructors
  */
-export const fromRegExpString = (s: string): RegExp => new RegExp(s);
+export const fromRegExpString =
+	(flags?: string) =>
+	(s: string): RegExp =>
+		new RegExp(s, flags);
 
 /**
  * A slightly different version of match using RegExp.prototype.exec instead of
@@ -74,7 +77,7 @@ export const lineBreak = new RegExp(MRegExpString.lineBreak);
  * @since 0.5.0
  * @category Instances
  */
-export const semVer = pipe(MRegExpString.semVer, MRegExpString.makeLine, fromRegExpString);
+export const semVer = pipe(MRegExpString.semVer, MRegExpString.makeLine, fromRegExpString());
 
 /**
  * A regular expression representing an email
@@ -82,7 +85,7 @@ export const semVer = pipe(MRegExpString.semVer, MRegExpString.makeLine, fromReg
  * @since 0.5.0
  * @category Instances
  */
-export const email = pipe(MRegExpString.email, MRegExpString.makeLine, fromRegExpString);
+export const email = pipe(MRegExpString.email, MRegExpString.makeLine, fromRegExpString());
 
 /**
  * A regular expression representing a strictly positive digit
@@ -90,7 +93,7 @@ export const email = pipe(MRegExpString.email, MRegExpString.makeLine, fromRegEx
  * @since 0.5.0
  * @category Instances
  */
-export const nonZeroDigit = pipe(MRegExpString.nonZeroDigit, fromRegExpString);
+export const nonZeroDigit = pipe(MRegExpString.nonZeroDigit, fromRegExpString());
 
 /**
  * A regular expression representing a string starting with an integer in base 2.
@@ -101,7 +104,7 @@ export const nonZeroDigit = pipe(MRegExpString.nonZeroDigit, fromRegExpString);
 export const binaryIntAtStart = pipe(
 	MRegExpString.binaryInt,
 	MRegExpString.atStart,
-	fromRegExpString
+	fromRegExpString()
 );
 
 /**
@@ -113,7 +116,7 @@ export const binaryIntAtStart = pipe(
 export const octalIntAtStart = pipe(
 	MRegExpString.octalInt,
 	MRegExpString.atStart,
-	fromRegExpString
+	fromRegExpString()
 );
 
 /**
@@ -122,4 +125,8 @@ export const octalIntAtStart = pipe(
  * @since 0.5.0
  * @category Instances
  */
-export const hexaIntAtStart = pipe(MRegExpString.hexaInt, MRegExpString.atStart, fromRegExpString);
+export const hexaIntAtStart = pipe(
+	MRegExpString.hexaInt,
+	MRegExpString.atStart,
+	fromRegExpString()
+);
