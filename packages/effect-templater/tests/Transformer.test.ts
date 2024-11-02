@@ -1,7 +1,7 @@
 /* eslint-disable functional/no-expression-statements */
 import { MBrand } from '@parischap/effect-lib';
 import { Transformer } from '@parischap/effect-templater';
-import { Either, Function, pipe } from 'effect';
+import { Either, Function, HashMap, pipe } from 'effect';
 import { describe, expect, it } from 'vitest';
 
 describe('Transformer', () => {
@@ -22,6 +22,74 @@ describe('Transformer', () => {
 				transformer.write,
 				Either.match({ onLeft: () => false, onRight: Function.identity })
 			);
+
+	describe('mapped case sensitive', () => {
+		const map = HashMap.make(['am', 0], ['Pm', 12]);
+		const transformer = Transformer.mapped(map, 'am/pm', true);
+		const readTester = readTesterMaker(transformer);
+		describe('Reading', () => {
+			it('Empty string', () => {
+				expect(readTester('')).toBe(false);
+			});
+
+			it('Non matching string', () => {
+				expect(readTester('foo')).toBe(false);
+			});
+
+			it('Matching string bad case', () => {
+				expect(readTester('pmfoo')).toBe(false);
+			});
+
+			it('Matching string', () => {
+				expect(readTester('Pmfoo')).toStrictEqual([12, 'foo']);
+			});
+		});
+
+		const writeTester = writeTesterMaker(transformer);
+		describe('Writing', () => {
+			it('Element of right type not in map', () => {
+				expect(writeTester(1)).toBe(false);
+			});
+
+			it('Element of right type in map', () => {
+				expect(writeTester(12)).toBe('Pm');
+			});
+		});
+	});
+
+	describe('mapped case insensitive', () => {
+		const map = HashMap.make(['am', 0], ['Pm', 12]);
+		const transformer = Transformer.mapped(map, 'am/pm', false);
+		const readTester = readTesterMaker(transformer);
+		describe('Reading', () => {
+			it('Empty string', () => {
+				expect(readTester('')).toBe(false);
+			});
+
+			it('Non matching string', () => {
+				expect(readTester('foo')).toBe(false);
+			});
+
+			it('Matching string bad case', () => {
+				expect(readTester('pmfoo')).toStrictEqual([12, 'foo']);
+			});
+
+			it('Matching string', () => {
+				expect(readTester('Pmfoo')).toStrictEqual([12, 'foo']);
+			});
+		});
+
+		const writeTester = writeTesterMaker(transformer);
+		describe('Writing', () => {
+			it('Element of right type not in map', () => {
+				expect(writeTester(1)).toBe(false);
+			});
+
+			it('Element of right type in map', () => {
+				expect(writeTester(12)).toBe('pm');
+			});
+		});
+	});
 
 	describe('String', () => {
 		describe('rest', () => {

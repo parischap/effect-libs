@@ -31,6 +31,7 @@ import {
 	flow,
 	Function,
 	Hash,
+	HashMap,
 	Inspectable,
 	pipe,
 	Pipeable,
@@ -171,6 +172,82 @@ export const compose =
 			),
 			write: flow(that.write, Either.flatMap(self.write))
 		});
+
+/**
+ * Transformer instance that transforms the keys of `map` into their corresponding values. And
+ * vice-versa. `map` must be a bijection. When reading from string, it tries to find one of `map`
+ * keys at the start of `input` (Attention: the order of map keys matters as the search will stop on
+ * first match). Upon success, it returns a `right` of the corresponding value. Upon failure, it
+ * returns a `left` of an error.
+ *
+ * @since 0.0.1
+ * @category Instances
+ */
+export const mapped = <
+	A extends {
+		readonly toString: () => string;
+	}
+>(
+	map: HashMap.HashMap<string, A>,
+	name: string,
+	strictCase: boolean
+): Type<A> => {
+	const casedMapEntries = pipe(
+		map,
+		HashMap.toEntries,
+		MFunction.fIfTrue({ condition: !strictCase, f: Array.map(Tuple.mapFirst(EString.toLowerCase)) })
+	);
+	const casedMap = HashMap.fromIterable(casedMapEntries);
+	const reversedMap = pipe(casedMapEntries, Array.map(Tuple.swap), HashMap.fromIterable);
+	const keys = Array.map(casedMapEntries, Tuple.getFirst);
+	const values = Array.map(casedMapEntries, Tuple.getSecond);
+	const regExp = pipe(
+		keys,
+		Array.map(MRegExpString.escape),
+		Function.tupled(MRegExpString.either),
+		MRegExpString.atStart,
+		MRegExp.fromRegExpString()
+	);
+
+	return make({
+		name,
+		read: (input) =>
+			pipe(
+				input,
+				MFunction.fIfTrue({ condition: !strictCase, f: EString.toLowerCase }),
+				MString.match(regExp),
+				EOption.map(
+					MTuple.makeBothBy({
+						toFirst: MFunction.flipDual(HashMap.unsafeGet<string, A, string>)(casedMap),
+						toSecond: flow(EString.length, Function.flip(MString.takeRightBut)(input))
+					})
+				),
+				Either.fromOption(
+					() =>
+						new Error.Type({
+							message: `Expected '${input}' to start with one of the following: ${pipe(keys, Array.map(flow(MString.prepend("'"), MString.append("'"))), Array.join(','))}`
+						})
+				)
+			),
+		write: (input) =>
+			pipe(
+				input,
+				MFunction.flipDual(HashMap.get<A, string, A>)(reversedMap),
+				Either.fromOption(
+					() =>
+						new Error.Type({
+							message: `Expected '${input.toString()}' to be one of: ${pipe(
+								values,
+								Array.map((value) =>
+									pipe(value.toString(), MString.prepend("'"), MString.append("'"))
+								),
+								Array.join(',')
+							)}`
+						})
+				)
+			)
+	});
+};
 
 /**
  * This namespace implements Transformers to and from string
@@ -832,7 +909,7 @@ export namespace Number {
 					key,
 					toRegExpString,
 					MRegExpString.atStart,
-					MRegExp.fromRegExpString,
+					MRegExp.fromRegExpString(),
 					Tuple.make,
 					Tuple.appendElement(true)
 				),
