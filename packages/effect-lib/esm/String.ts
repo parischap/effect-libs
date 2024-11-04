@@ -15,6 +15,7 @@ import {
 	Order,
 	Predicate,
 	String,
+	Struct,
 	Tuple,
 	flow,
 	pipe
@@ -25,6 +26,7 @@ import * as MFunction from './Function.js';
 import * as MInspectable from './Inspectable.js';
 import * as MMatch from './Match.js';
 import * as MRegExp from './RegExp.js';
+import * as MTuple from './Tuple.js';
 import * as MTypes from './types.js';
 
 const moduleTag = '@parischap/effect-lib/String/';
@@ -216,21 +218,19 @@ export const search =
  */
 export const searchAll =
 	(regexp: RegExp | string) =>
-	(self: string): Array<SearchResult.Type> => {
-		/* eslint-disable-next-line functional/prefer-readonly-type -- To preserve refinements */
-		const result: Array<SearchResult.Type> = [];
-		let searchPos = 0;
-		for (;;) {
-			const searchResultOption = search(regexp, searchPos)(self);
-			if (Option.isNone(searchResultOption)) break;
-			const searchResult = searchResultOption.value;
-			/* eslint-disable-next-line functional/immutable-data,functional/no-expression-statements */
-			result.push(searchResult);
-			/* eslint-disable-next-line functional/no-expression-statements */
-			searchPos = searchResult.endIndex;
-		}
-		return result;
-	};
+	(self: string): Array<SearchResult.Type> =>
+		Array.unfold(0, (pos) =>
+			pipe(
+				self,
+				search(regexp, pos),
+				Option.map(
+					MTuple.makeBothBy({
+						toFirst: Function.identity,
+						toSecond: Struct.get('endIndex')
+					})
+				)
+			)
+		);
 
 /**
  * Searches for the last occurence of `regexp` in `self` and returns a SearchResult. 'g' flag needs
@@ -510,22 +510,18 @@ export const splitAt =
  */
 export const splitEquallyRestAtStart =
 	(bitSize: number) =>
-	(self: string): Array<string> => {
-		let endIndex = self.length;
-		let startIndex: number;
-		/* eslint-disable-next-line functional/prefer-readonly-type */
-		const result: Array<string> = [];
-		while (endIndex > 0) {
-			/* eslint-disable-next-line functional/no-expression-statements */
-			startIndex = endIndex - bitSize;
-			/* eslint-disable-next-line functional/no-expression-statements, functional/immutable-data */
-			result.push(self.substring(startIndex, endIndex));
-			/* eslint-disable-next-line functional/no-expression-statements */
-			endIndex = startIndex;
-		}
-		/* eslint-disable-next-line functional/immutable-data */
-		return result.reverse();
-	};
+	(self: string): Array<string> =>
+		pipe(
+			Array.unfold(self, (s) =>
+				pipe(
+					s,
+					splitAt(s.length - bitSize),
+					Tuple.swap,
+					Option.liftPredicate(flow(Tuple.getSecond, String.isNonEmpty))
+				)
+			),
+			Array.reverse
+		);
 
 /**
  * Splits `self` in substrings of `bitSize` characters. The length of the last string, if any, is
@@ -536,23 +532,10 @@ export const splitEquallyRestAtStart =
  */
 export const splitEquallyRestAtEnd =
 	(bitSize: number) =>
-	(self: string): Array<string> => {
-		const l = self.length;
-		let startIndex = 0;
-		let endIndex: number;
-
-		/* eslint-disable-next-line functional/prefer-readonly-type */
-		const result: Array<string> = [];
-		while (startIndex < l) {
-			/* eslint-disable-next-line functional/no-expression-statements */
-			endIndex = startIndex + bitSize;
-			/* eslint-disable-next-line functional/no-expression-statements, functional/immutable-data */
-			result.push(self.substring(startIndex, endIndex));
-			/* eslint-disable-next-line functional/no-expression-statements */
-			startIndex = endIndex;
-		}
-		return result;
-	};
+	(self: string): Array<string> =>
+		Array.unfold(self, (s) =>
+			pipe(s, splitAt(bitSize), Option.liftPredicate(flow(Tuple.getSecond, String.isNonEmpty)))
+		);
 
 /**
  * Adds string `tabChar` `count` times at the beginning of each new line of `self`
