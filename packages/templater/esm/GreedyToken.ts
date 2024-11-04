@@ -8,7 +8,7 @@
 import { MInspectable, MPipeable, MString, MTypes } from '@parischap/effect-lib';
 import { MColor } from '@parischap/js-lib';
 import { Equal, Equivalence, Function, Hash, Inspectable, Pipeable, Predicate } from 'effect';
-import * as Token from './Token.js';
+import * as Token from './Pattern.js';
 
 /**
  * Interface that represents a Greedy Token

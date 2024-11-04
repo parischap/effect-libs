@@ -1,6 +1,6 @@
 /**
  * This module implements a Transformer<A> which is used to transform a string into a value of type
- * A and vice versa. It is used within a Token (see Token.ts).
+ * A and vice versa. It is used within a Pattern (see Pattern.ts).
  *
  * @since 0.0.1
  */
@@ -55,7 +55,7 @@ type TypeId = typeof TypeId;
  */
 export interface Type<in out A> extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
 	/**
-	 * Name of this Transformer instance. Useful when debugging
+	 * Name of this Transformer instance. Only useful for debugging purposes.
 	 *
 	 * @since 0.0.1
 	 */
@@ -176,9 +176,12 @@ export const compose =
 /**
  * Transformer instance that transforms the keys of `map` into their corresponding values. And
  * vice-versa. `map` must be a bijection. When reading from string, it tries to find one of `map`
- * keys at the start of `input` (Attention: the order of map keys matters as the search will stop on
- * first match). Upon success, it returns a `right` of the corresponding value. Upon failure, it
- * returns a `left` of an error.
+ * keys (equivalence is based on Equal.equals) at the start of `input` (Attention: the order of map
+ * keys matters as the search will stop on first match). Upon success, it returns a `right` of the
+ * corresponding value. Upon failure, it returns a `left` of an error. When writing to a string, it
+ * tries to find `input` among one of `map` values (equivalence is based on Equal.equals). Upon
+ * success, it returns a `right` of the corresponding key. Upon failure, it returns a `left` of an
+ * error.
  *
  * @since 0.0.1
  * @category Instances

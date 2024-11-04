@@ -517,7 +517,7 @@ export const splitEquallyRestAtStart =
 					s,
 					splitAt(s.length - bitSize),
 					Tuple.swap,
-					Option.liftPredicate(flow(Tuple.getSecond, String.isNonEmpty))
+					Option.liftPredicate(Predicate.tuple(String.isNonEmpty, Function.constTrue))
 				)
 			),
 			Array.reverse
@@ -534,7 +534,11 @@ export const splitEquallyRestAtEnd =
 	(bitSize: number) =>
 	(self: string): Array<string> =>
 		Array.unfold(self, (s) =>
-			pipe(s, splitAt(bitSize), Option.liftPredicate(flow(Tuple.getSecond, String.isNonEmpty)))
+			pipe(
+				s,
+				splitAt(bitSize),
+				Option.liftPredicate(Predicate.tuple(String.isNonEmpty, Function.constTrue))
+			)
 		);
 
 /**

@@ -2,8 +2,8 @@
  * In this document, the term `record` refers to a non-null object, an array or a function.
  *
  * Type that represents a value in its stringification context. A Value instance is created for the
- * initial value to stringify and, if that value is a record, a Value instance is also created for
- * each property and nested property of that record.
+ * value to stringify and, if that value is a record, for each property and nested property of that
+ * record.
  *
  * Value's can be ordered by ValueOrder instances (see ValueOrder.ts)
  *
@@ -11,21 +11,8 @@
  *
  * @since 0.0.1
  */
+import { MInspectable, MPipeable, MString, MStruct, MTypes } from '@parischap/effect-lib';
 import {
-	MFunction,
-	MInspectable,
-	MMatch,
-	MOption,
-	MPipeable,
-	MString,
-	MTree,
-	MTuple,
-	MTypes
-} from '@parischap/effect-lib';
-import {
-	Array,
-	Boolean,
-	Chunk,
 	Equal,
 	Equivalence,
 	Function,
@@ -40,10 +27,7 @@ import {
 	flow,
 	pipe
 } from 'effect';
-import * as FormattedString from './FormattedString.js';
-import * as Options from './Options.js';
 import type * as StringifiedValue from './StringifiedValue.js';
-import type * as StringifiedValues from './StringifiedValues.js';
 
 const moduleTag = '@parischap/pretty-print/Value/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
@@ -61,16 +45,21 @@ export interface Type<out V extends MTypes.Unknown>
 		Pipeable.Pipeable {
 	/** The value to stringify */
 	readonly value: V;
+	/** Contains the result of calling Options.byPasser on `value` */
+	readonly byPassedValue: Option.Option<StringifiedValue.Type>;
+
 	/**
-	 * Depth of `value` in the initial value to stringify: number of nested arrays and objects to open
-	 * to reach `value`
+	 * Depth of `value` in the value to stringify: number of nested arrays and objects to open to
+	 * reach `value`.
 	 */
 	readonly depth: number;
+
 	/**
-	 * Depth of `value` in the prototypal chain of the initial value to stringify: number of
-	 * prototypes to open to reach `value`
+	 * Depth of `value` in the prototypal chain of the value to stringify: number of prototypes to
+	 * open to reach `value`
 	 */
 	readonly protoDepth: number;
+
 	/**
 	 * The key to which `value` is attached (an empty string if `value` is not in a record, the index
 	 * converted to a string if `value` is in an array, the property key if `value` is in an object or
@@ -85,14 +74,12 @@ export interface Type<out V extends MTypes.Unknown>
 	readonly hasSymbolicKey: boolean;
 	/** 'true' if `value` belongs to a record and is attached to an enumerable key. 'false' otherwise. */
 	readonly hasEnumerableKey: boolean;
-	/** Contains the result of calling Options.byPasser on `value` */
-	readonly byPassedValue: Option.Option<StringifiedValue.Type>;
-	/** `true` if depth >= options.maxDepth */
-	readonly isTooDeep: boolean;
-	/** `true` if this value is the start of a cycle */
-	readonly isCycleStart: boolean;
 	/** 'true' if `value` belongs to a record that is an array */
 	readonly belongsToArray: boolean;
+
+	/** `true` if this value is the start of a cycle */
+	readonly isCycleStart: boolean;
+
 	/** @internal */
 	readonly [TypeId]: {
 		readonly _V: Types.Covariant<V>;
@@ -192,13 +179,34 @@ export type PrimitiveType = Type<MTypes.Primitive>;
 export interface Properties extends ReadonlyArray<All> {}
 
 /**
+ * Empty instance
+ *
+ * @since 0.0.1
+ * @category Instances
+ */
+export const empty: All = _make({
+	value: null as MTypes.Unknown,
+	depth: 0,
+	protoDepth: 0,
+	key: '',
+	stringKey: '',
+	hasFunctionValue: false,
+	hasSymbolicKey: false,
+	hasEnumerableKey: false,
+	byPassedValue: Option.none(),
+	isCycleStart: false,
+	belongsToArray: false
+});
+
+/**
  * True if the `value` of `self` represents a record
  *
  * @since 0.0.1
  * @category Guards
  */
-export const isRecord = (self: All): self is RecordType =>
-	pipe(self, Struct.get('value'), MTypes.isRecord);
+export const isRecord: Predicate.Refinement<All, RecordType> = Predicate.struct({
+	value: MTypes.isRecord
+}) as never;
 
 /**
  * True if the `value` of `self` represents an array
@@ -206,8 +214,9 @@ export const isRecord = (self: All): self is RecordType =>
  * @since 0.0.1
  * @category Guards
  */
-export const isArray = (self: All): self is ArrayType =>
-	pipe(self, Struct.get('value'), MTypes.isArray);
+export const isArray: Predicate.Refinement<All, ArrayType> = Predicate.struct({
+	value: MTypes.isArray
+}) as never;
 
 /**
  * True if the `value` of `self` represents a function
@@ -215,8 +224,9 @@ export const isArray = (self: All): self is ArrayType =>
  * @since 0.0.1
  * @category Guards
  */
-export const isFunction = (self: All): self is FunctionType =>
-	pipe(self, Struct.get('value'), MTypes.isFunction);
+export const isFunction: Predicate.Refinement<All, FunctionType> = Predicate.struct({
+	value: MTypes.isFunction
+}) as never;
 
 /**
  * True if the `value` of `self` represents a primitive
@@ -224,201 +234,123 @@ export const isFunction = (self: All): self is FunctionType =>
  * @since 0.0.1
  * @category Guards
  */
-export const isPrimitive = (self: All): self is PrimitiveType =>
-	pipe(self, Struct.get('value'), MTypes.isPrimitive);
+export const isPrimitive: Predicate.Refinement<All, PrimitiveType> = Predicate.struct({
+	value: MTypes.isPrimitive
+}) as never;
 
 /**
- * Constructor
- *
- * @since 0.0.1
- * @category Constructors
- */
-export const makeFromValue = (options: Options.Type) => (value: unknown) =>
-	_make({
-		value: value as MTypes.Unknown,
-		depth: 0,
-		protoDepth: 0,
-		key: '',
-		stringKey: '',
-		hasFunctionValue: false,
-		hasSymbolicKey: false,
-		hasEnumerableKey: false,
-		byPassedValue: MOption.fromOptionOrNullable(
-			options.byPasser.action(value as MTypes.Unknown, options)
-		),
-		isTooDeep: Number.greaterThanOrEqualTo(0, options.maxDepth),
-		isCycleStart: false,
-		belongsToArray: false
-	});
-
-/**
- * Creates a copy of `self` with `isCycleStart` set
- *
- * @since 0.0.1
- * @category Constructors
- */
-export const setIsCycleStart =
-	(isCycleStart: boolean) =>
-	<V extends MTypes.Unknown>(self: Type<V>): Type<V> => ({
-		...self,
-		isCycleStart
-	});
-
-/**
- * Creates a `Value` for each own or inherited (from the prototypes) property of the `value` of
- * `self`, removes the Value's not fulfilling the stringification options and returns an array of
- * the remaining Value's
+ * Returns a copy of `self` with `value` and `byPassedValue` set to `value` and `byPassedValue`.
  *
  * @since 0.0.1
  * @category Utils
  */
-const makeFromRecord =
-	(options: Options.Type) =>
-	(self: RecordType): Properties => {
-		let currentRecord = self.value;
-		let constituents = Chunk.empty<All>();
-		let currentProtoDepth = 0;
-		const nextDepth = self.depth + 1;
+export const setValue = (
+	value: MTypes.Unknown,
+	byPassedValue: Option.Option<StringifiedValue.Type>
+): ((self: All) => All) =>
+	flow(
+		Struct.evolve({
+			value: Function.constant(value),
+			byPassedValue: Function.constant(byPassedValue)
+		}),
+		_make
+	);
 
-		do {
-			/* eslint-disable-next-line functional/no-expression-statements */
-			constituents = Chunk.appendAll(
-				constituents,
-				pipe(
-					currentRecord,
-					// Record.map does not map on non enumerable properties
-					Reflect.ownKeys,
-					Array.map((key) => {
-						const value = currentRecord[key] as MTypes.Unknown;
-						return _make({
-							value,
-							depth: nextDepth,
-							protoDepth: currentProtoDepth,
-							key,
-							stringKey: MString.fromNonNullablePrimitive(key),
-							hasFunctionValue: MTypes.isFunction(value),
-							hasSymbolicKey: MTypes.isSymbol(key),
-							hasEnumerableKey: Object.prototype.propertyIsEnumerable.call(currentRecord, key),
-							byPassedValue: MOption.fromOptionOrNullable(options.byPasser.action(value, options)),
-							isTooDeep: Number.greaterThanOrEqualTo(nextDepth, options.maxDepth),
-							isCycleStart: false,
-							belongsToArray: MTypes.isArray(currentRecord)
-						});
-					}),
-					Chunk.fromIterable
-				)
-			);
-			const prototype = Reflect.getPrototypeOf(currentRecord);
-			/* eslint-disable-next-line functional/no-expression-statements */
-			if (prototype !== null) currentRecord = prototype;
-			else break;
-		} while (++currentProtoDepth <= options.maxPrototypeDepth);
-
-		return pipe(
-			constituents,
-			// Removes __proto__ properties if there are some because we have already read that property with getPrototypeOf
-			Array.filter(
-				Predicate.struct({ stringKey: Predicate.not(MFunction.strictEquals('__proto__')) })
+/**
+ * Returns a copy of `self` with `value` and `byPassedValue` set to `value` and `byPassedValue`.
+ *
+ * @since 0.0.1
+ * @category Utils
+ */
+export const setAsRecordKey = (
+	key: string | symbol,
+	parentRecord: MTypes.AnyRecord
+): ((self: All) => All) =>
+	flow(
+		Struct.evolve({
+			key: Function.constant(key),
+			stringKey: pipe(key, MString.fromNonNullablePrimitive, Function.constant),
+			hasSymbolicKey: pipe(key, MTypes.isSymbol, Function.constant),
+			hasEnumerableKey: Function.constant(
+				Object.prototype.propertyIsEnumerable.call(parentRecord, key)
 			),
-			options.propertyFilter.action(self)
-		);
-	};
+			belongsToArray: pipe(parentRecord, MTypes.isArray, Function.constant)
+		}),
+		MStruct.enrichWith({ hasFunctionValue: flow(Struct.get('value'), MTypes.isFunction) }),
+		_make
+	);
 
 /**
- * Stringifies the `value` of `self`. Non-recursive.
+ * Returns a copy of `self` with `isCycleStart` set
  *
  * @since 0.0.1
  * @category Utils
  */
-export const stringify =
-	(options: Options.Type) =>
-	(self: All): StringifiedValue.Type => {
-		const tree = MTree.nonRecursiveUnfoldAndMap(
-			self,
-			(seed, isCyclic) =>
-				pipe(
-					seed,
-					setIsCycleStart(isCyclic),
-					MTuple.makeBothBy({
-						toFirst: Function.identity,
-						toSecond: flow(
-							Option.liftPredicate(
-								Predicate.struct({
-									value: MTypes.isRecord,
-									byPassedValue: Option.isNone<StringifiedValue.Type>,
-									isTooDeep: Boolean.not,
-									isCycleStart: Boolean.not
-								}) as unknown as Predicate.Refinement<All, RecordType>
-							),
-							Option.map(
-								flow(
-									MMatch.make,
-									MMatch.when(isArray, makeFromRecord(options)),
-									MMatch.orElse(
-										flow(
-											makeFromRecord(options),
-											Array.sort(options.propertySortOrder),
-											MFunction.fIfTrue({
-												condition: options.dedupeRecordProperties,
-												f: Array.dedupeWith((self, that) => self.key === that.key)
-											})
-										)
-									)
-								)
-							),
-							Option.getOrElse(() => Array.empty<All>())
-						)
-					})
-				),
-			(value, stringifiedProps: StringifiedValues.Type) =>
-				pipe(
-					stringifiedProps,
-					Array.match({
-						onNonEmpty: options.recordFormatter.action(value),
+export const setIsCycleStart = (
+	isCycleStart: boolean
+): (<V extends MTypes.Unknown>(self: Type<V>) => Type<V>) =>
+	flow(Struct.evolve({ isCycleStart: Function.constant(isCycleStart) }), _make);
 
-						onEmpty: () =>
-							pipe(
-								value,
-								MMatch.make,
-								MMatch.tryFunction(Struct.get('byPassedValue')),
-								MMatch.orElse(
-									flow(
-										MMatch.make,
-										MMatch.when(
-											isPrimitive,
-											flow(
-												Struct.get('value'),
-												MString.fromPrimitive,
-												FormattedString.makeWith(),
-												Array.of
-											)
-										),
-										MMatch.unsafeWhen(
-											isRecord,
-											flow(
-												MMatch.make,
-												MMatch.when(
-													Struct.get('isTooDeep'),
-													flow(
-														MMatch.make,
-														MMatch.when(isArray, () => options.arrayLabel),
-														MMatch.when(isFunction, () => options.functionLabel),
-														MMatch.orElse(() => options.objectLabel),
-														Array.of
-													)
-												),
-												MMatch.when(Struct.get('isCycleStart'), () =>
-													Array.of(options.circularLabel)
-												),
-												MMatch.orElse(() => Array.empty<FormattedString.Type>())
-											)
-										)
-									)
-								)
-							)
-					}),
-					options.propertyFormatter.action(value)
-				)
-		);
-		return tree.value;
-	};
+/**
+ * Returns a copy of `self` with `protoDepth` set to 0
+ *
+ * @since 0.0.1
+ * @category Utils
+ */
+export const resetProtoDepth: <V extends MTypes.Unknown>(self: Type<V>) => Type<V> = flow(
+	Struct.evolve({ protoDepth: Function.constant(0) }),
+	_make
+);
+
+/**
+ * Returns a copy of `self` with `depth` incremented by 1
+ *
+ * @since 0.0.1
+ * @category Utils
+ */
+export const incDepth: <V extends MTypes.Unknown>(self: Type<V>) => Type<V> = flow(
+	Struct.evolve({ depth: Number.increment }),
+	_make
+);
+
+/**
+ * Returns a copy of `self` with `protoDepth` incremented by 1
+ *
+ * @since 0.0.1
+ * @category Utils
+ */
+export const incProtoDepth: <V extends MTypes.Unknown>(self: Type<V>) => Type<V> = flow(
+	Struct.evolve({ protoDepth: Number.increment }),
+	_make
+);
+
+/**
+ * Returns a `some` of a copy of `self` with `value` replaced by its prototype if it's not null.
+ * Otherwise, returns a `none`.
+ *
+ * @since 0.0.1
+ * @category Utils
+ */
+export const toProto = <V extends MTypes.AnyRecord>(self: Type<V>): Option.Option<Type<V>> =>
+	pipe(
+		self,
+		Struct.evolve({ value: Reflect.getPrototypeOf }),
+		Option.liftPredicate(
+			Predicate.struct({ value: Predicate.isNotNull }) as unknown as Predicate.Refinement<
+				object | null,
+				Type<V>
+			>
+		),
+		Option.map(_make)
+	);
+
+/**
+ * Returns a copy of `self` for each of its properties
+ *
+ * @since 0.0.1
+ * @category Utils
+ */
+export const toProperties: (self: RecordType) => ArrayType<V> = flow(
+	Struct.evolve({ protoDepth: Number.increment }),
+	_make
+);

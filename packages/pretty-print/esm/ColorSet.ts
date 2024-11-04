@@ -93,7 +93,7 @@ export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pip
 	/**
 	 * Color applied to the delimiters of a record, typically '[]' for arrays and '{}' for objects. It
 	 * is a colorWheel (see ColorWheel.ts), so the color of the delimiters will change in function of
-	 * the depth of the object or array in the initial value to stringify.
+	 * the depth of the object or array in the value to stringify.
 	 *
 	 * @since 0.0.1
 	 */

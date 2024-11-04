@@ -21,7 +21,7 @@ import * as Value from './Value.js';
 export const asLines = (
 	options: Options.Type = Options.uncoloredSplitWhenTotalLengthExceeds40
 ): MTypes.OneArgFunction<unknown, StringifiedValue.Type> =>
-	flow(Value.makeFromValue(options), Value.stringify(options));
+	flow(Value.makeFromTopValue(options), Value.stringify(options));
 
 /**
  * Pretty prints a value yielding the result as a string. The separator used to join all lines

@@ -9,16 +9,29 @@
  * @since 0.0.1
  */
 
-import { pipe } from 'effect';
+import { Array, Boolean, flow, Function, Number, Option, pipe, Struct } from 'effect';
 import * as ByPasser from './ByPasser.js';
 import * as ColorSet from './ColorSet.js';
 import * as FormattedString from './FormattedString.js';
 import * as PropertyFilter from './PropertyFilter.js';
 import * as PropertyFormatter from './PropertyFormatter.js';
 import * as RecordFormatter from './RecordFormatter.js';
+import * as StringifiedValue from './StringifiedValue.js';
+import * as StringifiedValues from './StringifiedValues.js';
+import * as Value from './Value.js';
 import * as ValueOrder from './ValueOrder.js';
 
-import { MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
+import {
+	MFunction,
+	MInspectable,
+	MMatch,
+	MOption,
+	MPipeable,
+	MString,
+	MTree,
+	MTuple,
+	MTypes
+} from '@parischap/effect-lib';
 import { Equal, Equivalence, Hash, Inspectable, Pipeable, Predicate } from 'effect';
 
 const moduleTag = '@parischap/pretty-print/Options/';
@@ -40,8 +53,9 @@ export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pip
 	readonly name: string;
 
 	/**
-	 * Maximum number of nested records that will be printed. A value inferior or equal to 0 means
-	 * that only primitive values are shown.
+	 * Maximum number of nested records that will be opened. A value inferior or equal to 0 means that
+	 * only primitive values of the value to stringify are shown. The others are replaced by
+	 * `arrayLabel`, `functionLabel` or `objectLabel`.
 	 *
 	 * @since 0.0.1
 	 */
@@ -197,6 +211,176 @@ export const setName =
 	(name: string) =>
 	(self: Type): Type =>
 		_make({ ...self, name: name });
+
+/**
+ * Function that transforms `self` into a value setter
+ *
+ * @since 0.0.1
+ * @category Utils
+ */
+export const toValueSetter =
+	(self: Type): ((value: unknown) => (all: Value.All) => Value.All) =>
+	(value) =>
+		Value.setValue(
+			value as MTypes.Unknown,
+			MOption.fromOptionOrNullable(self.byPasser.action(value as MTypes.Unknown, self))
+		);
+
+/**
+ * Returns a function that takes a Value.RecordType and returns a Value.All for each of its own or
+ * inherited (from the prototypes) properties that filfill `self`.
+ *
+ * @since 0.0.1
+ * @category Utils
+ */
+export const toRecordOpener =
+	(self: Type): ((record: Value.RecordType) => Value.Properties) =>
+	(record) =>
+		pipe(
+			Array.unfold(
+				pipe(record, Value.incDepth, Value.resetProtoDepth),
+				flow(
+					Option.liftPredicate(
+						Predicate.struct({
+							protoDepth: Number.lessThan(self.maxPrototypeDepth)
+						})
+					),
+					Option.flatMap(
+						flow(
+							MTuple.makeBothBy({
+								toFirst: flow(
+									Struct.get('value'),
+									Reflect.ownKeys,
+									Array.map((key) => {
+										const value = underlying[key] as MTypes.Unknown;
+										return Value.make({
+											value,
+											depth: nextDepth,
+											protoDepth: currentProtoDepth,
+											key,
+											stringKey: MString.fromNonNullablePrimitive(key),
+											hasFunctionValue: MTypes.isFunction(value),
+											hasSymbolicKey: MTypes.isSymbol(key),
+											hasEnumerableKey: Object.prototype.propertyIsEnumerable.call(underlying, key),
+											byPassedValue: MOption.fromOptionOrNullable(
+												self.byPasser.action(value, self)
+											),
+											isTooDeep: Number.greaterThanOrEqualTo(nextDepth, self.maxDepth),
+											isCycleStart: false,
+											belongsToArray: MTypes.isArray(underlying)
+										});
+									}),
+									Option.some
+								),
+								toSecond: Value.toProto
+							}),
+							Option.all
+						)
+					)
+				)
+			),
+			Array.flatten,
+			// Removes __proto__ properties if there are some because we have already read that property with getPrototypeOf
+			Array.filter(
+				Predicate.struct({ stringKey: Predicate.not(MFunction.strictEquals('__proto__')) })
+			),
+			self.propertyFilter.action(record)
+		);
+
+/**
+ * Function that transforms `self` into a Stringifyer
+ *
+ * @since 0.0.1
+ * @category Utils
+ */
+export const toStringifier =
+	(self: Type): ((value: Value.All) => StringifiedValue.Type) =>
+	(value) =>
+		MTree.nonRecursiveUnfoldAndMap(
+			value,
+			(seed, isCyclic) =>
+				pipe(
+					seed,
+					Value.setIsCycleStart(isCyclic),
+					MTuple.makeBothBy({
+						toFirst: Function.identity,
+						toSecond: flow(
+							Option.liftPredicate(
+								Predicate.struct({
+									value: MTypes.isRecord,
+									byPassedValue: Option.isNone<StringifiedValue.Type>,
+									isTooDeep: Boolean.not,
+									isCycleStart: Boolean.not
+								}) as unknown as Predicate.Refinement<Value.All, Value.RecordType>
+							),
+							Option.map(
+								flow(
+									MMatch.make,
+									MMatch.when(Value.isArray, Value.makeFromRecord(self)),
+									MMatch.orElse(
+										flow(
+											Value.makeFromRecord(self),
+											Array.sort(self.propertySortOrder),
+											MFunction.fIfTrue({
+												condition: self.dedupeRecordProperties,
+												f: Array.dedupeWith((self, that) => self.key === that.key)
+											})
+										)
+									)
+								)
+							),
+							Option.getOrElse(() => Array.empty<Value.All>())
+						)
+					})
+				),
+			(currentValue, stringifiedProps: StringifiedValues.Type) =>
+				pipe(
+					stringifiedProps,
+					Array.match({
+						onNonEmpty: self.recordFormatter.action(currentValue),
+
+						onEmpty: () =>
+							pipe(
+								currentValue,
+								MMatch.make,
+								MMatch.tryFunction(Struct.get('byPassedValue')),
+								MMatch.orElse(
+									flow(
+										MMatch.make,
+										MMatch.when(
+											Value.isPrimitive,
+											flow(
+												Struct.get('value'),
+												MString.fromPrimitive,
+												FormattedString.makeWith(),
+												Array.of
+											)
+										),
+										MMatch.unsafeWhen(
+											Value.isRecord,
+											flow(
+												MMatch.make,
+												MMatch.when(
+													Struct.get('isTooDeep'),
+													flow(
+														MMatch.make,
+														MMatch.when(Value.isArray, () => self.arrayLabel),
+														MMatch.when(Value.isFunction, () => self.functionLabel),
+														MMatch.orElse(() => self.objectLabel),
+														Array.of
+													)
+												),
+												MMatch.when(Struct.get('isCycleStart'), () => Array.of(self.circularLabel)),
+												MMatch.orElse(() => Array.empty<FormattedString.Type>())
+											)
+										)
+									)
+								)
+							)
+					}),
+					self.propertyFormatter.action(currentValue)
+				)
+		).value;
 
 /**
  * Function that returns an `Options` instance that pretty-prints a value on a single line in a way
