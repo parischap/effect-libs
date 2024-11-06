@@ -406,6 +406,16 @@ describe('MString', () => {
 		});
 	});
 
+	describe('splitAtFromRight', () => {
+		it('Empty string', () => {
+			expect(pipe('', MString.splitAtFromRight(2))).toStrictEqual(['', '']);
+		});
+
+		it('Non-empty string', () => {
+			expect(pipe('beforeafter', MString.splitAtFromRight(5))).toStrictEqual(['before', 'after']);
+		});
+	});
+
 	describe('splitEquallyRestAtStart', () => {
 		it('Empty string', () =>
 			expect(pipe('', MString.splitEquallyRestAtStart(3), Array.isEmptyArray)).toBe(true));

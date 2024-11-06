@@ -20,6 +20,7 @@ import {
 	flow,
 	pipe
 } from 'effect';
+import * as MArray from './Array.js';
 import * as MColor from './Color.js';
 import * as MCore from './Core.js';
 import * as MFunction from './Function.js';
@@ -502,26 +503,36 @@ export const splitAt =
 		Tuple.make(self.substring(0, n), self.substring(n));
 
 /**
+ * Splits `self` in two parts at position `n` from the end of `self`. The length of the second
+ * string is `n`. If `n` is strictly less than 0, it is taken equal to 0. If `n` is greater than the
+ * length of `self`, it is taken equal to the length of self.
+ *
+ * @since 0.0.6
+ * @category Utils
+ */
+export const splitAtFromRight =
+	(n: number) =>
+	(self: string): [left: string, right: string] =>
+		pipe(self, splitAt(self.length - n));
+
+/**
  * Splits `self` in substrings of `bitSize` characters. The length of the first string, if any, is
  * comprised between 1 and `bitSize` characters. `bitSize` must be a strictly positive integer.
  *
  * @since 0.0.6
  * @category Utils
  */
-export const splitEquallyRestAtStart =
-	(bitSize: number) =>
-	(self: string): Array<string> =>
-		pipe(
-			Array.unfold(self, (s) =>
-				pipe(
-					s,
-					splitAt(s.length - bitSize),
-					Tuple.swap,
-					Option.liftPredicate(flow(Tuple.getSecond, String.isNonEmpty))
-				)
-			),
-			Array.reverse
-		);
+export const splitEquallyRestAtStart = (bitSize: number): ((self: string) => Array<string>) =>
+	flow(
+		MArray.unfold(
+			flow(
+				splitAtFromRight(bitSize),
+				Tuple.swap,
+				Option.liftPredicate(Predicate.tuple(String.isNonEmpty, Function.constTrue))
+			)
+		),
+		Array.reverse
+	);
 
 /**
  * Splits `self` in substrings of `bitSize` characters. The length of the last string, if any, is
@@ -534,7 +545,11 @@ export const splitEquallyRestAtEnd =
 	(bitSize: number) =>
 	(self: string): Array<string> =>
 		Array.unfold(self, (s) =>
-			pipe(s, splitAt(bitSize), Option.liftPredicate(flow(Tuple.getSecond, String.isNonEmpty)))
+			pipe(
+				s,
+				splitAt(bitSize),
+				Option.liftPredicate(Predicate.tuple(String.isNonEmpty, Function.constTrue))
+			)
 		);
 
 /**
