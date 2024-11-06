@@ -7,13 +7,12 @@
 import * as Monoid from '@effect/typeclass/Monoid';
 import {
 	Array,
-	Chunk,
 	Equal,
 	Equivalence,
+	flow,
 	Function,
 	Hash,
 	Inspectable,
-	MutableList,
 	Option,
 	pipe,
 	Pipeable,
@@ -69,7 +68,7 @@ export interface Type<out A> extends Equal.Equal, Inspectable.Inspectable, Pipea
 export const has = (u: unknown): u is Type<unknown> => Predicate.hasProperty(u, TypeId);
 
 /**
- * Equivalence for the value property
+ * Returns an equivalence based on an equivalence of the value property
  *
  * @since 0.0.6 Equivalence
  */
@@ -323,85 +322,79 @@ export const reduceRight =
 		return go(b, 0)(self);
 	};
 
+/** Sets the value and forest of `self` */
+const _mutableSet = <A>(self: Type<unknown>, value: A, forest: Forest<A>): Type<A> => {
+	/* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements, functional/prefer-readonly-type */
+	(self as { value: A }).value = value;
+	/* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements, functional/prefer-readonly-type */
+	(self as { forest: Forest<A> }).forest = forest;
+	return self as never;
+};
+
 /**
  * Build a (possibly infinite) tree from a seed value and an unfold function, then optionnally
- * applies a function f to each node of the tree starting from the leaves. The function detects
- * cycles based on equality of the values (type B) and reports them to the unfold function - Non
- * recursive
+ * applies a function f to each node of the tree starting from the leaves. Cycle detection based on
+ * equality of the seeds (type A) reported to the unfold function - Non recursive
  *
  * @since 0.0.6
  * @category Constructors
  */
-export const nonRecursiveUnfoldAndMap: {
-	<A, B, C>(
-		seed: A,
-		/* eslint-disable-next-line functional/prefer-readonly-type */
-		unfold: (seed: A, isCyclic: boolean) => [nextValue: B, nextSeeds: ReadonlyArray<A>],
-		f: (value: B, children: ReadonlyArray<C>) => C
-	): Type<C>;
-	<A, B>(
-		seed: A,
-		/* eslint-disable-next-line functional/prefer-readonly-type */
-		unfold: (seed: A, isCyclic: boolean) => [nextValue: B, nextSeeds: ReadonlyArray<A>]
-	): Type<B>;
-} = <A, B, C>(
+export const nonRecursiveUnfoldAndMap = <A, B, C = B>(
 	seed: A,
 	/* eslint-disable-next-line functional/prefer-readonly-type */
-	unfold: (seed: A, isCyclic: boolean) => [nextValue: B, nextSeeds: ReadonlyArray<A>],
+	unfold: (seed: A, isCyclical: boolean) => [nextValue: B, nextSeeds: ReadonlyArray<A>],
 	f?: (value: B, children: ReadonlyArray<C>) => C
-): Type<C> => {
-	let toHandle: Chunk.Chunk<
-		readonly [seed: A, parent: Option.Option<Type<B>>, predecessors: ReadonlyArray<A>]
-	> = Chunk.of(Tuple.make(seed, Option.none<Type<B>>(), Array.empty<A>()));
-	let top = Option.none<Type<B>>();
-	const reverseNodeList: MutableList.MutableList<Type<B>> = MutableList.empty<Type<B>>();
-	do {
-		/* eslint-disable-next-line functional/no-expression-statements */
-		toHandle = pipe(
-			toHandle,
-			Chunk.reduce(
-				Chunk.empty<
-					readonly [seed: A, parent: Option.Option<Type<B>>, predecessors: ReadonlyArray<A>]
-				>(),
-				(nextToHandle, [seed, parent, predecessors]) => {
-					const isCyclic = Array.contains(predecessors, seed);
-					const nextPredecessors = Array.append(predecessors, seed);
-
-					const [nextValue, nextSeeds] = unfold(seed, isCyclic);
-					const node = _make({
-						value: nextValue,
-						forest: Array.empty()
-					});
-					/* eslint-disable-next-line functional/no-expression-statements */
-					MutableList.prepend(reverseNodeList, node);
-					const nodeOption = Option.some(node);
-					/* eslint-disable-next-line functional/no-expression-statements */
-					top = Option.orElse(top, () => nodeOption);
-					if (Option.isSome(parent))
-						/* eslint-disable-next-line functional/immutable-data, functional/prefer-readonly-type, functional/no-expression-statements */
-						(parent.value.forest as Array<Type<B>>).push(node);
-
-					return pipe(
-						nextSeeds,
-						Array.map((seed) => Tuple.make(seed, nodeOption, nextPredecessors)),
-						Chunk.fromIterable,
-						Chunk.prependAll(nextToHandle)
-					);
-				}
+): Type<C> =>
+	pipe(
+		_make({
+			value: Array.of(seed),
+			forest: Array.empty()
+		}),
+		Array.of,
+		MArray.unfold<Forest<Array.NonEmptyReadonlyArray<A>>, Forest<B>>(
+			flow(
+				Option.liftPredicate(Array.isNonEmptyReadonlyArray),
+				Option.map(
+					flow(
+						Array.map((node) => {
+							const predecessors = node.value;
+							const currentSeed = Array.lastNonEmpty(predecessors);
+							const isCyclical = pipe(
+								predecessors,
+								Array.initNonEmpty,
+								Array.contains(currentSeed)
+							);
+							const [nextValue, nextSeeds] = unfold(currentSeed, isCyclical);
+							const nextNodes = pipe(
+								nextSeeds,
+								Array.map((seed) =>
+									_make({
+										value: Array.append(predecessors, seed),
+										forest: Array.empty()
+									})
+								)
+							);
+							return Tuple.make(
+								_mutableSet(node, nextValue, nextNodes as unknown as Forest<B>),
+								nextNodes
+							);
+						}),
+						Array.unzip,
+						Tuple.mapSecond(Array.flatten)
+					)
+				)
 			)
-		);
-	} while (Chunk.size(toHandle) > 0);
-
-	if (f !== undefined) {
-		let currentNode: Type<B> | undefined;
-		while ((currentNode = MutableList.shift(reverseNodeList)) !== undefined) {
-			/* eslint-disable-next-line functional/immutable-data, functional/prefer-readonly-type,functional/no-expression-statements */
-			(currentNode as unknown as { value: C }).value = f(
-				currentNode.value,
-				Array.map(currentNode.forest, Struct.get('value')) as unknown as ReadonlyArray<C>
-			);
-		}
-	}
-
-	return (top as unknown as Option.Some<Type<C>>).value;
-};
+		),
+		Array.flatten,
+		Array.reverse,
+		f === undefined ?
+			Function.unsafeCoerce<ReadonlyArray<Type<B>>, ReadonlyArray<Type<C>>>
+		:	Array.map((node) =>
+				_mutableSet(
+					node,
+					f(node.value, Array.map(node.forest, Struct.get('value')) as unknown as ReadonlyArray<C>),
+					node.forest as unknown as Forest<C>
+				)
+			),
+		(arr) => Array.lastNonEmpty(arr as Array.NonEmptyArray<Type<C>>)
+	);

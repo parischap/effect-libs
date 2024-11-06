@@ -100,7 +100,7 @@ describe('MTree', () => {
 }`);
 		});
 
-		const cyclicTestInput: TestInput = {
+		const cyclicalTestInput: TestInput = {
 			value: 5,
 			children: [
 				{
@@ -129,11 +129,11 @@ describe('MTree', () => {
 
 		/* eslint-disable functional/immutable-data */
 		/* @ts-expect-error object is not undefined */
-		cyclicTestInput.children[0].children[0].children.push(cyclicTestInput);
+		cyclicalTestInput.children[0].children[0].children.push(cyclicalTestInput);
 		/* eslint-enable functional/immutable-data */
 		it('nonRecursiveUnfoldAndMap with cycles', () => {
-			const testTree = MTree.nonRecursiveUnfoldAndMap(cyclicTestInput, (seed, isCyclic) =>
-				isCyclic ? Tuple.make(0, Array.empty()) : Tuple.make(seed.value, seed.children)
+			const testTree = MTree.nonRecursiveUnfoldAndMap(cyclicalTestInput, (seed, isCyclical) =>
+				isCyclical ? Tuple.make(0, Array.empty()) : Tuple.make(seed.value, seed.children)
 			);
 			expect(testTree.toString()).toBe(`{
   "value": 5,
