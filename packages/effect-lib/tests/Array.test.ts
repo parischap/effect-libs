@@ -1,6 +1,17 @@
 /* eslint-disable functional/no-expression-statements */
-import { MArray, MFunction } from '@parischap/effect-lib';
-import { Array, Equal, Number, Option, pipe, Record, Tuple } from 'effect';
+import { MArray, MFunction, MTuple } from '@parischap/effect-lib';
+import {
+	Array,
+	Equal,
+	flow,
+	Function,
+	Number,
+	Option,
+	pipe,
+	Predicate,
+	Record,
+	Tuple
+} from 'effect';
 import { describe, expect, it } from 'vitest';
 
 describe('MArray', () => {
@@ -268,6 +279,58 @@ describe('MArray', () => {
 		});
 		it('Non empty array', () => {
 			expect(pipe(Array.make(1, 2, 3), MArray.modifyLast(Number.sum(1)))).toEqual([1, 2, 4]);
+		});
+	});
+
+	describe('unfold', () => {
+		it('Without cycle', () => {
+			expect(
+				pipe(
+					0,
+					MArray.unfold(
+						flow(
+							MTuple.makeBothBy({ toFirst: Function.identity, toSecond: Number.increment }),
+							Option.liftPredicate(Predicate.tuple(Number.lessThanOrEqualTo(3), Function.constTrue))
+						)
+					)
+				)
+			).toStrictEqual([0, 1, 2, 3]);
+		});
+
+		it('With cycle', () => {
+			const cyclical = flow(
+				Option.liftPredicate(Number.lessThanOrEqualTo(2)),
+				Option.map(Number.increment),
+				Option.getOrElse(Function.constant(0))
+			);
+			expect(
+				pipe(
+					0,
+					MArray.unfold((b, isCyclical) =>
+						isCyclical ?
+							Option.none()
+						:	pipe(
+								b,
+								MTuple.makeBothBy({ toFirst: Function.identity, toSecond: cyclical }),
+								Option.some
+							)
+					)
+				)
+			).toStrictEqual([0, 1, 2, 3]);
+		});
+	});
+
+	describe('splitAtFromRight', () => {
+		it('Empty array', () => {
+			expect(pipe(Array.empty(), MArray.splitAtFromRight(3))).toStrictEqual([[], []]);
+		});
+
+		it('Any array with n within bounds', () => {
+			expect(pipe(Array.make(1, 2, 3), MArray.splitAtFromRight(2))).toStrictEqual([[1], [2, 3]]);
+		});
+
+		it('Any array with n beyond bounds', () => {
+			expect(pipe(Array.make(1, 2, 3), MArray.splitAtFromRight(5))).toStrictEqual([[], [1, 2, 3]]);
 		});
 	});
 });

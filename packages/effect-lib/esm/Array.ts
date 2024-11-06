@@ -354,3 +354,35 @@ export const modifyHead =
 	<A, B>(f: (a: A) => B) =>
 	(self: ReadonlyArray<A>): Array<A | B> =>
 		Array.modify(self, 0, f);
+
+/**
+ * Same as Array.unfold but with cycle detection and curried
+ *
+ * @since 0.5.0
+ * @category Constructors
+ */
+export const unfold =
+	<B, A>(f: (b: B, isCyclical: boolean) => Option.Option<readonly [A, B]>) =>
+	(b: B): Array<A> => {
+		if (MTypes.isOneArgFunction(f)) return Array.unfold(b, f);
+		const knownBs = Array.empty<B>();
+		const internalF = (b: B) => {
+			const isCyclical = Array.contains(knownBs, b);
+			/* eslint-disable-next-line functional/no-expression-statements, functional/immutable-data */
+			knownBs.push(b);
+			return f(b, isCyclical);
+		};
+		return Array.unfold(b, internalF);
+	};
+
+/**
+ * Splits an `Iterable` into two segments, with the last segment containing a maximum of `n`
+ * elements. The value of `n` can be `0`.
+ *
+ * @since 0.5.0
+ * @category Utils
+ */
+export const splitAtFromRight =
+	(n: number) =>
+	<A>(self: ReadonlyArray<A>): [beforeIndex: Array<A>, fromIndex: Array<A>] =>
+		Array.splitAt(self, self.length - n);
