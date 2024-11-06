@@ -74,7 +74,7 @@ namespace ValueContainer {
 	export const has = (u: unknown): u is Type<unknown> => Predicate.hasProperty(u, TypeId);
 
 	/**
-	 * Equivalence for the value property
+	 * Returns an equivalence based on an equivalence of the value property
 	 *
 	 * @since 0.0.6 Equivalence
 	 */
