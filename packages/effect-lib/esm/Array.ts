@@ -315,7 +315,7 @@ export const unsafeGet =
  * @category Utils
  */
 export const modifyInit =
-	<S extends Readonly<MTypes.AnyArray>, B>(f: (a: Array.ReadonlyArray.Infer<S>, i: number) => B) =>
+	<S extends MTypes.AnyReadonlyArray, B>(f: (a: Array.ReadonlyArray.Infer<S>, i: number) => B) =>
 	(self: S): Array.ReadonlyArray.With<S, B> =>
 		Array.map(self, (elem, i) => (i < self.length - 1 ? f(elem, i) : elem));
 
@@ -327,7 +327,7 @@ export const modifyInit =
  * @category Utils
  */
 export const modifyTail =
-	<S extends Readonly<MTypes.AnyArray>, B>(f: (a: Array.ReadonlyArray.Infer<S>, i: number) => B) =>
+	<S extends MTypes.AnyReadonlyArray, B>(f: (a: Array.ReadonlyArray.Infer<S>, i: number) => B) =>
 	(self: S): Array.ReadonlyArray.With<S, B> =>
 		Array.map(self, (elem, i) => (i > 0 ? f(elem, i) : elem));
 
@@ -362,17 +362,17 @@ export const modifyHead =
  * @category Constructors
  */
 export const unfold =
-	<B, A>(f: (b: B, isCyclical: boolean) => Option.Option<readonly [A, B]>) =>
-	(b: B): Array<A> => {
-		if (MTypes.isOneArgFunction(f)) return Array.unfold(b, f);
-		const knownBs = Array.empty<B>();
-		const internalF = (b: B) => {
-			const isCyclical = Array.contains(knownBs, b);
+	<A, B>(f: (a: A, isCyclical: boolean) => Option.Option<readonly [B, A]>) =>
+	(a: A): Array<B> => {
+		if (MTypes.isOneArgFunction(f)) return Array.unfold(a, f);
+		const knownBs = Array.empty<A>();
+		const internalF = (a: A) => {
+			const isCyclical = Array.contains(knownBs, a);
 			/* eslint-disable-next-line functional/no-expression-statements, functional/immutable-data */
-			knownBs.push(b);
-			return f(b, isCyclical);
+			knownBs.push(a);
+			return f(a, isCyclical);
 		};
-		return Array.unfold(b, internalF);
+		return Array.unfold(a, internalF);
 	};
 
 /**

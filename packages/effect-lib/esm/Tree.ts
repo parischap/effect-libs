@@ -120,17 +120,18 @@ export type Infer<T extends Type<unknown>> = T extends Type<infer A> ? A : never
  * @since 0.0.6
  * @category Constructors
  */
-export const unfoldTree = <B, A>(
-	seed: B,
-	/* eslint-disable-next-line functional/prefer-readonly-type */
-	f: (seed: B) => [nextValue: A, nextSeeds: ReadonlyArray<B>]
-): Type<A> =>
-	pipe(seed, f, ([nextValue, nextSeeds]) =>
-		_make({
-			value: nextValue,
-			forest: unfoldForest(nextSeeds, f)
-		})
-	);
+export const unfoldTree =
+	<B, A>(
+		/* eslint-disable-next-line functional/prefer-readonly-type */
+		f: (seed: B) => [nextValue: A, nextSeeds: ReadonlyArray<B>]
+	) =>
+	(seed: B): Type<A> =>
+		pipe(seed, f, ([nextValue, nextSeeds]) =>
+			_make({
+				value: nextValue,
+				forest: pipe(nextSeeds, unfoldForest(f))
+			})
+		);
 
 /**
  * Builds a (possibly infinite) forest from a list of seed values.
@@ -138,11 +139,13 @@ export const unfoldTree = <B, A>(
  * @since 0.0.6
  * @category Constructors
  */
-export const unfoldForest = <B, A>(
-	seeds: ReadonlyArray<B>,
-	/* eslint-disable-next-line functional/prefer-readonly-type */
-	f: (seed: B) => [nextValue: A, nextSeeds: ReadonlyArray<B>]
-): Forest<A> => Array.map(seeds, (seed) => unfoldTree(seed, f));
+export const unfoldForest =
+	<B, A>(
+		/* eslint-disable-next-line functional/prefer-readonly-type */
+		f: (seed: B) => [nextValue: A, nextSeeds: ReadonlyArray<B>]
+	) =>
+	(seeds: ReadonlyArray<B>): Forest<A> =>
+		Array.map(seeds, unfoldTree(f));
 
 /**
  * Fold a tree into a "summary" value in bottom-up order.
@@ -339,62 +342,66 @@ const _mutableSet = <A>(self: Type<unknown>, value: A, forest: Forest<A>): Type<
  * @since 0.0.6
  * @category Constructors
  */
-export const nonRecursiveUnfoldAndMap = <A, B, C = B>(
-	seed: A,
-	/* eslint-disable-next-line functional/prefer-readonly-type */
-	unfold: (seed: A, isCyclical: boolean) => [nextValue: B, nextSeeds: ReadonlyArray<A>],
-	f?: (value: B, children: ReadonlyArray<C>) => C
-): Type<C> =>
-	pipe(
-		_make({
-			value: Array.of(seed),
-			forest: Array.empty()
-		}),
-		Array.of,
-		MArray.unfold<Forest<Array.NonEmptyReadonlyArray<A>>, Forest<B>>(
-			flow(
-				Option.liftPredicate(Array.isNonEmptyReadonlyArray),
-				Option.map(
-					flow(
-						Array.map((node) => {
-							const predecessors = node.value;
-							const currentSeed = Array.lastNonEmpty(predecessors);
-							const isCyclical = pipe(
-								predecessors,
-								Array.initNonEmpty,
-								Array.contains(currentSeed)
-							);
-							const [nextValue, nextSeeds] = unfold(currentSeed, isCyclical);
-							const nextNodes = pipe(
-								nextSeeds,
-								Array.map((seed) =>
-									_make({
-										value: Array.append(predecessors, seed),
-										forest: Array.empty()
-									})
-								)
-							);
-							return Tuple.make(
-								_mutableSet(node, nextValue, nextNodes as unknown as Forest<B>),
-								nextNodes
-							);
-						}),
-						Array.unzip,
-						Tuple.mapSecond(Array.flatten)
+export const nonRecursiveUnfoldAndMap =
+	<A, B, C = B>(
+		/* eslint-disable-next-line functional/prefer-readonly-type */
+		unfold: (seed: A, isCyclical: boolean) => [nextValue: B, nextSeeds: ReadonlyArray<A>],
+		f?: (value: B, children: ReadonlyArray<C>) => C
+	) =>
+	(seed: A): Type<C> =>
+		pipe(
+			_make({
+				value: Array.of(seed),
+				forest: Array.empty()
+			}),
+			Array.of,
+			MArray.unfold<Forest<Array.NonEmptyReadonlyArray<A>>, Forest<B>>(
+				flow(
+					Option.liftPredicate(Array.isNonEmptyReadonlyArray),
+					Option.map(
+						flow(
+							Array.map((node) => {
+								const predecessors = node.value;
+								const currentSeed = Array.lastNonEmpty(predecessors);
+								const isCyclical = pipe(
+									predecessors,
+									Array.initNonEmpty,
+									Array.contains(currentSeed)
+								);
+								const [nextValue, nextSeeds] = unfold(currentSeed, isCyclical);
+								const nextNodes = pipe(
+									nextSeeds,
+									Array.map((seed) =>
+										_make({
+											value: Array.append(predecessors, seed),
+											forest: Array.empty()
+										})
+									)
+								);
+								return Tuple.make(
+									_mutableSet(node, nextValue, nextNodes as unknown as Forest<B>),
+									nextNodes
+								);
+							}),
+							Array.unzip,
+							Tuple.mapSecond(Array.flatten)
+						)
 					)
 				)
-			)
-		),
-		Array.flatten,
-		Array.reverse,
-		f === undefined ?
-			Function.unsafeCoerce<ReadonlyArray<Type<B>>, ReadonlyArray<Type<C>>>
-		:	Array.map((node) =>
-				_mutableSet(
-					node,
-					f(node.value, Array.map(node.forest, Struct.get('value')) as unknown as ReadonlyArray<C>),
-					node.forest as unknown as Forest<C>
-				)
 			),
-		(arr) => Array.lastNonEmpty(arr as Array.NonEmptyArray<Type<C>>)
-	);
+			Array.flatten,
+			Array.reverse,
+			f === undefined ?
+				Function.unsafeCoerce<ReadonlyArray<Type<B>>, ReadonlyArray<Type<C>>>
+			:	Array.map((node) =>
+					_mutableSet(
+						node,
+						f(
+							node.value,
+							Array.map(node.forest, Struct.get('value')) as unknown as ReadonlyArray<C>
+						),
+						node.forest as unknown as Forest<C>
+					)
+				),
+			(arr) => Array.lastNonEmpty(arr as Array.NonEmptyArray<Type<C>>)
+		);

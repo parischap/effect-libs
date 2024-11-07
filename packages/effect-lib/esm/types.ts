@@ -4,7 +4,7 @@
  * @since 0.0.6
  */
 
-import { Array, Predicate } from 'effect';
+import { Predicate } from 'effect';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- Unknown or never don't work as well as any when it comes to inference because any is both at the top and bottom of the tree type */
 
@@ -20,22 +20,20 @@ export interface AnyRecord {
 }
 
 /**
- * Type created to avoid eslint-plugin-functional errors that expect ReadonlyArrays in function
- * returns
- *
- * @since 0.0.6
- * @category Models
- */
-/* eslint-disable-next-line functional/prefer-readonly-type */
-export type ReturnArray<out T> = Array<T>;
-
-/**
  * Type that represents an array
  *
  * @since 0.0.6
  * @category Models
  */
-export type AnyArray = ReturnArray<any>;
+export interface AnyArray extends Array<any> {}
+
+/**
+ * Type that represents a ReadonlyArray
+ *
+ * @since 0.5.0
+ * @category Models
+ */
+export interface AnyReadonlyArray extends ReadonlyArray<any> {}
 
 /**
  * Type that represents a primitive except `null` and `undefined`
@@ -69,7 +67,7 @@ export type Unknown = Primitive | AnyRecord;
  * @category Models
  */
 export interface AnyFunction {
-	(...a: ReadonlyArray<any>): any;
+	(...args: ReadonlyArray<any>): any;
 }
 
 /**
@@ -201,6 +199,15 @@ export type Data<T extends AnyRecord> = {
 };
 
 /**
+ * Utility type that removes all private, symbolic and toString, toJSON keys from a type and makes
+ * all remaining properties optional
+ *
+ * @since 0.0.6
+ * @category Utility types
+ */
+export type PartialData<T extends AnyRecord> = Partial<Data<T>>;
+
+/**
  * Utility type that removes all data from a type
  *
  * @since 0.0.6
@@ -213,6 +220,15 @@ export type Proto<T extends AnyRecord> = {
 		k
 	:	never]: T[k];
 };
+
+/**
+ * Utility type that transforms a functions with several arguments into a function with one argument
+ *
+ * @since 0.5.0
+ * @category Utility types
+ */
+export type toOneArgFunction<F extends AnyFunction> =
+	F extends () => any ? never : (arg1: Parameters<F>[0]) => ReturnType<F>;
 
 /**
  * Constructs an object with prototype `proto` and data `data`
@@ -234,13 +250,17 @@ export const objectFromDataAndProto = <P extends AnyRecord, D extends AnyRecord>
 export const objectFromData = <D extends AnyRecord>(data: D): D => Object.assign(data) as D;
 
 /**
- * Utility type that changes the type of the unique parameter of a OneArgFunction
+ * Utility type that changes the type of the unique parameter of a OneArgFunction to `A` when
+ * possible
  *
  * @since 0.5.0
  * @category Utility types
  */
 export type WithArgType<F, A> =
-	F extends Predicate.Refinement<_, infer R> ? Predicate.Refinement<A, R>
+	F extends Predicate.Refinement<infer _, infer R> ?
+		R extends A ?
+			Predicate.Refinement<A, R>
+		:	F
 	: F extends OneArgFunction<any, infer R> ? OneArgFunction<A, R>
 	: F;
 
@@ -248,18 +268,20 @@ export type WithArgType<F, A> =
  * Utility type that removes all private, symbolic and toString, toJSON keys from a type and makes
  * all remaining properties optional
  *
- * @since 0.0.6
+ * @since 0.5.0
  * @category Utility types
  */
-export type PartialData<T extends AnyRecord> = Partial<Data<T>>;
+/*export type ToPredicates<R extends AnyRecord> = {
+	readonly [k in keyof Data<R>]: Predicate.Predicate<R[k]>;
+};*/
 
 /**
- * Utility type that creates an intersection of all types in a tuple
+ * Utility type that creates an intersection of all types in a tuple/record
  *
  * @since 0.0.6
  * @category Utility types
  */
-export type TupleToIntersection<T extends Readonly<AnyArray>> =
+export type TupleToIntersection<T extends AnyRecord> =
 	{
 		readonly [K in keyof T]: (x: T[K]) => void;
 	} extends (
@@ -272,7 +294,7 @@ export type TupleToIntersection<T extends Readonly<AnyArray>> =
 
 type ArrayType<T> = Extract<
 	true extends T & false ? AnyArray
-	: T extends Readonly<AnyArray> ? T
+	: T extends AnyReadonlyArray ? T
 	: /* eslint-disable functional/prefer-readonly-type */ Array<unknown> /* eslint-enable functional/prefer-readonly-type */,
 	T
 >;
@@ -292,7 +314,7 @@ export const isArray = <T>(arg: T): arg is ArrayType<T> => Array.isArray(arg);
  * @since 0.0.6
  * @category Guards
  */
-export const isString = Predicate.isString;
+export const isString = (input: unknown): input is string => typeof input === 'string';
 
 /**
  * From `unknown` to `number`
@@ -300,7 +322,7 @@ export const isString = Predicate.isString;
  * @since 0.0.6
  * @category Guards
  */
-export const isNumber = Predicate.isNumber;
+export const isNumber = (input: unknown): input is number => typeof input === 'number';
 
 /**
  * From `unknown` to `bigint`
@@ -308,7 +330,7 @@ export const isNumber = Predicate.isNumber;
  * @since 0.0.6
  * @category Guards
  */
-export const isBigInt = Predicate.isBigInt;
+export const isBigInt = (input: unknown): input is bigint => typeof input === 'bigint';
 
 /**
  * From `unknown` to `boolean`
@@ -316,7 +338,7 @@ export const isBigInt = Predicate.isBigInt;
  * @since 0.0.6
  * @category Guards
  */
-export const isBoolean = Predicate.isBoolean;
+export const isBoolean = (input: unknown): input is boolean => typeof input === 'boolean';
 
 /**
  * From `unknown` to `symbol`
@@ -324,7 +346,7 @@ export const isBoolean = Predicate.isBoolean;
  * @since 0.0.6
  * @category Guards
  */
-export const isSymbol = Predicate.isSymbol;
+export const isSymbol = (input: unknown): input is symbol => typeof input === 'symbol';
 
 /**
  * From `unknown` to `undefined`
@@ -332,7 +354,7 @@ export const isSymbol = Predicate.isSymbol;
  * @since 0.0.6
  * @category Guards
  */
-export const isUndefined = Predicate.isUndefined;
+export const isUndefined = (input: unknown): input is undefined => input === undefined;
 
 /**
  * From a type `T` to the same type `T` without `undefined`
@@ -340,7 +362,7 @@ export const isUndefined = Predicate.isUndefined;
  * @since 0.0.6
  * @category Guards
  */
-export const isNotUndefined = Predicate.isNotUndefined;
+export const isNotUndefined = <A>(input: A): input is Exclude<A, undefined> => input !== undefined;
 
 /**
  * From a type `T` to `null` or `undefined` depending on what is in T
@@ -348,7 +370,8 @@ export const isNotUndefined = Predicate.isNotUndefined;
  * @since 0.0.6
  * @category Guards
  */
-export const isNullable = Predicate.isNullable;
+export const isNullable = <A>(input: A): input is Extract<A, null | undefined> =>
+	input === null || input === undefined;
 
 /**
  * From a type `T` to the same type `T` without `null` and `undefined`
@@ -356,7 +379,8 @@ export const isNullable = Predicate.isNullable;
  * @since 0.0.6
  * @category Guards
  */
-export const isNotNullable = Predicate.isNotNullable;
+export const isNotNullable = <A>(input: A): input is NonNullable<A> =>
+	input !== null && input !== undefined;
 
 /**
  * From `unknown` to `null`
@@ -364,7 +388,7 @@ export const isNotNullable = Predicate.isNotNullable;
  * @since 0.0.6
  * @category Guards
  */
-export const isNull = Predicate.isNull;
+export const isNull = (input: unknown): input is null => input === null;
 
 /**
  * From a type `T` to the same type `T` without `null`
@@ -372,7 +396,7 @@ export const isNull = Predicate.isNull;
  * @since 0.0.6
  * @category Guards
  */
-export const isNotNull = Predicate.isNotNull;
+export const isNotNull = <A>(input: A): input is Exclude<A, null> => input !== null;
 
 /**
  * From `unknown` to `AnyFunction`
@@ -383,22 +407,13 @@ export const isNotNull = Predicate.isNotNull;
 export const isFunction = (u: unknown): u is AnyFunction => typeof u === 'function';
 
 /**
- * From `unknown` to any `OneArgFunction`
- *
- * @since 0.0.6
- * @category Guards
- */
-export const isOneArgFunction = (u: unknown): u is OneArgFunction<any, any> =>
-	isFunction(u) && u.length > 0;
-
-/**
  * From `unknown` to `AnyRecord`
  *
  * @since 0.0.6
  * @category Guards
  */
 export const isRecord = (u: unknown): u is AnyRecord =>
-	['object', 'function'].includes(typeof u) && u !== null;
+	u !== null && ['object', 'function'].includes(typeof u);
 
 /**
  * From `unknown` to `Primitive`
@@ -406,10 +421,8 @@ export const isRecord = (u: unknown): u is AnyRecord =>
  * @since 0.0.6
  * @category Guards
  */
-export const isPrimitive = (u: unknown): u is Primitive => {
-	const typeOfU = typeof u;
-	return (typeOfU !== 'object' || u === null) && typeOfU !== 'function';
-};
+export const isPrimitive = (u: unknown): u is Primitive =>
+	u === null || !['object', 'function'].includes(typeof u);
 
 /**
  * From `unknown` to `Errorish`
@@ -455,6 +468,52 @@ export const isOverTwo = <A>(u: ReadonlyArray<A>): u is OverTwo<A> => u.length >
  * @category Guards
  */
 export const isSingleton = <A>(u: ReadonlyArray<A>): u is Singleton<A> => u.length === 1;
+
+/**
+ * From `F` to `toOneArgFunction<F>`
+ *
+ * @since 0.0.6
+ * @category Guards
+ */
+export const isOneArgFunction = <F extends AnyFunction>(
+	f: F | toOneArgFunction<F>
+): f is toOneArgFunction<F> => f.length === 1;
+
+/**
+ * Possible categories of a Javscript value
+ *
+ * @since 0.5.0
+ * @category Models
+ */
+export enum Category {
+	Primitive = 0,
+	NonNullObject = 1,
+	Array = 2,
+	Function = 3
+}
+
+/**
+ * Namesapce for the possible categories of a Javscript value
+ *
+ * @since 0.5.0
+ * @category Models
+ */
+export namespace Category {
+	export const fromValue = (u: unknown): Category => {
+		switch (typeof u) {
+			case 'function':
+				return Category.Function;
+			case 'object':
+				return (
+					u === null ? Category.Primitive
+					: Array.isArray(u) ? Category.Array
+					: Category.NonNullObject
+				);
+			default:
+				return Category.Primitive;
+		}
+	};
+}
 
 /**
  * A value with a covariant type
