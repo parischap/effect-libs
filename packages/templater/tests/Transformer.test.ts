@@ -1,6 +1,6 @@
 /* eslint-disable functional/no-expression-statements */
 import { MBrand } from '@parischap/effect-lib';
-import { Transformer } from '@parischap/effect-templater';
+import { Transformer } from '@parischap/templater';
 import { Either, Function, HashMap, pipe } from 'effect';
 import { describe, expect, it } from 'vitest';
 

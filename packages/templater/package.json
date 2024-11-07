@@ -5,7 +5,7 @@
 		"effect": "^3.9.1"
 	},
 	"devDependencies": {
-		"@parischap/effect-templater": "link:."
+		"@parischap/templater": "link:."
 	},
 	"publishConfig": {
 		"peerDependencies": {
@@ -58,7 +58,7 @@
 		"typescript",
 		"functional-programming"
 	],
-	"name": "@parischap-dev/effect-templater",
+	"name": "@parischap-dev/templater",
 	"type": "module",
 	"sideEffects": [],
 	"author": "Jérôme MARTIN",
@@ -66,12 +66,12 @@
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/parischap/effect-libs.git",
-		"directory": "packages/effect-templater"
+		"directory": "packages/templater"
 	},
 	"bugs": {
 		"url": "https://github.com/parischap/effect-libs/issues"
 	},
-	"homepage": "https://github.com/parischap/effect-libs/tree/master/packages/effect-templater",
+	"homepage": "https://github.com/parischap/effect-libs/tree/master/packages/templater",
 	"module": "./esm/index.js",
 	"exports": {
 		".": {

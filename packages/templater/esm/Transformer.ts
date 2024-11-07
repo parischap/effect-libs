@@ -42,7 +42,7 @@ import {
 } from 'effect';
 import * as Error from './Error.js';
 
-const moduleTag = '@parischap/effect-templater/Transformer/';
+const moduleTag = '@parischap/templater/Transformer/';
 const _moduleTag = moduleTag;
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;

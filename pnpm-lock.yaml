@@ -117,14 +117,14 @@ importers:
         specifier: latest
         version: 2.1.2(@types/node@22.7.5)(terser@5.34.1)
 
-  packages/effect-date:
+  packages/date:
     dependencies:
       '@parischap/effect-lib':
         specifier: workspace:@parischap-dev/effect-lib@*
         version: link:../effect-lib
-      '@parischap/effect-templater':
-        specifier: workspace:@parischap-dev/effect-templater@*
-        version: link:../effect-templater
+      '@parischap/templater':
+        specifier: workspace:@parischap-dev/templater@*
+        version: link:../templater
       effect:
         specifier: ^3.9.1
         version: 3.9.1
@@ -150,19 +150,6 @@ importers:
       effect:
         specifier: ^3.9.1
         version: 3.9.1
-
-  packages/effect-templater:
-    dependencies:
-      '@parischap/effect-lib':
-        specifier: workspace:@parischap-dev/effect-lib@*
-        version: link:../effect-lib
-      effect:
-        specifier: ^3.9.1
-        version: 3.9.1
-    devDependencies:
-      '@parischap/effect-templater':
-        specifier: link:.
-        version: 'link:'
 
   packages/node-effect-lib:
     dependencies:
@@ -220,6 +207,19 @@ importers:
       effect:
         specifier: ^3.9.1
         version: 3.9.1
+
+  packages/templater:
+    dependencies:
+      '@parischap/effect-lib':
+        specifier: workspace:@parischap-dev/effect-lib@*
+        version: link:../effect-lib
+      effect:
+        specifier: ^3.9.1
+        version: 3.9.1
+    devDependencies:
+      '@parischap/templater':
+        specifier: link:.
+        version: 'link:'
 
 packages:
 

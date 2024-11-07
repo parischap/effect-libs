@@ -1,4 +1,4 @@
-import { Transformer } from '@parischap/effect-templater';
+import { Transformer } from '@parischap/templater';
 import { pipe } from 'effect';
 
 const unsignedInt = Transformer.unsignedInt('.');

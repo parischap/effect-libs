@@ -27,7 +27,7 @@ import {
 } from 'effect';
 import { flow } from 'effect/Function';
 
-const moduleTag = '@parischap/effect-templater/Templater/';
+const moduleTag = '@parischap/templater/Templater/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
 

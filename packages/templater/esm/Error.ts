@@ -6,7 +6,7 @@
 
 import { Data } from 'effect';
 
-const moduleTag = '@parischap/effect-templater/Error/';
+const moduleTag = '@parischap/templater/Error/';
 
 /**
  * FunctionPort signals an error that occurs while Effectifying a function
