@@ -21,15 +21,17 @@ const Descriptor = MFunction.make<
 	Descriptor<[paramIndex: number, message: string], MergedToken.Type>
 >;
 
-export type DescriptorWithParamsAvailability = Descriptor<
-	Errors.InvalidDateString,
-	Option.Option<MergedToken.JoinedRecordWithPositions>
->;
+export interface DescriptorWithParamsAvailability
+	extends Descriptor<
+		Errors.InvalidDateString,
+		Option.Option<MergedToken.JoinedRecordWithPositions>
+	> {}
 
-export type DescriptorWithAllParamsAvailable = Descriptor<
-	Errors.InvalidDateString,
-	Option.Some<MergedToken.JoinedRecordWithPositions>
->;
+export interface DescriptorWithAllParamsAvailable
+	extends Descriptor<
+		Errors.InvalidDateString,
+		Option.Some<MergedToken.JoinedRecordWithPositions>
+	> {}
 
 const getParam = (
 	paramIndex: number,

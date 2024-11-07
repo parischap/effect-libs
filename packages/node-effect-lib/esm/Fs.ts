@@ -54,13 +54,13 @@ export interface WithStat<out P extends MFs.Path | MFs.Name = MFs.Path | MFs.Nam
 type ExpandedWithStat<P extends MFs.Path | MFs.Name> = P extends unknown ? WithStat<P> : never;
 
 /** @category Models */
-export type FilenameWithStat = WithStat<MFs.Filename>;
+export interface FilenameWithStat extends WithStat<MFs.Filename> {}
 /** @category Models */
-export type FoldernameWithStat = WithStat<MFs.Foldername>;
+export interface FoldernameWithStat extends WithStat<MFs.Foldername> {}
 /** @category Models */
-export type FilepathWithStat = WithStat<MFs.Filepath>;
+export interface FilepathWithStat extends WithStat<MFs.Filepath> {}
 /** @category Models */
-export type FolderpathWithStat = WithStat<MFs.Folderpath>;
+export interface FolderpathWithStat extends WithStat<MFs.Folderpath> {}
 
 const makeExpandedWithStat = <P extends MFs.Path | MFs.Name>(
 	params: MTypes.Data<WithStat<P>>
