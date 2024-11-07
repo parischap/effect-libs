@@ -3,7 +3,8 @@
  *
  * Type that represents a value in its stringification context. A Value instance is created for the
  * value to stringify and, if that value is a record, for each property and nested property of that
- * record.
+ * record. value to stringify and, if that value is a record, for each property and nested property
+ * of that record.
  *
  * Value's can be ordered by ValueOrder instances (see ValueOrder.ts)
  *
@@ -44,7 +45,6 @@ import {
 import * as FormattedString from './FormattedString.js';
 import type * as Options from './Options.js';
 import type * as StringifiedValue from './StringifiedValue.js';
-import type * as StringifiedValues from './StringifiedValues.js';
 
 const moduleTag = '@parischap/pretty-print/Value/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
@@ -69,12 +69,15 @@ export interface Type<out V extends MTypes.Unknown>
 
 	/**
 	 * Depth of `value` in the value to stringify: number of nested arrays and objects to open to
-	 * reach `value`.
+	 * reach `value`. Depth of `value` in the value to stringify: number of nested arrays and objects
+	 * to open to reach `value`.
 	 */
 	readonly depth: number;
+
 	/**
 	 * Depth of `value` in the prototypal chain of the value to stringify: number of prototypes to
-	 * open to reach `value`
+	 * open to reach `value` Depth of `value` in the prototypal chain of the value to stringify:
+	 * number of prototypes to open to reach `value`
 	 */
 	readonly protoDepth: number;
 
@@ -288,6 +291,7 @@ export const setValue = <V extends MTypes.Unknown>(
  *
  * @since 0.0.1
  * @category Utils
+ * @category Utils
  */
 export const setAsRecordKey = (
 	key: string | symbol,
@@ -366,6 +370,7 @@ export const incProtoDepth: <V extends MTypes.Unknown>(self: Type<V>) => Type<V>
  * not null. Otherwise, returns a `none`.
  *
  * @since 0.0.1
+ * @category Utils
  * @category Utils
  */
 export const toProto = (self: RecordType): Type<MTypes.AnyRecord | null> =>
