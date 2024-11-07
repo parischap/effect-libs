@@ -25,7 +25,7 @@ import {
 	Predicate,
 	Struct
 } from 'effect';
-import type * as Value from './Value.js';
+import * as Value from './Value.js';
 
 const moduleTag = '@parischap/pretty-print/PropertyFilter/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
@@ -153,7 +153,7 @@ export const keepAll: Type = _make({ name: 'keepAll', action: () => Function.ide
  */
 export const removeNonFunctions: Type = _make({
 	name: 'removeNonFunctions',
-	action: () => (props: Value.Properties) => Array.filter(props, Struct.get('hasFunctionValue'))
+	action: () => (props: Value.Properties) => Array.filter(props, Value.isRecordWithFunctionValue)
 });
 
 /**
@@ -165,7 +165,7 @@ export const removeNonFunctions: Type = _make({
 export const removeFunctions: Type = _make({
 	name: 'removeFunctions',
 	action: () => (props: Value.Properties) =>
-		Array.filter(props, Predicate.not(Struct.get('hasFunctionValue')))
+		Array.filter(props, Predicate.not(Value.isRecordWithFunctionValue))
 });
 
 /**

@@ -10,7 +10,8 @@
  * @since 0.0.1
  */
 
-import { Order, Struct } from 'effect';
+import { MFunction, MTypes } from '@parischap/effect-lib';
+import { Order, Predicate, Struct } from 'effect';
 import type * as Value from './Value.js';
 
 /**
@@ -20,7 +21,7 @@ import type * as Value from './Value.js';
  * @since 0.0.1
  * @category Models
  */
-export type Type = Order.Order<Value.All>;
+export interface Type extends Order.Order<Value.All> {}
 
 /**
  * `ValueOrder` instance based on `prototypalDepth`, lowest depth first
@@ -44,7 +45,10 @@ export const byStringKey: Type = Order.mapInput(Order.string, Struct.get('string
  * @since 0.0.1
  * @category Instances
  */
-export const byCallability: Type = Order.mapInput(Order.boolean, Struct.get('hasFunctionValue'));
+export const byCallability: Type = Order.mapInput(
+	Order.boolean,
+	Predicate.struct({ valueCategory: MFunction.strictEquals(MTypes.Category.Function) })
+);
 
 /**
  * `ValueOrder` instance based on the type of the key of the underlying value property (symbolic

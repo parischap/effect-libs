@@ -40,8 +40,9 @@ export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pip
 	readonly name: string;
 
 	/**
-	 * Maximum number of nested records that will be printed. A value inferior or equal to 0 means
-	 * that only primitive values are shown.
+	 * Maximum number of nested records that will be opened. A value inferior or equal to 0 means that
+	 * only primitive values of the value to stringify are shown. The others are replaced by
+	 * `arrayLabel`, `functionLabel` or `objectLabel`.
 	 *
 	 * @since 0.0.1
 	 */

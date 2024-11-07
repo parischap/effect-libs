@@ -31,7 +31,7 @@ import type * as ColorSet from './ColorSet.js';
 import * as FormattedString from './FormattedString.js';
 import * as PropertyMarks from './PropertyMarks.js';
 import type * as StringifiedValue from './StringifiedValue.js';
-import type * as Value from './Value.js';
+import * as Value from './Value.js';
 
 const moduleTag = '@parischap/pretty-print/PropertyFormatter/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
@@ -151,7 +151,8 @@ export const keyAndValue =
 						onNone: () => stringified,
 						onSome: flow(
 							FormattedString.makeWith(
-								value.hasFunctionValue ? colorSet.propertyKeyColorerWhenFunctionValue
+								Value.isRecordWithFunctionValue(value) ?
+									colorSet.propertyKeyColorerWhenFunctionValue
 								: value.hasSymbolicKey ? colorSet.propertyKeyColorerWhenSymbol
 								: colorSet.propertyKeyColorerWhenOther
 							),
