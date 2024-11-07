@@ -7,7 +7,7 @@ import * as Token from './Token.js';
 
 import { Array, Either, Number, Option, Record, String, Tuple, pipe } from 'effect';
 
-//const moduleTag = '@parischap/effect-date/parseDateString/';
+//const moduleTag = '@parischap/date/parseDateString/';
 export type DefaultOption = 'zeroValues' | 'nowFragments' | 'none';
 
 const defaultDate = function (defaultOption: DefaultOption) {

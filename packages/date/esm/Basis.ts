@@ -1,6 +1,6 @@
-import * as Errors from '@parischap/effect-date/Errors';
-import * as MergedBasis from '@parischap/effect-date/MergedBasis';
-import * as MergedToken from '@parischap/effect-date/MergedToken';
+import * as Errors from '@parischap/date/Errors';
+import * as MergedBasis from '@parischap/date/MergedBasis';
+import * as MergedToken from '@parischap/date/MergedToken';
 import { MArray, MFunction } from '@parischap/effect-lib';
 import { Array, Either, HashMap, Option, Record, pipe } from 'effect';
 export interface BasisFromMergedTokens<out E> {

@@ -2,10 +2,10 @@
 	"description": "A complement to the official effect library dedicated to date and time",
 	"peerDependencies": {
 		"@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
-		"@parischap/effect-templater": "workspace:@parischap-dev/effect-templater@*",
+		"@parischap/templater": "workspace:@parischap-dev/templater@*",
 		"effect": "^3.9.1"
 	},
-	"name": "@parischap-dev/effect-date",
+	"name": "@parischap-dev/date",
 	"type": "module",
 	"sideEffects": [],
 	"author": "Jérôme MARTIN",
@@ -13,12 +13,12 @@
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/parischap/effect-libs.git",
-		"directory": "packages/effect-date"
+		"directory": "packages/date"
 	},
 	"bugs": {
 		"url": "https://github.com/parischap/effect-libs/issues"
 	},
-	"homepage": "https://github.com/parischap/effect-libs/tree/master/packages/effect-date",
+	"homepage": "https://github.com/parischap/effect-libs/tree/master/packages/date",
 	"scripts": {
 		"tscheck": "tsc -b tsconfig.check.json --force ",
 		"lint": "eslint .",

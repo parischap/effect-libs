@@ -3,7 +3,7 @@ import { MBadArgumentError, MFunction } from '@parischap/effect-lib';
 import { Array, Either, Function, Number, Option, Struct, pipe } from 'effect';
 import * as Errors from './Errors.js';
 
-const moduleTag = '@parischap/effect-date/Date/';
+const moduleTag = '@parischap/date/Date/';
 
 interface MonthDescriptor {
 	readonly nbDaysInMonth: number;

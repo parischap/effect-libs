@@ -1,11 +1,11 @@
 import { MBadArgumentError, MEither, MOption } from '@parischap/effect-lib';
-import * as Templater from '@parischap/effect-templater';
+import * as Templater from '@parischap/templater';
 import { Either, Function, Option, pipe } from 'effect';
 import { apply, compose } from 'effect/Function';
 import * as Date from './Date.js';
 import * as Token from './Token.js';
 
-const moduleTag = '@parischap/effect-date/DateFormatter/';
+const moduleTag = '@parischap/date/DateFormatter/';
 
 export interface Type {
 	readonly dateTemplater: Templater.Type;

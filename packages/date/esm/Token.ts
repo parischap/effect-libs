@@ -4,7 +4,7 @@ import { Array, Either, HashMap, HashSet, Number, Record, String, Tuple, flow, p
 import { compose } from 'effect/Function';
 import * as MergedToken from './MergedToken.js';
 
-const moduleTag = '@parischap/effect-date/Token/';
+const moduleTag = '@parischap/date/Token/';
 
 export interface TokenToMergedToken {
 	(

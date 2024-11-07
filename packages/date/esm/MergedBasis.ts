@@ -1,4 +1,4 @@
-import * as utils from '@parischap/effect-date/utils';
+import * as utils from '@parischap/date/utils';
 import { MFunction } from '@parischap/effect-lib';
 import { HashMap, Record, pipe } from 'effect';
 
