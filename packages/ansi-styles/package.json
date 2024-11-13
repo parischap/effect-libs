@@ -1,0 +1,99 @@
+{
+	"description": "A simple library to format your console outputs using ANSI escape sequences defined in the Select Graphic Rendition subset (colors and other formatting sequences) ",
+	"peerDependencies": {
+		"@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
+		"effect": "^3.10.13"
+	},
+	"devDependencies": {
+		"@parischap/ansi-styles": "link:."
+	},
+	"publishConfig": {
+		"peerDependencies": {
+			"@parischap/effect-lib": "^0.4.0"
+		},
+		"main": "./cjs/index.js",
+		"types": "./dts/index.d.ts",
+		"scripts": {},
+		"exports": {
+			".": {
+				"types": "./dts/index.d.ts",
+				"import": "./esm/index.js",
+				"default": "./cjs/index.js"
+			}
+		}
+	},
+	"scripts": {
+		"examples": "vite-node examples/example1.ts",
+		"tscheck": "tsc -b tsconfig.check.json --force ",
+		"lint": "eslint .",
+		"update-config-files": "update-config-files",
+		"clean-config-files": "shx rm -rf package.json && shx rm -rf tsconfig.json",
+		"circular": "madge --extensions ts --circular --no-color --no-spinner esm",
+		"checks": "pnpm circular && pnpm lint && pnpm tscheck && pnpm test",
+		"lint-fix": "pnpm lint --fix",
+		"lint-rules": "pnpx @eslint/config-inspector",
+		"test": "vitest run",
+		"generate-types": "tsc -b tsconfig.esm.json --emitDeclarationOnly",
+		"clean-prod": "shx rm -rf dist && shx rm -rf .tsbuildinfo && shx mkdir -p dist",
+		"prodify": "prodify",
+		"publish-to-npm": "cd dist && npm publish --access=public && cd ..",
+		"install-prod": "cd dist && pnpm i && cd ..",
+		"docgen": "docgen",
+		"transpile-esm": "tsc -b tsconfig.esm.json",
+		"transpile-cjs": "babel dist/esm --plugins @babel/transform-export-namespace-from --plugins @babel/transform-modules-commonjs --out-dir dist/cjs --source-maps",
+		"transpile-annotate": "babel dist --plugins annotate-pure-calls --out-dir dist --source-maps",
+		"build": "pnpm clean-prod && pnpm transpile-esm && pnpm transpile-cjs && pnpm transpile-annotate && cross-env IS_LIBRARY=true prodify && pnpm install-prod",
+		"build-and-publish": "pnpm build && pnpm checks && pnpm publish-to-npm"
+	},
+	"keywords": [
+		"terminal",
+		"color",
+		"colour",
+		"colors",
+		"formatting",
+		"cli",
+		"console",
+		"string",
+		"ansi",
+		"style",
+		"styles",
+		"tty",
+		"formatting",
+		"rgb256",
+		"shell",
+		"xterm",
+		"log",
+		"logging",
+		"command-line",
+		"text",
+		"effect",
+		"typescript",
+		"functional-programming"
+	],
+	"name": "@parischap-dev/ansi-styles",
+	"type": "module",
+	"sideEffects": [],
+	"author": "Jérôme MARTIN",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/parischap/effect-libs.git",
+		"directory": "packages/ansi-styles"
+	},
+	"bugs": {
+		"url": "https://github.com/parischap/effect-libs/issues"
+	},
+	"homepage": "https://github.com/parischap/effect-libs/tree/master/packages/ansi-styles",
+	"module": "./esm/index.js",
+	"exports": {
+		".": {
+			"import": "./esm/index.ts"
+		}
+	},
+	"funding": [
+		{
+			"type": "ko-fi",
+			"url": "https://ko-fi.com/parischap"
+		}
+	]
+}
