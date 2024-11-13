@@ -14,7 +14,6 @@ const packageJson = merge.all([
 			...Configs.utils.makeWorkspaceDevDep('effect-lib'),
 			'@effect/platform': Configs.constants.effectPlatformVersion,
 			'@effect/platform-node': Configs.constants.effectPlatformNodeVersion,
-			'@effect/schema': Configs.constants.effectSchemaVersion,
 			effect: Configs.constants.effectVersion
 		}
 	},

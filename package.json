@@ -56,14 +56,14 @@
 		"@babel/plugin-transform-modules-commonjs": "latest",
 		"babel-plugin-annotate-pure-calls": "latest",
 		"@babel/cli": "latest",
-		"@effect/docgen": "https://github.com/parischap/docgenbuilt",
+		"@effect/docgen": "latest",
 		"prettier-plugin-jsdoc": "latest",
 		"tsx": "latest"
 	},
 	"workspaces": [
 		"packages/*"
 	],
-	"packageManager": "pnpm@9.11.0",
+	"packageManager": "pnpm@9.12.3",
 	"pnpm": {
 		"patchedDependencies": {},
 		"overrides": {

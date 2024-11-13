@@ -2,7 +2,7 @@
 	"description": "A functional library to read from (PHP sscanf equivalent) and write to (PHP sprintf equivalent) a string with type checking",
 	"peerDependencies": {
 		"@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
-		"effect": "^3.9.1"
+		"effect": "^3.10.13"
 	},
 	"devDependencies": {
 		"@parischap/templater": "link:."

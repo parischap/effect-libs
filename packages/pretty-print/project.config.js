@@ -11,6 +11,7 @@ const packageJson = merge.all([
 		description: 'A functional library to pretty-print and treeify objects',
 		peerDependencies: {
 			...Configs.utils.makeWorkspaceDevDep('effect-lib'),
+			...Configs.utils.makeWorkspaceDevDep('sgr-format'),
 			effect: Configs.constants.effectVersion
 		},
 		devDependencies: {
@@ -18,7 +19,8 @@ const packageJson = merge.all([
 		},
 		publishConfig: {
 			peerDependencies: {
-				[`${Configs.constants.scope}/effect-lib`]: '^0.4.0'
+				[`${Configs.constants.scope}/effect-lib`]: '^0.4.0',
+				[`${Configs.constants.scope}/effect-lib`]: '^0.0.1'
 			}
 		},
 		scripts: {

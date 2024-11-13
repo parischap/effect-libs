@@ -4,7 +4,7 @@
 		"@parischap/effect-lib": "^0.3.3",
 		"effect": "^3.8.4",
 		"@parischap/pretty-print": "^0.2.0",
-		"@effect/experimental": "^0.28.1"
+		"@effect/experimental": "^0.32.4"
 	},
 	"scripts": {
 		"play": "vite-node esm/index.ts",

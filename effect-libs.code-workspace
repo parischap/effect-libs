@@ -23,6 +23,9 @@
 		{
 			"path": "packages/date",
 		},
+		{
+			"path": "packages/ansi-styles",
+		},
 	],
 	"settings": {
 		"typescript.tsdk": "effect-libs\\node_modules\\typescript\\lib",

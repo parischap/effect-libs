@@ -3,7 +3,7 @@
 	"peerDependencies": {
 		"@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
 		"@parischap/templater": "workspace:@parischap-dev/templater@*",
-		"effect": "^3.9.1"
+		"effect": "^3.10.13"
 	},
 	"name": "@parischap-dev/date",
 	"type": "module",
