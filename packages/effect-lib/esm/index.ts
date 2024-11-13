@@ -2,7 +2,6 @@ export * as MArray from './Array.js';
 export * as MBrand from './Brand.js';
 export * as MCache from './Cache.js';
 export * as MChunk from './Chunk.js';
-export * as MColor from './Color.js';
 export * as MEither from './Either.js';
 export * as MFs from './Fs.js';
 export * as MFunction from './Function.js';
