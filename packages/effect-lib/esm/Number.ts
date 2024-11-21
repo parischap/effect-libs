@@ -27,8 +27,8 @@ export const unsafeIntFromString =
 		parseInt(s, radix);
 
 /**
- * Modulo - Use only with integers - Divisor must be positive. Unlike javascript remainder operator
- * (%), this function always returns a positive integer even if self is negative
+ * Modulo - Use only with integers - Unlike javascript remainder operator (%), this function always
+ * returns a positive integer even if `self` or `divisor` is negative
  *
  * @since 0.0.6
  * @category Utils
