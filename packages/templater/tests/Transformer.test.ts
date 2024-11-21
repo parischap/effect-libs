@@ -224,11 +224,11 @@ describe('Transformer', () => {
 	});
 
 	describe('Number', () => {
-		describe('Option', () => {
+		describe('Options', () => {
 			describe('Real', () => {
 				describe('standard', () => {
-					const tester = Transformer.Number.Option.toTester(
-						Transformer.Number.Option.Real.standard
+					const tester = Transformer.Number.Options.toTester(
+						Transformer.Number.Options.Real.standard
 					);
 
 					describe('Reading', () => {
@@ -295,7 +295,7 @@ describe('Transformer', () => {
 				});
 
 				describe('uk', () => {
-					const tester = Transformer.Number.Option.toTester(Transformer.Number.Option.Real.uk);
+					const tester = Transformer.Number.Options.toTester(Transformer.Number.Options.Real.uk);
 
 					describe('Reading', () => {
 						it('Empty string', () => {
@@ -353,7 +353,9 @@ describe('Transformer', () => {
 				});
 
 				describe('german', () => {
-					const tester = Transformer.Number.Option.toTester(Transformer.Number.Option.Real.german);
+					const tester = Transformer.Number.Options.toTester(
+						Transformer.Number.Options.Real.german
+					);
 
 					describe('Reading', () => {
 						it('Any floating point', () => {
@@ -363,8 +365,8 @@ describe('Transformer', () => {
 				});
 
 				describe('scientific', () => {
-					const tester = Transformer.Number.Option.toTester(
-						Transformer.Number.Option.Real.scientific
+					const tester = Transformer.Number.Options.toTester(
+						Transformer.Number.Options.Real.scientific
 					);
 
 					describe('Reading', () => {
@@ -426,8 +428,8 @@ describe('Transformer', () => {
 					});
 
 					describe('french2FractionalDigits', () => {
-						const tester = Transformer.Number.Option.toTester(
-							Transformer.Number.Option.Real.french2FractionalDigits
+						const tester = Transformer.Number.Options.toTester(
+							Transformer.Number.Options.Real.french2FractionalDigits
 						);
 
 						describe('Reading', () => {
@@ -481,7 +483,7 @@ describe('Transformer', () => {
 
 			describe('Int', () => {
 				describe('french', () => {
-					const tester = Transformer.Number.Option.toTester(Transformer.Number.Option.Int.french);
+					const tester = Transformer.Number.Options.toTester(Transformer.Number.Options.Int.french);
 
 					describe('Reading', () => {
 						it('Empty string', () => {
@@ -527,8 +529,8 @@ describe('Transformer', () => {
 				});
 
 				describe('signedFrench', () => {
-					const tester = Transformer.Number.Option.toTester(
-						Transformer.Number.Option.Int.signedFrench
+					const tester = Transformer.Number.Options.toTester(
+						Transformer.Number.Options.Int.signedFrench
 					);
 
 					describe('Reading', () => {
@@ -563,8 +565,8 @@ describe('Transformer', () => {
 				});
 
 				describe('plussedFrench', () => {
-					const tester = Transformer.Number.Option.toTester(
-						Transformer.Number.Option.Int.plussedFrench
+					const tester = Transformer.Number.Options.toTester(
+						Transformer.Number.Options.Int.plussedFrench
 					);
 
 					describe('Reading', () => {
@@ -601,8 +603,8 @@ describe('Transformer', () => {
 
 			describe('PositiveInt', () => {
 				describe('french', () => {
-					const tester = Transformer.Number.Option.toTester(
-						Transformer.Number.Option.PositiveInt.french
+					const tester = Transformer.Number.Options.toTester(
+						Transformer.Number.Options.PositiveInt.french
 					);
 
 					describe('Reading', () => {

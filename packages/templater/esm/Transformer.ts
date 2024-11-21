@@ -17,6 +17,7 @@ import {
 	MRegExp,
 	MRegExpString,
 	MString,
+	MStruct,
 	MTuple,
 	MTypes
 } from '@parischap/effect-lib';
@@ -24,7 +25,6 @@ import {
 	Array,
 	Either,
 	Number as ENumber,
-	Option as EOption,
 	Equal,
 	Equivalence,
 	String as EString,
@@ -33,6 +33,7 @@ import {
 	Hash,
 	HashMap,
 	Inspectable,
+	Option,
 	pipe,
 	Pipeable,
 	Predicate,
@@ -118,9 +119,6 @@ const proto: MTypes.Proto<Type<any>> = {
 		return Hash.cached(this, Hash.hash(this.name));
 	},
 	...MInspectable.BaseProto(moduleTag),
-	toJSON<A>(this: Type<A>) {
-		return this.name;
-	},
 	...MPipeable.BaseProto
 };
 
@@ -219,7 +217,7 @@ export const mapped = <
 				input,
 				MFunction.fIfTrue({ condition: !strictCase, f: EString.toLowerCase }),
 				MString.match(regExp),
-				EOption.map(
+				Option.map(
 					MTuple.makeBothBy({
 						toFirst: MFunction.flipDual(HashMap.unsafeGet<string, A, string>)(casedMap),
 						toSecond: flow(EString.length, Function.flip(MString.takeRightBut)(input))
@@ -353,14 +351,14 @@ export namespace Number {
 
 	/** Cache for number Transformers in different formats */
 	const _cache = MCache.make({
-		lookUp: ({ key }: { readonly key: Option.Type }) => {
+		lookUp: ({ key }: { readonly key: Options.Type }) => {
 			return pipe(
 				_make({
-					name: `number-${Option.name(key)}`,
+					name: `number-${Options.name(key)}`,
 
-					read: Option.toReader(key),
+					read: Options.toReader(key),
 
-					write: Option.toWriter(key)
+					write: Options.toWriter(key)
 				}),
 				Tuple.make,
 				Tuple.appendElement(true)
@@ -375,7 +373,7 @@ export namespace Number {
 	 * @since 0.0.1
 	 * @category Instances
 	 */
-	export const make = (options: Option.Type): Type => pipe(_cache, MCache.get(options));
+	export const make = (options: Options.Type): Type => pipe(_cache, MCache.get(options));
 
 	/**
 	 * Possible sign options
@@ -383,9 +381,9 @@ export namespace Number {
 	 * @since 0.0.1
 	 * @category Models
 	 */
-	export enum SignOption {
+	export enum SignOptions {
 		/**
-		 * No sign allowed - Negative numbers cannot be converted to a string with that option.
+		 * No sign allowed - Negative numbers cannot be converted to a string with that options.
 		 *
 		 * @since 0.0.1
 		 */
@@ -417,59 +415,59 @@ export namespace Number {
 	 * @since 0.0.1
 	 * @category Models
 	 */
-	export namespace SignOption {
+	export namespace SignOptions {
 		/**
-		 * Turns a sign option into a regular expression string
+		 * Turns a `SignOptions` into a regular expression string
 		 *
 		 * @since 0.0.1
 		 * @category Destructors
 		 */
-		export const toRegExpString: (self: SignOption) => string = flow(
+		export const toRegExpString: (self: SignOptions) => string = flow(
 			MMatch.make,
-			MMatch.whenIs(SignOption.None, () => ''),
-			MMatch.whenIs(SignOption.Mandatory, () => MRegExpString.sign),
-			MMatch.whenIs(SignOption.MinusAllowed, () => MRegExpString.optional(MRegExpString.minus)),
-			MMatch.whenIs(SignOption.Optional, () => MRegExpString.optional(MRegExpString.sign)),
+			MMatch.whenIs(SignOptions.None, () => ''),
+			MMatch.whenIs(SignOptions.Mandatory, () => MRegExpString.sign),
+			MMatch.whenIs(SignOptions.MinusAllowed, () => MRegExpString.optional(MRegExpString.minus)),
+			MMatch.whenIs(SignOptions.Optional, () => MRegExpString.optional(MRegExpString.sign)),
 			MMatch.exhaustive,
 			MRegExpString.capture
 		);
 
 		/**
-		 * Turns a sign option into a function that takes a number and returns a string representing its
-		 * sign, or an error if the sign cannot be represented with these options.
+		 * Turns a `SignOptions` into a function that takes a number and returns a string representing
+		 * its sign, or an error if the sign cannot be represented with these options.
 		 *
 		 * @since 0.0.1
 		 * @category Destructors
 		 */
 		export const toWriter: (
-			self: SignOption
+			self: SignOptions
 		) => MTypes.OneArgFunction<number, Either.Either<string, Error.Type>> = flow(
 			MMatch.make,
-			MMatch.whenIs(SignOption.None, () =>
+			MMatch.whenIs(SignOptions.None, () =>
 				flow(
 					Either.liftPredicate<number, Error.Type>(
 						ENumber.greaterThanOrEqualTo(0),
 						(input) =>
 							new Error.Type({
-								message: `Negative number '${input}' cannot be displayed with signOption 'None'`
+								message: `Negative number '${input}' cannot be displayed with 'SignOptions.None'`
 							})
 					),
 					Either.map(() => '')
 				)
 			),
-			MMatch.whenIs(SignOption.Mandatory, () =>
+			MMatch.whenIs(SignOptions.Mandatory, () =>
 				flow(
-					EOption.liftPredicate(ENumber.greaterThanOrEqualTo(0)),
-					EOption.map(() => '+'),
-					EOption.getOrElse(() => '-'),
+					Option.liftPredicate(ENumber.greaterThanOrEqualTo(0)),
+					Option.map(() => '+'),
+					Option.getOrElse(() => '-'),
 					Either.right
 				)
 			),
-			MMatch.whenIsOr(SignOption.MinusAllowed, SignOption.Optional, () =>
+			MMatch.whenIsOr(SignOptions.MinusAllowed, SignOptions.Optional, () =>
 				flow(
-					EOption.liftPredicate(ENumber.greaterThanOrEqualTo(0)),
-					EOption.map(() => ''),
-					EOption.getOrElse(() => '-'),
+					Option.liftPredicate(ENumber.greaterThanOrEqualTo(0)),
+					Option.map(() => ''),
+					Option.getOrElse(() => '-'),
 					Either.right
 				)
 			),
@@ -477,17 +475,17 @@ export namespace Number {
 		);
 
 		/**
-		 * Turns a sign option into its name
+		 * Turns a `SignOptions` into its name
 		 *
 		 * @since 0.0.1
 		 * @category Destructors
 		 */
-		export const name: (self: SignOption) => string = flow(
+		export const name: (self: SignOptions) => string = flow(
 			MMatch.make,
-			MMatch.whenIs(SignOption.None, () => 'no sign'),
-			MMatch.whenIs(SignOption.Mandatory, () => 'mandatory sign'),
-			MMatch.whenIs(SignOption.MinusAllowed, () => 'optional - sign'),
-			MMatch.whenIs(SignOption.Optional, () => 'optional +/- sign'),
+			MMatch.whenIs(SignOptions.None, () => 'no sign'),
+			MMatch.whenIs(SignOptions.Mandatory, () => 'mandatory sign'),
+			MMatch.whenIs(SignOptions.MinusAllowed, () => 'optional - sign'),
+			MMatch.whenIs(SignOptions.Optional, () => 'optional +/- sign'),
 			MMatch.exhaustive
 		);
 	}
@@ -498,7 +496,7 @@ export namespace Number {
 	 * @since 0.0.1
 	 * @category Models
 	 */
-	export enum ENotationOption {
+	export enum ENotationOptions {
 		/**
 		 * E-notation is disallowed
 		 *
@@ -524,7 +522,7 @@ export namespace Number {
 	 *
 	 * @since 0.0.1
 	 */
-	export namespace ENotationOption {
+	export namespace ENotationOptions {
 		const _regExpString = (expMark: string): string =>
 			pipe(
 				MRegExpString.int(),
@@ -533,37 +531,37 @@ export namespace Number {
 				MRegExpString.optional
 			);
 		/**
-		 * Turns an e-notation option into a regular expression string
+		 * Turns an `ENotationOptions` into a regular expression string
 		 *
 		 * @since 0.0.1
 		 * @category Destructors
 		 */
-		export const toRegExpString: (self: ENotationOption) => string = flow(
+		export const toRegExpString: (self: ENotationOptions) => string = flow(
 			MMatch.make,
-			MMatch.whenIs(ENotationOption.None, () => MRegExpString.emptyCapture),
-			MMatch.whenIs(ENotationOption.Lowercase, () => _regExpString('e')),
-			MMatch.whenIs(ENotationOption.Uppercase, () => _regExpString('E')),
+			MMatch.whenIs(ENotationOptions.None, () => MRegExpString.emptyCapture),
+			MMatch.whenIs(ENotationOptions.Lowercase, () => _regExpString('e')),
+			MMatch.whenIs(ENotationOptions.Uppercase, () => _regExpString('E')),
 			MMatch.exhaustive
 		);
 
-		export const isAllowed: Predicate.Predicate<ENotationOption> = Predicate.not(
-			MFunction.strictEquals(ENotationOption.None)
+		export const isAllowed: Predicate.Predicate<ENotationOptions> = Predicate.not(
+			MFunction.strictEquals(ENotationOptions.None)
 		);
 
 		/**
-		 * Turns an e-notation option into a function that takes an exponent and returns a string
+		 * Turns an `ENotationOptions` into a function that takes an exponent and returns a string
 		 * representing this exponent.
 		 *
 		 * @since 0.0.1
 		 * @category Destructors
 		 */
-		export const toWriter: (self: ENotationOption) => MTypes.OneArgFunction<number, string> = flow(
+		export const toWriter: (self: ENotationOptions) => MTypes.OneArgFunction<number, string> = flow(
 			MMatch.make,
-			MMatch.whenIs(ENotationOption.None, () => Function.constant('')),
-			MMatch.whenIs(ENotationOption.Lowercase, () =>
+			MMatch.whenIs(ENotationOptions.None, () => Function.constant('')),
+			MMatch.whenIs(ENotationOptions.Lowercase, () =>
 				flow(MString.fromNonNullablePrimitive, MString.prepend('e'))
 			),
-			MMatch.whenIs(ENotationOption.Uppercase, () =>
+			MMatch.whenIs(ENotationOptions.Uppercase, () =>
 				flow(MString.fromNonNullablePrimitive, MString.prepend('E'))
 			),
 			MMatch.exhaustive
@@ -571,12 +569,12 @@ export namespace Number {
 	}
 
 	/**
-	 * This namespace implements a Transformer for base 10 real numbers.
+	 * This namespace implements the Options to Transformer.Number.make.
 	 *
 	 * @since 0.0.1
 	 */
-	export namespace Option {
-		const moduleTag = _moduleTag + 'Real/Option/';
+	export namespace Options {
+		const moduleTag = _moduleTag + 'Real/Options/';
 		const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 		type TypeId = typeof TypeId;
 
@@ -587,11 +585,11 @@ export namespace Number {
 		 */
 		export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
 			/**
-			 * SignOption options
+			 * Sign options
 			 *
 			 * @since 0.0.1
 			 */
-			readonly signOption: SignOption;
+			readonly signOptions: SignOptions;
 
 			/**
 			 * Fractional separator. `fractionalSep` should not contain or be included in `thousandsSep`.
@@ -614,10 +612,10 @@ export namespace Number {
 			 * therefore considered to have 0 decimal digits. Must be a positive integer less than or
 			 * equal to `maxDecimalDigits`. When reading from a string, this is the minimal number of
 			 * digits that will be read for the decimal part. When writing to a string, the behaviour
-			 * depends on the value of the `eNotationOption`. If `eNotationOption` is set to
-			 * `ENotationOption.None`, trying to write strictly less than `minDecimalDigits` will result
-			 * in an error. If `eNotationOption` is not set to `ENotationOption.None`, the number to write
-			 * is multiplied by a 10^(-n) factor so that the [`minDecimalDigits`,`maxDecimalDigits`]
+			 * depends on the value of `eNotationOptions`. If `eNotationOptions` is set to
+			 * `ENotationOptions.None`, trying to write strictly less than `minDecimalDigits` will result
+			 * in an error. If `eNotationOptions` is not set to `ENotationOptions.None`, the number to
+			 * write is multiplied by a 10^(-n) factor so that the [`minDecimalDigits`,`maxDecimalDigits`]
 			 * constraint is respected. And a 10^n exponent will be added to the final string. When
 			 * writing a number whose absolute value is strictly less than 1, a leading 0 is always added
 			 * before the fractionalSep.
@@ -632,10 +630,10 @@ export namespace Number {
 			 * therefore considered to have 0 decimal digits. Must be a positive integer greater than or
 			 * equal to `minDecimalDigits` (+Infinity is allowed). When reading from a string, this is the
 			 * maximal number of digits that will be read for the decimal part. When writing to a string,
-			 * the behaviour depends on the value of the `eNotationOption`. If `eNotationOption` is set to
-			 * `ENotationOption.None`, trying to write strictly more than `maxDecimalDigits` will result
-			 * in an error. If `eNotationOption` is not set to `ENotationOption.None`, the number to write
-			 * is multiplied by a 10^(-n) factor so that the [`minDecimalDigits`,`maxDecimalDigits`]
+			 * the behaviour depends on the value of `eNotationOptions`. If `eNotationOptions` is set to
+			 * `ENotationOptions.None`, trying to write strictly more than `maxDecimalDigits` will result
+			 * in an error. If `eNotationOptions` is not set to `ENotationOptions.None`, the number to
+			 * write is multiplied by a 10^(-n) factor so that the [`minDecimalDigits`,`maxDecimalDigits`]
 			 * constraint is respected. And a 10^n exponent will be added to the final string. Do not set
 			 * `maxDecimalDigits` and `maxFractionalDigits` simultaneously to 0. When writing a number
 			 * whose absolute value is strictly less than 1, a leading 0 is always added before the
@@ -673,7 +671,7 @@ export namespace Number {
 			 *
 			 * @since 0.0.1
 			 */
-			readonly eNotationOption: ENotationOption;
+			readonly eNotationOptions: ENotationOptions;
 
 			/** @internal */
 			readonly [TypeId]: TypeId;
@@ -694,14 +692,14 @@ export namespace Number {
 		 * @category Equivalences
 		 */
 		export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
-			that.signOption === self.signOption &&
+			that.signOptions === self.signOptions &&
 			that.fractionalSep === self.fractionalSep &&
 			that.thousandsSep === self.thousandsSep &&
 			that.minDecimalDigits === self.minDecimalDigits &&
 			that.maxDecimalDigits === self.maxDecimalDigits &&
 			that.minFractionalDigits === self.minFractionalDigits &&
 			that.maxFractionalDigits === self.maxFractionalDigits &&
-			that.eNotationOption === self.eNotationOption;
+			that.eNotationOptions === self.eNotationOptions;
 
 		/** Prototype */
 		const proto: MTypes.Proto<Type> = {
@@ -732,50 +730,59 @@ export namespace Number {
 		 * @category Instances
 		 */
 		export const defaults: Type = make({
-			signOption: SignOption.MinusAllowed,
+			signOptions: SignOptions.MinusAllowed,
 			fractionalSep: '.',
 			thousandsSep: ',',
 			minDecimalDigits: 0,
 			maxDecimalDigits: +Infinity,
 			minFractionalDigits: 0,
 			maxFractionalDigits: 4,
-			eNotationOption: ENotationOption.None
+			eNotationOptions: ENotationOptions.None
 		});
 
 		/**
-		 * Returns a copy of `self` where `sign` is set to `SignOption.None`
+		 * Returns a copy of `self` where `sign` is set to `SignOptions.None`
 		 *
 		 * @since 0.0.1
 		 * @category Utils
 		 */
-		export const withNoSign = (self: Type): Type => make({ ...self, signOption: SignOption.None });
+		export const withNoSign: (self: Type) => Type = flow(
+			MStruct.set({ signOptions: SignOptions.None }),
+			make
+		);
 
 		/**
-		 * Returns a copy of `self` where `sign` is set to `SignOption.Mandatory`
+		 * Returns a copy of `self` where `sign` is set to `SignOptions.Mandatory`
 		 *
 		 * @since 0.0.1
 		 * @category Utils
 		 */
-		export const withMandatorySign = (self: Type): Type =>
-			make({ ...self, signOption: SignOption.Mandatory });
+		export const withMandatorySign: (self: Type) => Type = flow(
+			MStruct.set({ signOptions: SignOptions.Mandatory }),
+			make
+		);
 
 		/**
-		 * Returns a copy of `self` where `sign` is set to `SignOption.Optional`
+		 * Returns a copy of `self` where `sign` is set to `SignOptions.Optional`
 		 *
 		 * @since 0.0.1
 		 * @category Utils
 		 */
-		export const withOptionalSign = (self: Type): Type =>
-			make({ ...self, signOption: SignOption.Optional });
+		export const withOptionalSign: (self: Type) => Type = flow(
+			MStruct.set({ signOptions: SignOptions.Optional }),
+			make
+		);
 
 		/**
-		 * Returns a copy of `self` where `sign` is set to `SignOption.MinusAllowed`
+		 * Returns a copy of `self` where `sign` is set to `SignOptions.MinusAllowed`
 		 *
 		 * @since 0.0.1
 		 * @category Utils
 		 */
-		export const withMinusSignAllowed = (self: Type): Type =>
-			make({ ...self, signOption: SignOption.MinusAllowed });
+		export const withMinusSignAllowed: (self: Type) => Type = flow(
+			MStruct.set({ signOptions: SignOptions.MinusAllowed }),
+			make
+		);
 
 		/**
 		 * Returns a copy of `self` where `minFractionalDigits` and `maxFractionalDigits` are set to 0
@@ -783,8 +790,10 @@ export namespace Number {
 		 * @since 0.0.1
 		 * @category Utils
 		 */
-		export const withNoFractionalPart = (self: Type): Type =>
-			make({ ...self, minFractionalDigits: 0, maxFractionalDigits: 0 });
+		export const withNoFractionalPart: (self: Type) => Type = flow(
+			MStruct.set({ minFractionalDigits: 0, maxFractionalDigits: 0 }),
+			make
+		);
 
 		/**
 		 * Returns a copy of `self` where `maxDecimalDigits` is set to 0
@@ -792,8 +801,10 @@ export namespace Number {
 		 * @since 0.0.1
 		 * @category Utils
 		 */
-		export const withNoDecimalPart = (self: Type): Type =>
-			make({ ...self, minDecimalDigits: 0, maxDecimalDigits: 0 });
+		export const withNoDecimalPart: (self: Type) => Type = flow(
+			MStruct.set({ minDecimalDigits: 0, maxDecimalDigits: 0 }),
+			make
+		);
 
 		/**
 		 * Returns a copy of `self` that does not allow e-notation
@@ -801,8 +812,10 @@ export namespace Number {
 		 * @since 0.0.1
 		 * @category Utils
 		 */
-		export const withNoENotation = (self: Type): Type =>
-			make({ ...self, eNotationOption: ENotationOption.None });
+		export const withNoENotation: (self: Type) => Type = flow(
+			MStruct.set({ eNotationOptions: ENotationOptions.None }),
+			make
+		);
 
 		/**
 		 * Returns a copy of `self` that allows lowercase e-notation
@@ -810,8 +823,10 @@ export namespace Number {
 		 * @since 0.0.1
 		 * @category Utils
 		 */
-		export const withLowercaseENotation = (self: Type): Type =>
-			make({ ...self, eNotationOption: ENotationOption.Lowercase });
+		export const withLowercaseENotation: (self: Type) => Type = flow(
+			MStruct.set({ eNotationOptions: ENotationOptions.Lowercase }),
+			make
+		);
 
 		/**
 		 * Returns a copy of `self` that allows uppercase e-notation
@@ -819,8 +834,10 @@ export namespace Number {
 		 * @since 0.0.1
 		 * @category Utils
 		 */
-		export const withUppercaseENotation = (self: Type): Type =>
-			make({ ...self, eNotationOption: ENotationOption.Uppercase });
+		export const withUppercaseENotation: (self: Type) => Type = flow(
+			MStruct.set({ eNotationOptions: ENotationOptions.Uppercase }),
+			make
+		);
 
 		/**
 		 * Returns a copy of `self` where `thousandsSep` is set to the empty string
@@ -828,7 +845,10 @@ export namespace Number {
 		 * @since 0.0.1
 		 * @category Utils
 		 */
-		export const withNoThousandSep = (self: Type): Type => make({ ...self, thousandsSep: '' });
+		export const withNoThousandSep: (self: Type) => Type = flow(
+			MStruct.set({ thousandsSep: '' }),
+			make
+		);
 
 		/**
 		 * Returns a copy of `self` where `maxFractionalDigits` and `minFractionalDigits` are set to 2
@@ -836,23 +856,26 @@ export namespace Number {
 		 * @since 0.0.1
 		 * @category Utils
 		 */
-		export const withTwoFractionalDigits = (self: Type): Type =>
-			make({ ...self, minFractionalDigits: 2, maxFractionalDigits: 2 });
+		export const withTwoFractionalDigits: (self: Type) => Type = flow(
+			MStruct.set({ minFractionalDigits: 2, maxFractionalDigits: 2 }),
+			make
+		);
 
 		/**
 		 * Returns a copy of `self` where `minDecimalDigits` and `maxDecimalDigits` are set to 1 and
-		 * `eNotationOption` is set to `ENotationOption.Lowercase`
+		 * `eNotationOptions` is set to `ENotationOptions.Lowercase`
 		 *
 		 * @since 0.0.1
 		 * @category Utils
 		 */
-		export const withScientific = (self: Type): Type =>
-			make({
-				...self,
+		export const withScientific: (self: Type) => Type = flow(
+			MStruct.set({
 				minDecimalDigits: 1,
 				maxDecimalDigits: 1,
-				eNotationOption: ENotationOption.Lowercase
-			});
+				eNotationOptions: ENotationOptions.Lowercase
+			}),
+			make
+		);
 
 		/**
 		 * Returns a name for `self`
@@ -861,7 +884,7 @@ export namespace Number {
 		 * @category Destructors
 		 */
 		export const name = (self: Type): string =>
-			`${self.signOption}-${self.fractionalSep}-${self.thousandsSep}-${self.minDecimalDigits}-${self.maxDecimalDigits}-${self.minFractionalDigits}-${self.maxFractionalDigits}-${self.eNotationOption}`;
+			`${self.signOptions}-${self.fractionalSep}-${self.thousandsSep}-${self.minDecimalDigits}-${self.maxDecimalDigits}-${self.minFractionalDigits}-${self.maxFractionalDigits}-${self.eNotationOptions}`;
 
 		/**
 		 * Returns a regular expression string representing `self`. The returned regular expression
@@ -871,18 +894,18 @@ export namespace Number {
 		 * the function that uses this regular expression string.
 		 */
 		const toRegExpString = ({
-			signOption,
+			signOptions,
 			fractionalSep,
 			thousandsSep,
 			minDecimalDigits,
 			maxDecimalDigits,
 			minFractionalDigits,
 			maxFractionalDigits,
-			eNotationOption
+			eNotationOptions
 		}: Type): string => {
-			const signPart = SignOption.toRegExpString(signOption);
+			const signPart = SignOptions.toRegExpString(signOptions);
 
-			const eNotationPart = ENotationOption.toRegExpString(eNotationOption);
+			const eNotationPart = ENotationOptions.toRegExpString(eNotationOptions);
 
 			const decimalPart = MRegExpString.capture(
 				maxDecimalDigits <= 0 ? MRegExpString.optional('0')
@@ -928,7 +951,7 @@ export namespace Number {
 		export const toRegExp = (self: Type): RegExp => pipe(_cache, MCache.get(self));
 
 		/**
-		 * Turns a `Transformer.Option` into a function that tries to read a number from the start of a
+		 * Turns a `Transformer.Options` into a function that tries to read a number from the start of a
 		 * string with the options represented by `self`. The returned function returns, if successful,
 		 * a `some` of the part of the string that represents an `MBrand.Real` and the rest of the
 		 * string. Otherwise, it returns a `none`.
@@ -940,7 +963,7 @@ export namespace Number {
 			self: Type
 		): MTypes.OneArgFunction<
 			string,
-			EOption.Option<
+			Option.Option<
 				[
 					numberParts: [
 						number: string,
@@ -960,13 +983,13 @@ export namespace Number {
 					input,
 					MString.matchAndGroups(regExp),
 					// Take care of numbers with simultaneously no decimal and no fractional parts (see toRegExpString)
-					EOption.filter(
+					Option.filter(
 						Predicate.or(
 							flow(MArray.unsafeGet(2), EString.isNonEmpty),
 							flow(MArray.unsafeGet(3), EString.isNonEmpty)
 						)
 					),
-					EOption.map(
+					Option.map(
 						MTuple.makeBothBy({
 							toFirst: Function.unsafeCoerce<ReadonlyArray<string>, never>,
 							toSecond: flow(
@@ -980,7 +1003,7 @@ export namespace Number {
 		};
 
 		/**
-		 * Turns a `Transformer.Option` into a function that takes a string and returns `true` if that
+		 * Turns a `Transformer.Options` into a function that takes a string and returns `true` if that
 		 * string represents a `MBrand.Real` with the options represented by `self` and `false`
 		 * otherwise
 		 *
@@ -990,12 +1013,12 @@ export namespace Number {
 		export const toTester = (self: Type): MTypes.OneArgFunction<string, boolean> =>
 			flow(
 				toStringStartReader(self),
-				EOption.filter(flow(Tuple.getSecond, EString.isEmpty)),
-				EOption.isSome
+				Option.filter(flow(Tuple.getSecond, EString.isEmpty)),
+				Option.isSome
 			);
 
 		/**
-		 * Turns a `Transformer.Option` into a function that tries to read a number from the start of a
+		 * Turns a `Transformer.Options` into a function that tries to read a number from the start of a
 		 * string with the options represented by `self`. The returned function returns, if successful,
 		 * a `right` of the read `MBrand.Real` and the rest of the string. If not successful, it returns
 		 * a `left`.
@@ -1010,14 +1033,14 @@ export namespace Number {
 			Either.Either<readonly [value: number, rest: string], Error.Type>
 		> => {
 			const digitGroupAndSepLength = self.thousandsSep.length + MRegExpString.DIGIT_GROUP_SIZE;
-			const reader = Option.toStringStartReader(self);
+			const reader = Options.toStringStartReader(self);
 			const takeGroupFromRight = EString.takeRight(MRegExpString.DIGIT_GROUP_SIZE);
 
 			return (input) =>
 				pipe(
 					input,
 					reader,
-					EOption.map(
+					Option.map(
 						Tuple.mapFirst(([_, signPart, decimalPart, fractionalPart, exponentPart]) =>
 							pipe(
 								decimalPart,
@@ -1038,7 +1061,7 @@ export namespace Number {
 		};
 
 		/**
-		 * Turns a `Transformer.Option` into a function that tries to convert a `MBrand.Real` into a a
+		 * Turns a `Transformer.Options` into a function that tries to convert a `MBrand.Real` into a a
 		 * string with the options represented by `self`. The returned function returns, if successful,
 		 * a `right` of the string. If not successful, it returns a `left`.
 		 *
@@ -1048,9 +1071,9 @@ export namespace Number {
 		export const toWriter = (
 			self: Type
 		): MTypes.OneArgFunction<number, Either.Either<string, Error.Type>> => {
-			const allowsENotation = ENotationOption.isAllowed(self.eNotationOption);
-			const signWriter = SignOption.toWriter(self.signOption);
-			const eNotationWriter = ENotationOption.toWriter(self.eNotationOption);
+			const allowsENotation = ENotationOptions.isAllowed(self.eNotationOptions);
+			const signWriter = SignOptions.toWriter(self.signOptions);
+			const eNotationWriter = ENotationOptions.toWriter(self.eNotationOptions);
 			const toppedMaxFractionalDigit = Math.min(
 				MAX_MAX_FRACTIONAL_DIGITS,
 				self.maxFractionalDigits
@@ -1129,13 +1152,13 @@ export namespace Number {
 											pipe(
 												frac,
 												MString.searchRight(MRegExp.nonZeroDigit),
-												EOption.map(flow(Struct.get('startIndex'), ENumber.increment)),
-												EOption.getOrElse(Function.constant(0)),
+												Option.map(flow(Struct.get('startIndex'), ENumber.increment)),
+												Option.getOrElse(Function.constant(0)),
 												ENumber.max(self.minFractionalDigits),
 												MFunction.flipDual(EString.takeLeft)(frac),
-												EOption.liftPredicate(EString.isNonEmpty),
-												EOption.map(MString.prepend(self.fractionalSep)),
-												EOption.getOrElse(Function.constant(''))
+												Option.liftPredicate(EString.isNonEmpty),
+												Option.map(MString.prepend(self.fractionalSep)),
+												Option.getOrElse(Function.constant(''))
 											)
 									)
 						})
@@ -1152,7 +1175,7 @@ export namespace Number {
 
 		export namespace Real {
 			/**
-			 * Option instance that represents a real number with no thousand separator
+			 * Options instance that represents a real number with no thousand separator
 			 *
 			 * @since 0.0.1
 			 * @category Instances
@@ -1160,7 +1183,7 @@ export namespace Number {
 			export const standard: Type = pipe(defaults, withNoThousandSep);
 
 			/**
-			 * Option instance that represents a UK-style real number
+			 * Options instance that represents a UK-style real number
 			 *
 			 * @since 0.0.1
 			 * @category Instances
@@ -1168,253 +1191,261 @@ export namespace Number {
 			export const uk: Type = defaults;
 
 			/**
-			 * Option instance that represents a German-style real number
+			 * Options instance that represents a German-style real number
 			 *
 			 * @since 0.0.1
 			 * @category Instances
 			 */
-			export const german: Type = make({ ...defaults, thousandsSep: '.', fractionalSep: ',' });
+			export const german: Type = pipe(
+				defaults,
+				MStruct.set({ thousandsSep: '.', fractionalSep: ',' }),
+				make
+			);
 
 			/**
-			 * Option instance that represents a French-style real number
+			 * Options instance that represents a French-style real number
 			 *
 			 * @since 0.0.1
 			 * @category Instances
 			 */
-			export const french: Type = make({ ...defaults, thousandsSep: ' ', fractionalSep: ',' });
+			export const french: Type = pipe(
+				defaults,
+				MStruct.set({ thousandsSep: ' ', fractionalSep: ',' }),
+				make
+			);
 
 			/**
-			 * Option instance that represents a real number with two fractional digits and no thousand
+			 * Options instance that represents a real number with two fractional digits and no thousand
 			 * separator
 			 *
 			 * @since 0.0.1
 			 * @category Instances
 			 */
-			export const standard2FractionalDigits: Type = pipe(standard, withTwoFractionalDigits);
+			export const standard2FractionalDigits: Type = withTwoFractionalDigits(standard);
 
 			/**
-			 * Option instance that represents a UK-style real number with two fractional digits.
+			 * Options instance that represents a UK-style real number with two fractional digits.
 			 *
 			 * @since 0.0.1
 			 * @category Instances
 			 */
-			export const uk2FractionalDigits: Type = pipe(uk, withTwoFractionalDigits);
+			export const uk2FractionalDigits: Type = withTwoFractionalDigits(uk);
 
 			/**
-			 * Option instance that represents a German-style real number with two fractional digits.
+			 * Options instance that represents a German-style real number with two fractional digits.
 			 *
 			 * @since 0.0.1
 			 * @category Instances
 			 */
-			export const german2FractionalDigits: Type = pipe(german, withTwoFractionalDigits);
+			export const german2FractionalDigits: Type = withTwoFractionalDigits(german);
 
 			/**
-			 * Option instance that represents a French-style real number with two fractional digits.
+			 * Options instance that represents a French-style real number with two fractional digits.
 			 *
 			 * @since 0.0.1
 			 * @category Instances
 			 */
-			export const french2FractionalDigits: Type = pipe(french, withTwoFractionalDigits);
+			export const french2FractionalDigits: Type = withTwoFractionalDigits(french);
 
 			/**
-			 * Option instance that represents a number in scientific notation
+			 * Options instance that represents a number in scientific notation
 			 *
 			 * @since 0.0.1
 			 * @category Instances
 			 */
-			export const scientific: Type = pipe(standard, withScientific);
+			export const scientific: Type = withScientific(standard);
 
 			/**
-			 * Option instance that represents a number in UK-style scientific notation
+			 * Options instance that represents a number in UK-style scientific notation
 			 *
 			 * @since 0.0.1
 			 * @category Instances
 			 */
-			export const ukScientific: Type = pipe(uk, withScientific);
+			export const ukScientific: Type = withScientific(uk);
 
 			/**
-			 * Option instance that represents a number in German-style scientific notation
+			 * Options instance that represents a number in German-style scientific notation
 			 *
 			 * @since 0.0.1
 			 * @category Instances
 			 */
-			export const germanScientific: Type = pipe(german, withScientific);
+			export const germanScientific: Type = withScientific(german);
 
 			/**
-			 * Option instance that represents a number in French-style scientific notation
+			 * Options instance that represents a number in French-style scientific notation
 			 *
 			 * @since 0.0.1
 			 * @category Instances
 			 */
-			export const frenchScientific: Type = pipe(french, withScientific);
+			export const frenchScientific: Type = withScientific(french);
 
 			/**
-			 * Option instance that represents a number with no decimal part
+			 * Options instance that represents a number with no decimal part
 			 *
 			 * @since 0.0.1
 			 * @category Instances
 			 */
-			export const fractional: Type = pipe(standard, withNoDecimalPart);
+			export const fractional: Type = withNoDecimalPart(standard);
 
 			/**
-			 * Option instance that represents a UK-style number with no decimal part
+			 * Options instance that represents a UK-style number with no decimal part
 			 *
 			 * @since 0.0.1
 			 * @category Instances
 			 */
-			export const ukFractional: Type = pipe(uk, withNoDecimalPart);
+			export const ukFractional: Type = withNoDecimalPart(uk);
 
 			/**
-			 * Option instance that represents a German-style number with no decimal part
+			 * Options instance that represents a German-style number with no decimal part
 			 *
 			 * @since 0.0.1
 			 * @category Instances
 			 */
-			export const germanFractional: Type = pipe(german, withNoDecimalPart);
+			export const germanFractional: Type = withNoDecimalPart(german);
 
 			/**
-			 * Option instance that represents a French-style number with no decimal part
+			 * Options instance that represents a French-style number with no decimal part
 			 *
 			 * @since 0.0.1
 			 * @category Instances
 			 */
-			export const frenchFractional: Type = pipe(french, withNoDecimalPart);
+			export const frenchFractional: Type = withNoDecimalPart(french);
 		}
 
 		export namespace Int {
 			/**
-			 * Option instance that represents an integer with no thousand separator
+			 * Options instance that represents an integer with no thousand separator
 			 *
 			 * @since 0.0.1
 			 * @category Instances
 			 */
-			export const standard: Type = pipe(Real.standard, withNoFractionalPart);
+			export const standard: Type = withNoFractionalPart(Real.standard);
 
 			/**
-			 * Option instance that represents an integer with no thousand separator
+			 * Options instance that represents an integer with no thousand separator
 			 *
 			 * @since 0.0.1
 			 * @category Instances
 			 */
-			export const signed: Type = pipe(standard, withMandatorySign);
+			export const signed: Type = withMandatorySign(standard);
 
 			/**
-			 * Option instance that represents an integer with no thousand separator that may receive a
+			 * Options instance that represents an integer with no thousand separator that may receive a
 			 * plus sign for positive values
 			 *
 			 * @since 0.0.1
 			 * @category Instances
 			 */
-			export const plussed: Type = pipe(standard, withOptionalSign);
+			export const plussed: Type = withOptionalSign(standard);
 
 			/**
-			 * Option instance that represents a UK-style integer
+			 * Options instance that represents a UK-style integer
 			 *
 			 * @since 0.0.1
 			 * @category Instances
 			 */
-			export const uk: Type = pipe(Real.uk, withNoFractionalPart);
+			export const uk: Type = withNoFractionalPart(Real.uk);
 
 			/**
-			 * Option instance that represents a signed UK-style integer
+			 * Options instance that represents a signed UK-style integer
 			 *
 			 * @since 0.0.1
 			 * @category Instances
 			 */
-			export const signedUk: Type = pipe(uk, withMandatorySign);
+			export const signedUk: Type = withMandatorySign(uk);
 
 			/**
-			 * Option instance that represents a UK-style integer that may receive a plus sign for
+			 * Options instance that represents a UK-style integer that may receive a plus sign for
 			 * positive values.
 			 *
 			 * @since 0.0.1
 			 * @category Instances
 			 */
-			export const plussedUk: Type = pipe(uk, withOptionalSign);
+			export const plussedUk: Type = withOptionalSign(uk);
 
 			/**
-			 * Option instance that represents a German-style integer
+			 * Options instance that represents a German-style integer
 			 *
 			 * @since 0.0.1
 			 * @category Instances
 			 */
-			export const german: Type = pipe(Real.german, withNoFractionalPart);
+			export const german: Type = withNoFractionalPart(Real.german);
 
 			/**
-			 * Option instance that represents a signed German-style integer
+			 * Options instance that represents a signed German-style integer
 			 *
 			 * @since 0.0.1
 			 * @category Instances
 			 */
-			export const signedGerman: Type = pipe(german, withMandatorySign);
+			export const signedGerman: Type = withMandatorySign(german);
 
 			/**
-			 * Option instance that represents a German-style integer that may receive a plus sign for
+			 * Options instance that represents a German-style integer that may receive a plus sign for
 			 * positive values.
 			 *
 			 * @since 0.0.1
 			 * @category Instances
 			 */
-			export const plussedGerman: Type = pipe(german, withOptionalSign);
+			export const plussedGerman: Type = withOptionalSign(german);
 
 			/**
-			 * Option instance that represents a French-style integer
+			 * Options instance that represents a French-style integer
 			 *
 			 * @since 0.0.1
 			 * @category Instances
 			 */
-			export const french: Type = pipe(Real.french, withNoFractionalPart);
+			export const french: Type = withNoFractionalPart(Real.french);
 
 			/**
-			 * Option instance that represents a signed French-style integer
+			 * Options instance that represents a signed French-style integer
 			 *
 			 * @since 0.0.1
 			 * @category Instances
 			 */
-			export const signedFrench: Type = pipe(french, withMandatorySign);
+			export const signedFrench: Type = withMandatorySign(french);
 
 			/**
-			 * Option instance that represents a French-style integer that may receive a plus sign for
+			 * Options instance that represents a French-style integer that may receive a plus sign for
 			 * positive values.
 			 *
 			 * @since 0.0.1
 			 * @category Instances
 			 */
-			export const plussedFrench: Type = pipe(french, withOptionalSign);
+			export const plussedFrench: Type = withOptionalSign(french);
 		}
 
 		export namespace PositiveInt {
 			/**
-			 * Option instance that represents a positive integer with no thousand separator
+			 * Options instance that represents a positive integer with no thousand separator
 			 *
 			 * @since 0.0.1
 			 * @category Instances
 			 */
-			export const standard: Type = pipe(Int.standard, withNoSign);
+			export const standard: Type = withNoSign(Int.standard);
 
 			/**
-			 * Option instance that represents a positive UK-style integer
+			 * Options instance that represents a positive UK-style integer
 			 *
 			 * @since 0.0.1
 			 * @category Instances
 			 */
-			export const uk: Type = pipe(Int.uk, withNoSign);
+			export const uk: Type = withNoSign(Int.uk);
 
 			/**
-			 * Option instance that represents a positive German-style integer
+			 * Options instance that represents a positive German-style integer
 			 *
 			 * @since 0.0.1
 			 * @category Instances
 			 */
-			export const german: Type = pipe(Int.german, withNoSign);
+			export const german: Type = withNoSign(Int.german);
 
 			/**
-			 * Option instance that represents a positive French-style integer
+			 * Options instance that represents a positive French-style integer
 			 *
 			 * @since 0.0.1
 			 * @category Instances
 			 */
-			export const french: Type = pipe(Int.french, withNoSign);
+			export const french: Type = withNoSign(Int.french);
 		}
 	}
 
@@ -1438,7 +1469,7 @@ export namespace Number {
 		 * @since 0.0.1
 		 * @category Instances
 		 */
-		export const standard: Type = make(Option.Real.standard) as unknown as Type;
+		export const standard: Type = make(Options.Real.standard) as unknown as Type;
 
 		/**
 		 * Cached transformer instance that reads/writes a UK-style real number
@@ -1446,7 +1477,7 @@ export namespace Number {
 		 * @since 0.0.1
 		 * @category Instances
 		 */
-		export const uk: Type = make(Option.Real.uk) as unknown as Type;
+		export const uk: Type = make(Options.Real.uk) as unknown as Type;
 
 		/**
 		 * Cached transformer instance that reads/writes a German-style real number
@@ -1454,7 +1485,7 @@ export namespace Number {
 		 * @since 0.0.1
 		 * @category Instances
 		 */
-		export const german: Type = make(Option.Real.german) as unknown as Type;
+		export const german: Type = make(Options.Real.german) as unknown as Type;
 
 		/**
 		 * Cached transformer instance that reads/writes a French-style real number
@@ -1462,7 +1493,7 @@ export namespace Number {
 		 * @since 0.0.1
 		 * @category Instances
 		 */
-		export const french: Type = make(Option.Real.french) as unknown as Type;
+		export const french: Type = make(Options.Real.french) as unknown as Type;
 
 		/**
 		 * Cached transformer instance that reads/writes a real number with two fractional digits and no
@@ -1472,7 +1503,7 @@ export namespace Number {
 		 * @category Instances
 		 */
 		export const standard2FractionalDigits: Type = make(
-			Option.Real.standard2FractionalDigits
+			Options.Real.standard2FractionalDigits
 		) as unknown as Type;
 
 		/**
@@ -1483,7 +1514,7 @@ export namespace Number {
 		 * @category Instances
 		 */
 		export const uk2FractionalDigits: Type = make(
-			Option.Real.uk2FractionalDigits
+			Options.Real.uk2FractionalDigits
 		) as unknown as Type;
 
 		/**
@@ -1494,7 +1525,7 @@ export namespace Number {
 		 * @category Instances
 		 */
 		export const german2FractionalDigits: Type = make(
-			Option.Real.german2FractionalDigits
+			Options.Real.german2FractionalDigits
 		) as unknown as Type;
 
 		/**
@@ -1505,7 +1536,7 @@ export namespace Number {
 		 * @category Instances
 		 */
 		export const french2FractionalDigits: Type = make(
-			Option.Real.french2FractionalDigits
+			Options.Real.french2FractionalDigits
 		) as unknown as Type;
 
 		/**
@@ -1514,7 +1545,7 @@ export namespace Number {
 		 * @since 0.0.1
 		 * @category Instances
 		 */
-		export const scientific: Type = make(Option.Real.scientific) as unknown as Type;
+		export const scientific: Type = make(Options.Real.scientific) as unknown as Type;
 
 		/**
 		 * Cached transformer instance that reads/writes a number in UK-style scientific notation
@@ -1522,7 +1553,7 @@ export namespace Number {
 		 * @since 0.0.1
 		 * @category Instances
 		 */
-		export const ukScientific: Type = make(Option.Real.ukScientific) as unknown as Type;
+		export const ukScientific: Type = make(Options.Real.ukScientific) as unknown as Type;
 
 		/**
 		 * Cached transformer instance that reads/writes a number in German-style scientific notation
@@ -1530,7 +1561,7 @@ export namespace Number {
 		 * @since 0.0.1
 		 * @category Instances
 		 */
-		export const germanScientific: Type = make(Option.Real.germanScientific) as unknown as Type;
+		export const germanScientific: Type = make(Options.Real.germanScientific) as unknown as Type;
 
 		/**
 		 * Cached transformer instance that reads/writes a number in French-style scientific notation
@@ -1538,7 +1569,7 @@ export namespace Number {
 		 * @since 0.0.1
 		 * @category Instances
 		 */
-		export const frenchScientific: Type = make(Option.Real.frenchScientific) as unknown as Type;
+		export const frenchScientific: Type = make(Options.Real.frenchScientific) as unknown as Type;
 
 		/**
 		 * Cached transformer instance that reads/writes a number with no decimal part
@@ -1546,7 +1577,7 @@ export namespace Number {
 		 * @since 0.0.1
 		 * @category Instances
 		 */
-		export const fractional: Type = make(Option.Real.fractional) as unknown as Type;
+		export const fractional: Type = make(Options.Real.fractional) as unknown as Type;
 
 		/**
 		 * Cached transformer instance that reads/writes a UK-style number with no decimal part
@@ -1554,7 +1585,7 @@ export namespace Number {
 		 * @since 0.0.1
 		 * @category Instances
 		 */
-		export const ukFractional: Type = make(Option.Real.ukFractional) as unknown as Type;
+		export const ukFractional: Type = make(Options.Real.ukFractional) as unknown as Type;
 
 		/**
 		 * Cached transformer instance that reads/writes a German-style number with no decimal part
@@ -1562,7 +1593,7 @@ export namespace Number {
 		 * @since 0.0.1
 		 * @category Instances
 		 */
-		export const germanFractional: Type = make(Option.Real.germanFractional) as unknown as Type;
+		export const germanFractional: Type = make(Options.Real.germanFractional) as unknown as Type;
 
 		/**
 		 * Cached transformer instance that reads/writes a French-style number with no decimal part
@@ -1570,7 +1601,7 @@ export namespace Number {
 		 * @since 0.0.1
 		 * @category Instances
 		 */
-		export const frenchFractional: Type = make(Option.Real.frenchFractional) as unknown as Type;
+		export const frenchFractional: Type = make(Options.Real.frenchFractional) as unknown as Type;
 	}
 
 	/**
@@ -1593,7 +1624,7 @@ export namespace Number {
 		 * @since 0.0.1
 		 * @category Instances
 		 */
-		export const standard = make(Option.Int.standard) as unknown as Type;
+		export const standard = make(Options.Int.standard) as unknown as Type;
 
 		/**
 		 * Cached transformer instance that reads/writes an integer with no thousand separator
@@ -1601,7 +1632,7 @@ export namespace Number {
 		 * @since 0.0.1
 		 * @category Instances
 		 */
-		export const signed = make(Option.Int.signed) as unknown as Type;
+		export const signed = make(Options.Int.signed) as unknown as Type;
 
 		/**
 		 * Cached transformer instance that reads/writes an integer with no thousand separator that may
@@ -1610,7 +1641,7 @@ export namespace Number {
 		 * @since 0.0.1
 		 * @category Instances
 		 */
-		export const plussed = make(Option.Int.plussed) as unknown as Type;
+		export const plussed = make(Options.Int.plussed) as unknown as Type;
 
 		/**
 		 * Cached transformer instance that reads/writes a UK-style integer
@@ -1618,7 +1649,7 @@ export namespace Number {
 		 * @since 0.0.1
 		 * @category Instances
 		 */
-		export const uk = make(Option.Int.uk) as unknown as Type;
+		export const uk = make(Options.Int.uk) as unknown as Type;
 
 		/**
 		 * Cached transformer instance that reads/writes a UK-style signed integer
@@ -1626,7 +1657,7 @@ export namespace Number {
 		 * @since 0.0.1
 		 * @category Instances
 		 */
-		export const signedUk = make(Option.Int.signedUk) as unknown as Type;
+		export const signedUk = make(Options.Int.signedUk) as unknown as Type;
 
 		/**
 		 * Cached transformer instance that reads/writes a UK-style integer that may receive a plus sign
@@ -1635,7 +1666,7 @@ export namespace Number {
 		 * @since 0.0.1
 		 * @category Instances
 		 */
-		export const plussedUk = make(Option.Int.plussedUk) as unknown as Type;
+		export const plussedUk = make(Options.Int.plussedUk) as unknown as Type;
 
 		/**
 		 * Cached transformer instance that reads/writes a German-style integer
@@ -1643,7 +1674,7 @@ export namespace Number {
 		 * @since 0.0.1
 		 * @category Instances
 		 */
-		export const german = make(Option.Int.german) as unknown as Type;
+		export const german = make(Options.Int.german) as unknown as Type;
 
 		/**
 		 * Cached transformer instance that reads/writes a German-style signed integer
@@ -1651,7 +1682,7 @@ export namespace Number {
 		 * @since 0.0.1
 		 * @category Instances
 		 */
-		export const signedGerman = make(Option.Int.signedGerman) as unknown as Type;
+		export const signedGerman = make(Options.Int.signedGerman) as unknown as Type;
 
 		/**
 		 * Cached transformer instance that reads/writes a German-style integer that may receive a plus
@@ -1660,7 +1691,7 @@ export namespace Number {
 		 * @since 0.0.1
 		 * @category Instances
 		 */
-		export const plussedGerman = make(Option.Int.plussedGerman) as unknown as Type;
+		export const plussedGerman = make(Options.Int.plussedGerman) as unknown as Type;
 
 		/**
 		 * Cached transformer instance that reads/writes a French-style integer
@@ -1668,7 +1699,7 @@ export namespace Number {
 		 * @since 0.0.1
 		 * @category Instances
 		 */
-		export const french = make(Option.Int.french) as unknown as Type;
+		export const french = make(Options.Int.french) as unknown as Type;
 
 		/**
 		 * Cached transformer instance that reads/writes a French-style signed integer
@@ -1676,7 +1707,7 @@ export namespace Number {
 		 * @since 0.0.1
 		 * @category Instances
 		 */
-		export const signedFrench = make(Option.Int.signedFrench) as unknown as Type;
+		export const signedFrench = make(Options.Int.signedFrench) as unknown as Type;
 
 		/**
 		 * Cached transformer instance that reads/writes a French-style integer that may receive a plus
@@ -1685,7 +1716,7 @@ export namespace Number {
 		 * @since 0.0.1
 		 * @category Instances
 		 */
-		export const plussedFrench = make(Option.Int.plussedFrench) as unknown as Type;
+		export const plussedFrench = make(Options.Int.plussedFrench) as unknown as Type;
 	}
 
 	/**
@@ -1716,7 +1747,7 @@ export namespace Number {
 					pipe(
 						input,
 						MString.match(regExp),
-						EOption.map(
+						Option.map(
 							MTuple.makeBothBy({
 								toFirst: flow(
 									MNumber.unsafeIntFromString(radix),
@@ -1765,7 +1796,7 @@ export namespace Number {
 		 * @since 0.0.1
 		 * @category Instances
 		 */
-		export const standard = make(Option.PositiveInt.standard) as unknown as Type;
+		export const standard = make(Options.PositiveInt.standard) as unknown as Type;
 
 		/**
 		 * Cached transformer instance that reads/writes a UK-style positive integer
@@ -1773,7 +1804,7 @@ export namespace Number {
 		 * @since 0.0.1
 		 * @category Instances
 		 */
-		export const uk = make(Option.PositiveInt.uk) as unknown as Type;
+		export const uk = make(Options.PositiveInt.uk) as unknown as Type;
 
 		/**
 		 * Cached transformer instance that reads/writes a German-style positive integer
@@ -1781,7 +1812,7 @@ export namespace Number {
 		 * @since 0.0.1
 		 * @category Instances
 		 */
-		export const german = make(Option.PositiveInt.german) as unknown as Type;
+		export const german = make(Options.PositiveInt.german) as unknown as Type;
 
 		/**
 		 * Cached transformer instance that reads/writes a French-style positive integer
@@ -1789,6 +1820,6 @@ export namespace Number {
 		 * @since 0.0.1
 		 * @category Instances
 		 */
-		export const french = make(Option.PositiveInt.french) as unknown as Type;
+		export const french = make(Options.PositiveInt.french) as unknown as Type;
 	}
 }

@@ -198,6 +198,9 @@ importers:
 
   packages/pretty-print:
     dependencies:
+      '@parischap/ansi-styles':
+        specifier: workspace:@parischap-dev/ansi-styles@*
+        version: link:../ansi-styles
       '@parischap/effect-lib':
         specifier: workspace:@parischap-dev/effect-lib@*
         version: link:../effect-lib

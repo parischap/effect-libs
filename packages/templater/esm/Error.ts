@@ -9,7 +9,7 @@ import { Data } from 'effect';
 const moduleTag = '@parischap/templater/Error/';
 
 /**
- * FunctionPort signals an error that occurs while Effectifying a function
+ * Templating error
  *
  * @since 0.0.6
  * @category Models

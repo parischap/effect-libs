@@ -83,45 +83,46 @@ export const setName =
 		_make({ ...self, name: name });
 
 /**
- * Colorset instance for uncolored output (uses the identity function for all parts to be colored)
+ * FormatSet instance for unformatted output (uses the identity function for all parts to be
+ * colored)
  *
  * @since 0.0.1
  * @category Instances
  */
-export const uncolored: Type = _make({
-	name: 'uncolored',
-	stringValueColorer: Function.identity,
-	otherValueColorer: Function.identity,
-	symbolValueColorer: Function.identity,
-	bigIntMarkColorer: Function.identity,
-	propertyKeyColorerWhenFunctionValue: Function.identity,
-	propertyKeyColorerWhenSymbol: Function.identity,
-	propertyKeyColorerWhenOther: Function.identity,
-	propertySeparatorColorer: Function.identity,
-	recordDelimitersColorWheel: ColorWheel.empty,
-	keyValueSeparatorColorer: Function.identity,
-	prototypeMarkColorer: Function.identity,
-	multiLineIndentColorer: Function.identity
+export const unformatted: Type = _make({
+	name: 'unformatted',
+	stringValueFormatter: Function.identity,
+	otherValueFormatter: Function.identity,
+	symbolValueFormatter: Function.identity,
+	bigIntMarkFormatter: Function.identity,
+	propertyKeyFormatterWhenFunctionValue: Function.identity,
+	propertyKeyFormatterWhenSymbol: Function.identity,
+	propertyKeyFormatterWhenOther: Function.identity,
+	propertySeparatorFormatter: Function.identity,
+	recordDelimitersFormatWheel: FormatWheel.empty,
+	keyValueSeparatorFormatter: Function.identity,
+	prototypeMarkFormatter: Function.identity,
+	multiLineIndentFormatter: Function.identity
 });
 
 /**
- * Example colorset for ansi dark mode - Uses functions from the MColor module
+ * Example formatSet for ansi dark mode - Uses functions from the MColor module
  *
  * @since 0.0.1
  * @category Instances
  */
 export const ansiDarkMode: Type = _make({
 	name: 'ansiDarkMode',
-	stringValueColorer: MString.colorize(MColor.green),
-	otherValueColorer: MString.colorize(MColor.yellow),
-	symbolValueColorer: MString.colorize(MColor.cyan),
-	bigIntMarkColorer: MString.colorize(MColor.magenta),
-	propertyKeyColorerWhenFunctionValue: MString.colorize(MColor.blue),
-	propertyKeyColorerWhenSymbol: MString.colorize(MColor.cyan),
-	propertyKeyColorerWhenOther: MString.colorize(MColor.red),
-	propertySeparatorColorer: MString.colorize(MColor.white),
-	recordDelimitersColorWheel: ColorWheel.ansiDarkMode,
-	keyValueSeparatorColorer: MString.colorize(MColor.white),
-	prototypeMarkColorer: MString.colorize(MColor.green),
-	multiLineIndentColorer: MString.colorize(MColor.green)
+	stringValueFormatter: MString.colorize(MColor.green),
+	otherValueFormatter: MString.colorize(MColor.yellow),
+	symbolValueFormatter: MString.colorize(MColor.cyan),
+	bigIntMarkFormatter: MString.colorize(MColor.magenta),
+	propertyKeyFormatterWhenFunctionValue: MString.colorize(MColor.blue),
+	propertyKeyFormatterWhenSymbol: MString.colorize(MColor.cyan),
+	propertyKeyFormatterWhenOther: MString.colorize(MColor.red),
+	propertySeparatorFormatter: MString.colorize(MColor.white),
+	recordDelimitersFormatWheel: FormatWheel.ansiDarkMode,
+	keyValueSeparatorFormatter: MString.colorize(MColor.white),
+	prototypeMarkFormatter: MString.colorize(MColor.green),
+	multiLineIndentFormatter: MString.colorize(MColor.green)
 });
