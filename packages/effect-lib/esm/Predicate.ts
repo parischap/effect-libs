@@ -18,22 +18,12 @@ export interface EffectPredicate<in Z, out E, out R> {
 }
 
 /**
- * Type that represents a record/array of predicates. From a typescript perspective, this covers
- * arrays, objects, class instances and functions but not not null and undefined
- *
- * @since 0.0.6
- * @category Models
- */
-export type AnyPredicateArray = ReadonlyArray<Predicate.Predicate.Any>;
-
-/**
  * Type utiliy that extracts the source of a predicate or refinement.
  *
  * @since 0.0.6
  * @category Utility types
  */
-export type Source<R extends Predicate.Predicate.Any> =
-	readonly [R] extends readonly [Predicate.Predicate<infer A>] ? A : never;
+export type Source<R> = readonly [R] extends readonly [Predicate.Predicate<infer A>] ? A : never;
 
 /**
  * Type utiliy that extracts the target of a predicate or refinement.
@@ -41,7 +31,7 @@ export type Source<R extends Predicate.Predicate.Any> =
  * @since 0.0.6
  * @category Utility types
  */
-export type Target<R extends Predicate.Predicate.Any> =
+export type Target<R> =
 	readonly [R] extends readonly [Predicate.Refinement<infer _, infer A>] ? A : Source<R>;
 
 /**
@@ -51,45 +41,42 @@ export type Target<R extends Predicate.Predicate.Any> =
  * @since 0.0.6
  * @category Utility types
  */
-export type Coverage<R extends Predicate.Predicate.Any> =
-	Source<R> extends Target<R> ? never : Target<R>;
+export type Coverage<R> = Source<R> extends Target<R> ? never : Target<R>;
 
 /**
- * Type utiliy that takes an array of predicates or refinements and returns an array of their
- * sources
+ * Type utiliy that takes an array/record of predicates or refinements and returns an array/record
+ * of their sources
  *
  * @since 0.0.6
  * @category Utility types
  */
-export type PredicatesToSources<T extends AnyPredicateArray> = {
+export type PredicatesToSources<T> = {
 	readonly [key in keyof T]: Source<T[key]>;
 };
 
 /**
- * Type utiliy that takes an array of predicates or refinements and returns an array of their
- * targets
+ * Type utiliy that takes an array/record of predicates or refinements and returns an array/record
+ * of their targets
  *
  * @since 0.0.6
  * @category Utility types
  */
-export type PredicatesToTargets<T extends AnyPredicateArray> = {
+export type PredicatesToTargets<T> = {
 	readonly [key in keyof T]: Target<T[key]>;
 };
-
 /**
- * Type utiliy that takes an array of predicates or refinements and returns an array of their
- * coverages
+ * Type utiliy that takes an array/record of predicates or refinements and returns an array/record
+ * of their coverages
  *
  * @since 0.0.6
  * @category Utility types
  */
-export type PredicatesToCoverages<T extends AnyPredicateArray> = {
+export type PredicatesToCoverages<T> = {
 	readonly [key in keyof T]: Coverage<T[key]>;
 };
 
 /**
- * Type utiliy that takes an record of predicates or refinements and returns an record of their
- * sources
+ * Type utiliy that takes an array/record and returns an array/record of predicates
  *
  * @since 0.0.6
  * @category Utility types
@@ -99,9 +86,12 @@ export type SourcesToPredicates<T extends MTypes.AnyRecord> = {
 };
 
 /**
- * Same as Predicate struct but allows field completion and makes it possible to only pass only a
- * subset of the object fields aven when there are some refinements.
+ * Same as Predicate.struct but allows field completion and makes it possible to only pass a subset
+ * of the object fields even when there are some refinements.
  */
-/*export const struct = <F extends MTypes.AnyRecord>(
-	fields: NoInfer<Partial<SourcesToPredicates<MTypes.Data<F>>>>
-): Predicate.Predicate<F> => Predicate.struct(fields as never) as never;*/
+export const struct =
+	<O extends MTypes.AnyRecord, F extends Partial<SourcesToPredicates<MTypes.Data<O>>>>(fields: F) =>
+	(
+		o: O
+	): o is { readonly [key in keyof O]: key extends keyof F ? Target<F[key]> & O[key] : O[key] } =>
+		Predicate.struct(fields as never) as never;
