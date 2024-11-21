@@ -7,6 +7,7 @@
 import { Array, Number, pipe, Tuple } from 'effect';
 import * as MCore from './Core.js';
 import * as MNumber from './Number.js';
+import * as MTypes from './types.js';
 
 export const DIGIT_GROUP_SIZE = 3;
 
@@ -32,7 +33,7 @@ export const zeroOrMore = (self: string): string => `(?:${self})*`;
  * @since 0.5.0
  * @category Utils
  */
-export const oneOrMore = (self: string): string => `(?:${self})+`;
+export const oneOrMore: MTypes.StringTransformer = (self) => `(?:${self})+`;
 
 /**
  * Returns a new regular expression string where `self` may appear between `low` and `high` times.
@@ -43,8 +44,8 @@ export const oneOrMore = (self: string): string => `(?:${self})+`;
  * @category Utils
  */
 export const repeatBetween =
-	(low: number, high: number) =>
-	(self: string): string =>
+	(low: number, high: number): MTypes.StringTransformer =>
+	(self) =>
 		high <= 0 || high < low ? '' : `(?:${self}){${low},${high === +Infinity ? '' : high}}`;
 
 /**
@@ -55,7 +56,7 @@ export const repeatBetween =
  * @since 0.5.0
  * @category Utils
  */
-export const repeatAtMost = (high: number): ((self: string) => string) =>
+export const repeatAtMost = (high: number): MTypes.StringTransformer =>
 	high === +Infinity ? zeroOrMore : repeatBetween(0, high);
 
 /**
@@ -64,7 +65,7 @@ export const repeatAtMost = (high: number): ((self: string) => string) =>
  * @since 0.5.0
  * @category Utils
  */
-export const optional = (self: string): string => `(?:${self})?`;
+export const optional: MTypes.StringTransformer = (self) => `(?:${self})?`;
 
 /**
  * Returns a regular expression string that will match one of the provided regular expression
@@ -85,7 +86,7 @@ export const either = (...args: ReadonlyArray<string>): string =>
  * @since 0.5.0
  * @category Utils
  */
-export const makeLine = (self: string): string => `^${self}$`;
+export const makeLine: MTypes.StringTransformer = (self) => `^${self}$`;
 
 /**
  * Returns a new regular expression string where `self` must be at the end of a line
@@ -93,7 +94,7 @@ export const makeLine = (self: string): string => `^${self}$`;
  * @since 0.5.0
  * @category Utils
  */
-export const atEnd = (self: string): string => `${self}$`;
+export const atEnd: MTypes.StringTransformer = (self) => `${self}$`;
 
 /**
  * Returns a new regular expression string where `self` must be at the start of a line
@@ -101,7 +102,7 @@ export const atEnd = (self: string): string => `${self}$`;
  * @since 0.5.0
  * @category Utils
  */
-export const atStart = (self: string): string => `^${self}`;
+export const atStart: MTypes.StringTransformer = (self) => `^${self}`;
 
 /**
  * Returns a new regular expression string where `self` will be used as negative lookahead
@@ -109,7 +110,7 @@ export const atStart = (self: string): string => `^${self}`;
  * @since 0.5.0
  * @category Utils
  */
-export const negativeLookAhead = (self: string): string => `(?!${self})`;
+export const negativeLookAhead: MTypes.StringTransformer = (self) => `(?!${self})`;
 
 /**
  * Returns a new regular expression string where `self` will be used as ppositive lookahead
@@ -117,7 +118,7 @@ export const negativeLookAhead = (self: string): string => `(?!${self})`;
  * @since 0.5.0
  * @category Utils
  */
-export const positiveLookAhead = (self: string): string => `(?=${self})`;
+export const positiveLookAhead: MTypes.StringTransformer = (self) => `(?=${self})`;
 
 /**
  * Returns a new regular expression string where `self` will be captured
@@ -125,7 +126,7 @@ export const positiveLookAhead = (self: string): string => `(?=${self})`;
  * @since 0.5.0
  * @category Utils
  */
-export const capture = (self: string): string => `(${self})`;
+export const capture: MTypes.StringTransformer = (self) => `(${self})`;
 
 /**
  * Escapes all regex special characters
@@ -133,7 +134,7 @@ export const capture = (self: string): string => `(${self})`;
  * @since 0.5.0
  * @category Constructors
  */
-export const escape = (s: string): string => s.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&');
+export const escape: MTypes.StringTransformer = (s) => s.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&');
 
 /**
  * A regular expression string representing an empty capturing group
