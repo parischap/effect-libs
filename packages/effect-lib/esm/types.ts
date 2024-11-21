@@ -35,6 +35,10 @@ export interface AnyArray extends Array<any> {}
  */
 export interface AnyReadonlyArray extends ReadonlyArray<any> {}
 
+/** Type used to avoid warnings by Eslint/functional when functions return a non-readonly type */
+//interface ReturnArray<T> extends Array<T> {}
+//export { type ReturnArray as Array };
+
 /**
  * Type that represents a primitive except `null` and `undefined`
  *
@@ -152,6 +156,14 @@ export type RefinementFrom<in Source> = Predicate.Refinement<Source, any>;
  */
 export type Errorish = { readonly message: string; readonly stack?: string | undefined };
 
+/**
+ * Type of a string transformer, i.e a function that transforms a string into another one
+ *
+ * @since 0.5.0
+ * @category Models
+ */
+export interface StringTransformer extends OneArgFunction<string, string> {}
+
 /* eslint-disable-next-line functional/prefer-readonly-type */
 type Enumerate<N extends number, Acc extends Array<number> = []> =
 	/* eslint-disable-next-line functional/prefer-readonly-type */
@@ -184,28 +196,18 @@ export type ToTupleOf<Tuple extends AnyArray, Target> = {
 	readonly [k in keyof Tuple]: Target;
 };
 
-/**
- * Utility type that removes all non-data from a type
- *
- * @since 0.0.6
- * @category Utility types
- */
-export type Data<T extends AnyRecord> = {
-	readonly [k in keyof T as readonly [k] extends (
-		readonly [symbol | 'toString' | 'toJSON' | 'pipe' | `_${string}`]
-	) ?
-		never
-	:	k]: T[k];
-};
+type BaseProtoKeys = symbol | 'toString' | 'toJSON' | 'pipe';
 
 /**
- * Utility type that removes all private, symbolic and toString, toJSON keys from a type and makes
- * all remaining properties optional
+ * Utility type that removes all non-data from a type.
  *
  * @since 0.0.6
  * @category Utility types
  */
-export type PartialData<T extends AnyRecord> = Partial<Data<T>>;
+export type Data<T extends AnyRecord, ProtoFunctions extends string | symbol = never> = {
+	readonly [k in keyof T as readonly [k] extends readonly [BaseProtoKeys | ProtoFunctions] ? never
+	:	k]: T[k];
+};
 
 /**
  * Utility type that removes all data from a type
@@ -213,12 +215,22 @@ export type PartialData<T extends AnyRecord> = Partial<Data<T>>;
  * @since 0.0.6
  * @category Utility types
  */
-export type Proto<T extends AnyRecord> = {
-	readonly [k in keyof T as readonly [k] extends (
-		readonly [symbol | 'toString' | 'toJSON' | 'pipe']
-	) ?
-		k
-	:	never]: T[k];
+export type Proto<T extends AnyRecord, ProtoFunctions extends string | symbol = never> = Omit<
+	T,
+	keyof Data<T, ProtoFunctions>
+>;
+
+/**
+ * Utility type that returns all the keys of a record whose value is a function except those which
+ * are in the BaseProtoKeys list.
+ *
+ * @since 0.5.0
+ * @category Utility types
+ */
+export type NonSymbolicFunctionKeys<T extends AnyRecord> = keyof {
+	readonly [k in keyof T as readonly [k] extends readonly [BaseProtoKeys] ? never
+	: readonly [T[k]] extends readonly [AnyFunction] ? k
+	: never]: void;
 };
 
 /**
