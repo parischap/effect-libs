@@ -1,5 +1,5 @@
 /* eslint-disable functional/no-expression-statements */
-import { MColor, MString } from '@parischap/effect-lib';
+import { MString } from '@parischap/effect-lib';
 import { Array, Chunk, Equal, Option, pipe, String } from 'effect';
 import { describe, expect, it } from 'vitest';
 
@@ -481,12 +481,6 @@ describe('MString', () => {
 		});
 		it('Not matching - foo', () => {
 			expect(MString.isMultiLine('foo')).toBe(false);
-		});
-	});
-
-	describe('colorize', () => {
-		it('Simple color', () => {
-			expect(pipe('foo', MString.colorize(MColor.red))).toBe('\x1b[31mfoo\x1b[0m');
 		});
 	});
 
