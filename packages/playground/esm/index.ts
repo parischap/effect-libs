@@ -1,7 +1,7 @@
 /* eslint-disable functional/no-expression-statements */
-import { Options, Stringify } from '@parischap/pretty-print';
+import { PPOption, PPStringify } from '@parischap/pretty-print';
 
-const stringify = Stringify.asString(Options.ansiDarkTreeified);
+const stringify = PPStringify.asString(PPOption.ansiDarkTreeified);
 const toPrint = {
 	A: {
 		A1: { A11: null, A12: { A121: null, A122: null, A123: null }, A13: null },
