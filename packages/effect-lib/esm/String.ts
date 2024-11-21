@@ -21,7 +21,6 @@ import {
 	pipe
 } from 'effect';
 import * as MArray from './Array.js';
-import * as MColor from './Color.js';
 import * as MCore from './Core.js';
 import * as MFunction from './Function.js';
 import * as MInspectable from './Inspectable.js';
@@ -573,14 +572,6 @@ export const tabify =
  * @category Utils
  */
 export const isMultiLine = (self: string): boolean => MRegExp.lineBreak.test(self);
-
-/**
- * Applies an ANSI color to `self`
- *
- * @since 0.4.0
- * @category Utils
- */
-export const colorize = (color: MColor.Type) => (self: string) => MColor.applyToString(self)(color);
 
 /**
  * Returns true if `self` is a SemVer
