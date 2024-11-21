@@ -1,5 +1,5 @@
 /**
- * In this document, the term `record` refers to a non-null object, an array or a function.
+ * In this module, the term `record` refers to a non-null object, an array or a function.
  *
  * This module implements a type that contains the marks used to print the properties of a record.
  * It is used by the PropertyFormatter module (see PropertyFormatter.ts)
@@ -11,7 +11,7 @@
  */
 
 import { MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
-import { Equal, Equivalence, Hash, Inspectable, Pipeable, Predicate } from 'effect';
+import { Equal, Equivalence, Hash, Pipeable, Predicate } from 'effect';
 
 const moduleTag = '@parischap/pretty-print/PropertyMarks/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
@@ -23,9 +23,9 @@ type TypeId = typeof TypeId;
  * @since 0.0.1
  * @category Models
  */
-export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
+export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
 	/**
-	 * Name of this PropertyMarks instance. Useful when debugging
+	 * Name of this PropertyMarks instance. Useful for equality and debugging
 	 *
 	 * @since 0.0.1
 	 */
@@ -77,35 +77,21 @@ const proto: MTypes.Proto<Type> = {
 	[Hash.symbol](this: Type) {
 		return Hash.cached(this, Hash.hash(this.name));
 	},
-	...MInspectable.BaseProto(moduleTag),
-	toJSON(this: Type) {
-		return this.name === '' ? this : this.name;
+	[MInspectable.NameSymbol](this: Type) {
+		return this.name;
 	},
+	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto
 };
 
-/** Constructor */
-const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
-
 /**
- * Constructor without a name
+ * Constructor
  *
  * @since 0.0.1
  * @category Constructors
  */
-export const make = (params: Omit<MTypes.Data<Type>, 'name'>): Type =>
-	_make({ ...params, name: '' });
-
-/**
- * Returns a copy of `self` with `name` set to `name`
- *
- * @since 0.0.1
- * @category Utils
- */
-export const setName =
-	(name: string) =>
-	(self: Type): Type =>
-		_make({ ...self, name: name });
+export const make = (params: MTypes.Data<Type>): Type =>
+	MTypes.objectFromDataAndProto(proto, params);
 
 /**
  * PropertyMarks instance for objects
@@ -113,8 +99,8 @@ export const setName =
  * @since 0.0.1
  * @category Instances
  */
-export const object: Type = _make({
-	name: 'objectPropertyMarks',
+export const object: Type = make({
+	name: 'ObjectPropertyMarks',
 	keyValueSeparator: ': ',
 	prototypePrefix: '',
 	prototypeSuffix: '@'

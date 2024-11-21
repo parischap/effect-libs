@@ -1,5 +1,5 @@
 /**
- * In this document, the term `record` refers to a non-null object, an array or a function.
+ * In this module, the term `record` refers to a non-null object, an array or a function.
  *
  * This module implements a type that contains the marks used when printing a record. It is used by
  * the RecordFormatter module (see RecordFormatter.ts)
@@ -11,8 +11,8 @@
  */
 
 import { MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
-import { Equal, Equivalence, Hash, Inspectable, Pipeable, Predicate } from 'effect';
-import * as RecordExtremityMarks from './RecordExtremityMarks.js';
+import { Equal, Equivalence, Hash, Pipeable, Predicate } from 'effect';
+import * as PPRecordExtremityMarks from './RecordExtremityMarks.js';
 
 const moduleTag = '@parischap/pretty-print/RecordMarks/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
@@ -24,9 +24,9 @@ type TypeId = typeof TypeId;
  * @since 0.0.1
  * @category Models
  */
-export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
+export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
 	/**
-	 * Name of this RecordMarks instance. Useful when debugging
+	 * Name of this RecordMarks instance. Useful for equality and debugging
 	 *
 	 * @since 0.0.1
 	 */
@@ -42,13 +42,13 @@ export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pip
 	 *
 	 * @since 0.0.1
 	 */
-	readonly arrayMarks: RecordExtremityMarks.Type;
+	readonly arrayMarks: PPRecordExtremityMarks.Type;
 	/**
 	 * Marks inserted at the start/end of an object.
 	 *
 	 * @since 0.0.1
 	 */
-	readonly objectMarks: RecordExtremityMarks.Type;
+	readonly objectMarks: PPRecordExtremityMarks.Type;
 	/** @internal */
 	readonly [TypeId]: TypeId;
 }
@@ -78,35 +78,21 @@ const proto: MTypes.Proto<Type> = {
 	[Hash.symbol](this: Type) {
 		return Hash.cached(this, Hash.hash(this.name));
 	},
-	...MInspectable.BaseProto(moduleTag),
-	toJSON(this: Type) {
-		return this.name === '' ? this : this.name;
+	[MInspectable.NameSymbol](this: Type) {
+		return this.name;
 	},
+	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto
 };
 
-/** Constructor */
-const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
-
 /**
- * Constructor without a name
+ * Constructor
  *
  * @since 0.0.1
  * @category Constructors
  */
-export const make = (params: Omit<MTypes.Data<Type>, 'name'>): Type =>
-	_make({ ...params, name: '' });
-
-/**
- * Returns a copy of `self` with `name` set to `name`
- *
- * @since 0.0.1
- * @category Utils
- */
-export const setName =
-	(name: string) =>
-	(self: Type): Type =>
-		_make({ ...self, name: name });
+export const make = (params: MTypes.Data<Type>): Type =>
+	MTypes.objectFromDataAndProto(proto, params);
 
 /**
  * Empty RecordMarks instance
@@ -114,11 +100,11 @@ export const setName =
  * @since 0.0.1
  * @category Instances
  */
-export const none: Type = _make({
-	name: 'noMarks',
+export const none: Type = make({
+	name: 'NoMarks',
 	propertySeparator: '',
-	arrayMarks: RecordExtremityMarks.none,
-	objectMarks: RecordExtremityMarks.none
+	arrayMarks: PPRecordExtremityMarks.none,
+	objectMarks: PPRecordExtremityMarks.none
 });
 
 /**
@@ -127,11 +113,11 @@ export const none: Type = _make({
  * @since 0.0.1
  * @category Instances
  */
-export const multiLine: Type = _make({
-	name: 'multiLineRecordMarks',
+export const multiLine: Type = make({
+	name: 'MultiLineRecordMarks',
 	propertySeparator: ',',
-	arrayMarks: RecordExtremityMarks.multiLineArray,
-	objectMarks: RecordExtremityMarks.multiLineObject
+	arrayMarks: PPRecordExtremityMarks.multiLineArray,
+	objectMarks: PPRecordExtremityMarks.multiLineObject
 });
 
 /**
@@ -140,9 +126,9 @@ export const multiLine: Type = _make({
  * @since 0.0.1
  * @category Instances
  */
-export const singleLine: Type = _make({
-	name: 'singleLineRecordMarks',
+export const singleLine: Type = make({
+	name: 'SingleLineRecordMarks',
 	propertySeparator: multiLine.propertySeparator + ' ',
-	arrayMarks: RecordExtremityMarks.singleLineArray,
-	objectMarks: RecordExtremityMarks.singleLineObject
+	arrayMarks: PPRecordExtremityMarks.singleLineArray,
+	objectMarks: PPRecordExtremityMarks.singleLineObject
 });

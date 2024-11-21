@@ -1,5 +1,5 @@
 /**
- * In this document, the term `record` refers to a non-null object, an array or a function.
+ * In this module, the term `record` refers to a non-null object, an array or a function.
  *
  * This module implements a type that takes care of the formatting of records. From the stringified
  * representation of the properties of a record which it receives, it must return the stringified
@@ -20,27 +20,34 @@ import {
 	Equivalence,
 	flow,
 	Hash,
-	Inspectable,
 	Number,
 	Order,
 	pipe,
 	Pipeable,
-	Predicate,
-	String,
-	Struct
+	Predicate
 } from 'effect';
-import type * as ColorSet from './ColorSet.js';
-import * as ColorWheel from './ColorWheel.js';
-import * as FormattedString from './FormattedString.js';
-import * as IndentMode from './IndentMode.js';
-import * as RecordMarks from './RecordMarks.js';
-import * as StringifiedValue from './StringifiedValue.js';
-import * as StringifiedValues from './StringifiedValues.js';
-import type * as Value from './Value.js';
+import type * as PPFormatSet from './FormatMap.js';
+import * as PPFormattedString from './FormattedString.js';
+import * as PPFormatWheel from './FormatWheel.js';
+import * as PPIndentMode from './IndentMode.js';
+import * as PPRecordMarks from './RecordMarks.js';
+import * as PPStringifiedValue from './StringifiedValue.js';
+import * as PPStringifiedValues from './StringifiedValues.js';
+import * as PPValue from './Value.js';
 
 const moduleTag = '@parischap/pretty-print/RecordFormatter/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
+
+/**
+ * Type of the action of a RecordFormatter. `value` is the Value (see Value.ts) representing a
+ * record and stringifiedProps is an array of the stringified representations of the properties of
+ * that record (see StringifiedValue.ts). Based on these two parameters, it must return a
+ * stringified representation of the whole record.
+ */
+interface ActionType {
+	(stringifiedProps: PPStringifiedValues.Type): (value: PPValue.All) => PPStringifiedValue.Type;
+}
 
 /**
  * Type that represents a RecordFormatter.
@@ -48,24 +55,20 @@ type TypeId = typeof TypeId;
  * @since 0.0.1
  * @category Models
  */
-export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
+export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
 	/**
-	 * Name of this RecordFormatter instance. Useful when debugging
+	 * Name of this RecordFormatter instance. Useful for equality and debugging
 	 *
 	 * @since 0.0.1
 	 */
 	readonly name: string;
+
 	/**
-	 * Action of this RecordFormatter. `value` is the Value (see Value.ts) representing a record and
-	 * stringifiedProps is an array of the stringified representations of the properties of that
-	 * record (see StringifiedValue.ts). Based on these two parameters, it must return a stringified
-	 * representations of the whole record.
+	 * Action of this RecordFormatter.
 	 *
 	 * @since 0.0.1
 	 */
-	readonly action: (
-		value: Value.All
-	) => (stringifiedProps: StringifiedValues.Type) => StringifiedValue.Type;
+	readonly action: ActionType;
 	/** @internal */
 	readonly [TypeId]: TypeId;
 }
@@ -95,35 +98,29 @@ const proto: MTypes.Proto<Type> = {
 	[Hash.symbol](this: Type) {
 		return Hash.cached(this, Hash.hash(this.name));
 	},
-	...MInspectable.BaseProto(moduleTag),
-	toJSON(this: Type) {
-		return this.name === '' ? this : this.name;
+	[MInspectable.NameSymbol](this: Type) {
+		return this.name;
 	},
+	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto
 };
 
-/** Constructor */
-const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
-
 /**
- * Constructor without a name
+ * Constructor
  *
  * @since 0.0.1
  * @category Constructors
  */
-export const make = (params: Omit<MTypes.Data<Type>, 'name'>): Type =>
-	_make({ ...params, name: '' });
+export const make = (params: MTypes.Data<Type>): Type =>
+	MTypes.objectFromDataAndProto(proto, params);
 
 /**
- * Returns a copy of `self` with `name` set to `name`
+ * Returns the `action` of `self`
  *
- * @since 0.0.1
- * @category Utils
+ * @since 0.3.0
+ * @category Destructors
  */
-export const setName =
-	(name: string) =>
-	(self: Type): Type =>
-		_make({ ...self, name: name });
+export const action = (self: Type): ActionType => self.action;
 
 /**
  * Function that returns a RecordFormatter instance that will always print records on a single line
@@ -132,33 +129,39 @@ export const setName =
  * @category Instances
  */
 export const singleLineMaker =
-	(recordMarks: RecordMarks.Type) =>
-	(colorSet: ColorSet.Type): Type =>
-		_make({
-			name: colorSet.name + 'SingleLineWith' + String.capitalize(recordMarks.name),
-			action: (value) =>
-				flow(
-					StringifiedValues.addSeparatorBetweenProps(
+	(recordMarks: PPRecordMarks.Type) =>
+	(formatSet: PPFormatSet.Type): Type =>
+		make({
+			name: formatSet.name + 'SingleLineWith' + recordMarks.name,
+			action: (stringifiedProps) => (value) =>
+				pipe(
+					stringifiedProps,
+					PPStringifiedValues.addSeparatorBetweenProps(
 						recordMarks.propertySeparator,
-						colorSet.propertySeparatorColorer
+						formatSet.propertySeparatorFormatter
 					),
 					Array.flatten,
-					StringifiedValue.addExtremityMarks(
-						MTypes.isArray(value.value) ? recordMarks.arrayMarks : recordMarks.objectMarks,
-						pipe(colorSet.recordDelimitersColorWheel, ColorWheel.getColor(value.depth))
+					PPStringifiedValue.addExtremityMarks(
+						pipe(
+							value,
+							MMatch.make,
+							MMatch.when(PPValue.isArray, () => recordMarks.arrayMarks),
+							MMatch.orElse(() => recordMarks.objectMarks)
+						),
+						pipe(formatSet.recordDelimitersFormatWheel, PPFormatWheel.getFormat(value.depth))
 					),
-					StringifiedValue.toSingleLine
+					PPStringifiedValue.toSingleLine
 				)
 		});
 
 /**
- * Alias for `singleLineMaker(RecordMarks.singleLine)`
+ * Alias for `singleLineMaker(PPRecordMarks.singleLine)`
  *
  * @since 0.0.1
  * @category Instances
  */
-export const singleLine: (colorSet: ColorSet.Type) => Type = singleLineMaker(
-	RecordMarks.singleLine
+export const singleLine: (formatSet: PPFormatSet.Type) => Type = singleLineMaker(
+	PPRecordMarks.singleLine
 );
 
 /**
@@ -168,50 +171,51 @@ export const singleLine: (colorSet: ColorSet.Type) => Type = singleLineMaker(
  * @category Instances
  */
 export const multiLineMaker =
-	(recordMarks: RecordMarks.Type, indentMode: IndentMode.Type) =>
-	(colorSet: ColorSet.Type): Type =>
-		_make({
-			name:
-				colorSet.name +
-				'MultiLineWith' +
-				String.capitalize(recordMarks.name) +
-				'And' +
-				String.capitalize(indentMode.name),
-			action: (value) =>
-				flow(
-					StringifiedValues.addSeparatorBetweenProps(
+	(recordMarks: PPRecordMarks.Type, indentMode: PPIndentMode.Type) =>
+	(formatSet: PPFormatSet.Type): Type =>
+		make({
+			name: formatSet.name + 'MultiLineWith' + recordMarks.name + 'And' + indentMode.name,
+			action: (stringifiedProps) => (value) =>
+				pipe(
+					stringifiedProps,
+					PPStringifiedValues.addSeparatorBetweenProps(
 						recordMarks.propertySeparator,
-						colorSet.propertySeparatorColorer
+						formatSet.propertySeparatorFormatter
 					),
-					StringifiedValues.indentProps(indentMode, colorSet.multiLineIndentColorer),
+					PPStringifiedValues.indentProps(indentMode, formatSet.multiLineIndentFormatter),
 					Array.flatten,
-					StringifiedValue.addExtremityMarks(
-						MTypes.isArray(value.value) ? recordMarks.arrayMarks : recordMarks.objectMarks,
-						pipe(colorSet.recordDelimitersColorWheel, ColorWheel.getColor(value.depth))
+					PPStringifiedValue.addExtremityMarks(
+						pipe(
+							value,
+							MMatch.make,
+							MMatch.when(PPValue.isArray, () => recordMarks.arrayMarks),
+							MMatch.orElse(() => recordMarks.objectMarks)
+						),
+						pipe(formatSet.recordDelimitersFormatWheel, PPFormatWheel.getFormat(value.depth))
 					)
 				)
 		});
 
 /**
- * Alias for `multiLineMaker(RecordMarks.multiLine,IndentMode.tab)`
+ * Alias for `multiLineMaker(PPRecordMarks.multiLine,PPIndentMode.tab)`
  *
  * @since 0.0.1
  * @category Instances
  */
-export const tabified: (colorSet: ColorSet.Type) => Type = multiLineMaker(
-	RecordMarks.multiLine,
-	IndentMode.tab
+export const tabified: (formatSet: PPFormatSet.Type) => Type = multiLineMaker(
+	PPRecordMarks.multiLine,
+	PPIndentMode.tab
 );
 
 /**
- * Alias for `multiLineMaker(RecordMarks.none,IndentMode.tree)`
+ * Alias for `multiLineMaker(PPRecordMarks.none,PPIndentMode.tree)`
  *
  * @since 0.0.1
  * @category Instances
  */
-export const treeified: (colorSet: ColorSet.Type) => Type = multiLineMaker(
-	RecordMarks.none,
-	IndentMode.tree
+export const treeified: (formatSet: PPFormatSet.Type) => Type = multiLineMaker(
+	PPRecordMarks.none,
+	PPIndentMode.tree
 );
 
 /**
@@ -223,43 +227,46 @@ export const treeified: (colorSet: ColorSet.Type) => Type = multiLineMaker(
  */
 export const splitOnConstituentNumberMaker =
 	(
-		singleLineRecordMarks: RecordMarks.Type,
-		multiLinesRecordMarks: RecordMarks.Type,
-		indentMode: IndentMode.Type
+		singleLineRecordMarks: PPRecordMarks.Type,
+		multiLinesRecordMarks: PPRecordMarks.Type,
+		indentMode: PPIndentMode.Type
 	) =>
 	(limit: number) =>
-	(colorSet: ColorSet.Type): Type =>
-		_make({
+	(formatSet: PPFormatSet.Type): Type =>
+		make({
 			name:
-				colorSet.name +
+				formatSet.name +
 				'SplitWhenConstituentNumberExceeds' +
 				limit +
 				'With' +
-				String.capitalize(singleLineRecordMarks.name) +
+				singleLineRecordMarks.name +
 				'And' +
-				String.capitalize(multiLinesRecordMarks.name) +
+				multiLinesRecordMarks.name +
 				'And' +
-				String.capitalize(indentMode.name),
-			action: (value) =>
-				flow(
-					MMatch.make,
-					MMatch.when(
-						flow(Array.length, Number.lessThanOrEqualTo(limit)),
-						singleLineMaker(singleLineRecordMarks)(colorSet).action(value)
-					),
-					MMatch.orElse(multiLineMaker(multiLinesRecordMarks, indentMode)(colorSet).action(value))
-				)
+				indentMode.name,
+			action: flow(
+				MMatch.make,
+				MMatch.when(
+					flow(Array.length, Number.lessThanOrEqualTo(limit)),
+					pipe(formatSet, singleLineMaker(singleLineRecordMarks), action)
+				),
+				MMatch.orElse(pipe(formatSet, multiLineMaker(multiLinesRecordMarks, indentMode), action))
+			)
 		});
 
 /**
  * Alias for
- * `splitOnConstituentNumberMaker(RecordMarks.singleLine,RecordMarks.multiLine,IndentMode.tab)`
+ * `splitOnConstituentNumberMaker(PPRecordMarks.singleLine,PPRecordMarks.multiLine,PPIndentMode.tab)`
  *
  * @since 0.0.1
  * @category Instances
  */
-export const splitOnConstituentNumber: (limit: number) => (colorSet: ColorSet.Type) => Type =
-	splitOnConstituentNumberMaker(RecordMarks.singleLine, RecordMarks.multiLine, IndentMode.tab);
+export const splitOnConstituentNumber: (limit: number) => (formatSet: PPFormatSet.Type) => Type =
+	splitOnConstituentNumberMaker(
+		PPRecordMarks.singleLine,
+		PPRecordMarks.multiLine,
+		PPIndentMode.tab
+	);
 
 /**
  * Calls `singleLine` if the total length of the properties to print (excluding formatting
@@ -270,48 +277,46 @@ export const splitOnConstituentNumber: (limit: number) => (colorSet: ColorSet.Ty
  */
 export const splitOnTotalLengthMaker =
 	(
-		singleLineRecordMarks: RecordMarks.Type,
-		multiLinesRecordMarks: RecordMarks.Type,
-		indentMode: IndentMode.Type
+		singleLineRecordMarks: PPRecordMarks.Type,
+		multiLinesRecordMarks: PPRecordMarks.Type,
+		indentMode: PPIndentMode.Type
 	) =>
 	(limit: number) =>
-	(colorSet: ColorSet.Type): Type =>
-		_make({
+	(formatSet: PPFormatSet.Type): Type =>
+		make({
 			name:
-				colorSet.name +
+				formatSet.name +
 				'SplitWhenTotalLengthExceeds' +
 				limit +
 				'With' +
-				String.capitalize(singleLineRecordMarks.name) +
+				singleLineRecordMarks.name +
 				'And' +
-				String.capitalize(multiLinesRecordMarks.name) +
+				multiLinesRecordMarks.name +
 				'And' +
-				String.capitalize(indentMode.name),
-			action: (value) =>
-				flow(
-					MMatch.make,
-					MMatch.when(
-						flow(
-							Array.map<StringifiedValues.Type, number>(
-								flow(Array.map(FormattedString.printedLength), Number.sumAll)
-							),
-							Number.sumAll,
-							Number.lessThanOrEqualTo(limit)
-						),
-						singleLineMaker(singleLineRecordMarks)(colorSet).action(value)
+				indentMode.name,
+			action: flow(
+				MMatch.make,
+				MMatch.when(
+					flow(
+						Array.map(flow(Array.map(PPFormattedString.printedLength), Number.sumAll)),
+						Number.sumAll,
+						Number.lessThanOrEqualTo(limit)
 					),
-					MMatch.orElse(multiLineMaker(multiLinesRecordMarks, indentMode)(colorSet).action(value))
-				)
+					pipe(formatSet, singleLineMaker(singleLineRecordMarks), action)
+				),
+				MMatch.orElse(pipe(formatSet, multiLineMaker(multiLinesRecordMarks, indentMode), action))
+			)
 		});
 
 /**
- * Alias for `splitOnTotalLengthMaker(RecordMarks.singleLine,RecordMarks.multiLine,IndentMode.tab)`
+ * Alias for
+ * `splitOnTotalLengthMaker(PPRecordMarks.singleLine,PPRecordMarks.multiLine,PPIndentMode.tab)`
  *
  * @since 0.0.1
  * @category Instances
  */
-export const splitOnTotalLength: (limit: number) => (colorSet: ColorSet.Type) => Type =
-	splitOnTotalLengthMaker(RecordMarks.singleLine, RecordMarks.multiLine, IndentMode.tab);
+export const splitOnTotalLength: (limit: number) => (formatSet: PPFormatSet.Type) => Type =
+	splitOnTotalLengthMaker(PPRecordMarks.singleLine, PPRecordMarks.multiLine, PPIndentMode.tab);
 
 /**
  * Calls `singleLine` if the length of the longest property to print (excluding formatting
@@ -322,51 +327,52 @@ export const splitOnTotalLength: (limit: number) => (colorSet: ColorSet.Type) =>
  */
 export const splitOnLongestPropLengthMaker =
 	(
-		singleLineRecordMarks: RecordMarks.Type,
-		multiLinesRecordMarks: RecordMarks.Type,
-		indentMode: IndentMode.Type
+		singleLineRecordMarks: PPRecordMarks.Type,
+		multiLinesRecordMarks: PPRecordMarks.Type,
+		indentMode: PPIndentMode.Type
 	) =>
 	(limit: number) =>
-	(colorSet: ColorSet.Type): Type =>
-		_make({
+	(formatSet: PPFormatSet.Type): Type =>
+		make({
 			name:
-				colorSet.name +
+				formatSet.name +
 				'SplitWhenLongestPropLengthExceeds' +
 				limit +
 				'With' +
-				String.capitalize(singleLineRecordMarks.name) +
+				singleLineRecordMarks.name +
 				'And' +
-				String.capitalize(multiLinesRecordMarks.name) +
+				multiLinesRecordMarks.name +
 				'And' +
-				String.capitalize(indentMode.name),
-			action: (value) =>
-				flow(
-					MMatch.make,
-					MMatch.when(
-						flow(
-							Array.map<StringifiedValues.Type, number>(
-								flow(Array.map(FormattedString.printedLength), Number.sumAll)
-							),
-							Array.match({
-								onEmpty: () => false,
-								onNonEmpty: flow(Array.max(Order.number), Number.lessThanOrEqualTo(limit))
-							})
-						),
-						singleLineMaker(singleLineRecordMarks)(colorSet).action(value)
+				indentMode.name,
+			action: flow(
+				MMatch.make,
+				MMatch.when(
+					flow(
+						Array.map(flow(Array.map(PPFormattedString.printedLength), Number.sumAll)),
+						Array.match({
+							onEmpty: () => false,
+							onNonEmpty: flow(Array.max(Order.number), Number.lessThanOrEqualTo(limit))
+						})
 					),
-					MMatch.orElse(multiLineMaker(multiLinesRecordMarks, indentMode)(colorSet).action(value))
-				)
+					pipe(formatSet, singleLineMaker(singleLineRecordMarks), action)
+				),
+				MMatch.orElse(pipe(formatSet, multiLineMaker(multiLinesRecordMarks, indentMode), action))
+			)
 		});
 
 /**
  * Alias for
- * `splitOnLongestPropLengthMaker(RecordMarks.singleLine,RecordMarks.multiLine,IndentMode.tab)`
+ * `splitOnLongestPropLengthMaker(PPRecordMarks.singleLine,PPRecordMarks.multiLine,PPIndentMode.tab)`
  *
  * @since 0.0.1
  * @category Instances
  */
-export const splitOnLongestPropLength: (limit: number) => (colorSet: ColorSet.Type) => Type =
-	splitOnLongestPropLengthMaker(RecordMarks.singleLine, RecordMarks.multiLine, IndentMode.tab);
+export const splitOnLongestPropLength: (limit: number) => (formatSet: PPFormatSet.Type) => Type =
+	splitOnLongestPropLengthMaker(
+		PPRecordMarks.singleLine,
+		PPRecordMarks.multiLine,
+		PPIndentMode.tab
+	);
 
 /**
  * Calls `singleLine` for arrays and multiLine for other records. Calls `multiLine` otherwise
@@ -376,40 +382,46 @@ export const splitOnLongestPropLength: (limit: number) => (colorSet: ColorSet.Ty
  */
 export const splitNonArraysMaker =
 	(
-		singleLineRecordMarks: RecordMarks.Type,
-		multiLinesRecordMarks: RecordMarks.Type,
-		indentMode: IndentMode.Type
+		singleLineRecordMarks: PPRecordMarks.Type,
+		multiLinesRecordMarks: PPRecordMarks.Type,
+		indentMode: PPIndentMode.Type
 	) =>
-	(colorSet: ColorSet.Type): Type =>
-		_make({
+	(formatSet: PPFormatSet.Type): Type =>
+		make({
 			name:
-				colorSet.name +
+				formatSet.name +
 				'SplitNonArraysWith' +
-				String.capitalize(singleLineRecordMarks.name) +
+				singleLineRecordMarks.name +
 				'And' +
-				String.capitalize(multiLinesRecordMarks.name) +
+				multiLinesRecordMarks.name +
 				'And' +
-				String.capitalize(indentMode.name),
-			action: (value) =>
-				pipe(
-					value,
+				indentMode.name,
+			action: (stringifiedProps) =>
+				flow(
 					MMatch.make,
 					MMatch.when(
-						flow(Struct.get('value'), MTypes.isArray),
-						singleLineMaker(singleLineRecordMarks)(colorSet).action
+						PPValue.isArray,
+						pipe(formatSet, singleLineMaker(singleLineRecordMarks), action)(stringifiedProps)
 					),
-					MMatch.orElse(multiLineMaker(multiLinesRecordMarks, indentMode)(colorSet).action)
+					MMatch.orElse(
+						pipe(
+							formatSet,
+							multiLineMaker(multiLinesRecordMarks, indentMode),
+							action
+						)(stringifiedProps)
+					)
 				)
 		});
 
 /**
- * Alias for `splitNonArraysMaker(RecordMarks.singleLine,RecordMarks.multiLine,IndentMode.tab)`
+ * Alias for
+ * `splitNonArraysMaker(PPRecordMarks.singleLine,PPRecordMarks.multiLine,PPIndentMode.tab)`
  *
  * @since 0.0.1
  * @category Instances
  */
-export const splitNonArrays: (colorSet: ColorSet.Type) => Type = splitNonArraysMaker(
-	RecordMarks.singleLine,
-	RecordMarks.multiLine,
-	IndentMode.tab
+export const splitNonArrays: (formatSet: PPFormatSet.Type) => Type = splitNonArraysMaker(
+	PPRecordMarks.singleLine,
+	PPRecordMarks.multiLine,
+	PPIndentMode.tab
 );

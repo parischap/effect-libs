@@ -1,5 +1,5 @@
 /**
- * In this document, the term `record` refers to a non-null object, an array or a function.
+ * In this module, the term `record` refers to a non-null object, an array or a function.
  *
  * This module implements a type that contains the marks used to print the extremities of a record.
  * It is used by the RecordMarks module (see RecordMarks.ts)
@@ -10,8 +10,8 @@
  * @since 0.0.1
  */
 
-import { MInspectable, MPipeable, MString, MTypes } from '@parischap/effect-lib';
-import { Equal, Equivalence, Hash, Inspectable, Option, Pipeable, Predicate } from 'effect';
+import { MInspectable, MPipeable, MString, MStruct, MTypes } from '@parischap/effect-lib';
+import { Equal, Equivalence, Hash, Option, pipe, Pipeable, Predicate } from 'effect';
 
 const moduleTag = '@parischap/pretty-print/RecordExtremityMarks/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
@@ -23,9 +23,9 @@ type TypeId = typeof TypeId;
  * @since 0.0.1
  * @category Models
  */
-export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
+export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
 	/**
-	 * Name of this RecordExtremityMarks instance. Useful when debugging
+	 * Name of this RecordExtremityMarks instance. Useful for equality and debugging
 	 *
 	 * @since 0.0.1
 	 */
@@ -73,35 +73,21 @@ const proto: MTypes.Proto<Type> = {
 	[Hash.symbol](this: Type) {
 		return Hash.cached(this, Hash.hash(this.name));
 	},
-	...MInspectable.BaseProto(moduleTag),
-	toJSON(this: Type) {
-		return this.name === '' ? this : this.name;
+	[MInspectable.NameSymbol](this: Type) {
+		return this.name;
 	},
+	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto
 };
 
-/** Constructor */
-const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
-
 /**
- * Constructor without a name
+ * Constructor
  *
  * @since 0.0.1
  * @category Constructors
  */
-export const make = (params: Omit<MTypes.Data<Type>, 'name'>): Type =>
-	_make({ ...params, name: '' });
-
-/**
- * Returns a copy of `self` with `name` set to `name`
- *
- * @since 0.0.1
- * @category Utils
- */
-export const setName =
-	(name: string) =>
-	(self: Type): Type =>
-		_make({ ...self, name: name });
+export const make = (params: MTypes.Data<Type>): Type =>
+	MTypes.objectFromDataAndProto(proto, params);
 
 /**
  * Empty RecordExtremityMarks instance.
@@ -109,8 +95,8 @@ export const setName =
  * @since 0.0.1
  * @category Instances
  */
-export const none: Type = _make({
-	name: 'noMarks',
+export const none: Type = make({
+	name: 'NoMarks',
 	start: Option.some(''),
 	end: Option.none()
 });
@@ -121,7 +107,7 @@ export const none: Type = _make({
  * @since 0.0.1
  * @category Instances
  */
-export const multiLineArray: Type = _make({
+export const multiLineArray: Type = make({
 	name: 'multiLineArrayExtremityMarks',
 	start: Option.some('['),
 	end: Option.some(']')
@@ -133,10 +119,11 @@ export const multiLineArray: Type = _make({
  * @since 0.0.1
  * @category Instances
  */
-export const singleLineArray: Type = _make({
-	...multiLineArray,
-	name: 'singleLineArrayExtremityMarks'
-});
+export const singleLineArray: Type = pipe(
+	multiLineArray,
+	MStruct.set({ name: 'SingleLineArrayExtremityMarks' }),
+	make
+);
 
 /**
  * RecordExtremityMarks instance for object output on multiple lines.
@@ -144,8 +131,8 @@ export const singleLineArray: Type = _make({
  * @since 0.0.1
  * @category Instances
  */
-export const multiLineObject: Type = _make({
-	name: 'multiLineObjectExtremityMarks',
+export const multiLineObject: Type = make({
+	name: 'MultiLineObjectExtremityMarks',
 	start: Option.some('{'),
 	end: Option.some('}')
 });
@@ -156,8 +143,8 @@ export const multiLineObject: Type = _make({
  * @since 0.0.1
  * @category Instances
  */
-export const singleLineObject: Type = _make({
-	name: 'singleLineObjectExtremityMarks',
+export const singleLineObject: Type = make({
+	name: 'SingleLineObjectExtremityMarks',
 	start: Option.map(multiLineObject.start, MString.append(' ')),
 	end: Option.map(multiLineObject.end, MString.prepend(' '))
 });

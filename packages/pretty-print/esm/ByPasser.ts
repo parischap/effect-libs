@@ -1,12 +1,12 @@
 /**
- * In this document, the term `record` refers to a non-null object, an array or a function.
+ * In this module, the term `record` refers to a non-null object, an array or a function.
  *
- * This module implements a type that defines a specific stringification for certain values (the
- * stringification process is by-passed). For instance, you may prefer printing Dates as strings
- * rather than as objects.
+ * This module implements a type that defines a specific stringification process for certain values
+ * (the normal stringification process is by-passed). For instance, you may prefer printing Dates as
+ * strings rather than as objects.
  *
  * With the make function, you can define your own instances if the provided ones don't suit your
- * needs. The easiest way to do so is to call the action mathod of one of the existing ByPasser
+ * needs. The easiest way to do so is to call the action method of one of the existing ByPasser
  * instances for the part you want to keep and write your own code for the part you want to change.
  *
  * @since 0.0.1
@@ -28,17 +28,16 @@ import {
 	Equivalence,
 	flow,
 	Hash,
-	Inspectable,
 	Option,
 	pipe,
 	Pipeable,
 	Predicate,
 	String
 } from 'effect';
-import type * as ColorSet from './ColorSet.js';
-import * as FormattedString from './FormattedString.js';
-import type * as Options from './Options.js';
-import type * as StringifiedValue from './StringifiedValue.js';
+import type * as PPFormatSet from './FormatMap.js';
+import * as PPFormattedString from './FormattedString.js';
+import type * as PPOption from './Option.js';
+import type * as PPStringifiedValue from './StringifiedValue.js';
 
 const moduleTag = '@parischap/pretty-print/ByPasser/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
@@ -50,31 +49,32 @@ type TypeId = typeof TypeId;
  * @since 0.0.1
  * @category Models
  */
-export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
+export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
 	/**
-	 * Name of this ByPasser instance. Useful when debugging
+	 * Name of this ByPasser instance. Useful for equality and debugging: the action property being a
+	 * function, it will not be printed by the `toString` method.
 	 *
 	 * @since 0.0.1
 	 */
 	readonly name: string;
 	/**
-	 * Action of this ByPasser. `value` is the Value (see Value.ts) being currently printed. options
-	 * is the Options instance (see Options.ts) passed to the pretty-printer. If the action returns a
-	 * value of type `Some<StringifiedValue.Type>` or `StringifiedValue.Type`, this value will be used
-	 * as is to represent the input value. If it returns a `none` or `null` or `undefined`, the normal
-	 * stringification process will be applied. For primitive types, the normal stringification
+	 * Action of this ByPasser. `value` is the Value (see Value.ts) being currently printed. `option`
+	 * is the `Option` instance (see Option.ts) passed by the user. If the action returns a value of
+	 * type `Some<StringifiedValue.Type>` or `StringifiedValue.Type`, this `StringifiedValue` will be
+	 * used as is to represent the input value. If it returns a `none` or `null` or `undefined`, the
+	 * normal stringification process will be applied. For primitive types, the normal stringification
 	 * process is to call the toString method (except for `null` and `undefined` which are printed as
 	 * 'null' and 'undefined' respectively). For records, the normal stringification process consists
 	 * in stringifying the constituents of the record (obtained by calling Reflect.ownKeys). The
-	 * normal stringification process does not handle colors. So most of the time, it's best to byPass
-	 * at least primitives with one of the predefined `ByPasser` instances.
+	 * normal stringification process does not handle formats. So most of the time, it's best to use
+	 * one of the predefined `ByPasser` instances if you want formatted output.
 	 *
 	 * @since 0.0.1
 	 */
 	readonly action: (
 		value: MTypes.Unknown,
-		options: Options.Type
-	) => MOption.OptionOrNullable<StringifiedValue.Type>;
+		option: PPOption.Type
+	) => MOption.OptionOrNullable<PPStringifiedValue.Type>;
 	/** @internal */
 	readonly [TypeId]: TypeId;
 }
@@ -104,46 +104,32 @@ const proto: MTypes.Proto<Type> = {
 	[Hash.symbol](this: Type) {
 		return Hash.cached(this, Hash.hash(this.name));
 	},
-	...MInspectable.BaseProto(moduleTag),
-	toJSON(this: Type) {
-		return this.name === '' ? this : this.name;
+	[MInspectable.NameSymbol](this: Type) {
+		return this.name;
 	},
+	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto
 };
 
-/** Constructor */
-const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
-
 /**
- * Constructor without a name
+ * Constructor
  *
  * @since 0.0.1
  * @category Constructors
  */
-export const make = (params: Omit<MTypes.Data<Type>, 'name'>): Type =>
-	_make({ ...params, name: '' });
-
-/**
- * Returns a copy of `self` with `name` set to `name`
- *
- * @since 0.0.1
- * @category Utils
- */
-export const setName =
-	(name: string) =>
-	(self: Type): Type =>
-		_make({ ...self, name: name });
+export const make = (params: MTypes.Data<Type>): Type =>
+	MTypes.objectFromDataAndProto(proto, params);
 
 /**
  * Function that returns a ByPasser instance which prints primitives as util.inspect does. This
- * ByPasser manages colors. It does not provide any special treatment for objects.
+ * ByPasser manages formats. It does not provide any special treatment for objects.
  *
  * @since 0.0.1
  * @category Instances
  */
-export const objectAsRecord = (colorSet: ColorSet.Type): Type =>
-	_make({
-		name: colorSet.name + 'ObjectAsRecord',
+export const objectAsRecord = (formatSet: PPFormatSet.Type): Type =>
+	make({
+		name: formatSet.name + 'ObjectAsRecord',
 		action: flow(
 			MMatch.make,
 			MMatch.when(
@@ -151,7 +137,7 @@ export const objectAsRecord = (colorSet: ColorSet.Type): Type =>
 				flow(
 					MString.prepend("'"),
 					MString.append("'"),
-					FormattedString.makeWith(colorSet.stringValueColorer),
+					PPFormattedString.makeWith(formatSet.stringValueFormatter),
 					Array.of,
 					Option.some
 				)
@@ -163,7 +149,7 @@ export const objectAsRecord = (colorSet: ColorSet.Type): Type =>
 				MTypes.isUndefined,
 				flow(
 					MString.fromPrimitive,
-					FormattedString.makeWith(colorSet.otherValueColorer),
+					PPFormattedString.makeWith(formatSet.otherValueFormatter),
 					Array.of,
 					Option.some
 				)
@@ -172,8 +158,10 @@ export const objectAsRecord = (colorSet: ColorSet.Type): Type =>
 				MTypes.isBigInt,
 				flow(
 					MString.fromNonNullablePrimitive,
-					FormattedString.makeWith(colorSet.otherValueColorer),
-					FormattedString.append(pipe('n', FormattedString.makeWith(colorSet.bigIntMarkColorer))),
+					PPFormattedString.makeWith(formatSet.otherValueFormatter),
+					PPFormattedString.append(
+						pipe('n', PPFormattedString.makeWith(formatSet.bigIntMarkFormatter))
+					),
 					Array.of,
 					Option.some
 				)
@@ -182,7 +170,7 @@ export const objectAsRecord = (colorSet: ColorSet.Type): Type =>
 				MTypes.isSymbol,
 				flow(
 					MString.fromNonNullablePrimitive,
-					FormattedString.makeWith(colorSet.symbolValueColorer),
+					PPFormattedString.makeWith(formatSet.symbolValueFormatter),
 					Array.of,
 					Option.some
 				)
@@ -197,22 +185,22 @@ export const objectAsRecord = (colorSet: ColorSet.Type): Type =>
  * @since 0.0.1
  * @category Instances
  */
-export const objectAsRecordWithoutNullables = (colorSet: ColorSet.Type): Type =>
-	_make({
-		name: colorSet.name + 'ObjectAsRecordWithoutNullables',
-		action: (value, options) =>
+export const objectAsRecordWithoutNullables = (formatSet: PPFormatSet.Type): Type =>
+	make({
+		name: formatSet.name + 'ObjectAsRecordWithoutNullables',
+		action: (value, option) =>
 			pipe(
 				value,
 				MMatch.make,
 				MMatch.whenOr(MTypes.isNull, MTypes.isUndefined, () => Option.some(Array.empty())),
-				MMatch.orElse(() => objectAsRecord(colorSet).action(value, options))
+				MMatch.orElse(() => objectAsRecord(formatSet).action(value, option))
 			)
 	});
 
 /**
  * Same as `objectAsRecord` but records receive the following treatment:
  *
- * - For functions: returns a some of `options.functionLabel`
+ * - For functions: returns a some of `option.functionLabel`
  * - For arrays: return a `none`
  * - For non-null objects: first tries to call the toString method (only if it is different from
  *   Object.prototype.toString) and then the toJSON method. Returns a `some` of the result if
@@ -223,15 +211,15 @@ export const objectAsRecordWithoutNullables = (colorSet: ColorSet.Type): Type =>
  * @since 0.0.1
  * @category Instances
  */
-export const objectAsValue = (colorSet: ColorSet.Type): Type =>
-	_make({
-		name: colorSet.name + 'ObjectAsValue',
-		action: (value, options) =>
+export const objectAsValue = (formatSet: PPFormatSet.Type): Type =>
+	make({
+		name: formatSet.name + 'ObjectAsValue',
+		action: (value, option) =>
 			pipe(
 				value,
 				MMatch.make,
 				MMatch.when(MTypes.isArray, () => Option.none()),
-				MMatch.when(MTypes.isFunction, () => pipe(options.functionLabel, Array.of, Option.some)),
+				MMatch.when(MTypes.isFunction, () => pipe(option.functionLabel, Array.of, Option.some)),
 				MMatch.when(
 					MTypes.isRecord,
 					flow(
@@ -240,12 +228,12 @@ export const objectAsValue = (colorSet: ColorSet.Type): Type =>
 							flow(
 								// split resets RegExp.prototype.lastIndex after executing
 								String.split(MRegExp.globalLineBreak),
-								Array.map(FormattedString.makeWith(colorSet.otherValueColorer))
+								Array.map(PPFormattedString.makeWith(formatSet.otherValueFormatter))
 							)
 						)
 					)
 				),
-				MMatch.orElse(() => objectAsRecord(colorSet).action(value, options))
+				MMatch.orElse(() => objectAsRecord(formatSet).action(value, option))
 			)
 	});
 
@@ -255,14 +243,14 @@ export const objectAsValue = (colorSet: ColorSet.Type): Type =>
  * @since 0.0.1
  * @category Instances
  */
-export const objectAsValueWithoutNullables = (colorSet: ColorSet.Type): Type =>
-	_make({
-		name: colorSet.name + 'ObjectAsValueWithoutNullables',
-		action: (value, options) =>
+export const objectAsValueWithoutNullables = (formatSet: PPFormatSet.Type): Type =>
+	make({
+		name: formatSet.name + 'ObjectAsValueWithoutNullables',
+		action: (value, option) =>
 			pipe(
 				value,
 				MMatch.make,
 				MMatch.whenOr(MTypes.isNull, MTypes.isUndefined, () => Option.some(Array.empty())),
-				MMatch.orElse(() => objectAsValue(colorSet).action(value, options))
+				MMatch.orElse(() => objectAsValue(formatSet).action(value, option))
 			)
 	});

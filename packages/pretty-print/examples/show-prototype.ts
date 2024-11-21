@@ -1,19 +1,19 @@
 /* eslint-disable functional/no-expression-statements */
-import { Options, Stringify, ValueOrder } from '@parischap/pretty-print';
+import { PPOption, PPStringify, PPValueOrder } from '@parischap/pretty-print';
 import { Order } from 'effect';
 
-const singleLine = Stringify.asString(Options.ansiDarkSingleLine);
-const singleLineWithProto = Stringify.asString(
-	Options.make({
-		...Options.ansiDarkSingleLine,
+const singleLine = PPStringify.asString(PPOption.ansiDarkSingleLine);
+const singleLineWithProto = PPStringify.asString(
+	PPOption.make({
+		...PPOption.ansiDarkSingleLine,
 		maxPrototypeDepth: +Infinity
 	})
 );
-const dedupedSingleLineWithProto = Stringify.asString(
-	Options.make({
-		...Options.ansiDarkSingleLine,
+const dedupedSingleLineWithProto = PPStringify.asString(
+	PPOption.make({
+		...PPOption.ansiDarkSingleLine,
 		maxPrototypeDepth: +Infinity,
-		propertySortOrder: Order.combine(ValueOrder.byStringKey, ValueOrder.byPrototypalDepth),
+		propertySortOrder: Order.combine(PPValueOrder.byStringKey, PPValueOrder.byPrototypalDepth),
 		dedupeRecordProperties: true
 	})
 );

@@ -5,14 +5,14 @@
  * This module implements several ValueOrder instances. You can define your own if the provided ones
  * don't suit your needs. All you have to do is provide a function that matches Type.
  *
- * In this document, the term `record` refers to a non-null object, an array or a function.
+ * In this module, the term `record` refers to a non-null object, an array or a function.
  *
  * @since 0.0.1
  */
 
-import { MFunction, MTypes } from '@parischap/effect-lib';
-import { Order, Predicate, Struct } from 'effect';
-import type * as Value from './Value.js';
+import { MFunction, MPredicate, MTypes } from '@parischap/effect-lib';
+import { Order, Struct } from 'effect';
+import type * as PPValue from './Value.js';
 
 /**
  * Type that implements a ValueOrder. For non Effect users, Order<A> is a function that takes two
@@ -21,7 +21,7 @@ import type * as Value from './Value.js';
  * @since 0.0.1
  * @category Models
  */
-export interface Type extends Order.Order<Value.All> {}
+export interface Type extends Order.Order<PPValue.All> {}
 
 /**
  * `ValueOrder` instance based on `prototypalDepth`, lowest depth first
@@ -47,7 +47,7 @@ export const byStringKey: Type = Order.mapInput(Order.string, Struct.get('string
  */
 export const byCallability: Type = Order.mapInput(
 	Order.boolean,
-	Predicate.struct({ valueCategory: MFunction.strictEquals(MTypes.Category.Function) })
+	MPredicate.struct({ valueCategory: MFunction.strictEquals(MTypes.Category.Function) })
 );
 
 /**

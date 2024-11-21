@@ -1,18 +1,18 @@
 /* eslint-disable functional/no-expression-statements, functional/immutable-data */
 
-import { MTypes } from '@parischap/effect-lib';
+import { MStruct, MTypes } from '@parischap/effect-lib';
 import {
-	ColorSet,
-	Options,
-	PropertyFilter,
-	RecordFormatter,
-	Stringify
+	PPFormatSet,
+	PPOption,
+	PPPropertyFilter,
+	PPRecordFormatter,
+	PPStringify
 } from '@parischap/pretty-print';
 import { pipe } from 'effect';
 import { describe, expect, it } from 'vitest';
 
 describe('pretty-print', () => {
-	const defaultStringify = Stringify.asString();
+	const defaultPPStringify = PPStringify.asString();
 
 	function test(n: number) {
 		return n + 1;
@@ -20,43 +20,43 @@ describe('pretty-print', () => {
 
 	describe('Basic tests', () => {
 		it('string', () => {
-			expect(defaultStringify('123')).toBe("'123'");
+			expect(defaultPPStringify('123')).toBe("'123'");
 		});
 
 		it('number', () => {
-			expect(defaultStringify(123)).toBe('123');
+			expect(defaultPPStringify(123)).toBe('123');
 		});
 
 		it('bigInt', () => {
-			expect(defaultStringify(BigInt(9007199254740991))).toBe('9007199254740991n');
+			expect(defaultPPStringify(BigInt(9007199254740991))).toBe('9007199254740991n');
 		});
 
 		it('boolean', () => {
-			expect(defaultStringify(true)).toBe('true');
+			expect(defaultPPStringify(true)).toBe('true');
 		});
 
 		it('symbol', () => {
-			expect(defaultStringify(Symbol.for('test'))).toBe('Symbol(test)');
+			expect(defaultPPStringify(Symbol.for('test'))).toBe('Symbol(test)');
 		});
 
 		it('undefined', () => {
-			expect(defaultStringify(undefined)).toBe('undefined');
+			expect(defaultPPStringify(undefined)).toBe('undefined');
 		});
 
 		it('null', () => {
-			expect(defaultStringify(null)).toBe('null');
+			expect(defaultPPStringify(null)).toBe('null');
 		});
 
 		it('function', () => {
-			expect(defaultStringify(test)).toBe('(Function)');
+			expect(defaultPPStringify(test)).toBe('(Function)');
 		});
 
 		it('simple array', () => {
-			expect(defaultStringify([3, 4])).toBe('[3, 4]');
+			expect(defaultPPStringify([3, 4])).toBe('[3, 4]');
 		});
 
 		it('simple object', () => {
-			expect(defaultStringify({ a: 1, b: { a: 5, c: 8 }, d: true })).toBe(
+			expect(defaultPPStringify({ a: 1, b: { a: 5, c: 8 }, d: true })).toBe(
 				'{ a: 1, b: { a: 5, c: 8 }, d: true }'
 			);
 		});
@@ -93,19 +93,22 @@ describe('pretty-print', () => {
 		});
 
 		it('Split on total length', () => {
-			expect(
-				Stringify.asString({
-					...Options.singleLine(ColorSet.uncolored),
-					recordFormatter: RecordFormatter.splitOnTotalLength(92)(ColorSet.uncolored)
-				})(testA)
-			).toBe(
+			const stringify = pipe(
+				PPOption.singleLine(PPFormatSet.none),
+				MStruct.set({
+					recordFormatter: pipe(PPFormatSet.none, PPRecordFormatter.splitOnTotalLength(92))
+				}),
+				PPOption.make,
+				PPStringify.asString
+			);
+			expect(stringify(testA)).toBe(
 				'{ Symbol(symbol1): 42, a: 1, b: { a: 5, c: [7, 8, { a: 9, h: [11, 12, 13] }] }, d: true, e: (Function) }'
 			);
 
 			expect(
-				Stringify.asString({
-					...Options.uncoloredSplitWhenTotalLengthExceeds40,
-					recordFormatter: RecordFormatter.splitOnTotalLength(91)(ColorSet.uncolored)
+				PPStringify.asString({
+					...PPOption.unformattedSplitWhenTotalLengthExceeds40,
+					recordFormatter: PPRecordFormatter.splitOnTotalLength(91)(PPFormatSet.none)
 				})(testA)
 			).toBe(
 				'{\n  Symbol(symbol1): 42,\n  a: 1,\n  b: { a: 5, c: [7, 8, { a: 9, h: [11, 12, 13] }] },\n  d: true,\n  e: (Function)\n}'
@@ -114,18 +117,18 @@ describe('pretty-print', () => {
 
 		it('Split on number of constituents', () => {
 			expect(
-				Stringify.asString({
-					...Options.uncoloredTabified,
-					recordFormatter: RecordFormatter.splitOnConstituentNumber(5)(ColorSet.uncolored)
+				PPStringify.asString({
+					...PPOption.unformattedTabified,
+					recordFormatter: PPRecordFormatter.splitOnConstituentNumber(5)(PPFormatSet.none)
 				})(testA)
 			).toBe(
 				'{ Symbol(symbol1): 42, a: 1, b: { a: 5, c: [7, 8, { a: 9, h: [11, 12, 13] }] }, d: true, e: (Function) }'
 			);
 
 			expect(
-				Stringify.asString({
-					...Options.uncoloredTabified,
-					recordFormatter: RecordFormatter.splitOnConstituentNumber(4)(ColorSet.uncolored)
+				PPStringify.asString({
+					...PPOption.unformattedTabified,
+					recordFormatter: PPRecordFormatter.splitOnConstituentNumber(4)(PPFormatSet.none)
 				})(testA)
 			).toBe(
 				'{\n  Symbol(symbol1): 42,\n  a: 1,\n  b: { a: 5, c: [7, 8, { a: 9, h: [11, 12, 13] }] },\n  d: true,\n  e: (Function)\n}'
@@ -134,12 +137,12 @@ describe('pretty-print', () => {
 
 		it('Single-line, with non-enumerables except on arrays, without functions and symbols', () => {
 			expect(
-				Stringify.asString({
-					...Options.uncoloredSingleLine,
+				PPStringify.asString({
+					...PPOption.unformattedSingleLine,
 					propertyFilter: pipe(
-						PropertyFilter.removeNonEnumerablesOnArrays,
-						PropertyFilter.combine(PropertyFilter.removeFunctions),
-						PropertyFilter.combine(PropertyFilter.removeSymbolicKeys)
+						PPPropertyFilter.removeNonEnumerablesOnArrays,
+						PPPropertyFilter.combine(PPPropertyFilter.removeFunctions),
+						PPPropertyFilter.combine(PPPropertyFilter.removeSymbolicKeys)
 					)
 				})(testA)
 			).toBe('{ a: 1, b: { a: 5, c: [7, 8, { a: 9, h: [11, 12, 13] }] }, d: true, g: [54] }');
@@ -147,12 +150,12 @@ describe('pretty-print', () => {
 
 		it('Single-line, with non-enumerables, without enumerables, non-functions and string keys', () => {
 			expect(
-				Stringify.asString({
-					...Options.uncoloredSingleLine,
+				PPStringify.asString({
+					...PPOption.unformattedSingleLine,
 					propertyFilter: pipe(
-						PropertyFilter.removeEnumerables,
-						PropertyFilter.combine(PropertyFilter.removeNonFunctions),
-						PropertyFilter.combine(PropertyFilter.removeStringKeys)
+						PPPropertyFilter.removeEnumerables,
+						PPPropertyFilter.combine(PPPropertyFilter.removeNonFunctions),
+						PPPropertyFilter.combine(PPPropertyFilter.removeStringKeys)
 					)
 				})(testA)
 			).toBe('{ Symbol(symbol2): (Function) }');
@@ -160,8 +163,8 @@ describe('pretty-print', () => {
 
 		it('Single-line, maxDepth=2', () => {
 			expect(
-				Stringify.asString({
-					...Options.uncoloredSingleLine,
+				PPStringify.asString({
+					...PPOption.unformattedSingleLine,
 					maxDepth: 2
 				})(testA)
 			).toBe('{ Symbol(symbol1): 42, a: 1, b: { a: 5, c: [Array] }, d: true, e: (Function) }');
@@ -169,8 +172,8 @@ describe('pretty-print', () => {
 
 		it('Single-line with maxPrototypeDepth=+Infinity and dedupeRecordProperties=true', () => {
 			expect(
-				Stringify.asString({
-					...Options.uncoloredSingleLine,
+				PPStringify.asString({
+					...PPOption.unformattedSingleLine,
 					maxPrototypeDepth: +Infinity,
 					dedupeRecordProperties: true
 				})(testA)
@@ -181,8 +184,8 @@ describe('pretty-print', () => {
 
 		it('Treeified with maxPrototypeDepth=+Infinity', () => {
 			expect(
-				Stringify.asString({
-					...Options.uncoloredTreeified,
+				PPStringify.asString({
+					...PPOption.unformattedTreeified,
 					maxPrototypeDepth: +Infinity
 				})(testA)
 			).toBe(`

@@ -1,7 +1,7 @@
 /* eslint-disable functional/no-expression-statements */
-import { Options, Stringify } from '@parischap/pretty-print';
+import { PPOption, PPStringify } from '@parischap/pretty-print';
 
-const stringify = Stringify.asString(Options.ansiDarkSplitWhenTotalLengthExceeds40);
+const stringify = PPStringify.asString(PPOption.ansiDarkSplitWhenTotalLengthExceeds40);
 
 const toPrint = {
 	a: 1,

@@ -1,5 +1,5 @@
 /**
- * In this document, the term `record` refers to a non-null object, an array or a function.
+ * In this module, the term `record` refers to a non-null object, an array or a function.
  *
  * Type that represents a value in its stringification context. A Value instance is created for the
  * value to stringify and, if that value is a record, for each property and nested property of that
@@ -19,7 +19,9 @@ import {
 	MMatch,
 	MOption,
 	MPipeable,
+	MPredicate,
 	MString,
+	MStruct,
 	MTree,
 	MTuple,
 	MTypes
@@ -42,9 +44,10 @@ import {
 	flow,
 	pipe
 } from 'effect';
-import * as FormattedString from './FormattedString.js';
-import type * as Options from './Options.js';
-import type * as StringifiedValue from './StringifiedValue.js';
+import * as PPFormattedString from './FormattedString.js';
+import type * as PPOption from './Option.js';
+import type * as PPStringifiedValue from './StringifiedValue.js';
+import type * as PPStringifiedValues from './StringifiedValues.js';
 
 const moduleTag = '@parischap/pretty-print/Value/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
@@ -62,8 +65,8 @@ export interface Type<out V extends MTypes.Unknown>
 		Pipeable.Pipeable {
 	/** The value to stringify */
 	readonly value: V;
-	/** Contains the result of calling Options.byPasser on `value` */
-	readonly byPassedValue: Option.Option<StringifiedValue.Type>;
+	/** Contains the result of calling Option.byPasser on `value` */
+	readonly byPassedValue: Option.Option<PPStringifiedValue.Type>;
 	/** The category of `value` */
 	readonly valueCategory: MTypes.Category;
 
@@ -219,7 +222,7 @@ export const empty: All = _make({
  * @since 0.0.1
  * @category Predicates
  */
-export const isRecordWithFunctionValue: Predicate.Predicate<All> = Predicate.struct({
+export const isRecordWithFunctionValue: Predicate.Predicate<All> = MPredicate.struct({
 	stringKey: String.isNonEmpty,
 	valueCategory: MFunction.strictEquals(MTypes.Category.Function)
 });
@@ -270,19 +273,15 @@ export const isNotNull = <V extends MTypes.Unknown>(
  */
 export const setValue = <V extends MTypes.Unknown>(
 	value: V,
-	options: Options.Type
+	option: PPOption.Type
 ): ((self: All) => Type<V>) =>
 	flow(
-		Struct.evolve({
-			value: Function.constant(value),
-			byPassedValue: pipe(
-				options.byPasser.action(value, options),
-				MOption.fromOptionOrNullable,
-				Function.constant
-			),
-			valueCategory: pipe(value, MTypes.Category.fromValue, Function.constant)
+		MStruct.set({
+			value: value,
+			byPassedValue: MOption.fromOptionOrNullable(option.byPasser.action(value, option)),
+			valueCategory: MTypes.Category.fromValue(value)
 		}),
-		_make
+		_make<V>
 	);
 
 /**
@@ -298,14 +297,12 @@ export const setAsRecordKey = (
 	parentRecord: MTypes.AnyRecord
 ): ((self: All) => All) =>
 	flow(
-		Struct.evolve({
-			key: Function.constant(key),
-			stringKey: pipe(key, MString.fromNonNullablePrimitive, Function.constant),
-			hasSymbolicKey: pipe(key, MTypes.isSymbol, Function.constant),
-			hasEnumerableKey: Function.constant(
-				Object.prototype.propertyIsEnumerable.call(parentRecord, key)
-			),
-			belongsToArray: pipe(parentRecord, MTypes.isArray, Function.constant)
+		MStruct.set({
+			key,
+			stringKey: MString.fromNonNullablePrimitive(key),
+			hasSymbolicKey: MTypes.isSymbol(key),
+			hasEnumerableKey: Object.prototype.propertyIsEnumerable.call(parentRecord, key),
+			belongsToArray: MTypes.isArray(parentRecord)
 		}),
 		_make
 	);
@@ -319,7 +316,7 @@ export const setAsRecordKey = (
 export const setIsCycleStart = (
 	isCycleStart: boolean
 ): (<V extends MTypes.Unknown>(self: Type<V>) => Type<V>) =>
-	flow(Struct.evolve({ isCycleStart: Function.constant(isCycleStart) }), _make);
+	flow(MStruct.set({ isCycleStart }), _make);
 
 /**
  * Returns a copy of `self` with `protoDepth` set to 0
@@ -328,7 +325,7 @@ export const setIsCycleStart = (
  * @category Utils
  */
 export const resetProtoDepth: <V extends MTypes.Unknown>(self: Type<V>) => Type<V> = flow(
-	Struct.evolve({ protoDepth: Function.constant(0) }),
+	MStruct.set({ protoDepth: 0 }),
 	_make
 );
 
@@ -339,9 +336,9 @@ export const resetProtoDepth: <V extends MTypes.Unknown>(self: Type<V>) => Type<
  * @category Utils
  */
 export const makeFromTopValue =
-	(options: Options.Type) =>
+	(option: PPOption.Type) =>
 	(value: unknown): All =>
-		pipe(empty, setValue(value as MTypes.Unknown, options));
+		pipe(empty, setValue(value as MTypes.Unknown, option));
 
 /**
  * Returns a copy of `self` with `depth` incremented by 1
@@ -350,7 +347,7 @@ export const makeFromTopValue =
  * @category Utils
  */
 export const incDepth: <V extends MTypes.Unknown>(self: Type<V>) => Type<V> = flow(
-	Struct.evolve({ depth: Number.increment }),
+	MStruct.evolve({ depth: Number.increment }),
 	_make
 );
 
@@ -361,7 +358,7 @@ export const incDepth: <V extends MTypes.Unknown>(self: Type<V>) => Type<V> = fl
  * @category Utils
  */
 export const incProtoDepth: <V extends MTypes.Unknown>(self: Type<V>) => Type<V> = flow(
-	Struct.evolve({ protoDepth: Number.increment }),
+	MStruct.evolve({ protoDepth: Number.increment }),
 	_make
 );
 
@@ -371,10 +368,9 @@ export const incProtoDepth: <V extends MTypes.Unknown>(self: Type<V>) => Type<V>
  *
  * @since 0.0.1
  * @category Utils
- * @category Utils
  */
 export const toProto = (self: RecordType): Type<MTypes.AnyRecord | null> =>
-	pipe(self, Struct.evolve({ value: Reflect.getPrototypeOf }), _make);
+	pipe(self, MStruct.evolve({ value: Reflect.getPrototypeOf }), _make);
 
 /**
  * Returns a copy of `self` for each of its properties
@@ -383,7 +379,7 @@ export const toProto = (self: RecordType): Type<MTypes.AnyRecord | null> =>
  * @category Utils
  */
 export const toOwnProperties =
-	(options: Options.Type) =>
+	(option: PPOption.Type) =>
 	(self: RecordType): Properties => {
 		const underlying = self.value;
 		return pipe(
@@ -391,7 +387,7 @@ export const toOwnProperties =
 			// Record.map will not return all keys
 			Reflect.ownKeys,
 			Array.map((key) =>
-				pipe(self, setValue(underlying[key], options), setAsRecordKey(key, underlying))
+				pipe(self, setValue(underlying[key], option), setAsRecordKey(key, underlying))
 			)
 		);
 	};
@@ -404,7 +400,7 @@ export const toOwnProperties =
  * @category Utils
  */
 export const toOwnAndPrototypesProperties =
-	(options: Options.Type) =>
+	(option: PPOption.Type) =>
 	(self: RecordType): Properties =>
 		pipe(
 			self,
@@ -413,14 +409,14 @@ export const toOwnAndPrototypesProperties =
 			MArray.unfold<Type<MTypes.AnyRecord | null>, Properties>(
 				flow(
 					Option.liftPredicate(
-						Predicate.struct({
-							protoDepth: Number.lessThanOrEqualTo(options.maxPrototypeDepth)
+						MPredicate.struct({
+							protoDepth: Number.lessThanOrEqualTo(option.maxPrototypeDepth)
 						})
 					),
 					Option.filter(isNotNull),
 					Option.map(
 						MTuple.makeBothBy({
-							toFirst: toOwnProperties(options),
+							toFirst: toOwnProperties(option),
 							toSecond: flow(toProto, incProtoDepth)
 						})
 					)
@@ -429,9 +425,9 @@ export const toOwnAndPrototypesProperties =
 			Array.flatten,
 			// Removes __proto__ properties if there are some because we have already read that property with getPrototypeOf
 			Array.filter(
-				Predicate.struct({ stringKey: Predicate.not(MFunction.strictEquals('__proto__')) })
+				MPredicate.struct({ stringKey: Predicate.not(MFunction.strictEquals('__proto__')) })
 			),
-			options.propertyFilter.action(self)
+			option.propertyFilter.action(self)
 		);
 
 /**
@@ -440,7 +436,7 @@ export const toOwnAndPrototypesProperties =
  * @since 0.0.1
  * @category Utils
  */
-export const stringify = (options: Options.Type): ((self: All) => StringifiedValue.Type) =>
+export const stringify = (option: PPOption.Type): ((self: All) => PPStringifiedValue.Type) =>
 	flow(
 		MTree.nonRecursiveUnfoldAndMap(
 			(seed, isCyclical) =>
@@ -451,23 +447,23 @@ export const stringify = (options: Options.Type): ((self: All) => StringifiedVal
 						toFirst: Function.identity,
 						toSecond: flow(
 							Option.liftPredicate(
-								Predicate.struct({
+								MPredicate.struct({
 									byPassedValue: Option.isNone,
-									depth: Number.lessThan(options.maxDepth),
+									depth: Number.lessThan(option.maxDepth),
 									isCycleStart: Boolean.not
-								}) as Predicate.Predicate<All>
+								})
 							),
 							Option.map(
 								flow(
 									MMatch.make,
-									MMatch.when(isArray, toOwnAndPrototypesProperties(options)),
+									MMatch.when(isArray, toOwnAndPrototypesProperties(option)),
 									MMatch.when(
 										isRecord,
 										flow(
-											toOwnAndPrototypesProperties(options),
-											Array.sort(options.propertySortOrder),
+											toOwnAndPrototypesProperties(option),
+											Array.sort(option.propertySortOrder),
 											MFunction.fIfTrue({
-												condition: options.dedupeRecordProperties,
+												condition: option.dedupeRecordProperties,
 												f: Array.dedupeWith((self, that) => self.key === that.key)
 											})
 										)
@@ -479,11 +475,11 @@ export const stringify = (options: Options.Type): ((self: All) => StringifiedVal
 						)
 					})
 				),
-			(currentValue, stringifiedProps: StringifiedValues.Type) =>
+			(currentValue, stringifiedProps: PPStringifiedValues.Type) =>
 				pipe(
 					stringifiedProps,
 					Array.match({
-						onNonEmpty: options.recordFormatter.action(currentValue),
+						onNonEmpty: option.recordFormatter.action(currentValue),
 
 						onEmpty: () =>
 							pipe(
@@ -495,7 +491,7 @@ export const stringify = (options: Options.Type): ((self: All) => StringifiedVal
 									flow(
 										Struct.get('value'),
 										MString.fromPrimitive,
-										FormattedString.makeWith(),
+										PPFormattedString.makeWith(),
 										Array.of
 									)
 								),
@@ -504,29 +500,29 @@ export const stringify = (options: Options.Type): ((self: All) => StringifiedVal
 									flow(
 										MMatch.make,
 										MMatch.when(
-											Predicate.struct({
-												depth: Number.greaterThanOrEqualTo(options.maxDepth)
+											MPredicate.struct({
+												depth: Number.greaterThanOrEqualTo(option.maxDepth)
 											}),
 											flow(
 												MMatch.make,
-												MMatch.when(isArray, () => options.arrayLabel),
+												MMatch.when(isArray, () => option.arrayLabel),
 												MMatch.when(
-													Predicate.struct({
+													MPredicate.struct({
 														valueCategory: MFunction.strictEquals(MTypes.Category.Function)
 													}),
-													() => options.functionLabel
+													() => option.functionLabel
 												),
-												MMatch.orElse(() => options.objectLabel),
+												MMatch.orElse(() => option.objectLabel),
 												Array.of
 											)
 										),
-										MMatch.when(Struct.get('isCycleStart'), () => Array.of(options.circularLabel)),
-										MMatch.orElse(() => Array.empty<FormattedString.Type>())
+										MMatch.when(Struct.get('isCycleStart'), () => Array.of(option.circularLabel)),
+										MMatch.orElse(() => Array.empty<PPFormattedString.Type>())
 									)
 								)
 							)
 					}),
-					options.propertyFormatter.action(currentValue)
+					option.propertyFormatter.action(currentValue)
 				)
 		),
 		Struct.get('value')

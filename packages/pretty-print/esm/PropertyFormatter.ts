@@ -1,5 +1,5 @@
 /**
- * In this document, the term `record` refers to a non-null object, an array or a function.
+ * In this module, the term `record` refers to a non-null object, an array or a function.
  *
  * This module implements a type that takes care if the stringification of the properties of a
  * record. From the stringified representation of the value of a property which it receives, it must
@@ -19,7 +19,6 @@ import {
 	flow,
 	Function,
 	Hash,
-	Inspectable,
 	Option,
 	pipe,
 	Pipeable,
@@ -27,29 +26,39 @@ import {
 	String,
 	Struct
 } from 'effect';
-import type * as ColorSet from './ColorSet.js';
-import * as FormattedString from './FormattedString.js';
-import * as PropertyMarks from './PropertyMarks.js';
-import type * as StringifiedValue from './StringifiedValue.js';
-import * as Value from './Value.js';
+import type * as PPFormatSet from './FormatMap.js';
+import * as PPFormattedString from './FormattedString.js';
+import * as PPPropertyMarks from './PropertyMarks.js';
+import type * as PPStringifiedValue from './StringifiedValue.js';
+import * as PPValue from './Value.js';
 
 const moduleTag = '@parischap/pretty-print/PropertyFormatter/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
 
 /**
+ * Type of the action of this PropertyFormatter. `value` is the Value (see Value.ts) representing a
+ * property and `stringified` is the stringified representation of the value of that property (see
+ * StringifiedValue.ts). Based on these two parameters, it must return a stringified representation
+ * of the whole property.
+ */
+interface ActionType {
+	(value: PPValue.All): MTypes.OneArgFunction<PPStringifiedValue.Type>;
+}
+/**
  * Type that represents a PropertyFormatter.
  *
  * @since 0.0.1
  * @category Models
  */
-export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
+export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
 	/**
-	 * Name of this PropertyFormatter instance. Useful when debugging
+	 * Name of this PropertyFormatter instance. Useful for equality and debugging
 	 *
 	 * @since 0.0.1
 	 */
 	readonly name: string;
+
 	/**
 	 * Action of this PropertyFormatter. `value` is the Value (see Value.ts) representing a property
 	 * and `stringified` is the stringified representation of the value of that property (see
@@ -58,9 +67,8 @@ export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pip
 	 *
 	 * @since 0.0.1
 	 */
-	readonly action: (
-		value: Value.All
-	) => (stringified: StringifiedValue.Type) => StringifiedValue.Type;
+	readonly action: ActionType;
+
 	/** @internal */
 	readonly [TypeId]: TypeId;
 }
@@ -90,35 +98,29 @@ const proto: MTypes.Proto<Type> = {
 	[Hash.symbol](this: Type) {
 		return Hash.cached(this, Hash.hash(this.name));
 	},
-	...MInspectable.BaseProto(moduleTag),
-	toJSON(this: Type) {
-		return this.name === '' ? this : this.name;
+	[MInspectable.NameSymbol](this: Type) {
+		return this.name;
 	},
+	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto
 };
 
-/** Constructor */
-const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
-
 /**
- * Constructor without a name
+ * Constructor
  *
  * @since 0.0.1
  * @category Constructors
  */
-export const make = (params: Omit<MTypes.Data<Type>, 'name'>): Type =>
-	_make({ ...params, name: '' });
+export const make = (params: MTypes.Data<Type>): Type =>
+	MTypes.objectFromDataAndProto(proto, params);
 
 /**
- * Returns a copy of `self` with `name` set to `name`
+ * Returns the `action` of `self`
  *
- * @since 0.0.1
- * @category Utils
+ * @since 0.3.0
+ * @category Destructors
  */
-export const setName =
-	(name: string) =>
-	(self: Type): Type =>
-		_make({ ...self, name: name });
+export const action = (self: Type): ActionType => self.action;
 
 /**
  * PropertyFormatter instance that prints only the value of a property (similar to the usual way an
@@ -127,22 +129,22 @@ export const setName =
  * @since 0.0.1
  * @category Instances
  */
-export const valueOnly: Type = _make({ name: 'valueOnly', action: () => Function.identity });
+export const valueOnly: Type = make({ name: 'ValueOnly', action: () => Function.identity });
 
 /**
  * Function that returns a PropertyFormatter instance that prints the key and value of a property
  * (similar to the usual way an object is printed). A mark can be prepended or appended to the key
  * to show if the property comes from the object itself or from one of its prototypes. Uses the
- * `propertyMarks` and `colorSet` passed as parameter
+ * `propertyMarks` and `formatSet` passed as parameter
  *
  * @since 0.0.1
  * @category Instances
  */
 export const keyAndValue =
-	(propertyMarks: PropertyMarks.Type) =>
-	(colorSet: ColorSet.Type): Type =>
-		_make({
-			name: colorSet.name + 'KeyAndValueWith' + String.capitalize(propertyMarks.name),
+	(propertyMarks: PPPropertyMarks.Type) =>
+	(formatSet: PPFormatSet.Type): Type =>
+		make({
+			name: formatSet.name + 'KeyAndValueWith' + propertyMarks.name,
 			action: (value) => (stringified) =>
 				pipe(
 					value.stringKey,
@@ -150,24 +152,24 @@ export const keyAndValue =
 					Option.match({
 						onNone: () => stringified,
 						onSome: flow(
-							FormattedString.makeWith(
-								Value.isRecordWithFunctionValue(value) ?
-									colorSet.propertyKeyColorerWhenFunctionValue
-								: value.hasSymbolicKey ? colorSet.propertyKeyColorerWhenSymbol
-								: colorSet.propertyKeyColorerWhenOther
+							PPFormattedString.makeWith(
+								PPValue.isRecordWithFunctionValue(value) ?
+									formatSet.propertyKeyFormatterWhenFunctionValue
+								: value.hasSymbolicKey ? formatSet.propertyKeyFormatterWhenSymbol
+								: formatSet.propertyKeyFormatterWhenOther
 							),
-							FormattedString.prepend(
+							PPFormattedString.prepend(
 								pipe(
 									propertyMarks.prototypePrefix,
-									FormattedString.makeWith(colorSet.prototypeMarkColorer),
-									FormattedString.repeat(value.protoDepth)
+									PPFormattedString.makeWith(formatSet.prototypeMarkFormatter),
+									PPFormattedString.repeat(value.protoDepth)
 								)
 							),
-							FormattedString.append(
+							PPFormattedString.append(
 								pipe(
 									propertyMarks.prototypeSuffix,
-									FormattedString.makeWith(colorSet.prototypeMarkColorer),
-									FormattedString.repeat(value.protoDepth)
+									PPFormattedString.makeWith(formatSet.prototypeMarkFormatter),
+									PPFormattedString.repeat(value.protoDepth)
 								)
 							),
 							(key) =>
@@ -176,17 +178,17 @@ export const keyAndValue =
 									onNonEmpty: flow(
 										Array.modifyNonEmptyHead(
 											flow(
-												Option.liftPredicate(FormattedString.isNonEmpty),
+												Option.liftPredicate(PPFormattedString.isNonEmpty),
 												Option.match({
 													onNone: () => key,
 													onSome: flow(
-														FormattedString.prepend(
+														PPFormattedString.prepend(
 															pipe(
 																propertyMarks.keyValueSeparator,
-																FormattedString.makeWith(colorSet.keyValueSeparatorColorer)
+																PPFormattedString.makeWith(formatSet.keyValueSeparatorFormatter)
 															)
 														),
-														FormattedString.prepend(key)
+														PPFormattedString.prepend(key)
 													)
 												})
 											)
@@ -199,47 +201,43 @@ export const keyAndValue =
 		});
 
 /**
- * Alias for `keyAndValue(PropertyMarks.objectMarks)`
+ * Alias for `keyAndValue(PPPropertyMarks.objectMarks)`
  *
  * @since 0.0.1
  * @category Instances
  */
-export const keyAndValueWithObjectMarks: (colorSet: ColorSet.Type) => Type = keyAndValue(
-	PropertyMarks.object
+export const keyAndValueWithObjectMarks: (formatSet: PPFormatSet.Type) => Type = keyAndValue(
+	PPPropertyMarks.object
 );
 
 /**
  * PropertyFormatter instance that uses the `valueOnly` instance for arrays and the `keyAndValue`
- * instance for other records. In the second case, uses the `propertyMarks` and `colorSet` passed as
- * parameter
+ * instance for other records. In the second case, uses the `propertyMarks` and `formatSet` passed
+ * as parameter
  *
  * @since 0.0.1
  * @category Utils
  */
 export const valueForArraysKeyAndValueForOthers =
-	(propertyMarks: PropertyMarks.Type) =>
-	(colorSet: ColorSet.Type): Type =>
-		_make({
-			name:
-				colorSet.name +
-				'ValueForArraysKeyAndValueWith' +
-				String.capitalize(propertyMarks.name) +
-				'ForOthers',
+	(propertyMarks: PPPropertyMarks.Type) =>
+	(formatSet: PPFormatSet.Type): Type =>
+		make({
+			name: formatSet.name + 'ValueForArraysKeyAndValueWith' + propertyMarks.name + 'ForOthers',
 			action: (value) =>
 				pipe(
 					value,
 					MMatch.make,
 					MMatch.when(Struct.get('belongsToArray'), valueOnly.action),
-					MMatch.orElse(keyAndValue(propertyMarks)(colorSet).action)
+					MMatch.orElse(keyAndValue(propertyMarks)(formatSet).action)
 				)
 		});
 
 /**
- * Alias for `valueForArraysKeyAndValueForOthers(PropertyMarks.objectMarks)`
+ * Alias for `valueForArraysKeyAndValueForOthers(PPPropertyMarks.objectMarks)`
  *
  * @since 0.0.1
  * @category Instances
  */
-export const recordLike: (colorSet: ColorSet.Type) => Type = valueForArraysKeyAndValueForOthers(
-	PropertyMarks.object
+export const recordLike: (formatSet: PPFormatSet.Type) => Type = valueForArraysKeyAndValueForOthers(
+	PPPropertyMarks.object
 );

@@ -2,6 +2,7 @@
 	"description": "A functional library to pretty-print and treeify objects",
 	"peerDependencies": {
 		"@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
+		"@parischap/ansi-styles": "workspace:@parischap-dev/ansi-styles@*",
 		"effect": "^3.10.13"
 	},
 	"devDependencies": {
@@ -9,7 +10,8 @@
 	},
 	"publishConfig": {
 		"peerDependencies": {
-			"@parischap/effect-lib": "^0.4.0"
+			"@parischap/effect-lib": "^0.4.0",
+			"@parischap/ansi-styles": "^0.0.1"
 		},
 		"main": "./cjs/index.js",
 		"types": "./dts/index.d.ts",

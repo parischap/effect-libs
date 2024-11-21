@@ -1,5 +1,5 @@
 /**
- * In this document, the term `record` refers to a non-null object, an array or a function.
+ * In this module, the term `record` refers to a non-null object, an array or a function.
  *
  * This module implements a type that takes care of filtering properties when printing records.
  * PropertyFilter's can be combined.
@@ -10,7 +10,7 @@
  * @since 0.0.1
  */
 
-import { MInspectable, MMatch, MPipeable, MTypes } from '@parischap/effect-lib';
+import { MInspectable, MMatch, MPipeable, MPredicate, MTypes } from '@parischap/effect-lib';
 import {
 	Array,
 	Boolean,
@@ -19,40 +19,47 @@ import {
 	flow,
 	Function,
 	Hash,
-	Inspectable,
 	pipe,
 	Pipeable,
 	Predicate,
 	Struct
 } from 'effect';
-import * as Value from './Value.js';
+import * as PPValue from './Value.js';
 
 const moduleTag = '@parischap/pretty-print/PropertyFilter/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
 
 /**
+ * Type of the action of this PropertyFilter. `value` is the Value (see Value.ts) representing the
+ * record whose properties are to be filtered and `properties` is an array of Value's representing
+ * the properties of that record. Based on these two parameters, the function must return the array
+ * of those properties that will be printed.
+ */
+interface ActionType {
+	(value: PPValue.RecordType): (properties: PPValue.Properties) => PPValue.Properties;
+}
+/**
  * Type that represents a PropertyFilter.
  *
  * @since 0.0.1
  * @category Models
  */
-export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
+export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
 	/**
-	 * Name of this PropertyFilter instance. Useful when debugging
+	 * Name of this PropertyFilter instance. Useful for equality and debugging
 	 *
 	 * @since 0.0.1
 	 */
 	readonly name: string;
+
 	/**
-	 * Action of this PropertyFilter. `value` is the Value (see Value.ts) representing the record
-	 * whose properties are to be filtered and `properties` is an array of Value's representing the
-	 * properties of that record. Based on these two parameters, the function must return the array of
-	 * those properties that will be printed.
+	 * Action of this PropertyFilter.
 	 *
 	 * @since 0.0.1
 	 */
-	readonly action: (value: Value.RecordType) => (properties: Value.Properties) => Value.Properties;
+	readonly action: ActionType;
+
 	/** @internal */
 	readonly [TypeId]: TypeId;
 }
@@ -82,35 +89,29 @@ const proto: MTypes.Proto<Type> = {
 	[Hash.symbol](this: Type) {
 		return Hash.cached(this, Hash.hash(this.name));
 	},
-	...MInspectable.BaseProto(moduleTag),
-	toJSON(this: Type) {
-		return this.name === '' ? this : this.name;
+	[MInspectable.NameSymbol](this: Type) {
+		return this.name;
 	},
+	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto
 };
 
-/** Constructor */
-const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
-
 /**
- * Constructor without a name
+ * Constructor
  *
  * @since 0.0.1
  * @category Constructors
  */
-export const make = (params: Omit<MTypes.Data<Type>, 'name'>): Type =>
-	_make({ ...params, name: '' });
+export const make = (params: MTypes.Data<Type>): Type =>
+	MTypes.objectFromDataAndProto(proto, params);
 
 /**
- * Returns a copy of `self` with `name` set to `name`
+ * Returns the `action` of `self`
  *
- * @since 0.0.1
- * @category Utils
+ * @since 0.3.0
+ * @category Destructors
  */
-export const setName =
-	(name: string) =>
-	(self: Type): Type =>
-		_make({ ...self, name: name });
+export const action = (self: Type): ActionType => self.action;
 
 /**
  * Combines two propertyFilters into one. The action of `self` is applied before the action of
@@ -132,7 +133,7 @@ export const setName =
 export const combine =
 	(that: Type) =>
 	(self: Type): Type =>
-		_make({
+		make({
 			name: `${self.name}+${that.name}`,
 			action: (value) => Function.compose(self.action(value), that.action(value))
 		});
@@ -143,7 +144,7 @@ export const combine =
  * @since 0.0.1
  * @category Instances
  */
-export const keepAll: Type = _make({ name: 'keepAll', action: () => Function.identity });
+export const keepAll: Type = make({ name: 'keepAll', action: () => Function.identity });
 
 /**
  * PropertyFilter instance that removes properties of records whose value is not a function
@@ -151,9 +152,9 @@ export const keepAll: Type = _make({ name: 'keepAll', action: () => Function.ide
  * @since 0.0.1
  * @category Instances
  */
-export const removeNonFunctions: Type = _make({
-	name: 'removeNonFunctions',
-	action: () => (props: Value.Properties) => Array.filter(props, Value.isRecordWithFunctionValue)
+export const removeNonFunctions: Type = make({
+	name: 'RemoveNonFunctions',
+	action: () => Array.filter(PPValue.isRecordWithFunctionValue)
 });
 
 /**
@@ -162,10 +163,9 @@ export const removeNonFunctions: Type = _make({
  * @since 0.0.1
  * @category Instances
  */
-export const removeFunctions: Type = _make({
-	name: 'removeFunctions',
-	action: () => (props: Value.Properties) =>
-		Array.filter(props, Predicate.not(Value.isRecordWithFunctionValue))
+export const removeFunctions: Type = make({
+	name: 'RemoveFunctions',
+	action: () => Array.filter(Predicate.not(PPValue.isRecordWithFunctionValue))
 });
 
 /**
@@ -174,9 +174,9 @@ export const removeFunctions: Type = _make({
  * @since 0.0.1
  * @category Instances
  */
-export const removeNonEnumerables: Type = _make({
-	name: 'removeNonEnumerables',
-	action: () => (props: Value.Properties) => Array.filter(props, Struct.get('hasEnumerableKey'))
+export const removeNonEnumerables: Type = make({
+	name: 'RemoveNonEnumerables',
+	action: () => Array.filter(Struct.get('hasEnumerableKey'))
 });
 
 /**
@@ -185,10 +185,9 @@ export const removeNonEnumerables: Type = _make({
  * @since 0.0.1
  * @category Instances
  */
-export const removeEnumerables: Type = _make({
-	name: 'removeEnumerables',
-	action: () => (props: Value.Properties) =>
-		Array.filter(props, Predicate.not(Struct.get('hasEnumerableKey')))
+export const removeEnumerables: Type = make({
+	name: 'RemoveEnumerables',
+	action: () => Array.filter(Predicate.not(Struct.get('hasEnumerableKey')))
 });
 
 /**
@@ -197,9 +196,9 @@ export const removeEnumerables: Type = _make({
  * @since 0.0.1
  * @category Instances
  */
-export const removeStringKeys: Type = _make({
-	name: 'removeStringKeys',
-	action: () => (props: Value.Properties) => Array.filter(props, Struct.get('hasSymbolicKey'))
+export const removeStringKeys: Type = make({
+	name: 'RemoveStringKeys',
+	action: () => Array.filter(Struct.get('hasSymbolicKey'))
 });
 
 /**
@@ -208,10 +207,9 @@ export const removeStringKeys: Type = _make({
  * @since 0.0.1
  * @category Instances
  */
-export const removeSymbolicKeys: Type = _make({
-	name: 'removeSymbolicKeys',
-	action: () => (props: Value.Properties) =>
-		Array.filter(props, Predicate.not(Struct.get('hasSymbolicKey')))
+export const removeSymbolicKeys: Type = make({
+	name: 'RemoveSymbolicKeys',
+	action: () => Array.filter(Predicate.not(Struct.get('hasSymbolicKey')))
 });
 
 /**
@@ -237,10 +235,10 @@ export const enumerableNonFunctionStringKeys: Type = pipe(
 export const keepFulfillingKeyPredicate =
 	(name: string) =>
 	(predicate: Predicate.Predicate<string>): Type =>
-		_make({
+		make({
 			name,
 			action: () =>
-				Array.filter(Predicate.struct({ stringKey: predicate, hasSymbolicKey: Boolean.not }))
+				Array.filter(MPredicate.struct({ stringKey: predicate, hasSymbolicKey: Boolean.not }))
 		});
 
 /**
@@ -250,12 +248,11 @@ export const keepFulfillingKeyPredicate =
  * @since 0.0.1
  * @category Instances
  */
-export const removeNonEnumerablesOnArrays: Type = _make({
-	name: 'removeNonEnumerablesOnArrays',
+export const removeNonEnumerablesOnArrays: Type = make({
+	name: 'RemoveNonEnumerablesOnArrays',
 	action: flow(
-		Struct.get('value'),
 		MMatch.make,
-		MMatch.when(MTypes.isArray, () => Array.filter<Value.All>(Struct.get('hasEnumerableKey'))),
+		MMatch.when(PPValue.isArray, () => Array.filter<PPValue.All>(Struct.get('hasEnumerableKey'))),
 		MMatch.orElse(() => Function.identity)
 	)
 });
@@ -268,4 +265,4 @@ export const removeNonEnumerablesOnArrays: Type = _make({
  * @category Instances
  */
 export const take = (n: number): Type =>
-	_make({ name: `Take ${n} first prop(s)`, action: () => Array.take(n) });
+	make({ name: `Take ${n} first prop(s)`, action: () => Array.take(n) });

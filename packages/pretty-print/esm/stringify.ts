@@ -7,10 +7,10 @@
 
 import { MTypes } from '@parischap/effect-lib';
 import { Struct, flow } from 'effect';
-import * as FormattedString from './FormattedString.js';
-import * as Options from './Options.js';
-import type * as StringifiedValue from './StringifiedValue.js';
-import * as Value from './Value.js';
+import * as PPFormattedString from './FormattedString.js';
+import * as PPOption from './Option.js';
+import type * as PPStringifiedValue from './StringifiedValue.js';
+import * as PPValue from './Value.js';
 
 /**
  * Pretty prints a value yielding the result as a StringifiedValue
@@ -19,9 +19,9 @@ import * as Value from './Value.js';
  * @category Utils
  */
 export const asLines = (
-	options: Options.Type = Options.uncoloredSplitWhenTotalLengthExceeds40
-): MTypes.OneArgFunction<unknown, StringifiedValue.Type> =>
-	flow(Value.makeFromTopValue(options), Value.stringify(options));
+	option: PPOption.Type = PPOption.unformattedSplitWhenTotalLengthExceeds40
+): MTypes.OneArgFunction<unknown, PPStringifiedValue.Type> =>
+	flow(PPValue.makeFromTopValue(option), PPValue.stringify(option));
 
 /**
  * Pretty prints a value yielding the result as a string. The separator used to join all lines
@@ -31,12 +31,12 @@ export const asLines = (
  * @category Utils
  */
 export const asString = (
-	options: Options.Type & {
-		readonly lineSep?: FormattedString.Type;
-	} = Options.uncoloredSplitWhenTotalLengthExceeds40
+	option: PPOption.Type & {
+		readonly lineSep?: PPFormattedString.Type;
+	} = PPOption.unformattedSplitWhenTotalLengthExceeds40
 ): MTypes.OneArgFunction<unknown, string> =>
 	flow(
-		asLines(options),
-		FormattedString.join(options.lineSep ?? FormattedString.makeWith()('\n')),
+		asLines(option),
+		PPFormattedString.join(option.lineSep ?? PPFormattedString.makeWith()('\n')),
 		Struct.get('value')
 	);

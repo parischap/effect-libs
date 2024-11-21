@@ -5,12 +5,12 @@
  * @since 0.0.1
  */
 
+import { ASFormatter } from '@parischap/ansi-styles';
 import { MArray } from '@parischap/effect-lib';
 import { flow, pipe } from 'effect';
-import * as ColorSet from './ColorSet.js';
-import * as FormattedString from './FormattedString.js';
-import type * as IndentMode from './IndentMode.js';
-import type * as StringifiedValue from './StringifiedValue.js';
+import * as PPFormattedString from './FormattedString.js';
+import type * as PPIndentMode from './IndentMode.js';
+import type * as PPStringifiedValue from './StringifiedValue.js';
 
 /**
  * Type that represents a StringifiedValues
@@ -18,17 +18,7 @@ import type * as StringifiedValue from './StringifiedValue.js';
  * @since 0.0.1
  * @category Models
  */
-export interface Type extends ReadonlyArray<StringifiedValue.Type> {}
-
-/**
- * Type that represents a function that transforms a StringifiedValues
- *
- * @since 0.0.1
- * @category Models
- */
-export interface Transformer {
-	(self: Type): Type;
-}
+export interface Type extends ReadonlyArray<PPStringifiedValue.Type> {}
 
 /**
  * Adds a seperator at between the stringified properties of a record
@@ -38,12 +28,12 @@ export interface Transformer {
  */
 export const addSeparatorBetweenProps = (
 	propertySeparator: string,
-	colorer: ColorSet.Colorer
-): Transformer =>
+	formatter: ASFormatter.Type
+): MTypes.OneArgFunction<Type> =>
 	flow(
 		MArray.modifyInit(
 			MArray.modifyLast(
-				FormattedString.append(pipe(propertySeparator, FormattedString.makeWith(colorer)))
+				PPFormattedString.append(pipe(propertySeparator, PPFormattedString.makeWith(formatter)))
 			)
 		)
 	);
@@ -54,18 +44,21 @@ export const addSeparatorBetweenProps = (
  * @since 0.0.1
  * @category Utils
  */
-export const indentProps = (indentMode: IndentMode.Type, colorer: ColorSet.Colorer): Transformer =>
+export const indentProps = (
+	indentMode: PPIndentMode.Type,
+	formatter: ASFormatter.Type
+): MTypes.OneArgFunction<Type> =>
 	flow(
 		MArray.modifyInit(
 			flow(
 				MArray.modifyHead(
-					FormattedString.prepend(
-						pipe(indentMode.initPropFirstLine, FormattedString.makeWith(colorer))
+					PPFormattedString.prepend(
+						pipe(indentMode.initPropFirstLine, PPFormattedString.makeWith(formatter))
 					)
 				),
 				MArray.modifyTail(
-					FormattedString.prepend(
-						pipe(indentMode.initPropTailLines, FormattedString.makeWith(colorer))
+					PPFormattedString.prepend(
+						pipe(indentMode.initPropTailLines, PPFormattedString.makeWith(formatter))
 					)
 				)
 			)
@@ -73,13 +66,13 @@ export const indentProps = (indentMode: IndentMode.Type, colorer: ColorSet.Color
 		MArray.modifyLast(
 			flow(
 				MArray.modifyHead(
-					FormattedString.prepend(
-						pipe(indentMode.lastPropFirstLine, FormattedString.makeWith(colorer))
+					PPFormattedString.prepend(
+						pipe(indentMode.lastPropFirstLine, PPFormattedString.makeWith(formatter))
 					)
 				),
 				MArray.modifyTail(
-					FormattedString.prepend(
-						pipe(indentMode.lastPropTailLines, FormattedString.makeWith(colorer))
+					PPFormattedString.prepend(
+						pipe(indentMode.lastPropTailLines, PPFormattedString.makeWith(formatter))
 					)
 				)
 			)
