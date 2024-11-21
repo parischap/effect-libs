@@ -1,17 +1,19 @@
 /**
- * A very simple implementation of the Select Graphic Rendition subset which allows to style
- * terminal outputs. Info at
- * https://stackoverflow.com/questions/4842424/list-of-ansi-color-escape-sequences
+ * A very simple implementation of the formats defined in the Select Graphic Rendition subset. Info
+ * at https://stackoverflow.com/questions/4842424/list-of-ansi-fgColor-escape-sequences. A Format is
+ * used to build a Formatter (see Formatter.ts) or a ContextFormatter (see ContextFormatter.ts). If
+ * you only need a Formatter that applies a Color as foreground color, you don't need to create a
+ * Format. The Formatter module has a `fromColor` constructor.
  *
  * @since 0.0.1
  */
 
-import { MInspectable, MPipeable, MStruct, MTypes } from '@parischap/effect-lib';
-import { Array, Equal, Equivalence, flow, Hash, pipe, Pipeable, Predicate } from 'effect';
-import { ASColor } from './index.js';
-export * as ASColor from './Color.js';
+import { MFunction, MInspectable, MPipeable, MStruct, MTypes } from '@parischap/effect-lib';
+import { Array, Equal, Equivalence, flow, Hash, Option, pipe, Pipeable, Predicate } from 'effect';
+import * as ASColor from './Color.js';
+import { ASSequence } from './index.js';
 
-const moduleTag = '@parischap/ansi-style/Format/';
+const moduleTag = '@parischap/ansi-styles/Format/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
 
@@ -23,17 +25,17 @@ type TypeId = typeof TypeId;
  */
 export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
 	/**
-	 * Text color
+	 * Foreground color
 	 *
 	 * @since 0.0.1
 	 */
-	readonly color: ASColor.Type;
+	readonly fgColor?: ASColor.Type;
 	/**
 	 * Background color
 	 *
 	 * @since 0.0.1
 	 */
-	readonly bgColor: ASColor.Type;
+	readonly bgColor?: ASColor.Type;
 	/**
 	 * True if text must be bold
 	 *
@@ -90,8 +92,8 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
  * @category Equivalences
  */
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
-	that.color === self.color &&
-	that.bgColor === self.bgColor &&
+	Equal.equals(that.fgColor, self.fgColor) &&
+	Equal.equals(that.bgColor, self.bgColor) &&
 	that.isBold === self.isBold &&
 	that.isUnderlined === self.isUnderlined &&
 	that.isBlinking === self.isBlinking &&
@@ -106,41 +108,56 @@ const proto: MTypes.Proto<Type> = {
 		return has(that) && equivalence(this, that);
 	},
 	[Hash.symbol](this: Type) {
-		return Hash.cached(this, Hash.structure(this));
+		return pipe(
+			this.fgColor,
+			Hash.hash,
+			Hash.combine(Hash.hash(this.bgColor)),
+			Hash.combine(Hash.hash(this.isBold)),
+			Hash.combine(Hash.hash(this.isUnderlined)),
+			Hash.combine(Hash.hash(this.isBlinking)),
+			Hash.combine(Hash.hash(this.isFramed)),
+			Hash.combine(Hash.hash(this.isEncircled)),
+			Hash.combine(Hash.hash(this.isOverlined)),
+			Hash.optimize,
+			Hash.cached(this)
+		);
 	},
-	[MInspectable.GetName](this: Type) {
-		return (
+	[MInspectable.NameSymbol](this: Type) {
+		const name =
 			(this.isBold ? 'Bold' : '') +
 			(this.isUnderlined ? 'Underlined' : '') +
 			(this.isFramed ? 'Framed' : '') +
 			(this.isEncircled ? 'Encircled' : '') +
 			(this.isOverlined ? 'Overlined' : '') +
 			(this.isBlinking ? 'Blinking' : '') +
-			ASColor.name(this.color) +
-			(ASColor.TerminalDefault.has(this.bgColor) ? '' : `In${ASColor.name(this.bgColor)}`)
-		);
+			(this.fgColor !== undefined ? ASColor.fgName(this.fgColor) : '') +
+			(this.bgColor !== undefined ? ASColor.bgName(this.bgColor) : '');
+		return name === '' ? 'None' : name;
 	},
 	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto
 };
 
+/** Constructor */
+const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
+
 /**
- * Constructor
+ * Constructor that builds a format that applies `fgColor` as foreground color and no other
+ * formatting
  *
- * @since 0.0.6
+ * @since 0.0.1
  * @category Constructors
  */
-export const make = (params: MTypes.Data<Type>): Type =>
-	MTypes.objectFromDataAndProto(proto, params);
+export const fromColor = (fgColor: ASColor.Type): Type =>
+	pipe(none, MStruct.set({ fgColor }), _make);
+
 /**
- * Empty color
+ * Format that performs no formatting
  *
  * @since 0.0.1
  * @category Instances
  */
-export const terminalDefault: Type = make({
-	color: ASColor.TerminalDefault.instance,
-	bgColor: ASColor.TerminalDefault.instance,
+export const none: Type = _make({
 	isBold: false,
 	isUnderlined: false,
 	isBlinking: false,
@@ -150,32 +167,22 @@ export const terminalDefault: Type = make({
 });
 
 /**
- * Creates a format with the provided color as text color, the terminal default background color and
- * no other formatting
- *
- * @since 0.0.1
- * @category Constructors
- */
-export const fromColor = (color: ASColor.Type): Type =>
-	pipe(terminalDefault, MStruct.set({ color }), make);
-
-/**
- * Returns a copy of `self` with `color` set to `color`
+ * Returns a copy of `self` with `fgColor` set to `fgColor`
  *
  * @since 0.0.1
  * @category Utils
  */
-export const withColor = (color: ASColor.Type): ((self: Type) => Type) =>
-	flow(MStruct.set({ color }), make);
+export const setFgColor = (fgColor: ASColor.Type): MTypes.OneArgFunction<Type> =>
+	flow(MStruct.set({ fgColor }), _make);
 
 /**
- * Returns a copy of `self` with `backgroundColor` set to `backgroundColor`
+ * Returns a copy of `self` with `bgColor` set to `bgColor`
  *
  * @since 0.0.1
  * @category Utils
  */
-export const withBackgroundColor = (bgColor: ASColor.Type): ((self: Type) => Type) =>
-	flow(MStruct.set({ bgColor }), make);
+export const setBgColor = (bgColor: ASColor.Type): MTypes.OneArgFunction<Type> =>
+	flow(MStruct.set({ bgColor }), _make);
 
 /**
  * Returns a copy of `self` with `isBold` set to `true`
@@ -183,7 +190,7 @@ export const withBackgroundColor = (bgColor: ASColor.Type): ((self: Type) => Typ
  * @since 0.0.1
  * @category Utils
  */
-export const bold: (self: Type) => Type = flow(MStruct.set({ isBold: true }), make);
+export const makeBold: MTypes.OneArgFunction<Type> = flow(MStruct.set({ isBold: true }), _make);
 
 /**
  * Returns a copy of `self` with `isUnderlined` set to `true`
@@ -191,7 +198,10 @@ export const bold: (self: Type) => Type = flow(MStruct.set({ isBold: true }), ma
  * @since 0.0.1
  * @category Utils
  */
-export const underlined: (self: Type) => Type = flow(MStruct.set({ isUnderlined: true }), make);
+export const makeUnderlined: MTypes.OneArgFunction<Type> = flow(
+	MStruct.set({ isUnderlined: true }),
+	_make
+);
 
 /**
  * Returns a copy of `self` with `isBlinking` set to `true`
@@ -199,7 +209,10 @@ export const underlined: (self: Type) => Type = flow(MStruct.set({ isUnderlined:
  * @since 0.0.1
  * @category Utils
  */
-export const blinking: (self: Type) => Type = flow(MStruct.set({ isBlinking: true }), make);
+export const makeBlinking: MTypes.OneArgFunction<Type> = flow(
+	MStruct.set({ isBlinking: true }),
+	_make
+);
 
 /**
  * Returns a copy of `self` with `isFramed` set to `true`
@@ -207,7 +220,7 @@ export const blinking: (self: Type) => Type = flow(MStruct.set({ isBlinking: tru
  * @since 0.0.1
  * @category Utils
  */
-export const framed: (self: Type) => Type = flow(MStruct.set({ isFramed: true }), make);
+export const makeFramed: MTypes.OneArgFunction<Type> = flow(MStruct.set({ isFramed: true }), _make);
 
 /**
  * Returns a copy of `self` with `isEncircled` set to `true`
@@ -215,7 +228,10 @@ export const framed: (self: Type) => Type = flow(MStruct.set({ isFramed: true })
  * @since 0.0.1
  * @category Utils
  */
-export const encircled: (self: Type) => Type = flow(MStruct.set({ isEncircled: true }), make);
+export const makeEncircled: MTypes.OneArgFunction<Type> = flow(
+	MStruct.set({ isEncircled: true }),
+	_make
+);
 
 /**
  * Returns a copy of `self` with `isOverlined` set to `true`
@@ -223,55 +239,18 @@ export const encircled: (self: Type) => Type = flow(MStruct.set({ isEncircled: t
  * @since 0.0.1
  * @category Utils
  */
-export const overlined: (self: Type) => Type = flow(MStruct.set({ isOverlined: true }), make);
+export const makeOverlined: MTypes.OneArgFunction<Type> = flow(
+	MStruct.set({ isOverlined: true }),
+	_make
+);
 
 /**
- * Returns a copy of `self` with `isBold` set to `false`
+ * Gets the name of `self`
  *
  * @since 0.0.1
- * @category Utils
+ * @category Destructors
  */
-export const notBold: (self: Type) => Type = flow(MStruct.set({ isBold: false }), make);
-
-/**
- * Returns a copy of `self` with `isUnderlined` set to `false`
- *
- * @since 0.0.1
- * @category Utils
- */
-export const notUnderlined: (self: Type) => Type = flow(MStruct.set({ isUnderlined: false }), make);
-
-/**
- * Returns a copy of `self` with `isBlinking` set to `false`
- *
- * @since 0.0.1
- * @category Utils
- */
-export const notBlinking: (self: Type) => Type = flow(MStruct.set({ isBlinking: false }), make);
-
-/**
- * Returns a copy of `self` with `isFramed` set to `false`
- *
- * @since 0.0.1
- * @category Utils
- */
-export const notFramed: (self: Type) => Type = flow(MStruct.set({ isFramed: false }), make);
-
-/**
- * Returns a copy of `self` with `isEncircled` set to `false`
- *
- * @since 0.0.1
- * @category Utils
- */
-export const notEncircled: (self: Type) => Type = flow(MStruct.set({ isEncircled: false }), make);
-
-/**
- * Returns a copy of `self` with `isOverlined` set to `false`
- *
- * @since 0.0.1
- * @category Utils
- */
-export const notOverlined: (self: Type) => Type = flow(MStruct.set({ isOverlined: false }), make);
+export const name = (self: Type): string => self[MInspectable.NameSymbol]();
 
 /**
  * Gets the sequence for `self`
@@ -279,22 +258,42 @@ export const notOverlined: (self: Type) => Type = flow(MStruct.set({ isOverlined
  * @since 0.0.1
  * @category Destructors
  */
-export const getSequence = (self: Type): string => {
-	const bold = self.isBold ? Array.of(1) : Array.empty<number>();
-	const underline = self.isUnderlined ? Array.of(4) : Array.empty<number>();
-	const blink = self.isBlinking ? Array.of(5) : Array.empty<number>();
-	const framed = self.isFramed ? Array.of(51) : Array.empty<number>();
-	const encircled = self.isEncircled ? Array.of(52) : Array.empty<number>();
-	const overlined = self.isOverlined ? Array.of(53) : Array.empty<number>();
-	const sequence = [
-		...self.color,
-		...self.bgColor,
-		...bold,
-		...underline,
-		...blink,
-		...framed,
-		...encircled,
-		...overlined
-	];
-	return `\x1b[${sequence.join(';')}m${s}\x1b[0m`;
-};
+export const sequence = (self: Type): ASSequence.Type =>
+	pipe(
+		ASSequence.empty,
+		Array.appendAll(
+			pipe(
+				self.fgColor,
+				Option.liftPredicate(MTypes.isNotUndefined),
+				Option.map(ASColor.fgSequence),
+				Option.getOrElse(() => ASSequence.empty)
+			)
+		),
+		Array.appendAll(
+			pipe(
+				self.bgColor,
+				Option.liftPredicate(MTypes.isNotUndefined),
+				Option.map(ASColor.bgSequence),
+				Option.getOrElse(() => ASSequence.empty)
+			)
+		),
+		MFunction.fIfTrue({ condition: self.isBold, f: Array.append(1) }),
+		MFunction.fIfTrue({ condition: self.isUnderlined, f: Array.append(4) }),
+		MFunction.fIfTrue({ condition: self.isBlinking, f: Array.append(5) }),
+		MFunction.fIfTrue({ condition: self.isFramed, f: Array.append(51) }),
+		MFunction.fIfTrue({ condition: self.isEncircled, f: Array.append(52) }),
+		MFunction.fIfTrue({ condition: self.isOverlined, f: Array.append(53) })
+	);
+
+/**
+ * Gets the StringTransformer for `self`. This StringTransformer sends the sequence string
+ * corresponding to Format, then the string it receives as argument and finally the reset
+ * sequence.
+ *
+ * @since 0.0.1
+ * @category Destructors
+ */
+export const stringTransformer: MTypes.OneArgFunction<Type, MTypes.StringTransformer> = flow(
+	sequence,
+	ASSequence.toStringTransformer
+);
