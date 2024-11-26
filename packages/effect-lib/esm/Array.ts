@@ -296,7 +296,18 @@ export const groupBy =
 	};*/
 
 /**
- * Unsafe get an element from an array. No bounds check, faster than the Effect version
+ * Same as get but with flipped parameters
+ *
+ * @since 0.5.0
+ * @category Utils
+ */
+export const getter =
+	<A>(self: ReadonlyArray<A>): MTypes.OneArgFunction<number, Option.Option<A>> =>
+	(index) =>
+		Array.get(self, index);
+
+/**
+ * Unsafe gets an element from an array. No bounds check, faster than the Effect version
  *
  * @since 0.0.6
  * @category Utils
@@ -306,6 +317,17 @@ export const unsafeGet =
 	<A>(self: ReadonlyArray<A>): A =>
 		// @ts-expect-error getting array content unsafely
 		self[index];
+
+/**
+ * Same as unsafeGet but with flipped parameters
+ *
+ * @since 0.5.0
+ * @category Utils
+ */
+export const unsafeGetter =
+	<A>(self: ReadonlyArray<A>): MTypes.OneArgFunction<number, A> =>
+	(index) =>
+		unsafeGet(index)(self);
 
 /**
  * Returns a copy of self with all elements but the last modified by a function f. Returns a copy of
