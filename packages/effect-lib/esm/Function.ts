@@ -112,3 +112,11 @@ export const applyAsMethod =
 	(o: MTypes.AnyRecord) =>
 	<A>(self: LazyArg<A>): A =>
 		self.call(o);
+
+/**
+ * Calls `self` without any argument
+ *
+ * @since 0.5.0
+ * @category Utils
+ */
+export const call = <A>(self: LazyArg<A>): A => self();
