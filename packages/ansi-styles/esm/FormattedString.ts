@@ -3,9 +3,7 @@
  * the original string (before applying the format) and the formatted string. The reason for keeping
  * the original string is that it allows to calculate the length of the string without the
  * formatting characters and to implement an Order (see Order.ts) that does not take formatting
- * characters into account. FormattedString's without formatting characters can be built with the
- * make function. FormattedString's with formatting characters are built by Formatter's (see
- * Formatter.ts)
+ * characters into account.
  *
  * @since 0.0.1
  */
@@ -15,6 +13,7 @@ import {
 	Array,
 	Equal,
 	Equivalence,
+	Function,
 	Hash,
 	Inspectable,
 	Order,
@@ -25,6 +24,7 @@ import {
 	flow,
 	pipe
 } from 'effect';
+import type * as ASFormatter from './Formatter.js';
 
 const moduleTag = '@parischap/ansi-styles/FormattedString/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
@@ -91,8 +91,22 @@ const proto: MTypes.Proto<Type> = {
  * @since 0.0.1
  * @category Constructors
  */
-export const make = (params: MTypes.Data<Type>): Type =>
+export const _make = (params: MTypes.Data<Type>): Type =>
 	MTypes.objectFromDataAndProto(proto, params);
+
+/**
+ * Builds a FormattedString from a StringTransformer and a string
+ *
+ * @since 0.0.1
+ * @category Constructors
+ */
+export const fromStyleAndString =
+	(f: MTypes.StringTransformer): ASFormatter.ActionType =>
+	(s) =>
+		_make({
+			formatted: f(s),
+			unformatted: s
+		});
 
 /**
  * Builds a FormattedString from a string without applying any format.
@@ -100,11 +114,7 @@ export const make = (params: MTypes.Data<Type>): Type =>
  * @since 0.0.1
  * @category Constructors
  */
-export const fromString = (s: string): Type =>
-	make({
-		formatted: s,
-		unformatted: s
-	});
+export const fromString: ASFormatter.ActionType = fromStyleAndString(Function.identity);
 
 /**
  * An empty FormattedString
@@ -150,7 +160,7 @@ export const unformattedLength: MTypes.OneArgFunction<Type, number> = flow(
 export const append =
 	(that: Type) =>
 	(self: Type): Type =>
-		make({
+		_make({
 			formatted: self.formatted + that.formatted,
 			unformatted: self.unformatted + that.unformatted
 		});
@@ -164,7 +174,7 @@ export const append =
 export const prepend =
 	(that: Type) =>
 	(self: Type): Type =>
-		make({
+		_make({
 			formatted: that.formatted + self.formatted,
 			unformatted: that.unformatted + self.unformatted
 		});
@@ -176,7 +186,7 @@ export const prepend =
  * @category Utils
  */
 export const concat = (...sArr: ReadonlyArray<Type>): Type =>
-	make({
+	_make({
 		formatted: pipe(sArr, Array.map(formatted), Array.join('')),
 
 		unformatted: pipe(sArr, Array.map(unformatted), Array.join(''))
@@ -192,7 +202,7 @@ export const concat = (...sArr: ReadonlyArray<Type>): Type =>
 export const join =
 	(sep: Type) =>
 	(sArr: ReadonlyArray<Type>): Type =>
-		make({
+		_make({
 			formatted: pipe(sArr, Array.map(formatted), Array.join(sep.formatted)),
 
 			unformatted: pipe(sArr, Array.map(unformatted), Array.join(sep.unformatted))
@@ -208,7 +218,7 @@ export const repeat =
 	(n: number) =>
 	(self: Type): Type => {
 		const repeat = String.repeat(n);
-		return make({
+		return _make({
 			formatted: repeat(self.formatted),
 			unformatted: repeat(self.unformatted)
 		});

@@ -8,7 +8,6 @@
 
 import { MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
 import { Equal, Equivalence, Function, Hash, pipe, Pipeable, Predicate, Struct } from 'effect';
-import * as ASColor from './Color.js';
 import * as ASFormat from './Format.js';
 import * as ASFormattedString from './FormattedString.js';
 
@@ -95,21 +94,8 @@ export const fromStringTransformer =
 	(f) =>
 		_make({
 			name,
-			action: (s) =>
-				ASFormattedString.make({
-					formatted: f(s),
-					unformatted: s
-				})
+			action: ASFormattedString.fromStyleAndString(f)
 		});
-
-/**
- * Constructor from a Color
- *
- * @since 0.0.1
- * @category Constructors
- */
-export const fromColor = (color: ASColor.Type): Type =>
-	fromStringTransformer(color.name)(color.fgStringTransformer);
 
 /**
  * Creates a Formatter that applies the given Format.
