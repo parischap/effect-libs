@@ -94,4 +94,4 @@ export const struct =
 	(
 		o: O
 	): o is { readonly [key in keyof O]: key extends keyof F ? Target<F[key]> & O[key] : O[key] } =>
-		Predicate.struct(fields as never) as never;
+		Predicate.struct(fields as never)(o as never) as never;
