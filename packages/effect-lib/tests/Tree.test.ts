@@ -1,6 +1,6 @@
 /* eslint-disable functional/no-expression-statements */
 import { MTree } from '@parischap/effect-lib';
-import { Array, Tuple } from 'effect';
+import { Array, pipe, Tuple } from 'effect';
 import { describe, expect, it } from 'vitest';
 
 describe('MTree', () => {
@@ -37,28 +37,37 @@ describe('MTree', () => {
 	};
 	describe('Recursive functions', () => {
 		it('unfoldTree', () => {
-			const testTree = MTree.unfoldTree(testInput, (seed) => Tuple.make(seed.value, seed.children));
+			const testTree = pipe(
+				testInput,
+				MTree.unfoldTree((seed) => Tuple.make(seed.value, seed.children))
+			);
 			expect(testTree.toString()).toBe(`{
+  "_id": "@parischap/effect-lib/Tree/",
   "value": 5,
   "forest": [
     {
+      "_id": "@parischap/effect-lib/Tree/",
       "value": 6,
       "forest": [
         {
+          "_id": "@parischap/effect-lib/Tree/",
           "value": 8,
           "forest": []
         },
         {
+          "_id": "@parischap/effect-lib/Tree/",
           "value": 9,
           "forest": []
         }
       ]
     },
     {
+      "_id": "@parischap/effect-lib/Tree/",
       "value": 7,
       "forest": []
     },
     {
+      "_id": "@parischap/effect-lib/Tree/",
       "value": 8,
       "forest": []
     }
@@ -69,30 +78,37 @@ describe('MTree', () => {
 
 	describe('Non-recursive functions', () => {
 		it('nonRecursiveUnfoldAndMap without cycles', () => {
-			const testTree = MTree.nonRecursiveUnfoldAndMap(testInput, (seed) =>
-				Tuple.make(seed.value, seed.children)
+			const testTree = pipe(
+				testInput,
+				MTree.nonRecursiveUnfoldAndMap((seed) => Tuple.make(seed.value, seed.children))
 			);
 			expect(testTree.toString()).toBe(`{
+  "_id": "@parischap/effect-lib/Tree/",
   "value": 5,
   "forest": [
     {
+      "_id": "@parischap/effect-lib/Tree/",
       "value": 6,
       "forest": [
         {
+          "_id": "@parischap/effect-lib/Tree/",
           "value": 8,
           "forest": []
         },
         {
+          "_id": "@parischap/effect-lib/Tree/",
           "value": 9,
           "forest": []
         }
       ]
     },
     {
+      "_id": "@parischap/effect-lib/Tree/",
       "value": 7,
       "forest": []
     },
     {
+      "_id": "@parischap/effect-lib/Tree/",
       "value": 8,
       "forest": []
     }
@@ -132,35 +148,45 @@ describe('MTree', () => {
 		cyclicalTestInput.children[0].children[0].children.push(cyclicalTestInput);
 		/* eslint-enable functional/immutable-data */
 		it('nonRecursiveUnfoldAndMap with cycles', () => {
-			const testTree = MTree.nonRecursiveUnfoldAndMap(cyclicalTestInput, (seed, isCyclical) =>
-				isCyclical ? Tuple.make(0, Array.empty()) : Tuple.make(seed.value, seed.children)
+			const testTree = pipe(
+				cyclicalTestInput,
+				MTree.nonRecursiveUnfoldAndMap((seed, isCyclical) =>
+					isCyclical ? Tuple.make(0, Array.empty()) : Tuple.make(seed.value, seed.children)
+				)
 			);
 			expect(testTree.toString()).toBe(`{
+  "_id": "@parischap/effect-lib/Tree/",
   "value": 5,
   "forest": [
     {
+      "_id": "@parischap/effect-lib/Tree/",
       "value": 6,
       "forest": [
         {
+          "_id": "@parischap/effect-lib/Tree/",
           "value": 8,
           "forest": [
             {
+              "_id": "@parischap/effect-lib/Tree/",
               "value": 0,
               "forest": []
             }
           ]
         },
         {
+          "_id": "@parischap/effect-lib/Tree/",
           "value": 9,
           "forest": []
         }
       ]
     },
     {
+      "_id": "@parischap/effect-lib/Tree/",
       "value": 7,
       "forest": []
     },
     {
+      "_id": "@parischap/effect-lib/Tree/",
       "value": 8,
       "forest": []
     }
