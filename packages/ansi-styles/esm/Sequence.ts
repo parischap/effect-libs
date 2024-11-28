@@ -1,6 +1,7 @@
 /**
- * This module implements an array of numbers that represents an ansi-style. For instance [31]
- * represents the Original red color and [38,5,9] the EightBitRed color.
+ * This module implements an array of numbers that represents the sequence of numbers to output
+ * between `\x1b[` and `m` to produce an ansi-style. For instance [31] is the Sequence for the
+ * Original red color and [38,5,9] the sequence for the EightBitRed color.
  *
  * @since 0.0.1
  */

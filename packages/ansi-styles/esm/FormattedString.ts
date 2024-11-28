@@ -26,7 +26,7 @@ import {
 } from 'effect';
 import type * as ASFormatter from './Formatter.js';
 
-const moduleTag = '@parischap/ansi-styles/FormattedString/';
+export const moduleTag = '@parischap/ansi-styles/FormattedString/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
 
@@ -70,7 +70,7 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
  * @category Equivalences
  */
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
-	that.formatted === self.formatted;
+	that.formatted === self.formatted && that.unformatted == self.unformatted;
 
 /** Prototype */
 const proto: MTypes.Proto<Type> = {
@@ -79,7 +79,13 @@ const proto: MTypes.Proto<Type> = {
 		return has(that) && equivalence(this, that);
 	},
 	[Hash.symbol](this: Type) {
-		return pipe(this.formatted, Hash.hash, Hash.cached(this));
+		return pipe(
+			this.formatted,
+			Hash.hash,
+			Hash.combine(Hash.hash(this.unformatted)),
+			Hash.optimize,
+			Hash.cached(this)
+		);
 	},
 	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto

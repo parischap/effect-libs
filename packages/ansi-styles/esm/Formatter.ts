@@ -1,7 +1,6 @@
 /**
- * This module implements a type that applies a Format (see Format.ts) to a string. You may build a
- * Formatter without previously building a Format in the two following situations: Formatter that
- * does not apply any formatting and formatter that only applies a foreground color.
+ * This module implements a type whose action is to apply a Format (see Format.ts) to a string.
+ * Building a Formatter is not required but recommended for debugging purposes.
  *
  * @since 0.1.0
  */
@@ -11,7 +10,7 @@ import { Equal, Equivalence, Function, Hash, pipe, Pipeable, Predicate, Struct }
 import * as ASFormat from './Format.js';
 import * as ASFormattedString from './FormattedString.js';
 
-const moduleTag = '@parischap/ansi-styles/Formatter/';
+export const moduleTag = '@parischap/ansi-styles/Formatter/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
 

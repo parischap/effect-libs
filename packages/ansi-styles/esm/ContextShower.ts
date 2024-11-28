@@ -10,7 +10,7 @@ import { Equal, Equivalence, Hash, Pipeable, Predicate, Struct } from 'effect';
 import * as ASContextFormatter from './ContextFormatter.js';
 import * as ASFormattedString from './FormattedString.js';
 
-const moduleTag = '@parischap/ansi-styles/ContextShower/';
+export const moduleTag = '@parischap/ansi-styles/ContextShower/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
 
@@ -95,8 +95,8 @@ export const fromContextFormatter =
 	<C>(contextFormatter: ASContextFormatter.Type<C>) =>
 	(s: string): Type<C> =>
 		_make({
-			name: `${s}In${contextFormatter.name}`,
-			action: contextFormatter.action(s)
+			name: `${s}FormattedWith${contextFormatter.name}`,
+			action: (context) => contextFormatter.action(context)(s)
 		});
 
 /**

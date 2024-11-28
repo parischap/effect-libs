@@ -7,12 +7,13 @@
  * - A style that comprises foreground and background colors as well as several properties such as
  *   whether the text is bold, blinking, underlined,... (ASFormat.Styled).
  *
- * Note that a Styled Format with only a foreground color c is equal to a Colored Format built from
- * the c color.
+ * Note that a Styled Format with only a foreground color `c` is equal to a Colored Format built
+ * from the same `c` color.
  *
  * Once a Format is built, you can apply it directly to a string by calling the
  * ASFormat.stringTransformer function. However, if that stringTransformer is to be stored in
- * another object, it is best to encapsulate it into a Formatter for debug purposes.
+ * another object, it is good practise to encapsulate it into a Formatter so as to give it a name
+ * for debug purposes (a function does not get printed by JSON.stringify)
  *
  * @since 0.0.1
  */
@@ -41,7 +42,7 @@ import {
 } from 'effect';
 import * as ASSequence from './Sequence.js';
 
-const moduleTag = '@parischap/ansi-styles/Format/';
+export const moduleTag = '@parischap/ansi-styles/Format/';
 const _moduleTag = moduleTag;
 const _TypeId: unique symbol = Symbol.for(moduleTag);
 
@@ -86,24 +87,7 @@ const baseProto = {
  * @since 0.0.1
  * @category Destructors
  */
-export const name: MTypes.OneArgFunction<Type, string> = flow(
-	Struct.get(MInspectable.NameSymbol),
-	MFunction.call
-);
-
-/**
- * Gets the StringTransformer for `self`. This StringTransformer sends the sequence string
- * corresponding to Format, then the string it receives as argument and finally the reset sequence.
- *
- * @since 0.0.1
- * @category Destructors
- */
-export const stringTransformer: MTypes.OneArgFunction<Type, MTypes.StringTransformer> = flow(
-	MMatch.make,
-	MMatch.when(Colored.has, Colored.fgStringTransformer),
-	MMatch.when(Styled.has, Styled.stringTransformer),
-	MMatch.exhaustive
-);
+export const name = (self: Type): string => self[MInspectable.NameSymbol]();
 
 export namespace Colored {
 	const moduleTag = _moduleTag + 'Colored/';
@@ -185,7 +169,7 @@ export namespace Colored {
 	 * @since 0.0.1
 	 * @category Destructors
 	 */
-	export const fgName: MTypes.OneArgFunction<Type, string> = name;
+	export const fgName: MTypes.OneArgFunction<Type, string> = Struct.get('name');
 
 	/**
 	 * Returns the background name of `self`
@@ -193,7 +177,10 @@ export namespace Colored {
 	 * @since 0.0.1
 	 * @category Destructors
 	 */
-	export const bgName: MTypes.OneArgFunction<Type, string> = flow(name, MString.prepend('In'));
+	export const bgName: MTypes.OneArgFunction<Type, string> = flow(
+		Struct.get('name'),
+		MString.prepend('In')
+	);
 
 	/**
 	 * Returns the foreground sequence of `self`
@@ -1029,7 +1016,7 @@ export namespace Colored {
 					)
 				),
 				MMatch.exhaustive,
-				MString.prepend('8Bit')
+				MString.prepend('EightBit')
 			);
 		}
 
@@ -2855,7 +2842,7 @@ export namespace Colored {
 		}): Type =>
 			_fromSequence({
 				name,
-				fgSequence: Array.make(48, 2, redCode, greenCode, blueCode)
+				fgSequence: Array.make(38, 2, redCode, greenCode, blueCode)
 			});
 
 		/**
@@ -2864,7 +2851,7 @@ export namespace Colored {
 		 * @since 0.0.1
 		 * @category Construtors
 		 */
-		export const fromCodes = ({
+		export const make = ({
 			red,
 			green,
 			blue
@@ -2874,7 +2861,7 @@ export namespace Colored {
 			readonly blue: number;
 		}): Type =>
 			_fromCodes({
-				name: `RGB_${red}\${green}\${blue}`,
+				name: `RGB/${red}/${green}/${blue}`,
 				redCode: pipe(red, Number.round(0), Number.clamp({ minimum: 0, maximum: 255 })),
 				greenCode: pipe(green, Number.round(0), Number.clamp({ minimum: 0, maximum: 255 })),
 				blueCode: pipe(blue, Number.round(0), Number.clamp({ minimum: 0, maximum: 255 }))
@@ -4799,3 +4786,18 @@ export namespace Styled {
 		ASSequence.toStringTransformer
 	);
 }
+
+/**
+ * Gets the StringTransformer for `self`. This StringTransformer sends the sequence string
+ * corresponding to Format, then the string it receives as argument and finally the reset sequence.
+ *
+ * @since 0.0.1
+ * @category Destructors
+ */
+// Put this function after creating the Colored namespace. No warning if you do it the other way round but the code crashes at execution because Colored is undefined
+export const stringTransformer: MTypes.OneArgFunction<Type, MTypes.StringTransformer> = flow(
+	MMatch.make,
+	MMatch.when(Colored.has, Colored.fgStringTransformer),
+	MMatch.when(Styled.has, Styled.stringTransformer),
+	MMatch.exhaustive
+);

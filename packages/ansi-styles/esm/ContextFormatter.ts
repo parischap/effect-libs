@@ -10,31 +10,19 @@
  * @since 0.0.1
  */
 
-import { MArray, MInspectable, MNumber, MPipeable, MTypes } from '@parischap/effect-lib';
-import {
-	Array,
-	Equal,
-	Equivalence,
-	flow,
-	Function,
-	Hash,
-	pipe,
-	Pipeable,
-	Predicate,
-	Struct
-} from 'effect';
-import type * as ASContextShower from './ContextShower.js';
+import { MArray, MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
+import { Array, Equal, Equivalence, Hash, pipe, Pipeable, Predicate, Struct } from 'effect';
 import type * as ASFormat from './Format.js';
 import * as ASFormattedString from './FormattedString.js';
 import * as ASFormatter from './Formatter.js';
 import * as ASPalette from './Palette.js';
 
-const moduleTag = '@parischap/ansi-styles/ContextFormatter/';
+export const moduleTag = '@parischap/ansi-styles/ContextFormatter/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
 
 /** Type of the action of a ContextFormatter */
-type ActionType<in C> = MTypes.OneArgFunction<string, ASContextShower.ActionType<C>>;
+type ActionType<in C> = MTypes.OneArgFunction<C, ASFormatter.ActionType>;
 
 /**
  * Type that represents a ContextFormatter
@@ -106,7 +94,13 @@ const _make = <C>(params: MTypes.Data<Type<C>>): Type<C> =>
  * @category Constructors
  */
 export const fromPalette =
-	<C>(nameSuffix: string, indexFromContext: MTypes.OneArgFunction<C, number>) =>
+	<C>({
+		nameSuffix,
+		indexFromContext
+	}: {
+		readonly nameSuffix: string;
+		readonly indexFromContext: MTypes.OneArgFunction<C, number>;
+	}) =>
 	(palette: ASPalette.Type): Type<C> => {
 		const formats = palette.formats;
 		const n = formats.length;
@@ -114,15 +108,14 @@ export const fromPalette =
 			formats,
 			Array.map(ASFormatter.fromFormat),
 			MArray.match012({
-				onEmpty: () => (s) => () => ASFormattedString.fromString(s),
-				onSingleton: (formatter) => (s) => () => formatter.action(s),
-				onOverTwo: (formatters) => (s) =>
-					flow(
-						indexFromContext,
-						MNumber.intModulo(n),
-						MArray.unsafeGetter(formatters),
+				onEmpty: () => (_context) => ASFormattedString.fromString,
+				onSingleton: (formatter) => (_context) => formatter.action,
+				onOverTwo: (formatters) => (context) =>
+					pipe(
+						formatters,
+						MArray.unsafeGet(indexFromContext(context) % n),
 						ASFormatter.action,
-						Function.apply(s)
+						(z) => z
 					)
 			})
 		);
@@ -143,7 +136,7 @@ export const fromFormat = <C>(format: ASFormat.Type): Type<C> => {
 	const formatter = ASFormatter.fromFormat(format);
 	return _make({
 		name: `Always${formatter.name}`,
-		action: (s) => () => formatter.action(s)
+		action: (_context) => formatter.action
 	});
 };
 
