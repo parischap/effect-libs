@@ -19,8 +19,6 @@ import {
 import * as MMatch from './Match.js';
 import * as MTypes from './types.js';
 
-//const moduleTag = '@parischap/effect-lib/Array/';
-
 /**
  * Returns true if the length of `self` is `l`
  *
@@ -115,7 +113,7 @@ export const takeRightBut =
 
 /**
  * This function provides a safe way to read a value at a particular index from the end of a
- * `ReadonlyArray`.
+ * `ReadonlyArray`. Index `0` will return the last element of the array.
  *
  * @since 0.0.6
  * @category Utils
