@@ -9,7 +9,7 @@ import * as MNumber from './Number.js';
 import * as MString from './String.js';
 import * as MTypes from './types.js';
 
-const moduleTag = '@parischap/effect-lib/Brand/';
+export const moduleTag = '@parischap/effect-lib/Brand/';
 const _moduleTag = moduleTag;
 
 /** Brand constructor type with refined input */
@@ -189,7 +189,7 @@ export namespace Int {
  */
 export namespace IntRange {
 	/**
-	 * IntRange type - `Max` must be bigger than `Min`
+	 * IntRange type
 	 *
 	 * @since 0.3.4
 	 * @category Models
@@ -211,7 +211,7 @@ export namespace IntRange {
 	) =>
 		Brand.refined<Type<Name>>(pred, (n) =>
 			Brand.error(`'${n}' is not a finite integer in the range [${minimum} - ${maximum}]`)
-		) as never;
+		);
 
 	/**
 	 * Constructs an IntRange from a number. Throws an error if the provided number is not an integer,
@@ -242,7 +242,7 @@ export namespace IntRange {
 			minimum,
 			maximum,
 			Predicate.and(MNumber.isInt, Number.between({ minimum, maximum }))
-		);
+		) as never;
 
 	/**
 	 * Constructs an IntRange from an Int. Throws an error if the provided number is not in the given
@@ -255,7 +255,7 @@ export namespace IntRange {
 		minimum: number,
 		maximum: number
 	): RefinedConstructor<Int.Type, Type<Name>> =>
-		_fromNumber<Name>(minimum, maximum, Number.between({ minimum, maximum }));
+		_fromNumber<Name>(minimum, maximum, Number.between({ minimum, maximum })) as never;
 }
 
 /**
