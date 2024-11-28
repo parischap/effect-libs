@@ -7,7 +7,7 @@
 import { Inspectable as EInspectable } from 'effect';
 import * as MTypes from './types.js';
 
-const moduleTag = '@parischap/effect-lib/Inspectable/';
+export const moduleTag = '@parischap/effect-lib/Inspectable/';
 
 /**
  * Symbol used to define a special prototype function that must return a name identifying the object
