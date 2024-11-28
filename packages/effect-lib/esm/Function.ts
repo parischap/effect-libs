@@ -8,8 +8,6 @@ import { Equal, Function, Option, Predicate } from 'effect';
 import { LazyArg } from 'effect/Function';
 import * as MTypes from './types.js';
 
-//const moduleTag = '@parischap/effect-lib/Function/';
-
 /**
  * Applies function f if condition is true
  *
