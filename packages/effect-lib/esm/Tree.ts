@@ -26,7 +26,7 @@ import * as MInspectable from './Inspectable.js';
 import * as MPipeable from './Pipeable.js';
 import * as MTypes from './types.js';
 
-const moduleTag = '@parischap/effect-lib/Tree/';
+export const moduleTag = '@parischap/effect-lib/Tree/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
 
@@ -101,8 +101,13 @@ const proto: MTypes.Proto<Type<any>> = {
 	...MPipeable.BaseProto
 };
 
-/** Constructor */
-const _make = <A>(params: MTypes.Data<Type<A>>): Type<A> =>
+/**
+ * Constructor
+ *
+ * @since 0.5.0
+ * @category Constructors
+ */
+export const make = <A>(params: MTypes.Data<Type<A>>): Type<A> =>
 	MTypes.objectFromDataAndProto(proto, params);
 
 /**
@@ -127,7 +132,7 @@ export const unfoldTree =
 	) =>
 	(seed: B): Type<A> =>
 		pipe(seed, f, ([nextValue, nextSeeds]) =>
-			_make({
+			make({
 				value: nextValue,
 				forest: pipe(nextSeeds, unfoldForest(f))
 			})
@@ -180,7 +185,7 @@ export const flatMap =
 			(self: Type<A>): Type<B> => {
 				const { forest, value } = f(self.value, level);
 
-				return _make({
+				return make({
 					value,
 					forest: Array.appendAll(forest, Array.map(self.forest, go(level + 1)))
 				});
@@ -202,7 +207,7 @@ export const extendDown =
 		const go =
 			(level: number) =>
 			(self: Type<A>): Type<B> =>
-				_make({
+				make({
 					value: f(self, level),
 					forest: Array.map(self.forest, go(level + 1))
 				});
@@ -223,7 +228,7 @@ export const extendUp =
 		const go =
 			(level: number) =>
 			(self: Type<A>): Type<B> =>
-				_make({
+				make({
 					forest: Array.map(self.forest, go(level + 1)),
 					value: f(self, level)
 				});
@@ -258,7 +263,7 @@ export const map =
 		const go =
 			(level: number) =>
 			(self: Type<A>): Type<B> =>
-				_make({
+				make({
 					value: f(self.value, level),
 					forest: Array.map(self.forest, go(level + 1))
 				});
@@ -350,7 +355,7 @@ export const nonRecursiveUnfoldAndMap =
 	) =>
 	(seed: A): Type<C> =>
 		pipe(
-			_make({
+			make({
 				value: Array.of(seed),
 				forest: Array.empty()
 			}),
@@ -372,7 +377,7 @@ export const nonRecursiveUnfoldAndMap =
 								const nextNodes = pipe(
 									nextSeeds,
 									Array.map((seed) =>
-										_make({
+										make({
 											value: Array.append(predecessors, seed),
 											forest: Array.empty()
 										})
