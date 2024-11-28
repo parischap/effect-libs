@@ -12,7 +12,7 @@ import * as MPipeable from './Pipeable.js';
 import * as MPredicate from './Predicate.js';
 import * as MTypes from './types.js';
 
-const moduleTag = '@parischap/effect-lib/Match/';
+export const moduleTag = '@parischap/effect-lib/Match/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
 
@@ -42,6 +42,15 @@ export interface Type<out Input, out Output, out Rest extends Input = Input>
 		readonly _Rest: Types.Covariant<Rest>;
 	};
 }
+
+/**
+ * Type guard
+ *
+ * @since 0.0.6
+ * @category Guards
+ */
+export const has = (u: unknown): u is Type<unknown, unknown, unknown> =>
+	Predicate.hasProperty(u, TypeId);
 
 /** Prototype */
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */

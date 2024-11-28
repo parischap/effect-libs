@@ -1,9 +1,37 @@
 /* eslint-disable functional/no-expression-statements */
-import { MFunction, MMatch } from '@parischap/effect-lib';
-import { Array, Function, Number, pipe } from 'effect';
+import { MFunction, MMatch, MTypes, MUtils } from '@parischap/effect-lib';
+import { Array, flow, Function, Number, pipe, Struct } from 'effect';
 import { describe, expect, it } from 'vitest';
 
 describe('MMatch', () => {
+	describe('Tag, prototype and guards', () => {
+		const testMatch = MMatch.make(5);
+
+		it('moduleTag', () => {
+			expect(MMatch.moduleTag).toBe(MUtils.moduleTagFromFileName(__filename));
+		});
+
+		it('.toString()', () => {
+			expect(testMatch.toString()).toBe(`{
+  "_id": "@parischap/effect-lib/Match/",
+  "value": 5,
+  "result": {
+    "_id": "Option",
+    "_tag": "None"
+  }
+}`);
+		});
+
+		it('.pipe()', () => {
+			expect(testMatch.pipe(Struct.get('value'))).toBe(5);
+		});
+
+		it('has', () => {
+			expect(MMatch.has(testMatch)).toBe(true);
+			expect(MMatch.has(new Date())).toBe(false);
+		});
+	});
+
 	describe('Predicate matching', () => {
 		it('when', () => {
 			const testMatch = pipe(
@@ -94,24 +122,55 @@ describe('MMatch', () => {
 			expect(testMatch).toBe('b');
 		});
 
-		it('whenIs and exhaustive', () => {
+		it('whenIs and exhaustive passing', () => {
 			const testMatch = pipe(
 				TestEnum.B,
 				MMatch.make,
-				MMatch.whenIs(TestEnum.A, () => 'a'),
-				MMatch.whenIs(TestEnum.B, () => 'b'),
-				MMatch.when(isC, () => 'c'),
+				MMatch.whenIs(TestEnum.A, flow(Function.satisfies<TestEnum.A>(), Function.constant('a'))),
+				MMatch.whenIs(TestEnum.B, flow(Function.satisfies<TestEnum.B>(), Function.constant('b'))),
+				MMatch.when(isC, flow(Function.satisfies<TestEnum.C>(), Function.constant('c'))),
 				MMatch.exhaustive
 			);
 			expect(testMatch).toBe('b');
 		});
 
-		it('whenIsOr and exhaustive', () => {
+		it('whenIs and exhaustive not passing', () => {
 			const testMatch = pipe(
 				TestEnum.B,
 				MMatch.make,
-				MMatch.whenIs(TestEnum.A, () => 'a'),
-				MMatch.whenIsOr(TestEnum.B, TestEnum.C, () => 'b'),
+				MMatch.whenIs(TestEnum.A, flow(Function.satisfies<TestEnum.A>(), Function.constant('a'))),
+				MMatch.whenIs(TestEnum.B, flow(Function.satisfies<TestEnum.B>(), Function.constant('b'))),
+				// @ts-expect-error TestEnum.C missing
+				MMatch.exhaustive
+			);
+			expect(testMatch).toBe('b');
+		});
+
+		it('whenIsOr and exhaustive passing', () => {
+			const testMatch = pipe(
+				TestEnum.B,
+				MMatch.make,
+				MMatch.whenIs(TestEnum.A, flow(Function.satisfies<TestEnum.A>(), Function.constant('a'))),
+				MMatch.whenIsOr(
+					TestEnum.B,
+					TestEnum.C,
+					flow(Function.satisfies<TestEnum.B | TestEnum.C>(), Function.constant('b'))
+				),
+				MMatch.exhaustive
+			);
+			expect(testMatch).toBe('b');
+		});
+
+		it('whenIsOr and exhaustive not passing', () => {
+			const testMatch = pipe(
+				TestEnum.B,
+				MMatch.make,
+				MMatch.whenIsOr(
+					TestEnum.B,
+					TestEnum.C,
+					flow(Function.satisfies<TestEnum.B | TestEnum.C>(), Function.constant('b'))
+				),
+				// @ts-expect-error TestEnum.A missing
 				MMatch.exhaustive
 			);
 			expect(testMatch).toBe('b');
@@ -121,19 +180,38 @@ describe('MMatch', () => {
 			const testMatch = pipe(
 				TestEnum.B,
 				MMatch.make,
-				MMatch.whenIs(TestEnum.A, () => 'a'),
-				MMatch.when(isC, () => 'c'),
-				MMatch.orElse(() => 'b')
+				MMatch.whenIs(TestEnum.A, flow(Function.satisfies<TestEnum.A>(), Function.constant('a'))),
+				MMatch.when(isC, flow(Function.satisfies<TestEnum.C>(), Function.constant('c'))),
+				MMatch.orElse(flow(Function.satisfies<TestEnum.B>(), Function.constant('b')))
 			);
 			expect(testMatch).toBe('b');
 		});
 
-		it('whenOr and exhaustive', () => {
+		it('whenOr and exhaustive passing', () => {
 			const testMatch = pipe(
 				TestEnum.B,
 				MMatch.make,
-				MMatch.when(isC, () => 'c'),
-				MMatch.whenOr(isA, isB, () => 'b'),
+				MMatch.when(isC, flow(Function.satisfies<TestEnum.C>(), Function.constant('c'))),
+				MMatch.whenOr(
+					isA,
+					isB,
+					flow(Function.satisfies<TestEnum.A | TestEnum.B>(), Function.constant('b'))
+				),
+				MMatch.exhaustive
+			);
+			expect(testMatch).toBe('b');
+		});
+
+		it('whenOr and exhaustive not passing', () => {
+			const testMatch = pipe(
+				TestEnum.B,
+				MMatch.make,
+				MMatch.whenOr(
+					isA,
+					isB,
+					flow(Function.satisfies<TestEnum.A | TestEnum.B>(), Function.constant('b'))
+				),
+				// @ts-expect-error TestEnum.C missing
 				MMatch.exhaustive
 			);
 			expect(testMatch).toBe('b');
@@ -141,11 +219,16 @@ describe('MMatch', () => {
 
 		it('unsafeWhen', () => {
 			const testMatch = pipe(
-				TestEnum.C,
+				Array.of(0) as unknown,
 				MMatch.make,
-				MMatch.when(isA, () => 'a'),
-				MMatch.when(isB, () => 'b'),
-				MMatch.unsafeWhen(isC, () => 'c')
+				MMatch.when(
+					MTypes.isPrimitive,
+					flow(Function.satisfies<MTypes.Primitive>(), Function.constant('a'))
+				),
+				MMatch.unsafeWhen(
+					MTypes.isRecord,
+					flow(Function.satisfies<MTypes.AnyRecord>(), Function.constant('c'))
+				)
 			);
 			expect(testMatch).toBe('c');
 		});
