@@ -4,7 +4,8 @@
  * @since 0.5.0
  */
 
-import { Array, Number, pipe, Tuple } from 'effect';
+import { Function, Number, pipe, Tuple } from 'effect';
+import * as MArray from './Array.js';
 import * as MCore from './Core.js';
 import * as MNumber from './Number.js';
 import * as MTypes from './types.js';
@@ -75,10 +76,30 @@ export const optional: MTypes.StringTransformer = (self) => `(?:${self})?`;
  * @category Utils
  */
 export const either = (...args: ReadonlyArray<string>): string =>
-	Array.match(args, {
-		onEmpty: () => '',
-		onNonEmpty: (args) => `(?:${args.join('|')})`
-	});
+	pipe(
+		args,
+		MArray.match012({
+			onEmpty: () => '',
+			onSingleton: Function.identity,
+			onOverTwo: (args) => `(?:${args.join('|')})`
+		})
+	);
+
+/**
+ * Returns a regular expression string that will match one of the provided characters
+ *
+ * @since 0.5.0
+ * @category Utils
+ */
+export const characterClass = (...args: ReadonlyArray<string>): string =>
+	pipe(
+		args,
+		MArray.match012({
+			onEmpty: () => '',
+			onSingleton: Function.identity,
+			onOverTwo: (args) => `[${args.join('')}]`
+		})
+	);
 
 /**
  * Returns a new regular expression string where `self` must fill a whole line
@@ -160,13 +181,31 @@ export const anyChar = '.';
  */
 export const anythingButDot = '[^.]';
 
+const backslashString = '\\';
+
 /**
- * A regular expression string representing a backslash
+ * A regular expression string representing a backslashString
  *
  * @since 0.5.0
  * @category Instances
  */
-export const backslash = '\\';
+export const backslash = backslashString + backslashString;
+
+/**
+ * A regular expression string representing a slash
+ *
+ * @since 0.5.0
+ * @category Instances
+ */
+export const slash = backslashString + '/';
+
+/**
+ * A path separator regular expression string to split all possible paths
+ *
+ * @since 0.5.0
+ * @category Instances
+ */
+export const universalPathSep = characterClass(slash, backslash);
 
 /**
  * A regular expression string representing a dollar sign
@@ -174,7 +213,7 @@ export const backslash = '\\';
  * @since 0.5.0
  * @category Instances
  */
-export const dollar = backslash + '$';
+export const dollar = backslashString + '$';
 
 /**
  * A regular expression string representing a plus sign
@@ -182,7 +221,7 @@ export const dollar = backslash + '$';
  * @since 0.5.0
  * @category Instances
  */
-export const plus = backslash + '+';
+export const plus = backslashString + '+';
 
 /**
  * A regular expression string representing a minus sign
@@ -206,7 +245,7 @@ export const sign = either(plus, minus);
  * @since 0.5.0
  * @category Instances
  */
-export const star = backslash + '*';
+export const star = backslashString + '*';
 
 /**
  * A regular expression string representing a dot
@@ -214,7 +253,7 @@ export const star = backslash + '*';
  * @since 0.5.0
  * @category Instances
  */
-export const dot = backslash + '.';
+export const dot = backslashString + '.';
 
 /**
  * A regular expression string representing the arrowbase
@@ -230,7 +269,7 @@ export const arrowbase = '@';
  * @since 0.0.8
  * @category Instances
  */
-export const tab = backslash + 't';
+export const tab = backslashString + 't';
 
 /**
  * A regular expression string representing several whitespaces
@@ -246,7 +285,7 @@ export const whitespaces = zeroOrMore(`[ ${tab}]`);
  * @since 0.5.0
  * @category Instances
  */
-export const digit = backslash + 'd';
+export const digit = backslashString + 'd';
 
 /**
  * A regular expression string representing a strictly positive digit
@@ -421,7 +460,7 @@ export const lowerCaseLetterOrDigit = '[a-z0-9]';
  * @since 0.5.0
  * @category Instances
  */
-export const anyWordLetter = backslash + 'w';
+export const anyWordLetter = backslashString + 'w';
 
 /**
  * A regular expression string representing a word
@@ -432,20 +471,12 @@ export const anyWordLetter = backslash + 'w';
 export const anyWord = oneOrMore(anyWordLetter);
 
 /**
- * A regular expression string representing a slash
- *
- * @since 0.5.0
- * @category Instances
- */
-export const slash = backslash + '/';
-
-/**
  * A regular expression string representing a carriage return
  *
  * @since 0.5.0
  * @category Instances
  */
-export const CR = backslash + 'r';
+export const CR = backslashString + 'r';
 
 /**
  * A regular expression string representing a line-feed
@@ -453,7 +484,7 @@ export const CR = backslash + 'r';
  * @since 0.5.0
  * @category Instances
  */
-export const LF = backslash + 'n';
+export const LF = backslashString + 'n';
 
 /**
  * A regular expression string representing a linebreak in Windows, Unix and Mac Os
