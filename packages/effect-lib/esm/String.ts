@@ -13,6 +13,7 @@ import {
 	Inspectable,
 	Option,
 	Order,
+	Pipeable,
 	Predicate,
 	String,
 	Struct,
@@ -25,11 +26,12 @@ import * as MCore from './Core.js';
 import * as MFunction from './Function.js';
 import * as MInspectable from './Inspectable.js';
 import * as MMatch from './Match.js';
+import * as MPipeable from './Pipeable.js';
 import * as MRegExp from './RegExp.js';
 import * as MTuple from './Tuple.js';
 import * as MTypes from './types.js';
 
-const moduleTag = '@parischap/effect-lib/String/';
+export const moduleTag = '@parischap/effect-lib/String/';
 const _moduleTag = moduleTag;
 
 /**
@@ -49,7 +51,7 @@ export namespace SearchResult {
 	 * @since 0.0.6
 	 * @category Models
 	 */
-	export interface Type extends Equal.Equal, Inspectable.Inspectable {
+	export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
 		/**
 		 * The index where the match was found in the target string
 		 *
@@ -100,7 +102,8 @@ export namespace SearchResult {
 		[Hash.symbol](this: Type) {
 			return Hash.cached(this, Hash.structure(this));
 		},
-		...MInspectable.BaseProto(moduleTag)
+		...MInspectable.BaseProto(moduleTag),
+		...MPipeable.BaseProto
 	};
 
 	/**
@@ -143,6 +146,30 @@ export namespace SearchResult {
 	 */
 	export const overlappingEquivalence: Equivalence.Equivalence<Type> = (self: Type, that: Type) =>
 		self.endIndex >= that.startIndex && self.startIndex <= that.endIndex;
+
+	/**
+	 * Returns the `startIndex` property of `self`
+	 *
+	 * @since 0.5.0
+	 * @category Destructors
+	 */
+	export const startIndex: MTypes.OneArgFunction<Type, number> = Struct.get('startIndex');
+
+	/**
+	 * Returns the `endIndex` property of `self`
+	 *
+	 * @since 0.5.0
+	 * @category Destructors
+	 */
+	export const endIndex: MTypes.OneArgFunction<Type, number> = Struct.get('endIndex');
+
+	/**
+	 * Returns the `match` property of `self`
+	 *
+	 * @since 0.5.0
+	 * @category Destructors
+	 */
+	export const match: MTypes.OneArgFunction<Type, string> = Struct.get('match');
 }
 
 /**
@@ -182,7 +209,8 @@ export const fromNumber =
 /**
  * Searches for the first occurence of `regexp` in `self` and returns a SearchResult. You can
  * optionnally provide the index from which to start searching. 'g' flag needs not be set if you
- * pass a regular expression.
+ * pass a regular expression. As opposed to String.search, regexp special characters need not be
+ * escaped when passing a string regexp
  *
  * @since 0.0.6
  * @category Utils
@@ -265,9 +293,10 @@ export const takeLeftTo =
 	(self: string): string =>
 		pipe(
 			self,
-			String.search(regexp),
+			search(regexp),
+			Option.map(SearchResult.startIndex),
 			Option.getOrElse(() => self.length),
-			(pos) => String.takeLeft(self, pos)
+			MFunction.flipDual(String.takeLeft)(self)
 		);
 
 /**
@@ -286,7 +315,7 @@ export const takeRightFrom =
 			searchRight(regexp),
 			Option.map((searchResult) => searchResult.endIndex),
 			Option.getOrElse(Function.constant(0)),
-			(pos) => String.slice(pos)(self)
+			Function.flip(String.slice)(self)
 		);
 
 /**

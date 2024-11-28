@@ -1,9 +1,72 @@
 /* eslint-disable functional/no-expression-statements */
-import { MString } from '@parischap/effect-lib';
-import { Array, Chunk, Equal, Option, pipe, String } from 'effect';
+import { MString, MUtils } from '@parischap/effect-lib';
+import { Array, Chunk, Equal, Option, pipe, String, Struct } from 'effect';
 import { describe, expect, it } from 'vitest';
+import { SearchResult } from '../esm/String.js';
 
 describe('MString', () => {
+	it('moduleTag', () => {
+		expect(MString.moduleTag).toBe(MUtils.moduleTagFromFileName(__filename));
+	});
+
+	describe('SearchResult', () => {
+		const testSearchResult = SearchResult.make({ startIndex: 3, endIndex: 6, match: 'foo' });
+
+		describe('Tag, prototype and guards', () => {
+			describe('Equal.equals', () => {
+				it('Matching', () => {
+					expect(
+						Equal.equals(
+							testSearchResult,
+							SearchResult.make({ startIndex: 3, endIndex: 6, match: 'foo' })
+						)
+					).toBe(true);
+				});
+				it('Non matching', () => {
+					expect(
+						Equal.equals(
+							testSearchResult,
+							SearchResult.make({ startIndex: 3, endIndex: 6, match: 'baz' })
+						)
+					).toBe(false);
+				});
+			});
+
+			it('.toString()', () => {
+				expect(testSearchResult.toString()).toBe(`{
+  "_id": "@parischap/effect-lib/String/SearchResult/",
+  "startIndex": 3,
+  "endIndex": 6,
+  "match": "foo"
+}`);
+			});
+
+			it('.pipe()', () => {
+				expect(testSearchResult.pipe(Struct.get('startIndex'))).toBe(3);
+			});
+
+			it('has', () => {
+				expect(MString.SearchResult.has(testSearchResult)).toBe(true);
+				expect(MString.SearchResult.has(new Date())).toBe(false);
+			});
+		});
+
+		it('byLongestFirst', () => {
+			expect(
+				MString.SearchResult.byLongestFirst(
+					testSearchResult,
+					SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' })
+				)
+			).toBe(-1);
+			expect(
+				MString.SearchResult.byLongestFirst(
+					testSearchResult,
+					SearchResult.make({ startIndex: 3, endIndex: 7, match: 'foo1' })
+				)
+			).toBe(1);
+		});
+	});
+
 	describe('fromPrimitive', () => {
 		it('null', () => {
 			expect(pipe(null, MString.fromPrimitive)).toBe('null');
@@ -211,6 +274,10 @@ describe('MString', () => {
 
 		it('RegExp in non-empty string', () => {
 			expect(pipe('the bar is foo', MString.takeLeftTo(/bar/))).toBe('the ');
+		});
+
+		it('string with regexp special characters in non-empty string', () => {
+			expect(pipe('foo.bar.baz', MString.takeLeftTo('.'))).toBe('foo');
 		});
 	});
 
