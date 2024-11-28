@@ -1,10 +1,43 @@
 /* eslint-disable functional/no-expression-statements */
-import { MCache, MTypes } from '@parischap/effect-lib';
+import { MCache, MTypes, MUtils } from '@parischap/effect-lib';
 import { Array, MutableHashMap, Option, Order, Record, Tuple, pipe } from 'effect';
 import { describe, expect, it } from 'vitest';
 
 describe('MCache', () => {
-	describe('Non-recursive cache with no capacity and no TTL', () => {
+	const testCache = MCache.make({
+		lookUp: ({ key }: { readonly key: number }) => Tuple.make(key * 2, true)
+	});
+
+	describe('Tag, prototype and guards', () => {
+		it('moduleTag', () => {
+			expect(MCache.moduleTag).toBe(MUtils.moduleTagFromFileName(__filename));
+		});
+
+		it('.toString()', () => {
+			expect(testCache.toString()).toBe(`{
+  "_id": "@parischap/effect-lib/Cache/",
+  "store": {
+    "_id": "MutableHashMap",
+    "values": []
+  },
+  "keyOrder": {
+    "_id": "MutableQueue",
+    "values": []
+  }
+}`);
+		});
+
+		it('.pipe()', () => {
+			expect(testCache.pipe(MCache.get(3))).toBe(6);
+		});
+
+		it('has', () => {
+			expect(MCache.has(testCache)).toBe(true);
+			expect(MCache.has(new Date())).toBe(false);
+		});
+	});
+
+	describe('Non-recursive cache with unbounded capacity and no TTL', () => {
 		const testCache = MCache.make({
 			lookUp: ({ key }: { readonly key: number }) => Tuple.make(key * 2, true)
 		});
@@ -16,8 +49,7 @@ describe('MCache', () => {
 			expect(value1).toBe(6);
 			expect(value2).toBe(8);
 			expect(value3).toBe(6);
-			const store = testCache.store;
-			expect(MutableHashMap.size(store)).toBe(2);
+			expect(MutableHashMap.size(testCache.store)).toBe(2);
 			expect(MCache.keysInStore(testCache).toString()).toBe('3,4');
 		});
 	});
@@ -35,16 +67,14 @@ describe('MCache', () => {
 			expect(value1).toBe(6);
 			expect(value2).toBe(8);
 			expect(value3).toBe(6);
-			const store = testCache.store;
-			expect(MutableHashMap.size(store)).toBe(2);
+			expect(MutableHashMap.size(testCache.store)).toBe(2);
 			expect(MCache.keysInStore(testCache).toString()).toBe('3,4');
 		});
 
 		it("Get one more element but don't store it:8", () => {
 			const value1 = pipe(testCache, MCache.get(8));
 			expect(value1).toBe(16);
-			const store = testCache.store;
-			expect(MutableHashMap.size(store)).toBe(2);
+			expect(MutableHashMap.size(testCache.store)).toBe(2);
 			expect(MCache.keysInStore(testCache).toString()).toBe('3,4');
 		});
 
@@ -57,8 +87,7 @@ describe('MCache', () => {
 			expect(value2).toBe(12);
 			expect(value3).toBe(10);
 			expect(value4).toBe(14);
-			const store = testCache.store;
-			expect(MutableHashMap.size(store)).toBe(3);
+			expect(MutableHashMap.size(testCache.store)).toBe(3);
 			expect(MCache.keysInStore(testCache).toString()).toBe('5,6,7');
 		});
 	});
@@ -85,8 +114,7 @@ describe('MCache', () => {
 			expect(value2).toBe(9);
 			expect(value3).toBe(12);
 			expect(value4).toBe(15);
-			const store = testCache.store;
-			expect(MutableHashMap.size(store)).toBe(3);
+			expect(MutableHashMap.size(testCache.store)).toBe(3);
 			expect(pipe(testCache, MCache.keysInStore, Array.sort(Order.number))).toEqual([4, 5, 6]);
 		});
 
@@ -94,8 +122,7 @@ describe('MCache', () => {
 			expect(state).toBe(4);
 			const value1 = pipe(testCache, MCache.get(8));
 			expect(value1).toBe(20);
-			const store = testCache.store;
-			expect(MutableHashMap.size(store)).toBe(3);
+			expect(MutableHashMap.size(testCache.store)).toBe(3);
 			expect(pipe(testCache, MCache.keysInStore, Array.sort(Order.number))).toEqual([4, 5, 6]);
 		});
 
@@ -103,8 +130,7 @@ describe('MCache', () => {
 			expect(state).toBe(5);
 			const value1 = pipe(testCache, MCache.get(5));
 			expect(value1).toBe(15);
-			const store = testCache.store;
-			expect(MutableHashMap.size(store)).toBe(2);
+			expect(MutableHashMap.size(testCache.store)).toBe(2);
 			expect(pipe(testCache, MCache.keysInStore, Array.sort(Order.number))).toEqual([5, 6]);
 			expect(testCache.keyOrder.toJSON()).toEqual({
 				_id: 'MutableQueue',
@@ -119,8 +145,7 @@ describe('MCache', () => {
 			const value2 = pipe(testCache, MCache.get(4));
 			expect(value1).toBe(12);
 			expect(value2).toBe(15);
-			const store = testCache.store;
-			expect(MutableHashMap.size(store)).toBe(3);
+			expect(MutableHashMap.size(testCache.store)).toBe(3);
 			expect(pipe(testCache, MCache.keysInStore, Array.sort(Order.number))).toEqual([3, 4, 5]);
 		});
 
@@ -128,8 +153,7 @@ describe('MCache', () => {
 			expect(state).toBe(8);
 			const value1 = pipe(testCache, MCache.get(4));
 			expect(value1).toBe(16);
-			const store = testCache.store;
-			expect(MutableHashMap.size(store)).toBe(1);
+			expect(MutableHashMap.size(testCache.store)).toBe(1);
 			expect(pipe(testCache, MCache.keysInStore)).toEqual([4]);
 			expect(testCache.keyOrder.toJSON()).toEqual({
 				_id: 'MutableQueue',

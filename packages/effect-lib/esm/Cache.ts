@@ -26,7 +26,7 @@ import * as MInspectable from './Inspectable.js';
 import * as MPipeable from './Pipeable.js';
 import * as MTypes from './types.js';
 
-const moduleTag = '@parischap/effect-lib/Cache/';
+export const moduleTag = '@parischap/effect-lib/Cache/';
 const _moduleTag = moduleTag;
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
@@ -46,7 +46,7 @@ namespace ValueContainer {
 	 * @since 0.0.6
 	 * @category Models
 	 */
-	export interface Type<out A> extends Equal.Equal, Inspectable.Inspectable {
+	export interface Type<out A> extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
 		/**
 		 * The value calculated by the LookUp function
 		 *
@@ -103,7 +103,8 @@ namespace ValueContainer {
 		[Hash.symbol]<A>(this: Type<A>) {
 			return Hash.cached(this, Hash.hash(this.value));
 		},
-		...MInspectable.BaseProto(moduleTag)
+		...MInspectable.BaseProto(moduleTag),
+		...MPipeable.BaseProto
 	};
 
 	/**
