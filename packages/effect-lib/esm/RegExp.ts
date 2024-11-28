@@ -72,6 +72,14 @@ export const globalLineBreak = new RegExp(MRegExpString.lineBreak, 'g');
 export const lineBreak = new RegExp(MRegExpString.lineBreak);
 
 /**
+ * A regular expression representing a path separator that will match on all systems
+ *
+ * @since 0.5.0
+ * @category Instances
+ */
+export const universalPathSep = new RegExp(MRegExpString.universalPathSep);
+
+/**
  * A regular expression representing a SemVer
  *
  * @since 0.5.0
