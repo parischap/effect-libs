@@ -21,3 +21,4 @@ export * as MStruct from './Struct.js';
 export * as MTree from './Tree.js';
 export * as MTuple from './Tuple.js';
 export * as MTypes from './types.js';
+export * as MUtils from './utils.js';
