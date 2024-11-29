@@ -223,15 +223,12 @@ export type Proto<T extends AnyRecord, ProtoFunctions extends string | symbol = 
 /**
  * Utility type that returns all the keys of a record whose value is a function except those which
  * are in the BaseProtoKeys list.
- *
- * @since 0.5.0
- * @category Utility types
  */
-export type NonSymbolicFunctionKeys<T extends AnyRecord> = keyof {
+/*export type NonSymbolicFunctionKeys<T extends AnyRecord> = keyof {
 	readonly [k in keyof T as readonly [k] extends readonly [BaseProtoKeys] ? never
 	: readonly [T[k]] extends readonly [AnyFunction] ? k
 	: never]: void;
-};
+};*/
 
 /**
  * Utility type that transforms a functions with several arguments into a function with one argument
@@ -252,14 +249,6 @@ export const objectFromDataAndProto = <P extends AnyRecord, D extends AnyRecord>
 	proto: P,
 	data: D
 ): P & D => Object.assign(Object.create(proto), data) as P & D;
-
-/**
- * Constructs an object with data `data`
- *
- * @since 0.0.6
- * @category Utils
- */
-export const objectFromData = <D extends AnyRecord>(data: D): D => Object.assign(data) as D;
 
 /**
  * Utility type that changes the type of the unique parameter of a OneArgFunction to `A` when
