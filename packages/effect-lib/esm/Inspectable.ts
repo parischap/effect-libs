@@ -4,8 +4,8 @@
  * @since 0.3.3
  */
 
-import { Inspectable as EInspectable } from 'effect';
-import * as MTypes from './types.js';
+import { Inspectable as EInspectable, Option, pipe } from 'effect';
+import * as MRecord from './Record.js';
 
 export const moduleTag = '@parischap/effect-lib/Inspectable/';
 
@@ -38,11 +38,22 @@ export interface Inspectable extends EInspectable.Inspectable {
  */
 export const BaseProto = (moduleTag: string): EInspectable.Inspectable => ({
 	...EInspectable.BaseProto,
-	toJSON(this: {}) {
-		return (
-				NameSymbol in this && MTypes.isFunction(this[NameSymbol]) && this[NameSymbol].length === 0
-			) ?
-				(this[NameSymbol]() as unknown)
-			:	{ _id: moduleTag, ...this };
+	toJSON(this: {}): unknown {
+		return pipe(
+			this,
+			MRecord.tryZeroParamStringFunction({
+				functionName: NameSymbol
+			}),
+			Option.getOrElse(() => ({ _id: moduleTag, ...this }))
+		);
+	},
+	toString(this: {}): string {
+		return pipe(
+			this,
+			MRecord.tryZeroParamStringFunction({
+				functionName: NameSymbol
+			}),
+			Option.getOrElse(() => EInspectable.BaseProto.toString.call(this))
+		);
 	}
 });
