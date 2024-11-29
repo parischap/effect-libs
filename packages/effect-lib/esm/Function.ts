@@ -4,7 +4,7 @@
  * @since 0.0.6
  */
 
-import { Equal, Function, Option, Predicate } from 'effect';
+import { Equal, Option, Predicate } from 'effect';
 import { LazyArg } from 'effect/Function';
 import * as MTypes from './types.js';
 
@@ -50,8 +50,9 @@ export const flipDual =
  * @since 0.0.6
  * @category Utils
  */
-export const strictEquals: <A, B extends A>(that: B) => Predicate.Predicate<A> = (that) => (self) =>
-	self === that;
+export const strictEquals: <A = never>(that: unknown) => Predicate.Predicate<A> =
+	(that) => (self) =>
+		self === that;
 
 /**
  * Curried equality between elements having the same type using the Equal.equals comparator. Prefer
@@ -87,9 +88,9 @@ export const parameterNumber = (f: MTypes.AnyFunction) => f.length;
  *
  * 	export const result = MFunction.once(() => complexCalculation(12));
  */
-export const once = <A>(f: Function.LazyArg<A>): Function.LazyArg<A> => {
+export const once = <A>(f: LazyArg<A>): LazyArg<A> => {
 	let store = Option.none<A>();
-	const cached: Function.LazyArg<A> = () => {
+	const cached: LazyArg<A> = () => {
 		if (Option.isNone(store)) {
 			const result = f();
 			/* eslint-disable-next-line functional/no-expression-statements */
@@ -118,3 +119,21 @@ export const applyAsMethod =
  * @category Utils
  */
 export const call = <A>(self: LazyArg<A>): A => self();
+
+/**
+ * Returns the javascript Function prototype
+ *
+ * @since 0.5.0
+ * @category Utils
+ */
+export const prototype = Function.prototype;
+
+/**
+ * Returns a copy of a function (does not copy any properties added to the function)
+ *
+ * @since 0.5.0
+ * @category Utils
+ */
+export const clone = <Args extends ReadonlyArray<unknown>, A>(
+	self: (...args: Args) => A
+): ((...args: Args) => A) => self.bind({});
