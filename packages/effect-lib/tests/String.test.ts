@@ -339,22 +339,6 @@ describe('MString', () => {
 		});
 	});
 
-	describe('tryToStringToJSON', () => {
-		it('Object with default prototype', () => {
-			expect(pipe({ a: 5 }, MString.tryToStringToJSON, Option.isNone)).toBe(true);
-		});
-
-		it('Date object', () => {
-			expect(pipe(new Date(), MString.tryToStringToJSON, Option.isSome)).toBe(true);
-		});
-
-		it('Object with toJSON method', () => {
-			expect(
-				pipe({ toJSON: () => 'foo' }, MString.tryToStringToJSON, Equal.equals(Option.some('foo')))
-			).toBe(true);
-		});
-	});
-
 	describe('stripLeftOption', () => {
 		it('Empty string', () => {
 			expect(pipe('', MString.stripLeftOption('foo'), Option.isNone)).toBe(true);

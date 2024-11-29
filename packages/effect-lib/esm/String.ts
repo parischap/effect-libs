@@ -365,44 +365,6 @@ export const trimEnd = (charToRemove: string): ((self: string) => string) =>
 	);
 
 /**
- * Returns a some of the result of calling the toString method on obj provided it defines one
- * different from Object.prototype.toString. If toString is not defined or not overloaded, it
- * returns a some of the result of calling the toJSON function on obj provided it defines one.
- * Otherwise, it returns a none.
- *
- * @since 0.0.6
- * @category Utils
- */
-export const tryToStringToJSON = (obj: MTypes.AnyRecord): Option.Option<string> => {
-	const tryApplyingFOnObj = (f: MTypes.AnyFunction) =>
-		pipe(
-			f,
-			Option.liftPredicate(flow(MFunction.parameterNumber, MFunction.strictEquals(0))),
-			Option.map(MFunction.applyAsMethod(obj)),
-			Option.filter(MTypes.isString)
-		);
-
-	return pipe(
-		obj['toString'],
-		Option.liftPredicate(
-			Predicate.and(
-				MTypes.isFunction,
-				/* eslint-disable-next-line @typescript-eslint/unbound-method */
-				Predicate.not(MFunction.strictEquals(Object.prototype.toString))
-			)
-		),
-		Option.flatMap(tryApplyingFOnObj),
-		Option.orElse(() =>
-			pipe(
-				obj['toJSON'],
-				Option.liftPredicate(MTypes.isFunction),
-				Option.flatMap(tryApplyingFOnObj)
-			)
-		)
-	);
-};
-
-/**
  * If `self` starts with `s`, returns a some of `self` stripped of `s`. Otherwise, returns a none
  *
  * @since 0.0.6
