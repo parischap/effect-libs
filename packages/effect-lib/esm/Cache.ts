@@ -9,8 +9,6 @@
 import {
 	Array,
 	Equal,
-	Equivalence,
-	Hash,
 	Inspectable,
 	MutableHashMap,
 	MutableQueue,
@@ -46,7 +44,7 @@ namespace ValueContainer {
 	 * @since 0.0.6
 	 * @category Models
 	 */
-	export interface Type<out A> extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
+	export interface Type<out A> extends Inspectable.Inspectable, Pipeable.Pipeable {
 		/**
 		 * The value calculated by the LookUp function
 		 *
@@ -73,35 +71,11 @@ namespace ValueContainer {
 	 */
 	export const has = (u: unknown): u is Type<unknown> => Predicate.hasProperty(u, TypeId);
 
-	/**
-	 * Returns an equivalence based on an equivalence of the value property
-	 *
-	 * @since 0.0.6 Equivalence
-	 */
-	export const getEquivalence = <A>(
-		isEquivalent: Equivalence.Equivalence<A>
-	): Equivalence.Equivalence<Type<A>> =>
-		Equivalence.make((self, that) => isEquivalent(self.value, that.value));
-
-	/**
-	 * Equivalence based on the equality of their values
-	 *
-	 * @since 0.0.6
-	 * @category Equivalences
-	 */
-	export const equivalence = getEquivalence(Equal.equals);
-
 	/** Prototype */
 	/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 	const proto: MTypes.Proto<Type<any>> = {
 		[TypeId]: {
 			_A: MTypes.covariantValue
-		},
-		[Equal.symbol]<A>(this: Type<A>, that: unknown): boolean {
-			return has(that) && equivalence(this, that);
-		},
-		[Hash.symbol]<A>(this: Type<A>) {
-			return Hash.cached(this, Hash.hash(this.value));
 		},
 		...MInspectable.BaseProto(moduleTag),
 		...MPipeable.BaseProto
