@@ -1,10 +1,14 @@
 <div align="center">
 
-# pretty-print
+# ansi-styles
 
-An [Effect](https://effect.website/docs/introduction) library that produces the string representation of any value, in Node or the browser. Similar to util.inspect but with plenty of extra options: **treeifying, coloring, sorting, choosing what to display and how to display it...**
+An [Effect](https://effect.website/docs/introduction) library for terminal output styling with ANSI colors and formats. This module also offers:
 
-Non-recursive, tested and documented, 100% Typescript, 100% functional, 100% parametrizable.
+- friendly logging (your formats when encapsulated in other objects will show as a meaningful name (e.g BoldRed))
+- context formatting, i.e. the ability to apply context-dependent formatting
+- equivalence of formats (for Effect users using the Equal.equals mechanism) .
+
+Tested and documented, 100% Typescript, 100% functional.
 
 Can also be used by non-Effect users.
 
@@ -21,33 +25,35 @@ Depending on the package manager you use, run one of the following commands in y
 - **Using npm:**
 
   ```sh
-  npm install effect @parischap/effect-lib @parischap/pretty-print
+  npm install effect @parischap/effect-lib @parischap/ansi-styles
   ```
 
 - **Using pnpm:**
 
   ```sh
-  pnpm add effect @parischap/effect-lib @parischap/pretty-print
+  pnpm add effect @parischap/effect-lib @parischap/ansi-styles
   ```
 
 - **Using yarn:**
   ```sh
-  yarn add effect @parischap/effect-lib @parischap/pretty-print
+  yarn add effect @parischap/effect-lib @parischap/ansi-styles
   ```
 
-We use two peerDependencies. If you are not an Effect user, the size may seem important. But, in fact, we use little of each peerDependency. Bundled, tree-shaken, minified, it's only about [24kB](https://bundlephobia.com/package/@parischap/pretty-print). Minified and gzipped, it falls to [5kB](https://bundlephobia.com/package/@parischap/pretty-print)! (source bundlephobia)
+We use two peerDependencies. If you are not an Effect user, the size may seem important. But, in fact, we use little of each peerDependency. Bundled, tree-shaken, minified, it's only about [24kB](https://bundlephobia.com/package/@parischap/ansi-style). Minified and gzipped, it falls to [5kB](https://bundlephobia.com/package/@parischap/ansi-style)! (source bundlephobia)
+
+## Note
+
+We draw your attention to the [NO_COLOR](https://no-color.org/) standard: "Command-line software which adds ANSI color to its output by default should check for a NO_COLOR environment variable that, when present and not an empty string (regardless of its value), prevents the addition of ANSI color."
 
 ## API
 
-After reading this introduction, you may take a look at the [API](https://parischap.github.io/effect-libs/docs/pretty-print) documentation.
+After reading this introduction, you may take a look at the [API](https://parischap.github.io/effect-libs/docs/ansi-style) documentation.
 
 ## Usage
 
-In this documentation, the term `record` refers to a non-null `object`, an `array` or a `function`.
+### 1) Simple colors
 
-### 1) Using predefined `Options` instances
-
-The simplest way to use this library is to use one of the predefined `Options` instances.
+#### 1.1) Original colors
 
 #### Uncolored tabified printing
 

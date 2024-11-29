@@ -38,8 +38,7 @@ import {
 	pipe,
 	Pipeable,
 	Predicate,
-	Struct,
-	Types
+	Struct
 } from 'effect';
 import * as ASSequence from './Sequence.js';
 
@@ -47,99 +46,6 @@ export const moduleTag = '@parischap/ansi-styles/Format/';
 const _moduleTag = moduleTag;
 const _TypeId: unique symbol = Symbol.for(moduleTag);
 
-namespace IndexedStyleCharacteristic {
-	const moduleTag = _moduleTag + 'IndexedContainer/';
-	const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
-	type TypeId = typeof TypeId;
-
-	/**
-	 * Enum representing style characteristics
-	 *
-	 * @since 0.0.1
-	 * @category Models
-	 */
-	export enum Index {
-		BoldIndex = 0,
-		UnderlinedIndex = 1,
-		FramedIndex = 2,
-		EncircledIndex = 3,
-		OverlinedIndex = 4,
-		BlinkingIndex = 5,
-		FgColorIndex = 100,
-		BgColorIndex = 101
-	}
-
-	/**
-	 * An IndexContainer associates the value of a style characteristic with an index representing
-	 * that characteristic. For instance, an IndexContainer could contain the value `Black` associated
-	 * to the style characteristic `FgColor`, thus meaning that the text is to be displayed in black.
-	 *
-	 * @since 0.0.1
-	 * @category Models
-	 */
-	export interface Type<out A> extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
-		/**
-		 * Index of the style characteristic
-		 *
-		 * @since 0.0.1
-		 */
-		readonly index: Index;
-
-		/**
-		 * Value of the style characteristic
-		 *
-		 * @since 0.0.1
-		 */
-		readonly value: A;
-
-		/** @internal */
-		readonly [TypeId]: {
-			readonly _A: Types.Covariant<A>;
-		};
-	}
-
-	/**
-	 * Type guard
-	 *
-	 * @since 0.0.1
-	 * @category Guards
-	 */
-
-	export const has = (u: unknown): u is Type<unknown> => Predicate.hasProperty(u, TypeId);
-
-	/**
-	 * Equivalence
-	 *
-	 * @since 0.0.1
-	 * @category Equivalences
-	 */
-	/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-	export const equivalence: Equivalence.Equivalence<Type<any>> = (self, that) =>
-		that.index === self.index;
-
-	/** Prototype */
-	/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-	const proto: MTypes.Proto<Type<any>> = {
-		[TypeId]: {
-			_A: MTypes.covariantValue
-		},
-		[Equal.symbol]<A>(this: Type<A>, that: unknown): boolean {
-			return has(that) && equivalence(this, that);
-		},
-		[Hash.symbol]<C>(this: Type<C>) {
-			return Hash.cached(this, Hash.hash(this.name));
-		},
-		[MInspectable.NameSymbol]<C>(this: Type<C>) {
-			return this.name;
-		},
-		...MInspectable.BaseProto(moduleTag),
-		...MPipeable.BaseProto
-	};
-
-	/** Constructor */
-	const _make = <C>(params: MTypes.Data<Type<C>>): Type<C> =>
-		MTypes.objectFromDataAndProto(proto, params);
-}
 /**
  * Type that represents a Format
  *
