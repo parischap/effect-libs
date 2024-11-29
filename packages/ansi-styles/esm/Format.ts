@@ -33,11 +33,14 @@ import {
 	Equivalence,
 	flow,
 	Hash,
+	HashSet,
+	Inspectable,
 	Number,
 	Option,
 	pipe,
 	Pipeable,
 	Predicate,
+	SortedSet,
 	Struct,
 	Types
 } from 'effect';
@@ -45,19 +48,21 @@ import * as ASSequence from './Sequence.js';
 
 export const moduleTag = '@parischap/ansi-styles/Format/';
 const _moduleTag = moduleTag;
-const _TypeId: unique symbol = Symbol.for(moduleTag);
+const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+type TypeId = typeof TypeId;
 
-namespace IndexedStyleCharacteristic {
-	const moduleTag = _moduleTag + 'IndexedContainer/';
+namespace IndexedFormatCharacteristic {
+	const moduleTag = _moduleTag + 'IndexedFormatCharacteristic/';
 	const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 	type TypeId = typeof TypeId;
 
 	/**
-	 * Enum representing style characteristics
+	 * Enum representing format characteristics.
 	 *
 	 * @since 0.0.1
 	 * @category Models
 	 */
+	//The order is significant because format names are created by concatenating the names of each format characteristic in this order. `BoldRed` sounds better than `RedBold`. We left a gap before `FgColorIndex` in case we want to add new format characteristics.
 	export enum Index {
 		BoldIndex = 0,
 		UnderlinedIndex = 1,
@@ -70,23 +75,24 @@ namespace IndexedStyleCharacteristic {
 	}
 
 	/**
-	 * An IndexContainer associates the value of a style characteristic with an index representing
+	 * An IndexContainer associates the value of a format characteristic with an index representing
 	 * that characteristic. For instance, an IndexContainer could contain the value `Black` associated
-	 * to the style characteristic `FgColor`, thus meaning that the text is to be displayed in black.
+	 * to the format characteristic `FgColor`, thus meaning that the text is to be displayed in
+	 * black.
 	 *
 	 * @since 0.0.1
 	 * @category Models
 	 */
-	export interface Type<out A> extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
+	export interface Type<out A> extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
 		/**
-		 * Index of the style characteristic
+		 * Index of the format characteristic
 		 *
 		 * @since 0.0.1
 		 */
 		readonly index: Index;
 
 		/**
-		 * Value of the style characteristic
+		 * Value of the format characteristic
 		 *
 		 * @since 0.0.1
 		 */
@@ -126,27 +132,57 @@ namespace IndexedStyleCharacteristic {
 		[Equal.symbol]<A>(this: Type<A>, that: unknown): boolean {
 			return has(that) && equivalence(this, that);
 		},
-		[Hash.symbol]<C>(this: Type<C>) {
-			return Hash.cached(this, Hash.hash(this.name));
-		},
-		[MInspectable.NameSymbol]<C>(this: Type<C>) {
-			return this.name;
+		[Hash.symbol]<A>(this: Type<A>) {
+			return Hash.cached(this, Hash.hash(this.index));
 		},
 		...MInspectable.BaseProto(moduleTag),
 		...MPipeable.BaseProto
 	};
 
 	/** Constructor */
-	const _make = <C>(params: MTypes.Data<Type<C>>): Type<C> =>
+	export const _make = <A>(params: MTypes.Data<Type<A>>): Type<A> =>
 		MTypes.objectFromDataAndProto(proto, params);
 }
+
+export interface IndexedFormatCharacteristicName extends IndexedFormatCharacteristic.Type<string> {}
+export interface IndexedFormatCharacteristicSequence
+	extends IndexedFormatCharacteristic.Type<ASSequence.Type> {}
+
 /**
  * Type that represents a Format
  *
  * @since 0.0.1
  * @category Models
  */
-export type Type = Styled.Type | Colored.Type;
+export interface Type
+	extends MTypes.StringTransformer,
+		Equal.Equal,
+		MInspectable.Inspectable,
+		Pipeable.Pipeable {
+	/**
+	 * Name of this format
+	 *
+	 * @since 0.0.1
+	 */
+	readonly name: string;
+
+	/**
+	 * Names of all the characteristics that compose this format
+	 *
+	 * @since 0.0.1
+	 */
+	readonly names: SortedSet.SortedSet<IndexedFormatCharacteristicName>;
+
+	/**
+	 * Sequences of all the characteristics that compose this format
+	 *
+	 * @since 0.0.1
+	 */
+	readonly sequences: HashSet.HashSet<IndexedFormatCharacteristicSequence>;
+
+	/** @internal */
+	readonly [TypeId]: TypeId;
+}
 
 /**
  * Type guard
@@ -154,7 +190,7 @@ export type Type = Styled.Type | Colored.Type;
  * @since 0.0.6
  * @category Guards
  */
-export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
+export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
 
 /**
  * Equivalence
@@ -162,17 +198,36 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
  * @since 0.0.6
  * @category Equivalences
  */
-export const equivalence: Equivalence.Equivalence<Type> = (self, that) => name(that) === name(self);
+export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.name === self.name;
 
-/** Base prototype */
-const baseProto = {
+const base: MTypes.Proto<Type> = {
+	[TypeId]: TypeId,
 	[Equal.symbol](this: Type, that: unknown): boolean {
 		return has(that) && equivalence(this, that);
 	},
 	[Hash.symbol](this: Type) {
-		return Hash.cached(this, Hash.hash(name(this)));
+		return Hash.cached(this, Hash.hash(this.name));
 	},
+	[MInspectable.NameSymbol](this: Type) {
+		return this.name;
+	},
+	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto
+};
+
+/** Constructor */
+const _make = ({
+	name,
+	names,
+	sequences,
+	stringTransformer
+}: MTypes.Data<Type> & { readonly stringTransformer: MTypes.StringTransformer }): Type => {
+	return Object.assign(MFunction.clone(stringTransformer), {
+		name,
+		names,
+		sequences,
+		...base
+	});
 };
 
 /**
@@ -181,7 +236,29 @@ const baseProto = {
  * @since 0.0.1
  * @category Destructors
  */
-export const name = (self: Type): string => self[MInspectable.NameSymbol]();
+export const name: MTypes.OneArgFunction<Type, string> = Struct.get('name');
+
+/**
+ * Gets the names of `self`
+ *
+ * @since 0.0.1
+ * @category Destructors
+ */
+export const names: MTypes.OneArgFunction<
+	Type,
+	SortedSet.SortedSet<IndexedFormatCharacteristicName>
+> = Struct.get('names');
+
+/**
+ * Gets the sequences of `self`
+ *
+ * @since 0.0.1
+ * @category Destructors
+ */
+export const sequences: MTypes.OneArgFunction<
+	Type,
+	HashSet.HashSet<IndexedFormatCharacteristicSequence>
+> = Struct.get('sequences');
 
 export namespace Colored {
 	const moduleTag = _moduleTag + 'Colored/';
@@ -218,7 +295,7 @@ export namespace Colored {
 		readonly fgStringTransformer: MTypes.StringTransformer;
 
 		/** @internal */
-		readonly [_TypeId]: TypeId;
+		readonly [TypeId]: TypeId;
 	}
 
 	/**

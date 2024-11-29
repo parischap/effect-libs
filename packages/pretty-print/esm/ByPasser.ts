@@ -17,6 +17,7 @@ import {
 	MMatch,
 	MOption,
 	MPipeable,
+	MRecord,
 	MRegExp,
 	MString,
 	MTypes
@@ -202,9 +203,9 @@ export const objectAsRecordWithoutNullables = (formatSet: PPFormatSet.Type): Typ
  *
  * - For functions: returns a some of `option.functionLabel`
  * - For arrays: return a `none`
- * - For non-null objects: first tries to call the toString method (only if it is different from
- *   Object.prototype.toString) and then the toJSON method. Returns a `some` of the result if
- *   successful. Returns a `none` otherwise.
+ * - For non-null objects: tries to call the toString method (only if it is different from
+ *   Object.prototype.toString). Returns a `some` of the result if successful. Returns a `none`
+ *   otherwise.
  *
  * This is the instance you will use most of the time.
  *
@@ -223,7 +224,11 @@ export const objectAsValue = (formatSet: PPFormatSet.Type): Type =>
 				MMatch.when(
 					MTypes.isRecord,
 					flow(
-						MString.tryToStringToJSON,
+						MRecord.tryZeroParamStringFunction({
+							functionName: 'toString',
+							/* eslint-disable-next-line @typescript-eslint/unbound-method */
+							exception: Object.prototype.toString
+						}),
 						Option.map(
 							flow(
 								// split resets RegExp.prototype.lastIndex after executing
