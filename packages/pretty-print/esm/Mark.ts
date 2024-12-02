@@ -1,6 +1,6 @@
 /**
  * This module implements a type that represents a mark to be displayed when stringifying a value.
- * Each mark is composed of a string and the name of a Format (see FormatMap.ts) to apply to that
+ * Each mark is composed of a string and the id of a Format (see FormatMap.ts) to apply to that
  * string.
  *
  * With the make function, you can define your own instances if the provided ones don't suit your
@@ -45,7 +45,7 @@ export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pip
 	 */
 	readonly text: string;
 	/**
-	 * The name of the format to apply to the text
+	 * The id of the format to apply to the text
 	 *
 	 * @since 0.3.0
 	 */

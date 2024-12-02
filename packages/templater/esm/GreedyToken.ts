@@ -41,7 +41,7 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
  * @since 0.0.1
  * @category Equivalences
  */
-export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.name === self.name;
+export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
 
 /** Prototype */
 const proto: MTypes.Proto<Type> = {
@@ -50,11 +50,11 @@ const proto: MTypes.Proto<Type> = {
 		return has(that) && equivalence(this, that);
 	},
 	[Hash.symbol](this: Type) {
-		return Hash.cached(this, Hash.hash(this.name));
+		return Hash.cached(this, Hash.hash(this.id));
 	},
 	...MInspectable.BaseProto(moduleTag),
 	toJSON(this: Type) {
-		return this.name === '' ? this : this.name;
+		return this.id === '' ? this : this.id;
 	},
 	...MPipeable.BaseProto
 };
@@ -63,24 +63,23 @@ const proto: MTypes.Proto<Type> = {
 const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
 
 /**
- * Constructor without a name
+ * Constructor without a id
  *
  * @since 0.0.1
  * @category Constructors
  */
-export const make = (params: Omit<MTypes.Data<Type>, 'name'>): Type =>
-	_make({ ...params, name: '' });
+export const make = (params: Omit<MTypes.Data<Type>, 'id'>): Type => _make({ ...params, id: '' });
 
 /**
- * Returns a copy of `self` with `name` set to `name`
+ * Returns a copy of `self` with `id` set to `id`
  *
  * @since 0.0.1
  * @category Utils
  */
 export const setName =
-	(name: string) =>
+	(id: string) =>
 	(self: Type): Type =>
-		_make({ ...self, name: name });
+		_make({ ...self, id: id });
 
 /**
  * FormatSet instance for unformatted output (uses the identity function for all parts to be
@@ -90,7 +89,7 @@ export const setName =
  * @category Instances
  */
 export const unformatted: Type = _make({
-	name: 'unformatted',
+	id: 'unformatted',
 	stringValueFormatter: Function.identity,
 	otherValueFormatter: Function.identity,
 	symbolValueFormatter: Function.identity,
@@ -112,7 +111,7 @@ export const unformatted: Type = _make({
  * @category Instances
  */
 export const ansiDarkMode: Type = _make({
-	name: 'ansiDarkMode',
+	id: 'ansiDarkMode',
 	stringValueFormatter: MString.colorize(MColor.green),
 	otherValueFormatter: MString.colorize(MColor.yellow),
 	symbolValueFormatter: MString.colorize(MColor.cyan),

@@ -1,9 +1,9 @@
 /**
- * This module implements a PlaceHolder which is the association of a name and a Transformer (see
- * Transformer.ts). The name is the string to look for in the template (see Template.ts). Upon
+ * This module implements a PlaceHolder which is the association of a id and a Transformer (see
+ * Transformer.ts). The id is the string to look for in the template (see Template.ts). Upon
  * writing, each PlaceHolder present in the template must given a value. For a given PlaceHolder,
  * the value to write is transformed into a string by the Transformer and is inserted into the
- * template at all the positions where the name of that PlaceHolder appears. Upon reading, a text
+ * template at all the positions where the id of that PlaceHolder appears. Upon reading, a text
  * similar to the template must be provided. Strings are read from the text at all the positions
  * where a PlaceHolder appears in the template. The amount of text to read for each PlaceHolder is
  * determined by its Transformer. If the same Placeholder appears several times, the same string
@@ -28,8 +28,8 @@ type TypeId = typeof TypeId;
  * @category Models
  */
 export interface Type<in out A> extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
-	/** The name of this PlaceHolder */
-	readonly name: string;
+	/** The id of this PlaceHolder */
+	readonly id: string;
 
 	/** The Transformer associated to this PlaceHolder */
 	readonly transformer: Transformer.Type<A>;
@@ -55,8 +55,7 @@ export const has = (u: unknown): u is Type<unknown> => Predicate.hasProperty(u, 
  * @category Equivalences
  */
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-export const equivalence: Equivalence.Equivalence<Type<any>> = (self, that) =>
-	that.name === self.name;
+export const equivalence: Equivalence.Equivalence<Type<any>> = (self, that) => that.id === self.id;
 
 /** Prototype */
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
@@ -68,7 +67,7 @@ const proto: MTypes.Proto<Type<any>> = {
 		return has(that) && equivalence(this, that);
 	},
 	[Hash.symbol]<A>(this: Type<A>) {
-		return Hash.cached(this, Hash.hash(this.name));
+		return Hash.cached(this, Hash.hash(this.id));
 	},
 	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto

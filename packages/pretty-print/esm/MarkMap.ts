@@ -1,5 +1,5 @@
 /**
- * This module implements a type that represents Mark's (see Mark.ts) identified by their name to be
+ * This module implements a type that represents Mark's (see Mark.ts) identified by their id to be
  * displayed when stringifying a value.
  *
  * With the make function, you can define your own instances if the provided ones don't suit your
@@ -29,7 +29,7 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
 	 *
 	 * @since 0.3.0
 	 */
-	readonly name: string;
+	readonly id: string;
 	/**
 	 * Format applied to the different parts of the value to stringify
 	 *
@@ -55,7 +55,7 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
  * @since 0.3.0
  * @category Equivalences
  */
-export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.name === self.name;
+export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
 
 /** Prototype */
 const proto: MTypes.Proto<Type> = {
@@ -64,10 +64,10 @@ const proto: MTypes.Proto<Type> = {
 		return has(that) && equivalence(this, that);
 	},
 	[Hash.symbol](this: Type) {
-		return Hash.cached(this, Hash.hash(this.name));
+		return Hash.cached(this, Hash.hash(this.id));
 	},
-	[MInspectable.NameSymbol](this: Type) {
-		return this.name;
+	[MInspectable.IdSymbol](this: Type) {
+		return this.id;
 	},
 	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto

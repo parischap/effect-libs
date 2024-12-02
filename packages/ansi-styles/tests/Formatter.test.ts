@@ -48,6 +48,6 @@ describe('ASFormatter', () => {
 		expect(pipe('foo', ASFormatter.action(formatter), ASFormattedString.formatted)).toBe(
 			'\x1b[33;51mfoo\x1b[0m'
 		);
-		expect(ASFormatter.name(formatter)).toBe('FramedYellow');
+		expect(ASFormatter.id(formatter)).toBe('FramedYellow');
 	});
 });

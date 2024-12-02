@@ -29,7 +29,7 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
 	 *
 	 * @since 0.0.1
 	 */
-	readonly name: string;
+	readonly id: string;
 	/**
 	 * Start mark - Note that passing an empty string is not the same as passing an `Option.none`. An
 	 * empty string will result an a blank line when printing on multiple lines
@@ -62,7 +62,7 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
  * @since 0.0.1
  * @category Equivalences
  */
-export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.name === self.name;
+export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
 
 /** Prototype */
 const proto: MTypes.Proto<Type> = {
@@ -71,10 +71,10 @@ const proto: MTypes.Proto<Type> = {
 		return has(that) && equivalence(this, that);
 	},
 	[Hash.symbol](this: Type) {
-		return Hash.cached(this, Hash.hash(this.name));
+		return Hash.cached(this, Hash.hash(this.id));
 	},
-	[MInspectable.NameSymbol](this: Type) {
-		return this.name;
+	[MInspectable.IdSymbol](this: Type) {
+		return this.id;
 	},
 	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto
@@ -96,7 +96,7 @@ export const make = (params: MTypes.Data<Type>): Type =>
  * @category Instances
  */
 export const none: Type = make({
-	name: 'NoMarks',
+	id: 'NoMarks',
 	start: Option.some(''),
 	end: Option.none()
 });
@@ -108,7 +108,7 @@ export const none: Type = make({
  * @category Instances
  */
 export const multiLineArray: Type = make({
-	name: 'multiLineArrayExtremityMarks',
+	id: 'multiLineArrayExtremityMarks',
 	start: Option.some('['),
 	end: Option.some(']')
 });
@@ -121,7 +121,7 @@ export const multiLineArray: Type = make({
  */
 export const singleLineArray: Type = pipe(
 	multiLineArray,
-	MStruct.set({ name: 'SingleLineArrayExtremityMarks' }),
+	MStruct.set({ id: 'SingleLineArrayExtremityMarks' }),
 	make
 );
 
@@ -132,7 +132,7 @@ export const singleLineArray: Type = pipe(
  * @category Instances
  */
 export const multiLineObject: Type = make({
-	name: 'MultiLineObjectExtremityMarks',
+	id: 'MultiLineObjectExtremityMarks',
 	start: Option.some('{'),
 	end: Option.some('}')
 });
@@ -144,7 +144,7 @@ export const multiLineObject: Type = make({
  * @category Instances
  */
 export const singleLineObject: Type = make({
-	name: 'SingleLineObjectExtremityMarks',
+	id: 'SingleLineObjectExtremityMarks',
 	start: Option.map(multiLineObject.start, MString.append(' ')),
 	end: Option.map(multiLineObject.end, MString.prepend(' '))
 });

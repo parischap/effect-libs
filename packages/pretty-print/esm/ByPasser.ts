@@ -57,7 +57,7 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
 	 *
 	 * @since 0.0.1
 	 */
-	readonly name: string;
+	readonly id: string;
 	/**
 	 * Action of this ByPasser. `value` is the Value (see Value.ts) being currently printed. `option`
 	 * is the `Option` instance (see Option.ts) passed by the user. If the action returns a value of
@@ -94,7 +94,7 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
  * @since 0.0.1
  * @category Equivalences
  */
-export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.name === self.name;
+export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
 
 /** Prototype */
 const proto: MTypes.Proto<Type> = {
@@ -103,10 +103,10 @@ const proto: MTypes.Proto<Type> = {
 		return has(that) && equivalence(this, that);
 	},
 	[Hash.symbol](this: Type) {
-		return Hash.cached(this, Hash.hash(this.name));
+		return Hash.cached(this, Hash.hash(this.id));
 	},
-	[MInspectable.NameSymbol](this: Type) {
-		return this.name;
+	[MInspectable.IdSymbol](this: Type) {
+		return this.id;
 	},
 	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto
@@ -130,7 +130,7 @@ export const make = (params: MTypes.Data<Type>): Type =>
  */
 export const objectAsRecord = (formatSet: PPFormatSet.Type): Type =>
 	make({
-		name: formatSet.name + 'ObjectAsRecord',
+		id: formatSet.id + 'ObjectAsRecord',
 		action: flow(
 			MMatch.make,
 			MMatch.when(
@@ -188,7 +188,7 @@ export const objectAsRecord = (formatSet: PPFormatSet.Type): Type =>
  */
 export const objectAsRecordWithoutNullables = (formatSet: PPFormatSet.Type): Type =>
 	make({
-		name: formatSet.name + 'ObjectAsRecordWithoutNullables',
+		id: formatSet.id + 'ObjectAsRecordWithoutNullables',
 		action: (value, option) =>
 			pipe(
 				value,
@@ -214,7 +214,7 @@ export const objectAsRecordWithoutNullables = (formatSet: PPFormatSet.Type): Typ
  */
 export const objectAsValue = (formatSet: PPFormatSet.Type): Type =>
 	make({
-		name: formatSet.name + 'ObjectAsValue',
+		id: formatSet.id + 'ObjectAsValue',
 		action: (value, option) =>
 			pipe(
 				value,
@@ -250,7 +250,7 @@ export const objectAsValue = (formatSet: PPFormatSet.Type): Type =>
  */
 export const objectAsValueWithoutNullables = (formatSet: PPFormatSet.Type): Type =>
 	make({
-		name: formatSet.name + 'ObjectAsValueWithoutNullables',
+		id: formatSet.id + 'ObjectAsValueWithoutNullables',
 		action: (value, option) =>
 			pipe(
 				value,

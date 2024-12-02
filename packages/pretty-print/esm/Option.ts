@@ -37,7 +37,7 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
 	 *
 	 * @since 0.0.1
 	 */
-	readonly name: string;
+	readonly id: string;
 
 	/**
 	 * Map used to format the output stringified values (see FormatMap.ts)
@@ -110,13 +110,13 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
 	readonly propertySortOrder: PPValueOrder.Type;
 
 	/**
-	 * A key with the same name can appear in an object and one or several of its prototypes. This
-	 * option allows you to decide if you want to keep all these properties with the same name. If
-	 * true, only the first occurrence of each property with the same name is kept. Sorting happens
-	 * before deduping, so you can decide which property will be first by choosing your
-	 * propertySortOrder carefully. Usually, you will use `propertySortOrder:
-	 * ValueOrder.byPrototypalDepth`. If false, all occurrences of the same property are kept.
-	 * Deduping is only performed on records that are not arrays
+	 * A key with the same id can appear in an object and one or several of its prototypes. This
+	 * option allows you to decide if you want to keep all these properties with the same id. If true,
+	 * only the first occurrence of each property with the same id is kept. Sorting happens before
+	 * deduping, so you can decide which property will be first by choosing your propertySortOrder
+	 * carefully. Usually, you will use `propertySortOrder: ValueOrder.byPrototypalDepth`. If false,
+	 * all occurrences of the same property are kept. Deduping is only performed on records that are
+	 * not arrays
 	 *
 	 * @since 0.0.1
 	 */
@@ -172,7 +172,7 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
  * @since 0.0.1
  * @category Equivalences
  */
-export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.name === self.name;
+export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
 
 /** Prototype */
 const proto: MTypes.Proto<Type> = {
@@ -181,17 +181,17 @@ const proto: MTypes.Proto<Type> = {
 		return has(that) && equivalence(this, that);
 	},
 	[Hash.symbol](this: Type) {
-		return Hash.cached(this, Hash.hash(this.name));
+		return Hash.cached(this, Hash.hash(this.id));
 	},
-	[MInspectable.NameSymbol](this: Type) {
-		return this.name;
+	[MInspectable.IdSymbol](this: Type) {
+		return this.id;
 	},
 	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto
 };
 
 /**
- * Constructor without a name
+ * Constructor without a id
  *
  * @since 0.0.1
  * @category Constructors
@@ -208,7 +208,7 @@ export const make = (params: MTypes.Data<Type>): Type =>
  */
 export const singleLine = (formatSet: PPFormatSet.Type): Type =>
 	make({
-		name: formatSet.name + 'SingleLine',
+		id: formatSet.id + 'SingleLine',
 		maxDepth: 10,
 		arrayLabel: pipe('[Array]', PPFormattedString.makeWith(formatSet.otherValueFormatter)),
 		functionLabel: pipe('(Function)', PPFormattedString.makeWith(formatSet.otherValueFormatter)),
@@ -250,7 +250,7 @@ export const tabified = (formatSet: PPFormatSet.Type): Type =>
 	pipe(
 		singleLine(formatSet),
 		MStruct.set({
-			name: formatSet.name + 'Tabified',
+			id: formatSet.id + 'Tabified',
 			recordFormatter: PPRecordFormatter.tabified(formatSet)
 		}),
 		make
@@ -284,7 +284,7 @@ export const treeified = (formatSet: PPFormatSet.Type): Type =>
 	pipe(
 		singleLine(formatSet),
 		MStruct.set({
-			name: formatSet.name + 'Treeified',
+			id: formatSet.id + 'Treeified',
 			byPasser: PPByPasser.objectAsValueWithoutNullables(formatSet),
 			propertyFormatter: PPPropertyFormatter.keyAndValueWithObjectMarks(formatSet),
 			recordFormatter: PPRecordFormatter.tabified(formatSet)
@@ -320,7 +320,7 @@ export const splitWhenTotalLengthExceeds40 = (formatSet: PPFormatSet.Type): Type
 	pipe(
 		singleLine(formatSet),
 		MStruct.set({
-			name: formatSet.name + 'SplitWhenTotalLengthExceeds40',
+			id: formatSet.id + 'SplitWhenTotalLengthExceeds40',
 			recordFormatter: pipe(formatSet, PPRecordFormatter.splitOnTotalLength(40))
 		}),
 		make

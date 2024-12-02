@@ -60,7 +60,7 @@ export interface Type<in out A> extends Equal.Equal, Inspectable.Inspectable, Pi
 	 *
 	 * @since 0.0.1
 	 */
-	readonly name: string;
+	readonly id: string;
 	/**
 	 * Reads as much as it can from the start of the input string so that the read string can be
 	 * converted into an A. If nothing can be read, returns a `left`. Otherwise carries out the
@@ -103,8 +103,7 @@ export const has = (u: unknown): u is Type<unknown> => Predicate.hasProperty(u, 
  * @category Equivalences
  */
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-export const equivalence: Equivalence.Equivalence<Type<any>> = (self, that) =>
-	that.name === self.name;
+export const equivalence: Equivalence.Equivalence<Type<any>> = (self, that) => that.id === self.id;
 
 /** Prototype */
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
@@ -116,7 +115,7 @@ const proto: MTypes.Proto<Type<any>> = {
 		return has(that) && equivalence(this, that);
 	},
 	[Hash.symbol]<A>(this: Type<A>) {
-		return Hash.cached(this, Hash.hash(this.name));
+		return Hash.cached(this, Hash.hash(this.id));
 	},
 	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto
@@ -147,7 +146,7 @@ export const compose =
 	<A>(that: Type<A>) =>
 	(self: Type<string>): Type<A> =>
 		make({
-			name: `${self.name} ${that.name}`,
+			id: `${self.id} ${that.id}`,
 			read: flow(
 				self.read,
 				Either.flatMap(
@@ -190,7 +189,7 @@ export const mapped = <
 	}
 >(
 	map: HashMap.HashMap<string, A>,
-	name: string,
+	id: string,
 	strictCase: boolean
 ): Type<A> => {
 	const casedMapEntries = pipe(
@@ -211,7 +210,7 @@ export const mapped = <
 	);
 
 	return make({
-		name,
+		id,
 		read: (input) =>
 			pipe(
 				input,
@@ -267,7 +266,7 @@ export namespace String {
 	 * @category Instances
 	 */
 	export const rest: Type = make({
-		name: `string`,
+		id: `string`,
 		read: flow(Tuple.make, Tuple.appendElement(''), Either.right),
 		write: Either.right
 	});
@@ -286,7 +285,7 @@ export namespace String {
 	 */
 	export const fixedLength = (length: number, leftPadding = '', rightPadding = ''): Type =>
 		make({
-			name: `string${length}`,
+			id: `string${length}`,
 			read: flow(
 				MString.splitAt(length),
 				Either.liftPredicate(
@@ -354,7 +353,7 @@ export namespace Number {
 		lookUp: ({ key }: { readonly key: Options.Type }) => {
 			return pipe(
 				_make({
-					name: `number-${Options.name(key)}`,
+					id: `number-${Options.id(key)}`,
 
 					read: Options.toReader(key),
 
@@ -475,12 +474,12 @@ export namespace Number {
 		);
 
 		/**
-		 * Turns a `SignOptions` into its name
+		 * Turns a `SignOptions` into its id
 		 *
 		 * @since 0.0.1
 		 * @category Destructors
 		 */
-		export const name: (self: SignOptions) => string = flow(
+		export const id: (self: SignOptions) => string = flow(
 			MMatch.make,
 			MMatch.whenIs(SignOptions.None, () => 'no sign'),
 			MMatch.whenIs(SignOptions.Mandatory, () => 'mandatory sign'),
@@ -878,12 +877,12 @@ export namespace Number {
 		);
 
 		/**
-		 * Returns a name for `self`
+		 * Returns a id for `self`
 		 *
 		 * @since 0.0.1
 		 * @category Destructors
 		 */
-		export const name = (self: Type): string =>
+		export const id = (self: Type): string =>
 			`${self.signOptions}-${self.fractionalSep}-${self.thousandsSep}-${self.minDecimalDigits}-${self.maxDecimalDigits}-${self.minFractionalDigits}-${self.maxFractionalDigits}-${self.eNotationOptions}`;
 
 		/**
@@ -1740,9 +1739,9 @@ export namespace Number {
 		 * @since 0.0.1
 		 * @category Instances
 		 */
-		export const inBasis = (name: string, regExp: RegExp, radix: number): Type =>
+		export const inBasis = (id: string, regExp: RegExp, radix: number): Type =>
 			_make({
-				name,
+				id,
 				read: (input) =>
 					pipe(
 						input,
@@ -1759,7 +1758,7 @@ export namespace Number {
 						Either.fromOption(
 							() =>
 								new Error.Type({
-									message: `Could not read ${name} number from start of '${input}'`
+									message: `Could not read ${id} number from start of '${input}'`
 								})
 						)
 					),

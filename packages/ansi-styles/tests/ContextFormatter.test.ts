@@ -68,8 +68,8 @@ describe('ContextFormatter', () => {
 			);
 		});
 
-		it('.pipe() and name', () => {
-			expect(contextFormatterOnContextPos1.pipe(ASContextFormatter.name)).toBe(
+		it('.pipe() and id', () => {
+			expect(contextFormatterOnContextPos1.pipe(ASContextFormatter.id)).toBe(
 				'AllStandardOriginalColorsOnContextPos1'
 			);
 		});

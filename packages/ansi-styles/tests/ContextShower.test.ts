@@ -64,8 +64,8 @@ describe('ContextShower', () => {
 			);
 		});
 
-		it('.pipe() and name', () => {
-			expect(fooShowerOnContextPos.pipe(ASContextShower.name)).toBe(
+		it('.pipe() and id', () => {
+			expect(fooShowerOnContextPos.pipe(ASContextShower.id)).toBe(
 				'fooFormattedWithAllStandardOriginalColorsOnContextPos'
 			);
 		});

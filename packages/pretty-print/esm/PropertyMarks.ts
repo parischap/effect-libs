@@ -29,7 +29,7 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
 	 *
 	 * @since 0.0.1
 	 */
-	readonly name: string;
+	readonly id: string;
 	/**
 	 * Mark used to seperate the key and the value
 	 *
@@ -66,7 +66,7 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
  * @since 0.0.1
  * @category Equivalences
  */
-export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.name === self.name;
+export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
 
 /** Prototype */
 const proto: MTypes.Proto<Type> = {
@@ -75,10 +75,10 @@ const proto: MTypes.Proto<Type> = {
 		return has(that) && equivalence(this, that);
 	},
 	[Hash.symbol](this: Type) {
-		return Hash.cached(this, Hash.hash(this.name));
+		return Hash.cached(this, Hash.hash(this.id));
 	},
-	[MInspectable.NameSymbol](this: Type) {
-		return this.name;
+	[MInspectable.IdSymbol](this: Type) {
+		return this.id;
 	},
 	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto
@@ -100,7 +100,7 @@ export const make = (params: MTypes.Data<Type>): Type =>
  * @category Instances
  */
 export const object: Type = make({
-	name: 'ObjectPropertyMarks',
+	id: 'ObjectPropertyMarks',
 	keyValueSeparator: ': ',
 	prototypePrefix: '',
 	prototypeSuffix: '@'

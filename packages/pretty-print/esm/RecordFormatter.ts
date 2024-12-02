@@ -61,7 +61,7 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
 	 *
 	 * @since 0.0.1
 	 */
-	readonly name: string;
+	readonly id: string;
 
 	/**
 	 * Action of this RecordFormatter.
@@ -87,7 +87,7 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
  * @since 0.0.1
  * @category Equivalences
  */
-export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.name === self.name;
+export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
 
 /** Prototype */
 const proto: MTypes.Proto<Type> = {
@@ -96,10 +96,10 @@ const proto: MTypes.Proto<Type> = {
 		return has(that) && equivalence(this, that);
 	},
 	[Hash.symbol](this: Type) {
-		return Hash.cached(this, Hash.hash(this.name));
+		return Hash.cached(this, Hash.hash(this.id));
 	},
-	[MInspectable.NameSymbol](this: Type) {
-		return this.name;
+	[MInspectable.IdSymbol](this: Type) {
+		return this.id;
 	},
 	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto
@@ -132,7 +132,7 @@ export const singleLineMaker =
 	(recordMarks: PPRecordMarks.Type) =>
 	(formatSet: PPFormatSet.Type): Type =>
 		make({
-			name: formatSet.name + 'SingleLineWith' + recordMarks.name,
+			id: formatSet.id + 'SingleLineWith' + recordMarks.id,
 			action: (stringifiedProps) => (value) =>
 				pipe(
 					stringifiedProps,
@@ -174,7 +174,7 @@ export const multiLineMaker =
 	(recordMarks: PPRecordMarks.Type, indentMode: PPIndentMode.Type) =>
 	(formatSet: PPFormatSet.Type): Type =>
 		make({
-			name: formatSet.name + 'MultiLineWith' + recordMarks.name + 'And' + indentMode.name,
+			id: formatSet.id + 'MultiLineWith' + recordMarks.id + 'And' + indentMode.id,
 			action: (stringifiedProps) => (value) =>
 				pipe(
 					stringifiedProps,
@@ -234,16 +234,16 @@ export const splitOnConstituentNumberMaker =
 	(limit: number) =>
 	(formatSet: PPFormatSet.Type): Type =>
 		make({
-			name:
-				formatSet.name +
+			id:
+				formatSet.id +
 				'SplitWhenConstituentNumberExceeds' +
 				limit +
 				'With' +
-				singleLineRecordMarks.name +
+				singleLineRecordMarks.id +
 				'And' +
-				multiLinesRecordMarks.name +
+				multiLinesRecordMarks.id +
 				'And' +
-				indentMode.name,
+				indentMode.id,
 			action: flow(
 				MMatch.make,
 				MMatch.when(
@@ -284,16 +284,16 @@ export const splitOnTotalLengthMaker =
 	(limit: number) =>
 	(formatSet: PPFormatSet.Type): Type =>
 		make({
-			name:
-				formatSet.name +
+			id:
+				formatSet.id +
 				'SplitWhenTotalLengthExceeds' +
 				limit +
 				'With' +
-				singleLineRecordMarks.name +
+				singleLineRecordMarks.id +
 				'And' +
-				multiLinesRecordMarks.name +
+				multiLinesRecordMarks.id +
 				'And' +
-				indentMode.name,
+				indentMode.id,
 			action: flow(
 				MMatch.make,
 				MMatch.when(
@@ -334,16 +334,16 @@ export const splitOnLongestPropLengthMaker =
 	(limit: number) =>
 	(formatSet: PPFormatSet.Type): Type =>
 		make({
-			name:
-				formatSet.name +
+			id:
+				formatSet.id +
 				'SplitWhenLongestPropLengthExceeds' +
 				limit +
 				'With' +
-				singleLineRecordMarks.name +
+				singleLineRecordMarks.id +
 				'And' +
-				multiLinesRecordMarks.name +
+				multiLinesRecordMarks.id +
 				'And' +
-				indentMode.name,
+				indentMode.id,
 			action: flow(
 				MMatch.make,
 				MMatch.when(
@@ -388,14 +388,14 @@ export const splitNonArraysMaker =
 	) =>
 	(formatSet: PPFormatSet.Type): Type =>
 		make({
-			name:
-				formatSet.name +
+			id:
+				formatSet.id +
 				'SplitNonArraysWith' +
-				singleLineRecordMarks.name +
+				singleLineRecordMarks.id +
 				'And' +
-				multiLinesRecordMarks.name +
+				multiLinesRecordMarks.id +
 				'And' +
-				indentMode.name,
+				indentMode.id,
 			action: (stringifiedProps) =>
 				flow(
 					MMatch.make,

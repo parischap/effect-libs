@@ -1,5 +1,5 @@
 /**
- * This module implements a type that represents formatters identified by a name to be applied to the different
+ * This module implements a type that represents formatters identified by a id to be applied to the different
  * parts of a stringified value.
  *
  * With the make function, you can define your own instances if the provided ones don't suit your
@@ -29,7 +29,7 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
 	 *
 	 * @since 0.3.0
 	 */
-	readonly name: string;
+	readonly id: string;
 	/**
 	 * Format applied to the different parts of the value to stringify
 	 *
@@ -55,7 +55,7 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
  * @since 0.3.0
  * @category Equivalences
  */
-export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.name === self.name;
+export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
 
 /** Prototype */
 const proto: MTypes.Proto<Type> = {
@@ -64,10 +64,10 @@ const proto: MTypes.Proto<Type> = {
 		return has(that) && equivalence(this, that);
 	},
 	[Hash.symbol](this: Type) {
-		return Hash.cached(this, Hash.hash(this.name));
+		return Hash.cached(this, Hash.hash(this.id));
 	},
-	[MInspectable.NameSymbol](this: Type) {
-		return this.name;
+	[MInspectable.IdSymbol](this: Type) {
+		return this.id;
 	},
 	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto
@@ -99,7 +99,7 @@ export const make = (params: MTypes.Data<Type>): Type =>
  * @category Instances
  */
 export const none: Type = make({
-	name: 'None',
+	id: 'None',
 	format: HashMap.make(['stringValueFormatter', PPStringFormatter.none],
 	otherValueFormatter: PPStringFormatter.none,
 	symbolValueFormatter: PPStringFormatter.none,
@@ -121,7 +121,7 @@ export const none: Type = make({
  * @category Instances
  */
 export const ansiDarkMode: Type = make({
-	name: 'AnsiDarkMode',
+	id: 'AnsiDarkMode',
 	stringValueFormatter: pipe(ASColor.Original.green, ASFormat.fromColor, ASFormatter.fromFormat),
 	otherValueFormatter: pipe(ASColor.Original.yellow, ASFormat.fromColor, ASFormatter.fromFormat),
 	symbolValueFormatter: pipe(ASColor.Original.cyan, ASFormat.fromColor, ASFormatter.fromFormat),

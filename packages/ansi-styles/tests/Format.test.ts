@@ -39,7 +39,7 @@ describe('ASFormat', () => {
 		});
 
 		it('.pipe()', () => {
-			expect(testColoredFormat.pipe(ASFormatter.fromFormat, ASFormatter.name)).toBe('Red');
+			expect(testColoredFormat.pipe(ASFormatter.fromFormat, ASFormatter.id)).toBe('Red');
 		});
 
 		it('has', () => {
@@ -59,12 +59,12 @@ describe('ASFormat', () => {
 			it('red', () => {
 				const format = ASFormat.Colored.Original.red;
 				expect(ASFormat.stringTransformer(format)('foo')).toBe('\x1b[31mfoo\x1b[0m');
-				expect(ASFormat.name(format)).toBe('Red');
+				expect(ASFormat.id(format)).toBe('Red');
 			});
 			it('brightRed', () => {
 				const format = ASFormat.Colored.Original.brightRed;
 				expect(ASFormat.stringTransformer(format)('foo')).toBe('\x1b[91mfoo\x1b[0m');
-				expect(ASFormat.name(format)).toBe('BrightRed');
+				expect(ASFormat.id(format)).toBe('BrightRed');
 			});
 		});
 
@@ -72,7 +72,7 @@ describe('ASFormat', () => {
 			it('red', () => {
 				const format = ASFormat.Colored.EightBit.red;
 				expect(ASFormat.stringTransformer(format)('foo')).toBe('\x1b[38;5;9mfoo\x1b[0m');
-				expect(ASFormat.name(format)).toBe('EightBitRed');
+				expect(ASFormat.id(format)).toBe('EightBitRed');
 			});
 		});
 
@@ -80,12 +80,12 @@ describe('ASFormat', () => {
 			it('red', () => {
 				const format = ASFormat.Colored.RGB.red;
 				expect(ASFormat.stringTransformer(format)('foo')).toBe('\x1b[38;2;255;0;0mfoo\x1b[0m');
-				expect(ASFormat.name(format)).toBe('RGBRed');
+				expect(ASFormat.id(format)).toBe('RGBRed');
 			});
 			it('make', () => {
 				const format = ASFormat.Colored.RGB.make({ red: 18, green: 21, blue: 24 });
 				expect(ASFormat.stringTransformer(format)('foo')).toBe('\x1b[38;2;18;21;24mfoo\x1b[0m');
-				expect(ASFormat.name(format)).toBe('RGB/18/21/24');
+				expect(ASFormat.id(format)).toBe('RGB/18/21/24');
 			});
 		});
 
@@ -98,17 +98,17 @@ describe('ASFormat', () => {
 			it('none', () => {
 				const format = ASFormat.Styled.none;
 				expect(ASFormat.stringTransformer(format)('foo')).toBe('foo');
-				expect(ASFormat.name(format)).toBe('None');
+				expect(ASFormat.id(format)).toBe('None');
 			});
 			it('fromColor', () => {
 				const format = ASFormat.Styled.fromColor(ASFormat.Colored.Original.green);
 				expect(ASFormat.stringTransformer(format)('foo')).toBe('\x1b[32mfoo\x1b[0m');
-				expect(ASFormat.name(format)).toBe('Green');
+				expect(ASFormat.id(format)).toBe('Green');
 			});
 			it('Just bold', () => {
 				const format = pipe(ASFormat.Styled.none, ASFormat.Styled.makeBold);
 				expect(ASFormat.stringTransformer(format)('foo')).toBe('\x1b[1mfoo\x1b[0m');
-				expect(ASFormat.name(format)).toBe('Bold');
+				expect(ASFormat.id(format)).toBe('Bold');
 			});
 			it('All available styles', () => {
 				const format = pipe(
@@ -125,7 +125,7 @@ describe('ASFormat', () => {
 				expect(ASFormat.stringTransformer(format)('foo')).toBe(
 					'\x1b[38;5;3;48;2;205;92;92;1;4;5;51;52;53mfoo\x1b[0m'
 				);
-				expect(ASFormat.name(format)).toBe(
+				expect(ASFormat.id(format)).toBe(
 					'BoldUnderlinedFramedEncircledOverlinedBlinkingEightBitOliveInRGBIndianRed'
 				);
 			});

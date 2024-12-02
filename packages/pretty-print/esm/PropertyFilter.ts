@@ -51,7 +51,7 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
 	 *
 	 * @since 0.0.1
 	 */
-	readonly name: string;
+	readonly id: string;
 
 	/**
 	 * Action of this PropertyFilter.
@@ -78,7 +78,7 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
  * @since 0.0.1
  * @category Equivalences
  */
-export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.name === self.name;
+export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
 
 /** Prototype */
 const proto: MTypes.Proto<Type> = {
@@ -87,10 +87,10 @@ const proto: MTypes.Proto<Type> = {
 		return has(that) && equivalence(this, that);
 	},
 	[Hash.symbol](this: Type) {
-		return Hash.cached(this, Hash.hash(this.name));
+		return Hash.cached(this, Hash.hash(this.id));
 	},
-	[MInspectable.NameSymbol](this: Type) {
-		return this.name;
+	[MInspectable.IdSymbol](this: Type) {
+		return this.id;
 	},
 	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto
@@ -134,7 +134,7 @@ export const combine =
 	(that: Type) =>
 	(self: Type): Type =>
 		make({
-			name: `${self.name}+${that.name}`,
+			id: `${self.id}+${that.id}`,
 			action: (value) => Function.compose(self.action(value), that.action(value))
 		});
 
@@ -144,7 +144,7 @@ export const combine =
  * @since 0.0.1
  * @category Instances
  */
-export const keepAll: Type = make({ name: 'keepAll', action: () => Function.identity });
+export const keepAll: Type = make({ id: 'keepAll', action: () => Function.identity });
 
 /**
  * PropertyFilter instance that removes properties of records whose value is not a function
@@ -153,7 +153,7 @@ export const keepAll: Type = make({ name: 'keepAll', action: () => Function.iden
  * @category Instances
  */
 export const removeNonFunctions: Type = make({
-	name: 'RemoveNonFunctions',
+	id: 'RemoveNonFunctions',
 	action: () => Array.filter(PPValue.isRecordWithFunctionValue)
 });
 
@@ -164,7 +164,7 @@ export const removeNonFunctions: Type = make({
  * @category Instances
  */
 export const removeFunctions: Type = make({
-	name: 'RemoveFunctions',
+	id: 'RemoveFunctions',
 	action: () => Array.filter(Predicate.not(PPValue.isRecordWithFunctionValue))
 });
 
@@ -175,7 +175,7 @@ export const removeFunctions: Type = make({
  * @category Instances
  */
 export const removeNonEnumerables: Type = make({
-	name: 'RemoveNonEnumerables',
+	id: 'RemoveNonEnumerables',
 	action: () => Array.filter(Struct.get('hasEnumerableKey'))
 });
 
@@ -186,7 +186,7 @@ export const removeNonEnumerables: Type = make({
  * @category Instances
  */
 export const removeEnumerables: Type = make({
-	name: 'RemoveEnumerables',
+	id: 'RemoveEnumerables',
 	action: () => Array.filter(Predicate.not(Struct.get('hasEnumerableKey')))
 });
 
@@ -197,7 +197,7 @@ export const removeEnumerables: Type = make({
  * @category Instances
  */
 export const removeStringKeys: Type = make({
-	name: 'RemoveStringKeys',
+	id: 'RemoveStringKeys',
 	action: () => Array.filter(Struct.get('hasSymbolicKey'))
 });
 
@@ -208,7 +208,7 @@ export const removeStringKeys: Type = make({
  * @category Instances
  */
 export const removeSymbolicKeys: Type = make({
-	name: 'RemoveSymbolicKeys',
+	id: 'RemoveSymbolicKeys',
 	action: () => Array.filter(Predicate.not(Struct.get('hasSymbolicKey')))
 });
 
@@ -233,10 +233,10 @@ export const enumerableNonFunctionStringKeys: Type = pipe(
  * @category Instances
  */
 export const keepFulfillingKeyPredicate =
-	(name: string) =>
+	(id: string) =>
 	(predicate: Predicate.Predicate<string>): Type =>
 		make({
-			name,
+			id,
 			action: () =>
 				Array.filter(MPredicate.struct({ stringKey: predicate, hasSymbolicKey: Boolean.not }))
 		});
@@ -249,7 +249,7 @@ export const keepFulfillingKeyPredicate =
  * @category Instances
  */
 export const removeNonEnumerablesOnArrays: Type = make({
-	name: 'RemoveNonEnumerablesOnArrays',
+	id: 'RemoveNonEnumerablesOnArrays',
 	action: flow(
 		MMatch.make,
 		MMatch.when(PPValue.isArray, () => Array.filter<PPValue.All>(Struct.get('hasEnumerableKey'))),
@@ -265,4 +265,4 @@ export const removeNonEnumerablesOnArrays: Type = make({
  * @category Instances
  */
 export const take = (n: number): Type =>
-	make({ name: `Take ${n} first prop(s)`, action: () => Array.take(n) });
+	make({ id: `Take ${n} first prop(s)`, action: () => Array.take(n) });

@@ -34,7 +34,7 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
 	 *
 	 * @since 0.0.1
 	 */
-	readonly name: string;
+	readonly id: string;
 
 	/**
 	 * Action of this Formatter instance.
@@ -61,7 +61,7 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
  * @since 0.0.1
  * @category Equivalences
  */
-export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.name === self.name;
+export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
 
 /** Prototype */
 const proto: MTypes.Proto<Type> = {
@@ -70,10 +70,10 @@ const proto: MTypes.Proto<Type> = {
 		return has(that) && equivalence(this, that);
 	},
 	[Hash.symbol](this: Type) {
-		return Hash.cached(this, Hash.hash(this.name));
+		return Hash.cached(this, Hash.hash(this.id));
 	},
-	[MInspectable.NameSymbol](this: Type) {
-		return this.name;
+	[MInspectable.IdSymbol](this: Type) {
+		return this.id;
 	},
 	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto
@@ -89,10 +89,10 @@ const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto
  * @category Constructors
  */
 export const fromStringTransformer =
-	(name: string): MTypes.OneArgFunction<MTypes.StringTransformer, Type> =>
+	(id: string): MTypes.OneArgFunction<MTypes.StringTransformer, Type> =>
 	(f) =>
 		_make({
-			name,
+			id,
 			action: ASFormattedString.fromStyleAndString(f)
 		});
 
@@ -105,18 +105,18 @@ export const fromStringTransformer =
 export const fromFormat = (format: ASFormat.Type): Type =>
 	pipe(
 		format,
-		ASFormat.name,
+		ASFormat.id,
 		fromStringTransformer,
 		Function.apply(ASFormat.stringTransformer(format))
 	);
 
 /**
- * Gets the name of `self`
+ * Gets the id of `self`
  *
  * @since 0.0.1
  * @category Destructors
  */
-export const name: MTypes.OneArgFunction<Type, string> = Struct.get('name');
+export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
 
 /**
  * Gets the action of `self`

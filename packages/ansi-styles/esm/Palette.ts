@@ -1,5 +1,5 @@
 /**
- * A Palette is a type that groups several formats under a name. It is mainly used to build
+ * A Palette is a type that groups several formats under a id. It is mainly used to build
  * ContextFormatters (see ContextFormatter.ts).
  *
  * With the make function, you can define your own instances if the provided ones don't suit your
@@ -28,7 +28,7 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
 	 *
 	 * @since 0.0.1
 	 */
-	readonly name: string;
+	readonly id: string;
 
 	/**
 	 * Array of formats contained by this Palette
@@ -55,7 +55,7 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
  * @since 0.0.1
  * @category Equivalences
  */
-export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.name === self.name;
+export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
 
 /** Prototype */
 const proto: MTypes.Proto<Type> = {
@@ -64,10 +64,10 @@ const proto: MTypes.Proto<Type> = {
 		return has(that) && equivalence(this, that);
 	},
 	[Hash.symbol](this: Type) {
-		return Hash.cached(this, Hash.hash(this.name));
+		return Hash.cached(this, Hash.hash(this.id));
 	},
-	[MInspectable.NameSymbol](this: Type) {
-		return this.name;
+	[MInspectable.IdSymbol](this: Type) {
+		return this.id;
 	},
 	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto
@@ -83,12 +83,12 @@ export const make = (params: MTypes.Data<Type>): Type =>
 	MTypes.objectFromDataAndProto(proto, params);
 
 /**
- * Gets the name of `self`
+ * Gets the id of `self`
  *
  * @since 0.0.1
  * @category Destructors
  */
-export const name: MTypes.OneArgFunction<Type, string> = Struct.get('name');
+export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
 
 /**
  * Gets the underlying formats of `self`
@@ -108,7 +108,7 @@ export const formats: MTypes.OneArgFunction<Type, ReadonlyArray<ASFormat.Type>> 
  */
 
 export const allStandardOriginalColors = make({
-	name: 'AllStandardOriginalColors',
+	id: 'AllStandardOriginalColors',
 	formats: Array.make(
 		ASFormat.Colored.Original.black,
 		ASFormat.Colored.Original.red,
@@ -129,7 +129,7 @@ export const allStandardOriginalColors = make({
  */
 
 export const allBrightOriginalColors = make({
-	name: 'AllStandardOriginalColors',
+	id: 'AllStandardOriginalColors',
 	formats: Array.make(
 		ASFormat.Colored.Original.brightBlack,
 		ASFormat.Colored.Original.brightRed,
@@ -150,6 +150,6 @@ export const allBrightOriginalColors = make({
  */
 
 export const allOriginalColors = make({
-	name: 'AllStandardOriginalColors',
+	id: 'AllStandardOriginalColors',
 	formats: Array.appendAll(allStandardOriginalColors.formats, allBrightOriginalColors.formats)
 });

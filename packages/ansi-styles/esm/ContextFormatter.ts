@@ -36,7 +36,7 @@ export interface Type<in C> extends Equal.Equal, MInspectable.Inspectable, Pipea
 	 *
 	 * @since 0.0.1
 	 */
-	readonly name: string;
+	readonly id: string;
 
 	/**
 	 * Action of this ContextFormatter
@@ -65,7 +65,7 @@ export const has = (u: unknown): u is Type<unknown> => Predicate.hasProperty(u, 
  * @category Equivalences
  */
 export const equivalence: Equivalence.Equivalence<Type<never>> = (self, that) =>
-	that.name === self.name;
+	that.id === self.id;
 
 /** Prototype */
 const proto: MTypes.Proto<Type<never>> = {
@@ -74,10 +74,10 @@ const proto: MTypes.Proto<Type<never>> = {
 		return has(that) && equivalence(this, that);
 	},
 	[Hash.symbol]<C>(this: Type<C>) {
-		return Hash.cached(this, Hash.hash(this.name));
+		return Hash.cached(this, Hash.hash(this.id));
 	},
-	[MInspectable.NameSymbol]<C>(this: Type<C>) {
-		return this.name;
+	[MInspectable.IdSymbol]<C>(this: Type<C>) {
+		return this.id;
 	},
 	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto
@@ -121,7 +121,7 @@ export const fromPalette =
 		);
 
 		return _make({
-			name: `${palette.name}On${nameSuffix}`,
+			id: `${palette.id}On${nameSuffix}`,
 			action
 		});
 	};
@@ -135,18 +135,18 @@ export const fromPalette =
 export const fromFormat = <C>(format: ASFormat.Type): Type<C> => {
 	const formatter = ASFormatter.fromFormat(format);
 	return _make({
-		name: `Always${formatter.name}`,
+		id: `Always${formatter.id}`,
 		action: (_context) => formatter.action
 	});
 };
 
 /**
- * Gets the name of `self`
+ * Gets the id of `self`
  *
  * @since 0.0.1
  * @category Destructors
  */
-export const name: MTypes.OneArgFunction<Type<never>, string> = Struct.get('name');
+export const id: MTypes.OneArgFunction<Type<never>, string> = Struct.get('id');
 
 /**
  * Gets the `action` of `self`

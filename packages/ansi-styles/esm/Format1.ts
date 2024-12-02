@@ -12,8 +12,8 @@
  *
  * Once a Format is built, you can apply it directly to a string by calling the
  * ASFormat.stringTransformer function. However, if that stringTransformer is to be stored in
- * another object, it is good practise to encapsulate it into a Formatter so as to give it a name
- * for debug purposes (a function does not get printed by JSON.stringify)
+ * another object, it is good practise to encapsulate it into a Formatter so as to give it a id for
+ * debug purposes (a function does not get printed by JSON.stringify)
  *
  * @since 0.0.1
  */
@@ -68,7 +68,7 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
  * @since 0.0.6
  * @category Equivalences
  */
-export const equivalence: Equivalence.Equivalence<Type> = (self, that) => name(that) === name(self);
+export const equivalence: Equivalence.Equivalence<Type> = (self, that) => id(that) === id(self);
 
 /** Base prototype */
 const baseProto = {
@@ -76,18 +76,18 @@ const baseProto = {
 		return has(that) && equivalence(this, that);
 	},
 	[Hash.symbol](this: Type) {
-		return Hash.cached(this, Hash.hash(name(this)));
+		return Hash.cached(this, Hash.hash(id(this)));
 	},
 	...MPipeable.BaseProto
 };
 
 /**
- * Gets the name of `self`
+ * Gets the id of `self`
  *
  * @since 0.0.1
  * @category Destructors
  */
-export const name = (self: Type): string => self[MInspectable.NameSymbol]();
+export const id = (self: Type): string => self[MInspectable.IdSymbol]();
 
 export namespace Colored {
 	const moduleTag = _moduleTag + 'Colored/';
@@ -106,7 +106,7 @@ export namespace Colored {
 		 *
 		 * @since 0.0.1
 		 */
-		readonly name: string;
+		readonly id: string;
 
 		/**
 		 * Foreground sequence that corresponds to this Colored Format
@@ -140,8 +140,8 @@ export namespace Colored {
 	const proto: MTypes.Proto<Type> = {
 		[_TypeId]: TypeId,
 		...baseProto,
-		[MInspectable.NameSymbol](this: Type) {
-			return this.name;
+		[MInspectable.IdSymbol](this: Type) {
+			return this.id;
 		},
 		...MInspectable.BaseProto(moduleTag)
 	};
@@ -151,34 +151,34 @@ export namespace Colored {
 		MTypes.objectFromDataAndProto(proto, params);
 
 	export const _fromSequence = ({
-		name,
+		id,
 		fgSequence
 	}: {
-		readonly name: string;
+		readonly id: string;
 		readonly fgSequence: ASSequence.NonEmptyType;
 	}) =>
 		_make({
-			name,
+			id,
 			fgSequence,
 			fgStringTransformer: ASSequence.toStringTransformer(fgSequence)
 		});
 
 	/**
-	 * Returns the foreground name of `self`
+	 * Returns the foreground id of `self`
 	 *
 	 * @since 0.0.1
 	 * @category Destructors
 	 */
-	export const fgName: MTypes.OneArgFunction<Type, string> = Struct.get('name');
+	export const fgName: MTypes.OneArgFunction<Type, string> = Struct.get('id');
 
 	/**
-	 * Returns the background name of `self`
+	 * Returns the background id of `self`
 	 *
 	 * @since 0.0.1
 	 * @category Destructors
 	 */
 	export const bgName: MTypes.OneArgFunction<Type, string> = flow(
-		Struct.get('name'),
+		Struct.get('id'),
 		MString.prepend('In')
 	);
 
@@ -225,7 +225,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const instance = _fromSequence({
-			name: 'TerminalDefaultColor',
+			id: 'TerminalDefaultColor',
 			fgSequence: Array.of(39)
 		});
 	}
@@ -255,7 +255,7 @@ export namespace Colored {
 		}
 
 		export namespace Offset {
-			export const name: (self: Offset) => string = flow(
+			export const id: (self: Offset) => string = flow(
 				MMatch.make,
 				flow(
 					MMatch.whenIs(Offset.Black, () => 'Black'),
@@ -277,14 +277,14 @@ export namespace Colored {
 		 */
 		const _makeStandard = (colorOffset: Offset): Type =>
 			_fromSequence({
-				name: Offset.name(colorOffset),
+				id: Offset.id(colorOffset),
 				fgSequence: pipe(colorOffset, Number.sum(30), Array.of)
 			});
 
 		/** Constructor for bright colors. Needs not be exported: all possible instances are available */
 		const _makeBright = (colorOffset: Offset) =>
 			_fromSequence({
-				name: 'Bright' + Offset.name(colorOffset),
+				id: 'Bright' + Offset.id(colorOffset),
 				fgSequence: pipe(colorOffset, Number.sum(90), Array.of)
 			});
 		/**
@@ -689,7 +689,7 @@ export namespace Colored {
 		}
 
 		export namespace Code {
-			export const name: (self: Code) => string = flow(
+			export const id: (self: Code) => string = flow(
 				MMatch.make,
 				flow(
 					flow(
@@ -1023,7 +1023,7 @@ export namespace Colored {
 		/** Constructor. Needs not be exported: all possible instances are available */
 		const _fromCode = (code: Code): Type =>
 			_fromSequence({
-				name: Code.name(code),
+				id: Code.id(code),
 				fgSequence: pipe(code, Array.of, Array.prependAll([38, 5]))
 			});
 
@@ -2830,18 +2830,18 @@ export namespace Colored {
 	export namespace RGB {
 		/** Constructor */
 		const _fromCodes = ({
-			name,
+			id,
 			redCode,
 			greenCode,
 			blueCode
 		}: {
-			readonly name: string;
+			readonly id: string;
 			readonly redCode: number;
 			readonly greenCode: number;
 			readonly blueCode: number;
 		}): Type =>
 			_fromSequence({
-				name,
+				id,
 				fgSequence: Array.make(38, 2, redCode, greenCode, blueCode)
 			});
 
@@ -2861,7 +2861,7 @@ export namespace Colored {
 			readonly blue: number;
 		}): Type =>
 			_fromCodes({
-				name: `RGB/${red}/${green}/${blue}`,
+				id: `RGB/${red}/${green}/${blue}`,
 				redCode: pipe(red, Number.round(0), Number.clamp({ minimum: 0, maximum: 255 })),
 				greenCode: pipe(green, Number.round(0), Number.clamp({ minimum: 0, maximum: 255 })),
 				blueCode: pipe(blue, Number.round(0), Number.clamp({ minimum: 0, maximum: 255 }))
@@ -2874,7 +2874,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const maroon: Type = _fromCodes({
-			name: 'RGBMaroon',
+			id: 'RGBMaroon',
 			redCode: 128,
 			greenCode: 0,
 			blueCode: 0
@@ -2886,7 +2886,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const darkRed: Type = _fromCodes({
-			name: 'RGBDarkRed',
+			id: 'RGBDarkRed',
 			redCode: 139,
 			greenCode: 0,
 			blueCode: 0
@@ -2898,7 +2898,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const brown: Type = _fromCodes({
-			name: 'RGBBrown',
+			id: 'RGBBrown',
 			redCode: 165,
 			greenCode: 42,
 			blueCode: 42
@@ -2910,7 +2910,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const firebrick: Type = _fromCodes({
-			name: 'RGBFirebrick',
+			id: 'RGBFirebrick',
 			redCode: 178,
 			greenCode: 34,
 			blueCode: 34
@@ -2922,7 +2922,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const crimson: Type = _fromCodes({
-			name: 'RGBCrimson',
+			id: 'RGBCrimson',
 			redCode: 220,
 			greenCode: 20,
 			blueCode: 60
@@ -2934,7 +2934,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const red: Type = _fromCodes({
-			name: 'RGBRed',
+			id: 'RGBRed',
 			redCode: 255,
 			greenCode: 0,
 			blueCode: 0
@@ -2946,7 +2946,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const tomato: Type = _fromCodes({
-			name: 'RGBTomato',
+			id: 'RGBTomato',
 			redCode: 255,
 			greenCode: 99,
 			blueCode: 71
@@ -2958,7 +2958,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const coral: Type = _fromCodes({
-			name: 'RGBCoral',
+			id: 'RGBCoral',
 			redCode: 255,
 			greenCode: 127,
 			blueCode: 80
@@ -2970,7 +2970,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const indianRed: Type = _fromCodes({
-			name: 'RGBIndianRed',
+			id: 'RGBIndianRed',
 			redCode: 205,
 			greenCode: 92,
 			blueCode: 92
@@ -2982,7 +2982,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const lightCoral: Type = _fromCodes({
-			name: 'RGBLightCoral',
+			id: 'RGBLightCoral',
 			redCode: 240,
 			greenCode: 128,
 			blueCode: 128
@@ -2994,7 +2994,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const darkSalmon: Type = _fromCodes({
-			name: 'RGBDarkSalmon',
+			id: 'RGBDarkSalmon',
 			redCode: 233,
 			greenCode: 150,
 			blueCode: 122
@@ -3006,7 +3006,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const salmon: Type = _fromCodes({
-			name: 'RGBSalmon',
+			id: 'RGBSalmon',
 			redCode: 250,
 			greenCode: 128,
 			blueCode: 114
@@ -3018,7 +3018,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const lightSalmon: Type = _fromCodes({
-			name: 'RGBLightSalmon',
+			id: 'RGBLightSalmon',
 			redCode: 255,
 			greenCode: 160,
 			blueCode: 122
@@ -3030,7 +3030,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const orangeRed: Type = _fromCodes({
-			name: 'RGBOrangeRed',
+			id: 'RGBOrangeRed',
 			redCode: 255,
 			greenCode: 69,
 			blueCode: 0
@@ -3042,7 +3042,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const darkOrange: Type = _fromCodes({
-			name: 'RGBDarkOrange',
+			id: 'RGBDarkOrange',
 			redCode: 255,
 			greenCode: 140,
 			blueCode: 0
@@ -3054,7 +3054,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const orange: Type = _fromCodes({
-			name: 'RGBOrange',
+			id: 'RGBOrange',
 			redCode: 255,
 			greenCode: 165,
 			blueCode: 0
@@ -3066,7 +3066,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const gold: Type = _fromCodes({
-			name: 'RGBGold',
+			id: 'RGBGold',
 			redCode: 255,
 			greenCode: 215,
 			blueCode: 0
@@ -3078,7 +3078,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const darkGoldenRod: Type = _fromCodes({
-			name: 'RGBDarkGoldenRod',
+			id: 'RGBDarkGoldenRod',
 			redCode: 184,
 			greenCode: 134,
 			blueCode: 11
@@ -3090,7 +3090,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const goldenRod: Type = _fromCodes({
-			name: 'RGBGoldenRod',
+			id: 'RGBGoldenRod',
 			redCode: 218,
 			greenCode: 165,
 			blueCode: 32
@@ -3102,7 +3102,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const paleGoldenRod: Type = _fromCodes({
-			name: 'RGBPaleGoldenRod',
+			id: 'RGBPaleGoldenRod',
 			redCode: 238,
 			greenCode: 232,
 			blueCode: 170
@@ -3114,7 +3114,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const darkKhaki: Type = _fromCodes({
-			name: 'RGBDarkKhaki',
+			id: 'RGBDarkKhaki',
 			redCode: 189,
 			greenCode: 183,
 			blueCode: 107
@@ -3126,7 +3126,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const khaki: Type = _fromCodes({
-			name: 'RGBKhaki',
+			id: 'RGBKhaki',
 			redCode: 240,
 			greenCode: 230,
 			blueCode: 140
@@ -3138,7 +3138,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const olive: Type = _fromCodes({
-			name: 'RGBOlive',
+			id: 'RGBOlive',
 			redCode: 128,
 			greenCode: 128,
 			blueCode: 0
@@ -3150,7 +3150,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const yellow: Type = _fromCodes({
-			name: 'RGBYellow',
+			id: 'RGBYellow',
 			redCode: 255,
 			greenCode: 255,
 			blueCode: 0
@@ -3162,7 +3162,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const yellowGreen: Type = _fromCodes({
-			name: 'RGBYellowGreen',
+			id: 'RGBYellowGreen',
 			redCode: 154,
 			greenCode: 205,
 			blueCode: 50
@@ -3174,7 +3174,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const darkOliveGreen: Type = _fromCodes({
-			name: 'RGBDarkOliveGreen',
+			id: 'RGBDarkOliveGreen',
 			redCode: 85,
 			greenCode: 107,
 			blueCode: 47
@@ -3186,7 +3186,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const oliveDrab: Type = _fromCodes({
-			name: 'RGBOliveDrab',
+			id: 'RGBOliveDrab',
 			redCode: 107,
 			greenCode: 142,
 			blueCode: 35
@@ -3198,7 +3198,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const lawnGreen: Type = _fromCodes({
-			name: 'RGBLawnGreen',
+			id: 'RGBLawnGreen',
 			redCode: 124,
 			greenCode: 252,
 			blueCode: 0
@@ -3210,7 +3210,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const chartreuse: Type = _fromCodes({
-			name: 'RGBChartreuse',
+			id: 'RGBChartreuse',
 			redCode: 127,
 			greenCode: 255,
 			blueCode: 0
@@ -3222,7 +3222,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const greenYellow: Type = _fromCodes({
-			name: 'RGBGreenYellow',
+			id: 'RGBGreenYellow',
 			redCode: 173,
 			greenCode: 255,
 			blueCode: 47
@@ -3234,7 +3234,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const darkGreen: Type = _fromCodes({
-			name: 'RGBDarkGreen',
+			id: 'RGBDarkGreen',
 			redCode: 0,
 			greenCode: 100,
 			blueCode: 0
@@ -3246,7 +3246,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const green: Type = _fromCodes({
-			name: 'RGBGreen',
+			id: 'RGBGreen',
 			redCode: 0,
 			greenCode: 128,
 			blueCode: 0
@@ -3258,7 +3258,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const forestGreen: Type = _fromCodes({
-			name: 'RGBForestGreen',
+			id: 'RGBForestGreen',
 			redCode: 34,
 			greenCode: 139,
 			blueCode: 34
@@ -3270,7 +3270,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const lime: Type = _fromCodes({
-			name: 'RGBLime',
+			id: 'RGBLime',
 			redCode: 0,
 			greenCode: 255,
 			blueCode: 0
@@ -3282,7 +3282,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const limeGreen: Type = _fromCodes({
-			name: 'RGBLimeGreen',
+			id: 'RGBLimeGreen',
 			redCode: 50,
 			greenCode: 205,
 			blueCode: 50
@@ -3294,7 +3294,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const lightGreen: Type = _fromCodes({
-			name: 'RGBLightGreen',
+			id: 'RGBLightGreen',
 			redCode: 144,
 			greenCode: 238,
 			blueCode: 144
@@ -3306,7 +3306,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const paleGreen: Type = _fromCodes({
-			name: 'RGBPaleGreen',
+			id: 'RGBPaleGreen',
 			redCode: 152,
 			greenCode: 251,
 			blueCode: 152
@@ -3318,7 +3318,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const darkSeaGreen: Type = _fromCodes({
-			name: 'RGBDarkSeaGreen',
+			id: 'RGBDarkSeaGreen',
 			redCode: 143,
 			greenCode: 188,
 			blueCode: 143
@@ -3330,7 +3330,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const mediumSpringGreen: Type = _fromCodes({
-			name: 'RGBMediumSpringGreen',
+			id: 'RGBMediumSpringGreen',
 			redCode: 0,
 			greenCode: 250,
 			blueCode: 154
@@ -3342,7 +3342,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const springGreen: Type = _fromCodes({
-			name: 'RGBSpringGreen',
+			id: 'RGBSpringGreen',
 			redCode: 0,
 			greenCode: 255,
 			blueCode: 127
@@ -3354,7 +3354,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const seaGreen: Type = _fromCodes({
-			name: 'RGBSeaGreen',
+			id: 'RGBSeaGreen',
 			redCode: 46,
 			greenCode: 139,
 			blueCode: 87
@@ -3366,7 +3366,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const mediumAquaMarine: Type = _fromCodes({
-			name: 'RGBMediumAquaMarine',
+			id: 'RGBMediumAquaMarine',
 			redCode: 102,
 			greenCode: 205,
 			blueCode: 170
@@ -3378,7 +3378,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const mediumSeaGreen: Type = _fromCodes({
-			name: 'RGBMediumSeaGreen',
+			id: 'RGBMediumSeaGreen',
 			redCode: 60,
 			greenCode: 179,
 			blueCode: 113
@@ -3390,7 +3390,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const lightSeaGreen: Type = _fromCodes({
-			name: 'RGBLightSeaGreen',
+			id: 'RGBLightSeaGreen',
 			redCode: 32,
 			greenCode: 178,
 			blueCode: 170
@@ -3402,7 +3402,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const darkSlateGray: Type = _fromCodes({
-			name: 'RGBDarkSlateGray',
+			id: 'RGBDarkSlateGray',
 			redCode: 47,
 			greenCode: 79,
 			blueCode: 79
@@ -3414,7 +3414,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const teal: Type = _fromCodes({
-			name: 'RGBTeal',
+			id: 'RGBTeal',
 			redCode: 0,
 			greenCode: 128,
 			blueCode: 128
@@ -3426,7 +3426,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const darkCyan: Type = _fromCodes({
-			name: 'RGBDarkCyan',
+			id: 'RGBDarkCyan',
 			redCode: 0,
 			greenCode: 139,
 			blueCode: 139
@@ -3438,7 +3438,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const aqua: Type = _fromCodes({
-			name: 'RGBAqua',
+			id: 'RGBAqua',
 			redCode: 0,
 			greenCode: 255,
 			blueCode: 255
@@ -3450,7 +3450,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const cyan: Type = _fromCodes({
-			name: 'RGBCyan',
+			id: 'RGBCyan',
 			redCode: 0,
 			greenCode: 255,
 			blueCode: 255
@@ -3462,7 +3462,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const lightCyan: Type = _fromCodes({
-			name: 'RGBLightCyan',
+			id: 'RGBLightCyan',
 			redCode: 224,
 			greenCode: 255,
 			blueCode: 255
@@ -3474,7 +3474,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const darkTurquoise: Type = _fromCodes({
-			name: 'RGBDarkTurquoise',
+			id: 'RGBDarkTurquoise',
 			redCode: 0,
 			greenCode: 206,
 			blueCode: 209
@@ -3486,7 +3486,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const turquoise: Type = _fromCodes({
-			name: 'RGBTurquoise',
+			id: 'RGBTurquoise',
 			redCode: 64,
 			greenCode: 224,
 			blueCode: 208
@@ -3498,7 +3498,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const mediumTurquoise: Type = _fromCodes({
-			name: 'RGBMediumTurquoise',
+			id: 'RGBMediumTurquoise',
 			redCode: 72,
 			greenCode: 209,
 			blueCode: 204
@@ -3510,7 +3510,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const paleTurquoise: Type = _fromCodes({
-			name: 'RGBPaleTurquoise',
+			id: 'RGBPaleTurquoise',
 			redCode: 175,
 			greenCode: 238,
 			blueCode: 238
@@ -3522,7 +3522,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const aquaMarine: Type = _fromCodes({
-			name: 'RGBAquaMarine',
+			id: 'RGBAquaMarine',
 			redCode: 127,
 			greenCode: 255,
 			blueCode: 212
@@ -3534,7 +3534,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const powderBlue: Type = _fromCodes({
-			name: 'RGBPowderBlue',
+			id: 'RGBPowderBlue',
 			redCode: 176,
 			greenCode: 224,
 			blueCode: 230
@@ -3546,7 +3546,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const cadetBlue: Type = _fromCodes({
-			name: 'RGBCadetBlue',
+			id: 'RGBCadetBlue',
 			redCode: 95,
 			greenCode: 158,
 			blueCode: 160
@@ -3558,7 +3558,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const steelBlue: Type = _fromCodes({
-			name: 'RGBSteelBlue',
+			id: 'RGBSteelBlue',
 			redCode: 70,
 			greenCode: 130,
 			blueCode: 180
@@ -3570,7 +3570,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const cornFlowerBlue: Type = _fromCodes({
-			name: 'RGBCornFlowerBlue',
+			id: 'RGBCornFlowerBlue',
 			redCode: 100,
 			greenCode: 149,
 			blueCode: 237
@@ -3582,7 +3582,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const deepSkyBlue: Type = _fromCodes({
-			name: 'RGBDeepSkyBlue',
+			id: 'RGBDeepSkyBlue',
 			redCode: 0,
 			greenCode: 191,
 			blueCode: 255
@@ -3594,7 +3594,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const dodgerBlue: Type = _fromCodes({
-			name: 'RGBDodgerBlue',
+			id: 'RGBDodgerBlue',
 			redCode: 30,
 			greenCode: 144,
 			blueCode: 255
@@ -3606,7 +3606,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const lightBlue: Type = _fromCodes({
-			name: 'RGBLightBlue',
+			id: 'RGBLightBlue',
 			redCode: 173,
 			greenCode: 216,
 			blueCode: 230
@@ -3618,7 +3618,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const skyBlue: Type = _fromCodes({
-			name: 'RGBSkyBlue',
+			id: 'RGBSkyBlue',
 			redCode: 135,
 			greenCode: 206,
 			blueCode: 235
@@ -3630,7 +3630,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const lightSkyBlue: Type = _fromCodes({
-			name: 'RGBLightSkyBlue',
+			id: 'RGBLightSkyBlue',
 			redCode: 135,
 			greenCode: 206,
 			blueCode: 250
@@ -3642,7 +3642,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const midnightBlue: Type = _fromCodes({
-			name: 'RGBMidnightBlue',
+			id: 'RGBMidnightBlue',
 			redCode: 25,
 			greenCode: 25,
 			blueCode: 112
@@ -3654,7 +3654,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const navy: Type = _fromCodes({
-			name: 'RGBNavy',
+			id: 'RGBNavy',
 			redCode: 0,
 			greenCode: 0,
 			blueCode: 128
@@ -3666,7 +3666,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const darkBlue: Type = _fromCodes({
-			name: 'RGBDarkBlue',
+			id: 'RGBDarkBlue',
 			redCode: 0,
 			greenCode: 0,
 			blueCode: 139
@@ -3678,7 +3678,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const mediumBlue: Type = _fromCodes({
-			name: 'RGBMediumBlue',
+			id: 'RGBMediumBlue',
 			redCode: 0,
 			greenCode: 0,
 			blueCode: 205
@@ -3690,7 +3690,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const blue: Type = _fromCodes({
-			name: 'RGBBlue',
+			id: 'RGBBlue',
 			redCode: 0,
 			greenCode: 0,
 			blueCode: 255
@@ -3702,7 +3702,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const royalBlue: Type = _fromCodes({
-			name: 'RGBRoyalBlue',
+			id: 'RGBRoyalBlue',
 			redCode: 65,
 			greenCode: 105,
 			blueCode: 225
@@ -3714,7 +3714,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const blueViolet: Type = _fromCodes({
-			name: 'RGBBlueViolet',
+			id: 'RGBBlueViolet',
 			redCode: 138,
 			greenCode: 43,
 			blueCode: 226
@@ -3726,7 +3726,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const indigo: Type = _fromCodes({
-			name: 'RGBIndigo',
+			id: 'RGBIndigo',
 			redCode: 75,
 			greenCode: 0,
 			blueCode: 130
@@ -3738,7 +3738,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const darkSlateBlue: Type = _fromCodes({
-			name: 'RGBDarkSlateBlue',
+			id: 'RGBDarkSlateBlue',
 			redCode: 72,
 			greenCode: 61,
 			blueCode: 139
@@ -3750,7 +3750,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const slateBlue: Type = _fromCodes({
-			name: 'RGBSlateBlue',
+			id: 'RGBSlateBlue',
 			redCode: 106,
 			greenCode: 90,
 			blueCode: 205
@@ -3762,7 +3762,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const mediumSlateBlue: Type = _fromCodes({
-			name: 'RGBMediumSlateBlue',
+			id: 'RGBMediumSlateBlue',
 			redCode: 123,
 			greenCode: 104,
 			blueCode: 238
@@ -3774,7 +3774,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const mediumPurple: Type = _fromCodes({
-			name: 'RGBMediumPurple',
+			id: 'RGBMediumPurple',
 			redCode: 147,
 			greenCode: 112,
 			blueCode: 219
@@ -3786,7 +3786,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const darkMagenta: Type = _fromCodes({
-			name: 'RGBDarkMagenta',
+			id: 'RGBDarkMagenta',
 			redCode: 139,
 			greenCode: 0,
 			blueCode: 139
@@ -3798,7 +3798,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const darkViolet: Type = _fromCodes({
-			name: 'RGBDarkViolet',
+			id: 'RGBDarkViolet',
 			redCode: 148,
 			greenCode: 0,
 			blueCode: 211
@@ -3810,7 +3810,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const darkOrchid: Type = _fromCodes({
-			name: 'RGBDarkOrchid',
+			id: 'RGBDarkOrchid',
 			redCode: 153,
 			greenCode: 50,
 			blueCode: 204
@@ -3822,7 +3822,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const mediumOrchid2: Type = _fromCodes({
-			name: 'RGBMediumOrchid2',
+			id: 'RGBMediumOrchid2',
 			redCode: 186,
 			greenCode: 85,
 			blueCode: 211
@@ -3834,7 +3834,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const purple: Type = _fromCodes({
-			name: 'RGBPurple',
+			id: 'RGBPurple',
 			redCode: 128,
 			greenCode: 0,
 			blueCode: 128
@@ -3846,7 +3846,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const thistle: Type = _fromCodes({
-			name: 'RGBThistle',
+			id: 'RGBThistle',
 			redCode: 216,
 			greenCode: 191,
 			blueCode: 216
@@ -3858,7 +3858,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const plum: Type = _fromCodes({
-			name: 'RGBPlum',
+			id: 'RGBPlum',
 			redCode: 221,
 			greenCode: 160,
 			blueCode: 221
@@ -3870,7 +3870,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const violet: Type = _fromCodes({
-			name: 'RGBViolet',
+			id: 'RGBViolet',
 			redCode: 238,
 			greenCode: 130,
 			blueCode: 238
@@ -3882,7 +3882,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const magenta: Type = _fromCodes({
-			name: 'RGBMagenta',
+			id: 'RGBMagenta',
 			redCode: 255,
 			greenCode: 0,
 			blueCode: 255
@@ -3894,7 +3894,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const orchid: Type = _fromCodes({
-			name: 'RGBOrchid',
+			id: 'RGBOrchid',
 			redCode: 218,
 			greenCode: 112,
 			blueCode: 214
@@ -3906,7 +3906,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const mediumVioletRed: Type = _fromCodes({
-			name: 'RGBMediumVioletRed',
+			id: 'RGBMediumVioletRed',
 			redCode: 199,
 			greenCode: 21,
 			blueCode: 133
@@ -3918,7 +3918,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const paleVioletRed: Type = _fromCodes({
-			name: 'RGBPaleVioletRed',
+			id: 'RGBPaleVioletRed',
 			redCode: 219,
 			greenCode: 112,
 			blueCode: 147
@@ -3930,7 +3930,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const deepPink: Type = _fromCodes({
-			name: 'RGBDeepPink',
+			id: 'RGBDeepPink',
 			redCode: 255,
 			greenCode: 20,
 			blueCode: 147
@@ -3942,7 +3942,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const hotPink: Type = _fromCodes({
-			name: 'RGBHotPink',
+			id: 'RGBHotPink',
 			redCode: 255,
 			greenCode: 105,
 			blueCode: 180
@@ -3954,7 +3954,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const lightPink: Type = _fromCodes({
-			name: 'RGBLightPink',
+			id: 'RGBLightPink',
 			redCode: 255,
 			greenCode: 182,
 			blueCode: 193
@@ -3966,7 +3966,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const pink: Type = _fromCodes({
-			name: 'RGBPink',
+			id: 'RGBPink',
 			redCode: 255,
 			greenCode: 192,
 			blueCode: 203
@@ -3978,7 +3978,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const antiqueWhite: Type = _fromCodes({
-			name: 'RGBAntiqueWhite',
+			id: 'RGBAntiqueWhite',
 			redCode: 250,
 			greenCode: 235,
 			blueCode: 215
@@ -3990,7 +3990,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const beige: Type = _fromCodes({
-			name: 'RGBBeige',
+			id: 'RGBBeige',
 			redCode: 245,
 			greenCode: 245,
 			blueCode: 220
@@ -4002,7 +4002,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const bisque: Type = _fromCodes({
-			name: 'RGBBisque',
+			id: 'RGBBisque',
 			redCode: 255,
 			greenCode: 228,
 			blueCode: 196
@@ -4014,7 +4014,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const blanchedAlmond: Type = _fromCodes({
-			name: 'RGBBlanchedAlmond',
+			id: 'RGBBlanchedAlmond',
 			redCode: 255,
 			greenCode: 235,
 			blueCode: 205
@@ -4026,7 +4026,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const wheat: Type = _fromCodes({
-			name: 'RGBWheat',
+			id: 'RGBWheat',
 			redCode: 245,
 			greenCode: 222,
 			blueCode: 179
@@ -4038,7 +4038,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const cornSilk: Type = _fromCodes({
-			name: 'RGBCornSilk',
+			id: 'RGBCornSilk',
 			redCode: 255,
 			greenCode: 248,
 			blueCode: 220
@@ -4050,7 +4050,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const lemonChiffon: Type = _fromCodes({
-			name: 'RGBLemonChiffon',
+			id: 'RGBLemonChiffon',
 			redCode: 255,
 			greenCode: 250,
 			blueCode: 205
@@ -4062,7 +4062,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const lightGoldenRodYellow: Type = _fromCodes({
-			name: 'RGBLightGoldenRodYellow',
+			id: 'RGBLightGoldenRodYellow',
 			redCode: 250,
 			greenCode: 250,
 			blueCode: 210
@@ -4074,7 +4074,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const lightYellow: Type = _fromCodes({
-			name: 'RGBLightYellow',
+			id: 'RGBLightYellow',
 			redCode: 255,
 			greenCode: 255,
 			blueCode: 224
@@ -4086,7 +4086,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const saddleBrown: Type = _fromCodes({
-			name: 'RGBSaddleBrown',
+			id: 'RGBSaddleBrown',
 			redCode: 139,
 			greenCode: 69,
 			blueCode: 19
@@ -4098,7 +4098,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const sienna: Type = _fromCodes({
-			name: 'RGBSienna',
+			id: 'RGBSienna',
 			redCode: 160,
 			greenCode: 82,
 			blueCode: 45
@@ -4110,7 +4110,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const chocolate: Type = _fromCodes({
-			name: 'RGBChocolate',
+			id: 'RGBChocolate',
 			redCode: 210,
 			greenCode: 105,
 			blueCode: 30
@@ -4122,7 +4122,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const peru: Type = _fromCodes({
-			name: 'RGBPeru',
+			id: 'RGBPeru',
 			redCode: 205,
 			greenCode: 133,
 			blueCode: 63
@@ -4134,7 +4134,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const sandyBrown: Type = _fromCodes({
-			name: 'RGBSandyBrown',
+			id: 'RGBSandyBrown',
 			redCode: 244,
 			greenCode: 164,
 			blueCode: 96
@@ -4146,7 +4146,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const burlyWood: Type = _fromCodes({
-			name: 'RGBBurlyWood',
+			id: 'RGBBurlyWood',
 			redCode: 222,
 			greenCode: 184,
 			blueCode: 135
@@ -4158,7 +4158,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const tan: Type = _fromCodes({
-			name: 'RGBTan',
+			id: 'RGBTan',
 			redCode: 210,
 			greenCode: 180,
 			blueCode: 140
@@ -4170,7 +4170,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const rosyBrown: Type = _fromCodes({
-			name: 'RGBRosyBrown',
+			id: 'RGBRosyBrown',
 			redCode: 188,
 			greenCode: 143,
 			blueCode: 143
@@ -4182,7 +4182,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const moccasin: Type = _fromCodes({
-			name: 'RGBMoccasin',
+			id: 'RGBMoccasin',
 			redCode: 255,
 			greenCode: 228,
 			blueCode: 181
@@ -4194,7 +4194,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const navajoWhite: Type = _fromCodes({
-			name: 'RGBNavajoWhite',
+			id: 'RGBNavajoWhite',
 			redCode: 255,
 			greenCode: 222,
 			blueCode: 173
@@ -4206,7 +4206,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const peachPuff: Type = _fromCodes({
-			name: 'RGBPeachPuff',
+			id: 'RGBPeachPuff',
 			redCode: 255,
 			greenCode: 218,
 			blueCode: 185
@@ -4218,7 +4218,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const mistyRose: Type = _fromCodes({
-			name: 'RGBMistyRose',
+			id: 'RGBMistyRose',
 			redCode: 255,
 			greenCode: 228,
 			blueCode: 225
@@ -4230,7 +4230,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const lavenderBlush: Type = _fromCodes({
-			name: 'RGBLavenderBlush',
+			id: 'RGBLavenderBlush',
 			redCode: 255,
 			greenCode: 240,
 			blueCode: 245
@@ -4242,7 +4242,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const linen: Type = _fromCodes({
-			name: 'RGBLinen',
+			id: 'RGBLinen',
 			redCode: 250,
 			greenCode: 240,
 			blueCode: 230
@@ -4254,7 +4254,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const oldLace: Type = _fromCodes({
-			name: 'RGBOldLace',
+			id: 'RGBOldLace',
 			redCode: 253,
 			greenCode: 245,
 			blueCode: 230
@@ -4266,7 +4266,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const papayaWhip: Type = _fromCodes({
-			name: 'RGBPapayaWhip',
+			id: 'RGBPapayaWhip',
 			redCode: 255,
 			greenCode: 239,
 			blueCode: 213
@@ -4278,7 +4278,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const seaShell: Type = _fromCodes({
-			name: 'RGBSeaShell',
+			id: 'RGBSeaShell',
 			redCode: 255,
 			greenCode: 245,
 			blueCode: 238
@@ -4290,7 +4290,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const mintCream: Type = _fromCodes({
-			name: 'RGBMintCream',
+			id: 'RGBMintCream',
 			redCode: 245,
 			greenCode: 255,
 			blueCode: 250
@@ -4302,7 +4302,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const slateGray: Type = _fromCodes({
-			name: 'RGBSlateGray',
+			id: 'RGBSlateGray',
 			redCode: 112,
 			greenCode: 128,
 			blueCode: 144
@@ -4314,7 +4314,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const lightSlateGray: Type = _fromCodes({
-			name: 'RGBLightSlateGray',
+			id: 'RGBLightSlateGray',
 			redCode: 119,
 			greenCode: 136,
 			blueCode: 153
@@ -4326,7 +4326,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const lightSteelBlue: Type = _fromCodes({
-			name: 'RGBLightSteelBlue',
+			id: 'RGBLightSteelBlue',
 			redCode: 176,
 			greenCode: 196,
 			blueCode: 222
@@ -4338,7 +4338,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const lavender: Type = _fromCodes({
-			name: 'RGBLavender',
+			id: 'RGBLavender',
 			redCode: 230,
 			greenCode: 230,
 			blueCode: 250
@@ -4350,7 +4350,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const floralWhite: Type = _fromCodes({
-			name: 'RGBFloralWhite',
+			id: 'RGBFloralWhite',
 			redCode: 255,
 			greenCode: 250,
 			blueCode: 240
@@ -4362,7 +4362,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const aliceBlue: Type = _fromCodes({
-			name: 'RGBAliceBlue',
+			id: 'RGBAliceBlue',
 			redCode: 240,
 			greenCode: 248,
 			blueCode: 255
@@ -4374,7 +4374,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const ghostWhite: Type = _fromCodes({
-			name: 'RGBGhostWhite',
+			id: 'RGBGhostWhite',
 			redCode: 248,
 			greenCode: 248,
 			blueCode: 255
@@ -4386,7 +4386,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const honeydew: Type = _fromCodes({
-			name: 'RGBHoneydew',
+			id: 'RGBHoneydew',
 			redCode: 240,
 			greenCode: 255,
 			blueCode: 240
@@ -4398,7 +4398,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const ivory: Type = _fromCodes({
-			name: 'RGBIvory',
+			id: 'RGBIvory',
 			redCode: 255,
 			greenCode: 255,
 			blueCode: 240
@@ -4410,7 +4410,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const azure: Type = _fromCodes({
-			name: 'RGBAzure',
+			id: 'RGBAzure',
 			redCode: 240,
 			greenCode: 255,
 			blueCode: 255
@@ -4422,7 +4422,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const snow: Type = _fromCodes({
-			name: 'RGBSnow',
+			id: 'RGBSnow',
 			redCode: 255,
 			greenCode: 250,
 			blueCode: 250
@@ -4434,7 +4434,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const black: Type = _fromCodes({
-			name: 'RGBBlack',
+			id: 'RGBBlack',
 			redCode: 0,
 			greenCode: 0,
 			blueCode: 0
@@ -4446,7 +4446,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const dimGray: Type = _fromCodes({
-			name: 'RGBDimGray',
+			id: 'RGBDimGray',
 			redCode: 105,
 			greenCode: 105,
 			blueCode: 105
@@ -4458,7 +4458,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const gray: Type = _fromCodes({
-			name: 'RGBGray',
+			id: 'RGBGray',
 			redCode: 128,
 			greenCode: 128,
 			blueCode: 128
@@ -4470,7 +4470,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const darkGray: Type = _fromCodes({
-			name: 'RGBDarkGray',
+			id: 'RGBDarkGray',
 			redCode: 169,
 			greenCode: 169,
 			blueCode: 169
@@ -4482,7 +4482,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const silver: Type = _fromCodes({
-			name: 'RGBSilver',
+			id: 'RGBSilver',
 			redCode: 192,
 			greenCode: 192,
 			blueCode: 192
@@ -4494,7 +4494,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const lightGray: Type = _fromCodes({
-			name: 'RGBLightGray',
+			id: 'RGBLightGray',
 			redCode: 211,
 			greenCode: 211,
 			blueCode: 211
@@ -4506,7 +4506,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const gainsboro: Type = _fromCodes({
-			name: 'RGBGainsboro',
+			id: 'RGBGainsboro',
 			redCode: 220,
 			greenCode: 220,
 			blueCode: 220
@@ -4518,7 +4518,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const whiteSmoke: Type = _fromCodes({
-			name: 'RGBWhiteSmoke',
+			id: 'RGBWhiteSmoke',
 			redCode: 245,
 			greenCode: 245,
 			blueCode: 245
@@ -4530,7 +4530,7 @@ export namespace Colored {
 		 * @category RGB instances
 		 */
 		export const white: Type = _fromCodes({
-			name: 'RGBWhite',
+			id: 'RGBWhite',
 			redCode: 255,
 			greenCode: 255,
 			blueCode: 255
@@ -4616,8 +4616,8 @@ export namespace Styled {
 	const proto: MTypes.Proto<Type> = {
 		[_TypeId]: TypeId,
 		...baseProto,
-		[MInspectable.NameSymbol](this: Type) {
-			const name =
+		[MInspectable.IdSymbol](this: Type) {
+			const id =
 				(this.isBold ? 'Bold' : '') +
 				(this.isUnderlined ? 'Underlined' : '') +
 				(this.isFramed ? 'Framed' : '') +
@@ -4626,7 +4626,7 @@ export namespace Styled {
 				(this.isBlinking ? 'Blinking' : '') +
 				(this.fgColor !== undefined ? Colored.fgName(this.fgColor) : '') +
 				(this.bgColor !== undefined ? Colored.bgName(this.bgColor) : '');
-			return name === '' ? 'None' : name;
+			return id === '' ? 'None' : id;
 		},
 		...MInspectable.BaseProto(moduleTag)
 	};

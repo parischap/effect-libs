@@ -10,27 +10,27 @@ import * as MRecord from './Record.js';
 export const moduleTag = '@parischap/effect-lib/Inspectable/';
 
 /**
- * Symbol used to define a special prototype function that must return a name identifying the object
+ * Symbol used to define a special prototype function that must return an id for the object
  *
  * @since 0.5.0
  * @category Models
  */
-export const NameSymbol: unique symbol = Symbol.for(moduleTag + 'NameSymbol/') as NameSymbol;
+export const IdSymbol: unique symbol = Symbol.for(moduleTag + 'IdSymbol/') as IdSymbol;
 
 /**
- * Type used to define a special prototype function that must return a name identifying the object
+ * Type used to define a special prototype function that must return an id for the object
  *
  * @since 0.5.0
  * @category Models
  */
-export type NameSymbol = typeof NameSymbol;
+export type IdSymbol = typeof IdSymbol;
 
 export interface Inspectable extends EInspectable.Inspectable {
-	readonly [NameSymbol]: () => string;
+	readonly [IdSymbol]: () => string;
 }
 /**
  * Prototype of an `Inspectable` that overloads the `toJSON` method. If the object (usually its
- * prototype) has a `[NameSymbol]` function, returns the result of this function. Otherwise, return
+ * prototype) has a `[IdSymbol]` function, returns the result of this function. Otherwise, return
  * this with an extra '_id' field containing the moduleTag.
  *
  * @since 0.3.3
@@ -42,7 +42,7 @@ export const BaseProto = (moduleTag: string): EInspectable.Inspectable => ({
 		return pipe(
 			this,
 			MRecord.tryZeroParamStringFunction({
-				functionName: NameSymbol
+				functionName: IdSymbol
 			}),
 			Option.getOrElse(() => ({ _id: moduleTag, ...this }))
 		);
@@ -51,7 +51,7 @@ export const BaseProto = (moduleTag: string): EInspectable.Inspectable => ({
 		return pipe(
 			this,
 			MRecord.tryZeroParamStringFunction({
-				functionName: NameSymbol
+				functionName: IdSymbol
 			}),
 			Option.getOrElse(() => EInspectable.BaseProto.toString.call(this))
 		);

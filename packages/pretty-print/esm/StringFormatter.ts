@@ -107,10 +107,10 @@ export namespace Original {
  * @category Instance maker
  */
 export const wheelOnDepth: ({
-	name,
+	id,
 	formatters
 }: {
-	readonly name: string;
+	readonly id: string;
 	readonly formatters: ASFormatterArray.Type;
 }) => Type = ASWheelFormatter.fromFormatterArray(Struct.get('depth'));
 
@@ -122,7 +122,7 @@ export const wheelOnDepth: ({
  * @category Instances
  */
 export const allBasicOrignalColorsWheelOnDepth: Type = wheelOnDepth({
-	name: 'AllBasicOrignalColorsWheelOnDepth',
+	id: 'AllBasicOrignalColorsWheelOnDepth',
 	formatters: ASFormatterArray.allBasicOrignalColors
 });
 
@@ -134,10 +134,10 @@ export const allBasicOrignalColorsWheelOnDepth: Type = wheelOnDepth({
  * @category Instance maker
  */
 export const wheelOnProtoDepth: ({
-	name,
+	id,
 	formatters
 }: {
-	readonly name: string;
+	readonly id: string;
 	readonly formatters: ASFormatterArray.Type;
 }) => Type = ASWheelFormatter.fromFormatterArray(Struct.get('protoDepth'));
 
@@ -149,6 +149,6 @@ export const wheelOnProtoDepth: ({
  * @category Instances
  */
 export const allBasicOrignalColorsWheelOnProtoDepth: Type = wheelOnDepth({
-	name: 'AllBasicOrignalColorsWheelOnDepth',
+	id: 'AllBasicOrignalColorsWheelOnDepth',
 	formatters: ASFormatterArray.allBasicOrignalColors
 });
