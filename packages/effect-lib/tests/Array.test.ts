@@ -5,11 +5,14 @@ import {
 	Equal,
 	flow,
 	Function,
+	Hash,
 	Number,
 	Option,
+	Order,
 	pipe,
 	Predicate,
 	Record,
+	Struct,
 	Tuple
 } from 'effect';
 import { describe, expect, it } from 'vitest';
@@ -331,6 +334,77 @@ describe('MArray', () => {
 
 		it('Any array with n beyond bounds', () => {
 			expect(pipe(Array.make(1, 2, 3), MArray.splitAtFromRight(5))).toStrictEqual([[], [1, 2, 3]]);
+		});
+	});
+
+	describe('mergeSorted', () => {
+		class A implements Equal.Equal {
+			constructor(
+				readonly key: number,
+				readonly value: string
+			) {}
+			[Equal.symbol](this: A, that: unknown): boolean {
+				return that instanceof A && this.key === that.key;
+			}
+			[Hash.symbol](this: A) {
+				return pipe(this.key, Hash.hash, Hash.cached(this));
+			}
+		}
+
+		const byKey: Order.Order<A> = Order.mapInput(Number.Order, Struct.get('key'));
+
+		const mergeSortedAs = MArray.mergeSorted(byKey);
+
+		it('Empty arrays', () => {
+			expect(pipe(Array.empty<A>(), mergeSortedAs(Array.empty<A>()))).toStrictEqual(
+				Array.empty<A>()
+			);
+		});
+
+		it('that finishes first', () => {
+			expect(
+				pipe(
+					Array.make(new A(1, 'self1'), new A(3, 'self3'), new A(5, 'self5')),
+					mergeSortedAs(Array.make(new A(2, 'that2'), new A(3, 'that3'), new A(4, 'that4')))
+				)
+			).toStrictEqual(
+				Array.make(
+					new A(1, 'self1'),
+					new A(2, 'that2'),
+					new A(3, 'self3'),
+					new A(3, 'that3'),
+					new A(4, 'that4'),
+					new A(5, 'self5')
+				)
+			);
+		});
+
+		it('self finishes first', () => {
+			expect(
+				pipe(
+					Array.make(new A(1, 'self1'), new A(3, 'self3'), new A(5, 'self5')),
+					mergeSortedAs(
+						Array.make(
+							new A(2, 'that2'),
+							new A(3, 'that3'),
+							new A(4, 'that4'),
+							new A(6, 'that6'),
+							new A(7, 'that7')
+						)
+					)
+				)
+			).toStrictEqual(
+				Array.make(
+					new A(1, 'self1'),
+					new A(2, 'that2'),
+					new A(3, 'self3'),
+					new A(3, 'that3'),
+					new A(4, 'that4'),
+					new A(5, 'self5'),
+					new A(6, 'that6'),
+					new A(7, 'that7')
+				)
+			);
 		});
 	});
 });

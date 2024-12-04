@@ -11,6 +11,7 @@ import {
 	Equivalence,
 	Function,
 	Option,
+	Order,
 	Predicate,
 	Record,
 	Tuple,
@@ -396,8 +397,8 @@ export const unfold =
 	};
 
 /**
- * Splits an `Iterable` into two segments, with the last segment containing a maximum of `n`
- * elements. The value of `n` can be `0`.
+ * Splits `self` into two segments, with the last segment containing a maximum of `n` elements. The
+ * value of `n` can be `0`.
  *
  * @since 0.5.0
  * @category Utils
@@ -406,3 +407,76 @@ export const splitAtFromRight =
 	(n: number) =>
 	<A>(self: ReadonlyArray<A>): [beforeIndex: Array<A>, fromIndex: Array<A>] =>
 		Array.splitAt(self, self.length - n);
+
+/**
+ * Produces a sorted array from two sorted Iterables. Elements in `self` are assured to be before
+ * equal elements in `that` in the resulting array. The sorting order `o` must also be the one that
+ * was used to sort `self` and `that`
+ *
+ * @since 0.5.0
+ * @category Utils
+ */
+export const mergeSorted =
+	<A>(o: Order.Order<A>) =>
+	(that: Iterable<A>) =>
+	(self: Iterable<A>) => {
+		const selfIterator = self[Symbol.iterator]();
+		const thatIterator = that[Symbol.iterator]();
+
+		let selfNext = selfIterator.next();
+		if (selfNext.done !== false) return Array.fromIterable(that);
+		let thatNext = thatIterator.next();
+		if (thatNext.done !== false) return Array.fromIterable(self);
+
+		let selfNextValue = selfNext.value;
+		let thatNextValue = thatNext.value;
+
+		/* eslint-disable-next-line functional/prefer-readonly-type */
+		const sorted: Array<A> = [];
+
+		const lessThanOrEqualTo = Order.lessThanOrEqualTo(o);
+
+		do {
+			if (lessThanOrEqualTo(selfNextValue, thatNextValue)) {
+				/* eslint-disable-next-line functional/immutable-data,functional/no-expression-statements*/
+				sorted.push(selfNextValue);
+				/* eslint-disable-next-line functional/no-expression-statements*/
+				selfNext = selfIterator.next();
+				if (selfNext.done !== false)
+					do {
+						/* eslint-disable-next-line functional/immutable-data,functional/no-expression-statements*/
+						sorted.push(thatNextValue);
+						/* eslint-disable-next-line functional/no-expression-statements*/
+						thatNext = thatIterator.next();
+
+						if (thatNext.done !== false) return sorted;
+						/* eslint-disable-next-line functional/no-expression-statements*/
+						thatNextValue = thatNext.value;
+						/* eslint-disable-next-line no-constant-condition*/
+					} while (true);
+
+				/* eslint-disable-next-line functional/no-expression-statements*/
+				selfNextValue = selfNext.value;
+			} else {
+				/* eslint-disable-next-line functional/immutable-data,functional/no-expression-statements*/
+				sorted.push(thatNextValue);
+				/* eslint-disable-next-line functional/no-expression-statements*/
+				thatNext = thatIterator.next();
+				if (thatNext.done !== false)
+					do {
+						/* eslint-disable-next-line functional/immutable-data,functional/no-expression-statements*/
+						sorted.push(selfNextValue);
+						/* eslint-disable-next-line functional/no-expression-statements*/
+						selfNext = selfIterator.next();
+
+						if (selfNext.done !== false) return sorted;
+						/* eslint-disable-next-line functional/no-expression-statements*/
+						selfNextValue = selfNext.value;
+						/* eslint-disable-next-line no-constant-condition*/
+					} while (true);
+				/* eslint-disable-next-line functional/no-expression-statements*/
+				thatNextValue = thatNext.value;
+			}
+			/* eslint-disable-next-line no-constant-condition*/
+		} while (true);
+	};
