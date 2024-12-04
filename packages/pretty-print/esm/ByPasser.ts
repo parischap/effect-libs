@@ -36,8 +36,8 @@ import {
 	String
 } from 'effect';
 import type * as PPFormatSet from './FormatMap.js';
-import * as PPFormattedString from './FormattedString.js';
 import type * as PPOption from './Option.js';
+import * as PPString from './String.js';
 import type * as PPStringifiedValue from './StringifiedValue.js';
 
 const moduleTag = '@parischap/pretty-print/ByPasser/';
@@ -52,7 +52,7 @@ type TypeId = typeof TypeId;
  */
 export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
 	/**
-	 * Name of this ByPasser instance. Useful for equality and debugging: the action property being a
+	 * Id of this ByPasser instance. Useful for equality and debugging: the action property being a
 	 * function, it will not be printed by the `toString` method.
 	 *
 	 * @since 0.0.1
@@ -138,7 +138,7 @@ export const objectAsRecord = (formatSet: PPFormatSet.Type): Type =>
 				flow(
 					MString.prepend("'"),
 					MString.append("'"),
-					PPFormattedString.makeWith(formatSet.stringValueFormatter),
+					PPString.makeWith(formatSet.stringValueFormatter),
 					Array.of,
 					Option.some
 				)
@@ -150,7 +150,7 @@ export const objectAsRecord = (formatSet: PPFormatSet.Type): Type =>
 				MTypes.isUndefined,
 				flow(
 					MString.fromPrimitive,
-					PPFormattedString.makeWith(formatSet.otherValueFormatter),
+					PPString.makeWith(formatSet.otherValueFormatter),
 					Array.of,
 					Option.some
 				)
@@ -159,10 +159,8 @@ export const objectAsRecord = (formatSet: PPFormatSet.Type): Type =>
 				MTypes.isBigInt,
 				flow(
 					MString.fromNonNullablePrimitive,
-					PPFormattedString.makeWith(formatSet.otherValueFormatter),
-					PPFormattedString.append(
-						pipe('n', PPFormattedString.makeWith(formatSet.bigIntMarkFormatter))
-					),
+					PPString.makeWith(formatSet.otherValueFormatter),
+					PPString.append(pipe('n', PPString.makeWith(formatSet.bigIntMarkFormatter))),
 					Array.of,
 					Option.some
 				)
@@ -171,7 +169,7 @@ export const objectAsRecord = (formatSet: PPFormatSet.Type): Type =>
 				MTypes.isSymbol,
 				flow(
 					MString.fromNonNullablePrimitive,
-					PPFormattedString.makeWith(formatSet.symbolValueFormatter),
+					PPString.makeWith(formatSet.symbolValueFormatter),
 					Array.of,
 					Option.some
 				)
@@ -233,7 +231,7 @@ export const objectAsValue = (formatSet: PPFormatSet.Type): Type =>
 							flow(
 								// split resets RegExp.prototype.lastIndex after executing
 								String.split(MRegExp.globalLineBreak),
-								Array.map(PPFormattedString.makeWith(formatSet.otherValueFormatter))
+								Array.map(PPString.makeWith(formatSet.otherValueFormatter))
 							)
 						)
 					)

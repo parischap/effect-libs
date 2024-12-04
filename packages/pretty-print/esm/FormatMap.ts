@@ -25,7 +25,7 @@ type TypeId = typeof TypeId;
  */
 export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
 	/**
-	 * Name of this FormatMap instance. Useful for equality and debugging.
+	 * Id of this FormatMap instance. Useful for equality and debugging.
 	 *
 	 * @since 0.3.0
 	 */

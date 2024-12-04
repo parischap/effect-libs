@@ -12,10 +12,10 @@
 
 import { MArray, MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
 import { Array, Equal, Equivalence, Hash, pipe, Pipeable, Predicate, Struct } from 'effect';
-import type * as ASFormat from './Format.js';
-import * as ASFormattedString from './FormattedString.js';
 import * as ASFormatter from './Formatter.js';
 import * as ASPalette from './Palette.js';
+import * as ASString from './String.js';
+import type * as ASFormat from './Style.js';
 
 export const moduleTag = '@parischap/ansi-styles/ContextFormatter/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
@@ -32,7 +32,7 @@ type ActionType<in C> = MTypes.OneArgFunction<C, ASFormatter.ActionType>;
  */
 export interface Type<in C> extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
 	/**
-	 * Name of this ContextFormatter instance. Useful for equality and debugging
+	 * Id of this ContextFormatter instance. Useful for equality and debugging
 	 *
 	 * @since 0.0.1
 	 */
@@ -108,7 +108,7 @@ export const fromPalette =
 			formats,
 			Array.map(ASFormatter.fromFormat),
 			MArray.match012({
-				onEmpty: () => (_context) => ASFormattedString.fromString,
+				onEmpty: () => (_context) => ASString.fromString,
 				onSingleton: (formatter) => (_context) => formatter.action,
 				onOverTwo: (formatters) => (context) =>
 					pipe(

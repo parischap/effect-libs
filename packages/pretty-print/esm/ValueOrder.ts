@@ -47,7 +47,7 @@ export const byStringKey: Type = Order.mapInput(Order.string, Struct.get('string
  */
 export const byCallability: Type = Order.mapInput(
 	Order.boolean,
-	MPredicate.struct({ valueCategory: MFunction.strictEquals(MTypes.Category.Function) })
+	MPredicate.struct({ valueCategory: MFunction.strictEquals(MTypes.Category.Type.Function) })
 );
 
 /**

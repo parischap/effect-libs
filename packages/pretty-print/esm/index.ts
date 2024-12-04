@@ -1,6 +1,5 @@
 export * as PPByPasser from './ByPasser.js';
 export * as PPFormatMap from './FormatMap.js';
-export * as PPFormattedString from './FormattedString.js';
 export * as PPIndentMode from './IndentMode.js';
 export * as PPMark from './Mark.js';
 export * as PPMarkMap from './MarkMap.js';
@@ -11,6 +10,7 @@ export * as PPPropertyMarks from './PropertyMarks.js';
 export * as PPRecordExtremityMarks from './RecordExtremityMarks.js';
 export * as PPRecordFormatter from './RecordFormatter.js';
 export * as PPRecordMarks from './RecordMarks.js';
+export * as PPString from './String.js';
 export * as PPStringFormatter from './StringFormatter.js';
 export * as PPStringifiedValue from './StringifiedValue.js';
 export * as PPStringifiedValues from './StringifiedValues.js';

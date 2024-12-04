@@ -56,7 +56,7 @@ type TypeId = typeof TypeId;
  */
 export interface Type<in out A> extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
 	/**
-	 * Name of this Transformer instance. Only useful for debugging purposes.
+	 * Id of this Transformer instance. Only useful for debugging purposes.
 	 *
 	 * @since 0.0.1
 	 */

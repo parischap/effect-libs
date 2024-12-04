@@ -27,8 +27,8 @@ import {
 	Struct
 } from 'effect';
 import type * as PPFormatSet from './FormatMap.js';
-import * as PPFormattedString from './FormattedString.js';
 import * as PPPropertyMarks from './PropertyMarks.js';
+import * as PPString from './String.js';
 import type * as PPStringifiedValue from './StringifiedValue.js';
 import * as PPValue from './Value.js';
 
@@ -53,7 +53,7 @@ interface ActionType {
  */
 export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
 	/**
-	 * Name of this PropertyFormatter instance. Useful for equality and debugging
+	 * Id of this PropertyFormatter instance. Useful for equality and debugging
 	 *
 	 * @since 0.0.1
 	 */
@@ -152,24 +152,24 @@ export const keyAndValue =
 					Option.match({
 						onNone: () => stringified,
 						onSome: flow(
-							PPFormattedString.makeWith(
+							PPString.makeWith(
 								PPValue.isRecordWithFunctionValue(value) ?
 									formatSet.propertyKeyFormatterWhenFunctionValue
 								: value.hasSymbolicKey ? formatSet.propertyKeyFormatterWhenSymbol
 								: formatSet.propertyKeyFormatterWhenOther
 							),
-							PPFormattedString.prepend(
+							PPString.prepend(
 								pipe(
 									propertyMarks.prototypePrefix,
-									PPFormattedString.makeWith(formatSet.prototypeMarkFormatter),
-									PPFormattedString.repeat(value.protoDepth)
+									PPString.makeWith(formatSet.prototypeMarkFormatter),
+									PPString.repeat(value.protoDepth)
 								)
 							),
-							PPFormattedString.append(
+							PPString.append(
 								pipe(
 									propertyMarks.prototypeSuffix,
-									PPFormattedString.makeWith(formatSet.prototypeMarkFormatter),
-									PPFormattedString.repeat(value.protoDepth)
+									PPString.makeWith(formatSet.prototypeMarkFormatter),
+									PPString.repeat(value.protoDepth)
 								)
 							),
 							(key) =>
@@ -178,17 +178,17 @@ export const keyAndValue =
 									onNonEmpty: flow(
 										Array.modifyNonEmptyHead(
 											flow(
-												Option.liftPredicate(PPFormattedString.isNonEmpty),
+												Option.liftPredicate(PPString.isNonEmpty),
 												Option.match({
 													onNone: () => key,
 													onSome: flow(
-														PPFormattedString.prepend(
+														PPString.prepend(
 															pipe(
 																propertyMarks.keyValueSeparator,
-																PPFormattedString.makeWith(formatSet.keyValueSeparatorFormatter)
+																PPString.makeWith(formatSet.keyValueSeparatorFormatter)
 															)
 														),
-														PPFormattedString.prepend(key)
+														PPString.prepend(key)
 													)
 												})
 											)

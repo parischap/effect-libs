@@ -47,7 +47,7 @@ interface ActionType {
  */
 export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
 	/**
-	 * Name of this PropertyFilter instance. Useful for equality and debugging
+	 * Id of this PropertyFilter instance. Useful for equality and debugging
 	 *
 	 * @since 0.0.1
 	 */

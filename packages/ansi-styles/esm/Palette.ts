@@ -10,7 +10,7 @@
 
 import { MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
 import { Array, Equal, Equivalence, Hash, Pipeable, Predicate, Struct } from 'effect';
-import * as ASFormat from './Format.js';
+import * as ASFormat from './Style.js';
 
 const moduleTag = '@parischap/ansi-styles/Palette/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
@@ -24,7 +24,7 @@ type TypeId = typeof TypeId;
  */
 export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
 	/**
-	 * Name of this Palette instance. Useful for equality and debugging
+	 * Id of this Palette instance. Useful for equality and debugging
 	 *
 	 * @since 0.0.1
 	 */

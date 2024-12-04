@@ -27,10 +27,10 @@ import {
 	Predicate
 } from 'effect';
 import type * as PPFormatSet from './FormatMap.js';
-import * as PPFormattedString from './FormattedString.js';
 import * as PPFormatWheel from './FormatWheel.js';
 import * as PPIndentMode from './IndentMode.js';
 import * as PPRecordMarks from './RecordMarks.js';
+import * as PPString from './String.js';
 import * as PPStringifiedValue from './StringifiedValue.js';
 import * as PPStringifiedValues from './StringifiedValues.js';
 import * as PPValue from './Value.js';
@@ -57,7 +57,7 @@ interface ActionType {
  */
 export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
 	/**
-	 * Name of this RecordFormatter instance. Useful for equality and debugging
+	 * Id of this RecordFormatter instance. Useful for equality and debugging
 	 *
 	 * @since 0.0.1
 	 */
@@ -298,7 +298,7 @@ export const splitOnTotalLengthMaker =
 				MMatch.make,
 				MMatch.when(
 					flow(
-						Array.map(flow(Array.map(PPFormattedString.printedLength), Number.sumAll)),
+						Array.map(flow(Array.map(PPString.printedLength), Number.sumAll)),
 						Number.sumAll,
 						Number.lessThanOrEqualTo(limit)
 					),
@@ -348,7 +348,7 @@ export const splitOnLongestPropLengthMaker =
 				MMatch.make,
 				MMatch.when(
 					flow(
-						Array.map(flow(Array.map(PPFormattedString.printedLength), Number.sumAll)),
+						Array.map(flow(Array.map(PPString.printedLength), Number.sumAll)),
 						Array.match({
 							onEmpty: () => false,
 							onNonEmpty: flow(Array.max(Order.number), Number.lessThanOrEqualTo(limit))

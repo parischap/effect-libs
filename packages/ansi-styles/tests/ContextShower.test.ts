@@ -1,10 +1,5 @@
 /* eslint-disable functional/no-expression-statements */
-import {
-	ASContextFormatter,
-	ASContextShower,
-	ASFormattedString,
-	ASPalette
-} from '@parischap/ansi-styles';
+import { ASContextFormatter, ASContextShower, ASPalette, ASString } from '@parischap/ansi-styles';
 import { MUtils } from '@parischap/effect-lib';
 import { Equal, pipe, Struct } from 'effect';
 import { describe, expect, it } from 'vitest';
@@ -76,10 +71,10 @@ describe('ContextShower', () => {
 		});
 
 		it('action', () => {
-			expect(pipe(context1, fooShowerOnContextPos.action, ASFormattedString.formatted)).toBe(
+			expect(pipe(context1, fooShowerOnContextPos.action, ASString.formatted)).toBe(
 				'\x1b[32mfoo\x1b[0m'
 			);
-			expect(pipe(context2, fooShowerOnContextPos.action, ASFormattedString.formatted)).toBe(
+			expect(pipe(context2, fooShowerOnContextPos.action, ASString.formatted)).toBe(
 				'\x1b[30mfoo\x1b[0m'
 			);
 		});

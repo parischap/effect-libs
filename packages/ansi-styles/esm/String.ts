@@ -11,10 +11,7 @@
 import { MFunction, MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
 import {
 	Array,
-	Equal,
-	Equivalence,
 	Function,
-	Hash,
 	Inspectable,
 	Order,
 	Pipeable,
@@ -24,32 +21,32 @@ import {
 	flow,
 	pipe
 } from 'effect';
-import type * as ASFormatter from './Formatter.js';
+import type * as ASStyle from './Style.js';
 
-export const moduleTag = '@parischap/ansi-styles/FormattedString/';
+export const moduleTag = '@parischap/ansi-styles/String/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
 
 /**
- * Interface that represents a FormattedString
+ * Interface that represents a String
  *
  * @since 0.0.1
  * @category Models
  */
-export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
+export interface Type extends Inspectable.Inspectable, Pipeable.Pipeable {
 	/**
-	 * The formatted string
+	 * The strings to style
 	 *
 	 * @since 0.0.1
 	 */
-	readonly formatted: string;
+	readonly strings: ReadonlyArray<string | Type>;
 
 	/**
-	 * The unformatted string
+	 * The style to apply to `strings`
 	 *
 	 * @since 0.0.1
 	 */
-	readonly unformatted: string;
+	readonly style: ASStyle.Type;
 
 	/** @internal */
 	readonly [TypeId]: TypeId;
@@ -63,30 +60,9 @@ export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pip
  */
 export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
 
-/**
- * Equivalence
- *
- * @since 0.0.1
- * @category Equivalences
- */
-export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
-	that.formatted === self.formatted && that.unformatted == self.unformatted;
-
 /** Prototype */
 const proto: MTypes.Proto<Type> = {
 	[TypeId]: TypeId,
-	[Equal.symbol](this: Type, that: unknown): boolean {
-		return has(that) && equivalence(this, that);
-	},
-	[Hash.symbol](this: Type) {
-		return pipe(
-			this.formatted,
-			Hash.hash,
-			Hash.combine(Hash.hash(this.unformatted)),
-			Hash.optimize,
-			Hash.cached(this)
-		);
-	},
 	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto
 };
@@ -97,25 +73,11 @@ const proto: MTypes.Proto<Type> = {
  * @since 0.0.1
  * @category Constructors
  */
-export const _make = (params: MTypes.Data<Type>): Type =>
+export const make = (params: MTypes.Data<Type>): Type =>
 	MTypes.objectFromDataAndProto(proto, params);
 
 /**
- * Builds a FormattedString from a StringTransformer and a string
- *
- * @since 0.0.1
- * @category Constructors
- */
-export const fromStyleAndString =
-	(f: MTypes.StringTransformer): ASFormatter.ActionType =>
-	(s) =>
-		_make({
-			formatted: f(s),
-			unformatted: s
-		});
-
-/**
- * Builds a FormattedString from a string without applying any format.
+ * Builds a String from a string without applying any format.
  *
  * @since 0.0.1
  * @category Constructors
@@ -123,7 +85,7 @@ export const fromStyleAndString =
 export const fromString: ASFormatter.ActionType = fromStyleAndString(Function.identity);
 
 /**
- * An empty FormattedString
+ * An empty String
  *
  * @since 0.0.1
  * @category Instances
@@ -158,7 +120,7 @@ export const unformattedLength: MTypes.OneArgFunction<Type, number> = flow(
 );
 
 /**
- * Builds a new FormattedString by appending `that` to `self`
+ * Builds a new String by appending `that` to `self`
  *
  * @since 0.0.1
  * @category Utils
@@ -172,7 +134,7 @@ export const append =
 		});
 
 /**
- * Builds a new FormattedString by appending `self` to `that`
+ * Builds a new String by appending `self` to `that`
  *
  * @since 0.0.1
  * @category Utils
@@ -186,7 +148,7 @@ export const prepend =
 		});
 
 /**
- * Builds a new FormattedString by concatenating all passed FormattedStrings
+ * Builds a new String by concatenating all passed Strings
  *
  * @since 0.0.1
  * @category Utils
@@ -199,8 +161,7 @@ export const concat = (...sArr: ReadonlyArray<Type>): Type =>
 	});
 
 /**
- * Builds a new FormattedString by joining all passed FormattedStrings and adding a separator `sep`
- * in between
+ * Builds a new String by joining all passed Strings and adding a separator `sep` in between
  *
  * @since 0.0.1
  * @category Utils
@@ -215,7 +176,7 @@ export const join =
 		});
 
 /**
- * Builds a new FormattedString by repeating `n` times the passed FormattedString
+ * Builds a new String by repeating `n` times the passed String
  *
  * @since 0.0.1
  * @category Utils
@@ -231,7 +192,7 @@ export const repeat =
 	};
 
 /**
- * Returns `true` if the FormattedString represents an empty string
+ * Returns `true` if the String represents an empty string
  *
  * @since 0.0.1
  * @category Utils
@@ -242,7 +203,7 @@ export const isEmpty: Predicate.Predicate<Type> = flow(
 );
 
 /**
- * Returns `true` if the FormattedString does not represent an empty string
+ * Returns `true` if the String does not represent an empty string
  *
  * @since 0.0.1
  * @category Utils
@@ -250,7 +211,7 @@ export const isEmpty: Predicate.Predicate<Type> = flow(
 export const isNonEmpty: Predicate.Predicate<Type> = Predicate.not(isEmpty);
 
 /**
- * Defines an order on FormattedStrings based on the order of the `unformatted` property
+ * Defines an order on Strings based on the order of the `unformatted` property
  *
  * @since 0.0.1
  * @category Ordering

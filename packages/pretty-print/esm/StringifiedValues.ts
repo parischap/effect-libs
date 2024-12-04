@@ -8,8 +8,8 @@
 import { ASFormatter } from '@parischap/ansi-styles';
 import { MArray } from '@parischap/effect-lib';
 import { flow, pipe } from 'effect';
-import * as PPFormattedString from './FormattedString.js';
 import type * as PPIndentMode from './IndentMode.js';
+import * as PPString from './String.js';
 import type * as PPStringifiedValue from './StringifiedValue.js';
 
 /**
@@ -32,9 +32,7 @@ export const addSeparatorBetweenProps = (
 ): MTypes.OneArgFunction<Type> =>
 	flow(
 		MArray.modifyInit(
-			MArray.modifyLast(
-				PPFormattedString.append(pipe(propertySeparator, PPFormattedString.makeWith(formatter)))
-			)
+			MArray.modifyLast(PPString.append(pipe(propertySeparator, PPString.makeWith(formatter))))
 		)
 	);
 
@@ -52,28 +50,20 @@ export const indentProps = (
 		MArray.modifyInit(
 			flow(
 				MArray.modifyHead(
-					PPFormattedString.prepend(
-						pipe(indentMode.initPropFirstLine, PPFormattedString.makeWith(formatter))
-					)
+					PPString.prepend(pipe(indentMode.initPropFirstLine, PPString.makeWith(formatter)))
 				),
 				MArray.modifyTail(
-					PPFormattedString.prepend(
-						pipe(indentMode.initPropTailLines, PPFormattedString.makeWith(formatter))
-					)
+					PPString.prepend(pipe(indentMode.initPropTailLines, PPString.makeWith(formatter)))
 				)
 			)
 		),
 		MArray.modifyLast(
 			flow(
 				MArray.modifyHead(
-					PPFormattedString.prepend(
-						pipe(indentMode.lastPropFirstLine, PPFormattedString.makeWith(formatter))
-					)
+					PPString.prepend(pipe(indentMode.lastPropFirstLine, PPString.makeWith(formatter)))
 				),
 				MArray.modifyTail(
-					PPFormattedString.prepend(
-						pipe(indentMode.lastPropTailLines, PPFormattedString.makeWith(formatter))
-					)
+					PPString.prepend(pipe(indentMode.lastPropTailLines, PPString.makeWith(formatter)))
 				)
 			)
 		)

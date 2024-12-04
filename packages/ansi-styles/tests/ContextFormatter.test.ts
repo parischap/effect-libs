@@ -1,5 +1,5 @@
 /* eslint-disable functional/no-expression-statements */
-import { ASContextFormatter, ASFormattedString, ASPalette } from '@parischap/ansi-styles';
+import { ASContextFormatter, ASPalette, ASString } from '@parischap/ansi-styles';
 import { MUtils } from '@parischap/effect-lib';
 import { Equal, pipe, Struct } from 'effect';
 import { describe, expect, it } from 'vitest';
@@ -80,15 +80,15 @@ describe('ContextFormatter', () => {
 		});
 
 		it('action', () => {
-			expect(
-				pipe('foo', contextFormatterOnContextPos1.action(context1), ASFormattedString.formatted)
-			).toBe('\x1b[32mfoo\x1b[0m');
-			expect(
-				pipe('foo', contextFormatterOnContextPos2.action(context1), ASFormattedString.formatted)
-			).toBe('\x1b[34mfoo\x1b[0m');
-			expect(
-				pipe('foo', contextFormatterOnContextPos1.action(context2), ASFormattedString.formatted)
-			).toBe('\x1b[30mfoo\x1b[0m');
+			expect(pipe('foo', contextFormatterOnContextPos1.action(context1), ASString.formatted)).toBe(
+				'\x1b[32mfoo\x1b[0m'
+			);
+			expect(pipe('foo', contextFormatterOnContextPos2.action(context1), ASString.formatted)).toBe(
+				'\x1b[34mfoo\x1b[0m'
+			);
+			expect(pipe('foo', contextFormatterOnContextPos1.action(context2), ASString.formatted)).toBe(
+				'\x1b[30mfoo\x1b[0m'
+			);
 		});
 	});
 });

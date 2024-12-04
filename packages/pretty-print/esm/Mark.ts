@@ -24,7 +24,7 @@ import {
 	Predicate
 } from 'effect';
 import * as PPFormatMap from './FormatMap.js';
-import * as PPFormattedString from './FormattedString.js';
+import * as PPString from './String.js';
 import type * as PPValue from './Value.js';
 
 const moduleTag = '@parischap/pretty-print/Mark/';
@@ -55,7 +55,7 @@ export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pip
 	 *
 	 * @since 0.3.0
 	 */
-	readonly precalcedText: Option.Option<PPFormattedString.Type>;
+	readonly precalcedText: Option.Option<PPString.Type>;
 
 	/** @internal */
 	readonly [TypeId]: TypeId;
@@ -124,7 +124,7 @@ export const preCalc = (formatMap: PPFormatMap.Type): MTypes.OneArgFunction<Type
 							flow(
 								ASWheelFormatter.action,
 								Function.apply(null as never),
-								PPFormattedString.makeWith,
+								PPString.makeWith,
 								Function.apply(text)
 							)
 						)
@@ -143,7 +143,7 @@ export const preCalc = (formatMap: PPFormatMap.Type): MTypes.OneArgFunction<Type
 
 export const formatted =
 	(value: PPValue.All, formatMap: PPFormatMap.Type) =>
-	(self: Type): PPFormattedString.Type =>
+	(self: Type): PPString.Type =>
 		pipe(
 			self.precalcedText,
 			Option.getOrElse(() =>
@@ -152,7 +152,7 @@ export const formatted =
 					PPFormatMap.get(self.formatName),
 					ASWheelFormatter.action,
 					Function.apply(value),
-					PPFormattedString.makeWith,
+					PPString.makeWith,
 					Function.apply(self.text)
 				)
 			)

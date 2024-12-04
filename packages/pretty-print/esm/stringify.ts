@@ -7,8 +7,8 @@
 
 import { MTypes } from '@parischap/effect-lib';
 import { Struct, flow } from 'effect';
-import * as PPFormattedString from './FormattedString.js';
 import * as PPOption from './Option.js';
+import * as PPString from './String.js';
 import type * as PPStringifiedValue from './StringifiedValue.js';
 import * as PPValue from './Value.js';
 
@@ -32,11 +32,11 @@ export const asLines = (
  */
 export const asString = (
 	option: PPOption.Type & {
-		readonly lineSep?: PPFormattedString.Type;
+		readonly lineSep?: PPString.Type;
 	} = PPOption.unformattedSplitWhenTotalLengthExceeds40
 ): MTypes.OneArgFunction<unknown, string> =>
 	flow(
 		asLines(option),
-		PPFormattedString.join(option.lineSep ?? PPFormattedString.makeWith()('\n')),
+		PPString.join(option.lineSep ?? PPString.makeWith()('\n')),
 		Struct.get('value')
 	);

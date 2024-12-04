@@ -12,10 +12,10 @@
 import { pipe } from 'effect';
 import * as PPByPasser from './ByPasser.js';
 import * as PPFormatSet from './FormatMap.js';
-import * as PPFormattedString from './FormattedString.js';
 import * as PPPropertyFilter from './PropertyFilter.js';
 import * as PPPropertyFormatter from './PropertyFormatter.js';
 import * as PPRecordFormatter from './RecordFormatter.js';
+import * as PPString from './String.js';
 import * as PPValueOrder from './ValueOrder.js';
 
 import { MInspectable, MPipeable, MStruct, MTypes } from '@parischap/effect-lib';
@@ -33,7 +33,7 @@ type TypeId = typeof TypeId;
  */
 export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
 	/**
-	 * Name of this Option instance. Useful for equality and debugging
+	 * Id of this Option instance. Useful for equality and debugging
 	 *
 	 * @since 0.0.1
 	 */
@@ -210,11 +210,11 @@ export const singleLine = (formatSet: PPFormatSet.Type): Type =>
 	make({
 		id: formatSet.id + 'SingleLine',
 		maxDepth: 10,
-		arrayLabel: pipe('[Array]', PPFormattedString.makeWith(formatSet.otherValueFormatter)),
-		functionLabel: pipe('(Function)', PPFormattedString.makeWith(formatSet.otherValueFormatter)),
-		objectLabel: pipe('{Object}', PPFormattedString.makeWith(formatSet.otherValueFormatter)),
+		arrayLabel: pipe('[Array]', PPString.makeWith(formatSet.otherValueFormatter)),
+		functionLabel: pipe('(Function)', PPString.makeWith(formatSet.otherValueFormatter)),
+		objectLabel: pipe('{Object}', PPString.makeWith(formatSet.otherValueFormatter)),
 		maxPrototypeDepth: 0,
-		circularLabel: pipe('(Circular)', PPFormattedString.makeWith(formatSet.otherValueFormatter)),
+		circularLabel: pipe('(Circular)', PPString.makeWith(formatSet.otherValueFormatter)),
 		propertySortOrder: PPValueOrder.byStringKey,
 		dedupeRecordProperties: false,
 		byPasser: PPByPasser.objectAsValue(formatSet),

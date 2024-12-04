@@ -1,5 +1,5 @@
 /* eslint-disable functional/no-expression-statements */
-import { ASFormat, ASFormattedString, ASFormatter } from '@parischap/ansi-styles';
+import { ASFormat, ASFormatter, ASString } from '@parischap/ansi-styles';
 import { MUtils } from '@parischap/effect-lib';
 import { Equal, pipe } from 'effect';
 import { describe, expect, it } from 'vitest';
@@ -45,7 +45,7 @@ describe('ASFormatter', () => {
 			ASFormat.Styled.makeFramed,
 			ASFormatter.fromFormat
 		);
-		expect(pipe('foo', ASFormatter.action(formatter), ASFormattedString.formatted)).toBe(
+		expect(pipe('foo', ASFormatter.action(formatter), ASString.formatted)).toBe(
 			'\x1b[33;51mfoo\x1b[0m'
 		);
 		expect(ASFormatter.id(formatter)).toBe('FramedYellow');

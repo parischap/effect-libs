@@ -44,8 +44,8 @@ import {
 	flow,
 	pipe
 } from 'effect';
-import * as PPFormattedString from './FormattedString.js';
 import type * as PPOption from './Option.js';
+import * as PPString from './String.js';
 import type * as PPStringifiedValue from './StringifiedValue.js';
 import type * as PPStringifiedValues from './StringifiedValues.js';
 
@@ -68,7 +68,7 @@ export interface Type<out V extends MTypes.Unknown>
 	/** Contains the result of calling Option.byPasser on `value` */
 	readonly byPassedValue: Option.Option<PPStringifiedValue.Type>;
 	/** The category of `value` */
-	readonly valueCategory: MTypes.Category;
+	readonly valueCategory: MTypes.Category.Type;
 
 	/**
 	 * Depth of `value` in the value to stringify: number of nested arrays and objects to open to
@@ -204,7 +204,7 @@ export interface Properties extends ReadonlyArray<All> {}
 export const empty: All = _make({
 	value: null as MTypes.Unknown,
 	byPassedValue: Option.none(),
-	valueCategory: MTypes.Category.Primitive,
+	valueCategory: MTypes.Category.Type.Primitive,
 	depth: 0,
 	protoDepth: 0,
 	key: '',
@@ -224,7 +224,7 @@ export const empty: All = _make({
  */
 export const isRecordWithFunctionValue: Predicate.Predicate<All> = MPredicate.struct({
 	stringKey: String.isNonEmpty,
-	valueCategory: MFunction.strictEquals(MTypes.Category.Function)
+	valueCategory: MFunction.strictEquals(MTypes.Category.Type.Function)
 });
 
 /**
@@ -234,7 +234,7 @@ export const isRecordWithFunctionValue: Predicate.Predicate<All> = MPredicate.st
  * @category Guards
  */
 export const isPrimitive = (self: All): self is PrimitiveType =>
-	self.valueCategory === MTypes.Category.Primitive;
+	self.valueCategory === MTypes.Category.Type.Primitive;
 
 /**
  * True if the `value` of `self` represents an array
@@ -243,7 +243,7 @@ export const isPrimitive = (self: All): self is PrimitiveType =>
  * @category Guards
  */
 export const isArray = (self: All): self is ArrayType =>
-	self.valueCategory === MTypes.Category.Array;
+	self.valueCategory === MTypes.Category.Type.Array;
 
 /**
  * True if the `value` of `self` represents a record
@@ -252,7 +252,7 @@ export const isArray = (self: All): self is ArrayType =>
  * @category Guards
  */
 export const isRecord = (self: All): self is RecordType =>
-	self.valueCategory !== MTypes.Category.Primitive;
+	self.valueCategory !== MTypes.Category.Type.Primitive;
 
 /**
  * True if the `value` of `self` is not null
@@ -488,12 +488,7 @@ export const stringify = (option: PPOption.Type): ((self: All) => PPStringifiedV
 								MMatch.tryFunction(Struct.get('byPassedValue')),
 								MMatch.when(
 									isPrimitive,
-									flow(
-										Struct.get('value'),
-										MString.fromPrimitive,
-										PPFormattedString.makeWith(),
-										Array.of
-									)
+									flow(Struct.get('value'), MString.fromPrimitive, PPString.makeWith(), Array.of)
 								),
 								MMatch.unsafeWhen(
 									isRecord,
@@ -508,7 +503,7 @@ export const stringify = (option: PPOption.Type): ((self: All) => PPStringifiedV
 												MMatch.when(isArray, () => option.arrayLabel),
 												MMatch.when(
 													MPredicate.struct({
-														valueCategory: MFunction.strictEquals(MTypes.Category.Function)
+														valueCategory: MFunction.strictEquals(MTypes.Category.Type.Function)
 													}),
 													() => option.functionLabel
 												),
@@ -517,7 +512,7 @@ export const stringify = (option: PPOption.Type): ((self: All) => PPStringifiedV
 											)
 										),
 										MMatch.when(Struct.get('isCycleStart'), () => Array.of(option.circularLabel)),
-										MMatch.orElse(() => Array.empty<PPFormattedString.Type>())
+										MMatch.orElse(() => Array.empty<PPString.Type>())
 									)
 								)
 							)

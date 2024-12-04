@@ -8,7 +8,7 @@
 import { MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
 import { Equal, Equivalence, Hash, Pipeable, Predicate, Struct } from 'effect';
 import * as ASContextFormatter from './ContextFormatter.js';
-import * as ASFormattedString from './FormattedString.js';
+import * as ASString from './String.js';
 
 export const moduleTag = '@parischap/ansi-styles/ContextShower/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
@@ -20,7 +20,7 @@ type TypeId = typeof TypeId;
  * @since 0.0.1
  * @category Models
  */
-export type ActionType<in C> = MTypes.OneArgFunction<C, ASFormattedString.Type>;
+export type ActionType<in C> = MTypes.OneArgFunction<C, ASString.Type>;
 
 /**
  * Type that represents a ContextFormatter
@@ -30,7 +30,7 @@ export type ActionType<in C> = MTypes.OneArgFunction<C, ASFormattedString.Type>;
  */
 export interface Type<in C> extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
 	/**
-	 * Name of this ContextFormatter instance. Useful for equality and debugging
+	 * Id of this ContextFormatter instance. Useful for equality and debugging
 	 *
 	 * @since 0.0.1
 	 */
