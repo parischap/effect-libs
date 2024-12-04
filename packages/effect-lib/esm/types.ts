@@ -481,37 +481,43 @@ export const isOneArgFunction = <F extends AnyFunction>(
 ): f is toOneArgFunction<F> => f.length === 1;
 
 /**
- * Possible categories of a Javscript value
- *
- * @since 0.5.0
- * @category Models
- */
-export enum Category {
-	Primitive = 0,
-	NonNullObject = 1,
-	Array = 2,
-	Function = 3
-}
-
-/**
- * Namesapce for the possible categories of a Javscript value
+ * Namespace for the possible categories of a Javascript value
  *
  * @since 0.5.0
  * @category Models
  */
 export namespace Category {
-	export const fromValue = (u: unknown): Category => {
+	/**
+	 * Type of a Category
+	 *
+	 * @since 0.5.0
+	 * @category Models
+	 */
+	export enum Type {
+		Primitive = 0,
+		NonNullObject = 1,
+		Array = 2,
+		Function = 3
+	}
+
+	/**
+	 * Constructor
+	 *
+	 * @since 0.5.0
+	 * @category Constructors
+	 */
+	export const fromValue = (u: unknown): Type => {
 		switch (typeof u) {
 			case 'function':
-				return Category.Function;
+				return Type.Function;
 			case 'object':
 				return (
-					u === null ? Category.Primitive
-					: Array.isArray(u) ? Category.Array
-					: Category.NonNullObject
+					u === null ? Type.Primitive
+					: Array.isArray(u) ? Type.Array
+					: Type.NonNullObject
 				);
 			default:
-				return Category.Primitive;
+				return Type.Primitive;
 		}
 	};
 }
