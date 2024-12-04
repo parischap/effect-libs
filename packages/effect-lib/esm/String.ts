@@ -181,19 +181,17 @@ export namespace SearchResult {
 export const fromNonNullablePrimitive = (u: MTypes.NonNullablePrimitive): string => u.toString();
 
 /**
- * Builds a string from a primitive value.
+ * Builds a string from a primitive value. `null` is converted to the string "null" and `undefined`
+ * to the string "undefined"
  *
  * @since 0.0.6
  * @category Constructors
  */
-export const fromPrimitive = (u: MTypes.Primitive): string =>
-	pipe(
-		u,
-		MMatch.make,
-		MMatch.when(MTypes.isNull, () => 'null'),
-		MMatch.when(MTypes.isUndefined, () => 'undefined'),
-		MMatch.orElse(fromNonNullablePrimitive)
-	);
+export const fromPrimitive: MTypes.OneArgFunction<MTypes.Primitive, string> = flow(
+	MMatch.make,
+	MMatch.when(MTypes.isNotNullable, fromNonNullablePrimitive),
+	MMatch.orElse((s) => `${s}`)
+);
 
 /**
  * Builds a string from a number using the passed `radix`.
