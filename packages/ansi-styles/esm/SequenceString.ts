@@ -6,9 +6,8 @@
  * @since 0.0.1
  */
 
-import { MMatch, MString, MTypes } from '@parischap/effect-lib';
+import { MString, MTypes } from '@parischap/effect-lib';
 import { Array, flow, Option, String } from 'effect';
-import * as ASCharacteristicIndex from './CharacteristicIndex.js';
 import * as ASSequence from './Sequence.js';
 
 /**
@@ -317,29 +316,3 @@ export const fgColorReset: Type = fromNonEmptySequence(ASSequence.fgColorReset);
  * @category Instances
  */
 export const bgColorReset: Type = fromNonEmptySequence(ASSequence.bgColorReset);
-
-/**
- * Builds the reset SequenceString of a Characteristic from its index
- *
- * @since 0.0.1
- * @category Constructors
- */
-export const resetFromCharacteristicIndex: MTypes.OneArgFunction<ASCharacteristicIndex.Type, Type> =
-	flow(
-		flow(
-			MMatch.make,
-			MMatch.whenIs(ASCharacteristicIndex.Type.Intensity, () => intensityReset),
-			MMatch.whenIs(ASCharacteristicIndex.Type.Italic, () => italicReset),
-			MMatch.whenIs(ASCharacteristicIndex.Type.Underlined, () => underlinedReset),
-			MMatch.whenIs(ASCharacteristicIndex.Type.StruckThrough, () => struckThroughReset),
-			MMatch.whenIs(ASCharacteristicIndex.Type.Overlined, () => overlinedReset),
-			MMatch.whenIs(ASCharacteristicIndex.Type.Inversed, () => inversedReset),
-			MMatch.whenIs(ASCharacteristicIndex.Type.Hidden, () => hiddenReset),
-			MMatch.whenIs(ASCharacteristicIndex.Type.Blink, () => blinkReset)
-		),
-		flow(
-			MMatch.whenIs(ASCharacteristicIndex.Type.FgColor, () => fgColorReset),
-			MMatch.whenIs(ASCharacteristicIndex.Type.BgColor, () => bgColorReset),
-			MMatch.exhaustive
-		)
-	);

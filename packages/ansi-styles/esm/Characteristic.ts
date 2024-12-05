@@ -6,7 +6,7 @@
  * @since 0.0.1
  */
 
-import { MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
+import { MArray, MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
 import {
 	Equal,
 	Equivalence,
@@ -138,6 +138,22 @@ export const byId: Order.Order<Type> = Order.mapInput(String.Order, Struct.get('
  * @category Orders
  */
 export const byIndexAndId: Order.Order<Type> = Order.combine(byIndex, byId);
+
+/**
+ * Merges two sorted iterables of Characteristic's using the byIndexAndId order
+ *
+ * @since 0.0.1
+ * @category Utils
+ */
+export const mergeByIndexAndId = MArray.mergeSorted(byIndexAndId);
+
+/**
+ * Substracts an iterable of Characteristic's from another one using the
+ *
+ * @since 0.0.1
+ * @category Utils
+ */
+export const differenceByIndex = MArray.differenceSorted(byIndex);
 
 /** Constructor */
 const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);

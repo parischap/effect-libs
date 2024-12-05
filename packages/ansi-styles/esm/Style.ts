@@ -1,9 +1,7 @@
 /**
- * A very simple implementation of the styles defined in the Select Graphic Rendition subset. Info
- * at
- * https://stackoverflow.com/questions/4842424/list-of-ansi-fgColor-escape-characteristicSequences.
- * If you need to, you can define more RGB instances with the RGB.make and RGB.Bg.make
- * constructors.
+ * A Style is the same as a BasicStyle (see BasicStyle.ts) but comes packaged with a String
+ * constructor (see String.ts) that is merely syntaxic sugar and plenty of instances. If you need
+ * to, you can define more RGB instances with the RGB.make and RGB.Bg.make constructors.
  *
  * @since 0.0.1
  */
@@ -14,17 +12,15 @@ import {
 	Equal,
 	Equivalence,
 	flow,
+	Function,
 	Hash,
-	HashSet,
 	Number,
-	Option,
 	pipe,
 	Pipeable,
-	Predicate,
-	SortedSet,
-	Struct
+	Predicate
 } from 'effect';
-import * as ASSequence from './Sequence.js';
+import * as ASBasicStyle from './BasicStyle.js';
+import * as ASCharacteristic from './Characteristic.js';
 import type * as ASString from './String.js';
 
 export const moduleTag = '@parischap/ansi-styles/Style/';
@@ -35,48 +31,18 @@ export interface Action {
 	(...args: ReadonlyArray<string | ASString.Type>): ASString.Type;
 }
 
-namespace OriginalColorOffset {
-	/** 8 ANSI original color offsets */
-	enum Type {
-		Black = 0,
-		Red = 1,
-		Green = 2,
-		Yellow = 3,
-		Blue = 4,
-		Magenta = 5,
-		Cyan = 6,
-		White = 7
-	}
-
-	export const toId: (self: Type) => string = flow(
-		MMatch.make,
-		flow(
-			MMatch.whenIs(Type.Black, () => 'Black'),
-			MMatch.whenIs(Type.Red, () => 'Red'),
-			MMatch.whenIs(Type.Green, () => 'Green'),
-			MMatch.whenIs(Type.Yellow, () => 'Yellow'),
-			MMatch.whenIs(Type.Blue, () => 'Blue'),
-			MMatch.whenIs(Type.Magenta, () => 'Magenta'),
-			MMatch.whenIs(Type.Cyan, () => 'Cyan'),
-			MMatch.whenIs(Type.White, () => 'White')
-		),
-		MMatch.exhaustive
-	);
-}
 /**
  * Type that represents a Style
  *
  * @since 0.0.1
  * @category Models
  */
-export interface Type extends Action, Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
-	/**
-	 * Characteristics of this style
-	 *
-	 * @since 0.0.1
-	 */
-	readonly characteristics: ASCharacteristics.Type;
-
+export interface Type
+	extends Action,
+		ASBasicStyle.Type,
+		Equal.Equal,
+		MInspectable.Inspectable,
+		Pipeable.Pipeable {
 	/** @internal */
 	readonly [TypeId]: TypeId;
 }
@@ -112,240 +78,157 @@ const base: MTypes.Proto<Type> = {
 	...MPipeable.BaseProto
 };
 
+function _action(this: Type, ...args: ReadonlyArray<string | ASString.Type>): ASString.Type {
+	return 0 as never;
+}
+
 /** Constructor */
-const _make = ({
-	id,
-	characteristicIds,
-	characteristicSequences,
-	action
-}: MTypes.Data<Type> & { readonly action: Action }): Type => {
-	return Object.assign(MFunction.clone(action), {
+const _make = ({ id, characteristics, addSetSequenceString }: MTypes.Data<Type>): Type => {
+	return Object.assign(MFunction.clone(_action), {
 		id,
-		characteristicIds,
-		characteristicSequences,
+		characteristics,
+		addSetSequenceString,
 		...base
 	});
 };
 
-/** Constructor */
-const _fromIdsAndSequences = ({
-	characteristicIds,
-	characteristicSequences
-}: Omit<MTypes.Data<Type>, 'id'>): Type => {
-	return _make({
-		id: pipe(
-			characteristicIds,
-			SortedSet.values,
-			Array.fromIterable,
-			Array.map(Characteristic.value),
-			Array.join('')
+/** Constructor from a single Characteristic */
+export const _fromCharacteritic = (characteristic: ASCharacteristic.Type): Type =>
+	_make({
+		id: characteristic.id,
+		characteristics: Array.of(characteristic),
+		addSetSequenceString: MString.prepend(characteristic.sequenceString)
+	});
+
+/**
+ * None Style instance, i.e Style that performs no styling
+ *
+ * @since 0.0.1
+ * @category Instances
+ */
+export const none: Type = _make({
+	id: 'None',
+	characteristics: Array.empty(),
+	addSetSequenceString: Function.identity
+});
+
+/**
+ * Bold Style instance
+ *
+ * @since 0.0.1
+ * @category Instances
+ */
+export const bold: Type = _fromCharacteritic(ASCharacteristic.bold);
+
+/**
+ * Dim Style instance
+ *
+ * @since 0.0.1
+ * @category Instances
+ */
+export const dim: Type = _fromCharacteritic(ASCharacteristic.dim);
+
+/**
+ * Italic Style instance
+ *
+ * @since 0.0.1
+ * @category Instances
+ */
+export const italic: Type = _fromCharacteritic(ASCharacteristic.italic);
+
+/**
+ * Underlined Style instance
+ *
+ * @since 0.0.1
+ * @category Instances
+ */
+export const underlined: Type = _fromCharacteritic(ASCharacteristic.underlined);
+
+/**
+ * Struck-through Style instance
+ *
+ * @since 0.0.1
+ * @category Instances
+ */
+export const struckThrough: Type = _fromCharacteritic(ASCharacteristic.struckThrough);
+
+/**
+ * Overlined Style instance
+ *
+ * @since 0.0.1
+ * @category Instances
+ */
+export const overlined: Type = _fromCharacteritic(ASCharacteristic.overlined);
+
+/**
+ * Inversed Style instance
+ *
+ * @since 0.0.1
+ * @category Instances
+ */
+export const inversed: Type = _fromCharacteritic(ASCharacteristic.inversed);
+
+/**
+ * Hidden Style instance
+ *
+ * @since 0.0.1
+ * @category Instances
+ */
+export const hidden: Type = _fromCharacteritic(ASCharacteristic.hidden);
+
+/**
+ * Slow blink Style instance
+ *
+ * @since 0.0.1
+ * @category Instances
+ */
+export const slowBlink: Type = _fromCharacteritic(ASCharacteristic.slowBlink);
+
+/**
+ * Fast blink Style instance
+ *
+ * @since 0.0.1
+ * @category Instances
+ */
+export const fastBlink: Type = _fromCharacteritic(ASCharacteristic.fastBlink);
+
+namespace OriginalColorOffset {
+	/** 8 ANSI original color offsets */
+	export enum Type {
+		Black = 0,
+		Red = 1,
+		Green = 2,
+		Yellow = 3,
+		Blue = 4,
+		Magenta = 5,
+		Cyan = 6,
+		White = 7
+	}
+
+	export const toId: MTypes.OneArgFunction<Type, string> = flow(
+		MMatch.make,
+		flow(
+			MMatch.whenIs(Type.Black, () => 'Black'),
+			MMatch.whenIs(Type.Red, () => 'Red'),
+			MMatch.whenIs(Type.Green, () => 'Green'),
+			MMatch.whenIs(Type.Yellow, () => 'Yellow'),
+			MMatch.whenIs(Type.Blue, () => 'Blue'),
+			MMatch.whenIs(Type.Magenta, () => 'Magenta'),
+			MMatch.whenIs(Type.Cyan, () => 'Cyan'),
+			MMatch.whenIs(Type.White, () => 'White')
 		),
-		characteristicIds,
-		characteristicSequences,
-		action: pipe(
-			characteristicSequences,
-			HashSet.values,
-			Array.fromIterable,
-			Array.map(Characteristic.value),
-			(z) => z
-		)
-	});
-};
+		MMatch.exhaustive
+	);
 
-/** Constructor */
-const _fromIndexIdAndSequence = ({
-	characteristic,
-	id,
-	sequence
-}: {
-	readonly characteristic: Characteristic.Index;
-	readonly id: string;
-	readonly sequence: ASSequence.Type;
-}): Type => {
-	return _fromIdsAndSequences({
-		characteristicIds: pipe(
-			Characteristic.make({ index: characteristic, value: id }),
-			SortedSet.make(Characteristic.byIndex)
-		),
-		characteristicSequences: HashSet.make(
-			Characteristic.make({ index: characteristic, value: sequence })
-		)
-	});
-};
+	export const withId = (self: Type) => ({ offset: self, id: toId(self) });
+}
 
-/** Constructor */
-const _fromColorOffset = (offset: OriginalColorOffset): Type =>
-	_fromIndexIdAndSequence({
-		characteristic: Characteristic.Index.FgColor,
-		id: OriginalColorOffset.id(offset),
-		sequence: ASSequence.originalFgStandardColor(offset)
-	});
-
-/**
- * Gets the id of `self`
- *
- * @since 0.0.1
- * @category Destructors
- */
-export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
-
-/**
- * Gets the characteristicIds of `self`
- *
- * @since 0.0.1
- * @category Destructors
- */
-export const characteristicIds: MTypes.OneArgFunction<
-	Type,
-	SortedSet.SortedSet<Characteristic.Id>
-> = Struct.get('characteristicIds');
-
-/**
- * Gets the characteristicSequences of `self`
- *
- * @since 0.0.1
- * @category Destructors
- */
-export const characteristicSequences: MTypes.OneArgFunction<
-	Type,
-	HashSet.HashSet<Characteristic.Sequence>
-> = Struct.get('characteristicSequences');
-
-export const combine = (...formats: ReadonlyArray<Type>): Type =>
-	_fromIdsAndSequences({
-		characteristicIds: pipe(
-			formats,
-			Array.map(characteristicIds),
-			Array.reduce(SortedSet.empty<Characteristic.Id>(Characteristic.byIndex), (acc, set) =>
-				SortedSet.union(acc, set)
-			)
-		),
-		characteristicSequences: pipe(
-			formats,
-			Array.map(characteristicSequences),
-			Array.reduce(HashSet.empty<Characteristic.Sequence>(), (acc, set) => HashSet.union(acc, set))
-		)
-	});
-
-/**
- * Bold style instance
- *
- * @since 0.0.1
- * @category Instances
- */
-export const bold = _fromIndexIdAndSequence({
-	characteristic: Characteristic.Index.Intensity,
-	id: 'Bold',
-	sequence: ASSequence.bold
-});
-
-/**
- * Dim style instance
- *
- * @since 0.0.1
- * @category Instances
- */
-export const dim = _fromIndexIdAndSequence({
-	characteristic: Characteristic.Index.Intensity,
-	id: 'Dim',
-	sequence: ASSequence.dim
-});
-
-/**
- * Italic style instance
- *
- * @since 0.0.1
- * @category Instances
- */
-export const italic = _fromIndexIdAndSequence({
-	characteristic: Characteristic.Index.Italic,
-	id: 'Italic',
-	sequence: ASSequence.italic
-});
-
-/**
- * Underlined style instance
- *
- * @since 0.0.1
- * @category Instances
- */
-export const underlined = _fromIndexIdAndSequence({
-	characteristic: Characteristic.Index.Underlined,
-	id: 'Underlined',
-	sequence: ASSequence.underlined
-});
-
-/**
- * Strick-through style instance
- *
- * @since 0.0.1
- * @category Instances
- */
-export const struckThrough = _fromIndexIdAndSequence({
-	characteristic: Characteristic.Index.StruckThrough,
-	id: 'StruckThrough',
-	sequence: ASSequence.struckThrough
-});
-
-/**
- * Overlined style instance
- *
- * @since 0.0.1
- * @category Instances
- */
-export const overlined = _fromIndexIdAndSequence({
-	characteristic: Characteristic.Index.Overlined,
-	id: 'Overlined',
-	sequence: ASSequence.overlined
-});
-
-/**
- * Inversed style instance
- *
- * @since 0.0.1
- * @category Instances
- */
-export const inversed = _fromIndexIdAndSequence({
-	characteristic: Characteristic.Index.Inversed,
-	id: 'Inversed',
-	sequence: ASSequence.inversed
-});
-
-/**
- * Hide style instance
- *
- * @since 0.0.1
- * @category Instances
- */
-export const hidden = _fromIndexIdAndSequence({
-	characteristic: Characteristic.Index.Hide,
-	id: 'Hide',
-	sequence: ASSequence.hidden
-});
-
-/**
- * Slow blinking style instance
- *
- * @since 0.0.1
- * @category Instances
- */
-export const slowBlink = _fromIndexIdAndSequence({
-	characteristic: Characteristic.Index.Blinking,
-	id: 'SlowBlink',
-	sequence: ASSequence.slowBlink
-});
-
-/**
- * Fast blinking style instance
- *
- * @since 0.0.1
- * @category Instances
- */
-export const fastBlink = _fromIndexIdAndSequence({
-	characteristic: Characteristic.Index.Blinking,
-	id: 'FastBlink',
-	sequence: ASSequence.fastBlink
-});
+/** Standard foreground color Style instance maker */
+const _fromOriginalColorOffset: MTypes.OneArgFunction<OriginalColorOffset.Type, Type> = flow(
+	OriginalColorOffset.withId,
+	ASCharacteristic.standardFgColor,
+	_fromCharacteritic
+);
 
 /**
  * Original black color style instance
@@ -353,7 +236,7 @@ export const fastBlink = _fromIndexIdAndSequence({
  * @since 0.0.1
  * @category Original instances
  */
-export const black: Type = _fromColorOffset(OriginalColorOffset.Black);
+export const black: Type = _fromOriginalColorOffset(OriginalColorOffset.Type.Black);
 
 /**
  * Original red color style instance
@@ -361,7 +244,7 @@ export const black: Type = _fromColorOffset(OriginalColorOffset.Black);
  * @since 0.0.1
  * @category Original instances
  */
-export const red: Type = _fromColorOffset(OriginalColorOffset.Red);
+export const red: Type = _fromOriginalColorOffset(OriginalColorOffset.Type.Red);
 
 /**
  * Original green color style instance
@@ -369,7 +252,7 @@ export const red: Type = _fromColorOffset(OriginalColorOffset.Red);
  * @since 0.0.1
  * @category Original instances
  */
-export const green: Type = _fromColorOffset(OriginalColorOffset.Green);
+export const green: Type = _fromOriginalColorOffset(OriginalColorOffset.Type.Green);
 
 /**
  * Original yellow color style instance
@@ -377,7 +260,7 @@ export const green: Type = _fromColorOffset(OriginalColorOffset.Green);
  * @since 0.0.1
  * @category Original instances
  */
-export const yellow: Type = _fromColorOffset(OriginalColorOffset.Yellow);
+export const yellow: Type = _fromOriginalColorOffset(OriginalColorOffset.Type.Yellow);
 
 /**
  * Original blue color style instance
@@ -385,7 +268,7 @@ export const yellow: Type = _fromColorOffset(OriginalColorOffset.Yellow);
  * @since 0.0.1
  * @category Original instances
  */
-export const blue: Type = _fromColorOffset(OriginalColorOffset.Blue);
+export const blue: Type = _fromOriginalColorOffset(OriginalColorOffset.Type.Blue);
 
 /**
  * Original magenta color style instance
@@ -393,7 +276,7 @@ export const blue: Type = _fromColorOffset(OriginalColorOffset.Blue);
  * @since 0.0.1
  * @category Original instances
  */
-export const magenta: Type = _fromColorOffset(OriginalColorOffset.Magenta);
+export const magenta: Type = _fromOriginalColorOffset(OriginalColorOffset.Type.Magenta);
 
 /**
  * Original cyan color style instance
@@ -401,7 +284,7 @@ export const magenta: Type = _fromColorOffset(OriginalColorOffset.Magenta);
  * @since 0.0.1
  * @category Original instances
  */
-export const cyan: Type = _fromColorOffset(OriginalColorOffset.Cyan);
+export const cyan: Type = _fromOriginalColorOffset(OriginalColorOffset.Type.Cyan);
 
 /**
  * Original white color style instance
@@ -409,7 +292,7 @@ export const cyan: Type = _fromColorOffset(OriginalColorOffset.Cyan);
  * @since 0.0.1
  * @category Original instances
  */
-export const white: Type = _fromColorOffset(OriginalColorOffset.White);
+export const white: Type = _fromOriginalColorOffset(OriginalColorOffset.Type.White);
 
 /**
  * Namespace for bright original colors
@@ -418,13 +301,12 @@ export const white: Type = _fromColorOffset(OriginalColorOffset.White);
  * @category Models
  */
 export namespace Bright {
-	/** Constructor */
-	const _fromColorOffset = (offset: OriginalColorOffset): Type =>
-		_fromIndexIdAndSequence({
-			characteristic: Characteristic.Index.FgColor,
-			id: 'Bright' + OriginalColorOffset.id(offset),
-			sequence: ASSequence.originalFgBrightColor(offset)
-		});
+	/** Bright foreground color Style instance maker */
+	const _fromOriginalColorOffset: MTypes.OneArgFunction<OriginalColorOffset.Type, Type> = flow(
+		OriginalColorOffset.withId,
+		ASCharacteristic.brightFgColor,
+		_fromCharacteritic
+	);
 
 	/**
 	 * Original bright black color style instance
@@ -432,7 +314,7 @@ export namespace Bright {
 	 * @since 0.0.1
 	 * @category Original instances
 	 */
-	export const black: Type = _fromColorOffset(OriginalColorOffset.Black);
+	export const black: Type = _fromOriginalColorOffset(OriginalColorOffset.Type.Black);
 
 	/**
 	 * Original bright red color style instance
@@ -440,7 +322,7 @@ export namespace Bright {
 	 * @since 0.0.1
 	 * @category Original instances
 	 */
-	export const red: Type = _fromColorOffset(OriginalColorOffset.Red);
+	export const red: Type = _fromOriginalColorOffset(OriginalColorOffset.Type.Red);
 
 	/**
 	 * Original bright green color style instance
@@ -448,7 +330,7 @@ export namespace Bright {
 	 * @since 0.0.1
 	 * @category Original instances
 	 */
-	export const green: Type = _fromColorOffset(OriginalColorOffset.Green);
+	export const green: Type = _fromOriginalColorOffset(OriginalColorOffset.Type.Green);
 
 	/**
 	 * Original bright yellow color style instance
@@ -456,7 +338,7 @@ export namespace Bright {
 	 * @since 0.0.1
 	 * @category Original instances
 	 */
-	export const yellow: Type = _fromColorOffset(OriginalColorOffset.Yellow);
+	export const yellow: Type = _fromOriginalColorOffset(OriginalColorOffset.Type.Yellow);
 
 	/**
 	 * Original bright blue color style instance
@@ -464,7 +346,7 @@ export namespace Bright {
 	 * @since 0.0.1
 	 * @category Original instances
 	 */
-	export const blue: Type = _fromColorOffset(OriginalColorOffset.Blue);
+	export const blue: Type = _fromOriginalColorOffset(OriginalColorOffset.Type.Blue);
 
 	/**
 	 * Original bright magenta color style instance
@@ -472,7 +354,7 @@ export namespace Bright {
 	 * @since 0.0.1
 	 * @category Original instances
 	 */
-	export const magenta: Type = _fromColorOffset(OriginalColorOffset.Magenta);
+	export const magenta: Type = _fromOriginalColorOffset(OriginalColorOffset.Type.Magenta);
 
 	/**
 	 * Original bright cyan color style instance
@@ -480,7 +362,7 @@ export namespace Bright {
 	 * @since 0.0.1
 	 * @category Original instances
 	 */
-	export const cyan: Type = _fromColorOffset(OriginalColorOffset.Cyan);
+	export const cyan: Type = _fromOriginalColorOffset(OriginalColorOffset.Type.Cyan);
 
 	/**
 	 * Original bright white color style instance
@@ -488,7 +370,7 @@ export namespace Bright {
 	 * @since 0.0.1
 	 * @category Original instances
 	 */
-	export const white: Type = _fromColorOffset(OriginalColorOffset.White);
+	export const white: Type = _fromOriginalColorOffset(OriginalColorOffset.Type.White);
 }
 
 /**
@@ -498,13 +380,12 @@ export namespace Bright {
  * @category Models
  */
 export namespace Bg {
-	/** Constructor */
-	const _fromColorOffset = (offset: OriginalColorOffset): Type =>
-		_fromIndexIdAndSequence({
-			characteristic: Characteristic.Index.BgColor,
-			id: 'Bg' + OriginalColorOffset.id(offset),
-			sequence: ASSequence.originalBgStandardColor(offset)
-		});
+	/** Standard background color Style instance maker */
+	const _fromOriginalColorOffset: MTypes.OneArgFunction<OriginalColorOffset.Type, Type> = flow(
+		OriginalColorOffset.withId,
+		ASCharacteristic.standardBgColor,
+		_fromCharacteritic
+	);
 
 	/**
 	 * Original black color style instance
@@ -512,7 +393,7 @@ export namespace Bg {
 	 * @since 0.0.1
 	 * @category Original instances
 	 */
-	export const black: Type = _fromColorOffset(OriginalColorOffset.Black);
+	export const black: Type = _fromOriginalColorOffset(OriginalColorOffset.Type.Black);
 
 	/**
 	 * Original red color style instance
@@ -520,7 +401,7 @@ export namespace Bg {
 	 * @since 0.0.1
 	 * @category Original instances
 	 */
-	export const red: Type = _fromColorOffset(OriginalColorOffset.Red);
+	export const red: Type = _fromOriginalColorOffset(OriginalColorOffset.Type.Red);
 
 	/**
 	 * Original green color style instance
@@ -528,7 +409,7 @@ export namespace Bg {
 	 * @since 0.0.1
 	 * @category Original instances
 	 */
-	export const green: Type = _fromColorOffset(OriginalColorOffset.Green);
+	export const green: Type = _fromOriginalColorOffset(OriginalColorOffset.Type.Green);
 
 	/**
 	 * Original yellow color style instance
@@ -536,7 +417,7 @@ export namespace Bg {
 	 * @since 0.0.1
 	 * @category Original instances
 	 */
-	export const yellow: Type = _fromColorOffset(OriginalColorOffset.Yellow);
+	export const yellow: Type = _fromOriginalColorOffset(OriginalColorOffset.Type.Yellow);
 
 	/**
 	 * Original blue color style instance
@@ -544,7 +425,7 @@ export namespace Bg {
 	 * @since 0.0.1
 	 * @category Original instances
 	 */
-	export const blue: Type = _fromColorOffset(OriginalColorOffset.Blue);
+	export const blue: Type = _fromOriginalColorOffset(OriginalColorOffset.Type.Blue);
 
 	/**
 	 * Original magenta color style instance
@@ -552,7 +433,7 @@ export namespace Bg {
 	 * @since 0.0.1
 	 * @category Original instances
 	 */
-	export const magenta: Type = _fromColorOffset(OriginalColorOffset.Magenta);
+	export const magenta: Type = _fromOriginalColorOffset(OriginalColorOffset.Type.Magenta);
 
 	/**
 	 * Original cyan color style instance
@@ -560,7 +441,7 @@ export namespace Bg {
 	 * @since 0.0.1
 	 * @category Original instances
 	 */
-	export const cyan: Type = _fromColorOffset(OriginalColorOffset.Cyan);
+	export const cyan: Type = _fromOriginalColorOffset(OriginalColorOffset.Type.Cyan);
 
 	/**
 	 * Original white color style instance
@@ -568,22 +449,21 @@ export namespace Bg {
 	 * @since 0.0.1
 	 * @category Original instances
 	 */
-	export const white: Type = _fromColorOffset(OriginalColorOffset.White);
+	export const white: Type = _fromOriginalColorOffset(OriginalColorOffset.Type.White);
 
 	/**
-	 * Namespace for bright original colors used as bckground colors
+	 * Namespace for bright original colors used as background colors
 	 *
 	 * @since 0.0.1
 	 * @category Models
 	 */
 	export namespace Bright {
-		/** Constructor */
-		const _fromColorOffset = (offset: OriginalColorOffset): Type =>
-			_fromIndexIdAndSequence({
-				characteristic: Characteristic.Index.BgColor,
-				id: 'BgBright' + OriginalColorOffset.id(offset),
-				sequence: ASSequence.originalBgBrightColor(offset)
-			});
+		/** Bright background color Style instance maker */
+		const _fromOriginalColorOffset: MTypes.OneArgFunction<OriginalColorOffset.Type, Type> = flow(
+			OriginalColorOffset.withId,
+			ASCharacteristic.brightBgColor,
+			_fromCharacteritic
+		);
 
 		/**
 		 * Original bright black color style instance
@@ -591,7 +471,7 @@ export namespace Bg {
 		 * @since 0.0.1
 		 * @category Original instances
 		 */
-		export const black: Type = _fromColorOffset(OriginalColorOffset.Black);
+		export const black: Type = _fromOriginalColorOffset(OriginalColorOffset.Type.Black);
 
 		/**
 		 * Original bright red color style instance
@@ -599,7 +479,7 @@ export namespace Bg {
 		 * @since 0.0.1
 		 * @category Original instances
 		 */
-		export const red: Type = _fromColorOffset(OriginalColorOffset.Red);
+		export const red: Type = _fromOriginalColorOffset(OriginalColorOffset.Type.Red);
 
 		/**
 		 * Original bright green color style instance
@@ -607,7 +487,7 @@ export namespace Bg {
 		 * @since 0.0.1
 		 * @category Original instances
 		 */
-		export const green: Type = _fromColorOffset(OriginalColorOffset.Green);
+		export const green: Type = _fromOriginalColorOffset(OriginalColorOffset.Type.Green);
 
 		/**
 		 * Original bright yellow color style instance
@@ -615,7 +495,7 @@ export namespace Bg {
 		 * @since 0.0.1
 		 * @category Original instances
 		 */
-		export const yellow: Type = _fromColorOffset(OriginalColorOffset.Yellow);
+		export const yellow: Type = _fromOriginalColorOffset(OriginalColorOffset.Type.Yellow);
 
 		/**
 		 * Original bright blue color style instance
@@ -623,7 +503,7 @@ export namespace Bg {
 		 * @since 0.0.1
 		 * @category Original instances
 		 */
-		export const blue: Type = _fromColorOffset(OriginalColorOffset.Blue);
+		export const blue: Type = _fromOriginalColorOffset(OriginalColorOffset.Type.Blue);
 
 		/**
 		 * Original bright magenta color style instance
@@ -631,7 +511,7 @@ export namespace Bg {
 		 * @since 0.0.1
 		 * @category Original instances
 		 */
-		export const magenta: Type = _fromColorOffset(OriginalColorOffset.Magenta);
+		export const magenta: Type = _fromOriginalColorOffset(OriginalColorOffset.Type.Magenta);
 
 		/**
 		 * Original bright cyan color style instance
@@ -639,7 +519,7 @@ export namespace Bg {
 		 * @since 0.0.1
 		 * @category Original instances
 		 */
-		export const cyan: Type = _fromColorOffset(OriginalColorOffset.Cyan);
+		export const cyan: Type = _fromOriginalColorOffset(OriginalColorOffset.Type.Cyan);
 
 		/**
 		 * Original bright white color style instance
@@ -647,7 +527,7 @@ export namespace Bg {
 		 * @since 0.0.1
 		 * @category Original instances
 		 */
-		export const white: Type = _fromColorOffset(OriginalColorOffset.White);
+		export const white: Type = _fromOriginalColorOffset(OriginalColorOffset.Type.White);
 	}
 }
 
@@ -658,616 +538,612 @@ export namespace Bg {
  * @category Models
  */
 export namespace EightBit {
-	/**
-	 * EightBit color codes
-	 *
-	 * @since 0.0.1
-	 * @category Models
-	 */
-	export enum Code {
-		Black = 0,
-		Maroon = 1,
-		Green = 2,
-		Olive = 3,
-		Navy = 4,
-		Purple_1 = 5,
-		Teal = 6,
-		Silver = 7,
-		Grey = 8,
-		Red = 9,
-		Lime = 10,
-		Yellow = 11,
-		Blue = 12,
-		Fuchsia = 13,
-		Aqua = 14,
-		White = 15,
-		Grey0 = 16,
-		NavyBlue = 17,
-		DarkBlue = 18,
-		Blue3_1 = 19,
-		Blue3_2 = 20,
-		Blue1 = 21,
-		DarkGreen = 22,
-		DeepSkyBlue4_1 = 23,
-		DeepSkyBlue4_2 = 24,
-		DeepSkyBlue4_3 = 25,
-		DodgerBlue3 = 26,
-		DodgerBlue2 = 27,
-		Green4 = 28,
-		SpringGreen4 = 29,
-		Turquoise4 = 30,
-		DeepSkyBlue3_1 = 31,
-		DeepSkyBlue3_2 = 32,
-		DodgerBlue1 = 33,
-		Green3_1 = 34,
-		SpringGreen3_1 = 35,
-		DarkCyan = 36,
-		LightSeaGreen = 37,
-		DeepSkyBlue2 = 38,
-		DeepSkyBlue1 = 39,
-		Green3_2 = 40,
-		SpringGreen3_2 = 41,
-		SpringGreen2_1 = 42,
-		Cyan3 = 43,
-		DarkTurquoise = 44,
-		Turquoise2 = 45,
-		Green1 = 46,
-		SpringGreen2_2 = 47,
-		SpringGreen1 = 48,
-		MediumSpringGreen = 49,
-		Cyan2 = 50,
-		Cyan1 = 51,
-		DarkRed_1 = 52,
-		DeepPink4_1 = 53,
-		Purple4_1 = 54,
-		Purple4_2 = 55,
-		Purple3 = 56,
-		BlueViolet = 57,
-		Orange4_1 = 58,
-		Grey37 = 59,
-		MediumPurple4 = 60,
-		SlateBlue3_1 = 61,
-		SlateBlue3_2 = 62,
-		RoyalBlue1 = 63,
-		Chartreuse4 = 64,
-		DarkSeaGreen4_1 = 65,
-		PaleTurquoise4 = 66,
-		SteelBlue = 67,
-		SteelBlue3 = 68,
-		CornflowerBlue = 69,
-		Chartreuse3_1 = 70,
-		DarkSeaGreen4_2 = 71,
-		CadetBlue_1 = 72,
-		CadetBlue_2 = 73,
-		SkyBlue3 = 74,
-		SteelBlue1_1 = 75,
-		Chartreuse3_2 = 76,
-		PaleGreen3_1 = 77,
-		SeaGreen3 = 78,
-		Aquamarine3 = 79,
-		MediumTurquoise = 80,
-		SteelBlue1_2 = 81,
-		Chartreuse2_1 = 82,
-		SeaGreen2 = 83,
-		SeaGreen1_1 = 84,
-		SeaGreen1_2 = 85,
-		Aquamarine1_1 = 86,
-		DarkSlateGray2 = 87,
-		DarkRed_2 = 88,
-		DeepPink4_2 = 89,
-		DarkMagenta_1 = 90,
-		DarkMagenta_2 = 91,
-		DarkViolet_1 = 92,
-		Purple_2 = 93,
-		Orange4_2 = 94,
-		LightPink4 = 95,
-		Plum4 = 96,
-		MediumPurple3_1 = 97,
-		MediumPurple3_2 = 98,
-		SlateBlue1 = 99,
-		Yellow4_1 = 100,
-		Wheat4 = 101,
-		Grey53 = 102,
-		LightSlateGrey = 103,
-		MediumPurple = 104,
-		LightSlateBlue = 105,
-		Yellow4_2 = 106,
-		DarkOliveGreen3_1 = 107,
-		DarkSeaGreen = 108,
-		LightSkyBlue3_1 = 109,
-		LightSkyBlue3_2 = 110,
-		SkyBlue2 = 111,
-		Chartreuse2_2 = 112,
-		DarkOliveGreen3_2 = 113,
-		PaleGreen3_2 = 114,
-		DarkSeaGreen3_1 = 115,
-		DarkSlateGray3 = 116,
-		SkyBlue1 = 117,
-		Chartreuse1 = 118,
-		LightGreen_1 = 119,
-		LightGreen_2 = 120,
-		PaleGreen1_1 = 121,
-		Aquamarine1_2 = 122,
-		DarkSlateGray1 = 123,
-		Red3_1 = 124,
-		DeepPink4_3 = 125,
-		MediumVioletRed = 126,
-		Magenta3_1 = 127,
-		DarkViolet_2 = 128,
-		Purple_3 = 129,
-		DarkOrange3_1 = 130,
-		IndianRed_1 = 131,
-		HotPink3_1 = 132,
-		MediumOrchid3 = 133,
-		MediumOrchid = 134,
-		MediumPurple2_1 = 135,
-		DarkGoldenrod = 136,
-		LightSalmon3_1 = 137,
-		RosyBrown = 138,
-		Grey63 = 139,
-		MediumPurple2_2 = 140,
-		MediumPurple1 = 141,
-		Gold3_1 = 142,
-		DarkKhaki = 143,
-		NavajoWhite3 = 144,
-		Grey69 = 145,
-		LightSteelBlue3 = 146,
-		LightSteelBlue = 147,
-		Yellow3_1 = 148,
-		DarkOliveGreen3_3 = 149,
-		DarkSeaGreen3_2 = 150,
-		DarkSeaGreen2_1 = 151,
-		LightCyan3 = 152,
-		LightSkyBlue1 = 153,
-		GreenYellow = 154,
-		DarkOliveGreen2 = 155,
-		PaleGreen1_2 = 156,
-		DarkSeaGreen2_2 = 157,
-		DarkSeaGreen1_1 = 158,
-		PaleTurquoise1 = 159,
-		Red3_2 = 160,
-		DeepPink3_1 = 161,
-		DeepPink3_2 = 162,
-		Magenta3_2 = 163,
-		Magenta3_3 = 164,
-		Magenta2_1 = 165,
-		DarkOrange3_2 = 166,
-		IndianRed_2 = 167,
-		HotPink3_2 = 168,
-		HotPink2 = 169,
-		Orchid = 170,
-		MediumOrchid1_1 = 171,
-		Orange3 = 172,
-		LightSalmon3_2 = 173,
-		LightPink3 = 174,
-		Pink3 = 175,
-		Plum3 = 176,
-		Violet = 177,
-		Gold3_2 = 178,
-		LightGoldenrod3 = 179,
-		Tan = 180,
-		MistyRose3 = 181,
-		Thistle3 = 182,
-		Plum2 = 183,
-		Yellow3_2 = 184,
-		Khaki3 = 185,
-		LightGoldenrod2_1 = 186,
-		LightYellow3 = 187,
-		Grey84 = 188,
-		LightSteelBlue1 = 189,
-		Yellow2 = 190,
-		DarkOliveGreen1_1 = 191,
-		DarkOliveGreen1_2 = 192,
-		DarkSeaGreen1_2 = 193,
-		Honeydew2 = 194,
-		LightCyan1 = 195,
-		Red1 = 196,
-		DeepPink2 = 197,
-		DeepPink1_1 = 198,
-		DeepPink1_2 = 199,
-		Magenta2_2 = 200,
-		Magenta1 = 201,
-		OrangeRed1 = 202,
-		IndianRed1_1 = 203,
-		IndianRed1_2 = 204,
-		HotPink_1 = 205,
-		HotPink_2 = 206,
-		MediumOrchid1_2 = 207,
-		DarkOrange = 208,
-		Salmon1 = 209,
-		LightCoral = 210,
-		PaleVioletRed1 = 211,
-		Orchid2 = 212,
-		Orchid1 = 213,
-		Orange1 = 214,
-		SandyBrown = 215,
-		LightSalmon1 = 216,
-		LightPink1 = 217,
-		Pink1 = 218,
-		Plum1 = 219,
-		Gold1 = 220,
-		LightGoldenrod2_2 = 221,
-		LightGoldenrod2_3 = 222,
-		NavajoWhite1 = 223,
-		MistyRose1 = 224,
-		Thistle1 = 225,
-		Yellow1 = 226,
-		LightGoldenrod1 = 227,
-		Khaki1 = 228,
-		Wheat1 = 229,
-		Cornsilk1 = 230,
-		Grey100 = 231,
-		Grey3 = 232,
-		Grey7 = 233,
-		Grey11 = 234,
-		Grey15 = 235,
-		Grey19 = 236,
-		Grey23 = 237,
-		Grey27 = 238,
-		Grey30 = 239,
-		Grey35 = 240,
-		Grey39 = 241,
-		Grey42 = 242,
-		Grey46 = 243,
-		Grey50 = 244,
-		Grey54 = 245,
-		Grey58 = 246,
-		Grey62 = 247,
-		Grey66 = 248,
-		Grey70 = 249,
-		Grey74 = 250,
-		Grey78 = 251,
-		Grey82 = 252,
-		Grey85 = 253,
-		Grey89 = 254,
-		Grey93 = 255
-	}
+	/** Namespace for eight-bit color codes */
+	namespace Code {
+		/**
+		 * EightBit color codes
+		 *
+		 * @since 0.0.1
+		 * @category Models
+		 */
+		export enum Type {
+			Black = 0,
+			Maroon = 1,
+			Green = 2,
+			Olive = 3,
+			Navy = 4,
+			Purple_1 = 5,
+			Teal = 6,
+			Silver = 7,
+			Grey = 8,
+			Red = 9,
+			Lime = 10,
+			Yellow = 11,
+			Blue = 12,
+			Fuchsia = 13,
+			Aqua = 14,
+			White = 15,
+			Grey0 = 16,
+			NavyBlue = 17,
+			DarkBlue = 18,
+			Blue3_1 = 19,
+			Blue3_2 = 20,
+			Blue1 = 21,
+			DarkGreen = 22,
+			DeepSkyBlue4_1 = 23,
+			DeepSkyBlue4_2 = 24,
+			DeepSkyBlue4_3 = 25,
+			DodgerBlue3 = 26,
+			DodgerBlue2 = 27,
+			Green4 = 28,
+			SpringGreen4 = 29,
+			Turquoise4 = 30,
+			DeepSkyBlue3_1 = 31,
+			DeepSkyBlue3_2 = 32,
+			DodgerBlue1 = 33,
+			Green3_1 = 34,
+			SpringGreen3_1 = 35,
+			DarkCyan = 36,
+			LightSeaGreen = 37,
+			DeepSkyBlue2 = 38,
+			DeepSkyBlue1 = 39,
+			Green3_2 = 40,
+			SpringGreen3_2 = 41,
+			SpringGreen2_1 = 42,
+			Cyan3 = 43,
+			DarkTurquoise = 44,
+			Turquoise2 = 45,
+			Green1 = 46,
+			SpringGreen2_2 = 47,
+			SpringGreen1 = 48,
+			MediumSpringGreen = 49,
+			Cyan2 = 50,
+			Cyan1 = 51,
+			DarkRed_1 = 52,
+			DeepPink4_1 = 53,
+			Purple4_1 = 54,
+			Purple4_2 = 55,
+			Purple3 = 56,
+			BlueViolet = 57,
+			Orange4_1 = 58,
+			Grey37 = 59,
+			MediumPurple4 = 60,
+			SlateBlue3_1 = 61,
+			SlateBlue3_2 = 62,
+			RoyalBlue1 = 63,
+			Chartreuse4 = 64,
+			DarkSeaGreen4_1 = 65,
+			PaleTurquoise4 = 66,
+			SteelBlue = 67,
+			SteelBlue3 = 68,
+			CornflowerBlue = 69,
+			Chartreuse3_1 = 70,
+			DarkSeaGreen4_2 = 71,
+			CadetBlue_1 = 72,
+			CadetBlue_2 = 73,
+			SkyBlue3 = 74,
+			SteelBlue1_1 = 75,
+			Chartreuse3_2 = 76,
+			PaleGreen3_1 = 77,
+			SeaGreen3 = 78,
+			Aquamarine3 = 79,
+			MediumTurquoise = 80,
+			SteelBlue1_2 = 81,
+			Chartreuse2_1 = 82,
+			SeaGreen2 = 83,
+			SeaGreen1_1 = 84,
+			SeaGreen1_2 = 85,
+			Aquamarine1_1 = 86,
+			DarkSlateGray2 = 87,
+			DarkRed_2 = 88,
+			DeepPink4_2 = 89,
+			DarkMagenta_1 = 90,
+			DarkMagenta_2 = 91,
+			DarkViolet_1 = 92,
+			Purple_2 = 93,
+			Orange4_2 = 94,
+			LightPink4 = 95,
+			Plum4 = 96,
+			MediumPurple3_1 = 97,
+			MediumPurple3_2 = 98,
+			SlateBlue1 = 99,
+			Yellow4_1 = 100,
+			Wheat4 = 101,
+			Grey53 = 102,
+			LightSlateGrey = 103,
+			MediumPurple = 104,
+			LightSlateBlue = 105,
+			Yellow4_2 = 106,
+			DarkOliveGreen3_1 = 107,
+			DarkSeaGreen = 108,
+			LightSkyBlue3_1 = 109,
+			LightSkyBlue3_2 = 110,
+			SkyBlue2 = 111,
+			Chartreuse2_2 = 112,
+			DarkOliveGreen3_2 = 113,
+			PaleGreen3_2 = 114,
+			DarkSeaGreen3_1 = 115,
+			DarkSlateGray3 = 116,
+			SkyBlue1 = 117,
+			Chartreuse1 = 118,
+			LightGreen_1 = 119,
+			LightGreen_2 = 120,
+			PaleGreen1_1 = 121,
+			Aquamarine1_2 = 122,
+			DarkSlateGray1 = 123,
+			Red3_1 = 124,
+			DeepPink4_3 = 125,
+			MediumVioletRed = 126,
+			Magenta3_1 = 127,
+			DarkViolet_2 = 128,
+			Purple_3 = 129,
+			DarkOrange3_1 = 130,
+			IndianRed_1 = 131,
+			HotPink3_1 = 132,
+			MediumOrchid3 = 133,
+			MediumOrchid = 134,
+			MediumPurple2_1 = 135,
+			DarkGoldenrod = 136,
+			LightSalmon3_1 = 137,
+			RosyBrown = 138,
+			Grey63 = 139,
+			MediumPurple2_2 = 140,
+			MediumPurple1 = 141,
+			Gold3_1 = 142,
+			DarkKhaki = 143,
+			NavajoWhite3 = 144,
+			Grey69 = 145,
+			LightSteelBlue3 = 146,
+			LightSteelBlue = 147,
+			Yellow3_1 = 148,
+			DarkOliveGreen3_3 = 149,
+			DarkSeaGreen3_2 = 150,
+			DarkSeaGreen2_1 = 151,
+			LightCyan3 = 152,
+			LightSkyBlue1 = 153,
+			GreenYellow = 154,
+			DarkOliveGreen2 = 155,
+			PaleGreen1_2 = 156,
+			DarkSeaGreen2_2 = 157,
+			DarkSeaGreen1_1 = 158,
+			PaleTurquoise1 = 159,
+			Red3_2 = 160,
+			DeepPink3_1 = 161,
+			DeepPink3_2 = 162,
+			Magenta3_2 = 163,
+			Magenta3_3 = 164,
+			Magenta2_1 = 165,
+			DarkOrange3_2 = 166,
+			IndianRed_2 = 167,
+			HotPink3_2 = 168,
+			HotPink2 = 169,
+			Orchid = 170,
+			MediumOrchid1_1 = 171,
+			Orange3 = 172,
+			LightSalmon3_2 = 173,
+			LightPink3 = 174,
+			Pink3 = 175,
+			Plum3 = 176,
+			Violet = 177,
+			Gold3_2 = 178,
+			LightGoldenrod3 = 179,
+			Tan = 180,
+			MistyRose3 = 181,
+			Thistle3 = 182,
+			Plum2 = 183,
+			Yellow3_2 = 184,
+			Khaki3 = 185,
+			LightGoldenrod2_1 = 186,
+			LightYellow3 = 187,
+			Grey84 = 188,
+			LightSteelBlue1 = 189,
+			Yellow2 = 190,
+			DarkOliveGreen1_1 = 191,
+			DarkOliveGreen1_2 = 192,
+			DarkSeaGreen1_2 = 193,
+			Honeydew2 = 194,
+			LightCyan1 = 195,
+			Red1 = 196,
+			DeepPink2 = 197,
+			DeepPink1_1 = 198,
+			DeepPink1_2 = 199,
+			Magenta2_2 = 200,
+			Magenta1 = 201,
+			OrangeRed1 = 202,
+			IndianRed1_1 = 203,
+			IndianRed1_2 = 204,
+			HotPink_1 = 205,
+			HotPink_2 = 206,
+			MediumOrchid1_2 = 207,
+			DarkOrange = 208,
+			Salmon1 = 209,
+			LightCoral = 210,
+			PaleVioletRed1 = 211,
+			Orchid2 = 212,
+			Orchid1 = 213,
+			Orange1 = 214,
+			SandyBrown = 215,
+			LightSalmon1 = 216,
+			LightPink1 = 217,
+			Pink1 = 218,
+			Plum1 = 219,
+			Gold1 = 220,
+			LightGoldenrod2_2 = 221,
+			LightGoldenrod2_3 = 222,
+			NavajoWhite1 = 223,
+			MistyRose1 = 224,
+			Thistle1 = 225,
+			Yellow1 = 226,
+			LightGoldenrod1 = 227,
+			Khaki1 = 228,
+			Wheat1 = 229,
+			Cornsilk1 = 230,
+			Grey100 = 231,
+			Grey3 = 232,
+			Grey7 = 233,
+			Grey11 = 234,
+			Grey15 = 235,
+			Grey19 = 236,
+			Grey23 = 237,
+			Grey27 = 238,
+			Grey30 = 239,
+			Grey35 = 240,
+			Grey39 = 241,
+			Grey42 = 242,
+			Grey46 = 243,
+			Grey50 = 244,
+			Grey54 = 245,
+			Grey58 = 246,
+			Grey62 = 247,
+			Grey66 = 248,
+			Grey70 = 249,
+			Grey74 = 250,
+			Grey78 = 251,
+			Grey82 = 252,
+			Grey85 = 253,
+			Grey89 = 254,
+			Grey93 = 255
+		}
 
-	/**
-	 * Namespace for eight-bit color codes
-	 *
-	 * @since 0.0.1
-	 * @category Models
-	 */
-	export namespace Code {
-		export const id: (self: Code) => string = flow(
+		export const toId: (self: Code.Type) => string = flow(
 			MMatch.make,
 			flow(
 				flow(
 					flow(
-						MMatch.whenIs(Code.Black, () => 'Black'),
-						MMatch.whenIs(Code.Maroon, () => 'Maroon'),
-						MMatch.whenIs(Code.Green, () => 'Green'),
-						MMatch.whenIs(Code.Olive, () => 'Olive'),
-						MMatch.whenIs(Code.Navy, () => 'Navy'),
-						MMatch.whenIs(Code.Purple_1, () => 'Purple_1'),
-						MMatch.whenIs(Code.Teal, () => 'Teal'),
-						MMatch.whenIs(Code.Silver, () => 'Silver'),
-						MMatch.whenIs(Code.Grey, () => 'Grey')
+						MMatch.whenIs(Code.Type.Black, () => 'Black'),
+						MMatch.whenIs(Code.Type.Maroon, () => 'Maroon'),
+						MMatch.whenIs(Code.Type.Green, () => 'Green'),
+						MMatch.whenIs(Code.Type.Olive, () => 'Olive'),
+						MMatch.whenIs(Code.Type.Navy, () => 'Navy'),
+						MMatch.whenIs(Code.Type.Purple_1, () => 'Purple_1'),
+						MMatch.whenIs(Code.Type.Teal, () => 'Teal'),
+						MMatch.whenIs(Code.Type.Silver, () => 'Silver'),
+						MMatch.whenIs(Code.Type.Grey, () => 'Grey')
 					),
 					flow(
-						MMatch.whenIs(Code.Red, () => 'Red'),
-						MMatch.whenIs(Code.Lime, () => 'Lime'),
-						MMatch.whenIs(Code.Yellow, () => 'Yellow'),
-						MMatch.whenIs(Code.Blue, () => 'Blue'),
-						MMatch.whenIs(Code.Fuchsia, () => 'Fuchsia'),
-						MMatch.whenIs(Code.Aqua, () => 'Aqua'),
-						MMatch.whenIs(Code.White, () => 'White'),
-						MMatch.whenIs(Code.Grey0, () => 'Grey0'),
-						MMatch.whenIs(Code.NavyBlue, () => 'NavyBlue')
+						MMatch.whenIs(Code.Type.Red, () => 'Red'),
+						MMatch.whenIs(Code.Type.Lime, () => 'Lime'),
+						MMatch.whenIs(Code.Type.Yellow, () => 'Yellow'),
+						MMatch.whenIs(Code.Type.Blue, () => 'Blue'),
+						MMatch.whenIs(Code.Type.Fuchsia, () => 'Fuchsia'),
+						MMatch.whenIs(Code.Type.Aqua, () => 'Aqua'),
+						MMatch.whenIs(Code.Type.White, () => 'White'),
+						MMatch.whenIs(Code.Type.Grey0, () => 'Grey0'),
+						MMatch.whenIs(Code.Type.NavyBlue, () => 'NavyBlue')
 					),
 					flow(
-						MMatch.whenIs(Code.DarkBlue, () => 'DarkBlue'),
-						MMatch.whenIs(Code.Blue3_1, () => 'Blue3_1'),
-						MMatch.whenIs(Code.Blue3_2, () => 'Blue3_2'),
-						MMatch.whenIs(Code.Blue1, () => 'Blue1'),
-						MMatch.whenIs(Code.DarkGreen, () => 'DarkGreen'),
-						MMatch.whenIs(Code.DeepSkyBlue4_1, () => 'DeepSkyBlue4_1'),
-						MMatch.whenIs(Code.DeepSkyBlue4_2, () => 'DeepSkyBlue4_2'),
-						MMatch.whenIs(Code.DeepSkyBlue4_3, () => 'DeepSkyBlue4_3'),
-						MMatch.whenIs(Code.DodgerBlue3, () => 'DodgerBlue3')
+						MMatch.whenIs(Code.Type.DarkBlue, () => 'DarkBlue'),
+						MMatch.whenIs(Code.Type.Blue3_1, () => 'Blue3_1'),
+						MMatch.whenIs(Code.Type.Blue3_2, () => 'Blue3_2'),
+						MMatch.whenIs(Code.Type.Blue1, () => 'Blue1'),
+						MMatch.whenIs(Code.Type.DarkGreen, () => 'DarkGreen'),
+						MMatch.whenIs(Code.Type.DeepSkyBlue4_1, () => 'DeepSkyBlue4_1'),
+						MMatch.whenIs(Code.Type.DeepSkyBlue4_2, () => 'DeepSkyBlue4_2'),
+						MMatch.whenIs(Code.Type.DeepSkyBlue4_3, () => 'DeepSkyBlue4_3'),
+						MMatch.whenIs(Code.Type.DodgerBlue3, () => 'DodgerBlue3')
 					),
 					flow(
-						MMatch.whenIs(Code.DodgerBlue2, () => 'DodgerBlue2'),
-						MMatch.whenIs(Code.Green4, () => 'Green4'),
-						MMatch.whenIs(Code.SpringGreen4, () => 'SpringGreen4'),
-						MMatch.whenIs(Code.Turquoise4, () => 'Turquoise4'),
-						MMatch.whenIs(Code.DeepSkyBlue3_1, () => 'DeepSkyBlue3_1'),
-						MMatch.whenIs(Code.DeepSkyBlue3_2, () => 'DeepSkyBlue3_2'),
-						MMatch.whenIs(Code.DodgerBlue1, () => 'DodgerBlue1'),
-						MMatch.whenIs(Code.Green3_1, () => 'Green3_1'),
-						MMatch.whenIs(Code.SpringGreen3_1, () => 'SpringGreen3_1')
+						MMatch.whenIs(Code.Type.DodgerBlue2, () => 'DodgerBlue2'),
+						MMatch.whenIs(Code.Type.Green4, () => 'Green4'),
+						MMatch.whenIs(Code.Type.SpringGreen4, () => 'SpringGreen4'),
+						MMatch.whenIs(Code.Type.Turquoise4, () => 'Turquoise4'),
+						MMatch.whenIs(Code.Type.DeepSkyBlue3_1, () => 'DeepSkyBlue3_1'),
+						MMatch.whenIs(Code.Type.DeepSkyBlue3_2, () => 'DeepSkyBlue3_2'),
+						MMatch.whenIs(Code.Type.DodgerBlue1, () => 'DodgerBlue1'),
+						MMatch.whenIs(Code.Type.Green3_1, () => 'Green3_1'),
+						MMatch.whenIs(Code.Type.SpringGreen3_1, () => 'SpringGreen3_1')
 					),
 					flow(
-						MMatch.whenIs(Code.DarkCyan, () => 'DarkCyan'),
-						MMatch.whenIs(Code.LightSeaGreen, () => 'LightSeaGreen'),
-						MMatch.whenIs(Code.DeepSkyBlue2, () => 'DeepSkyBlue2'),
-						MMatch.whenIs(Code.DeepSkyBlue1, () => 'DeepSkyBlue1'),
-						MMatch.whenIs(Code.Green3_2, () => 'Green3_2'),
-						MMatch.whenIs(Code.SpringGreen3_2, () => 'SpringGreen3_2'),
-						MMatch.whenIs(Code.SpringGreen2_1, () => 'SpringGreen2_1'),
-						MMatch.whenIs(Code.Cyan3, () => 'Cyan3'),
-						MMatch.whenIs(Code.DarkTurquoise, () => 'DarkTurquoise')
+						MMatch.whenIs(Code.Type.DarkCyan, () => 'DarkCyan'),
+						MMatch.whenIs(Code.Type.LightSeaGreen, () => 'LightSeaGreen'),
+						MMatch.whenIs(Code.Type.DeepSkyBlue2, () => 'DeepSkyBlue2'),
+						MMatch.whenIs(Code.Type.DeepSkyBlue1, () => 'DeepSkyBlue1'),
+						MMatch.whenIs(Code.Type.Green3_2, () => 'Green3_2'),
+						MMatch.whenIs(Code.Type.SpringGreen3_2, () => 'SpringGreen3_2'),
+						MMatch.whenIs(Code.Type.SpringGreen2_1, () => 'SpringGreen2_1'),
+						MMatch.whenIs(Code.Type.Cyan3, () => 'Cyan3'),
+						MMatch.whenIs(Code.Type.DarkTurquoise, () => 'DarkTurquoise')
 					),
 					flow(
-						MMatch.whenIs(Code.Turquoise2, () => 'Turquoise2'),
-						MMatch.whenIs(Code.Green1, () => 'Green1'),
-						MMatch.whenIs(Code.SpringGreen2_2, () => 'SpringGreen2_2'),
-						MMatch.whenIs(Code.SpringGreen1, () => 'SpringGreen1'),
-						MMatch.whenIs(Code.MediumSpringGreen, () => 'MediumSpringGreen'),
-						MMatch.whenIs(Code.Cyan2, () => 'Cyan2'),
-						MMatch.whenIs(Code.Cyan1, () => 'Cyan1'),
-						MMatch.whenIs(Code.DarkRed_1, () => 'DarkRed_1'),
-						MMatch.whenIs(Code.DeepPink4_1, () => 'DeepPink4_1')
+						MMatch.whenIs(Code.Type.Turquoise2, () => 'Turquoise2'),
+						MMatch.whenIs(Code.Type.Green1, () => 'Green1'),
+						MMatch.whenIs(Code.Type.SpringGreen2_2, () => 'SpringGreen2_2'),
+						MMatch.whenIs(Code.Type.SpringGreen1, () => 'SpringGreen1'),
+						MMatch.whenIs(Code.Type.MediumSpringGreen, () => 'MediumSpringGreen'),
+						MMatch.whenIs(Code.Type.Cyan2, () => 'Cyan2'),
+						MMatch.whenIs(Code.Type.Cyan1, () => 'Cyan1'),
+						MMatch.whenIs(Code.Type.DarkRed_1, () => 'DarkRed_1'),
+						MMatch.whenIs(Code.Type.DeepPink4_1, () => 'DeepPink4_1')
 					),
 					flow(
-						MMatch.whenIs(Code.Purple4_1, () => 'Purple4_1'),
-						MMatch.whenIs(Code.Purple4_2, () => 'Purple4_2'),
-						MMatch.whenIs(Code.Purple3, () => 'Purple3'),
-						MMatch.whenIs(Code.BlueViolet, () => 'BlueViolet'),
-						MMatch.whenIs(Code.Orange4_1, () => 'Orange4_1'),
-						MMatch.whenIs(Code.Grey37, () => 'Grey37'),
-						MMatch.whenIs(Code.MediumPurple4, () => 'MediumPurple4'),
-						MMatch.whenIs(Code.SlateBlue3_1, () => 'SlateBlue3_1'),
-						MMatch.whenIs(Code.SlateBlue3_2, () => 'SlateBlue3_2')
+						MMatch.whenIs(Code.Type.Purple4_1, () => 'Purple4_1'),
+						MMatch.whenIs(Code.Type.Purple4_2, () => 'Purple4_2'),
+						MMatch.whenIs(Code.Type.Purple3, () => 'Purple3'),
+						MMatch.whenIs(Code.Type.BlueViolet, () => 'BlueViolet'),
+						MMatch.whenIs(Code.Type.Orange4_1, () => 'Orange4_1'),
+						MMatch.whenIs(Code.Type.Grey37, () => 'Grey37'),
+						MMatch.whenIs(Code.Type.MediumPurple4, () => 'MediumPurple4'),
+						MMatch.whenIs(Code.Type.SlateBlue3_1, () => 'SlateBlue3_1'),
+						MMatch.whenIs(Code.Type.SlateBlue3_2, () => 'SlateBlue3_2')
 					),
 					flow(
-						MMatch.whenIs(Code.RoyalBlue1, () => 'RoyalBlue1'),
-						MMatch.whenIs(Code.Chartreuse4, () => 'Chartreuse4'),
-						MMatch.whenIs(Code.DarkSeaGreen4_1, () => 'DarkSeaGreen4_1'),
-						MMatch.whenIs(Code.PaleTurquoise4, () => 'PaleTurquoise4'),
-						MMatch.whenIs(Code.SteelBlue, () => 'SteelBlue'),
-						MMatch.whenIs(Code.SteelBlue3, () => 'SteelBlue3'),
-						MMatch.whenIs(Code.CornflowerBlue, () => 'CornflowerBlue'),
-						MMatch.whenIs(Code.Chartreuse3_1, () => 'Chartreuse3_1'),
-						MMatch.whenIs(Code.DarkSeaGreen4_2, () => 'DarkSeaGreen4_2')
+						MMatch.whenIs(Code.Type.RoyalBlue1, () => 'RoyalBlue1'),
+						MMatch.whenIs(Code.Type.Chartreuse4, () => 'Chartreuse4'),
+						MMatch.whenIs(Code.Type.DarkSeaGreen4_1, () => 'DarkSeaGreen4_1'),
+						MMatch.whenIs(Code.Type.PaleTurquoise4, () => 'PaleTurquoise4'),
+						MMatch.whenIs(Code.Type.SteelBlue, () => 'SteelBlue'),
+						MMatch.whenIs(Code.Type.SteelBlue3, () => 'SteelBlue3'),
+						MMatch.whenIs(Code.Type.CornflowerBlue, () => 'CornflowerBlue'),
+						MMatch.whenIs(Code.Type.Chartreuse3_1, () => 'Chartreuse3_1'),
+						MMatch.whenIs(Code.Type.DarkSeaGreen4_2, () => 'DarkSeaGreen4_2')
 					),
 					flow(
-						MMatch.whenIs(Code.CadetBlue_1, () => 'CadetBlue_1'),
-						MMatch.whenIs(Code.CadetBlue_2, () => 'CadetBlue_2'),
-						MMatch.whenIs(Code.SkyBlue3, () => 'SkyBlue3'),
-						MMatch.whenIs(Code.SteelBlue1_1, () => 'SteelBlue1_1'),
-						MMatch.whenIs(Code.Chartreuse3_2, () => 'Chartreuse3_2'),
-						MMatch.whenIs(Code.PaleGreen3_1, () => 'PaleGreen3_1'),
-						MMatch.whenIs(Code.SeaGreen3, () => 'SeaGreen3'),
-						MMatch.whenIs(Code.Aquamarine3, () => 'Aquamarine3'),
-						MMatch.whenIs(Code.MediumTurquoise, () => 'MediumTurquoise')
+						MMatch.whenIs(Code.Type.CadetBlue_1, () => 'CadetBlue_1'),
+						MMatch.whenIs(Code.Type.CadetBlue_2, () => 'CadetBlue_2'),
+						MMatch.whenIs(Code.Type.SkyBlue3, () => 'SkyBlue3'),
+						MMatch.whenIs(Code.Type.SteelBlue1_1, () => 'SteelBlue1_1'),
+						MMatch.whenIs(Code.Type.Chartreuse3_2, () => 'Chartreuse3_2'),
+						MMatch.whenIs(Code.Type.PaleGreen3_1, () => 'PaleGreen3_1'),
+						MMatch.whenIs(Code.Type.SeaGreen3, () => 'SeaGreen3'),
+						MMatch.whenIs(Code.Type.Aquamarine3, () => 'Aquamarine3'),
+						MMatch.whenIs(Code.Type.MediumTurquoise, () => 'MediumTurquoise')
 					)
 				),
 				flow(
 					flow(
-						MMatch.whenIs(Code.SteelBlue1_2, () => 'SteelBlue1_2'),
-						MMatch.whenIs(Code.Chartreuse2_1, () => 'Chartreuse2_1'),
-						MMatch.whenIs(Code.SeaGreen2, () => 'SeaGreen2'),
-						MMatch.whenIs(Code.SeaGreen1_1, () => 'SeaGreen1_1'),
-						MMatch.whenIs(Code.SeaGreen1_2, () => 'SeaGreen1_2'),
-						MMatch.whenIs(Code.Aquamarine1_1, () => 'Aquamarine1_1'),
-						MMatch.whenIs(Code.DarkSlateGray2, () => 'DarkSlateGray2'),
-						MMatch.whenIs(Code.DarkRed_2, () => 'DarkRed_2'),
-						MMatch.whenIs(Code.DeepPink4_2, () => 'DeepPink4_2')
+						MMatch.whenIs(Code.Type.SteelBlue1_2, () => 'SteelBlue1_2'),
+						MMatch.whenIs(Code.Type.Chartreuse2_1, () => 'Chartreuse2_1'),
+						MMatch.whenIs(Code.Type.SeaGreen2, () => 'SeaGreen2'),
+						MMatch.whenIs(Code.Type.SeaGreen1_1, () => 'SeaGreen1_1'),
+						MMatch.whenIs(Code.Type.SeaGreen1_2, () => 'SeaGreen1_2'),
+						MMatch.whenIs(Code.Type.Aquamarine1_1, () => 'Aquamarine1_1'),
+						MMatch.whenIs(Code.Type.DarkSlateGray2, () => 'DarkSlateGray2'),
+						MMatch.whenIs(Code.Type.DarkRed_2, () => 'DarkRed_2'),
+						MMatch.whenIs(Code.Type.DeepPink4_2, () => 'DeepPink4_2')
 					),
 					flow(
-						MMatch.whenIs(Code.DarkMagenta_1, () => 'DarkMagenta_1'),
-						MMatch.whenIs(Code.DarkMagenta_2, () => 'DarkMagenta_2'),
-						MMatch.whenIs(Code.DarkViolet_1, () => 'DarkViolet_1'),
-						MMatch.whenIs(Code.Purple_2, () => 'Purple_2'),
-						MMatch.whenIs(Code.Orange4_2, () => 'Orange4_2'),
-						MMatch.whenIs(Code.LightPink4, () => 'LightPink4'),
-						MMatch.whenIs(Code.Plum4, () => 'Plum4'),
-						MMatch.whenIs(Code.MediumPurple3_1, () => 'MediumPurple3_1'),
-						MMatch.whenIs(Code.MediumPurple3_2, () => 'MediumPurple3_2')
+						MMatch.whenIs(Code.Type.DarkMagenta_1, () => 'DarkMagenta_1'),
+						MMatch.whenIs(Code.Type.DarkMagenta_2, () => 'DarkMagenta_2'),
+						MMatch.whenIs(Code.Type.DarkViolet_1, () => 'DarkViolet_1'),
+						MMatch.whenIs(Code.Type.Purple_2, () => 'Purple_2'),
+						MMatch.whenIs(Code.Type.Orange4_2, () => 'Orange4_2'),
+						MMatch.whenIs(Code.Type.LightPink4, () => 'LightPink4'),
+						MMatch.whenIs(Code.Type.Plum4, () => 'Plum4'),
+						MMatch.whenIs(Code.Type.MediumPurple3_1, () => 'MediumPurple3_1'),
+						MMatch.whenIs(Code.Type.MediumPurple3_2, () => 'MediumPurple3_2')
 					),
 					flow(
-						MMatch.whenIs(Code.SlateBlue1, () => 'SlateBlue1'),
-						MMatch.whenIs(Code.Yellow4_1, () => 'Yellow4_1'),
-						MMatch.whenIs(Code.Wheat4, () => 'Wheat4'),
-						MMatch.whenIs(Code.Grey53, () => 'Grey53'),
-						MMatch.whenIs(Code.LightSlateGrey, () => 'LightSlateGrey'),
-						MMatch.whenIs(Code.MediumPurple, () => 'MediumPurple'),
-						MMatch.whenIs(Code.LightSlateBlue, () => 'LightSlateBlue'),
-						MMatch.whenIs(Code.Yellow4_2, () => 'Yellow4_2'),
-						MMatch.whenIs(Code.DarkOliveGreen3_1, () => 'DarkOliveGreen3_1')
+						MMatch.whenIs(Code.Type.SlateBlue1, () => 'SlateBlue1'),
+						MMatch.whenIs(Code.Type.Yellow4_1, () => 'Yellow4_1'),
+						MMatch.whenIs(Code.Type.Wheat4, () => 'Wheat4'),
+						MMatch.whenIs(Code.Type.Grey53, () => 'Grey53'),
+						MMatch.whenIs(Code.Type.LightSlateGrey, () => 'LightSlateGrey'),
+						MMatch.whenIs(Code.Type.MediumPurple, () => 'MediumPurple'),
+						MMatch.whenIs(Code.Type.LightSlateBlue, () => 'LightSlateBlue'),
+						MMatch.whenIs(Code.Type.Yellow4_2, () => 'Yellow4_2'),
+						MMatch.whenIs(Code.Type.DarkOliveGreen3_1, () => 'DarkOliveGreen3_1')
 					),
 					flow(
-						MMatch.whenIs(Code.DarkSeaGreen, () => 'DarkSeaGreen'),
-						MMatch.whenIs(Code.LightSkyBlue3_1, () => 'LightSkyBlue3_1'),
-						MMatch.whenIs(Code.LightSkyBlue3_2, () => 'LightSkyBlue3_2'),
-						MMatch.whenIs(Code.SkyBlue2, () => 'SkyBlue2'),
-						MMatch.whenIs(Code.Chartreuse2_2, () => 'Chartreuse2_2'),
-						MMatch.whenIs(Code.DarkOliveGreen3_2, () => 'DarkOliveGreen3_2'),
-						MMatch.whenIs(Code.PaleGreen3_2, () => 'PaleGreen3_2'),
-						MMatch.whenIs(Code.DarkSeaGreen3_1, () => 'DarkSeaGreen3_1'),
-						MMatch.whenIs(Code.DarkSlateGray3, () => 'DarkSlateGray3')
+						MMatch.whenIs(Code.Type.DarkSeaGreen, () => 'DarkSeaGreen'),
+						MMatch.whenIs(Code.Type.LightSkyBlue3_1, () => 'LightSkyBlue3_1'),
+						MMatch.whenIs(Code.Type.LightSkyBlue3_2, () => 'LightSkyBlue3_2'),
+						MMatch.whenIs(Code.Type.SkyBlue2, () => 'SkyBlue2'),
+						MMatch.whenIs(Code.Type.Chartreuse2_2, () => 'Chartreuse2_2'),
+						MMatch.whenIs(Code.Type.DarkOliveGreen3_2, () => 'DarkOliveGreen3_2'),
+						MMatch.whenIs(Code.Type.PaleGreen3_2, () => 'PaleGreen3_2'),
+						MMatch.whenIs(Code.Type.DarkSeaGreen3_1, () => 'DarkSeaGreen3_1'),
+						MMatch.whenIs(Code.Type.DarkSlateGray3, () => 'DarkSlateGray3')
 					),
 					flow(
-						MMatch.whenIs(Code.SkyBlue1, () => 'SkyBlue1'),
-						MMatch.whenIs(Code.Chartreuse1, () => 'Chartreuse1'),
-						MMatch.whenIs(Code.LightGreen_1, () => 'LightGreen_1'),
-						MMatch.whenIs(Code.LightGreen_2, () => 'LightGreen_2'),
-						MMatch.whenIs(Code.PaleGreen1_1, () => 'PaleGreen1_1'),
-						MMatch.whenIs(Code.Aquamarine1_2, () => 'Aquamarine1_2'),
-						MMatch.whenIs(Code.DarkSlateGray1, () => 'DarkSlateGray1'),
-						MMatch.whenIs(Code.Red3_1, () => 'Red3_1'),
-						MMatch.whenIs(Code.DeepPink4_3, () => 'DeepPink4_3')
+						MMatch.whenIs(Code.Type.SkyBlue1, () => 'SkyBlue1'),
+						MMatch.whenIs(Code.Type.Chartreuse1, () => 'Chartreuse1'),
+						MMatch.whenIs(Code.Type.LightGreen_1, () => 'LightGreen_1'),
+						MMatch.whenIs(Code.Type.LightGreen_2, () => 'LightGreen_2'),
+						MMatch.whenIs(Code.Type.PaleGreen1_1, () => 'PaleGreen1_1'),
+						MMatch.whenIs(Code.Type.Aquamarine1_2, () => 'Aquamarine1_2'),
+						MMatch.whenIs(Code.Type.DarkSlateGray1, () => 'DarkSlateGray1'),
+						MMatch.whenIs(Code.Type.Red3_1, () => 'Red3_1'),
+						MMatch.whenIs(Code.Type.DeepPink4_3, () => 'DeepPink4_3')
 					),
 					flow(
-						MMatch.whenIs(Code.MediumVioletRed, () => 'MediumVioletRed'),
-						MMatch.whenIs(Code.Magenta3_1, () => 'Magenta3_1'),
-						MMatch.whenIs(Code.DarkViolet_2, () => 'DarkViolet_2'),
-						MMatch.whenIs(Code.Purple_3, () => 'Purple_3'),
-						MMatch.whenIs(Code.DarkOrange3_1, () => 'DarkOrange3_1'),
-						MMatch.whenIs(Code.IndianRed_1, () => 'IndianRed_1'),
-						MMatch.whenIs(Code.HotPink3_1, () => 'HotPink3_1'),
-						MMatch.whenIs(Code.MediumOrchid3, () => 'MediumOrchid3'),
-						MMatch.whenIs(Code.MediumOrchid, () => 'MediumOrchid')
+						MMatch.whenIs(Code.Type.MediumVioletRed, () => 'MediumVioletRed'),
+						MMatch.whenIs(Code.Type.Magenta3_1, () => 'Magenta3_1'),
+						MMatch.whenIs(Code.Type.DarkViolet_2, () => 'DarkViolet_2'),
+						MMatch.whenIs(Code.Type.Purple_3, () => 'Purple_3'),
+						MMatch.whenIs(Code.Type.DarkOrange3_1, () => 'DarkOrange3_1'),
+						MMatch.whenIs(Code.Type.IndianRed_1, () => 'IndianRed_1'),
+						MMatch.whenIs(Code.Type.HotPink3_1, () => 'HotPink3_1'),
+						MMatch.whenIs(Code.Type.MediumOrchid3, () => 'MediumOrchid3'),
+						MMatch.whenIs(Code.Type.MediumOrchid, () => 'MediumOrchid')
 					),
 					flow(
-						MMatch.whenIs(Code.MediumPurple2_1, () => 'MediumPurple2_1'),
-						MMatch.whenIs(Code.DarkGoldenrod, () => 'DarkGoldenrod'),
-						MMatch.whenIs(Code.LightSalmon3_1, () => 'LightSalmon3_1'),
-						MMatch.whenIs(Code.RosyBrown, () => 'RosyBrown'),
-						MMatch.whenIs(Code.Grey63, () => 'Grey63'),
-						MMatch.whenIs(Code.MediumPurple2_2, () => 'MediumPurple2_2'),
-						MMatch.whenIs(Code.MediumPurple1, () => 'MediumPurple1'),
-						MMatch.whenIs(Code.Gold3_1, () => 'Gold3_1'),
-						MMatch.whenIs(Code.DarkKhaki, () => 'DarkKhaki')
+						MMatch.whenIs(Code.Type.MediumPurple2_1, () => 'MediumPurple2_1'),
+						MMatch.whenIs(Code.Type.DarkGoldenrod, () => 'DarkGoldenrod'),
+						MMatch.whenIs(Code.Type.LightSalmon3_1, () => 'LightSalmon3_1'),
+						MMatch.whenIs(Code.Type.RosyBrown, () => 'RosyBrown'),
+						MMatch.whenIs(Code.Type.Grey63, () => 'Grey63'),
+						MMatch.whenIs(Code.Type.MediumPurple2_2, () => 'MediumPurple2_2'),
+						MMatch.whenIs(Code.Type.MediumPurple1, () => 'MediumPurple1'),
+						MMatch.whenIs(Code.Type.Gold3_1, () => 'Gold3_1'),
+						MMatch.whenIs(Code.Type.DarkKhaki, () => 'DarkKhaki')
 					),
 					flow(
-						MMatch.whenIs(Code.NavajoWhite3, () => 'NavajoWhite3'),
-						MMatch.whenIs(Code.Grey69, () => 'Grey69'),
-						MMatch.whenIs(Code.LightSteelBlue3, () => 'LightSteelBlue3'),
-						MMatch.whenIs(Code.LightSteelBlue, () => 'LightSteelBlue'),
-						MMatch.whenIs(Code.Yellow3_1, () => 'Yellow3_1'),
-						MMatch.whenIs(Code.DarkOliveGreen3_3, () => 'DarkOliveGreen3_3'),
-						MMatch.whenIs(Code.DarkSeaGreen3_2, () => 'DarkSeaGreen3_2'),
-						MMatch.whenIs(Code.DarkSeaGreen2_1, () => 'DarkSeaGreen2_1'),
-						MMatch.whenIs(Code.LightCyan3, () => 'LightCyan3')
+						MMatch.whenIs(Code.Type.NavajoWhite3, () => 'NavajoWhite3'),
+						MMatch.whenIs(Code.Type.Grey69, () => 'Grey69'),
+						MMatch.whenIs(Code.Type.LightSteelBlue3, () => 'LightSteelBlue3'),
+						MMatch.whenIs(Code.Type.LightSteelBlue, () => 'LightSteelBlue'),
+						MMatch.whenIs(Code.Type.Yellow3_1, () => 'Yellow3_1'),
+						MMatch.whenIs(Code.Type.DarkOliveGreen3_3, () => 'DarkOliveGreen3_3'),
+						MMatch.whenIs(Code.Type.DarkSeaGreen3_2, () => 'DarkSeaGreen3_2'),
+						MMatch.whenIs(Code.Type.DarkSeaGreen2_1, () => 'DarkSeaGreen2_1'),
+						MMatch.whenIs(Code.Type.LightCyan3, () => 'LightCyan3')
 					),
 					flow(
-						MMatch.whenIs(Code.LightSkyBlue1, () => 'LightSkyBlue1'),
-						MMatch.whenIs(Code.GreenYellow, () => 'GreenYellow'),
-						MMatch.whenIs(Code.DarkOliveGreen2, () => 'DarkOliveGreen2'),
-						MMatch.whenIs(Code.PaleGreen1_2, () => 'PaleGreen1_2'),
-						MMatch.whenIs(Code.DarkSeaGreen2_2, () => 'DarkSeaGreen2_2'),
-						MMatch.whenIs(Code.DarkSeaGreen1_1, () => 'DarkSeaGreen1_1'),
-						MMatch.whenIs(Code.PaleTurquoise1, () => 'PaleTurquoise1'),
-						MMatch.whenIs(Code.Red3_2, () => 'Red3_2'),
-						MMatch.whenIs(Code.DeepPink3_1, () => 'DeepPink3_1')
+						MMatch.whenIs(Code.Type.LightSkyBlue1, () => 'LightSkyBlue1'),
+						MMatch.whenIs(Code.Type.GreenYellow, () => 'GreenYellow'),
+						MMatch.whenIs(Code.Type.DarkOliveGreen2, () => 'DarkOliveGreen2'),
+						MMatch.whenIs(Code.Type.PaleGreen1_2, () => 'PaleGreen1_2'),
+						MMatch.whenIs(Code.Type.DarkSeaGreen2_2, () => 'DarkSeaGreen2_2'),
+						MMatch.whenIs(Code.Type.DarkSeaGreen1_1, () => 'DarkSeaGreen1_1'),
+						MMatch.whenIs(Code.Type.PaleTurquoise1, () => 'PaleTurquoise1'),
+						MMatch.whenIs(Code.Type.Red3_2, () => 'Red3_2'),
+						MMatch.whenIs(Code.Type.DeepPink3_1, () => 'DeepPink3_1')
 					)
 				),
 				flow(
 					flow(
-						MMatch.whenIs(Code.DeepPink3_2, () => 'DeepPink3_2'),
-						MMatch.whenIs(Code.Magenta3_2, () => 'Magenta3_2'),
-						MMatch.whenIs(Code.Magenta3_3, () => 'Magenta3_3'),
-						MMatch.whenIs(Code.Magenta2_1, () => 'Magenta2_1'),
-						MMatch.whenIs(Code.DarkOrange3_2, () => 'DarkOrange3_2'),
-						MMatch.whenIs(Code.IndianRed_2, () => 'IndianRed_2'),
-						MMatch.whenIs(Code.HotPink3_2, () => 'HotPink3_2'),
-						MMatch.whenIs(Code.HotPink2, () => 'HotPink2'),
-						MMatch.whenIs(Code.Orchid, () => 'Orchid')
+						MMatch.whenIs(Code.Type.DeepPink3_2, () => 'DeepPink3_2'),
+						MMatch.whenIs(Code.Type.Magenta3_2, () => 'Magenta3_2'),
+						MMatch.whenIs(Code.Type.Magenta3_3, () => 'Magenta3_3'),
+						MMatch.whenIs(Code.Type.Magenta2_1, () => 'Magenta2_1'),
+						MMatch.whenIs(Code.Type.DarkOrange3_2, () => 'DarkOrange3_2'),
+						MMatch.whenIs(Code.Type.IndianRed_2, () => 'IndianRed_2'),
+						MMatch.whenIs(Code.Type.HotPink3_2, () => 'HotPink3_2'),
+						MMatch.whenIs(Code.Type.HotPink2, () => 'HotPink2'),
+						MMatch.whenIs(Code.Type.Orchid, () => 'Orchid')
 					),
 					flow(
-						MMatch.whenIs(Code.MediumOrchid1_1, () => 'MediumOrchid1_1'),
-						MMatch.whenIs(Code.Orange3, () => 'Orange3'),
-						MMatch.whenIs(Code.LightSalmon3_2, () => 'LightSalmon3_2'),
-						MMatch.whenIs(Code.LightPink3, () => 'LightPink3'),
-						MMatch.whenIs(Code.Pink3, () => 'Pink3'),
-						MMatch.whenIs(Code.Plum3, () => 'Plum3'),
-						MMatch.whenIs(Code.Violet, () => 'Violet'),
-						MMatch.whenIs(Code.Gold3_2, () => 'Gold3_2'),
-						MMatch.whenIs(Code.LightGoldenrod3, () => 'LightGoldenrod3')
+						MMatch.whenIs(Code.Type.MediumOrchid1_1, () => 'MediumOrchid1_1'),
+						MMatch.whenIs(Code.Type.Orange3, () => 'Orange3'),
+						MMatch.whenIs(Code.Type.LightSalmon3_2, () => 'LightSalmon3_2'),
+						MMatch.whenIs(Code.Type.LightPink3, () => 'LightPink3'),
+						MMatch.whenIs(Code.Type.Pink3, () => 'Pink3'),
+						MMatch.whenIs(Code.Type.Plum3, () => 'Plum3'),
+						MMatch.whenIs(Code.Type.Violet, () => 'Violet'),
+						MMatch.whenIs(Code.Type.Gold3_2, () => 'Gold3_2'),
+						MMatch.whenIs(Code.Type.LightGoldenrod3, () => 'LightGoldenrod3')
 					),
 					flow(
-						MMatch.whenIs(Code.Tan, () => 'Tan'),
-						MMatch.whenIs(Code.MistyRose3, () => 'MistyRose3'),
-						MMatch.whenIs(Code.Thistle3, () => 'Thistle3'),
-						MMatch.whenIs(Code.Plum2, () => 'Plum2'),
-						MMatch.whenIs(Code.Yellow3_2, () => 'Yellow3_2'),
-						MMatch.whenIs(Code.Khaki3, () => 'Khaki3'),
-						MMatch.whenIs(Code.LightGoldenrod2_1, () => 'LightGoldenrod2_1'),
-						MMatch.whenIs(Code.LightYellow3, () => 'LightYellow3'),
-						MMatch.whenIs(Code.Grey84, () => 'Grey84')
+						MMatch.whenIs(Code.Type.Tan, () => 'Tan'),
+						MMatch.whenIs(Code.Type.MistyRose3, () => 'MistyRose3'),
+						MMatch.whenIs(Code.Type.Thistle3, () => 'Thistle3'),
+						MMatch.whenIs(Code.Type.Plum2, () => 'Plum2'),
+						MMatch.whenIs(Code.Type.Yellow3_2, () => 'Yellow3_2'),
+						MMatch.whenIs(Code.Type.Khaki3, () => 'Khaki3'),
+						MMatch.whenIs(Code.Type.LightGoldenrod2_1, () => 'LightGoldenrod2_1'),
+						MMatch.whenIs(Code.Type.LightYellow3, () => 'LightYellow3'),
+						MMatch.whenIs(Code.Type.Grey84, () => 'Grey84')
 					),
 					flow(
-						MMatch.whenIs(Code.LightSteelBlue1, () => 'LightSteelBlue1'),
-						MMatch.whenIs(Code.Yellow2, () => 'Yellow2'),
-						MMatch.whenIs(Code.DarkOliveGreen1_1, () => 'DarkOliveGreen1_1'),
-						MMatch.whenIs(Code.DarkOliveGreen1_2, () => 'DarkOliveGreen1_2'),
-						MMatch.whenIs(Code.DarkSeaGreen1_2, () => 'DarkSeaGreen1_2'),
-						MMatch.whenIs(Code.Honeydew2, () => 'Honeydew2'),
-						MMatch.whenIs(Code.LightCyan1, () => 'LightCyan1'),
-						MMatch.whenIs(Code.Red1, () => 'Red1'),
-						MMatch.whenIs(Code.DeepPink2, () => 'DeepPink2')
+						MMatch.whenIs(Code.Type.LightSteelBlue1, () => 'LightSteelBlue1'),
+						MMatch.whenIs(Code.Type.Yellow2, () => 'Yellow2'),
+						MMatch.whenIs(Code.Type.DarkOliveGreen1_1, () => 'DarkOliveGreen1_1'),
+						MMatch.whenIs(Code.Type.DarkOliveGreen1_2, () => 'DarkOliveGreen1_2'),
+						MMatch.whenIs(Code.Type.DarkSeaGreen1_2, () => 'DarkSeaGreen1_2'),
+						MMatch.whenIs(Code.Type.Honeydew2, () => 'Honeydew2'),
+						MMatch.whenIs(Code.Type.LightCyan1, () => 'LightCyan1'),
+						MMatch.whenIs(Code.Type.Red1, () => 'Red1'),
+						MMatch.whenIs(Code.Type.DeepPink2, () => 'DeepPink2')
 					),
 					flow(
-						MMatch.whenIs(Code.DeepPink1_1, () => 'DeepPink1_1'),
-						MMatch.whenIs(Code.DeepPink1_2, () => 'DeepPink1_2'),
-						MMatch.whenIs(Code.Magenta2_2, () => 'Magenta2_2'),
-						MMatch.whenIs(Code.Magenta1, () => 'Magenta1'),
-						MMatch.whenIs(Code.OrangeRed1, () => 'OrangeRed1'),
-						MMatch.whenIs(Code.IndianRed1_1, () => 'IndianRed1_1'),
-						MMatch.whenIs(Code.IndianRed1_2, () => 'IndianRed1_2'),
-						MMatch.whenIs(Code.HotPink_1, () => 'HotPink_1'),
-						MMatch.whenIs(Code.HotPink_2, () => 'HotPink_2')
+						MMatch.whenIs(Code.Type.DeepPink1_1, () => 'DeepPink1_1'),
+						MMatch.whenIs(Code.Type.DeepPink1_2, () => 'DeepPink1_2'),
+						MMatch.whenIs(Code.Type.Magenta2_2, () => 'Magenta2_2'),
+						MMatch.whenIs(Code.Type.Magenta1, () => 'Magenta1'),
+						MMatch.whenIs(Code.Type.OrangeRed1, () => 'OrangeRed1'),
+						MMatch.whenIs(Code.Type.IndianRed1_1, () => 'IndianRed1_1'),
+						MMatch.whenIs(Code.Type.IndianRed1_2, () => 'IndianRed1_2'),
+						MMatch.whenIs(Code.Type.HotPink_1, () => 'HotPink_1'),
+						MMatch.whenIs(Code.Type.HotPink_2, () => 'HotPink_2')
 					),
 					flow(
-						MMatch.whenIs(Code.MediumOrchid1_2, () => 'MediumOrchid1_2'),
-						MMatch.whenIs(Code.DarkOrange, () => 'DarkOrange'),
-						MMatch.whenIs(Code.Salmon1, () => 'Salmon1'),
-						MMatch.whenIs(Code.LightCoral, () => 'LightCoral'),
-						MMatch.whenIs(Code.PaleVioletRed1, () => 'PaleVioletRed1'),
-						MMatch.whenIs(Code.Orchid2, () => 'Orchid2'),
-						MMatch.whenIs(Code.Orchid1, () => 'Orchid1'),
-						MMatch.whenIs(Code.Orange1, () => 'Orange1'),
-						MMatch.whenIs(Code.SandyBrown, () => 'SandyBrown')
+						MMatch.whenIs(Code.Type.MediumOrchid1_2, () => 'MediumOrchid1_2'),
+						MMatch.whenIs(Code.Type.DarkOrange, () => 'DarkOrange'),
+						MMatch.whenIs(Code.Type.Salmon1, () => 'Salmon1'),
+						MMatch.whenIs(Code.Type.LightCoral, () => 'LightCoral'),
+						MMatch.whenIs(Code.Type.PaleVioletRed1, () => 'PaleVioletRed1'),
+						MMatch.whenIs(Code.Type.Orchid2, () => 'Orchid2'),
+						MMatch.whenIs(Code.Type.Orchid1, () => 'Orchid1'),
+						MMatch.whenIs(Code.Type.Orange1, () => 'Orange1'),
+						MMatch.whenIs(Code.Type.SandyBrown, () => 'SandyBrown')
 					),
 					flow(
-						MMatch.whenIs(Code.LightSalmon1, () => 'LightSalmon1'),
-						MMatch.whenIs(Code.LightPink1, () => 'LightPink1'),
-						MMatch.whenIs(Code.Pink1, () => 'Pink1'),
-						MMatch.whenIs(Code.Plum1, () => 'Plum1'),
-						MMatch.whenIs(Code.Gold1, () => 'Gold1'),
-						MMatch.whenIs(Code.LightGoldenrod2_2, () => 'LightGoldenrod2_2'),
-						MMatch.whenIs(Code.LightGoldenrod2_3, () => 'LightGoldenrod2_3'),
-						MMatch.whenIs(Code.NavajoWhite1, () => 'NavajoWhite1'),
-						MMatch.whenIs(Code.MistyRose1, () => 'MistyRose1')
+						MMatch.whenIs(Code.Type.LightSalmon1, () => 'LightSalmon1'),
+						MMatch.whenIs(Code.Type.LightPink1, () => 'LightPink1'),
+						MMatch.whenIs(Code.Type.Pink1, () => 'Pink1'),
+						MMatch.whenIs(Code.Type.Plum1, () => 'Plum1'),
+						MMatch.whenIs(Code.Type.Gold1, () => 'Gold1'),
+						MMatch.whenIs(Code.Type.LightGoldenrod2_2, () => 'LightGoldenrod2_2'),
+						MMatch.whenIs(Code.Type.LightGoldenrod2_3, () => 'LightGoldenrod2_3'),
+						MMatch.whenIs(Code.Type.NavajoWhite1, () => 'NavajoWhite1'),
+						MMatch.whenIs(Code.Type.MistyRose1, () => 'MistyRose1')
 					),
 					flow(
-						MMatch.whenIs(Code.Thistle1, () => 'Thistle1'),
-						MMatch.whenIs(Code.Yellow1, () => 'Yellow1'),
-						MMatch.whenIs(Code.LightGoldenrod1, () => 'LightGoldenrod1'),
-						MMatch.whenIs(Code.Khaki1, () => 'Khaki1'),
-						MMatch.whenIs(Code.Wheat1, () => 'Wheat1'),
-						MMatch.whenIs(Code.Cornsilk1, () => 'Cornsilk1'),
-						MMatch.whenIs(Code.Grey100, () => 'Grey100'),
-						MMatch.whenIs(Code.Grey3, () => 'Grey3'),
-						MMatch.whenIs(Code.Grey7, () => 'Grey7')
+						MMatch.whenIs(Code.Type.Thistle1, () => 'Thistle1'),
+						MMatch.whenIs(Code.Type.Yellow1, () => 'Yellow1'),
+						MMatch.whenIs(Code.Type.LightGoldenrod1, () => 'LightGoldenrod1'),
+						MMatch.whenIs(Code.Type.Khaki1, () => 'Khaki1'),
+						MMatch.whenIs(Code.Type.Wheat1, () => 'Wheat1'),
+						MMatch.whenIs(Code.Type.Cornsilk1, () => 'Cornsilk1'),
+						MMatch.whenIs(Code.Type.Grey100, () => 'Grey100'),
+						MMatch.whenIs(Code.Type.Grey3, () => 'Grey3'),
+						MMatch.whenIs(Code.Type.Grey7, () => 'Grey7')
 					),
 					flow(
-						MMatch.whenIs(Code.Grey11, () => 'Grey11'),
-						MMatch.whenIs(Code.Grey15, () => 'Grey15'),
-						MMatch.whenIs(Code.Grey19, () => 'Grey19'),
-						MMatch.whenIs(Code.Grey23, () => 'Grey23'),
-						MMatch.whenIs(Code.Grey27, () => 'Grey27'),
-						MMatch.whenIs(Code.Grey30, () => 'Grey30'),
-						MMatch.whenIs(Code.Grey35, () => 'Grey35'),
-						MMatch.whenIs(Code.Grey39, () => 'Grey39'),
-						MMatch.whenIs(Code.Grey42, () => 'Grey42')
+						MMatch.whenIs(Code.Type.Grey11, () => 'Grey11'),
+						MMatch.whenIs(Code.Type.Grey15, () => 'Grey15'),
+						MMatch.whenIs(Code.Type.Grey19, () => 'Grey19'),
+						MMatch.whenIs(Code.Type.Grey23, () => 'Grey23'),
+						MMatch.whenIs(Code.Type.Grey27, () => 'Grey27'),
+						MMatch.whenIs(Code.Type.Grey30, () => 'Grey30'),
+						MMatch.whenIs(Code.Type.Grey35, () => 'Grey35'),
+						MMatch.whenIs(Code.Type.Grey39, () => 'Grey39'),
+						MMatch.whenIs(Code.Type.Grey42, () => 'Grey42')
 					)
 				),
 				flow(
 					flow(
-						MMatch.whenIs(Code.Grey46, () => 'Grey46'),
-						MMatch.whenIs(Code.Grey50, () => 'Grey50'),
-						MMatch.whenIs(Code.Grey54, () => 'Grey54'),
-						MMatch.whenIs(Code.Grey58, () => 'Grey58'),
-						MMatch.whenIs(Code.Grey62, () => 'Grey62'),
-						MMatch.whenIs(Code.Grey66, () => 'Grey66'),
-						MMatch.whenIs(Code.Grey70, () => 'Grey70'),
-						MMatch.whenIs(Code.Grey74, () => 'Grey74'),
-						MMatch.whenIs(Code.Grey78, () => 'Grey78')
+						MMatch.whenIs(Code.Type.Grey46, () => 'Grey46'),
+						MMatch.whenIs(Code.Type.Grey50, () => 'Grey50'),
+						MMatch.whenIs(Code.Type.Grey54, () => 'Grey54'),
+						MMatch.whenIs(Code.Type.Grey58, () => 'Grey58'),
+						MMatch.whenIs(Code.Type.Grey62, () => 'Grey62'),
+						MMatch.whenIs(Code.Type.Grey66, () => 'Grey66'),
+						MMatch.whenIs(Code.Type.Grey70, () => 'Grey70'),
+						MMatch.whenIs(Code.Type.Grey74, () => 'Grey74'),
+						MMatch.whenIs(Code.Type.Grey78, () => 'Grey78')
 					),
 					flow(
-						MMatch.whenIs(Code.Grey82, () => 'Grey82'),
-						MMatch.whenIs(Code.Grey85, () => 'Grey85'),
-						MMatch.whenIs(Code.Grey89, () => 'Grey89'),
-						MMatch.whenIs(Code.Grey93, () => 'Grey93')
+						MMatch.whenIs(Code.Type.Grey82, () => 'Grey82'),
+						MMatch.whenIs(Code.Type.Grey85, () => 'Grey85'),
+						MMatch.whenIs(Code.Type.Grey89, () => 'Grey89'),
+						MMatch.whenIs(Code.Type.Grey93, () => 'Grey93')
 					)
 				)
 			),
 			MMatch.exhaustive,
 			MString.prepend('EightBit')
 		);
+
+		export const withId = (self: Type) => ({ code: self, id: toId(self) });
 	}
 
-	/** Constructor */
-	const _fromCode = (code: Code): Type =>
-		_fromIndexIdAndSequence({
-			characteristic: Characteristic.Index.FgColor,
-			id: 'EightBit' + Code.id(code),
-			sequence: ASSequence.eightBitFgColor(code)
-		});
+	/** EightBit foreground color Style instance maker */
+	const _fromCode: MTypes.OneArgFunction<Code.Type, Type> = flow(
+		Code.withId,
+		ASCharacteristic.eightBitFgColor,
+		_fromCharacteritic
+	);
 
 	/**
 	 * Eightbit black color
@@ -1275,1792 +1151,1792 @@ export namespace EightBit {
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const black: Type = _fromCode(Code.Black);
+	export const black: Type = _fromCode(Code.Type.Black);
 	/**
 	 * Eightbit maroon color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const maroon: Type = _fromCode(Code.Maroon);
+	export const maroon: Type = _fromCode(Code.Type.Maroon);
 	/**
 	 * Eightbit green color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const green: Type = _fromCode(Code.Green);
+	export const green: Type = _fromCode(Code.Type.Green);
 	/**
 	 * Eightbit olive color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const olive: Type = _fromCode(Code.Olive);
+	export const olive: Type = _fromCode(Code.Type.Olive);
 	/**
 	 * Eightbit navy color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const navy: Type = _fromCode(Code.Navy);
+	export const navy: Type = _fromCode(Code.Type.Navy);
 	/**
 	 * Eightbit purple_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const purple_1: Type = _fromCode(Code.Purple_1);
+	export const purple_1: Type = _fromCode(Code.Type.Purple_1);
 	/**
 	 * Eightbit teal color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const teal: Type = _fromCode(Code.Teal);
+	export const teal: Type = _fromCode(Code.Type.Teal);
 	/**
 	 * Eightbit silver color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const silver: Type = _fromCode(Code.Silver);
+	export const silver: Type = _fromCode(Code.Type.Silver);
 	/**
 	 * Eightbit grey color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const grey: Type = _fromCode(Code.Grey);
+	export const grey: Type = _fromCode(Code.Type.Grey);
 	/**
 	 * Eightbit red color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const red: Type = _fromCode(Code.Red);
+	export const red: Type = _fromCode(Code.Type.Red);
 	/**
 	 * Eightbit lime color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const lime: Type = _fromCode(Code.Lime);
+	export const lime: Type = _fromCode(Code.Type.Lime);
 	/**
 	 * Eightbit yellow color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const yellow: Type = _fromCode(Code.Yellow);
+	export const yellow: Type = _fromCode(Code.Type.Yellow);
 	/**
 	 * Eightbit blue color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const blue: Type = _fromCode(Code.Blue);
+	export const blue: Type = _fromCode(Code.Type.Blue);
 	/**
 	 * Eightbit fuchsia color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const fuchsia: Type = _fromCode(Code.Fuchsia);
+	export const fuchsia: Type = _fromCode(Code.Type.Fuchsia);
 	/**
 	 * Eightbit aqua color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const aqua: Type = _fromCode(Code.Aqua);
+	export const aqua: Type = _fromCode(Code.Type.Aqua);
 	/**
 	 * Eightbit white color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const white: Type = _fromCode(Code.White);
+	export const white: Type = _fromCode(Code.Type.White);
 	/**
 	 * Eightbit grey0 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const grey0: Type = _fromCode(Code.Grey0);
+	export const grey0: Type = _fromCode(Code.Type.Grey0);
 	/**
 	 * Eightbit navyBlue color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const navyBlue: Type = _fromCode(Code.NavyBlue);
+	export const navyBlue: Type = _fromCode(Code.Type.NavyBlue);
 	/**
 	 * Eightbit darkBlue color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const darkBlue: Type = _fromCode(Code.DarkBlue);
+	export const darkBlue: Type = _fromCode(Code.Type.DarkBlue);
 	/**
 	 * Eightbit blue3_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const blue3_1: Type = _fromCode(Code.Blue3_1);
+	export const blue3_1: Type = _fromCode(Code.Type.Blue3_1);
 	/**
 	 * Eightbit blue3_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const blue3_2: Type = _fromCode(Code.Blue3_2);
+	export const blue3_2: Type = _fromCode(Code.Type.Blue3_2);
 	/**
 	 * Eightbit blue1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const blue1: Type = _fromCode(Code.Blue1);
+	export const blue1: Type = _fromCode(Code.Type.Blue1);
 	/**
 	 * Eightbit darkGreen color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const darkGreen: Type = _fromCode(Code.DarkGreen);
+	export const darkGreen: Type = _fromCode(Code.Type.DarkGreen);
 	/**
 	 * Eightbit deepSkyBlue4_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const deepSkyBlue4_1: Type = _fromCode(Code.DeepSkyBlue4_1);
+	export const deepSkyBlue4_1: Type = _fromCode(Code.Type.DeepSkyBlue4_1);
 	/**
 	 * Eightbit deepSkyBlue4_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const deepSkyBlue4_2: Type = _fromCode(Code.DeepSkyBlue4_2);
+	export const deepSkyBlue4_2: Type = _fromCode(Code.Type.DeepSkyBlue4_2);
 	/**
 	 * Eightbit deepSkyBlue4_3 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const deepSkyBlue4_3: Type = _fromCode(Code.DeepSkyBlue4_3);
+	export const deepSkyBlue4_3: Type = _fromCode(Code.Type.DeepSkyBlue4_3);
 	/**
 	 * Eightbit dodgerBlue3 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const dodgerBlue3: Type = _fromCode(Code.DodgerBlue3);
+	export const dodgerBlue3: Type = _fromCode(Code.Type.DodgerBlue3);
 	/**
 	 * Eightbit dodgerBlue2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const dodgerBlue2: Type = _fromCode(Code.DodgerBlue2);
+	export const dodgerBlue2: Type = _fromCode(Code.Type.DodgerBlue2);
 	/**
 	 * Eightbit green4 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const green4: Type = _fromCode(Code.Green4);
+	export const green4: Type = _fromCode(Code.Type.Green4);
 	/**
 	 * Eightbit springGreen4 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const springGreen4: Type = _fromCode(Code.SpringGreen4);
+	export const springGreen4: Type = _fromCode(Code.Type.SpringGreen4);
 	/**
 	 * Eightbit turquoise4 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const turquoise4: Type = _fromCode(Code.Turquoise4);
+	export const turquoise4: Type = _fromCode(Code.Type.Turquoise4);
 	/**
 	 * Eightbit deepSkyBlue3_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const deepSkyBlue3_1: Type = _fromCode(Code.DeepSkyBlue3_1);
+	export const deepSkyBlue3_1: Type = _fromCode(Code.Type.DeepSkyBlue3_1);
 	/**
 	 * Eightbit deepSkyBlue3_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const deepSkyBlue3_2: Type = _fromCode(Code.DeepSkyBlue3_2);
+	export const deepSkyBlue3_2: Type = _fromCode(Code.Type.DeepSkyBlue3_2);
 	/**
 	 * Eightbit dodgerBlue1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const dodgerBlue1: Type = _fromCode(Code.DodgerBlue1);
+	export const dodgerBlue1: Type = _fromCode(Code.Type.DodgerBlue1);
 	/**
 	 * Eightbit green3_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const green3_1: Type = _fromCode(Code.Green3_1);
+	export const green3_1: Type = _fromCode(Code.Type.Green3_1);
 	/**
 	 * Eightbit springGreen3_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const springGreen3_1: Type = _fromCode(Code.SpringGreen3_1);
+	export const springGreen3_1: Type = _fromCode(Code.Type.SpringGreen3_1);
 	/**
 	 * Eightbit darkCyan color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const darkCyan: Type = _fromCode(Code.DarkCyan);
+	export const darkCyan: Type = _fromCode(Code.Type.DarkCyan);
 	/**
 	 * Eightbit lightSeaGreen color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const lightSeaGreen: Type = _fromCode(Code.LightSeaGreen);
+	export const lightSeaGreen: Type = _fromCode(Code.Type.LightSeaGreen);
 	/**
 	 * Eightbit deepSkyBlue2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const deepSkyBlue2: Type = _fromCode(Code.DeepSkyBlue2);
+	export const deepSkyBlue2: Type = _fromCode(Code.Type.DeepSkyBlue2);
 	/**
 	 * Eightbit deepSkyBlue1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const deepSkyBlue1: Type = _fromCode(Code.DeepSkyBlue1);
+	export const deepSkyBlue1: Type = _fromCode(Code.Type.DeepSkyBlue1);
 	/**
 	 * Eightbit green3_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const green3_2: Type = _fromCode(Code.Green3_2);
+	export const green3_2: Type = _fromCode(Code.Type.Green3_2);
 	/**
 	 * Eightbit springGreen3_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const springGreen3_2: Type = _fromCode(Code.SpringGreen3_2);
+	export const springGreen3_2: Type = _fromCode(Code.Type.SpringGreen3_2);
 	/**
 	 * Eightbit springGreen2_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const springGreen2_1: Type = _fromCode(Code.SpringGreen2_1);
+	export const springGreen2_1: Type = _fromCode(Code.Type.SpringGreen2_1);
 	/**
 	 * Eightbit cyan3 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const cyan3: Type = _fromCode(Code.Cyan3);
+	export const cyan3: Type = _fromCode(Code.Type.Cyan3);
 	/**
 	 * Eightbit darkTurquoise color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const darkTurquoise: Type = _fromCode(Code.DarkTurquoise);
+	export const darkTurquoise: Type = _fromCode(Code.Type.DarkTurquoise);
 	/**
 	 * Eightbit turquoise2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const turquoise2: Type = _fromCode(Code.Turquoise2);
+	export const turquoise2: Type = _fromCode(Code.Type.Turquoise2);
 	/**
 	 * Eightbit green1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const green1: Type = _fromCode(Code.Green1);
+	export const green1: Type = _fromCode(Code.Type.Green1);
 	/**
 	 * Eightbit springGreen2_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const springGreen2_2: Type = _fromCode(Code.SpringGreen2_2);
+	export const springGreen2_2: Type = _fromCode(Code.Type.SpringGreen2_2);
 	/**
 	 * Eightbit springGreen1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const springGreen1: Type = _fromCode(Code.SpringGreen1);
+	export const springGreen1: Type = _fromCode(Code.Type.SpringGreen1);
 	/**
 	 * Eightbit mediumSpringGreen color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const mediumSpringGreen: Type = _fromCode(Code.MediumSpringGreen);
+	export const mediumSpringGreen: Type = _fromCode(Code.Type.MediumSpringGreen);
 	/**
 	 * Eightbit cyan2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const cyan2: Type = _fromCode(Code.Cyan2);
+	export const cyan2: Type = _fromCode(Code.Type.Cyan2);
 	/**
 	 * Eightbit cyan1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const cyan1: Type = _fromCode(Code.Cyan1);
+	export const cyan1: Type = _fromCode(Code.Type.Cyan1);
 	/**
 	 * Eightbit darkRed_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const darkRed_1: Type = _fromCode(Code.DarkRed_1);
+	export const darkRed_1: Type = _fromCode(Code.Type.DarkRed_1);
 	/**
 	 * Eightbit deepPink4_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const deepPink4_1: Type = _fromCode(Code.DeepPink4_1);
+	export const deepPink4_1: Type = _fromCode(Code.Type.DeepPink4_1);
 	/**
 	 * Eightbit purple4_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const purple4_1: Type = _fromCode(Code.Purple4_1);
+	export const purple4_1: Type = _fromCode(Code.Type.Purple4_1);
 	/**
 	 * Eightbit purple4_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const purple4_2: Type = _fromCode(Code.Purple4_2);
+	export const purple4_2: Type = _fromCode(Code.Type.Purple4_2);
 	/**
 	 * Eightbit purple3 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const purple3: Type = _fromCode(Code.Purple3);
+	export const purple3: Type = _fromCode(Code.Type.Purple3);
 	/**
 	 * Eightbit blueViolet color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const blueViolet: Type = _fromCode(Code.BlueViolet);
+	export const blueViolet: Type = _fromCode(Code.Type.BlueViolet);
 	/**
 	 * Eightbit orange4_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const orange4_1: Type = _fromCode(Code.Orange4_1);
+	export const orange4_1: Type = _fromCode(Code.Type.Orange4_1);
 	/**
 	 * Eightbit grey37 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const grey37: Type = _fromCode(Code.Grey37);
+	export const grey37: Type = _fromCode(Code.Type.Grey37);
 	/**
 	 * Eightbit mediumPurple4 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const mediumPurple4: Type = _fromCode(Code.MediumPurple4);
+	export const mediumPurple4: Type = _fromCode(Code.Type.MediumPurple4);
 	/**
 	 * Eightbit slateBlue3_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const slateBlue3_1: Type = _fromCode(Code.SlateBlue3_1);
+	export const slateBlue3_1: Type = _fromCode(Code.Type.SlateBlue3_1);
 	/**
 	 * Eightbit slateBlue3_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const slateBlue3_2: Type = _fromCode(Code.SlateBlue3_2);
+	export const slateBlue3_2: Type = _fromCode(Code.Type.SlateBlue3_2);
 	/**
 	 * Eightbit royalBlue1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const royalBlue1: Type = _fromCode(Code.RoyalBlue1);
+	export const royalBlue1: Type = _fromCode(Code.Type.RoyalBlue1);
 	/**
 	 * Eightbit chartreuse4 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const chartreuse4: Type = _fromCode(Code.Chartreuse4);
+	export const chartreuse4: Type = _fromCode(Code.Type.Chartreuse4);
 	/**
 	 * Eightbit darkSeaGreen4_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const darkSeaGreen4_1: Type = _fromCode(Code.DarkSeaGreen4_1);
+	export const darkSeaGreen4_1: Type = _fromCode(Code.Type.DarkSeaGreen4_1);
 	/**
 	 * Eightbit paleTurquoise4 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const paleTurquoise4: Type = _fromCode(Code.PaleTurquoise4);
+	export const paleTurquoise4: Type = _fromCode(Code.Type.PaleTurquoise4);
 	/**
 	 * Eightbit steelBlue color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const steelBlue: Type = _fromCode(Code.SteelBlue);
+	export const steelBlue: Type = _fromCode(Code.Type.SteelBlue);
 	/**
 	 * Eightbit steelBlue3 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const steelBlue3: Type = _fromCode(Code.SteelBlue3);
+	export const steelBlue3: Type = _fromCode(Code.Type.SteelBlue3);
 	/**
 	 * Eightbit cornflowerBlue color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const cornflowerBlue: Type = _fromCode(Code.CornflowerBlue);
+	export const cornflowerBlue: Type = _fromCode(Code.Type.CornflowerBlue);
 	/**
 	 * Eightbit chartreuse3_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const chartreuse3_1: Type = _fromCode(Code.Chartreuse3_1);
+	export const chartreuse3_1: Type = _fromCode(Code.Type.Chartreuse3_1);
 	/**
 	 * Eightbit darkSeaGreen4_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const darkSeaGreen4_2: Type = _fromCode(Code.DarkSeaGreen4_2);
+	export const darkSeaGreen4_2: Type = _fromCode(Code.Type.DarkSeaGreen4_2);
 	/**
 	 * Eightbit cadetBlue_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const cadetBlue_1: Type = _fromCode(Code.CadetBlue_1);
+	export const cadetBlue_1: Type = _fromCode(Code.Type.CadetBlue_1);
 	/**
 	 * Eightbit cadetBlue_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const cadetBlue_2: Type = _fromCode(Code.CadetBlue_2);
+	export const cadetBlue_2: Type = _fromCode(Code.Type.CadetBlue_2);
 	/**
 	 * Eightbit skyBlue3 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const skyBlue3: Type = _fromCode(Code.SkyBlue3);
+	export const skyBlue3: Type = _fromCode(Code.Type.SkyBlue3);
 	/**
 	 * Eightbit steelBlue1_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const steelBlue1_1: Type = _fromCode(Code.SteelBlue1_1);
+	export const steelBlue1_1: Type = _fromCode(Code.Type.SteelBlue1_1);
 	/**
 	 * Eightbit chartreuse3_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const chartreuse3_2: Type = _fromCode(Code.Chartreuse3_2);
+	export const chartreuse3_2: Type = _fromCode(Code.Type.Chartreuse3_2);
 	/**
 	 * Eightbit paleGreen3_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const paleGreen3_1: Type = _fromCode(Code.PaleGreen3_1);
+	export const paleGreen3_1: Type = _fromCode(Code.Type.PaleGreen3_1);
 	/**
 	 * Eightbit seaGreen3 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const seaGreen3: Type = _fromCode(Code.SeaGreen3);
+	export const seaGreen3: Type = _fromCode(Code.Type.SeaGreen3);
 	/**
 	 * Eightbit aquamarine3 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const aquamarine3: Type = _fromCode(Code.Aquamarine3);
+	export const aquamarine3: Type = _fromCode(Code.Type.Aquamarine3);
 	/**
 	 * Eightbit mediumTurquoise color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const mediumTurquoise: Type = _fromCode(Code.MediumTurquoise);
+	export const mediumTurquoise: Type = _fromCode(Code.Type.MediumTurquoise);
 	/**
 	 * Eightbit steelBlue1_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const steelBlue1_2: Type = _fromCode(Code.SteelBlue1_2);
+	export const steelBlue1_2: Type = _fromCode(Code.Type.SteelBlue1_2);
 	/**
 	 * Eightbit chartreuse2_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const chartreuse2_1: Type = _fromCode(Code.Chartreuse2_1);
+	export const chartreuse2_1: Type = _fromCode(Code.Type.Chartreuse2_1);
 	/**
 	 * Eightbit seaGreen2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const seaGreen2: Type = _fromCode(Code.SeaGreen2);
+	export const seaGreen2: Type = _fromCode(Code.Type.SeaGreen2);
 	/**
 	 * Eightbit seaGreen1_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const seaGreen1_1: Type = _fromCode(Code.SeaGreen1_1);
+	export const seaGreen1_1: Type = _fromCode(Code.Type.SeaGreen1_1);
 	/**
 	 * Eightbit seaGreen1_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const seaGreen1_2: Type = _fromCode(Code.SeaGreen1_2);
+	export const seaGreen1_2: Type = _fromCode(Code.Type.SeaGreen1_2);
 	/**
 	 * Eightbit aquamarine1_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const aquamarine1_1: Type = _fromCode(Code.Aquamarine1_1);
+	export const aquamarine1_1: Type = _fromCode(Code.Type.Aquamarine1_1);
 	/**
 	 * Eightbit darkSlateGray2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const darkSlateGray2: Type = _fromCode(Code.DarkSlateGray2);
+	export const darkSlateGray2: Type = _fromCode(Code.Type.DarkSlateGray2);
 	/**
 	 * Eightbit darkRed_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const darkRed_2: Type = _fromCode(Code.DarkRed_2);
+	export const darkRed_2: Type = _fromCode(Code.Type.DarkRed_2);
 	/**
 	 * Eightbit deepPink4_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const deepPink4_2: Type = _fromCode(Code.DeepPink4_2);
+	export const deepPink4_2: Type = _fromCode(Code.Type.DeepPink4_2);
 	/**
 	 * Eightbit darkMagenta_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const darkMagenta_1: Type = _fromCode(Code.DarkMagenta_1);
+	export const darkMagenta_1: Type = _fromCode(Code.Type.DarkMagenta_1);
 	/**
 	 * Eightbit darkMagenta_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const darkMagenta_2: Type = _fromCode(Code.DarkMagenta_2);
+	export const darkMagenta_2: Type = _fromCode(Code.Type.DarkMagenta_2);
 	/**
 	 * Eightbit darkViolet_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const darkViolet_1: Type = _fromCode(Code.DarkViolet_1);
+	export const darkViolet_1: Type = _fromCode(Code.Type.DarkViolet_1);
 	/**
 	 * Eightbit purple_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const purple_2: Type = _fromCode(Code.Purple_2);
+	export const purple_2: Type = _fromCode(Code.Type.Purple_2);
 	/**
 	 * Eightbit orange4_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const orange4_2: Type = _fromCode(Code.Orange4_2);
+	export const orange4_2: Type = _fromCode(Code.Type.Orange4_2);
 	/**
 	 * Eightbit lightPink4 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const lightPink4: Type = _fromCode(Code.LightPink4);
+	export const lightPink4: Type = _fromCode(Code.Type.LightPink4);
 	/**
 	 * Eightbit plum4 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const plum4: Type = _fromCode(Code.Plum4);
+	export const plum4: Type = _fromCode(Code.Type.Plum4);
 	/**
 	 * Eightbit mediumPurple3_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const mediumPurple3_1: Type = _fromCode(Code.MediumPurple3_1);
+	export const mediumPurple3_1: Type = _fromCode(Code.Type.MediumPurple3_1);
 	/**
 	 * Eightbit mediumPurple3_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const mediumPurple3_2: Type = _fromCode(Code.MediumPurple3_2);
+	export const mediumPurple3_2: Type = _fromCode(Code.Type.MediumPurple3_2);
 	/**
 	 * Eightbit slateBlue1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const slateBlue1: Type = _fromCode(Code.SlateBlue1);
+	export const slateBlue1: Type = _fromCode(Code.Type.SlateBlue1);
 	/**
 	 * Eightbit yellow4_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const yellow4_1: Type = _fromCode(Code.Yellow4_1);
+	export const yellow4_1: Type = _fromCode(Code.Type.Yellow4_1);
 	/**
 	 * Eightbit wheat4 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const wheat4: Type = _fromCode(Code.Wheat4);
+	export const wheat4: Type = _fromCode(Code.Type.Wheat4);
 	/**
 	 * Eightbit grey53 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const grey53: Type = _fromCode(Code.Grey53);
+	export const grey53: Type = _fromCode(Code.Type.Grey53);
 	/**
 	 * Eightbit lightSlateGrey color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const lightSlateGrey: Type = _fromCode(Code.LightSlateGrey);
+	export const lightSlateGrey: Type = _fromCode(Code.Type.LightSlateGrey);
 	/**
 	 * Eightbit mediumPurple color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const mediumPurple: Type = _fromCode(Code.MediumPurple);
+	export const mediumPurple: Type = _fromCode(Code.Type.MediumPurple);
 	/**
 	 * Eightbit lightSlateBlue color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const lightSlateBlue: Type = _fromCode(Code.LightSlateBlue);
+	export const lightSlateBlue: Type = _fromCode(Code.Type.LightSlateBlue);
 	/**
 	 * Eightbit yellow4_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const yellow4_2: Type = _fromCode(Code.Yellow4_2);
+	export const yellow4_2: Type = _fromCode(Code.Type.Yellow4_2);
 	/**
 	 * Eightbit darkOliveGreen3_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const darkOliveGreen3_1: Type = _fromCode(Code.DarkOliveGreen3_1);
+	export const darkOliveGreen3_1: Type = _fromCode(Code.Type.DarkOliveGreen3_1);
 	/**
 	 * Eightbit darkSeaGreen color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const darkSeaGreen: Type = _fromCode(Code.DarkSeaGreen);
+	export const darkSeaGreen: Type = _fromCode(Code.Type.DarkSeaGreen);
 	/**
 	 * Eightbit lightSkyBlue3_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const lightSkyBlue3_1: Type = _fromCode(Code.LightSkyBlue3_1);
+	export const lightSkyBlue3_1: Type = _fromCode(Code.Type.LightSkyBlue3_1);
 	/**
 	 * Eightbit lightSkyBlue3_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const lightSkyBlue3_2: Type = _fromCode(Code.LightSkyBlue3_2);
+	export const lightSkyBlue3_2: Type = _fromCode(Code.Type.LightSkyBlue3_2);
 	/**
 	 * Eightbit skyBlue2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const skyBlue2: Type = _fromCode(Code.SkyBlue2);
+	export const skyBlue2: Type = _fromCode(Code.Type.SkyBlue2);
 	/**
 	 * Eightbit chartreuse2_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const chartreuse2_2: Type = _fromCode(Code.Chartreuse2_2);
+	export const chartreuse2_2: Type = _fromCode(Code.Type.Chartreuse2_2);
 	/**
 	 * Eightbit darkOliveGreen3_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const darkOliveGreen3_2: Type = _fromCode(Code.DarkOliveGreen3_2);
+	export const darkOliveGreen3_2: Type = _fromCode(Code.Type.DarkOliveGreen3_2);
 	/**
 	 * Eightbit paleGreen3_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const paleGreen3_2: Type = _fromCode(Code.PaleGreen3_2);
+	export const paleGreen3_2: Type = _fromCode(Code.Type.PaleGreen3_2);
 	/**
 	 * Eightbit darkSeaGreen3_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const darkSeaGreen3_1: Type = _fromCode(Code.DarkSeaGreen3_1);
+	export const darkSeaGreen3_1: Type = _fromCode(Code.Type.DarkSeaGreen3_1);
 	/**
 	 * Eightbit darkSlateGray3 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const darkSlateGray3: Type = _fromCode(Code.DarkSlateGray3);
+	export const darkSlateGray3: Type = _fromCode(Code.Type.DarkSlateGray3);
 	/**
 	 * Eightbit skyBlue1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const skyBlue1: Type = _fromCode(Code.SkyBlue1);
+	export const skyBlue1: Type = _fromCode(Code.Type.SkyBlue1);
 	/**
 	 * Eightbit chartreuse1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const chartreuse1: Type = _fromCode(Code.Chartreuse1);
+	export const chartreuse1: Type = _fromCode(Code.Type.Chartreuse1);
 	/**
 	 * Eightbit lightGreen_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const lightGreen_1: Type = _fromCode(Code.LightGreen_1);
+	export const lightGreen_1: Type = _fromCode(Code.Type.LightGreen_1);
 	/**
 	 * Eightbit lightGreen_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const lightGreen_2: Type = _fromCode(Code.LightGreen_2);
+	export const lightGreen_2: Type = _fromCode(Code.Type.LightGreen_2);
 	/**
 	 * Eightbit paleGreen1_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const paleGreen1_1: Type = _fromCode(Code.PaleGreen1_1);
+	export const paleGreen1_1: Type = _fromCode(Code.Type.PaleGreen1_1);
 	/**
 	 * Eightbit aquamarine1_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const aquamarine1_2: Type = _fromCode(Code.Aquamarine1_2);
+	export const aquamarine1_2: Type = _fromCode(Code.Type.Aquamarine1_2);
 	/**
 	 * Eightbit darkSlateGray1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const darkSlateGray1: Type = _fromCode(Code.DarkSlateGray1);
+	export const darkSlateGray1: Type = _fromCode(Code.Type.DarkSlateGray1);
 	/**
 	 * Eightbit red3_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const red3_1: Type = _fromCode(Code.Red3_1);
+	export const red3_1: Type = _fromCode(Code.Type.Red3_1);
 	/**
 	 * Eightbit deepPink4_3 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const deepPink4_3: Type = _fromCode(Code.DeepPink4_3);
+	export const deepPink4_3: Type = _fromCode(Code.Type.DeepPink4_3);
 	/**
 	 * Eightbit mediumVioletRed color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const mediumVioletRed: Type = _fromCode(Code.MediumVioletRed);
+	export const mediumVioletRed: Type = _fromCode(Code.Type.MediumVioletRed);
 	/**
 	 * Eightbit magenta3_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const magenta3_1: Type = _fromCode(Code.Magenta3_1);
+	export const magenta3_1: Type = _fromCode(Code.Type.Magenta3_1);
 	/**
 	 * Eightbit darkViolet_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const darkViolet_2: Type = _fromCode(Code.DarkViolet_2);
+	export const darkViolet_2: Type = _fromCode(Code.Type.DarkViolet_2);
 	/**
 	 * Eightbit purple_3 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const purple_3: Type = _fromCode(Code.Purple_3);
+	export const purple_3: Type = _fromCode(Code.Type.Purple_3);
 	/**
 	 * Eightbit darkOrange3_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const darkOrange3_1: Type = _fromCode(Code.DarkOrange3_1);
+	export const darkOrange3_1: Type = _fromCode(Code.Type.DarkOrange3_1);
 	/**
 	 * Eightbit indianRed_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const indianRed_1: Type = _fromCode(Code.IndianRed_1);
+	export const indianRed_1: Type = _fromCode(Code.Type.IndianRed_1);
 	/**
 	 * Eightbit hotPink3_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const hotPink3_1: Type = _fromCode(Code.HotPink3_1);
+	export const hotPink3_1: Type = _fromCode(Code.Type.HotPink3_1);
 	/**
 	 * Eightbit mediumOrchid3 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const mediumOrchid3: Type = _fromCode(Code.MediumOrchid3);
+	export const mediumOrchid3: Type = _fromCode(Code.Type.MediumOrchid3);
 	/**
 	 * Eightbit mediumOrchid color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const mediumOrchid: Type = _fromCode(Code.MediumOrchid);
+	export const mediumOrchid: Type = _fromCode(Code.Type.MediumOrchid);
 	/**
 	 * Eightbit mediumPurple2_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const mediumPurple2_1: Type = _fromCode(Code.MediumPurple2_1);
+	export const mediumPurple2_1: Type = _fromCode(Code.Type.MediumPurple2_1);
 	/**
 	 * Eightbit darkGoldenrod color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const darkGoldenrod: Type = _fromCode(Code.DarkGoldenrod);
+	export const darkGoldenrod: Type = _fromCode(Code.Type.DarkGoldenrod);
 	/**
 	 * Eightbit lightSalmon3_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const lightSalmon3_1: Type = _fromCode(Code.LightSalmon3_1);
+	export const lightSalmon3_1: Type = _fromCode(Code.Type.LightSalmon3_1);
 	/**
 	 * Eightbit rosyBrown color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const rosyBrown: Type = _fromCode(Code.RosyBrown);
+	export const rosyBrown: Type = _fromCode(Code.Type.RosyBrown);
 	/**
 	 * Eightbit grey63 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const grey63: Type = _fromCode(Code.Grey63);
+	export const grey63: Type = _fromCode(Code.Type.Grey63);
 	/**
 	 * Eightbit mediumPurple2_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const mediumPurple2_2: Type = _fromCode(Code.MediumPurple2_2);
+	export const mediumPurple2_2: Type = _fromCode(Code.Type.MediumPurple2_2);
 	/**
 	 * Eightbit mediumPurple1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const mediumPurple1: Type = _fromCode(Code.MediumPurple1);
+	export const mediumPurple1: Type = _fromCode(Code.Type.MediumPurple1);
 	/**
 	 * Eightbit gold3_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const gold3_1: Type = _fromCode(Code.Gold3_1);
+	export const gold3_1: Type = _fromCode(Code.Type.Gold3_1);
 	/**
 	 * Eightbit darkKhaki color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const darkKhaki: Type = _fromCode(Code.DarkKhaki);
+	export const darkKhaki: Type = _fromCode(Code.Type.DarkKhaki);
 	/**
 	 * Eightbit navajoWhite3 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const navajoWhite3: Type = _fromCode(Code.NavajoWhite3);
+	export const navajoWhite3: Type = _fromCode(Code.Type.NavajoWhite3);
 	/**
 	 * Eightbit grey69 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const grey69: Type = _fromCode(Code.Grey69);
+	export const grey69: Type = _fromCode(Code.Type.Grey69);
 	/**
 	 * Eightbit lightSteelBlue3 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const lightSteelBlue3: Type = _fromCode(Code.LightSteelBlue3);
+	export const lightSteelBlue3: Type = _fromCode(Code.Type.LightSteelBlue3);
 	/**
 	 * Eightbit lightSteelBlue color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const lightSteelBlue: Type = _fromCode(Code.LightSteelBlue);
+	export const lightSteelBlue: Type = _fromCode(Code.Type.LightSteelBlue);
 	/**
 	 * Eightbit yellow3_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const yellow3_1: Type = _fromCode(Code.Yellow3_1);
+	export const yellow3_1: Type = _fromCode(Code.Type.Yellow3_1);
 	/**
 	 * Eightbit darkOliveGreen3_3 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const darkOliveGreen3_3: Type = _fromCode(Code.DarkOliveGreen3_3);
+	export const darkOliveGreen3_3: Type = _fromCode(Code.Type.DarkOliveGreen3_3);
 	/**
 	 * Eightbit darkSeaGreen3_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const darkSeaGreen3_2: Type = _fromCode(Code.DarkSeaGreen3_2);
+	export const darkSeaGreen3_2: Type = _fromCode(Code.Type.DarkSeaGreen3_2);
 	/**
 	 * Eightbit darkSeaGreen2_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const darkSeaGreen2_1: Type = _fromCode(Code.DarkSeaGreen2_1);
+	export const darkSeaGreen2_1: Type = _fromCode(Code.Type.DarkSeaGreen2_1);
 	/**
 	 * Eightbit lightCyan3 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const lightCyan3: Type = _fromCode(Code.LightCyan3);
+	export const lightCyan3: Type = _fromCode(Code.Type.LightCyan3);
 	/**
 	 * Eightbit lightSkyBlue1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const lightSkyBlue1: Type = _fromCode(Code.LightSkyBlue1);
+	export const lightSkyBlue1: Type = _fromCode(Code.Type.LightSkyBlue1);
 	/**
 	 * Eightbit greenYellow color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const greenYellow: Type = _fromCode(Code.GreenYellow);
+	export const greenYellow: Type = _fromCode(Code.Type.GreenYellow);
 	/**
 	 * Eightbit darkOliveGreen2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const darkOliveGreen2: Type = _fromCode(Code.DarkOliveGreen2);
+	export const darkOliveGreen2: Type = _fromCode(Code.Type.DarkOliveGreen2);
 	/**
 	 * Eightbit paleGreen1_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const paleGreen1_2: Type = _fromCode(Code.PaleGreen1_2);
+	export const paleGreen1_2: Type = _fromCode(Code.Type.PaleGreen1_2);
 	/**
 	 * Eightbit darkSeaGreen2_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const darkSeaGreen2_2: Type = _fromCode(Code.DarkSeaGreen2_2);
+	export const darkSeaGreen2_2: Type = _fromCode(Code.Type.DarkSeaGreen2_2);
 	/**
 	 * Eightbit darkSeaGreen1_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const darkSeaGreen1_1: Type = _fromCode(Code.DarkSeaGreen1_1);
+	export const darkSeaGreen1_1: Type = _fromCode(Code.Type.DarkSeaGreen1_1);
 	/**
 	 * Eightbit paleTurquoise1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const paleTurquoise1: Type = _fromCode(Code.PaleTurquoise1);
+	export const paleTurquoise1: Type = _fromCode(Code.Type.PaleTurquoise1);
 	/**
 	 * Eightbit red3_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const red3_2: Type = _fromCode(Code.Red3_2);
+	export const red3_2: Type = _fromCode(Code.Type.Red3_2);
 	/**
 	 * Eightbit deepPink3_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const deepPink3_1: Type = _fromCode(Code.DeepPink3_1);
+	export const deepPink3_1: Type = _fromCode(Code.Type.DeepPink3_1);
 	/**
 	 * Eightbit deepPink3_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const deepPink3_2: Type = _fromCode(Code.DeepPink3_2);
+	export const deepPink3_2: Type = _fromCode(Code.Type.DeepPink3_2);
 	/**
 	 * Eightbit magenta3_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const magenta3_2: Type = _fromCode(Code.Magenta3_2);
+	export const magenta3_2: Type = _fromCode(Code.Type.Magenta3_2);
 	/**
 	 * Eightbit magenta3_3 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const magenta3_3: Type = _fromCode(Code.Magenta3_3);
+	export const magenta3_3: Type = _fromCode(Code.Type.Magenta3_3);
 	/**
 	 * Eightbit magenta2_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const magenta2_1: Type = _fromCode(Code.Magenta2_1);
+	export const magenta2_1: Type = _fromCode(Code.Type.Magenta2_1);
 	/**
 	 * Eightbit darkOrange3_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const darkOrange3_2: Type = _fromCode(Code.DarkOrange3_2);
+	export const darkOrange3_2: Type = _fromCode(Code.Type.DarkOrange3_2);
 	/**
 	 * Eightbit indianRed_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const indianRed_2: Type = _fromCode(Code.IndianRed_2);
+	export const indianRed_2: Type = _fromCode(Code.Type.IndianRed_2);
 	/**
 	 * Eightbit hotPink3_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const hotPink3_2: Type = _fromCode(Code.HotPink3_2);
+	export const hotPink3_2: Type = _fromCode(Code.Type.HotPink3_2);
 	/**
 	 * Eightbit hotPink2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const hotPink2: Type = _fromCode(Code.HotPink2);
+	export const hotPink2: Type = _fromCode(Code.Type.HotPink2);
 	/**
 	 * Eightbit orchid color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const orchid: Type = _fromCode(Code.Orchid);
+	export const orchid: Type = _fromCode(Code.Type.Orchid);
 	/**
 	 * Eightbit mediumOrchid1_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const mediumOrchid1_1: Type = _fromCode(Code.MediumOrchid1_1);
+	export const mediumOrchid1_1: Type = _fromCode(Code.Type.MediumOrchid1_1);
 	/**
 	 * Eightbit orange3 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const orange3: Type = _fromCode(Code.Orange3);
+	export const orange3: Type = _fromCode(Code.Type.Orange3);
 	/**
 	 * Eightbit lightSalmon3_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const lightSalmon3_2: Type = _fromCode(Code.LightSalmon3_2);
+	export const lightSalmon3_2: Type = _fromCode(Code.Type.LightSalmon3_2);
 	/**
 	 * Eightbit lightPink3 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const lightPink3: Type = _fromCode(Code.LightPink3);
+	export const lightPink3: Type = _fromCode(Code.Type.LightPink3);
 	/**
 	 * Eightbit pink3 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const pink3: Type = _fromCode(Code.Pink3);
+	export const pink3: Type = _fromCode(Code.Type.Pink3);
 	/**
 	 * Eightbit plum3 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const plum3: Type = _fromCode(Code.Plum3);
+	export const plum3: Type = _fromCode(Code.Type.Plum3);
 	/**
 	 * Eightbit violet color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const violet: Type = _fromCode(Code.Violet);
+	export const violet: Type = _fromCode(Code.Type.Violet);
 	/**
 	 * Eightbit gold3_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const gold3_2: Type = _fromCode(Code.Gold3_2);
+	export const gold3_2: Type = _fromCode(Code.Type.Gold3_2);
 	/**
 	 * Eightbit lightGoldenrod3 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const lightGoldenrod3: Type = _fromCode(Code.LightGoldenrod3);
+	export const lightGoldenrod3: Type = _fromCode(Code.Type.LightGoldenrod3);
 	/**
 	 * Eightbit tan color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const tan: Type = _fromCode(Code.Tan);
+	export const tan: Type = _fromCode(Code.Type.Tan);
 	/**
 	 * Eightbit mistyRose3 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const mistyRose3: Type = _fromCode(Code.MistyRose3);
+	export const mistyRose3: Type = _fromCode(Code.Type.MistyRose3);
 	/**
 	 * Eightbit thistle3 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const thistle3: Type = _fromCode(Code.Thistle3);
+	export const thistle3: Type = _fromCode(Code.Type.Thistle3);
 	/**
 	 * Eightbit plum2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const plum2: Type = _fromCode(Code.Plum2);
+	export const plum2: Type = _fromCode(Code.Type.Plum2);
 	/**
 	 * Eightbit yellow3_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const yellow3_2: Type = _fromCode(Code.Yellow3_2);
+	export const yellow3_2: Type = _fromCode(Code.Type.Yellow3_2);
 	/**
 	 * Eightbit khaki3 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const khaki3: Type = _fromCode(Code.Khaki3);
+	export const khaki3: Type = _fromCode(Code.Type.Khaki3);
 	/**
 	 * Eightbit lightGoldenrod2_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const lightGoldenrod2_1: Type = _fromCode(Code.LightGoldenrod2_1);
+	export const lightGoldenrod2_1: Type = _fromCode(Code.Type.LightGoldenrod2_1);
 	/**
 	 * Eightbit lightYellow3 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const lightYellow3: Type = _fromCode(Code.LightYellow3);
+	export const lightYellow3: Type = _fromCode(Code.Type.LightYellow3);
 	/**
 	 * Eightbit grey84 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const grey84: Type = _fromCode(Code.Grey84);
+	export const grey84: Type = _fromCode(Code.Type.Grey84);
 	/**
 	 * Eightbit lightSteelBlue1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const lightSteelBlue1: Type = _fromCode(Code.LightSteelBlue1);
+	export const lightSteelBlue1: Type = _fromCode(Code.Type.LightSteelBlue1);
 	/**
 	 * Eightbit yellow2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const yellow2: Type = _fromCode(Code.Yellow2);
+	export const yellow2: Type = _fromCode(Code.Type.Yellow2);
 	/**
 	 * Eightbit darkOliveGreen1_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const darkOliveGreen1_1: Type = _fromCode(Code.DarkOliveGreen1_1);
+	export const darkOliveGreen1_1: Type = _fromCode(Code.Type.DarkOliveGreen1_1);
 	/**
 	 * Eightbit darkOliveGreen1_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const darkOliveGreen1_2: Type = _fromCode(Code.DarkOliveGreen1_2);
+	export const darkOliveGreen1_2: Type = _fromCode(Code.Type.DarkOliveGreen1_2);
 	/**
 	 * Eightbit darkSeaGreen1_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const darkSeaGreen1_2: Type = _fromCode(Code.DarkSeaGreen1_2);
+	export const darkSeaGreen1_2: Type = _fromCode(Code.Type.DarkSeaGreen1_2);
 	/**
 	 * Eightbit honeydew2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const honeydew2: Type = _fromCode(Code.Honeydew2);
+	export const honeydew2: Type = _fromCode(Code.Type.Honeydew2);
 	/**
 	 * Eightbit lightCyan1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const lightCyan1: Type = _fromCode(Code.LightCyan1);
+	export const lightCyan1: Type = _fromCode(Code.Type.LightCyan1);
 	/**
 	 * Eightbit red1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const red1: Type = _fromCode(Code.Red1);
+	export const red1: Type = _fromCode(Code.Type.Red1);
 	/**
 	 * Eightbit deepPink2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const deepPink2: Type = _fromCode(Code.DeepPink2);
+	export const deepPink2: Type = _fromCode(Code.Type.DeepPink2);
 	/**
 	 * Eightbit deepPink1_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const deepPink1_1: Type = _fromCode(Code.DeepPink1_1);
+	export const deepPink1_1: Type = _fromCode(Code.Type.DeepPink1_1);
 	/**
 	 * Eightbit deepPink1_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const deepPink1_2: Type = _fromCode(Code.DeepPink1_2);
+	export const deepPink1_2: Type = _fromCode(Code.Type.DeepPink1_2);
 	/**
 	 * Eightbit magenta2_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const magenta2_2: Type = _fromCode(Code.Magenta2_2);
+	export const magenta2_2: Type = _fromCode(Code.Type.Magenta2_2);
 	/**
 	 * Eightbit magenta1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const magenta1: Type = _fromCode(Code.Magenta1);
+	export const magenta1: Type = _fromCode(Code.Type.Magenta1);
 	/**
 	 * Eightbit orangeRed1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const orangeRed1: Type = _fromCode(Code.OrangeRed1);
+	export const orangeRed1: Type = _fromCode(Code.Type.OrangeRed1);
 	/**
 	 * Eightbit indianRed1_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const indianRed1_1: Type = _fromCode(Code.IndianRed1_1);
+	export const indianRed1_1: Type = _fromCode(Code.Type.IndianRed1_1);
 	/**
 	 * Eightbit indianRed1_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const indianRed1_2: Type = _fromCode(Code.IndianRed1_2);
+	export const indianRed1_2: Type = _fromCode(Code.Type.IndianRed1_2);
 	/**
 	 * Eightbit hotPink_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const hotPink_1: Type = _fromCode(Code.HotPink_1);
+	export const hotPink_1: Type = _fromCode(Code.Type.HotPink_1);
 	/**
 	 * Eightbit hotPink_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const hotPink_2: Type = _fromCode(Code.HotPink_2);
+	export const hotPink_2: Type = _fromCode(Code.Type.HotPink_2);
 	/**
 	 * Eightbit mediumOrchid1_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const mediumOrchid1_2: Type = _fromCode(Code.MediumOrchid1_2);
+	export const mediumOrchid1_2: Type = _fromCode(Code.Type.MediumOrchid1_2);
 	/**
 	 * Eightbit darkOrange color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const darkOrange: Type = _fromCode(Code.DarkOrange);
+	export const darkOrange: Type = _fromCode(Code.Type.DarkOrange);
 	/**
 	 * Eightbit salmon1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const salmon1: Type = _fromCode(Code.Salmon1);
+	export const salmon1: Type = _fromCode(Code.Type.Salmon1);
 	/**
 	 * Eightbit lightCoral color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const lightCoral: Type = _fromCode(Code.LightCoral);
+	export const lightCoral: Type = _fromCode(Code.Type.LightCoral);
 	/**
 	 * Eightbit paleVioletRed1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const paleVioletRed1: Type = _fromCode(Code.PaleVioletRed1);
+	export const paleVioletRed1: Type = _fromCode(Code.Type.PaleVioletRed1);
 	/**
 	 * Eightbit orchid2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const orchid2: Type = _fromCode(Code.Orchid2);
+	export const orchid2: Type = _fromCode(Code.Type.Orchid2);
 	/**
 	 * Eightbit orchid1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const orchid1: Type = _fromCode(Code.Orchid1);
+	export const orchid1: Type = _fromCode(Code.Type.Orchid1);
 	/**
 	 * Eightbit orange1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const orange1: Type = _fromCode(Code.Orange1);
+	export const orange1: Type = _fromCode(Code.Type.Orange1);
 	/**
 	 * Eightbit sandyBrown color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const sandyBrown: Type = _fromCode(Code.SandyBrown);
+	export const sandyBrown: Type = _fromCode(Code.Type.SandyBrown);
 	/**
 	 * Eightbit lightSalmon1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const lightSalmon1: Type = _fromCode(Code.LightSalmon1);
+	export const lightSalmon1: Type = _fromCode(Code.Type.LightSalmon1);
 	/**
 	 * Eightbit lightPink1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const lightPink1: Type = _fromCode(Code.LightPink1);
+	export const lightPink1: Type = _fromCode(Code.Type.LightPink1);
 	/**
 	 * Eightbit pink1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const pink1: Type = _fromCode(Code.Pink1);
+	export const pink1: Type = _fromCode(Code.Type.Pink1);
 	/**
 	 * Eightbit plum1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const plum1: Type = _fromCode(Code.Plum1);
+	export const plum1: Type = _fromCode(Code.Type.Plum1);
 	/**
 	 * Eightbit gold1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const gold1: Type = _fromCode(Code.Gold1);
+	export const gold1: Type = _fromCode(Code.Type.Gold1);
 	/**
 	 * Eightbit lightGoldenrod2_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const lightGoldenrod2_2: Type = _fromCode(Code.LightGoldenrod2_2);
+	export const lightGoldenrod2_2: Type = _fromCode(Code.Type.LightGoldenrod2_2);
 	/**
 	 * Eightbit lightGoldenrod2_3 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const lightGoldenrod2_3: Type = _fromCode(Code.LightGoldenrod2_3);
+	export const lightGoldenrod2_3: Type = _fromCode(Code.Type.LightGoldenrod2_3);
 	/**
 	 * Eightbit navajoWhite1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const navajoWhite1: Type = _fromCode(Code.NavajoWhite1);
+	export const navajoWhite1: Type = _fromCode(Code.Type.NavajoWhite1);
 	/**
 	 * Eightbit mistyRose1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const mistyRose1: Type = _fromCode(Code.MistyRose1);
+	export const mistyRose1: Type = _fromCode(Code.Type.MistyRose1);
 	/**
 	 * Eightbit thistle1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const thistle1: Type = _fromCode(Code.Thistle1);
+	export const thistle1: Type = _fromCode(Code.Type.Thistle1);
 	/**
 	 * Eightbit yellow1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const yellow1: Type = _fromCode(Code.Yellow1);
+	export const yellow1: Type = _fromCode(Code.Type.Yellow1);
 	/**
 	 * Eightbit lightGoldenrod1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const lightGoldenrod1: Type = _fromCode(Code.LightGoldenrod1);
+	export const lightGoldenrod1: Type = _fromCode(Code.Type.LightGoldenrod1);
 	/**
 	 * Eightbit khaki1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const khaki1: Type = _fromCode(Code.Khaki1);
+	export const khaki1: Type = _fromCode(Code.Type.Khaki1);
 	/**
 	 * Eightbit wheat1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const wheat1: Type = _fromCode(Code.Wheat1);
+	export const wheat1: Type = _fromCode(Code.Type.Wheat1);
 	/**
 	 * Eightbit cornsilk1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const cornsilk1: Type = _fromCode(Code.Cornsilk1);
+	export const cornsilk1: Type = _fromCode(Code.Type.Cornsilk1);
 	/**
 	 * Eightbit grey100 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const grey100: Type = _fromCode(Code.Grey100);
+	export const grey100: Type = _fromCode(Code.Type.Grey100);
 	/**
 	 * Eightbit grey3 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const grey3: Type = _fromCode(Code.Grey3);
+	export const grey3: Type = _fromCode(Code.Type.Grey3);
 	/**
 	 * Eightbit grey7 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const grey7: Type = _fromCode(Code.Grey7);
+	export const grey7: Type = _fromCode(Code.Type.Grey7);
 	/**
 	 * Eightbit grey11 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const grey11: Type = _fromCode(Code.Grey11);
+	export const grey11: Type = _fromCode(Code.Type.Grey11);
 	/**
 	 * Eightbit grey15 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const grey15: Type = _fromCode(Code.Grey15);
+	export const grey15: Type = _fromCode(Code.Type.Grey15);
 	/**
 	 * Eightbit grey19 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const grey19: Type = _fromCode(Code.Grey19);
+	export const grey19: Type = _fromCode(Code.Type.Grey19);
 	/**
 	 * Eightbit grey23 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const grey23: Type = _fromCode(Code.Grey23);
+	export const grey23: Type = _fromCode(Code.Type.Grey23);
 	/**
 	 * Eightbit grey27 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const grey27: Type = _fromCode(Code.Grey27);
+	export const grey27: Type = _fromCode(Code.Type.Grey27);
 	/**
 	 * Eightbit grey30 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const grey30: Type = _fromCode(Code.Grey30);
+	export const grey30: Type = _fromCode(Code.Type.Grey30);
 	/**
 	 * Eightbit grey35 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const grey35: Type = _fromCode(Code.Grey35);
+	export const grey35: Type = _fromCode(Code.Type.Grey35);
 	/**
 	 * Eightbit grey39 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const grey39: Type = _fromCode(Code.Grey39);
+	export const grey39: Type = _fromCode(Code.Type.Grey39);
 	/**
 	 * Eightbit grey42 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const grey42: Type = _fromCode(Code.Grey42);
+	export const grey42: Type = _fromCode(Code.Type.Grey42);
 	/**
 	 * Eightbit grey46 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const grey46: Type = _fromCode(Code.Grey46);
+	export const grey46: Type = _fromCode(Code.Type.Grey46);
 	/**
 	 * Eightbit grey50 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const grey50: Type = _fromCode(Code.Grey50);
+	export const grey50: Type = _fromCode(Code.Type.Grey50);
 	/**
 	 * Eightbit grey54 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const grey54: Type = _fromCode(Code.Grey54);
+	export const grey54: Type = _fromCode(Code.Type.Grey54);
 	/**
 	 * Eightbit grey58 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const grey58: Type = _fromCode(Code.Grey58);
+	export const grey58: Type = _fromCode(Code.Type.Grey58);
 	/**
 	 * Eightbit grey62 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const grey62: Type = _fromCode(Code.Grey62);
+	export const grey62: Type = _fromCode(Code.Type.Grey62);
 	/**
 	 * Eightbit grey66 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const grey66: Type = _fromCode(Code.Grey66);
+	export const grey66: Type = _fromCode(Code.Type.Grey66);
 	/**
 	 * Eightbit grey70 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const grey70: Type = _fromCode(Code.Grey70);
+	export const grey70: Type = _fromCode(Code.Type.Grey70);
 	/**
 	 * Eightbit grey74 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const grey74: Type = _fromCode(Code.Grey74);
+	export const grey74: Type = _fromCode(Code.Type.Grey74);
 	/**
 	 * Eightbit grey78 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const grey78: Type = _fromCode(Code.Grey78);
+	export const grey78: Type = _fromCode(Code.Type.Grey78);
 	/**
 	 * Eightbit grey82 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const grey82: Type = _fromCode(Code.Grey82);
+	export const grey82: Type = _fromCode(Code.Type.Grey82);
 	/**
 	 * Eightbit grey85 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const grey85: Type = _fromCode(Code.Grey85);
+	export const grey85: Type = _fromCode(Code.Type.Grey85);
 	/**
 	 * Eightbit grey89 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const grey89: Type = _fromCode(Code.Grey89);
+	export const grey89: Type = _fromCode(Code.Type.Grey89);
 	/**
 	 * Eightbit grey93 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const grey93: Type = _fromCode(Code.Grey93);
+	export const grey93: Type = _fromCode(Code.Type.Grey93);
 
 	/**
 	 * Namespace for eight-bit colors used as background color
@@ -3069,13 +2945,12 @@ export namespace EightBit {
 	 * @category Models
 	 */
 	export namespace Bg {
-		/** Constructor */
-		const _fromCode = (code: Code): Type =>
-			_fromIndexIdAndSequence({
-				characteristic: Characteristic.Index.BgColor,
-				id: 'EightBitBg' + Code.id(code),
-				sequence: ASSequence.eightBitBgColor(code)
-			});
+		/** EightBit background color Style instance maker */
+		const _fromCode: MTypes.OneArgFunction<Code.Type, Type> = flow(
+			Code.withId,
+			ASCharacteristic.eightBitBgColor,
+			_fromCharacteritic
+		);
 
 		/**
 		 * Eightbit black color
@@ -3083,1792 +2958,1792 @@ export namespace EightBit {
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const black: Type = _fromCode(Code.Black);
+		export const black: Type = _fromCode(Code.Type.Black);
 		/**
 		 * Eightbit maroon color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const maroon: Type = _fromCode(Code.Maroon);
+		export const maroon: Type = _fromCode(Code.Type.Maroon);
 		/**
 		 * Eightbit green color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const green: Type = _fromCode(Code.Green);
+		export const green: Type = _fromCode(Code.Type.Green);
 		/**
 		 * Eightbit olive color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const olive: Type = _fromCode(Code.Olive);
+		export const olive: Type = _fromCode(Code.Type.Olive);
 		/**
 		 * Eightbit navy color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const navy: Type = _fromCode(Code.Navy);
+		export const navy: Type = _fromCode(Code.Type.Navy);
 		/**
 		 * Eightbit purple_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const purple_1: Type = _fromCode(Code.Purple_1);
+		export const purple_1: Type = _fromCode(Code.Type.Purple_1);
 		/**
 		 * Eightbit teal color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const teal: Type = _fromCode(Code.Teal);
+		export const teal: Type = _fromCode(Code.Type.Teal);
 		/**
 		 * Eightbit silver color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const silver: Type = _fromCode(Code.Silver);
+		export const silver: Type = _fromCode(Code.Type.Silver);
 		/**
 		 * Eightbit grey color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const grey: Type = _fromCode(Code.Grey);
+		export const grey: Type = _fromCode(Code.Type.Grey);
 		/**
 		 * Eightbit red color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const red: Type = _fromCode(Code.Red);
+		export const red: Type = _fromCode(Code.Type.Red);
 		/**
 		 * Eightbit lime color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const lime: Type = _fromCode(Code.Lime);
+		export const lime: Type = _fromCode(Code.Type.Lime);
 		/**
 		 * Eightbit yellow color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const yellow: Type = _fromCode(Code.Yellow);
+		export const yellow: Type = _fromCode(Code.Type.Yellow);
 		/**
 		 * Eightbit blue color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const blue: Type = _fromCode(Code.Blue);
+		export const blue: Type = _fromCode(Code.Type.Blue);
 		/**
 		 * Eightbit fuchsia color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const fuchsia: Type = _fromCode(Code.Fuchsia);
+		export const fuchsia: Type = _fromCode(Code.Type.Fuchsia);
 		/**
 		 * Eightbit aqua color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const aqua: Type = _fromCode(Code.Aqua);
+		export const aqua: Type = _fromCode(Code.Type.Aqua);
 		/**
 		 * Eightbit white color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const white: Type = _fromCode(Code.White);
+		export const white: Type = _fromCode(Code.Type.White);
 		/**
 		 * Eightbit grey0 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const grey0: Type = _fromCode(Code.Grey0);
+		export const grey0: Type = _fromCode(Code.Type.Grey0);
 		/**
 		 * Eightbit navyBlue color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const navyBlue: Type = _fromCode(Code.NavyBlue);
+		export const navyBlue: Type = _fromCode(Code.Type.NavyBlue);
 		/**
 		 * Eightbit darkBlue color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const darkBlue: Type = _fromCode(Code.DarkBlue);
+		export const darkBlue: Type = _fromCode(Code.Type.DarkBlue);
 		/**
 		 * Eightbit blue3_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const blue3_1: Type = _fromCode(Code.Blue3_1);
+		export const blue3_1: Type = _fromCode(Code.Type.Blue3_1);
 		/**
 		 * Eightbit blue3_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const blue3_2: Type = _fromCode(Code.Blue3_2);
+		export const blue3_2: Type = _fromCode(Code.Type.Blue3_2);
 		/**
 		 * Eightbit blue1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const blue1: Type = _fromCode(Code.Blue1);
+		export const blue1: Type = _fromCode(Code.Type.Blue1);
 		/**
 		 * Eightbit darkGreen color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const darkGreen: Type = _fromCode(Code.DarkGreen);
+		export const darkGreen: Type = _fromCode(Code.Type.DarkGreen);
 		/**
 		 * Eightbit deepSkyBlue4_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const deepSkyBlue4_1: Type = _fromCode(Code.DeepSkyBlue4_1);
+		export const deepSkyBlue4_1: Type = _fromCode(Code.Type.DeepSkyBlue4_1);
 		/**
 		 * Eightbit deepSkyBlue4_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const deepSkyBlue4_2: Type = _fromCode(Code.DeepSkyBlue4_2);
+		export const deepSkyBlue4_2: Type = _fromCode(Code.Type.DeepSkyBlue4_2);
 		/**
 		 * Eightbit deepSkyBlue4_3 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const deepSkyBlue4_3: Type = _fromCode(Code.DeepSkyBlue4_3);
+		export const deepSkyBlue4_3: Type = _fromCode(Code.Type.DeepSkyBlue4_3);
 		/**
 		 * Eightbit dodgerBlue3 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const dodgerBlue3: Type = _fromCode(Code.DodgerBlue3);
+		export const dodgerBlue3: Type = _fromCode(Code.Type.DodgerBlue3);
 		/**
 		 * Eightbit dodgerBlue2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const dodgerBlue2: Type = _fromCode(Code.DodgerBlue2);
+		export const dodgerBlue2: Type = _fromCode(Code.Type.DodgerBlue2);
 		/**
 		 * Eightbit green4 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const green4: Type = _fromCode(Code.Green4);
+		export const green4: Type = _fromCode(Code.Type.Green4);
 		/**
 		 * Eightbit springGreen4 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const springGreen4: Type = _fromCode(Code.SpringGreen4);
+		export const springGreen4: Type = _fromCode(Code.Type.SpringGreen4);
 		/**
 		 * Eightbit turquoise4 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const turquoise4: Type = _fromCode(Code.Turquoise4);
+		export const turquoise4: Type = _fromCode(Code.Type.Turquoise4);
 		/**
 		 * Eightbit deepSkyBlue3_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const deepSkyBlue3_1: Type = _fromCode(Code.DeepSkyBlue3_1);
+		export const deepSkyBlue3_1: Type = _fromCode(Code.Type.DeepSkyBlue3_1);
 		/**
 		 * Eightbit deepSkyBlue3_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const deepSkyBlue3_2: Type = _fromCode(Code.DeepSkyBlue3_2);
+		export const deepSkyBlue3_2: Type = _fromCode(Code.Type.DeepSkyBlue3_2);
 		/**
 		 * Eightbit dodgerBlue1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const dodgerBlue1: Type = _fromCode(Code.DodgerBlue1);
+		export const dodgerBlue1: Type = _fromCode(Code.Type.DodgerBlue1);
 		/**
 		 * Eightbit green3_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const green3_1: Type = _fromCode(Code.Green3_1);
+		export const green3_1: Type = _fromCode(Code.Type.Green3_1);
 		/**
 		 * Eightbit springGreen3_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const springGreen3_1: Type = _fromCode(Code.SpringGreen3_1);
+		export const springGreen3_1: Type = _fromCode(Code.Type.SpringGreen3_1);
 		/**
 		 * Eightbit darkCyan color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const darkCyan: Type = _fromCode(Code.DarkCyan);
+		export const darkCyan: Type = _fromCode(Code.Type.DarkCyan);
 		/**
 		 * Eightbit lightSeaGreen color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const lightSeaGreen: Type = _fromCode(Code.LightSeaGreen);
+		export const lightSeaGreen: Type = _fromCode(Code.Type.LightSeaGreen);
 		/**
 		 * Eightbit deepSkyBlue2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const deepSkyBlue2: Type = _fromCode(Code.DeepSkyBlue2);
+		export const deepSkyBlue2: Type = _fromCode(Code.Type.DeepSkyBlue2);
 		/**
 		 * Eightbit deepSkyBlue1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const deepSkyBlue1: Type = _fromCode(Code.DeepSkyBlue1);
+		export const deepSkyBlue1: Type = _fromCode(Code.Type.DeepSkyBlue1);
 		/**
 		 * Eightbit green3_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const green3_2: Type = _fromCode(Code.Green3_2);
+		export const green3_2: Type = _fromCode(Code.Type.Green3_2);
 		/**
 		 * Eightbit springGreen3_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const springGreen3_2: Type = _fromCode(Code.SpringGreen3_2);
+		export const springGreen3_2: Type = _fromCode(Code.Type.SpringGreen3_2);
 		/**
 		 * Eightbit springGreen2_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const springGreen2_1: Type = _fromCode(Code.SpringGreen2_1);
+		export const springGreen2_1: Type = _fromCode(Code.Type.SpringGreen2_1);
 		/**
 		 * Eightbit cyan3 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const cyan3: Type = _fromCode(Code.Cyan3);
+		export const cyan3: Type = _fromCode(Code.Type.Cyan3);
 		/**
 		 * Eightbit darkTurquoise color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const darkTurquoise: Type = _fromCode(Code.DarkTurquoise);
+		export const darkTurquoise: Type = _fromCode(Code.Type.DarkTurquoise);
 		/**
 		 * Eightbit turquoise2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const turquoise2: Type = _fromCode(Code.Turquoise2);
+		export const turquoise2: Type = _fromCode(Code.Type.Turquoise2);
 		/**
 		 * Eightbit green1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const green1: Type = _fromCode(Code.Green1);
+		export const green1: Type = _fromCode(Code.Type.Green1);
 		/**
 		 * Eightbit springGreen2_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const springGreen2_2: Type = _fromCode(Code.SpringGreen2_2);
+		export const springGreen2_2: Type = _fromCode(Code.Type.SpringGreen2_2);
 		/**
 		 * Eightbit springGreen1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const springGreen1: Type = _fromCode(Code.SpringGreen1);
+		export const springGreen1: Type = _fromCode(Code.Type.SpringGreen1);
 		/**
 		 * Eightbit mediumSpringGreen color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const mediumSpringGreen: Type = _fromCode(Code.MediumSpringGreen);
+		export const mediumSpringGreen: Type = _fromCode(Code.Type.MediumSpringGreen);
 		/**
 		 * Eightbit cyan2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const cyan2: Type = _fromCode(Code.Cyan2);
+		export const cyan2: Type = _fromCode(Code.Type.Cyan2);
 		/**
 		 * Eightbit cyan1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const cyan1: Type = _fromCode(Code.Cyan1);
+		export const cyan1: Type = _fromCode(Code.Type.Cyan1);
 		/**
 		 * Eightbit darkRed_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const darkRed_1: Type = _fromCode(Code.DarkRed_1);
+		export const darkRed_1: Type = _fromCode(Code.Type.DarkRed_1);
 		/**
 		 * Eightbit deepPink4_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const deepPink4_1: Type = _fromCode(Code.DeepPink4_1);
+		export const deepPink4_1: Type = _fromCode(Code.Type.DeepPink4_1);
 		/**
 		 * Eightbit purple4_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const purple4_1: Type = _fromCode(Code.Purple4_1);
+		export const purple4_1: Type = _fromCode(Code.Type.Purple4_1);
 		/**
 		 * Eightbit purple4_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const purple4_2: Type = _fromCode(Code.Purple4_2);
+		export const purple4_2: Type = _fromCode(Code.Type.Purple4_2);
 		/**
 		 * Eightbit purple3 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const purple3: Type = _fromCode(Code.Purple3);
+		export const purple3: Type = _fromCode(Code.Type.Purple3);
 		/**
 		 * Eightbit blueViolet color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const blueViolet: Type = _fromCode(Code.BlueViolet);
+		export const blueViolet: Type = _fromCode(Code.Type.BlueViolet);
 		/**
 		 * Eightbit orange4_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const orange4_1: Type = _fromCode(Code.Orange4_1);
+		export const orange4_1: Type = _fromCode(Code.Type.Orange4_1);
 		/**
 		 * Eightbit grey37 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const grey37: Type = _fromCode(Code.Grey37);
+		export const grey37: Type = _fromCode(Code.Type.Grey37);
 		/**
 		 * Eightbit mediumPurple4 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const mediumPurple4: Type = _fromCode(Code.MediumPurple4);
+		export const mediumPurple4: Type = _fromCode(Code.Type.MediumPurple4);
 		/**
 		 * Eightbit slateBlue3_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const slateBlue3_1: Type = _fromCode(Code.SlateBlue3_1);
+		export const slateBlue3_1: Type = _fromCode(Code.Type.SlateBlue3_1);
 		/**
 		 * Eightbit slateBlue3_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const slateBlue3_2: Type = _fromCode(Code.SlateBlue3_2);
+		export const slateBlue3_2: Type = _fromCode(Code.Type.SlateBlue3_2);
 		/**
 		 * Eightbit royalBlue1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const royalBlue1: Type = _fromCode(Code.RoyalBlue1);
+		export const royalBlue1: Type = _fromCode(Code.Type.RoyalBlue1);
 		/**
 		 * Eightbit chartreuse4 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const chartreuse4: Type = _fromCode(Code.Chartreuse4);
+		export const chartreuse4: Type = _fromCode(Code.Type.Chartreuse4);
 		/**
 		 * Eightbit darkSeaGreen4_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const darkSeaGreen4_1: Type = _fromCode(Code.DarkSeaGreen4_1);
+		export const darkSeaGreen4_1: Type = _fromCode(Code.Type.DarkSeaGreen4_1);
 		/**
 		 * Eightbit paleTurquoise4 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const paleTurquoise4: Type = _fromCode(Code.PaleTurquoise4);
+		export const paleTurquoise4: Type = _fromCode(Code.Type.PaleTurquoise4);
 		/**
 		 * Eightbit steelBlue color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const steelBlue: Type = _fromCode(Code.SteelBlue);
+		export const steelBlue: Type = _fromCode(Code.Type.SteelBlue);
 		/**
 		 * Eightbit steelBlue3 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const steelBlue3: Type = _fromCode(Code.SteelBlue3);
+		export const steelBlue3: Type = _fromCode(Code.Type.SteelBlue3);
 		/**
 		 * Eightbit cornflowerBlue color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const cornflowerBlue: Type = _fromCode(Code.CornflowerBlue);
+		export const cornflowerBlue: Type = _fromCode(Code.Type.CornflowerBlue);
 		/**
 		 * Eightbit chartreuse3_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const chartreuse3_1: Type = _fromCode(Code.Chartreuse3_1);
+		export const chartreuse3_1: Type = _fromCode(Code.Type.Chartreuse3_1);
 		/**
 		 * Eightbit darkSeaGreen4_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const darkSeaGreen4_2: Type = _fromCode(Code.DarkSeaGreen4_2);
+		export const darkSeaGreen4_2: Type = _fromCode(Code.Type.DarkSeaGreen4_2);
 		/**
 		 * Eightbit cadetBlue_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const cadetBlue_1: Type = _fromCode(Code.CadetBlue_1);
+		export const cadetBlue_1: Type = _fromCode(Code.Type.CadetBlue_1);
 		/**
 		 * Eightbit cadetBlue_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const cadetBlue_2: Type = _fromCode(Code.CadetBlue_2);
+		export const cadetBlue_2: Type = _fromCode(Code.Type.CadetBlue_2);
 		/**
 		 * Eightbit skyBlue3 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const skyBlue3: Type = _fromCode(Code.SkyBlue3);
+		export const skyBlue3: Type = _fromCode(Code.Type.SkyBlue3);
 		/**
 		 * Eightbit steelBlue1_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const steelBlue1_1: Type = _fromCode(Code.SteelBlue1_1);
+		export const steelBlue1_1: Type = _fromCode(Code.Type.SteelBlue1_1);
 		/**
 		 * Eightbit chartreuse3_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const chartreuse3_2: Type = _fromCode(Code.Chartreuse3_2);
+		export const chartreuse3_2: Type = _fromCode(Code.Type.Chartreuse3_2);
 		/**
 		 * Eightbit paleGreen3_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const paleGreen3_1: Type = _fromCode(Code.PaleGreen3_1);
+		export const paleGreen3_1: Type = _fromCode(Code.Type.PaleGreen3_1);
 		/**
 		 * Eightbit seaGreen3 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const seaGreen3: Type = _fromCode(Code.SeaGreen3);
+		export const seaGreen3: Type = _fromCode(Code.Type.SeaGreen3);
 		/**
 		 * Eightbit aquamarine3 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const aquamarine3: Type = _fromCode(Code.Aquamarine3);
+		export const aquamarine3: Type = _fromCode(Code.Type.Aquamarine3);
 		/**
 		 * Eightbit mediumTurquoise color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const mediumTurquoise: Type = _fromCode(Code.MediumTurquoise);
+		export const mediumTurquoise: Type = _fromCode(Code.Type.MediumTurquoise);
 		/**
 		 * Eightbit steelBlue1_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const steelBlue1_2: Type = _fromCode(Code.SteelBlue1_2);
+		export const steelBlue1_2: Type = _fromCode(Code.Type.SteelBlue1_2);
 		/**
 		 * Eightbit chartreuse2_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const chartreuse2_1: Type = _fromCode(Code.Chartreuse2_1);
+		export const chartreuse2_1: Type = _fromCode(Code.Type.Chartreuse2_1);
 		/**
 		 * Eightbit seaGreen2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const seaGreen2: Type = _fromCode(Code.SeaGreen2);
+		export const seaGreen2: Type = _fromCode(Code.Type.SeaGreen2);
 		/**
 		 * Eightbit seaGreen1_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const seaGreen1_1: Type = _fromCode(Code.SeaGreen1_1);
+		export const seaGreen1_1: Type = _fromCode(Code.Type.SeaGreen1_1);
 		/**
 		 * Eightbit seaGreen1_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const seaGreen1_2: Type = _fromCode(Code.SeaGreen1_2);
+		export const seaGreen1_2: Type = _fromCode(Code.Type.SeaGreen1_2);
 		/**
 		 * Eightbit aquamarine1_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const aquamarine1_1: Type = _fromCode(Code.Aquamarine1_1);
+		export const aquamarine1_1: Type = _fromCode(Code.Type.Aquamarine1_1);
 		/**
 		 * Eightbit darkSlateGray2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const darkSlateGray2: Type = _fromCode(Code.DarkSlateGray2);
+		export const darkSlateGray2: Type = _fromCode(Code.Type.DarkSlateGray2);
 		/**
 		 * Eightbit darkRed_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const darkRed_2: Type = _fromCode(Code.DarkRed_2);
+		export const darkRed_2: Type = _fromCode(Code.Type.DarkRed_2);
 		/**
 		 * Eightbit deepPink4_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const deepPink4_2: Type = _fromCode(Code.DeepPink4_2);
+		export const deepPink4_2: Type = _fromCode(Code.Type.DeepPink4_2);
 		/**
 		 * Eightbit darkMagenta_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const darkMagenta_1: Type = _fromCode(Code.DarkMagenta_1);
+		export const darkMagenta_1: Type = _fromCode(Code.Type.DarkMagenta_1);
 		/**
 		 * Eightbit darkMagenta_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const darkMagenta_2: Type = _fromCode(Code.DarkMagenta_2);
+		export const darkMagenta_2: Type = _fromCode(Code.Type.DarkMagenta_2);
 		/**
 		 * Eightbit darkViolet_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const darkViolet_1: Type = _fromCode(Code.DarkViolet_1);
+		export const darkViolet_1: Type = _fromCode(Code.Type.DarkViolet_1);
 		/**
 		 * Eightbit purple_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const purple_2: Type = _fromCode(Code.Purple_2);
+		export const purple_2: Type = _fromCode(Code.Type.Purple_2);
 		/**
 		 * Eightbit orange4_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const orange4_2: Type = _fromCode(Code.Orange4_2);
+		export const orange4_2: Type = _fromCode(Code.Type.Orange4_2);
 		/**
 		 * Eightbit lightPink4 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const lightPink4: Type = _fromCode(Code.LightPink4);
+		export const lightPink4: Type = _fromCode(Code.Type.LightPink4);
 		/**
 		 * Eightbit plum4 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const plum4: Type = _fromCode(Code.Plum4);
+		export const plum4: Type = _fromCode(Code.Type.Plum4);
 		/**
 		 * Eightbit mediumPurple3_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const mediumPurple3_1: Type = _fromCode(Code.MediumPurple3_1);
+		export const mediumPurple3_1: Type = _fromCode(Code.Type.MediumPurple3_1);
 		/**
 		 * Eightbit mediumPurple3_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const mediumPurple3_2: Type = _fromCode(Code.MediumPurple3_2);
+		export const mediumPurple3_2: Type = _fromCode(Code.Type.MediumPurple3_2);
 		/**
 		 * Eightbit slateBlue1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const slateBlue1: Type = _fromCode(Code.SlateBlue1);
+		export const slateBlue1: Type = _fromCode(Code.Type.SlateBlue1);
 		/**
 		 * Eightbit yellow4_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const yellow4_1: Type = _fromCode(Code.Yellow4_1);
+		export const yellow4_1: Type = _fromCode(Code.Type.Yellow4_1);
 		/**
 		 * Eightbit wheat4 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const wheat4: Type = _fromCode(Code.Wheat4);
+		export const wheat4: Type = _fromCode(Code.Type.Wheat4);
 		/**
 		 * Eightbit grey53 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const grey53: Type = _fromCode(Code.Grey53);
+		export const grey53: Type = _fromCode(Code.Type.Grey53);
 		/**
 		 * Eightbit lightSlateGrey color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const lightSlateGrey: Type = _fromCode(Code.LightSlateGrey);
+		export const lightSlateGrey: Type = _fromCode(Code.Type.LightSlateGrey);
 		/**
 		 * Eightbit mediumPurple color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const mediumPurple: Type = _fromCode(Code.MediumPurple);
+		export const mediumPurple: Type = _fromCode(Code.Type.MediumPurple);
 		/**
 		 * Eightbit lightSlateBlue color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const lightSlateBlue: Type = _fromCode(Code.LightSlateBlue);
+		export const lightSlateBlue: Type = _fromCode(Code.Type.LightSlateBlue);
 		/**
 		 * Eightbit yellow4_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const yellow4_2: Type = _fromCode(Code.Yellow4_2);
+		export const yellow4_2: Type = _fromCode(Code.Type.Yellow4_2);
 		/**
 		 * Eightbit darkOliveGreen3_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const darkOliveGreen3_1: Type = _fromCode(Code.DarkOliveGreen3_1);
+		export const darkOliveGreen3_1: Type = _fromCode(Code.Type.DarkOliveGreen3_1);
 		/**
 		 * Eightbit darkSeaGreen color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const darkSeaGreen: Type = _fromCode(Code.DarkSeaGreen);
+		export const darkSeaGreen: Type = _fromCode(Code.Type.DarkSeaGreen);
 		/**
 		 * Eightbit lightSkyBlue3_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const lightSkyBlue3_1: Type = _fromCode(Code.LightSkyBlue3_1);
+		export const lightSkyBlue3_1: Type = _fromCode(Code.Type.LightSkyBlue3_1);
 		/**
 		 * Eightbit lightSkyBlue3_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const lightSkyBlue3_2: Type = _fromCode(Code.LightSkyBlue3_2);
+		export const lightSkyBlue3_2: Type = _fromCode(Code.Type.LightSkyBlue3_2);
 		/**
 		 * Eightbit skyBlue2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const skyBlue2: Type = _fromCode(Code.SkyBlue2);
+		export const skyBlue2: Type = _fromCode(Code.Type.SkyBlue2);
 		/**
 		 * Eightbit chartreuse2_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const chartreuse2_2: Type = _fromCode(Code.Chartreuse2_2);
+		export const chartreuse2_2: Type = _fromCode(Code.Type.Chartreuse2_2);
 		/**
 		 * Eightbit darkOliveGreen3_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const darkOliveGreen3_2: Type = _fromCode(Code.DarkOliveGreen3_2);
+		export const darkOliveGreen3_2: Type = _fromCode(Code.Type.DarkOliveGreen3_2);
 		/**
 		 * Eightbit paleGreen3_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const paleGreen3_2: Type = _fromCode(Code.PaleGreen3_2);
+		export const paleGreen3_2: Type = _fromCode(Code.Type.PaleGreen3_2);
 		/**
 		 * Eightbit darkSeaGreen3_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const darkSeaGreen3_1: Type = _fromCode(Code.DarkSeaGreen3_1);
+		export const darkSeaGreen3_1: Type = _fromCode(Code.Type.DarkSeaGreen3_1);
 		/**
 		 * Eightbit darkSlateGray3 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const darkSlateGray3: Type = _fromCode(Code.DarkSlateGray3);
+		export const darkSlateGray3: Type = _fromCode(Code.Type.DarkSlateGray3);
 		/**
 		 * Eightbit skyBlue1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const skyBlue1: Type = _fromCode(Code.SkyBlue1);
+		export const skyBlue1: Type = _fromCode(Code.Type.SkyBlue1);
 		/**
 		 * Eightbit chartreuse1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const chartreuse1: Type = _fromCode(Code.Chartreuse1);
+		export const chartreuse1: Type = _fromCode(Code.Type.Chartreuse1);
 		/**
 		 * Eightbit lightGreen_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const lightGreen_1: Type = _fromCode(Code.LightGreen_1);
+		export const lightGreen_1: Type = _fromCode(Code.Type.LightGreen_1);
 		/**
 		 * Eightbit lightGreen_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const lightGreen_2: Type = _fromCode(Code.LightGreen_2);
+		export const lightGreen_2: Type = _fromCode(Code.Type.LightGreen_2);
 		/**
 		 * Eightbit paleGreen1_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const paleGreen1_1: Type = _fromCode(Code.PaleGreen1_1);
+		export const paleGreen1_1: Type = _fromCode(Code.Type.PaleGreen1_1);
 		/**
 		 * Eightbit aquamarine1_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const aquamarine1_2: Type = _fromCode(Code.Aquamarine1_2);
+		export const aquamarine1_2: Type = _fromCode(Code.Type.Aquamarine1_2);
 		/**
 		 * Eightbit darkSlateGray1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const darkSlateGray1: Type = _fromCode(Code.DarkSlateGray1);
+		export const darkSlateGray1: Type = _fromCode(Code.Type.DarkSlateGray1);
 		/**
 		 * Eightbit red3_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const red3_1: Type = _fromCode(Code.Red3_1);
+		export const red3_1: Type = _fromCode(Code.Type.Red3_1);
 		/**
 		 * Eightbit deepPink4_3 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const deepPink4_3: Type = _fromCode(Code.DeepPink4_3);
+		export const deepPink4_3: Type = _fromCode(Code.Type.DeepPink4_3);
 		/**
 		 * Eightbit mediumVioletRed color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const mediumVioletRed: Type = _fromCode(Code.MediumVioletRed);
+		export const mediumVioletRed: Type = _fromCode(Code.Type.MediumVioletRed);
 		/**
 		 * Eightbit magenta3_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const magenta3_1: Type = _fromCode(Code.Magenta3_1);
+		export const magenta3_1: Type = _fromCode(Code.Type.Magenta3_1);
 		/**
 		 * Eightbit darkViolet_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const darkViolet_2: Type = _fromCode(Code.DarkViolet_2);
+		export const darkViolet_2: Type = _fromCode(Code.Type.DarkViolet_2);
 		/**
 		 * Eightbit purple_3 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const purple_3: Type = _fromCode(Code.Purple_3);
+		export const purple_3: Type = _fromCode(Code.Type.Purple_3);
 		/**
 		 * Eightbit darkOrange3_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const darkOrange3_1: Type = _fromCode(Code.DarkOrange3_1);
+		export const darkOrange3_1: Type = _fromCode(Code.Type.DarkOrange3_1);
 		/**
 		 * Eightbit indianRed_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const indianRed_1: Type = _fromCode(Code.IndianRed_1);
+		export const indianRed_1: Type = _fromCode(Code.Type.IndianRed_1);
 		/**
 		 * Eightbit hotPink3_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const hotPink3_1: Type = _fromCode(Code.HotPink3_1);
+		export const hotPink3_1: Type = _fromCode(Code.Type.HotPink3_1);
 		/**
 		 * Eightbit mediumOrchid3 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const mediumOrchid3: Type = _fromCode(Code.MediumOrchid3);
+		export const mediumOrchid3: Type = _fromCode(Code.Type.MediumOrchid3);
 		/**
 		 * Eightbit mediumOrchid color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const mediumOrchid: Type = _fromCode(Code.MediumOrchid);
+		export const mediumOrchid: Type = _fromCode(Code.Type.MediumOrchid);
 		/**
 		 * Eightbit mediumPurple2_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const mediumPurple2_1: Type = _fromCode(Code.MediumPurple2_1);
+		export const mediumPurple2_1: Type = _fromCode(Code.Type.MediumPurple2_1);
 		/**
 		 * Eightbit darkGoldenrod color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const darkGoldenrod: Type = _fromCode(Code.DarkGoldenrod);
+		export const darkGoldenrod: Type = _fromCode(Code.Type.DarkGoldenrod);
 		/**
 		 * Eightbit lightSalmon3_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const lightSalmon3_1: Type = _fromCode(Code.LightSalmon3_1);
+		export const lightSalmon3_1: Type = _fromCode(Code.Type.LightSalmon3_1);
 		/**
 		 * Eightbit rosyBrown color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const rosyBrown: Type = _fromCode(Code.RosyBrown);
+		export const rosyBrown: Type = _fromCode(Code.Type.RosyBrown);
 		/**
 		 * Eightbit grey63 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const grey63: Type = _fromCode(Code.Grey63);
+		export const grey63: Type = _fromCode(Code.Type.Grey63);
 		/**
 		 * Eightbit mediumPurple2_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const mediumPurple2_2: Type = _fromCode(Code.MediumPurple2_2);
+		export const mediumPurple2_2: Type = _fromCode(Code.Type.MediumPurple2_2);
 		/**
 		 * Eightbit mediumPurple1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const mediumPurple1: Type = _fromCode(Code.MediumPurple1);
+		export const mediumPurple1: Type = _fromCode(Code.Type.MediumPurple1);
 		/**
 		 * Eightbit gold3_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const gold3_1: Type = _fromCode(Code.Gold3_1);
+		export const gold3_1: Type = _fromCode(Code.Type.Gold3_1);
 		/**
 		 * Eightbit darkKhaki color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const darkKhaki: Type = _fromCode(Code.DarkKhaki);
+		export const darkKhaki: Type = _fromCode(Code.Type.DarkKhaki);
 		/**
 		 * Eightbit navajoWhite3 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const navajoWhite3: Type = _fromCode(Code.NavajoWhite3);
+		export const navajoWhite3: Type = _fromCode(Code.Type.NavajoWhite3);
 		/**
 		 * Eightbit grey69 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const grey69: Type = _fromCode(Code.Grey69);
+		export const grey69: Type = _fromCode(Code.Type.Grey69);
 		/**
 		 * Eightbit lightSteelBlue3 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const lightSteelBlue3: Type = _fromCode(Code.LightSteelBlue3);
+		export const lightSteelBlue3: Type = _fromCode(Code.Type.LightSteelBlue3);
 		/**
 		 * Eightbit lightSteelBlue color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const lightSteelBlue: Type = _fromCode(Code.LightSteelBlue);
+		export const lightSteelBlue: Type = _fromCode(Code.Type.LightSteelBlue);
 		/**
 		 * Eightbit yellow3_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const yellow3_1: Type = _fromCode(Code.Yellow3_1);
+		export const yellow3_1: Type = _fromCode(Code.Type.Yellow3_1);
 		/**
 		 * Eightbit darkOliveGreen3_3 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const darkOliveGreen3_3: Type = _fromCode(Code.DarkOliveGreen3_3);
+		export const darkOliveGreen3_3: Type = _fromCode(Code.Type.DarkOliveGreen3_3);
 		/**
 		 * Eightbit darkSeaGreen3_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const darkSeaGreen3_2: Type = _fromCode(Code.DarkSeaGreen3_2);
+		export const darkSeaGreen3_2: Type = _fromCode(Code.Type.DarkSeaGreen3_2);
 		/**
 		 * Eightbit darkSeaGreen2_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const darkSeaGreen2_1: Type = _fromCode(Code.DarkSeaGreen2_1);
+		export const darkSeaGreen2_1: Type = _fromCode(Code.Type.DarkSeaGreen2_1);
 		/**
 		 * Eightbit lightCyan3 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const lightCyan3: Type = _fromCode(Code.LightCyan3);
+		export const lightCyan3: Type = _fromCode(Code.Type.LightCyan3);
 		/**
 		 * Eightbit lightSkyBlue1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const lightSkyBlue1: Type = _fromCode(Code.LightSkyBlue1);
+		export const lightSkyBlue1: Type = _fromCode(Code.Type.LightSkyBlue1);
 		/**
 		 * Eightbit greenYellow color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const greenYellow: Type = _fromCode(Code.GreenYellow);
+		export const greenYellow: Type = _fromCode(Code.Type.GreenYellow);
 		/**
 		 * Eightbit darkOliveGreen2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const darkOliveGreen2: Type = _fromCode(Code.DarkOliveGreen2);
+		export const darkOliveGreen2: Type = _fromCode(Code.Type.DarkOliveGreen2);
 		/**
 		 * Eightbit paleGreen1_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const paleGreen1_2: Type = _fromCode(Code.PaleGreen1_2);
+		export const paleGreen1_2: Type = _fromCode(Code.Type.PaleGreen1_2);
 		/**
 		 * Eightbit darkSeaGreen2_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const darkSeaGreen2_2: Type = _fromCode(Code.DarkSeaGreen2_2);
+		export const darkSeaGreen2_2: Type = _fromCode(Code.Type.DarkSeaGreen2_2);
 		/**
 		 * Eightbit darkSeaGreen1_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const darkSeaGreen1_1: Type = _fromCode(Code.DarkSeaGreen1_1);
+		export const darkSeaGreen1_1: Type = _fromCode(Code.Type.DarkSeaGreen1_1);
 		/**
 		 * Eightbit paleTurquoise1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const paleTurquoise1: Type = _fromCode(Code.PaleTurquoise1);
+		export const paleTurquoise1: Type = _fromCode(Code.Type.PaleTurquoise1);
 		/**
 		 * Eightbit red3_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const red3_2: Type = _fromCode(Code.Red3_2);
+		export const red3_2: Type = _fromCode(Code.Type.Red3_2);
 		/**
 		 * Eightbit deepPink3_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const deepPink3_1: Type = _fromCode(Code.DeepPink3_1);
+		export const deepPink3_1: Type = _fromCode(Code.Type.DeepPink3_1);
 		/**
 		 * Eightbit deepPink3_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const deepPink3_2: Type = _fromCode(Code.DeepPink3_2);
+		export const deepPink3_2: Type = _fromCode(Code.Type.DeepPink3_2);
 		/**
 		 * Eightbit magenta3_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const magenta3_2: Type = _fromCode(Code.Magenta3_2);
+		export const magenta3_2: Type = _fromCode(Code.Type.Magenta3_2);
 		/**
 		 * Eightbit magenta3_3 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const magenta3_3: Type = _fromCode(Code.Magenta3_3);
+		export const magenta3_3: Type = _fromCode(Code.Type.Magenta3_3);
 		/**
 		 * Eightbit magenta2_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const magenta2_1: Type = _fromCode(Code.Magenta2_1);
+		export const magenta2_1: Type = _fromCode(Code.Type.Magenta2_1);
 		/**
 		 * Eightbit darkOrange3_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const darkOrange3_2: Type = _fromCode(Code.DarkOrange3_2);
+		export const darkOrange3_2: Type = _fromCode(Code.Type.DarkOrange3_2);
 		/**
 		 * Eightbit indianRed_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const indianRed_2: Type = _fromCode(Code.IndianRed_2);
+		export const indianRed_2: Type = _fromCode(Code.Type.IndianRed_2);
 		/**
 		 * Eightbit hotPink3_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const hotPink3_2: Type = _fromCode(Code.HotPink3_2);
+		export const hotPink3_2: Type = _fromCode(Code.Type.HotPink3_2);
 		/**
 		 * Eightbit hotPink2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const hotPink2: Type = _fromCode(Code.HotPink2);
+		export const hotPink2: Type = _fromCode(Code.Type.HotPink2);
 		/**
 		 * Eightbit orchid color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const orchid: Type = _fromCode(Code.Orchid);
+		export const orchid: Type = _fromCode(Code.Type.Orchid);
 		/**
 		 * Eightbit mediumOrchid1_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const mediumOrchid1_1: Type = _fromCode(Code.MediumOrchid1_1);
+		export const mediumOrchid1_1: Type = _fromCode(Code.Type.MediumOrchid1_1);
 		/**
 		 * Eightbit orange3 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const orange3: Type = _fromCode(Code.Orange3);
+		export const orange3: Type = _fromCode(Code.Type.Orange3);
 		/**
 		 * Eightbit lightSalmon3_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const lightSalmon3_2: Type = _fromCode(Code.LightSalmon3_2);
+		export const lightSalmon3_2: Type = _fromCode(Code.Type.LightSalmon3_2);
 		/**
 		 * Eightbit lightPink3 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const lightPink3: Type = _fromCode(Code.LightPink3);
+		export const lightPink3: Type = _fromCode(Code.Type.LightPink3);
 		/**
 		 * Eightbit pink3 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const pink3: Type = _fromCode(Code.Pink3);
+		export const pink3: Type = _fromCode(Code.Type.Pink3);
 		/**
 		 * Eightbit plum3 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const plum3: Type = _fromCode(Code.Plum3);
+		export const plum3: Type = _fromCode(Code.Type.Plum3);
 		/**
 		 * Eightbit violet color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const violet: Type = _fromCode(Code.Violet);
+		export const violet: Type = _fromCode(Code.Type.Violet);
 		/**
 		 * Eightbit gold3_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const gold3_2: Type = _fromCode(Code.Gold3_2);
+		export const gold3_2: Type = _fromCode(Code.Type.Gold3_2);
 		/**
 		 * Eightbit lightGoldenrod3 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const lightGoldenrod3: Type = _fromCode(Code.LightGoldenrod3);
+		export const lightGoldenrod3: Type = _fromCode(Code.Type.LightGoldenrod3);
 		/**
 		 * Eightbit tan color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const tan: Type = _fromCode(Code.Tan);
+		export const tan: Type = _fromCode(Code.Type.Tan);
 		/**
 		 * Eightbit mistyRose3 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const mistyRose3: Type = _fromCode(Code.MistyRose3);
+		export const mistyRose3: Type = _fromCode(Code.Type.MistyRose3);
 		/**
 		 * Eightbit thistle3 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const thistle3: Type = _fromCode(Code.Thistle3);
+		export const thistle3: Type = _fromCode(Code.Type.Thistle3);
 		/**
 		 * Eightbit plum2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const plum2: Type = _fromCode(Code.Plum2);
+		export const plum2: Type = _fromCode(Code.Type.Plum2);
 		/**
 		 * Eightbit yellow3_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const yellow3_2: Type = _fromCode(Code.Yellow3_2);
+		export const yellow3_2: Type = _fromCode(Code.Type.Yellow3_2);
 		/**
 		 * Eightbit khaki3 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const khaki3: Type = _fromCode(Code.Khaki3);
+		export const khaki3: Type = _fromCode(Code.Type.Khaki3);
 		/**
 		 * Eightbit lightGoldenrod2_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const lightGoldenrod2_1: Type = _fromCode(Code.LightGoldenrod2_1);
+		export const lightGoldenrod2_1: Type = _fromCode(Code.Type.LightGoldenrod2_1);
 		/**
 		 * Eightbit lightYellow3 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const lightYellow3: Type = _fromCode(Code.LightYellow3);
+		export const lightYellow3: Type = _fromCode(Code.Type.LightYellow3);
 		/**
 		 * Eightbit grey84 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const grey84: Type = _fromCode(Code.Grey84);
+		export const grey84: Type = _fromCode(Code.Type.Grey84);
 		/**
 		 * Eightbit lightSteelBlue1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const lightSteelBlue1: Type = _fromCode(Code.LightSteelBlue1);
+		export const lightSteelBlue1: Type = _fromCode(Code.Type.LightSteelBlue1);
 		/**
 		 * Eightbit yellow2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const yellow2: Type = _fromCode(Code.Yellow2);
+		export const yellow2: Type = _fromCode(Code.Type.Yellow2);
 		/**
 		 * Eightbit darkOliveGreen1_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const darkOliveGreen1_1: Type = _fromCode(Code.DarkOliveGreen1_1);
+		export const darkOliveGreen1_1: Type = _fromCode(Code.Type.DarkOliveGreen1_1);
 		/**
 		 * Eightbit darkOliveGreen1_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const darkOliveGreen1_2: Type = _fromCode(Code.DarkOliveGreen1_2);
+		export const darkOliveGreen1_2: Type = _fromCode(Code.Type.DarkOliveGreen1_2);
 		/**
 		 * Eightbit darkSeaGreen1_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const darkSeaGreen1_2: Type = _fromCode(Code.DarkSeaGreen1_2);
+		export const darkSeaGreen1_2: Type = _fromCode(Code.Type.DarkSeaGreen1_2);
 		/**
 		 * Eightbit honeydew2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const honeydew2: Type = _fromCode(Code.Honeydew2);
+		export const honeydew2: Type = _fromCode(Code.Type.Honeydew2);
 		/**
 		 * Eightbit lightCyan1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const lightCyan1: Type = _fromCode(Code.LightCyan1);
+		export const lightCyan1: Type = _fromCode(Code.Type.LightCyan1);
 		/**
 		 * Eightbit red1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const red1: Type = _fromCode(Code.Red1);
+		export const red1: Type = _fromCode(Code.Type.Red1);
 		/**
 		 * Eightbit deepPink2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const deepPink2: Type = _fromCode(Code.DeepPink2);
+		export const deepPink2: Type = _fromCode(Code.Type.DeepPink2);
 		/**
 		 * Eightbit deepPink1_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const deepPink1_1: Type = _fromCode(Code.DeepPink1_1);
+		export const deepPink1_1: Type = _fromCode(Code.Type.DeepPink1_1);
 		/**
 		 * Eightbit deepPink1_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const deepPink1_2: Type = _fromCode(Code.DeepPink1_2);
+		export const deepPink1_2: Type = _fromCode(Code.Type.DeepPink1_2);
 		/**
 		 * Eightbit magenta2_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const magenta2_2: Type = _fromCode(Code.Magenta2_2);
+		export const magenta2_2: Type = _fromCode(Code.Type.Magenta2_2);
 		/**
 		 * Eightbit magenta1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const magenta1: Type = _fromCode(Code.Magenta1);
+		export const magenta1: Type = _fromCode(Code.Type.Magenta1);
 		/**
 		 * Eightbit orangeRed1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const orangeRed1: Type = _fromCode(Code.OrangeRed1);
+		export const orangeRed1: Type = _fromCode(Code.Type.OrangeRed1);
 		/**
 		 * Eightbit indianRed1_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const indianRed1_1: Type = _fromCode(Code.IndianRed1_1);
+		export const indianRed1_1: Type = _fromCode(Code.Type.IndianRed1_1);
 		/**
 		 * Eightbit indianRed1_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const indianRed1_2: Type = _fromCode(Code.IndianRed1_2);
+		export const indianRed1_2: Type = _fromCode(Code.Type.IndianRed1_2);
 		/**
 		 * Eightbit hotPink_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const hotPink_1: Type = _fromCode(Code.HotPink_1);
+		export const hotPink_1: Type = _fromCode(Code.Type.HotPink_1);
 		/**
 		 * Eightbit hotPink_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const hotPink_2: Type = _fromCode(Code.HotPink_2);
+		export const hotPink_2: Type = _fromCode(Code.Type.HotPink_2);
 		/**
 		 * Eightbit mediumOrchid1_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const mediumOrchid1_2: Type = _fromCode(Code.MediumOrchid1_2);
+		export const mediumOrchid1_2: Type = _fromCode(Code.Type.MediumOrchid1_2);
 		/**
 		 * Eightbit darkOrange color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const darkOrange: Type = _fromCode(Code.DarkOrange);
+		export const darkOrange: Type = _fromCode(Code.Type.DarkOrange);
 		/**
 		 * Eightbit salmon1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const salmon1: Type = _fromCode(Code.Salmon1);
+		export const salmon1: Type = _fromCode(Code.Type.Salmon1);
 		/**
 		 * Eightbit lightCoral color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const lightCoral: Type = _fromCode(Code.LightCoral);
+		export const lightCoral: Type = _fromCode(Code.Type.LightCoral);
 		/**
 		 * Eightbit paleVioletRed1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const paleVioletRed1: Type = _fromCode(Code.PaleVioletRed1);
+		export const paleVioletRed1: Type = _fromCode(Code.Type.PaleVioletRed1);
 		/**
 		 * Eightbit orchid2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const orchid2: Type = _fromCode(Code.Orchid2);
+		export const orchid2: Type = _fromCode(Code.Type.Orchid2);
 		/**
 		 * Eightbit orchid1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const orchid1: Type = _fromCode(Code.Orchid1);
+		export const orchid1: Type = _fromCode(Code.Type.Orchid1);
 		/**
 		 * Eightbit orange1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const orange1: Type = _fromCode(Code.Orange1);
+		export const orange1: Type = _fromCode(Code.Type.Orange1);
 		/**
 		 * Eightbit sandyBrown color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const sandyBrown: Type = _fromCode(Code.SandyBrown);
+		export const sandyBrown: Type = _fromCode(Code.Type.SandyBrown);
 		/**
 		 * Eightbit lightSalmon1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const lightSalmon1: Type = _fromCode(Code.LightSalmon1);
+		export const lightSalmon1: Type = _fromCode(Code.Type.LightSalmon1);
 		/**
 		 * Eightbit lightPink1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const lightPink1: Type = _fromCode(Code.LightPink1);
+		export const lightPink1: Type = _fromCode(Code.Type.LightPink1);
 		/**
 		 * Eightbit pink1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const pink1: Type = _fromCode(Code.Pink1);
+		export const pink1: Type = _fromCode(Code.Type.Pink1);
 		/**
 		 * Eightbit plum1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const plum1: Type = _fromCode(Code.Plum1);
+		export const plum1: Type = _fromCode(Code.Type.Plum1);
 		/**
 		 * Eightbit gold1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const gold1: Type = _fromCode(Code.Gold1);
+		export const gold1: Type = _fromCode(Code.Type.Gold1);
 		/**
 		 * Eightbit lightGoldenrod2_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const lightGoldenrod2_2: Type = _fromCode(Code.LightGoldenrod2_2);
+		export const lightGoldenrod2_2: Type = _fromCode(Code.Type.LightGoldenrod2_2);
 		/**
 		 * Eightbit lightGoldenrod2_3 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const lightGoldenrod2_3: Type = _fromCode(Code.LightGoldenrod2_3);
+		export const lightGoldenrod2_3: Type = _fromCode(Code.Type.LightGoldenrod2_3);
 		/**
 		 * Eightbit navajoWhite1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const navajoWhite1: Type = _fromCode(Code.NavajoWhite1);
+		export const navajoWhite1: Type = _fromCode(Code.Type.NavajoWhite1);
 		/**
 		 * Eightbit mistyRose1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const mistyRose1: Type = _fromCode(Code.MistyRose1);
+		export const mistyRose1: Type = _fromCode(Code.Type.MistyRose1);
 		/**
 		 * Eightbit thistle1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const thistle1: Type = _fromCode(Code.Thistle1);
+		export const thistle1: Type = _fromCode(Code.Type.Thistle1);
 		/**
 		 * Eightbit yellow1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const yellow1: Type = _fromCode(Code.Yellow1);
+		export const yellow1: Type = _fromCode(Code.Type.Yellow1);
 		/**
 		 * Eightbit lightGoldenrod1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const lightGoldenrod1: Type = _fromCode(Code.LightGoldenrod1);
+		export const lightGoldenrod1: Type = _fromCode(Code.Type.LightGoldenrod1);
 		/**
 		 * Eightbit khaki1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const khaki1: Type = _fromCode(Code.Khaki1);
+		export const khaki1: Type = _fromCode(Code.Type.Khaki1);
 		/**
 		 * Eightbit wheat1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const wheat1: Type = _fromCode(Code.Wheat1);
+		export const wheat1: Type = _fromCode(Code.Type.Wheat1);
 		/**
 		 * Eightbit cornsilk1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const cornsilk1: Type = _fromCode(Code.Cornsilk1);
+		export const cornsilk1: Type = _fromCode(Code.Type.Cornsilk1);
 		/**
 		 * Eightbit grey100 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const grey100: Type = _fromCode(Code.Grey100);
+		export const grey100: Type = _fromCode(Code.Type.Grey100);
 		/**
 		 * Eightbit grey3 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const grey3: Type = _fromCode(Code.Grey3);
+		export const grey3: Type = _fromCode(Code.Type.Grey3);
 		/**
 		 * Eightbit grey7 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const grey7: Type = _fromCode(Code.Grey7);
+		export const grey7: Type = _fromCode(Code.Type.Grey7);
 		/**
 		 * Eightbit grey11 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const grey11: Type = _fromCode(Code.Grey11);
+		export const grey11: Type = _fromCode(Code.Type.Grey11);
 		/**
 		 * Eightbit grey15 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const grey15: Type = _fromCode(Code.Grey15);
+		export const grey15: Type = _fromCode(Code.Type.Grey15);
 		/**
 		 * Eightbit grey19 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const grey19: Type = _fromCode(Code.Grey19);
+		export const grey19: Type = _fromCode(Code.Type.Grey19);
 		/**
 		 * Eightbit grey23 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const grey23: Type = _fromCode(Code.Grey23);
+		export const grey23: Type = _fromCode(Code.Type.Grey23);
 		/**
 		 * Eightbit grey27 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const grey27: Type = _fromCode(Code.Grey27);
+		export const grey27: Type = _fromCode(Code.Type.Grey27);
 		/**
 		 * Eightbit grey30 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const grey30: Type = _fromCode(Code.Grey30);
+		export const grey30: Type = _fromCode(Code.Type.Grey30);
 		/**
 		 * Eightbit grey35 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const grey35: Type = _fromCode(Code.Grey35);
+		export const grey35: Type = _fromCode(Code.Type.Grey35);
 		/**
 		 * Eightbit grey39 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const grey39: Type = _fromCode(Code.Grey39);
+		export const grey39: Type = _fromCode(Code.Type.Grey39);
 		/**
 		 * Eightbit grey42 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const grey42: Type = _fromCode(Code.Grey42);
+		export const grey42: Type = _fromCode(Code.Type.Grey42);
 		/**
 		 * Eightbit grey46 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const grey46: Type = _fromCode(Code.Grey46);
+		export const grey46: Type = _fromCode(Code.Type.Grey46);
 		/**
 		 * Eightbit grey50 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const grey50: Type = _fromCode(Code.Grey50);
+		export const grey50: Type = _fromCode(Code.Type.Grey50);
 		/**
 		 * Eightbit grey54 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const grey54: Type = _fromCode(Code.Grey54);
+		export const grey54: Type = _fromCode(Code.Type.Grey54);
 		/**
 		 * Eightbit grey58 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const grey58: Type = _fromCode(Code.Grey58);
+		export const grey58: Type = _fromCode(Code.Type.Grey58);
 		/**
 		 * Eightbit grey62 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const grey62: Type = _fromCode(Code.Grey62);
+		export const grey62: Type = _fromCode(Code.Type.Grey62);
 		/**
 		 * Eightbit grey66 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const grey66: Type = _fromCode(Code.Grey66);
+		export const grey66: Type = _fromCode(Code.Type.Grey66);
 		/**
 		 * Eightbit grey70 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const grey70: Type = _fromCode(Code.Grey70);
+		export const grey70: Type = _fromCode(Code.Type.Grey70);
 		/**
 		 * Eightbit grey74 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const grey74: Type = _fromCode(Code.Grey74);
+		export const grey74: Type = _fromCode(Code.Type.Grey74);
 		/**
 		 * Eightbit grey78 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const grey78: Type = _fromCode(Code.Grey78);
+		export const grey78: Type = _fromCode(Code.Type.Grey78);
 		/**
 		 * Eightbit grey82 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const grey82: Type = _fromCode(Code.Grey82);
+		export const grey82: Type = _fromCode(Code.Type.Grey82);
 		/**
 		 * Eightbit grey85 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const grey85: Type = _fromCode(Code.Grey85);
+		export const grey85: Type = _fromCode(Code.Type.Grey85);
 		/**
 		 * Eightbit grey89 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const grey89: Type = _fromCode(Code.Grey89);
+		export const grey89: Type = _fromCode(Code.Type.Grey89);
 		/**
 		 * Eightbit grey93 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const grey93: Type = _fromCode(Code.Grey93);
+		export const grey93: Type = _fromCode(Code.Type.Grey93);
 	}
 }
 
@@ -4879,23 +4754,16 @@ export namespace EightBit {
  * @category Models
  */
 export namespace RGB {
-	/** Constructor */
-	const _fromCodes = ({
-		id,
-		redCode,
-		greenCode,
-		blueCode
-	}: {
-		readonly id: string;
-		readonly redCode: number;
-		readonly greenCode: number;
-		readonly blueCode: number;
-	}): Type =>
-		_fromIndexIdAndSequence({
-			characteristic: Characteristic.Index.FgColor,
-			id: `RGB_${id}`,
-			sequence: ASSequence.RgbFgColor({ redCode, greenCode, blueCode })
-		});
+	/** RGB foreground color Style instance maker */
+	const _fromCodes: MTypes.OneArgFunction<
+		{
+			readonly id: string;
+			readonly redCode: number;
+			readonly greenCode: number;
+			readonly blueCode: number;
+		},
+		Type
+	> = flow(ASCharacteristic.RgbFgColor, _fromCharacteritic);
 
 	/**
 	 * Constructor
@@ -6595,23 +6463,16 @@ export namespace RGB {
 	 * @category Models
 	 */
 	export namespace Bg {
-		/** Constructor */
-		const _fromCodes = ({
-			id,
-			redCode,
-			greenCode,
-			blueCode
-		}: {
-			readonly id: string;
-			readonly redCode: number;
-			readonly greenCode: number;
-			readonly blueCode: number;
-		}): Type =>
-			_fromIndexIdAndSequence({
-				characteristic: Characteristic.Index.BgColor,
-				id: `RGBBg_${id}`,
-				sequence: ASSequence.RgbBgColor({ redCode, greenCode, blueCode })
-			});
+		/** RGB background color Style instance maker */
+		const _fromCodes: MTypes.OneArgFunction<
+			{
+				readonly id: string;
+				readonly redCode: number;
+				readonly greenCode: number;
+				readonly blueCode: number;
+			},
+			Type
+		> = flow(ASCharacteristic.RgbBgColor, _fromCharacteritic);
 
 		/**
 		 * Constructor
@@ -8305,49 +8166,3 @@ export namespace RGB {
 		});
 	}
 }
-
-/**
- * Gets the sequence for `self`
- *
- * @since 0.0.1
- * @category Destructors
- */
-export const sequence = (self: Type): ASSequence.Type =>
-	pipe(
-		ASSequence.empty,
-		Array.appendAll(
-			pipe(
-				self.fgColor,
-				Option.liftPredicate(MTypes.isNotUndefined),
-				Option.map(Colored.fgSequence),
-				Option.getOrElse(() => ASSequence.empty)
-			)
-		),
-		Array.appendAll(
-			pipe(
-				self.bgColor,
-				Option.liftPredicate(MTypes.isNotUndefined),
-				Option.map(Colored.bgSequence),
-				Option.getOrElse(() => ASSequence.empty)
-			)
-		),
-		MFunction.fIfTrue({ condition: self.isBold, f: Array.append(1) }),
-		MFunction.fIfTrue({ condition: self.isUnderlined, f: Array.append(4) }),
-		MFunction.fIfTrue({ condition: self.isBlinking, f: Array.append(5) }),
-		MFunction.fIfTrue({ condition: self.isFramed, f: Array.append(51) }),
-		MFunction.fIfTrue({ condition: self.isEncircled, f: Array.append(52) }),
-		MFunction.fIfTrue({ condition: self.isOverlined, f: Array.append(53) })
-	);
-
-/**
- * Gets the StringTransformer for `self`. This StringTransformer sends the sequence string
- * corresponding to `self`, then the string it receives as argument and finally the reset sequence
- * string.
- *
- * @since 0.0.1
- * @category Destructors
- */
-export const stringTransformer: MTypes.OneArgFunction<Type, MTypes.StringTransformer> = flow(
-	sequence,
-	ASSequence.toStringTransformer
-);

@@ -21,7 +21,7 @@ import {
 	flow,
 	pipe
 } from 'effect';
-import type * as ASStyle from './Style.js';
+import * as ASBasicStyle from './BasicStyle.js';
 
 export const moduleTag = '@parischap/ansi-styles/String/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
@@ -46,7 +46,7 @@ export interface Type extends Inspectable.Inspectable, Pipeable.Pipeable {
 	 *
 	 * @since 0.0.1
 	 */
-	readonly style: ASStyle.Type;
+	readonly style: ASBasicStyle.Type;
 
 	/** @internal */
 	readonly [TypeId]: TypeId;
