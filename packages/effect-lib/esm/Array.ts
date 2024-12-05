@@ -18,6 +18,7 @@ import {
 	pipe
 } from 'effect';
 import * as MMatch from './Match.js';
+import * as MOption from './Option.js';
 import * as MTypes from './types.js';
 
 /**
@@ -419,64 +420,53 @@ export const splitAtFromRight =
 export const mergeSorted =
 	<A>(o: Order.Order<A>) =>
 	(that: Iterable<A>) =>
-	(self: Iterable<A>) => {
+	(self: Iterable<A>): Array<A> => {
+		const lessThanOrEqualTo = Order.lessThanOrEqualTo(o);
 		const selfIterator = self[Symbol.iterator]();
 		const thatIterator = that[Symbol.iterator]();
-
-		let selfNext = selfIterator.next();
-		if (selfNext.done !== false) return Array.fromIterable(that);
-		let thatNext = thatIterator.next();
-		if (thatNext.done !== false) return Array.fromIterable(self);
-
-		let selfNextValue = selfNext.value;
-		let thatNextValue = thatNext.value;
-
-		/* eslint-disable-next-line functional/prefer-readonly-type */
-		const sorted: Array<A> = [];
-
-		const lessThanOrEqualTo = Order.lessThanOrEqualTo(o);
-
-		do {
-			if (lessThanOrEqualTo(selfNextValue, thatNextValue)) {
-				/* eslint-disable-next-line functional/immutable-data,functional/no-expression-statements*/
-				sorted.push(selfNextValue);
-				/* eslint-disable-next-line functional/no-expression-statements*/
-				selfNext = selfIterator.next();
-				if (selfNext.done !== false)
-					do {
-						/* eslint-disable-next-line functional/immutable-data,functional/no-expression-statements*/
-						sorted.push(thatNextValue);
-						/* eslint-disable-next-line functional/no-expression-statements*/
-						thatNext = thatIterator.next();
-
-						if (thatNext.done !== false) return sorted;
-						/* eslint-disable-next-line functional/no-expression-statements*/
-						thatNextValue = thatNext.value;
-						/* eslint-disable-next-line no-constant-condition*/
-					} while (true);
-
-				/* eslint-disable-next-line functional/no-expression-statements*/
-				selfNextValue = selfNext.value;
-			} else {
-				/* eslint-disable-next-line functional/immutable-data,functional/no-expression-statements*/
-				sorted.push(thatNextValue);
-				/* eslint-disable-next-line functional/no-expression-statements*/
-				thatNext = thatIterator.next();
-				if (thatNext.done !== false)
-					do {
-						/* eslint-disable-next-line functional/immutable-data,functional/no-expression-statements*/
-						sorted.push(selfNextValue);
-						/* eslint-disable-next-line functional/no-expression-statements*/
-						selfNext = selfIterator.next();
-
-						if (selfNext.done !== false) return sorted;
-						/* eslint-disable-next-line functional/no-expression-statements*/
-						selfNextValue = selfNext.value;
-						/* eslint-disable-next-line no-constant-condition*/
-					} while (true);
-				/* eslint-disable-next-line functional/no-expression-statements*/
-				thatNextValue = thatNext.value;
-			}
-			/* eslint-disable-next-line no-constant-condition*/
-		} while (true);
+		return pipe(
+			Tuple.make(
+				MOption.fromNextIteratorValue(selfIterator),
+				MOption.fromNextIteratorValue(thatIterator)
+			),
+			unfold(([selfValueOption, thatValueOption]) =>
+				Option.match(selfValueOption, {
+					onSome: (selfValue) =>
+						Option.match(thatValueOption, {
+							onSome: (thatValue) =>
+								lessThanOrEqualTo(selfValue, thatValue) ?
+									Option.some(
+										Tuple.make(
+											selfValue,
+											Tuple.make(MOption.fromNextIteratorValue(selfIterator), thatValueOption)
+										)
+									)
+								:	Option.some(
+										Tuple.make(
+											thatValue,
+											Tuple.make(selfValueOption, MOption.fromNextIteratorValue(thatIterator))
+										)
+									),
+							onNone: () =>
+								Option.some(
+									Tuple.make(
+										selfValue,
+										Tuple.make(MOption.fromNextIteratorValue(selfIterator), Option.none())
+									)
+								)
+						}),
+					onNone: () =>
+						Option.match(thatValueOption, {
+							onSome: (thatValue) =>
+								Option.some(
+									Tuple.make(
+										thatValue,
+										Tuple.make(Option.none(), MOption.fromNextIteratorValue(thatIterator))
+									)
+								),
+							onNone: () => Option.none()
+						})
+				})
+			)
+		);
 	};
