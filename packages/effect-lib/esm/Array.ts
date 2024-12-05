@@ -378,13 +378,24 @@ export const modifyHead =
 		Array.modify(self, 0, f);
 
 /**
+ * Type of the unfold function in the unfold function
+ *
+ * @since 0.5.0
+ * @category Constructors
+ */
+export interface UnfoldFunction<A, B> {
+	/* eslint-disable-next-line functional/prefer-readonly-type */
+	(a: A, isCyclical: boolean): Option.Option<[B, A]>;
+}
+
+/**
  * Same as Array.unfold but with cycle detection and curried
  *
  * @since 0.5.0
  * @category Constructors
  */
 export const unfold =
-	<A, B>(f: (a: A, isCyclical: boolean) => Option.Option<readonly [B, A]>) =>
+	<A, B>(f: UnfoldFunction<A, B>) =>
 	(a: A): Array<B> => {
 		if (MTypes.isOneArgFunction(f)) return Array.unfold(a, f);
 		const knownBs = Array.empty<A>();
@@ -410,7 +421,7 @@ export const splitAtFromRight =
 		Array.splitAt(self, self.length - n);
 
 /**
- * Produces a sorted array from two sorted Iterables. Elements in `self` are assured to be before
+ * Merges two sorted Iterables into a sorted array. Elements in `self` are assured to be before
  * equal elements in `that` in the resulting array. The sorting order `o` must also be the one that
  * was used to sort `self` and `that`
  *
@@ -468,5 +479,69 @@ export const mergeSorted =
 						})
 				})
 			)
+		);
+	};
+
+/**
+ * Removes all elements of `that` from `self`. The sorting order `o` must also be the one that was
+ * used to sort `self` and `that`
+ *
+ * @since 0.5.0
+ * @category Utils
+ */
+export const differenceSorted =
+	<A>(o: Order.Order<A>) =>
+	(that: Iterable<A>) =>
+	(self: Iterable<A>): Array<A> => {
+		const lessThan = Order.lessThan(o);
+		const selfIterator = self[Symbol.iterator]();
+		const thatIterator = that[Symbol.iterator]();
+		return pipe(
+			Tuple.make(
+				MOption.fromNextIteratorValue(selfIterator),
+				MOption.fromNextIteratorValue(thatIterator)
+			),
+			unfold(([selfValueOption, thatValueOption]) =>
+				Option.match(selfValueOption, {
+					onSome: (selfValue) =>
+						Option.match(thatValueOption, {
+							onSome: (thatValue) =>
+								lessThan(selfValue, thatValue) ?
+									Option.some(
+										Tuple.make(
+											Array.of(selfValue),
+											Tuple.make(MOption.fromNextIteratorValue(selfIterator), thatValueOption)
+										)
+									)
+								: Equal.equals(selfValue, thatValue) ?
+									Option.some(
+										Tuple.make(
+											Array.empty(),
+											Tuple.make(
+												MOption.fromNextIteratorValue(selfIterator),
+												MOption.fromNextIteratorValue(thatIterator)
+											)
+										)
+									)
+								:	Option.some(
+										Tuple.make(
+											Array.empty(),
+											Tuple.make(selfValueOption, MOption.fromNextIteratorValue(thatIterator))
+										)
+									),
+							onNone: () =>
+								Option.some(
+									Tuple.make(
+										Array.of(selfValue),
+										Tuple.make(MOption.fromNextIteratorValue(selfIterator), Option.none())
+									)
+								)
+						}),
+					onNone: () =>
+						/* eslint-disable-next-line functional/prefer-readonly-type */
+						Option.none<[ReadonlyArray<A>, [Option.Option<A>, Option.Option<A>]]>()
+				})
+			),
+			Array.flatten
 		);
 	};

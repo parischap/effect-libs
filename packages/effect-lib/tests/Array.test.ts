@@ -407,4 +407,25 @@ describe('MArray', () => {
 			);
 		});
 	});
+
+	describe('differenceSorted', () => {
+		const substractSortedNumbers = MArray.differenceSorted(Number.Order);
+		it('Substract non-empty array from empty array', () => {
+			expect(
+				pipe(Array.empty<number>(), substractSortedNumbers(Array.make(1, 2, 3)))
+			).toStrictEqual(Array.empty<number>());
+		});
+
+		it('that finishes first', () => {
+			expect(
+				pipe(Array.make(1, 2, 4, 6, 6, 6, 7, 8), substractSortedNumbers(Array.make(2, 6, 6)))
+			).toStrictEqual(Array.make(1, 4, 6, 7, 8));
+		});
+
+		it('self finishes first', () => {
+			expect(
+				pipe(Array.make(1, 2, 4, 6, 6, 7, 8), substractSortedNumbers(Array.make(2, 6, 6, 10)))
+			).toStrictEqual(Array.make(1, 4, 7, 8));
+		});
+	});
 });
