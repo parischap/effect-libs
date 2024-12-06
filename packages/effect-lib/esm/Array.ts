@@ -10,6 +10,7 @@ import {
 	Equal,
 	Equivalence,
 	Function,
+	Number,
 	Option,
 	Order,
 	Predicate,
@@ -545,3 +546,9 @@ export const differenceSorted =
 			Array.flatten
 		);
 	};
+
+/**
+ * Equivalence for arrays of numbers. To be removed when Equal.equals will handle Arrays properly
+ * (from Effect 4.0 onwards)
+ */
+export const numberEquivalence = Array.getEquivalence(Number.Equivalence);
