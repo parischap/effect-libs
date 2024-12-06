@@ -94,6 +94,7 @@ export namespace SearchResult {
 		that.match === self.match;
 
 	/** Prototype */
+	const _TypeIdHash = Hash.hash(TypeId);
 	const proto: MTypes.Proto<Type> = {
 		[TypeId]: TypeId,
 		[Equal.symbol](this: Type, that: unknown): boolean {
@@ -105,7 +106,7 @@ export namespace SearchResult {
 				Hash.hash,
 				Hash.combine(Hash.hash(this.endIndex)),
 				Hash.combine(Hash.hash(this.match)),
-				Hash.combine(Hash.hash(TypeId)),
+				Hash.combine(_TypeIdHash),
 				Hash.cached(this)
 			);
 		},
