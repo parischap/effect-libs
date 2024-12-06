@@ -1,9 +1,6 @@
 /**
- * This module implements a type that represents the result of formatting a string. It contains both
- * the original string (before applying the format) and the formatted string. The reason for keeping
- * the original string is that it allows to calculate the length of the string without the
- * formatting characters and to implement an Order (see Order.ts) that does not take formatting
- * characters into account.
+ * This module implements a type that represents the result of formatting a string. It contains a
+ * style and the string on which to apply this style.
  *
  * @since 0.0.1
  */
@@ -23,26 +20,26 @@ import {
 } from 'effect';
 import * as ASBasicStyle from './BasicStyle.js';
 
-export const moduleTag = '@parischap/ansi-styles/String/';
+export const moduleTag = '@parischap/ansi-styles/StringElem/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
 
 /**
- * Interface that represents a String
+ * Interface that represents a StringElem
  *
  * @since 0.0.1
  * @category Models
  */
 export interface Type extends Inspectable.Inspectable, Pipeable.Pipeable {
 	/**
-	 * The strings to style
+	 * The elem on which to apply the style
 	 *
 	 * @since 0.0.1
 	 */
-	readonly strings: string;
+	readonly elem: string;
 
 	/**
-	 * The style to apply to `strings`
+	 * The style to apply to `elem`
 	 *
 	 * @since 0.0.1
 	 */

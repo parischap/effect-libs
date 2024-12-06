@@ -79,13 +79,20 @@ export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
 	that.text === self.text && self.formatName === that.formatName;
 
 /** Prototype */
+const _TypeIdHash = Hash.hash(TypeId);
 const proto: MTypes.Proto<Type> = {
 	[TypeId]: TypeId,
 	[Equal.symbol](this: Type, that: unknown): boolean {
 		return has(that) && equivalence(this, that);
 	},
 	[Hash.symbol](this: Type) {
-		return Hash.cached(this, Hash.structure(this));
+		return pipe(
+			this.text,
+			Hash.hash,
+			Hash.combine(Hash.hash(this.formatName)),
+			Hash.combine(_TypeIdHash),
+			Hash.cached(this)
+		);
 	},
 	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto

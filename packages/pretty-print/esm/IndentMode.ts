@@ -11,7 +11,7 @@
  */
 
 import { MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
-import { Equal, Equivalence, Hash, Pipeable, Predicate } from 'effect';
+import { Equal, Equivalence, Hash, pipe, Pipeable, Predicate } from 'effect';
 
 const moduleTag = '@parischap/pretty-print/IndentMode/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
@@ -79,13 +79,14 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
 
 /** Prototype */
+const _TypeIdHash = Hash.hash(TypeId);
 const proto: MTypes.Proto<Type> = {
 	[TypeId]: TypeId,
 	[Equal.symbol](this: Type, that: unknown): boolean {
 		return has(that) && equivalence(this, that);
 	},
 	[Hash.symbol](this: Type) {
-		return Hash.cached(this, Hash.hash(this.id));
+		return pipe(this.id, Hash.hash, Hash.combine(_TypeIdHash), Hash.cached(this));
 	},
 	[MInspectable.IdSymbol](this: Type) {
 		return this.id;

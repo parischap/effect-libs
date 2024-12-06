@@ -7,18 +7,7 @@
  */
 
 import { MFunction, MInspectable, MMatch, MPipeable, MString, MTypes } from '@parischap/effect-lib';
-import {
-	Array,
-	Equal,
-	Equivalence,
-	flow,
-	Function,
-	Hash,
-	Number,
-	pipe,
-	Pipeable,
-	Predicate
-} from 'effect';
+import { Array, Equal, Equivalence, flow, Function, Hash, Number, pipe, Predicate } from 'effect';
 import * as ASBasicStyle from './BasicStyle.js';
 import * as ASCharacteristic from './Characteristic.js';
 import type * as ASString from './String.js';
@@ -37,12 +26,7 @@ export interface Action {
  * @since 0.0.1
  * @category Models
  */
-export interface Type
-	extends Action,
-		ASBasicStyle.Type,
-		Equal.Equal,
-		MInspectable.Inspectable,
-		Pipeable.Pipeable {
+export interface Type extends Action, ASBasicStyle.Type {
 	/** @internal */
 	readonly [TypeId]: TypeId;
 }
@@ -63,13 +47,14 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
  */
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
 
+const _TypeIdHash = Hash.hash(TypeId);
 const base: MTypes.Proto<Type> = {
 	[TypeId]: TypeId,
 	[Equal.symbol](this: Type, that: unknown): boolean {
 		return has(that) && equivalence(this, that);
 	},
 	[Hash.symbol](this: Type) {
-		return Hash.cached(this, Hash.hash(this.id));
+		return pipe(this.id, Hash.hash, Hash.combine(_TypeIdHash), Hash.cached(this));
 	},
 	[MInspectable.IdSymbol](this: Type) {
 		return this.id;

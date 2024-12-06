@@ -7,8 +7,8 @@
  *
  * @since 0.0.1
  */
-import { MString, MTypes } from '@parischap/effect-lib';
-import { Array, flow, pipe, Struct } from 'effect';
+import { MInspectable, MString, MTypes } from '@parischap/effect-lib';
+import { Array, Equal, flow, pipe, Pipeable, Struct } from 'effect';
 import * as ASCharacteristic from './Characteristic.js';
 import * as ASSequence from './Sequence.js';
 import * as ASSequenceString from './SequenceString.js';
@@ -19,7 +19,7 @@ import * as ASSequenceString from './SequenceString.js';
  * @since 0.0.1
  * @category Models
  */
-export interface Type {
+export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
 	/**
 	 * Name of this style
 	 *

@@ -128,14 +128,15 @@ export const getEquivalence = <V extends MTypes.Unknown>(
 	Equivalence.make((self, that) => isEquivalent(self.value, that.value));
 
 /**
- * Equivalence based on the equality of their values
+ * Equivalence based on the equality of their values for cycle detection
  *
  * @since 0.0.1
  * @category Equivalences
  */
-export const equivalence = getEquivalence(Equal.equals);
+export const equivalence = getEquivalence((self, that) => self === that);
 
 /** Prototype */
+const _TypeIdHash = Hash.hash(TypeId);
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 const proto: MTypes.Proto<Type<any>> = {
 	[TypeId]: {
@@ -145,7 +146,7 @@ const proto: MTypes.Proto<Type<any>> = {
 		return has(that) && equivalence(this, that);
 	},
 	[Hash.symbol]<V extends MTypes.Unknown>(this: Type<V>) {
-		return Hash.cached(this, Hash.hash(this.value));
+		return pipe(this.value, Hash.hash, Hash.combine(_TypeIdHash), Hash.cached(this));
 	},
 	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto

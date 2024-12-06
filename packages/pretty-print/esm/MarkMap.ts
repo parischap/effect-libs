@@ -9,7 +9,7 @@
  */
 
 import { MInspectable, MPipeable, MStruct, MTypes } from '@parischap/effect-lib';
-import { Equal, Equivalence, flow, Hash, HashMap, Pipeable, Predicate } from 'effect';
+import { Equal, Equivalence, flow, Hash, HashMap, pipe, Pipeable, Predicate } from 'effect';
 import * as PPFormatMap from './FormatMap.js';
 import * as PPMark from './Mark.js';
 
@@ -58,13 +58,14 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
 
 /** Prototype */
+const _TypeIdHash = Hash.hash(TypeId);
 const proto: MTypes.Proto<Type> = {
 	[TypeId]: TypeId,
 	[Equal.symbol](this: Type, that: unknown): boolean {
 		return has(that) && equivalence(this, that);
 	},
 	[Hash.symbol](this: Type) {
-		return Hash.cached(this, Hash.hash(this.id));
+		return pipe(this.id, Hash.hash, Hash.combine(_TypeIdHash), Hash.cached(this));
 	},
 	[MInspectable.IdSymbol](this: Type) {
 		return this.id;

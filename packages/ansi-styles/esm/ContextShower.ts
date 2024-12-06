@@ -6,7 +6,7 @@
  */
 
 import { MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
-import { Equal, Equivalence, Hash, Pipeable, Predicate, Struct } from 'effect';
+import { Equal, Equivalence, Hash, pipe, Pipeable, Predicate, Struct } from 'effect';
 import * as ASContextFormatter from './ContextFormatter.js';
 import * as ASString from './String.js';
 
@@ -66,13 +66,14 @@ export const equivalence: Equivalence.Equivalence<Type<never>> = (self, that) =>
 	that.id === self.id;
 
 /** Prototype */
+const _TypeIdHash = Hash.hash(TypeId);
 const proto: MTypes.Proto<Type<never>> = {
 	[TypeId]: TypeId,
 	[Equal.symbol]<C>(this: Type<C>, that: unknown): boolean {
 		return has(that) && equivalence(this, that);
 	},
 	[Hash.symbol]<C>(this: Type<C>) {
-		return Hash.cached(this, Hash.hash(this.id));
+		return pipe(this.id, Hash.hash, Hash.combine(_TypeIdHash), Hash.cached(this));
 	},
 	[MInspectable.IdSymbol]<C>(this: Type<C>) {
 		return this.id;

@@ -58,6 +58,7 @@ export const has = (u: unknown): u is Type<unknown> => Predicate.hasProperty(u, 
 export const equivalence: Equivalence.Equivalence<Type<any>> = (self, that) => that.id === self.id;
 
 /** Prototype */
+const _TypeIdHash = Hash.hash(TypeId);
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 const proto: MTypes.Proto<Type<any>> = {
 	[TypeId]: {
@@ -67,7 +68,7 @@ const proto: MTypes.Proto<Type<any>> = {
 		return has(that) && equivalence(this, that);
 	},
 	[Hash.symbol]<A>(this: Type<A>) {
-		return Hash.cached(this, Hash.hash(this.id));
+		return pipe(this.id, Hash.hash, Hash.combine(_TypeIdHash), Hash.cached(this));
 	},
 	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto
