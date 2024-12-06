@@ -100,7 +100,14 @@ export namespace SearchResult {
 			return has(that) && equivalence(this, that);
 		},
 		[Hash.symbol](this: Type) {
-			return Hash.cached(this, Hash.structure(this));
+			return pipe(
+				this.startIndex,
+				Hash.hash,
+				Hash.combine(Hash.hash(this.endIndex)),
+				Hash.combine(Hash.hash(this.match)),
+				Hash.combine(Hash.hash(TypeId)),
+				Hash.cached(this)
+			);
 		},
 		...MInspectable.BaseProto(moduleTag),
 		...MPipeable.BaseProto
