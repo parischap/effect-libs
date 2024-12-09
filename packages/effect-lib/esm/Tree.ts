@@ -7,8 +7,11 @@
 import * as Monoid from '@effect/typeclass/Monoid';
 import {
 	Array,
+	Equal,
+	Equivalence,
 	flow,
 	Function,
+	Hash,
 	Inspectable,
 	Option,
 	pipe,
@@ -37,7 +40,7 @@ export interface Forest<A> extends ReadonlyArray<Type<A>> {}
  * @since 0.0.6
  * @category Models
  */
-export interface Type<out A> extends Inspectable.Inspectable, Pipeable.Pipeable {
+export interface Type<out A> extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
 	/**
 	 * The value
 	 *
@@ -64,11 +67,46 @@ export interface Type<out A> extends Inspectable.Inspectable, Pipeable.Pipeable 
  */
 export const has = (u: unknown): u is Type<unknown> => Predicate.hasProperty(u, TypeId);
 
+/**
+ * Returns an equivalence based on an equivalence of the subtype
+ *
+ * @since 0.5.0 Equivalence
+ */
+export const getEquivalence = <A>(
+	isEquivalent: Equivalence.Equivalence<A>
+): Equivalence.Equivalence<Type<A>> => {
+	const internalEquivalence: Equivalence.Equivalence<Type<A>> = (self, that) =>
+		isEquivalent(self.value, that.value) && forestEq(self.forest, that.forest);
+	const forestEq = Array.getEquivalence(internalEquivalence);
+	return internalEquivalence;
+};
+
+/**
+ * Equivalence based on Equal.equals
+ *
+ * @since 0.5.0
+ * @category Equivalences
+ */
+export const equivalence = getEquivalence(Equal.equals);
+
 /** Prototype */
+const _TypeIdHash = Hash.hash(TypeId);
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 const proto: MTypes.Proto<Type<any>> = {
 	[TypeId]: {
 		_A: MTypes.covariantValue
+	},
+	[Equal.symbol]<A>(this: Type<A>, that: unknown): boolean {
+		return has(that) && equivalence(this, that);
+	},
+	[Hash.symbol]<A>(this: Type<A>) {
+		return pipe(
+			this.value,
+			Hash.hash,
+			Hash.combine(Hash.array(this.forest)),
+			Hash.combine(_TypeIdHash),
+			Hash.cached(this)
+		);
 	},
 	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto

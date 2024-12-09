@@ -11,7 +11,16 @@ interface TestInput {
 
 describe('MTree', () => {
 	describe('Tag, prototype and guards', () => {
-		const testTree = MTree.make({ value: 5, forest: Array.empty() });
+		const testTree = MTree.make({
+			value: 5,
+			forest: Array.make(
+				MTree.make({
+					value: 3,
+					forest: Array.make(MTree.make({ value: 1, forest: Array.empty() }))
+				}),
+				MTree.make({ value: 2, forest: Array.empty() })
+			)
+		});
 
 		it('moduleTag', () => {
 			expect(MTree.moduleTag).toBe(MUtils.moduleTagFromFileName(__filename));
@@ -24,13 +33,33 @@ describe('MTree', () => {
 						testTree,
 						MTree.make({
 							value: 5,
-							forest: Array.of(MTree.make({ value: 4, forest: Array.empty() }))
+							forest: Array.make(
+								MTree.make({
+									value: 3,
+									forest: Array.make(MTree.make({ value: 1, forest: Array.empty() }))
+								}),
+								MTree.make({ value: 2, forest: Array.empty() })
+							)
 						})
 					)
 				).toBe(true);
 			});
 			it('Non matching', () => {
-				expect(Equal.equals(testTree, MTree.make({ value: 4, forest: Array.empty() }))).toBe(false);
+				expect(
+					Equal.equals(
+						testTree,
+						MTree.make({
+							value: 5,
+							forest: Array.make(
+								MTree.make({
+									value: 3,
+									forest: Array.empty()
+								}),
+								MTree.make({ value: 2, forest: Array.empty() })
+							)
+						})
+					)
+				).toBe(false);
 			});
 		});
 
