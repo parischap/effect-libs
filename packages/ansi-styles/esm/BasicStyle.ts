@@ -7,11 +7,7 @@
  *
  * @since 0.0.1
  */
-import { MInspectable, MString, MTypes } from '@parischap/effect-lib';
-import { Array, Equal, flow, pipe, Pipeable, Struct } from 'effect';
-import * as ASCharacteristic from './Characteristic.js';
-import * as ASSequence from './Sequence.js';
-import * as ASSequenceString from './SequenceString.js';
+import * as ASStyleCharacteristic from './StyleCharacteristic.js';
 
 /**
  * Type that represents a BasicStyle
@@ -19,84 +15,16 @@ import * as ASSequenceString from './SequenceString.js';
  * @since 0.0.1
  * @category Models
  */
-export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
+export interface Type {
 	/**
-	 * Name of this style
+	 * Sorted array of the StyleCharacteristic's defining this style. Did not use a SortedSet because
+	 * we need some waranties as to the order of equivalent elements when merging
+	 * StyleCharacteristic's
 	 *
 	 * @since 0.0.1
 	 */
-	readonly id: string;
-	// Did not use a SortedSet because I need some waranties as to the order of equal elements when merging Characteristic's
-	/**
-	 * Sorted array of the Characteristic's defining this style
-	 *
-	 * @since 0.0.1
-	 */
-	readonly characteristics: ReadonlyArray<ASCharacteristic.Type>;
-
-	/**
-	 * StringTransformer that prepends the set SequenceString corresponding to this style
-	 *
-	 * @since 0.0.1
-	 */
-	readonly addSetSequenceString: MTypes.StringTransformer;
+	readonly characteristics: ReadonlyArray<ASStyleCharacteristic.Type>;
 }
-
-/**
- * Gets the `id` property of `self`
- *
- * @since 0.0.1
- * @category Destructors
- */
-export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
-
-/**
- * Gets the `characteristics` property of `self`
- *
- * @since 0.0.1
- * @category Destructors
- */
-export const characteristics: MTypes.OneArgFunction<
-	Type,
-	ReadonlyArray<ASCharacteristic.Type>
-> = Struct.get('characteristics');
-
-/**
- * Gets the `addSetSequenceString` property of `self`
- *
- * @since 0.0.1
- * @category Destructors
- */
-export const addSetSequenceString: MTypes.OneArgFunction<Type, MTypes.StringTransformer> =
-	Struct.get('addSetSequenceString');
-
-/**
- * Builds a BasicStyle from the combination of two other BasicStyles. If `self` and `that` contain
- * contrary Characteristic's (e.g `self` contains `Bold` and `that` contains `Dim`), the
- * characteristics in `that` will prevail.
- *
- * @since 0.0.1
- * @category Utils
- */
-export const combine = (that: Type) => (self: Type) => {
-	const characteristics = pipe(
-		that.characteristics,
-		ASCharacteristic.mergeByIndexAndId(self.characteristics),
-		Array.dedupeAdjacent
-	) as unknown as Array.NonEmptyReadonlyArray<ASCharacteristic.Type>;
-
-	return {
-		id: pipe(characteristics, Array.map(ASCharacteristic.id), Array.join('')),
-		characteristics,
-		addSetSequenceString: pipe(
-			characteristics,
-			Array.map(ASCharacteristic.sequence),
-			Array.flatten,
-			ASSequenceString.fromNonEmptySequence,
-			MString.prepend
-		)
-	};
-};
 
 /**
  * Builds a StringTransformer that appends the set SequenceString of all the Characteristic's of
@@ -106,7 +34,7 @@ export const combine = (that: Type) => (self: Type) => {
  * @since 0.0.1
  * @category Destructors
  */
-export const toAddResetSequenceString =
+/*export const toAddResetSequenceString =
 	(context: Type) =>
 	(self: Type): MTypes.StringTransformer =>
 		pipe(
@@ -117,4 +45,4 @@ export const toAddResetSequenceString =
 			Array.flatten,
 			ASSequenceString.fromSequence,
 			MString.append
-		);
+		);*/

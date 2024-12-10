@@ -1,16 +1,27 @@
 /**
- * A Style is the same as a BasicStyle (see BasicStyle.ts) but comes packaged with a String
- * constructor (see String.ts) that is merely syntaxic sugar and plenty of instances. If you need
- * to, you can define more RGB instances with the RGB.make and RGB.Bg.make constructors.
+ * This module implements a type that represents an ANSI style as defined in the Select Graphic
+ * Rendition subset. Info at
+ * https://stackoverflow.com/questions/4842424/list-of-ansi-fgColor-escape-characteristicSequences.
+ * A style is simply a sorted array of the StyleCharacteristics that define it.
  *
  * @since 0.0.1
  */
 
 import { MFunction, MInspectable, MMatch, MPipeable, MString, MTypes } from '@parischap/effect-lib';
-import { Array, Equal, Equivalence, flow, Function, Hash, Number, pipe, Predicate } from 'effect';
-import * as ASBasicStyle from './BasicStyle.js';
-import * as ASCharacteristic from './Characteristic.js';
-import type * as ASString from './String.js';
+import {
+	Array,
+	Equal,
+	Equivalence,
+	flow,
+	Hash,
+	Number,
+	pipe,
+	Pipeable,
+	Predicate,
+	Struct
+} from 'effect';
+import * as ASStyleCharacteristic from './StyleCharacteristic.js';
+import * as ASString from './Text.js';
 
 export const moduleTag = '@parischap/ansi-styles/Style/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
@@ -26,7 +37,16 @@ export interface Action {
  * @since 0.0.1
  * @category Models
  */
-export interface Type extends Action, ASBasicStyle.Type {
+export interface Type extends Action, Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
+	/**
+	 * Array of the StyleCharacteristic's defining this style sorted by Category and id. Did not use a
+	 * SortedSet because we need some waranties as to the order of equivalent elements when merging
+	 * StyleCharacteristic's
+	 *
+	 * @since 0.0.1
+	 */
+	readonly characteristics: ReadonlyArray<ASStyleCharacteristic.Type>;
+
 	/** @internal */
 	readonly [TypeId]: TypeId;
 }
@@ -39,13 +59,17 @@ export interface Type extends Action, ASBasicStyle.Type {
  */
 export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
 
+// To be removed when Effect 4.0 with structural equality comes out
+const _characteristicsEq: Equivalence.Equivalence<ReadonlyArray<ASStyleCharacteristic.Type>> =
+	Array.getEquivalence(ASStyleCharacteristic.equivalence);
 /**
  * Equivalence
  *
  * @since 0.0.6
  * @category Equivalences
  */
-export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
+export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
+	_characteristicsEq(self.characteristics, that.characteristics);
 
 const _TypeIdHash = Hash.hash(TypeId);
 const base: MTypes.Proto<Type> = {
@@ -54,10 +78,10 @@ const base: MTypes.Proto<Type> = {
 		return has(that) && equivalence(this, that);
 	},
 	[Hash.symbol](this: Type) {
-		return pipe(this.id, Hash.hash, Hash.combine(_TypeIdHash), Hash.cached(this));
+		return pipe(this.characteristics, Hash.array, Hash.combine(_TypeIdHash), Hash.cached(this));
 	},
 	[MInspectable.IdSymbol](this: Type) {
-		return this.id;
+		return pipe(this.characteristics, Array.map(ASStyleCharacteristic.id), Array.join(''));
 	},
 	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto
@@ -68,21 +92,60 @@ function _action(this: Type, ...args: ReadonlyArray<string | ASString.Type>): AS
 }
 
 /** Constructor */
-const _make = ({ id, characteristics, addSetSequenceString }: MTypes.Data<Type>): Type => {
+const _make = ({ characteristics }: MTypes.Data<Type>): Type => {
 	return Object.assign(MFunction.clone(_action), {
-		id,
 		characteristics,
-		addSetSequenceString,
 		...base
 	});
 };
 
+/**
+ * Gets the `characteristics` property of `self`
+ *
+ * @since 0.0.1
+ * @category Destructors
+ */
+export const characteristics: MTypes.OneArgFunction<
+	Type,
+	ReadonlyArray<ASStyleCharacteristic.Type>
+> = Struct.get('characteristics');
+
+/**
+ * Builds a Style from the combination of two other Styles. If `self` and `that` contain contrary
+ * StyleCharacteristic's (e.g `self` contains `Bold` and `that` contains `Dim`), the characteristics
+ * in `that` will prevail.
+ *
+ * @since 0.0.1
+ * @category Utils
+ */
+export const combine =
+	(that: Type) =>
+	(self: Type): Type =>
+		_make({
+			characteristics: pipe(
+				that.characteristics,
+				ASStyleCharacteristic.mergeByCategoryAndId(self.characteristics),
+				Array.dedupeAdjacentWith(ASStyleCharacteristic.sameCategoryEquivalence)
+			)
+		});
+
+/**
+ * @since 0.0.1
+ * @category Utils
+ */
+/*const toStringTransformer = (self: Type): MTypes.StringTransformer =>
+	pipe(
+		self.characteristics,
+		Array.map(ASStyleCharacteristic.sequence),
+		Array.flatten,
+		ASSequenceString.fromNonEmptySequence,
+		MString.prepend
+	);*/
+
 /** Constructor from a single Characteristic */
-export const _fromCharacteritic = (characteristic: ASCharacteristic.Type): Type =>
+export const _fromCharacteritic = (characteristic: ASStyleCharacteristic.Type): Type =>
 	_make({
-		id: characteristic.id,
-		characteristics: Array.of(characteristic),
-		addSetSequenceString: MString.prepend(characteristic.sequenceString)
+		characteristics: Array.of(characteristic)
 	});
 
 /**
@@ -92,9 +155,7 @@ export const _fromCharacteritic = (characteristic: ASCharacteristic.Type): Type 
  * @category Instances
  */
 export const none: Type = _make({
-	id: 'None',
-	characteristics: Array.empty(),
-	addSetSequenceString: Function.identity
+	characteristics: Array.empty()
 });
 
 /**
@@ -103,7 +164,7 @@ export const none: Type = _make({
  * @since 0.0.1
  * @category Instances
  */
-export const bold: Type = _fromCharacteritic(ASCharacteristic.bold);
+export const bold: Type = _fromCharacteritic(ASStyleCharacteristic.bold);
 
 /**
  * Dim Style instance
@@ -111,7 +172,15 @@ export const bold: Type = _fromCharacteritic(ASCharacteristic.bold);
  * @since 0.0.1
  * @category Instances
  */
-export const dim: Type = _fromCharacteritic(ASCharacteristic.dim);
+export const dim: Type = _fromCharacteritic(ASStyleCharacteristic.dim);
+
+/**
+ * Normal Style instance
+ *
+ * @since 0.0.1
+ * @category Instances
+ */
+export const normal: Type = _fromCharacteritic(ASStyleCharacteristic.normal);
 
 /**
  * Italic Style instance
@@ -119,7 +188,15 @@ export const dim: Type = _fromCharacteritic(ASCharacteristic.dim);
  * @since 0.0.1
  * @category Instances
  */
-export const italic: Type = _fromCharacteritic(ASCharacteristic.italic);
+export const italic: Type = _fromCharacteritic(ASStyleCharacteristic.italic);
+
+/**
+ * NotItalic Style instance
+ *
+ * @since 0.0.1
+ * @category Instances
+ */
+export const notItalic: Type = _fromCharacteritic(ASStyleCharacteristic.notItalic);
 
 /**
  * Underlined Style instance
@@ -127,7 +204,15 @@ export const italic: Type = _fromCharacteritic(ASCharacteristic.italic);
  * @since 0.0.1
  * @category Instances
  */
-export const underlined: Type = _fromCharacteritic(ASCharacteristic.underlined);
+export const underlined: Type = _fromCharacteritic(ASStyleCharacteristic.underlined);
+
+/**
+ * NotUnderlined Style instance
+ *
+ * @since 0.0.1
+ * @category Instances
+ */
+export const notUnderlined: Type = _fromCharacteritic(ASStyleCharacteristic.notUnderlined);
 
 /**
  * Struck-through Style instance
@@ -135,7 +220,15 @@ export const underlined: Type = _fromCharacteritic(ASCharacteristic.underlined);
  * @since 0.0.1
  * @category Instances
  */
-export const struckThrough: Type = _fromCharacteritic(ASCharacteristic.struckThrough);
+export const struckThrough: Type = _fromCharacteritic(ASStyleCharacteristic.struckThrough);
+
+/**
+ * NotStruckThrough Style instance
+ *
+ * @since 0.0.1
+ * @category Instances
+ */
+export const notStruckThrough: Type = _fromCharacteritic(ASStyleCharacteristic.notStruckThrough);
 
 /**
  * Overlined Style instance
@@ -143,7 +236,15 @@ export const struckThrough: Type = _fromCharacteritic(ASCharacteristic.struckThr
  * @since 0.0.1
  * @category Instances
  */
-export const overlined: Type = _fromCharacteritic(ASCharacteristic.overlined);
+export const overlined: Type = _fromCharacteritic(ASStyleCharacteristic.overlined);
+
+/**
+ * NotOverlined Style instance
+ *
+ * @since 0.0.1
+ * @category Instances
+ */
+export const notOverlined: Type = _fromCharacteritic(ASStyleCharacteristic.notOverlined);
 
 /**
  * Inversed Style instance
@@ -151,7 +252,15 @@ export const overlined: Type = _fromCharacteritic(ASCharacteristic.overlined);
  * @since 0.0.1
  * @category Instances
  */
-export const inversed: Type = _fromCharacteritic(ASCharacteristic.inversed);
+export const inversed: Type = _fromCharacteritic(ASStyleCharacteristic.inversed);
+
+/**
+ * NotInversed Style instance
+ *
+ * @since 0.0.1
+ * @category Instances
+ */
+export const notInversed: Type = _fromCharacteritic(ASStyleCharacteristic.notInversed);
 
 /**
  * Hidden Style instance
@@ -159,7 +268,15 @@ export const inversed: Type = _fromCharacteritic(ASCharacteristic.inversed);
  * @since 0.0.1
  * @category Instances
  */
-export const hidden: Type = _fromCharacteritic(ASCharacteristic.hidden);
+export const hidden: Type = _fromCharacteritic(ASStyleCharacteristic.hidden);
+
+/**
+ * NotHidden Style instance
+ *
+ * @since 0.0.1
+ * @category Instances
+ */
+export const notHidden: Type = _fromCharacteritic(ASStyleCharacteristic.notHidden);
 
 /**
  * Slow blink Style instance
@@ -167,7 +284,7 @@ export const hidden: Type = _fromCharacteritic(ASCharacteristic.hidden);
  * @since 0.0.1
  * @category Instances
  */
-export const slowBlink: Type = _fromCharacteritic(ASCharacteristic.slowBlink);
+export const slowBlink: Type = _fromCharacteritic(ASStyleCharacteristic.slowBlink);
 
 /**
  * Fast blink Style instance
@@ -175,7 +292,15 @@ export const slowBlink: Type = _fromCharacteritic(ASCharacteristic.slowBlink);
  * @since 0.0.1
  * @category Instances
  */
-export const fastBlink: Type = _fromCharacteritic(ASCharacteristic.fastBlink);
+export const fastBlink: Type = _fromCharacteritic(ASStyleCharacteristic.fastBlink);
+
+/**
+ * NoBlink Style instance
+ *
+ * @since 0.0.1
+ * @category Instances
+ */
+export const noBlink: Type = _fromCharacteritic(ASStyleCharacteristic.noBlink);
 
 namespace OriginalColorOffset {
 	/** 8 ANSI original color offsets */
@@ -211,7 +336,7 @@ namespace OriginalColorOffset {
 /** Standard foreground color Style instance maker */
 const _fromOriginalColorOffset: MTypes.OneArgFunction<OriginalColorOffset.Type, Type> = flow(
 	OriginalColorOffset.withId,
-	ASCharacteristic.standardFgColor,
+	ASStyleCharacteristic.standardFgColor,
 	_fromCharacteritic
 );
 
@@ -289,7 +414,7 @@ export namespace Bright {
 	/** Bright foreground color Style instance maker */
 	const _fromOriginalColorOffset: MTypes.OneArgFunction<OriginalColorOffset.Type, Type> = flow(
 		OriginalColorOffset.withId,
-		ASCharacteristic.brightFgColor,
+		ASStyleCharacteristic.brightFgColor,
 		_fromCharacteritic
 	);
 
@@ -368,7 +493,7 @@ export namespace Bg {
 	/** Standard background color Style instance maker */
 	const _fromOriginalColorOffset: MTypes.OneArgFunction<OriginalColorOffset.Type, Type> = flow(
 		OriginalColorOffset.withId,
-		ASCharacteristic.standardBgColor,
+		ASStyleCharacteristic.standardBgColor,
 		_fromCharacteritic
 	);
 
@@ -446,7 +571,7 @@ export namespace Bg {
 		/** Bright background color Style instance maker */
 		const _fromOriginalColorOffset: MTypes.OneArgFunction<OriginalColorOffset.Type, Type> = flow(
 			OriginalColorOffset.withId,
-			ASCharacteristic.brightBgColor,
+			ASStyleCharacteristic.brightBgColor,
 			_fromCharacteritic
 		);
 
@@ -1126,7 +1251,7 @@ export namespace EightBit {
 	/** EightBit foreground color Style instance maker */
 	const _fromCode: MTypes.OneArgFunction<Code.Type, Type> = flow(
 		Code.withId,
-		ASCharacteristic.eightBitFgColor,
+		ASStyleCharacteristic.eightBitFgColor,
 		_fromCharacteritic
 	);
 
@@ -2933,7 +3058,7 @@ export namespace EightBit {
 		/** EightBit background color Style instance maker */
 		const _fromCode: MTypes.OneArgFunction<Code.Type, Type> = flow(
 			Code.withId,
-			ASCharacteristic.eightBitBgColor,
+			ASStyleCharacteristic.eightBitBgColor,
 			_fromCharacteritic
 		);
 
@@ -4748,7 +4873,7 @@ export namespace RGB {
 			readonly blueCode: number;
 		},
 		Type
-	> = flow(ASCharacteristic.RgbFgColor, _fromCharacteritic);
+	> = flow(ASStyleCharacteristic.RgbFgColor, _fromCharacteritic);
 
 	/**
 	 * Constructor
@@ -6457,7 +6582,7 @@ export namespace RGB {
 				readonly blueCode: number;
 			},
 			Type
-		> = flow(ASCharacteristic.RgbBgColor, _fromCharacteritic);
+		> = flow(ASStyleCharacteristic.RgbBgColor, _fromCharacteritic);
 
 		/**
 		 * Constructor

@@ -1,10 +1,10 @@
 /**
  * Module that implements a Tree. Adapted from FP-TS. All nodes in the tree have the same type. If
- * you need a tree with a specific type for leaves, just create a Tree<A|B> where B woud be the
- * specifi type of the values of the leaves. From a type perspective, the only non-existent allowed
- * situation is that of a node with a value of type B (leaf) that has children. But if your are
- * confident that the tree was built properly, you can just ignore these non exitent children for
- * leaves.
+ * you need a tree with a specific type for leaves, just create a Tree<A|B> where B is the type of
+ * the values of the leaves. From a type perspective, the only non-existent allowed situation is
+ * that of a node with a value of type B (leaf) that has children. But if your are confident that
+ * the tree was built properly, you can just ignore these non exitent children for leaves. Creating
+ * a tree with a specific type for leaves creates more trouble than it solves.
  *
  * @since 0.0.6
  */

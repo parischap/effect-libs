@@ -14,8 +14,8 @@ import { MArray, MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
 import { Array, Equal, Equivalence, Hash, pipe, Pipeable, Predicate, Struct } from 'effect';
 import * as ASFormatter from './Formatter.js';
 import * as ASPalette from './Palette.js';
-import * as ASString from './String.js';
 import type * as ASFormat from './Style.js';
+import * as ASString from './Text.js';
 
 export const moduleTag = '@parischap/ansi-styles/ContextFormatter/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;

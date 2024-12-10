@@ -6,7 +6,7 @@
  * @since 0.0.1
  */
 
-import { MArray, MInspectable, MPipeable, MString, MTypes } from '@parischap/effect-lib';
+import { MArray, MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
 import {
 	Array,
 	Equal,
@@ -20,6 +20,7 @@ import {
 	String,
 	Struct
 } from 'effect';
+import * as Utils from './utils.js';
 
 export const moduleTag = '@parischap/ansi-styles/StyleCharacteristic/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
@@ -48,14 +49,6 @@ namespace Category {
 }
 
 /**
- * Type that represents the sequence of a style characteristic (numbers between `\x1b[` and `m` used
- * to generate this ANSI style, e.g [1] for bold)
- *
- * @since 0.0.1
- */
-export interface Sequence extends Array.NonEmptyArray<number> {}
-
-/**
  * Type of a style Characteristic
  *
  * @since 0.0.1
@@ -81,7 +74,7 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
 	 *
 	 * @since 0.0.1
 	 */
-	readonly sequence: Sequence;
+	readonly sequence: Utils.NonEmptySequence;
 
 	/**
 	 * SequenceString of this style characteristic (command string that produces this style, e.g
@@ -169,7 +162,7 @@ export const byCategoryAndId: Order.Order<Type> = Order.combine(byCategory, byId
  * @since 0.0.1
  * @category Utils
  */
-export const mergeByIndexAndId = MArray.mergeSorted(byCategoryAndId);
+export const mergeByCategoryAndId = MArray.mergeSorted(byCategoryAndId);
 
 /** Constructor */
 const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
@@ -178,13 +171,7 @@ const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto
 const _fromIdCategoryAndSequence = (params: Omit<MTypes.Data<Type>, 'sequenceString'>): Type =>
 	_make({
 		...params,
-		sequenceString: pipe(
-			params.sequence,
-			Array.map(MString.fromNumber(10)),
-			Array.join(';'),
-			MString.prepend('\x1b['),
-			MString.append('m')
-		)
+		sequenceString: Utils.fromNonEmptySequenceToSequenceString(params.sequence)
 	});
 
 /**
@@ -209,7 +196,7 @@ export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
  * @since 0.0.1
  * @category Destructors
  */
-export const sequence: MTypes.OneArgFunction<Type, Sequence> = Struct.get('sequence');
+export const sequence: MTypes.OneArgFunction<Type, Utils.NonEmptySequence> = Struct.get('sequence');
 
 /**
  * Gets the `sequenceString` property of `self`

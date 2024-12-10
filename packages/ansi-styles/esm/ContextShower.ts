@@ -8,7 +8,7 @@
 import { MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
 import { Equal, Equivalence, Hash, pipe, Pipeable, Predicate, Struct } from 'effect';
 import * as ASContextFormatter from './ContextFormatter.js';
-import * as ASString from './String.js';
+import * as ASString from './Text.js';
 
 export const moduleTag = '@parischap/ansi-styles/ContextShower/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
