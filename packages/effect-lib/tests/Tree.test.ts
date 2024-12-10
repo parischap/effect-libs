@@ -104,7 +104,7 @@ describe('MTree', () => {
 		it('nonRecursiveUnfoldAndMap and .toString()', () => {
 			const testTree = pipe(
 				testInput,
-				MTree.nonRecursiveUnfoldAndMap((seed) => Tuple.make(seed.value, seed.children))
+				MTree.unfoldAndMapAccum((seed) => Tuple.make(seed.value, seed.children))
 			);
 			expect(testTree.toString()).toBe(`{
   "_id": "@parischap/effect-lib/Tree/",
@@ -176,7 +176,7 @@ describe('MTree', () => {
 		it('nonRecursiveUnfoldAndMap and .toString()', () => {
 			const testTree = pipe(
 				testInput,
-				MTree.nonRecursiveUnfoldAndMap((seed, isCyclical) =>
+				MTree.unfoldAndMapAccum((seed, isCyclical) =>
 					isCyclical ? Tuple.make(0, Array.empty()) : Tuple.make(seed.value, seed.children)
 				)
 			);
