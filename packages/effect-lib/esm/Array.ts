@@ -399,11 +399,11 @@ export const unfold =
 	<A, B>(f: UnfoldFunction<A, B>) =>
 	(a: A): Array<B> => {
 		if (MTypes.isOneArgFunction(f)) return Array.unfold(a, f);
-		const knownBs = Array.empty<A>();
+		const knownAs = Array.empty<A>();
 		const internalF = (a: A) => {
-			const isCyclical = Array.contains(knownBs, a);
+			const isCyclical = Array.contains(knownAs, a);
 			/* eslint-disable-next-line functional/no-expression-statements, functional/immutable-data */
-			knownBs.push(a);
+			knownAs.push(a);
 			return f(a, isCyclical);
 		};
 		return Array.unfold(a, internalF);
@@ -419,7 +419,21 @@ export const unfold =
 export const splitAtFromRight =
 	(n: number) =>
 	<A>(self: ReadonlyArray<A>): [beforeIndex: Array<A>, fromIndex: Array<A>] =>
-		Array.splitAt(self, self.length - n);
+		Array.splitAt(self, Math.max(0, self.length - n));
+
+/**
+ * Splits `self` into two segments, with the last segment containing a maximum of `n` elements. The
+ * value of `n` must be `>=1`.
+ *
+ * @since 0.5.0
+ * @category Utils
+ */
+export const splitNonEmptyAtFromRight =
+	(n: number) =>
+	<A>(
+		self: Array.NonEmptyReadonlyArray<A>
+	): [beforeIndex: Array<A>, fromIndex: Array.NonEmptyArray<A>] =>
+		pipe(self, splitAtFromRight(n)) as never;
 
 /**
  * Merges two sorted Iterables into a sorted array. Elements in `self` are assured to be before
