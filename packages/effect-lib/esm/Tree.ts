@@ -29,6 +29,7 @@ import {
 import * as MArray from './Array.js';
 import * as MInspectable from './Inspectable.js';
 import * as MPipeable from './Pipeable.js';
+import * as MStruct from './Struct.js';
 import * as MTypes from './types.js';
 
 export const moduleTag = '@parischap/effect-lib/Tree/';
@@ -136,14 +137,11 @@ export const make = <A>(params: MTypes.Data<Type<A>>): Type<A> =>
 
 export type Infer<T extends Type<unknown>> = T extends Type<infer A> ? A : never;
 
-/** Sets the value and forest of `self` */
-const _mutableSet = <A>(self: Type<unknown>, value: A, forest: Forest<A>): Type<A> => {
-	/* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements, functional/prefer-readonly-type */
-	(self as { value: A }).value = value;
-	/* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements, functional/prefer-readonly-type */
-	(self as { forest: Forest<A> }).forest = forest;
-	return self as Type<A>;
-};
+/** Sets the value and forest of `self` - MUTATES SELF */
+const _mutableSet =
+	<A>(value: A, forest: Forest<A>) =>
+	(self: Type<unknown>): Type<A> =>
+		pipe(self, MStruct.mutableSet({ value, forest })) as Type<A>;
 
 /**
  * Non recursive function that builds a (possibly infinite) tree from a seed value and an unfold

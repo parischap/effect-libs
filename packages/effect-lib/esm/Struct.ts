@@ -50,6 +50,18 @@ export const set =
 	});
 
 /**
+ * Same as set but mutates `self`. To use in extreme situations only
+ *
+ * @since 0.5.0
+ * @category Utils
+ */
+export const mutableSet =
+	<O extends MTypes.AnyRecord, O1 extends Partial<O>>(that: O1) =>
+	(self: O): Omit<O, keyof O1> & O1 =>
+		/* eslint-disable-next-line functional/immutable-data */
+		Object.assign(self, that);
+
+/**
  * Builds a one-key struct
  *
  * @since 0.0.6
