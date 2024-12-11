@@ -96,6 +96,29 @@ export const enrichWith =
 			(newValues) => ({ ...self, ...newValues })
 		);
 
+/**
+ * Same as enrichWith but mutates `self`. To use in extreme situations only
+ *
+ * @since 0.0.6
+ * @category Utils
+ */
+
+export const mutableEnrichWith =
+	<
+		O extends MTypes.AnyRecord,
+		/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+		O1 extends Record<string | symbol, MTypes.OneArgFunction<O, any>>
+	>(
+		fields: O1
+	) =>
+	(self: O): Omit<O, keyof O1> & { readonly [key in keyof O1]: ReturnType<O1[key]> } =>
+		/* eslint-disable-next-line functional/immutable-data */
+		Object.assign(
+			self,
+			/* eslint-disable-next-line  @typescript-eslint/no-unsafe-return */
+			Record.map(fields, (f) => f(self))
+		);
+
 /* eslint-disable */
 // Copied from Struct.ts
 type Transformed<O, T> = unknown & {

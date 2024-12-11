@@ -35,21 +35,6 @@ describe('MRecord', () => {
 		});
 	});
 
-	describe('mutableSet', () => {
-		it('No overlap', () => {
-			const value = { a: 0, b: 1 };
-			// @ts-expect-error Cannot set `c` as it is not in target record
-			pipe(value, MStruct.mutableSet({ c: 2 }));
-			expect(value).toEqual({ a: 0, b: 1, c: 2 });
-		});
-
-		it('With overlap', () => {
-			const value = { a: 0, b: 1 };
-			pipe(value, MStruct.mutableSet({ b: 2 }));
-			expect(value).toEqual({ a: 0, b: 2 });
-		});
-	});
-
 	describe('make', () => {
 		it('From number', () => {
 			expect(pipe(3, MStruct.make('a'))).toEqual({ a: 3 });
@@ -73,6 +58,26 @@ describe('MRecord', () => {
 					})
 				)
 			).toEqual({ a: 0, b: 2, c: 1 });
+		});
+	});
+
+	describe('mutableEnrichWith', () => {
+		it('No overlap', () => {
+			const value = { a: 0, b: 1 };
+			pipe(value, MStruct.mutableEnrichWith({ c: flow(Struct.get('a'), Number.sum(1)) }));
+			expect(value).toEqual({ a: 0, b: 1, c: 1 });
+		});
+
+		it('With overlap', () => {
+			const value = { a: 0, b: 1 };
+			pipe(
+				value,
+				MStruct.mutableEnrichWith({
+					c: flow(Struct.get('a'), Number.sum(1)),
+					b: flow(Struct.get('b'), Number.sum(1))
+				})
+			);
+			expect(value).toEqual({ a: 0, b: 2, c: 1 });
 		});
 	});
 
