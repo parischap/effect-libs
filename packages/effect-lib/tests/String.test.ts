@@ -469,7 +469,7 @@ describe('MString', () => {
 
 	describe('splitEquallyRestAtStart', () => {
 		it('Empty string', () =>
-			expect(pipe('', MString.splitEquallyRestAtStart(3), Array.isEmptyArray)).toBe(true));
+			expect(pipe('', MString.splitEquallyRestAtStart(3))).toStrictEqual(['']));
 
 		it('Non-empty string without rest', () =>
 			expect(pipe('foobarbaz', MString.splitEquallyRestAtStart(3))).toStrictEqual([
@@ -489,7 +489,7 @@ describe('MString', () => {
 
 	describe('splitEquallyRestAtEnd', () => {
 		it('Empty string', () =>
-			expect(pipe('', MString.splitEquallyRestAtEnd(3), Array.isEmptyArray)).toBe(true));
+			expect(pipe('', MString.splitEquallyRestAtEnd(3))).toStrictEqual(['']));
 
 		it('Non-empty string without rest', () =>
 			expect(pipe('foobarbaz', MString.splitEquallyRestAtEnd(3))).toStrictEqual([

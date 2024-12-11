@@ -518,13 +518,15 @@ export const splitAtFromRight =
  * @since 0.0.6
  * @category Utils
  */
-export const splitEquallyRestAtStart = (bitSize: number): ((self: string) => Array<string>) =>
+export const splitEquallyRestAtStart = (
+	bitSize: number
+): MTypes.OneArgFunction<string, Array<string>> =>
 	flow(
-		MArray.unfold(
+		MArray.unfoldNonEmpty(
 			flow(
 				splitAtFromRight(bitSize),
 				Tuple.swap,
-				Option.liftPredicate(Predicate.tuple(String.isNonEmpty, Function.constTrue))
+				Tuple.mapSecond(Option.liftPredicate(String.isNonEmpty))
 			)
 		),
 		Array.reverse
@@ -537,16 +539,12 @@ export const splitEquallyRestAtStart = (bitSize: number): ((self: string) => Arr
  * @since 0.0.6
  * @category Utils
  */
-export const splitEquallyRestAtEnd =
-	(bitSize: number) =>
-	(self: string): Array<string> =>
-		Array.unfold(self, (s) =>
-			pipe(
-				s,
-				splitAt(bitSize),
-				Option.liftPredicate(Predicate.tuple(String.isNonEmpty, Function.constTrue))
-			)
-		);
+export const splitEquallyRestAtEnd = (
+	bitSize: number
+): MTypes.OneArgFunction<string, Array<string>> =>
+	MArray.unfoldNonEmpty(
+		flow(splitAt(bitSize), Tuple.mapSecond(Option.liftPredicate(String.isNonEmpty)))
+	);
 
 /**
  * Adds string `tabChar` `count` times at the beginning of each new line of `self`
