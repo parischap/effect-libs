@@ -37,10 +37,14 @@ const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
 
 /**
+ * Typeof the children of a node
+ *
  * @since 0.0.6
  * @category Models
  */
 export interface Forest<A> extends ReadonlyArray<Type<A>> {}
+
+type NonEmptyForest<A> = Array.NonEmptyReadonlyArray<Type<A>>;
 
 /**
  * @since 0.0.6
@@ -137,12 +141,6 @@ export const make = <A>(params: MTypes.Data<Type<A>>): Type<A> =>
 
 export type Infer<T extends Type<unknown>> = T extends Type<infer A> ? A : never;
 
-/** Sets the value and forest of `self` - MUTATES SELF */
-const _mutableSet =
-	<A>(value: A, forest: Forest<A>) =>
-	(self: Type<unknown>): Type<A> =>
-		pipe(self, MStruct.mutableSet({ value, forest })) as Type<A>;
-
 /**
  * Non recursive function that builds a (possibly infinite) tree from a seed value and an unfold
  * function, then optionnally applies a function f to the value of each node and the result of
@@ -164,59 +162,55 @@ export const unfoldAndMapAccum =
 		const dontHandleCycles = MTypes.isOneArgFunction(unfold);
 
 		return pipe(
-			make({
-				// MArray.unfold cycle detection will not work here. So we have to reimplement it
-				value: Tuple.make(seed, Array.empty<A>()),
-				forest: Array.empty()
-			}),
-			Array.of,
-			MArray.unfold<Forest<readonly [seed: A, predecessors: ReadonlyArray<A>]>, Forest<B>>(
+			[
+				make({
+					// MArray.unfold cycle detection will not work here. So we have to reimplement it
+					value: Tuple.make(seed, Array.empty<A>()),
+					forest: Array.empty()
+				})
+			],
+			MArray.unfoldNonEmpty(
 				flow(
-					Option.liftPredicate(Array.isNonEmptyReadonlyArray),
-					Option.map(
-						flow(
-							Array.map((node) => {
-								const value = node.value;
-								const currentSeed = Tuple.getFirst(value);
-								const predecessors = Tuple.getSecond(value);
-								const isCyclical = Array.contains(predecessors, currentSeed);
-								const nextPredecessors =
-									dontHandleCycles ? predecessors : Array.append(predecessors, currentSeed);
-								const [nextValue, nextSeeds] = unfold(currentSeed, isCyclical);
+					Array.map((node) => {
+						const value = node.value;
+						const currentSeed = Tuple.getFirst(value);
+						const predecessors = Tuple.getSecond(value);
+						const isCyclical = Array.contains(predecessors, currentSeed);
+						const nextPredecessors =
+							dontHandleCycles ? predecessors : Array.append(predecessors, currentSeed);
+						const [nextValue, nextSeeds] = unfold(currentSeed, isCyclical);
 
-								const nextNodes = Array.map(nextSeeds, (seed) =>
-									make({
-										value: Tuple.make(seed, nextPredecessors),
-										forest: Array.empty()
-									})
-								);
-
-								return Tuple.make(
-									_mutableSet(node, nextValue, nextNodes as unknown as Forest<B>),
-									nextNodes
-								);
+						const nextNodes = Array.map(nextSeeds, (seed) =>
+							make({
+								value: Tuple.make(seed, nextPredecessors),
+								forest: Array.empty()
+							})
+						);
+						return pipe(
+							node as Type<B>,
+							MStruct.mutableEnrichWith({
+								value: Function.constant(nextValue),
+								forest: Function.constant(nextNodes as unknown as Forest<B>)
 							}),
-							Array.unzip,
-							Tuple.mapSecond(Array.flatten)
-						)
-					)
+							Tuple.make,
+							Tuple.appendElement(nextNodes)
+						);
+					}),
+					Array.unzip,
+					Tuple.mapSecond(flow(Array.flatten, Option.liftPredicate(Array.isNonEmptyArray)))
 				)
 			),
 			Array.flatten,
-			Array.reverse,
+			Array.reverse as MTypes.OneArgFunction<Forest<B>, NonEmptyForest<C>>,
 			f === undefined ?
-				Function.unsafeCoerce<Forest<B>, Forest<C>>
-			:	Array.map((node) =>
-					_mutableSet(
-						node,
-						f(
-							node.value,
-							Array.map(node.forest, Struct.get('value')) as unknown as ReadonlyArray<C>
-						),
-						node.forest as unknown as Forest<C>
-					)
+				Function.identity
+			:	Array.map(
+					MStruct.mutableEnrichWith({
+						value: (node) =>
+							f(node.value as unknown as B, Array.map(node.forest, Struct.get('value')))
+					})
 				),
-			(arr) => Array.lastNonEmpty(arr as Array.NonEmptyArray<Type<C>>)
+			Array.lastNonEmpty
 		);
 	};
 
