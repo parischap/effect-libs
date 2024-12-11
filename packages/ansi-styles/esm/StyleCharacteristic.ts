@@ -1,7 +1,8 @@
 /**
- * A Characteristic associates the attributes of a style characteristic to an index representing
- * that characteristic. For instance, a Characteristic could contain the Id `Black` associated to
- * the style characteristic `FgColor`, thus meaning that the text is to be displayed in black.
+ * A StyleCharacteristic associates the attributes of a style characteristic to an index
+ * representing that characteristic. For instance, a StyleCharacteristic could contain the Id
+ * `Black` associated to the style characteristic `FgColor`, thus meaning that the text is to be
+ * displayed in black.
  *
  * @since 0.0.1
  */
@@ -34,7 +35,7 @@ namespace Category {
 	 * @category Models
 	 */
 	export enum Type {
-		//Order matters because Style ids are created by concatenating the ids of the Characteristic's that compose them in this order: `BoldRed` sounds better than `RedBold`. We left a gap before `FgColor` in case we want to add new style characteristics.
+		//Order matters because Style ids are created by concatenating the ids of the StyleCharacteristic's that compose them in this order: `BoldRed` sounds better than `RedBold`. We left a gap before `FgColor` in case we want to add new style characteristics.
 		Intensity = 0,
 		Italic = 1,
 		Underlined = 2,
@@ -49,7 +50,7 @@ namespace Category {
 }
 
 /**
- * Type of a style Characteristic
+ * Type of a StyleCharacteristic
  *
  * @since 0.0.1
  * @category Models
@@ -157,7 +158,7 @@ export const byId: Order.Order<Type> = Order.mapInput(String.Order, Struct.get('
 export const byCategoryAndId: Order.Order<Type> = Order.combine(byCategory, byId);
 
 /**
- * Merges two sorted iterables of Characteristic's using the byCategoryAndId order
+ * Merges two sorted iterables of StyleCharacteristic's using the byCategoryAndId order
  *
  * @since 0.0.1
  * @category Utils
@@ -207,7 +208,7 @@ export const sequence: MTypes.OneArgFunction<Type, Utils.NonEmptySequence> = Str
 export const sequenceString: MTypes.OneArgFunction<Type, string> = Struct.get('sequenceString');
 
 /**
- * Bold Characteristic instance
+ * Bold StyleCharacteristic instance
  *
  * @since 0.0.1
  * @category Instances
@@ -219,7 +220,7 @@ export const bold: Type = _fromIdCategoryAndSequence({
 });
 
 /**
- * Dim Characteristic instance
+ * Dim StyleCharacteristic instance
  *
  * @since 0.0.1
  * @category Instances
@@ -231,7 +232,7 @@ export const dim: Type = _fromIdCategoryAndSequence({
 });
 
 /**
- * Normal Characteristic instance
+ * Normal StyleCharacteristic instance
  *
  * @since 0.0.1
  * @category Instances
@@ -243,7 +244,7 @@ export const normal: Type = _fromIdCategoryAndSequence({
 });
 
 /**
- * Italic Characteristic instance
+ * Italic StyleCharacteristic instance
  *
  * @since 0.0.1
  * @category Instances
@@ -255,7 +256,7 @@ export const italic: Type = _fromIdCategoryAndSequence({
 });
 
 /**
- * NotItalic Characteristic instance
+ * NotItalic StyleCharacteristic instance
  *
  * @since 0.0.1
  * @category Instances
@@ -267,7 +268,7 @@ export const notItalic: Type = _fromIdCategoryAndSequence({
 });
 
 /**
- * Underlined Characteristic instance
+ * Underlined StyleCharacteristic instance
  *
  * @since 0.0.1
  * @category Instances
@@ -279,7 +280,7 @@ export const underlined: Type = _fromIdCategoryAndSequence({
 });
 
 /**
- * NotUnderlined Characteristic instance
+ * NotUnderlined StyleCharacteristic instance
  *
  * @since 0.0.1
  * @category Instances
@@ -291,7 +292,7 @@ export const notUnderlined: Type = _fromIdCategoryAndSequence({
 });
 
 /**
- * StruckThrough Characteristic instance
+ * StruckThrough StyleCharacteristic instance
  *
  * @since 0.0.1
  * @category Instances
@@ -303,7 +304,7 @@ export const struckThrough: Type = _fromIdCategoryAndSequence({
 });
 
 /**
- * NotStruckThrough Characteristic instance
+ * NotStruckThrough StyleCharacteristic instance
  *
  * @since 0.0.1
  * @category Instances
@@ -315,7 +316,7 @@ export const notStruckThrough: Type = _fromIdCategoryAndSequence({
 });
 
 /**
- * Overlined Characteristic instance
+ * Overlined StyleCharacteristic instance
  *
  * @since 0.0.1
  * @category Instances
@@ -327,7 +328,7 @@ export const overlined: Type = _fromIdCategoryAndSequence({
 });
 
 /**
- * NotOverlined Characteristic instance
+ * NotOverlined StyleCharacteristic instance
  *
  * @since 0.0.1
  * @category Instances
@@ -339,7 +340,7 @@ export const notOverlined: Type = _fromIdCategoryAndSequence({
 });
 
 /**
- * Inversed Characteristic instance
+ * Inversed StyleCharacteristic instance
  *
  * @since 0.0.1
  * @category Instances
@@ -351,7 +352,7 @@ export const inversed: Type = _fromIdCategoryAndSequence({
 });
 
 /**
- * NotInversed Characteristic instance
+ * NotInversed StyleCharacteristic instance
  *
  * @since 0.0.1
  * @category Instances
@@ -363,7 +364,7 @@ export const notInversed: Type = _fromIdCategoryAndSequence({
 });
 
 /**
- * Hidden Characteristic instance
+ * Hidden StyleCharacteristic instance
  *
  * @since 0.0.1
  * @category Instances
@@ -375,7 +376,7 @@ export const hidden: Type = _fromIdCategoryAndSequence({
 });
 
 /**
- * NotHidden Characteristic instance
+ * NotHidden StyleCharacteristic instance
  *
  * @since 0.0.1
  * @category Instances
@@ -387,7 +388,7 @@ export const notHidden: Type = _fromIdCategoryAndSequence({
 });
 
 /**
- * SlowBlink Characteristic instance
+ * SlowBlink StyleCharacteristic instance
  *
  * @since 0.0.1
  * @category Instances
@@ -399,7 +400,7 @@ export const slowBlink: Type = _fromIdCategoryAndSequence({
 });
 
 /**
- * FastBlink Characteristic instance
+ * FastBlink StyleCharacteristic instance
  *
  * @since 0.0.1
  * @category Instances
@@ -411,7 +412,7 @@ export const fastBlink: Type = _fromIdCategoryAndSequence({
 });
 
 /**
- * NoBlink Characteristic instance
+ * NoBlink StyleCharacteristic instance
  *
  * @since 0.0.1
  * @category Instances
@@ -423,12 +424,12 @@ export const noBlink: Type = _fromIdCategoryAndSequence({
 });
 
 /**
- * Standard foreground color Characteristic instance maker
+ * Standard foreground color StyleCharacteristic instance maker
  *
  * @since 0.0.1
  * @category Instance makers
  */
-export const standardFgColor = ({
+export const standardColor = ({
 	id,
 	offset
 }: {
@@ -442,12 +443,12 @@ export const standardFgColor = ({
 	});
 
 /**
- * Bright foreground color Characteristic instance maker
+ * Bright foreground color StyleCharacteristic instance maker
  *
  * @since 0.0.1
  * @category Instance makers
  */
-export const brightFgColor = ({
+export const brightColor = ({
 	id,
 	offset
 }: {
@@ -455,37 +456,31 @@ export const brightFgColor = ({
 	readonly offset: number;
 }): Type =>
 	_fromIdCategoryAndSequence({
-		id,
+		id: `Bright${id}`,
 		category: Category.Type.FgColor,
 		sequence: Array.of(offset + 90)
 	});
 
 /**
- * EightBit foreground color Characteristic instance maker
+ * EightBit foreground color StyleCharacteristic instance maker
  *
  * @since 0.0.1
  * @category Instance makers
  */
-export const eightBitFgColor = ({
-	id,
-	code
-}: {
-	readonly id: string;
-	readonly code: number;
-}): Type =>
+export const eightBitColor = ({ id, code }: { readonly id: string; readonly code: number }): Type =>
 	_fromIdCategoryAndSequence({
-		id,
+		id: `EightBit${id}`,
 		category: Category.Type.FgColor,
 		sequence: Array.make(38, 5, code)
 	});
 
 /**
- * RGB foreground color Characteristic instance maker
+ * RGB foreground color StyleCharacteristic instance maker
  *
  * @since 0.0.1
  * @category Instance makers
  */
-export const RgbFgColor = ({
+export const RgbColor = ({
 	id,
 	redCode,
 	greenCode,
@@ -497,111 +492,119 @@ export const RgbFgColor = ({
 	readonly blueCode: number;
 }): Type =>
 	_fromIdCategoryAndSequence({
-		id,
+		id: `Rgb${id}`,
 		category: Category.Type.FgColor,
 		sequence: Array.make(38, 2, redCode, greenCode, blueCode)
 	});
 
 /**
- * Uncolored Characteristic instance
+ * Default foreground color StyleCharacteristic instance
  *
  * @since 0.0.1
  * @category Instances
  */
-export const uncolored: Type = _fromIdCategoryAndSequence({
-	id: 'Uncolored',
+export const defaultColor: Type = _fromIdCategoryAndSequence({
+	id: 'DefaultColor',
 	category: Category.Type.FgColor,
 	sequence: Array.of(39)
 });
 
 /**
- * Standard background color Characteristic instance maker
+ * Namespace for StyleCharacteristic's used as background colors
  *
  * @since 0.0.1
- * @category Instance makers
+ * @category Models
  */
-export const standardBgColor = ({
-	id,
-	offset
-}: {
-	readonly id: string;
-	readonly offset: number;
-}): Type =>
-	_fromIdCategoryAndSequence({
+export namespace Bg {
+	/**
+	 * Standard background color StyleCharacteristic instance maker
+	 *
+	 * @since 0.0.1
+	 * @category Instance makers
+	 */
+	export const standardColor = ({
 		id,
-		category: Category.Type.BgColor,
-		sequence: Array.of(offset + 40)
-	});
+		offset
+	}: {
+		readonly id: string;
+		readonly offset: number;
+	}): Type =>
+		_fromIdCategoryAndSequence({
+			id: `Bg${id}`,
+			category: Category.Type.BgColor,
+			sequence: Array.of(offset + 40)
+		});
 
-/**
- * Bright background color Characteristic instance maker
- *
- * @since 0.0.1
- * @category Instance makers
- */
-export const brightBgColor = ({
-	id,
-	offset
-}: {
-	readonly id: string;
-	readonly offset: number;
-}): Type =>
-	_fromIdCategoryAndSequence({
+	/**
+	 * Bright background color StyleCharacteristic instance maker
+	 *
+	 * @since 0.0.1
+	 * @category Instance makers
+	 */
+	export const brightColor = ({
 		id,
-		category: Category.Type.BgColor,
-		sequence: Array.of(offset + 100)
-	});
+		offset
+	}: {
+		readonly id: string;
+		readonly offset: number;
+	}): Type =>
+		_fromIdCategoryAndSequence({
+			id: `BgBright${id}`,
+			category: Category.Type.BgColor,
+			sequence: Array.of(offset + 100)
+		});
 
-/**
- * EightBit background color Characteristic instance maker
- *
- * @since 0.0.1
- * @category Instance makers
- */
-export const eightBitBgColor = ({
-	id,
-	code
-}: {
-	readonly id: string;
-	readonly code: number;
-}): Type =>
-	_fromIdCategoryAndSequence({
+	/**
+	 * EightBit background color StyleCharacteristic instance maker
+	 *
+	 * @since 0.0.1
+	 * @category Instance makers
+	 */
+	export const eightBitColor = ({
 		id,
-		category: Category.Type.BgColor,
-		sequence: Array.make(48, 5, code)
-	});
+		code
+	}: {
+		readonly id: string;
+		readonly code: number;
+	}): Type =>
+		_fromIdCategoryAndSequence({
+			id: `BgEightBit${id}`,
+			category: Category.Type.BgColor,
+			sequence: Array.make(48, 5, code)
+		});
 
-/**
- * RGB background color Characteristic instance maker
- *
- * @since 0.0.1
- * @category Instance makers
- */
-export const RgbBgColor = ({
-	id,
-	redCode,
-	greenCode,
-	blueCode
-}: {
-	readonly id: string;
-	readonly redCode: number;
-	readonly greenCode: number;
-	readonly blueCode: number;
-}): Type =>
-	_fromIdCategoryAndSequence({
+	/**
+	 * RGB background color StyleCharacteristic instance maker
+	 *
+	 * @since 0.0.1
+	 * @category Instance makers
+	 */
+	export const RgbColor = ({
 		id,
-		category: Category.Type.BgColor,
-		sequence: Array.make(48, 2, redCode, greenCode, blueCode)
-	});
+		redCode,
+		greenCode,
+		blueCode
+	}: {
+		readonly id: string;
+		readonly redCode: number;
+		readonly greenCode: number;
+		readonly blueCode: number;
+	}): Type =>
+		_fromIdCategoryAndSequence({
+			id: `BgRgb${id}`,
+			category: Category.Type.BgColor,
+			sequence: Array.make(48, 2, redCode, greenCode, blueCode)
+		});
 
-/**
- * BgUncolored Characteristic instance
- *
- * @since 0.0.1
- * @category Instances
- */
-export const bgUncolored: Type = _fromIdCategoryAndSequence({
-	id: 'BgUncolored',
-	category: Category.Type.BgColor,
-	sequence: Array.of(49)
-});
+	/**
+	 * BgUncolored StyleCharacteristic instance
+	 *
+	 * @since 0.0.1
+	 * @category Instances
+	 */
+	export const defaultColor: Type = _fromIdCategoryAndSequence({
+		id: 'BgDefaultColor',
+		category: Category.Type.BgColor,
+		sequence: Array.of(49)
+	});
+}

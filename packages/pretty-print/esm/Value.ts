@@ -407,21 +407,20 @@ export const toOwnAndPrototypesProperties =
 			self,
 			incDepth,
 			resetProtoDepth,
-			MArray.unfold<Type<MTypes.AnyRecord | null>, Properties>(
-				flow(
-					Option.liftPredicate(
-						MPredicate.struct({
-							protoDepth: Number.lessThanOrEqualTo(option.maxPrototypeDepth)
-						})
-					),
-					Option.filter(isNotNull),
-					Option.map(
-						MTuple.makeBothBy({
-							toFirst: toOwnProperties(option),
-							toSecond: flow(toProto, incProtoDepth)
-						})
+			MArray.unfoldNonEmpty(
+				MTuple.makeBothBy({
+					toFirst: toOwnProperties(option),
+					toSecond: flow(
+						toProto,
+						incProtoDepth,
+						Option.liftPredicate(
+							MPredicate.struct({
+								protoDepth: Number.lessThanOrEqualTo(option.maxPrototypeDepth)
+							})
+						),
+						Option.filter(isNotNull)
 					)
-				)
+				})
 			),
 			Array.flatten,
 			// Removes __proto__ properties if there are some because we have already read that property with getPrototypeOf
