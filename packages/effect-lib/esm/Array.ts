@@ -379,24 +379,21 @@ export const modifyHead =
 		Array.modify(self, 0, f);
 
 /**
- * Type of the unfold function in the unfold function
- *
- * @since 0.5.0
- * @category Constructors
- */
-export interface UnfoldFunction<A, B> {
-	/* eslint-disable-next-line functional/prefer-readonly-type */
-	(a: A, isCyclical: boolean): Option.Option<[B, A]>;
-}
-
-/**
  * Same as Array.unfold but with cycle detection and curried
  *
  * @since 0.5.0
  * @category Constructors
  */
 export const unfold =
-	<A, B>(f: UnfoldFunction<A, B>) =>
+	<A, B>(
+		f: (
+			a: A,
+			isCyclical: boolean
+		) => Option.Option<
+			/* eslint-disable-next-line functional/prefer-readonly-type */
+			[B, A]
+		>
+	) =>
 	(a: A): Array<B> => {
 		if (MTypes.isOneArgFunction(f)) return Array.unfold(a, f);
 		const knownAs = Array.empty<A>();
@@ -407,6 +404,26 @@ export const unfold =
 			return f(a, isCyclical);
 		};
 		return Array.unfold(a, internalF);
+	};
+
+/**
+ * Same as unfold but f always returns a B and an Option<A>
+ *
+ * @since 0.5.0
+ * @category Constructors
+ */
+export const unfoldNonEmpty =
+	<A, B>(
+		f: (
+			a: A,
+			isCyclical: boolean
+		) => /* eslint-disable-next-line functional/prefer-readonly-type */
+		[B, Option.Option<A>]
+	) =>
+	(a: A): Array.NonEmptyArray<B> => {
+		const internalF = (aOption: Option.Option<A>, isCyclical: boolean) =>
+			Option.map(aOption, (a) => f(a, isCyclical));
+		return pipe(a, Option.some, unfold(internalF)) as Array.NonEmptyArray<B>;
 	};
 
 /**
