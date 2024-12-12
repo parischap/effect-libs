@@ -93,6 +93,14 @@ export namespace SearchResult {
 		that.endIndex === self.endIndex &&
 		that.match === self.match;
 
+	/**
+	 * Equivalence that considers two SearchResult's to be equivalent when they overlap
+	 *
+	 * @since 0.0.6 Equivalence
+	 */
+	export const areOverlapping: Equivalence.Equivalence<Type> = (self: Type, that: Type) =>
+		self.endIndex >= that.startIndex && self.startIndex <= that.endIndex;
+
 	/** Prototype */
 	const _TypeIdHash = Hash.hash(TypeId);
 	const proto: MTypes.Proto<Type> = {
@@ -146,14 +154,6 @@ export namespace SearchResult {
 	 * @category Ordering
 	 */
 	export const byLongestFirst = Order.combine(byStartIndex, Order.reverse(byEndIndex));
-
-	/**
-	 * Equivalence, two SearchResult's are considered equivalent if they overlap
-	 *
-	 * @since 0.0.6 Equivalence
-	 */
-	export const overlappingEquivalence: Equivalence.Equivalence<Type> = (self: Type, that: Type) =>
-		self.endIndex >= that.startIndex && self.startIndex <= that.endIndex;
 
 	/**
 	 * Returns the `startIndex` property of `self`
