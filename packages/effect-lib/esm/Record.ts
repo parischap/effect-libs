@@ -5,6 +5,7 @@
  */
 
 import { flow, Option, pipe, Predicate, Record } from 'effect';
+import { LazyArg } from 'effect/Function';
 import * as MFunction from './Function.js';
 import * as MTypes from './types.js';
 
@@ -33,13 +34,12 @@ export const tryZeroParamStringFunction =
 		exception
 	}: {
 		readonly functionName: string | symbol;
-		readonly exception?: MTypes.AnyFunction;
+		readonly exception?: LazyArg<string>;
 	}) =>
 	(self: MTypes.AnyRecord): Option.Option<string> =>
 		pipe(
-			self,
-			Record.get(functionName),
-			Option.filter(MTypes.isFunction),
+			self[functionName],
+			Option.liftPredicate(MTypes.isFunction),
 			Option.filter(
 				Predicate.and(
 					Predicate.not(MFunction.strictEquals(exception)),
