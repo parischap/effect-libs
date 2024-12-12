@@ -35,9 +35,8 @@ export interface AnyArray extends Array<any> {}
  */
 export interface AnyReadonlyArray extends ReadonlyArray<any> {}
 
-/** Type used to avoid warnings by Eslint/functional when functions return a non-readonly type */
-//interface ReturnArray<T> extends Array<T> {}
-//export { type ReturnArray as Array };
+/** Type used to avoid warnings by Eslint/functional when functions return a mutable array */
+//export interface MutableArray<T> extends Array<T> {}
 
 /**
  * Type that represents a primitive except `null` and `undefined`
