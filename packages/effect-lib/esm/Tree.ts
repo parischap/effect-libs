@@ -1,6 +1,6 @@
 /**
- * Module that implements a Tree<A,B> where the value of the non-leaf nodes is of type A and the
- * value of the leaf nodes is of type B. Adapted from FP-TS
+ * Module that implements a Tree<A,B> where the value of a non-leaf node is of type A and the value
+ * of a leaf node is of type B. Adapted from FP-TS
  *
  * @since 0.5.0
  */
