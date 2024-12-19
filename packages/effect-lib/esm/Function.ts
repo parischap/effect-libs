@@ -127,13 +127,3 @@ export const call = <A>(self: LazyArg<A>): A => self();
  * @category Utils
  */
 export const prototype = Function.prototype;
-
-/**
- * Returns a copy of a function (does not copy any properties added to the function)
- *
- * @since 0.5.0
- * @category Utils
- */
-export const clone = <Args extends ReadonlyArray<unknown>, A>(
-	self: (...args: Args) => A
-): ((...args: Args) => A) => self.bind({});
