@@ -33,9 +33,13 @@ describe('ASFormatter', () => {
 			expect(testFormatter.pipe(JSON.stringify)).toBe('"Yellow"');
 		});
 
-		it('has', () => {
-			expect(ASFormatter.has(testFormatter)).toBe(true);
-			expect(ASFormatter.has(testFormat)).toBe(false);
+		describe('has', () => {
+			it('Matching', () => {
+				expect(ASFormatter.has(testFormatter)).toBe(true);
+			});
+			it('Non matching', () => {
+				expect(ASFormatter.has(testFormat)).toBe(false);
+			});
 		});
 	});
 

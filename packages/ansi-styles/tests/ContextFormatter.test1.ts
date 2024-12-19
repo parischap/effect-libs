@@ -74,9 +74,13 @@ describe('ContextFormatter', () => {
 			);
 		});
 
-		it('has', () => {
-			expect(ASContextFormatter.has(contextFormatterOnContextPos1)).toBe(true);
-			expect(ASContextFormatter.has(new Date())).toBe(false);
+		describe('has', () => {
+			it('Matching', () => {
+				expect(ASContextFormatter.has(contextFormatterOnContextPos1)).toBe(true);
+			});
+			it('Non matching', () => {
+				expect(ASContextFormatter.has(new Date())).toBe(false);
+			});
 		});
 
 		it('action', () => {

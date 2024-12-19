@@ -1,27 +1,20 @@
 /**
  * This module implements a type that represents an ANSI style as defined in the Select Graphic
  * Rendition subset. Info at
- * https://stackoverflow.com/questions/4842424/list-of-ansi-fgColor-escape-characteristicSequences.
- * A style is simply a sorted array of the StyleCharacteristics that define it.
+ * https://stackoverflow.com/questions/4f842424/list-of-ansi-fgColor-escape-characteristicSequences.
+ * A style is simply a sorted array of the StyleCharacteristic's (see StyleCharacteristics.ts) that
+ * define it. As syntaxic sugar, styles are callable functions that create Text's (see Text.ts). For
+ * instance, `const text = ASStyle.red('foo')` will create a text containing the string 'foo' styled
+ * in red.
  *
  * @since 0.0.1
  */
 
-import { MFunction, MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
-import {
-	Array,
-	Equal,
-	Equivalence,
-	flow,
-	Hash,
-	Number,
-	pipe,
-	Pipeable,
-	Predicate,
-	Struct
-} from 'effect';
+import { MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
+import { Equal, Equivalence, flow, Hash, Number, pipe, Pipeable, Predicate, Struct } from 'effect';
 import * as ASColorCode from './ColorCode.js';
 import * as ASStyleCharacteristic from './StyleCharacteristic.js';
+import * as ASStyleCharacteristics from './StyleCharacteristics.js';
 import * as ASText from './Text.js';
 
 export const moduleTag = '@parischap/ansi-styles/Style/';
@@ -46,7 +39,7 @@ export interface Type extends Action, Equal.Equal, MInspectable.Inspectable, Pip
 	 *
 	 * @since 0.0.1
 	 */
-	readonly characteristics: ReadonlyArray<ASStyleCharacteristic.Type>;
+	readonly characteristics: ASStyleCharacteristics.Type;
 
 	/** @internal */
 	readonly [TypeId]: TypeId;
@@ -60,9 +53,6 @@ export interface Type extends Action, Equal.Equal, MInspectable.Inspectable, Pip
  */
 export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
 
-// To be removed when Effect 4.0 with structural equality comes out
-const _characteristicsEq: Equivalence.Equivalence<ReadonlyArray<ASStyleCharacteristic.Type>> =
-	Array.getEquivalence(ASStyleCharacteristic.equivalence);
 /**
  * Equivalence
  *
@@ -70,7 +60,7 @@ const _characteristicsEq: Equivalence.Equivalence<ReadonlyArray<ASStyleCharacter
  * @category Equivalences
  */
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
-	_characteristicsEq(self.characteristics, that.characteristics);
+	ASStyleCharacteristics.equivalence(self.characteristics, that.characteristics);
 
 const _TypeIdHash = Hash.hash(TypeId);
 const base: MTypes.Proto<Type> = {
@@ -79,25 +69,25 @@ const base: MTypes.Proto<Type> = {
 		return has(that) && equivalence(this, that);
 	},
 	[Hash.symbol](this: Type) {
-		return pipe(this.characteristics, Hash.array, Hash.combine(_TypeIdHash), Hash.cached(this));
+		return pipe(this.characteristics, Hash.hash, Hash.combine(_TypeIdHash), Hash.cached(this));
 	},
 	[MInspectable.IdSymbol](this: Type) {
-		return pipe(this.characteristics, Array.map(ASStyleCharacteristic.id), Array.join(''));
+		return this.characteristics[MInspectable.IdSymbol]();
 	},
 	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto
 };
 
-function _action(this: Type, ...args: ReadonlyArray<string | ASText.Type>): ASText.Type {
-	return 0 as never;
-}
-
 /** Constructor */
 const _make = ({ characteristics }: MTypes.Data<Type>): Type => {
-	return Object.assign(MFunction.clone(_action), {
-		characteristics,
-		...base
-	});
+	return Object.assign(
+		(...args: ReadonlyArray<string | ASText.Type>): ASText.Type =>
+			ASText.fromStyleCharacteristics(characteristics)(...args),
+		{
+			characteristics,
+			...base
+		}
+	);
 };
 
 /**
@@ -106,48 +96,31 @@ const _make = ({ characteristics }: MTypes.Data<Type>): Type => {
  * @since 0.0.1
  * @category Destructors
  */
-export const characteristics: MTypes.OneArgFunction<
-	Type,
-	ReadonlyArray<ASStyleCharacteristic.Type>
-> = Struct.get('characteristics');
-
-/**
- * Builds a Style from the combination of two other Styles. If `self` and `that` contain contrary
- * StyleCharacteristic's (e.g `self` contains `Bold` and `that` contains `Dim`), the characteristics
- * in `that` will prevail.
- *
- * @since 0.0.1
- * @category Utils
- */
-export const combine =
-	(that: Type) =>
-	(self: Type): Type =>
-		_make({
-			characteristics: pipe(
-				that.characteristics,
-				ASStyleCharacteristic.mergeByCategoryAndId(self.characteristics),
-				Array.dedupeAdjacentWith(ASStyleCharacteristic.sameCategoryEquivalence)
-			)
-		});
-
-/**
- * @since 0.0.1
- * @category Utils
- */
-/*const toStringTransformer = (self: Type): MTypes.StringTransformer =>
-	pipe(
-		self.characteristics,
-		Array.map(ASStyleCharacteristic.sequence),
-		Array.flatten,
-		ASSequenceString.fromNonEmptySequence,
-		MString.prepend
-	);*/
+export const characteristics: MTypes.OneArgFunction<Type, ASStyleCharacteristics.Type> =
+	Struct.get('characteristics');
 
 /** Constructor from a single Characteristic */
 export const _fromCharacteritic = (characteristic: ASStyleCharacteristic.Type): Type =>
 	_make({
-		characteristics: Array.of(characteristic)
+		characteristics: ASStyleCharacteristics.fromStyleCharacteristic(characteristic)
 	});
+
+/**
+ * Builds a new Style by merging `self` and `that`. In case of conflict (e.g `self` contains `Bold`
+ * and `that` contains `Dim`), the characteristics in `that` will prevail.
+ *
+ * @since 0.0.1
+ * @category Utils
+ */
+export const merge =
+	(that: Type) =>
+	(self: Type): Type =>
+		_make({
+			characteristics: pipe(
+				self.characteristics,
+				ASStyleCharacteristics.merge(that.characteristics)
+			)
+		});
 
 /**
  * None Style instance, i.e Style that performs no styling
@@ -155,9 +128,7 @@ export const _fromCharacteritic = (characteristic: ASStyleCharacteristic.Type): 
  * @since 0.0.1
  * @category Instances
  */
-export const none: Type = _make({
-	characteristics: Array.empty()
-});
+export const none: Type = _make({ characteristics: ASStyleCharacteristics.none });
 
 /**
  * Bold Style instance
@@ -1428,12 +1399,12 @@ export namespace EightBit {
 	 */
 	export const mediumPurple2_1: Type = _fromCode(ASColorCode.EightBit.Type.MediumPurple2_1);
 	/**
-	 * Eightbit darkGoldenrod color
+	 * Eightbit darkGoldenRod color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const darkGoldenrod: Type = _fromCode(ASColorCode.EightBit.Type.DarkGoldenrod);
+	export const darkGoldenRod: Type = _fromCode(ASColorCode.EightBit.Type.DarkGoldenRod);
 	/**
 	 * Eightbit lightSalmon3_1 color
 	 *
@@ -1729,12 +1700,12 @@ export namespace EightBit {
 	 */
 	export const gold3_2: Type = _fromCode(ASColorCode.EightBit.Type.Gold3_2);
 	/**
-	 * Eightbit lightGoldenrod3 color
+	 * Eightbit lightGoldenRod3 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const lightGoldenrod3: Type = _fromCode(ASColorCode.EightBit.Type.LightGoldenrod3);
+	export const lightGoldenRod3: Type = _fromCode(ASColorCode.EightBit.Type.LightGoldenRod3);
 	/**
 	 * Eightbit tan color
 	 *
@@ -1778,12 +1749,12 @@ export namespace EightBit {
 	 */
 	export const khaki3: Type = _fromCode(ASColorCode.EightBit.Type.Khaki3);
 	/**
-	 * Eightbit lightGoldenrod2_1 color
+	 * Eightbit lightGoldenRod2_1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const lightGoldenrod2_1: Type = _fromCode(ASColorCode.EightBit.Type.LightGoldenrod2_1);
+	export const lightGoldenRod2_1: Type = _fromCode(ASColorCode.EightBit.Type.LightGoldenRod2_1);
 	/**
 	 * Eightbit lightYellow3 color
 	 *
@@ -1834,12 +1805,12 @@ export namespace EightBit {
 	 */
 	export const darkSeaGreen1_2: Type = _fromCode(ASColorCode.EightBit.Type.DarkSeaGreen1_2);
 	/**
-	 * Eightbit honeydew2 color
+	 * Eightbit honeyDew2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const honeydew2: Type = _fromCode(ASColorCode.EightBit.Type.Honeydew2);
+	export const honeyDew2: Type = _fromCode(ASColorCode.EightBit.Type.HoneyDew2);
 	/**
 	 * Eightbit lightCyan1 color
 	 *
@@ -2023,19 +1994,19 @@ export namespace EightBit {
 	 */
 	export const gold1: Type = _fromCode(ASColorCode.EightBit.Type.Gold1);
 	/**
-	 * Eightbit lightGoldenrod2_2 color
+	 * Eightbit lightGoldenRod2_2 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const lightGoldenrod2_2: Type = _fromCode(ASColorCode.EightBit.Type.LightGoldenrod2_2);
+	export const lightGoldenRod2_2: Type = _fromCode(ASColorCode.EightBit.Type.LightGoldenRod2_2);
 	/**
-	 * Eightbit lightGoldenrod2_3 color
+	 * Eightbit lightGoldenRod2_3 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const lightGoldenrod2_3: Type = _fromCode(ASColorCode.EightBit.Type.LightGoldenrod2_3);
+	export const lightGoldenRod2_3: Type = _fromCode(ASColorCode.EightBit.Type.LightGoldenRod2_3);
 	/**
 	 * Eightbit navajoWhite1 color
 	 *
@@ -2065,12 +2036,12 @@ export namespace EightBit {
 	 */
 	export const yellow1: Type = _fromCode(ASColorCode.EightBit.Type.Yellow1);
 	/**
-	 * Eightbit lightGoldenrod1 color
+	 * Eightbit lightGoldenRod1 color
 	 *
 	 * @since 0.0.1
 	 * @category EightBit instances
 	 */
-	export const lightGoldenrod1: Type = _fromCode(ASColorCode.EightBit.Type.LightGoldenrod1);
+	export const lightGoldenRod1: Type = _fromCode(ASColorCode.EightBit.Type.LightGoldenRod1);
 	/**
 	 * Eightbit khaki1 color
 	 *
@@ -3821,13 +3792,13 @@ export namespace Rgb {
 		blueCode: 255
 	});
 	/**
-	 * RGB honeydew color
+	 * RGB honeyDew color
 	 *
 	 * @since 0.0.1
 	 * @category RGB instances
 	 */
-	export const honeydew: Type = _fromCode({
-		id: 'Honeydew',
+	export const honeyDew: Type = _fromCode({
+		id: 'HoneyDew',
 		redCode: 240,
 		greenCode: 255,
 		blueCode: 240
@@ -5110,12 +5081,12 @@ export namespace Bg {
 		 */
 		export const mediumPurple2_1: Type = _fromCode(ASColorCode.EightBit.Type.MediumPurple2_1);
 		/**
-		 * Eightbit darkGoldenrod color
+		 * Eightbit darkGoldenRod color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const darkGoldenrod: Type = _fromCode(ASColorCode.EightBit.Type.DarkGoldenrod);
+		export const darkGoldenRod: Type = _fromCode(ASColorCode.EightBit.Type.DarkGoldenRod);
 		/**
 		 * Eightbit lightSalmon3_1 color
 		 *
@@ -5411,12 +5382,12 @@ export namespace Bg {
 		 */
 		export const gold3_2: Type = _fromCode(ASColorCode.EightBit.Type.Gold3_2);
 		/**
-		 * Eightbit lightGoldenrod3 color
+		 * Eightbit lightGoldenRod3 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const lightGoldenrod3: Type = _fromCode(ASColorCode.EightBit.Type.LightGoldenrod3);
+		export const lightGoldenRod3: Type = _fromCode(ASColorCode.EightBit.Type.LightGoldenRod3);
 		/**
 		 * Eightbit tan color
 		 *
@@ -5460,12 +5431,12 @@ export namespace Bg {
 		 */
 		export const khaki3: Type = _fromCode(ASColorCode.EightBit.Type.Khaki3);
 		/**
-		 * Eightbit lightGoldenrod2_1 color
+		 * Eightbit lightGoldenRod2_1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const lightGoldenrod2_1: Type = _fromCode(ASColorCode.EightBit.Type.LightGoldenrod2_1);
+		export const lightGoldenRod2_1: Type = _fromCode(ASColorCode.EightBit.Type.LightGoldenRod2_1);
 		/**
 		 * Eightbit lightYellow3 color
 		 *
@@ -5516,12 +5487,12 @@ export namespace Bg {
 		 */
 		export const darkSeaGreen1_2: Type = _fromCode(ASColorCode.EightBit.Type.DarkSeaGreen1_2);
 		/**
-		 * Eightbit honeydew2 color
+		 * Eightbit honeyDew2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const honeydew2: Type = _fromCode(ASColorCode.EightBit.Type.Honeydew2);
+		export const honeyDew2: Type = _fromCode(ASColorCode.EightBit.Type.HoneyDew2);
 		/**
 		 * Eightbit lightCyan1 color
 		 *
@@ -5705,19 +5676,19 @@ export namespace Bg {
 		 */
 		export const gold1: Type = _fromCode(ASColorCode.EightBit.Type.Gold1);
 		/**
-		 * Eightbit lightGoldenrod2_2 color
+		 * Eightbit lightGoldenRod2_2 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const lightGoldenrod2_2: Type = _fromCode(ASColorCode.EightBit.Type.LightGoldenrod2_2);
+		export const lightGoldenRod2_2: Type = _fromCode(ASColorCode.EightBit.Type.LightGoldenRod2_2);
 		/**
-		 * Eightbit lightGoldenrod2_3 color
+		 * Eightbit lightGoldenRod2_3 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const lightGoldenrod2_3: Type = _fromCode(ASColorCode.EightBit.Type.LightGoldenrod2_3);
+		export const lightGoldenRod2_3: Type = _fromCode(ASColorCode.EightBit.Type.LightGoldenRod2_3);
 		/**
 		 * Eightbit navajoWhite1 color
 		 *
@@ -5747,12 +5718,12 @@ export namespace Bg {
 		 */
 		export const yellow1: Type = _fromCode(ASColorCode.EightBit.Type.Yellow1);
 		/**
-		 * Eightbit lightGoldenrod1 color
+		 * Eightbit lightGoldenRod1 color
 		 *
 		 * @since 0.0.1
 		 * @category EightBit instances
 		 */
-		export const lightGoldenrod1: Type = _fromCode(ASColorCode.EightBit.Type.LightGoldenrod1);
+		export const lightGoldenRod1: Type = _fromCode(ASColorCode.EightBit.Type.LightGoldenRod1);
 		/**
 		 * Eightbit khaki1 color
 		 *
@@ -7504,13 +7475,13 @@ export namespace Bg {
 			blueCode: 255
 		});
 		/**
-		 * RGB honeydew color
+		 * RGB honeyDew color
 		 *
 		 * @since 0.0.1
 		 * @category RGB instances
 		 */
-		export const honeydew: Type = _fromCode({
-			id: 'Honeydew',
+		export const honeyDew: Type = _fromCode({
+			id: 'HoneyDew',
 			redCode: 240,
 			greenCode: 255,
 			blueCode: 240

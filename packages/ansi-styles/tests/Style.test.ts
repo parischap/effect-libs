@@ -1,134 +1,100 @@
 /* eslint-disable functional/no-expression-statements */
-import { ASFormat, ASFormatter } from '@parischap/ansi-styles';
+import { ASStyle, ASStyleCharacteristics } from '@parischap/ansi-styles';
 import { MUtils } from '@parischap/effect-lib';
-import { Equal, pipe } from 'effect';
+import { Array, Equal, pipe } from 'effect';
 import { describe, expect, it } from 'vitest';
 
-describe('ASFormat', () => {
+describe('ASStyle', () => {
 	describe('Tag, prototype and guards', () => {
-		const testColoredFormat = ASFormat.Colored.Original.red;
+		const red = ASStyle.red;
+		const bold = ASStyle.bold;
+		const boldRed1 = pipe(red, ASStyle.merge(bold));
+		const boldRed2 = pipe(bold, ASStyle.merge(red));
 
 		it('moduleTag', () => {
-			expect(ASFormat.moduleTag).toBe(MUtils.moduleTagFromFileName(__filename));
+			expect(ASStyle.moduleTag).toBe(MUtils.moduleTagFromFileName(__filename));
 		});
 
 		describe('Equal.equals', () => {
-			it('Colored', () => {
-				expect(Equal.equals(testColoredFormat, ASFormat.Colored.Original.red)).toBe(true);
-				expect(Equal.equals(testColoredFormat, ASFormat.Colored.Original.green)).toBe(false);
+			it('Matching', () => {
+				expect(Equal.equals(ASStyle.none, ASStyle.none)).toBe(true);
+				expect(Equal.equals(boldRed1, boldRed2)).toBe(true);
 			});
 
-			it('Colored and Styled matching', () => {
-				expect(Equal.equals(testColoredFormat, ASFormat.Styled.fromColor(testColoredFormat))).toBe(
-					true
-				);
-			});
-
-			it('Colored and Styled not matching', () => {
-				expect(
-					Equal.equals(
-						testColoredFormat,
-						ASFormat.Styled.fromColor(ASFormat.Colored.Original.green)
-					)
-				).toBe(false);
+			it('Non-matching', () => {
+				expect(Equal.equals(boldRed2, bold)).toBe(false);
 			});
 		});
 
-		it('.toString()', () => {
-			expect(testColoredFormat.toString()).toBe('"Red"');
+		describe('.toString()', () => {
+			it('red before bold', () => {
+				expect(boldRed1.toString()).toBe('BoldRed');
+			});
+			it('bold before red', () => {
+				expect(boldRed2.toString()).toBe('BoldRed');
+			});
+			it('Other than color', () => {
+				expect(ASStyle.struckThrough.toString()).toBe('StruckThrough');
+			});
+			it('Default foreground color', () => {
+				expect(ASStyle.defaultColor.toString()).toBe('DefaultColor');
+			});
+			it('Bright ThreeBit foreground color', () => {
+				expect(ASStyle.Bright.cyan.toString()).toBe('BrightCyan');
+			});
+			it('EightBit foreground color', () => {
+				expect(ASStyle.EightBit.maroon.toString()).toBe('EightBitMaroon');
+			});
+			it('RGB predefined foreground color', () => {
+				expect(ASStyle.Rgb.goldenRod.toString()).toBe('RgbGoldenRod');
+			});
+			it('RGB user-defined foreground color', () => {
+				expect(ASStyle.Rgb.make({ red: 107, green: 108, blue: 109 }).toString()).toBe(
+					'Rgb107/108/109'
+				);
+			});
+			it('Default background color', () => {
+				expect(ASStyle.Bg.defaultColor.toString()).toBe('BgDefaultColor');
+			});
+			it('Bright ThreeBit background color', () => {
+				expect(ASStyle.Bg.Bright.cyan.toString()).toBe('BgBrightCyan');
+			});
+			it('EightBit background color', () => {
+				expect(ASStyle.Bg.EightBit.maroon.toString()).toBe('BgEightBitMaroon');
+			});
+			it('RGB predefined background color', () => {
+				expect(ASStyle.Bg.Rgb.goldenRod.toString()).toBe('BgRgbGoldenRod');
+			});
+			it('RGB user-defined background color', () => {
+				expect(ASStyle.Bg.Rgb.make({ red: 107, green: 108, blue: 109 }).toString()).toBe(
+					'BgRgb107/108/109'
+				);
+			});
 		});
 
 		it('.pipe()', () => {
-			expect(testColoredFormat.pipe(ASFormatter.fromFormat, ASFormatter.id)).toBe('Red');
+			expect(
+				boldRed1.pipe(ASStyle.characteristics, ASStyleCharacteristics.sortedArray, Array.length)
+			).toBe(2);
 		});
 
-		it('has', () => {
-			expect(ASFormat.has(testColoredFormat)).toBe(true);
-			expect(ASFormat.has(ASFormat.Styled.none)).toBe(true);
-			expect(ASFormat.has(new Date())).toBe(false);
+		describe('has', () => {
+			it('Matching', () => {
+				expect(ASStyle.has(boldRed2)).toBe(true);
+			});
+			it('Non matching', () => {
+				expect(ASStyle.has(new Date())).toBe(false);
+			});
 		});
 	});
 
-	describe('Colored', () => {
-		it('has', () => {
-			expect(ASFormat.Colored.has(ASFormat.Colored.Original.red)).toBe(true);
-			expect(ASFormat.Colored.has(ASFormat.Styled.none)).toBe(false);
-		});
-
-		describe('Original', () => {
-			it('red', () => {
-				const format = ASFormat.Colored.Original.red;
-				expect(ASFormat.stringTransformer(format)('foo')).toBe('\x1b[31mfoo\x1b[0m');
-				expect(ASFormat.id(format)).toBe('Red');
-			});
-			it('brightRed', () => {
-				const format = ASFormat.Colored.Original.brightRed;
-				expect(ASFormat.stringTransformer(format)('foo')).toBe('\x1b[91mfoo\x1b[0m');
-				expect(ASFormat.id(format)).toBe('BrightRed');
-			});
-		});
-
-		describe('EightBit', () => {
-			it('red', () => {
-				const format = ASFormat.Colored.EightBit.red;
-				expect(ASFormat.stringTransformer(format)('foo')).toBe('\x1b[38;5;9mfoo\x1b[0m');
-				expect(ASFormat.id(format)).toBe('EightBitRed');
-			});
-		});
-
-		describe('RGB', () => {
-			it('red', () => {
-				const format = ASFormat.Colored.RGB.red;
-				expect(ASFormat.stringTransformer(format)('foo')).toBe('\x1b[38;2;255;0;0mfoo\x1b[0m');
-				expect(ASFormat.id(format)).toBe('RGBRed');
-			});
-			it('make', () => {
-				const format = ASFormat.Colored.RGB.make({ red: 18, green: 21, blue: 24 });
-				expect(ASFormat.stringTransformer(format)('foo')).toBe('\x1b[38;2;18;21;24mfoo\x1b[0m');
-				expect(ASFormat.id(format)).toBe('RGB/18/21/24');
-			});
-		});
-
-		describe('Styled', () => {
-			it('has', () => {
-				expect(ASFormat.Styled.has(ASFormat.Colored.Original.red)).toBe(false);
-				expect(ASFormat.Styled.has(ASFormat.Styled.none)).toBe(true);
-			});
-
-			it('none', () => {
-				const format = ASFormat.Styled.none;
-				expect(ASFormat.stringTransformer(format)('foo')).toBe('foo');
-				expect(ASFormat.id(format)).toBe('None');
-			});
-			it('fromColor', () => {
-				const format = ASFormat.Styled.fromColor(ASFormat.Colored.Original.green);
-				expect(ASFormat.stringTransformer(format)('foo')).toBe('\x1b[32mfoo\x1b[0m');
-				expect(ASFormat.id(format)).toBe('Green');
-			});
-			it('Just bold', () => {
-				const format = pipe(ASFormat.Styled.none, ASFormat.Styled.makeBold);
-				expect(ASFormat.stringTransformer(format)('foo')).toBe('\x1b[1mfoo\x1b[0m');
-				expect(ASFormat.id(format)).toBe('Bold');
-			});
-			it('All available styles', () => {
-				const format = pipe(
-					ASFormat.Styled.none,
-					ASFormat.Styled.setFgColor(ASFormat.Colored.EightBit.olive),
-					ASFormat.Styled.setBgColor(ASFormat.Colored.RGB.indianRed),
-					ASFormat.Styled.makeBold,
-					ASFormat.Styled.makeUnderlined,
-					ASFormat.Styled.makeBlinking,
-					ASFormat.Styled.makeFramed,
-					ASFormat.Styled.makeEncircled,
-					ASFormat.Styled.makeOverlined
-				);
-				expect(ASFormat.stringTransformer(format)('foo')).toBe(
-					'\x1b[38;5;3;48;2;205;92;92;1;4;5;51;52;53mfoo\x1b[0m'
-				);
-				expect(ASFormat.id(format)).toBe(
-					'BoldUnderlinedFramedEncircledOverlinedBlinkingEightBitOliveInRGBIndianRed'
-				);
-			});
-		});
+	it('merge', () => {
+		expect(
+			pipe(
+				ASStyle.green,
+				ASStyle.merge(ASStyle.slowBlink),
+				ASStyle.merge(ASStyle.Rgb.honeyDew)
+			).toString()
+		).toBe('SlowBlinkRgbHoneyDew');
 	});
 });

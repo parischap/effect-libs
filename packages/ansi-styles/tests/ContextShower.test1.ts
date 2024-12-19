@@ -65,9 +65,13 @@ describe('ContextShower', () => {
 			);
 		});
 
-		it('has', () => {
-			expect(ASContextShower.has(fooShowerOnContextPos)).toBe(true);
-			expect(ASContextShower.has(new Date())).toBe(false);
+		describe('has', () => {
+			it('Matching', () => {
+				expect(ASContextShower.has(fooShowerOnContextPos)).toBe(true);
+			});
+			it('Non matching', () => {
+				expect(ASContextShower.has(new Date())).toBe(false);
+			});
 		});
 
 		it('action', () => {

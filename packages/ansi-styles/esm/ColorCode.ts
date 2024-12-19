@@ -4,7 +4,7 @@
  * @since 0.0.1
  */
 
-import { MMatch, MString, MTypes } from '@parischap/effect-lib';
+import { MMatch, MTypes } from '@parischap/effect-lib';
 import { flow } from 'effect';
 
 /**
@@ -211,7 +211,7 @@ export namespace EightBit {
 		MediumOrchid3 = 133,
 		MediumOrchid = 134,
 		MediumPurple2_1 = 135,
-		DarkGoldenrod = 136,
+		DarkGoldenRod = 136,
 		LightSalmon3_1 = 137,
 		RosyBrown = 138,
 		Grey63 = 139,
@@ -254,14 +254,14 @@ export namespace EightBit {
 		Plum3 = 176,
 		Violet = 177,
 		Gold3_2 = 178,
-		LightGoldenrod3 = 179,
+		LightGoldenRod3 = 179,
 		Tan = 180,
 		MistyRose3 = 181,
 		Thistle3 = 182,
 		Plum2 = 183,
 		Yellow3_2 = 184,
 		Khaki3 = 185,
-		LightGoldenrod2_1 = 186,
+		LightGoldenRod2_1 = 186,
 		LightYellow3 = 187,
 		Grey84 = 188,
 		LightSteelBlue1 = 189,
@@ -269,7 +269,7 @@ export namespace EightBit {
 		DarkOliveGreen1_1 = 191,
 		DarkOliveGreen1_2 = 192,
 		DarkSeaGreen1_2 = 193,
-		Honeydew2 = 194,
+		HoneyDew2 = 194,
 		LightCyan1 = 195,
 		Red1 = 196,
 		DeepPink2 = 197,
@@ -296,13 +296,13 @@ export namespace EightBit {
 		Pink1 = 218,
 		Plum1 = 219,
 		Gold1 = 220,
-		LightGoldenrod2_2 = 221,
-		LightGoldenrod2_3 = 222,
+		LightGoldenRod2_2 = 221,
+		LightGoldenRod2_3 = 222,
 		NavajoWhite1 = 223,
 		MistyRose1 = 224,
 		Thistle1 = 225,
 		Yellow1 = 226,
-		LightGoldenrod1 = 227,
+		LightGoldenRod1 = 227,
 		Khaki1 = 228,
 		Wheat1 = 229,
 		Cornsilk1 = 230,
@@ -512,7 +512,7 @@ export namespace EightBit {
 				),
 				flow(
 					MMatch.whenIs(Type.MediumPurple2_1, () => 'MediumPurple2_1'),
-					MMatch.whenIs(Type.DarkGoldenrod, () => 'DarkGoldenrod'),
+					MMatch.whenIs(Type.DarkGoldenRod, () => 'DarkGoldenRod'),
 					MMatch.whenIs(Type.LightSalmon3_1, () => 'LightSalmon3_1'),
 					MMatch.whenIs(Type.RosyBrown, () => 'RosyBrown'),
 					MMatch.whenIs(Type.Grey63, () => 'Grey63'),
@@ -565,7 +565,7 @@ export namespace EightBit {
 					MMatch.whenIs(Type.Plum3, () => 'Plum3'),
 					MMatch.whenIs(Type.Violet, () => 'Violet'),
 					MMatch.whenIs(Type.Gold3_2, () => 'Gold3_2'),
-					MMatch.whenIs(Type.LightGoldenrod3, () => 'LightGoldenrod3')
+					MMatch.whenIs(Type.LightGoldenRod3, () => 'LightGoldenRod3')
 				),
 				flow(
 					MMatch.whenIs(Type.Tan, () => 'Tan'),
@@ -574,7 +574,7 @@ export namespace EightBit {
 					MMatch.whenIs(Type.Plum2, () => 'Plum2'),
 					MMatch.whenIs(Type.Yellow3_2, () => 'Yellow3_2'),
 					MMatch.whenIs(Type.Khaki3, () => 'Khaki3'),
-					MMatch.whenIs(Type.LightGoldenrod2_1, () => 'LightGoldenrod2_1'),
+					MMatch.whenIs(Type.LightGoldenRod2_1, () => 'LightGoldenRod2_1'),
 					MMatch.whenIs(Type.LightYellow3, () => 'LightYellow3'),
 					MMatch.whenIs(Type.Grey84, () => 'Grey84')
 				),
@@ -584,7 +584,7 @@ export namespace EightBit {
 					MMatch.whenIs(Type.DarkOliveGreen1_1, () => 'DarkOliveGreen1_1'),
 					MMatch.whenIs(Type.DarkOliveGreen1_2, () => 'DarkOliveGreen1_2'),
 					MMatch.whenIs(Type.DarkSeaGreen1_2, () => 'DarkSeaGreen1_2'),
-					MMatch.whenIs(Type.Honeydew2, () => 'Honeydew2'),
+					MMatch.whenIs(Type.HoneyDew2, () => 'HoneyDew2'),
 					MMatch.whenIs(Type.LightCyan1, () => 'LightCyan1'),
 					MMatch.whenIs(Type.Red1, () => 'Red1'),
 					MMatch.whenIs(Type.DeepPink2, () => 'DeepPink2')
@@ -617,15 +617,15 @@ export namespace EightBit {
 					MMatch.whenIs(Type.Pink1, () => 'Pink1'),
 					MMatch.whenIs(Type.Plum1, () => 'Plum1'),
 					MMatch.whenIs(Type.Gold1, () => 'Gold1'),
-					MMatch.whenIs(Type.LightGoldenrod2_2, () => 'LightGoldenrod2_2'),
-					MMatch.whenIs(Type.LightGoldenrod2_3, () => 'LightGoldenrod2_3'),
+					MMatch.whenIs(Type.LightGoldenRod2_2, () => 'LightGoldenRod2_2'),
+					MMatch.whenIs(Type.LightGoldenRod2_3, () => 'LightGoldenRod2_3'),
 					MMatch.whenIs(Type.NavajoWhite1, () => 'NavajoWhite1'),
 					MMatch.whenIs(Type.MistyRose1, () => 'MistyRose1')
 				),
 				flow(
 					MMatch.whenIs(Type.Thistle1, () => 'Thistle1'),
 					MMatch.whenIs(Type.Yellow1, () => 'Yellow1'),
-					MMatch.whenIs(Type.LightGoldenrod1, () => 'LightGoldenrod1'),
+					MMatch.whenIs(Type.LightGoldenRod1, () => 'LightGoldenRod1'),
 					MMatch.whenIs(Type.Khaki1, () => 'Khaki1'),
 					MMatch.whenIs(Type.Wheat1, () => 'Wheat1'),
 					MMatch.whenIs(Type.Cornsilk1, () => 'Cornsilk1'),
@@ -665,8 +665,7 @@ export namespace EightBit {
 				)
 			)
 		),
-		MMatch.exhaustive,
-		MString.prepend('EightBit')
+		MMatch.exhaustive
 	);
 
 	/**

@@ -18,10 +18,9 @@ import {
 	pipe,
 	Pipeable,
 	Predicate,
-	String,
 	Struct
 } from 'effect';
-import * as Utils from './utils.js';
+import * as ASAnsiString from './AnsiString.js';
 
 export const moduleTag = '@parischap/ansi-styles/StyleCharacteristic/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
@@ -75,15 +74,14 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
 	 *
 	 * @since 0.0.1
 	 */
-	readonly sequence: Utils.NonEmptySequence;
+	readonly sequence: ASAnsiString.NonEmptySequence;
 
 	/**
-	 * SequenceString of this style characteristic (command string that produces this style, e.g
-	 * `\x1b[1m` for bold)
+	 * ANSI string of this style characteristic
 	 *
 	 * @since 0.0.1
 	 */
-	readonly sequenceString: string;
+	readonly ansiString: ASAnsiString.Type;
 
 	/** @internal */
 	readonly [TypeId]: TypeId;
@@ -108,12 +106,13 @@ export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
 	MArray.numberEquivalence(self.sequence, that.sequence);
 
 /**
- * Equivalence
+ * Equivalence that considers two StyleCharacteristic's to be equivalent if they have the same
+ * catagory
  *
  * @since 0.0.1
  * @category Equivalences
  */
-export const sameCategoryEquivalence: Equivalence.Equivalence<Type> = (self, that) =>
+export const haveSameCategory: Equivalence.Equivalence<Type> = (self, that) =>
 	that.category === self.category;
 
 /** Prototype */
@@ -133,6 +132,9 @@ const proto: MTypes.Proto<Type> = {
 	...MPipeable.BaseProto
 };
 
+/** Constructor */
+const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
+
 /**
  * Order on Characteristics based on the `category` property
  *
@@ -141,38 +143,11 @@ const proto: MTypes.Proto<Type> = {
  */
 export const byCategory: Order.Order<Type> = Order.mapInput(Number.Order, Struct.get('category'));
 
-/**
- * Order on Characteristics based on the `id` property
- *
- * @since 0.0.1
- * @category Orders
- */
-export const byId: Order.Order<Type> = Order.mapInput(String.Order, Struct.get('id'));
-
-/**
- * Order on Characteristics based first on the `category` property then on the `id` property
- *
- * @since 0.0.1
- * @category Orders
- */
-export const byCategoryAndId: Order.Order<Type> = Order.combine(byCategory, byId);
-
-/**
- * Merges two sorted iterables of StyleCharacteristic's using the byCategoryAndId order
- *
- * @since 0.0.1
- * @category Utils
- */
-export const mergeByCategoryAndId = MArray.mergeSorted(byCategoryAndId);
-
 /** Constructor */
-const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
-
-/** Constructor */
-const _fromIdCategoryAndSequence = (params: Omit<MTypes.Data<Type>, 'sequenceString'>): Type =>
+const _fromIdCategoryAndSequence = (params: Omit<MTypes.Data<Type>, 'ansiString'>): Type =>
 	_make({
 		...params,
-		sequenceString: Utils.fromNonEmptySequenceToSequenceString(params.sequence)
+		ansiString: ASAnsiString.fromNonEmptySequence(params.sequence)
 	});
 
 /**
@@ -197,15 +172,16 @@ export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
  * @since 0.0.1
  * @category Destructors
  */
-export const sequence: MTypes.OneArgFunction<Type, Utils.NonEmptySequence> = Struct.get('sequence');
+export const sequence: MTypes.OneArgFunction<Type, ASAnsiString.NonEmptySequence> =
+	Struct.get('sequence');
 
 /**
- * Gets the `sequenceString` property of `self`
+ * Gets the `ansiString` property of `self`
  *
  * @since 0.0.1
  * @category Destructors
  */
-export const sequenceString: MTypes.OneArgFunction<Type, string> = Struct.get('sequenceString');
+export const ansiString: MTypes.OneArgFunction<Type, ASAnsiString.Type> = Struct.get('ansiString');
 
 /**
  * Bold StyleCharacteristic instance
