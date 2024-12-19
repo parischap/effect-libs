@@ -1,17 +1,13 @@
 /**
- * Module that implements a Tree. Adapted from FP-TS. All nodes in the tree have the same type. If
- * you need a tree with a specific type for leaves, just create a Tree<A|B> where B is the type of
- * the values of the leaves. From a type perspective, the only non-existent allowed situation is
- * that of a node with a value of type B (leaf) that has children. But if your are confident that
- * the tree was built properly, you can just ignore these non exitent children for leaves. Creating
- * a tree with a specific type for leaves creates more trouble than it solves.
+ * Module that implements a Tree<A,B> where the value of the non-leaf nodes is of type A and the
+ * value of the leaf nodes is of type B. Adapted from FP-TS
  *
- * @since 0.0.6
+ * @since 0.5.0
  */
 
-import * as Monoid from '@effect/typeclass/Monoid';
 import {
 	Array,
+	Either,
 	Equal,
 	Equivalence,
 	flow,
@@ -28,6 +24,7 @@ import {
 } from 'effect';
 import * as MArray from './Array.js';
 import * as MInspectable from './Inspectable.js';
+import * as MMatch from './Match.js';
 import * as MPipeable from './Pipeable.js';
 import * as MStruct from './Struct.js';
 import * as MTypes from './types.js';
@@ -35,62 +32,267 @@ import * as MTypes from './types.js';
 export const moduleTag = '@parischap/effect-lib/Tree/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
+const _TypeIdHash = Hash.hash(TypeId);
 
 /**
- * Typeof the children of a node
+ * Namespace of a Leaf
  *
- * @since 0.0.6
+ * @since 0.5.0
  * @category Models
  */
-export interface Forest<A> extends ReadonlyArray<Type<A>> {}
-
-type NonEmptyForest<A> = Array.NonEmptyReadonlyArray<Type<A>>;
-
-/**
- * @since 0.0.6
- * @category Models
- */
-export interface Type<out A> extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
+export namespace Leaf {
 	/**
-	 * The value
+	 * Typeof a Leaf node
 	 *
-	 * @since 0.0.6
+	 * @since 0.5.0
+	 * @category Models
 	 */
-	readonly value: A;
+	export interface Type<out A, out B>
+		extends Equal.Equal,
+			Inspectable.Inspectable,
+			Pipeable.Pipeable {
+		/**
+		 * Identifier of a Leaf
+		 *
+		 * @since 0.5.0
+		 */
+		readonly _tag: 'Leaf';
+
+		/**
+		 * Value of a Leaf node
+		 *
+		 * @since 0.5.0
+		 */
+		readonly value: B;
+
+		/** @internal */
+		readonly [TypeId]: {
+			readonly _A: Types.Covariant<A>;
+			readonly _B: Types.Covariant<B>;
+		};
+	}
+
 	/**
-	 * The children of `value`.
+	 * Type guard
 	 *
-	 * @since 0.0.6
+	 * @since 0.5.0
+	 * @category Guards
 	 */
-	readonly forest: Forest<A>;
-	/** @internal */
-	readonly [TypeId]: {
-		readonly _A: Types.Covariant<A>;
+	export const has = (u: unknown): u is Type<unknown, unknown> => Node.has(u) && Node.isLeaf(u);
+
+	/**
+	 * Returns an equivalence based on an equivalence of the type of the values
+	 *
+	 * @since 0.5.0 Equivalence
+	 */
+	export const getEquivalence =
+		<B>(bEquivalence: Equivalence.Equivalence<B>): Equivalence.Equivalence<Type<unknown, B>> =>
+		(self, that) =>
+			bEquivalence(self.value, that.value);
+
+	/**
+	 * Equivalence based on Equal.equals
+	 *
+	 * @since 0.5.0
+	 * @category Equivalences
+	 */
+	export const equivalence: Equivalence.Equivalence<Type<unknown, unknown>> = getEquivalence(
+		Equal.equals
+	);
+
+	const _make = <A, B>(params: MTypes.Data<Type<A, B>>): Type<A, B> =>
+		MTypes.objectFromDataAndProto(Node.proto, params);
+
+	/**
+	 * Constructor
+	 *
+	 * @since 0.5.0
+	 * @category Constructors
+	 */
+	export const make = <A, B>(value: B): Type<A, B> => _make({ value, _tag: 'Leaf' });
+}
+
+export namespace Node {
+	/**
+	 * Type of a Node
+	 *
+	 * @since 0.5.0
+	 * @category Models
+	 */
+	export type Type<A, B> = Leaf.Type<A, B> | _Type<A, B>;
+
+	/**
+	 * Type guard
+	 *
+	 * @since 0.5.0
+	 * @category Guards
+	 */
+	export const has = (u: unknown): u is Type<unknown, unknown> => Predicate.hasProperty(u, TypeId);
+
+	/**
+	 * Type guard
+	 *
+	 * @since 0.5.0
+	 * @category Guards
+	 */
+	export const isLeaf = <A, B>(u: Type<A, B>): u is Leaf.Type<A, B> => u._tag === 'Leaf';
+
+	/**
+	 * Returns an equivalence based on an equivalence of the subtypes
+	 *
+	 * @since 0.5.0 Equivalence
+	 */
+	export const getEquivalence = <A, B>(
+		aEquivalence: Equivalence.Equivalence<A>,
+		bEquivalence: Equivalence.Equivalence<B>
+	): Equivalence.Equivalence<Type<A, B>> => {
+		const leafEq = Leaf.getEquivalence(bEquivalence);
+		// Do not create a variable with _getEquivalence(aEquivalence, bEquivalence) here. Equivalences on recursive structures must respect the structure termination process. So _getEquivalence(aEquivalence, bEquivalence) must only be called when this and that are not leaves.
+		return (self, that) =>
+			isLeaf(self) && isLeaf(that) ? leafEq(self, that)
+			: !isLeaf(self) && !isLeaf(that) ? _getEquivalence(aEquivalence, bEquivalence)(self, that)
+			: false;
+	};
+
+	/**
+	 * Equivalence based on Equal.equals
+	 *
+	 * @since 0.5.0
+	 * @category Equivalences
+	 */
+	export const equivalence: Equivalence.Equivalence<Type<unknown, unknown>> = getEquivalence(
+		Equal.equals,
+		Equal.equals
+	);
+
+	/** Prototype */
+	/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+	export const proto: MTypes.Proto<Type<any, any>> = {
+		[TypeId]: {
+			_A: MTypes.covariantValue,
+			_B: MTypes.covariantValue
+		},
+		[Equal.symbol]<A, B>(this: Type<A, B>, that: unknown): boolean {
+			return has(that) && equivalence(this, that);
+		},
+		[Hash.symbol]<A, B>(this: Type<A, B>) {
+			return isLeaf(this) ?
+					pipe(this.value, Hash.hash, Hash.combine(_TypeIdHash), Hash.cached(this))
+				:	pipe(
+						this.value,
+						Hash.hash,
+						Hash.combine(Hash.array(this.forest)),
+						Hash.combine(_TypeIdHash),
+						Hash.cached(this)
+					);
+		},
+		...MInspectable.BaseProto(moduleTag),
+		...MPipeable.BaseProto
 	};
 }
 
 /**
- * Type guard
+ * Namespace of a Forest
  *
- * @since 0.0.6
- * @category Guards
+ * @since 0.5.0
+ * @category Models
  */
-export const has = (u: unknown): u is Type<unknown> => Predicate.hasProperty(u, TypeId);
+export namespace Forest {
+	/**
+	 * Type of a forest
+	 *
+	 * @since 0.5.0
+	 * @category Models
+	 */
+	export interface Type<out A, out B> extends ReadonlyArray<Node.Type<A, B>> {}
+
+	/**
+	 * Typeof the children of a node (at least one child)
+	 *
+	 * @since 0.5.0
+	 * @category Models
+	 */
+	export type NonEmptyType<out A, out B> = Array.NonEmptyReadonlyArray<Node.Type<A, B>>;
+
+	/**
+	 * Returns an equivalence based on an equivalence of the subtypes
+	 *
+	 * @since 0.5.0 Equivalence
+	 */
+	export const getEquivalence =
+		<A, B>(
+			aEquivalence: Equivalence.Equivalence<A>,
+			bEquivalence: Equivalence.Equivalence<B>
+		): Equivalence.Equivalence<Type<A, B>> =>
+		// Do not create a variable with Node.getEquivalence(aEquivalence, bEquivalence) here. Equivalences on recursive structures must respect the structure termination process. So Node.getEquivalence(aEquivalence, bEquivalence) must only be called when this and that are not empty arrays.
+		(self, that) =>
+			Array.isEmptyReadonlyArray(self) ?
+				Array.isEmptyReadonlyArray(that) ?
+					true
+				:	false
+			: Array.isEmptyReadonlyArray(that) ? false
+			: Array.getEquivalence(Node.getEquivalence(aEquivalence, bEquivalence))(self, that);
+}
 
 /**
- * Returns an equivalence based on an equivalence of the subtype
+ * Typeof a Tree (non-leaf node)
+ *
+ * @since 0.5.0
+ * @category Models
+ */
+export interface Type<out A, out B>
+	extends Equal.Equal,
+		Inspectable.Inspectable,
+		Pipeable.Pipeable {
+	/**
+	 * Identifier of a Tree
+	 *
+	 * @since 0.5.0
+	 */
+	readonly _tag: 'Tree';
+
+	/**
+	 * The value of a Tree (non-leaf node)
+	 *
+	 * @since 0.5.0
+	 */
+	readonly value: A;
+	/**
+	 * The children of a Tree (non-leaf node)
+	 *
+	 * @since 0.5.0
+	 */
+	readonly forest: Forest.Type<A, B>;
+
+	/** @internal */
+	readonly [TypeId]: {
+		readonly _A: Types.Covariant<A>;
+		readonly _B: Types.Covariant<B>;
+	};
+}
+type _Type<out A, out B> = Type<A, B>;
+
+/**
+ * Type guard
+ *
+ * @since 0.5.0
+ * @category Guards
+ */
+export const has = (u: unknown): u is Type<unknown, unknown> => Node.has(u) && !Node.isLeaf(u);
+
+/**
+ * Returns an equivalence based on an equivalence of the subtypes
  *
  * @since 0.5.0 Equivalence
  */
-export const getEquivalence = <A>(
-	isEquivalent: Equivalence.Equivalence<A>
-): Equivalence.Equivalence<Type<A>> => {
-	const internalEquivalence: Equivalence.Equivalence<Type<A>> = (self, that) =>
-		isEquivalent(self.value, that.value) && forestEq(self.forest, that.forest);
-	const forestEq: Equivalence.Equivalence<ReadonlyArray<Type<A>>> =
-		Array.getEquivalence(internalEquivalence);
-	return internalEquivalence;
+export const getEquivalence = <A, B>(
+	aEquivalence: Equivalence.Equivalence<A>,
+	bEquivalence: Equivalence.Equivalence<B>
+): Equivalence.Equivalence<Type<A, B>> => {
+	const forestEq = Forest.getEquivalence(aEquivalence, bEquivalence);
+	return (self, that) => aEquivalence(self.value, that.value) && forestEq(self.forest, that.forest);
 };
+const _getEquivalence = getEquivalence;
 
 /**
  * Equivalence based on Equal.equals
@@ -98,30 +300,13 @@ export const getEquivalence = <A>(
  * @since 0.5.0
  * @category Equivalences
  */
-export const equivalence = getEquivalence(Equal.equals);
+export const equivalence: Equivalence.Equivalence<Type<unknown, unknown>> = getEquivalence(
+	Equal.equals,
+	Equal.equals
+);
 
-/** Prototype */
-const _TypeIdHash = Hash.hash(TypeId);
-/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-const proto: MTypes.Proto<Type<any>> = {
-	[TypeId]: {
-		_A: MTypes.covariantValue
-	},
-	[Equal.symbol]<A>(this: Type<A>, that: unknown): boolean {
-		return has(that) && equivalence(this, that);
-	},
-	[Hash.symbol]<A>(this: Type<A>) {
-		return pipe(
-			this.value,
-			Hash.hash,
-			Hash.combine(Hash.array(this.forest)),
-			Hash.combine(_TypeIdHash),
-			Hash.cached(this)
-		);
-	},
-	...MInspectable.BaseProto(moduleTag),
-	...MPipeable.BaseProto
-};
+const _make = <A, B>(params: MTypes.Data<Type<A, B>>): Type<A, B> =>
+	MTypes.objectFromDataAndProto(Node.proto, params);
 
 /**
  * Constructor
@@ -129,90 +314,141 @@ const proto: MTypes.Proto<Type<any>> = {
  * @since 0.5.0
  * @category Constructors
  */
-export const make = <A>(params: MTypes.Data<Type<A>>): Type<A> =>
-	MTypes.objectFromDataAndProto(proto, params);
+export const make = <A, B>(params: Omit<MTypes.Data<Type<A, B>>, '_tag'>): Type<A, B> =>
+	_make({ ...params, _tag: 'Tree' });
 
-/**
- * Utility type that returns the type of the value of a Tree
- *
- * @since 0.0.6
- * @category Utility types
- */
-
-export type Infer<T extends Type<unknown>> = T extends Type<infer A> ? A : never;
-
-/**
- * Non recursive function that builds a (possibly infinite) tree from a seed value and an unfold
- * function, then optionnally applies a function f to the value of each node and the result of
- * applying f to the children of the node (see fold below). Cycle detection based on equality of the
- * seeds (type A) reported to the unfold function. The reason for grouping unfold with MapAccum is
- * that we have already calculated the order in which to perform the fold and we can mutate te tree
- * as it has been created by this function.
- *
- * @since 0.0.6
- * @category Constructors
- */
-export const unfoldAndMapAccum =
-	<A, B, C = B>(
-		/* eslint-disable-next-line functional/prefer-readonly-type */
-		unfold: (seed: A, isCyclical: boolean) => [nextValue: B, nextSeeds: ReadonlyArray<A>],
-		f?: (value: B, children: ReadonlyArray<C>) => C
+const _unfold =
+	<S, A, B>(
+		f: (
+			seed: S,
+			isCyclical: boolean
+			/* eslint-disable-next-line functional/prefer-readonly-type */
+		) => Either.Either<[nextValue: A, nextSeeds: ReadonlyArray<S>], B>
 	) =>
-	(seed: A): Type<C> => {
-		const dontHandleCycles = MTypes.isOneArgFunction(unfold);
+	(seed: S): Forest.NonEmptyType<A, B> => {
+		const dontHandleCycles = MTypes.isOneArgFunction(f);
 
 		return pipe(
 			[
-				make({
+				Leaf.make(
 					// MArray.unfold cycle detection will not work here. So we have to reimplement it
-					value: Tuple.make(seed, Array.empty<A>()),
-					forest: Array.empty()
-				})
+					Tuple.make(seed, Array.empty<S>())
+				)
 			],
 			MArray.unfoldNonEmpty(
 				flow(
 					Array.map((node) => {
-						const value = node.value;
-						const currentSeed = Tuple.getFirst(value);
-						const predecessors = Tuple.getSecond(value);
+						const [currentSeed, predecessors] = node.value;
 						const isCyclical = Array.contains(predecessors, currentSeed);
-						const nextPredecessors =
-							dontHandleCycles ? predecessors : Array.append(predecessors, currentSeed);
-						const [nextValue, nextSeeds] = unfold(currentSeed, isCyclical);
-
-						const nextNodes = Array.map(nextSeeds, (seed) =>
-							make({
-								value: Tuple.make(seed, nextPredecessors),
-								forest: Array.empty()
-							})
-						);
 						return pipe(
-							node as Type<B>,
-							MStruct.mutableEnrichWith({
-								value: Function.constant(nextValue),
-								forest: Function.constant(nextNodes as unknown as Forest<B>)
+							f(currentSeed, isCyclical),
+							Either.mapBoth({
+								onLeft: (nextValue) =>
+									pipe(
+										node,
+										MStruct.mutableEnrichWith({
+											value: Function.constant(nextValue)
+										}),
+										(node) => Tuple.make(node as unknown as Leaf.Type<A, B>),
+										Tuple.appendElement(Array.empty())
+									),
+								onRight: ([nextValue, nextSeeds]) => {
+									const nextNodes = Array.map(nextSeeds, (seed) =>
+										Leaf.make(
+											Tuple.make(
+												seed,
+												dontHandleCycles ? predecessors : Array.append(predecessors, currentSeed)
+											)
+										)
+									);
+									return pipe(
+										node,
+										MStruct.mutableEnrichWith({
+											value: Function.constant(nextValue),
+											_tag: Function.constant('Tree' as const),
+											forest: Function.constant(nextNodes as unknown as Forest.Type<A, B>)
+										}),
+										(node) => Tuple.make(node as Type<A, B>),
+										Tuple.appendElement(nextNodes)
+									);
+								}
 							}),
-							Tuple.make,
-							Tuple.appendElement(nextNodes)
+							Either.merge
 						);
 					}),
 					Array.unzip,
 					Tuple.mapSecond(flow(Array.flatten, Option.liftPredicate(Array.isNonEmptyArray)))
 				)
 			),
-			Array.flatten,
-			Array.reverse as MTypes.OneArgFunction<Forest<B>, NonEmptyForest<C>>,
-			f === undefined ?
-				Function.identity
-			:	Array.map(
-					MStruct.mutableEnrichWith({
-						value: (node) =>
-							f(node.value as unknown as B, Array.map(node.forest, Struct.get('value')))
-					})
-				),
-			Array.lastNonEmpty
-		);
+			Array.flatten
+		) as never;
 	};
+
+/**
+ * Non recursive function that builds a (possibly infinite) tree from a seed value and an unfold
+ * function. Cycle detection based on equality of the seeds (type S) reported to the unfold
+ * function.
+ *
+ * @since 0.5.0
+ * @category Constructors
+ */
+
+export const unfold =
+	<S, A, B>(
+		f: (
+			seed: S,
+			isCyclical: boolean
+			/* eslint-disable-next-line functional/prefer-readonly-type */
+		) => Either.Either<[nextValue: A, nextSeeds: ReadonlyArray<S>], B>
+	) =>
+	(seed: S): Type<A, B> =>
+		pipe(seed, _unfold(f), Array.headNonEmpty) as never;
+
+/**
+ * Non recursive function that builds a (possibly infinite) tree from a seed value and an unfold
+ * function, then applies a function f to the value of each node and the result of applying f to the
+ * children of the node (see fold below). Cycle detection based on equality of the seeds (type S)
+ * reported to the unfold function.
+ *
+ * @since 0.5.0
+ * @category Constructors
+ */
+
+export const unfoldAndFold =
+	<S, A, B>({
+		unfold,
+		fold
+	}: {
+		readonly unfold: (
+			seed: S,
+			isCyclical: boolean
+			/* eslint-disable-next-line functional/prefer-readonly-type */
+		) => Either.Either<[nextValue: A, nextSeeds: ReadonlyArray<S>], B>;
+		readonly fold: (value: A, children: ReadonlyArray<B>) => B;
+	}) =>
+	(seed: S): B =>
+		pipe(
+			seed,
+			_unfold(unfold),
+			Array.reverse,
+			Array.map(
+				flow(
+					MMatch.make,
+					MMatch.when(Node.isLeaf, Function.identity),
+					MMatch.orElse(
+						MStruct.mutableEnrichWith({
+							value: (node) =>
+								fold(
+									node.value,
+									Array.map(node.forest as unknown as Forest.Type<B, B>, Struct.get('value'))
+								)
+						})
+					)
+				)
+			),
+			Array.lastNonEmpty,
+			Struct.get('value')
+		);
 
 /**
  * Folds a tree into a "summary" value in bottom-up order.
@@ -222,172 +458,175 @@ export const unfoldAndMapAccum =
  *
  * This is also known as the catamorphism on trees.
  *
- * @since 0.0.6
+ * @since 0.5.0
  * @category Utils
  */
-export const fold =
-	<B, A>(f: (a: NoInfer<A>, bs: ReadonlyArray<B>, level: number) => B) =>
-	(self: Type<A>): B => {
-		const go =
-			(level: number) =>
-			(fa: Type<A>): B =>
-				f(fa.value, Array.map(fa.forest, go(level + 1)), level);
-		return go(0)(self);
+export const fold = <A, B>(
+	f: (a: NoInfer<A>, bs: ReadonlyArray<B>, level: number) => B
+): MTypes.OneArgFunction<Type<A, B>, B> => {
+	const go =
+		(level: number) =>
+		(self: Node.Type<A, B>): B =>
+			Node.isLeaf(self) ? self.value : f(self.value, Array.map(self.forest, go(level + 1)), level);
+
+	return go(0);
+};
+
+/**
+ * Maps a tree
+ *
+ * @since 0.5.0
+ * @category Utils
+ */
+export const map = <A, B, C, D>({
+	fNonLeaf,
+	fLeaf
+}: {
+	readonly fNonLeaf: (a: NoInfer<A>, level: number) => C;
+	readonly fLeaf: (b: NoInfer<B>, level: number) => D;
+}): MTypes.OneArgFunction<Type<A, B>, Type<C, D>> => {
+	const goLeaf =
+		(level: number) =>
+		(self: Leaf.Type<A, B>): Leaf.Type<C, D> =>
+			Leaf.make<C, D>(fLeaf(self.value, level));
+
+	const goNonLeaf =
+		(level: number) =>
+		(self: Type<A, B>): Type<C, D> =>
+			make({
+				value: fNonLeaf(self.value, level),
+				forest: Array.map(
+					self.forest,
+					flow(
+						MMatch.make,
+						MMatch.when(Node.isLeaf, goLeaf(level + 1)),
+						MMatch.orElse(goNonLeaf(level + 1))
+					)
+				)
+			});
+
+	return goNonLeaf(0);
+};
+
+const _reduce =
+	(arrReduceFunction: typeof Array.reduce) =>
+	<A, B, Z>({
+		z,
+		fNonLeaf,
+		fLeaf
+	}: {
+		readonly z: Z;
+		readonly fNonLeaf: (z: Z, a: NoInfer<A>, level: number) => Z;
+		readonly fLeaf: (z: Z, b: NoInfer<B>, level: number) => Z;
+	}): MTypes.OneArgFunction<Type<A, B>, Z> => {
+		const goLeaf =
+			(z: Z, level: number) =>
+			(self: Leaf.Type<A, B>): Z =>
+				fLeaf(z, self.value, level);
+
+		const goNonLeaf =
+			(z: Z, level: number) =>
+			(self: Type<A, B>): Z =>
+				arrReduceFunction(self.forest, fNonLeaf(z, self.value, level), (z, node) =>
+					pipe(
+						node,
+						MMatch.make,
+						MMatch.when(Node.isLeaf, goLeaf(z, level + 1)),
+						MMatch.orElse(goNonLeaf(z, level + 1))
+					)
+				);
+
+		return goNonLeaf(z, 0);
 	};
 
 /**
- * @since 0.0.6
+ * Top-down reduction - Children are processed from left to right
+ *
+ * @since 0.5.0
  * @category Utils
  */
-export const flatMap =
-	<B, A>(f: (a: NoInfer<A>, level: number) => Type<B>) =>
-	(self: Type<A>): Type<B> => {
-		const go =
-			(level: number) =>
-			(self: Type<A>): Type<B> => {
-				const { forest, value } = f(self.value, level);
+export const reduce = _reduce(Array.reduce);
 
-				return make({
-					value,
-					forest: Array.appendAll(forest, Array.map(self.forest, go(level + 1)))
-				});
-			};
-		return go(0)(self);
-	};
+/**
+ * Top-down reduction - Children are processed from right to left
+ *
+ * @since 0.5.0
+ * @category Utils
+ */
+export const reduceRight = _reduce(Array.reduceRight);
 
 /**
  * Returns a new tree in which the value of each node is replaced by the result of a function that
  * takes the node as parameter in top-down order. More powerful than map which takes only the value
  * of the node as parameter
  *
- * @since 0.0.6
+ * @since 0.5.0
  * @category Utils
  */
-export const extendDown =
-	<B, A>(f: (fa: Type<NoInfer<A>>, level: number) => B) =>
-	(self: Type<A>): Type<B> => {
-		const go =
-			(level: number) =>
-			(self: Type<A>): Type<B> =>
-				make({
-					value: f(self, level),
-					forest: Array.map(self.forest, go(level + 1))
-				});
-		return go(0)(self);
-	};
+export const extendDown = <A, B, C, D>({
+	fNonLeaf,
+	fLeaf
+}: {
+	readonly fNonLeaf: (tree: Type<NoInfer<A>, NoInfer<B>>, level: number) => C;
+	readonly fLeaf: (leaf: Leaf.Type<NoInfer<A>, NoInfer<B>>, level: number) => D;
+}): MTypes.OneArgFunction<Type<A, B>, Type<C, D>> => {
+	const goLeaf =
+		(level: number) =>
+		(self: Leaf.Type<A, B>): Leaf.Type<C, D> =>
+			Leaf.make<C, D>(fLeaf(self, level));
+
+	const goNonLeaf =
+		(level: number) =>
+		(self: Type<A, B>): Type<C, D> =>
+			make({
+				value: fNonLeaf(self, level),
+				forest: Array.map(
+					self.forest,
+					flow(
+						MMatch.make,
+						MMatch.when(Node.isLeaf, goLeaf(level + 1)),
+						MMatch.orElse(goNonLeaf(level + 1))
+					)
+				)
+			});
+
+	return goNonLeaf(0);
+};
 
 /**
  * Returns a new tree in which the value of each node is replaced by the result of a function that
  * takes the node as parameter in bottom-up order. More powerful than map which takes only the value
  * of the node as parameter
  *
- * @since 0.0.6
+ * @since 0.5.0
  * @category Utils
  */
-export const extendUp =
-	<B, A>(f: (fa: Type<NoInfer<A>>, level: number) => B) =>
-	(self: Type<A>): Type<B> => {
-		const go =
-			(level: number) =>
-			(self: Type<A>): Type<B> =>
-				make({
-					forest: Array.map(self.forest, go(level + 1)),
-					value: f(self, level)
-				});
-		return go(0)(self);
-	};
+export const extendUp = <A, B, C, D>({
+	fNonLeaf,
+	fLeaf
+}: {
+	readonly fNonLeaf: (tree: Type<NoInfer<A>, NoInfer<B>>, level: number) => C;
+	readonly fLeaf: (leaf: Leaf.Type<NoInfer<A>, NoInfer<B>>, level: number) => D;
+}): MTypes.OneArgFunction<Type<A, B>, Type<C, D>> => {
+	const goLeaf =
+		(level: number) =>
+		(self: Leaf.Type<A, B>): Leaf.Type<C, D> =>
+			Leaf.make<C, D>(fLeaf(self, level));
 
-/**
- * Copies a tree
- *
- * @since 0.0.6
- * @category Utils
- */
-export const duplicate: <A>(self: Type<A>) => Type<Type<A>> = extendDown(Function.identity);
+	const goNonLeaf =
+		(level: number) =>
+		(self: Type<A, B>): Type<C, D> =>
+			make({
+				forest: Array.map(
+					self.forest,
+					flow(
+						MMatch.make,
+						MMatch.when(Node.isLeaf, goLeaf(level + 1)),
+						MMatch.orElse(goNonLeaf(level + 1))
+					)
+				),
+				value: fNonLeaf(self, level)
+			});
 
-/**
- * Flattens two imbricate trees
- *
- * @since 0.0.6
- * @category Utils
- */
-export const flatten: <A>(self: Type<Type<A>>) => Type<A> = flatMap(Function.identity);
-
-/**
- * Maps a tree
- *
- * @since 0.0.6
- * @category Utils
- */
-export const map =
-	<B, A>(f: (a: NoInfer<A>, level: number) => B) =>
-	(self: Type<A>): Type<B> => {
-		const go =
-			(level: number) =>
-			(self: Type<A>): Type<B> =>
-				make({
-					value: f(self.value, level),
-					forest: Array.map(self.forest, go(level + 1))
-				});
-		return go(0)(self);
-	};
-
-/**
- * Top-down reduction - Children are processed from left to right
- *
- * @since 0.0.6
- * @category Utils
- */
-export const reduce =
-	<B, A>(b: B, f: (b: B, a: NoInfer<A>, level: number) => B) =>
-	(self: Type<A>): B => {
-		const go =
-			(b: B, level: number) =>
-			(self: Type<A>): B => {
-				let r: B = f(b, self.value, level);
-				const len = self.forest.length;
-				for (let i = 0; i < len; i++) {
-					/* eslint-disable-next-line functional/no-expression-statements */
-					r = pipe(self.forest, MArray.unsafeGet(i), go(r, level + 1));
-				}
-				return r;
-			};
-		return go(b, 0)(self);
-	};
-
-/**
- * Reduce using a monoid to perform the concatenation
- *
- * @since 0.0.6
- * @category Utils
- */
-export const foldMap =
-	<B, A>(M: Monoid.Monoid<B>, f: (a: NoInfer<A>, level: number) => B) =>
-	(self: Type<A>): B =>
-		pipe(
-			self,
-			reduce(M.empty, (acc, a, level) => M.combine(acc, f(a, level)))
-		);
-
-/**
- * Top-down reduction - Children are processed from right to left
- *
- * @since 0.0.6
- * @category Utils
- */
-export const reduceRight =
-	<B, A>(b: B, f: (b: B, a: NoInfer<A>, level: number) => B) =>
-	(self: Type<A>): B => {
-		const go =
-			(b: B, level: number) =>
-			(self: Type<A>): B => {
-				let r: B = f(b, self.value, level);
-				const len = self.forest.length;
-				for (let i = len - 1; i >= 0; i--) {
-					/* eslint-disable-next-line functional/no-expression-statements */
-					r = pipe(self.forest, MArray.unsafeGet(i), go(r, level + 1));
-				}
-				return r;
-			};
-		return go(b, 0)(self);
-	};
+	return goNonLeaf(0);
+};
