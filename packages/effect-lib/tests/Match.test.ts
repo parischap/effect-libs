@@ -26,9 +26,13 @@ describe('MMatch', () => {
 			expect(testMatch.pipe(Struct.get('value'))).toBe(5);
 		});
 
-		it('has', () => {
-			expect(MMatch.has(testMatch)).toBe(true);
-			expect(MMatch.has(new Date())).toBe(false);
+		describe('has', () => {
+			it('Matching', () => {
+				expect(MMatch.has(testMatch)).toBe(true);
+			});
+			it('Non matching', () => {
+				expect(MMatch.has(new Date())).toBe(false);
+			});
 		});
 	});
 

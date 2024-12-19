@@ -323,22 +323,20 @@ describe('MArray', () => {
 		});
 	});
 
-	describe('unfoldNonEmpty', () => {
-		it('Without cycle', () => {
-			expect(
-				pipe(
-					0,
-					MArray.unfoldNonEmpty(
-						flow(
-							MTuple.makeBothBy({
-								toFirst: Function.identity,
-								toSecond: flow(Number.increment, Option.liftPredicate(Number.lessThanOrEqualTo(3)))
-							})
-						)
+	it('unfoldNonEmpty', () => {
+		expect(
+			pipe(
+				0,
+				MArray.unfoldNonEmpty(
+					flow(
+						MTuple.makeBothBy({
+							toFirst: Function.identity,
+							toSecond: flow(Number.increment, Option.liftPredicate(Number.lessThanOrEqualTo(3)))
+						})
 					)
 				)
-			).toStrictEqual([0, 1, 2, 3]);
-		});
+			)
+		).toStrictEqual([0, 1, 2, 3]);
 	});
 
 	describe('splitAtFromRight', () => {

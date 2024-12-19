@@ -45,9 +45,13 @@ describe('MString', () => {
 				expect(testSearchResult.pipe(Struct.get('startIndex'))).toBe(3);
 			});
 
-			it('has', () => {
-				expect(MString.SearchResult.has(testSearchResult)).toBe(true);
-				expect(MString.SearchResult.has(new Date())).toBe(false);
+			describe('has', () => {
+				it('Matching', () => {
+					expect(MString.SearchResult.has(testSearchResult)).toBe(true);
+				});
+				it('Non matching', () => {
+					expect(MString.SearchResult.has(new Date())).toBe(false);
+				});
 			});
 		});
 

@@ -31,9 +31,13 @@ describe('MCache', () => {
 			expect(testCache.pipe(MCache.get(3))).toBe(6);
 		});
 
-		it('has', () => {
-			expect(MCache.has(testCache)).toBe(true);
-			expect(MCache.has(new Date())).toBe(false);
+		describe('has', () => {
+			it('Matching', () => {
+				expect(MCache.has(testCache)).toBe(true);
+			});
+			it('Non matching', () => {
+				expect(MCache.has(new Date())).toBe(false);
+			});
 		});
 	});
 
