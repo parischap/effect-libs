@@ -109,11 +109,10 @@ export type LookUp<A, B> = ({
 	isCircular
 }:
 	| { readonly key: A; readonly memoized: undefined; readonly isCircular: true }
-	/* eslint-disable-next-line functional/prefer-readonly-type -- Return type */
-	| { readonly key: A; readonly memoized: (a: A) => B; readonly isCircular: false }) => [
-	result: B,
-	storeInCache: boolean
-];
+	| { readonly key: A; readonly memoized: (a: A) => B; readonly isCircular: false }) => MTypes.Pair<
+	B,
+	boolean
+>;
 
 /**
  * @since 0.0.6

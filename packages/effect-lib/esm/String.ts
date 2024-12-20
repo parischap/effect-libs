@@ -181,7 +181,7 @@ export namespace SearchResult {
 }
 
 /**
- * Builds a string from a primitive value other than `null` and `undefined`. and `a`
+ * Builds a string from a primitive value other than `null` and `undefined`.
  *
  * @since 0.0.6
  * @category Constructors
@@ -541,7 +541,7 @@ export const splitEquallyRestAtStart = (
  */
 export const splitEquallyRestAtEnd = (
 	bitSize: number
-): MTypes.OneArgFunction<string, Array<string>> =>
+): MTypes.OneArgFunction<string, MTypes.OverOne<string>> =>
 	MArray.unfoldNonEmpty(
 		flow(splitAt(bitSize), Tuple.mapSecond(Option.liftPredicate(String.isNonEmpty)))
 	);

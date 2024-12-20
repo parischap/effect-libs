@@ -201,7 +201,12 @@ export const whenIs =
  * 		);
  */
 export const whenIsOr =
-	<Input extends MTypes.Primitive, Rest extends Input, R extends MTypes.OverTwo<Rest>, Output1>(
+	<
+		Input extends MTypes.Primitive,
+		Rest extends Input,
+		R extends MTypes.ReadonlyOverTwo<Rest>,
+		Output1
+	>(
 		...args: readonly [...values: R, f: (value: R[number]) => Output1]
 	) =>
 	<Output>(
@@ -272,7 +277,7 @@ export const whenOr =
 		Input,
 		Rest extends Input,
 		// R can be an array of predicates on a type wider than Rest (eg. when using Predicate.struct with not all properties)
-		R extends MTypes.OverTwo<Predicate.Predicate<Rest>>,
+		R extends MTypes.ReadonlyOverTwo<Predicate.Predicate<Rest>>,
 		Output1
 	>(
 		...args: readonly [
@@ -309,7 +314,7 @@ export const whenAnd =
 		Input,
 		Rest extends Input,
 		// R can be an array of predicates on a type wider than Rest (eg. when using Predicate.struct with not all properties)
-		R extends MTypes.OverTwo<Predicate.Predicate<Rest>>,
+		R extends MTypes.ReadonlyOverTwo<Predicate.Predicate<Rest>>,
 		Output1
 	>(
 		...args: readonly [

@@ -6,6 +6,7 @@
 
 import { Cause, Either, Function, Option, Predicate, Tuple, pipe } from 'effect';
 import * as MTuple from './Tuple.js';
+import * as MTypes from './types.js';
 
 /**
  * Same as Effect.optionFromOptional but for Either's
@@ -53,8 +54,8 @@ export const getRightWhenNoLeft = <A>(self: Either.Either<A, never>): A =>
  * @category Utils
  */
 export const traversePair = <A, B, L>(
-	self: Either.Either<readonly [A, B], L>
-): [Either.Either<A, L>, Either.Either<B, L>] =>
+	self: Either.Either<MTypes.ReadonlyPair<A, B>, L>
+): MTypes.Pair<Either.Either<A, L>, Either.Either<B, L>> =>
 	pipe(
 		self,
 		Either.map(Tuple.mapBoth({ onFirst: Either.right, onSecond: Either.right })),

@@ -64,14 +64,14 @@ export const match012 =
 	<A, B, C = B, D = B>(options: {
 		readonly onEmpty: Function.LazyArg<B>;
 		readonly onSingleton: (self: NoInfer<A>) => C;
-		readonly onOverTwo: (self: MTypes.OverTwo<NoInfer<A>>) => D;
+		readonly onOverTwo: (self: MTypes.ReadonlyOverTwo<NoInfer<A>>) => D;
 	}) =>
 	(self: ReadonlyArray<A>): B | C | D =>
 		pipe(
-			self as MTypes.EmptyArray | MTypes.Singleton<A> | MTypes.OverTwo<A>,
+			self,
 			MMatch.make,
-			MMatch.when(MTypes.isOverTwo<A>, (overTwo) => options.onOverTwo(overTwo)),
-			MMatch.when(MTypes.isSingleton<A>, (singleton) => options.onSingleton(singleton[0])),
+			MMatch.when(MTypes.isReadonlyOverTwo<A>, (overTwo) => options.onOverTwo(overTwo)),
+			MMatch.when(MTypes.isReadonlySingleton<A>, (singleton) => options.onSingleton(singleton[0])),
 			MMatch.orElse(options.onEmpty)
 		);
 
@@ -152,12 +152,10 @@ export const longestCommonSubArray =
 export const extractFirst: {
 	<A, B extends A>(
 		refinement: (a: NoInfer<A>, i: number) => a is B
-		/* eslint-disable-next-line functional/prefer-readonly-type -- Return type */
-	): (self: ReadonlyArray<A>) => [match: Option.Option<B>, remaining: Array<A>];
+	): (self: ReadonlyArray<A>) => MTypes.Pair<Option.Option<B>, MTypes.MutableArray<A>>;
 	<A>(
 		predicate: (a: NoInfer<A>, i: number) => boolean
-		/* eslint-disable-next-line functional/prefer-readonly-type -- Return type */
-	): (self: ReadonlyArray<A>) => [match: Option.Option<A>, remaining: Array<A>];
+	): (self: ReadonlyArray<A>) => MTypes.Pair<Option.Option<A>, MTypes.MutableArray<A>>;
 } =
 	<A>(predicate: (a: NoInfer<A>, i: number) => boolean) =>
 	(self: ReadonlyArray<A>): [match: Option.Option<A>, remaining: Array<A>] =>
@@ -268,7 +266,7 @@ export const groupBy =
 		readonly fKey: (a: NoInfer<A>) => string;
 		readonly fValue: (a: NoInfer<A>) => B;
 	}) =>
-	(self: Iterable<A>): Record<string, Array.NonEmptyArray<B>> =>
+	(self: Iterable<A>): Record<string, MTypes.OverOne<B>> =>
 		pipe(self, Array.groupBy(fKey), Record.map(Array.map(fValue)));
 
 /**
@@ -277,8 +275,8 @@ export const groupBy =
  */
 /*export const groupByInMap =
 	<A, B, C>(fKey: (a: A) => C, fValue: (a: A) => B) =>
-	(self: ReadonlyArray<A>): HashMap.HashMap<C, Array.NonEmptyArray<B>> => {
-		return HashMap.mutate(HashMap.empty<C, Array.NonEmptyArray<B>>(), (map) => {
+	(self: ReadonlyArray<A>): HashMap.HashMap<C, MTypes.OverOne<B>> => {
+		return HashMap.mutate(HashMap.empty<C, MTypes.OverOne<B>>(), (map) => {
 			for (const a of self) {
 				const c = fKey(a);
 				const b = fValue(a);
@@ -385,15 +383,7 @@ export const modifyHead =
  * @category Constructors
  */
 export const unfold =
-	<A, B>(
-		f: (
-			a: A,
-			isCyclical: boolean
-		) => Option.Option<
-			/* eslint-disable-next-line functional/prefer-readonly-type */
-			[B, A]
-		>
-	) =>
+	<A, B>(f: (a: A, isCyclical: boolean) => Option.Option<MTypes.Pair<B, A>>) =>
 	(a: A): Array<B> => {
 		if (MTypes.isOneArgFunction(f)) return Array.unfold(a, f);
 		const knownAs = Array.empty<A>();
@@ -413,17 +403,11 @@ export const unfold =
  * @category Constructors
  */
 export const unfoldNonEmpty =
-	<A, B>(
-		f: (
-			a: A,
-			isCyclical: boolean
-		) => /* eslint-disable-next-line functional/prefer-readonly-type */
-		[B, Option.Option<A>]
-	) =>
-	(a: A): Array.NonEmptyArray<B> => {
+	<A, B>(f: (a: A, isCyclical: boolean) => MTypes.Pair<B, Option.Option<A>>) =>
+	(a: A): MTypes.OverOne<B> => {
 		const internalF = (aOption: Option.Option<A>, isCyclical: boolean) =>
 			Option.map(aOption, (a) => f(a, isCyclical));
-		return pipe(a, Option.some, unfold(internalF)) as Array.NonEmptyArray<B>;
+		return pipe(a, Option.some, unfold(internalF)) as unknown as MTypes.OverOne<B>;
 	};
 
 /**
@@ -447,9 +431,7 @@ export const splitAtFromRight =
  */
 export const splitNonEmptyAtFromRight =
 	(n: number) =>
-	<A>(
-		self: Array.NonEmptyReadonlyArray<A>
-	): [beforeIndex: Array<A>, fromIndex: Array.NonEmptyArray<A>] =>
+	<A>(self: MTypes.OverOne<A>): [beforeIndex: Array<A>, fromIndex: MTypes.OverOne<A>] =>
 		pipe(self, splitAtFromRight(n)) as never;
 
 /**
@@ -570,8 +552,9 @@ export const differenceSorted =
 								)
 						}),
 					onNone: () =>
-						/* eslint-disable-next-line functional/prefer-readonly-type */
-						Option.none<[ReadonlyArray<A>, [Option.Option<A>, Option.Option<A>]]>()
+						Option.none<
+							MTypes.Pair<MTypes.MutableArray<A>, MTypes.Pair<Option.Option<A>, Option.Option<A>>>
+						>()
 				})
 			),
 			Array.flatten
