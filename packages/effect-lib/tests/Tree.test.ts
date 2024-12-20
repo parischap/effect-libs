@@ -1,91 +1,60 @@
 /* eslint-disable functional/no-expression-statements */
-import { MTree, MTuple, MUtils } from '@parischap/effect-lib';
-import { Array, Either, Equal, flow, Number, pipe, Struct } from 'effect';
+import { MMatch, MString, MTree, MTuple, MTypes, MUtils } from '@parischap/effect-lib';
+import {
+	Array,
+	Either,
+	Equal,
+	flow,
+	Function,
+	Number,
+	Option,
+	pipe,
+	String,
+	Struct,
+	Tuple
+} from 'effect';
 import { describe, expect, it } from 'vitest';
 
-interface TestInput {
-	readonly value: '+' | '*' | number;
-	readonly children: ReadonlyArray<TestInput>;
-}
+const splitBy = <S extends string>(
+	sep: S
+): MTypes.OneArgFunction<
+	string,
+	Option.Option<Either.Either<[S, MTypes.OverOne<string>], never>>
+> =>
+	flow(
+		String.split(sep),
+		Option.liftPredicate(MTypes.isOverTwo),
+		Option.map(flow(Array.map(String.trim), Tuple.make, MTuple.prependElement(sep), Either.right))
+	);
 
-const unfold = (seed: TestInput, isCyclical: boolean) =>
-	isCyclical ?
-		Either.left(0)
-	:	(pipe(
-			seed,
-			Either.liftPredicate(
-				flow(Struct.get('children'), Array.isNonEmptyReadonlyArray),
-				Struct.get('value')
-			),
-			Either.map(
-				MTuple.makeBothBy({
-					toFirst: Struct.get('value'),
-					toSecond: Struct.get('children')
-				})
-			)
-			/* eslint-disable-next-line functional/prefer-readonly-type*/
-		) as Either.Either<['+' | '*', readonly TestInput[]], number>);
+const unfold: MTypes.OneArgFunction<
+	string,
+	Either.Either<MTypes.Pair<'.' | ',' | ' ', MTypes.OverOne<string>>, string>
+> = flow(
+	MMatch.make,
+	MMatch.tryFunction(splitBy('.')),
+	MMatch.tryFunction(splitBy(',')),
+	MMatch.tryFunction(splitBy(' ')),
+	MMatch.orElse(Either.left)
+);
 
-const fold = (value: '+' | '*', children: ReadonlyArray<number>) =>
-	value === '+' ? Number.sumAll(children) : Number.multiplyAll(children);
+const foldNonLeaf = (value: '.' | ',' | ' ', children: ReadonlyArray<string>): string =>
+	Array.join(children, value + (value === ' ' ? '' : ' '));
 
-const testInput1: TestInput = {
-	value: '+',
-	children: [
-		{
-			value: '*',
-			children: [
-				{
-					value: 8,
-					children: []
-				},
-				{
-					value: 9,
-					children: []
-				}
-			]
-		},
-		{
-			value: '+',
-			children: [
-				{
-					value: 1,
-					children: []
-				},
-				{
-					value: 2,
-					children: []
-				}
-			]
-		}
-	]
-};
+const testSentence0 = 'Foo, Bat Bar. Baz Bar Foo';
+const testSentence1 =
+	'Foo goes fishing, Bat goes hunting. Baz prefers smimming, in a large pool, by his house';
+const testSentence3 =
+	'Foo goes fishing, Bat goes hunting. Baz prefers smimming, in a long pool, by his house';
+const testSentence1Mapped =
+	'Foo@ goes@ fishing@. Bat@ goes@ hunting@, Baz@ prefers@ smimming@. in@ a@ large@ pool@. by@ his@ house@';
 
-const testTree1 = pipe(testInput1, MTree.unfold(unfold));
-const testTree2 = pipe(testInput1, MTree.unfold(unfold));
-
-const testInput3 = pipe(testInput1, JSON.stringify, JSON.parse) as TestInput;
-/* @ts-expect-error it's a test */ /* eslint-disable-next-line functional/immutable-data*/
-testInput3.children[1].children[0].value = 5;
-const testTree3 = pipe(testInput3, MTree.unfold(unfold));
-
-const testInput4 = pipe(testInput1, JSON.stringify, JSON.parse) as TestInput;
-/* @ts-expect-error it's a test */ /* eslint-disable-next-line functional/immutable-data*/
-testInput4.children[1].children[0] = testInput4;
-const testTree4 = pipe(testInput4, MTree.unfold(unfold));
+const testTree0 = pipe(testSentence0, MTree.unfold(unfold));
+const testTree1 = pipe(testSentence1, MTree.unfold(unfold));
+const testTree2 = pipe(testSentence1, MTree.unfold(unfold));
+const testTree3 = pipe(testSentence3, MTree.unfold(unfold));
 
 describe('MTree', () => {
-	describe('Leaf', () => {
-		describe('pipe and has', () => {
-			it('Matching', () => {
-				expect(MTree.Leaf.make(5).pipe(MTree.Leaf.has)).toBe(true);
-			});
-			it('Non matching', () => {
-				expect(MTree.Leaf.has(new Date())).toBe(false);
-			});
-		});
-	});
-
 	describe('Tag, prototype and guards', () => {
 		it('moduleTag', () => {
 			expect(MTree.moduleTag).toBe(MUtils.moduleTagFromFileName(__filename));
@@ -100,9 +69,13 @@ describe('MTree', () => {
 			});
 		});
 
-		describe('pipe and has', () => {
+		it('pipe', () => {
+			expect(testTree1.pipe(MTypes.isRecord)).toBe(true);
+		});
+
+		describe('has', () => {
 			it('Matching', () => {
-				expect(MTree.make({ value: 5, forest: Array.empty() }).pipe(MTree.has)).toBe(true);
+				expect(testTree1.pipe(MTree.has)).toBe(true);
 			});
 			it('Non matching', () => {
 				expect(MTree.has(new Date())).toBe(false);
@@ -112,85 +85,58 @@ describe('MTree', () => {
 
 	describe('unfold and .toString()', () => {
 		it('Non-cyclical test input', () => {
-			expect(testTree1.toString()).toBe(`{
+			expect(testTree0.toString()).toBe(`{
   "_id": "@parischap/effect-lib/Tree/",
-  "value": "+",
-  "_tag": "Tree",
+  "value": ".",
+  "_tag": "NonLeaf",
   "forest": [
     {
       "_id": "@parischap/effect-lib/Tree/",
-      "value": "*",
-      "_tag": "Tree",
+      "value": ",",
+      "_tag": "NonLeaf",
       "forest": [
         {
           "_id": "@parischap/effect-lib/Tree/",
-          "value": 8,
+          "value": "Foo",
           "_tag": "Leaf"
         },
         {
           "_id": "@parischap/effect-lib/Tree/",
-          "value": 9,
-          "_tag": "Leaf"
+          "value": " ",
+          "_tag": "NonLeaf",
+          "forest": [
+            {
+              "_id": "@parischap/effect-lib/Tree/",
+              "value": "Bat",
+              "_tag": "Leaf"
+            },
+            {
+              "_id": "@parischap/effect-lib/Tree/",
+              "value": "Bar",
+              "_tag": "Leaf"
+            }
+          ]
         }
       ]
     },
     {
       "_id": "@parischap/effect-lib/Tree/",
-      "value": "+",
-      "_tag": "Tree",
+      "value": " ",
+      "_tag": "NonLeaf",
       "forest": [
         {
           "_id": "@parischap/effect-lib/Tree/",
-          "value": 1,
+          "value": "Baz",
           "_tag": "Leaf"
         },
         {
           "_id": "@parischap/effect-lib/Tree/",
-          "value": 2,
-          "_tag": "Leaf"
-        }
-      ]
-    }
-  ]
-}`);
-		});
-
-		it('Cyclical test input', () => {
-			expect(testTree4.toString()).toBe(`{
-  "_id": "@parischap/effect-lib/Tree/",
-  "value": "+",
-  "_tag": "Tree",
-  "forest": [
-    {
-      "_id": "@parischap/effect-lib/Tree/",
-      "value": "*",
-      "_tag": "Tree",
-      "forest": [
-        {
-          "_id": "@parischap/effect-lib/Tree/",
-          "value": 8,
+          "value": "Bar",
           "_tag": "Leaf"
         },
         {
           "_id": "@parischap/effect-lib/Tree/",
-          "value": 9,
-          "_tag": "Leaf"
-        }
-      ]
-    },
-    {
-      "_id": "@parischap/effect-lib/Tree/",
-      "value": "+",
-      "_tag": "Tree",
-      "forest": [
-        {
-          "_id": "@parischap/effect-lib/Tree/",
-          "value": 0,
-          "_tag": "Leaf"
-        },
-        {
-          "_id": "@parischap/effect-lib/Tree/",
-          "value": 2,
+          "value": "Foo",
           "_tag": "Leaf"
         }
       ]
@@ -201,21 +147,40 @@ describe('MTree', () => {
 	});
 
 	it('unfoldAndFold', () => {
-		expect(pipe(testInput1, MTree.unfoldAndFold({ unfold, fold }))).toBe(75);
+		expect(
+			pipe(
+				testSentence1,
+				MTree.unfoldAndFold({
+					unfold,
+					foldNonLeaf,
+					foldLeaf: Function.identity
+				})
+			)
+		).toBe(testSentence1);
 	});
 
 	it('fold', () => {
-		expect(pipe(testTree1, MTree.fold(fold))).toBe(75);
+		expect(pipe(testTree1, MTree.fold({ fNonLeaf: foldNonLeaf, fLeaf: Function.identity }))).toBe(
+			testSentence1
+		);
 	});
 
 	it('map', () => {
 		expect(
 			pipe(
 				testTree1,
-				MTree.map({ fNonLeaf: (value) => (value === '*' ? '+' : '*'), fLeaf: Number.increment }),
-				MTree.fold(fold)
+				MTree.map({
+					fNonLeaf: flow(
+						MMatch.make,
+						MMatch.whenIs('.', Function.constant(',' as const)),
+						MMatch.whenIs(',', Function.constant('.' as const)),
+						MMatch.orElse(Function.constant(' ' as const))
+					),
+					fLeaf: MString.append('@')
+				}),
+				MTree.fold({ fNonLeaf: foldNonLeaf, fLeaf: Function.identity })
 			)
-		).toBe(114);
+		).toBe(testSentence1Mapped);
 	});
 
 	it('reduce', () => {
@@ -224,11 +189,15 @@ describe('MTree', () => {
 				testTree1,
 				MTree.reduce({
 					z: 3,
-					fNonLeaf: (acc, value) => acc + (value === '*' ? 2 : 1),
-					fLeaf: (acc, value) => acc + value
+					fNonLeaf: (acc, value) =>
+						acc +
+						(value === '.' ? 1
+						: value === ',' ? 2
+						: 0),
+					fLeaf: Number.increment
 				})
 			)
-		).toBe(27);
+		).toBe(24);
 	});
 
 	it('reduceRight', () => {
@@ -237,11 +206,15 @@ describe('MTree', () => {
 				testTree1,
 				MTree.reduceRight({
 					z: 3,
-					fNonLeaf: (acc, value) => acc + (value === '*' ? 2 : 1),
-					fLeaf: (acc, value) => acc + value
+					fNonLeaf: (z, value) =>
+						z +
+						(value === '.' ? 1
+						: value === ',' ? 2
+						: 0),
+					fLeaf: Number.increment
 				})
 			)
-		).toBe(27);
+		).toBe(24);
 	});
 
 	it('extendDown', () => {
@@ -249,12 +222,18 @@ describe('MTree', () => {
 			pipe(
 				testTree1,
 				MTree.extendDown({
-					fNonLeaf: (node) => (node.value === '*' ? '+' : '*'),
-					fLeaf: (node) => node.value + 1
+					fNonLeaf: flow(
+						Struct.get('value'),
+						MMatch.make,
+						MMatch.whenIs('.', Function.constant(',' as const)),
+						MMatch.whenIs(',', Function.constant('.' as const)),
+						MMatch.orElse(Function.constant(' ' as const))
+					),
+					fLeaf: flow(Struct.get('value'), MString.append('@'))
 				}),
-				MTree.fold(fold)
+				MTree.fold({ fNonLeaf: foldNonLeaf, fLeaf: Function.identity })
 			)
-		).toBe(114);
+		).toBe(testSentence1Mapped);
 	});
 
 	it('extendUp', () => {
@@ -262,11 +241,17 @@ describe('MTree', () => {
 			pipe(
 				testTree1,
 				MTree.extendUp({
-					fNonLeaf: (node) => (node.value === '*' ? '+' : '*'),
-					fLeaf: (node) => node.value + 1
+					fNonLeaf: flow(
+						Struct.get('value'),
+						MMatch.make,
+						MMatch.whenIs('.', Function.constant(',' as const)),
+						MMatch.whenIs(',', Function.constant('.' as const)),
+						MMatch.orElse(Function.constant(' ' as const))
+					),
+					fLeaf: flow(Struct.get('value'), MString.append('@'))
 				}),
-				MTree.fold(fold)
+				MTree.fold({ fNonLeaf: foldNonLeaf, fLeaf: Function.identity })
 			)
-		).toBe(114);
+		).toBe(testSentence1Mapped);
 	});
 });
