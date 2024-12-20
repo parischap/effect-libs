@@ -23,7 +23,7 @@ export interface Sequence extends ReadonlyArray<number> {}
  *
  * @since 0.0.1
  */
-export interface NonEmptySequence extends Array.NonEmptyReadonlyArray<number> {}
+export interface NonEmptySequence extends MTypes.ReadonlyOverOne<number> {}
 
 /**
  * Builds an AnsiString from a NonEmptySequence
@@ -45,7 +45,7 @@ export const fromNonEmptySequence: MTypes.OneArgFunction<NonEmptySequence, strin
  * @category Constructors
  */
 export const fromSequence: MTypes.OneArgFunction<Sequence, string> = flow(
-	Option.liftPredicate(Array.isNonEmptyReadonlyArray),
+	Option.liftPredicate(MTypes.isReadonlyOverOne),
 	Option.map(fromNonEmptySequence),
 	Option.getOrElse(Function.constant(''))
 );

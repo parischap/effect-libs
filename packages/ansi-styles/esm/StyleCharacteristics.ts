@@ -32,8 +32,9 @@ type TypeId = typeof TypeId;
  */
 export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
 	/**
-	 * Array of StyleCharacteristic's sorted by category. Did not use a SortedSet because we need some
-	 * waranties as to the order of equivalent elements when merging StyleCharacteristics
+	 * Array of StyleCharacteristic's sorted by category and at most one element for each category.
+	 * Did not use a SortedSet because we need some waranties as to the order of equivalent elements
+	 * when merging StyleCharacteristics
 	 *
 	 * @since 0.0.1
 	 */
@@ -52,7 +53,7 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
 export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
 
 // To be removed when Effect 4.0 with structural equality comes out
-const _sortedArrayEq: Equivalence.Equivalence<ReadonlyArray<ASStyleCharacteristic.Type>> =
+const _arrayEq: Equivalence.Equivalence<ReadonlyArray<ASStyleCharacteristic.Type>> =
 	Array.getEquivalence(ASStyleCharacteristic.equivalence);
 
 /**
@@ -62,7 +63,7 @@ const _sortedArrayEq: Equivalence.Equivalence<ReadonlyArray<ASStyleCharacteristi
  * @category Equivalences
  */
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
-	_sortedArrayEq(self.sortedArray, that.sortedArray);
+	_arrayEq(self.sortedArray, that.sortedArray);
 
 const _TypeIdHash = Hash.hash(TypeId);
 const proto: MTypes.Proto<Type> = {
@@ -82,40 +83,6 @@ const proto: MTypes.Proto<Type> = {
 
 /** Constructor */
 const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
-
-/**
- * Empty StyleCharacteristics
- *
- * @since 0.0.1
- * @category Instances
- */
-export const none: Type = _make({
-	sortedArray: Array.empty()
-});
-
-/**
- * Default StyleCharacteristics for all categories
- *
- * @since 0.0.1
- * @category Instances
- */
-export const defaults: Type = _make({
-	sortedArray: pipe(
-		[
-			ASStyleCharacteristic.normal,
-			ASStyleCharacteristic.notItalic,
-			ASStyleCharacteristic.notUnderlined,
-			ASStyleCharacteristic.notStruckThrough,
-			ASStyleCharacteristic.notOverlined,
-			ASStyleCharacteristic.notInversed,
-			ASStyleCharacteristic.notHidden,
-			ASStyleCharacteristic.noBlink,
-			ASStyleCharacteristic.defaultColor,
-			ASStyleCharacteristic.Bg.defaultColor
-		],
-		Array.sort(ASStyleCharacteristic.byCategory)
-	)
-});
 
 /**
  * Constructor from a single StyleCharacteristic
@@ -189,4 +156,34 @@ export const toAnsiString: MTypes.OneArgFunction<Type, ASAnsiString.Type> = flow
 			ASAnsiString.fromNonEmptySequence
 		)
 	})
+);
+
+/**
+ * Empty StyleCharacteristics
+ *
+ * @since 0.0.1
+ * @category Instances
+ */
+export const none: Type = _make({
+	sortedArray: Array.empty()
+});
+
+/**
+ * Default StyleCharacteristics for all categories
+ *
+ * @since 0.0.1
+ * @category Instances
+ */
+export const defaults: Type = pipe(
+	ASStyleCharacteristic.normal,
+	fromStyleCharacteristic,
+	merge(fromStyleCharacteristic(ASStyleCharacteristic.notItalic)),
+	merge(fromStyleCharacteristic(ASStyleCharacteristic.notUnderlined)),
+	merge(fromStyleCharacteristic(ASStyleCharacteristic.notStruckThrough)),
+	merge(fromStyleCharacteristic(ASStyleCharacteristic.notOverlined)),
+	merge(fromStyleCharacteristic(ASStyleCharacteristic.notInversed)),
+	merge(fromStyleCharacteristic(ASStyleCharacteristic.notHidden)),
+	merge(fromStyleCharacteristic(ASStyleCharacteristic.noBlink)),
+	merge(fromStyleCharacteristic(ASStyleCharacteristic.defaultColor)),
+	merge(fromStyleCharacteristic(ASStyleCharacteristic.Bg.defaultColor))
 );
