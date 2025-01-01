@@ -15,11 +15,12 @@ import {
 } from 'effect';
 import { describe, expect, it } from 'vitest';
 
+/* Tries to split a string by the provided separator `sep`. If the split yields at least two elements returns a right of a some of a tuple containing the separator and an array containing the trimmed split strings. Otherwise, returns a none */
 const splitBy = <S extends string>(
 	sep: S
 ): MTypes.OneArgFunction<
 	string,
-	Option.Option<Either.Either<[S, MTypes.OverOne<string>], never>>
+	Option.Option<Either.Either<[S, MTypes.OverOne<string>], string>>
 > =>
 	flow(
 		String.split(sep),
@@ -162,6 +163,31 @@ describe('MTree', () => {
 	it('fold', () => {
 		expect(pipe(testTree1, MTree.fold({ fNonLeaf: foldNonLeaf, fLeaf: Function.identity }))).toBe(
 			testSentence1
+		);
+	});
+
+	it('mapAccum', () => {
+		expect(
+			pipe(
+				testTree1,
+				MTree.mapAccum({
+					accum: '',
+					fNonLeaf: (s, a) =>
+						pipe(
+							a,
+							MMatch.make,
+							MMatch.whenIs('.', Function.constant(',' as const)),
+							MMatch.whenIs(',', Function.constant('.' as const)),
+							MMatch.orElse(Function.constant(' ' as const)),
+							Tuple.make,
+							MTuple.prependElement(s + a)
+						),
+					fLeaf: (s, b) => pipe(b, MString.append(s))
+				}),
+				MTree.fold({ fNonLeaf: foldNonLeaf, fLeaf: Function.identity })
+			)
+		).toBe(
+			'Foo.,  goes.,  fishing., . Bat.,  goes.,  hunting., , Baz.,  prefers.,  smimming., . in.,  a.,  large.,  pool., . by.,  his.,  house., '
 		);
 	});
 

@@ -29,6 +29,7 @@ import * as MInspectable from './Inspectable.js';
 import * as MMatch from './Match.js';
 import * as MPipeable from './Pipeable.js';
 import * as MStruct from './Struct.js';
+import * as MTuple from './Tuple.js';
 import * as MTypes from './types.js';
 
 export const moduleTag = '@parischap/effect-lib/Tree/';
@@ -114,7 +115,7 @@ export namespace Forest {
 	 * @since 0.5.0
 	 * @category Models
 	 */
-	export type Type<out A, out B> = MTypes.ReadonlyOverOne<_Type<A, B>>;
+	export type Type<A, B> = MTypes.ReadonlyOverOne<_Type<A, B>>;
 
 	/**
 	 * Returns an equivalence based on an equivalence of the subtypes
@@ -342,7 +343,7 @@ export const unfoldAndFold =
 		);
 
 /**
- * Folds a tree into a "summary" value in bottom-up order.
+ * Folds a tree into a "summary" value in bottom-up order with.
  *
  * For each Leaf in the tree, applies `fLeaf`. For each NonLeaf in the tree, applies `fNonLeaf` to
  * the `value` property and the result of applying `fNonLeaf` or `fLeaf` to each node in the
@@ -371,6 +372,37 @@ export const fold = <A, B, C>({
 };
 
 /**
+ * Maps a tree with an accumulator
+ *
+ * @since 0.5.0
+ * @category Utils
+ */
+export const mapAccum = <S, A, B, C, D>({
+	accum,
+	fNonLeaf,
+	fLeaf
+}: {
+	readonly accum: S;
+	readonly fNonLeaf: (s: S, a: NoInfer<A>, level: number) => MTypes.Pair<S, C>;
+	readonly fLeaf: (s: S, b: NoInfer<B>, level: number) => D;
+}): MTypes.OneArgFunction<Type<A, B>, Type<C, D>> => {
+	const go = (s: S, level: number): MTypes.OneArgFunction<Type<A, B>, Type<C, D>> =>
+		flow(
+			MMatch.make,
+			MMatch.when(isLeaf, (leaf) => Leaf.make(fLeaf(s, leaf.value, level))),
+			MMatch.orElse((nonLeaf) => {
+				const [nextS, value] = fNonLeaf(s, nonLeaf.value, level);
+				return NonLeaf.make({
+					value,
+					forest: Array.map(nonLeaf.forest, go(nextS, level + 1))
+				});
+			})
+		);
+
+	return go(accum, 0);
+};
+
+/**
  * Maps a tree
  *
  * @since 0.5.0
@@ -383,19 +415,10 @@ export const map = <A, B, C, D>({
 	readonly fNonLeaf: (a: NoInfer<A>, level: number) => C;
 	readonly fLeaf: (b: NoInfer<B>, level: number) => D;
 }): MTypes.OneArgFunction<Type<A, B>, Type<C, D>> => {
-	const go = (level: number): MTypes.OneArgFunction<Type<A, B>, Type<C, D>> =>
-		flow(
-			MMatch.make,
-			MMatch.when(isLeaf, (leaf) => Leaf.make(fLeaf(leaf.value, level))),
-			MMatch.orElse((nonLeaf) =>
-				NonLeaf.make({
-					value: fNonLeaf(nonLeaf.value, level),
-					forest: Array.map(nonLeaf.forest, go(level + 1))
-				})
-			)
-		);
-
-	return go(0);
+	const internalFNonLeaf = (_: number, a: A, level: number) =>
+		pipe(fNonLeaf(a, level), Tuple.make, MTuple.prependElement(0));
+	const internalFLeaf = (_: number, b: B, level: number) => fLeaf(b, level);
+	return mapAccum({ accum: 0, fNonLeaf: internalFNonLeaf, fLeaf: internalFLeaf });
 };
 
 const _reduce =
