@@ -25,6 +25,187 @@ const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
 
 /**
+ * BoldState namespace
+ *
+ * @since 0.0.1
+ * @category Models
+ */
+namespace BoldState {
+	/**
+	 * BoldState type.
+	 *
+	 * @since 0.0.1
+	 * @category Models
+	 */
+	export enum Type {
+		Unset = 0,
+		NotBold = 1,
+		Bold = 2
+	}
+}
+
+/**
+ * DimState namespace
+ *
+ * @since 0.0.1
+ * @category Models
+ */
+namespace DimState {
+	/**
+	 * DimState type.
+	 *
+	 * @since 0.0.1
+	 * @category Models
+	 */
+	export enum Type {
+		Unset = 0,
+		NotDim = 1,
+		Dim = 2
+	}
+}
+
+/**
+ * ItalicState namespace
+ *
+ * @since 0.0.1
+ * @category Models
+ */
+namespace ItalicState {
+	/**
+	 * ItalicState type.
+	 *
+	 * @since 0.0.1
+	 * @category Models
+	 */
+	export enum Type {
+		Unset = 0,
+		NotItalic = 1,
+		Italic = 2
+	}
+}
+
+/**
+ * UnderlinedState namespace
+ *
+ * @since 0.0.1
+ * @category Models
+ */
+namespace UnderlinedState {
+	/**
+	 * UnderlinedState type.
+	 *
+	 * @since 0.0.1
+	 * @category Models
+	 */
+	export enum Type {
+		Unset = 0,
+		NotUnderlined = 1,
+		Underlined = 2
+	}
+}
+
+/**
+ * StruckThroughState namespace
+ *
+ * @since 0.0.1
+ * @category Models
+ */
+namespace StruckThroughState {
+	/**
+	 * StruckThroughState type.
+	 *
+	 * @since 0.0.1
+	 * @category Models
+	 */
+	export enum Type {
+		Unset = 0,
+		NotStruckThrough = 1,
+		StruckThrough = 2
+	}
+}
+
+/**
+ * OverlinedState namespace
+ *
+ * @since 0.0.1
+ * @category Models
+ */
+namespace OverlinedState {
+	/**
+	 * OverlinedState type.
+	 *
+	 * @since 0.0.1
+	 * @category Models
+	 */
+	export enum Type {
+		Unset = 0,
+		NotOverlined = 1,
+		Overlined = 2
+	}
+}
+
+/**
+ * InversedState namespace
+ *
+ * @since 0.0.1
+ * @category Models
+ */
+namespace InversedState {
+	/**
+	 * InversedState type.
+	 *
+	 * @since 0.0.1
+	 * @category Models
+	 */
+	export enum Type {
+		Unset = 0,
+		NotInversed = 1,
+		Inversed = 2
+	}
+}
+
+/**
+ * HiddenState namespace
+ *
+ * @since 0.0.1
+ * @category Models
+ */
+namespace HiddenState {
+	/**
+	 * HiddenState type.
+	 *
+	 * @since 0.0.1
+	 * @category Models
+	 */
+	export enum Type {
+		Unset = 0,
+		NotHidden = 1,
+		Hidden = 2
+	}
+}
+
+/**
+ * BlinkState namespace
+ *
+ * @since 0.0.1
+ * @category Models
+ */
+namespace BlinkState {
+	/**
+	 * BlinkState type.
+	 *
+	 * @since 0.0.1
+	 * @category Models
+	 */
+	export enum Type {
+		Unset = 0,
+		NoBlink = 1,
+		SlowBlink = 2,
+		FastBlink = 3
+	}
+}
+
+/**
  * Type of a StyleCharacteristics
  *
  * @since 0.0.1
@@ -103,7 +284,7 @@ const _differenceByCategory = MArray.differenceSorted(ASStyleCharacteristic.byCa
  * @since 0.0.1
  * @category Utils
  */
-export const merge =
+export const mergeOver =
 	(that: Type) =>
 	(self: Type): Type =>
 		_make({
@@ -114,6 +295,18 @@ export const merge =
 				Array.dedupeAdjacentWith(ASStyleCharacteristic.haveSameCategory)
 			)
 		});
+
+/**
+ * Builds a new StyleCharacteristics by merging `self` and `that`. In case of conflict (e.g `self`
+ * contains `Bold` and `that` contains `Dim`), the characteristics in `self` will prevail.
+ *
+ * @since 0.0.1
+ * @category Utils
+ */
+export const mergeUnder =
+	(that: Type) =>
+	(self: Type): Type =>
+		mergeOver(self)(that);
 
 /**
  * Builds a new StyleCharacteristics by removing from `self` the StyleCharacterostic's of `that`.
@@ -175,15 +368,16 @@ export const none: Type = _make({
  * @category Instances
  */
 export const defaults: Type = pipe(
-	ASStyleCharacteristic.normal,
+	ASStyleCharacteristic.notBold,
 	fromStyleCharacteristic,
-	merge(fromStyleCharacteristic(ASStyleCharacteristic.notItalic)),
-	merge(fromStyleCharacteristic(ASStyleCharacteristic.notUnderlined)),
-	merge(fromStyleCharacteristic(ASStyleCharacteristic.notStruckThrough)),
-	merge(fromStyleCharacteristic(ASStyleCharacteristic.notOverlined)),
-	merge(fromStyleCharacteristic(ASStyleCharacteristic.notInversed)),
-	merge(fromStyleCharacteristic(ASStyleCharacteristic.notHidden)),
-	merge(fromStyleCharacteristic(ASStyleCharacteristic.noBlink)),
-	merge(fromStyleCharacteristic(ASStyleCharacteristic.defaultColor)),
-	merge(fromStyleCharacteristic(ASStyleCharacteristic.Bg.defaultColor))
+	mergeOver(fromStyleCharacteristic(ASStyleCharacteristic.notDim)),
+	mergeOver(fromStyleCharacteristic(ASStyleCharacteristic.notItalic)),
+	mergeOver(fromStyleCharacteristic(ASStyleCharacteristic.notUnderlined)),
+	mergeOver(fromStyleCharacteristic(ASStyleCharacteristic.notStruckThrough)),
+	mergeOver(fromStyleCharacteristic(ASStyleCharacteristic.notOverlined)),
+	mergeOver(fromStyleCharacteristic(ASStyleCharacteristic.notInversed)),
+	mergeOver(fromStyleCharacteristic(ASStyleCharacteristic.notHidden)),
+	mergeOver(fromStyleCharacteristic(ASStyleCharacteristic.noBlink)),
+	mergeOver(fromStyleCharacteristic(ASStyleCharacteristic.defaultColor)),
+	mergeOver(fromStyleCharacteristic(ASStyleCharacteristic.Bg.defaultColor))
 );

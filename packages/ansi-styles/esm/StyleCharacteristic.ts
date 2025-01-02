@@ -35,14 +35,16 @@ namespace Category {
 	 */
 	export enum Type {
 		//Order matters because Style ids are created by concatenating the ids of the StyleCharacteristic's that compose them in this order: `BoldRed` sounds better than `RedBold`. We left a gap before `FgColor` in case we want to add new style characteristics.
-		Intensity = 0,
-		Italic = 1,
-		Underlined = 2,
-		StruckThrough = 3,
-		Overlined = 4,
-		Inversed = 5,
-		Hidden = 6,
-		Blink = 7,
+		// Dim and bold are two different characteristics although they have the same reset. A text both dim and bold is not a normal text. It looks bold and dim.
+		Bold = 0,
+		Dim = 1,
+		Italic = 2,
+		Underlined = 3,
+		StruckThrough = 4,
+		Overlined = 5,
+		Inversed = 6,
+		Hidden = 7,
+		Blink = 8,
 		FgColor = 100,
 		BgColor = 101
 	}
@@ -191,8 +193,20 @@ export const ansiString: MTypes.OneArgFunction<Type, ASAnsiString.Type> = Struct
  */
 export const bold: Type = _fromIdCategoryAndSequence({
 	id: 'Bold',
-	category: Category.Type.Intensity,
+	category: Category.Type.Bold,
 	sequence: Array.of(1)
+});
+
+/**
+ * NotBold StyleCharacteristic instance
+ *
+ * @since 0.0.1
+ * @category Instances
+ */
+export const notBold: Type = _fromIdCategoryAndSequence({
+	id: 'NotBold',
+	category: Category.Type.Bold,
+	sequence: Array.of(22)
 });
 
 /**
@@ -203,19 +217,19 @@ export const bold: Type = _fromIdCategoryAndSequence({
  */
 export const dim: Type = _fromIdCategoryAndSequence({
 	id: 'Dim',
-	category: Category.Type.Intensity,
+	category: Category.Type.Dim,
 	sequence: Array.of(2)
 });
 
 /**
- * Normal StyleCharacteristic instance
+ * NotBold StyleCharacteristic instance
  *
  * @since 0.0.1
  * @category Instances
  */
-export const normal: Type = _fromIdCategoryAndSequence({
-	id: 'Normal',
-	category: Category.Type.Intensity,
+export const notDim: Type = _fromIdCategoryAndSequence({
+	id: 'NotDim',
+	category: Category.Type.Dim,
 	sequence: Array.of(22)
 });
 

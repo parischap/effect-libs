@@ -1,5 +1,5 @@
 {
-	"name": "@parischap-dev/effect-lib",
+	"name": "@parischap-dev/accounting",
 	"type": "module",
 	"author": "Jérôme MARTIN",
 	"license": "MIT",
@@ -20,16 +20,13 @@
 		"repository": {
 			"type": "git",
 			"url": "git+https://github.com/parischap/effect-libs.git",
-			"directory": "packages/effect-lib"
+			"directory": "packages/accounting"
 		},
-		"homepage": "https://github.com/parischap/effect-libs/tree/master/packages/effect-lib",
-		"transpile-esm": "tsc -b tsconfig.esm.json",
-		"transpile-cjs": "babel dist/esm --plugins @babel/transform-export-namespace-from --plugins @babel/transform-modules-commonjs --out-dir dist/cjs --source-maps",
-		"transpile-annotate": "babel dist --plugins annotate-pure-calls --out-dir dist --source-maps",
-		"generate-types": "",
-		"compile": "pnpm transpile-esm && pnpm transpile-cjs && pnpm transpile-annotate",
-		"build-and-publish": "pnpm build && pnpm checks && pnpm publish-to-npm",
-		"docgen": "docgen",
+		"homepage": "https://github.com/parischap/effect-libs/tree/master/packages/accounting",
+		"generate-types": "tsc -b tsconfig.esm.json --emitDeclarationOnly",
+		"compile": "pnpm bundle && pnpm prodify",
+		"build-and-publish": "echo \"private package cannot be published\"",
+		"docgen": "echo \"docgen not activated for this package\"",
 		"pre-build": "",
 		"post-build": "",
 		"prodify": "prodify",
@@ -51,32 +48,26 @@
 		"exports": {
 			".": {
 				"import": "./esm/index.js",
-				"types": "./dts/index.d.ts",
-				"default": "./cjs/index.js"
+				"types": "./dts/index.d.ts"
 			}
 		},
-		"main": "./cjs/index.js",
-		"types": "./dts/index.d.ts"
-	},
-	"bugs": {
-		"url": "https://github.com/parischap/effect-libs/issues"
-	},
-	"funding": [
-		{
-			"type": "ko-fi",
-			"url": "https://ko-fi.com/parischap"
+		"dependencies": {},
+		"sideEffects": [],
+		"peerDependencies": {
+			"@parischap/effect-lib": "^0.4.0"
 		}
-	],
-	"keywords": [
-		"effect",
-		"typescript",
-		"functional-programming"
-	],
-	"devDependencies": {
-		"@parischap/effect-lib": "link:."
 	},
-	"description": "An extension to the official Effect library",
+	"dependencies": {
+		"@effect/experimental": "^0.35.2"
+	},
+	"sideEffects": false,
+	"private": true,
+	"devDependencies": {
+		"@parischap/accounting": "link:."
+	},
+	"description": "Small app to prepare LGDP accounting entries",
 	"peerDependencies": {
+		"@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
 		"effect": "^3.11.9"
 	}
 }

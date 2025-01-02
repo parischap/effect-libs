@@ -8,8 +8,8 @@ describe('ASStyle', () => {
 	describe('Tag, prototype and guards', () => {
 		const red = ASStyle.red;
 		const bold = ASStyle.bold;
-		const boldRed1 = pipe(red, ASStyle.merge(bold));
-		const boldRed2 = pipe(bold, ASStyle.merge(red));
+		const boldRed1 = pipe(red, ASStyle.mergeOver(bold));
+		const boldRed2 = pipe(bold, ASStyle.mergeOver(red));
 
 		it('moduleTag', () => {
 			expect(ASStyle.moduleTag).toBe(MUtils.moduleTagFromFileName(__filename));
@@ -88,13 +88,23 @@ describe('ASStyle', () => {
 		});
 	});
 
-	it('merge', () => {
+	it('mergeOver', () => {
 		expect(
 			pipe(
 				ASStyle.green,
-				ASStyle.merge(ASStyle.slowBlink),
-				ASStyle.merge(ASStyle.Rgb.honeyDew)
+				ASStyle.mergeOver(ASStyle.slowBlink),
+				ASStyle.mergeOver(ASStyle.Rgb.honeyDew)
 			).toString()
 		).toBe('SlowBlinkRgbHoneyDew');
+	});
+
+	it('mergeUnder', () => {
+		expect(
+			pipe(
+				ASStyle.green,
+				ASStyle.mergeUnder(ASStyle.slowBlink),
+				ASStyle.mergeUnder(ASStyle.Rgb.honeyDew)
+			).toString()
+		).toBe('SlowBlinkGreen');
 	});
 });

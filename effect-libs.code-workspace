@@ -26,6 +26,12 @@
 		{
 			"path": "packages/ansi-styles",
 		},
+		{
+			"path": "packages/accounting",
+		},
+		{
+			"path": "packages/effect-report",
+		},
 	],
 	"settings": {
 		"typescript.tsdk": "effect-libs\\node_modules\\typescript\\lib",

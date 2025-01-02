@@ -321,7 +321,7 @@ export interface ServiceInterface {
 	) => Effect.Effect<void, PlatformError.PlatformError>;
 }
 
-export class Service extends Context.Tag(moduleTag + 'Service')<Service, ServiceInterface>() {}
+export class Service extends Context.Tag(moduleTag + 'Service/')<Service, ServiceInterface>() {}
 
 export const layer = Layer.effect(
 	Service,
@@ -332,7 +332,10 @@ export const layer = Layer.effect(
 		const stat: ServiceInterface['stat'] = fs.stat as never;
 
 		const readDirectory: ServiceInterface['readDirectory'] = (path) =>
-			fs.readDirectory(path) as Effect.Effect<ReadonlyArray<MFs.Name>, PlatformError.PlatformError>;
+			fs.readDirectory(path) as unknown as Effect.Effect<
+				ReadonlyArray<MFs.Name>,
+				PlatformError.PlatformError
+			>;
 
 		const realPath: ServiceInterface['realPath'] = <T extends MFs.Path>(path: T) =>
 			fs.realPath(path) as Effect.Effect<T, PlatformError.PlatformError>;
@@ -377,7 +380,8 @@ export const layer = Layer.effect(
 										pathOrDescriptor: path,
 										module: 'FileSystem',
 										method: 'glob',
-										message: `Circularity detected. Following paths are cycling: ${Array.join(duplicates, ', ')}`
+										message: 'Circularity detected. Following paths are cycling'
+										//message: `Circularity detected. Following paths are cycling: ${Array.join(duplicates, ', ')}`
 									})
 								),
 								Either.map(Array.appendAll(parents))

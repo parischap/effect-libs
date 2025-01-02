@@ -9,8 +9,8 @@ describe('ASStyleCharacteristics', () => {
 		const bold = ASStyleCharacteristics.fromStyleCharacteristic(ASStyleCharacteristic.bold);
 		const dim = ASStyleCharacteristics.fromStyleCharacteristic(ASStyleCharacteristic.dim);
 		const italic = ASStyleCharacteristics.fromStyleCharacteristic(ASStyleCharacteristic.italic);
-		const boldItalic1 = pipe(bold, ASStyleCharacteristics.merge(italic));
-		const boldItalic2 = pipe(italic, ASStyleCharacteristics.merge(bold));
+		const boldItalic1 = pipe(bold, ASStyleCharacteristics.mergeUnder(italic));
+		const boldItalic2 = pipe(italic, ASStyleCharacteristics.mergeUnder(bold));
 
 		it('moduleTag', () => {
 			expect(ASStyleCharacteristics.moduleTag).toBe(MUtils.moduleTagFromFileName(__filename));
@@ -48,12 +48,12 @@ describe('ASStyleCharacteristics', () => {
 			});
 		});
 
-		describe('merge', () => {
+		describe('mergeUnder', () => {
 			it('None with none', () => {
 				expect(
 					pipe(
 						ASStyleCharacteristics.none,
-						ASStyleCharacteristics.merge(ASStyleCharacteristics.none),
+						ASStyleCharacteristics.mergeUnder(ASStyleCharacteristics.none),
 						Equal.equals(ASStyleCharacteristics.none)
 					)
 				).toBe(true);
@@ -61,7 +61,11 @@ describe('ASStyleCharacteristics', () => {
 
 			it('Non-none with none', () => {
 				expect(
-					pipe(bold, ASStyleCharacteristics.merge(ASStyleCharacteristics.none), Equal.equals(bold))
+					pipe(
+						bold,
+						ASStyleCharacteristics.mergeUnder(ASStyleCharacteristics.none),
+						Equal.equals(bold)
+					)
 				).toBe(true);
 			});
 
@@ -69,10 +73,41 @@ describe('ASStyleCharacteristics', () => {
 				expect(
 					pipe(
 						bold,
-						ASStyleCharacteristics.merge(dim),
-						ASStyleCharacteristics.merge(dim),
-						ASStyleCharacteristics.merge(italic),
-						ASStyleCharacteristics.merge(bold),
+						ASStyleCharacteristics.mergeUnder(dim),
+						ASStyleCharacteristics.mergeUnder(italic),
+						Equal.equals(boldItalic1)
+					)
+				).toBe(true);
+			});
+		});
+
+		describe('mergeOver', () => {
+			it('None with none', () => {
+				expect(
+					pipe(
+						ASStyleCharacteristics.none,
+						ASStyleCharacteristics.mergeOver(ASStyleCharacteristics.none),
+						Equal.equals(ASStyleCharacteristics.none)
+					)
+				).toBe(true);
+			});
+
+			it('Non-none with none', () => {
+				expect(
+					pipe(
+						bold,
+						ASStyleCharacteristics.mergeOver(ASStyleCharacteristics.none),
+						Equal.equals(bold)
+					)
+				).toBe(true);
+			});
+
+			it('Complex case', () => {
+				expect(
+					pipe(
+						dim,
+						ASStyleCharacteristics.mergeOver(bold),
+						ASStyleCharacteristics.mergeOver(italic),
 						Equal.equals(boldItalic1)
 					)
 				).toBe(true);
@@ -104,10 +139,10 @@ describe('ASStyleCharacteristics', () => {
 				expect(
 					pipe(
 						bold,
-						ASStyleCharacteristics.merge(dim),
-						ASStyleCharacteristics.merge(dim),
-						ASStyleCharacteristics.merge(italic),
-						ASStyleCharacteristics.merge(bold),
+						ASStyleCharacteristics.mergeUnder(dim),
+						ASStyleCharacteristics.mergeUnder(dim),
+						ASStyleCharacteristics.mergeUnder(italic),
+						ASStyleCharacteristics.mergeUnder(bold),
 						ASStyleCharacteristics.difference(
 							ASStyleCharacteristics.fromStyleCharacteristic(ASStyleCharacteristic.slowBlink)
 						),

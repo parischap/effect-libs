@@ -4,7 +4,7 @@ import { MUtils } from '@parischap/effect-lib';
 import { Array, Equal, pipe } from 'effect';
 import { describe, expect, it } from 'vitest';
 
-const boldRed = pipe(ASStyle.red, ASStyle.merge(ASStyle.bold));
+const boldRed = pipe(ASStyle.red, ASStyle.mergeOver(ASStyle.bold));
 const boldRedFoo = boldRed('foo');
 
 describe('ASText', () => {
@@ -24,16 +24,16 @@ describe('ASText', () => {
 
 		describe('.toString()', () => {
 			it('Simple string with no style', () => {
-				expect(ASStyle.none('foo').toString()).toBe(`foo${ASAnsiString.resetAnsiString}`);
+				expect(ASStyle.none('foo').toString()).toBe(`foo${ASAnsiString.reset}`);
 			});
 
 			it('Bold red string', () => {
-				expect(boldRedFoo.toString()).toBe(`\x1b[1;31mfoo${ASAnsiString.resetAnsiString}`);
+				expect(boldRedFoo.toString()).toBe(`\x1b[1;31mfoo${ASAnsiString.reset}`);
 			});
 		});
 
 		it('.pipe()', () => {
-			expect(boldRedFoo.pipe(ASText.styledStrings, Array.length)).toBe(1);
+			expect(boldRedFoo.pipe(ASText.uniStyledTexts, Array.length)).toBe(1);
 		});
 
 		describe('has', () => {
@@ -46,19 +46,20 @@ describe('ASText', () => {
 		});
 	});
 
-	it('toPrefixedAnsiString', () => {
+	it('toAnsiString', () => {
 		const text = ASStyle.noBlink(
 			'foo ',
 			boldRed(
 				'goes ',
 				ASStyle.italic('to '),
-				ASStyle.Rgb.pink('the ', ASStyle.normal('beach ')),
+				ASStyle.Rgb.pink('the ', ASStyle.notBold('beach ')),
 				ASStyle.dim('to swim '),
-				ASStyle.fastBlink('with bar ')
+				ASStyle.slowBlink('with bar ')
 			)
 		);
+		//console.log('\x1b[31;1mFoo\x1b[2;21mgoes\x1b[22mTo\x1b[2mthe');
 		console.log(text);
-		expect(ASText.toPrefixedAnsiString(text)).toBe('afoobabarb');
+		expect(ASText.toAnsiString(text)).toBe('afoobabarb');
 	});
 
 	/*it('append', () => {

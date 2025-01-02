@@ -1,11 +1,10 @@
 /**
  * This module implements a type that represents an ANSI style as defined in the Select Graphic
  * Rendition subset. Info at
- * https://stackoverflow.com/questions/4f842424/list-of-ansi-fgColor-escape-characteristicSequences.
- * A style is simply a sorted array of the StyleCharacteristic's (see StyleCharacteristics.ts) that
- * define it. As syntaxic sugar, styles are callable functions that create Text's (see Text.ts). For
- * instance, `const text = ASStyle.red('foo')` will create a text containing the string 'foo' styled
- * in red.
+ * https://stackoverflow.com/questions/4842424/list-of-ansi-color-escape-sequences A style is simply
+ * a sorted array of the StyleCharacteristic's (see StyleCharacteristics.ts) that define it. As
+ * syntaxic sugar, styles are callable functions that create Text's (see Text.ts). For instance,
+ * `const text = ASStyle.red('foo')` will create a text containing the string 'foo' styled in red.
  *
  * @since 0.0.1
  */
@@ -82,7 +81,7 @@ const base: MTypes.Proto<Type> = {
 const _make = ({ characteristics }: MTypes.Data<Type>): Type => {
 	return Object.assign(
 		(...args: ReadonlyArray<string | ASText.Type>): ASText.Type =>
-			ASText.fromStyleCharacteristics(characteristics)(...args),
+			ASText.fromStyleAndElems(characteristics)(...args),
 		{
 			characteristics,
 			...base
@@ -112,13 +111,30 @@ export const _fromCharacteritic = (characteristic: ASStyleCharacteristic.Type): 
  * @since 0.0.1
  * @category Utils
  */
-export const merge =
+export const mergeOver =
 	(that: Type) =>
 	(self: Type): Type =>
 		_make({
 			characteristics: pipe(
 				self.characteristics,
-				ASStyleCharacteristics.merge(that.characteristics)
+				ASStyleCharacteristics.mergeOver(that.characteristics)
+			)
+		});
+
+/**
+ * Builds a new Style by merging `self` and `that`. In case of conflict (e.g `self` contains `Bold`
+ * and `that` contains `Dim`), the characteristics in `self` will prevail.
+ *
+ * @since 0.0.1
+ * @category Utils
+ */
+export const mergeUnder =
+	(that: Type) =>
+	(self: Type): Type =>
+		_make({
+			characteristics: pipe(
+				self.characteristics,
+				ASStyleCharacteristics.mergeUnder(that.characteristics)
 			)
 		});
 
@@ -139,6 +155,14 @@ export const none: Type = _make({ characteristics: ASStyleCharacteristics.none }
 export const bold: Type = _fromCharacteritic(ASStyleCharacteristic.bold);
 
 /**
+ * NotBold Style instance
+ *
+ * @since 0.0.1
+ * @category Instances
+ */
+export const notBold: Type = _fromCharacteritic(ASStyleCharacteristic.notBold);
+
+/**
  * Dim Style instance
  *
  * @since 0.0.1
@@ -147,12 +171,12 @@ export const bold: Type = _fromCharacteritic(ASStyleCharacteristic.bold);
 export const dim: Type = _fromCharacteritic(ASStyleCharacteristic.dim);
 
 /**
- * Normal Style instance
+ * NotDim Style instance
  *
  * @since 0.0.1
  * @category Instances
  */
-export const normal: Type = _fromCharacteritic(ASStyleCharacteristic.normal);
+export const notDim: Type = _fromCharacteritic(ASStyleCharacteristic.notDim);
 
 /**
  * Italic Style instance

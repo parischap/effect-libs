@@ -19,6 +19,7 @@ export interface Parsed<out T extends MFs.Name> {
 	readonly ext: string;
 	readonly name: string;
 }
+
 export interface ServiceInterface {
 	/** Current working directory */
 	readonly currentDirectory: MFs.Folderpath;
@@ -77,13 +78,13 @@ export interface ServiceInterface {
 		(p: MFs.Path): boolean;
 	};
 
-	/** The platform-specific file separator. '\' or '/'. */
+	/** The platform-specific file separator. '' or '/'. */
 	readonly sep: string;
 	readonly fromFileUrl: (url: URL) => Effect.Effect<MFs.Filepath, PlatformError.BadArgument>;
 	readonly toFileUrl: (path: MFs.Path) => Effect.Effect<URL, PlatformError.BadArgument>;
 }
 
-export class Service extends Context.Tag(moduleTag + 'Service')<Service, ServiceInterface>() {}
+export class Service extends Context.Tag(moduleTag + 'Service/')<Service, ServiceInterface>() {}
 
 export const layer = Layer.effect(
 	Service,

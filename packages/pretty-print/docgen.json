@@ -3,5 +3,6 @@
 	"examplesCompilerOptions": "./tsconfig.docgen.json",
 	"srcDir": "./esm",
 	"outDir": "docs",
-	"exclude": ["esm/index.ts"]
+	"exclude": ["esm/index.ts"],
+	"enforceDescriptions": true
 }

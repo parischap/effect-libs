@@ -3,26 +3,16 @@ import { merge } from 'ts-deepmerge';
 
 export default merge(
 	Configs.configSubRepo({
-		environment: Configs.Environment.Type.Library,
-		bundled: false,
-		visibility: Configs.Visibility.Type.Public,
+		environment: Configs.Environment.Type.Node,
+		bundled: true,
+		visibility: Configs.Visibility.Type.Private,
 		hasStaticFolder: false,
 		hasDocGen: false,
-		keywords: [
-			'printf',
-			'sprintf',
-			'sscanf',
-			'template',
-			'format',
-			'templater',
-			'typescript',
-			'effect'
-		]
+		keywords: []
 	}),
 	{
 		[Configs.constants.packageJsonFileName]: {
-			description:
-				'A functional library to read from (PHP sscanf equivalent) and write to (PHP sprintf equivalent) a string with type checking',
+			description: 'Small app to prepare LGDP accounting entries',
 			peerDependencies: {
 				...Configs.utils.devWorkspaceLink('effect-lib'),
 				effect: Configs.constants.effectVersion
@@ -32,9 +22,7 @@ export default merge(
 					[`${Configs.constants.scope}/effect-lib`]: '^0.4.0'
 				}
 			},
-			scripts: {
-				examples: 'vite-node examples/stupid.ts'
-			}
+			scripts: {}
 		}
 	}
 );

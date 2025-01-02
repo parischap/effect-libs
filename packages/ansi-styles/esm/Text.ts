@@ -5,7 +5,17 @@
  * @since 0.0.1
  */
 
-import { MFunction, MInspectable, MMatch, MPipeable, MString, MTree, MTypes } from '@parischap/effect-lib';
+import {
+	MArray,
+	MFunction,
+	MInspectable,
+	MMatch,
+	MPipeable,
+	MString,
+	MStruct,
+	MTuple,
+	MTypes
+} from '@parischap/effect-lib';
 import {
 	Array,
 	Equal,
@@ -13,6 +23,7 @@ import {
 	Function,
 	Hash,
 	Inspectable,
+	Number,
 	Option,
 	Pipeable,
 	Predicate,
@@ -26,12 +37,173 @@ import * as ASAnsiString from './AnsiString.js';
 import * as ASStyleCharacteristics from './StyleCharacteristics.js';
 
 export const moduleTag = '@parischap/ansi-styles/Text/';
+const _moduleTag = moduleTag;
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
 
-type Node = MTree.Node.Type<ASStyleCharacteristics.Type, string>
-type Tree = MTree.Type<ASStyleCharacteristics.Type, string>
-type Leaf =  MTree.Leaf.Type<ASStyleCharacteristics.Type, string>
+/**
+ * Namespace of a unformly styled text (that is a text that is thorougly formatted with the same
+ * style)
+ *
+ * @since 0.0.1
+ */
+namespace UniStyled {
+	const moduleTag = _moduleTag + 'UniStyled/';
+	const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+	type TypeId = typeof TypeId;
+
+	/**
+	 * Interface that represents a Unistyled text
+	 *
+	 * @since 0.0.1
+	 * @category Models
+	 */
+	export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
+		/**
+		 * The text to be styled
+		 *
+		 * @since 0.0.1
+		 */
+		readonly text: string;
+
+		/**
+		 * The style to apply to the text
+		 *
+		 * @since 0.0.1
+		 */
+		readonly styleCharacteristics: ASStyleCharacteristics.Type;
+
+		/* @internal */
+		readonly [TypeId]: TypeId;
+	}
+
+	/**
+	 * Type guard
+	 *
+	 * @since 0.0.1
+	 * @category Guards
+	 */
+	export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
+
+	/**
+	 * Equivalence
+	 *
+	 * @since 0.0.1
+	 * @category Equivalences
+	 */
+	export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
+		self.text === that.text &&
+		ASStyleCharacteristics.equivalence(self.styleCharacteristics, that.styleCharacteristics);
+
+	/**
+	 * Equivalence based on the styleCharacteristics
+	 *
+	 * @since 0.0.1
+	 * @category Equivalences
+	 */
+	export const haveSameStyle: Equivalence.Equivalence<Type> = (self, that) =>
+		ASStyleCharacteristics.equivalence(self.styleCharacteristics, that.styleCharacteristics);
+
+	/** Prototype */
+	const _TypeIdHash = Hash.hash(TypeId);
+	const proto: MTypes.Proto<Type> = {
+		[TypeId]: TypeId,
+		[Equal.symbol](this: Type, that: unknown): boolean {
+			return has(that) && equivalence(this, that);
+		},
+		[Hash.symbol](this: Type) {
+			return pipe(
+				this.text,
+				Hash.hash,
+				Hash.combine(Hash.hash(this.styleCharacteristics)),
+				Hash.combine(_TypeIdHash),
+				Hash.cached(this)
+			);
+		},
+		...MInspectable.BaseProto(moduleTag),
+		...MPipeable.BaseProto
+	};
+
+	/**
+	 * Constructor
+	 *
+	 * @since 0.0.1
+	 */
+	export const make = (params: MTypes.Data<Type>): Type =>
+		MTypes.objectFromDataAndProto(proto, params);
+
+	/**
+	 * Gets the `text` property of `self`
+	 *
+	 * @since 0.0.1
+	 * @category Destructors
+	 */
+	export const text: MTypes.OneArgFunction<Type, string> = Struct.get('text');
+
+	/**
+	 * Gets the `styleCharacteristics` property of `self`
+	 *
+	 * @since 0.0.1
+	 * @category Destructors
+	 */
+	export const styleCharacteristics: MTypes.OneArgFunction<Type, ASStyleCharacteristics.Type> =
+		Struct.get('styleCharacteristics');
+
+	/**
+	 * Merges the chararcteristics of `styleCharacteristics` with the styleCharacteristics of `self`.
+	 * In case of conflict, the characteristics in `self` prevail.
+	 *
+	 * @since 0.0.1
+	 * @category Utils
+	 */
+	export const applyStyleUnder = (
+		styleCharacteristics: ASStyleCharacteristics.Type
+	): MTypes.OneArgFunction<Type, Type> =>
+		flow(
+			MStruct.evolve({
+				styleCharacteristics: ASStyleCharacteristics.mergeUnder(styleCharacteristics)
+			}),
+			make
+		);
+
+	/**
+	 * Builds a new UniStyled from the concatenation of several UniStyled. The style of the resulting
+	 * Unistyled is the one of the first Unistyled to concatenated
+	 *
+	 * @since 0.0.1
+	 * @category Constructors
+	 */
+	export const concat = (elems: Array.NonEmptyReadonlyArray<Type>): Type =>
+		make({
+			text: pipe(elems, Array.map(text), Array.join('')),
+			styleCharacteristics: pipe(elems, Array.headNonEmpty, styleCharacteristics)
+		});
+
+	/**
+	 * Gets the length of `self` without the formatting
+	 *
+	 * @since 0.0.1
+	 * @category Utils
+	 */
+	export const length: MTypes.OneArgFunction<Type, number> = flow(
+		Struct.get('text'),
+		String.length
+	);
+
+	/**
+	 * Returns the ANSI string corresponding to self
+	 *
+	 * @since 0.0.1
+	 * @category Destructors
+	 */
+	export const toAnsiString: MTypes.OneArgFunction<Type, string> = flow(
+		MTuple.makeBothBy({
+			toFirst: flow(styleCharacteristics, ASStyleCharacteristics.toAnsiString),
+			toSecond: text
+		}),
+		Array.join('')
+	);
+}
 
 /**
  * Interface that represents a Text
@@ -40,8 +212,8 @@ type Leaf =  MTree.Leaf.Type<ASStyleCharacteristics.Type, string>
  * @category Models
  */
 export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
-	/* The text as a tree with strings as leaves and ASStyleCharacteristic's for the other nodes */
-	readonly tree: Tree;
+	/* The text as an array of UniStyled */
+	readonly uniStyledTexts: ReadonlyArray<UniStyled.Type>;
 
 	/* @internal */
 	readonly [TypeId]: TypeId;
@@ -55,7 +227,7 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
  */
 export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
 
-const _equivalence = MTree.getEquivalence(ASStyleCharacteristics.equivalence, String.Equivalence);
+const _equivalence = Array.getEquivalence(UniStyled.equivalence);
 /**
  * Equivalence
  *
@@ -63,8 +235,7 @@ const _equivalence = MTree.getEquivalence(ASStyleCharacteristics.equivalence, St
  * @category Equivalences
  */
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
-	_equivalence(self.tree, that.tree);
-
+	_equivalence(self.uniStyledTexts, that.uniStyledTexts);
 
 /** Prototype */
 const _TypeIdHash = Hash.hash(TypeId);
@@ -74,10 +245,10 @@ const proto: MTypes.Proto<Type> = {
 		return has(that) && equivalence(this, that);
 	},
 	[Hash.symbol](this: Type) {
-		return pipe(this.tree, Hash.hash, Hash.combine(_TypeIdHash), Hash.cached(this));
+		return pipe(this.uniStyledTexts, Hash.array, Hash.combine(_TypeIdHash), Hash.cached(this));
 	},
 	[MInspectable.IdSymbol](this: Type) {
-		return toPrefixedAnsiString(this);
+		return toAnsiString(this);
 	},
 	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto
@@ -87,14 +258,15 @@ const proto: MTypes.Proto<Type> = {
 const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
 
 /**
- * Returns the `tree` property of `self`
+ * Returns the `uniStyledTexts` property of `self`
  *
  * @since 0.0.1
  * @category Destructors
  */
-export const tree: MTypes.OneArgFunction<Type,
-	Tree
-> = Struct.get('tree');
+export const uniStyledTexts: MTypes.OneArgFunction<
+	Type,
+	ReadonlyArray<UniStyled.Type>
+> = Struct.get('uniStyledTexts');
 
 /**
  * Returns the length of `self` without the length of the styling
@@ -103,8 +275,9 @@ export const tree: MTypes.OneArgFunction<Type,
  * @category Destructors
  */
 export const length: MTypes.OneArgFunction<Type, number> = flow(
-	tree,
-	MTree.reduce({ z: 0, fNonLeaf: Function.identity, fLeaf: (z, b) => z + b.length })
+	uniStyledTexts,
+	Array.map(UniStyled.length),
+	Number.sumAll
 );
 
 /**
@@ -122,34 +295,48 @@ export const isEmpty: Predicate.Predicate<Type> = flow(length, MFunction.strictE
  * @since 0.0.1
  * @category Constructors
  */
-export const fromStyleAndElems =
-	(characteristics: ASStyleCharacteristics.Type) =>
-	(...elems: ReadonlyArray<string | Type>): Type =>
-		_make({
-			tree: MTree.make({
-				value: characteristics,
-				forest: pipe(
-					elems,
-					Array.filterMap<string|Type,Node>(
-						flow(
-							MMatch.make,
-							MMatch.when(MTypes.isString, 
-								flow( MTree.Leaf.make<ASStyleCharacteristics.Type, string>, Option.some)
-							),
-							MMatch.when(isEmpty, Function.constant(Option.none())),
-							MMatch.orElse(flow(Struct.get('tree'),Option.some)),
-						)
-					),
-					Array.match({
-						onEmpty: Function.constant(Array.empty<Node>()),
-						onNonEmpty: 
-					})
-				)
-			}):
-		});
 
 /**
  * Builds a new Text by concatenating all passed Texts or strings
+ *
+ * @since 0.0.1
+ * @category Utils
+ */
+export const fromStyleAndElems =
+	(styleCharacteristics: ASStyleCharacteristics.Type) =>
+	(...elems: ReadonlyArray<string | Type>): Type =>
+		_make({
+			uniStyledTexts: pipe(
+				elems,
+				Array.filterMap(
+					flow(
+						MMatch.make,
+						MMatch.when(
+							MTypes.isString,
+							flow(
+								Option.liftPredicate(String.isNonEmpty),
+								Option.map((text) => pipe({ text, styleCharacteristics }, UniStyled.make, Array.of))
+							)
+						),
+						MMatch.orElse(
+							flow(
+								Struct.get('uniStyledTexts'),
+								Array.map(UniStyled.applyStyleUnder(styleCharacteristics)),
+								Option.some
+							)
+						)
+					)
+				),
+				Array.flatten,
+				Array.match({
+					onEmpty: () => Array.empty<UniStyled.Type>(),
+					onNonEmpty: flow(Array.groupWith(UniStyled.haveSameStyle), Array.map(UniStyled.concat))
+				})
+			)
+		});
+
+/**
+ * Bilds Concatenates
  *
  * @since 0.0.1
  * @category Utils
@@ -172,20 +359,31 @@ export const empty: Type = concat();
  * @since 0.0.1
  * @category Destructors
  */
-export const toPrefixedAnsiString = (self: Type): string =>
-	pipe(
-		self.styledStrings,
-		Array.mapAccum(ASStyleCharacteristics.defaults, (context, styledString) =>
-			Tuple.make(
-				pipe(context, ASStyleCharacteristics.merge(styledString.style)),
-				pipe(styledString, StyledString.removeCharacteristics(context))
-			)
-		),
-		Tuple.getSecond,
-		Array.map(StyledString.toPrefixedAnsiString),
-		Array.join(''),
-		MString.append(ASAnsiString.resetAnsiString)
-	);
+export const toAnsiString: MTypes.OneArgFunction<Type, string> = flow(
+	uniStyledTexts,
+	MArray.match012({
+		onEmpty: Function.constant(''),
+		onSingleton: flow(UniStyled.toAnsiString, MString.append(ASAnsiString.reset)),
+		onOverTwo: flow(
+			Array.map(UniStyled.applyStyleUnder(ASStyleCharacteristics.defaults)),
+			Array.reduce(Tuple.make('', ASStyleCharacteristics.defaults), ([text, context], uniStyled) =>
+				pipe(
+					uniStyled.styleCharacteristics,
+					ASStyleCharacteristics.difference(context),
+					ASStyleCharacteristics.toAnsiString,
+					MString.prepend(text),
+					MString.append(uniStyled.text),
+					Tuple.make,
+					Tuple.appendElement(
+						pipe(context, ASStyleCharacteristics.mergeOver(uniStyled.styleCharacteristics))
+					)
+				)
+			),
+			Tuple.getFirst,
+			MString.append(ASAnsiString.reset)
+		)
+	})
+);
 
 /**
  * Builds a new Text by appending `that` to `self`

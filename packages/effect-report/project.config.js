@@ -5,36 +5,26 @@ export default merge(
 	Configs.configSubRepo({
 		environment: Configs.Environment.Type.Library,
 		bundled: false,
-		visibility: Configs.Visibility.Type.Public,
+		visibility: Configs.Visibility.Type.Private,
 		hasStaticFolder: false,
 		hasDocGen: false,
-		keywords: [
-			'printf',
-			'sprintf',
-			'sscanf',
-			'template',
-			'format',
-			'templater',
-			'typescript',
-			'effect'
-		]
+		keywords: []
 	}),
 	{
 		[Configs.constants.packageJsonFileName]: {
-			description:
-				'A functional library to read from (PHP sscanf equivalent) and write to (PHP sprintf equivalent) a string with type checking',
+			description: 'A functional library to prettify Effect logging',
 			peerDependencies: {
 				...Configs.utils.devWorkspaceLink('effect-lib'),
+				...Configs.utils.devWorkspaceLink('ansi-styles'),
 				effect: Configs.constants.effectVersion
 			},
 			publishConfig: {
 				peerDependencies: {
-					[`${Configs.constants.scope}/effect-lib`]: '^0.4.0'
+					[`${Configs.constants.scope}/effect-lib`]: '^0.4.0',
+					[`${Configs.constants.scope}/ansi-styles`]: '^0.0.1'
 				}
 			},
-			scripts: {
-				examples: 'vite-node examples/stupid.ts'
-			}
+			scripts: {}
 		}
 	}
 );

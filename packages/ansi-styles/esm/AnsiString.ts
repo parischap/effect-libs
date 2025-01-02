@@ -64,4 +64,4 @@ export const empty: Type = '';
  * @since 0.0.1
  * @category Constructors
  */
-export const resetAnsiString: Type = fromNonEmptySequence(Array.of(0));
+export const reset: Type = fromNonEmptySequence(Array.of(0));

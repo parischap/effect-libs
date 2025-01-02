@@ -1,4 +1,4 @@
-# This workflow is triggered by a new release. It will create the documentation and push it to github pages
+# This workflow is triggered manually. It will create the documentation and push it to github pages
 
 name: Pages
 on:
@@ -27,7 +27,7 @@ jobs:
           node-version: "latest"
           cache: pnpm
           registry-url: https://registry.npmjs.org/
-      - run: pnpm docgen
+      - run: pnpm prepare-docs
       - name: Build pages Jekyll
         uses: actions/jekyll-build-pages@v1
         with:

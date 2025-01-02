@@ -1,34 +1,27 @@
 {
 	"name": "@parischap-dev/effect-libs",
 	"type": "module",
-	"sideEffects": [],
 	"author": "Jérôme MARTIN",
 	"license": "MIT",
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/parischap/effect-libs.git"
-	},
-	"bugs": {
-		"url": "https://github.com/parischap/effect-libs/issues"
-	},
-	"homepage": "https://github.com/parischap/effect-libs",
 	"scripts": {
 		"tscheck": "tsc -b tsconfig.check.json --force ",
 		"lint": "eslint .",
+		"lint-fix": "eslint . --fix",
+		"lint-rules": "pnpx @eslint/config-inspector",
 		"update-config-files": "update-config-files",
 		"clean-config-files": "shx rm -rf package.json && shx rm -rf tsconfig.json",
 		"update-all-config-files": "pnpm -r -include-workspace-root=true --workspace-concurrency=1 update-config-files",
 		"clean-all-prod-files": "pnpm -r clean-prod",
 		"clean-all-config-files": "pnpm -r -include-workspace-root=true clean-config-files",
 		"build-all": "pnpm -r build",
-		"docgen": "pnpm --recursive --parallel docgen && compile-docs"
+		"prepare-docs": "pnpm --recursive --parallel docgen && compile-docs"
 	},
+	"packageManager": "pnpm@9.15.1",
 	"devDependencies": {
-		"@parischap/configs": "latest",
+		"ts-deepmerge": "latest",
 		"@tsconfig/node20": "latest",
 		"@tsconfig/strictest": "latest",
 		"shx": "latest",
-		"deepmerge": "latest",
 		"@eslint/eslintrc": "latest",
 		"@eslint/js": "latest",
 		"@html-eslint/eslint-plugin": "latest",
@@ -46,7 +39,7 @@
 		"prettier": "latest",
 		"typescript": "latest",
 		"typescript-eslint": "latest",
-		"vite": "latest",
+		"vite": "^5.0.0",
 		"vite-node": "latest",
 		"vitest": "latest",
 		"madge": "latest",
@@ -58,17 +51,15 @@
 		"@babel/cli": "latest",
 		"@effect/docgen": "latest",
 		"prettier-plugin-jsdoc": "latest",
-		"tsx": "latest"
+		"tsx": "latest",
+		"@parischap/configs": "latest"
 	},
-	"workspaces": [
-		"packages/*"
-	],
-	"packageManager": "pnpm@9.12.3",
 	"pnpm": {
 		"patchedDependencies": {},
-		"overrides": {
-			"tsconfig-paths": "^4.0.0"
-		}
+		"overrides": {}
 	},
-	"description": "Top repository of monorepo"
+	"description": "Top repository of monorepo",
+	"workspaces": [
+		"packages/*"
+	]
 }

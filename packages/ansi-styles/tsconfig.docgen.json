@@ -1,5 +1,0 @@
-{
-	"extends": "./tsconfig.base.json",
-	"include": ["**/*.ts", "**/*.mts", "**/*.cts"],
-	"compilerOptions": { "noEmit": true, "lib": ["ESNext"], "types": ["node"] }
-}
