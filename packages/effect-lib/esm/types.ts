@@ -107,7 +107,7 @@ export type EmptyReadonlyArray = readonly [];
  * @category Models
  */
 /* eslint-disable-next-line functional/prefer-readonly-type */
-export type Singleton<out A> = [A];
+export type Singleton<A> = [A];
 
 /**
  * Type that represents a tuple or array with one element
@@ -115,7 +115,7 @@ export type Singleton<out A> = [A];
  * @since 0.0.6
  * @category Models
  */
-export type ReadonlySingleton<out A> = readonly [A];
+export type ReadonlySingleton<A> = readonly [A];
 
 /**
  * Type that represents a tuple or array with two elements
@@ -124,7 +124,7 @@ export type ReadonlySingleton<out A> = readonly [A];
  * @category Models
  */
 /* eslint-disable-next-line functional/prefer-readonly-type */
-export type Pair<out A, out B> = [A, B];
+export type Pair<A, B> = [A, B];
 
 /**
  * Type that represents a tuple or array with two elements
@@ -132,7 +132,7 @@ export type Pair<out A, out B> = [A, B];
  * @since 0.0.6
  * @category Models
  */
-export type ReadonlyPair<out A, out B> = readonly [A, B];
+export type ReadonlyPair<A, B> = readonly [A, B];
 
 /**
  * Type that represents a non empty array
@@ -142,7 +142,7 @@ export type ReadonlyPair<out A, out B> = readonly [A, B];
  */
 
 /* eslint-disable-next-line functional/prefer-readonly-type */
-export type OverOne<out A> = [A, ...Array<A>];
+export type OverOne<A> = [A, ...Array<A>];
 
 /**
  * Type that represents a non empty array
@@ -150,7 +150,7 @@ export type OverOne<out A> = [A, ...Array<A>];
  * @since 0.0.6
  * @category Models
  */
-export type ReadonlyOverOne<out A> = readonly [A, ...ReadonlyArray<A>];
+export type ReadonlyOverOne<A> = readonly [A, ...ReadonlyArray<A>];
 
 /**
  * Type that represents an array with at least two elements
@@ -159,7 +159,7 @@ export type ReadonlyOverOne<out A> = readonly [A, ...ReadonlyArray<A>];
  * @category Models
  */
 /* eslint-disable-next-line functional/prefer-readonly-type */
-export type OverTwo<out A> = [A, A, ...Array<A>];
+export type OverTwo<A> = [A, A, ...Array<A>];
 
 /**
  * Type that represents an array with at least two elements
@@ -167,7 +167,7 @@ export type OverTwo<out A> = [A, A, ...Array<A>];
  * @since 0.0.6
  * @category Models
  */
-export type ReadonlyOverTwo<out A> = readonly [A, A, ...ReadonlyArray<A>];
+export type ReadonlyOverTwo<A> = readonly [A, A, ...ReadonlyArray<A>];
 
 /**
  * Type that represents any predicate or refinement
@@ -191,7 +191,7 @@ export type AnyRefinement = Predicate.Refinement<any, any>;
  * @since 0.0.6
  * @category Models
  */
-export type RefinementFrom<in Source> = Predicate.Refinement<Source, any>;
+export type RefinementFrom<Source> = Predicate.Refinement<Source, any>;
 
 /**
  * Type that represents a value that can be used as an error
