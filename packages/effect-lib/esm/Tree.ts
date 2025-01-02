@@ -159,7 +159,8 @@ export const isLeaf = <A, B>(u: Type<A, B>): u is Leaf.Type<B> => u._tag === 'Le
 /**
  * Returns an equivalence based on an equivalence of the subtypes
  *
- * @since 0.5.0 Equivalence
+ * @since 0.5.0
+ * @category Equivalences
  */
 export const getEquivalence = <A, B>(
 	aEquivalence: Equivalence.Equivalence<A>,
@@ -198,7 +199,13 @@ export const proto: MTypes.Proto<Type<any, any>> = {
 	},
 	[Hash.symbol]<A, B>(this: Type<A, B>) {
 		return isLeaf(this) ?
-				pipe(this.value, Hash.hash, Hash.combine(_TypeIdHash), Hash.cached(this))
+				pipe(
+					this.value,
+					Hash.hash,
+					Hash.combine(Hash.hash(this._tag)),
+					Hash.combine(_TypeIdHash),
+					Hash.cached(this)
+				)
 			:	pipe(
 					this.value,
 					Hash.hash,
