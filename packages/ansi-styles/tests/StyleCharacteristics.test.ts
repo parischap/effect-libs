@@ -70,9 +70,11 @@ describe('ASStyleCharacteristics', () => {
 		});
 	});
 
-	it('isItalic', () => {
-		expect(Equal.equals(ASStyleCharacteristics.isItalic(boldItalic), Option.some(true))).toBe(true);
-		expect(Equal.equals(ASStyleCharacteristics.isItalic(bold1), Option.some(false))).toBe(true);
+	it('italicState', () => {
+		expect(Equal.equals(ASStyleCharacteristics.italicState(boldItalic), Option.some(true))).toBe(
+			true
+		);
+		expect(pipe(ASStyleCharacteristics.italicState(bold1), Option.isNone)).toBe(true);
 	});
 
 	describe('toSequence', () => {
@@ -113,41 +115,6 @@ describe('ASStyleCharacteristics', () => {
 		).toBe('BoldDimItalicRed');
 	});
 
-	describe('updateContext', () => {
-		it('with notDim', () => {
-			expect(
-				pipe(
-					ASStyleCharacteristics.none,
-					ASStyleCharacteristics.updateContext(
-						pipe(
-							ASStyleCharacteristics.fromColorAsForegroundColor(ASColor.ThreeBit.red),
-							ASStyleCharacteristics.mergeUnder(ASStyleCharacteristics.notDim)
-						)
-					),
-					ASStyleCharacteristics.toId
-				)
-			).toBe('NotBoldNotDimRed');
-		});
-		it('with notDim and bold', () => {
-			expect(
-				pipe(
-					ASStyleCharacteristics.none,
-					ASStyleCharacteristics.updateContext(boldNotDimRed),
-					ASStyleCharacteristics.toId
-				)
-			).toBe('BoldNotDimRed');
-		});
-		it('with dim and NotBold', () => {
-			expect(
-				pipe(
-					ASStyleCharacteristics.none,
-					ASStyleCharacteristics.updateContext(notBoldDimRed),
-					ASStyleCharacteristics.toId
-				)
-			).toBe('NotBoldDimRed');
-		});
-	});
-
 	describe('difference', () => {
 		it('None with none', () => {
 			expect(
@@ -178,5 +145,17 @@ describe('ASStyleCharacteristics', () => {
 				)
 			).toBe('NotBold');
 		});
+	});
+
+	it('substractContext', () => {
+		expect(
+			pipe(
+				ASStyleCharacteristics.bold,
+				ASStyleCharacteristics.mergeUnder(ASStyleCharacteristics.notDim),
+				ASStyleCharacteristics.mergeUnder(ASStyleCharacteristics.italic),
+				ASStyleCharacteristics.substractContext(ASStyleCharacteristics.bold),
+				ASStyleCharacteristics.toId
+			)
+		).toBe('BoldNotDimItalic');
 	});
 });

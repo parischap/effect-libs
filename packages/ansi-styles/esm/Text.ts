@@ -367,7 +367,7 @@ export const toAnsiString: MTypes.OneArgFunction<Type, string> = flow(
 				([text, context], uniStyled) => {
 					const toApply = pipe(
 						uniStyled.styleCharacteristics,
-						ASStyleCharacteristics.difference(context)
+						ASStyleCharacteristics.substractContext(context)
 					);
 
 					return pipe(
@@ -376,7 +376,7 @@ export const toAnsiString: MTypes.OneArgFunction<Type, string> = flow(
 						MString.prepend(text),
 						MString.append(uniStyled.text),
 						Tuple.make,
-						Tuple.appendElement(pipe(context, ASStyleCharacteristics.updateContext(toApply)))
+						Tuple.appendElement(pipe(context, ASStyleCharacteristics.mergeOver(toApply)))
 					);
 				}
 			),

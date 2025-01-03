@@ -1,11 +1,30 @@
 /* eslint-disable functional/no-expression-statements */
-import { ASAnsiString, ASStyle, ASText } from '@parischap/ansi-styles';
+import { ASAnsiString, ASColor, ASStyleCharacteristics, ASText } from '@parischap/ansi-styles';
 import { MUtils } from '@parischap/effect-lib';
-import { Array, Equal, pipe } from 'effect';
+import { Array, Equal, flow, pipe } from 'effect';
 import { describe, expect, it } from 'vitest';
 
-const boldRed = pipe(ASStyle.red, ASStyle.mergeOver(ASStyle.bold));
-const boldRedFoo = boldRed('foo');
+const none = ASText.concat;
+const bold = ASText.fromStyleAndElems(ASStyleCharacteristics.bold);
+const dim = ASText.fromStyleAndElems(ASStyleCharacteristics.dim);
+const italic = ASText.fromStyleAndElems(ASStyleCharacteristics.italic);
+const underlined = ASText.fromStyleAndElems(ASStyleCharacteristics.underlined);
+const notBold = ASText.fromStyleAndElems(ASStyleCharacteristics.notBold);
+const notUnderlined = ASText.fromStyleAndElems(ASStyleCharacteristics.notUnderlined);
+
+const red = pipe(
+	ASColor.ThreeBit.red,
+	ASStyleCharacteristics.fromColorAsForegroundColor,
+	ASText.fromStyleAndElems
+);
+const pink = pipe(
+	ASColor.Rgb.pink,
+	ASStyleCharacteristics.fromColorAsForegroundColor,
+	ASText.fromStyleAndElems
+);
+
+const boldRed = flow(bold, red);
+const boldRedFoo = pipe('foo', boldRed);
 
 describe('ASText', () => {
 	describe('Tag, prototype and guards', () => {
@@ -15,16 +34,21 @@ describe('ASText', () => {
 
 		describe('Equal.equals', () => {
 			it('Matching', () => {
-				expect(Equal.equals(boldRedFoo, ASStyle.red(ASStyle.bold('foo')))).toBe(true);
+				expect(Equal.equals(boldRedFoo, pipe('foo', red, bold))).toBe(true);
+				expect(Equal.equals(pipe('', boldRed), pipe('', none))).toBe(true);
 			});
 			it('Non matching', () => {
-				expect(Equal.equals(boldRedFoo, ASStyle.bold('foo'))).toBe(false);
+				expect(Equal.equals(boldRedFoo, pipe('foo', bold))).toBe(false);
 			});
 		});
 
 		describe('.toString()', () => {
+			it('Empty', () => {
+				expect(ASText.empty.toString()).toBe('');
+			});
+
 			it('Simple string with no style', () => {
-				expect(ASStyle.none('foo').toString()).toBe(`foo${ASAnsiString.reset}`);
+				expect(none('foo').toString()).toBe('foo');
 			});
 
 			it('Bold red string', () => {
@@ -33,7 +57,7 @@ describe('ASText', () => {
 		});
 
 		it('.pipe()', () => {
-			expect(boldRedFoo.pipe(ASText.uniStyledTexts, Array.length)).toBe(1);
+			expect(boldRedFoo.pipe(ASText.length)).toBe(3);
 		});
 
 		describe('has', () => {
@@ -46,20 +70,36 @@ describe('ASText', () => {
 		});
 	});
 
+	describe('empty, isEmpty', () => {
+		it('Matching', () => {
+			expect(pipe(ASText.empty, ASText.isEmpty)).toBe(true);
+		});
+		it('Non matching', () => {
+			expect(pipe(boldRedFoo, ASText.isEmpty)).toBe(false);
+		});
+	});
+
+	it('fromStyleAndElems', () => {
+		const weird = bold('foo', 'bar', italic('foo'), italic('bar'), '', 'baz');
+		expect(pipe(weird, ASText.uniStyledTexts, Array.length)).toBe(3);
+		expect(ASText.equivalence(weird, bold('foobar', italic('foobar'), 'baz'))).toBe(true);
+	});
+
 	it('toAnsiString', () => {
-		const text = ASStyle.noBlink(
+		const text = notUnderlined(
 			'foo ',
 			boldRed(
 				'goes ',
-				ASStyle.italic('to '),
-				ASStyle.Rgb.pink('the ', ASStyle.notBold('beach ')),
-				ASStyle.dim('to swim '),
-				ASStyle.slowBlink('with bar ')
+				italic('to '),
+				pink('the ', notBold('beach ')),
+				dim('to swim '),
+				underlined('with bar')
 			)
 		);
-		//console.log('\x1b[31;1mFoo\x1b[2;21mgoes\x1b[22mTo\x1b[2mthe');
-		console.log(text);
-		expect(ASText.toAnsiString(text)).toBe('afoobabarb');
+
+		expect(ASText.toAnsiString(text)).toBe(
+			'foo \x1b[1;31mgoes \x1b[3mto \x1b[23;38;2;255;192;203mthe \x1b[22mbeach \x1b[1;2;31mto swim \x1b[22;1;4mwith bar\x1b[0m'
+		);
 	});
 
 	/*it('append', () => {

@@ -206,77 +206,79 @@ namespace ColorOption {
  */
 export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
 	/**
-	 * IsBold
+	 * BoldState of this style
 	 *
 	 * @since 0.0.1
 	 */
-	readonly isBold: BoolOption.Type;
+	readonly boldState: BoolOption.Type;
 
 	/**
-	 * IsDim
+	 * DimState of this style
 	 *
 	 * @since 0.0.1
 	 */
-	readonly isDim: BoolOption.Type;
+	readonly dimState: BoolOption.Type;
 
 	/**
-	 * IsItalic
+	 * ItalicState of this style
 	 *
 	 * @since 0.0.1
 	 */
-	readonly isItalic: BoolOption.Type;
+	readonly italicState: BoolOption.Type;
 
 	/**
-	 * IsUnderlined
+	 * UnderlinedState of this style
 	 *
 	 * @since 0.0.1
 	 */
-	readonly isUnderlined: BoolOption.Type;
+	readonly underlinedState: BoolOption.Type;
 
 	/**
-	 * IsStruckThrough
+	 * StruckThroughState of this style
 	 *
 	 * @since 0.0.1
 	 */
-	readonly isStruckThrough: BoolOption.Type;
+	readonly struckThroughState: BoolOption.Type;
 
 	/**
-	 * IsOverlined
+	 * OverlinedState of this style
 	 *
 	 * @since 0.0.1
 	 */
-	readonly isOverlined: BoolOption.Type;
+	readonly overlinedState: BoolOption.Type;
 
 	/**
-	 * IsInversed
+	 * InversedState of this style
 	 *
 	 * @since 0.0.1
 	 */
-	readonly isInversed: BoolOption.Type;
+	readonly inversedState: BoolOption.Type;
 
 	/**
-	 * IsHidden
+	 * HiddenState of this style
 	 *
 	 * @since 0.0.1
 	 */
-	readonly isHidden: BoolOption.Type;
+	readonly hiddenState: BoolOption.Type;
 
 	/**
-	 * BlinkState
+	 * BlinkingState of this style
 	 *
 	 * @since 0.0.1
 	 */
-	readonly isBlinking: BoolOption.Type;
+	readonly blinkingState: BoolOption.Type;
 
 	/**
-	 * Foreground color. In the second option, none means default terminal foreground color
+	 * Foreground color of this style. In the second option, none means default terminal foreground
+	 * color
 	 *
 	 * @since 0.0.1
 	 */
 	readonly fgColor: ColorOption.Type;
 
 	/**
-	 * Background color. In the second option, none means default terminal background color
+	 * Background color of this style. In the second option, none means default terminal background
+	 * color
 	 *
 	 * @since 0.0.1
 	 */
@@ -301,15 +303,15 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
  * @category Equivalences
  */
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
-	BoolOption.equivalence(self.isBold, that.isBold) &&
-	BoolOption.equivalence(self.isDim, that.isDim) &&
-	BoolOption.equivalence(self.isItalic, that.isItalic) &&
-	BoolOption.equivalence(self.isUnderlined, that.isUnderlined) &&
-	BoolOption.equivalence(self.isStruckThrough, that.isStruckThrough) &&
-	BoolOption.equivalence(self.isOverlined, that.isOverlined) &&
-	BoolOption.equivalence(self.isInversed, that.isInversed) &&
-	BoolOption.equivalence(self.isHidden, that.isHidden) &&
-	BoolOption.equivalence(self.isBlinking, that.isBlinking) &&
+	BoolOption.equivalence(self.boldState, that.boldState) &&
+	BoolOption.equivalence(self.dimState, that.dimState) &&
+	BoolOption.equivalence(self.italicState, that.italicState) &&
+	BoolOption.equivalence(self.underlinedState, that.underlinedState) &&
+	BoolOption.equivalence(self.struckThroughState, that.struckThroughState) &&
+	BoolOption.equivalence(self.overlinedState, that.overlinedState) &&
+	BoolOption.equivalence(self.inversedState, that.inversedState) &&
+	BoolOption.equivalence(self.hiddenState, that.hiddenState) &&
+	BoolOption.equivalence(self.blinkingState, that.blinkingState) &&
 	ColorOption.equivalence(self.fgColor, that.fgColor) &&
 	ColorOption.equivalence(self.bgColor, that.bgColor);
 
@@ -321,16 +323,16 @@ const proto: MTypes.Proto<Type> = {
 	},
 	[Hash.symbol](this: Type) {
 		return pipe(
-			this.isBold,
+			this.boldState,
 			Hash.hash,
-			Hash.combine(Hash.hash(this.isDim)),
-			Hash.combine(Hash.hash(this.isItalic)),
-			Hash.combine(Hash.hash(this.isUnderlined)),
-			Hash.combine(Hash.hash(this.isStruckThrough)),
-			Hash.combine(Hash.hash(this.isOverlined)),
-			Hash.combine(Hash.hash(this.isInversed)),
-			Hash.combine(Hash.hash(this.isHidden)),
-			Hash.combine(Hash.hash(this.isBlinking)),
+			Hash.combine(Hash.hash(this.dimState)),
+			Hash.combine(Hash.hash(this.italicState)),
+			Hash.combine(Hash.hash(this.underlinedState)),
+			Hash.combine(Hash.hash(this.struckThroughState)),
+			Hash.combine(Hash.hash(this.overlinedState)),
+			Hash.combine(Hash.hash(this.inversedState)),
+			Hash.combine(Hash.hash(this.hiddenState)),
+			Hash.combine(Hash.hash(this.blinkingState)),
 			Hash.combine(Hash.hash(this.fgColor)),
 			Hash.combine(Hash.hash(this.bgColor)),
 			Hash.combine(_TypeIdHash),
@@ -348,78 +350,81 @@ const proto: MTypes.Proto<Type> = {
 const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
 
 /**
- * Returns the `isBold` property of `self`
+ * Returns the `boldState` property of `self`
  *
  * @since 0.0.1
  * @category Destructors
  */
-export const isBold: MTypes.OneArgFunction<Type, BoolOption.Type> = Struct.get('isBold');
+export const boldState: MTypes.OneArgFunction<Type, BoolOption.Type> = Struct.get('boldState');
 
 /**
- * Returns the `isDim` property of `self`
+ * Returns the `dimState` property of `self`
  *
  * @since 0.0.1
  * @category Destructors
  */
-export const isDim: MTypes.OneArgFunction<Type, BoolOption.Type> = Struct.get('isDim');
+export const dimState: MTypes.OneArgFunction<Type, BoolOption.Type> = Struct.get('dimState');
 
 /**
- * Returns the `isItalic` property of `self`
+ * Returns the `italicState` property of `self`
  *
  * @since 0.0.1
  * @category Destructors
  */
-export const isItalic: MTypes.OneArgFunction<Type, BoolOption.Type> = Struct.get('isItalic');
+export const italicState: MTypes.OneArgFunction<Type, BoolOption.Type> = Struct.get('italicState');
 
 /**
- * Returns the `isUnderlined` property of `self`
+ * Returns the `underlinedState` property of `self`
  *
  * @since 0.0.1
  * @category Destructors
  */
-export const isUnderlined: MTypes.OneArgFunction<Type, BoolOption.Type> =
-	Struct.get('isUnderlined');
+export const underlinedState: MTypes.OneArgFunction<Type, BoolOption.Type> =
+	Struct.get('underlinedState');
 
 /**
- * Returns the `isStruckThrough` property of `self`
+ * Returns the `struckThroughState` property of `self`
  *
  * @since 0.0.1
  * @category Destructors
  */
-export const isStruckThrough: MTypes.OneArgFunction<Type, BoolOption.Type> =
-	Struct.get('isStruckThrough');
+export const struckThroughState: MTypes.OneArgFunction<Type, BoolOption.Type> =
+	Struct.get('struckThroughState');
 
 /**
- * Returns the `isOverlined` property of `self`
+ * Returns the `overlinedState` property of `self`
  *
  * @since 0.0.1
  * @category Destructors
  */
-export const isOverlined: MTypes.OneArgFunction<Type, BoolOption.Type> = Struct.get('isOverlined');
+export const overlinedState: MTypes.OneArgFunction<Type, BoolOption.Type> =
+	Struct.get('overlinedState');
 
 /**
- * Returns the `isInversed` property of `self`
+ * Returns the `inversedState` property of `self`
  *
  * @since 0.0.1
  * @category Destructors
  */
-export const isInversed: MTypes.OneArgFunction<Type, BoolOption.Type> = Struct.get('isInversed');
+export const inversedState: MTypes.OneArgFunction<Type, BoolOption.Type> =
+	Struct.get('inversedState');
 
 /**
- * Returns the `isHidden` property of `self`
+ * Returns the `hiddenState` property of `self`
  *
  * @since 0.0.1
  * @category Destructors
  */
-export const isHidden: MTypes.OneArgFunction<Type, BoolOption.Type> = Struct.get('isHidden');
+export const hiddenState: MTypes.OneArgFunction<Type, BoolOption.Type> = Struct.get('hiddenState');
 
 /**
- * Returns the `isBlinking` property of `self`
+ * Returns the `blinkingState` property of `self`
  *
  * @since 0.0.1
  * @category Destructors
  */
-export const isBlinking: MTypes.OneArgFunction<Type, BoolOption.Type> = Struct.get('isBlinking');
+export const blinkingState: MTypes.OneArgFunction<Type, BoolOption.Type> =
+	Struct.get('blinkingState');
 
 /**
  * Returns the `fgColor` property of `self`
@@ -437,27 +442,63 @@ export const fgColor: MTypes.OneArgFunction<Type, ColorOption.Type> = Struct.get
  */
 export const bgColor: MTypes.OneArgFunction<Type, ColorOption.Type> = Struct.get('bgColor');
 
-const _isBoldId = BoolOption.toId(Function.constant('NotBold'), Function.constant('Bold'));
-const _isDimId = BoolOption.toId(Function.constant('NotDim'), Function.constant('Dim'));
-const _isItalicId = BoolOption.toId(Function.constant('NotItalic'), Function.constant('Italic'));
-const _isUnderlinedId = BoolOption.toId(
+/**
+ * Returns true if `self` has the bold state
+ *
+ * @since 0.0.1
+ * @category Predicates
+ */
+export const hasBold: Predicate.Predicate<Type> = (self) =>
+	BoolOption.equivalence(self.boldState, _trueSome);
+
+/**
+ * Returns true if `self` has the notBold state
+ *
+ * @since 0.0.1
+ * @category Predicates
+ */
+export const hasNotBold: Predicate.Predicate<Type> = (self) =>
+	BoolOption.equivalence(self.boldState, _falseSome);
+
+/**
+ * Returns true if `self` has the dim state
+ *
+ * @since 0.0.1
+ * @category Predicates
+ */
+export const hasDim: Predicate.Predicate<Type> = (self) =>
+	BoolOption.equivalence(self.dimState, _trueSome);
+
+/**
+ * Returns true if `self` has the notDim state
+ *
+ * @since 0.0.1
+ * @category Predicates
+ */
+export const hasNotDim: Predicate.Predicate<Type> = (self) =>
+	BoolOption.equivalence(self.dimState, _falseSome);
+
+const _boldStateId = BoolOption.toId(Function.constant('NotBold'), Function.constant('Bold'));
+const _dimStateId = BoolOption.toId(Function.constant('NotDim'), Function.constant('Dim'));
+const _italicStateId = BoolOption.toId(Function.constant('NotItalic'), Function.constant('Italic'));
+const _underlinedStateId = BoolOption.toId(
 	Function.constant('NotUnderlined'),
 	Function.constant('Underlined')
 );
-const _isStruckThroughId = BoolOption.toId(
+const _struckThroughStateId = BoolOption.toId(
 	Function.constant('NotStruckThrough'),
 	Function.constant('StruckThrough')
 );
-const _isOverlinedId = BoolOption.toId(
+const _overlinedStateId = BoolOption.toId(
 	Function.constant('NotOverlined'),
 	Function.constant('Overlined')
 );
-const _isInversedId = BoolOption.toId(
+const _inversedStateId = BoolOption.toId(
 	Function.constant('NotInversed'),
 	Function.constant('Inversed')
 );
-const _isHiddenId = BoolOption.toId(Function.constant('NotHidden'), Function.constant('Hidden'));
-const _isBlinkingId = BoolOption.toId(
+const _hiddenStateId = BoolOption.toId(Function.constant('NotHidden'), Function.constant('Hidden'));
+const _blinkingStateId = BoolOption.toId(
 	Function.constant('NotBlinking'),
 	Function.constant('Blinking')
 );
@@ -472,29 +513,29 @@ const _bgColorId = ColorOption.toId('In');
  */
 export const toId = (self: Type): string => {
 	return (
-		_isBoldId(self.isBold) +
-		_isDimId(self.isDim) +
-		_isItalicId(self.isItalic) +
-		_isUnderlinedId(self.isUnderlined) +
-		_isStruckThroughId(self.isStruckThrough) +
-		_isOverlinedId(self.isOverlined) +
-		_isInversedId(self.isInversed) +
-		_isHiddenId(self.isHidden) +
-		_isBlinkingId(self.isBlinking) +
+		_boldStateId(self.boldState) +
+		_dimStateId(self.dimState) +
+		_italicStateId(self.italicState) +
+		_underlinedStateId(self.underlinedState) +
+		_struckThroughStateId(self.struckThroughState) +
+		_overlinedStateId(self.overlinedState) +
+		_inversedStateId(self.inversedState) +
+		_hiddenStateId(self.hiddenState) +
+		_blinkingStateId(self.blinkingState) +
 		_fgColorId(self.fgColor) +
 		_bgColorId(self.bgColor)
 	);
 };
 
-const _isBoldToSequence = BoolOption.toSequence(22, 1);
-const _isDimToSequence = BoolOption.toSequence(22, 2);
-const _isItalicToSequence = BoolOption.toSequence(23, 3);
-const _isUnderlinedToSequence = BoolOption.toSequence(24, 4);
-const _isStruckThroughToSequence = BoolOption.toSequence(29, 9);
-const _isOverlinedToSequence = BoolOption.toSequence(55, 53);
-const _isInversedToSequence = BoolOption.toSequence(27, 7);
-const _isHiddenToSequence = BoolOption.toSequence(28, 8);
-const _isBlinkingToSequence = BoolOption.toSequence(25, 5);
+const _boldStateToSequence = BoolOption.toSequence(22, 1);
+const _dimStateToSequence = BoolOption.toSequence(22, 2);
+const _italicStateToSequence = BoolOption.toSequence(23, 3);
+const _underlinedStateToSequence = BoolOption.toSequence(24, 4);
+const _struckThroughStateToSequence = BoolOption.toSequence(29, 9);
+const _overlinedStateToSequence = BoolOption.toSequence(55, 53);
+const _inversedStateToSequence = BoolOption.toSequence(27, 7);
+const _hiddenStateToSequence = BoolOption.toSequence(28, 8);
+const _blinkingStateToSequence = BoolOption.toSequence(25, 5);
 const _fgColorToSequence = ColorOption.toSequence(0);
 const _bgColorToSequence = ColorOption.toSequence(10);
 
@@ -505,23 +546,23 @@ const _bgColorToSequence = ColorOption.toSequence(10);
  * @category Destructors
  */
 export const toSequence = (self: Type): ASAnsiString.Sequence => {
-	const isBoldReset = BoolOption.equivalence(self.isBold, _falseSome);
-	const isDimReset = BoolOption.equivalence(self.isDim, _falseSome);
+	const isNotDimPresent = hasNotDim(self);
 	return pipe(
-		// Useless to send the same reset twice
-		isBoldReset && isDimReset ? Array.of(_isBoldToSequence(self.isBold))
-			// Send DimReset before bold state because DimReset would cancel its effect
-		: isDimReset ? Array.make(_isDimToSequence(self.isDim), _isBoldToSequence(self.isBold))
-		: Array.make(_isBoldToSequence(self.isBold), _isDimToSequence(self.isDim)),
+		// Useless to send both notBold and notDim because they have the same value
+		hasNotBold(self) && isNotDimPresent ? Array.of(_boldStateToSequence(self.boldState))
+			// Send notDim before bold otherwise bold will never take effect
+		: isNotDimPresent ?
+			Array.make(_dimStateToSequence(self.dimState), _boldStateToSequence(self.boldState))
+		:	Array.make(_boldStateToSequence(self.boldState), _dimStateToSequence(self.dimState)),
 		Array.appendAll(
 			Array.make(
-				_isItalicToSequence(self.isItalic),
-				_isUnderlinedToSequence(self.isUnderlined),
-				_isStruckThroughToSequence(self.isStruckThrough),
-				_isOverlinedToSequence(self.isOverlined),
-				_isInversedToSequence(self.isInversed),
-				_isHiddenToSequence(self.isHidden),
-				_isBlinkingToSequence(self.isBlinking),
+				_italicStateToSequence(self.italicState),
+				_underlinedStateToSequence(self.underlinedState),
+				_struckThroughStateToSequence(self.struckThroughState),
+				_overlinedStateToSequence(self.overlinedState),
+				_inversedStateToSequence(self.inversedState),
+				_hiddenStateToSequence(self.hiddenState),
+				_blinkingStateToSequence(self.blinkingState),
 				_fgColorToSequence(self.fgColor),
 				_bgColorToSequence(self.bgColor)
 			)
@@ -552,15 +593,18 @@ export const mergeUnder =
 	(that: Type) =>
 	(self: Type): Type =>
 		_make({
-			isBold: pipe(self.isBold, BoolOption.mergeUnder(that.isBold)),
-			isDim: pipe(self.isDim, BoolOption.mergeUnder(that.isDim)),
-			isItalic: pipe(self.isItalic, BoolOption.mergeUnder(that.isItalic)),
-			isUnderlined: pipe(self.isUnderlined, BoolOption.mergeUnder(that.isUnderlined)),
-			isStruckThrough: pipe(self.isStruckThrough, BoolOption.mergeUnder(that.isStruckThrough)),
-			isOverlined: pipe(self.isOverlined, BoolOption.mergeUnder(that.isOverlined)),
-			isInversed: pipe(self.isInversed, BoolOption.mergeUnder(that.isInversed)),
-			isHidden: pipe(self.isHidden, BoolOption.mergeUnder(that.isHidden)),
-			isBlinking: pipe(self.isBlinking, BoolOption.mergeUnder(that.isBlinking)),
+			boldState: pipe(self.boldState, BoolOption.mergeUnder(that.boldState)),
+			dimState: pipe(self.dimState, BoolOption.mergeUnder(that.dimState)),
+			italicState: pipe(self.italicState, BoolOption.mergeUnder(that.italicState)),
+			underlinedState: pipe(self.underlinedState, BoolOption.mergeUnder(that.underlinedState)),
+			struckThroughState: pipe(
+				self.struckThroughState,
+				BoolOption.mergeUnder(that.struckThroughState)
+			),
+			overlinedState: pipe(self.overlinedState, BoolOption.mergeUnder(that.overlinedState)),
+			inversedState: pipe(self.inversedState, BoolOption.mergeUnder(that.inversedState)),
+			hiddenState: pipe(self.hiddenState, BoolOption.mergeUnder(that.hiddenState)),
+			blinkingState: pipe(self.blinkingState, BoolOption.mergeUnder(that.blinkingState)),
 			fgColor: pipe(self.fgColor, ColorOption.mergeUnder(that.fgColor)),
 			bgColor: pipe(self.bgColor, ColorOption.mergeUnder(that.bgColor))
 		});
@@ -578,26 +622,6 @@ export const mergeOver =
 		mergeUnder(self)(that);
 
 /**
- * Builds a new StyleCharacteristics by merging `self` and `that`. In case of conflict (e.g `self`
- * contains `Bold` and `that` contains `NotBold`), the characteristics in `self` will prevail.
- *
- * @since 0.0.1
- * @category Utils
- */
-export const updateContext =
-	(that: Type) =>
-	(self: Type): Type =>
-		pipe(
-			that,
-			BoolOption.equivalence(that.isBold, _falseSome) && Option.isNone(that.isDim) ?
-				flow(MStruct.set({ isDim: _falseSome }), _make)
-			: BoolOption.equivalence(that.isDim, _falseSome) && Option.isNone(that.isBold) ?
-				flow(MStruct.set({ isBold: _falseSome }), _make)
-			:	Function.identity,
-			mergeUnder(self)
-		);
-
-/**
  * Builds a new StyleCharacteristics by removing from `self` the StyleCharacteristic's of `that`.
  *
  * @since 0.0.1
@@ -607,18 +631,43 @@ export const difference =
 	(that: Type) =>
 	(self: Type): Type =>
 		_make({
-			isBold: pipe(self.isBold, BoolOption.difference(that.isBold)),
-			isDim: pipe(self.isDim, BoolOption.difference(that.isDim)),
-			isItalic: pipe(self.isItalic, BoolOption.difference(that.isItalic)),
-			isUnderlined: pipe(self.isUnderlined, BoolOption.difference(that.isUnderlined)),
-			isStruckThrough: pipe(self.isStruckThrough, BoolOption.difference(that.isStruckThrough)),
-			isOverlined: pipe(self.isOverlined, BoolOption.difference(that.isOverlined)),
-			isInversed: pipe(self.isInversed, BoolOption.difference(that.isInversed)),
-			isHidden: pipe(self.isHidden, BoolOption.difference(that.isHidden)),
-			isBlinking: pipe(self.isBlinking, BoolOption.difference(that.isBlinking)),
+			boldState: pipe(self.boldState, BoolOption.difference(that.boldState)),
+			dimState: pipe(self.dimState, BoolOption.difference(that.dimState)),
+			italicState: pipe(self.italicState, BoolOption.difference(that.italicState)),
+			underlinedState: pipe(self.underlinedState, BoolOption.difference(that.underlinedState)),
+			struckThroughState: pipe(
+				self.struckThroughState,
+				BoolOption.difference(that.struckThroughState)
+			),
+			overlinedState: pipe(self.overlinedState, BoolOption.difference(that.overlinedState)),
+			inversedState: pipe(self.inversedState, BoolOption.difference(that.inversedState)),
+			hiddenState: pipe(self.hiddenState, BoolOption.difference(that.hiddenState)),
+			blinkingState: pipe(self.blinkingState, BoolOption.difference(that.blinkingState)),
 			fgColor: pipe(self.fgColor, ColorOption.difference(that.fgColor)),
 			bgColor: pipe(self.bgColor, ColorOption.difference(that.bgColor))
 		});
+
+/**
+ * Builds a new StyleCharacteristics by removing from `self` the StyleCharacteristic's of `context`.
+ * But if `self` contains bold and notDim and bold is also in `context`, then do not remove it
+ * bacause the bold in the context will be erased by notDim. Same if `self` contains dim and notBold
+ * and dim is also in `context`
+ *
+ * @since 0.0.1
+ * @category Utils
+ */
+export const substractContext =
+	(context: Type) =>
+	(self: Type): Type => {
+		const target = pipe(self, difference(context));
+		return (
+			hasBold(self) && hasNotDim(target) ?
+				pipe(target, MStruct.set({ boldState: _trueSome }), _make)
+			: hasDim(self) && hasNotBold(target) ?
+				pipe(target, MStruct.set({ dimState: _trueSome }), _make)
+			:	target
+		);
+	};
 
 /**
  * Empty StyleCharacteristics
@@ -627,15 +676,15 @@ export const difference =
  * @category Instances
  */
 export const none: Type = _make({
-	isBold: Option.none(),
-	isDim: Option.none(),
-	isItalic: Option.none(),
-	isUnderlined: Option.none(),
-	isStruckThrough: Option.none(),
-	isOverlined: Option.none(),
-	isInversed: Option.none(),
-	isHidden: Option.none(),
-	isBlinking: Option.none(),
+	boldState: Option.none(),
+	dimState: Option.none(),
+	italicState: Option.none(),
+	underlinedState: Option.none(),
+	struckThroughState: Option.none(),
+	overlinedState: Option.none(),
+	inversedState: Option.none(),
+	hiddenState: Option.none(),
+	blinkingState: Option.none(),
 	fgColor: Option.none(),
 	bgColor: Option.none()
 });
@@ -647,15 +696,15 @@ export const none: Type = _make({
  * @category Instances
  */
 export const defaults: Type = _make({
-	isBold: _falseSome,
-	isDim: _falseSome,
-	isItalic: _falseSome,
-	isUnderlined: _falseSome,
-	isStruckThrough: _falseSome,
-	isOverlined: _falseSome,
-	isInversed: _falseSome,
-	isHidden: _falseSome,
-	isBlinking: _falseSome,
+	boldState: _falseSome,
+	dimState: _falseSome,
+	italicState: _falseSome,
+	underlinedState: _falseSome,
+	struckThroughState: _falseSome,
+	overlinedState: _falseSome,
+	inversedState: _falseSome,
+	hiddenState: _falseSome,
+	blinkingState: _falseSome,
 	fgColor: Option.some(Option.none()),
 	bgColor: Option.some(Option.none())
 });
@@ -667,15 +716,15 @@ export const defaults: Type = _make({
  * @category Instances
  */
 export const bold: Type = _make({
-	isBold: _trueSome,
-	isDim: Option.none(),
-	isItalic: Option.none(),
-	isUnderlined: Option.none(),
-	isStruckThrough: Option.none(),
-	isOverlined: Option.none(),
-	isInversed: Option.none(),
-	isHidden: Option.none(),
-	isBlinking: Option.none(),
+	boldState: _trueSome,
+	dimState: Option.none(),
+	italicState: Option.none(),
+	underlinedState: Option.none(),
+	struckThroughState: Option.none(),
+	overlinedState: Option.none(),
+	inversedState: Option.none(),
+	hiddenState: Option.none(),
+	blinkingState: Option.none(),
 	fgColor: Option.none(),
 	bgColor: Option.none()
 });
@@ -687,15 +736,15 @@ export const bold: Type = _make({
  * @category Instances
  */
 export const notBold: Type = _make({
-	isBold: _falseSome,
-	isDim: Option.none(),
-	isItalic: Option.none(),
-	isUnderlined: Option.none(),
-	isStruckThrough: Option.none(),
-	isOverlined: Option.none(),
-	isInversed: Option.none(),
-	isHidden: Option.none(),
-	isBlinking: Option.none(),
+	boldState: _falseSome,
+	dimState: Option.none(),
+	italicState: Option.none(),
+	underlinedState: Option.none(),
+	struckThroughState: Option.none(),
+	overlinedState: Option.none(),
+	inversedState: Option.none(),
+	hiddenState: Option.none(),
+	blinkingState: Option.none(),
 	fgColor: Option.none(),
 	bgColor: Option.none()
 });
@@ -707,15 +756,15 @@ export const notBold: Type = _make({
  * @category Instances
  */
 export const dim: Type = _make({
-	isBold: Option.none(),
-	isDim: _trueSome,
-	isItalic: Option.none(),
-	isUnderlined: Option.none(),
-	isStruckThrough: Option.none(),
-	isOverlined: Option.none(),
-	isInversed: Option.none(),
-	isHidden: Option.none(),
-	isBlinking: Option.none(),
+	boldState: Option.none(),
+	dimState: _trueSome,
+	italicState: Option.none(),
+	underlinedState: Option.none(),
+	struckThroughState: Option.none(),
+	overlinedState: Option.none(),
+	inversedState: Option.none(),
+	hiddenState: Option.none(),
+	blinkingState: Option.none(),
 	fgColor: Option.none(),
 	bgColor: Option.none()
 });
@@ -727,15 +776,15 @@ export const dim: Type = _make({
  * @category Instances
  */
 export const notDim: Type = _make({
-	isBold: Option.none(),
-	isDim: _falseSome,
-	isItalic: Option.none(),
-	isUnderlined: Option.none(),
-	isStruckThrough: Option.none(),
-	isOverlined: Option.none(),
-	isInversed: Option.none(),
-	isHidden: Option.none(),
-	isBlinking: Option.none(),
+	boldState: Option.none(),
+	dimState: _falseSome,
+	italicState: Option.none(),
+	underlinedState: Option.none(),
+	struckThroughState: Option.none(),
+	overlinedState: Option.none(),
+	inversedState: Option.none(),
+	hiddenState: Option.none(),
+	blinkingState: Option.none(),
 	fgColor: Option.none(),
 	bgColor: Option.none()
 });
@@ -747,15 +796,15 @@ export const notDim: Type = _make({
  * @category Instances
  */
 export const italic: Type = _make({
-	isBold: Option.none(),
-	isDim: Option.none(),
-	isItalic: _trueSome,
-	isUnderlined: Option.none(),
-	isStruckThrough: Option.none(),
-	isOverlined: Option.none(),
-	isInversed: Option.none(),
-	isHidden: Option.none(),
-	isBlinking: Option.none(),
+	boldState: Option.none(),
+	dimState: Option.none(),
+	italicState: _trueSome,
+	underlinedState: Option.none(),
+	struckThroughState: Option.none(),
+	overlinedState: Option.none(),
+	inversedState: Option.none(),
+	hiddenState: Option.none(),
+	blinkingState: Option.none(),
 	fgColor: Option.none(),
 	bgColor: Option.none()
 });
@@ -767,15 +816,15 @@ export const italic: Type = _make({
  * @category Instances
  */
 export const notItalic: Type = _make({
-	isBold: Option.none(),
-	isDim: Option.none(),
-	isItalic: _falseSome,
-	isUnderlined: Option.none(),
-	isStruckThrough: Option.none(),
-	isOverlined: Option.none(),
-	isInversed: Option.none(),
-	isHidden: Option.none(),
-	isBlinking: Option.none(),
+	boldState: Option.none(),
+	dimState: Option.none(),
+	italicState: _falseSome,
+	underlinedState: Option.none(),
+	struckThroughState: Option.none(),
+	overlinedState: Option.none(),
+	inversedState: Option.none(),
+	hiddenState: Option.none(),
+	blinkingState: Option.none(),
 	fgColor: Option.none(),
 	bgColor: Option.none()
 });
@@ -787,15 +836,15 @@ export const notItalic: Type = _make({
  * @category Instances
  */
 export const underlined: Type = _make({
-	isBold: Option.none(),
-	isDim: Option.none(),
-	isItalic: Option.none(),
-	isUnderlined: _trueSome,
-	isStruckThrough: Option.none(),
-	isOverlined: Option.none(),
-	isInversed: Option.none(),
-	isHidden: Option.none(),
-	isBlinking: Option.none(),
+	boldState: Option.none(),
+	dimState: Option.none(),
+	italicState: Option.none(),
+	underlinedState: _trueSome,
+	struckThroughState: Option.none(),
+	overlinedState: Option.none(),
+	inversedState: Option.none(),
+	hiddenState: Option.none(),
+	blinkingState: Option.none(),
 	fgColor: Option.none(),
 	bgColor: Option.none()
 });
@@ -807,15 +856,15 @@ export const underlined: Type = _make({
  * @category Instances
  */
 export const notUnderlined: Type = _make({
-	isBold: Option.none(),
-	isDim: Option.none(),
-	isItalic: Option.none(),
-	isUnderlined: _falseSome,
-	isStruckThrough: Option.none(),
-	isOverlined: Option.none(),
-	isInversed: Option.none(),
-	isHidden: Option.none(),
-	isBlinking: Option.none(),
+	boldState: Option.none(),
+	dimState: Option.none(),
+	italicState: Option.none(),
+	underlinedState: _falseSome,
+	struckThroughState: Option.none(),
+	overlinedState: Option.none(),
+	inversedState: Option.none(),
+	hiddenState: Option.none(),
+	blinkingState: Option.none(),
 	fgColor: Option.none(),
 	bgColor: Option.none()
 });
@@ -827,15 +876,15 @@ export const notUnderlined: Type = _make({
  * @category Instances
  */
 export const struckThrough: Type = _make({
-	isBold: Option.none(),
-	isDim: Option.none(),
-	isItalic: Option.none(),
-	isUnderlined: Option.none(),
-	isStruckThrough: _trueSome,
-	isOverlined: Option.none(),
-	isInversed: Option.none(),
-	isHidden: Option.none(),
-	isBlinking: Option.none(),
+	boldState: Option.none(),
+	dimState: Option.none(),
+	italicState: Option.none(),
+	underlinedState: Option.none(),
+	struckThroughState: _trueSome,
+	overlinedState: Option.none(),
+	inversedState: Option.none(),
+	hiddenState: Option.none(),
+	blinkingState: Option.none(),
 	fgColor: Option.none(),
 	bgColor: Option.none()
 });
@@ -847,15 +896,15 @@ export const struckThrough: Type = _make({
  * @category Instances
  */
 export const notStruckThrough: Type = _make({
-	isBold: Option.none(),
-	isDim: Option.none(),
-	isItalic: Option.none(),
-	isUnderlined: Option.none(),
-	isStruckThrough: _falseSome,
-	isOverlined: Option.none(),
-	isInversed: Option.none(),
-	isHidden: Option.none(),
-	isBlinking: Option.none(),
+	boldState: Option.none(),
+	dimState: Option.none(),
+	italicState: Option.none(),
+	underlinedState: Option.none(),
+	struckThroughState: _falseSome,
+	overlinedState: Option.none(),
+	inversedState: Option.none(),
+	hiddenState: Option.none(),
+	blinkingState: Option.none(),
 	fgColor: Option.none(),
 	bgColor: Option.none()
 });
@@ -867,15 +916,15 @@ export const notStruckThrough: Type = _make({
  * @category Instances
  */
 export const overlined: Type = _make({
-	isBold: Option.none(),
-	isDim: Option.none(),
-	isItalic: Option.none(),
-	isUnderlined: Option.none(),
-	isStruckThrough: Option.none(),
-	isOverlined: _trueSome,
-	isInversed: Option.none(),
-	isHidden: Option.none(),
-	isBlinking: Option.none(),
+	boldState: Option.none(),
+	dimState: Option.none(),
+	italicState: Option.none(),
+	underlinedState: Option.none(),
+	struckThroughState: Option.none(),
+	overlinedState: _trueSome,
+	inversedState: Option.none(),
+	hiddenState: Option.none(),
+	blinkingState: Option.none(),
 	fgColor: Option.none(),
 	bgColor: Option.none()
 });
@@ -887,15 +936,15 @@ export const overlined: Type = _make({
  * @category Instances
  */
 export const notOverlined: Type = _make({
-	isBold: Option.none(),
-	isDim: Option.none(),
-	isItalic: Option.none(),
-	isUnderlined: Option.none(),
-	isStruckThrough: Option.none(),
-	isOverlined: _falseSome,
-	isInversed: Option.none(),
-	isHidden: Option.none(),
-	isBlinking: Option.none(),
+	boldState: Option.none(),
+	dimState: Option.none(),
+	italicState: Option.none(),
+	underlinedState: Option.none(),
+	struckThroughState: Option.none(),
+	overlinedState: _falseSome,
+	inversedState: Option.none(),
+	hiddenState: Option.none(),
+	blinkingState: Option.none(),
 	fgColor: Option.none(),
 	bgColor: Option.none()
 });
@@ -907,15 +956,15 @@ export const notOverlined: Type = _make({
  * @category Instances
  */
 export const inversed: Type = _make({
-	isBold: Option.none(),
-	isDim: Option.none(),
-	isItalic: Option.none(),
-	isUnderlined: Option.none(),
-	isStruckThrough: Option.none(),
-	isOverlined: Option.none(),
-	isInversed: _trueSome,
-	isHidden: Option.none(),
-	isBlinking: Option.none(),
+	boldState: Option.none(),
+	dimState: Option.none(),
+	italicState: Option.none(),
+	underlinedState: Option.none(),
+	struckThroughState: Option.none(),
+	overlinedState: Option.none(),
+	inversedState: _trueSome,
+	hiddenState: Option.none(),
+	blinkingState: Option.none(),
 	fgColor: Option.none(),
 	bgColor: Option.none()
 });
@@ -927,15 +976,15 @@ export const inversed: Type = _make({
  * @category Instances
  */
 export const notInversed: Type = _make({
-	isBold: Option.none(),
-	isDim: Option.none(),
-	isItalic: Option.none(),
-	isUnderlined: Option.none(),
-	isStruckThrough: Option.none(),
-	isOverlined: Option.none(),
-	isInversed: _falseSome,
-	isHidden: Option.none(),
-	isBlinking: Option.none(),
+	boldState: Option.none(),
+	dimState: Option.none(),
+	italicState: Option.none(),
+	underlinedState: Option.none(),
+	struckThroughState: Option.none(),
+	overlinedState: Option.none(),
+	inversedState: _falseSome,
+	hiddenState: Option.none(),
+	blinkingState: Option.none(),
 	fgColor: Option.none(),
 	bgColor: Option.none()
 });
@@ -947,15 +996,15 @@ export const notInversed: Type = _make({
  * @category Instances
  */
 export const hidden: Type = _make({
-	isBold: Option.none(),
-	isDim: Option.none(),
-	isItalic: Option.none(),
-	isUnderlined: Option.none(),
-	isStruckThrough: Option.none(),
-	isOverlined: Option.none(),
-	isInversed: Option.none(),
-	isHidden: _trueSome,
-	isBlinking: Option.none(),
+	boldState: Option.none(),
+	dimState: Option.none(),
+	italicState: Option.none(),
+	underlinedState: Option.none(),
+	struckThroughState: Option.none(),
+	overlinedState: Option.none(),
+	inversedState: Option.none(),
+	hiddenState: _trueSome,
+	blinkingState: Option.none(),
 	fgColor: Option.none(),
 	bgColor: Option.none()
 });
@@ -967,15 +1016,15 @@ export const hidden: Type = _make({
  * @category Instances
  */
 export const notHidden: Type = _make({
-	isBold: Option.none(),
-	isDim: Option.none(),
-	isItalic: Option.none(),
-	isUnderlined: Option.none(),
-	isStruckThrough: Option.none(),
-	isOverlined: Option.none(),
-	isInversed: Option.none(),
-	isHidden: _falseSome,
-	isBlinking: Option.none(),
+	boldState: Option.none(),
+	dimState: Option.none(),
+	italicState: Option.none(),
+	underlinedState: Option.none(),
+	struckThroughState: Option.none(),
+	overlinedState: Option.none(),
+	inversedState: Option.none(),
+	hiddenState: _falseSome,
+	blinkingState: Option.none(),
 	fgColor: Option.none(),
 	bgColor: Option.none()
 });
@@ -987,15 +1036,15 @@ export const notHidden: Type = _make({
  * @category Instances
  */
 export const blinking: Type = _make({
-	isBold: Option.none(),
-	isDim: Option.none(),
-	isItalic: Option.none(),
-	isUnderlined: Option.none(),
-	isStruckThrough: Option.none(),
-	isOverlined: Option.none(),
-	isInversed: Option.none(),
-	isHidden: Option.none(),
-	isBlinking: _trueSome,
+	boldState: Option.none(),
+	dimState: Option.none(),
+	italicState: Option.none(),
+	underlinedState: Option.none(),
+	struckThroughState: Option.none(),
+	overlinedState: Option.none(),
+	inversedState: Option.none(),
+	hiddenState: Option.none(),
+	blinkingState: _trueSome,
 	fgColor: Option.none(),
 	bgColor: Option.none()
 });
@@ -1007,15 +1056,15 @@ export const blinking: Type = _make({
  * @category Instances
  */
 export const notBlinking: Type = _make({
-	isBold: Option.none(),
-	isDim: Option.none(),
-	isItalic: Option.none(),
-	isUnderlined: Option.none(),
-	isStruckThrough: Option.none(),
-	isOverlined: Option.none(),
-	isInversed: Option.none(),
-	isHidden: Option.none(),
-	isBlinking: _falseSome,
+	boldState: Option.none(),
+	dimState: Option.none(),
+	italicState: Option.none(),
+	underlinedState: Option.none(),
+	struckThroughState: Option.none(),
+	overlinedState: Option.none(),
+	inversedState: Option.none(),
+	hiddenState: Option.none(),
+	blinkingState: _falseSome,
 	fgColor: Option.none(),
 	bgColor: Option.none()
 });
@@ -1027,15 +1076,15 @@ export const notBlinking: Type = _make({
  * @category Instances
  */
 export const fgDefaultColor: Type = _make({
-	isBold: Option.none(),
-	isDim: Option.none(),
-	isItalic: Option.none(),
-	isUnderlined: Option.none(),
-	isStruckThrough: Option.none(),
-	isOverlined: Option.none(),
-	isInversed: Option.none(),
-	isHidden: Option.none(),
-	isBlinking: Option.none(),
+	boldState: Option.none(),
+	dimState: Option.none(),
+	italicState: Option.none(),
+	underlinedState: Option.none(),
+	struckThroughState: Option.none(),
+	overlinedState: Option.none(),
+	inversedState: Option.none(),
+	hiddenState: Option.none(),
+	blinkingState: Option.none(),
 	fgColor: Option.some(Option.none()),
 	bgColor: Option.none()
 });
@@ -1048,15 +1097,15 @@ export const fgDefaultColor: Type = _make({
  */
 export const fromColorAsForegroundColor = (color: ASColor.Type): Type =>
 	_make({
-		isBold: Option.none(),
-		isDim: Option.none(),
-		isItalic: Option.none(),
-		isUnderlined: Option.none(),
-		isStruckThrough: Option.none(),
-		isOverlined: Option.none(),
-		isInversed: Option.none(),
-		isHidden: Option.none(),
-		isBlinking: Option.none(),
+		boldState: Option.none(),
+		dimState: Option.none(),
+		italicState: Option.none(),
+		underlinedState: Option.none(),
+		struckThroughState: Option.none(),
+		overlinedState: Option.none(),
+		inversedState: Option.none(),
+		hiddenState: Option.none(),
+		blinkingState: Option.none(),
 		fgColor: Option.some(Option.some(color)),
 		bgColor: Option.none()
 	});
@@ -1068,15 +1117,15 @@ export const fromColorAsForegroundColor = (color: ASColor.Type): Type =>
  * @category Instances
  */
 export const bgDefaultColor: Type = _make({
-	isBold: Option.none(),
-	isDim: Option.none(),
-	isItalic: Option.none(),
-	isUnderlined: Option.none(),
-	isStruckThrough: Option.none(),
-	isOverlined: Option.none(),
-	isInversed: Option.none(),
-	isHidden: Option.none(),
-	isBlinking: Option.none(),
+	boldState: Option.none(),
+	dimState: Option.none(),
+	italicState: Option.none(),
+	underlinedState: Option.none(),
+	struckThroughState: Option.none(),
+	overlinedState: Option.none(),
+	inversedState: Option.none(),
+	hiddenState: Option.none(),
+	blinkingState: Option.none(),
 	fgColor: Option.none(),
 	bgColor: Option.some(Option.none())
 });
@@ -1089,15 +1138,15 @@ export const bgDefaultColor: Type = _make({
  */
 export const fromColorAsBackgroundColor = (color: ASColor.Type): Type =>
 	_make({
-		isBold: Option.none(),
-		isDim: Option.none(),
-		isItalic: Option.none(),
-		isUnderlined: Option.none(),
-		isStruckThrough: Option.none(),
-		isOverlined: Option.none(),
-		isInversed: Option.none(),
-		isHidden: Option.none(),
-		isBlinking: Option.none(),
+		boldState: Option.none(),
+		dimState: Option.none(),
+		italicState: Option.none(),
+		underlinedState: Option.none(),
+		struckThroughState: Option.none(),
+		overlinedState: Option.none(),
+		inversedState: Option.none(),
+		hiddenState: Option.none(),
+		blinkingState: Option.none(),
 		fgColor: Option.none(),
 		bgColor: Option.some(Option.some(color))
 	});
