@@ -4,8 +4,7 @@
  * @since 0.0.6
  */
 
-import { Equal, Option, Predicate } from 'effect';
-import { LazyArg } from 'effect/Function';
+import { Equal, Function, Option, Predicate } from 'effect';
 import * as MTypes from './types.js';
 
 /**
@@ -88,9 +87,9 @@ export const parameterNumber = (f: MTypes.AnyFunction) => f.length;
  *
  * 	export const result = MFunction.once(() => complexCalculation(12));
  */
-export const once = <A>(f: LazyArg<A>): LazyArg<A> => {
+export const once = <A>(f: Function.LazyArg<A>): Function.LazyArg<A> => {
 	let store = Option.none<A>();
-	const cached: LazyArg<A> = () => {
+	const cached: Function.LazyArg<A> = () => {
 		if (Option.isNone(store)) {
 			const result = f();
 			/* eslint-disable-next-line functional/no-expression-statements */
@@ -109,7 +108,7 @@ export const once = <A>(f: LazyArg<A>): LazyArg<A> => {
  */
 export const applyAsMethod =
 	(o: MTypes.AnyRecord) =>
-	<A>(self: LazyArg<A>): A =>
+	<A>(self: Function.LazyArg<A>): A =>
 		self.call(o);
 
 /**
@@ -118,12 +117,12 @@ export const applyAsMethod =
  * @since 0.5.0
  * @category Utils
  */
-export const call = <A>(self: LazyArg<A>): A => self();
+export const call = <A>(self: Function.LazyArg<A>): A => self();
 
 /**
- * Returns the javascript Function prototype
+ * Returns a lazy empty string
  *
  * @since 0.5.0
  * @category Utils
  */
-export const prototype = Function.prototype;
+export const constEmptyString = Function.constant('');
