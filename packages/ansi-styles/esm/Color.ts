@@ -1,16 +1,17 @@
 /**
  * This module defines all available ANSI colors
  *
+ * You can use the RGB.make function to build more RGB colors
+ *
  * @since 0.0.1
  */
 
-import { MInspectable, MMatch, MPipeable, MTuple, MTypes } from '@parischap/effect-lib';
+import { MInspectable, MMatch, MPipeable, MTypes } from '@parischap/effect-lib';
 import {
 	Array,
 	Equal,
 	Equivalence,
 	flow,
-	Function,
 	Hash,
 	Number,
 	pipe,
@@ -25,7 +26,8 @@ const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
 const _TypeIdHash = Hash.hash(TypeId);
 
-const _tag: unique symbol = Symbol.for(moduleTag + '_tag/');
+const _TagSymbol: unique symbol = Symbol.for(moduleTag + '_TagSymbol/');
+const _sequenceSymbol: unique symbol = Symbol.for(moduleTag + '_sequenceSymbol/');
 
 export type Type = ThreeBit.Type | EightBit.Type | Rgb.Type;
 
@@ -44,7 +46,7 @@ const _has = has;
  * @since 0.0.1
  * @category Guards
  */
-export const isThreeBit = (u: Type): u is ThreeBit.Type => u[_tag] === 'ThreeBit';
+export const isThreeBit = (u: Type): u is ThreeBit.Type => u[_TagSymbol] === 'ThreeBit';
 
 /**
  * Type guard
@@ -52,7 +54,7 @@ export const isThreeBit = (u: Type): u is ThreeBit.Type => u[_tag] === 'ThreeBit
  * @since 0.0.1
  * @category Guards
  */
-export const isEightBit = (u: Type): u is EightBit.Type => u[_tag] === 'EightBit';
+export const isEightBit = (u: Type): u is EightBit.Type => u[_TagSymbol] === 'EightBit';
 
 /**
  * Type guard
@@ -60,45 +62,7 @@ export const isEightBit = (u: Type): u is EightBit.Type => u[_tag] === 'EightBit
  * @since 0.0.1
  * @category Guards
  */
-export const isRgb = (u: Type): u is Rgb.Type => u[_tag] === 'Rgb';
-
-/**
- * Equivalence
- *
- * @since 0.0.1
- * @category Equivalences
- */
-export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
-	isThreeBit(self) && isThreeBit(that) ? ThreeBit.equivalence(self, that)
-	: isEightBit(self) && isEightBit(that) ? EightBit.equivalence(self, that)
-	: isRgb(self) && isRgb(that) ? Rgb.equivalence(self, that)
-	: false;
-
-/**
- * Gets the id of `self`
- *
- * @since 0.0.1
- * @category Destructors
- */
-export const id: MTypes.OneArgFunction<Type, string> = flow(
-	MMatch.make,
-	MMatch.when(isThreeBit, ThreeBit.id),
-	MMatch.when(isEightBit, EightBit.id),
-	MMatch.orElse(Rgb.id)
-);
-
-/**
- * Gets the sequence of `self`
- *
- * @since 0.0.1
- * @category Destructors
- */
-export const sequence: MTypes.OneArgFunction<Type, ASAnsiString.Sequence> = flow(
-	MMatch.make,
-	MMatch.when(isThreeBit, ThreeBit.sequence),
-	MMatch.when(isEightBit, EightBit.sequence),
-	MMatch.orElse(Rgb.sequence)
-);
+export const isRgb = (u: Type): u is Rgb.Type => u[_TagSymbol] === 'Rgb';
 
 /**
  * Namespace for three-bit colors
@@ -167,11 +131,17 @@ export namespace ThreeBit {
 		 *
 		 * @since 0.0.1
 		 */
-
 		readonly isBright: boolean;
 
+		/**
+		 * Gets the sequence of `this`
+		 *
+		 * @since 0.0.1
+		 */
+		readonly [_sequenceSymbol]: () => ASAnsiString.NonEmptySequence;
+
 		/** @internal */
-		readonly [_tag]: 'ThreeBit';
+		readonly [_TagSymbol]: 'ThreeBit';
 
 		/** @internal */
 		readonly [TypeId]: TypeId;
@@ -198,7 +168,7 @@ export namespace ThreeBit {
 	/** Prototype */
 	const proto: MTypes.Proto<Type> = {
 		[TypeId]: TypeId,
-		[_tag]: 'ThreeBit',
+		[_TagSymbol]: 'ThreeBit',
 		[Equal.symbol](this: Type, that: unknown): boolean {
 			return has(that) && equivalence(this, that);
 		},
@@ -207,13 +177,16 @@ export namespace ThreeBit {
 				this.offset,
 				Hash.hash,
 				Hash.combine(Hash.hash(this.isBright)),
-				Hash.combine(Hash.hash(this[_tag])),
+				Hash.combine(Hash.hash(this[_TagSymbol])),
 				Hash.combine(_TypeIdHash),
 				Hash.cached(this)
 			);
 		},
+		[_sequenceSymbol](this: Type) {
+			return Array.of((this.isBright ? 90 : 30) + this.offset);
+		},
 		[MInspectable.IdSymbol](this: Type) {
-			return id(this);
+			return (this.isBright ? 'Bright' : '') + Offset.toId(this.offset);
 		},
 		...MInspectable.BaseProto(moduleTag),
 		...MPipeable.BaseProto
@@ -237,43 +210,6 @@ export namespace ThreeBit {
 	 * @category Destructors
 	 */
 	export const isBright: MTypes.OneArgFunction<Type, boolean> = Struct.get('isBright');
-
-	/**
-	 * Gets the id of `self`
-	 *
-	 * @since 0.0.1
-	 * @category Destructors
-	 */
-	export const id: MTypes.OneArgFunction<Type, string> = flow(
-		MTuple.makeBothBy({
-			toFirst: flow(
-				MMatch.make,
-				MMatch.when(isBright, Function.constant('Bright')),
-				MMatch.orElse(Function.constant(''))
-			),
-			toSecond: flow(offset, Offset.toId)
-		}),
-		Array.join('')
-	);
-
-	/**
-	 * Gets the sequence of `self`
-	 *
-	 * @since 0.0.1
-	 * @category Destructors
-	 */
-	export const sequence: MTypes.OneArgFunction<Type, ASAnsiString.Sequence> = flow(
-		MTuple.makeBothBy({
-			toFirst: flow(
-				MMatch.make,
-				MMatch.when(isBright, Function.constant(90)),
-				MMatch.orElse(Function.constant(30))
-			),
-			toSecond: offset
-		}),
-		Number.sumAll,
-		Array.make
-	);
 
 	/** Constructor */
 	const _makeNormal = (offset: Offset.Type) => _make({ offset, isBright: false });
@@ -1042,8 +978,15 @@ export namespace EightBit {
 		 */
 		readonly code: Code.Type;
 
+		/**
+		 * Gets the sequence of `this`
+		 *
+		 * @since 0.0.1
+		 */
+		readonly [_sequenceSymbol]: () => ASAnsiString.NonEmptySequence;
+
 		/** @internal */
-		readonly [_tag]: 'EightBit';
+		readonly [_TagSymbol]: 'EightBit';
 
 		/** @internal */
 		readonly [TypeId]: TypeId;
@@ -1068,7 +1011,7 @@ export namespace EightBit {
 	/** Prototype */
 	const proto: MTypes.Proto<Type> = {
 		[TypeId]: TypeId,
-		[_tag]: 'EightBit',
+		[_TagSymbol]: 'EightBit',
 		[Equal.symbol](this: Type, that: unknown): boolean {
 			return has(that) && equivalence(this, that);
 		},
@@ -1076,13 +1019,16 @@ export namespace EightBit {
 			return pipe(
 				this.code,
 				Hash.hash,
-				Hash.combine(Hash.hash(this[_tag])),
+				Hash.combine(Hash.hash(this[_TagSymbol])),
 				Hash.combine(_TypeIdHash),
 				Hash.cached(this)
 			);
 		},
+		[_sequenceSymbol](this: Type) {
+			return Array.make(38, 5, this.code);
+		},
 		[MInspectable.IdSymbol](this: Type) {
-			return id(this);
+			return 'EightBit' + Code.toId(this.code);
 		},
 		...MInspectable.BaseProto(moduleTag),
 		...MPipeable.BaseProto
@@ -1098,22 +1044,6 @@ export namespace EightBit {
 	 * @category Destructors
 	 */
 	export const code: MTypes.OneArgFunction<Type, Code.Type> = Struct.get('code');
-
-	/**
-	 * Gets the id of `self`
-	 *
-	 * @since 0.0.1
-	 * @category Destructors
-	 */
-	export const id: MTypes.OneArgFunction<Type, string> = flow(code, Code.toId);
-
-	/**
-	 * Gets the sequence of `self`
-	 *
-	 * @since 0.0.1
-	 * @category Destructors
-	 */
-	export const sequence = (self: Type): ASAnsiString.Sequence => Array.make(38, 5, self.code);
 
 	/**
 	 * Eightbit black color
@@ -2942,8 +2872,15 @@ export namespace Rgb {
 		 */
 		readonly blueCode: number;
 
+		/**
+		 * Gets the sequence of `this`
+		 *
+		 * @since 0.0.1
+		 */
+		readonly [_sequenceSymbol]: () => ASAnsiString.NonEmptySequence;
+
 		/** @internal */
-		readonly [_tag]: 'Rgb';
+		readonly [_TagSymbol]: 'Rgb';
 
 		/** @internal */
 		readonly [TypeId]: TypeId;
@@ -2972,7 +2909,7 @@ export namespace Rgb {
 	/** Prototype */
 	const proto: MTypes.Proto<Type> = {
 		[TypeId]: TypeId,
-		[_tag]: 'Rgb',
+		[_TagSymbol]: 'Rgb',
 		[Equal.symbol](this: Type, that: unknown): boolean {
 			return has(that) && equivalence(this, that);
 		},
@@ -2982,10 +2919,13 @@ export namespace Rgb {
 				Hash.hash,
 				Hash.combine(Hash.hash(this.greenCode)),
 				Hash.combine(Hash.hash(this.blueCode)),
-				Hash.combine(Hash.hash(this[_tag])),
+				Hash.combine(Hash.hash(this[_TagSymbol])),
 				Hash.combine(_TypeIdHash),
 				Hash.cached(this)
 			);
+		},
+		[_sequenceSymbol](this: Type) {
+			return Array.make(38, 2, this.redCode, this.greenCode, this.blueCode);
 		},
 		[MInspectable.IdSymbol](this: Type) {
 			return this.id;
@@ -3028,15 +2968,6 @@ export namespace Rgb {
 	 * @category Destructors
 	 */
 	export const blueCode: MTypes.OneArgFunction<Type, number> = Struct.get('blueCode');
-
-	/**
-	 * Gets the sequence of `self`
-	 *
-	 * @since 0.0.1
-	 * @category Destructors
-	 */
-	export const sequence = (self: Type): ASAnsiString.Sequence =>
-		Array.make(38, 2, self.redCode, self.greenCode, self.blueCode);
 
 	/** Constructor */
 	const _makeShort = (id: string, redCode: number, greenCode: number, blueCode: number): Type =>
@@ -4038,3 +3969,31 @@ export namespace Rgb {
 	 */
 	export const white: Type = _makeShort('White', 255, 255, 255);
 }
+
+/**
+ * Equivalence
+ *
+ * @since 0.0.1
+ * @category Equivalences
+ */
+export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
+	isThreeBit(self) && isThreeBit(that) ? ThreeBit.equivalence(self, that)
+	: isEightBit(self) && isEightBit(that) ? EightBit.equivalence(self, that)
+	: isRgb(self) && isRgb(that) ? Rgb.equivalence(self, that)
+	: false;
+
+/**
+ * Gets the id of `self`
+ *
+ * @since 0.0.1
+ * @category Destructors
+ */
+export const toId = (self: Type): string => self[MInspectable.IdSymbol]();
+
+/**
+ * Gets the sequence of `self`
+ *
+ * @since 0.0.1
+ * @category Destructors
+ */
+export const toSequence = (self: Type): ASAnsiString.NonEmptySequence => self[_sequenceSymbol]();

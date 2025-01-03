@@ -557,7 +557,7 @@ export namespace Number {
 		 */
 		export const toWriter: (self: ENotationOptions) => MTypes.OneArgFunction<number, string> = flow(
 			MMatch.make,
-			MMatch.whenIs(ENotationOptions.None, () => Function.constant('')),
+			MMatch.whenIs(ENotationOptions.None, () => MFunction.constEmptyString),
 			MMatch.whenIs(ENotationOptions.Lowercase, () =>
 				flow(MString.fromNonNullablePrimitive, MString.prepend('e'))
 			),
@@ -1171,7 +1171,7 @@ export namespace Number {
 												MFunction.flipDual(EString.takeLeft)(frac),
 												Option.liftPredicate(EString.isNonEmpty),
 												Option.map(MString.prepend(self.fractionalSep)),
-												Option.getOrElse(Function.constant(''))
+												Option.getOrElse(MFunction.constEmptyString)
 											)
 									)
 						})

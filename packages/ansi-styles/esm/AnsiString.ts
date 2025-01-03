@@ -4,8 +4,8 @@
  * @since 0.0.1
  */
 
-import { MString, MTypes } from '@parischap/effect-lib';
-import { Array, flow, Function, Option } from 'effect';
+import { MFunction, MString, MTypes } from '@parischap/effect-lib';
+import { Array, flow, Option } from 'effect';
 
 /** Type of an ANSI string */
 export type Type = string;
@@ -47,7 +47,7 @@ export const fromNonEmptySequence: MTypes.OneArgFunction<NonEmptySequence, strin
 export const fromSequence: MTypes.OneArgFunction<Sequence, string> = flow(
 	Option.liftPredicate(MTypes.isReadonlyOverOne),
 	Option.map(fromNonEmptySequence),
-	Option.getOrElse(Function.constant(''))
+	Option.getOrElse(MFunction.constEmptyString)
 );
 
 /**

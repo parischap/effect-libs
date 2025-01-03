@@ -20,10 +20,10 @@ export type Type = ASWheelFormatter.Type<PPValue.All>;
 export const none: Type = ASWheelFormatter.none;
 
 /**
- * StringFormatter instance maker that applies a single format
+ * Builds a StringFormatter that applies a single format
  *
  * @since 0.3.0
- * @category Instance maker
+ * @category Constructors
  */
 export const fromFormat: (formatter: ASFormatter.Type) => Type = ASWheelFormatter.fromFormatter;
 
@@ -100,11 +100,11 @@ export namespace Original {
 }
 
 /**
- * StringFormatter instance maker that applies a format from a wheel based on the depth of the Value
- * being formatted
+ * Builds a StringFormatter that applies a format from a wheel based on the depth of the Value being
+ * formatted
  *
  * @since 0.3.0
- * @category Instance maker
+ * @category Constructors
  */
 export const wheelOnDepth: ({
 	id,
@@ -127,11 +127,11 @@ export const allBasicOrignalColorsWheelOnDepth: Type = wheelOnDepth({
 });
 
 /**
- * StringFormatter instance maker that applies a format from a wheel based on the protoDepth of the
- * Value being formatted
+ * Builds a StringFormatter that applies a format from a wheel based on the protoDepth of the Value
+ * being formatted
  *
  * @since 0.3.0
- * @category Instance maker
+ * @category Constructors
  */
 export const wheelOnProtoDepth: ({
 	id,

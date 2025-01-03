@@ -13,14 +13,12 @@ import {
 	MPipeable,
 	MString,
 	MStruct,
-	MTuple,
 	MTypes
 } from '@parischap/effect-lib';
 import {
 	Array,
 	Equal,
 	Equivalence,
-	Function,
 	Hash,
 	Inspectable,
 	Number,
@@ -196,13 +194,10 @@ namespace UniStyled {
 	 * @since 0.0.1
 	 * @category Destructors
 	 */
-	export const toAnsiString: MTypes.OneArgFunction<Type, string> = flow(
-		MTuple.makeBothBy({
-			toFirst: flow(styleCharacteristics, ASStyleCharacteristics.toAnsiString),
-			toSecond: text
-		}),
-		Array.join('')
-	);
+	export const toAnsiString = (self: Type): string => {
+		const ansiStart = ASStyleCharacteristics.toAnsiString(self.styleCharacteristics);
+		return ansiStart + self.text + (ansiStart !== '' ? ASAnsiString.reset : '');
+	};
 }
 
 /**
@@ -227,6 +222,7 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
  */
 export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
 
+// To be removed when Effect 4.0 with structural equality comes out
 const _equivalence = Array.getEquivalence(UniStyled.equivalence);
 /**
  * Equivalence
@@ -362,22 +358,27 @@ export const empty: Type = concat();
 export const toAnsiString: MTypes.OneArgFunction<Type, string> = flow(
 	uniStyledTexts,
 	MArray.match012({
-		onEmpty: Function.constant(''),
-		onSingleton: flow(UniStyled.toAnsiString, MString.append(ASAnsiString.reset)),
+		onEmpty: MFunction.constEmptyString,
+		onSingleton: UniStyled.toAnsiString,
 		onOverTwo: flow(
 			Array.map(UniStyled.applyStyleUnder(ASStyleCharacteristics.defaults)),
-			Array.reduce(Tuple.make('', ASStyleCharacteristics.defaults), ([text, context], uniStyled) =>
-				pipe(
-					uniStyled.styleCharacteristics,
-					ASStyleCharacteristics.difference(context),
-					ASStyleCharacteristics.toAnsiString,
-					MString.prepend(text),
-					MString.append(uniStyled.text),
-					Tuple.make,
-					Tuple.appendElement(
-						pipe(context, ASStyleCharacteristics.mergeOver(uniStyled.styleCharacteristics))
-					)
-				)
+			Array.reduce(
+				Tuple.make('', ASStyleCharacteristics.defaults),
+				([text, context], uniStyled) => {
+					const toApply = pipe(
+						uniStyled.styleCharacteristics,
+						ASStyleCharacteristics.difference(context)
+					);
+
+					return pipe(
+						toApply,
+						ASStyleCharacteristics.toAnsiString,
+						MString.prepend(text),
+						MString.append(uniStyled.text),
+						Tuple.make,
+						Tuple.appendElement(pipe(context, ASStyleCharacteristics.updateContext(toApply)))
+					);
+				}
 			),
 			Tuple.getFirst,
 			MString.append(ASAnsiString.reset)

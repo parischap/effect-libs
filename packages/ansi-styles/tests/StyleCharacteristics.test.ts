@@ -1,170 +1,182 @@
 /* eslint-disable functional/no-expression-statements */
-import { ASStyleCharacteristic, ASStyleCharacteristics } from '@parischap/ansi-styles';
+import { ASColor, ASStyleCharacteristics } from '@parischap/ansi-styles';
 import { MUtils } from '@parischap/effect-lib';
-import { Array, Equal, pipe } from 'effect';
+import { Equal, Option, pipe } from 'effect';
 import { describe, expect, it } from 'vitest';
 
 describe('ASStyleCharacteristics', () => {
-	describe('Tag, prototype and guards', () => {
-		const bold = ASStyleCharacteristics.fromStyleCharacteristic(ASStyleCharacteristic.bold);
-		const dim = ASStyleCharacteristics.fromStyleCharacteristic(ASStyleCharacteristic.dim);
-		const italic = ASStyleCharacteristics.fromStyleCharacteristic(ASStyleCharacteristic.italic);
-		const boldItalic1 = pipe(bold, ASStyleCharacteristics.mergeUnder(italic));
-		const boldItalic2 = pipe(italic, ASStyleCharacteristics.mergeUnder(bold));
+	const boldItalic = pipe(
+		ASStyleCharacteristics.bold,
+		ASStyleCharacteristics.mergeUnder(ASStyleCharacteristics.italic)
+	);
+	const boldItalicBrightGreenInBlue = pipe(
+		boldItalic,
+		ASStyleCharacteristics.mergeUnder(
+			ASStyleCharacteristics.fromColorAsForegroundColor(ASColor.ThreeBit.Bright.green)
+		),
+		ASStyleCharacteristics.mergeUnder(
+			ASStyleCharacteristics.fromColorAsBackgroundColor(ASColor.EightBit.blue)
+		)
+	);
+	const bold1 = pipe(boldItalic, ASStyleCharacteristics.difference(ASStyleCharacteristics.italic));
+	const notBoldNotDimRed = pipe(
+		ASStyleCharacteristics.fromColorAsForegroundColor(ASColor.ThreeBit.red),
+		ASStyleCharacteristics.mergeUnder(ASStyleCharacteristics.notBold),
+		ASStyleCharacteristics.mergeUnder(ASStyleCharacteristics.notDim)
+	);
+	const boldNotDimRed = pipe(
+		ASStyleCharacteristics.fromColorAsForegroundColor(ASColor.ThreeBit.red),
+		ASStyleCharacteristics.mergeUnder(ASStyleCharacteristics.bold),
+		ASStyleCharacteristics.mergeUnder(ASStyleCharacteristics.notDim)
+	);
+	const notBoldDimRed = pipe(
+		ASStyleCharacteristics.fromColorAsForegroundColor(ASColor.ThreeBit.red),
+		ASStyleCharacteristics.mergeUnder(ASStyleCharacteristics.notBold),
+		ASStyleCharacteristics.mergeUnder(ASStyleCharacteristics.dim)
+	);
 
+	describe('Tag, prototype and guards', () => {
 		it('moduleTag', () => {
 			expect(ASStyleCharacteristics.moduleTag).toBe(MUtils.moduleTagFromFileName(__filename));
 		});
 
 		describe('Equal.equals', () => {
 			it('Matching', () => {
-				expect(Equal.equals(boldItalic1, boldItalic2)).toBe(true);
+				expect(Equal.equals(ASStyleCharacteristics.bold, bold1)).toBe(true);
 				expect(Equal.equals(ASStyleCharacteristics.none, ASStyleCharacteristics.none)).toBe(true);
 			});
 			it('Non matching', () => {
-				expect(Equal.equals(bold, dim)).toBe(false);
+				expect(Equal.equals(ASStyleCharacteristics.bold, boldItalic)).toBe(false);
+				expect(Equal.equals(ASStyleCharacteristics.bold, new Date())).toBe(false);
 			});
 		});
 
 		describe('.toString()', () => {
-			it('Bold before italic', () => {
-				expect(boldItalic1.toString()).toBe('BoldItalic');
-			});
-			it('Italic before bold', () => {
-				expect(boldItalic2.toString()).toBe('BoldItalic');
-			});
+			expect(ASStyleCharacteristics.none.toString()).toBe('');
+			expect(boldItalicBrightGreenInBlue.toString()).toBe('BoldItalicBrightGreenInEightBitBlue');
 		});
 
 		it('.pipe()', () => {
-			expect(bold.pipe(ASStyleCharacteristics.sortedArray, Array.length)).toBe(1);
+			expect(bold1.pipe(ASStyleCharacteristics.toId)).toBe('Bold');
 		});
 
 		describe('has', () => {
 			it('Matching', () => {
-				expect(ASStyleCharacteristics.has(boldItalic1)).toBe(true);
+				expect(ASStyleCharacteristics.has(boldItalic)).toBe(true);
 			});
 			it('Non matching', () => {
 				expect(ASStyleCharacteristics.has(new Date())).toBe(false);
 			});
 		});
+	});
 
-		describe('mergeUnder', () => {
-			it('None with none', () => {
-				expect(
-					pipe(
-						ASStyleCharacteristics.none,
-						ASStyleCharacteristics.mergeUnder(ASStyleCharacteristics.none),
-						Equal.equals(ASStyleCharacteristics.none)
-					)
-				).toBe(true);
-			});
+	it('isItalic', () => {
+		expect(Equal.equals(ASStyleCharacteristics.isItalic(boldItalic), Option.some(true))).toBe(true);
+		expect(Equal.equals(ASStyleCharacteristics.isItalic(bold1), Option.some(false))).toBe(true);
+	});
 
-			it('Non-none with none', () => {
-				expect(
-					pipe(
-						bold,
-						ASStyleCharacteristics.mergeUnder(ASStyleCharacteristics.none),
-						Equal.equals(bold)
-					)
-				).toBe(true);
-			});
-
-			it('Complex case', () => {
-				expect(
-					pipe(
-						bold,
-						ASStyleCharacteristics.mergeUnder(dim),
-						ASStyleCharacteristics.mergeUnder(italic),
-						Equal.equals(boldItalic1)
-					)
-				).toBe(true);
-			});
+	describe('toSequence', () => {
+		it('none', () => {
+			expect(ASStyleCharacteristics.toSequence(ASStyleCharacteristics.none)).toEqual([]);
 		});
 
-		describe('mergeOver', () => {
-			it('None with none', () => {
-				expect(
-					pipe(
-						ASStyleCharacteristics.none,
-						ASStyleCharacteristics.mergeOver(ASStyleCharacteristics.none),
-						Equal.equals(ASStyleCharacteristics.none)
-					)
-				).toBe(true);
-			});
-
-			it('Non-none with none', () => {
-				expect(
-					pipe(
-						bold,
-						ASStyleCharacteristics.mergeOver(ASStyleCharacteristics.none),
-						Equal.equals(bold)
-					)
-				).toBe(true);
-			});
-
-			it('Complex case', () => {
-				expect(
-					pipe(
-						dim,
-						ASStyleCharacteristics.mergeOver(bold),
-						ASStyleCharacteristics.mergeOver(italic),
-						Equal.equals(boldItalic1)
-					)
-				).toBe(true);
-			});
+		it('bold italic', () => {
+			expect(ASStyleCharacteristics.toSequence(boldItalic)).toEqual([1, 3]);
 		});
 
-		describe('difference', () => {
-			it('None with none', () => {
-				expect(
-					pipe(
-						ASStyleCharacteristics.none,
-						ASStyleCharacteristics.difference(ASStyleCharacteristics.none),
-						Equal.equals(ASStyleCharacteristics.none)
-					)
-				).toBe(true);
-			});
-
-			it('Non-none with none', () => {
-				expect(
-					pipe(
-						bold,
-						ASStyleCharacteristics.difference(ASStyleCharacteristics.none),
-						Equal.equals(bold)
-					)
-				).toBe(true);
-			});
-
-			it('Complex case', () => {
-				expect(
-					pipe(
-						bold,
-						ASStyleCharacteristics.mergeUnder(dim),
-						ASStyleCharacteristics.mergeUnder(dim),
-						ASStyleCharacteristics.mergeUnder(italic),
-						ASStyleCharacteristics.mergeUnder(bold),
-						ASStyleCharacteristics.difference(
-							ASStyleCharacteristics.fromStyleCharacteristic(ASStyleCharacteristic.slowBlink)
-						),
-						ASStyleCharacteristics.difference(boldItalic1),
-						Equal.equals(ASStyleCharacteristics.none)
-					)
-				).toBe(true);
-			});
+		it('Not bold not dim red', () => {
+			expect(ASStyleCharacteristics.toSequence(notBoldNotDimRed)).toEqual([22, 31]);
 		});
 
-		describe('toAnsiString', () => {
-			it('None', () => {
-				expect(ASStyleCharacteristics.toAnsiString(ASStyleCharacteristics.none)).toBe('');
-			});
+		it('Bold not dim red', () => {
+			expect(ASStyleCharacteristics.toSequence(boldNotDimRed)).toEqual([22, 1, 31]);
+		});
 
-			it('With one characteristic', () => {
-				expect(ASStyleCharacteristics.toAnsiString(bold)).toBe('\x1b[1m');
-			});
+		it('Not bold dim red', () => {
+			expect(ASStyleCharacteristics.toSequence(notBoldDimRed)).toEqual([22, 2, 31]);
+		});
+	});
 
-			it('With more than one characteristic', () => {
-				expect(ASStyleCharacteristics.toAnsiString(boldItalic1)).toBe('\x1b[1;3m');
-			});
+	it('mergeUnder', () => {
+		expect(
+			pipe(
+				notBoldDimRed,
+				ASStyleCharacteristics.mergeUnder(boldItalic),
+				ASStyleCharacteristics.toId
+			)
+		).toBe('NotBoldDimItalicRed');
+	});
+
+	it('mergeOver', () => {
+		expect(
+			pipe(notBoldDimRed, ASStyleCharacteristics.mergeOver(boldItalic), ASStyleCharacteristics.toId)
+		).toBe('BoldDimItalicRed');
+	});
+
+	describe('updateContext', () => {
+		it('with notDim', () => {
+			expect(
+				pipe(
+					ASStyleCharacteristics.none,
+					ASStyleCharacteristics.updateContext(
+						pipe(
+							ASStyleCharacteristics.fromColorAsForegroundColor(ASColor.ThreeBit.red),
+							ASStyleCharacteristics.mergeUnder(ASStyleCharacteristics.notDim)
+						)
+					),
+					ASStyleCharacteristics.toId
+				)
+			).toBe('NotBoldNotDimRed');
+		});
+		it('with notDim and bold', () => {
+			expect(
+				pipe(
+					ASStyleCharacteristics.none,
+					ASStyleCharacteristics.updateContext(boldNotDimRed),
+					ASStyleCharacteristics.toId
+				)
+			).toBe('BoldNotDimRed');
+		});
+		it('with dim and NotBold', () => {
+			expect(
+				pipe(
+					ASStyleCharacteristics.none,
+					ASStyleCharacteristics.updateContext(notBoldDimRed),
+					ASStyleCharacteristics.toId
+				)
+			).toBe('NotBoldDimRed');
+		});
+	});
+
+	describe('difference', () => {
+		it('None with none', () => {
+			expect(
+				pipe(
+					ASStyleCharacteristics.none,
+					ASStyleCharacteristics.difference(ASStyleCharacteristics.none),
+					ASStyleCharacteristics.toId
+				)
+			).toBe('');
+		});
+
+		it('Complex case 1', () => {
+			expect(
+				pipe(
+					boldItalicBrightGreenInBlue,
+					ASStyleCharacteristics.difference(boldNotDimRed),
+					ASStyleCharacteristics.toId
+				)
+			).toBe('ItalicBrightGreenInEightBitBlue');
+		});
+
+		it('Complex case 2', () => {
+			expect(
+				pipe(
+					notBoldNotDimRed,
+					ASStyleCharacteristics.difference(boldNotDimRed),
+					ASStyleCharacteristics.toId
+				)
+			).toBe('NotBold');
 		});
 	});
 });
