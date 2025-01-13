@@ -178,6 +178,22 @@ importers:
         specifier: ^3.9.1
         version: 3.9.1
 
+  packages/effect-report:
+    dependencies:
+      '@parischap/ansi-styles':
+        specifier: workspace:@parischap-dev/ansi-styles@*
+        version: link:../ansi-styles
+      '@parischap/effect-lib':
+        specifier: workspace:@parischap-dev/effect-lib@*
+        version: link:../effect-lib
+      effect:
+        specifier: ^3.11.9
+        version: 3.12.0
+    devDependencies:
+      '@parischap/effect-report':
+        specifier: link:.
+        version: 'link:'
+
   packages/node-effect-lib:
     dependencies:
       '@effect/platform':
