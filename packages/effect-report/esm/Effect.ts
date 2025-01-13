@@ -1,26 +1,25 @@
+import { ASStyle } from '@parischap/ansi-styles';
 import { MFs } from '@parischap/effect-lib';
-import { JsANSI } from '@parischap/js-lib';
-import { Effect, pipe } from 'effect';
+import { Effect, flow, pipe } from 'effect';
 import * as MCause from './Cause.js';
 import * as RErrors from './Errors.js';
 import * as RLogger from './Logger.js';
 
-export const presentAndWrapErrors =
-	(message: string) =>
-	<A, E, R>(self: Effect.Effect<A, E, R>): Effect.Effect<A, never, R> =>
-		pipe(
-			self,
-			Effect.tap(() => RLogger.logDebugTitle(message)),
-			Effect.withLogSpan(message),
-			Effect.catchAllCause((c) =>
-				Effect.die(
-					new RErrors.WithOriginalCause({
-						message,
-						originalCause: c
-					})
-				)
+export const presentAndWrapErrors = (
+	message: string
+): (<A, E, R>(self: Effect.Effect<A, E, R>) => Effect.Effect<A, never, R>) =>
+	flow(
+		Effect.tap(() => RLogger.logDebugTitle(message)),
+		Effect.withLogSpan(message),
+		Effect.catchAllCause((c) =>
+			Effect.die(
+				new RErrors.WithOriginalCause({
+					message,
+					originalCause: c
+				})
 			)
-		);
+		)
+	);
 
 export const logIntermediateResult =
 	(message: (s: string) => string) =>
@@ -66,9 +65,11 @@ export const presentAndShowErrors =
 					(errorText) => {
 						// Do not use Effect.log here because it has a special formatting
 						if (errorText.trim() === '') {
-							console.log(JsANSI.green('SCRIPT EXITED SUCCESSFULLY'));
+							/* eslint-disable-next-line functional/no-expression-statements */
+							console.log(ASStyle.green('SCRIPT EXITED SUCCESSFULLY'));
 						} else {
-							console.error(JsANSI.red('SCRIPT FAILED WITH FOLLOWING ERROR(S)') + eol + errorText);
+							/* eslint-disable-next-line functional/no-expression-statements */
+							console.error(ASStyle.red('SCRIPT FAILED WITH FOLLOWING ERROR(S)'), eol + errorText);
 						}
 						return Effect.void;
 					}

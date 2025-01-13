@@ -3,7 +3,7 @@ import { merge } from 'ts-deepmerge';
 
 export default merge(
 	Configs.configSubRepo({
-		environment: Configs.Environment.Type.Library,
+		environment: Configs.Environment.Type.Node,
 		bundled: false,
 		visibility: Configs.Visibility.Type.Private,
 		hasStaticFolder: false,

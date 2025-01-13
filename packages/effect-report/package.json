@@ -1,0 +1,75 @@
+{
+	"name": "@parischap-dev/effect-report",
+	"type": "module",
+	"author": "Jérôme MARTIN",
+	"license": "MIT",
+	"scripts": {
+		"tscheck": "tsc -b tsconfig.check.json --force ",
+		"lint": "eslint .",
+		"lint-fix": "eslint . --fix",
+		"lint-rules": "pnpx @eslint/config-inspector",
+		"update-config-files": "update-config-files",
+		"clean-config-files": "shx rm -rf package.json && shx rm -rf tsconfig.json",
+		"circular": "madge --extensions ts --circular --no-color --no-spinner esm",
+		"checks": "pnpm circular && pnpm lint && pnpm tscheck && pnpm test",
+		"test": "vitest run",
+		"clean-prod": "shx rm -rf dist && shx rm -rf .tsbuildinfo && shx mkdir -p dist",
+		"publish-to-npm": "cd dist && npm publish --access=public && cd ..",
+		"install-prod": "cd dist && pnpm i && cd ..",
+		"build": "pnpm clean-prod && pnpm pre-build && pnpm compile && pnpm post-build && pnpm generate-types && pnpm install-prod",
+		"repository": {
+			"type": "git",
+			"url": "git+https://github.com/parischap/effect-libs.git",
+			"directory": "packages/effect-report"
+		},
+		"homepage": "https://github.com/parischap/effect-libs/tree/master/packages/effect-report",
+		"transpile-esm": "tsc -b tsconfig.esm.json",
+		"transpile-cjs": "babel dist/esm --plugins @babel/transform-export-namespace-from --plugins @babel/transform-modules-commonjs --out-dir dist/cjs --source-maps",
+		"transpile-annotate": "babel dist --plugins annotate-pure-calls --out-dir dist --source-maps",
+		"generate-types": "",
+		"compile": "pnpm transpile-esm && pnpm transpile-cjs && pnpm transpile-annotate",
+		"build-and-publish": "echo \"private package cannot be published\"",
+		"docgen": "echo \"docgen not activated for this package\"",
+		"pre-build": "",
+		"post-build": "",
+		"prodify": "prodify",
+		"bundle": "bundle-files"
+	},
+	"module": "./esm/index.js",
+	"exports": {
+		".": {
+			"import": "./esm/index.ts"
+		}
+	},
+	"publishConfig": {
+		"scripts": {},
+		"devDependencies": {},
+		"publishConfig": {},
+		"packageManager": "",
+		"pnpm": {},
+		"type": "",
+		"exports": {
+			".": {
+				"import": "./esm/index.js",
+				"types": "./dts/index.d.ts",
+				"default": "./cjs/index.js"
+			}
+		},
+		"main": "./cjs/index.js",
+		"types": "./dts/index.d.ts",
+		"peerDependencies": {
+			"@parischap/effect-lib": "^0.4.0",
+			"@parischap/ansi-styles": "^0.0.1"
+		}
+	},
+	"private": true,
+	"devDependencies": {
+		"@parischap/effect-report": "link:."
+	},
+	"description": "A functional library to prettify Effect logging",
+	"peerDependencies": {
+		"@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
+		"@parischap/ansi-styles": "workspace:@parischap-dev/ansi-styles@*",
+		"effect": "^3.11.9"
+	}
+}

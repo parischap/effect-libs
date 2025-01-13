@@ -1,5 +1,4 @@
 import { MString, MTypes } from '@parischap/effect-lib';
-import { JsANSI, JsString } from '@parischap/js-lib';
 import { Array, Effect, FiberId, List, LogLevel, Logger, Option, String, pipe } from 'effect';
 
 //const moduleTag = '@parischap/effect-lib/Logger/';
