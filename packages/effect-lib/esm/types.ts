@@ -202,7 +202,7 @@ export type RefinementFrom<Source> = Predicate.Refinement<Source, any>;
 export type Errorish = { readonly message: string; readonly stack?: string | undefined };
 
 /**
- * Type of a string transformer, i.e a function that transforms a string into another one
+ * Type of a string transformer, i.e. a function that transforms a string into another one
  *
  * @since 0.5.0
  * @category Models

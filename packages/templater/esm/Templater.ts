@@ -1,8 +1,8 @@
 /**
  * A template is a string that contains targets where to read/write. Each target can appear between
- * 0 and n times. Targets can overlap, e.g `falling-tree`, `tree`, `tree-shaking`. In this case, the
- * foremost and longest target takes precedence. For instance, in the template `this bundler is good
- * at tree-shaking`, although `tree` and `tree-shaking` are present at the same position, the
+ * 0 and n times. Targets can overlap, e.g. `falling-tree`, `tree`, `tree-shaking`. In this case,
+ * the foremost and longest target takes precedence. For instance, in the template `this bundler is
+ * good at tree-shaking`, although `tree` and `tree-shaking` are present at the same position, the
  * longest target `tree-shaking` will take precedence.
  *
  * I can give a length : alignment and padding a max-length no length

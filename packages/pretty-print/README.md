@@ -303,7 +303,7 @@ We have now covered the most usual use cases. But don't forget you can define yo
 
 ### 3) Getting the result as an array of lines
 
-Sometimes, you may want to get the result of pretty-printing as an array of lines. This can be useful if you need to further format the output lines, e.g add an extra tab at the start of each line... In this case, you will use the [Stringify.asLines](https://parischap.github.io/effect-libs/pretty-print/stringify.ts.html#aslines) function instead of the [Stringify.asString](https://parischap.github.io/effect-libs/pretty-print/stringify.ts.html#asString) function. This function takes the same parameters as the asString function but it returns a [StringifiedValue](https://parischap.github.io/effect-libs/pretty-print/StringifiedValue.ts.html) which is an array of [FormattedString's](https://parischap.github.io/effect-libs/pretty-print/FormattedString.ts.html).
+Sometimes, you may want to get the result of pretty-printing as an array of lines. This can be useful if you need to further format the output lines, e.g. add an extra tab at the start of each line... In this case, you will use the [Stringify.asLines](https://parischap.github.io/effect-libs/pretty-print/stringify.ts.html#aslines) function instead of the [Stringify.asString](https://parischap.github.io/effect-libs/pretty-print/stringify.ts.html#asString) function. This function takes the same parameters as the asString function but it returns a [StringifiedValue](https://parischap.github.io/effect-libs/pretty-print/StringifiedValue.ts.html) which is an array of [FormattedString's](https://parischap.github.io/effect-libs/pretty-print/FormattedString.ts.html).
 
 The following example shows how to add a tab at the start of each line of the stringified result:
 

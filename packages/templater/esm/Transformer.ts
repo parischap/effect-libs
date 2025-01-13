@@ -277,7 +277,7 @@ export namespace String {
 	 * returns an error if there are less than `length` characters left to read. Othewise, it reads
 	 * `length` characters from its input and optionnally trims `leftPadding` and `rightPadding`. The
 	 * write method will return an error if the value to write is more than `length` characters long.
-	 * Otherwise, it will first pad its input to the left, then to the right, i.e if both
+	 * Otherwise, it will first pad its input to the left, then to the right, i.e. if both
 	 * `leftPadding` and `rightPadding` are non-empty strings, only `leftPadding` will be applied.
 	 * `leftPadding` and `rightPadding` must be at most one character long.
 	 *

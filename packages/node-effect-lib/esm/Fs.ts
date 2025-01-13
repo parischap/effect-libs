@@ -1,3 +1,4 @@
+/** FIX GLOB */
 import { Error as PlatformError, FileSystem as PlatformFs } from '@effect/platform';
 import { NodeFileSystem as PlatformNodeFs } from '@effect/platform-node';
 import { MFs, MFunction, MPredicate, MTuple, MTypes } from '@parischap/effect-lib';
