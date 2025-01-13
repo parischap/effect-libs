@@ -19,7 +19,7 @@ import {
 	Predicate,
 	Struct
 } from 'effect';
-import { ASAnsiString } from './index.js';
+import * as ASAnsiString from './AnsiString.js';
 
 export const moduleTag = '@parischap/ansi-styles/Color/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;

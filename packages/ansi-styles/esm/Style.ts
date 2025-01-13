@@ -1,10 +1,7 @@
 /**
- * This module implements a type that represents an ANSI style as defined in the Select Graphic
- * Rendition subset. Info at
- * https://stackoverflow.com/questions/4842424/list-of-ansi-color-escape-sequences A style is simply
- * a sorted array of the StyleCharacteristic's (see StyleCharacteristics.ts) that define it. As
- * syntaxic sugar, styles are callable functions that create Text's (see Text.ts). For instance,
- * `const text = ASStyle.red('foo')` will create a text containing the string 'foo' styled in red.
+ * Same as StyleCharacteristics (see StyleCharacteristics.ts) but, as syntaxic sugar, styles are
+ * callable functions that create Text's (see Text.ts). For instance, `const text =
+ * ASStyle.red('foo')` will create a text containing the string 'foo' styled in red.
  *
  * @since 0.0.1
  */
@@ -22,8 +19,7 @@ type TypeId = typeof TypeId;
 export interface Action {
 	(...args: ReadonlyArray<string | ASText.Type>): ASText.Type;
 }
-
-/**
+/*
  * Type that represents a Style
  *
  * @since 0.0.1
@@ -35,7 +31,7 @@ export interface Type extends Action, Equal.Equal, MInspectable.Inspectable, Pip
 	 *
 	 * @since 0.0.1
 	 */
-	readonly characteristics: ASStyleCharacteristics.Type;
+	readonly style: ASStyleCharacteristics.Type;
 
 	/** @internal */
 	readonly [TypeId]: TypeId;
@@ -56,7 +52,7 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
  * @category Equivalences
  */
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
-	ASStyleCharacteristics.equivalence(self.characteristics, that.characteristics);
+	ASStyleCharacteristics.equivalence(self.style, that.style);
 
 const _TypeIdHash = Hash.hash(TypeId);
 const base: MTypes.Proto<Type> = {
@@ -65,39 +61,44 @@ const base: MTypes.Proto<Type> = {
 		return has(that) && equivalence(this, that);
 	},
 	[Hash.symbol](this: Type) {
-		return pipe(this.characteristics, Hash.hash, Hash.combine(_TypeIdHash), Hash.cached(this));
+		return pipe(this.style, Hash.hash, Hash.combine(_TypeIdHash), Hash.cached(this));
 	},
 	[MInspectable.IdSymbol](this: Type) {
-		return ASStyleCharacteristics.toId(this.characteristics);
+		return toId(this);
 	},
 	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto
 };
 
 /** Constructor */
-const _make = ({ characteristics }: MTypes.Data<Type>): Type => {
-	return Object.assign(
+const _make = ({ style }: MTypes.Data<Type>): Type =>
+	Object.assign(
 		(...args: ReadonlyArray<string | ASText.Type>): ASText.Type =>
-			ASText.fromStyleAndElems(characteristics)(...args),
+			ASText.fromStyleAndElems(style)(...args),
 		{
-			characteristics,
+			style,
 			...base
 		}
 	);
-};
 
 /**
- * Gets the `characteristics` property of `self`
+ * Gets the `style` property of `self`
  *
  * @since 0.0.1
  * @category Destructors
  */
-export const characteristics: MTypes.OneArgFunction<Type, ASStyleCharacteristics.Type> =
-	Struct.get('characteristics');
+export const style: MTypes.OneArgFunction<Type, ASStyleCharacteristics.Type> = Struct.get('style');
 
 /**
+ * Returns the id of `self`
+ *
+ * @since 0.0.1
+ * @category Destructors
+ */
+export const toId = (self: Type): string => ASStyleCharacteristics.toId(self.style);
+/**
  * Builds a new Style by merging `self` and `that`. In case of conflict (e.g `self` contains `Bold`
- * and `that` contains `NotBold`), the characteristics in `that` will prevail.
+ * and `that` contains `NotBold`), the style in `that` will prevail.
  *
  * @since 0.0.1
  * @category Utils
@@ -106,15 +107,12 @@ export const mergeOver =
 	(that: Type) =>
 	(self: Type): Type =>
 		_make({
-			characteristics: pipe(
-				self.characteristics,
-				ASStyleCharacteristics.mergeOver(that.characteristics)
-			)
+			style: pipe(self.style, ASStyleCharacteristics.mergeOver(that.style))
 		});
 
 /**
  * Builds a new Style by merging `self` and `that`. In case of conflict (e.g `self` contains `Bold`
- * and `that` contains `NotBold`), the characteristics in `self` will prevail.
+ * and `that` contains `NotBold`), the style in `self` will prevail.
  *
  * @since 0.0.1
  * @category Utils
@@ -123,19 +121,16 @@ export const mergeUnder =
 	(that: Type) =>
 	(self: Type): Type =>
 		_make({
-			characteristics: pipe(
-				self.characteristics,
-				ASStyleCharacteristics.mergeUnder(that.characteristics)
-			)
+			style: pipe(self.style, ASStyleCharacteristics.mergeUnder(that.style))
 		});
 
 /**
- * None Style instance, i.e Style that performs no styling
+ * None Style instance, i.e. Style that performs no styling
  *
  * @since 0.0.1
  * @category Instances
  */
-export const none: Type = _make({ characteristics: ASStyleCharacteristics.none });
+export const none: Type = _make({ style: ASStyleCharacteristics.none });
 
 /**
  * Bold Style instance
@@ -143,7 +138,7 @@ export const none: Type = _make({ characteristics: ASStyleCharacteristics.none }
  * @since 0.0.1
  * @category Instances
  */
-export const bold: Type = _make({ characteristics: ASStyleCharacteristics.bold });
+export const bold: Type = _make({ style: ASStyleCharacteristics.bold });
 
 /**
  * NotBold Style instance
@@ -151,7 +146,7 @@ export const bold: Type = _make({ characteristics: ASStyleCharacteristics.bold }
  * @since 0.0.1
  * @category Instances
  */
-export const notBold: Type = _make({ characteristics: ASStyleCharacteristics.notBold });
+export const notBold: Type = _make({ style: ASStyleCharacteristics.notBold });
 
 /**
  * Dim Style instance
@@ -159,7 +154,7 @@ export const notBold: Type = _make({ characteristics: ASStyleCharacteristics.not
  * @since 0.0.1
  * @category Instances
  */
-export const dim: Type = _make({ characteristics: ASStyleCharacteristics.dim });
+export const dim: Type = _make({ style: ASStyleCharacteristics.dim });
 
 /**
  * NotDim Style instance
@@ -167,7 +162,7 @@ export const dim: Type = _make({ characteristics: ASStyleCharacteristics.dim });
  * @since 0.0.1
  * @category Instances
  */
-export const notDim: Type = _make({ characteristics: ASStyleCharacteristics.notDim });
+export const notDim: Type = _make({ style: ASStyleCharacteristics.notDim });
 
 /**
  * Italic Style instance
@@ -175,7 +170,7 @@ export const notDim: Type = _make({ characteristics: ASStyleCharacteristics.notD
  * @since 0.0.1
  * @category Instances
  */
-export const italic: Type = _make({ characteristics: ASStyleCharacteristics.italic });
+export const italic: Type = _make({ style: ASStyleCharacteristics.italic });
 
 /**
  * NotItalic Style instance
@@ -183,7 +178,7 @@ export const italic: Type = _make({ characteristics: ASStyleCharacteristics.ital
  * @since 0.0.1
  * @category Instances
  */
-export const notItalic: Type = _make({ characteristics: ASStyleCharacteristics.notItalic });
+export const notItalic: Type = _make({ style: ASStyleCharacteristics.notItalic });
 
 /**
  * Underlined Style instance
@@ -191,7 +186,7 @@ export const notItalic: Type = _make({ characteristics: ASStyleCharacteristics.n
  * @since 0.0.1
  * @category Instances
  */
-export const underlined: Type = _make({ characteristics: ASStyleCharacteristics.underlined });
+export const underlined: Type = _make({ style: ASStyleCharacteristics.underlined });
 
 /**
  * NotUnderlined Style instance
@@ -199,7 +194,7 @@ export const underlined: Type = _make({ characteristics: ASStyleCharacteristics.
  * @since 0.0.1
  * @category Instances
  */
-export const notUnderlined: Type = _make({ characteristics: ASStyleCharacteristics.notUnderlined });
+export const notUnderlined: Type = _make({ style: ASStyleCharacteristics.notUnderlined });
 
 /**
  * Struck-through Style instance
@@ -207,7 +202,7 @@ export const notUnderlined: Type = _make({ characteristics: ASStyleCharacteristi
  * @since 0.0.1
  * @category Instances
  */
-export const struckThrough: Type = _make({ characteristics: ASStyleCharacteristics.struckThrough });
+export const struckThrough: Type = _make({ style: ASStyleCharacteristics.struckThrough });
 
 /**
  * NotStruckThrough Style instance
@@ -216,7 +211,7 @@ export const struckThrough: Type = _make({ characteristics: ASStyleCharacteristi
  * @category Instances
  */
 export const notStruckThrough: Type = _make({
-	characteristics: ASStyleCharacteristics.notStruckThrough
+	style: ASStyleCharacteristics.notStruckThrough
 });
 
 /**
@@ -225,7 +220,7 @@ export const notStruckThrough: Type = _make({
  * @since 0.0.1
  * @category Instances
  */
-export const overlined: Type = _make({ characteristics: ASStyleCharacteristics.overlined });
+export const overlined: Type = _make({ style: ASStyleCharacteristics.overlined });
 
 /**
  * NotOverlined Style instance
@@ -233,7 +228,7 @@ export const overlined: Type = _make({ characteristics: ASStyleCharacteristics.o
  * @since 0.0.1
  * @category Instances
  */
-export const notOverlined: Type = _make({ characteristics: ASStyleCharacteristics.notOverlined });
+export const notOverlined: Type = _make({ style: ASStyleCharacteristics.notOverlined });
 
 /**
  * Inversed Style instance
@@ -241,7 +236,7 @@ export const notOverlined: Type = _make({ characteristics: ASStyleCharacteristic
  * @since 0.0.1
  * @category Instances
  */
-export const inversed: Type = _make({ characteristics: ASStyleCharacteristics.inversed });
+export const inversed: Type = _make({ style: ASStyleCharacteristics.inversed });
 
 /**
  * NotInversed Style instance
@@ -249,7 +244,7 @@ export const inversed: Type = _make({ characteristics: ASStyleCharacteristics.in
  * @since 0.0.1
  * @category Instances
  */
-export const notInversed: Type = _make({ characteristics: ASStyleCharacteristics.notInversed });
+export const notInversed: Type = _make({ style: ASStyleCharacteristics.notInversed });
 
 /**
  * Hidden Style instance
@@ -257,7 +252,7 @@ export const notInversed: Type = _make({ characteristics: ASStyleCharacteristics
  * @since 0.0.1
  * @category Instances
  */
-export const hidden: Type = _make({ characteristics: ASStyleCharacteristics.hidden });
+export const hidden: Type = _make({ style: ASStyleCharacteristics.hidden });
 
 /**
  * NotHidden Style instance
@@ -265,7 +260,7 @@ export const hidden: Type = _make({ characteristics: ASStyleCharacteristics.hidd
  * @since 0.0.1
  * @category Instances
  */
-export const notHidden: Type = _make({ characteristics: ASStyleCharacteristics.notHidden });
+export const notHidden: Type = _make({ style: ASStyleCharacteristics.notHidden });
 
 /**
  * Blinking Style instance
@@ -273,7 +268,7 @@ export const notHidden: Type = _make({ characteristics: ASStyleCharacteristics.n
  * @since 0.0.1
  * @category Instances
  */
-export const blinking: Type = _make({ characteristics: ASStyleCharacteristics.blinking });
+export const blinking: Type = _make({ style: ASStyleCharacteristics.blinking });
 
 /**
  * NotBlinking Style instance
@@ -281,7 +276,7 @@ export const blinking: Type = _make({ characteristics: ASStyleCharacteristics.bl
  * @since 0.0.1
  * @category Instances
  */
-export const notBlinking: Type = _make({ characteristics: ASStyleCharacteristics.notBlinking });
+export const notBlinking: Type = _make({ style: ASStyleCharacteristics.notBlinking });
 
 /**
  * Default foreground color Style instance
@@ -289,7 +284,7 @@ export const notBlinking: Type = _make({ characteristics: ASStyleCharacteristics
  * @since 0.0.1
  * @category Instances
  */
-export const defaultColor: Type = _make({ characteristics: ASStyleCharacteristics.fgDefaultColor });
+export const defaultColor: Type = _make({ style: ASStyleCharacteristics.fgDefaultColor });
 
 /**
  * Builds a Style that applies `color` as foreground color
@@ -298,7 +293,7 @@ export const defaultColor: Type = _make({ characteristics: ASStyleCharacteristic
  * @category Constructors
  */
 export const color = (color: ASColor.Type): Type =>
-	_make({ characteristics: ASStyleCharacteristics.fromColorAsForegroundColor(color) });
+	_make({ style: ASStyleCharacteristics.fromColorAsForegroundColor(color) });
 
 /**
  * Original black color style instance
@@ -450,7 +445,7 @@ export namespace Bg {
 	 * @category Instances
 	 */
 	export const defaultColor: Type = _make({
-		characteristics: ASStyleCharacteristics.bgDefaultColor
+		style: ASStyleCharacteristics.bgDefaultColor
 	});
 
 	/**
@@ -460,7 +455,7 @@ export namespace Bg {
 	 * @category Constructors
 	 */
 	export const color = (color: ASColor.Type): Type =>
-		_make({ characteristics: ASStyleCharacteristics.fromColorAsBackgroundColor(color) });
+		_make({ style: ASStyleCharacteristics.fromColorAsBackgroundColor(color) });
 
 	/**
 	 * Original black color style instance

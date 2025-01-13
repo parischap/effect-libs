@@ -54,6 +54,8 @@ describe('ASStyleCharacteristics', () => {
 		describe('.toString()', () => {
 			expect(ASStyleCharacteristics.none.toString()).toBe('');
 			expect(boldItalicBrightGreenInBlue.toString()).toBe('BoldItalicBrightGreenInEightBitBlue');
+			expect(ASStyleCharacteristics.fgDefaultColor.toString()).toBe('DefaultColor');
+			expect(ASStyleCharacteristics.bgDefaultColor.toString()).toBe('InDefaultColor');
 		});
 
 		it('.pipe()', () => {
@@ -70,11 +72,35 @@ describe('ASStyleCharacteristics', () => {
 		});
 	});
 
-	it('italicState', () => {
+	describe('italicState', () => {
 		expect(Equal.equals(ASStyleCharacteristics.italicState(boldItalic), Option.some(true))).toBe(
 			true
 		);
 		expect(pipe(ASStyleCharacteristics.italicState(bold1), Option.isNone)).toBe(true);
+	});
+
+	it('hasBold', () => {
+		expect(ASStyleCharacteristics.hasBold(boldItalic)).toBe(true);
+		expect(ASStyleCharacteristics.hasBold(ASStyleCharacteristics.none)).toBe(false);
+		expect(ASStyleCharacteristics.hasBold(notBoldNotDimRed)).toBe(false);
+	});
+
+	it('hasNotBold', () => {
+		expect(ASStyleCharacteristics.hasNotBold(notBoldNotDimRed)).toBe(true);
+		expect(ASStyleCharacteristics.hasNotBold(boldItalic)).toBe(false);
+		expect(ASStyleCharacteristics.hasNotBold(ASStyleCharacteristics.none)).toBe(false);
+	});
+
+	it('hasDim', () => {
+		expect(ASStyleCharacteristics.hasDim(notBoldDimRed)).toBe(true);
+		expect(ASStyleCharacteristics.hasDim(ASStyleCharacteristics.none)).toBe(false);
+		expect(ASStyleCharacteristics.hasDim(notBoldNotDimRed)).toBe(false);
+	});
+
+	it('hasNotDim', () => {
+		expect(ASStyleCharacteristics.hasNotDim(notBoldNotDimRed)).toBe(true);
+		expect(ASStyleCharacteristics.hasNotDim(boldItalic)).toBe(false);
+		expect(ASStyleCharacteristics.hasNotDim(ASStyleCharacteristics.none)).toBe(false);
 	});
 
 	describe('toSequence', () => {
@@ -96,6 +122,16 @@ describe('ASStyleCharacteristics', () => {
 
 		it('Not bold dim red', () => {
 			expect(ASStyleCharacteristics.toSequence(notBoldDimRed)).toEqual([22, 2, 31]);
+		});
+
+		it('Bold default background color', () => {
+			expect(
+				pipe(
+					ASStyleCharacteristics.bold,
+					ASStyleCharacteristics.mergeOver(ASStyleCharacteristics.bgDefaultColor),
+					ASStyleCharacteristics.toSequence
+				)
+			).toEqual([1, 49]);
 		});
 	});
 

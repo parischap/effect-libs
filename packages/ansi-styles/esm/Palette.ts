@@ -1,5 +1,5 @@
 /**
- * A Palette is a type that groups several formats under a id. It is mainly used to build
+ * A Palette is a type that groups several styles under an id. It is mainly used to build
  * ContextFormatters (see ContextFormatter.ts).
  *
  * With the make function, you can define your own instances if the provided ones don't suit your
@@ -9,12 +9,20 @@
  */
 
 import { MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
-import { Array, Equal, Equivalence, Hash, pipe, Pipeable, Predicate, Struct } from 'effect';
-import * as ASFormat from './Style.js';
+import { Array, Equal, Equivalence, flow, Hash, pipe, Pipeable, Predicate, Struct } from 'effect';
+import * as ASStyle from './Style.js';
 
-const moduleTag = '@parischap/ansi-styles/Palette/';
+export const moduleTag = '@parischap/ansi-styles/Palette/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
+
+/**
+ * Type that represents an array of Style's.
+ *
+ * @since 0.0.1
+ * @category Models
+ */
+export type Styles = ReadonlyArray<ASStyle.Type>;
 
 /**
  * Type that represents a Palette.
@@ -24,18 +32,11 @@ type TypeId = typeof TypeId;
  */
 export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
 	/**
-	 * Id of this Palette instance. Useful for equality and debugging
+	 * Array of styles contained by this Palette
 	 *
 	 * @since 0.0.1
 	 */
-	readonly id: string;
-
-	/**
-	 * Array of formats contained by this Palette
-	 *
-	 * @since 0.0.1
-	 */
-	readonly formats: ReadonlyArray<ASFormat.Type>;
+	readonly styles: Styles;
 
 	/** @internal */
 	readonly [TypeId]: TypeId;
@@ -49,13 +50,17 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
  */
 export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
 
+// To be removed when Effect 4.0 with structural equality comes out
+const _equivalence = Array.getEquivalence(ASStyle.equivalence);
+
 /**
  * Equivalence
  *
  * @since 0.0.1
  * @category Equivalences
  */
-export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
+export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
+	_equivalence(self.styles, that.styles);
 
 /** Prototype */
 const _TypeIdHash = Hash.hash(TypeId);
@@ -65,10 +70,10 @@ const proto: MTypes.Proto<Type> = {
 		return has(that) && equivalence(this, that);
 	},
 	[Hash.symbol](this: Type) {
-		return pipe(this.id, Hash.hash, Hash.combine(_TypeIdHash), Hash.cached(this));
+		return pipe(this.styles, Hash.array, Hash.combine(_TypeIdHash), Hash.cached(this));
 	},
 	[MInspectable.IdSymbol](this: Type) {
-		return this.id;
+		return toId(this);
 	},
 	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto
@@ -89,17 +94,43 @@ export const make = (params: MTypes.Data<Type>): Type =>
  * @since 0.0.1
  * @category Destructors
  */
-export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
+export const toId: MTypes.OneArgFunction<Type, string> = flow(
+	Struct.get('styles'),
+	Array.map(ASStyle.toId),
+	Array.join('/')
+);
 
 /**
- * Gets the underlying formats of `self`
+ * Gets the underlying styles of `self`
  *
  * @since 0.0.1
  * @category Destructors
  */
-export const formats: MTypes.OneArgFunction<Type, ReadonlyArray<ASFormat.Type>> = Struct.get(
-	'formats'
-);
+export const styles: MTypes.OneArgFunction<Type, Styles> = Struct.get('styles');
+
+/**
+ * Appends `that` to `self`
+ *
+ * @since 0.0.1
+ * @category Utils
+ */
+export const append =
+	(that: Type) =>
+	(self: Type): Type =>
+		make({
+			styles: pipe(self.styles, Array.appendAll(that.styles))
+		});
+
+/**
+ * Empty Palette instance
+ *
+ * @since 0.0.1
+ * @category Instances
+ */
+
+export const empty: Type = make({
+	styles: Array.empty()
+});
 
 /**
  * Palette instance which contains all standard original colors
@@ -108,17 +139,16 @@ export const formats: MTypes.OneArgFunction<Type, ReadonlyArray<ASFormat.Type>> 
  * @category Instances
  */
 
-export const allStandardOriginalColors = make({
-	id: 'AllStandardOriginalColors',
-	formats: Array.make(
-		ASFormat.Colored.Original.black,
-		ASFormat.Colored.Original.red,
-		ASFormat.Colored.Original.green,
-		ASFormat.Colored.Original.yellow,
-		ASFormat.Colored.Original.blue,
-		ASFormat.Colored.Original.magenta,
-		ASFormat.Colored.Original.cyan,
-		ASFormat.Colored.Original.white
+export const allStandardOriginalColors: Type = make({
+	styles: Array.make(
+		ASStyle.black,
+		ASStyle.red,
+		ASStyle.green,
+		ASStyle.yellow,
+		ASStyle.blue,
+		ASStyle.magenta,
+		ASStyle.cyan,
+		ASStyle.white
 	)
 });
 
@@ -129,17 +159,16 @@ export const allStandardOriginalColors = make({
  * @category Instances
  */
 
-export const allBrightOriginalColors = make({
-	id: 'AllStandardOriginalColors',
-	formats: Array.make(
-		ASFormat.Colored.Original.brightBlack,
-		ASFormat.Colored.Original.brightRed,
-		ASFormat.Colored.Original.brightGreen,
-		ASFormat.Colored.Original.brightYellow,
-		ASFormat.Colored.Original.brightBlue,
-		ASFormat.Colored.Original.brightMagenta,
-		ASFormat.Colored.Original.brightCyan,
-		ASFormat.Colored.Original.brightWhite
+export const allBrightOriginalColors: Type = make({
+	styles: Array.make(
+		ASStyle.Bright.black,
+		ASStyle.Bright.red,
+		ASStyle.Bright.green,
+		ASStyle.Bright.yellow,
+		ASStyle.Bright.blue,
+		ASStyle.Bright.magenta,
+		ASStyle.Bright.cyan,
+		ASStyle.Bright.white
 	)
 });
 
@@ -150,7 +179,7 @@ export const allBrightOriginalColors = make({
  * @category Instances
  */
 
-export const allOriginalColors = make({
-	id: 'AllStandardOriginalColors',
-	formats: Array.appendAll(allStandardOriginalColors.formats, allBrightOriginalColors.formats)
-});
+export const allOriginalColors: Type = pipe(
+	allStandardOriginalColors,
+	append(allBrightOriginalColors)
+);

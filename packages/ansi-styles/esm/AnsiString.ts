@@ -1,5 +1,5 @@
 /**
- * This modules implements a command string that produces an ANSI style, e.g `\x1b[1m` for bold
+ * This modules implements a command string that produces an ANSI style, e.g. `\x1b[1m` for bold
  *
  * @since 0.0.1
  */
@@ -11,8 +11,8 @@ import { Array, flow, Option } from 'effect';
 export type Type = string;
 
 /**
- * Type that represents the sequence of a style characteristic (numbers between `\x1b[` and `m` used
- * to generate this ANSI style, e.g [1] for bold)
+ * Type that represents the sequence of a command string (the numbers separated by a semicolon
+ * between `\x1b[` and `m`, e.g. [1,31] for bold red)
  *
  * @since 0.0.1
  */
