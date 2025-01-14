@@ -16,19 +16,11 @@
 		"clean-prod": "shx rm -rf dist && shx rm -rf .tsbuildinfo && shx mkdir -p dist",
 		"publish-to-npm": "cd dist && npm publish --access=public && cd ..",
 		"install-prod": "cd dist && pnpm i && cd ..",
-		"build": "pnpm clean-prod && pnpm pre-build && pnpm compile && pnpm post-build && pnpm generate-types && pnpm install-prod",
-		"repository": {
-			"type": "git",
-			"url": "git+https://github.com/parischap/effect-libs.git",
-			"directory": "packages/playground"
-		},
-		"homepage": "https://github.com/parischap/effect-libs/tree/master/packages/playground",
+		"build": "pnpm clean-prod && pnpm --if-present pre-build && pnpm compile && pnpm --if-present post-build && pnpm --if-present generate-types && pnpm install-prod",
 		"generate-types": "tsc -b tsconfig.esm.json --emitDeclarationOnly",
 		"compile": "pnpm bundle && pnpm prodify",
 		"build-and-publish": "echo \"private package cannot be published\"",
 		"docgen": "echo \"docgen not activated for this package\"",
-		"pre-build": "",
-		"post-build": "",
 		"prodify": "prodify",
 		"bundle": "bundle-files",
 		"play": "vite-node esm/index.ts"
@@ -55,10 +47,16 @@
 		"dependencies": {},
 		"sideEffects": []
 	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/parischap/effect-libs.git",
+		"directory": "packages/playground"
+	},
+	"homepage": "https://github.com/parischap/effect-libs/tree/master/packages/playground",
 	"dependencies": {
-		"@effect/experimental": "^0.35.2",
+		"@effect/experimental": "^0.36.2",
 		"@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
-		"effect": "^3.11.9"
+		"effect": "^3.12.2"
 	},
 	"sideEffects": false,
 	"private": true,

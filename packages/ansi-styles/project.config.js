@@ -45,7 +45,7 @@ export default merge(
 				}
 			},
 			scripts: {
-				examples: 'vite-node examples/stupid.ts'
+				examples: 'vite-node examples/basic-usage.ts'
 			}
 		}
 	}

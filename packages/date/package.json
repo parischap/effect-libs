@@ -16,22 +16,13 @@
 		"clean-prod": "shx rm -rf dist && shx rm -rf .tsbuildinfo && shx mkdir -p dist",
 		"publish-to-npm": "cd dist && npm publish --access=public && cd ..",
 		"install-prod": "cd dist && pnpm i && cd ..",
-		"build": "pnpm clean-prod && pnpm pre-build && pnpm compile && pnpm post-build && pnpm generate-types && pnpm install-prod",
-		"repository": {
-			"type": "git",
-			"url": "git+https://github.com/parischap/effect-libs.git",
-			"directory": "packages/date"
-		},
-		"homepage": "https://github.com/parischap/effect-libs/tree/master/packages/date",
+		"build": "pnpm clean-prod && pnpm --if-present pre-build && pnpm compile && pnpm --if-present post-build && pnpm --if-present generate-types && pnpm install-prod",
 		"transpile-esm": "tsc -b tsconfig.esm.json",
 		"transpile-cjs": "babel dist/esm --plugins @babel/transform-export-namespace-from --plugins @babel/transform-modules-commonjs --out-dir dist/cjs --source-maps",
 		"transpile-annotate": "babel dist --plugins annotate-pure-calls --out-dir dist --source-maps",
-		"generate-types": "",
 		"compile": "pnpm transpile-esm && pnpm transpile-cjs && pnpm transpile-annotate",
 		"build-and-publish": "pnpm build && pnpm checks && pnpm publish-to-npm",
 		"docgen": "echo \"docgen not activated for this package\"",
-		"pre-build": "",
-		"post-build": "",
 		"prodify": "prodify",
 		"bundle": "bundle-files"
 	},
@@ -62,6 +53,12 @@
 			"@parischap/templater": "^0.0.1"
 		}
 	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/parischap/effect-libs.git",
+		"directory": "packages/date"
+	},
+	"homepage": "https://github.com/parischap/effect-libs/tree/master/packages/date",
 	"bugs": {
 		"url": "https://github.com/parischap/effect-libs/issues"
 	},
@@ -83,6 +80,6 @@
 	"peerDependencies": {
 		"@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
 		"@parischap/templater": "workspace:@parischap-dev/templater@*",
-		"effect": "^3.11.9"
+		"effect": "^3.12.2"
 	}
 }
