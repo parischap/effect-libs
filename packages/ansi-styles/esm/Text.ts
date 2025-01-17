@@ -34,6 +34,12 @@ import {
 import * as ASAnsiString from './AnsiString.js';
 import * as ASStyleCharacteristics from './StyleCharacteristics.js';
 
+/**
+ * Module tag
+ *
+ * @since 0.0.1
+ * @category Models
+ */
 export const moduleTag = '@parischap/ansi-styles/Text/';
 const _moduleTag = moduleTag;
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
@@ -179,7 +185,7 @@ namespace UniStyled {
 	 * @since 0.0.1
 	 * @category Constructors
 	 */
-	export const concat = (elems: Array.NonEmptyReadonlyArray<Type>): Type =>
+	export const concat = (elems: MTypes.OverOne<Type>): Type =>
 		make({
 			text: pipe(elems, Array.map(text), Array.join('')),
 			style: pipe(elems, Array.headNonEmpty, style)

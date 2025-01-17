@@ -12,20 +12,45 @@ import * as ASColor from './Color.js';
 import * as ASStyleCharacteristics from './StyleCharacteristics.js';
 import * as ASText from './Text.js';
 
+/**
+ * Module tag
+ *
+ * @since 0.0.1
+ * @category Models
+ */
 export const moduleTag = '@parischap/ansi-styles/Style/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
 
-export interface Action {
-	(...args: ReadonlyArray<string | ASText.Type>): ASText.Type;
+/**
+ * Namespace of a Style used as an action
+ *
+ * @since 0.0.1
+ * @category Models
+ */
+export namespace Action {
+	/**
+	 * Type of the action
+	 *
+	 * @since 0.0.1
+	 * @category Models
+	 */
+	export interface Type {
+		(...args: ReadonlyArray<string | ASText.Type>): ASText.Type;
+	}
 }
-/*
+
+/**
  * Type that represents a Style
  *
  * @since 0.0.1
  * @category Models
  */
-export interface Type extends Action, Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
+export interface Type
+	extends Action.Type,
+		Equal.Equal,
+		MInspectable.Inspectable,
+		Pipeable.Pipeable {
 	/**
 	 * StyleCharacteristics that define this Style
 	 *
@@ -54,6 +79,7 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
 	ASStyleCharacteristics.equivalence(self.style, that.style);
 
+/** Base */
 const _TypeIdHash = Hash.hash(TypeId);
 const base: MTypes.Proto<Type> = {
 	[TypeId]: TypeId,
@@ -71,12 +97,11 @@ const base: MTypes.Proto<Type> = {
 };
 
 /** Constructor */
-const _make = ({ style }: MTypes.Data<Type>): Type =>
+const _make = (params: MTypes.Data<Type>): Type =>
 	Object.assign(
-		(...args: ReadonlyArray<string | ASText.Type>): ASText.Type =>
-			ASText.fromStyleAndElems(style)(...args),
+		((...args) => ASText.fromStyleAndElems(params.style)(...args)) satisfies Action.Type,
 		{
-			style,
+			...params,
 			...base
 		}
 	);

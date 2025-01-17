@@ -7,7 +7,12 @@
 import { MFunction, MString, MTypes } from '@parischap/effect-lib';
 import { Array, flow, Option } from 'effect';
 
-/** Type of an ANSI string */
+/**
+ * Type of an ANSI string
+ *
+ * @since 0.0.1
+ * @category Models
+ */
 export type Type = string;
 
 /**
@@ -15,6 +20,7 @@ export type Type = string;
  * between `\x1b[` and `m`, e.g. [1,31] for bold red)
  *
  * @since 0.0.1
+ * @category Models
  */
 export interface Sequence extends ReadonlyArray<number> {}
 

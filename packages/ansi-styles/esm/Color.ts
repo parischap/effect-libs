@@ -21,6 +21,12 @@ import {
 } from 'effect';
 import * as ASAnsiString from './AnsiString.js';
 
+/**
+ * Module tag
+ *
+ * @since 0.0.1
+ * @category Models
+ */
 export const moduleTag = '@parischap/ansi-styles/Color/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
@@ -29,6 +35,12 @@ const _TypeIdHash = Hash.hash(TypeId);
 const _TagSymbol: unique symbol = Symbol.for(moduleTag + '_TagSymbol/');
 const _sequenceSymbol: unique symbol = Symbol.for(moduleTag + '_sequenceSymbol/');
 
+/**
+ * Type of a Color
+ *
+ * @since 0.0.1
+ * @category Models
+ */
 export type Type = ThreeBit.Type | EightBit.Type | Rgb.Type;
 
 /**
@@ -117,7 +129,12 @@ export namespace ThreeBit {
 		);
 	}
 
-	/** ThreeBit color Type */
+	/**
+	 * ThreeBit color Type
+	 *
+	 * @since 0.0.1
+	 * @category Models
+	 */
 	export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
 		/**
 		 * Offset of this color
@@ -165,7 +182,7 @@ export namespace ThreeBit {
 	export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
 		self.offset === that.offset && self.isBright === that.isBright;
 
-	/** Prototype */
+	/** Base */
 	const proto: MTypes.Proto<Type> = {
 		[TypeId]: TypeId,
 		[_TagSymbol]: 'ThreeBit',
@@ -969,7 +986,12 @@ export namespace EightBit {
 		);
 	}
 
-	/** EightBit color Type */
+	/**
+	 * EightBit color Type
+	 *
+	 * @since 0.0.1
+	 * @category Models
+	 */
 	export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
 		/**
 		 * Code of this color
@@ -1008,7 +1030,7 @@ export namespace EightBit {
 	 */
 	export const equivalence: Equivalence.Equivalence<Type> = (self, that) => self.code === that.code;
 
-	/** Prototype */
+	/** Base */
 	const proto: MTypes.Proto<Type> = {
 		[TypeId]: TypeId,
 		[_TagSymbol]: 'EightBit',
@@ -2846,7 +2868,12 @@ export namespace EightBit {
  * @category Models
  */
 export namespace Rgb {
-	/** ThreeBit color Type */
+	/**
+	 * ThreeBit color Type
+	 *
+	 * @since 0.0.1
+	 * @category Models
+	 */
 	export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
 		/** Id of this RGB color */
 		readonly id: string;
@@ -2906,7 +2933,7 @@ export namespace Rgb {
 		self.greenCode === that.greenCode &&
 		self.blueCode === that.blueCode;
 
-	/** Prototype */
+	/** Base */
 	const proto: MTypes.Proto<Type> = {
 		[TypeId]: TypeId,
 		[_TagSymbol]: 'Rgb',

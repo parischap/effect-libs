@@ -78,7 +78,7 @@ describe('ASStyle', () => {
 		).toBe('BlinkingGreen');
 	});
 
-	it('Constructor', () => {
+	it('Action', () => {
 		expect(
 			ASText.equivalence(bold('foo'), ASText.fromStyleAndElems(ASStyleCharacteristics.bold)('foo'))
 		).toBe(true);

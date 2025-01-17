@@ -51,8 +51,8 @@ describe('ASStyleCharacteristics', () => {
 			});
 		});
 
-		describe('.toString()', () => {
-			expect(ASStyleCharacteristics.none.toString()).toBe('');
+		it('.toString()', () => {
+			expect(ASStyleCharacteristics.none.toString()).toBe('NoStyle');
 			expect(boldItalicBrightGreenInBlue.toString()).toBe('BoldItalicBrightGreenInEightBitBlue');
 			expect(ASStyleCharacteristics.fgDefaultColor.toString()).toBe('DefaultColor');
 			expect(ASStyleCharacteristics.bgDefaultColor.toString()).toBe('InDefaultColor');
@@ -72,7 +72,7 @@ describe('ASStyleCharacteristics', () => {
 		});
 	});
 
-	describe('italicState', () => {
+	it('italicState', () => {
 		expect(Equal.equals(ASStyleCharacteristics.italicState(boldItalic), Option.some(true))).toBe(
 			true
 		);
@@ -159,7 +159,7 @@ describe('ASStyleCharacteristics', () => {
 					ASStyleCharacteristics.difference(ASStyleCharacteristics.none),
 					ASStyleCharacteristics.toId
 				)
-			).toBe('');
+			).toBe('NoStyle');
 		});
 
 		it('Complex case 1', () => {

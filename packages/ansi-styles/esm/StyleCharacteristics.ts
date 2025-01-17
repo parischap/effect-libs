@@ -37,6 +37,12 @@ import {
 import * as ASAnsiString from './AnsiString.js';
 import * as ASColor from './Color.js';
 
+/**
+ * Module tag
+ *
+ * @since 0.0.1
+ * @category Models
+ */
 export const moduleTag = '@parischap/ansi-styles/StyleCharacteristics/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
@@ -595,18 +601,21 @@ const _bgColorId = ColorOption.toId('In');
  * @since 0.0.1
  * @category Destructors
  */
-export const toId = (self: Type): string =>
-	_boldStateId(self.boldState) +
-	_dimStateId(self.dimState) +
-	_italicStateId(self.italicState) +
-	_underlinedStateId(self.underlinedState) +
-	_struckThroughStateId(self.struckThroughState) +
-	_overlinedStateId(self.overlinedState) +
-	_inversedStateId(self.inversedState) +
-	_hiddenStateId(self.hiddenState) +
-	_blinkingStateId(self.blinkingState) +
-	_fgColorId(self.fgColor) +
-	_bgColorId(self.bgColor);
+export const toId = (self: Type): string => {
+	const result =
+		_boldStateId(self.boldState) +
+		_dimStateId(self.dimState) +
+		_italicStateId(self.italicState) +
+		_underlinedStateId(self.underlinedState) +
+		_struckThroughStateId(self.struckThroughState) +
+		_overlinedStateId(self.overlinedState) +
+		_inversedStateId(self.inversedState) +
+		_hiddenStateId(self.hiddenState) +
+		_blinkingStateId(self.blinkingState) +
+		_fgColorId(self.fgColor) +
+		_bgColorId(self.bgColor);
+	return result === '' ? 'NoStyle' : result;
+};
 
 const _boldStateToSequence = BoolOption.toSequence(22, 1);
 const _dimStateToSequence = BoolOption.toSequence(22, 2);
