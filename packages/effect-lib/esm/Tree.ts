@@ -32,6 +32,12 @@ import * as MStruct from './Struct.js';
 import * as MTuple from './Tuple.js';
 import * as MTypes from './types.js';
 
+/**
+ * Module tag
+ *
+ * @since 0.5.0
+ * @category Models
+ */
 export const moduleTag = '@parischap/effect-lib/Tree/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
@@ -189,7 +195,7 @@ export const equivalence: Equivalence.Equivalence<Type<unknown, unknown>> = getE
 
 /** Prototype */
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-export const proto: MTypes.Proto<Type<any, any>> = {
+const proto: MTypes.Proto<Type<any, any>> = {
 	[TypeId]: {
 		_A: MTypes.covariantValue,
 		_B: MTypes.covariantValue

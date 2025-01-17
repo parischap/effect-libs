@@ -9,6 +9,12 @@ import * as MNumber from './Number.js';
 import * as MString from './String.js';
 import * as MTypes from './types.js';
 
+/**
+ * Module tag
+ *
+ * @since 0.5.0
+ * @category Models
+ */
 export const moduleTag = '@parischap/effect-lib/Brand/';
 const _moduleTag = moduleTag;
 

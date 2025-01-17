@@ -36,7 +36,7 @@ export const tryZeroParamStringFunction =
 		readonly functionName: string | symbol;
 		readonly exception?: LazyArg<string>;
 	}) =>
-	(self: MTypes.AnyRecord): Option.Option<string> =>
+	(self: MTypes.NonNullObject): Option.Option<string> =>
 		pipe(
 			self[functionName],
 			Option.liftPredicate(MTypes.isFunction),

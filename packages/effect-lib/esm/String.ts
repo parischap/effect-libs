@@ -31,6 +31,12 @@ import * as MRegExp from './RegExp.js';
 import * as MTuple from './Tuple.js';
 import * as MTypes from './types.js';
 
+/**
+ * Module tag
+ *
+ * @since 0.5.0
+ * @category Models
+ */
 export const moduleTag = '@parischap/effect-lib/String/';
 const _moduleTag = moduleTag;
 

@@ -10,6 +10,12 @@ import * as MCore from './Core.js';
 import * as MNumber from './Number.js';
 import * as MTypes from './types.js';
 
+/**
+ * Size of a group of digits
+ *
+ * @since 0.5.0
+ * @category Constants
+ */
 export const DIGIT_GROUP_SIZE = 3;
 
 /**
@@ -311,6 +317,9 @@ const _digitGroup: string = pipe(digit, repeatBetween(DIGIT_GROUP_SIZE, DIGIT_GR
  * and at most `n` digits using thousandsSep as thousands separator. `m` and `n` must be strictly
  * positive integers with `n` greater than or equal to `m`. `n` may receive the +Infinity value. If
  * you want no thousands separator, pass an empty string to `thousandsSep`.
+ *
+ * @since 0.5.0
+ * @category Instances
  */
 export const strictlyPositiveInt = (n = +Infinity, m = 1, thousandsSep = ''): string => {
 	if (thousandsSep === '' || n <= DIGIT_GROUP_SIZE) return _strictlyPositiveInt(n, m);

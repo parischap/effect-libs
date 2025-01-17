@@ -24,6 +24,12 @@ import * as MInspectable from './Inspectable.js';
 import * as MPipeable from './Pipeable.js';
 import * as MTypes from './types.js';
 
+/**
+ * Module tag
+ *
+ * @since 0.5.0
+ * @category Models
+ */
 export const moduleTag = '@parischap/effect-lib/Cache/';
 const _moduleTag = moduleTag;
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
@@ -115,6 +121,8 @@ export type LookUp<A, B> = ({
 >;
 
 /**
+ * Type that represents a Cache
+ *
  * @since 0.0.6
  * @category Models
  */

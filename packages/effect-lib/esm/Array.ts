@@ -564,5 +564,8 @@ export const differenceSorted =
 /**
  * Equivalence for arrays of numbers. To be removed when Equal.equals will handle Arrays properly
  * (from Effect 4.0 onwards)
+ *
+ * @since 0.5.0
+ * @category Equivalences
  */
 export const numberEquivalence = Array.getEquivalence(Number.Equivalence);

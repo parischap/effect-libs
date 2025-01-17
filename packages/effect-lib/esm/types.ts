@@ -9,13 +9,14 @@ import { Predicate } from 'effect';
 /* eslint-disable @typescript-eslint/no-explicit-any -- Unknown or never don't work as well as any when it comes to inference because any is both at the top and bottom of the tree type */
 
 /**
- * Type that represents a record. From a typescript perspective, this covers arrays, objects, class
- * instances and functions but not not null and undefined
+ * Type that represents a non-null object as javascript understands it. So it includes records (in
+ * their usual computer science meaning), class instances, arrays, and functions but not null or
+ * undefined.
  *
  * @since 0.0.6
  * @category Models
  */
-export interface AnyRecord {
+export interface NonNullObject {
 	readonly [key: string | symbol]: any;
 }
 
@@ -58,7 +59,7 @@ export type Primitive = NonNullablePrimitive | null | undefined;
  * @since 0.0.6
  * @category Models
  */
-export type Unknown = Primitive | AnyRecord;
+export type Unknown = Primitive | NonNullObject;
 
 /**
  * Type that represents a function
@@ -80,7 +81,12 @@ export interface OneArgFunction<in A, out B = A> {
 	(a: A): B;
 }
 
-/** Type used to avoid warnings by eslint/functional when functions return a mutable array */
+/**
+ * Type used to avoid warnings by eslint/functional when functions return a mutable array
+ *
+ * @since 0.5.0
+ * @category Models
+ */
 export interface MutableArray<T> extends Array<T> {}
 
 /**
@@ -249,7 +255,7 @@ type BaseProtoKeys = symbol | 'toString' | 'toJSON' | 'pipe';
  * @since 0.0.6
  * @category Utility types
  */
-export type Data<T extends AnyRecord, ProtoFunctions extends string | symbol = never> = {
+export type Data<T extends NonNullObject, ProtoFunctions extends string | symbol = never> = {
 	readonly [k in keyof T as readonly [k] extends readonly [BaseProtoKeys | ProtoFunctions] ? never
 	:	k]: T[k];
 };
@@ -260,7 +266,7 @@ export type Data<T extends AnyRecord, ProtoFunctions extends string | symbol = n
  * @since 0.0.6
  * @category Utility types
  */
-export type Proto<T extends AnyRecord, ProtoFunctions extends string | symbol = never> = Omit<
+export type Proto<T extends NonNullObject, ProtoFunctions extends string | symbol = never> = Omit<
 	T,
 	keyof Data<T, ProtoFunctions>
 >;
@@ -269,7 +275,7 @@ export type Proto<T extends AnyRecord, ProtoFunctions extends string | symbol = 
  * Utility type that returns all the keys of a record whose value is a function except those which
  * are in the BaseProtoKeys list.
  */
-/*export type NonSymbolicFunctionKeys<T extends AnyRecord> = keyof {
+/*export type NonSymbolicFunctionKeys<T extends NonNullObject> = keyof {
 	readonly [k in keyof T as readonly [k] extends readonly [BaseProtoKeys] ? never
 	: readonly [T[k]] extends readonly [AnyFunction] ? k
 	: never]: void;
@@ -290,7 +296,7 @@ export type toOneArgFunction<F extends AnyFunction> =
  * @since 0.0.6
  * @category Utils
  */
-export const objectFromDataAndProto = <P extends AnyRecord, D extends AnyRecord>(
+export const objectFromDataAndProto = <P extends NonNullObject, D extends NonNullObject>(
 	proto: P,
 	data: D
 ): P & D => Object.assign(Object.create(proto), data) as P & D;
@@ -317,7 +323,7 @@ export type WithArgType<F, A> =
  * @since 0.5.0
  * @category Utility types
  */
-/*export type ToPredicates<R extends AnyRecord> = {
+/*export type ToPredicates<R extends NonNullObject> = {
 	readonly [k in keyof Data<R>]: Predicate.Predicate<R[k]>;
 };*/
 
@@ -327,7 +333,7 @@ export type WithArgType<F, A> =
  * @since 0.0.6
  * @category Utility types
  */
-export type TupleToIntersection<T extends AnyRecord> =
+export type TupleToIntersection<T extends NonNullObject> =
 	{
 		readonly [K in keyof T]: (x: T[K]) => void;
 	} extends (
@@ -453,12 +459,12 @@ export const isNotNull = <A>(input: A): input is Exclude<A, null> => input !== n
 export const isFunction = (u: unknown): u is AnyFunction => typeof u === 'function';
 
 /**
- * From `unknown` to `AnyRecord`
+ * From `unknown` to `NonNullObject`
  *
  * @since 0.0.6
  * @category Guards
  */
-export const isRecord = (u: unknown): u is AnyRecord =>
+export const isNonNullObject = (u: unknown): u is NonNullObject =>
 	u !== null && ['object', 'function'].includes(typeof u);
 
 /**
@@ -571,14 +577,15 @@ export const isOneArgFunction = <F extends AnyFunction>(
  */
 export namespace Category {
 	/**
-	 * Type of a Category
+	 * Type of a Category.
 	 *
 	 * @since 0.5.0
 	 * @category Models
 	 */
 	export enum Type {
 		Primitive = 0,
-		NonNullObject = 1,
+		// Record is to be understood in its computer science usual meaning, so a list of values identified by a key. Not to be confused with a Typescript Record that includes arrays and functions.
+		Record = 1,
 		Array = 2,
 		Function = 3
 	}
@@ -597,7 +604,7 @@ export namespace Category {
 				return (
 					u === null ? Type.Primitive
 					: Array.isArray(u) ? Type.Array
-					: Type.NonNullObject
+					: Type.Record
 				);
 			default:
 				return Type.Primitive;

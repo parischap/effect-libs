@@ -12,11 +12,19 @@ import * as MPipeable from './Pipeable.js';
 import * as MPredicate from './Predicate.js';
 import * as MTypes from './types.js';
 
+/**
+ * Module tag
+ *
+ * @since 0.5.0
+ * @category Models
+ */
 export const moduleTag = '@parischap/effect-lib/Match/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
 
 /**
+ * Type that represents a matcher
+ *
  * @since 0.0.6
  * @category Models
  */
@@ -91,14 +99,14 @@ export const make = <Input>(value: Input) => _make({ value, result: Option.none(
  * 	import { pipe } from 'effect';
  *
  * 	const handlePrimitive = (value: MTypes.Primitive) => value;
- * 	const handleRecord = (value: MTypes.AnyRecord) => value;
+ * 	const handleRecord = (value: MTypes.NonNullObject) => value;
  *
  * 	export const testMatcher = (value: MTypes.Unknown) =>
  * 		pipe(
  * 			value,
  * 			MMatch.make,
  * 			MMatch.when(MTypes.isPrimitive, handlePrimitive),
- * 			MMatch.when(MTypes.isRecord, handleRecord),
+ * 			MMatch.when(MTypes.isNonNullObject, handleRecord),
  * 			MMatch.exhaustive
  * 		);
  */
@@ -367,13 +375,13 @@ export const orElse =
  * 	import { pipe } from 'effect';
  *
  * 	const handlePrimitive = (value: MTypes.Primitive) => value;
- * 	const handleRecord = (value: MTypes.AnyRecord) => value;
+ * 	const handleRecord = (value: MTypes.NonNullObject) => value;
  *
  * 	export const testMatcher = (value: unknown) =>
  * 		pipe(
  * 			value,
  * 			MMatch.make,
- * 			MMatch.when(MTypes.isRecord, handleRecord),
+ * 			MMatch.when(MTypes.isNonNullObject, handleRecord),
  * 			MMatch.unsafeWhen(MTypes.isPrimitive, handlePrimitive)
  * 		);
  */
@@ -395,14 +403,14 @@ export const unsafeWhen =
  * 	import { pipe } from 'effect';
  *
  * 	const handlePrimitive = (value: MTypes.Primitive) => value;
- * 	const handleRecord = (value: MTypes.AnyRecord) => value;
+ * 	const handleRecord = (value: MTypes.NonNullObject) => value;
  *
  * 	export const testMatcher = (value: MTypes.Unknown) =>
  * 		pipe(
  * 			value,
  * 			MMatch.make,
  * 			MMatch.when(MTypes.isPrimitive, handlePrimitive),
- * 			MMatch.when(MTypes.isRecord, handleRecord),
+ * 			MMatch.when(MTypes.isNonNullObject, handleRecord),
  * 			MMatch.exhaustive
  * 		);
  */

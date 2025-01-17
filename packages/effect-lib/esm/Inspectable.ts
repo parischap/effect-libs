@@ -7,6 +7,12 @@
 import { Inspectable as EInspectable, Option, pipe } from 'effect';
 import * as MRecord from './Record.js';
 
+/**
+ * Module tag
+ *
+ * @since 0.5.0
+ * @category Models
+ */
 export const moduleTag = '@parischap/effect-lib/Inspectable/';
 
 /**
@@ -25,6 +31,12 @@ export const IdSymbol: unique symbol = Symbol.for(moduleTag + 'IdSymbol/') as Id
  */
 export type IdSymbol = typeof IdSymbol;
 
+/**
+ * Interface that an object should implement when an id can be used to represent it
+ *
+ * @since 0.5.0
+ * @category Models
+ */
 export interface Inspectable extends EInspectable.Inspectable {
 	readonly [IdSymbol]: () => string;
 }

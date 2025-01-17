@@ -15,8 +15,8 @@ import * as MTypes from './types.js';
  * @category Utils
  */
 export const prepend =
-	<O extends MTypes.AnyRecord>(that: O) =>
-	<O1 extends MTypes.AnyRecord>(self: O1): MTypes.Data<Omit<O, keyof O1> & O1> => ({
+	<O extends MTypes.NonNullObject>(that: O) =>
+	<O1 extends MTypes.NonNullObject>(self: O1): MTypes.Data<Omit<O, keyof O1> & O1> => ({
 		...that,
 		...self
 	});
@@ -30,8 +30,8 @@ export const prepend =
  * @category Utils
  */
 export const append =
-	<O1 extends MTypes.AnyRecord>(that: O1) =>
-	<O extends MTypes.AnyRecord>(self: O): MTypes.Data<Omit<O, keyof O1> & O1> => ({
+	<O1 extends MTypes.NonNullObject>(that: O1) =>
+	<O extends MTypes.NonNullObject>(self: O): MTypes.Data<Omit<O, keyof O1> & O1> => ({
 		...self,
 		...that
 	});
@@ -43,7 +43,7 @@ export const append =
  * @category Utils
  */
 export const set =
-	<O extends MTypes.AnyRecord, O1 extends Partial<O>>(that: O1) =>
+	<O extends MTypes.NonNullObject, O1 extends Partial<O>>(that: O1) =>
 	(self: O): MTypes.Data<Omit<O, keyof O1> & O1> => ({
 		...self,
 		...that
@@ -56,7 +56,7 @@ export const set =
  * @category Utils
  */
 export const mutableSet =
-	<O extends MTypes.AnyRecord, O1 extends Partial<O>>(that: O1) =>
+	<O extends MTypes.NonNullObject, O1 extends Partial<O>>(that: O1) =>
 	(self: O): Omit<O, keyof O1> & O1 =>
 		/* eslint-disable-next-line functional/immutable-data */
 		Object.assign(self, that);
@@ -82,7 +82,7 @@ export const make =
 
 export const enrichWith =
 	<
-		O extends MTypes.AnyRecord,
+		O extends MTypes.NonNullObject,
 		/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 		O1 extends Record<string | symbol, MTypes.OneArgFunction<O, any>>
 	>(
@@ -105,7 +105,7 @@ export const enrichWith =
 
 export const mutableEnrichWith =
 	<
-		O extends MTypes.AnyRecord,
+		O extends MTypes.NonNullObject,
 		/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 		O1 extends Record<string | symbol, MTypes.OneArgFunction<O, any>>
 	>(

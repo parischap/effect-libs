@@ -81,16 +81,21 @@ export type PredicatesToCoverages<T> = {
  * @since 0.0.6
  * @category Utility types
  */
-export type SourcesToPredicates<T extends MTypes.AnyRecord> = {
+export type SourcesToPredicates<T extends MTypes.NonNullObject> = {
 	readonly [key in keyof T]: Predicate.Predicate<T[key]>;
 };
 
 /**
  * Same as Predicate.struct but allows field completion and makes it possible to only pass a subset
  * of the object fields even when there are some refinements.
+ *
+ * @since 0.5.0
+ * @category Utils
  */
 export const struct =
-	<O extends MTypes.AnyRecord, F extends Partial<SourcesToPredicates<MTypes.Data<O>>>>(fields: F) =>
+	<O extends MTypes.NonNullObject, F extends Partial<SourcesToPredicates<MTypes.Data<O>>>>(
+		fields: F
+	) =>
 	(
 		o: O
 	): o is { readonly [key in keyof O]: key extends keyof F ? Target<F[key]> & O[key] : O[key] } =>

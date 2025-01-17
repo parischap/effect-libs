@@ -71,7 +71,7 @@ describe('MTree', () => {
 		});
 
 		it('pipe', () => {
-			expect(testTree1.pipe(MTypes.isRecord)).toBe(true);
+			expect(testTree1.pipe(MTypes.isNonNullObject)).toBe(true);
 		});
 
 		describe('has', () => {
