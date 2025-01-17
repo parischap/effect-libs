@@ -22,7 +22,7 @@
 		"transpile-annotate": "babel dist --plugins annotate-pure-calls --out-dir dist --source-maps",
 		"compile": "pnpm transpile-esm && pnpm transpile-cjs && pnpm transpile-annotate",
 		"build-and-publish": "pnpm build && pnpm checks && pnpm publish-to-npm",
-		"docgen": "echo \"docgen not activated for this package\"",
+		"docgen": "docgen",
 		"prodify": "prodify",
 		"bundle": "bundle-files",
 		"examples": "vite-node examples/basic-usage.ts"

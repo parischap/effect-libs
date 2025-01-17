@@ -7,7 +7,7 @@ export default merge(
 		bundled: false,
 		visibility: Configs.Visibility.Type.Public,
 		hasStaticFolder: false,
-		hasDocGen: false,
+		hasDocGen: true,
 		keywords: [
 			'terminal',
 			'color',
