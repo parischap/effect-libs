@@ -8,10 +8,16 @@
  * @since 0.1.0
  */
 
-import { MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
+import { MInspectable, MPipeable, MString, MTypes } from '@parischap/effect-lib';
 import { Array, Equal, Equivalence, flow, Hash, pipe, Pipeable, Predicate, Struct } from 'effect';
 import * as ASStyle from './Style.js';
 
+/**
+ * Module tag
+ *
+ * @since 0.0.1
+ * @category Models
+ */
 export const moduleTag = '@parischap/ansi-styles/Palette/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
@@ -22,7 +28,7 @@ type TypeId = typeof TypeId;
  * @since 0.0.1
  * @category Models
  */
-export type Styles = ReadonlyArray<ASStyle.Type>;
+export type Styles = MTypes.OverTwo<ASStyle.Type>;
 
 /**
  * Type that represents a Palette.
@@ -79,14 +85,16 @@ const proto: MTypes.Proto<Type> = {
 	...MPipeable.BaseProto
 };
 
+/** Constructor */
+const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
+
 /**
  * Constructor
  *
  * @since 0.0.1
  * @category Constructors
  */
-export const make = (params: MTypes.Data<Type>): Type =>
-	MTypes.objectFromDataAndProto(proto, params);
+export const make = (...styles: Styles): Type => _make({ styles });
 
 /**
  * Gets the id of `self`
@@ -97,7 +105,8 @@ export const make = (params: MTypes.Data<Type>): Type =>
 export const toId: MTypes.OneArgFunction<Type, string> = flow(
 	Struct.get('styles'),
 	Array.map(ASStyle.toId),
-	Array.join('/')
+	Array.join('/'),
+	MString.append('Palette')
 );
 
 /**
@@ -117,20 +126,7 @@ export const styles: MTypes.OneArgFunction<Type, Styles> = Struct.get('styles');
 export const append =
 	(that: Type) =>
 	(self: Type): Type =>
-		make({
-			styles: pipe(self.styles, Array.appendAll(that.styles))
-		});
-
-/**
- * Empty Palette instance
- *
- * @since 0.0.1
- * @category Instances
- */
-
-export const empty: Type = make({
-	styles: Array.empty()
-});
+		make(...self.styles, ...that.styles);
 
 /**
  * Palette instance which contains all standard original colors
@@ -139,18 +135,16 @@ export const empty: Type = make({
  * @category Instances
  */
 
-export const allStandardOriginalColors: Type = make({
-	styles: Array.make(
-		ASStyle.black,
-		ASStyle.red,
-		ASStyle.green,
-		ASStyle.yellow,
-		ASStyle.blue,
-		ASStyle.magenta,
-		ASStyle.cyan,
-		ASStyle.white
-	)
-});
+export const allStandardOriginalColors: Type = make(
+	ASStyle.black,
+	ASStyle.red,
+	ASStyle.green,
+	ASStyle.yellow,
+	ASStyle.blue,
+	ASStyle.magenta,
+	ASStyle.cyan,
+	ASStyle.white
+);
 
 /**
  * Palette instance which contains all bright original colors
@@ -159,18 +153,16 @@ export const allStandardOriginalColors: Type = make({
  * @category Instances
  */
 
-export const allBrightOriginalColors: Type = make({
-	styles: Array.make(
-		ASStyle.Bright.black,
-		ASStyle.Bright.red,
-		ASStyle.Bright.green,
-		ASStyle.Bright.yellow,
-		ASStyle.Bright.blue,
-		ASStyle.Bright.magenta,
-		ASStyle.Bright.cyan,
-		ASStyle.Bright.white
-	)
-});
+export const allBrightOriginalColors: Type = make(
+	ASStyle.Bright.black,
+	ASStyle.Bright.red,
+	ASStyle.Bright.green,
+	ASStyle.Bright.yellow,
+	ASStyle.Bright.blue,
+	ASStyle.Bright.magenta,
+	ASStyle.Bright.cyan,
+	ASStyle.Bright.white
+);
 
 /**
  * Palette instance which contains all original colors

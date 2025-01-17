@@ -1,7 +1,6 @@
 /* eslint-disable functional/no-expression-statements */
 import { ASContextFormatter, ASPalette, ASStyle, ASText } from '@parischap/ansi-styles';
 import { MUtils } from '@parischap/effect-lib';
-import { Equal } from 'effect';
 import { describe, expect, it } from 'vitest';
 
 describe('ContextFormatter', () => {
@@ -14,15 +13,15 @@ describe('ContextFormatter', () => {
 		return context.pos1;
 	}
 
-	const fooContextFormatter = ASContextFormatter.make({
+	const formatterOnContextPos1 = ASContextFormatter.PaletteBased.make(pos1);
+
+	const fooUnistyledFormatter = ASContextFormatter.Unistyled.make({
 		defaultText: 'foo',
-		indexFromContext: pos1,
-		palette: ASPalette.allStandardOriginalColors
+		style: ASStyle.red
 	});
 
-	const barContextFormatter = ASContextFormatter.make({
-		defaultText: 'bar',
-		indexFromContext: pos1,
+	const allStandardOriginalColorsFormaterOnContextPos1WithFooDefault = formatterOnContextPos1({
+		defaultText: 'foo',
 		palette: ASPalette.allStandardOriginalColors
 	});
 
@@ -36,92 +35,163 @@ describe('ContextFormatter', () => {
 		otherStuff: 'dummy'
 	};
 
-	describe('Tag, prototype and guards', () => {
+	describe('Tag and guards', () => {
 		it('moduleTag', () => {
 			expect(ASContextFormatter.moduleTag).toBe(MUtils.moduleTagFromFileName(__filename));
 		});
 
-		describe('Equal.equals', () => {
-			it('Matching', () => {
-				expect(
-					Equal.equals(
-						fooContextFormatter,
-						ASContextFormatter.make({
-							defaultText: 'foo',
-							indexFromContext: pos1,
-							palette: ASPalette.allStandardOriginalColors
-						})
-					)
-				).toBe(true);
-			});
-			it('Non matching', () => {
-				expect(Equal.equals(fooContextFormatter, barContextFormatter)).toBe(false);
-			});
-		});
-
-		it('.toString()', () => {
-			expect(fooContextFormatter.toString()).toBe(
-				'Black/Red/Green/Yellow/Blue/Magenta/Cyan/WhiteBasedOnPos1WithFooAsDefault'
-			);
-		});
-
-		it('.pipe()', () => {
-			expect(fooContextFormatter.pipe(ASContextFormatter.has)).toBe(true);
-		});
-
 		describe('has', () => {
 			it('Matching', () => {
-				expect(ASContextFormatter.has(fooContextFormatter)).toBe(true);
+				expect(ASContextFormatter.has(fooUnistyledFormatter)).toBe(true);
+				expect(
+					ASContextFormatter.has(allStandardOriginalColorsFormaterOnContextPos1WithFooDefault)
+				).toBe(true);
 			});
 			it('Non matching', () => {
 				expect(ASContextFormatter.has(new Date())).toBe(false);
 			});
 		});
+
+		describe('isUnistyled', () => {
+			it('Matching', () => {
+				expect(ASContextFormatter.isUnistyled(fooUnistyledFormatter)).toBe(true);
+			});
+			it('Non matching', () => {
+				expect(
+					ASContextFormatter.isUnistyled(
+						allStandardOriginalColorsFormaterOnContextPos1WithFooDefault
+					)
+				).toBe(false);
+			});
+		});
+
+		describe('isPaletteBased', () => {
+			it('Matching', () => {
+				expect(
+					ASContextFormatter.isPaletteBased(
+						allStandardOriginalColorsFormaterOnContextPos1WithFooDefault
+					)
+				).toBe(true);
+			});
+			it('Non matching', () => {
+				expect(ASContextFormatter.isPaletteBased(fooUnistyledFormatter)).toBe(false);
+			});
+		});
 	});
 
-	describe('Constructor', () => {
-		it('Empty palette with value', () => {
-			expect(
-				ASText.equivalence(
-					ASContextFormatter.make({
-						defaultText: 'foo',
-						indexFromContext: pos1,
-						palette: ASPalette.empty
-					})('baz')(context1),
-					ASText.fromString('baz')
-				)
-			).toBe(true);
+	describe('Unistyled', () => {
+		describe('Prototype and guards', () => {
+			it('.pipe()', () => {
+				expect(fooUnistyledFormatter.pipe(ASContextFormatter.has)).toBe(true);
+			});
+
+			describe('has', () => {
+				it('Matching', () => {
+					expect(ASContextFormatter.Unistyled.has(fooUnistyledFormatter)).toBe(true);
+				});
+				it('Non matching', () => {
+					expect(
+						ASContextFormatter.Unistyled.has(
+							allStandardOriginalColorsFormaterOnContextPos1WithFooDefault
+						)
+					).toBe(false);
+				});
+			});
 		});
 
-		it('Empty palette without value', () => {
-			expect(
-				ASText.equivalence(
-					ASContextFormatter.make({
-						defaultText: 'foo',
-						indexFromContext: pos1,
-						palette: ASPalette.empty
-					})('')(context1),
-					ASText.fromString('foo')
-				)
-			).toBe(true);
+		describe('.toString()', () => {
+			it('With default text', () => {
+				expect(fooUnistyledFormatter.toString()).toBe('RedFormatterWithFooAsDefault');
+			});
+
+			it('Without default text', () => {
+				expect(
+					ASContextFormatter.Unistyled.make({ defaultText: '', style: ASStyle.none }).toString()
+				).toBe('NoStyleFormatter');
+			});
 		});
 
-		it('Non-empty palette with value with context within bounds', () => {
-			expect(ASText.equivalence(fooContextFormatter('baz')(context1), ASStyle.green('baz'))).toBe(
-				true
-			);
+		describe('Action', () => {
+			it('Non-empty string', () => {
+				expect(ASText.equivalence(fooUnistyledFormatter('baz')(context1), ASStyle.red('baz'))).toBe(
+					true
+				);
+			});
+
+			it('Empty string', () => {
+				expect(ASText.equivalence(fooUnistyledFormatter()(context1), ASStyle.red('foo'))).toBe(
+					true
+				);
+			});
+		});
+	});
+
+	describe('PaletteBased', () => {
+		describe('Prototype and guards', () => {
+			it('.pipe()', () => {
+				expect(
+					allStandardOriginalColorsFormaterOnContextPos1WithFooDefault.pipe(ASContextFormatter.has)
+				).toBe(true);
+			});
+
+			describe('has', () => {
+				it('Matching', () => {
+					expect(
+						ASContextFormatter.PaletteBased.has(
+							allStandardOriginalColorsFormaterOnContextPos1WithFooDefault
+						)
+					).toBe(true);
+				});
+				it('Non matching', () => {
+					expect(ASContextFormatter.PaletteBased.has(fooUnistyledFormatter)).toBe(false);
+				});
+			});
 		});
 
-		it('Non-empty palette without value with context within bounds', () => {
-			expect(ASText.equivalence(fooContextFormatter('')(context1), ASStyle.green('foo'))).toBe(
-				true
-			);
+		describe('.toString()', () => {
+			it('With default text', () => {
+				expect(allStandardOriginalColorsFormaterOnContextPos1WithFooDefault.toString()).toBe(
+					'Black/Red/Green/Yellow/Blue/Magenta/Cyan/WhitePaletteFormatterOnPos1WithFooAsDefault'
+				);
+			});
+
+			it('Without default text', () => {
+				expect(
+					formatterOnContextPos1({
+						defaultText: '',
+						palette: ASPalette.allStandardOriginalColors
+					}).toString()
+				).toBe('Black/Red/Green/Yellow/Blue/Magenta/Cyan/WhitePaletteFormatterOnPos1');
+			});
 		});
 
-		it('Non-empty palette with value with context out of bounds', () => {
-			expect(ASText.equivalence(fooContextFormatter('baz')(context2), ASStyle.red('baz'))).toBe(
-				true
-			);
+		describe('Action', () => {
+			it('With value and context within bounds', () => {
+				expect(
+					ASText.equivalence(
+						allStandardOriginalColorsFormaterOnContextPos1WithFooDefault('baz')(context1),
+						ASStyle.green('baz')
+					)
+				).toBe(true);
+			});
+
+			it('With value with context out of bounds', () => {
+				expect(
+					ASText.equivalence(
+						allStandardOriginalColorsFormaterOnContextPos1WithFooDefault('baz')(context2),
+						ASStyle.red('baz')
+					)
+				).toBe(true);
+			});
+
+			it('Without value, with context within bounds', () => {
+				expect(
+					ASText.equivalence(
+						allStandardOriginalColorsFormaterOnContextPos1WithFooDefault()(context1),
+						ASStyle.green('foo')
+					)
+				).toBe(true);
+			});
 		});
 	});
 });
