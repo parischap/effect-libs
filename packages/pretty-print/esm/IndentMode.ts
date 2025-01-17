@@ -1,6 +1,4 @@
 /**
- * In this module, the term `record` refers to a non-null object, an array or a function.
- *
  * This module implements a type that takes care of indentation when printing a record on multiple
  * lines. It is used by the RecordFormatter module (see RecordFormatter.ts)
  *

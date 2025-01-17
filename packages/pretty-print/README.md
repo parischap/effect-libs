@@ -43,6 +43,11 @@ After reading this introduction, you may take a look at the [API](https://parisc
 
 ## Usage
 
+For primitive types, the normal stringification
+_ process is to call the toString method (except for `null` and `undefined` which are printed as
+_ 'null' and 'undefined' respectively). For records, the normal stringification process consists
+_ in stringifying the constituents of the record (obtained by calling Reflect.ownKeys). The
+_ normal stringification process does not handle formats. So most of the time, it's best to use \* one of the predefined `ByPasser` instances if you want formatted output.
 In this documentation, the term `record` refers to a non-null `object`, an `array` or a `function`.
 
 ### 1) Using predefined `Options` instances

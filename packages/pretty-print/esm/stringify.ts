@@ -1,6 +1,6 @@
 /**
- * This module implements two functions to pretty-print a value either as a StringifiedValue (see
- * StringifiedValue.ts) or as a string. It is the main module of this package.
+ * This module implements two functions to pretty-print a value either as a Stringified (see
+ * Stringified.ts) or as a string. It is the main module of this package.
  *
  * @since 0.0.1
  */
@@ -9,11 +9,11 @@ import { MTypes } from '@parischap/effect-lib';
 import { Struct, flow } from 'effect';
 import * as PPOption from './Option.js';
 import * as PPString from './String.js';
-import type * as PPStringifiedValue from './StringifiedValue.js';
+import type * as PPStringifiedValue from './Stringified.js';
 import * as PPValue from './Value.js';
 
 /**
- * Pretty prints a value yielding the result as a StringifiedValue
+ * Pretty prints a value yielding the result as a Stringified
  *
  * @since 0.0.1
  * @category Utils
@@ -21,7 +21,7 @@ import * as PPValue from './Value.js';
 export const asLines = (
 	option: PPOption.Type = PPOption.unformattedSplitWhenTotalLengthExceeds40
 ): MTypes.OneArgFunction<unknown, PPStringifiedValue.Type> =>
-	flow(PPValue.makeFromTopValue(option), PPValue.stringify(option));
+	flow(PPValue.makeFromTopValue, PPValue.stringify(option));
 
 /**
  * Pretty prints a value yielding the result as a string. The separator used to join all lines

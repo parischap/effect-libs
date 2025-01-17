@@ -1,6 +1,4 @@
 /**
- * In this module, the term `record` refers to a non-null object, an array or a function.
- *
  * This module implements a type that contains the marks used when printing a record. It is used by
  * the RecordFormatter module (see RecordFormatter.ts)
  *

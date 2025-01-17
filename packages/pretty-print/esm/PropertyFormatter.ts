@@ -1,6 +1,4 @@
 /**
- * In this module, the term `record` refers to a non-null object, an array or a function.
- *
  * This module implements a type that takes care if the stringification of the properties of a
  * record. From the stringified representation of the value of a property which it receives, it must
  * return the stringified representation of the whole property (key and value).
@@ -26,10 +24,10 @@ import {
 	String,
 	Struct
 } from 'effect';
-import type * as PPFormatSet from './FormatMap.js';
 import * as PPPropertyMarks from './PropertyMarks.js';
 import * as PPString from './String.js';
-import type * as PPStringifiedValue from './StringifiedValue.js';
+import type * as PPStringifiedValue from './Stringified.js';
+import type * as PPFormatSet from './StyleMap.js';
 import * as PPValue from './Value.js';
 
 const moduleTag = '@parischap/pretty-print/PropertyFormatter/';
@@ -39,8 +37,8 @@ type TypeId = typeof TypeId;
 /**
  * Type of the action of this PropertyFormatter. `value` is the Value (see Value.ts) representing a
  * property and `stringified` is the stringified representation of the value of that property (see
- * StringifiedValue.ts). Based on these two parameters, it must return a stringified representation
- * of the whole property.
+ * Stringified.ts). Based on these two parameters, it must return a stringified representation of
+ * the whole property.
  */
 interface ActionType {
 	(value: PPValue.All): MTypes.OneArgFunction<PPStringifiedValue.Type>;
@@ -62,8 +60,8 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
 	/**
 	 * Action of this PropertyFormatter. `value` is the Value (see Value.ts) representing a property
 	 * and `stringified` is the stringified representation of the value of that property (see
-	 * StringifiedValue.ts). Based on these two parameters, it must return a stringified
-	 * representation of the whole property.
+	 * Stringified.ts). Based on these two parameters, it must return a stringified representation of
+	 * the whole property.
 	 *
 	 * @since 0.0.1
 	 */
@@ -154,8 +152,7 @@ export const keyAndValue =
 						onNone: () => stringified,
 						onSome: flow(
 							PPString.makeWith(
-								PPValue.isRecordWithFunctionValue(value) ?
-									formatSet.propertyKeyFormatterWhenFunctionValue
+								PPValue.isFunctionInRecord(value) ? formatSet.propertyKeyFormatterWhenFunctionValue
 								: value.hasSymbolicKey ? formatSet.propertyKeyFormatterWhenSymbol
 								: formatSet.propertyKeyFormatterWhenOther
 							),

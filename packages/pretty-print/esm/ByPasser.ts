@@ -1,13 +1,10 @@
 /**
- * In this module, the term `record` refers to a non-null object, an array or a function.
- *
  * This module implements a type that defines a specific stringification process for certain values
- * (the normal stringification process is by-passed). For instance, you may prefer printing Dates as
- * strings rather than as objects.
+ * (the normal stringification process is by-passed, hence its name). For instance, you may prefer
+ * printing Dates as strings rather than as objects.
  *
  * With the make function, you can define your own instances if the provided ones don't suit your
- * needs. The easiest way to do so is to call the action method of one of the existing ByPasser
- * instances for the part you want to keep and write your own code for the part you want to change.
+ * needs.
  *
  * @since 0.0.1
  */
@@ -23,6 +20,7 @@ import {
 	MTypes
 } from '@parischap/effect-lib';
 
+import { ASText } from '@parischap/ansi-styles';
 import {
 	Array,
 	Equal,
@@ -35,14 +33,38 @@ import {
 	Predicate,
 	String
 } from 'effect';
-import type * as PPFormatSet from './FormatMap.js';
-import type * as PPOption from './Option.js';
-import * as PPString from './String.js';
+import * as PPOptionAndPrecalc from './OptionAndPrecalc.js';
 import type * as PPStringifiedValue from './StringifiedValue.js';
+import * as PPValue from './Value.js';
 
 const moduleTag = '@parischap/pretty-print/ByPasser/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
+
+/**
+ * Namespace of a ByPasser used as an action
+ *
+ * @since 0.0.1
+ * @category Models
+ */
+export namespace Action {
+	/**
+	 * Type of the action. The first parameter contains the Option instance passed by the user
+	 * enriched by some precalced values (see OptionAndPrecalc.ts). The second parameter is the Value
+	 * (see Value.ts) being currently displayed. If the action returns a value of type
+	 * `Some<StringifiedValue.Type>` or `StringifiedValue.Type`, this `StringifiedValue` will be used
+	 * as is to represent the input value. If it returns a `none` or `null` or `undefined`, the normal
+	 * stringification process will be applied.
+	 *
+	 * @since 0.0.1
+	 * @category Models
+	 */
+	export interface Type
+		extends MTypes.OneArgFunction<
+			PPOptionAndPrecalc.Type,
+			MTypes.OneArgFunction<PPValue.All, MOption.OptionOrNullable<PPStringifiedValue.Type>>
+		> {}
+}
 
 /**
  * Type that represents a ByPasser.
@@ -50,32 +72,18 @@ type TypeId = typeof TypeId;
  * @since 0.0.1
  * @category Models
  */
-export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
+export interface Type
+	extends Action.Type,
+		Equal.Equal,
+		MInspectable.Inspectable,
+		Pipeable.Pipeable {
 	/**
-	 * Id of this ByPasser instance. Useful for equality and debugging: the action property being a
-	 * function, it will not be printed by the `toString` method.
+	 * Id of this ByPasser instance. Useful for equality and debugging
 	 *
 	 * @since 0.0.1
 	 */
 	readonly id: string;
-	/**
-	 * Action of this ByPasser. `value` is the Value (see Value.ts) being currently printed. `option`
-	 * is the `Option` instance (see Option.ts) passed by the user. If the action returns a value of
-	 * type `Some<StringifiedValue.Type>` or `StringifiedValue.Type`, this `StringifiedValue` will be
-	 * used as is to represent the input value. If it returns a `none` or `null` or `undefined`, the
-	 * normal stringification process will be applied. For primitive types, the normal stringification
-	 * process is to call the toString method (except for `null` and `undefined` which are printed as
-	 * 'null' and 'undefined' respectively). For records, the normal stringification process consists
-	 * in stringifying the constituents of the record (obtained by calling Reflect.ownKeys). The
-	 * normal stringification process does not handle formats. So most of the time, it's best to use
-	 * one of the predefined `ByPasser` instances if you want formatted output.
-	 *
-	 * @since 0.0.1
-	 */
-	readonly action: (
-		value: MTypes.Unknown,
-		option: PPOption.Type
-	) => MOption.OptionOrNullable<PPStringifiedValue.Type>;
+
 	/** @internal */
 	readonly [TypeId]: TypeId;
 }
@@ -96,9 +104,9 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
  */
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
 
-/** Prototype */
+/** Base */
 const _TypeIdHash = Hash.hash(TypeId);
-const proto: MTypes.Proto<Type> = {
+const base: MTypes.Proto<Type> = {
 	[TypeId]: TypeId,
 	[Equal.symbol](this: Type, that: unknown): boolean {
 		return has(that) && equivalence(this, that);
@@ -119,27 +127,34 @@ const proto: MTypes.Proto<Type> = {
  * @since 0.0.1
  * @category Constructors
  */
-export const make = (params: MTypes.Data<Type>): Type =>
-	MTypes.objectFromDataAndProto(proto, params);
+export const make = ({ id, action }: { readonly id: string; readonly action: Action.Type }): Type =>
+	Object.assign(action.bind({}), {
+		id,
+		...base
+	});
 
 /**
- * Function that returns a ByPasser instance which prints primitives as util.inspect does. This
- * ByPasser manages formats. It does not provide any special treatment for objects.
+ * Function that returns a ByPasser instance which prints primitives as util.inspect does. It does
+ * not provide any special treatment for objects.
  *
  * @since 0.0.1
  * @category Instances
  */
-export const objectAsRecord = (formatSet: PPFormatSet.Type): Type =>
-	make({
-		id: formatSet.id + 'ObjectAsRecord',
-		action: flow(
+export const objectAsRecord: Type = make({
+	id: 'ObjectAsRecord',
+	action: (optionAndPrecalc) => (value) => {
+		const textShower = pipe(value, PPOptionAndPrecalc.toTextShower(optionAndPrecalc));
+		const markShower = pipe(value, PPOptionAndPrecalc.toMarkShower(optionAndPrecalc));
+		return pipe(
+			value,
+			PPValue.value,
 			MMatch.make,
 			MMatch.when(
 				MTypes.isString,
 				flow(
-					MString.prepend("'"),
-					MString.append("'"),
-					PPString.makeWith(formatSet.stringValueFormatter),
+					textShower('stringValue'),
+					ASText.prepend(markShower('stringStartDelimiter')),
+					ASText.append(markShower('stringEndDelimiter')),
 					Array.of,
 					Option.some
 				)
@@ -149,35 +164,27 @@ export const objectAsRecord = (formatSet: PPFormatSet.Type): Type =>
 				MTypes.isBoolean,
 				MTypes.isNull,
 				MTypes.isUndefined,
-				flow(
-					MString.fromPrimitive,
-					PPString.makeWith(formatSet.otherValueFormatter),
-					Array.of,
-					Option.some
-				)
+				flow(MString.fromPrimitive, textShower('otherValue'), Array.of, Option.some)
 			),
 			MMatch.when(
 				MTypes.isBigInt,
 				flow(
 					MString.fromNonNullablePrimitive,
-					PPString.makeWith(formatSet.otherValueFormatter),
-					PPString.append(pipe('n', PPString.makeWith(formatSet.bigIntMarkFormatter))),
+					textShower('otherValue'),
+					ASText.prepend(markShower('bigIntStartDelimiter')),
+					ASText.append(markShower('bigIntEndDelimiter')),
 					Array.of,
 					Option.some
 				)
 			),
 			MMatch.when(
 				MTypes.isSymbol,
-				flow(
-					MString.fromNonNullablePrimitive,
-					PPString.makeWith(formatSet.symbolValueFormatter),
-					Array.of,
-					Option.some
-				)
+				flow(MString.fromNonNullablePrimitive, textShower('symbolValue'), Array.of, Option.some)
 			),
 			MMatch.orElse(() => Option.none())
-		)
-	});
+		);
+	}
+});
 
 /**
  * Same as `objectAsRecord` but nullable values are not printed.
@@ -221,7 +228,7 @@ export const objectAsValue = (formatSet: PPFormatSet.Type): Type =>
 				MMatch.when(MTypes.isArray, () => Option.none()),
 				MMatch.when(MTypes.isFunction, () => pipe(option.functionLabel, Array.of, Option.some)),
 				MMatch.when(
-					MTypes.isRecord,
+					MTypes.isNonNullObject,
 					flow(
 						MRecord.tryZeroParamStringFunction({
 							functionName: 'toString',

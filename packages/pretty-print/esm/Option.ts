@@ -1,6 +1,4 @@
 /**
- * In this module, the term `record` refers to a non-null object, an array or a function.
- *
  * This module implements the options for pretty-printing.
  *
  * With the make function, you can define your own instances if the provided ones don't suit your
@@ -11,17 +9,17 @@
 
 import { pipe } from 'effect';
 import * as PPByPasser from './ByPasser.js';
-import * as PPFormatSet from './FormatMap.js';
+import * as PPMarkMap from './MarkMap.js';
 import * as PPPropertyFilter from './PropertyFilter.js';
 import * as PPPropertyFormatter from './PropertyFormatter.js';
 import * as PPRecordFormatter from './RecordFormatter.js';
-import * as PPString from './String.js';
+import * as PPStyleMap from './StyleMap.js';
 import * as PPValueOrder from './ValueOrder.js';
 
 import { MInspectable, MPipeable, MStruct, MTypes } from '@parischap/effect-lib';
 import { Equal, Equivalence, Hash, Pipeable, Predicate } from 'effect';
 
-const moduleTag = '@parischap/pretty-print/Option/';
+export const moduleTag = '@parischap/pretty-print/Option/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
 
@@ -40,18 +38,18 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
 	readonly id: string;
 
 	/**
-	 * Map used to format the output stringified values (see FormatMap.ts)
+	 * Map of ContextFormatter's are used to style the different parts of a stringified value
 	 *
 	 * @since 0.3.0
 	 */
-	readonly formatMap: string;
+	readonly styleMap: PPStyleMap.Type;
 
 	/**
-	 * Map used to format the output stringified values (see MarkMap.ts)
+	 * Map of the different marks that appear in a value to stringify
 	 *
 	 * @since 0.3.0
 	 */
-	readonly markMap: string;
+	readonly markMap: PPMarkMap.Type;
 
 	/**
 	 * Maximum number of nested records that will be opened. A value inferior or equal to 0 means that
@@ -63,27 +61,6 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
 	readonly maxDepth: number;
 
 	/**
-	 * Text to show instead of an array when maxDepth is reached.
-	 *
-	 * @since 0.0.1
-	 */
-	readonly arrayLabel: string;
-
-	/**
-	 * Text to show instead of a function when maxDepth is reached.
-	 *
-	 * @since 0.0.1
-	 */
-	readonly functionLabel: string;
-
-	/**
-	 * Text to show instead of a non-null object when maxDepth is reached.
-	 *
-	 * @since 0.0.1
-	 */
-	readonly objectLabel: string;
-
-	/**
 	 * Indicates the level in the prototypal chain of a record down to which properties are shown.
 	 * maxPrototypeDepth <= 0 means that only properties of the top record are shown.
 	 * maxPrototypeDepth = 1 means that only properties of the top record and its direct prototype are
@@ -92,14 +69,6 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
 	 * @since 0.0.1
 	 */
 	readonly maxPrototypeDepth: number;
-
-	/**
-	 * Text to show instead of a record that contains a direct or indirect circular reference to
-	 * itself.
-	 *
-	 * @since 0.0.1
-	 */
-	readonly circularLabel: string;
 
 	/**
 	 * `ValueOrder` instance: allows you to specify how to sort properties when printing records (see

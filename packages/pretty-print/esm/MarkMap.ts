@@ -1,6 +1,5 @@
 /**
- * This module implements a type that represents Mark's (see Mark.ts) identified by their id to be
- * displayed when stringifying a value.
+ * This module implements a map of the different marks that appear in a value to stringify.
  *
  * With the make function, you can define your own instances if the provided ones don't suit your
  * needs.
@@ -8,17 +7,36 @@
  * @since 0.3.0
  */
 
-import { MInspectable, MPipeable, MStruct, MTypes } from '@parischap/effect-lib';
-import { Equal, Equivalence, flow, Hash, HashMap, pipe, Pipeable, Predicate } from 'effect';
-import * as PPFormatMap from './FormatMap.js';
-import * as PPMark from './Mark.js';
+import { MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
+import { Equal, Equivalence, Hash, HashMap, pipe, Pipeable, Predicate, Struct } from 'effect';
 
 const moduleTag = '@parischap/pretty-print/MarkMap/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
+namespace Mark {
+	export interface Type {
+		/**
+		 * The text to be displayed for this mark
+		 *
+		 * @since 0.3.0
+		 */
+		readonly text: string;
+		/**
+		 * The name of the part that this mark belongs to. It will be used to determine to style to
+		 * apply (see StyleMap.ts).
+		 *
+		 * @since 0.3.0
+		 */
+		readonly partName: string;
+	}
+}
+
+namespace Marks {
+	export interface Type extends HashMap.HashMap<string, Mark.Type> {}
+}
 
 /**
- * Interface that represents a FormatSet
+ * Interface that represents a MarkMap
  *
  * @since 0.3.0
  * @category Models
@@ -31,11 +49,11 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
 	 */
 	readonly id: string;
 	/**
-	 * Format applied to the different parts of the value to stringify
+	 * Map of the different marks that appear in a value to stringify
 	 *
 	 * @since 0.3.0
 	 */
-	readonly marks: HashMap.HashMap<string, PPMark.Type>;
+	readonly marks: Marks.Type;
 
 	/** @internal */
 	readonly [TypeId]: TypeId;
@@ -84,16 +102,38 @@ export const make = (params: MTypes.Data<Type>): Type =>
 	MTypes.objectFromDataAndProto(proto, params);
 
 /**
- * Returns a copy of `self` where all Mark's have been precalced.
+ * Returns the `id` property of `self`
  *
  * @since 0.3.0
- * @category Utils
+ * @category Destructors
  */
-export const preCalc = (formatMap: PPFormatMap.Type): MTypes.OneArgFunction<Type> =>
-	flow(
-		MStruct.evolve({
-			// No infer missing in HashMap.map
-			marks: HashMap.map<PPMark.Type, PPMark.Type, string>(PPMark.preCalc(formatMap))
-		}),
-		make
-	);
+export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
+
+/**
+ * Returns the `marks` property of `self`
+ *
+ * @since 0.3.0
+ * @category Destructors
+ */
+export const marks: MTypes.OneArgFunction<Type, Marks.Type> = Struct.get('marks');
+
+/**
+ * Default MarkMap instance
+ *
+ * @since 0.3.0
+ * @category Instances
+ */
+
+export const defaults: Type = make({
+	id: 'Defaults',
+	marks: HashMap.make(
+		['arrayBeyondMaxDepth', { text: '[Array]', partName: 'message' }],
+		['functionBeyondMaxDepth', { text: '(Function)', partName: 'message' }],
+		['objectBeyondMaxDepth', { text: '{Object}', partName: 'message' }],
+		['circularityDetection', { text: '(Circular)', partName: 'message' }],
+		['stringStartDelimiter', { text: "'", partName: 'stringDelimiters' }],
+		['stringEndDelimiter', { text: "'", partName: 'stringDelimiters' }],
+		['bigIntStartDelimiter', { text: '', partName: 'bigIntDelimiters' }],
+		['bigIntEndDelimiter', { text: 'n', partName: 'bigIntDelimiters' }]
+	)
+});

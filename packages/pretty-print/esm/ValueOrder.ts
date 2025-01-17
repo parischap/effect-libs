@@ -5,14 +5,12 @@
  * This module implements several ValueOrder instances. You can define your own if the provided ones
  * don't suit your needs. All you have to do is provide a function that matches Type.
  *
- * In this module, the term `record` refers to a non-null object, an array or a function.
- *
  * @since 0.0.1
  */
 
-import { MFunction, MPredicate, MTypes } from '@parischap/effect-lib';
-import { Order, Struct } from 'effect';
-import type * as PPValue from './Value.js';
+import { MFunction, MTypes } from '@parischap/effect-lib';
+import { flow, Order } from 'effect';
+import * as PPValue from './Value.js';
 
 /**
  * Type that implements a ValueOrder. For non Effect users, Order<A> is a function that takes two
@@ -29,14 +27,14 @@ export interface Type extends Order.Order<PPValue.All> {}
  * @since 0.0.1
  * @category Instances
  */
-export const byPrototypalDepth: Type = Order.mapInput(Order.number, Struct.get('protoDepth'));
+export const byPrototypalDepth: Type = Order.mapInput(Order.number, PPValue.protoDepth);
 /**
  * `ValueOrder` instance based on `stringKey`
  *
  * @since 0.0.1
  * @category Instances
  */
-export const byStringKey: Type = Order.mapInput(Order.string, Struct.get('stringKey'));
+export const byStringKey: Type = Order.mapInput(Order.string, PPValue.stringKey);
 
 /**
  * `ValueOrder` instance based on the callability of the underlying value property (non functions
@@ -47,7 +45,7 @@ export const byStringKey: Type = Order.mapInput(Order.string, Struct.get('string
  */
 export const byCallability: Type = Order.mapInput(
 	Order.boolean,
-	MPredicate.struct({ valueCategory: MFunction.strictEquals(MTypes.Category.Type.Function) })
+	flow(PPValue.valueCategory, MFunction.strictEquals(MTypes.Category.Type.Function))
 );
 
 /**
@@ -57,10 +55,7 @@ export const byCallability: Type = Order.mapInput(
  * @since 0.0.1
  * @category Instances
  */
-export const byType: Type = Order.mapInput(
-	Order.reverse(Order.boolean),
-	Struct.get('hasSymbolicKey')
-);
+export const byType: Type = Order.mapInput(Order.reverse(Order.boolean), PPValue.hasSymbolicKey);
 
 /**
  * `ValueOrder` instance based on the enumerability of the key of the underlying value property
@@ -69,4 +64,4 @@ export const byType: Type = Order.mapInput(
  * @since 0.0.1
  * @category Instances
  */
-export const byEnumerability: Type = Order.mapInput(Order.boolean, Struct.get('hasEnumerableKey'));
+export const byEnumerability: Type = Order.mapInput(Order.boolean, PPValue.hasEnumerableKey);

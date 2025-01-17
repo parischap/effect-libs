@@ -1,6 +1,6 @@
 /**
- * Type that is an alias for an array of StringifiedValue's (see StringifiedValue.ts). It represents
- * the output of the stringification process of the properties of a record.
+ * Type that is an alias for an array of Stringified's (see Stringified.ts). It represents the
+ * output of the stringification process of the properties of a record.
  *
  * @since 0.0.1
  */
@@ -10,7 +10,7 @@ import { MArray } from '@parischap/effect-lib';
 import { flow, pipe } from 'effect';
 import type * as PPIndentMode from './IndentMode.js';
 import * as PPString from './String.js';
-import type * as PPStringifiedValue from './StringifiedValue.js';
+import type * as PPStringifiedValue from './Stringified.js';
 
 /**
  * Type that represents a StringifiedValues

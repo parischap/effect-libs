@@ -1,6 +1,4 @@
 /**
- * In this module, the term `record` refers to a non-null object, an array or a function.
- *
  * This module implements a type that takes care of the formatting of records. From the stringified
  * representation of the properties of a record which it receives, it must return the stringified
  * representation of the whole record. It can take care of aspects like printing on a single or
@@ -26,13 +24,13 @@ import {
 	Pipeable,
 	Predicate
 } from 'effect';
-import type * as PPFormatSet from './FormatMap.js';
 import * as PPFormatWheel from './FormatWheel.js';
 import * as PPIndentMode from './IndentMode.js';
 import * as PPRecordMarks from './RecordMarks.js';
 import * as PPString from './String.js';
-import * as PPStringifiedValue from './StringifiedValue.js';
-import * as PPStringifiedValues from './StringifiedValues.js';
+import * as PPStringifiedValue from './Stringified.js';
+import * as PPStringifiedValues from './StringifiedProperties.js';
+import type * as PPFormatSet from './StyleMap.js';
 import * as PPValue from './Value.js';
 
 const moduleTag = '@parischap/pretty-print/RecordFormatter/';
@@ -42,8 +40,8 @@ type TypeId = typeof TypeId;
 /**
  * Type of the action of a RecordFormatter. `value` is the Value (see Value.ts) representing a
  * record and stringifiedProps is an array of the stringified representations of the properties of
- * that record (see StringifiedValue.ts). Based on these two parameters, it must return a
- * stringified representation of the whole record.
+ * that record (see Stringified.ts). Based on these two parameters, it must return a stringified
+ * representation of the whole record.
  */
 interface ActionType {
 	(stringifiedProps: PPStringifiedValues.Type): (value: PPValue.All) => PPStringifiedValue.Type;
