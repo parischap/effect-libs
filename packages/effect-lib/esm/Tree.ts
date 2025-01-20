@@ -1,8 +1,12 @@
 /**
  * Module that implements a Tree<A,B> where the value of a non-leaf node is of type A and the value
- * of a leaf node is of type B. A Tree can be made up of a single leaf. If you don't want this
- * situation, you may work with the type NonLeaf<A,B> instead. In all the provided functions, self
- * can be a Tree<A,B> or a NonLeaf<A,B>
+ * of a leaf node is of type B.
+ *
+ * A node may have no leaf.
+ *
+ * A Tree may be composed of a single leaf. If this situation does not correspond to your need, you
+ * may work with the type NonLeaf<A,B> instead. In all the provided functions, self can be a
+ * Tree<A,B> or a NonLeaf<A,B>
  *
  * @since 0.5.0
  */
@@ -121,7 +125,7 @@ export namespace Forest {
 	 * @since 0.5.0
 	 * @category Models
 	 */
-	export type Type<A, B> = MTypes.ReadonlyOverOne<_Type<A, B>>;
+	export type Type<A, B> = ReadonlyArray<_Type<A, B>>;
 
 	/**
 	 * Returns an equivalence based on an equivalence of the subtypes
@@ -226,9 +230,9 @@ const proto: MTypes.Proto<Type<any, any>> = {
 
 const _unfold =
 	<S, A, B>(
-		f: (seed: S, isCyclical: boolean) => Either.Either<MTypes.Pair<A, MTypes.OverOne<S>>, B>
+		f: (seed: S, isCyclical: boolean) => Either.Either<MTypes.Pair<A, ReadonlyArray<S>>, B>
 	) =>
-	(seed: S): Forest.Type<A, B> => {
+	(seed: S): MTypes.OverOne<_Type<A, B>> => {
 		const dontHandleCycles = MTypes.isOneArgFunction(f);
 
 		return pipe(
@@ -298,7 +302,7 @@ const _unfold =
 
 export const unfold =
 	<S, A, B>(
-		f: (seed: S, isCyclical: boolean) => Either.Either<MTypes.Pair<A, MTypes.OverOne<S>>, B>
+		f: (seed: S, isCyclical: boolean) => Either.Either<MTypes.Pair<A, ReadonlyArray<S>>, B>
 	) =>
 	(seed: S): Type<A, B> =>
 		pipe(seed, _unfold(f), Array.headNonEmpty);
@@ -322,8 +326,8 @@ export const unfoldAndFold =
 		readonly unfold: (
 			seed: S,
 			isCyclical: boolean
-		) => Either.Either<MTypes.Pair<A, MTypes.OverOne<S>>, B>;
-		readonly foldNonLeaf: (value: A, children: MTypes.OverOne<B>) => C;
+		) => Either.Either<MTypes.Pair<A, ReadonlyArray<S>>, B>;
+		readonly foldNonLeaf: (value: A, children: ReadonlyArray<B>) => C;
 		readonly foldLeaf: (value: B) => C;
 	}) =>
 	(seed: S): C =>
