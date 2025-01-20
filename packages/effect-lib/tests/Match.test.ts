@@ -14,8 +14,8 @@ describe('MMatch', () => {
 		it('.toString()', () => {
 			expect(testMatch.toString()).toBe(`{
   "_id": "@parischap/effect-lib/Match/",
-  "value": 5,
-  "result": {
+  "input": 5,
+  "output": {
     "_id": "Option",
     "_tag": "None"
   }
@@ -23,7 +23,7 @@ describe('MMatch', () => {
 		});
 
 		it('.pipe()', () => {
-			expect(testMatch.pipe(Struct.get('value'))).toBe(5);
+			expect(testMatch.pipe(Struct.get('input'))).toBe(5);
 		});
 
 		describe('has', () => {

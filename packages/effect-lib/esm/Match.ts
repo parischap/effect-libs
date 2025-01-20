@@ -28,21 +28,21 @@ type TypeId = typeof TypeId;
  * @since 0.0.6
  * @category Models
  */
-export interface Type<out Input, out Output, out Rest extends Input = Input>
+export interface Type<out Input, out Output, out Rest extends Input>
 	extends Inspectable.Inspectable,
 		Pipeable.Pipeable {
 	/**
-	 * The value to match
+	 * The input to match
 	 *
 	 * @since 0.0.6
 	 */
-	readonly value: Input;
+	readonly input: Input;
 	/**
-	 * The result of the match when it has been found
+	 * The output of the matcher when it has been found
 	 *
 	 * @since 0.0.6
 	 */
-	readonly result: Option.Option<Output>;
+	readonly output: Option.Option<Output>;
 	/** @internal */
 	readonly [TypeId]: {
 		readonly _Input: Types.Covariant<Input>;
@@ -62,7 +62,7 @@ export const has = (u: unknown): u is Type<unknown, unknown, unknown> =>
 
 /** Prototype */
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-const proto: MTypes.Proto<Type<any, any>> = {
+const proto: MTypes.Proto<Type<any, any, any>> = {
 	[TypeId]: {
 		_Input: MTypes.covariantValue,
 		_Output: MTypes.covariantValue,
@@ -73,9 +73,10 @@ const proto: MTypes.Proto<Type<any, any>> = {
 };
 
 /** Constructor */
-const _make = <Input, Output, Rest extends Input>(
-	params: MTypes.Data<Type<Input, Output, Rest>>
-): Type<Input, Output, Rest> => MTypes.objectFromDataAndProto(proto, params);
+const _make = <Input, Output>(params: {
+	readonly input: Input;
+	readonly output: Option.Option<Output>;
+}): Type<Input, Output, Input> => MTypes.objectFromDataAndProto(proto, params);
 
 /**
  * Builds a new matcher
@@ -83,14 +84,15 @@ const _make = <Input, Output, Rest extends Input>(
  * @since 0.0.6
  * @category Constructors
  */
-export const make = <Input>(value: Input) => _make({ value, result: Option.none() });
+export const make = <Input>(input: Input): Type<Input, never, Input> =>
+	_make({ input, output: Option.none() });
 
 /**
- * Matches against a refinement or a predicate. Returns a copy of self if self already has a result.
- * Otherwise, applies the predicate/refinement to the value of self. Returns a copy of self if the
- * predicate returns `false`. Otherwise, returns a copy of self with the result set to the output of
- * a function f called with the value of self as parameter. From a type perspective, the Rest is
- * only `refined` if the predicate is a refinement.
+ * Matches against a refinement or a predicate. Returns a copy of `self` if `self` already has an
+ * output. Otherwise, applies the predicate/refinement to `self.input`. Returns a copy of `self` if
+ * the predicate returns `false`. Otherwise, returns a copy of `self` with the output set to
+ * `f(self.input)`. From a type perspective, the Rest is only `refined` if the predicate is a
+ * refinement.
  *
  * @since 0.0.6
  * @category Utils
@@ -99,14 +101,14 @@ export const make = <Input>(value: Input) => _make({ value, result: Option.none(
  * 	import { pipe } from 'effect';
  *
  * 	const handlePrimitive = (value: MTypes.Primitive) => value;
- * 	const handleRecord = (value: MTypes.NonNullObject) => value;
+ * 	const handleNonNullObject = (value: MTypes.NonNullObject) => value;
  *
  * 	export const testMatcher = (value: MTypes.Unknown) =>
  * 		pipe(
  * 			value,
  * 			MMatch.make,
  * 			MMatch.when(MTypes.isPrimitive, handlePrimitive),
- * 			MMatch.when(MTypes.isNonNullObject, handleRecord),
+ * 			MMatch.when(MTypes.isNonNullObject, handleNonNullObject),
  * 			MMatch.exhaustive
  * 		);
  */
@@ -126,23 +128,23 @@ export const when =
 		self: Type<Input, Output, Rest>
 	): Type<Input, Output | Output1, Exclude<Rest, MPredicate.Coverage<Pred>>> =>
 		_make({
-			value: self.value,
-			result: Option.orElse(self.result, () =>
+			input: self.input,
+			output: Option.orElse(self.output, () =>
 				pipe(
-					self.value as Rest,
+					self.input as Rest,
 					Option.liftPredicate(predicate),
-					Option.map(f as (value: Input) => Output1)
+					Option.map(f as MTypes.OneArgFunction<Input, Output1>)
 				)
 			)
 		});
 
 /**
  * Matches against a primitive value sparing you the need to define a type guard. Returns a copy of
- * self if self already has a result. Otherwise, the value of self is compared to the provided value
- * using strict equality. Returns a copy of self if the two values are not equal. Otherwise, returns
- * a copy of self with the result set to the output of a function f called with the value of self as
- * parameter. From a type perspective, the Rest will only be 'refined` if it`s a finite type like an
- * Enum (but not `number` or `string`)
+ * `self` if `self` already has an output. Otherwise, `self.input` is compared to the provided value
+ * using strict equality. Returns a copy of `self` if the two values are not equal. Otherwise,
+ * returns a copy of self with the output set to the result of `f(self.input)`. From a type
+ * perspective, the Rest will only be 'refined` if it`s a finite type like an Enum (but not `number`
+ * or `string`)
  *
  * @since 0.0.6
  * @category Utils
@@ -173,10 +175,10 @@ export const whenIs =
 	) =>
 	<Output>(self: Type<Input, Output, Rest>): Type<Input, Output | Output1, Exclude<Rest, A>> =>
 		_make({
-			value: self.value,
-			result: Option.orElse(self.result, () =>
+			input: self.input,
+			output: Option.orElse(self.output, () =>
 				pipe(
-					self.value,
+					self.input,
 					Option.liftPredicate((input: Input): input is A => input === value),
 					Option.map(f)
 				)
@@ -221,10 +223,10 @@ export const whenIsOr =
 		self: Type<Input, Output, Rest>
 	): Type<Input, Output | Output1, Exclude<Rest, R[number]>> =>
 		_make({
-			value: self.value,
-			result: Option.orElse(self.result, () =>
+			input: self.input,
+			output: Option.orElse(self.output, () =>
 				pipe(
-					self.value,
+					self.input,
 					Option.liftPredicate(
 						Predicate.some(
 							pipe(
@@ -237,17 +239,15 @@ export const whenIsOr =
 							)
 						)
 					),
-					Option.map(args[args.length - 1] as (value: Input) => Output1)
+					Option.map(args[args.length - 1] as MTypes.OneArgFunction<Input, Output1>)
 				)
 			)
 		});
 
 /**
- * Tries f on the input value and matches if f returns a some whose value becomes the result of the
- * matcher. Returns a copy of self if self already has a result. Otherwise, calls a function f with
- * the value of self as parameter. Returns a copy of self if f returns a `none`. Otherwise, returns
- * a copy of self with the result set to the output the f function (extracted from the `some`). From
- * a type perspective, the `Rest` will not be refined.
+ * Returns a copy of `self` if `self` already has an output. Otherwise, tries `f` on `self.input`
+ * and matches if `f` returns a `some` whose value becomes the output of the matcher. Returns a copy
+ * of `self` if `f` returns a `none`. From a type perspective, the `Rest` will not be refined.
  *
  * @since 0.0.6
  * @category Utils
@@ -268,8 +268,8 @@ export const tryFunction =
 	<Input, Rest extends Input, Output1>(f: (value: NoInfer<Rest>) => Option.Option<Output1>) =>
 	<Output>(self: Type<Input, Output, Rest>): Type<Input, Output | Output1, Rest> =>
 		_make({
-			value: self.value,
-			result: Option.orElse(self.result, () => f(self.value as Rest))
+			input: self.input,
+			output: Option.orElse(self.output, () => f(self.input as Rest))
 		});
 
 /**
@@ -297,14 +297,14 @@ export const whenOr =
 		self: Type<Input, Output, Rest>
 	): Type<Input, Output | Output1, Exclude<Rest, MPredicate.PredicatesToCoverages<R>[number]>> =>
 		_make({
-			value: self.value,
-			result: Option.orElse(self.result, () =>
+			input: self.input,
+			output: Option.orElse(self.output, () =>
 				pipe(
-					self.value,
+					self.input,
 					Option.liftPredicate(
 						Predicate.some(args.slice(0, -1) as ReadonlyArray<Predicate.Predicate<Input>>)
 					),
-					Option.map(args[args.length - 1] as (value: Input) => Output1)
+					Option.map(args[args.length - 1] as MTypes.OneArgFunction<Input, Output1>)
 				)
 			)
 		});
@@ -340,21 +340,21 @@ export const whenAnd =
 		Exclude<Rest, MTypes.TupleToIntersection<MPredicate.PredicatesToCoverages<R>>>
 	> =>
 		_make({
-			value: self.value,
-			result: Option.orElse(self.result, () =>
+			input: self.input,
+			output: Option.orElse(self.output, () =>
 				pipe(
-					self.value,
+					self.input,
 					Option.liftPredicate(
 						Predicate.every(args.slice(0, -1) as ReadonlyArray<Predicate.Predicate<Input>>)
 					),
-					Option.map(args[args.length - 1] as (value: Input) => Output1)
+					Option.map(args[args.length - 1] as MTypes.OneArgFunction<Input, Output1>)
 				)
 			)
 		});
 
 /**
- * Returns the result of self if self already has a result. Otherwise, returns the result of f
- * applied to the value of self.
+ * Returns `self.output` if `self` already has an output. Otherwise, returns the result of f applied
+ * to `self.input`.
  *
  * @since 0.0.6
  * @category Utils
@@ -362,7 +362,7 @@ export const whenAnd =
 export const orElse =
 	<Input, Rest extends Input, Output1>(f: (value: NoInfer<Rest>) => Output1) =>
 	<Output>(self: Type<Input, Output, Rest>): Output | Output1 =>
-		Option.getOrElse(self.result, () => f(self.value as unknown as Rest));
+		Option.getOrElse(self.output, () => f(self.input as unknown as Rest));
 
 /**
  * Same as orElse but we pass a predicate (useless from a javascript perspective) to tell the
@@ -375,13 +375,13 @@ export const orElse =
  * 	import { pipe } from 'effect';
  *
  * 	const handlePrimitive = (value: MTypes.Primitive) => value;
- * 	const handleRecord = (value: MTypes.NonNullObject) => value;
+ * 	const handleNonNullObject = (value: MTypes.NonNullObject) => value;
  *
  * 	export const testMatcher = (value: unknown) =>
  * 		pipe(
  * 			value,
  * 			MMatch.make,
- * 			MMatch.when(MTypes.isNonNullObject, handleRecord),
+ * 			MMatch.when(MTypes.isNonNullObject, handleNonNullObject),
  * 			MMatch.unsafeWhen(MTypes.isPrimitive, handlePrimitive)
  * 		);
  */
@@ -391,10 +391,10 @@ export const unsafeWhen =
 		f: (value: NoInfer<MPredicate.Target<Refinement>>) => Output1
 	) =>
 	<Output>(self: Type<Input, Output, Rest>): Output | Output1 =>
-		Option.getOrElse(self.result, () => f(self.value as never));
+		Option.getOrElse(self.output, () => f(self.input as never));
 
 /**
- * Returns the result of the matcher and shows a type error if `Rest` is not `never`
+ * Returns the output of the matcher and shows a type error if `Rest` is not `never`
  *
  * @since 0.0.6
  * @category Utils
@@ -403,16 +403,16 @@ export const unsafeWhen =
  * 	import { pipe } from 'effect';
  *
  * 	const handlePrimitive = (value: MTypes.Primitive) => value;
- * 	const handleRecord = (value: MTypes.NonNullObject) => value;
+ * 	const handleNonNullObject = (value: MTypes.NonNullObject) => value;
  *
  * 	export const testMatcher = (value: MTypes.Unknown) =>
  * 		pipe(
  * 			value,
  * 			MMatch.make,
  * 			MMatch.when(MTypes.isPrimitive, handlePrimitive),
- * 			MMatch.when(MTypes.isNonNullObject, handleRecord),
+ * 			MMatch.when(MTypes.isNonNullObject, handleNonNullObject),
  * 			MMatch.exhaustive
  * 		);
  */
 export const exhaustive = <Input, Output>(self: Type<Input, Output, never>): Output =>
-	(self.result as Option.Some<Output>).value;
+	(self.output as Option.Some<Output>).value;
