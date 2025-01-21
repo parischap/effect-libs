@@ -3,8 +3,6 @@
  * context. It encapsulates a Palette (see Palette.ts) that contains `n` styles and a function that
  * takes a context object and returns an index `i`. It uses the Style at position i % n, where % is
  * the modulo function.
- *
- * @since 0.0.1
  */
 
 import { MArray, MInspectable, MMatch, MPipeable, MStruct, MTypes } from '@parischap/effect-lib';
@@ -16,7 +14,6 @@ import * as ASText from './Text.js';
 /**
  * Module tag
  *
- * @since 0.0.1
  * @category Models
  */
 export const moduleTag = '@parischap/ansi-styles/ContextFormatter/';
@@ -28,14 +25,12 @@ const _TagSymbol: unique symbol = Symbol.for(moduleTag + '_TagSymbol/');
 /**
  * Namespace of a ContextFormatter used as an action
  *
- * @since 0.0.1
  * @category Models
  */
 export namespace Action {
 	/**
 	 * Type of the action
 	 *
-	 * @since 0.0.1
 	 * @category Models
 	 */
 	export interface Type<in C> {
@@ -46,7 +41,6 @@ export namespace Action {
 /**
  * Type of a ContextFormatter
  *
- * @since 0.0.1
  * @category Models
  */
 export type Type<C> = Unistyled.Type | PaletteBased.Type<C>;
@@ -54,7 +48,6 @@ export type Type<C> = Unistyled.Type | PaletteBased.Type<C>;
 /**
  * Type guard
  *
- * @since 0.0.1
  * @category Guards
  */
 export const has = (u: unknown): u is Type<never> => Predicate.hasProperty(u, TypeId);
@@ -63,7 +56,6 @@ const _has = has;
 /**
  * Type guard
  *
- * @since 0.0.1
  * @category Guards
  */
 export const isUnistyled = (u: Type<never>): u is Unistyled.Type => u[_TagSymbol] === 'Unistyled';
@@ -71,7 +63,6 @@ export const isUnistyled = (u: Type<never>): u is Unistyled.Type => u[_TagSymbol
 /**
  * Type guard
  *
- * @since 0.0.1
  * @category Guards
  */
 export const isPaletteBased = (u: Type<never>): u is PaletteBased.Type<never> =>
@@ -81,29 +72,19 @@ export const isPaletteBased = (u: Type<never>): u is PaletteBased.Type<never> =>
  * Namespace for a Unistyled ContextFormatter, i.e. a ContextFormatter which always applies the same
  * style (which can be Style.none) and therefore does not care for a context
  *
- * @since 0.0.1
  * @category Models
  */
 export namespace Unistyled {
 	/**
 	 * Unistyled ContextFormatter Type
 	 *
-	 * @since 0.0.1
 	 * @category Models
 	 */
 	export interface Type extends Action.Type<unknown>, MInspectable.Inspectable, Pipeable.Pipeable {
-		/**
-		 * The text to display by default if an empty string is passed to the formatter
-		 *
-		 * @since 0.0.1
-		 */
+		/** The text to display by default if an empty string is passed to the formatter */
 		readonly defaultText: string;
 
-		/**
-		 * The style to apply
-		 *
-		 * @since 0.0.1
-		 */
+		/** The style to apply */
 		readonly style: ASStyle.Type;
 
 		/** @internal */
@@ -116,7 +97,6 @@ export namespace Unistyled {
 	/**
 	 * Type guard
 	 *
-	 * @since 0.0.1
 	 * @category Guards
 	 */
 
@@ -149,7 +129,6 @@ export namespace Unistyled {
 	/**
 	 * Constructor
 	 *
-	 * @since 0.0.1
 	 * @category Constructors
 	 */
 	export const make = ({
@@ -163,7 +142,6 @@ export namespace Unistyled {
 	/**
 	 * Gets the `defaultText` property of `self`
 	 *
-	 * @since 0.0.1
 	 * @category Destructors
 	 */
 	export const defaultText: MTypes.OneArgFunction<Type, string> = Struct.get('defaultText');
@@ -171,7 +149,6 @@ export namespace Unistyled {
 	/**
 	 * Gets the `style` property of `self`
 	 *
-	 * @since 0.0.1
 	 * @category Destructors
 	 */
 	export const style: MTypes.OneArgFunction<Type, ASStyle.Type> = Struct.get('style');
@@ -179,7 +156,6 @@ export namespace Unistyled {
 	/**
 	 * Gets the id of `self`
 	 *
-	 * @since 0.0.1
 	 * @category Destructors
 	 */
 	export const toId = (self: Type): string =>
@@ -190,7 +166,6 @@ export namespace Unistyled {
 	/**
 	 * Builds a copy of `self` with the 'defaultText' property set to 'defaultText'
 	 *
-	 * @since 0.0.1
 	 * @category Utils
 	 */
 	export const setDefaultText = (defaultText: string): MTypes.OneArgFunction<Type, Type> =>
@@ -200,21 +175,18 @@ export namespace Unistyled {
 /**
  * Namespace for a PaletteBased ContextFormatter
  *
- * @since 0.0.1
  * @category Models
  */
 export namespace PaletteBased {
 	/**
 	 * Namespace of a function that transforms a context into an index
 	 *
-	 * @since 0.0.1
 	 * @category Models
 	 */
 	export namespace IndexFromContext {
 		/**
 		 * Type of an IndexFromContext
 		 *
-		 * @since 0.0.1
 		 * @category Models
 		 */
 		export interface Type<in C> {
@@ -225,29 +197,16 @@ export namespace PaletteBased {
 	/**
 	 * Type that represents a non empty ContextFormatter
 	 *
-	 * @since 0.0.1
 	 * @category Models
 	 */
 	export interface Type<in C> extends Action.Type<C>, MInspectable.Inspectable, Pipeable.Pipeable {
-		/**
-		 * The text to display by default if an empty string is passed to the formatter
-		 *
-		 * @since 0.0.1
-		 */
+		/** The text to display by default if an empty string is passed to the formatter */
 		readonly defaultText: string;
 
-		/**
-		 * Function that takes a context object and derives an index from it
-		 *
-		 * @since 0.0.1
-		 */
+		/** Function that takes a context object and derives an index from it */
 		readonly indexFromContext: IndexFromContext.Type<C>;
 
-		/**
-		 * Palette used by this ContextFormatter.
-		 *
-		 * @since 0.0.1
-		 */
+		/** Palette used by this ContextFormatter. */
 		readonly palette: ASPalette.Type;
 
 		/** @internal */
@@ -262,7 +221,6 @@ export namespace PaletteBased {
 	/**
 	 * Type guard
 	 *
-	 * @since 0.0.1
 	 * @category Guards
 	 */
 
@@ -306,7 +264,6 @@ export namespace PaletteBased {
 	/**
 	 * Constructor
 	 *
-	 * @since 0.0.1
 	 * @category Constructors
 	 */
 	export const make =
@@ -323,7 +280,6 @@ export namespace PaletteBased {
 	/**
 	 * Gets the `indexFromContext` property of `self`
 	 *
-	 * @since 0.0.1
 	 * @category Destructors
 	 */
 	export const indexFromContext: <C>(self: Type<C>) => IndexFromContext.Type<C> =
@@ -332,7 +288,6 @@ export namespace PaletteBased {
 	/**
 	 * Gets the `palette` property of `self`
 	 *
-	 * @since 0.0.1
 	 * @category Destructors
 	 */
 	export const palette: MTypes.OneArgFunction<Type<never>, ASPalette.Type> = Struct.get('palette');
@@ -340,7 +295,6 @@ export namespace PaletteBased {
 	/**
 	 * Gets the `defaultText` property of `self`
 	 *
-	 * @since 0.0.1
 	 * @category Destructors
 	 */
 	export const defaultText: MTypes.OneArgFunction<Type<never>, string> = Struct.get('defaultText');
@@ -348,7 +302,6 @@ export namespace PaletteBased {
 	/**
 	 * Gets the id of `self`
 	 *
-	 * @since 0.0.1
 	 * @category Destructors
 	 */
 	export const toId = (self: Type<never>): string =>
@@ -360,7 +313,6 @@ export namespace PaletteBased {
 	/**
 	 * Builds a copy of `self` with the 'defaultText' property set to 'defaultText'
 	 *
-	 * @since 0.0.1
 	 * @category Utils
 	 */
 	export const setDefaultText = (defaultText: string): (<C>(self: Type<C>) => Type<C>) =>
@@ -370,7 +322,6 @@ export namespace PaletteBased {
 /**
  * Builds a copy of `self` with the 'defaultText' property set to 'defaultText'
  *
- * @since 0.0.1
  * @category Utils
  */
 export const setDefaultText = (defaultText: string): (<C>(self: Type<C>) => Type<C>) =>
@@ -383,7 +334,6 @@ export const setDefaultText = (defaultText: string): (<C>(self: Type<C>) => Type
 /**
  * None ContextFormatter instance: does not apply any style, does not provide a defaultText
  *
- * @since 0.0.1
  * @category Instances
  */
 
@@ -392,7 +342,6 @@ export const none: Unistyled.Type = Unistyled.make({ style: ASStyle.none });
 /**
  * Original black color instance
  *
- * @since 0.0.1
  * @category Original instances
  */
 export const black: Unistyled.Type = Unistyled.make({ style: ASStyle.black });
@@ -400,7 +349,6 @@ export const black: Unistyled.Type = Unistyled.make({ style: ASStyle.black });
 /**
  * Original red color instance
  *
- * @since 0.0.1
  * @category Original instances
  */
 export const red: Unistyled.Type = Unistyled.make({ style: ASStyle.red });
@@ -408,7 +356,6 @@ export const red: Unistyled.Type = Unistyled.make({ style: ASStyle.red });
 /**
  * Original green color instance
  *
- * @since 0.0.1
  * @category Original instances
  */
 export const green: Unistyled.Type = Unistyled.make({ style: ASStyle.green });
@@ -416,7 +363,6 @@ export const green: Unistyled.Type = Unistyled.make({ style: ASStyle.green });
 /**
  * Original yellow color instance
  *
- * @since 0.0.1
  * @category Original instances
  */
 export const yellow: Unistyled.Type = Unistyled.make({ style: ASStyle.yellow });
@@ -424,7 +370,6 @@ export const yellow: Unistyled.Type = Unistyled.make({ style: ASStyle.yellow });
 /**
  * Original blue color instance
  *
- * @since 0.0.1
  * @category Original instances
  */
 export const blue: Unistyled.Type = Unistyled.make({ style: ASStyle.blue });
@@ -432,7 +377,6 @@ export const blue: Unistyled.Type = Unistyled.make({ style: ASStyle.blue });
 /**
  * Original magenta color instance
  *
- * @since 0.0.1
  * @category Original instances
  */
 export const magenta: Unistyled.Type = Unistyled.make({ style: ASStyle.magenta });
@@ -440,7 +384,6 @@ export const magenta: Unistyled.Type = Unistyled.make({ style: ASStyle.magenta }
 /**
  * Original cyan color instance
  *
- * @since 0.0.1
  * @category Original instances
  */
 export const cyan: Unistyled.Type = Unistyled.make({ style: ASStyle.cyan });
@@ -448,7 +391,6 @@ export const cyan: Unistyled.Type = Unistyled.make({ style: ASStyle.cyan });
 /**
  * Original white color instance
  *
- * @since 0.0.1
  * @category Original instances
  */
 export const white: Unistyled.Type = Unistyled.make({ style: ASStyle.white });

@@ -1,8 +1,4 @@
-/**
- * A simple extension to the Effect Struct module
- *
- * @since 0.0.6
- */
+/** A simple extension to the Effect Struct module */
 
 import { Record, Struct, pipe } from 'effect';
 import * as MTypes from './types.js';
@@ -11,7 +7,6 @@ import * as MTypes from './types.js';
  * be taken into account. Use instead of the spread operator because it does not copy the prototype
  * but returns a type containing the properties borne by the prototype.
  *
- * @since 0.0.6
  * @category Utils
  */
 export const prepend =
@@ -26,7 +21,6 @@ export const prepend =
  * prevail. Use instead of the spread operator because it does not copy the prototype but returns a
  * type containing the properties borne by the prototype.
  *
- * @since 0.0.6
  * @category Utils
  */
 export const append =
@@ -39,7 +33,6 @@ export const append =
 /**
  * Same as append but only existing properties of `self` can be overriden.
  *
- * @since 0.0.6
  * @category Utils
  */
 export const set =
@@ -52,7 +45,6 @@ export const set =
 /**
  * Same as set but mutates `self`. To use in extreme situations only
  *
- * @since 0.5.0
  * @category Utils
  */
 export const mutableSet =
@@ -64,7 +56,6 @@ export const mutableSet =
 /**
  * Builds a one-key struct
  *
- * @since 0.0.6
  * @category Constructors
  */
 export const make =
@@ -76,7 +67,6 @@ export const make =
  * Calculates a 'fields' struct whose values are based on functions taking `self` as argument and
  * appends it to `self`.
  *
- * @since 0.0.6
  * @category Utils
  */
 
@@ -99,7 +89,6 @@ export const enrichWith =
 /**
  * Same as enrichWith but mutates `self`. To use in extreme situations only
  *
- * @since 0.0.6
  * @category Utils
  */
 
@@ -137,7 +126,6 @@ type PartialTransform<O, T> = {
  * Same as Struct.evolve but we remove from the return type any property borne by the prototype as
  * it does not get copied. If property to evolve is not in target `obj`, it is ignored.
  *
- * @since 0.5.0
  * @category Utils
  */
 export const evolve: {

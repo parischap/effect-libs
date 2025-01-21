@@ -2,8 +2,6 @@
  * Same as StyleCharacteristics (see StyleCharacteristics.ts) but, as syntaxic sugar, styles are
  * callable functions that create Text's (see Text.ts). For instance, `const text =
  * ASStyle.red('foo')` will create a text containing the string 'foo' styled in red.
- *
- * @since 0.0.1
  */
 
 import { MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
@@ -15,7 +13,6 @@ import * as ASText from './Text.js';
 /**
  * Module tag
  *
- * @since 0.0.1
  * @category Models
  */
 export const moduleTag = '@parischap/ansi-styles/Style/';
@@ -25,14 +22,12 @@ type TypeId = typeof TypeId;
 /**
  * Namespace of a Style used as an action
  *
- * @since 0.0.1
  * @category Models
  */
 export namespace Action {
 	/**
 	 * Type of the action
 	 *
-	 * @since 0.0.1
 	 * @category Models
 	 */
 	export interface Type {
@@ -43,7 +38,6 @@ export namespace Action {
 /**
  * Type that represents a Style
  *
- * @since 0.0.1
  * @category Models
  */
 export interface Type
@@ -51,11 +45,7 @@ export interface Type
 		Equal.Equal,
 		MInspectable.Inspectable,
 		Pipeable.Pipeable {
-	/**
-	 * StyleCharacteristics that define this Style
-	 *
-	 * @since 0.0.1
-	 */
+	/** StyleCharacteristics that define this Style */
 	readonly style: ASStyleCharacteristics.Type;
 
 	/** @internal */
@@ -65,7 +55,6 @@ export interface Type
 /**
  * Type guard
  *
- * @since 0.0.6
  * @category Guards
  */
 export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
@@ -73,7 +62,6 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
 /**
  * Equivalence
  *
- * @since 0.0.6
  * @category Equivalences
  */
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
@@ -109,7 +97,6 @@ const _make = (params: MTypes.Data<Type>): Type =>
 /**
  * Gets the `style` property of `self`
  *
- * @since 0.0.1
  * @category Destructors
  */
 export const style: MTypes.OneArgFunction<Type, ASStyleCharacteristics.Type> = Struct.get('style');
@@ -117,7 +104,6 @@ export const style: MTypes.OneArgFunction<Type, ASStyleCharacteristics.Type> = S
 /**
  * Returns the id of `self`
  *
- * @since 0.0.1
  * @category Destructors
  */
 export const toId = (self: Type): string => ASStyleCharacteristics.toId(self.style);
@@ -125,7 +111,6 @@ export const toId = (self: Type): string => ASStyleCharacteristics.toId(self.sty
  * Builds a new Style by merging `self` and `that`. In case of conflict (e.g `self` contains `Bold`
  * and `that` contains `NotBold`), the style in `that` will prevail.
  *
- * @since 0.0.1
  * @category Utils
  */
 export const mergeOver =
@@ -139,7 +124,6 @@ export const mergeOver =
  * Builds a new Style by merging `self` and `that`. In case of conflict (e.g `self` contains `Bold`
  * and `that` contains `NotBold`), the style in `self` will prevail.
  *
- * @since 0.0.1
  * @category Utils
  */
 export const mergeUnder =
@@ -152,7 +136,6 @@ export const mergeUnder =
 /**
  * None Style instance, i.e. Style that performs no styling
  *
- * @since 0.0.1
  * @category Instances
  */
 export const none: Type = _make({ style: ASStyleCharacteristics.none });
@@ -160,7 +143,6 @@ export const none: Type = _make({ style: ASStyleCharacteristics.none });
 /**
  * Bold Style instance
  *
- * @since 0.0.1
  * @category Instances
  */
 export const bold: Type = _make({ style: ASStyleCharacteristics.bold });
@@ -168,7 +150,6 @@ export const bold: Type = _make({ style: ASStyleCharacteristics.bold });
 /**
  * NotBold Style instance
  *
- * @since 0.0.1
  * @category Instances
  */
 export const notBold: Type = _make({ style: ASStyleCharacteristics.notBold });
@@ -176,7 +157,6 @@ export const notBold: Type = _make({ style: ASStyleCharacteristics.notBold });
 /**
  * Dim Style instance
  *
- * @since 0.0.1
  * @category Instances
  */
 export const dim: Type = _make({ style: ASStyleCharacteristics.dim });
@@ -184,7 +164,6 @@ export const dim: Type = _make({ style: ASStyleCharacteristics.dim });
 /**
  * NotDim Style instance
  *
- * @since 0.0.1
  * @category Instances
  */
 export const notDim: Type = _make({ style: ASStyleCharacteristics.notDim });
@@ -192,7 +171,6 @@ export const notDim: Type = _make({ style: ASStyleCharacteristics.notDim });
 /**
  * Italic Style instance
  *
- * @since 0.0.1
  * @category Instances
  */
 export const italic: Type = _make({ style: ASStyleCharacteristics.italic });
@@ -200,7 +178,6 @@ export const italic: Type = _make({ style: ASStyleCharacteristics.italic });
 /**
  * NotItalic Style instance
  *
- * @since 0.0.1
  * @category Instances
  */
 export const notItalic: Type = _make({ style: ASStyleCharacteristics.notItalic });
@@ -208,7 +185,6 @@ export const notItalic: Type = _make({ style: ASStyleCharacteristics.notItalic }
 /**
  * Underlined Style instance
  *
- * @since 0.0.1
  * @category Instances
  */
 export const underlined: Type = _make({ style: ASStyleCharacteristics.underlined });
@@ -216,7 +192,6 @@ export const underlined: Type = _make({ style: ASStyleCharacteristics.underlined
 /**
  * NotUnderlined Style instance
  *
- * @since 0.0.1
  * @category Instances
  */
 export const notUnderlined: Type = _make({ style: ASStyleCharacteristics.notUnderlined });
@@ -224,7 +199,6 @@ export const notUnderlined: Type = _make({ style: ASStyleCharacteristics.notUnde
 /**
  * Struck-through Style instance
  *
- * @since 0.0.1
  * @category Instances
  */
 export const struckThrough: Type = _make({ style: ASStyleCharacteristics.struckThrough });
@@ -232,7 +206,6 @@ export const struckThrough: Type = _make({ style: ASStyleCharacteristics.struckT
 /**
  * NotStruckThrough Style instance
  *
- * @since 0.0.1
  * @category Instances
  */
 export const notStruckThrough: Type = _make({
@@ -242,7 +215,6 @@ export const notStruckThrough: Type = _make({
 /**
  * Overlined Style instance
  *
- * @since 0.0.1
  * @category Instances
  */
 export const overlined: Type = _make({ style: ASStyleCharacteristics.overlined });
@@ -250,7 +222,6 @@ export const overlined: Type = _make({ style: ASStyleCharacteristics.overlined }
 /**
  * NotOverlined Style instance
  *
- * @since 0.0.1
  * @category Instances
  */
 export const notOverlined: Type = _make({ style: ASStyleCharacteristics.notOverlined });
@@ -258,7 +229,6 @@ export const notOverlined: Type = _make({ style: ASStyleCharacteristics.notOverl
 /**
  * Inversed Style instance
  *
- * @since 0.0.1
  * @category Instances
  */
 export const inversed: Type = _make({ style: ASStyleCharacteristics.inversed });
@@ -266,7 +236,6 @@ export const inversed: Type = _make({ style: ASStyleCharacteristics.inversed });
 /**
  * NotInversed Style instance
  *
- * @since 0.0.1
  * @category Instances
  */
 export const notInversed: Type = _make({ style: ASStyleCharacteristics.notInversed });
@@ -274,7 +243,6 @@ export const notInversed: Type = _make({ style: ASStyleCharacteristics.notInvers
 /**
  * Hidden Style instance
  *
- * @since 0.0.1
  * @category Instances
  */
 export const hidden: Type = _make({ style: ASStyleCharacteristics.hidden });
@@ -282,7 +250,6 @@ export const hidden: Type = _make({ style: ASStyleCharacteristics.hidden });
 /**
  * NotHidden Style instance
  *
- * @since 0.0.1
  * @category Instances
  */
 export const notHidden: Type = _make({ style: ASStyleCharacteristics.notHidden });
@@ -290,7 +257,6 @@ export const notHidden: Type = _make({ style: ASStyleCharacteristics.notHidden }
 /**
  * Blinking Style instance
  *
- * @since 0.0.1
  * @category Instances
  */
 export const blinking: Type = _make({ style: ASStyleCharacteristics.blinking });
@@ -298,7 +264,6 @@ export const blinking: Type = _make({ style: ASStyleCharacteristics.blinking });
 /**
  * NotBlinking Style instance
  *
- * @since 0.0.1
  * @category Instances
  */
 export const notBlinking: Type = _make({ style: ASStyleCharacteristics.notBlinking });
@@ -306,7 +271,6 @@ export const notBlinking: Type = _make({ style: ASStyleCharacteristics.notBlinki
 /**
  * Default foreground color Style instance
  *
- * @since 0.0.1
  * @category Instances
  */
 export const defaultColor: Type = _make({ style: ASStyleCharacteristics.fgDefaultColor });
@@ -314,7 +278,6 @@ export const defaultColor: Type = _make({ style: ASStyleCharacteristics.fgDefaul
 /**
  * Builds a Style that applies `color` as foreground color
  *
- * @since 0.0.1
  * @category Constructors
  */
 export const color = (color: ASColor.Type): Type =>
@@ -323,7 +286,6 @@ export const color = (color: ASColor.Type): Type =>
 /**
  * Original black color style instance
  *
- * @since 0.0.1
  * @category Original instances
  */
 export const black: Type = color(ASColor.ThreeBit.black);
@@ -331,7 +293,6 @@ export const black: Type = color(ASColor.ThreeBit.black);
 /**
  * Original red color style instance
  *
- * @since 0.0.1
  * @category Original instances
  */
 export const red: Type = color(ASColor.ThreeBit.red);
@@ -339,7 +300,6 @@ export const red: Type = color(ASColor.ThreeBit.red);
 /**
  * Original green color style instance
  *
- * @since 0.0.1
  * @category Original instances
  */
 export const green: Type = color(ASColor.ThreeBit.green);
@@ -347,7 +307,6 @@ export const green: Type = color(ASColor.ThreeBit.green);
 /**
  * Original yellow color style instance
  *
- * @since 0.0.1
  * @category Original instances
  */
 export const yellow: Type = color(ASColor.ThreeBit.yellow);
@@ -355,7 +314,6 @@ export const yellow: Type = color(ASColor.ThreeBit.yellow);
 /**
  * Original blue color style instance
  *
- * @since 0.0.1
  * @category Original instances
  */
 export const blue: Type = color(ASColor.ThreeBit.blue);
@@ -363,7 +321,6 @@ export const blue: Type = color(ASColor.ThreeBit.blue);
 /**
  * Original magenta color style instance
  *
- * @since 0.0.1
  * @category Original instances
  */
 export const magenta: Type = color(ASColor.ThreeBit.magenta);
@@ -371,7 +328,6 @@ export const magenta: Type = color(ASColor.ThreeBit.magenta);
 /**
  * Original cyan color style instance
  *
- * @since 0.0.1
  * @category Original instances
  */
 export const cyan: Type = color(ASColor.ThreeBit.cyan);
@@ -379,7 +335,6 @@ export const cyan: Type = color(ASColor.ThreeBit.cyan);
 /**
  * Original white color style instance
  *
- * @since 0.0.1
  * @category Original instances
  */
 export const white: Type = color(ASColor.ThreeBit.white);
@@ -387,14 +342,12 @@ export const white: Type = color(ASColor.ThreeBit.white);
 /**
  * Namespace for bright original colors
  *
- * @since 0.0.1
  * @category Models
  */
 export namespace Bright {
 	/**
 	 * Original bright black color style instance
 	 *
-	 * @since 0.0.1
 	 * @category Original instances
 	 */
 	export const black: Type = color(ASColor.ThreeBit.Bright.black);
@@ -402,7 +355,6 @@ export namespace Bright {
 	/**
 	 * Original bright red color style instance
 	 *
-	 * @since 0.0.1
 	 * @category Original instances
 	 */
 	export const red: Type = color(ASColor.ThreeBit.Bright.red);
@@ -410,7 +362,6 @@ export namespace Bright {
 	/**
 	 * Original bright green color style instance
 	 *
-	 * @since 0.0.1
 	 * @category Original instances
 	 */
 	export const green: Type = color(ASColor.ThreeBit.Bright.green);
@@ -418,7 +369,6 @@ export namespace Bright {
 	/**
 	 * Original bright yellow color style instance
 	 *
-	 * @since 0.0.1
 	 * @category Original instances
 	 */
 	export const yellow: Type = color(ASColor.ThreeBit.Bright.yellow);
@@ -426,7 +376,6 @@ export namespace Bright {
 	/**
 	 * Original bright blue color style instance
 	 *
-	 * @since 0.0.1
 	 * @category Original instances
 	 */
 	export const blue: Type = color(ASColor.ThreeBit.Bright.blue);
@@ -434,7 +383,6 @@ export namespace Bright {
 	/**
 	 * Original bright magenta color style instance
 	 *
-	 * @since 0.0.1
 	 * @category Original instances
 	 */
 	export const magenta: Type = color(ASColor.ThreeBit.Bright.magenta);
@@ -442,7 +390,6 @@ export namespace Bright {
 	/**
 	 * Original bright cyan color style instance
 	 *
-	 * @since 0.0.1
 	 * @category Original instances
 	 */
 	export const cyan: Type = color(ASColor.ThreeBit.Bright.cyan);
@@ -450,7 +397,6 @@ export namespace Bright {
 	/**
 	 * Original bright white color style instance
 	 *
-	 * @since 0.0.1
 	 * @category Original instances
 	 */
 	export const white: Type = color(ASColor.ThreeBit.Bright.white);
@@ -459,14 +405,12 @@ export namespace Bright {
 /**
  * Namespace for colors used as background colors
  *
- * @since 0.0.1
  * @category Models
  */
 export namespace Bg {
 	/**
 	 * Default background color Style instance
 	 *
-	 * @since 0.0.1
 	 * @category Instances
 	 */
 	export const defaultColor: Type = _make({
@@ -476,7 +420,6 @@ export namespace Bg {
 	/**
 	 * Builds a Style that applies `color` as background color
 	 *
-	 * @since 0.0.1
 	 * @category Constructors
 	 */
 	export const color = (color: ASColor.Type): Type =>
@@ -485,7 +428,6 @@ export namespace Bg {
 	/**
 	 * Original black color style instance
 	 *
-	 * @since 0.0.1
 	 * @category Original instances
 	 */
 	export const black: Type = color(ASColor.ThreeBit.black);
@@ -493,7 +435,6 @@ export namespace Bg {
 	/**
 	 * Original red color style instance
 	 *
-	 * @since 0.0.1
 	 * @category Original instances
 	 */
 	export const red: Type = color(ASColor.ThreeBit.red);
@@ -501,7 +442,6 @@ export namespace Bg {
 	/**
 	 * Original green color style instance
 	 *
-	 * @since 0.0.1
 	 * @category Original instances
 	 */
 	export const green: Type = color(ASColor.ThreeBit.green);
@@ -509,7 +449,6 @@ export namespace Bg {
 	/**
 	 * Original yellow color style instance
 	 *
-	 * @since 0.0.1
 	 * @category Original instances
 	 */
 	export const yellow: Type = color(ASColor.ThreeBit.yellow);
@@ -517,7 +456,6 @@ export namespace Bg {
 	/**
 	 * Original blue color style instance
 	 *
-	 * @since 0.0.1
 	 * @category Original instances
 	 */
 	export const blue: Type = color(ASColor.ThreeBit.blue);
@@ -525,7 +463,6 @@ export namespace Bg {
 	/**
 	 * Original magenta color style instance
 	 *
-	 * @since 0.0.1
 	 * @category Original instances
 	 */
 	export const magenta: Type = color(ASColor.ThreeBit.magenta);
@@ -533,7 +470,6 @@ export namespace Bg {
 	/**
 	 * Original cyan color style instance
 	 *
-	 * @since 0.0.1
 	 * @category Original instances
 	 */
 	export const cyan: Type = color(ASColor.ThreeBit.cyan);
@@ -541,7 +477,6 @@ export namespace Bg {
 	/**
 	 * Original white color style instance
 	 *
-	 * @since 0.0.1
 	 * @category Original instances
 	 */
 	export const white: Type = color(ASColor.ThreeBit.white);
@@ -549,14 +484,12 @@ export namespace Bg {
 	/**
 	 * Namespace for bright original colors
 	 *
-	 * @since 0.0.1
 	 * @category Models
 	 */
 	export namespace Bright {
 		/**
 		 * Original bright black color style instance
 		 *
-		 * @since 0.0.1
 		 * @category Original instances
 		 */
 		export const black: Type = color(ASColor.ThreeBit.Bright.black);
@@ -564,7 +497,6 @@ export namespace Bg {
 		/**
 		 * Original bright red color style instance
 		 *
-		 * @since 0.0.1
 		 * @category Original instances
 		 */
 		export const red: Type = color(ASColor.ThreeBit.Bright.red);
@@ -572,7 +504,6 @@ export namespace Bg {
 		/**
 		 * Original bright green color style instance
 		 *
-		 * @since 0.0.1
 		 * @category Original instances
 		 */
 		export const green: Type = color(ASColor.ThreeBit.Bright.green);
@@ -580,7 +511,6 @@ export namespace Bg {
 		/**
 		 * Original bright yellow color style instance
 		 *
-		 * @since 0.0.1
 		 * @category Original instances
 		 */
 		export const yellow: Type = color(ASColor.ThreeBit.Bright.yellow);
@@ -588,7 +518,6 @@ export namespace Bg {
 		/**
 		 * Original bright blue color style instance
 		 *
-		 * @since 0.0.1
 		 * @category Original instances
 		 */
 		export const blue: Type = color(ASColor.ThreeBit.Bright.blue);
@@ -596,7 +525,6 @@ export namespace Bg {
 		/**
 		 * Original bright magenta color style instance
 		 *
-		 * @since 0.0.1
 		 * @category Original instances
 		 */
 		export const magenta: Type = color(ASColor.ThreeBit.Bright.magenta);
@@ -604,7 +532,6 @@ export namespace Bg {
 		/**
 		 * Original bright cyan color style instance
 		 *
-		 * @since 0.0.1
 		 * @category Original instances
 		 */
 		export const cyan: Type = color(ASColor.ThreeBit.Bright.cyan);
@@ -612,7 +539,6 @@ export namespace Bg {
 		/**
 		 * Original bright white color style instance
 		 *
-		 * @since 0.0.1
 		 * @category Original instances
 		 */
 		export const white: Type = color(ASColor.ThreeBit.Bright.white);

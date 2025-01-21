@@ -1,8 +1,6 @@
 /**
  * This module implements a styled text, i.e. an array of UniStyled where a UniStyled is a string
  * formatted in a given style.
- *
- * @since 0.0.1
  */
 
 import {
@@ -37,7 +35,6 @@ import * as ASStyleCharacteristics from './StyleCharacteristics.js';
 /**
  * Module tag
  *
- * @since 0.0.1
  * @category Models
  */
 export const moduleTag = '@parischap/ansi-styles/Text/';
@@ -48,8 +45,6 @@ type TypeId = typeof TypeId;
 /**
  * Namespace of a unformly styled text (that is a text that is thorougly formatted with the same
  * style)
- *
- * @since 0.0.1
  */
 namespace UniStyled {
 	const moduleTag = _moduleTag + 'UniStyled/';
@@ -59,22 +54,13 @@ namespace UniStyled {
 	/**
 	 * Interface that represents a Unistyled text
 	 *
-	 * @since 0.0.1
 	 * @category Models
 	 */
 	export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
-		/**
-		 * The text to be styled
-		 *
-		 * @since 0.0.1
-		 */
+		/** The text to be styled */
 		readonly text: string;
 
-		/**
-		 * The style to apply to the text
-		 *
-		 * @since 0.0.1
-		 */
+		/** The style to apply to the text */
 		readonly style: ASStyleCharacteristics.Type;
 
 		/* @internal */
@@ -84,7 +70,6 @@ namespace UniStyled {
 	/**
 	 * Type guard
 	 *
-	 * @since 0.0.1
 	 * @category Guards
 	 */
 	export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
@@ -92,7 +77,6 @@ namespace UniStyled {
 	/**
 	 * Equivalence based on the style
 	 *
-	 * @since 0.0.1
 	 * @category Equivalences
 	 */
 	export const haveSameStyle: Equivalence.Equivalence<Type> = (self, that) =>
@@ -101,7 +85,6 @@ namespace UniStyled {
 	/**
 	 * Equivalence based on the text
 	 *
-	 * @since 0.0.1
 	 * @category Equivalences
 	 */
 	export const haveSameText: Equivalence.Equivalence<Type> = (self, that) =>
@@ -110,7 +93,6 @@ namespace UniStyled {
 	/**
 	 * Equivalence
 	 *
-	 * @since 0.0.1
 	 * @category Equivalences
 	 */
 	export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
@@ -136,18 +118,13 @@ namespace UniStyled {
 		...MPipeable.BaseProto
 	};
 
-	/**
-	 * Constructor
-	 *
-	 * @since 0.0.1
-	 */
+	/** Constructor */
 	export const make = (params: MTypes.Data<Type>): Type =>
 		MTypes.objectFromDataAndProto(proto, params);
 
 	/**
 	 * Gets the `text` property of `self`
 	 *
-	 * @since 0.0.1
 	 * @category Destructors
 	 */
 	export const text: MTypes.OneArgFunction<Type, string> = Struct.get('text');
@@ -155,7 +132,6 @@ namespace UniStyled {
 	/**
 	 * Gets the `style` property of `self`
 	 *
-	 * @since 0.0.1
 	 * @category Destructors
 	 */
 	export const style: MTypes.OneArgFunction<Type, ASStyleCharacteristics.Type> =
@@ -165,7 +141,6 @@ namespace UniStyled {
 	 * Merges the characteristics of `style` with the `style` property of `self`. In case of conflict,
 	 * the characteristics in the `style` property of `self` will prevail.
 	 *
-	 * @since 0.0.1
 	 * @category Utils
 	 */
 	export const applyStyleUnder = (
@@ -182,7 +157,6 @@ namespace UniStyled {
 	 * Builds a new UniStyled from the concatenation of several UniStyled. The style of the resulting
 	 * Unistyled is the one of the first Unistyled to be concatenated
 	 *
-	 * @since 0.0.1
 	 * @category Constructors
 	 */
 	export const concat = (elems: MTypes.OverOne<Type>): Type =>
@@ -194,7 +168,6 @@ namespace UniStyled {
 	/**
 	 * Gets the length of `self` without the formatting
 	 *
-	 * @since 0.0.1
 	 * @category Utils
 	 */
 	export const length: MTypes.OneArgFunction<Type, number> = flow(
@@ -205,7 +178,6 @@ namespace UniStyled {
 	/**
 	 * Returns the ANSI string corresponding to self
 	 *
-	 * @since 0.0.1
 	 * @category Destructors
 	 */
 	export const toAnsiString = (self: Type): string => {
@@ -217,7 +189,6 @@ namespace UniStyled {
 /**
  * Interface that represents a Text
  *
- * @since 0.0.1
  * @category Models
  */
 export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
@@ -231,7 +202,6 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
 /**
  * Type guard
  *
- * @since 0.0.1
  * @category Guards
  */
 export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
@@ -245,7 +215,6 @@ const _haveSameTextequivalence = Array.getEquivalence(UniStyled.haveSameText);
 /**
  * Equivalence
  *
- * @since 0.0.1
  * @category Equivalences
  */
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
@@ -254,7 +223,6 @@ export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
 /**
  * Equivalence
  *
- * @since 0.0.1
  * @category Equivalences
  */
 export const haveSameText: Equivalence.Equivalence<Type> = (self, that) =>
@@ -283,7 +251,6 @@ const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto
 /**
  * Returns the `uniStyledTexts` property of `self`
  *
- * @since 0.0.1
  * @category Destructors
  */
 export const uniStyledTexts: MTypes.OneArgFunction<
@@ -294,7 +261,6 @@ export const uniStyledTexts: MTypes.OneArgFunction<
 /**
  * Returns the length of `self` without the length of the styling
  *
- * @since 0.0.1
  * @category Destructors
  */
 export const length: MTypes.OneArgFunction<Type, number> = flow(
@@ -306,7 +272,6 @@ export const length: MTypes.OneArgFunction<Type, number> = flow(
 /**
  * Predicate that returns true if `self` is empty
  *
- * @since 0.0.1
  * @category Predicates
  */
 
@@ -315,7 +280,6 @@ export const isEmpty: Predicate.Predicate<Type> = flow(length, MFunction.strictE
 /**
  * Builds a Text by applying a StyleCharacteristics to some strings and other Text's
  *
- * @since 0.0.1
  * @category Constructors
  */
 
@@ -355,7 +319,6 @@ export const fromStyleAndElems =
 /**
  * Builds a new Text by concatenating all passed Texts or strings
  *
- * @since 0.0.1
  * @category Utils
  */
 export const concat: (...elems: ReadonlyArray<string | Type>) => Type = fromStyleAndElems(
@@ -365,7 +328,6 @@ export const concat: (...elems: ReadonlyArray<string | Type>) => Type = fromStyl
 /**
  * An empty Text
  *
- * @since 0.0.1
  * @category Instances
  */
 export const empty: Type = concat();
@@ -373,7 +335,6 @@ export const empty: Type = concat();
 /**
  * Builds a Text from a string withoout applying any style
  *
- * @since 0.0.1
  * @category Constructors
  */
 export const fromString: MTypes.OneArgFunction<string, Type> = concat;
@@ -381,7 +342,6 @@ export const fromString: MTypes.OneArgFunction<string, Type> = concat;
 /**
  * Returns the ANSI string corresponding to self
  *
- * @since 0.0.1
  * @category Destructors
  */
 export const toAnsiString: MTypes.OneArgFunction<Type, string> = flow(
@@ -415,7 +375,6 @@ export const toAnsiString: MTypes.OneArgFunction<Type, string> = flow(
 /**
  * Builds a new Text by appending `that` to `self`
  *
- * @since 0.0.1
  * @category Utils
  */
 export const append =
@@ -426,7 +385,6 @@ export const append =
 /**
  * Builds a new String by appending `self` to `that`
  *
- * @since 0.0.1
  * @category Utils
  */
 export const prepend =
@@ -437,7 +395,6 @@ export const prepend =
 /**
  * Builds a new Text by joining all passed Texts and adding `self` as separator in between
  *
- * @since 0.0.1
  * @category Utils
  */
 export const join =
@@ -448,7 +405,6 @@ export const join =
 /**
  * Builds a new Text by repeating `n` times the passed Text
  *
- * @since 0.0.1
  * @category Utils
  */
 export const repeat =

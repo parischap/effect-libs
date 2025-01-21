@@ -1,8 +1,4 @@
-/**
- * A simple extension to the Effect Tuple module
- *
- * @since 0.0.6
- */
+/** A simple extension to the Effect Tuple module */
 
 import { Tuple, pipe } from 'effect';
 
@@ -14,7 +10,6 @@ import { Tuple, pipe } from 'effect';
  * That's because `Array.map` and `Array.filter` send a second argument with the position of the
  * value.
  *
- * @since 0.0.6
  * @category Constructors
  */
 export const fromSingleValue = <A>(a: A): [A] => Tuple.make(a);
@@ -22,7 +17,6 @@ export const fromSingleValue = <A>(a: A): [A] => Tuple.make(a);
 /**
  * Creates a two element tuple with the same value
  *
- * @since 0.0.6
  * @category Constructors
  */
 export const makeBoth = <A>(a: A): [A, A] => Tuple.make(a, a);
@@ -30,7 +24,6 @@ export const makeBoth = <A>(a: A): [A, A] => Tuple.make(a, a);
 /**
  * Creates a two element tuple applying two different functions to the same value
  *
- * @since 0.0.6
  * @category Constructors
  */
 export const makeBothBy =
@@ -47,7 +40,6 @@ export const makeBothBy =
 /**
  * Prepends an element at the start of a tuple.
  *
- * @since 0.0.6
  * @category Utils
  */
 export const prependElement =
@@ -58,7 +50,6 @@ export const prependElement =
 /**
  * Returns the first two elements of a tuple
  *
- * @since 0.0.6
  * @category Utils
  */
 export const firstTwo = <A, B, C extends ReadonlyArray<unknown>>(

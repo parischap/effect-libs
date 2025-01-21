@@ -1,15 +1,10 @@
-/**
- * A simple extension to the Effect Chunk module
- *
- * @since 0.0.6
- */
+/** A simple extension to the Effect Chunk module */
 
 import { Boolean, Chunk, Option, Predicate, pipe } from 'effect';
 
 /**
  * Returns true if the length of `self` is `l`
  *
- * @since 0.5.0
  * @category Predicates
  */
 export const hasLength =
@@ -20,7 +15,6 @@ export const hasLength =
 /**
  * Returns true if the provided Chunk contains duplicates
  *
- * @since 0.0.6
  * @category Utils
  */
 export const hasDuplicates = <A>(self: Chunk.Chunk<A>): boolean =>
@@ -29,7 +23,6 @@ export const hasDuplicates = <A>(self: Chunk.Chunk<A>): boolean =>
 /**
  * Returns a Chunk of the indexes of all elements of self matching the predicate
  *
- * @since 0.0.6
  * @category Utils
  */
 export const findAll =
@@ -45,7 +38,6 @@ export const findAll =
 /**
  * Returns a chunk containing all elements of self except the n last elements
  *
- * @since 0.0.6
  * @category Utils
  */
 export const takeBut =
@@ -56,7 +48,6 @@ export const takeBut =
 /**
  * Returns a chunk containing all elements of self except the n first elements
  *
- * @since 0.0.6
  * @category Utils
  */
 export const takeRightBut =

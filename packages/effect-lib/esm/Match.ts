@@ -2,8 +2,6 @@
  * Simple matcher that can only match against predicates and refinements. Fast and simple but
  * sufficient for most use cases. As the matcher is so simple, it needs no compilation which really
  * simplifies its use.
- *
- * @since 0.0.6
  */
 
 import { Array, Inspectable, Option, Pipeable, Predicate, Types, pipe } from 'effect';
@@ -15,7 +13,6 @@ import * as MTypes from './types.js';
 /**
  * Module tag
  *
- * @since 0.5.0
  * @category Models
  */
 export const moduleTag = '@parischap/effect-lib/Match/';
@@ -25,23 +22,14 @@ type TypeId = typeof TypeId;
 /**
  * Type that represents a matcher
  *
- * @since 0.0.6
  * @category Models
  */
 export interface Type<out Input, out Output, out Rest extends Input>
 	extends Inspectable.Inspectable,
 		Pipeable.Pipeable {
-	/**
-	 * The input to match
-	 *
-	 * @since 0.0.6
-	 */
+	/** The input to match */
 	readonly input: Input;
-	/**
-	 * The output of the matcher when it has been found
-	 *
-	 * @since 0.0.6
-	 */
+	/** The output of the matcher when it has been found */
 	readonly output: Option.Option<Output>;
 	/** @internal */
 	readonly [TypeId]: {
@@ -54,7 +42,6 @@ export interface Type<out Input, out Output, out Rest extends Input>
 /**
  * Type guard
  *
- * @since 0.0.6
  * @category Guards
  */
 export const has = (u: unknown): u is Type<unknown, unknown, unknown> =>
@@ -81,7 +68,6 @@ const _make = <Input, Output>(params: {
 /**
  * Builds a new matcher
  *
- * @since 0.0.6
  * @category Constructors
  */
 export const make = <Input>(input: Input): Type<Input, never, Input> =>
@@ -94,7 +80,6 @@ export const make = <Input>(input: Input): Type<Input, never, Input> =>
  * `f(self.input)`. From a type perspective, the Rest is only `refined` if the predicate is a
  * refinement.
  *
- * @since 0.0.6
  * @category Utils
  * @example
  * 	import { MMatch, MTypes } from '@parischap/effect-lib';
@@ -146,7 +131,6 @@ export const when =
  * perspective, the Rest will only be 'refined` if it`s a finite type like an Enum (but not `number`
  * or `string`)
  *
- * @since 0.0.6
  * @category Utils
  * @example
  * 	import { MMatch } from '@parischap/effect-lib';
@@ -188,7 +172,6 @@ export const whenIs =
 /**
  * Same as whenIs but you can pass several values to match against.
  *
- * @since 0.2.2
  * @category Utils
  * @example
  * 	import { MMatch } from '@parischap/effect-lib';
@@ -249,7 +232,6 @@ export const whenIsOr =
  * and matches if `f` returns a `some` whose value becomes the output of the matcher. Returns a copy
  * of `self` if `f` returns a `none`. From a type perspective, the `Rest` will not be refined.
  *
- * @since 0.0.6
  * @category Utils
  * @example
  * 	import { MMatch } from '@parischap/effect-lib';
@@ -277,7 +259,6 @@ export const tryFunction =
  * returns `true`. From a type perspective, the `Rest` will only be refined if all predicates are
  * refinements.
  *
- * @since 0.0.6
  * @category Utils
  */
 export const whenOr =
@@ -314,7 +295,6 @@ export const whenOr =
  * return `true`. From a type perspective, the `Rest` will only be refined if all predicates are
  * refinements.
  *
- * @since 0.0.6
  * @category Utils
  */
 export const whenAnd =
@@ -356,7 +336,6 @@ export const whenAnd =
  * Returns `self.output` if `self` already has an output. Otherwise, returns the result of f applied
  * to `self.input`.
  *
- * @since 0.0.6
  * @category Utils
  */
 export const orElse =
@@ -368,7 +347,6 @@ export const orElse =
  * Same as orElse but we pass a predicate (useless from a javascript perspective) to tell the
  * compiler what `Rest` should be. Useful when we know better than Typescript.
  *
- * @since 0.0.6
  * @category Utils
  * @example
  * 	import { MMatch, MTypes } from '@parischap/effect-lib';
@@ -396,7 +374,6 @@ export const unsafeWhen =
 /**
  * Returns the output of the matcher and shows a type error if `Rest` is not `never`
  *
- * @since 0.0.6
  * @category Utils
  * @example
  * 	import { MMatch, MTypes } from '@parischap/effect-lib';

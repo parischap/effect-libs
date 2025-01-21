@@ -1,8 +1,4 @@
-/**
- * A simple extension to the Effect Array module
- *
- * @since 0.0.6
- */
+/** A simple extension to the Effect Array module */
 
 import {
 	Array,
@@ -25,7 +21,6 @@ import * as MTypes from './types.js';
 /**
  * Returns true if the length of `self` is `l`
  *
- * @since 0.5.0
  * @category Predicates
  */
 export const hasLength =
@@ -37,7 +32,6 @@ export const hasLength =
  * Returns true if the provided ReadonlyArray contains duplicates using the provided isEquivalent
  * function
  *
- * @since 0.0.6
  * @category Utils
  */
 export const hasDuplicatesWith =
@@ -48,7 +42,6 @@ export const hasDuplicatesWith =
 /**
  * Returns true if the provided ReadonlyArray contains duplicates
  *
- * @since 0.0.6
  * @category Utils
  */
 export const hasDuplicates = hasDuplicatesWith(Equal.equivalence());
@@ -57,7 +50,6 @@ export const hasDuplicates = hasDuplicatesWith(Equal.equivalence());
  * Matches the elements of an array, applying functions to cases of empty arrays, arrays containing
  * a single element, and arrays containing two or more elements.
  *
- * @since 0.0.6
  * @category Utils
  */
 export const match012 =
@@ -78,7 +70,6 @@ export const match012 =
 /**
  * Returns an array of the indexes of all elements of self matching the predicate
  *
- * @since 0.0.6
  * @category Utils
  */
 
@@ -95,7 +86,6 @@ export const findAll =
 /**
  * Takes all elements of self except the n last elements
  *
- * @since 0.0.6
  * @category Utils
  */
 export const takeBut =
@@ -106,7 +96,6 @@ export const takeBut =
 /**
  * Takes all elements of self except the n first elements
  *
- * @since 0.0.6
  * @category Utils
  */
 export const takeRightBut =
@@ -118,7 +107,6 @@ export const takeRightBut =
  * This function provides a safe way to read a value at a particular index from the end of a
  * `ReadonlyArray`. Index `0` will return the last element of the array.
  *
- * @since 0.0.6
  * @category Utils
  */
 export const getFromEnd =
@@ -129,7 +117,6 @@ export const getFromEnd =
 /**
  * This function returns the longest sub-array common to self and that starting at index 0
  *
- * @since 0.0.6
  * @category Utils
  */
 export const longestCommonSubArray =
@@ -146,7 +133,6 @@ export const longestCommonSubArray =
  * Extracts from an array the first item that matches the predicate. Returns the extracted item and
  * the remaining items.
  *
- * @since 0.0.6
  * @category Utils
  */
 export const extractFirst: {
@@ -171,7 +157,6 @@ export const extractFirst: {
  * Flattens an array of arrays adding an index that will allow to reverse this operation with
  * groupByNum
  *
- * @since 0.0.6
  * @category Utils
  * @example
  * 	import { MArray } from '@parischap/effect-lib';
@@ -208,7 +193,6 @@ export const ungroup = <A>(as: ReadonlyArray<ReadonlyArray<A>>): Array<[number, 
  * the corresponding value is ignored. There may be holes in the output array. Can be used to
  * reverse the ungroup function.
  *
- * @since 0.0.6
  * @category Utils
  * @example
  * 	import { MArray } from '@parischap/effect-lib';
@@ -255,7 +239,6 @@ export const groupByNum =
 /**
  * Same as Array.groupBy but with a value projection function
  *
- * @since 0.0.6
  * @category Utils
  */
 export const groupBy =
@@ -297,7 +280,6 @@ export const groupBy =
 /**
  * Same as get but with flipped parameters
  *
- * @since 0.5.0
  * @category Utils
  */
 export const getter =
@@ -308,7 +290,6 @@ export const getter =
 /**
  * Unsafe gets an element from an array. No bounds check, faster than the Effect version
  *
- * @since 0.0.6
  * @category Utils
  */
 export const unsafeGet =
@@ -320,7 +301,6 @@ export const unsafeGet =
 /**
  * Same as unsafeGet but with flipped parameters
  *
- * @since 0.5.0
  * @category Utils
  */
 export const unsafeGetter =
@@ -332,7 +312,6 @@ export const unsafeGetter =
  * Returns a copy of self with all elements but the last modified by a function f. Returns a copy of
  * self if it contains at most one element.
  *
- * @since 0.0.6
  * @category Utils
  */
 export const modifyInit =
@@ -344,7 +323,6 @@ export const modifyInit =
  * Returns a copy of self with all elements but the first modified by a function f . Returns a copy
  * of self if it contains at most one element.
  *
- * @since 0.0.6
  * @category Utils
  */
 export const modifyTail =
@@ -356,7 +334,6 @@ export const modifyTail =
  * Returns a copy of self with the last element modified by a function f. Returns a copy of self if
  * it contains no elements.
  *
- * @since 0.0.6
  * @category Utils
  */
 export const modifyLast =
@@ -368,7 +345,6 @@ export const modifyLast =
  * Returns a copy of self with the first element modified by a function f. Returns a copy of self if
  * it contains no elements.
  *
- * @since 0.0.6
  * @category Utils
  */
 export const modifyHead =
@@ -379,7 +355,6 @@ export const modifyHead =
 /**
  * Same as Array.unfold but with cycle detection and curried
  *
- * @since 0.5.0
  * @category Constructors
  */
 export const unfold =
@@ -399,7 +374,6 @@ export const unfold =
 /**
  * Same as unfold but f always returns a B and an Option<A>
  *
- * @since 0.5.0
  * @category Constructors
  */
 export const unfoldNonEmpty =
@@ -414,7 +388,6 @@ export const unfoldNonEmpty =
  * Splits `self` into two segments, with the last segment containing a maximum of `n` elements. The
  * value of `n` can be `0`.
  *
- * @since 0.5.0
  * @category Utils
  */
 export const splitAtFromRight =
@@ -426,7 +399,6 @@ export const splitAtFromRight =
  * Splits `self` into two segments, with the last segment containing a maximum of `n` elements. The
  * value of `n` must be `>=1`.
  *
- * @since 0.5.0
  * @category Utils
  */
 export const splitNonEmptyAtFromRight =
@@ -439,7 +411,6 @@ export const splitNonEmptyAtFromRight =
  * equal elements in `that` in the resulting array. The sorting order `o` must also be the one that
  * was used to sort `self` and `that`
  *
- * @since 0.5.0
  * @category Utils
  */
 export const mergeSorted =
@@ -500,7 +471,6 @@ export const mergeSorted =
  * Removes all elements of `that` from `self`. The sorting order `o` must also be the one that was
  * used to sort `self` and `that`
  *
- * @since 0.5.0
  * @category Utils
  */
 export const differenceSorted =
@@ -565,7 +535,6 @@ export const differenceSorted =
  * Equivalence for arrays of numbers. To be removed when Equal.equals will handle Arrays properly
  * (from Effect 4.0 onwards)
  *
- * @since 0.5.0
  * @category Equivalences
  */
 export const numberEquivalence = Array.getEquivalence(Number.Equivalence);

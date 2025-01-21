@@ -1,19 +1,14 @@
-/**
- * A simple type module
- *
- * @since 0.0.6
- */
+/** A simple type module */
 
 import { Predicate } from 'effect';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- Unknown or never don't work as well as any when it comes to inference because any is both at the top and bottom of the tree type */
 
 /**
- * Type that represents a non-null object as javascript understands it. So it includes records (in
- * their usual computer science meaning), class instances, arrays, and functions but not null or
+ * Type that represents a non-null object as defined in javascript. It includes records (in their
+ * usual computer science meaning), class instances, arrays, and functions but not null or
  * undefined.
  *
- * @since 0.0.6
  * @category Models
  */
 export interface NonNullObject {
@@ -23,7 +18,6 @@ export interface NonNullObject {
 /**
  * Type that represents an array
  *
- * @since 0.0.6
  * @category Models
  */
 export interface AnyArray extends Array<any> {}
@@ -31,7 +25,6 @@ export interface AnyArray extends Array<any> {}
 /**
  * Type that represents a ReadonlyArray
  *
- * @since 0.5.0
  * @category Models
  */
 export interface AnyReadonlyArray extends ReadonlyArray<any> {}
@@ -39,7 +32,6 @@ export interface AnyReadonlyArray extends ReadonlyArray<any> {}
 /**
  * Type that represents a primitive except `null` and `undefined`
  *
- * @since 0.0.6
  * @category Models
  */
 export type NonNullablePrimitive = string | number | bigint | boolean | symbol;
@@ -47,7 +39,6 @@ export type NonNullablePrimitive = string | number | bigint | boolean | symbol;
 /**
  * Type that represents a primitive
  *
- * @since 0.0.6
  * @category Models
  */
 export type Primitive = NonNullablePrimitive | null | undefined;
@@ -56,7 +47,6 @@ export type Primitive = NonNullablePrimitive | null | undefined;
  * Type that represents all possible Javascript values but not all possible Typescript types (it
  * does not represent for instance types like the intersection of a primitive and an object)
  *
- * @since 0.0.6
  * @category Models
  */
 export type Unknown = Primitive | NonNullObject;
@@ -64,7 +54,6 @@ export type Unknown = Primitive | NonNullObject;
 /**
  * Type that represents a function
  *
- * @since 0.0.6
  * @category Models
  */
 export interface AnyFunction {
@@ -74,7 +63,6 @@ export interface AnyFunction {
 /**
  * Type that represents a function with one argument
  *
- * @since 0.0.6
  * @category Models
  */
 export interface OneArgFunction<in A, out B = A> {
@@ -84,7 +72,6 @@ export interface OneArgFunction<in A, out B = A> {
 /**
  * Type used to avoid warnings by eslint/functional when functions return a mutable array
  *
- * @since 0.5.0
  * @category Models
  */
 export interface MutableArray<T> extends Array<T> {}
@@ -92,7 +79,6 @@ export interface MutableArray<T> extends Array<T> {}
 /**
  * Type that represents an empty array or tuple
  *
- * @since 0.0.6
  * @category Models
  */
 /* eslint-disable-next-line functional/prefer-readonly-type */
@@ -101,7 +87,6 @@ export type EmptyArray = [];
 /**
  * Type that represents an empty array or tuple
  *
- * @since 0.0.6
  * @category Models
  */
 export type EmptyReadonlyArray = readonly [];
@@ -109,7 +94,6 @@ export type EmptyReadonlyArray = readonly [];
 /**
  * Type that represents a tuple or array with one element
  *
- * @since 0.0.6
  * @category Models
  */
 /* eslint-disable-next-line functional/prefer-readonly-type */
@@ -118,7 +102,6 @@ export type Singleton<A> = [A];
 /**
  * Type that represents a tuple or array with one element
  *
- * @since 0.0.6
  * @category Models
  */
 export type ReadonlySingleton<A> = readonly [A];
@@ -126,7 +109,6 @@ export type ReadonlySingleton<A> = readonly [A];
 /**
  * Type that represents a tuple or array with two elements
  *
- * @since 0.0.6
  * @category Models
  */
 /* eslint-disable-next-line functional/prefer-readonly-type */
@@ -135,7 +117,6 @@ export type Pair<A, B> = [A, B];
 /**
  * Type that represents a tuple or array with two elements
  *
- * @since 0.0.6
  * @category Models
  */
 export type ReadonlyPair<A, B> = readonly [A, B];
@@ -143,7 +124,6 @@ export type ReadonlyPair<A, B> = readonly [A, B];
 /**
  * Type that represents a non empty array
  *
- * @since 0.0.6
  * @category Models
  */
 
@@ -153,7 +133,6 @@ export type OverOne<A> = [A, ...Array<A>];
 /**
  * Type that represents a non empty array
  *
- * @since 0.0.6
  * @category Models
  */
 export type ReadonlyOverOne<A> = readonly [A, ...ReadonlyArray<A>];
@@ -161,7 +140,6 @@ export type ReadonlyOverOne<A> = readonly [A, ...ReadonlyArray<A>];
 /**
  * Type that represents an array with at least two elements
  *
- * @since 0.0.6
  * @category Models
  */
 /* eslint-disable-next-line functional/prefer-readonly-type */
@@ -170,7 +148,6 @@ export type OverTwo<A> = [A, A, ...Array<A>];
 /**
  * Type that represents an array with at least two elements
  *
- * @since 0.0.6
  * @category Models
  */
 export type ReadonlyOverTwo<A> = readonly [A, A, ...ReadonlyArray<A>];
@@ -178,7 +155,6 @@ export type ReadonlyOverTwo<A> = readonly [A, A, ...ReadonlyArray<A>];
 /**
  * Type that represents any predicate or refinement
  *
- * @since 0.0.6
  * @category Models
  */
 export type AnyPredicate = Predicate.Predicate<any>;
@@ -186,7 +162,6 @@ export type AnyPredicate = Predicate.Predicate<any>;
 /**
  * Type that represents any refinement
  *
- * @since 0.0.6
  * @category Models
  */
 export type AnyRefinement = Predicate.Refinement<any, any>;
@@ -194,7 +169,6 @@ export type AnyRefinement = Predicate.Refinement<any, any>;
 /**
  * Type that represents any refinement from a given type
  *
- * @since 0.0.6
  * @category Models
  */
 export type RefinementFrom<Source> = Predicate.Refinement<Source, any>;
@@ -202,7 +176,6 @@ export type RefinementFrom<Source> = Predicate.Refinement<Source, any>;
 /**
  * Type that represents a value that can be used as an error
  *
- * @since 0.0.6
  * @category Models
  */
 export type Errorish = { readonly message: string; readonly stack?: string | undefined };
@@ -210,7 +183,6 @@ export type Errorish = { readonly message: string; readonly stack?: string | und
 /**
  * Type of a string transformer, i.e. a function that transforms a string into another one
  *
- * @since 0.5.0
  * @category Models
  */
 export interface StringTransformer extends OneArgFunction<string, string> {}
@@ -223,7 +195,6 @@ type Enumerate<N extends number, Acc extends Array<number> = []> =
 /**
  * Utility type that generates a range of numeric literal types
  *
- * @since 0.0.6
  * @category Utility types
  */
 export type IntRange<F extends number, T extends number> = Exclude<Enumerate<T>, Enumerate<F>>;
@@ -231,7 +202,6 @@ export type IntRange<F extends number, T extends number> = Exclude<Enumerate<T>,
 /**
  * Utility type that extracts all elements of a tuple but the first
  *
- * @since 0.0.6
  * @category Utility types
  */
 /* eslint-disable-next-line functional/prefer-readonly-type */
@@ -240,7 +210,6 @@ export type Tail<T extends AnyArray> = [T] extends [[any, ...infer R]] ? R : nev
 /**
  * Utility type that alters all types of a tuple Tuple to Target
  *
- * @since 0.0.6
  * @category Utility types
  */
 export type ToTupleOf<Tuple extends AnyArray, Target> = {
@@ -252,7 +221,6 @@ type BaseProtoKeys = symbol | 'toString' | 'toJSON' | 'pipe';
 /**
  * Utility type that removes all non-data from a type.
  *
- * @since 0.0.6
  * @category Utility types
  */
 export type Data<T extends NonNullObject, ProtoFunctions extends string | symbol = never> = {
@@ -263,7 +231,6 @@ export type Data<T extends NonNullObject, ProtoFunctions extends string | symbol
 /**
  * Utility type that removes all data from a type
  *
- * @since 0.0.6
  * @category Utility types
  */
 export type Proto<T extends NonNullObject, ProtoFunctions extends string | symbol = never> = Omit<
@@ -284,7 +251,6 @@ export type Proto<T extends NonNullObject, ProtoFunctions extends string | symbo
 /**
  * Utility type that transforms a functions with several arguments into a function with one argument
  *
- * @since 0.5.0
  * @category Utility types
  */
 export type toOneArgFunction<F extends AnyFunction> =
@@ -293,7 +259,6 @@ export type toOneArgFunction<F extends AnyFunction> =
 /**
  * Constructs an object with prototype `proto` and data `data`
  *
- * @since 0.0.6
  * @category Utils
  */
 export const objectFromDataAndProto = <P extends NonNullObject, D extends NonNullObject>(
@@ -305,7 +270,6 @@ export const objectFromDataAndProto = <P extends NonNullObject, D extends NonNul
  * Utility type that changes the type of the unique parameter of a OneArgFunction to `A` when
  * possible
  *
- * @since 0.5.0
  * @category Utility types
  */
 export type WithArgType<F, A> =
@@ -320,7 +284,6 @@ export type WithArgType<F, A> =
  * Utility type that removes all private, symbolic and toString, toJSON keys from a type and makes
  * all remaining properties optional
  *
- * @since 0.5.0
  * @category Utility types
  */
 /*export type ToPredicates<R extends NonNullObject> = {
@@ -330,7 +293,6 @@ export type WithArgType<F, A> =
 /**
  * Utility type that creates an intersection of all types in a tuple/record
  *
- * @since 0.0.6
  * @category Utility types
  */
 export type TupleToIntersection<T extends NonNullObject> =
@@ -355,7 +317,6 @@ type ArrayType<T> = Extract<
  * From `unknown` to `Array`. Not based on Array.isArray from a Typescript perspective because it is
  * bugged. See https://github.com/microsoft/TypeScript/issues/17002
  *
- * @since 0.0.6
  * @category Guards
  */
 export const isArray = <T>(arg: T): arg is ArrayType<T> => Array.isArray(arg);
@@ -363,7 +324,6 @@ export const isArray = <T>(arg: T): arg is ArrayType<T> => Array.isArray(arg);
 /**
  * From `unknown` to `string`
  *
- * @since 0.0.6
  * @category Guards
  */
 export const isString = (input: unknown): input is string => typeof input === 'string';
@@ -371,7 +331,6 @@ export const isString = (input: unknown): input is string => typeof input === 's
 /**
  * From `unknown` to `number`
  *
- * @since 0.0.6
  * @category Guards
  */
 export const isNumber = (input: unknown): input is number => typeof input === 'number';
@@ -379,7 +338,6 @@ export const isNumber = (input: unknown): input is number => typeof input === 'n
 /**
  * From `unknown` to `bigint`
  *
- * @since 0.0.6
  * @category Guards
  */
 export const isBigInt = (input: unknown): input is bigint => typeof input === 'bigint';
@@ -387,7 +345,6 @@ export const isBigInt = (input: unknown): input is bigint => typeof input === 'b
 /**
  * From `unknown` to `boolean`
  *
- * @since 0.0.6
  * @category Guards
  */
 export const isBoolean = (input: unknown): input is boolean => typeof input === 'boolean';
@@ -395,7 +352,6 @@ export const isBoolean = (input: unknown): input is boolean => typeof input === 
 /**
  * From `unknown` to `symbol`
  *
- * @since 0.0.6
  * @category Guards
  */
 export const isSymbol = (input: unknown): input is symbol => typeof input === 'symbol';
@@ -403,7 +359,6 @@ export const isSymbol = (input: unknown): input is symbol => typeof input === 's
 /**
  * From `unknown` to `undefined`
  *
- * @since 0.0.6
  * @category Guards
  */
 export const isUndefined = (input: unknown): input is undefined => input === undefined;
@@ -411,7 +366,6 @@ export const isUndefined = (input: unknown): input is undefined => input === und
 /**
  * From a type `T` to the same type `T` without `undefined`
  *
- * @since 0.0.6
  * @category Guards
  */
 export const isNotUndefined = <A>(input: A): input is Exclude<A, undefined> => input !== undefined;
@@ -419,7 +373,6 @@ export const isNotUndefined = <A>(input: A): input is Exclude<A, undefined> => i
 /**
  * From a type `T` to `null` or `undefined` depending on what is in T
  *
- * @since 0.0.6
  * @category Guards
  */
 export const isNullable = <A>(input: A): input is Extract<A, null | undefined> =>
@@ -428,7 +381,6 @@ export const isNullable = <A>(input: A): input is Extract<A, null | undefined> =
 /**
  * From a type `T` to the same type `T` without `null` and `undefined`
  *
- * @since 0.0.6
  * @category Guards
  */
 export const isNotNullable = <A>(input: A): input is NonNullable<A> =>
@@ -437,7 +389,6 @@ export const isNotNullable = <A>(input: A): input is NonNullable<A> =>
 /**
  * From `unknown` to `null`
  *
- * @since 0.0.6
  * @category Guards
  */
 export const isNull = (input: unknown): input is null => input === null;
@@ -445,7 +396,6 @@ export const isNull = (input: unknown): input is null => input === null;
 /**
  * From a type `T` to the same type `T` without `null`
  *
- * @since 0.0.6
  * @category Guards
  */
 export const isNotNull = <A>(input: A): input is Exclude<A, null> => input !== null;
@@ -453,7 +403,6 @@ export const isNotNull = <A>(input: A): input is Exclude<A, null> => input !== n
 /**
  * From `unknown` to `AnyFunction`
  *
- * @since 0.0.6
  * @category Guards
  */
 export const isFunction = (u: unknown): u is AnyFunction => typeof u === 'function';
@@ -461,7 +410,6 @@ export const isFunction = (u: unknown): u is AnyFunction => typeof u === 'functi
 /**
  * From `unknown` to `NonNullObject`
  *
- * @since 0.0.6
  * @category Guards
  */
 export const isNonNullObject = (u: unknown): u is NonNullObject =>
@@ -470,7 +418,6 @@ export const isNonNullObject = (u: unknown): u is NonNullObject =>
 /**
  * From `unknown` to `Primitive`
  *
- * @since 0.0.6
  * @category Guards
  */
 export const isPrimitive = (u: unknown): u is Primitive =>
@@ -479,7 +426,6 @@ export const isPrimitive = (u: unknown): u is Primitive =>
 /**
  * From `unknown` to `Errorish`
  *
- * @since 0.0.6
  * @category Guards
  */
 export const isErrorish = (u: unknown): u is Errorish =>
@@ -492,7 +438,6 @@ export const isErrorish = (u: unknown): u is Errorish =>
 /**
  * From `Array<A>` to `EmptyArray`
  *
- * @since 0.0.6
  * @category Guards
  */
 /* eslint-disable-next-line functional/prefer-readonly-type */
@@ -501,7 +446,6 @@ export const isEmptyArray = <A>(u: Array<A>): u is EmptyArray => u.length === 0;
 /**
  * From `ReadonlyArray<A>` to `EmptyReadonlyArray`
  *
- * @since 0.0.6
  * @category Guards
  */
 export const isEmptyReadonlyArray = <A>(u: ReadonlyArray<A>): u is EmptyReadonlyArray =>
@@ -510,7 +454,6 @@ export const isEmptyReadonlyArray = <A>(u: ReadonlyArray<A>): u is EmptyReadonly
 /**
  * From `Array<A>` to `OverOne<A>`
  *
- * @since 0.0.6
  * @category Guards
  */
 /* eslint-disable-next-line functional/prefer-readonly-type */
@@ -519,7 +462,6 @@ export const isOverOne = <A>(u: Array<A>): u is OverOne<A> => u.length >= 1;
 /**
  * From `ReadonlyArray<A>` to `ReadonlyOverOne<A>`
  *
- * @since 0.0.6
  * @category Guards
  */
 export const isReadonlyOverOne = <A>(u: ReadonlyArray<A>): u is ReadonlyOverOne<A> => u.length >= 1;
@@ -527,7 +469,6 @@ export const isReadonlyOverOne = <A>(u: ReadonlyArray<A>): u is ReadonlyOverOne<
 /**
  * From `Array<A>` to `OverTwo<A>`
  *
- * @since 0.0.6
  * @category Guards
  */
 /* eslint-disable-next-line functional/prefer-readonly-type */
@@ -536,7 +477,6 @@ export const isOverTwo = <A>(u: Array<A>): u is OverTwo<A> => u.length >= 2;
 /**
  * From `ReadonlyArray<A>` to `ReadonlyOverTwo<A>`
  *
- * @since 0.0.6
  * @category Guards
  */
 export const isReadonlyOverTwo = <A>(u: ReadonlyArray<A>): u is ReadonlyOverTwo<A> => u.length >= 2;
@@ -544,7 +484,6 @@ export const isReadonlyOverTwo = <A>(u: ReadonlyArray<A>): u is ReadonlyOverTwo<
 /**
  * From `Array<A>` to `Singleton<A>`
  *
- * @since 0.0.6
  * @category Guards
  */
 /* eslint-disable-next-line functional/prefer-readonly-type */
@@ -553,7 +492,6 @@ export const isSingleton = <A>(u: Array<A>): u is Singleton<A> => u.length === 1
 /**
  * From `ReadonlyArray<A>` to `ReadonlySingleton<A>`
  *
- * @since 0.0.6
  * @category Guards
  */
 export const isReadonlySingleton = <A>(u: ReadonlyArray<A>): u is ReadonlySingleton<A> =>
@@ -562,7 +500,6 @@ export const isReadonlySingleton = <A>(u: ReadonlyArray<A>): u is ReadonlySingle
 /**
  * From `F` to `toOneArgFunction<F>`
  *
- * @since 0.0.6
  * @category Guards
  */
 export const isOneArgFunction = <F extends AnyFunction>(
@@ -572,19 +509,17 @@ export const isOneArgFunction = <F extends AnyFunction>(
 /**
  * Namespace for the possible categories of a Javascript value
  *
- * @since 0.5.0
  * @category Models
  */
 export namespace Category {
 	/**
 	 * Type of a Category.
 	 *
-	 * @since 0.5.0
 	 * @category Models
 	 */
 	export enum Type {
 		Primitive = 0,
-		// Record is to be understood in its computer science usual meaning, so a list of values identified by a key. Not to be confused with a Typescript Record that includes arrays and functions.
+		// Record is to be understood in its computer science usual meaning, so a list of values identified by a key. Not to be confused with a Typescript Record that also includes arrays and functions.
 		Record = 1,
 		Array = 2,
 		Function = 3
@@ -593,7 +528,6 @@ export namespace Category {
 	/**
 	 * Constructor
 	 *
-	 * @since 0.5.0
 	 * @category Constructors
 	 */
 	export const fromValue = (u: unknown): Type => {
@@ -615,7 +549,6 @@ export namespace Category {
 /**
  * A value with a covariant type
  *
- * @since 0.0.6
  * @category Constants
  */
 export const covariantValue = (_: never) => _;
@@ -623,7 +556,6 @@ export const covariantValue = (_: never) => _;
 /**
  * A value with a contravariant type
  *
- * @since 0.0.6
  * @category Constants
  */
 export const contravariantValue = (_: unknown) => _;
@@ -631,7 +563,6 @@ export const contravariantValue = (_: unknown) => _;
 /**
  * A value with an invariant type
  *
- * @since 0.0.6
  * @category Constants
  */
 /* eslint-disable @typescript-eslint/no-unsafe-return */

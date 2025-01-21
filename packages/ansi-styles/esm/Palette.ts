@@ -4,8 +4,6 @@
  *
  * With the make function, you can define your own instances if the provided ones don't suit your
  * needs.
- *
- * @since 0.1.0
  */
 
 import { MInspectable, MPipeable, MString, MTypes } from '@parischap/effect-lib';
@@ -15,7 +13,6 @@ import * as ASStyle from './Style.js';
 /**
  * Module tag
  *
- * @since 0.0.1
  * @category Models
  */
 export const moduleTag = '@parischap/ansi-styles/Palette/';
@@ -25,7 +22,6 @@ type TypeId = typeof TypeId;
 /**
  * Type that represents an array of Style's.
  *
- * @since 0.0.1
  * @category Models
  */
 export type Styles = MTypes.OverTwo<ASStyle.Type>;
@@ -33,15 +29,10 @@ export type Styles = MTypes.OverTwo<ASStyle.Type>;
 /**
  * Type that represents a Palette.
  *
- * @since 0.0.1
  * @category Models
  */
 export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
-	/**
-	 * Array of styles contained by this Palette
-	 *
-	 * @since 0.0.1
-	 */
+	/** Array of styles contained by this Palette */
 	readonly styles: Styles;
 
 	/** @internal */
@@ -51,7 +42,6 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
 /**
  * Type guard
  *
- * @since 0.0.1
  * @category Guards
  */
 export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
@@ -62,7 +52,6 @@ const _equivalence = Array.getEquivalence(ASStyle.equivalence);
 /**
  * Equivalence
  *
- * @since 0.0.1
  * @category Equivalences
  */
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
@@ -91,7 +80,6 @@ const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto
 /**
  * Constructor
  *
- * @since 0.0.1
  * @category Constructors
  */
 export const make = (...styles: Styles): Type => _make({ styles });
@@ -99,7 +87,6 @@ export const make = (...styles: Styles): Type => _make({ styles });
 /**
  * Gets the id of `self`
  *
- * @since 0.0.1
  * @category Destructors
  */
 export const toId: MTypes.OneArgFunction<Type, string> = flow(
@@ -112,7 +99,6 @@ export const toId: MTypes.OneArgFunction<Type, string> = flow(
 /**
  * Gets the underlying styles of `self`
  *
- * @since 0.0.1
  * @category Destructors
  */
 export const styles: MTypes.OneArgFunction<Type, Styles> = Struct.get('styles');
@@ -120,7 +106,6 @@ export const styles: MTypes.OneArgFunction<Type, Styles> = Struct.get('styles');
 /**
  * Appends `that` to `self`
  *
- * @since 0.0.1
  * @category Utils
  */
 export const append =
@@ -131,7 +116,6 @@ export const append =
 /**
  * Palette instance which contains all standard original colors
  *
- * @since 0.0.1
  * @category Instances
  */
 
@@ -149,7 +133,6 @@ export const allStandardOriginalColors: Type = make(
 /**
  * Palette instance which contains all bright original colors
  *
- * @since 0.0.1
  * @category Instances
  */
 
@@ -167,7 +150,6 @@ export const allBrightOriginalColors: Type = make(
 /**
  * Palette instance which contains all original colors
  *
- * @since 0.0.1
  * @category Instances
  */
 

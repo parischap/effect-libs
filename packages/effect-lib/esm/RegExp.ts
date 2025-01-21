@@ -1,8 +1,4 @@
-/**
- * Very simple regular expression module
- *
- * @since 0.5.0
- */
+/** Very simple regular expression module */
 
 import { Option, pipe } from 'effect';
 import * as MArray from './Array.js';
@@ -11,7 +7,6 @@ import * as MRegExpString from './RegExpString.js';
 /**
  * Creates a RegExp from a string
  *
- * @since 0.5.0
  * @category Constructors
  */
 export const fromRegExpString =
@@ -24,7 +19,6 @@ export const fromRegExpString =
  * String.prototype.match. This function will always return only the first match, even if the `g`
  * flag is set. Good to use in a library when you have no control over the RegExp you receive.
  *
- * @since 0.5.0
  * @category Destructors
  */
 export const match =
@@ -35,7 +29,6 @@ export const match =
 /**
  * Same as match but also returns capturing groups.
  *
- * @since 0.5.0
  * @category Destructors
  */
 export const matchAndGroups =
@@ -58,7 +51,6 @@ export const matchAndGroups =
  * NOT BE USED WITH `exec` or `test` because these functions will modify the lastIndex property of
  * this global RegExp
  *
- * @since 0.5.0
  * @category Instances
  */
 export const globalLineBreak = new RegExp(MRegExpString.lineBreak, 'g');
@@ -66,7 +58,6 @@ export const globalLineBreak = new RegExp(MRegExpString.lineBreak, 'g');
 /**
  * A regular expression representing a linebreak in all systems without the `g` flag.
  *
- * @since 0.5.0
  * @category Instances
  */
 export const lineBreak = new RegExp(MRegExpString.lineBreak);
@@ -74,7 +65,6 @@ export const lineBreak = new RegExp(MRegExpString.lineBreak);
 /**
  * A regular expression representing a path separator that will match on all systems
  *
- * @since 0.5.0
  * @category Instances
  */
 export const universalPathSep = new RegExp(MRegExpString.universalPathSep);
@@ -82,7 +72,6 @@ export const universalPathSep = new RegExp(MRegExpString.universalPathSep);
 /**
  * A regular expression representing a SemVer
  *
- * @since 0.5.0
  * @category Instances
  */
 export const semVer = pipe(MRegExpString.semVer, MRegExpString.makeLine, fromRegExpString());
@@ -90,7 +79,6 @@ export const semVer = pipe(MRegExpString.semVer, MRegExpString.makeLine, fromReg
 /**
  * A regular expression representing an email
  *
- * @since 0.5.0
  * @category Instances
  */
 export const email = pipe(MRegExpString.email, MRegExpString.makeLine, fromRegExpString());
@@ -98,7 +86,6 @@ export const email = pipe(MRegExpString.email, MRegExpString.makeLine, fromRegEx
 /**
  * A regular expression representing a strictly positive digit
  *
- * @since 0.5.0
  * @category Instances
  */
 export const nonZeroDigit = pipe(MRegExpString.nonZeroDigit, fromRegExpString());
@@ -106,7 +93,6 @@ export const nonZeroDigit = pipe(MRegExpString.nonZeroDigit, fromRegExpString())
 /**
  * A regular expression representing a string starting with an integer in base 2.
  *
- * @since 0.5.0
  * @category Instances
  */
 export const binaryIntAtStart = pipe(
@@ -118,7 +104,6 @@ export const binaryIntAtStart = pipe(
 /**
  * A regular expression representing a string starting with an integer in base 8.
  *
- * @since 0.5.0
  * @category Instances
  */
 export const octalIntAtStart = pipe(
@@ -130,7 +115,6 @@ export const octalIntAtStart = pipe(
 /**
  * A regular expression representing a string starting with an integer in base 16.
  *
- * @since 0.5.0
  * @category Instances
  */
 export const hexaIntAtStart = pipe(

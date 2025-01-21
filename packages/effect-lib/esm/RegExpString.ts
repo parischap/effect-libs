@@ -1,8 +1,4 @@
-/**
- * Very simple regular expression string module
- *
- * @since 0.5.0
- */
+/** Very simple regular expression string module */
 
 import { Function, Number, pipe, Tuple } from 'effect';
 import * as MArray from './Array.js';
@@ -13,7 +9,6 @@ import * as MTypes from './types.js';
 /**
  * Size of a group of digits
  *
- * @since 0.5.0
  * @category Constants
  */
 export const DIGIT_GROUP_SIZE = 3;
@@ -21,7 +16,6 @@ export const DIGIT_GROUP_SIZE = 3;
 /**
  * Creates a string representing a regular expression from a regular expression
  *
- * @since 0.5.0
  * @category Constructors
  */
 export const fromRegExp = (regExp: RegExp): string => regExp.source;
@@ -29,7 +23,6 @@ export const fromRegExp = (regExp: RegExp): string => regExp.source;
 /**
  * Returns a new regular expression string where `self` may appear 0 or more times
  *
- * @since 0.5.0
  * @category Utils
  */
 export const zeroOrMore = (self: string): string => `(?:${self})*`;
@@ -37,7 +30,6 @@ export const zeroOrMore = (self: string): string => `(?:${self})*`;
 /**
  * Returns a new regular expression string where `self` may appear 1 or more times
  *
- * @since 0.5.0
  * @category Utils
  */
 export const oneOrMore: MTypes.StringTransformer = (self) => `(?:${self})+`;
@@ -47,7 +39,6 @@ export const oneOrMore: MTypes.StringTransformer = (self) => `(?:${self})+`;
  * Both `low` and `high` must be integers. If `high` is null or negative or strictly less than
  * `low`, the function returns an empry string. `high` may receive the `+Infinity` value.
  *
- * @since 0.5.0
  * @category Utils
  */
 export const repeatBetween =
@@ -60,7 +51,6 @@ export const repeatBetween =
  * `high` must be an integer. If `high` is null or negative, the function returns an empry string.
  * If `high` is `+Infinity`, the function is an alias to `zeroOrMore`
  *
- * @since 0.5.0
  * @category Utils
  */
 export const repeatAtMost = (high: number): MTypes.StringTransformer =>
@@ -69,7 +59,6 @@ export const repeatAtMost = (high: number): MTypes.StringTransformer =>
 /**
  * Returns a new regular expression string where `self` is optional
  *
- * @since 0.5.0
  * @category Utils
  */
 export const optional: MTypes.StringTransformer = (self) => `(?:${self})?`;
@@ -78,7 +67,6 @@ export const optional: MTypes.StringTransformer = (self) => `(?:${self})?`;
  * Returns a regular expression string that will match one of the provided regular expression
  * strings
  *
- * @since 0.5.0
  * @category Utils
  */
 export const either = (...args: ReadonlyArray<string>): string =>
@@ -94,7 +82,6 @@ export const either = (...args: ReadonlyArray<string>): string =>
 /**
  * Returns a regular expression string that will match one of the provided characters
  *
- * @since 0.5.0
  * @category Utils
  */
 export const characterClass = (...args: ReadonlyArray<string>): string =>
@@ -110,7 +97,6 @@ export const characterClass = (...args: ReadonlyArray<string>): string =>
 /**
  * Returns a new regular expression string where `self` must fill a whole line
  *
- * @since 0.5.0
  * @category Utils
  */
 export const makeLine: MTypes.StringTransformer = (self) => `^${self}$`;
@@ -118,7 +104,6 @@ export const makeLine: MTypes.StringTransformer = (self) => `^${self}$`;
 /**
  * Returns a new regular expression string where `self` must be at the end of a line
  *
- * @since 0.5.0
  * @category Utils
  */
 export const atEnd: MTypes.StringTransformer = (self) => `${self}$`;
@@ -126,7 +111,6 @@ export const atEnd: MTypes.StringTransformer = (self) => `${self}$`;
 /**
  * Returns a new regular expression string where `self` must be at the start of a line
  *
- * @since 0.5.0
  * @category Utils
  */
 export const atStart: MTypes.StringTransformer = (self) => `^${self}`;
@@ -134,7 +118,6 @@ export const atStart: MTypes.StringTransformer = (self) => `^${self}`;
 /**
  * Returns a new regular expression string where `self` will be used as negative lookahead
  *
- * @since 0.5.0
  * @category Utils
  */
 export const negativeLookAhead: MTypes.StringTransformer = (self) => `(?!${self})`;
@@ -142,7 +125,6 @@ export const negativeLookAhead: MTypes.StringTransformer = (self) => `(?!${self}
 /**
  * Returns a new regular expression string where `self` will be used as ppositive lookahead
  *
- * @since 0.5.0
  * @category Utils
  */
 export const positiveLookAhead: MTypes.StringTransformer = (self) => `(?=${self})`;
@@ -150,7 +132,6 @@ export const positiveLookAhead: MTypes.StringTransformer = (self) => `(?=${self}
 /**
  * Returns a new regular expression string where `self` will be captured
  *
- * @since 0.5.0
  * @category Utils
  */
 export const capture: MTypes.StringTransformer = (self) => `(${self})`;
@@ -158,7 +139,6 @@ export const capture: MTypes.StringTransformer = (self) => `(${self})`;
 /**
  * Escapes all regex special characters
  *
- * @since 0.5.0
  * @category Constructors
  */
 export const escape: MTypes.StringTransformer = (s) => s.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&');
@@ -166,7 +146,6 @@ export const escape: MTypes.StringTransformer = (s) => s.replace(/[/\-\\^$*+?.()
 /**
  * A regular expression string representing an empty capturing group
  *
- * @since 0.5.0
  * @category Instances
  */
 export const emptyCapture = capture('');
@@ -174,7 +153,6 @@ export const emptyCapture = capture('');
 /**
  * A regular expression string representing any character
  *
- * @since 0.5.0
  * @category Instances
  */
 export const anyChar = '.';
@@ -182,7 +160,6 @@ export const anyChar = '.';
 /**
  * A regular expression string representing anything but a dot
  *
- * @since 0.5.0
  * @category Instances
  */
 export const anythingButDot = '[^.]';
@@ -192,7 +169,6 @@ const backslashString = '\\';
 /**
  * A regular expression string representing a backslashString
  *
- * @since 0.5.0
  * @category Instances
  */
 export const backslash = backslashString + backslashString;
@@ -200,7 +176,6 @@ export const backslash = backslashString + backslashString;
 /**
  * A regular expression string representing a slash
  *
- * @since 0.5.0
  * @category Instances
  */
 export const slash = backslashString + '/';
@@ -208,7 +183,6 @@ export const slash = backslashString + '/';
 /**
  * A path separator regular expression string to split all possible paths
  *
- * @since 0.5.0
  * @category Instances
  */
 export const universalPathSep = characterClass(slash, backslash);
@@ -216,7 +190,6 @@ export const universalPathSep = characterClass(slash, backslash);
 /**
  * A regular expression string representing a dollar sign
  *
- * @since 0.5.0
  * @category Instances
  */
 export const dollar = backslashString + '$';
@@ -224,7 +197,6 @@ export const dollar = backslashString + '$';
 /**
  * A regular expression string representing a plus sign
  *
- * @since 0.5.0
  * @category Instances
  */
 export const plus = backslashString + '+';
@@ -232,7 +204,6 @@ export const plus = backslashString + '+';
 /**
  * A regular expression string representing a minus sign
  *
- * @since 0.5.0
  * @category Instances
  */
 export const minus = '-';
@@ -240,7 +211,6 @@ export const minus = '-';
 /**
  * A regular expression string representing a plus or a minus sign
  *
- * @since 0.5.0
  * @category Instances
  */
 export const sign = either(plus, minus);
@@ -248,7 +218,6 @@ export const sign = either(plus, minus);
 /**
  * A regular expression string representing a star
  *
- * @since 0.5.0
  * @category Instances
  */
 export const star = backslashString + '*';
@@ -256,7 +225,6 @@ export const star = backslashString + '*';
 /**
  * A regular expression string representing a dot
  *
- * @since 0.5.0
  * @category Instances
  */
 export const dot = backslashString + '.';
@@ -264,7 +232,6 @@ export const dot = backslashString + '.';
 /**
  * A regular expression string representing the arrowbase
  *
- * @since 0.5.0
  * @category Instances
  */
 export const arrowbase = '@';
@@ -272,7 +239,6 @@ export const arrowbase = '@';
 /**
  * A regular expression string representing a tab
  *
- * @since 0.0.8
  * @category Instances
  */
 export const tab = backslashString + 't';
@@ -280,7 +246,6 @@ export const tab = backslashString + 't';
 /**
  * A regular expression string representing several whitespaces
  *
- * @since 0.0.8
  * @category Instances
  */
 export const whitespaces = zeroOrMore(`[ ${tab}]`);
@@ -288,7 +253,6 @@ export const whitespaces = zeroOrMore(`[ ${tab}]`);
 /**
  * A regular expression string representing a digit
  *
- * @since 0.5.0
  * @category Instances
  */
 export const digit = backslashString + 'd';
@@ -296,7 +260,6 @@ export const digit = backslashString + 'd';
 /**
  * A regular expression string representing a strictly positive digit
  *
- * @since 0.5.0
  * @category Instances
  */
 export const nonZeroDigit = '[1-9]';
@@ -318,7 +281,6 @@ const _digitGroup: string = pipe(digit, repeatBetween(DIGIT_GROUP_SIZE, DIGIT_GR
  * positive integers with `n` greater than or equal to `m`. `n` may receive the +Infinity value. If
  * you want no thousands separator, pass an empty string to `thousandsSep`.
  *
- * @since 0.5.0
  * @category Instances
  */
 export const strictlyPositiveInt = (n = +Infinity, m = 1, thousandsSep = ''): string => {
@@ -389,7 +351,6 @@ export const strictlyPositiveInt = (n = +Infinity, m = 1, thousandsSep = ''): st
  * integers with `n` greater than or equal to `m`. `n` may receive the +Infinity value. If you want
  * no thousands separator, pass an empty string to `thousandsSep`.
  *
- * @since 0.5.0
  * @category Instances
  */
 export const positiveInt = (n?: number, m?: number, thousandsSep?: string): string =>
@@ -401,7 +362,6 @@ export const positiveInt = (n?: number, m?: number, thousandsSep?: string): stri
  * integers with `n` greater than or equal to `m`. `n` may receive the +Infinity value. If you want
  * no thousands separator, pass an empty string to `thousandsSep`.
  *
- * @since 0.5.0
  * @category Instances
  */
 export const int = (n?: number, m?: number, thousandsSep?: string): string =>
@@ -410,7 +370,6 @@ export const int = (n?: number, m?: number, thousandsSep?: string): string =>
 /**
  * A regular expression string representing an integer in base 2.
  *
- * @since 0.5.0
  * @category Instances
  */
 export const binaryInt: string = oneOrMore('[0-1]');
@@ -418,7 +377,6 @@ export const binaryInt: string = oneOrMore('[0-1]');
 /**
  * A regular expression string representing an integer in base 8.
  *
- * @since 0.5.0
  * @category Instances
  */
 export const octalInt: string = oneOrMore('[0-7]');
@@ -426,7 +384,6 @@ export const octalInt: string = oneOrMore('[0-7]');
 /**
  * A regular expression string representing an integer in base 16.
  *
- * @since 0.5.0
  * @category Instances
  */
 export const hexaInt: string = oneOrMore('[0-9A-Fa-f]');
@@ -434,7 +391,6 @@ export const hexaInt: string = oneOrMore('[0-9A-Fa-f]');
 /**
  * A regular expression string representing a letter
  *
- * @since 0.5.0
  * @category Instances
  */
 export const letter = '[A-Za-z]';
@@ -442,7 +398,6 @@ export const letter = '[A-Za-z]';
 /**
  * A regular expression string representing a lowercase letter
  *
- * @since 0.5.0
  * @category Instances
  */
 export const lowerCaseLetter = '[a-z]';
@@ -450,7 +405,6 @@ export const lowerCaseLetter = '[a-z]';
 /**
  * A regular expression string representing an uppercase letter
  *
- * @since 0.5.0
  * @category Instances
  */
 export const upperCaseLetter = '[A-Z]';
@@ -458,7 +412,6 @@ export const upperCaseLetter = '[A-Z]';
 /**
  * A regular expression string representing a lowercase letter
  *
- * @since 0.0.8
  * @category Instances
  */
 export const lowerCaseLetterOrDigit = '[a-z0-9]';
@@ -466,7 +419,6 @@ export const lowerCaseLetterOrDigit = '[a-z0-9]';
 /**
  * A regular expression string representing a word letter
  *
- * @since 0.5.0
  * @category Instances
  */
 export const anyWordLetter = backslashString + 'w';
@@ -474,7 +426,6 @@ export const anyWordLetter = backslashString + 'w';
 /**
  * A regular expression string representing a word
  *
- * @since 0.5.0
  * @category Instances
  */
 export const anyWord = oneOrMore(anyWordLetter);
@@ -482,7 +433,6 @@ export const anyWord = oneOrMore(anyWordLetter);
 /**
  * A regular expression string representing a carriage return
  *
- * @since 0.5.0
  * @category Instances
  */
 export const CR = backslashString + 'r';
@@ -490,7 +440,6 @@ export const CR = backslashString + 'r';
 /**
  * A regular expression string representing a line-feed
  *
- * @since 0.5.0
  * @category Instances
  */
 export const LF = backslashString + 'n';
@@ -498,7 +447,6 @@ export const LF = backslashString + 'n';
 /**
  * A regular expression string representing a linebreak in Windows, Unix and Mac Os
  *
- * @since 0.5.0
  * @category Instances
  */
 export const lineBreak = either(CR + LF, CR, LF);
@@ -506,7 +454,6 @@ export const lineBreak = either(CR + LF, CR, LF);
 /**
  * A regular expression string representing a SemVer. Imported from https://semver.org/
  *
- * @since 0.5.0
  * @category Instances
  */
 export const semVer =
@@ -517,7 +464,6 @@ export const semVer =
  * A regular expression string representing an email - Imported from
  * https://stackoverflow.com/questions/201323/how-can-i-validate-an-email-address-using-a-regular-expression
  *
- * @since 0.5.0
  * @category Instances
  */
 export const email =

@@ -1,8 +1,4 @@
-/**
- * A simple extension to the Effect Brand module
- *
- * @since 0.3.4
- */
+/** A simple extension to the Effect Brand module */
 
 import { Brand, Number, Predicate } from 'effect';
 import * as MNumber from './Number.js';
@@ -12,7 +8,6 @@ import * as MTypes from './types.js';
 /**
  * Module tag
  *
- * @since 0.5.0
  * @category Models
  */
 export const moduleTag = '@parischap/effect-lib/Brand/';
@@ -30,11 +25,7 @@ type RefinedConstructor<B, A extends Brand.Brand<string | symbol> & B> = MTypes.
 	>;
 };
 
-/**
- * This namespace implements an Email brand.
- *
- * @since 0.4.0
- */
+/** This namespace implements an Email brand. */
 export namespace Email {
 	const moduleTag = _moduleTag + 'Email/';
 	const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
@@ -42,7 +33,6 @@ export namespace Email {
 	/**
 	 * Email type
 	 *
-	 * @since 0.3.4
 	 * @category Models
 	 */
 	export type Type = Brand.Branded<string, TypeId>;
@@ -50,7 +40,6 @@ export namespace Email {
 	/**
 	 * Constructs an Email without any verifications
 	 *
-	 * @since 0.3.4
 	 * @category Constructors
 	 */
 	export const unsafeFromString = Brand.nominal<Type>();
@@ -59,7 +48,6 @@ export namespace Email {
 	 * Constructs an Email from a string. Throws an error if the provided string does not match the
 	 * `email` pattern
 	 *
-	 * @since 0.3.4
 	 * @category Constructors
 	 */
 	export const fromString = Brand.refined<Type>(MString.isEmail, (s) =>
@@ -67,11 +55,7 @@ export namespace Email {
 	);
 }
 
-/**
- * This namespace implements a SemVer brand.
- *
- * @since 0.4.0
- */
+/** This namespace implements a SemVer brand. */
 export namespace SemVer {
 	const moduleTag = _moduleTag + 'SemVer/';
 	const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
@@ -80,7 +64,6 @@ export namespace SemVer {
 	/**
 	 * SemVer type
 	 *
-	 * @since 0.3.4
 	 * @category Models
 	 */
 	export type Type = Brand.Branded<string, TypeId>;
@@ -88,7 +71,6 @@ export namespace SemVer {
 	/**
 	 * Constructs a SemVer without any verifications
 	 *
-	 * @since 0.3.4
 	 * @category Constructors
 	 */
 	export const unsafeFromString = Brand.nominal<Type>();
@@ -97,7 +79,6 @@ export namespace SemVer {
 	 * Constructs a SemVer from a string. Throws an error if the provided string does not match the
 	 * `semVer` pattern
 	 *
-	 * @since 0.3.4
 	 * @category Constructors
 	 */
 	export const fromString = Brand.refined<Type>(MString.isSemVer, (s) =>
@@ -105,11 +86,7 @@ export namespace SemVer {
 	);
 }
 
-/**
- * This namespace implements a finite real number brand (no Infinity or Nan)
- *
- * @since 0.4.0
- */
+/** This namespace implements a finite real number brand (no Infinity or Nan) */
 export namespace Real {
 	const moduleTag = _moduleTag + 'Real/';
 	const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
@@ -118,7 +95,6 @@ export namespace Real {
 	/**
 	 * Real type
 	 *
-	 * @since 0.3.4
 	 * @category Models
 	 */
 	export type Type = Brand.Branded<number, TypeId>;
@@ -126,7 +102,6 @@ export namespace Real {
 	/**
 	 * Constructs a Real from a number without any verifications
 	 *
-	 * @since 0.3.4
 	 * @category Constructors
 	 */
 	export const unsafeFromNumber = Brand.nominal<Type>();
@@ -134,7 +109,6 @@ export namespace Real {
 	/**
 	 * Constructs a Real from a number. Throws an error if the provided number is not finite
 	 *
-	 * @since 0.3.4
 	 * @category Constructors
 	 */
 	export const fromNumber = Brand.refined<Type>(MNumber.isFinite, (n) =>
@@ -142,11 +116,7 @@ export namespace Real {
 	);
 }
 
-/**
- * This namespace implements a finite integer brand (no Infinity or Nan)
- *
- * @since 0.4.0
- */
+/** This namespace implements a finite integer brand (no Infinity or Nan) */
 export namespace Int {
 	const moduleTag = _moduleTag + 'Int/';
 	const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
@@ -155,7 +125,6 @@ export namespace Int {
 	/**
 	 * Int type
 	 *
-	 * @since 0.3.4
 	 * @category Models
 	 */
 	export type Type = Brand.Branded<Real.Type, TypeId>;
@@ -163,7 +132,6 @@ export namespace Int {
 	/**
 	 * Constructs an Int from a number without any verifications
 	 *
-	 * @since 0.3.4
 	 * @category Constructors
 	 */
 	export const unsafeFromNumber = Brand.nominal<Type>();
@@ -174,7 +142,6 @@ export namespace Int {
 	/**
 	 * Constructs an Int from a number. Throws an error if the provided number is not a finite integer
 	 *
-	 * @since 0.3.4
 	 * @category Constructors
 	 */
 	export const fromNumber = _fromNumber(Predicate.and(MNumber.isFinite, MNumber.isInt));
@@ -182,22 +149,16 @@ export namespace Int {
 	/**
 	 * Constructs an Int from an Real. Throws an error if the provided number is not an integer
 	 *
-	 * @since 0.3.4
 	 * @category Constructors
 	 */
 	export const fromReal: RefinedConstructor<Real.Type, Type> = _fromNumber(MNumber.isInt);
 }
 
-/**
- * This namespace implements a integer range brand.
- *
- * @since 0.4.0
- */
+/** This namespace implements a integer range brand. */
 export namespace IntRange {
 	/**
 	 * IntRange type
 	 *
-	 * @since 0.3.4
 	 * @category Models
 	 */
 	export type Type<Name extends symbol> = Brand.Branded<Int.Type, Name>;
@@ -205,7 +166,6 @@ export namespace IntRange {
 	/**
 	 * Constructs an IntRange from a number without any verifications
 	 *
-	 * @since 0.3.4
 	 * @category Constructors
 	 */
 	export const unsafeFromNumber = <Name extends symbol = never>() => Brand.nominal<Type<Name>>();
@@ -223,7 +183,6 @@ export namespace IntRange {
 	 * Constructs an IntRange from a number. Throws an error if the provided number is not an integer,
 	 * not in the given range or not finite
 	 *
-	 * @since 0.3.4
 	 * @category Constructors
 	 */
 	export const fromNumber = <Name extends symbol>(minimum: number, maximum: number) =>
@@ -237,7 +196,6 @@ export namespace IntRange {
 	 * Constructs an IntRange from a Real. Throws an error if the provided number is not an integer or
 	 * not in the given range
 	 *
-	 * @since 0.3.4
 	 * @category Constructors
 	 */
 	export const fromReal = <Name extends symbol>(
@@ -254,7 +212,6 @@ export namespace IntRange {
 	 * Constructs an IntRange from an Int. Throws an error if the provided number is not in the given
 	 * range
 	 *
-	 * @since 0.3.4
 	 * @category Constructors
 	 */
 	export const fromInt = <Name extends symbol>(
@@ -264,11 +221,7 @@ export namespace IntRange {
 		_fromNumber<Name>(minimum, maximum, Number.between({ minimum, maximum })) as never;
 }
 
-/**
- * This namespace implements a positive integer brand.
- *
- * @since 0.4.0
- */
+/** This namespace implements a positive integer brand. */
 export namespace PositiveInt {
 	const moduleTag = _moduleTag + 'PositiveInt/';
 	const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
@@ -276,7 +229,6 @@ export namespace PositiveInt {
 	/**
 	 * Type for positive integers
 	 *
-	 * @since 0.3.4
 	 * @category Instances
 	 */
 	export type Type = IntRange.Type<TypeId>;
@@ -284,7 +236,6 @@ export namespace PositiveInt {
 	/**
 	 * Constructs a PositiveInt from a number without any verifications
 	 *
-	 * @since 0.3.4
 	 * @category Constructors
 	 */
 	export const unsafeFromNumber = IntRange.unsafeFromNumber<TypeId>();
@@ -293,7 +244,6 @@ export namespace PositiveInt {
 	 * Constructs a PositiveInt from a number. Throws an error if the provided number is not an
 	 * integer, not positive or not finite
 	 *
-	 * @since 0.3.4
 	 * @category Constructors
 	 */
 	export const fromNumber = IntRange.fromNumber<TypeId>(0, +Infinity);
@@ -302,7 +252,6 @@ export namespace PositiveInt {
 	 * Constructs a PositiveInt from a Real. Throws an error if the provided number is not a positive
 	 * integer
 	 *
-	 * @since 0.3.4
 	 * @category Constructors
 	 */
 	export const fromReal = IntRange.fromReal<TypeId>(0, +Infinity);
@@ -310,7 +259,6 @@ export namespace PositiveInt {
 	/**
 	 * Constructs a PositiveInt from an Int. Throws an error if the provided Int is not positive
 	 *
-	 * @since 0.3.4
 	 * @category Constructors
 	 */
 	export const fromInt = IntRange.fromInt<TypeId>(0, +Infinity);

@@ -1,8 +1,4 @@
-/**
- * A simple extension to the Effect Function module
- *
- * @since 0.0.6
- */
+/** A simple extension to the Effect Function module */
 
 import { Equal, Function, Option, Predicate } from 'effect';
 import * as MTypes from './types.js';
@@ -10,7 +6,6 @@ import * as MTypes from './types.js';
 /**
  * Applies function f if condition is true
  *
- * @since 0.0.6
  * @category Utils
  */
 export const fIfTrue =
@@ -28,7 +23,6 @@ export const fIfTrue =
  * Flips a dual function. If the dual function takes type parameters, most of the time you need to
  * pass them. For instance: MFunction.flipDual(Array.get<string>)(targetValues)
  *
- * @since 0.0.6
  * @category Utils
  */
 
@@ -46,7 +40,6 @@ export const flipDual =
 /**
  * Strict equality predicate
  *
- * @since 0.0.6
  * @category Utils
  */
 export const strictEquals: <A = never>(that: unknown) => Predicate.Predicate<A> =
@@ -57,7 +50,6 @@ export const strictEquals: <A = never>(that: unknown) => Predicate.Predicate<A> 
  * Curried equality between elements having the same type using the Equal.equals comparator. Prefer
  * using strictEquals for primitive types because it is faster
  *
- * @since 0.0.6
  * @category Utils
  */
 export const isEquivalentTo =
@@ -68,17 +60,22 @@ export const isEquivalentTo =
 /**
  * Returns the expected number of parameters of a function
  *
- * @since 0.0.6
  * @category Utils
  */
-export const parameterNumber = (f: MTypes.AnyFunction) => f.length;
+export const parameterNumber = (f: MTypes.AnyFunction): number => f.length;
+
+/**
+ * Returns the name of a function
+ *
+ * @category Utils
+ */
+export const name = (f: MTypes.AnyFunction): string => f.name;
 
 /**
  * Function to memoize a function that takes no argument. Useful to initialize a time-consuming
  * constant only when it is used (not at startup). Not that any unused constant will be tree-shaken,
  * so do not use this function if startup time is not an issue.
  *
- * @since 0.0.6
  * @category Utils
  * @example
  * 	import { MFunction } from '@parischap/effect-lib';
@@ -103,7 +100,6 @@ export const once = <A>(f: Function.LazyArg<A>): Function.LazyArg<A> => {
 /**
  * Applies `self` to `o`
  *
- * @since 0.0.6
  * @category Utils
  */
 export const applyAsMethod =
@@ -114,7 +110,6 @@ export const applyAsMethod =
 /**
  * Calls `self` without any argument
  *
- * @since 0.5.0
  * @category Utils
  */
 export const call = <A>(self: Function.LazyArg<A>): A => self();
@@ -122,7 +117,6 @@ export const call = <A>(self: Function.LazyArg<A>): A => self();
 /**
  * Returns a lazy empty string
  *
- * @since 0.5.0
  * @category Utils
  */
 export const constEmptyString = Function.constant('');

@@ -6,8 +6,6 @@
  * longest target `tree-shaking` will take precedence.
  *
  * I can give a length : alignment and padding a max-length no length
- *
- * @since 0.0.6
  */
 import { MArray, MEither, MFunction, MString, MTuple, MTypes } from '@parischap/effect-lib';
 import {
@@ -54,7 +52,6 @@ export interface Type<out T extends string> extends Inspectable.Inspectable, Pip
 /**
  * Type guard
  *
- * @since 0.0.6
  * @category Guards
  */
 export const has = (u: unknown): u is Type<string> => Predicate.hasProperty(u, TypeId);

@@ -1,8 +1,4 @@
-/**
- * A simple extension to the Effect Inspectable module
- *
- * @since 0.3.3
- */
+/** A simple extension to the Effect Inspectable module */
 
 import { Inspectable as EInspectable, Option, pipe } from 'effect';
 import * as MRecord from './Record.js';
@@ -10,7 +6,6 @@ import * as MRecord from './Record.js';
 /**
  * Module tag
  *
- * @since 0.5.0
  * @category Models
  */
 export const moduleTag = '@parischap/effect-lib/Inspectable/';
@@ -18,7 +13,6 @@ export const moduleTag = '@parischap/effect-lib/Inspectable/';
 /**
  * Symbol used to define a special prototype function that must return an id for the object
  *
- * @since 0.5.0
  * @category Models
  */
 export const IdSymbol: unique symbol = Symbol.for(moduleTag + 'IdSymbol/') as IdSymbol;
@@ -26,7 +20,6 @@ export const IdSymbol: unique symbol = Symbol.for(moduleTag + 'IdSymbol/') as Id
 /**
  * Type used to define a special prototype function that must return an id for the object
  *
- * @since 0.5.0
  * @category Models
  */
 export type IdSymbol = typeof IdSymbol;
@@ -34,7 +27,6 @@ export type IdSymbol = typeof IdSymbol;
 /**
  * Interface that an object should implement when an id can be used to represent it
  *
- * @since 0.5.0
  * @category Models
  */
 export interface Inspectable extends EInspectable.Inspectable {
@@ -45,7 +37,6 @@ export interface Inspectable extends EInspectable.Inspectable {
  * prototype) has a `[IdSymbol]` function, returns the result of this function. Otherwise, return
  * this with an extra '_id' field containing the moduleTag.
  *
- * @since 0.3.3
  * @category Instances
  */
 export const BaseProto = (moduleTag: string): EInspectable.Inspectable => ({

@@ -1,8 +1,4 @@
-/**
- * A simple extension to the Effect String module
- *
- * @since 0.0.6
- */
+/** A simple extension to the Effect String module */
 
 import {
 	Array,
@@ -34,7 +30,6 @@ import * as MTypes from './types.js';
 /**
  * Module tag
  *
- * @since 0.5.0
  * @category Models
  */
 export const moduleTag = '@parischap/effect-lib/String/';
@@ -43,8 +38,6 @@ const _moduleTag = moduleTag;
 /**
  * This namespace implements a type that represents the result of the search of a string in another
  * string.
- *
- * @since 0.4.0
  */
 export namespace SearchResult {
 	const moduleTag = _moduleTag + 'SearchResult/';
@@ -54,27 +47,14 @@ export namespace SearchResult {
 	/**
 	 * Interface that represents a SearchResult
 	 *
-	 * @since 0.0.6
 	 * @category Models
 	 */
 	export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
-		/**
-		 * The index where the match was found in the target string
-		 *
-		 * @since 0.0.6
-		 */
+		/** The index where the match was found in the target string */
 		readonly startIndex: number;
-		/**
-		 * The index of the character following the match in the target string
-		 *
-		 * @since 0.0.6
-		 */
+		/** The index of the character following the match in the target string */
 		readonly endIndex: number;
-		/**
-		 * The match
-		 *
-		 * @since 0.0.6
-		 */
+		/** The match */
 		readonly match: string;
 		/** @internal */
 		readonly [TypeId]: TypeId;
@@ -83,7 +63,6 @@ export namespace SearchResult {
 	/**
 	 * Type guard
 	 *
-	 * @since 0.0.6
 	 * @category Guards
 	 */
 	export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
@@ -91,7 +70,6 @@ export namespace SearchResult {
 	/**
 	 * Equivalence
 	 *
-	 * @since 0.0.6
 	 * @category Equivalences
 	 */
 	export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
@@ -131,7 +109,6 @@ export namespace SearchResult {
 	/**
 	 * Constructor
 	 *
-	 * @since 0.0.6
 	 * @category Constructors
 	 */
 	export const make = (params: MTypes.Data<Type>): Type =>
@@ -140,7 +117,6 @@ export namespace SearchResult {
 	/**
 	 * SearchResult Order based on the startIndex
 	 *
-	 * @since 0.0.6
 	 * @category Ordering
 	 */
 	export const byStartIndex = Order.mapInput(Order.number, (self: Type) => self.startIndex);
@@ -148,7 +124,6 @@ export namespace SearchResult {
 	/**
 	 * SearchResult Order based on the endIndex
 	 *
-	 * @since 0.0.6
 	 * @category Ordering
 	 */
 	export const byEndIndex = Order.mapInput(Order.number, (self: Type) => self.endIndex);
@@ -156,7 +131,6 @@ export namespace SearchResult {
 	/**
 	 * SearchResult Order that gives precedence to the first longest SearchResult.
 	 *
-	 * @since 0.0.6
 	 * @category Ordering
 	 */
 	export const byLongestFirst = Order.combine(byStartIndex, Order.reverse(byEndIndex));
@@ -164,7 +138,6 @@ export namespace SearchResult {
 	/**
 	 * Returns the `startIndex` property of `self`
 	 *
-	 * @since 0.5.0
 	 * @category Destructors
 	 */
 	export const startIndex: MTypes.OneArgFunction<Type, number> = Struct.get('startIndex');
@@ -172,7 +145,6 @@ export namespace SearchResult {
 	/**
 	 * Returns the `endIndex` property of `self`
 	 *
-	 * @since 0.5.0
 	 * @category Destructors
 	 */
 	export const endIndex: MTypes.OneArgFunction<Type, number> = Struct.get('endIndex');
@@ -180,7 +152,6 @@ export namespace SearchResult {
 	/**
 	 * Returns the `match` property of `self`
 	 *
-	 * @since 0.5.0
 	 * @category Destructors
 	 */
 	export const match: MTypes.OneArgFunction<Type, string> = Struct.get('match');
@@ -189,7 +160,6 @@ export namespace SearchResult {
 /**
  * Builds a string from a primitive value other than `null` and `undefined`.
  *
- * @since 0.0.6
  * @category Constructors
  */
 export const fromNonNullablePrimitive = (u: MTypes.NonNullablePrimitive): string => u.toString();
@@ -198,7 +168,6 @@ export const fromNonNullablePrimitive = (u: MTypes.NonNullablePrimitive): string
  * Builds a string from a primitive value. `null` is converted to the string "null" and `undefined`
  * to the string "undefined"
  *
- * @since 0.0.6
  * @category Constructors
  */
 export const fromPrimitive: MTypes.OneArgFunction<MTypes.Primitive, string> = flow(
@@ -210,7 +179,6 @@ export const fromPrimitive: MTypes.OneArgFunction<MTypes.Primitive, string> = fl
 /**
  * Builds a string from a number using the passed `radix`.
  *
- * @since 0.5.0
  * @category Constructors
  */
 export const fromNumber =
@@ -224,7 +192,6 @@ export const fromNumber =
  * pass a regular expression. As opposed to String.search, regexp special characters need not be
  * escaped when passing a string regexp
  *
- * @since 0.0.6
  * @category Utils
  */
 export const search =
@@ -253,7 +220,6 @@ export const search =
  * Searches for all occurences of `regexp` in `self` and returns an array of SearchResults. 'g' flag
  * needs not be set if you pass a regular expression.
  *
- * @since 0.0.6
  * @category Utils
  */
 export const searchAll =
@@ -276,7 +242,6 @@ export const searchAll =
  * Searches for the last occurence of `regexp` in `self` and returns a SearchResult. 'g' flag needs
  * not be set if you pass a regular expression.
  *
- * @since 0.0.6
  * @category Utils
  */
 export const searchRight =
@@ -297,7 +262,6 @@ export const searchRight =
  * characters before that substring. If no occurence is found, returns `self`. 'g' flag has no
  * incidence if you pass a regular expression.
  *
- * @since 0.0.6
  * @category Utils
  */
 export const takeLeftTo =
@@ -316,7 +280,6 @@ export const takeLeftTo =
  * characters after that substring. If no occurence is found, returns `self`. 'g' flag needs not be
  * set if you pass a regular expression.
  *
- * @since 0.0.6
  * @category Utils
  */
 export const takeRightFrom =
@@ -333,7 +296,6 @@ export const takeRightFrom =
 /**
  * Takes all characters from `self` except the `n` last characters
  *
- * @since 0.0.6
  * @category Utils
  */
 export const takeLeftBut =
@@ -344,7 +306,6 @@ export const takeLeftBut =
 /**
  * Takes all characters from `self` except the `n` first characters
  *
- * @since 0.0.6
  * @category Utils
  */
 export const takeRightBut =
@@ -355,7 +316,6 @@ export const takeRightBut =
 /**
  * Same as String.trimStart but the character to remove can be specified
  *
- * @since 0.5.0
  * @category Utils
  */
 export const trimStart = (charToRemove: string): ((self: string) => string) =>
@@ -364,7 +324,6 @@ export const trimStart = (charToRemove: string): ((self: string) => string) =>
 /**
  * Same as String.trimEnd but the character to remove can be specified
  *
- * @since 0.5.0
  * @category Utils
  */
 export const trimEnd = (charToRemove: string): ((self: string) => string) =>
@@ -379,7 +338,6 @@ export const trimEnd = (charToRemove: string): ((self: string) => string) =>
 /**
  * If `self` starts with `s`, returns a some of `self` stripped of `s`. Otherwise, returns a none
  *
- * @since 0.0.6
  * @category Utils
  */
 export const stripLeftOption = (s: string): ((self: string) => Option.Option<string>) =>
@@ -388,7 +346,6 @@ export const stripLeftOption = (s: string): ((self: string) => Option.Option<str
 /**
  * If `self` starts with `s`, returns `self` stripped of `s`. Otherwise, returns `self`
  *
- * @since 0.0.6
  * @category Utils
  */
 export const stripLeft =
@@ -403,7 +360,6 @@ export const stripLeft =
 /**
  * If `self` ends with `s`, returns a some of `self` stripped of `s`. Otherwise, returns a none
  *
- * @since 0.0.6
  * @category Utils
  */
 export const stripRightOption = (s: string): ((self: string) => Option.Option<string>) =>
@@ -412,7 +368,6 @@ export const stripRightOption = (s: string): ((self: string) => Option.Option<st
 /**
  * If `self` ends with `s`, returns `self` stripped of `s`. Otherwise, returns `self`
  *
- * @since 0.0.6
  * @category Utils
  */
 export const stripRight =
@@ -427,7 +382,6 @@ export const stripRight =
 /**
  * Returns the number of occurences of `regexp` in `self`
  *
- * @since 0.0.6
  * @category Utils
  */
 
@@ -439,7 +393,6 @@ export const count =
 /**
  * Appends `s` to `self`
  *
- * @since 0.0.6
  * @category Utils
  */
 export const append = MCore.appendString;
@@ -447,7 +400,6 @@ export const append = MCore.appendString;
 /**
  * Prepends `s` to `self`
  *
- * @since 0.0.6
  * @category Utils
  */
 export const prepend = MCore.prependString;
@@ -460,7 +412,6 @@ export const prepend = MCore.prependString;
  * taken equal to 0. Same for `endIndex`. If `startIndex` or strisctly superior to the length of
  * `self`, it is taken equal to the length of `self`. Same
  *
- * @since 0.0.6
  * @category Utils
  */
 export const replaceBetween =
@@ -472,7 +423,6 @@ export const replaceBetween =
  * String.prototype.match. This function will always return only the first match, even if the `g`
  * flag is set. Good to use in a library when you have no control over the RegExp you receive.
  *
- * @since 0.0.6
  * @category Utils
  */
 export const match =
@@ -483,7 +433,6 @@ export const match =
 /**
  * Same as match but also returns capturing groups.
  *
- * @since 0.5.0
  * @category Destructors
  */
 export const matchAndGroups =
@@ -496,7 +445,6 @@ export const matchAndGroups =
  * to `n-1`). If `n` is strictly less than 0, it is taken equal to 0. If `n` is greater than the
  * length of `self`, it is taken equal to the length of self.
  *
- * @since 0.0.6
  * @category Utils
  */
 export const splitAt =
@@ -509,7 +457,6 @@ export const splitAt =
  * string is `n`. If `n` is strictly less than 0, it is taken equal to 0. If `n` is greater than the
  * length of `self`, it is taken equal to the length of self.
  *
- * @since 0.0.6
  * @category Utils
  */
 export const splitAtFromRight =
@@ -521,7 +468,6 @@ export const splitAtFromRight =
  * Splits `self` in substrings of `bitSize` characters. The length of the first string, if any, is
  * comprised between 1 and `bitSize` characters. `bitSize` must be a strictly positive integer.
  *
- * @since 0.0.6
  * @category Utils
  */
 export const splitEquallyRestAtStart = (
@@ -542,7 +488,6 @@ export const splitEquallyRestAtStart = (
  * Splits `self` in substrings of `bitSize` characters. The length of the last string, if any, is
  * comprised between 1 and `bitSize` characters. `bitSize` must be a strictly positive integer.
  *
- * @since 0.0.6
  * @category Utils
  */
 export const splitEquallyRestAtEnd = (
@@ -555,7 +500,6 @@ export const splitEquallyRestAtEnd = (
 /**
  * Adds string `tabChar` `count` times at the beginning of each new line of `self`
  *
- * @since 0.4.0
  * @category Utils
  */
 export const tabify =
@@ -569,7 +513,6 @@ export const tabify =
 /**
  * Returns true if `self` contains an eol character
  *
- * @since 0.4.0
  * @category Utils
  */
 export const isMultiLine = (self: string): boolean => MRegExp.lineBreak.test(self);
@@ -577,7 +520,6 @@ export const isMultiLine = (self: string): boolean => MRegExp.lineBreak.test(sel
 /**
  * Returns true if `self` is a SemVer
  *
- * @since 0.5.0
  * @category Predicates
  */
 export const isSemVer = (self: string): boolean => MRegExp.semVer.test(self);
@@ -585,7 +527,6 @@ export const isSemVer = (self: string): boolean => MRegExp.semVer.test(self);
 /**
  * Returns true if `self` is an email
  *
- * @since 0.5.0
  * @category Predicates
  */
 export const isEmail = (self: string): boolean => MRegExp.email.test(self);
@@ -593,7 +534,6 @@ export const isEmail = (self: string): boolean => MRegExp.email.test(self);
 /**
  * Returns true if the length of `self` is `l`
  *
- * @since 0.5.0
  * @category Predicates
  */
 export const hasLength =

@@ -1,13 +1,8 @@
-/**
- * Module of helper functions used to avoid import circularity
- *
- * @since 0.5.0
- */
+/** Module of helper functions used to avoid import circularity */
 
 /**
  * Returns a new string where s has been prepended to self
  *
- * @since 0.5.0
  * @category Utils
  */
 export const prependString =
@@ -18,7 +13,6 @@ export const prependString =
 /**
  * Returns a new string where s has been appended to self
  *
- * @since 0.5.0
  * @category Utils
  */
 export const appendString =

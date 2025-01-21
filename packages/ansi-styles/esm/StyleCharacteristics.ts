@@ -7,8 +7,6 @@
  * not been set. It is important to note that although dim and bold use the same reset sequence
  * (i.e. 22), they are completely different characteristics (i.e. a style can be bold and dim at the
  * same time, or just bold, or just dim).
- *
- * @since 0.0.1
  */
 
 import {
@@ -40,7 +38,6 @@ import * as ASColor from './Color.js';
 /**
  * Module tag
  *
- * @since 0.0.1
  * @category Models
  */
 export const moduleTag = '@parischap/ansi-styles/StyleCharacteristics/';
@@ -53,14 +50,12 @@ const _trueSome = Option.some(true);
 /**
  * Namespace of an optional style charcateristic
  *
- * @since 0.0.1
  * @category Models
  */
 namespace OptionalCharacteristic {
 	/**
 	 * Type of an OptionalCharacteristic
 	 *
-	 * @since 0.0.1
 	 * @category Models
 	 */
 	export type Type<A> = Option.Option<A>;
@@ -68,7 +63,6 @@ namespace OptionalCharacteristic {
 	/**
 	 * Equivalence
 	 *
-	 * @since 0.0.1
 	 * @category Equivalences
 	 */
 	export const getEquivalence = Option.getEquivalence;
@@ -76,7 +70,6 @@ namespace OptionalCharacteristic {
 	/**
 	 * Returns the id of `self`
 	 *
-	 * @since 0.0.1
 	 * @category Destructors
 	 */
 	export const toId = <A>(
@@ -90,7 +83,6 @@ namespace OptionalCharacteristic {
 	/**
 	 * Returns the sequence corresponding to `self`
 	 *
-	 * @since 0.0.1
 	 * @category Destructors
 	 */
 	export const toSequence = <A>(
@@ -105,7 +97,6 @@ namespace OptionalCharacteristic {
 	 * Builds a new OptionalCharacteristic by merging `self` and `that`. In case of conflict, `self`
 	 * will prevail.
 	 *
-	 * @since 0.0.1
 	 * @category Utils
 	 */
 	export const mergeUnder = <A>(that: Type<A>): MTypes.OneArgFunction<Type<A>, Type<A>> =>
@@ -115,7 +106,6 @@ namespace OptionalCharacteristic {
 	 * Builds a new OptionalCharacteristic by substracting `that` from `self`. `that` can be
 	 * substracted from `self` only if it is equal to `self`.
 	 *
-	 * @since 0.0.1
 	 * @category Utils
 	 */
 	export const difference =
@@ -128,14 +118,12 @@ namespace OptionalCharacteristic {
 /**
  * Namespace of an optional style charcateristic with two possible values
  *
- * @since 0.0.1
  * @category Models
  */
 namespace BoolOption {
 	/**
 	 * Type of a BoolOption
 	 *
-	 * @since 0.0.1
 	 * @category Models
 	 */
 	export type Type = OptionalCharacteristic.Type<boolean>;
@@ -143,7 +131,6 @@ namespace BoolOption {
 	/**
 	 * Equivalence
 	 *
-	 * @since 0.0.1
 	 * @category Equivalences
 	 */
 	export const equivalence = OptionalCharacteristic.getEquivalence(Boolean.Equivalence);
@@ -151,7 +138,6 @@ namespace BoolOption {
 	/**
 	 * Returns the id of `self`
 	 *
-	 * @since 0.0.1
 	 * @category Destructors
 	 */
 	export const toId = (
@@ -168,7 +154,6 @@ namespace BoolOption {
 	/**
 	 * Returns the sequence corresponding to `self`
 	 *
-	 * @since 0.0.1
 	 * @category Destructors
 	 */
 	export const toSequence = (
@@ -185,7 +170,6 @@ namespace BoolOption {
 	/**
 	 * Builds a new BoolOption by merging `self` and `that`. In case of conflict, `self` will prevail.
 	 *
-	 * @since 0.0.1
 	 * @category Utils
 	 */
 	export const mergeUnder: MTypes.OneArgFunction<
@@ -197,7 +181,6 @@ namespace BoolOption {
 	 * Builds a new Characteristic by substracting `that` from `self`. `that` can be substracted from
 	 * `self` only if it is equal to `self`.
 	 *
-	 * @since 0.0.1
 	 * @category Utils
 	 */
 	export const difference: MTypes.OneArgFunction<
@@ -209,14 +192,12 @@ namespace BoolOption {
 /**
  * Namespace of an optional color style charcateristic
  *
- * @since 0.0.1
  * @category Models
  */
 namespace ColorOption {
 	/**
 	 * Type of a ColorOption. In the innermost option, `none` means `default terminal color`
 	 *
-	 * @since 0.0.1
 	 * @category Models
 	 */
 	export type Type = OptionalCharacteristic.Type<Option.Option<ASColor.Type>>;
@@ -224,7 +205,6 @@ namespace ColorOption {
 	/**
 	 * Equivalence
 	 *
-	 * @since 0.0.1
 	 * @category Equivalences
 	 */
 	export const equivalence = OptionalCharacteristic.getEquivalence(
@@ -234,7 +214,6 @@ namespace ColorOption {
 	/**
 	 * Returns the id of `self`
 	 *
-	 * @since 0.0.1
 	 * @category Destructors
 	 */
 	export const toId = (prefix: string): MTypes.OneArgFunction<Type, string> =>
@@ -251,7 +230,6 @@ namespace ColorOption {
 	/**
 	 * Returns the sequence corresponding to `self`
 	 *
-	 * @since 0.0.1
 	 * @category Destructors
 	 */
 	export const toSequence = (offset: number): MTypes.OneArgFunction<Type, ASAnsiString.Sequence> =>
@@ -269,7 +247,6 @@ namespace ColorOption {
 	 * Builds a new ColorOption by merging `self` and `that`. In case of conflict, `self` will
 	 * prevail.
 	 *
-	 * @since 0.0.1
 	 * @category Utils
 	 */
 	export const mergeUnder: MTypes.OneArgFunction<
@@ -281,7 +258,6 @@ namespace ColorOption {
 	 * Builds a new ColorOption by substracting `that` from `self`. `that` can be substracted from
 	 * `self` only if it is equal to `self`.
 	 *
-	 * @since 0.0.1
 	 * @category Utils
 	 */
 	export const difference: MTypes.OneArgFunction<
@@ -293,85 +269,40 @@ namespace ColorOption {
 /**
  * Type of a StyleCharacteristics
  *
- * @since 0.0.1
  * @category Models
  */
 export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
-	/**
-	 * BoldState of this style
-	 *
-	 * @since 0.0.1
-	 */
+	/** BoldState of this style */
 	readonly boldState: BoolOption.Type;
 
-	/**
-	 * DimState of this style
-	 *
-	 * @since 0.0.1
-	 */
+	/** DimState of this style */
 	readonly dimState: BoolOption.Type;
 
-	/**
-	 * ItalicState of this style
-	 *
-	 * @since 0.0.1
-	 */
+	/** ItalicState of this style */
 	readonly italicState: BoolOption.Type;
 
-	/**
-	 * UnderlinedState of this style
-	 *
-	 * @since 0.0.1
-	 */
+	/** UnderlinedState of this style */
 	readonly underlinedState: BoolOption.Type;
 
-	/**
-	 * StruckThroughState of this style
-	 *
-	 * @since 0.0.1
-	 */
+	/** StruckThroughState of this style */
 	readonly struckThroughState: BoolOption.Type;
 
-	/**
-	 * OverlinedState of this style
-	 *
-	 * @since 0.0.1
-	 */
+	/** OverlinedState of this style */
 	readonly overlinedState: BoolOption.Type;
 
-	/**
-	 * InversedState of this style
-	 *
-	 * @since 0.0.1
-	 */
+	/** InversedState of this style */
 	readonly inversedState: BoolOption.Type;
 
-	/**
-	 * HiddenState of this style
-	 *
-	 * @since 0.0.1
-	 */
+	/** HiddenState of this style */
 	readonly hiddenState: BoolOption.Type;
 
-	/**
-	 * BlinkingState of this style
-	 *
-	 * @since 0.0.1
-	 */
+	/** BlinkingState of this style */
 	readonly blinkingState: BoolOption.Type;
 
-	/**
-	 * Foreground color of this style.
-	 *
-	 * @since 0.0.1
-	 */
+	/** Foreground color of this style. */
 	readonly fgColor: ColorOption.Type;
 
-	/**
-	 * Background color of this style.
-	 *
-	 * @since 0.0.1
-	 */
+	/** Background color of this style. */
 	readonly bgColor: ColorOption.Type;
 
 	/** @internal */
@@ -381,7 +312,6 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
 /**
  * Type guard
  *
- * @since 0.0.1
  * @category Guards
  */
 export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
@@ -389,7 +319,6 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
 /**
  * Equivalence
  *
- * @since 0.0.1
  * @category Equivalences
  */
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
@@ -442,7 +371,6 @@ const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto
 /**
  * Returns the `boldState` property of `self`
  *
- * @since 0.0.1
  * @category Destructors
  */
 export const boldState: MTypes.OneArgFunction<Type, BoolOption.Type> = Struct.get('boldState');
@@ -450,7 +378,6 @@ export const boldState: MTypes.OneArgFunction<Type, BoolOption.Type> = Struct.ge
 /**
  * Returns the `dimState` property of `self`
  *
- * @since 0.0.1
  * @category Destructors
  */
 export const dimState: MTypes.OneArgFunction<Type, BoolOption.Type> = Struct.get('dimState');
@@ -458,7 +385,6 @@ export const dimState: MTypes.OneArgFunction<Type, BoolOption.Type> = Struct.get
 /**
  * Returns the `italicState` property of `self`
  *
- * @since 0.0.1
  * @category Destructors
  */
 export const italicState: MTypes.OneArgFunction<Type, BoolOption.Type> = Struct.get('italicState');
@@ -466,7 +392,6 @@ export const italicState: MTypes.OneArgFunction<Type, BoolOption.Type> = Struct.
 /**
  * Returns the `underlinedState` property of `self`
  *
- * @since 0.0.1
  * @category Destructors
  */
 export const underlinedState: MTypes.OneArgFunction<Type, BoolOption.Type> =
@@ -475,7 +400,6 @@ export const underlinedState: MTypes.OneArgFunction<Type, BoolOption.Type> =
 /**
  * Returns the `struckThroughState` property of `self`
  *
- * @since 0.0.1
  * @category Destructors
  */
 export const struckThroughState: MTypes.OneArgFunction<Type, BoolOption.Type> =
@@ -484,7 +408,6 @@ export const struckThroughState: MTypes.OneArgFunction<Type, BoolOption.Type> =
 /**
  * Returns the `overlinedState` property of `self`
  *
- * @since 0.0.1
  * @category Destructors
  */
 export const overlinedState: MTypes.OneArgFunction<Type, BoolOption.Type> =
@@ -493,7 +416,6 @@ export const overlinedState: MTypes.OneArgFunction<Type, BoolOption.Type> =
 /**
  * Returns the `inversedState` property of `self`
  *
- * @since 0.0.1
  * @category Destructors
  */
 export const inversedState: MTypes.OneArgFunction<Type, BoolOption.Type> =
@@ -502,7 +424,6 @@ export const inversedState: MTypes.OneArgFunction<Type, BoolOption.Type> =
 /**
  * Returns the `hiddenState` property of `self`
  *
- * @since 0.0.1
  * @category Destructors
  */
 export const hiddenState: MTypes.OneArgFunction<Type, BoolOption.Type> = Struct.get('hiddenState');
@@ -510,7 +431,6 @@ export const hiddenState: MTypes.OneArgFunction<Type, BoolOption.Type> = Struct.
 /**
  * Returns the `blinkingState` property of `self`
  *
- * @since 0.0.1
  * @category Destructors
  */
 export const blinkingState: MTypes.OneArgFunction<Type, BoolOption.Type> =
@@ -519,7 +439,6 @@ export const blinkingState: MTypes.OneArgFunction<Type, BoolOption.Type> =
 /**
  * Returns the `fgColor` property of `self`
  *
- * @since 0.0.1
  * @category Destructors
  */
 export const fgColor: MTypes.OneArgFunction<Type, ColorOption.Type> = Struct.get('fgColor');
@@ -527,7 +446,6 @@ export const fgColor: MTypes.OneArgFunction<Type, ColorOption.Type> = Struct.get
 /**
  * Returns the `bgColor` property of `self`
  *
- * @since 0.0.1
  * @category Destructors
  */
 export const bgColor: MTypes.OneArgFunction<Type, ColorOption.Type> = Struct.get('bgColor');
@@ -535,7 +453,6 @@ export const bgColor: MTypes.OneArgFunction<Type, ColorOption.Type> = Struct.get
 /**
  * Returns true if `self` has the bold state
  *
- * @since 0.0.1
  * @category Predicates
  */
 export const hasBold: Predicate.Predicate<Type> = (self) =>
@@ -544,7 +461,6 @@ export const hasBold: Predicate.Predicate<Type> = (self) =>
 /**
  * Returns true if `self` has the notBold state
  *
- * @since 0.0.1
  * @category Predicates
  */
 export const hasNotBold: Predicate.Predicate<Type> = (self) =>
@@ -553,7 +469,6 @@ export const hasNotBold: Predicate.Predicate<Type> = (self) =>
 /**
  * Returns true if `self` has the dim state
  *
- * @since 0.0.1
  * @category Predicates
  */
 export const hasDim: Predicate.Predicate<Type> = (self) =>
@@ -562,7 +477,6 @@ export const hasDim: Predicate.Predicate<Type> = (self) =>
 /**
  * Returns true if `self` has the notDim state
  *
- * @since 0.0.1
  * @category Predicates
  */
 export const hasNotDim: Predicate.Predicate<Type> = (self) =>
@@ -598,7 +512,6 @@ const _bgColorId = ColorOption.toId('In');
 /**
  * Returns the id of `self`
  *
- * @since 0.0.1
  * @category Destructors
  */
 export const toId = (self: Type): string => {
@@ -632,7 +545,6 @@ const _bgColorToSequence = ColorOption.toSequence(10);
 /**
  * Returns the sequence corresponding to `self`
  *
- * @since 0.0.1
  * @category Destructors
  */
 export const toSequence = (self: Type): ASAnsiString.Sequence => {
@@ -664,7 +576,6 @@ export const toSequence = (self: Type): ASAnsiString.Sequence => {
 /**
  * Returns the ANSI string corresponding to `self`
  *
- * @since 0.0.1
  * @category Destructors
  */
 export const toAnsiString: MTypes.OneArgFunction<Type, ASAnsiString.Type> = flow(
@@ -676,7 +587,6 @@ export const toAnsiString: MTypes.OneArgFunction<Type, ASAnsiString.Type> = flow
  * Builds a new StyleCharacteristics by merging `self` and `that`. In case of conflict (e.g `self`
  * contains `Bold` and `that` contains `NotBold`), the characteristics in `self` will prevail.
  *
- * @since 0.0.1
  * @category Utils
  */
 export const mergeUnder =
@@ -703,7 +613,6 @@ export const mergeUnder =
  * Builds a new StyleCharacteristics by merging `self` and `that`. In case of conflict (e.g `self`
  * contains `Bold` and `that` contains `NotBold`), the characteristics in `that` will prevail.
  *
- * @since 0.0.1
  * @category Utils
  */
 export const mergeOver =
@@ -714,7 +623,6 @@ export const mergeOver =
 /**
  * Builds a new StyleCharacteristics by removing from `self` the StyleCharacteristic's of `that`.
  *
- * @since 0.0.1
  * @category Utils
  */
 export const difference =
@@ -746,7 +654,6 @@ export const difference =
  * - If `self` and `context` contain `dim` and `self` also contains `notBold` and `context` does not
  *   contain `notBold`, then do not remove `dim`
  *
- * @since 0.0.1
  * @category Utils
  */
 export const substractContext =
@@ -765,7 +672,6 @@ export const substractContext =
 /**
  * Empty StyleCharacteristics
  *
- * @since 0.0.1
  * @category Instances
  */
 export const none: Type = _make({
@@ -785,7 +691,6 @@ export const none: Type = _make({
 /**
  * Default StyleCharacteristics
  *
- * @since 0.0.1
  * @category Instances
  */
 export const defaults: Type = _make({
@@ -805,7 +710,6 @@ export const defaults: Type = _make({
 /**
  * Bold StyleCharacteristics
  *
- * @since 0.0.1
  * @category Instances
  */
 export const bold: Type = pipe(none, MStruct.set({ boldState: _trueSome }), _make);
@@ -813,7 +717,6 @@ export const bold: Type = pipe(none, MStruct.set({ boldState: _trueSome }), _mak
 /**
  * NotBold StyleCharacteristics
  *
- * @since 0.0.1
  * @category Instances
  */
 export const notBold: Type = pipe(none, MStruct.set({ boldState: _falseSome }), _make);
@@ -821,7 +724,6 @@ export const notBold: Type = pipe(none, MStruct.set({ boldState: _falseSome }), 
 /**
  * Dim StyleCharacteristics
  *
- * @since 0.0.1
  * @category Instances
  */
 export const dim: Type = pipe(none, MStruct.set({ dimState: _trueSome }), _make);
@@ -829,7 +731,6 @@ export const dim: Type = pipe(none, MStruct.set({ dimState: _trueSome }), _make)
 /**
  * NotDim StyleCharacteristics
  *
- * @since 0.0.1
  * @category Instances
  */
 export const notDim: Type = pipe(none, MStruct.set({ dimState: _falseSome }), _make);
@@ -837,7 +738,6 @@ export const notDim: Type = pipe(none, MStruct.set({ dimState: _falseSome }), _m
 /**
  * Italic StyleCharacteristics
  *
- * @since 0.0.1
  * @category Instances
  */
 export const italic: Type = pipe(none, MStruct.set({ italicState: _trueSome }), _make);
@@ -845,7 +745,6 @@ export const italic: Type = pipe(none, MStruct.set({ italicState: _trueSome }), 
 /**
  * NotItalic StyleCharacteristics
  *
- * @since 0.0.1
  * @category Instances
  */
 export const notItalic: Type = pipe(none, MStruct.set({ italicState: _falseSome }), _make);
@@ -853,7 +752,6 @@ export const notItalic: Type = pipe(none, MStruct.set({ italicState: _falseSome 
 /**
  * Underlined StyleCharacteristics
  *
- * @since 0.0.1
  * @category Instances
  */
 export const underlined: Type = pipe(none, MStruct.set({ underlinedState: _trueSome }), _make);
@@ -861,7 +759,6 @@ export const underlined: Type = pipe(none, MStruct.set({ underlinedState: _trueS
 /**
  * NotUnderlined StyleCharacteristics
  *
- * @since 0.0.1
  * @category Instances
  */
 export const notUnderlined: Type = pipe(none, MStruct.set({ underlinedState: _falseSome }), _make);
@@ -869,7 +766,6 @@ export const notUnderlined: Type = pipe(none, MStruct.set({ underlinedState: _fa
 /**
  * StruckThrough StyleCharacteristics
  *
- * @since 0.0.1
  * @category Instances
  */
 export const struckThrough: Type = pipe(
@@ -881,7 +777,6 @@ export const struckThrough: Type = pipe(
 /**
  * NotStruckThrough StyleCharacteristics
  *
- * @since 0.0.1
  * @category Instances
  */
 export const notStruckThrough: Type = pipe(
@@ -893,7 +788,6 @@ export const notStruckThrough: Type = pipe(
 /**
  * Overlined StyleCharacteristics
  *
- * @since 0.0.1
  * @category Instances
  */
 export const overlined: Type = pipe(none, MStruct.set({ overlinedState: _trueSome }), _make);
@@ -901,7 +795,6 @@ export const overlined: Type = pipe(none, MStruct.set({ overlinedState: _trueSom
 /**
  * NotOverlined StyleCharacteristics
  *
- * @since 0.0.1
  * @category Instances
  */
 export const notOverlined: Type = pipe(none, MStruct.set({ overlinedState: _falseSome }), _make);
@@ -909,7 +802,6 @@ export const notOverlined: Type = pipe(none, MStruct.set({ overlinedState: _fals
 /**
  * Inversed StyleCharacteristics
  *
- * @since 0.0.1
  * @category Instances
  */
 export const inversed: Type = pipe(none, MStruct.set({ inversedState: _trueSome }), _make);
@@ -917,7 +809,6 @@ export const inversed: Type = pipe(none, MStruct.set({ inversedState: _trueSome 
 /**
  * NotInversed StyleCharacteristics
  *
- * @since 0.0.1
  * @category Instances
  */
 export const notInversed: Type = pipe(none, MStruct.set({ inversedState: _falseSome }), _make);
@@ -925,7 +816,6 @@ export const notInversed: Type = pipe(none, MStruct.set({ inversedState: _falseS
 /**
  * Hidden StyleCharacteristics
  *
- * @since 0.0.1
  * @category Instances
  */
 export const hidden: Type = pipe(none, MStruct.set({ hiddenState: _trueSome }), _make);
@@ -933,7 +823,6 @@ export const hidden: Type = pipe(none, MStruct.set({ hiddenState: _trueSome }), 
 /**
  * NotHidden StyleCharacteristics
  *
- * @since 0.0.1
  * @category Instances
  */
 export const notHidden: Type = pipe(none, MStruct.set({ hiddenState: _falseSome }), _make);
@@ -941,7 +830,6 @@ export const notHidden: Type = pipe(none, MStruct.set({ hiddenState: _falseSome 
 /**
  * Blinking StyleCharacteristics
  *
- * @since 0.0.1
  * @category Instances
  */
 export const blinking: Type = pipe(none, MStruct.set({ blinkingState: _trueSome }), _make);
@@ -949,7 +837,6 @@ export const blinking: Type = pipe(none, MStruct.set({ blinkingState: _trueSome 
 /**
  * NotBlinking StyleCharacteristics
  *
- * @since 0.0.1
  * @category Instances
  */
 export const notBlinking: Type = pipe(none, MStruct.set({ blinkingState: _falseSome }), _make);
@@ -957,7 +844,6 @@ export const notBlinking: Type = pipe(none, MStruct.set({ blinkingState: _falseS
 /**
  * Default foreground color StyleCharacteristics
  *
- * @since 0.0.1
  * @category Instances
  */
 export const fgDefaultColor: Type = pipe(
@@ -969,7 +855,6 @@ export const fgDefaultColor: Type = pipe(
 /**
  * Builds a StyleCharacteristics that applies `color` as foreground color
  *
- * @since 0.0.1
  * @category Constructors
  */
 export const fromColorAsForegroundColor = (color: ASColor.Type): Type =>
@@ -978,7 +863,6 @@ export const fromColorAsForegroundColor = (color: ASColor.Type): Type =>
 /**
  * Default foreground color StyleCharacteristics
  *
- * @since 0.0.1
  * @category Instances
  */
 export const bgDefaultColor: Type = pipe(
@@ -990,7 +874,6 @@ export const bgDefaultColor: Type = pipe(
 /**
  * Builds a StyleCharacteristics that applies `color` as background color
  *
- * @since 0.0.1
  * @category Constructors
  */
 export const fromColorAsBackgroundColor = (color: ASColor.Type): Type =>

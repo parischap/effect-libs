@@ -9,8 +9,6 @@
  * determined by its Transformer. If the same Placeholder appears several times, the same string
  * must present at all the positions where this PlaceHolder appears. This string is then converted
  * to a value by the Transformer.
- *
- * @since 0.0.1
  */
 
 import { MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
@@ -24,7 +22,6 @@ type TypeId = typeof TypeId;
 /**
  * Type that represents a PlaceHolder.
  *
- * @since 0.0.1
  * @category Models
  */
 export interface Type<in out A> extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
@@ -43,7 +40,6 @@ export interface Type<in out A> extends Equal.Equal, Inspectable.Inspectable, Pi
 /**
  * Type guard
  *
- * @since 0.0.1
  * @category Guards
  */
 export const has = (u: unknown): u is Type<unknown> => Predicate.hasProperty(u, TypeId);
@@ -51,7 +47,6 @@ export const has = (u: unknown): u is Type<unknown> => Predicate.hasProperty(u, 
 /**
  * Equivalence
  *
- * @since 0.0.1
  * @category Equivalences
  */
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
@@ -77,7 +72,6 @@ const proto: MTypes.Proto<Type<any>> = {
 /**
  * Constructor
  *
- * @since 0.0.1
  * @category Constructors
  */
 export const make = <A>(params: MTypes.Data<Type<A>>): Type<A> =>

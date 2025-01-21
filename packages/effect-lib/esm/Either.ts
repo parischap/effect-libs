@@ -1,8 +1,4 @@
-/**
- * A simple extension to the Effect Either module
- *
- * @since 0.0.6
- */
+/** A simple extension to the Effect Either module */
 
 import { Cause, Either, Function, Option, Predicate, Tuple, pipe } from 'effect';
 import * as MTuple from './Tuple.js';
@@ -11,7 +7,6 @@ import * as MTypes from './types.js';
 /**
  * Same as Effect.optionFromOptional but for Either's
  *
- * @since 0.0.6
  * @category Utils
  */
 export const optionFromOptional = <A, E>(
@@ -30,7 +25,6 @@ export const optionFromOptional = <A, E>(
 /**
  * Flattens two eithers into a single one
  *
- * @since 0.0.6
  * @category Utils
  */
 export const flatten: <R, L1, L2>(
@@ -40,7 +34,6 @@ export const flatten: <R, L1, L2>(
 /**
  * Gets the value of an Either that can never be a left
  *
- * @since 0.0.6
  * @category Utils
  */
 export const getRightWhenNoLeft = <A>(self: Either.Either<A, never>): A =>
@@ -50,7 +43,6 @@ export const getRightWhenNoLeft = <A>(self: Either.Either<A, never>): A =>
  * Transforms an either of a tuple into a tuple of either's. Useful for instance for error
  * management in reduce or mapAccum
  *
- * @since 0.0.6
  * @category Utils
  */
 export const traversePair = <A, B, L>(
@@ -65,7 +57,6 @@ export const traversePair = <A, B, L>(
 /**
  * Recovers from the specified tagged error.
  *
- * @since 0.0.6
  * @category Utils
  */
 export const catchTag =

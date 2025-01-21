@@ -3,8 +3,6 @@
  * is populated by a lookup function which may be recursive. The cache capacity may temporarily be
  * exceeded if the lookup function is recursive (because the cache is also used to determine
  * circularity). Keys are compared using Equal.equals.
- *
- * @since 0.0.6
  */
 import {
 	Array,
@@ -27,7 +25,6 @@ import * as MTypes from './types.js';
 /**
  * Module tag
  *
- * @since 0.5.0
  * @category Models
  */
 export const moduleTag = '@parischap/effect-lib/Cache/';
@@ -47,21 +44,12 @@ namespace ValueContainer {
 	/**
 	 * Interface that represents a ValueContainer
 	 *
-	 * @since 0.0.6
 	 * @category Models
 	 */
 	export interface Type<out A> extends Inspectable.Inspectable, Pipeable.Pipeable {
-		/**
-		 * The value calculated by the LookUp function
-		 *
-		 * @since 0.0.6
-		 */
+		/** The value calculated by the LookUp function */
 		readonly value: A;
-		/**
-		 * The time at which the value was calculated
-		 *
-		 * @since 0.0.6
-		 */
+		/** The time at which the value was calculated */
 		readonly storeDate: number;
 		/** @internal */
 		readonly [TypeId]: {
@@ -72,7 +60,6 @@ namespace ValueContainer {
 	/**
 	 * Type guard
 	 *
-	 * @since 0.0.6
 	 * @category Guards
 	 */
 	export const has = (u: unknown): u is Type<unknown> => Predicate.hasProperty(u, TypeId);
@@ -90,7 +77,6 @@ namespace ValueContainer {
 	/**
 	 * Constructor
 	 *
-	 * @since 0.0.6
 	 * @category Constructors
 	 */
 	export const make = <A>(params: MTypes.Data<Type<A>>): Type<A> =>
@@ -106,7 +92,6 @@ namespace ValueContainer {
  * in the cache. Note that when isCircular is true, the result is not stored in the cache even if
  * the result of the function indicates it should.
  *
- * @since 0.0.6
  * @category Models
  */
 export type LookUp<A, B> = ({
@@ -123,41 +108,24 @@ export type LookUp<A, B> = ({
 /**
  * Type that represents a Cache
  *
- * @since 0.0.6
  * @category Models
  */
 export interface Type<in out A, in out B> extends Inspectable.Inspectable, Pipeable.Pipeable {
 	/**
 	 * The key/value cache. A None value means the value is currently under calculation. A circular
 	 * flag will be sent if the value needs to be retreived while it is being calculated.
-	 *
-	 * @since 0.0.6
 	 */
 	readonly store: MutableHashMap.MutableHashMap<A, Option.Option<ValueContainer.Type<B>>>;
 	/**
 	 * A queue used to track the order in which keys were inserted so as to remove the oldest keys
 	 * first in case the cache has bounded capacity
-	 *
-	 * @since 0.0.6
 	 */
 	readonly keyOrder: MutableQueue.MutableQueue<A>;
-	/**
-	 * The lookup function used to populate the cache
-	 *
-	 * @since 0.0.6
-	 */
+	/** The lookup function used to populate the cache */
 	readonly lookUp: LookUp<A, B>;
-	/**
-	 * The capicity of the cache. If undefined, the cache is unbounded
-	 *
-	 * @since 0.0.6
-	 */
+	/** The capicity of the cache. If undefined, the cache is unbounded */
 	readonly capacity: number | undefined;
-	/**
-	 * The lifespan of the values in the cache. If undefined, the values never expire
-	 *
-	 * @since 0.0.6
-	 */
+	/** The lifespan of the values in the cache. If undefined, the values never expire */
 	readonly lifeSpan: number | undefined;
 	/** @internal */
 	readonly [TypeId]: {
@@ -169,7 +137,6 @@ export interface Type<in out A, in out B> extends Inspectable.Inspectable, Pipea
 /**
  * Type guard
  *
- * @since 0.0.6
  * @category Guards
  */
 export const has = (u: unknown): u is Type<unknown, unknown> => Predicate.hasProperty(u, TypeId);
@@ -194,7 +161,6 @@ const _make = <A, B>(params: MTypes.Data<Type<A, B>>): Type<A, B> =>
  * undefined, the cache is unbounded. If the lifespan is undefined, the values never expire. Keys
  * are compared using Equal.equals.
  *
- * @since 0.0.6
  * @category Constructor
  * @example
  * 	import { MCache, MTypes } from '@parischap/effect-lib';
@@ -247,7 +213,6 @@ export const make = <A, B>({
  * populate the cache. If it is in the cache but is too old,the lookup function is called to refresh
  * it.
  *
- * @since 0.0.6
  * @category Utils
  * @example
  * 	import { MCache } from '@parischap/effect-lib';
@@ -349,7 +314,6 @@ export const get =
 /**
  * Returns an array of the keys whose value is currently stored in the cache
  *
- * @since 0.0.6
  * @category Utils
  */
 export const keysInStore = <A, B>(self: Type<A, B>): Array<A> =>

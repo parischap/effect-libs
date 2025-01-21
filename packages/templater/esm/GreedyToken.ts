@@ -1,8 +1,6 @@
 /**
  * This module implements a type that represents a Token (see Token.ts) that reads as much of the
  * input string as it can while ensuring that the read data is valid.
- *
- * @since 0.0.1
  */
 
 import { MInspectable, MPipeable, MString, MTypes } from '@parischap/effect-lib';
@@ -13,15 +11,10 @@ import * as Token from './Pattern.js';
 /**
  * Interface that represents a Greedy Token
  *
- * @since 0.0.1
  * @category Models
  */
 export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
-	/**
-	 * RegExp that the token must comply with
-	 *
-	 * @since 0.0.1
-	 */
+	/** RegExp that the token must comply with */
 	readonly pattern: RegExp;
 	/** @internal */
 	readonly [Token.TypeId]: Token.TypeId;
@@ -30,7 +23,6 @@ export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pip
 /**
  * Type guard
  *
- * @since 0.0.1
  * @category Guards
  */
 export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
@@ -38,7 +30,6 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
 /**
  * Equivalence
  *
- * @since 0.0.1
  * @category Equivalences
  */
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
@@ -66,7 +57,6 @@ const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto
 /**
  * Constructor without a id
  *
- * @since 0.0.1
  * @category Constructors
  */
 export const make = (params: Omit<MTypes.Data<Type>, 'id'>): Type => _make({ ...params, id: '' });
@@ -74,7 +64,6 @@ export const make = (params: Omit<MTypes.Data<Type>, 'id'>): Type => _make({ ...
 /**
  * Returns a copy of `self` with `id` set to `id`
  *
- * @since 0.0.1
  * @category Utils
  */
 export const setName =
@@ -86,7 +75,6 @@ export const setName =
  * FormatSet instance for unformatted output (uses the identity function for all parts to be
  * colored)
  *
- * @since 0.0.1
  * @category Instances
  */
 export const unformatted: Type = _make({
@@ -108,7 +96,6 @@ export const unformatted: Type = _make({
 /**
  * Example formatSet for ansi dark mode - Uses functions from the MColor module
  *
- * @since 0.0.1
  * @category Instances
  */
 export const ansiDarkMode: Type = _make({

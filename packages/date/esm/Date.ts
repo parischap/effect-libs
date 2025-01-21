@@ -201,7 +201,6 @@ const _calcYearData = (year: number): Either.Either<YearData, MBadArgumentError.
  * Returns the local time zone offset in hours of the machine on which this code runs. Result is
  * cached. So result will become wrong if you change the local timeZoneOffset
  *
- * @since 0.0.6
  * @category Utils
  */
 export const localTimeZoneOffset: () => number = MFunction.once(

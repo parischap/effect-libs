@@ -7,8 +7,6 @@
  * A Tree may be composed of a single leaf. If this situation does not correspond to your need, you
  * may work with the type NonLeaf<A,B> instead. In all the provided functions, self can be a
  * Tree<A,B> or a NonLeaf<A,B>
- *
- * @since 0.5.0
  */
 
 import {
@@ -39,7 +37,6 @@ import * as MTypes from './types.js';
 /**
  * Module tag
  *
- * @since 0.5.0
  * @category Models
  */
 export const moduleTag = '@parischap/effect-lib/Tree/';
@@ -50,29 +47,19 @@ const _TypeIdHash = Hash.hash(TypeId);
 /**
  * Namespace of a Leaf
  *
- * @since 0.5.0
  * @category Models
  */
 export namespace Leaf {
 	/**
 	 * Typeof a Leaf node
 	 *
-	 * @since 0.5.0
 	 * @category Models
 	 */
 	export interface Type<out B> extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
-		/**
-		 * Identifier of a Leaf
-		 *
-		 * @since 0.5.0
-		 */
+		/** Identifier of a Leaf */
 		readonly _tag: 'Leaf';
 
-		/**
-		 * Value of a Leaf node
-		 *
-		 * @since 0.5.0
-		 */
+		/** Value of a Leaf node */
 		readonly value: B;
 
 		/** @internal */
@@ -95,7 +82,6 @@ export namespace Leaf {
 	/**
 	 * Equivalence based on Equal.equals
 	 *
-	 * @since 0.5.0
 	 * @category Equivalences
 	 */
 	export const equivalence: Equivalence.Equivalence<Type<unknown>> = getEquivalence(Equal.equals);
@@ -106,7 +92,6 @@ export namespace Leaf {
 	/**
 	 * Constructor
 	 *
-	 * @since 0.5.0
 	 * @category Constructors
 	 */
 	export const make = <B>(value: B): Type<B> => _make({ value, _tag: 'Leaf' });
@@ -115,14 +100,12 @@ export namespace Leaf {
 /**
  * Namespace of a Forest
  *
- * @since 0.5.0
  * @category Models
  */
 export namespace Forest {
 	/**
 	 * Type of a Forest
 	 *
-	 * @since 0.5.0
 	 * @category Models
 	 */
 	export type Type<A, B> = ReadonlyArray<_Type<A, B>>;
@@ -145,7 +128,6 @@ type _Type<A, B> = Type<A, B>;
 /**
  * Type of a Tree
  *
- * @since 0.5.0
  * @category Models
  */
 export type Type<A, B> = Leaf.Type<B> | NonLeaf.Type<A, B>;
@@ -153,7 +135,6 @@ export type Type<A, B> = Leaf.Type<B> | NonLeaf.Type<A, B>;
 /**
  * Type guard
  *
- * @since 0.5.0
  * @category Guards
  */
 export const has = (u: unknown): u is Type<unknown, unknown> => Predicate.hasProperty(u, TypeId);
@@ -161,7 +142,6 @@ export const has = (u: unknown): u is Type<unknown, unknown> => Predicate.hasPro
 /**
  * Type guard
  *
- * @since 0.5.0
  * @category Guards
  */
 export const isLeaf = <A, B>(u: Type<A, B>): u is Leaf.Type<B> => u._tag === 'Leaf';
@@ -169,7 +149,6 @@ export const isLeaf = <A, B>(u: Type<A, B>): u is Leaf.Type<B> => u._tag === 'Le
 /**
  * Returns an equivalence based on an equivalence of the subtypes
  *
- * @since 0.5.0
  * @category Equivalences
  */
 export const getEquivalence = <A, B>(
@@ -189,7 +168,6 @@ const _getEquivalence = getEquivalence;
 /**
  * Equivalence based on Equal.equals
  *
- * @since 0.5.0
  * @category Equivalences
  */
 export const equivalence: Equivalence.Equivalence<Type<unknown, unknown>> = getEquivalence(
@@ -296,7 +274,6 @@ const _unfold =
  * function. Cycle detection based on equality of the seeds (type S) reported to the unfold
  * function.
  *
- * @since 0.5.0
  * @category Constructors
  */
 
@@ -313,7 +290,6 @@ export const unfold =
  * children of the node (see fold below). Cycle detection based on equality of the seeds (type S)
  * reported to the unfold function.
  *
- * @since 0.5.0
  * @category Constructors
  */
 
@@ -368,7 +344,6 @@ export const unfoldAndFold =
  *
  * This is also known as the catamorphism on trees.
  *
- * @since 0.5.0
  * @category Utils
  */
 export const fold = <A, B, C>({
@@ -391,7 +366,6 @@ export const fold = <A, B, C>({
 /**
  * Maps a tree with an accumulator
  *
- * @since 0.5.0
  * @category Utils
  */
 export const mapAccum = <S, A, B, C, D>({
@@ -422,7 +396,6 @@ export const mapAccum = <S, A, B, C, D>({
 /**
  * Maps a tree
  *
- * @since 0.5.0
  * @category Utils
  */
 export const map = <A, B, C, D>({
@@ -466,7 +439,6 @@ const _reduce =
 /**
  * Top-down reduction - Children are processed from left to right
  *
- * @since 0.5.0
  * @category Utils
  */
 export const reduce = _reduce(Array.reduce);
@@ -474,7 +446,6 @@ export const reduce = _reduce(Array.reduce);
 /**
  * Top-down reduction - Children are processed from right to left
  *
- * @since 0.5.0
  * @category Utils
  */
 export const reduceRight = _reduce(Array.reduceRight);
@@ -484,7 +455,6 @@ export const reduceRight = _reduce(Array.reduceRight);
  * takes the node as parameter in top-down order. More powerful than map which takes only the value
  * of the node as parameter
  *
- * @since 0.5.0
  * @category Utils
  */
 export const extendDown = <A, B, C, D>({
@@ -514,7 +484,6 @@ export const extendDown = <A, B, C, D>({
  * takes the node as parameter in bottom-up order. More powerful than map which takes only the value
  * of the node as parameter
  *
- * @since 0.5.0
  * @category Utils
  */
 export const extendUp = <A, B, C, D>({
@@ -542,38 +511,24 @@ export const extendUp = <A, B, C, D>({
 /**
  * Namespace of a NonLeaf
  *
- * @since 0.5.0
  * @category Models
  */
 export namespace NonLeaf {
 	/**
 	 * Typeof a NonLeaf
 	 *
-	 * @since 0.5.0
 	 * @category Models
 	 */
 	export interface Type<out A, out B>
 		extends Equal.Equal,
 			Inspectable.Inspectable,
 			Pipeable.Pipeable {
-		/**
-		 * Identifier of a NonLeaf
-		 *
-		 * @since 0.5.0
-		 */
+		/** Identifier of a NonLeaf */
 		readonly _tag: 'NonLeaf';
 
-		/**
-		 * The value of a NonLeaf
-		 *
-		 * @since 0.5.0
-		 */
+		/** The value of a NonLeaf */
 		readonly value: A;
-		/**
-		 * The children of a NonLeaf
-		 *
-		 * @since 0.5.0
-		 */
+		/** The children of a NonLeaf */
 		readonly forest: Forest.Type<A, B>;
 
 		/** @internal */
@@ -600,7 +555,6 @@ export namespace NonLeaf {
 	/**
 	 * Equivalence based on Equal.equals
 	 *
-	 * @since 0.5.0
 	 * @category Equivalences
 	 */
 	export const equivalence: Equivalence.Equivalence<Type<unknown, unknown>> = getEquivalence(
@@ -614,7 +568,6 @@ export namespace NonLeaf {
 	/**
 	 * Constructor
 	 *
-	 * @since 0.5.0
 	 * @category Constructors
 	 */
 	export const make = <A, B>(params: Omit<MTypes.Data<Type<A, B>>, '_tag'>): Type<A, B> =>

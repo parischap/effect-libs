@@ -1,8 +1,4 @@
-/**
- * This modules implements a command string that produces an ANSI style, e.g. `\x1b[1m` for bold
- *
- * @since 0.0.1
- */
+/** This modules implements a command string that produces an ANSI style, e.g. `\x1b[1m` for bold */
 
 import { MFunction, MString, MTypes } from '@parischap/effect-lib';
 import { Array, flow, Option } from 'effect';
@@ -10,7 +6,6 @@ import { Array, flow, Option } from 'effect';
 /**
  * Type of an ANSI string
  *
- * @since 0.0.1
  * @category Models
  */
 export type Type = string;
@@ -19,22 +14,16 @@ export type Type = string;
  * Type that represents the sequence of a command string (the numbers separated by a semicolon
  * between `\x1b[` and `m`, e.g. [1,31] for bold red)
  *
- * @since 0.0.1
  * @category Models
  */
 export interface Sequence extends ReadonlyArray<number> {}
 
-/**
- * Same as Sequence but must constain at least one number
- *
- * @since 0.0.1
- */
+/** Same as Sequence but must constain at least one number */
 export interface NonEmptySequence extends MTypes.ReadonlyOverOne<number> {}
 
 /**
  * Builds an AnsiString from a NonEmptySequence
  *
- * @since 0.0.1
  * @category Constructors
  */
 export const fromNonEmptySequence: MTypes.OneArgFunction<NonEmptySequence, string> = flow(
@@ -47,7 +36,6 @@ export const fromNonEmptySequence: MTypes.OneArgFunction<NonEmptySequence, strin
 /**
  * Builds an AnsiString from a Sequence
  *
- * @since 0.0.1
  * @category Constructors
  */
 export const fromSequence: MTypes.OneArgFunction<Sequence, string> = flow(
@@ -59,7 +47,6 @@ export const fromSequence: MTypes.OneArgFunction<Sequence, string> = flow(
 /**
  * Empty AnsiString instance
  *
- * @since 0.0.1
  * @category Constructors
  */
 export const empty: Type = '';
@@ -67,7 +54,6 @@ export const empty: Type = '';
 /**
  * Reset AnsiString instance
  *
- * @since 0.0.1
  * @category Constructors
  */
 export const reset: Type = fromNonEmptySequence(Array.of(0));
