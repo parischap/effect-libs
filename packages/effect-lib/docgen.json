@@ -4,5 +4,6 @@
 	"srcDir": "./esm",
 	"outDir": "docs",
 	"exclude": ["esm/index.ts"],
-	"enforceDescriptions": true
+	"enforceDescriptions": true,
+	"enforceVersion": false
 }
