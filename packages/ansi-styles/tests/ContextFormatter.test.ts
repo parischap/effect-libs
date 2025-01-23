@@ -15,9 +15,10 @@ describe('ContextFormatter', () => {
 		return value.pos1;
 	}
 
-	const pos1BasedFormatter = ASContextFormatter.PaletteBased.make(pos1);
-
-	const pos1BasedAllColorsFormatter = pos1BasedFormatter(ASPalette.allStandardOriginalColors);
+	const pos1BasedAllColorsFormatter = ASContextFormatter.PaletteBased.make({
+		indexFromContext: pos1,
+		palette: ASPalette.allStandardOriginalColors
+	});
 
 	const value1: Value = {
 		pos1: 2,

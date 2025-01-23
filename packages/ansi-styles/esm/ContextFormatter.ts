@@ -205,8 +205,12 @@ export namespace PaletteBased {
 		...MPipeable.BaseProto
 	};
 
-	/** Constructor */
-	const _make = <C>(params: MTypes.Data<Type<C>>): Type<C> => {
+	/**
+	 * Constructor
+	 *
+	 * @category Constructors
+	 */
+	export const make = <C>(params: MTypes.Data<Type<C>>): Type<C> => {
 		const styles = params.palette.styles;
 		const n = styles.length;
 		const indexFromContext = params.indexFromContext;
@@ -219,16 +223,6 @@ export namespace PaletteBased {
 			}
 		);
 	};
-
-	/**
-	 * Constructor
-	 *
-	 * @category Constructors
-	 */
-	export const make =
-		<C>(indexFromContext: IndexFromContext.Type<C>) =>
-		(palette: ASPalette.Type): Type<C> =>
-			_make({ indexFromContext, palette });
 
 	/**
 	 * Gets the `indexFromContext` property of `self`
