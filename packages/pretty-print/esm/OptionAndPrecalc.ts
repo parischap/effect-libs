@@ -3,64 +3,18 @@
  * values useful for the stringification process
  */
 
-import { Function, HashMap, Inspectable, pipe, Struct } from 'effect';
+import { Function, HashMap, Inspectable, Option, pipe, Struct } from 'effect';
 import * as PPOption from './Option.js';
 import * as PPStyleMap from './StyleMap.js';
 import * as PPValue from './Value.js';
 
-import { ASContextFormatter, ASText } from '@parischap/ansi-styles';
+import { ASText } from '@parischap/ansi-styles';
 import { MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
 import { Pipeable, Predicate } from 'effect';
 
 export const moduleTag = '@parischap/pretty-print/OptionAndPrecalc/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
-
-/**
- * Namespace of a ContextualTextShower
- *
- * @category Models
- */
-export namespace ContextualTextShower {
-	/**
-	 * Type of a ContextualTextShower
-	 *
-	 * - @category Models
-	 */
-	export interface Type extends MTypes.OneArgFunction<PPValue.All, ASText.Type> {}
-}
-
-/**
- * Namespace of a TextShower
- *
- * @category Models
- */
-export namespace TextShower {
-	/**
-	 * Type of a TextShower
-	 *
-	 * @category Models
-	 */
-	export interface Type
-		extends MTypes.OneArgFunction<
-			string,
-			MTypes.OneArgFunction<string, ContextualTextShower.Type>
-		> {}
-}
-
-/**
- * Namespace of a ContextualMarkShower
- *
- * @category Models
- */
-export namespace ContextualMarkShower {
-	/**
-	 * Type of a ContextualMarkShower
-	 *
-	 * - @category Models
-	 */
-	export interface Type extends MTypes.OneArgFunction<PPValue.All, ASText.Type> {}
-}
 
 /**
  * Namespace of a MarkShower
@@ -73,7 +27,57 @@ export namespace MarkShower {
 	 *
 	 * @category Models
 	 */
-	export interface Type extends MTypes.OneArgFunction<string, ContextualMarkShower.Type> {}
+	export interface Type extends MTypes.OneArgFunction<PPValue.All, ASText.Type> {}
+
+	/**
+	 * MarkShower instance that always prints an empty Text
+	 *
+	 * @category Instances
+	 */
+	export const empty: Type = (_context) => ASText.empty;
+}
+
+/**
+ * Namespace of a MarkShowerMap
+ *
+ * @category Models
+ */
+export namespace MarkShowerMap {
+	/**
+	 * Type of a MarkShowerMap
+	 *
+	 * @category Models
+	 */
+	export interface Type extends HashMap.HashMap<string, MarkShower.Type> {}
+}
+
+/**
+ * Namespace of a MarkShowerBuilder
+ *
+ * @category Models
+ */
+export namespace MarkShowerBuilder {
+	/**
+	 * Type of a MarkShowerBuilder
+	 *
+	 * @category Models
+	 */
+	export interface Type extends MTypes.OneArgFunction<string, MarkShower.Type> {}
+}
+
+/**
+ * Namespace of a TextFormatterBuilder
+ *
+ * @category Models
+ */
+export namespace TextFormatterBuilder {
+	/**
+	 * Type of a TextFormatterBuilder
+	 *
+	 * @category Models
+	 */
+	export interface Type
+		extends MTypes.OneArgFunction<string, PPStyleMap.ValueBasedFormatter.Type> {}
 }
 
 /**
@@ -86,7 +90,7 @@ export interface Type extends Inspectable.Inspectable, Pipeable.Pipeable {
 	readonly option: PPOption.Type;
 
 	/** Precompiled map of the different marks that appear in a value to stringify */
-	readonly precompMarkMap: PPStyleMap.Type;
+	readonly markShowerMap: MarkShowerMap.Type;
 
 	/** @internal */
 	readonly [TypeId]: TypeId;
@@ -114,20 +118,19 @@ const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto
  *
  * @category Constructors
  */
-export const make = (option: PPOption.Type): Type =>
-	_make({
+export const make = (option: PPOption.Type): Type => {
+	const styleMap = option.styleMap;
+	return _make({
 		option,
-		precompMarkMap: PPStyleMap.make({
-			id: option.markMap.id,
-			styles: pipe(
-				option.markMap,
-				Struct.get('marks'),
-				HashMap.map(({ text, partName }) =>
-					pipe(option.styleMap, PPStyleMap.get(partName), ASContextFormatter.setDefaultText(text))
-				)
+		markShowerMap: HashMap.map(option.markMap.marks, ({ text, partName }) =>
+			pipe(
+				styleMap,
+				PPStyleMap.get(partName),
+				(contextFormatter) => (value) => contextFormatter(value)(text)
 			)
-		})
+		)
 	});
+};
 
 /**
  * Returns the `option` property of `self`
@@ -137,21 +140,34 @@ export const make = (option: PPOption.Type): Type =>
 export const option: MTypes.OneArgFunction<Type, PPOption.Type> = Struct.get('option');
 
 /**
- * Returns the `precompMarkMap` property of `self`
+ * Returns the `markShowerMap` property of `self`
  *
  * @category Destructors
  */
-export const precompMarkMap: MTypes.OneArgFunction<Type, PPStyleMap.Type> =
-	Struct.get('precompMarkMap');
+export const markShowerMap: MTypes.OneArgFunction<Type, MarkShowerMap.Type> =
+	Struct.get('markShowerMap');
 
-/** Builds a textShower from `self` */
-export const toTextShower = (self: Type): TextShower.Type => {
+/**
+ * Builds a TextShower builder from `self`
+ *
+ * @category Destructors
+ */
+export const toTextFormatterBuilder = (self: Type): TextFormatterBuilder.Type => {
 	const styleMap = self.option.styleMap;
 	return (partName) => pipe(styleMap, PPStyleMap.get(partName));
 };
 
-/** Builds a markShower from `self` */
-export const toMarkShower = (self: Type): MarkShower.Type => {
-	const markMap = self.precompMarkMap;
-	return (partName) => pipe(markMap, PPStyleMap.get(partName), Function.apply(undefined));
+/**
+ * Builds a MarkShower builder from `self`
+ *
+ * @category Destructors
+ */
+export const toMarkShowerBuilder = (self: Type): MarkShowerBuilder.Type => {
+	const markShowerMap = self.markShowerMap;
+	return (markName) =>
+		pipe(
+			markShowerMap,
+			HashMap.get(markName),
+			Option.getOrElse(Function.constant(MarkShower.empty))
+		);
 };

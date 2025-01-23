@@ -21,34 +21,35 @@ export interface Type extends MTypes.OneArgFunction<unknown, PPStringifiedValue.
 
 export const make = (option: PPOption.Type): Type => {
 	const optionAndPrecalc = PPOptionAndPrecalc.make(option);
-	const textShower = PPOptionAndPrecalc.toTextShower(optionAndPrecalc);
-	const markShower = PPOptionAndPrecalc.toMarkShower(optionAndPrecalc);
-	const contextualPropertyFormatter = option.propertyFormatter(optionAndPrecalc);
+
+	const textFormatterBuilder = PPOptionAndPrecalc.toTextFormatterBuilder(optionAndPrecalc);
+	const stringValueTextFormatter = textFormatterBuilder('stringValue');
+	const otherValueTextFormatter = textFormatterBuilder('otherValue');
+	const symbolValueTextFormatter = textFormatterBuilder('symbolValue');
+
+	const markShowerBuilder = PPOptionAndPrecalc.toMarkShowerBuilder(optionAndPrecalc);
+	const circularityDetectionMarkShower = markShowerBuilder('circularityDetection');
+	const stringStartDelimiterMarkShower = markShowerBuilder('stringStartDelimiter');
+	const stringEndDelimiterMarkShower = markShowerBuilder('stringEndDelimiter');
+	const nullValueMarkShower = markShowerBuilder('nullValue');
+	const undefinedValueMarkShower = markShowerBuilder('undefinedValue');
+	const bigIntStartDelimiterMarkShower = markShowerBuilder('bigIntStartDelimiter');
+	const bigIntEndDelimiterMarkShower = markShowerBuilder('bigIntEndDelimiter');
+	const arrayBeyondMaxDepthMarkShower = markShowerBuilder('arrayBeyondMaxDepth');
+	const functionBeyondMaxDepthMarkShower = markShowerBuilder('functionBeyondMaxDepth');
+	const objectBeyondMaxDepthMarkShower = markShowerBuilder('objectBeyondMaxDepth');
+
+	const byPasser = option.byPasser(textFormatterBuilder, markShowerBuilder);
+	const propertyFormatter = option.propertyFormatter(textFormatterBuilder, markShowerBuilder);
 	const fromRecord = PPProperties.fromRecord(optionAndPrecalc);
-	const circularityDetection = markShower('circularityDetection');
-	const stringValue = textShower('stringValue');
-	const stringStartDelimiter = markShower('stringStartDelimiter');
-	const stringEndDelimiter = markShower('stringEndDelimiter');
-	const otherValue = textShower('otherValue');
-	const nullValue = markShower('nullValue');
-	const undefinedValue = markShower('undefinedValue');
-	const bigIntStartDelimiter = markShower('bigIntStartDelimiter');
-	const bigIntEndDelimiter = markShower('bigIntEndDelimiter');
-	const symbolValue = textShower('symbolValue');
-	const arrayBeyondMaxDepth = markShower('arrayBeyondMaxDepth');
-	const functionBeyondMaxDepth = markShower('functionBeyondMaxDepth');
-	const objectBeyondMaxDepth = markShower('objectBeyondMaxDepth');
 
 	return flow(
 		PPValue.makeFromTopValue,
 		MTree.unfoldAndFold({
 			unfold: (seed, isCyclical) => {
-				const propertyFormatter = contextualPropertyFormatter(seed);
-				const byPasser = option.byPasser(textShower, markShower);
-
 				const stringifiedValue =
 					isCyclical ?
-						pipe(seed, circularityDetection, PPStringifiedValue.fromText, Either.left)
+						pipe(seed, circularityDetectionMarkShower, PPStringifiedValue.fromText, Either.left)
 					:	pipe(
 							seed,
 							MMatch.make,
@@ -64,30 +65,33 @@ export const make = (option: PPOption.Type): Type => {
 										MMatch.when(
 											MTypes.isString,
 											flow(
-												stringValue(seed),
-												ASText.prepend(stringStartDelimiter(seed)),
-												ASText.append(stringEndDelimiter(seed))
+												stringValueTextFormatter(seed),
+												ASText.prepend(stringStartDelimiterMarkShower(seed)),
+												ASText.append(stringEndDelimiterMarkShower(seed))
 											)
 										),
 										MMatch.whenOr(
 											MTypes.isNumber,
 											MTypes.isBoolean,
-											flow(MString.fromNonNullablePrimitive, otherValue(seed))
+											flow(MString.fromNonNullablePrimitive, otherValueTextFormatter(seed))
 										),
-										MMatch.when(MTypes.isNull, pipe(seed, nullValue, Function.constant)),
-										MMatch.when(MTypes.isUndefined, pipe(seed, undefinedValue, Function.constant)),
+										MMatch.when(MTypes.isNull, pipe(seed, nullValueMarkShower, Function.constant)),
+										MMatch.when(
+											MTypes.isUndefined,
+											pipe(seed, undefinedValueMarkShower, Function.constant)
+										),
 										MMatch.when(
 											MTypes.isBigInt,
 											flow(
 												MString.fromNonNullablePrimitive,
-												otherValue(seed),
-												ASText.prepend(bigIntStartDelimiter(seed)),
-												ASText.append(bigIntEndDelimiter(seed))
+												otherValueTextFormatter(seed),
+												ASText.prepend(bigIntStartDelimiterMarkShower(seed)),
+												ASText.append(bigIntEndDelimiterMarkShower(seed))
 											)
 										),
 										MMatch.when(
 											MTypes.isSymbol,
-											flow(MString.fromNonNullablePrimitive, symbolValue(seed))
+											flow(MString.fromNonNullablePrimitive, symbolValueTextFormatter(seed))
 										),
 										MMatch.exhaustive
 									),
@@ -99,15 +103,18 @@ export const make = (option: PPOption.Type): Type => {
 								flow(PPValue.depth, Number.greaterThanOrEqualTo(option.maxDepth)),
 								flow(
 									MMatch.make,
-									MMatch.when(PPValue.isArray, pipe(seed, arrayBeyondMaxDepth, Function.constant)),
+									MMatch.when(
+										PPValue.isArray,
+										pipe(seed, arrayBeyondMaxDepthMarkShower, Function.constant)
+									),
 									MMatch.when(
 										flow(
 											PPValue.valueCategory,
 											MFunction.strictEquals(MTypes.Category.Type.Function)
 										),
-										pipe(seed, functionBeyondMaxDepth, Function.constant)
+										pipe(seed, functionBeyondMaxDepthMarkShower, Function.constant)
 									),
-									MMatch.orElse(pipe(seed, objectBeyondMaxDepth, Function.constant)),
+									MMatch.orElse(pipe(seed, objectBeyondMaxDepthMarkShower, Function.constant)),
 									PPStringifiedValue.fromText,
 									Either.left
 								)

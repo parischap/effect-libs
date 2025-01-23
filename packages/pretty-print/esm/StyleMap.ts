@@ -34,7 +34,7 @@ type TypeId = typeof TypeId;
  *
  * @category Models
  */
-namespace ValueBasedFormatter {
+export namespace ValueBasedFormatter {
 	/**
 	 * Type of a ValueBasedFormatter
 	 *

@@ -9,7 +9,6 @@ import { MArray, MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
 import { pipe, Pipeable, Predicate, String, Struct, Types } from 'effect';
 import * as ASPalette from './Palette.js';
 import * as ASStyle from './Style.js';
-import * as ASText from './Text.js';
 
 /**
  * Module tag
@@ -33,8 +32,7 @@ export namespace Action {
 	 *
 	 * @category Models
 	 */
-	export interface Type<in C>
-		extends MTypes.OneArgFunction<C, MTypes.OneArgFunction<string, ASText.Type>> {}
+	export interface Type<in C> extends MTypes.OneArgFunction<C, ASStyle.Action.Type> {}
 }
 
 /**

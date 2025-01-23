@@ -38,28 +38,20 @@ type TypeId = typeof TypeId;
  */
 export namespace Action {
 	/**
-	 * Type of the action. The first parameter contains the Option instance passed by the user
-	 * enriched by some precalced values (see OptionAndPrecalc.ts). The second parameter is the Value
-	 * (see Value.ts) being currently displayed. If the action returns a value of type
-	 * `Some<StringifiedValue.Type>` or `StringifiedValue.Type`, this `StringifiedValue` will be used
-	 * as is to represent the input value. If it returns a `none` or `null` or `undefined`, the normal
-	 * stringification process will be applied.
+	 * Type of the action. The action takes as input a TextFormatterBuilder and a MarkShowerBuilder
+	 * (see OptionAndPrecalc.ts), the Value (see Value.ts) being currently printed, and the
+	 * stringified representation of that value (see StringifiedValue.ts) . Based on these three
+	 * parameters, it must return a stringified representation of the whole property.
 	 *
 	 * @category Models
 	 */
-	export interface Type
-		extends MTypes.OneArgFunction<
-			PPOptionAndPrecalc.Type,
-			MTypes.OneArgFunction<PPValue.All, MTypes.OneArgFunction<PPStringifiedValue.Type>>
-		> {}
+	export interface Type {
+		(
+			textFormatterBuilder: PPOptionAndPrecalc.TextFormatterBuilder.Type,
+			markShowerBuilder: PPOptionAndPrecalc.MarkShowerBuilder.Type
+		): MTypes.OneArgFunction<PPValue.All, MTypes.OneArgFunction<PPStringifiedValue.Type>>;
+	}
 }
-
-/**
- * Type of the action of this PropertyFormatter. `value` is the Value (see Value.ts) representing a
- * property and `stringified` is the stringified representation of the value of that property (see
- * Stringified.ts). Based on these two parameters, it must return a stringified representation of
- * the whole property.
- */
 
 /**
  * Type that represents a PropertyFormatter.
@@ -135,7 +127,7 @@ export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
  */
 export const valueOnly: Type = make({
 	id: 'ValueOnly',
-	action: (_optionsAndPrecalc) => (_value) => Function.identity
+	action: (_textFormatterBuilder, _markShowerBuilder) => (_value) => Function.identity
 });
 
 /**
@@ -147,12 +139,20 @@ export const valueOnly: Type = make({
  */
 export const keyAndValue: Type = make({
 	id: 'KeyAndValue',
-	action: (optionAndPrecalc) => {
-		const contextualTextShower = PPOptionAndPrecalc.toTextShower(optionAndPrecalc);
-		const contextualMarkShower = PPOptionAndPrecalc.toMarkShower(optionAndPrecalc);
+	action: (textFormatterBuilder, markShowerBuilder) => {
+		const propertyKeyWhenFunctionValueTextFormatter = textFormatterBuilder(
+			'propertyKeyWhenFunctionValue'
+		);
+		const propertyKeyWhenSymbolTextFormatter = textFormatterBuilder('propertyKeyWhenSymbol');
+		const propertyKeyWhenOtherTextFormatter = textFormatterBuilder('propertyKeyWhenOther');
+
+		const prototypeStartDelimiterMarkShower = markShowerBuilder('prototypeStartDelimiter');
+		const prototypeEndDelimiterMarkShower = markShowerBuilder('prototypeEndDelimiter');
+
 		return (value) => {
-			const textShower = contextualTextShower(value);
-			const markShower = contextualMarkShower(value);
+			const inContextPrototypeStartDelimiterMarkShower = prototypeStartDelimiterMarkShower(value);
+			const inContextPrototypeEndDelimiterMarkShower = prototypeEndDelimiterMarkShower(value);
+
 			return (stringifiedValue) =>
 				pipe(
 					value,
@@ -162,18 +162,18 @@ export const keyAndValue: Type = make({
 							MMatch.make,
 							MMatch.when(
 								PPValue.isFunction,
-								flow(PPValue.stringKey, textShower('propertyKeyWhenFunctionValue'))
+								flow(PPValue.stringKey, propertyKeyWhenFunctionValueTextFormatter(value))
 							),
 							MMatch.when(
 								PPValue.hasSymbolicKey,
-								flow(PPValue.stringKey, textShower('propertyKeyWhenSymbol'))
+								flow(PPValue.stringKey, propertyKeyWhenSymbolTextFormatter(value))
 							),
-							MMatch.orElse(flow(PPValue.stringKey, textShower('propertyKeyWhenOther'))),
+							MMatch.orElse(flow(PPValue.stringKey, propertyKeyWhenOtherTextFormatter(value))),
 							ASText.prepend(
-								pipe('prototypeStartDelimiter', markShower, ASText.repeat(value.protoDepth))
+								pipe(inContextPrototypeStartDelimiterMarkShower, ASText.repeat(value.protoDepth))
 							),
 							ASText.append(
-								pipe('prototypeEndDelimiter', markShower, ASText.repeat(value.protoDepth))
+								pipe(inContextPrototypeEndDelimiterMarkShower, ASText.repeat(value.protoDepth))
 							)
 						)
 					),

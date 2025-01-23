@@ -34,7 +34,7 @@ import {
 	Struct
 } from 'effect';
 import * as PPOptionAndPrecalc from './OptionAndPrecalc.js';
-import type * as PPStringifiedValue from './StringifiedValue.js';
+import * as PPStringifiedValue from './StringifiedValue.js';
 import * as PPValue from './Value.js';
 
 const moduleTag = '@parischap/pretty-print/ByPasser/';
@@ -48,18 +48,18 @@ type TypeId = typeof TypeId;
  */
 export namespace Action {
 	/**
-	 * Type of the action. The action takes as input the Value (see Value.ts) being currently printed,
-	 * a textShower and a textFormatter (see OptionAndPrecalc.ts). If the action returns a value of
-	 * type `Some<StringifiedValue.Type>` or `StringifiedValue.Type`, this `StringifiedValue` will be
-	 * used as is to represent the input value. If it returns a `none` or `null` or `undefined`, the
-	 * normal stringification process will be applied.
+	 * Type of the action. The action takes as input a TextFormatterBuilder and a MarkShowerBuilder
+	 * (see OptionAndPrecalc.ts) and the Value being currently printed (see Value.ts). If the action
+	 * returns a value of type `Some<StringifiedValue.Type>` or `StringifiedValue.Type`, this
+	 * `StringifiedValue` will be used as is to represent the input value. If it returns a `none` or
+	 * `null` or `undefined`, the normal stringification process will be applied.
 	 *
 	 * @category Models
 	 */
 	export interface Type {
 		(
-			textShower: PPOptionAndPrecalc.TextShower.Type,
-			markShower: PPOptionAndPrecalc.MarkShower.Type
+			textFormatterBuilder: PPOptionAndPrecalc.TextFormatterBuilder.Type,
+			markShowerBuilder: PPOptionAndPrecalc.MarkShowerBuilder.Type
 		): MTypes.OneArgFunction<PPValue.All, MOption.OptionOrNullable<PPStringifiedValue.Type>>;
 	}
 }
@@ -144,44 +144,55 @@ export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
  */
 export const bypassIfToStringed: Type = make({
 	id: 'bypassIfToStringed',
-	action: (textShower, markShower) => (value) => {
-		return pipe(
-			value,
-			PPValue.value,
-			MMatch.make,
-			MMatch.when(
-				MTypes.isFunction,
-				flow(
-					MFunction.name,
-					Option.liftPredicate(
-						Predicate.and(String.isNonEmpty, Predicate.not(MFunction.strictEquals('anonymous')))
-					),
-					Option.map(textShower('functionName')),
-					Option.getOrElse(pipe('defaultFunctionName', markShower, Function.constant)),
-					ASText.prepend(markShower('functionPrefix')),
-					ASText.append(markShower('functionSuffix')),
-					Array.of,
-					Option.some
-				)
-			),
-			MMatch.when(
-				MTypes.isNonNullObject,
-				flow(
-					MRecord.tryZeroParamStringFunction({
-						functionName: 'toString',
-						/* eslint-disable-next-line @typescript-eslint/unbound-method */
-						exception: Object.prototype.toString
-					}),
-					Option.map(
-						flow(
-							// split resets RegExp.prototype.lastIndex after executing
-							String.split(MRegExp.globalLineBreak),
-							Array.map(textShower('toStringedObject'))
+	action: (textFormatterBuilder, markShowerBuilder) => {
+		const functionNameTextFormatter = textFormatterBuilder('functionName');
+		const toStringedObjectTextFormatter = textFormatterBuilder('toStringedObject');
+
+		const functionPrefixMarkShower = markShowerBuilder('functionPrefix');
+		const functionSuffixMarkShower = markShowerBuilder('functionSuffix');
+		const defaultFunctionNameMarkShower = markShowerBuilder('defaultFunctionName');
+
+		return (value) => {
+			const inContextToStringedObjectTextFormatter: MTypes.OneArgFunction<string, ASText.Type> =
+				toStringedObjectTextFormatter(value);
+			return pipe(
+				value,
+				PPValue.value,
+				MMatch.make,
+				MMatch.when(
+					MTypes.isFunction,
+					flow(
+						MFunction.name,
+						Option.liftPredicate(
+							Predicate.and(String.isNonEmpty, Predicate.not(MFunction.strictEquals('anonymous')))
+						),
+						Option.map(functionNameTextFormatter(value)),
+						Option.getOrElse(pipe(value, defaultFunctionNameMarkShower, Function.constant)),
+						ASText.prepend(functionPrefixMarkShower(value)),
+						ASText.append(functionSuffixMarkShower(value)),
+						PPStringifiedValue.fromText,
+						Option.some
+					)
+				),
+				MMatch.when(
+					MTypes.isNonNullObject,
+					flow(
+						MRecord.tryZeroParamStringFunction({
+							functionName: 'toString',
+							/* eslint-disable-next-line @typescript-eslint/unbound-method */
+							exception: Object.prototype.toString
+						}),
+						Option.map(
+							flow(
+								// split resets RegExp.prototype.lastIndex after executing
+								String.split(MRegExp.globalLineBreak),
+								Array.map(inContextToStringedObjectTextFormatter)
+							)
 						)
 					)
-				)
-			),
-			MMatch.orElse(Function.constant(Option.none()))
-		);
+				),
+				MMatch.orElse(Function.constant(Option.none()))
+			);
+		};
 	}
 });
