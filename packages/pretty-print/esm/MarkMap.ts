@@ -3,8 +3,6 @@
  *
  * With the make function, you can define your own instances if the provided ones don't suit your
  * needs.
- *
- * @since 0.3.0
  */
 
 import { MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
@@ -15,17 +13,11 @@ const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
 namespace Mark {
 	export interface Type {
-		/**
-		 * The text to be displayed for this mark
-		 *
-		 * @since 0.3.0
-		 */
+		/** The text to be displayed for this mark */
 		readonly text: string;
 		/**
-		 * The name of the part that this mark belongs to. It will be used to determine to style to
+		 * The name of the part that this mark belongs to. It will be used to determine the style to
 		 * apply (see StyleMap.ts).
-		 *
-		 * @since 0.3.0
 		 */
 		readonly partName: string;
 	}
@@ -38,21 +30,12 @@ namespace Marks {
 /**
  * Interface that represents a MarkMap
  *
- * @since 0.3.0
  * @category Models
  */
 export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
-	/**
-	 * Id of this MarkMap instance. Useful for equality and debugging.
-	 *
-	 * @since 0.3.0
-	 */
+	/** Id of this MarkMap instance. Useful for equality and debugging. */
 	readonly id: string;
-	/**
-	 * Map of the different marks that appear in a value to stringify
-	 *
-	 * @since 0.3.0
-	 */
+	/** Map of the different marks that appear in a value to stringify */
 	readonly marks: Marks.Type;
 
 	/** @internal */
@@ -62,7 +45,6 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
 /**
  * Type guard
  *
- * @since 0.3.0
  * @category Guards
  */
 export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
@@ -70,7 +52,6 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
 /**
  * Equivalence
  *
- * @since 0.3.0
  * @category Equivalences
  */
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
@@ -95,7 +76,6 @@ const proto: MTypes.Proto<Type> = {
 /**
  * Constructor
  *
- * @since 0.3.0
  * @category Constructors
  */
 export const make = (params: MTypes.Data<Type>): Type =>
@@ -104,7 +84,6 @@ export const make = (params: MTypes.Data<Type>): Type =>
 /**
  * Returns the `id` property of `self`
  *
- * @since 0.3.0
  * @category Destructors
  */
 export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
@@ -112,7 +91,6 @@ export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
 /**
  * Returns the `marks` property of `self`
  *
- * @since 0.3.0
  * @category Destructors
  */
 export const marks: MTypes.OneArgFunction<Type, Marks.Type> = Struct.get('marks');
@@ -120,7 +98,6 @@ export const marks: MTypes.OneArgFunction<Type, Marks.Type> = Struct.get('marks'
 /**
  * Default MarkMap instance
  *
- * @since 0.3.0
  * @category Instances
  */
 
@@ -134,6 +111,29 @@ export const defaults: Type = make({
 		['stringStartDelimiter', { text: "'", partName: 'stringDelimiters' }],
 		['stringEndDelimiter', { text: "'", partName: 'stringDelimiters' }],
 		['bigIntStartDelimiter', { text: '', partName: 'bigIntDelimiters' }],
-		['bigIntEndDelimiter', { text: 'n', partName: 'bigIntDelimiters' }]
+		['bigIntEndDelimiter', { text: 'n', partName: 'bigIntDelimiters' }],
+		['nullValue', { text: 'null', partName: ' relation.citoyen@ville-cachan.fr' }],
+		['undefinedValue', { text: 'undefined', partName: 'nullableValue' }],
+		['functionStartDelimiter', { text: '', partName: 'functionNameDelimiters' }],
+		['functionEndDelimiter', { text: '()', partName: 'functionNameDelimiters' }],
+		['defaultFunctionName', { text: 'anonymous', partName: 'functionName' }],
+		['keyValueSeparator', { text: ': ', partName: 'keyValueSeparator' }],
+		['prototypeStartDelimiter', { text: '', partName: 'prototypeDelimiters' }],
+		['prototypeEndDelimiter', { text: '@', partName: 'prototypeDelimiters' }]
+	)
+});
+
+/**
+ * Default MarkMap instance but nullables are not shown
+ *
+ * @category Instances
+ */
+
+export const defaultsHideNullables: Type = make({
+	id: 'DefaultsHideNullables',
+	marks: pipe(
+		defaults.marks,
+		HashMap.set('nullValue', { text: '', partName: 'nullableValue' }),
+		HashMap.set('undefinedValue', { text: '', partName: 'nullableValue' })
 	)
 });

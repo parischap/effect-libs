@@ -1,8 +1,6 @@
 /**
  * Type that is an alias for an array of Stringified's (see Stringified.ts). It represents the
  * output of the stringification process of the properties of a record.
- *
- * @since 0.0.1
  */
 
 import { ASFormatter } from '@parischap/ansi-styles';
@@ -15,7 +13,6 @@ import type * as PPStringifiedValue from './Stringified.js';
 /**
  * Type that represents a StringifiedValues
  *
- * @since 0.0.1
  * @category Models
  */
 export interface Type extends ReadonlyArray<PPStringifiedValue.Type> {}
@@ -23,7 +20,6 @@ export interface Type extends ReadonlyArray<PPStringifiedValue.Type> {}
 /**
  * Adds a seperator at between the stringified properties of a record
  *
- * @since 0.0.1
  * @category Utils
  */
 export const addSeparatorBetweenProps = (
@@ -39,7 +35,6 @@ export const addSeparatorBetweenProps = (
 /**
  * Indents the stringified properties of a record
  *
- * @since 0.0.1
  * @category Utils
  */
 export const indentProps = (

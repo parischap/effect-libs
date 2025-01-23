@@ -6,14 +6,11 @@
  * Value's can be ordered by ValueOrder instances (see ValueOrder.ts)
  *
  * As an end user, you should never have to create a Value instance.
- *
- * @since 0.0.1
  */
 import {
 	MFunction,
 	MInspectable,
 	MPipeable,
-	MPredicate,
 	MString,
 	MStruct,
 	MTypes
@@ -41,7 +38,6 @@ type TypeId = typeof TypeId;
 /**
  * An interface that represents a Value
  *
- * @since 0.0.1
  * @category Models
  */
 export interface Type<out V extends MTypes.Unknown>
@@ -91,7 +87,6 @@ export interface Type<out V extends MTypes.Unknown>
 /**
  * Type guard
  *
- * @since 0.0.1
  * @category Guards
  */
 export const has = (u: unknown): u is Type<MTypes.Unknown> => Predicate.hasProperty(u, TypeId);
@@ -99,7 +94,6 @@ export const has = (u: unknown): u is Type<MTypes.Unknown> => Predicate.hasPrope
 /**
  * Returns an equivalence based on an equivalence of the value property
  *
- * @since 0.0.1
  * @category Equivalences
  */
 export const getEquivalence = <V extends MTypes.Unknown>(
@@ -110,7 +104,6 @@ export const getEquivalence = <V extends MTypes.Unknown>(
 /**
  * Equivalence based on the equality of their values for cycle detection
  *
- * @since 0.0.1
  * @category Equivalences
  */
 export const equivalence: Equivalence.Equivalence<All> = getEquivalence(
@@ -141,7 +134,6 @@ const _make = <V extends MTypes.Unknown>(params: MTypes.Data<Type<V>>): Type<V> 
 /**
  * Creates a `Value` from `value` which is the value to stringify
  *
- * @since 0.0.1
  * @category Constructors
  */
 export const makeFromTopValue = (value: unknown): All =>
@@ -160,7 +152,6 @@ export const makeFromTopValue = (value: unknown): All =>
 /**
  * Type that represents any Value in its stringification context
  *
- * @since 0.0.1
  * @category Models
  */
 export interface All extends Type<MTypes.Unknown> {}
@@ -168,7 +159,6 @@ export interface All extends Type<MTypes.Unknown> {}
 /**
  * Type that represents a primitive in its stringification context
  *
- * @since 0.0.1
  * @category Models
  */
 export interface PrimitiveType extends Type<MTypes.Primitive> {}
@@ -176,7 +166,6 @@ export interface PrimitiveType extends Type<MTypes.Primitive> {}
 /**
  * Type that represents an array in its stringification context
  *
- * @since 0.0.1
  * @category Models
  */
 export interface ArrayType extends Type<MTypes.AnyArray> {}
@@ -184,7 +173,6 @@ export interface ArrayType extends Type<MTypes.AnyArray> {}
 /**
  * Type that represents a record in its stringification context
  *
- * @since 0.0.1
  * @category Models
  */
 export interface RecordType extends Type<MTypes.NonNullObject> {}
@@ -192,7 +180,6 @@ export interface RecordType extends Type<MTypes.NonNullObject> {}
 /**
  * Returns the `value` property of `self`
  *
- * @since 0.0.1
  * @category Destructors
  */
 export const value: <V extends MTypes.Unknown>(self: Type<V>) => V = Struct.get('value');
@@ -200,7 +187,6 @@ export const value: <V extends MTypes.Unknown>(self: Type<V>) => V = Struct.get(
 /**
  * Returns the `valueCategory` property of `self`
  *
- * @since 0.0.1
  * @category Destructors
  */
 export const valueCategory: MTypes.OneArgFunction<All, MTypes.Category.Type> =
@@ -209,7 +195,6 @@ export const valueCategory: MTypes.OneArgFunction<All, MTypes.Category.Type> =
 /**
  * Returns the `depth` property of `self`
  *
- * @since 0.0.1
  * @category Destructors
  */
 export const depth: MTypes.OneArgFunction<All, number> = Struct.get('depth');
@@ -217,7 +202,6 @@ export const depth: MTypes.OneArgFunction<All, number> = Struct.get('depth');
 /**
  * Returns the `protoDepth` property of `self`
  *
- * @since 0.0.1
  * @category Destructors
  */
 export const protoDepth: MTypes.OneArgFunction<All, number> = Struct.get('protoDepth');
@@ -225,7 +209,6 @@ export const protoDepth: MTypes.OneArgFunction<All, number> = Struct.get('protoD
 /**
  * Returns the `key` property of `self`
  *
- * @since 0.0.1
  * @category Destructors
  */
 export const key: MTypes.OneArgFunction<All, string | symbol> = Struct.get('key');
@@ -233,7 +216,6 @@ export const key: MTypes.OneArgFunction<All, string | symbol> = Struct.get('key'
 /**
  * Returns the `stringKey` property of `self`
  *
- * @since 0.0.1
  * @category Destructors
  */
 export const stringKey: MTypes.OneArgFunction<All, string> = Struct.get('stringKey');
@@ -241,7 +223,6 @@ export const stringKey: MTypes.OneArgFunction<All, string> = Struct.get('stringK
 /**
  * Returns the `hasSymbolicKey` property of `self`
  *
- * @since 0.0.1
  * @category Destructors
  */
 export const hasSymbolicKey: MTypes.OneArgFunction<All, boolean> = Struct.get('hasSymbolicKey');
@@ -249,7 +230,6 @@ export const hasSymbolicKey: MTypes.OneArgFunction<All, boolean> = Struct.get('h
 /**
  * Returns the `hasEnumerableKey` property of `self`
  *
- * @since 0.0.1
  * @category Destructors
  */
 export const hasEnumerableKey: MTypes.OneArgFunction<All, boolean> = Struct.get('hasEnumerableKey');
@@ -257,27 +237,13 @@ export const hasEnumerableKey: MTypes.OneArgFunction<All, boolean> = Struct.get(
 /**
  * Returns the `belongsToArray` property of `self`
  *
- * @since 0.0.1
  * @category Destructors
  */
 export const belongsToArray: MTypes.OneArgFunction<All, boolean> = Struct.get('belongsToArray');
 
 /**
- * Predicate that returns `true` if `self` belongs to a record and its value is a function. Returns
- * `false` otherwise
- *
- * @since 0.0.1
- * @category Predicates
- */
-export const isFunctionInRecord: Predicate.Predicate<All> = MPredicate.struct({
-	stringKey: String.isNonEmpty,
-	valueCategory: MFunction.strictEquals(MTypes.Category.Type.Function)
-});
-
-/**
  * True if the `value` of `self` represents a primitive
  *
- * @since 0.0.1
  * @category Guards
  */
 export const isPrimitive = (self: All): self is PrimitiveType =>
@@ -286,7 +252,6 @@ export const isPrimitive = (self: All): self is PrimitiveType =>
 /**
  * True if the `value` of `self` represents an array
  *
- * @since 0.0.1
  * @category Guards
  */
 export const isArray = (self: All): self is ArrayType =>
@@ -295,16 +260,13 @@ export const isArray = (self: All): self is ArrayType =>
 /**
  * True if the `value` of `self` represents a record
  *
- * @since 0.0.1
  * @category Guards
  */
-export const isNonNullObject = (self: All): self is RecordType =>
-	pipe(self, isPrimitive, Boolean.not);
+export const isRecord = (self: All): self is RecordType => pipe(self, isPrimitive, Boolean.not);
 
 /**
  * True if the `value` of `self` is not null
  *
- * @since 0.0.1
  * @category Guards
  */
 export const isNotNull = <V extends MTypes.Unknown>(
@@ -312,9 +274,23 @@ export const isNotNull = <V extends MTypes.Unknown>(
 ): self is Type<Exclude<V, null>> => pipe(self, value, Predicate.isNotNull);
 
 /**
+ * True if the `value` of `self` is a Function
+ *
+ * @category Guards
+ */
+export const isFunction = (self: All): self is Type<MTypes.AnyFunction> =>
+	pipe(self, valueCategory, MFunction.strictEquals(MTypes.Category.Type.Function));
+
+/**
+ * True if the `value` of `self` belongs to a record
+ *
+ * @category Predicates
+ */
+export const belongsToRecord: Predicate.Predicate<All> = flow(stringKey, String.isNonEmpty);
+
+/**
  * Returns a copy of `self` with `protoDepth` set to 0
  *
- * @since 0.0.1
  * @category Utils
  */
 export const resetProtoDepth: <V extends MTypes.Unknown>(self: Type<V>) => Type<V> = flow(
@@ -325,7 +301,6 @@ export const resetProtoDepth: <V extends MTypes.Unknown>(self: Type<V>) => Type<
 /**
  * Returns a copy of `self` with `depth` incremented by 1
  *
- * @since 0.0.1
  * @category Utils
  */
 export const incDepth: <V extends MTypes.Unknown>(self: Type<V>) => Type<V> = flow(
@@ -336,7 +311,6 @@ export const incDepth: <V extends MTypes.Unknown>(self: Type<V>) => Type<V> = fl
 /**
  * Returns a copy of `self` with `protoDepth` incremented by 1
  *
- * @since 0.0.1
  * @category Utils
  */
 export const incProtoDepth: <V extends MTypes.Unknown>(self: Type<V>) => Type<V> = flow(
@@ -350,7 +324,6 @@ export const incProtoDepth: <V extends MTypes.Unknown>(self: Type<V>) => Type<V>
  * valueCategory, key, stringKey,... The prototype can be seen as an extension of the value that
  * contains extra properties.
  *
- * @since 0.0.1
  * @category Utils
  */
 export const toProto = (self: RecordType): Type<MTypes.NonNullObject | null> =>
@@ -360,7 +333,6 @@ export const toProto = (self: RecordType): Type<MTypes.NonNullObject | null> =>
  * Builds a new Value from a property of an existing RecordType `self` specified by `key`. Only
  * `depth` and `protoDepth` are left unchanged.
  *
- * @since 0.0.1
  * @category Utils
  */
 export const toRecordPropertyBuilder = (self: RecordType): ((key: string | symbol) => All) => {
@@ -383,3 +355,6 @@ export const toRecordPropertyBuilder = (self: RecordType): ((key: string | symbo
 		);
 	};
 };
+
+/** @category Destructors */
+const toFormattedKey;

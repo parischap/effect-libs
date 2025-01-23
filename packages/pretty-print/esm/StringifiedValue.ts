@@ -1,40 +1,64 @@
 /**
  * Type that represents the output of the stringification process of a value. It is in fact an alias
  * for an array of ASText's (see Text.ts in @parischap/ansi-styles). Each elament of the array
- * represents a line of the stringified value. A value may be stringified in zero, one or more lines
- * depending on the options you passed to the stringification function. For instance,
- * stringification may result in 0- line result if the value is an empty object or if it is an
- * object whose keys are all filtered out by the options passed to the stringification function or
- * if Option.byPasser returns an empty array.
- *
- * @since 0.0.1
+ * represents a line of the stringified value. There must always be at least one line. But that line
+ * may contain en empty text.
  */
 
 import { ASText } from '@parischap/ansi-styles';
-import { MTypes } from '@parischap/effect-lib';
-import { Array, flow, Function, Option, pipe } from 'effect';
+import { MArray, MTypes } from '@parischap/effect-lib';
+import { Array, flow, Function, Option, pipe, Predicate } from 'effect';
 import type * as PPRecordExtremityMarks from './RecordExtremityMarks.js';
 
 /**
  * Type that represents a Stringified
  *
- * @since 0.0.1
  * @category Models
  */
-export interface Type extends ReadonlyArray<ASText.Type> {}
+export interface Type extends MTypes.OverOne<ASText.Type> {}
+
+/**
+ * Builds a StringifiedValue from a Text
+ *
+ * @category Constructors
+ */
+export const fromText: MTypes.OneArgFunction<ASText.Type, Type> = Array.of;
+
+/**
+ * Empty StringifiedValue instance
+ *
+ * @category Instances
+ */
+export const empty: Type = pipe(ASText.empty, fromText);
 
 /**
  * Returns a single-line version of `self`
  *
- * @since 0.0.1
  * @category Utils
  */
-export const toSingleLine: MTypes.OneArgFunction<Type> = flow(ASText.join(ASText.empty), Array.of);
+export const toSingleLine: MTypes.OneArgFunction<Type> = flow(ASText.join(ASText.empty), fromText);
+
+/**
+ * Returns `true` if `self` is empty.
+ *
+ * @category Predicates
+ */
+export const isEmpty: Predicate.Predicate<Type> = MArray.match012({
+	onEmpty: Function.constTrue,
+	onSingleton: ASText.isEmpty,
+	onOverTwo: Function.constFalse
+});
+
+/**
+ * Returns `true` if `self` is not empty.
+ *
+ * @category Predicates
+ */
+export const isNotEmpty: Predicate.Predicate<Type> = Predicate.not(isEmpty);
 
 /**
  * Add extremity marks at the start and end of `self`
  *
- * @since 0.0.1
  * @category Utils
  */
 export const addExtremityMarks = (

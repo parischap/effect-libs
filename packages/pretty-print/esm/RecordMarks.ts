@@ -4,8 +4,6 @@
  *
  * With the make function, you can define your own instances if the provided ones don't suit your
  * needs.
- *
- * @since 0.0.1
  */
 
 import { MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
@@ -19,33 +17,16 @@ type TypeId = typeof TypeId;
 /**
  * Interface that represents a RecordMarks
  *
- * @since 0.0.1
  * @category Models
  */
 export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
-	/**
-	 * Id of this RecordMarks instance. Useful for equality and debugging
-	 *
-	 * @since 0.0.1
-	 */
+	/** Id of this RecordMarks instance. Useful for equality and debugging */
 	readonly id: string;
-	/**
-	 * Separator inserted between the properties of a record
-	 *
-	 * @since 0.0.1
-	 */
+	/** Separator inserted between the properties of a record */
 	readonly propertySeparator: string;
-	/**
-	 * Marks inserted at the start/end of an array.
-	 *
-	 * @since 0.0.1
-	 */
+	/** Marks inserted at the start/end of an array. */
 	readonly arrayMarks: PPRecordExtremityMarks.Type;
-	/**
-	 * Marks inserted at the start/end of an object.
-	 *
-	 * @since 0.0.1
-	 */
+	/** Marks inserted at the start/end of an object. */
 	readonly objectMarks: PPRecordExtremityMarks.Type;
 	/** @internal */
 	readonly [TypeId]: TypeId;
@@ -54,7 +35,6 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
 /**
  * Type guard
  *
- * @since 0.0.1
  * @category Guards
  */
 export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
@@ -62,7 +42,6 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
 /**
  * Equivalence
  *
- * @since 0.0.1
  * @category Equivalences
  */
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
@@ -87,7 +66,6 @@ const proto: MTypes.Proto<Type> = {
 /**
  * Constructor
  *
- * @since 0.0.1
  * @category Constructors
  */
 export const make = (params: MTypes.Data<Type>): Type =>
@@ -96,7 +74,6 @@ export const make = (params: MTypes.Data<Type>): Type =>
 /**
  * Empty RecordMarks instance
  *
- * @since 0.0.1
  * @category Instances
  */
 export const none: Type = make({
@@ -109,7 +86,6 @@ export const none: Type = make({
 /**
  * RecordMarks instance for array and object output on multiple lines.
  *
- * @since 0.0.1
  * @category Instances
  */
 export const multiLine: Type = make({
@@ -122,7 +98,6 @@ export const multiLine: Type = make({
 /**
  * Default RecordMarks instance for array and object output on single lines.
  *
- * @since 0.0.1
  * @category Instances
  */
 export const singleLine: Type = make({

@@ -7,8 +7,6 @@
  *
  * With the make function, you can define your own instances if the provided ones don't suit your
  * needs.
- *
- * @since 0.0.1
  */
 
 import { MInspectable, MMatch, MPipeable, MTypes } from '@parischap/effect-lib';
@@ -50,22 +48,13 @@ interface ActionType {
 /**
  * Type that represents a RecordFormatter.
  *
- * @since 0.0.1
  * @category Models
  */
 export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
-	/**
-	 * Id of this RecordFormatter instance. Useful for equality and debugging
-	 *
-	 * @since 0.0.1
-	 */
+	/** Id of this RecordFormatter instance. Useful for equality and debugging */
 	readonly id: string;
 
-	/**
-	 * Action of this RecordFormatter.
-	 *
-	 * @since 0.0.1
-	 */
+	/** Action of this RecordFormatter. */
 	readonly action: ActionType;
 	/** @internal */
 	readonly [TypeId]: TypeId;
@@ -74,7 +63,6 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
 /**
  * Type guard
  *
- * @since 0.0.1
  * @category Guards
  */
 export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
@@ -82,7 +70,6 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
 /**
  * Equivalence
  *
- * @since 0.0.1
  * @category Equivalences
  */
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
@@ -107,7 +94,6 @@ const proto: MTypes.Proto<Type> = {
 /**
  * Constructor
  *
- * @since 0.0.1
  * @category Constructors
  */
 export const make = (params: MTypes.Data<Type>): Type =>
@@ -116,7 +102,6 @@ export const make = (params: MTypes.Data<Type>): Type =>
 /**
  * Returns the `action` of `self`
  *
- * @since 0.3.0
  * @category Destructors
  */
 export const action = (self: Type): ActionType => self.action;
@@ -124,7 +109,6 @@ export const action = (self: Type): ActionType => self.action;
 /**
  * Function that returns a RecordFormatter instance that will always print records on a single line
  *
- * @since 0.0.1
  * @category Instances
  */
 export const singleLineMaker =
@@ -156,7 +140,6 @@ export const singleLineMaker =
 /**
  * Alias for `singleLineMaker(PPRecordMarks.singleLine)`
  *
- * @since 0.0.1
  * @category Instances
  */
 export const singleLine: (formatSet: PPFormatSet.Type) => Type = singleLineMaker(
@@ -166,7 +149,6 @@ export const singleLine: (formatSet: PPFormatSet.Type) => Type = singleLineMaker
 /**
  * Function that returns a RecordFormatter instance that will always print records on multiple lines
  *
- * @since 0.0.1
  * @category Instances
  */
 export const multiLineMaker =
@@ -198,7 +180,6 @@ export const multiLineMaker =
 /**
  * Alias for `multiLineMaker(PPRecordMarks.multiLine,PPIndentMode.tab)`
  *
- * @since 0.0.1
  * @category Instances
  */
 export const tabified: (formatSet: PPFormatSet.Type) => Type = multiLineMaker(
@@ -209,7 +190,6 @@ export const tabified: (formatSet: PPFormatSet.Type) => Type = multiLineMaker(
 /**
  * Alias for `multiLineMaker(PPRecordMarks.none,PPIndentMode.tree)`
  *
- * @since 0.0.1
  * @category Instances
  */
 export const treeified: (formatSet: PPFormatSet.Type) => Type = multiLineMaker(
@@ -221,7 +201,6 @@ export const treeified: (formatSet: PPFormatSet.Type) => Type = multiLineMaker(
  * Calls `singleLine` if the number of properties to print is less than or equal to `limit`. Calls
  * `multiLine` otherwise
  *
- * @since 0.0.1
  * @category Instances
  */
 export const splitOnConstituentNumberMaker =
@@ -257,7 +236,6 @@ export const splitOnConstituentNumberMaker =
  * Alias for
  * `splitOnConstituentNumberMaker(PPRecordMarks.singleLine,PPRecordMarks.multiLine,PPIndentMode.tab)`
  *
- * @since 0.0.1
  * @category Instances
  */
 export const splitOnConstituentNumber: (limit: number) => (formatSet: PPFormatSet.Type) => Type =
@@ -271,7 +249,6 @@ export const splitOnConstituentNumber: (limit: number) => (formatSet: PPFormatSe
  * Calls `singleLine` if the total length of the properties to print (excluding formatting
  * characters and record marks) is less than or equal to `limit`. Calls `multiLine` otherwise
  *
- * @since 0.0.1
  * @category Instances
  */
 export const splitOnTotalLengthMaker =
@@ -311,7 +288,6 @@ export const splitOnTotalLengthMaker =
  * Alias for
  * `splitOnTotalLengthMaker(PPRecordMarks.singleLine,PPRecordMarks.multiLine,PPIndentMode.tab)`
  *
- * @since 0.0.1
  * @category Instances
  */
 export const splitOnTotalLength: (limit: number) => (formatSet: PPFormatSet.Type) => Type =
@@ -321,7 +297,6 @@ export const splitOnTotalLength: (limit: number) => (formatSet: PPFormatSet.Type
  * Calls `singleLine` if the length of the longest property to print (excluding formatting
  * characters and record marks) is less than or equal to `limit`. Calls `multiLine` otherwise
  *
- * @since 0.0.1
  * @category Instances
  */
 export const splitOnLongestPropLengthMaker =
@@ -363,7 +338,6 @@ export const splitOnLongestPropLengthMaker =
  * Alias for
  * `splitOnLongestPropLengthMaker(PPRecordMarks.singleLine,PPRecordMarks.multiLine,PPIndentMode.tab)`
  *
- * @since 0.0.1
  * @category Instances
  */
 export const splitOnLongestPropLength: (limit: number) => (formatSet: PPFormatSet.Type) => Type =
@@ -376,7 +350,6 @@ export const splitOnLongestPropLength: (limit: number) => (formatSet: PPFormatSe
 /**
  * Calls `singleLine` for arrays and multiLine for other records. Calls `multiLine` otherwise
  *
- * @since 0.0.1
  * @category Instances
  */
 export const splitNonArraysMaker =
@@ -416,7 +389,6 @@ export const splitNonArraysMaker =
  * Alias for
  * `splitNonArraysMaker(PPRecordMarks.singleLine,PPRecordMarks.multiLine,PPIndentMode.tab)`
  *
- * @since 0.0.1
  * @category Instances
  */
 export const splitNonArrays: (formatSet: PPFormatSet.Type) => Type = splitNonArraysMaker(

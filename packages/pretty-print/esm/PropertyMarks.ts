@@ -4,8 +4,6 @@
  *
  * With the make function, you can define your own instances if the provided ones don't suit your
  * needs.
- *
- * @since 0.0.1
  */
 
 import { MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
@@ -18,33 +16,16 @@ type TypeId = typeof TypeId;
 /**
  * Interface that lets you specify the marks to print when the key of the property is printed
  *
- * @since 0.0.1
  * @category Models
  */
 export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
-	/**
-	 * Id of this PropertyMarks instance. Useful for equality and debugging
-	 *
-	 * @since 0.0.1
-	 */
+	/** Id of this PropertyMarks instance. Useful for equality and debugging */
 	readonly id: string;
-	/**
-	 * Mark used to seperate the key and the value
-	 *
-	 * @since 0.0.1
-	 */
+	/** Mark used to seperate the key and the value */
 	readonly keyValueSeparator: string;
-	/**
-	 * Mark to prepend to the key as many times as the depth of the property in the prototypal chain
-	 *
-	 * @since 0.0.1
-	 */
+	/** Mark to prepend to the key as many times as the depth of the property in the prototypal chain */
 	readonly prototypePrefix: string;
-	/**
-	 * Mark to append to the key as many times as the depth of the property in the prototypal chain
-	 *
-	 * @since 0.0.1
-	 */
+	/** Mark to append to the key as many times as the depth of the property in the prototypal chain */
 	readonly prototypeSuffix: string;
 	/** @internal */
 	readonly [TypeId]: TypeId;
@@ -53,7 +34,6 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
 /**
  * Type guard
  *
- * @since 0.0.1
  * @category Guards
  */
 export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
@@ -61,7 +41,6 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
 /**
  * Equivalence
  *
- * @since 0.0.1
  * @category Equivalences
  */
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
@@ -86,7 +65,6 @@ const proto: MTypes.Proto<Type> = {
 /**
  * Constructor
  *
- * @since 0.0.1
  * @category Constructors
  */
 export const make = (params: MTypes.Data<Type>): Type =>
@@ -95,7 +73,6 @@ export const make = (params: MTypes.Data<Type>): Type =>
 /**
  * PropertyMarks instance for objects
  *
- * @since 0.0.1
  * @category Instances
  */
 export const object: Type = make({

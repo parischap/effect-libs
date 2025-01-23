@@ -3,11 +3,9 @@
  *
  * With the make function, you can define your own instances if the provided ones don't suit your
  * needs.
- *
- * @since 0.0.1
  */
 
-import { pipe } from 'effect';
+import { pipe, Struct } from 'effect';
 import * as PPByPasser from './ByPasser.js';
 import * as PPMarkMap from './MarkMap.js';
 import * as PPPropertyFilter from './PropertyFilter.js';
@@ -26,37 +24,22 @@ type TypeId = typeof TypeId;
 /**
  * Interface that represents the options for pretty printing
  *
- * @since 0.0.1
  * @category Models
  */
 export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
-	/**
-	 * Id of this Option instance. Useful for equality and debugging
-	 *
-	 * @since 0.0.1
-	 */
+	/** Id of this Option instance. Useful for equality and debugging */
 	readonly id: string;
 
-	/**
-	 * Map of ContextFormatter's are used to style the different parts of a stringified value
-	 *
-	 * @since 0.3.0
-	 */
+	/** Map of ContextFormatter's are used to style the different parts of a stringified value */
 	readonly styleMap: PPStyleMap.Type;
 
-	/**
-	 * Map of the different marks that appear in a value to stringify
-	 *
-	 * @since 0.3.0
-	 */
+	/** Map of the different marks that appear in a value to stringify */
 	readonly markMap: PPMarkMap.Type;
 
 	/**
 	 * Maximum number of nested records that will be opened. A value inferior or equal to 0 means that
 	 * only primitive values of the value to stringify are shown. The others are replaced by
 	 * `arrayLabel`, `functionLabel` or `objectLabel`.
-	 *
-	 * @since 0.0.1
 	 */
 	readonly maxDepth: number;
 
@@ -65,16 +48,12 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
 	 * maxPrototypeDepth <= 0 means that only properties of the top record are shown.
 	 * maxPrototypeDepth = 1 means that only properties of the top record and its direct prototype are
 	 * shown...
-	 *
-	 * @since 0.0.1
 	 */
 	readonly maxPrototypeDepth: number;
 
 	/**
 	 * `ValueOrder` instance: allows you to specify how to sort properties when printing records (see
 	 * ValueOrder.ts)
-	 *
-	 * @since 0.0.1
 	 */
 	readonly propertySortOrder: PPValueOrder.Type;
 
@@ -86,40 +65,30 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
 	 * carefully. Usually, you will use `propertySortOrder: ValueOrder.byPrototypalDepth`. If false,
 	 * all occurrences of the same property are kept. Deduping is only performed on records that are
 	 * not arrays
-	 *
-	 * @since 0.0.1
 	 */
 	readonly dedupeRecordProperties: boolean;
 
 	/**
 	 * `ByPasser` instance: allows you to specify which values receive a special stringification
 	 * process (see ByPasser.ts)
-	 *
-	 * @since 0.0.1
 	 */
 	readonly byPasser: PPByPasser.Type;
 
 	/**
 	 * `PropertyFilter` instance: allows you to specify which properties are shown when printing
 	 * records (see PropertyFilter.ts)
-	 *
-	 * @since 0.0.1
 	 */
 	readonly propertyFilter: PPPropertyFilter.Type;
 
 	/**
 	 * `PropertyFormatter` instance: allows you to specify how to format record properties (see
 	 * PropertyFormatter.ts)
-	 *
-	 * @since 0.0.1
 	 */
 	readonly propertyFormatter: PPPropertyFormatter.Type;
 
 	/**
 	 * `RecordFormatter` instance: allows you to specify how to print a record from its stringified
 	 * properties (see RecordFormatter.ts)
-	 *
-	 * @since 0.0.1
 	 */
 	readonly recordFormatter: PPRecordFormatter.Type;
 
@@ -130,7 +99,6 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
 /**
  * Type guard
  *
- * @since 0.0.1
  * @category Guards
  */
 export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
@@ -138,7 +106,6 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
 /**
  * Equivalence
  *
- * @since 0.0.1
  * @category Equivalences
  */
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
@@ -163,17 +130,98 @@ const proto: MTypes.Proto<Type> = {
 /**
  * Constructor without a id
  *
- * @since 0.0.1
  * @category Constructors
  */
 export const make = (params: MTypes.Data<Type>): Type =>
 	MTypes.objectFromDataAndProto(proto, params);
 
 /**
+ * Returns the `id` property of `self`
+ *
+ * @category Destructors
+ */
+export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
+
+/**
+ * Returns the `styleMap` property of `self`
+ *
+ * @category Destructors
+ */
+export const styleMap: MTypes.OneArgFunction<Type, PPStyleMap.Type> = Struct.get('styleMap');
+
+/**
+ * Returns the `markMap` property of `self`
+ *
+ * @category Destructors
+ */
+export const markMap: MTypes.OneArgFunction<Type, PPMarkMap.Type> = Struct.get('markMap');
+
+/**
+ * Returns the `maxDepth` property of `self`
+ *
+ * @category Destructors
+ */
+export const maxDepth: MTypes.OneArgFunction<Type, number> = Struct.get('maxDepth');
+
+/**
+ * Returns the `maxPrototypeDepth` property of `self`
+ *
+ * @category Destructors
+ */
+export const maxPrototypeDepth: MTypes.OneArgFunction<Type, number> =
+	Struct.get('maxPrototypeDepth');
+
+/**
+ * Returns the `propertySortOrder` property of `self`
+ *
+ * @category Destructors
+ */
+export const propertySortOrder: MTypes.OneArgFunction<Type, PPValueOrder.Type> =
+	Struct.get('propertySortOrder');
+
+/**
+ * Returns the `dedupeRecordProperties` property of `self`
+ *
+ * @category Destructors
+ */
+export const dedupeRecordProperties: MTypes.OneArgFunction<Type, boolean> =
+	Struct.get('dedupeRecordProperties');
+
+/**
+ * Returns the `byPasser` property of `self`
+ *
+ * @category Destructors
+ */
+export const byPasser: MTypes.OneArgFunction<Type, PPByPasser.Type> = Struct.get('byPasser');
+
+/**
+ * Returns the `propertyFilter` property of `self`
+ *
+ * @category Destructors
+ */
+export const propertyFilter: MTypes.OneArgFunction<Type, PPPropertyFilter.Type> =
+	Struct.get('propertyFilter');
+
+/**
+ * Returns the `propertyFormatter` property of `self`
+ *
+ * @category Destructors
+ */
+export const propertyFormatter: MTypes.OneArgFunction<Type, PPPropertyFormatter.Type> =
+	Struct.get('propertyFormatter');
+
+/**
+ * Returns the `recordFormatter` property of `self`
+ *
+ * @category Destructors
+ */
+export const recordFormatter: MTypes.OneArgFunction<Type, PPRecordFormatter.Type> =
+	Struct.get('recordFormatter');
+
+/**
  * Function that returns an `Option` instance that pretty-prints a value on a single line in a way
  * very similar to util.inspect. It takes a `FormatSet` instance as an argument.
  *
- * @since 0.0.1
  * @category Instances
  */
 export const singleLine = (formatSet: PPFormatSet.Type): Type =>
@@ -196,7 +244,6 @@ export const singleLine = (formatSet: PPFormatSet.Type): Type =>
 /**
  * Alias for `singleLine(PPFormatSet.none)`
  *
- * @since 0.0.1
  * @category Instances
  */
 export const unformattedSingleLine: Type = singleLine(PPFormatSet.none);
@@ -204,7 +251,6 @@ export const unformattedSingleLine: Type = singleLine(PPFormatSet.none);
 /**
  * Alias for `singleLine(PPFormatSet.ansiDarkMode)`
  *
- * @since 0.0.1
  * @category Instances
  */
 export const ansiDarkSingleLine: Type = singleLine(PPFormatSet.ansiDarkMode);
@@ -213,7 +259,6 @@ export const ansiDarkSingleLine: Type = singleLine(PPFormatSet.ansiDarkMode);
  * Function that returns an `Options` instance that pretty-prints a value on multiple indented lines
  * in a way very similar to util.inspect. It takes a `FormatSet` instance as an argument.
  *
- * @since 0.0.1
  * @category Instances
  */
 export const tabified = (formatSet: PPFormatSet.Type): Type =>
@@ -229,7 +274,6 @@ export const tabified = (formatSet: PPFormatSet.Type): Type =>
 /**
  * Alias for `tabified(PPFormatSet.none)`
  *
- * @since 0.0.1
  * @category Instances
  */
 export const unformattedTabified: Type = tabified(PPFormatSet.none);
@@ -237,7 +281,6 @@ export const unformattedTabified: Type = tabified(PPFormatSet.none);
 /**
  * Alias for `tabified(PPFormatSet.ansiDarkMode)`
  *
- * @since 0.0.1
  * @category Instances
  */
 export const ansiDarkTabified: Type = tabified(PPFormatSet.ansiDarkMode);
@@ -247,7 +290,6 @@ export const ansiDarkTabified: Type = tabified(PPFormatSet.ansiDarkMode);
  * tree-like structure in a way very similar to util.inspect. It takes a `PPFormatSet` instance as
  * an argument.
  *
- * @since 0.0.1
  * @category Instances
  */
 export const treeified = (formatSet: PPFormatSet.Type): Type =>
@@ -265,7 +307,6 @@ export const treeified = (formatSet: PPFormatSet.Type): Type =>
 /**
  * Alias for `treeified(PPFormatSet.none)`
  *
- * @since 0.0.1
  * @category Instances
  */
 export const unformattedTreeified: Type = treeified(PPFormatSet.none);
@@ -273,7 +314,6 @@ export const unformattedTreeified: Type = treeified(PPFormatSet.none);
 /**
  * Alias for `treeified(PPFormatSet.ansiDarkMode)`
  *
- * @since 0.0.1
  * @category Instances
  */
 export const ansiDarkTreeified: Type = treeified(PPFormatSet.ansiDarkMode);
@@ -283,7 +323,6 @@ export const ansiDarkTreeified: Type = treeified(PPFormatSet.ansiDarkMode);
  * contains, will be printed on multiple indented lines if the total length of its stringified
  * properties is less than or equal to 40 characters. Record-marks are not included in the count.
  *
- * @since 0.0.1
  * @category Instances
  */
 export const splitWhenTotalLengthExceeds40 = (formatSet: PPFormatSet.Type): Type =>
@@ -299,7 +338,6 @@ export const splitWhenTotalLengthExceeds40 = (formatSet: PPFormatSet.Type): Type
 /**
  * Alias for `splitWhenTotalLengthExceeds40(PPFormatSet.none)`
  *
- * @since 0.0.1
  * @category Instances
  */
 export const unformattedSplitWhenTotalLengthExceeds40: Type = splitWhenTotalLengthExceeds40(
@@ -309,7 +347,6 @@ export const unformattedSplitWhenTotalLengthExceeds40: Type = splitWhenTotalLeng
 /**
  * Alias for `splitWhenTotalLengthExceeds40(PPFormatSet.ansiDarkMode)`
  *
- * @since 0.0.1
  * @category Instances
  */
 export const ansiDarkSplitWhenTotalLengthExceeds40: Type = splitWhenTotalLengthExceeds40(

@@ -4,8 +4,6 @@
  *
  * With the make function, you can define your own instances if the provided ones don't suit your
  * needs.
- *
- * @since 0.0.1
  */
 
 import { MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
@@ -18,42 +16,29 @@ type TypeId = typeof TypeId;
 /**
  * Interface that defines an IndentMode
  *
- * @since 0.0.1
  * @category Models
  */
 export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
-	/**
-	 * Id of this IndentMode instance. Useful for equality and debugging
-	 *
-	 * @since 0.0.1
-	 */
+	/** Id of this IndentMode instance. Useful for equality and debugging */
 	readonly id: string;
 	/**
 	 * Filler prepended to the first line of the stringified representation of each property except
 	 * the last, of a record
-	 *
-	 * @since 0.0.1
 	 */
 	readonly initPropFirstLine: string;
 	/**
 	 * Filler prepended to the first line of the stringified representation of the last property of a
 	 * record
-	 *
-	 * @since 0.0.1
 	 */
 	readonly lastPropFirstLine: string;
 	/**
 	 * Filler prepended to the all lines but the first of the stringified representation of each
 	 * property, except the last, of a record
-	 *
-	 * @since 0.0.1
 	 */
 	readonly initPropTailLines: string;
 	/**
 	 * Filler prepended to the all lines but the first of the stringified representation of the last
 	 * property of a record
-	 *
-	 * @since 0.0.1
 	 */
 	readonly lastPropTailLines: string;
 	/** @internal */
@@ -63,7 +48,6 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
 /**
  * Type guard
  *
- * @since 0.0.1
  * @category Guards
  */
 export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
@@ -71,7 +55,6 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
 /**
  * Equivalence
  *
- * @since 0.0.1
  * @category Equivalences
  */
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
@@ -96,7 +79,6 @@ const proto: MTypes.Proto<Type> = {
 /**
  * Constructor
  *
- * @since 0.0.1
  * @category Constructors
  */
 export const make = (params: MTypes.Data<Type>): Type =>
@@ -105,7 +87,6 @@ export const make = (params: MTypes.Data<Type>): Type =>
 /**
  * IndentMode instance for tabified output. Uses 2 spaces as tabs.
  *
- * @since 0.0.1
  * @category Instances
  */
 export const tab: Type = make({
@@ -119,7 +100,6 @@ export const tab: Type = make({
 /**
  * IndentMode instance for treeified output. Uses horizontal and vertical lines as tabs.
  *
- * @since 0.0.1
  * @category Instances
  */
 export const tree: Type = make({

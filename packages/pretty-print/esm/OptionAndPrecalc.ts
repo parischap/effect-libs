@@ -1,8 +1,6 @@
 /**
  * This module implements a type that encapsulates the options for pretty-printing and precalculated
  * values useful for the stringification process
- *
- * @since 0.0.1
  */
 
 import { Function, HashMap, Inspectable, pipe, Struct } from 'effect';
@@ -19,24 +17,75 @@ const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
 
 /**
+ * Namespace of a ContextualTextShower
+ *
+ * @category Models
+ */
+export namespace ContextualTextShower {
+	/**
+	 * Type of a ContextualTextShower
+	 *
+	 * - @category Models
+	 */
+	export interface Type extends MTypes.OneArgFunction<PPValue.All, ASText.Type> {}
+}
+
+/**
+ * Namespace of a TextShower
+ *
+ * @category Models
+ */
+export namespace TextShower {
+	/**
+	 * Type of a TextShower
+	 *
+	 * @category Models
+	 */
+	export interface Type
+		extends MTypes.OneArgFunction<
+			string,
+			MTypes.OneArgFunction<string, ContextualTextShower.Type>
+		> {}
+}
+
+/**
+ * Namespace of a ContextualMarkShower
+ *
+ * @category Models
+ */
+export namespace ContextualMarkShower {
+	/**
+	 * Type of a ContextualMarkShower
+	 *
+	 * - @category Models
+	 */
+	export interface Type extends MTypes.OneArgFunction<PPValue.All, ASText.Type> {}
+}
+
+/**
+ * Namespace of a MarkShower
+ *
+ * @category Models
+ */
+export namespace MarkShower {
+	/**
+	 * Type of a MarkShower
+	 *
+	 * @category Models
+	 */
+	export interface Type extends MTypes.OneArgFunction<string, ContextualMarkShower.Type> {}
+}
+
+/**
  * Interface that represents an OptionAndPrecalc
  *
- * @since 0.0.1
  * @category Models
  */
 export interface Type extends Inspectable.Inspectable, Pipeable.Pipeable {
-	/**
-	 * The original options passed by the user
-	 *
-	 * @since 0.0.1
-	 */
+	/** The original options passed by the user */
 	readonly option: PPOption.Type;
 
-	/**
-	 * Precompiled map of the different marks that appear in a value to stringify
-	 *
-	 * @since 0.3.0
-	 */
+	/** Precompiled map of the different marks that appear in a value to stringify */
 	readonly precompMarkMap: PPStyleMap.Type;
 
 	/** @internal */
@@ -46,7 +95,6 @@ export interface Type extends Inspectable.Inspectable, Pipeable.Pipeable {
 /**
  * Type guard
  *
- * @since 0.0.1
  * @category Guards
  */
 export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
@@ -64,7 +112,6 @@ const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto
 /**
  * Constructor
  *
- * @since 0.0.1
  * @category Constructors
  */
 export const make = (option: PPOption.Type): Type =>
@@ -82,23 +129,29 @@ export const make = (option: PPOption.Type): Type =>
 		})
 	});
 
+/**
+ * Returns the `option` property of `self`
+ *
+ * @category Destructors
+ */
+export const option: MTypes.OneArgFunction<Type, PPOption.Type> = Struct.get('option');
+
+/**
+ * Returns the `precompMarkMap` property of `self`
+ *
+ * @category Destructors
+ */
+export const precompMarkMap: MTypes.OneArgFunction<Type, PPStyleMap.Type> =
+	Struct.get('precompMarkMap');
+
 /** Builds a textShower from `self` */
-export const toTextShower = (
-	self: Type
-): MTypes.OneArgFunction<
-	PPValue.All,
-	MTypes.OneArgFunction<string, MTypes.OneArgFunction<string, ASText.Type>>
-> => {
+export const toTextShower = (self: Type): TextShower.Type => {
 	const styleMap = self.option.styleMap;
-	return (context) => (partName) => (text) =>
-		pipe(styleMap, PPStyleMap.get(partName), Function.apply(text), Function.apply(context));
+	return (partName) => pipe(styleMap, PPStyleMap.get(partName));
 };
 
 /** Builds a markShower from `self` */
-export const toMarkShower = (
-	self: Type
-): MTypes.OneArgFunction<PPValue.All, MTypes.OneArgFunction<string, ASText.Type>> => {
+export const toMarkShower = (self: Type): MarkShower.Type => {
 	const markMap = self.precompMarkMap;
-	return (context) => (partName) =>
-		pipe(markMap, PPStyleMap.get(partName), Function.apply(undefined), Function.apply(context));
+	return (partName) => pipe(markMap, PPStyleMap.get(partName), Function.apply(undefined));
 };
