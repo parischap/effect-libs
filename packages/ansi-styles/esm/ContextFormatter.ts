@@ -1,12 +1,12 @@
 /**
  * A ContextFormatter is a type that allows you to format a string differently depending on the
- * context. It encapsulates a Palette (see Palette.ts) that contains `n` styles and a function that
- * takes a context object and returns an index `i`. It uses the Style at position i % n, where % is
- * the modulo function.
+ * value of a context object. It encapsulates a Palette (see Palette.ts) that contains `n` styles
+ * and a function that takes a context object and returns an index `i`. It uses the Style at
+ * position i % n, where % is the modulo function.
  */
 
-import { MArray, MInspectable, MMatch, MPipeable, MStruct, MTypes } from '@parischap/effect-lib';
-import { flow, Function, Option, pipe, Pipeable, Predicate, String, Struct, Types } from 'effect';
+import { MArray, MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
+import { pipe, Pipeable, Predicate, String, Struct, Types } from 'effect';
 import * as ASPalette from './Palette.js';
 import * as ASStyle from './Style.js';
 import * as ASText from './Text.js';
@@ -33,7 +33,8 @@ export namespace Action {
 	 *
 	 * @category Models
 	 */
-	export interface Type<in C> extends MTypes.OneArgFunction<C, (s?: string) => ASText.Type> {}
+	export interface Type<in C>
+		extends MTypes.OneArgFunction<C, MTypes.OneArgFunction<string, ASText.Type>> {}
 }
 
 /**
@@ -79,9 +80,6 @@ export namespace Unistyled {
 	 * @category Models
 	 */
 	export interface Type extends Action.Type<unknown>, MInspectable.Inspectable, Pipeable.Pipeable {
-		/** The text to display by default if an empty string is passed to the formatter */
-		readonly defaultText: string;
-
 		/** The style to apply */
 		readonly style: ASStyle.Type;
 
@@ -112,39 +110,20 @@ export namespace Unistyled {
 	};
 
 	/** Constructor */
-	const _make = (params: MTypes.Data<Type>): Type =>
-		Object.assign(
-			((_context) =>
-				flow(
-					Option.liftPredicate(MTypes.isNotUndefined),
-					Option.getOrElse(Function.constant(params.defaultText)),
-					params.style
-				)) satisfies Action.Type<unknown>,
-			{
-				...params,
-				...base
-			}
-		);
+	const _make = (params: MTypes.Data<Type>): Type => {
+		const style = params.style;
+		return Object.assign(((_context) => style) satisfies Action.Type<unknown>, {
+			...params,
+			...base
+		});
+	};
 
 	/**
 	 * Constructor
 	 *
 	 * @category Constructors
 	 */
-	export const make = ({
-		defaultText = '',
-		style
-	}: {
-		readonly defaultText?: string;
-		readonly style: ASStyle.Type;
-	}): Type => _make({ defaultText, style });
-
-	/**
-	 * Gets the `defaultText` property of `self`
-	 *
-	 * @category Destructors
-	 */
-	export const defaultText: MTypes.OneArgFunction<Type, string> = Struct.get('defaultText');
+	export const make = (style: ASStyle.Type): Type => _make({ style });
 
 	/**
 	 * Gets the `style` property of `self`
@@ -158,22 +137,11 @@ export namespace Unistyled {
 	 *
 	 * @category Destructors
 	 */
-	export const toId = (self: Type): string =>
-		ASStyle.toId(self.style) +
-		'Formatter' +
-		(self.defaultText === '' ? '' : 'With' + String.capitalize(self.defaultText) + 'AsDefault');
-
-	/**
-	 * Builds a copy of `self` with the 'defaultText' property set to 'defaultText'
-	 *
-	 * @category Utils
-	 */
-	export const setDefaultText = (defaultText: string): MTypes.OneArgFunction<Type, Type> =>
-		flow(MStruct.set({ defaultText }), _make);
+	export const toId = (self: Type): string => ASStyle.toId(self.style) + 'Formatter';
 }
 
 /**
- * Namespace for a PaletteBased ContextFormatter
+ * Namespace for a Palette-based ContextFormatter
  *
  * @category Models
  */
@@ -195,18 +163,15 @@ export namespace PaletteBased {
 	}
 
 	/**
-	 * Type that represents a non empty ContextFormatter
+	 * Type that represents a Palette-based ContextFormatter
 	 *
 	 * @category Models
 	 */
 	export interface Type<in C> extends Action.Type<C>, MInspectable.Inspectable, Pipeable.Pipeable {
-		/** The text to display by default if an empty string is passed to the formatter */
-		readonly defaultText: string;
-
 		/** Function that takes a context object and derives an index from it */
 		readonly indexFromContext: IndexFromContext.Type<C>;
 
-		/** Palette used by this ContextFormatter. */
+		/** Palette used by this ContextFormatter */
 		readonly palette: ASPalette.Type;
 
 		/** @internal */
@@ -244,15 +209,10 @@ export namespace PaletteBased {
 	const _make = <C>(params: MTypes.Data<Type<C>>): Type<C> => {
 		const styles = params.palette.styles;
 		const n = styles.length;
+		const indexFromContext = params.indexFromContext;
 		return Object.assign(
-			((context) => {
-				const style = pipe(styles, MArray.unsafeGet(params.indexFromContext(context) % n));
-				return flow(
-					Option.liftPredicate(MTypes.isNotUndefined),
-					Option.getOrElse(Function.constant(params.defaultText)),
-					style
-				);
-			}) satisfies Action.Type<C>,
+			((context) =>
+				pipe(styles, MArray.unsafeGet(indexFromContext(context) % n))) satisfies Action.Type<C>,
 			{
 				...params,
 				...base
@@ -267,14 +227,8 @@ export namespace PaletteBased {
 	 */
 	export const make =
 		<C>(indexFromContext: IndexFromContext.Type<C>) =>
-		({
-			defaultText = '',
-			palette
-		}: {
-			readonly defaultText?: string;
-			readonly palette: ASPalette.Type;
-		}): Type<C> =>
-			_make({ defaultText, indexFromContext, palette });
+		(palette: ASPalette.Type): Type<C> =>
+			_make({ indexFromContext, palette });
 
 	/**
 	 * Gets the `indexFromContext` property of `self`
@@ -292,43 +246,16 @@ export namespace PaletteBased {
 	export const palette: MTypes.OneArgFunction<Type<never>, ASPalette.Type> = Struct.get('palette');
 
 	/**
-	 * Gets the `defaultText` property of `self`
-	 *
-	 * @category Destructors
-	 */
-	export const defaultText: MTypes.OneArgFunction<Type<never>, string> = Struct.get('defaultText');
-
-	/**
 	 * Gets the id of `self`
 	 *
 	 * @category Destructors
 	 */
 	export const toId = (self: Type<never>): string =>
-		ASPalette.toId(self.palette) +
-		'FormatterOn' +
 		String.capitalize(self.indexFromContext.name) +
-		(self.defaultText === '' ? '' : 'With' + String.capitalize(self.defaultText) + 'AsDefault');
-
-	/**
-	 * Builds a copy of `self` with the 'defaultText' property set to 'defaultText'
-	 *
-	 * @category Utils
-	 */
-	export const setDefaultText = (defaultText: string): (<C>(self: Type<C>) => Type<C>) =>
-		flow(MStruct.set({ defaultText }), _make);
+		'Based' +
+		ASPalette.toId(self.palette) +
+		'Formatter';
 }
-
-/**
- * Builds a copy of `self` with the 'defaultText' property set to 'defaultText'
- *
- * @category Utils
- */
-export const setDefaultText = (defaultText: string): (<C>(self: Type<C>) => Type<C>) =>
-	flow(
-		MMatch.make,
-		MMatch.when(isUnistyled, Unistyled.setDefaultText(defaultText)),
-		MMatch.orElse(PaletteBased.setDefaultText(defaultText))
-	);
 
 /**
  * None ContextFormatter instance: does not apply any style, does not provide a defaultText
@@ -336,60 +263,60 @@ export const setDefaultText = (defaultText: string): (<C>(self: Type<C>) => Type
  * @category Instances
  */
 
-export const none: Unistyled.Type = Unistyled.make({ style: ASStyle.none });
+export const none: Unistyled.Type = Unistyled.make(ASStyle.none);
 
 /**
  * Original black color instance
  *
  * @category Original instances
  */
-export const black: Unistyled.Type = Unistyled.make({ style: ASStyle.black });
+export const black: Unistyled.Type = Unistyled.make(ASStyle.black);
 
 /**
  * Original red color instance
  *
  * @category Original instances
  */
-export const red: Unistyled.Type = Unistyled.make({ style: ASStyle.red });
+export const red: Unistyled.Type = Unistyled.make(ASStyle.red);
 
 /**
  * Original green color instance
  *
  * @category Original instances
  */
-export const green: Unistyled.Type = Unistyled.make({ style: ASStyle.green });
+export const green: Unistyled.Type = Unistyled.make(ASStyle.green);
 
 /**
  * Original yellow color instance
  *
  * @category Original instances
  */
-export const yellow: Unistyled.Type = Unistyled.make({ style: ASStyle.yellow });
+export const yellow: Unistyled.Type = Unistyled.make(ASStyle.yellow);
 
 /**
  * Original blue color instance
  *
  * @category Original instances
  */
-export const blue: Unistyled.Type = Unistyled.make({ style: ASStyle.blue });
+export const blue: Unistyled.Type = Unistyled.make(ASStyle.blue);
 
 /**
  * Original magenta color instance
  *
  * @category Original instances
  */
-export const magenta: Unistyled.Type = Unistyled.make({ style: ASStyle.magenta });
+export const magenta: Unistyled.Type = Unistyled.make(ASStyle.magenta);
 
 /**
  * Original cyan color instance
  *
  * @category Original instances
  */
-export const cyan: Unistyled.Type = Unistyled.make({ style: ASStyle.cyan });
+export const cyan: Unistyled.Type = Unistyled.make(ASStyle.cyan);
 
 /**
  * Original white color instance
  *
  * @category Original instances
  */
-export const white: Unistyled.Type = Unistyled.make({ style: ASStyle.white });
+export const white: Unistyled.Type = Unistyled.make(ASStyle.white);
