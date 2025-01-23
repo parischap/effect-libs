@@ -6,7 +6,7 @@
  */
 
 import { MArray, MInspectable, MMatch, MPipeable, MStruct, MTypes } from '@parischap/effect-lib';
-import { flow, Function, pipe, Pipeable, Predicate, String, Struct, Types } from 'effect';
+import { flow, Function, Option, pipe, Pipeable, Predicate, String, Struct, Types } from 'effect';
 import * as ASPalette from './Palette.js';
 import * as ASStyle from './Style.js';
 import * as ASText from './Text.js';
@@ -33,9 +33,7 @@ export namespace Action {
 	 *
 	 * @category Models
 	 */
-	export interface Type<in C> {
-		(s?: string): MTypes.OneArgFunction<C, ASText.Type>;
-	}
+	export interface Type<in C> extends MTypes.OneArgFunction<C, (s?: string) => ASText.Type> {}
 }
 
 /**
@@ -116,10 +114,12 @@ export namespace Unistyled {
 	/** Constructor */
 	const _make = (params: MTypes.Data<Type>): Type =>
 		Object.assign(
-			((s) => {
-				const textToShow = params.style(MTypes.isUndefined(s) ? params.defaultText : s);
-				return (): ASText.Type => textToShow;
-			}) satisfies Action.Type<unknown>,
+			((_context) =>
+				flow(
+					Option.liftPredicate(MTypes.isNotUndefined),
+					Option.getOrElse(Function.constant(params.defaultText)),
+					params.style
+				)) satisfies Action.Type<unknown>,
 			{
 				...params,
 				...base
@@ -245,14 +245,13 @@ export namespace PaletteBased {
 		const styles = params.palette.styles;
 		const n = styles.length;
 		return Object.assign(
-			((s) => {
-				const textToShow = MTypes.isUndefined(s) ? params.defaultText : s;
-				return (context: C): ASText.Type =>
-					pipe(
-						styles,
-						MArray.unsafeGet(params.indexFromContext(context) % n),
-						Function.apply(textToShow)
-					);
+			((context) => {
+				const style = pipe(styles, MArray.unsafeGet(params.indexFromContext(context) % n));
+				return flow(
+					Option.liftPredicate(MTypes.isNotUndefined),
+					Option.getOrElse(Function.constant(params.defaultText)),
+					style
+				);
 			}) satisfies Action.Type<C>,
 			{
 				...params,

@@ -4,36 +4,42 @@ import { MUtils } from '@parischap/effect-lib';
 import { describe, expect, it } from 'vitest';
 
 describe('ContextFormatter', () => {
-	interface Context {
-		readonly pos1: number;
-		readonly otherStuff: string;
-	}
-
-	function pos1(context: Context): number {
-		return context.pos1;
-	}
-
-	const formatterOnContextPos1 = ASContextFormatter.PaletteBased.make(pos1);
-
-	const fooUnistyledFormatter = ASContextFormatter.Unistyled.make({
+	const unistyledFormatterWithFooDefault = ASContextFormatter.Unistyled.make({
 		defaultText: 'foo',
 		style: ASStyle.red
 	});
 
-	const allStandardOriginalColorsFormaterOnContextPos1WithFooDefault = formatterOnContextPos1({
+	interface Value {
+		readonly pos1: number;
+		readonly otherStuff: string;
+	}
+
+	function pos1(value: Value): number {
+		return value.pos1;
+	}
+
+	const valuePos1ContextFormatter = ASContextFormatter.PaletteBased.make(pos1);
+
+	const valuePos1ContextFormatterWithFooDefault = valuePos1ContextFormatter({
 		defaultText: 'foo',
 		palette: ASPalette.allStandardOriginalColors
 	});
 
-	const context1: Context = {
+	const value1: Value = {
 		pos1: 2,
 		otherStuff: 'dummy'
 	};
 
-	const context2: Context = {
+	const value2: Value = {
 		pos1: 9,
 		otherStuff: 'dummy'
 	};
+
+	const unistyledFormatterWithFooDefaultInValue1Context = unistyledFormatterWithFooDefault(value1);
+	const valuePos1ContextFormatterWithFooDefaultInValue1Context =
+		valuePos1ContextFormatterWithFooDefault(value1);
+	const valuePos1ContextFormatterWithFooDefaultInValue2Context =
+		valuePos1ContextFormatterWithFooDefault(value2);
 
 	describe('Tag and guards', () => {
 		it('moduleTag', () => {
@@ -42,10 +48,8 @@ describe('ContextFormatter', () => {
 
 		describe('has', () => {
 			it('Matching', () => {
-				expect(ASContextFormatter.has(fooUnistyledFormatter)).toBe(true);
-				expect(
-					ASContextFormatter.has(allStandardOriginalColorsFormaterOnContextPos1WithFooDefault)
-				).toBe(true);
+				expect(ASContextFormatter.has(unistyledFormatterWithFooDefault)).toBe(true);
+				expect(ASContextFormatter.has(valuePos1ContextFormatterWithFooDefault)).toBe(true);
 			});
 			it('Non matching', () => {
 				expect(ASContextFormatter.has(new Date())).toBe(false);
@@ -54,27 +58,21 @@ describe('ContextFormatter', () => {
 
 		describe('isUnistyled', () => {
 			it('Matching', () => {
-				expect(ASContextFormatter.isUnistyled(fooUnistyledFormatter)).toBe(true);
+				expect(ASContextFormatter.isUnistyled(unistyledFormatterWithFooDefault)).toBe(true);
 			});
 			it('Non matching', () => {
-				expect(
-					ASContextFormatter.isUnistyled(
-						allStandardOriginalColorsFormaterOnContextPos1WithFooDefault
-					)
-				).toBe(false);
+				expect(ASContextFormatter.isUnistyled(valuePos1ContextFormatterWithFooDefault)).toBe(false);
 			});
 		});
 
 		describe('isPaletteBased', () => {
 			it('Matching', () => {
-				expect(
-					ASContextFormatter.isPaletteBased(
-						allStandardOriginalColorsFormaterOnContextPos1WithFooDefault
-					)
-				).toBe(true);
+				expect(ASContextFormatter.isPaletteBased(valuePos1ContextFormatterWithFooDefault)).toBe(
+					true
+				);
 			});
 			it('Non matching', () => {
-				expect(ASContextFormatter.isPaletteBased(fooUnistyledFormatter)).toBe(false);
+				expect(ASContextFormatter.isPaletteBased(unistyledFormatterWithFooDefault)).toBe(false);
 			});
 		});
 	});
@@ -82,26 +80,24 @@ describe('ContextFormatter', () => {
 	describe('Unistyled', () => {
 		describe('Prototype and guards', () => {
 			it('.pipe()', () => {
-				expect(fooUnistyledFormatter.pipe(ASContextFormatter.has)).toBe(true);
+				expect(unistyledFormatterWithFooDefault.pipe(ASContextFormatter.has)).toBe(true);
 			});
 
 			describe('has', () => {
 				it('Matching', () => {
-					expect(ASContextFormatter.Unistyled.has(fooUnistyledFormatter)).toBe(true);
+					expect(ASContextFormatter.Unistyled.has(unistyledFormatterWithFooDefault)).toBe(true);
 				});
 				it('Non matching', () => {
-					expect(
-						ASContextFormatter.Unistyled.has(
-							allStandardOriginalColorsFormaterOnContextPos1WithFooDefault
-						)
-					).toBe(false);
+					expect(ASContextFormatter.Unistyled.has(valuePos1ContextFormatterWithFooDefault)).toBe(
+						false
+					);
 				});
 			});
 		});
 
 		describe('.toString()', () => {
 			it('With default text', () => {
-				expect(fooUnistyledFormatter.toString()).toBe('RedFormatterWithFooAsDefault');
+				expect(unistyledFormatterWithFooDefault.toString()).toBe('RedFormatterWithFooAsDefault');
 			});
 
 			it('Without default text', () => {
@@ -112,16 +108,19 @@ describe('ContextFormatter', () => {
 		});
 
 		describe('Action', () => {
-			it('Non-empty string', () => {
-				expect(ASText.equivalence(fooUnistyledFormatter('baz')(context1), ASStyle.red('baz'))).toBe(
-					true
-				);
+			it('With string', () => {
+				expect(
+					ASText.equivalence(
+						unistyledFormatterWithFooDefaultInValue1Context('baz'),
+						ASStyle.red('baz')
+					)
+				).toBe(true);
 			});
 
-			it('Empty string', () => {
-				expect(ASText.equivalence(fooUnistyledFormatter()(context1), ASStyle.red('foo'))).toBe(
-					true
-				);
+			it('Without string', () => {
+				expect(
+					ASText.equivalence(unistyledFormatterWithFooDefaultInValue1Context(), ASStyle.red('foo'))
+				).toBe(true);
 			});
 		});
 	});
@@ -129,35 +128,31 @@ describe('ContextFormatter', () => {
 	describe('PaletteBased', () => {
 		describe('Prototype and guards', () => {
 			it('.pipe()', () => {
-				expect(
-					allStandardOriginalColorsFormaterOnContextPos1WithFooDefault.pipe(ASContextFormatter.has)
-				).toBe(true);
+				expect(valuePos1ContextFormatterWithFooDefault.pipe(ASContextFormatter.has)).toBe(true);
 			});
 
 			describe('has', () => {
 				it('Matching', () => {
-					expect(
-						ASContextFormatter.PaletteBased.has(
-							allStandardOriginalColorsFormaterOnContextPos1WithFooDefault
-						)
-					).toBe(true);
+					expect(ASContextFormatter.PaletteBased.has(valuePos1ContextFormatterWithFooDefault)).toBe(
+						true
+					);
 				});
 				it('Non matching', () => {
-					expect(ASContextFormatter.PaletteBased.has(fooUnistyledFormatter)).toBe(false);
+					expect(ASContextFormatter.PaletteBased.has(unistyledFormatterWithFooDefault)).toBe(false);
 				});
 			});
 		});
 
 		describe('.toString()', () => {
 			it('With default text', () => {
-				expect(allStandardOriginalColorsFormaterOnContextPos1WithFooDefault.toString()).toBe(
+				expect(valuePos1ContextFormatterWithFooDefault.toString()).toBe(
 					'Black/Red/Green/Yellow/Blue/Magenta/Cyan/WhitePaletteFormatterOnPos1WithFooAsDefault'
 				);
 			});
 
 			it('Without default text', () => {
 				expect(
-					formatterOnContextPos1({
+					valuePos1ContextFormatter({
 						defaultText: '',
 						palette: ASPalette.allStandardOriginalColors
 					}).toString()
@@ -166,28 +161,28 @@ describe('ContextFormatter', () => {
 		});
 
 		describe('Action', () => {
-			it('With value and context within bounds', () => {
+			it('With string and context within bounds', () => {
 				expect(
 					ASText.equivalence(
-						allStandardOriginalColorsFormaterOnContextPos1WithFooDefault('baz')(context1),
+						valuePos1ContextFormatterWithFooDefaultInValue1Context('baz'),
 						ASStyle.green('baz')
 					)
 				).toBe(true);
 			});
 
-			it('With value with context out of bounds', () => {
+			it('With string with context out of bounds', () => {
 				expect(
 					ASText.equivalence(
-						allStandardOriginalColorsFormaterOnContextPos1WithFooDefault('baz')(context2),
+						valuePos1ContextFormatterWithFooDefaultInValue2Context('baz'),
 						ASStyle.red('baz')
 					)
 				).toBe(true);
 			});
 
-			it('Without value, with context within bounds', () => {
+			it('Without string, with context within bounds', () => {
 				expect(
 					ASText.equivalence(
-						allStandardOriginalColorsFormaterOnContextPos1WithFooDefault()(context1),
+						valuePos1ContextFormatterWithFooDefaultInValue1Context(),
 						ASStyle.green('foo')
 					)
 				).toBe(true);
