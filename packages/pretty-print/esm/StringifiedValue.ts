@@ -7,8 +7,8 @@
 
 import { ASText } from '@parischap/ansi-styles';
 import { MArray, MTypes } from '@parischap/effect-lib';
-import { Array, flow, Function, Option, pipe, Predicate } from 'effect';
-import type * as PPRecordExtremityMarks from './RecordExtremityMarks.js';
+import { Array, flow, Function, pipe, Predicate } from 'effect';
+import type * as PPStringifiedProperties from './StringifiedProperties.js';
 
 /**
  * Type that represents a Stringified
@@ -30,6 +30,14 @@ export const fromText: MTypes.OneArgFunction<ASText.Type, Type> = Array.of;
  * @category Instances
  */
 export const empty: Type = pipe(ASText.empty, fromText);
+
+/**
+ * Builds a StringifiedValue from a StringifiedProperties
+ *
+ * @category Constructors
+ */
+export const fromStringifiedProperties: MTypes.OneArgFunction<PPStringifiedProperties.Type, Type> =
+	Array.match({ onEmpty: Function.constant(empty), onNonEmpty: Array.flatten });
 
 /**
  * Returns a single-line version of `self`
@@ -57,21 +65,15 @@ export const isEmpty: Predicate.Predicate<Type> = MArray.match012({
 export const isNotEmpty: Predicate.Predicate<Type> = Predicate.not(isEmpty);
 
 /**
- * Add extremity marks at the start and end of `self`
+ * Returns a copy of `self` with a mark at the start
  *
  * @category Utils
  */
-export const addExtremityMarks = (
-	extremityMarks: PPRecordExtremityMarks.Type,
-	formatter: ASFormatter.Type
-): MTypes.OneArgFunction<Type> =>
-	flow(
-		Option.match(extremityMarks.start, {
-			onNone: () => Function.identity<Type>,
-			onSome: (start) => Array.prepend(pipe(start, PPString.makeWith(formatter)))<PPString.Type>
-		}),
-		Option.match(extremityMarks.end, {
-			onNone: () => Function.identity<Type>,
-			onSome: (end) => Array.append(pipe(end, PPString.makeWith(formatter)))<PPString.Type>
-		})
-	);
+export const addEndMark = (mark: ASText.Type): MTypes.OneArgFunction<Type> => Array.append(mark);
+
+/**
+ * Returns a copy of `self` with a mark at the end
+ *
+ * @category Utils
+ */
+export const addStartMark = (mark: ASText.Type): MTypes.OneArgFunction<Type> => Array.prepend(mark);

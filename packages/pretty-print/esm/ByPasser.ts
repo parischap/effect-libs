@@ -33,8 +33,8 @@ import {
 	String,
 	Struct
 } from 'effect';
-import * as PPOptionAndPrecalc from './OptionAndPrecalc.js';
 import * as PPStringifiedValue from './StringifiedValue.js';
+import type * as PPStringifier from './Stringifier.js';
 import * as PPValue from './Value.js';
 
 const moduleTag = '@parischap/pretty-print/ByPasser/';
@@ -48,8 +48,8 @@ type TypeId = typeof TypeId;
  */
 export namespace Action {
 	/**
-	 * Type of the action. The action takes as input a TextFormatterBuilder and a MarkShowerBuilder
-	 * (see OptionAndPrecalc.ts) and the Value being currently printed (see Value.ts). If the action
+	 * Type of the action. The action takes as input a TextFormatterBuilder, a MarkShowerBuilder (see
+	 * OptionAndPrecalc.ts) and the Value being currently printed (see Value.ts). If the action
 	 * returns a value of type `Some<StringifiedValue.Type>` or `StringifiedValue.Type`, this
 	 * `StringifiedValue` will be used as is to represent the input value. If it returns a `none` or
 	 * `null` or `undefined`, the normal stringification process will be applied.
@@ -58,8 +58,8 @@ export namespace Action {
 	 */
 	export interface Type {
 		(
-			textFormatterBuilder: PPOptionAndPrecalc.TextFormatterBuilder.Type,
-			markShowerBuilder: PPOptionAndPrecalc.MarkShowerBuilder.Type
+			textFormatterBuilder: PPStringifier.TextFormatterBuilder.Type,
+			markShowerBuilder: PPStringifier.MarkShowerBuilder.Type
 		): MTypes.OneArgFunction<PPValue.All, MOption.OptionOrNullable<PPStringifiedValue.Type>>;
 	}
 }
@@ -148,8 +148,8 @@ export const bypassIfToStringed: Type = make({
 		const functionNameTextFormatter = textFormatterBuilder('functionName');
 		const toStringedObjectTextFormatter = textFormatterBuilder('toStringedObject');
 
-		const functionPrefixMarkShower = markShowerBuilder('functionPrefix');
-		const functionSuffixMarkShower = markShowerBuilder('functionSuffix');
+		const functionNameStartDelimiterMarkShower = markShowerBuilder('functionNameStartDelimiter');
+		const functionNameEndDelimiterMarkShower = markShowerBuilder('functionNameEndDelimiter');
 		const defaultFunctionNameMarkShower = markShowerBuilder('defaultFunctionName');
 
 		return (value) => {
@@ -168,14 +168,14 @@ export const bypassIfToStringed: Type = make({
 						),
 						Option.map(functionNameTextFormatter(value)),
 						Option.getOrElse(pipe(value, defaultFunctionNameMarkShower, Function.constant)),
-						ASText.prepend(functionPrefixMarkShower(value)),
-						ASText.append(functionSuffixMarkShower(value)),
+						ASText.prepend(functionNameStartDelimiterMarkShower(value)),
+						ASText.append(functionNameEndDelimiterMarkShower(value)),
 						PPStringifiedValue.fromText,
 						Option.some
 					)
 				),
 				MMatch.when(
-					MTypes.isNonNullObject,
+					MTypes.isNonPrimitive,
 					flow(
 						MRecord.tryZeroParamStringFunction({
 							functionName: 'toString',

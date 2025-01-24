@@ -5,7 +5,7 @@
 
 import { MArray, MFunction, MPredicate, MTuple, MTypes } from '@parischap/effect-lib';
 import { Array, flow, Number, Option, pipe, Predicate } from 'effect';
-import * as PPOptionAndPrecalc from './OptionAndPrecalc.js';
+import * as PPOption from './Option.js';
 import * as PPValue from './Value.js';
 
 /**
@@ -16,15 +16,15 @@ import * as PPValue from './Value.js';
 export interface Type extends ReadonlyArray<PPValue.All> {}
 
 /**
- * Returns a function that takes a Value.RecordType and returns a Value.All for each of its own and
- * inherited (from the prototypes) properties. Stops when option.maxPrototypeDepth is reached and
- * applies option.propertyFilter
+ * Returns a function that takes a Value.NonPrimitiveType and returns a Value.All for each of its
+ * own and inherited (from the prototypes) properties. Stops when option.maxPrototypeDepth is
+ * reached and applies option.propertyFilter
  *
  * @category Utils
  */
 export const fromRecord = (
-	optionAndPrecalc: PPOptionAndPrecalc.Type
-): MTypes.OneArgFunction<PPValue.RecordType, Type> =>
+	option: PPOption.Type
+): MTypes.OneArgFunction<PPValue.NonPrimitiveType, Type> =>
 	flow(
 		PPValue.incDepth,
 		PPValue.resetProtoDepth,
@@ -44,7 +44,7 @@ export const fromRecord = (
 					PPValue.incProtoDepth,
 					Option.liftPredicate(
 						MPredicate.struct({
-							protoDepth: Number.lessThanOrEqualTo(optionAndPrecalc.option.maxPrototypeDepth)
+							protoDepth: Number.lessThanOrEqualTo(option.maxPrototypeDepth)
 						})
 					),
 					Option.filter(PPValue.isNotNull)
@@ -56,5 +56,5 @@ export const fromRecord = (
 		Array.filter(
 			MPredicate.struct({ stringKey: Predicate.not(MFunction.strictEquals('__proto__')) })
 		),
-		optionAndPrecalc.option.propertyFilter
+		option.propertyFilter
 	);

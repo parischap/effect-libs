@@ -107,19 +107,32 @@ export const defaults: Type = make({
 		['arrayBeyondMaxDepth', { text: '[Array]', partName: 'message' }],
 		['functionBeyondMaxDepth', { text: '(Function)', partName: 'message' }],
 		['objectBeyondMaxDepth', { text: '{Object}', partName: 'message' }],
-		['circularityDetection', { text: '(Circular)', partName: 'message' }],
+		['circularObject', { text: '(Circular)', partName: 'message' }],
 		['stringStartDelimiter', { text: "'", partName: 'stringDelimiters' }],
 		['stringEndDelimiter', { text: "'", partName: 'stringDelimiters' }],
 		['bigIntStartDelimiter', { text: '', partName: 'bigIntDelimiters' }],
 		['bigIntEndDelimiter', { text: 'n', partName: 'bigIntDelimiters' }],
-		['nullValue', { text: 'null', partName: ' relation.citoyen@ville-cachan.fr' }],
+		['nullValue', { text: 'null', partName: 'nullableValue' }],
 		['undefinedValue', { text: 'undefined', partName: 'nullableValue' }],
-		['functionStartDelimiter', { text: '', partName: 'functionNameDelimiters' }],
-		['functionEndDelimiter', { text: '()', partName: 'functionNameDelimiters' }],
+		['functionNameStartDelimiter', { text: '', partName: 'functionNameDelimiters' }],
+		['functionNameEndDelimiter', { text: '()', partName: 'functionNameDelimiters' }],
 		['defaultFunctionName', { text: 'anonymous', partName: 'functionName' }],
 		['keyValueSeparator', { text: ': ', partName: 'keyValueSeparator' }],
 		['prototypeStartDelimiter', { text: '', partName: 'prototypeDelimiters' }],
-		['prototypeEndDelimiter', { text: '@', partName: 'prototypeDelimiters' }]
+		['prototypeEndDelimiter', { text: '@', partName: 'prototypeDelimiters' }],
+		[
+			'singleLineInBetweenPropertySeparator',
+			{ text: ', ', partName: 'inBetweenPropertySeparator' }
+		],
+		['multiLineInBetweenPropertySeparator', { text: ',', partName: 'inBetweenPropertySeparator' }],
+		['singleLineArrayStartDelimiter', { text: '[', partName: 'objectDelimiters' }],
+		['singleLineArrayEndDelimiter', { text: ']', partName: 'objectDelimiters' }],
+		['multiLineArrayStartDelimiter', { text: '[', partName: 'objectDelimiters' }],
+		['multiLineArrayEndDelimiter', { text: ']', partName: 'objectDelimiters' }],
+		['singleLineRecordStartDelimiter', { text: '{ ', partName: 'objectDelimiters' }],
+		['singleLineRecordEndDelimiter', { text: ' }', partName: 'objectDelimiters' }],
+		['multiLineRecordStartDelimiter', { text: '{', partName: 'objectDelimiters' }],
+		['multiLineRecordEndDelimiter', { text: '}', partName: 'objectDelimiters' }]
 	)
 });
 

@@ -1,14 +1,13 @@
 /**
- * Type that is an alias for an array of Stringified's (see Stringified.ts). It represents the
- * output of the stringification process of the properties of a record.
+ * Type that is an alias for an array of StringifiedValue's (see StringifiedValue.ts). It represents
+ * the output of the stringification process of the properties of a record.
  */
 
-import { ASFormatter } from '@parischap/ansi-styles';
-import { MArray } from '@parischap/effect-lib';
+import { ASText } from '@parischap/ansi-styles';
+import { MArray, MTypes } from '@parischap/effect-lib';
 import { flow, pipe } from 'effect';
 import type * as PPIndentMode from './IndentMode.js';
-import * as PPString from './String.js';
-import type * as PPStringifiedValue from './Stringified.js';
+import * as PPStringifiedValue from './StringifiedValue.js';
 
 /**
  * Type that represents a StringifiedValues
@@ -18,19 +17,13 @@ import type * as PPStringifiedValue from './Stringified.js';
 export interface Type extends ReadonlyArray<PPStringifiedValue.Type> {}
 
 /**
- * Adds a seperator at between the stringified properties of a record
+ * Return a copy of `self` with a mark added at the end of each stringified property except the last
+ * one
  *
  * @category Utils
  */
-export const addSeparatorBetweenProps = (
-	propertySeparator: string,
-	formatter: ASFormatter.Type
-): MTypes.OneArgFunction<Type> =>
-	flow(
-		MArray.modifyInit(
-			MArray.modifyLast(PPString.append(pipe(propertySeparator, PPString.makeWith(formatter))))
-		)
-	);
+export const addMarkInBetween = (mark: ASText.Type): MTypes.OneArgFunction<Type> =>
+	flow(MArray.modifyInit(PPStringifiedValue.addEndMark(mark)));
 
 /**
  * Indents the stringified properties of a record

@@ -23,42 +23,14 @@ import {
 	Predicate,
 	Struct
 } from 'effect';
-import * as PPValue from './Value.js';
+import * as PPValueBasedFormatter from './ValueBasedFormatter.js';
 
 export const moduleTag = '@parischap/pretty-print/StyleMap/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
 
-/**
- * Namespace for a ContextFormatter based on the context of a Value
- *
- * @category Models
- */
-export namespace ValueBasedFormatter {
-	/**
-	 * Type of a ValueBasedFormatter
-	 *
-	 * @category Models
-	 */
-	export type Type = ASContextFormatter.Type<PPValue.All>;
-
-	/**
-	 * Constructor of a depth-indexed ValueBasedFormatter
-	 *
-	 * @category Constructors
-	 */
-	export const makeDepthIndexed = (palette: ASPalette.Type): Type =>
-		ASContextFormatter.PaletteBased.make({
-			// Use named function so the name gets printed by the toString function
-			indexFromContext: function valueDepth(value: PPValue.All) {
-				return PPValue.depth(value);
-			},
-			palette
-		});
-}
-
 export namespace Styles {
-	export interface Type extends HashMap.HashMap<string, ValueBasedFormatter.Type> {}
+	export interface Type extends HashMap.HashMap<string, PPValueBasedFormatter.Type> {}
 }
 
 /**
@@ -135,7 +107,7 @@ export const styles: MTypes.OneArgFunction<Type, Styles.Type> = Struct.get('styl
  *
  * @category Destructors
  */
-export const get = (partName: string): MTypes.OneArgFunction<Type, ValueBasedFormatter.Type> =>
+export const get = (partName: string): MTypes.OneArgFunction<Type, PPValueBasedFormatter.Type> =>
 	flow(
 		Struct.get('styles'),
 		HashMap.get(partName),
@@ -161,7 +133,7 @@ export const ansiDarkMode: Type = make({
 		['propertyKeyWhenSymbol', ASContextFormatter.cyan],
 		['propertyKeyWhenOther', ASContextFormatter.red],
 		['inBetweenPropertySeparator', ASContextFormatter.white],
-		['recordDelimiters', ValueBasedFormatter.makeDepthIndexed(ASPalette.allOriginalColors)],
+		['objectDelimiters', PPValueBasedFormatter.makeDepthIndexed(ASPalette.allOriginalColors)],
 		['keyValueSeparator', ASContextFormatter.white],
 		['prototypeDelimiters', ASContextFormatter.green],
 		['multiLineIndent', ASContextFormatter.green],

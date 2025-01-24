@@ -24,7 +24,6 @@ import {
 	Number,
 	Pipeable,
 	Predicate,
-	String,
 	Struct,
 	Types,
 	flow,
@@ -175,7 +174,7 @@ export interface ArrayType extends Type<MTypes.AnyArray> {}
  *
  * @category Models
  */
-export interface RecordType extends Type<MTypes.NonNullObject> {}
+export interface NonPrimitiveType extends Type<MTypes.NonPrimitive> {}
 
 /**
  * Returns the `value` property of `self`
@@ -262,7 +261,8 @@ export const isArray = (self: All): self is ArrayType =>
  *
  * @category Guards
  */
-export const isRecord = (self: All): self is RecordType => pipe(self, isPrimitive, Boolean.not);
+export const isNonPrimitive = (self: All): self is NonPrimitiveType =>
+	pipe(self, isPrimitive, Boolean.not);
 
 /**
  * True if the `value` of `self` is not null
@@ -280,13 +280,6 @@ export const isNotNull = <V extends MTypes.Unknown>(
  */
 export const isFunction = (self: All): self is Type<MTypes.AnyFunction> =>
 	pipe(self, valueCategory, MFunction.strictEquals(MTypes.Category.Type.Function));
-
-/**
- * True if the `value` of `self` belongs to a record
- *
- * @category Predicates
- */
-export const belongsToRecord: Predicate.Predicate<All> = flow(stringKey, String.isNonEmpty);
 
 /**
  * Returns a copy of `self` with `protoDepth` set to 0
@@ -326,16 +319,18 @@ export const incProtoDepth: <V extends MTypes.Unknown>(self: Type<V>) => Type<V>
  *
  * @category Utils
  */
-export const toProto = (self: RecordType): Type<MTypes.NonNullObject | null> =>
+export const toProto = (self: NonPrimitiveType): Type<MTypes.NonPrimitive | null> =>
 	pipe(self, MStruct.evolve({ value: Reflect.getPrototypeOf }), _make);
 
 /**
- * Builds a new Value from a property of an existing RecordType `self` specified by `key`. Only
- * `depth` and `protoDepth` are left unchanged.
+ * Builds a new Value from a property of an existing NonPrimitiveType `self` specified by `key`.
+ * Only `depth` and `protoDepth` are left unchanged.
  *
  * @category Utils
  */
-export const toRecordPropertyBuilder = (self: RecordType): ((key: string | symbol) => All) => {
+export const toRecordPropertyBuilder = (
+	self: NonPrimitiveType
+): ((key: string | symbol) => All) => {
 	const underlying = self.value;
 	const belongsToArray = MTypes.isArray(underlying);
 	return (key) => {
@@ -355,6 +350,3 @@ export const toRecordPropertyBuilder = (self: RecordType): ((key: string | symbo
 		);
 	};
 };
-
-/** @category Destructors */
-const toFormattedKey;

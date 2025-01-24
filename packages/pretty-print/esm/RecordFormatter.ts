@@ -15,20 +15,19 @@ import {
 	Equal,
 	Equivalence,
 	flow,
+	Function,
 	Hash,
 	Number,
 	Order,
 	pipe,
 	Pipeable,
-	Predicate
+	Predicate,
+	Struct
 } from 'effect';
-import * as PPFormatWheel from './FormatWheel.js';
 import * as PPIndentMode from './IndentMode.js';
-import * as PPRecordMarks from './RecordMarks.js';
-import * as PPString from './String.js';
-import * as PPStringifiedValue from './Stringified.js';
-import * as PPStringifiedValues from './StringifiedProperties.js';
-import type * as PPFormatSet from './StyleMap.js';
+import * as PPStringifiedProperties from './StringifiedProperties.js';
+import * as PPStringifiedValue from './StringifiedValue.js';
+import type * as PPStringifier from './Stringifier.js';
 import * as PPValue from './Value.js';
 
 const moduleTag = '@parischap/pretty-print/RecordFormatter/';
@@ -36,13 +35,26 @@ const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
 
 /**
- * Type of the action of a RecordFormatter. `value` is the Value (see Value.ts) representing a
- * record and stringifiedProps is an array of the stringified representations of the properties of
- * that record (see Stringified.ts). Based on these two parameters, it must return a stringified
- * representation of the whole record.
+ * Namespace of a RecordFormatter used as an action
+ *
+ * @category Models
  */
-interface ActionType {
-	(stringifiedProps: PPStringifiedValues.Type): (value: PPValue.All) => PPStringifiedValue.Type;
+export namespace Action {
+	/**
+	 * Type of the action of a RecordFormatter. The action takes as input a TextFormatterBuilder, a
+	 * MarkShowerBuilder (see OptionAndPrecalc.ts), the Value being currently printed (see Value.ts)
+	 * and an array of the stringified properties (see StringifiedProperties.ts). Based on these
+	 * parameters, it must return a stringified representation of the whole record.
+	 */
+	export interface Type {
+		(
+			textFormatterBuilder: PPStringifier.TextFormatterBuilder.Type,
+			markShowerBuilder: PPStringifier.MarkShowerBuilder.Type
+		): (
+			value: PPValue.NonPrimitiveType,
+			children: PPStringifiedProperties.Type
+		) => PPStringifiedValue.Type;
+	}
 }
 
 /**
@@ -50,12 +62,14 @@ interface ActionType {
  *
  * @category Models
  */
-export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
+export interface Type
+	extends Action.Type,
+		Equal.Equal,
+		MInspectable.Inspectable,
+		Pipeable.Pipeable {
 	/** Id of this RecordFormatter instance. Useful for equality and debugging */
 	readonly id: string;
 
-	/** Action of this RecordFormatter. */
-	readonly action: ActionType;
 	/** @internal */
 	readonly [TypeId]: TypeId;
 }
@@ -74,9 +88,9 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
  */
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
 
-/** Prototype */
+/** Base */
 const _TypeIdHash = Hash.hash(TypeId);
-const proto: MTypes.Proto<Type> = {
+const base: MTypes.Proto<Type> = {
 	[TypeId]: TypeId,
 	[Equal.symbol](this: Type, that: unknown): boolean {
 		return has(that) && equivalence(this, that);
@@ -96,55 +110,73 @@ const proto: MTypes.Proto<Type> = {
  *
  * @category Constructors
  */
-export const make = (params: MTypes.Data<Type>): Type =>
-	MTypes.objectFromDataAndProto(proto, params);
+export const make = ({ id, action }: { readonly id: string; readonly action: Action.Type }): Type =>
+	Object.assign(action.bind({}), {
+		id,
+		...base
+	});
 
 /**
- * Returns the `action` of `self`
+ * Returns the `id` property of `self`
  *
  * @category Destructors
  */
-export const action = (self: Type): ActionType => self.action;
+export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
 
 /**
- * Function that returns a RecordFormatter instance that will always print records on a single line
+ * RecordFormatter instance that will always print records on a single line
  *
  * @category Instances
  */
-export const singleLineMaker =
-	(recordMarks: PPRecordMarks.Type) =>
-	(formatSet: PPFormatSet.Type): Type =>
-		make({
-			id: formatSet.id + 'SingleLineWith' + recordMarks.id,
-			action: (stringifiedProps) => (value) =>
+export const singleLine: Type = make({
+	id: 'SingleLine',
+	action: (_textFormatterBuilder, markShowerBuilder) => {
+		const singleLineInBetweenPropertySeparatorMarkShower = markShowerBuilder(
+			'singleLineInBetweenPropertySeparator'
+		);
+		const singleLineArrayStartDelimiterMarkShower = markShowerBuilder(
+			'singleLineArrayStartDelimiter'
+		);
+		const singleLineArrayEndDelimiterMarkShower = markShowerBuilder('singleLineArrayEndDelimiter');
+		const singleLineRecordStartDelimiterMarkShower = markShowerBuilder(
+			'singleLineRecordStartDelimiter'
+		);
+		const singleLineRecordEndDelimiterMarkShower = markShowerBuilder(
+			'singleLineRecordEndDelimiter'
+		);
+
+		return (value, stringifiedProperties) =>
+			pipe(
+				stringifiedProperties,
+				PPStringifiedProperties.addMarkInBetween(
+					singleLineInBetweenPropertySeparatorMarkShower(value)
+				),
+				PPStringifiedValue.fromStringifiedProperties,
 				pipe(
-					stringifiedProps,
-					PPStringifiedValues.addSeparatorBetweenProps(
-						recordMarks.propertySeparator,
-						formatSet.propertySeparatorFormatter
+					value,
+					MMatch.make,
+					MMatch.when(
+						PPValue.isArray,
+						Function.constant(
+							flow(
+								PPStringifiedValue.addStartMark(singleLineArrayStartDelimiterMarkShower(value)),
+								PPStringifiedValue.addEndMark(singleLineArrayEndDelimiterMarkShower(value))
+							)
+						)
 					),
-					Array.flatten,
-					PPStringifiedValue.addExtremityMarks(
-						pipe(
-							value,
-							MMatch.make,
-							MMatch.when(PPValue.isArray, () => recordMarks.arrayMarks),
-							MMatch.orElse(() => recordMarks.objectMarks)
-						),
-						pipe(formatSet.recordDelimitersFormatWheel, PPFormatWheel.getFormat(value.depth))
-					),
-					PPStringifiedValue.toSingleLine
-				)
-		});
-
-/**
- * Alias for `singleLineMaker(PPRecordMarks.singleLine)`
- *
- * @category Instances
- */
-export const singleLine: (formatSet: PPFormatSet.Type) => Type = singleLineMaker(
-	PPRecordMarks.singleLine
-);
+					MMatch.orElse(
+						Function.constant(
+							flow(
+								PPStringifiedValue.addStartMark(singleLineRecordStartDelimiterMarkShower(value)),
+								PPStringifiedValue.addEndMark(singleLineRecordEndDelimiterMarkShower(value))
+							)
+						)
+					)
+				),
+				PPStringifiedValue.toSingleLine
+			);
+	}
+});
 
 /**
  * Function that returns a RecordFormatter instance that will always print records on multiple lines

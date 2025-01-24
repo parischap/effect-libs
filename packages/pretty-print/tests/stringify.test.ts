@@ -74,7 +74,7 @@ describe('pretty-print', () => {
 		});
 		const symbol1 = Symbol.for('symbol1');
 		const symbol2 = Symbol.for('symbol2');
-		const testA = Object.assign(Object.create(testB) as MTypes.NonNullObject, {
+		const testA = Object.assign(Object.create(testB) as MTypes.NonPrimitive, {
 			a: 1,
 			e: () => 42,
 			b: { a: 5, c: [7, 8, { h: [11, 12, 13], a: 9 }] },
