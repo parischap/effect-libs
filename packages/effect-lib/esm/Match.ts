@@ -86,14 +86,14 @@ export const make = <Input>(input: Input): Type<Input, never, Input> =>
  * 	import { pipe } from 'effect';
  *
  * 	const handlePrimitive = (value: MTypes.Primitive) => value;
- * 	const handleNonNullObject = (value: MTypes.NonNullObject) => value;
+ * 	const handleNonPrimitive = (value: MTypes.NonPrimitive) => value;
  *
  * 	export const testMatcher = (value: MTypes.Unknown) =>
  * 		pipe(
  * 			value,
  * 			MMatch.make,
  * 			MMatch.when(MTypes.isPrimitive, handlePrimitive),
- * 			MMatch.when(MTypes.isNonNullObject, handleNonNullObject),
+ * 			MMatch.when(MTypes.isNonPrimitive, handleNonPrimitive),
  * 			MMatch.exhaustive
  * 		);
  */
@@ -353,13 +353,13 @@ export const orElse =
  * 	import { pipe } from 'effect';
  *
  * 	const handlePrimitive = (value: MTypes.Primitive) => value;
- * 	const handleNonNullObject = (value: MTypes.NonNullObject) => value;
+ * 	const handleNonPrimitive = (value: MTypes.NonPrimitive) => value;
  *
  * 	export const testMatcher = (value: unknown) =>
  * 		pipe(
  * 			value,
  * 			MMatch.make,
- * 			MMatch.when(MTypes.isNonNullObject, handleNonNullObject),
+ * 			MMatch.when(MTypes.isNonPrimitive, handleNonPrimitive),
  * 			MMatch.unsafeWhen(MTypes.isPrimitive, handlePrimitive)
  * 		);
  */
@@ -380,14 +380,14 @@ export const unsafeWhen =
  * 	import { pipe } from 'effect';
  *
  * 	const handlePrimitive = (value: MTypes.Primitive) => value;
- * 	const handleNonNullObject = (value: MTypes.NonNullObject) => value;
+ * 	const handleNonPrimitive = (value: MTypes.NonPrimitive) => value;
  *
  * 	export const testMatcher = (value: MTypes.Unknown) =>
  * 		pipe(
  * 			value,
  * 			MMatch.make,
  * 			MMatch.when(MTypes.isPrimitive, handlePrimitive),
- * 			MMatch.when(MTypes.isNonNullObject, handleNonNullObject),
+ * 			MMatch.when(MTypes.isNonPrimitive, handleNonPrimitive),
  * 			MMatch.exhaustive
  * 		);
  */

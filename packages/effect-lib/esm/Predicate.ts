@@ -69,7 +69,7 @@ export type PredicatesToCoverages<T> = {
  *
  * @category Utility types
  */
-export type SourcesToPredicates<T extends MTypes.NonNullObject> = {
+export type SourcesToPredicates<T extends MTypes.NonPrimitive> = {
 	readonly [key in keyof T]: Predicate.Predicate<T[key]>;
 };
 
@@ -80,7 +80,7 @@ export type SourcesToPredicates<T extends MTypes.NonNullObject> = {
  * @category Utils
  */
 export const struct =
-	<O extends MTypes.NonNullObject, F extends Partial<SourcesToPredicates<MTypes.Data<O>>>>(
+	<O extends MTypes.NonPrimitive, F extends Partial<SourcesToPredicates<MTypes.Data<O>>>>(
 		fields: F
 	) =>
 	(

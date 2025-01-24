@@ -11,7 +11,7 @@ import { Predicate } from 'effect';
  *
  * @category Models
  */
-export interface NonNullObject {
+export interface NonPrimitive {
 	readonly [key: string | symbol]: any;
 }
 
@@ -49,7 +49,7 @@ export type Primitive = NonNullablePrimitive | null | undefined;
  *
  * @category Models
  */
-export type Unknown = Primitive | NonNullObject;
+export type Unknown = Primitive | NonPrimitive;
 
 /**
  * Type that represents a function
@@ -223,7 +223,7 @@ type BaseProtoKeys = symbol | 'toString' | 'toJSON' | 'pipe';
  *
  * @category Utility types
  */
-export type Data<T extends NonNullObject, ProtoFunctions extends string | symbol = never> = {
+export type Data<T extends NonPrimitive, ProtoFunctions extends string | symbol = never> = {
 	readonly [k in keyof T as readonly [k] extends readonly [BaseProtoKeys | ProtoFunctions] ? never
 	:	k]: T[k];
 };
@@ -233,7 +233,7 @@ export type Data<T extends NonNullObject, ProtoFunctions extends string | symbol
  *
  * @category Utility types
  */
-export type Proto<T extends NonNullObject, ProtoFunctions extends string | symbol = never> = Omit<
+export type Proto<T extends NonPrimitive, ProtoFunctions extends string | symbol = never> = Omit<
 	T,
 	keyof Data<T, ProtoFunctions>
 >;
@@ -242,7 +242,7 @@ export type Proto<T extends NonNullObject, ProtoFunctions extends string | symbo
  * Utility type that returns all the keys of a record whose value is a function except those which
  * are in the BaseProtoKeys list.
  */
-/*export type NonSymbolicFunctionKeys<T extends NonNullObject> = keyof {
+/*export type NonSymbolicFunctionKeys<T extends NonPrimitive> = keyof {
 	readonly [k in keyof T as readonly [k] extends readonly [BaseProtoKeys] ? never
 	: readonly [T[k]] extends readonly [AnyFunction] ? k
 	: never]: void;
@@ -261,7 +261,7 @@ export type toOneArgFunction<F extends AnyFunction> =
  *
  * @category Utils
  */
-export const objectFromDataAndProto = <P extends NonNullObject, D extends NonNullObject>(
+export const objectFromDataAndProto = <P extends NonPrimitive, D extends NonPrimitive>(
 	proto: P,
 	data: D
 ): P & D => Object.assign(Object.create(proto), data) as P & D;
@@ -286,7 +286,7 @@ export type WithArgType<F, A> =
  *
  * @category Utility types
  */
-/*export type ToPredicates<R extends NonNullObject> = {
+/*export type ToPredicates<R extends NonPrimitive> = {
 	readonly [k in keyof Data<R>]: Predicate.Predicate<R[k]>;
 };*/
 
@@ -295,7 +295,7 @@ export type WithArgType<F, A> =
  *
  * @category Utility types
  */
-export type TupleToIntersection<T extends NonNullObject> =
+export type TupleToIntersection<T extends NonPrimitive> =
 	{
 		readonly [K in keyof T]: (x: T[K]) => void;
 	} extends (
@@ -408,11 +408,11 @@ export const isNotNull = <A>(input: A): input is Exclude<A, null> => input !== n
 export const isFunction = (u: unknown): u is AnyFunction => typeof u === 'function';
 
 /**
- * From `unknown` to `NonNullObject`
+ * From `unknown` to `NonPrimitive`
  *
  * @category Guards
  */
-export const isNonNullObject = (u: unknown): u is NonNullObject =>
+export const isNonPrimitive = (u: unknown): u is NonPrimitive =>
 	u !== null && ['object', 'function'].includes(typeof u);
 
 /**

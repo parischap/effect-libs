@@ -278,6 +278,14 @@ export const length: MTypes.OneArgFunction<Type, number> = flow(
 export const isEmpty: Predicate.Predicate<Type> = flow(length, MFunction.strictEquals(0));
 
 /**
+ * Predicate that returns true if `self` is not empty
+ *
+ * @category Predicates
+ */
+
+export const isNotEmpty: Predicate.Predicate<Type> = Predicate.not(isEmpty);
+
+/**
  * Builds a Text by applying a StyleCharacteristics to some strings and other Text's
  *
  * @category Constructors

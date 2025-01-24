@@ -230,8 +230,8 @@ describe('MMatch', () => {
 					flow(Function.satisfies<MTypes.Primitive>(), Function.constant('a'))
 				),
 				MMatch.unsafeWhen(
-					MTypes.isNonNullObject,
-					flow(Function.satisfies<MTypes.NonNullObject>(), Function.constant('c'))
+					MTypes.isNonPrimitive,
+					flow(Function.satisfies<MTypes.NonPrimitive>(), Function.constant('c'))
 				)
 			);
 			expect(testMatch).toBe('c');

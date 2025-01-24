@@ -103,7 +103,7 @@ export const once = <A>(f: Function.LazyArg<A>): Function.LazyArg<A> => {
  * @category Utils
  */
 export const applyAsMethod =
-	(o: MTypes.NonNullObject) =>
+	(o: MTypes.NonPrimitive) =>
 	<A>(self: Function.LazyArg<A>): A =>
 		self.call(o);
 
