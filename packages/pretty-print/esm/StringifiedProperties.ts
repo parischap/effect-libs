@@ -5,8 +5,7 @@
 
 import { ASText } from '@parischap/ansi-styles';
 import { MArray, MTypes } from '@parischap/effect-lib';
-import { flow, pipe } from 'effect';
-import type * as PPIndentMode from './IndentMode.js';
+import { Array, flow, Function, Number, Order } from 'effect';
 import * as PPStringifiedValue from './StringifiedValue.js';
 
 /**
@@ -26,33 +25,68 @@ export const addMarkInBetween = (mark: ASText.Type): MTypes.OneArgFunction<Type>
 	flow(MArray.modifyInit(PPStringifiedValue.addEndMark(mark)));
 
 /**
- * Indents the stringified properties of a record
+ * Returns a copy of `self` in which each stringified property has been tabified with `tab`
  *
  * @category Utils
  */
-export const indentProps = (
-	indentMode: PPIndentMode.Type,
-	formatter: ASFormatter.Type
-): MTypes.OneArgFunction<Type> =>
+export const tabify = (tab: ASText.Type): MTypes.OneArgFunction<Type> =>
+	Array.map(PPStringifiedValue.prependToAllLines(tab));
+
+/**
+ * Returns a copy of `self` in which `treeIndentForFirstLineOfInitProps` has been prepended to the
+ * first line of all properties but the last, `treeIndentForTailsLinesOfInitProps` has been
+ * prepended to all the lines but the first of all properties but the last,
+ * `treeIndentForFirstLineOfLastProp` has been prepended to the first line of the last property, and
+ * `treeIndentForTailLinesOfLastProp` has been prepended to all the lines but the first of last
+ * property.
+ *
+ * @category Utils
+ */
+export const treeify = ({
+	treeIndentForFirstLineOfInitProps,
+	treeIndentForTailLinesOfInitProps,
+	treeIndentForFirstLineOfLastProp,
+	treeIndentForTailLinesOfLastProp
+}: {
+	readonly treeIndentForFirstLineOfInitProps: ASText.Type;
+	readonly treeIndentForTailLinesOfInitProps: ASText.Type;
+	readonly treeIndentForFirstLineOfLastProp: ASText.Type;
+	readonly treeIndentForTailLinesOfLastProp: ASText.Type;
+}): MTypes.OneArgFunction<Type> =>
 	flow(
 		MArray.modifyInit(
 			flow(
-				MArray.modifyHead(
-					PPString.prepend(pipe(indentMode.initPropFirstLine, PPString.makeWith(formatter)))
-				),
-				MArray.modifyTail(
-					PPString.prepend(pipe(indentMode.initPropTailLines, PPString.makeWith(formatter)))
-				)
+				PPStringifiedValue.prependToFirstLine(treeIndentForFirstLineOfInitProps),
+				PPStringifiedValue.prependToTailLines(treeIndentForTailLinesOfInitProps)
 			)
 		),
 		MArray.modifyLast(
 			flow(
-				MArray.modifyHead(
-					PPString.prepend(pipe(indentMode.lastPropFirstLine, PPString.makeWith(formatter)))
-				),
-				MArray.modifyTail(
-					PPString.prepend(pipe(indentMode.lastPropTailLines, PPString.makeWith(formatter)))
-				)
+				PPStringifiedValue.prependToFirstLine(treeIndentForFirstLineOfLastProp),
+				PPStringifiedValue.prependToTailLines(treeIndentForTailLinesOfLastProp)
 			)
 		)
 	);
+
+/**
+ * Returns the length of `self`
+ *
+ * @category Destructors
+ */
+export const length: MTypes.OneArgFunction<Type, number> = flow(
+	Array.map(PPStringifiedValue.length),
+	Number.sumAll
+);
+
+/**
+ * Returns the length of the longest property of `self`
+ *
+ * @category Destructors
+ */
+export const longestPropLength: MTypes.OneArgFunction<Type, number> = flow(
+	Array.map(PPStringifiedValue.length),
+	Array.match({
+		onEmpty: Function.constant(0),
+		onNonEmpty: Array.max(Order.number)
+	})
+);

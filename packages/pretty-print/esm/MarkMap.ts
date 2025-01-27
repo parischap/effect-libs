@@ -132,7 +132,12 @@ export const defaults: Type = make({
 		['singleLineRecordStartDelimiter', { text: '{ ', partName: 'objectDelimiters' }],
 		['singleLineRecordEndDelimiter', { text: ' }', partName: 'objectDelimiters' }],
 		['multiLineRecordStartDelimiter', { text: '{', partName: 'objectDelimiters' }],
-		['multiLineRecordEndDelimiter', { text: '}', partName: 'objectDelimiters' }]
+		['multiLineRecordEndDelimiter', { text: '}', partName: 'objectDelimiters' }],
+		['tabIndent', { text: '  ', partName: 'indentation' }],
+		['treeIndentForFirstLineOfInitProps', { text: '├─ ', partName: 'indentation' }],
+		['treeIndentForTailLinesOfInitProps', { text: '│  ', partName: 'indentation' }],
+		['treeIndentForFirstLineOfLastProp', { text: '└─ ', partName: 'indentation' }],
+		['treeIndentForTailLinesOfLastProp', { text: '   ', partName: 'indentation' }]
 	)
 });
 

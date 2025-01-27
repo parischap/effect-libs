@@ -136,7 +136,7 @@ export const ansiDarkMode: Type = make({
 		['objectDelimiters', PPValueBasedFormatter.makeDepthIndexed(ASPalette.allOriginalColors)],
 		['keyValueSeparator', ASContextFormatter.white],
 		['prototypeDelimiters', ASContextFormatter.green],
-		['multiLineIndent', ASContextFormatter.green],
+		['indentation', ASContextFormatter.green],
 		['functionName', ASContextFormatter.green],
 		['functionNameDelimiters', ASContextFormatter.green],
 		['toStringedObject', ASContextFormatter.yellow]

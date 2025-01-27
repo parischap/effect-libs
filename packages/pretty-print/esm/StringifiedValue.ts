@@ -6,9 +6,11 @@
  */
 
 import { ASText } from '@parischap/ansi-styles';
-import { MArray, MTypes } from '@parischap/effect-lib';
-import { Array, flow, Function, pipe, Predicate } from 'effect';
+import { MArray, MMatch, MTypes } from '@parischap/effect-lib';
+import { Array, flow, Function, Number, pipe, Predicate } from 'effect';
 import type * as PPStringifiedProperties from './StringifiedProperties.js';
+import type * as PPStringifier from './Stringifier.js';
+import * as PPValue from './Value.js';
 
 /**
  * Type that represents a Stringified
@@ -77,3 +79,69 @@ export const addEndMark = (mark: ASText.Type): MTypes.OneArgFunction<Type> => Ar
  * @category Utils
  */
 export const addStartMark = (mark: ASText.Type): MTypes.OneArgFunction<Type> => Array.prepend(mark);
+
+export const addNonPrimitiveMarks =
+	({
+		arrayStartDelimiterMarkShower,
+		arrayEndDelimiterMarkShower,
+		recordStartDelimiterMarkShower,
+		recordEndDelimiterMarkShower
+	}: {
+		readonly arrayStartDelimiterMarkShower: PPStringifier.MarkShower.Type;
+		readonly arrayEndDelimiterMarkShower: PPStringifier.MarkShower.Type;
+		readonly recordStartDelimiterMarkShower: PPStringifier.MarkShower.Type;
+		readonly recordEndDelimiterMarkShower: PPStringifier.MarkShower.Type;
+	}) =>
+	(value: PPValue.NonPrimitiveType): MTypes.OneArgFunction<Type> =>
+		flow(
+			addStartMark(
+				pipe(
+					value,
+					MMatch.make,
+					MMatch.when(PPValue.isArray, Function.constant(arrayStartDelimiterMarkShower(value))),
+					MMatch.orElse(Function.constant(recordStartDelimiterMarkShower(value)))
+				)
+			),
+			addEndMark(
+				pipe(
+					value,
+					MMatch.make,
+					MMatch.when(PPValue.isArray, Function.constant(arrayEndDelimiterMarkShower(value))),
+					MMatch.orElse(Function.constant(recordEndDelimiterMarkShower(value)))
+				)
+			)
+		);
+
+/**
+ * Returns a copy of `self` in which `text` has been prepended to each line
+ *
+ * @category Utils
+ */
+export const prependToAllLines = (text: ASText.Type): MTypes.OneArgFunction<Type> =>
+	Array.map(ASText.prepend(text));
+
+/**
+ * Returns a copy of `self` in which `text` has been prepended to the first line
+ *
+ * @category Utils
+ */
+export const prependToFirstLine = (text: ASText.Type): MTypes.OneArgFunction<Type> =>
+	Array.modifyNonEmptyHead(ASText.prepend(text));
+
+/**
+ * Returns a copy of `self` in which `text` has been prepended to all lines but the first
+ *
+ * @category Utils
+ */
+export const prependToTailLines = (text: ASText.Type): MTypes.OneArgFunction<Type> =>
+	MArray.modifyTail(ASText.prepend(text));
+
+/**
+ * Returns the length of `self`
+ *
+ * @category Destructors
+ */
+export const length: MTypes.OneArgFunction<Type, number> = flow(
+	Array.map(ASText.length),
+	Number.sumAll
+);
