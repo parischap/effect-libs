@@ -337,8 +337,8 @@ export const modifyTail =
  * @category Utils
  */
 export const modifyLast =
-	<A, B>(f: (a: A) => B) =>
-	(self: ReadonlyArray<A>): Array<A | B> =>
+	<S extends MTypes.AnyReadonlyArray, B>(f: (a: Array.ReadonlyArray.Infer<S>) => B) =>
+	(self: S): Array.ReadonlyArray.With<S, Array.ReadonlyArray.Infer<S> | B> =>
 		Array.modify(self, self.length - 1, f);
 
 /**
@@ -348,8 +348,8 @@ export const modifyLast =
  * @category Utils
  */
 export const modifyHead =
-	<A, B>(f: (a: A) => B) =>
-	(self: ReadonlyArray<A>): Array<A | B> =>
+	<S extends MTypes.AnyReadonlyArray, B>(f: (a: Array.ReadonlyArray.Infer<S>) => B) =>
+	(self: S): Array.ReadonlyArray.With<S, Array.ReadonlyArray.Infer<S> | B> =>
 		Array.modify(self, 0, f);
 
 /**
