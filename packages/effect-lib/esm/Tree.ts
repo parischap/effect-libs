@@ -27,6 +27,7 @@ import {
 	Types
 } from 'effect';
 import * as MArray from './Array.js';
+import * as MFunction from './Function.js';
 import * as MInspectable from './Inspectable.js';
 import * as MMatch from './Match.js';
 import * as MPipeable from './Pipeable.js';
@@ -208,25 +209,29 @@ const proto: MTypes.Proto<Type<any, any>> = {
 
 const _unfold =
 	<S, A, B>(
-		f: (seed: S, isCyclical: boolean) => Either.Either<MTypes.Pair<A, ReadonlyArray<S>>, B>
+		f: (
+			seed: S,
+			cyclicalRef: Option.Option<A>
+		) => Either.Either<MTypes.Pair<A, ReadonlyArray<S>>, B>
 	) =>
-	(seed: S): MTypes.OverOne<_Type<A, B>> => {
+	(seed: S): MTypes.OverOne<Type<A, B>> => {
 		const dontHandleCycles = MTypes.isOneArgFunction(f);
 
 		return pipe(
 			Array.of(
 				Leaf.make(
 					// MArray.unfold cycle detection will not work here. So we have to reimplement it
-					Tuple.make(seed, Array.empty<S>())
+					Tuple.make(seed, Array.empty<S>(), Array.empty<A>())
 				)
 			),
 			MArray.unfoldNonEmpty(
 				flow(
 					Array.map((node) => {
-						const [currentSeed, predecessors] = node.value;
-						const isCyclical = Array.contains(predecessors, currentSeed);
+						const [currentSeed, predecessors, predecessorsValue] = node.value;
+						const index = Array.findFirstIndex(predecessors, MFunction.strictEquals(currentSeed));
+
 						return pipe(
-							f(currentSeed, isCyclical),
+							f(currentSeed, pipe(index, Option.map(MArray.unsafeGetter(predecessorsValue)))),
 							Either.mapBoth({
 								onLeft: (nextValue) =>
 									pipe(
@@ -242,7 +247,10 @@ const _unfold =
 										Leaf.make(
 											Tuple.make(
 												seed,
-												dontHandleCycles ? predecessors : Array.append(predecessors, currentSeed)
+												dontHandleCycles ? predecessors : Array.append(predecessors, currentSeed),
+												dontHandleCycles ? predecessorsValue : (
+													Array.append(predecessorsValue, nextValue)
+												)
 											)
 										)
 									);
@@ -271,15 +279,19 @@ const _unfold =
 
 /**
  * Non recursive function that builds a (possibly infinite) tree from a seed value and an unfold
- * function. Cycle detection based on equality of the seeds (type S) reported to the unfold
- * function.
+ * function. A cycle is reported when a seed has itself as a direct parent. In that case, function
+ * `f` receives as `cyclicalRef` argument a `some` of the tree node that was created from that
+ * seed.
  *
  * @category Constructors
  */
 
 export const unfold =
 	<S, A, B>(
-		f: (seed: S, isCyclical: boolean) => Either.Either<MTypes.Pair<A, ReadonlyArray<S>>, B>
+		f: (
+			seed: S,
+			cyclicalRef: Option.Option<A>
+		) => Either.Either<MTypes.Pair<A, ReadonlyArray<S>>, B>
 	) =>
 	(seed: S): Type<A, B> =>
 		pipe(seed, _unfold(f), Array.headNonEmpty);
@@ -287,21 +299,22 @@ export const unfold =
 /**
  * Non recursive function that builds a (possibly infinite) tree from a seed value and an unfold
  * function, then applies a function f to the value of each node and the result of applying f to the
- * children of the node (see fold below). Cycle detection based on equality of the seeds (type S)
- * reported to the unfold function.
+ * children of the node (see fold below). A cycle is reported when a seed has itself as a direct
+ * parent. In that case, function `unfold` receives as `cyclicalRef` argument a `some` of the tree
+ * node that wad created from that seed.
  *
  * @category Constructors
  */
 
 export const unfoldAndFold =
-	<S, A, B, C>({
+	<A, B, S = A, C = B>({
 		unfold,
 		foldNonLeaf,
 		foldLeaf
 	}: {
 		readonly unfold: (
 			seed: S,
-			isCyclical: boolean
+			cyclicalRef: Option.Option<A>
 		) => Either.Either<MTypes.Pair<A, ReadonlyArray<S>>, B>;
 		readonly foldNonLeaf: (value: A, children: ReadonlyArray<B>) => C;
 		readonly foldLeaf: (value: B) => C;

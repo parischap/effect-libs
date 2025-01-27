@@ -145,3 +145,11 @@ export const length: MTypes.OneArgFunction<Type, number> = flow(
 	Array.map(ASText.length),
 	Number.sumAll
 );
+
+/**
+ * Returns the ANSI string corresponding to self
+ *
+ * @category Destructors
+ */
+export const toAnsiString = (sep = '\n'): MTypes.OneArgFunction<Type, string> =>
+	flow(Array.map(ASText.toAnsiString), Array.join(sep));

@@ -15,7 +15,7 @@ import {
 } from 'effect';
 import { describe, expect, it } from 'vitest';
 
-/* Tries to split a string by the provided separator `sep`. If the split yields at least two elements returns a right of a some of a tuple containing the separator and an array containing the trimmed split strings. Otherwise, returns a none */
+/* Tries to split a string by the provided separator `sep`. If the split yields at least two elements, returns a some of a right of a tuple containing the separator and an array of the split elements. Otherwise, returns a none */
 const splitBy = <S extends string>(
 	sep: S
 ): MTypes.OneArgFunction<

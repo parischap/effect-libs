@@ -5,7 +5,17 @@
 
 import { ASText } from '@parischap/ansi-styles';
 import { MFunction, MMatch, MOption, MString, MTree, MTuple, MTypes } from '@parischap/effect-lib';
-import { Array, Either, flow, Function, HashMap, Number, Option, pipe } from 'effect';
+import {
+	Array,
+	Either,
+	flow,
+	Function,
+	HashMap,
+	MutableHashMap,
+	Number,
+	Option,
+	pipe
+} from 'effect';
 import * as PPOption from './Option.js';
 import * as PPProperties from './Properties.js';
 import * as PPStringifiedValue from './StringifiedValue.js';
@@ -108,102 +118,129 @@ export const make = (option: PPOption.Type): Type => {
 	const stringValueTextFormatter = textFormatterBuilder('stringValue');
 	const otherValueTextFormatter = textFormatterBuilder('otherValue');
 	const symbolValueTextFormatter = textFormatterBuilder('symbolValue');
+	const messageTextFormatter = textFormatterBuilder('message');
 
-	const circularityDetectionMarkShower = markShowerBuilder('circularObject');
 	const stringStartDelimiterMarkShower = markShowerBuilder('stringStartDelimiter');
 	const stringEndDelimiterMarkShower = markShowerBuilder('stringEndDelimiter');
 	const nullValueMarkShower = markShowerBuilder('nullValue');
 	const undefinedValueMarkShower = markShowerBuilder('undefinedValue');
 	const bigIntStartDelimiterMarkShower = markShowerBuilder('bigIntStartDelimiter');
 	const bigIntEndDelimiterMarkShower = markShowerBuilder('bigIntEndDelimiter');
+	const circularityMarkShower = markShowerBuilder('circularObject');
+	const circularReferenceStartDelimiterMarkShower = markShowerBuilder(
+		'circularReferenceStartDelimiter'
+	);
+	const circularReferenceEndDelimiterMarkShower = markShowerBuilder(
+		'circularReferenceEndDelimiter'
+	);
 	const arrayBeyondMaxDepthMarkShower = markShowerBuilder('arrayBeyondMaxDepth');
 	const functionBeyondMaxDepthMarkShower = markShowerBuilder('functionBeyondMaxDepth');
 	const objectBeyondMaxDepthMarkShower = markShowerBuilder('objectBeyondMaxDepth');
+	const messageStartDelimiterMarkShower = markShowerBuilder('messageStartDelimiter');
+	const messageEndDelimiterMarkShower = markShowerBuilder('messageEndDelimiter');
 
 	const byPasser = option.byPasser(textFormatterBuilder, markShowerBuilder);
 	const propertyFormatter = option.propertyFormatter(textFormatterBuilder, markShowerBuilder);
 	const recordFormatter = option.recordFormatter(textFormatterBuilder, markShowerBuilder);
 	const fromRecord = PPProperties.fromRecord(option);
 
+	let lastCyclicalIndex = 1;
+	const cyclicalMap = MutableHashMap.empty<PPValue.NonPrimitiveType, number>();
+
 	return flow(
 		PPValue.makeFromTopValue,
-		MTree.unfoldAndFold({
-			unfold: (seed, isCyclical) => {
-				const stringifiedValue =
-					isCyclical ?
-						pipe(seed, circularityDetectionMarkShower, PPStringifiedValue.fromText, Either.left)
-					:	pipe(
-							seed,
-							MMatch.make,
-							MMatch.tryFunction(
-								flow(byPasser, MOption.fromOptionOrNullable, Option.map(Either.left))
-							),
-							MMatch.when(
-								PPValue.isPrimitive,
-								flow(
-									PPValue.value<MTypes.Primitive>,
+		MTree.unfoldAndFold<PPValue.NonPrimitiveType, PPStringifiedValue.Type, PPValue.All>({
+			unfold: (seed, cyclicalRef) =>
+				pipe(
+					seed,
+					MMatch.make,
+					MMatch.tryFunction(flow(byPasser, MOption.fromOptionOrNullable, Option.map(Either.left))),
+					MMatch.when(
+						PPValue.isPrimitive,
+						flow(
+							PPValue.value<MTypes.Primitive>,
+							flow(
+								MMatch.make,
+								MMatch.when(
+									MTypes.isString,
 									flow(
-										MMatch.make,
-										MMatch.when(
-											MTypes.isString,
-											flow(
-												stringValueTextFormatter(seed),
-												ASText.prepend(stringStartDelimiterMarkShower(seed)),
-												ASText.append(stringEndDelimiterMarkShower(seed))
-											)
-										),
-										MMatch.whenOr(
-											MTypes.isNumber,
-											MTypes.isBoolean,
-											flow(MString.fromNonNullablePrimitive, otherValueTextFormatter(seed))
-										),
-										MMatch.when(MTypes.isNull, pipe(seed, nullValueMarkShower, Function.constant)),
-										MMatch.when(
-											MTypes.isUndefined,
-											pipe(seed, undefinedValueMarkShower, Function.constant)
-										),
-										MMatch.when(
-											MTypes.isBigInt,
-											flow(
-												MString.fromNonNullablePrimitive,
-												otherValueTextFormatter(seed),
-												ASText.prepend(bigIntStartDelimiterMarkShower(seed)),
-												ASText.append(bigIntEndDelimiterMarkShower(seed))
-											)
-										),
-										MMatch.when(
-											MTypes.isSymbol,
-											flow(MString.fromNonNullablePrimitive, symbolValueTextFormatter(seed))
-										),
-										MMatch.exhaustive
-									),
-									PPStringifiedValue.fromText,
-									Either.left
-								)
+										stringValueTextFormatter(seed),
+										ASText.prepend(stringStartDelimiterMarkShower(seed)),
+										ASText.append(stringEndDelimiterMarkShower(seed))
+									)
+								),
+								MMatch.whenOr(
+									MTypes.isNumber,
+									MTypes.isBoolean,
+									flow(MString.fromNonNullablePrimitive, otherValueTextFormatter(seed))
+								),
+								MMatch.when(MTypes.isNull, pipe(seed, nullValueMarkShower, Function.constant)),
+								MMatch.when(
+									MTypes.isUndefined,
+									pipe(seed, undefinedValueMarkShower, Function.constant)
+								),
+								MMatch.when(
+									MTypes.isBigInt,
+									flow(
+										MString.fromNonNullablePrimitive,
+										otherValueTextFormatter(seed),
+										ASText.prepend(bigIntStartDelimiterMarkShower(seed)),
+										ASText.append(bigIntEndDelimiterMarkShower(seed))
+									)
+								),
+								MMatch.when(
+									MTypes.isSymbol,
+									flow(MString.fromNonNullablePrimitive, symbolValueTextFormatter(seed))
+								),
+								MMatch.exhaustive
+							),
+							PPStringifiedValue.fromText,
+							Either.left
+						)
+					),
+					MMatch.when(
+						flow(PPValue.depth, Number.greaterThanOrEqualTo(option.maxDepth)),
+						flow(
+							MMatch.make,
+							MMatch.when(
+								PPValue.isArray,
+								pipe(seed, arrayBeyondMaxDepthMarkShower, Function.constant)
 							),
 							MMatch.when(
-								flow(PPValue.depth, Number.greaterThanOrEqualTo(option.maxDepth)),
-								flow(
-									MMatch.make,
-									MMatch.when(
-										PPValue.isArray,
-										pipe(seed, arrayBeyondMaxDepthMarkShower, Function.constant)
-									),
-									MMatch.when(
-										flow(
-											PPValue.valueCategory,
-											MFunction.strictEquals(MTypes.Category.Type.Function)
-										),
-										pipe(seed, functionBeyondMaxDepthMarkShower, Function.constant)
-									),
-									MMatch.orElse(pipe(seed, objectBeyondMaxDepthMarkShower, Function.constant)),
+								flow(PPValue.valueCategory, MFunction.strictEquals(MTypes.Category.Type.Function)),
+								pipe(seed, functionBeyondMaxDepthMarkShower, Function.constant)
+							),
+							MMatch.orElse(pipe(seed, objectBeyondMaxDepthMarkShower, Function.constant)),
+							ASText.prepend(messageStartDelimiterMarkShower(seed)),
+							ASText.append(messageEndDelimiterMarkShower(seed)),
+							PPStringifiedValue.fromText,
+							Either.left
+						)
+					),
+					MMatch.unsafeWhen(PPValue.isNonPrimitive, (nonPrimitiveValue) =>
+						pipe(
+							cyclicalRef,
+							Option.map((cyclicalValue) =>
+								pipe(
+									cyclicalMap,
+									MutableHashMap.get(cyclicalValue),
+									Option.getOrElse(() => {
+										/* eslint-disable-next-line functional/no-expression-statements */
+										MutableHashMap.set(cyclicalMap, cyclicalValue, lastCyclicalIndex);
+										return lastCyclicalIndex++;
+									}),
+									MString.fromNonNullablePrimitive,
+									messageTextFormatter(seed),
+									ASText.prepend(circularityMarkShower(seed)),
+									ASText.prepend(messageStartDelimiterMarkShower(seed)),
+									ASText.append(messageEndDelimiterMarkShower(seed)),
 									PPStringifiedValue.fromText,
 									Either.left
 								)
 							),
-							MMatch.unsafeWhen(
-								PPValue.isNonPrimitive,
-								flow(
+							Option.getOrElse(
+								pipe(
+									nonPrimitiveValue,
 									MTuple.makeBothBy({
 										toFirst: Function.identity,
 										toSecond: flow(
@@ -221,15 +258,33 @@ export const make = (option: PPOption.Type): Type => {
 											)
 										)
 									}),
-									Either.right
+									Either.right,
+									Function.constant
 								)
 							)
-						);
-
-				return stringifiedValue;
-			},
+						)
+					)
+				),
 			foldNonLeaf: (value, children) =>
-				pipe(children, recordFormatter(value), propertyFormatter(value)),
+				pipe(
+					children,
+					recordFormatter(value),
+					pipe(
+						cyclicalMap,
+						MutableHashMap.get(value),
+						Option.map(
+							flow(
+								MString.fromNonNullablePrimitive,
+								messageTextFormatter(value),
+								ASText.prepend(circularReferenceStartDelimiterMarkShower(value)),
+								ASText.append(circularReferenceEndDelimiterMarkShower(value)),
+								PPStringifiedValue.prependToFirstLine
+							)
+						),
+						Option.getOrElse(Function.constant(Function.identity))
+					),
+					propertyFormatter(value)
+				),
 			foldLeaf: Function.identity
 		})
 	);

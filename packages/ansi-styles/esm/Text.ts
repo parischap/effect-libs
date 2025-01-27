@@ -341,6 +341,13 @@ export const concat: (...elems: ReadonlyArray<string | Type>) => Type = fromStyl
 export const empty: Type = concat();
 
 /**
+ * A Text instance that represents a linebreak
+ *
+ * @category Instances
+ */
+export const lineBreak: Type = concat(`\n`);
+
+/**
  * Builds a Text from a string withoout applying any style
  *
  * @category Constructors

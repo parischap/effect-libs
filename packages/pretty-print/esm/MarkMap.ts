@@ -104,10 +104,14 @@ export const marks: MTypes.OneArgFunction<Type, Marks.Type> = Struct.get('marks'
 export const defaults: Type = make({
 	id: 'Defaults',
 	marks: HashMap.make(
-		['arrayBeyondMaxDepth', { text: '[Array]', partName: 'message' }],
-		['functionBeyondMaxDepth', { text: '(Function)', partName: 'message' }],
-		['objectBeyondMaxDepth', { text: '{Object}', partName: 'message' }],
-		['circularObject', { text: '(Circular)', partName: 'message' }],
+		['arrayBeyondMaxDepth', { text: 'Array', partName: 'message' }],
+		['functionBeyondMaxDepth', { text: 'Function', partName: 'message' }],
+		['objectBeyondMaxDepth', { text: 'Object', partName: 'message' }],
+		['circularObject', { text: 'Circular *', partName: 'message' }],
+		['messageStartDelimiter', { text: '[', partName: 'message' }],
+		['messageEndDelimiter', { text: ']', partName: 'message' }],
+		['circularReferenceStartDelimiter', { text: '<Ref *', partName: 'message' }],
+		['circularReferenceEndDelimiter', { text: '>', partName: 'message' }],
 		['stringStartDelimiter', { text: "'", partName: 'stringDelimiters' }],
 		['stringEndDelimiter', { text: "'", partName: 'stringDelimiters' }],
 		['bigIntStartDelimiter', { text: '', partName: 'bigIntDelimiters' }],
