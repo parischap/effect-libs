@@ -353,6 +353,23 @@ describe('MArray', () => {
 		});
 	});
 
+	describe('firstSomeResult', () => {
+		const f = Option.liftPredicate(Number.greaterThanOrEqualTo(3));
+		it('Empty array', () => {
+			expect(pipe(Array.empty(), MArray.firstSomeResult(f), Option.isNone)).toBe(true);
+		});
+
+		it('Array with matching element', () => {
+			expect(
+				Equal.equals(pipe(Array.make(1, 2, 3, 4), MArray.firstSomeResult(f)), Option.some(3))
+			).toBe(true);
+		});
+
+		it('Array with no matching element', () => {
+			expect(pipe(Array.make(1, 2, 2, 1), MArray.firstSomeResult(f), Option.isNone)).toBe(true);
+		});
+	});
+
 	describe('mergeSorted', () => {
 		class A implements Equal.Equal {
 			constructor(

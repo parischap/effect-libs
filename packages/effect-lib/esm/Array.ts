@@ -407,6 +407,22 @@ export const splitNonEmptyAtFromRight =
 		pipe(self, splitAtFromRight(n)) as never;
 
 /**
+ * Applies a function `f` that returns an option to each element of `self`. Returns the first `some`
+ * encountered if any. Returns `none` otherwise.
+ *
+ * @category Destructors
+ */
+export const firstSomeResult =
+	<A, B>(f: (a: NoInfer<A>) => Option.Option<B>) =>
+	(self: Iterable<A>): Option.Option<B> => {
+		for (const a of self) {
+			const b = f(a);
+			if (Option.isSome(b)) return b;
+		}
+		return Option.none();
+	};
+
+/**
  * Merges two sorted Iterables into a sorted array. Elements in `self` are assured to be before
  * equal elements in `that` in the resulting array. The sorting order `o` must also be the one that
  * was used to sort `self` and `that`
