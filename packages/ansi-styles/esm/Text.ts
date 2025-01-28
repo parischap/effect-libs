@@ -398,7 +398,7 @@ export const append =
 		concat(self, that);
 
 /**
- * Builds a new String by appending `self` to `that`
+ * Builds a new Text by prepending `that` to `self`
  *
  * @category Utils
  */
@@ -406,6 +406,14 @@ export const prepend =
 	(that: Type) =>
 	(self: Type): Type =>
 		concat(that, self);
+
+/**
+ * Builds a new Text by prepending `startText` and appending 'endText' to `self`
+ *
+ * @category Utils
+ */
+export const surround = (startText: Type, endText: Type): MTypes.OneArgFunction<Type> =>
+	flow(prepend(startText), append(endText));
 
 /**
  * Builds a new Text by joining all passed Texts and adding `self` as separator in between
