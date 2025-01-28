@@ -4,7 +4,16 @@
  */
 
 import { ASText } from '@parischap/ansi-styles';
-import { MFunction, MMatch, MOption, MString, MTree, MTuple, MTypes } from '@parischap/effect-lib';
+import {
+	MArray,
+	MFunction,
+	MMatch,
+	MOption,
+	MString,
+	MTree,
+	MTuple,
+	MTypes
+} from '@parischap/effect-lib';
 import {
 	Array,
 	Either,
@@ -14,7 +23,8 @@ import {
 	MutableHashMap,
 	Number,
 	Option,
-	pipe
+	pipe,
+	String
 } from 'effect';
 import * as PPOption from './Option.js';
 import * as PPProperties from './Properties.js';
@@ -22,6 +32,7 @@ import * as PPStringifiedValue from './StringifiedValue.js';
 import * as PPStyleMap from './StyleMap.js';
 import * as PPValue from './Value.js';
 import * as PPValueBasedFormatter from './ValueBasedFormatter.js';
+import { PPByPasser } from './index.js';
 
 /**
  * Namespace of a TextFormatterBuilder
@@ -122,6 +133,7 @@ export const make = (option: PPOption.Type): Type => {
 
 	const stringStartDelimiterMarkShower = markShowerBuilder('stringStartDelimiter');
 	const stringEndDelimiterMarkShower = markShowerBuilder('stringEndDelimiter');
+	const stringOverflowSuffixMarkShower = markShowerBuilder('stringOverflowSuffix');
 	const nullValueMarkShower = markShowerBuilder('nullValue');
 	const undefinedValueMarkShower = markShowerBuilder('undefinedValue');
 	const bigIntStartDelimiterMarkShower = markShowerBuilder('bigIntStartDelimiter');
@@ -134,15 +146,23 @@ export const make = (option: PPOption.Type): Type => {
 		'circularReferenceEndDelimiter'
 	);
 	const arrayBeyondMaxDepthMarkShower = markShowerBuilder('arrayBeyondMaxDepth');
-	const functionBeyondMaxDepthMarkShower = markShowerBuilder('functionBeyondMaxDepth');
 	const objectBeyondMaxDepthMarkShower = markShowerBuilder('objectBeyondMaxDepth');
 	const messageStartDelimiterMarkShower = markShowerBuilder('messageStartDelimiter');
 	const messageEndDelimiterMarkShower = markShowerBuilder('messageEndDelimiter');
 
-	const byPasser = option.byPasser(textFormatterBuilder, markShowerBuilder);
+	const byPassers = Array.map(option.byPassers, (byPasser) =>
+		byPasser(textFormatterBuilder, markShowerBuilder)
+	);
+	const byPasser = (seed: PPValue.All) =>
+		pipe(
+			byPassers,
+			MArray.firstSomeResult(flow(Function.apply(seed), MOption.fromOptionOrNullable)),
+			Option.map(Either.left)
+		);
 	const propertyFormatter = option.propertyFormatter(textFormatterBuilder, markShowerBuilder);
 	const recordFormatter = option.recordFormatter(textFormatterBuilder, markShowerBuilder);
 	const fromRecord = PPProperties.fromRecord(option);
+	const functionToNameByPasser = PPByPasser.functionToName(textFormatterBuilder, markShowerBuilder);
 
 	let lastCyclicalIndex = 1;
 	const cyclicalMap = MutableHashMap.empty<PPValue.NonPrimitiveType, number>();
@@ -154,7 +174,7 @@ export const make = (option: PPOption.Type): Type => {
 				pipe(
 					seed,
 					MMatch.make,
-					MMatch.tryFunction(flow(byPasser, MOption.fromOptionOrNullable, Option.map(Either.left))),
+					MMatch.tryFunction(byPasser),
 					MMatch.when(
 						PPValue.isPrimitive,
 						flow(
@@ -164,9 +184,23 @@ export const make = (option: PPOption.Type): Type => {
 								MMatch.when(
 									MTypes.isString,
 									flow(
-										stringValueTextFormatter(seed),
-										ASText.prepend(stringStartDelimiterMarkShower(seed)),
-										ASText.append(stringEndDelimiterMarkShower(seed))
+										Either.liftPredicate(
+											flow(String.length, Number.greaterThan(option.maxStringLength)),
+											Function.identity
+										),
+										Either.mapBoth({
+											onLeft: stringValueTextFormatter(seed),
+											onRight: flow(
+												String.takeLeft(option.maxStringLength),
+												stringValueTextFormatter(seed),
+												ASText.append(stringOverflowSuffixMarkShower(seed))
+											)
+										}),
+										Either.merge,
+										ASText.surround(
+											stringStartDelimiterMarkShower(seed),
+											stringEndDelimiterMarkShower(seed)
+										)
 									)
 								),
 								MMatch.whenOr(
@@ -184,8 +218,10 @@ export const make = (option: PPOption.Type): Type => {
 									flow(
 										MString.fromNonNullablePrimitive,
 										otherValueTextFormatter(seed),
-										ASText.prepend(bigIntStartDelimiterMarkShower(seed)),
-										ASText.append(bigIntEndDelimiterMarkShower(seed))
+										ASText.surround(
+											bigIntStartDelimiterMarkShower(seed),
+											bigIntEndDelimiterMarkShower(seed)
+										)
 									)
 								),
 								MMatch.when(
@@ -204,16 +240,26 @@ export const make = (option: PPOption.Type): Type => {
 							MMatch.make,
 							MMatch.when(
 								PPValue.isArray,
-								pipe(seed, arrayBeyondMaxDepthMarkShower, Function.constant)
+								flow(
+									arrayBeyondMaxDepthMarkShower,
+									ASText.surround(
+										messageStartDelimiterMarkShower(seed),
+										messageEndDelimiterMarkShower(seed)
+									),
+									PPStringifiedValue.fromText
+								)
 							),
-							MMatch.when(
-								flow(PPValue.valueCategory, MFunction.strictEquals(MTypes.Category.Type.Function)),
-								pipe(seed, functionBeyondMaxDepthMarkShower, Function.constant)
+							MMatch.tryFunction(flow(functionToNameByPasser, MOption.fromOptionOrNullable)),
+							MMatch.orElse(
+								flow(
+									objectBeyondMaxDepthMarkShower,
+									ASText.surround(
+										messageStartDelimiterMarkShower(seed),
+										messageEndDelimiterMarkShower(seed)
+									),
+									PPStringifiedValue.fromText
+								)
 							),
-							MMatch.orElse(pipe(seed, objectBeyondMaxDepthMarkShower, Function.constant)),
-							ASText.prepend(messageStartDelimiterMarkShower(seed)),
-							ASText.append(messageEndDelimiterMarkShower(seed)),
-							PPStringifiedValue.fromText,
 							Either.left
 						)
 					),

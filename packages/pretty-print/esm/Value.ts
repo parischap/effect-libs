@@ -170,6 +170,13 @@ export interface PrimitiveType extends Type<MTypes.Primitive> {}
 export interface ArrayType extends Type<MTypes.AnyArray> {}
 
 /**
+ * Type that represents a function in its stringification context
+ *
+ * @category Models
+ */
+export interface FunctionType extends Type<MTypes.AnyFunction> {}
+
+/**
  * Type that represents a record in its stringification context
  *
  * @category Models
@@ -278,7 +285,7 @@ export const isNotNull = <V extends MTypes.Unknown>(
  *
  * @category Guards
  */
-export const isFunction = (self: All): self is Type<MTypes.AnyFunction> =>
+export const isFunction = (self: All): self is FunctionType =>
 	pipe(self, valueCategory, MFunction.strictEquals(MTypes.Category.Type.Function));
 
 /**

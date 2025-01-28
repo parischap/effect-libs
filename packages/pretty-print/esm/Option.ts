@@ -52,6 +52,12 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
 	readonly maxPrototypeDepth: number;
 
 	/**
+	 * Maximal number of characters to show for a string. A string will be truncated only if it has
+	 * strictly more characters than `maxStringLength`
+	 */
+	readonly maxStringLength: number;
+
+	/**
 	 * `ValueOrder` instance: allows you to specify how to sort properties when printing records (see
 	 * ValueOrder.ts)
 	 */
@@ -69,10 +75,11 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
 	readonly dedupeRecordProperties: boolean;
 
 	/**
-	 * `ByPasser` instance: allows you to specify which values receive a special stringification
-	 * process (see ByPasser.ts)
+	 * Array of `ByPasser` instances (see ByPasser.ts): the first ByPasser that returns a `some` is
+	 * used to display that value. If all ByPasser's return a `none`, the normal stringification
+	 * process is applied.
 	 */
-	readonly byPasser: PPByPasser.Type;
+	readonly byPassers: ReadonlyArray<PPByPasser.Type>;
 
 	/**
 	 * `PropertyFilter` instance: allows you to specify which properties are shown when printing
@@ -224,7 +231,7 @@ export const recordFormatter: MTypes.OneArgFunction<Type, PPRecordFormatter.Type
  *
  * @category Instances
  */
-export const singleLine = (formatSet: PPFormatSet.Type): Type =>
+export const utilInspectLike = (formatSet: PPFormatSet.Type): Type =>
 	make({
 		id: formatSet.id + 'SingleLine',
 		maxDepth: 10,

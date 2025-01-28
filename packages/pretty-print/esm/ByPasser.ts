@@ -10,7 +10,6 @@
 import {
 	MFunction,
 	MInspectable,
-	MMatch,
 	MOption,
 	MPipeable,
 	MRecord,
@@ -131,67 +130,90 @@ export const make = ({ id, action }: { readonly id: string; readonly action: Act
 export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
 
 /**
- * ByPasser instance that returns:
+ * ByPasser instance that has the following behavior:
  *
- * - For functions: a some of the function name followed by parentheses
- * - For any other object than functions: tries to call the toString method (only if it is different
- *   from Object.prototype.toString). Returns a `some` of the result if successful. Returns a `none`
- *   otherwise. For any other value: returns a none
- *
- * This is the instance you will use most of the time.
+ * - For any function: a some of the function name followed by parentheses.
+ * - For any other value: returns a `none`
  *
  * @category Instances
  */
-export const bypassIfToStringed: Type = make({
-	id: 'bypassIfToStringed',
+export const functionToName: Type = make({
+	id: 'FunctionToName',
 	action: (textFormatterBuilder, markShowerBuilder) => {
 		const functionNameTextFormatter = textFormatterBuilder('functionName');
-		const toStringedObjectTextFormatter = textFormatterBuilder('toStringedObject');
 
 		const functionNameStartDelimiterMarkShower = markShowerBuilder('functionNameStartDelimiter');
 		const functionNameEndDelimiterMarkShower = markShowerBuilder('functionNameEndDelimiter');
 		const defaultFunctionNameMarkShower = markShowerBuilder('defaultFunctionName');
+		const messageStartDelimiterMarkShower = markShowerBuilder('messageStartDelimiter');
+		const messageEndDelimiterMarkShower = markShowerBuilder('messageEndDelimiter');
 
-		return (value) => {
-			const inContextToStringedObjectTextFormatter: MTypes.OneArgFunction<string, ASText.Type> =
-				toStringedObjectTextFormatter(value);
-			return pipe(
+		return (value) =>
+			pipe(
 				value,
-				PPValue.value,
-				MMatch.make,
-				MMatch.when(
-					MTypes.isFunction,
+				Option.liftPredicate(PPValue.isFunction),
+				Option.map(
 					flow(
+						PPValue.value,
 						MFunction.name,
 						Option.liftPredicate(
 							Predicate.and(String.isNonEmpty, Predicate.not(MFunction.strictEquals('anonymous')))
 						),
 						Option.map(functionNameTextFormatter(value)),
 						Option.getOrElse(pipe(value, defaultFunctionNameMarkShower, Function.constant)),
-						ASText.prepend(functionNameStartDelimiterMarkShower(value)),
-						ASText.append(functionNameEndDelimiterMarkShower(value)),
-						PPStringifiedValue.fromText,
-						Option.some
+						ASText.surround(
+							functionNameStartDelimiterMarkShower(value),
+							messageStartDelimiterMarkShower(value)
+						),
+						ASText.surround(
+							functionNameEndDelimiterMarkShower(value),
+							messageEndDelimiterMarkShower(value)
+						),
+						PPStringifiedValue.fromText
 					)
-				),
-				MMatch.when(
-					MTypes.isNonPrimitive,
+				)
+			);
+	}
+});
+
+/**
+ * ByPasser instance that has the following behavior:
+ *
+ * - For any non-primitive value : tries to call the toString method (only if it is different from
+ *   Object.prototype.toString). Returns a `some` of the result if successful. Returns a `none`
+ *   otherwise.
+ * - For any other value: returns a `none`
+ *
+ * @category Instances
+ */
+export const objectToString: Type = make({
+	id: 'ObjectToString',
+	action: (textFormatterBuilder, _markShowerBuilder) => {
+		const toStringedObjectTextFormatter = textFormatterBuilder('toStringedObject');
+
+		return (value) => {
+			const inContextToStringedObjectTextFormatter: MTypes.OneArgFunction<string, ASText.Type> =
+				toStringedObjectTextFormatter(value);
+			return pipe(
+				value,
+				Option.liftPredicate(PPValue.isNonPrimitive),
+				Option.flatMap(
 					flow(
+						PPValue.value,
 						MRecord.tryZeroParamStringFunction({
 							functionName: 'toString',
 							/* eslint-disable-next-line @typescript-eslint/unbound-method */
 							exception: Object.prototype.toString
-						}),
-						Option.map(
-							flow(
-								// split resets RegExp.prototype.lastIndex after executing
-								String.split(MRegExp.globalLineBreak),
-								Array.map(inContextToStringedObjectTextFormatter)
-							)
-						)
+						})
 					)
 				),
-				MMatch.orElse(Function.constant(Option.none()))
+				Option.map(
+					flow(
+						// split resets RegExp.prototype.lastIndex after executing
+						String.split(MRegExp.globalLineBreak),
+						Array.map(inContextToStringedObjectTextFormatter)
+					)
+				)
 			);
 		};
 	}

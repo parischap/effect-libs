@@ -161,10 +161,8 @@ export const keyAndValue: Type = make({
 				MMatch.when(PPValue.hasSymbolicKey, propertyKeyWhenSymbolTextFormatter),
 				MMatch.orElse(propertyKeyWhenOtherTextFormatter),
 				Function.apply(value.stringKey),
-				ASText.prepend(
-					pipe(value, prototypeStartDelimiterMarkShower, ASText.repeat(value.protoDepth))
-				),
-				ASText.append(
+				ASText.surround(
+					pipe(value, prototypeStartDelimiterMarkShower, ASText.repeat(value.protoDepth)),
 					pipe(value, prototypeEndDelimiterMarkShower, ASText.repeat(value.protoDepth))
 				),
 				(stringifiedKey) =>
