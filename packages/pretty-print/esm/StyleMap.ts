@@ -8,7 +8,7 @@
  * needs.
  */
 
-import { ASContextFormatter, ASPalette } from '@parischap/ansi-styles';
+import { ASContextFormatter, ASPalette, ASStyle } from '@parischap/ansi-styles';
 import { MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
 import {
 	Equal,
@@ -122,24 +122,33 @@ export const get = (partName: string): MTypes.OneArgFunction<Type, PPValueBasedF
 export const ansiDarkMode: Type = make({
 	id: 'AnsiDarkMode',
 	styles: HashMap.make(
-		['message', ASContextFormatter.green],
-		['stringDelimiters', ASContextFormatter.green],
-		['stringValue', ASContextFormatter.green],
-		['nullableValue', ASContextFormatter.green],
-		['symbolValue', ASContextFormatter.cyan],
-		['otherValue', ASContextFormatter.yellow],
-		['bigIntDelimiters', ASContextFormatter.magenta],
-		['propertyKeyWhenFunctionValue', ASContextFormatter.blue],
-		['propertyKeyWhenSymbol', ASContextFormatter.cyan],
-		['propertyKeyWhenOther', ASContextFormatter.red],
-		['inBetweenPropertySeparator', ASContextFormatter.white],
-		['objectDelimiters', PPValueBasedFormatter.makeDepthIndexed(ASPalette.allOriginalColors)],
-		['keyValueSeparator', ASContextFormatter.white],
-		['prototypeDelimiters', ASContextFormatter.green],
-		['indentation', ASContextFormatter.green],
-		['functionName', ASContextFormatter.green],
-		['functionNameDelimiters', ASContextFormatter.green],
-		['toStringedObject', ASContextFormatter.yellow]
+		['Message', ASContextFormatter.green],
+		['StringDelimiters', ASContextFormatter.green],
+		['StringValue', ASContextFormatter.green],
+		[
+			'NullValue',
+			ASContextFormatter.Unistyled.make(pipe(ASStyle.green, ASStyle.mergeOver(ASStyle.bold)))
+		],
+		['UndefinedValue', ASContextFormatter.green],
+		['SymbolValue', ASContextFormatter.cyan],
+		['OtherValue', ASContextFormatter.yellow],
+		['BigIntDelimiters', ASContextFormatter.magenta],
+		['PropertyKeyWhenFunctionValue', ASContextFormatter.blue],
+		['PropertyKeyWhenSymbol', ASContextFormatter.cyan],
+		['PropertyKeyWhenOther', ASContextFormatter.red],
+		['InBetweenPropertySeparator', ASContextFormatter.white],
+		[
+			'NonPrimitiveValueDelimiters',
+			PPValueBasedFormatter.makeDepthIndexed(ASPalette.allOriginalColors)
+		],
+		['NonPrimitiveValueName', ASContextFormatter.green],
+		['PropertyNumber', ASContextFormatter.green],
+		['KeyValueSeparator', ASContextFormatter.white],
+		['PrototypeDelimiters', ASContextFormatter.green],
+		['Indentation', ASContextFormatter.green],
+		['FunctionName', ASContextFormatter.green],
+		['FunctionNameDelimiters', ASContextFormatter.green],
+		['ToStringedObject', ASContextFormatter.yellow]
 	)
 });
 

@@ -104,44 +104,68 @@ export const marks: MTypes.OneArgFunction<Type, Marks.Type> = Struct.get('marks'
 export const defaults: Type = make({
 	id: 'Defaults',
 	marks: HashMap.make(
-		['arrayBeyondMaxDepth', { text: 'Array', partName: 'message' }],
-		['objectBeyondMaxDepth', { text: 'Object', partName: 'message' }],
-		['circularObject', { text: 'Circular *', partName: 'message' }],
-		['messageStartDelimiter', { text: '[', partName: 'message' }],
-		['messageEndDelimiter', { text: ']', partName: 'message' }],
-		['circularReferenceStartDelimiter', { text: '<Ref *', partName: 'message' }],
-		['circularReferenceEndDelimiter', { text: '>', partName: 'message' }],
-		['stringStartDelimiter', { text: "'", partName: 'stringDelimiters' }],
-		['stringEndDelimiter', { text: "'", partName: 'stringDelimiters' }],
-		['stringOverflowSuffix', { text: '...', partName: 'stringValue' }],
-		['bigIntStartDelimiter', { text: '', partName: 'bigIntDelimiters' }],
-		['bigIntEndDelimiter', { text: 'n', partName: 'bigIntDelimiters' }],
-		['nullValue', { text: 'null', partName: 'nullableValue' }],
-		['undefinedValue', { text: 'undefined', partName: 'nullableValue' }],
-		['functionNameStartDelimiter', { text: 'Function: ', partName: 'functionNameDelimiters' }],
-		['functionNameEndDelimiter', { text: '', partName: 'functionNameDelimiters' }],
-		['defaultFunctionName', { text: 'anonymous', partName: 'functionName' }],
-		['keyValueSeparator', { text: ': ', partName: 'keyValueSeparator' }],
-		['prototypeStartDelimiter', { text: '', partName: 'prototypeDelimiters' }],
-		['prototypeEndDelimiter', { text: '@', partName: 'prototypeDelimiters' }],
+		['CircularObject', { text: 'Circular *', partName: 'Message' }],
+		['MessageStartDelimiter', { text: '[', partName: 'Message' }],
+		['MessageEndDelimiter', { text: ']', partName: 'Message' }],
+		['CircularReferenceStartDelimiter', { text: '<Ref *', partName: 'Message' }],
+		['CircularReferenceEndDelimiter', { text: '>', partName: 'Message' }],
+		['StringStartDelimiter', { text: "'", partName: 'StringDelimiters' }],
+		['StringEndDelimiter', { text: "'", partName: 'StringDelimiters' }],
+		['StringOverflowSuffix', { text: '...', partName: 'StringValue' }],
+		['BigIntStartDelimiter', { text: '', partName: 'BigIntDelimiters' }],
+		['BigIntEndDelimiter', { text: 'n', partName: 'BigIntDelimiters' }],
+		['NullValue', { text: 'null', partName: 'NullValue' }],
+		['UndefinedValue', { text: 'undefined', partName: 'UndefinedValue' }],
+		['FunctionNameStartDelimiter', { text: 'Function: ', partName: 'FunctionNameDelimiters' }],
+		['FunctionNameEndDelimiter', { text: '', partName: 'FunctionNameDelimiters' }],
+		['DefaultFunctionName', { text: 'anonymous', partName: 'FunctionName' }],
+		['PrototypeStartDelimiter', { text: '', partName: 'PrototypeDelimiters' }],
+		['PrototypeEndDelimiter', { text: '@', partName: 'PrototypeDelimiters' }],
 		[
-			'singleLineInBetweenPropertySeparator',
-			{ text: ', ', partName: 'inBetweenPropertySeparator' }
+			'SingleLineInBetweenPropertySeparator',
+			{ text: ', ', partName: 'InBetweenPropertySeparator' }
 		],
-		['multiLineInBetweenPropertySeparator', { text: ',', partName: 'inBetweenPropertySeparator' }],
-		['singleLineArrayStartDelimiter', { text: '[', partName: 'objectDelimiters' }],
-		['singleLineArrayEndDelimiter', { text: ']', partName: 'objectDelimiters' }],
-		['multiLineArrayStartDelimiter', { text: '[', partName: 'objectDelimiters' }],
-		['multiLineArrayEndDelimiter', { text: ']', partName: 'objectDelimiters' }],
-		['singleLineRecordStartDelimiter', { text: '{ ', partName: 'objectDelimiters' }],
-		['singleLineRecordEndDelimiter', { text: ' }', partName: 'objectDelimiters' }],
-		['multiLineRecordStartDelimiter', { text: '{', partName: 'objectDelimiters' }],
-		['multiLineRecordEndDelimiter', { text: '}', partName: 'objectDelimiters' }],
-		['tabIndent', { text: '  ', partName: 'indentation' }],
-		['treeIndentForFirstLineOfInitProps', { text: '├─ ', partName: 'indentation' }],
-		['treeIndentForTailLinesOfInitProps', { text: '│  ', partName: 'indentation' }],
-		['treeIndentForFirstLineOfLastProp', { text: '└─ ', partName: 'indentation' }],
-		['treeIndentForTailLinesOfLastProp', { text: '   ', partName: 'indentation' }]
+		['MultiLineInBetweenPropertySeparator', { text: ',', partName: 'InBetweenPropertySeparator' }],
+		['NonPrimitiveValueNameSeparator', { text: ' ', partName: 'NonPrimitiveValueName' }],
+		['PropertyNumberSeparator', { text: ',', partName: 'PropertyNumber' }],
+		['PropertyNumberStartDelimiter', { text: '(', partName: 'PropertyNumber' }],
+		['PropertyNumberEndDelimiter', { text: ')', partName: 'PropertyNumber' }],
+
+		['NonPrimitiveValueKeyValueSeparator', { text: ': ', partName: 'KeyValueSeparator' }],
+		[
+			'NonPrimitiveValueSingleLineStartDelimiter',
+			{ text: '{ ', partName: 'NonPrimitiveValueDelimiters' }
+		],
+		[
+			'NonPrimitiveValueSingleLineEndDelimiter',
+			{ text: ' }', partName: 'NonPrimitiveValueDelimiters' }
+		],
+		[
+			'NonPrimitiveValueMultiLineStartDelimiter',
+			{ text: '{', partName: 'NonPrimitiveValueDelimiters' }
+		],
+		[
+			'NonPrimitiveValueMultiLineEndDelimiter',
+			{ text: '}', partName: 'NonPrimitiveValueDelimiters' }
+		],
+
+		['ArrayKeyValueSeparator', { text: ': ', partName: 'KeyValueSeparator' }],
+		['ArraySingleLineStartDelimiter', { text: '[', partName: 'NonPrimitiveValueDelimiters' }],
+		['ArraySingleLineEndDelimiter', { text: ']', partName: 'NonPrimitiveValueDelimiters' }],
+		['ArrayMultiLineStartDelimiter', { text: '[', partName: 'NonPrimitiveValueDelimiters' }],
+		['ArrayMultiLineEndDelimiter', { text: ']', partName: 'NonPrimitiveValueDelimiters' }],
+
+		['MapAndSetKeyValueSeparator', { text: ' => ', partName: 'KeyValueSeparator' }],
+		['MapAndSetSingleLineStartDelimiter', { text: '{ ', partName: 'NonPrimitiveValueDelimiters' }],
+		['MapAndSetSingleLineEndDelimiter', { text: ' }', partName: 'NonPrimitiveValueDelimiters' }],
+		['MapAndSetMultiLineStartDelimiter', { text: '{', partName: 'NonPrimitiveValueDelimiters' }],
+		['MapAndSetMultiLineEndDelimiter', { text: '}', partName: 'NonPrimitiveValueDelimiters' }],
+
+		['TabIndent', { text: '  ', partName: 'Indentation' }],
+		['TreeIndentForFirstLineOfInitProps', { text: '├─ ', partName: 'Indentation' }],
+		['TreeIndentForTailLinesOfInitProps', { text: '│  ', partName: 'Indentation' }],
+		['TreeIndentForFirstLineOfLastProp', { text: '└─ ', partName: 'Indentation' }],
+		['TreeIndentForTailLinesOfLastProp', { text: '   ', partName: 'Indentation' }]
 	)
 });
 
@@ -155,7 +179,7 @@ export const defaultsHideNullables: Type = make({
 	id: 'DefaultsHideNullables',
 	marks: pipe(
 		defaults.marks,
-		HashMap.set('nullValue', { text: '', partName: 'nullableValue' }),
-		HashMap.set('undefinedValue', { text: '', partName: 'nullableValue' })
+		HashMap.set('NullValue', { text: '', partName: 'NullValue' }),
+		HashMap.set('UndefinedValue', { text: '', partName: 'UndefinedValue' })
 	)
 });

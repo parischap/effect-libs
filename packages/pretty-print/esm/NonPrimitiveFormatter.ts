@@ -1,9 +1,9 @@
 /**
- * This module implements a type that takes care of the formatting of records. From the stringified
- * representation of the properties of a record which it receives, it must return the stringified
- * representation of the whole record. It can take care of aspects like printing on a single or
- * multiple lines, indentation when printing on multiple lines, adding specific array/object
- * marks,...
+ * This module implements a type that takes care of the formatting of non primitive values. From the
+ * stringified representation of the properties of a record which it receives, it must return the
+ * stringified representation of the whole record. It can take care of aspects like printing on a
+ * single or multiple lines, indentation when printing on multiple lines, adding specific
+ * array/object marks,...
  *
  * With the make function, you can define your own instances if the provided ones don't suit your
  * needs.
@@ -22,9 +22,9 @@ import {
 	Predicate,
 	Struct
 } from 'effect';
+import type * as PPOption from './Option.js';
 import * as PPStringifiedProperties from './StringifiedProperties.js';
 import * as PPStringifiedValue from './StringifiedValue.js';
-import type * as PPStringifier from './Stringifier.js';
 import * as PPValue from './Value.js';
 
 const moduleTag = '@parischap/pretty-print/RecordFormatter/';
@@ -38,16 +38,20 @@ type TypeId = typeof TypeId;
  */
 export namespace Action {
 	/**
-	 * Type of the action of a RecordFormatter. The action takes as input a TextFormatterBuilder, a
-	 * MarkShowerBuilder (see OptionAndPrecalc.ts), the Value being currently printed (see Value.ts)
-	 * and an array of the stringified properties (see StringifiedProperties.ts). Based on these
-	 * parameters, it must return a stringified representation of the whole record.
+	 * Type of the action of a RecordFormatter. The action takes as input a
+	 * ValueBasedFormatterConstructor, a MarkShowerConstructor (see OptionAndPrecalc.ts), the Value
+	 * being currently printed (see Value.ts) and an array of the stringified properties (see
+	 * StringifiedProperties.ts) of that value. Based on these parameters, it must return a
+	 * stringified representation of the whole record.
 	 */
 	export interface Type {
-		(
-			textFormatterBuilder: PPStringifier.TextFormatterBuilder.Type,
-			markShowerBuilder: PPStringifier.MarkShowerBuilder.Type
-		): (
+		({
+			valueBasedFormatterConstructor,
+			markShowerConstructor
+		}: {
+			readonly valueBasedFormatterConstructor: PPOption.ValueBasedFormatterConstructor.Type;
+			readonly markShowerConstructor: PPOption.MarkShowerConstructor.Type;
+		}): (
 			value: PPValue.NonPrimitiveType
 		) => (children: PPStringifiedProperties.Type) => PPStringifiedValue.Type;
 	}
@@ -126,15 +130,15 @@ export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
  */
 export const singleLine: Type = make({
 	id: 'SingleLine',
-	action: (_textFormatterBuilder, markShowerBuilder) => {
-		const singleLineInBetweenPropertySeparatorMarkShower = markShowerBuilder(
-			'singleLineInBetweenPropertySeparator'
+	action: ({ markShowerConstructor }) => {
+		const singleLineInBetweenPropertySeparatorMarkShower = markShowerConstructor(
+			'SingleLineInBetweenPropertySeparator'
 		);
 		const addNonPrimitiveMarks = PPStringifiedValue.addNonPrimitiveMarks({
-			arrayStartDelimiterMarkShower: markShowerBuilder('singleLineArrayStartDelimiter'),
-			arrayEndDelimiterMarkShower: markShowerBuilder('singleLineArrayEndDelimiter'),
-			recordStartDelimiterMarkShower: markShowerBuilder('singleLineRecordStartDelimiter'),
-			recordEndDelimiterMarkShower: markShowerBuilder('singleLineRecordEndDelimiter')
+			arrayStartDelimiterMarkShower: markShowerConstructor('singleLineArrayStartDelimiter'),
+			arrayEndDelimiterMarkShower: markShowerConstructor('singleLineArrayEndDelimiter'),
+			recordStartDelimiterMarkShower: markShowerConstructor('singleLineRecordStartDelimiter'),
+			recordEndDelimiterMarkShower: markShowerConstructor('singleLineRecordEndDelimiter')
 		});
 
 		return (value) =>
@@ -156,17 +160,17 @@ export const singleLine: Type = make({
  */
 export const tabify: Type = make({
 	id: 'Tabified',
-	action: (_textFormatterBuilder, markShowerBuilder) => {
-		const multiLineInBetweenPropertySeparatorMarkShower = markShowerBuilder(
-			'multiLineInBetweenPropertySeparator'
+	action: ({ markShowerConstructor }) => {
+		const multiLineInBetweenPropertySeparatorMarkShower = markShowerConstructor(
+			'MultiLineInBetweenPropertySeparator'
 		);
 
-		const tabIndentMarkShower = markShowerBuilder('tabIndent');
+		const tabIndentMarkShower = markShowerConstructor('TabIndent');
 		const addNonPrimitiveMarks = PPStringifiedValue.addNonPrimitiveMarks({
-			arrayStartDelimiterMarkShower: markShowerBuilder('multiLineArrayStartDelimiter'),
-			arrayEndDelimiterMarkShower: markShowerBuilder('multiLineArrayEndDelimiter'),
-			recordStartDelimiterMarkShower: markShowerBuilder('multiLineRecordStartDelimiter'),
-			recordEndDelimiterMarkShower: markShowerBuilder('multiLineRecordEndDelimiter')
+			arrayStartDelimiterMarkShower: markShowerConstructor('multiLineArrayStartDelimiter'),
+			arrayEndDelimiterMarkShower: markShowerConstructor('multiLineArrayEndDelimiter'),
+			recordStartDelimiterMarkShower: markShowerConstructor('multiLineRecordStartDelimiter'),
+			recordEndDelimiterMarkShower: markShowerConstructor('multiLineRecordEndDelimiter')
 		});
 
 		return (value) =>
@@ -189,9 +193,9 @@ export const tabify: Type = make({
  */
 export const splitNonArraysMaker: Type = make({
 	id: 'SplitNonArrays',
-	action: (textFormatterBuilder, markShowerBuilder) => {
-		const initializedSingleLine = singleLine(textFormatterBuilder, markShowerBuilder);
-		const initilizedTabify = tabify(textFormatterBuilder, markShowerBuilder);
+	action: (params) => {
+		const initializedSingleLine = singleLine(params);
+		const initilizedTabify = tabify(params);
 		return (value) =>
 			PPValue.isArray(value) ? initializedSingleLine(value) : initilizedTabify(value);
 	}
@@ -204,18 +208,18 @@ export const splitNonArraysMaker: Type = make({
  */
 export const treeify: Type = make({
 	id: 'Treeified',
-	action: (_textFormatterBuilder, markShowerBuilder) => {
-		const treeIndentForFirstLineOfInitPropsMarkShower = markShowerBuilder(
-			'treeIndentForFirstLineOfInitProps'
+	action: ({ markShowerConstructor }) => {
+		const treeIndentForFirstLineOfInitPropsMarkShower = markShowerConstructor(
+			'TreeIndentForFirstLineOfInitProps'
 		);
-		const treeIndentForTailLinesOfInitPropsMarkShower = markShowerBuilder(
-			'treeIndentForTailLinesOfInitProps'
+		const treeIndentForTailLinesOfInitPropsMarkShower = markShowerConstructor(
+			'TreeIndentForTailLinesOfInitProps'
 		);
-		const treeIndentForFirstLineOfLastPropMarkShower = markShowerBuilder(
-			'treeIndentForFirstLineOfLastProp'
+		const treeIndentForFirstLineOfLastPropMarkShower = markShowerConstructor(
+			'TreeIndentForFirstLineOfLastProp'
 		);
-		const treeIndentForTailLinesOfLastPropMarkShower = markShowerBuilder(
-			'treeIndentForTailLinesOfLastProp'
+		const treeIndentForTailLinesOfLastPropMarkShower = markShowerConstructor(
+			'TreeIndentForTailLinesOfLastProp'
 		);
 
 		return (value) =>
@@ -240,9 +244,9 @@ export const treeify: Type = make({
 export const splitOnConstituentNumberMaker = (limit: number): Type =>
 	make({
 		id: 'SplitWhenConstituentNumberExceeds' + limit,
-		action: (textFormatterBuilder, markShowerBuilder) => {
-			const initializedSingleLine = singleLine(textFormatterBuilder, markShowerBuilder);
-			const initilizedTabify = tabify(textFormatterBuilder, markShowerBuilder);
+		action: (params) => {
+			const initializedSingleLine = singleLine(params);
+			const initilizedTabify = tabify(params);
 			return (value) =>
 				flow(
 					MMatch.make,
@@ -264,9 +268,9 @@ export const splitOnConstituentNumberMaker = (limit: number): Type =>
 export const splitOnTotalLengthMaker = (limit: number): Type =>
 	make({
 		id: 'SplitWhenTotalLengthExceeds' + limit,
-		action: (textFormatterBuilder, markShowerBuilder) => {
-			const initializedSingleLine = singleLine(textFormatterBuilder, markShowerBuilder);
-			const initilizedTabify = tabify(textFormatterBuilder, markShowerBuilder);
+		action: (params) => {
+			const initializedSingleLine = singleLine(params);
+			const initilizedTabify = tabify(params);
 			return (value) =>
 				flow(
 					MMatch.make,
@@ -288,9 +292,9 @@ export const splitOnTotalLengthMaker = (limit: number): Type =>
 export const splitOnLongestPropLengthMaker = (limit: number): Type =>
 	make({
 		id: 'SplitWhenLongestPropLengthExceeds' + limit,
-		action: (textFormatterBuilder, markShowerBuilder) => {
-			const initializedSingleLine = singleLine(textFormatterBuilder, markShowerBuilder);
-			const initilizedTabify = tabify(textFormatterBuilder, markShowerBuilder);
+		action: (params) => {
+			const initializedSingleLine = singleLine(params);
+			const initilizedTabify = tabify(params);
 			return (value) =>
 				flow(
 					MMatch.make,

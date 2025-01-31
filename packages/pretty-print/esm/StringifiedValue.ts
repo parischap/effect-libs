@@ -6,11 +6,9 @@
  */
 
 import { ASText } from '@parischap/ansi-styles';
-import { MArray, MMatch, MTypes } from '@parischap/effect-lib';
+import { MArray, MTypes } from '@parischap/effect-lib';
 import { Array, flow, Function, Number, pipe, Predicate } from 'effect';
 import type * as PPStringifiedProperties from './StringifiedProperties.js';
-import type * as PPStringifier from './Stringifier.js';
-import * as PPValue from './Value.js';
 
 /**
  * Type that represents a Stringified
@@ -67,50 +65,18 @@ export const isEmpty: Predicate.Predicate<Type> = MArray.match012({
 export const isNotEmpty: Predicate.Predicate<Type> = Predicate.not(isEmpty);
 
 /**
- * Returns a copy of `self` with a mark at the start
+ * Returns a copy of `self` with a mark at the end
  *
  * @category Utils
  */
 export const addEndMark = (mark: ASText.Type): MTypes.OneArgFunction<Type> => Array.append(mark);
 
 /**
- * Returns a copy of `self` with a mark at the end
+ * Returns a copy of `self` with a mark at the start
  *
  * @category Utils
  */
 export const addStartMark = (mark: ASText.Type): MTypes.OneArgFunction<Type> => Array.prepend(mark);
-
-export const addNonPrimitiveMarks =
-	({
-		arrayStartDelimiterMarkShower,
-		arrayEndDelimiterMarkShower,
-		recordStartDelimiterMarkShower,
-		recordEndDelimiterMarkShower
-	}: {
-		readonly arrayStartDelimiterMarkShower: PPStringifier.MarkShower.Type;
-		readonly arrayEndDelimiterMarkShower: PPStringifier.MarkShower.Type;
-		readonly recordStartDelimiterMarkShower: PPStringifier.MarkShower.Type;
-		readonly recordEndDelimiterMarkShower: PPStringifier.MarkShower.Type;
-	}) =>
-	(value: PPValue.NonPrimitiveType): MTypes.OneArgFunction<Type> =>
-		flow(
-			addStartMark(
-				pipe(
-					value,
-					MMatch.make,
-					MMatch.when(PPValue.isArray, Function.constant(arrayStartDelimiterMarkShower(value))),
-					MMatch.orElse(Function.constant(recordStartDelimiterMarkShower(value)))
-				)
-			),
-			addEndMark(
-				pipe(
-					value,
-					MMatch.make,
-					MMatch.when(PPValue.isArray, Function.constant(arrayEndDelimiterMarkShower(value))),
-					MMatch.orElse(Function.constant(recordEndDelimiterMarkShower(value)))
-				)
-			)
-		);
 
 /**
  * Returns a copy of `self` in which `text` has been prepended to each line
@@ -119,6 +85,14 @@ export const addNonPrimitiveMarks =
  */
 export const prependToAllLines = (text: ASText.Type): MTypes.OneArgFunction<Type> =>
 	Array.map(ASText.prepend(text));
+
+/**
+ * Returns a copy of `self` in which `text` has been appended to the last line
+ *
+ * @category Utils
+ */
+export const appendToLastLine = (text: ASText.Type): MTypes.OneArgFunction<Type> =>
+	Array.modifyNonEmptyLast(ASText.append(text));
 
 /**
  * Returns a copy of `self` in which `text` has been prepended to the first line

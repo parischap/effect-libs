@@ -14,7 +14,7 @@ const dedupedSingleLineWithProto = PPStringify.asString(
 		...PPOption.ansiDarkSingleLine,
 		maxPrototypeDepth: +Infinity,
 		propertySortOrder: Order.combine(PPValueOrder.byStringKey, PPValueOrder.byPrototypalDepth),
-		dedupeRecordProperties: true
+		dedupeProperties: true
 	})
 );
 

@@ -155,7 +155,7 @@ export namespace ThreeBit {
 	export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
 		self.offset === that.offset && self.isBright === that.isBright;
 
-	/** Base */
+	/** Proto */
 	const proto: MTypes.Proto<Type> = {
 		[TypeId]: TypeId,
 		[_TagSymbol]: 'ThreeBit',

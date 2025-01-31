@@ -10,7 +10,6 @@
 import {
 	MFunction,
 	MInspectable,
-	MOption,
 	MPipeable,
 	MRecord,
 	MRegExp,
@@ -32,8 +31,8 @@ import {
 	String,
 	Struct
 } from 'effect';
+import type * as PPOption from './Option.js';
 import * as PPStringifiedValue from './StringifiedValue.js';
-import type * as PPStringifier from './Stringifier.js';
 import * as PPValue from './Value.js';
 
 const moduleTag = '@parischap/pretty-print/ByPasser/';
@@ -47,19 +46,23 @@ type TypeId = typeof TypeId;
  */
 export namespace Action {
 	/**
-	 * Type of the action. The action takes as input a TextFormatterBuilder, a MarkShowerBuilder (see
-	 * OptionAndPrecalc.ts) and the Value being currently printed (see Value.ts). If the action
-	 * returns a value of type `Some<StringifiedValue.Type>` or `StringifiedValue.Type`, this
-	 * `StringifiedValue` will be used as is to represent the input value. If it returns a `none` or
-	 * `null` or `undefined`, the normal stringification process will be applied.
+	 * Type of the action. The action takes as input a ValueBasedFormatterConstructor, a
+	 * MarkShowerConstructor (see OptionAndPrecalc.ts) and the Value being currently printed (see
+	 * Value.ts). If the action returns a value of type `Some<StringifiedValue.Type>` or
+	 * `StringifiedValue.Type`, this `StringifiedValue` will be used as is to represent the input
+	 * value. If it returns a `none` or `null` or `undefined`, the normal stringification process will
+	 * be applied.
 	 *
 	 * @category Models
 	 */
 	export interface Type {
-		(
-			textFormatterBuilder: PPStringifier.TextFormatterBuilder.Type,
-			markShowerBuilder: PPStringifier.MarkShowerBuilder.Type
-		): MTypes.OneArgFunction<PPValue.All, MOption.OptionOrNullable<PPStringifiedValue.Type>>;
+		({
+			valueBasedFormatterConstructor,
+			markShowerConstructor
+		}: {
+			readonly valueBasedFormatterConstructor: PPOption.ValueBasedFormatterConstructor.Type;
+			readonly markShowerConstructor: PPOption.MarkShowerConstructor.Type;
+		}): MTypes.OneArgFunction<PPValue.All, Option.Option<PPStringifiedValue.Type>>;
 	}
 }
 
@@ -139,14 +142,16 @@ export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
  */
 export const functionToName: Type = make({
 	id: 'FunctionToName',
-	action: (textFormatterBuilder, markShowerBuilder) => {
-		const functionNameTextFormatter = textFormatterBuilder('functionName');
+	action: ({ valueBasedFormatterConstructor, markShowerConstructor }) => {
+		const functionNameTextFormatter = valueBasedFormatterConstructor('FunctionName');
 
-		const functionNameStartDelimiterMarkShower = markShowerBuilder('functionNameStartDelimiter');
-		const functionNameEndDelimiterMarkShower = markShowerBuilder('functionNameEndDelimiter');
-		const defaultFunctionNameMarkShower = markShowerBuilder('defaultFunctionName');
-		const messageStartDelimiterMarkShower = markShowerBuilder('messageStartDelimiter');
-		const messageEndDelimiterMarkShower = markShowerBuilder('messageEndDelimiter');
+		const functionNameStartDelimiterMarkShower = markShowerConstructor(
+			'FunctionNameStartDelimiter'
+		);
+		const functionNameEndDelimiterMarkShower = markShowerConstructor('FunctionNameEndDelimiter');
+		const defaultFunctionNameMarkShower = markShowerConstructor('DefaultFunctionName');
+		const messageStartDelimiterMarkShower = markShowerConstructor('MessageStartDelimiter');
+		const messageEndDelimiterMarkShower = markShowerConstructor('MessageEndDelimiter');
 
 		return (value) =>
 			pipe(
@@ -188,8 +193,8 @@ export const functionToName: Type = make({
  */
 export const objectToString: Type = make({
 	id: 'ObjectToString',
-	action: (textFormatterBuilder, _markShowerBuilder) => {
-		const toStringedObjectTextFormatter = textFormatterBuilder('toStringedObject');
+	action: ({ valueBasedFormatterConstructor }) => {
+		const toStringedObjectTextFormatter = valueBasedFormatterConstructor('ToStringedObject');
 
 		return (value) => {
 			const inContextToStringedObjectTextFormatter: MTypes.OneArgFunction<string, ASText.Type> =

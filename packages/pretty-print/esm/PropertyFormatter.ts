@@ -13,18 +13,16 @@ import {
 	Array,
 	Equal,
 	Equivalence,
-	flow,
 	Function,
 	Hash,
-	Option,
 	pipe,
 	Pipeable,
 	Predicate,
+	String,
 	Struct
 } from 'effect';
-
+import type * as PPOption from './Option.js';
 import * as PPStringifiedValue from './StringifiedValue.js';
-import type * as PPStringifier from './Stringifier.js';
 import * as PPValue from './Value.js';
 
 const moduleTag = '@parischap/pretty-print/PropertyFormatter/';
@@ -38,21 +36,21 @@ type TypeId = typeof TypeId;
  */
 export namespace Action {
 	/**
-	 * Type of the action. The action takes as input a TextFormatterBuilder, a MarkShowerBuilder (see
-	 * OptionAndPrecalc.ts), the Value (see Value.ts) being currently printed, and the stringified
-	 * representation of that value (see StringifiedValue.ts) . Based on these three parameters, it
-	 * must return a stringified representation of the whole property.
+	 * Type of the action. The action takes as input a ValueBasedFormatterConstructor, a
+	 * MarkShowerConstructor (see OptionAndPrecalc.ts), the Value (see Value.ts) being currently
+	 * printed, and the stringified representation of that value (see StringifiedValue.ts) . Based on
+	 * these three parameters, it must return a stringified representation of the whole property.
 	 *
 	 * @category Models
 	 */
 	export interface Type {
-		(
-			textFormatterBuilder: PPStringifier.TextFormatterBuilder.Type,
-			markShowerBuilder: PPStringifier.MarkShowerBuilder.Type
-		): MTypes.OneArgFunction<
-			PPValue.NonPrimitiveType,
-			MTypes.OneArgFunction<PPStringifiedValue.Type>
-		>;
+		({
+			valueBasedFormatterConstructor,
+			markShowerConstructor
+		}: {
+			readonly valueBasedFormatterConstructor: PPOption.ValueBasedFormatterConstructor.Type;
+			readonly markShowerConstructor: PPOption.MarkShowerConstructor.Type;
+		}): MTypes.OneArgFunction<PPValue.Property.All, MTypes.OneArgFunction<PPStringifiedValue.Type>>;
 	}
 }
 
@@ -130,7 +128,7 @@ export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
  */
 export const valueOnly: Type = make({
 	id: 'ValueOnly',
-	action: (_textFormatterBuilder, _markShowerBuilder) => (_value) => Function.identity
+	action: () => (_value) => Function.identity
 });
 
 /**
@@ -142,42 +140,59 @@ export const valueOnly: Type = make({
  */
 export const keyAndValue: Type = make({
 	id: 'KeyAndValue',
-	action: (textFormatterBuilder, markShowerBuilder) => {
-		const propertyKeyWhenFunctionValueTextFormatter = textFormatterBuilder(
-			'propertyKeyWhenFunctionValue'
+	action: ({ valueBasedFormatterConstructor, markShowerConstructor }) => {
+		const propertyKeyWhenFunctionValueTextFormatter = valueBasedFormatterConstructor(
+			'PropertyKeyWhenFunctionValue'
 		);
-		const propertyKeyWhenSymbolTextFormatter = textFormatterBuilder('propertyKeyWhenSymbol');
-		const propertyKeyWhenOtherTextFormatter = textFormatterBuilder('propertyKeyWhenOther');
+		const propertyKeyWhenSymbolTextFormatter =
+			valueBasedFormatterConstructor('PropertyKeyWhenSymbol');
+		const propertyKeyWhenOtherTextFormatter =
+			valueBasedFormatterConstructor('PropertyKeyWhenOther');
 
-		const prototypeStartDelimiterMarkShower = markShowerBuilder('prototypeStartDelimiter');
-		const prototypeEndDelimiterMarkShower = markShowerBuilder('prototypeEndDelimiter');
-		const keyValueSeparatorMarkShower = markShowerBuilder('keyValueSeparator');
+		const prototypeStartDelimiterMarkShower = markShowerConstructor('PrototypeStartDelimiter');
+		const prototypeEndDelimiterMarkShower = markShowerConstructor('prototypeEndDelimiter');
+		const keyValueSeparatorMarkShower = markShowerConstructor('KeyValueSeparator');
 
-		return (value) =>
-			pipe(
+		return (value) => {
+			const stringKey = value.stringKey;
+			if (MTypes.isSingleton(stringKey) && String.isEmpty(stringKey[0])) return Function.identity;
+
+			const textFormatter = pipe(
 				value,
 				MMatch.make,
-				MMatch.when(PPValue.isFunction, propertyKeyWhenFunctionValueTextFormatter),
-				MMatch.when(PPValue.hasSymbolicKey, propertyKeyWhenSymbolTextFormatter),
-				MMatch.orElse(propertyKeyWhenOtherTextFormatter),
-				Function.apply(value.stringKey),
-				ASText.surround(
-					pipe(value, prototypeStartDelimiterMarkShower, ASText.repeat(value.protoDepth)),
-					pipe(value, prototypeEndDelimiterMarkShower, ASText.repeat(value.protoDepth))
-				),
-				(stringifiedKey) =>
-					Array.modifyNonEmptyHead(
-						flow(
-							Option.liftPredicate(ASText.isNotEmpty),
-							Option.map(
-								flow(
-									ASText.prepend(keyValueSeparatorMarkShower(value)),
-									ASText.prepend(stringifiedKey)
-								)
-							),
-							Option.getOrElse(() => stringifiedKey)
-						)
-					)
+				MMatch.when(PPValue.Property.isFunction, propertyKeyWhenFunctionValueTextFormatter),
+				MMatch.when(PPValue.Property.hasSymbolicKey, propertyKeyWhenSymbolTextFormatter),
+				MMatch.orElse(propertyKeyWhenOtherTextFormatter)
 			);
+
+			const key: PPStringifiedValue.Type = pipe(
+				stringKey,
+				Array.map((line, _i) => textFormatter(line)),
+				PPStringifiedValue.prependToFirstLine(
+					pipe(value, prototypeStartDelimiterMarkShower, ASText.repeat(value.protoDepth))
+				),
+				PPStringifiedValue.appendToLastLine(
+					pipe(value, prototypeEndDelimiterMarkShower, ASText.repeat(value.protoDepth))
+				)
+			);
+
+			return (stringifiedValue) =>
+				pipe(
+					key,
+					Array.initNonEmpty,
+					Array.append(
+						pipe(
+							Array.lastNonEmpty(key),
+							ASText.append(
+								PPStringifiedValue.isEmpty(stringifiedValue) ?
+									ASText.empty
+								:	keyValueSeparatorMarkShower(value)
+							),
+							ASText.append(Array.headNonEmpty(stringifiedValue))
+						)
+					),
+					Array.appendAll(Array.tailNonEmpty(stringifiedValue))
+				);
+		};
 	}
 });

@@ -1,23 +1,27 @@
 /* eslint-disable functional/no-expression-statements */
 import { inspect } from 'node:util';
-const target = {
-	array1: [1, 2, 3],
-	array2: [3, 4, 5]
+const toPrint = {
+	a: 1,
+	b: { a: 5, c: 8 },
+	d: { e: true, f: { a: { k: { z: 'foo', y: 'bar' }, j: false } }, g: 'aa' },
+	z: null,
+	y: undefined
 };
-
-const handler2 = {
-	get() {
-		return 'world';
-	}
-};
-
-const proxy2 = new Proxy(target, handler2);
-
-const map1 = new Map();
-
-map1.set('a', 1);
-map1.set('b', 2);
-map1.set('c', 3);
 
 // Inspect by basic method
-console.log(inspect(map1));
+console.log(inspect(toPrint, { colors: true }));
+
+/*const map1 = new Map();
+
+map1.set({ a: 'a', b: 'b' }, 1);
+map1.set({ a: 'a1', b: 'b' }, 2);
+map1.set({ a: 'a2', b: 'b', c: 'c', d: 'd', e: 'e', jetaimemonamour: 'jetaimemonamour' }, 3);*/
+
+/*const set1 = new WeakSet();
+set1.add({ a: 'a', b: 'b' });
+set1.add({ a: 'a1', b: 'b' });*/
+
+const typedArray1 = new Int8Array(8);
+typedArray1[0] = 32;
+
+console.log(inspect(typedArray1));

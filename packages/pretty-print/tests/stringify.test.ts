@@ -170,12 +170,12 @@ describe('pretty-print', () => {
 			).toBe('{ Symbol(symbol1): 42, a: 1, b: { a: 5, c: [Array] }, d: true, e: (Function) }');
 		});
 
-		it('Single-line with maxPrototypeDepth=+Infinity and dedupeRecordProperties=true', () => {
+		it('Single-line with maxPrototypeDepth=+Infinity and dedupeProperties=true', () => {
 			expect(
 				PPStringify.asString({
 					...PPOption.unformattedSingleLine,
 					maxPrototypeDepth: +Infinity,
-					dedupeRecordProperties: true
+					dedupeProperties: true
 				})(testA)
 			).toBe(
 				"{ Symbol(symbol1): 42, a: 1, b: { a: 5, c: [7, 8, { a: 9, h: [11, 12, 13] }] }, c@: { d: [3, 4], e: ['a', 'b'] }, d: true, e: (Function) }"

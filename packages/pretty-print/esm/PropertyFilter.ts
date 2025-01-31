@@ -1,6 +1,6 @@
 /**
- * This module implements a type that takes care of filtering properties when printing records.
- * PropertyFilter's can be combined.
+ * This module implements a type that takes care of filtering properties when printing non primitive
+ * values.
  *
  * With the make function, you can define your own instances if the provided ones don't suit your
  * needs.
@@ -12,14 +12,12 @@ import {
 	Boolean,
 	Equal,
 	Equivalence,
-	Function,
 	Hash,
 	pipe,
 	Pipeable,
 	Predicate,
 	Struct
 } from 'effect';
-import * as PPProperties from './Properties.js';
 import * as PPValue from './Value.js';
 
 const moduleTag = '@parischap/pretty-print/PropertyFilter/';
@@ -37,7 +35,7 @@ export namespace Action {
 	 *
 	 * @category Models
 	 */
-	export interface Type extends MTypes.OneArgFunction<PPProperties.Type> {}
+	export interface Type extends MTypes.OneArgFunction<PPValue.Properties.Type> {}
 }
 
 /**
@@ -107,130 +105,77 @@ export const make = ({ id, action }: { readonly id: string; readonly action: Act
 export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
 
 /**
- * Combines two propertyFilters into one. The action of `self` is applied before the action of
- * `that`
- *
- * @category Utils
- */
-export const combine =
-	(that: Type) =>
-	(self: Type): Type =>
-		make({
-			id: `${self.id}+${that.id}`,
-			action: Function.compose(self, that)
-		});
-
-/**
- * PropertyFilter instance that keeps all properties
+ * PropertyFilter instance that keeps properties of records whose value is a function
  *
  * @category Instances
  */
-export const keepAll: Type = make({ id: 'keepAll', action: Function.identity });
-
-/**
- * PropertyFilter instance that removes properties of records whose value is not a function
- *
- * @category Instances
- */
-export const removeNonFunctions: Type = make({
-	id: 'RemoveNonFunctions',
-	action: Array.filter(PPValue.isFunction)
+export const keepFunctions: Type = make({
+	id: 'keepFunctions',
+	action: Array.filter(PPValue.Property.isFunction)
 });
 
 /**
- * PropertyFilter instance that removes properties of records whose value is a function
+ * PropertyFilter instance that keeps properties of records whose value is not a function
  *
  * @category Instances
  */
-export const removeFunctions: Type = make({
-	id: 'RemoveFunctions',
-	action: Array.filter(Predicate.not(PPValue.isFunction))
+export const keepNonFunctions: Type = make({
+	id: 'keepNonFunctions',
+	action: Array.filter(Predicate.not(PPValue.Property.isFunction))
 });
 
 /**
- * PropertyFilter instance that removes non-enumerable properties
+ * PropertyFilter instance that keeps enumerable properties of records
  *
  * @category Instances
  */
-export const removeNonEnumerables: Type = make({
-	id: 'RemoveNonEnumerables',
-	action: Array.filter(Struct.get('hasEnumerableKey'))
+export const keepEnumerables: Type = make({
+	id: 'keepEnumerables',
+	action: Array.filter(PPValue.Property.isEnumerable)
 });
 
 /**
- * PropertyFilter instance that removes enumerable properties
+ * PropertyFilter instance that keeps non-enumerable properties of records
  *
  * @category Instances
  */
-export const removeEnumerables: Type = make({
-	id: 'RemoveEnumerables',
-	action: Array.filter(Predicate.not(Struct.get('hasEnumerableKey')))
+export const keepNonEnumerables: Type = make({
+	id: 'keepNonEnumerables',
+	action: Array.filter(Predicate.not(PPValue.Property.isEnumerable))
 });
 
 /**
- * PropertyFilter instance that removes properties with a key of type `string`
+ * PropertyFilter instance that keeps properties of records with a symbolic key
  *
  * @category Instances
  */
-export const removeStringKeys: Type = make({
-	id: 'RemoveStringKeys',
-	action: Array.filter(Struct.get('hasSymbolicKey'))
+export const keepSymbolicKeys: Type = make({
+	id: 'keepSymbolicKeys',
+	action: Array.filter(PPValue.Property.hasSymbolicKey)
 });
 
 /**
- * PropertyFilter instance that removes properties with a key of type `symbol`
+ * PropertyFilter instance that keeps properties of records with a string key
  *
  * @category Instances
  */
-export const removeSymbolicKeys: Type = make({
-	id: 'RemoveSymbolicKeys',
-	action: Array.filter(Predicate.not(Struct.get('hasSymbolicKey')))
+export const keepStringKeys: Type = make({
+	id: 'keepStringKeys',
+	action: Array.filter(Predicate.not(PPValue.Property.hasSymbolicKey))
 });
 
 /**
- * PropertyFilter instance that removes properties which are non-enumerable, whose key is symbolic
- * or whose value is a function
- *
- * @category Instances
- */
-export const enumerableNonFunctionStringKeys: Type = pipe(
-	removeNonEnumerables,
-	combine(removeSymbolicKeys),
-	combine(removeFunctions)
-);
-
-/**
- * Function that returns a propertyFilter instance that keeps only properties whose key is a string
+ * Constructor of a propertyFilter instance that keeps properties of records whose key is a string
  * that fulfills a predicate
  *
- * @category Instances
+ * @category Constructors
  */
 export const keepFulfillingKeyPredicate =
 	(id: string) =>
 	(predicate: Predicate.Predicate<string>): Type =>
 		make({
 			id,
-			action: Array.filter(MPredicate.struct({ stringKey: predicate, hasSymbolicKey: Boolean.not }))
+			action: Array.filter(
+				MPredicate.struct({ oneLineStringKey: predicate, hasSymbolicKey: Boolean.not })
+			)
 		});
-
-/**
- * PropertyFilter instance that removes non-enumerable properties on arrays but keeps them on other
- * records
- *
- * @category Instances
- */
-export const removeNonEnumerablesOnArrays: Type = make({
-	id: 'RemoveNonEnumerablesOnArrays',
-	action: Array.filter<PPValue.All>(
-		Predicate.and(Struct.get('hasEnumerableKey'), Struct.get('belongsToArray'))
-	)
-});
-
-/**
- * Function that returns a PropertyFilter instance that keeps only the `n` first properties of a
- * record
- *
- * @category Instances
- */
-export const take = (n: number): Type =>
-	make({ id: `Take ${n} first prop(s)`, action: Array.take(n) });
