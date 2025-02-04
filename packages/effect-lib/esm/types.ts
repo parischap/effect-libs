@@ -424,6 +424,14 @@ export const isPrimitive = (u: unknown): u is Primitive =>
 	u === null || !['object', 'function'].includes(typeof u);
 
 /**
+ * From `unknown` to `Iterable<unknown>`
+ *
+ * @category Guards
+ */
+export const isIterable = (input: unknown): input is Iterable<unknown> =>
+	Predicate.hasProperty(input, Symbol.iterator);
+
+/**
  * From `unknown` to `Errorish`
  *
  * @category Guards
@@ -496,6 +504,21 @@ export const isSingleton = <A>(u: Array<A>): u is Singleton<A> => u.length === 1
  */
 export const isReadonlySingleton = <A>(u: ReadonlyArray<A>): u is ReadonlySingleton<A> =>
 	u.length === 1;
+
+/**
+ * From `Array<A>` to `Pair<A,A>`
+ *
+ * @category Guards
+ */
+/* eslint-disable-next-line functional/prefer-readonly-type */
+export const isPair = <A>(u: Array<A>): u is Pair<A, A> => u.length === 2;
+
+/**
+ * From `ReadonlyArray<A>` to `ReadonlPair<A>`
+ *
+ * @category Guards
+ */
+export const isReadonlyPair = <A>(u: ReadonlyArray<A>): u is ReadonlyPair<A, A> => u.length === 2;
 
 /**
  * From `F` to `toOneArgFunction<F>`
