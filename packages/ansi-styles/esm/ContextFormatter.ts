@@ -20,6 +20,8 @@ const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
 
 const _TagSymbol: unique symbol = Symbol.for(moduleTag + '_TagSymbol/');
+const UnistyledTag = 'Unistyled';
+const PaletteBasedTag = 'PaletteBased';
 
 /**
  * Namespace of a ContextFormatter used as an action
@@ -55,7 +57,7 @@ const _has = has;
  *
  * @category Guards
  */
-export const isUnistyled = (u: Type<never>): u is Unistyled.Type => u[_TagSymbol] === 'Unistyled';
+export const isUnistyled = (u: Type<never>): u is Unistyled.Type => u[_TagSymbol] === UnistyledTag;
 
 /**
  * Type guard
@@ -63,7 +65,7 @@ export const isUnistyled = (u: Type<never>): u is Unistyled.Type => u[_TagSymbol
  * @category Guards
  */
 export const isPaletteBased = (u: Type<never>): u is PaletteBased.Type<never> =>
-	u[_TagSymbol] === 'PaletteBased';
+	u[_TagSymbol] === PaletteBasedTag;
 
 /**
  * Namespace for a Unistyled ContextFormatter, i.e. a ContextFormatter which always applies the same
@@ -82,7 +84,7 @@ export namespace Unistyled {
 		readonly style: ASStyle.Type;
 
 		/** @internal */
-		readonly [_TagSymbol]: 'Unistyled';
+		readonly [_TagSymbol]: typeof UnistyledTag;
 
 		/** @internal */
 		readonly [TypeId]: TypeId;
@@ -99,7 +101,7 @@ export namespace Unistyled {
 	/** Base */
 	const base: MTypes.Proto<Type> = {
 		[TypeId]: TypeId,
-		[_TagSymbol]: 'Unistyled',
+		[_TagSymbol]: UnistyledTag,
 		[MInspectable.IdSymbol](this: Type) {
 			return toId(this);
 		},
@@ -173,7 +175,7 @@ export namespace PaletteBased {
 		readonly palette: ASPalette.Type;
 
 		/** @internal */
-		readonly [_TagSymbol]: 'PaletteBased';
+		readonly [_TagSymbol]: typeof PaletteBasedTag;
 
 		/** @internal */
 		readonly [TypeId]: {
@@ -195,7 +197,7 @@ export namespace PaletteBased {
 		[TypeId]: {
 			_C: MTypes.contravariantValue
 		},
-		[_TagSymbol]: 'PaletteBased',
+		[_TagSymbol]: PaletteBasedTag,
 		[MInspectable.IdSymbol]<C>(this: Type<C>) {
 			return toId(this);
 		},

@@ -30,6 +30,13 @@ type TypeId = typeof TypeId;
 const _TypeIdHash = Hash.hash(TypeId);
 
 const _TagSymbol: unique symbol = Symbol.for(moduleTag + '_TagSymbol/');
+const ThreeBitTag = 'ThreeBit';
+const EightBitTag = 'EightBit';
+const RgbTag = 'Rgb';
+const ThreeBitTagHash = Hash.hash(ThreeBitTag);
+const EightBitTagHash = Hash.hash(EightBitTag);
+const RgbTagHash = Hash.hash(RgbTag);
+
 const _sequenceSymbol: unique symbol = Symbol.for(moduleTag + '_sequenceSymbol/');
 
 /**
@@ -52,21 +59,21 @@ const _has = has;
  *
  * @category Guards
  */
-export const isThreeBit = (u: Type): u is ThreeBit.Type => u[_TagSymbol] === 'ThreeBit';
+export const isThreeBit = (u: Type): u is ThreeBit.Type => u[_TagSymbol] === ThreeBitTag;
 
 /**
  * Type guard
  *
  * @category Guards
  */
-export const isEightBit = (u: Type): u is EightBit.Type => u[_TagSymbol] === 'EightBit';
+export const isEightBit = (u: Type): u is EightBit.Type => u[_TagSymbol] === EightBitTag;
 
 /**
  * Type guard
  *
  * @category Guards
  */
-export const isRgb = (u: Type): u is Rgb.Type => u[_TagSymbol] === 'Rgb';
+export const isRgb = (u: Type): u is Rgb.Type => u[_TagSymbol] === RgbTag;
 
 /**
  * Namespace for three-bit colors
@@ -133,7 +140,7 @@ export namespace ThreeBit {
 		readonly [_sequenceSymbol]: () => ASAnsiString.NonEmptySequence;
 
 		/** @internal */
-		readonly [_TagSymbol]: 'ThreeBit';
+		readonly [_TagSymbol]: typeof ThreeBitTag;
 
 		/** @internal */
 		readonly [TypeId]: TypeId;
@@ -158,7 +165,7 @@ export namespace ThreeBit {
 	/** Proto */
 	const proto: MTypes.Proto<Type> = {
 		[TypeId]: TypeId,
-		[_TagSymbol]: 'ThreeBit',
+		[_TagSymbol]: ThreeBitTag,
 		[Equal.symbol](this: Type, that: unknown): boolean {
 			return has(that) && equivalence(this, that);
 		},
@@ -167,7 +174,7 @@ export namespace ThreeBit {
 				this.offset,
 				Hash.hash,
 				Hash.combine(Hash.hash(this.isBright)),
-				Hash.combine(Hash.hash(this[_TagSymbol])),
+				Hash.combine(ThreeBitTagHash),
 				Hash.combine(_TypeIdHash),
 				Hash.cached(this)
 			);
@@ -949,7 +956,7 @@ export namespace EightBit {
 		readonly [_sequenceSymbol]: () => ASAnsiString.NonEmptySequence;
 
 		/** @internal */
-		readonly [_TagSymbol]: 'EightBit';
+		readonly [_TagSymbol]: typeof EightBitTag;
 
 		/** @internal */
 		readonly [TypeId]: TypeId;
@@ -972,7 +979,7 @@ export namespace EightBit {
 	/** Base */
 	const proto: MTypes.Proto<Type> = {
 		[TypeId]: TypeId,
-		[_TagSymbol]: 'EightBit',
+		[_TagSymbol]: EightBitTag,
 		[Equal.symbol](this: Type, that: unknown): boolean {
 			return has(that) && equivalence(this, that);
 		},
@@ -980,7 +987,7 @@ export namespace EightBit {
 			return pipe(
 				this.code,
 				Hash.hash,
-				Hash.combine(Hash.hash(this[_TagSymbol])),
+				Hash.combine(EightBitTagHash),
 				Hash.combine(_TypeIdHash),
 				Hash.cached(this)
 			);
@@ -2571,7 +2578,7 @@ export namespace Rgb {
 		readonly [_sequenceSymbol]: () => ASAnsiString.NonEmptySequence;
 
 		/** @internal */
-		readonly [_TagSymbol]: 'Rgb';
+		readonly [_TagSymbol]: typeof RgbTag;
 
 		/** @internal */
 		readonly [TypeId]: TypeId;
@@ -2598,7 +2605,7 @@ export namespace Rgb {
 	/** Base */
 	const proto: MTypes.Proto<Type> = {
 		[TypeId]: TypeId,
-		[_TagSymbol]: 'Rgb',
+		[_TagSymbol]: RgbTag,
 		[Equal.symbol](this: Type, that: unknown): boolean {
 			return has(that) && equivalence(this, that);
 		},
@@ -2608,7 +2615,7 @@ export namespace Rgb {
 				Hash.hash,
 				Hash.combine(Hash.hash(this.greenCode)),
 				Hash.combine(Hash.hash(this.blueCode)),
-				Hash.combine(Hash.hash(this[_TagSymbol])),
+				Hash.combine(RgbTagHash),
 				Hash.combine(_TypeIdHash),
 				Hash.cached(this)
 			);
