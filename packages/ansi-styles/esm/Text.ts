@@ -388,6 +388,17 @@ export const toAnsiString: MTypes.OneArgFunction<Type, string> = flow(
 );
 
 /**
+ * Returns the string corresponding to self without any styling
+ *
+ * @category Destructors
+ */
+export const toUnstyledString: MTypes.OneArgFunction<Type, string> = flow(
+	uniStyledTexts,
+	Array.map(UniStyled.text),
+	Array.join('')
+);
+
+/**
  * Builds a new Text by appending `that` to `self`
  *
  * @category Utils
