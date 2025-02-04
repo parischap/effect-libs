@@ -27,7 +27,7 @@ export const makeBoth = <A>(a: A): [A, A] => Tuple.make(a, a);
  * @category Constructors
  */
 export const makeBothBy =
-	<A, B, C>({
+	<A, B, C = B>({
 		toFirst,
 		toSecond
 	}: {
