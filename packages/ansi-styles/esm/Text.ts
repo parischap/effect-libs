@@ -38,18 +38,17 @@ import * as ASStyleCharacteristics from './StyleCharacteristics.js';
  * @category Models
  */
 export const moduleTag = '@parischap/ansi-styles/Text/';
-const _moduleTag = moduleTag;
-const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
-type TypeId = typeof TypeId;
+const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
+type _TypeId = typeof _TypeId;
 
 /**
  * Namespace of a unformly styled text (that is a text that is thorougly formatted with the same
  * style)
  */
 namespace UniStyled {
-	const moduleTag = _moduleTag + 'UniStyled/';
-	const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
-	type TypeId = typeof TypeId;
+	const namespaceTag = moduleTag + 'UniStyled/';
+	const _TypeId: unique symbol = Symbol.for(namespaceTag) as _TypeId;
+	type _TypeId = typeof _TypeId;
 
 	/**
 	 * Interface that represents a Unistyled text
@@ -64,7 +63,7 @@ namespace UniStyled {
 		readonly style: ASStyleCharacteristics.Type;
 
 		/* @internal */
-		readonly [TypeId]: TypeId;
+		readonly [_TypeId]: _TypeId;
 	}
 
 	/**
@@ -72,7 +71,7 @@ namespace UniStyled {
 	 *
 	 * @category Guards
 	 */
-	export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
+	export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
 
 	/**
 	 * Equivalence based on the style
@@ -99,9 +98,9 @@ namespace UniStyled {
 		haveSameText(self, that) && haveSameStyle(self, that);
 
 	/** Prototype */
-	const _TypeIdHash = Hash.hash(TypeId);
+	const _TypeIdHash = Hash.hash(_TypeId);
 	const proto: MTypes.Proto<Type> = {
-		[TypeId]: TypeId,
+		[_TypeId]: _TypeId,
 		[Equal.symbol](this: Type, that: unknown): boolean {
 			return has(that) && equivalence(this, that);
 		},
@@ -196,7 +195,7 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
 	readonly uniStyledTexts: ReadonlyArray<UniStyled.Type>;
 
 	/* @internal */
-	readonly [TypeId]: TypeId;
+	readonly [_TypeId]: _TypeId;
 }
 
 /**
@@ -204,7 +203,7 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
  *
  * @category Guards
  */
-export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
+export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
 
 // To be removed when Effect 4.0 with structural equality comes out
 const _equivalence = Array.getEquivalence(UniStyled.equivalence);
@@ -229,9 +228,9 @@ export const haveSameText: Equivalence.Equivalence<Type> = (self, that) =>
 	_haveSameTextequivalence(self.uniStyledTexts, that.uniStyledTexts);
 
 /** Prototype */
-const _TypeIdHash = Hash.hash(TypeId);
+const _TypeIdHash = Hash.hash(_TypeId);
 const proto: MTypes.Proto<Type> = {
-	[TypeId]: TypeId,
+	[_TypeId]: _TypeId,
 	[Equal.symbol](this: Type, that: unknown): boolean {
 		return has(that) && equivalence(this, that);
 	},

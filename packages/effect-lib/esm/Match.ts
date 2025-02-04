@@ -16,8 +16,8 @@ import * as MTypes from './types.js';
  * @category Models
  */
 export const moduleTag = '@parischap/effect-lib/Match/';
-const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
-type TypeId = typeof TypeId;
+const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
+type _TypeId = typeof _TypeId;
 
 /**
  * Type that represents a matcher
@@ -32,7 +32,7 @@ export interface Type<out Input, out Output, out Rest extends Input>
 	/** The output of the matcher when it has been found */
 	readonly output: Option.Option<Output>;
 	/** @internal */
-	readonly [TypeId]: {
+	readonly [_TypeId]: {
 		readonly _Input: Types.Covariant<Input>;
 		readonly _Output: Types.Covariant<Output>;
 		readonly _Rest: Types.Covariant<Rest>;
@@ -45,12 +45,12 @@ export interface Type<out Input, out Output, out Rest extends Input>
  * @category Guards
  */
 export const has = (u: unknown): u is Type<unknown, unknown, unknown> =>
-	Predicate.hasProperty(u, TypeId);
+	Predicate.hasProperty(u, _TypeId);
 
 /** Prototype */
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 const proto: MTypes.Proto<Type<any, any, any>> = {
-	[TypeId]: {
+	[_TypeId]: {
 		_Input: MTypes.covariantValue,
 		_Output: MTypes.covariantValue,
 		_Rest: MTypes.covariantValue

@@ -28,18 +28,17 @@ import * as MTypes from './types.js';
  * @category Models
  */
 export const moduleTag = '@parischap/effect-lib/Cache/';
-const _moduleTag = moduleTag;
-const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
-type TypeId = typeof TypeId;
+const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
+type _TypeId = typeof _TypeId;
 
 /**
  * This namespace implements a ValueContainer which is a container for a value to be stored in a
  * cache.
  */
 namespace ValueContainer {
-	const moduleTag = _moduleTag + 'ValueContainer/';
-	const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
-	type TypeId = typeof TypeId;
+	const namespaceTag = moduleTag + 'ValueContainer/';
+	const _TypeId: unique symbol = Symbol.for(namespaceTag) as _TypeId;
+	type _TypeId = typeof _TypeId;
 
 	/**
 	 * Interface that represents a ValueContainer
@@ -52,7 +51,7 @@ namespace ValueContainer {
 		/** The time at which the value was calculated */
 		readonly storeDate: number;
 		/** @internal */
-		readonly [TypeId]: {
+		readonly [_TypeId]: {
 			readonly _A: Types.Covariant<A>;
 		};
 	}
@@ -62,12 +61,12 @@ namespace ValueContainer {
 	 *
 	 * @category Guards
 	 */
-	export const has = (u: unknown): u is Type<unknown> => Predicate.hasProperty(u, TypeId);
+	export const has = (u: unknown): u is Type<unknown> => Predicate.hasProperty(u, _TypeId);
 
 	/** Prototype */
 	/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 	const proto: MTypes.Proto<Type<any>> = {
-		[TypeId]: {
+		[_TypeId]: {
 			_A: MTypes.covariantValue
 		},
 		...MInspectable.BaseProto(moduleTag),
@@ -128,7 +127,7 @@ export interface Type<in out A, in out B> extends Inspectable.Inspectable, Pipea
 	/** The lifespan of the values in the cache. If undefined, the values never expire */
 	readonly lifeSpan: number | undefined;
 	/** @internal */
-	readonly [TypeId]: {
+	readonly [_TypeId]: {
 		readonly _A: Types.Invariant<A>;
 		readonly _B: Types.Invariant<B>;
 	};
@@ -139,12 +138,12 @@ export interface Type<in out A, in out B> extends Inspectable.Inspectable, Pipea
  *
  * @category Guards
  */
-export const has = (u: unknown): u is Type<unknown, unknown> => Predicate.hasProperty(u, TypeId);
+export const has = (u: unknown): u is Type<unknown, unknown> => Predicate.hasProperty(u, _TypeId);
 
 /** Prototype */
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 const proto: MTypes.Proto<Type<any, any>> = {
-	[TypeId]: {
+	[_TypeId]: {
 		_A: MTypes.invariantValue,
 		_B: MTypes.invariantValue
 	},

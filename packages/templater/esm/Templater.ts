@@ -26,8 +26,8 @@ import {
 import { flow } from 'effect/Function';
 
 const moduleTag = '@parischap/templater/Templater/';
-const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
-type TypeId = typeof TypeId;
+const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
+type _TypeId = typeof _TypeId;
 
 /**
  * During compilation, a template is split at the boundary of each target. So if there are n targets
@@ -44,7 +44,7 @@ export interface Type<out T extends string> extends Inspectable.Inspectable, Pip
 	readonly finalStaticText: string;
 	readonly targets: ReadonlyArray<T>;
 	/** @internal */
-	readonly [TypeId]: {
+	readonly [_TypeId]: {
 		readonly _T: Types.Covariant<T>;
 	};
 }
@@ -54,12 +54,12 @@ export interface Type<out T extends string> extends Inspectable.Inspectable, Pip
  *
  * @category Guards
  */
-export const has = (u: unknown): u is Type<string> => Predicate.hasProperty(u, TypeId);
+export const has = (u: unknown): u is Type<string> => Predicate.hasProperty(u, _TypeId);
 
 /** Prototype */
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 const proto: MTypes.Proto<Type<any>> = {
-	[TypeId]: {
+	[_TypeId]: {
 		_T: MTypes.covariantValue
 	},
 	toJSON<T extends string>(this: Type<T>) {

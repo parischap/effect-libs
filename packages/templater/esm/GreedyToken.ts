@@ -17,7 +17,7 @@ export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pip
 	/** RegExp that the token must comply with */
 	readonly pattern: RegExp;
 	/** @internal */
-	readonly [Token.TypeId]: Token.TypeId;
+	readonly [Token._TypeId]: Token._TypeId;
 }
 
 /**
@@ -25,7 +25,7 @@ export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pip
  *
  * @category Guards
  */
-export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
+export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
 
 /**
  * Equivalence
@@ -35,9 +35,9 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
 
 /** Prototype */
-const _TypeIdHash = Hash.hash(TypeId);
+const _TypeIdHash = Hash.hash(_TypeId);
 const proto: MTypes.Proto<Type> = {
-	[TypeId]: TypeId,
+	[_TypeId]: _TypeId,
 	[Equal.symbol](this: Type, that: unknown): boolean {
 		return has(that) && equivalence(this, that);
 	},

@@ -16,12 +16,12 @@ import * as ASStyle from './Style.js';
  * @category Models
  */
 export const moduleTag = '@parischap/ansi-styles/ContextFormatter/';
-const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
-type TypeId = typeof TypeId;
+const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
+type _TypeId = typeof _TypeId;
 
 const _TagSymbol: unique symbol = Symbol.for(moduleTag + '_TagSymbol/');
-const UnistyledTag = 'Unistyled';
-const PaletteBasedTag = 'PaletteBased';
+const _UnistyledTag = 'Unistyled';
+const _PaletteBasedTag = 'PaletteBased';
 
 /**
  * Namespace of a ContextFormatter used as an action
@@ -49,7 +49,7 @@ export type Type<C> = Unistyled.Type | PaletteBased.Type<C>;
  *
  * @category Guards
  */
-export const has = (u: unknown): u is Type<never> => Predicate.hasProperty(u, TypeId);
+export const has = (u: unknown): u is Type<never> => Predicate.hasProperty(u, _TypeId);
 const _has = has;
 
 /**
@@ -57,7 +57,7 @@ const _has = has;
  *
  * @category Guards
  */
-export const isUnistyled = (u: Type<never>): u is Unistyled.Type => u[_TagSymbol] === UnistyledTag;
+export const isUnistyled = (u: Type<never>): u is Unistyled.Type => u[_TagSymbol] === _UnistyledTag;
 
 /**
  * Type guard
@@ -65,7 +65,7 @@ export const isUnistyled = (u: Type<never>): u is Unistyled.Type => u[_TagSymbol
  * @category Guards
  */
 export const isPaletteBased = (u: Type<never>): u is PaletteBased.Type<never> =>
-	u[_TagSymbol] === PaletteBasedTag;
+	u[_TagSymbol] === _PaletteBasedTag;
 
 /**
  * Namespace for a Unistyled ContextFormatter, i.e. a ContextFormatter which always applies the same
@@ -84,10 +84,10 @@ export namespace Unistyled {
 		readonly style: ASStyle.Type;
 
 		/** @internal */
-		readonly [_TagSymbol]: typeof UnistyledTag;
+		readonly [_TagSymbol]: typeof _UnistyledTag;
 
 		/** @internal */
-		readonly [TypeId]: TypeId;
+		readonly [_TypeId]: _TypeId;
 	}
 
 	/**
@@ -100,8 +100,8 @@ export namespace Unistyled {
 
 	/** Base */
 	const base: MTypes.Proto<Type> = {
-		[TypeId]: TypeId,
-		[_TagSymbol]: UnistyledTag,
+		[_TypeId]: _TypeId,
+		[_TagSymbol]: _UnistyledTag,
 		[MInspectable.IdSymbol](this: Type) {
 			return toId(this);
 		},
@@ -175,10 +175,10 @@ export namespace PaletteBased {
 		readonly palette: ASPalette.Type;
 
 		/** @internal */
-		readonly [_TagSymbol]: typeof PaletteBasedTag;
+		readonly [_TagSymbol]: typeof _PaletteBasedTag;
 
 		/** @internal */
-		readonly [TypeId]: {
+		readonly [_TypeId]: {
 			readonly _C: Types.Contravariant<C>;
 		};
 	}
@@ -194,10 +194,10 @@ export namespace PaletteBased {
 	/** Base */
 	/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 	const base: MTypes.Proto<Type<any>> = {
-		[TypeId]: {
+		[_TypeId]: {
 			_C: MTypes.contravariantValue
 		},
-		[_TagSymbol]: PaletteBasedTag,
+		[_TagSymbol]: _PaletteBasedTag,
 		[MInspectable.IdSymbol]<C>(this: Type<C>) {
 			return toId(this);
 		},

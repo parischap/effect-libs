@@ -42,9 +42,8 @@ import {
 import * as Error from './Error.js';
 
 const moduleTag = '@parischap/templater/Transformer/';
-const _moduleTag = moduleTag;
-const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
-type TypeId = typeof TypeId;
+const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
+type _TypeId = typeof _TypeId;
 
 /**
  * Type that represents a Transformer.
@@ -70,7 +69,7 @@ export interface Type<in out A> extends Equal.Equal, Inspectable.Inspectable, Pi
 	readonly write: MTypes.OneArgFunction<A, Either.Either<string, Error.Type>>;
 
 	/** @internal */
-	readonly [TypeId]: {
+	readonly [_TypeId]: {
 		readonly _A: Types.Invariant<A>;
 	};
 }
@@ -82,7 +81,7 @@ interface _Type<in out A> extends Type<A> {}
  *
  * @category Guards
  */
-export const has = (u: unknown): u is Type<unknown> => Predicate.hasProperty(u, TypeId);
+export const has = (u: unknown): u is Type<unknown> => Predicate.hasProperty(u, _TypeId);
 
 /**
  * Equivalence
@@ -93,10 +92,10 @@ export const has = (u: unknown): u is Type<unknown> => Predicate.hasProperty(u, 
 export const equivalence: Equivalence.Equivalence<Type<any>> = (self, that) => that.id === self.id;
 
 /** Prototype */
-const _TypeIdHash = Hash.hash(TypeId);
+const _TypeIdHash = Hash.hash(_TypeId);
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 const proto: MTypes.Proto<Type<any>> = {
-	[TypeId]: {
+	[_TypeId]: {
 		_A: MTypes.invariantValue
 	},
 	[Equal.symbol]<A>(this: Type<A>, that: unknown): boolean {
@@ -504,9 +503,9 @@ export namespace Number {
 
 	/** This namespace implements the Options to Transformer.Number.make. */
 	export namespace Options {
-		const moduleTag = _moduleTag + 'Real/Options/';
-		const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
-		type TypeId = typeof TypeId;
+		const namespaceTag = moduleTag + 'Real/Options/';
+		const _TypeId: unique symbol = Symbol.for(namespaceTag) as _TypeId;
+		type _TypeId = typeof _TypeId;
 
 		/** Transformer.Real options */
 		export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
@@ -578,7 +577,7 @@ export namespace Number {
 			readonly eNotationOptions: ENotationOptions;
 
 			/** @internal */
-			readonly [TypeId]: TypeId;
+			readonly [_TypeId]: _TypeId;
 		}
 
 		/**
@@ -586,7 +585,7 @@ export namespace Number {
 		 *
 		 * @category Guards
 		 */
-		export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
+		export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
 
 		/**
 		 * Equivalence
@@ -604,9 +603,9 @@ export namespace Number {
 			that.eNotationOptions === self.eNotationOptions;
 
 		/** Prototype */
-		const _TypeIdHash = Hash.hash(TypeId);
+		const _TypeIdHash = Hash.hash(_TypeId);
 		const proto: MTypes.Proto<Type> = {
-			[TypeId]: TypeId,
+			[_TypeId]: _TypeId,
 			[Equal.symbol](this: Type, that: unknown): boolean {
 				return has(that) && equivalence(this, that);
 			},

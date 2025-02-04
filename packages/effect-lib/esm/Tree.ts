@@ -41,9 +41,9 @@ import * as MTypes from './types.js';
  * @category Models
  */
 export const moduleTag = '@parischap/effect-lib/Tree/';
-const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
-type TypeId = typeof TypeId;
-const _TypeIdHash = Hash.hash(TypeId);
+const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
+type _TypeId = typeof _TypeId;
+const _TypeIdHash = Hash.hash(_TypeId);
 
 /**
  * Namespace of a Leaf
@@ -64,7 +64,7 @@ export namespace Leaf {
 		readonly value: B;
 
 		/** @internal */
-		readonly [TypeId]: {
+		readonly [_TypeId]: {
 			readonly _A: Types.Covariant<never>;
 			readonly _B: Types.Covariant<B>;
 		};
@@ -138,7 +138,7 @@ export type Type<A, B> = Leaf.Type<B> | NonLeaf.Type<A, B>;
  *
  * @category Guards
  */
-export const has = (u: unknown): u is Type<unknown, unknown> => Predicate.hasProperty(u, TypeId);
+export const has = (u: unknown): u is Type<unknown, unknown> => Predicate.hasProperty(u, _TypeId);
 
 /**
  * Type guard
@@ -179,7 +179,7 @@ export const equivalence: Equivalence.Equivalence<Type<unknown, unknown>> = getE
 /** Prototype */
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 const proto: MTypes.Proto<Type<any, any>> = {
-	[TypeId]: {
+	[_TypeId]: {
 		_A: MTypes.covariantValue,
 		_B: MTypes.covariantValue
 	},
@@ -545,7 +545,7 @@ export namespace NonLeaf {
 		readonly forest: Forest.Type<A, B>;
 
 		/** @internal */
-		readonly [TypeId]: {
+		readonly [_TypeId]: {
 			readonly _A: Types.Covariant<A>;
 			readonly _B: Types.Covariant<B>;
 		};

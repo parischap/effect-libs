@@ -11,7 +11,6 @@ import * as MTypes from './types.js';
  * @category Models
  */
 export const moduleTag = '@parischap/effect-lib/Brand/';
-const _moduleTag = moduleTag;
 
 /** Brand constructor type with refined input */
 
@@ -27,15 +26,15 @@ type RefinedConstructor<B, A extends Brand.Brand<string | symbol> & B> = MTypes.
 
 /** This namespace implements an Email brand. */
 export namespace Email {
-	const moduleTag = _moduleTag + 'Email/';
-	const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
-	type TypeId = typeof TypeId;
+	const namespaceTag = moduleTag + 'Email/';
+	const _TypeId: unique symbol = Symbol.for(namespaceTag) as _TypeId;
+	type _TypeId = typeof _TypeId;
 	/**
 	 * Email type
 	 *
 	 * @category Models
 	 */
-	export type Type = Brand.Branded<string, TypeId>;
+	export type Type = Brand.Branded<string, _TypeId>;
 
 	/**
 	 * Constructs an Email without any verifications
@@ -57,16 +56,16 @@ export namespace Email {
 
 /** This namespace implements a SemVer brand. */
 export namespace SemVer {
-	const moduleTag = _moduleTag + 'SemVer/';
-	const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
-	type TypeId = typeof TypeId;
+	const namespaceTag = moduleTag + 'SemVer/';
+	const _TypeId: unique symbol = Symbol.for(namespaceTag) as _TypeId;
+	type _TypeId = typeof _TypeId;
 
 	/**
 	 * SemVer type
 	 *
 	 * @category Models
 	 */
-	export type Type = Brand.Branded<string, TypeId>;
+	export type Type = Brand.Branded<string, _TypeId>;
 
 	/**
 	 * Constructs a SemVer without any verifications
@@ -88,16 +87,16 @@ export namespace SemVer {
 
 /** This namespace implements a finite real number brand (no Infinity or Nan) */
 export namespace Real {
-	const moduleTag = _moduleTag + 'Real/';
-	const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
-	type TypeId = typeof TypeId;
+	const namespaceTag = moduleTag + 'Real/';
+	const _TypeId: unique symbol = Symbol.for(namespaceTag) as _TypeId;
+	type _TypeId = typeof _TypeId;
 
 	/**
 	 * Real type
 	 *
 	 * @category Models
 	 */
-	export type Type = Brand.Branded<number, TypeId>;
+	export type Type = Brand.Branded<number, _TypeId>;
 
 	/**
 	 * Constructs a Real from a number without any verifications
@@ -118,16 +117,16 @@ export namespace Real {
 
 /** This namespace implements a finite integer brand (no Infinity or Nan) */
 export namespace Int {
-	const moduleTag = _moduleTag + 'Int/';
-	const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
-	type TypeId = typeof TypeId;
+	const namespaceTag = moduleTag + 'Int/';
+	const _TypeId: unique symbol = Symbol.for(namespaceTag) as _TypeId;
+	type _TypeId = typeof _TypeId;
 
 	/**
 	 * Int type
 	 *
 	 * @category Models
 	 */
-	export type Type = Brand.Branded<Real.Type, TypeId>;
+	export type Type = Brand.Branded<Real.Type, _TypeId>;
 
 	/**
 	 * Constructs an Int from a number without any verifications
@@ -223,22 +222,22 @@ export namespace IntRange {
 
 /** This namespace implements a positive integer brand. */
 export namespace PositiveInt {
-	const moduleTag = _moduleTag + 'PositiveInt/';
-	const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
-	type TypeId = typeof TypeId;
+	const namespaceTag = moduleTag + 'PositiveInt/';
+	const _TypeId: unique symbol = Symbol.for(namespaceTag) as _TypeId;
+	type _TypeId = typeof _TypeId;
 	/**
 	 * Type for positive integers
 	 *
 	 * @category Instances
 	 */
-	export type Type = IntRange.Type<TypeId>;
+	export type Type = IntRange.Type<_TypeId>;
 
 	/**
 	 * Constructs a PositiveInt from a number without any verifications
 	 *
 	 * @category Constructors
 	 */
-	export const unsafeFromNumber = IntRange.unsafeFromNumber<TypeId>();
+	export const unsafeFromNumber = IntRange.unsafeFromNumber<_TypeId>();
 
 	/**
 	 * Constructs a PositiveInt from a number. Throws an error if the provided number is not an
@@ -246,7 +245,7 @@ export namespace PositiveInt {
 	 *
 	 * @category Constructors
 	 */
-	export const fromNumber = IntRange.fromNumber<TypeId>(0, +Infinity);
+	export const fromNumber = IntRange.fromNumber<_TypeId>(0, +Infinity);
 
 	/**
 	 * Constructs a PositiveInt from a Real. Throws an error if the provided number is not a positive
@@ -254,12 +253,12 @@ export namespace PositiveInt {
 	 *
 	 * @category Constructors
 	 */
-	export const fromReal = IntRange.fromReal<TypeId>(0, +Infinity);
+	export const fromReal = IntRange.fromReal<_TypeId>(0, +Infinity);
 
 	/**
 	 * Constructs a PositiveInt from an Int. Throws an error if the provided Int is not positive
 	 *
 	 * @category Constructors
 	 */
-	export const fromInt = IntRange.fromInt<TypeId>(0, +Infinity);
+	export const fromInt = IntRange.fromInt<_TypeId>(0, +Infinity);
 }

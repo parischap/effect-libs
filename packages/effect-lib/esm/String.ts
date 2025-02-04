@@ -33,16 +33,15 @@ import * as MTypes from './types.js';
  * @category Models
  */
 export const moduleTag = '@parischap/effect-lib/String/';
-const _moduleTag = moduleTag;
 
 /**
  * This namespace implements a type that represents the result of the search of a string in another
  * string.
  */
 export namespace SearchResult {
-	const moduleTag = _moduleTag + 'SearchResult/';
-	const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
-	type TypeId = typeof TypeId;
+	const namespaceTag = moduleTag + 'SearchResult/';
+	const _TypeId: unique symbol = Symbol.for(namespaceTag) as _TypeId;
+	type _TypeId = typeof _TypeId;
 
 	/**
 	 * Interface that represents a SearchResult
@@ -57,7 +56,7 @@ export namespace SearchResult {
 		/** The match */
 		readonly match: string;
 		/** @internal */
-		readonly [TypeId]: TypeId;
+		readonly [_TypeId]: _TypeId;
 	}
 
 	/**
@@ -65,7 +64,7 @@ export namespace SearchResult {
 	 *
 	 * @category Guards
 	 */
-	export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
+	export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
 
 	/**
 	 * Equivalence
@@ -86,9 +85,9 @@ export namespace SearchResult {
 		self.endIndex >= that.startIndex && self.startIndex <= that.endIndex;
 
 	/** Prototype */
-	const _TypeIdHash = Hash.hash(TypeId);
+	const _TypeIdHash = Hash.hash(_TypeId);
 	const proto: MTypes.Proto<Type> = {
-		[TypeId]: TypeId,
+		[_TypeId]: _TypeId,
 		[Equal.symbol](this: Type, that: unknown): boolean {
 			return has(that) && equivalence(this, that);
 		},

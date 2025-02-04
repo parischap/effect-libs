@@ -25,17 +25,17 @@ import * as ASAnsiString from './AnsiString.js';
  * @category Models
  */
 export const moduleTag = '@parischap/ansi-styles/Color/';
-const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
-type TypeId = typeof TypeId;
-const _TypeIdHash = Hash.hash(TypeId);
+const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
+type _TypeId = typeof _TypeId;
+const _TypeIdHash = Hash.hash(_TypeId);
 
 const _TagSymbol: unique symbol = Symbol.for(moduleTag + '_TagSymbol/');
-const ThreeBitTag = 'ThreeBit';
-const EightBitTag = 'EightBit';
-const RgbTag = 'Rgb';
-const ThreeBitTagHash = Hash.hash(ThreeBitTag);
-const EightBitTagHash = Hash.hash(EightBitTag);
-const RgbTagHash = Hash.hash(RgbTag);
+const _ThreeBitTag = 'ThreeBit';
+const _EightBitTag = 'EightBit';
+const _RgbTag = 'Rgb';
+const _ThreeBitTagHash = Hash.hash(_ThreeBitTag);
+const _EightBitTagHash = Hash.hash(_EightBitTag);
+const _RgbTagHash = Hash.hash(_RgbTag);
 
 const _sequenceSymbol: unique symbol = Symbol.for(moduleTag + '_sequenceSymbol/');
 
@@ -51,7 +51,7 @@ export type Type = ThreeBit.Type | EightBit.Type | Rgb.Type;
  *
  * @category Guards
  */
-export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
+export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
 const _has = has;
 
 /**
@@ -59,21 +59,21 @@ const _has = has;
  *
  * @category Guards
  */
-export const isThreeBit = (u: Type): u is ThreeBit.Type => u[_TagSymbol] === ThreeBitTag;
+export const isThreeBit = (u: Type): u is ThreeBit.Type => u[_TagSymbol] === _ThreeBitTag;
 
 /**
  * Type guard
  *
  * @category Guards
  */
-export const isEightBit = (u: Type): u is EightBit.Type => u[_TagSymbol] === EightBitTag;
+export const isEightBit = (u: Type): u is EightBit.Type => u[_TagSymbol] === _EightBitTag;
 
 /**
  * Type guard
  *
  * @category Guards
  */
-export const isRgb = (u: Type): u is Rgb.Type => u[_TagSymbol] === RgbTag;
+export const isRgb = (u: Type): u is Rgb.Type => u[_TagSymbol] === _RgbTag;
 
 /**
  * Namespace for three-bit colors
@@ -140,10 +140,10 @@ export namespace ThreeBit {
 		readonly [_sequenceSymbol]: () => ASAnsiString.NonEmptySequence;
 
 		/** @internal */
-		readonly [_TagSymbol]: typeof ThreeBitTag;
+		readonly [_TagSymbol]: typeof _ThreeBitTag;
 
 		/** @internal */
-		readonly [TypeId]: TypeId;
+		readonly [_TypeId]: _TypeId;
 	}
 
 	/**
@@ -164,8 +164,8 @@ export namespace ThreeBit {
 
 	/** Proto */
 	const proto: MTypes.Proto<Type> = {
-		[TypeId]: TypeId,
-		[_TagSymbol]: ThreeBitTag,
+		[_TypeId]: _TypeId,
+		[_TagSymbol]: _ThreeBitTag,
 		[Equal.symbol](this: Type, that: unknown): boolean {
 			return has(that) && equivalence(this, that);
 		},
@@ -174,7 +174,7 @@ export namespace ThreeBit {
 				this.offset,
 				Hash.hash,
 				Hash.combine(Hash.hash(this.isBright)),
-				Hash.combine(ThreeBitTagHash),
+				Hash.combine(_ThreeBitTagHash),
 				Hash.combine(_TypeIdHash),
 				Hash.cached(this)
 			);
@@ -956,10 +956,10 @@ export namespace EightBit {
 		readonly [_sequenceSymbol]: () => ASAnsiString.NonEmptySequence;
 
 		/** @internal */
-		readonly [_TagSymbol]: typeof EightBitTag;
+		readonly [_TagSymbol]: typeof _EightBitTag;
 
 		/** @internal */
-		readonly [TypeId]: TypeId;
+		readonly [_TypeId]: _TypeId;
 	}
 
 	/**
@@ -978,8 +978,8 @@ export namespace EightBit {
 
 	/** Base */
 	const proto: MTypes.Proto<Type> = {
-		[TypeId]: TypeId,
-		[_TagSymbol]: EightBitTag,
+		[_TypeId]: _TypeId,
+		[_TagSymbol]: _EightBitTag,
 		[Equal.symbol](this: Type, that: unknown): boolean {
 			return has(that) && equivalence(this, that);
 		},
@@ -987,7 +987,7 @@ export namespace EightBit {
 			return pipe(
 				this.code,
 				Hash.hash,
-				Hash.combine(EightBitTagHash),
+				Hash.combine(_EightBitTagHash),
 				Hash.combine(_TypeIdHash),
 				Hash.cached(this)
 			);
@@ -2578,10 +2578,10 @@ export namespace Rgb {
 		readonly [_sequenceSymbol]: () => ASAnsiString.NonEmptySequence;
 
 		/** @internal */
-		readonly [_TagSymbol]: typeof RgbTag;
+		readonly [_TagSymbol]: typeof _RgbTag;
 
 		/** @internal */
-		readonly [TypeId]: TypeId;
+		readonly [_TypeId]: _TypeId;
 	}
 
 	/**
@@ -2604,8 +2604,8 @@ export namespace Rgb {
 
 	/** Base */
 	const proto: MTypes.Proto<Type> = {
-		[TypeId]: TypeId,
-		[_TagSymbol]: RgbTag,
+		[_TypeId]: _TypeId,
+		[_TagSymbol]: _RgbTag,
 		[Equal.symbol](this: Type, that: unknown): boolean {
 			return has(that) && equivalence(this, that);
 		},
@@ -2615,7 +2615,7 @@ export namespace Rgb {
 				Hash.hash,
 				Hash.combine(Hash.hash(this.greenCode)),
 				Hash.combine(Hash.hash(this.blueCode)),
-				Hash.combine(RgbTagHash),
+				Hash.combine(_RgbTagHash),
 				Hash.combine(_TypeIdHash),
 				Hash.cached(this)
 			);

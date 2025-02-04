@@ -16,8 +16,8 @@ import * as ASText from './Text.js';
  * @category Models
  */
 export const moduleTag = '@parischap/ansi-styles/Style/';
-const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
-type TypeId = typeof TypeId;
+const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
+type _TypeId = typeof _TypeId;
 
 /**
  * Namespace of a Style used as an action
@@ -49,7 +49,7 @@ export interface Type
 	readonly style: ASStyleCharacteristics.Type;
 
 	/** @internal */
-	readonly [TypeId]: TypeId;
+	readonly [_TypeId]: _TypeId;
 }
 
 /**
@@ -57,7 +57,7 @@ export interface Type
  *
  * @category Guards
  */
-export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
+export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
 
 /**
  * Equivalence
@@ -68,9 +68,9 @@ export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
 	ASStyleCharacteristics.equivalence(self.style, that.style);
 
 /** Base */
-const _TypeIdHash = Hash.hash(TypeId);
+const _TypeIdHash = Hash.hash(_TypeId);
 const base: MTypes.Proto<Type> = {
-	[TypeId]: TypeId,
+	[_TypeId]: _TypeId,
 	[Equal.symbol](this: Type, that: unknown): boolean {
 		return has(that) && equivalence(this, that);
 	},
