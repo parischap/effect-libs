@@ -286,15 +286,9 @@ const _unfold =
  * @category Constructors
  */
 
-export const unfold =
-	<S, A, B>(
-		f: (
-			seed: S,
-			cyclicalRef: Option.Option<A>
-		) => Either.Either<MTypes.Pair<A, ReadonlyArray<S>>, B>
-	) =>
-	(seed: S): Type<A, B> =>
-		pipe(seed, _unfold(f), Array.headNonEmpty);
+export const unfold = <S, A, B>(
+	f: (seed: S, cyclicalRef: Option.Option<A>) => Either.Either<MTypes.Pair<A, ReadonlyArray<S>>, B>
+): MTypes.OneArgFunction<S, Type<A, B>> => flow(_unfold(f), Array.headNonEmpty);
 
 /**
  * Non recursive function that builds a (possibly infinite) tree from a seed value and an unfold
@@ -306,47 +300,40 @@ export const unfold =
  * @category Constructors
  */
 
-export const unfoldAndFold =
-	<A, B, S = A, C = B>({
-		unfold,
-		foldNonLeaf,
-		foldLeaf
-	}: {
-		readonly unfold: (
-			seed: S,
-			cyclicalRef: Option.Option<A>
-		) => Either.Either<MTypes.Pair<A, ReadonlyArray<S>>, B>;
-		readonly foldNonLeaf: (value: A, children: ReadonlyArray<B>) => C;
-		readonly foldLeaf: (value: B) => C;
-	}) =>
-	(seed: S): C =>
-		pipe(
-			seed,
-			_unfold(unfold),
-			Array.reverse,
-			Array.map(
-				flow(
-					MMatch.make,
-					MMatch.when(
-						isLeaf,
-						MStruct.mutableEnrichWith({
-							value: (node) => foldLeaf(node.value)
-						})
-					),
-					MMatch.orElse(
-						MStruct.mutableEnrichWith({
-							value: (node) =>
-								foldNonLeaf(
-									node.value,
-									Array.map(node.forest as Forest.Type<B, B>, Struct.get('value'))
-								)
-						})
-					)
-				)
-			),
-			Array.lastNonEmpty,
-			Struct.get('value')
-		);
+export const unfoldAndFold = <A, B, S = A, C = B>({
+	unfold,
+	foldNonLeaf,
+	foldLeaf
+}: {
+	readonly unfold: (
+		seed: S,
+		cyclicalRef: Option.Option<A>
+	) => Either.Either<MTypes.Pair<A, ReadonlyArray<S>>, B>;
+	readonly foldNonLeaf: (value: A, children: ReadonlyArray<B>) => C;
+	readonly foldLeaf: (value: B) => C;
+}): MTypes.OneArgFunction<S, C> =>
+	flow(
+		_unfold(unfold),
+		Array.reverse,
+		Array.map(
+			flow(
+				Either.liftPredicate(isLeaf, Function.unsafeCoerce<Type<A, B>, NonLeaf.Type<A, B>>),
+				Either.mapBoth({
+					onLeft: MStruct.mutableEnrichWith({
+						value: (node) =>
+							foldNonLeaf(
+								node.value,
+								Array.map(node.forest as Forest.Type<B, B>, Struct.get('value'))
+							)
+					}),
+					onRight: Struct.evolve({ value: foldLeaf })
+				}),
+				Either.merge
+			)
+		),
+		Array.lastNonEmpty,
+		Struct.get('value')
+	);
 
 /**
  * Folds a tree into a "summary" value in bottom-up order with.
