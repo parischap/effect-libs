@@ -60,10 +60,10 @@ const proto: MTypes.Proto<Type<any, any, any>> = {
 };
 
 /** Constructor */
-const _make = <Input, Output>(params: {
+const _make = <Input, Output, Rest extends Input>(params: {
 	readonly input: Input;
 	readonly output: Option.Option<Output>;
-}): Type<Input, Output, Input> => MTypes.objectFromDataAndProto(proto, params);
+}): Type<Input, Output, Rest> => MTypes.objectFromDataAndProto(proto, params);
 
 /**
  * Builds a new matcher
@@ -99,15 +99,10 @@ export const make = <Input>(input: Input): Type<Input, never, Input> =>
  */
 
 export const when =
-	<
-		Input,
-		Rest extends Input,
-		// Pred can be a predicate on a type wider than Rest (eg. when using Predicate.struct with not all properties)
-		Pred extends Predicate.Predicate<Rest>,
-		Output1
-	>(
+	<Input, Rest extends Input, Pred extends Predicate.Predicate<Rest>, Output1>(
 		predicate: Pred,
-		f: (value: NoInfer<MPredicate.Target<Pred> & Rest>) => Output1
+		// Pred can be a predicate on a type wider than Rest (eg. when using Predicate.struct with not all properties), so Target<Pred> can be larger than Rest
+		f: (value: NoInfer<MTypes.SimplifiedIntersect<MPredicate.Target<Pred>, Rest>>) => Output1
 	) =>
 	<Output>(
 		self: Type<Input, Output, Rest>
@@ -262,16 +257,13 @@ export const tryFunction =
  * @category Utils
  */
 export const whenOr =
-	<
-		Input,
-		Rest extends Input,
-		// R can be an array of predicates on a type wider than Rest (eg. when using Predicate.struct with not all properties)
-		R extends MTypes.ReadonlyOverTwo<Predicate.Predicate<Rest>>,
-		Output1
-	>(
+	<Input, Rest extends Input, R extends MTypes.ReadonlyOverTwo<Predicate.Predicate<Rest>>, Output1>(
 		...args: readonly [
 			...refinements: R,
-			f: (value: NoInfer<MPredicate.PredicatesToTargets<R>[number] & Rest>) => Output1
+			// R can be an array of predicates on a type wider than Rest (eg. when using Predicate.struct with not all properties), so MPredicate.PredicatesToTargets<R>[number] can be larger than Rest
+			f: (
+				value: NoInfer<MTypes.SimplifiedIntersect<MPredicate.PredicatesToTargets<R>[number], Rest>>
+			) => Output1
 		]
 	) =>
 	<Output>(
@@ -298,17 +290,17 @@ export const whenOr =
  * @category Utils
  */
 export const whenAnd =
-	<
-		Input,
-		Rest extends Input,
-		// R can be an array of predicates on a type wider than Rest (eg. when using Predicate.struct with not all properties)
-		R extends MTypes.ReadonlyOverTwo<Predicate.Predicate<Rest>>,
-		Output1
-	>(
+	<Input, Rest extends Input, R extends MTypes.ReadonlyOverTwo<Predicate.Predicate<Rest>>, Output1>(
 		...args: readonly [
 			...refinements: R,
 			f: (
-				value: NoInfer<MTypes.TupleToIntersection<MPredicate.PredicatesToTargets<R>>> & Rest
+				// R can be an array of predicates on a type wider than Rest (eg. when using Predicate.struct with not all properties), so MTypes.TupleToIntersection<MPredicate.PredicatesToTargets<R>> can be wider than Rest
+				value: NoInfer<
+					MTypes.SimplifiedIntersect<
+						MTypes.TupleToIntersection<MPredicate.PredicatesToTargets<R>>,
+						Rest
+					>
+				>
 			) => Output1
 		]
 	) =>
