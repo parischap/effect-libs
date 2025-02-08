@@ -27,7 +27,6 @@ import {
 	Types
 } from 'effect';
 import * as MArray from './Array.js';
-import * as MFunction from './Function.js';
 import * as MInspectable from './Inspectable.js';
 import * as MMatch from './Match.js';
 import * as MPipeable from './Pipeable.js';
@@ -96,6 +95,13 @@ export namespace Leaf {
 	 * @category Constructors
 	 */
 	export const make = <B>(value: B): Type<B> => _make({ value, _tag: 'Leaf' });
+
+	/**
+	 * Returns the `value` property of `self`
+	 *
+	 * @category Destructors
+	 */
+	export const value: <B>(self: Type<B>) => B = Struct.get('value');
 }
 
 /**
@@ -207,6 +213,13 @@ const proto: MTypes.Proto<Type<any, any>> = {
 	...MPipeable.BaseProto
 };
 
+/**
+ * Returns the `value` property of `self`
+ *
+ * @category Destructors
+ */
+export const value: <A, B>(self: Type<A, B>) => A | B = Struct.get('value');
+
 const _unfold =
 	<S, A, B>(
 		f: (
@@ -228,7 +241,7 @@ const _unfold =
 				flow(
 					Array.map((node) => {
 						const [currentSeed, predecessors, predecessorsValue] = node.value;
-						const index = Array.findFirstIndex(predecessors, MFunction.strictEquals(currentSeed));
+						const index = Array.findFirstIndex(predecessors, Equal.equals(currentSeed));
 
 						return pipe(
 							f(currentSeed, pipe(index, Option.map(MArray.unsafeGetter(predecessorsValue)))),
@@ -279,9 +292,9 @@ const _unfold =
 
 /**
  * Non recursive function that builds a (possibly infinite) tree from a seed value and an unfold
- * function. A cycle is reported when a seed has itself as a direct parent. In that case, function
- * `f` receives as `cyclicalRef` argument a `some` of the tree node that was created from that
- * seed.
+ * function. A cycle is reported when a seed has a value equal to itself (in terms of Equal.equals)
+ * as a direct parent. In that case, function `f` receives as `cyclicalRef` argument a `some` of the
+ * value of the non-leaf that was created from that seed.
  *
  * @category Constructors
  */
@@ -293,9 +306,9 @@ export const unfold = <S, A, B>(
 /**
  * Non recursive function that builds a (possibly infinite) tree from a seed value and an unfold
  * function, then applies a function f to the value of each node and the result of applying f to the
- * children of the node (see fold below). A cycle is reported when a seed has itself as a direct
- * parent. In that case, function `unfold` receives as `cyclicalRef` argument a `some` of the tree
- * node that wad created from that seed.
+ * children of the node (see fold below).A cycle is reported when a seed has a value equal to itself
+ * (in terms of Equal.equals) as a direct parent. In that case, function `f` receives as
+ * `cyclicalRef` argument a `some` of the value of the non-leaf that was created from that seed.
  *
  * @category Constructors
  */
@@ -317,18 +330,14 @@ export const unfoldAndFold = <A, B, S = A, C = B>({
 		Array.reverse,
 		Array.map(
 			flow(
-				Either.liftPredicate(isLeaf, Function.unsafeCoerce<Type<A, B>, NonLeaf.Type<A, B>>),
-				Either.mapBoth({
-					onLeft: MStruct.mutableEnrichWith({
+				MMatch.make,
+				MMatch.when(isLeaf, Struct.evolve({ value: foldLeaf })),
+				MMatch.orElse(
+					MStruct.mutableEnrichWith({
 						value: (node) =>
-							foldNonLeaf(
-								node.value,
-								Array.map(node.forest as Forest.Type<B, B>, Struct.get('value'))
-							)
-					}),
-					onRight: Struct.evolve({ value: foldLeaf })
-				}),
-				Either.merge
+							foldNonLeaf(node.value, Array.map(node.forest as Forest.Type<B, B>, value))
+					})
+				)
 			)
 		),
 		Array.lastNonEmpty,
@@ -353,12 +362,12 @@ export const fold = <A, B, C>({
 	readonly fNonLeaf: (a: NoInfer<A>, bs: ReadonlyArray<C>, level: number) => C;
 	readonly fLeaf: (a: NoInfer<B>, level: number) => C;
 }): MTypes.OneArgFunction<Type<A, B>, C> => {
-	const go =
-		(level: number) =>
-		(self: Type<A, B>): C =>
-			isLeaf(self) ?
-				fLeaf(self.value, level + 1)
-			:	fNonLeaf(self.value, Array.map(self.forest, go(level + 1)), level);
+	const go = (level: number): MTypes.OneArgFunction<Type<A, B>, C> =>
+		flow(
+			MMatch.make,
+			MMatch.when(isLeaf, (self) => fLeaf(self.value, level + 1)),
+			MMatch.orElse((self) => fNonLeaf(self.value, Array.map(self.forest, go(level + 1)), level))
+		);
 
 	return go(0);
 };
@@ -572,4 +581,11 @@ export namespace NonLeaf {
 	 */
 	export const make = <A, B>(params: Omit<MTypes.Data<Type<A, B>>, '_tag'>): Type<A, B> =>
 		_make({ ...params, _tag: 'NonLeaf' });
+
+	/**
+	 * Returns the `value` property of `self`
+	 *
+	 * @category Destructors
+	 */
+	export const value: <A, B>(self: Type<A, B>) => A = Struct.get('value');
 }

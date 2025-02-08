@@ -1,59 +1,66 @@
 /* eslint-disable functional/no-expression-statements */
 import { MMatch, MString, MTree, MTuple, MTypes, MUtils } from '@parischap/effect-lib';
-import {
-	Array,
-	Either,
-	Equal,
-	flow,
-	Function,
-	Number,
-	Option,
-	pipe,
-	String,
-	Struct,
-	Tuple
-} from 'effect';
+import { Array, Either, Equal, flow, Function, Option, pipe, Record } from 'effect';
 import { describe, expect, it } from 'vitest';
 
-/* Tries to split a string by the provided separator `sep`. If the split yields at least two elements, returns a some of a right of a tuple containing the separator and an array of the split elements. Otherwise, returns a none */
-const splitBy = <S extends string>(
-	sep: S
-): MTypes.OneArgFunction<
-	string,
-	Option.Option<Either.Either<[S, MTypes.OverOne<string>], string>>
-> =>
-	flow(
-		String.split(sep),
-		Option.liftPredicate(MTypes.isOverTwo),
-		Option.map(flow(Array.map(String.trim), Tuple.make, MTuple.prependElement(sep), Either.right))
+const unfoldObject = (seed: MTypes.Unknown, cyclicalRef: Option.Option<'Array' | 'Record'>) =>
+	pipe(
+		cyclicalRef,
+		Option.map(flow(MString.prepend('Cyclical '), Either.left)),
+		Option.getOrElse(
+			pipe(
+				seed,
+				MMatch.make,
+				MMatch.when(MTypes.isPrimitive, flow(MString.fromPrimitive, Either.left)),
+				MMatch.orElse(
+					flow(
+						MTuple.makeBothBy({
+							toFirst: flow(
+								MMatch.make,
+								MMatch.when(MTypes.isArray, Function.constant('Array' as const)),
+								MMatch.orElse(Function.constant('Record' as const))
+							),
+							toSecond: Record.values
+						}),
+						Either.right
+					)
+				),
+				Function.constant
+			)
+		)
 	);
 
-const unfold: MTypes.OneArgFunction<
-	string,
-	Either.Either<MTypes.Pair<'.' | ',' | ' ', MTypes.OverOne<string>>, string>
-> = flow(
-	MMatch.make,
-	MMatch.tryFunction(splitBy('.')),
-	MMatch.tryFunction(splitBy(',')),
-	MMatch.tryFunction(splitBy(' ')),
-	MMatch.orElse(Either.left)
-);
+const foldNonLeaf = (value: 'Array' | 'Record', children: ReadonlyArray<string>) => {
+	const joined = Array.join(children, ', ');
+	return value === 'Array' ? '[' + joined + ']' : '{ ' + joined + ' }';
+};
 
-const foldNonLeaf = (value: '.' | ',' | ' ', children: ReadonlyArray<string>): string =>
-	Array.join(children, value + (value === ' ' ? '' : ' '));
+const nonCyclicalObject1 = {
+	a: [{ a: { a: 's1', b: 's2' }, b: 's3' }, ['s4']],
+	b: [{ a: { a: ['s5'] }, b: 's6' }, 's7']
+};
 
-const testSentence0 = 'Foo, Bat Bar. Baz Bar Foo';
-const testSentence1 =
-	'Foo goes fishing, Bat goes hunting. Baz prefers smimming, in a large pool, by his house';
-const testSentence3 =
-	'Foo goes fishing, Bat goes hunting. Baz prefers smimming, in a long pool, by his house';
-const testSentence1Mapped =
-	'Foo@ goes@ fishing@. Bat@ goes@ hunting@, Baz@ prefers@ smimming@. in@ a@ large@ pool@. by@ his@ house@';
+const nonCyclicalObject2 = {
+	a: [{ a: { a: 's1', b: 's2' }, b: 's3' }, ['s4']],
+	b: [{ a: { a: ['s5'] }, b: 's6' }, 's7']
+};
+/* eslint-disable-next-line functional/immutable-data */ /*  @ts-expect-error  this is a test*/
+nonCyclicalObject2.b.push(nonCyclicalObject2.a[0]);
 
-const testTree0 = pipe(testSentence0, MTree.unfold(unfold));
-const testTree1 = pipe(testSentence1, MTree.unfold(unfold));
-const testTree2 = pipe(testSentence1, MTree.unfold(unfold));
-const testTree3 = pipe(testSentence3, MTree.unfold(unfold));
+const cyclicalObject = {
+	a: [{ a: { a: 's1', b: 's2' }, b: 's3' }, ['s4']],
+	b: [{ a: { a: ['s5'] }, b: 's6' }, 's7']
+};
+/* eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */ /*  @ts-expect-error  this is a test*/
+cyclicalObject.b[0].a.a.push(cyclicalObject.b);
+
+const testTree1 = pipe(nonCyclicalObject1, MTree.unfold(unfoldObject));
+const testTree2 = pipe(nonCyclicalObject1, MTree.unfold(unfoldObject));
+const testTree3 = pipe(nonCyclicalObject2, MTree.unfold(unfoldObject));
+const testTree4 = pipe(cyclicalObject, MTree.unfold(unfoldObject));
+
+const foldedTestTree1 = '{ [{ { s1, s2 }, s3 }, [s4]], [{ { [s5] }, s6 }, s7] }';
+const mappedTestTree1 = '[{ [[s1@, s2@], s3@], { s4@ } }, { [[{ s5@ }], s6@], s7@ }]';
 
 describe('MTree', () => {
 	describe('Tag, prototype and guards', () => {
@@ -84,36 +91,54 @@ describe('MTree', () => {
 		});
 	});
 
-	describe('unfold and .toString()', () => {
-		it('Non-cyclical test input', () => {
-			expect(testTree0.toString()).toBe(`{
+	it('unfold and .toString()', () => {
+		expect(testTree1.toString()).toBe(`{
   "_id": "@parischap/effect-lib/Tree/",
-  "value": ".",
+  "value": "Record",
   "_tag": "NonLeaf",
   "forest": [
     {
       "_id": "@parischap/effect-lib/Tree/",
-      "value": ",",
+      "value": "Array",
       "_tag": "NonLeaf",
       "forest": [
         {
           "_id": "@parischap/effect-lib/Tree/",
-          "value": "Foo",
-          "_tag": "Leaf"
-        },
-        {
-          "_id": "@parischap/effect-lib/Tree/",
-          "value": " ",
+          "value": "Record",
           "_tag": "NonLeaf",
           "forest": [
             {
               "_id": "@parischap/effect-lib/Tree/",
-              "value": "Bat",
-              "_tag": "Leaf"
+              "value": "Record",
+              "_tag": "NonLeaf",
+              "forest": [
+                {
+                  "_id": "@parischap/effect-lib/Tree/",
+                  "value": "s1",
+                  "_tag": "Leaf"
+                },
+                {
+                  "_id": "@parischap/effect-lib/Tree/",
+                  "value": "s2",
+                  "_tag": "Leaf"
+                }
+              ]
             },
             {
               "_id": "@parischap/effect-lib/Tree/",
-              "value": "Bar",
+              "value": "s3",
+              "_tag": "Leaf"
+            }
+          ]
+        },
+        {
+          "_id": "@parischap/effect-lib/Tree/",
+          "value": "Array",
+          "_tag": "NonLeaf",
+          "forest": [
+            {
+              "_id": "@parischap/effect-lib/Tree/",
+              "value": "s4",
               "_tag": "Leaf"
             }
           ]
@@ -122,48 +147,82 @@ describe('MTree', () => {
     },
     {
       "_id": "@parischap/effect-lib/Tree/",
-      "value": " ",
+      "value": "Array",
       "_tag": "NonLeaf",
       "forest": [
         {
           "_id": "@parischap/effect-lib/Tree/",
-          "value": "Baz",
-          "_tag": "Leaf"
+          "value": "Record",
+          "_tag": "NonLeaf",
+          "forest": [
+            {
+              "_id": "@parischap/effect-lib/Tree/",
+              "value": "Record",
+              "_tag": "NonLeaf",
+              "forest": [
+                {
+                  "_id": "@parischap/effect-lib/Tree/",
+                  "value": "Array",
+                  "_tag": "NonLeaf",
+                  "forest": [
+                    {
+                      "_id": "@parischap/effect-lib/Tree/",
+                      "value": "s5",
+                      "_tag": "Leaf"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "_id": "@parischap/effect-lib/Tree/",
+              "value": "s6",
+              "_tag": "Leaf"
+            }
+          ]
         },
         {
           "_id": "@parischap/effect-lib/Tree/",
-          "value": "Bar",
-          "_tag": "Leaf"
-        },
-        {
-          "_id": "@parischap/effect-lib/Tree/",
-          "value": "Foo",
+          "value": "s7",
           "_tag": "Leaf"
         }
       ]
     }
   ]
 }`);
-		});
 	});
 
 	it('unfoldAndFold', () => {
 		expect(
 			pipe(
-				testSentence1,
+				nonCyclicalObject1,
 				MTree.unfoldAndFold({
-					unfold,
+					unfold: unfoldObject,
 					foldNonLeaf,
 					foldLeaf: Function.identity
 				})
 			)
-		).toBe(testSentence1);
+		).toBe(foldedTestTree1);
 	});
 
-	it('fold', () => {
-		expect(pipe(testTree1, MTree.fold({ fNonLeaf: foldNonLeaf, fLeaf: Function.identity }))).toBe(
-			testSentence1
-		);
+	describe('fold', () => {
+		it('Non-cyclical value 1', () => {
+			expect(pipe(testTree1, MTree.fold({ fNonLeaf: foldNonLeaf, fLeaf: Function.identity }))).toBe(
+				foldedTestTree1
+			);
+		});
+
+		it('Non-cyclical value 2', () => {
+			expect(pipe(testTree3, MTree.fold({ fNonLeaf: foldNonLeaf, fLeaf: Function.identity }))).toBe(
+				'{ [{ { s1, s2 }, s3 }, [s4]], [{ { [s5] }, s6 }, s7, { { s1, s2 }, s3 }] }'
+			);
+		});
+
+		it('Cyclical value', () => {
+			expect(pipe(testTree4, MTree.fold({ fNonLeaf: foldNonLeaf, fLeaf: Function.identity }))).toBe(
+				'{ [{ { s1, s2 }, s3 }, [s4]], [{ { [s5, Cyclical Array] }, s6 }, s7] }'
+			);
+		});
 	});
 
 	it('mapAccum', () => {
@@ -171,24 +230,13 @@ describe('MTree', () => {
 			pipe(
 				testTree1,
 				MTree.mapAccum({
-					accum: '',
-					fNonLeaf: (s, a) =>
-						pipe(
-							a,
-							MMatch.make,
-							MMatch.whenIs('.', Function.constant(',' as const)),
-							MMatch.whenIs(',', Function.constant('.' as const)),
-							MMatch.orElse(Function.constant(' ' as const)),
-							Tuple.make,
-							MTuple.prependElement(s + a)
-						),
-					fLeaf: (s, b) => pipe(b, MString.append(s))
+					accum: 0,
+					fNonLeaf: (accum, a) => [accum + (a === 'Array' ? 1 : 2), a],
+					fLeaf: (accum, b) => b + ' ' + accum.toString()
 				}),
 				MTree.fold({ fNonLeaf: foldNonLeaf, fLeaf: Function.identity })
 			)
-		).toBe(
-			'Foo.,  goes.,  fishing., . Bat.,  goes.,  hunting., , Baz.,  prefers.,  smimming., . in.,  a.,  large.,  pool., . by.,  his.,  house., '
-		);
+		).toBe('{ [{ { s1 7, s2 7 }, s3 5 }, [s4 4]], [{ { [s5 8] }, s6 5 }, s7 3] }');
 	});
 
 	it('map', () => {
@@ -196,17 +244,12 @@ describe('MTree', () => {
 			pipe(
 				testTree1,
 				MTree.map({
-					fNonLeaf: flow(
-						MMatch.make,
-						MMatch.whenIs('.', Function.constant(',' as const)),
-						MMatch.whenIs(',', Function.constant('.' as const)),
-						MMatch.orElse(Function.constant(' ' as const))
-					),
+					fNonLeaf: (a) => (a === 'Array' ? 'Record' : 'Array'),
 					fLeaf: MString.append('@')
 				}),
 				MTree.fold({ fNonLeaf: foldNonLeaf, fLeaf: Function.identity })
 			)
-		).toBe(testSentence1Mapped);
+		).toBe(mappedTestTree1);
 	});
 
 	it('reduce', () => {
@@ -215,15 +258,11 @@ describe('MTree', () => {
 				testTree1,
 				MTree.reduce({
 					z: 3,
-					fNonLeaf: (acc, value) =>
-						acc +
-						(value === '.' ? 1
-						: value === ',' ? 2
-						: 0),
-					fLeaf: Number.increment
+					fNonLeaf: (z, a) => z + (a === 'Array' ? 1 : 2),
+					fLeaf: (z, a) => z + a.length
 				})
 			)
-		).toBe(24);
+		).toBe(31);
 	});
 
 	it('reduceRight', () => {
@@ -232,15 +271,11 @@ describe('MTree', () => {
 				testTree1,
 				MTree.reduceRight({
 					z: 3,
-					fNonLeaf: (z, value) =>
-						z +
-						(value === '.' ? 1
-						: value === ',' ? 2
-						: 0),
-					fLeaf: Number.increment
+					fNonLeaf: (z, a) => z + (a === 'Array' ? 1 : 2),
+					fLeaf: (z, a) => z + a.length
 				})
 			)
-		).toBe(24);
+		).toBe(31);
 	});
 
 	it('extendDown', () => {
@@ -248,18 +283,12 @@ describe('MTree', () => {
 			pipe(
 				testTree1,
 				MTree.extendDown({
-					fNonLeaf: flow(
-						Struct.get('value'),
-						MMatch.make,
-						MMatch.whenIs('.', Function.constant(',' as const)),
-						MMatch.whenIs(',', Function.constant('.' as const)),
-						MMatch.orElse(Function.constant(' ' as const))
-					),
-					fLeaf: flow(Struct.get('value'), MString.append('@'))
+					fNonLeaf: (a) => (a.value === 'Array' ? 'Record' : 'Array'),
+					fLeaf: flow(MTree.Leaf.value, MString.append('@'))
 				}),
 				MTree.fold({ fNonLeaf: foldNonLeaf, fLeaf: Function.identity })
 			)
-		).toBe(testSentence1Mapped);
+		).toBe(mappedTestTree1);
 	});
 
 	it('extendUp', () => {
@@ -267,17 +296,11 @@ describe('MTree', () => {
 			pipe(
 				testTree1,
 				MTree.extendUp({
-					fNonLeaf: flow(
-						Struct.get('value'),
-						MMatch.make,
-						MMatch.whenIs('.', Function.constant(',' as const)),
-						MMatch.whenIs(',', Function.constant('.' as const)),
-						MMatch.orElse(Function.constant(' ' as const))
-					),
-					fLeaf: flow(Struct.get('value'), MString.append('@'))
+					fNonLeaf: (a) => (a.value === 'Array' ? 'Record' : 'Array'),
+					fLeaf: flow(MTree.Leaf.value, MString.append('@'))
 				}),
 				MTree.fold({ fNonLeaf: foldNonLeaf, fLeaf: Function.identity })
 			)
-		).toBe(testSentence1Mapped);
+		).toBe(mappedTestTree1);
 	});
 });
