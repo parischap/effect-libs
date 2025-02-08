@@ -9,8 +9,8 @@ import { MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
 import { Equal, Equivalence, Hash, HashMap, pipe, Pipeable, Predicate, Struct } from 'effect';
 
 const moduleTag = '@parischap/pretty-print/MarkMap/';
-const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
-type TypeId = typeof TypeId;
+const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
+type _TypeId = typeof _TypeId;
 namespace Mark {
 	export interface Type {
 		/** The text to be displayed for this mark */
@@ -39,7 +39,7 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
 	readonly marks: Marks.Type;
 
 	/** @internal */
-	readonly [TypeId]: TypeId;
+	readonly [_TypeId]: _TypeId;
 }
 
 /**
@@ -47,7 +47,7 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
  *
  * @category Guards
  */
-export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
+export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
 
 /**
  * Equivalence
@@ -57,9 +57,9 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
 
 /** Prototype */
-const _TypeIdHash = Hash.hash(TypeId);
+const _TypeIdHash = Hash.hash(_TypeId);
 const proto: MTypes.Proto<Type> = {
-	[TypeId]: TypeId,
+	[_TypeId]: _TypeId,
 	[Equal.symbol](this: Type, that: unknown): boolean {
 		return has(that) && equivalence(this, that);
 	},
@@ -104,56 +104,13 @@ export const marks: MTypes.OneArgFunction<Type, Marks.Type> = Struct.get('marks'
 export const defaults: Type = make({
 	id: 'Defaults',
 	marks: HashMap.make(
-		['CircularObject', { text: 'Circular *', partName: 'Message' }],
+		['FunctionNameStartDelimiter', { text: 'Function: ', partName: 'Message' }],
+		['FunctionNameEndDelimiter', { text: '', partName: 'Message' }],
 		['MessageStartDelimiter', { text: '[', partName: 'Message' }],
 		['MessageEndDelimiter', { text: ']', partName: 'Message' }],
+		['CircularObject', { text: 'Circular *', partName: 'Message' }],
 		['CircularReferenceStartDelimiter', { text: '<Ref *', partName: 'Message' }],
 		['CircularReferenceEndDelimiter', { text: '>', partName: 'Message' }],
-		['StringStartDelimiter', { text: "'", partName: 'StringDelimiters' }],
-		['StringEndDelimiter', { text: "'", partName: 'StringDelimiters' }],
-		['StringOverflowSuffix', { text: '...', partName: 'StringValue' }],
-		['BigIntStartDelimiter', { text: '', partName: 'BigIntDelimiters' }],
-		['BigIntEndDelimiter', { text: 'n', partName: 'BigIntDelimiters' }],
-		['NullValue', { text: 'null', partName: 'NullValue' }],
-		['UndefinedValue', { text: 'undefined', partName: 'UndefinedValue' }],
-		['FunctionNameStartDelimiter', { text: 'Function: ', partName: 'FunctionNameDelimiters' }],
-		['FunctionNameEndDelimiter', { text: '', partName: 'FunctionNameDelimiters' }],
-		['DefaultFunctionName', { text: 'anonymous', partName: 'FunctionName' }],
-		['PrototypeStartDelimiter', { text: '', partName: 'PrototypeDelimiters' }],
-		['PrototypeEndDelimiter', { text: '@', partName: 'PrototypeDelimiters' }],
-		[
-			'SingleLineInBetweenPropertySeparator',
-			{ text: ', ', partName: 'InBetweenPropertySeparator' }
-		],
-		['MultiLineInBetweenPropertySeparator', { text: ',', partName: 'InBetweenPropertySeparator' }],
-		['NonPrimitiveValueNameSeparator', { text: ' ', partName: 'NonPrimitiveValueName' }],
-		['PropertyNumberSeparator', { text: ',', partName: 'PropertyNumber' }],
-		['PropertyNumberStartDelimiter', { text: '(', partName: 'PropertyNumber' }],
-		['PropertyNumberEndDelimiter', { text: ')', partName: 'PropertyNumber' }],
-
-		['NonPrimitiveValueKeyValueSeparator', { text: ': ', partName: 'KeyValueSeparator' }],
-		[
-			'NonPrimitiveValueSingleLineStartDelimiter',
-			{ text: '{ ', partName: 'NonPrimitiveValueDelimiters' }
-		],
-		[
-			'NonPrimitiveValueSingleLineEndDelimiter',
-			{ text: ' }', partName: 'NonPrimitiveValueDelimiters' }
-		],
-		[
-			'NonPrimitiveValueMultiLineStartDelimiter',
-			{ text: '{', partName: 'NonPrimitiveValueDelimiters' }
-		],
-		[
-			'NonPrimitiveValueMultiLineEndDelimiter',
-			{ text: '}', partName: 'NonPrimitiveValueDelimiters' }
-		],
-
-		['ArrayKeyValueSeparator', { text: ': ', partName: 'KeyValueSeparator' }],
-		['ArraySingleLineStartDelimiter', { text: '[', partName: 'NonPrimitiveValueDelimiters' }],
-		['ArraySingleLineEndDelimiter', { text: ']', partName: 'NonPrimitiveValueDelimiters' }],
-		['ArrayMultiLineStartDelimiter', { text: '[', partName: 'NonPrimitiveValueDelimiters' }],
-		['ArrayMultiLineEndDelimiter', { text: ']', partName: 'NonPrimitiveValueDelimiters' }],
 
 		['MapAndSetKeyValueSeparator', { text: ' => ', partName: 'KeyValueSeparator' }],
 		['MapAndSetSingleLineStartDelimiter', { text: '{ ', partName: 'NonPrimitiveValueDelimiters' }],

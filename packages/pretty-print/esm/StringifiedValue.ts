@@ -121,9 +121,18 @@ export const length: MTypes.OneArgFunction<Type, number> = flow(
 );
 
 /**
- * Returns the ANSI string corresponding to self
+ * Returns the ANSI string corresponding to `self`
  *
  * @category Destructors
  */
 export const toAnsiString = (sep = '\n'): MTypes.OneArgFunction<Type, string> =>
 	flow(Array.map(ASText.toAnsiString), Array.join(sep));
+
+/**
+ * Returns the stringq corresponding to `self` without any styling
+ *
+ * @category Destructors
+ */
+export const toUnstyledStrings: MTypes.OneArgFunction<Type, MTypes.OverOne<string>> = Array.map(
+	ASText.toUnstyledString
+);

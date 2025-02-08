@@ -1,9 +1,9 @@
 /**
  * This module implements a type that takes care of the formatting of non primitive values. From the
- * stringified representation of the properties of a record which it receives, it must return the
- * stringified representation of the whole record. It can take care of aspects like printing on a
- * single or multiple lines, indentation when printing on multiple lines, adding specific
- * array/object marks,...
+ * stringified representation of the properties of a non-primitive value which it receives, it must
+ * return the stringified representation of the whole non-primitive value. It can take care of
+ * aspects like printing on a single or multiple lines, indentation when printing on multiple lines,
+ * adding specific array/object marks,...
  *
  * With the make function, you can define your own instances if the provided ones don't suit your
  * needs.
@@ -27,38 +27,41 @@ import * as PPStringifiedProperties from './StringifiedProperties.js';
 import * as PPStringifiedValue from './StringifiedValue.js';
 import * as PPValue from './Value.js';
 
-const moduleTag = '@parischap/pretty-print/RecordFormatter/';
-const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
-type TypeId = typeof TypeId;
+const moduleTag = '@parischap/pretty-print/NonPrimitiveFormatter/';
+const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
+type _TypeId = typeof _TypeId;
 
 /**
- * Namespace of a RecordFormatter used as an action
+ * Namespace of a NonPrimitiveFormatter used as an action
  *
  * @category Models
  */
 export namespace Action {
 	/**
-	 * Type of the action of a RecordFormatter. The action takes as input a
+	 * Type of the action of a NonPrimitiveFormatter. The action takes as input a
 	 * ValueBasedFormatterConstructor, a MarkShowerConstructor (see OptionAndPrecalc.ts), the Value
 	 * being currently printed (see Value.ts) and an array of the stringified properties (see
 	 * StringifiedProperties.ts) of that value. Based on these parameters, it must return a
-	 * stringified representation of the whole record.
+	 * stringified representation of the whole rescord.
 	 */
 	export interface Type {
-		({
-			valueBasedFormatterConstructor,
-			markShowerConstructor
-		}: {
-			readonly valueBasedFormatterConstructor: PPOption.ValueBasedFormatterConstructor.Type;
-			readonly markShowerConstructor: PPOption.MarkShowerConstructor.Type;
-		}): (
-			value: PPValue.NonPrimitiveType
+		(
+			this: PPOption.NonPrimitive.Type,
+			{
+				valueBasedFormatterConstructor,
+				markShowerConstructor
+			}: {
+				readonly valueBasedFormatterConstructor: PPOption.ValueBasedFormatterConstructor.Type;
+				readonly markShowerConstructor: PPOption.MarkShowerConstructor.Type;
+			}
+		): (
+			value: PPValue.NonPrimitive
 		) => (children: PPStringifiedProperties.Type) => PPStringifiedValue.Type;
 	}
 }
 
 /**
- * Type that represents a RecordFormatter.
+ * Type that represents a NonPrimitiveFormatter.
  *
  * @category Models
  */
@@ -67,11 +70,11 @@ export interface Type
 		Equal.Equal,
 		MInspectable.Inspectable,
 		Pipeable.Pipeable {
-	/** Id of this RecordFormatter instance. Useful for equality and debugging */
+	/** Id of this NonPrimitiveFormatter instance. Useful for equality and debugging */
 	readonly id: string;
 
 	/** @internal */
-	readonly [TypeId]: TypeId;
+	readonly [_TypeId]: _TypeId;
 }
 
 /**
@@ -79,7 +82,7 @@ export interface Type
  *
  * @category Guards
  */
-export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
+export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
 
 /**
  * Equivalence
@@ -89,9 +92,9 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
 
 /** Base */
-const _TypeIdHash = Hash.hash(TypeId);
+const _TypeIdHash = Hash.hash(_TypeId);
 const base: MTypes.Proto<Type> = {
-	[TypeId]: TypeId,
+	[_TypeId]: _TypeId,
 	[Equal.symbol](this: Type, that: unknown): boolean {
 		return has(that) && equivalence(this, that);
 	},
@@ -124,7 +127,7 @@ export const make = ({ id, action }: { readonly id: string; readonly action: Act
 export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
 
 /**
- * RecordFormatter instance that will always print records on a single line
+ * NonPrimitiveFormatter instance that will always print records on a single line
  *
  * @category Instances
  */
@@ -154,7 +157,8 @@ export const singleLine: Type = make({
 });
 
 /**
- * RecordFormatter instance that will always print records on multiple lines with a tab indentation
+ * NonPrimitiveFormatter instance that will always print records on multiple lines with a tab
+ * indentation
  *
  * @category Instances
  */
@@ -202,7 +206,7 @@ export const splitNonArraysMaker: Type = make({
 });
 
 /**
- * RecordFormatter instance that will always print records in a tree-like fashion
+ * NonPrimitiveFormatter instance that will always print records in a tree-like fashion
  *
  * @category Instances
  */
@@ -236,8 +240,8 @@ export const treeify: Type = make({
 });
 
 /**
- * RecordFormatter instance maker that will print record on a single line if the number of their
- * constituents is less than or equal to `limit`.
+ * NonPrimitiveFormatter instance maker that will print record on a single line if the number of
+ * their constituents is less than or equal to `limit`.
  *
  * @category Constructors
  */

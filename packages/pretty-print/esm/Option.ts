@@ -6,37 +6,51 @@
  */
 
 import { ASText } from '@parischap/ansi-styles';
-import { MArray, MMatch, MString, MStruct, MTree, MTuple, MTypes } from '@parischap/effect-lib';
+import {
+	MArray,
+	MFunction,
+	MMatch,
+	MString,
+	MStruct,
+	MTree,
+	MTuple,
+	MTypes
+} from '@parischap/effect-lib';
 import {
 	Array,
 	Either,
 	flow,
 	Function,
 	HashMap,
+	HashSet,
 	MutableHashMap,
 	Number,
 	Option,
 	pipe,
-	String
+	SortedMap,
+	SortedSet,
+	Tuple
 } from 'effect';
 
 import * as PPByPasser from './ByPasser.js';
 import * as PPMarkMap from './MarkMap.js';
 import * as PPNonPrimitiveFormatter from './NonPrimitiveFormatter.js';
-import * as PPPropertyFilter from './PropertyFilter.js';
-import * as PPPropertyFormatter from './PropertyFormatter.js';
-import * as PPPropertyOrder from './PropertyOrder.js';
+import * as PPPrimitiveFormatter from './PrimitiveFormatter.js';
 import * as PPStringifiedValue from './StringifiedValue.js';
 import * as PPStyleMap from './StyleMap.js';
 import * as PPValue from './Value.js';
 import * as PPValueBasedFormatter from './ValueBasedFormatter.js';
+import * as PPValueFilter from './ValueFilter.js';
+import * as PPValueFormatter from './ValueFormatter.js';
+import * as PPValues from './Values.js';
 
 import { MInspectable, MPipeable } from '@parischap/effect-lib';
 import { Equal, Equivalence, Hash, Pipeable, Predicate } from 'effect';
+import { isIterable } from 'effect/Predicate';
 
 export const moduleTag = '@parischap/pretty-print/Option/';
-const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
-type TypeId = typeof TypeId;
+const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
+type _TypeId = typeof _TypeId;
 
 /**
  * Namespace of an array of ByPasser's (see ByPasser.ts)
@@ -63,7 +77,7 @@ export namespace PropertyFilters {
 	 *
 	 * @category Models
 	 */
-	export interface Type extends ReadonlyArray<PPPropertyFilter.Type> {}
+	export interface Type extends ReadonlyArray<PPValueFilter.Type> {}
 }
 
 /**
@@ -165,10 +179,10 @@ export namespace PropertySource {
 		 * protocol. If the iterator returns a pair, that pair is deemed to be a key/value pair. If it
 		 * returns a single value, an auto-incremented numerical key (converted to a string) is
 		 * automatically generated. In all other cases, the output of the iterator is ignored.
-		 * `FromIterator` is usually a good choice for Arrays, Maps, Sets, WeakMaps, WeakSets and
+		 * `FromIterable` is usually a good choice for Arrays, Maps, Sets, WeakMaps, WeakSets and
 		 * TypedArrays
 		 */
-		FromIterator = 1,
+		FromIterable = 1,
 		/**
 		 * Properties are obtained by calling Reflect.getOwnProperties on the object and its prototypes
 		 * and by by iterating over the object that must implement the Iterable protocol - Could come in
@@ -214,30 +228,34 @@ export namespace PropertyNumberDisplayOption {
  * @category Models
  */
 
-export namespace NonPrimitiveOption {
+export namespace NonPrimitive {
+	const namespaceTag = moduleTag + 'NonPrimitive/';
+	const _TypeId: unique symbol = Symbol.for(namespaceTag) as _TypeId;
+	type _TypeId = typeof _TypeId;
 	/**
-	 * Type of a NonPrimitiveOption
+	 * Type of an option for a NonPrimitive
 	 *
 	 * @category Models
 	 */
-	export interface Type {
+	export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
 		/**
-		 * Name of the object. That name is used on two occasions:
+		 * Id of this instance. This id is:
 		 *
-		 * - It is displayed with the style associated to the `message` partName in case `maxDepth` is
-		 *   superseded (see StyleMap.ts) surrounded by the `messageStartDelimiter` and
-		 *   `messageEndDelimiter` marks (see MarkMap.ts). For instance: [Array]
-		 * - It is displayed before the `singleLineStartDelimiter` or `multiLineStartDelimiter` if
-		 *   `showName` is `true`
+		 * - Used for equality and debugging
+		 * - Displayed with the `message` style in case `maxDepth` is superseded (see StyleMap.ts)
+		 *   surrounded by the `messageStartDelimiter` and `messageEndDelimiter` marks (see MarkMap.ts).
+		 *   For instance: [Array]
+		 * - Displayed before the `singleLineStartDelimiterMark` or `multiLineStartDelimiterMark` if
+		 *   `showId` is `true`
 		 */
-		readonly name: string;
+		readonly id: string;
 
 		/**
-		 * If true, the name will be shown in the `NonPrimitiveValueName` style just before the
-		 * startDelimiter seperated from it by the `NonPrimitiveValueNameSeparator` mark. For instance:
-		 * `Map { 'a' => 1, 'b' => 2 }`
+		 * If true, the id will be shown in the `NonPrimitiveValueId` style just before the
+		 * `singleLineStartDelimiterMark` or `multiLineStartDelimiterMark` seperated from it by the
+		 * `NonPrimitiveValueNameSeparator` mark. For instance: `Map { 'a' => 1, 'b' => 2 }`
 		 */
-		readonly showName: boolean;
+		readonly showId: boolean;
 
 		/**
 		 * Options regarding the display of the property number. If not `None`, the property number will
@@ -248,20 +266,44 @@ export namespace NonPrimitiveOption {
 		 */
 		readonly propertyNumberDisplayOption: PropertyNumberDisplayOption.Type;
 
-		/** Name of the keyValueSeparator mark for that non-primitive value */
-		readonly keyValueSeparatorMarkName: string;
+		/** KeyValueSeparatorMark for that non-primitive value */
+		readonly keyValueSeparatorMark: string;
 
-		/** Name of the singleLineStartDelimiter mark for that non-primitive value */
-		readonly singleLineStartDelimiterMarkName: string;
+		/** SingleLineStartDelimiterMark for that non-primitive value */
+		readonly singleLineStartDelimiterMark: string;
 
-		/** Name of the singleLineEndDelimiter mark for that non-primitive value */
-		readonly singleLineEndDelimiterMarkName: string;
+		/** SingleLineEndDelimiterMark for that non-primitive value */
+		readonly singleLineEndDelimiterMark: string;
 
-		/** Name of the multiLineStartDelimiter mark for that non-primitive value */
-		readonly multiLineStartDelimiterMarkName: string;
+		/** MultiLineStartDelimiterMark for that non-primitive value */
+		readonly multiLineStartDelimiterMark: string;
 
-		/** Name of the multiLineEndDelimiter mark for that non-primitive value */
-		readonly multiLineEndDelimiterMarkName: string;
+		/** MultiLineEndDelimiterMark for that non-primitive value */
+		readonly multiLineEndDelimiterMark: string;
+
+		/** PrototypeStartDelimiterMark for that non-primitive value */
+		readonly prototypeStartDelimiterMark: string;
+
+		/** PrototypeEndDelimiterMark for that non-primitive value */
+		readonly prototypeEndDelimiterMark: string;
+
+		/** SingleLineInBetweenPropertySeparatorMark for that non-primitive value */
+		readonly singleLineInBetweenPropertySeparatorMark: string;
+
+		/** MultiLineInBetweenPropertySeparatorMark for that non-primitive value */
+		readonly multiLineInBetweenPropertySeparatorMark: string;
+
+		/** NonPrimitiveValueNameSeparatorMark for that non-primitive value */
+		readonly nonPrimitiveValueNameSeparatorMark: string;
+
+		/** PropertyNumberSeparatorMark for that non-primitive value */
+		readonly propertyNumberSeparatorMark: string;
+
+		/** PropertyNumberStartDelimiterMark for that non-primitive value */
+		readonly propertyNumberStartDelimiterMark: string;
+
+		/** PropertyNumberEndDelimiterMark for that non-primitive value */
+		readonly propertyNumberEndDelimiterMark: string;
 
 		/** Specifies the source of properties for non-primitive values. This value can be overriden */
 		readonly propertySource: PropertySource.Type;
@@ -282,39 +324,149 @@ export namespace NonPrimitiveOption {
 		readonly propertyFilters: PropertyFilters.Type;
 
 		/**
-		 * `ValueOrder` instance: allows you to specify how to sort properties of non primitive values
-		 * (see ValueOrder.ts). Applied just after the propertyFilters
+		 * If `none`, properties are not sorted. If a `some` of a ValueOrder (see ValueOrder.ts), that
+		 * ValueOrder is used to sort properties of non primitive values just after application of the
+		 * propertyFilters.
 		 */
-		readonly propertySortOrder: PPPropertyOrder.Type;
+		readonly propertySortOrder: Option.Option<PPValue.Order.Type>;
 
 		/**
 		 * Non-primitive values can have several properties with the same key, for instance in an object
 		 * and one or several of its prototypes. This option allows you to decide if you want to keep
 		 * all the properties with the same key. If true, only the first occurrence of each property
 		 * with the same key is kept. Sorting happens before deduping, so you can decide which property
-		 * will be first by choosing your propertySortOrder carefully (usually, you will use
+		 * will be first by choosing your propertySortOrder carefully (e.g. you may use
 		 * `PropertyOrder.byPrototypalDepth`. If false, all occurrences of the same property are kept.
 		 */
 		readonly dedupeProperties: boolean;
 
 		/**
 		 * Maximal number of properties to keep for non-primitive values. Pass +Infinity to show all
-		 * properties. Applied after property deduping.
+		 * properties. Applied after property deduping. The `maxPropertyNumber` first properties after
+		 * filtering and ordering are kept.
 		 */
 		readonly maxPropertyNumber: number;
 
 		/**
-		 * `PropertyFormatter` instance: allows you to specify how to format properties of non-primitive
-		 * values (see PropertyFormatter.ts)
+		 * `ValueFormatter` instance (see ValueFormatter.ts) which allows you to specify how to format
+		 * properties of non-primitive values (see ValueFormatter.ts)
 		 */
-		readonly propertyFormatter: PPPropertyFormatter.Type;
+		readonly propertyFormatter: PPValueFormatter.Type;
 
 		/**
-		 * `NonPrimitiveFormatter` instance: allows you to specify how to print a non-^primitive value
+		 * `NonPrimitiveFormatter` instance: allows you to specify how to print a non-primitive value
 		 * from its stringified properties (see NonPrimitiveFormatter.ts)
 		 */
 		readonly nonPrimitiveFormatter: PPNonPrimitiveFormatter.Type;
+
+		/** @internal */
+		readonly [_TypeId]: _TypeId;
 	}
+
+	/**
+	 * Type guard
+	 *
+	 * @category Guards
+	 */
+	export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
+
+	/**
+	 * Equivalence
+	 *
+	 * @category Equivalences
+	 */
+	export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
+
+	/** Prototype */
+	const _TypeIdHash = Hash.hash(_TypeId);
+	const proto: MTypes.Proto<Type> = {
+		[_TypeId]: _TypeId,
+		[Equal.symbol](this: Type, that: unknown): boolean {
+			return has(that) && equivalence(this, that);
+		},
+		[Hash.symbol](this: Type) {
+			return pipe(this.id, Hash.hash, Hash.combine(_TypeIdHash), Hash.cached(this));
+		},
+		[MInspectable.IdSymbol](this: Type) {
+			return this.id;
+		},
+		...MInspectable.BaseProto(namespaceTag),
+		...MPipeable.BaseProto
+	};
+
+	/**
+	 * Constructor without a id
+	 *
+	 * @category Constructors
+	 */
+	export const make = (params: MTypes.Data<Type>): Type =>
+		MTypes.objectFromDataAndProto(proto, params);
+
+	/**
+	 * Defaults NonPrimitive Option instance
+	 *
+	 * @category Instances
+	 */
+	export const defaults: Type = make({
+		id: 'Object',
+		showId: false,
+		propertyNumberDisplayOption: PropertyNumberDisplayOption.Type.None,
+		keyValueSeparatorMark: ':',
+		singleLineStartDelimiterMark: '{ ',
+		singleLineEndDelimiterMark: ' }',
+		multiLineStartDelimiterMark: '{',
+		multiLineEndDelimiterMark: '}',
+		prototypeStartDelimiterMark: '',
+		prototypeEndDelimiterMark: '@',
+		singleLineInBetweenPropertySeparatorMark: ', ',
+		multiLineInBetweenPropertySeparatorMark: ',',
+		nonPrimitiveValueNameSeparatorMark: ' ',
+		propertyNumberSeparatorMark: ',',
+		propertyNumberStartDelimiterMark: '(',
+		propertyNumberEndDelimiterMark: ')',
+		propertySource: PropertySource.Type.FromProperties,
+		maxPrototypeDepth: 2,
+		propertyFilters: Array.make(PPValueFilter.removeNonEnumerables),
+		propertySortOrder: Option.none(),
+		dedupeProperties: false,
+		maxPropertyNumber: 100,
+		propertyFormatter: PPValueFormatter.keyAndValue,
+		nonPrimitiveFormatter: PPNonPrimitiveFormatter.splitOnTotalLengthMaker(80)
+	});
+
+	/**
+	 * NonPrimitive Option instance for arrays
+	 *
+	 * @category Instances
+	 */
+	export const array: Type = make({
+		...defaults,
+		id: 'Array',
+		singleLineStartDelimiterMark: '[',
+		singleLineEndDelimiterMark: ']',
+		multiLineStartDelimiterMark: '[',
+		multiLineEndDelimiterMark: ']',
+		propertySource: PropertySource.Type.FromIterable,
+		propertyFilters: Array.empty(),
+		propertyFormatter: PPValueFormatter.valueOnly
+	});
+
+	/**
+	 * Constructor that generates a NonPrimitive Option instance suitable for maps
+	 *
+	 * @category Constructors
+	 */
+	export const mapsAndSets = (id: string): Type =>
+		make({
+			...defaults,
+			id,
+			showId: true,
+			propertyNumberDisplayOption: PropertyNumberDisplayOption.Type.All,
+			keyValueSeparatorMark: '=>',
+			propertySource: PropertySource.Type.FromIterable,
+			propertyFilters: Array.empty(),
+			propertyFormatter: PPValueFormatter.valueForAutoGenerated
+		});
 
 	export namespace Initialized {
 		/**
@@ -322,9 +474,9 @@ export namespace NonPrimitiveOption {
 		 *
 		 * @category Models
 		 */
-		export interface Type extends NonPrimitiveOption.Type {
-			readonly initializedPropertyFilter: PPPropertyFilter.Action.Type;
-			readonly initializedPropertyFormatter: ReturnType<PPPropertyFormatter.Action.Type>;
+		export interface Type extends MTypes.Data<NonPrimitive.Type> {
+			readonly initializedPropertyFilter: PPValueFilter.Action.Type;
+			readonly initializedPropertyFormatter: ReturnType<PPValueFormatter.Action.Type>;
 			readonly initializedNonPrimitiveFormatter: ReturnType<PPNonPrimitiveFormatter.Action.Type>;
 		}
 
@@ -333,20 +485,22 @@ export namespace NonPrimitiveOption {
 		 *
 		 * @category Constructors
 		 */
-		export const make = (params: {
+		export const fromOption = (params: {
 			readonly valueBasedFormatterConstructor: ValueBasedFormatterConstructor.Type;
 			readonly markShowerConstructor: MarkShowerConstructor.Type;
-			readonly nonPrimitiveOption: NonPrimitiveOption.Type;
-		}): Type =>
-			pipe(
-				params.nonPrimitiveOption,
+		}): MTypes.OneArgFunction<NonPrimitive.Type, Type> =>
+			flow(
 				MStruct.enrichWith({
-					initializedPropertyFilter: (self) => (properties: PPValue.Properties.Type) =>
-						Array.reduce(self.propertyFilters, properties, (remainingProperties, propertyFilter) =>
-							propertyFilter(remainingProperties)
+					initializedPropertyFilter: (nonPrimitiveOption) => (properties: PPValues.Type) =>
+						Array.reduce(
+							nonPrimitiveOption.propertyFilters,
+							properties,
+							(remainingProperties, propertyFilter) => propertyFilter(remainingProperties)
 						),
-					initializedPropertyFormatter: (self) => self.propertyFormatter(params),
-					initializedNonPrimitiveFormatter: (self) => self.nonPrimitiveFormatter(params)
+					initializedPropertyFormatter: (nonPrimitiveOption) =>
+						nonPrimitiveOption.propertyFormatter(params),
+					initializedNonPrimitiveFormatter: (nonPrimitiveOption) =>
+						nonPrimitiveOption.nonPrimitiveFormatter(params)
 				})
 			);
 	}
@@ -374,36 +528,34 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
 	 */
 	readonly byPassers: ByPassers.Type;
 
-	/**
-	 * Maximal number of characters to show for strings. Pass +Infinity to show the entire contents of
-	 * strings
-	 */
-	readonly maxStringLength: number;
+	/** PrimitiveFormatter (see PrimitiveFormatter.ts) instance used to format primitive values */
+	readonly primitiveFormatter: PPPrimitiveFormatter.Type;
 
 	/**
 	 * Maximum number of nested non primitive values that will be opened. A value inferior or equal to
 	 * 0 means that only primitive values of the value to stringify are shown, non-primitive values
-	 * are replaced by a message string (see generalNonPrimitiveOption and specificOption).
+	 * are replaced by a message string (see generalNonPrimitiveOption and
+	 * specificNonPrimitiveOption). Pass +Infinity to see all levels of any object.
 	 */
 	readonly maxDepth: number;
 
 	/**
 	 * Options that will apply to all non-primitive values other than those for which specific options
-	 * are provided. See specificOptions below
+	 * are provided. See specificNonPrimitiveOptions below
 	 */
-	readonly generalNonPrimitiveOption: NonPrimitiveOption.Type;
+	readonly generalNonPrimitiveOption: NonPrimitive.Type;
 
 	/**
 	 * Function that takes a value and returns either a `none` if the generalNonPrimitiveOptions must
 	 * be applied for that value or a `some` of the specific options to apply for that value.
 	 */
-	readonly specificOption: MTypes.OneArgFunction<
-		PPValue.NonPrimitiveType,
-		Option.Option<NonPrimitiveOption.Type>
+	readonly specificNonPrimitiveOption: MTypes.OneArgFunction<
+		PPValue.NonPrimitive,
+		Option.Option<NonPrimitive.Type>
 	>;
 
 	/** @internal */
-	readonly [TypeId]: TypeId;
+	readonly [_TypeId]: _TypeId;
 }
 
 /**
@@ -411,7 +563,7 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
  *
  * @category Guards
  */
-export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
+export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
 
 /**
  * Equivalence
@@ -421,9 +573,9 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
 
 /** Prototype */
-const _TypeIdHash = Hash.hash(TypeId);
+const _TypeIdHash = Hash.hash(_TypeId);
 const proto: MTypes.Proto<Type> = {
-	[TypeId]: TypeId,
+	[_TypeId]: _TypeId,
 	[Equal.symbol](this: Type, that: unknown): boolean {
 		return has(that) && equivalence(this, that);
 	},
@@ -446,27 +598,36 @@ export const make = (params: MTypes.Data<Type>): Type =>
 	MTypes.objectFromDataAndProto(proto, params);
 
 /**
- * Function that returns an `Option` instance that pretty-prints a value on a single line in a way
- * very similar to util.inspect. It takes a `FormatSet` instance as an argument.
+ * Function that returns an `Option` instance that pretty-prints a value in a way very similar to
+ * util.inspect.
  *
  * @category Instances
  */
-export const utilInspectLike = (formatSet: PPFormatSet.Type): Type =>
-	make({
-		id: formatSet.id + 'SingleLine',
-		maxDepth: 10,
-		arrayLabel: pipe('[Array]', PPString.makeWith(formatSet.otherValueFormatter)),
-		functionLabel: pipe('(Function)', PPString.makeWith(formatSet.otherValueFormatter)),
-		objectLabel: pipe('{Object}', PPString.makeWith(formatSet.otherValueFormatter)),
-		maxPrototypeDepth: 0,
-		circularLabel: pipe('(Circular)', PPString.makeWith(formatSet.otherValueFormatter)),
-		propertySortOrder: PPPropertyOrder.byStringKey,
-		dedupeProperties: false,
-		byPasser: PPByPasser.objectAsValue(formatSet),
-		propertyFilter: PPPropertyFilter.removeNonEnumerables,
-		propertyFormatter: PPPropertyFormatter.recordLike(formatSet),
-		recordFormatter: PPRecordFormatter.singleLine(formatSet)
-	});
+export const utilInspectLike: Type = make({
+	id: 'UtilInspectLike',
+	styleMap: PPStyleMap.none,
+	markMap: PPMarkMap.defaults,
+	byPassers: Array.make(PPByPasser.functionToName, PPByPasser.objectToString),
+	primitiveFormatter: PPPrimitiveFormatter.utilInspectLike(),
+	maxDepth: 2,
+	generalNonPrimitiveOption: NonPrimitive.defaults,
+	specificNonPrimitiveOption: (value) => {
+		if (MTypes.isArray(value)) return Option.some(NonPrimitive.array);
+		if (value instanceof Map) return Option.some(NonPrimitive.mapsAndSets('Map'));
+		if (value instanceof Set) return Option.some(NonPrimitive.mapsAndSets('Set'));
+		if (value instanceof WeakMap) return Option.some(NonPrimitive.mapsAndSets('WeakMap'));
+		if (value instanceof WeakSet) return Option.some(NonPrimitive.mapsAndSets('WeakSet'));
+		if (HashMap.isHashMap(value)) return Option.some(NonPrimitive.mapsAndSets('EffectHashMap'));
+		if (SortedMap.isSortedMap(value))
+			return Option.some(NonPrimitive.mapsAndSets('EffectSortedMap'));
+		if (HashSet.isHashSet(value)) return Option.some(NonPrimitive.mapsAndSets('EffectHashSet'));
+		if (SortedSet.isSortedSet(value))
+			return Option.some(NonPrimitive.mapsAndSets('EffectSortedSet'));
+		if (!MTypes.isString(value) && isIterable(value))
+			return Option.some(NonPrimitive.mapsAndSets('Iterable'));
+		return Option.none();
+	}
+});
 
 /**
  * Builds a Stringifier from an Option
@@ -480,7 +641,7 @@ export const toStringifier = (self: Type): Stringifier.Type => {
 		pipe(
 			styleMap,
 			PPStyleMap.get(partName),
-			(contextFormatter) => (value) => contextFormatter(value)(text)
+			(contextFormatter) => (value) => pipe(text, contextFormatter(value))
 		)
 	);
 
@@ -496,18 +657,9 @@ export const toStringifier = (self: Type): Stringifier.Type => {
 
 	const constructors = { markShowerConstructor, valueBasedFormatterConstructor };
 
-	const stringValueTextFormatter = valueBasedFormatterConstructor('StringValue');
-	const otherValueTextFormatter = valueBasedFormatterConstructor('OtherValue');
-	const symbolValueTextFormatter = valueBasedFormatterConstructor('SymbolValue');
+	const primitiveValueTextFormatter = valueBasedFormatterConstructor('PrimitiveValue');
 	const messageTextFormatter = valueBasedFormatterConstructor('Message');
 
-	const stringStartDelimiterMarkShower = markShowerConstructor('StringStartDelimiter');
-	const stringEndDelimiterMarkShower = markShowerConstructor('StringEndDelimiter');
-	const stringOverflowSuffixMarkShower = markShowerConstructor('StringOverflowSuffix');
-	const nullValueMarkShower = markShowerConstructor('NullValue');
-	const undefinedValueMarkShower = markShowerConstructor('UndefinedValue');
-	const bigIntStartDelimiterMarkShower = markShowerConstructor('BigIntStartDelimiter');
-	const bigIntEndDelimiterMarkShower = markShowerConstructor('BigIntEndDelimiter');
 	const circularObjectMarkShower = markShowerConstructor('CircularObject');
 	const circularReferenceStartDelimiterMarkShower = markShowerConstructor(
 		'CircularReferenceStartDelimiter'
@@ -520,182 +672,165 @@ export const toStringifier = (self: Type): Stringifier.Type => {
 
 	const initializedByPassers = Array.map(self.byPassers, Function.apply(constructors));
 
-	const initializedByPasser: ReturnType<PPByPasser.Action.Type> = (seed) =>
-		pipe(initializedByPassers, MArray.firstSomeResult(Function.apply(seed)));
+	const initializedByPasser: ReturnType<PPByPasser.Action.Type> = (value) =>
+		pipe(initializedByPassers, MArray.firstSomeResult(Function.apply(value)));
 
-	const initializedGeneralNonPrimitiveOption = NonPrimitiveOption.Initialized.make({
-		...constructors,
-		nonPrimitiveOption: self.generalNonPrimitiveOption
-	});
-
-	const functionToNameByPasser = PPByPasser.functionToName(constructors);
+	const toInitializedNonPrimitiveOption = NonPrimitive.Initialized.fromOption(constructors);
+	const initializedGeneralNonPrimitiveOption = toInitializedNonPrimitiveOption(
+		self.generalNonPrimitiveOption
+	);
+	const functionToNameByPasser = PPByPasser.functionToName.call(self, constructors);
 
 	let lastCyclicalIndex = 1;
-	const cyclicalMap = MutableHashMap.empty<PPValue.NonPrimitiveType, number>();
+	const cyclicalMap = MutableHashMap.empty<PPValue.NonPrimitive, number>();
 
 	const stringifier: Stringifier.Type = flow(
-		PPValue.Top.make,
-		MTree.unfoldAndFold<PPValue.NonPrimitiveType, PPStringifiedValue.Type, PPValue.All>({
+		PPValue.fromTopValue,
+		MTree.unfoldAndFold<
+			readonly [
+				nonPrimitiveValue: PPValue.NonPrimitive,
+				nonPrimitiveOption: NonPrimitive.Initialized.Type,
+				allPropertyNumber: number
+			],
+			readonly [stringified: PPStringifiedValue.Type, value: PPValue.All],
+			PPValue.All
+		>({
 			unfold: (seed, cyclicalRef) =>
-				Either.gen(function* () {
-					const notByPassed = yield* pipe(
-						seed,
-						initializedByPasser,
-						Either.fromOption(Function.constant(seed)),
-						Either.flip
-					);
+				pipe(
+					Either.gen(function* () {
+						const notByPassed = yield* pipe(
+							seed,
+							initializedByPasser,
+							Either.fromOption(Function.constant(seed)),
+							Either.flip
+						);
 
-					const nonPrimitive = yield* pipe(
-						notByPassed,
-						Either.liftPredicate(
-							PPValue.isNonPrimitive,
-							Function.unsafeCoerce<PPValue.All, PPValue.PrimitiveType>
-						),
-						Either.mapLeft(
-							flow(
-								PPValue.value,
+						const unBypassedNonPrimitive = yield* pipe(
+							notByPassed,
+							Either.liftPredicate(
+								PPValue.isNonPrimitive,
+								Function.unsafeCoerce<PPValue.All, PPValue.Primitive>
+							),
+							Either.mapLeft(
 								flow(
-									MMatch.make,
-									MMatch.when(
-										MTypes.isString,
-										flow(
-											Either.liftPredicate(
-												flow(String.length, Number.greaterThan(self.maxStringLength)),
-												Function.identity
-											),
-											Either.mapBoth({
-												onLeft: stringValueTextFormatter(seed),
-												onRight: flow(
-													String.takeLeft(self.maxStringLength),
-													stringValueTextFormatter(seed),
-													ASText.append(stringOverflowSuffixMarkShower(seed))
-												)
-											}),
-											Either.merge,
-											ASText.surround(
-												stringStartDelimiterMarkShower(seed),
-												stringEndDelimiterMarkShower(seed)
-											)
-										)
-									),
-									MMatch.whenOr(
-										MTypes.isNumber,
-										MTypes.isBoolean,
-										flow(MString.fromNonNullablePrimitive, otherValueTextFormatter(seed))
-									),
-									MMatch.when(MTypes.isNull, pipe(seed, nullValueMarkShower, Function.constant)),
-									MMatch.when(
-										MTypes.isUndefined,
-										pipe(seed, undefinedValueMarkShower, Function.constant)
-									),
-									MMatch.when(
-										MTypes.isBigInt,
-										flow(
-											MString.fromNonNullablePrimitive,
-											otherValueTextFormatter(seed),
-											ASText.surround(
-												bigIntStartDelimiterMarkShower(seed),
-												bigIntEndDelimiterMarkShower(seed)
-											)
-										)
-									),
-									MMatch.when(
-										MTypes.isSymbol,
-										flow(MString.fromNonNullablePrimitive, symbolValueTextFormatter(seed))
-									),
-									MMatch.exhaustive
-								),
-								PPStringifiedValue.fromText
+									self.primitiveFormatter,
+									primitiveValueTextFormatter(notByPassed),
+									PPStringifiedValue.fromText
+								)
 							)
-						)
-					);
+						);
 
-					const initializedNonPrimitiveOption = pipe(
-						self.specificOption,
-						Function.apply(nonPrimitive),
-						Option.map((specificOption) =>
-							NonPrimitiveOption.Initialized.make({
-								...constructors,
-								nonPrimitiveOption: specificOption
-							})
-						),
-						Option.getOrElse(Function.constant(initializedGeneralNonPrimitiveOption))
-					);
+						const initializedNonPrimitiveOption = pipe(
+							unBypassedNonPrimitive,
+							self.specificNonPrimitiveOption,
+							Option.map(toInitializedNonPrimitiveOption),
+							Option.getOrElse(Function.constant(initializedGeneralNonPrimitiveOption))
+						);
 
-					const nonPrimitiveUnderMaxDepth = yield* pipe(
-						nonPrimitive,
-						Either.liftPredicate(
-							flow(PPValue.depth, Number.lessThan(self.maxDepth)),
-							flow(
-								functionToNameByPasser,
-								Option.getOrElse(
-									pipe(
-										initializedNonPrimitiveOption.name,
-										messageTextFormatter(seed),
-										ASText.surround(
-											messageStartDelimiterMarkShower(seed),
-											messageEndDelimiterMarkShower(seed)
-										),
-										PPStringifiedValue.fromText,
-										Function.constant
+						const unBypassedNonPrimitiveUnderMaxDepth = yield* pipe(
+							unBypassedNonPrimitive,
+							Either.liftPredicate(
+								flow(PPValue.depth, Number.lessThan(self.maxDepth)),
+								flow(
+									functionToNameByPasser,
+									Option.getOrElse(
+										pipe(
+											initializedNonPrimitiveOption.id,
+											messageTextFormatter(unBypassedNonPrimitive),
+											ASText.surround(
+												messageStartDelimiterMarkShower(unBypassedNonPrimitive),
+												messageEndDelimiterMarkShower(unBypassedNonPrimitive)
+											),
+											PPStringifiedValue.fromText,
+											Function.constant
+										)
 									)
 								)
 							)
-						)
-					);
+						);
 
-					const res = pipe(
-						cyclicalRef,
-						Option.map((cyclicalValue) =>
-							pipe(
-								cyclicalMap,
-								MutableHashMap.get(cyclicalValue),
-								Option.getOrElse(() => {
-									/* eslint-disable-next-line functional/no-expression-statements */
-									MutableHashMap.set(cyclicalMap, cyclicalValue, lastCyclicalIndex);
-									return lastCyclicalIndex++;
-								}),
-								MString.fromNonNullablePrimitive,
-								messageTextFormatter(seed),
-								ASText.prepend(circularObjectMarkShower(seed)),
-								ASText.surround(
-									messageStartDelimiterMarkShower(seed),
-									messageEndDelimiterMarkShower(seed)
-								),
-								PPStringifiedValue.fromText
-							)
-						),
-						Either.fromOption(
-							pipe(
-								nonPrimitiveUnderMaxDepth,
-								MTuple.makeBothBy({
-									toFirst: Function.identity,
-									toSecond: flow(
-										MMatch.make,
-										MMatch.when(PPValue.isArray, fromNonPrimitive),
-										MMatch.orElse(
-											flow(
-												fromNonPrimitive,
-												Array.sort(self.propertySortOrder),
-												MFunction.fIfTrue({
-													condition: self.dedupeProperties,
-													f: Array.dedupeWith((self, that) => self.key === that.key)
-												})
-												//option.propertyFilter
-											)
-										)
-									)
-								}),
-								Function.constant
-							)
-						),
-						Either.flip
-					);
-				}) as never,
-			foldNonLeaf: (nonPrimitive, children) =>
+						const unCyclicalUnBypassedNonPrimitiveUnderMaxDepth = yield* pipe(
+							cyclicalRef,
+							Option.map(([cyclicalValue]) =>
+								pipe(
+									cyclicalMap,
+									MutableHashMap.get(cyclicalValue),
+									Option.getOrElse(() => {
+										/* eslint-disable-next-line functional/no-expression-statements */
+										MutableHashMap.set(cyclicalMap, cyclicalValue, lastCyclicalIndex);
+										return lastCyclicalIndex++;
+									}),
+									MString.fromNonNullablePrimitive,
+									messageTextFormatter(unBypassedNonPrimitiveUnderMaxDepth),
+									ASText.prepend(circularObjectMarkShower(unBypassedNonPrimitiveUnderMaxDepth)),
+									ASText.surround(
+										messageStartDelimiterMarkShower(unBypassedNonPrimitiveUnderMaxDepth),
+										messageEndDelimiterMarkShower(unBypassedNonPrimitiveUnderMaxDepth)
+									),
+									PPStringifiedValue.fromText
+								)
+							),
+							Either.fromOption(Function.constant(unBypassedNonPrimitiveUnderMaxDepth)),
+							Either.flip
+						);
+
+						const properties = pipe(
+							initializedNonPrimitiveOption.propertySource,
+							MMatch.make,
+							MMatch.whenIs(PropertySource.Type.FromProperties, () =>
+								PPValues.fromProperties(initializedNonPrimitiveOption.maxPrototypeDepth)
+							),
+							MMatch.whenIs(PropertySource.Type.FromIterable, () =>
+								PPValues.fromIterable(stringifier)
+							),
+							MMatch.whenIs(PropertySource.Type.FromPropertiesAndIterator, () =>
+								flow(
+									MTuple.makeBothBy<PPValue.NonPrimitive, PPValues.Type>({
+										toFirst: PPValues.fromProperties(
+											initializedNonPrimitiveOption.maxPrototypeDepth
+										),
+										toSecond: PPValues.fromIterable(stringifier)
+									}),
+									Array.flatten
+								)
+							),
+							MMatch.exhaustive,
+							Function.apply(unCyclicalUnBypassedNonPrimitiveUnderMaxDepth)
+						);
+
+						const sort: MTypes.OneArgFunction<PPValues.Type> = pipe(
+							initializedNonPrimitiveOption.propertySortOrder,
+							Option.map((order) => Array.sort(order)),
+							Option.getOrElse(Function.constant(Function.identity))
+						);
+
+						const filteredAndSortedProperties = pipe(
+							properties,
+							initializedNonPrimitiveOption.initializedPropertyFilter,
+							sort,
+							MFunction.fIfTrue({
+								condition: initializedNonPrimitiveOption.dedupeProperties,
+								f: Array.dedupeWith((self, that) => self.oneLineStringKey === that.oneLineStringKey)
+							}),
+							Array.take(initializedNonPrimitiveOption.maxPropertyNumber)
+						);
+
+						return Tuple.make(
+							Tuple.make(
+								unCyclicalUnBypassedNonPrimitiveUnderMaxDepth,
+								initializedNonPrimitiveOption,
+								properties.length
+							),
+							filteredAndSortedProperties
+						);
+					}),
+					Either.mapLeft(flow(Tuple.make, Tuple.appendElement(seed)))
+				),
+			foldNonLeaf: ([nonPrimitive, initializedNonPrimitiveOption, allPropertyNumber], children) =>
 				pipe(
 					children,
-					recordFormatter(nonPrimitive),
+					Array.map(([stringified,value])=>),
+					initializedNonPrimitiveOption.initializedNonPrimitiveFormatter(nonPrimitive),
 					pipe(
 						cyclicalMap,
 						MutableHashMap.get(nonPrimitive),
@@ -712,7 +847,7 @@ export const toStringifier = (self: Type): Stringifier.Type => {
 					),
 					propertyFormatter(nonPrimitive)
 				),
-			foldLeaf: Function.identity // Properties need formatting here
+			foldLeaf: Function.identity
 		})
 	);
 

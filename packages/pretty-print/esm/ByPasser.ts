@@ -36,8 +36,8 @@ import * as PPStringifiedValue from './StringifiedValue.js';
 import * as PPValue from './Value.js';
 
 const moduleTag = '@parischap/pretty-print/ByPasser/';
-const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
-type TypeId = typeof TypeId;
+const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
+type _TypeId = typeof _TypeId;
 
 /**
  * Namespace of a ByPasser used as an action
@@ -46,23 +46,25 @@ type TypeId = typeof TypeId;
  */
 export namespace Action {
 	/**
-	 * Type of the action. The action takes as input a ValueBasedFormatterConstructor, a
-	 * MarkShowerConstructor (see OptionAndPrecalc.ts) and the Value being currently printed (see
-	 * Value.ts). If the action returns a value of type `Some<StringifiedValue.Type>` or
-	 * `StringifiedValue.Type`, this `StringifiedValue` will be used as is to represent the input
-	 * value. If it returns a `none` or `null` or `undefined`, the normal stringification process will
-	 * be applied.
+	 * Type of the action. The action takes as input a ValueBasedFormatterConstructor (see Option.ts),
+	 * a MarkShowerConstructor (see Option.ts) and the Value being currently printed. If the action
+	 * returns a value of type `Some<StringifiedValue.Type>`, this `StringifiedValue` will be used as
+	 * is to represent the input value. If it returns a `none`, the normal stringification process
+	 * will be applied.
 	 *
 	 * @category Models
 	 */
 	export interface Type {
-		({
-			valueBasedFormatterConstructor,
-			markShowerConstructor
-		}: {
-			readonly valueBasedFormatterConstructor: PPOption.ValueBasedFormatterConstructor.Type;
-			readonly markShowerConstructor: PPOption.MarkShowerConstructor.Type;
-		}): MTypes.OneArgFunction<PPValue.All, Option.Option<PPStringifiedValue.Type>>;
+		(
+			this: PPOption.Type,
+			{
+				valueBasedFormatterConstructor,
+				markShowerConstructor
+			}: {
+				readonly valueBasedFormatterConstructor: PPOption.ValueBasedFormatterConstructor.Type;
+				readonly markShowerConstructor: PPOption.MarkShowerConstructor.Type;
+			}
+		): MTypes.OneArgFunction<PPValue.All, Option.Option<PPStringifiedValue.Type>>;
 	}
 }
 
@@ -80,7 +82,7 @@ export interface Type
 	readonly id: string;
 
 	/** @internal */
-	readonly [TypeId]: TypeId;
+	readonly [_TypeId]: _TypeId;
 }
 
 /**
@@ -88,7 +90,7 @@ export interface Type
  *
  * @category Guards
  */
-export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
+export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
 
 /**
  * Equivalence
@@ -98,9 +100,9 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
 
 /** Base */
-const _TypeIdHash = Hash.hash(TypeId);
+const _TypeIdHash = Hash.hash(_TypeId);
 const base: MTypes.Proto<Type> = {
-	[TypeId]: TypeId,
+	[_TypeId]: _TypeId,
 	[Equal.symbol](this: Type, that: unknown): boolean {
 		return has(that) && equivalence(this, that);
 	},
@@ -135,7 +137,8 @@ export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
 /**
  * ByPasser instance that has the following behavior:
  *
- * - For any function: a some of the function name followed by parentheses.
+ * - For any function: a some of the function name surrounded by the function delimiters and the
+ *   message delimiters. If the function name is an empty string, `anonymous` is used instead.
  * - For any other value: returns a `none`
  *
  * @category Instances
@@ -143,13 +146,12 @@ export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
 export const functionToName: Type = make({
 	id: 'FunctionToName',
 	action: ({ valueBasedFormatterConstructor, markShowerConstructor }) => {
-		const functionNameTextFormatter = valueBasedFormatterConstructor('FunctionName');
+		const messageTextFormatter = valueBasedFormatterConstructor('Message');
 
 		const functionNameStartDelimiterMarkShower = markShowerConstructor(
 			'FunctionNameStartDelimiter'
 		);
 		const functionNameEndDelimiterMarkShower = markShowerConstructor('FunctionNameEndDelimiter');
-		const defaultFunctionNameMarkShower = markShowerConstructor('DefaultFunctionName');
 		const messageStartDelimiterMarkShower = markShowerConstructor('MessageStartDelimiter');
 		const messageEndDelimiterMarkShower = markShowerConstructor('MessageEndDelimiter');
 
@@ -159,13 +161,11 @@ export const functionToName: Type = make({
 				Option.liftPredicate(PPValue.isFunction),
 				Option.map(
 					flow(
-						PPValue.value,
+						PPValue.content,
 						MFunction.name,
-						Option.liftPredicate(
-							Predicate.and(String.isNonEmpty, Predicate.not(MFunction.strictEquals('anonymous')))
-						),
-						Option.map(functionNameTextFormatter(value)),
-						Option.getOrElse(pipe(value, defaultFunctionNameMarkShower, Function.constant)),
+						Option.liftPredicate(String.isNonEmpty),
+						Option.getOrElse(Function.constant('anonymous')),
+						messageTextFormatter(value),
 						ASText.surround(
 							functionNameStartDelimiterMarkShower(value),
 							messageStartDelimiterMarkShower(value)
@@ -204,7 +204,7 @@ export const objectToString: Type = make({
 				Option.liftPredicate(PPValue.isNonPrimitive),
 				Option.flatMap(
 					flow(
-						PPValue.value,
+						PPValue.content,
 						MRecord.tryZeroParamStringFunction({
 							functionName: 'toString',
 							/* eslint-disable-next-line @typescript-eslint/unbound-method */

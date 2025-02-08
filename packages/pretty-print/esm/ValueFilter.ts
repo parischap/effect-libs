@@ -19,13 +19,14 @@ import {
 	Struct
 } from 'effect';
 import * as PPValue from './Value.js';
+import * as PPValues from './Values.js';
 
-const moduleTag = '@parischap/pretty-print/PropertyFilter/';
-const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
-type TypeId = typeof TypeId;
+const moduleTag = '@parischap/pretty-print/ValueFilter/';
+const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
+type _TypeId = typeof _TypeId;
 
 /**
- * Namespace of a PropertyFilter used as an action
+ * Namespace of a ValueFilter used as an action
  *
  * @category Models
  */
@@ -35,11 +36,11 @@ export namespace Action {
 	 *
 	 * @category Models
 	 */
-	export interface Type extends MTypes.OneArgFunction<PPValue.Properties.Type> {}
+	export interface Type extends MTypes.OneArgFunction<PPValues.Type> {}
 }
 
 /**
- * Type that represents a PropertyFilter.
+ * Type that represents a ValueFilter.
  *
  * @category Models
  */
@@ -48,11 +49,11 @@ export interface Type
 		Equal.Equal,
 		MInspectable.Inspectable,
 		Pipeable.Pipeable {
-	/** Id of this PropertyFilter instance. Useful for equality and debugging */
+	/** Id of this ValueFilter instance. Useful for equality and debugging */
 	readonly id: string;
 
 	/** @internal */
-	readonly [TypeId]: TypeId;
+	readonly [_TypeId]: _TypeId;
 }
 
 /**
@@ -60,7 +61,7 @@ export interface Type
  *
  * @category Guards
  */
-export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
+export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
 
 /**
  * Equivalence
@@ -70,9 +71,9 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
 
 /** Base */
-const _TypeIdHash = Hash.hash(TypeId);
+const _TypeIdHash = Hash.hash(_TypeId);
 const base: MTypes.Proto<Type> = {
-	[TypeId]: TypeId,
+	[_TypeId]: _TypeId,
 	[Equal.symbol](this: Type, that: unknown): boolean {
 		return has(that) && equivalence(this, that);
 	},
@@ -105,72 +106,76 @@ export const make = ({ id, action }: { readonly id: string; readonly action: Act
 export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
 
 /**
- * PropertyFilter instance that keeps properties of records whose value is a function
+ * ValueFilter instance that removes properties of non-primitive values whose value is not a
+ * function
  *
  * @category Instances
  */
-export const keepFunctions: Type = make({
-	id: 'keepFunctions',
-	action: Array.filter(PPValue.Property.isFunction)
+export const removeNonFunctions: Type = make({
+	id: 'removeNonFunctions',
+	action: Array.filter(PPValue.isFunction)
 });
 
 /**
- * PropertyFilter instance that keeps properties of records whose value is not a function
+ * ValueFilter instance that removes properties of non-primitive values whose value is a function
  *
  * @category Instances
  */
-export const keepNonFunctions: Type = make({
-	id: 'keepNonFunctions',
-	action: Array.filter(Predicate.not(PPValue.Property.isFunction))
+export const removeFunctions: Type = make({
+	id: 'removeFunctions',
+	action: Array.filter(Predicate.not(PPValue.isFunction))
 });
 
 /**
- * PropertyFilter instance that keeps enumerable properties of records
+ * ValueFilter instance that removes non-enumerable properties of non-primitive values
  *
  * @category Instances
  */
-export const keepEnumerables: Type = make({
-	id: 'keepEnumerables',
-	action: Array.filter(PPValue.Property.isEnumerable)
+export const removeNonEnumerables: Type = make({
+	id: 'removeNonEnumerables',
+	action: Array.filter(PPValue.isEnumerable)
 });
 
 /**
- * PropertyFilter instance that keeps non-enumerable properties of records
+ * ValueFilter instance that removes enumerable properties of non-primitive values
  *
  * @category Instances
  */
-export const keepNonEnumerables: Type = make({
-	id: 'keepNonEnumerables',
-	action: Array.filter(Predicate.not(PPValue.Property.isEnumerable))
+export const removeEnumerables: Type = make({
+	id: 'removeEnumerables',
+	action: Array.filter(Predicate.not(PPValue.isEnumerable))
 });
 
 /**
- * PropertyFilter instance that keeps properties of records with a symbolic key
+ * ValueFilter instance that removes properties of non-primitive values with a string key
  *
  * @category Instances
  */
-export const keepSymbolicKeys: Type = make({
-	id: 'keepSymbolicKeys',
-	action: Array.filter(PPValue.Property.hasSymbolicKey)
+export const removeStringKeys: Type = make({
+	id: 'removeStringKeys',
+	action: Array.filter(PPValue.hasSymbolicKey)
 });
 
 /**
- * PropertyFilter instance that keeps properties of records with a string key
+ * ValueFilter instance that removes properties of non-primitive values with a symbolic key
  *
  * @category Instances
  */
-export const keepStringKeys: Type = make({
-	id: 'keepStringKeys',
-	action: Array.filter(Predicate.not(PPValue.Property.hasSymbolicKey))
+export const removeSymbolicKeys: Type = make({
+	id: 'removeSymbolicKeys',
+	action: Array.filter(Predicate.not(PPValue.hasSymbolicKey))
 });
 
 /**
- * Constructor of a propertyFilter instance that keeps properties of records whose key is a string
- * that fulfills a predicate
+ * Constructor of a propertyFilter instance that removes properties of non-primitive values whose
+ * key is:
+ *
+ * - A string that does not fulfill `predicate`
+ * - A symbol
  *
  * @category Constructors
  */
-export const keepFulfillingKeyPredicate =
+export const removeNotFulfillingKeyPredicate =
 	(id: string) =>
 	(predicate: Predicate.Predicate<string>): Type =>
 		make({

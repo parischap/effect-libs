@@ -26,8 +26,8 @@ import {
 import * as PPValueBasedFormatter from './ValueBasedFormatter.js';
 
 export const moduleTag = '@parischap/pretty-print/StyleMap/';
-const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
-type TypeId = typeof TypeId;
+const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
+type _TypeId = typeof _TypeId;
 
 export namespace Styles {
 	export interface Type extends HashMap.HashMap<string, PPValueBasedFormatter.Type> {}
@@ -45,7 +45,7 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
 	readonly styles: Styles.Type;
 
 	/** @internal */
-	readonly [TypeId]: TypeId;
+	readonly [_TypeId]: _TypeId;
 }
 
 /**
@@ -53,7 +53,7 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
  *
  * @category Guards
  */
-export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
+export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
 
 /**
  * Equivalence
@@ -63,9 +63,9 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
 
 /** Prototype */
-const _TypeIdHash = Hash.hash(TypeId);
+const _TypeIdHash = Hash.hash(_TypeId);
 const proto: MTypes.Proto<Type> = {
-	[TypeId]: TypeId,
+	[_TypeId]: _TypeId,
 	[Equal.symbol](this: Type, that: unknown): boolean {
 		return has(that) && equivalence(this, that);
 	},
@@ -123,32 +123,50 @@ export const ansiDarkMode: Type = make({
 	id: 'AnsiDarkMode',
 	styles: HashMap.make(
 		['Message', ASContextFormatter.green],
-		['StringDelimiters', ASContextFormatter.green],
-		['StringValue', ASContextFormatter.green],
+		['ToStringedObject', ASContextFormatter.yellow],
 		[
-			'NullValue',
-			ASContextFormatter.Unistyled.make(pipe(ASStyle.green, ASStyle.mergeOver(ASStyle.bold)))
+			'PrimitiveValue',
+			PPValueBasedFormatter.makeTypeIndexed(
+				ASPalette.make(
+					// string
+					ASStyle.green,
+					// number
+					ASStyle.yellow,
+					// bigint
+					ASStyle.yellow,
+					// boolean
+					ASStyle.yellow,
+					// symbol
+					ASStyle.cyan,
+					// null
+					pipe(ASStyle.green, ASStyle.mergeOver(ASStyle.bold)),
+					// undefined
+					ASStyle.green
+				)
+			)
 		],
-		['UndefinedValue', ASContextFormatter.green],
-		['SymbolValue', ASContextFormatter.cyan],
-		['OtherValue', ASContextFormatter.yellow],
-		['BigIntDelimiters', ASContextFormatter.magenta],
-		['PropertyKeyWhenFunctionValue', ASContextFormatter.blue],
-		['PropertyKeyWhenSymbol', ASContextFormatter.cyan],
-		['PropertyKeyWhenOther', ASContextFormatter.red],
+		[
+			'PropertyKey',
+			PPValueBasedFormatter.makeKeyTypeIndexed(
+				ASPalette.make(
+					// string key
+					ASStyle.red,
+					// symbolic key
+					ASStyle.cyan
+				)
+			)
+		],
+		['PrototypeDelimiters', ASContextFormatter.green],
+		['KeyValueSeparator', ASContextFormatter.white],
+
 		['InBetweenPropertySeparator', ASContextFormatter.white],
 		[
 			'NonPrimitiveValueDelimiters',
 			PPValueBasedFormatter.makeDepthIndexed(ASPalette.allOriginalColors)
 		],
-		['NonPrimitiveValueName', ASContextFormatter.green],
+		['NonPrimitiveValueId', ASContextFormatter.green],
 		['PropertyNumber', ASContextFormatter.green],
-		['KeyValueSeparator', ASContextFormatter.white],
-		['PrototypeDelimiters', ASContextFormatter.green],
-		['Indentation', ASContextFormatter.green],
-		['FunctionName', ASContextFormatter.green],
-		['FunctionNameDelimiters', ASContextFormatter.green],
-		['ToStringedObject', ASContextFormatter.yellow]
+		['Indentation', ASContextFormatter.green]
 	)
 });
 
@@ -160,5 +178,5 @@ export const ansiDarkMode: Type = make({
  */
 export const none: Type = make({
 	id: 'None',
-	styles: pipe(ansiDarkMode, styles, HashMap.map(Function.constant(ASContextFormatter.none)))
+	styles: HashMap.empty()
 });
