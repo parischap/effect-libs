@@ -101,7 +101,7 @@ export namespace SearchResult {
 				Hash.cached(this)
 			);
 		},
-		...MInspectable.BaseProto(moduleTag),
+		...MInspectable.BaseProto(namespaceTag),
 		...MPipeable.BaseProto
 	};
 

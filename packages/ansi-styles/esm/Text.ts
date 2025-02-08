@@ -113,7 +113,7 @@ namespace UniStyled {
 				Hash.cached(this)
 			);
 		},
-		...MInspectable.BaseProto(moduleTag),
+		...MInspectable.BaseProto(namespaceTag),
 		...MPipeable.BaseProto
 	};
 

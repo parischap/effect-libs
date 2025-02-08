@@ -69,7 +69,7 @@ namespace ValueContainer {
 		[_TypeId]: {
 			_A: MTypes.covariantValue
 		},
-		...MInspectable.BaseProto(moduleTag),
+		...MInspectable.BaseProto(namespaceTag),
 		...MPipeable.BaseProto
 	};
 

@@ -624,7 +624,7 @@ export namespace Number {
 					Hash.cached(this)
 				);
 			},
-			...MInspectable.BaseProto(moduleTag),
+			...MInspectable.BaseProto(namespaceTag),
 			...MPipeable.BaseProto
 		};
 
