@@ -1,7 +1,6 @@
 /** A simple extension to the Effect Record module */
 
-import { flow, Option, pipe, Predicate, Record } from 'effect';
-import { LazyArg } from 'effect/Function';
+import { flow, Function, Option, pipe, Predicate, Record } from 'effect';
 import * as MFunction from './Function.js';
 import * as MTypes from './types.js';
 
@@ -18,7 +17,8 @@ export const unsafeGet =
 
 /**
  * Tries to call method `functionName` on `self` without any parameters. Returns a `some` of the
- * result if such a function exists and returns a string. Returns a `none` otherwise
+ * result if such a function exists (and is different from exception if defined) and returns a
+ * string. Returns a `none` otherwise
  *
  * @category Utils
  */
@@ -28,7 +28,7 @@ export const tryZeroParamStringFunction =
 		exception
 	}: {
 		readonly functionName: string | symbol;
-		readonly exception?: LazyArg<string>;
+		readonly exception?: MTypes.AnyFunction;
 	}) =>
 	(self: MTypes.NonPrimitive): Option.Option<string> =>
 		pipe(
@@ -36,7 +36,12 @@ export const tryZeroParamStringFunction =
 			Option.liftPredicate(MTypes.isFunction),
 			Option.filter(
 				Predicate.and(
-					Predicate.not(MFunction.strictEquals(exception)),
+					pipe(
+						exception,
+						Option.liftPredicate(MTypes.isNotUndefined),
+						Option.map(flow(MFunction.strictEquals<MTypes.AnyFunction>, Predicate.not)),
+						Option.getOrElse(Function.constant(Function.constTrue))
+					),
 					flow(MFunction.parameterNumber, MFunction.strictEquals(0))
 				)
 			),
