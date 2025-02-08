@@ -98,15 +98,23 @@ export const make = <Input>(input: Input): Type<Input, never, Input> =>
  * 		);
  */
 
-export const when =
-	<Input, Rest extends Input, Pred extends Predicate.Predicate<Rest>, Output1>(
-		predicate: Pred,
-		// Pred can be a predicate on a type wider than Rest (eg. when using Predicate.struct with not all properties), so Target<Pred> can be larger than Rest
-		f: (value: NoInfer<MTypes.SimplifiedIntersect<MPredicate.Target<Pred>, Rest>>) => Output1
-	) =>
-	<Output>(
+export const when: {
+	<Input, Rest extends Input, Refined extends Rest, Output1>(
+		predicate: Predicate.Refinement<NoInfer<Rest>, Refined>,
+		f: (value: Refined) => Output1
+	): <Output>(
 		self: Type<Input, Output, Rest>
-	): Type<Input, Output | Output1, Exclude<Rest, MPredicate.Coverage<Pred>>> =>
+	) => Type<Input, Output | Output1, Exclude<Rest, Refined>>;
+	<Input, Rest extends Input, Output1>(
+		predicate: Predicate.Predicate<NoInfer<Rest>>,
+		f: (value: Rest) => Output1
+	): <Output>(self: Type<Input, Output, Rest>) => Type<Input, Output | Output1, Rest>;
+} =
+	<Input, Rest extends Input, Output1>(
+		predicate: Predicate.Predicate<Rest>,
+		f: (value: Rest) => Output1
+	) =>
+	<Output>(self: Type<Input, Output, Rest>) =>
 		_make({
 			input: self.input,
 			output: Option.orElse(self.output, () =>
@@ -116,7 +124,7 @@ export const when =
 					Option.map(f as MTypes.OneArgFunction<Input, Output1>)
 				)
 			)
-		});
+		}) as never;
 
 /**
  * Matches against a primitive value sparing you the need to define a type guard. Returns a copy of
@@ -356,9 +364,9 @@ export const orElse =
  * 		);
  */
 export const unsafeWhen =
-	<Input, Rest extends Input, Refinement extends MTypes.RefinementFrom<Rest>, Output1>(
-		_predicate: Refinement,
-		f: (value: NoInfer<MPredicate.Target<Refinement>>) => Output1
+	<Input, Rest extends Input, Refined extends Rest, Output1>(
+		_predicate: Predicate.Refinement<Rest, Refined>,
+		f: (value: NoInfer<Refined>) => Output1
 	) =>
 	<Output>(self: Type<Input, Output, Rest>): Output | Output1 =>
 		Option.getOrElse(self.output, () => f(self.input as never));
