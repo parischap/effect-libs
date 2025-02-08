@@ -42,9 +42,8 @@ export const flipDual =
  *
  * @category Utils
  */
-export const strictEquals: <A = never>(that: unknown) => Predicate.Predicate<A> =
-	(that) => (self) =>
-		self === that;
+export const strictEquals: <A>(that: NoInfer<A>) => Predicate.Predicate<A> = (that) => (self) =>
+	self === that;
 
 /**
  * Curried equality between elements having the same type using the Equal.equals comparator. Prefer
