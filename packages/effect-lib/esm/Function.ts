@@ -119,3 +119,10 @@ export const call = <A>(self: Function.LazyArg<A>): A => self();
  * @category Utils
  */
 export const constEmptyString = Function.constant('');
+
+/**
+ * Returns a copy of `self` (but definitely bound to an empty object)
+ *
+ * @category Utils
+ */
+export const copy = <F extends MTypes.AnyFunction>(self: F): F => self.bind({}) as F;
