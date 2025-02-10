@@ -74,7 +74,7 @@ export const enrichWith =
 	<
 		O extends MTypes.NonPrimitive,
 		/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-		O1 extends Record<string | symbol, MTypes.OneArgFunction<O, any>>
+		O1 extends Record<string | symbol, MTypes.OneArgFunction<NoInfer<O>, any>>
 	>(
 		fields: O1
 	) =>
