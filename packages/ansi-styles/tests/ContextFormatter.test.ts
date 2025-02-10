@@ -93,10 +93,20 @@ describe('ContextFormatter', () => {
 			});
 		});
 
-		it('Action', () => {
-			expect(
-				ASText.equivalence(redUnistyledFormatterInValue1Context('foo'), ASStyle.red('foo'))
-			).toBe(true);
+		describe('Action', () => {
+			it('Context first', () => {
+				expect(
+					ASText.equivalence(redUnistyledFormatterInValue1Context('foo'), ASStyle.red('foo'))
+				).toBe(true);
+			});
+			it('Context last', () => {
+				expect(
+					ASText.equivalence(
+						redUnistyledFormatter.withContextLast('foo')(value1),
+						ASStyle.red('foo')
+					)
+				).toBe(true);
+			});
 		});
 	});
 
@@ -123,7 +133,7 @@ describe('ContextFormatter', () => {
 		});
 
 		describe('Action', () => {
-			it('Context within bounds', () => {
+			it('Context first within bounds', () => {
 				expect(
 					ASText.equivalence(
 						pos1BasedAllColorsFormatterInValue1Context('foo'),
@@ -132,9 +142,18 @@ describe('ContextFormatter', () => {
 				).toBe(true);
 			});
 
-			it('Context out of bounds', () => {
+			it('Context first out of bounds', () => {
 				expect(
 					ASText.equivalence(pos1BasedAllColorsFormatterInValue2Context('foo'), ASStyle.red('foo'))
+				).toBe(true);
+			});
+
+			it('Context last', () => {
+				expect(
+					ASText.equivalence(
+						pos1BasedAllColorsFormatter.withContextLast('foo')(value1),
+						ASStyle.green('foo')
+					)
 				).toBe(true);
 			});
 		});

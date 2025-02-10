@@ -5,10 +5,11 @@
  * position i % n, where % is the modulo function.
  */
 
-import { MArray, MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
+import { MArray, MFunction, MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
 import { pipe, Pipeable, Predicate, String, Struct, Types } from 'effect';
 import * as ASPalette from './Palette.js';
 import * as ASStyle from './Style.js';
+import type * as ASText from './Text.js';
 
 /**
  * Module tag
@@ -34,7 +35,9 @@ export namespace Action {
 	 *
 	 * @category Models
 	 */
-	export interface Type<in C> extends MTypes.OneArgFunction<C, ASStyle.Action.Type> {}
+	export interface Type<in C> extends MTypes.OneArgFunction<C, ASStyle.Action.Type> {
+		readonly withContextLast: MTypes.OneArgFunction<string, MTypes.OneArgFunction<C, ASText.Type>>;
+	}
 }
 
 /**
@@ -109,21 +112,21 @@ export namespace Unistyled {
 		...MPipeable.BaseProto
 	};
 
-	/** Constructor */
-	const _make = (params: MTypes.Data<Type>): Type => {
-		const style = params.style;
-		return Object.assign(((_context) => style) satisfies Action.Type<unknown>, {
-			...params,
-			...base
-		});
-	};
-
 	/**
 	 * Constructor
 	 *
 	 * @category Constructors
 	 */
-	export const make = (style: ASStyle.Type): Type => _make({ style });
+	export const make = (style: ASStyle.Type): Type => {
+		return Object.assign((_context: unknown) => style, {
+			...base,
+			style,
+			withContextLast: (toStyle: string) => {
+				const styled = style(toStyle);
+				return (_context: unknown) => styled;
+			}
+		});
+	};
 
 	/**
 	 * Gets the `style` property of `self`
@@ -210,18 +213,22 @@ export namespace PaletteBased {
 	 *
 	 * @category Constructors
 	 */
-	export const make = <C>(params: MTypes.Data<Type<C>>): Type<C> => {
-		const styles = params.palette.styles;
+	export const make = <C>({
+		indexFromContext,
+		palette
+	}: {
+		readonly indexFromContext: IndexFromContext.Type<C>;
+		readonly palette: ASPalette.Type;
+	}): Type<C> => {
+		const styles = palette.styles;
 		const n = styles.length;
-		const indexFromContext = params.indexFromContext;
-		return Object.assign(
-			((context) =>
-				pipe(styles, MArray.unsafeGet(indexFromContext(context) % n))) satisfies Action.Type<C>,
-			{
-				...params,
-				...base
-			}
-		);
+		const getStyle = (context: C) => pipe(styles, MArray.unsafeGet(indexFromContext(context) % n));
+		return Object.assign(MFunction.copy(getStyle), {
+			...base,
+			indexFromContext,
+			palette,
+			withContextLast: (toStyle: string) => (context: C) => getStyle(context)(toStyle)
+		});
 	};
 
 	/**
