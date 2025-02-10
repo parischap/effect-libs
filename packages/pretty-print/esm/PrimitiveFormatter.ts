@@ -7,7 +7,7 @@
  * define your own instances if the provided ones don't suit your needs.
  */
 
-import { MInspectable, MMatch, MPipeable, MString, MTypes } from '@parischap/effect-lib';
+import { MFunction, MInspectable, MMatch, MPipeable, MString, MTypes } from '@parischap/effect-lib';
 import {
 	Either,
 	Equal,
@@ -98,7 +98,7 @@ const base: MTypes.Proto<Type> = {
  * @category Constructors
  */
 export const make = ({ id, action }: { readonly id: string; readonly action: Action.Type }): Type =>
-	Object.assign(action.bind({}), {
+	Object.assign(MFunction.copy(action), {
 		id,
 		...base
 	});

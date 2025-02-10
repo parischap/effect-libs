@@ -130,20 +130,6 @@ export namespace MarkShower {
 }
 
 /**
- * Namespace of a MarkShowerMap
- *
- * @category Models
- */
-export namespace MarkShowerMap {
-	/**
-	 * Type of a MarkShowerMap
-	 *
-	 * @category Models
-	 */
-	export interface Type extends HashMap.HashMap<string, MarkShower.Type> {}
-}
-
-/**
  * Namespace of a MarkShowerConstructor
  *
  * @category Models
@@ -155,6 +141,20 @@ export namespace MarkShowerConstructor {
 	 * @category Models
 	 */
 	export interface Type extends MTypes.OneArgFunction<string, MarkShower.Type> {}
+}
+
+/**
+ * Namespace of a MarkShowerMap
+ *
+ * @category Models
+ */
+export namespace MarkShowerMap {
+	/**
+	 * Type of a MarkShowerMap
+	 *
+	 * @category Models
+	 */
+	export interface Type extends HashMap.HashMap<string, MarkShower.Type> {}
 }
 
 /**
@@ -293,8 +293,8 @@ export namespace NonPrimitive {
 		/** MultiLineInBetweenPropertySeparatorMark for that non-primitive value */
 		readonly multiLineInBetweenPropertySeparatorMark: string;
 
-		/** NonPrimitiveValueNameSeparatorMark for that non-primitive value */
-		readonly nonPrimitiveValueNameSeparatorMark: string;
+		/** NonPrimitiveValueIdSeparatorMark for that non-primitive value */
+		readonly nonPrimitiveValueIdSeparatorMark: string;
 
 		/** PropertyNumberSeparatorMark for that non-primitive value */
 		readonly propertyNumberSeparatorMark: string;
@@ -420,7 +420,7 @@ export namespace NonPrimitive {
 		prototypeEndDelimiterMark: '@',
 		singleLineInBetweenPropertySeparatorMark: ', ',
 		multiLineInBetweenPropertySeparatorMark: ',',
-		nonPrimitiveValueNameSeparatorMark: ' ',
+		nonPrimitiveValueIdSeparatorMark: ' ',
 		propertyNumberSeparatorMark: ',',
 		propertyNumberStartDelimiterMark: '(',
 		propertyNumberEndDelimiterMark: ')',
@@ -478,6 +478,8 @@ export namespace NonPrimitive {
 			readonly initializedPropertyFilter: PPValueFilter.Action.Type;
 			readonly initializedPropertyFormatter: ReturnType<PPValueFormatter.Action.Type>;
 			readonly initializedNonPrimitiveFormatter: ReturnType<PPNonPrimitiveFormatter.Action.Type>;
+			readonly stringifiedNonPrimitiveValueStart: MarkShower.Type;
+			readonly stringifiedNonPrimitiveValueEnd: MarkShower.Type;
 		}
 
 		/**
@@ -488,8 +490,13 @@ export namespace NonPrimitive {
 		export const fromOption = (params: {
 			readonly valueBasedFormatterConstructor: ValueBasedFormatterConstructor.Type;
 			readonly markShowerConstructor: MarkShowerConstructor.Type;
-		}): MTypes.OneArgFunction<NonPrimitive.Type, Type> =>
-			flow(
+		}): MTypes.OneArgFunction<NonPrimitive.Type, Type> => {
+			const nonPrimitiveValueIdTextFormatter =
+				params.valueBasedFormatterConstructor('nonPrimitiveValueId');
+			const propertyNumberDelimitersTextFormatter = params.valueBasedFormatterConstructor(
+				'propertyNumberDelimiters'
+			);
+			return flow(
 				MStruct.enrichWith({
 					initializedPropertyFilter: (nonPrimitiveOption) => (properties: PPValues.Type) =>
 						Array.reduce(
@@ -500,9 +507,45 @@ export namespace NonPrimitive {
 					initializedPropertyFormatter: (nonPrimitiveOption) =>
 						nonPrimitiveOption.propertyFormatter(params),
 					initializedNonPrimitiveFormatter: (nonPrimitiveOption) =>
-						nonPrimitiveOption.nonPrimitiveFormatter(params)
+						nonPrimitiveOption.nonPrimitiveFormatter(params),
+					stringifiedNonPrimitiveValueStart:
+						(nonPrimitiveOption): MarkShower.Type =>
+						(value) =>
+							pipe(
+								ASText.empty,
+								nonPrimitiveOption.showId ?
+									ASText.append(
+										pipe(nonPrimitiveOption.id, nonPrimitiveValueIdTextFormatter(value))
+									)
+								:	Function.identity,
+
+								(
+									nonPrimitiveOption.propertyNumberDisplayOption !==
+										PropertyNumberDisplayOption.Type.None
+								) ?
+									ASText.append(
+										pipe(
+											nonPrimitiveOption.propertyNumberStartDelimiterMark,
+											propertyNumberDelimitersTextFormatter(value)
+										)
+									)
+								:	Function.identity
+							),
+					stringifiedNonPrimitiveValueEnd:
+						(nonPrimitiveOption): MarkShower.Type =>
+						(value) =>
+							(
+								nonPrimitiveOption.propertyNumberDisplayOption !==
+								PropertyNumberDisplayOption.Type.None
+							) ?
+								pipe(
+									nonPrimitiveOption.propertyNumberEndDelimiterMark,
+									propertyNumberDelimitersTextFormatter(value)
+								)
+							:	ASText.empty
 				})
 			);
+		};
 	}
 }
 
@@ -829,7 +872,9 @@ export const toStringifier = (self: Type): Stringifier.Type => {
 			foldNonLeaf: ([nonPrimitive, initializedNonPrimitiveOption, allPropertyNumber], children) =>
 				pipe(
 					children,
-					Array.map(([stringified,value])=>),
+					Array.map(([stringified, value]) =>
+						initializedNonPrimitiveOption.initializedPropertyFormatter(value)(stringified)
+					),
 					initializedNonPrimitiveOption.initializedNonPrimitiveFormatter(nonPrimitive),
 					pipe(
 						cyclicalMap,
@@ -844,9 +889,8 @@ export const toStringifier = (self: Type): Stringifier.Type => {
 							)
 						),
 						Option.getOrElse(Function.constant(Function.identity))
-					),
-					propertyFormatter(nonPrimitive)
-				),
+					)
+				) as never,
 			foldLeaf: Function.identity
 		})
 	);

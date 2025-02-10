@@ -22,7 +22,7 @@ export interface Type extends ReadonlyArray<PPStringifiedValue.Type> {}
  * @category Utils
  */
 export const addMarkInBetween = (mark: ASText.Type): MTypes.OneArgFunction<Type> =>
-	flow(MArray.modifyInit(PPStringifiedValue.addEndMark(mark)));
+	flow(MArray.modifyInit(PPStringifiedValue.addLineAfter(mark)));
 
 /**
  * Returns a copy of `self` in which each stringified property has been tabified with `tab`

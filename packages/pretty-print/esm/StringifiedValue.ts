@@ -69,14 +69,15 @@ export const isNotEmpty: Predicate.Predicate<Type> = Predicate.not(isEmpty);
  *
  * @category Utils
  */
-export const addEndMark = (mark: ASText.Type): MTypes.OneArgFunction<Type> => Array.append(mark);
+export const addLineAfter = (mark: ASText.Type): MTypes.OneArgFunction<Type> => Array.append(mark);
 
 /**
  * Returns a copy of `self` with a mark at the start
  *
  * @category Utils
  */
-export const addStartMark = (mark: ASText.Type): MTypes.OneArgFunction<Type> => Array.prepend(mark);
+export const addLineBefore = (mark: ASText.Type): MTypes.OneArgFunction<Type> =>
+	Array.prepend(mark);
 
 /**
  * Returns a copy of `self` in which `text` has been prepended to each line

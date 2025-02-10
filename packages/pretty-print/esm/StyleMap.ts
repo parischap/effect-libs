@@ -158,15 +158,16 @@ export const ansiDarkMode: Type = make({
 		],
 		['PrototypeDelimiters', ASContextFormatter.green],
 		['KeyValueSeparator', ASContextFormatter.white],
-
 		['InBetweenPropertySeparator', ASContextFormatter.white],
 		[
 			'NonPrimitiveValueDelimiters',
 			PPValueBasedFormatter.makeDepthIndexed(ASPalette.allOriginalColors)
 		],
+		['Indentation', ASContextFormatter.green],
 		['NonPrimitiveValueId', ASContextFormatter.green],
-		['PropertyNumber', ASContextFormatter.green],
-		['Indentation', ASContextFormatter.green]
+		['PropertyNumbers', ASContextFormatter.green],
+		['propertyNumberSeparator', ASContextFormatter.green],
+		['propertyNumberDelimiters', ASContextFormatter.green]
 	)
 });
 

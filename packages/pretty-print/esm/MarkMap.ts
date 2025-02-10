@@ -111,13 +111,6 @@ export const defaults: Type = make({
 		['CircularObject', { text: 'Circular *', partName: 'Message' }],
 		['CircularReferenceStartDelimiter', { text: '<Ref *', partName: 'Message' }],
 		['CircularReferenceEndDelimiter', { text: '>', partName: 'Message' }],
-
-		['MapAndSetKeyValueSeparator', { text: ' => ', partName: 'KeyValueSeparator' }],
-		['MapAndSetSingleLineStartDelimiter', { text: '{ ', partName: 'NonPrimitiveValueDelimiters' }],
-		['MapAndSetSingleLineEndDelimiter', { text: ' }', partName: 'NonPrimitiveValueDelimiters' }],
-		['MapAndSetMultiLineStartDelimiter', { text: '{', partName: 'NonPrimitiveValueDelimiters' }],
-		['MapAndSetMultiLineEndDelimiter', { text: '}', partName: 'NonPrimitiveValueDelimiters' }],
-
 		['TabIndent', { text: '  ', partName: 'Indentation' }],
 		['TreeIndentForFirstLineOfInitProps', { text: '├─ ', partName: 'Indentation' }],
 		['TreeIndentForTailLinesOfInitProps', { text: '│  ', partName: 'Indentation' }],

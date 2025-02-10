@@ -8,7 +8,7 @@
  */
 
 import { ASText } from '@parischap/ansi-styles';
-import { MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
+import { MFunction, MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
 import {
 	Array,
 	Either,
@@ -47,7 +47,7 @@ export namespace Action {
 	 */
 	export interface Type {
 		(
-			this: PPOption.NonPrimitive.Type,
+			this: PPOption.NonPrimitive.Initialized.Type,
 			{
 				valueBasedFormatterConstructor,
 				markShowerConstructor
@@ -113,7 +113,7 @@ const base: MTypes.Proto<Type> = {
  * @category Constructors
  */
 export const make = ({ id, action }: { readonly id: string; readonly action: Action.Type }): Type =>
-	Object.assign(action.bind({}), {
+	Object.assign(MFunction.copy(action), {
 		id,
 		...base
 	});

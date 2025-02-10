@@ -9,7 +9,8 @@
  * needs.
  */
 
-import { MInspectable, MMatch, MPipeable, MTypes } from '@parischap/effect-lib';
+import { ASText } from '@parischap/ansi-styles';
+import { MFunction, MInspectable, MMatch, MPipeable, MTypes } from '@parischap/effect-lib';
 import {
 	Array,
 	Equal,
@@ -22,7 +23,7 @@ import {
 	Predicate,
 	Struct
 } from 'effect';
-import type * as PPOption from './Option.js';
+import * as PPOption from './Option.js';
 import * as PPStringifiedProperties from './StringifiedProperties.js';
 import * as PPStringifiedValue from './StringifiedValue.js';
 import * as PPValue from './Value.js';
@@ -40,13 +41,14 @@ export namespace Action {
 	/**
 	 * Type of the action of a NonPrimitiveFormatter. The action takes as input a
 	 * ValueBasedFormatterConstructor, a MarkShowerConstructor (see OptionAndPrecalc.ts), the Value
-	 * being currently printed (see Value.ts) and an array of the stringified properties (see
-	 * StringifiedProperties.ts) of that value. Based on these parameters, it must return a
-	 * stringified representation of the whole rescord.
+	 * being currently printed (see Value.ts), a header to be displayed in front of the stringified
+	 * properties (usually the id of the non primitive value and the number of displayed properties)
+	 * and an array of the stringified properties (see StringifiedProperties.ts) of that value. Based
+	 * on these parameters, it must return a stringified representation of the whole record.
 	 */
 	export interface Type {
 		(
-			this: PPOption.NonPrimitive.Type,
+			this: PPOption.NonPrimitive.Initialized.Type,
 			{
 				valueBasedFormatterConstructor,
 				markShowerConstructor
@@ -55,7 +57,8 @@ export namespace Action {
 				readonly markShowerConstructor: PPOption.MarkShowerConstructor.Type;
 			}
 		): (
-			value: PPValue.NonPrimitive
+			value: PPValue.NonPrimitive,
+			header: ASText.Type
 		) => (children: PPStringifiedProperties.Type) => PPStringifiedValue.Type;
 	}
 }
@@ -114,7 +117,7 @@ const base: MTypes.Proto<Type> = {
  * @category Constructors
  */
 export const make = ({ id, action }: { readonly id: string; readonly action: Action.Type }): Type =>
-	Object.assign(action.bind({}), {
+	Object.assign(MFunction.copy(action), {
 		id,
 		...base
 	});
@@ -133,26 +136,38 @@ export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
  */
 export const singleLine: Type = make({
 	id: 'SingleLine',
-	action: ({ markShowerConstructor }) => {
-		const singleLineInBetweenPropertySeparatorMarkShower = markShowerConstructor(
-			'SingleLineInBetweenPropertySeparator'
+	action: function (this, { valueBasedFormatterConstructor }) {
+		const inBetweenPropertySeparatorTextFormatter = valueBasedFormatterConstructor(
+			'InBetweenPropertySeparator'
 		);
-		const addNonPrimitiveMarks = PPStringifiedValue.addNonPrimitiveMarks({
-			arrayStartDelimiterMarkShower: markShowerConstructor('singleLineArrayStartDelimiter'),
-			arrayEndDelimiterMarkShower: markShowerConstructor('singleLineArrayEndDelimiter'),
-			recordStartDelimiterMarkShower: markShowerConstructor('singleLineRecordStartDelimiter'),
-			recordEndDelimiterMarkShower: markShowerConstructor('singleLineRecordEndDelimiter')
-		});
+		const nonPrimitiveValueDelimitersTextFormatter = valueBasedFormatterConstructor(
+			'NonPrimitiveValueDelimiters'
+		);
 
-		return (value) =>
-			flow(
+		return (value) => {
+			const inContextInBetweenPropertySeparatorTextFormatter =
+				inBetweenPropertySeparatorTextFormatter(value);
+			const inContextNonPrimitiveValueDelimitersTextFormatter =
+				nonPrimitiveValueDelimitersTextFormatter(value);
+			return flow(
 				PPStringifiedProperties.addMarkInBetween(
-					singleLineInBetweenPropertySeparatorMarkShower(value)
+					inContextInBetweenPropertySeparatorTextFormatter(
+						this.singleLineInBetweenPropertySeparatorMark
+					)
 				),
 				PPStringifiedValue.fromStringifiedProperties,
-				addNonPrimitiveMarks(value),
+				PPStringifiedValue.addNonPrimitiveValueDelimiters({
+					startDelimiterMark: inContextNonPrimitiveValueDelimitersTextFormatter(
+						this.singleLineStartDelimiterMark
+					),
+					endDelimiterMark: inContextNonPrimitiveValueDelimitersTextFormatter(
+						this.singleLineEndDelimiterMark
+					)
+				}),
+
 				PPStringifiedValue.toSingleLine
 			);
+		};
 	}
 });
 
@@ -164,9 +179,12 @@ export const singleLine: Type = make({
  */
 export const tabify: Type = make({
 	id: 'Tabified',
-	action: ({ markShowerConstructor }) => {
-		const multiLineInBetweenPropertySeparatorMarkShower = markShowerConstructor(
-			'MultiLineInBetweenPropertySeparator'
+	action: ({ valueBasedFormatterConstructor }) => {
+		const inBetweenPropertySeparatorTextFormatter = valueBasedFormatterConstructor(
+			'InBetweenPropertySeparator'
+		);
+		const nonPrimitiveValueDelimitersTextFormatter = valueBasedFormatterConstructor(
+			'NonPrimitiveValueDelimiters'
 		);
 
 		const tabIndentMarkShower = markShowerConstructor('TabIndent');
