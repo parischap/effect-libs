@@ -8,6 +8,7 @@
 import { ASText } from '@parischap/ansi-styles';
 import {
 	MArray,
+	MCache,
 	MFunction,
 	MMatch,
 	MString,
@@ -293,8 +294,8 @@ export namespace NonPrimitive {
 		/** MultiLineInBetweenPropertySeparatorMark for that non-primitive value */
 		readonly multiLineInBetweenPropertySeparatorMark: string;
 
-		/** NonPrimitiveValueIdSeparatorMark for that non-primitive value */
-		readonly nonPrimitiveValueIdSeparatorMark: string;
+		/** IdSeparatorMark for that non-primitive value */
+		readonly idSeparatorMark: string;
 
 		/** PropertyNumberSeparatorMark for that non-primitive value */
 		readonly propertyNumberSeparatorMark: string;
@@ -420,7 +421,7 @@ export namespace NonPrimitive {
 		prototypeEndDelimiterMark: '@',
 		singleLineInBetweenPropertySeparatorMark: ', ',
 		multiLineInBetweenPropertySeparatorMark: ',',
-		nonPrimitiveValueIdSeparatorMark: ' ',
+		idSeparatorMark: ' ',
 		propertyNumberSeparatorMark: ',',
 		propertyNumberStartDelimiterMark: '(',
 		propertyNumberEndDelimiterMark: ')',
@@ -478,8 +479,13 @@ export namespace NonPrimitive {
 			readonly initializedPropertyFilter: PPValueFilter.Action.Type;
 			readonly initializedPropertyFormatter: ReturnType<PPValueFormatter.Action.Type>;
 			readonly initializedNonPrimitiveFormatter: ReturnType<PPNonPrimitiveFormatter.Action.Type>;
-			readonly stringifiedNonPrimitiveValueStart: MarkShower.Type;
-			readonly stringifiedNonPrimitiveValueEnd: MarkShower.Type;
+			readonly initializedNonPrimitiveIdHeaderConstructor: ({
+				allPropertyNumber,
+				actualPropertyNumber
+			}: {
+				readonly allPropertyNumber: number;
+				readonly actualPropertyNumber: number;
+			}) => MarkShower.Type;
 		}
 
 		/**
@@ -493,56 +499,121 @@ export namespace NonPrimitive {
 		}): MTypes.OneArgFunction<NonPrimitive.Type, Type> => {
 			const nonPrimitiveValueIdTextFormatter =
 				params.valueBasedFormatterConstructor('nonPrimitiveValueId');
+			const nonPrimitiveValueIdSeparatorTextFormatter = params.valueBasedFormatterConstructor(
+				'nonPrimitiveValueIdSeparator'
+			);
 			const propertyNumberDelimitersTextFormatter = params.valueBasedFormatterConstructor(
 				'propertyNumberDelimiters'
 			);
+			const propertyNumberSeparatorTextFormatter =
+				params.valueBasedFormatterConstructor('propertyNumberSeparator');
+			const PropertyNumbersTextFormatter = params.valueBasedFormatterConstructor('PropertyNumbers');
+
 			return flow(
 				MStruct.enrichWith({
-					initializedPropertyFilter: (nonPrimitiveOption) => (properties: PPValues.Type) =>
-						Array.reduce(
-							nonPrimitiveOption.propertyFilters,
-							properties,
-							(remainingProperties, propertyFilter) => propertyFilter(remainingProperties)
-						),
+					initializedPropertyFilter:
+						(nonPrimitiveOption): Type['initializedPropertyFilter'] =>
+						(properties) =>
+							Array.reduce(
+								nonPrimitiveOption.propertyFilters,
+								properties,
+								(remainingProperties, propertyFilter) => propertyFilter(remainingProperties)
+							),
 					initializedPropertyFormatter: (nonPrimitiveOption) =>
 						nonPrimitiveOption.propertyFormatter(params),
 					initializedNonPrimitiveFormatter: (nonPrimitiveOption) =>
 						nonPrimitiveOption.nonPrimitiveFormatter(params),
-					stringifiedNonPrimitiveValueStart:
-						(nonPrimitiveOption): MarkShower.Type =>
-						(value) =>
-							pipe(
-								ASText.empty,
-								nonPrimitiveOption.showId ?
-									ASText.append(
-										pipe(nonPrimitiveOption.id, nonPrimitiveValueIdTextFormatter(value))
-									)
-								:	Function.identity,
+					initializedNonPrimitiveIdHeaderConstructor: (
+						nonPrimitiveOption
+					): Type['initializedNonPrimitiveIdHeaderConstructor'] => {
+						const emptyText = Function.constant(ASText.empty);
 
-								(
-									nonPrimitiveOption.propertyNumberDisplayOption !==
-										PropertyNumberDisplayOption.Type.None
-								) ?
-									ASText.append(
-										pipe(
-											nonPrimitiveOption.propertyNumberStartDelimiterMark,
-											propertyNumberDelimitersTextFormatter(value)
-										)
-									)
-								:	Function.identity
-							),
-					stringifiedNonPrimitiveValueEnd:
-						(nonPrimitiveOption): MarkShower.Type =>
-						(value) =>
+						const [propertyNumberStartDelimiter, propertyNumberEndDelimiter] =
 							(
-								nonPrimitiveOption.propertyNumberDisplayOption !==
+								nonPrimitiveOption.propertyNumberDisplayOption ===
 								PropertyNumberDisplayOption.Type.None
 							) ?
-								pipe(
-									nonPrimitiveOption.propertyNumberEndDelimiterMark,
-									propertyNumberDelimitersTextFormatter(value)
+								Tuple.make(emptyText, emptyText)
+							:	Tuple.make(
+									propertyNumberDelimitersTextFormatter.withContextLast(
+										nonPrimitiveOption.propertyNumberStartDelimiterMark
+									),
+									propertyNumberDelimitersTextFormatter.withContextLast(
+										nonPrimitiveOption.propertyNumberEndDelimiterMark
+									)
+								);
+
+						const propertyNumberSeparator =
+							(
+								nonPrimitiveOption.propertyNumberDisplayOption ===
+								PropertyNumberDisplayOption.Type.AllAndActual
+							) ?
+								propertyNumberSeparatorTextFormatter.withContextLast(
+									nonPrimitiveOption.propertyNumberSeparatorMark
 								)
-							:	ASText.empty
+							:	emptyText;
+
+						const idSeparator =
+							(
+								nonPrimitiveOption.showId ||
+								nonPrimitiveOption.propertyNumberDisplayOption !==
+									PropertyNumberDisplayOption.Type.None
+							) ?
+								nonPrimitiveValueIdSeparatorTextFormatter.withContextLast(
+									nonPrimitiveOption.idSeparatorMark
+								)
+							:	emptyText;
+
+						const id =
+							nonPrimitiveOption.showId ?
+								nonPrimitiveValueIdTextFormatter.withContextLast(nonPrimitiveOption.id)
+							:	emptyText;
+
+						//const start = pipe(id, ASText.append(propertyNumberStartDelimiter));
+						//const end = pipe(propertyNumberEndDelimiter, ASText.append(idSeparator));
+						return ({ allPropertyNumber, actualPropertyNumber }) =>
+							(value) => {
+								const styledTotalPropertyNumber =
+									(
+										[
+											PropertyNumberDisplayOption.Type.All,
+											PropertyNumberDisplayOption.Type.AllAndActual
+										].includes(nonPrimitiveOption.propertyNumberDisplayOption)
+									) ?
+										pipe(
+											allPropertyNumber,
+											MString.fromNonNullablePrimitive,
+											PropertyNumbersTextFormatter.withContextLast,
+											Function.apply(value)
+										)
+									:	ASText.empty;
+
+								const styledActualPropertyNumber =
+									(
+										[
+											PropertyNumberDisplayOption.Type.Actual,
+											PropertyNumberDisplayOption.Type.AllAndActual
+										].includes(nonPrimitiveOption.propertyNumberDisplayOption)
+									) ?
+										pipe(
+											actualPropertyNumber,
+											MString.fromNonNullablePrimitive,
+											PropertyNumbersTextFormatter.withContextLast,
+											Function.apply(value)
+										)
+									:	ASText.empty;
+
+								return ASText.concat(
+									id(value),
+									propertyNumberStartDelimiter(value),
+									styledTotalPropertyNumber,
+									propertyNumberSeparator(value),
+									styledActualPropertyNumber,
+									propertyNumberEndDelimiter(value),
+									idSeparator(value)
+								);
+							};
+					}
 				})
 			);
 		};
@@ -681,10 +752,8 @@ export const utilInspectLike: Type = make({
 export const toStringifier = (self: Type): Stringifier.Type => {
 	const styleMap = self.styleMap;
 	const markShowerMap: MarkShowerMap.Type = HashMap.map(self.markMap.marks, ({ text, partName }) =>
-		pipe(
-			styleMap,
-			PPStyleMap.get(partName),
-			(contextFormatter) => (value) => pipe(text, contextFormatter(value))
+		pipe(styleMap, PPStyleMap.get(partName), (contextFormatter) =>
+			contextFormatter.withContextLast(text)
 		)
 	);
 
@@ -719,9 +788,17 @@ export const toStringifier = (self: Type): Stringifier.Type => {
 		pipe(initializedByPassers, MArray.firstSomeResult(Function.apply(value)));
 
 	const toInitializedNonPrimitiveOption = NonPrimitive.Initialized.fromOption(constructors);
-	const initializedGeneralNonPrimitiveOption = toInitializedNonPrimitiveOption(
+
+	const initializedNonPrimitiveOptionCache = MCache.make({
+		lookUp: ({ key }: { readonly key: NonPrimitive.Type }) =>
+			Tuple.make(toInitializedNonPrimitiveOption(key), true)
+	});
+
+	const initializedNonPrimitiveOptionGetter = MCache.toGetter(initializedNonPrimitiveOptionCache);
+	const initializedGeneralNonPrimitiveOption = initializedNonPrimitiveOptionGetter(
 		self.generalNonPrimitiveOption
 	);
+
 	const functionToNameByPasser = PPByPasser.functionToName.call(self, constructors);
 
 	let lastCyclicalIndex = 1;
@@ -766,7 +843,7 @@ export const toStringifier = (self: Type): Stringifier.Type => {
 						const initializedNonPrimitiveOption = pipe(
 							unBypassedNonPrimitive,
 							self.specificNonPrimitiveOption,
-							Option.map(toInitializedNonPrimitiveOption),
+							Option.map(initializedNonPrimitiveOptionGetter),
 							Option.getOrElse(Function.constant(initializedGeneralNonPrimitiveOption))
 						);
 
@@ -873,26 +950,39 @@ export const toStringifier = (self: Type): Stringifier.Type => {
 				pipe(
 					children,
 					Array.map(([stringified, value]) =>
-						initializedNonPrimitiveOption.initializedPropertyFormatter(value)(stringified)
+						pipe(stringified, initializedNonPrimitiveOption.initializedPropertyFormatter(value))
 					),
-					initializedNonPrimitiveOption.initializedNonPrimitiveFormatter(nonPrimitive),
-					pipe(
-						cyclicalMap,
-						MutableHashMap.get(nonPrimitive),
-						Option.map(
-							flow(
-								MString.fromNonNullablePrimitive,
-								messageTextFormatter(nonPrimitive),
-								ASText.prepend(circularReferenceStartDelimiterMarkShower(nonPrimitive)),
-								ASText.append(circularReferenceEndDelimiterMarkShower(nonPrimitive)),
-								PPStringifiedValue.prependToFirstLine
+					initializedNonPrimitiveOption.initializedNonPrimitiveFormatter({
+						value: nonPrimitive,
+						header: pipe(
+							cyclicalMap,
+							MutableHashMap.get(nonPrimitive),
+							Option.map(
+								flow(
+									MString.fromNonNullablePrimitive,
+									messageTextFormatter(nonPrimitive),
+									ASText.prepend(circularReferenceStartDelimiterMarkShower(nonPrimitive)),
+									ASText.append(circularReferenceEndDelimiterMarkShower(nonPrimitive))
+								)
+							),
+							Option.getOrElse(Function.constant(ASText.empty)),
+							ASText.append(
+								pipe(
+									nonPrimitive,
+									initializedNonPrimitiveOption.initializedNonPrimitiveIdHeaderConstructor({
+										allPropertyNumber,
+										actualPropertyNumber: children.length
+									})
+								)
 							)
-						),
-						Option.getOrElse(Function.constant(Function.identity))
-					)
-				) as never,
+						)
+					}),
+					Tuple.make,
+					Tuple.appendElement(nonPrimitive)
+				),
 			foldLeaf: Function.identity
-		})
+		}),
+		Tuple.getFirst
 	);
 
 	return stringifier;

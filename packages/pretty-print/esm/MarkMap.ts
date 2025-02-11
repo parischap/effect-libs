@@ -110,7 +110,7 @@ export const defaults: Type = make({
 		['MessageEndDelimiter', { text: ']', partName: 'Message' }],
 		['CircularObject', { text: 'Circular *', partName: 'Message' }],
 		['CircularReferenceStartDelimiter', { text: '<Ref *', partName: 'Message' }],
-		['CircularReferenceEndDelimiter', { text: '>', partName: 'Message' }],
+		['CircularReferenceEndDelimiter', { text: '> ', partName: 'Message' }],
 		['TabIndent', { text: '  ', partName: 'Indentation' }],
 		['TreeIndentForFirstLineOfInitProps', { text: '├─ ', partName: 'Indentation' }],
 		['TreeIndentForTailLinesOfInitProps', { text: '│  ', partName: 'Indentation' }],

@@ -10,7 +10,7 @@
  */
 
 import { ASText } from '@parischap/ansi-styles';
-import { MFunction, MInspectable, MMatch, MPipeable, MTypes } from '@parischap/effect-lib';
+import { MFunction, MInspectable, MMatch, MPipeable, MTuple, MTypes } from '@parischap/effect-lib';
 import {
 	Array,
 	Equal,
@@ -48,7 +48,7 @@ export namespace Action {
 	 */
 	export interface Type {
 		(
-			this: PPOption.NonPrimitive.Initialized.Type,
+			this: PPOption.NonPrimitive.Type,
 			{
 				valueBasedFormatterConstructor,
 				markShowerConstructor
@@ -56,10 +56,13 @@ export namespace Action {
 				readonly valueBasedFormatterConstructor: PPOption.ValueBasedFormatterConstructor.Type;
 				readonly markShowerConstructor: PPOption.MarkShowerConstructor.Type;
 			}
-		): (
-			value: PPValue.NonPrimitive,
-			header: ASText.Type
-		) => (children: PPStringifiedProperties.Type) => PPStringifiedValue.Type;
+		): ({
+			value,
+			header
+		}: {
+			readonly value: PPValue.NonPrimitive;
+			readonly header: ASText.Type;
+		}) => (children: PPStringifiedProperties.Type) => PPStringifiedValue.Type;
 	}
 }
 
@@ -130,7 +133,7 @@ export const make = ({ id, action }: { readonly id: string; readonly action: Act
 export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
 
 /**
- * NonPrimitiveFormatter instance that will always print records on a single line
+ * NonPrimitiveFormatter instance that will always print non-primitive values on a single line
  *
  * @category Instances
  */
@@ -144,27 +147,26 @@ export const singleLine: Type = make({
 			'NonPrimitiveValueDelimiters'
 		);
 
-		return (value) => {
-			const inContextInBetweenPropertySeparatorTextFormatter =
-				inBetweenPropertySeparatorTextFormatter(value);
+		return ({ value, header }) => {
+			const inBetweenPropertySeparator = pipe(
+				this.singleLineInBetweenPropertySeparatorMark,
+				inBetweenPropertySeparatorTextFormatter(value)
+			);
 			const inContextNonPrimitiveValueDelimitersTextFormatter =
 				nonPrimitiveValueDelimitersTextFormatter(value);
+			const startDelimiterMarkAndHeader = pipe(
+				this.singleLineStartDelimiterMark,
+				inContextNonPrimitiveValueDelimitersTextFormatter,
+				ASText.prepend(header)
+			);
+			const endDelimiterMark = inContextNonPrimitiveValueDelimitersTextFormatter(
+				this.singleLineEndDelimiterMark
+			);
 			return flow(
-				PPStringifiedProperties.addMarkInBetween(
-					inContextInBetweenPropertySeparatorTextFormatter(
-						this.singleLineInBetweenPropertySeparatorMark
-					)
-				),
+				PPStringifiedProperties.addMarkInBetween(inBetweenPropertySeparator),
 				PPStringifiedValue.fromStringifiedProperties,
-				PPStringifiedValue.addNonPrimitiveValueDelimiters({
-					startDelimiterMark: inContextNonPrimitiveValueDelimitersTextFormatter(
-						this.singleLineStartDelimiterMark
-					),
-					endDelimiterMark: inContextNonPrimitiveValueDelimitersTextFormatter(
-						this.singleLineEndDelimiterMark
-					)
-				}),
-
+				PPStringifiedValue.addLineBefore(startDelimiterMarkAndHeader),
+				PPStringifiedValue.addLineAfter(endDelimiterMark),
 				PPStringifiedValue.toSingleLine
 			);
 		};
@@ -172,59 +174,51 @@ export const singleLine: Type = make({
 });
 
 /**
- * NonPrimitiveFormatter instance that will always print records on multiple lines with a tab
- * indentation
+ * NonPrimitiveFormatter instance that will always print non-primitive values on multiple lines with
+ * a tab indentation
  *
  * @category Instances
  */
 export const tabify: Type = make({
 	id: 'Tabified',
-	action: ({ valueBasedFormatterConstructor }) => {
+	action: function (this, { valueBasedFormatterConstructor, markShowerConstructor }) {
 		const inBetweenPropertySeparatorTextFormatter = valueBasedFormatterConstructor(
 			'InBetweenPropertySeparator'
 		);
 		const nonPrimitiveValueDelimitersTextFormatter = valueBasedFormatterConstructor(
 			'NonPrimitiveValueDelimiters'
 		);
-
 		const tabIndentMarkShower = markShowerConstructor('TabIndent');
-		const addNonPrimitiveMarks = PPStringifiedValue.addNonPrimitiveMarks({
-			arrayStartDelimiterMarkShower: markShowerConstructor('multiLineArrayStartDelimiter'),
-			arrayEndDelimiterMarkShower: markShowerConstructor('multiLineArrayEndDelimiter'),
-			recordStartDelimiterMarkShower: markShowerConstructor('multiLineRecordStartDelimiter'),
-			recordEndDelimiterMarkShower: markShowerConstructor('multiLineRecordEndDelimiter')
-		});
 
-		return (value) =>
-			flow(
-				PPStringifiedProperties.addMarkInBetween(
-					multiLineInBetweenPropertySeparatorMarkShower(value)
-				),
-				PPStringifiedProperties.tabify(tabIndentMarkShower(value)),
-				PPStringifiedValue.fromStringifiedProperties,
-				addNonPrimitiveMarks(value),
-				PPStringifiedValue.toSingleLine
+		return ({ value, header }) => {
+			const inBetweenPropertySeparator = pipe(
+				this.multiLineInBetweenPropertySeparatorMark,
+				inBetweenPropertySeparatorTextFormatter(value)
 			);
+			const inContextNonPrimitiveValueDelimitersTextFormatter =
+				nonPrimitiveValueDelimitersTextFormatter(value);
+			const startDelimiterMarkAndHeader = pipe(
+				this.multiLineStartDelimiterMark,
+				inContextNonPrimitiveValueDelimitersTextFormatter,
+				ASText.prepend(header)
+			);
+			const endDelimiterMark = inContextNonPrimitiveValueDelimitersTextFormatter(
+				this.multiLineEndDelimiterMark
+			);
+			const tab = tabIndentMarkShower(value);
+			return flow(
+				PPStringifiedProperties.addMarkInBetween(inBetweenPropertySeparator),
+				PPStringifiedProperties.tabify(tab),
+				PPStringifiedValue.fromStringifiedProperties,
+				PPStringifiedValue.addLineBefore(startDelimiterMarkAndHeader),
+				PPStringifiedValue.addLineAfter(endDelimiterMark)
+			);
+		};
 	}
 });
 
 /**
- * Calls `singleLine` for arrays, `tabify` otherwise
- *
- * @category Instances
- */
-export const splitNonArraysMaker: Type = make({
-	id: 'SplitNonArrays',
-	action: (params) => {
-		const initializedSingleLine = singleLine(params);
-		const initilizedTabify = tabify(params);
-		return (value) =>
-			PPValue.isArray(value) ? initializedSingleLine(value) : initilizedTabify(value);
-	}
-});
-
-/**
- * NonPrimitiveFormatter instance that will always print records in a tree-like fashion
+ * NonPrimitiveFormatter instance that will always print non-primitive values in a tree-like fashion
  *
  * @category Instances
  */
@@ -244,7 +238,7 @@ export const treeify: Type = make({
 			'TreeIndentForTailLinesOfLastProp'
 		);
 
-		return (value) =>
+		return ({ value }) =>
 			flow(
 				PPStringifiedProperties.treeify({
 					treeIndentForFirstLineOfInitProps: treeIndentForFirstLineOfInitPropsMarkShower(value),
@@ -258,49 +252,66 @@ export const treeify: Type = make({
 });
 
 /**
- * NonPrimitiveFormatter instance maker that will print record on a single line if the number of
- * their constituents is less than or equal to `limit`.
+ * NonPrimitiveFormatter instance maker that will print non-primitive values on a single line if the
+ * actual number of their constituents (after filtering,...) is less than or equal to `limit`.
  *
  * @category Constructors
  */
 export const splitOnConstituentNumberMaker = (limit: number): Type =>
 	make({
 		id: 'SplitWhenConstituentNumberExceeds' + limit,
-		action: (params) => {
-			const initializedSingleLine = singleLine(params);
-			const initilizedTabify = tabify(params);
-			return (value) =>
+		action: function (this, params) {
+			const initializedSingleLine = singleLine.call(this, params);
+			const initilizedTabify = tabify.call(this, params);
+			return ({ value, header }) =>
 				flow(
 					MMatch.make,
 					MMatch.when(
 						flow(Array.length, Number.lessThanOrEqualTo(limit)),
-						initializedSingleLine(value)
+						initializedSingleLine({ value, header })
 					),
-					MMatch.orElse(initilizedTabify(value))
+					MMatch.orElse(initilizedTabify({ value, header }))
 				);
 		}
 	});
 
 /**
  * Calls `singleLine` if the total length of the properties to print (excluding formatting
- * characters and object marks) is less than or equal to `limit`. Calls `tabify` otherwise
+ * characters) is less than or equal to `limit`. Calls `tabify` otherwise
  *
- * @category Instances
+ * @category Constructors
  */
 export const splitOnTotalLengthMaker = (limit: number): Type =>
 	make({
 		id: 'SplitWhenTotalLengthExceeds' + limit,
-		action: (params) => {
-			const initializedSingleLine = singleLine(params);
-			const initilizedTabify = tabify(params);
-			return (value) =>
+		action: function (this, params) {
+			const initializedSingleLine = singleLine.call(this, params);
+			const initilizedTabify = tabify.call(this, params);
+			const inBetweenSepLength = this.singleLineInBetweenPropertySeparatorMark.length;
+			const delimitersLength =
+				this.singleLineStartDelimiterMark.length + this.singleLineEndDelimiterMark.length;
+			return ({ value, header }) =>
 				flow(
 					MMatch.make,
 					MMatch.when(
-						flow(PPStringifiedProperties.length, Number.lessThanOrEqualTo(limit)),
-						initializedSingleLine(value)
+						flow(
+							MTuple.makeBothBy({
+								toFirst: PPStringifiedProperties.length,
+								toSecond: flow(
+									Array.length,
+									Number.decrement,
+									Number.max(0),
+									Number.multiply(inBetweenSepLength),
+									Number.sum(delimitersLength),
+									Number.sum(ASText.length(header))
+								)
+							}),
+							Number.sumAll,
+							Number.lessThanOrEqualTo(limit)
+						),
+						initializedSingleLine({ value, header })
 					),
-					MMatch.orElse(initilizedTabify(value))
+					MMatch.orElse(initilizedTabify({ value, header }))
 				);
 		}
 	});
@@ -314,17 +325,17 @@ export const splitOnTotalLengthMaker = (limit: number): Type =>
 export const splitOnLongestPropLengthMaker = (limit: number): Type =>
 	make({
 		id: 'SplitWhenLongestPropLengthExceeds' + limit,
-		action: (params) => {
-			const initializedSingleLine = singleLine(params);
-			const initilizedTabify = tabify(params);
-			return (value) =>
+		action: function (this, params) {
+			const initializedSingleLine = singleLine.call(this, params);
+			const initilizedTabify = tabify.call(this, params);
+			return ({ value, header }) =>
 				flow(
 					MMatch.make,
 					MMatch.when(
 						flow(PPStringifiedProperties.longestPropLength, Number.lessThanOrEqualTo(limit)),
-						initializedSingleLine(value)
+						initializedSingleLine({ value, header })
 					),
-					MMatch.orElse(initilizedTabify(value))
+					MMatch.orElse(initilizedTabify({ value, header }))
 				);
 		}
 	});

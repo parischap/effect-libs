@@ -47,7 +47,7 @@ export namespace Action {
 	 */
 	export interface Type {
 		(
-			this: PPOption.NonPrimitive.Initialized.Type,
+			this: PPOption.NonPrimitive.Type,
 			{
 				valueBasedFormatterConstructor,
 				markShowerConstructor

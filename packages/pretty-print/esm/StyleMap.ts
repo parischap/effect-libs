@@ -165,6 +165,7 @@ export const ansiDarkMode: Type = make({
 		],
 		['Indentation', ASContextFormatter.green],
 		['NonPrimitiveValueId', ASContextFormatter.green],
+		['NonPrimitiveValueIdSeparator', ASContextFormatter.green],
 		['PropertyNumbers', ASContextFormatter.green],
 		['propertyNumberSeparator', ASContextFormatter.green],
 		['propertyNumberDelimiters', ASContextFormatter.green]
