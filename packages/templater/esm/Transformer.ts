@@ -344,7 +344,7 @@ export namespace Number {
 	 *
 	 * @category Instances
 	 */
-	export const make = (options: Options.Type): Type => pipe(_cache, MCache.get(options));
+	export const make: MTypes.OneArgFunction<Options.Type, Type> = MCache.toGetter(_cache);
 
 	/**
 	 * Possible sign options
@@ -846,7 +846,7 @@ export namespace Number {
 		 *
 		 * @category Destructors
 		 */
-		export const toRegExp = (self: Type): RegExp => pipe(_cache, MCache.get(self));
+		export const toRegExp: MTypes.OneArgFunction<Type, RegExp> = MCache.toGetter(_cache);
 
 		/**
 		 * Turns a `Transformer.Options` into a function that tries to read a number from the start of a
