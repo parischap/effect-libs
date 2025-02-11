@@ -1,6 +1,6 @@
 /** A simple extension to the Effect Struct module */
 
-import { Record, Struct, pipe } from 'effect';
+import { Function, Record, Struct, pipe } from 'effect';
 import * as MTypes from './types.js';
 /**
  * Prepends `that` to `self`. If `that` contains fields that already exist in `self`, they will not
@@ -74,7 +74,7 @@ export const enrichWith =
 	<
 		O extends MTypes.NonPrimitive,
 		/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-		O1 extends Record<string | symbol, MTypes.OneArgFunction<NoInfer<O>, any>>
+		O1 extends Record<string | symbol, MTypes.OneArgFunction<O, any>>
 	>(
 		fields: O1
 	) =>
@@ -82,7 +82,7 @@ export const enrichWith =
 		pipe(
 			fields,
 			/* eslint-disable-next-line @typescript-eslint/no-unsafe-return */
-			Record.map((f) => f(self)),
+			Record.map(Function.apply(self)),
 			(newValues) => ({ ...self, ...newValues })
 		);
 
@@ -105,7 +105,7 @@ export const mutableEnrichWith =
 		Object.assign(
 			self,
 			/* eslint-disable-next-line  @typescript-eslint/no-unsafe-return */
-			Record.map(fields, (f) => f(self))
+			Record.map(fields, Function.apply(self))
 		);
 
 /* eslint-disable */
