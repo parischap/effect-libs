@@ -87,9 +87,9 @@ namespace ValueContainer {
  * memoized version of itself if it needs to perform recursion. It also receives a flag indicating
  * whether circularity was detected. In that case, the memoized version of the function is not
  * passed as recursion should be stopped to avoid an infinite loop. The output of the function must
- * contain the result of the function and a boolean indicating whether the result should be stored
- * in the cache. Note that when isCircular is true, the result is not stored in the cache even if
- * the result of the function indicates it should.
+ * contain the result of the lookup and a boolean indicating whether the result should be stored in
+ * the cache. Note that when isCircular is true, the result is not stored in the cache even if the
+ * result of the function indicates it should.
  *
  * @category Models
  */
@@ -160,7 +160,7 @@ const _make = <A, B>(params: MTypes.Data<Type<A, B>>): Type<A, B> =>
  * undefined, the cache is unbounded. If the lifespan is undefined, the values never expire. Keys
  * are compared using Equal.equals.
  *
- * @category Constructor
+ * @category Constructors
  * @example
  * 	import { MCache, MTypes } from '@parischap/effect-lib';
  * 	import { Record, Tuple, pipe } from 'effect';
@@ -208,11 +208,11 @@ export const make = <A, B>({
 	});
 
 /**
- * Gets a value from the cache. If the value is not in the cache, the lookup function is called to
- * populate the cache. If it is in the cache but is too old,the lookup function is called to refresh
- * it.
+ * Gets a value from the cache. If the value is not in the cache (value comparison is based on
+ * Equal.equals), the lookup function is called to populate the cache. If it is in the cache but is
+ * too old,the lookup function is called to refresh it.
  *
- * @category Utils
+ * @category Destructors
  * @example
  * 	import { MCache } from '@parischap/effect-lib';
  * 	import { Tuple } from 'effect';
@@ -311,9 +311,19 @@ export const get =
 	};
 
 /**
+ * Returns a function that gets a value from the `self`
+ *
+ * @category Destructors
+ */
+export const toGetter =
+	<A, B>(self: Type<A, B>): MTypes.OneArgFunction<A, B> =>
+	(a) =>
+		pipe(self, get(a));
+
+/**
  * Returns an array of the keys whose value is currently stored in the cache
  *
- * @category Utils
+ * @category Destructors
  */
 export const keysInStore = <A, B>(self: Type<A, B>): Array<A> =>
 	pipe(
