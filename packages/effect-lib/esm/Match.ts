@@ -270,7 +270,7 @@ export const whenOr =
 			...refinements: R,
 			// R can be an array of predicates on a type wider than Rest (eg. when using Predicate.struct with not all properties), so MPredicate.PredicatesToTargets<R>[number] can be larger than Rest
 			f: (
-				value: NoInfer<MTypes.SimplifiedIntersect<MPredicate.PredicatesToTargets<R>[number], Rest>>
+				value: NoInfer<MTypes.IntersectAndSimplify<MPredicate.PredicatesToTargets<R>[number], Rest>>
 			) => Output1
 		]
 	) =>
@@ -302,10 +302,10 @@ export const whenAnd =
 		...args: readonly [
 			...refinements: R,
 			f: (
-				// R can be an array of predicates on a type wider than Rest (eg. when using Predicate.struct with not all properties), so MTypes.TupleToIntersection<MPredicate.PredicatesToTargets<R>> can be wider than Rest
+				// R can be an array of predicates on a type wider than Rest (eg. when using Predicate.struct with not all properties), so MTypes.ToKeyIntersection<MPredicate.PredicatesToTargets<R>> can be wider than Rest
 				value: NoInfer<
-					MTypes.SimplifiedIntersect<
-						MTypes.TupleToIntersection<MPredicate.PredicatesToTargets<R>>,
+					MTypes.IntersectAndSimplify<
+						MTypes.ToKeyIntersection<MPredicate.PredicatesToTargets<R>>,
 						Rest
 					>
 				>
@@ -317,7 +317,7 @@ export const whenAnd =
 	): Type<
 		Input,
 		Output | Output1,
-		Exclude<Rest, MTypes.TupleToIntersection<MPredicate.PredicatesToCoverages<R>>>
+		Exclude<Rest, MTypes.ToKeyIntersection<MPredicate.PredicatesToCoverages<R>>>
 	> =>
 		_make({
 			input: self.input,
