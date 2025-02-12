@@ -17,14 +17,15 @@ export interface EffectPredicate<in Z, out E, out R> {
  *
  * @category Utility types
  */
-export type Source<R> = readonly [R] extends readonly [Predicate.Predicate<infer A>] ? A : never;
+export type Source<R extends MTypes.AnyPredicate> =
+	readonly [R] extends readonly [Predicate.Predicate<infer A>] ? A : never;
 
 /**
  * Type utiliy that extracts the target of a predicate or refinement.
  *
  * @category Utility types
  */
-export type Target<R> =
+export type Target<R extends MTypes.AnyPredicate> =
 	readonly [R] extends readonly [Predicate.Refinement<infer _, infer A>] ? A : Source<R>;
 
 /**
@@ -33,15 +34,19 @@ export type Target<R> =
  *
  * @category Utility types
  */
-export type Coverage<R> = Source<R> extends Target<R> ? never : Target<R>;
+export type Coverage<R extends MTypes.AnyPredicate> =
+	readonly [R] extends readonly [Predicate.Refinement<infer _, infer A>] ? A : never;
+
+// Do not use an interface here.
+type PredicateArray = ReadonlyArray<MTypes.AnyPredicate>;
 
 /**
- * Type utiliy that takes an array/record of predicates or refinements and returns an array/record
- * of their sources
+ * Type utiliy that takes an array of predicates or refinements and returns an array/record of their
+ * sources
  *
  * @category Utility types
  */
-export type PredicatesToSources<T> = {
+export type PredicatesToSources<T extends PredicateArray> = {
 	readonly [key in keyof T]: Source<T[key]>;
 };
 
@@ -51,7 +56,7 @@ export type PredicatesToSources<T> = {
  *
  * @category Utility types
  */
-export type PredicatesToTargets<T> = {
+export type PredicatesToTargets<T extends PredicateArray> = {
 	readonly [key in keyof T]: Target<T[key]>;
 };
 /**
@@ -60,7 +65,7 @@ export type PredicatesToTargets<T> = {
  *
  * @category Utility types
  */
-export type PredicatesToCoverages<T> = {
+export type PredicatesToCoverages<T extends PredicateArray> = {
 	readonly [key in keyof T]: Coverage<T[key]>;
 };
 
@@ -85,5 +90,11 @@ export const struct =
 	) =>
 	(
 		o: O
-	): o is { readonly [key in keyof O]: key extends keyof F ? Target<F[key]> & O[key] : O[key] } =>
+	): o is {
+		readonly [key in keyof O]: key extends keyof F ?
+			F[key] extends MTypes.AnyPredicate ?
+				Target<F[key]> & O[key]
+			:	never
+		:	O[key];
+	} =>
 		Predicate.struct(fields as never)(o as never) as never;

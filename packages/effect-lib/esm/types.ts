@@ -30,46 +30,6 @@ export interface AnyArray extends Array<any> {}
 export interface AnyReadonlyArray extends ReadonlyArray<any> {}
 
 /**
- * Type that represents a primitive except `null` and `undefined`
- *
- * @category Models
- */
-export type NonNullablePrimitive = string | number | bigint | boolean | symbol;
-
-/**
- * Type that represents a primitive
- *
- * @category Models
- */
-export type Primitive = NonNullablePrimitive | null | undefined;
-
-/**
- * Type that represents all possible Javascript values but not all possible Typescript types (it
- * does not represent for instance types like the intersection of a primitive and an object)
- *
- * @category Models
- */
-export type Unknown = Primitive | NonPrimitive;
-
-/**
- * Type that represents a function
- *
- * @category Models
- */
-export interface AnyFunction {
-	(...args: ReadonlyArray<any>): any;
-}
-
-/**
- * Type that represents a function with one argument
- *
- * @category Models
- */
-export interface OneArgFunction<in A, out B = A> {
-	(a: A): B;
-}
-
-/**
  * Type used to avoid warnings by eslint/functional when functions return a mutable array
  *
  * @category Models
@@ -153,6 +113,46 @@ export type OverTwo<A> = [A, A, ...Array<A>];
 export type ReadonlyOverTwo<A> = readonly [A, A, ...ReadonlyArray<A>];
 
 /**
+ * Type that represents a function
+ *
+ * @category Models
+ */
+export interface AnyFunction {
+	(...args: ReadonlyArray<any>): any;
+}
+
+/**
+ * Type that represents a function with one argument
+ *
+ * @category Models
+ */
+export interface OneArgFunction<in A, out B = A> {
+	(a: A): B;
+}
+
+/**
+ * Type that represents a primitive except `null` and `undefined`
+ *
+ * @category Models
+ */
+export type NonNullablePrimitive = string | number | bigint | boolean | symbol;
+
+/**
+ * Type that represents a primitive
+ *
+ * @category Models
+ */
+export type Primitive = NonNullablePrimitive | null | undefined;
+
+/**
+ * Type that represents all possible Javascript values but not all possible Typescript types (it
+ * does not represent Branded types for instance)
+ *
+ * @category Models
+ */
+export type Unknown = Primitive | NonPrimitive;
+
+/**
  * Type that represents any predicate or refinement
  *
  * @category Models
@@ -185,12 +185,31 @@ export type Errorish = { readonly message: string; readonly stack?: string | und
  *
  * @category Models
  */
-export interface StringTransformer extends OneArgFunction<string, string> {}
+export interface StringTransformer extends OneArgFunction<string> {}
 
 /* eslint-disable-next-line functional/prefer-readonly-type */
 type Enumerate<N extends number, Acc extends Array<number> = []> =
 	/* eslint-disable-next-line functional/prefer-readonly-type */
 	[Acc['length']] extends [N] ? Acc[number] : Enumerate<N, [...Acc, Acc['length']]>;
+
+/**
+ * Utility type that retuns `never` if two types are equal. `unknown` otherwise
+ *
+ * @category Utility types
+ */
+export type Equals<A, B> =
+	readonly [A] extends readonly [B] ?
+		readonly [B] extends readonly [A] ?
+			never
+		:	unknown
+	:	unknown;
+
+/**
+ * Function that reports an error if the type it receives is not `never`
+ *
+ * @category Utils
+ */
+export function checkNever<_A extends never>(): void {}
 
 /**
  * Utility type that generates a range of numeric literal types
@@ -204,15 +223,16 @@ export type IntRange<F extends number, T extends number> = Exclude<Enumerate<T>,
  *
  * @category Utility types
  */
-/* eslint-disable-next-line functional/prefer-readonly-type */
-export type Tail<T extends AnyArray> = [T] extends [[any, ...infer R]] ? R : never;
+export type ReadonlyTail<T> =
+	readonly [T] extends readonly [readonly [any, ...infer R]] ? { readonly [key in keyof R]: R[key] }
+	:	never;
 
 /**
- * Utility type that alters all types of a tuple Tuple to Target
+ * Utility type that changes the types of all keys of a tuple, array, struct or record to Target
  *
  * @category Utility types
  */
-export type ToTupleOf<Tuple extends AnyArray, Target> = {
+export type MapToReadonlyTarget<Tuple, Target> = {
 	readonly [k in keyof Tuple]: Target;
 };
 
@@ -239,24 +259,6 @@ export type Proto<T extends NonPrimitive, ProtoFunctions extends string | symbol
 >;
 
 /**
- * Utility type that returns all the keys of a record whose value is a function except those which
- * are in the BaseProtoKeys list.
- */
-/*export type NonSymbolicFunctionKeys<T extends NonPrimitive> = keyof {
-	readonly [k in keyof T as readonly [k] extends readonly [BaseProtoKeys] ? never
-	: readonly [T[k]] extends readonly [AnyFunction] ? k
-	: never]: void;
-};*/
-
-/**
- * Utility type that transforms a functions with several arguments into a function with one argument
- *
- * @category Utility types
- */
-export type toOneArgFunction<F extends AnyFunction> =
-	F extends () => any ? never : (arg1: Parameters<F>[0]) => ReturnType<F>;
-
-/**
  * Constructs an object with prototype `proto` and data `data`
  *
  * @category Utils
@@ -267,12 +269,12 @@ export const objectFromDataAndProto = <P extends NonPrimitive, D extends NonPrim
 ): P & D => Object.assign(Object.create(proto), data) as P & D;
 
 /**
- * Utility type that changes the type of the unique parameter of a OneArgFunction to `A` when
- * possible
+ * Utility type that changes the type of the unique parameter of `F` to `A` if `F` is a Refinement
+ * or a OneArgFunction. Returns `F` otherwise
  *
  * @category Utility types
  */
-export type WithArgType<F, A> =
+export type SetArgTypeTo<F, A> =
 	F extends Predicate.Refinement<infer _, infer R> ?
 		R extends A ?
 			Predicate.Refinement<A, R>
@@ -291,11 +293,12 @@ export type WithArgType<F, A> =
 };*/
 
 /**
- * Utility type that creates an intersection of all types in a tuple/record
+ * Utility type that creates an intersection of all keys of a type. Meant to be used with Tuples
+ * even though not set as a constraint
  *
  * @category Utility types
  */
-export type TupleToIntersection<T extends NonPrimitive> =
+export type ToKeyIntersection<T> =
 	{
 		readonly [K in keyof T]: (x: T[K]) => void;
 	} extends (
@@ -306,13 +309,6 @@ export type TupleToIntersection<T extends NonPrimitive> =
 		I
 	:	never;
 
-type ArrayType<T> = Extract<
-	true extends T & false ? AnyArray
-	: T extends AnyReadonlyArray ? T
-	: /* eslint-disable functional/prefer-readonly-type */ Array<unknown> /* eslint-enable functional/prefer-readonly-type */,
-	T
->;
-
 /**
  * Utility type that creates an intersection and simplifies it which Typescript does not do by
  * itself (see
@@ -321,7 +317,7 @@ type ArrayType<T> = Extract<
  * @category Utility types
  */
 
-export type SimplifiedIntersect<T, U> =
+export type IntersectAndSimplify<T, U> =
 	readonly [T] extends readonly [U] ? T
 	: readonly [U] extends readonly [T] ? U
 	: T & U;
@@ -333,6 +329,12 @@ export type SimplifiedIntersect<T, U> =
  * @category Guards
  */
 export const isArray = <T>(arg: T): arg is ArrayType<T> => Array.isArray(arg);
+type ArrayType<T> = Extract<
+	true extends T & false ? AnyArray
+	: T extends AnyReadonlyArray ? T
+	: /* eslint-disable functional/prefer-readonly-type */ Array<unknown> /* eslint-enable functional/prefer-readonly-type */,
+	T
+>;
 
 /**
  * From `unknown` to `string`
@@ -384,6 +386,20 @@ export const isUndefined = (input: unknown): input is undefined => input === und
 export const isNotUndefined = <A>(input: A): input is Exclude<A, undefined> => input !== undefined;
 
 /**
+ * From `unknown` to `null`
+ *
+ * @category Guards
+ */
+export const isNull = (input: unknown): input is null => input === null;
+
+/**
+ * From a type `T` to the same type `T` without `null`
+ *
+ * @category Guards
+ */
+export const isNotNull = <A>(input: A): input is Exclude<A, null> => input !== null;
+
+/**
  * From a type `T` to `null` or `undefined` depending on what is in T
  *
  * @category Guards
@@ -400,18 +416,19 @@ export const isNotNullable = <A>(input: A): input is NonNullable<A> =>
 	input !== null && input !== undefined;
 
 /**
- * From `unknown` to `null`
+ * From `unknown` to `NonPrimitive`
  *
  * @category Guards
  */
-export const isNull = (input: unknown): input is null => input === null;
+export const isNonPrimitive = <A>(input: A): input is Extract<A, NonPrimitive> =>
+	input !== null && (typeof input === 'object' || typeof input === 'function');
 
 /**
- * From a type `T` to the same type `T` without `null`
+ * From `unknown` to `Primitive`
  *
  * @category Guards
  */
-export const isNotNull = <A>(input: A): input is Exclude<A, null> => input !== null;
+export const isPrimitive = <A>(input: A): input is Extract<A, Primitive> => !isNonPrimitive(input);
 
 /**
  * From `unknown` to `AnyFunction`
@@ -421,41 +438,13 @@ export const isNotNull = <A>(input: A): input is Exclude<A, null> => input !== n
 export const isFunction = (u: unknown): u is AnyFunction => typeof u === 'function';
 
 /**
- * From `unknown` to `NonPrimitive`
+ * From a function with many arguments to a function with a single argument
  *
  * @category Guards
  */
-export const isNonPrimitive = (u: unknown): u is NonPrimitive =>
-	u !== null && ['object', 'function'].includes(typeof u);
-
-/**
- * From `unknown` to `Primitive`
- *
- * @category Guards
- */
-export const isPrimitive = (u: unknown): u is Primitive =>
-	u === null || !['object', 'function'].includes(typeof u);
-
-/**
- * From `unknown` to `Iterable<unknown>`
- *
- * @category Guards
- */
-export const isIterable = (input: unknown): input is Iterable<unknown> =>
-	Predicate.hasProperty(input, Symbol.iterator);
-
-/**
- * From `unknown` to `Errorish`
- *
- * @category Guards
- */
-export const isErrorish = (u: unknown): u is Errorish =>
-	u !== null &&
-	typeof u === 'object' &&
-	'message' in u &&
-	typeof u.message === 'string' &&
-	(!('stack' in u) || typeof u.stack === 'string');
-
+export const isOneArgFunction = <A, R>(
+	f: (a: A, ...args: ReadonlyArray<any>) => R
+): f is (a: A) => R => f.length === 1;
 /**
  * From `Array<A>` to `EmptyArray`
  *
@@ -534,13 +523,24 @@ export const isPair = <A>(u: Array<A>): u is Pair<A, A> => u.length === 2;
 export const isReadonlyPair = <A>(u: ReadonlyArray<A>): u is ReadonlyPair<A, A> => u.length === 2;
 
 /**
- * From `F` to `toOneArgFunction<F>`
+ * From `unknown` to `Iterable<unknown>`
  *
  * @category Guards
  */
-export const isOneArgFunction = <F extends AnyFunction>(
-	f: F | toOneArgFunction<F>
-): f is toOneArgFunction<F> => f.length === 1;
+export const isIterable = (input: unknown): input is Iterable<unknown> =>
+	Predicate.hasProperty(input, Symbol.iterator);
+
+/**
+ * From `unknown` to `Errorish`
+ *
+ * @category Guards
+ */
+export const isErrorish = (u: unknown): u is Errorish =>
+	typeof u === 'object' &&
+	u !== null &&
+	'message' in u &&
+	typeof u.message === 'string' &&
+	(!('stack' in u) || typeof u.stack === 'string');
 
 /**
  * Namespace for the possible categories of a Javascript value
@@ -605,7 +605,7 @@ export namespace Category {
 	 * @category Predicates
 	 */
 	export const isNonPrimitive: Predicate.Predicate<Type> = (self) =>
-		[Type.Record, Type.Array, Type.Function].includes(self);
+		self === Type.Record || self === Type.Array || self === Type.Function;
 
 	/**
 	 * Returns `true` if `self` represents a primitive. `false` otherwise
