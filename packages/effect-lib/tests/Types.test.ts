@@ -5,14 +5,21 @@ import { describe, expect, it } from 'vitest';
 
 const unknown = null as unknown;
 
-const testString = 'foo' as string;
+const testString = 'foo';
 const testNumber = 5;
 const testBigint = 5n;
 const testBoolean = false;
-const testArray = [5, 6];
-const testReadonlyArray = [5, 6] as ReadonlyArray<number>;
 const testSymbol: unique symbol = Symbol.for('testSymbol');
-
+/* eslint-disable-next-line functional/prefer-readonly-type */
+const testArray0: Array<number> = [];
+const testArray1 = [5];
+const testArray2 = [5, 6];
+const testArray3 = [5, 6, 7];
+const testReadonlyArray = testArray2 as ReadonlyArray<number>;
+const testRecord = {
+	a: 'foo',
+	b: false
+};
 const testOneArgFunction = Number.increment;
 const testFunction = (n: number, m?: number) => n + (m !== undefined ? m : 0);
 
@@ -263,7 +270,7 @@ describe('MTypes', () => {
 		});
 
 		it('Non matching', () => {
-			expect(MTypes.isPrimitive(testArray)).toBe(false);
+			expect(MTypes.isPrimitive(testArray2)).toBe(false);
 			expect(MTypes.isPrimitive(testOneArgFunction)).toBe(false);
 		});
 	});
@@ -274,7 +281,7 @@ describe('MTypes', () => {
 			MTypes.checkNever<MTypes.Equals<typeof numberOrArray, ReadonlyArray<number>>>();
 
 		it('Matching', () => {
-			expect(MTypes.isNonPrimitive(testArray)).toBe(true);
+			expect(MTypes.isNonPrimitive(testArray2)).toBe(true);
 			expect(MTypes.isNonPrimitive(testOneArgFunction)).toBe(true);
 		});
 
@@ -310,15 +317,15 @@ describe('MTypes', () => {
 	});
 
 	describe('isEmptyArray', () => {
-		if (MTypes.isEmptyArray(testArray))
-			MTypes.checkNever<MTypes.Equals<typeof testArray, MTypes.EmptyArray>>();
+		if (MTypes.isEmptyArray(testArray2))
+			MTypes.checkNever<MTypes.Equals<typeof testArray2, MTypes.EmptyArray>>();
 
 		it('Matching', () => {
-			expect(MTypes.isEmptyArray([])).toBe(true);
+			expect(MTypes.isEmptyArray(testArray0)).toBe(true);
 		});
 
 		it('Non matching', () => {
-			expect(MTypes.isEmptyArray([1, 2, 3])).toBe(false);
+			expect(MTypes.isEmptyArray(testArray3)).toBe(false);
 		});
 	});
 
@@ -327,25 +334,25 @@ describe('MTypes', () => {
 			MTypes.checkNever<MTypes.Equals<typeof testReadonlyArray, MTypes.EmptyReadonlyArray>>();
 
 		it('Matching', () => {
-			expect(MTypes.isEmptyReadonlyArray([])).toBe(true);
+			expect(MTypes.isEmptyReadonlyArray(testArray0)).toBe(true);
 		});
 
 		it('Non matching', () => {
-			expect(MTypes.isEmptyReadonlyArray([1, 2, 3])).toBe(false);
+			expect(MTypes.isEmptyReadonlyArray(testArray3)).toBe(false);
 		});
 	});
 
 	describe('isOverOne', () => {
-		if (MTypes.isOverOne(testArray))
-			MTypes.checkNever<MTypes.Equals<typeof testArray, MTypes.OverOne<number>>>();
+		if (MTypes.isOverOne(testArray2))
+			MTypes.checkNever<MTypes.Equals<typeof testArray2, MTypes.OverOne<number>>>();
 
 		it('Matching', () => {
-			expect(MTypes.isOverOne([1])).toBe(true);
-			expect(MTypes.isOverOne([1, 2])).toBe(true);
+			expect(MTypes.isOverOne(testArray1)).toBe(true);
+			expect(MTypes.isOverOne(testArray2)).toBe(true);
 		});
 
 		it('Non matching', () => {
-			expect(MTypes.isOverOne([])).toBe(false);
+			expect(MTypes.isOverOne(testArray0)).toBe(false);
 		});
 	});
 
@@ -354,26 +361,26 @@ describe('MTypes', () => {
 			MTypes.checkNever<MTypes.Equals<typeof testReadonlyArray, MTypes.ReadonlyOverOne<number>>>();
 
 		it('Matching', () => {
-			expect(MTypes.isReadonlyOverOne([1])).toBe(true);
-			expect(MTypes.isReadonlyOverOne([1, 2])).toBe(true);
+			expect(MTypes.isReadonlyOverOne(testArray1)).toBe(true);
+			expect(MTypes.isReadonlyOverOne(testArray2)).toBe(true);
 		});
 
 		it('Non matching', () => {
-			expect(MTypes.isReadonlyOverOne([])).toBe(false);
+			expect(MTypes.isReadonlyOverOne(testArray0)).toBe(false);
 		});
 	});
 
 	describe('isOverTwo', () => {
-		if (MTypes.isOverTwo(testArray))
-			MTypes.checkNever<MTypes.Equals<typeof testArray, MTypes.OverTwo<number>>>();
+		if (MTypes.isOverTwo(testArray2))
+			MTypes.checkNever<MTypes.Equals<typeof testArray2, MTypes.OverTwo<number>>>();
 
 		it('Matching', () => {
-			expect(MTypes.isOverTwo([1, 2])).toBe(true);
-			expect(MTypes.isOverTwo([1, 2, 3])).toBe(true);
+			expect(MTypes.isOverTwo(testArray2)).toBe(true);
+			expect(MTypes.isOverTwo(testArray3)).toBe(true);
 		});
 
 		it('Non matching', () => {
-			expect(MTypes.isOverTwo([1])).toBe(false);
+			expect(MTypes.isOverTwo(testArray1)).toBe(false);
 		});
 	});
 
@@ -382,26 +389,26 @@ describe('MTypes', () => {
 			MTypes.checkNever<MTypes.Equals<typeof testReadonlyArray, MTypes.ReadonlyOverTwo<number>>>();
 
 		it('Matching', () => {
-			expect(MTypes.isReadonlyOverTwo([1, 2])).toBe(true);
-			expect(MTypes.isReadonlyOverTwo([1, 2, 3])).toBe(true);
+			expect(MTypes.isReadonlyOverTwo(testArray2)).toBe(true);
+			expect(MTypes.isReadonlyOverTwo(testArray3)).toBe(true);
 		});
 
 		it('Non matching', () => {
-			expect(MTypes.isReadonlyOverTwo([])).toBe(false);
+			expect(MTypes.isReadonlyOverTwo(testArray0)).toBe(false);
 		});
 	});
 
 	describe('isSingleton', () => {
-		if (MTypes.isSingleton(testArray))
-			MTypes.checkNever<MTypes.Equals<typeof testArray, MTypes.Singleton<number>>>();
+		if (MTypes.isSingleton(testArray2))
+			MTypes.checkNever<MTypes.Equals<typeof testArray2, MTypes.Singleton<number>>>();
 
 		it('Matching', () => {
-			expect(MTypes.isSingleton([1])).toBe(true);
+			expect(MTypes.isSingleton(testArray1)).toBe(true);
 		});
 
 		it('Non matching', () => {
-			expect(MTypes.isSingleton([])).toBe(false);
-			expect(MTypes.isSingleton([1, 2])).toBe(false);
+			expect(MTypes.isSingleton(testArray0)).toBe(false);
+			expect(MTypes.isSingleton(testArray2)).toBe(false);
 		});
 	});
 
@@ -412,26 +419,26 @@ describe('MTypes', () => {
 			>();
 
 		it('Matching', () => {
-			expect(MTypes.isReadonlySingleton([1])).toBe(true);
+			expect(MTypes.isReadonlySingleton(testArray1)).toBe(true);
 		});
 
 		it('Non matching', () => {
-			expect(MTypes.isReadonlySingleton([])).toBe(false);
-			expect(MTypes.isReadonlySingleton([1, 2])).toBe(false);
+			expect(MTypes.isReadonlySingleton(testArray0)).toBe(false);
+			expect(MTypes.isReadonlySingleton(testArray2)).toBe(false);
 		});
 	});
 
 	describe('isPair', () => {
-		if (MTypes.isPair(testArray))
-			MTypes.checkNever<MTypes.Equals<typeof testArray, MTypes.Pair<number, number>>>();
+		if (MTypes.isPair(testArray2))
+			MTypes.checkNever<MTypes.Equals<typeof testArray2, MTypes.Pair<number, number>>>();
 
 		it('Matching', () => {
-			expect(MTypes.isPair([1, 2])).toBe(true);
+			expect(MTypes.isPair(testArray2)).toBe(true);
 		});
 
 		it('Non matching', () => {
-			expect(MTypes.isPair([1])).toBe(false);
-			expect(MTypes.isPair([1, 2, 3])).toBe(false);
+			expect(MTypes.isPair(testArray1)).toBe(false);
+			expect(MTypes.isPair(testArray3)).toBe(false);
 		});
 	});
 
@@ -442,12 +449,12 @@ describe('MTypes', () => {
 			>();
 
 		it('Matching', () => {
-			expect(MTypes.isReadonlyPair([1, 2])).toBe(true);
+			expect(MTypes.isReadonlyPair(testArray2)).toBe(true);
 		});
 
 		it('Non matching', () => {
-			expect(MTypes.isReadonlyPair([])).toBe(false);
-			expect(MTypes.isReadonlyPair([1, 2, 3])).toBe(false);
+			expect(MTypes.isReadonlyPair(testArray0)).toBe(false);
+			expect(MTypes.isReadonlyPair(testArray3)).toBe(false);
 		});
 	});
 
@@ -456,12 +463,63 @@ describe('MTypes', () => {
 			MTypes.checkNever<MTypes.Equals<typeof unknown, Iterable<unknown>>>();
 
 		it('Matching', () => {
-			//expect(MTypes.isIterable(testString)).toBe(true);
-			expect(MTypes.isIterable(testArray)).toBe(true);
+			expect(MTypes.isIterable(testArray2)).toBe(true);
 		});
 
 		it('Non matching', () => {
 			expect(MTypes.isIterable(testNumber)).toBe(false);
+			expect(MTypes.isIterable(testString)).toBe(false);
+		});
+	});
+
+	describe('isErrorish', () => {
+		if (MTypes.isErrorish(unknown))
+			MTypes.checkNever<MTypes.Equals<typeof unknown, MTypes.Errorish>>();
+
+		it('Matching', () => {
+			expect(MTypes.isErrorish({ message: 'foo' })).toBe(true);
+			expect(MTypes.isErrorish({ message: 'foo', stack: 'bar' })).toBe(true);
+		});
+
+		it('Non matching', () => {
+			expect(MTypes.isErrorish(null)).toBe(false);
+			expect(MTypes.isErrorish({ message: false })).toBe(false);
+			expect(MTypes.isErrorish({ message: 'foo', stack: 5 })).toBe(false);
+			expect(MTypes.isErrorish(testRecord)).toBe(false);
+		});
+	});
+
+	describe('Category', () => {
+		describe('fromValue and predicates', () => {
+			it('Matching', () => {
+				expect(MTypes.Category.isString(MTypes.Category.fromValue(testString))).toBe(true);
+				expect(MTypes.Category.isNumber(MTypes.Category.fromValue(testNumber))).toBe(true);
+				expect(MTypes.Category.isBigint(MTypes.Category.fromValue(testBigint))).toBe(true);
+				expect(MTypes.Category.isBoolean(MTypes.Category.fromValue(testBoolean))).toBe(true);
+				expect(MTypes.Category.isSymbol(MTypes.Category.fromValue(testSymbol))).toBe(true);
+				expect(MTypes.Category.isUndefined(MTypes.Category.fromValue(undefined))).toBe(true);
+				expect(MTypes.Category.isNull(MTypes.Category.fromValue(null))).toBe(true);
+				expect(MTypes.Category.isFunction(MTypes.Category.fromValue(testFunction))).toBe(true);
+				expect(MTypes.Category.isArray(MTypes.Category.fromValue(testArray2))).toBe(true);
+				expect(MTypes.Category.isRecord(MTypes.Category.fromValue(testRecord))).toBe(true);
+				expect(MTypes.Category.isPrimitive(MTypes.Category.fromValue(testString))).toBe(true);
+				expect(MTypes.Category.isNonPrimitive(MTypes.Category.fromValue(testArray2))).toBe(true);
+			});
+
+			it('Non matching', () => {
+				expect(MTypes.Category.isString(MTypes.Category.fromValue(testNumber))).toBe(false);
+				expect(MTypes.Category.isNumber(MTypes.Category.fromValue(testString))).toBe(false);
+				expect(MTypes.Category.isBigint(MTypes.Category.fromValue(testNumber))).toBe(false);
+				expect(MTypes.Category.isBoolean(MTypes.Category.fromValue(testNumber))).toBe(false);
+				expect(MTypes.Category.isSymbol(MTypes.Category.fromValue(testNumber))).toBe(false);
+				expect(MTypes.Category.isUndefined(MTypes.Category.fromValue(testNumber))).toBe(false);
+				expect(MTypes.Category.isNull(MTypes.Category.fromValue(testNumber))).toBe(false);
+				expect(MTypes.Category.isFunction(MTypes.Category.fromValue(testNumber))).toBe(false);
+				expect(MTypes.Category.isArray(MTypes.Category.fromValue(testNumber))).toBe(false);
+				expect(MTypes.Category.isRecord(MTypes.Category.fromValue(testNumber))).toBe(false);
+				expect(MTypes.Category.isPrimitive(MTypes.Category.fromValue(testArray2))).toBe(false);
+				expect(MTypes.Category.isNonPrimitive(MTypes.Category.fromValue(testNumber))).toBe(false);
+			});
 		});
 	});
 });

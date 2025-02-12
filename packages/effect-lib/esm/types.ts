@@ -523,7 +523,8 @@ export const isPair = <A>(u: Array<A>): u is Pair<A, A> => u.length === 2;
 export const isReadonlyPair = <A>(u: ReadonlyArray<A>): u is ReadonlyPair<A, A> => u.length === 2;
 
 /**
- * From `unknown` to `Iterable<unknown>`
+ * From `unknown` to `Iterable<unknown>`. DOES NOT WORK FOR string which is the only primitive type
+ * to be iterable
  *
  * @category Guards
  */
