@@ -14,11 +14,11 @@ export const moduleTag = '@parischap/effect-lib/Brand/';
 
 /** Brand constructor type with refined input */
 
-type RefinedConstructor<B, A extends Brand.Brand<string | symbol> & B> = MTypes.WithArgType<
+type RefinedConstructor<B, A extends Brand.Brand<string | symbol> & B> = MTypes.SetArgTypeTo<
 	Brand.Brand.Constructor<A>,
 	B
 > & {
-	readonly [k in keyof Brand.Brand.Constructor<A>]: MTypes.WithArgType<
+	readonly [k in keyof Brand.Brand.Constructor<A>]: MTypes.SetArgTypeTo<
 		Brand.Brand.Constructor<A>[k],
 		B
 	>;
