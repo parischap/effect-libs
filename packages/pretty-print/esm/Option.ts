@@ -723,8 +723,8 @@ export const utilInspectLike: Type = make({
 		if (HashSet.isHashSet(value)) return Option.some(NonPrimitive.mapsAndSets('EffectHashSet'));
 		if (SortedSet.isSortedSet(value))
 			return Option.some(NonPrimitive.mapsAndSets('EffectSortedSet'));
-		if (!MTypes.isString(value) && isIterable(value))
-			return Option.some(NonPrimitive.mapsAndSets('Iterable'));
+		// isIterable will returns false for strings. Useless to deal with that case
+		if (isIterable(value)) return Option.some(NonPrimitive.mapsAndSets('Iterable'));
 		return Option.none();
 	}
 });
