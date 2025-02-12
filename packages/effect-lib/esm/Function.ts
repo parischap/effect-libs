@@ -32,7 +32,7 @@ export const flipDual =
 		F extends (self: any, ...others: ReadonlyArray<any>) => unknown
 	>(
 		f: F
-	): ((self: Parameters<F>[0]) => (...b: MTypes.Tail<Parameters<F>>) => ReturnType<F>) =>
+	): ((self: Parameters<F>[0]) => (...b: MTypes.ReadonlyTail<Parameters<F>>) => ReturnType<F>) =>
 	(self) =>
 	(...b) =>
 		f(self, ...b) as ReturnType<F>;
