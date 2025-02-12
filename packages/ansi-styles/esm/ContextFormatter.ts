@@ -29,13 +29,27 @@ const _PaletteBasedTag = 'PaletteBased';
  *
  * @category Models
  */
+export namespace ActionBase {
+	/**
+	 * Type of the action
+	 *
+	 * @category Models
+	 */
+	export interface Type<in C> extends MTypes.OneArgFunction<C, ASStyle.Action.Type> {}
+}
+
+/**
+ * Namespace of a ContextFormatter used as an action
+ *
+ * @category Models
+ */
 export namespace Action {
 	/**
 	 * Type of the action
 	 *
 	 * @category Models
 	 */
-	export interface Type<in C> extends MTypes.OneArgFunction<C, ASStyle.Action.Type> {
+	export interface Type<in C> extends ActionBase.Type<C> {
 		readonly withContextLast: MTypes.OneArgFunction<string, MTypes.OneArgFunction<C, ASText.Type>>;
 	}
 }
@@ -117,16 +131,23 @@ export namespace Unistyled {
 	 *
 	 * @category Constructors
 	 */
-	export const make = (style: ASStyle.Type): Type => {
-		return Object.assign((_context: unknown) => style, {
+	const _make = (params: MTypes.Data<Type, 'withContextLast'>): Type => {
+		return Object.assign((() => params.style) satisfies ActionBase.Type<unknown>, {
 			...base,
-			style,
-			withContextLast: (toStyle: string) => {
-				const styled = style(toStyle);
-				return (_context: unknown) => styled;
-			}
+			...params,
+			withContextLast: ((toStyle) => {
+				const styled = params.style(toStyle);
+				return () => styled;
+			}) satisfies Action.Type<unknown>['withContextLast']
 		});
 	};
+
+	/**
+	 * Constructor
+	 *
+	 * @category Constructors
+	 */
+	export const make = (style: ASStyle.Type): Type => _make({ style });
 
 	/**
 	 * Gets the `style` property of `self`
@@ -213,21 +234,18 @@ export namespace PaletteBased {
 	 *
 	 * @category Constructors
 	 */
-	export const make = <C>({
-		indexFromContext,
-		palette
-	}: {
-		readonly indexFromContext: IndexFromContext.Type<C>;
-		readonly palette: ASPalette.Type;
-	}): Type<C> => {
-		const styles = palette.styles;
+	export const make = <C>(params: MTypes.Data<Type<C>, 'withContextLast'>): Type<C> => {
+		const styles = params.palette.styles;
 		const n = styles.length;
-		const getStyle = (context: C) => pipe(styles, MArray.unsafeGet(indexFromContext(context) % n));
+
+		const getStyle: ActionBase.Type<C> = (context) =>
+			pipe(styles, MArray.unsafeGet(params.indexFromContext(context) % n));
+
 		return Object.assign(MFunction.copy(getStyle), {
 			...base,
-			indexFromContext,
-			palette,
-			withContextLast: (toStyle: string) => (context: C) => getStyle(context)(toStyle)
+			...params,
+			withContextLast: ((toStyle) => (context) =>
+				getStyle(context)(toStyle)) satisfies Action.Type<C>['withContextLast']
 		});
 	};
 
