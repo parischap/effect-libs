@@ -79,12 +79,7 @@ export const enrichWith =
 		fields: O1
 	) =>
 	(self: O): MTypes.Data<Omit<O, keyof O1> & { readonly [key in keyof O1]: ReturnType<O1[key]> }> =>
-		pipe(
-			fields,
-			/* eslint-disable-next-line @typescript-eslint/no-unsafe-return */
-			Record.map(Function.apply(self)),
-			(newValues) => ({ ...self, ...newValues })
-		);
+		pipe(fields, Record.map(Function.apply(self)), (newValues) => ({ ...self, ...newValues }));
 
 /**
  * Same as enrichWith but mutates `self`. To use in extreme situations only
@@ -102,11 +97,7 @@ export const mutableEnrichWith =
 	) =>
 	(self: O): Omit<O, keyof O1> & { readonly [key in keyof O1]: ReturnType<O1[key]> } =>
 		/* eslint-disable-next-line functional/immutable-data */
-		Object.assign(
-			self,
-			/* eslint-disable-next-line  @typescript-eslint/no-unsafe-return */
-			Record.map(fields, Function.apply(self))
-		);
+		Object.assign(self, Record.map(fields, Function.apply(self)));
 
 /* eslint-disable */
 // Copied from Struct.ts
