@@ -137,7 +137,7 @@ export const make = <const T extends string>(
  */
 export const write =
 	<const T extends ReadonlyArray<string>>(self: Type<T>) =>
-	(targetValues: MTypes.ToTupleOf<T, string>): string =>
+	(targetValues: MTypes.MapToReadonlyTarget<T, string>): string =>
 		pipe(
 			self,
 			MTuple.firstTwo,
@@ -178,11 +178,11 @@ export const write =
 
 export const read = <const T extends ReadonlyArray<string>>(
 	self: Type<T>,
-	targetPatterns: MTypes.ToTupleOf<T, RegExp>
+	targetPatterns: MTypes.MapToReadonlyTarget<T, RegExp>
 ): ((
 	filledOutTemplate: string
 ) => Either.Either<
-	MTypes.ToTupleOf<T, Option.Option<string>>,
+	MTypes.MapToReadonlyTarget<T, Option.Option<string>>,
 	MBadArgumentError.BadFormat | MBadArgumentError.TooMany<string>
 >) => {
 	const [textAndTargetArray, finalStaticText, targets] = self;
@@ -309,6 +309,6 @@ export const read = <const T extends ReadonlyArray<string>>(
 				),
 				Either.all
 			);
-			return result as MTypes.ToTupleOf<T, Option.Option<string>>;
+			return result as MTypes.MapToReadonlyTarget<T, Option.Option<string>>;
 		}) as never;
 };

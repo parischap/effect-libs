@@ -528,11 +528,16 @@ export namespace NonPrimitive {
 					): Type['initializedNonPrimitiveIdHeaderConstructor'] => {
 						const emptyText = Function.constant(ASText.empty);
 
+						const propertyNumberDisplayOption = nonPrimitiveOption.propertyNumberDisplayOption;
+						const isNone = propertyNumberDisplayOption === PropertyNumberDisplayOption.Type.None;
+						const isAll = propertyNumberDisplayOption === PropertyNumberDisplayOption.Type.All;
+						const isActual =
+							propertyNumberDisplayOption === PropertyNumberDisplayOption.Type.Actual;
+						const isAllAndActual =
+							propertyNumberDisplayOption === PropertyNumberDisplayOption.Type.AllAndActual;
+
 						const [propertyNumberStartDelimiter, propertyNumberEndDelimiter] =
-							(
-								nonPrimitiveOption.propertyNumberDisplayOption ===
-								PropertyNumberDisplayOption.Type.None
-							) ?
+							isNone ?
 								Tuple.make(emptyText, emptyText)
 							:	Tuple.make(
 									propertyNumberDelimitersTextFormatter.withContextLast(
@@ -544,21 +549,14 @@ export namespace NonPrimitive {
 								);
 
 						const propertyNumberSeparator =
-							(
-								nonPrimitiveOption.propertyNumberDisplayOption ===
-								PropertyNumberDisplayOption.Type.AllAndActual
-							) ?
+							isAllAndActual ?
 								propertyNumberSeparatorTextFormatter.withContextLast(
 									nonPrimitiveOption.propertyNumberSeparatorMark
 								)
 							:	emptyText;
 
 						const idSeparator =
-							(
-								nonPrimitiveOption.showId ||
-								nonPrimitiveOption.propertyNumberDisplayOption !==
-									PropertyNumberDisplayOption.Type.None
-							) ?
+							nonPrimitiveOption.showId || !isNone ?
 								nonPrimitiveValueIdSeparatorTextFormatter.withContextLast(
 									nonPrimitiveOption.idSeparatorMark
 								)
@@ -569,17 +567,10 @@ export namespace NonPrimitive {
 								nonPrimitiveValueIdTextFormatter.withContextLast(nonPrimitiveOption.id)
 							:	emptyText;
 
-						//const start = pipe(id, ASText.append(propertyNumberStartDelimiter));
-						//const end = pipe(propertyNumberEndDelimiter, ASText.append(idSeparator));
 						return ({ allPropertyNumber, actualPropertyNumber }) =>
 							(value) => {
 								const styledTotalPropertyNumber =
-									(
-										[
-											PropertyNumberDisplayOption.Type.All,
-											PropertyNumberDisplayOption.Type.AllAndActual
-										].includes(nonPrimitiveOption.propertyNumberDisplayOption)
-									) ?
+									isAll || isAllAndActual ?
 										pipe(
 											allPropertyNumber,
 											MString.fromNonNullablePrimitive,
@@ -589,12 +580,7 @@ export namespace NonPrimitive {
 									:	ASText.empty;
 
 								const styledActualPropertyNumber =
-									(
-										[
-											PropertyNumberDisplayOption.Type.Actual,
-											PropertyNumberDisplayOption.Type.AllAndActual
-										].includes(nonPrimitiveOption.propertyNumberDisplayOption)
-									) ?
+									isActual || isAllAndActual ?
 										pipe(
 											actualPropertyNumber,
 											MString.fromNonNullablePrimitive,
