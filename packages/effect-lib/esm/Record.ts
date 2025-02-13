@@ -16,13 +16,13 @@ export const unsafeGet =
 		self[key];
 
 /**
- * Tries to call method `functionName` on `self` without any parameters. Returns a `some` of the
- * result if such a function exists (and is different from exception if defined) and returns a
- * string. Returns a `none` otherwise
+ * Tries to call method `functionName` on `self` with no parameters. Returns a `some` of the result
+ * if such a function exists, is different from exception (if defined), and takes no parameter.
+ * Returns a `none` otherwise
  *
  * @category Utils
  */
-export const tryZeroParamStringFunction =
+export const tryZeroParamFunction =
 	({
 		functionName,
 		exception
@@ -30,7 +30,7 @@ export const tryZeroParamStringFunction =
 		readonly functionName: string | symbol;
 		readonly exception?: MTypes.AnyFunction;
 	}) =>
-	(self: MTypes.NonPrimitive): Option.Option<string> =>
+	(self: MTypes.NonPrimitive): Option.Option<unknown> =>
 		pipe(
 			self[functionName],
 			Option.liftPredicate(MTypes.isFunction),
@@ -45,6 +45,17 @@ export const tryZeroParamStringFunction =
 					flow(MFunction.parameterNumber, MFunction.strictEquals(0))
 				)
 			),
-			Option.map(MFunction.applyAsMethod(self)),
-			Option.filter(MTypes.isString)
+			Option.map(MFunction.applyAsMethod(self))
 		);
+
+/**
+ * Same as `tryZeroParamStringFunction` but returns a `none` if the result of the function is not a
+ * string
+ *
+ * @category Utils
+ */
+export const tryZeroParamStringFunction = (params: {
+	readonly functionName: string | symbol;
+	readonly exception?: MTypes.AnyFunction;
+}): MTypes.OneArgFunction<MTypes.NonPrimitive, Option.Option<string>> =>
+	flow(tryZeroParamFunction(params), Option.filter(MTypes.isString));
