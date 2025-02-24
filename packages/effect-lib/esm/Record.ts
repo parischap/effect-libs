@@ -45,7 +45,7 @@ export const tryZeroParamFunction =
 					flow(MFunction.parameterNumber, MFunction.strictEquals(0))
 				)
 			),
-			Option.map(MFunction.applyAsMethod(self))
+			Option.map(MFunction.applyAsThis(self))
 		);
 
 /**
