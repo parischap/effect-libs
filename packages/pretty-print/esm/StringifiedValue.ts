@@ -7,7 +7,7 @@
 
 import { ASText } from '@parischap/ansi-styles';
 import { MArray, MTypes } from '@parischap/effect-lib';
-import { Array, flow, Function, Number, pipe, Predicate } from 'effect';
+import { Array, Equivalence, flow, Function, Number, pipe, Predicate } from 'effect';
 import type * as PPStringifiedProperties from './StringifiedProperties.js';
 
 /**
@@ -16,6 +16,14 @@ import type * as PPStringifiedProperties from './StringifiedProperties.js';
  * @category Models
  */
 export interface Type extends MTypes.OverOne<ASText.Type> {}
+
+/**
+ * Equivalence for StringifiedValue's. To be removed when Equal.equals will handle Arrays properly
+ * (from Effect 4.0 onwards)
+ *
+ * @category Equivalences
+ */
+export const equivalence: Equivalence.Equivalence<Type> = Array.getEquivalence(ASText.equivalence);
 
 /**
  * Builds a StringifiedValue from a Text
@@ -69,15 +77,15 @@ export const isNotEmpty: Predicate.Predicate<Type> = Predicate.not(isEmpty);
  *
  * @category Utils
  */
-export const addLineAfter = (mark: ASText.Type): MTypes.OneArgFunction<Type> => Array.append(mark);
+export const addLineAfter = (line: ASText.Type): MTypes.OneArgFunction<Type> => Array.append(line);
 
 /**
  * Returns a copy of `self` with a mark at the start
  *
  * @category Utils
  */
-export const addLineBefore = (mark: ASText.Type): MTypes.OneArgFunction<Type> =>
-	Array.prepend(mark);
+export const addLineBefore = (line: ASText.Type): MTypes.OneArgFunction<Type> =>
+	Array.prepend(line);
 
 /**
  * Returns a copy of `self` in which `text` has been prepended to each line

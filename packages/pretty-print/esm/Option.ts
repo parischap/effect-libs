@@ -5,16 +5,16 @@
  * needs.
  */
 
-import { ASText } from '@parischap/ansi-styles';
+import { ASContextFormatter, ASText } from '@parischap/ansi-styles';
 import {
 	MArray,
 	MCache,
 	MFunction,
 	MMatch,
+	MRecord,
 	MString,
 	MStruct,
 	MTree,
-	MTuple,
 	MTypes
 } from '@parischap/effect-lib';
 import {
@@ -28,6 +28,7 @@ import {
 	Number,
 	Option,
 	pipe,
+	Record,
 	SortedMap,
 	SortedSet,
 	Tuple
@@ -47,7 +48,6 @@ import * as PPValues from './Values.js';
 
 import { MInspectable, MPipeable } from '@parischap/effect-lib';
 import { Equal, Equivalence, Hash, Pipeable, Predicate } from 'effect';
-import { isIterable } from 'effect/Predicate';
 
 export const moduleTag = '@parischap/pretty-print/Option/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
@@ -107,10 +107,29 @@ export namespace ValueBasedFormatterConstructor {
 	 * @category Models
 	 */
 	export interface Type extends MTypes.OneArgFunction<string, PPValueBasedFormatter.Type> {}
+
+	/**
+	 * Creates a ValueBasedFormatterConstructor that will return the ValueBasedFormatter corresponding
+	 * to `partName` in `styleMap`
+	 *
+	 * @category Constructors
+	 */
+	export const fromOption =
+		(option: _Type): Type =>
+		(partName) =>
+			pipe(option.styleMap, PPStyleMap.get(partName));
+
+	/**
+	 * Creates a ValueBasedFormatterConstructor that always returns a `none` ContextFormatter
+	 *
+	 * @category Constructors
+	 */
+	export const noneConstructor: Type = () => ASContextFormatter.none;
 }
 
 /**
- * Namespace of a MarkShower
+ * Namespace of a MarkShower. A MarkShower always displays the same text but in a style that depends
+ * on a context object.
  *
  * @category Models
  */
@@ -142,20 +161,34 @@ export namespace MarkShowerConstructor {
 	 * @category Models
 	 */
 	export interface Type extends MTypes.OneArgFunction<string, MarkShower.Type> {}
-}
 
-/**
- * Namespace of a MarkShowerMap
- *
- * @category Models
- */
-export namespace MarkShowerMap {
 	/**
-	 * Type of a MarkShowerMap
+	 * Creates a MarkShowerConstructor that will return a MarkShower that displays the text associated
+	 * to `markName` in option.markMap in the style associated to partName in option.styleMap
 	 *
-	 * @category Models
+	 * @category Constructors
 	 */
-	export interface Type extends HashMap.HashMap<string, MarkShower.Type> {}
+	export const fromOption = (option: _Type): Type => {
+		const markShowerMap = HashMap.map(option.markMap.marks, ({ text, partName }) =>
+			pipe(option.styleMap, PPStyleMap.get(partName), (contextFormatter) =>
+				contextFormatter.withContextLast(text)
+			)
+		);
+
+		return (markName) =>
+			pipe(
+				markShowerMap,
+				HashMap.get(markName),
+				Option.getOrElse(Function.constant(MarkShower.empty))
+			);
+	};
+
+	/**
+	 * Creates a MarkShowerConstructor that always returns the empty MarkShower
+	 *
+	 * @category Constructors
+	 */
+	export const emptyConstructor: Type = () => MarkShower.empty;
 }
 
 /**
@@ -175,21 +208,21 @@ export namespace PropertySource {
 		 * `FromProperties` is usually a good choice for records
 		 */
 		FromProperties = 0,
+
 		/**
 		 * Properties are obtained by iterating over the object that must implement the Iterable
-		 * protocol. If the iterator returns a pair, that pair is deemed to be a key/value pair. If it
-		 * returns a single value, an auto-incremented numerical key (converted to a string) is
-		 * automatically generated. In all other cases, the output of the iterator is ignored.
-		 * `FromIterable` is usually a good choice for Arrays, Maps, Sets, WeakMaps, WeakSets and
-		 * TypedArrays
+		 * protocol. Each value returned by the iterator is used to create a property with an
+		 * auto-incremented numerical key (converted to a string). `FromValueIterable` is usually a good
+		 * choice for Arrays, TypedArrays, Sets, WeakSets, ...
 		 */
-		FromIterable = 1,
+		FromValueIterable = 1,
+
 		/**
-		 * Properties are obtained by calling Reflect.getOwnProperties on the object and its prototypes
-		 * and by by iterating over the object that must implement the Iterable protocol - Could come in
-		 * handy if you have an iterable that also has properties that you want to display.
+		 * Properties are obtained by iterating over the object that must implement the Iterable
+		 * protocol. The iterator must return a key/value pair. Otherwise, the returned value is
+		 * ignored. `FromKeyValueIterable` is usually a good choice for Maps, WeakMaps,...
 		 */
-		FromPropertiesAndIterator = 2
+		FromKeyValueIterable = 2
 	}
 }
 
@@ -311,10 +344,10 @@ export namespace NonPrimitive {
 
 		/**
 		 * Indicates the level in the prototypal chain of a non-primitive value down to which properties
-		 * are shown. This value is only used when propertySource is `FromProperties` or
-		 * `FromPropertiesAndIterator`. maxPrototypeDepth <= 0 means that only the own properties of a
-		 * non-primitive value are shown. maxPrototypeDepth = 1 means that only the own properties of a
-		 * non-primitive value and its direct prototype are shown...
+		 * are shown. This value is only used when propertySource is `FromProperties`. maxPrototypeDepth
+		 * <= 0 means that only the own properties of a non-primitive value are shown. maxPrototypeDepth
+		 * = 1 means that only the own properties of a non-primitive value and its direct prototype are
+		 * shown...
 		 */
 		readonly maxPrototypeDepth: number;
 
@@ -447,7 +480,7 @@ export namespace NonPrimitive {
 		singleLineEndDelimiterMark: ']',
 		multiLineStartDelimiterMark: '[',
 		multiLineEndDelimiterMark: ']',
-		propertySource: PropertySource.Type.FromIterable,
+		propertySource: PropertySource.Type.FromValueIterable,
 		propertyFilters: Array.empty(),
 		propertyFormatter: PPValueFormatter.valueOnly
 	});
@@ -457,14 +490,32 @@ export namespace NonPrimitive {
 	 *
 	 * @category Constructors
 	 */
-	export const mapsAndSets = (id: string): Type =>
+	export const maps = (id: string): Type =>
 		make({
 			...defaults,
 			id,
 			showId: true,
 			propertyNumberDisplayOption: PropertyNumberDisplayOption.Type.All,
 			keyValueSeparatorMark: '=>',
-			propertySource: PropertySource.Type.FromIterable,
+			propertySource: PropertySource.Type.FromKeyValueIterable,
+			propertyFilters: Array.empty(),
+			propertyFormatter: PPValueFormatter.valueForAutoGenerated
+		});
+
+	/**
+	 * Constructor that generates a NonPrimitive Option instance suitable for sets and arrays other
+	 * than Array
+	 *
+	 * @category Constructors
+	 */
+	export const setsAndArrays = (id: string): Type =>
+		make({
+			...defaults,
+			id,
+			showId: true,
+			propertyNumberDisplayOption: PropertyNumberDisplayOption.Type.All,
+			keyValueSeparatorMark: '=>',
+			propertySource: PropertySource.Type.FromValueIterable,
 			propertyFilters: Array.empty(),
 			propertyFormatter: PPValueFormatter.valueForAutoGenerated
 		});
@@ -606,6 +657,7 @@ export namespace NonPrimitive {
 	}
 }
 
+interface _Type extends Type {}
 /**
  * Interface that represents the options for pretty printing
  *
@@ -712,21 +764,70 @@ export const utilInspectLike: Type = make({
 	maxDepth: 2,
 	generalNonPrimitiveOption: NonPrimitive.defaults,
 	specificNonPrimitiveOption: (value) => {
-		if (MTypes.isArray(value)) return Option.some(NonPrimitive.array);
-		if (value instanceof Map) return Option.some(NonPrimitive.mapsAndSets('Map'));
-		if (value instanceof Set) return Option.some(NonPrimitive.mapsAndSets('Set'));
-		if (value instanceof WeakMap) return Option.some(NonPrimitive.mapsAndSets('WeakMap'));
-		if (value instanceof WeakSet) return Option.some(NonPrimitive.mapsAndSets('WeakSet'));
-		if (HashMap.isHashMap(value)) return Option.some(NonPrimitive.mapsAndSets('EffectHashMap'));
-		if (SortedMap.isSortedMap(value))
-			return Option.some(NonPrimitive.mapsAndSets('EffectSortedMap'));
-		if (HashSet.isHashSet(value)) return Option.some(NonPrimitive.mapsAndSets('EffectHashSet'));
-		if (SortedSet.isSortedSet(value))
-			return Option.some(NonPrimitive.mapsAndSets('EffectSortedSet'));
-		// isIterable will returns false for strings. Useless to deal with that case
-		if (isIterable(value)) return Option.some(NonPrimitive.mapsAndSets('Iterable'));
-		return Option.none();
+		const content = value.content;
+		if (MTypes.isArray(content)) return Option.some(NonPrimitive.array);
+		if (content instanceof Map) return Option.some(NonPrimitive.maps('Map'));
+		if (content instanceof Set) return Option.some(NonPrimitive.setsAndArrays('Set'));
+		if (content instanceof WeakMap) return Option.some(NonPrimitive.maps('WeakMap'));
+		if (content instanceof WeakSet) return Option.some(NonPrimitive.setsAndArrays('WeakSet'));
+		if (content instanceof Int8Array) return Option.some(NonPrimitive.setsAndArrays('Int8Array'));
+		if (content instanceof Uint8Array) return Option.some(NonPrimitive.setsAndArrays('Uint8Array'));
+		if (content instanceof Uint8ClampedArray)
+			return Option.some(NonPrimitive.setsAndArrays('Uint8ClampedArray'));
+		if (content instanceof Int16Array) return Option.some(NonPrimitive.setsAndArrays('Int16Array'));
+		if (content instanceof Uint16Array)
+			return Option.some(NonPrimitive.setsAndArrays('Uint16Array'));
+		if (content instanceof Int32Array) return Option.some(NonPrimitive.setsAndArrays('Int32Array'));
+		if (content instanceof Uint32Array)
+			return Option.some(NonPrimitive.setsAndArrays('Uint32Array'));
+		if (content instanceof Float32Array)
+			return Option.some(NonPrimitive.setsAndArrays('Float32Array'));
+		if (content instanceof Float64Array)
+			return Option.some(NonPrimitive.setsAndArrays('Float64Array'));
+		if (content instanceof BigInt64Array)
+			return Option.some(NonPrimitive.setsAndArrays('BigInt64Array'));
+		if (content instanceof BigUint64Array)
+			return Option.some(NonPrimitive.setsAndArrays('BigUint64Array'));
+		if (HashMap.isHashMap(content)) return Option.some(NonPrimitive.maps('EffectHashMap'));
+		if (SortedMap.isSortedMap(content)) return Option.some(NonPrimitive.maps('EffectSortedMap'));
+		if (HashSet.isHashSet(content)) return Option.some(NonPrimitive.setsAndArrays('EffectHashSet'));
+		if (SortedSet.isSortedSet(content))
+			return Option.some(NonPrimitive.setsAndArrays('EffectSortedSet'));
+
+		return pipe(
+			content,
+			MRecord.tryZeroParamFunction({ functionName: 'toJSON' }),
+			Option.filter(MTypes.isNonPrimitive),
+			Option.flatMap(Record.get('_id')),
+			Option.filter(MTypes.isString),
+			Option.flatMap(
+				flow(
+					MMatch.make,
+					MMatch.whenIs(
+						'MutableHashMap',
+						flow(MString.prepend('Effect'), NonPrimitive.maps, Option.some)
+					),
+					MMatch.whenIs(
+						'MutableHashSet',
+						flow(MString.prepend('Effect'), NonPrimitive.setsAndArrays, Option.some)
+					),
+					MMatch.orElse(Function.constant(Option.none()))
+				)
+			)
+		);
 	}
+});
+
+/**
+ * Function that returns an `Option` instance that pretty-prints a value in a way very similar to
+ * util.inspect with colors adapted to a terminal in dark mode.
+ *
+ * @category Instances
+ */
+export const darkModeUtilInspectLike: Type = make({
+	...utilInspectLike,
+	id: 'DarkModeUtilInspectLike',
+	styleMap: PPStyleMap.darkMode
 });
 
 /**
@@ -736,22 +837,8 @@ export const utilInspectLike: Type = make({
  */
 
 export const toStringifier = (self: Type): Stringifier.Type => {
-	const styleMap = self.styleMap;
-	const markShowerMap: MarkShowerMap.Type = HashMap.map(self.markMap.marks, ({ text, partName }) =>
-		pipe(styleMap, PPStyleMap.get(partName), (contextFormatter) =>
-			contextFormatter.withContextLast(text)
-		)
-	);
-
-	const markShowerConstructor: MarkShowerConstructor.Type = (markName) =>
-		pipe(
-			markShowerMap,
-			HashMap.get(markName),
-			Option.getOrElse(Function.constant(MarkShower.empty))
-		);
-
-	const valueBasedFormatterConstructor: ValueBasedFormatterConstructor.Type = (partName) =>
-		pipe(styleMap, PPStyleMap.get(partName));
+	const valueBasedFormatterConstructor = ValueBasedFormatterConstructor.fromOption(self);
+	const markShowerConstructor = MarkShowerConstructor.fromOption(self);
 
 	const constructors = { markShowerConstructor, valueBasedFormatterConstructor };
 
@@ -883,22 +970,21 @@ export const toStringifier = (self: Type): Stringifier.Type => {
 						const properties = pipe(
 							initializedNonPrimitiveOption.propertySource,
 							MMatch.make,
-							MMatch.whenIs(PropertySource.Type.FromProperties, () =>
-								PPValues.fromProperties(initializedNonPrimitiveOption.maxPrototypeDepth)
-							),
-							MMatch.whenIs(PropertySource.Type.FromIterable, () =>
-								PPValues.fromIterable(stringifier)
-							),
-							MMatch.whenIs(PropertySource.Type.FromPropertiesAndIterator, () =>
-								flow(
-									MTuple.makeBothBy<PPValue.NonPrimitive, PPValues.Type>({
-										toFirst: PPValues.fromProperties(
-											initializedNonPrimitiveOption.maxPrototypeDepth
-										),
-										toSecond: PPValues.fromIterable(stringifier)
-									}),
-									Array.flatten
+							MMatch.whenIs(
+								PropertySource.Type.FromProperties,
+								pipe(
+									initializedNonPrimitiveOption.maxPrototypeDepth,
+									PPValues.fromProperties,
+									Function.constant
 								)
+							),
+							MMatch.whenIs(
+								PropertySource.Type.FromValueIterable,
+								Function.constant(PPValues.fromValueIterable)
+							),
+							MMatch.whenIs(
+								PropertySource.Type.FromKeyValueIterable,
+								Function.constant(PPValues.fromKeyValueIterable(stringifier))
 							),
 							MMatch.exhaustive,
 							Function.apply(unCyclicalUnBypassedNonPrimitiveUnderMaxDepth)

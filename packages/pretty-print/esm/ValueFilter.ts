@@ -93,7 +93,7 @@ const base: MTypes.Proto<Type> = {
  * @category Constructors
  */
 export const make = ({ id, action }: { readonly id: string; readonly action: Action.Type }): Type =>
-	Object.assign(MFunction.copy(action), {
+	Object.assign(MFunction.clone(action), {
 		id,
 		...base
 	});

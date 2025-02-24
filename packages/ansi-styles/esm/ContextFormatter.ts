@@ -241,7 +241,7 @@ export namespace PaletteBased {
 		const getStyle: ActionBase.Type<C> = (context) =>
 			pipe(styles, MArray.unsafeGet(params.indexFromContext(context) % n));
 
-		return Object.assign(MFunction.copy(getStyle), {
+		return Object.assign(MFunction.clone(getStyle), {
 			...base,
 			...params,
 			withContextLast: ((toStyle) => (context) =>

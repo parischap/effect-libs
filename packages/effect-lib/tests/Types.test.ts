@@ -264,6 +264,9 @@ describe('MTypes', () => {
 		if (MTypes.isPrimitive(numberOrArray))
 			MTypes.checkNever<MTypes.Equals<typeof numberOrArray, number>>();
 
+		if (MTypes.isPrimitive(unknown))
+			MTypes.checkNever<MTypes.Equals<typeof unknown, MTypes.Primitive>>();
+
 		it('Matching', () => {
 			expect(MTypes.isPrimitive(testNumber)).toBe(true);
 			expect(MTypes.isPrimitive(undefined)).toBe(true);
@@ -279,6 +282,9 @@ describe('MTypes', () => {
 		const numberOrArray = [3] as unknown as number | ReadonlyArray<number>;
 		if (MTypes.isNonPrimitive(numberOrArray))
 			MTypes.checkNever<MTypes.Equals<typeof numberOrArray, ReadonlyArray<number>>>();
+
+		if (MTypes.isNonPrimitive(unknown))
+			MTypes.checkNever<MTypes.Equals<typeof unknown, MTypes.NonPrimitive>>();
 
 		it('Matching', () => {
 			expect(MTypes.isNonPrimitive(testArray2)).toBe(true);

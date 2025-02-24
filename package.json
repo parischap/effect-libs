@@ -16,7 +16,7 @@
 		"build-all": "pnpm -r build",
 		"prepare-docs": "pnpm --recursive --parallel docgen && compile-docs"
 	},
-	"packageManager": "pnpm@9.15.2",
+	"packageManager": "pnpm@9.15.4",
 	"devDependencies": {
 		"ts-deepmerge": "latest",
 		"@tsconfig/node20": "latest",

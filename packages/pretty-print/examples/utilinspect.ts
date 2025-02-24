@@ -8,9 +8,4 @@ const toPrint = {
 	y: BigInt(4)
 };
 
-const map1 = new Set();
-map1.add(1);
-map1.add(2);
-map1.add(3);
-// Inspect by basic method
-console.log(inspect(map1, { colors: true, maxArrayLength: 2 }));
+console.log(inspect(toPrint));

@@ -420,7 +420,7 @@ export const isNotNullable = <A>(input: A): input is NonNullable<A> =>
  *
  * @category Guards
  */
-export const isNonPrimitive = <A>(input: A): input is Extract<A, NonPrimitive> =>
+export const isNonPrimitive = <A>(input: A): input is Exclude<A, Primitive> & NonPrimitive =>
 	input !== null && (typeof input === 'object' || typeof input === 'function');
 
 /**
@@ -428,7 +428,8 @@ export const isNonPrimitive = <A>(input: A): input is Extract<A, NonPrimitive> =
  *
  * @category Guards
  */
-export const isPrimitive = <A>(input: A): input is Extract<A, Primitive> => !isNonPrimitive(input);
+export const isPrimitive = <A>(input: A): input is Exclude<A, NonPrimitive> & Primitive =>
+	!isNonPrimitive(input);
 
 /**
  * From `unknown` to `AnyFunction`

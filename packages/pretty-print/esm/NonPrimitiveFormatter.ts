@@ -28,7 +28,7 @@ import * as PPStringifiedProperties from './StringifiedProperties.js';
 import * as PPStringifiedValue from './StringifiedValue.js';
 import * as PPValue from './Value.js';
 
-const moduleTag = '@parischap/pretty-print/NonPrimitiveFormatter/';
+export const moduleTag = '@parischap/pretty-print/NonPrimitiveFormatter/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
@@ -120,7 +120,7 @@ const base: MTypes.Proto<Type> = {
  * @category Constructors
  */
 export const make = ({ id, action }: { readonly id: string; readonly action: Action.Type }): Type =>
-	Object.assign(MFunction.copy(action), {
+	Object.assign(MFunction.clone(action), {
 		id,
 		...base
 	});
@@ -162,6 +162,7 @@ export const singleLine: Type = make({
 			const endDelimiterMark = inContextNonPrimitiveValueDelimitersTextFormatter(
 				this.singleLineEndDelimiterMark
 			);
+
 			return flow(
 				PPStringifiedProperties.addMarkInBetween(inBetweenPropertySeparator),
 				PPStringifiedValue.fromStringifiedProperties,

@@ -1,7 +1,7 @@
 /**
  * This module implements a type that defines a specific stringification process for certain values
  * (the normal stringification process is by-passed, hence its name). For instance, you may prefer
- * printing Dates as strings rather than as objects.
+ * printing a Date as a string rather than as an object with all its technical properties.
  *
  * With the make function, you can define your own instances if the provided ones don't suit your
  * needs.
@@ -35,7 +35,7 @@ import type * as PPOption from './Option.js';
 import * as PPStringifiedValue from './StringifiedValue.js';
 import * as PPValue from './Value.js';
 
-const moduleTag = '@parischap/pretty-print/ByPasser/';
+export const moduleTag = '@parischap/pretty-print/ByPasser/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
@@ -122,7 +122,7 @@ const base: MTypes.Proto<Type> = {
  * @category Constructors
  */
 export const make = ({ id, action }: { readonly id: string; readonly action: Action.Type }): Type =>
-	Object.assign(MFunction.copy(action), {
+	Object.assign(MFunction.clone(action), {
 		id,
 		...base
 	});
@@ -133,6 +133,16 @@ export const make = ({ id, action }: { readonly id: string; readonly action: Act
  * @category Destructors
  */
 export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
+
+/**
+ * ByPasser instance that does not bypass any value
+ *
+ * @category Instances
+ */
+export const empty: Type = make({
+	id: 'Empty',
+	action: () => () => Option.none()
+});
 
 /**
  * ByPasser instance that has the following behavior:
@@ -168,10 +178,10 @@ export const functionToName: Type = make({
 						messageTextFormatter(value),
 						ASText.surround(
 							functionNameStartDelimiterMarkShower(value),
-							messageStartDelimiterMarkShower(value)
+							functionNameEndDelimiterMarkShower(value)
 						),
 						ASText.surround(
-							functionNameEndDelimiterMarkShower(value),
+							messageStartDelimiterMarkShower(value),
 							messageEndDelimiterMarkShower(value)
 						),
 						PPStringifiedValue.fromText
@@ -197,8 +207,7 @@ export const objectToString: Type = make({
 		const toStringedObjectTextFormatter = valueBasedFormatterConstructor('ToStringedObject');
 
 		return (value) => {
-			const inContextToStringedObjectTextFormatter: MTypes.OneArgFunction<string, ASText.Type> =
-				toStringedObjectTextFormatter(value);
+			const inContextToStringedObjectTextFormatter = toStringedObjectTextFormatter(value);
 			return pipe(
 				value,
 				Option.liftPredicate(PPValue.isNonPrimitive),
@@ -216,7 +225,7 @@ export const objectToString: Type = make({
 					flow(
 						// split resets RegExp.prototype.lastIndex after executing
 						String.split(MRegExp.globalLineBreak),
-						Array.map(inContextToStringedObjectTextFormatter)
+						Array.map((s, _i) => inContextToStringedObjectTextFormatter(s))
 					)
 				)
 			);

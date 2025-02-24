@@ -80,6 +80,6 @@
 	"peerDependencies": {
 		"@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
 		"@parischap/templater": "workspace:@parischap-dev/templater@*",
-		"effect": "^3.12.5"
+		"effect": "^3.13.0"
 	}
 }

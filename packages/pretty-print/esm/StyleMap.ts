@@ -108,19 +108,15 @@ export const styles: MTypes.OneArgFunction<Type, Styles.Type> = Struct.get('styl
  * @category Destructors
  */
 export const get = (partName: string): MTypes.OneArgFunction<Type, PPValueBasedFormatter.Type> =>
-	flow(
-		Struct.get('styles'),
-		HashMap.get(partName),
-		Option.getOrElse(Function.constant(ASContextFormatter.none))
-	);
+	flow(styles, HashMap.get(partName), Option.getOrElse(Function.constant(ASContextFormatter.none)));
 
 /**
  * StyleMap instance for ansi dark mode
  *
  * @category Instances
  */
-export const ansiDarkMode: Type = make({
-	id: 'AnsiDarkMode',
+export const darkMode: Type = make({
+	id: 'DarkMode',
 	styles: HashMap.make(
 		['Message', ASContextFormatter.green],
 		['ToStringedObject', ASContextFormatter.yellow],

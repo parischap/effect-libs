@@ -436,7 +436,8 @@ export const join =
 		concat(...pipe(arr, Array.intersperse(self)));
 
 /**
- * Builds a new Text by repeating `n` times the passed Text
+ * Builds a new Text by repeating `n` times the passed Text. `n` must be a strictly positive
+ * integer.
  *
  * @category Utils
  */

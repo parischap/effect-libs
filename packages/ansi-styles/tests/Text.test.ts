@@ -25,6 +25,9 @@ const pink = pipe(
 
 const boldRed = flow(bold, red);
 const boldRedFoo = pipe('foo', boldRed);
+const foo = ASText.fromString('foo');
+const bar = ASText.fromString('bar');
+const baz = ASText.fromString('baz');
 
 describe('ASText', () => {
 	describe('Tag, prototype and guards', () => {
@@ -32,10 +35,19 @@ describe('ASText', () => {
 			expect(ASText.moduleTag).toBe(MUtils.moduleTagFromFileName(__filename));
 		});
 
+		describe('haveSameText', () => {
+			it('Matching', () => {
+				expect(ASText.haveSameText(boldRedFoo, ASText.fromString('foo'))).toBe(true);
+			});
+			it('Non matching', () => {
+				expect(ASText.haveSameText(boldRedFoo, boldRed('bar'))).toBe(false);
+			});
+		});
+
 		describe('Equal.equals', () => {
 			it('Matching', () => {
 				expect(Equal.equals(boldRedFoo, pipe('foo', red, bold))).toBe(true);
-				expect(Equal.equals(pipe('', boldRed), pipe('', none))).toBe(true);
+				expect(Equal.equals(boldRed(''), none(''))).toBe(true);
 			});
 			it('Non matching', () => {
 				expect(Equal.equals(boldRedFoo, pipe('foo', bold))).toBe(false);
@@ -70,6 +82,14 @@ describe('ASText', () => {
 		});
 	});
 
+	it('length', () => {
+		expect(ASText.length(dim(pink('foo'), red('bar')))).toBe(6);
+	});
+
+	it('concat', () => {
+		expect(ASText.toUnstyledString(ASText.concat(foo, bar, boldRedFoo))).toBe('foobarfoo');
+	});
+
 	describe('empty, isEmpty', () => {
 		it('Matching', () => {
 			expect(pipe(ASText.empty, ASText.isEmpty)).toBe(true);
@@ -102,43 +122,29 @@ describe('ASText', () => {
 		);
 	});
 
-	/*it('append', () => {
-		const result = foo.pipe(ASText.append(bar));
-		expect(ASText.formatted(result)).toBe('afoobabarb');
-		expect(ASText.unformatted(result)).toBe('foobar');
+	it('toUnstyledString', () => {
+		expect(ASText.toUnstyledString(dim(pink('foo'), red('bar')))).toBe('foobar');
+	});
+
+	it('append', () => {
+		expect(ASText.toUnstyledString(foo.pipe(ASText.append(bar)))).toBe('foobar');
 	});
 
 	it('prepend', () => {
-		const result = foo.pipe(ASText.prepend(bar));
-		expect(ASText.formatted(result)).toBe('abarbafoob');
-		expect(ASText.unformatted(result)).toBe('barfoo');
+		expect(ASText.toUnstyledString(bar.pipe(ASText.prepend(foo)))).toBe('foobar');
 	});
 
-	it('concat', () => {
-		const result = ASText.concat(foo, bar, baz);
-		expect(ASText.formatted(result)).toBe('afoobabarbabazb');
-		expect(ASText.unformatted(result)).toBe('foobarbaz');
+	it('surround', () => {
+		expect(ASText.toUnstyledString(bar.pipe(ASText.surround(foo, foo)))).toBe('foobarfoo');
 	});
 
 	it('join', () => {
-		const result = pipe(Array.make(foo, baz), ASText.join(bar));
-		expect(ASText.formatted(result)).toBe('afoobabarbabazb');
-		expect(ASText.unformatted(result)).toBe('foobarbaz');
+		expect(pipe(Array.make(foo, bar, foo), ASText.join(baz), ASText.toUnstyledString)).toBe(
+			'foobazbarbazfoo'
+		);
 	});
 
 	it('repeat', () => {
-		const result = foo.pipe(ASText.repeat(2));
-		expect(ASText.formatted(result)).toBe('afoobafoob');
-		expect(ASText.unformatted(result)).toBe('foofoo');
+		expect(ASText.toUnstyledString(bar.pipe(ASText.repeat(3)))).toBe('barbarbar');
 	});
-
-	it('isEmpty', () => {
-		expect(ASText.isEmpty(foo)).toBe(false);
-		expect(ASText.isEmpty(ASText.empty)).toBe(true);
-	});
-
-	it('isNonEmpty', () => {
-		expect(ASText.isNonEmpty(foo)).toBe(true);
-		expect(ASText.isNonEmpty(ASText.empty)).toBe(false);
-	});*/
 });

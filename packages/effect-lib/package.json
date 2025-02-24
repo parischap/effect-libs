@@ -74,6 +74,6 @@
 	},
 	"description": "An extension to the official Effect library",
 	"peerDependencies": {
-		"effect": "^3.12.5"
+		"effect": "^3.13.0"
 	}
 }
