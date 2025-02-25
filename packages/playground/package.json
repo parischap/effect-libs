@@ -54,9 +54,9 @@
 	},
 	"homepage": "https://github.com/parischap/effect-libs/tree/master/packages/playground",
 	"dependencies": {
-		"@effect/experimental": "^0.41.0",
+		"@effect/experimental": "^0.41.2",
 		"@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
-		"effect": "^3.13.0"
+		"effect": "^3.13.2"
 	},
 	"sideEffects": false,
 	"private": true,

@@ -39,7 +39,7 @@
 		"prettier": "latest",
 		"typescript": "latest",
 		"typescript-eslint": "latest",
-		"vite": "^5.0.0",
+		"vite": "latest",
 		"vite-node": "latest",
 		"vitest": "latest",
 		"madge": "latest",
