@@ -7,8 +7,20 @@
  */
 
 import { MInspectable, MPipeable, MString, MTypes } from '@parischap/effect-lib';
-import { Array, Equal, Equivalence, flow, Hash, pipe, Pipeable, Predicate, Struct } from 'effect';
+import {
+	Array,
+	Equal,
+	Equivalence,
+	flow,
+	Function,
+	Hash,
+	pipe,
+	Pipeable,
+	Predicate,
+	Struct
+} from 'effect';
 import * as ASStyle from './Style.js';
+import * as ASStyles from './Styles.js';
 
 /**
  * Module tag
@@ -20,20 +32,13 @@ const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
 /**
- * Type that represents an array of Style's.
- *
- * @category Models
- */
-export type Styles = MTypes.OverTwo<ASStyle.Type>;
-
-/**
  * Type that represents a Palette.
  *
  * @category Models
  */
 export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
 	/** Array of styles contained by this Palette */
-	readonly styles: Styles;
+	readonly styles: ASStyles.Type;
 
 	/** @internal */
 	readonly [_TypeId]: _TypeId;
@@ -82,7 +87,8 @@ const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto
  *
  * @category Constructors
  */
-export const make = (...styles: Styles): Type => _make({ styles });
+export const make = (...styles: ASStyles.Type): Type => _make({ styles });
+const _tupledMake = Function.tupled(make);
 
 /**
  * Gets the id of `self`
@@ -91,8 +97,7 @@ export const make = (...styles: Styles): Type => _make({ styles });
  */
 export const toId: MTypes.OneArgFunction<Type, string> = flow(
 	Struct.get('styles'),
-	Array.map(ASStyle.toId),
-	Array.join('/'),
+	ASStyles.toId,
 	MString.append('Palette')
 );
 
@@ -101,7 +106,7 @@ export const toId: MTypes.OneArgFunction<Type, string> = flow(
  *
  * @category Destructors
  */
-export const styles: MTypes.OneArgFunction<Type, Styles> = Struct.get('styles');
+export const styles: MTypes.OneArgFunction<Type, ASStyles.Type> = Struct.get('styles');
 
 /**
  * Appends `that` to `self`
@@ -111,7 +116,7 @@ export const styles: MTypes.OneArgFunction<Type, Styles> = Struct.get('styles');
 export const append =
 	(that: Type) =>
 	(self: Type): Type =>
-		make(...self.styles, ...that.styles);
+		pipe(self.styles, ASStyles.append(that.styles), _tupledMake);
 
 /**
  * Palette instance which contains all standard original colors
