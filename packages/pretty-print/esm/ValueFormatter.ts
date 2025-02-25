@@ -27,7 +27,7 @@ import type * as PPOption from './Option.js';
 import * as PPStringifiedValue from './StringifiedValue.js';
 import * as PPValue from './Value.js';
 
-const moduleTag = '@parischap/pretty-print/ValueFormatter/';
+export const moduleTag = '@parischap/pretty-print/ValueFormatter/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
@@ -152,6 +152,7 @@ export const keyAndValue: Type = make({
 
 		return (value) => {
 			const stringKey = value.stringKey;
+			const protoDepth = value.protoDepth;
 
 			if (MTypes.isSingleton(stringKey) && String.isEmpty(stringKey[0])) return Function.identity;
 			const inContextPropertyKeyTextFormatter = propertyKeyTextFormatter(value);
@@ -165,20 +166,25 @@ export const keyAndValue: Type = make({
 			const key: PPStringifiedValue.Type = pipe(
 				stringKey,
 				Array.map((line, _i) => inContextPropertyKeyTextFormatter(line)),
-				PPStringifiedValue.prependToFirstLine(
-					pipe(
-						this.prototypeStartDelimiterMark,
-						inContextPrototypeDelimitersTextFormatter,
-						ASText.repeat(value.protoDepth)
+				MFunction.fIfTrue({
+					condition: protoDepth > 0,
+					f: flow(
+						PPStringifiedValue.prependToFirstLine(
+							pipe(
+								this.prototypeStartDelimiterMark,
+								inContextPrototypeDelimitersTextFormatter,
+								ASText.repeat(protoDepth)
+							)
+						),
+						PPStringifiedValue.appendToLastLine(
+							pipe(
+								this.prototypeEndDelimiterMark,
+								inContextPrototypeDelimitersTextFormatter,
+								ASText.repeat(protoDepth)
+							)
+						)
 					)
-				),
-				PPStringifiedValue.appendToLastLine(
-					pipe(
-						this.prototypeEndDelimiterMark,
-						inContextPrototypeDelimitersTextFormatter,
-						ASText.repeat(value.protoDepth)
-					)
-				)
+				})
 			);
 
 			return (stringifiedValue) => {
@@ -189,10 +195,13 @@ export const keyAndValue: Type = make({
 					Array.initNonEmpty,
 					Array.append(
 						pipe(
+							key,
 							// cannot be an empty string
-							Array.lastNonEmpty(key),
-							ASText.append(ASText.isEmpty(firstLine) ? ASText.empty : keyValueSeparator),
-							ASText.append(firstLine)
+							Array.lastNonEmpty,
+							MFunction.fIfTrue({
+								condition: ASText.isNotEmpty(firstLine),
+								f: flow(ASText.append(keyValueSeparator), ASText.append(firstLine))
+							})
 						)
 					),
 					Array.appendAll(Array.tailNonEmpty(stringifiedValue))

@@ -73,14 +73,14 @@ export const isEmpty: Predicate.Predicate<Type> = MArray.match012({
 export const isNotEmpty: Predicate.Predicate<Type> = Predicate.not(isEmpty);
 
 /**
- * Returns a copy of `self` with a mark at the end
+ * Returns a copy of `self` with a new line at the end
  *
  * @category Utils
  */
 export const addLineAfter = (line: ASText.Type): MTypes.OneArgFunction<Type> => Array.append(line);
 
 /**
- * Returns a copy of `self` with a mark at the start
+ * Returns a copy of `self` with a new line at the start
  *
  * @category Utils
  */
@@ -134,8 +134,8 @@ export const length: MTypes.OneArgFunction<Type, number> = flow(
  *
  * @category Destructors
  */
-export const toAnsiString = (sep = '\n'): MTypes.OneArgFunction<Type, string> =>
-	flow(Array.map(ASText.toAnsiString), Array.join(sep));
+export const toAnsiString = (sep = ASText.lineBreak): MTypes.OneArgFunction<Type, string> =>
+	flow(ASText.join(sep), ASText.toAnsiString);
 
 /**
  * Returns the stringq corresponding to `self` without any styling

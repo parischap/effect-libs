@@ -21,7 +21,7 @@ import {
 import * as PPValue from './Value.js';
 import * as PPValues from './Values.js';
 
-const moduleTag = '@parischap/pretty-print/ValueFilter/';
+export const moduleTag = '@parischap/pretty-print/ValueFilter/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
@@ -112,7 +112,7 @@ export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
  * @category Instances
  */
 export const removeNonFunctions: Type = make({
-	id: 'removeNonFunctions',
+	id: 'RemoveNonFunctions',
 	action: Array.filter(PPValue.isFunction)
 });
 
@@ -122,7 +122,7 @@ export const removeNonFunctions: Type = make({
  * @category Instances
  */
 export const removeFunctions: Type = make({
-	id: 'removeFunctions',
+	id: 'RemoveFunctions',
 	action: Array.filter(Predicate.not(PPValue.isFunction))
 });
 
@@ -132,7 +132,7 @@ export const removeFunctions: Type = make({
  * @category Instances
  */
 export const removeNonEnumerables: Type = make({
-	id: 'removeNonEnumerables',
+	id: 'RemoveNonEnumerables',
 	action: Array.filter(PPValue.isEnumerable)
 });
 
@@ -142,7 +142,7 @@ export const removeNonEnumerables: Type = make({
  * @category Instances
  */
 export const removeEnumerables: Type = make({
-	id: 'removeEnumerables',
+	id: 'RemoveEnumerables',
 	action: Array.filter(Predicate.not(PPValue.isEnumerable))
 });
 
@@ -152,7 +152,7 @@ export const removeEnumerables: Type = make({
  * @category Instances
  */
 export const removeStringKeys: Type = make({
-	id: 'removeStringKeys',
+	id: 'RemoveStringKeys',
 	action: Array.filter(PPValue.hasSymbolicKey)
 });
 
@@ -162,7 +162,7 @@ export const removeStringKeys: Type = make({
  * @category Instances
  */
 export const removeSymbolicKeys: Type = make({
-	id: 'removeSymbolicKeys',
+	id: 'RemoveSymbolicKeys',
 	action: Array.filter(Predicate.not(PPValue.hasSymbolicKey))
 });
 
@@ -175,12 +175,16 @@ export const removeSymbolicKeys: Type = make({
  *
  * @category Constructors
  */
-export const removeNotFulfillingKeyPredicate =
-	(id: string) =>
-	(predicate: Predicate.Predicate<string>): Type =>
-		make({
-			id,
-			action: Array.filter(
-				MPredicate.struct({ oneLineStringKey: predicate, hasSymbolicKey: Boolean.not })
-			)
-		});
+export const removeNotFulfillingKeyPredicate = ({
+	id,
+	predicate
+}: {
+	readonly id: string;
+	readonly predicate: Predicate.Predicate<string>;
+}): Type =>
+	make({
+		id,
+		action: Array.filter(
+			MPredicate.struct({ oneLineStringKey: predicate, hasSymbolicKey: Boolean.not })
+		)
+	});

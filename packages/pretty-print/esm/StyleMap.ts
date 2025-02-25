@@ -157,7 +157,17 @@ export const darkMode: Type = make({
 		['InBetweenPropertySeparator', ASContextFormatter.white],
 		[
 			'NonPrimitiveValueDelimiters',
-			PPValueBasedFormatter.makeDepthIndexed(ASPalette.allOriginalColors)
+			PPValueBasedFormatter.makeDepthIndexed(
+				ASPalette.make(
+					ASStyle.red,
+					ASStyle.green,
+					ASStyle.yellow,
+					ASStyle.blue,
+					ASStyle.magenta,
+					ASStyle.cyan,
+					ASStyle.white
+				)
+			)
 		],
 		['Indentation', ASContextFormatter.green],
 		['NonPrimitiveValueId', ASContextFormatter.green],

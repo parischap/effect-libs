@@ -25,7 +25,7 @@ import {
 import type * as PPOption from './Option.js';
 import * as PPValue from './Value.js';
 
-const moduleTag = '@parischap/pretty-print/PrimitiveFormatter/';
+export const moduleTag = '@parischap/pretty-print/PrimitiveFormatter/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
@@ -115,15 +115,23 @@ export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
  *
  * @category Instances
  */
-export const utilInspectLike = ({
-	maxStringLength = 10000,
-	numberFormatter = new Intl.NumberFormat()
-}: {
-	readonly maxStringLength?: number;
-	readonly numberFormatter?: Intl.NumberFormat;
-} = {}) =>
+export const utilInspectLikeMaker = (
+	{
+		maxStringLength,
+		numberFormatter,
+		id
+	}: {
+		readonly maxStringLength: number;
+		readonly numberFormatter: Intl.NumberFormat;
+		readonly id: string;
+	} = {
+		maxStringLength: 10000,
+		numberFormatter: new Intl.NumberFormat(),
+		id: 'UtilInspectLike'
+	}
+) =>
 	make({
-		id: 'UtilInspectLike',
+		id,
 		action: flow(
 			MMatch.make,
 			MMatch.when(
@@ -146,7 +154,7 @@ export const utilInspectLike = ({
 			),
 			MMatch.when(
 				PPValue.isBigint,
-				flow(PPValue.content, (n) => numberFormatter.format(n), MString.prepend('n'))
+				flow(PPValue.content, (n) => numberFormatter.format(n), MString.append('n'))
 			),
 			MMatch.orElse(flow(PPValue.content, MString.fromPrimitive))
 		)

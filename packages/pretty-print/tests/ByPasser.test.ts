@@ -1,15 +1,19 @@
 /* eslint-disable functional/no-expression-statements */
-import { ASText } from '@parischap/ansi-styles';
+import { ASStyle } from '@parischap/ansi-styles';
 import { MUtils } from '@parischap/effect-lib';
 import { PPByPasser, PPOption, PPStringifiedValue, PPValue } from '@parischap/pretty-print';
-import { Equal, Option, pipe } from 'effect';
+import { Array, Equal, Option, pipe } from 'effect';
 import { describe, expect, it } from 'vitest';
 
 describe('ByPasser', () => {
-	const utilInspectLike = PPOption.utilInspectLike;
+	const utilInspectLike = PPOption.darkModeUtilInspectLike;
 	const valueBasedFormatterConstructor =
 		PPOption.ValueBasedFormatterConstructor.fromOption(utilInspectLike);
 	const markShowerConstructor = PPOption.MarkShowerConstructor.fromOption(utilInspectLike);
+	const constructors = {
+		valueBasedFormatterConstructor,
+		markShowerConstructor
+	};
 
 	const optionEq = Option.getEquivalence(PPStringifiedValue.equivalence);
 
@@ -60,12 +64,9 @@ describe('ByPasser', () => {
 					pipe(
 						foo,
 						PPValue.fromTopValue,
-						PPByPasser.functionToName.call(utilInspectLike, {
-							valueBasedFormatterConstructor,
-							markShowerConstructor
-						})
+						PPByPasser.functionToName.call(utilInspectLike, constructors)
 					),
-					pipe('[Function: foo]', ASText.fromString, PPStringifiedValue.fromText, Option.some)
+					pipe('[Function: foo]', ASStyle.green, PPStringifiedValue.fromText, Option.some)
 				)
 			).toBe(true);
 		});
@@ -76,12 +77,9 @@ describe('ByPasser', () => {
 					pipe(
 						(n: number) => n + 1,
 						PPValue.fromTopValue,
-						PPByPasser.functionToName.call(utilInspectLike, {
-							valueBasedFormatterConstructor,
-							markShowerConstructor
-						})
+						PPByPasser.functionToName.call(utilInspectLike, constructors)
 					),
-					pipe('[Function: anonymous]', ASText.fromString, PPStringifiedValue.fromText, Option.some)
+					pipe('[Function: anonymous]', ASStyle.green, PPStringifiedValue.fromText, Option.some)
 				)
 			).toBe(true);
 		});
@@ -91,10 +89,7 @@ describe('ByPasser', () => {
 				pipe(
 					3,
 					PPValue.fromTopValue,
-					PPByPasser.functionToName.call(utilInspectLike, {
-						valueBasedFormatterConstructor,
-						markShowerConstructor
-					}),
+					PPByPasser.functionToName.call(utilInspectLike, constructors),
 					Option.isNone
 				)
 			).toBe(true);
@@ -107,24 +102,7 @@ describe('ByPasser', () => {
 				pipe(
 					3,
 					PPValue.fromTopValue,
-					PPByPasser.objectToString.call(utilInspectLike, {
-						valueBasedFormatterConstructor,
-						markShowerConstructor
-					}),
-					Option.isNone
-				)
-			).toBe(true);
-		});
-
-		it('Applied to object without a .toString method', () => {
-			expect(
-				pipe(
-					3,
-					PPValue.fromTopValue,
-					PPByPasser.objectToString.call(utilInspectLike, {
-						valueBasedFormatterConstructor,
-						markShowerConstructor
-					}),
+					PPByPasser.objectToString.call(utilInspectLike, constructors),
 					Option.isNone
 				)
 			).toBe(true);
@@ -135,10 +113,7 @@ describe('ByPasser', () => {
 				pipe(
 					{ a: 3 },
 					PPValue.fromTopValue,
-					PPByPasser.objectToString.call(utilInspectLike, {
-						valueBasedFormatterConstructor,
-						markShowerConstructor
-					}),
+					PPByPasser.objectToString.call(utilInspectLike, constructors),
 					Option.isNone
 				)
 			).toBe(true);
@@ -148,14 +123,11 @@ describe('ByPasser', () => {
 			expect(
 				optionEq(
 					pipe(
-						{ a: 3, toString: (): string => 'foo' },
+						{ a: 3, toString: (): string => 'foo\nbar' },
 						PPValue.fromTopValue,
-						PPByPasser.objectToString.call(utilInspectLike, {
-							valueBasedFormatterConstructor,
-							markShowerConstructor
-						})
+						PPByPasser.objectToString.call(utilInspectLike, constructors)
 					),
-					pipe('foo', ASText.fromString, PPStringifiedValue.fromText, Option.some)
+					pipe(Array.make(ASStyle.yellow('foo'), ASStyle.yellow('bar')), Option.some)
 				)
 			).toBe(true);
 		});

@@ -2,6 +2,7 @@ export * as PPByPasser from './ByPasser.js';
 export * as PPMarkMap from './MarkMap.js';
 export * as PPNonPrimitiveFormatter from './NonPrimitiveFormatter.js';
 export * as PPOption from './Option.js';
+export * as PPPrimitiveFormatter from './PrimitiveFormatter.js';
 export * as PPStringifiedProperties from './StringifiedProperties.js';
 export * as PPStringifiedValue from './StringifiedValue.js';
 export * as PPStyleMap from './StyleMap.js';
