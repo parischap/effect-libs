@@ -1,14 +1,21 @@
 /* eslint-disable functional/no-expression-statements */
 import { ASStyle } from '@parischap/ansi-styles';
 import { MUtils } from '@parischap/effect-lib';
-import { PPByPasser, PPOption, PPStringifiedValue, PPValue } from '@parischap/pretty-print';
+import {
+	PPByPasser,
+	PPOption,
+	PPStringifiedValue,
+	PPValue,
+	PPValueBasedFormatterConstructor
+} from '@parischap/pretty-print';
 import { Array, Equal, Option, pipe } from 'effect';
 import { describe, expect, it } from 'vitest';
 
 describe('ByPasser', () => {
 	const utilInspectLike = PPOption.darkModeUtilInspectLike;
-	const valueBasedFormatterConstructor =
-		PPOption.ValueBasedFormatterConstructor.fromOption(utilInspectLike);
+	const valueBasedFormatterConstructor = PPValueBasedFormatterConstructor.fromStyleMap(
+		utilInspectLike.styleMap
+	);
 	const markShowerConstructor = PPOption.MarkShowerConstructor.fromOption(utilInspectLike);
 	const constructors = {
 		valueBasedFormatterConstructor,

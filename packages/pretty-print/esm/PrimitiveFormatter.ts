@@ -45,7 +45,7 @@ export namespace Action {
 }
 
 /**
- * Type that represents a PrimitiveFormatter.
+ * Type that represents a PrimitiveFormatter
  *
  * @category Models
  */

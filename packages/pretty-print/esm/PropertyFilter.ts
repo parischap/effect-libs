@@ -21,12 +21,12 @@ import {
 import * as PPValue from './Value.js';
 import * as PPValues from './Values.js';
 
-export const moduleTag = '@parischap/pretty-print/ValueFilter/';
+export const moduleTag = '@parischap/pretty-print/PropertyFilter/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
 /**
- * Namespace of a ValueFilter used as an action
+ * Namespace of a PropertyFilter used as an action
  *
  * @category Models
  */
@@ -40,7 +40,7 @@ export namespace Action {
 }
 
 /**
- * Type that represents a ValueFilter.
+ * Type that represents a PropertyFilter.
  *
  * @category Models
  */
@@ -49,7 +49,7 @@ export interface Type
 		Equal.Equal,
 		MInspectable.Inspectable,
 		Pipeable.Pipeable {
-	/** Id of this ValueFilter instance. Useful for equality and debugging */
+	/** Id of this PropertyFilter instance. Useful for equality and debugging */
 	readonly id: string;
 
 	/** @internal */
@@ -106,7 +106,7 @@ export const make = ({ id, action }: { readonly id: string; readonly action: Act
 export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
 
 /**
- * ValueFilter instance that removes properties of non-primitive values whose value is not a
+ * PropertyFilter instance that removes properties of non-primitive values whose value is not a
  * function
  *
  * @category Instances
@@ -117,7 +117,7 @@ export const removeNonFunctions: Type = make({
 });
 
 /**
- * ValueFilter instance that removes properties of non-primitive values whose value is a function
+ * PropertyFilter instance that removes properties of non-primitive values whose value is a function
  *
  * @category Instances
  */
@@ -127,7 +127,7 @@ export const removeFunctions: Type = make({
 });
 
 /**
- * ValueFilter instance that removes non-enumerable properties of non-primitive values
+ * PropertyFilter instance that removes non-enumerable properties of non-primitive values
  *
  * @category Instances
  */
@@ -137,7 +137,7 @@ export const removeNonEnumerables: Type = make({
 });
 
 /**
- * ValueFilter instance that removes enumerable properties of non-primitive values
+ * PropertyFilter instance that removes enumerable properties of non-primitive values
  *
  * @category Instances
  */
@@ -147,7 +147,7 @@ export const removeEnumerables: Type = make({
 });
 
 /**
- * ValueFilter instance that removes properties of non-primitive values with a string key
+ * PropertyFilter instance that removes properties of non-primitive values with a string key
  *
  * @category Instances
  */
@@ -157,7 +157,7 @@ export const removeStringKeys: Type = make({
 });
 
 /**
- * ValueFilter instance that removes properties of non-primitive values with a symbolic key
+ * PropertyFilter instance that removes properties of non-primitive values with a symbolic key
  *
  * @category Instances
  */

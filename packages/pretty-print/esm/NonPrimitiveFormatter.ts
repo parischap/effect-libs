@@ -27,6 +27,7 @@ import * as PPOption from './Option.js';
 import * as PPStringifiedProperties from './StringifiedProperties.js';
 import * as PPStringifiedValue from './StringifiedValue.js';
 import * as PPValue from './Value.js';
+import * as PPValueBasedFormatterConstructor from './ValueBasedFormatterConstructor.js';
 
 export const moduleTag = '@parischap/pretty-print/NonPrimitiveFormatter/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
@@ -40,11 +41,12 @@ type _TypeId = typeof _TypeId;
 export namespace Action {
 	/**
 	 * Type of the action of a NonPrimitiveFormatter. The action takes as input a
-	 * ValueBasedFormatterConstructor, a MarkShowerConstructor (see OptionAndPrecalc.ts), the Value
-	 * being currently printed (see Value.ts), a header to be displayed in front of the stringified
-	 * properties (usually the id of the non primitive value and the number of displayed properties)
-	 * and an array of the stringified properties (see StringifiedProperties.ts) of that value. Based
-	 * on these parameters, it must return a stringified representation of the whole record.
+	 * ValueBasedFormatterConstructor (see ValueBasedFormatterConstructor.ts), a MarkShowerConstructor
+	 * (see MarkShowerConstructor.ts), the Value being currently printed (see Value.ts), a header to
+	 * be displayed in front of the stringified properties (usually the id of the non primitive value
+	 * and the number of displayed properties) and an array of the stringified properties (see
+	 * StringifiedProperties.ts) of that value. Based on these parameters, it must return a
+	 * stringified representation of the whole record.
 	 */
 	export interface Type {
 		(
@@ -53,7 +55,7 @@ export namespace Action {
 				valueBasedFormatterConstructor,
 				markShowerConstructor
 			}: {
-				readonly valueBasedFormatterConstructor: PPOption.ValueBasedFormatterConstructor.Type;
+				readonly valueBasedFormatterConstructor: PPValueBasedFormatterConstructor.Type;
 				readonly markShowerConstructor: PPOption.MarkShowerConstructor.Type;
 			}
 		): ({

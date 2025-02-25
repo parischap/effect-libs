@@ -14,7 +14,7 @@ import { describe, expect, it } from 'vitest';
 describe('ValueFormatter', () => {
 	const utilInspectLike = PPOption.darkModeUtilInspectLike;
 	const valueBasedFormatterConstructor =
-		PPOption.ValueBasedFormatterConstructor.fromOption(utilInspectLike);
+		PPValueBasedFormatterConstructor.fromOption(utilInspectLike);
 	const markShowerConstructor = PPOption.MarkShowerConstructor.fromOption(utilInspectLike);
 	const nonPrimitiveOption = PPOption.NonPrimitive.maps('Foo');
 	const constructors = {

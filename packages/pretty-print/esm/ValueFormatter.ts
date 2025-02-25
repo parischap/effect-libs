@@ -26,6 +26,7 @@ import {
 import type * as PPOption from './Option.js';
 import * as PPStringifiedValue from './StringifiedValue.js';
 import * as PPValue from './Value.js';
+import * as PPValueBasedFormatterConstructor from './ValueBasedFormatterConstructor.js';
 
 export const moduleTag = '@parischap/pretty-print/ValueFormatter/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
@@ -38,10 +39,11 @@ type _TypeId = typeof _TypeId;
  */
 export namespace Action {
 	/**
-	 * Type of the action. The action takes as input a ValueBasedFormatterConstructor (see Option.ts),
-	 * a MarkShowerConstructor (see Option.ts), the Value (see Value.ts) being currently printed, and
-	 * the stringified representation of that value (see StringifiedValue.ts) . Based on these four
-	 * parameters, it must return a stringified representation of the whole property.
+	 * Type of the action. The action takes as input a ValueBasedFormatterConstructor (see
+	 * ValueBasedFormatterConstructor.ts), a MarkShowerConstructor (see Option.ts), the Value (see
+	 * Value.ts) being currently printed, and the stringified representation of that value (see
+	 * StringifiedValue.ts) . Based on these four parameters, it must return a stringified
+	 * representation of the whole property.
 	 *
 	 * @category Models
 	 */
@@ -52,7 +54,7 @@ export namespace Action {
 				valueBasedFormatterConstructor,
 				markShowerConstructor
 			}: {
-				readonly valueBasedFormatterConstructor: PPOption.ValueBasedFormatterConstructor.Type;
+				readonly valueBasedFormatterConstructor: PPValueBasedFormatterConstructor.Type;
 				readonly markShowerConstructor: PPOption.MarkShowerConstructor.Type;
 			}
 		): MTypes.OneArgFunction<PPValue.All, MTypes.OneArgFunction<PPStringifiedValue.Type>>;
