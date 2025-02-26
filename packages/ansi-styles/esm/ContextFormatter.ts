@@ -29,13 +29,41 @@ const _PaletteBasedTag = 'PaletteBased';
  *
  * @category Models
  */
-export namespace ActionBase {
+export namespace DirectAction {
 	/**
 	 * Type of the action
 	 *
 	 * @category Models
 	 */
 	export interface Type<in C> extends MTypes.OneArgFunction<C, ASStyle.Action.Type> {}
+}
+
+/**
+ * Namespace of a ContextFormatter used as an action with flipped parameters
+ *
+ * @category Models
+ */
+export namespace ReversedAction {
+	/**
+	 * Namespace of an initialized ContextFormatter used as an action with flipped parameters
+	 *
+	 * @category Models
+	 */
+	export namespace Initialized {
+		/**
+		 * Type of the action
+		 *
+		 * @category Models
+		 */
+		export interface Type<in C> extends MTypes.OneArgFunction<C, ASText.Type> {}
+	}
+
+	/**
+	 * Type of the action
+	 *
+	 * @category Models
+	 */
+	export interface Type<in C> extends MTypes.OneArgFunction<string, Initialized.Type<C>> {}
 }
 
 /**
@@ -49,8 +77,8 @@ export namespace Action {
 	 *
 	 * @category Models
 	 */
-	export interface Type<in C> extends ActionBase.Type<C> {
-		readonly withContextLast: MTypes.OneArgFunction<string, MTypes.OneArgFunction<C, ASText.Type>>;
+	export interface Type<in C> extends DirectAction.Type<C> {
+		readonly withContextLast: ReversedAction.Type<C>;
 	}
 }
 
@@ -132,13 +160,13 @@ export namespace Unistyled {
 	 * @category Constructors
 	 */
 	const _make = (params: MTypes.Data<Type, 'withContextLast'>): Type => {
-		return Object.assign((() => params.style) satisfies ActionBase.Type<unknown>, {
+		return Object.assign((() => params.style) satisfies DirectAction.Type<unknown>, {
 			...base,
 			...params,
 			withContextLast: ((toStyle) => {
 				const styled = params.style(toStyle);
 				return () => styled;
-			}) satisfies Action.Type<unknown>['withContextLast']
+			}) satisfies ReversedAction.Type<unknown>
 		});
 	};
 
@@ -238,14 +266,14 @@ export namespace PaletteBased {
 		const styles = params.palette.styles;
 		const n = styles.length;
 
-		const getStyle: ActionBase.Type<C> = (context) =>
+		const getStyle: DirectAction.Type<C> = (context) =>
 			pipe(styles, MArray.unsafeGet(params.indexFromContext(context) % n));
 
 		return Object.assign(MFunction.clone(getStyle), {
 			...base,
 			...params,
 			withContextLast: ((toStyle) => (context) =>
-				getStyle(context)(toStyle)) satisfies Action.Type<C>['withContextLast']
+				getStyle(context)(toStyle)) satisfies ReversedAction.Type<C>
 		});
 	};
 
