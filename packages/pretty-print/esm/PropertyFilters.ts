@@ -24,7 +24,7 @@ export const empty: Type = Array.empty();
  *
  * @category Instances
  */
-export const defaults: Type = Array.of(PPPropertyFilter.removeNonEnumerables);
+export const utilInspectLike: Type = Array.of(PPPropertyFilter.removeNonEnumerables);
 
 /**
  * Returns a PropertyFilter that is equivalent to `self`. The returned PropertyFilter executes
@@ -32,7 +32,7 @@ export const defaults: Type = Array.of(PPPropertyFilter.removeNonEnumerables);
  *
  * @category Destructors
  */
-export const toSyntheticPropertyFilterAction =
+export const toSyntheticPropertyFilter =
 	(self: Type): PPPropertyFilter.Action.Type =>
 	(properties) =>
 		Array.reduce(self, properties, (remainingProperties, propertyFilter) =>

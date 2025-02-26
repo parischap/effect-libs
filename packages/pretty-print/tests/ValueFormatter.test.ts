@@ -2,10 +2,12 @@
 import { ASStyle, ASText } from '@parischap/ansi-styles';
 import { MUtils } from '@parischap/effect-lib';
 import {
+	PPMarkShowerConstructor,
 	PPNonPrimitiveFormatter,
 	PPOption,
 	PPStringifiedValue,
 	PPValue,
+	PPValueBasedFormatterConstructor,
 	PPValueFormatter
 } from '@parischap/pretty-print';
 import { Array, Equal, Function, pipe } from 'effect';
@@ -15,7 +17,7 @@ describe('ValueFormatter', () => {
 	const utilInspectLike = PPOption.darkModeUtilInspectLike;
 	const valueBasedFormatterConstructor =
 		PPValueBasedFormatterConstructor.fromOption(utilInspectLike);
-	const markShowerConstructor = PPOption.MarkShowerConstructor.fromOption(utilInspectLike);
+	const markShowerConstructor = PPMarkShowerConstructor.fromOption(utilInspectLike);
 	const nonPrimitiveOption = PPOption.NonPrimitive.maps('Foo');
 	const constructors = {
 		valueBasedFormatterConstructor,

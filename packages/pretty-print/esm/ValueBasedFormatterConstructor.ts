@@ -1,13 +1,14 @@
 /**
  * This module implements a Type that builds a ValueBasedFormatter (see ValueBasedFormatter.ts) from
- * a StyleMap (see StyleMap.ts)
+ * an Option (see Option.ts) and a partName.
  */
 
 import { ASContextFormatter } from '@parischap/ansi-styles';
 import { MTypes } from '@parischap/effect-lib';
 import { pipe } from 'effect';
+import type * as PPOption from './Option.js';
+import * as PPStyleMap from './StyleMap.js';
 import * as PPValueBasedFormatter from './ValueBasedFormatter.js';
-import { PPStyleMap } from './index.js';
 /**
  * Type of a ValueBasedFormatterConstructor
  *
@@ -17,14 +18,14 @@ export interface Type extends MTypes.OneArgFunction<string, PPValueBasedFormatte
 
 /**
  * Builds a ValueBasedFormatter (see ValueBasedFormatter.ts) from the `partName` style of the
- * provided `styleMap` (see StyleMap.ts)
+ * provided `option.styleMap` (see StyleMap.ts)
  *
  * @category Constructors
  */
-export const fromStyleMap =
-	(styleMap: PPStyleMap.Type): Type =>
+export const fromOption =
+	(option: PPOption.Type): Type =>
 	(partName) =>
-		pipe(styleMap, PPStyleMap.get(partName));
+		pipe(option.styleMap, PPStyleMap.get(partName));
 
 /**
  * Creates a ValueBasedFormatterConstructor that always returns a `none` ContextFormatter

@@ -3,6 +3,7 @@ import { ASStyle } from '@parischap/ansi-styles';
 import { MUtils } from '@parischap/effect-lib';
 import {
 	PPByPasser,
+	PPMarkShowerConstructor,
 	PPOption,
 	PPStringifiedValue,
 	PPValue,
@@ -13,16 +14,16 @@ import { describe, expect, it } from 'vitest';
 
 describe('ByPasser', () => {
 	const utilInspectLike = PPOption.darkModeUtilInspectLike;
-	const valueBasedFormatterConstructor = PPValueBasedFormatterConstructor.fromStyleMap(
-		utilInspectLike.styleMap
-	);
-	const markShowerConstructor = PPOption.MarkShowerConstructor.fromOption(utilInspectLike);
+	const valueBasedFormatterConstructor =
+		PPValueBasedFormatterConstructor.fromOption(utilInspectLike);
+	const markShowerConstructor = PPMarkShowerConstructor.fromOption(utilInspectLike);
 	const constructors = {
 		valueBasedFormatterConstructor,
 		markShowerConstructor
 	};
 
 	const optionEq = Option.getEquivalence(PPStringifiedValue.equivalence);
+	const empty = PPByPasser.empty;
 
 	describe('Tag, prototype and guards', () => {
 		it('moduleTag', () => {
@@ -35,25 +36,25 @@ describe('ByPasser', () => {
 				action: () => () => Option.none()
 			});
 			it('Matching', () => {
-				expect(Equal.equals(PPByPasser.empty, dummy)).toBe(true);
+				expect(Equal.equals(empty, dummy)).toBe(true);
 			});
 
 			it('Non-matching', () => {
-				expect(Equal.equals(PPByPasser.empty, PPByPasser.functionToName)).toBe(false);
+				expect(Equal.equals(empty, PPByPasser.functionToName)).toBe(false);
 			});
 		});
 
 		it('.toString()', () => {
-			expect(PPByPasser.empty.toString()).toBe(`Empty`);
+			expect(empty.toString()).toBe(`Empty`);
 		});
 
 		it('.pipe()', () => {
-			expect(PPByPasser.empty.pipe(PPByPasser.id)).toBe('Empty');
+			expect(empty.pipe(PPByPasser.id)).toBe('Empty');
 		});
 
 		describe('has', () => {
 			it('Matching', () => {
-				expect(PPByPasser.has(PPByPasser.empty)).toBe(true);
+				expect(PPByPasser.has(empty)).toBe(true);
 			});
 			it('Non matching', () => {
 				expect(PPByPasser.has(new Date())).toBe(false);
@@ -62,17 +63,14 @@ describe('ByPasser', () => {
 	});
 
 	describe('functionToName', () => {
+		const initializedFunctionToName = PPByPasser.functionToName.call(utilInspectLike, constructors);
 		it('Applied to named function', () => {
 			function foo(): string {
 				return 'foo';
 			}
 			expect(
 				optionEq(
-					pipe(
-						foo,
-						PPValue.fromTopValue,
-						PPByPasser.functionToName.call(utilInspectLike, constructors)
-					),
+					pipe(foo, PPValue.fromTopValue, initializedFunctionToName),
 					pipe('[Function: foo]', ASStyle.green, PPStringifiedValue.fromText, Option.some)
 				)
 			).toBe(true);
@@ -81,49 +79,27 @@ describe('ByPasser', () => {
 		it('Applied to unnamed function', () => {
 			expect(
 				optionEq(
-					pipe(
-						(n: number) => n + 1,
-						PPValue.fromTopValue,
-						PPByPasser.functionToName.call(utilInspectLike, constructors)
-					),
+					pipe((n: number) => n + 1, PPValue.fromTopValue, initializedFunctionToName),
 					pipe('[Function: anonymous]', ASStyle.green, PPStringifiedValue.fromText, Option.some)
 				)
 			).toBe(true);
 		});
 
 		it('Applied to non-function value', () => {
-			expect(
-				pipe(
-					3,
-					PPValue.fromTopValue,
-					PPByPasser.functionToName.call(utilInspectLike, constructors),
-					Option.isNone
-				)
-			).toBe(true);
+			expect(pipe(3, PPValue.fromTopValue, initializedFunctionToName, Option.isNone)).toBe(true);
 		});
 	});
 
 	describe('objectToString', () => {
+		const initializedObjectToString = PPByPasser.objectToString.call(utilInspectLike, constructors);
 		it('Applied to primitive', () => {
-			expect(
-				pipe(
-					3,
-					PPValue.fromTopValue,
-					PPByPasser.objectToString.call(utilInspectLike, constructors),
-					Option.isNone
-				)
-			).toBe(true);
+			expect(pipe(3, PPValue.fromTopValue, initializedObjectToString, Option.isNone)).toBe(true);
 		});
 
 		it('Applied to object without a .toString method', () => {
-			expect(
-				pipe(
-					{ a: 3 },
-					PPValue.fromTopValue,
-					PPByPasser.objectToString.call(utilInspectLike, constructors),
-					Option.isNone
-				)
-			).toBe(true);
+			expect(pipe({ a: 3 }, PPValue.fromTopValue, initializedObjectToString, Option.isNone)).toBe(
+				true
+			);
 		});
 
 		it('Applied to object with a .toString method', () => {
@@ -132,7 +108,7 @@ describe('ByPasser', () => {
 					pipe(
 						{ a: 3, toString: (): string => 'foo\nbar' },
 						PPValue.fromTopValue,
-						PPByPasser.objectToString.call(utilInspectLike, constructors)
+						initializedObjectToString
 					),
 					pipe(Array.make(ASStyle.yellow('foo'), ASStyle.yellow('bar')), Option.some)
 				)

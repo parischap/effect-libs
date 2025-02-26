@@ -18,7 +18,7 @@ export interface Type extends ReadonlyArray<PPByPasser.Type> {}
  *
  * @category Destructors
  */
-export const toSyntheticByPasserAction = (self: Type): PPByPasser.Action.Type =>
+export const toSyntheticByPasser = (self: Type): PPByPasser.Action.Type =>
 	function (this, constructors) {
 		const initializedByPassers = Array.map(self, (byPasser) => byPasser.call(this, constructors));
 

@@ -2,19 +2,22 @@
 import { ASStyle, ASText } from '@parischap/ansi-styles';
 import { MUtils } from '@parischap/effect-lib';
 import {
+	PPMarkShowerConstructor,
 	PPNonPrimitiveFormatter,
 	PPOption,
 	PPStringifiedValue,
-	PPValue
+	PPValue,
+	PPValueBasedFormatterConstructor
 } from '@parischap/pretty-print';
 import { Array, Equal, Function, pipe } from 'effect';
 import { describe, expect, it } from 'vitest';
 
 describe('NonPrimitiveFormatter', () => {
+	const singleLine = PPNonPrimitiveFormatter.singleLine;
 	const utilInspectLike = PPOption.darkModeUtilInspectLike;
 	const valueBasedFormatterConstructor =
 		PPValueBasedFormatterConstructor.fromOption(utilInspectLike);
-	const markShowerConstructor = PPOption.MarkShowerConstructor.fromOption(utilInspectLike);
+	const markShowerConstructor = PPMarkShowerConstructor.fromOption(utilInspectLike);
 	const nonPrimitiveOption = PPOption.NonPrimitive.maps('Foo');
 	const constructors = {
 		valueBasedFormatterConstructor,
@@ -70,29 +73,25 @@ describe('NonPrimitiveFormatter', () => {
 				action: () => () => () => PPStringifiedValue.empty
 			});
 			it('Matching', () => {
-				expect(Equal.equals(PPNonPrimitiveFormatter.singleLine, dummy)).toBe(true);
+				expect(Equal.equals(singleLine, dummy)).toBe(true);
 			});
 
 			it('Non-matching', () => {
-				expect(
-					Equal.equals(PPNonPrimitiveFormatter.singleLine, PPNonPrimitiveFormatter.tabify)
-				).toBe(false);
+				expect(Equal.equals(singleLine, PPNonPrimitiveFormatter.tabify)).toBe(false);
 			});
 		});
 
 		it('.toString()', () => {
-			expect(PPNonPrimitiveFormatter.singleLine.toString()).toBe(`SingleLine`);
+			expect(singleLine.toString()).toBe(`SingleLine`);
 		});
 
 		it('.pipe()', () => {
-			expect(PPNonPrimitiveFormatter.singleLine.pipe(PPNonPrimitiveFormatter.id)).toBe(
-				'SingleLine'
-			);
+			expect(singleLine.pipe(PPNonPrimitiveFormatter.id)).toBe('SingleLine');
 		});
 
 		describe('has', () => {
 			it('Matching', () => {
-				expect(PPNonPrimitiveFormatter.has(PPNonPrimitiveFormatter.singleLine)).toBe(true);
+				expect(PPNonPrimitiveFormatter.has(singleLine)).toBe(true);
 			});
 			it('Non matching', () => {
 				expect(PPNonPrimitiveFormatter.has(new Date())).toBe(false);
@@ -104,7 +103,7 @@ describe('NonPrimitiveFormatter', () => {
 		expect(
 			pipe(
 				valueAndHeader,
-				PPNonPrimitiveFormatter.singleLine.call(nonPrimitiveOption, constructors),
+				singleLine.call(nonPrimitiveOption, constructors),
 				Function.apply(children),
 				PPStringifiedValue.toAnsiString()
 			)

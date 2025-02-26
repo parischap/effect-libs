@@ -101,7 +101,7 @@ export const marks: MTypes.OneArgFunction<Type, Marks.Type> = Struct.get('marks'
  * @category Instances
  */
 
-export const defaults: Type = make({
+export const utilInspectLike: Type = make({
 	id: 'Defaults',
 	marks: HashMap.make(
 		['FunctionNameStartDelimiter', { text: 'Function: ', partName: 'Message' }],
@@ -128,7 +128,7 @@ export const defaults: Type = make({
 export const defaultsHideNullables: Type = make({
 	id: 'DefaultsHideNullables',
 	marks: pipe(
-		defaults.marks,
+		utilInspectLike.marks,
 		HashMap.set('NullValue', { text: '', partName: 'NullValue' }),
 		HashMap.set('UndefinedValue', { text: '', partName: 'UndefinedValue' })
 	)

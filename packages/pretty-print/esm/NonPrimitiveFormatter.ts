@@ -23,6 +23,7 @@ import {
 	Predicate,
 	Struct
 } from 'effect';
+import * as PPMarkShowerConstructor from './MarkShowerConstructor.js';
 import * as PPOption from './Option.js';
 import * as PPStringifiedProperties from './StringifiedProperties.js';
 import * as PPStringifiedValue from './StringifiedValue.js';
@@ -40,13 +41,34 @@ type _TypeId = typeof _TypeId;
  */
 export namespace Action {
 	/**
+	 * Namespace of an initialized NonPrimitiveFormatter used as an action
+	 *
+	 * @category Models
+	 */
+	export namespace Initialized {
+		/**
+		 * Type of the action of a NonPrimitiveFormatter. The action takes as input the Value being
+		 * currently printed (see Value.ts), a header to be displayed in front of the stringified
+		 * properties (usually the id of the non primitive value and the number of displayed properties)
+		 * and an array of the stringified properties (see StringifiedProperties.ts) of that value.
+		 * Based on these parameters, it must return a stringified representation of the whole record.
+		 */
+		export interface Type {
+			({
+				value,
+				header
+			}: {
+				readonly value: PPValue.NonPrimitive;
+				readonly header: ASText.Type;
+			}): (children: PPStringifiedProperties.Type) => PPStringifiedValue.Type;
+		}
+	}
+
+	/**
 	 * Type of the action of a NonPrimitiveFormatter. The action takes as input a
 	 * ValueBasedFormatterConstructor (see ValueBasedFormatterConstructor.ts), a MarkShowerConstructor
-	 * (see MarkShowerConstructor.ts), the Value being currently printed (see Value.ts), a header to
-	 * be displayed in front of the stringified properties (usually the id of the non primitive value
-	 * and the number of displayed properties) and an array of the stringified properties (see
-	 * StringifiedProperties.ts) of that value. Based on these parameters, it must return a
-	 * stringified representation of the whole record.
+	 * (see MarkShowerConstructor.ts). Based on these parameters, it must return an Initialized
+	 * Action.
 	 */
 	export interface Type {
 		(
@@ -56,15 +78,9 @@ export namespace Action {
 				markShowerConstructor
 			}: {
 				readonly valueBasedFormatterConstructor: PPValueBasedFormatterConstructor.Type;
-				readonly markShowerConstructor: PPOption.MarkShowerConstructor.Type;
+				readonly markShowerConstructor: PPMarkShowerConstructor.Type;
 			}
-		): ({
-			value,
-			header
-		}: {
-			readonly value: PPValue.NonPrimitive;
-			readonly header: ASText.Type;
-		}) => (children: PPStringifiedProperties.Type) => PPStringifiedValue.Type;
+		): Initialized.Type;
 	}
 }
 

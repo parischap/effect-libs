@@ -31,6 +31,7 @@ import {
 	String,
 	Struct
 } from 'effect';
+import * as PPMarkShowerConstructor from './MarkShowerConstructor.js';
 import type * as PPOption from './Option.js';
 import * as PPStringifiedValue from './StringifiedValue.js';
 import * as PPValue from './Value.js';
@@ -63,7 +64,7 @@ export namespace Action {
 				markShowerConstructor
 			}: {
 				readonly valueBasedFormatterConstructor: PPValueBasedFormatterConstructor.Type;
-				readonly markShowerConstructor: PPOption.MarkShowerConstructor.Type;
+				readonly markShowerConstructor: PPMarkShowerConstructor.Type;
 			}
 		): MTypes.OneArgFunction<PPValue.All, Option.Option<PPStringifiedValue.Type>>;
 	}

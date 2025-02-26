@@ -30,6 +30,7 @@ import {
 	Record,
 	SortedMap,
 	SortedSet,
+	Struct,
 	Tuple
 } from 'effect';
 
@@ -38,6 +39,8 @@ import { Equal, Equivalence, Hash, Pipeable, Predicate } from 'effect';
 import * as PPByPasser from './ByPasser.js';
 import * as PPByPassers from './ByPassers.js';
 import * as PPMarkMap from './MarkMap.js';
+import * as PPMarkShower from './MarkShower.js';
+import * as PPMarkShowerConstructor from './MarkShowerConstructor.js';
 import * as PPNonPrimitiveFormatter from './NonPrimitiveFormatter.js';
 import * as PPPrimitiveFormatter from './PrimitiveFormatter.js';
 import * as PPPropertyFilter from './PropertyFilter.js';
@@ -65,70 +68,6 @@ export namespace Stringifier {
 	 * @category Models
 	 */
 	export interface Type extends MTypes.OneArgFunction<unknown, PPStringifiedValue.Type> {}
-}
-
-/**
- * Namespace of a MarkShower. A MarkShower always displays the same text but in a style that depends
- * on a context object.
- *
- * @category Models
- */
-export namespace MarkShower {
-	/**
-	 * Type of a MarkShower
-	 *
-	 * @category Models
-	 */
-	export interface Type extends MTypes.OneArgFunction<PPValue.All, ASText.Type> {}
-
-	/**
-	 * MarkShower instance that always prints an empty Text
-	 *
-	 * @category Instances
-	 */
-	export const empty: Type = (_context) => ASText.empty;
-}
-
-/**
- * Namespace of a MarkShowerConstructor
- *
- * @category Models
- */
-export namespace MarkShowerConstructor {
-	/**
-	 * Type of a MarkShowerConstructor
-	 *
-	 * @category Models
-	 */
-	export interface Type extends MTypes.OneArgFunction<string, MarkShower.Type> {}
-
-	/**
-	 * Creates a MarkShowerConstructor that will return a MarkShower that displays the text associated
-	 * to `markName` in option.markMap in the style associated to partName in option.styleMap
-	 *
-	 * @category Constructors
-	 */
-	export const fromOption = (option: _Type): Type => {
-		const markShowerMap = HashMap.map(option.markMap.marks, ({ text, partName }) =>
-			pipe(option.styleMap, PPStyleMap.get(partName), (contextFormatter) =>
-				contextFormatter.withContextLast(text)
-			)
-		);
-
-		return (markName) =>
-			pipe(
-				markShowerMap,
-				HashMap.get(markName),
-				Option.getOrElse(Function.constant(MarkShower.empty))
-			);
-	};
-
-	/**
-	 * Creates a MarkShowerConstructor that always returns the empty MarkShower
-	 *
-	 * @category Constructors
-	 */
-	export const emptyConstructor: Type = () => MarkShower.empty;
 }
 
 /**
@@ -369,7 +308,7 @@ export namespace NonPrimitive {
 	};
 
 	/**
-	 * Constructor without a id
+	 * Constructor without an id
 	 *
 	 * @category Constructors
 	 */
@@ -377,11 +316,18 @@ export namespace NonPrimitive {
 		MTypes.objectFromDataAndProto(proto, params);
 
 	/**
+	 * Returns the `id` property of `self`
+	 *
+	 * @category Destructors
+	 */
+	export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
+
+	/**
 	 * Defaults NonPrimitive Option instance
 	 *
 	 * @category Instances
 	 */
-	export const defaults: Type = make({
+	export const record: Type = make({
 		id: 'Object',
 		showId: false,
 		propertyNumberDisplayOption: PropertyNumberDisplayOption.Type.None,
@@ -400,7 +346,7 @@ export namespace NonPrimitive {
 		propertyNumberEndDelimiterMark: ')',
 		propertySource: PropertySource.Type.FromProperties,
 		maxPrototypeDepth: 2,
-		propertyFilters: PPPropertyFilters.defaults,
+		propertyFilters: PPPropertyFilters.utilInspectLike,
 		propertySortOrder: Option.none(),
 		dedupeProperties: false,
 		maxPropertyNumber: 100,
@@ -414,7 +360,7 @@ export namespace NonPrimitive {
 	 * @category Instances
 	 */
 	export const array: Type = make({
-		...defaults,
+		...record,
 		id: 'Array',
 		singleLineStartDelimiterMark: '[',
 		singleLineEndDelimiterMark: ']',
@@ -432,7 +378,7 @@ export namespace NonPrimitive {
 	 */
 	export const maps = (id: string): Type =>
 		make({
-			...defaults,
+			...record,
 			id,
 			showId: true,
 			propertyNumberDisplayOption: PropertyNumberDisplayOption.Type.All,
@@ -450,7 +396,7 @@ export namespace NonPrimitive {
 	 */
 	export const setsAndArrays = (id: string): Type =>
 		make({
-			...defaults,
+			...record,
 			id,
 			showId: true,
 			propertyNumberDisplayOption: PropertyNumberDisplayOption.Type.All,
@@ -468,49 +414,48 @@ export namespace NonPrimitive {
 		 */
 		export interface Type extends MTypes.Data<NonPrimitive.Type> {
 			readonly syntheticPropertyFilter: PPPropertyFilter.Action.Type;
-			readonly initializedPropertyFormatter: ReturnType<PPValueFormatter.Action.Type>;
-			readonly initializedNonPrimitiveFormatter: ReturnType<PPNonPrimitiveFormatter.Action.Type>;
-			readonly initializedNonPrimitiveIdHeaderConstructor: ({
+			readonly initializedPropertyFormatter: PPValueFormatter.Action.Initialized.Type;
+			readonly initializedNonPrimitiveFormatter: PPNonPrimitiveFormatter.Action.Initialized.Type;
+			readonly toHeaderMarkShower: ({
 				allPropertyNumber,
 				actualPropertyNumber
 			}: {
 				readonly allPropertyNumber: number;
 				readonly actualPropertyNumber: number;
-			}) => MarkShower.Type;
+			}) => PPMarkShower.Type;
 		}
 
 		/**
-		 * Constructor
+		 * Builds an Initialized from a NonPrimitive
 		 *
 		 * @category Constructors
 		 */
-		export const fromOption = (params: {
+		export const fromNonPrimitive = (params: {
 			readonly valueBasedFormatterConstructor: PPValueBasedFormatterConstructor.Type;
-			readonly markShowerConstructor: MarkShowerConstructor.Type;
+			readonly markShowerConstructor: PPMarkShowerConstructor.Type;
 		}): MTypes.OneArgFunction<NonPrimitive.Type, Type> => {
+			const valueBasedFormatterConstructor = params.valueBasedFormatterConstructor;
 			const nonPrimitiveValueIdTextFormatter =
-				params.valueBasedFormatterConstructor('nonPrimitiveValueId');
-			const nonPrimitiveValueIdSeparatorTextFormatter = params.valueBasedFormatterConstructor(
-				'nonPrimitiveValueIdSeparator'
+				valueBasedFormatterConstructor('NonPrimitiveValueId');
+			const nonPrimitiveValueIdSeparatorTextFormatter = valueBasedFormatterConstructor(
+				'NonPrimitiveValueIdSeparator'
 			);
-			const propertyNumberDelimitersTextFormatter = params.valueBasedFormatterConstructor(
-				'propertyNumberDelimiters'
+			const propertyNumberDelimitersTextFormatter = valueBasedFormatterConstructor(
+				'PropertyNumberDelimiters'
 			);
 			const propertyNumberSeparatorTextFormatter =
-				params.valueBasedFormatterConstructor('propertyNumberSeparator');
-			const PropertyNumbersTextFormatter = params.valueBasedFormatterConstructor('PropertyNumbers');
+				valueBasedFormatterConstructor('PropertyNumberSeparator');
+			const PropertyNumbersTextFormatter = valueBasedFormatterConstructor('PropertyNumbers');
 
 			return flow(
 				MStruct.enrichWith({
 					syntheticPropertyFilter: (nonPrimitiveOption): PPPropertyFilter.Action.Type =>
-						PPPropertyFilters.toSyntheticPropertyFilterAction(nonPrimitiveOption.propertyFilters),
+						PPPropertyFilters.toSyntheticPropertyFilter(nonPrimitiveOption.propertyFilters),
 					initializedPropertyFormatter: (nonPrimitiveOption) =>
 						nonPrimitiveOption.propertyFormatter(params),
 					initializedNonPrimitiveFormatter: (nonPrimitiveOption) =>
 						nonPrimitiveOption.nonPrimitiveFormatter(params),
-					initializedNonPrimitiveIdHeaderConstructor: (
-						nonPrimitiveOption
-					): Type['initializedNonPrimitiveIdHeaderConstructor'] => {
+					toHeaderMarkShower: (nonPrimitiveOption): Type['toHeaderMarkShower'] => {
 						const emptyText = Function.constant(ASText.empty);
 
 						const propertyNumberDisplayOption = nonPrimitiveOption.propertyNumberDisplayOption;
@@ -591,7 +536,6 @@ export namespace NonPrimitive {
 	}
 }
 
-interface _Type extends Type {}
 /**
  * Interface that represents the options for pretty printing
  *
@@ -684,6 +628,13 @@ export const make = (params: MTypes.Data<Type>): Type =>
 	MTypes.objectFromDataAndProto(proto, params);
 
 /**
+ * Returns the `id` property of `self`
+ *
+ * @category Destructors
+ */
+export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
+
+/**
  * Function that returns an `Option` instance that pretty-prints a value in a way very similar to
  * util.inspect.
  *
@@ -692,11 +643,11 @@ export const make = (params: MTypes.Data<Type>): Type =>
 export const utilInspectLike: Type = make({
 	id: 'UtilInspectLike',
 	styleMap: PPStyleMap.none,
-	markMap: PPMarkMap.defaults,
+	markMap: PPMarkMap.utilInspectLike,
 	byPassers: Array.make(PPByPasser.functionToName, PPByPasser.objectToString),
 	primitiveFormatter: PPPrimitiveFormatter.utilInspectLikeMaker(),
 	maxDepth: 2,
-	generalNonPrimitiveOption: NonPrimitive.defaults,
+	generalNonPrimitiveOption: NonPrimitive.record,
 	specificNonPrimitiveOption: (value) => {
 		const content = value.content;
 		if (MTypes.isArray(content)) return Option.some(NonPrimitive.array);
@@ -771,10 +722,8 @@ export const darkModeUtilInspectLike: Type = make({
  */
 
 export const toStringifier = (self: Type): Stringifier.Type => {
-	const valueBasedFormatterConstructor = PPValueBasedFormatterConstructor.fromStyleMap(
-		self.styleMap
-	);
-	const markShowerConstructor = MarkShowerConstructor.fromOption(self);
+	const valueBasedFormatterConstructor = PPValueBasedFormatterConstructor.fromOption(self);
+	const markShowerConstructor = PPMarkShowerConstructor.fromOption(self);
 
 	const constructors = { markShowerConstructor, valueBasedFormatterConstructor };
 
@@ -791,12 +740,12 @@ export const toStringifier = (self: Type): Stringifier.Type => {
 	const messageStartDelimiterMarkShower = markShowerConstructor('messageStartDelimiter');
 	const messageEndDelimiterMarkShower = markShowerConstructor('messageEndDelimiter');
 
-	const initializedByPasser = PPByPassers.toSyntheticByPasserAction(self.byPassers).call(
+	const initializedByPasser = PPByPassers.toSyntheticByPasser(self.byPassers).call(
 		self,
 		constructors
 	);
 
-	const toInitializedNonPrimitiveOption = NonPrimitive.Initialized.fromOption(constructors);
+	const toInitializedNonPrimitiveOption = NonPrimitive.Initialized.fromNonPrimitive(constructors);
 
 	const initializedNonPrimitiveOptionCache = MCache.make({
 		lookUp: ({ key }: { readonly key: NonPrimitive.Type }) =>
@@ -977,7 +926,7 @@ export const toStringifier = (self: Type): Stringifier.Type => {
 							ASText.append(
 								pipe(
 									nonPrimitive,
-									initializedNonPrimitiveOption.initializedNonPrimitiveIdHeaderConstructor({
+									initializedNonPrimitiveOption.toHeaderMarkShower({
 										allPropertyNumber,
 										actualPropertyNumber: children.length
 									})

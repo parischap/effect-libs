@@ -173,8 +173,8 @@ export const darkMode: Type = make({
 		['NonPrimitiveValueId', ASContextFormatter.green],
 		['NonPrimitiveValueIdSeparator', ASContextFormatter.green],
 		['PropertyNumbers', ASContextFormatter.green],
-		['propertyNumberSeparator', ASContextFormatter.green],
-		['propertyNumberDelimiters', ASContextFormatter.green]
+		['PropertyNumberSeparator', ASContextFormatter.green],
+		['PropertyNumberDelimiters', ASContextFormatter.green]
 	)
 });
 
