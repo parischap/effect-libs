@@ -1,6 +1,6 @@
 /** A simple type module */
 
-import { Function, Predicate } from 'effect';
+import { Array, Function, Option, pipe, Predicate } from 'effect';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- Unknown or never don't work as well as any when it comes to inference because any is both at the top and bottom of the tree type */
 
@@ -111,6 +111,30 @@ export type OverTwo<A> = [A, A, ...Array<A>];
  * @category Models
  */
 export type ReadonlyOverTwo<A> = readonly [A, A, ...ReadonlyArray<A>];
+
+const _allTypedArrayConstructors = [
+	Int8Array,
+	Uint8Array,
+	Uint8ClampedArray,
+	Int16Array,
+	Uint16Array,
+	Int32Array,
+	Uint32Array,
+	Float32Array,
+	Float64Array,
+	BigInt64Array,
+	BigUint64Array
+] as const;
+type _allTypedArrayConstructorsType = typeof _allTypedArrayConstructors;
+type toTypedArrayInstances<A extends _allTypedArrayConstructorsType> = {
+	readonly [key in keyof A]: InstanceType<A[key]>;
+};
+/**
+ * Type that represents all typed arrays
+ *
+ * @category Models
+ */
+export type TypedArray = toTypedArrayInstances<_allTypedArrayConstructorsType>[number];
 
 /**
  * Type that represents a function
@@ -543,6 +567,32 @@ export const isErrorish = (u: unknown): u is Errorish =>
 	'message' in u &&
 	typeof u.message === 'string' &&
 	(!('stack' in u) || typeof u.stack === 'string');
+
+/**
+ * If `u` is a TypedArray, returns a `some` of its name (e.g. UInt8Array). Otherwise, returns a
+ * `none`
+ *
+ * @category Information
+ */
+export const typedArrayName = (u: unknown): Option.Option<string> =>
+	pipe(
+		_allTypedArrayConstructors,
+		Array.findFirst((constructor) => u instanceof constructor),
+		Option.map(
+			(constructor) =>
+				(constructor as unknown as { readonly [Symbol.species]: { readonly name: string } })[
+					Symbol.species
+				].name
+		)
+	);
+
+/**
+ * From `unknown` to `TypedArray`
+ *
+ * @category Guards
+ */
+export const isTypedArray = <A>(input: A): input is Extract<A, TypedArray> =>
+	pipe(input, typedArrayName, Option.isSome);
 
 /**
  * Namespace for the possible categories of a Javascript value

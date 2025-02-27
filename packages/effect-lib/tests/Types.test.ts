@@ -1,6 +1,6 @@
 /* eslint-disable functional/no-expression-statements */
 import { MTypes } from '@parischap/effect-lib';
-import { Number, Predicate, Record } from 'effect';
+import { Number, Option, pipe, Predicate, Record, String } from 'effect';
 import { describe, expect, it } from 'vitest';
 
 const unknown = null as unknown;
@@ -492,6 +492,33 @@ describe('MTypes', () => {
 			expect(MTypes.isErrorish({ message: false })).toBe(false);
 			expect(MTypes.isErrorish({ message: 'foo', stack: 5 })).toBe(false);
 			expect(MTypes.isErrorish(testRecord)).toBe(false);
+		});
+	});
+
+	describe('typedArrayName', () => {
+		const stringOptionEq = Option.getEquivalence(String.Equivalence);
+		it('Matching', () => {
+			expect(
+				stringOptionEq(MTypes.typedArrayName(new Uint8Array(5)), Option.some('Uint8Array'))
+			).toBe(true);
+		});
+
+		it('Non matching', () => {
+			expect(pipe(5, MTypes.typedArrayName, Option.isNone)).toBe(true);
+		});
+	});
+
+	describe('isTypedArray', () => {
+		const numberOrUint16Array = new Uint16Array(5) as number | Uint16Array<ArrayBuffer>;
+		if (MTypes.isTypedArray(numberOrUint16Array))
+			MTypes.checkNever<MTypes.Equals<typeof numberOrUint16Array, Uint16Array<ArrayBuffer>>>();
+
+		it('Matching', () => {
+			expect(MTypes.isTypedArray(new Uint16Array(5))).toBe(true);
+		});
+
+		it('Non matching', () => {
+			expect(MTypes.isTypedArray(5)).toBe(false);
 		});
 	});
 
