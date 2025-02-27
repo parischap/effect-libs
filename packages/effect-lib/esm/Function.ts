@@ -129,3 +129,10 @@ export const clone = <This, Args extends ReadonlyArray<unknown>, R>(
 	function (this, ...args) {
 		return self.call(this, ...args);
 	};
+
+/**
+ * The Function.prototype
+ *
+ * @category Statics
+ */
+export const proto = Object.getPrototypeOf(Math.max) as MTypes.NonPrimitive;
