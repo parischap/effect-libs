@@ -114,5 +114,17 @@ describe('ByPasser', () => {
 				)
 			).toBe(true);
 		});
+
+		it('Applied to a date', () => {
+			expect(
+				pipe(new Date(0), PPValue.fromTopValue, initializedObjectToString, Option.isSome)
+			).toBe(true);
+		});
+
+		it('Applied to an array', () => {
+			expect(pipe([1, 2], PPValue.fromTopValue, initializedObjectToString, Option.isNone)).toBe(
+				true
+			);
+		});
 	});
 });

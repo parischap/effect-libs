@@ -16,6 +16,7 @@ import {
 	Equal,
 	Equivalence,
 	flow,
+	Function,
 	Hash,
 	Number,
 	pipe,
@@ -172,22 +173,31 @@ export const singleLine: Type = make({
 			);
 			const inContextNonPrimitiveValueDelimitersTextFormatter =
 				nonPrimitiveValueDelimitersTextFormatter(value);
-			const startDelimiterMarkAndHeader = pipe(
-				this.singleLineStartDelimiterMark,
-				inContextNonPrimitiveValueDelimitersTextFormatter,
-				ASText.prepend(header)
-			);
-			const endDelimiterMark = inContextNonPrimitiveValueDelimitersTextFormatter(
-				this.singleLineEndDelimiterMark
-			);
 
-			return flow(
-				PPStringifiedProperties.addMarkInBetween(inBetweenPropertySeparator),
-				PPStringifiedValue.fromStringifiedProperties,
-				PPStringifiedValue.addLineBefore(startDelimiterMarkAndHeader),
-				PPStringifiedValue.addLineAfter(endDelimiterMark),
-				PPStringifiedValue.toSingleLine
-			);
+			return Array.match({
+				onEmpty: pipe(
+					this.multiLineStartDelimiterMark + this.multiLineEndDelimiterMark,
+					inContextNonPrimitiveValueDelimitersTextFormatter,
+					ASText.prepend(header),
+					PPStringifiedValue.fromText,
+					Function.constant
+				),
+				onNonEmpty: flow(
+					PPStringifiedProperties.addMarkInBetween(inBetweenPropertySeparator),
+					PPStringifiedProperties.prependProperty(
+						pipe(
+							this.singleLineStartDelimiterMark,
+							inContextNonPrimitiveValueDelimitersTextFormatter,
+							ASText.prepend(header)
+						)
+					),
+					PPStringifiedProperties.appendProperty(
+						inContextNonPrimitiveValueDelimitersTextFormatter(this.singleLineEndDelimiterMark)
+					),
+					PPStringifiedValue.fromStringifiedProperties,
+					PPStringifiedValue.toSingleLine
+				)
+			});
 		};
 	}
 });
@@ -228,9 +238,9 @@ export const tabify: Type = make({
 			return flow(
 				PPStringifiedProperties.addMarkInBetween(inBetweenPropertySeparator),
 				PPStringifiedProperties.tabify(tab),
-				PPStringifiedValue.fromStringifiedProperties,
-				PPStringifiedValue.addLineBefore(startDelimiterMarkAndHeader),
-				PPStringifiedValue.addLineAfter(endDelimiterMark)
+				PPStringifiedProperties.prependProperty(startDelimiterMarkAndHeader),
+				PPStringifiedProperties.appendProperty(endDelimiterMark),
+				PPStringifiedValue.fromStringifiedProperties
 			);
 		};
 	}
@@ -309,6 +319,8 @@ export const splitOnTotalLengthMaker = (limit: number): Type =>
 			const inBetweenSepLength = this.singleLineInBetweenPropertySeparatorMark.length;
 			const delimitersLength =
 				this.singleLineStartDelimiterMark.length + this.singleLineEndDelimiterMark.length;
+			const delimitersLengthWhenEmpty =
+				this.multiLineStartDelimiterMark.length + this.multiLineEndDelimiterMark.length;
 			return ({ value, header }) =>
 				flow(
 					MMatch.make,
@@ -316,14 +328,16 @@ export const splitOnTotalLengthMaker = (limit: number): Type =>
 						flow(
 							MTuple.makeBothBy({
 								toFirst: PPStringifiedProperties.length,
-								toSecond: flow(
-									Array.length,
-									Number.decrement,
-									Number.max(0),
-									Number.multiply(inBetweenSepLength),
-									Number.sum(delimitersLength),
-									Number.sum(ASText.length(header))
-								)
+								toSecond: Array.match({
+									onEmpty: Function.constant(ASText.length(header) + delimitersLengthWhenEmpty),
+									onNonEmpty: flow(
+										Array.length,
+										Number.decrement,
+										Number.multiply(inBetweenSepLength),
+										Number.sum(delimitersLength),
+										Number.sum(ASText.length(header))
+									)
+								})
 							}),
 							Number.sumAll,
 							Number.lessThanOrEqualTo(limit)

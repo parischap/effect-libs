@@ -11,7 +11,7 @@ import { Array, Equivalence, flow, Function, Number, pipe, Predicate } from 'eff
 import type * as PPStringifiedProperties from './StringifiedProperties.js';
 
 /**
- * Type that represents a Stringified
+ * Type that represents a StringifiedValue
  *
  * @category Models
  */

@@ -13,14 +13,14 @@ describe('Values', () => {
 			}
 		};
 
-		const topValue1 = Object.assign(Object.create(topValueProto), {
+		const topValue = Object.assign(Object.create(topValueProto), {
 			a: [1, 3],
 			b: true
 		}) as unknown;
 
 		expect(
 			pipe(
-				PPValue.fromTopValue(topValue1) as PPValue.NonPrimitive,
+				PPValue.fromTopValue(topValue) as PPValue.NonPrimitive,
 				PPValues.fromProperties(1),
 				Array.map((p) => p.toString()),
 				Array.join('\n')

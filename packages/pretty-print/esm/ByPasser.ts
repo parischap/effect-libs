@@ -196,9 +196,11 @@ export const functionToName: Type = make({
 /**
  * ByPasser instance that has the following behavior:
  *
- * - For any non-primitive value : tries to call the toString method (only if it is different from
- *   Object.prototype.toString). Returns a `some` of the result if successful. Returns a `none`
- *   otherwise.
+ * - For any non-primitive value which is not an iterable or a function : tries to call the toString
+ *   method (only if it is different from Object.prototype.toString). Returns a `some` of the result
+ *   if successful. Returns a `none` otherwise. Calling the .toString method on an Iterable will not
+ *   be as efficient as using the `FromValueIterable` or `FromKeyValueIterable` property sources.
+ *   Calling the .toString method on a function will not work properly.
  * - For any other value: returns a `none`
  *
  * @category Instances
@@ -211,11 +213,11 @@ export const objectToString: Type = make({
 		return (value) => {
 			const inContextToStringedObjectTextFormatter = toStringedObjectTextFormatter(value);
 			return pipe(
-				value,
-				Option.liftPredicate(PPValue.isNonPrimitive),
+				value.content,
+				Option.liftPredicate(MTypes.isNonPrimitive),
+				Option.filter(Predicate.not(Predicate.or(MTypes.isIterable, MTypes.isFunction))),
 				Option.flatMap(
 					flow(
-						PPValue.content,
 						MRecord.tryZeroParamStringFunction({
 							functionName: 'toString',
 							/* eslint-disable-next-line @typescript-eslint/unbound-method */

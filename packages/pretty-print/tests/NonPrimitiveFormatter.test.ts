@@ -99,37 +99,75 @@ describe('NonPrimitiveFormatter', () => {
 		});
 	});
 
-	it('singleLine', () => {
-		expect(
-			pipe(
-				valueAndHeader,
-				singleLine.call(nonPrimitiveOption, constructors),
-				Function.apply(children),
-				PPStringifiedValue.toAnsiString()
-			)
-		).toBe(singleLineResult);
+	describe('singleLine', () => {
+		it('With strictly more than 0 children', () => {
+			expect(
+				pipe(
+					valueAndHeader,
+					singleLine.call(nonPrimitiveOption, constructors),
+					Function.apply(children),
+					PPStringifiedValue.toAnsiString()
+				)
+			).toBe(singleLineResult);
+		});
+
+		it('With 0 children', () => {
+			expect(
+				pipe(
+					valueAndHeader,
+					singleLine.call(nonPrimitiveOption, constructors),
+					Function.apply(Array.empty()),
+					PPStringifiedValue.toUnstyledStrings
+				)
+			).toStrictEqual(['Foo(2) {}']);
+		});
 	});
 
-	it('tabify', () => {
-		expect(
-			pipe(
-				valueAndHeader,
-				PPNonPrimitiveFormatter.tabify.call(nonPrimitiveOption, constructors),
-				Function.apply(children),
-				PPStringifiedValue.toAnsiString()
-			)
-		).toBe(tabifyResult);
+	describe('tabify', () => {
+		it('With strictly more than 0 children', () => {
+			expect(
+				pipe(
+					valueAndHeader,
+					PPNonPrimitiveFormatter.tabify.call(nonPrimitiveOption, constructors),
+					Function.apply(children),
+					PPStringifiedValue.toAnsiString()
+				)
+			).toBe(tabifyResult);
+		});
+
+		it('With 0 children', () => {
+			expect(
+				pipe(
+					valueAndHeader,
+					PPNonPrimitiveFormatter.tabify.call(nonPrimitiveOption, constructors),
+					Function.apply(Array.empty()),
+					PPStringifiedValue.toUnstyledStrings
+				)
+			).toStrictEqual(['Foo(2) {', '}']);
+		});
 	});
 
-	it('treeify', () => {
-		expect(
-			pipe(
-				valueAndHeader,
-				PPNonPrimitiveFormatter.treeify.call(nonPrimitiveOption, constructors),
-				Function.apply(children),
-				PPStringifiedValue.toAnsiString()
-			)
-		).toBe(treeifyResult);
+	describe('treeify', () => {
+		it('With strictly more than 0 children', () => {
+			expect(
+				pipe(
+					valueAndHeader,
+					PPNonPrimitiveFormatter.treeify.call(nonPrimitiveOption, constructors),
+					Function.apply(children),
+					PPStringifiedValue.toAnsiString()
+				)
+			).toBe(treeifyResult);
+		});
+		it('With 0 children', () => {
+			expect(
+				pipe(
+					valueAndHeader,
+					PPNonPrimitiveFormatter.treeify.call(nonPrimitiveOption, constructors),
+					Function.apply(Array.empty()),
+					PPStringifiedValue.isEmpty
+				)
+			).toBe(true);
+		});
 	});
 
 	describe('splitOnConstituentNumberMaker', () => {
@@ -163,32 +201,64 @@ describe('NonPrimitiveFormatter', () => {
 	});
 
 	describe('splitOnTotalLengthMaker', () => {
-		it('Under limit', () => {
-			expect(
-				pipe(
-					valueAndHeader,
-					PPNonPrimitiveFormatter.splitOnTotalLengthMaker(24).call(
-						nonPrimitiveOption,
-						constructors
-					),
-					Function.apply(children),
-					PPStringifiedValue.toAnsiString()
-				)
-			).toBe(singleLineResult);
+		describe('With strictly more than 0 children', () => {
+			it('Under limit', () => {
+				expect(
+					pipe(
+						valueAndHeader,
+						PPNonPrimitiveFormatter.splitOnTotalLengthMaker(24).call(
+							nonPrimitiveOption,
+							constructors
+						),
+						Function.apply(children),
+						PPStringifiedValue.toAnsiString()
+					)
+				).toBe(singleLineResult);
+			});
+
+			it('Above limit', () => {
+				expect(
+					pipe(
+						valueAndHeader,
+						PPNonPrimitiveFormatter.splitOnTotalLengthMaker(23).call(
+							nonPrimitiveOption,
+							constructors
+						),
+						Function.apply(children),
+						PPStringifiedValue.toAnsiString()
+					)
+				).toBe(tabifyResult);
+			});
 		});
 
-		it('Above limit', () => {
-			expect(
-				pipe(
-					valueAndHeader,
-					PPNonPrimitiveFormatter.splitOnTotalLengthMaker(23).call(
-						nonPrimitiveOption,
-						constructors
-					),
-					Function.apply(children),
-					PPStringifiedValue.toAnsiString()
-				)
-			).toBe(tabifyResult);
+		describe('With 0 children', () => {
+			it('Under limit', () => {
+				expect(
+					pipe(
+						valueAndHeader,
+						PPNonPrimitiveFormatter.splitOnTotalLengthMaker(9).call(
+							nonPrimitiveOption,
+							constructors
+						),
+						Function.apply(Array.empty()),
+						PPStringifiedValue.toUnstyledStrings
+					)
+				).toStrictEqual(['Foo(2) {}']);
+			});
+
+			it('Above limit', () => {
+				expect(
+					pipe(
+						valueAndHeader,
+						PPNonPrimitiveFormatter.splitOnTotalLengthMaker(8).call(
+							nonPrimitiveOption,
+							constructors
+						),
+						Function.apply(Array.empty()),
+						PPStringifiedValue.toUnstyledStrings
+					)
+				).toStrictEqual(['Foo(2) {', '}']);
+			});
 		});
 	});
 

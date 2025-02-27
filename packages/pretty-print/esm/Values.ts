@@ -36,20 +36,25 @@ export const fromProperties =
 			{ protoDepth: 0, nonPrimitiveContent },
 			MArray.unfoldNonEmpty(
 				MTuple.makeBothBy({
-					toFirst: ({ protoDepth, nonPrimitiveContent }) =>
-						pipe(
-							nonPrimitiveContent,
-							// Record.map will not return all keys
-							Reflect.ownKeys,
-							Array.map((key) =>
-								PPValue.fromNonPrimitiveValueAndKey({
-									nonPrimitiveContent,
-									key,
-									depth,
-									protoDepth
-								})
-							)
-						),
+					toFirst: ({ protoDepth, nonPrimitiveContent }) => {
+						// Record.map will not return all keys
+						const ownKeys = Reflect.ownKeys(nonPrimitiveContent);
+						const isFunctionProto = nonPrimitiveContent === MFunction.proto;
+
+						return Array.filterMap(ownKeys, (key) =>
+							// The arguments and caller properties of the function prototype are deprecated, reading them causes an error
+							isFunctionProto && (key === 'arguments' || key === 'caller') ?
+								Option.none()
+							:	Option.some(
+									PPValue.fromNonPrimitiveValueAndKey({
+										nonPrimitiveContent,
+										key,
+										depth,
+										protoDepth
+									})
+								)
+						);
+					},
 					toSecond: flow(
 						MStruct.evolve({
 							protoDepth: Number.increment,

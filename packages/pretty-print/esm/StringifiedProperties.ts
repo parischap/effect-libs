@@ -25,6 +25,22 @@ export const addMarkInBetween = (mark: ASText.Type): MTypes.OneArgFunction<Type>
 	flow(MArray.modifyInit(PPStringifiedValue.appendToLastLine(mark)));
 
 /**
+ * Return a copy of `self` with `property` added as a single-line StringifiedValue at the start
+ *
+ * @category Utils
+ */
+export const prependProperty = (property: ASText.Type): MTypes.OneArgFunction<Type> =>
+	Array.prepend(PPStringifiedValue.fromText(property));
+
+/**
+ * Return a copy of `self` with `property` added as a single-line StringifiedValue at the end
+ *
+ * @category Utils
+ */
+export const appendProperty = (property: ASText.Type): MTypes.OneArgFunction<Type> =>
+	Array.append(PPStringifiedValue.fromText(property));
+
+/**
  * Returns a copy of `self` in which each stringified property has been tabified with `tab`
  *
  * @category Utils
