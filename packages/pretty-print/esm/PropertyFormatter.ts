@@ -26,8 +26,13 @@ import * as PPMarkShowerConstructor from './MarkShowerConstructor.js';
 import type * as PPOption from './Option.js';
 import * as PPStringifiedValue from './StringifiedValue.js';
 import * as PPValue from './Value.js';
-import * as PPValueBasedFormatterConstructor from './ValueBasedFormatterConstructor.js';
+import * as PPValueBasedStylerConstructor from './ValueBasedStylerConstructor.js';
 
+/**
+ * Module tag
+ *
+ * @category Models
+ */
 export const moduleTag = '@parischap/pretty-print/PropertyFormatter/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
@@ -65,9 +70,9 @@ export namespace Action {
 	}
 
 	/**
-	 * Type of the action. The action takes as input a ValueBasedFormatterConstructor (see
-	 * ValueBasedFormatterConstructor.ts), a MarkShowerConstructor (see MarkShowerConstructor.ts).
-	 * Based on these two parameters, it must return an Initialized Action.
+	 * Type of the action. The action takes as input a ValueBasedStylerConstructor (see
+	 * ValueBasedStylerConstructor.ts), a MarkShowerConstructor (see MarkShowerConstructor.ts). Based
+	 * on these two parameters, it must return an Initialized Action.
 	 *
 	 * @category Models
 	 */
@@ -75,10 +80,10 @@ export namespace Action {
 		(
 			this: PPOption.NonPrimitive.Type,
 			{
-				valueBasedFormatterConstructor,
+				valueBasedStylerConstructor,
 				markShowerConstructor
 			}: {
-				readonly valueBasedFormatterConstructor: PPValueBasedFormatterConstructor.Type;
+				readonly valueBasedStylerConstructor: PPValueBasedStylerConstructor.Type;
 				readonly markShowerConstructor: PPMarkShowerConstructor.Type;
 			}
 		): Initialized.Type;
@@ -170,10 +175,10 @@ const _keyAndValueAction = ({
 	readonly onSameLine: boolean;
 	readonly dontShowLeafValue: boolean;
 }): Action.Type =>
-	function (this, { valueBasedFormatterConstructor }) {
-		const propertyKeyTextFormatter = valueBasedFormatterConstructor('PropertyKey');
-		const prototypeDelimitersTextFormatter = valueBasedFormatterConstructor('PrototypeDelimiters');
-		const KeyValueSeparatorTextFormatter = valueBasedFormatterConstructor('KeyValueSeparator');
+	function (this, { valueBasedStylerConstructor }) {
+		const propertyKeyTextFormatter = valueBasedStylerConstructor('PropertyKey');
+		const prototypeDelimitersTextFormatter = valueBasedStylerConstructor('PrototypeDelimiters');
+		const KeyValueSeparatorTextFormatter = valueBasedStylerConstructor('KeyValueSeparator');
 
 		return ({ value, isLeaf }) => {
 			const stringKey = value.stringKey;

@@ -35,8 +35,13 @@ import * as PPMarkShowerConstructor from './MarkShowerConstructor.js';
 import type * as PPOption from './Option.js';
 import * as PPStringifiedValue from './StringifiedValue.js';
 import * as PPValue from './Value.js';
-import * as PPValueBasedFormatterConstructor from './ValueBasedFormatterConstructor.js';
+import * as PPValueBasedStylerConstructor from './ValueBasedStylerConstructor.js';
 
+/**
+ * Module tag
+ *
+ * @category Models
+ */
 export const moduleTag = '@parischap/pretty-print/ByPasser/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
@@ -48,8 +53,8 @@ type _TypeId = typeof _TypeId;
  */
 export namespace Action {
 	/**
-	 * Type of the action. The action takes as input a ValueBasedFormatterConstructor (see
-	 * ValueBasedFormatterConstructor.ts), a MarkShowerConstructor (see Option.ts) and the Value being
+	 * Type of the action. The action takes as input a ValueBasedStylerConstructor (see
+	 * ValueBasedStylerConstructor.ts), a MarkShowerConstructor (see Option.ts) and the Value being
 	 * currently printed. If the action returns a value of type `Some<StringifiedValue.Type>`, this
 	 * `StringifiedValue` will be used as is to represent the input value. If it returns a `none`, the
 	 * normal stringification process will be applied.
@@ -60,10 +65,10 @@ export namespace Action {
 		(
 			this: PPOption.Type,
 			{
-				valueBasedFormatterConstructor,
+				valueBasedStylerConstructor,
 				markShowerConstructor
 			}: {
-				readonly valueBasedFormatterConstructor: PPValueBasedFormatterConstructor.Type;
+				readonly valueBasedStylerConstructor: PPValueBasedStylerConstructor.Type;
 				readonly markShowerConstructor: PPMarkShowerConstructor.Type;
 			}
 		): MTypes.OneArgFunction<PPValue.All, Option.Option<PPStringifiedValue.Type>>;
@@ -157,8 +162,8 @@ export const empty: Type = make({
  */
 export const functionToName: Type = make({
 	id: 'FunctionToName',
-	action: ({ valueBasedFormatterConstructor, markShowerConstructor }) => {
-		const messageTextFormatter = valueBasedFormatterConstructor('Message');
+	action: ({ valueBasedStylerConstructor, markShowerConstructor }) => {
+		const messageTextFormatter = valueBasedStylerConstructor('Message');
 
 		const functionNameStartDelimiterMarkShower = markShowerConstructor(
 			'FunctionNameStartDelimiter'
@@ -207,8 +212,8 @@ export const functionToName: Type = make({
  */
 export const objectToString: Type = make({
 	id: 'ObjectToString',
-	action: ({ valueBasedFormatterConstructor }) => {
-		const toStringedObjectTextFormatter = valueBasedFormatterConstructor('ToStringedObject');
+	action: ({ valueBasedStylerConstructor }) => {
+		const toStringedObjectTextFormatter = valueBasedStylerConstructor('ToStringedObject');
 
 		return (value) => {
 			const inContextToStringedObjectTextFormatter = toStringedObjectTextFormatter(value);

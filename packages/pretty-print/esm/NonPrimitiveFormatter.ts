@@ -29,8 +29,13 @@ import type * as PPOption from './Option.js';
 import * as PPStringifiedProperties from './StringifiedProperties.js';
 import * as PPStringifiedValue from './StringifiedValue.js';
 import * as PPValue from './Value.js';
-import * as PPValueBasedFormatterConstructor from './ValueBasedFormatterConstructor.js';
+import * as PPValueBasedStylerConstructor from './ValueBasedStylerConstructor.js';
 
+/**
+ * Module tag
+ *
+ * @category Models
+ */
 export const moduleTag = '@parischap/pretty-print/NonPrimitiveFormatter/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
@@ -67,18 +72,17 @@ export namespace Action {
 
 	/**
 	 * Type of the action of a NonPrimitiveFormatter. The action takes as input a
-	 * ValueBasedFormatterConstructor (see ValueBasedFormatterConstructor.ts), a MarkShowerConstructor
-	 * (see MarkShowerConstructor.ts). Based on these parameters, it must return an Initialized
-	 * Action.
+	 * ValueBasedStylerConstructor (see ValueBasedStylerConstructor.ts), a MarkShowerConstructor (see
+	 * MarkShowerConstructor.ts). Based on these parameters, it must return an Initialized Action.
 	 */
 	export interface Type {
 		(
 			this: PPOption.NonPrimitive.Type,
 			{
-				valueBasedFormatterConstructor,
+				valueBasedStylerConstructor,
 				markShowerConstructor
 			}: {
-				readonly valueBasedFormatterConstructor: PPValueBasedFormatterConstructor.Type;
+				readonly valueBasedStylerConstructor: PPValueBasedStylerConstructor.Type;
 				readonly markShowerConstructor: PPMarkShowerConstructor.Type;
 			}
 		): Initialized.Type;
@@ -158,11 +162,11 @@ export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
  */
 export const singleLine: Type = make({
 	id: 'SingleLine',
-	action: function (this, { valueBasedFormatterConstructor }) {
-		const inBetweenPropertySeparatorTextFormatter = valueBasedFormatterConstructor(
+	action: function (this, { valueBasedStylerConstructor }) {
+		const inBetweenPropertySeparatorTextFormatter = valueBasedStylerConstructor(
 			'InBetweenPropertySeparator'
 		);
-		const nonPrimitiveValueDelimitersTextFormatter = valueBasedFormatterConstructor(
+		const nonPrimitiveValueDelimitersTextFormatter = valueBasedStylerConstructor(
 			'NonPrimitiveValueDelimiters'
 		);
 
@@ -210,11 +214,11 @@ export const singleLine: Type = make({
  */
 export const tabify: Type = make({
 	id: 'Tabify',
-	action: function (this, { valueBasedFormatterConstructor, markShowerConstructor }) {
-		const inBetweenPropertySeparatorTextFormatter = valueBasedFormatterConstructor(
+	action: function (this, { valueBasedStylerConstructor, markShowerConstructor }) {
+		const inBetweenPropertySeparatorTextFormatter = valueBasedStylerConstructor(
 			'InBetweenPropertySeparator'
 		);
-		const nonPrimitiveValueDelimitersTextFormatter = valueBasedFormatterConstructor(
+		const nonPrimitiveValueDelimitersTextFormatter = valueBasedStylerConstructor(
 			'NonPrimitiveValueDelimiters'
 		);
 		const tabIndentMarkShower = markShowerConstructor('TabIndent');

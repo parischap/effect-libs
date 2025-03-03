@@ -1,9 +1,9 @@
 /* eslint-disable functional/no-expression-statements */
 import { ASPalette, ASStyle, ASText } from '@parischap/ansi-styles';
-import { PPValue, PPValueBasedFormatter } from '@parischap/pretty-print';
+import { PPValue, PPValueBasedStyler } from '@parischap/pretty-print';
 import { describe, expect, it } from 'vitest';
 
-describe('ValueBasedFormatter', () => {
+describe('ValueBasedStyler', () => {
 	const palette = ASPalette.make(ASStyle.black, ASStyle.red, ASStyle.green, ASStyle.blue);
 
 	const symbolicKey: unique symbol = Symbol.for('symbolicKey');
@@ -17,7 +17,7 @@ describe('ValueBasedFormatter', () => {
 	it('makeDepthIndexed', () => {
 		expect(
 			ASText.equivalence(
-				PPValueBasedFormatter.makeDepthIndexed(palette)(context)('foo'),
+				PPValueBasedStyler.makeDepthIndexed(palette)(context)('foo'),
 				ASStyle.green('foo')
 			)
 		).toBe(true);
@@ -26,7 +26,7 @@ describe('ValueBasedFormatter', () => {
 	it('makeTypeIndexed', () => {
 		expect(
 			ASText.equivalence(
-				PPValueBasedFormatter.makeTypeIndexed(palette)(context)('foo'),
+				PPValueBasedStyler.makeTypeIndexed(palette)(context)('foo'),
 				ASStyle.red('foo')
 			)
 		).toBe(true);
@@ -35,7 +35,7 @@ describe('ValueBasedFormatter', () => {
 	it('makeKeyTypeIndexed', () => {
 		expect(
 			ASText.equivalence(
-				PPValueBasedFormatter.makeKeyTypeIndexed(palette)(context)('foo'),
+				PPValueBasedStyler.makeKeyTypeIndexed(palette)(context)('foo'),
 				ASStyle.red('foo')
 			)
 		).toBe(true);

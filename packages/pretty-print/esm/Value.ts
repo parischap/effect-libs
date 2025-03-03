@@ -19,6 +19,11 @@ import {
 	Types
 } from 'effect';
 
+/**
+ * Module tag
+ *
+ * @category Models
+ */
 export const moduleTag = '@parischap/pretty-print/Value/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
@@ -290,6 +295,11 @@ export const isEnumerable: MTypes.OneArgFunction<All, boolean> = Struct.get('isE
  * @category Models
  */
 export namespace Order {
+	/**
+	 * Type of an Order on a Value.All
+	 *
+	 * @category Models
+	 */
 	export interface Type extends EOrder.Order<All> {}
 	/**
 	 * Order instance based on the `protoDepth` property, lowest depth first

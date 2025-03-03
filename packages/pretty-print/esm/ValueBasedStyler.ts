@@ -7,14 +7,14 @@ import { ASContextStyler, ASPalette } from '@parischap/ansi-styles';
 import * as PPValue from './Value.js';
 
 /**
- * Type of a ValueBasedFormatter
+ * Type of a ValueBasedStyler
  *
  * @category Models
  */
 export type Type = ASContextStyler.Type<PPValue.All>;
 
 /**
- * Constructor of a depth-indexed ValueBasedFormatter
+ * Constructor of a depth-indexed ValueBasedStyler
  *
  * @category Constructors
  */
@@ -28,7 +28,7 @@ export const makeDepthIndexed = (palette: ASPalette.Type): Type =>
 	});
 
 /**
- * Constructor of a type-indexed ValueBasedFormatter
+ * Constructor of a type-indexed ValueBasedStyler
  *
  * @category Constructors
  */
@@ -42,7 +42,7 @@ export const makeTypeIndexed = (palette: ASPalette.Type): Type =>
 	});
 
 /**
- * Constructor of a key-type-indexed ValueBasedFormatter
+ * Constructor of a key-type-indexed ValueBasedStyler
  *
  * @category Constructors
  */

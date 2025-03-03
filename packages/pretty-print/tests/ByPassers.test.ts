@@ -7,18 +7,17 @@ import {
 	PPOption,
 	PPStringifiedValue,
 	PPValue,
-	PPValueBasedFormatterConstructor
+	PPValueBasedStylerConstructor
 } from '@parischap/pretty-print';
 import { Array, Option, pipe } from 'effect';
 import { describe, expect, it } from 'vitest';
 
 describe('ByPassers', () => {
 	const utilInspectLike = PPOption.darkModeUtilInspectLike;
-	const valueBasedFormatterConstructor =
-		PPValueBasedFormatterConstructor.fromOption(utilInspectLike);
+	const valueBasedStylerConstructor = PPValueBasedStylerConstructor.fromOption(utilInspectLike);
 	const markShowerConstructor = PPMarkShowerConstructor.fromOption(utilInspectLike);
 	const constructors = {
-		valueBasedFormatterConstructor,
+		valueBasedStylerConstructor,
 		markShowerConstructor
 	};
 

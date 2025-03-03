@@ -8,7 +8,7 @@ import {
 	PPPropertyFilter,
 	PPStringifiedValue,
 	PPValue,
-	PPValueBasedFormatterConstructor
+	PPValueBasedStylerConstructor
 } from '@parischap/pretty-print';
 import { Array, Equal, HashMap, HashSet, Option, pipe, Predicate } from 'effect';
 import { describe, expect, it } from 'vitest';
@@ -53,11 +53,11 @@ describe('Option', () => {
 				const differingPropertyNumbers = { allPropertyNumber: 5, actualPropertyNumber: 3 };
 				const equalPropertyNumbers = { allPropertyNumber: 3, actualPropertyNumber: 3 };
 				const utilInspectLike = PPOption.darkModeUtilInspectLike;
-				const valueBasedFormatterConstructor =
-					PPValueBasedFormatterConstructor.fromOption(utilInspectLike);
+				const valueBasedStylerConstructor =
+					PPValueBasedStylerConstructor.fromOption(utilInspectLike);
 				const markShowerConstructor = PPMarkShowerConstructor.fromOption(utilInspectLike);
 				const constructors = {
-					valueBasedFormatterConstructor,
+					valueBasedStylerConstructor,
 					markShowerConstructor
 				};
 				const fromNonPrimitive = PPOption.NonPrimitive.Initialized.fromNonPrimitive(constructors);

@@ -23,14 +23,29 @@ import {
 	Predicate,
 	Struct
 } from 'effect';
-import * as PPValueBasedFormatter from './ValueBasedFormatter.js';
+import * as PPValueBasedStyler from './ValueBasedStyler.js';
 
+/**
+ * Module tag
+ *
+ * @category Models
+ */
 export const moduleTag = '@parischap/pretty-print/StyleMap/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
+/**
+ * Namespace that represents a map of ValueBasedStyler's
+ *
+ * @category Models
+ */
 export namespace Styles {
-	export interface Type extends HashMap.HashMap<string, PPValueBasedFormatter.Type> {}
+	/**
+	 * Type of a Styles
+	 *
+	 * @category Models
+	 */
+	export interface Type extends HashMap.HashMap<string, PPValueBasedStyler.Type> {}
 }
 
 /**
@@ -102,12 +117,12 @@ export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
 export const styles: MTypes.OneArgFunction<Type, Styles.Type> = Struct.get('styles');
 
 /**
- * Returns the ValueBasedFormatter associated with `partName` which identifies a part of a
- * stringified value. Returns `ASContextStyler.none` if `partName` is not present in `self`.
+ * Returns the ValueBasedStyler associated with `partName` which identifies a part of a stringified
+ * value. Returns `ASContextStyler.none` if `partName` is not present in `self`.
  *
  * @category Destructors
  */
-export const get = (partName: string): MTypes.OneArgFunction<Type, PPValueBasedFormatter.Type> =>
+export const get = (partName: string): MTypes.OneArgFunction<Type, PPValueBasedStyler.Type> =>
 	flow(styles, HashMap.get(partName), Option.getOrElse(Function.constant(ASContextStyler.none)));
 
 /**
@@ -122,7 +137,7 @@ export const darkMode: Type = make({
 		['ToStringedObject', ASContextStyler.yellow],
 		[
 			'PrimitiveValue',
-			PPValueBasedFormatter.makeTypeIndexed(
+			PPValueBasedStyler.makeTypeIndexed(
 				ASPalette.make(
 					// string
 					ASStyle.green,
@@ -143,7 +158,7 @@ export const darkMode: Type = make({
 		],
 		[
 			'PropertyKey',
-			PPValueBasedFormatter.makeKeyTypeIndexed(
+			PPValueBasedStyler.makeKeyTypeIndexed(
 				ASPalette.make(
 					// string key
 					ASStyle.red,
@@ -157,7 +172,7 @@ export const darkMode: Type = make({
 		['InBetweenPropertySeparator', ASContextStyler.white],
 		[
 			'NonPrimitiveValueDelimiters',
-			PPValueBasedFormatter.makeDepthIndexed(
+			PPValueBasedStyler.makeDepthIndexed(
 				ASPalette.make(
 					ASStyle.red,
 					ASStyle.green,

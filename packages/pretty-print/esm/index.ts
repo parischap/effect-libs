@@ -13,6 +13,6 @@ export * as PPStringifiedProperties from './StringifiedProperties.js';
 export * as PPStringifiedValue from './StringifiedValue.js';
 export * as PPStyleMap from './StyleMap.js';
 export * as PPValue from './Value.js';
-export * as PPValueBasedFormatter from './ValueBasedFormatter.js';
-export * as PPValueBasedFormatterConstructor from './ValueBasedFormatterConstructor.js';
+export * as PPValueBasedStyler from './ValueBasedStyler.js';
+export * as PPValueBasedStylerConstructor from './ValueBasedStylerConstructor.js';
 export * as PPValues from './Values.js';

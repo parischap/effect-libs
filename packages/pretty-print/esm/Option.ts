@@ -39,9 +39,14 @@ import * as PPPropertyFormatter from './PropertyFormatter.js';
 import * as PPStringifiedValue from './StringifiedValue.js';
 import * as PPStyleMap from './StyleMap.js';
 import * as PPValue from './Value.js';
-import * as PPValueBasedFormatterConstructor from './ValueBasedFormatterConstructor.js';
+import * as PPValueBasedStylerConstructor from './ValueBasedStylerConstructor.js';
 import * as PPValues from './Values.js';
 
+/**
+ * Module tag
+ *
+ * @category Models
+ */
 export const moduleTag = '@parischap/pretty-print/Option/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
@@ -402,6 +407,11 @@ export namespace NonPrimitive {
 			propertyFormatter: PPPropertyFormatter.valueOnly
 		});
 
+	/**
+	 * Namespace of an initialized NonPrimitive Option
+	 *
+	 * @category Models
+	 */
 	export namespace Initialized {
 		/**
 		 * Type of an InitializedNonPrimitiveOption
@@ -427,21 +437,20 @@ export namespace NonPrimitive {
 		 * @category Constructors
 		 */
 		export const fromNonPrimitive = (params: {
-			readonly valueBasedFormatterConstructor: PPValueBasedFormatterConstructor.Type;
+			readonly valueBasedStylerConstructor: PPValueBasedStylerConstructor.Type;
 			readonly markShowerConstructor: PPMarkShowerConstructor.Type;
 		}): MTypes.OneArgFunction<NonPrimitive.Type, Type> => {
-			const valueBasedFormatterConstructor = params.valueBasedFormatterConstructor;
-			const nonPrimitiveValueIdTextFormatter =
-				valueBasedFormatterConstructor('NonPrimitiveValueId');
-			const nonPrimitiveValueIdSeparatorTextFormatter = valueBasedFormatterConstructor(
+			const valueBasedStylerConstructor = params.valueBasedStylerConstructor;
+			const nonPrimitiveValueIdTextFormatter = valueBasedStylerConstructor('NonPrimitiveValueId');
+			const nonPrimitiveValueIdSeparatorTextFormatter = valueBasedStylerConstructor(
 				'NonPrimitiveValueIdSeparator'
 			);
-			const propertyNumberDelimitersTextFormatter = valueBasedFormatterConstructor(
+			const propertyNumberDelimitersTextFormatter = valueBasedStylerConstructor(
 				'PropertyNumberDelimiters'
 			);
 			const propertyNumberSeparatorTextFormatter =
-				valueBasedFormatterConstructor('PropertyNumberSeparator');
-			const PropertyNumbersTextFormatter = valueBasedFormatterConstructor('PropertyNumbers');
+				valueBasedStylerConstructor('PropertyNumberSeparator');
+			const PropertyNumbersTextFormatter = valueBasedStylerConstructor('PropertyNumbers');
 
 			return flow(
 				MStruct.enrichWith({
@@ -569,7 +578,7 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
 	/** Id of this Option instance. Useful for equality and debugging */
 	readonly id: string;
 
-	/** Map of ValueBasedFormatter's used to style the different parts of a stringified value */
+	/** Map of ValueBasedStyler's used to style the different parts of a stringified value */
 	readonly styleMap: PPStyleMap.Type;
 
 	/** Map of the different marks that appear in a value to stringify */
@@ -788,13 +797,13 @@ export const darkModeTreeifyHideLeaves: Type = make({
  */
 
 export const toStringifier = (self: Type): Stringifier.Type => {
-	const valueBasedFormatterConstructor = PPValueBasedFormatterConstructor.fromOption(self);
+	const valueBasedStylerConstructor = PPValueBasedStylerConstructor.fromOption(self);
 	const markShowerConstructor = PPMarkShowerConstructor.fromOption(self);
 
-	const constructors = { markShowerConstructor, valueBasedFormatterConstructor };
+	const constructors = { markShowerConstructor, valueBasedStylerConstructor };
 
-	const primitiveValueTextFormatter = valueBasedFormatterConstructor('PrimitiveValue');
-	const messageTextFormatter = valueBasedFormatterConstructor('Message');
+	const primitiveValueTextFormatter = valueBasedStylerConstructor('PrimitiveValue');
+	const messageTextFormatter = valueBasedStylerConstructor('Message');
 
 	const circularObjectMarkShower = markShowerConstructor('CircularObject');
 	const circularReferenceStartDelimiterMarkShower = markShowerConstructor(

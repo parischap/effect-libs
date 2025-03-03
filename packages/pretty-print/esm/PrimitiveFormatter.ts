@@ -25,6 +25,11 @@ import {
 import type * as PPOption from './Option.js';
 import * as PPValue from './Value.js';
 
+/**
+ * Module tag
+ *
+ * @category Models
+ */
 export const moduleTag = '@parischap/pretty-print/PrimitiveFormatter/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
