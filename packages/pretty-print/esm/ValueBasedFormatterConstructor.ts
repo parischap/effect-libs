@@ -3,7 +3,7 @@
  * an Option (see Option.ts) and a partName.
  */
 
-import { ASContextFormatter } from '@parischap/ansi-styles';
+import { ASContextStyler } from '@parischap/ansi-styles';
 import { MTypes } from '@parischap/effect-lib';
 import { pipe } from 'effect';
 import type * as PPOption from './Option.js';
@@ -32,4 +32,4 @@ export const fromOption =
  *
  * @category Constructors
  */
-export const noneConstructor: Type = () => ASContextFormatter.none;
+export const noneConstructor: Type = () => ASContextStyler.none;

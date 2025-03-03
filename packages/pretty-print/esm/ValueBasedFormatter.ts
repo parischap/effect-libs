@@ -1,9 +1,9 @@
 /**
- * Alias for ASContextFormatter.Type<PPValue.All> (see @parischap/ansi-style/ContextFormatter.ts and
+ * Alias for ASContextStyler.Type<PPValue.All> (see @parischap/ansi-style/ContextFormatter.ts and
  * Value.ts)
  */
 
-import { ASContextFormatter, ASPalette } from '@parischap/ansi-styles';
+import { ASContextStyler, ASPalette } from '@parischap/ansi-styles';
 import * as PPValue from './Value.js';
 
 /**
@@ -11,7 +11,7 @@ import * as PPValue from './Value.js';
  *
  * @category Models
  */
-export type Type = ASContextFormatter.Type<PPValue.All>;
+export type Type = ASContextStyler.Type<PPValue.All>;
 
 /**
  * Constructor of a depth-indexed ValueBasedFormatter
@@ -19,7 +19,7 @@ export type Type = ASContextFormatter.Type<PPValue.All>;
  * @category Constructors
  */
 export const makeDepthIndexed = (palette: ASPalette.Type): Type =>
-	ASContextFormatter.PaletteBased.make({
+	ASContextStyler.PaletteBased.make({
 		// Use named function so the name gets printed by the toString function
 		indexFromContext: function valueDepth(value: PPValue.All) {
 			return PPValue.depth(value);
@@ -33,7 +33,7 @@ export const makeDepthIndexed = (palette: ASPalette.Type): Type =>
  * @category Constructors
  */
 export const makeTypeIndexed = (palette: ASPalette.Type): Type =>
-	ASContextFormatter.PaletteBased.make({
+	ASContextStyler.PaletteBased.make({
 		// Use named function so the name gets printed by the toString function
 		indexFromContext: function valueType(value: PPValue.All) {
 			return value.contentType;
@@ -47,7 +47,7 @@ export const makeTypeIndexed = (palette: ASPalette.Type): Type =>
  * @category Constructors
  */
 export const makeKeyTypeIndexed = (palette: ASPalette.Type): Type =>
-	ASContextFormatter.PaletteBased.make({
+	ASContextStyler.PaletteBased.make({
 		// Use named function so the name gets printed by the toString function
 		indexFromContext: function keyType(value: PPValue.All) {
 			// `1` for symbolic key, `0` for string key

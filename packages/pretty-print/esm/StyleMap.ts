@@ -8,7 +8,7 @@
  * needs.
  */
 
-import { ASContextFormatter, ASPalette, ASStyle } from '@parischap/ansi-styles';
+import { ASContextStyler, ASPalette, ASStyle } from '@parischap/ansi-styles';
 import { MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
 import {
 	Equal,
@@ -103,12 +103,12 @@ export const styles: MTypes.OneArgFunction<Type, Styles.Type> = Struct.get('styl
 
 /**
  * Returns the ValueBasedFormatter associated with `partName` which identifies a part of a
- * stringified value. Returns `ASContextFormatter.none` if `partName` is not present in `self`.
+ * stringified value. Returns `ASContextStyler.none` if `partName` is not present in `self`.
  *
  * @category Destructors
  */
 export const get = (partName: string): MTypes.OneArgFunction<Type, PPValueBasedFormatter.Type> =>
-	flow(styles, HashMap.get(partName), Option.getOrElse(Function.constant(ASContextFormatter.none)));
+	flow(styles, HashMap.get(partName), Option.getOrElse(Function.constant(ASContextStyler.none)));
 
 /**
  * StyleMap instance for ansi dark mode
@@ -118,8 +118,8 @@ export const get = (partName: string): MTypes.OneArgFunction<Type, PPValueBasedF
 export const darkMode: Type = make({
 	id: 'DarkMode',
 	styles: HashMap.make(
-		['Message', ASContextFormatter.green],
-		['ToStringedObject', ASContextFormatter.yellow],
+		['Message', ASContextStyler.green],
+		['ToStringedObject', ASContextStyler.yellow],
 		[
 			'PrimitiveValue',
 			PPValueBasedFormatter.makeTypeIndexed(
@@ -152,9 +152,9 @@ export const darkMode: Type = make({
 				)
 			)
 		],
-		['PrototypeDelimiters', ASContextFormatter.green],
-		['KeyValueSeparator', ASContextFormatter.white],
-		['InBetweenPropertySeparator', ASContextFormatter.white],
+		['PrototypeDelimiters', ASContextStyler.green],
+		['KeyValueSeparator', ASContextStyler.white],
+		['InBetweenPropertySeparator', ASContextStyler.white],
 		[
 			'NonPrimitiveValueDelimiters',
 			PPValueBasedFormatter.makeDepthIndexed(
@@ -169,12 +169,12 @@ export const darkMode: Type = make({
 				)
 			)
 		],
-		['Indentation', ASContextFormatter.green],
-		['NonPrimitiveValueId', ASContextFormatter.green],
-		['NonPrimitiveValueIdSeparator', ASContextFormatter.green],
-		['PropertyNumbers', ASContextFormatter.green],
-		['PropertyNumberSeparator', ASContextFormatter.green],
-		['PropertyNumberDelimiters', ASContextFormatter.green]
+		['Indentation', ASContextStyler.green],
+		['NonPrimitiveValueId', ASContextStyler.green],
+		['NonPrimitiveValueIdSeparator', ASContextStyler.green],
+		['PropertyNumbers', ASContextStyler.green],
+		['PropertyNumberSeparator', ASContextStyler.green],
+		['PropertyNumberDelimiters', ASContextStyler.green]
 	)
 });
 

@@ -1,5 +1,5 @@
 /* eslint-disable functional/no-expression-statements */
-import { ASContextFormatter, ASText } from '@parischap/ansi-styles';
+import { ASContextStyler, ASText } from '@parischap/ansi-styles';
 import { MUtils } from '@parischap/effect-lib';
 import { PPStyleMap, PPValue } from '@parischap/pretty-print';
 import { Equal, Function, pipe } from 'effect';
@@ -44,7 +44,7 @@ describe('StyleMap', () => {
 	describe('get', () => {
 		it('Existing partname', () => {
 			expect(
-				pipe(PPStyleMap.darkMode, PPStyleMap.get('Message'), ASContextFormatter.Unistyled.has)
+				pipe(PPStyleMap.darkMode, PPStyleMap.get('Message'), ASContextStyler.Unistyled.has)
 			).toBe(true);
 		});
 
