@@ -1,4 +1,7 @@
-/** This module implements a Type that represents an array of Style's (see Style.ts). */
+/**
+ * This module implements a Type that represents an array of Style's (see Style.ts). It is used by
+ * the Palette module (see Palette.ts)
+ */
 
 import { MTypes } from '@parischap/effect-lib';
 import { Array, flow } from 'effect';

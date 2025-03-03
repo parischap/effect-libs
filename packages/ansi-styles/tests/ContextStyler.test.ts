@@ -1,10 +1,10 @@
 /* eslint-disable functional/no-expression-statements */
-import { ASContextFormatter, ASPalette, ASStyle, ASText } from '@parischap/ansi-styles';
+import { ASContextStyler, ASPalette, ASStyle, ASText } from '@parischap/ansi-styles';
 import { MUtils } from '@parischap/effect-lib';
 import { describe, expect, it } from 'vitest';
 
-describe('ContextFormatter', () => {
-	const redUnistyledFormatter = ASContextFormatter.red;
+describe('ContextStyler', () => {
+	const redUnistyledFormatter = ASContextStyler.red;
 
 	interface Value {
 		readonly pos1: number;
@@ -15,7 +15,7 @@ describe('ContextFormatter', () => {
 		return value.pos1;
 	}
 
-	const pos1BasedAllColorsFormatter = ASContextFormatter.PaletteBased.make({
+	const pos1BasedAllColorsFormatter = ASContextStyler.PaletteBased.make({
 		indexFromContext: pos1,
 		palette: ASPalette.allStandardOriginalColors
 	});
@@ -36,34 +36,34 @@ describe('ContextFormatter', () => {
 
 	describe('Tag and guards', () => {
 		it('moduleTag', () => {
-			expect(ASContextFormatter.moduleTag).toBe(MUtils.moduleTagFromFileName(__filename));
+			expect(ASContextStyler.moduleTag).toBe(MUtils.moduleTagFromFileName(__filename));
 		});
 
 		describe('has', () => {
 			it('Matching', () => {
-				expect(ASContextFormatter.has(redUnistyledFormatter)).toBe(true);
-				expect(ASContextFormatter.has(pos1BasedAllColorsFormatter)).toBe(true);
+				expect(ASContextStyler.has(redUnistyledFormatter)).toBe(true);
+				expect(ASContextStyler.has(pos1BasedAllColorsFormatter)).toBe(true);
 			});
 			it('Non matching', () => {
-				expect(ASContextFormatter.has(new Date())).toBe(false);
+				expect(ASContextStyler.has(new Date())).toBe(false);
 			});
 		});
 
 		describe('isUnistyled', () => {
 			it('Matching', () => {
-				expect(ASContextFormatter.isUnistyled(redUnistyledFormatter)).toBe(true);
+				expect(ASContextStyler.isUnistyled(redUnistyledFormatter)).toBe(true);
 			});
 			it('Non matching', () => {
-				expect(ASContextFormatter.isUnistyled(pos1BasedAllColorsFormatter)).toBe(false);
+				expect(ASContextStyler.isUnistyled(pos1BasedAllColorsFormatter)).toBe(false);
 			});
 		});
 
 		describe('isPaletteBased', () => {
 			it('Matching', () => {
-				expect(ASContextFormatter.isPaletteBased(pos1BasedAllColorsFormatter)).toBe(true);
+				expect(ASContextStyler.isPaletteBased(pos1BasedAllColorsFormatter)).toBe(true);
 			});
 			it('Non matching', () => {
-				expect(ASContextFormatter.isPaletteBased(redUnistyledFormatter)).toBe(false);
+				expect(ASContextStyler.isPaletteBased(redUnistyledFormatter)).toBe(false);
 			});
 		});
 	});
@@ -71,22 +71,22 @@ describe('ContextFormatter', () => {
 	describe('Unistyled', () => {
 		describe('Prototype and guards', () => {
 			it('.pipe()', () => {
-				expect(redUnistyledFormatter.pipe(ASContextFormatter.has)).toBe(true);
+				expect(redUnistyledFormatter.pipe(ASContextStyler.has)).toBe(true);
 			});
 
 			describe('has', () => {
 				it('Matching', () => {
-					expect(ASContextFormatter.Unistyled.has(redUnistyledFormatter)).toBe(true);
+					expect(ASContextStyler.Unistyled.has(redUnistyledFormatter)).toBe(true);
 				});
 				it('Non matching', () => {
-					expect(ASContextFormatter.Unistyled.has(pos1BasedAllColorsFormatter)).toBe(false);
+					expect(ASContextStyler.Unistyled.has(pos1BasedAllColorsFormatter)).toBe(false);
 				});
 			});
 		});
 
 		describe('.toString()', () => {
 			it('None instance', () => {
-				expect(ASContextFormatter.none.toString()).toBe('NoStyleFormatter');
+				expect(ASContextStyler.none.toString()).toBe('NoStyleFormatter');
 			});
 			it('Red instance', () => {
 				expect(redUnistyledFormatter.toString()).toBe('RedFormatter');
@@ -113,15 +113,15 @@ describe('ContextFormatter', () => {
 	describe('PaletteBased', () => {
 		describe('Prototype and guards', () => {
 			it('.pipe()', () => {
-				expect(pos1BasedAllColorsFormatter.pipe(ASContextFormatter.has)).toBe(true);
+				expect(pos1BasedAllColorsFormatter.pipe(ASContextStyler.has)).toBe(true);
 			});
 
 			describe('has', () => {
 				it('Matching', () => {
-					expect(ASContextFormatter.PaletteBased.has(pos1BasedAllColorsFormatter)).toBe(true);
+					expect(ASContextStyler.PaletteBased.has(pos1BasedAllColorsFormatter)).toBe(true);
 				});
 				it('Non matching', () => {
-					expect(ASContextFormatter.PaletteBased.has(redUnistyledFormatter)).toBe(false);
+					expect(ASContextStyler.PaletteBased.has(redUnistyledFormatter)).toBe(false);
 				});
 			});
 		});

@@ -16,7 +16,7 @@ import type * as ASText from './Text.js';
  *
  * @category Models
  */
-export const moduleTag = '@parischap/ansi-styles/ContextFormatter/';
+export const moduleTag = '@parischap/ansi-styles/ContextStyler/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
