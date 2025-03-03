@@ -322,7 +322,7 @@ export const unfoldAndFold = <A, B, S = A, C = B>({
 		seed: S,
 		cyclicalRef: Option.Option<A>
 	) => Either.Either<MTypes.Pair<A, ReadonlyArray<S>>, B>;
-	readonly foldNonLeaf: (value: A, children: ReadonlyArray<B>) => C;
+	readonly foldNonLeaf: (value: A, children: ReadonlyArray<C>) => C;
 	readonly foldLeaf: (value: B) => C;
 }): MTypes.OneArgFunction<S, C> =>
 	flow(
@@ -335,7 +335,7 @@ export const unfoldAndFold = <A, B, S = A, C = B>({
 				MMatch.orElse(
 					MStruct.mutableEnrichWith({
 						value: (node) =>
-							foldNonLeaf(node.value, Array.map(node.forest as Forest.Type<B, B>, value))
+							foldNonLeaf(node.value, Array.map(node.forest as unknown as Forest.Type<C, C>, value))
 					})
 				)
 			)
