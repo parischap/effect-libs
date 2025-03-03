@@ -5,8 +5,7 @@
 An [Effect](https://effect.website/docs/introduction) library for terminal output styling with ANSI colors and formats. This module also offers:
 
 - friendly logging (your formats when encapsulated in other objects will show as a meaningful name (e.g. BoldRed))
-- context formatting, i.e. the ability to apply context-dependent formatting
-- equivalence of formats (for Effect users using the Equal.equals mechanism) .
+- context styling, i.e. the ability to apply context-dependent styling
 
 Tested and documented, 100% Typescript, 100% functional.
 
@@ -72,4 +71,10 @@ console.log(
 );
 ```
 
-Here is
+=> Output:
+
+![Basic usage example](readme-assets/basic-example.png?sanitize=true)
+
+### Available styles and colors
+
+The ASStyle module offers
