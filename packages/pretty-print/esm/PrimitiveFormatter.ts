@@ -113,7 +113,7 @@ export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
 /**
  * PropertyFormatter contructor that builds an instance that works like util.inspect
  *
- * @category Instances
+ * @category Constructors
  */
 export const utilInspectLikeMaker = (
 	{
@@ -129,15 +129,15 @@ export const utilInspectLikeMaker = (
 		numberFormatter: new Intl.NumberFormat(),
 		id: 'UtilInspectLike'
 	}
-) =>
+): Type =>
 	make({
 		id,
 		action: flow(
+			PPValue.content,
 			MMatch.make,
 			MMatch.when(
-				PPValue.isString,
+				MTypes.isString,
 				flow(
-					PPValue.content,
 					Either.liftPredicate(
 						flow(String.length, Number.greaterThan(maxStringLength)),
 						Function.identity
@@ -149,13 +149,13 @@ export const utilInspectLikeMaker = (
 				)
 			),
 			MMatch.when(
-				PPValue.isNumber,
-				flow(PPValue.content, (n) => numberFormatter.format(n))
+				MTypes.isNumber,
+				flow((n) => numberFormatter.format(n))
 			),
 			MMatch.when(
-				PPValue.isBigint,
-				flow(PPValue.content, (n) => numberFormatter.format(n), MString.append('n'))
+				MTypes.isBigInt,
+				flow((n) => numberFormatter.format(n), MString.append('n'))
 			),
-			MMatch.orElse(flow(PPValue.content, MString.fromPrimitive))
+			MMatch.orElse(MString.fromPrimitive)
 		)
 	});

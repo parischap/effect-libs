@@ -25,7 +25,7 @@ import {
 	Struct
 } from 'effect';
 import * as PPMarkShowerConstructor from './MarkShowerConstructor.js';
-import * as PPOption from './Option.js';
+import type * as PPOption from './Option.js';
 import * as PPStringifiedProperties from './StringifiedProperties.js';
 import * as PPStringifiedValue from './StringifiedValue.js';
 import * as PPValue from './Value.js';
@@ -209,7 +209,7 @@ export const singleLine: Type = make({
  * @category Instances
  */
 export const tabify: Type = make({
-	id: 'Tabified',
+	id: 'Tabify',
 	action: function (this, { valueBasedFormatterConstructor, markShowerConstructor }) {
 		const inBetweenPropertySeparatorTextFormatter = valueBasedFormatterConstructor(
 			'InBetweenPropertySeparator'
@@ -252,7 +252,7 @@ export const tabify: Type = make({
  * @category Instances
  */
 export const treeify: Type = make({
-	id: 'Treeified',
+	id: 'Treeify',
 	action: ({ markShowerConstructor }) => {
 		const treeIndentForFirstLineOfInitPropsMarkShower = markShowerConstructor(
 			'TreeIndentForFirstLineOfInitProps'

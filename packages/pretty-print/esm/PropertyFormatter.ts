@@ -11,7 +11,6 @@ import { ASText } from '@parischap/ansi-styles';
 import { MFunction, MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
 import {
 	Array,
-	Either,
 	Equal,
 	Equivalence,
 	flow,
@@ -29,31 +28,40 @@ import * as PPStringifiedValue from './StringifiedValue.js';
 import * as PPValue from './Value.js';
 import * as PPValueBasedFormatterConstructor from './ValueBasedFormatterConstructor.js';
 
-export const moduleTag = '@parischap/pretty-print/ValueFormatter/';
+export const moduleTag = '@parischap/pretty-print/PropertyFormatter/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
 /**
- * Namespace of a ValueFormatter used as an action
+ * Namespace of a PropertyFormatter used as an action
  *
  * @category Models
  */
 export namespace Action {
 	/**
-	 * Namespace of an initialized ValueFormatter used as an action
+	 * Namespace of an initialized PropertyFormatter used as an action
 	 *
 	 * @category Models
 	 */
 	export namespace Initialized {
 		/**
 		 * Type of the action. The action takes as input the Value (see Value.ts) being currently
-		 * printed, and the stringified representation of that value (see StringifiedValue.ts) . Based
-		 * on these two parameters, it must return a stringified representation of the whole property.
+		 * printed, a boolean that indicates if the value is a leaf (i.e. it could be stringified
+		 * without stringifying each of its properties) and the stringified representation of that value
+		 * (see StringifiedValue.ts) . Based on these two parameters, it must return a stringified
+		 * representation of the whole property.
 		 *
 		 * @category Models
 		 */
-		export interface Type
-			extends MTypes.OneArgFunction<PPValue.All, MTypes.OneArgFunction<PPStringifiedValue.Type>> {}
+		export interface Type {
+			({
+				value,
+				isLeaf
+			}: {
+				readonly value: PPValue.All;
+				readonly isLeaf: boolean;
+			}): MTypes.OneArgFunction<PPStringifiedValue.Type>;
+		}
 	}
 
 	/**
@@ -78,7 +86,7 @@ export namespace Action {
 }
 
 /**
- * Type that represents a ValueFormatter.
+ * Type that represents a PropertyFormatter.
  *
  * @category Models
  */
@@ -87,7 +95,7 @@ export interface Type
 		Equal.Equal,
 		MInspectable.Inspectable,
 		Pipeable.Pipeable {
-	/** Id of this ValueFormatter instance. Useful for equality and debugging */
+	/** Id of this PropertyFormatter instance. Useful for equality and debugging */
 	readonly id: string;
 
 	/** @internal */
@@ -102,7 +110,7 @@ export interface Type
 export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
 
 /**
- * ValueFormatter equivalence
+ * PropertyFormatter equivalence
  *
  * @category Equivalences
  */
@@ -144,31 +152,30 @@ export const make = ({ id, action }: { readonly id: string; readonly action: Act
 export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
 
 /**
- * ValueFormatter instance that prints only the value of a property (similar to the usual way an
+ * PropertyFormatter instance that prints only the value of a property (similar to the usual way an
  * array is printed).
  *
  * @category Instances
  */
 export const valueOnly: Type = make({
 	id: 'ValueOnly',
-	action: () => (_value) => Function.identity
+	action: () => () => Function.identity
 });
 
-/**
- * ValueFormatter instance that prints the key and value of a property (similar to the usual way a
- * record is printed). A mark can be prepended or appended to the key to show if the property comes
- * from the object itself or from one of its prototypes.
- *
- * @category Instances
- */
-export const keyAndValue: Type = make({
-	id: 'KeyAndValue',
-	action: function (this, { valueBasedFormatterConstructor }) {
+/* if onSameLine=false and isLeaf=false , the lines of the value are appended to the lines of the key and no keyValueSeparator is used. In all other cases, the last line of the key and the first line of the value are merged and separated by the keyValueSeparator. */
+const _keyAndValueAction = ({
+	onSameLine,
+	dontShowLeafValue
+}: {
+	readonly onSameLine: boolean;
+	readonly dontShowLeafValue: boolean;
+}): Action.Type =>
+	function (this, { valueBasedFormatterConstructor }) {
 		const propertyKeyTextFormatter = valueBasedFormatterConstructor('PropertyKey');
 		const prototypeDelimitersTextFormatter = valueBasedFormatterConstructor('PrototypeDelimiters');
 		const KeyValueSeparatorTextFormatter = valueBasedFormatterConstructor('KeyValueSeparator');
 
-		return (value) => {
+		return ({ value, isLeaf }) => {
 			const stringKey = value.stringKey;
 			const protoDepth = value.protoDepth;
 
@@ -206,7 +213,10 @@ export const keyAndValue: Type = make({
 			);
 
 			return (stringifiedValue) => {
+				if (!onSameLine && !isLeaf) return pipe(key, Array.appendAll(stringifiedValue));
+
 				const firstLine = Array.headNonEmpty(stringifiedValue);
+				const showValue = !isLeaf || !dontShowLeafValue;
 
 				return pipe(
 					key,
@@ -217,33 +227,54 @@ export const keyAndValue: Type = make({
 							// cannot be an empty string
 							Array.lastNonEmpty,
 							MFunction.fIfTrue({
-								condition: ASText.isNotEmpty(firstLine),
+								condition: showValue && ASText.isNotEmpty(firstLine),
 								f: flow(ASText.append(keyValueSeparator), ASText.append(firstLine))
 							})
 						)
 					),
-					Array.appendAll(Array.tailNonEmpty(stringifiedValue))
+					MFunction.fIfTrue({
+						condition: showValue,
+						f: Array.appendAll(Array.tailNonEmpty(stringifiedValue))
+					})
 				);
 			};
 		};
-	}
+	};
+
+/**
+ * PropertyFormatter instance that prints the key and value of a property (similar to the usual way
+ * a record is printed). A mark can be prepended or appended to the key to show if the property
+ * comes from the object itself or from one of its prototypes.
+ *
+ * @category Constructors
+ */
+export const keyAndValue: Type = make({
+	id: 'KeyAndValue',
+	action: _keyAndValueAction({ onSameLine: true, dontShowLeafValue: false })
 });
 
 /**
- * ValueFormatter instance that calls `valueOnly` for Value's whose key was autogenerated,
- * `keyAndValue` otherwise.
+ * PropertyFormatter instance that :
  *
- * @category Instances
+ * - For a leaf: merges the last line of the key with the first line of the value
+ * - For a non-leaf: prints the key and value on separate lines without any key/value separator
+ *
+ * @category Constructors
  */
-export const valueForAutoGenerated: Type = make({
-	id: 'valueForAutoGenerated',
-	action: function (this, params) {
-		const initializedValueOnly = valueOnly.call(this, params);
-		const initializedKeyAndValue = keyAndValue.call(this, params);
-		return flow(
-			Either.liftPredicate(PPValue.autogeneratedKey, Function.identity),
-			Either.mapBoth({ onRight: initializedValueOnly, onLeft: initializedKeyAndValue }),
-			Either.merge
-		);
-	}
+export const treeify: Type = make({
+	id: 'Treeify',
+	action: _keyAndValueAction({ onSameLine: false, dontShowLeafValue: false })
+});
+
+/**
+ * PropertyFormatter instance that :
+ *
+ * - For a leaf: prints only the key
+ * - For a non-leaf: prints the key and value on separate lines without any key/value separator
+ *
+ * @category Constructors
+ */
+export const treeifyHideLeafValues: Type = make({
+	id: 'Treeify',
+	action: _keyAndValueAction({ onSameLine: false, dontShowLeafValue: true })
 });

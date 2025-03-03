@@ -5,7 +5,7 @@
 
 import { MTypes } from '@parischap/effect-lib';
 import { Function, HashMap, Option, pipe } from 'effect';
-import { PPMarkShower } from './index.js';
+import * as PPMarkShower from './MarkShower.js';
 import type * as PPOption from './Option.js';
 import * as PPStyleMap from './StyleMap.js';
 /**

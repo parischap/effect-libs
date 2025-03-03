@@ -19,7 +19,7 @@ import {
 	Struct
 } from 'effect';
 import * as PPValue from './Value.js';
-import * as PPValues from './Values.js';
+import type * as PPValues from './Values.js';
 
 export const moduleTag = '@parischap/pretty-print/PropertyFilter/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
