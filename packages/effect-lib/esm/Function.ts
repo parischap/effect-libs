@@ -74,7 +74,16 @@ export const name = (f: MTypes.AnyFunction): string => f.name;
  *
  * 	const complexFoo = () => 1;
  * 	const memoized = MFunction.once(complexFoo);
+ *
+ * 	export function foo1() {
+ * 		return memoized() + 1;
+ * 	}
+ *
+ * 	export function foo2() {
+ * 		return memoized() + 2;
+ * 	}
  */
+
 export const once = <A>(f: Function.LazyArg<A>): Function.LazyArg<A> => {
 	let store = Option.none<A>();
 	const cached: Function.LazyArg<A> = () =>

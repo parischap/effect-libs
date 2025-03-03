@@ -355,7 +355,7 @@ export const orElse =
  * 	const handlePrimitive = (value: MTypes.Primitive) => value;
  * 	const handleNonPrimitive = (value: MTypes.NonPrimitive) => value;
  *
- * 	export const testMatcher = (value: unknown) =>
+ * 	export const testMatcher = (value: MTypes.Unknown) =>
  * 		pipe(
  * 			value,
  * 			MMatch.make,
