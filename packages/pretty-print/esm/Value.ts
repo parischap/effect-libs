@@ -6,10 +6,8 @@
 import { MInspectable, MPipeable, MString, MTypes } from '@parischap/effect-lib';
 import {
 	Array,
-	Order as EOrder,
 	Equal,
 	Equivalence,
-	flow,
 	Hash,
 	Inspectable,
 	pipe,
@@ -288,57 +286,3 @@ export const hasSymbolicKey: MTypes.OneArgFunction<All, boolean> = Struct.get('h
  * @category Destructors
  */
 export const isEnumerable: MTypes.OneArgFunction<All, boolean> = Struct.get('isEnumerable');
-
-/**
- * Namespace for Value ordering
- *
- * @category Models
- */
-export namespace Order {
-	/**
-	 * Type of an Order on a Value.All
-	 *
-	 * @category Models
-	 */
-	export interface Type extends EOrder.Order<All> {}
-	/**
-	 * Order instance based on the `protoDepth` property, lowest depth first
-	 *
-	 * @category Ordering
-	 */
-	export const byProtoDepth: Type = EOrder.mapInput(EOrder.number, protoDepth);
-
-	/**
-	 * Order instance based on the `oneLineStringKey` property
-	 *
-	 * @category Ordering
-	 */
-	export const byOneLineStringKey: Type = EOrder.mapInput(EOrder.string, oneLineStringKey);
-
-	/**
-	 * Order instance based on the callability of the `content` property (non functions first, then
-	 * functions)
-	 *
-	 * @category Ordering
-	 */
-	export const byCallability: Type = EOrder.mapInput(
-		EOrder.boolean,
-		flow(contentType, MTypes.Category.isFunction)
-	);
-
-	/**
-	 * Order instance based on the type of the key associated to the value (symbolic keys first, then
-	 * string keys)
-	 *
-	 * @category Ordering
-	 */
-	export const byKeyType: Type = EOrder.mapInput(EOrder.reverse(EOrder.boolean), hasSymbolicKey);
-
-	/**
-	 * Order instance based on the enumerability of the property to which the value belongs
-	 * (non-enumerable keys first, then enumerable keys)
-	 *
-	 * @category Ordering
-	 */
-	export const byEnumerability: Type = EOrder.mapInput(EOrder.boolean, isEnumerable);
-}

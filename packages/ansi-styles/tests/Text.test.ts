@@ -13,12 +13,12 @@ const notBold = ASText.fromStyleAndElems(ASStyleCharacteristics.notBold);
 const notUnderlined = ASText.fromStyleAndElems(ASStyleCharacteristics.notUnderlined);
 
 const red = pipe(
-	ASColor.ThreeBit.red,
+	ASColor.threeBitRed,
 	ASStyleCharacteristics.fromColorAsForegroundColor,
 	ASText.fromStyleAndElems
 );
 const pink = pipe(
-	ASColor.Rgb.pink,
+	ASColor.rgbPink,
 	ASStyleCharacteristics.fromColorAsForegroundColor,
 	ASText.fromStyleAndElems
 );
@@ -69,7 +69,7 @@ describe('ASText', () => {
 		});
 
 		it('.pipe()', () => {
-			expect(boldRedFoo.pipe(ASText.length)).toBe(3);
+			expect(boldRedFoo.pipe(ASText.toLength)).toBe(3);
 		});
 
 		describe('has', () => {
@@ -83,7 +83,7 @@ describe('ASText', () => {
 	});
 
 	it('length', () => {
-		expect(ASText.length(dim(pink('foo'), red('bar')))).toBe(6);
+		expect(ASText.toLength(dim(pink('foo'), red('bar')))).toBe(6);
 	});
 
 	it('concat', () => {

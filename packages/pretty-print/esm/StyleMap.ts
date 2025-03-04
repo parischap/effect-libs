@@ -1,7 +1,7 @@
 /**
- * This module implements a map of ContextFormatter's (see
+ * This module implements a map of ContextStyler's (see
  *
- * @parischap/ansi-styles/ContextFormatter.ts). These ContextFormatter's are used to style the different parts of a
+ * @parischap/ansi-styles/ContextStyler.ts). These ContextStyler's are used to style the different parts of a
  * stringified value.
  *
  * With the make function, you can define your own instances if the provided ones don't suit your
@@ -194,7 +194,7 @@ export const darkMode: Type = make({
 });
 
 /**
- * StyleMap instance that doesn't apply any formatting (uses the none ContextFormatter of the
+ * StyleMap instance that doesn't apply any formatting (uses the none ContextStyler of the
  * ansi-styles library for all parts to be formatted)
  *
  * @category Instances

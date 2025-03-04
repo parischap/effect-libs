@@ -93,11 +93,11 @@ describe('PropertyFilter', () => {
 		);
 	});
 
-	it('removeNotFulfillingKeyPredicate', () => {
+	it('removeNotFulfillingKeyPredicateMaker', () => {
 		expect(
 			pipe(
 				values,
-				PPPropertyFilter.removeNotFulfillingKeyPredicate({
+				PPPropertyFilter.removeNotFulfillingKeyPredicateMaker({
 					id: 'OnlyLength',
 					predicate: MFunction.strictEquals('length')
 				})

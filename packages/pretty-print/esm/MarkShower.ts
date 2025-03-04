@@ -1,8 +1,7 @@
 /**
- * Namespace of a MarkShower. A MarkShower is a ContextFormatter (see
- *
- * @parischap/ContextFromatter.ts> used as a reversed action. It always displays the same text but
- * in a style that depends on the Value context object.
+ * Namespace of a MarkShower. A MarkShower is a ContextStyler (see @parischap/ContextStyler.ts> used
+ * as a reversed action. It always displays the same text but in a style that depends on the Value
+ * context object.
  */
 import { ASContextStyler, ASText } from '@parischap/ansi-styles';
 import * as PPValue from './Value.js';

@@ -40,6 +40,7 @@ import * as PPStringifiedValue from './StringifiedValue.js';
 import * as PPStyleMap from './StyleMap.js';
 import * as PPValue from './Value.js';
 import * as PPValueBasedStylerConstructor from './ValueBasedStylerConstructor.js';
+import * as PPValueOrder from './ValueOrder.js';
 import * as PPValues from './Values.js';
 
 /**
@@ -242,7 +243,7 @@ export namespace NonPrimitive {
 		 * ValueOrder is used to sort properties of non primitive values just after application of the
 		 * propertyFilters.
 		 */
-		readonly propertySortOrder: Option.Option<PPValue.Order.Type>;
+		readonly propertySortOrder: Option.Option<PPValueOrder.Type>;
 
 		/**
 		 * Non-primitive values can have several properties with the same key, for instance in an object

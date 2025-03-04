@@ -1,10 +1,10 @@
 /**
  * This module implements a type that takes care of the formatting of primitive values, e.g.
- * surround strings in quotes, add 'n' at the end of a bigint, display numbers with thousand
+ * surround strings in quotes, add 'n' at the end of a bigint, display numbers with a thousand
  * separator,...
  *
- * This module implements several PrimitiveFormatter instances. With the make function, you can
- * define your own instances if the provided ones don't suit your needs.
+ * With the make function, you can define your own instances if the provided ones don't suit your
+ * needs.
  */
 
 import { MFunction, MInspectable, MMatch, MPipeable, MString, MTypes } from '@parischap/effect-lib';

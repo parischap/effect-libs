@@ -1,5 +1,5 @@
 /**
- * Alias for ASContextStyler.Type<PPValue.All> (see @parischap/ansi-style/ContextFormatter.ts and
+ * Alias for ASContextStyler.Type<PPValue.All> (see @parischap/ansi-style/ContextStyler.ts and
  * Value.ts)
  */
 

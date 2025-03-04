@@ -1,8 +1,8 @@
 /**
- * A ContextFormatter is a type that allows you to format a string differently depending on the
- * value of a context object. It encapsulates a Palette (see Palette.ts) that contains `n` styles
- * and a function that takes a context object and returns an index `i`. It uses the Style at
- * position i % n, where % is the modulo function.
+ * A ContextStyler is a type that allows you to format a string differently depending on the value
+ * of a context object. It encapsulates a Palette (see Palette.ts) that contains `n` styles and a
+ * function that takes a context object and returns an index `i`. It uses the Style at position i %
+ * n, where % is the modulo function.
  */
 
 import { MArray, MFunction, MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
@@ -25,7 +25,7 @@ const _UnistyledTag = 'Unistyled';
 const _PaletteBasedTag = 'PaletteBased';
 
 /**
- * Namespace of a ContextFormatter used as an action
+ * Namespace of a ContextStyler used as an action
  *
  * @category Models
  */
@@ -39,13 +39,13 @@ export namespace DirectAction {
 }
 
 /**
- * Namespace of a ContextFormatter used as an action with flipped parameters
+ * Namespace of a ContextStyler used as an action with flipped parameters
  *
  * @category Models
  */
 export namespace ReversedAction {
 	/**
-	 * Namespace of an initialized ContextFormatter used as an action with flipped parameters
+	 * Namespace of an initialized ContextStyler used as an action with flipped parameters
 	 *
 	 * @category Models
 	 */
@@ -67,7 +67,7 @@ export namespace ReversedAction {
 }
 
 /**
- * Namespace of a ContextFormatter used as an action
+ * Namespace of a ContextStyler used as an action
  *
  * @category Models
  */
@@ -83,7 +83,7 @@ export namespace Action {
 }
 
 /**
- * Type of a ContextFormatter
+ * Type of a ContextStyler
  *
  * @category Models
  */
@@ -113,14 +113,14 @@ export const isPaletteBased = (u: Type<never>): u is PaletteBased.Type<never> =>
 	u[_TagSymbol] === _PaletteBasedTag;
 
 /**
- * Namespace for a Unistyled ContextFormatter, i.e. a ContextFormatter which always applies the same
- * style (which can be Style.none) and therefore does not care for a context
+ * Namespace for a Unistyled ContextStyler, i.e. a ContextStyler which always applies the same style
+ * (which can be Style.none) and therefore does not care for a context
  *
  * @category Models
  */
 export namespace Unistyled {
 	/**
-	 * Unistyled ContextFormatter Type
+	 * Unistyled ContextStyler Type
 	 *
 	 * @category Models
 	 */
@@ -193,7 +193,7 @@ export namespace Unistyled {
 }
 
 /**
- * Namespace for a Palette-based ContextFormatter
+ * Namespace for a Palette-based ContextStyler
  *
  * @category Models
  */
@@ -215,7 +215,7 @@ export namespace PaletteBased {
 	}
 
 	/**
-	 * Type that represents a Palette-based ContextFormatter
+	 * Type that represents a Palette-based ContextStyler
 	 *
 	 * @category Models
 	 */
@@ -223,7 +223,7 @@ export namespace PaletteBased {
 		/** Function that takes a context object and derives an index from it */
 		readonly indexFromContext: IndexFromContext.Type<C>;
 
-		/** Palette used by this ContextFormatter */
+		/** Palette used by this ContextStyler */
 		readonly palette: ASPalette.Type;
 
 		/** @internal */
@@ -305,7 +305,7 @@ export namespace PaletteBased {
 }
 
 /**
- * None ContextFormatter instance: does not apply any style, does not provide a defaultText
+ * None ContextStyler instance: does not apply any style, does not provide a defaultText
  *
  * @category Instances
  */

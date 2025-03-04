@@ -18,14 +18,14 @@ export interface Type extends MTypes.OneArgFunction<string, PPMarkShower.Type> {
 /**
  * Creates a MarkShowerConstructor that will return a MarkShower from `markName` and `option`.
  * Concretely, this markShower will display the text attached to markName in option.markMap using
- * the reversed action of the ValueBasedContextFormatter attached to markName in option.markMap
+ * the reversed action of the ValueBasedContextStyler attached to markName in option.markMap
  *
  * @category Constructors
  */
 export const fromOption = (option: PPOption.Type): Type => {
 	const markShowerMap = HashMap.map(option.markMap.marks, ({ text, partName }) =>
-		pipe(option.styleMap, PPStyleMap.get(partName), (contextFormatter) =>
-			contextFormatter.withContextLast(text)
+		pipe(option.styleMap, PPStyleMap.get(partName), (contextStyler) =>
+			contextStyler.withContextLast(text)
 		)
 	);
 
@@ -36,10 +36,3 @@ export const fromOption = (option: PPOption.Type): Type => {
 			Option.getOrElse(Function.constant(PPMarkShower.empty))
 		);
 };
-
-/**
- * Creates a MarkShowerConstructor that always returns the empty MarkShower
- *
- * @category Constructors
- */
-export const emptyConstructor: Type = () => PPMarkShower.empty;

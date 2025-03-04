@@ -37,7 +37,7 @@ export interface Inspectable extends EInspectable.Inspectable {
  * prototype) has a `[IdSymbol]` function, returns the result of this function. Otherwise, return
  * this with an extra '_id' field containing the moduleTag.
  *
- * @category Instances
+ * @category Constants
  */
 export const BaseProto = (moduleTag: string): EInspectable.Inspectable => ({
 	...EInspectable.BaseProto,

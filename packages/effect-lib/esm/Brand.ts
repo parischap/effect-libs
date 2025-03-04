@@ -24,7 +24,11 @@ type RefinedConstructor<B, A extends Brand.Brand<string | symbol> & B> = MTypes.
 	>;
 };
 
-/** This namespace implements an Email brand. */
+/**
+ * This namespace implements an Email brand
+ *
+ * @category Models
+ */
 export namespace Email {
 	const namespaceTag = moduleTag + 'Email/';
 	const _TypeId: unique symbol = Symbol.for(namespaceTag) as _TypeId;
@@ -54,7 +58,11 @@ export namespace Email {
 	);
 }
 
-/** This namespace implements a SemVer brand. */
+/**
+ * This namespace implements a SemVer brand
+ *
+ * @category Models
+ */
 export namespace SemVer {
 	const namespaceTag = moduleTag + 'SemVer/';
 	const _TypeId: unique symbol = Symbol.for(namespaceTag) as _TypeId;
@@ -85,7 +93,11 @@ export namespace SemVer {
 	);
 }
 
-/** This namespace implements a finite real number brand (no Infinity or Nan) */
+/**
+ * This namespace implements a finite real number brand (no Infinity or Nan)
+ *
+ * @category Models
+ */
 export namespace Real {
 	const namespaceTag = moduleTag + 'Real/';
 	const _TypeId: unique symbol = Symbol.for(namespaceTag) as _TypeId;
@@ -115,7 +127,11 @@ export namespace Real {
 	);
 }
 
-/** This namespace implements a finite integer brand (no Infinity or Nan) */
+/**
+ * This namespace implements a finite integer brand (no Infinity or Nan)
+ *
+ * @category Models
+ */
 export namespace Int {
 	const namespaceTag = moduleTag + 'Int/';
 	const _TypeId: unique symbol = Symbol.for(namespaceTag) as _TypeId;
@@ -153,7 +169,11 @@ export namespace Int {
 	export const fromReal: RefinedConstructor<Real.Type, Type> = _fromNumber(MNumber.isInt);
 }
 
-/** This namespace implements a integer range brand. */
+/**
+ * This namespace implements a integer range brand
+ *
+ * @category Models
+ */
 export namespace IntRange {
 	/**
 	 * IntRange type
@@ -220,7 +240,11 @@ export namespace IntRange {
 		_fromNumber<Name>(minimum, maximum, Number.between({ minimum, maximum })) as never;
 }
 
-/** This namespace implements a positive integer brand. */
+/**
+ * This namespace implements a positive integer brand
+ *
+ * @category Models
+ */
 export namespace PositiveInt {
 	const namespaceTag = moduleTag + 'PositiveInt/';
 	const _TypeId: unique symbol = Symbol.for(namespaceTag) as _TypeId;

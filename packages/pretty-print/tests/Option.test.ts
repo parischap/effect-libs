@@ -8,7 +8,8 @@ import {
 	PPPropertyFilter,
 	PPStringifiedValue,
 	PPValue,
-	PPValueBasedStylerConstructor
+	PPValueBasedStylerConstructor,
+	PPValueOrder
 } from '@parischap/pretty-print';
 import { Array, Equal, HashMap, HashSet, Option, pipe, Predicate } from 'effect';
 import { describe, expect, it } from 'vitest';
@@ -254,7 +255,7 @@ describe('Option', () => {
 				generalNonPrimitiveOption: {
 					...PPOption.NonPrimitive.record,
 					propertyFilters: Array.of(
-						PPPropertyFilter.removeNotFulfillingKeyPredicate({
+						PPPropertyFilter.removeNotFulfillingKeyPredicateMaker({
 							id: 'keepAAndLength',
 							predicate: Predicate.or(MFunction.strictEquals('a'), MFunction.strictEquals('length'))
 						})
@@ -281,7 +282,7 @@ describe('Option', () => {
 				...PPOption.utilInspectLike,
 				generalNonPrimitiveOption: {
 					...PPOption.NonPrimitive.record,
-					propertySortOrder: Option.some(PPValue.Order.byOneLineStringKey)
+					propertySortOrder: Option.some(PPValueOrder.byOneLineStringKey)
 				}
 			})
 		);

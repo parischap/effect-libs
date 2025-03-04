@@ -1,6 +1,6 @@
 /**
  * A Palette is a type that groups several styles under an id. It is mainly used to build
- * ContextFormatters (see ContextFormatter.ts).
+ * ContextStylers (see ContextStyler.ts).
  *
  * With the make function, you can define your own instances if the provided ones don't suit your
  * needs.

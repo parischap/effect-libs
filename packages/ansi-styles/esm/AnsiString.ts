@@ -18,7 +18,11 @@ export type Type = string;
  */
 export interface Sequence extends ReadonlyArray<number> {}
 
-/** Same as Sequence but must constain at least one number */
+/**
+ * Same as Sequence but must constain at least one number
+ *
+ * @category Models
+ */
 export interface NonEmptySequence extends MTypes.ReadonlyOverOne<number> {}
 
 /**
@@ -47,13 +51,13 @@ export const fromSequence: MTypes.OneArgFunction<Sequence, string> = flow(
 /**
  * Empty AnsiString instance
  *
- * @category Constructors
+ * @category Instances
  */
 export const empty: Type = '';
 
 /**
  * Reset AnsiString instance
  *
- * @category Constructors
+ * @category Instances
  */
 export const reset: Type = fromNonEmptySequence(Array.of(0));

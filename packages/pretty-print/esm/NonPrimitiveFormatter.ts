@@ -1,9 +1,9 @@
 /**
- * This module implements a type that takes care of the formatting of non primitive values. From the
+ * This module implements a type that takes care of the formatting of non-primitive values. From the
  * stringified representation of the properties of a non-primitive value which it receives, it must
  * return the stringified representation of the whole non-primitive value. It can take care of
- * aspects like printing on a single or multiple lines, indentation when printing on multiple lines,
- * adding specific array/object marks,...
+ * aspects like adding specific array/object marks, printing on a single or multiple lines,
+ * indentation when printing on multiple lines, ...
  *
  * With the make function, you can define your own instances if the provided ones don't suit your
  * needs.
@@ -331,15 +331,15 @@ export const splitOnTotalLengthMaker = (limit: number): Type =>
 					MMatch.when(
 						flow(
 							MTuple.makeBothBy({
-								toFirst: PPStringifiedProperties.length,
+								toFirst: PPStringifiedProperties.toLength,
 								toSecond: Array.match({
-									onEmpty: Function.constant(ASText.length(header) + delimitersLengthWhenEmpty),
+									onEmpty: Function.constant(ASText.toLength(header) + delimitersLengthWhenEmpty),
 									onNonEmpty: flow(
 										Array.length,
 										Number.decrement,
 										Number.multiply(inBetweenSepLength),
 										Number.sum(delimitersLength),
-										Number.sum(ASText.length(header))
+										Number.sum(ASText.toLength(header))
 									)
 								})
 							}),
@@ -369,7 +369,7 @@ export const splitOnLongestPropLengthMaker = (limit: number): Type =>
 				flow(
 					MMatch.make,
 					MMatch.when(
-						flow(PPStringifiedProperties.longestPropLength, Number.lessThanOrEqualTo(limit)),
+						flow(PPStringifiedProperties.toLongestPropLength, Number.lessThanOrEqualTo(limit)),
 						initializedSingleLine({ value, header })
 					),
 					MMatch.orElse(initilizedTabify({ value, header }))

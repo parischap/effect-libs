@@ -50,11 +50,11 @@ describe('StringifiedValue', () => {
 
 	describe('length', () => {
 		it('With empty StringifiedValue', () => {
-			expect(pipe(PPStringifiedValue.length(PPStringifiedValue.empty))).toBe(0);
+			expect(pipe(PPStringifiedValue.toLength(PPStringifiedValue.empty))).toBe(0);
 		});
 
 		it('With non-empty StringifiedValue', () => {
-			expect(pipe(PPStringifiedValue.length(test1))).toBe(6);
+			expect(pipe(PPStringifiedValue.toLength(test1))).toBe(6);
 		});
 	});
 

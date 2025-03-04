@@ -123,18 +123,3 @@ export const utilInspectLike: Type = make({
 		['TreeIndentForTailLinesOfLastProp', { text: '   ', partName: 'Indentation' }]
 	)
 });
-
-/**
- * Default MarkMap instance but nullables are not shown
- *
- * @category Instances
- */
-
-export const defaultsHideNullables: Type = make({
-	id: 'DefaultsHideNullables',
-	marks: pipe(
-		utilInspectLike.marks,
-		HashMap.set('NullValue', { text: '', partName: 'NullValue' }),
-		HashMap.set('UndefinedValue', { text: '', partName: 'UndefinedValue' })
-	)
-});

@@ -3,7 +3,7 @@
  * foreground and background colors, whether it's bold or not,... These characteristics are those of
  * the Select Graphic Rendition subset for which info can be found at
  * https://stackoverflow.com/questions/4842424/list-of-ansi-color-escape-sequences. Each
- * characteristic is defined as an option, none meaning that the corresponding characteristic has
+ * characteristic is defined as an option, `none` meaning that the corresponding characteristic has
  * not been set. It is important to note that although dim and bold use the same reset sequence
  * (i.e. 22), they are completely different characteristics (i.e. a style can be bold and dim at the
  * same time, or just bold, or just dim).

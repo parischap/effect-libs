@@ -1,5 +1,5 @@
 /**
- * This module implements a type that takes care of filtering properties when printing non primitive
+ * This module implements a type that takes care of filtering properties when printing non-primitive
  * values.
  *
  * With the make function, you can define your own instances if the provided ones don't suit your
@@ -180,7 +180,7 @@ export const removeSymbolicKeys: Type = make({
  *
  * @category Constructors
  */
-export const removeNotFulfillingKeyPredicate = ({
+export const removeNotFulfillingKeyPredicateMaker = ({
 	id,
 	predicate
 }: {

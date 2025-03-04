@@ -62,7 +62,7 @@ export const decAndFracParts = (self: number): [decPart: number, fracPart: numbe
  *
  * @category Utils
  */
-// DO NOT USE A TACIT FUNCTION because Number.isFinite takes an unknwon parameter
+// DO NOT USE A TACIT FUNCTION because Number.isFinite takes an unknown parameter
 export const isNotFinite = (self: number) => !Number.isFinite(self);
 
 /**
@@ -99,6 +99,6 @@ export const shift = (n: number) => (self: number) => self * Math.pow(10, n);
 /**
  * Alias to javascript Number.EPSILON
  *
- * @category Utils
+ * @category Constants
  */
 export const EPSILON = Number.EPSILON;

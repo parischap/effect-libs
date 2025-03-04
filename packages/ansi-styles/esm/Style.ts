@@ -288,56 +288,56 @@ export const color = (color: ASColor.Type): Type =>
  *
  * @category Original instances
  */
-export const black: Type = color(ASColor.ThreeBit.black);
+export const black: Type = color(ASColor.threeBitBlack);
 
 /**
  * Original red color style instance
  *
  * @category Original instances
  */
-export const red: Type = color(ASColor.ThreeBit.red);
+export const red: Type = color(ASColor.threeBitRed);
 
 /**
  * Original green color style instance
  *
  * @category Original instances
  */
-export const green: Type = color(ASColor.ThreeBit.green);
+export const green: Type = color(ASColor.threeBitGreen);
 
 /**
  * Original yellow color style instance
  *
  * @category Original instances
  */
-export const yellow: Type = color(ASColor.ThreeBit.yellow);
+export const yellow: Type = color(ASColor.threeBitYellow);
 
 /**
  * Original blue color style instance
  *
  * @category Original instances
  */
-export const blue: Type = color(ASColor.ThreeBit.blue);
+export const blue: Type = color(ASColor.threeBitBlue);
 
 /**
  * Original magenta color style instance
  *
  * @category Original instances
  */
-export const magenta: Type = color(ASColor.ThreeBit.magenta);
+export const magenta: Type = color(ASColor.threeBitMagenta);
 
 /**
  * Original cyan color style instance
  *
  * @category Original instances
  */
-export const cyan: Type = color(ASColor.ThreeBit.cyan);
+export const cyan: Type = color(ASColor.threeBitCyan);
 
 /**
  * Original white color style instance
  *
  * @category Original instances
  */
-export const white: Type = color(ASColor.ThreeBit.white);
+export const white: Type = color(ASColor.threeBitWhite);
 
 /**
  * Namespace for bright original colors
@@ -350,56 +350,56 @@ export namespace Bright {
 	 *
 	 * @category Original instances
 	 */
-	export const black: Type = color(ASColor.ThreeBit.Bright.black);
+	export const black: Type = color(ASColor.threeBitBrightBlack);
 
 	/**
 	 * Original bright red color style instance
 	 *
 	 * @category Original instances
 	 */
-	export const red: Type = color(ASColor.ThreeBit.Bright.red);
+	export const red: Type = color(ASColor.threeBitBrightRed);
 
 	/**
 	 * Original bright green color style instance
 	 *
 	 * @category Original instances
 	 */
-	export const green: Type = color(ASColor.ThreeBit.Bright.green);
+	export const green: Type = color(ASColor.threeBitBrightGreen);
 
 	/**
 	 * Original bright yellow color style instance
 	 *
 	 * @category Original instances
 	 */
-	export const yellow: Type = color(ASColor.ThreeBit.Bright.yellow);
+	export const yellow: Type = color(ASColor.threeBitBrightYellow);
 
 	/**
 	 * Original bright blue color style instance
 	 *
 	 * @category Original instances
 	 */
-	export const blue: Type = color(ASColor.ThreeBit.Bright.blue);
+	export const blue: Type = color(ASColor.threeBitBrightBlue);
 
 	/**
 	 * Original bright magenta color style instance
 	 *
 	 * @category Original instances
 	 */
-	export const magenta: Type = color(ASColor.ThreeBit.Bright.magenta);
+	export const magenta: Type = color(ASColor.threeBitBrightMagenta);
 
 	/**
 	 * Original bright cyan color style instance
 	 *
 	 * @category Original instances
 	 */
-	export const cyan: Type = color(ASColor.ThreeBit.Bright.cyan);
+	export const cyan: Type = color(ASColor.threeBitBrightCyan);
 
 	/**
 	 * Original bright white color style instance
 	 *
 	 * @category Original instances
 	 */
-	export const white: Type = color(ASColor.ThreeBit.Bright.white);
+	export const white: Type = color(ASColor.threeBitBrightWhite);
 }
 
 /**
@@ -430,56 +430,56 @@ export namespace Bg {
 	 *
 	 * @category Original instances
 	 */
-	export const black: Type = color(ASColor.ThreeBit.black);
+	export const black: Type = color(ASColor.threeBitBlack);
 
 	/**
 	 * Original red color style instance
 	 *
 	 * @category Original instances
 	 */
-	export const red: Type = color(ASColor.ThreeBit.red);
+	export const red: Type = color(ASColor.threeBitRed);
 
 	/**
 	 * Original green color style instance
 	 *
 	 * @category Original instances
 	 */
-	export const green: Type = color(ASColor.ThreeBit.green);
+	export const green: Type = color(ASColor.threeBitGreen);
 
 	/**
 	 * Original yellow color style instance
 	 *
 	 * @category Original instances
 	 */
-	export const yellow: Type = color(ASColor.ThreeBit.yellow);
+	export const yellow: Type = color(ASColor.threeBitYellow);
 
 	/**
 	 * Original blue color style instance
 	 *
 	 * @category Original instances
 	 */
-	export const blue: Type = color(ASColor.ThreeBit.blue);
+	export const blue: Type = color(ASColor.threeBitBlue);
 
 	/**
 	 * Original magenta color style instance
 	 *
 	 * @category Original instances
 	 */
-	export const magenta: Type = color(ASColor.ThreeBit.magenta);
+	export const magenta: Type = color(ASColor.threeBitMagenta);
 
 	/**
 	 * Original cyan color style instance
 	 *
 	 * @category Original instances
 	 */
-	export const cyan: Type = color(ASColor.ThreeBit.cyan);
+	export const cyan: Type = color(ASColor.threeBitCyan);
 
 	/**
 	 * Original white color style instance
 	 *
 	 * @category Original instances
 	 */
-	export const white: Type = color(ASColor.ThreeBit.white);
+	export const white: Type = color(ASColor.threeBitWhite);
 
 	/**
 	 * Namespace for bright original colors
@@ -492,55 +492,55 @@ export namespace Bg {
 		 *
 		 * @category Original instances
 		 */
-		export const black: Type = color(ASColor.ThreeBit.Bright.black);
+		export const black: Type = color(ASColor.threeBitBrightBlack);
 
 		/**
 		 * Original bright red color style instance
 		 *
 		 * @category Original instances
 		 */
-		export const red: Type = color(ASColor.ThreeBit.Bright.red);
+		export const red: Type = color(ASColor.threeBitBrightRed);
 
 		/**
 		 * Original bright green color style instance
 		 *
 		 * @category Original instances
 		 */
-		export const green: Type = color(ASColor.ThreeBit.Bright.green);
+		export const green: Type = color(ASColor.threeBitBrightGreen);
 
 		/**
 		 * Original bright yellow color style instance
 		 *
 		 * @category Original instances
 		 */
-		export const yellow: Type = color(ASColor.ThreeBit.Bright.yellow);
+		export const yellow: Type = color(ASColor.threeBitBrightYellow);
 
 		/**
 		 * Original bright blue color style instance
 		 *
 		 * @category Original instances
 		 */
-		export const blue: Type = color(ASColor.ThreeBit.Bright.blue);
+		export const blue: Type = color(ASColor.threeBitBrightBlue);
 
 		/**
 		 * Original bright magenta color style instance
 		 *
 		 * @category Original instances
 		 */
-		export const magenta: Type = color(ASColor.ThreeBit.Bright.magenta);
+		export const magenta: Type = color(ASColor.threeBitBrightMagenta);
 
 		/**
 		 * Original bright cyan color style instance
 		 *
 		 * @category Original instances
 		 */
-		export const cyan: Type = color(ASColor.ThreeBit.Bright.cyan);
+		export const cyan: Type = color(ASColor.threeBitBrightCyan);
 
 		/**
 		 * Original bright white color style instance
 		 *
 		 * @category Original instances
 		 */
-		export const white: Type = color(ASColor.ThreeBit.Bright.white);
+		export const white: Type = color(ASColor.threeBitBrightWhite);
 	}
 }

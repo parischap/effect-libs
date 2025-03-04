@@ -1,6 +1,6 @@
 /**
  * Type that is an alias for an array of StringifiedValue's (see StringifiedValue.ts). It represents
- * the output of the stringification process of the properties of a record.
+ * the output of the stringification process of the properties of a non-primitive value.
  */
 
 import { ASText } from '@parischap/ansi-styles';
@@ -89,8 +89,8 @@ export const treeify = ({
  *
  * @category Destructors
  */
-export const length: MTypes.OneArgFunction<Type, number> = flow(
-	Array.map(PPStringifiedValue.length),
+export const toLength: MTypes.OneArgFunction<Type, number> = flow(
+	Array.map(PPStringifiedValue.toLength),
 	Number.sumAll
 );
 
@@ -99,8 +99,8 @@ export const length: MTypes.OneArgFunction<Type, number> = flow(
  *
  * @category Destructors
  */
-export const longestPropLength: MTypes.OneArgFunction<Type, number> = flow(
-	Array.map(PPStringifiedValue.length),
+export const toLongestPropLength: MTypes.OneArgFunction<Type, number> = flow(
+	Array.map(PPStringifiedValue.toLength),
 	Array.match({
 		onEmpty: Function.constant(0),
 		onNonEmpty: Array.max(Order.number)

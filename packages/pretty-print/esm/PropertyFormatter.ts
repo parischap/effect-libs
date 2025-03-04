@@ -251,7 +251,7 @@ const _keyAndValueAction = ({
  * a record is printed). A mark can be prepended or appended to the key to show if the property
  * comes from the object itself or from one of its prototypes.
  *
- * @category Constructors
+ * @category Instances
  */
 export const keyAndValue: Type = make({
 	id: 'KeyAndValue',
@@ -261,10 +261,10 @@ export const keyAndValue: Type = make({
 /**
  * PropertyFormatter instance that :
  *
- * - For a leaf: merges the last line of the key with the first line of the value
+ * - For a leaf: does the same as keyAndValue
  * - For a non-leaf: prints the key and value on separate lines without any key/value separator
  *
- * @category Constructors
+ * @category Instances
  */
 export const treeify: Type = make({
 	id: 'Treeify',
@@ -277,7 +277,7 @@ export const treeify: Type = make({
  * - For a leaf: prints only the key
  * - For a non-leaf: prints the key and value on separate lines without any key/value separator
  *
- * @category Constructors
+ * @category Instances
  */
 export const treeifyHideLeafValues: Type = make({
 	id: 'Treeify',

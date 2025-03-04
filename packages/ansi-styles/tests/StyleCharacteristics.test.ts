@@ -12,25 +12,25 @@ describe('ASStyleCharacteristics', () => {
 	const boldItalicBrightGreenInBlue = pipe(
 		boldItalic,
 		ASStyleCharacteristics.mergeUnder(
-			ASStyleCharacteristics.fromColorAsForegroundColor(ASColor.ThreeBit.Bright.green)
+			ASStyleCharacteristics.fromColorAsForegroundColor(ASColor.threeBitBrightGreen)
 		),
 		ASStyleCharacteristics.mergeUnder(
-			ASStyleCharacteristics.fromColorAsBackgroundColor(ASColor.EightBit.blue)
+			ASStyleCharacteristics.fromColorAsBackgroundColor(ASColor.eightBitBlue)
 		)
 	);
 	const bold1 = pipe(boldItalic, ASStyleCharacteristics.difference(ASStyleCharacteristics.italic));
 	const notBoldNotDimRed = pipe(
-		ASStyleCharacteristics.fromColorAsForegroundColor(ASColor.ThreeBit.red),
+		ASStyleCharacteristics.fromColorAsForegroundColor(ASColor.threeBitRed),
 		ASStyleCharacteristics.mergeUnder(ASStyleCharacteristics.notBold),
 		ASStyleCharacteristics.mergeUnder(ASStyleCharacteristics.notDim)
 	);
 	const boldNotDimRed = pipe(
-		ASStyleCharacteristics.fromColorAsForegroundColor(ASColor.ThreeBit.red),
+		ASStyleCharacteristics.fromColorAsForegroundColor(ASColor.threeBitRed),
 		ASStyleCharacteristics.mergeUnder(ASStyleCharacteristics.bold),
 		ASStyleCharacteristics.mergeUnder(ASStyleCharacteristics.notDim)
 	);
 	const notBoldDimRed = pipe(
-		ASStyleCharacteristics.fromColorAsForegroundColor(ASColor.ThreeBit.red),
+		ASStyleCharacteristics.fromColorAsForegroundColor(ASColor.threeBitRed),
 		ASStyleCharacteristics.mergeUnder(ASStyleCharacteristics.notBold),
 		ASStyleCharacteristics.mergeUnder(ASStyleCharacteristics.dim)
 	);

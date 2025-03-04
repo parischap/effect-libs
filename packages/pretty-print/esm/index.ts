@@ -15,4 +15,5 @@ export * as PPStyleMap from './StyleMap.js';
 export * as PPValue from './Value.js';
 export * as PPValueBasedStyler from './ValueBasedStyler.js';
 export * as PPValueBasedStylerConstructor from './ValueBasedStylerConstructor.js';
+export * as PPValueOrder from './ValueOrder.js';
 export * as PPValues from './Values.js';

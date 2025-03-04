@@ -37,6 +37,8 @@ export const moduleTag = '@parischap/effect-lib/String/';
 /**
  * This namespace implements a type that represents the result of the search of a string in another
  * string.
+ *
+ * @category Models
  */
 export namespace SearchResult {
 	const namespaceTag = moduleTag + 'SearchResult/';

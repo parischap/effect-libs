@@ -5,7 +5,7 @@ import { Pipeable } from 'effect';
 /**
  * Default prototype of a Pipeable
  *
- * @category Instances
+ * @category Constants
  */
 export const BaseProto: Pipeable.Pipeable = {
 	pipe(this: {}) {

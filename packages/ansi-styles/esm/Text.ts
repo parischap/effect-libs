@@ -169,7 +169,7 @@ namespace UniStyled {
 	 *
 	 * @category Utils
 	 */
-	export const length: MTypes.OneArgFunction<Type, number> = flow(
+	export const toLength: MTypes.OneArgFunction<Type, number> = flow(
 		Struct.get('text'),
 		String.length
 	);
@@ -262,9 +262,9 @@ export const uniStyledTexts: MTypes.OneArgFunction<
  *
  * @category Destructors
  */
-export const length: MTypes.OneArgFunction<Type, number> = flow(
+export const toLength: MTypes.OneArgFunction<Type, number> = flow(
 	uniStyledTexts,
-	Array.map(UniStyled.length),
+	Array.map(UniStyled.toLength),
 	Number.sumAll
 );
 
@@ -274,7 +274,7 @@ export const length: MTypes.OneArgFunction<Type, number> = flow(
  * @category Predicates
  */
 
-export const isEmpty: Predicate.Predicate<Type> = flow(length, MFunction.strictEquals(0));
+export const isEmpty: Predicate.Predicate<Type> = flow(toLength, MFunction.strictEquals(0));
 
 /**
  * Predicate that returns true if `self` is not empty

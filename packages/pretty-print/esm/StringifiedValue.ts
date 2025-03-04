@@ -124,8 +124,8 @@ export const prependToTailLines = (text: ASText.Type): MTypes.OneArgFunction<Typ
  *
  * @category Destructors
  */
-export const length: MTypes.OneArgFunction<Type, number> = flow(
-	Array.map(ASText.length),
+export const toLength: MTypes.OneArgFunction<Type, number> = flow(
+	Array.map(ASText.toLength),
 	Number.sumAll
 );
 
