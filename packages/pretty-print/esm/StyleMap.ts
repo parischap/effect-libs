@@ -123,7 +123,7 @@ export const styles: MTypes.OneArgFunction<Type, Styles.Type> = Struct.get('styl
  * @category Destructors
  */
 export const get = (partName: string): MTypes.OneArgFunction<Type, PPValueBasedStyler.Type> =>
-	flow(styles, HashMap.get(partName), Option.getOrElse(Function.constant(ASContextStyler.none)));
+	flow(styles, HashMap.get(partName), Option.getOrElse(Function.constant(ASContextStyler.none())));
 
 /**
  * StyleMap instance for ansi dark mode
@@ -133,8 +133,8 @@ export const get = (partName: string): MTypes.OneArgFunction<Type, PPValueBasedS
 export const darkMode: Type = make({
 	id: 'DarkMode',
 	styles: HashMap.make(
-		['Message', ASContextStyler.green],
-		['ToStringedObject', ASContextStyler.yellow],
+		['Message', ASContextStyler.green()],
+		['ToStringedObject', ASContextStyler.yellow()],
 		[
 			'PrimitiveValue',
 			PPValueBasedStyler.makeTypeIndexed(
@@ -167,9 +167,9 @@ export const darkMode: Type = make({
 				)
 			)
 		],
-		['PrototypeDelimiters', ASContextStyler.green],
-		['KeyValueSeparator', ASContextStyler.white],
-		['InBetweenPropertySeparator', ASContextStyler.white],
+		['PrototypeDelimiters', ASContextStyler.green()],
+		['KeyValueSeparator', ASContextStyler.white()],
+		['InBetweenPropertySeparator', ASContextStyler.white()],
 		[
 			'NonPrimitiveValueDelimiters',
 			PPValueBasedStyler.makeDepthIndexed(
@@ -184,12 +184,12 @@ export const darkMode: Type = make({
 				)
 			)
 		],
-		['Indentation', ASContextStyler.green],
-		['NonPrimitiveValueId', ASContextStyler.green],
-		['NonPrimitiveValueIdSeparator', ASContextStyler.green],
-		['PropertyNumbers', ASContextStyler.green],
-		['PropertyNumberSeparator', ASContextStyler.green],
-		['PropertyNumberDelimiters', ASContextStyler.green]
+		['Indentation', ASContextStyler.green()],
+		['NonPrimitiveValueId', ASContextStyler.green()],
+		['NonPrimitiveValueIdSeparator', ASContextStyler.green()],
+		['PropertyNumbers', ASContextStyler.green()],
+		['PropertyNumberSeparator', ASContextStyler.green()],
+		['PropertyNumberDelimiters', ASContextStyler.green()]
 	)
 });
 

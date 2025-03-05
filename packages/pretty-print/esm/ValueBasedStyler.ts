@@ -19,7 +19,7 @@ export type Type = ASContextStyler.Type<PPValue.All>;
  * @category Constructors
  */
 export const makeDepthIndexed = (palette: ASPalette.Type): Type =>
-	ASContextStyler.PaletteBased.make({
+	ASContextStyler.fromPalette({
 		// Use named function so the name gets printed by the toString function
 		indexFromContext: function valueDepth(value: PPValue.All) {
 			return PPValue.depth(value);
@@ -33,7 +33,7 @@ export const makeDepthIndexed = (palette: ASPalette.Type): Type =>
  * @category Constructors
  */
 export const makeTypeIndexed = (palette: ASPalette.Type): Type =>
-	ASContextStyler.PaletteBased.make({
+	ASContextStyler.fromPalette({
 		// Use named function so the name gets printed by the toString function
 		indexFromContext: function valueType(value: PPValue.All) {
 			return value.contentType;
@@ -47,7 +47,7 @@ export const makeTypeIndexed = (palette: ASPalette.Type): Type =>
  * @category Constructors
  */
 export const makeKeyTypeIndexed = (palette: ASPalette.Type): Type =>
-	ASContextStyler.PaletteBased.make({
+	ASContextStyler.fromPalette({
 		// Use named function so the name gets printed by the toString function
 		indexFromContext: function keyType(value: PPValue.All) {
 			// `1` for symbolic key, `0` for string key

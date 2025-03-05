@@ -43,9 +43,7 @@ describe('StyleMap', () => {
 
 	describe('get', () => {
 		it('Existing partname', () => {
-			expect(
-				pipe(PPStyleMap.darkMode, PPStyleMap.get('Message'), ASContextStyler.Unistyled.has)
-			).toBe(true);
+			expect(pipe(PPStyleMap.darkMode, PPStyleMap.get('Message'), ASContextStyler.has)).toBe(true);
 		});
 
 		it('Missing partname', () => {
