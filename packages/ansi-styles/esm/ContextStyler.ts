@@ -1,12 +1,10 @@
 /**
  * A ContextStyler is a type that allows you to format a string differently depending on the value
- * of a context object. It encapsulates a Palette (see Palette.ts) that contains `n` styles and a
- * function that takes a context object and returns an index `i`. It uses the Style at position i %
- * n, where % is the modulo function.
+ * of a context object.
  */
 
 import { MArray, MFunction, MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
-import { pipe, Pipeable, Predicate, String, Struct, Types } from 'effect';
+import { Equal, Equivalence, Hash, pipe, Pipeable, Predicate, String, Struct, Types } from 'effect';
 import * as ASPalette from './Palette.js';
 import * as ASStyle from './Style.js';
 import type * as ASText from './Text.js';
@@ -19,10 +17,6 @@ import type * as ASText from './Text.js';
 export const moduleTag = '@parischap/ansi-styles/ContextStyler/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
-
-const _TagSymbol: unique symbol = Symbol.for(moduleTag + '_TagSymbol/');
-const _UnistyledTag = 'Unistyled';
-const _PaletteBasedTag = 'PaletteBased';
 
 /**
  * Namespace of a ContextStyler used as an action
@@ -83,226 +77,124 @@ export namespace Action {
 }
 
 /**
- * Type of a ContextStyler
+ * Namespace of a function that transforms a context into an index
  *
  * @category Models
  */
-export type Type<C> = Unistyled.Type | PaletteBased.Type<C>;
-
-/**
- * Type guard
- *
- * @category Guards
- */
-export const has = (u: unknown): u is Type<never> => Predicate.hasProperty(u, _TypeId);
-const _has = has;
-
-/**
- * Type guard
- *
- * @category Guards
- */
-export const isUnistyled = (u: Type<never>): u is Unistyled.Type => u[_TagSymbol] === _UnistyledTag;
-
-/**
- * Type guard
- *
- * @category Guards
- */
-export const isPaletteBased = (u: Type<never>): u is PaletteBased.Type<never> =>
-	u[_TagSymbol] === _PaletteBasedTag;
-
-/**
- * Namespace for a Unistyled ContextStyler, i.e. a ContextStyler which always applies the same style
- * (which can be Style.none) and therefore does not care for a context
- *
- * @category Models
- */
-export namespace Unistyled {
+export namespace IndexFromContext {
 	/**
-	 * Unistyled ContextStyler Type
+	 * Type of an IndexFromContext
 	 *
 	 * @category Models
 	 */
-	export interface Type extends Action.Type<unknown>, MInspectable.Inspectable, Pipeable.Pipeable {
-		/** The style to apply */
-		readonly style: ASStyle.Type;
-
-		/** @internal */
-		readonly [_TagSymbol]: typeof _UnistyledTag;
-
-		/** @internal */
-		readonly [_TypeId]: _TypeId;
+	export interface Type<in C> {
+		(c: C): number;
 	}
-
-	/**
-	 * Type guard
-	 *
-	 * @category Guards
-	 */
-
-	export const has = (u: unknown): u is Type => _has(u) && isUnistyled(u);
-
-	/** Base */
-	const base: MTypes.Proto<Type> = {
-		[_TypeId]: _TypeId,
-		[_TagSymbol]: _UnistyledTag,
-		[MInspectable.IdSymbol](this: Type) {
-			return toId(this);
-		},
-		...MInspectable.BaseProto(moduleTag),
-		...MPipeable.BaseProto
-	};
-
-	/**
-	 * Constructor
-	 *
-	 * @category Constructors
-	 */
-	const _make = (params: MTypes.Data<Type, 'withContextLast'>): Type => {
-		return Object.assign((() => params.style) satisfies DirectAction.Type<unknown>, {
-			...base,
-			...params,
-			withContextLast: ((toStyle) => {
-				const styled = params.style(toStyle);
-				return () => styled;
-			}) satisfies ReversedAction.Type<unknown>
-		});
-	};
-
-	/**
-	 * Constructor
-	 *
-	 * @category Constructors
-	 */
-	export const make = (style: ASStyle.Type): Type => _make({ style });
-
-	/**
-	 * Gets the `style` property of `self`
-	 *
-	 * @category Destructors
-	 */
-	export const style: MTypes.OneArgFunction<Type, ASStyle.Type> = Struct.get('style');
-
-	/**
-	 * Gets the id of `self`
-	 *
-	 * @category Destructors
-	 */
-	export const toId = (self: Type): string => ASStyle.toId(self.style) + 'Formatter';
 }
 
 /**
- * Namespace for a Palette-based ContextStyler
+ * Type that represents a ContextStyler
  *
  * @category Models
  */
-export namespace PaletteBased {
-	/**
-	 * Namespace of a function that transforms a context into an index
-	 *
-	 * @category Models
-	 */
-	export namespace IndexFromContext {
-		/**
-		 * Type of an IndexFromContext
-		 *
-		 * @category Models
-		 */
-		export interface Type<in C> {
-			(c: C): number;
-		}
-	}
+export interface Type<in C>
+	extends Action.Type<C>,
+		Equal.Equal,
+		MInspectable.Inspectable,
+		Pipeable.Pipeable {
+	/** Id of this ContextStyler instance. Useful for equality and debugging */
+	readonly id: string;
 
-	/**
-	 * Type that represents a Palette-based ContextStyler
-	 *
-	 * @category Models
-	 */
-	export interface Type<in C> extends Action.Type<C>, MInspectable.Inspectable, Pipeable.Pipeable {
-		/** Function that takes a context object and derives an index from it */
-		readonly indexFromContext: IndexFromContext.Type<C>;
-
-		/** Palette used by this ContextStyler */
-		readonly palette: ASPalette.Type;
-
-		/** @internal */
-		readonly [_TagSymbol]: typeof _PaletteBasedTag;
-
-		/** @internal */
-		readonly [_TypeId]: {
-			readonly _C: Types.Contravariant<C>;
-		};
-	}
-
-	/**
-	 * Type guard
-	 *
-	 * @category Guards
-	 */
-
-	export const has = (u: unknown): u is Type<never> => _has(u) && isPaletteBased(u);
-
-	/** Base */
-	/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-	const base: MTypes.Proto<Type<any>> = {
-		[_TypeId]: {
-			_C: MTypes.contravariantValue
-		},
-		[_TagSymbol]: _PaletteBasedTag,
-		[MInspectable.IdSymbol]<C>(this: Type<C>) {
-			return toId(this);
-		},
-		...MInspectable.BaseProto(moduleTag),
-		...MPipeable.BaseProto
+	/** @internal */
+	readonly [_TypeId]: {
+		readonly _C: Types.Contravariant<C>;
 	};
-
-	/**
-	 * Constructor
-	 *
-	 * @category Constructors
-	 */
-	export const make = <C>(params: MTypes.Data<Type<C>, 'withContextLast'>): Type<C> => {
-		const styles = params.palette.styles;
-		const n = styles.length;
-
-		const getStyle: DirectAction.Type<C> = (context) =>
-			pipe(styles, MArray.unsafeGet(params.indexFromContext(context) % n));
-
-		return Object.assign(MFunction.clone(getStyle), {
-			...base,
-			...params,
-			withContextLast: ((toStyle) => (context) =>
-				getStyle(context)(toStyle)) satisfies ReversedAction.Type<C>
-		});
-	};
-
-	/**
-	 * Gets the `indexFromContext` property of `self`
-	 *
-	 * @category Destructors
-	 */
-	export const indexFromContext: <C>(self: Type<C>) => IndexFromContext.Type<C> =
-		Struct.get('indexFromContext');
-
-	/**
-	 * Gets the `palette` property of `self`
-	 *
-	 * @category Destructors
-	 */
-	export const palette: MTypes.OneArgFunction<Type<never>, ASPalette.Type> = Struct.get('palette');
-
-	/**
-	 * Gets the id of `self`
-	 *
-	 * @category Destructors
-	 */
-	export const toId = (self: Type<never>): string =>
-		String.capitalize(self.indexFromContext.name) +
-		'Based' +
-		ASPalette.toId(self.palette) +
-		'Formatter';
 }
+
+/**
+ * Type guard
+ *
+ * @category Guards
+ */
+export const has = (u: unknown): u is Type<unknown> => Predicate.hasProperty(u, _TypeId);
+
+/**
+ * Equivalence
+ *
+ * @category Equivalences
+ */
+export const equivalence: Equivalence.Equivalence<Type<unknown>> = (self, that) =>
+	that.id === self.id;
+
+/** Base */
+const _TypeIdHash = Hash.hash(_TypeId);
+const base: MTypes.Proto<Type<unknown>> = {
+	[_TypeId]: { _C: MTypes.contravariantValue },
+	[Equal.symbol](this: Type<unknown>, that: unknown): boolean {
+		return has(that) && equivalence(this, that);
+	},
+	[Hash.symbol]<A>(this: Type<A>) {
+		return pipe(this.id, Hash.hash, Hash.combine(_TypeIdHash), Hash.cached(this));
+	},
+	[MInspectable.IdSymbol]<A>(this: Type<A>) {
+		return this.id;
+	},
+	...MInspectable.BaseProto(moduleTag),
+	...MPipeable.BaseProto
+};
+
+/**
+ * Constructor of a ContextStyler based on a single style. This ContextStyler is optimized to take
+ * care of the fact that the context value is needless
+ *
+ * @category Constructors
+ */
+export const fromSingleStyle = <C>(style: ASStyle.Type): Type<C> => {
+	return Object.assign((() => style) satisfies DirectAction.Type<unknown>, {
+		...base,
+		id: ASStyle.toId(style) + 'Formatter',
+		withContextLast: ((toStyle) => {
+			const styled = style(toStyle);
+			return () => styled;
+		}) satisfies ReversedAction.Type<unknown>
+	});
+};
+
+/**
+ * Constructor of a `ContextStyler` based on a Palette (see Palette.ts) that contains `n` styles and
+ * an `indexFromContext` function that is able to transform a Context object into an integer `i`.
+ * The style that will be used is the one in the Palette at position i % n, where % is the modulo
+ * function.
+ *
+ * @category Constructors
+ */
+export const fromPalette = <C>({
+	palette,
+	indexFromContext
+}: {
+	readonly palette: ASPalette.Type;
+	readonly indexFromContext: IndexFromContext.Type<C>;
+}): Type<C> => {
+	const styles = palette.styles;
+	const n = styles.length;
+
+	const getStyle: DirectAction.Type<C> = (context) =>
+		pipe(styles, MArray.unsafeGet(indexFromContext(context) % n));
+
+	return Object.assign(MFunction.clone(getStyle), {
+		...base,
+		id: String.capitalize(indexFromContext.name) + 'Based' + ASPalette.toId(palette) + 'Formatter',
+		withContextLast: ((toStyle) => (context) =>
+			getStyle(context)(toStyle)) satisfies ReversedAction.Type<C>
+	});
+};
+
+/**
+ * Gets the id of `self`
+ *
+ * @category Destructors
+ */
+export const id: MTypes.OneArgFunction<Type<never>, string> = Struct.get('id');
 
 /**
  * None ContextStyler instance: does not apply any style, does not provide a defaultText
@@ -310,60 +202,60 @@ export namespace PaletteBased {
  * @category Instances
  */
 
-export const none: Unistyled.Type = Unistyled.make(ASStyle.none);
+export const none = <C>(): Type<C> => fromSingleStyle(ASStyle.none);
 
 /**
  * Original black color instance
  *
  * @category Original instances
  */
-export const black: Unistyled.Type = Unistyled.make(ASStyle.black);
+export const black = <C>(): Type<C> => fromSingleStyle(ASStyle.black);
 
 /**
  * Original red color instance
  *
  * @category Original instances
  */
-export const red: Unistyled.Type = Unistyled.make(ASStyle.red);
+export const red = <C>(): Type<C> => fromSingleStyle(ASStyle.red);
 
 /**
  * Original green color instance
  *
  * @category Original instances
  */
-export const green: Unistyled.Type = Unistyled.make(ASStyle.green);
+export const green = <C>(): Type<C> => fromSingleStyle(ASStyle.green);
 
 /**
  * Original yellow color instance
  *
  * @category Original instances
  */
-export const yellow: Unistyled.Type = Unistyled.make(ASStyle.yellow);
+export const yellow = <C>(): Type<C> => fromSingleStyle(ASStyle.yellow);
 
 /**
  * Original blue color instance
  *
  * @category Original instances
  */
-export const blue: Unistyled.Type = Unistyled.make(ASStyle.blue);
+export const blue = <C>(): Type<C> => fromSingleStyle(ASStyle.blue);
 
 /**
  * Original magenta color instance
  *
  * @category Original instances
  */
-export const magenta: Unistyled.Type = Unistyled.make(ASStyle.magenta);
+export const magenta = <C>(): Type<C> => fromSingleStyle(ASStyle.magenta);
 
 /**
  * Original cyan color instance
  *
  * @category Original instances
  */
-export const cyan: Unistyled.Type = Unistyled.make(ASStyle.cyan);
+export const cyan = <C>(): Type<C> => fromSingleStyle(ASStyle.cyan);
 
 /**
  * Original white color instance
  *
  * @category Original instances
  */
-export const white: Unistyled.Type = Unistyled.make(ASStyle.white);
+export const white = <C>(): Type<C> => fromSingleStyle(ASStyle.white);

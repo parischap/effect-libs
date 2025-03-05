@@ -45,7 +45,8 @@ export default merge(
 				}
 			},
 			scripts: {
-				examples: 'vite-node examples/basic-usage.ts'
+				examples:
+					'vite-node examples/basic-usage.ts && vite-node examples/cancelling-a-style.ts && vite-node examples/simple-colors.ts && vite-node examples/all-colors.ts'
 			}
 		}
 	}

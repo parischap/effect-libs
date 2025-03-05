@@ -2,10 +2,7 @@
 
 # ansi-styles
 
-An [Effect](https://effect.website/docs/introduction) library for terminal output styling with ANSI colors and formats. This module also offers:
-
-- friendly logging (your formats when encapsulated in other objects will show as a meaningful name (e.g. BoldRed))
-- context styling, i.e. the ability to apply context-dependent styling
+An [Effect](https://effect.website/docs/introduction) library for terminal output styling with ANSI colors and formats.
 
 Tested and documented, 100% Typescript, 100% functional.
 
@@ -46,9 +43,11 @@ We draw your attention to the [NO_COLOR](https://no-color.org/) standard: "Comma
 
 ## API
 
-After reading this introduction, you may take a look at the [API](https://parischap.github.io/effect-libs/docs/ansi-style) documentation.
+After reading this introduction, you may take a look at the [API](https://parischap.github.io/effect-libs/docs/ansi-styles) documentation.
 
 ## Usage
+
+### 1) Basic usage
 
 Just import ASStyle and build simple styled strings in the following manner:
 
@@ -75,6 +74,158 @@ console.log(
 
 ![Basic usage example](readme-assets/basic-example.png?sanitize=true)
 
-### Available styles and colors
+As can be seen in the previous example, although `bold` and `dim` share the same reset code (22), using `dim` inside `bold` (or vice-versa) will work properly. This feature is not well handled by most ANSI styling packages.
 
-The ASStyle module offers
+### 2) List of available styles
+
+In the previous example, we used the `bold` and `dim` styles. Following is the list of all predefined styles:
+
+- none (does not apply any styling)
+- blinking
+- bold
+- dim
+- hidden
+- inversed
+- italic
+- overlined
+- struckThrough
+- underlined
+
+Be aware that all styles are not available in all terminals. For instance, the `dim` and `blinking` styles will do nothing on most terminals.
+
+### 3) Cancelling a style
+
+In some cases, you may need to cancel the effect of a style using one of the following predefined styles:
+
+- notBlinking
+- notBold
+- notDim
+- notHidden
+- notInversed
+- notItalic
+- notOverlined
+- notStruckThrough
+- notUnderlined
+
+For instance:
+
+```ts
+import { ASStyle } from "@parischap/ansi-styles";
+
+console.log(ASStyle.bold("I am ", ASStyle.notBold("not bold")));
+```
+
+=> Output:
+
+![Cancelling a style example](readme-assets/cancelling-a-style.png?sanitize=true)
+
+### 4) List of predefined three-bit colors
+
+The Style module contains the following predefined foreground three-bit colors:
+
+- black
+- blue
+- cyan
+- green
+- magenta
+- red
+- white
+- yellow
+
+If your terminal takes them in charge, you can even use the bright version of each color by preceding it with the `Bright.` keyword:
+
+- Bright.black
+- Bright.Bright.blue
+- Bright.cyan
+- Bright.green
+- Bright.magenta
+- Bright.red
+- Bright.white
+- Bright.yellow
+
+If it's the background color that you want to change, precede the color with the `Bg.` keyword. For instance, `Bg.red` or `Bg.Bright.red`.
+
+In some cases, you may need to revert to the default terminal color. In that case, use `defaultColor` or `Bg.defaultColor`
+
+Here is an example:
+
+```ts
+import { ASStyle } from "@parischap/ansi-styles";
+
+console.log(
+	ASStyle.none(
+		ASStyle.green("I am "),
+		ASStyle.Bright.green("in different shades "),
+		ASStyle.Bg.Bright.green("of green", ASStyle.Bg.defaultColor(".")),
+	),
+);
+```
+
+=> Output:
+
+![Using simple colors example](readme-assets/simple-colors.png?sanitize=true)
+
+### 5) Using 8-bit and RGB colors
+
+If your terminal takes them in charge, you can use 8-bit or RGB colors. To that extent, use the `ASStyle.color` and `ASStyle.Bg.color` combinators.
+
+The ASColor module defines 16 three-bit color instances (8 normal + 8 bright), 256 eight-bit color instances and 140 RGB color instances. All these instances can be found in the [API](https://parischap.github.io/effect-libs/ansi-styles/Color.ts.html). Furthermore, you can define more RGB colors with the `ASColor.Rgb.make` combinator.
+
+Here is an example:
+
+```ts
+import { ASColor, ASStyle } from "@parischap/ansi-styles";
+
+console.log(ASStyle.color(ASColor.rgbCoral)("I am a coral string"));
+console.log(
+	ASStyle.color(ASColor.Rgb.make({ red: 176, green: 17, blue: 243 }))(
+		"I am a string colored with an RGB-user-defined color",
+	),
+);
+```
+
+### 6) Using a ContextStyler
+
+A `ContextStyler` allows you to style a text differently according to a context object. There are two `ContextStyler` constructors:
+
+- `fromPalette`: this constructor takes as parameters a `Palette` (see Palette.ts), i.e. an array of `n` (n>=2) Styles, and an `indexFromContext` function that is able to transform a Context object into an integer `i`. The style that will be used is the one in the Palette at position i % n, where % is the modulo function.
+- `fromSingleStyle`: this constructor takes as parameter a single style that will always be used (i.e. it ignores the context object that it receives). This is useful if a function expects a ContextStyler but needs not take care of the context in some situations.
+
+A `ContextStyler` is a curated `function` object that takes first a context value and then a string to display. Sometimes, you need to use a ContextStyler the other way round: you pass it first the string to display and then the context value. In that case, use the `withContextLast` method.
+
+Here is an example:
+
+```ts
+import { ASContextStyler, ASPalette } from "@parischap/ansi-styles";
+
+interface Value {
+	readonly pos1: number;
+	readonly otherStuff: string;
+}
+
+const red: ASContextStyler.Type<Value> = ASContextStyler.red();
+
+const pos1 = (value: Value): number => value.pos1;
+
+const pos1BasedAllColorsFormatter = ASContextStyler.fromPalette({
+	indexFromContext: pos1,
+	palette: ASPalette.allStandardOriginalColors,
+});
+
+const value1: Value = {
+	pos1: 2,
+	otherStuff: "dummy",
+};
+const pos1BasedAllColorsFormatterInValue1Context =
+	pos1BasedAllColorsFormatter(value1);
+const redInValue1Context = red(value1);
+
+/* Prints `foo` in red */
+console.log(redInValue1Context("foo"));
+
+/* Prints `foo` in green */
+console.log(pos1BasedAllColorsFormatterInValue1Context("foo"));
+
+/* Prints `foo` in green using parameters in reversed order */
+console.log(pos1BasedAllColorsFormatter.withContextLast("foo")(value1));
+```
