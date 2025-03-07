@@ -35,12 +35,13 @@ export default merge(
 			publishConfig: {
 				peerDependencies: {
 					[`${Configs.constants.scope}/effect-lib`]: '^0.4.0',
-					[`${Configs.constants.scope}/ansi-styles`]: '^0.0.1'
+					[`${Configs.constants.scope}/ansi-styles`]: '^0.0.1',
+					effect: Configs.constants.effectVersion
 				}
 			},
 			scripts: {
 				examples:
-					'vite-node examples/uncolored-tabified.ts && vite-node examples/ansi-dark-tabified.ts && vite-node examples/ansi-dark-treeified.ts && vite-node examples/date-as-object-or-value.ts && vite-node examples/show-prototype.ts'
+					'vite-node examples/util-inspect-like.ts && vite-node examples/treeify.ts && vite-node examples/treeify-with-leaves.ts && vite-node examples/circularity-handling.ts'
 			}
 		}
 	}

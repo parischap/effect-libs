@@ -1,3 +1,6 @@
 packages:
-  - "packages/*"
-  - "packages/*/dist"
+  - packages/*
+  - packages/*/dist
+onlyBuiltDependencies:
+  - esbuild
+  - msgpackr-extract

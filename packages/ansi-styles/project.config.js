@@ -41,7 +41,8 @@ export default merge(
 			},
 			publishConfig: {
 				peerDependencies: {
-					[`${Configs.constants.scope}/effect-lib`]: '^0.4.0'
+					[`${Configs.constants.scope}/effect-lib`]: '^0.4.0',
+					effect: Configs.constants.effectVersion
 				}
 			},
 			scripts: {

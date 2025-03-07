@@ -16,7 +16,7 @@
 		"build-all": "pnpm -r build",
 		"prepare-docs": "pnpm --recursive --parallel docgen && compile-docs"
 	},
-	"packageManager": "pnpm@9.15.4",
+	"packageManager": "pnpm@10.5.2",
 	"devDependencies": {
 		"ts-deepmerge": "latest",
 		"@tsconfig/node20": "latest",
@@ -29,7 +29,6 @@
 		"@types/eslint": "latest",
 		"@types/eslint-config-prettier": "latest",
 		"@types/eslint__eslintrc": "latest",
-		"@types/eslint__js": "latest",
 		"@types/node": "latest",
 		"cross-env": "latest",
 		"eslint": "latest",

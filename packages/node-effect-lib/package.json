@@ -20,7 +20,7 @@
 		"transpile-esm": "tsc -b tsconfig.esm.json",
 		"transpile-cjs": "babel dist/esm --plugins @babel/transform-export-namespace-from --plugins @babel/transform-modules-commonjs --out-dir dist/cjs --source-maps",
 		"transpile-annotate": "babel dist --plugins annotate-pure-calls --out-dir dist --source-maps",
-		"compile": "pnpm transpile-esm && pnpm transpile-cjs && pnpm transpile-annotate",
+		"compile": "pnpm transpile-esm && pnpm transpile-cjs && pnpm transpile-annotate && pnpm prodify",
 		"build-and-publish": "pnpm build && pnpm checks && pnpm publish-to-npm",
 		"docgen": "echo \"docgen not activated for this package\"",
 		"prodify": "prodify",
@@ -78,8 +78,8 @@
 	"description": "A complement to the official @effect/platform library with add-ons for Node.js",
 	"peerDependencies": {
 		"@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
-		"@effect/platform": "^0.77.2",
-		"@effect/platform-node": "^0.73.2",
-		"effect": "^3.13.2"
+		"@effect/platform": "^0.77.6",
+		"@effect/platform-node": "^0.73.6",
+		"effect": "^3.13.6"
 	}
 }
