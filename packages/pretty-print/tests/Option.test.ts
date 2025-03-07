@@ -251,6 +251,7 @@ describe('Option', () => {
 		const stringifierWithoutFunctionByPasserShowingPrototype = PPOption.toStringifier(
 			PPOption.make({
 				...PPOption.utilInspectLike,
+				id: 'WithoutFunctionByPasser',
 				byPassers: Array.of(PPByPasser.objectToString),
 				generalNonPrimitiveOption: {
 					...PPOption.NonPrimitive.record,
@@ -265,11 +266,12 @@ describe('Option', () => {
 			})
 		);
 		const stringifierWithInfiniteMaxDepth = PPOption.toStringifier(
-			PPOption.make({ ...PPOption.utilInspectLike, maxDepth: +Infinity })
+			PPOption.make({ ...PPOption.utilInspectLike, id: 'NoDepthLimit', maxDepth: +Infinity })
 		);
 		const stringifierWithLimitedPropertiesShowPropNumber = PPOption.toStringifier(
 			PPOption.make({
 				...PPOption.utilInspectLike,
+				id: 'WithModifiedNonPrimitiveOptions',
 				generalNonPrimitiveOption: {
 					...PPOption.NonPrimitive.record,
 					maxPropertyNumber: 2,
@@ -280,6 +282,7 @@ describe('Option', () => {
 		const stringifierWithSortedProperties = PPOption.toStringifier(
 			PPOption.make({
 				...PPOption.utilInspectLike,
+				id: 'WithModifiedNonPrimitiveOptions',
 				generalNonPrimitiveOption: {
 					...PPOption.NonPrimitive.record,
 					propertySortOrder: Option.some(PPValueOrder.byOneLineStringKey)

@@ -122,18 +122,14 @@ export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
  */
 export const utilInspectLikeMaker = (
 	{
+		id,
 		maxStringLength,
-		numberFormatter,
-		id
+		numberFormatter
 	}: {
+		readonly id: string;
 		readonly maxStringLength: number;
 		readonly numberFormatter: Intl.NumberFormat;
-		readonly id: string;
-	} = {
-		maxStringLength: 10000,
-		numberFormatter: new Intl.NumberFormat(),
-		id: 'UtilInspectLike'
-	}
+	} = { id: 'UtilInspectLike', maxStringLength: 10000, numberFormatter: new Intl.NumberFormat() }
 ): Type =>
 	make({
 		id,

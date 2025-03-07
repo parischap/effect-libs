@@ -597,9 +597,10 @@ export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pi
 
 	/**
 	 * Maximum number of nested non primitive values that will be opened. A value inferior or equal to
-	 * 0 means that only primitive values of the value to stringify are shown, non-primitive values
-	 * are replaced by a message string (see generalNonPrimitiveOption and
-	 * specificNonPrimitiveOption). Pass +Infinity to see all levels of any non primitive value.
+	 * 0 means that only the value to stringify is shown, provided it is a primitive. If it is a
+	 * non-primitive value, it gets replaced by a message string that depends on the type of that non
+	 * primitive value (e.g. [Object], [Array],...). Pass +Infinity to see all levels of any non
+	 * primitive value.
 	 */
 	readonly maxDepth: number;
 

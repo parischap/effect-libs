@@ -2,7 +2,7 @@
 
 # pretty-print
 
-An [Effect](https://effect.website/docs/introduction) library that produces the string representation of any value, in Node or the browser. Similar to util.inspect but with plenty of extra options: **treeifying, coloring, sorting, choosing what to display and how to display it...**
+An [Effect](https://effect.website/docs/introduction) library that produces the string representation of any value, in Node or the browser. Similar to util.inspect but with plenty of extra options: **treeifying, coloring, sorting, choosing what to display and how to display it...**. It supports natively Effect iterables like HashMap, HashSet,...
 
 Non-recursive, tested and documented, 100% Typescript, 100% functional, 100% parametrizable.
 
@@ -41,310 +41,238 @@ We use three peerDependencies. If you are not an Effect user, the size may seem 
 
 After reading this introduction, you may take a look at the [API](https://parischap.github.io/effect-libs/docs/pretty-print) documentation.
 
+## Upgrading
+
+Version 0.3.0 introduced many improvements and breaking changes. we apologize for any inconvenience caused and appreciate your understanding.
+
 ## Usage
 
-For primitive types, the normal stringification
-_ process is to call the toString method (except for `null` and `undefined` which are printed as
-_ 'null' and 'undefined' respectively). For records, the normal stringification process consists
-_ in stringifying the constituents of the record (obtained by calling Reflect.ownKeys). The
-_ normal stringification process does not handle formats. So most of the time, it's best to use \* one of the predefined `ByPasser` instances if you want formatted output.
-In this documentation, the term `record` refers to a non-null `object`, an `array` or a `function`.
+Note that, throughout this document, the term `non-primitive value` refers to a value that is not a Javascript primitive. So it can represent javascript functions or non-null javascript objects (which of course include arrays).
 
-### 1) Using predefined `Options` instances
+### A) Using predefined `Option` instances
 
-The simplest way to use this library is to use one of the predefined `Options` instances.
-
-#### Uncolored tabified printing
+For a start, you can use one of the 6 predefined `Option` instances.
 
 ```ts
-import { Stringify } from "@parischap/pretty-print";
+import { PPOption, PPStringifiedValue } from "@parischap/pretty-print";
+import { HashMap, pipe } from "effect";
 
-const stringify = Stringify.asString();
+const stringifier = PPOption.toStringifier(PPOption.darkModeUtilInspectLike);
 
 const toPrint = {
-	a: 1,
+	a: [7, 8],
+	e: HashMap.make(["key1", 3], ["key2", 6]),
 	b: { a: 5, c: 8 },
-	d: { e: true, f: { a: { k: { z: "foo", y: "bar" }, j: false } }, g: "aa" },
+	f: Math.max,
+	d: {
+		e: true,
+		f: { a: { k: { z: "foo", y: "bar" } } },
+	},
 };
 
-console.log(stringify(toPrint));
+console.log(pipe(toPrint, stringifier, PPStringifiedValue.toAnsiString()));
 ```
 
 => Output:
 
-![uncolored-tabified-example](readme-assets/uncolored-tabified.png?sanitize=true)
+![util-inspect-like-example](readme-assets/util-inspect-like.png?sanitize=true)
 
-When you don't pass any `Options` instance to the asString function, it uses by default the `uncoloredSplitWhenTotalLengthExceeds40` instance. As its name suggests, this instance will split a record on several lines only when its total printable length exceeds 40 characters.
+In the previous example, we used the `darkModeUtilInspectLike` Option instance. As its name suggests, it pretty-prints values in a way very similar to the Javascript `util.inspect()` function using colors adapted to a dark-mode terminal (which is almost always the case). But if you don't need coloring, you can simply use the `utilInspectLike` Option instance instead. Do note how the Effect HashMap gets directly printed without any particular effort.
 
-#### Tabified printing with ANSI colors adapted to a screen in dark mode
-
-```ts
-import { Options, Stringify } from "@parischap/pretty-print";
-
-const stringify = Stringify.asString(
-	Options.ansiDarkSplitWhenTotalLengthExceeds40,
-);
-
-const toPrint = {
-	a: 1,
-	b: { a: 5, c: 8 },
-	d: { e: true, f: { a: { k: { z: "foo", y: "bar" }, j: false } }, g: "aa" },
-};
-
-console.log(stringify(toPrint));
-```
-
-=> Output:
-
-![ansi-dark-tabified-example](readme-assets/ansi-dark-tabified.png?sanitize=true)
-
-Note how the color of parentheses changes in function of the depth of the nested object. You can change these colors by modifying the property `recordDelimitersColorWheel` of the passed colorSet parameter (see [ColorSet](https://parischap.github.io/effect-libs/pretty-print/ColorSet.ts.html#type-interface)). You could also change altogether the way a record is printed by writing your own [RecordFormatter](https://parischap.github.io/effect-libs/pretty-print/RecordFormatter.ts.html).
-
-#### Treeified printing with ANSI colors adapted to a screen in dark mode
+The remaining 4 predefined Option instances are all related to treeifying. For instance:
 
 ```ts
-import { Options, Stringify } from "@parischap/pretty-print";
+import { PPOption, PPStringifiedValue } from "@parischap/pretty-print";
+import { HashMap, pipe } from "effect";
 
-const stringify = Stringify.asString(Options.ansiDarkTreeified);
+const stringifier = PPOption.toStringifier(PPOption.darkModeTreeifyHideLeaves);
+
 const toPrint = {
 	A: {
-		A1: { A11: null, A12: { A121: null, A122: null, A123: null }, A13: null },
+		A1: {
+			A11: null,
+			A12: [{ A121: null, A122: null, A123: null }, { A124: null }],
+			A13: null,
+		},
 		A2: null,
 		A3: null,
 	},
-	B: { B1: null, B2: null },
+	B: HashMap.make(["B1", null], ["B2", null]),
 };
 
-console.log(stringify(toPrint));
+console.log(pipe(toPrint, stringifier, PPStringifiedValue.toAnsiString()));
 ```
 
 => Output:
 
-![ansi-dark-treeified-example](readme-assets/ansi-dark-treeified.png?sanitize=true)
+![treeify-example](readme-assets/treeify.png?sanitize=true)
 
-#### More predefined option instances
-
-You can find the whole list of predefined `Options` instances in the Instances section of the [Options](https://parischap.github.io/effect-libs/pretty-print/Options.ts.html#instances) documentation.
-
-### 2) Defining your own Options instances
-
-You can view all available options in the [Options](https://parischap.github.io/effect-libs/pretty-print/Options.ts.html#type-interface) model.
-
-You could create your own `Options` instance from scratch. But it is usually easier to start from one of the existing instances and to overwrite the parts you want to change. Most of the time, you will start from the `singleLine` Options instance which is defined in the following manner:
+Again, do note how an array and an Effect HashMap get directly treeified without any particular effort.
+As you have guessed, the `treeifyHideLeaves` Option instance does the same without coloring. And the treeify and darkModeTreeify Option instances also treeify without hiding the leaves (the `null` values in the previous example). Here's a simple example:
 
 ```ts
-export const singleLine = (colorSet: ColorSet.Type): Type =>
-	_make({
-		name: colorSet.name + "SingleLine",
-		maxDepth: 10,
-		arrayLabel: pipe(
-			"[Array]",
-			FormattedString.makeWith(colorSet.otherValueColorer),
-		),
-		functionLabel: pipe(
-			"(Function)",
-			FormattedString.makeWith(colorSet.otherValueColorer),
-		),
-		objectLabel: pipe(
-			"{Object}",
-			FormattedString.makeWith(colorSet.otherValueColorer),
-		),
-		maxPrototypeDepth: 0,
-		circularLabel: pipe(
-			"(Circular)",
-			FormattedString.makeWith(colorSet.otherValueColorer),
-		),
-		propertySortOrder: ValueOrder.byStringKey,
-		dedupeRecordProperties: false,
-		byPasser: ByPasser.objectAsValue(colorSet),
-		propertyFilter: PropertyFilter.removeNonEnumerables,
-		propertyFormatter: PropertyFormatter.recordLike(colorSet),
-		recordFormatter: RecordFormatter.singleLine(colorSet),
-	});
-```
-
-1. Let's see how we would modify it to hide enumerable properties and properties whose key is a string:
-
-```ts
-import { PropertyFilter, Options } from "@parischap/pretty-print";
+import { PPOption, PPStringifiedValue } from "@parischap/pretty-print";
 import { pipe } from "effect";
 
-const ansiDarkSingleLineWithSymbolicNonEnums: Options.Type = Options.make({
-	...Options.ansiDarkSingleLine,
+const stringifier = PPOption.toStringifier(PPOption.darkModeTreeify);
 
-	propertyFilter: pipe(
-		PropertyFilter.removeNonEnumerables,
-		PropertyFilter.combine(PropertyFilter.removeStringKeys),
-	),
+const toPrint = {
+	Vegetal: {
+		Trees: {
+			Oaks: 8,
+			BirchTree: 3,
+		},
+		Fruit: { Apples: 8, Lemons: 5 },
+	},
+	Animal: {
+		Mammals: {
+			Dogs: 3,
+			Cats: 2,
+		},
+	},
+};
+
+console.log(pipe(toPrint, stringifier, PPStringifiedValue.toAnsiString()));
+```
+
+=> Output:
+
+![treeify-with-leaves-example](readme-assets/treeify-with-leaves.png?sanitize=true)
+
+### B) Creating your own Option instances
+
+You can find a detailed description of the Option object in the [API](https://parischap.github.io/effect-libs/pretty-print/Option.ts.html#type-interface-3) documentation.
+
+#### 1) Applying your own styles and colors
+
+If you are not interested in going too deep into details, just remember that you need to use the `styleMap` property of the Option object to define the colors that the pretty-printer will use. For instance, this is how you could define the `darkModeUtilInspectLike` Option instance from the `utilInspectLike` Option instance if it didn't already exist:
+
+```ts
+import { PPOption, PPStyleMap } from "@parischap/pretty-print";
+
+export const darkModeUtilInspectLike: PPOption.Type = PPOption.make({
+	...PPOption.utilInspectLike,
+	id: "DarkModeUtilInspectLike",
+	styleMap: PPStyleMap.darkMode,
 });
 ```
 
-In this example, we use the [PropertyFilter.combine](https://parischap.github.io/effect-libs/pretty-print/PropertyFilter.ts.html#combine) function to combine the effects of [PropertyFilter.removeNonEnumerables](https://parischap.github.io/effect-libs/pretty-print/PropertyFilter.ts.html#removenonenumerables) and [PropertyFilter.removeStringKeys](https://parischap.github.io/effect-libs/pretty-print/PropertyFilter.ts.html#removenonenumerables). Note that combining order may be important even though it is not in this case.
+Just passing `PPStyleMap.darkMode` to the `styleMap` property does the trick. Inversely, you can suppress all colors from a colored Option instance by passing `PPStyleMap.none` to the `styleMap` property.
 
-2. Let's walk through a more complex example. In the following code, we will modify `Options.ansiDarkSingleLine` to show the properties borne by the prototype of an object and see the effect of sorting and deduping:
+This package uses the [@parischap/ansi-styles](https://www.npmjs.com/package/@parischap/ansi-styles) package to apply styles to a stringified value. Please refer to the documentation of that package if you intend to define your own coloring options.
+
+An Option instance has a `styleMap` property which, as its name suggests, is a map that associates the name of the part of a stringified value (e.g. the key/value separator when pretty-printing a non-primitive value,...) to a `ValueBasedStyler` which is nothing but an alias for a `ContextStyler` (see [@parischap/ansi-styles](https://parischap.github.io/effect-libs/ansi-styles/ContextStyler.ts.html)) whose Context object is a `Value` (see Value.ts).
+
+A `Value` is an object that contains a value to pretty-print and contextual information about that value (its depth in the initial value to pretty-print, its depth in the prototypal chain of the object it belongs to, its type, the type of its key if it belongs to a non-primitive value...). For instance, in the object `{a:3, b:{d:5, c:6}}`, the value 3 has a depth of 1 and the values 5 and 6 a depth of 2. The ValueBasedStyler.ts module defines three constructors:
+
+- `makeDepthIndexed`: this constructor builds a ContextStyler that will use the `depth` property of the Value object it receives to choose which style to apply. This is for instance useful to style the curly-brackets that surround a non-primitive value when we want to use a different color at different depths.
+- `makeTypeIndexed`: this constructor builds a ContextStyler that will use the `contentType` property of the Value object it receives to choose which style to apply. This is for instance useful to style different types of values in different colors (e.g. green for strings, cyan for symbols,...).
+- `makeKeyTypeIndexed`: this constructor builds a ContextStyler that will use the `hasSymbolicKey` property of the Value object it receives to choose which style to apply. This is for instance useful to style symbolic property keys in cyan and string property keys in red.
+
+Of course, you may create any other constructors that suit your needs and use them in your own StyleMap instances.
+
+As already discussed, there are two predefined instances of StyleMap's:
+
+- `darkMode` which uses ContextStyler's adapted to dark-mode terminals.
+- `none` which does not perform any styling.
+
+There is a `make` constructor that allows you to define other StyleMap's if you need to. Take a look at the code of the `darkMode` instance to better understand how a StyleMap works. Note that that you can define more entries than there are in the `darkMode` instance. For instance, you could create a NonPrimitiveFormatter that prints the length of the prototypal chain of an object in between pipes before the curly brackets. You could name that part `prototypalChainLength` and add it as an entry in your StyleMap instance. Note that if you refer to an entry that has not been defined in the styleMap, no error will be reported. Instead, the `none` Style will be used (i.e. no styling will be performed).
+
+#### 2) Changing the default marks
+
+We make use of predefined marks when pretty-printing a value. For instance, when we encounter a function `max` to pretty-print, we display it in the following way: `[Function: max]` which, in fact, is the following sucession of marks: MessageStartDelimiter + FunctionNameStartDelimiter + function name + FunctionNameEndDelimiter + MessageEndDelimiter. As you will discover later, that behavior can be altered.
+
+An Option instance has a `markMap` property which, as its name suggests, is a map that associates the name of a mark to a string and a style to use for that mark. For instance, the `FunctionNameStartDelimiter` mark is defined as `{ text: 'Function: ', partName: 'Message' }` meaning that the text 'Function: ' will be used to represent it and that this text will be styled using the `Message` partName style defined in the styleMap.
+
+The MarkMap.ts module defines a single instance named `utilInspectLike`. You can use the make constructor to define your own instances if you need to. For instance, if you wanted the function name to be followed by '()', this is how you would define your own Option instance:
 
 ```ts
-import { Options, Stringify, ValueOrder } from "@parischap/pretty-print";
-import { Order } from "effect";
+import { PPMarkMap, PPOption } from "@parischap/pretty-print";
+import { HashMap } from "effect";
 
-const singleLine = Stringify.asString(Options.ansiDarkSingleLine);
-const singleLineWithProto = Stringify.asString(
-	Options.make({
-		...Options.ansiDarkSingleLine,
-		maxPrototypeDepth: +Infinity,
-	}),
-);
-const dedupedSingleLineWithProto = Stringify.asString(
-	Options.make({
-		...Options.ansiDarkSingleLine,
-		maxPrototypeDepth: +Infinity,
-		propertySortOrder: Order.combine(
-			ValueOrder.byStringKey,
-			ValueOrder.byPrototypalDepth,
+export const withParentheses: PPOption.Type = PPOption.make({
+	...PPOption.utilInspectLike,
+	id: "WithParentheses",
+	markMap: PPMarkMap.make({
+		id: "withParenteses",
+		marks: HashMap.set(
+			PPMarkMap.utilInspectLike.marks,
+			"FunctionNameEndDelimiter",
+			{
+				text: "()",
+				partName: "Message",
+			},
 		),
-		dedupeRecordProperties: true,
 	}),
-);
-
-const proto = {
-	a: 10,
-	c: 20,
-};
-
-const toPrint = Object.assign(Object.create(proto), {
-	a: 50,
-	b: 30,
-}) as unknown;
-
-// { a: 50, b: 30 }
-console.log(singleLine(toPrint));
-// { a: 50, a@: 10, b: 30, c@: 20 }
-console.log(singleLineWithProto(toPrint));
-// { a@: 10, b: 30, c@: 20 }
-console.log(dedupedSingleLineWithProto(toPrint));
-```
-
-In this example, the `singleLine` stringifier is the default stringifier. It does not show properties of prototypes.
-
-In the `singleLineWithProto` stringifier, we only add the line `maxPrototypeDepth: +Infinity` to indicate we want to see prototypes of all records to any depth. Note in the result that we now have two `a` properties, of which one is followed by the `@` character to indicate it is borne by the first prototype in the prototypal chain. If it were the second prototype, it would be followed by '@@', ...
-
-Now, it may not be necessary to show these two `a` properties. During execution, the one borne by the prototype will not be used. In the `dedupedSingleLineWithProto` stringifier, we use the [Effect](https://effect.website/docs/introduction) `Order.combine` function to sort our properties first by key (see [ValueOrder.byStringKey](https://parischap.github.io/effect-libs/pretty-print/ValueOrder.ts.html#bystringkey)), then by depth in the proptotypal chain (see [ValueOrder.byPrototypalDepth](https://parischap.github.io/effect-libs/pretty-print/ValueOrder.ts.html#byprototypaldepth)). Then we set [Options.dedupeRecordProperties](https://parischap.github.io/effect-libs/pretty-print/Options.ts.html#type-interface) to keep only the first of several properties with the same name. Now, in the result, we see the `a` property borne by the object itself and the `c` property borne by its prototype.
-
-Note: of course, the mark used to show a property is borne by a prototype (`@` by default) can be altered. If you just want to change the mark or the place where it is printed, you can simply define a new [PropertyMarks](https://parischap.github.io/effect-libs/pretty-print/RecordMarks.ts.html#type-interface) instance and modify with it the [PropertyFormatter](https://parischap.github.io/effect-libs/pretty-print/PropertyFormatter.ts.html) given to the `Options` instance:
-
-```ts
-import {
-	Stringify,
-	PropertyMarks,
-	PropertyFormatter,
-	ColorSet,
-	Options,
-} from "@parischap/pretty-print";
-// Now, properties on prototypes will be prefixed with `_`
-const myPropertyMarks: PropertyMarks.Type = {
-	...PropertyMarks.object,
-	prototypePrefix: "_",
-	prototypeSuffix: "",
-};
-const myObjectAndArrayLikePropertyFormatter =
-	PropertyFormatter.valueForArraysKeyAndValueForOthers(myPropertyMarks);
-const mySingleLineWithProtoStringifyer = Stringify.asString({
-	...Options.ansiDarkSingleLine,
-	maxPrototypeDepth: +Infinity,
-	propertyFormatter: myObjectAndArrayLikePropertyFormatter(
-		ColorSet.ansiDarkMode,
-	),
 });
 ```
 
-But you could also define a completely different [PropertyFormatter](https://parischap.github.io/effect-libs/pretty-print/PropertyFormatter.ts.html).
+As for StyleMap's, you can define your own entries in the MarkMap instances you define. And then use these extra entries in the ByPasser's... that you define. Note that if you refer to a mark that is not present in the markMap, an unstyled empty string to represent it.
 
-3. Let's see how to change the [ByPasser](https://parischap.github.io/effect-libs/pretty-print/ByPasser.ts.html) which lets you apply a special treatment for certain values. There are four predefined ByPasser instances. As you can see above, the `singleLine` Options instance uses [ByPasser.objectAsValue](https://parischap.github.io/effect-libs/pretty-print/ByPasser.ts.html#objectAsValue). Let's see what happens on a Date object if we replace it with [ByPasser.objectAsRecord](https://parischap.github.io/effect-libs/pretty-print/ByPasser.ts.html#objectAsRecord):
+#### 3) Bypassing some values
+
+There are situations where you want to display an object in a simplified manner. For instance, you may prefer
+printing a Date as a string rather than as an object with all its technical properties. This is what the byPassers property of an Option instance is for. This property contains an array of ByPasser's which are successively tried on the value to stringify. If any of the ByPasser's matches (returns a `some` of the representation of that object), the value is by-passed by its reresentation. Otherwise, it will be stringified using the normal stringification process.
+
+The `utilInspectLike` Option instance makes use of the two pre-defined ByPasser instances:
+
+- the `functionToName` ByPasser instance replaces a function object by its function name surrounded by the function delimiters and the message delimiters as defined in the `markMap`.
+- the `objectToString` ByPasser instance will replace any non-primitive value which is not an iterable or a function and by the result of calling its toString method provided it is different from Object.prototype.toString. This is how for instance a Date object will be printed as a string (because it defines a .toString method).
+
+You can use the make constructor to define your own ByPasser's if you need to. You can also define your own Option instance with fewer ByPasser's. For instance, this is how you would define an Option instance that displays functions as any other objects (for instance if you want to show some properties of the function object):
 
 ```ts
-import {
-	ByPasser,
-	ColorSet,
-	Options,
-	Stringify,
-} from "@parischap/pretty-print";
+import { PPByPasser, PPOption } from "@parischap/pretty-print";
 
-const toPrint = new Date(Date.UTC(2024, 8, 20));
-
-const stringifyAsValue = Stringify.asString({
-	...Options.ansiDarkSingleLine,
+const noFunctionSpecificity = PPOption.make({
+	...PPOption.utilInspectLike,
+	id: "WithoutFunctionByPasser",
+	byPassers: Array.of(PPByPasser.objectToString),
 });
-
-const stringifyAsRecord = Stringify.asString({
-	...Options.ansiDarkSingleLine,
-	byPasser: ByPasser.objectAsRecord(ColorSet.ansiDarkMode),
-});
-
-// As value: Fri Sep 20 2024 02:00:00 GMT+0200 (heure d’été d’Europe centrale)
-console.log(`As value: ${stringifyAsValue(toPrint)}`);
-// As record:
-console.log(`As record: ${stringifyAsRecord(toPrint)}`);
 ```
 
-When printed as a record, the string representation of a Date object is an empty string. A Date object is a special object with no properties. Using the `ByPasser.objectAsValue` instance makes more sense in that case!
+#### 4) Changing the look of primitive values
 
-4. Finally, what if we want to define an uncoloredSplitWhenTotalLengthExceeds50 stringifier instead of the predefined `uncoloredSplitWhenTotalLengthExceeds40`. Well, simply write:
+The `primitiveFormatter` property of an Option instance is in charge of formatting primitive values. The way primitive values are displayed is usually quite standard and you will seldom need to change that. There are two things that you might want to customize though:
 
-```ts
-import { ColorSet, Options, RecordFormatter } from "@parischap/pretty-print";
+- the formatting of numbers (with or without thousand separator, number of decimals, decimal separator,...)
+- the maximal length of strings beyond which they shall be clipped.
 
-const splitWhenTotalLengthExceeds50 = (colorSet: ColorSet.Type): Options.Type =>
-	Options.make({
-		...Options.singleLine(colorSet),
-		recordFormatter: RecordFormatter.splitOnTotalLength(40)(colorSet),
-	});
+To that extent, the PrimitiveFormatter.ts module defines a constructor `utilInspectLikeMaker` that takes a `maxStringLength` and a `numberFormatter` parameters. For instance the `utilInspectLike` Option instance uses `PPPrimitiveFormatter.utilInspectLikeMaker({ id: 'UtilInspectLike', maxStringLength: 10000, numberFormatter: new Intl.NumberFormat() })` as value for its `primitiveFormatter` property.
 
-const uncoloredSplitWhenTotalLengthExceeds50 = splitWhenTotalLengthExceeds50(
-	ColorSet.uncolored,
-);
-```
+The PrimitiveFormatter.ts module also exports a `make` constructor in case you want to define an altogether different `PrimitiveFormatter` instance.
 
-We have now covered the most usual use cases. But don't forget you can define your own [ByPasser](https://parischap.github.io/effect-libs/pretty-print/ByPasser.ts.html), [PropertyFilter](https://parischap.github.io/effect-libs/pretty-print/PropertyFilter.ts.html), [PropertyFormatter](https://parischap.github.io/effect-libs/pretty-print/PropertyFormatter.ts.html) and [RecordFormatter](https://parischap.github.io/effect-libs/pretty-print/RecordFormatter.ts.html) if you need something really specific. Use the [API](https://parischap.github.io/effect-libs/docs/pretty-print) documentation to get the best out of this package!
+#### 5) Drilling further down into a non-primitive value
 
-### 3) Getting the result as an array of lines
+The `maxDepth` property of an Option instance lets you define how many levels of nested non-primitive values you want to display. 0 means that only the value to stringify is shown, provided it is a primitive. If it is a non-primitive value, it gets replaced by a message string that depends on the type of that non primitive value (e.g. [Object], [Array],...). As you will see further down, the message that gets printed is defined in the `generalNonPrimitiveOption` and `specificNonPrimitiveOption` properties of an Option instance.
 
-Sometimes, you may want to get the result of pretty-printing as an array of lines. This can be useful if you need to further format the output lines, e.g. add an extra tab at the start of each line... In this case, you will use the [Stringify.asLines](https://parischap.github.io/effect-libs/pretty-print/stringify.ts.html#aslines) function instead of the [Stringify.asString](https://parischap.github.io/effect-libs/pretty-print/stringify.ts.html#asString) function. This function takes the same parameters as the asString function but it returns a [StringifiedValue](https://parischap.github.io/effect-libs/pretty-print/StringifiedValue.ts.html) which is an array of [FormattedString's](https://parischap.github.io/effect-libs/pretty-print/FormattedString.ts.html).
+#### 6) Customizing the way non-primitive values get displayed
 
-The following example shows how to add a tab at the start of each line of the stringified result:
+### C) Handling recursivity
+
+This package handles recursivity similarly to the Javascript `util.inspect()` function. For instance:
 
 ```ts
-import { Options, Stringify, FormattedString } from "@parischap/pretty-print";
-import { pipe, Struct } from "effect";
-
-// Create a FormattedString that contains a tab
-const tab = pipe("\t", FormattedString.makeWith());
-// Create a FormattedString that contains a newline
-const newline = pipe("\n", FormattedString.makeWith());
-// Create a stringify function with the uncoloredTabified options.
-const stringify = Stringify.asLines(Options.uncoloredTabified);
-// Stringify value { a: 1, b: 2 } and add a tab at the start of each line of the result,
-const stringified = stringify({ a: 1, b: 2 }).map(FormattedString.prepend(tab));
-// Join the result into a string using the newline string as separator
-const stringResult = pipe(
-	stringified,
-	FormattedString.join(newline),
-	Struct.get("value"),
-);
-```
-
-### 4) Changing the default line separator of the asString function
-
-In fact, the [Stringify.asString](https://parischap.github.io/effect-libs/pretty-print/stringify.ts.html#asString) function does exactly what we saw in the previous example: it calls the [Stringify.asLines](https://parischap.github.io/effect-libs/pretty-print/stringify.ts.html#aslines) function and joins the result with a FormattedString representing a new line by adding it to the `Options` instance. But you can change the default string used to represent a new line:
-
-```ts
-import { FormattedString, Options, Stringify } from "@parischap/pretty-print";
+import { PPOption, PPStringifiedValue } from "@parischap/pretty-print";
 import { pipe } from "effect";
 
-// Create a FormattedString that contains a newline
-const newline = pipe("\r\n", FormattedString.makeWith());
+const stringifier = PPOption.toStringifier(
+	PPOption.make({ ...PPOption.utilInspectLike, maxDepth: +Infinity }),
+);
 
-const stringify = Stringify.asString({
-	...Options.ansiDarkSplitWhenTotalLengthExceeds40,
-	lineSep: newline,
-});
+const circular = {
+	a: 1 as unknown,
+	b: { inner: 1 as unknown, circular: 1 as unknown },
+};
+/* eslint-disable functional/immutable-data */
+circular.a = [circular];
+circular.b.inner = circular.b;
+circular.b.circular = circular;
+/* eslint-enable functional/immutable-data*/
+
+console.log(pipe(circular, stringifier, PPStringifiedValue.toAnsiString()));
 ```
+
+=> Output:
+
+![circularity-handling-example](readme-assets/circularity-handling.png?sanitize=true)
