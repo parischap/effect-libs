@@ -20,7 +20,7 @@
 		"transpile-esm": "tsc -b tsconfig.esm.json",
 		"transpile-cjs": "babel dist/esm --plugins @babel/transform-export-namespace-from --plugins @babel/transform-modules-commonjs --out-dir dist/cjs --source-maps",
 		"transpile-annotate": "babel dist --plugins annotate-pure-calls --out-dir dist --source-maps",
-		"compile": "pnpm transpile-esm && pnpm transpile-cjs && pnpm transpile-annotate",
+		"compile": "pnpm transpile-esm && pnpm transpile-cjs && pnpm transpile-annotate && pnpm prodify",
 		"build-and-publish": "pnpm build && pnpm checks && pnpm publish-to-npm",
 		"docgen": "echo \"docgen not activated for this package\"",
 		"prodify": "prodify",
@@ -87,6 +87,6 @@
 	"description": "A functional library to read from (PHP sscanf equivalent) and write to (PHP sprintf equivalent) a string with type checking",
 	"peerDependencies": {
 		"@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
-		"effect": "^3.13.2"
+		"effect": "^3.13.6"
 	}
 }
