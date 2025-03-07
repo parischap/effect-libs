@@ -169,7 +169,7 @@ console.log(
 
 If your terminal takes them in charge, you can use 8-bit or RGB colors. To that extent, use the `ASStyle.color` and `ASStyle.Bg.color` combinators.
 
-The ASColor module defines 16 three-bit color instances (8 normal + 8 bright), 256 eight-bit color instances and 140 RGB color instances. All these instances can be found in the [API](https://parischap.github.io/effect-libs/ansi-styles/Color.ts.html). Furthermore, you can define more RGB colors with the `ASColor.Rgb.make` combinator.
+The ASColor module defines 16 three-bit color instances (8 normal + 8 bright), 256 eight-bit color instances and 140 RGB color instances. All these instances can be found in the [API](https://parischap.github.io/effect-libs/ansi-styles/Color.ts.html) documentation. Furthermore, you can define more RGB colors with the `ASColor.Rgb.make` combinator.
 
 Here is an example:
 
