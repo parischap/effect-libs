@@ -35,7 +35,7 @@ export default merge(
 			publishConfig: {
 				peerDependencies: {
 					[`${Configs.constants.scope}/effect-lib`]: '^0.5.0',
-					[`${Configs.constants.scope}/ansi-styles`]: '^0.0.1',
+					[`${Configs.constants.scope}/ansi-styles`]: '^0.2.0',
 					effect: Configs.constants.effectVersion
 				}
 			},

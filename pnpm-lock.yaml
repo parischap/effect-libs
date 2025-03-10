@@ -234,6 +234,18 @@ importers:
         specifier: link:.
         version: 'link:'
 
+  packages/pretty-print/dist:
+    dependencies:
+      '@parischap/ansi-styles':
+        specifier: ^0.2.0
+        version: 0.2.0(@parischap/effect-lib@0.5.0(effect@3.13.6))(effect@3.13.6)
+      '@parischap/effect-lib':
+        specifier: ^0.5.0
+        version: 0.5.0(effect@3.13.6)
+      effect:
+        specifier: ^3.13.6
+        version: 3.13.6
+
   packages/templater:
     dependencies:
       '@parischap/effect-lib':
@@ -762,6 +774,12 @@ packages:
   '@parcel/watcher@2.4.1':
     resolution: {integrity: sha512-HNjmfLQEVRZmHRET336f20H/8kOozUGwk7yajvsonjNxbj2wBTK1WsQuHkD5yYh9RxFGL2EyDHryOihOwUoKDA==}
     engines: {node: '>= 10.0.0'}
+
+  '@parischap/ansi-styles@0.2.0':
+    resolution: {integrity: sha512-sgfdXSM4BmSYIF1RYXG/IiRXXVHKOIfKayL8KWgIZh+mE6xEf41+5koKuKKZnFd5pp59wDW/Zlg9CH3FFSwkWA==}
+    peerDependencies:
+      '@parischap/effect-lib': ^0.5.0
+      effect: ^3.13.6
 
   '@parischap/configs@1.7.0':
     resolution: {integrity: sha512-2MaOopfcdG31cOtnoo8qE4SvAsnJw08n9NxfE05xHI9LkS2+KGEd0/b6GMzSj+XQYMJ8ZL6+QvFqx5g2/cjF3g==}
@@ -3175,6 +3193,11 @@ snapshots:
       '@parcel/watcher-win32-arm64': 2.4.1
       '@parcel/watcher-win32-ia32': 2.4.1
       '@parcel/watcher-win32-x64': 2.4.1
+
+  '@parischap/ansi-styles@0.2.0(@parischap/effect-lib@0.5.0(effect@3.13.6))(effect@3.13.6)':
+    dependencies:
+      '@parischap/effect-lib': 0.5.0(effect@3.13.6)
+      effect: 3.13.6
 
   '@parischap/configs@1.7.0': {}
 
