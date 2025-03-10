@@ -35,7 +35,7 @@ Depending on the package manager you use, run one of the following commands in y
   yarn add effect @parischap/effect-lib @parischap/ansi-styles
   ```
 
-We use two peerDependencies. If you are not an Effect user, the size may seem important. But, in fact, we use little of each peerDependency. Bundled, tree-shaken, minified, it's only about [24kB](https://bundlephobia.com/package/@parischap/ansi-style). Minified and gzipped, it falls to [5kB](https://bundlephobia.com/package/@parischap/ansi-style)! (source bundlephobia)
+We use two peerDependencies. If you are not an Effect user, the size may seem important. But, in fact, we use little of each peerDependency. Bundled, tree-shaken, minified, it's only about [80kB](https://bundlephobia.com/package/@parischap/ansi-styles). Minified and gzipped, it falls to [16kB](https://bundlephobia.com/package/@parischap/ansi-styles)! (source bundlephobia)
 
 ## Note
 
