@@ -127,8 +127,11 @@ importers:
   packages/ansi-styles/dist:
     dependencies:
       '@parischap/effect-lib':
-        specifier: ^0.4.0
-        version: 0.4.0(@effect/typeclass@0.30.10(effect@3.13.6))(effect@3.13.6)
+        specifier: ^0.5.0
+        version: 0.5.0(effect@3.13.6)
+      effect:
+        specifier: ^3.13.6
+        version: 3.13.6
 
   packages/date:
     dependencies:
@@ -230,15 +233,6 @@ importers:
       '@parischap/pretty-print':
         specifier: link:.
         version: 'link:'
-
-  packages/pretty-print/dist:
-    dependencies:
-      '@parischap/effect-lib':
-        specifier: ^0.4.0
-        version: 0.4.0(@effect/typeclass@0.30.10(effect@3.9.1))(effect@3.9.1)
-      effect:
-        specifier: ^3.9.1
-        version: 3.9.1
 
   packages/templater:
     dependencies:
@@ -406,11 +400,6 @@ packages:
     resolution: {integrity: sha512-ghhLNyj/UoQvmp2I29nqngMlAzQB72BhjUKcOA58cUPaUUwNy3K2jmUAzdU6SB3RHIObsX44CM/jXZiYfTv59A==}
     peerDependencies:
       effect: ^3.13.6
-
-  '@effect/typeclass@0.30.10':
-    resolution: {integrity: sha512-063pkjTByaRWA+lm0ZDLC3ghsUrCy7FqlZQ8xd8ssDwgoQXSvildvShwXjQs7obFmt8GUx24uzeLFe8do8POYQ==}
-    peerDependencies:
-      effect: ^3.11.10
 
   '@esbuild/aix-ppc64@0.25.0':
     resolution: {integrity: sha512-O7vun9Sf8DFjH2UtqK8Ku3LkquL9SZL8OLY1T5NZkA34+wG3OQF7cl4Ql8vdNzM6fzBbYfLaiRLIOZ+2FOCgBQ==}
@@ -778,11 +767,10 @@ packages:
     resolution: {integrity: sha512-2MaOopfcdG31cOtnoo8qE4SvAsnJw08n9NxfE05xHI9LkS2+KGEd0/b6GMzSj+XQYMJ8ZL6+QvFqx5g2/cjF3g==}
     hasBin: true
 
-  '@parischap/effect-lib@0.4.0':
-    resolution: {integrity: sha512-frcVDBXUMb3VLUCNrIaWzsrRcP9ZtIwOhjhicjOKjI1tA+F3rGU+intMqcNvueBzFXYYV8dgDwaPRDsu9asKbQ==}
+  '@parischap/effect-lib@0.5.0':
+    resolution: {integrity: sha512-Wx/yGsHHvHvDxXhOzdPQtgzuSEommN6yNG9rZUQLSeuSphZogEwlMDJvID2gs5Wim43ct9Dw4leN6YOqGEktuA==}
     peerDependencies:
-      '@effect/typeclass': ^0.28.1
-      effect: ^3.9.1
+      effect: ^3.13.6
 
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
@@ -1427,9 +1415,6 @@ packages:
 
   effect@3.13.6:
     resolution: {integrity: sha512-NKmzyIuOb2UuHFPRz9EYScbhMBxXkzjPRuu+4axE+hMk1f0U7TZxzi2CP3TVVxA2kzvh00aBQEbyH7Opq4PnWg==}
-
-  effect@3.9.1:
-    resolution: {integrity: sha512-dxd+eiCqxOriBM12EQ6uIjn3cJpKIP7DfqafWTVEb45aMO157iEeDcO09SEdVSAy/OqpFlRF+4Lx7Hei1ipvOA==}
 
   electron-to-chromium@1.5.55:
     resolution: {integrity: sha512-6maZ2ASDOTBtjt9FhqYPRnbvKU5tjG0IN9SztUOWYw2AzNDNpKJYLJmlK0/En4Hs/aiWnB+JZ+gW19PIGszgKg==}
@@ -2925,14 +2910,6 @@ snapshots:
       find-my-way-ts: 0.1.5
       multipasta: 0.2.5
 
-  '@effect/typeclass@0.30.10(effect@3.13.6)':
-    dependencies:
-      effect: 3.13.6
-
-  '@effect/typeclass@0.30.10(effect@3.9.1)':
-    dependencies:
-      effect: 3.9.1
-
   '@esbuild/aix-ppc64@0.25.0':
     optional: true
 
@@ -3201,15 +3178,9 @@ snapshots:
 
   '@parischap/configs@1.7.0': {}
 
-  '@parischap/effect-lib@0.4.0(@effect/typeclass@0.30.10(effect@3.13.6))(effect@3.13.6)':
+  '@parischap/effect-lib@0.5.0(effect@3.13.6)':
     dependencies:
-      '@effect/typeclass': 0.30.10(effect@3.13.6)
       effect: 3.13.6
-
-  '@parischap/effect-lib@0.4.0(@effect/typeclass@0.30.10(effect@3.9.1))(effect@3.9.1)':
-    dependencies:
-      '@effect/typeclass': 0.30.10(effect@3.9.1)
-      effect: 3.9.1
 
   '@pkgjs/parseargs@0.11.0':
     optional: true
@@ -3887,8 +3858,6 @@ snapshots:
     dependencies:
       '@standard-schema/spec': 1.0.0
       fast-check: 3.23.2
-
-  effect@3.9.1: {}
 
   electron-to-chromium@1.5.55: {}
 
