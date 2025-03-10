@@ -35,7 +35,7 @@ Depending on the package manager you use, run one of the following commands in y
   yarn add effect @parischap/effect-lib @parischap/ansi-styles @parischap/pretty-print
   ```
 
-We use three peerDependencies. If you are not an Effect user, the size may seem important. But, in fact, we use little of each peerDependency. Bundled, tree-shaken, minified, it's only about [24kB](https://bundlephobia.com/package/@parischap/pretty-print). Minified and gzipped, it falls to [5kB](https://bundlephobia.com/package/@parischap/pretty-print)! (source bundlephobia)
+We use three peerDependencies. If you are not an Effect user, the size may seem important. But, in fact, we use little of each peerDependency. Bundled, tree-shaken, minified, it's only about [30kB](https://bundlephobia.com/package/@parischap/pretty-print). Minified and gzipped, it falls to [7kB](https://bundlephobia.com/package/@parischap/pretty-print)! (source bundlephobia)
 
 ## API
 

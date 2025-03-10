@@ -51,7 +51,7 @@
 		"types": "./dts/index.d.ts",
 		"peerDependencies": {
 			"@parischap/effect-lib": "^0.5.0",
-			"@parischap/ansi-styles": "^0.2.0",
+			"@parischap/ansi-styles": "^0.2.1",
 			"effect": "^3.13.6"
 		}
 	},
