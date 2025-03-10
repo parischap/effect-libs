@@ -141,7 +141,7 @@ console.log(pipe(toPrint, stringifier, PPStringifiedValue.toAnsiString()));
 
 ### B) Creating your own Option instances
 
-You can find a detailed description of the Option object in the [API](https://parischap.github.io/effect-libs/pretty-print/Option.ts.html#type-interface-3) documentation.
+You can find a detailed description of the Option object in the [API](https://parischap.github.io/effect-libs/pretty-print/Option.ts.html#type-interface-3) documentation. As you will see, an Option instance has an id property. This id will be displayed instead of all the properties of the Option instance when logging to the console. Although it will have no execution impact, try to use meaningful ids to simplify debugging!
 
 #### 1) Applying your own styles and colors
 
@@ -161,9 +161,9 @@ Just passing `PPStyleMap.darkMode` to the `styleMap` property does the trick. In
 
 This package uses the [@parischap/ansi-styles](https://www.npmjs.com/package/@parischap/ansi-styles) package to apply styles to a stringified value. Please refer to the documentation of that package if you intend to define your own coloring options.
 
-An Option instance has a `styleMap` property which, as its name suggests, is a map that associates the name of the part of a stringified value (e.g. the key/value separator when pretty-printing a non-primitive value,...) to a `ValueBasedStyler` which is nothing but an alias for a `ContextStyler` (see [@parischap/ansi-styles](https://parischap.github.io/effect-libs/ansi-styles/ContextStyler.ts.html)) whose Context object is a `Value` (see Value.ts).
+An Option instance has a `styleMap` property which, as its name suggests, is a map that associates the name of the part of a stringified value (e.g. the key/value separator when pretty-printing a non-primitive value,...) to a `ValueBasedStyler` which is nothing but an alias for a `ContextStyler` (see [@parischap/ansi-styles](https://parischap.github.io/effect-libs/ansi-styles/ContextStyler.ts.html)) whose Context object is a `Value` (see [Value.ts](https://parischap.github.io/effect-libs/pretty-print/Value.ts.html)).
 
-A `Value` is an object that contains a value to pretty-print and contextual information about that value (its depth in the initial value to pretty-print, its depth in the prototypal chain of the object it belongs to, its type, the type of its key if it belongs to a non-primitive value...). For instance, in the object `{a:3, b:{d:5, c:6}}`, the value 3 has a depth of 1 and the values 5 and 6 a depth of 2. The ValueBasedStyler.ts module defines three constructors:
+A `Value` is an object that contains a value to pretty-print and contextual information about that value (its depth in the initial value to pretty-print, its depth in the prototypal chain of the object it belongs to, its type, the type of its key if it belongs to a non-primitive value...). For instance, in the object `{a:3, b:{d:5, c:6}}`, the value 3 has a depth of 1 and the values 5 and 6 a depth of 2. The [ValueBasedStyler.ts](https://parischap.github.io/effect-libs/pretty-print/ValueBasedStyler.ts.html) module defines three constructors:
 
 - `makeDepthIndexed`: this constructor builds a ContextStyler that will use the `depth` property of the Value object it receives to choose which style to apply. This is for instance useful to style the curly-brackets that surround a non-primitive value when we want to use a different color at different depths.
 - `makeTypeIndexed`: this constructor builds a ContextStyler that will use the `contentType` property of the Value object it receives to choose which style to apply. This is for instance useful to style different types of values in different colors (e.g. green for strings, cyan for symbols,...).
@@ -176,15 +176,15 @@ As already discussed, there are two predefined instances of StyleMap's:
 - `darkMode` which uses ContextStyler's adapted to dark-mode terminals.
 - `none` which does not perform any styling.
 
-There is a `make` constructor that allows you to define other StyleMap's if you need to. Take a look at the code of the `darkMode` instance to better understand how a StyleMap works. Note that that you can define more entries than there are in the `darkMode` instance. For instance, you could create a NonPrimitiveFormatter that prints the length of the prototypal chain of an object in between pipes before the curly brackets. You could name that part `prototypalChainLength` and add it as an entry in your StyleMap instance. Note that if you refer to an entry that has not been defined in the styleMap, no error will be reported. Instead, the `none` Style will be used (i.e. no styling will be performed).
+There is a `make` constructor that allows you to define other StyleMap's if you need to. Take a look at the code of the `darkMode` instance to better understand how a StyleMap works. Note that you can define more entries (called `partName`) than there are in the `darkMode` instance. For instance, you could create a `NonPrimitiveFormatter` that prints the length of the prototypal chain of an object in between pipes before the curly brackets. You could name that part `prototypalChainLength` and add it as an entry in your StyleMap instance. Note that if you refer to a `partName` that has not been defined in the styleMap, no error will be reported. Instead, the `none` Style will be used (i.e. no styling will be applied).
 
 #### 2) Changing the default marks
 
-We make use of predefined marks when pretty-printing a value. For instance, when we encounter a function `max` to pretty-print, we display it in the following way: `[Function: max]` which, in fact, is the following sucession of marks: MessageStartDelimiter + FunctionNameStartDelimiter + function name + FunctionNameEndDelimiter + MessageEndDelimiter. As you will discover later, that behavior can be altered.
+We make use of predefined marks when pretty-printing a value. For instance, when we encounter a function `max` to pretty-print, we display it in the following way: `[Function: max]` which, in fact, is the following succession of marks: MessageStartDelimiter + FunctionNameStartDelimiter + function name + FunctionNameEndDelimiter + MessageEndDelimiter. As you will discover later, that behavior can be altered.
 
-An Option instance has a `markMap` property which, as its name suggests, is a map that associates the name of a mark to a string and a style to use for that mark. For instance, the `FunctionNameStartDelimiter` mark is defined as `{ text: 'Function: ', partName: 'Message' }` meaning that the text 'Function: ' will be used to represent it and that this text will be styled using the `Message` partName style defined in the styleMap.
+An Option instance has a `markMap` property which, as its name suggests, is a map that associates the name of a mark to a string and a style to use for that mark. For instance, the `FunctionNameStartDelimiter` mark is defined as `{ text: 'Function: ', partName: 'Message' }` meaning that the text 'Function: ' will be used to represent it and that this text will be styled using the `ValueBasedFormatter` associated to the `Message` partName in the styleMap.
 
-The MarkMap.ts module defines a single instance named `utilInspectLike`. You can use the make constructor to define your own instances if you need to. For instance, if you wanted the function name to be followed by '()', this is how you would define your own Option instance:
+The [MarkMap.ts](https://parischap.github.io/effect-libs/pretty-print/MarkMap.ts.html) module defines a single instance named `utilInspectLike`. You can use the make constructor to define your own instances if you need to. For instance, if you wanted the function name to be followed by '()', this is how you would define your own Option instance:
 
 ```ts
 import { PPMarkMap, PPOption } from "@parischap/pretty-print";
@@ -207,24 +207,24 @@ export const withParentheses: PPOption.Type = PPOption.make({
 });
 ```
 
-As for StyleMap's, you can define your own entries in the MarkMap instances you define. And then use these extra entries in the ByPasser's... that you define. Note that if you refer to a mark that is not present in the markMap, an unstyled empty string to represent it.
+Similarly to StyleMap's, you can define your own entries in the MarkMap instances you define. And then use these extra entries in the ByPasser's... that you define. Note that if you refer to a mark that is not present in the markMap, an unstyled empty string will be used to represent it.
 
 #### 3) Bypassing some values
 
-There are situations where you want to display an object in a simplified manner. For instance, you may prefer
-printing a Date as a string rather than as an object with all its technical properties. This is what the byPassers property of an Option instance is for. This property contains an array of ByPasser's which are successively tried on the value to stringify. If any of the ByPasser's matches (returns a `some` of the representation of that object), the value is by-passed by its reresentation. Otherwise, it will be stringified using the normal stringification process.
+There are situations where you want to display a non-primitive value in a simplified manner. For instance, you may prefer
+printing a Date as a string rather than as an object with all its technical properties. This is what the byPassers property of an Option instance is for. This property contains an array of ByPasser's (see [ByPasser.ts](https://parischap.github.io/effect-libs/pretty-print/ByPasser.ts.html)) which are successively tried on the value to stringify. If any of the ByPasser's matches (returns a `some` of the representation of that non-primitive value), the value is by-passed by the returned representation. Otherwise, it will be stringified using the normal stringification process.
 
 The `utilInspectLike` Option instance makes use of the two pre-defined ByPasser instances:
 
-- the `functionToName` ByPasser instance replaces a function object by its function name surrounded by the function delimiters and the message delimiters as defined in the `markMap`.
-- the `objectToString` ByPasser instance will replace any non-primitive value which is not an iterable or a function and by the result of calling its toString method provided it is different from Object.prototype.toString. This is how for instance a Date object will be printed as a string (because it defines a .toString method).
+- the `functionToName` ByPasser instance replaces a function object by its function name preceded by the `MessageStartDelimiter` and `FunctionStartDelimiter` and followed by the `FunctionEndDelimiter` and `MessageEndDelimiter` as they are defined in the `markMap`.
+- the `objectToString` ByPasser instance will replace any non-primitive value which is not an iterable or a function by the result of calling its toString method provided it defines one different from Object.prototype.toString. This ByPasser for instance works well with Javascript Date objects (because they define a .toString method).
 
-You can use the make constructor to define your own ByPasser's if you need to. You can also define your own Option instance with fewer ByPasser's. For instance, this is how you would define an Option instance that displays functions as any other objects (for instance if you want to show some properties of the function object):
+You can use the make constructor to define your own ByPasser's if you need to. You can also define your own Option instance with fewer ByPasser's. For instance, this is how you would define an Option instance that displays functions as any other non-primitive value (for instance if you want to show some properties of the function object):
 
 ```ts
 import { PPByPasser, PPOption } from "@parischap/pretty-print";
 
-const noFunctionSpecificity = PPOption.make({
+const withoutFunctionByPasser = PPOption.make({
 	...PPOption.utilInspectLike,
 	id: "WithoutFunctionByPasser",
 	byPassers: Array.of(PPByPasser.objectToString),
@@ -238,15 +238,65 @@ The `primitiveFormatter` property of an Option instance is in charge of formatti
 - the formatting of numbers (with or without thousand separator, number of decimals, decimal separator,...)
 - the maximal length of strings beyond which they shall be clipped.
 
-To that extent, the PrimitiveFormatter.ts module defines a constructor `utilInspectLikeMaker` that takes a `maxStringLength` and a `numberFormatter` parameters. For instance the `utilInspectLike` Option instance uses `PPPrimitiveFormatter.utilInspectLikeMaker({ id: 'UtilInspectLike', maxStringLength: 10000, numberFormatter: new Intl.NumberFormat() })` as value for its `primitiveFormatter` property.
+To that extent, the [PrimitiveFormatter.ts](https://parischap.github.io/effect-libs/pretty-print/PrimitiveFormatter.ts.html) module defines a constructor `utilInspectLikeMaker` that takes two parameters: `maxStringLength` and `numberFormatter`. For example the `utilInspectLike` Option instance uses `PPPrimitiveFormatter.utilInspectLikeMaker({ id: 'UtilInspectLike', maxStringLength: 10000, numberFormatter: new Intl.NumberFormat() })` as value for its `primitiveFormatter` property.
 
-The PrimitiveFormatter.ts module also exports a `make` constructor in case you want to define an altogether different `PrimitiveFormatter` instance.
+There is also a `make` constructor in case you want to define an altogether different `PrimitiveFormatter` instance.
 
 #### 5) Drilling further down into a non-primitive value
 
-The `maxDepth` property of an Option instance lets you define how many levels of nested non-primitive values you want to display. 0 means that only the value to stringify is shown, provided it is a primitive. If it is a non-primitive value, it gets replaced by a message string that depends on the type of that non primitive value (e.g. [Object], [Array],...). As you will see further down, the message that gets printed is defined in the `generalNonPrimitiveOption` and `specificNonPrimitiveOption` properties of an Option instance.
+The `maxDepth` property of an Option instance lets you define how many levels of nested non-primitive values you want to display. 0 means that only the value to stringify is shown, provided it is a primitive. If it is a non-primitive value, it gets replaced by a message string that depends on the type of that non-primitive value (e.g. [Object], [Array],...). As you will see further down, the message that gets printed for a particular non-primitive value is defined in the `generalNonPrimitiveOption` and `specificNonPrimitiveOption` properties of an Option instance.
+
+The `utilInspectLike` Option instance uses 2 for its `maxDepth` property.
 
 #### 6) Customizing the way non-primitive values get displayed
+
+The `generalNonPrimitiveOption` property of an Option instance is an object of type Option.NonPrimitive which contains a set of options that apply to all non-primitive values except those for which the function defined by the `specificNonPrimitiveOption` property returns a `Some<Option.NonPrimitive>` that will take precedence. So the `generalNonPrimitiveOption` property defines the non-primitive value options by default and the `specificNonPrimitiveOption` define options for specific type of non-primitive values like arrays, maps, sets,...
+
+For example, the `utilInspectLike` Option instance defines a `generalNonPrimitiveOption` property with all the usual defaults used when printing a record (curly brackets,...). These defaults are overridden for arrays, TypedArray's, maps, sets, HashMaps, HashSets,... in the `specificNonPrimitiveOption` property.
+
+You can see the documentation of all the properties of an Option.NonPrimitive in the [API](https://parischap.github.io/effect-libs/pretty-print/Option.ts.html#type-interface) documentation. The documentation of most pf he properties of an Option.NonPrimitive is rather clear. We will only cover here the most complex aspects.
+
+##### i) Specifying the source of the properties
+
+This package offers three ways of extracting the properties of a non-primitive value:
+
+- Properties are obtained by calling Reflect.getOwnProperties on the non-primitive-value and its prototypes (until maxPrototypeDepth is reached). This is usually a good choice for records
+- Properties are obtained by iterating over the non-primitive-value that must implement the Iterable protocol. Each value returned by the iterator is used to create a property with an auto-incremented numerical key (converted to a string). This is usually a good choice for arrays and sets.
+- Properties are obtained by iterating over the non-primitive-value that must implement the Iterable protocol. The iterator must return a key/value pair. Otherwise, the returned value is ignored. This is usually a good choice for maps,...
+
+##### ii) Filtering out properties
+
+You can use the `propertyFilters` property to specify a list of filters to apply to the retrieved list of properties of a non-primitive value. The [PropertyFilter.ts](https://parischap.github.io/effect-libs/pretty-print/PropertyFilter.ts.html) module defines several instances that you can combine to reach the desired behavior. For example, the `utilInspectLike` Option instance uses `PPPropertyFilter.removeNonEnumerables` to remove all non-enumerable properties. There is a make constructor if you want to define more elaborate filters.
+
+##### iii) Sorting properties
+
+You can use the `propertySortOrder` property to sort the retrieved properties after filtering. The `utilInspectLike` Option instance does not apply any sorting. But you can easily pass one of the instances defined in the [ValueOrder.ts](https://parischap.github.io/effect-libs/pretty-print/ValueOrder.ts.html) module. You can also use the Effect Order module to combine the predefined instances into more elaborate Order's.
+
+##### iv) Combining the stringified representation of the key and the stringified representation of the value of a property
+
+You can use the `propertyFormatter` property to specify how to combine the stringified representation of the key and the stringified representation of the value of a property. The [PropertyFormatter.ts](https://parischap.github.io/effect-libs/pretty-print/PropertyFormatter.ts.html) module defines several instances which should cover most situations:
+
+- `valueOnly` instance: as its name suggests, this instance ignores the stringified representation of the key. This is useful for arraylikes for which dsiplaying a numerical auto-incremented key brings no valuable information.
+- `keyAndValue` instance: the last line of the stringified representation of the key and the first line of the stringified representation of the value are merged and separated by the keyValueSeparator. That's the usual way a record is displayed (e.g. 'a: 1').
+- `treeify` instance: for a leaf: does the same as `keyAndValue`; for a non-leaf: appends the lines of the stringified representation of the value to the lines of the stringified representation of the key without any separator.
+- `treeifyHideLeafValues` instance: for a leaf: prints only the stringified representation of the key; for a non-leaf: does the same as `treeify`.
+
+But it also ships a `make` constructor in case you have some very specific needs.
+
+##### v) Combining the stringified representations of all the properties: non-prilitive value marks, single-line vs multi-line output
+
+You can use the `nonPrimitiveFormatter` property to specify how to combine the stringified representations of all the properties of a non-primitive value. A `NonPrimitiveFormatter` is in charge of adding marks that symbolize the type of the non-primitive value (e.g. curly brackets for records, square brackets for arrays,...), of adding a mark to seperate the stringified representation of all the properties (usually a comma or nothing when treeifying), and of splitting or not the result on several lines.
+
+The [NonPrimitiveFormatter.ts](https://parischap.github.io/effect-libs/pretty-print/NonPrimitiveFormatter.ts.html) module defines several instances which should cover most situations:
+
+- `singleLine` instance: this instance joins the stringified representation of all the properties in a single-line after adding separators and the marks that symbolize that non-primitive value.
+- `tabify` instance: this instance concatenates the stringified representation of all the properties after adding tabs, separators and the marks that symbolize that non-primitive value.
+- `treeify` instance: this instance concatenates the stringified representation of all the properties after adding tree marks.
+- `splitOnConstituentNumberMaker` constructor: calls `singleLine` when the number of properties is inferior to the passed parameter; calls `tabify` otherwise.
+- `splitOnLongestPropLengthMaker` constructor: calls `singleLine` when the length of the stringified representation of the longest property is inferior to the passed parameter; calls `tabify` otherwise.
+- `splitOnTotalLengthMaker` constructor: calls `singleLine` when the length of the stringified representation of the whole non-primitive value printed on a single line is inferior to the passed parameter; calls `tabify` otherwise.
+
+But it also ships a `make` constructor in case you have some very specific needs.
 
 ### C) Handling recursivity
 

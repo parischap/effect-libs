@@ -79,31 +79,33 @@ export namespace PropertySource {
 	 */
 	export enum Type {
 		/**
-		 * Properties are obtained by calling Reflect.getOwnProperties on the object and its prototypes.
-		 * `FromProperties` is usually a good choice for records
+		 * Properties are obtained by calling Reflect.getOwnProperties on the non-primitive-value and
+		 * its prototypes (until maxPrototypeDepth is reached). This is usually a good choice for
+		 * records
 		 */
 		FromProperties = 0,
 
 		/**
-		 * Properties are obtained by iterating over the object that must implement the Iterable
-		 * protocol. Each value returned by the iterator is used to create a property with an
-		 * auto-incremented numerical key (converted to a string). `FromValueIterable` is usually a good
-		 * choice for Arrays, TypedArrays, Sets, WeakSets, ...
+		 * Properties are obtained by iterating over the non-primitive-value that must implement the
+		 * Iterable protocol. Each value returned by the iterator is used to create a property with an
+		 * auto-incremented numerical key (converted to a string). This is usually a good choice for
+		 * arrays and sets.
 		 */
 		FromValueIterable = 1,
 
 		/**
-		 * Properties are obtained by iterating over the object that must implement the Iterable
-		 * protocol. The iterator must return a key/value pair. Otherwise, the returned value is
-		 * ignored. `FromKeyValueIterable` is usually a good choice for Maps, WeakMaps,...
+		 * Properties are obtained by iterating over the non-primitive-value that must implement the
+		 * Iterable protocol. The iterator must return a key/value pair. Otherwise, the returned value
+		 * is ignored. This is usually a good choice for maps,...
 		 */
 		FromKeyValueIterable = 2
 	}
 }
 
 /**
- * Namespace for the options regarding the display of the number of properties. The number of
- * properties is shown in between parentheses just after the object name
+ * Namespace for the options regarding the display of the number of properties of a non-primitive
+ * value. The number of properties is shown in between parentheses just after the non-primitive
+ * value id.
  *
  * @category Models
  */
@@ -119,8 +121,8 @@ export namespace PropertyNumberDisplayOption {
 		/** Shows the number of properties retrieved from the property source */
 		All = 1,
 		/**
-		 * Shows the number of properties actually displayed (after filtering, deduping and applying
-		 * `maxPropertyNumber`)
+		 * Shows the number of properties actually displayed, i.e. these remaining after filtering,
+		 * deduping and applying `maxPropertyNumber`
 		 */
 		Actual = 2,
 		/**
@@ -154,117 +156,147 @@ export namespace NonPrimitive {
 	 */
 	export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
 		/**
-		 * Id of this instance. This id is:
+		 * Id of this type of non-primitive valie. This id is:
 		 *
 		 * - Used for equality and debugging
-		 * - Displayed with the `message` style in case `maxDepth` is superseded (see StyleMap.ts)
-		 *   surrounded by the `messageStartDelimiter` and `messageEndDelimiter` marks (see MarkMap.ts).
-		 *   For instance: [Array]
-		 * - Displayed before the `singleLineStartDelimiterMark` or `multiLineStartDelimiterMark` if
-		 *   `showId` is `true`
+		 * - Displayed in case `maxDepth` is superseded surrounded by the MessageStartDelimiter and
+		 *   MessageEndDelimiter marks. For instance: [Array]
+		 * - Displayed in front of the representation of the non-primitive value even if `maxDepth` is not
+		 *   superseded if `showId` is `true` (see below).
 		 */
 		readonly id: string;
 
 		/**
-		 * If true, the id will be shown in the `NonPrimitiveValueId` style just before the
-		 * `singleLineStartDelimiterMark` or `multiLineStartDelimiterMark` seperated from it by the
-		 * `NonPrimitiveValueNameSeparator` mark. For instance: `Map { 'a' => 1, 'b' => 2 }`
+		 * If true, the id will be shown just before the non-primitive value representation seperated
+		 * from it by the `NonPrimitiveValueNameSeparator` mark. For instance: `Map { 'a' => 1, 'b' => 2
+		 * }`
 		 */
 		readonly showId: boolean;
 
 		/**
-		 * Options regarding the display of the property number. If not `None`, the property number will
-		 * be suffixed to the name in between the `PropertyNumberStartDelimiter` and
-		 * `PropertyNumberEndDelimiter` marks. For AllAndActual, the `PropertyNumberSeparator` mark is
-		 * used to seperate the two property numbers. For instance: `Map(2) { 'a' => 1, 'b' => 2 }` with
-		 * `Actual` or `Map(5,2) { 'a' => 1, 'b' => 2 }` with `AllAndActual`
+		 * Options regarding the display of the property number of a non-primitive value. If not `None`,
+		 * the property number will be suffixed to the id in between the `PropertyNumberStartDelimiter`
+		 * and `PropertyNumberEndDelimiter` marks. For `AllAndActual` and `AllAndActualIfDifferent`, the
+		 * `PropertyNumberSeparator` mark is used to seperate the two property numbers. For instance:
+		 * `Map(2) { 'a' => 1, 'b' => 2 }` with `Actual` or `Map(5,2) { 'a' => 1, 'b' => 2 }` with
+		 * `AllAndActual`
 		 */
 		readonly propertyNumberDisplayOption: PropertyNumberDisplayOption.Type;
 
-		/** KeyValueSeparatorMark for that non-primitive value */
+		/** Key/value separator mark for that type of non-primitive value. For instance ': ' for an array */
 		readonly keyValueSeparatorMark: string;
 
-		/** SingleLineStartDelimiterMark for that non-primitive value */
+		/**
+		 * Mark shown before the representation of a non-primitive value when it is displayed on a
+		 * single line. For instance '{ ' for a record
+		 */
 		readonly singleLineStartDelimiterMark: string;
 
-		/** SingleLineEndDelimiterMark for that non-primitive value */
+		/**
+		 * Mark shown after the representation of a non-primitive value when it is displayed on a single
+		 * line. For instance ' }' for a record
+		 */
 		readonly singleLineEndDelimiterMark: string;
 
-		/** MultiLineStartDelimiterMark for that non-primitive value */
+		/**
+		 * Mark shown before the representation of a non-primitive value when it is displayed on
+		 * multiple lines. For instance '{' for a record
+		 */
 		readonly multiLineStartDelimiterMark: string;
 
-		/** MultiLineEndDelimiterMark for that non-primitive value */
+		/**
+		 * Mark shown after the representation of a non-primitive value when it is displayed on multiple
+		 * lines. For instance '}' for a record
+		 */
 		readonly multiLineEndDelimiterMark: string;
 
-		/** PrototypeStartDelimiterMark for that non-primitive value */
+		/**
+		 * Mark repeated before the key of the property of a non-primitive value to indicate the depth
+		 * of that key in the prototypal chain
+		 */
 		readonly prototypeStartDelimiterMark: string;
 
-		/** PrototypeEndDelimiterMark for that non-primitive value */
+		/**
+		 * Mark repeated after the key of the property of a non-primitive value to indicate the depth of
+		 * that key in the prototypal chain. For instance '@'. `@` means that the key is on the direct
+		 * prototype of the non-primitive value and '@@' means that the key is on the prototype of the
+		 * prototype of the non-primitive value
+		 */
 		readonly prototypeEndDelimiterMark: string;
 
-		/** SingleLineInBetweenPropertySeparatorMark for that non-primitive value */
+		/**
+		 * SingleLineInBetweenPropertySeparatorMark for that type of non-primitive value. For instance
+		 * ', ' for records
+		 */
 		readonly singleLineInBetweenPropertySeparatorMark: string;
 
-		/** MultiLineInBetweenPropertySeparatorMark for that non-primitive value */
+		/**
+		 * MultiLineInBetweenPropertySeparatorMark for that non-primitive value. For instance ',' for
+		 * records
+		 */
 		readonly multiLineInBetweenPropertySeparatorMark: string;
 
-		/** IdSeparatorMark for that non-primitive value */
+		/** IdSeparatorMark for that type of non-primitive value. For instance ' ' */
 		readonly idSeparatorMark: string;
 
-		/** PropertyNumberSeparatorMark for that non-primitive value */
+		/** PropertyNumberSeparatorMark for that type of non-primitive value. For instance ',' */
 		readonly propertyNumberSeparatorMark: string;
 
-		/** PropertyNumberStartDelimiterMark for that non-primitive value */
+		/** PropertyNumberStartDelimiterMark for that type of non-primitive value. For instance '(' */
 		readonly propertyNumberStartDelimiterMark: string;
 
-		/** PropertyNumberEndDelimiterMark for that non-primitive value */
+		/** PropertyNumberEndDelimiterMark for that type of non-primitive value. For instance ')' */
 		readonly propertyNumberEndDelimiterMark: string;
 
-		/** Specifies the source of properties for non-primitive values. This value can be overriden */
+		/**
+		 * Specifies the source of properties for non-primitive values. See the PropertySource.Type for
+		 * more details
+		 */
 		readonly propertySource: PropertySource.Type;
 
 		/**
 		 * Indicates the level in the prototypal chain of a non-primitive value down to which properties
 		 * are shown. This value is only used when propertySource is `FromProperties`. maxPrototypeDepth
 		 * <= 0 means that only the own properties of a non-primitive value are shown. maxPrototypeDepth
-		 * = 1 means that only the own properties of a non-primitive value and its direct prototype are
-		 * shown...
+		 * = 1 means that only the own properties of a non-primitive value and that of its direct
+		 * prototype are shown...
 		 */
 		readonly maxPrototypeDepth: number;
 
 		/**
 		 * Array of `PropertyFilter` instances applied successively just after retrieving the properties
-		 * of a non-primitive value from the selected source.
+		 * of a non-primitive value from the selected source (see PropertyFilter.ts)
 		 */
 		readonly propertyFilters: PPPropertyFilters.Type;
 
 		/**
 		 * If `none`, properties are not sorted. If a `some` of a ValueOrder (see ValueOrder.ts), that
-		 * ValueOrder is used to sort properties of non primitive values just after application of the
+		 * ValueOrder is used to sort properties of non-primitive values just after application of the
 		 * propertyFilters.
 		 */
 		readonly propertySortOrder: Option.Option<PPValueOrder.Type>;
 
 		/**
-		 * Non-primitive values can have several properties with the same key, for instance in an object
-		 * and one or several of its prototypes. This option allows you to decide if you want to keep
-		 * all the properties with the same key. If true, only the first occurrence of each property
-		 * with the same key is kept. Sorting happens before deduping, so you can decide which property
-		 * will be first by choosing your propertySortOrder carefully (e.g. you may use
-		 * `PropertyOrder.byPrototypalDepth`. If false, all occurrences of the same property are kept.
+		 * Non-primitive values can have several properties with the same key. For instance, the same
+		 * key can appear in an object and one or several of its prototypes. This option allows you to
+		 * decide if you want to keep all the properties with the same key. If true, only the first
+		 * occurrence of each property with the same key is kept. Sorting happens before deduping, so
+		 * you can decide which property will be first by choosing your propertySortOrder carefully
+		 * (e.g. you may use `PropertyOrder.byPrototypalDepth`. If false, all occurrences of the same
+		 * property are kept.
 		 */
 		readonly dedupeProperties: boolean;
 
 		/**
 		 * Maximal number of properties to keep for non-primitive values. Pass +Infinity to show all
-		 * properties. Applied after property deduping. The `maxPropertyNumber` first properties after
-		 * filtering and ordering are kept.
+		 * properties. Keeps the `maxPropertyNumber` first properties after filtering, ordering and
+		 * deduping.
 		 */
 		readonly maxPropertyNumber: number;
 
 		/**
-		 * `PropertyFormatter` instance (see PropertyFormatter.ts) which allows you to specify how to
-		 * format properties of non-primitive values (see PropertyFormatter.ts)
+		 * `PropertyFormatter` instance which allows you to specify how to format properties of
+		 * non-primitive values (see PropertyFormatter.ts)
 		 */
 		readonly propertyFormatter: PPPropertyFormatter.Type;
 
