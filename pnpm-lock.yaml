@@ -237,8 +237,8 @@ importers:
   packages/pretty-print/dist:
     dependencies:
       '@parischap/ansi-styles':
-        specifier: ^0.2.0
-        version: 0.2.0(@parischap/effect-lib@0.5.0(effect@3.13.6))(effect@3.13.6)
+        specifier: ^0.2.1
+        version: 0.2.1(@parischap/effect-lib@0.5.0(effect@3.13.6))(effect@3.13.6)
       '@parischap/effect-lib':
         specifier: ^0.5.0
         version: 0.5.0(effect@3.13.6)
@@ -775,8 +775,8 @@ packages:
     resolution: {integrity: sha512-HNjmfLQEVRZmHRET336f20H/8kOozUGwk7yajvsonjNxbj2wBTK1WsQuHkD5yYh9RxFGL2EyDHryOihOwUoKDA==}
     engines: {node: '>= 10.0.0'}
 
-  '@parischap/ansi-styles@0.2.0':
-    resolution: {integrity: sha512-sgfdXSM4BmSYIF1RYXG/IiRXXVHKOIfKayL8KWgIZh+mE6xEf41+5koKuKKZnFd5pp59wDW/Zlg9CH3FFSwkWA==}
+  '@parischap/ansi-styles@0.2.1':
+    resolution: {integrity: sha512-rQdEdz26FcSLubAUiZIPOy6+HQ/fc6XrkdduM2tRdsvDu6fxzVItT9wvW8591naoQZru4GcQytR2sgh+jl1DYQ==}
     peerDependencies:
       '@parischap/effect-lib': ^0.5.0
       effect: ^3.13.6
@@ -3194,7 +3194,7 @@ snapshots:
       '@parcel/watcher-win32-ia32': 2.4.1
       '@parcel/watcher-win32-x64': 2.4.1
 
-  '@parischap/ansi-styles@0.2.0(@parischap/effect-lib@0.5.0(effect@3.13.6))(effect@3.13.6)':
+  '@parischap/ansi-styles@0.2.1(@parischap/effect-lib@0.5.0(effect@3.13.6))(effect@3.13.6)':
     dependencies:
       '@parischap/effect-lib': 0.5.0(effect@3.13.6)
       effect: 3.13.6
