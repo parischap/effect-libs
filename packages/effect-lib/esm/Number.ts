@@ -21,8 +21,8 @@ export const unsafeIntFromString =
 		parseInt(s, radix);
 
 /**
- * Modulo - Use only with integers - Unlike javascript remainder operator (%), this function always
- * returns a positive integer even if `self` or `divisor` is negative
+ * Modulo - Use only with finite integers - Unlike javascript remainder operator (%), this function
+ * always returns a positive integer even if `self` or `divisor` is negative
  *
  * @category Utils
  */
@@ -34,7 +34,7 @@ export const intModulo =
 
 /**
  * Returns the `quotient` and `remainder` of the division of `self` by `divisor`. `remainder` always
- * has the sign of `divisor`.
+ * has the sign of `divisor`. Use only with finite integers
  *
  * @category Utils
  */
@@ -47,7 +47,7 @@ export const quotientAndRemainder =
 	};
 
 /**
- * Returns the decimal and fractional parts of a number.
+ * Returns the decimal and fractional parts of a number. Use only with finite integers
  *
  * @category Utils
  */
@@ -95,10 +95,3 @@ export const isNotInt = (self: number) => !Number.isInteger(self);
  * @category Utils
  */
 export const shift = (n: number) => (self: number) => self * Math.pow(10, n);
-
-/**
- * Alias to javascript Number.EPSILON
- *
- * @category Constants
- */
-export const EPSILON = Number.EPSILON;
