@@ -443,7 +443,7 @@ export const match =
  */
 export const matchAndGroups =
 	(regExp: RegExp) =>
-	(self: string): Option.Option<RegExpExecArray> =>
+	(self: string): Option.Option<[match: string, capturingGroups: Array<string>]> =>
 		pipe(regExp, MRegExp.matchAndGroups(self));
 
 /**

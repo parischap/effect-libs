@@ -1,8 +1,10 @@
 /** Very simple regular expression module */
 
-import { Option, pipe } from 'effect';
+import { Array, flow, Option, pipe, Tuple } from 'effect';
 import * as MArray from './Array.js';
+import * as MFunction from './Function.js';
 import * as MRegExpString from './RegExpString.js';
+import * as MTypes from './types.js';
 
 /**
  * Creates a RegExp from a string
@@ -33,17 +35,23 @@ export const match =
  */
 export const matchAndGroups =
 	(s: string) =>
-	(self: RegExp): Option.Option<RegExpExecArray> =>
+	(self: RegExp): Option.Option<[match: string, capturingGroups: Array<string>]> =>
 		pipe(
 			self.exec(s),
 			Option.fromNullable,
 			// RegExpExecArray extends from Array<string>. But this is a Typescript bug. When there are optional capturing groups, there can be some undefined elements. So let's make javascript and Typescript coherent.
-			Option.map((arr) => {
-				for (let loop = 1; loop < arr.length; loop++)
-					/* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements*/
-					if (arr[loop] === undefined) arr[loop] = '';
-				return arr;
-			})
+			Option.map(
+				flow(
+					Array.map(
+						flow(
+							Option.liftPredicate(MTypes.isNotUndefined),
+							Option.getOrElse(MFunction.constEmptyString)
+						)
+					),
+					Array.splitAt(1),
+					Tuple.mapFirst(MArray.unsafeGet(0))
+				)
+			)
 		);
 
 /**
