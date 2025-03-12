@@ -188,10 +188,10 @@ console.log(
 
 A `ContextStyler` allows you to style a text differently according to a context object. There are two `ContextStyler` constructors:
 
-- `fromPalette`: this constructor takes as parameters a `Palette` (see Palette.ts), i.e. an array of `n` (n>=2) Styles, and an `indexFromContext` function that is able to transform a Context object into an integer `i`. The style that will be used is the one in the Palette at position i % n, where % is the modulo function.
-- `fromSingleStyle`: this constructor takes as parameter a single style that will always be used (i.e. it ignores the context object that it receives). This is useful if a function expects a ContextStyler but needs not take care of the context in some situations.
+- `fromPalette`: this constructor takes as parameters a `Palette` (see Palette.ts), i.e. an array of `n` (n>=2) Style's, and an `indexFromContext` function that is able to transform a Context object into an integer `i`. The Style that will be used is the one in the Palette at position i % n, where % is the modulo function.
+- `fromSingleStyle`: this constructor takes as parameter a single style that will always be used (i.e. the built instance will ignore the context object it receives). This is useful if a function expects a ContextStyler but needs not take care of the context in some situations.
 
-A `ContextStyler` is a curated `function` object that takes first a context value and then a string to display. Sometimes, you need to use a ContextStyler the other way round: you pass it first the string to display and then the context value. In that case, use the `withContextLast` method.
+A `ContextStyler` is a curated `function` object that takes first a context value and then a string to display. Sometimes, you need to use a `ContextStyler` the other way round: you pass it first the string to display and then the context value. In that case, use the `withContextLast` method.
 
 Here is an example:
 
