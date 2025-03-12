@@ -26,7 +26,9 @@ describe('MRegExpString', () => {
 			});
 
 			it('1 digit at most', () => {
-				const regExp = new RegExp(MRegExpString.makeLine(MRegExpString.strictlyPositiveInt(1)));
+				const regExp = new RegExp(
+					MRegExpString.makeLine(MRegExpString.strictlyPositiveInt({ maximumDigits: 1 }))
+				);
 
 				expect(regExp.test('')).toBe(false);
 				expect(regExp.test(' ')).toBe(false);
@@ -39,7 +41,9 @@ describe('MRegExpString', () => {
 			});
 
 			it('2 digits at most', () => {
-				const regExp = new RegExp(MRegExpString.makeLine(MRegExpString.strictlyPositiveInt(2)));
+				const regExp = new RegExp(
+					MRegExpString.makeLine(MRegExpString.strictlyPositiveInt({ maximumDigits: 2 }))
+				);
 
 				expect(regExp.test('')).toBe(false);
 				expect(regExp.test(' ')).toBe(false);
@@ -53,7 +57,11 @@ describe('MRegExpString', () => {
 			});
 
 			it('4 digits at most, 3 digits at least', () => {
-				const regExp = new RegExp(MRegExpString.makeLine(MRegExpString.strictlyPositiveInt(4, 3)));
+				const regExp = new RegExp(
+					MRegExpString.makeLine(
+						MRegExpString.strictlyPositiveInt({ maximumDigits: 4, minimumDigits: 3 })
+					)
+				);
 
 				expect(regExp.test('')).toBe(false);
 				expect(regExp.test(' ')).toBe(false);
@@ -71,7 +79,13 @@ describe('MRegExpString', () => {
 
 		it('No digit limit, space thousand separator', () => {
 			const regExp = new RegExp(
-				MRegExpString.makeLine(MRegExpString.strictlyPositiveInt(+Infinity, 1, ' '))
+				MRegExpString.makeLine(
+					MRegExpString.strictlyPositiveInt({
+						maximumDigits: +Infinity,
+						minimumDigits: 1,
+						thousandSeparator: ' '
+					})
+				)
 			);
 
 			expect(regExp.test('')).toBe(false);
@@ -95,7 +109,13 @@ describe('MRegExpString', () => {
 
 		it('1 digit at most, space thousand separator', () => {
 			const regExp = new RegExp(
-				MRegExpString.makeLine(MRegExpString.strictlyPositiveInt(1, 1, ' '))
+				MRegExpString.makeLine(
+					MRegExpString.strictlyPositiveInt({
+						maximumDigits: 1,
+						minimumDigits: 1,
+						thousandSeparator: ' '
+					})
+				)
 			);
 
 			expect(regExp.test('')).toBe(false);
@@ -111,7 +131,13 @@ describe('MRegExpString', () => {
 
 		it('2 digits at most, space thousand separator', () => {
 			const regExp = new RegExp(
-				MRegExpString.makeLine(MRegExpString.strictlyPositiveInt(2, 1, ' '))
+				MRegExpString.makeLine(
+					MRegExpString.strictlyPositiveInt({
+						maximumDigits: 2,
+						minimumDigits: 1,
+						thousandSeparator: ' '
+					})
+				)
 			);
 
 			expect(regExp.test('')).toBe(false);
@@ -128,7 +154,13 @@ describe('MRegExpString', () => {
 
 		it('3 digits at most, space thousand separator', () => {
 			const regExp = new RegExp(
-				MRegExpString.makeLine(MRegExpString.strictlyPositiveInt(3, 1, ' '))
+				MRegExpString.makeLine(
+					MRegExpString.strictlyPositiveInt({
+						maximumDigits: 3,
+						minimumDigits: 1,
+						thousandSeparator: ' '
+					})
+				)
 			);
 
 			expect(regExp.test('')).toBe(false);
@@ -147,7 +179,13 @@ describe('MRegExpString', () => {
 
 		it('4 digits at most, space thousand separator', () => {
 			const regExp = new RegExp(
-				MRegExpString.makeLine(MRegExpString.strictlyPositiveInt(4, 1, ' '))
+				MRegExpString.makeLine(
+					MRegExpString.strictlyPositiveInt({
+						maximumDigits: 4,
+						minimumDigits: 1,
+						thousandSeparator: ' '
+					})
+				)
 			);
 
 			expect(regExp.test('')).toBe(false);
@@ -167,7 +205,13 @@ describe('MRegExpString', () => {
 
 		it('5 digits at most, space thousand separator', () => {
 			const regExp = new RegExp(
-				MRegExpString.makeLine(MRegExpString.strictlyPositiveInt(5, 1, ' '))
+				MRegExpString.makeLine(
+					MRegExpString.strictlyPositiveInt({
+						maximumDigits: 5,
+						minimumDigits: 1,
+						thousandSeparator: ' '
+					})
+				)
 			);
 
 			expect(regExp.test('')).toBe(false);
@@ -188,7 +232,13 @@ describe('MRegExpString', () => {
 
 		it('6 digits at most, space thousand separator', () => {
 			const regExp = new RegExp(
-				MRegExpString.makeLine(MRegExpString.strictlyPositiveInt(6, 1, ' '))
+				MRegExpString.makeLine(
+					MRegExpString.strictlyPositiveInt({
+						maximumDigits: 6,
+						minimumDigits: 1,
+						thousandSeparator: ' '
+					})
+				)
 			);
 
 			expect(regExp.test('')).toBe(false);
@@ -210,7 +260,13 @@ describe('MRegExpString', () => {
 
 		it('7 digits at most, space thousand separator', () => {
 			const regExp = new RegExp(
-				MRegExpString.makeLine(MRegExpString.strictlyPositiveInt(7, 1, ' '))
+				MRegExpString.makeLine(
+					MRegExpString.strictlyPositiveInt({
+						maximumDigits: 7,
+						minimumDigits: 1,
+						thousandSeparator: ' '
+					})
+				)
 			);
 
 			expect(regExp.test('')).toBe(false);
@@ -233,7 +289,13 @@ describe('MRegExpString', () => {
 
 		it('Between 2 and 5 digits', () => {
 			const regExp = new RegExp(
-				MRegExpString.makeLine(MRegExpString.strictlyPositiveInt(5, 2, ' '))
+				MRegExpString.makeLine(
+					MRegExpString.strictlyPositiveInt({
+						maximumDigits: 5,
+						minimumDigits: 2,
+						thousandSeparator: ' '
+					})
+				)
 			);
 			expect(regExp.test('')).toBe(false);
 			expect(regExp.test(' ')).toBe(false);
@@ -256,7 +318,13 @@ describe('MRegExpString', () => {
 
 		it('Between 3 and 5 digits', () => {
 			const regExp = new RegExp(
-				MRegExpString.makeLine(MRegExpString.strictlyPositiveInt(5, 3, ' '))
+				MRegExpString.makeLine(
+					MRegExpString.strictlyPositiveInt({
+						maximumDigits: 5,
+						minimumDigits: 3,
+						thousandSeparator: ' '
+					})
+				)
 			);
 			expect(regExp.test('')).toBe(false);
 			expect(regExp.test(' ')).toBe(false);
@@ -279,7 +347,13 @@ describe('MRegExpString', () => {
 
 		it('Between 4 and 5 digits', () => {
 			const regExp = new RegExp(
-				MRegExpString.makeLine(MRegExpString.strictlyPositiveInt(5, 4, ' '))
+				MRegExpString.makeLine(
+					MRegExpString.strictlyPositiveInt({
+						maximumDigits: 5,
+						minimumDigits: 4,
+						thousandSeparator: ' '
+					})
+				)
 			);
 			expect(regExp.test('')).toBe(false);
 			expect(regExp.test(' ')).toBe(false);
@@ -302,7 +376,13 @@ describe('MRegExpString', () => {
 
 		it('Between 5 and 5 digits', () => {
 			const regExp = new RegExp(
-				MRegExpString.makeLine(MRegExpString.strictlyPositiveInt(5, 5, ' '))
+				MRegExpString.makeLine(
+					MRegExpString.strictlyPositiveInt({
+						maximumDigits: 5,
+						minimumDigits: 5,
+						thousandSeparator: ' '
+					})
+				)
 			);
 			expect(regExp.test('')).toBe(false);
 			expect(regExp.test(' ')).toBe(false);
@@ -325,7 +405,13 @@ describe('MRegExpString', () => {
 
 		it('Between 3 and 7 digits', () => {
 			const regExp = new RegExp(
-				MRegExpString.makeLine(MRegExpString.strictlyPositiveInt(7, 3, ' '))
+				MRegExpString.makeLine(
+					MRegExpString.strictlyPositiveInt({
+						maximumDigits: 7,
+						minimumDigits: 3,
+						thousandSeparator: ' '
+					})
+				)
 			);
 			expect(regExp.test('')).toBe(false);
 			expect(regExp.test(' ')).toBe(false);

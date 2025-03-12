@@ -2,7 +2,6 @@
 
 import { Function, Number, pipe, Tuple } from 'effect';
 import * as MArray from './Array.js';
-import * as MCore from './Core.js';
 import * as MNumber from './Number.js';
 import * as MTypes from './types.js';
 
@@ -267,48 +266,69 @@ export const digit = backslashString + 'd';
 export const nonZeroDigit = '[1-9]';
 
 /**
- * A regular expression string representing a strictly positive integer in base 10 with at least 'm'
- * and at most `n` digits. `m` and `n` must be strictly positive integers with `n` greater than or
- * equal to `m`. `n` may receive the +Infinity value.
+ * A regular expression string representing a strictly positive integer in base 10 with at least
+ * 'minimumDigits' and at most `maximumDigits` digits. `minimumDigits` and `maximumDigits` must be
+ * strictly positive integers with `maximumDigits` greater than or equal to `minimumDigits`.
+ * `maximumDigits` may receive the +Infinity value. `minimumDigits` may not receive the +Infinity
+ * value.
  */
-const _strictlyPositiveInt = (n: number, m: number): string =>
-	nonZeroDigit + pipe(digit, repeatBetween(m - 1, n - 1));
+const _strictlyPositiveInt = ({
+	minimumDigits,
+	maximumDigits
+}: {
+	readonly minimumDigits: number;
+	readonly maximumDigits: number;
+}): string => nonZeroDigit + repeatBetween(minimumDigits - 1, maximumDigits - 1)(digit);
 
 /** A regular expression string representing a group of `DIGIT_GROUP_SIZE` digits. */
-const _digitGroup: string = pipe(digit, repeatBetween(DIGIT_GROUP_SIZE, DIGIT_GROUP_SIZE));
+const _digitGroup: string = repeatBetween(DIGIT_GROUP_SIZE, DIGIT_GROUP_SIZE)(digit);
 
 /**
- * A regular expression string representing a strictly positive integer in base 10 with at least 'm'
- * and at most `n` digits using thousandsSep as thousand separator. `m` and `n` must be strictly
- * positive integers with `n` greater than or equal to `m`. `n` may receive the +Infinity value. If
- * you want no thousand separator, pass an empty string to `thousandsSep`.
+ * A regular expression string representing a strictly positive integer in base 10 with at least
+ * 'minimumDigits' and at most `maximumDigits` digits using `thousandsSeparator` as thousand
+ * separator. `minimumDigits` and `maximumDigits` must be strictly positive integers with
+ * `maximumDigits` greater than or equal to `minimumDigits`. `maximumDigits` may receive the
+ * +Infinity value. `minimumDigits` may not receive the +Infinity value. If you want no thousand
+ * separator, pass an empty string to `thousandsSeparator`.
  *
  * @category Instances
  */
-export const strictlyPositiveInt = (n = +Infinity, m = 1, thousandsSep = ''): string => {
-	if (thousandsSep === '' || n <= DIGIT_GROUP_SIZE) return _strictlyPositiveInt(n, m);
+export const strictlyPositiveInt = ({
+	minimumDigits = 1,
+	maximumDigits = +Infinity,
+	thousandSeparator = ''
+}: {
+	readonly minimumDigits?: number;
+	readonly maximumDigits?: number;
+	readonly thousandSeparator?: string;
+} = {}): string => {
+	if (thousandSeparator === '' || maximumDigits <= DIGIT_GROUP_SIZE)
+		return _strictlyPositiveInt({ minimumDigits, maximumDigits });
 
-	const thousandGroup = escape(thousandsSep) + _digitGroup;
+	const thousandGroup = escape(thousandSeparator) + _digitGroup;
 
 	const groupedDigit = (
 		groupNumberMin: number,
 		groupNumberMax: number,
-		frontGroupDigitNumberMin: number,
-		frontGroupDigitNumberMax: number
+		frontGroupMinimumDigit: number,
+		frontGroupMaximumDigit: number
 	): string =>
-		pipe(
-			thousandGroup,
-			repeatBetween(groupNumberMin, groupNumberMax),
-			MCore.prependString(_strictlyPositiveInt(frontGroupDigitNumberMax, frontGroupDigitNumberMin))
-		);
+		_strictlyPositiveInt({
+			minimumDigits: frontGroupMinimumDigit,
+			maximumDigits: frontGroupMaximumDigit
+		}) + repeatBetween(groupNumberMin, groupNumberMax)(thousandGroup);
 
 	const [quotientHigh, remainderHigh] =
-		n === +Infinity ?
+		maximumDigits === +Infinity ?
 			[+Infinity, DIGIT_GROUP_SIZE]
-		:	pipe(n - 1, MNumber.quotientAndRemainder(DIGIT_GROUP_SIZE), Tuple.mapSecond(Number.sum(1)));
+		:	pipe(
+				maximumDigits - 1,
+				MNumber.quotientAndRemainder(DIGIT_GROUP_SIZE),
+				Tuple.mapSecond(Number.sum(1))
+			);
 
 	const [quotientLow, remainderLow] = pipe(
-		m - 1,
+		minimumDigits - 1,
 		MNumber.quotientAndRemainder(DIGIT_GROUP_SIZE),
 		Tuple.mapSecond(Number.sum(1))
 	);
@@ -348,26 +368,39 @@ export const strictlyPositiveInt = (n = +Infinity, m = 1, thousandsSep = ''): st
 };
 
 /**
- * A regular expression string representing a positive integer in base 10 with at least 'm' and at
- * most `n` digits using thousandsSep as thousand separator. `m` and `n` must be strictly positive
- * integers with `n` greater than or equal to `m`. `n` may receive the +Infinity value. If you want
- * no thousand separator, pass an empty string to `thousandsSep`.
+ * A regular expression string representing a positive integer in base 10 with at least
+ * 'minimumDigits' and at most `maximumDigits` digits using `thousandsSeparator` as thousand
+ * separator. `minimumDigits` and `maximumDigits` must be strictly positive integers with
+ * `maximumDigits` greater than or equal to `minimumDigits`. `maximumDigits` may receive the
+ * +Infinity value. `minimumDigits` may not receive the +Infinity value. If you want no thousand
+ * separator, pass an empty string to `thousandsSeparator`.
  *
  * @category Instances
  */
-export const positiveInt = (n?: number, m?: number, thousandsSep?: string): string =>
-	either('0', strictlyPositiveInt(n, m, thousandsSep));
+export const positiveInt = (
+	params: {
+		readonly minimumDigits?: number;
+		readonly maximumDigits?: number;
+		readonly thousandSeparator?: string;
+	} = {}
+): string => either('0', strictlyPositiveInt(params));
 
 /**
- * A regular expression string representing an integer in base 10 with with at least 'm' and at most
- * `n` digits using thousandsSep as thousand separator. `m` and `n` must be strictly positive
- * integers with `n` greater than or equal to `m`. `n` may receive the +Infinity value. If you want
- * no thousand separator, pass an empty string to `thousandsSep`.
+ * A regular expression string representing an integer in base 10 with with at least 'minimumDigits'
+ * and at most `maximumDigits` digits using `thousandsSeparator` as thousand separator.
+ * `minimumDigits` and `maximumDigits` must be strictly positive integers with `maximumDigits`
+ * greater than or equal to `minimumDigits`. `maximumDigits` may receive the +Infinity value. If you
+ * want no thousand separator, pass an empty string to `thousandsSeparator`.
  *
  * @category Instances
  */
-export const int = (n?: number, m?: number, thousandsSep?: string): string =>
-	optional(sign) + positiveInt(n, m, thousandsSep);
+export const int = (
+	params: {
+		readonly minimumDigits?: number;
+		readonly maximumDigits?: number;
+		readonly thousandSeparator?: string;
+	} = {}
+): string => optional(sign) + positiveInt(params);
 
 /**
  * A regular expression string representing an integer in base 2.
