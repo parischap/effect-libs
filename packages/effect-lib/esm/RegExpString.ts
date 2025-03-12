@@ -277,9 +277,9 @@ const _digitGroup: string = pipe(digit, repeatBetween(DIGIT_GROUP_SIZE, DIGIT_GR
 
 /**
  * A regular expression string representing a strictly positive integer in base 10 with at least 'm'
- * and at most `n` digits using thousandsSep as thousands separator. `m` and `n` must be strictly
+ * and at most `n` digits using thousandsSep as thousand separator. `m` and `n` must be strictly
  * positive integers with `n` greater than or equal to `m`. `n` may receive the +Infinity value. If
- * you want no thousands separator, pass an empty string to `thousandsSep`.
+ * you want no thousand separator, pass an empty string to `thousandsSep`.
  *
  * @category Instances
  */
@@ -347,9 +347,9 @@ export const strictlyPositiveInt = (n = +Infinity, m = 1, thousandsSep = ''): st
 
 /**
  * A regular expression string representing a positive integer in base 10 with at least 'm' and at
- * most `n` digits using thousandsSep as thousands separator. `m` and `n` must be strictly positive
+ * most `n` digits using thousandsSep as thousand separator. `m` and `n` must be strictly positive
  * integers with `n` greater than or equal to `m`. `n` may receive the +Infinity value. If you want
- * no thousands separator, pass an empty string to `thousandsSep`.
+ * no thousand separator, pass an empty string to `thousandsSep`.
  *
  * @category Instances
  */
@@ -358,9 +358,9 @@ export const positiveInt = (n?: number, m?: number, thousandsSep?: string): stri
 
 /**
  * A regular expression string representing an integer in base 10 with with at least 'm' and at most
- * `n` digits using thousandsSep as thousands separator. `m` and `n` must be strictly positive
+ * `n` digits using thousandsSep as thousand separator. `m` and `n` must be strictly positive
  * integers with `n` greater than or equal to `m`. `n` may receive the +Infinity value. If you want
- * no thousands separator, pass an empty string to `thousandsSep`.
+ * no thousand separator, pass an empty string to `thousandsSep`.
  *
  * @category Instances
  */
