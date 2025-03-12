@@ -82,43 +82,43 @@ export const isRgb = (u: Type): u is Rgb.Type => u[_tagSymbol] === _rgbTag;
  */
 export namespace ThreeBit {
 	/**
+	 * Possible three-bit color offsets
+	 *
+	 * @category Models
+	 */
+	export enum Offset {
+		Black = 0,
+		Red = 1,
+		Green = 2,
+		Yellow = 3,
+		Blue = 4,
+		Magenta = 5,
+		Cyan = 6,
+		White = 7
+	}
+
+	/**
 	 * Namespace for three-bit color offsets
 	 *
 	 * @category Models
 	 */
 	export namespace Offset {
 		/**
-		 * Three-bit color offsets
-		 *
-		 * @category Models
-		 */
-		export enum Type {
-			Black = 0,
-			Red = 1,
-			Green = 2,
-			Yellow = 3,
-			Blue = 4,
-			Magenta = 5,
-			Cyan = 6,
-			White = 7
-		}
-
-		/**
 		 * Builds the id of a color from its offset
 		 *
 		 * @category Destructors
 		 */
-		export const toId: MTypes.OneArgFunction<Type, string> = flow(
+		export const toId: MTypes.OneArgFunction<Offset, string> = flow(
 			MMatch.make,
 			flow(
-				MMatch.whenIs(Type.Black, () => 'Black'),
-				MMatch.whenIs(Type.Red, () => 'Red'),
-				MMatch.whenIs(Type.Green, () => 'Green'),
-				MMatch.whenIs(Type.Yellow, () => 'Yellow'),
-				MMatch.whenIs(Type.Blue, () => 'Blue'),
-				MMatch.whenIs(Type.Magenta, () => 'Magenta'),
-				MMatch.whenIs(Type.Cyan, () => 'Cyan'),
-				MMatch.whenIs(Type.White, () => 'White')
+				MMatch.whenIs(Offset.Black, () => 'Black'),
+				MMatch.whenIs(Offset.Red, () => 'Red'),
+				MMatch.whenIs(Offset.Green, () => 'Green'),
+				MMatch.whenIs(Offset.Yellow, () => 'Yellow'),
+				MMatch.whenIs(Offset.Blue, () => 'Blue'),
+				MMatch.whenIs(Offset.Magenta, () => 'Magenta'),
+				MMatch.whenIs(Offset.Cyan, () => 'Cyan'),
+				MMatch.whenIs(Offset.White, () => 'White')
 			),
 			MMatch.exhaustive
 		);
@@ -131,7 +131,7 @@ export namespace ThreeBit {
 	 */
 	export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
 		/** Offset of this color */
-		readonly offset: Offset.Type;
+		readonly offset: Offset;
 
 		/** Indicates whether the color is bright */
 		readonly isBright: boolean;
@@ -197,7 +197,7 @@ export namespace ThreeBit {
 	 *
 	 * @category Destructors
 	 */
-	export const offset: MTypes.OneArgFunction<Type, Offset.Type> = Struct.get('offset');
+	export const offset: MTypes.OneArgFunction<Type, Offset> = Struct.get('offset');
 
 	/**
 	 * Gets the `isBright` property of `self`
@@ -211,7 +211,7 @@ export namespace ThreeBit {
 	 *
 	 * @category Constructors
 	 */
-	export const make = (offset: Offset.Type) => _make({ offset, isBright: false });
+	export const make = (offset: Offset) => _make({ offset, isBright: false });
 
 	/**
 	 * Namespace for bright three-bit colors
@@ -224,7 +224,7 @@ export namespace ThreeBit {
 		 *
 		 * @category Original instances
 		 */
-		export const make = (offset: Offset.Type) => _make({ offset, isBright: true });
+		export const make = (offset: Offset) => _make({ offset, isBright: true });
 	}
 }
 
@@ -235,603 +235,603 @@ export namespace ThreeBit {
  */
 export namespace EightBit {
 	/**
+	 * Possible eight-bit color codes
+	 *
+	 * @category Models
+	 */
+	export enum Code {
+		Black = 0,
+		Maroon = 1,
+		Green = 2,
+		Olive = 3,
+		Navy = 4,
+		Purple_1 = 5,
+		Teal = 6,
+		Silver = 7,
+		Grey = 8,
+		Red = 9,
+		Lime = 10,
+		Yellow = 11,
+		Blue = 12,
+		Fuchsia = 13,
+		Aqua = 14,
+		White = 15,
+		Grey0 = 16,
+		NavyBlue = 17,
+		DarkBlue = 18,
+		Blue3_1 = 19,
+		Blue3_2 = 20,
+		Blue1 = 21,
+		DarkGreen = 22,
+		DeepSkyBlue4_1 = 23,
+		DeepSkyBlue4_2 = 24,
+		DeepSkyBlue4_3 = 25,
+		DodgerBlue3 = 26,
+		DodgerBlue2 = 27,
+		Green4 = 28,
+		SpringGreen4 = 29,
+		Turquoise4 = 30,
+		DeepSkyBlue3_1 = 31,
+		DeepSkyBlue3_2 = 32,
+		DodgerBlue1 = 33,
+		Green3_1 = 34,
+		SpringGreen3_1 = 35,
+		DarkCyan = 36,
+		LightSeaGreen = 37,
+		DeepSkyBlue2 = 38,
+		DeepSkyBlue1 = 39,
+		Green3_2 = 40,
+		SpringGreen3_2 = 41,
+		SpringGreen2_1 = 42,
+		Cyan3 = 43,
+		DarkTurquoise = 44,
+		Turquoise2 = 45,
+		Green1 = 46,
+		SpringGreen2_2 = 47,
+		SpringGreen1 = 48,
+		MediumSpringGreen = 49,
+		Cyan2 = 50,
+		Cyan1 = 51,
+		DarkRed_1 = 52,
+		DeepPink4_1 = 53,
+		Purple4_1 = 54,
+		Purple4_2 = 55,
+		Purple3 = 56,
+		BlueViolet = 57,
+		Orange4_1 = 58,
+		Grey37 = 59,
+		MediumPurple4 = 60,
+		SlateBlue3_1 = 61,
+		SlateBlue3_2 = 62,
+		RoyalBlue1 = 63,
+		Chartreuse4 = 64,
+		DarkSeaGreen4_1 = 65,
+		PaleTurquoise4 = 66,
+		SteelBlue = 67,
+		SteelBlue3 = 68,
+		CornflowerBlue = 69,
+		Chartreuse3_1 = 70,
+		DarkSeaGreen4_2 = 71,
+		CadetBlue_1 = 72,
+		CadetBlue_2 = 73,
+		SkyBlue3 = 74,
+		SteelBlue1_1 = 75,
+		Chartreuse3_2 = 76,
+		PaleGreen3_1 = 77,
+		SeaGreen3 = 78,
+		Aquamarine3 = 79,
+		MediumTurquoise = 80,
+		SteelBlue1_2 = 81,
+		Chartreuse2_1 = 82,
+		SeaGreen2 = 83,
+		SeaGreen1_1 = 84,
+		SeaGreen1_2 = 85,
+		Aquamarine1_1 = 86,
+		DarkSlateGray2 = 87,
+		DarkRed_2 = 88,
+		DeepPink4_2 = 89,
+		DarkMagenta_1 = 90,
+		DarkMagenta_2 = 91,
+		DarkViolet_1 = 92,
+		Purple_2 = 93,
+		Orange4_2 = 94,
+		LightPink4 = 95,
+		Plum4 = 96,
+		MediumPurple3_1 = 97,
+		MediumPurple3_2 = 98,
+		SlateBlue1 = 99,
+		Yellow4_1 = 100,
+		Wheat4 = 101,
+		Grey53 = 102,
+		LightSlateGrey = 103,
+		MediumPurple = 104,
+		LightSlateBlue = 105,
+		Yellow4_2 = 106,
+		DarkOliveGreen3_1 = 107,
+		DarkSeaGreen = 108,
+		LightSkyBlue3_1 = 109,
+		LightSkyBlue3_2 = 110,
+		SkyBlue2 = 111,
+		Chartreuse2_2 = 112,
+		DarkOliveGreen3_2 = 113,
+		PaleGreen3_2 = 114,
+		DarkSeaGreen3_1 = 115,
+		DarkSlateGray3 = 116,
+		SkyBlue1 = 117,
+		Chartreuse1 = 118,
+		LightGreen_1 = 119,
+		LightGreen_2 = 120,
+		PaleGreen1_1 = 121,
+		Aquamarine1_2 = 122,
+		DarkSlateGray1 = 123,
+		Red3_1 = 124,
+		DeepPink4_3 = 125,
+		MediumVioletRed = 126,
+		Magenta3_1 = 127,
+		DarkViolet_2 = 128,
+		Purple_3 = 129,
+		DarkOrange3_1 = 130,
+		IndianRed_1 = 131,
+		HotPink3_1 = 132,
+		MediumOrchid3 = 133,
+		MediumOrchid = 134,
+		MediumPurple2_1 = 135,
+		DarkGoldenRod = 136,
+		LightSalmon3_1 = 137,
+		RosyBrown = 138,
+		Grey63 = 139,
+		MediumPurple2_2 = 140,
+		MediumPurple1 = 141,
+		Gold3_1 = 142,
+		DarkKhaki = 143,
+		NavajoWhite3 = 144,
+		Grey69 = 145,
+		LightSteelBlue3 = 146,
+		LightSteelBlue = 147,
+		Yellow3_1 = 148,
+		DarkOliveGreen3_3 = 149,
+		DarkSeaGreen3_2 = 150,
+		DarkSeaGreen2_1 = 151,
+		LightCyan3 = 152,
+		LightSkyBlue1 = 153,
+		GreenYellow = 154,
+		DarkOliveGreen2 = 155,
+		PaleGreen1_2 = 156,
+		DarkSeaGreen2_2 = 157,
+		DarkSeaGreen1_1 = 158,
+		PaleTurquoise1 = 159,
+		Red3_2 = 160,
+		DeepPink3_1 = 161,
+		DeepPink3_2 = 162,
+		Magenta3_2 = 163,
+		Magenta3_3 = 164,
+		Magenta2_1 = 165,
+		DarkOrange3_2 = 166,
+		IndianRed_2 = 167,
+		HotPink3_2 = 168,
+		HotPink2 = 169,
+		Orchid = 170,
+		MediumOrchid1_1 = 171,
+		Orange3 = 172,
+		LightSalmon3_2 = 173,
+		LightPink3 = 174,
+		Pink3 = 175,
+		Plum3 = 176,
+		Violet = 177,
+		Gold3_2 = 178,
+		LightGoldenRod3 = 179,
+		Tan = 180,
+		MistyRose3 = 181,
+		Thistle3 = 182,
+		Plum2 = 183,
+		Yellow3_2 = 184,
+		Khaki3 = 185,
+		LightGoldenRod2_1 = 186,
+		LightYellow3 = 187,
+		Grey84 = 188,
+		LightSteelBlue1 = 189,
+		Yellow2 = 190,
+		DarkOliveGreen1_1 = 191,
+		DarkOliveGreen1_2 = 192,
+		DarkSeaGreen1_2 = 193,
+		HoneyDew2 = 194,
+		LightCyan1 = 195,
+		Red1 = 196,
+		DeepPink2 = 197,
+		DeepPink1_1 = 198,
+		DeepPink1_2 = 199,
+		Magenta2_2 = 200,
+		Magenta1 = 201,
+		OrangeRed1 = 202,
+		IndianRed1_1 = 203,
+		IndianRed1_2 = 204,
+		HotPink_1 = 205,
+		HotPink_2 = 206,
+		MediumOrchid1_2 = 207,
+		DarkOrange = 208,
+		Salmon1 = 209,
+		LightCoral = 210,
+		PaleVioletRed1 = 211,
+		Orchid2 = 212,
+		Orchid1 = 213,
+		Orange1 = 214,
+		SandyBrown = 215,
+		LightSalmon1 = 216,
+		LightPink1 = 217,
+		Pink1 = 218,
+		Plum1 = 219,
+		Gold1 = 220,
+		LightGoldenRod2_2 = 221,
+		LightGoldenRod2_3 = 222,
+		NavajoWhite1 = 223,
+		MistyRose1 = 224,
+		Thistle1 = 225,
+		Yellow1 = 226,
+		LightGoldenRod1 = 227,
+		Khaki1 = 228,
+		Wheat1 = 229,
+		Cornsilk1 = 230,
+		Grey100 = 231,
+		Grey3 = 232,
+		Grey7 = 233,
+		Grey11 = 234,
+		Grey15 = 235,
+		Grey19 = 236,
+		Grey23 = 237,
+		Grey27 = 238,
+		Grey30 = 239,
+		Grey35 = 240,
+		Grey39 = 241,
+		Grey42 = 242,
+		Grey46 = 243,
+		Grey50 = 244,
+		Grey54 = 245,
+		Grey58 = 246,
+		Grey62 = 247,
+		Grey66 = 248,
+		Grey70 = 249,
+		Grey74 = 250,
+		Grey78 = 251,
+		Grey82 = 252,
+		Grey85 = 253,
+		Grey89 = 254,
+		Grey93 = 255
+	}
+
+	/**
 	 * Namespace for eight-bit color codes
 	 *
 	 * @category Models
 	 */
 	export namespace Code {
 		/**
-		 * Eight-bit color codes
-		 *
-		 * @category Models
-		 */
-		export enum Type {
-			Black = 0,
-			Maroon = 1,
-			Green = 2,
-			Olive = 3,
-			Navy = 4,
-			Purple_1 = 5,
-			Teal = 6,
-			Silver = 7,
-			Grey = 8,
-			Red = 9,
-			Lime = 10,
-			Yellow = 11,
-			Blue = 12,
-			Fuchsia = 13,
-			Aqua = 14,
-			White = 15,
-			Grey0 = 16,
-			NavyBlue = 17,
-			DarkBlue = 18,
-			Blue3_1 = 19,
-			Blue3_2 = 20,
-			Blue1 = 21,
-			DarkGreen = 22,
-			DeepSkyBlue4_1 = 23,
-			DeepSkyBlue4_2 = 24,
-			DeepSkyBlue4_3 = 25,
-			DodgerBlue3 = 26,
-			DodgerBlue2 = 27,
-			Green4 = 28,
-			SpringGreen4 = 29,
-			Turquoise4 = 30,
-			DeepSkyBlue3_1 = 31,
-			DeepSkyBlue3_2 = 32,
-			DodgerBlue1 = 33,
-			Green3_1 = 34,
-			SpringGreen3_1 = 35,
-			DarkCyan = 36,
-			LightSeaGreen = 37,
-			DeepSkyBlue2 = 38,
-			DeepSkyBlue1 = 39,
-			Green3_2 = 40,
-			SpringGreen3_2 = 41,
-			SpringGreen2_1 = 42,
-			Cyan3 = 43,
-			DarkTurquoise = 44,
-			Turquoise2 = 45,
-			Green1 = 46,
-			SpringGreen2_2 = 47,
-			SpringGreen1 = 48,
-			MediumSpringGreen = 49,
-			Cyan2 = 50,
-			Cyan1 = 51,
-			DarkRed_1 = 52,
-			DeepPink4_1 = 53,
-			Purple4_1 = 54,
-			Purple4_2 = 55,
-			Purple3 = 56,
-			BlueViolet = 57,
-			Orange4_1 = 58,
-			Grey37 = 59,
-			MediumPurple4 = 60,
-			SlateBlue3_1 = 61,
-			SlateBlue3_2 = 62,
-			RoyalBlue1 = 63,
-			Chartreuse4 = 64,
-			DarkSeaGreen4_1 = 65,
-			PaleTurquoise4 = 66,
-			SteelBlue = 67,
-			SteelBlue3 = 68,
-			CornflowerBlue = 69,
-			Chartreuse3_1 = 70,
-			DarkSeaGreen4_2 = 71,
-			CadetBlue_1 = 72,
-			CadetBlue_2 = 73,
-			SkyBlue3 = 74,
-			SteelBlue1_1 = 75,
-			Chartreuse3_2 = 76,
-			PaleGreen3_1 = 77,
-			SeaGreen3 = 78,
-			Aquamarine3 = 79,
-			MediumTurquoise = 80,
-			SteelBlue1_2 = 81,
-			Chartreuse2_1 = 82,
-			SeaGreen2 = 83,
-			SeaGreen1_1 = 84,
-			SeaGreen1_2 = 85,
-			Aquamarine1_1 = 86,
-			DarkSlateGray2 = 87,
-			DarkRed_2 = 88,
-			DeepPink4_2 = 89,
-			DarkMagenta_1 = 90,
-			DarkMagenta_2 = 91,
-			DarkViolet_1 = 92,
-			Purple_2 = 93,
-			Orange4_2 = 94,
-			LightPink4 = 95,
-			Plum4 = 96,
-			MediumPurple3_1 = 97,
-			MediumPurple3_2 = 98,
-			SlateBlue1 = 99,
-			Yellow4_1 = 100,
-			Wheat4 = 101,
-			Grey53 = 102,
-			LightSlateGrey = 103,
-			MediumPurple = 104,
-			LightSlateBlue = 105,
-			Yellow4_2 = 106,
-			DarkOliveGreen3_1 = 107,
-			DarkSeaGreen = 108,
-			LightSkyBlue3_1 = 109,
-			LightSkyBlue3_2 = 110,
-			SkyBlue2 = 111,
-			Chartreuse2_2 = 112,
-			DarkOliveGreen3_2 = 113,
-			PaleGreen3_2 = 114,
-			DarkSeaGreen3_1 = 115,
-			DarkSlateGray3 = 116,
-			SkyBlue1 = 117,
-			Chartreuse1 = 118,
-			LightGreen_1 = 119,
-			LightGreen_2 = 120,
-			PaleGreen1_1 = 121,
-			Aquamarine1_2 = 122,
-			DarkSlateGray1 = 123,
-			Red3_1 = 124,
-			DeepPink4_3 = 125,
-			MediumVioletRed = 126,
-			Magenta3_1 = 127,
-			DarkViolet_2 = 128,
-			Purple_3 = 129,
-			DarkOrange3_1 = 130,
-			IndianRed_1 = 131,
-			HotPink3_1 = 132,
-			MediumOrchid3 = 133,
-			MediumOrchid = 134,
-			MediumPurple2_1 = 135,
-			DarkGoldenRod = 136,
-			LightSalmon3_1 = 137,
-			RosyBrown = 138,
-			Grey63 = 139,
-			MediumPurple2_2 = 140,
-			MediumPurple1 = 141,
-			Gold3_1 = 142,
-			DarkKhaki = 143,
-			NavajoWhite3 = 144,
-			Grey69 = 145,
-			LightSteelBlue3 = 146,
-			LightSteelBlue = 147,
-			Yellow3_1 = 148,
-			DarkOliveGreen3_3 = 149,
-			DarkSeaGreen3_2 = 150,
-			DarkSeaGreen2_1 = 151,
-			LightCyan3 = 152,
-			LightSkyBlue1 = 153,
-			GreenYellow = 154,
-			DarkOliveGreen2 = 155,
-			PaleGreen1_2 = 156,
-			DarkSeaGreen2_2 = 157,
-			DarkSeaGreen1_1 = 158,
-			PaleTurquoise1 = 159,
-			Red3_2 = 160,
-			DeepPink3_1 = 161,
-			DeepPink3_2 = 162,
-			Magenta3_2 = 163,
-			Magenta3_3 = 164,
-			Magenta2_1 = 165,
-			DarkOrange3_2 = 166,
-			IndianRed_2 = 167,
-			HotPink3_2 = 168,
-			HotPink2 = 169,
-			Orchid = 170,
-			MediumOrchid1_1 = 171,
-			Orange3 = 172,
-			LightSalmon3_2 = 173,
-			LightPink3 = 174,
-			Pink3 = 175,
-			Plum3 = 176,
-			Violet = 177,
-			Gold3_2 = 178,
-			LightGoldenRod3 = 179,
-			Tan = 180,
-			MistyRose3 = 181,
-			Thistle3 = 182,
-			Plum2 = 183,
-			Yellow3_2 = 184,
-			Khaki3 = 185,
-			LightGoldenRod2_1 = 186,
-			LightYellow3 = 187,
-			Grey84 = 188,
-			LightSteelBlue1 = 189,
-			Yellow2 = 190,
-			DarkOliveGreen1_1 = 191,
-			DarkOliveGreen1_2 = 192,
-			DarkSeaGreen1_2 = 193,
-			HoneyDew2 = 194,
-			LightCyan1 = 195,
-			Red1 = 196,
-			DeepPink2 = 197,
-			DeepPink1_1 = 198,
-			DeepPink1_2 = 199,
-			Magenta2_2 = 200,
-			Magenta1 = 201,
-			OrangeRed1 = 202,
-			IndianRed1_1 = 203,
-			IndianRed1_2 = 204,
-			HotPink_1 = 205,
-			HotPink_2 = 206,
-			MediumOrchid1_2 = 207,
-			DarkOrange = 208,
-			Salmon1 = 209,
-			LightCoral = 210,
-			PaleVioletRed1 = 211,
-			Orchid2 = 212,
-			Orchid1 = 213,
-			Orange1 = 214,
-			SandyBrown = 215,
-			LightSalmon1 = 216,
-			LightPink1 = 217,
-			Pink1 = 218,
-			Plum1 = 219,
-			Gold1 = 220,
-			LightGoldenRod2_2 = 221,
-			LightGoldenRod2_3 = 222,
-			NavajoWhite1 = 223,
-			MistyRose1 = 224,
-			Thistle1 = 225,
-			Yellow1 = 226,
-			LightGoldenRod1 = 227,
-			Khaki1 = 228,
-			Wheat1 = 229,
-			Cornsilk1 = 230,
-			Grey100 = 231,
-			Grey3 = 232,
-			Grey7 = 233,
-			Grey11 = 234,
-			Grey15 = 235,
-			Grey19 = 236,
-			Grey23 = 237,
-			Grey27 = 238,
-			Grey30 = 239,
-			Grey35 = 240,
-			Grey39 = 241,
-			Grey42 = 242,
-			Grey46 = 243,
-			Grey50 = 244,
-			Grey54 = 245,
-			Grey58 = 246,
-			Grey62 = 247,
-			Grey66 = 248,
-			Grey70 = 249,
-			Grey74 = 250,
-			Grey78 = 251,
-			Grey82 = 252,
-			Grey85 = 253,
-			Grey89 = 254,
-			Grey93 = 255
-		}
-
-		/**
 		 * Builds the id of a color from its code
 		 *
 		 * @category Destructors
 		 */
-		export const toId: MTypes.OneArgFunction<Type, string> = flow(
+		export const toId: MTypes.OneArgFunction<Code, string> = flow(
 			MMatch.make,
 			flow(
 				flow(
 					flow(
-						MMatch.whenIs(Type.Black, () => 'Black'),
-						MMatch.whenIs(Type.Maroon, () => 'Maroon'),
-						MMatch.whenIs(Type.Green, () => 'Green'),
-						MMatch.whenIs(Type.Olive, () => 'Olive'),
-						MMatch.whenIs(Type.Navy, () => 'Navy'),
-						MMatch.whenIs(Type.Purple_1, () => 'Purple_1'),
-						MMatch.whenIs(Type.Teal, () => 'Teal'),
-						MMatch.whenIs(Type.Silver, () => 'Silver'),
-						MMatch.whenIs(Type.Grey, () => 'Grey')
+						MMatch.whenIs(Code.Black, () => 'Black'),
+						MMatch.whenIs(Code.Maroon, () => 'Maroon'),
+						MMatch.whenIs(Code.Green, () => 'Green'),
+						MMatch.whenIs(Code.Olive, () => 'Olive'),
+						MMatch.whenIs(Code.Navy, () => 'Navy'),
+						MMatch.whenIs(Code.Purple_1, () => 'Purple_1'),
+						MMatch.whenIs(Code.Teal, () => 'Teal'),
+						MMatch.whenIs(Code.Silver, () => 'Silver'),
+						MMatch.whenIs(Code.Grey, () => 'Grey')
 					),
 					flow(
-						MMatch.whenIs(Type.Red, () => 'Red'),
-						MMatch.whenIs(Type.Lime, () => 'Lime'),
-						MMatch.whenIs(Type.Yellow, () => 'Yellow'),
-						MMatch.whenIs(Type.Blue, () => 'Blue'),
-						MMatch.whenIs(Type.Fuchsia, () => 'Fuchsia'),
-						MMatch.whenIs(Type.Aqua, () => 'Aqua'),
-						MMatch.whenIs(Type.White, () => 'White'),
-						MMatch.whenIs(Type.Grey0, () => 'Grey0'),
-						MMatch.whenIs(Type.NavyBlue, () => 'NavyBlue')
+						MMatch.whenIs(Code.Red, () => 'Red'),
+						MMatch.whenIs(Code.Lime, () => 'Lime'),
+						MMatch.whenIs(Code.Yellow, () => 'Yellow'),
+						MMatch.whenIs(Code.Blue, () => 'Blue'),
+						MMatch.whenIs(Code.Fuchsia, () => 'Fuchsia'),
+						MMatch.whenIs(Code.Aqua, () => 'Aqua'),
+						MMatch.whenIs(Code.White, () => 'White'),
+						MMatch.whenIs(Code.Grey0, () => 'Grey0'),
+						MMatch.whenIs(Code.NavyBlue, () => 'NavyBlue')
 					),
 					flow(
-						MMatch.whenIs(Type.DarkBlue, () => 'DarkBlue'),
-						MMatch.whenIs(Type.Blue3_1, () => 'Blue3_1'),
-						MMatch.whenIs(Type.Blue3_2, () => 'Blue3_2'),
-						MMatch.whenIs(Type.Blue1, () => 'Blue1'),
-						MMatch.whenIs(Type.DarkGreen, () => 'DarkGreen'),
-						MMatch.whenIs(Type.DeepSkyBlue4_1, () => 'DeepSkyBlue4_1'),
-						MMatch.whenIs(Type.DeepSkyBlue4_2, () => 'DeepSkyBlue4_2'),
-						MMatch.whenIs(Type.DeepSkyBlue4_3, () => 'DeepSkyBlue4_3'),
-						MMatch.whenIs(Type.DodgerBlue3, () => 'DodgerBlue3')
+						MMatch.whenIs(Code.DarkBlue, () => 'DarkBlue'),
+						MMatch.whenIs(Code.Blue3_1, () => 'Blue3_1'),
+						MMatch.whenIs(Code.Blue3_2, () => 'Blue3_2'),
+						MMatch.whenIs(Code.Blue1, () => 'Blue1'),
+						MMatch.whenIs(Code.DarkGreen, () => 'DarkGreen'),
+						MMatch.whenIs(Code.DeepSkyBlue4_1, () => 'DeepSkyBlue4_1'),
+						MMatch.whenIs(Code.DeepSkyBlue4_2, () => 'DeepSkyBlue4_2'),
+						MMatch.whenIs(Code.DeepSkyBlue4_3, () => 'DeepSkyBlue4_3'),
+						MMatch.whenIs(Code.DodgerBlue3, () => 'DodgerBlue3')
 					),
 					flow(
-						MMatch.whenIs(Type.DodgerBlue2, () => 'DodgerBlue2'),
-						MMatch.whenIs(Type.Green4, () => 'Green4'),
-						MMatch.whenIs(Type.SpringGreen4, () => 'SpringGreen4'),
-						MMatch.whenIs(Type.Turquoise4, () => 'Turquoise4'),
-						MMatch.whenIs(Type.DeepSkyBlue3_1, () => 'DeepSkyBlue3_1'),
-						MMatch.whenIs(Type.DeepSkyBlue3_2, () => 'DeepSkyBlue3_2'),
-						MMatch.whenIs(Type.DodgerBlue1, () => 'DodgerBlue1'),
-						MMatch.whenIs(Type.Green3_1, () => 'Green3_1'),
-						MMatch.whenIs(Type.SpringGreen3_1, () => 'SpringGreen3_1')
+						MMatch.whenIs(Code.DodgerBlue2, () => 'DodgerBlue2'),
+						MMatch.whenIs(Code.Green4, () => 'Green4'),
+						MMatch.whenIs(Code.SpringGreen4, () => 'SpringGreen4'),
+						MMatch.whenIs(Code.Turquoise4, () => 'Turquoise4'),
+						MMatch.whenIs(Code.DeepSkyBlue3_1, () => 'DeepSkyBlue3_1'),
+						MMatch.whenIs(Code.DeepSkyBlue3_2, () => 'DeepSkyBlue3_2'),
+						MMatch.whenIs(Code.DodgerBlue1, () => 'DodgerBlue1'),
+						MMatch.whenIs(Code.Green3_1, () => 'Green3_1'),
+						MMatch.whenIs(Code.SpringGreen3_1, () => 'SpringGreen3_1')
 					),
 					flow(
-						MMatch.whenIs(Type.DarkCyan, () => 'DarkCyan'),
-						MMatch.whenIs(Type.LightSeaGreen, () => 'LightSeaGreen'),
-						MMatch.whenIs(Type.DeepSkyBlue2, () => 'DeepSkyBlue2'),
-						MMatch.whenIs(Type.DeepSkyBlue1, () => 'DeepSkyBlue1'),
-						MMatch.whenIs(Type.Green3_2, () => 'Green3_2'),
-						MMatch.whenIs(Type.SpringGreen3_2, () => 'SpringGreen3_2'),
-						MMatch.whenIs(Type.SpringGreen2_1, () => 'SpringGreen2_1'),
-						MMatch.whenIs(Type.Cyan3, () => 'Cyan3'),
-						MMatch.whenIs(Type.DarkTurquoise, () => 'DarkTurquoise')
+						MMatch.whenIs(Code.DarkCyan, () => 'DarkCyan'),
+						MMatch.whenIs(Code.LightSeaGreen, () => 'LightSeaGreen'),
+						MMatch.whenIs(Code.DeepSkyBlue2, () => 'DeepSkyBlue2'),
+						MMatch.whenIs(Code.DeepSkyBlue1, () => 'DeepSkyBlue1'),
+						MMatch.whenIs(Code.Green3_2, () => 'Green3_2'),
+						MMatch.whenIs(Code.SpringGreen3_2, () => 'SpringGreen3_2'),
+						MMatch.whenIs(Code.SpringGreen2_1, () => 'SpringGreen2_1'),
+						MMatch.whenIs(Code.Cyan3, () => 'Cyan3'),
+						MMatch.whenIs(Code.DarkTurquoise, () => 'DarkTurquoise')
 					),
 					flow(
-						MMatch.whenIs(Type.Turquoise2, () => 'Turquoise2'),
-						MMatch.whenIs(Type.Green1, () => 'Green1'),
-						MMatch.whenIs(Type.SpringGreen2_2, () => 'SpringGreen2_2'),
-						MMatch.whenIs(Type.SpringGreen1, () => 'SpringGreen1'),
-						MMatch.whenIs(Type.MediumSpringGreen, () => 'MediumSpringGreen'),
-						MMatch.whenIs(Type.Cyan2, () => 'Cyan2'),
-						MMatch.whenIs(Type.Cyan1, () => 'Cyan1'),
-						MMatch.whenIs(Type.DarkRed_1, () => 'DarkRed_1'),
-						MMatch.whenIs(Type.DeepPink4_1, () => 'DeepPink4_1')
+						MMatch.whenIs(Code.Turquoise2, () => 'Turquoise2'),
+						MMatch.whenIs(Code.Green1, () => 'Green1'),
+						MMatch.whenIs(Code.SpringGreen2_2, () => 'SpringGreen2_2'),
+						MMatch.whenIs(Code.SpringGreen1, () => 'SpringGreen1'),
+						MMatch.whenIs(Code.MediumSpringGreen, () => 'MediumSpringGreen'),
+						MMatch.whenIs(Code.Cyan2, () => 'Cyan2'),
+						MMatch.whenIs(Code.Cyan1, () => 'Cyan1'),
+						MMatch.whenIs(Code.DarkRed_1, () => 'DarkRed_1'),
+						MMatch.whenIs(Code.DeepPink4_1, () => 'DeepPink4_1')
 					),
 					flow(
-						MMatch.whenIs(Type.Purple4_1, () => 'Purple4_1'),
-						MMatch.whenIs(Type.Purple4_2, () => 'Purple4_2'),
-						MMatch.whenIs(Type.Purple3, () => 'Purple3'),
-						MMatch.whenIs(Type.BlueViolet, () => 'BlueViolet'),
-						MMatch.whenIs(Type.Orange4_1, () => 'Orange4_1'),
-						MMatch.whenIs(Type.Grey37, () => 'Grey37'),
-						MMatch.whenIs(Type.MediumPurple4, () => 'MediumPurple4'),
-						MMatch.whenIs(Type.SlateBlue3_1, () => 'SlateBlue3_1'),
-						MMatch.whenIs(Type.SlateBlue3_2, () => 'SlateBlue3_2')
+						MMatch.whenIs(Code.Purple4_1, () => 'Purple4_1'),
+						MMatch.whenIs(Code.Purple4_2, () => 'Purple4_2'),
+						MMatch.whenIs(Code.Purple3, () => 'Purple3'),
+						MMatch.whenIs(Code.BlueViolet, () => 'BlueViolet'),
+						MMatch.whenIs(Code.Orange4_1, () => 'Orange4_1'),
+						MMatch.whenIs(Code.Grey37, () => 'Grey37'),
+						MMatch.whenIs(Code.MediumPurple4, () => 'MediumPurple4'),
+						MMatch.whenIs(Code.SlateBlue3_1, () => 'SlateBlue3_1'),
+						MMatch.whenIs(Code.SlateBlue3_2, () => 'SlateBlue3_2')
 					),
 					flow(
-						MMatch.whenIs(Type.RoyalBlue1, () => 'RoyalBlue1'),
-						MMatch.whenIs(Type.Chartreuse4, () => 'Chartreuse4'),
-						MMatch.whenIs(Type.DarkSeaGreen4_1, () => 'DarkSeaGreen4_1'),
-						MMatch.whenIs(Type.PaleTurquoise4, () => 'PaleTurquoise4'),
-						MMatch.whenIs(Type.SteelBlue, () => 'SteelBlue'),
-						MMatch.whenIs(Type.SteelBlue3, () => 'SteelBlue3'),
-						MMatch.whenIs(Type.CornflowerBlue, () => 'CornflowerBlue'),
-						MMatch.whenIs(Type.Chartreuse3_1, () => 'Chartreuse3_1'),
-						MMatch.whenIs(Type.DarkSeaGreen4_2, () => 'DarkSeaGreen4_2')
+						MMatch.whenIs(Code.RoyalBlue1, () => 'RoyalBlue1'),
+						MMatch.whenIs(Code.Chartreuse4, () => 'Chartreuse4'),
+						MMatch.whenIs(Code.DarkSeaGreen4_1, () => 'DarkSeaGreen4_1'),
+						MMatch.whenIs(Code.PaleTurquoise4, () => 'PaleTurquoise4'),
+						MMatch.whenIs(Code.SteelBlue, () => 'SteelBlue'),
+						MMatch.whenIs(Code.SteelBlue3, () => 'SteelBlue3'),
+						MMatch.whenIs(Code.CornflowerBlue, () => 'CornflowerBlue'),
+						MMatch.whenIs(Code.Chartreuse3_1, () => 'Chartreuse3_1'),
+						MMatch.whenIs(Code.DarkSeaGreen4_2, () => 'DarkSeaGreen4_2')
 					),
 					flow(
-						MMatch.whenIs(Type.CadetBlue_1, () => 'CadetBlue_1'),
-						MMatch.whenIs(Type.CadetBlue_2, () => 'CadetBlue_2'),
-						MMatch.whenIs(Type.SkyBlue3, () => 'SkyBlue3'),
-						MMatch.whenIs(Type.SteelBlue1_1, () => 'SteelBlue1_1'),
-						MMatch.whenIs(Type.Chartreuse3_2, () => 'Chartreuse3_2'),
-						MMatch.whenIs(Type.PaleGreen3_1, () => 'PaleGreen3_1'),
-						MMatch.whenIs(Type.SeaGreen3, () => 'SeaGreen3'),
-						MMatch.whenIs(Type.Aquamarine3, () => 'Aquamarine3'),
-						MMatch.whenIs(Type.MediumTurquoise, () => 'MediumTurquoise')
+						MMatch.whenIs(Code.CadetBlue_1, () => 'CadetBlue_1'),
+						MMatch.whenIs(Code.CadetBlue_2, () => 'CadetBlue_2'),
+						MMatch.whenIs(Code.SkyBlue3, () => 'SkyBlue3'),
+						MMatch.whenIs(Code.SteelBlue1_1, () => 'SteelBlue1_1'),
+						MMatch.whenIs(Code.Chartreuse3_2, () => 'Chartreuse3_2'),
+						MMatch.whenIs(Code.PaleGreen3_1, () => 'PaleGreen3_1'),
+						MMatch.whenIs(Code.SeaGreen3, () => 'SeaGreen3'),
+						MMatch.whenIs(Code.Aquamarine3, () => 'Aquamarine3'),
+						MMatch.whenIs(Code.MediumTurquoise, () => 'MediumTurquoise')
 					)
 				),
 				flow(
 					flow(
-						MMatch.whenIs(Type.SteelBlue1_2, () => 'SteelBlue1_2'),
-						MMatch.whenIs(Type.Chartreuse2_1, () => 'Chartreuse2_1'),
-						MMatch.whenIs(Type.SeaGreen2, () => 'SeaGreen2'),
-						MMatch.whenIs(Type.SeaGreen1_1, () => 'SeaGreen1_1'),
-						MMatch.whenIs(Type.SeaGreen1_2, () => 'SeaGreen1_2'),
-						MMatch.whenIs(Type.Aquamarine1_1, () => 'Aquamarine1_1'),
-						MMatch.whenIs(Type.DarkSlateGray2, () => 'DarkSlateGray2'),
-						MMatch.whenIs(Type.DarkRed_2, () => 'DarkRed_2'),
-						MMatch.whenIs(Type.DeepPink4_2, () => 'DeepPink4_2')
+						MMatch.whenIs(Code.SteelBlue1_2, () => 'SteelBlue1_2'),
+						MMatch.whenIs(Code.Chartreuse2_1, () => 'Chartreuse2_1'),
+						MMatch.whenIs(Code.SeaGreen2, () => 'SeaGreen2'),
+						MMatch.whenIs(Code.SeaGreen1_1, () => 'SeaGreen1_1'),
+						MMatch.whenIs(Code.SeaGreen1_2, () => 'SeaGreen1_2'),
+						MMatch.whenIs(Code.Aquamarine1_1, () => 'Aquamarine1_1'),
+						MMatch.whenIs(Code.DarkSlateGray2, () => 'DarkSlateGray2'),
+						MMatch.whenIs(Code.DarkRed_2, () => 'DarkRed_2'),
+						MMatch.whenIs(Code.DeepPink4_2, () => 'DeepPink4_2')
 					),
 					flow(
-						MMatch.whenIs(Type.DarkMagenta_1, () => 'DarkMagenta_1'),
-						MMatch.whenIs(Type.DarkMagenta_2, () => 'DarkMagenta_2'),
-						MMatch.whenIs(Type.DarkViolet_1, () => 'DarkViolet_1'),
-						MMatch.whenIs(Type.Purple_2, () => 'Purple_2'),
-						MMatch.whenIs(Type.Orange4_2, () => 'Orange4_2'),
-						MMatch.whenIs(Type.LightPink4, () => 'LightPink4'),
-						MMatch.whenIs(Type.Plum4, () => 'Plum4'),
-						MMatch.whenIs(Type.MediumPurple3_1, () => 'MediumPurple3_1'),
-						MMatch.whenIs(Type.MediumPurple3_2, () => 'MediumPurple3_2')
+						MMatch.whenIs(Code.DarkMagenta_1, () => 'DarkMagenta_1'),
+						MMatch.whenIs(Code.DarkMagenta_2, () => 'DarkMagenta_2'),
+						MMatch.whenIs(Code.DarkViolet_1, () => 'DarkViolet_1'),
+						MMatch.whenIs(Code.Purple_2, () => 'Purple_2'),
+						MMatch.whenIs(Code.Orange4_2, () => 'Orange4_2'),
+						MMatch.whenIs(Code.LightPink4, () => 'LightPink4'),
+						MMatch.whenIs(Code.Plum4, () => 'Plum4'),
+						MMatch.whenIs(Code.MediumPurple3_1, () => 'MediumPurple3_1'),
+						MMatch.whenIs(Code.MediumPurple3_2, () => 'MediumPurple3_2')
 					),
 					flow(
-						MMatch.whenIs(Type.SlateBlue1, () => 'SlateBlue1'),
-						MMatch.whenIs(Type.Yellow4_1, () => 'Yellow4_1'),
-						MMatch.whenIs(Type.Wheat4, () => 'Wheat4'),
-						MMatch.whenIs(Type.Grey53, () => 'Grey53'),
-						MMatch.whenIs(Type.LightSlateGrey, () => 'LightSlateGrey'),
-						MMatch.whenIs(Type.MediumPurple, () => 'MediumPurple'),
-						MMatch.whenIs(Type.LightSlateBlue, () => 'LightSlateBlue'),
-						MMatch.whenIs(Type.Yellow4_2, () => 'Yellow4_2'),
-						MMatch.whenIs(Type.DarkOliveGreen3_1, () => 'DarkOliveGreen3_1')
+						MMatch.whenIs(Code.SlateBlue1, () => 'SlateBlue1'),
+						MMatch.whenIs(Code.Yellow4_1, () => 'Yellow4_1'),
+						MMatch.whenIs(Code.Wheat4, () => 'Wheat4'),
+						MMatch.whenIs(Code.Grey53, () => 'Grey53'),
+						MMatch.whenIs(Code.LightSlateGrey, () => 'LightSlateGrey'),
+						MMatch.whenIs(Code.MediumPurple, () => 'MediumPurple'),
+						MMatch.whenIs(Code.LightSlateBlue, () => 'LightSlateBlue'),
+						MMatch.whenIs(Code.Yellow4_2, () => 'Yellow4_2'),
+						MMatch.whenIs(Code.DarkOliveGreen3_1, () => 'DarkOliveGreen3_1')
 					),
 					flow(
-						MMatch.whenIs(Type.DarkSeaGreen, () => 'DarkSeaGreen'),
-						MMatch.whenIs(Type.LightSkyBlue3_1, () => 'LightSkyBlue3_1'),
-						MMatch.whenIs(Type.LightSkyBlue3_2, () => 'LightSkyBlue3_2'),
-						MMatch.whenIs(Type.SkyBlue2, () => 'SkyBlue2'),
-						MMatch.whenIs(Type.Chartreuse2_2, () => 'Chartreuse2_2'),
-						MMatch.whenIs(Type.DarkOliveGreen3_2, () => 'DarkOliveGreen3_2'),
-						MMatch.whenIs(Type.PaleGreen3_2, () => 'PaleGreen3_2'),
-						MMatch.whenIs(Type.DarkSeaGreen3_1, () => 'DarkSeaGreen3_1'),
-						MMatch.whenIs(Type.DarkSlateGray3, () => 'DarkSlateGray3')
+						MMatch.whenIs(Code.DarkSeaGreen, () => 'DarkSeaGreen'),
+						MMatch.whenIs(Code.LightSkyBlue3_1, () => 'LightSkyBlue3_1'),
+						MMatch.whenIs(Code.LightSkyBlue3_2, () => 'LightSkyBlue3_2'),
+						MMatch.whenIs(Code.SkyBlue2, () => 'SkyBlue2'),
+						MMatch.whenIs(Code.Chartreuse2_2, () => 'Chartreuse2_2'),
+						MMatch.whenIs(Code.DarkOliveGreen3_2, () => 'DarkOliveGreen3_2'),
+						MMatch.whenIs(Code.PaleGreen3_2, () => 'PaleGreen3_2'),
+						MMatch.whenIs(Code.DarkSeaGreen3_1, () => 'DarkSeaGreen3_1'),
+						MMatch.whenIs(Code.DarkSlateGray3, () => 'DarkSlateGray3')
 					),
 					flow(
-						MMatch.whenIs(Type.SkyBlue1, () => 'SkyBlue1'),
-						MMatch.whenIs(Type.Chartreuse1, () => 'Chartreuse1'),
-						MMatch.whenIs(Type.LightGreen_1, () => 'LightGreen_1'),
-						MMatch.whenIs(Type.LightGreen_2, () => 'LightGreen_2'),
-						MMatch.whenIs(Type.PaleGreen1_1, () => 'PaleGreen1_1'),
-						MMatch.whenIs(Type.Aquamarine1_2, () => 'Aquamarine1_2'),
-						MMatch.whenIs(Type.DarkSlateGray1, () => 'DarkSlateGray1'),
-						MMatch.whenIs(Type.Red3_1, () => 'Red3_1'),
-						MMatch.whenIs(Type.DeepPink4_3, () => 'DeepPink4_3')
+						MMatch.whenIs(Code.SkyBlue1, () => 'SkyBlue1'),
+						MMatch.whenIs(Code.Chartreuse1, () => 'Chartreuse1'),
+						MMatch.whenIs(Code.LightGreen_1, () => 'LightGreen_1'),
+						MMatch.whenIs(Code.LightGreen_2, () => 'LightGreen_2'),
+						MMatch.whenIs(Code.PaleGreen1_1, () => 'PaleGreen1_1'),
+						MMatch.whenIs(Code.Aquamarine1_2, () => 'Aquamarine1_2'),
+						MMatch.whenIs(Code.DarkSlateGray1, () => 'DarkSlateGray1'),
+						MMatch.whenIs(Code.Red3_1, () => 'Red3_1'),
+						MMatch.whenIs(Code.DeepPink4_3, () => 'DeepPink4_3')
 					),
 					flow(
-						MMatch.whenIs(Type.MediumVioletRed, () => 'MediumVioletRed'),
-						MMatch.whenIs(Type.Magenta3_1, () => 'Magenta3_1'),
-						MMatch.whenIs(Type.DarkViolet_2, () => 'DarkViolet_2'),
-						MMatch.whenIs(Type.Purple_3, () => 'Purple_3'),
-						MMatch.whenIs(Type.DarkOrange3_1, () => 'DarkOrange3_1'),
-						MMatch.whenIs(Type.IndianRed_1, () => 'IndianRed_1'),
-						MMatch.whenIs(Type.HotPink3_1, () => 'HotPink3_1'),
-						MMatch.whenIs(Type.MediumOrchid3, () => 'MediumOrchid3'),
-						MMatch.whenIs(Type.MediumOrchid, () => 'MediumOrchid')
+						MMatch.whenIs(Code.MediumVioletRed, () => 'MediumVioletRed'),
+						MMatch.whenIs(Code.Magenta3_1, () => 'Magenta3_1'),
+						MMatch.whenIs(Code.DarkViolet_2, () => 'DarkViolet_2'),
+						MMatch.whenIs(Code.Purple_3, () => 'Purple_3'),
+						MMatch.whenIs(Code.DarkOrange3_1, () => 'DarkOrange3_1'),
+						MMatch.whenIs(Code.IndianRed_1, () => 'IndianRed_1'),
+						MMatch.whenIs(Code.HotPink3_1, () => 'HotPink3_1'),
+						MMatch.whenIs(Code.MediumOrchid3, () => 'MediumOrchid3'),
+						MMatch.whenIs(Code.MediumOrchid, () => 'MediumOrchid')
 					),
 					flow(
-						MMatch.whenIs(Type.MediumPurple2_1, () => 'MediumPurple2_1'),
-						MMatch.whenIs(Type.DarkGoldenRod, () => 'DarkGoldenRod'),
-						MMatch.whenIs(Type.LightSalmon3_1, () => 'LightSalmon3_1'),
-						MMatch.whenIs(Type.RosyBrown, () => 'RosyBrown'),
-						MMatch.whenIs(Type.Grey63, () => 'Grey63'),
-						MMatch.whenIs(Type.MediumPurple2_2, () => 'MediumPurple2_2'),
-						MMatch.whenIs(Type.MediumPurple1, () => 'MediumPurple1'),
-						MMatch.whenIs(Type.Gold3_1, () => 'Gold3_1'),
-						MMatch.whenIs(Type.DarkKhaki, () => 'DarkKhaki')
+						MMatch.whenIs(Code.MediumPurple2_1, () => 'MediumPurple2_1'),
+						MMatch.whenIs(Code.DarkGoldenRod, () => 'DarkGoldenRod'),
+						MMatch.whenIs(Code.LightSalmon3_1, () => 'LightSalmon3_1'),
+						MMatch.whenIs(Code.RosyBrown, () => 'RosyBrown'),
+						MMatch.whenIs(Code.Grey63, () => 'Grey63'),
+						MMatch.whenIs(Code.MediumPurple2_2, () => 'MediumPurple2_2'),
+						MMatch.whenIs(Code.MediumPurple1, () => 'MediumPurple1'),
+						MMatch.whenIs(Code.Gold3_1, () => 'Gold3_1'),
+						MMatch.whenIs(Code.DarkKhaki, () => 'DarkKhaki')
 					),
 					flow(
-						MMatch.whenIs(Type.NavajoWhite3, () => 'NavajoWhite3'),
-						MMatch.whenIs(Type.Grey69, () => 'Grey69'),
-						MMatch.whenIs(Type.LightSteelBlue3, () => 'LightSteelBlue3'),
-						MMatch.whenIs(Type.LightSteelBlue, () => 'LightSteelBlue'),
-						MMatch.whenIs(Type.Yellow3_1, () => 'Yellow3_1'),
-						MMatch.whenIs(Type.DarkOliveGreen3_3, () => 'DarkOliveGreen3_3'),
-						MMatch.whenIs(Type.DarkSeaGreen3_2, () => 'DarkSeaGreen3_2'),
-						MMatch.whenIs(Type.DarkSeaGreen2_1, () => 'DarkSeaGreen2_1'),
-						MMatch.whenIs(Type.LightCyan3, () => 'LightCyan3')
+						MMatch.whenIs(Code.NavajoWhite3, () => 'NavajoWhite3'),
+						MMatch.whenIs(Code.Grey69, () => 'Grey69'),
+						MMatch.whenIs(Code.LightSteelBlue3, () => 'LightSteelBlue3'),
+						MMatch.whenIs(Code.LightSteelBlue, () => 'LightSteelBlue'),
+						MMatch.whenIs(Code.Yellow3_1, () => 'Yellow3_1'),
+						MMatch.whenIs(Code.DarkOliveGreen3_3, () => 'DarkOliveGreen3_3'),
+						MMatch.whenIs(Code.DarkSeaGreen3_2, () => 'DarkSeaGreen3_2'),
+						MMatch.whenIs(Code.DarkSeaGreen2_1, () => 'DarkSeaGreen2_1'),
+						MMatch.whenIs(Code.LightCyan3, () => 'LightCyan3')
 					),
 					flow(
-						MMatch.whenIs(Type.LightSkyBlue1, () => 'LightSkyBlue1'),
-						MMatch.whenIs(Type.GreenYellow, () => 'GreenYellow'),
-						MMatch.whenIs(Type.DarkOliveGreen2, () => 'DarkOliveGreen2'),
-						MMatch.whenIs(Type.PaleGreen1_2, () => 'PaleGreen1_2'),
-						MMatch.whenIs(Type.DarkSeaGreen2_2, () => 'DarkSeaGreen2_2'),
-						MMatch.whenIs(Type.DarkSeaGreen1_1, () => 'DarkSeaGreen1_1'),
-						MMatch.whenIs(Type.PaleTurquoise1, () => 'PaleTurquoise1'),
-						MMatch.whenIs(Type.Red3_2, () => 'Red3_2'),
-						MMatch.whenIs(Type.DeepPink3_1, () => 'DeepPink3_1')
+						MMatch.whenIs(Code.LightSkyBlue1, () => 'LightSkyBlue1'),
+						MMatch.whenIs(Code.GreenYellow, () => 'GreenYellow'),
+						MMatch.whenIs(Code.DarkOliveGreen2, () => 'DarkOliveGreen2'),
+						MMatch.whenIs(Code.PaleGreen1_2, () => 'PaleGreen1_2'),
+						MMatch.whenIs(Code.DarkSeaGreen2_2, () => 'DarkSeaGreen2_2'),
+						MMatch.whenIs(Code.DarkSeaGreen1_1, () => 'DarkSeaGreen1_1'),
+						MMatch.whenIs(Code.PaleTurquoise1, () => 'PaleTurquoise1'),
+						MMatch.whenIs(Code.Red3_2, () => 'Red3_2'),
+						MMatch.whenIs(Code.DeepPink3_1, () => 'DeepPink3_1')
 					)
 				),
 				flow(
 					flow(
-						MMatch.whenIs(Type.DeepPink3_2, () => 'DeepPink3_2'),
-						MMatch.whenIs(Type.Magenta3_2, () => 'Magenta3_2'),
-						MMatch.whenIs(Type.Magenta3_3, () => 'Magenta3_3'),
-						MMatch.whenIs(Type.Magenta2_1, () => 'Magenta2_1'),
-						MMatch.whenIs(Type.DarkOrange3_2, () => 'DarkOrange3_2'),
-						MMatch.whenIs(Type.IndianRed_2, () => 'IndianRed_2'),
-						MMatch.whenIs(Type.HotPink3_2, () => 'HotPink3_2'),
-						MMatch.whenIs(Type.HotPink2, () => 'HotPink2'),
-						MMatch.whenIs(Type.Orchid, () => 'Orchid')
+						MMatch.whenIs(Code.DeepPink3_2, () => 'DeepPink3_2'),
+						MMatch.whenIs(Code.Magenta3_2, () => 'Magenta3_2'),
+						MMatch.whenIs(Code.Magenta3_3, () => 'Magenta3_3'),
+						MMatch.whenIs(Code.Magenta2_1, () => 'Magenta2_1'),
+						MMatch.whenIs(Code.DarkOrange3_2, () => 'DarkOrange3_2'),
+						MMatch.whenIs(Code.IndianRed_2, () => 'IndianRed_2'),
+						MMatch.whenIs(Code.HotPink3_2, () => 'HotPink3_2'),
+						MMatch.whenIs(Code.HotPink2, () => 'HotPink2'),
+						MMatch.whenIs(Code.Orchid, () => 'Orchid')
 					),
 					flow(
-						MMatch.whenIs(Type.MediumOrchid1_1, () => 'MediumOrchid1_1'),
-						MMatch.whenIs(Type.Orange3, () => 'Orange3'),
-						MMatch.whenIs(Type.LightSalmon3_2, () => 'LightSalmon3_2'),
-						MMatch.whenIs(Type.LightPink3, () => 'LightPink3'),
-						MMatch.whenIs(Type.Pink3, () => 'Pink3'),
-						MMatch.whenIs(Type.Plum3, () => 'Plum3'),
-						MMatch.whenIs(Type.Violet, () => 'Violet'),
-						MMatch.whenIs(Type.Gold3_2, () => 'Gold3_2'),
-						MMatch.whenIs(Type.LightGoldenRod3, () => 'LightGoldenRod3')
+						MMatch.whenIs(Code.MediumOrchid1_1, () => 'MediumOrchid1_1'),
+						MMatch.whenIs(Code.Orange3, () => 'Orange3'),
+						MMatch.whenIs(Code.LightSalmon3_2, () => 'LightSalmon3_2'),
+						MMatch.whenIs(Code.LightPink3, () => 'LightPink3'),
+						MMatch.whenIs(Code.Pink3, () => 'Pink3'),
+						MMatch.whenIs(Code.Plum3, () => 'Plum3'),
+						MMatch.whenIs(Code.Violet, () => 'Violet'),
+						MMatch.whenIs(Code.Gold3_2, () => 'Gold3_2'),
+						MMatch.whenIs(Code.LightGoldenRod3, () => 'LightGoldenRod3')
 					),
 					flow(
-						MMatch.whenIs(Type.Tan, () => 'Tan'),
-						MMatch.whenIs(Type.MistyRose3, () => 'MistyRose3'),
-						MMatch.whenIs(Type.Thistle3, () => 'Thistle3'),
-						MMatch.whenIs(Type.Plum2, () => 'Plum2'),
-						MMatch.whenIs(Type.Yellow3_2, () => 'Yellow3_2'),
-						MMatch.whenIs(Type.Khaki3, () => 'Khaki3'),
-						MMatch.whenIs(Type.LightGoldenRod2_1, () => 'LightGoldenRod2_1'),
-						MMatch.whenIs(Type.LightYellow3, () => 'LightYellow3'),
-						MMatch.whenIs(Type.Grey84, () => 'Grey84')
+						MMatch.whenIs(Code.Tan, () => 'Tan'),
+						MMatch.whenIs(Code.MistyRose3, () => 'MistyRose3'),
+						MMatch.whenIs(Code.Thistle3, () => 'Thistle3'),
+						MMatch.whenIs(Code.Plum2, () => 'Plum2'),
+						MMatch.whenIs(Code.Yellow3_2, () => 'Yellow3_2'),
+						MMatch.whenIs(Code.Khaki3, () => 'Khaki3'),
+						MMatch.whenIs(Code.LightGoldenRod2_1, () => 'LightGoldenRod2_1'),
+						MMatch.whenIs(Code.LightYellow3, () => 'LightYellow3'),
+						MMatch.whenIs(Code.Grey84, () => 'Grey84')
 					),
 					flow(
-						MMatch.whenIs(Type.LightSteelBlue1, () => 'LightSteelBlue1'),
-						MMatch.whenIs(Type.Yellow2, () => 'Yellow2'),
-						MMatch.whenIs(Type.DarkOliveGreen1_1, () => 'DarkOliveGreen1_1'),
-						MMatch.whenIs(Type.DarkOliveGreen1_2, () => 'DarkOliveGreen1_2'),
-						MMatch.whenIs(Type.DarkSeaGreen1_2, () => 'DarkSeaGreen1_2'),
-						MMatch.whenIs(Type.HoneyDew2, () => 'HoneyDew2'),
-						MMatch.whenIs(Type.LightCyan1, () => 'LightCyan1'),
-						MMatch.whenIs(Type.Red1, () => 'Red1'),
-						MMatch.whenIs(Type.DeepPink2, () => 'DeepPink2')
+						MMatch.whenIs(Code.LightSteelBlue1, () => 'LightSteelBlue1'),
+						MMatch.whenIs(Code.Yellow2, () => 'Yellow2'),
+						MMatch.whenIs(Code.DarkOliveGreen1_1, () => 'DarkOliveGreen1_1'),
+						MMatch.whenIs(Code.DarkOliveGreen1_2, () => 'DarkOliveGreen1_2'),
+						MMatch.whenIs(Code.DarkSeaGreen1_2, () => 'DarkSeaGreen1_2'),
+						MMatch.whenIs(Code.HoneyDew2, () => 'HoneyDew2'),
+						MMatch.whenIs(Code.LightCyan1, () => 'LightCyan1'),
+						MMatch.whenIs(Code.Red1, () => 'Red1'),
+						MMatch.whenIs(Code.DeepPink2, () => 'DeepPink2')
 					),
 					flow(
-						MMatch.whenIs(Type.DeepPink1_1, () => 'DeepPink1_1'),
-						MMatch.whenIs(Type.DeepPink1_2, () => 'DeepPink1_2'),
-						MMatch.whenIs(Type.Magenta2_2, () => 'Magenta2_2'),
-						MMatch.whenIs(Type.Magenta1, () => 'Magenta1'),
-						MMatch.whenIs(Type.OrangeRed1, () => 'OrangeRed1'),
-						MMatch.whenIs(Type.IndianRed1_1, () => 'IndianRed1_1'),
-						MMatch.whenIs(Type.IndianRed1_2, () => 'IndianRed1_2'),
-						MMatch.whenIs(Type.HotPink_1, () => 'HotPink_1'),
-						MMatch.whenIs(Type.HotPink_2, () => 'HotPink_2')
+						MMatch.whenIs(Code.DeepPink1_1, () => 'DeepPink1_1'),
+						MMatch.whenIs(Code.DeepPink1_2, () => 'DeepPink1_2'),
+						MMatch.whenIs(Code.Magenta2_2, () => 'Magenta2_2'),
+						MMatch.whenIs(Code.Magenta1, () => 'Magenta1'),
+						MMatch.whenIs(Code.OrangeRed1, () => 'OrangeRed1'),
+						MMatch.whenIs(Code.IndianRed1_1, () => 'IndianRed1_1'),
+						MMatch.whenIs(Code.IndianRed1_2, () => 'IndianRed1_2'),
+						MMatch.whenIs(Code.HotPink_1, () => 'HotPink_1'),
+						MMatch.whenIs(Code.HotPink_2, () => 'HotPink_2')
 					),
 					flow(
-						MMatch.whenIs(Type.MediumOrchid1_2, () => 'MediumOrchid1_2'),
-						MMatch.whenIs(Type.DarkOrange, () => 'DarkOrange'),
-						MMatch.whenIs(Type.Salmon1, () => 'Salmon1'),
-						MMatch.whenIs(Type.LightCoral, () => 'LightCoral'),
-						MMatch.whenIs(Type.PaleVioletRed1, () => 'PaleVioletRed1'),
-						MMatch.whenIs(Type.Orchid2, () => 'Orchid2'),
-						MMatch.whenIs(Type.Orchid1, () => 'Orchid1'),
-						MMatch.whenIs(Type.Orange1, () => 'Orange1'),
-						MMatch.whenIs(Type.SandyBrown, () => 'SandyBrown')
+						MMatch.whenIs(Code.MediumOrchid1_2, () => 'MediumOrchid1_2'),
+						MMatch.whenIs(Code.DarkOrange, () => 'DarkOrange'),
+						MMatch.whenIs(Code.Salmon1, () => 'Salmon1'),
+						MMatch.whenIs(Code.LightCoral, () => 'LightCoral'),
+						MMatch.whenIs(Code.PaleVioletRed1, () => 'PaleVioletRed1'),
+						MMatch.whenIs(Code.Orchid2, () => 'Orchid2'),
+						MMatch.whenIs(Code.Orchid1, () => 'Orchid1'),
+						MMatch.whenIs(Code.Orange1, () => 'Orange1'),
+						MMatch.whenIs(Code.SandyBrown, () => 'SandyBrown')
 					),
 					flow(
-						MMatch.whenIs(Type.LightSalmon1, () => 'LightSalmon1'),
-						MMatch.whenIs(Type.LightPink1, () => 'LightPink1'),
-						MMatch.whenIs(Type.Pink1, () => 'Pink1'),
-						MMatch.whenIs(Type.Plum1, () => 'Plum1'),
-						MMatch.whenIs(Type.Gold1, () => 'Gold1'),
-						MMatch.whenIs(Type.LightGoldenRod2_2, () => 'LightGoldenRod2_2'),
-						MMatch.whenIs(Type.LightGoldenRod2_3, () => 'LightGoldenRod2_3'),
-						MMatch.whenIs(Type.NavajoWhite1, () => 'NavajoWhite1'),
-						MMatch.whenIs(Type.MistyRose1, () => 'MistyRose1')
+						MMatch.whenIs(Code.LightSalmon1, () => 'LightSalmon1'),
+						MMatch.whenIs(Code.LightPink1, () => 'LightPink1'),
+						MMatch.whenIs(Code.Pink1, () => 'Pink1'),
+						MMatch.whenIs(Code.Plum1, () => 'Plum1'),
+						MMatch.whenIs(Code.Gold1, () => 'Gold1'),
+						MMatch.whenIs(Code.LightGoldenRod2_2, () => 'LightGoldenRod2_2'),
+						MMatch.whenIs(Code.LightGoldenRod2_3, () => 'LightGoldenRod2_3'),
+						MMatch.whenIs(Code.NavajoWhite1, () => 'NavajoWhite1'),
+						MMatch.whenIs(Code.MistyRose1, () => 'MistyRose1')
 					),
 					flow(
-						MMatch.whenIs(Type.Thistle1, () => 'Thistle1'),
-						MMatch.whenIs(Type.Yellow1, () => 'Yellow1'),
-						MMatch.whenIs(Type.LightGoldenRod1, () => 'LightGoldenRod1'),
-						MMatch.whenIs(Type.Khaki1, () => 'Khaki1'),
-						MMatch.whenIs(Type.Wheat1, () => 'Wheat1'),
-						MMatch.whenIs(Type.Cornsilk1, () => 'Cornsilk1'),
-						MMatch.whenIs(Type.Grey100, () => 'Grey100'),
-						MMatch.whenIs(Type.Grey3, () => 'Grey3'),
-						MMatch.whenIs(Type.Grey7, () => 'Grey7')
+						MMatch.whenIs(Code.Thistle1, () => 'Thistle1'),
+						MMatch.whenIs(Code.Yellow1, () => 'Yellow1'),
+						MMatch.whenIs(Code.LightGoldenRod1, () => 'LightGoldenRod1'),
+						MMatch.whenIs(Code.Khaki1, () => 'Khaki1'),
+						MMatch.whenIs(Code.Wheat1, () => 'Wheat1'),
+						MMatch.whenIs(Code.Cornsilk1, () => 'Cornsilk1'),
+						MMatch.whenIs(Code.Grey100, () => 'Grey100'),
+						MMatch.whenIs(Code.Grey3, () => 'Grey3'),
+						MMatch.whenIs(Code.Grey7, () => 'Grey7')
 					),
 					flow(
-						MMatch.whenIs(Type.Grey11, () => 'Grey11'),
-						MMatch.whenIs(Type.Grey15, () => 'Grey15'),
-						MMatch.whenIs(Type.Grey19, () => 'Grey19'),
-						MMatch.whenIs(Type.Grey23, () => 'Grey23'),
-						MMatch.whenIs(Type.Grey27, () => 'Grey27'),
-						MMatch.whenIs(Type.Grey30, () => 'Grey30'),
-						MMatch.whenIs(Type.Grey35, () => 'Grey35'),
-						MMatch.whenIs(Type.Grey39, () => 'Grey39'),
-						MMatch.whenIs(Type.Grey42, () => 'Grey42')
+						MMatch.whenIs(Code.Grey11, () => 'Grey11'),
+						MMatch.whenIs(Code.Grey15, () => 'Grey15'),
+						MMatch.whenIs(Code.Grey19, () => 'Grey19'),
+						MMatch.whenIs(Code.Grey23, () => 'Grey23'),
+						MMatch.whenIs(Code.Grey27, () => 'Grey27'),
+						MMatch.whenIs(Code.Grey30, () => 'Grey30'),
+						MMatch.whenIs(Code.Grey35, () => 'Grey35'),
+						MMatch.whenIs(Code.Grey39, () => 'Grey39'),
+						MMatch.whenIs(Code.Grey42, () => 'Grey42')
 					)
 				),
 				flow(
 					flow(
-						MMatch.whenIs(Type.Grey46, () => 'Grey46'),
-						MMatch.whenIs(Type.Grey50, () => 'Grey50'),
-						MMatch.whenIs(Type.Grey54, () => 'Grey54'),
-						MMatch.whenIs(Type.Grey58, () => 'Grey58'),
-						MMatch.whenIs(Type.Grey62, () => 'Grey62'),
-						MMatch.whenIs(Type.Grey66, () => 'Grey66'),
-						MMatch.whenIs(Type.Grey70, () => 'Grey70'),
-						MMatch.whenIs(Type.Grey74, () => 'Grey74'),
-						MMatch.whenIs(Type.Grey78, () => 'Grey78')
+						MMatch.whenIs(Code.Grey46, () => 'Grey46'),
+						MMatch.whenIs(Code.Grey50, () => 'Grey50'),
+						MMatch.whenIs(Code.Grey54, () => 'Grey54'),
+						MMatch.whenIs(Code.Grey58, () => 'Grey58'),
+						MMatch.whenIs(Code.Grey62, () => 'Grey62'),
+						MMatch.whenIs(Code.Grey66, () => 'Grey66'),
+						MMatch.whenIs(Code.Grey70, () => 'Grey70'),
+						MMatch.whenIs(Code.Grey74, () => 'Grey74'),
+						MMatch.whenIs(Code.Grey78, () => 'Grey78')
 					),
 					flow(
-						MMatch.whenIs(Type.Grey82, () => 'Grey82'),
-						MMatch.whenIs(Type.Grey85, () => 'Grey85'),
-						MMatch.whenIs(Type.Grey89, () => 'Grey89'),
-						MMatch.whenIs(Type.Grey93, () => 'Grey93')
+						MMatch.whenIs(Code.Grey82, () => 'Grey82'),
+						MMatch.whenIs(Code.Grey85, () => 'Grey85'),
+						MMatch.whenIs(Code.Grey89, () => 'Grey89'),
+						MMatch.whenIs(Code.Grey93, () => 'Grey93')
 					)
 				)
 			),
@@ -846,7 +846,7 @@ export namespace EightBit {
 	 */
 	export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
 		/** Code of this color */
-		readonly code: Code.Type;
+		readonly code: Code;
 
 		/** Gets the sequence of `this` */
 		readonly [_sequenceSymbol]: () => ASAnsiString.NonEmptySequence;
@@ -911,7 +911,7 @@ export namespace EightBit {
 	 *
 	 * @category Destructors
 	 */
-	export const code: MTypes.OneArgFunction<Type, Code.Type> = Struct.get('code');
+	export const code: MTypes.OneArgFunction<Type, Code> = Struct.get('code');
 }
 
 /**
@@ -1090,242 +1090,238 @@ export const toSequence = (self: Type): ASAnsiString.NonEmptySequence => self[_s
  *
  * @category Original instances
  */
-export const threeBitBlack: ThreeBit.Type = ThreeBit.make(ThreeBit.Offset.Type.Black);
+export const threeBitBlack: ThreeBit.Type = ThreeBit.make(ThreeBit.Offset.Black);
 /**
  * Original Red color instance
  *
  * @category Original instances
  */
-export const threeBitRed: ThreeBit.Type = ThreeBit.make(ThreeBit.Offset.Type.Red);
+export const threeBitRed: ThreeBit.Type = ThreeBit.make(ThreeBit.Offset.Red);
 /**
  * Original Green color instance
  *
  * @category Original instances
  */
-export const threeBitGreen: ThreeBit.Type = ThreeBit.make(ThreeBit.Offset.Type.Green);
+export const threeBitGreen: ThreeBit.Type = ThreeBit.make(ThreeBit.Offset.Green);
 /**
  * Original Yellow color instance
  *
  * @category Original instances
  */
-export const threeBitYellow: ThreeBit.Type = ThreeBit.make(ThreeBit.Offset.Type.Yellow);
+export const threeBitYellow: ThreeBit.Type = ThreeBit.make(ThreeBit.Offset.Yellow);
 /**
  * Original Blue color instance
  *
  * @category Original instances
  */
-export const threeBitBlue: ThreeBit.Type = ThreeBit.make(ThreeBit.Offset.Type.Blue);
+export const threeBitBlue: ThreeBit.Type = ThreeBit.make(ThreeBit.Offset.Blue);
 /**
  * Original Magenta color instance
  *
  * @category Original instances
  */
-export const threeBitMagenta: ThreeBit.Type = ThreeBit.make(ThreeBit.Offset.Type.Magenta);
+export const threeBitMagenta: ThreeBit.Type = ThreeBit.make(ThreeBit.Offset.Magenta);
 /**
  * Original Cyan color instance
  *
  * @category Original instances
  */
-export const threeBitCyan: ThreeBit.Type = ThreeBit.make(ThreeBit.Offset.Type.Cyan);
+export const threeBitCyan: ThreeBit.Type = ThreeBit.make(ThreeBit.Offset.Cyan);
 /**
  * Original White color instance
  *
  * @category Original instances
  */
-export const threeBitWhite: ThreeBit.Type = ThreeBit.make(ThreeBit.Offset.Type.White);
+export const threeBitWhite: ThreeBit.Type = ThreeBit.make(ThreeBit.Offset.White);
 
 /**
  * Original Bright Black color instance
  *
  * @category Original instances
  */
-export const threeBitBrightBlack: ThreeBit.Type = ThreeBit.Bright.make(ThreeBit.Offset.Type.Black);
+export const threeBitBrightBlack: ThreeBit.Type = ThreeBit.Bright.make(ThreeBit.Offset.Black);
 /**
  * Original Bright Red color instance
  *
  * @category Original instances
  */
-export const threeBitBrightRed: ThreeBit.Type = ThreeBit.Bright.make(ThreeBit.Offset.Type.Red);
+export const threeBitBrightRed: ThreeBit.Type = ThreeBit.Bright.make(ThreeBit.Offset.Red);
 /**
  * Original Bright Green color instance
  *
  * @category Original instances
  */
-export const threeBitBrightGreen: ThreeBit.Type = ThreeBit.Bright.make(ThreeBit.Offset.Type.Green);
+export const threeBitBrightGreen: ThreeBit.Type = ThreeBit.Bright.make(ThreeBit.Offset.Green);
 /**
  * Original Bright Yellow color instance
  *
  * @category Original instances
  */
-export const threeBitBrightYellow: ThreeBit.Type = ThreeBit.Bright.make(
-	ThreeBit.Offset.Type.Yellow
-);
+export const threeBitBrightYellow: ThreeBit.Type = ThreeBit.Bright.make(ThreeBit.Offset.Yellow);
 /**
  * Original Bright Blue color instance
  *
  * @category Original instances
  */
-export const threeBitBrightBlue: ThreeBit.Type = ThreeBit.Bright.make(ThreeBit.Offset.Type.Blue);
+export const threeBitBrightBlue: ThreeBit.Type = ThreeBit.Bright.make(ThreeBit.Offset.Blue);
 /**
  * Original Bright Magenta color instance
  *
  * @category Original instances
  */
-export const threeBitBrightMagenta: ThreeBit.Type = ThreeBit.Bright.make(
-	ThreeBit.Offset.Type.Magenta
-);
+export const threeBitBrightMagenta: ThreeBit.Type = ThreeBit.Bright.make(ThreeBit.Offset.Magenta);
 /**
  * Original Bright Cyan color instance
  *
  * @category Original instances
  */
-export const threeBitBrightCyan: ThreeBit.Type = ThreeBit.Bright.make(ThreeBit.Offset.Type.Cyan);
+export const threeBitBrightCyan: ThreeBit.Type = ThreeBit.Bright.make(ThreeBit.Offset.Cyan);
 /**
  * Original Bright White color instance
  *
  * @category Original instances
  */
-export const threeBitBrightWhite: ThreeBit.Type = ThreeBit.Bright.make(ThreeBit.Offset.Type.White);
+export const threeBitBrightWhite: ThreeBit.Type = ThreeBit.Bright.make(ThreeBit.Offset.White);
 
 /**
  * Eightbit Black Color instance
  *
  * @category EightBit instances
  */
-export const eightBitBlack: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Black });
+export const eightBitBlack: EightBit.Type = EightBit.make({ code: EightBit.Code.Black });
 /**
  * Eightbit Maroon Color instance
  *
  * @category EightBit instances
  */
-export const eightBitMaroon: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Maroon });
+export const eightBitMaroon: EightBit.Type = EightBit.make({ code: EightBit.Code.Maroon });
 /**
  * Eightbit Green Color instance
  *
  * @category EightBit instances
  */
-export const eightBitGreen: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Green });
+export const eightBitGreen: EightBit.Type = EightBit.make({ code: EightBit.Code.Green });
 /**
  * Eightbit Olive Color instance
  *
  * @category EightBit instances
  */
-export const eightBitOlive: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Olive });
+export const eightBitOlive: EightBit.Type = EightBit.make({ code: EightBit.Code.Olive });
 /**
  * Eightbit Navy Color instance
  *
  * @category EightBit instances
  */
-export const eightBitNavy: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Navy });
+export const eightBitNavy: EightBit.Type = EightBit.make({ code: EightBit.Code.Navy });
 /**
  * Eightbit Purple_1 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitPurple_1: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Purple_1 });
+export const eightBitPurple_1: EightBit.Type = EightBit.make({ code: EightBit.Code.Purple_1 });
 /**
  * Eightbit Teal Color instance
  *
  * @category EightBit instances
  */
-export const eightBitTeal: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Teal });
+export const eightBitTeal: EightBit.Type = EightBit.make({ code: EightBit.Code.Teal });
 /**
  * Eightbit Silver Color instance
  *
  * @category EightBit instances
  */
-export const eightBitSilver: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Silver });
+export const eightBitSilver: EightBit.Type = EightBit.make({ code: EightBit.Code.Silver });
 /**
  * Eightbit Grey Color instance
  *
  * @category EightBit instances
  */
-export const eightBitGrey: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Grey });
+export const eightBitGrey: EightBit.Type = EightBit.make({ code: EightBit.Code.Grey });
 /**
  * Eightbit Red Color instance
  *
  * @category EightBit instances
  */
-export const eightBitRed: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Red });
+export const eightBitRed: EightBit.Type = EightBit.make({ code: EightBit.Code.Red });
 /**
  * Eightbit Lime Color instance
  *
  * @category EightBit instances
  */
-export const eightBitLime: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Lime });
+export const eightBitLime: EightBit.Type = EightBit.make({ code: EightBit.Code.Lime });
 /**
  * Eightbit Yellow Color instance
  *
  * @category EightBit instances
  */
-export const eightBitYellow: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Yellow });
+export const eightBitYellow: EightBit.Type = EightBit.make({ code: EightBit.Code.Yellow });
 /**
  * Eightbit Blue Color instance
  *
  * @category EightBit instances
  */
-export const eightBitBlue: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Blue });
+export const eightBitBlue: EightBit.Type = EightBit.make({ code: EightBit.Code.Blue });
 /**
  * Eightbit Fuchsia Color instance
  *
  * @category EightBit instances
  */
-export const eightBitFuchsia: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Fuchsia });
+export const eightBitFuchsia: EightBit.Type = EightBit.make({ code: EightBit.Code.Fuchsia });
 /**
  * Eightbit Aqua Color instance
  *
  * @category EightBit instances
  */
-export const eightBitAqua: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Aqua });
+export const eightBitAqua: EightBit.Type = EightBit.make({ code: EightBit.Code.Aqua });
 /**
  * Eightbit White Color instance
  *
  * @category EightBit instances
  */
-export const eightBitWhite: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.White });
+export const eightBitWhite: EightBit.Type = EightBit.make({ code: EightBit.Code.White });
 /**
  * Eightbit Grey0 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitGrey0: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Grey0 });
+export const eightBitGrey0: EightBit.Type = EightBit.make({ code: EightBit.Code.Grey0 });
 /**
  * Eightbit NavyBlue Color instance
  *
  * @category EightBit instances
  */
-export const eightBitNavyBlue: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.NavyBlue });
+export const eightBitNavyBlue: EightBit.Type = EightBit.make({ code: EightBit.Code.NavyBlue });
 /**
  * Eightbit DarkBlue Color instance
  *
  * @category EightBit instances
  */
-export const eightBitDarkBlue: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.DarkBlue });
+export const eightBitDarkBlue: EightBit.Type = EightBit.make({ code: EightBit.Code.DarkBlue });
 /**
  * Eightbit Blue3_1 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitBlue3_1: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Blue3_1 });
+export const eightBitBlue3_1: EightBit.Type = EightBit.make({ code: EightBit.Code.Blue3_1 });
 /**
  * Eightbit Blue3_2 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitBlue3_2: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Blue3_2 });
+export const eightBitBlue3_2: EightBit.Type = EightBit.make({ code: EightBit.Code.Blue3_2 });
 /**
  * Eightbit Blue1 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitBlue1: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Blue1 });
+export const eightBitBlue1: EightBit.Type = EightBit.make({ code: EightBit.Code.Blue1 });
 /**
  * Eightbit DarkGreen Color instance
  *
  * @category EightBit instances
  */
 export const eightBitDarkGreen: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DarkGreen
+	code: EightBit.Code.DarkGreen
 });
 /**
  * Eightbit DeepSkyBlue4_1 Color instance
@@ -1333,7 +1329,7 @@ export const eightBitDarkGreen: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitDeepSkyBlue4_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DeepSkyBlue4_1
+	code: EightBit.Code.DeepSkyBlue4_1
 });
 /**
  * Eightbit DeepSkyBlue4_2 Color instance
@@ -1341,7 +1337,7 @@ export const eightBitDeepSkyBlue4_1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitDeepSkyBlue4_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DeepSkyBlue4_2
+	code: EightBit.Code.DeepSkyBlue4_2
 });
 /**
  * Eightbit DeepSkyBlue4_3 Color instance
@@ -1349,7 +1345,7 @@ export const eightBitDeepSkyBlue4_2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitDeepSkyBlue4_3: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DeepSkyBlue4_3
+	code: EightBit.Code.DeepSkyBlue4_3
 });
 /**
  * Eightbit DodgerBlue3 Color instance
@@ -1357,7 +1353,7 @@ export const eightBitDeepSkyBlue4_3: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitDodgerBlue3: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DodgerBlue3
+	code: EightBit.Code.DodgerBlue3
 });
 /**
  * Eightbit DodgerBlue2 Color instance
@@ -1365,21 +1361,21 @@ export const eightBitDodgerBlue3: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitDodgerBlue2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DodgerBlue2
+	code: EightBit.Code.DodgerBlue2
 });
 /**
  * Eightbit Green4 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitGreen4: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Green4 });
+export const eightBitGreen4: EightBit.Type = EightBit.make({ code: EightBit.Code.Green4 });
 /**
  * Eightbit SpringGreen4 Color instance
  *
  * @category EightBit instances
  */
 export const eightBitSpringGreen4: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.SpringGreen4
+	code: EightBit.Code.SpringGreen4
 });
 /**
  * Eightbit Turquoise4 Color instance
@@ -1387,7 +1383,7 @@ export const eightBitSpringGreen4: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitTurquoise4: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.Turquoise4
+	code: EightBit.Code.Turquoise4
 });
 /**
  * Eightbit DeepSkyBlue3_1 Color instance
@@ -1395,7 +1391,7 @@ export const eightBitTurquoise4: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitDeepSkyBlue3_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DeepSkyBlue3_1
+	code: EightBit.Code.DeepSkyBlue3_1
 });
 /**
  * Eightbit DeepSkyBlue3_2 Color instance
@@ -1403,7 +1399,7 @@ export const eightBitDeepSkyBlue3_1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitDeepSkyBlue3_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DeepSkyBlue3_2
+	code: EightBit.Code.DeepSkyBlue3_2
 });
 /**
  * Eightbit DodgerBlue1 Color instance
@@ -1411,35 +1407,35 @@ export const eightBitDeepSkyBlue3_2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitDodgerBlue1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DodgerBlue1
+	code: EightBit.Code.DodgerBlue1
 });
 /**
  * Eightbit Green3_1 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitGreen3_1: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Green3_1 });
+export const eightBitGreen3_1: EightBit.Type = EightBit.make({ code: EightBit.Code.Green3_1 });
 /**
  * Eightbit SpringGreen3_1 Color instance
  *
  * @category EightBit instances
  */
 export const eightBitSpringGreen3_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.SpringGreen3_1
+	code: EightBit.Code.SpringGreen3_1
 });
 /**
  * Eightbit DarkCyan Color instance
  *
  * @category EightBit instances
  */
-export const eightBitDarkCyan: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.DarkCyan });
+export const eightBitDarkCyan: EightBit.Type = EightBit.make({ code: EightBit.Code.DarkCyan });
 /**
  * Eightbit LightSeaGreen Color instance
  *
  * @category EightBit instances
  */
 export const eightBitLightSeaGreen: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.LightSeaGreen
+	code: EightBit.Code.LightSeaGreen
 });
 /**
  * Eightbit DeepSkyBlue2 Color instance
@@ -1447,7 +1443,7 @@ export const eightBitLightSeaGreen: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitDeepSkyBlue2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DeepSkyBlue2
+	code: EightBit.Code.DeepSkyBlue2
 });
 /**
  * Eightbit DeepSkyBlue1 Color instance
@@ -1455,21 +1451,21 @@ export const eightBitDeepSkyBlue2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitDeepSkyBlue1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DeepSkyBlue1
+	code: EightBit.Code.DeepSkyBlue1
 });
 /**
  * Eightbit Green3_2 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitGreen3_2: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Green3_2 });
+export const eightBitGreen3_2: EightBit.Type = EightBit.make({ code: EightBit.Code.Green3_2 });
 /**
  * Eightbit SpringGreen3_2 Color instance
  *
  * @category EightBit instances
  */
 export const eightBitSpringGreen3_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.SpringGreen3_2
+	code: EightBit.Code.SpringGreen3_2
 });
 /**
  * Eightbit SpringGreen2_1 Color instance
@@ -1477,21 +1473,21 @@ export const eightBitSpringGreen3_2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitSpringGreen2_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.SpringGreen2_1
+	code: EightBit.Code.SpringGreen2_1
 });
 /**
  * Eightbit Cyan3 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitCyan3: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Cyan3 });
+export const eightBitCyan3: EightBit.Type = EightBit.make({ code: EightBit.Code.Cyan3 });
 /**
  * Eightbit DarkTurquoise Color instance
  *
  * @category EightBit instances
  */
 export const eightBitDarkTurquoise: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DarkTurquoise
+	code: EightBit.Code.DarkTurquoise
 });
 /**
  * Eightbit Turquoise2 Color instance
@@ -1499,21 +1495,21 @@ export const eightBitDarkTurquoise: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitTurquoise2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.Turquoise2
+	code: EightBit.Code.Turquoise2
 });
 /**
  * Eightbit Green1 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitGreen1: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Green1 });
+export const eightBitGreen1: EightBit.Type = EightBit.make({ code: EightBit.Code.Green1 });
 /**
  * Eightbit SpringGreen2_2 Color instance
  *
  * @category EightBit instances
  */
 export const eightBitSpringGreen2_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.SpringGreen2_2
+	code: EightBit.Code.SpringGreen2_2
 });
 /**
  * Eightbit SpringGreen1 Color instance
@@ -1521,7 +1517,7 @@ export const eightBitSpringGreen2_2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitSpringGreen1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.SpringGreen1
+	code: EightBit.Code.SpringGreen1
 });
 /**
  * Eightbit MediumSpringGreen Color instance
@@ -1529,27 +1525,27 @@ export const eightBitSpringGreen1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitMediumSpringGreen: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.MediumSpringGreen
+	code: EightBit.Code.MediumSpringGreen
 });
 /**
  * Eightbit Cyan2 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitCyan2: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Cyan2 });
+export const eightBitCyan2: EightBit.Type = EightBit.make({ code: EightBit.Code.Cyan2 });
 /**
  * Eightbit Cyan1 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitCyan1: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Cyan1 });
+export const eightBitCyan1: EightBit.Type = EightBit.make({ code: EightBit.Code.Cyan1 });
 /**
  * Eightbit DarkRed_1 Color instance
  *
  * @category EightBit instances
  */
 export const eightBitDarkRed_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DarkRed_1
+	code: EightBit.Code.DarkRed_1
 });
 /**
  * Eightbit DeepPink4_1 Color instance
@@ -1557,7 +1553,7 @@ export const eightBitDarkRed_1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitDeepPink4_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DeepPink4_1
+	code: EightBit.Code.DeepPink4_1
 });
 /**
  * Eightbit Purple4_1 Color instance
@@ -1565,7 +1561,7 @@ export const eightBitDeepPink4_1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitPurple4_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.Purple4_1
+	code: EightBit.Code.Purple4_1
 });
 /**
  * Eightbit Purple4_2 Color instance
@@ -1573,21 +1569,21 @@ export const eightBitPurple4_1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitPurple4_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.Purple4_2
+	code: EightBit.Code.Purple4_2
 });
 /**
  * Eightbit Purple3 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitPurple3: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Purple3 });
+export const eightBitPurple3: EightBit.Type = EightBit.make({ code: EightBit.Code.Purple3 });
 /**
  * Eightbit BlueViolet Color instance
  *
  * @category EightBit instances
  */
 export const eightBitBlueViolet: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.BlueViolet
+	code: EightBit.Code.BlueViolet
 });
 /**
  * Eightbit Orange4_1 Color instance
@@ -1595,21 +1591,21 @@ export const eightBitBlueViolet: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitOrange4_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.Orange4_1
+	code: EightBit.Code.Orange4_1
 });
 /**
  * Eightbit Grey37 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitGrey37: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Grey37 });
+export const eightBitGrey37: EightBit.Type = EightBit.make({ code: EightBit.Code.Grey37 });
 /**
  * Eightbit MediumPurple4 Color instance
  *
  * @category EightBit instances
  */
 export const eightBitMediumPurple4: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.MediumPurple4
+	code: EightBit.Code.MediumPurple4
 });
 /**
  * Eightbit SlateBlue3_1 Color instance
@@ -1617,7 +1613,7 @@ export const eightBitMediumPurple4: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitSlateBlue3_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.SlateBlue3_1
+	code: EightBit.Code.SlateBlue3_1
 });
 /**
  * Eightbit SlateBlue3_2 Color instance
@@ -1625,7 +1621,7 @@ export const eightBitSlateBlue3_1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitSlateBlue3_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.SlateBlue3_2
+	code: EightBit.Code.SlateBlue3_2
 });
 /**
  * Eightbit RoyalBlue1 Color instance
@@ -1633,7 +1629,7 @@ export const eightBitSlateBlue3_2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitRoyalBlue1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.RoyalBlue1
+	code: EightBit.Code.RoyalBlue1
 });
 /**
  * Eightbit Chartreuse4 Color instance
@@ -1641,7 +1637,7 @@ export const eightBitRoyalBlue1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitChartreuse4: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.Chartreuse4
+	code: EightBit.Code.Chartreuse4
 });
 /**
  * Eightbit DarkSeaGreen4_1 Color instance
@@ -1649,7 +1645,7 @@ export const eightBitChartreuse4: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitDarkSeaGreen4_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DarkSeaGreen4_1
+	code: EightBit.Code.DarkSeaGreen4_1
 });
 /**
  * Eightbit PaleTurquoise4 Color instance
@@ -1657,7 +1653,7 @@ export const eightBitDarkSeaGreen4_1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitPaleTurquoise4: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.PaleTurquoise4
+	code: EightBit.Code.PaleTurquoise4
 });
 /**
  * Eightbit SteelBlue Color instance
@@ -1665,7 +1661,7 @@ export const eightBitPaleTurquoise4: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitSteelBlue: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.SteelBlue
+	code: EightBit.Code.SteelBlue
 });
 /**
  * Eightbit SteelBlue3 Color instance
@@ -1673,7 +1669,7 @@ export const eightBitSteelBlue: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitSteelBlue3: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.SteelBlue3
+	code: EightBit.Code.SteelBlue3
 });
 /**
  * Eightbit CornflowerBlue Color instance
@@ -1681,7 +1677,7 @@ export const eightBitSteelBlue3: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitCornflowerBlue: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.CornflowerBlue
+	code: EightBit.Code.CornflowerBlue
 });
 /**
  * Eightbit Chartreuse3_1 Color instance
@@ -1689,7 +1685,7 @@ export const eightBitCornflowerBlue: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitChartreuse3_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.Chartreuse3_1
+	code: EightBit.Code.Chartreuse3_1
 });
 /**
  * Eightbit DarkSeaGreen4_2 Color instance
@@ -1697,7 +1693,7 @@ export const eightBitChartreuse3_1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitDarkSeaGreen4_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DarkSeaGreen4_2
+	code: EightBit.Code.DarkSeaGreen4_2
 });
 /**
  * Eightbit CadetBlue_1 Color instance
@@ -1705,7 +1701,7 @@ export const eightBitDarkSeaGreen4_2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitCadetBlue_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.CadetBlue_1
+	code: EightBit.Code.CadetBlue_1
 });
 /**
  * Eightbit CadetBlue_2 Color instance
@@ -1713,21 +1709,21 @@ export const eightBitCadetBlue_1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitCadetBlue_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.CadetBlue_2
+	code: EightBit.Code.CadetBlue_2
 });
 /**
  * Eightbit SkyBlue3 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitSkyBlue3: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.SkyBlue3 });
+export const eightBitSkyBlue3: EightBit.Type = EightBit.make({ code: EightBit.Code.SkyBlue3 });
 /**
  * Eightbit SteelBlue1_1 Color instance
  *
  * @category EightBit instances
  */
 export const eightBitSteelBlue1_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.SteelBlue1_1
+	code: EightBit.Code.SteelBlue1_1
 });
 /**
  * Eightbit Chartreuse3_2 Color instance
@@ -1735,7 +1731,7 @@ export const eightBitSteelBlue1_1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitChartreuse3_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.Chartreuse3_2
+	code: EightBit.Code.Chartreuse3_2
 });
 /**
  * Eightbit PaleGreen3_1 Color instance
@@ -1743,7 +1739,7 @@ export const eightBitChartreuse3_2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitPaleGreen3_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.PaleGreen3_1
+	code: EightBit.Code.PaleGreen3_1
 });
 /**
  * Eightbit SeaGreen3 Color instance
@@ -1751,7 +1747,7 @@ export const eightBitPaleGreen3_1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitSeaGreen3: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.SeaGreen3
+	code: EightBit.Code.SeaGreen3
 });
 /**
  * Eightbit Aquamarine3 Color instance
@@ -1759,7 +1755,7 @@ export const eightBitSeaGreen3: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitAquamarine3: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.Aquamarine3
+	code: EightBit.Code.Aquamarine3
 });
 /**
  * Eightbit MediumTurquoise Color instance
@@ -1767,7 +1763,7 @@ export const eightBitAquamarine3: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitMediumTurquoise: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.MediumTurquoise
+	code: EightBit.Code.MediumTurquoise
 });
 /**
  * Eightbit SteelBlue1_2 Color instance
@@ -1775,7 +1771,7 @@ export const eightBitMediumTurquoise: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitSteelBlue1_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.SteelBlue1_2
+	code: EightBit.Code.SteelBlue1_2
 });
 /**
  * Eightbit Chartreuse2_1 Color instance
@@ -1783,7 +1779,7 @@ export const eightBitSteelBlue1_2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitChartreuse2_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.Chartreuse2_1
+	code: EightBit.Code.Chartreuse2_1
 });
 /**
  * Eightbit SeaGreen2 Color instance
@@ -1791,7 +1787,7 @@ export const eightBitChartreuse2_1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitSeaGreen2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.SeaGreen2
+	code: EightBit.Code.SeaGreen2
 });
 /**
  * Eightbit SeaGreen1_1 Color instance
@@ -1799,7 +1795,7 @@ export const eightBitSeaGreen2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitSeaGreen1_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.SeaGreen1_1
+	code: EightBit.Code.SeaGreen1_1
 });
 /**
  * Eightbit SeaGreen1_2 Color instance
@@ -1807,7 +1803,7 @@ export const eightBitSeaGreen1_1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitSeaGreen1_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.SeaGreen1_2
+	code: EightBit.Code.SeaGreen1_2
 });
 /**
  * Eightbit Aquamarine1_1 Color instance
@@ -1815,7 +1811,7 @@ export const eightBitSeaGreen1_2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitAquamarine1_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.Aquamarine1_1
+	code: EightBit.Code.Aquamarine1_1
 });
 /**
  * Eightbit DarkSlateGray2 Color instance
@@ -1823,7 +1819,7 @@ export const eightBitAquamarine1_1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitDarkSlateGray2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DarkSlateGray2
+	code: EightBit.Code.DarkSlateGray2
 });
 /**
  * Eightbit DarkRed_2 Color instance
@@ -1831,7 +1827,7 @@ export const eightBitDarkSlateGray2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitDarkRed_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DarkRed_2
+	code: EightBit.Code.DarkRed_2
 });
 /**
  * Eightbit DeepPink4_2 Color instance
@@ -1839,7 +1835,7 @@ export const eightBitDarkRed_2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitDeepPink4_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DeepPink4_2
+	code: EightBit.Code.DeepPink4_2
 });
 /**
  * Eightbit DarkMagenta_1 Color instance
@@ -1847,7 +1843,7 @@ export const eightBitDeepPink4_2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitDarkMagenta_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DarkMagenta_1
+	code: EightBit.Code.DarkMagenta_1
 });
 /**
  * Eightbit DarkMagenta_2 Color instance
@@ -1855,7 +1851,7 @@ export const eightBitDarkMagenta_1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitDarkMagenta_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DarkMagenta_2
+	code: EightBit.Code.DarkMagenta_2
 });
 /**
  * Eightbit DarkViolet_1 Color instance
@@ -1863,21 +1859,21 @@ export const eightBitDarkMagenta_2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitDarkViolet_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DarkViolet_1
+	code: EightBit.Code.DarkViolet_1
 });
 /**
  * Eightbit Purple_2 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitPurple_2: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Purple_2 });
+export const eightBitPurple_2: EightBit.Type = EightBit.make({ code: EightBit.Code.Purple_2 });
 /**
  * Eightbit Orange4_2 Color instance
  *
  * @category EightBit instances
  */
 export const eightBitOrange4_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.Orange4_2
+	code: EightBit.Code.Orange4_2
 });
 /**
  * Eightbit LightPink4 Color instance
@@ -1885,21 +1881,21 @@ export const eightBitOrange4_2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitLightPink4: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.LightPink4
+	code: EightBit.Code.LightPink4
 });
 /**
  * Eightbit Plum4 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitPlum4: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Plum4 });
+export const eightBitPlum4: EightBit.Type = EightBit.make({ code: EightBit.Code.Plum4 });
 /**
  * Eightbit MediumPurple3_1 Color instance
  *
  * @category EightBit instances
  */
 export const eightBitMediumPurple3_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.MediumPurple3_1
+	code: EightBit.Code.MediumPurple3_1
 });
 /**
  * Eightbit MediumPurple3_2 Color instance
@@ -1907,7 +1903,7 @@ export const eightBitMediumPurple3_1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitMediumPurple3_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.MediumPurple3_2
+	code: EightBit.Code.MediumPurple3_2
 });
 /**
  * Eightbit SlateBlue1 Color instance
@@ -1915,7 +1911,7 @@ export const eightBitMediumPurple3_2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitSlateBlue1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.SlateBlue1
+	code: EightBit.Code.SlateBlue1
 });
 /**
  * Eightbit Yellow4_1 Color instance
@@ -1923,27 +1919,27 @@ export const eightBitSlateBlue1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitYellow4_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.Yellow4_1
+	code: EightBit.Code.Yellow4_1
 });
 /**
  * Eightbit Wheat4 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitWheat4: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Wheat4 });
+export const eightBitWheat4: EightBit.Type = EightBit.make({ code: EightBit.Code.Wheat4 });
 /**
  * Eightbit Grey53 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitGrey53: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Grey53 });
+export const eightBitGrey53: EightBit.Type = EightBit.make({ code: EightBit.Code.Grey53 });
 /**
  * Eightbit LightSlateGrey Color instance
  *
  * @category EightBit instances
  */
 export const eightBitLightSlateGrey: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.LightSlateGrey
+	code: EightBit.Code.LightSlateGrey
 });
 /**
  * Eightbit MediumPurple Color instance
@@ -1951,7 +1947,7 @@ export const eightBitLightSlateGrey: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitMediumPurple: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.MediumPurple
+	code: EightBit.Code.MediumPurple
 });
 /**
  * Eightbit LightSlateBlue Color instance
@@ -1959,7 +1955,7 @@ export const eightBitMediumPurple: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitLightSlateBlue: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.LightSlateBlue
+	code: EightBit.Code.LightSlateBlue
 });
 /**
  * Eightbit Yellow4_2 Color instance
@@ -1967,7 +1963,7 @@ export const eightBitLightSlateBlue: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitYellow4_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.Yellow4_2
+	code: EightBit.Code.Yellow4_2
 });
 /**
  * Eightbit DarkOliveGreen3_1 Color instance
@@ -1975,7 +1971,7 @@ export const eightBitYellow4_2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitDarkOliveGreen3_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DarkOliveGreen3_1
+	code: EightBit.Code.DarkOliveGreen3_1
 });
 /**
  * Eightbit DarkSeaGreen Color instance
@@ -1983,7 +1979,7 @@ export const eightBitDarkOliveGreen3_1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitDarkSeaGreen: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DarkSeaGreen
+	code: EightBit.Code.DarkSeaGreen
 });
 /**
  * Eightbit LightSkyBlue3_1 Color instance
@@ -1991,7 +1987,7 @@ export const eightBitDarkSeaGreen: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitLightSkyBlue3_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.LightSkyBlue3_1
+	code: EightBit.Code.LightSkyBlue3_1
 });
 /**
  * Eightbit LightSkyBlue3_2 Color instance
@@ -1999,21 +1995,21 @@ export const eightBitLightSkyBlue3_1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitLightSkyBlue3_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.LightSkyBlue3_2
+	code: EightBit.Code.LightSkyBlue3_2
 });
 /**
  * Eightbit SkyBlue2 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitSkyBlue2: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.SkyBlue2 });
+export const eightBitSkyBlue2: EightBit.Type = EightBit.make({ code: EightBit.Code.SkyBlue2 });
 /**
  * Eightbit Chartreuse2_2 Color instance
  *
  * @category EightBit instances
  */
 export const eightBitChartreuse2_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.Chartreuse2_2
+	code: EightBit.Code.Chartreuse2_2
 });
 /**
  * Eightbit DarkOliveGreen3_2 Color instance
@@ -2021,7 +2017,7 @@ export const eightBitChartreuse2_2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitDarkOliveGreen3_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DarkOliveGreen3_2
+	code: EightBit.Code.DarkOliveGreen3_2
 });
 /**
  * Eightbit PaleGreen3_2 Color instance
@@ -2029,7 +2025,7 @@ export const eightBitDarkOliveGreen3_2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitPaleGreen3_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.PaleGreen3_2
+	code: EightBit.Code.PaleGreen3_2
 });
 /**
  * Eightbit DarkSeaGreen3_1 Color instance
@@ -2037,7 +2033,7 @@ export const eightBitPaleGreen3_2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitDarkSeaGreen3_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DarkSeaGreen3_1
+	code: EightBit.Code.DarkSeaGreen3_1
 });
 /**
  * Eightbit DarkSlateGray3 Color instance
@@ -2045,21 +2041,21 @@ export const eightBitDarkSeaGreen3_1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitDarkSlateGray3: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DarkSlateGray3
+	code: EightBit.Code.DarkSlateGray3
 });
 /**
  * Eightbit SkyBlue1 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitSkyBlue1: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.SkyBlue1 });
+export const eightBitSkyBlue1: EightBit.Type = EightBit.make({ code: EightBit.Code.SkyBlue1 });
 /**
  * Eightbit Chartreuse1 Color instance
  *
  * @category EightBit instances
  */
 export const eightBitChartreuse1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.Chartreuse1
+	code: EightBit.Code.Chartreuse1
 });
 /**
  * Eightbit LightGreen_1 Color instance
@@ -2067,7 +2063,7 @@ export const eightBitChartreuse1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitLightGreen_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.LightGreen_1
+	code: EightBit.Code.LightGreen_1
 });
 /**
  * Eightbit LightGreen_2 Color instance
@@ -2075,7 +2071,7 @@ export const eightBitLightGreen_1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitLightGreen_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.LightGreen_2
+	code: EightBit.Code.LightGreen_2
 });
 /**
  * Eightbit PaleGreen1_1 Color instance
@@ -2083,7 +2079,7 @@ export const eightBitLightGreen_2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitPaleGreen1_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.PaleGreen1_1
+	code: EightBit.Code.PaleGreen1_1
 });
 /**
  * Eightbit Aquamarine1_2 Color instance
@@ -2091,7 +2087,7 @@ export const eightBitPaleGreen1_1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitAquamarine1_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.Aquamarine1_2
+	code: EightBit.Code.Aquamarine1_2
 });
 /**
  * Eightbit DarkSlateGray1 Color instance
@@ -2099,21 +2095,21 @@ export const eightBitAquamarine1_2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitDarkSlateGray1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DarkSlateGray1
+	code: EightBit.Code.DarkSlateGray1
 });
 /**
  * Eightbit Red3_1 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitRed3_1: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Red3_1 });
+export const eightBitRed3_1: EightBit.Type = EightBit.make({ code: EightBit.Code.Red3_1 });
 /**
  * Eightbit DeepPink4_3 Color instance
  *
  * @category EightBit instances
  */
 export const eightBitDeepPink4_3: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DeepPink4_3
+	code: EightBit.Code.DeepPink4_3
 });
 /**
  * Eightbit MediumVioletRed Color instance
@@ -2121,7 +2117,7 @@ export const eightBitDeepPink4_3: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitMediumVioletRed: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.MediumVioletRed
+	code: EightBit.Code.MediumVioletRed
 });
 /**
  * Eightbit Magenta3_1 Color instance
@@ -2129,7 +2125,7 @@ export const eightBitMediumVioletRed: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitMagenta3_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.Magenta3_1
+	code: EightBit.Code.Magenta3_1
 });
 /**
  * Eightbit DarkViolet_2 Color instance
@@ -2137,21 +2133,21 @@ export const eightBitMagenta3_1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitDarkViolet_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DarkViolet_2
+	code: EightBit.Code.DarkViolet_2
 });
 /**
  * Eightbit Purple_3 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitPurple_3: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Purple_3 });
+export const eightBitPurple_3: EightBit.Type = EightBit.make({ code: EightBit.Code.Purple_3 });
 /**
  * Eightbit DarkOrange3_1 Color instance
  *
  * @category EightBit instances
  */
 export const eightBitDarkOrange3_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DarkOrange3_1
+	code: EightBit.Code.DarkOrange3_1
 });
 /**
  * Eightbit IndianRed_1 Color instance
@@ -2159,7 +2155,7 @@ export const eightBitDarkOrange3_1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitIndianRed_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.IndianRed_1
+	code: EightBit.Code.IndianRed_1
 });
 /**
  * Eightbit HotPink3_1 Color instance
@@ -2167,7 +2163,7 @@ export const eightBitIndianRed_1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitHotPink3_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.HotPink3_1
+	code: EightBit.Code.HotPink3_1
 });
 /**
  * Eightbit MediumOrchid3 Color instance
@@ -2175,7 +2171,7 @@ export const eightBitHotPink3_1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitMediumOrchid3: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.MediumOrchid3
+	code: EightBit.Code.MediumOrchid3
 });
 /**
  * Eightbit MediumOrchid Color instance
@@ -2183,7 +2179,7 @@ export const eightBitMediumOrchid3: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitMediumOrchid: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.MediumOrchid
+	code: EightBit.Code.MediumOrchid
 });
 /**
  * Eightbit MediumPurple2_1 Color instance
@@ -2191,7 +2187,7 @@ export const eightBitMediumOrchid: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitMediumPurple2_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.MediumPurple2_1
+	code: EightBit.Code.MediumPurple2_1
 });
 /**
  * Eightbit DarkGoldenRod Color instance
@@ -2199,7 +2195,7 @@ export const eightBitMediumPurple2_1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitDarkGoldenRod: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DarkGoldenRod
+	code: EightBit.Code.DarkGoldenRod
 });
 /**
  * Eightbit LightSalmon3_1 Color instance
@@ -2207,7 +2203,7 @@ export const eightBitDarkGoldenRod: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitLightSalmon3_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.LightSalmon3_1
+	code: EightBit.Code.LightSalmon3_1
 });
 /**
  * Eightbit RosyBrown Color instance
@@ -2215,21 +2211,21 @@ export const eightBitLightSalmon3_1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitRosyBrown: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.RosyBrown
+	code: EightBit.Code.RosyBrown
 });
 /**
  * Eightbit Grey63 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitGrey63: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Grey63 });
+export const eightBitGrey63: EightBit.Type = EightBit.make({ code: EightBit.Code.Grey63 });
 /**
  * Eightbit MediumPurple2_2 Color instance
  *
  * @category EightBit instances
  */
 export const eightBitMediumPurple2_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.MediumPurple2_2
+	code: EightBit.Code.MediumPurple2_2
 });
 /**
  * Eightbit MediumPurple1 Color instance
@@ -2237,21 +2233,21 @@ export const eightBitMediumPurple2_2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitMediumPurple1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.MediumPurple1
+	code: EightBit.Code.MediumPurple1
 });
 /**
  * Eightbit Gold3_1 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitGold3_1: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Gold3_1 });
+export const eightBitGold3_1: EightBit.Type = EightBit.make({ code: EightBit.Code.Gold3_1 });
 /**
  * Eightbit DarkKhaki Color instance
  *
  * @category EightBit instances
  */
 export const eightBitDarkKhaki: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DarkKhaki
+	code: EightBit.Code.DarkKhaki
 });
 /**
  * Eightbit NavajoWhite3 Color instance
@@ -2259,21 +2255,21 @@ export const eightBitDarkKhaki: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitNavajoWhite3: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.NavajoWhite3
+	code: EightBit.Code.NavajoWhite3
 });
 /**
  * Eightbit Grey69 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitGrey69: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Grey69 });
+export const eightBitGrey69: EightBit.Type = EightBit.make({ code: EightBit.Code.Grey69 });
 /**
  * Eightbit LightSteelBlue3 Color instance
  *
  * @category EightBit instances
  */
 export const eightBitLightSteelBlue3: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.LightSteelBlue3
+	code: EightBit.Code.LightSteelBlue3
 });
 /**
  * Eightbit LightSteelBlue Color instance
@@ -2281,7 +2277,7 @@ export const eightBitLightSteelBlue3: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitLightSteelBlue: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.LightSteelBlue
+	code: EightBit.Code.LightSteelBlue
 });
 /**
  * Eightbit Yellow3_1 Color instance
@@ -2289,7 +2285,7 @@ export const eightBitLightSteelBlue: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitYellow3_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.Yellow3_1
+	code: EightBit.Code.Yellow3_1
 });
 /**
  * Eightbit DarkOliveGreen3_3 Color instance
@@ -2297,7 +2293,7 @@ export const eightBitYellow3_1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitDarkOliveGreen3_3: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DarkOliveGreen3_3
+	code: EightBit.Code.DarkOliveGreen3_3
 });
 /**
  * Eightbit DarkSeaGreen3_2 Color instance
@@ -2305,7 +2301,7 @@ export const eightBitDarkOliveGreen3_3: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitDarkSeaGreen3_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DarkSeaGreen3_2
+	code: EightBit.Code.DarkSeaGreen3_2
 });
 /**
  * Eightbit DarkSeaGreen2_1 Color instance
@@ -2313,7 +2309,7 @@ export const eightBitDarkSeaGreen3_2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitDarkSeaGreen2_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DarkSeaGreen2_1
+	code: EightBit.Code.DarkSeaGreen2_1
 });
 /**
  * Eightbit LightCyan3 Color instance
@@ -2321,7 +2317,7 @@ export const eightBitDarkSeaGreen2_1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitLightCyan3: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.LightCyan3
+	code: EightBit.Code.LightCyan3
 });
 /**
  * Eightbit LightSkyBlue1 Color instance
@@ -2329,7 +2325,7 @@ export const eightBitLightCyan3: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitLightSkyBlue1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.LightSkyBlue1
+	code: EightBit.Code.LightSkyBlue1
 });
 /**
  * Eightbit GreenYellow Color instance
@@ -2337,7 +2333,7 @@ export const eightBitLightSkyBlue1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitGreenYellow: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.GreenYellow
+	code: EightBit.Code.GreenYellow
 });
 /**
  * Eightbit DarkOliveGreen2 Color instance
@@ -2345,7 +2341,7 @@ export const eightBitGreenYellow: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitDarkOliveGreen2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DarkOliveGreen2
+	code: EightBit.Code.DarkOliveGreen2
 });
 /**
  * Eightbit PaleGreen1_2 Color instance
@@ -2353,7 +2349,7 @@ export const eightBitDarkOliveGreen2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitPaleGreen1_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.PaleGreen1_2
+	code: EightBit.Code.PaleGreen1_2
 });
 /**
  * Eightbit DarkSeaGreen2_2 Color instance
@@ -2361,7 +2357,7 @@ export const eightBitPaleGreen1_2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitDarkSeaGreen2_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DarkSeaGreen2_2
+	code: EightBit.Code.DarkSeaGreen2_2
 });
 /**
  * Eightbit DarkSeaGreen1_1 Color instance
@@ -2369,7 +2365,7 @@ export const eightBitDarkSeaGreen2_2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitDarkSeaGreen1_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DarkSeaGreen1_1
+	code: EightBit.Code.DarkSeaGreen1_1
 });
 /**
  * Eightbit PaleTurquoise1 Color instance
@@ -2377,21 +2373,21 @@ export const eightBitDarkSeaGreen1_1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitPaleTurquoise1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.PaleTurquoise1
+	code: EightBit.Code.PaleTurquoise1
 });
 /**
  * Eightbit Red3_2 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitRed3_2: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Red3_2 });
+export const eightBitRed3_2: EightBit.Type = EightBit.make({ code: EightBit.Code.Red3_2 });
 /**
  * Eightbit DeepPink3_1 Color instance
  *
  * @category EightBit instances
  */
 export const eightBitDeepPink3_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DeepPink3_1
+	code: EightBit.Code.DeepPink3_1
 });
 /**
  * Eightbit DeepPink3_2 Color instance
@@ -2399,7 +2395,7 @@ export const eightBitDeepPink3_1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitDeepPink3_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DeepPink3_2
+	code: EightBit.Code.DeepPink3_2
 });
 /**
  * Eightbit Magenta3_2 Color instance
@@ -2407,7 +2403,7 @@ export const eightBitDeepPink3_2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitMagenta3_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.Magenta3_2
+	code: EightBit.Code.Magenta3_2
 });
 /**
  * Eightbit Magenta3_3 Color instance
@@ -2415,7 +2411,7 @@ export const eightBitMagenta3_2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitMagenta3_3: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.Magenta3_3
+	code: EightBit.Code.Magenta3_3
 });
 /**
  * Eightbit Magenta2_1 Color instance
@@ -2423,7 +2419,7 @@ export const eightBitMagenta3_3: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitMagenta2_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.Magenta2_1
+	code: EightBit.Code.Magenta2_1
 });
 /**
  * Eightbit DarkOrange3_2 Color instance
@@ -2431,7 +2427,7 @@ export const eightBitMagenta2_1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitDarkOrange3_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DarkOrange3_2
+	code: EightBit.Code.DarkOrange3_2
 });
 /**
  * Eightbit IndianRed_2 Color instance
@@ -2439,7 +2435,7 @@ export const eightBitDarkOrange3_2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitIndianRed_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.IndianRed_2
+	code: EightBit.Code.IndianRed_2
 });
 /**
  * Eightbit HotPink3_2 Color instance
@@ -2447,41 +2443,41 @@ export const eightBitIndianRed_2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitHotPink3_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.HotPink3_2
+	code: EightBit.Code.HotPink3_2
 });
 /**
  * Eightbit HotPink2 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitHotPink2: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.HotPink2 });
+export const eightBitHotPink2: EightBit.Type = EightBit.make({ code: EightBit.Code.HotPink2 });
 /**
  * Eightbit Orchid Color instance
  *
  * @category EightBit instances
  */
-export const eightBitOrchid: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Orchid });
+export const eightBitOrchid: EightBit.Type = EightBit.make({ code: EightBit.Code.Orchid });
 /**
  * Eightbit MediumOrchid1_1 Color instance
  *
  * @category EightBit instances
  */
 export const eightBitMediumOrchid1_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.MediumOrchid1_1
+	code: EightBit.Code.MediumOrchid1_1
 });
 /**
  * Eightbit Orange3 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitOrange3: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Orange3 });
+export const eightBitOrange3: EightBit.Type = EightBit.make({ code: EightBit.Code.Orange3 });
 /**
  * Eightbit LightSalmon3_2 Color instance
  *
  * @category EightBit instances
  */
 export const eightBitLightSalmon3_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.LightSalmon3_2
+	code: EightBit.Code.LightSalmon3_2
 });
 /**
  * Eightbit LightPink3 Color instance
@@ -2489,87 +2485,87 @@ export const eightBitLightSalmon3_2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitLightPink3: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.LightPink3
+	code: EightBit.Code.LightPink3
 });
 /**
  * Eightbit Pink3 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitPink3: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Pink3 });
+export const eightBitPink3: EightBit.Type = EightBit.make({ code: EightBit.Code.Pink3 });
 /**
  * Eightbit Plum3 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitPlum3: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Plum3 });
+export const eightBitPlum3: EightBit.Type = EightBit.make({ code: EightBit.Code.Plum3 });
 /**
  * Eightbit Violet Color instance
  *
  * @category EightBit instances
  */
-export const eightBitViolet: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Violet });
+export const eightBitViolet: EightBit.Type = EightBit.make({ code: EightBit.Code.Violet });
 /**
  * Eightbit Gold3_2 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitGold3_2: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Gold3_2 });
+export const eightBitGold3_2: EightBit.Type = EightBit.make({ code: EightBit.Code.Gold3_2 });
 /**
  * Eightbit LightGoldenRod3 Color instance
  *
  * @category EightBit instances
  */
 export const eightBitLightGoldenRod3: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.LightGoldenRod3
+	code: EightBit.Code.LightGoldenRod3
 });
 /**
  * Eightbit Tan Color instance
  *
  * @category EightBit instances
  */
-export const eightBitTan: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Tan });
+export const eightBitTan: EightBit.Type = EightBit.make({ code: EightBit.Code.Tan });
 /**
  * Eightbit MistyRose3 Color instance
  *
  * @category EightBit instances
  */
 export const eightBitMistyRose3: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.MistyRose3
+	code: EightBit.Code.MistyRose3
 });
 /**
  * Eightbit Thistle3 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitThistle3: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Thistle3 });
+export const eightBitThistle3: EightBit.Type = EightBit.make({ code: EightBit.Code.Thistle3 });
 /**
  * Eightbit Plum2 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitPlum2: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Plum2 });
+export const eightBitPlum2: EightBit.Type = EightBit.make({ code: EightBit.Code.Plum2 });
 /**
  * Eightbit Yellow3_2 Color instance
  *
  * @category EightBit instances
  */
 export const eightBitYellow3_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.Yellow3_2
+	code: EightBit.Code.Yellow3_2
 });
 /**
  * Eightbit Khaki3 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitKhaki3: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Khaki3 });
+export const eightBitKhaki3: EightBit.Type = EightBit.make({ code: EightBit.Code.Khaki3 });
 /**
  * Eightbit LightGoldenRod2_1 Color instance
  *
  * @category EightBit instances
  */
 export const eightBitLightGoldenRod2_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.LightGoldenRod2_1
+	code: EightBit.Code.LightGoldenRod2_1
 });
 /**
  * Eightbit LightYellow3 Color instance
@@ -2577,35 +2573,35 @@ export const eightBitLightGoldenRod2_1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitLightYellow3: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.LightYellow3
+	code: EightBit.Code.LightYellow3
 });
 /**
  * Eightbit Grey84 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitGrey84: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Grey84 });
+export const eightBitGrey84: EightBit.Type = EightBit.make({ code: EightBit.Code.Grey84 });
 /**
  * Eightbit LightSteelBlue1 Color instance
  *
  * @category EightBit instances
  */
 export const eightBitLightSteelBlue1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.LightSteelBlue1
+	code: EightBit.Code.LightSteelBlue1
 });
 /**
  * Eightbit Yellow2 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitYellow2: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Yellow2 });
+export const eightBitYellow2: EightBit.Type = EightBit.make({ code: EightBit.Code.Yellow2 });
 /**
  * Eightbit DarkOliveGreen1_1 Color instance
  *
  * @category EightBit instances
  */
 export const eightBitDarkOliveGreen1_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DarkOliveGreen1_1
+	code: EightBit.Code.DarkOliveGreen1_1
 });
 /**
  * Eightbit DarkOliveGreen1_2 Color instance
@@ -2613,7 +2609,7 @@ export const eightBitDarkOliveGreen1_1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitDarkOliveGreen1_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DarkOliveGreen1_2
+	code: EightBit.Code.DarkOliveGreen1_2
 });
 /**
  * Eightbit DarkSeaGreen1_2 Color instance
@@ -2621,7 +2617,7 @@ export const eightBitDarkOliveGreen1_2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitDarkSeaGreen1_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DarkSeaGreen1_2
+	code: EightBit.Code.DarkSeaGreen1_2
 });
 /**
  * Eightbit HoneyDew2 Color instance
@@ -2629,7 +2625,7 @@ export const eightBitDarkSeaGreen1_2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitHoneyDew2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.HoneyDew2
+	code: EightBit.Code.HoneyDew2
 });
 /**
  * Eightbit LightCyan1 Color instance
@@ -2637,21 +2633,21 @@ export const eightBitHoneyDew2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitLightCyan1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.LightCyan1
+	code: EightBit.Code.LightCyan1
 });
 /**
  * Eightbit Red1 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitRed1: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Red1 });
+export const eightBitRed1: EightBit.Type = EightBit.make({ code: EightBit.Code.Red1 });
 /**
  * Eightbit DeepPink2 Color instance
  *
  * @category EightBit instances
  */
 export const eightBitDeepPink2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DeepPink2
+	code: EightBit.Code.DeepPink2
 });
 /**
  * Eightbit DeepPink1_1 Color instance
@@ -2659,7 +2655,7 @@ export const eightBitDeepPink2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitDeepPink1_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DeepPink1_1
+	code: EightBit.Code.DeepPink1_1
 });
 /**
  * Eightbit DeepPink1_2 Color instance
@@ -2667,7 +2663,7 @@ export const eightBitDeepPink1_1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitDeepPink1_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DeepPink1_2
+	code: EightBit.Code.DeepPink1_2
 });
 /**
  * Eightbit Magenta2_2 Color instance
@@ -2675,21 +2671,21 @@ export const eightBitDeepPink1_2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitMagenta2_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.Magenta2_2
+	code: EightBit.Code.Magenta2_2
 });
 /**
  * Eightbit Magenta1 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitMagenta1: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Magenta1 });
+export const eightBitMagenta1: EightBit.Type = EightBit.make({ code: EightBit.Code.Magenta1 });
 /**
  * Eightbit OrangeRed1 Color instance
  *
  * @category EightBit instances
  */
 export const eightBitOrangeRed1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.OrangeRed1
+	code: EightBit.Code.OrangeRed1
 });
 /**
  * Eightbit IndianRed1_1 Color instance
@@ -2697,7 +2693,7 @@ export const eightBitOrangeRed1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitIndianRed1_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.IndianRed1_1
+	code: EightBit.Code.IndianRed1_1
 });
 /**
  * Eightbit IndianRed1_2 Color instance
@@ -2705,7 +2701,7 @@ export const eightBitIndianRed1_1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitIndianRed1_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.IndianRed1_2
+	code: EightBit.Code.IndianRed1_2
 });
 /**
  * Eightbit HotPink_1 Color instance
@@ -2713,7 +2709,7 @@ export const eightBitIndianRed1_2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitHotPink_1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.HotPink_1
+	code: EightBit.Code.HotPink_1
 });
 /**
  * Eightbit HotPink_2 Color instance
@@ -2721,7 +2717,7 @@ export const eightBitHotPink_1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitHotPink_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.HotPink_2
+	code: EightBit.Code.HotPink_2
 });
 /**
  * Eightbit MediumOrchid1_2 Color instance
@@ -2729,7 +2725,7 @@ export const eightBitHotPink_2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitMediumOrchid1_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.MediumOrchid1_2
+	code: EightBit.Code.MediumOrchid1_2
 });
 /**
  * Eightbit DarkOrange Color instance
@@ -2737,21 +2733,21 @@ export const eightBitMediumOrchid1_2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitDarkOrange: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.DarkOrange
+	code: EightBit.Code.DarkOrange
 });
 /**
  * Eightbit Salmon1 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitSalmon1: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Salmon1 });
+export const eightBitSalmon1: EightBit.Type = EightBit.make({ code: EightBit.Code.Salmon1 });
 /**
  * Eightbit LightCoral Color instance
  *
  * @category EightBit instances
  */
 export const eightBitLightCoral: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.LightCoral
+	code: EightBit.Code.LightCoral
 });
 /**
  * Eightbit PaleVioletRed1 Color instance
@@ -2759,33 +2755,33 @@ export const eightBitLightCoral: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitPaleVioletRed1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.PaleVioletRed1
+	code: EightBit.Code.PaleVioletRed1
 });
 /**
  * Eightbit Orchid2 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitOrchid2: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Orchid2 });
+export const eightBitOrchid2: EightBit.Type = EightBit.make({ code: EightBit.Code.Orchid2 });
 /**
  * Eightbit Orchid1 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitOrchid1: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Orchid1 });
+export const eightBitOrchid1: EightBit.Type = EightBit.make({ code: EightBit.Code.Orchid1 });
 /**
  * Eightbit Orange1 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitOrange1: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Orange1 });
+export const eightBitOrange1: EightBit.Type = EightBit.make({ code: EightBit.Code.Orange1 });
 /**
  * Eightbit SandyBrown Color instance
  *
  * @category EightBit instances
  */
 export const eightBitSandyBrown: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.SandyBrown
+	code: EightBit.Code.SandyBrown
 });
 /**
  * Eightbit LightSalmon1 Color instance
@@ -2793,7 +2789,7 @@ export const eightBitSandyBrown: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitLightSalmon1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.LightSalmon1
+	code: EightBit.Code.LightSalmon1
 });
 /**
  * Eightbit LightPink1 Color instance
@@ -2801,33 +2797,33 @@ export const eightBitLightSalmon1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitLightPink1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.LightPink1
+	code: EightBit.Code.LightPink1
 });
 /**
  * Eightbit Pink1 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitPink1: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Pink1 });
+export const eightBitPink1: EightBit.Type = EightBit.make({ code: EightBit.Code.Pink1 });
 /**
  * Eightbit Plum1 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitPlum1: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Plum1 });
+export const eightBitPlum1: EightBit.Type = EightBit.make({ code: EightBit.Code.Plum1 });
 /**
  * Eightbit Gold1 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitGold1: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Gold1 });
+export const eightBitGold1: EightBit.Type = EightBit.make({ code: EightBit.Code.Gold1 });
 /**
  * Eightbit LightGoldenRod2_2 Color instance
  *
  * @category EightBit instances
  */
 export const eightBitLightGoldenRod2_2: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.LightGoldenRod2_2
+	code: EightBit.Code.LightGoldenRod2_2
 });
 /**
  * Eightbit LightGoldenRod2_3 Color instance
@@ -2835,7 +2831,7 @@ export const eightBitLightGoldenRod2_2: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitLightGoldenRod2_3: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.LightGoldenRod2_3
+	code: EightBit.Code.LightGoldenRod2_3
 });
 /**
  * Eightbit NavajoWhite1 Color instance
@@ -2843,7 +2839,7 @@ export const eightBitLightGoldenRod2_3: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitNavajoWhite1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.NavajoWhite1
+	code: EightBit.Code.NavajoWhite1
 });
 /**
  * Eightbit MistyRose1 Color instance
@@ -2851,198 +2847,198 @@ export const eightBitNavajoWhite1: EightBit.Type = EightBit.make({
  * @category EightBit instances
  */
 export const eightBitMistyRose1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.MistyRose1
+	code: EightBit.Code.MistyRose1
 });
 /**
  * Eightbit Thistle1 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitThistle1: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Thistle1 });
+export const eightBitThistle1: EightBit.Type = EightBit.make({ code: EightBit.Code.Thistle1 });
 /**
  * Eightbit Yellow1 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitYellow1: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Yellow1 });
+export const eightBitYellow1: EightBit.Type = EightBit.make({ code: EightBit.Code.Yellow1 });
 /**
  * Eightbit LightGoldenRod1 Color instance
  *
  * @category EightBit instances
  */
 export const eightBitLightGoldenRod1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.LightGoldenRod1
+	code: EightBit.Code.LightGoldenRod1
 });
 /**
  * Eightbit Khaki1 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitKhaki1: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Khaki1 });
+export const eightBitKhaki1: EightBit.Type = EightBit.make({ code: EightBit.Code.Khaki1 });
 /**
  * Eightbit Wheat1 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitWheat1: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Wheat1 });
+export const eightBitWheat1: EightBit.Type = EightBit.make({ code: EightBit.Code.Wheat1 });
 /**
  * Eightbit Cornsilk1 Color instance
  *
  * @category EightBit instances
  */
 export const eightBitCornsilk1: EightBit.Type = EightBit.make({
-	code: EightBit.Code.Type.Cornsilk1
+	code: EightBit.Code.Cornsilk1
 });
 /**
  * Eightbit Grey100 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitGrey100: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Grey100 });
+export const eightBitGrey100: EightBit.Type = EightBit.make({ code: EightBit.Code.Grey100 });
 /**
  * Eightbit Grey3 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitGrey3: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Grey3 });
+export const eightBitGrey3: EightBit.Type = EightBit.make({ code: EightBit.Code.Grey3 });
 /**
  * Eightbit Grey7 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitGrey7: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Grey7 });
+export const eightBitGrey7: EightBit.Type = EightBit.make({ code: EightBit.Code.Grey7 });
 /**
  * Eightbit Grey11 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitGrey11: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Grey11 });
+export const eightBitGrey11: EightBit.Type = EightBit.make({ code: EightBit.Code.Grey11 });
 /**
  * Eightbit Grey15 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitGrey15: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Grey15 });
+export const eightBitGrey15: EightBit.Type = EightBit.make({ code: EightBit.Code.Grey15 });
 /**
  * Eightbit Grey19 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitGrey19: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Grey19 });
+export const eightBitGrey19: EightBit.Type = EightBit.make({ code: EightBit.Code.Grey19 });
 /**
  * Eightbit Grey23 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitGrey23: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Grey23 });
+export const eightBitGrey23: EightBit.Type = EightBit.make({ code: EightBit.Code.Grey23 });
 /**
  * Eightbit Grey27 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitGrey27: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Grey27 });
+export const eightBitGrey27: EightBit.Type = EightBit.make({ code: EightBit.Code.Grey27 });
 /**
  * Eightbit Grey30 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitGrey30: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Grey30 });
+export const eightBitGrey30: EightBit.Type = EightBit.make({ code: EightBit.Code.Grey30 });
 /**
  * Eightbit Grey35 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitGrey35: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Grey35 });
+export const eightBitGrey35: EightBit.Type = EightBit.make({ code: EightBit.Code.Grey35 });
 /**
  * Eightbit Grey39 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitGrey39: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Grey39 });
+export const eightBitGrey39: EightBit.Type = EightBit.make({ code: EightBit.Code.Grey39 });
 /**
  * Eightbit Grey42 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitGrey42: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Grey42 });
+export const eightBitGrey42: EightBit.Type = EightBit.make({ code: EightBit.Code.Grey42 });
 /**
  * Eightbit Grey46 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitGrey46: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Grey46 });
+export const eightBitGrey46: EightBit.Type = EightBit.make({ code: EightBit.Code.Grey46 });
 /**
  * Eightbit Grey50 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitGrey50: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Grey50 });
+export const eightBitGrey50: EightBit.Type = EightBit.make({ code: EightBit.Code.Grey50 });
 /**
  * Eightbit Grey54 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitGrey54: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Grey54 });
+export const eightBitGrey54: EightBit.Type = EightBit.make({ code: EightBit.Code.Grey54 });
 /**
  * Eightbit Grey58 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitGrey58: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Grey58 });
+export const eightBitGrey58: EightBit.Type = EightBit.make({ code: EightBit.Code.Grey58 });
 /**
  * Eightbit Grey62 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitGrey62: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Grey62 });
+export const eightBitGrey62: EightBit.Type = EightBit.make({ code: EightBit.Code.Grey62 });
 /**
  * Eightbit Grey66 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitGrey66: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Grey66 });
+export const eightBitGrey66: EightBit.Type = EightBit.make({ code: EightBit.Code.Grey66 });
 /**
  * Eightbit Grey70 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitGrey70: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Grey70 });
+export const eightBitGrey70: EightBit.Type = EightBit.make({ code: EightBit.Code.Grey70 });
 /**
  * Eightbit Grey74 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitGrey74: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Grey74 });
+export const eightBitGrey74: EightBit.Type = EightBit.make({ code: EightBit.Code.Grey74 });
 /**
  * Eightbit Grey78 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitGrey78: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Grey78 });
+export const eightBitGrey78: EightBit.Type = EightBit.make({ code: EightBit.Code.Grey78 });
 /**
  * Eightbit Grey82 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitGrey82: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Grey82 });
+export const eightBitGrey82: EightBit.Type = EightBit.make({ code: EightBit.Code.Grey82 });
 /**
  * Eightbit Grey85 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitGrey85: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Grey85 });
+export const eightBitGrey85: EightBit.Type = EightBit.make({ code: EightBit.Code.Grey85 });
 /**
  * Eightbit Grey89 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitGrey89: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Grey89 });
+export const eightBitGrey89: EightBit.Type = EightBit.make({ code: EightBit.Code.Grey89 });
 /**
  * Eightbit Grey93 Color instance
  *
  * @category EightBit instances
  */
-export const eightBitGrey93: EightBit.Type = EightBit.make({ code: EightBit.Code.Type.Grey93 });
+export const eightBitGrey93: EightBit.Type = EightBit.make({ code: EightBit.Code.Grey93 });
 
 /**
  * RGB AliceBlue Color instance

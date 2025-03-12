@@ -36,7 +36,7 @@ export interface Type<out V> extends Equal.Equal, Inspectable.Inspectable, Pipea
 	readonly content: V;
 
 	/** Type of content */
-	readonly contentType: MTypes.Category.Type;
+	readonly contentType: MTypes.Category;
 
 	/**
 	 * Depth of this value in the value to stringify: number of nested non-primitive values to open to
@@ -240,8 +240,7 @@ export const content: <V>(self: Type<V>) => V = Struct.get('content');
  *
  * @category Destructors
  */
-export const contentType: MTypes.OneArgFunction<All, MTypes.Category.Type> =
-	Struct.get('contentType');
+export const contentType: MTypes.OneArgFunction<All, MTypes.Category> = Struct.get('contentType');
 
 /**
  * Returns the `depth` property of `self`

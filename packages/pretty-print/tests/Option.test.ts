@@ -75,7 +75,7 @@ describe('Option', () => {
 					const headerMarkShower = pipe(
 						{
 							...PPOption.NonPrimitive.record,
-							propertyNumberDisplayOption: PPOption.PropertyNumberDisplayOption.Type.All
+							propertyNumberDisplayOption: PPOption.PropertyNumberDisplayOption.All
 						},
 						nonPrimitiveMake,
 						fromNonPrimitive
@@ -89,7 +89,7 @@ describe('Option', () => {
 					const headerMarkShower = pipe(
 						{
 							...PPOption.NonPrimitive.record,
-							propertyNumberDisplayOption: PPOption.PropertyNumberDisplayOption.Type.Actual
+							propertyNumberDisplayOption: PPOption.PropertyNumberDisplayOption.Actual
 						},
 						nonPrimitiveMake,
 						fromNonPrimitive
@@ -103,7 +103,7 @@ describe('Option', () => {
 					const headerMarkShower = pipe(
 						{
 							...PPOption.NonPrimitive.record,
-							propertyNumberDisplayOption: PPOption.PropertyNumberDisplayOption.Type.AllAndActual
+							propertyNumberDisplayOption: PPOption.PropertyNumberDisplayOption.AllAndActual
 						},
 						nonPrimitiveMake,
 						fromNonPrimitive
@@ -119,7 +119,7 @@ describe('Option', () => {
 							{
 								...PPOption.NonPrimitive.record,
 								propertyNumberDisplayOption:
-									PPOption.PropertyNumberDisplayOption.Type.AllAndActualIfDifferent
+									PPOption.PropertyNumberDisplayOption.AllAndActualIfDifferent
 							},
 							nonPrimitiveMake,
 							fromNonPrimitive
@@ -132,7 +132,7 @@ describe('Option', () => {
 							{
 								...PPOption.NonPrimitive.record,
 								propertyNumberDisplayOption:
-									PPOption.PropertyNumberDisplayOption.Type.AllAndActualIfDifferent
+									PPOption.PropertyNumberDisplayOption.AllAndActualIfDifferent
 							},
 							nonPrimitiveMake,
 							fromNonPrimitive
@@ -148,7 +148,7 @@ describe('Option', () => {
 						{
 							...PPOption.NonPrimitive.record,
 							showId: true,
-							propertyNumberDisplayOption: PPOption.PropertyNumberDisplayOption.Type.None
+							propertyNumberDisplayOption: PPOption.PropertyNumberDisplayOption.None
 						},
 						nonPrimitiveMake,
 						fromNonPrimitive
@@ -163,7 +163,7 @@ describe('Option', () => {
 						{
 							...PPOption.NonPrimitive.record,
 							showId: true,
-							propertyNumberDisplayOption: PPOption.PropertyNumberDisplayOption.Type.AllAndActual
+							propertyNumberDisplayOption: PPOption.PropertyNumberDisplayOption.AllAndActual
 						},
 						nonPrimitiveMake,
 						fromNonPrimitive
@@ -180,7 +180,7 @@ describe('Option', () => {
 								...PPOption.NonPrimitive.record,
 								showId: true,
 								propertyNumberDisplayOption:
-									PPOption.PropertyNumberDisplayOption.Type.AllAndActualIfDifferent
+									PPOption.PropertyNumberDisplayOption.AllAndActualIfDifferent
 							},
 							nonPrimitiveMake,
 							fromNonPrimitive
@@ -196,7 +196,7 @@ describe('Option', () => {
 								...PPOption.NonPrimitive.record,
 								showId: true,
 								propertyNumberDisplayOption:
-									PPOption.PropertyNumberDisplayOption.Type.AllAndActualIfDifferent
+									PPOption.PropertyNumberDisplayOption.AllAndActualIfDifferent
 							},
 							nonPrimitiveMake,
 							fromNonPrimitive
@@ -275,7 +275,7 @@ describe('Option', () => {
 				generalNonPrimitiveOption: {
 					...PPOption.NonPrimitive.record,
 					maxPropertyNumber: 2,
-					propertyNumberDisplayOption: PPOption.PropertyNumberDisplayOption.Type.AllAndActual
+					propertyNumberDisplayOption: PPOption.PropertyNumberDisplayOption.AllAndActual
 				}
 			})
 		);

@@ -67,76 +67,61 @@ export namespace Stringifier {
 }
 
 /**
- * Namespace for the possible sources of properties for non-primitive values
+ * Possible sources of properties for non-primitive values
  *
  * @category Models
  */
-export namespace PropertySource {
+
+export enum PropertySource {
 	/**
-	 * Type of a PropertySource
-	 *
-	 * @category Models
+	 * Properties are obtained by calling Reflect.getOwnProperties on the non-primitive-value and its
+	 * prototypes (until maxPrototypeDepth is reached). This is usually a good choice for records
 	 */
-	export enum Type {
-		/**
-		 * Properties are obtained by calling Reflect.getOwnProperties on the non-primitive-value and
-		 * its prototypes (until maxPrototypeDepth is reached). This is usually a good choice for
-		 * records
-		 */
-		FromProperties = 0,
+	FromProperties = 0,
 
-		/**
-		 * Properties are obtained by iterating over the non-primitive-value that must implement the
-		 * Iterable protocol. Each value returned by the iterator is used to create a property with an
-		 * auto-incremented numerical key (converted to a string). This is usually a good choice for
-		 * arrays and sets.
-		 */
-		FromValueIterable = 1,
+	/**
+	 * Properties are obtained by iterating over the non-primitive-value that must implement the
+	 * Iterable protocol. Each value returned by the iterator is used to create a property with an
+	 * auto-incremented numerical key (converted to a string). This is usually a good choice for
+	 * arrays and sets.
+	 */
+	FromValueIterable = 1,
 
-		/**
-		 * Properties are obtained by iterating over the non-primitive-value that must implement the
-		 * Iterable protocol. The iterator must return a key/value pair. Otherwise, the returned value
-		 * is ignored. This is usually a good choice for maps,...
-		 */
-		FromKeyValueIterable = 2
-	}
+	/**
+	 * Properties are obtained by iterating over the non-primitive-value that must implement the
+	 * Iterable protocol. The iterator must return a key/value pair. Otherwise, the returned value is
+	 * ignored. This is usually a good choice for maps,...
+	 */
+	FromKeyValueIterable = 2
 }
 
 /**
- * Namespace for the options regarding the display of the number of properties of a non-primitive
- * value. The number of properties is shown in between parentheses just after the non-primitive
- * value id.
+ * Possible options regarding the display of the number of properties of a non-primitive value.
  *
  * @category Models
  */
-export namespace PropertyNumberDisplayOption {
+
+export enum PropertyNumberDisplayOption {
+	/** The number of properties is not shown */
+	None = 0,
+	/** Shows the number of properties retrieved from the property source */
+	All = 1,
 	/**
-	 * Type of a PropertyNumberDisplayOption
-	 *
-	 * @category Models
+	 * Shows the number of properties actually displayed, i.e. these remaining after filtering,
+	 * deduping and applying `maxPropertyNumber`
 	 */
-	export enum Type {
-		/** The number of properties is not shown */
-		None = 0,
-		/** Shows the number of properties retrieved from the property source */
-		All = 1,
-		/**
-		 * Shows the number of properties actually displayed, i.e. these remaining after filtering,
-		 * deduping and applying `maxPropertyNumber`
-		 */
-		Actual = 2,
-		/**
-		 * Shows both the number of properties retrieved from the property source and the number of
-		 * properties actually displayed (after filtering, deduping and applying `maxPropertyNumber`)
-		 */
-		AllAndActual = 3,
-		/**
-		 * Shows both the number of properties retrieved from the property source and the number of
-		 * properties actually displayed (after filtering, deduping and applying `maxPropertyNumber`)
-		 * only if these two numbers are different. Otherwise, does not show anything
-		 */
-		AllAndActualIfDifferent = 4
-	}
+	Actual = 2,
+	/**
+	 * Shows both the number of properties retrieved from the property source and the number of
+	 * properties actually displayed (after filtering, deduping and applying `maxPropertyNumber`)
+	 */
+	AllAndActual = 3,
+	/**
+	 * Shows both the number of properties retrieved from the property source and the number of
+	 * properties actually displayed (after filtering, deduping and applying `maxPropertyNumber`) only
+	 * if these two numbers are different. Otherwise, does not show anything
+	 */
+	AllAndActualIfDifferent = 4
 }
 
 /**
@@ -181,7 +166,7 @@ export namespace NonPrimitive {
 		 * `Map(2) { 'a' => 1, 'b' => 2 }` with `Actual` or `Map(5,2) { 'a' => 1, 'b' => 2 }` with
 		 * `AllAndActual`
 		 */
-		readonly propertyNumberDisplayOption: PropertyNumberDisplayOption.Type;
+		readonly propertyNumberDisplayOption: PropertyNumberDisplayOption;
 
 		/** Key/value separator mark for that type of non-primitive value. For instance ': ' for an array */
 		readonly keyValueSeparatorMark: string;
@@ -252,7 +237,7 @@ export namespace NonPrimitive {
 		 * Specifies the source of properties for non-primitive values. See the PropertySource.Type for
 		 * more details
 		 */
-		readonly propertySource: PropertySource.Type;
+		readonly propertySource: PropertySource;
 
 		/**
 		 * Indicates the level in the prototypal chain of a non-primitive value down to which properties
@@ -364,7 +349,7 @@ export namespace NonPrimitive {
 	export const record: Type = make({
 		id: 'Object',
 		showId: false,
-		propertyNumberDisplayOption: PropertyNumberDisplayOption.Type.None,
+		propertyNumberDisplayOption: PropertyNumberDisplayOption.None,
 		keyValueSeparatorMark: ': ',
 		singleLineStartDelimiterMark: '{ ',
 		singleLineEndDelimiterMark: ' }',
@@ -378,7 +363,7 @@ export namespace NonPrimitive {
 		propertyNumberSeparatorMark: ',',
 		propertyNumberStartDelimiterMark: '(',
 		propertyNumberEndDelimiterMark: ')',
-		propertySource: PropertySource.Type.FromProperties,
+		propertySource: PropertySource.FromProperties,
 		maxPrototypeDepth: 0,
 		propertyFilters: PPPropertyFilters.utilInspectLike,
 		propertySortOrder: Option.none(),
@@ -396,12 +381,12 @@ export namespace NonPrimitive {
 	export const array: Type = make({
 		...record,
 		id: 'Array',
-		propertyNumberDisplayOption: PropertyNumberDisplayOption.Type.AllAndActualIfDifferent,
+		propertyNumberDisplayOption: PropertyNumberDisplayOption.AllAndActualIfDifferent,
 		singleLineStartDelimiterMark: '[ ',
 		singleLineEndDelimiterMark: ' ]',
 		multiLineStartDelimiterMark: '[',
 		multiLineEndDelimiterMark: ']',
-		propertySource: PropertySource.Type.FromValueIterable,
+		propertySource: PropertySource.FromValueIterable,
 		propertyFilters: PPPropertyFilters.empty,
 		propertyFormatter: PPPropertyFormatter.valueOnly
 	});
@@ -416,9 +401,9 @@ export namespace NonPrimitive {
 			...record,
 			id,
 			showId: true,
-			propertyNumberDisplayOption: PropertyNumberDisplayOption.Type.AllAndActualIfDifferent,
+			propertyNumberDisplayOption: PropertyNumberDisplayOption.AllAndActualIfDifferent,
 			keyValueSeparatorMark: ' => ',
-			propertySource: PropertySource.Type.FromKeyValueIterable,
+			propertySource: PropertySource.FromKeyValueIterable,
 			propertyFilters: PPPropertyFilters.empty,
 			propertyFormatter: PPPropertyFormatter.keyAndValue
 		});
@@ -434,8 +419,8 @@ export namespace NonPrimitive {
 			...record,
 			id,
 			showId: true,
-			propertyNumberDisplayOption: PropertyNumberDisplayOption.Type.AllAndActualIfDifferent,
-			propertySource: PropertySource.Type.FromValueIterable,
+			propertyNumberDisplayOption: PropertyNumberDisplayOption.AllAndActualIfDifferent,
+			propertySource: PropertySource.FromValueIterable,
 			propertyFilters: PPPropertyFilters.empty,
 			propertyFormatter: PPPropertyFormatter.valueOnly
 		});
@@ -497,15 +482,13 @@ export namespace NonPrimitive {
 						const emptyText = Function.constant(ASText.empty);
 
 						const propertyNumberDisplayOption = nonPrimitiveOption.propertyNumberDisplayOption;
-						const isNone = propertyNumberDisplayOption === PropertyNumberDisplayOption.Type.None;
-						const isAll = propertyNumberDisplayOption === PropertyNumberDisplayOption.Type.All;
-						const isActual =
-							propertyNumberDisplayOption === PropertyNumberDisplayOption.Type.Actual;
+						const isNone = propertyNumberDisplayOption === PropertyNumberDisplayOption.None;
+						const isAll = propertyNumberDisplayOption === PropertyNumberDisplayOption.All;
+						const isActual = propertyNumberDisplayOption === PropertyNumberDisplayOption.Actual;
 						const isAllAndActual =
-							propertyNumberDisplayOption === PropertyNumberDisplayOption.Type.AllAndActual;
+							propertyNumberDisplayOption === PropertyNumberDisplayOption.AllAndActual;
 						const isAllAndActualIfDifferent =
-							propertyNumberDisplayOption ===
-							PropertyNumberDisplayOption.Type.AllAndActualIfDifferent;
+							propertyNumberDisplayOption === PropertyNumberDisplayOption.AllAndActualIfDifferent;
 						const showId = nonPrimitiveOption.showId;
 
 						const [propertyNumberStartDelimiter, propertyNumberEndDelimiter] =
@@ -965,7 +948,7 @@ export const toStringifier = (self: Type): Stringifier.Type => {
 							initializedNonPrimitiveOption.propertySource,
 							MMatch.make,
 							MMatch.whenIs(
-								PropertySource.Type.FromProperties,
+								PropertySource.FromProperties,
 								pipe(
 									initializedNonPrimitiveOption.maxPrototypeDepth,
 									PPValues.fromProperties,
@@ -973,11 +956,11 @@ export const toStringifier = (self: Type): Stringifier.Type => {
 								)
 							),
 							MMatch.whenIs(
-								PropertySource.Type.FromValueIterable,
+								PropertySource.FromValueIterable,
 								Function.constant(PPValues.fromValueIterable)
 							),
 							MMatch.whenIs(
-								PropertySource.Type.FromKeyValueIterable,
+								PropertySource.FromKeyValueIterable,
 								Function.constant(PPValues.fromKeyValueIterable(stringifier))
 							),
 							MMatch.exhaustive,
