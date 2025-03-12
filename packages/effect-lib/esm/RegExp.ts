@@ -97,36 +97,3 @@ export const email = pipe(MRegExpString.email, MRegExpString.makeLine, fromRegEx
  * @category Instances
  */
 export const nonZeroDigit = pipe(MRegExpString.nonZeroDigit, fromRegExpString());
-
-/**
- * A regular expression representing a string starting with an integer in base 2.
- *
- * @category Instances
- */
-export const binaryIntAtStart = pipe(
-	MRegExpString.binaryInt,
-	MRegExpString.atStart,
-	fromRegExpString()
-);
-
-/**
- * A regular expression representing a string starting with an integer in base 8.
- *
- * @category Instances
- */
-export const octalIntAtStart = pipe(
-	MRegExpString.octalInt,
-	MRegExpString.atStart,
-	fromRegExpString()
-);
-
-/**
- * A regular expression representing a string starting with an integer in base 16.
- *
- * @category Instances
- */
-export const hexaIntAtStart = pipe(
-	MRegExpString.hexaInt,
-	MRegExpString.atStart,
-	fromRegExpString()
-);

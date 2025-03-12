@@ -1,9 +1,11 @@
 /**
- * A template is a string that contains targets where to read/write. Each target can appear between
- * 0 and n times. Targets can overlap, e.g. `falling-tree`, `tree`, `tree-shaking`. In this case,
- * the foremost and longest target takes precedence. For instance, in the template `this bundler is
- * good at tree-shaking`, although `tree` and `tree-shaking` are present at the same position, the
- * longest target `tree-shaking` will take precedence.
+ * A template is a string that contains placeholders where to read/write. A Templater is an object
+ * built from a template and a list of placeholders that offers read and write functionalities. The
+ * read functionality takes a textEach target can appear between 0 and n times. Targets can overlap.
+ * For instance e.g. `falling-tree`, `tree`, `tree-shaking`. In this case, the foremost and longest
+ * target takes precedence. For instance, in the template `this bundler is good at tree-shaking`,
+ * although `tree` and `tree-shaking` are present at the same position, the longest target
+ * `tree-shaking` will take precedence.
  *
  * I can give a length : alignment and padding a max-length no length
  */
@@ -33,15 +35,15 @@ type _TypeId = typeof _TypeId;
  * During compilation, a template is split at the boundary of each target. So if there are n targets
  * in the template, we have, after compilation, an array of n blocks, each block containing the text
  * between the end of the previous target (or the start of the template if there is no previous
- * target) and the start of the current one, and the index, in targets, of the current target. There
- * remains a final text after the last target. Note: the static text of the first block and
+ * target) and the start of the current one, and the index, in `targets`, of the current target.
+ * There remains a final text after the last target. Note: the static text of the first block and
  * finalStaticText may be empty strings.
  *
  * @category Models
  */
 export interface Type<out T extends string> extends Inspectable.Inspectable, Pipeable.Pipeable {
-	readonly textAndTargetArray: ReadonlyArray<readonly [staticText: string, targetIndex: number]>;
-	readonly finalStaticText: string;
+	readonly blocks: ReadonlyArray<readonly [precedingText: string, targetIndex: number]>;
+	readonly finalText: string;
 	readonly targets: ReadonlyArray<T>;
 	/** @internal */
 	readonly [_TypeId]: {

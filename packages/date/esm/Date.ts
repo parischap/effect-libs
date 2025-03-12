@@ -1,5 +1,5 @@
 /** @since 0.0.6 */
-import { MBadArgumentError, MFunction } from '@parischap/effect-lib';
+import { MBadArgumentError, MFunction, MNumber } from '@parischap/effect-lib';
 import { Array, Either, Function, Number, Option, Struct, pipe } from 'effect';
 import * as Errors from './Errors.js';
 
@@ -135,7 +135,7 @@ const _getNbDaysInYear = (isLeapYear: boolean): number => (isLeapYear ? 366 : 36
  * UTC sunday.
  */
 const _getWeekDayFromTimestamp = (timestamp: number): number => {
-	const weekDay0 = JsPatches.intModulo(7)(Math.floor(timestamp / DAY_MS) - 3);
+	const weekDay0 = MNumber.intModulo(7)(Math.floor(timestamp / DAY_MS) - 3);
 	return weekDay0 === 0 ? 7 : weekDay0;
 };
 

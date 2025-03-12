@@ -1,7 +1,4 @@
-/**
- * This module implements a Transformer<A> which is used to transform a string into a value of type
- * A and vice versa. It is used within a Pattern (see Pattern.ts).
- */
+/** This module implements conversions from number to string and string to number in base-10 notation */
 
 import {
 	MArray,
@@ -36,73 +33,335 @@ import {
 	Pipeable,
 	Predicate,
 	Struct,
-	Tuple,
-	Types
+	Tuple
 } from 'effect';
 import * as Error from './Error.js';
 
-const moduleTag = '@parischap/templater/Transformer/';
+const moduleTag = '@parischap/templater/NumberFormat/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
 /**
- * Type that represents a Transformer.
+ * Possible rounding modes
  *
  * @category Models
  */
-export interface Type<in out A> extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
-	/** Id of this Transformer instance. Only useful for debugging purposes. */
-	readonly id: string;
+export enum RoundingMode {
+	/** Round toward +∞. Positive values round up. Negative values round "more positive" */
+	Ceil = 0,
+	/** Round toward -∞. Positive values round down. Negative values round "more negative" */
+	Floor = 1,
 	/**
-	 * Reads as much as it can from the start of the input string so that the read string can be
-	 * converted into an A. If nothing can be read, returns a `left`. Otherwise carries out the
-	 * conversion, and returns a `right` of the converted value and the rest of string
+	 * Round away from 0. The magnitude of the value is always increased by rounding. Positive values
+	 * round up. Negative values round "more negative"
 	 */
-	readonly read: MTypes.OneArgFunction<
-		string,
-		Either.Either<readonly [value: A, rest: string], Error.Type>
-	>;
+	Expand = 2,
 	/**
-	 * Tries to convert a value of type A into a string. Returns a `right` of the string if the
-	 * conversion was successful. Otherwise, returns a `left`
+	 * Round toward 0. This magnitude of the value is always reduced by rounding. Positive values
+	 * round down. Negative values round "less negative"
 	 */
-	readonly write: MTypes.OneArgFunction<A, Either.Either<string, Error.Type>>;
-
-	/** @internal */
-	readonly [_TypeId]: {
-		readonly _A: Types.Invariant<A>;
-	};
+	Trunc = 3,
+	/**
+	 * Ties toward +∞. Values above the half-increment round like "ceil" (towards +∞), and below like
+	 * "floor" (towards -∞). On the half-increment, values round like "ceil"
+	 */
+	HalfCeil = 4,
+	/**
+	 * Ties toward -∞. Values above the half-increment round like "ceil" (towards +∞), and below like
+	 * "floor" (towards -∞). On the half-increment, values round like "floor"
+	 */
+	HalfFloor = 5,
+	/**
+	 * Ties away from 0. Values above the half-increment round like "expand" (away from zero), and
+	 * below like "trunc" (towards 0). On the half-increment, values round like "expand"
+	 */
+	HalfExpand = 6,
+	/**
+	 * Ties toward 0. Values above the half-increment round like "expand" (away from zero), and below
+	 * like "trunc" (towards 0). On the half-increment, values round like "trunc"
+	 */
+	halfTrunc = 7,
+	/**
+	 * Ties towards the nearest even integer. Values above the half-increment round like "expand"
+	 * (away from zero), and below like "trunc" (towards 0). On the half-increment values round
+	 * towards the nearest even digit
+	 */
+	halfEven = 8
 }
 
-interface _Type<in out A> extends Type<A> {}
+/**
+ * Possible sign display options
+ *
+ * @category Models
+ */
+export enum SignDisplay {
+	/** Sign display for negative numbers only, including negative zero */
+	Auto = 0,
+	/** Always display sign */
+	Always = 1,
+	/** Sign display for positive and negative numbers, but not zero */
+	ExceptZero = 2,
+	/** Sign display for negative numbers only, excluding negative zero */
+	Negative = 3,
+	/** Never display sign */
+	Never = 4
+}
+
+/**
+ * Namespace for possible sign display options
+ *
+ * @category Models
+ */
+export namespace SignDisplay {
+	/**
+	 * Turns a `SignOptions` into a function that takes a number and returns a string representing its
+	 * sign, or an error if the sign cannot be represented with these options.
+	 *
+	 * @category Destructors
+	 */
+	export const toWriter: (
+		self: SignOptions
+	) => MTypes.OneArgFunction<number, Either.Either<string, Error.Type>> = flow(
+		MMatch.make,
+		MMatch.whenIs(SignOptions.None, () =>
+			flow(
+				Either.liftPredicate<number, Error.Type>(
+					ENumber.greaterThanOrEqualTo(0),
+					(input) =>
+						new Error.Type({
+							message: `Negative number '${input}' cannot be displayed with 'SignOptions.None'`
+						})
+				),
+				Either.map(() => '')
+			)
+		),
+		MMatch.whenIs(SignOptions.Mandatory, () =>
+			flow(
+				Option.liftPredicate(ENumber.greaterThanOrEqualTo(0)),
+				Option.map(() => '+'),
+				Option.getOrElse(() => '-'),
+				Either.right
+			)
+		),
+		MMatch.whenIsOr(SignOptions.MinusAllowed, SignOptions.Optional, () =>
+			flow(
+				Option.liftPredicate(ENumber.greaterThanOrEqualTo(0)),
+				Option.map(() => ''),
+				Option.getOrElse(() => '-'),
+				Either.right
+			)
+		),
+		MMatch.exhaustive
+	);
+}
+/**
+ * Possible e-notation options
+ *
+ * @category Models
+ */
+export enum ScientificNotation {
+	/**
+	 * Scientific notation is disallowed when converting from string to number and not used when
+	 * converting from number to string
+	 */
+	None = 0,
+	/**
+	 * Scientific notation is allowed but not mandatory when converting from string to number. It is
+	 * used when converting from number to string only if the `minimumIntegerDigits` and
+	 * `maximumIntegerDigits` conditions are not respected otherwise.
+	 */
+	Standard = 1,
+	/**
+	 * The absolute value of the mantissa m must fulfill 1 ≤ |m| < 10 both when converting to and from
+	 * string. When converting from number to string, the e-notation is not used if the exponent is 0.
+	 * An e-notation with a null exponent is tolerated when converting from string to number
+	 */
+	Normalized = 2,
+	/**
+	 * The absolute value of the mantissa m must fulfill 1 ≤ |m| < 1000 and the exponent must be a
+	 * multiple of 3 both when converting to and from string. When converting from number to string,
+	 * the e-notation is not used if the exponent is 0. An e-notation with a null exponent is
+	 * tolerated when converting from string to number
+	 */
+	Engineering = 3
+}
+
+/**
+ * Type that represents a NumberFormat.
+ *
+ * @category Models
+ */
+export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
+	/** Id of this NumberFormat instance. Useful for equality and debugging */
+	readonly id: string;
+
+	/**
+	 * Thousand separator. Use an empty string for no separator. Usually a string made of at most one
+	 * character but not mandatory. Should be different from `fractionalSeparator`. Will not throw
+	 * otherwise but unexpected results might occur
+	 */
+	readonly thousandSeparator: string;
+
+	/**
+	 * Fractional separator. Usually a one-character string but not mandatory. Should not be an empty
+	 * string and be different from `thousandSeparator`. Will not throw otherwise but unexpected
+	 * results might occur
+	 */
+	readonly fractionalSeparator: string;
+
+	/**
+	 * Minimim number of digits forming the integer part of a number. Must be a positive integer less
+	 * than or equal to `maximumIntegerDigits`. Will be clipped to that range otherwise.
+	 *
+	 * Conversion from number to string:
+	 *
+	 * - If `scientificNotation===None`, the string will be left-padded with `0`'s if necessary (it will
+	 *   not if not necessary, so numbers with a null integer part will be displayed starting with '.'
+	 *   when using `minimumIntegerDigits===0` and with '0.' or '0' when using
+	 *   `minimumIntegerDigits===1`). Converting the number 0 to a string will fail when using
+	 *   `minimumIntegerDigits===0`
+	 * - If `scientificNotation===Standard`, an e-notation will be used if necessary to respect the
+	 *   condition
+	 * - In all other situations, the conversion will fail if the condition is not respeected. For
+	 *   instance, trying to use `minimumIntegerDigits!==1` with `scientificNotation===Normalized`
+	 *   will fail
+	 *
+	 * Conversion from string to number: will fail if the input string does not respect this condition
+	 * (the string must be left-padded with `0`'s to respect the condition if necessary but only if
+	 * `scientificNotation===None`).
+	 */
+	readonly minimumIntegerDigits: number;
+
+	/**
+	 * Maximum number of digits forming the integer part of a number. Must be a positive integer. Will
+	 * be taken equal to 0 if not positive. You should not set `maximumIntegerDigits` and
+	 * `maximumFractionDigits` simultaneously to 0 because conversions will always fail.
+	 *
+	 * Conversion from number to string:
+	 *
+	 * - If `scientificNotation===Standard`, an e-notation will be used if necessary to respect the
+	 *   condition
+	 * - In all other situations, the conversion will fail if the condition is not respected.
+	 *
+	 * Conversion from string to number: the conversion will fail if the condition is not respected.
+	 */
+	readonly maximumIntegerDigits: number;
+
+	/**
+	 * Minimim number of digits forming the fractional part of a number. Must be a positive integer
+	 * less than or equal to `maximumFractionDigits`. Will be clipped to that range otherwise.
+	 *
+	 * Conversion from number to string: the string will be right-padded with `0`'s if necessary to
+	 * respect the condition
+	 *
+	 * Conversion from string to number: will fail if the input string does not respect this condition
+	 * (the string must be right-padded with `0`'s to respect the condition if necessary).
+	 */
+	readonly minimumFractionDigits: number;
+
+	/**
+	 * Maximum number of digits forming the fractional part of a number. Must be a positive integer.
+	 * Will be taken equal to 0 if not positive. You should not set `maximumIntegerDigits` and
+	 * `maximumFractionDigits` simultaneously to 0 because conversions will always fail.
+	 *
+	 * Conversion from number to string: the number will be rounded using the roundingMode to respect
+	 * the condition. Rounding may cause the `minimumIntegerDigits` and `minimumIntegerDigits`
+	 * conditions to fail.
+	 *
+	 * Conversion from string to number: will fail if the input string does not respect this
+	 * condition.
+	 */
+	readonly maximumFractionDigits: number;
+
+	readonly eNotationChar: string;
+	readonly scientificNotation: ScientificNotation;
+
+	/** Rounding mode options. See RoundingMode */
+	readonly roundingMode: RoundingMode;
+
+	/** Sign display options. See SignDisplay */
+	readonly signDisplay: SignDisplay;
+
+	/**
+	 * Minimal number of decimal digits. Note that numbers starting with `0.` (for instance `0.5`) are
+	 * considered to be equivalent to numbers starting with `.` (for instance `.5`) and are therefore
+	 * considered to have 0 decimal digits. Must be a positive integer less than or equal to
+	 * `maxDecimalDigits`. When reading from a string, this is the minimal number of digits that will
+	 * be read for the decimal part. When writing to a string, the behaviour depends on the value of
+	 * `eNotationOptions`. If `eNotationOptions` is set to `ENotationOptions.None`, trying to write
+	 * strictly less than `minDecimalDigits` will result in an error. If `eNotationOptions` is not set
+	 * to `ENotationOptions.None`, the number to write is multiplied by a 10^(-n) factor so that the
+	 * [`minDecimalDigits`,`maxDecimalDigits`] constraint is respected. And a 10^n exponent will be
+	 * added to the final string. When writing a number whose absolute value is strictly less than 1,
+	 * a leading 0 is always added before the fractionalSep.
+	 */
+	readonly minDecimalDigits: number;
+
+	/**
+	 * Maximal number of decimal digits. Note that numbers starting with `0.` (for instance `0.5`) are
+	 * considered to be equivalent to numbers starting with `.` (for instance `.5`) and are therefore
+	 * considered to have 0 decimal digits. Must be a positive integer greater than or equal to
+	 * `minDecimalDigits` (+Infinity is allowed). When reading from a string, this is the maximal
+	 * number of digits that will be read for the decimal part. When writing to a string, the
+	 * behaviour depends on the value of `eNotationOptions`. If `eNotationOptions` is set to
+	 * `ENotationOptions.None`, trying to write strictly more than `maxDecimalDigits` will result in
+	 * an error. If `eNotationOptions` is not set to `ENotationOptions.None`, the number to write is
+	 * multiplied by a 10^(-n) factor so that the [`minDecimalDigits`,`maxDecimalDigits`] constraint
+	 * is respected. And a 10^n exponent will be added to the final string. Do not set
+	 * `maxDecimalDigits` and `maxFractionalDigits` simultaneously to 0. When writing a number whose
+	 * absolute value is strictly less than 1, a leading 0 is always added before the fractionalSep.
+	 */
+	readonly maxDecimalDigits: number;
+
+	/**
+	 * Minimum number of fractional digits. Must be a positive integer less than or equal to
+	 * `maxFractionalDigits`. Use 0 for integers. When reading from a string, this is the minimal
+	 * number of digits that will be read for the fractional part. When writing to a string, the
+	 * fractional part will be right-padded with zeros if necessary.
+	 */
+	readonly minFractionalDigits: number;
+
+	/**
+	 * Maximum number of fractional digits. Must be a positive integer greater than or equal to
+	 * `minFractionalDigits` (+Infinity is allowed). Use 0 for integers. When reading from a string,
+	 * this is the maximal number of digits that will be read for the fractional part. When writing to
+	 * a string, the fractional part will be truncated to the min of that length and
+	 * `MAX_MAX_FRACTIONAL_DIGITS` if necessary (the last digit will be rounded up if the digit before
+	 * it is superior or equal to 5; rounded down otherwise). Do not set `maxDecimalDigits` and
+	 * `maxFractionalDigits` simultaneously to 0.
+	 */
+	readonly maxFractionalDigits: number;
+
+	/** @internal */
+	readonly [_TypeId]: _TypeId;
+}
 
 /**
  * Type guard
  *
  * @category Guards
  */
-export const has = (u: unknown): u is Type<unknown> => Predicate.hasProperty(u, _TypeId);
+export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
 
 /**
  * Equivalence
  *
  * @category Equivalences
  */
-/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-export const equivalence: Equivalence.Equivalence<Type<any>> = (self, that) => that.id === self.id;
+export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
 
-/** Prototype */
+/** Base */
 const _TypeIdHash = Hash.hash(_TypeId);
-/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-const proto: MTypes.Proto<Type<any>> = {
-	[_TypeId]: {
-		_A: MTypes.invariantValue
-	},
-	[Equal.symbol]<A>(this: Type<A>, that: unknown): boolean {
+const base: MTypes.Proto<Type> = {
+	[_TypeId]: _TypeId,
+	[Equal.symbol](this: Type, that: unknown): boolean {
 		return has(that) && equivalence(this, that);
 	},
-	[Hash.symbol]<A>(this: Type<A>) {
+	[Hash.symbol](this: Type) {
 		return pipe(this.id, Hash.hash, Hash.combine(_TypeIdHash), Hash.cached(this));
+	},
+	[MInspectable.IdSymbol](this: Type) {
+		return this.id;
 	},
 	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto
@@ -113,10 +372,18 @@ const proto: MTypes.Proto<Type<any>> = {
  *
  * @category Constructors
  */
-export const make = <A>(params: MTypes.Data<Type<A>>): Type<A> =>
-	MTypes.objectFromDataAndProto(proto, params);
+export const make = ({ id, action }: { readonly id: string; readonly action: Action.Type }): Type =>
+	Object.assign(MFunction.clone(action), {
+		id,
+		...base
+	});
 
-const _make = make;
+/**
+ * Returns the `id` property of `self`
+ *
+ * @category Destructors
+ */
+export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
 
 /**
  * Composes the `self` Transformer (Transformer<string>) with the `that` Transformer
@@ -252,7 +519,7 @@ export namespace String {
 
 	/**
 	 * Transformer instance that reads/writes a string of exactly `length` characters. The read method
-	 * returns an error if there are less than `length` characters left to read. Othewise, it reads
+	 * returns an error if there are less than `length` characters left to read. Otherwise, it reads
 	 * `length` characters from its input and optionnally trims `leftPadding` and `rightPadding`. The
 	 * write method will return an error if the value to write is more than `length` characters long.
 	 * Otherwise, it will first pad its input to the left, then to the right, i.e. if both
@@ -440,20 +707,6 @@ export namespace Number {
 			MMatch.whenIs(SignOptions.Optional, () => 'optional +/- sign'),
 			MMatch.exhaustive
 		);
-	}
-
-	/**
-	 * Possible e-notation options
-	 *
-	 * @category Models
-	 */
-	export enum ENotationOptions {
-		/** E-notation is disallowed */
-		None = 0,
-		/** E-notation may be present with a lowercase e */
-		Lowercase = 1,
-		/** E-notation may be present with an uppercase E */
-		Uppercase = 2
 	}
 
 	/** Namespace for e-notation options */

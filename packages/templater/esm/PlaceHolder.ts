@@ -1,5 +1,5 @@
 /**
- * This module implements a PlaceHolder which is the association of a id and a Transformer (see
+ * This module implements a PlaceHolder which is the association of an id and a Transformer (see
  * Transformer.ts). The id is the string to look for in the template (see Template.ts). Upon
  * writing, each PlaceHolder present in the template must given a value. For a given PlaceHolder,
  * the value to write is transformed into a string by the Transformer and is inserted into the
