@@ -44,7 +44,9 @@ export const oneOrMore: MTypes.StringTransformer = (self) => `(?:${self})+`;
 export const repeatBetween =
 	(low: number, high: number): MTypes.StringTransformer =>
 	(self) =>
-		high <= 0 || high < low ? '' : `(?:${self}){${low},${high === +Infinity ? '' : high}}`;
+		high <= 0 || high < low ?
+			''
+		:	`(?:${self}){${low < 0 ? 0 : low},${high === +Infinity ? '' : high}}`;
 
 /**
  * Returns a new regular expression string where `self` may appear between 0 and `high` times.
@@ -270,7 +272,7 @@ export const nonZeroDigit = '[1-9]';
  * equal to `m`. `n` may receive the +Infinity value.
  */
 const _strictlyPositiveInt = (n: number, m: number): string =>
-	pipe(digit, repeatBetween(m - 1, n - 1), MCore.prependString(nonZeroDigit));
+	nonZeroDigit + pipe(digit, repeatBetween(m - 1, n - 1));
 
 /** A regular expression string representing a group of `DIGIT_GROUP_SIZE` digits. */
 const _digitGroup: string = pipe(digit, repeatBetween(DIGIT_GROUP_SIZE, DIGIT_GROUP_SIZE));
