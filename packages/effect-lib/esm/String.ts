@@ -18,7 +18,6 @@ import {
 	pipe
 } from 'effect';
 import * as MArray from './Array.js';
-import * as MCore from './Core.js';
 import * as MFunction from './Function.js';
 import * as MInspectable from './Inspectable.js';
 import * as MMatch from './Match.js';
@@ -396,14 +395,20 @@ export const count =
  *
  * @category Utils
  */
-export const append = MCore.appendString;
+export const append =
+	(s: string) =>
+	(self: string): string =>
+		self + s;
 
 /**
  * Prepends `s` to `self`
  *
  * @category Utils
  */
-export const prepend = MCore.prependString;
+export const prepend =
+	(s: string) =>
+	(self: string): string =>
+		s + self;
 
 /**
  * Replaces the part of `self` between `startIndex` included and `endIndex` excluded by
