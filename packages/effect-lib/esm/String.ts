@@ -82,7 +82,7 @@ export namespace SearchResult {
 	 *
 	 * @since 0.0.6 Equivalence
 	 */
-	export const areOverlapping: Equivalence.Equivalence<Type> = (self: Type, that: Type) =>
+	export const areOverlapping: Equivalence.Equivalence<Type> = (self, that) =>
 		self.endIndex >= that.startIndex && self.startIndex <= that.endIndex;
 
 	/** Prototype */
@@ -119,21 +119,30 @@ export namespace SearchResult {
 	 *
 	 * @category Ordering
 	 */
-	export const byStartIndex = Order.mapInput(Order.number, (self: Type) => self.startIndex);
+	export const byStartIndex: Order.Order<Type> = Order.mapInput(
+		Order.number,
+		(self: Type) => self.startIndex
+	);
 
 	/**
 	 * SearchResult Order based on the endIndex
 	 *
 	 * @category Ordering
 	 */
-	export const byEndIndex = Order.mapInput(Order.number, (self: Type) => self.endIndex);
+	export const byEndIndex: Order.Order<Type> = Order.mapInput(
+		Order.number,
+		(self: Type) => self.endIndex
+	);
 
 	/**
 	 * SearchResult Order that gives precedence to the first longest SearchResult.
 	 *
 	 * @category Ordering
 	 */
-	export const byLongestFirst = Order.combine(byStartIndex, Order.reverse(byEndIndex));
+	export const byLongestFirst: Order.Order<Type> = Order.combine(
+		byStartIndex,
+		Order.reverse(byEndIndex)
+	);
 
 	/**
 	 * Returns the `startIndex` property of `self`
@@ -182,8 +191,8 @@ export const fromPrimitive: MTypes.OneArgFunction<MTypes.Primitive, string> = fl
  * @category Constructors
  */
 export const fromNumber =
-	(radix?: number) =>
-	(u: number): string =>
+	(radix?: number): MTypes.NumberToString =>
+	(u) =>
 		u.toString(radix);
 
 /**
@@ -265,13 +274,13 @@ export const searchRight =
  * @category Utils
  */
 export const takeLeftTo =
-	(regexp: RegExp | string) =>
-	(self: string): string =>
+	(regexp: RegExp | string): MTypes.StringTransformer =>
+	(self) =>
 		pipe(
 			self,
 			search(regexp),
 			Option.map(SearchResult.startIndex),
-			Option.getOrElse(() => self.length),
+			Option.getOrElse(Function.constant(self.length)),
 			MFunction.flipDual(String.takeLeft)(self)
 		);
 
@@ -283,8 +292,8 @@ export const takeLeftTo =
  * @category Utils
  */
 export const takeRightFrom =
-	(regexp: RegExp | string) =>
-	(self: string): string =>
+	(regexp: RegExp | string): MTypes.StringTransformer =>
+	(self) =>
 		pipe(
 			self,
 			searchRight(regexp),
@@ -299,8 +308,8 @@ export const takeRightFrom =
  * @category Utils
  */
 export const takeLeftBut =
-	(n: number) =>
-	(self: string): string =>
+	(n: number): MTypes.StringTransformer =>
+	(self) =>
 		String.takeLeft(self, self.length - n);
 
 /**
@@ -309,8 +318,8 @@ export const takeLeftBut =
  * @category Utils
  */
 export const takeRightBut =
-	(n: number) =>
-	(self: string): string =>
+	(n: number): MTypes.StringTransformer =>
+	(self) =>
 		String.takeRight(self, self.length - n);
 
 /**
@@ -318,7 +327,7 @@ export const takeRightBut =
  *
  * @category Utils
  */
-export const trimStart = (charToRemove: string): ((self: string) => string) =>
+export const trimStart = (charToRemove: string): MTypes.StringTransformer =>
 	flow(Array.dropWhile(MFunction.strictEquals(charToRemove)), Array.join(''));
 
 /**
@@ -326,7 +335,7 @@ export const trimStart = (charToRemove: string): ((self: string) => string) =>
  *
  * @category Utils
  */
-export const trimEnd = (charToRemove: string): ((self: string) => string) =>
+export const trimEnd = (charToRemove: string): MTypes.StringTransformer =>
 	flow(
 		Array.fromIterable,
 		Array.reverse,
@@ -340,7 +349,7 @@ export const trimEnd = (charToRemove: string): ((self: string) => string) =>
  *
  * @category Utils
  */
-export const stripLeftOption = (s: string): ((self: string) => Option.Option<string>) =>
+export const stripLeftOption = (s: string): MTypes.OneArgFunction<string, Option.Option<string>> =>
 	flow(Option.liftPredicate(String.startsWith(s)), Option.map(takeRightBut(s.length)));
 
 /**
@@ -349,20 +358,16 @@ export const stripLeftOption = (s: string): ((self: string) => Option.Option<str
  * @category Utils
  */
 export const stripLeft =
-	(s: string) =>
-	(self: string): string =>
-		pipe(
-			self,
-			stripLeftOption(s),
-			Option.getOrElse(() => self)
-		);
+	(s: string): MTypes.StringTransformer =>
+	(self) =>
+		pipe(self, stripLeftOption(s), Option.getOrElse(Function.constant(self)));
 
 /**
  * If `self` ends with `s`, returns a some of `self` stripped of `s`. Otherwise, returns a none
  *
  * @category Utils
  */
-export const stripRightOption = (s: string): ((self: string) => Option.Option<string>) =>
+export const stripRightOption = (s: string): MTypes.OneArgFunction<string, Option.Option<string>> =>
 	flow(Option.liftPredicate(String.endsWith(s)), Option.map(takeLeftBut(s.length)));
 
 /**
@@ -371,13 +376,9 @@ export const stripRightOption = (s: string): ((self: string) => Option.Option<st
  * @category Utils
  */
 export const stripRight =
-	(s: string) =>
-	(self: string): string =>
-		pipe(
-			self,
-			stripRightOption(s),
-			Option.getOrElse(() => self)
-		);
+	(s: string): MTypes.StringTransformer =>
+	(self) =>
+		pipe(self, stripRightOption(s), Option.getOrElse(Function.constant(self)));
 
 /**
  * Returns the number of occurences of `regexp` in `self`
@@ -386,8 +387,8 @@ export const stripRight =
  */
 
 export const count =
-	(regexp: RegExp | string) =>
-	(self: string): number =>
+	(regexp: RegExp | string): MTypes.NumberFromString =>
+	(self) =>
 		pipe(self, searchAll(regexp), Array.length);
 
 /**
@@ -396,8 +397,8 @@ export const count =
  * @category Utils
  */
 export const append =
-	(s: string) =>
-	(self: string): string =>
+	(s: string): MTypes.StringTransformer =>
+	(self) =>
 		self + s;
 
 /**
@@ -406,8 +407,8 @@ export const append =
  * @category Utils
  */
 export const prepend =
-	(s: string) =>
-	(self: string): string =>
+	(s: string): MTypes.StringTransformer =>
+	(self) =>
 		s + self;
 
 /**
@@ -421,7 +422,8 @@ export const prepend =
  * @category Utils
  */
 export const replaceBetween =
-	(replacement: string, startIndex: number, endIndex: number) => (self: string) =>
+	(replacement: string, startIndex: number, endIndex: number): MTypes.StringTransformer =>
+	(self) =>
 		self.substring(0, startIndex) + replacement + self.substring(endIndex);
 
 /**
@@ -509,8 +511,8 @@ export const splitEquallyRestAtEnd = (
  * @category Utils
  */
 export const tabify =
-	(tabChar: string, count = 1) =>
-	(self: string) => {
+	(tabChar: string, count = 1): MTypes.StringTransformer =>
+	(self) => {
 		const tab = tabChar.repeat(count);
 		// replace resets RegExp.prototype.lastIndex after executing
 		return tab + self.replace(MRegExp.globalLineBreak, '$&' + tab);
@@ -521,21 +523,21 @@ export const tabify =
  *
  * @category Utils
  */
-export const isMultiLine = (self: string): boolean => MRegExp.lineBreak.test(self);
+export const isMultiLine: Predicate.Predicate<string> = (self) => MRegExp.lineBreak.test(self);
 
 /**
  * Returns true if `self` is a SemVer
  *
  * @category Predicates
  */
-export const isSemVer = (self: string): boolean => MRegExp.semVer.test(self);
+export const isSemVer: Predicate.Predicate<string> = (self) => MRegExp.semVer.test(self);
 
 /**
  * Returns true if `self` is an email
  *
  * @category Predicates
  */
-export const isEmail = (self: string): boolean => MRegExp.email.test(self);
+export const isEmail: Predicate.Predicate<string> = (self) => MRegExp.email.test(self);
 
 /**
  * Returns true if the length of `self` is `l`
@@ -543,6 +545,6 @@ export const isEmail = (self: string): boolean => MRegExp.email.test(self);
  * @category Predicates
  */
 export const hasLength =
-	(l: number) =>
-	(self: string): boolean =>
+	(l: number): Predicate.Predicate<string> =>
+	(self) =>
 		self.length === l;

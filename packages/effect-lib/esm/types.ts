@@ -211,6 +211,20 @@ export type Errorish = { readonly message: string; readonly stack?: string | und
  */
 export interface StringTransformer extends OneArgFunction<string> {}
 
+/**
+ * Type that represents a function that transforms a string into a number.
+ *
+ * @category Models
+ */
+export interface NumberFromString extends OneArgFunction<string, number> {}
+
+/**
+ * Type that represents a function that transforms a number into a string.
+ *
+ * @category Models
+ */
+export interface NumberToString extends OneArgFunction<number, string> {}
+
 /* eslint-disable-next-line functional/prefer-readonly-type */
 type Enumerate<N extends number, Acc extends Array<number> = []> =
 	/* eslint-disable-next-line functional/prefer-readonly-type */
