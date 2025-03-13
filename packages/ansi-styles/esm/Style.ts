@@ -40,11 +40,7 @@ export namespace Action {
  *
  * @category Models
  */
-export interface Type
-	extends Action.Type,
-		Equal.Equal,
-		MInspectable.Inspectable,
-		Pipeable.Pipeable {
+export interface Type extends Action.Type, Equal.Equal, MInspectable.Type, Pipeable.Pipeable {
 	/** StyleCharacteristics that define this Style */
 	readonly style: ASStyleCharacteristics.Type;
 

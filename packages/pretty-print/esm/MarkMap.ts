@@ -37,7 +37,7 @@ namespace Marks {
  *
  * @category Models
  */
-export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
+export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable {
 	/** Id of this MarkMap instance. Useful for equality and debugging. */
 	readonly id: string;
 	/** Map of the different marks that appear in a value to stringify */

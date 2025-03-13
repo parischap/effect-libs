@@ -271,7 +271,7 @@ namespace ColorOption {
  *
  * @category Models
  */
-export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
+export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable {
 	/** BoldState of this style */
 	readonly boldState: BoolOption.Type;
 

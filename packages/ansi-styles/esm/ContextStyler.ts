@@ -100,7 +100,7 @@ export namespace IndexFromContext {
 export interface Type<in C>
 	extends Action.Type<C>,
 		Equal.Equal,
-		MInspectable.Inspectable,
+		MInspectable.Type,
 		Pipeable.Pipeable {
 	/** Id of this ContextStyler instance. Useful for equality and debugging */
 	readonly id: string;

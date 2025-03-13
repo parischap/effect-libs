@@ -94,11 +94,7 @@ export namespace Action {
  *
  * @category Models
  */
-export interface Type
-	extends Action.Type,
-		Equal.Equal,
-		MInspectable.Inspectable,
-		Pipeable.Pipeable {
+export interface Type extends Action.Type, Equal.Equal, MInspectable.Type, Pipeable.Pipeable {
 	/** Id of this NonPrimitiveFormatter instance. Useful for equality and debugging */
 	readonly id: string;
 

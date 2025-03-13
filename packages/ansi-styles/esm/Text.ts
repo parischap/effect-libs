@@ -190,7 +190,7 @@ namespace UniStyled {
  *
  * @category Models
  */
-export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
+export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable {
 	/* The text as an array of UniStyled */
 	readonly uniStyledTexts: ReadonlyArray<UniStyled.Type>;
 

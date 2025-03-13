@@ -53,7 +53,7 @@ export namespace Styles {
  *
  * @category Models
  */
-export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
+export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable {
 	/** Id of this StyleMap instance. Useful for equality and debugging. */
 	readonly id: string;
 	/** Map of Sttyle's to be applied to the different parts of the value to stringify */

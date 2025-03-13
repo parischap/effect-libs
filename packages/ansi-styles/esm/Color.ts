@@ -129,7 +129,7 @@ export namespace ThreeBit {
 	 *
 	 * @category Models
 	 */
-	export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
+	export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable {
 		/** Offset of this color */
 		readonly offset: Offset;
 
@@ -844,7 +844,7 @@ export namespace EightBit {
 	 *
 	 * @category Models
 	 */
-	export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
+	export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable {
 		/** Code of this color */
 		readonly code: Code;
 
@@ -925,7 +925,7 @@ export namespace Rgb {
 	 *
 	 * @category Models
 	 */
-	export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
+	export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable {
 		/** Id of this RGB color */
 		readonly id: string;
 

@@ -36,7 +36,7 @@ type _TypeId = typeof _TypeId;
  *
  * @category Models
  */
-export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
+export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable {
 	/** Array of styles contained by this Palette */
 	readonly styles: ASStyles.Type;
 

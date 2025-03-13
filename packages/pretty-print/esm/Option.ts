@@ -139,7 +139,7 @@ export namespace NonPrimitive {
 	 *
 	 * @category Models
 	 */
-	export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
+	export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable {
 		/**
 		 * Id of this type of non-primitive valie. This id is:
 		 *
@@ -590,7 +590,7 @@ export namespace NonPrimitive {
  *
  * @category Models
  */
-export interface Type extends Equal.Equal, MInspectable.Inspectable, Pipeable.Pipeable {
+export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable {
 	/** Id of this Option instance. Useful for equality and debugging */
 	readonly id: string;
 
