@@ -133,6 +133,19 @@ importers:
         specifier: ^3.13.6
         version: 3.13.6
 
+  packages/conversions:
+    dependencies:
+      '@parischap/effect-lib':
+        specifier: workspace:@parischap-dev/effect-lib@*
+        version: link:../effect-lib
+      effect:
+        specifier: ^3.13.6
+        version: 3.13.6
+    devDependencies:
+      '@parischap/conversions':
+        specifier: link:.
+        version: 'link:'
+
   packages/date:
     dependencies:
       '@parischap/effect-lib':
