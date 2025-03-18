@@ -14,7 +14,6 @@ import {
 	Equal,
 	Equivalence,
 	flow,
-	Function,
 	Hash,
 	HashMap,
 	Option,
@@ -123,7 +122,11 @@ export const styles: MTypes.OneArgFunction<Type, Styles.Type> = Struct.get('styl
  * @category Destructors
  */
 export const get = (partName: string): MTypes.OneArgFunction<Type, PPValueBasedStyler.Type> =>
-	flow(styles, HashMap.get(partName), Option.getOrElse(Function.constant(ASContextStyler.none())));
+	flow(
+		styles,
+		HashMap.get(partName),
+		Option.getOrElse(() => ASContextStyler.none())
+	);
 
 /**
  * StyleMap instance for ansi dark mode

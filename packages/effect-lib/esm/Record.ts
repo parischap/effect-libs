@@ -40,7 +40,7 @@ export const tryZeroParamFunction =
 						exception,
 						Option.liftPredicate(MTypes.isNotUndefined),
 						Option.map(flow(MFunction.strictEquals<MTypes.AnyFunction>, Predicate.not)),
-						Option.getOrElse(Function.constant(Function.constTrue))
+						Option.getOrElse(() => Function.constTrue)
 					),
 					flow(MFunction.parameterNumber, MFunction.strictEquals(0))
 				)

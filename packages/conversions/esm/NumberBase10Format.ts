@@ -1,24 +1,16 @@
 /** This module implements conversions from number to string and string to number in base-10 notation */
 
+import { MInspectable, MMatch, MPipeable, MString, MTypes } from '@parischap/effect-lib';
 import {
-	MInspectable,
-	MPipeable,
-	MRegExp,
-	MRegExpString,
-	MString,
-	MTypes
-} from '@parischap/effect-lib';
-import {
+	BigDecimal,
 	Equal,
 	Equivalence,
-	Function,
 	Hash,
 	Option,
 	pipe,
 	Pipeable,
 	Predicate,
-	Struct,
-	Tuple
+	Struct
 } from 'effect';
 import * as CVNumberReader from './NumberReader.js';
 
@@ -361,23 +353,27 @@ export const signDisplay: MTypes.OneArgFunction<Type, SignDisplay> = Struct.get(
  * @category Destructors
  */
 export const toNumberReader = (self: Type): CVNumberReader.Type => {
-	const getParts = pipe(
-		{
-			thousandSeparator: self.thousandSeparator,
-			fractionalSeparator: self.fractionalSeparator,
-			eNotationChars: self.eNotationChars
-		},
-		MRegExpString.number,
-		MRegExpString.makeLine,
-		MRegExp.fromRegExpString(),
-		MString.matchAndGroups,
-		Function.compose(Option.map(Tuple.getSecond))
-	);
+	const getParts = MString.toNumberParts(self);
 
 	return (text) =>
 		Option.gen(function* () {
-			const parts = yield* getParts(text);
-			return 0;
+			const [
+				sign,
+				mantissaIntegerPart,
+				mantissaFractionalPart,
+				exponentSign,
+				exponentAbsoluteValue
+			] = yield* getParts(text);
+
+			const validatedSign = yield* pipe(
+				self.signDisplay,
+				MMatch.make,
+				MMatch.whenIs(SignDisplay.Auto, Function.constant(1)),
+				MMatch.exhaustive,
+				Option.some
+			);
+
+			return BigDecimal.make(BigInt(0), 2);
 		});
 };
 

@@ -10,7 +10,7 @@ import {
 	MTuple,
 	MTypes
 } from '@parischap/effect-lib';
-import { Array, Either, flow, Function, Number, Option, pipe, Predicate } from 'effect';
+import { Array, Either, flow, Number, Option, pipe, Predicate } from 'effect';
 import type * as PPOption from './Option.js';
 import * as PPStringifiedValue from './StringifiedValue.js';
 import * as PPValue from './Value.js';
@@ -99,7 +99,7 @@ export const fromValueIterable = (nonPrimitive: PPValue.NonPrimitive): Type =>
 				)
 			)
 		),
-		Option.getOrElse(Function.constant(Array.empty()))
+		Option.getOrElse(() => Array.empty())
 	);
 /**
  * Builds a Values from an iterable non-primitive value returning a key/value iterator
@@ -137,5 +137,5 @@ export const fromKeyValueIterable =
 					)
 				)
 			),
-			Option.getOrElse(Function.constant(Array.empty()))
+			Option.getOrElse(() => Array.empty())
 		);

@@ -41,9 +41,9 @@ describe('MMatch', () => {
 			const testMatch = pipe(
 				5,
 				MMatch.make,
-				MMatch.when(Number.greaterThanOrEqualTo(6), () => 'a'),
-				MMatch.when(Number.lessThan(6), () => 'b'),
-				MMatch.orElse(() => 'c')
+				MMatch.when(Number.greaterThanOrEqualTo(6), Function.constant('a')),
+				MMatch.when(Number.lessThan(6), Function.constant('b')),
+				MMatch.orElse(Function.constant('c'))
 			);
 			expect(testMatch).toBe('b');
 		});
@@ -52,9 +52,9 @@ describe('MMatch', () => {
 			const testMatch = pipe(
 				5,
 				MMatch.make,
-				MMatch.whenIs(6, () => 'a'),
-				MMatch.whenIs(5, () => 'b'),
-				MMatch.orElse(() => 'c')
+				MMatch.whenIs(6, Function.constant('a')),
+				MMatch.whenIs(5, Function.constant('b')),
+				MMatch.orElse(Function.constant('c'))
 			);
 			expect(testMatch).toBe('b');
 		});
@@ -63,9 +63,9 @@ describe('MMatch', () => {
 			const testMatch = pipe(
 				4,
 				MMatch.make,
-				MMatch.whenIs(6, () => 'a'),
-				MMatch.whenIs(5, () => 'b'),
-				MMatch.orElse(() => 'c')
+				MMatch.whenIs(6, Function.constant('a')),
+				MMatch.whenIs(5, Function.constant('b')),
+				MMatch.orElse(Function.constant('c'))
 			);
 			expect(testMatch).toBe('c');
 		});
@@ -74,9 +74,9 @@ describe('MMatch', () => {
 			const testMatch = pipe(
 				5,
 				MMatch.make,
-				MMatch.whenOr(MFunction.strictEquals(4), MFunction.strictEquals(5), () => 'a'),
-				MMatch.when(MFunction.strictEquals(6), () => 'b'),
-				MMatch.orElse(() => 'c')
+				MMatch.whenOr(MFunction.strictEquals(4), MFunction.strictEquals(5), Function.constant('a')),
+				MMatch.when(MFunction.strictEquals(6), Function.constant('b')),
+				MMatch.orElse(Function.constant('c'))
 			);
 			expect(testMatch).toBe('a');
 		});
@@ -85,9 +85,9 @@ describe('MMatch', () => {
 			const testMatch = pipe(
 				5,
 				MMatch.make,
-				MMatch.when(Number.greaterThan(7), () => 'a'),
-				MMatch.whenAnd(Number.lessThan(7), Number.greaterThan(3), () => 'b'),
-				MMatch.orElse(() => 'c')
+				MMatch.when(Number.greaterThan(7), Function.constant('a')),
+				MMatch.whenAnd(Number.lessThan(7), Number.greaterThan(3), Function.constant('b')),
+				MMatch.orElse(Function.constant('c'))
 			);
 			expect(testMatch).toBe('b');
 		});
@@ -118,9 +118,9 @@ describe('MMatch', () => {
 			const testMatch = pipe(
 				TestEnum.B,
 				MMatch.make,
-				MMatch.when(isA, () => 'a'),
-				MMatch.when(isB, () => 'b'),
-				MMatch.when(isC, () => 'c'),
+				MMatch.when(isA, Function.constant('a')),
+				MMatch.when(isB, Function.constant('b')),
+				MMatch.when(isC, Function.constant('c')),
 				MMatch.exhaustive
 			);
 			expect(testMatch).toBe('b');

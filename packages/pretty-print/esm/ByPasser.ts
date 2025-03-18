@@ -22,7 +22,6 @@ import {
 	Equal,
 	Equivalence,
 	flow,
-	Function,
 	Hash,
 	Option,
 	pipe,
@@ -177,7 +176,7 @@ export const functionToName: Type = make({
 						PPValue.content,
 						MFunction.name,
 						Option.liftPredicate(String.isNonEmpty),
-						Option.getOrElse(Function.constant('anonymous')),
+						Option.getOrElse(() => 'anonymous'),
 						messageTextFormatter(value),
 						ASText.surround(
 							functionNameStartDelimiterMarkShower(value),

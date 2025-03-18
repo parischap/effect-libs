@@ -89,7 +89,7 @@ namespace OptionalCharacteristic {
 		someSequence: MTypes.OneArgFunction<A, ASAnsiString.Sequence>
 	): MTypes.OneArgFunction<Type<A>, ASAnsiString.Sequence> =>
 		Option.match({
-			onNone: Function.constant(Array.empty()),
+			onNone: () => Array.empty(),
 			onSome: someSequence
 		});
 

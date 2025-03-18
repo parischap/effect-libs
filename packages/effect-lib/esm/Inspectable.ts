@@ -1,6 +1,6 @@
 /** A simple extension to the Effect Inspectable module */
 
-import { Function, Inspectable, Option, pipe } from 'effect';
+import { Inspectable, Option, pipe } from 'effect';
 import * as MRecord from './Record.js';
 
 /**
@@ -47,7 +47,7 @@ export const BaseProto = (moduleTag: string): Inspectable.Inspectable => ({
 			MRecord.tryZeroParamStringFunction({
 				functionName: IdSymbol
 			}),
-			Option.getOrElse(Function.constant({ _id: moduleTag, ...this }))
+			Option.getOrElse(() => ({ _id: moduleTag, ...this }))
 		);
 	},
 	toString(this: {}): string {
@@ -56,7 +56,7 @@ export const BaseProto = (moduleTag: string): Inspectable.Inspectable => ({
 			MRecord.tryZeroParamStringFunction({
 				functionName: IdSymbol
 			}),
-			Option.getOrElse(Function.constant(Inspectable.BaseProto.toString.call(this)))
+			Option.getOrElse(() => Inspectable.BaseProto.toString.call(this))
 		);
 	}
 });

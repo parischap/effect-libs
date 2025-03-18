@@ -1166,7 +1166,7 @@ export namespace Number {
 												frac,
 												MString.searchRight(MRegExp.nonZeroDigit),
 												Option.map(flow(Struct.get('startIndex'), ENumber.increment)),
-												Option.getOrElse(Function.constant(0)),
+												Option.getOrElse(() => 0),
 												ENumber.max(self.minFractionalDigits),
 												MFunction.flipDual(EString.takeLeft)(frac),
 												Option.liftPredicate(EString.isNonEmpty),

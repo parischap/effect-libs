@@ -329,7 +329,7 @@ export const splitOnTotalLengthMaker = (limit: number): Type =>
 							MTuple.makeBothBy({
 								toFirst: PPStringifiedProperties.toLength,
 								toSecond: Array.match({
-									onEmpty: Function.constant(ASText.toLength(header) + delimitersLengthWhenEmpty),
+									onEmpty: () => ASText.toLength(header) + delimitersLengthWhenEmpty,
 									onNonEmpty: flow(
 										Array.length,
 										Number.decrement,

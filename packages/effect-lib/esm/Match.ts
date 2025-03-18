@@ -149,9 +149,9 @@ export const when: {
  * 		pipe(
  * 			value,
  * 			MMatch.make,
- * 			MMatch.whenIs(TestEnum.A, () => `a`),
- * 			MMatch.whenIs(TestEnum.B, () => `b`),
- * 			MMatch.whenIs(TestEnum.C, () => `c`),
+ * 			MMatch.whenIs(TestEnum.A, Function.constant(`a`)),
+ * 			MMatch.whenIs(TestEnum.B, Function.constant(`b`)),
+ * 			MMatch.whenIs(TestEnum.C, Function.constant(`c`)),
  * 			MMatch.exhaustive
  * 		);
  */
@@ -190,9 +190,8 @@ export const whenIs =
  * 		pipe(
  * 			value,
  * 			MMatch.make,
- * 			MMatch.whenIs(TestEnum.A, () => `a`),
- * 			MMatch.whenIs(TestEnum.B, () => `b`),
- * 			MMatch.whenIs(TestEnum.C, () => `c`),
+ * 			MMatch.whenIs(TestEnum.A, Function.constant(`a`)),
+ * 			MMatch.whenIsOr(TestEnum.B, TestEnum.C, Function.constant(`b`)),
  * 			MMatch.exhaustive
  * 		);
  */

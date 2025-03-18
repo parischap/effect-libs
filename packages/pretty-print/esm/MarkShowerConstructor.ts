@@ -4,7 +4,7 @@
  */
 
 import { MTypes } from '@parischap/effect-lib';
-import { Function, HashMap, Option, pipe } from 'effect';
+import { HashMap, Option, pipe } from 'effect';
 import * as PPMarkShower from './MarkShower.js';
 import type * as PPOption from './Option.js';
 import * as PPStyleMap from './StyleMap.js';
@@ -33,6 +33,6 @@ export const fromOption = (option: PPOption.Type): Type => {
 		pipe(
 			markShowerMap,
 			HashMap.get(markName),
-			Option.getOrElse(Function.constant(PPMarkShower.empty))
+			Option.getOrElse(() => PPMarkShower.empty)
 		);
 };

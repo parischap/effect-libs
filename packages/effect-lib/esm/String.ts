@@ -281,7 +281,7 @@ export const takeLeftTo =
 			self,
 			search(regexp),
 			Option.map(SearchResult.startIndex),
-			Option.getOrElse(Function.constant(self.length)),
+			Option.getOrElse(() => self.length),
 			MFunction.flipDual(String.takeLeft)(self)
 		);
 
@@ -299,7 +299,7 @@ export const takeRightFrom =
 			self,
 			searchRight(regexp),
 			Option.map((searchResult) => searchResult.endIndex),
-			Option.getOrElse(Function.constant(0)),
+			Option.getOrElse(() => 0),
 			Function.flip(String.slice)(self)
 		);
 
@@ -361,7 +361,11 @@ export const stripLeftOption = (s: string): MTypes.OneArgFunction<string, Option
 export const stripLeft =
 	(s: string): MTypes.StringTransformer =>
 	(self) =>
-		pipe(self, stripLeftOption(s), Option.getOrElse(Function.constant(self)));
+		pipe(
+			self,
+			stripLeftOption(s),
+			Option.getOrElse(() => self)
+		);
 
 /**
  * If `self` ends with `s`, returns a some of `self` stripped of `s`. Otherwise, returns a none
@@ -379,7 +383,11 @@ export const stripRightOption = (s: string): MTypes.OneArgFunction<string, Optio
 export const stripRight =
 	(s: string): MTypes.StringTransformer =>
 	(self) =>
-		pipe(self, stripRightOption(s), Option.getOrElse(Function.constant(self)));
+		pipe(
+			self,
+			stripRightOption(s),
+			Option.getOrElse(() => self)
+		);
 
 /**
  * Returns the number of occurences of `regexp` in `self`

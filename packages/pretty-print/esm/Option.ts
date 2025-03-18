@@ -894,7 +894,7 @@ export const toStringifier = (self: Type): Stringifier.Type => {
 							unBypassedNonPrimitive,
 							self.specificNonPrimitiveOption,
 							Option.map(initializedNonPrimitiveOptionGetter),
-							Option.getOrElse(Function.constant(initializedGeneralNonPrimitiveOption))
+							Option.getOrElse(() => initializedGeneralNonPrimitiveOption)
 						);
 
 						const unBypassedNonPrimitiveUnderMaxDepth = yield* pipe(
@@ -947,21 +947,15 @@ export const toStringifier = (self: Type): Stringifier.Type => {
 						const properties = pipe(
 							initializedNonPrimitiveOption.propertySource,
 							MMatch.make,
-							MMatch.whenIs(
-								PropertySource.FromProperties,
-								pipe(
-									initializedNonPrimitiveOption.maxPrototypeDepth,
-									PPValues.fromProperties,
-									Function.constant
-								)
+							MMatch.whenIs(PropertySource.FromProperties, () =>
+								pipe(initializedNonPrimitiveOption.maxPrototypeDepth, PPValues.fromProperties)
 							),
 							MMatch.whenIs(
 								PropertySource.FromValueIterable,
 								Function.constant(PPValues.fromValueIterable)
 							),
-							MMatch.whenIs(
-								PropertySource.FromKeyValueIterable,
-								Function.constant(PPValues.fromKeyValueIterable(stringifier))
+							MMatch.whenIs(PropertySource.FromKeyValueIterable, () =>
+								PPValues.fromKeyValueIterable(stringifier)
 							),
 							MMatch.exhaustive,
 							Function.apply(unCyclicalUnBypassedNonPrimitiveUnderMaxDepth)
@@ -970,7 +964,7 @@ export const toStringifier = (self: Type): Stringifier.Type => {
 						const sort: MTypes.OneArgFunction<PPValues.Type> = pipe(
 							initializedNonPrimitiveOption.propertySortOrder,
 							Option.map((order) => Array.sort(order)),
-							Option.getOrElse(Function.constant(Function.identity))
+							Option.getOrElse(() => Function.identity)
 						);
 
 						const filteredAndSortedProperties = pipe(
@@ -1017,7 +1011,7 @@ export const toStringifier = (self: Type): Stringifier.Type => {
 									ASText.append(circularReferenceEndDelimiterMarkShower(nonPrimitive))
 								)
 							),
-							Option.getOrElse(Function.constant(ASText.empty)),
+							Option.getOrElse(() => ASText.empty),
 							ASText.append(
 								pipe(
 									nonPrimitive,

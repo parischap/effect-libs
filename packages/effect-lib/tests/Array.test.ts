@@ -304,7 +304,7 @@ describe('MArray', () => {
 			const cyclical = flow(
 				Option.liftPredicate(Number.lessThanOrEqualTo(2)),
 				Option.map(Number.increment),
-				Option.getOrElse(Function.constant(0))
+				Option.getOrElse(() => 0)
 			);
 			expect(
 				pipe(
