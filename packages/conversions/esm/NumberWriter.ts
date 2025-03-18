@@ -4,11 +4,11 @@
  */
 
 import { MTypes } from '@parischap/effect-lib';
-import { Option } from 'effect';
+import { BigDecimal, Option } from 'effect';
 
 /**
  * Type that represents a NumberWriter
  *
  * @category Models
  */
-export interface Type extends MTypes.OneArgFunction<number, Option.Option<string>> {}
+export interface Type extends MTypes.OneArgFunction<BigDecimal.BigDecimal, Option.Option<string>> {}

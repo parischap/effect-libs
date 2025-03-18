@@ -1,22 +1,80 @@
 /** This module implements conversions from number to string and string to number in base-10 notation */
 
 import {
-	MFunction,
 	MInspectable,
 	MPipeable,
+	MRegExp,
 	MRegExpString,
 	MString,
 	MTypes
 } from '@parischap/effect-lib';
-import { Equal, Equivalence, Hash, pipe, Pipeable, Predicate, Struct } from 'effect';
+import {
+	Equal,
+	Equivalence,
+	Function,
+	Hash,
+	Option,
+	pipe,
+	Pipeable,
+	Predicate,
+	Struct,
+	Tuple
+} from 'effect';
 import * as CVNumberReader from './NumberReader.js';
 
-const moduleTag = '@parischap/templater/NumberFormat10/';
+export const moduleTag = '@parischap/templater/NumberFormat10/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
 /**
- * Possible rounding modes
+ * Possible sign display options
+ *
+ * @category Models
+ */
+export enum SignDisplay {
+	/**
+	 * Conversion from number to string: sign display for negative numbers only, including negative
+	 * zero.
+	 *
+	 * Conversion from string to number: conversion will fail if a positive sign is used.
+	 */
+	Auto = 0,
+
+	/**
+	 * Conversion from number to string: sign display for all numbers.
+	 *
+	 * Conversion from string to number: conversion will fail if a sign is not present
+	 */
+	Always = 1,
+
+	/**
+	 * Conversion from number to string: sign display for positive and negative numbers, but not zero
+	 *
+	 * Conversion from string to number: conversion will fail if a sign is not present for a value
+	 * other than 0 or if a sign is present for 0.
+	 */
+	ExceptZero = 2,
+
+	/**
+	 * Conversion from number to string: sign display for negative numbers only, excluding negative
+	 * zero.
+	 *
+	 * Conversion from string to number: conversion will fail if a positive sign is used or if a
+	 * negative sign is used for 0.
+	 */
+	Negative = 3,
+
+	/**
+	 * Conversion from number to string: no sign display.
+	 *
+	 * Conversion from string to number: conversion will fail if any sign is present. The number will
+	 * be treated as positive.
+	 */
+	Never = 4
+}
+
+/**
+ * Possible rounding modes - Only used when converting from number to string
  *
  * @category Models
  */
@@ -31,8 +89,8 @@ export enum RoundingMode {
 	 */
 	Expand = 2,
 	/**
-	 * Round toward 0. This magnitude of the value is always reduced by rounding. Positive values
-	 * round down. Negative values round "less negative"
+	 * Round toward 0. The magnitude of the value is always reduced by rounding. Positive values round
+	 * down. Negative values round "less negative"
 	 */
 	Trunc = 3,
 	/**
@@ -64,57 +122,49 @@ export enum RoundingMode {
 }
 
 /**
- * Possible sign display options
- *
- * @category Models
- */
-export enum SignDisplay {
-	/** Sign display for negative numbers only, including negative zero */
-	Auto = 0,
-	/** Always display sign */
-	Always = 1,
-	/** Sign display for positive and negative numbers, but not zero */
-	ExceptZero = 2,
-	/** Sign display for negative numbers only, excluding negative zero */
-	Negative = 3,
-	/** Never display sign */
-	Never = 4
-}
-
-/**
- * Possible e-notation options
+ * Possible scientific notation options
  *
  * @category Models
  */
 export enum ScientificNotation {
 	/**
-	 * Scientific notation is disallowed when converting from string to number and not used when
-	 * converting from number to string
+	 * Conversion from number to string: scientific notation is not used.
+	 *
+	 * Conversion from string to number: conversion will fail if scientific notation is used.
 	 */
 	None = 0,
+
 	/**
-	 * Scientific notation is allowed but not mandatory when converting from string to number. It is
-	 * used when converting from number to string only if the `minimumIntegerDigits` and
-	 * `maximumIntegerDigits` conditions are not respected otherwise.
+	 * Conversion from number to string: scientific notation is not used.
+	 *
+	 * Conversion from string to number: scientific notation may be used but is not mandatory.
 	 */
 	Standard = 1,
+
 	/**
-	 * The absolute value of the mantissa m must fulfill 1 ≤ |m| < 10 both when converting to and from
-	 * string. When converting from number to string, the e-notation is not used if the exponent is 0.
-	 * An e-notation with a null exponent is tolerated when converting from string to number
+	 * Conversion from number to string: scientific notation is used so that the absolute value of the
+	 * mantissa m fulfills 1 ≤ |m| < 10. It is only displayed if the exponent is different from 0.
+	 *
+	 * Conversion from string to number: the conversion will fail if the absolute value of the
+	 * mantissa m does not fulfill 1 ≤ |m| < 10. A string without an exponent is treated equivalent to
+	 * a string with a null exponent.
 	 */
 	Normalized = 2,
+
 	/**
-	 * The absolute value of the mantissa m must fulfill 1 ≤ |m| < 1000 and the exponent must be a
-	 * multiple of 3 both when converting to and from string. When converting from number to string,
-	 * the e-notation is not used if the exponent is 0. An e-notation with a null exponent is
-	 * tolerated when converting from string to number
+	 * Conversion from number to string: scientific notation is used so that the mantissa m fulfills 1
+	 * ≤ |m| < 1000 and the exponent is a multiple of 3. It is only displayed if the exponent is
+	 * different from 0.
+	 *
+	 * Conversion from string to number: the conversion will fail if the absolute value of the
+	 * mantissa m does not fulfill 1 ≤ |m| < 1000 or if the exponent is not a multiple of 3. A string
+	 * without an exponent is treated equivalent to a string with a null exponent.
 	 */
 	Engineering = 3
 }
 
 /**
- * Type that represents a NumberFormat.
+ * Type that represents a NumberBase10Format.
  *
  * @category Models
  */
@@ -137,46 +187,21 @@ export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable 
 	readonly fractionalSeparator: string;
 
 	/**
-	 * Minimim number of digits forming the integer part of a number. Must be a positive integer less
-	 * than or equal to `maximumIntegerDigits`. Will be clipped to that range otherwise.
-	 *
 	 * Conversion from number to string:
 	 *
-	 * - If `scientificNotation===None`, the string will be left-padded with `0`'s if necessary (it will
-	 *   not if not necessary, so numbers with a null integer part will be displayed starting with '.'
-	 *   when using `minimumIntegerDigits===0` and with '0.' or '0' when using
-	 *   `minimumIntegerDigits===1`). Converting the number 0 to a string will fail when using
-	 *   `minimumIntegerDigits===0`
-	 * - If `scientificNotation===Standard`, an e-notation will be used if necessary to respect the
-	 *   condition
-	 * - In all other situations, the conversion will fail if the condition is not respeected. For
-	 *   instance, trying to use `minimumIntegerDigits!==1` with `scientificNotation===Normalized`
-	 *   will fail
+	 * - If `true` or if `maximumFractionDigits===0`, numbers with a null integer part are displayed
+	 *   starting with '0'. Otherwise, they are displayed starting with '.'.
 	 *
-	 * Conversion from string to number: will fail if the input string does not respect this condition
-	 * (the string must be left-padded with `0`'s to respect the condition if necessary but only if
-	 * `scientificNotation===None`).
+	 * Conversion from string to number
+	 *
+	 * - If `true`, conversion will fail for numbers starting with '.' (after an optional sign).
+	 * - If `false`, conversion will fail for numbers starting with '0.' (after an optional sign).
 	 */
-	readonly minimumIntegerDigits: number;
-
-	/**
-	 * Maximum number of digits forming the integer part of a number. Must be a positive integer. Will
-	 * be taken equal to 0 if not positive. You should not set `maximumIntegerDigits` and
-	 * `maximumFractionDigits` simultaneously to 0 because conversions will always fail.
-	 *
-	 * Conversion from number to string:
-	 *
-	 * - If `scientificNotation===Standard`, an e-notation will be used if necessary to respect the
-	 *   condition
-	 * - In all other situations, the conversion will fail if the condition is not respected.
-	 *
-	 * Conversion from string to number: the conversion will fail if the condition is not respected.
-	 */
-	readonly maximumIntegerDigits: number;
+	readonly show0IntegerPart: boolean;
 
 	/**
 	 * Minimim number of digits forming the fractional part of a number. Must be a positive integer
-	 * less than or equal to `maximumFractionDigits`. Will be clipped to that range otherwise.
+	 * (>=0).
 	 *
 	 * Conversion from number to string: the string will be right-padded with `0`'s if necessary to
 	 * respect the condition
@@ -187,13 +212,11 @@ export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable 
 	readonly minimumFractionDigits: number;
 
 	/**
-	 * Maximum number of digits forming the fractional part of a number. Must be a positive integer.
-	 * Will be taken equal to 0 if not positive. You should not set `maximumIntegerDigits` and
-	 * `maximumFractionDigits` simultaneously to 0 because conversions will always fail.
+	 * Maximum number of digits forming the fractional part of a number. Must be an integer value.
+	 * Will be taken equal to `minimumFractionDigits` if strictly less than that value.
 	 *
 	 * Conversion from number to string: the number will be rounded using the roundingMode to respect
-	 * the condition. Rounding may cause the `minimumIntegerDigits` and `minimumIntegerDigits`
-	 * conditions to fail.
+	 * the condition.
 	 *
 	 * Conversion from string to number: will fail if the input string does not respect this
 	 * condition.
@@ -201,7 +224,7 @@ export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable 
 	readonly maximumFractionDigits: number;
 
 	/**
-	 * Characters to use to represent e-notation. Usually ['e','E']
+	 * Possible characters to use to represent e-notation. Usually ['e','E']
 	 *
 	 * Conversion from number to string: the string at index 0 is used
 	 *
@@ -286,22 +309,6 @@ export const fractionalSeparator: MTypes.OneArgFunction<Type, string> =
 	Struct.get('fractionalSeparator');
 
 /**
- * Returns the `minimumIntegerDigits` property of `self`
- *
- * @category Destructors
- */
-export const minimumIntegerDigits: MTypes.OneArgFunction<Type, number> =
-	Struct.get('minimumIntegerDigits');
-
-/**
- * Returns the `maximumIntegerDigits` property of `self`
- *
- * @category Destructors
- */
-export const maximumIntegerDigits: MTypes.OneArgFunction<Type, number> =
-	Struct.get('maximumIntegerDigits');
-
-/**
  * Returns the `minimumFractionDigits` property of `self`
  *
  * @category Destructors
@@ -349,33 +356,45 @@ export const roundingMode: MTypes.OneArgFunction<Type, RoundingMode> = Struct.ge
 export const signDisplay: MTypes.OneArgFunction<Type, SignDisplay> = Struct.get('signDisplay');
 
 /**
- * Returns the `signDisplay` property of `self`
+ * Returns a NumberReader implementing `self`
  *
  * @category Destructors
  */
 export const toNumberReader = (self: Type): CVNumberReader.Type => {
-	const signPart = pipe(MRegExpString.sign, MRegExpString.optional, MRegExpString.capture);
-
-	const eNotationPart = ENotationOptions.toRegExpString(eNotationOptions);
-
-	const decimalPart = MRegExpString.capture(
-		maxDecimalDigits <= 0 ? MRegExpString.optional('0')
-		: minDecimalDigits <= 0 ?
-			pipe(MRegExpString.positiveInt(maxDecimalDigits, 1, thousandsSep), MRegExpString.optional)
-		:	MRegExpString.strictlyPositiveInt(maxDecimalDigits, minDecimalDigits, thousandsSep)
+	const getParts = pipe(
+		{
+			thousandSeparator: self.thousandSeparator,
+			fractionalSeparator: self.fractionalSeparator,
+			eNotationChars: self.eNotationChars
+		},
+		MRegExpString.number,
+		MRegExpString.makeLine,
+		MRegExp.fromRegExpString(),
+		MString.matchAndGroups,
+		Function.compose(Option.map(Tuple.getSecond))
 	);
 
-	const fractionalPart =
-		maxFractionalDigits <= 0 ?
-			MRegExpString.emptyCapture
-		:	pipe(
-				MRegExpString.digit,
-				MRegExpString.repeatBetween(Math.max(1, minFractionalDigits), maxFractionalDigits),
-				MRegExpString.capture,
-				MString.prepend(MRegExpString.escape(fractionalSep)),
-				MFunction.fIfTrue({ condition: minFractionalDigits <= 0, f: MRegExpString.optional })
-			);
-
-	return signPart + decimalPart + fractionalPart + eNotationPart;
-	return (text) => 1;
+	return (text) =>
+		Option.gen(function* () {
+			const parts = yield* getParts(text);
+			return 0;
+		});
 };
+
+/**
+ * Options instance that represents a UK-style number
+ *
+ * @category Instances
+ */
+export const uk: Type = make({
+	id: 'ukNumberFormet',
+	thousandSeparator: ',',
+	fractionalSeparator: '.',
+	show0IntegerPart: true,
+	minimumFractionDigits: 0,
+	maximumFractionDigits: 3,
+	eNotationChars: ['E', 'e'],
+	scientificNotation: ScientificNotation.None,
+	roundingMode: RoundingMode.HalfExpand,
+	signDisplay: SignDisplay.Auto
+});
