@@ -333,7 +333,7 @@ export const number = ({
 } = {}): string =>
 	_signPart +
 	pipe(thousandSeparator, positiveInt, optionalCapture) +
-	pipe(fractionalSeparator, escape, optional) +
+	pipe(fractionalSeparator, escape, optionalCapture) +
 	_fractionalPart +
 	pipe(
 		eNotationChars,

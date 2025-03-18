@@ -556,14 +556,16 @@ describe('MString', () => {
 			const getParts = MString.toNumberParts();
 
 			it('Simple number', () => {
-				expect(stringArrayOptionEq(getParts('12'), Option.some(['', '12', '', '', '']))).toBe(true);
+				expect(stringArrayOptionEq(getParts('12'), Option.some(['', '12', '', '', '', '']))).toBe(
+					true
+				);
 			});
 
 			it('Complex number', () => {
 				expect(
 					stringArrayOptionEq(
 						getParts('+  18320.45e-2'),
-						Option.some(['+', '18320', '45', '-', '2'])
+						Option.some(['+', '18320', '.', '45', '-', '2'])
 					)
 				).toBe(true);
 			});
@@ -577,13 +579,16 @@ describe('MString', () => {
 
 			it('Simple number', () => {
 				expect(
-					stringArrayOptionEq(getParts('12 430'), Option.some(['', '12 430', '', '', '']))
+					stringArrayOptionEq(getParts('12 430'), Option.some(['', '12 430', '', '', '', '']))
 				).toBe(true);
 			});
 
 			it('Complex number', () => {
 				expect(
-					stringArrayOptionEq(getParts('+18 320.45^2'), Option.some(['+', '18 320', '45', '', '2']))
+					stringArrayOptionEq(
+						getParts('+18 320.45^2'),
+						Option.some(['+', '18 320', '.', '45', '', '2'])
+					)
 				).toBe(true);
 			});
 		});

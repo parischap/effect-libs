@@ -585,6 +585,7 @@ export const toNumberParts = (
 		[
 			sign: string,
 			mantissaIntegerPart: string,
+			fractionalSeparator: string,
 			mantissaFractionalPart: string,
 			exponentSign: string,
 			exponentAbsoluteValue: string
