@@ -1,8 +1,7 @@
 /** Very simple regular expression string module */
 
-import { Function, Number, pipe, Tuple } from 'effect';
+import { Array, Function, pipe, String } from 'effect';
 import * as MArray from './Array.js';
-import * as MNumber from './Number.js';
 import * as MTypes from './types.js';
 
 /**
@@ -35,27 +34,15 @@ export const oneOrMore: MTypes.StringTransformer = (self) => `(?:${self})+`;
 
 /**
  * Returns a new regular expression string where `self` may appear between `low` and `high` times.
- * Both `low` and `high` must be integers. If `high` is null or negative or strictly less than
- * `low`, the function returns an empry string. `high` may receive the `+Infinity` value.
+ * `low` must be a positive integer inferior or equal to `high`. `high` must be a strictly positive
+ * integer that may receive the `+Infinity` value.
  *
  * @category Utils
  */
 export const repeatBetween =
-	(low: number, high: number): MTypes.StringTransformer =>
+	(low: number, high: number): MTypes.OneArgFunction<string> =>
 	(self) =>
-		high <= 0 || high < low ?
-			''
-		:	`(?:${self}){${low < 0 ? 0 : low},${high === +Infinity ? '' : high}}`;
-
-/**
- * Returns a new regular expression string where `self` may appear between 0 and `high` times.
- * `high` must be an integer. If `high` is null or negative, the function returns an empry string.
- * If `high` is `+Infinity`, the function is an alias to `zeroOrMore`
- *
- * @category Utils
- */
-export const repeatAtMost = (high: number): MTypes.StringTransformer =>
-	high === +Infinity ? zeroOrMore : repeatBetween(0, high);
+		`(?:${self}){${low},${high === +Infinity ? '' : high}}`;
 
 /**
  * Returns a new regular expression string where `self` is optional
@@ -73,6 +60,7 @@ export const optional: MTypes.StringTransformer = (self) => `(?:${self})?`;
 export const either = (...args: ReadonlyArray<string>): string =>
 	pipe(
 		args,
+		Array.filter(String.isNonEmpty),
 		MArray.match012({
 			onEmpty: () => '',
 			onSingleton: Function.identity,
@@ -136,6 +124,13 @@ export const positiveLookAhead: MTypes.StringTransformer = (self) => `(?=${self}
  * @category Utils
  */
 export const capture: MTypes.StringTransformer = (self) => `(${self})`;
+
+/**
+ * Returns a new regular expression string where `self` is made optional and captured
+ *
+ * @category Utils
+ */
+export const optionalCapture: MTypes.StringTransformer = (self) => `(${self})?`;
 
 /**
  * Escapes all regex special characters
@@ -245,11 +240,18 @@ export const arrowbase = '@';
 export const tab = backslashString + 't';
 
 /**
- * A regular expression string representing several whitespaces
+ * A regular expression string representing a space
  *
  * @category Instances
  */
-export const whitespaces = zeroOrMore(`[ ${tab}]`);
+export const space = backslashString + 's';
+
+/**
+ * A regular expression string representing zero or more spaces
+ *
+ * @category Instances
+ */
+export const spaces = zeroOrMore(space);
 
 /**
  * A regular expression string representing a digit
@@ -265,142 +267,82 @@ export const digit = backslashString + 'd';
  */
 export const nonZeroDigit = '[1-9]';
 
-/**
- * A regular expression string representing a strictly positive integer in base 10 with at least
- * 'minimumDigits' and at most `maximumDigits` digits. `minimumDigits` and `maximumDigits` must be
- * strictly positive integers with `maximumDigits` greater than or equal to `minimumDigits`.
- * `maximumDigits` may receive the +Infinity value. `minimumDigits` may not receive the +Infinity
- * value.
- */
-const _strictlyPositiveInt = ({
-	minimumDigits,
-	maximumDigits
-}: {
-	readonly minimumDigits: number;
-	readonly maximumDigits: number;
-}): string => nonZeroDigit + repeatBetween(minimumDigits - 1, maximumDigits - 1)(digit);
-
-/** A regular expression string representing a group of `DIGIT_GROUP_SIZE` digits. */
+// A regular expression string representing a group of `DIGIT_GROUP_SIZE` digits.
 const _digitGroup: string = repeatBetween(DIGIT_GROUP_SIZE, DIGIT_GROUP_SIZE)(digit);
+// A regular expression representing a strictly positive integer to (10^(n+1))-1
+const _strictlyPositiveIntNPlusOneDigits = (n: number) => nonZeroDigit + repeatBetween(0, n)(digit);
+// A regular expression representing a strictly positive integer without thousand separator
+const _strictlyPositiveInt = _strictlyPositiveIntNPlusOneDigits(+Infinity);
+// A regular expression representing a strictly positive integer to 999 without thousand separator
+const _strictlyPositiveIntTo999 = _strictlyPositiveIntNPlusOneDigits(2);
 
 /**
- * A regular expression string representing a strictly positive integer in base 10 with at least
- * 'minimumDigits' and at most `maximumDigits` digits using `thousandsSeparator` as thousand
- * separator. `minimumDigits` and `maximumDigits` must be strictly positive integers with
- * `maximumDigits` greater than or equal to `minimumDigits`. `maximumDigits` may receive the
- * +Infinity value. `minimumDigits` may not receive the +Infinity value. If you want no thousand
- * separator, pass an empty string to `thousandsSeparator`.
+ * Returns a regular expression string representing a strictly positive integer in base 10 using
+ * `thousandsSeparator` as thousand separator. The default value for `thousandsSeparator` is an
+ * empty string (no separator).
  *
  * @category Instances
  */
-export const strictlyPositiveInt = ({
-	minimumDigits = 1,
-	maximumDigits = +Infinity,
-	thousandSeparator = ''
+export const strictlyPositiveInt = (thousandSeparator = ''): string =>
+	thousandSeparator === '' ? _strictlyPositiveInt : (
+		_strictlyPositiveIntTo999 + zeroOrMore(escape(thousandSeparator) + _digitGroup)
+	);
+
+/**
+ * Returns a regular expression string representing a positive integer in base 10 using
+ * `thousandsSeparator` as thousand separator. The default value for `thousandsSeparator` is an
+ * empty string (no separator)
+ *
+ * @category Instances
+ */
+export const positiveInt = (thousandSeparator?: string): string =>
+	either('0', strictlyPositiveInt(thousandSeparator));
+
+// Regular expression string representing a captured optional sign potentially followed by spaces
+const _signPart = pipe(sign, capture, String.concat(spaces), optional);
+// Regular expression string representing a captured optional sign
+const _expSignPart = optionalCapture(sign);
+// Regular expression string representing the captured fractional part of a floating-point number
+const _fractionalPart = pipe(digit, repeatBetween(0, +Infinity), capture);
+const tupledCharacterClass = Function.tupled(characterClass);
+
+/**
+ * Returns a regular expression string representing a number in base 10 using `thousandsSeparator`
+ * as thousand separator, `fractionalSeparator` as fractional separator and `eNotationChars` as
+ * possible characters for scientific notation.
+ *
+ * - `thousandSeparator`: Usually a string made of at most one character but not mandatory. Should be
+ *   different from `fractionalSeparator`. Will not throw otherwise but unexpected results might
+ *   occur. Default value: ''.
+ * - `fractionalSeparator`: usually a one-character string but not mandatory. Should not be an empty
+ *   string and be different from `thousandSeparator`. Will not throw otherwise but unexpected
+ *   results might occur. Default value: '.'
+ * - `eNotationChars`: array of possible chracters that can be used to represent an exponent. Default
+ *   value: ['E', 'e']).
+ *
+ * @category Instances
+ */
+export const number = ({
+	thousandSeparator,
+	fractionalSeparator = '.',
+	eNotationChars = ['E', 'e']
 }: {
-	readonly minimumDigits?: number;
-	readonly maximumDigits?: number;
 	readonly thousandSeparator?: string;
-} = {}): string => {
-	if (thousandSeparator === '' || maximumDigits <= DIGIT_GROUP_SIZE)
-		return _strictlyPositiveInt({ minimumDigits, maximumDigits });
-
-	const thousandGroup = escape(thousandSeparator) + _digitGroup;
-
-	const groupedDigit = (
-		groupNumberMin: number,
-		groupNumberMax: number,
-		frontGroupMinimumDigit: number,
-		frontGroupMaximumDigit: number
-	): string =>
-		_strictlyPositiveInt({
-			minimumDigits: frontGroupMinimumDigit,
-			maximumDigits: frontGroupMaximumDigit
-		}) + repeatBetween(groupNumberMin, groupNumberMax)(thousandGroup);
-
-	const [quotientHigh, remainderHigh] =
-		maximumDigits === +Infinity ?
-			[+Infinity, DIGIT_GROUP_SIZE]
-		:	pipe(
-				maximumDigits - 1,
-				MNumber.quotientAndRemainder(DIGIT_GROUP_SIZE),
-				Tuple.mapSecond(Number.sum(1))
-			);
-
-	const [quotientLow, remainderLow] = pipe(
-		minimumDigits - 1,
-		MNumber.quotientAndRemainder(DIGIT_GROUP_SIZE),
-		Tuple.mapSecond(Number.sum(1))
+	readonly fractionalSeparator?: string;
+	readonly eNotationChars?: ReadonlyArray<string>;
+} = {}): string =>
+	_signPart +
+	pipe(thousandSeparator, positiveInt, optionalCapture) +
+	pipe(fractionalSeparator, escape, optional) +
+	_fractionalPart +
+	pipe(
+		eNotationChars,
+		Array.map(escape),
+		tupledCharacterClass,
+		String.concat(_expSignPart),
+		String.concat(pipe(thousandSeparator, positiveInt, capture)),
+		optional
 	);
-
-	if (quotientLow >= quotientHigh)
-		return groupedDigit(quotientHigh, quotientHigh, remainderLow, remainderHigh);
-
-	const fullFirstGroup = remainderHigh === DIGIT_GROUP_SIZE;
-	const fullLastGroup = remainderLow === 1;
-
-	if (fullLastGroup && fullFirstGroup)
-		return groupedDigit(quotientLow, quotientHigh, 1, DIGIT_GROUP_SIZE);
-
-	if (fullLastGroup)
-		return either(
-			groupedDigit(quotientLow, quotientHigh - 1, 1, DIGIT_GROUP_SIZE),
-			groupedDigit(quotientHigh, quotientHigh, 1, remainderHigh)
-		);
-
-	if (fullFirstGroup)
-		return either(
-			groupedDigit(quotientLow, quotientLow, remainderLow, DIGIT_GROUP_SIZE),
-			groupedDigit(quotientLow + 1, quotientHigh, 1, DIGIT_GROUP_SIZE)
-		);
-
-	if (quotientLow === quotientHigh - 1)
-		return either(
-			groupedDigit(quotientLow, quotientLow, remainderLow, DIGIT_GROUP_SIZE),
-			groupedDigit(quotientHigh, quotientHigh, 1, remainderHigh)
-		);
-
-	return either(
-		groupedDigit(quotientLow, quotientLow, remainderLow, DIGIT_GROUP_SIZE),
-		groupedDigit(quotientLow + 1, quotientHigh - 1, 1, DIGIT_GROUP_SIZE),
-		groupedDigit(quotientHigh, quotientHigh, 1, remainderHigh)
-	);
-};
-
-/**
- * A regular expression string representing a positive integer in base 10 with at least
- * 'minimumDigits' and at most `maximumDigits` digits using `thousandsSeparator` as thousand
- * separator. `minimumDigits` and `maximumDigits` must be strictly positive integers with
- * `maximumDigits` greater than or equal to `minimumDigits`. `maximumDigits` may receive the
- * +Infinity value. `minimumDigits` may not receive the +Infinity value. If you want no thousand
- * separator, pass an empty string to `thousandsSeparator`.
- *
- * @category Instances
- */
-export const positiveInt = (
-	params: {
-		readonly minimumDigits?: number;
-		readonly maximumDigits?: number;
-		readonly thousandSeparator?: string;
-	} = {}
-): string => either('0', strictlyPositiveInt(params));
-
-/**
- * A regular expression string representing an integer in base 10 with with at least 'minimumDigits'
- * and at most `maximumDigits` digits using `thousandsSeparator` as thousand separator.
- * `minimumDigits` and `maximumDigits` must be strictly positive integers with `maximumDigits`
- * greater than or equal to `minimumDigits`. `maximumDigits` may receive the +Infinity value. If you
- * want no thousand separator, pass an empty string to `thousandsSeparator`.
- *
- * @category Instances
- */
-export const int = (
-	params: {
-		readonly minimumDigits?: number;
-		readonly maximumDigits?: number;
-		readonly thousandSeparator?: string;
-	} = {}
-): string => optional(sign) + positiveInt(params);
 
 /**
  * A regular expression string representing an integer in base 2.

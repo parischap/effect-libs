@@ -23,6 +23,7 @@ import * as MInspectable from './Inspectable.js';
 import * as MMatch from './Match.js';
 import * as MPipeable from './Pipeable.js';
 import * as MRegExp from './RegExp.js';
+import * as MRegExpString from './RegExpString.js';
 import * as MTuple from './Tuple.js';
 import * as MTypes from './types.js';
 
@@ -548,3 +549,48 @@ export const hasLength =
 	(l: number): Predicate.Predicate<string> =>
 	(self) =>
 		self.length === l;
+
+/**
+ * Splits a string representing a number into a tuple of strings
+ *
+ * - `thousandSeparator`: Usually a string made of at most one character but not mandatory. Should be
+ *   different from `fractionalSeparator`. Will not throw otherwise but unexpected results might
+ *   occur. Default value: ''.
+ * - `fractionalSeparator`: usually a one-character string but not mandatory. Should not be an empty
+ *   string and be different from `thousandSeparator`. Will not throw otherwise but unexpected
+ *   results might occur. Default value: '.'
+ * - `eNotationChars`: array of possible chracters that can be used to represent an exponent. Default
+ *   value: ['E', 'e']).
+ * - `self`: the string representing the number to split
+ *
+ * @category Destructors
+ */
+export const toNumberParts = (
+	params: {
+		readonly thousandSeparator?: string;
+		readonly fractionalSeparator?: string;
+		readonly eNotationChars?: ReadonlyArray<string>;
+	} = {}
+): MTypes.OneArgFunction<
+	string,
+	Option.Option<
+		[
+			sign: string,
+			mantissaIntegerPart: string,
+			mantissaFractionalPart: string,
+			exponentSign: string,
+			exponentAbsoluteValue: string
+		]
+	>
+> => {
+	const getParts = pipe(
+		params,
+		MRegExpString.number,
+		MRegExpString.makeLine,
+		MRegExp.fromRegExpString(),
+		matchAndGroups,
+		Function.compose(Option.map(Tuple.getSecond))
+	);
+
+	return getParts as never;
+};
