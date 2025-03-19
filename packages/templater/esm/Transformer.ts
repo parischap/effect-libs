@@ -207,7 +207,7 @@ export const mapped = <
 		Array.map(MRegExpString.escape),
 		Function.tupled(MRegExpString.either),
 		MRegExpString.atStart,
-		MRegExp.fromRegExpString()
+		RegExp
 	);
 
 	return make({
@@ -923,8 +923,11 @@ export namespace Number {
 			const decimalPart = MRegExpString.capture(
 				maxDecimalDigits <= 0 ? MRegExpString.optional('0')
 				: minDecimalDigits <= 0 ?
-					pipe(MRegExpString.positiveInt(maxDecimalDigits, 1, thousandsSep), MRegExpString.optional)
-				:	MRegExpString.strictlyPositiveInt(maxDecimalDigits, minDecimalDigits, thousandsSep)
+					pipe(
+						MRegExpString.positiveBase10Int(maxDecimalDigits, 1, thousandsSep),
+						MRegExpString.optional
+					)
+				:	MRegExpString.strictlyPositiveBase10Int(maxDecimalDigits, minDecimalDigits, thousandsSep)
 			);
 
 			const fractionalPart =
@@ -948,7 +951,7 @@ export namespace Number {
 					key,
 					toRegExpString,
 					MRegExpString.atStart,
-					MRegExp.fromRegExpString(),
+					RegExp,
 					Tuple.make,
 					Tuple.appendElement(true)
 				),

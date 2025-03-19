@@ -36,7 +36,7 @@ const threeDigits = new RegExp(MRegExpString.digit + MRegExpString.digit + MRegE
 const fourDigits = new RegExp(
 	MRegExpString.digit + MRegExpString.digit + MRegExpString.digit + MRegExpString.digit
 );
-const positiveInt = new RegExp(MRegExpString.positiveInt);
+const positiveBase10Int = new RegExp(MRegExpString.positiveBase10Int);
 const anyWord = new RegExp(MRegExpString.anyWord);
 
 /** Returns an error for an unknown locale */
@@ -165,7 +165,7 @@ const array = Array.make(
 	Descriptor({
 		name: 'y',
 		label: 'year',
-		parsePattern: positiveInt,
+		parsePattern: positiveBase10Int,
 		tokenToMergedToken: numberFromString,
 		mergedToken: 'year'
 	}),
@@ -200,7 +200,7 @@ const array = Array.make(
 	Descriptor({
 		name: 'o',
 		label: 'year day',
-		parsePattern: positiveInt,
+		parsePattern: positiveBase10Int,
 		tokenToMergedToken: numberFromString,
 		mergedToken: 'ordinalDay'
 	}),
@@ -216,7 +216,7 @@ const array = Array.make(
 	Descriptor({
 		name: 'M',
 		label: 'month',
-		parsePattern: positiveInt,
+		parsePattern: positiveBase10Int,
 		tokenToMergedToken: numberFromString,
 		mergedToken: 'month'
 	}),
@@ -252,7 +252,7 @@ const array = Array.make(
 	Descriptor({
 		name: 'd',
 		label: 'day of month',
-		parsePattern: positiveInt,
+		parsePattern: positiveBase10Int,
 		tokenToMergedToken: numberFromString,
 		mergedToken: 'monthDay'
 	}),
@@ -268,7 +268,7 @@ const array = Array.make(
 	Descriptor({
 		name: 'W',
 		label: 'week number',
-		parsePattern: positiveInt,
+		parsePattern: positiveBase10Int,
 		tokenToMergedToken: numberFromString,
 		mergedToken: 'isoWeek'
 	}),
@@ -284,7 +284,7 @@ const array = Array.make(
 	Descriptor({
 		name: 'E',
 		label: 'weekday',
-		parsePattern: positiveInt,
+		parsePattern: positiveBase10Int,
 		tokenToMergedToken: numberFromString,
 		mergedToken: 'weekDay'
 	}),
@@ -312,7 +312,7 @@ const array = Array.make(
 	Descriptor({
 		name: 'H',
 		label: 'hour24',
-		parsePattern: positiveInt,
+		parsePattern: positiveBase10Int,
 		tokenToMergedToken: numberFromString,
 		mergedToken: 'hour24'
 	}),
@@ -328,7 +328,7 @@ const array = Array.make(
 	Descriptor({
 		name: 'h',
 		label: 'hour12',
-		parsePattern: positiveInt,
+		parsePattern: positiveBase10Int,
 		tokenToMergedToken: numberFromString,
 		mergedToken: 'hour12'
 	}),
@@ -354,7 +354,7 @@ const array = Array.make(
 	Descriptor({
 		name: 'm',
 		label: 'minute',
-		parsePattern: positiveInt,
+		parsePattern: positiveBase10Int,
 		tokenToMergedToken: numberFromString,
 		mergedToken: 'minute'
 	}),
@@ -370,7 +370,7 @@ const array = Array.make(
 	Descriptor({
 		name: 's',
 		label: 'second',
-		parsePattern: positiveInt,
+		parsePattern: positiveBase10Int,
 		tokenToMergedToken: numberFromString,
 		mergedToken: 'second'
 	}),
@@ -386,7 +386,7 @@ const array = Array.make(
 	Descriptor({
 		name: 'S',
 		label: 'millisecond',
-		parsePattern: positiveInt,
+		parsePattern: positiveBase10Int,
 		tokenToMergedToken: numberFromString,
 		mergedToken: 'millisecond'
 	}),
@@ -402,7 +402,7 @@ const array = Array.make(
 	Descriptor({
 		name: 'Z',
 		label: 'narrow zone offset',
-		parsePattern: new RegExp(MRegExpString.sign + MRegExpString.positiveInt),
+		parsePattern: new RegExp(MRegExpString.sign + MRegExpString.positiveBase10Int),
 		tokenToMergedToken: numberFromString,
 		mergedToken: 'timeZoneOffset'
 	}),

@@ -1,6 +1,6 @@
 /** This module implements conversions from number to string and string to number in base-10 notation */
 
-import { MInspectable, MMatch, MPipeable, MString, MTypes } from '@parischap/effect-lib';
+import { MFunction, MInspectable, MMatch, MPipeable, MString, MTypes } from '@parischap/effect-lib';
 import {
 	BigDecimal,
 	Equal,
@@ -10,6 +10,7 @@ import {
 	pipe,
 	Pipeable,
 	Predicate,
+	String,
 	Struct
 } from 'effect';
 import * as CVNumberReader from './NumberReader.js';
@@ -360,17 +361,28 @@ export const toNumberReader = (self: Type): CVNumberReader.Type => {
 			const [
 				sign,
 				mantissaIntegerPart,
+				fractionalSeparator,
 				mantissaFractionalPart,
 				exponentSign,
 				exponentAbsoluteValue
 			] = yield* getParts(text);
 
+			const noMantissaFractionalPart = mantissaFractionalPart === '';
+			const zeros = pipe(mantissaFractionalPart);
+			const noMantissaIntegerPart = mantissaIntegerPart === '';
+
+			// mantissaIntegerPart, fractionalSeparator, and mantissaFractionalPart cannot be all absent together and fractionalSeparator cannot be the only one present
 			const validatedSign = yield* pipe(
 				self.signDisplay,
 				MMatch.make,
-				MMatch.whenIs(SignDisplay.Auto, Function.constant(1)),
-				MMatch.exhaustive,
-				Option.some
+				MMatch.whenIs(SignDisplay.Auto, () =>
+					Option.liftPredicate(sign, Predicate.not(MFunction.strictEquals('+')))
+				),
+				MMatch.whenIs(SignDisplay.Always, () => Option.liftPredicate(sign, String.isNonEmpty)),
+				MMatch.whenIs(SignDisplay.ExceptZero, () => Option.liftPredicate(sign, String.isNonEmpty)),
+				MMatch.whenIs(SignDisplay.Negative, () => Option.liftPredicate(sign, String.isNonEmpty)),
+				MMatch.whenIs(SignDisplay.Never, () => Option.liftPredicate(sign, String.isNonEmpty)),
+				MMatch.exhaustive
 			);
 
 			return BigDecimal.make(BigInt(0), 2);
