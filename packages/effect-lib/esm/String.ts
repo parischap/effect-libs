@@ -453,9 +453,19 @@ export const match =
  * @category Destructors
  */
 export const matchAndGroups =
-	(regExp: RegExp) =>
-	(self: string): Option.Option<[match: string, capturingGroups: Array<string>]> =>
-		pipe(regExp, MRegExp.matchAndGroups(self));
+	<N extends number>(regExp: RegExp, capturingGroupNumber: N) =>
+	(self: string): Option.Option<[match: string, capturingGroups: MTypes.Tuple<string, N>]> =>
+		pipe(regExp, MRegExp.matchAndGroups(self, capturingGroupNumber));
+
+/**
+ * Same as matchAndGroups but returns only the captured groups.
+ *
+ * @category Destructors
+ */
+export const capturedGroups =
+	<N extends number>(regExp: RegExp, capturingGroupNumber: N) =>
+	(self: string): Option.Option<MTypes.Tuple<string, N>> =>
+		pipe(regExp, MRegExp.capturedGroups(self, capturingGroupNumber));
 
 /**
  * Splits `self` in two parts at position `n`. The length of the first string is `n` (characters `0`
@@ -559,27 +569,57 @@ export const hasLength =
 		self.length === l;
 
 /**
+ * Returns a positive integer from `self` that must be expressed in base 10 using
+ * `thousandSeparator` as thousand separator. Checks input format and cannot return NaN or
+ * Infinity.
+ *
+ * @category Destructors
+ */
+
+export const base10ToPositiveInt = (
+	thousandSeparator: string
+): MTypes.OneArgFunction<string, Option.Option<number>> => {
+	const getValidatedString = pipe(
+		thousandSeparator,
+		MRegExpString.positiveBase10Int,
+		MRegExpString.makeLine,
+		RegExp,
+		match
+	);
+
+	const removeThousandSeparator =
+		thousandSeparator === '' ?
+			Function.identity
+		:	flow(
+				splitEquallyRestAtStart(MRegExpString.DIGIT_GROUP_SIZE + thousandSeparator.length),
+				Array.map(String.takeRight(MRegExpString.DIGIT_GROUP_SIZE)),
+				Array.join('')
+			);
+
+	return flow(getValidatedString, Option.map(flow(removeThousandSeparator, (n) => +n)));
+};
+
+//const _tupledBigDecimalMake = Function.tupled(BigDecimal.make);
+/**
  * Splits a string representing a number into a tuple of strings
  *
  * - `thousandSeparator`: Usually a string made of at most one character but not mandatory. Should be
  *   different from `fractionalSeparator`. Will not throw otherwise but unexpected results might
- *   occur. Default value: ''.
- * - `fractionalSeparator`: usually a one-character string but not mandatory. Should not be an empty
- *   string and be different from `thousandSeparator`. Will not throw otherwise but unexpected
- *   results might occur. Default value: '.'
- * - `eNotationChars`: array of possible chracters that can be used to represent an exponent. Default
+ *   occur. Use '' for no thousand separator.
+ * - `fractionalSeparator`: usually a one-character string but not mandatory (e.g. '.'). Should not be
+ *   an empty string and be different from `thousandSeparator`. Will not throw otherwise but
+ *   unexpected results might occur.
+ * - `eNotationChars`: array of possible chracters that can be used to represent an exponent (e.g.
  *   value: ['E', 'e']).
  * - `self`: the string representing the number to split
  *
  * @category Destructors
  */
-export const toNumberParts = (
-	params: {
-		readonly thousandSeparator?: string;
-		readonly fractionalSeparator?: string;
-		readonly eNotationChars?: ReadonlyArray<string>;
-	} = {}
-): MTypes.OneArgFunction<
+/*export const toNumberParts = (params: {
+	readonly thousandSeparator: string;
+	readonly fractionalSeparator: string;
+	readonly eNotationChars: ReadonlyArray<string>;
+}): MTypes.OneArgFunction<
 	string,
 	Option.Option<
 		[
@@ -592,14 +632,71 @@ export const toNumberParts = (
 		]
 	>
 > => {
-	const getParts = pipe(
-		params,
-		MRegExpString.number,
-		MRegExpString.makeLine,
-		MRegExp.fromRegExpString(),
-		matchAndGroups,
-		Function.compose(Option.map(Tuple.getSecond))
+	const getParts = capturedGroups(
+		pipe(params, MRegExpString.base10Number, MRegExpString.makeLine, RegExp),
+		6
 	);
 
-	return getParts as never;
-};
+	return (self) =>
+		Option.gen(function* () {
+			const [
+				sign,
+				mantissaIntegerPart,
+				fractionalSeparator,
+				mantissaFractionalPart,
+				exponentSign,
+				exponentAbsoluteValue
+			] = yield* getParts(self);
+
+			const fractionalSeparatorOption = Option.liftPredicate(
+				fractionalSeparator,
+				String.isNonEmpty
+			);
+
+			const mantissaFractionalPartOption = Option.liftPredicate(
+				mantissaFractionalPart,
+				String.isNonEmpty
+			);
+
+			const mantissaFractionalPartValue = yield* pipe(
+				fractionalSeparatorOption,
+				Option.match({
+					onNone: () =>
+						Option.match(mantissaFractionalPartOption, {
+							onNone: () => Option.some(Option.none<string>()),
+							onSome: () => Option.none<Option.Option<string>>()
+						}),
+					onSome: () =>
+						Option.match(mantissaFractionalPartOption, {
+							onNone: () => Option.none<Option.Option<string>>(),
+							onSome: flow(Option.some, Option.some)
+						})
+				}),
+				Option.map(
+					Option.map(
+						flow(
+							MTuple.makeBothBy({
+								toFirst: flow(MNumber.unsafeIntFromString(10), BigInt),
+								toSecond: String.length
+							}),
+							_tupledBigDecimalMake
+						)
+					)
+				)
+			);
+
+			const signValue = pipe(
+				sign,
+				Option.liftPredicate(String.isNonEmpty),
+				Option.map(
+					flow(
+						MMatch.make,
+						MMatch.whenIs('+', Function.constant(1 as const)),
+						MMatch.orElse(Function.constant(-1 as const))
+					)
+				)
+			);
+
+			return 0 as never;
+		});
+};*/

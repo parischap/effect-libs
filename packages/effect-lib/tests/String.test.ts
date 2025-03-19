@@ -1,6 +1,6 @@
 /* eslint-disable functional/no-expression-statements */
 import { MString, MUtils } from '@parischap/effect-lib';
-import { Array, Chunk, Equal, Option, pipe, String, Struct } from 'effect';
+import { Array, Chunk, Equal, Number, Option, pipe, String, Struct } from 'effect';
 import { describe, expect, it } from 'vitest';
 import { SearchResult } from '../esm/String.js';
 
@@ -545,52 +545,20 @@ describe('MString', () => {
 		});
 	});
 
-	describe('toNumberParts', () => {
-		const stringArrayOptionEq = pipe(
-			String.Equivalence,
-			Array.getEquivalence,
-			Option.getEquivalence
-		);
-
-		describe('Default parameters', () => {
-			const getParts = MString.toNumberParts();
-
-			it('Simple number', () => {
-				expect(stringArrayOptionEq(getParts('12'), Option.some(['', '12', '', '', '', '']))).toBe(
-					true
-				);
-			});
-
-			it('Complex number', () => {
-				expect(
-					stringArrayOptionEq(
-						getParts('+  18320.45e-2'),
-						Option.some(['+', '18320', '.', '45', '-', '2'])
-					)
-				).toBe(true);
-			});
+	describe('base10ToPositiveInt', () => {
+		const numberOptionEq = Option.getEquivalence(Number.Equivalence);
+		it('Integer with no sep', () => {
+			const base10ToPositiveInt = MString.base10ToPositiveInt('');
+			expect(numberOptionEq(pipe('10000', base10ToPositiveInt), Option.some(10000))).toBe(true);
+			expect(pipe('10 000', base10ToPositiveInt, Option.isNone)).toBe(true);
 		});
 
-		describe('With space thousand separator and ^ as exponent', () => {
-			const getParts = MString.toNumberParts({
-				thousandSeparator: ' ',
-				eNotationChars: ['^']
-			});
-
-			it('Simple number', () => {
-				expect(
-					stringArrayOptionEq(getParts('12 430'), Option.some(['', '12 430', '', '', '', '']))
-				).toBe(true);
-			});
-
-			it('Complex number', () => {
-				expect(
-					stringArrayOptionEq(
-						getParts('+18 320.45^2'),
-						Option.some(['+', '18 320', '.', '45', '', '2'])
-					)
-				).toBe(true);
-			});
+		it('Integer with space sep', () => {
+			const base10ToPositiveInt = MString.base10ToPositiveInt(' ');
+			expect(numberOptionEq(pipe('16 342 124', base10ToPositiveInt), Option.some(16342124))).toBe(
+				true
+			);
+			expect(pipe('10000', base10ToPositiveInt, Option.isNone)).toBe(true);
 		});
 	});
 });
