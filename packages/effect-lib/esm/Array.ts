@@ -6,7 +6,6 @@ import {
 	Equal,
 	Equivalence,
 	Function,
-	Number,
 	Option,
 	Order,
 	Predicate,
@@ -548,9 +547,11 @@ export const differenceSorted =
 	};
 
 /**
- * Equivalence for arrays of numbers. To be removed when Equal.equals will handle Arrays properly
- * (from Effect 4.0 onwards)
+ * Same as Array.pad but returns a tuple
  *
- * @category Equivalences
+ * @category Utils
  */
-export const numberEquivalence = Array.getEquivalence(Number.Equivalence);
+export const pad = <A, T, N extends number>(
+	n: N,
+	fill: T
+): MTypes.OneArgFunction<Array<A>, MTypes.Tuple<A | T, N>> => Array.pad(n, fill) as never;
