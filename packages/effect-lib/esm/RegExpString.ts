@@ -269,34 +269,32 @@ export const nonZeroDigit = '[1-9]';
 
 // A regular expression string representing a group of `DIGIT_GROUP_SIZE` digits.
 const _digitGroup: string = repeatBetween(DIGIT_GROUP_SIZE, DIGIT_GROUP_SIZE)(digit);
-// A regular expression representing a strictly positive integer to (10^(n+1))-1
+// A regular expression representing a strictly positive integer in base 10 to (10^(n+1))-1 without thousand separator
 const _strictlyPositiveIntNPlusOneDigits = (n: number) => nonZeroDigit + repeatBetween(0, n)(digit);
-// A regular expression representing a strictly positive integer without thousand separator
+// A regular expression representing a strictly positive integer in base 10 without thousand separator
 const _strictlyPositiveInt = _strictlyPositiveIntNPlusOneDigits(+Infinity);
-// A regular expression representing a strictly positive integer to 999 without thousand separator
+// A regular expression representing a strictly positive integer in base 10 to 999 without thousand separator
 const _strictlyPositiveIntTo999 = _strictlyPositiveIntNPlusOneDigits(2);
 
 /**
  * Returns a regular expression string representing a strictly positive integer in base 10 using
- * `thousandsSeparator` as thousand separator. The default value for `thousandsSeparator` is an
- * empty string (no separator).
+ * `thousandSeparator` as thousand separator. Pass an empty string for no thousand separator.
  *
  * @category Instances
  */
-export const strictlyPositiveInt = (thousandSeparator = ''): string =>
+export const strictlyPositiveBase10Int = (thousandSeparator: string): string =>
 	thousandSeparator === '' ? _strictlyPositiveInt : (
 		_strictlyPositiveIntTo999 + zeroOrMore(escape(thousandSeparator) + _digitGroup)
 	);
 
 /**
  * Returns a regular expression string representing a positive integer in base 10 using
- * `thousandsSeparator` as thousand separator. The default value for `thousandsSeparator` is an
- * empty string (no separator)
+ * `thousandSeparator` as thousand separator. Pass an empty string for no thousand separator.
  *
  * @category Instances
  */
-export const positiveInt = (thousandSeparator?: string): string =>
-	either('0', strictlyPositiveInt(thousandSeparator));
+export const positiveBase10Int = (thousandSeparator: string): string =>
+	either('0', strictlyPositiveBase10Int(thousandSeparator));
 
 // Regular expression string representing a captured optional sign potentially followed by spaces
 const _signPart = pipe(sign, capture, String.concat(spaces), optional);
@@ -304,43 +302,43 @@ const _signPart = pipe(sign, capture, String.concat(spaces), optional);
 const _expSignPart = optionalCapture(sign);
 // Regular expression string representing the captured fractional part of a floating-point number
 const _fractionalPart = pipe(digit, repeatBetween(0, +Infinity), capture);
-const tupledCharacterClass = Function.tupled(characterClass);
+const _tupledCharacterClass = Function.tupled(characterClass);
 
 /**
- * Returns a regular expression string representing a number in base 10 using `thousandsSeparator`
- * as thousand separator, `fractionalSeparator` as fractional separator and `eNotationChars` as
+ * Returns a regular expression string representing a number in base 10 using `thousandSeparator` as
+ * thousand separator, `fractionalSeparator` as fractional separator and `eNotationChars` as
  * possible characters for scientific notation.
  *
  * - `thousandSeparator`: Usually a string made of at most one character but not mandatory. Should be
  *   different from `fractionalSeparator`. Will not throw otherwise but unexpected results might
- *   occur. Default value: ''.
- * - `fractionalSeparator`: usually a one-character string but not mandatory. Should not be an empty
- *   string and be different from `thousandSeparator`. Will not throw otherwise but unexpected
- *   results might occur. Default value: '.'
- * - `eNotationChars`: array of possible chracters that can be used to represent an exponent. Default
+ *   occur. Use '' for no thousand separator.
+ * - `fractionalSeparator`: usually a one-character string but not mandatory (e.g. '.'). Should not be
+ *   an empty string and be different from `thousandSeparator`. Will not throw otherwise but
+ *   unexpected results might occur.
+ * - `eNotationChars`: array of possible chracters that can be used to represent an exponent (e.g.
  *   value: ['E', 'e']).
  *
  * @category Instances
  */
-export const number = ({
+export const base10Number = ({
 	thousandSeparator,
-	fractionalSeparator = '.',
-	eNotationChars = ['E', 'e']
+	fractionalSeparator,
+	eNotationChars
 }: {
-	readonly thousandSeparator?: string;
-	readonly fractionalSeparator?: string;
-	readonly eNotationChars?: ReadonlyArray<string>;
-} = {}): string =>
+	readonly thousandSeparator: string;
+	readonly fractionalSeparator: string;
+	readonly eNotationChars: ReadonlyArray<string>;
+}): string =>
 	_signPart +
-	pipe(thousandSeparator, positiveInt, optionalCapture) +
+	pipe(thousandSeparator, positiveBase10Int, optionalCapture) +
 	pipe(fractionalSeparator, escape, optionalCapture) +
 	_fractionalPart +
 	pipe(
 		eNotationChars,
 		Array.map(escape),
-		tupledCharacterClass,
+		_tupledCharacterClass,
 		String.concat(_expSignPart),
-		String.concat(pipe(thousandSeparator, positiveInt, capture)),
+		String.concat(pipe(thousandSeparator, positiveBase10Int, capture)),
 		optional
 	);
 
