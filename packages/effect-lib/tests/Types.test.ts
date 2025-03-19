@@ -34,6 +34,15 @@ type TestTuple = readonly [number, boolean, string];
 type TestRefinement = typeof MTypes.isString;
 type TestOneArgFunction = typeof Number.increment;
 
+/** Tuple */
+MTypes.checkNever<
+	MTypes.Equals<
+		MTypes.Tuple<string, 2 | 3>,
+		readonly [string, string] | readonly [string, string, string]
+	>
+>();
+MTypes.checkNever<MTypes.Equals<MTypes.Tuple<string, number>, ReadonlyArray<string>>>();
+
 /** IntRange */
 MTypes.checkNever<MTypes.Equals<MTypes.IntRange<3, 6>, 3 | 4 | 5>>();
 

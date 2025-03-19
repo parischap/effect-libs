@@ -250,6 +250,20 @@ export type Equals<A, B> =
 export function checkNever<_A extends never>(): void {}
 
 /**
+ * Utilityy type that generates a tuple of `N` `T`'s
+ *
+ * @category Utility types
+ */
+export type Tuple<T, N extends number> =
+	N extends N ?
+		number extends N ?
+			ReadonlyArray<T>
+		:	_TupleOf<T, N, readonly []>
+	:	never;
+type _TupleOf<T, N extends number, R extends ReadonlyArray<unknown>> =
+	R['length'] extends N ? R : _TupleOf<T, N, readonly [T, ...R]>;
+
+/**
  * Utility type that generates a range of numeric literal types
  *
  * @category Utility types
