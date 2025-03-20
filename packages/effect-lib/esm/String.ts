@@ -2,6 +2,7 @@
 
 import {
 	Array,
+	BigDecimal,
 	Equal,
 	Equivalence,
 	Function,
@@ -18,7 +19,9 @@ import {
 	pipe
 } from 'effect';
 import * as MArray from './Array.js';
+import * as MBrand from './Brand.js';
 import * as MFunction from './Function.js';
+import { MBigDecimal } from './index.js';
 import * as MInspectable from './Inspectable.js';
 import * as MMatch from './Match.js';
 import * as MPipeable from './Pipeable.js';
@@ -568,40 +571,52 @@ export const hasLength =
 	(self) =>
 		self.length === l;
 
+/** Function that removes the thousand separator from a string representing an unsigned integer */
+const _removeThousandSeparator = (thousandSeparator: string): MTypes.StringTransformer =>
+	thousandSeparator === '' ?
+		Function.identity
+	:	flow(
+			splitEquallyRestAtStart(MRegExpString.DIGIT_GROUP_SIZE + thousandSeparator.length),
+			Array.map(String.takeRight(MRegExpString.DIGIT_GROUP_SIZE)),
+			Array.join('')
+		);
 /**
- * Returns a positive integer from `self` that must be expressed in base 10 using
- * `thousandSeparator` as thousand separator. Checks input format and cannot return NaN or
- * Infinity.
+ * Returns a `some` of a positive integer if `self` represents an unsigned base 10 number using
+ * `thousandSeparator` as thousand separator. Returns a `none` otherwise.
  *
  * @category Destructors
  */
 
-export const base10ToPositiveInt = (
+export const unsignedBase10IntToNumber = (
 	thousandSeparator: string
-): MTypes.OneArgFunction<string, Option.Option<number>> => {
+): MTypes.OneArgFunction<string, Option.Option<MBrand.PositiveInt.Type>> => {
 	const getValidatedString = pipe(
 		thousandSeparator,
-		MRegExpString.positiveBase10Int,
+		MRegExpString.unsignedBase10Int,
 		MRegExpString.makeLine,
 		RegExp,
 		match
 	);
 
-	const removeThousandSeparator =
-		thousandSeparator === '' ?
-			Function.identity
-		:	flow(
-				splitEquallyRestAtStart(MRegExpString.DIGIT_GROUP_SIZE + thousandSeparator.length),
-				Array.map(String.takeRight(MRegExpString.DIGIT_GROUP_SIZE)),
-				Array.join('')
-			);
+	const removeThousandSeparator = _removeThousandSeparator(thousandSeparator);
 
-	return flow(getValidatedString, Option.map(flow(removeThousandSeparator, (n) => +n)));
+	return flow(
+		getValidatedString,
+		Option.map(flow(removeThousandSeparator, Number, MBrand.PositiveInt.unsafeFromNumber))
+	);
 };
 
-//const _tupledBigDecimalMake = Function.tupled(BigDecimal.make);
 /**
- * Splits a string representing a number into a tuple of strings
+ * Analyzes a string representing a number and returns a tuple containing:
+ *
+ * - `sign`: if the parameter string is signed, a `some` of the multiplicand that represents that sign
+ *   (`+1` for '+' and `-1` for '-'). Otherwise, a `none`.
+ * - `mantissa`: the mantissa expressed as a BigDecimal
+ * - `exponent`: the exponent expressed as a number (an integer in fact)
+ * - `mantissaFractionalPartLength`: the length of the fractional part of the mantissa in the string
+ *   parameter omitting the length of the fractional separator (e.g. 2 for '52.00')
+ *
+ * The parameters to provide are:
  *
  * - `thousandSeparator`: Usually a string made of at most one character but not mandatory. Should be
  *   different from `fractionalSeparator`. Will not throw otherwise but unexpected results might
@@ -615,7 +630,7 @@ export const base10ToPositiveInt = (
  *
  * @category Destructors
  */
-/*export const toNumberParts = (params: {
+export const toNumberParts = (params: {
 	readonly thousandSeparator: string;
 	readonly fractionalSeparator: string;
 	readonly eNotationChars: ReadonlyArray<string>;
@@ -623,70 +638,56 @@ export const base10ToPositiveInt = (
 	string,
 	Option.Option<
 		[
-			sign: string,
-			mantissaIntegerPart: string,
-			fractionalSeparator: string,
-			mantissaFractionalPart: string,
-			exponentSign: string,
-			exponentAbsoluteValue: string
+			sign: Option.Option<1 | -1>,
+			mantissa: BigDecimal.BigDecimal,
+			exponent: number,
+			mantissaFractionalPartLength: number
 		]
 	>
 > => {
+	const removeThousandSeparator = _removeThousandSeparator(params.thousandSeparator);
 	const getParts = capturedGroups(
 		pipe(params, MRegExpString.base10Number, MRegExpString.makeLine, RegExp),
-		6
+		4
 	);
+	const fractionalSeparatorLength = params.fractionalSeparator.length;
 
 	return (self) =>
 		Option.gen(function* () {
-			const [
-				sign,
-				mantissaIntegerPart,
-				fractionalSeparator,
+			const [signPart, mantissaIntegerPart, mantissaFractionalPart, exponentPart] =
+				yield* getParts(self);
+
+			const mantissaFractionalPartLength =
+				mantissaFractionalPart.length - fractionalSeparatorLength;
+
+			const mantissaFractionalPartOption = pipe(
 				mantissaFractionalPart,
-				exponentSign,
-				exponentAbsoluteValue
-			] = yield* getParts(self);
-
-			const fractionalSeparatorOption = Option.liftPredicate(
-				fractionalSeparator,
-				String.isNonEmpty
-			);
-
-			const mantissaFractionalPartOption = Option.liftPredicate(
-				mantissaFractionalPart,
-				String.isNonEmpty
-			);
-
-			const mantissaFractionalPartValue = yield* pipe(
-				fractionalSeparatorOption,
-				Option.match({
-					onNone: () =>
-						Option.match(mantissaFractionalPartOption, {
-							onNone: () => Option.some(Option.none<string>()),
-							onSome: () => Option.none<Option.Option<string>>()
-						}),
-					onSome: () =>
-						Option.match(mantissaFractionalPartOption, {
-							onNone: () => Option.none<Option.Option<string>>(),
-							onSome: flow(Option.some, Option.some)
-						})
-				}),
+				Option.liftPredicate(String.isNonEmpty),
 				Option.map(
-					Option.map(
-						flow(
-							MTuple.makeBothBy({
-								toFirst: flow(MNumber.unsafeIntFromString(10), BigInt),
-								toSecond: String.length
-							}),
-							_tupledBigDecimalMake
-						)
+					flow(
+						String.substring(fractionalSeparatorLength),
+						MBigDecimal.unsafeFromIntString(mantissaFractionalPartLength)
 					)
 				)
 			);
 
-			const signValue = pipe(
-				sign,
+			const mantissa = yield* pipe(
+				mantissaIntegerPart,
+				Option.liftPredicate(String.isNonEmpty),
+				Option.map(flow(removeThousandSeparator, MBigDecimal.unsafeFromIntString(0))),
+				Option.match({
+					onNone: Function.constant(mantissaFractionalPartOption),
+					onSome: flow(
+						BigDecimal.sum(
+							Option.getOrElse(mantissaFractionalPartOption, Function.constant(MBigDecimal.zero))
+						),
+						Option.some
+					)
+				})
+			);
+
+			const sign = pipe(
+				signPart,
 				Option.liftPredicate(String.isNonEmpty),
 				Option.map(
 					flow(
@@ -697,6 +698,6 @@ export const base10ToPositiveInt = (
 				)
 			);
 
-			return 0 as never;
+			return Tuple.make(sign, mantissa, +exponentPart, mantissaFractionalPartLength);
 		});
-};*/
+};

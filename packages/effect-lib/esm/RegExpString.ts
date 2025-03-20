@@ -269,39 +269,39 @@ export const nonZeroDigit = '[1-9]';
 
 // A regular expression string representing a group of `DIGIT_GROUP_SIZE` digits.
 const _digitGroup: string = repeatBetween(DIGIT_GROUP_SIZE, DIGIT_GROUP_SIZE)(digit);
-// A regular expression representing a strictly positive integer in base 10 to (10^(n+1))-1 without thousand separator
-const _strictlyPositiveIntNPlusOneDigits = (n: number) => nonZeroDigit + repeatBetween(0, n)(digit);
-// A regular expression representing a strictly positive integer in base 10 without thousand separator
-const _strictlyPositiveInt = _strictlyPositiveIntNPlusOneDigits(+Infinity);
-// A regular expression representing a strictly positive integer in base 10 to 999 without thousand separator
-const _strictlyPositiveIntTo999 = _strictlyPositiveIntNPlusOneDigits(2);
+// A regular expression representing an unsigned non-null integer in base 10 to (10^(n+1))-1 without thousand separator
+const _unsignedNonNullIntNPlusOneDigits = (n: number) => nonZeroDigit + repeatBetween(0, n)(digit);
+// A regular expression representing an unsigned non-null integer in base 10 without thousand separator
+const _unsignedNonNullInt = _unsignedNonNullIntNPlusOneDigits(+Infinity);
+// A regular expression representing an unsigned non-null integer in base 10 to 999 without thousand separator
+const _unsignedNonNullIntTo999 = _unsignedNonNullIntNPlusOneDigits(2);
 
 /**
- * Returns a regular expression string representing a strictly positive integer in base 10 using
+ * Returns a regular expression string representing an unsigned non-null integer in base 10 using
  * `thousandSeparator` as thousand separator. Pass an empty string for no thousand separator.
  *
  * @category Instances
  */
-export const strictlyPositiveBase10Int = (thousandSeparator: string): string =>
-	thousandSeparator === '' ? _strictlyPositiveInt : (
-		_strictlyPositiveIntTo999 + zeroOrMore(escape(thousandSeparator) + _digitGroup)
+export const unsignedNonNullBase10Int = (thousandSeparator: string): string =>
+	thousandSeparator === '' ? _unsignedNonNullInt : (
+		_unsignedNonNullIntTo999 + zeroOrMore(escape(thousandSeparator) + _digitGroup)
 	);
 
 /**
- * Returns a regular expression string representing a positive integer in base 10 using
+ * Returns a regular expression string representing an unsigned integer in base 10 using
  * `thousandSeparator` as thousand separator. Pass an empty string for no thousand separator.
  *
  * @category Instances
  */
-export const positiveBase10Int = (thousandSeparator: string): string =>
-	either('0', strictlyPositiveBase10Int(thousandSeparator));
+export const unsignedBase10Int = (thousandSeparator: string): string =>
+	either('0', unsignedNonNullBase10Int(thousandSeparator));
 
 // Regular expression string representing a captured optional sign potentially followed by spaces
 const _signPart = pipe(sign, capture, String.concat(spaces), optional);
-// Regular expression string representing a captured optional sign
-const _expSignPart = optionalCapture(sign);
+// Regular expression string representing the captured exponent of a number
+const _expPart = pipe(sign, optional, String.concat(_unsignedNonNullInt), capture);
 // Regular expression string representing the captured fractional part of a floating-point number
-const _fractionalPart = pipe(digit, repeatBetween(0, +Infinity), capture);
+const _fractionalPart = repeatBetween(0, +Infinity)(digit);
 const _tupledCharacterClass = Function.tupled(characterClass);
 
 /**
@@ -330,17 +330,9 @@ export const base10Number = ({
 	readonly eNotationChars: ReadonlyArray<string>;
 }): string =>
 	_signPart +
-	pipe(thousandSeparator, positiveBase10Int, optionalCapture) +
-	pipe(fractionalSeparator, escape, optionalCapture) +
-	_fractionalPart +
-	pipe(
-		eNotationChars,
-		Array.map(escape),
-		_tupledCharacterClass,
-		String.concat(_expSignPart),
-		String.concat(pipe(thousandSeparator, positiveBase10Int, capture)),
-		optional
-	);
+	pipe(thousandSeparator, unsignedBase10Int, optionalCapture) +
+	pipe(fractionalSeparator, escape, String.concat(_fractionalPart), optionalCapture) +
+	pipe(eNotationChars, Array.map(escape), _tupledCharacterClass, String.concat(_expPart), optional);
 
 /**
  * A regular expression string representing an integer in base 2.

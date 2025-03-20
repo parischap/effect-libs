@@ -1,6 +1,7 @@
 /** A simple extension to the Effect Number module */
 
 import { Option } from 'effect';
+import * as MBrand from './Brand.js';
 import * as MString from './String.js';
 import * as MTypes from './types.js';
 
@@ -26,16 +27,15 @@ export const unsafeIntFromString =
 		parseInt(s, radix);
 
 /**
- * Builds a positive integer from a string that must be expressed in base 10 using
- * `thousandSeparator` as thousand separator. Checks input format and cannot return NaN or
- * Infinity.
+ * Returns a `some` of an MBrand.PositiveInt if the string argument represents an unsigned base-10
+ * integer using `thousandSeparator` as thousand separator. Returns a `none` otherwise.
  *
  * @category Constructors
  */
-export const positiveIntFromBase10String = (
+export const fromUnsignedBase10IntString = (
 	thousandSeparator: string
-): MTypes.OneArgFunction<string, Option.Option<number>> =>
-	MString.base10ToPositiveInt(thousandSeparator);
+): MTypes.OneArgFunction<string, Option.Option<MBrand.PositiveInt.Type>> =>
+	MString.unsignedBase10IntToNumber(thousandSeparator);
 
 /**
  * Modulo - Use only with finite integers - Unlike javascript remainder operator (%), this function

@@ -1,6 +1,6 @@
 /* eslint-disable functional/no-expression-statements */
 import { MString, MUtils } from '@parischap/effect-lib';
-import { Array, Chunk, Equal, Number, Option, pipe, String, Struct } from 'effect';
+import { Array, Equal, Number, Option, pipe, String, Struct } from 'effect';
 import { describe, expect, it } from 'vitest';
 import { SearchResult } from '../esm/String.js';
 
@@ -168,7 +168,7 @@ describe('MString', () => {
 	});
 
 	describe('searchAll', () => {
-		//const arrayEq = Array.getEquivalence(MString.SearchResult.Equivalence);
+		const searchResultArrayEq = Array.getEquivalence(MString.SearchResult.equivalence);
 
 		it('string in empty string', () => {
 			expect(pipe('', MString.searchAll('foo'), Array.isEmptyArray)).toBe(true);
@@ -176,16 +176,11 @@ describe('MString', () => {
 
 		it('string in string containing two occurences', () => {
 			expect(
-				pipe(
-					'the foo is foo',
-					MString.searchAll('foo'),
-					// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
-					Chunk.fromIterable,
-					Equal.equals(
-						Chunk.make(
-							MString.SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }),
-							MString.SearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' })
-						)
+				searchResultArrayEq(
+					MString.searchAll('foo')('the foo is foo'),
+					Array.make(
+						MString.SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }),
+						MString.SearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' })
 					)
 				)
 			).toBe(true);
@@ -197,16 +192,11 @@ describe('MString', () => {
 
 		it('RegExp in string containing two occurences', () => {
 			expect(
-				pipe(
-					'the foo is fuo',
-					MString.searchAll(/f.o/),
-					// Revert from Chunk to Array when Effect 4.0 with structural equality comes out
-					Chunk.fromIterable,
-					Equal.equals(
-						Chunk.make(
-							MString.SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }),
-							MString.SearchResult.make({ startIndex: 11, endIndex: 14, match: 'fuo' })
-						)
+				searchResultArrayEq(
+					MString.searchAll(/f.o/)('the foo is fuo'),
+					Array.make(
+						MString.SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }),
+						MString.SearchResult.make({ startIndex: 11, endIndex: 14, match: 'fuo' })
 					)
 				)
 			).toBe(true);
@@ -545,20 +535,41 @@ describe('MString', () => {
 		});
 	});
 
-	describe('base10ToPositiveInt', () => {
+	describe('unsignedBase10IntToNumber', () => {
 		const numberOptionEq = Option.getEquivalence(Number.Equivalence);
 		it('Integer with no sep', () => {
-			const base10ToPositiveInt = MString.base10ToPositiveInt('');
-			expect(numberOptionEq(pipe('10000', base10ToPositiveInt), Option.some(10000))).toBe(true);
-			expect(pipe('10 000', base10ToPositiveInt, Option.isNone)).toBe(true);
+			const unsignedBase10IntToNumber = MString.unsignedBase10IntToNumber('');
+			expect(numberOptionEq(pipe('10000', unsignedBase10IntToNumber), Option.some(10000))).toBe(
+				true
+			);
+			expect(pipe('10 000', unsignedBase10IntToNumber, Option.isNone)).toBe(true);
 		});
 
 		it('Integer with space sep', () => {
-			const base10ToPositiveInt = MString.base10ToPositiveInt(' ');
-			expect(numberOptionEq(pipe('16 342 124', base10ToPositiveInt), Option.some(16342124))).toBe(
+			const unsignedBase10IntToNumber = MString.unsignedBase10IntToNumber(' ');
+			expect(
+				numberOptionEq(pipe('16 342 124', unsignedBase10IntToNumber), Option.some(16342124))
+			).toBe(true);
+			expect(pipe('10000', unsignedBase10IntToNumber, Option.isNone)).toBe(true);
+		});
+	});
+
+	describe('toNumberParts', () => {
+		const numberOptionEq = Option.getEquivalence(Number.Equivalence);
+		it('Integer with no sep', () => {
+			const unsignedBase10IntToNumber = MString.unsignedBase10IntToNumber('');
+			expect(numberOptionEq(pipe('10000', unsignedBase10IntToNumber), Option.some(10000))).toBe(
 				true
 			);
-			expect(pipe('10000', base10ToPositiveInt, Option.isNone)).toBe(true);
+			expect(pipe('10 000', unsignedBase10IntToNumber, Option.isNone)).toBe(true);
+		});
+
+		it('Integer with space sep', () => {
+			const unsignedBase10IntToNumber = MString.unsignedBase10IntToNumber(' ');
+			expect(
+				numberOptionEq(pipe('16 342 124', unsignedBase10IntToNumber), Option.some(16342124))
+			).toBe(true);
+			expect(pipe('10000', unsignedBase10IntToNumber, Option.isNone)).toBe(true);
 		});
 	});
 });

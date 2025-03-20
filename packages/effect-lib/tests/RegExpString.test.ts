@@ -12,10 +12,10 @@ describe('MRegExpString', () => {
 		});
 	});
 
-	describe('strictlyPositiveBase10Int', () => {
+	describe('unsignedNonNullBase10Int', () => {
 		describe('No thousand separator', () => {
 			const regExp = pipe(
-				MRegExpString.strictlyPositiveBase10Int(''),
+				MRegExpString.unsignedNonNullBase10Int(''),
 				MRegExpString.makeLine,
 				RegExp
 			);
@@ -34,7 +34,7 @@ describe('MRegExpString', () => {
 
 		describe('With space thousand separator', () => {
 			const regExp = pipe(
-				MRegExpString.strictlyPositiveBase10Int(' '),
+				MRegExpString.unsignedNonNullBase10Int(' '),
 				MRegExpString.makeLine,
 				RegExp
 			);
@@ -57,9 +57,9 @@ describe('MRegExpString', () => {
 		});
 	});
 
-	describe('positiveBase10Int', () => {
+	describe('unsignedBase10Int', () => {
 		describe('No thousand separator', () => {
-			const regExp = pipe(MRegExpString.positiveBase10Int(''), MRegExpString.makeLine, RegExp);
+			const regExp = pipe(MRegExpString.unsignedBase10Int(''), MRegExpString.makeLine, RegExp);
 
 			it('Matching', () => {
 				expect(regExp.test('0')).toBe(true);
@@ -75,7 +75,7 @@ describe('MRegExpString', () => {
 		});
 
 		describe('With dot thousand separator', () => {
-			const regExp = pipe(MRegExpString.positiveBase10Int('.'), MRegExpString.makeLine, RegExp);
+			const regExp = pipe(MRegExpString.unsignedBase10Int('.'), MRegExpString.makeLine, RegExp);
 
 			it('Matching', () => {
 				expect(regExp.test('0')).toBe(true);
@@ -109,7 +109,7 @@ describe('MRegExpString', () => {
 				MRegExpString.makeLine,
 				RegExp,
 				Tuple.make,
-				Tuple.appendElement(6),
+				Tuple.appendElement(4),
 				Function.tupled(MString.capturedGroups)
 			);
 
@@ -120,16 +120,16 @@ describe('MRegExpString', () => {
 				eNotationChars: ['E', 'e']
 			});
 			it('Simple number', () => {
-				expect(
-					stringArrayOptionEq(getPartsWithNoSep('12'), Option.some(['', '12', '', '', '', '']))
-				).toBe(true);
+				expect(stringArrayOptionEq(getPartsWithNoSep('12'), Option.some(['', '12', '', '']))).toBe(
+					true
+				);
 			});
 
 			it('Complex number', () => {
 				expect(
 					stringArrayOptionEq(
 						getPartsWithNoSep('+  18320.45e-2'),
-						Option.some(['+', '18320', '.', '45', '-', '2'])
+						Option.some(['+', '18320', '.45', '-2'])
 					)
 				).toBe(true);
 			});
@@ -144,10 +144,7 @@ describe('MRegExpString', () => {
 
 			it('Simple number', () => {
 				expect(
-					stringArrayOptionEq(
-						getPartsWithSep('12 430'),
-						Option.some(['', '12 430', '', '', '', ''])
-					)
+					stringArrayOptionEq(getPartsWithSep('12 430'), Option.some(['', '12 430', '', '']))
 				).toBe(true);
 			});
 
@@ -155,7 +152,7 @@ describe('MRegExpString', () => {
 				expect(
 					stringArrayOptionEq(
 						getPartsWithSep('+18 320.45^2'),
-						Option.some(['+', '18 320', '.', '45', '', '2'])
+						Option.some(['+', '18 320', '.45', '2'])
 					)
 				).toBe(true);
 			});

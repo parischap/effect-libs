@@ -924,10 +924,10 @@ export namespace Number {
 				maxDecimalDigits <= 0 ? MRegExpString.optional('0')
 				: minDecimalDigits <= 0 ?
 					pipe(
-						MRegExpString.positiveBase10Int(maxDecimalDigits, 1, thousandsSep),
+						MRegExpString.unsignedBase10Int(maxDecimalDigits, 1, thousandsSep),
 						MRegExpString.optional
 					)
-				:	MRegExpString.strictlyPositiveBase10Int(maxDecimalDigits, minDecimalDigits, thousandsSep)
+				:	MRegExpString.unsignedNonNullBase10Int(maxDecimalDigits, minDecimalDigits, thousandsSep)
 			);
 
 			const fractionalPart =
