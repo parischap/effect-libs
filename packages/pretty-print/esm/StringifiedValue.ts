@@ -18,8 +18,7 @@ import type * as PPStringifiedProperties from './StringifiedProperties.js';
 export interface Type extends MTypes.OverOne<ASText.Type> {}
 
 /**
- * Equivalence for StringifiedValue's. To be removed when Equal.equals will handle Arrays properly
- * (from Effect 4.0 onwards)
+ * Equivalence for StringifiedValue's.
  *
  * @category Equivalences
  */
