@@ -51,9 +51,7 @@ export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable 
  */
 export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
 
-// To be removed when Effect 4.0 with structural equality comes out
 const _equivalence = Array.getEquivalence(ASStyle.equivalence);
-
 /**
  * Equivalence
  *
