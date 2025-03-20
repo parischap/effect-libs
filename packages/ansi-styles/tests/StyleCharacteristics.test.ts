@@ -105,23 +105,23 @@ describe('ASStyleCharacteristics', () => {
 
 	describe('toSequence', () => {
 		it('none', () => {
-			expect(ASStyleCharacteristics.toSequence(ASStyleCharacteristics.none)).toEqual([]);
+			expect(ASStyleCharacteristics.toSequence(ASStyleCharacteristics.none)).toStrictEqual([]);
 		});
 
 		it('bold italic', () => {
-			expect(ASStyleCharacteristics.toSequence(boldItalic)).toEqual([1, 3]);
+			expect(ASStyleCharacteristics.toSequence(boldItalic)).toStrictEqual([1, 3]);
 		});
 
 		it('Not bold not dim red', () => {
-			expect(ASStyleCharacteristics.toSequence(notBoldNotDimRed)).toEqual([22, 31]);
+			expect(ASStyleCharacteristics.toSequence(notBoldNotDimRed)).toStrictEqual([22, 31]);
 		});
 
 		it('Bold not dim red', () => {
-			expect(ASStyleCharacteristics.toSequence(boldNotDimRed)).toEqual([22, 1, 31]);
+			expect(ASStyleCharacteristics.toSequence(boldNotDimRed)).toStrictEqual([22, 1, 31]);
 		});
 
 		it('Not bold dim red', () => {
-			expect(ASStyleCharacteristics.toSequence(notBoldDimRed)).toEqual([22, 2, 31]);
+			expect(ASStyleCharacteristics.toSequence(notBoldDimRed)).toStrictEqual([22, 2, 31]);
 		});
 
 		it('Bold default background color', () => {
@@ -131,7 +131,7 @@ describe('ASStyleCharacteristics', () => {
 					ASStyleCharacteristics.mergeOver(ASStyleCharacteristics.bgDefaultColor),
 					ASStyleCharacteristics.toSequence
 				)
-			).toEqual([1, 49]);
+			).toStrictEqual([1, 49]);
 		});
 	});
 

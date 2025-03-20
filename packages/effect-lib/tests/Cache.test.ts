@@ -119,7 +119,9 @@ describe('MCache', () => {
 			expect(value3).toBe(12);
 			expect(value4).toBe(15);
 			expect(MutableHashMap.size(testCache.store)).toBe(3);
-			expect(pipe(testCache, MCache.keysInStore, Array.sort(Order.number))).toEqual([4, 5, 6]);
+			expect(pipe(testCache, MCache.keysInStore, Array.sort(Order.number))).toStrictEqual([
+				4, 5, 6
+			]);
 		});
 
 		it("Get one more element but don't store it: 8", () => {
@@ -127,7 +129,9 @@ describe('MCache', () => {
 			const value1 = pipe(testCache, MCache.get(8));
 			expect(value1).toBe(20);
 			expect(MutableHashMap.size(testCache.store)).toBe(3);
-			expect(pipe(testCache, MCache.keysInStore, Array.sort(Order.number))).toEqual([4, 5, 6]);
+			expect(pipe(testCache, MCache.keysInStore, Array.sort(Order.number))).toStrictEqual([
+				4, 5, 6
+			]);
 		});
 
 		it('Get element again: 5', () => {
@@ -135,8 +139,8 @@ describe('MCache', () => {
 			const value1 = pipe(testCache, MCache.get(5));
 			expect(value1).toBe(15);
 			expect(MutableHashMap.size(testCache.store)).toBe(2);
-			expect(pipe(testCache, MCache.keysInStore, Array.sort(Order.number))).toEqual([5, 6]);
-			expect(testCache.keyOrder.toJSON()).toEqual({
+			expect(pipe(testCache, MCache.keysInStore, Array.sort(Order.number))).toStrictEqual([5, 6]);
+			expect(testCache.keyOrder.toJSON()).toStrictEqual({
 				_id: 'MutableQueue',
 				values: [6, 5]
 			});
@@ -150,7 +154,9 @@ describe('MCache', () => {
 			expect(value1).toBe(12);
 			expect(value2).toBe(15);
 			expect(MutableHashMap.size(testCache.store)).toBe(3);
-			expect(pipe(testCache, MCache.keysInStore, Array.sort(Order.number))).toEqual([3, 4, 5]);
+			expect(pipe(testCache, MCache.keysInStore, Array.sort(Order.number))).toStrictEqual([
+				3, 4, 5
+			]);
 		});
 
 		it('Get element again: 4', () => {
@@ -158,8 +164,8 @@ describe('MCache', () => {
 			const value1 = pipe(testCache, MCache.get(4));
 			expect(value1).toBe(16);
 			expect(MutableHashMap.size(testCache.store)).toBe(1);
-			expect(pipe(testCache, MCache.keysInStore)).toEqual([4]);
-			expect(testCache.keyOrder.toJSON()).toEqual({
+			expect(pipe(testCache, MCache.keysInStore)).toStrictEqual([4]);
+			expect(testCache.keyOrder.toJSON()).toStrictEqual({
 				_id: 'MutableQueue',
 				values: [4]
 			});

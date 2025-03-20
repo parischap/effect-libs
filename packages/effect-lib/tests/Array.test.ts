@@ -90,9 +90,9 @@ describe('MArray', () => {
 			).toBe(true);
 		});
 		it('Non empty array', () => {
-			expect(pipe(Array.make(3, 2, 5, 3, 8, 3), MArray.findAll(MFunction.strictEquals(3)))).toEqual(
-				[0, 3, 5]
-			);
+			expect(
+				pipe(Array.make(3, 2, 5, 3, 8, 3), MArray.findAll(MFunction.strictEquals(3)))
+			).toStrictEqual([0, 3, 5]);
 		});
 	});
 
@@ -101,7 +101,7 @@ describe('MArray', () => {
 			expect(pipe(Array.empty<number>(), MArray.takeBut(2), Array.isEmptyArray)).toBe(true);
 		});
 		it('Non empty array', () => {
-			expect(pipe(Array.make(3, 2, 5, 3, 8, 3), MArray.takeBut(2))).toEqual([3, 2, 5, 3]);
+			expect(pipe(Array.make(3, 2, 5, 3, 8, 3), MArray.takeBut(2))).toStrictEqual([3, 2, 5, 3]);
 		});
 	});
 
@@ -110,7 +110,9 @@ describe('MArray', () => {
 			expect(pipe(Array.empty<number>(), MArray.takeRightBut(2), Array.isEmptyArray)).toBe(true);
 		});
 		it('Non empty array', () => {
-			expect(pipe(Array.make(3, 2, 5, 3, 8, 3), MArray.takeRightBut(2))).toEqual([5, 3, 8, 3]);
+			expect(pipe(Array.make(3, 2, 5, 3, 8, 3), MArray.takeRightBut(2))).toStrictEqual([
+				5, 3, 8, 3
+			]);
 		});
 	});
 
@@ -138,7 +140,7 @@ describe('MArray', () => {
 		it('Non empty array', () => {
 			expect(
 				pipe(Array.make(1, 2, 3, 4, 5), MArray.longestCommonSubArray(Array.make(1, 2, 3)))
-			).toEqual([1, 2, 3]);
+			).toStrictEqual([1, 2, 3]);
 		});
 	});
 
@@ -157,7 +159,7 @@ describe('MArray', () => {
 				MArray.extractFirst(Option.isSome)
 			);
 			expect(pipe(extracted, Equal.equals(Option.some(Option.some(3))))).toBe(true);
-			expect(remaining).toEqual([Option.none(), Option.some(4), Option.none()]);
+			expect(remaining).toStrictEqual([Option.none(), Option.some(4), Option.none()]);
 		});
 	});
 
@@ -176,7 +178,7 @@ describe('MArray', () => {
 					],
 					MArray.ungroup
 				)
-			).toEqual([
+			).toStrictEqual([
 				[0, 1],
 				[0, 2],
 				[0, 3],
@@ -199,7 +201,7 @@ describe('MArray', () => {
 			];
 			expect(
 				pipe(foo, MArray.groupByNum({ size: 2, fKey: Tuple.getFirst, fValue: Tuple.getSecond }))
-			).toEqual([
+			).toStrictEqual([
 				[1, 2, 3],
 				[1, 2, 3]
 			]);
@@ -215,7 +217,7 @@ describe('MArray', () => {
 			];
 			expect(
 				pipe(foo, MArray.groupByNum({ size: 2, fKey: Tuple.getFirst, fValue: Tuple.getSecond }))
-			).toEqual([[1, 2, 3], []]);
+			).toStrictEqual([[1, 2, 3], []]);
 		});
 	});
 
@@ -238,7 +240,9 @@ describe('MArray', () => {
 				['a', 2],
 				['b', 3]
 			];
-			expect(pipe(foo, MArray.groupBy({ fKey: Tuple.getFirst, fValue: Tuple.getSecond }))).toEqual({
+			expect(
+				pipe(foo, MArray.groupBy({ fKey: Tuple.getFirst, fValue: Tuple.getSecond }))
+			).toStrictEqual({
 				a: [1, 3, 2],
 				b: [2, 1, 3]
 			});
@@ -247,19 +251,19 @@ describe('MArray', () => {
 
 	describe('modifyInit', () => {
 		it('One element', () => {
-			expect(pipe(Array.of(1), MArray.modifyInit(Number.sum(1)))).toEqual([1]);
+			expect(pipe(Array.of(1), MArray.modifyInit(Number.sum(1)))).toStrictEqual([1]);
 		});
 		it('More than one element', () => {
-			expect(pipe(Array.make(1, 2, 3), MArray.modifyInit(Number.sum(1)))).toEqual([2, 3, 3]);
+			expect(pipe(Array.make(1, 2, 3), MArray.modifyInit(Number.sum(1)))).toStrictEqual([2, 3, 3]);
 		});
 	});
 
 	describe('modifyTail', () => {
 		it('One element', () => {
-			expect(pipe(Array.of(1), MArray.modifyTail(Number.sum(1)))).toEqual([1]);
+			expect(pipe(Array.of(1), MArray.modifyTail(Number.sum(1)))).toStrictEqual([1]);
 		});
 		it('More than one element', () => {
-			expect(pipe(Array.make(1, 2, 3), MArray.modifyTail(Number.sum(1)))).toEqual([1, 3, 4]);
+			expect(pipe(Array.make(1, 2, 3), MArray.modifyTail(Number.sum(1)))).toStrictEqual([1, 3, 4]);
 		});
 	});
 
@@ -270,7 +274,7 @@ describe('MArray', () => {
 			).toBe(true);
 		});
 		it('Non empty array', () => {
-			expect(pipe(Array.make(1, 2, 3), MArray.modifyHead(Number.sum(1)))).toEqual([2, 2, 3]);
+			expect(pipe(Array.make(1, 2, 3), MArray.modifyHead(Number.sum(1)))).toStrictEqual([2, 2, 3]);
 		});
 	});
 
@@ -281,7 +285,7 @@ describe('MArray', () => {
 			).toBe(true);
 		});
 		it('Non empty array', () => {
-			expect(pipe(Array.make(1, 2, 3), MArray.modifyLast(Number.sum(1)))).toEqual([1, 2, 4]);
+			expect(pipe(Array.make(1, 2, 3), MArray.modifyLast(Number.sum(1)))).toStrictEqual([1, 2, 4]);
 		});
 	});
 

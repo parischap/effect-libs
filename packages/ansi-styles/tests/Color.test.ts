@@ -180,21 +180,21 @@ describe('Color', () => {
 
 	describe('toSequence', () => {
 		it('ThreeBit', () => {
-			expect(ASColor.toSequence(ASColor.threeBitGreen)).toEqual([32]);
+			expect(ASColor.toSequence(ASColor.threeBitGreen)).toStrictEqual([32]);
 		});
 		it('ThreeBit.Bright', () => {
-			expect(ASColor.toSequence(ASColor.threeBitBrightGreen)).toEqual([92]);
+			expect(ASColor.toSequence(ASColor.threeBitBrightGreen)).toStrictEqual([92]);
 		});
 		it('EightBit', () => {
-			expect(ASColor.toSequence(ASColor.eightBitGreen)).toEqual([38, 5, 2]);
+			expect(ASColor.toSequence(ASColor.eightBitGreen)).toStrictEqual([38, 5, 2]);
 		});
 		it('Rgb predefined', () => {
-			expect(ASColor.toSequence(ASColor.rgbGreen)).toEqual([38, 2, 0, 128, 0]);
+			expect(ASColor.toSequence(ASColor.rgbGreen)).toStrictEqual([38, 2, 0, 128, 0]);
 		});
 		it('Rgb user-defined', () => {
-			expect(ASColor.toSequence(ASColor.Rgb.make({ red: 127, green: 18, blue: 12 }))).toEqual([
-				38, 2, 127, 18, 12
-			]);
+			expect(ASColor.toSequence(ASColor.Rgb.make({ red: 127, green: 18, blue: 12 }))).toStrictEqual(
+				[38, 2, 127, 18, 12]
+			);
 		});
 	});
 });

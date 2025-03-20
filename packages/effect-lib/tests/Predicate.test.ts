@@ -63,7 +63,9 @@ describe('MPredicate', () => {
 	describe('struct', () => {
 		it('Type error expected', () => {
 			/* @ts-expect-error c not present in object */
-			expect(pipe({ a: 0, b: 1 }, MPredicate.struct({ c: Predicate.isNumber }))).toEqual(false);
+			expect(pipe({ a: 0, b: 1 }, MPredicate.struct({ c: Predicate.isNumber }))).toStrictEqual(
+				false
+			);
 		});
 
 		it('Passing', () => {
@@ -72,7 +74,7 @@ describe('MPredicate', () => {
 					{ a: 0, b: 1, c: 2 },
 					MPredicate.struct({ b: Predicate.isNumber, c: Predicate.isNumber })
 				)
-			).toEqual(true);
+			).toStrictEqual(true);
 		});
 
 		it('Failing', () => {
@@ -81,7 +83,7 @@ describe('MPredicate', () => {
 					{ a: 0, b: 1, c: 2 },
 					MPredicate.struct({ b: Predicate.isNumber, c: Predicate.isString })
 				)
-			).toEqual(false);
+			).toStrictEqual(false);
 		});
 	});
 });

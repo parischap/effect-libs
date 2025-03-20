@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 describe('MTuple', () => {
 	describe('make', () => {
 		it('With Array.map', () => {
-			expect(pipe(Array.make(1, 2), Array.map(MTuple.fromSingleValue))).toEqual(
+			expect(pipe(Array.make(1, 2), Array.map(MTuple.fromSingleValue))).toStrictEqual(
 				Array.make(Tuple.make(1), Tuple.make(2))
 			);
 		});
@@ -14,7 +14,7 @@ describe('MTuple', () => {
 
 	describe('makeBoth', () => {
 		it('From number', () => {
-			expect(pipe(1, MTuple.makeBoth)).toEqual(Tuple.make(1, 1));
+			expect(pipe(1, MTuple.makeBoth)).toStrictEqual(Tuple.make(1, 1));
 		});
 	});
 
@@ -22,19 +22,19 @@ describe('MTuple', () => {
 		it('From number', () => {
 			expect(
 				pipe(1, MTuple.makeBothBy({ toFirst: Number.sum(1), toSecond: Number.multiply(2) }))
-			).toEqual(Tuple.make(2, 2));
+			).toStrictEqual(Tuple.make(2, 2));
 		});
 	});
 
 	describe('prepend', () => {
 		it('From number', () => {
-			expect(pipe(1, Tuple.make, MTuple.prependElement(2))).toEqual(Tuple.make(2, 1));
+			expect(pipe(1, Tuple.make, MTuple.prependElement(2))).toStrictEqual(Tuple.make(2, 1));
 		});
 	});
 
 	describe('firstTwo', () => {
 		it('From number tuple', () => {
-			expect(pipe(Tuple.make(1, 2, 3), MTuple.firstTwo)).toEqual(Tuple.make(1, 2));
+			expect(pipe(Tuple.make(1, 2, 3), MTuple.firstTwo)).toStrictEqual(Tuple.make(1, 2));
 		});
 	});
 });
