@@ -2,36 +2,33 @@
 	"folders": [
 		{
 			"name": "effect-lib",
-			"path": "packages/effect-lib"
+			"path": "packages/effect-lib",
 		},
 		{
 			"name": "node-effect-lib",
-			"path": "packages/node-effect-lib"
+			"path": "packages/node-effect-lib",
 		},
 		{
-			"path": "."
+			"path": ".",
 		},
 		{
-			"path": "packages/pretty-print"
+			"path": "packages/pretty-print",
 		},
 		{
-			"path": "packages/playground"
+			"path": "packages/templater",
 		},
 		{
-			"path": "packages/templater"
+			"path": "packages/date",
 		},
 		{
-			"path": "packages/date"
+			"path": "packages/ansi-styles",
 		},
 		{
-			"path": "packages/ansi-styles"
+			"path": "packages/effect-report",
 		},
 		{
-			"path": "packages/effect-report"
+			"path": "packages/intl",
 		},
-		{
-			"path": "packages/conversions"
-		}
 	],
 	"settings": {
 		"typescript.tsdk": "effect-libs\\node_modules\\typescript\\lib",

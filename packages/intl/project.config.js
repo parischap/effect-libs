@@ -1,8 +1,8 @@
 import * as Configs from '@parischap/configs';
 
 export default Configs.configSubRepo({
-	description:
-		'A functional library to read from (PHP sscanf equivalent) and write to (PHP sprintf equivalent) a string with type checking',
+	description: 'A functional library to convert number and dates to string and vice-versa',
+	environment: Configs.Environment.Type.Library,
 	dependencies: {},
 	devDependencies: {},
 	internalPeerDependencies: { 'effect-lib': Configs.constants.effectLibVersion },
@@ -11,19 +11,9 @@ export default Configs.configSubRepo({
 	},
 	examples: ['stupid.ts'],
 	scripts: {},
-	environment: Configs.Environment.Type.Library,
 	bundled: false,
 	visibility: Configs.Visibility.Type.Public,
 	hasStaticFolder: false,
-	hasDocGen: false,
-	keywords: [
-		'printf',
-		'sprintf',
-		'sscanf',
-		'template',
-		'format',
-		'templater',
-		'typescript',
-		'effect'
-	]
+	hasDocGen: true,
+	keywords: ['number', 'text', 'conversion', 'n2t', 'num2text', 'convert', 'typescript', 'effect']
 });

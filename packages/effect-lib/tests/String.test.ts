@@ -535,25 +535,6 @@ describe('MString', () => {
 		});
 	});
 
-	describe('unsignedBase10IntToNumber', () => {
-		const numberOptionEq = Option.getEquivalence(Number.Equivalence);
-		it('Integer with no sep', () => {
-			const unsignedBase10IntToNumber = MString.unsignedBase10IntToNumber('');
-			expect(numberOptionEq(pipe('10000', unsignedBase10IntToNumber), Option.some(10000))).toBe(
-				true
-			);
-			expect(pipe('10 000', unsignedBase10IntToNumber, Option.isNone)).toBe(true);
-		});
-
-		it('Integer with space sep', () => {
-			const unsignedBase10IntToNumber = MString.unsignedBase10IntToNumber(' ');
-			expect(
-				numberOptionEq(pipe('16 342 124', unsignedBase10IntToNumber), Option.some(16342124))
-			).toBe(true);
-			expect(pipe('10000', unsignedBase10IntToNumber, Option.isNone)).toBe(true);
-		});
-	});
-
 	describe('toNumberParts', () => {
 		const numberOptionEq = Option.getEquivalence(Number.Equivalence);
 		it('Integer with no sep', () => {

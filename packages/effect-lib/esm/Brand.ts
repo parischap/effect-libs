@@ -1,7 +1,8 @@
 /** A simple extension to the Effect Brand module */
 
-import { Brand, Number, Predicate } from 'effect';
+import { Brand, flow, Number, Option, pipe, Predicate } from 'effect';
 import * as MNumber from './Number.js';
+import * as MRegExpString from './RegExpString.js';
 import * as MString from './String.js';
 import * as MTypes from './types.js';
 
@@ -285,4 +286,34 @@ export namespace PositiveInt {
 	 * @category Constructors
 	 */
 	export const fromInt = IntRange.fromInt<_TypeId>(0, +Infinity);
+
+	/**
+	 * Constructs a PositiveInt from a string representing a positive integer expressed in base 10
+	 * with `thousandSeparator` as thousand separator. Throws an error if the passed string does not
+	 * match the expected format
+	 *
+	 * @category Destructors
+	 */
+
+	export const fromBase10String = (
+		thousandSeparator: string
+	): MTypes.OneArgFunction<string, Option.Option<Type>> => {
+		const getValidatedString = pipe(
+			thousandSeparator,
+			MRegExpString.unsignedBase10Int,
+			MRegExpString.makeLine,
+			RegExp,
+			MString.match
+		);
+
+		const removeThousandSeparator = MString.removeNCharsEveryMCharsFromRight({
+			m: MRegExpString.DIGIT_GROUP_SIZE,
+			n: thousandSeparator.length
+		});
+
+		return flow(
+			getValidatedString,
+			Option.map(flow(removeThousandSeparator, MNumber.unsafeFromString, unsafeFromNumber))
+		);
+	};
 }

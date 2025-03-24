@@ -1,41 +1,12 @@
 /** A simple extension to the Effect Number module */
 
-import { Option } from 'effect';
-import * as MBrand from './Brand.js';
-import * as MString from './String.js';
-import * as MTypes from './types.js';
-
 /**
- * Constructs a number from a string. Does not check input format and can return NaN or Infinity.
- * Use unsafeIntFromString if you need to pass a radix.
+ * Constructs a number from a string. Does not check input format and can return NaN or Infinity
  *
  * @category Constructors
  */
 
 export const unsafeFromString = (s: string): number => +s;
-
-/**
- * Constructs an integer from a string expressed in base `radix`. Does not check input format and
- * can return NaN
- *
- * @category Constructors
- */
-
-export const unsafeIntFromString =
-	(radix?: number) =>
-	(s: string): number =>
-		parseInt(s, radix);
-
-/**
- * Returns a `some` of an MBrand.PositiveInt if the string argument represents an unsigned base-10
- * integer using `thousandSeparator` as thousand separator. Returns a `none` otherwise.
- *
- * @category Constructors
- */
-export const fromUnsignedBase10IntString = (
-	thousandSeparator: string
-): MTypes.OneArgFunction<string, Option.Option<MBrand.PositiveInt.Type>> =>
-	MString.unsignedBase10IntToNumber(thousandSeparator);
 
 /**
  * Modulo - Use only with finite integers - Unlike javascript remainder operator (%), this function

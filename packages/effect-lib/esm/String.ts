@@ -19,9 +19,8 @@ import {
 	pipe
 } from 'effect';
 import * as MArray from './Array.js';
-import * as MBrand from './Brand.js';
+import * as MBigDecimal from './BigDecimal.js';
 import * as MFunction from './Function.js';
-import { MBigDecimal } from './index.js';
 import * as MInspectable from './Inspectable.js';
 import * as MMatch from './Match.js';
 import * as MPipeable from './Pipeable.js';
@@ -571,40 +570,21 @@ export const hasLength =
 	(self) =>
 		self.length === l;
 
-/** Function that removes the thousand separator from a string representing an unsigned integer */
-const _removeThousandSeparator = (thousandSeparator: string): MTypes.StringTransformer =>
-	thousandSeparator === '' ?
-		Function.identity
-	:	flow(
-			splitEquallyRestAtStart(MRegExpString.DIGIT_GROUP_SIZE + thousandSeparator.length),
-			Array.map(String.takeRight(MRegExpString.DIGIT_GROUP_SIZE)),
-			Array.join('')
-		);
 /**
- * Returns a `some` of a positive integer if `self` represents an unsigned base 10 number using
- * `thousandSeparator` as thousand separator. Returns a `none` otherwise.
+ * Function that removes n chars every m chars starting from the right
  *
- * @category Destructors
+ * @category Utils
  */
-
-export const unsignedBase10IntToNumber = (
-	thousandSeparator: string
-): MTypes.OneArgFunction<string, Option.Option<MBrand.PositiveInt.Type>> => {
-	const getValidatedString = pipe(
-		thousandSeparator,
-		MRegExpString.unsignedBase10Int,
-		MRegExpString.makeLine,
-		RegExp,
-		match
-	);
-
-	const removeThousandSeparator = _removeThousandSeparator(thousandSeparator);
-
-	return flow(
-		getValidatedString,
-		Option.map(flow(removeThousandSeparator, Number, MBrand.PositiveInt.unsafeFromNumber))
-	);
-};
+export const removeNCharsEveryMCharsFromRight = ({
+	m,
+	n
+}: {
+	readonly m: number;
+	readonly n: number;
+}): MTypes.StringTransformer =>
+	n === 0 ?
+		Function.identity
+	:	flow(splitEquallyRestAtStart(m + n), Array.map(String.takeRight(m)), Array.join(''));
 
 /**
  * Analyzes a string representing a number and returns a tuple containing:
@@ -645,7 +625,10 @@ export const toNumberParts = (params: {
 		]
 	>
 > => {
-	const removeThousandSeparator = _removeThousandSeparator(params.thousandSeparator);
+	const removeThousandSeparator = removeNCharsEveryMCharsFromRight({
+		m: MRegExpString.DIGIT_GROUP_SIZE,
+		n: params.thousandSeparator.length
+	});
 	const getParts = capturedGroups(
 		pipe(params, MRegExpString.base10Number, MRegExpString.makeLine, RegExp),
 		4

@@ -121,9 +121,12 @@ describe('MArray', () => {
 			expect(pipe(Array.empty<number>(), MArray.getFromEnd(2), Option.isNone)).toBe(true);
 		});
 		it('Non empty array', () => {
-			expect(pipe(Array.make(1, 2, 3), MArray.getFromEnd(2), Equal.equals(Option.some(1)))).toBe(
-				true
-			);
+			expect(
+				Option.getEquivalence(Number.Equivalence)(
+					pipe(Array.make(1, 2, 3), MArray.getFromEnd(2)),
+					Option.some(1)
+				)
+			).toBe(true);
 		});
 	});
 
@@ -145,21 +148,25 @@ describe('MArray', () => {
 	});
 
 	describe('extractFirst', () => {
+		const tupleEq = Tuple.getEquivalence(
+			Option.getEquivalence(Number.Equivalence),
+			Array.getEquivalence(Number.Equivalence)
+		);
 		it('Empty array', () => {
-			const [extracted, remaining] = pipe(
-				Array.empty<Option.Option<number>>(),
-				MArray.extractFirst(Option.isSome)
-			);
-			expect(pipe(extracted, Option.isNone)).toBe(true);
-			expect(pipe(remaining, Array.isEmptyArray)).toBe(true);
+			expect(
+				tupleEq(
+					pipe(Array.empty<number>(), MArray.extractFirst(MFunction.strictEquals(3))),
+					Tuple.make(Option.none(), Array.empty())
+				)
+			).toBe(true);
 		});
 		it('Non empty array', () => {
-			const [extracted, remaining] = pipe(
-				Array.make(Option.none(), Option.some(3), Option.some(4), Option.none()),
-				MArray.extractFirst(Option.isSome)
-			);
-			expect(pipe(extracted, Equal.equals(Option.some(Option.some(3))))).toBe(true);
-			expect(remaining).toStrictEqual([Option.none(), Option.some(4), Option.none()]);
+			expect(
+				tupleEq(
+					pipe(Array.make(1, 2, 3, 4, 5), MArray.extractFirst(MFunction.strictEquals(3))),
+					Tuple.make(Option.some(3), Array.make(1, 2, 4, 5))
+				)
+			).toBe(true);
 		});
 	});
 
@@ -294,7 +301,7 @@ describe('MArray', () => {
 			expect(
 				pipe(
 					0,
-					MArray.unfold(
+					MArray.unfold<number, number>(
 						flow(
 							MTuple.makeBothBy({ toFirst: Function.identity, toSecond: Number.increment }),
 							Option.liftPredicate(Predicate.tuple(Number.lessThanOrEqualTo(3), Function.constTrue))

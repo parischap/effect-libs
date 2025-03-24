@@ -4,7 +4,7 @@
 	"author": "Jérôme MARTIN",
 	"license": "MIT",
 	"scripts": {
-		"tscheck": "tsc -b tsconfig.check.json --force ",
+		"tscheck": "tsc -b tsconfig.check.json --force",
 		"lint": "eslint .",
 		"lint-fix": "eslint . --fix",
 		"lint-rules": "pnpx @eslint/config-inspector",
@@ -17,24 +17,35 @@
 		"publish-to-npm": "cd dist && npm publish --access=public && cd ..",
 		"install-prod": "cd dist && pnpm i && cd ..",
 		"build": "pnpm clean-prod && pnpm --if-present pre-build && pnpm compile && pnpm --if-present post-build && pnpm --if-present generate-types && pnpm install-prod",
+		"prodify": "prodify",
+		"examples": "",
 		"transpile-esm": "tsc -b tsconfig.esm.json",
 		"transpile-cjs": "babel dist/esm --plugins @babel/transform-export-namespace-from --plugins @babel/transform-modules-commonjs --out-dir dist/cjs --source-maps",
 		"transpile-annotate": "babel dist --plugins annotate-pure-calls --out-dir dist --source-maps",
 		"compile": "pnpm transpile-esm && pnpm transpile-cjs && pnpm transpile-annotate && pnpm prodify",
 		"build-and-publish": "pnpm build && pnpm checks && pnpm publish-to-npm",
-		"docgen": "docgen",
-		"prodify": "prodify",
-		"bundle": "bundle-files"
+		"docgen": "docgen"
 	},
+	"description": "An extension to the official Effect library",
 	"module": "./esm/index.js",
 	"exports": {
 		".": {
 			"import": "./esm/index.ts"
 		}
 	},
+	"dependencies": {},
+	"devDependencies": {
+		"@parischap/effect-lib": "link:."
+	},
+	"peerDependencies": {
+		"effect": "^3.14.1"
+	},
 	"publishConfig": {
 		"scripts": {},
 		"devDependencies": {},
+		"peerDependencies": {
+			"effect": "^3.14.1"
+		},
 		"publishConfig": {},
 		"packageManager": "",
 		"pnpm": {},
@@ -68,12 +79,5 @@
 		"effect",
 		"typescript",
 		"functional-programming"
-	],
-	"devDependencies": {
-		"@parischap/effect-lib": "link:."
-	},
-	"description": "An extension to the official Effect library",
-	"peerDependencies": {
-		"effect": "^3.13.6"
-	}
+	]
 }
