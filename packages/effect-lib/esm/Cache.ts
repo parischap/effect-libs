@@ -1,15 +1,17 @@
 /**
- * This module implements a cache with a fixed capacity and time-to-live. The contents of the cache
- * is populated by a lookup function which may be recursive. The cache capacity may temporarily be
- * exceeded if the lookup function is recursive (because the cache is also used to determine
- * circularity). Keys are compared using Equal.equals.
+ * This module implements a mutable cache with an optional capacity and and an optional
+ * time-to-live. The contents of the cache is populated by a lookup function which may be recursive.
+ * The cache capacity may temporarily be exceeded if the lookup function is recursive (because the
+ * cache is also used to determine circularity). Keys are compared using Equal.equals.
+ *
+ * Atention: a cache is a mutable object.
  */
 import {
 	Array,
 	Equal,
 	Inspectable,
 	MutableHashMap,
-	MutableQueue,
+	MutableList,
 	Option,
 	Pipeable,
 	Predicate,
@@ -19,6 +21,7 @@ import {
 	pipe
 } from 'effect';
 import * as MInspectable from './Inspectable.js';
+import * as MNumber from './Number.js';
 import * as MPipeable from './Pipeable.js';
 import * as MTypes from './types.js';
 
@@ -115,17 +118,28 @@ export interface Type<in out A, in out B> extends Inspectable.Inspectable, Pipea
 	 * flag will be sent if the value needs to be retreived while it is being calculated.
 	 */
 	readonly store: MutableHashMap.MutableHashMap<A, Option.Option<ValueContainer.Type<B>>>;
+
 	/**
-	 * A queue used to track the order in which keys were inserted so as to remove the oldest keys
+	 * A list used to track the order in which keys were inserted so as to remove the oldest keys
 	 * first in case the cache has bounded capacity
 	 */
-	readonly keyOrder: MutableQueue.MutableQueue<A>;
+	readonly keyListInOrder: MutableList.MutableList<A>;
+
 	/** The lookup function used to populate the cache */
 	readonly lookUp: LookUp<A, B>;
-	/** The capicity of the cache. If undefined, the cache is unbounded */
-	readonly capacity: number | undefined;
-	/** The lifespan of the values in the cache. If undefined, the values never expire */
-	readonly lifeSpan: number | undefined;
+
+	/**
+	 * The capicity of the cache. If +Infinity, the cache is unbounded. If Nan or a negative value,
+	 * capacity is set to 0
+	 */
+	readonly capacity: number;
+
+	/**
+	 * The lifespan of the values in the cache. If +Infinity, the values never expire. If Nan or a
+	 * negative value, the lifespan is set to 0
+	 */
+	readonly lifeSpan: number;
+
 	/** @internal */
 	readonly [_TypeId]: {
 		readonly _A: Types.Invariant<A>;
@@ -192,8 +206,8 @@ const _make = <A, B>(params: MTypes.Data<Type<A, B>>): Type<A, B> =>
  */
 export const make = <A, B>({
 	lookUp,
-	capacity = undefined,
-	lifeSpan = undefined
+	capacity = +Infinity,
+	lifeSpan = +Infinity
 }: {
 	readonly lookUp: LookUp<A, B>;
 	readonly capacity?: number;
@@ -201,10 +215,10 @@ export const make = <A, B>({
 }) =>
 	_make({
 		lookUp,
-		capacity,
-		lifeSpan,
+		capacity: isNaN(capacity) || capacity < 0 ? 0 : capacity,
+		lifeSpan: isNaN(lifeSpan) || lifeSpan < 0 ? 0 : lifeSpan,
 		store: MutableHashMap.empty<A, Option.Option<ValueContainer.Type<B>>>(),
-		keyOrder: MutableQueue.unbounded<A>()
+		keyListInOrder: MutableList.empty<A>()
 	});
 
 /**
@@ -212,7 +226,7 @@ export const make = <A, B>({
  * Equal.equals), the lookup function is called to populate the cache. If it is in the cache but is
  * too old,the lookup function is called to refresh it.
  *
- * @category Destructors
+ * @category Utils
  * @example
  * 	import { MCache } from '@parischap/effect-lib';
  * 	import { Tuple } from 'effect';
@@ -226,9 +240,13 @@ export const make = <A, B>({
 export const get =
 	<A>(a: A) =>
 	<B>(self: Type<A, B>): B => {
-		const now = MTypes.isUndefined(self.lifeSpan) ? 0 : Date.now();
+		const lifeSpan = self.lifeSpan;
+		const now = MNumber.isFinite(lifeSpan) ? Date.now() : 0;
+		const capacity = self.capacity;
+		const hasBoundedCapacity = MNumber.isFinite(capacity);
 		const store = self.store;
-		const keyOrder = self.keyOrder;
+		const keyListInOrder = self.keyListInOrder;
+
 		return pipe(
 			store,
 			MutableHashMap.get(a),
@@ -248,15 +266,12 @@ export const get =
 							a,
 							Option.some(ValueContainer.make({ value: result, storeDate: now }))
 						);
-						if (self.capacity !== undefined) {
+						if (hasBoundedCapacity) {
 							/* eslint-disable-next-line functional/no-expression-statements */
-							MutableQueue.offer(keyOrder, a);
-							if (MutableQueue.length(keyOrder) > self.capacity) {
+							MutableList.prepend(keyListInOrder, a);
+							if (MutableList.length(keyListInOrder) > capacity) {
 								/* eslint-disable-next-line functional/no-expression-statements */
-								MutableHashMap.remove(
-									store,
-									MutableQueue.poll(keyOrder, MutableQueue.EmptyMutableQueue)
-								);
+								MutableHashMap.remove(store, MutableList.pop(keyListInOrder));
 							}
 						}
 						/* eslint-disable-next-line functional/no-expression-statements */
@@ -268,17 +283,17 @@ export const get =
 						pipe({ key: a, memoized: undefined, isCircular: true }, self.lookUp, Tuple.getFirst),
 					onSome: (valueContainer) => {
 						if (
-							self.lifeSpan !== undefined &&
 							// if lifespan===0, we don't do the test because it could return false if the two values are stored in the same millisecond.
-							(self.lifeSpan === 0 || now - valueContainer.storeDate > self.lifeSpan)
+							lifeSpan <= 0 ||
+							now - valueContainer.storeDate > lifeSpan
 						) {
-							if (self.capacity !== undefined) {
-								let head = MutableQueue.poll(keyOrder, MutableQueue.EmptyMutableQueue);
+							if (hasBoundedCapacity) {
+								let head = MutableList.pop(keyListInOrder);
 								while (!Equal.equals(a, head)) {
 									/* eslint-disable-next-line functional/no-expression-statements */
 									MutableHashMap.remove(store, head);
 									/* eslint-disable-next-line functional/no-expression-statements */
-									head = MutableQueue.poll(keyOrder, MutableQueue.EmptyMutableQueue);
+									head = MutableList.pop(keyListInOrder);
 								}
 							}
 							/* eslint-disable-next-line functional/no-expression-statements */
@@ -295,9 +310,9 @@ export const get =
 									a,
 									Option.some(ValueContainer.make({ value: result, storeDate: now }))
 								);
-								if (self.capacity !== undefined)
+								if (hasBoundedCapacity)
 									/* eslint-disable-next-line functional/no-expression-statements */
-									MutableQueue.offer(keyOrder, a);
+									MutableList.prepend(keyListInOrder, a);
 								/* eslint-disable-next-line functional/no-expression-statements */
 							} else MutableHashMap.remove(store, a);
 							return result;
@@ -313,7 +328,7 @@ export const get =
 /**
  * Returns a function that gets a value from the `self`
  *
- * @category Destructors
+ * @category Utils
  */
 export const toGetter =
 	<A, B>(self: Type<A, B>): MTypes.OneArgFunction<A, B> =>
@@ -323,7 +338,7 @@ export const toGetter =
 /**
  * Returns an array of the keys whose value is currently stored in the cache
  *
- * @category Destructors
+ * @category Utils
  */
 export const keysInStore = <A, B>(self: Type<A, B>): Array<A> =>
 	pipe(
