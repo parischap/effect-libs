@@ -137,7 +137,7 @@ export const when: {
  * @category Utils
  * @example
  * 	import { MMatch } from '@parischap/effect-lib';
- * 	import { pipe } from 'effect';
+ * 	import { pipe, Function } from 'effect';
  *
  * 	enum TestEnum {
  * 		A = `a`,
@@ -178,7 +178,7 @@ export const whenIs =
  * @category Utils
  * @example
  * 	import { MMatch } from '@parischap/effect-lib';
- * 	import { pipe } from 'effect';
+ * 	import { pipe, Function } from 'effect';
  *
  * 	enum TestEnum {
  * 		A = `a`,
