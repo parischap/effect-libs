@@ -1,6 +1,5 @@
 /* eslint-disable functional/no-expression-statements */
 import { ASStyle, ASText } from '@parischap/ansi-styles';
-import { MUtils } from '@parischap/effect-lib';
 import {
 	PPMarkShowerConstructor,
 	PPNonPrimitiveFormatter,
@@ -11,7 +10,7 @@ import {
 	PPValueBasedStylerConstructor
 } from '@parischap/pretty-print';
 import { Array, Equal, Function, pipe } from 'effect';
-import { describe, expect, it } from 'vitest';
+import { describe, it } from 'vitest';
 
 describe('PropertyFormatter', () => {
 	const utilInspectLike = PPOption.darkModeUtilInspectLike;
@@ -28,7 +27,10 @@ describe('PropertyFormatter', () => {
 
 	describe('Tag, prototype and guards', () => {
 		it('moduleTag', () => {
-			expect(PPPropertyFormatter.moduleTag).toBe(MUtils.moduleTagFromFileName(__filename));
+			TEUtils.strictEqual(
+				PPPropertyFormatter.moduleTag,
+				TEUtils.moduleTagFromTestFilePath(__filename)
+			);
 		});
 
 		describe('Equal.equals', () => {
@@ -37,35 +39,35 @@ describe('PropertyFormatter', () => {
 				action: () => () => () => PPStringifiedValue.empty
 			});
 			it('Matching', () => {
-				expect(Equal.equals(valueOnly, dummy)).toBe(true);
+				TEUtils.assertTrue(Equal.equals(valueOnly, dummy));
 			});
 
 			it('Non-matching', () => {
-				expect(Equal.equals(valueOnly, PPPropertyFormatter.keyAndValue)).toBe(false);
+				TEUtils.assertFalse(Equal.equals(valueOnly, PPPropertyFormatter.keyAndValue));
 			});
 		});
 
 		it('.toString()', () => {
-			expect(valueOnly.toString()).toBe(`ValueOnly`);
+			TEUtils.strictEqual(valueOnly.toString(), `ValueOnly`);
 		});
 
 		it('.pipe()', () => {
-			expect(valueOnly.pipe(PPPropertyFormatter.id)).toBe('ValueOnly');
+			TEUtils.strictEqual(valueOnly.pipe(PPPropertyFormatter.id), 'ValueOnly');
 		});
 
 		describe('has', () => {
 			it('Matching', () => {
-				expect(PPPropertyFormatter.has(valueOnly)).toBe(true);
+				TEUtils.assertTrue(PPPropertyFormatter.has(valueOnly));
 			});
 			it('Non matching', () => {
-				expect(PPPropertyFormatter.has(new Date())).toBe(false);
+				TEUtils.assertFalse(PPPropertyFormatter.has(new Date()));
 			});
 		});
 	});
 
 	it('valueOnly', () => {
 		const valueOnlyFormatter = PPPropertyFormatter.valueOnly.call(nonPrimitiveOption, constructors);
-		expect(
+		TEUtils.strictEqual(
 			pipe(
 				valueOnlyFormatter({
 					value: PPValue.fromNonPrimitiveValueAndKey({
@@ -78,8 +80,9 @@ describe('PropertyFormatter', () => {
 				}),
 				Function.apply(stringified),
 				PPStringifiedValue.toAnsiString()
-			)
-		).toBe(pipe('1', ASStyle.none, PPStringifiedValue.fromText, PPStringifiedValue.toAnsiString()));
+			),
+			pipe('1', ASStyle.none, PPStringifiedValue.fromText, PPStringifiedValue.toAnsiString())
+		);
 	});
 
 	describe('keyAndValue', () => {
@@ -95,19 +98,18 @@ describe('PropertyFormatter', () => {
 			constructors
 		);
 		it('With empty key', () => {
-			expect(
+			TEUtils.strictEqual(
 				pipe(
 					keyAndValueFormatter({ value: PPValue.fromTopValue(1), isLeaf: false }),
 					Function.apply(stringified),
 					PPStringifiedValue.toAnsiString()
-				)
-			).toBe(
+				),
 				pipe('1', ASStyle.none, PPStringifiedValue.fromText, PPStringifiedValue.toAnsiString())
 			);
 		});
 
 		it('With one-line key at protoDepth=0', () => {
-			expect(
+			TEUtils.strictEqual(
 				pipe(
 					keyAndValueFormatter({
 						value: PPValue.fromNonPrimitiveValueAndKey({
@@ -120,8 +122,7 @@ describe('PropertyFormatter', () => {
 					}),
 					Function.apply(stringified),
 					PPStringifiedValue.toAnsiString()
-				)
-			).toBe(
+				),
 				pipe(
 					ASStyle.none(ASStyle.red('a'), ASStyle.white(' => '), '1'),
 					PPStringifiedValue.fromText,
@@ -131,7 +132,7 @@ describe('PropertyFormatter', () => {
 		});
 
 		it('With one-line key at protoDepth=2', () => {
-			expect(
+			TEUtils.strictEqual(
 				pipe(
 					keyAndValueFormatter({
 						value: PPValue.fromNonPrimitiveValueAndKey({
@@ -144,8 +145,7 @@ describe('PropertyFormatter', () => {
 					}),
 					Function.apply(stringified),
 					PPStringifiedValue.toAnsiString()
-				)
-			).toBe(
+				),
 				pipe(
 					ASStyle.none(ASStyle.red('a'), ASStyle.green('@@'), ASStyle.white(' => '), '1'),
 					PPStringifiedValue.fromText,
@@ -155,7 +155,7 @@ describe('PropertyFormatter', () => {
 		});
 
 		it('With multi-line key and multiline value', () => {
-			expect(
+			TEUtils.strictEqual(
 				pipe(
 					tabifiedKeyAndValueFormatter({
 						value: PPValue.fromIterable({
@@ -174,8 +174,7 @@ describe('PropertyFormatter', () => {
 						)
 					),
 					PPStringifiedValue.toAnsiString()
-				)
-			).toBe(
+				),
 				pipe(
 					Array.make(
 						ASStyle.red('{'),
@@ -197,29 +196,31 @@ describe('PropertyFormatter', () => {
 
 		describe('With empty key', () => {
 			it('isLeaf=false', () => {
-				expect(
+				TEUtils.deepStrictEqual(
 					pipe(
 						treeifyFormatter({ value: PPValue.fromTopValue(1), isLeaf: false }),
 						Function.apply(stringified),
 						PPStringifiedValue.toUnstyledStrings
-					)
-				).toStrictEqual(['1']);
+					),
+					['1']
+				);
 			});
 
 			it('isLeaf=true', () => {
-				expect(
+				TEUtils.deepStrictEqual(
 					pipe(
 						treeifyFormatter({ value: PPValue.fromTopValue(1), isLeaf: true }),
 						Function.apply(stringified),
 						PPStringifiedValue.toUnstyledStrings
-					)
-				).toStrictEqual(['1']);
+					),
+					['1']
+				);
 			});
 		});
 
 		describe('With one-line key at protoDepth=0', () => {
 			it('isLeaf=false', () => {
-				expect(
+				TEUtils.deepStrictEqual(
 					pipe(
 						treeifyFormatter({
 							value: PPValue.fromNonPrimitiveValueAndKey({
@@ -232,12 +233,13 @@ describe('PropertyFormatter', () => {
 						}),
 						Function.apply(stringified),
 						PPStringifiedValue.toUnstyledStrings
-					)
-				).toStrictEqual(['a', '1']);
+					),
+					['a', '1']
+				);
 			});
 
 			it('isLeaf=true', () => {
-				expect(
+				TEUtils.deepStrictEqual(
 					pipe(
 						treeifyFormatter({
 							value: PPValue.fromNonPrimitiveValueAndKey({
@@ -250,8 +252,9 @@ describe('PropertyFormatter', () => {
 						}),
 						Function.apply(stringified),
 						PPStringifiedValue.toUnstyledStrings
-					)
-				).toStrictEqual(['a => 1']);
+					),
+					['a => 1']
+				);
 			});
 		});
 	});

@@ -1,61 +1,61 @@
 /* eslint-disable functional/no-expression-statements */
 import { ASContextStyler, ASText } from '@parischap/ansi-styles';
-import { MUtils } from '@parischap/effect-lib';
 import { PPStyleMap, PPValue } from '@parischap/pretty-print';
 import { Equal, Function, pipe } from 'effect';
-import { describe, expect, it } from 'vitest';
+import { describe, it } from 'vitest';
 
 describe('StyleMap', () => {
 	const none = PPStyleMap.none;
 	describe('Tag, prototype and guards', () => {
 		it('moduleTag', () => {
-			expect(PPStyleMap.moduleTag).toBe(MUtils.moduleTagFromFileName(__filename));
+			TEUtils.assertSome(TEUtils.moduleTagFromTestFilePath(__filename), PPStyleMap.moduleTag);
 		});
 
 		describe('Equal.equals', () => {
 			const dummy = PPStyleMap.make(none);
 			it('Matching', () => {
-				expect(Equal.equals(none, dummy)).toBe(true);
+				TEUtils.assertTrue(Equal.equals(none, dummy));
 			});
 
 			it('Non-matching', () => {
-				expect(Equal.equals(none, PPStyleMap.darkMode)).toBe(false);
+				TEUtils.assertFalse(Equal.equals(none, PPStyleMap.darkMode));
 			});
 		});
 
 		it('.toString()', () => {
-			expect(none.toString()).toBe(`None`);
+			TEUtils.strictEqual(none.toString(), `None`);
 		});
 
 		it('.pipe()', () => {
-			expect(none.pipe(PPStyleMap.id)).toBe('None');
+			TEUtils.strictEqual(none.pipe(PPStyleMap.id), 'None');
 		});
 
 		describe('has', () => {
 			it('Matching', () => {
-				expect(PPStyleMap.has(none)).toBe(true);
+				TEUtils.assertTrue(PPStyleMap.has(none));
 			});
 			it('Non matching', () => {
-				expect(PPStyleMap.has(new Date())).toBe(false);
+				TEUtils.assertFalse(PPStyleMap.has(new Date()));
 			});
 		});
 	});
 
 	describe('get', () => {
 		it('Existing partname', () => {
-			expect(pipe(PPStyleMap.darkMode, PPStyleMap.get('Message'), ASContextStyler.has)).toBe(true);
+			TEUtils.assertTrue(pipe(PPStyleMap.darkMode, PPStyleMap.get('Message'), ASContextStyler.has));
 		});
 
 		it('Missing partname', () => {
-			expect(
+			TEUtils.strictEqual(
 				pipe(
 					none,
 					PPStyleMap.get('Message'),
 					Function.apply(PPValue.fromTopValue(null)),
 					Function.apply('foo'),
 					ASText.toAnsiString
-				)
-			).toBe('foo');
+				),
+				'foo'
+			);
 		});
 	});
 });

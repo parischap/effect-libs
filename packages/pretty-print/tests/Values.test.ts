@@ -3,7 +3,7 @@ import { ASText } from '@parischap/ansi-styles';
 import { PPOption, PPValue, PPValues } from '@parischap/pretty-print';
 import { Array, flow, HashMap, pipe } from 'effect';
 import { inspect } from 'node:util';
-import { describe, expect, it } from 'vitest';
+import { describe, it } from 'vitest';
 
 describe('Values', () => {
 	it('fromProperties', () => {
@@ -18,14 +18,14 @@ describe('Values', () => {
 			b: true
 		}) as unknown;
 
-		expect(
+		TEUtils.strictEqual(
 			pipe(
 				PPValue.fromTopValue(topValue) as PPValue.NonPrimitive,
 				PPValues.fromProperties(1),
 				Array.map((p) => p.toString()),
 				Array.join('\n')
 			)
-		).toBe(`{
+		,`{
   "_id": "@parischap/pretty-print/Value/",
   "content": [
     1,
@@ -69,14 +69,14 @@ describe('Values', () => {
 	});
 
 	it('fromValueIterable', () => {
-		expect(
+		TEUtils.strictEqual(
 			pipe(
 				PPValue.fromTopValue([1, 'a']) as PPValue.NonPrimitive,
 				PPValues.fromValueIterable,
 				Array.map((p) => p.toString()),
 				Array.join('\n')
 			)
-		).toBe(`{
+		,`{
   "_id": "@parischap/pretty-print/Value/",
   "content": 1,
   "contentType": 1,
@@ -106,14 +106,14 @@ describe('Values', () => {
 
 	it('fromKeyValueIterable', () => {
 		const stringifier: PPOption.Stringifier.Type = flow(inspect, ASText.fromString, Array.of);
-		expect(
+		TEUtils.strictEqual(
 			pipe(
 				PPValue.fromTopValue(HashMap.make(['a', 1], ['b', 2])) as PPValue.NonPrimitive,
 				PPValues.fromKeyValueIterable(stringifier),
 				Array.map((p) => p.toString()),
 				Array.join('\n')
 			)
-		).toBe(`{
+		,`{
   "_id": "@parischap/pretty-print/Value/",
   "content": 1,
   "contentType": 1,

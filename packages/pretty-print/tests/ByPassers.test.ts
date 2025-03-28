@@ -10,7 +10,7 @@ import {
 	PPValueBasedStylerConstructor
 } from '@parischap/pretty-print';
 import { Array, Option, pipe } from 'effect';
-import { describe, expect, it } from 'vitest';
+import { describe, it } from 'vitest';
 
 describe('ByPassers', () => {
 	const utilInspectLike = PPOption.darkModeUtilInspectLike;
@@ -38,16 +38,16 @@ describe('ByPassers', () => {
 			function foo(): string {
 				return 'foo';
 			}
-			expect(
+			TEUtils.assertTrue(
 				optionEq(
 					pipe(foo, PPValue.fromTopValue, initializedSyntheticByPasser),
 					pipe('[Function: foo]', ASStyle.green, PPStringifiedValue.fromText, Option.some)
 				)
-			).toBe(true);
+			);
 		});
 
 		it('Applied to object with a .toString method', () => {
-			expect(
+			TEUtils.assertTrue(
 				optionEq(
 					pipe(
 						{ a: 3, toString: (): string => 'foo\nbar' },
@@ -56,11 +56,13 @@ describe('ByPassers', () => {
 					),
 					pipe(Array.make(ASStyle.yellow('foo'), ASStyle.yellow('bar')), Option.some)
 				)
-			).toBe(true);
+			);
 		});
 
 		it('Applied to primitive', () => {
-			expect(pipe(3, PPValue.fromTopValue, initializedSyntheticByPasser, Option.isNone)).toBe(true);
+			TEUtils.assertTrue(
+				pipe(3, PPValue.fromTopValue, initializedSyntheticByPasser, Option.isNone)
+			);
 		});
 	});
 });

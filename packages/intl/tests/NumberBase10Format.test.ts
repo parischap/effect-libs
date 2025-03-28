@@ -1,43 +1,45 @@
 /* eslint-disable functional/no-expression-statements */
 import { CVNumberBase10Format } from '@parischap/conversions';
-import { MUtils } from '@parischap/effect-lib';
 import { Equal } from 'effect';
-import { describe, expect, it } from 'vitest';
+import { describe, it } from 'vitest';
 
 const uk = CVNumberBase10Format.uk;
 
 describe('NumberBase10Format', () => {
 	describe('Tag, prototype and guards', () => {
 		it('moduleTag', () => {
-			expect(CVNumberBase10Format.moduleTag).toBe(MUtils.moduleTagFromFileName(__filename));
+			TEUtils.strictEqual(
+				CVNumberBase10Format.moduleTag,
+				TEUtils.moduleTagFromTestFilePath(__filename)
+			);
 		});
 
 		describe('Equal.equals', () => {
 			it('Matching', () => {
-				expect(Equal.equals(uk, CVNumberBase10Format.make({ ...uk }))).toBe(true);
+				TEUtils.assertTrue(Equal.equals(uk, CVNumberBase10Format.make({ ...uk })));
 			});
 
 			it('Non-matching', () => {
-				expect(Equal.equals(uk, blackRed)).toBe(false);
+				TEUtils.assertFalse(Equal.equals(uk, blackRed));
 			});
 		});
 
 		describe('.toString()', () => {
 			it('Black and red', () => {
-				expect(blackRed.toString()).toBe('Black/RedPalette');
+				TEUtils.strictEqual(blackRed.toString(), 'Black/RedPalette');
 			});
 		});
 
 		it('.pipe()', () => {
-			expect(blackRed.pipe(ASPalette.has)).toBe(true);
+			TEUtils.assertTrue(blackRed.pipe(ASPalette.has));
 		});
 
 		describe('has', () => {
 			it('Matching', () => {
-				expect(ASPalette.has(blackRed)).toBe(true);
+				TEUtils.assertTrue(ASPalette.has(blackRed));
 			});
 			it('Non matching', () => {
-				expect(ASPalette.has(new Date())).toBe(false);
+				TEUtils.assertFalse(ASPalette.has(new Date()));
 			});
 		});
 	});

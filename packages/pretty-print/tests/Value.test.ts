@@ -1,8 +1,7 @@
 /* eslint-disable functional/no-expression-statements */
-import { MUtils } from '@parischap/effect-lib';
 import { PPValue } from '@parischap/pretty-print';
 import { Equal } from 'effect';
-import { describe, expect, it } from 'vitest';
+import { describe, it } from 'vitest';
 
 describe('Value', () => {
 	const value1 = PPValue.fromTopValue(3);
@@ -11,21 +10,23 @@ describe('Value', () => {
 
 	describe('Tag, prototype and guards', () => {
 		it('moduleTag', () => {
-			expect(PPValue.moduleTag).toBe(MUtils.moduleTagFromFileName(__filename));
+			TEUtils.assertSome(TEUtils.moduleTagFromTestFilePath(__filename), PPValue.moduleTag);
 		});
 
 		describe('Equal.equals', () => {
 			it('Matching', () => {
-				expect(Equal.equals(value1, value2)).toBe(true);
+				TEUtils.assertTrue(Equal.equals(value1, value2));
 			});
 
 			it('Non-matching', () => {
-				expect(Equal.equals(value1, value3)).toBe(false);
+				TEUtils.assertFalse(Equal.equals(value1, value3));
 			});
 		});
 
 		it('.toString()', () => {
-			expect(value1.toString()).toBe(`{
+			TEUtils.strictEqual(
+				value1.toString(),
+				`{
   "_id": "@parischap/pretty-print/Value/",
   "content": 3,
   "contentType": 1,
@@ -37,33 +38,34 @@ describe('Value', () => {
   "oneLineStringKey": "",
   "hasSymbolicKey": false,
   "isEnumerable": false
-}`);
+}`
+			);
 		});
 
 		it('.pipe()', () => {
-			expect(value1.pipe(PPValue.content)).toBe(3);
+			TEUtils.strictEqual(value1.pipe(PPValue.content), 3);
 		});
 
 		describe('has', () => {
 			it('Matching', () => {
-				expect(PPValue.has(value1)).toBe(true);
+				TEUtils.assertTrue(PPValue.has(value1));
 			});
 			it('Non matching', () => {
-				expect(PPValue.has(new Date())).toBe(false);
+				TEUtils.assertFalse(PPValue.has(new Date()));
 			});
 		});
 	});
 
 	describe('fromNonPrimitiveValueAndKey', () => {
 		it('Enumerable property', () => {
-			expect(
+			TEUtils.strictEqual(
 				PPValue.fromNonPrimitiveValueAndKey({
 					nonPrimitiveContent: { a: 1, b: 'foo' },
 					key: 'a',
 					depth: 1,
 					protoDepth: 0
-				}).toString()
-			).toBe(`{
+				}).toString(),
+				`{
   "_id": "@parischap/pretty-print/Value/",
   "content": 1,
   "contentType": 1,
@@ -75,18 +77,19 @@ describe('Value', () => {
   "oneLineStringKey": "a",
   "hasSymbolicKey": false,
   "isEnumerable": true
-}`);
+}`
+			);
 		});
 
 		it('Non-enumerable property', () => {
-			expect(
+			TEUtils.strictEqual(
 				PPValue.fromNonPrimitiveValueAndKey({
 					nonPrimitiveContent: [1, 2],
 					key: 'length',
 					depth: 1,
 					protoDepth: 0
-				}).toString()
-			).toBe(`{
+				}).toString(),
+				`{
   "_id": "@parischap/pretty-print/Value/",
   "content": 2,
   "contentType": 1,
@@ -98,19 +101,20 @@ describe('Value', () => {
   "oneLineStringKey": "length",
   "hasSymbolicKey": false,
   "isEnumerable": false
-}`);
+}`
+			);
 		});
 	});
 });
 
 it('fromIterable', () => {
-	expect(
+	TEUtils.strictEqual(
 		PPValue.fromIterable({
 			content: 'foo',
 			stringKey: ['a : 1', 'b : 2'],
 			depth: 1
-		}).toString()
-	).toBe(`{
+		}).toString(),
+		`{
   "_id": "@parischap/pretty-print/Value/",
   "content": "foo",
   "contentType": 0,
@@ -123,5 +127,6 @@ it('fromIterable', () => {
   "oneLineStringKey": "a : 1b : 2",
   "hasSymbolicKey": false,
   "isEnumerable": true
-}`);
+}`
+	);
 });

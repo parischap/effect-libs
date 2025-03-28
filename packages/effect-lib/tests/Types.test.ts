@@ -1,7 +1,8 @@
 /* eslint-disable functional/no-expression-statements */
 import { MTypes } from '@parischap/effect-lib';
-import { Number, Option, pipe, Predicate, Record, String } from 'effect';
-import { describe, expect, it } from 'vitest';
+import { TEUtils } from '@parischap/test-utils';
+import { Number, Predicate, Record } from 'effect';
+import { describe, it } from 'vitest';
 
 const unknown = null as unknown;
 
@@ -119,11 +120,11 @@ describe('MTypes', () => {
 		if (MTypes.isString(unknown)) MTypes.checkNever<MTypes.Equals<typeof unknown, string>>();
 
 		it('Matching', () => {
-			expect(MTypes.isString(testString)).toBe(true);
+			TEUtils.assertTrue(MTypes.isString(testString));
 		});
 
 		it('Non matching', () => {
-			expect(MTypes.isString(testNumber)).toBe(false);
+			TEUtils.assertFalse(MTypes.isString(testNumber));
 		});
 	});
 
@@ -131,11 +132,11 @@ describe('MTypes', () => {
 		if (MTypes.isNumber(unknown)) MTypes.checkNever<MTypes.Equals<typeof unknown, number>>();
 
 		it('Matching', () => {
-			expect(MTypes.isNumber(testNumber)).toBe(true);
+			TEUtils.assertTrue(MTypes.isNumber(testNumber));
 		});
 
 		it('Non matching', () => {
-			expect(MTypes.isNumber(testString)).toBe(false);
+			TEUtils.assertFalse(MTypes.isNumber(testString));
 		});
 	});
 
@@ -143,23 +144,11 @@ describe('MTypes', () => {
 		if (MTypes.isBigInt(unknown)) MTypes.checkNever<MTypes.Equals<typeof unknown, bigint>>();
 
 		it('Matching', () => {
-			expect(MTypes.isBigInt(testBigint)).toBe(true);
+			TEUtils.assertTrue(MTypes.isBigInt(testBigint));
 		});
 
 		it('Non matching', () => {
-			expect(MTypes.isBigInt(testNumber)).toBe(false);
-		});
-	});
-
-	describe('isBigInt', () => {
-		if (MTypes.isBigInt(unknown)) MTypes.checkNever<MTypes.Equals<typeof unknown, bigint>>();
-
-		it('Matching', () => {
-			expect(MTypes.isBigInt(testBigint)).toBe(true);
-		});
-
-		it('Non matching', () => {
-			expect(MTypes.isBigInt(testNumber)).toBe(false);
+			TEUtils.assertFalse(MTypes.isBigInt(testNumber));
 		});
 	});
 
@@ -167,11 +156,11 @@ describe('MTypes', () => {
 		if (MTypes.isBoolean(unknown)) MTypes.checkNever<MTypes.Equals<typeof unknown, boolean>>();
 
 		it('Matching', () => {
-			expect(MTypes.isBoolean(testBoolean)).toBe(true);
+			TEUtils.assertTrue(MTypes.isBoolean(testBoolean));
 		});
 
 		it('Non matching', () => {
-			expect(MTypes.isBoolean(testNumber)).toBe(false);
+			TEUtils.assertFalse(MTypes.isBoolean(testNumber));
 		});
 	});
 
@@ -179,11 +168,11 @@ describe('MTypes', () => {
 		if (MTypes.isSymbol(unknown)) MTypes.checkNever<MTypes.Equals<typeof unknown, symbol>>();
 
 		it('Matching', () => {
-			expect(MTypes.isSymbol(testSymbol)).toBe(true);
+			TEUtils.assertTrue(MTypes.isSymbol(testSymbol));
 		});
 
 		it('Non matching', () => {
-			expect(MTypes.isSymbol(testNumber)).toBe(false);
+			TEUtils.assertFalse(MTypes.isSymbol(testNumber));
 		});
 	});
 
@@ -191,11 +180,11 @@ describe('MTypes', () => {
 		if (MTypes.isUndefined(unknown)) MTypes.checkNever<MTypes.Equals<typeof unknown, undefined>>();
 
 		it('Matching', () => {
-			expect(MTypes.isUndefined(undefined)).toBe(true);
+			TEUtils.assertTrue(MTypes.isUndefined(undefined));
 		});
 
 		it('Non matching', () => {
-			expect(MTypes.isUndefined(testNumber)).toBe(false);
+			TEUtils.assertFalse(MTypes.isUndefined(testNumber));
 		});
 	});
 
@@ -205,11 +194,11 @@ describe('MTypes', () => {
 			MTypes.checkNever<MTypes.Equals<typeof undefinedOrNumber, number>>();
 
 		it('Matching', () => {
-			expect(MTypes.isNotUndefined(testNumber)).toBe(true);
+			TEUtils.assertTrue(MTypes.isNotUndefined(testNumber));
 		});
 
 		it('Non matching', () => {
-			expect(MTypes.isNotUndefined(undefined)).toBe(false);
+			TEUtils.assertFalse(MTypes.isNotUndefined(undefined));
 		});
 	});
 
@@ -217,11 +206,11 @@ describe('MTypes', () => {
 		if (MTypes.isNull(unknown)) MTypes.checkNever<MTypes.Equals<typeof unknown, null>>();
 
 		it('Matching', () => {
-			expect(MTypes.isNull(null)).toBe(true);
+			TEUtils.assertTrue(MTypes.isNull(null));
 		});
 
 		it('Non matching', () => {
-			expect(MTypes.isNull(testNumber)).toBe(false);
+			TEUtils.assertFalse(MTypes.isNull(testNumber));
 		});
 	});
 
@@ -231,11 +220,11 @@ describe('MTypes', () => {
 			MTypes.checkNever<MTypes.Equals<typeof nullOrNumber, number>>();
 
 		it('Matching', () => {
-			expect(MTypes.isNotNull(testNumber)).toBe(true);
+			TEUtils.assertTrue(MTypes.isNotNull(testNumber));
 		});
 
 		it('Non matching', () => {
-			expect(MTypes.isNotNull(null)).toBe(false);
+			TEUtils.assertFalse(MTypes.isNotNull(null));
 		});
 	});
 
@@ -245,12 +234,12 @@ describe('MTypes', () => {
 			MTypes.checkNever<MTypes.Equals<typeof nullOrNumber, null>>();
 
 		it('Matching', () => {
-			expect(MTypes.isNullable(null)).toBe(true);
-			expect(MTypes.isNullable(undefined)).toBe(true);
+			TEUtils.assertTrue(MTypes.isNullable(null));
+			TEUtils.assertTrue(MTypes.isNullable(undefined));
 		});
 
 		it('Non matching', () => {
-			expect(MTypes.isNullable(testNumber)).toBe(false);
+			TEUtils.assertFalse(MTypes.isNullable(testNumber));
 		});
 	});
 
@@ -260,11 +249,11 @@ describe('MTypes', () => {
 			MTypes.checkNever<MTypes.Equals<typeof nullOrNumber, number>>();
 
 		it('Matching', () => {
-			expect(MTypes.isNotNullable(testNumber)).toBe(true);
+			TEUtils.assertTrue(MTypes.isNotNullable(testNumber));
 		});
 
 		it('Non matching', () => {
-			expect(MTypes.isNotNullable(null)).toBe(false);
+			TEUtils.assertFalse(MTypes.isNotNullable(null));
 		});
 	});
 
@@ -277,13 +266,13 @@ describe('MTypes', () => {
 			MTypes.checkNever<MTypes.Equals<typeof unknown, MTypes.Primitive>>();
 
 		it('Matching', () => {
-			expect(MTypes.isPrimitive(testNumber)).toBe(true);
-			expect(MTypes.isPrimitive(undefined)).toBe(true);
+			TEUtils.assertTrue(MTypes.isPrimitive(testNumber));
+			TEUtils.assertTrue(MTypes.isPrimitive(undefined));
 		});
 
 		it('Non matching', () => {
-			expect(MTypes.isPrimitive(testArray2)).toBe(false);
-			expect(MTypes.isPrimitive(testOneArgFunction)).toBe(false);
+			TEUtils.assertFalse(MTypes.isPrimitive(testArray2));
+			TEUtils.assertFalse(MTypes.isPrimitive(testOneArgFunction));
 		});
 	});
 
@@ -296,12 +285,12 @@ describe('MTypes', () => {
 			MTypes.checkNever<MTypes.Equals<typeof unknown, MTypes.NonPrimitive>>();
 
 		it('Matching', () => {
-			expect(MTypes.isNonPrimitive(testArray2)).toBe(true);
-			expect(MTypes.isNonPrimitive(testOneArgFunction)).toBe(true);
+			TEUtils.assertTrue(MTypes.isNonPrimitive(testArray2));
+			TEUtils.assertTrue(MTypes.isNonPrimitive(testOneArgFunction));
 		});
 
 		it('Non matching', () => {
-			expect(MTypes.isNonPrimitive(testSymbol)).toBe(false);
+			TEUtils.assertFalse(MTypes.isNonPrimitive(testSymbol));
 		});
 	});
 
@@ -310,11 +299,11 @@ describe('MTypes', () => {
 			MTypes.checkNever<MTypes.Equals<typeof unknown, MTypes.AnyFunction>>();
 
 		it('Matching', () => {
-			expect(MTypes.isFunction(testFunction)).toBe(true);
+			TEUtils.assertTrue(MTypes.isFunction(testFunction));
 		});
 
 		it('Non matching', () => {
-			expect(MTypes.isFunction(testNumber)).toBe(false);
+			TEUtils.assertFalse(MTypes.isFunction(testNumber));
 		});
 	});
 
@@ -323,11 +312,11 @@ describe('MTypes', () => {
 			MTypes.checkNever<MTypes.Equals<typeof testFunction, MTypes.OneArgFunction<number>>>();
 
 		it('Matching', () => {
-			expect(MTypes.isOneArgFunction(testOneArgFunction)).toBe(true);
+			TEUtils.assertTrue(MTypes.isOneArgFunction(testOneArgFunction));
 		});
 
 		it('Non matching', () => {
-			expect(MTypes.isOneArgFunction(testFunction)).toBe(false);
+			TEUtils.assertFalse(MTypes.isOneArgFunction(testFunction));
 		});
 	});
 
@@ -336,11 +325,11 @@ describe('MTypes', () => {
 			MTypes.checkNever<MTypes.Equals<typeof testArray2, MTypes.EmptyArray>>();
 
 		it('Matching', () => {
-			expect(MTypes.isEmptyArray(testArray0)).toBe(true);
+			TEUtils.assertTrue(MTypes.isEmptyArray(testArray0));
 		});
 
 		it('Non matching', () => {
-			expect(MTypes.isEmptyArray(testArray3)).toBe(false);
+			TEUtils.assertFalse(MTypes.isEmptyArray(testArray3));
 		});
 	});
 
@@ -349,11 +338,11 @@ describe('MTypes', () => {
 			MTypes.checkNever<MTypes.Equals<typeof testReadonlyArray, MTypes.EmptyReadonlyArray>>();
 
 		it('Matching', () => {
-			expect(MTypes.isEmptyReadonlyArray(testArray0)).toBe(true);
+			TEUtils.assertTrue(MTypes.isEmptyReadonlyArray(testArray0));
 		});
 
 		it('Non matching', () => {
-			expect(MTypes.isEmptyReadonlyArray(testArray3)).toBe(false);
+			TEUtils.assertFalse(MTypes.isEmptyReadonlyArray(testArray3));
 		});
 	});
 
@@ -362,12 +351,12 @@ describe('MTypes', () => {
 			MTypes.checkNever<MTypes.Equals<typeof testArray2, MTypes.OverOne<number>>>();
 
 		it('Matching', () => {
-			expect(MTypes.isOverOne(testArray1)).toBe(true);
-			expect(MTypes.isOverOne(testArray2)).toBe(true);
+			TEUtils.assertTrue(MTypes.isOverOne(testArray1));
+			TEUtils.assertTrue(MTypes.isOverOne(testArray2));
 		});
 
 		it('Non matching', () => {
-			expect(MTypes.isOverOne(testArray0)).toBe(false);
+			TEUtils.assertFalse(MTypes.isOverOne(testArray0));
 		});
 	});
 
@@ -376,12 +365,12 @@ describe('MTypes', () => {
 			MTypes.checkNever<MTypes.Equals<typeof testReadonlyArray, MTypes.ReadonlyOverOne<number>>>();
 
 		it('Matching', () => {
-			expect(MTypes.isReadonlyOverOne(testArray1)).toBe(true);
-			expect(MTypes.isReadonlyOverOne(testArray2)).toBe(true);
+			TEUtils.assertTrue(MTypes.isReadonlyOverOne(testArray1));
+			TEUtils.assertTrue(MTypes.isReadonlyOverOne(testArray2));
 		});
 
 		it('Non matching', () => {
-			expect(MTypes.isReadonlyOverOne(testArray0)).toBe(false);
+			TEUtils.assertFalse(MTypes.isReadonlyOverOne(testArray0));
 		});
 	});
 
@@ -390,12 +379,12 @@ describe('MTypes', () => {
 			MTypes.checkNever<MTypes.Equals<typeof testArray2, MTypes.OverTwo<number>>>();
 
 		it('Matching', () => {
-			expect(MTypes.isOverTwo(testArray2)).toBe(true);
-			expect(MTypes.isOverTwo(testArray3)).toBe(true);
+			TEUtils.assertTrue(MTypes.isOverTwo(testArray2));
+			TEUtils.assertTrue(MTypes.isOverTwo(testArray3));
 		});
 
 		it('Non matching', () => {
-			expect(MTypes.isOverTwo(testArray1)).toBe(false);
+			TEUtils.assertFalse(MTypes.isOverTwo(testArray1));
 		});
 	});
 
@@ -404,12 +393,12 @@ describe('MTypes', () => {
 			MTypes.checkNever<MTypes.Equals<typeof testReadonlyArray, MTypes.ReadonlyOverTwo<number>>>();
 
 		it('Matching', () => {
-			expect(MTypes.isReadonlyOverTwo(testArray2)).toBe(true);
-			expect(MTypes.isReadonlyOverTwo(testArray3)).toBe(true);
+			TEUtils.assertTrue(MTypes.isReadonlyOverTwo(testArray2));
+			TEUtils.assertTrue(MTypes.isReadonlyOverTwo(testArray3));
 		});
 
 		it('Non matching', () => {
-			expect(MTypes.isReadonlyOverTwo(testArray0)).toBe(false);
+			TEUtils.assertFalse(MTypes.isReadonlyOverTwo(testArray0));
 		});
 	});
 
@@ -418,12 +407,12 @@ describe('MTypes', () => {
 			MTypes.checkNever<MTypes.Equals<typeof testArray2, MTypes.Singleton<number>>>();
 
 		it('Matching', () => {
-			expect(MTypes.isSingleton(testArray1)).toBe(true);
+			TEUtils.assertTrue(MTypes.isSingleton(testArray1));
 		});
 
 		it('Non matching', () => {
-			expect(MTypes.isSingleton(testArray0)).toBe(false);
-			expect(MTypes.isSingleton(testArray2)).toBe(false);
+			TEUtils.assertFalse(MTypes.isSingleton(testArray0));
+			TEUtils.assertFalse(MTypes.isSingleton(testArray2));
 		});
 	});
 
@@ -434,12 +423,12 @@ describe('MTypes', () => {
 			>();
 
 		it('Matching', () => {
-			expect(MTypes.isReadonlySingleton(testArray1)).toBe(true);
+			TEUtils.assertTrue(MTypes.isReadonlySingleton(testArray1));
 		});
 
 		it('Non matching', () => {
-			expect(MTypes.isReadonlySingleton(testArray0)).toBe(false);
-			expect(MTypes.isReadonlySingleton(testArray2)).toBe(false);
+			TEUtils.assertFalse(MTypes.isReadonlySingleton(testArray0));
+			TEUtils.assertFalse(MTypes.isReadonlySingleton(testArray2));
 		});
 	});
 
@@ -448,12 +437,12 @@ describe('MTypes', () => {
 			MTypes.checkNever<MTypes.Equals<typeof testArray2, MTypes.Pair<number, number>>>();
 
 		it('Matching', () => {
-			expect(MTypes.isPair(testArray2)).toBe(true);
+			TEUtils.assertTrue(MTypes.isPair(testArray2));
 		});
 
 		it('Non matching', () => {
-			expect(MTypes.isPair(testArray1)).toBe(false);
-			expect(MTypes.isPair(testArray3)).toBe(false);
+			TEUtils.assertFalse(MTypes.isPair(testArray1));
+			TEUtils.assertFalse(MTypes.isPair(testArray3));
 		});
 	});
 
@@ -464,12 +453,12 @@ describe('MTypes', () => {
 			>();
 
 		it('Matching', () => {
-			expect(MTypes.isReadonlyPair(testArray2)).toBe(true);
+			TEUtils.assertTrue(MTypes.isReadonlyPair(testArray2));
 		});
 
 		it('Non matching', () => {
-			expect(MTypes.isReadonlyPair(testArray0)).toBe(false);
-			expect(MTypes.isReadonlyPair(testArray3)).toBe(false);
+			TEUtils.assertFalse(MTypes.isReadonlyPair(testArray0));
+			TEUtils.assertFalse(MTypes.isReadonlyPair(testArray3));
 		});
 	});
 
@@ -478,12 +467,12 @@ describe('MTypes', () => {
 			MTypes.checkNever<MTypes.Equals<typeof unknown, Iterable<unknown>>>();
 
 		it('Matching', () => {
-			expect(MTypes.isIterable(testArray2)).toBe(true);
+			TEUtils.assertTrue(MTypes.isIterable(testArray2));
 		});
 
 		it('Non matching', () => {
-			expect(MTypes.isIterable(testNumber)).toBe(false);
-			expect(MTypes.isIterable(testString)).toBe(false);
+			TEUtils.assertFalse(MTypes.isIterable(testNumber));
+			TEUtils.assertFalse(MTypes.isIterable(testString));
 		});
 	});
 
@@ -492,28 +481,25 @@ describe('MTypes', () => {
 			MTypes.checkNever<MTypes.Equals<typeof unknown, MTypes.Errorish>>();
 
 		it('Matching', () => {
-			expect(MTypes.isErrorish({ message: 'foo' })).toBe(true);
-			expect(MTypes.isErrorish({ message: 'foo', stack: 'bar' })).toBe(true);
+			TEUtils.assertTrue(MTypes.isErrorish({ message: 'foo' }));
+			TEUtils.assertTrue(MTypes.isErrorish({ message: 'foo', stack: 'bar' }));
 		});
 
 		it('Non matching', () => {
-			expect(MTypes.isErrorish(null)).toBe(false);
-			expect(MTypes.isErrorish({ message: false })).toBe(false);
-			expect(MTypes.isErrorish({ message: 'foo', stack: 5 })).toBe(false);
-			expect(MTypes.isErrorish(testRecord)).toBe(false);
+			TEUtils.assertFalse(MTypes.isErrorish(null));
+			TEUtils.assertFalse(MTypes.isErrorish({ message: false }));
+			TEUtils.assertFalse(MTypes.isErrorish({ message: 'foo', stack: 5 }));
+			TEUtils.assertFalse(MTypes.isErrorish(testRecord));
 		});
 	});
 
 	describe('typedArrayName', () => {
-		const stringOptionEq = Option.getEquivalence(String.Equivalence);
 		it('Matching', () => {
-			expect(
-				stringOptionEq(MTypes.typedArrayName(new Uint8Array(5)), Option.some('Uint8Array'))
-			).toBe(true);
+			TEUtils.assertSome(MTypes.typedArrayName(new Uint8Array(5)), 'Uint8Array');
 		});
 
 		it('Non matching', () => {
-			expect(pipe(5, MTypes.typedArrayName, Option.isNone)).toBe(true);
+			TEUtils.assertNone(MTypes.typedArrayName(5));
 		});
 	});
 
@@ -523,44 +509,44 @@ describe('MTypes', () => {
 			MTypes.checkNever<MTypes.Equals<typeof numberOrUint16Array, Uint16Array<ArrayBuffer>>>();
 
 		it('Matching', () => {
-			expect(MTypes.isTypedArray(new Uint16Array(5))).toBe(true);
+			TEUtils.assertTrue(MTypes.isTypedArray(new Uint16Array(5)));
 		});
 
 		it('Non matching', () => {
-			expect(MTypes.isTypedArray(5)).toBe(false);
+			TEUtils.assertFalse(MTypes.isTypedArray(5));
 		});
 	});
 
 	describe('Category', () => {
 		describe('fromValue and predicates', () => {
 			it('Matching', () => {
-				expect(MTypes.Category.isString(MTypes.Category.fromValue(testString))).toBe(true);
-				expect(MTypes.Category.isNumber(MTypes.Category.fromValue(testNumber))).toBe(true);
-				expect(MTypes.Category.isBigint(MTypes.Category.fromValue(testBigint))).toBe(true);
-				expect(MTypes.Category.isBoolean(MTypes.Category.fromValue(testBoolean))).toBe(true);
-				expect(MTypes.Category.isSymbol(MTypes.Category.fromValue(testSymbol))).toBe(true);
-				expect(MTypes.Category.isUndefined(MTypes.Category.fromValue(undefined))).toBe(true);
-				expect(MTypes.Category.isNull(MTypes.Category.fromValue(null))).toBe(true);
-				expect(MTypes.Category.isFunction(MTypes.Category.fromValue(testFunction))).toBe(true);
-				expect(MTypes.Category.isArray(MTypes.Category.fromValue(testArray2))).toBe(true);
-				expect(MTypes.Category.isRecord(MTypes.Category.fromValue(testRecord))).toBe(true);
-				expect(MTypes.Category.isPrimitive(MTypes.Category.fromValue(testString))).toBe(true);
-				expect(MTypes.Category.isNonPrimitive(MTypes.Category.fromValue(testArray2))).toBe(true);
+				TEUtils.assertTrue(MTypes.Category.isString(MTypes.Category.fromValue(testString)));
+				TEUtils.assertTrue(MTypes.Category.isNumber(MTypes.Category.fromValue(testNumber)));
+				TEUtils.assertTrue(MTypes.Category.isBigint(MTypes.Category.fromValue(testBigint)));
+				TEUtils.assertTrue(MTypes.Category.isBoolean(MTypes.Category.fromValue(testBoolean)));
+				TEUtils.assertTrue(MTypes.Category.isSymbol(MTypes.Category.fromValue(testSymbol)));
+				TEUtils.assertTrue(MTypes.Category.isUndefined(MTypes.Category.fromValue(undefined)));
+				TEUtils.assertTrue(MTypes.Category.isNull(MTypes.Category.fromValue(null)));
+				TEUtils.assertTrue(MTypes.Category.isFunction(MTypes.Category.fromValue(testFunction)));
+				TEUtils.assertTrue(MTypes.Category.isArray(MTypes.Category.fromValue(testArray2)));
+				TEUtils.assertTrue(MTypes.Category.isRecord(MTypes.Category.fromValue(testRecord)));
+				TEUtils.assertTrue(MTypes.Category.isPrimitive(MTypes.Category.fromValue(testString)));
+				TEUtils.assertTrue(MTypes.Category.isNonPrimitive(MTypes.Category.fromValue(testArray2)));
 			});
 
 			it('Non matching', () => {
-				expect(MTypes.Category.isString(MTypes.Category.fromValue(testNumber))).toBe(false);
-				expect(MTypes.Category.isNumber(MTypes.Category.fromValue(testString))).toBe(false);
-				expect(MTypes.Category.isBigint(MTypes.Category.fromValue(testNumber))).toBe(false);
-				expect(MTypes.Category.isBoolean(MTypes.Category.fromValue(testNumber))).toBe(false);
-				expect(MTypes.Category.isSymbol(MTypes.Category.fromValue(testNumber))).toBe(false);
-				expect(MTypes.Category.isUndefined(MTypes.Category.fromValue(testNumber))).toBe(false);
-				expect(MTypes.Category.isNull(MTypes.Category.fromValue(testNumber))).toBe(false);
-				expect(MTypes.Category.isFunction(MTypes.Category.fromValue(testNumber))).toBe(false);
-				expect(MTypes.Category.isArray(MTypes.Category.fromValue(testNumber))).toBe(false);
-				expect(MTypes.Category.isRecord(MTypes.Category.fromValue(testNumber))).toBe(false);
-				expect(MTypes.Category.isPrimitive(MTypes.Category.fromValue(testArray2))).toBe(false);
-				expect(MTypes.Category.isNonPrimitive(MTypes.Category.fromValue(testNumber))).toBe(false);
+				TEUtils.assertFalse(MTypes.Category.isString(MTypes.Category.fromValue(testNumber)));
+				TEUtils.assertFalse(MTypes.Category.isNumber(MTypes.Category.fromValue(testString)));
+				TEUtils.assertFalse(MTypes.Category.isBigint(MTypes.Category.fromValue(testNumber)));
+				TEUtils.assertFalse(MTypes.Category.isBoolean(MTypes.Category.fromValue(testNumber)));
+				TEUtils.assertFalse(MTypes.Category.isSymbol(MTypes.Category.fromValue(testNumber)));
+				TEUtils.assertFalse(MTypes.Category.isUndefined(MTypes.Category.fromValue(testNumber)));
+				TEUtils.assertFalse(MTypes.Category.isNull(MTypes.Category.fromValue(testNumber)));
+				TEUtils.assertFalse(MTypes.Category.isFunction(MTypes.Category.fromValue(testNumber)));
+				TEUtils.assertFalse(MTypes.Category.isArray(MTypes.Category.fromValue(testNumber)));
+				TEUtils.assertFalse(MTypes.Category.isRecord(MTypes.Category.fromValue(testNumber)));
+				TEUtils.assertFalse(MTypes.Category.isPrimitive(MTypes.Category.fromValue(testArray2)));
+				TEUtils.assertFalse(MTypes.Category.isNonPrimitive(MTypes.Category.fromValue(testNumber)));
 			});
 		});
 	});

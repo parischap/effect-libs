@@ -1,6 +1,6 @@
 /* eslint-disable functional/no-expression-statements */
 import { ASStyle, ASText } from '@parischap/ansi-styles';
-import { MFunction, MUtils } from '@parischap/effect-lib';
+import { MFunction } from '@parischap/effect-lib';
 import {
 	PPByPasser,
 	PPMarkShowerConstructor,
@@ -12,7 +12,7 @@ import {
 	PPValueOrder
 } from '@parischap/pretty-print';
 import { Array, Equal, HashMap, HashSet, Option, pipe, Predicate } from 'effect';
-import { describe, expect, it } from 'vitest';
+import { describe, it } from 'vitest';
 
 describe('Option', () => {
 	describe('NonPrimitive', () => {
@@ -22,28 +22,28 @@ describe('Option', () => {
 				const dummy = PPOption.NonPrimitive.make(record);
 
 				it('Matching', () => {
-					expect(Equal.equals(record, dummy)).toBe(true);
+					TEUtils.assertTrue(Equal.equals(record, dummy));
 				});
 
 				it('Non-matching', () => {
-					expect(Equal.equals(record, PPOption.NonPrimitive.array)).toBe(false);
+					TEUtils.assertFalse(Equal.equals(record, PPOption.NonPrimitive.array));
 				});
 			});
 
 			it('.toString()', () => {
-				expect(record.toString()).toBe(`Object`);
+				TEUtils.strictEqual(record.toString(), `Object`);
 			});
 
 			it('.pipe()', () => {
-				expect(record.pipe(PPOption.NonPrimitive.id)).toBe('Object');
+				TEUtils.strictEqual(record.pipe(PPOption.NonPrimitive.id), 'Object');
 			});
 
 			describe('has', () => {
 				it('Matching', () => {
-					expect(PPOption.NonPrimitive.has(record)).toBe(true);
+					TEUtils.assertTrue(PPOption.NonPrimitive.has(record));
 				});
 				it('Non matching', () => {
-					expect(PPOption.NonPrimitive.has(new Date())).toBe(false);
+					TEUtils.assertFalse(PPOption.NonPrimitive.has(new Date()));
 				});
 			});
 		});
@@ -68,7 +68,7 @@ describe('Option', () => {
 					const headerMarkShower = fromNonPrimitive(
 						PPOption.NonPrimitive.record
 					).toHeaderMarkShower(differingPropertyNumbers);
-					expect(pipe(value, headerMarkShower, ASText.isEmpty)).toBe(true);
+					TEUtils.assertTrue(pipe(value, headerMarkShower, ASText.isEmpty));
 				});
 
 				it('showId = false, propertyNumberDisplayOption = All', () => {
@@ -80,7 +80,8 @@ describe('Option', () => {
 						nonPrimitiveMake,
 						fromNonPrimitive
 					).toHeaderMarkShower(differingPropertyNumbers);
-					expect(ASText.equivalence(pipe(value, headerMarkShower), ASStyle.green('(5) '))).toBe(
+					TEUtils.strictEqual(
+						ASText.equivalence(pipe(value, headerMarkShower), ASStyle.green('(5) ')),
 						true
 					);
 				});
@@ -94,7 +95,8 @@ describe('Option', () => {
 						nonPrimitiveMake,
 						fromNonPrimitive
 					).toHeaderMarkShower(differingPropertyNumbers);
-					expect(ASText.equivalence(pipe(value, headerMarkShower), ASStyle.green('(3) '))).toBe(
+					TEUtils.strictEqual(
+						ASText.equivalence(pipe(value, headerMarkShower), ASStyle.green('(3) ')),
 						true
 					);
 				});
@@ -108,7 +110,8 @@ describe('Option', () => {
 						nonPrimitiveMake,
 						fromNonPrimitive
 					).toHeaderMarkShower(equalPropertyNumbers);
-					expect(ASText.equivalence(pipe(value, headerMarkShower), ASStyle.green('(3,3) '))).toBe(
+					TEUtils.strictEqual(
+						ASText.equivalence(pipe(value, headerMarkShower), ASStyle.green('(3,3) ')),
 						true
 					);
 				});
@@ -124,7 +127,7 @@ describe('Option', () => {
 							nonPrimitiveMake,
 							fromNonPrimitive
 						).toHeaderMarkShower(equalPropertyNumbers);
-						expect(pipe(value, headerMarkShower, ASText.isEmpty)).toBe(true);
+						TEUtils.assertTrue(pipe(value, headerMarkShower, ASText.isEmpty));
 					});
 
 					it('With differing property numbers', () => {
@@ -137,7 +140,8 @@ describe('Option', () => {
 							nonPrimitiveMake,
 							fromNonPrimitive
 						).toHeaderMarkShower(differingPropertyNumbers);
-						expect(ASText.equivalence(pipe(value, headerMarkShower), ASStyle.green('(5,3) '))).toBe(
+						TEUtils.strictEqual(
+							ASText.equivalence(pipe(value, headerMarkShower), ASStyle.green('(5,3) ')),
 							true
 						);
 					});
@@ -153,7 +157,8 @@ describe('Option', () => {
 						nonPrimitiveMake,
 						fromNonPrimitive
 					).toHeaderMarkShower(differingPropertyNumbers);
-					expect(ASText.equivalence(pipe(value, headerMarkShower), ASStyle.green('Object '))).toBe(
+					TEUtils.strictEqual(
+						ASText.equivalence(pipe(value, headerMarkShower), ASStyle.green('Object ')),
 						true
 					);
 				});
@@ -168,9 +173,9 @@ describe('Option', () => {
 						nonPrimitiveMake,
 						fromNonPrimitive
 					).toHeaderMarkShower(differingPropertyNumbers);
-					expect(
+					TEUtils.assertTrue(
 						ASText.equivalence(pipe(value, headerMarkShower), ASStyle.green('Object(5,3) '))
-					).toBe(true);
+					);
 				});
 
 				describe('showId = true, propertyNumberDisplayOption = AllAndActualIfDifferent', () => {
@@ -185,9 +190,9 @@ describe('Option', () => {
 							nonPrimitiveMake,
 							fromNonPrimitive
 						).toHeaderMarkShower(differingPropertyNumbers);
-						expect(
+						TEUtils.assertTrue(
 							ASText.equivalence(pipe(value, headerMarkShower), ASStyle.green('Object(5,3) '))
-						).toBe(true);
+						);
 					});
 
 					it('With equal property numbers', () => {
@@ -201,9 +206,9 @@ describe('Option', () => {
 							nonPrimitiveMake,
 							fromNonPrimitive
 						).toHeaderMarkShower(equalPropertyNumbers);
-						expect(
+						TEUtils.assertTrue(
 							ASText.equivalence(pipe(value, headerMarkShower), ASStyle.green('Object '))
-						).toBe(true);
+						);
 					});
 				});
 			});
@@ -214,34 +219,34 @@ describe('Option', () => {
 		const utilInspectLike = PPOption.utilInspectLike;
 
 		it('moduleTag', () => {
-			expect(PPOption.moduleTag).toBe(MUtils.moduleTagFromFileName(__filename));
+			TEUtils.assertSome(TEUtils.moduleTagFromTestFilePath(__filename), PPOption.moduleTag);
 		});
 
 		describe('Equal.equals', () => {
 			const dummy = PPOption.make(utilInspectLike);
 			it('Matching', () => {
-				expect(Equal.equals(utilInspectLike, dummy)).toBe(true);
+				TEUtils.assertTrue(Equal.equals(utilInspectLike, dummy));
 			});
 
 			it('Non-matching', () => {
-				expect(Equal.equals(utilInspectLike, PPOption.darkModeUtilInspectLike)).toBe(false);
+				TEUtils.assertFalse(Equal.equals(utilInspectLike, PPOption.darkModeUtilInspectLike));
 			});
 		});
 
 		it('.toString()', () => {
-			expect(utilInspectLike.toString()).toBe(`UtilInspectLike`);
+			TEUtils.strictEqual(utilInspectLike.toString(), `UtilInspectLike`);
 		});
 
 		it('.pipe()', () => {
-			expect(utilInspectLike.pipe(PPOption.id)).toBe('UtilInspectLike');
+			TEUtils.strictEqual(utilInspectLike.pipe(PPOption.id), 'UtilInspectLike');
 		});
 
 		describe('has', () => {
 			it('Matching', () => {
-				expect(PPOption.has(utilInspectLike)).toBe(true);
+				TEUtils.assertTrue(PPOption.has(utilInspectLike));
 			});
 			it('Non matching', () => {
-				expect(PPOption.has(new Date())).toBe(false);
+				TEUtils.assertFalse(PPOption.has(new Date()));
 			});
 		});
 	});
@@ -299,28 +304,32 @@ describe('Option', () => {
 
 		describe('Check bypasser handling', () => {
 			it('With function', () => {
-				expect(pipe(fooFunction, stringifier, PPStringifiedValue.toUnstyledStrings)).toStrictEqual(
+				TEUtils.deepStrictEqual(
+					pipe(fooFunction, stringifier, PPStringifiedValue.toUnstyledStrings),
 					Array.of('[Function: foo]')
 				);
 			});
 
 			it('With date', () => {
 				const dummy = new Date(0);
-				expect(pipe(dummy, stringifier, PPStringifiedValue.toUnstyledStrings)).toStrictEqual(
+				TEUtils.deepStrictEqual(
+					pipe(dummy, stringifier, PPStringifiedValue.toUnstyledStrings),
 					Array.of(dummy.toString())
 				);
 			});
 		});
 
 		it('Check primitive handling', () => {
-			expect(pipe(5, stringifier, PPStringifiedValue.toUnstyledStrings)).toStrictEqual(
+			TEUtils.deepStrictEqual(
+				pipe(5, stringifier, PPStringifiedValue.toUnstyledStrings),
 				Array.of('5')
 			);
 		});
 
 		describe('Check maxDepth handling', () => {
 			it('With object', () => {
-				expect(pipe({ a: { a: { a: 1 } } }, stringifier, PPStringifiedValue.toAnsiString())).toBe(
+				TEUtils.strictEqual(
+					pipe({ a: { a: { a: 1 } } }, stringifier, PPStringifiedValue.toAnsiString()),
 					pipe(
 						ASStyle.red(
 							'{ a',
@@ -337,9 +346,10 @@ describe('Option', () => {
 			});
 
 			it('With map', () => {
-				expect(
-					pipe({ a: { a: new Map() } }, stringifier, PPStringifiedValue.toUnstyledStrings)
-				).toStrictEqual(Array.of('{ a: { a: [Map] } }'));
+				TEUtils.deepStrictEqual(
+					pipe({ a: { a: new Map() } }, stringifier, PPStringifiedValue.toUnstyledStrings),
+					Array.of('{ a: { a: [Map] } }')
+				);
 			});
 		});
 
@@ -349,7 +359,8 @@ describe('Option', () => {
 				/* eslint-disable-next-line functional/immutable-data */
 				circular.a = circular;
 
-				expect(pipe(circular, stringifier, PPStringifiedValue.toAnsiString())).toBe(
+				TEUtils.strictEqual(
+					pipe(circular, stringifier, PPStringifiedValue.toAnsiString()),
 					pipe(
 						ASStyle.green(
 							'<Ref *1> ',
@@ -370,32 +381,36 @@ describe('Option', () => {
 				circular.b.inner = circular.b;
 				circular.b.circular = circular;
 				/* eslint-enable functional/immutable-data*/
-				expect(
-					pipe(circular, stringifierWithInfiniteMaxDepth, PPStringifiedValue.toUnstyledStrings)
-				).toStrictEqual([
-					'<Ref *1> {',
-					'  a: [ [Circular *1] ],',
-					'  b: <Ref *2> { inner: [Circular *2], circular: [Circular *1] }',
-					'}'
-				]);
+				TEUtils.deepStrictEqual(
+					pipe(circular, stringifierWithInfiniteMaxDepth, PPStringifiedValue.toUnstyledStrings),
+					[
+						'<Ref *1> {',
+						'  a: [ [Circular *1] ],',
+						'  b: <Ref *2> { inner: [Circular *2], circular: [Circular *1] }',
+						'}'
+					]
+				);
 			});
 		});
 
 		describe('Check non-primitive handling', () => {
 			it('Empty array', () => {
-				expect(pipe([], stringifier, PPStringifiedValue.toUnstyledStrings)).toStrictEqual(
+				TEUtils.deepStrictEqual(
+					pipe([], stringifier, PPStringifiedValue.toUnstyledStrings),
 					Array.of('[]')
 				);
 			});
 
 			it('Empty record', () => {
-				expect(pipe({}, stringifier, PPStringifiedValue.toUnstyledStrings)).toStrictEqual(
+				TEUtils.deepStrictEqual(
+					pipe({}, stringifier, PPStringifiedValue.toUnstyledStrings),
 					Array.of('{}')
 				);
 			});
 
 			it('Simple array', () => {
-				expect(pipe([3, 4], stringifier, PPStringifiedValue.toUnstyledStrings)).toStrictEqual(
+				TEUtils.deepStrictEqual(
+					pipe([3, 4], stringifier, PPStringifiedValue.toUnstyledStrings),
 					Array.of('[ 3, 4 ]')
 				);
 			});
@@ -411,9 +426,8 @@ describe('Option', () => {
 					a: ['r', { c: HashSet.make(new Uint8Array(3), new Uint8Array(3)) }],
 					b: 't'
 				};
-				expect(
-					pipe(test, stringifierWithInfiniteMaxDepth, PPStringifiedValue.toUnstyledStrings)
-				).toStrictEqual(
+				TEUtils.deepStrictEqual(
+					pipe(test, stringifierWithInfiniteMaxDepth, PPStringifiedValue.toUnstyledStrings),
 					Array.make(
 						'{',
 						'  c: {',
@@ -429,33 +443,36 @@ describe('Option', () => {
 			});
 
 			it('Show property number when necessary', () => {
-				expect(
+				TEUtils.deepStrictEqual(
 					pipe(
 						{ b: 1, a: 2, c: 3 },
 						stringifierWithLimitedPropertiesShowPropNumber,
 						PPStringifiedValue.toUnstyledStrings
-					)
-				).toStrictEqual(Array.make('(3,2) { b: 1, a: 2 }'));
+					),
+					Array.make('(3,2) { b: 1, a: 2 }')
+				);
 			});
 
 			it('Sort properties', () => {
-				expect(
+				TEUtils.deepStrictEqual(
 					pipe(
 						{ b: 1, a: 2, c: 3 },
 						stringifierWithSortedProperties,
 						PPStringifiedValue.toUnstyledStrings
-					)
-				).toStrictEqual(Array.make('{ a: 2, b: 1, c: 3 }'));
+					),
+					Array.make('{ a: 2, b: 1, c: 3 }')
+				);
 			});
 
 			it('Unbypassed function with some prototype properties', () => {
-				expect(
+				TEUtils.deepStrictEqual(
 					pipe(
 						fooFunction,
 						stringifierWithoutFunctionByPasserShowingPrototype,
 						PPStringifiedValue.toUnstyledStrings
-					)
-				).toStrictEqual(Array.of('{ length: 1, a: 1, length@: 0 }'));
+					),
+					Array.of('{ length: 1, a: 1, length@: 0 }')
+				);
 			});
 
 			describe('Treeify', () => {
@@ -472,57 +489,59 @@ describe('Option', () => {
 					B: HashMap.make(['B1', null], ['B2', null])
 				};
 				it('Show leaves', () => {
-					expect(
+					TEUtils.deepStrictEqual(
 						pipe(
 							toTreeify,
 							PPOption.toStringifier(PPOption.treeify),
 							PPStringifiedValue.toUnstyledStrings
-						)
-					).toStrictEqual([
-						'├─ A',
-						'│  ├─ A1',
-						'│  │  ├─ A11: null',
-						'│  │  ├─ A12',
-						'│  │  │  ├─ 0',
-						'│  │  │  │  ├─ A121: null',
-						'│  │  │  │  ├─ A122: null',
-						'│  │  │  │  └─ A123: null',
-						'│  │  │  └─ 1',
-						'│  │  │     └─ A124: null',
-						'│  │  └─ A13: null',
-						'│  ├─ A2: null',
-						'│  └─ A3: null',
-						'└─ B',
-						'   ├─ B2 => null',
-						'   └─ B1 => null'
-					]);
+						),
+						[
+							'├─ A',
+							'│  ├─ A1',
+							'│  │  ├─ A11: null',
+							'│  │  ├─ A12',
+							'│  │  │  ├─ 0',
+							'│  │  │  │  ├─ A121: null',
+							'│  │  │  │  ├─ A122: null',
+							'│  │  │  │  └─ A123: null',
+							'│  │  │  └─ 1',
+							'│  │  │     └─ A124: null',
+							'│  │  └─ A13: null',
+							'│  ├─ A2: null',
+							'│  └─ A3: null',
+							'└─ B',
+							'   ├─ B2 => null',
+							'   └─ B1 => null'
+						]
+					);
 				});
 
 				it('Hide leaves', () => {
-					expect(
+					TEUtils.deepStrictEqual(
 						pipe(
 							toTreeify,
 							PPOption.toStringifier(PPOption.treeifyHideLeaves),
 							PPStringifiedValue.toUnstyledStrings
-						)
-					).toStrictEqual([
-						'├─ A',
-						'│  ├─ A1',
-						'│  │  ├─ A11',
-						'│  │  ├─ A12',
-						'│  │  │  ├─ 0',
-						'│  │  │  │  ├─ A121',
-						'│  │  │  │  ├─ A122',
-						'│  │  │  │  └─ A123',
-						'│  │  │  └─ 1',
-						'│  │  │     └─ A124',
-						'│  │  └─ A13',
-						'│  ├─ A2',
-						'│  └─ A3',
-						'└─ B',
-						'   ├─ B2',
-						'   └─ B1'
-					]);
+						),
+						[
+							'├─ A',
+							'│  ├─ A1',
+							'│  │  ├─ A11',
+							'│  │  ├─ A12',
+							'│  │  │  ├─ 0',
+							'│  │  │  │  ├─ A121',
+							'│  │  │  │  ├─ A122',
+							'│  │  │  │  └─ A123',
+							'│  │  │  └─ 1',
+							'│  │  │     └─ A124',
+							'│  │  └─ A13',
+							'│  ├─ A2',
+							'│  └─ A3',
+							'└─ B',
+							'   ├─ B2',
+							'   └─ B1'
+						]
+					);
 				});
 			});
 		});

@@ -1,8 +1,7 @@
 /* eslint-disable functional/no-expression-statements */
 import { ASAnsiString, ASColor, ASStyleCharacteristics, ASText } from '@parischap/ansi-styles';
-import { MUtils } from '@parischap/effect-lib';
 import { Array, Equal, flow, pipe } from 'effect';
-import { describe, expect, it } from 'vitest';
+import { describe, it } from 'vitest';
 
 const none = ASText.concat;
 const bold = ASText.fromStyleAndElems(ASStyleCharacteristics.bold);
@@ -32,77 +31,77 @@ const baz = ASText.fromString('baz');
 describe('ASText', () => {
 	describe('Tag, prototype and guards', () => {
 		it('moduleTag', () => {
-			expect(ASText.moduleTag).toBe(MUtils.moduleTagFromFileName(__filename));
+			TEUtils.assertSome(TEUtils.moduleTagFromTestFilePath(__filename), ASText.moduleTag);
 		});
 
 		describe('haveSameText', () => {
 			it('Matching', () => {
-				expect(ASText.haveSameText(boldRedFoo, ASText.fromString('foo'))).toBe(true);
+				TEUtils.assertTrue(ASText.haveSameText(boldRedFoo, ASText.fromString('foo')));
 			});
 			it('Non matching', () => {
-				expect(ASText.haveSameText(boldRedFoo, boldRed('bar'))).toBe(false);
+				TEUtils.assertFalse(ASText.haveSameText(boldRedFoo, boldRed('bar')));
 			});
 		});
 
 		describe('Equal.equals', () => {
 			it('Matching', () => {
-				expect(Equal.equals(boldRedFoo, pipe('foo', red, bold))).toBe(true);
-				expect(Equal.equals(boldRed(''), none(''))).toBe(true);
+				TEUtils.assertTrue(Equal.equals(boldRedFoo, pipe('foo', red, bold)));
+				TEUtils.assertTrue(Equal.equals(boldRed(''), none('')));
 			});
 			it('Non matching', () => {
-				expect(Equal.equals(boldRedFoo, pipe('foo', bold))).toBe(false);
+				TEUtils.assertFalse(Equal.equals(boldRedFoo, pipe('foo', bold)));
 			});
 		});
 
 		describe('.toString()', () => {
 			it('Empty', () => {
-				expect(ASText.empty.toString()).toBe('');
+				TEUtils.strictEqual(ASText.empty.toString(), '');
 			});
 
 			it('Simple string with no style', () => {
-				expect(none('foo').toString()).toBe('foo');
+				TEUtils.strictEqual(none('foo').toString(), 'foo');
 			});
 
 			it('Bold red string', () => {
-				expect(boldRedFoo.toString()).toBe(`\x1b[1;31mfoo${ASAnsiString.reset}`);
+				TEUtils.strictEqual(boldRedFoo.toString(), `\x1b[1;31mfoo${ASAnsiString.reset}`);
 			});
 		});
 
 		it('.pipe()', () => {
-			expect(boldRedFoo.pipe(ASText.toLength)).toBe(3);
+			TEUtils.strictEqual(boldRedFoo.pipe(ASText.toLength), 3);
 		});
 
 		describe('has', () => {
 			it('Matching', () => {
-				expect(ASText.has(boldRedFoo)).toBe(true);
+				TEUtils.assertTrue(ASText.has(boldRedFoo));
 			});
 			it('Non matching', () => {
-				expect(ASText.has(new Date())).toBe(false);
+				TEUtils.assertFalse(ASText.has(new Date()));
 			});
 		});
 	});
 
 	it('length', () => {
-		expect(ASText.toLength(dim(pink('foo'), red('bar')))).toBe(6);
+		TEUtils.strictEqual(ASText.toLength(dim(pink('foo'), red('bar'))), 6);
 	});
 
 	it('concat', () => {
-		expect(ASText.toUnstyledString(ASText.concat(foo, bar, boldRedFoo))).toBe('foobarfoo');
+		TEUtils.strictEqual(ASText.toUnstyledString(ASText.concat(foo, bar, boldRedFoo)), 'foobarfoo');
 	});
 
 	describe('empty, isEmpty', () => {
 		it('Matching', () => {
-			expect(pipe(ASText.empty, ASText.isEmpty)).toBe(true);
+			TEUtils.assertTrue(pipe(ASText.empty, ASText.isEmpty));
 		});
 		it('Non matching', () => {
-			expect(pipe(boldRedFoo, ASText.isEmpty)).toBe(false);
+			TEUtils.assertFalse(pipe(boldRedFoo, ASText.isEmpty));
 		});
 	});
 
 	it('fromStyleAndElems', () => {
 		const weird = bold('foo', 'bar', italic('foo'), italic('bar'), '', 'baz');
-		expect(pipe(weird, ASText.uniStyledTexts, Array.length)).toBe(3);
-		expect(ASText.equivalence(weird, bold('foobar', italic('foobar'), 'baz'))).toBe(true);
+		TEUtils.strictEqual(pipe(weird, ASText.uniStyledTexts, Array.length), 3);
+		TEUtils.assertTrue(ASText.equivalence(weird, bold('foobar', italic('foobar'), 'baz')));
 	});
 
 	it('toAnsiString', () => {
@@ -117,34 +116,36 @@ describe('ASText', () => {
 			)
 		);
 
-		expect(ASText.toAnsiString(text)).toBe(
+		TEUtils.strictEqual(
+			ASText.toAnsiString(text),
 			'foo \x1b[1;31mgoes \x1b[3mto \x1b[23;38;2;255;192;203mthe \x1b[22mbeach \x1b[1;2;31mto swim \x1b[22;1;4mwith bar\x1b[0m'
 		);
 	});
 
 	it('toUnstyledString', () => {
-		expect(ASText.toUnstyledString(dim(pink('foo'), red('bar')))).toBe('foobar');
+		TEUtils.strictEqual(ASText.toUnstyledString(dim(pink('foo'), red('bar'))), 'foobar');
 	});
 
 	it('append', () => {
-		expect(ASText.toUnstyledString(foo.pipe(ASText.append(bar)))).toBe('foobar');
+		TEUtils.strictEqual(ASText.toUnstyledString(foo.pipe(ASText.append(bar))), 'foobar');
 	});
 
 	it('prepend', () => {
-		expect(ASText.toUnstyledString(bar.pipe(ASText.prepend(foo)))).toBe('foobar');
+		TEUtils.strictEqual(ASText.toUnstyledString(bar.pipe(ASText.prepend(foo))), 'foobar');
 	});
 
 	it('surround', () => {
-		expect(ASText.toUnstyledString(bar.pipe(ASText.surround(foo, foo)))).toBe('foobarfoo');
+		TEUtils.strictEqual(ASText.toUnstyledString(bar.pipe(ASText.surround(foo, foo))), 'foobarfoo');
 	});
 
 	it('join', () => {
-		expect(pipe(Array.make(foo, bar, foo), ASText.join(baz), ASText.toUnstyledString)).toBe(
+		TEUtils.strictEqual(
+			pipe(Array.make(foo, bar, foo), ASText.join(baz), ASText.toUnstyledString),
 			'foobazbarbazfoo'
 		);
 	});
 
 	it('repeat', () => {
-		expect(ASText.toUnstyledString(bar.pipe(ASText.repeat(3)))).toBe('barbarbar');
+		TEUtils.strictEqual(ASText.toUnstyledString(bar.pipe(ASText.repeat(3))), 'barbarbar');
 	});
 });

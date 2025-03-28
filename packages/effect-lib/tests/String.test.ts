@@ -1,12 +1,13 @@
 /* eslint-disable functional/no-expression-statements */
-import { MString, MUtils } from '@parischap/effect-lib';
-import { Array, Equal, Number, Option, pipe, String, Struct } from 'effect';
-import { describe, expect, it } from 'vitest';
+import { MString } from '@parischap/effect-lib';
+import { TEUtils } from '@parischap/test-utils';
+import { Array, Equal, Option, pipe, String, Struct } from 'effect';
+import { describe, it } from 'vitest';
 import { SearchResult } from '../esm/String.js';
 
 describe('MString', () => {
 	it('moduleTag', () => {
-		expect(MString.moduleTag).toBe(MUtils.moduleTagFromFileName(__filename));
+		TEUtils.assertSome(TEUtils.moduleTagFromTestFilePath(__filename), MString.moduleTag);
 	});
 
 	describe('SearchResult', () => {
@@ -15,413 +16,359 @@ describe('MString', () => {
 		describe('Tag, prototype and guards', () => {
 			describe('Equal.equals', () => {
 				it('Matching', () => {
-					expect(
-						Equal.equals(
-							testSearchResult,
-							SearchResult.make({ startIndex: 3, endIndex: 6, match: 'foo' })
-						)
-					).toBe(true);
+					TEUtils.assertEquals(
+						testSearchResult,
+						SearchResult.make({ startIndex: 3, endIndex: 6, match: 'foo' })
+					);
 				});
 				it('Non matching', () => {
-					expect(
+					TEUtils.assertFalse(
 						Equal.equals(
 							testSearchResult,
 							SearchResult.make({ startIndex: 3, endIndex: 6, match: 'baz' })
 						)
-					).toBe(false);
+					);
 				});
 			});
 
 			it('.toString()', () => {
-				expect(testSearchResult.toString()).toBe(`{
+				TEUtils.strictEqual(
+					testSearchResult.toString(),
+					`{
   "_id": "@parischap/effect-lib/String/SearchResult/",
   "startIndex": 3,
   "endIndex": 6,
   "match": "foo"
-}`);
+}`
+				);
 			});
 
 			it('.pipe()', () => {
-				expect(testSearchResult.pipe(Struct.get('startIndex'))).toBe(3);
+				TEUtils.strictEqual(testSearchResult.pipe(Struct.get('startIndex')), 3);
 			});
 
 			describe('has', () => {
 				it('Matching', () => {
-					expect(MString.SearchResult.has(testSearchResult)).toBe(true);
+					TEUtils.assertTrue(MString.SearchResult.has(testSearchResult));
 				});
 				it('Non matching', () => {
-					expect(MString.SearchResult.has(new Date())).toBe(false);
+					TEUtils.assertFalse(MString.SearchResult.has(new Date()));
 				});
 			});
 		});
 
 		it('byLongestFirst', () => {
-			expect(
+			TEUtils.strictEqual(
 				MString.SearchResult.byLongestFirst(
 					testSearchResult,
 					SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' })
-				)
-			).toBe(-1);
-			expect(
+				),
+				-1
+			);
+			TEUtils.strictEqual(
 				MString.SearchResult.byLongestFirst(
 					testSearchResult,
 					SearchResult.make({ startIndex: 3, endIndex: 7, match: 'foo1' })
-				)
-			).toBe(1);
+				),
+				1
+			);
 		});
 	});
 
 	describe('fromPrimitive', () => {
 		it('null', () => {
-			expect(pipe(null, MString.fromPrimitive)).toBe('null');
+			TEUtils.strictEqual(MString.fromPrimitive(null), 'null');
 		});
 
 		it('undefined', () => {
-			expect(pipe(undefined, MString.fromPrimitive)).toBe('undefined');
+			TEUtils.strictEqual(MString.fromPrimitive(undefined), 'undefined');
 		});
 
 		it('number', () => {
-			expect(pipe(5, MString.fromPrimitive)).toBe('5');
+			TEUtils.strictEqual(MString.fromPrimitive(5), '5');
 		});
 	});
 
 	describe('search', () => {
 		it('string in empty string', () => {
-			expect(pipe('', MString.search('foo', 4), Option.isNone)).toBe(true);
+			TEUtils.assertNone(MString.search('foo', 4)(''));
 		});
 
 		it('string in string containing one occurence', () => {
-			expect(
-				pipe(
-					'the foo is bar',
-					MString.search('foo', 4),
-					Equal.equals(
-						Option.some(MString.SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }))
-					)
-				)
-			).toBe(true);
+			TEUtils.assertEquals(
+				MString.search('foo', 4)('the foo is bar'),
+				Option.some(MString.SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }))
+			);
 		});
 
 		it('string in string containing two occurences with startIndex=4', () => {
-			expect(
-				pipe(
-					'the foo is foo',
-					MString.search('foo', 4),
-					Equal.equals(
-						Option.some(MString.SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }))
-					)
-				)
-			).toBe(true);
+			TEUtils.assertEquals(
+				MString.search('foo', 4)('the foo is foo'),
+				Option.some(MString.SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }))
+			);
 		});
 
 		it('string in string containing two occurences with startIndex=5', () => {
-			expect(
-				pipe(
-					'the foo is foo',
-					MString.search('foo', 5),
-					Equal.equals(
-						Option.some(MString.SearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' }))
-					)
-				)
-			).toBe(true);
+			TEUtils.assertEquals(
+				MString.search('foo', 5)('the foo is foo'),
+				Option.some(MString.SearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' }))
+			);
 		});
 
 		it('RegExp in empty string', () => {
-			expect(pipe('', MString.search(/f.o/, 4), Option.isNone)).toBe(true);
+			TEUtils.assertNone(MString.search(/f.o/, 4)(''));
 		});
 
 		it('RegExp in string containing one occurence', () => {
-			expect(
-				pipe(
-					'the foo is bar',
-					MString.search(/f.o/, 4),
-					Equal.equals(
-						Option.some(MString.SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }))
-					)
-				)
-			).toBe(true);
+			TEUtils.assertEquals(
+				MString.search(/f.o/, 4)('the foo is bar'),
+				Option.some(MString.SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }))
+			);
 		});
 
 		it('RegExp in string containing two occurences with startIndex=4', () => {
-			expect(
-				pipe(
-					'the foo is foo',
-					MString.search(/f.o/, 4),
-					Equal.equals(
-						Option.some(MString.SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }))
-					)
-				)
-			).toBe(true);
+			TEUtils.assertEquals(
+				MString.search(/f.o/, 4)('the foo is foo'),
+				Option.some(MString.SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }))
+			);
 		});
 
 		it('RegExp in string containing two occurences with startIndex=5', () => {
-			expect(
-				pipe(
-					'the foo is foo',
-					MString.search(/f.o/, 5),
-					Equal.equals(
-						Option.some(MString.SearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' }))
-					)
-				)
-			).toBe(true);
+			TEUtils.assertEquals(
+				MString.search(/f.o/, 5)('the foo is foo'),
+				Option.some(MString.SearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' }))
+			);
 		});
 	});
 
 	describe('searchAll', () => {
-		const searchResultArrayEq = Array.getEquivalence(MString.SearchResult.equivalence);
-
 		it('string in empty string', () => {
-			expect(pipe('', MString.searchAll('foo'), Array.isEmptyArray)).toBe(true);
+			TEUtils.assertTrue(pipe('', MString.searchAll('foo'), Array.isEmptyArray));
 		});
 
 		it('string in string containing two occurences', () => {
-			expect(
-				searchResultArrayEq(
-					MString.searchAll('foo')('the foo is foo'),
-					Array.make(
-						MString.SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }),
-						MString.SearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' })
-					)
+			TEUtils.assertEquals(
+				MString.searchAll('foo')('the foo is foo'),
+				Array.make(
+					MString.SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }),
+					MString.SearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' })
 				)
-			).toBe(true);
+			);
 		});
 
 		it('RegExp in empty string', () => {
-			expect(pipe('', MString.searchAll(/f.o/), Array.isEmptyArray)).toBe(true);
+			TEUtils.assertTrue(pipe('', MString.searchAll(/f.o/), Array.isEmptyArray));
 		});
 
 		it('RegExp in string containing two occurences', () => {
-			expect(
-				searchResultArrayEq(
-					MString.searchAll(/f.o/)('the foo is fuo'),
-					Array.make(
-						MString.SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }),
-						MString.SearchResult.make({ startIndex: 11, endIndex: 14, match: 'fuo' })
-					)
+			TEUtils.assertEquals(
+				MString.searchAll(/f.o/)('the foo is fuo'),
+				Array.make(
+					MString.SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }),
+					MString.SearchResult.make({ startIndex: 11, endIndex: 14, match: 'fuo' })
 				)
-			).toBe(true);
+			);
 		});
 	});
 
 	describe('searchRight', () => {
 		it('string in empty string', () => {
-			expect(pipe('', MString.searchRight('foo'), Option.isNone)).toBe(true);
+			TEUtils.assertNone(pipe('', MString.searchRight('foo')));
 		});
 
 		it('string in string containing one occurence', () => {
-			expect(
-				pipe(
-					'the bar is foo',
-					MString.searchRight('foo'),
-					Equal.equals(
-						Option.some(MString.SearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' }))
-					)
-				)
-			).toBe(true);
+			TEUtils.assertEquals(
+				MString.searchRight('foo')('the bar is foo'),
+				Option.some(MString.SearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' }))
+			);
 		});
 
 		it('string in string containing two occurences', () => {
-			expect(
-				pipe(
-					'the foo is foo',
-					MString.searchRight('foo'),
-					Equal.equals(
-						Option.some(MString.SearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' }))
-					)
-				)
-			).toBe(true);
+			TEUtils.assertEquals(
+				MString.searchRight('foo')('the foo is foo'),
+				Option.some(MString.SearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' }))
+			);
 		});
 
 		it('RegExp in empty string', () => {
-			expect(pipe('', MString.searchRight(/f.o/), Option.isNone)).toBe(true);
+			TEUtils.assertNone(MString.searchRight(/f.o/)(''));
 		});
 
 		it('RegExp in string containing one occurence', () => {
-			expect(
-				pipe(
-					'the foo is bar',
-					MString.searchRight(/f.o/),
-					Equal.equals(
-						Option.some(MString.SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }))
-					)
-				)
-			).toBe(true);
+			TEUtils.assertEquals(
+				MString.searchRight(/f.o/)('the foo is bar'),
+				Option.some(MString.SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }))
+			);
 		});
 
 		it('RegExp in string containing two occurences', () => {
-			expect(
-				pipe(
-					'the foo is foo',
-					MString.searchRight(/f.o/),
-					Equal.equals(
-						Option.some(MString.SearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' }))
-					)
-				)
-			).toBe(true);
+			TEUtils.assertEquals(
+				MString.searchRight(/f.o/)('the foo is foo'),
+				Option.some(MString.SearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' }))
+			);
 		});
 	});
 
 	describe('takeLeftTo', () => {
 		it('string in empty string', () => {
-			expect(pipe('', MString.takeLeftTo('foo'), String.isEmpty)).toBe(true);
+			TEUtils.assertTrue(pipe('', MString.takeLeftTo('foo'), String.isEmpty));
 		});
 
 		it('RegExp in non-empty string', () => {
-			expect(pipe('the bar is foo', MString.takeLeftTo(/bar/))).toBe('the ');
+			TEUtils.strictEqual(MString.takeLeftTo(/bar/)('the bar is foo'), 'the ');
 		});
 
 		it('string with regexp special characters in non-empty string', () => {
-			expect(pipe('foo.bar.baz', MString.takeLeftTo('.'))).toBe('foo');
+			TEUtils.strictEqual(MString.takeLeftTo('.')('foo.bar.baz'), 'foo');
 		});
 	});
 
 	describe('takeRightFrom', () => {
 		it('string in empty string', () => {
-			expect(pipe('', MString.takeRightFrom('is'), String.isEmpty)).toBe(true);
+			TEUtils.assertTrue(pipe('', MString.takeRightFrom('is'), String.isEmpty));
 		});
 
 		it('RegExp in non-empty string', () => {
-			expect(pipe('the bar is foo', MString.takeRightFrom(/is/))).toBe(' foo');
+			TEUtils.strictEqual(MString.takeRightFrom(/is/)('the bar is foo'), ' foo');
 		});
 	});
 
 	describe('takeLeftBut', () => {
 		it('Empty string', () => {
-			expect(pipe('', MString.takeLeftBut(2), String.isEmpty)).toBe(true);
+			TEUtils.assertTrue(pipe('', MString.takeLeftBut(2), String.isEmpty));
 		});
 
 		it('Non-empty string', () => {
-			expect(pipe('foo is', MString.takeLeftBut(3))).toBe('foo');
+			TEUtils.strictEqual(MString.takeLeftBut(3)('foo is'), 'foo');
 		});
 	});
 
 	describe('takeRightBut', () => {
 		it('Empty string', () => {
-			expect(pipe('', MString.takeRightBut(2), String.isEmpty)).toBe(true);
+			TEUtils.assertTrue(pipe('', MString.takeRightBut(2), String.isEmpty));
 		});
 
 		it('Non-empty string', () => {
-			expect(pipe('foo is', MString.takeRightBut(4))).toBe('is');
+			TEUtils.strictEqual(MString.takeRightBut(4)('foo is'), 'is');
 		});
 	});
 
 	describe('trimStart', () => {
 		it('Empty string', () => {
-			expect(pipe('', MString.trimStart('0'), String.isEmpty)).toBe(true);
+			TEUtils.assertTrue(pipe('', MString.trimStart('0'), String.isEmpty));
 		});
 
 		it('Non-empty string with the character to remove not at the start', () => {
-			expect(pipe('12034000', MString.trimStart('0'))).toBe('12034000');
+			TEUtils.strictEqual(MString.trimStart('0')('12034000'), '12034000');
 		});
 
 		it('Non-empty string with the character to remove at the start', () => {
-			expect(pipe('0012034000', MString.trimStart('0'))).toBe('12034000');
+			TEUtils.strictEqual(MString.trimStart('0')('0012034000'), '12034000');
 		});
 	});
 
 	describe('trimEnd', () => {
 		it('Empty string', () => {
-			expect(pipe('', MString.trimEnd('0'), String.isEmpty)).toBe(true);
+			TEUtils.assertTrue(pipe('', MString.trimEnd('0'), String.isEmpty));
 		});
 
 		it('Non-empty string with the character to remove not at the end', () => {
-			expect(pipe('00012034', MString.trimEnd('0'))).toBe('00012034');
+			TEUtils.strictEqual(MString.trimEnd('0')('00012034'), '00012034');
 		});
 
 		it('Non-empty string with the character to remove at the end', () => {
-			expect(pipe('0001203400', MString.trimEnd('0'))).toBe('00012034');
+			TEUtils.strictEqual(MString.trimEnd('0')('0001203400'), '00012034');
 		});
 	});
 
 	describe('stripLeftOption', () => {
 		it('Empty string', () => {
-			expect(pipe('', MString.stripLeftOption('foo'), Option.isNone)).toBe(true);
+			TEUtils.assertNone(MString.stripLeftOption('foo')(''));
 		});
 
 		it('Non-empty string with matching start', () => {
-			expect(pipe('foo is', MString.stripLeftOption('foo '), Equal.equals(Option.some('is')))).toBe(
-				true
-			);
+			TEUtils.assertSome(MString.stripLeftOption('foo ')('foo is'), 'is');
 		});
 
 		it('Non-empty string with non matching start', () => {
-			expect(pipe('bar is', MString.stripLeftOption('foo '), Option.isNone)).toBe(true);
+			TEUtils.assertNone(MString.stripLeftOption('foo ')('bar is'));
 		});
 	});
 
 	describe('stripLeft', () => {
 		it('Empty string', () => {
-			expect(pipe('', MString.stripLeft('foo'), String.isEmpty)).toBe(true);
+			TEUtils.assertTrue(pipe('', MString.stripLeft('foo'), String.isEmpty));
 		});
 
 		it('Non-empty string with matching start', () => {
-			expect(pipe('foo is', MString.stripLeft('foo '))).toBe('is');
+			TEUtils.strictEqual(MString.stripLeft('foo ')('foo is'), 'is');
 		});
 
 		it('Non-empty string with non matching start', () => {
-			expect(pipe('bar is', MString.stripLeft('foo '))).toBe('bar is');
+			TEUtils.strictEqual(MString.stripLeft('foo ')('bar is'), 'bar is');
 		});
 	});
 
 	describe('stripRightOption', () => {
 		it('Empty string', () => {
-			expect(pipe('', MString.stripRightOption('foo'), Option.isNone)).toBe(true);
+			TEUtils.assertNone(MString.stripRightOption('foo')(''));
 		});
 
 		it('Non-empty string with matching end', () => {
-			expect(
-				pipe('foo is foo', MString.stripRightOption(' foo'), Equal.equals(Option.some('foo is')))
-			).toBe(true);
+			TEUtils.assertSome(MString.stripRightOption(' foo')('foo is foo'), 'foo is');
 		});
 
 		it('Non-empty string with non matching start', () => {
-			expect(pipe('foo is bar', MString.stripRightOption(' foo'), Option.isNone)).toBe(true);
+			TEUtils.assertNone(MString.stripRightOption(' foo')('foo is bar'));
 		});
 	});
 
 	describe('stripRight', () => {
 		it('Empty string', () => {
-			expect(pipe('', MString.stripRight('foo'), String.isEmpty)).toBe(true);
+			TEUtils.assertTrue(pipe('', MString.stripRight('foo'), String.isEmpty));
 		});
 
 		it('Non-empty string with matching end', () => {
-			expect(pipe('foo is foo', MString.stripRight(' foo'))).toBe('foo is');
+			TEUtils.strictEqual(MString.stripRight(' foo')('foo is foo'), 'foo is');
 		});
 
 		it('Non-empty string with non matching end', () => {
-			expect(pipe('foo is bar', MString.stripRight(' foo'))).toBe('foo is bar');
+			TEUtils.strictEqual(MString.stripRight(' foo')('foo is bar'), 'foo is bar');
 		});
 	});
 
 	describe('count', () => {
 		it('string in empty string', () => {
-			expect(pipe('', MString.count('foo'))).toBe(0);
+			TEUtils.strictEqual(MString.count('foo')(''), 0);
 		});
 
 		it('RegExp in non-empty string', () => {
-			expect(pipe('foo is fuo', MString.count(/f.o/))).toBe(2);
+			TEUtils.strictEqual(MString.count(/f.o/)('foo is fuo'), 2);
 		});
 	});
 
 	describe('replaceBetween', () => {
 		it('Empty string', () => {
-			expect(pipe('', MString.replaceBetween('foo', 5, 2))).toBe('foo');
+			TEUtils.strictEqual(MString.replaceBetween('foo', 5, 2)(''), 'foo');
 		});
 
 		it('Replacement in non-empty string', () => {
-			expect(pipe('foo saw bar and baz', MString.replaceBetween('himself', 8, 11))).toBe(
+			TEUtils.strictEqual(
+				MString.replaceBetween('himself', 8, 11)('foo saw bar and baz'),
 				'foo saw himself and baz'
 			);
 		});
 
 		it('Insertion in non-empty string', () => {
-			expect(pipe('foo saw baz', MString.replaceBetween('bar and ', 8, 8))).toBe(
+			TEUtils.strictEqual(
+				MString.replaceBetween('bar and ', 8, 8)('foo saw baz'),
 				'foo saw bar and baz'
 			);
 		});
 
 		it('Replacement in non-empty string with unorthodox arguments', () => {
-			expect(pipe('foo saw bar', MString.replaceBetween('baz. baz', 8, 3))).toBe(
+			TEUtils.strictEqual(
+				MString.replaceBetween('baz. baz', 8, 3)('foo saw bar'),
 				'foo saw baz. baz saw bar'
 			);
 		});
@@ -429,51 +376,46 @@ describe('MString', () => {
 
 	describe('match', () => {
 		it('Without global flag', () => {
-			expect(
-				pipe('Numbers between 1 and 9', MString.match(/\d/), Equal.equals(Option.some('1')))
-			).toBe(true);
+			TEUtils.assertSome(MString.match(/\d/)('Numbers between 1 and 9'), '1');
 		});
 
 		it('With global flag', () => {
-			expect(
-				pipe('Numbers between 1 and 9', MString.match(/\d/g), Equal.equals(Option.some('1')))
-			).toBe(true);
+			TEUtils.assertSome(MString.match(/\d/g)('Numbers between 1 and 9'), '1');
 		});
 	});
 
 	describe('splitAt', () => {
 		it('Empty string', () => {
-			expect(pipe('', MString.splitAt(2))).toStrictEqual(['', '']);
+			TEUtils.deepStrictEqual(MString.splitAt(2)(''), ['', '']);
 		});
 
 		it('Non-empty string', () => {
-			expect(pipe('beforeafter', MString.splitAt(6))).toStrictEqual(['before', 'after']);
+			TEUtils.deepStrictEqual(MString.splitAt(6)('beforeafter'), ['before', 'after']);
 		});
 	});
 
 	describe('splitAtFromRight', () => {
 		it('Empty string', () => {
-			expect(pipe('', MString.splitAtFromRight(2))).toStrictEqual(['', '']);
+			TEUtils.deepStrictEqual(MString.splitAtFromRight(2)(''), ['', '']);
 		});
 
 		it('Non-empty string', () => {
-			expect(pipe('beforeafter', MString.splitAtFromRight(5))).toStrictEqual(['before', 'after']);
+			TEUtils.deepStrictEqual(MString.splitAtFromRight(5)('beforeafter'), ['before', 'after']);
 		});
 	});
 
 	describe('splitEquallyRestAtStart', () => {
-		it('Empty string', () =>
-			expect(pipe('', MString.splitEquallyRestAtStart(3))).toStrictEqual(['']));
+		it('Empty string', () => TEUtils.deepStrictEqual(MString.splitEquallyRestAtStart(3)(''), ['']));
 
 		it('Non-empty string without rest', () =>
-			expect(pipe('foobarbaz', MString.splitEquallyRestAtStart(3))).toStrictEqual([
+			TEUtils.deepStrictEqual(MString.splitEquallyRestAtStart(3)('foobarbaz'), [
 				'foo',
 				'bar',
 				'baz'
 			]));
 
 		it('Non-empty string with rest', () =>
-			expect(pipe('afoobarbaz', MString.splitEquallyRestAtStart(3))).toStrictEqual([
+			TEUtils.deepStrictEqual(MString.splitEquallyRestAtStart(3)('afoobarbaz'), [
 				'a',
 				'foo',
 				'bar',
@@ -482,18 +424,17 @@ describe('MString', () => {
 	});
 
 	describe('splitEquallyRestAtEnd', () => {
-		it('Empty string', () =>
-			expect(pipe('', MString.splitEquallyRestAtEnd(3))).toStrictEqual(['']));
+		it('Empty string', () => TEUtils.deepStrictEqual(MString.splitEquallyRestAtEnd(3)(''), ['']));
 
 		it('Non-empty string without rest', () =>
-			expect(pipe('foobarbaz', MString.splitEquallyRestAtEnd(3))).toStrictEqual([
+			TEUtils.deepStrictEqual(MString.splitEquallyRestAtEnd(3)('foobarbaz'), [
 				'foo',
 				'bar',
 				'baz'
 			]));
 
 		it('Non-empty string with rest', () =>
-			expect(pipe('foobarbaza', MString.splitEquallyRestAtEnd(3))).toStrictEqual([
+			TEUtils.deepStrictEqual(MString.splitEquallyRestAtEnd(3)('foobarbaza'), [
 				'foo',
 				'bar',
 				'baz',
@@ -503,54 +444,35 @@ describe('MString', () => {
 
 	describe('tabify', () => {
 		const simpleTabify = MString.tabify('aa', 3);
-		it('Value 1', () => {
-			expect(simpleTabify('')).toBe('aaaaaa');
+		it('Empty string', () => {
+			TEUtils.strictEqual(simpleTabify(''), 'aaaaaa');
 		});
-		it('Value 2', () => {
-			expect(simpleTabify('foo')).toBe('aaaaaafoo');
+		it('One-line string', () => {
+			TEUtils.strictEqual(simpleTabify('foo'), 'aaaaaafoo');
 		});
-		it('Value 3', () => {
-			expect(simpleTabify('foo\r\nfoo1')).toBe('aaaaaafoo\r\naaaaaafoo1');
+		it('Two-line string', () => {
+			TEUtils.strictEqual(simpleTabify('foo\r\nfoo1'), 'aaaaaafoo\r\naaaaaafoo1');
 		});
 	});
 
 	describe('isMultiLine', () => {
 		it('Matching - Windows', () => {
-			expect(MString.isMultiLine('foo\r\nbar')).toBe(true);
+			TEUtils.assertTrue(MString.isMultiLine('foo\r\nbar'));
 		});
 		it('Matching - Mac Os before X', () => {
-			expect(MString.isMultiLine('foo\rbar')).toBe(true);
+			TEUtils.assertTrue(MString.isMultiLine('foo\rbar'));
 		});
 		it('Matching - UNIX, Mac Os X', () => {
-			expect(MString.isMultiLine('foo\nbar')).toBe(true);
+			TEUtils.assertTrue(MString.isMultiLine('foo\nbar'));
 		});
 		it('Not matching - foo', () => {
-			expect(MString.isMultiLine('foo')).toBe(false);
+			TEUtils.assertFalse(MString.isMultiLine('foo'));
 		});
 	});
 
 	describe('hasLength', () => {
 		it('Simple string', () => {
-			expect(pipe('foo', MString.hasLength(3))).toBe(true);
-		});
-	});
-
-	describe('toNumberParts', () => {
-		const numberOptionEq = Option.getEquivalence(Number.Equivalence);
-		it('Integer with no sep', () => {
-			const unsignedBase10IntToNumber = MString.unsignedBase10IntToNumber('');
-			expect(numberOptionEq(pipe('10000', unsignedBase10IntToNumber), Option.some(10000))).toBe(
-				true
-			);
-			expect(pipe('10 000', unsignedBase10IntToNumber, Option.isNone)).toBe(true);
-		});
-
-		it('Integer with space sep', () => {
-			const unsignedBase10IntToNumber = MString.unsignedBase10IntToNumber(' ');
-			expect(
-				numberOptionEq(pipe('16 342 124', unsignedBase10IntToNumber), Option.some(16342124))
-			).toBe(true);
-			expect(pipe('10000', unsignedBase10IntToNumber, Option.isNone)).toBe(true);
+			TEUtils.assertTrue(MString.hasLength(3)('foo'));
 		});
 	});
 });

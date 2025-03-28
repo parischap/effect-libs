@@ -1,12 +1,14 @@
 /* eslint-disable functional/no-expression-statements */
 import { MRegExpString, MString } from '@parischap/effect-lib';
-import { Array, Function, Option, pipe, String, Tuple } from 'effect';
-import { describe, expect, it } from 'vitest';
+import { TEUtils } from '@parischap/test-utils';
+import { Function, Option, pipe, Tuple } from 'effect';
+import { describe, it } from 'vitest';
 
 describe('MRegExpString', () => {
 	describe('escape', () => {
 		it('All together', () => {
-			expect(MRegExpString.escape('\\ ^ $ * + ? . ( ) | { } [ ]')).toBe(
+			TEUtils.strictEqual(
+				MRegExpString.escape('\\ ^ $ * + ? . ( ) | { } [ ]'),
 				'\\\\ \\^ \\$ \\* \\+ \\? \\. \\( \\) \\| \\{ \\} \\[ \\]'
 			);
 		});
@@ -21,14 +23,14 @@ describe('MRegExpString', () => {
 			);
 
 			it('Matching', () => {
-				expect(regExp.test('1')).toBe(true);
-				expect(regExp.test('18320')).toBe(true);
+				TEUtils.assertTrue(regExp.test('1'));
+				TEUtils.assertTrue(regExp.test('18320'));
 			});
 
 			it('Non-matching', () => {
-				expect(regExp.test('0')).toBe(false);
-				expect(regExp.test('18 320')).toBe(false);
-				expect(regExp.test('018320')).toBe(false);
+				TEUtils.assertFalse(regExp.test('0'));
+				TEUtils.assertFalse(regExp.test('18 320'));
+				TEUtils.assertFalse(regExp.test('018320'));
 			});
 		});
 
@@ -40,19 +42,19 @@ describe('MRegExpString', () => {
 			);
 
 			it('Matching', () => {
-				expect(regExp.test('1')).toBe(true);
-				expect(regExp.test('999')).toBe(true);
-				expect(regExp.test('18 320')).toBe(true);
+				TEUtils.assertTrue(regExp.test('1'));
+				TEUtils.assertTrue(regExp.test('999'));
+				TEUtils.assertTrue(regExp.test('18 320'));
 			});
 
 			it('Non-matching', () => {
-				expect(regExp.test('0')).toBe(false);
-				expect(regExp.test('18320')).toBe(false);
-				expect(regExp.test('1 8320')).toBe(false);
-				expect(regExp.test(' 18 320')).toBe(false);
-				expect(regExp.test('18 320 ')).toBe(false);
-				expect(regExp.test('18  320')).toBe(false);
-				expect(regExp.test('018 320')).toBe(false);
+				TEUtils.assertFalse(regExp.test('0'));
+				TEUtils.assertFalse(regExp.test('18320'));
+				TEUtils.assertFalse(regExp.test('1 8320'));
+				TEUtils.assertFalse(regExp.test(' 18 320'));
+				TEUtils.assertFalse(regExp.test('18 320 '));
+				TEUtils.assertFalse(regExp.test('18  320'));
+				TEUtils.assertFalse(regExp.test('018 320'));
 			});
 		});
 	});
@@ -62,15 +64,15 @@ describe('MRegExpString', () => {
 			const regExp = pipe(MRegExpString.unsignedBase10Int(''), MRegExpString.makeLine, RegExp);
 
 			it('Matching', () => {
-				expect(regExp.test('0')).toBe(true);
-				expect(regExp.test('1')).toBe(true);
-				expect(regExp.test('18320')).toBe(true);
+				TEUtils.assertTrue(regExp.test('0'));
+				TEUtils.assertTrue(regExp.test('1'));
+				TEUtils.assertTrue(regExp.test('18320'));
 			});
 
 			it('Non-matching', () => {
-				expect(regExp.test('00')).toBe(false);
-				expect(regExp.test('18 320')).toBe(false);
-				expect(regExp.test('018320')).toBe(false);
+				TEUtils.assertFalse(regExp.test('00'));
+				TEUtils.assertFalse(regExp.test('18 320'));
+				TEUtils.assertFalse(regExp.test('018320'));
 			});
 		});
 
@@ -78,26 +80,20 @@ describe('MRegExpString', () => {
 			const regExp = pipe(MRegExpString.unsignedBase10Int('.'), MRegExpString.makeLine, RegExp);
 
 			it('Matching', () => {
-				expect(regExp.test('0')).toBe(true);
-				expect(regExp.test('1')).toBe(true);
-				expect(regExp.test('999')).toBe(true);
-				expect(regExp.test('18.320')).toBe(true);
+				TEUtils.assertTrue(regExp.test('0'));
+				TEUtils.assertTrue(regExp.test('1'));
+				TEUtils.assertTrue(regExp.test('999'));
+				TEUtils.assertTrue(regExp.test('18.320'));
 			});
 
 			it('Non-matching', () => {
-				expect(regExp.test('18320')).toBe(false);
-				expect(regExp.test('1.8320')).toBe(false);
+				TEUtils.assertFalse(regExp.test('18320'));
+				TEUtils.assertFalse(regExp.test('1.8320'));
 			});
 		});
 	});
 
 	describe('base10Number', () => {
-		const stringArrayOptionEq = pipe(
-			String.Equivalence,
-			Array.getEquivalence,
-			Option.getEquivalence
-		);
-
 		const getParts = (params: {
 			readonly thousandSeparator: string;
 			readonly fractionalSeparator: string;
@@ -120,18 +116,14 @@ describe('MRegExpString', () => {
 				eNotationChars: ['E', 'e']
 			});
 			it('Simple number', () => {
-				expect(stringArrayOptionEq(getPartsWithNoSep('12'), Option.some(['', '12', '', '']))).toBe(
-					true
-				);
+				TEUtils.assertEquals(getPartsWithNoSep('12'), Option.some(Tuple.make('', '12', '', '')));
 			});
 
 			it('Complex number', () => {
-				expect(
-					stringArrayOptionEq(
-						getPartsWithNoSep('+  18320.45e-2'),
-						Option.some(['+', '18320', '.45', '-2'])
-					)
-				).toBe(true);
+				TEUtils.assertEquals(
+					getPartsWithNoSep('+  18320.45e-2'),
+					Option.some(Tuple.make('+', '18320', '.45', '-2'))
+				);
 			});
 		});
 
@@ -143,18 +135,17 @@ describe('MRegExpString', () => {
 			});
 
 			it('Simple number', () => {
-				expect(
-					stringArrayOptionEq(getPartsWithSep('12 430'), Option.some(['', '12 430', '', '']))
-				).toBe(true);
+				TEUtils.assertEquals(
+					getPartsWithSep('12 430'),
+					Option.some(Tuple.make('', '12 430', '', ''))
+				);
 			});
 
 			it('Complex number', () => {
-				expect(
-					stringArrayOptionEq(
-						getPartsWithSep('+18 320.45^2'),
-						Option.some(['+', '18 320', '.45', '2'])
-					)
-				).toBe(true);
+				TEUtils.assertEquals(
+					getPartsWithSep('+18 320.45^2'),
+					Option.some(Tuple.make('+', '18 320', '.45', '2'))
+				);
 			});
 		});
 	});

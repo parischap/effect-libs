@@ -1,9 +1,10 @@
 /* eslint-disable functional/no-expression-statements */
-import { MInspectable, MUtils } from '@parischap/effect-lib';
-import { describe, expect, it } from 'vitest';
+import { MInspectable } from '@parischap/effect-lib';
+import { TEUtils } from '@parischap/test-utils';
+import { describe, it } from 'vitest';
 
 describe('MInspectable', () => {
 	it('moduleTag', () => {
-		expect(MInspectable.moduleTag).toBe(MUtils.moduleTagFromFileName(__filename));
+		TEUtils.assertSome(TEUtils.moduleTagFromTestFilePath(__filename), MInspectable.moduleTag);
 	});
 });

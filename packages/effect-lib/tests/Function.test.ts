@@ -1,67 +1,73 @@
 /* eslint-disable functional/no-expression-statements */
 import { MFunction } from '@parischap/effect-lib';
+import { TEUtils } from '@parischap/test-utils';
 import { Number, pipe, String } from 'effect';
-import { describe, expect, it } from 'vitest';
+import { describe, it } from 'vitest';
+
 describe('MFunction', () => {
 	describe('fIfTrue', () => {
 		it('Matching', () => {
-			expect(pipe(1 as number, MFunction.fIfTrue({ condition: true, f: Number.increment }))).toBe(
+			TEUtils.strictEqual(
+				pipe(1 as number, MFunction.fIfTrue({ condition: true, f: Number.increment })),
 				2
 			);
 		});
 
 		it('Non-matching', () => {
-			expect(pipe(1 as number, MFunction.fIfTrue({ condition: false, f: Number.increment }))).toBe(
+			TEUtils.strictEqual(
+				pipe(1 as number, MFunction.fIfTrue({ condition: false, f: Number.increment })),
 				1
 			);
 		});
 	});
 
 	it('flipDual', () => {
-		expect(pipe(2, MFunction.flipDual(String.takeLeft)('foo'))).toBe('fo');
+		TEUtils.strictEqual(pipe(2, MFunction.flipDual(String.takeLeft)('foo')), 'fo');
 	});
 
 	describe('strictEquals', () => {
-		const test: number = 5;
 		it('Matching', () => {
-			expect(pipe(test, MFunction.strictEquals(5))).toBe(true);
+			TEUtils.assertTrue(pipe(5, MFunction.strictEquals(5)));
 		});
 
 		it('Non matching', () => {
-			expect(pipe(test, MFunction.strictEquals(2))).toBe(false);
+			TEUtils.assertFalse(pipe(5, MFunction.strictEquals(2)));
 		});
 	});
 
 	it('parameterNumber', () => {
-		const foo = (m: number, n: number) => m + n;
-		expect(pipe(foo, MFunction.parameterNumber)).toBe(2);
+		TEUtils.strictEqual(
+			pipe((m: number, n: number) => m + n, MFunction.parameterNumber),
+			2
+		);
 	});
 
 	it('name', () => {
-		const foo = (m: number, n: number) => m + n;
-		expect(pipe(foo, MFunction.name)).toBe('foo');
+		TEUtils.strictEqual(pipe(Math.max, MFunction.name), 'max');
 	});
 
 	it('once', () => {
 		let a = 0;
 		const complexFoo = () => a++;
 		const memoized = MFunction.once(complexFoo);
-		expect(memoized()).toBe(0);
-		expect(memoized()).toBe(0);
+		TEUtils.strictEqual(memoized(), 0);
+		TEUtils.strictEqual(memoized(), 0);
 	});
 
 	it('applyAsMethod', () => {
-		expect(pipe(Array.prototype.pop, MFunction.applyAsThis([1, 2]))).toBe(2);
+		TEUtils.strictEqual(pipe(Array.prototype.pop, MFunction.applyAsThis([1, 2])), 2);
 	});
 
-	it('applyNoArg', () => {
-		const foo = () => 1;
-		expect(pipe(foo, MFunction.execute)).toBe(1);
+	it('execute', () => {
+		TEUtils.strictEqual(
+			pipe(() => 1, MFunction.execute),
+			1
+		);
 	});
 
 	it('clone', () => {
-		const copy = MFunction.clone(Number.increment);
-		expect(copy === Number.increment).toBe(false);
-		expect(copy(1)).toBe(2);
+		const incCopy = MFunction.clone(Number.increment);
+		TEUtils.assertFalse(incCopy === Number.increment);
+		TEUtils.strictEqual(incCopy(1), 2);
 	});
 });

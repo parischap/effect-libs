@@ -3,6 +3,6 @@ import { describe, expect, it } from 'vitest';
 
 describe('Dummy', () => {
 	it('dummy', () => {
-		expect(1).toBe(1);
+		TEUtils.strictEqual(1,1);
 	});
 });

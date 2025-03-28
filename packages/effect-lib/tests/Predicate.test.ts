@@ -1,7 +1,8 @@
 /* eslint-disable functional/no-expression-statements */
 import { MPredicate, MTypes } from '@parischap/effect-lib';
+import { TEUtils } from '@parischap/test-utils';
 import { pipe, Predicate } from 'effect';
-import { describe, expect, it } from 'vitest';
+import { describe, it } from 'vitest';
 
 /** Source */
 MTypes.checkNever<MTypes.Equals<MPredicate.Source<Predicate.Predicate<number>>, number>>();
@@ -63,27 +64,25 @@ describe('MPredicate', () => {
 	describe('struct', () => {
 		it('Type error expected', () => {
 			/* @ts-expect-error c not present in object */
-			expect(pipe({ a: 0, b: 1 }, MPredicate.struct({ c: Predicate.isNumber }))).toStrictEqual(
-				false
-			);
+			TEUtils.assertFalse(pipe({ a: 0, b: 1 }, MPredicate.struct({ c: Predicate.isNumber })));
 		});
 
 		it('Passing', () => {
-			expect(
+			TEUtils.assertTrue(
 				pipe(
 					{ a: 0, b: 1, c: 2 },
 					MPredicate.struct({ b: Predicate.isNumber, c: Predicate.isNumber })
 				)
-			).toStrictEqual(true);
+			);
 		});
 
 		it('Failing', () => {
-			expect(
+			TEUtils.assertFalse(
 				pipe(
 					{ a: 0, b: 1, c: 2 },
 					MPredicate.struct({ b: Predicate.isNumber, c: Predicate.isString })
 				)
-			).toStrictEqual(false);
+			);
 		});
 	});
 });

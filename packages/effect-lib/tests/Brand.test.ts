@@ -1,121 +1,148 @@
 /* eslint-disable functional/no-expression-statements */
-import { MBrand, MUtils } from '@parischap/effect-lib';
-import { Number, Option, pipe } from 'effect';
-import { describe, expect, it } from 'vitest';
+import { MBrand } from '@parischap/effect-lib';
+import { TEUtils } from '@parischap/test-utils';
+import { pipe } from 'effect';
+import { describe, it } from 'vitest';
 
 describe('MBrand', () => {
 	it('moduleTag', () => {
-		expect(MBrand.moduleTag).toBe(MUtils.moduleTagFromFileName(__filename));
+		TEUtils.assertSome(TEUtils.moduleTagFromTestFilePath(__filename), MBrand.moduleTag);
 	});
 
 	describe('Email', () => {
 		it('unsafeFromString', () => {
-			expect(MBrand.Email.unsafeFromString('foo')).toBe('foo');
+			TEUtils.strictEqual(MBrand.Email.unsafeFromString('foo'), 'foo');
 		});
-		it('fromString throwing', () => {
-			expect(() => MBrand.Email.fromString('foo')).toThrow();
-		});
-		it('fromString passing', () => {
-			expect(MBrand.Email.fromString('foo@bar.baz')).toBe('foo@bar.baz');
+
+		describe('fromString', () => {
+			it('Not passing', () => {
+				TEUtils.assertNone(MBrand.Email.fromString.option('foo'));
+			});
+			it('Passing', () => {
+				TEUtils.strictEqual(MBrand.Email.fromString('foo@bar.baz'), 'foo@bar.baz');
+			});
 		});
 	});
 
 	describe('SemVer', () => {
 		it('unsafeFromString', () => {
-			expect(MBrand.SemVer.unsafeFromString('foo')).toBe('foo');
+			TEUtils.strictEqual(MBrand.SemVer.unsafeFromString('foo'), 'foo');
 		});
-		it('fromString throwing', () => {
-			expect(() => MBrand.SemVer.fromString('foo')).toThrow();
-		});
-		it('fromString passing', () => {
-			expect(MBrand.SemVer.fromString('1.0.1')).toBe('1.0.1');
+
+		describe('fromString', () => {
+			it('Not passing', () => {
+				TEUtils.assertNone(MBrand.SemVer.fromString.option('foo'));
+			});
+			it('Passing', () => {
+				TEUtils.strictEqual(MBrand.SemVer.fromString('1.0.1'), '1.0.1');
+			});
 		});
 	});
 
 	describe('Real', () => {
 		it('unsafeFromNumber', () => {
-			expect(MBrand.Real.unsafeFromNumber(NaN)).toBe(NaN);
+			TEUtils.strictEqual(MBrand.Real.unsafeFromNumber(NaN), NaN);
 		});
-		it('fromNumber throwing', () => {
-			expect(() => MBrand.Real.fromNumber(NaN)).toThrow();
-		});
-		it('fromNumber passing', () => {
-			expect(MBrand.Real.fromNumber(18.4)).toBe(18.4);
+
+		describe('fromNumber', () => {
+			it('Not passing', () => {
+				TEUtils.assertNone(MBrand.Real.fromNumber.option(NaN));
+			});
+			it('Passing', () => {
+				TEUtils.strictEqual(MBrand.Real.fromNumber(18.4), 18.4);
+			});
 		});
 	});
 
 	describe('Int', () => {
 		it('unsafeFromNumber', () => {
-			expect(MBrand.Int.unsafeFromNumber(NaN)).toBe(NaN);
+			TEUtils.strictEqual(MBrand.Int.unsafeFromNumber(NaN), NaN);
 		});
-		it('fromNumber throwing', () => {
-			expect(() => MBrand.Int.fromNumber(NaN)).toThrow();
+
+		describe('fromNumber', () => {
+			it('Not passing', () => {
+				TEUtils.assertNone(MBrand.Int.fromNumber.option(NaN));
+			});
+			it('Not passing', () => {
+				TEUtils.assertNone(MBrand.Int.fromNumber.option(18.4));
+			});
+			it('Passing', () => {
+				TEUtils.strictEqual(MBrand.Int.fromNumber(18), 18);
+			});
 		});
-		it('fromNumber throwing', () => {
-			expect(() => MBrand.Int.fromNumber(18.4)).toThrow();
-		});
-		it('fromNumber passing', () => {
-			expect(MBrand.Int.fromNumber(18)).toBe(18);
-		});
-		it('fromReal throwing', () => {
-			expect(() => pipe(18.4, MBrand.Real.fromNumber, MBrand.Int.fromReal)).toThrow();
-		});
-		it('fromReal passing', () => {
-			expect(pipe(18, MBrand.Real.fromNumber, MBrand.Int.fromReal)).toBe(18);
+
+		describe('fromReal', () => {
+			it('Not passing', () => {
+				TEUtils.assertNone(pipe(18.4, MBrand.Real.fromNumber, MBrand.Int.fromReal.option));
+			});
+			it('Passing', () => {
+				TEUtils.strictEqual(pipe(18, MBrand.Real.fromNumber, MBrand.Int.fromReal), 18);
+			});
 		});
 	});
 
 	describe('PositiveInt', () => {
 		it('unsafeFromNumber', () => {
-			expect(MBrand.PositiveInt.unsafeFromNumber(NaN)).toBe(NaN);
+			TEUtils.strictEqual(MBrand.PositiveInt.unsafeFromNumber(NaN), NaN);
 		});
 
 		describe('fromNumber', () => {
-			it('Throwing', () => {
-				expect(() => MBrand.PositiveInt.fromNumber(NaN)).toThrow();
+			it('Not passing', () => {
+				TEUtils.assertNone(MBrand.PositiveInt.fromNumber.option(NaN));
 			});
-			it('Throwing', () => {
-				expect(() => MBrand.PositiveInt.fromNumber(-18)).toThrow();
+			it('Not passing', () => {
+				TEUtils.assertNone(MBrand.PositiveInt.fromNumber.option(-18));
 			});
 			it('Passing', () => {
-				expect(MBrand.PositiveInt.fromNumber(18)).toBe(18);
+				TEUtils.strictEqual(MBrand.PositiveInt.fromNumber(18), 18);
 			});
 		});
 
 		describe('fromReal', () => {
-			it('Throwing', () => {
-				expect(() => pipe(18.4, MBrand.Real.fromNumber, MBrand.PositiveInt.fromReal)).toThrow();
+			it('Not passing', () => {
+				TEUtils.assertNone(pipe(18.4, MBrand.Real.fromNumber, MBrand.PositiveInt.fromReal.option));
 			});
 			it('Passing', () => {
-				expect(pipe(18, MBrand.Real.fromNumber, MBrand.PositiveInt.fromReal)).toBe(18);
+				TEUtils.strictEqual(pipe(18, MBrand.Real.fromNumber, MBrand.PositiveInt.fromReal), 18);
 			});
 		});
 
 		describe('fromInt', () => {
-			it('Throwing', () => {
-				expect(() => pipe(-18, MBrand.Int.fromNumber, MBrand.PositiveInt.fromInt)).toThrow();
+			it('Not passing', () => {
+				TEUtils.assertNone(pipe(-18, MBrand.Int.fromNumber, MBrand.PositiveInt.fromInt.option));
 			});
 			it('Passing', () => {
-				expect(pipe(18, MBrand.Int.fromNumber, MBrand.PositiveInt.fromInt)).toBe(18);
+				TEUtils.strictEqual(pipe(18, MBrand.Int.fromNumber, MBrand.PositiveInt.fromInt), 18);
 			});
 		});
 
 		describe('fromBase10String', () => {
-			const numberOptionEq = Option.getEquivalence(Number.Equivalence);
-			it('Integer with no sep', () => {
+			describe('Integer with no sep', () => {
 				const unsignedBase10IntToNumber = MBrand.PositiveInt.fromBase10String('');
-				expect(numberOptionEq(pipe('10000', unsignedBase10IntToNumber), Option.some(10000))).toBe(
-					true
-				);
-				expect(pipe('10 000', unsignedBase10IntToNumber, Option.isNone)).toBe(true);
+				it('Passing', () => {
+					TEUtils.assertSome(
+						unsignedBase10IntToNumber('10000'),
+						MBrand.PositiveInt.unsafeFromNumber(10000)
+					);
+				});
+
+				it('Not passing', () => {
+					TEUtils.assertNone(unsignedBase10IntToNumber('10 000'));
+				});
 			});
 
-			it('Integer with space sep', () => {
+			describe('Integer with space sep', () => {
 				const unsignedBase10IntToNumber = MBrand.PositiveInt.fromBase10String(' ');
-				expect(
-					numberOptionEq(pipe('16 342 124', unsignedBase10IntToNumber), Option.some(16342124))
-				).toBe(true);
-				expect(pipe('10000', unsignedBase10IntToNumber, Option.isNone)).toBe(true);
+				it('Passing', () => {
+					TEUtils.assertSome(
+						unsignedBase10IntToNumber('16 342 124'),
+						MBrand.PositiveInt.unsafeFromNumber(16342124)
+					);
+				});
+
+				it('Not passing', () => {
+					TEUtils.assertNone(unsignedBase10IntToNumber('10000'));
+				});
 			});
 		});
 	});

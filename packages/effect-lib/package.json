@@ -10,6 +10,12 @@
 		"lint-rules": "pnpx @eslint/config-inspector",
 		"update-config-files": "update-config-files",
 		"clean-config-files": "shx rm -rf package.json && shx rm -rf tsconfig.json",
+		"transpile-esm": "tsc -b tsconfig.esm.json",
+		"transpile-cjs": "babel dist/esm --plugins @babel/transform-export-namespace-from --plugins @babel/transform-modules-commonjs --out-dir dist/cjs --source-maps",
+		"transpile-annotate": "babel dist --plugins annotate-pure-calls --out-dir dist --source-maps",
+		"compile": "pnpm transpile-esm && pnpm transpile-cjs && pnpm transpile-annotate && pnpm prodify",
+		"build-and-publish": "pnpm build && pnpm checks && pnpm publish-to-npm",
+		"docgen": "docgen",
 		"circular": "madge --extensions ts --circular --no-color --no-spinner esm",
 		"checks": "pnpm circular && pnpm lint && pnpm tscheck && pnpm test",
 		"test": "vitest run",
@@ -18,14 +24,42 @@
 		"install-prod": "cd dist && pnpm i && cd ..",
 		"build": "pnpm clean-prod && pnpm --if-present pre-build && pnpm compile && pnpm --if-present post-build && pnpm --if-present generate-types && pnpm install-prod",
 		"prodify": "prodify",
-		"examples": "",
-		"transpile-esm": "tsc -b tsconfig.esm.json",
-		"transpile-cjs": "babel dist/esm --plugins @babel/transform-export-namespace-from --plugins @babel/transform-modules-commonjs --out-dir dist/cjs --source-maps",
-		"transpile-annotate": "babel dist --plugins annotate-pure-calls --out-dir dist --source-maps",
-		"compile": "pnpm transpile-esm && pnpm transpile-cjs && pnpm transpile-annotate && pnpm prodify",
-		"build-and-publish": "pnpm build && pnpm checks && pnpm publish-to-npm",
-		"docgen": "docgen"
+		"examples": ""
 	},
+	"publishConfig": {
+		"main": "./cjs/index.js",
+		"types": "./dts/index.d.ts",
+		"exports": {
+			".": {
+				"default": "./cjs/index.js",
+				"import": "./esm/index.js",
+				"types": "./dts/index.d.ts"
+			}
+		},
+		"scripts": {},
+		"devDependencies": {},
+		"peerDependencies": {
+			"effect": "^3.14.1"
+		},
+		"publishConfig": {},
+		"packageManager": "",
+		"pnpm": {},
+		"type": ""
+	},
+	"bugs": {
+		"url": "https://github.com/parischap/effect-libs/issues"
+	},
+	"funding": [
+		{
+			"type": "ko-fi",
+			"url": "https://ko-fi.com/parischap"
+		}
+	],
+	"keywords": [
+		"effect",
+		"typescript",
+		"functional-programming"
+	],
 	"description": "An extension to the official Effect library",
 	"module": "./esm/index.js",
 	"exports": {
@@ -40,44 +74,10 @@
 	"peerDependencies": {
 		"effect": "^3.14.1"
 	},
-	"publishConfig": {
-		"scripts": {},
-		"devDependencies": {},
-		"peerDependencies": {
-			"effect": "^3.14.1"
-		},
-		"publishConfig": {},
-		"packageManager": "",
-		"pnpm": {},
-		"type": "",
-		"exports": {
-			".": {
-				"import": "./esm/index.js",
-				"types": "./dts/index.d.ts",
-				"default": "./cjs/index.js"
-			}
-		},
-		"main": "./cjs/index.js",
-		"types": "./dts/index.d.ts"
-	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/parischap/effect-libs.git",
 		"directory": "packages/effect-lib"
 	},
-	"homepage": "https://github.com/parischap/effect-libs/tree/master/packages/effect-lib",
-	"bugs": {
-		"url": "https://github.com/parischap/effect-libs/issues"
-	},
-	"funding": [
-		{
-			"type": "ko-fi",
-			"url": "https://ko-fi.com/parischap"
-		}
-	],
-	"keywords": [
-		"effect",
-		"typescript",
-		"functional-programming"
-	]
+	"homepage": "https://github.com/parischap/effect-libs/tree/master/packages/effect-lib"
 }

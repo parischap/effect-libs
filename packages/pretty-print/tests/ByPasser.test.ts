@@ -1,6 +1,5 @@
 /* eslint-disable functional/no-expression-statements */
 import { ASStyle } from '@parischap/ansi-styles';
-import { MUtils } from '@parischap/effect-lib';
 import {
 	PPByPasser,
 	PPMarkShowerConstructor,
@@ -10,7 +9,7 @@ import {
 	PPValueBasedStylerConstructor
 } from '@parischap/pretty-print';
 import { Array, Equal, Option, pipe } from 'effect';
-import { describe, expect, it } from 'vitest';
+import { describe, it } from 'vitest';
 
 describe('ByPasser', () => {
 	const utilInspectLike = PPOption.darkModeUtilInspectLike;
@@ -26,7 +25,7 @@ describe('ByPasser', () => {
 
 	describe('Tag, prototype and guards', () => {
 		it('moduleTag', () => {
-			expect(PPByPasser.moduleTag).toBe(MUtils.moduleTagFromFileName(__filename));
+			TEUtils.assertSome(TEUtils.moduleTagFromTestFilePath(__filename), PPByPasser.moduleTag);
 		});
 
 		describe('Equal.equals', () => {
@@ -35,28 +34,28 @@ describe('ByPasser', () => {
 				action: () => () => Option.none()
 			});
 			it('Matching', () => {
-				expect(Equal.equals(empty, dummy)).toBe(true);
+				TEUtils.assertTrue(Equal.equals(empty, dummy));
 			});
 
 			it('Non-matching', () => {
-				expect(Equal.equals(empty, PPByPasser.functionToName)).toBe(false);
+				TEUtils.assertFalse(Equal.equals(empty, PPByPasser.functionToName));
 			});
 		});
 
 		it('.toString()', () => {
-			expect(empty.toString()).toBe(`Empty`);
+			TEUtils.strictEqual(empty.toString(), `Empty`);
 		});
 
 		it('.pipe()', () => {
-			expect(empty.pipe(PPByPasser.id)).toBe('Empty');
+			TEUtils.strictEqual(empty.pipe(PPByPasser.id), 'Empty');
 		});
 
 		describe('has', () => {
 			it('Matching', () => {
-				expect(PPByPasser.has(empty)).toBe(true);
+				TEUtils.assertTrue(PPByPasser.has(empty));
 			});
 			it('Non matching', () => {
-				expect(PPByPasser.has(new Date())).toBe(false);
+				TEUtils.assertFalse(PPByPasser.has(new Date()));
 			});
 		});
 	});
@@ -67,42 +66,43 @@ describe('ByPasser', () => {
 			function foo(): string {
 				return 'foo';
 			}
-			expect(
+			TEUtils.assertTrue(
 				optionEq(
 					pipe(foo, PPValue.fromTopValue, initializedFunctionToName),
 					pipe('[Function: foo]', ASStyle.green, PPStringifiedValue.fromText, Option.some)
 				)
-			).toBe(true);
+			);
 		});
 
 		it('Applied to unnamed function', () => {
-			expect(
+			TEUtils.assertTrue(
 				optionEq(
 					pipe((n: number) => n + 1, PPValue.fromTopValue, initializedFunctionToName),
 					pipe('[Function: anonymous]', ASStyle.green, PPStringifiedValue.fromText, Option.some)
 				)
-			).toBe(true);
+			);
 		});
 
 		it('Applied to non-function value', () => {
-			expect(pipe(3, PPValue.fromTopValue, initializedFunctionToName, Option.isNone)).toBe(true);
+			TEUtils.assertTrue(pipe(3, PPValue.fromTopValue, initializedFunctionToName, Option.isNone));
 		});
 	});
 
 	describe('objectToString', () => {
 		const initializedObjectToString = PPByPasser.objectToString.call(utilInspectLike, constructors);
 		it('Applied to primitive', () => {
-			expect(pipe(3, PPValue.fromTopValue, initializedObjectToString, Option.isNone)).toBe(true);
+			TEUtils.assertTrue(pipe(3, PPValue.fromTopValue, initializedObjectToString, Option.isNone));
 		});
 
 		it('Applied to object without a .toString method', () => {
-			expect(pipe({ a: 3 }, PPValue.fromTopValue, initializedObjectToString, Option.isNone)).toBe(
+			TEUtils.strictEqual(
+				pipe({ a: 3 }, PPValue.fromTopValue, initializedObjectToString, Option.isNone),
 				true
 			);
 		});
 
 		it('Applied to object with a .toString method', () => {
-			expect(
+			TEUtils.assertTrue(
 				optionEq(
 					pipe(
 						{ a: 3, toString: (): string => 'foo\nbar' },
@@ -111,17 +111,18 @@ describe('ByPasser', () => {
 					),
 					pipe(Array.make(ASStyle.yellow('foo'), ASStyle.yellow('bar')), Option.some)
 				)
-			).toBe(true);
+			);
 		});
 
 		it('Applied to a date', () => {
-			expect(
+			TEUtils.assertTrue(
 				pipe(new Date(0), PPValue.fromTopValue, initializedObjectToString, Option.isSome)
-			).toBe(true);
+			);
 		});
 
 		it('Applied to an array', () => {
-			expect(pipe([1, 2], PPValue.fromTopValue, initializedObjectToString, Option.isNone)).toBe(
+			TEUtils.strictEqual(
+				pipe([1, 2], PPValue.fromTopValue, initializedObjectToString, Option.isNone),
 				true
 			);
 		});

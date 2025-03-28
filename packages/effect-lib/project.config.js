@@ -3,11 +3,14 @@ import * as Configs from '@parischap/configs';
 export default Configs.configSubRepo({
 	description: 'An extension to the official Effect library',
 	dependencies: {},
-	devDependencies: {},
+	devDependencies: {
+	},
 	internalPeerDependencies: {},
-	externalPeerDependencies: { effect: Configs.constants.effectVersion },
+	externalPeerDependencies: {
+		effect: Configs.constants.effectVersion
+	},
 	examples: [],
-	scripts: {},
+	scripts: { },
 	environment: Configs.Environment.Type.Library,
 	bundled: false,
 	visibility: Configs.Visibility.Type.Public,

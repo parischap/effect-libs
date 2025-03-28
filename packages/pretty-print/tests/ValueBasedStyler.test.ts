@@ -1,7 +1,7 @@
 /* eslint-disable functional/no-expression-statements */
 import { ASPalette, ASStyle, ASText } from '@parischap/ansi-styles';
 import { PPValue, PPValueBasedStyler } from '@parischap/pretty-print';
-import { describe, expect, it } from 'vitest';
+import { describe, it } from 'vitest';
 
 describe('ValueBasedStyler', () => {
 	const palette = ASPalette.make(ASStyle.black, ASStyle.red, ASStyle.green, ASStyle.blue);
@@ -15,29 +15,29 @@ describe('ValueBasedStyler', () => {
 	});
 
 	it('makeDepthIndexed', () => {
-		expect(
+		TEUtils.assertTrue(
 			ASText.equivalence(
 				PPValueBasedStyler.makeDepthIndexed(palette)(context)('foo'),
 				ASStyle.green('foo')
 			)
-		).toBe(true);
+		);
 	});
 
 	it('makeTypeIndexed', () => {
-		expect(
+		TEUtils.assertTrue(
 			ASText.equivalence(
 				PPValueBasedStyler.makeTypeIndexed(palette)(context)('foo'),
 				ASStyle.red('foo')
 			)
-		).toBe(true);
+		);
 	});
 
 	it('makeKeyTypeIndexed', () => {
-		expect(
+		TEUtils.assertTrue(
 			ASText.equivalence(
 				PPValueBasedStyler.makeKeyTypeIndexed(palette)(context)('foo'),
 				ASStyle.red('foo')
 			)
-		).toBe(true);
+		);
 	});
 });

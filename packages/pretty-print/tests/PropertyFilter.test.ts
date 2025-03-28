@@ -1,8 +1,8 @@
 /* eslint-disable functional/no-expression-statements */
-import { MFunction, MUtils } from '@parischap/effect-lib';
+import { MFunction } from '@parischap/effect-lib';
 import { PPPropertyFilter, PPValue, PPValues } from '@parischap/pretty-print';
 import { Array, Equal, Function, pipe } from 'effect';
-import { describe, expect, it } from 'vitest';
+import { describe, it } from 'vitest';
 
 describe('PropertyFilter', () => {
 	const removeFunctions = PPPropertyFilter.removeFunctions;
@@ -28,7 +28,10 @@ describe('PropertyFilter', () => {
 
 	describe('Tag, prototype and guards', () => {
 		it('moduleTag', () => {
-			expect(PPPropertyFilter.moduleTag).toBe(MUtils.moduleTagFromFileName(__filename));
+			TEUtils.strictEqual(
+				PPPropertyFilter.moduleTag,
+				TEUtils.moduleTagFromTestFilePath(__filename)
+			);
 		});
 
 		describe('Equal.equals', () => {
@@ -37,71 +40,75 @@ describe('PropertyFilter', () => {
 				action: Function.identity
 			});
 			it('Matching', () => {
-				expect(Equal.equals(removeFunctions, dummy)).toBe(true);
+				TEUtils.assertTrue(Equal.equals(removeFunctions, dummy));
 			});
 
 			it('Non-matching', () => {
-				expect(Equal.equals(removeFunctions, PPPropertyFilter.removeNonFunctions)).toBe(false);
+				TEUtils.assertFalse(Equal.equals(removeFunctions, PPPropertyFilter.removeNonFunctions));
 			});
 		});
 
 		it('.toString()', () => {
-			expect(removeFunctions.toString()).toBe(`RemoveFunctions`);
+			TEUtils.strictEqual(removeFunctions.toString(), `RemoveFunctions`);
 		});
 
 		it('.pipe()', () => {
-			expect(removeFunctions.pipe(PPPropertyFilter.id)).toBe('RemoveFunctions');
+			TEUtils.strictEqual(removeFunctions.pipe(PPPropertyFilter.id), 'RemoveFunctions');
 		});
 
 		describe('has', () => {
 			it('Matching', () => {
-				expect(PPPropertyFilter.has(removeFunctions)).toBe(true);
+				TEUtils.assertTrue(PPPropertyFilter.has(removeFunctions));
 			});
 			it('Non matching', () => {
-				expect(PPPropertyFilter.has(new Date())).toBe(false);
+				TEUtils.assertFalse(PPPropertyFilter.has(new Date()));
 			});
 		});
 	});
 
 	it('removeNonFunctions', () => {
-		expect(pipe(values, PPPropertyFilter.removeNonFunctions)).toStrictEqual(Array.of(value2));
+		TEUtils.deepStrictEqual(pipe(values, PPPropertyFilter.removeNonFunctions), Array.of(value2));
 	});
 
 	it('removeFunctions', () => {
-		expect(pipe(values, PPPropertyFilter.removeFunctions)).toStrictEqual(
+		TEUtils.deepStrictEqual(
+			pipe(values, PPPropertyFilter.removeFunctions),
 			Array.make(value1, value3, value4)
 		);
 	});
 
 	it('removeNonEnumerables', () => {
-		expect(pipe(values, PPPropertyFilter.removeNonEnumerables)).toStrictEqual(Array.of(value4));
+		TEUtils.deepStrictEqual(pipe(values, PPPropertyFilter.removeNonEnumerables), Array.of(value4));
 	});
 
 	it('removeEnumerables', () => {
-		expect(pipe(values, PPPropertyFilter.removeEnumerables)).toStrictEqual(
+		TEUtils.deepStrictEqual(
+			pipe(values, PPPropertyFilter.removeEnumerables),
 			Array.make(value1, value2, value3)
 		);
 	});
 
 	it('removeStringKeys', () => {
-		expect(pipe(values, PPPropertyFilter.removeStringKeys)).toStrictEqual(Array.of(value4));
+		TEUtils.deepStrictEqual(pipe(values, PPPropertyFilter.removeStringKeys), Array.of(value4));
 	});
 
 	it('removeSymbolicKeys', () => {
-		expect(pipe(values, PPPropertyFilter.removeSymbolicKeys)).toStrictEqual(
+		TEUtils.deepStrictEqual(
+			pipe(values, PPPropertyFilter.removeSymbolicKeys),
 			Array.make(value1, value2, value3)
 		);
 	});
 
 	it('removeNotFulfillingKeyPredicateMaker', () => {
-		expect(
+		TEUtils.deepStrictEqual(
 			pipe(
 				values,
 				PPPropertyFilter.removeNotFulfillingKeyPredicateMaker({
 					id: 'OnlyLength',
 					predicate: MFunction.strictEquals('length')
 				})
-			)
-		).toStrictEqual(Array.of(value3));
+			),
+			Array.of(value3)
+		);
 	});
 });

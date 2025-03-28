@@ -1,7 +1,7 @@
 /* eslint-disable functional/no-expression-statements */
 import { PPPropertyFilter, PPPropertyFilters, PPValue, PPValues } from '@parischap/pretty-print';
 import { Array, pipe } from 'effect';
-import { describe, expect, it } from 'vitest';
+import { describe, it } from 'vitest';
 
 describe('PropertyFilters', () => {
 	const value1 = PPValue.fromTopValue({
@@ -29,6 +29,6 @@ describe('PropertyFilters', () => {
 			PPPropertyFilter.removeNonEnumerables
 		);
 		const removeFunctionsAndNonEnumerables = PPPropertyFilters.toSyntheticPropertyFilter(filters);
-		expect(pipe(values, removeFunctionsAndNonEnumerables)).toStrictEqual(Array.of(value4));
+		TEUtils.deepStrictEqual(pipe(values, removeFunctionsAndNonEnumerables),Array.of(value4));
 	});
 });

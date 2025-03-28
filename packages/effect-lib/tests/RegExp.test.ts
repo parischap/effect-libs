@@ -1,45 +1,42 @@
 /* eslint-disable functional/no-expression-statements */
 import { MRegExp } from '@parischap/effect-lib';
-import { Array, Option, pipe, String } from 'effect';
-import { describe, expect, it } from 'vitest';
-
-const stringArrayEq = Array.getEquivalence(String.Equivalence);
-const regExp = /af(o)o(bar)?a/;
+import { TEUtils } from '@parischap/test-utils';
+import { Option, pipe, Tuple } from 'effect';
+import { describe, it } from 'vitest';
 
 describe('MRegExp', () => {
+	const regExp = /af(o)o(bar)?a/;
+
 	describe('match', () => {
-		const stringOptionEq = Option.getEquivalence(String.Equivalence);
 		it('Matching', () => {
-			expect(stringOptionEq(pipe(regExp, MRegExp.match('afooa')), Option.some('afooa'))).toBe(true);
-			expect(stringOptionEq(pipe(regExp, MRegExp.match('afoobara')), Option.some('afoobara'))).toBe(
-				true
-			);
+			TEUtils.assertSome(pipe(regExp, MRegExp.match('afooa')), 'afooa');
+			TEUtils.assertSome(pipe(regExp, MRegExp.match('afoobara')), 'afoobara');
 		});
 
 		it('Non matching', () => {
-			expect(pipe(regExp, MRegExp.match('afoob'), Option.isNone)).toBe(true);
+			TEUtils.assertNone(pipe(regExp, MRegExp.match('afoob')));
 		});
 	});
 
 	describe('matchAndGroups', () => {
 		it('Matching', () => {
-			const result = pipe(regExp, MRegExp.matchAndGroups('afooa', 2));
-			expect(
-				Option.isSome(result) &&
-					result.value[0] === 'afooa' &&
-					stringArrayEq(result.value[1], Array.make('o', ''))
-			).toBe(true);
+			TEUtils.assertEquals(
+				pipe(regExp, MRegExp.matchAndGroups('afooa', 2)),
+				Option.some(Tuple.make('afooa', Tuple.make('o', '')))
+			);
 		});
 
 		it('Non matching', () => {
-			expect(pipe(regExp, MRegExp.match('afoob'), Option.isNone)).toBe(true);
+			TEUtils.assertNone(MRegExp.match('afoob')(regExp));
 		});
 	});
 
 	describe('capturedGroups', () => {
 		it('Matching', () => {
-			const result = pipe(regExp, MRegExp.capturedGroups('afooa', 2));
-			expect(Option.isSome(result) && stringArrayEq(result.value, Array.make('o', ''))).toBe(true);
+			TEUtils.assertEquals(
+				pipe(regExp, MRegExp.capturedGroups('afooa', 2)),
+				Option.some(Tuple.make('o', ''))
+			);
 		});
 	});
 });

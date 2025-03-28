@@ -1,8 +1,7 @@
 /* eslint-disable functional/no-expression-statements */
-import { MUtils } from '@parischap/effect-lib';
 import { PPOption, PPPrimitiveFormatter, PPValue } from '@parischap/pretty-print';
 import { Equal, pipe } from 'effect';
-import { describe, expect, it } from 'vitest';
+import { describe, it } from 'vitest';
 
 describe('PrimitiveFormatter', () => {
 	const utilInspectLike = PPOption.utilInspectLike;
@@ -14,125 +13,139 @@ describe('PrimitiveFormatter', () => {
 	});
 	describe('Tag, prototype and guards', () => {
 		it('moduleTag', () => {
-			expect(PPPrimitiveFormatter.moduleTag).toBe(MUtils.moduleTagFromFileName(__filename));
+			TEUtils.strictEqual(
+				PPPrimitiveFormatter.moduleTag,
+				TEUtils.moduleTagFromTestFilePath(__filename)
+			);
 		});
 
 		describe('Equal.equals', () => {
 			it('Matching', () => {
-				expect(
+				TEUtils.assertTrue(
 					Equal.equals(utilInspectLikeFormatter, PPPrimitiveFormatter.utilInspectLikeMaker())
-				).toBe(true);
+				);
 			});
 
 			it('Non-matching', () => {
-				expect(
+				TEUtils.assertFalse(
 					Equal.equals(utilInspectLikeFormatter, utilInspectLikeFormatterWithOtherDefaults)
-				).toBe(false);
+				);
 			});
 		});
 
 		it('.toString()', () => {
-			expect(utilInspectLikeFormatter.toString()).toBe(`UtilInspectLike`);
+			TEUtils.strictEqual(utilInspectLikeFormatter.toString(), `UtilInspectLike`);
 		});
 
 		it('.pipe()', () => {
-			expect(utilInspectLikeFormatter.pipe(PPPrimitiveFormatter.id)).toBe('UtilInspectLike');
+			TEUtils.strictEqual(
+				utilInspectLikeFormatter.pipe(PPPrimitiveFormatter.id),
+				'UtilInspectLike'
+			);
 		});
 
 		describe('has', () => {
 			it('Matching', () => {
-				expect(PPPrimitiveFormatter.has(utilInspectLikeFormatter)).toBe(true);
+				TEUtils.assertTrue(PPPrimitiveFormatter.has(utilInspectLikeFormatter));
 			});
 			it('Non matching', () => {
-				expect(PPPrimitiveFormatter.has(new Date())).toBe(false);
+				TEUtils.assertFalse(PPPrimitiveFormatter.has(new Date()));
 			});
 		});
 	});
 
 	describe('utilInspectLikeMaker', () => {
 		it('string under maxStringlength', () => {
-			expect(
+			TEUtils.strictEqual(
 				pipe(
 					utilInspectLikeFormatterWithOtherDefaults.call(
 						utilInspectLike,
 						PPValue.fromTopValue('foo')
 					)
-				)
-			).toBe("'foo'");
+				),
+				"'foo'"
+			);
 		});
 
 		it('string under maxStringlength', () => {
-			expect(
+			TEUtils.strictEqual(
 				pipe(
 					utilInspectLikeFormatterWithOtherDefaults.call(
 						utilInspectLike,
 						PPValue.fromTopValue('foobar')
 					)
-				)
-			).toBe("'foo...'");
+				),
+				"'foo...'"
+			);
 		});
 
 		it('number', () => {
-			expect(
+			TEUtils.strictEqual(
 				pipe(
 					utilInspectLikeFormatterWithOtherDefaults.call(utilInspectLike, PPValue.fromTopValue(255))
-				)
-			).toBe('255');
+				),
+				'255'
+			);
 		});
 
 		it('bigint', () => {
-			expect(
+			TEUtils.strictEqual(
 				pipe(
 					utilInspectLikeFormatterWithOtherDefaults.call(
 						utilInspectLike,
 						PPValue.fromTopValue(BigInt(5))
 					)
-				)
-			).toBe('5n');
+				),
+				'5n'
+			);
 		});
 
 		it('boolean', () => {
-			expect(
+			TEUtils.strictEqual(
 				pipe(
 					utilInspectLikeFormatterWithOtherDefaults.call(
 						utilInspectLike,
 						PPValue.fromTopValue(true)
 					)
-				)
-			).toBe('true');
+				),
+				'true'
+			);
 		});
 
 		it('symbol', () => {
-			expect(
+			TEUtils.strictEqual(
 				pipe(
 					utilInspectLikeFormatterWithOtherDefaults.call(
 						utilInspectLike,
 						PPValue.fromTopValue(Symbol.for('foo'))
 					)
-				)
-			).toBe('Symbol(foo)');
+				),
+				'Symbol(foo)'
+			);
 		});
 
 		it('undefined', () => {
-			expect(
+			TEUtils.strictEqual(
 				pipe(
 					utilInspectLikeFormatterWithOtherDefaults.call(
 						utilInspectLike,
 						PPValue.fromTopValue(undefined)
 					)
-				)
-			).toBe('undefined');
+				),
+				'undefined'
+			);
 		});
 
 		it('null', () => {
-			expect(
+			TEUtils.strictEqual(
 				pipe(
 					utilInspectLikeFormatterWithOtherDefaults.call(
 						utilInspectLike,
 						PPValue.fromTopValue(null)
 					)
-				)
-			).toBe('null');
+				),
+				'null'
+			);
 		});
 	});
 });

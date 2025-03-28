@@ -1,53 +1,52 @@
 /* eslint-disable functional/no-expression-statements */
 import { ASColor } from '@parischap/ansi-styles';
-import { MUtils } from '@parischap/effect-lib';
 import { Equal } from 'effect';
-import { describe, expect, it } from 'vitest';
+import { describe, it } from 'vitest';
 
 describe('Color', () => {
 	describe('Tag and guards', () => {
 		it('moduleTag', () => {
-			expect(ASColor.moduleTag).toBe(MUtils.moduleTagFromFileName(__filename));
+			TEUtils.assertSome(TEUtils.moduleTagFromTestFilePath(__filename), ASColor.moduleTag);
 		});
 
 		describe('has', () => {
 			it('Matching', () => {
-				expect(ASColor.has(ASColor.threeBitRed)).toBe(true);
-				expect(ASColor.has(ASColor.eightBitRed)).toBe(true);
-				expect(ASColor.has(ASColor.rgbRed)).toBe(true);
+				TEUtils.assertTrue(ASColor.has(ASColor.threeBitRed));
+				TEUtils.assertTrue(ASColor.has(ASColor.eightBitRed));
+				TEUtils.assertTrue(ASColor.has(ASColor.rgbRed));
 			});
 			it('Non matching', () => {
-				expect(ASColor.has(new Date())).toBe(false);
+				TEUtils.assertFalse(ASColor.has(new Date()));
 			});
 		});
 
 		describe('isThreeBit', () => {
 			it('Matching', () => {
-				expect(ASColor.isThreeBit(ASColor.threeBitRed)).toBe(true);
+				TEUtils.assertTrue(ASColor.isThreeBit(ASColor.threeBitRed));
 			});
 			it('Non matching', () => {
-				expect(ASColor.isThreeBit(ASColor.eightBitRed)).toBe(false);
-				expect(ASColor.isThreeBit(ASColor.rgbRed)).toBe(false);
+				TEUtils.assertFalse(ASColor.isThreeBit(ASColor.eightBitRed));
+				TEUtils.assertFalse(ASColor.isThreeBit(ASColor.rgbRed));
 			});
 		});
 
 		describe('isEightBit', () => {
 			it('Matching', () => {
-				expect(ASColor.isEightBit(ASColor.eightBitRed)).toBe(true);
+				TEUtils.assertTrue(ASColor.isEightBit(ASColor.eightBitRed));
 			});
 			it('Non matching', () => {
-				expect(ASColor.isEightBit(ASColor.threeBitRed)).toBe(false);
-				expect(ASColor.isEightBit(ASColor.rgbRed)).toBe(false);
+				TEUtils.assertFalse(ASColor.isEightBit(ASColor.threeBitRed));
+				TEUtils.assertFalse(ASColor.isEightBit(ASColor.rgbRed));
 			});
 		});
 
 		describe('isRgb', () => {
 			it('Matching', () => {
-				expect(ASColor.isRgb(ASColor.rgbRed)).toBe(true);
+				TEUtils.assertTrue(ASColor.isRgb(ASColor.rgbRed));
 			});
 			it('Non matching', () => {
-				expect(ASColor.isRgb(ASColor.threeBitRed)).toBe(false);
-				expect(ASColor.isRgb(ASColor.eightBitRed)).toBe(false);
+				TEUtils.assertFalse(ASColor.isRgb(ASColor.threeBitRed));
+				TEUtils.assertFalse(ASColor.isRgb(ASColor.eightBitRed));
 			});
 		});
 	});
@@ -56,27 +55,27 @@ describe('Color', () => {
 		describe('Prototype and guards', () => {
 			describe('Equal.equals', () => {
 				it('Matching', () => {
-					expect(Equal.equals(ASColor.threeBitBlack, ASColor.threeBitBlack)).toBe(true);
+					TEUtils.assertTrue(Equal.equals(ASColor.threeBitBlack, ASColor.threeBitBlack));
 				});
 
 				it('Non-matching', () => {
-					expect(Equal.equals(ASColor.threeBitBlack, new Date())).toBe(false);
-					expect(Equal.equals(ASColor.threeBitBlack, ASColor.threeBitRed)).toBe(false);
-					expect(Equal.equals(ASColor.threeBitBlack, ASColor.eightBitBlack)).toBe(false);
+					TEUtils.assertFalse(Equal.equals(ASColor.threeBitBlack, new Date()));
+					TEUtils.assertFalse(Equal.equals(ASColor.threeBitBlack, ASColor.threeBitRed));
+					TEUtils.assertFalse(Equal.equals(ASColor.threeBitBlack, ASColor.eightBitBlack));
 				});
 			});
 
 			it('.pipe()', () => {
-				expect(ASColor.threeBitBlack.pipe(ASColor.ThreeBit.has)).toBe(true);
+				TEUtils.assertTrue(ASColor.threeBitBlack.pipe(ASColor.ThreeBit.has));
 			});
 
 			describe('has', () => {
 				it('Matching', () => {
-					expect(ASColor.ThreeBit.has(ASColor.threeBitBlack)).toBe(true);
+					TEUtils.assertTrue(ASColor.ThreeBit.has(ASColor.threeBitBlack));
 				});
 				it('Non matching', () => {
-					expect(ASColor.ThreeBit.has(new Date())).toBe(false);
-					expect(ASColor.ThreeBit.has(ASColor.eightBitBlack)).toBe(false);
+					TEUtils.assertFalse(ASColor.ThreeBit.has(new Date()));
+					TEUtils.assertFalse(ASColor.ThreeBit.has(ASColor.eightBitBlack));
 				});
 			});
 		});
@@ -86,27 +85,27 @@ describe('Color', () => {
 		describe('Prototype and guards', () => {
 			describe('Equal.equals', () => {
 				it('Matching', () => {
-					expect(Equal.equals(ASColor.eightBitBlack, ASColor.eightBitBlack)).toBe(true);
+					TEUtils.assertTrue(Equal.equals(ASColor.eightBitBlack, ASColor.eightBitBlack));
 				});
 
 				it('Non-matching', () => {
-					expect(Equal.equals(ASColor.eightBitBlack, new Date())).toBe(false);
-					expect(Equal.equals(ASColor.eightBitBlack, ASColor.eightBitRed)).toBe(false);
-					expect(Equal.equals(ASColor.eightBitBlack, ASColor.threeBitBlack)).toBe(false);
+					TEUtils.assertFalse(Equal.equals(ASColor.eightBitBlack, new Date()));
+					TEUtils.assertFalse(Equal.equals(ASColor.eightBitBlack, ASColor.eightBitRed));
+					TEUtils.assertFalse(Equal.equals(ASColor.eightBitBlack, ASColor.threeBitBlack));
 				});
 			});
 
 			it('.pipe()', () => {
-				expect(ASColor.eightBitBlack.pipe(ASColor.EightBit.has)).toBe(true);
+				TEUtils.assertTrue(ASColor.eightBitBlack.pipe(ASColor.EightBit.has));
 			});
 
 			describe('has', () => {
 				it('Matching', () => {
-					expect(ASColor.EightBit.has(ASColor.eightBitBlack)).toBe(true);
+					TEUtils.assertTrue(ASColor.EightBit.has(ASColor.eightBitBlack));
 				});
 				it('Non matching', () => {
-					expect(ASColor.EightBit.has(new Date())).toBe(false);
-					expect(ASColor.EightBit.has(ASColor.threeBitBlack)).toBe(false);
+					TEUtils.assertFalse(ASColor.EightBit.has(new Date()));
+					TEUtils.assertFalse(ASColor.EightBit.has(ASColor.threeBitBlack));
 				});
 			});
 		});
@@ -116,27 +115,27 @@ describe('Color', () => {
 		describe('Prototype and guards', () => {
 			describe('Equal.equals', () => {
 				it('Matching', () => {
-					expect(Equal.equals(ASColor.rgbBlack, ASColor.rgbBlack)).toBe(true);
+					TEUtils.assertTrue(Equal.equals(ASColor.rgbBlack, ASColor.rgbBlack));
 				});
 
 				it('Non-matching', () => {
-					expect(Equal.equals(ASColor.rgbBlack, new Date())).toBe(false);
-					expect(Equal.equals(ASColor.rgbBlack, ASColor.rgbRed)).toBe(false);
-					expect(Equal.equals(ASColor.rgbBlack, ASColor.eightBitBlack)).toBe(false);
+					TEUtils.assertFalse(Equal.equals(ASColor.rgbBlack, new Date()));
+					TEUtils.assertFalse(Equal.equals(ASColor.rgbBlack, ASColor.rgbRed));
+					TEUtils.assertFalse(Equal.equals(ASColor.rgbBlack, ASColor.eightBitBlack));
 				});
 			});
 
 			it('.pipe()', () => {
-				expect(ASColor.rgbBlack.pipe(ASColor.Rgb.has)).toBe(true);
+				TEUtils.assertTrue(ASColor.rgbBlack.pipe(ASColor.Rgb.has));
 			});
 
 			describe('has', () => {
 				it('Matching', () => {
-					expect(ASColor.Rgb.has(ASColor.rgbBlack)).toBe(true);
+					TEUtils.assertTrue(ASColor.Rgb.has(ASColor.rgbBlack));
 				});
 				it('Non matching', () => {
-					expect(ASColor.Rgb.has(new Date())).toBe(false);
-					expect(ASColor.Rgb.has(ASColor.eightBitBlack)).toBe(false);
+					TEUtils.assertFalse(ASColor.Rgb.has(new Date()));
+					TEUtils.assertFalse(ASColor.Rgb.has(ASColor.eightBitBlack));
 				});
 			});
 		});
@@ -144,35 +143,36 @@ describe('Color', () => {
 
 	describe('equivalence', () => {
 		it('Matching', () => {
-			expect(ASColor.equivalence(ASColor.threeBitBlack, ASColor.threeBitBlack)).toBe(true);
-			expect(ASColor.equivalence(ASColor.eightBitBlack, ASColor.eightBitBlack)).toBe(true);
-			expect(
+			TEUtils.assertTrue(ASColor.equivalence(ASColor.threeBitBlack, ASColor.threeBitBlack));
+			TEUtils.assertTrue(ASColor.equivalence(ASColor.eightBitBlack, ASColor.eightBitBlack));
+			TEUtils.assertTrue(
 				ASColor.equivalence(ASColor.rgbBlack, ASColor.Rgb.make({ red: 0, green: 0, blue: 0 }))
-			).toBe(true);
+			);
 		});
 
 		it('Non-matching', () => {
-			expect(ASColor.equivalence(ASColor.threeBitBlack, ASColor.eightBitBlack)).toBe(false);
-			expect(ASColor.equivalence(ASColor.eightBitBlack, ASColor.rgbBlack)).toBe(false);
-			expect(ASColor.equivalence(ASColor.threeBitBlack, ASColor.rgbBlack)).toBe(false);
+			TEUtils.assertFalse(ASColor.equivalence(ASColor.threeBitBlack, ASColor.eightBitBlack));
+			TEUtils.assertFalse(ASColor.equivalence(ASColor.eightBitBlack, ASColor.rgbBlack));
+			TEUtils.assertFalse(ASColor.equivalence(ASColor.threeBitBlack, ASColor.rgbBlack));
 		});
 	});
 
 	describe('toId', () => {
 		it('ThreeBit', () => {
-			expect(ASColor.toId(ASColor.threeBitGreen)).toBe('Green');
+			TEUtils.strictEqual(ASColor.toId(ASColor.threeBitGreen), 'Green');
 		});
 		it('ThreeBit.Bright', () => {
-			expect(ASColor.toId(ASColor.threeBitBrightGreen)).toBe('BrightGreen');
+			TEUtils.strictEqual(ASColor.toId(ASColor.threeBitBrightGreen), 'BrightGreen');
 		});
 		it('EightBit', () => {
-			expect(ASColor.toId(ASColor.eightBitGreen)).toBe('EightBitGreen');
+			TEUtils.strictEqual(ASColor.toId(ASColor.eightBitGreen), 'EightBitGreen');
 		});
 		it('Rgb predefined', () => {
-			expect(ASColor.toId(ASColor.rgbGreen)).toBe('RgbGreen');
+			TEUtils.strictEqual(ASColor.toId(ASColor.rgbGreen), 'RgbGreen');
 		});
 		it('Rgb user-defined', () => {
-			expect(ASColor.toId(ASColor.Rgb.make({ red: 127, green: 18, blue: 12 }))).toBe(
+			TEUtils.strictEqual(
+				ASColor.toId(ASColor.Rgb.make({ red: 127, green: 18, blue: 12 })),
 				'Rgb127/18/12'
 			);
 		});
@@ -180,19 +180,20 @@ describe('Color', () => {
 
 	describe('toSequence', () => {
 		it('ThreeBit', () => {
-			expect(ASColor.toSequence(ASColor.threeBitGreen)).toStrictEqual([32]);
+			TEUtils.deepStrictEqual(ASColor.toSequence(ASColor.threeBitGreen), [32]);
 		});
 		it('ThreeBit.Bright', () => {
-			expect(ASColor.toSequence(ASColor.threeBitBrightGreen)).toStrictEqual([92]);
+			TEUtils.deepStrictEqual(ASColor.toSequence(ASColor.threeBitBrightGreen), [92]);
 		});
 		it('EightBit', () => {
-			expect(ASColor.toSequence(ASColor.eightBitGreen)).toStrictEqual([38, 5, 2]);
+			TEUtils.deepStrictEqual(ASColor.toSequence(ASColor.eightBitGreen), [38, 5, 2]);
 		});
 		it('Rgb predefined', () => {
-			expect(ASColor.toSequence(ASColor.rgbGreen)).toStrictEqual([38, 2, 0, 128, 0]);
+			TEUtils.deepStrictEqual(ASColor.toSequence(ASColor.rgbGreen), [38, 2, 0, 128, 0]);
 		});
 		it('Rgb user-defined', () => {
-			expect(ASColor.toSequence(ASColor.Rgb.make({ red: 127, green: 18, blue: 12 }))).toStrictEqual(
+			TEUtils.deepStrictEqual(
+				ASColor.toSequence(ASColor.Rgb.make({ red: 127, green: 18, blue: 12 })),
 				[38, 2, 127, 18, 12]
 			);
 		});

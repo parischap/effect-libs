@@ -1,16 +1,16 @@
 /* eslint-disable functional/no-expression-statements */
 import { ASAnsiString } from '@parischap/ansi-styles';
 import { Array } from 'effect';
-import { describe, expect, it } from 'vitest';
+import { describe, it } from 'vitest';
 
 describe('AnsiString', () => {
 	describe('fromSequence', () => {
 		it('From empty sequence', () => {
-			expect(ASAnsiString.fromSequence(Array.empty())).toBe('');
+			TEUtils.strictEqual(ASAnsiString.fromSequence(Array.empty()),'');
 		});
 
 		it('From non-empty sequence', () => {
-			expect(ASAnsiString.fromSequence(Array.make(0, 1))).toBe('\x1b[0;1m');
+			TEUtils.strictEqual(ASAnsiString.fromSequence(Array.make(0, 1)),'\x1b[0;1m');
 		});
 	});
 });

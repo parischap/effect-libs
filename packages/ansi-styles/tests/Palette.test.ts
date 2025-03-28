@@ -1,49 +1,48 @@
 /* eslint-disable functional/no-expression-statements */
 import { ASPalette, ASStyle } from '@parischap/ansi-styles';
-import { MUtils } from '@parischap/effect-lib';
 import { Equal, pipe } from 'effect';
-import { describe, expect, it } from 'vitest';
+import { describe, it } from 'vitest';
 
 const blackRed = ASPalette.make(ASStyle.black, ASStyle.red);
 
 describe('ASPalette', () => {
 	describe('Tag, prototype and guards', () => {
 		it('moduleTag', () => {
-			expect(ASPalette.moduleTag).toBe(MUtils.moduleTagFromFileName(__filename));
+			TEUtils.assertSome(TEUtils.moduleTagFromTestFilePath(__filename), ASPalette.moduleTag);
 		});
 
 		describe('Equal.equals', () => {
 			it('Matching', () => {
-				expect(Equal.equals(blackRed, ASPalette.make(ASStyle.black, ASStyle.red))).toBe(true);
+				TEUtils.assertTrue(Equal.equals(blackRed, ASPalette.make(ASStyle.black, ASStyle.red)));
 			});
 
 			it('Non-matching', () => {
-				expect(Equal.equals(ASPalette.allOriginalColors, blackRed)).toBe(false);
+				TEUtils.assertFalse(Equal.equals(ASPalette.allOriginalColors, blackRed));
 			});
 		});
 
 		describe('.toString()', () => {
 			it('Black and red', () => {
-				expect(blackRed.toString()).toBe('Black/RedPalette');
+				TEUtils.strictEqual(blackRed.toString(), 'Black/RedPalette');
 			});
 		});
 
 		it('.pipe()', () => {
-			expect(blackRed.pipe(ASPalette.has)).toBe(true);
+			TEUtils.assertTrue(blackRed.pipe(ASPalette.has));
 		});
 
 		describe('has', () => {
 			it('Matching', () => {
-				expect(ASPalette.has(blackRed)).toBe(true);
+				TEUtils.assertTrue(ASPalette.has(blackRed));
 			});
 			it('Non matching', () => {
-				expect(ASPalette.has(new Date())).toBe(false);
+				TEUtils.assertFalse(ASPalette.has(new Date()));
 			});
 		});
 	});
 
 	it('append', () => {
-		expect(
+		TEUtils.assertTrue(
 			ASPalette.equivalence(
 				pipe(
 					ASPalette.make(ASStyle.black, ASStyle.red, ASStyle.green, ASStyle.yellow),
@@ -53,6 +52,6 @@ describe('ASPalette', () => {
 				),
 				ASPalette.allStandardOriginalColors
 			)
-		).toBe(true);
+		);
 	});
 });

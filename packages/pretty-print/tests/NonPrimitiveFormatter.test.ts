@@ -1,6 +1,5 @@
 /* eslint-disable functional/no-expression-statements */
 import { ASStyle, ASText } from '@parischap/ansi-styles';
-import { MUtils } from '@parischap/effect-lib';
 import {
 	PPMarkShowerConstructor,
 	PPNonPrimitiveFormatter,
@@ -10,7 +9,7 @@ import {
 	PPValueBasedStylerConstructor
 } from '@parischap/pretty-print';
 import { Array, Equal, Function, pipe } from 'effect';
-import { describe, expect, it } from 'vitest';
+import { describe, it } from 'vitest';
 
 describe('NonPrimitiveFormatter', () => {
 	const singleLine = PPNonPrimitiveFormatter.singleLine;
@@ -63,7 +62,10 @@ describe('NonPrimitiveFormatter', () => {
 
 	describe('Tag, prototype and guards', () => {
 		it('moduleTag', () => {
-			expect(PPNonPrimitiveFormatter.moduleTag).toBe(MUtils.moduleTagFromFileName(__filename));
+			TEUtils.strictEqual(
+				PPNonPrimitiveFormatter.moduleTag,
+				TEUtils.moduleTagFromTestFilePath(__filename)
+			);
 		});
 
 		describe('Equal.equals', () => {
@@ -72,106 +74,111 @@ describe('NonPrimitiveFormatter', () => {
 				action: () => () => () => PPStringifiedValue.empty
 			});
 			it('Matching', () => {
-				expect(Equal.equals(singleLine, dummy)).toBe(true);
+				TEUtils.assertTrue(Equal.equals(singleLine, dummy));
 			});
 
 			it('Non-matching', () => {
-				expect(Equal.equals(singleLine, PPNonPrimitiveFormatter.tabify)).toBe(false);
+				TEUtils.assertFalse(Equal.equals(singleLine, PPNonPrimitiveFormatter.tabify));
 			});
 		});
 
 		it('.toString()', () => {
-			expect(singleLine.toString()).toBe(`SingleLine`);
+			TEUtils.strictEqual(singleLine.toString(), `SingleLine`);
 		});
 
 		it('.pipe()', () => {
-			expect(singleLine.pipe(PPNonPrimitiveFormatter.id)).toBe('SingleLine');
+			TEUtils.strictEqual(singleLine.pipe(PPNonPrimitiveFormatter.id), 'SingleLine');
 		});
 
 		describe('has', () => {
 			it('Matching', () => {
-				expect(PPNonPrimitiveFormatter.has(singleLine)).toBe(true);
+				TEUtils.assertTrue(PPNonPrimitiveFormatter.has(singleLine));
 			});
 			it('Non matching', () => {
-				expect(PPNonPrimitiveFormatter.has(new Date())).toBe(false);
+				TEUtils.assertFalse(PPNonPrimitiveFormatter.has(new Date()));
 			});
 		});
 	});
 
 	describe('singleLine', () => {
 		it('With strictly more than 0 children', () => {
-			expect(
+			TEUtils.strictEqual(
 				pipe(
 					valueAndHeader,
 					singleLine.call(nonPrimitiveOption, constructors),
 					Function.apply(children),
 					PPStringifiedValue.toAnsiString()
-				)
-			).toBe(singleLineResult);
+				),
+				singleLineResult
+			);
 		});
 
 		it('With 0 children', () => {
-			expect(
+			TEUtils.deepStrictEqual(
 				pipe(
 					valueAndHeader,
 					singleLine.call(nonPrimitiveOption, constructors),
 					Function.apply(Array.empty()),
 					PPStringifiedValue.toUnstyledStrings
-				)
-			).toStrictEqual(['Foo(2) {}']);
+				),
+				['Foo(2) {}']
+			);
 		});
 	});
 
 	describe('tabify', () => {
 		it('With strictly more than 0 children', () => {
-			expect(
+			TEUtils.strictEqual(
 				pipe(
 					valueAndHeader,
 					PPNonPrimitiveFormatter.tabify.call(nonPrimitiveOption, constructors),
 					Function.apply(children),
 					PPStringifiedValue.toAnsiString()
-				)
-			).toBe(tabifyResult);
+				),
+				tabifyResult
+			);
 		});
 
 		it('With 0 children', () => {
-			expect(
+			TEUtils.deepStrictEqual(
 				pipe(
 					valueAndHeader,
 					PPNonPrimitiveFormatter.tabify.call(nonPrimitiveOption, constructors),
 					Function.apply(Array.empty()),
 					PPStringifiedValue.toUnstyledStrings
-				)
-			).toStrictEqual(['Foo(2) {', '}']);
+				),
+				['Foo(2) {', '}']
+			);
 		});
 	});
 
 	describe('treeify', () => {
 		it('With strictly more than 0 children', () => {
-			expect(
+			TEUtils.strictEqual(
 				pipe(
 					valueAndHeader,
 					PPNonPrimitiveFormatter.treeify.call(nonPrimitiveOption, constructors),
 					Function.apply(children),
 					PPStringifiedValue.toAnsiString()
-				)
-			).toBe(treeifyResult);
+				),
+				treeifyResult
+			);
 		});
 		it('With 0 children', () => {
-			expect(
+			TEUtils.assertTrue(
 				pipe(
 					valueAndHeader,
 					PPNonPrimitiveFormatter.treeify.call(nonPrimitiveOption, constructors),
 					Function.apply(Array.empty()),
 					PPStringifiedValue.isEmpty
 				)
-			).toBe(true);
+			);
 		});
 	});
 
 	describe('splitOnConstituentNumberMaker', () => {
 		it('Under limit', () => {
-			expect(
+			TEUtils.strictEqual(
 				pipe(
 					valueAndHeader,
 					PPNonPrimitiveFormatter.splitOnConstituentNumberMaker(2).call(
@@ -180,12 +187,13 @@ describe('NonPrimitiveFormatter', () => {
 					),
 					Function.apply(children),
 					PPStringifiedValue.toAnsiString()
-				)
-			).toBe(singleLineResult);
+				),
+				singleLineResult
+			);
 		});
 
 		it('Above limit', () => {
-			expect(
+			TEUtils.strictEqual(
 				pipe(
 					valueAndHeader,
 					PPNonPrimitiveFormatter.splitOnConstituentNumberMaker(1).call(
@@ -194,15 +202,16 @@ describe('NonPrimitiveFormatter', () => {
 					),
 					Function.apply(children),
 					PPStringifiedValue.toAnsiString()
-				)
-			).toBe(tabifyResult);
+				),
+				tabifyResult
+			);
 		});
 	});
 
 	describe('splitOnTotalLengthMaker', () => {
 		describe('With strictly more than 0 children', () => {
 			it('Under limit', () => {
-				expect(
+				TEUtils.strictEqual(
 					pipe(
 						valueAndHeader,
 						PPNonPrimitiveFormatter.splitOnTotalLengthMaker(24).call(
@@ -211,12 +220,13 @@ describe('NonPrimitiveFormatter', () => {
 						),
 						Function.apply(children),
 						PPStringifiedValue.toAnsiString()
-					)
-				).toBe(singleLineResult);
+					),
+					singleLineResult
+				);
 			});
 
 			it('Above limit', () => {
-				expect(
+				TEUtils.strictEqual(
 					pipe(
 						valueAndHeader,
 						PPNonPrimitiveFormatter.splitOnTotalLengthMaker(23).call(
@@ -225,14 +235,15 @@ describe('NonPrimitiveFormatter', () => {
 						),
 						Function.apply(children),
 						PPStringifiedValue.toAnsiString()
-					)
-				).toBe(tabifyResult);
+					),
+					tabifyResult
+				);
 			});
 		});
 
 		describe('With 0 children', () => {
 			it('Under limit', () => {
-				expect(
+				TEUtils.deepStrictEqual(
 					pipe(
 						valueAndHeader,
 						PPNonPrimitiveFormatter.splitOnTotalLengthMaker(9).call(
@@ -241,12 +252,13 @@ describe('NonPrimitiveFormatter', () => {
 						),
 						Function.apply(Array.empty()),
 						PPStringifiedValue.toUnstyledStrings
-					)
-				).toStrictEqual(['Foo(2) {}']);
+					),
+					['Foo(2) {}']
+				);
 			});
 
 			it('Above limit', () => {
-				expect(
+				TEUtils.deepStrictEqual(
 					pipe(
 						valueAndHeader,
 						PPNonPrimitiveFormatter.splitOnTotalLengthMaker(8).call(
@@ -255,15 +267,16 @@ describe('NonPrimitiveFormatter', () => {
 						),
 						Function.apply(Array.empty()),
 						PPStringifiedValue.toUnstyledStrings
-					)
-				).toStrictEqual(['Foo(2) {', '}']);
+					),
+					['Foo(2) {', '}']
+				);
 			});
 		});
 	});
 
 	describe('splitOnLongestPropLengthMaker', () => {
 		it('Under limit', () => {
-			expect(
+			TEUtils.strictEqual(
 				pipe(
 					valueAndHeader,
 					PPNonPrimitiveFormatter.splitOnLongestPropLengthMaker(6).call(
@@ -272,12 +285,13 @@ describe('NonPrimitiveFormatter', () => {
 					),
 					Function.apply(children),
 					PPStringifiedValue.toAnsiString()
-				)
-			).toBe(singleLineResult);
+				),
+				singleLineResult
+			);
 		});
 
 		it('Above limit', () => {
-			expect(
+			TEUtils.strictEqual(
 				pipe(
 					valueAndHeader,
 					PPNonPrimitiveFormatter.splitOnLongestPropLengthMaker(5).call(
@@ -286,8 +300,9 @@ describe('NonPrimitiveFormatter', () => {
 					),
 					Function.apply(children),
 					PPStringifiedValue.toAnsiString()
-				)
-			).toBe(tabifyResult);
+				),
+				tabifyResult
+			);
 		});
 	});
 });
