@@ -1,34 +1,35 @@
 /* eslint-disable functional/no-expression-statements */
 import { ASAnsiString, ASColor, ASStyleCharacteristics, ASText } from '@parischap/ansi-styles';
+import { TEUtils } from '@parischap/test-utils';
 import { Array, Equal, flow, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
-const none = ASText.concat;
-const bold = ASText.fromStyleAndElems(ASStyleCharacteristics.bold);
-const dim = ASText.fromStyleAndElems(ASStyleCharacteristics.dim);
-const italic = ASText.fromStyleAndElems(ASStyleCharacteristics.italic);
-const underlined = ASText.fromStyleAndElems(ASStyleCharacteristics.underlined);
-const notBold = ASText.fromStyleAndElems(ASStyleCharacteristics.notBold);
-const notUnderlined = ASText.fromStyleAndElems(ASStyleCharacteristics.notUnderlined);
-
-const red = pipe(
-	ASColor.threeBitRed,
-	ASStyleCharacteristics.fromColorAsForegroundColor,
-	ASText.fromStyleAndElems
-);
-const pink = pipe(
-	ASColor.rgbPink,
-	ASStyleCharacteristics.fromColorAsForegroundColor,
-	ASText.fromStyleAndElems
-);
-
-const boldRed = flow(bold, red);
-const boldRedFoo = pipe('foo', boldRed);
-const foo = ASText.fromString('foo');
-const bar = ASText.fromString('bar');
-const baz = ASText.fromString('baz');
-
 describe('ASText', () => {
+	const none = ASText.concat;
+	const bold = ASText.fromStyleAndElems(ASStyleCharacteristics.bold);
+	const dim = ASText.fromStyleAndElems(ASStyleCharacteristics.dim);
+	const italic = ASText.fromStyleAndElems(ASStyleCharacteristics.italic);
+	const underlined = ASText.fromStyleAndElems(ASStyleCharacteristics.underlined);
+	const notBold = ASText.fromStyleAndElems(ASStyleCharacteristics.notBold);
+	const notUnderlined = ASText.fromStyleAndElems(ASStyleCharacteristics.notUnderlined);
+
+	const red = pipe(
+		ASColor.threeBitRed,
+		ASStyleCharacteristics.fromColorAsForegroundColor,
+		ASText.fromStyleAndElems
+	);
+	const pink = pipe(
+		ASColor.rgbPink,
+		ASStyleCharacteristics.fromColorAsForegroundColor,
+		ASText.fromStyleAndElems
+	);
+
+	const boldRed = flow(bold, red);
+	const boldRedFoo = pipe('foo', boldRed);
+	const foo = ASText.fromString('foo');
+	const bar = ASText.fromString('bar');
+	const baz = ASText.fromString('baz');
+
 	describe('Tag, prototype and guards', () => {
 		it('moduleTag', () => {
 			TEUtils.assertSome(TEUtils.moduleTagFromTestFilePath(__filename), ASText.moduleTag);
@@ -45,8 +46,8 @@ describe('ASText', () => {
 
 		describe('Equal.equals', () => {
 			it('Matching', () => {
-				TEUtils.assertTrue(Equal.equals(boldRedFoo, pipe('foo', red, bold)));
-				TEUtils.assertTrue(Equal.equals(boldRed(''), none('')));
+				TEUtils.assertEquals(boldRedFoo, pipe('foo', red, bold));
+				TEUtils.assertEquals(boldRed(''), none(''));
 			});
 			it('Non matching', () => {
 				TEUtils.assertFalse(Equal.equals(boldRedFoo, pipe('foo', bold)));
@@ -91,17 +92,17 @@ describe('ASText', () => {
 
 	describe('empty, isEmpty', () => {
 		it('Matching', () => {
-			TEUtils.assertTrue(pipe(ASText.empty, ASText.isEmpty));
+			TEUtils.assertTrue(ASText.isEmpty(ASText.empty));
 		});
 		it('Non matching', () => {
-			TEUtils.assertFalse(pipe(boldRedFoo, ASText.isEmpty));
+			TEUtils.assertFalse(ASText.isEmpty(boldRedFoo));
 		});
 	});
 
 	it('fromStyleAndElems', () => {
 		const weird = bold('foo', 'bar', italic('foo'), italic('bar'), '', 'baz');
 		TEUtils.strictEqual(pipe(weird, ASText.uniStyledTexts, Array.length), 3);
-		TEUtils.assertTrue(ASText.equivalence(weird, bold('foobar', italic('foobar'), 'baz')));
+		TEUtils.assertEquals(weird, bold('foobar', italic('foobar'), 'baz'));
 	});
 
 	it('toAnsiString', () => {

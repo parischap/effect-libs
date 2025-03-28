@@ -1,6 +1,7 @@
 /* eslint-disable functional/no-expression-statements */
 import { MFunction } from '@parischap/effect-lib';
 import { PPPropertyFilter, PPValue, PPValues } from '@parischap/pretty-print';
+import { TEUtils } from '@parischap/test-utils';
 import { Array, Equal, Function, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
@@ -28,19 +29,18 @@ describe('PropertyFilter', () => {
 
 	describe('Tag, prototype and guards', () => {
 		it('moduleTag', () => {
-			TEUtils.strictEqual(
-				PPPropertyFilter.moduleTag,
-				TEUtils.moduleTagFromTestFilePath(__filename)
-			);
+			TEUtils.assertSome(TEUtils.moduleTagFromTestFilePath(__filename), PPPropertyFilter.moduleTag);
 		});
 
 		describe('Equal.equals', () => {
-			const dummy = PPPropertyFilter.make({
-				id: 'RemoveFunctions',
-				action: Function.identity
-			});
 			it('Matching', () => {
-				TEUtils.assertTrue(Equal.equals(removeFunctions, dummy));
+				TEUtils.assertEquals(
+					removeFunctions,
+					PPPropertyFilter.make({
+						id: 'RemoveFunctions',
+						action: Function.identity
+					})
+				);
 			});
 
 			it('Non-matching', () => {

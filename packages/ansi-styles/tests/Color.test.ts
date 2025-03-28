@@ -1,5 +1,6 @@
 /* eslint-disable functional/no-expression-statements */
 import { ASColor } from '@parischap/ansi-styles';
+import { TEUtils } from '@parischap/test-utils';
 import { Equal } from 'effect';
 import { describe, it } from 'vitest';
 
@@ -55,7 +56,7 @@ describe('Color', () => {
 		describe('Prototype and guards', () => {
 			describe('Equal.equals', () => {
 				it('Matching', () => {
-					TEUtils.assertTrue(Equal.equals(ASColor.threeBitBlack, ASColor.threeBitBlack));
+					TEUtils.assertEquals(ASColor.threeBitBlack, ASColor.threeBitBlack);
 				});
 
 				it('Non-matching', () => {
@@ -85,7 +86,7 @@ describe('Color', () => {
 		describe('Prototype and guards', () => {
 			describe('Equal.equals', () => {
 				it('Matching', () => {
-					TEUtils.assertTrue(Equal.equals(ASColor.eightBitBlack, ASColor.eightBitBlack));
+					TEUtils.assertEquals(ASColor.eightBitBlack, ASColor.eightBitBlack);
 				});
 
 				it('Non-matching', () => {
@@ -115,7 +116,7 @@ describe('Color', () => {
 		describe('Prototype and guards', () => {
 			describe('Equal.equals', () => {
 				it('Matching', () => {
-					TEUtils.assertTrue(Equal.equals(ASColor.rgbBlack, ASColor.rgbBlack));
+					TEUtils.assertEquals(ASColor.rgbBlack, ASColor.rgbBlack);
 				});
 
 				it('Non-matching', () => {

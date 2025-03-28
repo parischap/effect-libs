@@ -1,5 +1,6 @@
 /* eslint-disable functional/no-expression-statements */
-import { ASContextStyler, ASPalette, ASStyle, ASText } from '@parischap/ansi-styles';
+import { ASContextStyler, ASPalette, ASStyle } from '@parischap/ansi-styles';
+import { TEUtils } from '@parischap/test-utils';
 import { Equal } from 'effect';
 import { describe, it } from 'vitest';
 
@@ -38,9 +39,8 @@ describe('ContextStyler', () => {
 		});
 
 		describe('Equal.equals', () => {
-			const dummy = ASContextStyler.fromSingleStyle(ASStyle.red);
 			it('Matching', () => {
-				TEUtils.assertTrue(Equal.equals(red, dummy));
+				TEUtils.assertEquals(red, ASContextStyler.fromSingleStyle(ASStyle.red));
 			});
 
 			it('Non-matching', () => {
@@ -73,27 +73,21 @@ describe('ContextStyler', () => {
 
 	describe('Action', () => {
 		it('FromSingleStyle', () => {
-			TEUtils.assertTrue(ASText.equivalence(redInValue1Context('foo'), ASStyle.red('foo')));
+			TEUtils.assertEquals(redInValue1Context('foo'), ASStyle.red('foo'));
 		});
 
 		it('From Palette context first within bounds', () => {
-			TEUtils.assertTrue(
-				ASText.equivalence(pos1BasedAllColorsFormatterInValue1Context('foo'), ASStyle.green('foo'))
-			);
+			TEUtils.assertEquals(pos1BasedAllColorsFormatterInValue1Context('foo'), ASStyle.green('foo'));
 		});
 
 		it('From Palette context first out of bounds', () => {
-			TEUtils.assertTrue(
-				ASText.equivalence(pos1BasedAllColorsFormatterInValue2Context('foo'), ASStyle.red('foo'))
-			);
+			TEUtils.assertEquals(pos1BasedAllColorsFormatterInValue2Context('foo'), ASStyle.red('foo'));
 		});
 
 		it('From Palette context last', () => {
-			TEUtils.assertTrue(
-				ASText.equivalence(
-					pos1BasedAllColorsFormatter.withContextLast('foo')(value1),
-					ASStyle.green('foo')
-				)
+			TEUtils.assertEquals(
+				pos1BasedAllColorsFormatter.withContextLast('foo')(value1),
+				ASStyle.green('foo')
 			);
 		});
 	});

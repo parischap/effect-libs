@@ -107,7 +107,7 @@ export const marks: MTypes.OneArgFunction<Type, Marks.Type> = Struct.get('marks'
  */
 
 export const utilInspectLike: Type = make({
-	id: 'Defaults',
+	id: 'UtilInspectLike',
 	marks: HashMap.make(
 		['FunctionNameStartDelimiter', { text: 'Function: ', partName: 'Message' }],
 		['FunctionNameEndDelimiter', { text: '', partName: 'Message' }],

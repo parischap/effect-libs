@@ -1,6 +1,7 @@
 /* eslint-disable functional/no-expression-statements */
 import { ASColor, ASStyleCharacteristics } from '@parischap/ansi-styles';
-import { Equal, Option, pipe } from 'effect';
+import { TEUtils } from '@parischap/test-utils';
+import { Equal, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('ASStyleCharacteristics', () => {
@@ -36,16 +37,16 @@ describe('ASStyleCharacteristics', () => {
 
 	describe('Tag, prototype and guards', () => {
 		it('moduleTag', () => {
-			TEUtils.strictEqual(
-				ASStyleCharacteristics.moduleTag,
-				TEUtils.moduleTagFromTestFilePath(__filename)
+			TEUtils.assertSome(
+				TEUtils.moduleTagFromTestFilePath(__filename),
+				ASStyleCharacteristics.moduleTag
 			);
 		});
 
 		describe('Equal.equals', () => {
 			it('Matching', () => {
-				TEUtils.assertTrue(Equal.equals(ASStyleCharacteristics.bold, bold1));
-				TEUtils.assertTrue(Equal.equals(ASStyleCharacteristics.none, ASStyleCharacteristics.none));
+				TEUtils.assertEquals(ASStyleCharacteristics.bold, bold1);
+				TEUtils.assertEquals(ASStyleCharacteristics.none, ASStyleCharacteristics.none);
 			});
 			it('Non matching', () => {
 				TEUtils.assertFalse(Equal.equals(ASStyleCharacteristics.bold, boldItalic));
@@ -78,11 +79,8 @@ describe('ASStyleCharacteristics', () => {
 	});
 
 	it('italicState', () => {
-		TEUtils.strictEqual(
-			Equal.equals(ASStyleCharacteristics.italicState(boldItalic), Option.some(true)),
-			true
-		);
-		TEUtils.assertTrue(pipe(ASStyleCharacteristics.italicState(bold1), Option.isNone));
+		TEUtils.assertSome(ASStyleCharacteristics.italicState(boldItalic), true);
+		TEUtils.assertNone(ASStyleCharacteristics.italicState(bold1));
 	});
 
 	it('hasBold', () => {

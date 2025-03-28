@@ -9,6 +9,7 @@ import {
 	PPValue,
 	PPValueBasedStylerConstructor
 } from '@parischap/pretty-print';
+import { TEUtils } from '@parischap/test-utils';
 import { Array, Equal, Function, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
@@ -27,19 +28,21 @@ describe('PropertyFormatter', () => {
 
 	describe('Tag, prototype and guards', () => {
 		it('moduleTag', () => {
-			TEUtils.strictEqual(
-				PPPropertyFormatter.moduleTag,
-				TEUtils.moduleTagFromTestFilePath(__filename)
+			TEUtils.assertSome(
+				TEUtils.moduleTagFromTestFilePath(__filename),
+				PPPropertyFormatter.moduleTag
 			);
 		});
 
 		describe('Equal.equals', () => {
-			const dummy = PPPropertyFormatter.make({
-				id: 'ValueOnly',
-				action: () => () => () => PPStringifiedValue.empty
-			});
 			it('Matching', () => {
-				TEUtils.assertTrue(Equal.equals(valueOnly, dummy));
+				TEUtils.assertEquals(
+					valueOnly,
+					PPPropertyFormatter.make({
+						id: 'ValueOnly',
+						action: () => () => () => PPStringifiedValue.empty
+					})
+				);
 			});
 
 			it('Non-matching', () => {

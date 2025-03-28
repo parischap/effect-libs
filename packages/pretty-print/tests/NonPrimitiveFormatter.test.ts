@@ -8,6 +8,7 @@ import {
 	PPValue,
 	PPValueBasedStylerConstructor
 } from '@parischap/pretty-print';
+import { TEUtils } from '@parischap/test-utils';
 import { Array, Equal, Function, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
@@ -62,19 +63,21 @@ describe('NonPrimitiveFormatter', () => {
 
 	describe('Tag, prototype and guards', () => {
 		it('moduleTag', () => {
-			TEUtils.strictEqual(
-				PPNonPrimitiveFormatter.moduleTag,
-				TEUtils.moduleTagFromTestFilePath(__filename)
+			TEUtils.assertSome(
+				TEUtils.moduleTagFromTestFilePath(__filename),
+				PPNonPrimitiveFormatter.moduleTag
 			);
 		});
 
 		describe('Equal.equals', () => {
-			const dummy = PPNonPrimitiveFormatter.make({
-				id: 'SingleLine',
-				action: () => () => () => PPStringifiedValue.empty
-			});
 			it('Matching', () => {
-				TEUtils.assertTrue(Equal.equals(singleLine, dummy));
+				TEUtils.assertEquals(
+					singleLine,
+					PPNonPrimitiveFormatter.make({
+						id: 'SingleLine',
+						action: () => () => () => PPStringifiedValue.empty
+					})
+				);
 			});
 
 			it('Non-matching', () => {

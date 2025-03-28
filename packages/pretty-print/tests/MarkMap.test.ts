@@ -1,5 +1,6 @@
 /* eslint-disable functional/no-expression-statements */
 import { PPMarkMap } from '@parischap/pretty-print';
+import { TEUtils } from '@parischap/test-utils';
 import { Equal } from 'effect';
 import { describe, it } from 'vitest';
 
@@ -12,22 +13,23 @@ describe('MarkMap', () => {
 		});
 
 		describe('Equal.equals', () => {
-			const dummy = PPMarkMap.make(utilInspectLike);
 			it('Matching', () => {
-				TEUtils.assertTrue(Equal.equals(utilInspectLike, dummy));
+				TEUtils.assertEquals(utilInspectLike, PPMarkMap.make(utilInspectLike));
 			});
 
 			it('Non-matching', () => {
-				TEUtils.assertFalse(Equal.equals(utilInspectLike, PPMarkMap.defaultsHideNullables));
+				TEUtils.assertFalse(
+					Equal.equals(utilInspectLike, PPMarkMap.make({ ...utilInspectLike, id: 'Dummy' }))
+				);
 			});
 		});
 
 		it('.toString()', () => {
-			TEUtils.strictEqual(utilInspectLike.toString(), `Defaults`);
+			TEUtils.strictEqual(utilInspectLike.toString(), `UtilInspectLike`);
 		});
 
 		it('.pipe()', () => {
-			TEUtils.strictEqual(utilInspectLike.pipe(PPMarkMap.id), 'Defaults');
+			TEUtils.strictEqual(utilInspectLike.pipe(PPMarkMap.id), 'UtilInspectLike');
 		});
 
 		describe('has', () => {

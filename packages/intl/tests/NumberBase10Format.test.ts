@@ -8,9 +8,9 @@ const uk = CVNumberBase10Format.uk;
 describe('NumberBase10Format', () => {
 	describe('Tag, prototype and guards', () => {
 		it('moduleTag', () => {
-			TEUtils.strictEqual(
-				CVNumberBase10Format.moduleTag,
-				TEUtils.moduleTagFromTestFilePath(__filename)
+			TEUtils.assertSome(
+				TEUtils.moduleTagFromTestFilePath(__filename),
+				CVNumberBase10Format.moduleTag
 			);
 		});
 

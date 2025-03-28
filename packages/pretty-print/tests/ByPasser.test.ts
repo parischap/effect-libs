@@ -8,6 +8,7 @@ import {
 	PPValue,
 	PPValueBasedStylerConstructor
 } from '@parischap/pretty-print';
+import { TEUtils } from '@parischap/test-utils';
 import { Array, Equal, Option, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
@@ -20,7 +21,6 @@ describe('ByPasser', () => {
 		markShowerConstructor
 	};
 
-	const optionEq = Option.getEquivalence(PPStringifiedValue.equivalence);
 	const empty = PPByPasser.empty;
 
 	describe('Tag, prototype and guards', () => {
@@ -29,12 +29,14 @@ describe('ByPasser', () => {
 		});
 
 		describe('Equal.equals', () => {
-			const dummy = PPByPasser.make({
-				id: 'Empty',
-				action: () => () => Option.none()
-			});
 			it('Matching', () => {
-				TEUtils.assertTrue(Equal.equals(empty, dummy));
+				TEUtils.assertEquals(
+					empty,
+					PPByPasser.make({
+						id: 'Empty',
+						action: () => () => Option.none()
+					})
+				);
 			});
 
 			it('Non-matching', () => {
@@ -66,51 +68,42 @@ describe('ByPasser', () => {
 			function foo(): string {
 				return 'foo';
 			}
-			TEUtils.assertTrue(
-				optionEq(
-					pipe(foo, PPValue.fromTopValue, initializedFunctionToName),
-					pipe('[Function: foo]', ASStyle.green, PPStringifiedValue.fromText, Option.some)
-				)
+			TEUtils.assertEquals(
+				pipe(foo, PPValue.fromTopValue, initializedFunctionToName),
+				pipe('[Function: foo]', ASStyle.green, PPStringifiedValue.fromText, Option.some)
 			);
 		});
 
 		it('Applied to unnamed function', () => {
-			TEUtils.assertTrue(
-				optionEq(
-					pipe((n: number) => n + 1, PPValue.fromTopValue, initializedFunctionToName),
-					pipe('[Function: anonymous]', ASStyle.green, PPStringifiedValue.fromText, Option.some)
-				)
+			TEUtils.assertEquals(
+				pipe((n: number) => n + 1, PPValue.fromTopValue, initializedFunctionToName),
+				pipe('[Function: anonymous]', ASStyle.green, PPStringifiedValue.fromText, Option.some)
 			);
 		});
 
 		it('Applied to non-function value', () => {
-			TEUtils.assertTrue(pipe(3, PPValue.fromTopValue, initializedFunctionToName, Option.isNone));
+			TEUtils.assertNone(pipe(3, PPValue.fromTopValue, initializedFunctionToName));
 		});
 	});
 
 	describe('objectToString', () => {
 		const initializedObjectToString = PPByPasser.objectToString.call(utilInspectLike, constructors);
 		it('Applied to primitive', () => {
-			TEUtils.assertTrue(pipe(3, PPValue.fromTopValue, initializedObjectToString, Option.isNone));
+			TEUtils.assertNone(pipe(3, PPValue.fromTopValue, initializedObjectToString));
 		});
 
 		it('Applied to object without a .toString method', () => {
-			TEUtils.strictEqual(
-				pipe({ a: 3 }, PPValue.fromTopValue, initializedObjectToString, Option.isNone),
-				true
-			);
+			TEUtils.assertNone(pipe({ a: 3 }, PPValue.fromTopValue, initializedObjectToString));
 		});
 
 		it('Applied to object with a .toString method', () => {
-			TEUtils.assertTrue(
-				optionEq(
-					pipe(
-						{ a: 3, toString: (): string => 'foo\nbar' },
-						PPValue.fromTopValue,
-						initializedObjectToString
-					),
-					pipe(Array.make(ASStyle.yellow('foo'), ASStyle.yellow('bar')), Option.some)
-				)
+			TEUtils.assertEquals(
+				pipe(
+					{ a: 3, toString: (): string => 'foo\nbar' },
+					PPValue.fromTopValue,
+					initializedObjectToString
+				),
+				pipe(Array.make(ASStyle.yellow('foo'), ASStyle.yellow('bar')), Option.some)
 			);
 		});
 
@@ -121,10 +114,7 @@ describe('ByPasser', () => {
 		});
 
 		it('Applied to an array', () => {
-			TEUtils.strictEqual(
-				pipe([1, 2], PPValue.fromTopValue, initializedObjectToString, Option.isNone),
-				true
-			);
+			TEUtils.assertNone(pipe([1, 2], PPValue.fromTopValue, initializedObjectToString));
 		});
 	});
 });

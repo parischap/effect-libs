@@ -1,5 +1,6 @@
 /* eslint-disable functional/no-expression-statements */
 import { ASStyle, ASStyleCharacteristics, ASText } from '@parischap/ansi-styles';
+import { TEUtils } from '@parischap/test-utils';
 import { Equal, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
@@ -16,8 +17,8 @@ describe('ASStyle', () => {
 
 		describe('Equal.equals', () => {
 			it('Matching', () => {
-				TEUtils.assertTrue(Equal.equals(ASStyle.none, ASStyle.none));
-				TEUtils.assertTrue(Equal.equals(boldRed1, boldRed2));
+				TEUtils.assertEquals(ASStyle.none, ASStyle.none);
+				TEUtils.assertEquals(boldRed1, boldRed2);
 			});
 
 			it('Non-matching', () => {
@@ -80,8 +81,6 @@ describe('ASStyle', () => {
 	});
 
 	it('Action', () => {
-		TEUtils.assertTrue(
-			ASText.equivalence(bold('foo'), ASText.fromStyleAndElems(ASStyleCharacteristics.bold)('foo'))
-		);
+		TEUtils.assertEquals(bold('foo'), ASText.fromStyleAndElems(ASStyleCharacteristics.bold)('foo'));
 	});
 });

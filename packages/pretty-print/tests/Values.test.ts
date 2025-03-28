@@ -1,6 +1,7 @@
 /* eslint-disable functional/no-expression-statements */
 import { ASText } from '@parischap/ansi-styles';
 import { PPOption, PPValue, PPValues } from '@parischap/pretty-print';
+import { TEUtils } from '@parischap/test-utils';
 import { Array, flow, HashMap, pipe } from 'effect';
 import { inspect } from 'node:util';
 import { describe, it } from 'vitest';
@@ -24,8 +25,8 @@ describe('Values', () => {
 				PPValues.fromProperties(1),
 				Array.map((p) => p.toString()),
 				Array.join('\n')
-			)
-		,`{
+			),
+			`{
   "_id": "@parischap/pretty-print/Value/",
   "content": [
     1,
@@ -65,7 +66,8 @@ describe('Values', () => {
   "oneLineStringKey": "toString",
   "hasSymbolicKey": false,
   "isEnumerable": true
-}`);
+}`
+		);
 	});
 
 	it('fromValueIterable', () => {
@@ -75,8 +77,8 @@ describe('Values', () => {
 				PPValues.fromValueIterable,
 				Array.map((p) => p.toString()),
 				Array.join('\n')
-			)
-		,`{
+			),
+			`{
   "_id": "@parischap/pretty-print/Value/",
   "content": 1,
   "contentType": 1,
@@ -101,7 +103,8 @@ describe('Values', () => {
   "oneLineStringKey": "1",
   "hasSymbolicKey": false,
   "isEnumerable": true
-}`);
+}`
+		);
 	});
 
 	it('fromKeyValueIterable', () => {
@@ -112,8 +115,8 @@ describe('Values', () => {
 				PPValues.fromKeyValueIterable(stringifier),
 				Array.map((p) => p.toString()),
 				Array.join('\n')
-			)
-		,`{
+			),
+			`{
   "_id": "@parischap/pretty-print/Value/",
   "content": 1,
   "contentType": 1,
@@ -138,6 +141,7 @@ describe('Values', () => {
   "oneLineStringKey": "b",
   "hasSymbolicKey": false,
   "isEnumerable": true
-}`);
+}`
+		);
 	});
 });

@@ -1,11 +1,12 @@
 /* eslint-disable functional/no-expression-statements */
 import { ASPalette, ASStyle } from '@parischap/ansi-styles';
+import { TEUtils } from '@parischap/test-utils';
 import { Equal, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
-const blackRed = ASPalette.make(ASStyle.black, ASStyle.red);
-
 describe('ASPalette', () => {
+	const blackRed = ASPalette.make(ASStyle.black, ASStyle.red);
+
 	describe('Tag, prototype and guards', () => {
 		it('moduleTag', () => {
 			TEUtils.assertSome(TEUtils.moduleTagFromTestFilePath(__filename), ASPalette.moduleTag);
@@ -13,7 +14,7 @@ describe('ASPalette', () => {
 
 		describe('Equal.equals', () => {
 			it('Matching', () => {
-				TEUtils.assertTrue(Equal.equals(blackRed, ASPalette.make(ASStyle.black, ASStyle.red)));
+				TEUtils.assertEquals(blackRed, ASPalette.make(ASStyle.black, ASStyle.red));
 			});
 
 			it('Non-matching', () => {
@@ -42,16 +43,12 @@ describe('ASPalette', () => {
 	});
 
 	it('append', () => {
-		TEUtils.assertTrue(
-			ASPalette.equivalence(
-				pipe(
-					ASPalette.make(ASStyle.black, ASStyle.red, ASStyle.green, ASStyle.yellow),
-					ASPalette.append(
-						ASPalette.make(ASStyle.blue, ASStyle.magenta, ASStyle.cyan, ASStyle.white)
-					)
-				),
-				ASPalette.allStandardOriginalColors
-			)
+		TEUtils.assertEquals(
+			pipe(
+				ASPalette.make(ASStyle.black, ASStyle.red, ASStyle.green, ASStyle.yellow),
+				ASPalette.append(ASPalette.make(ASStyle.blue, ASStyle.magenta, ASStyle.cyan, ASStyle.white))
+			),
+			ASPalette.allStandardOriginalColors
 		);
 	});
 });

@@ -1,5 +1,6 @@
 /* eslint-disable functional/no-expression-statements */
 import { PPOption, PPPrimitiveFormatter, PPValue } from '@parischap/pretty-print';
+import { TEUtils } from '@parischap/test-utils';
 import { Equal, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
@@ -13,17 +14,15 @@ describe('PrimitiveFormatter', () => {
 	});
 	describe('Tag, prototype and guards', () => {
 		it('moduleTag', () => {
-			TEUtils.strictEqual(
-				PPPrimitiveFormatter.moduleTag,
-				TEUtils.moduleTagFromTestFilePath(__filename)
+			TEUtils.assertSome(
+				TEUtils.moduleTagFromTestFilePath(__filename),
+				PPPrimitiveFormatter.moduleTag
 			);
 		});
 
 		describe('Equal.equals', () => {
 			it('Matching', () => {
-				TEUtils.assertTrue(
-					Equal.equals(utilInspectLikeFormatter, PPPrimitiveFormatter.utilInspectLikeMaker())
-				);
+				TEUtils.assertEquals(utilInspectLikeFormatter, PPPrimitiveFormatter.utilInspectLikeMaker());
 			});
 
 			it('Non-matching', () => {

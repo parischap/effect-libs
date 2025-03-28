@@ -1,6 +1,7 @@
 /* eslint-disable functional/no-expression-statements */
-import { ASPalette, ASStyle, ASText } from '@parischap/ansi-styles';
+import { ASPalette, ASStyle } from '@parischap/ansi-styles';
 import { PPValue, PPValueBasedStyler } from '@parischap/pretty-print';
+import { TEUtils } from '@parischap/test-utils';
 import { describe, it } from 'vitest';
 
 describe('ValueBasedStyler', () => {
@@ -15,29 +16,23 @@ describe('ValueBasedStyler', () => {
 	});
 
 	it('makeDepthIndexed', () => {
-		TEUtils.assertTrue(
-			ASText.equivalence(
-				PPValueBasedStyler.makeDepthIndexed(palette)(context)('foo'),
-				ASStyle.green('foo')
-			)
+		TEUtils.assertEquals(
+			PPValueBasedStyler.makeDepthIndexed(palette)(context)('foo'),
+			ASStyle.green('foo')
 		);
 	});
 
 	it('makeTypeIndexed', () => {
-		TEUtils.assertTrue(
-			ASText.equivalence(
-				PPValueBasedStyler.makeTypeIndexed(palette)(context)('foo'),
-				ASStyle.red('foo')
-			)
+		TEUtils.assertEquals(
+			PPValueBasedStyler.makeTypeIndexed(palette)(context)('foo'),
+			ASStyle.red('foo')
 		);
 	});
 
 	it('makeKeyTypeIndexed', () => {
-		TEUtils.assertTrue(
-			ASText.equivalence(
-				PPValueBasedStyler.makeKeyTypeIndexed(palette)(context)('foo'),
-				ASStyle.red('foo')
-			)
+		TEUtils.assertEquals(
+			PPValueBasedStyler.makeKeyTypeIndexed(palette)(context)('foo'),
+			ASStyle.red('foo')
 		);
 	});
 });

@@ -9,6 +9,7 @@ import {
 	PPValue,
 	PPValueBasedStylerConstructor
 } from '@parischap/pretty-print';
+import { TEUtils } from '@parischap/test-utils';
 import { Array, Option, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
@@ -26,8 +27,6 @@ describe('ByPassers', () => {
 		PPByPasser.objectToString
 	);
 
-	const optionEq = Option.getEquivalence(PPStringifiedValue.equivalence);
-
 	describe('initializedSyntheticByPasser', () => {
 		const initializedSyntheticByPasser = PPByPassers.toSyntheticByPasser(byPassers).call(
 			utilInspectLike,
@@ -38,31 +37,25 @@ describe('ByPassers', () => {
 			function foo(): string {
 				return 'foo';
 			}
-			TEUtils.assertTrue(
-				optionEq(
-					pipe(foo, PPValue.fromTopValue, initializedSyntheticByPasser),
-					pipe('[Function: foo]', ASStyle.green, PPStringifiedValue.fromText, Option.some)
-				)
+			TEUtils.assertEquals(
+				pipe(foo, PPValue.fromTopValue, initializedSyntheticByPasser),
+				pipe('[Function: foo]', ASStyle.green, PPStringifiedValue.fromText, Option.some)
 			);
 		});
 
 		it('Applied to object with a .toString method', () => {
-			TEUtils.assertTrue(
-				optionEq(
-					pipe(
-						{ a: 3, toString: (): string => 'foo\nbar' },
-						PPValue.fromTopValue,
-						initializedSyntheticByPasser
-					),
-					pipe(Array.make(ASStyle.yellow('foo'), ASStyle.yellow('bar')), Option.some)
-				)
+			TEUtils.assertEquals(
+				pipe(
+					{ a: 3, toString: (): string => 'foo\nbar' },
+					PPValue.fromTopValue,
+					initializedSyntheticByPasser
+				),
+				pipe(Array.make(ASStyle.yellow('foo'), ASStyle.yellow('bar')), Option.some)
 			);
 		});
 
 		it('Applied to primitive', () => {
-			TEUtils.assertTrue(
-				pipe(3, PPValue.fromTopValue, initializedSyntheticByPasser, Option.isNone)
-			);
+			TEUtils.assertNone(pipe(3, PPValue.fromTopValue, initializedSyntheticByPasser));
 		});
 	});
 });

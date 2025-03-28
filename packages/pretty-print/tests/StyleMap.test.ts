@@ -1,6 +1,7 @@
 /* eslint-disable functional/no-expression-statements */
 import { ASContextStyler, ASText } from '@parischap/ansi-styles';
 import { PPStyleMap, PPValue } from '@parischap/pretty-print';
+import { TEUtils } from '@parischap/test-utils';
 import { Equal, Function, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
@@ -12,9 +13,8 @@ describe('StyleMap', () => {
 		});
 
 		describe('Equal.equals', () => {
-			const dummy = PPStyleMap.make(none);
 			it('Matching', () => {
-				TEUtils.assertTrue(Equal.equals(none, dummy));
+				TEUtils.assertEquals(none, PPStyleMap.make(none));
 			});
 
 			it('Non-matching', () => {

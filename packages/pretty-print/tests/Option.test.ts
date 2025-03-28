@@ -11,6 +11,7 @@ import {
 	PPValueBasedStylerConstructor,
 	PPValueOrder
 } from '@parischap/pretty-print';
+import { TEUtils } from '@parischap/test-utils';
 import { Array, Equal, HashMap, HashSet, Option, pipe, Predicate } from 'effect';
 import { describe, it } from 'vitest';
 
@@ -19,10 +20,8 @@ describe('Option', () => {
 		const record = PPOption.NonPrimitive.record;
 		describe('Prototype and guards', () => {
 			describe('Equal.equals', () => {
-				const dummy = PPOption.NonPrimitive.make(record);
-
 				it('Matching', () => {
-					TEUtils.assertTrue(Equal.equals(record, dummy));
+					TEUtils.assertEquals(record, PPOption.NonPrimitive.make(record));
 				});
 
 				it('Non-matching', () => {
@@ -80,10 +79,7 @@ describe('Option', () => {
 						nonPrimitiveMake,
 						fromNonPrimitive
 					).toHeaderMarkShower(differingPropertyNumbers);
-					TEUtils.strictEqual(
-						ASText.equivalence(pipe(value, headerMarkShower), ASStyle.green('(5) ')),
-						true
-					);
+					TEUtils.assertEquals(pipe(value, headerMarkShower), ASStyle.green('(5) '));
 				});
 
 				it('showId = false, propertyNumberDisplayOption = Actual', () => {
@@ -95,10 +91,7 @@ describe('Option', () => {
 						nonPrimitiveMake,
 						fromNonPrimitive
 					).toHeaderMarkShower(differingPropertyNumbers);
-					TEUtils.strictEqual(
-						ASText.equivalence(pipe(value, headerMarkShower), ASStyle.green('(3) ')),
-						true
-					);
+					TEUtils.assertEquals(pipe(value, headerMarkShower), ASStyle.green('(3) '));
 				});
 
 				it('showId = false, propertyNumberDisplayOption = AllAndActual', () => {
@@ -110,10 +103,7 @@ describe('Option', () => {
 						nonPrimitiveMake,
 						fromNonPrimitive
 					).toHeaderMarkShower(equalPropertyNumbers);
-					TEUtils.strictEqual(
-						ASText.equivalence(pipe(value, headerMarkShower), ASStyle.green('(3,3) ')),
-						true
-					);
+					TEUtils.assertEquals(pipe(value, headerMarkShower), ASStyle.green('(3,3) '));
 				});
 
 				describe('showId = false, propertyNumberDisplayOption = AllAndActualIfDifferent', () => {
@@ -140,10 +130,7 @@ describe('Option', () => {
 							nonPrimitiveMake,
 							fromNonPrimitive
 						).toHeaderMarkShower(differingPropertyNumbers);
-						TEUtils.strictEqual(
-							ASText.equivalence(pipe(value, headerMarkShower), ASStyle.green('(5,3) ')),
-							true
-						);
+						TEUtils.assertEquals(pipe(value, headerMarkShower), ASStyle.green('(5,3) '));
 					});
 				});
 
@@ -157,10 +144,7 @@ describe('Option', () => {
 						nonPrimitiveMake,
 						fromNonPrimitive
 					).toHeaderMarkShower(differingPropertyNumbers);
-					TEUtils.strictEqual(
-						ASText.equivalence(pipe(value, headerMarkShower), ASStyle.green('Object ')),
-						true
-					);
+					TEUtils.assertEquals(pipe(value, headerMarkShower), ASStyle.green('Object '));
 				});
 
 				it('showId = true, propertyNumberDisplayOption = AllAndActual', () => {
@@ -173,9 +157,7 @@ describe('Option', () => {
 						nonPrimitiveMake,
 						fromNonPrimitive
 					).toHeaderMarkShower(differingPropertyNumbers);
-					TEUtils.assertTrue(
-						ASText.equivalence(pipe(value, headerMarkShower), ASStyle.green('Object(5,3) '))
-					);
+					TEUtils.assertEquals(pipe(value, headerMarkShower), ASStyle.green('Object(5,3) '));
 				});
 
 				describe('showId = true, propertyNumberDisplayOption = AllAndActualIfDifferent', () => {
@@ -190,9 +172,7 @@ describe('Option', () => {
 							nonPrimitiveMake,
 							fromNonPrimitive
 						).toHeaderMarkShower(differingPropertyNumbers);
-						TEUtils.assertTrue(
-							ASText.equivalence(pipe(value, headerMarkShower), ASStyle.green('Object(5,3) '))
-						);
+						TEUtils.assertEquals(pipe(value, headerMarkShower), ASStyle.green('Object(5,3) '));
 					});
 
 					it('With equal property numbers', () => {
@@ -206,9 +186,7 @@ describe('Option', () => {
 							nonPrimitiveMake,
 							fromNonPrimitive
 						).toHeaderMarkShower(equalPropertyNumbers);
-						TEUtils.assertTrue(
-							ASText.equivalence(pipe(value, headerMarkShower), ASStyle.green('Object '))
-						);
+						TEUtils.assertEquals(pipe(value, headerMarkShower), ASStyle.green('Object '));
 					});
 				});
 			});
@@ -223,9 +201,8 @@ describe('Option', () => {
 		});
 
 		describe('Equal.equals', () => {
-			const dummy = PPOption.make(utilInspectLike);
 			it('Matching', () => {
-				TEUtils.assertTrue(Equal.equals(utilInspectLike, dummy));
+				TEUtils.assertEquals(utilInspectLike, PPOption.make(utilInspectLike));
 			});
 
 			it('Non-matching', () => {

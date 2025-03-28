@@ -1,5 +1,6 @@
 /* eslint-disable functional/no-expression-statements */
 import { PPValue } from '@parischap/pretty-print';
+import { TEUtils } from '@parischap/test-utils';
 import { Equal } from 'effect';
 import { describe, it } from 'vitest';
 
@@ -15,7 +16,7 @@ describe('Value', () => {
 
 		describe('Equal.equals', () => {
 			it('Matching', () => {
-				TEUtils.assertTrue(Equal.equals(value1, value2));
+				TEUtils.assertEquals(value1, value2);
 			});
 
 			it('Non-matching', () => {
