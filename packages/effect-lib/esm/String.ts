@@ -23,6 +23,7 @@ import * as MBigDecimal from './BigDecimal.js';
 import * as MFunction from './Function.js';
 import * as MInspectable from './Inspectable.js';
 import * as MMatch from './Match.js';
+import * as MNumber from './Number.js';
 import * as MPipeable from './Pipeable.js';
 import * as MRegExp from './RegExp.js';
 import * as MRegExpString from './RegExpString.js';
@@ -592,7 +593,8 @@ export const removeNCharsEveryMCharsFromRight = ({
  * - `sign`: if the parameter string is signed, a `some` of the multiplicand that represents that sign
  *   (`+1` for '+' and `-1` for '-'). Otherwise, a `none`.
  * - `mantissa`: the mantissa expressed as a BigDecimal
- * - `exponent`: the exponent expressed as a number (an integer in fact)
+ * - `exponent`: if the parameter string contains an e-notation, a `some` of the exponent expressed as
+ *   a number (an integer in fact). Otherwise a `none`.
  * - `mantissaFractionalPartLength`: the length of the fractional part of the mantissa in the string
  *   parameter omitting the length of the fractional separator (e.g. 2 for '52.00')
  *
@@ -610,7 +612,7 @@ export const removeNCharsEveryMCharsFromRight = ({
  *
  * @category Destructors
  */
-export const toNumberParts = (params: {
+export const toBase10NumberParts = (params: {
 	readonly thousandSeparator: string;
 	readonly fractionalSeparator: string;
 	readonly eNotationChars: ReadonlyArray<string>;
@@ -620,7 +622,7 @@ export const toNumberParts = (params: {
 		[
 			sign: Option.Option<1 | -1>,
 			mantissa: BigDecimal.BigDecimal,
-			exponent: number,
+			exponent: Option.Option<number>,
 			mantissaFractionalPartLength: number
 		]
 	>
@@ -629,6 +631,7 @@ export const toNumberParts = (params: {
 		m: MRegExpString.DIGIT_GROUP_SIZE,
 		n: params.thousandSeparator.length
 	});
+
 	const getParts = capturedGroups(
 		pipe(params, MRegExpString.base10Number, MRegExpString.makeLine, RegExp),
 		4
@@ -640,8 +643,10 @@ export const toNumberParts = (params: {
 			const [signPart, mantissaIntegerPart, mantissaFractionalPart, exponentPart] =
 				yield* getParts(self);
 
-			const mantissaFractionalPartLength =
-				mantissaFractionalPart.length - fractionalSeparatorLength;
+			const mantissaFractionalPartLength = Math.max(
+				0,
+				mantissaFractionalPart.length - fractionalSeparatorLength
+			);
 
 			const mantissaFractionalPartOption = pipe(
 				mantissaFractionalPart,
@@ -657,16 +662,16 @@ export const toNumberParts = (params: {
 			const mantissa = yield* pipe(
 				mantissaIntegerPart,
 				Option.liftPredicate(String.isNonEmpty),
-				Option.map(flow(removeThousandSeparator, MBigDecimal.unsafeFromIntString(0))),
-				Option.match({
-					onNone: Function.constant(mantissaFractionalPartOption),
-					onSome: flow(
+				Option.map(
+					flow(
+						removeThousandSeparator,
+						MBigDecimal.unsafeFromIntString(0),
 						BigDecimal.sum(
 							Option.getOrElse(mantissaFractionalPartOption, Function.constant(MBigDecimal.zero))
-						),
-						Option.some
+						)
 					)
-				})
+				),
+				Option.orElse(Function.constant(mantissaFractionalPartOption))
 			);
 
 			const sign = pipe(
@@ -681,6 +686,12 @@ export const toNumberParts = (params: {
 				)
 			);
 
-			return Tuple.make(sign, mantissa, +exponentPart, mantissaFractionalPartLength);
+			const exponent = pipe(
+				exponentPart,
+				Option.liftPredicate(String.isNonEmpty),
+				Option.map(MNumber.unsafeFromString)
+			);
+
+			return Tuple.make(sign, mantissa, exponent, mantissaFractionalPartLength);
 		});
 };

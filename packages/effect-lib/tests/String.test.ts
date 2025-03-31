@@ -1,7 +1,7 @@
 /* eslint-disable functional/no-expression-statements */
 import { MString } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
-import { Array, Equal, Option, pipe, String, Struct } from 'effect';
+import { Array, BigDecimal, Equal, Option, pipe, String, Struct, Tuple } from 'effect';
 import { describe, it } from 'vitest';
 import { SearchResult } from '../esm/String.js';
 
@@ -473,6 +473,57 @@ describe('MString', () => {
 	describe('hasLength', () => {
 		it('Simple string', () => {
 			TEUtils.assertTrue(MString.hasLength(3)('foo'));
+		});
+	});
+
+	it('removeNCharsEveryMCharsFromRight', () => {
+		TEUtils.strictEqual(
+			MString.removeNCharsEveryMCharsFromRight({ n: 2, m: 3 })('1aafooaabaraabaz'),
+			'1foobarbaz'
+		);
+	});
+
+	describe('toBase10NumberParts', () => {
+		const toBase10NumberParts = MString.toBase10NumberParts({
+			thousandSeparator: ' ',
+			fractionalSeparator: ',',
+			eNotationChars: ['E', 'e']
+		});
+
+		it('Empty string', () => {
+			TEUtils.assertNone(toBase10NumberParts(''));
+		});
+
+		it('Only a sign', () => {
+			TEUtils.assertNone(toBase10NumberParts('+'));
+		});
+
+		it('Unsigned mantissa with no integer part', () => {
+			TEUtils.assertEquals(
+				toBase10NumberParts(',45'),
+				Option.some(Tuple.make(Option.none(), BigDecimal.make(45n, 2), Option.none(), 2))
+			);
+		});
+
+		it('Signed mantissa with no integer part', () => {
+			TEUtils.assertEquals(
+				toBase10NumberParts('+,45'),
+				Option.some(Tuple.make(Option.some(1), BigDecimal.make(45n, 2), Option.none(), 2))
+			);
+		});
+
+		it('Signed mantissa with no fractional part', () => {
+			TEUtils.assertEquals(
+				toBase10NumberParts('-45'),
+				Option.some(Tuple.make(Option.some(-1), BigDecimal.unsafeFromNumber(45), Option.none(), 0))
+			);
+		});
+
+		it('Unsigned mantissa and exponent', () => {
+			TEUtils.assertEquals(
+				toBase10NumberParts('45,45e-12'),
+				Option.some(Tuple.make(Option.none(), BigDecimal.make(4545n, 2), Option.some(-12), 2))
+			);
 		});
 	});
 });
