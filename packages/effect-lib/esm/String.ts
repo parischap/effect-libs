@@ -2,7 +2,6 @@
 
 import {
 	Array,
-	BigDecimal,
 	Equal,
 	Equivalence,
 	Function,
@@ -19,14 +18,11 @@ import {
 	pipe
 } from 'effect';
 import * as MArray from './Array.js';
-import * as MBigDecimal from './BigDecimal.js';
 import * as MFunction from './Function.js';
 import * as MInspectable from './Inspectable.js';
 import * as MMatch from './Match.js';
-import * as MNumber from './Number.js';
 import * as MPipeable from './Pipeable.js';
 import * as MRegExp from './RegExp.js';
-import * as MRegExpString from './RegExpString.js';
 import * as MTuple from './Tuple.js';
 import * as MTypes from './types.js';
 
@@ -586,131 +582,3 @@ export const removeNCharsEveryMCharsFromRight = ({
 	n === 0 ?
 		Function.identity
 	:	flow(splitEquallyRestAtStart(m + n), Array.map(String.takeRight(m)), Array.join(''));
-
-/**
- * Analyzes a string representing a number and returns a tuple containing:
- *
- * - `sign`: if the parameter string is signed, a `some` of the multiplicand that represents that sign
- *   (`+1` for '+' and `-1` for '-'). Otherwise, a `none`.
- * - `mantissa`: the mantissa expressed as a BigDecimal
- * - `exponent`: if the parameter string contains an e-notation, a `some` of the exponent expressed as
- *   a number (an integer in fact). Otherwise a `none`.
- * - `mantissaFractionalPartLength`: the length of the fractional part of the mantissa in the string
- *   parameter omitting the length of the fractional separator (e.g. 2 for '52.00')
- * - SignPart: the sign as a string as it was in the parameter string
- * - MantissaIntegerPart: the integer part of the mantissa as a string as it was in the parameter
- *   string
- * - MantissaFractionalPart: the fractional part of the mantissa as a string as it was in the
- *   parameter string
- * - ExponentPart: the exponent as a string as it was in the parameter string
- *
- * The parameters to provide are:
- *
- * - `thousandSeparator`: Usually a string made of at most one character but not mandatory. Should be
- *   different from `fractionalSeparator`. Will not throw otherwise but unexpected results might
- *   occur. Use '' for no thousand separator.
- * - `fractionalSeparator`: usually a one-character string but not mandatory (e.g. '.'). Should not be
- *   an empty string and be different from `thousandSeparator`. Will not throw otherwise but
- *   unexpected results might occur.
- * - `eNotationChars`: array of possible chracters that can be used to represent an exponent (e.g.
- *   value: ['E', 'e']).
- * - `self`: the string representing the number to split
- *
- * @category Destructors
- */
-export const toBase10NumberParts = (params: {
-	readonly thousandSeparator: string;
-	readonly fractionalSeparator: string;
-	readonly eNotationChars: ReadonlyArray<string>;
-}): MTypes.OneArgFunction<
-	string,
-	Option.Option<
-		[
-			sign: Option.Option<1 | -1>,
-			mantissa: BigDecimal.BigDecimal,
-			exponent: Option.Option<number>,
-			mantissaFractionalPartLength: number,
-			signPart: string,
-			mantissaIntegerPart: string,
-			mantissaFractionalPart: string,
-			exponentPart: string
-		]
-	>
-> => {
-	const removeThousandSeparator = removeNCharsEveryMCharsFromRight({
-		m: MRegExpString.DIGIT_GROUP_SIZE,
-		n: params.thousandSeparator.length
-	});
-
-	const getParts = capturedGroups(
-		pipe(params, MRegExpString.base10Number, MRegExpString.makeLine, RegExp),
-		4
-	);
-	const fractionalSeparatorLength = params.fractionalSeparator.length;
-
-	return (self) =>
-		Option.gen(function* () {
-			const [signPart, mantissaIntegerPart, mantissaFractionalPart, exponentPart] =
-				yield* getParts(self);
-
-			const mantissaFractionalPartLength = Math.max(
-				0,
-				mantissaFractionalPart.length - fractionalSeparatorLength
-			);
-
-			const mantissaFractionalPartOption = pipe(
-				mantissaFractionalPart,
-				Option.liftPredicate(String.isNonEmpty),
-				Option.map(
-					flow(
-						String.substring(fractionalSeparatorLength),
-						MBigDecimal.unsafeFromIntString(mantissaFractionalPartLength)
-					)
-				)
-			);
-
-			const mantissa = yield* pipe(
-				mantissaIntegerPart,
-				Option.liftPredicate(String.isNonEmpty),
-				Option.map(
-					flow(
-						removeThousandSeparator,
-						MBigDecimal.unsafeFromIntString(0),
-						BigDecimal.sum(
-							Option.getOrElse(mantissaFractionalPartOption, Function.constant(MBigDecimal.zero))
-						)
-					)
-				),
-				Option.orElse(Function.constant(mantissaFractionalPartOption))
-			);
-
-			const sign = pipe(
-				signPart,
-				Option.liftPredicate(String.isNonEmpty),
-				Option.map(
-					flow(
-						MMatch.make,
-						MMatch.whenIs('+', Function.constant(1 as const)),
-						MMatch.orElse(Function.constant(-1 as const))
-					)
-				)
-			);
-
-			const exponent = pipe(
-				exponentPart,
-				Option.liftPredicate(String.isNonEmpty),
-				Option.map(MNumber.unsafeFromString)
-			);
-
-			return Tuple.make(
-				sign,
-				mantissa,
-				exponent,
-				mantissaFractionalPartLength,
-				signPart,
-				mantissaIntegerPart,
-				mantissaFractionalPart,
-				exponentPart
-			);
-		});
-};
