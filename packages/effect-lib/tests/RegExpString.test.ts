@@ -122,7 +122,7 @@ describe('MRegExpString', () => {
 			it('Complex number', () => {
 				TEUtils.assertEquals(
 					getPartsWithNoSep('+  18320.45e-2'),
-					Option.some(Tuple.make('+', '18320', '.45', '-2'))
+					Option.some(Tuple.make('+', '18320', '45', '-2'))
 				);
 			});
 		});
@@ -144,7 +144,7 @@ describe('MRegExpString', () => {
 			it('Complex number', () => {
 				TEUtils.assertEquals(
 					getPartsWithSep('+18 320.45^2'),
-					Option.some(Tuple.make('+', '18 320', '.45', '2'))
+					Option.some(Tuple.make('+', '18 320', '45', '2'))
 				);
 			});
 		});

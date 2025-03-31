@@ -331,7 +331,7 @@ export const base10Number = ({
 }): string =>
 	_signPart +
 	pipe(thousandSeparator, unsignedBase10Int, optionalCapture) +
-	pipe(fractionalSeparator, escape, String.concat(_fractionalPart), optionalCapture) +
+	pipe(fractionalSeparator, escape, String.concat(capture(_fractionalPart)), optional) +
 	pipe(eNotationChars, Array.map(escape), _tupledCharacterClass, String.concat(_expPart), optional);
 
 /**
