@@ -501,28 +501,39 @@ describe('MString', () => {
 		it('Unsigned mantissa with no integer part', () => {
 			TEUtils.assertEquals(
 				toBase10NumberParts(',45'),
-				Option.some(Tuple.make(Option.none(), BigDecimal.make(45n, 2), Option.none(), 2))
+				Option.some(Tuple.make(Option.none(), BigDecimal.make(45n, 2), Option.none(), 2, false))
 			);
 		});
 
 		it('Signed mantissa with no integer part', () => {
 			TEUtils.assertEquals(
 				toBase10NumberParts('+,45'),
-				Option.some(Tuple.make(Option.some(1), BigDecimal.make(45n, 2), Option.none(), 2))
+				Option.some(Tuple.make(Option.some(1), BigDecimal.make(45n, 2), Option.none(), 2, false))
 			);
 		});
 
 		it('Signed mantissa with no fractional part', () => {
 			TEUtils.assertEquals(
 				toBase10NumberParts('-45'),
-				Option.some(Tuple.make(Option.some(-1), BigDecimal.unsafeFromNumber(45), Option.none(), 0))
+				Option.some(
+					Tuple.make(Option.some(-1), BigDecimal.unsafeFromNumber(45), Option.none(), 0, false)
+				)
 			);
 		});
 
 		it('Unsigned mantissa and exponent', () => {
 			TEUtils.assertEquals(
 				toBase10NumberParts('45,45e-12'),
-				Option.some(Tuple.make(Option.none(), BigDecimal.make(4545n, 2), Option.some(-12), 2))
+				Option.some(
+					Tuple.make(Option.none(), BigDecimal.make(4545n, 2), Option.some(-12), 2, false)
+				)
+			);
+		});
+
+		it('Signed mantissa with exponent and zero mantissa integer part', () => {
+			TEUtils.assertEquals(
+				toBase10NumberParts('0,45e12'),
+				Option.some(Tuple.make(Option.none(), BigDecimal.make(45n, 2), Option.some(12), 2, true))
 			);
 		});
 	});

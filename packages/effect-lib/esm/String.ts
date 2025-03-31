@@ -623,7 +623,8 @@ export const toBase10NumberParts = (params: {
 			sign: Option.Option<1 | -1>,
 			mantissa: BigDecimal.BigDecimal,
 			exponent: Option.Option<number>,
-			mantissaFractionalPartLength: number
+			mantissaFractionalPartLength: number,
+			hasZeroMantissaIntegerPart: boolean
 		]
 	>
 > => {
@@ -647,6 +648,8 @@ export const toBase10NumberParts = (params: {
 				0,
 				mantissaFractionalPart.length - fractionalSeparatorLength
 			);
+
+			const hasZeroMantissaIntegerPart = mantissaIntegerPart === '0';
 
 			const mantissaFractionalPartOption = pipe(
 				mantissaFractionalPart,
@@ -692,6 +695,12 @@ export const toBase10NumberParts = (params: {
 				Option.map(MNumber.unsafeFromString)
 			);
 
-			return Tuple.make(sign, mantissa, exponent, mantissaFractionalPartLength);
+			return Tuple.make(
+				sign,
+				mantissa,
+				exponent,
+				mantissaFractionalPartLength,
+				hasZeroMantissaIntegerPart
+			);
 		});
 };
