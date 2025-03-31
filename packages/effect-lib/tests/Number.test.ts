@@ -41,6 +41,16 @@ describe('MString', () => {
 		});
 	});
 
+	describe('isMultipleOf', () => {
+		it('Passing', () => {
+			TEUtils.assertTrue(pipe(27, MNumber.isMultipleOf(3)));
+		});
+
+		it('Not passing', () => {
+			TEUtils.assertFalse(pipe(26, MNumber.isMultipleOf(3)));
+		});
+	});
+
 	describe('shift', () => {
 		it('Positive shift', () => {
 			TEUtils.strictEqual(pipe(5.04, MNumber.shift(2)), 504);

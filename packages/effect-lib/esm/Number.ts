@@ -1,4 +1,6 @@
 /** A simple extension to the Effect Number module */
+import { Predicate } from 'effect';
+import * as MTypes from './types.js';
 
 /**
  * Constructs a number from a string. Does not check input format and can return NaN or Infinity
@@ -6,7 +8,7 @@
  * @category Constructors
  */
 
-export const unsafeFromString = (s: string): number => +s;
+export const unsafeFromString: MTypes.NumberFromString = (s) => +s;
 
 /**
  * Modulo - Use only with finite integers - Unlike javascript remainder operator (%), this function
@@ -48,34 +50,38 @@ export const decAndFracParts = (self: number): [decPart: number, fracPart: numbe
 /**
  * Returns true if the provided number is NaN, Infinity, +Infinity or -Infinity
  *
- * @category Utils
+ * @category Predicates
  */
-// DO NOT USE A TACIT FUNCTION because Number.isFinite takes an unknown parameter
-export const isNotFinite = (self: number) => !Number.isFinite(self);
+export const isNotFinite: Predicate.Predicate<number> = Predicate.not(Number.isFinite);
 
 /**
  * Returns true if the provided number is not NaN, Infinity, +Infinity or -Infinity
  *
  * @category Utils
  */
-// DO NOT USE A TACIT FUNCTION because Number.isFinite takes an unknwon parameter
-export const isFinite = (self: number) => Number.isFinite(self);
+export const isFinite: Predicate.Predicate<number> = Number.isFinite;
 
 /**
  * Returns true if the provided number is an integer
  *
- * @category Utils
+ * @category Predicates
  */
-// DO NOT USE A TACIT FUNCTION because Number.isInteger takes an unknwon parameter
-export const isInt = (self: number) => Number.isInteger(self);
+export const isInt: Predicate.Predicate<number> = Number.isInteger;
 
 /**
  * Returns true if the provided number is not an integer
  *
- * @category Utils
+ * @category Predicates
  */
-// DO NOT USE A TACIT FUNCTION because Number.isInteger takes an unknwon parameter
-export const isNotInt = (self: number) => !Number.isInteger(self);
+export const isNotInt: Predicate.Predicate<number> = Predicate.not(Number.isInteger);
+
+/**
+ * Returns true if `self` is a multiple of `a`. Works even if `self` or `a` or both are negative
+ *
+ * @category Predicates
+ */
+export const isMultipleOf: (a: number) => Predicate.Predicate<number> = (a) => (self) =>
+	self % a === 0;
 
 /**
  * Returns `self` multiplied by 10^n
