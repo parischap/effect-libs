@@ -27,7 +27,7 @@
 			"path": "packages/effect-report",
 		},
 		{
-			"path": "packages/intl",
+			"path": "packages/conversions",
 		},
 	],
 	"settings": {

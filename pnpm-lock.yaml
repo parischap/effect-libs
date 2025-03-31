@@ -112,6 +112,15 @@ importers:
         specifier: link:.
         version: 'link:'
 
+  packages/ansi-styles/dist:
+    dependencies:
+      '@parischap/effect-lib':
+        specifier: ^0.4.0
+        version: 0.4.0(@effect/typeclass@0.28.2(effect@3.14.1))(effect@3.14.1)
+      effect:
+        specifier: ^3.14.1
+        version: 3.14.1
+
   packages/date:
     dependencies:
       '@parischap/effect-lib':
@@ -134,6 +143,12 @@ importers:
       '@parischap/effect-lib':
         specifier: link:.
         version: 'link:'
+
+  packages/effect-lib/dist:
+    dependencies:
+      effect:
+        specifier: ^3.14.1
+        version: 3.14.1
 
   packages/effect-report:
     dependencies:
@@ -198,6 +213,18 @@ importers:
       '@parischap/pretty-print':
         specifier: link:.
         version: 'link:'
+
+  packages/pretty-print/dist:
+    dependencies:
+      '@parischap/ansi-styles':
+        specifier: ^0.2.1
+        version: 0.2.1(@parischap/effect-lib@0.4.0(@effect/typeclass@0.28.2(effect@3.14.1))(effect@3.14.1))(effect@3.14.1)
+      '@parischap/effect-lib':
+        specifier: ^0.4.0
+        version: 0.4.0(@effect/typeclass@0.28.2(effect@3.14.1))(effect@3.14.1)
+      effect:
+        specifier: ^3.14.1
+        version: 3.14.1
 
   packages/templater:
     dependencies:
@@ -377,6 +404,11 @@ packages:
       '@effect/experimental': ^0.44.1
       '@effect/platform': ^0.80.1
       effect: ^3.14.1
+
+  '@effect/typeclass@0.28.2':
+    resolution: {integrity: sha512-0Pd7KLzaGVtT07f+5fT5ZEl7V4CF1Sd54py3LJE/+Ys+bqezdCFqW/U1OER2RAJ68MTSXvjMmowsU9AJfs8WMQ==}
+    peerDependencies:
+      effect: ^3.9.2
 
   '@esbuild/aix-ppc64@0.25.1':
     resolution: {integrity: sha512-kfYGy8IdzTGy+z0vFGvExZtxkFlA4zAxgKEahG9KE1ScBjpQnFsNOX8KTU5ojNru5ed5CVoJYXFtoxaq5nFbjQ==}
@@ -742,9 +774,21 @@ packages:
     resolution: {integrity: sha512-dfUnCxiN9H4ap84DvD2ubjw+3vUNpstxa0TneY/Paat8a3R4uQZDLSvWjmznAY/DoahqTHl9V46HF/Zs3F29pg==}
     engines: {node: '>= 10.0.0'}
 
+  '@parischap/ansi-styles@0.2.1':
+    resolution: {integrity: sha512-rQdEdz26FcSLubAUiZIPOy6+HQ/fc6XrkdduM2tRdsvDu6fxzVItT9wvW8591naoQZru4GcQytR2sgh+jl1DYQ==}
+    peerDependencies:
+      '@parischap/effect-lib': ^0.5.0
+      effect: ^3.13.6
+
   '@parischap/configs@1.22.0':
     resolution: {integrity: sha512-QXZlC7BJ49lGf0y+eY8pBCfcULzJavDu2qJ7fsmrPVN8xzdJJk9BEeVWEKyZ63UPZu+TAc0NFXwAf5dHtYPLhg==}
     hasBin: true
+
+  '@parischap/effect-lib@0.4.0':
+    resolution: {integrity: sha512-frcVDBXUMb3VLUCNrIaWzsrRcP9ZtIwOhjhicjOKjI1tA+F3rGU+intMqcNvueBzFXYYV8dgDwaPRDsu9asKbQ==}
+    peerDependencies:
+      '@effect/typeclass': ^0.28.1
+      effect: ^3.9.1
 
   '@parischap/test-utils@0.3.0':
     resolution: {integrity: sha512-qADRjw9WmtxsaeyhuwkzHFrpRIsTi3Sj+33Gt5aewCi36CyTQvCTR6zIENOkMEllecmC4BjbCrTx364LyCRw1g==}
@@ -2864,6 +2908,10 @@ snapshots:
       effect: 3.14.1
       uuid: 11.1.0
 
+  '@effect/typeclass@0.28.2(effect@3.14.1)':
+    dependencies:
+      effect: 3.14.1
+
   '@esbuild/aix-ppc64@0.25.1':
     optional: true
 
@@ -3123,7 +3171,17 @@ snapshots:
       '@parcel/watcher-win32-ia32': 2.5.1
       '@parcel/watcher-win32-x64': 2.5.1
 
+  '@parischap/ansi-styles@0.2.1(@parischap/effect-lib@0.4.0(@effect/typeclass@0.28.2(effect@3.14.1))(effect@3.14.1))(effect@3.14.1)':
+    dependencies:
+      '@parischap/effect-lib': 0.4.0(@effect/typeclass@0.28.2(effect@3.14.1))(effect@3.14.1)
+      effect: 3.14.1
+
   '@parischap/configs@1.22.0': {}
+
+  '@parischap/effect-lib@0.4.0(@effect/typeclass@0.28.2(effect@3.14.1))(effect@3.14.1)':
+    dependencies:
+      '@effect/typeclass': 0.28.2(effect@3.14.1)
+      effect: 3.14.1
 
   '@parischap/test-utils@0.3.0(effect@3.14.1)':
     dependencies:
