@@ -597,6 +597,12 @@ export const removeNCharsEveryMCharsFromRight = ({
  *   a number (an integer in fact). Otherwise a `none`.
  * - `mantissaFractionalPartLength`: the length of the fractional part of the mantissa in the string
  *   parameter omitting the length of the fractional separator (e.g. 2 for '52.00')
+ * - SignPart: the sign as a string as it was in the parameter string
+ * - MantissaIntegerPart: the integer part of the mantissa as a string as it was in the parameter
+ *   string
+ * - MantissaFractionalPart: the fractional part of the mantissa as a string as it was in the
+ *   parameter string
+ * - ExponentPart: the exponent as a string as it was in the parameter string
  *
  * The parameters to provide are:
  *
@@ -624,7 +630,10 @@ export const toBase10NumberParts = (params: {
 			mantissa: BigDecimal.BigDecimal,
 			exponent: Option.Option<number>,
 			mantissaFractionalPartLength: number,
-			hasZeroMantissaIntegerPart: boolean
+			signPart: string,
+			mantissaIntegerPart: string,
+			mantissaFractionalPart: string,
+			exponentPart: string
 		]
 	>
 > => {
@@ -648,8 +657,6 @@ export const toBase10NumberParts = (params: {
 				0,
 				mantissaFractionalPart.length - fractionalSeparatorLength
 			);
-
-			const hasZeroMantissaIntegerPart = mantissaIntegerPart === '0';
 
 			const mantissaFractionalPartOption = pipe(
 				mantissaFractionalPart,
@@ -700,7 +707,10 @@ export const toBase10NumberParts = (params: {
 				mantissa,
 				exponent,
 				mantissaFractionalPartLength,
-				hasZeroMantissaIntegerPart
+				signPart,
+				mantissaIntegerPart,
+				mantissaFractionalPart,
+				exponentPart
 			);
 		});
 };
