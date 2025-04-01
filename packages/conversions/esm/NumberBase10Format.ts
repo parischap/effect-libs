@@ -1,19 +1,32 @@
 /** This module implements conversions from number to string and string to number in base-10 notation */
 
-import { MFunction, MInspectable, MMatch, MPipeable, MString, MTypes } from '@parischap/effect-lib';
+import {
+	MBigDecimal,
+	MFunction,
+	MInspectable,
+	MMatch,
+	MNumber,
+	MPipeable,
+	MRegExpString,
+	MString,
+	MTypes
+} from '@parischap/effect-lib';
 import {
 	BigDecimal,
 	Equal,
 	Equivalence,
+	flow,
+	Function,
 	Hash,
+	Number,
 	Option,
 	pipe,
 	Pipeable,
 	Predicate,
 	String,
-	Struct
+	Struct,
+	Tuple
 } from 'effect';
-import * as CVNumberReader from './NumberReader.js';
 
 export const moduleTag = '@parischap/templater/NumberFormat10/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
@@ -36,7 +49,7 @@ export enum SignDisplay {
 	/**
 	 * Conversion from number to string: sign display for all numbers.
 	 *
-	 * Conversion from string to number: conversion will fail if a sign is not present
+	 * Conversion from string to number: conversion will fail if no sign is present
 	 */
 	Always = 1,
 
@@ -123,7 +136,7 @@ export enum ScientificNotation {
 	/**
 	 * Conversion from number to string: scientific notation is not used.
 	 *
-	 * Conversion from string to number: conversion will fail if scientific notation is used.
+	 * Conversion from string to number: conversion will fail if a scientific notation is present.
 	 */
 	None = 0,
 
@@ -136,22 +149,25 @@ export enum ScientificNotation {
 
 	/**
 	 * Conversion from number to string: scientific notation is used so that the absolute value of the
-	 * mantissa m fulfills 1 ≤ |m| < 10. It is only displayed if the exponent is different from 0.
+	 * mantissa m fulfills 1 ≤ |m| < 10. The exponent part is only displayed if the exponent is
+	 * different from 0.
 	 *
 	 * Conversion from string to number: the conversion will fail if the absolute value of the
-	 * mantissa m does not fulfill 1 ≤ |m| < 10. A string without an exponent is treated equivalent to
-	 * a string with a null exponent.
+	 * mantissa m does not fulfill 1 ≤ |m| < 10. Scientific notation may be used but is not mandatory.
+	 * A string that does not contain a scientific notation is deemed equivalent to a string with a
+	 * null exponent.
 	 */
 	Normalized = 2,
 
 	/**
 	 * Conversion from number to string: scientific notation is used so that the mantissa m fulfills 1
-	 * ≤ |m| < 1000 and the exponent is a multiple of 3. It is only displayed if the exponent is
-	 * different from 0.
+	 * ≤ |m| < 1000 and the exponent is a multiple of 3. The exponent part is only displayed if the
+	 * exponent is different from 0.
 	 *
 	 * Conversion from string to number: the conversion will fail if the absolute value of the
-	 * mantissa m does not fulfill 1 ≤ |m| < 1000 or if the exponent is not a multiple of 3. A string
-	 * without an exponent is treated equivalent to a string with a null exponent.
+	 * mantissa m does not fulfill 1 ≤ |m| < 1000 or if the exponent is not a multiple of 3.
+	 * Scientific notation may be used but is not mandatory. A string that does not contain a
+	 * scientific notation is deemed equivalent to a string with a null exponent.
 	 */
 	Engineering = 3
 }
@@ -167,15 +183,14 @@ export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable 
 
 	/**
 	 * Thousand separator. Use an empty string for no separator. Usually a string made of at most one
-	 * character but not mandatory. Should be different from `fractionalSeparator`. Will not throw
-	 * otherwise but unexpected results might occur
+	 * character different from `fractionalSeparator`. Will not throw otherwise but unexpected results
+	 * might occur.
 	 */
 	readonly thousandSeparator: string;
 
 	/**
-	 * Fractional separator. Usually a one-character string but not mandatory. Should not be an empty
-	 * string and be different from `thousandSeparator`. Will not throw otherwise but unexpected
-	 * results might occur
+	 * Fractional separator. Usually a one-character string different from `thousandSeparator`. Will
+	 * not throw otherwise but unexpected results might occur.
 	 */
 	readonly fractionalSeparator: string;
 
@@ -190,7 +205,7 @@ export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable 
 	 * - If `true`, conversion will fail for numbers starting with '.' (after an optional sign).
 	 * - If `false`, conversion will fail for numbers starting with '0.' (after an optional sign).
 	 */
-	readonly show0IntegerPart: boolean;
+	readonly showNullIntegerPart: boolean;
 
 	/**
 	 * Minimim number of digits forming the fractional part of a number. Must be a positive integer
@@ -217,12 +232,14 @@ export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable 
 	readonly maximumFractionDigits: number;
 
 	/**
-	 * Possible characters to use to represent e-notation. Usually ['e','E']
+	 * Possible characters to use to represent e-notation. Usually ['e','E']. Must be an array of
+	 * one-character strings. Will not throw otherwise but unexpected results will occur. Not used if
+	 * `scientificNotation === None`
 	 *
 	 * Conversion from number to string: the string at index 0 is used
 	 *
-	 * Conversion from string to number: the e-notation must be one of the strings present in the
-	 * array
+	 * Conversion from string to number: the first character of the e-notation must be one of the
+	 * one-character strings present in the array
 	 */
 	readonly eNotationChars: ReadonlyArray<string>;
 
@@ -240,7 +257,7 @@ export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable 
 }
 
 /**
- * Type guard
+ * S Type guard
  *
  * @category Guards
  */
@@ -302,6 +319,14 @@ export const fractionalSeparator: MTypes.OneArgFunction<Type, string> =
 	Struct.get('fractionalSeparator');
 
 /**
+ * Returns the `showNullIntegerPart` property of `self`
+ *
+ * @category Destructors
+ */
+export const showNullIntegerPart: MTypes.OneArgFunction<Type, boolean> =
+	Struct.get('showNullIntegerPart');
+
+/**
  * Returns the `minimumFractionDigits` property of `self`
  *
  * @category Destructors
@@ -349,44 +374,205 @@ export const roundingMode: MTypes.OneArgFunction<Type, RoundingMode> = Struct.ge
 export const signDisplay: MTypes.OneArgFunction<Type, SignDisplay> = Struct.get('signDisplay');
 
 /**
- * Returns a NumberReader implementing `self`
+ * Returns a function that tries to read a number respecting the options represented by `self` from
+ * the start of a string `text`. If successful, that function returns a `some` containing `readText`
+ * (the part of `text` that could be analyzed as representing a number) and `value` (`readText`
+ * converted to a BigDecimal value). Otherwise, it returns a `none`.
  *
  * @category Destructors
  */
-export const toNumberReader = (self: Type): CVNumberReader.Type => {
-	const getParts = MString.toNumberParts(self);
+export const toNumberExtracter = (
+	self: Type
+): MTypes.OneArgFunction<
+	string,
+	Option.Option<[value: BigDecimal.BigDecimal, readText: string]>
+> => {
+	const removeThousandSeparator = MString.removeNCharsEveryMCharsFromRight({
+		m: MRegExpString.DIGIT_GROUP_SIZE,
+		n: self.thousandSeparator.length
+	});
+
+	const getParts = MString.matchAndGroups(
+		pipe(self, MRegExpString.base10Number, MRegExpString.atStart, RegExp),
+		4
+	);
+
+	const isPlusSign: Predicate.Predicate<string> = MFunction.strictEquals('+');
+	const hasASign = Option.liftPredicate(String.isNonEmpty);
+	const hasNoSign = Option.liftPredicate<string, string>(String.isEmpty);
+	const hasNotPlusSign = Option.liftPredicate(Predicate.not(isPlusSign));
+
+	const signTransformer = pipe(
+		self.signDisplay,
+		MMatch.make,
+		MMatch.whenIs(SignDisplay.Auto, () => () => hasNotPlusSign),
+		MMatch.whenIs(SignDisplay.Always, () => () => hasASign),
+		MMatch.whenIs(SignDisplay.ExceptZero, () =>
+			flow(
+				MMatch.make<boolean>,
+				MMatch.whenIs(true, Function.constant(hasNoSign)),
+				MMatch.orElse(Function.constant(hasASign))
+			)
+		),
+		MMatch.whenIs(SignDisplay.Negative, () =>
+			flow(
+				MMatch.make<boolean>,
+				MMatch.whenIs(true, Function.constant(hasNoSign)),
+				MMatch.orElse(Function.constant(hasNotPlusSign))
+			)
+		),
+		MMatch.whenIs(SignDisplay.Never, () => () => hasNoSign),
+		MMatch.exhaustive,
+		Function.compose(
+			Function.compose(
+				Option.map(
+					flow(
+						Option.liftPredicate(isPlusSign),
+						Option.as(1 as const),
+						Option.getOrElse(Function.constant(-1 as const))
+					)
+				)
+			)
+		)
+	);
+
+	const stringToExponentOption = flow(
+		Option.liftPredicate(String.isNonEmpty),
+		Option.map(MNumber.unsafeFromString),
+		Option.orElseSome(Function.constant(0))
+	);
+
+	const exponentTransformer = pipe(
+		self.scientificNotation,
+		MMatch.make,
+		MMatch.whenIs(ScientificNotation.None, () =>
+			flow(Option.liftPredicate(String.isEmpty), Option.as(0))
+		),
+		MMatch.whenIsOr(
+			ScientificNotation.Standard,
+			ScientificNotation.Normalized,
+			() => stringToExponentOption
+		),
+		MMatch.whenIs(ScientificNotation.Engineering, () =>
+			flow(stringToExponentOption, Option.filter(MNumber.isMultipleOf(3)))
+		),
+		MMatch.exhaustive
+	);
+
+	const mantissaIntegerPartChecker = pipe(
+		self.scientificNotation,
+		MMatch.make,
+		MMatch.whenIsOr(
+			ScientificNotation.None,
+			ScientificNotation.Standard,
+			() => Option.some<BigDecimal.BigDecimal>
+		),
+		MMatch.whenIs(ScientificNotation.Normalized, () =>
+			Option.liftPredicate(
+				Predicate.and(
+					BigDecimal.greaterThanOrEqualTo(BigDecimal.unsafeFromNumber(1)),
+					BigDecimal.lessThan(BigDecimal.unsafeFromNumber(10))
+				)
+			)
+		),
+		MMatch.whenIs(ScientificNotation.Engineering, () =>
+			Option.liftPredicate(
+				Predicate.and(
+					BigDecimal.greaterThanOrEqualTo(BigDecimal.unsafeFromNumber(1)),
+					BigDecimal.lessThan(BigDecimal.unsafeFromNumber(1000))
+				)
+			)
+		),
+		MMatch.exhaustive
+	);
 
 	return (text) =>
 		Option.gen(function* () {
-			const [
-				sign,
-				mantissaIntegerPart,
-				fractionalSeparator,
+			const [match, [signPart, mantissaIntegerPart, mantissaFractionalPart, exponentPart]] =
+				yield* getParts(text);
+
+			const mantissaFractionalPartLength = yield* pipe(
 				mantissaFractionalPart,
-				exponentSign,
-				exponentAbsoluteValue
-			] = yield* getParts(text);
-
-			const noMantissaFractionalPart = mantissaFractionalPart === '';
-			const zeros = pipe(mantissaFractionalPart);
-			const noMantissaIntegerPart = mantissaIntegerPart === '';
-
-			// mantissaIntegerPart, fractionalSeparator, and mantissaFractionalPart cannot be all absent together and fractionalSeparator cannot be the only one present
-			const validatedSign = yield* pipe(
-				self.signDisplay,
-				MMatch.make,
-				MMatch.whenIs(SignDisplay.Auto, () =>
-					Option.liftPredicate(sign, Predicate.not(MFunction.strictEquals('+')))
-				),
-				MMatch.whenIs(SignDisplay.Always, () => Option.liftPredicate(sign, String.isNonEmpty)),
-				MMatch.whenIs(SignDisplay.ExceptZero, () => Option.liftPredicate(sign, String.isNonEmpty)),
-				MMatch.whenIs(SignDisplay.Negative, () => Option.liftPredicate(sign, String.isNonEmpty)),
-				MMatch.whenIs(SignDisplay.Never, () => Option.liftPredicate(sign, String.isNonEmpty)),
-				MMatch.exhaustive
+				String.length,
+				Option.liftPredicate(
+					Number.between({
+						minimum: self.minimumFractionDigits,
+						maximum: self.maximumFractionDigits
+					})
+				)
 			);
 
-			return BigDecimal.make(BigInt(0), 2);
+			const mantissa = yield* pipe(
+				mantissaIntegerPart,
+				Option.liftPredicate(String.isNonEmpty),
+				Option.match({
+					onNone: () =>
+						self.showNullIntegerPart || mantissaFractionalPartLength === 0 ?
+							Option.none()
+						:	Option.some(MBigDecimal.zero),
+					onSome: flow(
+						self.showNullIntegerPart ?
+							Option.some
+						:	Option.liftPredicate(Predicate.not(MFunction.strictEquals('0'))),
+						Option.map(flow(removeThousandSeparator, MBigDecimal.unsafeFromIntString(0)))
+					)
+				}),
+				Option.flatMap(mantissaIntegerPartChecker),
+				Option.map(
+					BigDecimal.sum(
+						pipe(
+							mantissaFractionalPart,
+							Option.liftPredicate(String.isNonEmpty),
+							Option.map(MBigDecimal.unsafeFromIntString(mantissaFractionalPartLength)),
+							Option.getOrElse(Function.constant(MBigDecimal.zero))
+						)
+					)
+				)
+			);
+
+			const sign = yield* pipe(
+				signPart,
+				signTransformer(BigDecimal.Equivalence(mantissa, MBigDecimal.zero))
+			);
+
+			const exponent = yield* exponentTransformer(exponentPart);
+
+			return Tuple.make(
+				pipe(
+					mantissa,
+					BigDecimal.multiply(BigDecimal.unsafeFromNumber(sign)),
+					BigDecimal.scale(mantissa.scale - exponent)
+				),
+				match
+			);
+			some;
 		});
+};
+
+/**
+ * Returns a function that tries to read a number respecting the options represented by `self` from
+ * the whole of a string `text`. If successful, that function returns a `some` of a BigDecimal.
+ * Otherwise, it returns a `none`.
+ *
+ * @category Destructors
+ */
+export const toNumberReader = (
+	self: Type
+): MTypes.OneArgFunction<string, Option.Option<BigDecimal.BigDecimal>> => {
+	const extractor = toNumberExtracter(self);
+	return (text) =>
+		pipe(
+			text,
+			extractor,
+			Option.flatMap(
+				flow(
+					Option.liftPredicate(
+						flow(Tuple.getSecond, String.length, MFunction.strictEquals(text.length))
+					),
+					Option.map(Tuple.getFirst)
+				)
+			)
+		);
 };
 
 /**
@@ -398,7 +584,7 @@ export const uk: Type = make({
 	id: 'ukNumberFormet',
 	thousandSeparator: ',',
 	fractionalSeparator: '.',
-	show0IntegerPart: true,
+	showNullIntegerPart: true,
 	minimumFractionDigits: 0,
 	maximumFractionDigits: 3,
 	eNotationChars: ['E', 'e'],
