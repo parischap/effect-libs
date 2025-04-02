@@ -299,7 +299,7 @@ export const unsignedBase10Int = (thousandSeparator: string): string =>
 // Regular expression string representing a captured optional sign potentially followed by spaces
 const _signPart = pipe(sign, capture, String.concat(spaces), optional);
 // Regular expression string representing the captured exponent of a number
-const _expPart = pipe(sign, optional, String.concat(_unsignedNonNullInt), capture);
+const _expPart = pipe(sign, optional, String.concat(unsignedBase10Int('')), capture);
 // Regular expression string representing the captured fractional part of a floating-point number
 const _fractionalPart = repeatBetween(0, +Infinity)(digit);
 const _tupledCharacterClass = Function.tupled(characterClass);
