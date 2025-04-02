@@ -37,13 +37,13 @@ export const quotientAndRemainder =
 	};
 
 /**
- * Returns the decimal and fractional parts of a number. Use only with finite integers
+ * Returns the integer and fractional parts of a number. Use only with finite integers
  *
  * @category Utils
  */
 
 export const decAndFracParts = (self: number): [decPart: number, fracPart: number] => {
-	const decPart = Math.floor(self) + (self < 0 ? 1 : 0);
+	const decPart = Math.trunc(self);
 	return [decPart, self - decPart];
 };
 

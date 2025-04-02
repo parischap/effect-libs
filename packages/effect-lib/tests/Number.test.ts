@@ -4,7 +4,7 @@ import { TEUtils } from '@parischap/test-utils';
 import { pipe } from 'effect';
 import { describe, it } from 'vitest';
 
-describe('MString', () => {
+describe('MNumber', () => {
 	describe('intModulo', () => {
 		it('Positive divisor strictly inferior to dividend', () => {
 			TEUtils.strictEqual(MNumber.intModulo(3)(5), 2);
@@ -38,6 +38,32 @@ describe('MString', () => {
 
 		it('Negative dividend, negative divisor', () => {
 			TEUtils.deepStrictEqual(pipe(-27, MNumber.quotientAndRemainder(-5)), [5, -2]);
+		});
+	});
+
+	describe('decAndFracParts', () => {
+		it('Positive number, first fractional digit < 5', () => {
+			const [integerPart, fractionalPart] = MNumber.decAndFracParts(5.4);
+			TEUtils.strictEqual(integerPart, 5);
+			TEUtils.assertTrue(Math.abs(fractionalPart - 0.4) < 3 * Number.EPSILON);
+		});
+
+		it('Positive number, first fractional digit >= 5', () => {
+			const [integerPart, fractionalPart] = MNumber.decAndFracParts(5.5);
+			TEUtils.strictEqual(integerPart, 5);
+			TEUtils.assertTrue(Math.abs(fractionalPart - 0.5) < 3 * Number.EPSILON);
+		});
+
+		it('Negative number, first fractional digit < 5', () => {
+			const [integerPart, fractionalPart] = MNumber.decAndFracParts(-5.4);
+			TEUtils.strictEqual(integerPart, -5);
+			TEUtils.assertTrue(Math.abs(fractionalPart + 0.4) < 3 * Number.EPSILON);
+		});
+
+		it('Negative number, first fractional digit >= 5', () => {
+			const [integerPart, fractionalPart] = MNumber.decAndFracParts(-5.5);
+			TEUtils.strictEqual(integerPart, -5);
+			TEUtils.assertTrue(Math.abs(fractionalPart + 0.5) < 3 * Number.EPSILON);
 		});
 	});
 
