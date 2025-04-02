@@ -28,7 +28,7 @@ import {
 	Tuple
 } from 'effect';
 
-export const moduleTag = '@parischap/templater/NumberFormat10/';
+export const moduleTag = '@parischap/conversions/NumberBase10Format/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
@@ -209,7 +209,7 @@ export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable 
 
 	/**
 	 * Minimim number of digits forming the fractional part of a number. Must be a positive integer
-	 * (>=0).
+	 * (>=0) less than or equal to `maximumFractionDigits`.
 	 *
 	 * Conversion from number to string: the string will be right-padded with `0`'s if necessary to
 	 * respect the condition
@@ -220,8 +220,8 @@ export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable 
 	readonly minimumFractionDigits: number;
 
 	/**
-	 * Maximum number of digits forming the fractional part of a number. Must be an integer value.
-	 * Will be taken equal to `minimumFractionDigits` if strictly less than that value.
+	 * Maximum number of digits forming the fractional part of a number. Must be an integer value
+	 * greater than or equal to `minimumFractionDigits`. Can take the +Infinity value.
 	 *
 	 * Conversion from number to string: the number will be rounded using the roundingMode to respect
 	 * the condition.
@@ -381,7 +381,7 @@ export const signDisplay: MTypes.OneArgFunction<Type, SignDisplay> = Struct.get(
  *
  * @category Destructors
  */
-export const toNumberExtracter = (
+export const toNumberExtractor = (
 	self: Type
 ): MTypes.OneArgFunction<
 	string,
@@ -398,6 +398,7 @@ export const toNumberExtracter = (
 	);
 
 	const isPlusSign: Predicate.Predicate<string> = MFunction.strictEquals('+');
+	const isMinusSign: Predicate.Predicate<string> = MFunction.strictEquals('-');
 	const hasASign = Option.liftPredicate(String.isNonEmpty);
 	const hasNoSign = Option.liftPredicate<string, string>(String.isEmpty);
 	const hasNotPlusSign = Option.liftPredicate(Predicate.not(isPlusSign));
@@ -427,9 +428,9 @@ export const toNumberExtracter = (
 			Function.compose(
 				Option.map(
 					flow(
-						Option.liftPredicate(isPlusSign),
-						Option.as(1 as const),
-						Option.getOrElse(Function.constant(-1 as const))
+						Option.liftPredicate(isMinusSign),
+						Option.as(-1 as const),
+						Option.getOrElse(Function.constant(1 as const))
 					)
 				)
 			)
@@ -511,7 +512,7 @@ export const toNumberExtracter = (
 							Option.none()
 						:	Option.some(MBigDecimal.zero),
 					onSome: flow(
-						self.showNullIntegerPart ?
+						self.showNullIntegerPart || mantissaFractionalPartLength === 0 ?
 							Option.some
 						:	Option.liftPredicate(Predicate.not(MFunction.strictEquals('0'))),
 						Option.map(flow(removeThousandSeparator, MBigDecimal.unsafeFromIntString(0)))
@@ -539,13 +540,11 @@ export const toNumberExtracter = (
 
 			return Tuple.make(
 				pipe(
-					mantissa,
-					BigDecimal.multiply(BigDecimal.unsafeFromNumber(sign)),
-					BigDecimal.scale(mantissa.scale - exponent)
+					BigDecimal.make(mantissa.value, mantissa.scale - exponent),
+					BigDecimal.multiply(BigDecimal.unsafeFromNumber(sign))
 				),
 				match
 			);
-			some;
 		});
 };
 
@@ -559,7 +558,7 @@ export const toNumberExtracter = (
 export const toNumberReader = (
 	self: Type
 ): MTypes.OneArgFunction<string, Option.Option<BigDecimal.BigDecimal>> => {
-	const extractor = toNumberExtracter(self);
+	const extractor = toNumberExtractor(self);
 	return (text) =>
 		pipe(
 			text,
@@ -576,14 +575,16 @@ export const toNumberReader = (
 };
 
 /**
- * Options instance that represents a UK-style number
+ * NumberBase10Format instance that uses a comma as fractional separator and a space as thousand
+ * separator. Used in countries like France, French-speaking Canada, French-speaking Belgium,
+ * Denmark, Finland, Sweden...
  *
  * @category Instances
  */
-export const uk: Type = make({
-	id: 'ukNumberFormet',
-	thousandSeparator: ',',
-	fractionalSeparator: '.',
+export const commaAndSpace: Type = make({
+	id: 'CommaAndSpace',
+	thousandSeparator: ' ',
+	fractionalSeparator: ',',
 	showNullIntegerPart: true,
 	minimumFractionDigits: 0,
 	maximumFractionDigits: 3,
@@ -592,3 +593,321 @@ export const uk: Type = make({
 	roundingMode: RoundingMode.HalfExpand,
 	signDisplay: SignDisplay.Auto
 });
+
+/**
+ * NumberBase10Format instance that uses a comma as fractional separator and a dot as thousand
+ * separator. Used in countries like Dutch-speaking Belgium, the Netherlands, Germany, Italy,
+ * Norway, Croatia, Spain...
+ *
+ * @category Instances
+ */
+export const commaAndDot: Type = make({
+	...commaAndSpace,
+	id: 'CommaAndDot',
+	thousandSeparator: '.'
+});
+
+/**
+ * NumberBase10Format instance that uses a dot as fractional separator and a comma as thousand
+ * separator. Used in countries like the UK, the US, English-speaking Canada, Australia, Thaïland,
+ * Bosnia...
+ *
+ * @category Instances
+ */
+export const dotAndComma: Type = make({
+	...commaAndSpace,
+	id: 'DotAndComma',
+	fractionalSeparator: '.',
+	thousandSeparator: ','
+});
+
+/**
+ * Combinator that returns a copy of self with `maximumFractionDigits` set to 0.
+ *
+ * @category Utils
+ */
+export const withNoDecimals = (self: Type): Type =>
+	make({
+		...self,
+		id: self.id + 'WithNoDecimals',
+		minimumFractionDigits: 0,
+		maximumFractionDigits: 0
+	});
+
+/**
+ * Combinator that returns a copy of self with `minimumFractionDigits` and `maximumFractionDigits`
+ * set to 2.
+ *
+ * @category Utils
+ */
+export const withTwoDecimals = (self: Type): Type =>
+	make({
+		...self,
+		id: self.id + 'WithTwoDecimals',
+		minimumFractionDigits: 2,
+		maximumFractionDigits: 2
+	});
+
+/**
+ * Combinator that returns a copy of self with`maximumFractionDigits` set to +Infinity.
+ *
+ * @category Utils
+ */
+export const withUnlimitedDecimals = (self: Type): Type =>
+	make({
+		...self,
+		id: self.id + 'WithUnlimitedDecimals',
+		maximumFractionDigits: +Infinity
+	});
+
+/**
+ * Combinator that returns a copy of self with `scientificNotation` set to `None`.
+ *
+ * @category Utils
+ */
+export const withNoScientificNotation = (self: Type): Type =>
+	make({
+		...self,
+		id: self.id + 'WithNoScientificNotation',
+		scientificNotation: ScientificNotation.None
+	});
+
+/**
+ * Combinator that returns a copy of self with `scientificNotation` set to `Standard`.
+ *
+ * @category Utils
+ */
+export const withStandardScientificNotation = (self: Type): Type =>
+	make({
+		...self,
+		id: self.id + 'WithStandardScientificNotation',
+		scientificNotation: ScientificNotation.Standard
+	});
+
+/**
+ * Combinator that returns a copy of self with `scientificNotation` set to `Normalized`.
+ *
+ * @category Utils
+ */
+export const withNormalizedScientificNotation = (self: Type): Type =>
+	make({
+		...self,
+		id: self.id + 'WithNormalizedScientificNotation',
+		scientificNotation: ScientificNotation.Normalized
+	});
+
+/**
+ * Combinator that returns a copy of self with `scientificNotation` set to `Engineering`.
+ *
+ * @category Utils
+ */
+export const withEngineeringScientificNotation = (self: Type): Type =>
+	make({
+		...self,
+		id: self.id + 'WithEngineeringScientificNotation',
+		scientificNotation: ScientificNotation.Engineering
+	});
+
+/**
+ * Combinator that returns a copy of self with `thousandSeparator` set to ''.
+ *
+ * @category Utils
+ */
+export const withoutThousandSeparator = (self: Type): Type =>
+	make({
+		...self,
+		id: self.id + 'WithoutThousandSeparator',
+		thousandSeparator: ''
+	});
+
+/**
+ * Combinator that returns a copy of self with `signDisplay` set to `Auto`.
+ *
+ * @category Utils
+ */
+export const withSignDisplayForNegative = (self: Type): Type =>
+	make({
+		...self,
+		id: self.id + 'WithSignDisplayForNegative',
+		signDisplay: SignDisplay.Auto
+	});
+
+/**
+ * Combinator that returns a copy of self with `signDisplay` set to `Always`.
+ *
+ * @category Utils
+ */
+export const withSignDisplay = (self: Type): Type =>
+	make({
+		...self,
+		id: self.id + 'WithSignDisplay',
+		signDisplay: SignDisplay.Always
+	});
+
+/**
+ * Combinator that returns a copy of self with `signDisplay` set to `ExceptZero`.
+ *
+ * @category Utils
+ */
+export const withSignDisplayExceptZero = (self: Type): Type =>
+	make({
+		...self,
+		id: self.id + 'WithSignDisplayExceptZero',
+		signDisplay: SignDisplay.ExceptZero
+	});
+
+/**
+ * Combinator that returns a copy of self with `signDisplay` set to `Negative`.
+ *
+ * @category Utils
+ */
+export const withSignDisplayForNegativeExceptZero = (self: Type): Type =>
+	make({
+		...self,
+		id: self.id + 'WithSignDisplayForNegativeExceptZero',
+		signDisplay: SignDisplay.Negative
+	});
+
+/**
+ * Combinator that returns a copy of self with `signDisplay` set to `Never`.
+ *
+ * @category Utils
+ */
+export const withoutSignDisplay = (self: Type): Type =>
+	make({
+		...self,
+		id: self.id + 'WithoutSignDisplay',
+		signDisplay: SignDisplay.Never
+	});
+
+/**
+ * Combinator that returns a copy of self with `roundingMode` set to `Ceil`.
+ *
+ * @category Utils
+ */
+export const withCeilRoundingMode = (self: Type): Type =>
+	make({
+		...self,
+		id: self.id + 'WithCeilRoundingMode',
+		roundingMode: RoundingMode.Ceil
+	});
+
+/**
+ * Combinator that returns a copy of self with `roundingMode` set to `Floor`.
+ *
+ * @category Utils
+ */
+export const withFloorRoundingMode = (self: Type): Type =>
+	make({
+		...self,
+		id: self.id + 'WithFloorRoundingMode',
+		roundingMode: RoundingMode.Floor
+	});
+
+/**
+ * Combinator that returns a copy of self with `roundingMode` set to `Expand`.
+ *
+ * @category Utils
+ */
+export const withExpandRoundingMode = (self: Type): Type =>
+	make({
+		...self,
+		id: self.id + 'WithExpandRoundingMode',
+		roundingMode: RoundingMode.Expand
+	});
+
+/**
+ * Combinator that returns a copy of self with `roundingMode` set to `Trunc`.
+ *
+ * @category Utils
+ */
+export const withTruncRoundingMode = (self: Type): Type =>
+	make({
+		...self,
+		id: self.id + 'WithTruncRoundingMode',
+		roundingMode: RoundingMode.Trunc
+	});
+
+/**
+ * Combinator that returns a copy of self with `roundingMode` set to `HalfCeil`.
+ *
+ * @category Utils
+ */
+export const withHalfCeilRoundingMode = (self: Type): Type =>
+	make({
+		...self,
+		id: self.id + 'WithHalfCeilRoundingMode',
+		roundingMode: RoundingMode.HalfCeil
+	});
+
+/**
+ * Combinator that returns a copy of self with `roundingMode` set to `HalfFloor`.
+ *
+ * @category Utils
+ */
+export const withHalfFloorRoundingMode = (self: Type): Type =>
+	make({
+		...self,
+		id: self.id + 'WithHalfFloorRoundingMode',
+		roundingMode: RoundingMode.HalfFloor
+	});
+
+/**
+ * Combinator that returns a copy of self with `roundingMode` set to `HalfExpand`.
+ *
+ * @category Utils
+ */
+export const withHalfExpandRoundingMode = (self: Type): Type =>
+	make({
+		...self,
+		id: self.id + 'WithHalfExpandRoundingMode',
+		roundingMode: RoundingMode.HalfExpand
+	});
+
+/**
+ * Combinator that returns a copy of self with `roundingMode` set to `HalfTrunc`.
+ *
+ * @category Utils
+ */
+export const withHalfTruncRoundingMode = (self: Type): Type =>
+	make({
+		...self,
+		id: self.id + 'WithHalfTruncRoundingMode',
+		roundingMode: RoundingMode.halfTrunc
+	});
+
+/**
+ * Combinator that returns a copy of self with `roundingMode` set to `HalfEven`.
+ *
+ * @category Utils
+ */
+export const withHalfEvenRoundingMode = (self: Type): Type =>
+	make({
+		...self,
+		id: self.id + 'WithHalfEvenRoundingMode',
+		roundingMode: RoundingMode.halfEven
+	});
+
+/**
+ * Combinator that returns a copy of self with `showNullIntegerPart` set to `false`.
+ *
+ * @category Utils
+ */
+export const withNullIntegerPartNotShowing = (self: Type): Type =>
+	make({
+		...self,
+		id: self.id + 'WithNullIntegerPartNotShowing',
+		showNullIntegerPart: false
+	});
+
+/**
+ * Combinator that returns a copy of self with `showNullIntegerPart` set to `true`.
+ *
+ * @category Utils
+ */
+export const withNullIntegerPartShowing = (self: Type): Type =>
+	make({
+		...self,
+		id: self.id + 'WithNullIntegerPartShowing',
+		showNullIntegerPart: true
+	});
