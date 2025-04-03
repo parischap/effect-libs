@@ -41,29 +41,62 @@ describe('MNumber', () => {
 		});
 	});
 
-	describe('integerAndFractionalParts', () => {
-		it('Positive number, first fractional digit < 5', () => {
-			const [integerPart, fractionalPart] = MNumber.integerAndFractionalParts(5.4);
-			TEUtils.strictEqual(integerPart, 5);
-			TEUtils.assertTrue(Math.abs(fractionalPart - 0.4) < 3 * Number.EPSILON);
+	describe('equals', () => {
+		it('Passing', () => {
+			TEUtils.assertTrue(pipe(0.3, MNumber.equals(0.1 + 0.2)));
 		});
 
-		it('Positive number, first fractional digit >= 5', () => {
-			const [integerPart, fractionalPart] = MNumber.integerAndFractionalParts(5.5);
-			TEUtils.strictEqual(integerPart, 5);
-			TEUtils.assertTrue(Math.abs(fractionalPart - 0.5) < 3 * Number.EPSILON);
+		it('Not passing', () => {
+			TEUtils.assertFalse(pipe(0.4, MNumber.equals(0.1 + 0.2)));
+		});
+	});
+
+	describe('trunc', () => {
+		it('Number that does not need to be truncated', () => {
+			TEUtils.assertTrue(pipe(54.5, MNumber.trunc(2), MNumber.equals(54.5)));
 		});
 
-		it('Negative number, first fractional digit < 5', () => {
-			const [integerPart, fractionalPart] = MNumber.integerAndFractionalParts(-5.4);
-			TEUtils.strictEqual(integerPart, -5);
-			TEUtils.assertTrue(Math.abs(fractionalPart + 0.4) < 3 * Number.EPSILON);
+		it('Positive number, first following digit < 5', () => {
+			TEUtils.assertTrue(pipe(0.544, MNumber.trunc(2), MNumber.equals(0.54)));
 		});
 
-		it('Negative number, first fractional digit >= 5', () => {
-			const [integerPart, fractionalPart] = MNumber.integerAndFractionalParts(-5.5);
-			TEUtils.strictEqual(integerPart, -5);
-			TEUtils.assertTrue(Math.abs(fractionalPart + 0.5) < 3 * Number.EPSILON);
+		it('Positive number, first following digit >= 5', () => {
+			TEUtils.assertTrue(pipe(0.545, MNumber.trunc(2), MNumber.equals(0.54)));
+		});
+
+		it('Negative number, first following digit < 5', () => {
+			TEUtils.assertTrue(pipe(-0.544, MNumber.trunc(2), MNumber.equals(-0.54)));
+		});
+
+		it('Negative number, first following digit >= 5', () => {
+			TEUtils.assertTrue(pipe(-0.545, MNumber.trunc(2), MNumber.equals(-0.54)));
+		});
+	});
+
+	describe('truncatedAndFollowingParts', () => {
+		const truncatedAndFollowingParts = MNumber.truncatedAndFollowingParts(1);
+		it('Positive number, first following digit < 5', () => {
+			const [truncatedPart, followingPart] = truncatedAndFollowingParts(5.44);
+			TEUtils.assertTrue(pipe(truncatedPart, MNumber.equals(5.4)));
+			TEUtils.assertTrue(pipe(followingPart, MNumber.equals(0.04)));
+		});
+
+		it('Positive number, first following digit >= 5', () => {
+			const [truncatedPart, followingPart] = truncatedAndFollowingParts(5.45);
+			TEUtils.assertTrue(pipe(truncatedPart, MNumber.equals(5.4)));
+			TEUtils.assertTrue(pipe(followingPart, MNumber.equals(0.05)));
+		});
+
+		it('Negative number, first following digit < 5', () => {
+			const [truncatedPart, followingPart] = truncatedAndFollowingParts(-5.44);
+			TEUtils.assertTrue(pipe(truncatedPart, MNumber.equals(-5.4)));
+			TEUtils.assertTrue(pipe(followingPart, MNumber.equals(-0.04)));
+		});
+
+		it('Negative number, first following digit >= 5', () => {
+			const [truncatedPart, followingPart] = truncatedAndFollowingParts(-5.45);
+			TEUtils.assertTrue(pipe(truncatedPart, MNumber.equals(-5.4)));
+			TEUtils.assertTrue(pipe(followingPart, MNumber.equals(-0.05)));
 		});
 	});
 

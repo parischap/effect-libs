@@ -1,6 +1,6 @@
 /** A simple extension to the Effect BigDecimal module */
 
-import { BigDecimal, Function, pipe, Tuple } from 'effect';
+import { BigDecimal, pipe, Tuple } from 'effect';
 import * as MTypes from './types.js';
 
 /**
@@ -21,23 +21,26 @@ export const unsafeFromIntString =
 export const zero: BigDecimal.BigDecimal = BigDecimal.make(0n, 0);
 
 /**
- * Truncates a BigDecimal after `n` decimal digits. `n` must be a positive integer that can take the
- * +Infinity value. If not provided, `n` is taken equal to 0.
+ * Truncates a BigDecimal after `n` decimal digits. `n` must be a positive finite integer. If not
+ * provided, `n` is taken equal to 0.
  *
  * @category Utils
  */
-export const trunc = (n = 0): MTypes.OneArgFunction<BigDecimal.BigDecimal> =>
-	n === +Infinity ? Function.identity : BigDecimal.scale(n);
+export const trunc = (n = 0): MTypes.OneArgFunction<BigDecimal.BigDecimal> => BigDecimal.scale(n);
 
 /**
- * Returns the integer and fractional parts of a number. Use only with finite integers
+ * Returns `truncatedPart`, `self` truncated after `n` decimal digits, and `followingpart`, the
+ * difference between `self` and `truncatedPart`. `n` must be a positive finite integer. If not
+ * provided, `n` is taken equal to 0.
  *
- * @category Utils
+ * @category Destructors
  */
 
-export const integerAndFractionalParts = (
-	self: BigDecimal.BigDecimal
-): [decPart: BigDecimal.BigDecimal, fracPart: BigDecimal.BigDecimal] => {
-	const integerPart = pipe(self, trunc());
-	return Tuple.make(integerPart, BigDecimal.subtract(self, integerPart));
-};
+export const truncatedAndFollowingParts =
+	(n = 0) =>
+	(
+		self: BigDecimal.BigDecimal
+	): [truncatedPart: BigDecimal.BigDecimal, followingpart: BigDecimal.BigDecimal] => {
+		const truncatedPart = pipe(self, trunc(n));
+		return Tuple.make(truncatedPart, BigDecimal.subtract(self, truncatedPart));
+	};

@@ -1,6 +1,8 @@
 /** A simple extension to the Effect Number module */
-import { Predicate } from 'effect';
+import { pipe, Predicate } from 'effect';
 import * as MTypes from './types.js';
+
+const TRIPLE_EPSILON = 3 * Number.EPSILON;
 
 /**
  * Constructs a number from a string. Does not check input format and can return NaN or Infinity
@@ -26,7 +28,7 @@ export const intModulo =
  * Returns the `quotient` and `remainder` of the division of `self` by `divisor`. `remainder` always
  * has the sign of `divisor`. Use only with finite integers
  *
- * @category Utils
+ * @category Destructors
  */
 
 export const quotientAndRemainder =
@@ -37,15 +39,47 @@ export const quotientAndRemainder =
 	};
 
 /**
- * Returns the integer and fractional parts of a number. Use only with finite integers
+ * Returns the absolute value of `self`
  *
  * @category Utils
  */
+export const abs: MTypes.OneArgFunction<number> = Math.abs;
 
-export const integerAndFractionalParts = (self: number): [decPart: number, fracPart: number] => {
-	const decPart = Math.trunc(self);
-	return [decPart, self - decPart];
-};
+/**
+ * Predicate that returns true if two numbers are equal
+ *
+ * @category Predicates
+ */
+export const equals =
+	(n: number): Predicate.Predicate<number> =>
+	(self) =>
+		Math.abs(self - n) < TRIPLE_EPSILON;
+
+/**
+ * Truncates a number after `n` decimal digits. `n` must be a positive finite integer. If not
+ * provided, `n` is taken equal to 0.
+ *
+ * @category Utils
+ */
+export const trunc =
+	(n = 0) =>
+	(self: number): number =>
+		pipe(self, shift(n), Math.trunc, shift(-n));
+
+/**
+ * Returns `truncatedPart`, `self` truncated after `n` decimal digits, and followingpart, the
+ * difference between `self` and `truncatedPart`. `n` must be a positive finite integer. If not
+ * provided, `n` is taken equal to 0.
+ *
+ * @category Destructors
+ */
+
+export const truncatedAndFollowingParts =
+	(n = 0) =>
+	(self: number): [truncatedPart: number, followingpart: number] => {
+		const truncatedPart = pipe(self, trunc(n));
+		return [truncatedPart, self - truncatedPart];
+	};
 
 /**
  * Returns true if the provided number is NaN, Infinity, +Infinity or -Infinity
@@ -57,7 +91,7 @@ export const isNotFinite: Predicate.Predicate<number> = Predicate.not(Number.isF
 /**
  * Returns true if the provided number is not NaN, Infinity, +Infinity or -Infinity
  *
- * @category Utils
+ * @category Predicates
  */
 export const isFinite: Predicate.Predicate<number> = Number.isFinite;
 
@@ -88,4 +122,4 @@ export const isMultipleOf: (a: number) => Predicate.Predicate<number> = (a) => (
  *
  * @category Utils
  */
-export const shift = (n: number) => (self: number) => self * Math.pow(10, n);
+export const shift = (n: number) => (self: number) => self * 10 ** n;
