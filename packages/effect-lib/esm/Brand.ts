@@ -95,7 +95,7 @@ export namespace SemVer {
 }
 
 /**
- * This namespace implements a finite real number brand (no Infinity or Nan)
+ * This namespace implements a finite real number brand (Infinity or Nan disallowed)
  *
  * @category Models
  */
