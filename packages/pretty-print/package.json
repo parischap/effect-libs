@@ -10,6 +10,12 @@
 		"lint-rules": "pnpx @eslint/config-inspector",
 		"update-config-files": "update-config-files",
 		"clean-config-files": "shx rm -rf package.json && shx rm -rf tsconfig.json",
+		"transpile-esm": "tsc -b tsconfig.esm.json",
+		"transpile-cjs": "babel dist/esm --plugins @babel/transform-export-namespace-from --plugins @babel/transform-modules-commonjs --out-dir dist/cjs --source-maps",
+		"transpile-annotate": "babel dist --plugins annotate-pure-calls --out-dir dist --source-maps",
+		"compile": "pnpm transpile-esm && pnpm transpile-cjs && pnpm transpile-annotate && pnpm prodify",
+		"build-and-publish": "pnpm build && pnpm checks && pnpm publish-to-npm",
+		"docgen": "docgen",
 		"circular": "madge --extensions ts --circular --no-color --no-spinner esm",
 		"checks": "pnpm circular && pnpm lint && pnpm tscheck && pnpm test",
 		"test": "vitest run",
@@ -18,58 +24,30 @@
 		"install-prod": "cd dist && pnpm i && cd ..",
 		"build": "pnpm clean-prod && pnpm --if-present pre-build && pnpm compile && pnpm --if-present post-build && pnpm --if-present generate-types && pnpm install-prod",
 		"prodify": "prodify",
-		"examples": "vite-node example/util-inspect-like.ts&&vite-node example/treeify.ts&&vite-node example/treeify-with-leaves.ts&&vite-node example/circularity-handling.ts",
-		"transpile-esm": "tsc -b tsconfig.esm.json",
-		"transpile-cjs": "babel dist/esm --plugins @babel/transform-export-namespace-from --plugins @babel/transform-modules-commonjs --out-dir dist/cjs --source-maps",
-		"transpile-annotate": "babel dist --plugins annotate-pure-calls --out-dir dist --source-maps",
-		"compile": "pnpm transpile-esm && pnpm transpile-cjs && pnpm transpile-annotate && pnpm prodify",
-		"build-and-publish": "pnpm build && pnpm checks && pnpm publish-to-npm",
-		"docgen": "docgen"
-	},
-	"description": "A functional library to pretty-print and treeify objects",
-	"module": "./esm/index.js",
-	"exports": {
-		".": {
-			"import": "./esm/index.ts"
-		}
-	},
-	"dependencies": {},
-	"devDependencies": {
-		"@parischap/pretty-print": "link:."
-	},
-	"peerDependencies": {
-		"@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
-		"@parischap/ansi-styles": "workspace:@parischap-dev/ansi-styles@*",
-		"effect": "^3.14.1"
+		"examples": "vite-node examples/util-inspect-like.ts&&vite-node examples/treeify.ts&&vite-node examples/treeify-with-leaves.ts&&vite-node examples/circularity-handling.ts"
 	},
 	"publishConfig": {
+		"main": "./cjs/index.js",
+		"types": "./dts/index.d.ts",
+		"exports": {
+			".": {
+				"default": "./cjs/index.js",
+				"import": "./esm/index.js",
+				"types": "./dts/index.d.ts"
+			}
+		},
 		"scripts": {},
 		"devDependencies": {},
 		"peerDependencies": {
-			"@parischap/effect-lib": "^0.4.0",
+			"@parischap/effect-lib": "^0.5.0",
 			"@parischap/ansi-styles": "^0.2.1",
-			"effect": "^3.14.1"
+			"effect": "^3.14.5"
 		},
 		"publishConfig": {},
 		"packageManager": "",
 		"pnpm": {},
-		"type": "",
-		"exports": {
-			".": {
-				"import": "./esm/index.js",
-				"types": "./dts/index.d.ts",
-				"default": "./cjs/index.js"
-			}
-		},
-		"main": "./cjs/index.js",
-		"types": "./dts/index.d.ts"
+		"type": ""
 	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/parischap/effect-libs.git",
-		"directory": "packages/pretty-print"
-	},
-	"homepage": "https://github.com/parischap/effect-libs/tree/master/packages/pretty-print",
 	"bugs": {
 		"url": "https://github.com/parischap/effect-libs/issues"
 	},
@@ -96,5 +74,27 @@
 		"effect",
 		"typescript",
 		"functional-programming"
-	]
+	],
+	"description": "A functional library to pretty-print and treeify objects",
+	"module": "./esm/index.js",
+	"exports": {
+		".": {
+			"import": "./esm/index.ts"
+		}
+	},
+	"dependencies": {},
+	"devDependencies": {
+		"@parischap/pretty-print": "link:."
+	},
+	"peerDependencies": {
+		"@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
+		"@parischap/ansi-styles": "workspace:@parischap-dev/ansi-styles@*",
+		"effect": "^3.14.5"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/parischap/effect-libs.git",
+		"directory": "packages/pretty-print"
+	},
+	"homepage": "https://github.com/parischap/effect-libs/tree/master/packages/pretty-print"
 }

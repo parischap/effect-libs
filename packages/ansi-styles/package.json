@@ -24,7 +24,7 @@
 		"install-prod": "cd dist && pnpm i && cd ..",
 		"build": "pnpm clean-prod && pnpm --if-present pre-build && pnpm compile && pnpm --if-present post-build && pnpm --if-present generate-types && pnpm install-prod",
 		"prodify": "prodify",
-		"examples": "vite-node example/basic-usage.ts&&vite-node example/cancelling-a-style.ts&&vite-node example/simple-colors.ts&&vite-node example/all-colors.ts"
+		"examples": "vite-node examples/basic-usage.ts&&vite-node examples/cancelling-a-style.ts&&vite-node examples/simple-colors.ts&&vite-node examples/all-colors.ts"
 	},
 	"publishConfig": {
 		"main": "./cjs/index.js",
@@ -39,8 +39,8 @@
 		"scripts": {},
 		"devDependencies": {},
 		"peerDependencies": {
-			"@parischap/effect-lib": "^0.4.0",
-			"effect": "^3.14.1"
+			"@parischap/effect-lib": "^0.5.0",
+			"effect": "^3.14.5"
 		},
 		"publishConfig": {},
 		"packageManager": "",
@@ -94,7 +94,7 @@
 	},
 	"peerDependencies": {
 		"@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
-		"effect": "^3.14.1"
+		"effect": "^3.14.5"
 	},
 	"repository": {
 		"type": "git",
