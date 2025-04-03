@@ -1,6 +1,6 @@
 /** A simple extension to the Effect BigDecimal module */
 
-import { BigDecimal, pipe, Tuple } from 'effect';
+import { BigDecimal, Function, pipe, Tuple } from 'effect';
 import * as MTypes from './types.js';
 
 /**
@@ -21,12 +21,13 @@ export const unsafeFromIntString =
 export const zero: BigDecimal.BigDecimal = BigDecimal.make(0n, 0);
 
 /**
- * Truncates a BigDecimal after `n` decimal digits. `n` must be a positive integer. If not provided,
- * `n` is taken equal to 0.
+ * Truncates a BigDecimal after `n` decimal digits. `n` must be a positive integer that can take the
+ * +Infinity value. If not provided, `n` is taken equal to 0.
  *
  * @category Utils
  */
-export const trunc = (n = 0): MTypes.OneArgFunction<BigDecimal.BigDecimal> => BigDecimal.scale(n);
+export const trunc = (n = 0): MTypes.OneArgFunction<BigDecimal.BigDecimal> =>
+	n === +Infinity ? Function.identity : BigDecimal.scale(n);
 
 /**
  * Returns the integer and fractional parts of a number. Use only with finite integers

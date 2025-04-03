@@ -17,6 +17,13 @@ describe('MBigDecimal', () => {
 			);
 		});
 
+		it('Using +Infinity for n', () => {
+			TEUtils.assertEquals(
+				pipe(BigDecimal.make(545n, 1), MBigDecimal.trunc(+Infinity)),
+				BigDecimal.make(545n, 1)
+			);
+		});
+
 		it('Positive number, first fractional digit < 5', () => {
 			TEUtils.assertEquals(
 				pipe(BigDecimal.make(544n, 3), MBigDecimal.trunc(2)),
