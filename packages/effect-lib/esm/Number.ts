@@ -42,7 +42,7 @@ export const quotientAndRemainder =
  * @category Utils
  */
 
-export const decAndFracParts = (self: number): [decPart: number, fracPart: number] => {
+export const integerAndFractionalParts = (self: number): [decPart: number, fracPart: number] => {
 	const decPart = Math.trunc(self);
 	return [decPart, self - decPart];
 };

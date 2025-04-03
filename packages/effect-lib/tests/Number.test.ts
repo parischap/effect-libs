@@ -41,27 +41,27 @@ describe('MNumber', () => {
 		});
 	});
 
-	describe('decAndFracParts', () => {
+	describe('integerAndFractionalParts', () => {
 		it('Positive number, first fractional digit < 5', () => {
-			const [integerPart, fractionalPart] = MNumber.decAndFracParts(5.4);
+			const [integerPart, fractionalPart] = MNumber.integerAndFractionalParts(5.4);
 			TEUtils.strictEqual(integerPart, 5);
 			TEUtils.assertTrue(Math.abs(fractionalPart - 0.4) < 3 * Number.EPSILON);
 		});
 
 		it('Positive number, first fractional digit >= 5', () => {
-			const [integerPart, fractionalPart] = MNumber.decAndFracParts(5.5);
+			const [integerPart, fractionalPart] = MNumber.integerAndFractionalParts(5.5);
 			TEUtils.strictEqual(integerPart, 5);
 			TEUtils.assertTrue(Math.abs(fractionalPart - 0.5) < 3 * Number.EPSILON);
 		});
 
 		it('Negative number, first fractional digit < 5', () => {
-			const [integerPart, fractionalPart] = MNumber.decAndFracParts(-5.4);
+			const [integerPart, fractionalPart] = MNumber.integerAndFractionalParts(-5.4);
 			TEUtils.strictEqual(integerPart, -5);
 			TEUtils.assertTrue(Math.abs(fractionalPart + 0.4) < 3 * Number.EPSILON);
 		});
 
 		it('Negative number, first fractional digit >= 5', () => {
-			const [integerPart, fractionalPart] = MNumber.decAndFracParts(-5.5);
+			const [integerPart, fractionalPart] = MNumber.integerAndFractionalParts(-5.5);
 			TEUtils.strictEqual(integerPart, -5);
 			TEUtils.assertTrue(Math.abs(fractionalPart + 0.5) < 3 * Number.EPSILON);
 		});
