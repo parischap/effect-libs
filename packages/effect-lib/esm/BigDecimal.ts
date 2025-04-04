@@ -21,26 +21,27 @@ export const unsafeFromIntString =
 export const zero: BigDecimal.BigDecimal = BigDecimal.make(0n, 0);
 
 /**
- * Truncates a BigDecimal after `n` decimal digits. `n` must be a positive finite integer. If not
- * provided, `n` is taken equal to 0.
+ * Truncates a BigDecimal after `precision` decimal digits. `precision` must be a positive finite
+ * integer. If not provided, `precision` is taken equal to 0.
  *
  * @category Utils
  */
-export const trunc = (n = 0): MTypes.OneArgFunction<BigDecimal.BigDecimal> => BigDecimal.scale(n);
+export const trunc = (precision = 0): MTypes.OneArgFunction<BigDecimal.BigDecimal> =>
+	BigDecimal.scale(precision);
 
 /**
- * Returns `truncatedPart`, `self` truncated after `n` decimal digits, and `followingpart`, the
- * difference between `self` and `truncatedPart`. `n` must be a positive finite integer. If not
- * provided, `n` is taken equal to 0.
+ * Returns `truncatedPart`, `self` truncated after `precision` decimal digits, and `followingpart`,
+ * the difference between `self` and `truncatedPart`. `precision` must be a positive finite integer.
+ * If not provided, `precision` is taken equal to 0.
  *
  * @category Destructors
  */
 
 export const truncatedAndFollowingParts =
-	(n = 0) =>
+	(precision = 0) =>
 	(
 		self: BigDecimal.BigDecimal
 	): [truncatedPart: BigDecimal.BigDecimal, followingpart: BigDecimal.BigDecimal] => {
-		const truncatedPart = pipe(self, trunc(n));
+		const truncatedPart = pipe(self, trunc(precision));
 		return Tuple.make(truncatedPart, BigDecimal.subtract(self, truncatedPart));
 	};
