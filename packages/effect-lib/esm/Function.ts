@@ -124,7 +124,7 @@ export const execute = <A>(self: Function.LazyArg<A>): A => self();
  *
  * @category Utils
  */
-export const constEmptyString = Function.constant('');
+export const constEmptyString = Function.constant('' as const);
 
 /**
  * Returns a copy of `self`
