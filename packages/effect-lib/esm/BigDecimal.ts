@@ -1,8 +1,10 @@
 /** A simple extension to the Effect BigDecimal module */
 
 import { BigDecimal, pipe, Tuple } from 'effect';
+import * as MNumber from './Number.js';
 import * as MTypes from './types.js';
 
+const bigDecimal10 = BigDecimal.make(10n, 0);
 /**
  * Function that creates a Bigdecimal from a string representing an bigint and a scale
  *
@@ -45,3 +47,43 @@ export const truncatedAndFollowingParts =
 		const truncatedPart = pipe(self, trunc(precision));
 		return Tuple.make(truncatedPart, BigDecimal.subtract(self, truncatedPart));
 	};
+
+/**
+ * Rounds `self` at `precision` decimals using `roundingMode`. `precision` must be a finite positive
+ * integer. Default `precision` is `0` and default `roundingMode` is `HalfExpand`.
+ */
+export const round = ({
+	precision = 0,
+	roundingMode = MNumber.RoundingMode.HalfExpand
+}: {
+	readonly precision?: number;
+	readonly roundingMode?: MNumber.RoundingMode;
+} = {}): MTypes.OneArgFunction<BigDecimal.BigDecimal> => {
+	const shiftValue = BigDecimal.make(1n, -precision);
+	const shift = BigDecimal.multiply(shiftValue);
+	const unshift = BigDecimal.unsafeDivide(shiftValue);
+	const correcter = MNumber.RoundingMode.toCorrecter(roundingMode);
+
+	return (self) => {
+		const shiftedSelf = shift(self);
+		const truncatedShiftedSelf = pipe(shiftedSelf, trunc());
+		const firstFollowingDigit = pipe(
+			shiftedSelf,
+			BigDecimal.subtract(truncatedShiftedSelf),
+			BigDecimal.multiply(bigDecimal10),
+			trunc(),
+			BigDecimal.unsafeToNumber
+		);
+		return pipe(
+			truncatedShiftedSelf,
+			BigDecimal.sum(
+				pipe(
+					{ firstFollowingDigit, isEven: truncatedShiftedSelf.value % 2n === 0n },
+					correcter,
+					BigDecimal.unsafeFromNumber
+				)
+			),
+			unshift
+		);
+	};
+};
