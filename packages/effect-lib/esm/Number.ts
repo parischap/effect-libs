@@ -247,10 +247,10 @@ export namespace RoundingMode {
 		MMatch.exhaustive
 	);
 }
+
 /**
  * Rounds `self` at `precision` decimals using `roundingMode`. `precision` must be a finite positive
- * integer. `precision` must be a finite positive integer. Default `precision` is `0` and default
- * `roundingMode` is `HalfExpand`.
+ * integer. Default `precision` is `0` and default `roundingMode` is `HalfExpand`.
  */
 export const round = ({
 	precision = 0,
