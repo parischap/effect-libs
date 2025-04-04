@@ -513,6 +513,13 @@ describe('NumberBase10Format', () => {
 					Option.some(Tuple.make(BigDecimal.make(-4545n, 2), '-45,45'))
 				);
 			});
+
+			it('Fractional part of mantissa starting with zeros', () => {
+				TEUtils.assertEquals(
+					numberExtractor('-45,00'),
+					Option.some(Tuple.make(BigDecimal.make(-45n, 0), '-45,00'))
+				);
+			});
 		});
 	});
 
