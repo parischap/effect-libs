@@ -5,6 +5,79 @@ import { pipe } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('MNumber', () => {
+	describe('RoundingMode', () => {
+		describe('toCorrecter', () => {
+			it('Ceil', () => {
+				const correcter = MNumber.RoundingMode.toCorrecter(MNumber.RoundingMode.Ceil);
+				TEUtils.strictEqual(correcter({ firstFollowingDigit: 0, isEven: false }), 0);
+				TEUtils.strictEqual(correcter({ firstFollowingDigit: 1, isEven: false }), 1);
+				TEUtils.strictEqual(correcter({ firstFollowingDigit: -1, isEven: false }), 0);
+			});
+
+			it('Floor', () => {
+				const correcter = MNumber.RoundingMode.toCorrecter(MNumber.RoundingMode.Floor);
+				TEUtils.strictEqual(correcter({ firstFollowingDigit: 0, isEven: false }), 0);
+				TEUtils.strictEqual(correcter({ firstFollowingDigit: 1, isEven: false }), 0);
+				TEUtils.strictEqual(correcter({ firstFollowingDigit: -1, isEven: false }), -1);
+			});
+
+			it('Expand', () => {
+				const correcter = MNumber.RoundingMode.toCorrecter(MNumber.RoundingMode.Expand);
+				TEUtils.strictEqual(correcter({ firstFollowingDigit: 0, isEven: false }), 0);
+				TEUtils.strictEqual(correcter({ firstFollowingDigit: 1, isEven: false }), 1);
+				TEUtils.strictEqual(correcter({ firstFollowingDigit: -1, isEven: false }), -1);
+			});
+
+			it('Trunc', () => {
+				const correcter = MNumber.RoundingMode.toCorrecter(MNumber.RoundingMode.Trunc);
+				TEUtils.strictEqual(correcter({ firstFollowingDigit: 0, isEven: false }), 0);
+				TEUtils.strictEqual(correcter({ firstFollowingDigit: 1, isEven: false }), 0);
+				TEUtils.strictEqual(correcter({ firstFollowingDigit: -1, isEven: false }), 0);
+			});
+
+			it('HalfCeil', () => {
+				const correcter = MNumber.RoundingMode.toCorrecter(MNumber.RoundingMode.HalfCeil);
+				TEUtils.strictEqual(correcter({ firstFollowingDigit: 5, isEven: false }), 1);
+				TEUtils.strictEqual(correcter({ firstFollowingDigit: 4, isEven: false }), 0);
+				TEUtils.strictEqual(correcter({ firstFollowingDigit: -5, isEven: false }), 0);
+				TEUtils.strictEqual(correcter({ firstFollowingDigit: -6, isEven: false }), -1);
+			});
+
+			it('HalfFloor', () => {
+				const correcter = MNumber.RoundingMode.toCorrecter(MNumber.RoundingMode.HalfFloor);
+				TEUtils.strictEqual(correcter({ firstFollowingDigit: 5, isEven: false }), 0);
+				TEUtils.strictEqual(correcter({ firstFollowingDigit: 6, isEven: false }), 1);
+				TEUtils.strictEqual(correcter({ firstFollowingDigit: -5, isEven: false }), -1);
+				TEUtils.strictEqual(correcter({ firstFollowingDigit: -4, isEven: false }), 0);
+			});
+
+			it('HalfExpand', () => {
+				const correcter = MNumber.RoundingMode.toCorrecter(MNumber.RoundingMode.HalfExpand);
+				TEUtils.strictEqual(correcter({ firstFollowingDigit: 5, isEven: false }), 1);
+				TEUtils.strictEqual(correcter({ firstFollowingDigit: 4, isEven: false }), 0);
+				TEUtils.strictEqual(correcter({ firstFollowingDigit: -5, isEven: false }), -1);
+				TEUtils.strictEqual(correcter({ firstFollowingDigit: -4, isEven: false }), 0);
+			});
+
+			it('HalfEven', () => {
+				const correcter = MNumber.RoundingMode.toCorrecter(MNumber.RoundingMode.HalfEven);
+				TEUtils.strictEqual(correcter({ firstFollowingDigit: 6, isEven: true }), 1);
+				TEUtils.strictEqual(correcter({ firstFollowingDigit: 5, isEven: true }), 0);
+				TEUtils.strictEqual(correcter({ firstFollowingDigit: 4, isEven: true }), 0);
+				TEUtils.strictEqual(correcter({ firstFollowingDigit: -6, isEven: true }), -1);
+				TEUtils.strictEqual(correcter({ firstFollowingDigit: -5, isEven: true }), 0);
+				TEUtils.strictEqual(correcter({ firstFollowingDigit: -4, isEven: true }), 0);
+
+				TEUtils.strictEqual(correcter({ firstFollowingDigit: 6, isEven: false }), 1);
+				TEUtils.strictEqual(correcter({ firstFollowingDigit: 5, isEven: false }), 1);
+				TEUtils.strictEqual(correcter({ firstFollowingDigit: 4, isEven: false }), 0);
+				TEUtils.strictEqual(correcter({ firstFollowingDigit: -6, isEven: false }), -1);
+				TEUtils.strictEqual(correcter({ firstFollowingDigit: -5, isEven: false }), -1);
+				TEUtils.strictEqual(correcter({ firstFollowingDigit: -4, isEven: false }), 0);
+			});
+		});
+	});
+
 	describe('intModulo', () => {
 		it('Positive divisor strictly inferior to dividend', () => {
 			TEUtils.strictEqual(MNumber.intModulo(3)(5), 2);
@@ -94,77 +167,12 @@ describe('MNumber', () => {
 	});
 
 	describe('round', () => {
-		it('Ceil', () => {
-			const round = MNumber.round({ precision: 3, roundingMode: MNumber.RoundingMode.Ceil });
-			TEUtils.assertTrue(pipe(0.456, round, MNumber.equals(0.456)));
-			TEUtils.assertTrue(pipe(0.4561, round, MNumber.equals(0.457)));
-			TEUtils.assertTrue(pipe(-0.4561, round, MNumber.equals(-0.456)));
-			TEUtils.assertTrue(pipe(-0.456, round, MNumber.equals(-0.456)));
-		});
-
-		it('Floor', () => {
-			const round = MNumber.round({ precision: 3, roundingMode: MNumber.RoundingMode.Floor });
-			TEUtils.assertTrue(pipe(0.456, round, MNumber.equals(0.456)));
-			TEUtils.assertTrue(pipe(0.4561, round, MNumber.equals(0.456)));
-			TEUtils.assertTrue(pipe(-0.4561, round, MNumber.equals(-0.457)));
-			TEUtils.assertTrue(pipe(-0.456, round, MNumber.equals(-0.456)));
-		});
-
-		it('Expand', () => {
-			const round = MNumber.round({ precision: 3, roundingMode: MNumber.RoundingMode.Expand });
-			TEUtils.assertTrue(pipe(0.456, round, MNumber.equals(0.456)));
-			TEUtils.assertTrue(pipe(0.4561, round, MNumber.equals(0.457)));
-			TEUtils.assertTrue(pipe(-0.4561, round, MNumber.equals(-0.457)));
-			TEUtils.assertTrue(pipe(-0.456, round, MNumber.equals(-0.456)));
-		});
-
-		it('Trunc', () => {
-			const round = MNumber.round({ precision: 3, roundingMode: MNumber.RoundingMode.Trunc });
-			TEUtils.assertTrue(pipe(0.456, round, MNumber.equals(0.456)));
-			TEUtils.assertTrue(pipe(0.4561, round, MNumber.equals(0.456)));
-			TEUtils.assertTrue(pipe(-0.4561, round, MNumber.equals(-0.456)));
-			TEUtils.assertTrue(pipe(-0.456, round, MNumber.equals(-0.456)));
-		});
-
-		it('HalfCeil', () => {
-			const round = MNumber.round({ precision: 3, roundingMode: MNumber.RoundingMode.HalfCeil });
-			TEUtils.assertTrue(pipe(0.4565, round, MNumber.equals(0.457)));
-			TEUtils.assertTrue(pipe(0.4564, round, MNumber.equals(0.456)));
-			TEUtils.assertTrue(pipe(-0.4565, round, MNumber.equals(-0.456)));
-			TEUtils.assertTrue(pipe(-0.4566, round, MNumber.equals(-0.457)));
-		});
-
-		it('HalfFloor', () => {
-			const round = MNumber.round({ precision: 3, roundingMode: MNumber.RoundingMode.HalfFloor });
-			TEUtils.assertTrue(pipe(0.4565, round, MNumber.equals(0.456)));
+		const round = MNumber.round({ precision: 3, roundingMode: MNumber.RoundingMode.HalfEven });
+		it('Even number', () => {
 			TEUtils.assertTrue(pipe(0.4566, round, MNumber.equals(0.457)));
-			TEUtils.assertTrue(pipe(-0.4565, round, MNumber.equals(-0.457)));
-			TEUtils.assertTrue(pipe(-0.4564, round, MNumber.equals(-0.456)));
 		});
-
-		it('HalfExpand', () => {
-			const round = MNumber.round({ precision: 3, roundingMode: MNumber.RoundingMode.HalfExpand });
-			TEUtils.assertTrue(pipe(0.4565, round, MNumber.equals(0.457)));
-			TEUtils.assertTrue(pipe(0.4564, round, MNumber.equals(0.456)));
-			TEUtils.assertTrue(pipe(-0.4565, round, MNumber.equals(-0.457)));
+		it('Odd number', () => {
 			TEUtils.assertTrue(pipe(-0.4564, round, MNumber.equals(-0.456)));
-		});
-
-		it('HalfEven', () => {
-			const round = MNumber.round({ precision: 3, roundingMode: MNumber.RoundingMode.HalfEven });
-			TEUtils.assertTrue(pipe(0.4566, round, MNumber.equals(0.457)));
-			TEUtils.assertTrue(pipe(0.4565, round, MNumber.equals(0.456)));
-			TEUtils.assertTrue(pipe(0.4564, round, MNumber.equals(0.456)));
-			TEUtils.assertTrue(pipe(-0.4566, round, MNumber.equals(-0.457)));
-			TEUtils.assertTrue(pipe(-0.4565, round, MNumber.equals(-0.456)));
-			TEUtils.assertTrue(pipe(-0.4564, round, MNumber.equals(-0.456)));
-
-			TEUtils.assertTrue(pipe(0.4576, round, MNumber.equals(0.458)));
-			TEUtils.assertTrue(pipe(0.4575, round, MNumber.equals(0.458)));
-			TEUtils.assertTrue(pipe(0.4574, round, MNumber.equals(0.457)));
-			TEUtils.assertTrue(pipe(-0.4576, round, MNumber.equals(-0.458)));
-			TEUtils.assertTrue(pipe(-0.4575, round, MNumber.equals(-0.458)));
-			TEUtils.assertTrue(pipe(-0.4574, round, MNumber.equals(-0.457)));
 		});
 	});
 });
