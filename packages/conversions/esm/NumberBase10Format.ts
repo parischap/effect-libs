@@ -2,9 +2,14 @@
  * This module implements conversions from number to string and string to number in base-10
  * notation.
  */
+/**
+ * This module implements conversions from number to string and string to number in base-10
+ * notation.
+ */
 
 import {
 	MBigDecimal,
+	MBrand,
 	MBrand,
 	MFunction,
 	MInspectable,
@@ -17,6 +22,7 @@ import {
 } from '@parischap/effect-lib';
 import {
 	BigDecimal,
+	BigInt,
 	BigInt,
 	Equal,
 	Equivalence,
@@ -86,6 +92,7 @@ export enum SignDisplay {
 
 /**
  * Namespace for possible sign display options
+ * Namespace for possible sign display options
  *
  * @category Models
  */
@@ -143,7 +150,69 @@ export namespace SignDisplay {
 		)
 	);
 
+export namespace SignDisplay {
 	/**
+	 * Type of a SignDisplay Reader
+	 *
+	 * @category Models
+	 */
+	export interface Reader {
+		(hasNullMantissa: boolean): (sign: string) => Option.Option<-1 | 1>;
+	}
+
+	const isPlusSign: Predicate.Predicate<string> = MFunction.strictEquals('+');
+	const isMinusSign: Predicate.Predicate<string> = MFunction.strictEquals('-');
+	const hasASign = Option.liftPredicate(String.isNonEmpty);
+	const hasNoSign = Option.liftPredicate<string, string>(String.isEmpty);
+	const hasNotPlusSign = Option.liftPredicate(Predicate.not(isPlusSign));
+
+	/**
+	 * Builds a `Reader` implementing `self`
+	 *
+	 * @category Destructors
+	 */
+	export const toReader: MTypes.OneArgFunction<SignDisplay, Reader> = flow(
+		MMatch.make,
+		MMatch.whenIs(SignDisplay.Auto, () => () => hasNotPlusSign),
+		MMatch.whenIs(SignDisplay.Always, () => () => hasASign),
+		MMatch.whenIs(SignDisplay.ExceptZero, () =>
+			flow(
+				MMatch.make<boolean>,
+				MMatch.whenIs(true, Function.constant(hasNoSign)),
+				MMatch.orElse(Function.constant(hasASign))
+			)
+		),
+		MMatch.whenIs(SignDisplay.Negative, () =>
+			flow(
+				MMatch.make<boolean>,
+				MMatch.whenIs(true, Function.constant(hasNoSign)),
+				MMatch.orElse(Function.constant(hasNotPlusSign))
+			)
+		),
+		MMatch.whenIs(SignDisplay.Never, () => () => hasNoSign),
+		MMatch.exhaustive,
+		Function.compose(
+			Function.compose(
+				Option.map(
+					flow(
+						Option.liftPredicate(isMinusSign),
+						Option.as(-1 as const),
+						Option.getOrElse(Function.constant(1 as const))
+					)
+				)
+			)
+		)
+	);
+
+	/**
+	 * Type of a SignDisplay Writer
+	 *
+	 * @category Models
+	 */
+	export interface Writer {
+		({ sign, isZero }: { readonly sign: -1 | 1; readonly isZero: boolean }): '+' | '-' | '';
+	}
+
 	 * Type of a SignDisplay Writer
 	 *
 	 * @category Models
@@ -396,6 +465,7 @@ export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable 
 
 	/** Rounding mode options. See RoundingMode */
 	readonly roundingMode: MNumber.RoundingMode;
+	readonly roundingMode: MNumber.RoundingMode;
 
 	/** Sign display options. See SignDisplay */
 	readonly signDisplay: SignDisplay;
@@ -514,6 +584,8 @@ export const scientificNotation: MTypes.OneArgFunction<Type, ScientificNotation>
  */
 export const roundingMode: MTypes.OneArgFunction<Type, MNumber.RoundingMode> =
 	Struct.get('roundingMode');
+export const roundingMode: MTypes.OneArgFunction<Type, MNumber.RoundingMode> =
+	Struct.get('roundingMode');
 
 /**
  * Returns the `signDisplay` property of `self`
@@ -600,6 +672,7 @@ export const toNumberExtractor = (
 
 			const sign = yield* pipe(
 				signPart,
+				signReader(BigDecimal.Equivalence(mantissa, MBigDecimal.zero))
 				signReader(BigDecimal.Equivalence(mantissa, MBigDecimal.zero))
 			);
 
@@ -701,6 +774,7 @@ export const commaAndSpace: Type = make({
 	maximumFractionDigits: 3,
 	eNotationChars: ['E', 'e'],
 	scientificNotation: ScientificNotation.None,
+	roundingMode: MNumber.RoundingMode.HalfExpand,
 	roundingMode: MNumber.RoundingMode.HalfExpand,
 	signDisplay: SignDisplay.Auto
 });
@@ -901,6 +975,7 @@ export const withCeilRoundingMode = (self: Type): Type =>
 		...self,
 		id: self.id + 'WithCeilRoundingMode',
 		roundingMode: MNumber.RoundingMode.Ceil
+		roundingMode: MNumber.RoundingMode.Ceil
 	});
 
 /**
@@ -912,6 +987,7 @@ export const withFloorRoundingMode = (self: Type): Type =>
 	make({
 		...self,
 		id: self.id + 'WithFloorRoundingMode',
+		roundingMode: MNumber.RoundingMode.Floor
 		roundingMode: MNumber.RoundingMode.Floor
 	});
 
@@ -925,6 +1001,7 @@ export const withExpandRoundingMode = (self: Type): Type =>
 		...self,
 		id: self.id + 'WithExpandRoundingMode',
 		roundingMode: MNumber.RoundingMode.Expand
+		roundingMode: MNumber.RoundingMode.Expand
 	});
 
 /**
@@ -936,6 +1013,7 @@ export const withTruncRoundingMode = (self: Type): Type =>
 	make({
 		...self,
 		id: self.id + 'WithTruncRoundingMode',
+		roundingMode: MNumber.RoundingMode.Trunc
 		roundingMode: MNumber.RoundingMode.Trunc
 	});
 
@@ -949,6 +1027,7 @@ export const withHalfCeilRoundingMode = (self: Type): Type =>
 		...self,
 		id: self.id + 'WithHalfCeilRoundingMode',
 		roundingMode: MNumber.RoundingMode.HalfCeil
+		roundingMode: MNumber.RoundingMode.HalfCeil
 	});
 
 /**
@@ -961,6 +1040,7 @@ export const withHalfFloorRoundingMode = (self: Type): Type =>
 		...self,
 		id: self.id + 'WithHalfFloorRoundingMode',
 		roundingMode: MNumber.RoundingMode.HalfFloor
+		roundingMode: MNumber.RoundingMode.HalfFloor
 	});
 
 /**
@@ -972,6 +1052,7 @@ export const withHalfExpandRoundingMode = (self: Type): Type =>
 	make({
 		...self,
 		id: self.id + 'WithHalfExpandRoundingMode',
+		roundingMode: MNumber.RoundingMode.HalfExpand
 		roundingMode: MNumber.RoundingMode.HalfExpand
 	});
 
@@ -996,6 +1077,7 @@ export const withHalfEvenRoundingMode = (self: Type): Type =>
 	make({
 		...self,
 		id: self.id + 'WithHalfEvenRoundingMode',
+		roundingMode: MNumber.RoundingMode.halfEven
 		roundingMode: MNumber.RoundingMode.halfEven
 	});
 
