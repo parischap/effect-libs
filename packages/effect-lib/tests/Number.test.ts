@@ -73,33 +73,6 @@ describe('MNumber', () => {
 		});
 	});
 
-	describe('truncatedAndFollowingParts', () => {
-		const truncatedAndFollowingParts = MNumber.truncatedAndFollowingParts(1);
-		it('Positive number, first following digit < 5', () => {
-			const [truncatedPart, followingPart] = truncatedAndFollowingParts(5.44);
-			TEUtils.assertTrue(pipe(truncatedPart, MNumber.equals(5.4)));
-			TEUtils.assertTrue(pipe(followingPart, MNumber.equals(0.04)));
-		});
-
-		it('Positive number, first following digit >= 5', () => {
-			const [truncatedPart, followingPart] = truncatedAndFollowingParts(5.45);
-			TEUtils.assertTrue(pipe(truncatedPart, MNumber.equals(5.4)));
-			TEUtils.assertTrue(pipe(followingPart, MNumber.equals(0.05)));
-		});
-
-		it('Negative number, first following digit < 5', () => {
-			const [truncatedPart, followingPart] = truncatedAndFollowingParts(-5.44);
-			TEUtils.assertTrue(pipe(truncatedPart, MNumber.equals(-5.4)));
-			TEUtils.assertTrue(pipe(followingPart, MNumber.equals(-0.04)));
-		});
-
-		it('Negative number, first following digit >= 5', () => {
-			const [truncatedPart, followingPart] = truncatedAndFollowingParts(-5.45);
-			TEUtils.assertTrue(pipe(truncatedPart, MNumber.equals(-5.4)));
-			TEUtils.assertTrue(pipe(followingPart, MNumber.equals(-0.05)));
-		});
-	});
-
 	describe('isMultipleOf', () => {
 		it('Passing', () => {
 			TEUtils.assertTrue(pipe(27, MNumber.isMultipleOf(3)));
@@ -117,6 +90,81 @@ describe('MNumber', () => {
 
 		it('Negative shift', () => {
 			TEUtils.strictEqual(pipe(504, MNumber.shift(-2)), 5.04);
+		});
+	});
+
+	describe('round', () => {
+		it('Ceil', () => {
+			const round = MNumber.round({ precision: 3, roundingMode: MNumber.RoundingMode.Ceil });
+			TEUtils.assertTrue(pipe(0.456, round, MNumber.equals(0.456)));
+			TEUtils.assertTrue(pipe(0.4561, round, MNumber.equals(0.457)));
+			TEUtils.assertTrue(pipe(-0.4561, round, MNumber.equals(-0.456)));
+			TEUtils.assertTrue(pipe(-0.456, round, MNumber.equals(-0.456)));
+		});
+
+		it('Floor', () => {
+			const round = MNumber.round({ precision: 3, roundingMode: MNumber.RoundingMode.Floor });
+			TEUtils.assertTrue(pipe(0.456, round, MNumber.equals(0.456)));
+			TEUtils.assertTrue(pipe(0.4561, round, MNumber.equals(0.456)));
+			TEUtils.assertTrue(pipe(-0.4561, round, MNumber.equals(-0.457)));
+			TEUtils.assertTrue(pipe(-0.456, round, MNumber.equals(-0.456)));
+		});
+
+		it('Expand', () => {
+			const round = MNumber.round({ precision: 3, roundingMode: MNumber.RoundingMode.Expand });
+			TEUtils.assertTrue(pipe(0.456, round, MNumber.equals(0.456)));
+			TEUtils.assertTrue(pipe(0.4561, round, MNumber.equals(0.457)));
+			TEUtils.assertTrue(pipe(-0.4561, round, MNumber.equals(-0.457)));
+			TEUtils.assertTrue(pipe(-0.456, round, MNumber.equals(-0.456)));
+		});
+
+		it('Trunc', () => {
+			const round = MNumber.round({ precision: 3, roundingMode: MNumber.RoundingMode.Trunc });
+			TEUtils.assertTrue(pipe(0.456, round, MNumber.equals(0.456)));
+			TEUtils.assertTrue(pipe(0.4561, round, MNumber.equals(0.456)));
+			TEUtils.assertTrue(pipe(-0.4561, round, MNumber.equals(-0.456)));
+			TEUtils.assertTrue(pipe(-0.456, round, MNumber.equals(-0.456)));
+		});
+
+		it('HalfCeil', () => {
+			const round = MNumber.round({ precision: 3, roundingMode: MNumber.RoundingMode.HalfCeil });
+			TEUtils.assertTrue(pipe(0.4565, round, MNumber.equals(0.457)));
+			TEUtils.assertTrue(pipe(0.4564, round, MNumber.equals(0.456)));
+			TEUtils.assertTrue(pipe(-0.4565, round, MNumber.equals(-0.456)));
+			TEUtils.assertTrue(pipe(-0.4566, round, MNumber.equals(-0.457)));
+		});
+
+		it('HalfFloor', () => {
+			const round = MNumber.round({ precision: 3, roundingMode: MNumber.RoundingMode.HalfFloor });
+			TEUtils.assertTrue(pipe(0.4565, round, MNumber.equals(0.456)));
+			TEUtils.assertTrue(pipe(0.4566, round, MNumber.equals(0.457)));
+			TEUtils.assertTrue(pipe(-0.4565, round, MNumber.equals(-0.457)));
+			TEUtils.assertTrue(pipe(-0.4564, round, MNumber.equals(-0.456)));
+		});
+
+		it('HalfExpand', () => {
+			const round = MNumber.round({ precision: 3, roundingMode: MNumber.RoundingMode.HalfExpand });
+			TEUtils.assertTrue(pipe(0.4565, round, MNumber.equals(0.457)));
+			TEUtils.assertTrue(pipe(0.4564, round, MNumber.equals(0.456)));
+			TEUtils.assertTrue(pipe(-0.4565, round, MNumber.equals(-0.457)));
+			TEUtils.assertTrue(pipe(-0.4564, round, MNumber.equals(-0.456)));
+		});
+
+		it('HalfEven', () => {
+			const round = MNumber.round({ precision: 3, roundingMode: MNumber.RoundingMode.HalfEven });
+			TEUtils.assertTrue(pipe(0.4566, round, MNumber.equals(0.457)));
+			TEUtils.assertTrue(pipe(0.4565, round, MNumber.equals(0.456)));
+			TEUtils.assertTrue(pipe(0.4564, round, MNumber.equals(0.456)));
+			TEUtils.assertTrue(pipe(-0.4566, round, MNumber.equals(-0.457)));
+			TEUtils.assertTrue(pipe(-0.4565, round, MNumber.equals(-0.456)));
+			TEUtils.assertTrue(pipe(-0.4564, round, MNumber.equals(-0.456)));
+
+			TEUtils.assertTrue(pipe(0.4576, round, MNumber.equals(0.458)));
+			TEUtils.assertTrue(pipe(0.4575, round, MNumber.equals(0.458)));
+			TEUtils.assertTrue(pipe(0.4574, round, MNumber.equals(0.457)));
+			TEUtils.assertTrue(pipe(-0.4576, round, MNumber.equals(-0.458)));
+			TEUtils.assertTrue(pipe(-0.4575, round, MNumber.equals(-0.458)));
+			TEUtils.assertTrue(pipe(-0.4574, round, MNumber.equals(-0.457)));
 		});
 	});
 });
