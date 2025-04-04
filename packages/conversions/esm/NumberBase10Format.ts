@@ -1,7 +1,11 @@
-/** This module implements conversions from number to string and string to number in base-10 notation */
+/**
+ * This module implements conversions from number to string and string to number in base-10
+ * notation.
+ */
 
 import {
 	MBigDecimal,
+	MBrand,
 	MFunction,
 	MInspectable,
 	MMatch,
@@ -13,6 +17,7 @@ import {
 } from '@parischap/effect-lib';
 import {
 	BigDecimal,
+	BigInt,
 	Equal,
 	Equivalence,
 	flow,
@@ -80,51 +85,109 @@ export enum SignDisplay {
 }
 
 /**
- * Possible rounding modes - Only used when converting from number to string
+ * Namespace for possible sign display options
  *
  * @category Models
  */
-export enum RoundingMode {
-	/** Round toward +∞. Positive values round up. Negative values round "more positive" */
-	Ceil = 0,
-	/** Round toward -∞. Positive values round down. Negative values round "more negative" */
-	Floor = 1,
+export namespace SignDisplay {
 	/**
-	 * Round away from 0. The magnitude of the value is always increased by rounding. Positive values
-	 * round up. Negative values round "more negative"
+	 * Type of a SignDisplay Reader
+	 *
+	 * @category Models
 	 */
-	Expand = 2,
+	export interface Reader {
+		(hasNullMantissa: boolean): (sign: string) => Option.Option<-1 | 1>;
+	}
+
+	const isPlusSign: Predicate.Predicate<string> = MFunction.strictEquals('+');
+	const isMinusSign: Predicate.Predicate<string> = MFunction.strictEquals('-');
+	const hasASign = Option.liftPredicate(String.isNonEmpty);
+	const hasNoSign = Option.liftPredicate<string, string>(String.isEmpty);
+	const hasNotPlusSign = Option.liftPredicate(Predicate.not(isPlusSign));
+
 	/**
-	 * Round toward 0. The magnitude of the value is always reduced by rounding. Positive values round
-	 * down. Negative values round "less negative"
+	 * Builds a `Reader` implementing `self`
+	 *
+	 * @category Destructors
 	 */
-	Trunc = 3,
+	export const toReader: MTypes.OneArgFunction<SignDisplay, Reader> = flow(
+		MMatch.make,
+		MMatch.whenIs(SignDisplay.Auto, () => () => hasNotPlusSign),
+		MMatch.whenIs(SignDisplay.Always, () => () => hasASign),
+		MMatch.whenIs(SignDisplay.ExceptZero, () =>
+			flow(
+				MMatch.make<boolean>,
+				MMatch.whenIs(true, Function.constant(hasNoSign)),
+				MMatch.orElse(Function.constant(hasASign))
+			)
+		),
+		MMatch.whenIs(SignDisplay.Negative, () =>
+			flow(
+				MMatch.make<boolean>,
+				MMatch.whenIs(true, Function.constant(hasNoSign)),
+				MMatch.orElse(Function.constant(hasNotPlusSign))
+			)
+		),
+		MMatch.whenIs(SignDisplay.Never, () => () => hasNoSign),
+		MMatch.exhaustive,
+		Function.compose(
+			Function.compose(
+				Option.map(
+					flow(
+						Option.liftPredicate(isMinusSign),
+						Option.as(-1 as const),
+						Option.getOrElse(Function.constant(1 as const))
+					)
+				)
+			)
+		)
+	);
+
 	/**
-	 * Ties toward +∞. Values above the half-increment round like "ceil" (towards +∞), and below like
-	 * "floor" (towards -∞). On the half-increment, values round like "ceil"
+	 * Type of a SignDisplay Writer
+	 *
+	 * @category Models
 	 */
-	HalfCeil = 4,
+	export interface Writer {
+		({ sign, isZero }: { readonly sign: -1 | 1; readonly isZero: boolean }): '+' | '-' | '';
+	}
+
 	/**
-	 * Ties toward -∞. Values above the half-increment round like "ceil" (towards +∞), and below like
-	 * "floor" (towards -∞). On the half-increment, values round like "floor"
+	 * Builds a `Writer` implementing `self`
+	 *
+	 * @category Destructors
 	 */
-	HalfFloor = 5,
-	/**
-	 * Ties away from 0. Values above the half-increment round like "expand" (away from zero), and
-	 * below like "trunc" (towards 0). On the half-increment, values round like "expand"
-	 */
-	HalfExpand = 6,
-	/**
-	 * Ties toward 0. Values above the half-increment round like "expand" (away from zero), and below
-	 * like "trunc" (towards 0). On the half-increment, values round like "trunc"
-	 */
-	halfTrunc = 7,
-	/**
-	 * Ties towards the nearest even integer. Values above the half-increment round like "expand"
-	 * (away from zero), and below like "trunc" (towards 0). On the half-increment values round
-	 * towards the nearest even digit
-	 */
-	halfEven = 8
+	export const toWriter: MTypes.OneArgFunction<SignDisplay, Writer> = flow(
+		MMatch.make,
+		MMatch.whenIs(
+			SignDisplay.Auto,
+			(): Writer =>
+				({ sign }) =>
+					sign === -1 ? '-' : ''
+		),
+		MMatch.whenIs(
+			SignDisplay.Always,
+			(): Writer =>
+				({ sign }) =>
+					sign === -1 ? '-' : '+'
+		),
+		MMatch.whenIs(
+			SignDisplay.ExceptZero,
+			(): Writer =>
+				({ sign, isZero }) =>
+					isZero ? ''
+					: sign === -1 ? '-'
+					: '+'
+		),
+		MMatch.whenIs(
+			SignDisplay.Negative,
+			(): Writer =>
+				({ sign, isZero }) =>
+					isZero || sign === 1 ? '' : '-'
+		),
+		MMatch.whenIs(SignDisplay.Never, (): Writer => MFunction.constEmptyString),
+		MMatch.exhaustive
+	);
 }
 
 /**
@@ -172,6 +235,91 @@ export enum ScientificNotation {
 	Engineering = 3
 }
 
+/**
+ * Namespace for possible scientific notation options
+ *
+ * @category Models
+ */
+export namespace ScientificNotation {
+	/**
+	 * Type of a ScientificNotation Reader
+	 *
+	 * @category Models
+	 */
+	export interface Reader {
+		(exponent: string): Option.Option<number>;
+	}
+
+	const stringToExponentOption = flow(
+		Option.liftPredicate(String.isNonEmpty),
+		Option.map(MNumber.unsafeFromString),
+		Option.orElseSome(Function.constant(0))
+	);
+
+	/**
+	 * Builds a `Reader` implementing `self`
+	 *
+	 * @category Destructors
+	 */
+	export const toReader: MTypes.OneArgFunction<ScientificNotation, Reader> = flow(
+		MMatch.make,
+		MMatch.whenIs(ScientificNotation.None, () =>
+			flow(Option.liftPredicate(String.isEmpty), Option.as(0))
+		),
+		MMatch.whenIsOr(
+			ScientificNotation.Standard,
+			ScientificNotation.Normalized,
+			() => stringToExponentOption
+		),
+		MMatch.whenIs(ScientificNotation.Engineering, () =>
+			flow(stringToExponentOption, Option.filter(MNumber.isMultipleOf(3)))
+		),
+		MMatch.exhaustive
+	);
+
+	/**
+	 * Type of a MantissaIntegerPartChecker
+	 *
+	 * @category Models
+	 */
+	export interface MantissaIntegerPartChecker {
+		(mantissaIntegerPart: BigDecimal.BigDecimal): Option.Option<BigDecimal.BigDecimal>;
+	}
+
+	/**
+	 * Builds a `Reader` implementing `self`
+	 *
+	 * @category Destructors
+	 */
+	export const toMantissaIntegerPartChecker: MTypes.OneArgFunction<
+		ScientificNotation,
+		MantissaIntegerPartChecker
+	> = flow(
+		MMatch.make,
+		MMatch.whenIsOr(
+			ScientificNotation.None,
+			ScientificNotation.Standard,
+			() => Option.some<BigDecimal.BigDecimal>
+		),
+		MMatch.whenIs(ScientificNotation.Normalized, () =>
+			Option.liftPredicate(
+				Predicate.and(
+					BigDecimal.greaterThanOrEqualTo(BigDecimal.unsafeFromNumber(1)),
+					BigDecimal.lessThan(BigDecimal.unsafeFromNumber(10))
+				)
+			)
+		),
+		MMatch.whenIs(ScientificNotation.Engineering, () =>
+			Option.liftPredicate(
+				Predicate.and(
+					BigDecimal.greaterThanOrEqualTo(BigDecimal.unsafeFromNumber(1)),
+					BigDecimal.lessThan(BigDecimal.unsafeFromNumber(1000))
+				)
+			)
+		),
+		MMatch.exhaustive
+	);
+}
 /**
  * Type that represents a NumberBase10Format.
  *
@@ -247,7 +395,7 @@ export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable 
 	readonly scientificNotation: ScientificNotation;
 
 	/** Rounding mode options. See RoundingMode */
-	readonly roundingMode: RoundingMode;
+	readonly roundingMode: MNumber.RoundingMode;
 
 	/** Sign display options. See SignDisplay */
 	readonly signDisplay: SignDisplay;
@@ -364,7 +512,8 @@ export const scientificNotation: MTypes.OneArgFunction<Type, ScientificNotation>
  *
  * @category Destructors
  */
-export const roundingMode: MTypes.OneArgFunction<Type, RoundingMode> = Struct.get('roundingMode');
+export const roundingMode: MTypes.OneArgFunction<Type, MNumber.RoundingMode> =
+	Struct.get('roundingMode');
 
 /**
  * Returns the `signDisplay` property of `self`
@@ -397,94 +546,12 @@ export const toNumberExtractor = (
 		4
 	);
 
-	const isPlusSign: Predicate.Predicate<string> = MFunction.strictEquals('+');
-	const isMinusSign: Predicate.Predicate<string> = MFunction.strictEquals('-');
-	const hasASign = Option.liftPredicate(String.isNonEmpty);
-	const hasNoSign = Option.liftPredicate<string, string>(String.isEmpty);
-	const hasNotPlusSign = Option.liftPredicate(Predicate.not(isPlusSign));
+	const signReader = SignDisplay.toReader(self.signDisplay);
 
-	const signTransformer = pipe(
-		self.signDisplay,
-		MMatch.make,
-		MMatch.whenIs(SignDisplay.Auto, () => () => hasNotPlusSign),
-		MMatch.whenIs(SignDisplay.Always, () => () => hasASign),
-		MMatch.whenIs(SignDisplay.ExceptZero, () =>
-			flow(
-				MMatch.make<boolean>,
-				MMatch.whenIs(true, Function.constant(hasNoSign)),
-				MMatch.orElse(Function.constant(hasASign))
-			)
-		),
-		MMatch.whenIs(SignDisplay.Negative, () =>
-			flow(
-				MMatch.make<boolean>,
-				MMatch.whenIs(true, Function.constant(hasNoSign)),
-				MMatch.orElse(Function.constant(hasNotPlusSign))
-			)
-		),
-		MMatch.whenIs(SignDisplay.Never, () => () => hasNoSign),
-		MMatch.exhaustive,
-		Function.compose(
-			Function.compose(
-				Option.map(
-					flow(
-						Option.liftPredicate(isMinusSign),
-						Option.as(-1 as const),
-						Option.getOrElse(Function.constant(1 as const))
-					)
-				)
-			)
-		)
-	);
+	const exponentReader = ScientificNotation.toReader(self.scientificNotation);
 
-	const stringToExponentOption = flow(
-		Option.liftPredicate(String.isNonEmpty),
-		Option.map(MNumber.unsafeFromString),
-		Option.orElseSome(Function.constant(0))
-	);
-
-	const exponentTransformer = pipe(
-		self.scientificNotation,
-		MMatch.make,
-		MMatch.whenIs(ScientificNotation.None, () =>
-			flow(Option.liftPredicate(String.isEmpty), Option.as(0))
-		),
-		MMatch.whenIsOr(
-			ScientificNotation.Standard,
-			ScientificNotation.Normalized,
-			() => stringToExponentOption
-		),
-		MMatch.whenIs(ScientificNotation.Engineering, () =>
-			flow(stringToExponentOption, Option.filter(MNumber.isMultipleOf(3)))
-		),
-		MMatch.exhaustive
-	);
-
-	const mantissaIntegerPartChecker = pipe(
-		self.scientificNotation,
-		MMatch.make,
-		MMatch.whenIsOr(
-			ScientificNotation.None,
-			ScientificNotation.Standard,
-			() => Option.some<BigDecimal.BigDecimal>
-		),
-		MMatch.whenIs(ScientificNotation.Normalized, () =>
-			Option.liftPredicate(
-				Predicate.and(
-					BigDecimal.greaterThanOrEqualTo(BigDecimal.unsafeFromNumber(1)),
-					BigDecimal.lessThan(BigDecimal.unsafeFromNumber(10))
-				)
-			)
-		),
-		MMatch.whenIs(ScientificNotation.Engineering, () =>
-			Option.liftPredicate(
-				Predicate.and(
-					BigDecimal.greaterThanOrEqualTo(BigDecimal.unsafeFromNumber(1)),
-					BigDecimal.lessThan(BigDecimal.unsafeFromNumber(1000))
-				)
-			)
-		),
-		MMatch.exhaustive
+	const mantissaIntegerPartChecker = ScientificNotation.toMantissaIntegerPartChecker(
+		self.scientificNotation
 	);
 
 	return (text) =>
@@ -533,10 +600,10 @@ export const toNumberExtractor = (
 
 			const sign = yield* pipe(
 				signPart,
-				signTransformer(BigDecimal.Equivalence(mantissa, MBigDecimal.zero))
+				signReader(BigDecimal.Equivalence(mantissa, MBigDecimal.zero))
 			);
 
-			const exponent = yield* exponentTransformer(exponentPart);
+			const exponent = yield* exponentReader(exponentPart);
 
 			return Tuple.make(
 				pipe(
@@ -575,6 +642,50 @@ export const toNumberReader = (
 };
 
 /**
+ * Returns a function that tries to write `number` respecting the options represented by `self`. If
+ * successful, that function returns a `some` of `number` converted to a string. Otherwise, it
+ * returns a `none`. `number` can be of type number or BigDecimal for better accuracy. There is a
+ * difference between number and BigDecimal (and bigint) regarding the sign of 0. In Javascript,
+ * Object.is(0,-0) is false whereas Object.is(0n,-0n) is true. So if the sign of zero is important
+ * to you, prefer passing a number to the function. `0` as a BigDecimal will always be interpreted
+ * as a positive `0` as we have no means of knowing if it is negative or positive.
+ *
+ * @category Destructors
+ */
+export const toNumberWriter = (
+	self: Type
+): MTypes.OneArgFunction<BigDecimal.BigDecimal | MBrand.Real.Type, Option.Option<string>> => {
+	const round =
+		self.maximumFractionDigits === +Infinity ?
+			Function.identity
+		:	MBigDecimal.round({
+				precision: self.maximumFractionDigits,
+				roundingMode: self.roundingMode
+			});
+	const signWriter = SignDisplay.toWriter(self.signDisplay);
+	return (number) =>
+		Option.gen(function* () {
+			const [sign, selfAsBigDecimal] =
+				MTypes.isNumber(number) ?
+					Tuple.make(
+						number < 0 || Object.is(-0, number) ? (-1 as const) : (1 as const),
+						BigDecimal.unsafeFromNumber(number)
+					)
+				:	Tuple.make(number.value < 0 ? (-1 as const) : (1 as const), number);
+
+			const rounded = round(selfAsBigDecimal);
+			const [truncatedPart, followingPart] = pipe(
+				rounded,
+				MBigDecimal.truncatedAndFollowingParts()
+			);
+			const signAsString = signWriter({ sign, isZero: BigDecimal.isZero(rounded) });
+			const bounderIntegerPart = yield* BigInt.toNumber(integerPart.value);
+
+			return '';
+		});
+};
+
+/**
  * NumberBase10Format instance that uses a comma as fractional separator and a space as thousand
  * separator. Used in countries like France, French-speaking Canada, French-speaking Belgium,
  * Denmark, Finland, Sweden...
@@ -590,7 +701,7 @@ export const commaAndSpace: Type = make({
 	maximumFractionDigits: 3,
 	eNotationChars: ['E', 'e'],
 	scientificNotation: ScientificNotation.None,
-	roundingMode: RoundingMode.HalfExpand,
+	roundingMode: MNumber.RoundingMode.HalfExpand,
 	signDisplay: SignDisplay.Auto
 });
 
@@ -789,7 +900,7 @@ export const withCeilRoundingMode = (self: Type): Type =>
 	make({
 		...self,
 		id: self.id + 'WithCeilRoundingMode',
-		roundingMode: RoundingMode.Ceil
+		roundingMode: MNumber.RoundingMode.Ceil
 	});
 
 /**
@@ -801,7 +912,7 @@ export const withFloorRoundingMode = (self: Type): Type =>
 	make({
 		...self,
 		id: self.id + 'WithFloorRoundingMode',
-		roundingMode: RoundingMode.Floor
+		roundingMode: MNumber.RoundingMode.Floor
 	});
 
 /**
@@ -813,7 +924,7 @@ export const withExpandRoundingMode = (self: Type): Type =>
 	make({
 		...self,
 		id: self.id + 'WithExpandRoundingMode',
-		roundingMode: RoundingMode.Expand
+		roundingMode: MNumber.RoundingMode.Expand
 	});
 
 /**
@@ -825,7 +936,7 @@ export const withTruncRoundingMode = (self: Type): Type =>
 	make({
 		...self,
 		id: self.id + 'WithTruncRoundingMode',
-		roundingMode: RoundingMode.Trunc
+		roundingMode: MNumber.RoundingMode.Trunc
 	});
 
 /**
@@ -837,7 +948,7 @@ export const withHalfCeilRoundingMode = (self: Type): Type =>
 	make({
 		...self,
 		id: self.id + 'WithHalfCeilRoundingMode',
-		roundingMode: RoundingMode.HalfCeil
+		roundingMode: MNumber.RoundingMode.HalfCeil
 	});
 
 /**
@@ -849,7 +960,7 @@ export const withHalfFloorRoundingMode = (self: Type): Type =>
 	make({
 		...self,
 		id: self.id + 'WithHalfFloorRoundingMode',
-		roundingMode: RoundingMode.HalfFloor
+		roundingMode: MNumber.RoundingMode.HalfFloor
 	});
 
 /**
@@ -861,7 +972,7 @@ export const withHalfExpandRoundingMode = (self: Type): Type =>
 	make({
 		...self,
 		id: self.id + 'WithHalfExpandRoundingMode',
-		roundingMode: RoundingMode.HalfExpand
+		roundingMode: MNumber.RoundingMode.HalfExpand
 	});
 
 /**
@@ -873,7 +984,7 @@ export const withHalfTruncRoundingMode = (self: Type): Type =>
 	make({
 		...self,
 		id: self.id + 'WithHalfTruncRoundingMode',
-		roundingMode: RoundingMode.halfTrunc
+		roundingMode: MNumber.RoundingMode.HalfTrunc
 	});
 
 /**
@@ -885,7 +996,7 @@ export const withHalfEvenRoundingMode = (self: Type): Type =>
 	make({
 		...self,
 		id: self.id + 'WithHalfEvenRoundingMode',
-		roundingMode: RoundingMode.halfEven
+		roundingMode: MNumber.RoundingMode.halfEven
 	});
 
 /**
