@@ -1,5 +1,6 @@
 export * as MArray from './Array.js';
 export * as MBigDecimal from './BigDecimal.js';
+export * as MBigInt from './BigInt.js';
 export * as MBrand from './Brand.js';
 export * as MCache from './Cache.js';
 export * as MChunk from './Chunk.js';

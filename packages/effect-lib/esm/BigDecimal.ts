@@ -1,6 +1,7 @@
 /** A simple extension to the Effect BigDecimal module */
 
 import { BigDecimal, pipe, Tuple } from 'effect';
+import * as MBigInt from './BigInt.js';
 import * as MNumber from './Number.js';
 import * as MTypes from './types.js';
 
@@ -78,7 +79,7 @@ export const round = ({
 			truncatedShiftedSelf,
 			BigDecimal.sum(
 				pipe(
-					{ firstFollowingDigit, isEven: truncatedShiftedSelf.value % 2n === 0n },
+					{ firstFollowingDigit, isEven: MBigInt.isEven(truncatedShiftedSelf.value) },
 					correcter,
 					BigDecimal.unsafeFromNumber
 				)
