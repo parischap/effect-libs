@@ -2,6 +2,13 @@
  * This module implements conversions from number to string and string to number in base-10
  * notation.
  */
+<<<<<<< HEAD
+=======
+/**
+ * This module implements conversions from number to string and string to number in base-10
+ * notation.
+ */
+>>>>>>> 6f8a6555bca0f0a61a4aef7918cdddb00e0d8efc
 
 import {
 	MBigDecimal,
