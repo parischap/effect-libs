@@ -1149,7 +1149,7 @@ export namespace Number {
 					const [dec, frac] = pipe(
 						absInput,
 						MNumber.shift(-exponent),
-						MNumber.integerAndFractionalParts,
+						MNumber.truncatedAndFollowingParts,
 						Tuple.mapBoth({
 							onFirst: flow(
 								MString.fromNonNullablePrimitive,
