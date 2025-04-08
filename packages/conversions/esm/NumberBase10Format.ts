@@ -5,19 +5,23 @@
 
 import {
 	MBigDecimal,
+	MBigInt,
 	MBrand,
 	MFunction,
 	MInspectable,
 	MMatch,
 	MNumber,
 	MPipeable,
+	MPredicate,
 	MRegExpString,
 	MString,
 	MTypes
 } from '@parischap/effect-lib';
 import {
+	Array,
 	BigDecimal,
 	BigInt,
+	Either,
 	Equal,
 	Equivalence,
 	flow,
@@ -86,19 +90,52 @@ export enum SignDisplay {
 
 export namespace SignDisplay {
 	/**
+	 * Type that represents the possible strings for a sign
+	 *
+	 * @category Models
+	 */
+	export type SignString = '-' | '+' | '';
+
+	/**
+	 * Type that represents the possible values for a sign
+	 *
+	 * @category Models
+	 */
+	export type SignValue = -1 | 1;
+
+	/**
 	 * Type of a SignDisplay Reader
 	 *
 	 * @category Models
 	 */
-	export interface Reader {
-		(hasNullMantissa: boolean): (sign: string) => Option.Option<-1 | 1>;
-	}
+	export interface Reader
+		extends MTypes.OneArgFunction<
+			{ readonly sign: SignString; readonly isZero: boolean },
+			Option.Option<SignValue>
+		> {}
 
-	const isPlusSign: Predicate.Predicate<string> = MFunction.strictEquals('+');
-	const isMinusSign: Predicate.Predicate<string> = MFunction.strictEquals('-');
-	const hasASign = Option.liftPredicate(String.isNonEmpty);
-	const hasNoSign = Option.liftPredicate<string, string>(String.isEmpty);
-	const hasNotPlusSign = Option.liftPredicate(Predicate.not(isPlusSign));
+	const isPlusSign: Predicate.Predicate<SignString> = MFunction.strictEquals('+');
+	const isMinusSign: Predicate.Predicate<SignString> = MFunction.strictEquals('-');
+	const signStringToSignValue: MTypes.OneArgFunction<SignString, SignValue> = flow(
+		Option.liftPredicate(isMinusSign),
+		Option.as(-1 as const),
+		Option.getOrElse(Function.constant(1 as const))
+	);
+	const hasASign: Reader = flow(
+		Struct.get('sign'),
+		Option.liftPredicate(String.isNonEmpty),
+		Option.map(signStringToSignValue)
+	);
+	const hasNoSign: Reader = flow(
+		Struct.get('sign'),
+		Option.liftPredicate(String.isEmpty),
+		Option.map(signStringToSignValue)
+	);
+	const hasNotPlusSign: Reader = flow(
+		Struct.get('sign'),
+		Option.liftPredicate(Predicate.not(isPlusSign)),
+		Option.map(signStringToSignValue)
+	);
 
 	/**
 	 * Builds a `Reader` implementing `self`
@@ -107,35 +144,28 @@ export namespace SignDisplay {
 	 */
 	export const toReader: MTypes.OneArgFunction<SignDisplay, Reader> = flow(
 		MMatch.make,
-		MMatch.whenIs(SignDisplay.Auto, () => () => hasNotPlusSign),
-		MMatch.whenIs(SignDisplay.Always, () => () => hasASign),
-		MMatch.whenIs(SignDisplay.ExceptZero, () =>
-			flow(
-				MMatch.make<boolean>,
-				MMatch.whenIs(true, Function.constant(hasNoSign)),
-				MMatch.orElse(Function.constant(hasASign))
-			)
-		),
-		MMatch.whenIs(SignDisplay.Negative, () =>
-			flow(
-				MMatch.make<boolean>,
-				MMatch.whenIs(true, Function.constant(hasNoSign)),
-				MMatch.orElse(Function.constant(hasNotPlusSign))
-			)
-		),
-		MMatch.whenIs(SignDisplay.Never, () => () => hasNoSign),
-		MMatch.exhaustive,
-		Function.compose(
-			Function.compose(
-				Option.map(
-					flow(
-						Option.liftPredicate(isMinusSign),
-						Option.as(-1 as const),
-						Option.getOrElse(Function.constant(1 as const))
-					)
+		MMatch.whenIs(SignDisplay.Auto, Function.constant(hasNotPlusSign)),
+		MMatch.whenIs(SignDisplay.Always, Function.constant(hasASign)),
+		MMatch.whenIs(
+			SignDisplay.ExceptZero,
+			(): Reader =>
+				flow(
+					MMatch.make,
+					MMatch.when(MPredicate.struct({ isZero: Function.identity }), hasNoSign),
+					MMatch.orElse(hasASign)
 				)
-			)
-		)
+		),
+		MMatch.whenIs(
+			SignDisplay.Negative,
+			(): Reader =>
+				flow(
+					MMatch.make,
+					MMatch.when(MPredicate.struct({ isZero: Function.identity }), hasNoSign),
+					MMatch.orElse(hasNotPlusSign)
+				)
+		),
+		MMatch.whenIs(SignDisplay.Never, Function.constant(hasNoSign)),
+		MMatch.exhaustive
 	);
 
 	/**
@@ -143,9 +173,11 @@ export namespace SignDisplay {
 	 *
 	 * @category Models
 	 */
-	export interface Writer {
-		({ sign, isZero }: { readonly sign: -1 | 1; readonly isZero: boolean }): '+' | '-' | '';
-	}
+	export interface Writer
+		extends MTypes.OneArgFunction<
+			{ readonly sign: SignValue; readonly isZero: boolean },
+			SignString
+		> {}
 
 	/**
 	 * Builds a `Writer` implementing `self`
@@ -207,25 +239,23 @@ export enum ScientificNotation {
 
 	/**
 	 * Conversion from number to string: scientific notation is used so that the absolute value of the
-	 * mantissa m fulfills 1 ≤ |m| < 10. The exponent part is only displayed if the exponent is
-	 * different from 0.
+	 * mantissa m fulfills 1 ≤ |m| < 10. Number 0 will be displayed as `0e0`.
 	 *
-	 * Conversion from string to number: the conversion will fail if the absolute value of the
-	 * mantissa m does not fulfill 1 ≤ |m| < 10. Scientific notation may be used but is not mandatory.
-	 * A string that does not contain a scientific notation is deemed equivalent to a string with a
-	 * null exponent.
+	 * Conversion from string to number: the conversion will fail if the mantissa is not null and its
+	 * value m does not fulfill 1 ≤ |m| < 10. Scientific notation may be used but is not mandatory. A
+	 * string that does not contain a scientific notation is deemed equivalent to a string with a null
+	 * exponent.
 	 */
 	Normalized = 2,
 
 	/**
 	 * Conversion from number to string: scientific notation is used so that the mantissa m fulfills 1
-	 * ≤ |m| < 1000 and the exponent is a multiple of 3. The exponent part is only displayed if the
-	 * exponent is different from 0.
+	 * ≤ |m| < 1000 and the exponent is a multiple of 3. Number 0 will be displayed as `0e0`.
 	 *
-	 * Conversion from string to number: the conversion will fail if the absolute value of the
-	 * mantissa m does not fulfill 1 ≤ |m| < 1000 or if the exponent is not a multiple of 3.
-	 * Scientific notation may be used but is not mandatory. A string that does not contain a
-	 * scientific notation is deemed equivalent to a string with a null exponent.
+	 * Conversion from string to number: the conversion will fail if the mantissa is not null and its
+	 * value m does not fulfill 1 ≤ |m| < 1000 or if the exponent is not a multiple of 3. Scientific
+	 * notation may be used but is not mandatory. A string that does not contain a scientific notation
+	 * is deemed equivalent to a string with a null exponent.
 	 */
 	Engineering = 3
 }
@@ -241,11 +271,9 @@ export namespace ScientificNotation {
 	 *
 	 * @category Models
 	 */
-	export interface Reader {
-		(exponent: string): Option.Option<number>;
-	}
+	export interface Reader extends MTypes.OneArgFunction<string, Option.Option<number>> {}
 
-	const stringToExponentOption = flow(
+	const _stringToExponent = flow(
 		Option.liftPredicate(String.isNonEmpty),
 		Option.map(MNumber.unsafeFromString),
 		Option.orElseSome(Function.constant(0))
@@ -264,56 +292,102 @@ export namespace ScientificNotation {
 		MMatch.whenIsOr(
 			ScientificNotation.Standard,
 			ScientificNotation.Normalized,
-			() => stringToExponentOption
+			Function.constant(_stringToExponent)
 		),
 		MMatch.whenIs(ScientificNotation.Engineering, () =>
-			flow(stringToExponentOption, Option.filter(MNumber.isMultipleOf(3)))
+			flow(_stringToExponent, Option.filter(MNumber.isMultipleOf(3)))
 		),
 		MMatch.exhaustive
 	);
 
 	/**
-	 * Type of a MantissaIntegerPartChecker
+	 * Type of a MantissaChecker
 	 *
 	 * @category Models
 	 */
-	export interface MantissaIntegerPartChecker {
-		(mantissaIntegerPart: BigDecimal.BigDecimal): Option.Option<BigDecimal.BigDecimal>;
-	}
+	export interface MantissaChecker
+		extends MTypes.OneArgFunction<BigDecimal.BigDecimal, Option.Option<BigDecimal.BigDecimal>> {}
+
+	const zeroOrinRange = (rangeTop: number): Predicate.Predicate<BigDecimal.BigDecimal> =>
+		Predicate.or(
+			BigDecimal.isZero,
+			Predicate.and(
+				BigDecimal.greaterThanOrEqualTo(BigDecimal.unsafeFromNumber(1)),
+				BigDecimal.lessThan(BigDecimal.unsafeFromNumber(rangeTop))
+			)
+		);
+
+	const zeroOrinOneToTenRange = zeroOrinRange(10);
+	const zeroOrinOneToOneThousandRange = zeroOrinRange(1000);
 
 	/**
 	 * Builds a `Reader` implementing `self`
 	 *
 	 * @category Destructors
 	 */
-	export const toMantissaIntegerPartChecker: MTypes.OneArgFunction<
-		ScientificNotation,
-		MantissaIntegerPartChecker
-	> = flow(
+	export const toMantissaChecker: MTypes.OneArgFunction<ScientificNotation, MantissaChecker> = flow(
 		MMatch.make,
 		MMatch.whenIsOr(
 			ScientificNotation.None,
 			ScientificNotation.Standard,
 			() => Option.some<BigDecimal.BigDecimal>
 		),
-		MMatch.whenIs(ScientificNotation.Normalized, () =>
-			Option.liftPredicate(
-				Predicate.and(
-					BigDecimal.greaterThanOrEqualTo(BigDecimal.unsafeFromNumber(1)),
-					BigDecimal.lessThan(BigDecimal.unsafeFromNumber(10))
-				)
-			)
-		),
+		MMatch.whenIs(ScientificNotation.Normalized, () => Option.liftPredicate(zeroOrinOneToTenRange)),
 		MMatch.whenIs(ScientificNotation.Engineering, () =>
-			Option.liftPredicate(
-				Predicate.and(
-					BigDecimal.greaterThanOrEqualTo(BigDecimal.unsafeFromNumber(1)),
-					BigDecimal.lessThan(BigDecimal.unsafeFromNumber(1000))
-				)
-			)
+			Option.liftPredicate(zeroOrinOneToOneThousandRange)
 		),
 		MMatch.exhaustive
 	);
+
+	/**
+	 * Type of a MantissaAdjuster
+	 *
+	 * @category Models
+	 */
+	export interface MantissaAdjuster
+		extends MTypes.OneArgFunction<
+			BigDecimal.BigDecimal,
+			readonly [adjustedMantissa: BigDecimal.BigDecimal, exponent: Option.Option<number>]
+		> {}
+
+	/**
+	 * Builds a `Reader` implementing `self`
+	 *
+	 * @category Destructors
+	 */
+	export const toMantissaAdjuster: MTypes.OneArgFunction<ScientificNotation, MantissaAdjuster> =
+		flow(
+			MMatch.make,
+			MMatch.whenIsOr(
+				ScientificNotation.None,
+				ScientificNotation.Standard,
+				(): MantissaAdjuster => flow(Tuple.make, Tuple.appendElement(Option.none()))
+			),
+			MMatch.whenIs(
+				ScientificNotation.Normalized,
+				(): MantissaAdjuster => (b) => {
+					if (BigDecimal.isZero(b)) return Tuple.make(b, Option.some(0));
+					const value = b.value;
+					const log10 = MBigInt.unsafeLog10(BigInt.abs(value));
+
+					return Tuple.make(BigDecimal.make(value, log10), Option.some(log10 - b.scale));
+				}
+			),
+			MMatch.whenIs(
+				ScientificNotation.Engineering,
+				(): MantissaAdjuster => (b) => {
+					if (BigDecimal.isZero(b)) return Tuple.make(b, Option.some(0));
+					const value = b.value;
+					const log10 = MBigInt.unsafeLog10(BigInt.abs(value));
+					const correctedLog10 = log10 - MNumber.intModulo(3)(log10);
+					return Tuple.make(
+						BigDecimal.make(value, correctedLog10),
+						Option.some(correctedLog10 - b.scale)
+					);
+				}
+			),
+			MMatch.exhaustive
+		);
 }
 /**
  * Type that represents a NumberBase10Format.
@@ -545,9 +619,7 @@ export const toNumberExtractor = (
 
 	const exponentReader = ScientificNotation.toReader(self.scientificNotation);
 
-	const mantissaIntegerPartChecker = ScientificNotation.toMantissaIntegerPartChecker(
-		self.scientificNotation
-	);
+	const mantissaChecker = ScientificNotation.toMantissaChecker(self.scientificNotation);
 
 	return (text) =>
 		Option.gen(function* () {
@@ -580,7 +652,6 @@ export const toNumberExtractor = (
 						Option.map(flow(removeThousandSeparator, MBigDecimal.unsafeFromIntString(0)))
 					)
 				}),
-				Option.flatMap(mantissaIntegerPartChecker),
 				Option.map(
 					BigDecimal.sum(
 						pipe(
@@ -593,16 +664,18 @@ export const toNumberExtractor = (
 				)
 			);
 
-			const sign = yield* pipe(
-				signPart,
-				signReader(BigDecimal.Equivalence(mantissa, MBigDecimal.zero))
-			);
+			const checkedMantissa = yield* mantissaChecker(mantissa);
+
+			const sign = yield* signReader({
+				isZero: BigDecimal.isZero(checkedMantissa),
+				sign: signPart as SignDisplay.SignString
+			});
 
 			const exponent = yield* exponentReader(exponentPart);
 
 			return Tuple.make(
 				pipe(
-					BigDecimal.make(mantissa.value, mantissa.scale - exponent),
+					BigDecimal.make(checkedMantissa.value, checkedMantissa.scale - exponent),
 					BigDecimal.multiply(BigDecimal.unsafeFromNumber(sign))
 				),
 				match
@@ -649,7 +722,7 @@ export const toNumberReader = (
  */
 export const toNumberWriter = (
 	self: Type
-): MTypes.OneArgFunction<BigDecimal.BigDecimal | MBrand.Real.Type, Option.Option<string>> => {
+): MTypes.OneArgFunction<BigDecimal.BigDecimal | MBrand.Real.Type, string> => {
 	const round =
 		self.maximumFractionDigits === +Infinity ?
 			Function.identity
@@ -658,26 +731,70 @@ export const toNumberWriter = (
 				roundingMode: self.roundingMode
 			});
 	const signWriter = SignDisplay.toWriter(self.signDisplay);
-	return (number) =>
-		Option.gen(function* () {
-			const [sign, selfAsBigDecimal] =
-				MTypes.isNumber(number) ?
-					Tuple.make(
-						number < 0 || Object.is(-0, number) ? (-1 as const) : (1 as const),
-						BigDecimal.unsafeFromNumber(number)
-					)
-				:	Tuple.make(number.value < 0 ? (-1 as const) : (1 as const), number);
+	const mantissaAdjuster = ScientificNotation.toMantissaAdjuster(self.scientificNotation);
+	const hasThousandSeparator = self.thousandSeparator !== '';
+	const eNotationChar = pipe(
+		self.eNotationChars,
+		Array.get(0),
+		Option.getOrElse(MFunction.constEmptyString)
+	);
 
-			const rounded = round(selfAsBigDecimal);
-			const [truncatedPart, followingPart] = pipe(
-				rounded,
-				MBigDecimal.truncatedAndFollowingParts()
-			);
-			const signAsString = signWriter({ sign, isZero: BigDecimal.isZero(rounded) });
-			const bounderIntegerPart = yield* BigInt.toNumber(integerPart.value);
+	return (number) => {
+		const [sign, selfAsBigDecimal] =
+			MTypes.isNumber(number) ?
+				Tuple.make(
+					number < 0 || Object.is(-0, number) ? (-1 as const) : (1 as const),
+					BigDecimal.unsafeFromNumber(number)
+				)
+			:	Tuple.make(number.value < 0 ? (-1 as const) : (1 as const), number);
 
-			return '';
-		});
+		const [adjusted, exponent] = mantissaAdjuster(selfAsBigDecimal);
+		const absRounded = pipe(adjusted, round, BigDecimal.abs);
+		const [integerPart, fractionalPart] = pipe(
+			absRounded,
+			MBigDecimal.truncatedAndFollowingParts()
+		);
+		const signAsString = signWriter({ sign, isZero: BigDecimal.isZero(absRounded) });
+
+		const fractionalPartAsString = pipe(
+			fractionalPart.value.toString(),
+			String.padStart(fractionalPart.scale, '0'),
+			String.padEnd(self.minimumFractionDigits, '0')
+		);
+
+		const integerPartAsString = pipe(
+			integerPart.value.toString(),
+			MFunction.fIfTrue({
+				condition: hasThousandSeparator,
+				f: flow(
+					MString.splitEquallyRestAtStart(MRegExpString.DIGIT_GROUP_SIZE),
+					Array.intersperse(self.thousandSeparator),
+					Array.join('')
+				)
+			}),
+			Either.liftPredicate(
+				Predicate.not(MFunction.strictEquals('0')),
+				MFunction.fIfTrue({
+					condition: !self.showNullIntegerPart && fractionalPartAsString.length !== 0,
+					f: MFunction.constEmptyString
+				})
+			),
+			Either.merge
+		);
+
+		const exponentAsString = pipe(
+			exponent,
+			Option.map(flow(MString.fromNumber(10), MString.prepend(eNotationChar))),
+			Option.getOrElse(MFunction.constEmptyString)
+		);
+		return (
+			signAsString +
+			integerPartAsString +
+			self.fractionalSeparator +
+			fractionalPartAsString +
+			exponentAsString
+		);
+	};
 };
 
 /**
@@ -696,7 +813,6 @@ export const commaAndSpace: Type = make({
 	maximumFractionDigits: 3,
 	eNotationChars: ['E', 'e'],
 	scientificNotation: ScientificNotation.None,
-	roundingMode: MNumber.RoundingMode.HalfExpand,
 	roundingMode: MNumber.RoundingMode.HalfExpand,
 	signDisplay: SignDisplay.Auto
 });

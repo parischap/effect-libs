@@ -46,314 +46,412 @@ describe('NumberBase10Format', () => {
 		});
 	});
 
-	describe('toNumberExtractor', () => {
-		describe('Scientific notation tests', () => {
-			it('None', () => {
-				const numberExtractor = CVNumberBase10Format.toNumberExtractor(commaAndSpace);
-				TEUtils.assertNone(numberExtractor('-45,45e-2Dummy'));
-			});
-
-			describe('Standard scientific notation', () => {
-				const numberExtractor = pipe(
-					commaAndSpace,
-					CVNumberBase10Format.withStandardScientificNotation,
-					CVNumberBase10Format.toNumberExtractor
-				);
-
-				it('With no scientific notation', () => {
-					TEUtils.assertEquals(
-						numberExtractor('1 234 544,45Dummy'),
-						Option.some(Tuple.make(BigDecimal.make(123454445n, 2), '1 234 544,45'))
-					);
-				});
-
-				it('With scientific notation', () => {
-					TEUtils.assertEquals(
-						numberExtractor('-45,45e-2Dummy'),
-						Option.some(Tuple.make(BigDecimal.make(-4545n, 4), '-45,45e-2'))
-					);
-				});
-
-				it('With mal-formed scientific notation', () => {
-					TEUtils.assertEquals(
-						numberExtractor('-45,45e-Dummy'),
-						Option.some(Tuple.make(BigDecimal.make(-4545n, 2), '-45,45'))
-					);
-				});
-			});
-
-			describe('Normalized scientific notation', () => {
-				const numberExtractor = pipe(
-					commaAndSpace,
-					CVNumberBase10Format.withNormalizedScientificNotation,
-					CVNumberBase10Format.toNumberExtractor
-				);
-
-				describe('With no scientific notation', () => {
-					it('Passing', () => {
-						TEUtils.assertEquals(
-							numberExtractor('-1,654Dummy'),
-							Option.some(Tuple.make(BigDecimal.make(-1654n, 3), '-1,654'))
-						);
-					});
-
-					it('Not passing', () => {
-						TEUtils.assertNone(numberExtractor('21,654Dummy'));
-					});
-				});
-
-				describe('With scientific notation', () => {
-					it('Passing', () => {
-						TEUtils.assertEquals(
-							numberExtractor('-1,654e3Dummy'),
-							Option.some(Tuple.make(BigDecimal.make(-1654n, 0), '-1,654e3'))
-						);
-					});
-
-					it('Not passing', () => {
-						TEUtils.assertNone(numberExtractor('0,654e3Dummy'));
-					});
-				});
-			});
-
-			describe('Engineering scientific notation', () => {
-				const numberExtractor = pipe(
-					commaAndSpace,
-					CVNumberBase10Format.withEngineeringScientificNotation,
-					CVNumberBase10Format.toNumberExtractor
-				);
-
-				describe('With no scientific notation', () => {
-					it('Passing', () => {
-						TEUtils.assertEquals(
-							numberExtractor('824Dummy'),
-							Option.some(Tuple.make(BigDecimal.make(824n, 0), '824'))
-						);
-					});
-
-					it('Not passing', () => {
-						TEUtils.assertNone(numberExtractor('1 000,654Dummy'));
-					});
-				});
-
-				describe('With scientific notation', () => {
-					it('Passing', () => {
-						TEUtils.assertEquals(
-							numberExtractor('-543,6e3Dummy'),
-							Option.some(Tuple.make(BigDecimal.make(-543600n, 0), '-543,6e3'))
-						);
-					});
-
-					it('Not passing', () => {
-						TEUtils.assertNone(numberExtractor('0,654e3Dummy'));
-					});
-				});
-			});
-		});
-
-		describe('Sign display tests', () => {
+	describe('SignDisplay', () => {
+		describe('toReader', () => {
 			describe('Auto', () => {
-				const numberExtractor = CVNumberBase10Format.toNumberExtractor(commaAndSpace);
-
-				it('Negative non-null value', () => {
-					TEUtils.assertEquals(
-						numberExtractor('-544,45Dummy'),
-						Option.some(Tuple.make(BigDecimal.make(-54445n, 2), '-544,45'))
-					);
+				const reader = CVNumberBase10Format.SignDisplay.toReader(
+					CVNumberBase10Format.SignDisplay.Auto
+				);
+				it('No sign', () => {
+					TEUtils.assertSome(reader({ isZero: false, sign: '' }), 1);
+					TEUtils.assertSome(reader({ isZero: true, sign: '' }), 1);
 				});
-
-				it('Negative null value', () => {
-					TEUtils.assertEquals(
-						numberExtractor('-0Dummy'),
-						Option.some(Tuple.make(BigDecimal.make(0n, 0), '-0'))
-					);
+				it('Minus sign', () => {
+					TEUtils.assertSome(reader({ isZero: false, sign: '-' }), -1);
+					TEUtils.assertSome(reader({ isZero: true, sign: '-' }), -1);
 				});
-
-				it('Positive non-null value', () => {
-					TEUtils.assertNone(numberExtractor('+0,45Dummy'));
-				});
-
-				it('Positive null value', () => {
-					TEUtils.assertNone(numberExtractor('+0Dummy'));
-				});
-
-				it('Unsigned non-null value', () => {
-					TEUtils.assertEquals(
-						numberExtractor('45,45Dummy'),
-						Option.some(Tuple.make(BigDecimal.make(4545n, 2), '45,45'))
-					);
-				});
-
-				it('Unsigned null value', () => {
-					TEUtils.assertEquals(
-						numberExtractor('0Dummy'),
-						Option.some(Tuple.make(BigDecimal.make(0n, 0), '0'))
-					);
+				it('Plus sign', () => {
+					TEUtils.assertNone(reader({ isZero: false, sign: '+' }));
+					TEUtils.assertNone(reader({ isZero: true, sign: '+' }));
 				});
 			});
 
 			describe('Always', () => {
-				const numberExtractor = pipe(
-					commaAndSpace,
-					CVNumberBase10Format.withSignDisplay,
-					CVNumberBase10Format.toNumberExtractor
+				const reader = CVNumberBase10Format.SignDisplay.toReader(
+					CVNumberBase10Format.SignDisplay.Always
 				);
-
-				it('Negative non-null value', () => {
-					TEUtils.assertEquals(
-						numberExtractor('-544,45Dummy'),
-						Option.some(Tuple.make(BigDecimal.make(-54445n, 2), '-544,45'))
-					);
+				it('No sign', () => {
+					TEUtils.assertNone(reader({ isZero: false, sign: '' }));
+					TEUtils.assertNone(reader({ isZero: true, sign: '' }));
 				});
-
-				it('Negative null value', () => {
-					TEUtils.assertEquals(
-						numberExtractor('-0,45Dummy'),
-						Option.some(Tuple.make(BigDecimal.make(-45n, 2), '-0,45'))
-					);
+				it('Minus sign', () => {
+					TEUtils.assertSome(reader({ isZero: false, sign: '-' }), -1);
+					TEUtils.assertSome(reader({ isZero: true, sign: '-' }), -1);
 				});
-
-				it('Positive non-null value', () => {
-					TEUtils.assertEquals(
-						numberExtractor('+45,45Dummy'),
-						Option.some(Tuple.make(BigDecimal.make(4545n, 2), '+45,45'))
-					);
-				});
-
-				it('Positive null value', () => {
-					TEUtils.assertEquals(
-						numberExtractor('+0Dummy'),
-						Option.some(Tuple.make(BigDecimal.make(0n, 0), '+0'))
-					);
-				});
-
-				it('Unsigned non-null value', () => {
-					TEUtils.assertNone(numberExtractor('45,45Dummy'));
-				});
-
-				it('Unsigned null value', () => {
-					TEUtils.assertNone(numberExtractor('0Dummy'));
+				it('Plus sign', () => {
+					TEUtils.assertSome(reader({ isZero: false, sign: '+' }), 1);
+					TEUtils.assertSome(reader({ isZero: true, sign: '+' }), 1);
 				});
 			});
 
 			describe('ExceptZero', () => {
-				const numberExtractor = pipe(
-					commaAndSpace,
-					CVNumberBase10Format.withSignDisplayExceptZero,
-					CVNumberBase10Format.toNumberExtractor
+				const reader = CVNumberBase10Format.SignDisplay.toReader(
+					CVNumberBase10Format.SignDisplay.ExceptZero
 				);
-
-				it('Negative non-null value', () => {
-					TEUtils.assertEquals(
-						numberExtractor('-544,45Dummy'),
-						Option.some(Tuple.make(BigDecimal.make(-54445n, 2), '-544,45'))
-					);
+				it('No sign', () => {
+					TEUtils.assertNone(reader({ isZero: false, sign: '' }));
+					//TEUtils.assertSome(reader({ isZero: true, sign: '' }), 1);
 				});
-
-				it('Negative null value', () => {
-					TEUtils.assertNone(numberExtractor('-0Dummy'));
+				it('Minus sign', () => {
+					TEUtils.assertSome(reader({ isZero: false, sign: '-' }), -1);
+					TEUtils.assertNone(reader({ isZero: true, sign: '-' }));
 				});
-
-				it('Positive non-null value', () => {
-					TEUtils.assertEquals(
-						numberExtractor('+45,45Dummy'),
-						Option.some(Tuple.make(BigDecimal.make(4545n, 2), '+45,45'))
-					);
-				});
-
-				it('Positive null value', () => {
-					TEUtils.assertNone(numberExtractor('+0Dummy'));
-				});
-
-				it('Unsigned non-null value', () => {
-					TEUtils.assertNone(numberExtractor('45,45Dummy'));
-				});
-
-				it('Unsigned null value', () => {
-					TEUtils.assertEquals(
-						numberExtractor('0Dummy'),
-						Option.some(Tuple.make(BigDecimal.make(0n, 0), '0'))
-					);
+				it('Plus sign', () => {
+					TEUtils.assertSome(reader({ isZero: false, sign: '+' }), 1);
+					TEUtils.assertNone(reader({ isZero: true, sign: '+' }));
 				});
 			});
 
 			describe('Negative', () => {
-				const numberExtractor = pipe(
-					commaAndSpace,
-					CVNumberBase10Format.withSignDisplayForNegativeExceptZero,
-					CVNumberBase10Format.toNumberExtractor
+				const reader = CVNumberBase10Format.SignDisplay.toReader(
+					CVNumberBase10Format.SignDisplay.Negative
 				);
-
-				it('Negative non-null value', () => {
-					TEUtils.assertEquals(
-						numberExtractor('-544,45Dummy'),
-						Option.some(Tuple.make(BigDecimal.make(-54445n, 2), '-544,45'))
-					);
+				it('No sign', () => {
+					TEUtils.assertSome(reader({ isZero: false, sign: '' }), 1);
+					TEUtils.assertSome(reader({ isZero: true, sign: '' }), 1);
 				});
-
-				it('Negative null value', () => {
-					TEUtils.assertNone(numberExtractor('-0Dummy'));
+				it('Minus sign', () => {
+					TEUtils.assertSome(reader({ isZero: false, sign: '-' }), -1);
+					TEUtils.assertNone(reader({ isZero: true, sign: '-' }));
 				});
-
-				it('Positive non-null value', () => {
-					TEUtils.assertNone(numberExtractor('+45,45Dummy'));
-				});
-
-				it('Positive null value', () => {
-					TEUtils.assertNone(numberExtractor('+0Dummy'));
-				});
-
-				it('Unsigned non-null value', () => {
-					TEUtils.assertEquals(
-						numberExtractor('45,45Dummy'),
-						Option.some(Tuple.make(BigDecimal.make(4545n, 2), '45,45'))
-					);
-				});
-
-				it('Unsigned null value', () => {
-					TEUtils.assertEquals(
-						numberExtractor('0Dummy'),
-						Option.some(Tuple.make(BigDecimal.make(0n, 0), '0'))
-					);
+				it('Plus sign', () => {
+					TEUtils.assertNone(reader({ isZero: false, sign: '+' }));
+					TEUtils.assertNone(reader({ isZero: true, sign: '+' }));
 				});
 			});
 
 			describe('Never', () => {
-				const numberExtractor = pipe(
-					commaAndSpace,
-					CVNumberBase10Format.withoutSignDisplay,
-					CVNumberBase10Format.toNumberExtractor
+				const reader = CVNumberBase10Format.SignDisplay.toReader(
+					CVNumberBase10Format.SignDisplay.Never
 				);
-
-				it('Negative non-null value', () => {
-					TEUtils.assertNone(numberExtractor('-544,45Dummy'));
+				it('No sign', () => {
+					TEUtils.assertSome(reader({ isZero: false, sign: '' }), 1);
+					TEUtils.assertSome(reader({ isZero: true, sign: '' }), 1);
 				});
-
-				it('Negative null value', () => {
-					TEUtils.assertNone(numberExtractor('-0Dummy'));
+				it('Minus sign', () => {
+					TEUtils.assertNone(reader({ isZero: false, sign: '-' }));
+					TEUtils.assertNone(reader({ isZero: true, sign: '-' }));
 				});
-
-				it('Positive non-null value', () => {
-					TEUtils.assertNone(numberExtractor('+45,45Dummy'));
+				it('Plus sign', () => {
+					TEUtils.assertNone(reader({ isZero: false, sign: '+' }));
+					TEUtils.assertNone(reader({ isZero: true, sign: '+' }));
 				});
+			});
+		});
 
-				it('Positive null value', () => {
-					TEUtils.assertNone(numberExtractor('+0Dummy'));
+		describe('toWriter', () => {
+			describe('Auto', () => {
+				const writer = CVNumberBase10Format.SignDisplay.toWriter(
+					CVNumberBase10Format.SignDisplay.Auto
+				);
+				it('Minus sign', () => {
+					TEUtils.strictEqual(writer({ isZero: false, sign: -1 }), '-');
+					TEUtils.strictEqual(writer({ isZero: true, sign: -1 }), '-');
 				});
+				it('Plus sign', () => {
+					TEUtils.strictEqual(writer({ isZero: false, sign: 1 }), '');
+					TEUtils.strictEqual(writer({ isZero: true, sign: 1 }), '');
+				});
+			});
 
-				it('Unsigned non-null value', () => {
-					TEUtils.assertEquals(
-						numberExtractor('45,45Dummy'),
-						Option.some(Tuple.make(BigDecimal.make(4545n, 2), '45,45'))
-					);
+			describe('Always', () => {
+				const writer = CVNumberBase10Format.SignDisplay.toWriter(
+					CVNumberBase10Format.SignDisplay.Always
+				);
+				it('Minus sign', () => {
+					TEUtils.strictEqual(writer({ isZero: false, sign: -1 }), '-');
+					TEUtils.strictEqual(writer({ isZero: true, sign: -1 }), '-');
 				});
+				it('Plus sign', () => {
+					TEUtils.strictEqual(writer({ isZero: false, sign: 1 }), '+');
+					TEUtils.strictEqual(writer({ isZero: true, sign: 1 }), '+');
+				});
+			});
 
-				it('Unsigned null value', () => {
-					TEUtils.assertEquals(
-						numberExtractor('0Dummy'),
-						Option.some(Tuple.make(BigDecimal.make(0n, 0), '0'))
-					);
+			describe('ExceptZero', () => {
+				const writer = CVNumberBase10Format.SignDisplay.toWriter(
+					CVNumberBase10Format.SignDisplay.ExceptZero
+				);
+				it('Minus sign', () => {
+					TEUtils.strictEqual(writer({ isZero: false, sign: -1 }), '-');
+					TEUtils.strictEqual(writer({ isZero: true, sign: -1 }), '');
 				});
+				it('Plus sign', () => {
+					TEUtils.strictEqual(writer({ isZero: false, sign: 1 }), '+');
+					TEUtils.strictEqual(writer({ isZero: true, sign: 1 }), '');
+				});
+			});
+
+			describe('Negative', () => {
+				const writer = CVNumberBase10Format.SignDisplay.toWriter(
+					CVNumberBase10Format.SignDisplay.Negative
+				);
+				it('Minus sign', () => {
+					TEUtils.strictEqual(writer({ isZero: false, sign: -1 }), '-');
+					TEUtils.strictEqual(writer({ isZero: true, sign: -1 }), '');
+				});
+				it('Plus sign', () => {
+					TEUtils.strictEqual(writer({ isZero: false, sign: 1 }), '');
+					TEUtils.strictEqual(writer({ isZero: true, sign: 1 }), '');
+				});
+			});
+
+			describe('Never', () => {
+				const writer = CVNumberBase10Format.SignDisplay.toWriter(
+					CVNumberBase10Format.SignDisplay.Never
+				);
+				it('Minus sign', () => {
+					TEUtils.strictEqual(writer({ isZero: false, sign: -1 }), '');
+					TEUtils.strictEqual(writer({ isZero: true, sign: -1 }), '');
+				});
+				it('Plus sign', () => {
+					TEUtils.strictEqual(writer({ isZero: false, sign: 1 }), '');
+					TEUtils.strictEqual(writer({ isZero: true, sign: 1 }), '');
+				});
+			});
+		});
+	});
+
+	describe('ScientificNotation', () => {
+		describe('toReader', () => {
+			describe('None', () => {
+				const reader = CVNumberBase10Format.ScientificNotation.toReader(
+					CVNumberBase10Format.ScientificNotation.None
+				);
+				it('Empty string', () => {
+					TEUtils.assertSome(reader(''), 0);
+				});
+				it('Value', () => {
+					TEUtils.assertNone(reader('+15'));
+				});
+			});
+
+			describe('Standard', () => {
+				const reader = CVNumberBase10Format.ScientificNotation.toReader(
+					CVNumberBase10Format.ScientificNotation.Standard
+				);
+				it('Empty string', () => {
+					TEUtils.assertSome(reader(''), 0);
+				});
+				it('Positive value', () => {
+					TEUtils.assertSome(reader('+15'), 15);
+				});
+			});
+
+			describe('Normalized', () => {
+				const reader = CVNumberBase10Format.ScientificNotation.toReader(
+					CVNumberBase10Format.ScientificNotation.Normalized
+				);
+				it('Empty string', () => {
+					TEUtils.assertSome(reader(''), 0);
+				});
+				it('Negative Value', () => {
+					TEUtils.assertSome(reader('-15'), -15);
+				});
+			});
+
+			describe('Engineering', () => {
+				const reader = CVNumberBase10Format.ScientificNotation.toReader(
+					CVNumberBase10Format.ScientificNotation.Engineering
+				);
+				it('Empty string', () => {
+					TEUtils.assertSome(reader(''), 0);
+				});
+				it('Multiple of 3', () => {
+					TEUtils.assertSome(reader('15'), 15);
+				});
+				it('Non-multiple of 3', () => {
+					TEUtils.assertNone(reader('16'));
+				});
+			});
+		});
+
+		describe('toMantissaChecker', () => {
+			it('None', () => {
+				const checker = CVNumberBase10Format.ScientificNotation.toMantissaChecker(
+					CVNumberBase10Format.ScientificNotation.None
+				);
+				TEUtils.assertTrue(pipe(checker(BigDecimal.make(15n, 1)), Option.isSome));
+			});
+
+			it('Standard', () => {
+				const checker = CVNumberBase10Format.ScientificNotation.toMantissaChecker(
+					CVNumberBase10Format.ScientificNotation.Standard
+				);
+				TEUtils.assertTrue(pipe(checker(BigDecimal.make(0n, 1)), Option.isSome));
+			});
+
+			describe('Normalized', () => {
+				const checker = CVNumberBase10Format.ScientificNotation.toMantissaChecker(
+					CVNumberBase10Format.ScientificNotation.Normalized
+				);
+				it('Passing', () => {
+					TEUtils.assertTrue(pipe(checker(BigDecimal.make(95n, 1)), Option.isSome));
+				});
+				it('Not-passing', () => {
+					TEUtils.assertNone(checker(BigDecimal.make(95n, 2)));
+				});
+			});
+
+			describe('Engineering', () => {
+				const checker = CVNumberBase10Format.ScientificNotation.toMantissaChecker(
+					CVNumberBase10Format.ScientificNotation.Engineering
+				);
+				it('Passing', () => {
+					TEUtils.assertTrue(pipe(checker(BigDecimal.make(59527n, 2)), Option.isSome));
+				});
+				it('Not-passing', () => {
+					TEUtils.assertNone(checker(BigDecimal.make(100198n, 2)));
+				});
+			});
+		});
+
+		describe('toMantissaAdjuster', () => {
+			const aBigNumber = BigDecimal.make(15_654_543_234n, 3);
+			const aSmallNumber = BigDecimal.make(-15n, 3);
+			it('None', () => {
+				const adjuster = CVNumberBase10Format.ScientificNotation.toMantissaAdjuster(
+					CVNumberBase10Format.ScientificNotation.None
+				);
+				TEUtils.assertEquals(adjuster(aBigNumber), [aBigNumber, Option.none()]);
+			});
+
+			it('Standard', () => {
+				const adjuster = CVNumberBase10Format.ScientificNotation.toMantissaAdjuster(
+					CVNumberBase10Format.ScientificNotation.Standard
+				);
+				TEUtils.assertEquals(adjuster(aBigNumber), [aBigNumber, Option.none()]);
+			});
+
+			describe('Normalized', () => {
+				const adjuster = CVNumberBase10Format.ScientificNotation.toMantissaAdjuster(
+					CVNumberBase10Format.ScientificNotation.Normalized
+				);
+				it('Big number', () => {
+					TEUtils.assertEquals(adjuster(aBigNumber), [
+						BigDecimal.make(15_654_543_234n, 10),
+						Option.some(7)
+					]);
+				});
+				it('Small number', () => {
+					TEUtils.assertEquals(adjuster(aSmallNumber), [BigDecimal.make(-15n, 1), Option.some(-2)]);
+				});
+			});
+
+			describe('Engineering', () => {
+				const adjuster = CVNumberBase10Format.ScientificNotation.toMantissaAdjuster(
+					CVNumberBase10Format.ScientificNotation.Engineering
+				);
+				it('Big number', () => {
+					TEUtils.assertEquals(adjuster(aBigNumber), [
+						BigDecimal.make(15_654_543_234n, 9),
+						Option.some(6)
+					]);
+				});
+				it('Small number', () => {
+					TEUtils.assertEquals(adjuster(aSmallNumber), [BigDecimal.make(-15n, 0), Option.some(-3)]);
+				});
+			});
+		});
+	});
+
+	describe('toNumberExtractor', () => {
+		describe('General tests', () => {
+			//Use withSignDisplayForNegativeExceptZero to make sure that SignDisplay.toReader is called properly
+			const numberExtractor = pipe(
+				commaAndSpace,
+				CVNumberBase10Format.withSignDisplayForNegativeExceptZero,
+				CVNumberBase10Format.toNumberExtractor
+			);
+
+			it('String not starting by number', () => {
+				TEUtils.assertNone(numberExtractor('Dummy'));
+			});
+
+			it('Only a sign', () => {
+				TEUtils.assertNone(numberExtractor('- Dummy'));
+			});
+
+			it('Negative zero', () => {
+				TEUtils.assertNone(numberExtractor('-0Dummy'));
+			});
+
+			it('Zero', () => {
+				TEUtils.assertEquals(
+					numberExtractor('0Dummy'),
+					Option.some(Tuple.make(BigDecimal.make(0n, 2), '0'))
+				);
+			});
+
+			it('Unsigned mantissa with no integer part', () => {
+				TEUtils.assertEquals(
+					numberExtractor('0,45Dummy'),
+					Option.some(Tuple.make(BigDecimal.make(45n, 2), '0,45'))
+				);
+			});
+
+			it('Signed mantissa with no integer part', () => {
+				TEUtils.assertEquals(
+					numberExtractor('-0,45Dummy'),
+					Option.some(Tuple.make(BigDecimal.make(-45n, 2), '-0,45'))
+				);
+			});
+
+			it('Signed mantissa with no fractional part', () => {
+				TEUtils.assertEquals(
+					numberExtractor('-45'),
+					Option.some(Tuple.make(BigDecimal.make(-45n, 0), '-45'))
+				);
+			});
+
+			it('Signed mantissa', () => {
+				TEUtils.assertEquals(
+					numberExtractor('-45,45'),
+					Option.some(Tuple.make(BigDecimal.make(-4545n, 2), '-45,45'))
+				);
+			});
+
+			it('Fractional part of mantissa starting with zeros', () => {
+				TEUtils.assertEquals(
+					numberExtractor('-45,00'),
+					Option.some(Tuple.make(BigDecimal.make(-45n, 0), '-45,00'))
+				);
+			});
+		});
+
+		describe('Allow scientific notation', () => {
+			//Use withEngineeringScientificNotation to make sure that ScientificNotation.toReader is called properly
+			const numberExtractor = pipe(
+				commaAndSpace,
+				CVNumberBase10Format.withEngineeringScientificNotation,
+				CVNumberBase10Format.toNumberExtractor
+			);
+
+			it('Only an exponent', () => {
+				TEUtils.assertNone(numberExtractor('e12Dummy'));
+			});
+
+			it('An exponent that is not a multiple of 3', () => {
+				TEUtils.assertNone(numberExtractor('512,45e13Dummy'));
+			});
+
+			it('A mantissa out of range', () => {
+				TEUtils.assertNone(numberExtractor('1 512,45e12Dummy'));
+				TEUtils.assertNone(numberExtractor('0,45Dummy'));
+			});
+
+			it('Zero', () => {
+				TEUtils.assertEquals(
+					numberExtractor('0Dummy'),
+					Option.some(Tuple.make(BigDecimal.make(0n, 2), '0'))
+				);
+			});
+
+			it('A number respecting all conditions', () => {
+				TEUtils.assertEquals(
+					numberExtractor('512,45e12Dummy'),
+					Option.some(Tuple.make(BigDecimal.make(51245n, -10), '512,45e12'))
+				);
 			});
 		});
 
@@ -468,57 +566,6 @@ describe('NumberBase10Format', () => {
 						Option.some(Tuple.make(BigDecimal.make(1234n, 4), '0,1234'))
 					);
 				});
-			});
-		});
-
-		describe('General tests', () => {
-			const numberExtractor = CVNumberBase10Format.toNumberExtractor(commaAndSpace);
-
-			it('String not starting by number', () => {
-				TEUtils.assertNone(numberExtractor('Dummy'));
-			});
-
-			it('Only a sign', () => {
-				TEUtils.assertNone(numberExtractor('+ Dummy'));
-			});
-
-			it('Only an exponent', () => {
-				TEUtils.assertNone(numberExtractor('e12 Dummy'));
-			});
-
-			it('Unsigned mantissa with no integer part', () => {
-				TEUtils.assertEquals(
-					numberExtractor('0,45Dummy'),
-					Option.some(Tuple.make(BigDecimal.make(45n, 2), '0,45'))
-				);
-			});
-
-			it('Signed mantissa with no integer part', () => {
-				TEUtils.assertEquals(
-					numberExtractor('-0,45Dummy'),
-					Option.some(Tuple.make(BigDecimal.make(-45n, 2), '-0,45'))
-				);
-			});
-
-			it('Signed mantissa with no fractional part', () => {
-				TEUtils.assertEquals(
-					numberExtractor('-45'),
-					Option.some(Tuple.make(BigDecimal.make(-45n, 0), '-45'))
-				);
-			});
-
-			it('Signed mantissa', () => {
-				TEUtils.assertEquals(
-					numberExtractor('-45,45'),
-					Option.some(Tuple.make(BigDecimal.make(-4545n, 2), '-45,45'))
-				);
-			});
-
-			it('Fractional part of mantissa starting with zeros', () => {
-				TEUtils.assertEquals(
-					numberExtractor('-45,00'),
-					Option.some(Tuple.make(BigDecimal.make(-45n, 0), '-45,00'))
-				);
 			});
 		});
 	});
