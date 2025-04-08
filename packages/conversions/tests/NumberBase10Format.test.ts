@@ -1,6 +1,6 @@
 /* eslint-disable functional/no-expression-statements */
 import { CVNumberBase10Format } from '@parischap/conversions';
-import { MBigDecimal } from '@parischap/effect-lib';
+import { MBigDecimal, MBrand } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
 import { BigDecimal, Equal, Option, pipe, Tuple } from 'effect';
 import { describe, it } from 'vitest';
@@ -307,8 +307,8 @@ describe('NumberBase10Format', () => {
 		});
 
 		describe('toMantissaAdjuster', () => {
-			const aBigNumber = BigDecimal.make(15_654_543_234n, 3);
-			const aSmallNumber = BigDecimal.make(-15n, 3);
+			const aBigNumber = BigDecimal.make(15_654_543_234n, 2);
+			const aSmallNumber = BigDecimal.make(-15n, 4);
 			it('None', () => {
 				const adjuster = CVNumberBase10Format.ScientificNotation.toMantissaAdjuster(
 					CVNumberBase10Format.ScientificNotation.None
@@ -329,12 +329,12 @@ describe('NumberBase10Format', () => {
 				);
 				it('Big number', () => {
 					TEUtils.assertEquals(adjuster(aBigNumber), [
-						BigDecimal.make(15_654_543_234n, 10),
-						Option.some(7)
+						BigDecimal.make(15654543234n, 10),
+						Option.some(8)
 					]);
 				});
 				it('Small number', () => {
-					TEUtils.assertEquals(adjuster(aSmallNumber), [BigDecimal.make(-15n, 1), Option.some(-2)]);
+					TEUtils.assertEquals(adjuster(aSmallNumber), [BigDecimal.make(-15n, 1), Option.some(-3)]);
 				});
 			});
 
@@ -344,19 +344,19 @@ describe('NumberBase10Format', () => {
 				);
 				it('Big number', () => {
 					TEUtils.assertEquals(adjuster(aBigNumber), [
-						BigDecimal.make(15_654_543_234n, 9),
+						BigDecimal.make(15_654_543_234n, 8),
 						Option.some(6)
 					]);
 				});
 				it('Small number', () => {
-					TEUtils.assertEquals(adjuster(aSmallNumber), [BigDecimal.make(-15n, 0), Option.some(-3)]);
+					TEUtils.assertEquals(adjuster(aSmallNumber), [BigDecimal.make(-15n, 1), Option.some(-3)]);
 				});
 			});
 		});
 	});
 
 	describe('toNumberExtractor', () => {
-		describe('General tests', () => {
+		describe('General tests with commaAndSpace', () => {
 			//Use withSignDisplayForNegativeExceptZero to make sure that SignDisplay.toReader is called properly
 			const numberExtractor = pipe(
 				commaAndSpace,
@@ -509,7 +509,7 @@ describe('NumberBase10Format', () => {
 			describe('Two decimals', () => {
 				const numberExtractor = pipe(
 					commaAndSpace,
-					CVNumberBase10Format.withTwoDecimals,
+					CVNumberBase10Format.withNDecimals(2),
 					CVNumberBase10Format.toNumberExtractor
 				);
 
@@ -556,7 +556,7 @@ describe('NumberBase10Format', () => {
 			describe('Unbounded', () => {
 				const numberExtractor = pipe(
 					commaAndSpace,
-					CVNumberBase10Format.withUnlimitedDecimals,
+					CVNumberBase10Format.withMaxNDecimals(+Infinity),
 					CVNumberBase10Format.toNumberExtractor
 				);
 
@@ -582,6 +582,86 @@ describe('NumberBase10Format', () => {
 
 		it('Not passing', () => {
 			TEUtils.assertNone(numberReader('-45,45e-'));
+		});
+	});
+
+	describe('toNumberWriter', () => {
+		describe('General tests with commaAndSpace', () => {
+			const numberWriter = CVNumberBase10Format.toNumberWriter(commaAndSpace);
+			it('Zero', () => {
+				TEUtils.assertEquals(numberWriter(MBrand.Real.unsafeFromNumber(0)), '0');
+			});
+
+			it('Negative zero', () => {
+				TEUtils.assertEquals(numberWriter(MBrand.Real.unsafeFromNumber(-0.0004)), '-0');
+			});
+
+			it('Number with less than maximumFractionDigits decimals', () => {
+				TEUtils.assertEquals(numberWriter(MBrand.Real.unsafeFromNumber(1528.65)), '1 528,65');
+			});
+
+			it('BigDecimal as input, more than maximumFractionDigits decimals', () => {
+				TEUtils.assertEquals(numberWriter(BigDecimal.make(-14675435n, 4)), '-1 467,544');
+			});
+		});
+
+		describe('Tests with withNullIntegerPartNotShowing', () => {
+			const numberWriter = pipe(
+				commaAndSpace,
+				CVNumberBase10Format.withNullIntegerPartNotShowing,
+				CVNumberBase10Format.toNumberWriter
+			);
+			it('Zero', () => {
+				TEUtils.assertEquals(numberWriter(MBrand.Real.unsafeFromNumber(0)), '0');
+			});
+
+			it('Number rounded down to zero', () => {
+				TEUtils.assertEquals(numberWriter(MBrand.Real.unsafeFromNumber(-0.0004)), '-0');
+			});
+
+			it('Number rounded up from zero', () => {
+				TEUtils.assertEquals(numberWriter(MBrand.Real.unsafeFromNumber(0.0005)), ',001');
+			});
+		});
+
+		describe('Tests with withNDecimals(2) and withNullIntegerPartNotShowing', () => {
+			const numberWriter = pipe(
+				commaAndSpace,
+				CVNumberBase10Format.withNDecimals(2),
+				CVNumberBase10Format.withNullIntegerPartNotShowing,
+				CVNumberBase10Format.toNumberWriter
+			);
+			it('Zero', () => {
+				TEUtils.assertEquals(numberWriter(MBrand.Real.unsafeFromNumber(0)), ',00');
+			});
+
+			it('Number rounded down to zero', () => {
+				TEUtils.assertEquals(numberWriter(MBrand.Real.unsafeFromNumber(-0.004)), '-,00');
+			});
+
+			it('Number rounded up from zero', () => {
+				TEUtils.assertEquals(numberWriter(MBrand.Real.unsafeFromNumber(0.005)), ',01');
+			});
+		});
+
+		describe('Tests with withEngineeringScientificNotation', () => {
+			const numberWriter = pipe(
+				commaAndSpace,
+				CVNumberBase10Format.withEngineeringScientificNotation,
+				CVNumberBase10Format.withMinNDecimals(2),
+				CVNumberBase10Format.toNumberWriter
+			);
+			it('Negative Zero', () => {
+				TEUtils.assertEquals(numberWriter(MBrand.Real.unsafeFromNumber(-0)), '-0,00E0');
+			});
+
+			it('Big positive number', () => {
+				TEUtils.assertEquals(numberWriter(MBrand.Real.unsafeFromNumber(154321.5)), '154,322E3');
+			});
+
+			it('Small negative number', () => {
+				TEUtils.assertEquals(numberWriter(MBrand.Real.unsafeFromNumber(-523e-5)), '-5,23E-3');
+			});
 		});
 	});
 });

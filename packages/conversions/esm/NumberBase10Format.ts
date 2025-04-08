@@ -378,11 +378,11 @@ export namespace ScientificNotation {
 				(): MantissaAdjuster => (b) => {
 					if (BigDecimal.isZero(b)) return Tuple.make(b, Option.some(0));
 					const value = b.value;
-					const log10 = MBigInt.unsafeLog10(BigInt.abs(value));
+					const log10 = MBigInt.unsafeLog10(BigInt.abs(value)) - b.scale;
 					const correctedLog10 = log10 - MNumber.intModulo(3)(log10);
 					return Tuple.make(
-						BigDecimal.make(value, correctedLog10),
-						Option.some(correctedLog10 - b.scale)
+						BigDecimal.make(value, correctedLog10 + b.scale),
+						Option.some(correctedLog10)
 					);
 				}
 			),
@@ -754,12 +754,21 @@ export const toNumberWriter = (
 			absRounded,
 			MBigDecimal.truncatedAndFollowingParts()
 		);
+
 		const signAsString = signWriter({ sign, isZero: BigDecimal.isZero(absRounded) });
 
+		const normalizedFractionalPart = BigDecimal.normalize(fractionalPart);
+
 		const fractionalPartAsString = pipe(
-			fractionalPart.value.toString(),
-			String.padStart(fractionalPart.scale, '0'),
-			String.padEnd(self.minimumFractionDigits, '0')
+			normalizedFractionalPart.value,
+			Option.liftPredicate(Predicate.not(MBigInt.isZero)),
+			Option.map(MString.fromNonNullablePrimitive),
+			Option.getOrElse(MFunction.constEmptyString),
+			String.padStart(normalizedFractionalPart.scale, '0'),
+			String.padEnd(self.minimumFractionDigits, '0'),
+			Option.liftPredicate(String.isNonEmpty),
+			Option.map(MString.prepend(self.fractionalSeparator)),
+			Option.getOrElse(MFunction.constEmptyString)
 		);
 
 		const integerPartAsString = pipe(
@@ -787,13 +796,7 @@ export const toNumberWriter = (
 			Option.map(flow(MString.fromNumber(10), MString.prepend(eNotationChar))),
 			Option.getOrElse(MFunction.constEmptyString)
 		);
-		return (
-			signAsString +
-			integerPartAsString +
-			self.fractionalSeparator +
-			fractionalPartAsString +
-			exponentAsString
-		);
+		return signAsString + integerPartAsString + fractionalPartAsString + exponentAsString;
 	};
 };
 
@@ -845,43 +848,52 @@ export const dotAndComma: Type = make({
 });
 
 /**
- * Combinator that returns a copy of self with `maximumFractionDigits` set to 0.
- *
- * @category Utils
- */
-export const withNoDecimals = (self: Type): Type =>
-	make({
-		...self,
-		id: self.id + 'WithNoDecimals',
-		minimumFractionDigits: 0,
-		maximumFractionDigits: 0
-	});
-
-/**
  * Combinator that returns a copy of self with `minimumFractionDigits` and `maximumFractionDigits`
- * set to 2.
+ * set to `n`. `n` must be a finite positive integer.
  *
  * @category Utils
  */
-export const withTwoDecimals = (self: Type): Type =>
-	make({
-		...self,
-		id: self.id + 'WithTwoDecimals',
-		minimumFractionDigits: 2,
-		maximumFractionDigits: 2
-	});
+export const withNDecimals =
+	(n: number) =>
+	(self: Type): Type =>
+		make({
+			...self,
+			id: self.id + 'WithNoDecimals',
+			minimumFractionDigits: n,
+			maximumFractionDigits: n
+		});
 
 /**
- * Combinator that returns a copy of self with`maximumFractionDigits` set to +Infinity.
+ * Combinator that returns a copy of self with `maximumFractionDigits` set to `n`. `n` must be
+ * positive integer.
  *
  * @category Utils
  */
-export const withUnlimitedDecimals = (self: Type): Type =>
-	make({
-		...self,
-		id: self.id + 'WithUnlimitedDecimals',
-		maximumFractionDigits: +Infinity
-	});
+export const withMaxNDecimals =
+	(n: number) =>
+	(self: Type): Type =>
+		make({
+			...self,
+			id: self.id + 'WithTwoDecimals',
+			minimumFractionDigits: Math.min(self.minimumFractionDigits, n),
+			maximumFractionDigits: n
+		});
+
+/**
+ * Combinator that returns a copy of self with `minimumFractionDigits` set to `n`. `n` must be a
+ * finite positive integer.
+ *
+ * @category Utils
+ */
+export const withMinNDecimals =
+	(n: number) =>
+	(self: Type): Type =>
+		make({
+			...self,
+			id: self.id + 'WithTwoDecimals',
+			minimumFractionDigits: n,
+			maximumFractionDigits: Math.max(self.maximumFractionDigits, n)
+		});
 
 /**
  * Combinator that returns a copy of self with `scientificNotation` set to `None`.
