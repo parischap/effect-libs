@@ -20,8 +20,10 @@ export const unsafeFromString: MTypes.NumberFromString = (s) => +s;
 
 export const intModulo =
 	(divisor: number) =>
-	(self: number): number =>
-		self >= 0 ? self % divisor : (self % divisor) + divisor;
+	(self: number): number => {
+		const rest = self % divisor;
+		return rest < 0 ? rest + Math.abs(divisor) : rest;
+	};
 
 /**
  * Returns the `quotient` and `remainder` of the division of `self` by `divisor`. `remainder` always

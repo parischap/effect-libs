@@ -78,22 +78,17 @@ describe('MNumber', () => {
 		});
 	});
 
-	describe('intModulo', () => {
-		it('Positive divisor strictly inferior to dividend', () => {
-			TEUtils.strictEqual(MNumber.intModulo(3)(5), 2);
-		});
-
-		it('Positive divisor superior or equal to dividend', () => {
-			TEUtils.strictEqual(MNumber.intModulo(5)(3), 3);
-		});
-
-		it('Negative divisor strictly inferior to dividend in absolute value', () => {
-			TEUtils.strictEqual(MNumber.intModulo(3)(-5), 1);
-		});
-
-		it('Negative divisor superior or equal to dividend in absolute value', () => {
-			TEUtils.strictEqual(MNumber.intModulo(5)(-3), 2);
-		});
+	it('intModulo', () => {
+		TEUtils.strictEqual(MNumber.intModulo(3)(5), 2);
+		TEUtils.strictEqual(MNumber.intModulo(5)(3), 3);
+		TEUtils.strictEqual(MNumber.intModulo(3)(-5), 1);
+		TEUtils.strictEqual(MNumber.intModulo(5)(-3), 2);
+		TEUtils.strictEqual(MNumber.intModulo(5)(-3), 2);
+		TEUtils.strictEqual(pipe(-3, MNumber.intModulo(3), MNumber.abs), 0);
+		TEUtils.strictEqual(MNumber.intModulo(-3)(5), 2);
+		TEUtils.strictEqual(MNumber.intModulo(-5)(3), 3);
+		TEUtils.strictEqual(MNumber.intModulo(-3)(-5), 1);
+		TEUtils.strictEqual(MNumber.intModulo(-5)(-3), 2);
 	});
 
 	describe('quotientAndRemainder', () => {
