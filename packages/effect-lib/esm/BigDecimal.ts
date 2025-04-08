@@ -52,6 +52,8 @@ export const truncatedAndFollowingParts =
 /**
  * Rounds `self` at `precision` decimals using `roundingMode`. `precision` must be a finite positive
  * integer. Default `precision` is `0` and default `roundingMode` is `HalfExpand`.
+ *
+ * @category Utils
  */
 export const round = ({
 	precision = 0,
