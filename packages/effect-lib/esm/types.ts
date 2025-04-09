@@ -331,7 +331,7 @@ export type SetArgTypeTo<F, A> =
 		R extends A ?
 			Predicate.Refinement<A, R>
 		:	F
-	: F extends OneArgFunction<any, infer R> ? OneArgFunction<A, R>
+	: F extends OneArgFunction<infer _, infer R> ? OneArgFunction<A, R>
 	: F;
 
 /**
