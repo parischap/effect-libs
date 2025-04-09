@@ -42,6 +42,7 @@ describe('MBrand', () => {
 	describe('Real', () => {
 		it('unsafeFromNumber', () => {
 			TEUtils.strictEqual(MBrand.Real.unsafeFromNumber(NaN), NaN);
+			TEUtils.strictEqual(MBrand.Real.unsafeFromNumber(15.4), 15.4);
 		});
 
 		describe('fromNumber', () => {
@@ -55,15 +56,16 @@ describe('MBrand', () => {
 	});
 
 	describe('Int', () => {
-		it('unsafeFromNumber', () => {
+		describe('unsafeFromNumber', () => {
 			TEUtils.strictEqual(MBrand.Int.unsafeFromNumber(NaN), NaN);
+			TEUtils.strictEqual(MBrand.Int.unsafeFromNumber(15), 15);
 		});
 
 		describe('fromNumber', () => {
-			it('Not passing', () => {
+			it('Not passing: not finite', () => {
 				TEUtils.assertNone(MBrand.Int.fromNumber.option(NaN));
 			});
-			it('Not passing', () => {
+			it('Not passing: not integer', () => {
 				TEUtils.assertNone(MBrand.Int.fromNumber.option(18.4));
 			});
 			it('Passing', () => {
@@ -84,14 +86,18 @@ describe('MBrand', () => {
 	describe('PositiveInt', () => {
 		it('unsafeFromNumber', () => {
 			TEUtils.strictEqual(MBrand.PositiveInt.unsafeFromNumber(NaN), NaN);
+			TEUtils.strictEqual(MBrand.PositiveInt.unsafeFromNumber(15), 15);
 		});
 
 		describe('fromNumber', () => {
-			it('Not passing', () => {
+			it('Not passing: not finite', () => {
 				TEUtils.assertNone(MBrand.PositiveInt.fromNumber.option(NaN));
 			});
-			it('Not passing', () => {
+			it('Not passing: not positive', () => {
 				TEUtils.assertNone(MBrand.PositiveInt.fromNumber.option(-18));
+			});
+			it('Not passing: not an integer', () => {
+				TEUtils.assertNone(MBrand.PositiveInt.fromNumber.option(18.4));
 			});
 			it('Passing', () => {
 				TEUtils.strictEqual(MBrand.PositiveInt.fromNumber(18), 18);
@@ -99,8 +105,11 @@ describe('MBrand', () => {
 		});
 
 		describe('fromReal', () => {
-			it('Not passing', () => {
+			it('Not passing: not an integer', () => {
 				TEUtils.assertNone(pipe(18.4, MBrand.Real.fromNumber, MBrand.PositiveInt.fromReal.option));
+			});
+			it('Not passing: not positive', () => {
+				TEUtils.assertNone(pipe(-18, MBrand.Real.fromNumber, MBrand.PositiveInt.fromReal.option));
 			});
 			it('Passing', () => {
 				TEUtils.strictEqual(pipe(18, MBrand.Real.fromNumber, MBrand.PositiveInt.fromReal), 18);
@@ -108,7 +117,7 @@ describe('MBrand', () => {
 		});
 
 		describe('fromInt', () => {
-			it('Not passing', () => {
+			it('Not passing: not positive', () => {
 				TEUtils.assertNone(pipe(-18, MBrand.Int.fromNumber, MBrand.PositiveInt.fromInt.option));
 			});
 			it('Passing', () => {
