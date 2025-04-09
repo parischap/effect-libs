@@ -40,8 +40,8 @@ export const moduleTag = '@parischap/effect-lib/String/';
  * @category Models
  */
 export namespace SearchResult {
-	const namespaceTag = moduleTag + 'SearchResult/';
-	const _TypeId: unique symbol = Symbol.for(namespaceTag) as _TypeId;
+	const _namespaceTag = moduleTag + 'SearchResult/';
+	const _TypeId: unique symbol = Symbol.for(_namespaceTag) as _TypeId;
 	type _TypeId = typeof _TypeId;
 
 	/**
@@ -102,7 +102,7 @@ export namespace SearchResult {
 				Hash.cached(this)
 			);
 		},
-		...MInspectable.BaseProto(namespaceTag),
+		...MInspectable.BaseProto(_namespaceTag),
 		...MPipeable.BaseProto
 	};
 

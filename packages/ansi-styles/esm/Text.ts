@@ -46,8 +46,8 @@ type _TypeId = typeof _TypeId;
  * style)
  */
 namespace UniStyled {
-	const namespaceTag = moduleTag + 'UniStyled/';
-	const _TypeId: unique symbol = Symbol.for(namespaceTag) as _TypeId;
+	const _namespaceTag = moduleTag + 'UniStyled/';
+	const _TypeId: unique symbol = Symbol.for(_namespaceTag) as _TypeId;
 	type _TypeId = typeof _TypeId;
 
 	/**
@@ -113,7 +113,7 @@ namespace UniStyled {
 				Hash.cached(this)
 			);
 		},
-		...MInspectable.BaseProto(namespaceTag),
+		...MInspectable.BaseProto(_namespaceTag),
 		...MPipeable.BaseProto
 	};
 

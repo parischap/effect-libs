@@ -31,8 +31,8 @@ type RefinedConstructor<B, A extends Brand.Brand<string | symbol> & B> = MTypes.
  * @category Models
  */
 export namespace Email {
-	const namespaceTag = moduleTag + 'Email/';
-	const _TypeId: unique symbol = Symbol.for(namespaceTag) as _TypeId;
+	const _namespaceTag = moduleTag + 'Email/';
+	const _TypeId: unique symbol = Symbol.for(_namespaceTag) as _TypeId;
 	type _TypeId = typeof _TypeId;
 	/**
 	 * Email type
@@ -65,8 +65,8 @@ export namespace Email {
  * @category Models
  */
 export namespace SemVer {
-	const namespaceTag = moduleTag + 'SemVer/';
-	const _TypeId: unique symbol = Symbol.for(namespaceTag) as _TypeId;
+	const _namespaceTag = moduleTag + 'SemVer/';
+	const _TypeId: unique symbol = Symbol.for(_namespaceTag) as _TypeId;
 	type _TypeId = typeof _TypeId;
 
 	/**
@@ -100,8 +100,8 @@ export namespace SemVer {
  * @category Models
  */
 export namespace Real {
-	const namespaceTag = moduleTag + 'Real/';
-	const _TypeId: unique symbol = Symbol.for(namespaceTag) as _TypeId;
+	const _namespaceTag = moduleTag + 'Real/';
+	const _TypeId: unique symbol = Symbol.for(_namespaceTag) as _TypeId;
 	type _TypeId = typeof _TypeId;
 
 	/**
@@ -134,8 +134,8 @@ export namespace Real {
  * @category Models
  */
 export namespace Int {
-	const namespaceTag = moduleTag + 'Int/';
-	const _TypeId: unique symbol = Symbol.for(namespaceTag) as _TypeId;
+	const _namespaceTag = moduleTag + 'Int/';
+	const _TypeId: unique symbol = Symbol.for(_namespaceTag) as _TypeId;
 	type _TypeId = typeof _TypeId;
 
 	/**
@@ -247,8 +247,8 @@ export namespace IntRange {
  * @category Models
  */
 export namespace PositiveInt {
-	const namespaceTag = moduleTag + 'PositiveInt/';
-	const _TypeId: unique symbol = Symbol.for(namespaceTag) as _TypeId;
+	const _namespaceTag = moduleTag + 'PositiveInt/';
+	const _TypeId: unique symbol = Symbol.for(_namespaceTag) as _TypeId;
 	type _TypeId = typeof _TypeId;
 	/**
 	 * Type for positive integers

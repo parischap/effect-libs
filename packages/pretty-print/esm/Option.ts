@@ -131,8 +131,8 @@ export enum PropertyNumberDisplayOption {
  */
 
 export namespace NonPrimitive {
-	const namespaceTag = moduleTag + 'NonPrimitive/';
-	const _TypeId: unique symbol = Symbol.for(namespaceTag) as _TypeId;
+	const _namespaceTag = moduleTag + 'NonPrimitive/';
+	const _TypeId: unique symbol = Symbol.for(_namespaceTag) as _TypeId;
 	type _TypeId = typeof _TypeId;
 	/**
 	 * Type of an option for a NonPrimitive
@@ -322,7 +322,7 @@ export namespace NonPrimitive {
 		[MInspectable.IdSymbol](this: Type) {
 			return this.id;
 		},
-		...MInspectable.BaseProto(namespaceTag),
+		...MInspectable.BaseProto(_namespaceTag),
 		...MPipeable.BaseProto
 	};
 

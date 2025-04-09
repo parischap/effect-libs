@@ -39,8 +39,8 @@ type _TypeId = typeof _TypeId;
  * cache.
  */
 namespace ValueContainer {
-	const namespaceTag = moduleTag + 'ValueContainer/';
-	const _TypeId: unique symbol = Symbol.for(namespaceTag) as _TypeId;
+	const _namespaceTag = moduleTag + 'ValueContainer/';
+	const _TypeId: unique symbol = Symbol.for(_namespaceTag) as _TypeId;
 	type _TypeId = typeof _TypeId;
 
 	/**
@@ -72,7 +72,7 @@ namespace ValueContainer {
 		[_TypeId]: {
 			_A: MTypes.covariantValue
 		},
-		...MInspectable.BaseProto(namespaceTag),
+		...MInspectable.BaseProto(_namespaceTag),
 		...MPipeable.BaseProto
 	};
 
