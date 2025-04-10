@@ -6,7 +6,6 @@
 import {
 	MBigDecimal,
 	MBigInt,
-	MBrand,
 	MFunction,
 	MInspectable,
 	MMatch,
@@ -36,8 +35,9 @@ import {
 	Struct,
 	Tuple
 } from 'effect';
+import type * as CVBrand from './Brand.js';
 
-export const moduleTag = '@parischap/conversions/NumberBase10Format/';
+export const moduleTag = '@parischap/formatting/NumberBase10Format/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
@@ -722,7 +722,7 @@ export const toNumberReader = (
  */
 export const toNumberWriter = (
 	self: Type
-): MTypes.OneArgFunction<BigDecimal.BigDecimal | MBrand.Real.Type, string> => {
+): MTypes.OneArgFunction<BigDecimal.BigDecimal | CVBrand.Real.Type, string> => {
 	const round =
 		self.maximumFractionDigits === +Infinity ?
 			Function.identity

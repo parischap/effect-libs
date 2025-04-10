@@ -27,7 +27,7 @@
 			"path": "packages/effect-report",
 		},
 		{
-			"path": "packages/conversions",
+			"path": "packages/formatting",
 		},
 	],
 	"settings": {

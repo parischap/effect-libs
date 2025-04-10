@@ -1,5 +1,5 @@
 {
-	"name": "@parischap-dev/conversions",
+	"name": "@parischap-dev/formatting",
 	"type": "module",
 	"author": "Jérôme MARTIN",
 	"license": "MIT",
@@ -78,7 +78,7 @@
 	},
 	"dependencies": {},
 	"devDependencies": {
-		"@parischap/conversions": "link:."
+		"@parischap/formatting": "link:."
 	},
 	"peerDependencies": {
 		"@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
@@ -87,7 +87,7 @@
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/parischap/effect-libs.git",
-		"directory": "packages/conversions"
+		"directory": "packages/formatting"
 	},
-	"homepage": "https://github.com/parischap/effect-libs/tree/master/packages/conversions"
+	"homepage": "https://github.com/parischap/effect-libs/tree/master/packages/formatting"
 }
