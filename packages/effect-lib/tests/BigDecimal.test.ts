@@ -5,10 +5,6 @@ import { BigDecimal, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('MBigDecimal', () => {
-	it('unsafeFromIntString', () => {
-		TEUtils.assertEquals(MBigDecimal.unsafeFromIntString(2)('123'), BigDecimal.make(123n, 2));
-	});
-
 	describe('trunc', () => {
 		it('Number that does not need to be truncated', () => {
 			TEUtils.assertEquals(

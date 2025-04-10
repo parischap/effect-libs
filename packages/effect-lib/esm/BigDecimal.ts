@@ -1,20 +1,37 @@
 /** A simple extension to the Effect BigDecimal module */
 
-import { BigDecimal, pipe, Tuple } from 'effect';
+import { BigDecimal, flow, Function, Option, pipe, Tuple } from 'effect';
 import * as MBigInt from './BigInt.js';
 import * as MNumber from './Number.js';
 import * as MTypes from './types.js';
 
-const bigDecimal10 = BigDecimal.make(10n, 0);
+const _bigDecimal10 = BigDecimal.make(10n, 0);
+const _bigDecimalMinSafeInteger = BigDecimal.make(BigInt(Number.MIN_SAFE_INTEGER), 0);
+const _bigDecimalMaxSafeInteger = BigDecimal.make(BigInt(Number.MAX_SAFE_INTEGER), 0);
+const _tupledMake = Function.tupled(BigDecimal.make);
+
 /**
- * Function that creates a Bigdecimal from a string representing an bigint and a scale
+ * Function that creates a Bigdecimal from a scale and a string representing a bigint
  *
  * @category Constructors
  */
-export const unsafeFromIntString =
-	(scale: number): MTypes.OneArgFunction<string, BigDecimal.BigDecimal> =>
-	(s) =>
-		BigDecimal.make(BigInt(s), scale);
+export const unsafeFromIntString = (
+	scale: number
+): MTypes.OneArgFunction<string, BigDecimal.BigDecimal> =>
+	flow(MBigInt.unsafeFromString, Tuple.make, Tuple.appendElement(scale), _tupledMake);
+
+/**
+ * Function that converts a BigDecimal to a number. Returns a `some` if the BigDecimal is in the
+ * 64-bit range of a number. Returns a `none` otherwise
+ *
+ * @category Destructors
+ */
+export const toNumber: MTypes.OneArgFunction<BigDecimal.BigDecimal, Option.Option<number>> = flow(
+	Option.liftPredicate(
+		BigDecimal.between({ minimum: _bigDecimalMinSafeInteger, maximum: _bigDecimalMaxSafeInteger })
+	),
+	Option.map(BigDecimal.unsafeToNumber)
+);
 
 /**
  * BigDecimal instance representing the 0 value
@@ -73,7 +90,7 @@ export const round = ({
 		const firstFollowingDigit = pipe(
 			shiftedSelf,
 			BigDecimal.subtract(truncatedShiftedSelf),
-			BigDecimal.multiply(bigDecimal10),
+			BigDecimal.multiply(_bigDecimal10),
 			trunc(),
 			BigDecimal.unsafeToNumber
 		);
