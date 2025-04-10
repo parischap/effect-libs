@@ -4,11 +4,19 @@ import { flow, Number, Option, pipe, Predicate, String } from 'effect';
 import * as MTypes from './types.js';
 
 /**
- * Constructs a bigint from a number
+ * Constructs a bigint from a number. Will only fail if the number is NaN, Infinity or not an
+ * integer.
  *
  * @category Constructors
  */
 export const unsafeFromNumber: MTypes.OneArgFunction<number, bigint> = BigInt;
+
+/**
+ * Constructs a bigint from a string. Will only fail if the string does not represent an integer.
+ *
+ * @category Constructors
+ */
+export const unsafeFromString: MTypes.OneArgFunction<string, bigint> = BigInt;
 
 /**
  * Returns `true` if `self` is positive
