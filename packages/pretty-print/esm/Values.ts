@@ -93,7 +93,7 @@ export const fromValueIterable = (nonPrimitive: PPValue.NonPrimitive): Type =>
 				Array.map((content, i) =>
 					PPValue.fromIterable({
 						content,
-						stringKey: pipe(i, MString.fromNonNullablePrimitive, Array.of),
+						stringKey: pipe(i, MString.fromNumber(10), Array.of),
 						depth: nonPrimitive.depth + 1
 					})
 				)

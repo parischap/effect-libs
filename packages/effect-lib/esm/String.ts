@@ -167,15 +167,17 @@ export namespace SearchResult {
 }
 
 /**
- * Builds a string from a primitive value other than `null` and `undefined`.
+ * Builds a string from a primitive value other than `null` and `undefined`. For numbers and
+ * bigints, base-10 conversion is assumed.
  *
  * @category Constructors
  */
-export const fromNonNullablePrimitive = (u: MTypes.NonNullablePrimitive): string => u.toString();
+export const fromNonNullablePrimitive = (u: MTypes.NonNullablePrimitive): string =>
+	MTypes.isNumber(u) ? fromNumber(10)(u) : u.toString();
 
 /**
  * Builds a string from a primitive value. `null` is converted to the string "null" and `undefined`
- * to the string "undefined"
+ * to the string "undefined". . For numbers and bigints, base-10 conversion is assumed.
  *
  * @category Constructors
  */
@@ -192,8 +194,25 @@ export const fromPrimitive: MTypes.OneArgFunction<MTypes.Primitive, string> = fl
  */
 export const fromNumber =
 	(radix?: number): MTypes.NumberToString =>
-	(u) =>
-		u.toString(radix);
+	(u) => {
+		// If this condition is not respected, Javascript will use an exponent in the converted string
+		if (radix !== 10 || (u >= 1e-6 && u < 1e21)) return u.toString(radix);
+		const integerPart = Math.trunc(u);
+		const decimalPart = Math.trunc((u - integerPart) * 1e16);
+		return (
+			BigInt(integerPart).toString(10) +
+			pipe(
+				decimalPart,
+				BigInt,
+				(b) => b.toString(10),
+				String.padStart(16, '0'),
+				trimEnd('0'),
+				Option.liftPredicate(String.isNonEmpty),
+				Option.map(prepend('.')),
+				Option.getOrElse(MFunction.constEmptyString)
+			)
+		);
+	};
 
 /**
  * Searches for the first occurence of `regexp` in `self` and returns a SearchResult. You can

@@ -532,7 +532,7 @@ export namespace NonPrimitive {
 									isAll || showAllAndActual ?
 										pipe(
 											allPropertyNumber,
-											MString.fromNonNullablePrimitive,
+											MString.fromNumber(10),
 											PropertyNumbersTextFormatter.withContextLast,
 											Function.apply(value)
 										)
@@ -542,7 +542,7 @@ export namespace NonPrimitive {
 									isActual || showAllAndActual ?
 										pipe(
 											actualPropertyNumber,
-											MString.fromNonNullablePrimitive,
+											MString.fromNumber(10),
 											PropertyNumbersTextFormatter.withContextLast,
 											Function.apply(value)
 										)
@@ -930,7 +930,7 @@ export const toStringifier = (self: Type): Stringifier.Type => {
 										MutableHashMap.set(cyclicalMap, cyclicalValue, lastCyclicalIndex);
 										return lastCyclicalIndex++;
 									}),
-									MString.fromNonNullablePrimitive,
+									MString.fromNumber(10),
 									messageTextFormatter(unBypassedNonPrimitiveUnderMaxDepth),
 									ASText.prepend(circularObjectMarkShower(unBypassedNonPrimitiveUnderMaxDepth)),
 									ASText.surround(
@@ -1005,7 +1005,7 @@ export const toStringifier = (self: Type): Stringifier.Type => {
 							MutableHashMap.get(nonPrimitive),
 							Option.map(
 								flow(
-									MString.fromNonNullablePrimitive,
+									MString.fromNumber(10),
 									messageTextFormatter(nonPrimitive),
 									ASText.prepend(circularReferenceStartDelimiterMarkShower(nonPrimitive)),
 									ASText.append(circularReferenceEndDelimiterMarkShower(nonPrimitive))

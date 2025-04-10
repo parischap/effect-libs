@@ -84,8 +84,20 @@ describe('MString', () => {
 			TEUtils.strictEqual(MString.fromPrimitive(undefined), 'undefined');
 		});
 
-		it('number', () => {
+		it('Integer', () => {
 			TEUtils.strictEqual(MString.fromPrimitive(5), '5');
+		});
+
+		it('Irrational number', () => {
+			TEUtils.strictEqual(MString.fromPrimitive(16.0 / 3.0), '5.333333333333333');
+		});
+
+		it('Very small number', () => {
+			TEUtils.strictEqual(MString.fromPrimitive(1e-8), '0.00000001');
+		});
+
+		it('Very large integer', () => {
+			TEUtils.strictEqual(MString.fromPrimitive(1e22), '10000000000000000000000');
 		});
 	});
 
