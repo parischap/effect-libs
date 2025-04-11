@@ -121,19 +121,6 @@ importers:
         specifier: ^3.14.5
         version: 3.14.5
 
-  packages/conversions:
-    dependencies:
-      '@parischap/effect-lib':
-        specifier: workspace:@parischap-dev/effect-lib@*
-        version: link:../effect-lib
-      effect:
-        specifier: ^3.14.5
-        version: 3.14.5
-    devDependencies:
-      '@parischap/conversions':
-        specifier: link:.
-        version: 'link:'
-
   packages/date:
     dependencies:
       '@parischap/effect-lib':
@@ -176,6 +163,19 @@ importers:
         version: 3.14.5
     devDependencies:
       '@parischap/effect-report':
+        specifier: link:.
+        version: 'link:'
+
+  packages/formatting:
+    dependencies:
+      '@parischap/effect-lib':
+        specifier: workspace:@parischap-dev/effect-lib@*
+        version: link:../effect-lib
+      effect:
+        specifier: ^3.14.5
+        version: 3.14.5
+    devDependencies:
+      '@parischap/formatting':
         specifier: link:.
         version: 'link:'
 

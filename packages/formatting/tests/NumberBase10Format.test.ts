@@ -1,6 +1,6 @@
 /* eslint-disable functional/no-expression-statements */
 import { MBigDecimal } from '@parischap/effect-lib';
-import { CVBrand, CVNumberBase10Format } from '@parischap/formatting';
+import { CVNumberBase10Format, CVReal } from '@parischap/formatting';
 import { TEUtils } from '@parischap/test-utils';
 import { BigDecimal, Equal, Option, pipe, Tuple } from 'effect';
 import { describe, it } from 'vitest';
@@ -589,15 +589,15 @@ describe('NumberBase10Format', () => {
 		describe('General tests with commaAndSpace', () => {
 			const numberWriter = CVNumberBase10Format.toNumberWriter(commaAndSpace);
 			it('Zero', () => {
-				TEUtils.assertEquals(numberWriter(CVBrand.Real.unsafeFromNumber(0)), '0');
+				TEUtils.assertEquals(numberWriter(CVReal.unsafeFromNumber(0)), '0');
 			});
 
 			it('Negative zero', () => {
-				TEUtils.assertEquals(numberWriter(CVBrand.Real.unsafeFromNumber(-0.0004)), '-0');
+				TEUtils.assertEquals(numberWriter(CVReal.unsafeFromNumber(-0.0004)), '-0');
 			});
 
 			it('Number with less than maximumFractionDigits decimals', () => {
-				TEUtils.assertEquals(numberWriter(CVBrand.Real.unsafeFromNumber(1528.65)), '1 528,65');
+				TEUtils.assertEquals(numberWriter(CVReal.unsafeFromNumber(1528.65)), '1 528,65');
 			});
 
 			it('BigDecimal as input, more than maximumFractionDigits decimals', () => {
@@ -612,15 +612,15 @@ describe('NumberBase10Format', () => {
 				CVNumberBase10Format.toNumberWriter
 			);
 			it('Zero', () => {
-				TEUtils.assertEquals(numberWriter(CVBrand.Real.unsafeFromNumber(0)), '0');
+				TEUtils.assertEquals(numberWriter(CVReal.unsafeFromNumber(0)), '0');
 			});
 
 			it('Number rounded down to zero', () => {
-				TEUtils.assertEquals(numberWriter(CVBrand.Real.unsafeFromNumber(-0.0004)), '-0');
+				TEUtils.assertEquals(numberWriter(CVReal.unsafeFromNumber(-0.0004)), '-0');
 			});
 
 			it('Number rounded up from zero', () => {
-				TEUtils.assertEquals(numberWriter(CVBrand.Real.unsafeFromNumber(0.0005)), ',001');
+				TEUtils.assertEquals(numberWriter(CVReal.unsafeFromNumber(0.0005)), ',001');
 			});
 		});
 
@@ -632,15 +632,15 @@ describe('NumberBase10Format', () => {
 				CVNumberBase10Format.toNumberWriter
 			);
 			it('Zero', () => {
-				TEUtils.assertEquals(numberWriter(CVBrand.Real.unsafeFromNumber(0)), ',00');
+				TEUtils.assertEquals(numberWriter(CVReal.unsafeFromNumber(0)), ',00');
 			});
 
 			it('Number rounded down to zero', () => {
-				TEUtils.assertEquals(numberWriter(CVBrand.Real.unsafeFromNumber(-0.004)), '-,00');
+				TEUtils.assertEquals(numberWriter(CVReal.unsafeFromNumber(-0.004)), '-,00');
 			});
 
 			it('Number rounded up from zero', () => {
-				TEUtils.assertEquals(numberWriter(CVBrand.Real.unsafeFromNumber(0.005)), ',01');
+				TEUtils.assertEquals(numberWriter(CVReal.unsafeFromNumber(0.005)), ',01');
 			});
 		});
 
@@ -652,15 +652,15 @@ describe('NumberBase10Format', () => {
 				CVNumberBase10Format.toNumberWriter
 			);
 			it('Negative Zero', () => {
-				TEUtils.assertEquals(numberWriter(CVBrand.Real.unsafeFromNumber(-0)), '-0,00E0');
+				TEUtils.assertEquals(numberWriter(CVReal.unsafeFromNumber(-0)), '-0,00E0');
 			});
 
 			it('Big positive number', () => {
-				TEUtils.assertEquals(numberWriter(CVBrand.Real.unsafeFromNumber(154321.5)), '154,322E3');
+				TEUtils.assertEquals(numberWriter(CVReal.unsafeFromNumber(154321.5)), '154,322E3');
 			});
 
 			it('Small negative number', () => {
-				TEUtils.assertEquals(numberWriter(CVBrand.Real.unsafeFromNumber(-523e-5)), '-5,23E-3');
+				TEUtils.assertEquals(numberWriter(CVReal.unsafeFromNumber(-523e-5)), '-5,23E-3');
 			});
 		});
 	});

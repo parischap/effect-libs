@@ -1,3 +1,10 @@
-export * as CVBrand from './Brand.js';
+export * as CVEmail from './Email.js';
 export * as CVNumberBase10Format from './NumberBase10Format.js';
+export * as CVPositiveReal from './PositiveReal.js';
+export * as CVPositiveRealInt from './PositiveRealInt.js';
+export * as CVReal from './Real.js';
+export * as CVRealInt from './RealInt.js';
+export * as CVRoundingMode from './RoundingMode.js';
+export * as CVRoundingOption from './RoundingOption.js';
 export * as CVSchema from './Schema.js';
+export * as CVSemVer from './SemVer.js';

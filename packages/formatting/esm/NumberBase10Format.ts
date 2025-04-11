@@ -35,7 +35,9 @@ import {
 	Struct,
 	Tuple
 } from 'effect';
-import type * as CVBrand from './Brand.js';
+import * as CVReal from './Real.js';
+import * as CVRoundingMode from './RoundingMode.js';
+import * as CVRoundingOption from './RoundingOption.js';
 
 export const moduleTag = '@parischap/formatting/NumberBase10Format/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
@@ -464,7 +466,7 @@ export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable 
 	readonly scientificNotation: ScientificNotation;
 
 	/** Rounding mode options. See RoundingMode */
-	readonly roundingMode: MNumber.RoundingMode;
+	readonly roundingMode: CVRoundingMode.Type;
 
 	/** Sign display options. See SignDisplay */
 	readonly signDisplay: SignDisplay;
@@ -474,7 +476,7 @@ export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable 
 }
 
 /**
- * S Type guard
+ * Type guard
  *
  * @category Guards
  */
@@ -581,7 +583,7 @@ export const scientificNotation: MTypes.OneArgFunction<Type, ScientificNotation>
  *
  * @category Destructors
  */
-export const roundingMode: MTypes.OneArgFunction<Type, MNumber.RoundingMode> =
+export const roundingMode: MTypes.OneArgFunction<Type, CVRoundingMode.Type> =
 	Struct.get('roundingMode');
 
 /**
@@ -722,14 +724,18 @@ export const toNumberReader = (
  */
 export const toNumberWriter = (
 	self: Type
-): MTypes.OneArgFunction<BigDecimal.BigDecimal | CVBrand.Real.Type, string> => {
-	const round =
+): MTypes.OneArgFunction<BigDecimal.BigDecimal | CVReal.Type, string> => {
+	const rounder =
 		self.maximumFractionDigits === +Infinity ?
 			Function.identity
-		:	MBigDecimal.round({
-				precision: self.maximumFractionDigits,
-				roundingMode: self.roundingMode
-			});
+		:	pipe(
+				{
+					precision: self.maximumFractionDigits,
+					roundingMode: self.roundingMode
+				},
+				CVRoundingOption.make,
+				CVRoundingOption.toBigDecimalRounder
+			);
 	const signWriter = SignDisplay.toWriter(self.signDisplay);
 	const mantissaAdjuster = ScientificNotation.toMantissaAdjuster(self.scientificNotation);
 	const hasThousandSeparator = self.thousandSeparator !== '';
@@ -749,7 +755,7 @@ export const toNumberWriter = (
 			:	Tuple.make(number.value < 0 ? (-1 as const) : (1 as const), number);
 
 		const [adjusted, exponent] = mantissaAdjuster(selfAsBigDecimal);
-		const absRounded = pipe(adjusted, round, BigDecimal.abs);
+		const absRounded = pipe(adjusted, rounder, BigDecimal.abs);
 		const [integerPart, fractionalPart] = pipe(
 			absRounded,
 			MBigDecimal.truncatedAndFollowingParts()
@@ -816,7 +822,7 @@ export const commaAndSpace: Type = make({
 	maximumFractionDigits: 3,
 	eNotationChars: ['E', 'e'],
 	scientificNotation: ScientificNotation.None,
-	roundingMode: MNumber.RoundingMode.HalfExpand,
+	roundingMode: CVRoundingMode.Type.HalfExpand,
 	signDisplay: SignDisplay.Auto
 });
 
@@ -1024,7 +1030,7 @@ export const withCeilRoundingMode = (self: Type): Type =>
 	make({
 		...self,
 		id: self.id + 'WithCeilRoundingMode',
-		roundingMode: MNumber.RoundingMode.Ceil
+		roundingMode: CVRoundingMode.Type.Ceil
 	});
 
 /**
@@ -1036,7 +1042,7 @@ export const withFloorRoundingMode = (self: Type): Type =>
 	make({
 		...self,
 		id: self.id + 'WithFloorRoundingMode',
-		roundingMode: MNumber.RoundingMode.Floor
+		roundingMode: CVRoundingMode.Type.Floor
 	});
 
 /**
@@ -1048,7 +1054,7 @@ export const withExpandRoundingMode = (self: Type): Type =>
 	make({
 		...self,
 		id: self.id + 'WithExpandRoundingMode',
-		roundingMode: MNumber.RoundingMode.Expand
+		roundingMode: CVRoundingMode.Type.Expand
 	});
 
 /**
@@ -1060,7 +1066,7 @@ export const withTruncRoundingMode = (self: Type): Type =>
 	make({
 		...self,
 		id: self.id + 'WithTruncRoundingMode',
-		roundingMode: MNumber.RoundingMode.Trunc
+		roundingMode: CVRoundingMode.Type.Trunc
 	});
 
 /**
@@ -1072,7 +1078,7 @@ export const withHalfCeilRoundingMode = (self: Type): Type =>
 	make({
 		...self,
 		id: self.id + 'WithHalfCeilRoundingMode',
-		roundingMode: MNumber.RoundingMode.HalfCeil
+		roundingMode: CVRoundingMode.Type.HalfCeil
 	});
 
 /**
@@ -1084,7 +1090,7 @@ export const withHalfFloorRoundingMode = (self: Type): Type =>
 	make({
 		...self,
 		id: self.id + 'WithHalfFloorRoundingMode',
-		roundingMode: MNumber.RoundingMode.HalfFloor
+		roundingMode: CVRoundingMode.Type.HalfFloor
 	});
 
 /**
@@ -1096,7 +1102,7 @@ export const withHalfExpandRoundingMode = (self: Type): Type =>
 	make({
 		...self,
 		id: self.id + 'WithHalfExpandRoundingMode',
-		roundingMode: MNumber.RoundingMode.HalfExpand
+		roundingMode: CVRoundingMode.Type.HalfExpand
 	});
 
 /**
@@ -1108,7 +1114,7 @@ export const withHalfTruncRoundingMode = (self: Type): Type =>
 	make({
 		...self,
 		id: self.id + 'WithHalfTruncRoundingMode',
-		roundingMode: MNumber.RoundingMode.HalfTrunc
+		roundingMode: CVRoundingMode.Type.HalfTrunc
 	});
 
 /**
@@ -1120,7 +1126,7 @@ export const withHalfEvenRoundingMode = (self: Type): Type =>
 	make({
 		...self,
 		id: self.id + 'WithHalfEvenRoundingMode',
-		roundingMode: MNumber.RoundingMode.HalfEven
+		roundingMode: CVRoundingMode.Type.HalfEven
 	});
 
 /**

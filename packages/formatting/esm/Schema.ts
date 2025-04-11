@@ -1,14 +1,19 @@
 import { Array, BigDecimal, Either, flow, Option, ParseResult, pipe, Schema, Struct } from 'effect';
-import * as CVBrand from './Brand.js';
+import * as CVEmail from './Email.js';
 import * as CVNumberBase10Format from './NumberBase10Format.js';
+import * as CVPositiveReal from './PositiveReal.js';
+import * as CVPositiveRealInt from './PositiveRealInt.js';
+import * as CVReal from './Real.js';
+import * as CVRealInt from './RealInt.js';
+import * as CVSemVer from './SemVer.js';
 
 /**
  * A Schema that transforms a string into a CVBrand.Email.Type
  *
  * @category Schema transformations
  */
-export const EmailFromString: Schema.Schema<CVBrand.Email.Type, string> = Schema.String.pipe(
-	Schema.fromBrand(CVBrand.Email.constructor)
+export const EmailFromString: Schema.Schema<CVEmail.Type, string> = Schema.String.pipe(
+	Schema.fromBrand(CVEmail.constructor)
 );
 
 /**
@@ -16,15 +21,15 @@ export const EmailFromString: Schema.Schema<CVBrand.Email.Type, string> = Schema
  *
  * @category Schema instances
  */
-export const EmailFromSelf: Schema.Schema<CVBrand.Email.Type> = Schema.typeSchema(EmailFromString);
+export const EmailFromSelf: Schema.Schema<CVEmail.Type> = Schema.typeSchema(EmailFromString);
 
 /**
  * A Schema that transforms a string into an CVBrand.SemVer.Type
  *
  * @category Schema transformations
  */
-export const SemVerFromString: Schema.Schema<CVBrand.SemVer.Type, string> = Schema.String.pipe(
-	Schema.fromBrand(CVBrand.SemVer.constructor)
+export const SemVerFromString: Schema.Schema<CVSemVer.Type, string> = Schema.String.pipe(
+	Schema.fromBrand(CVSemVer.constructor)
 );
 
 /**
@@ -32,57 +37,71 @@ export const SemVerFromString: Schema.Schema<CVBrand.SemVer.Type, string> = Sche
  *
  * @category Schema instances
  */
-export const SemVerFromSelf: Schema.Schema<CVBrand.SemVer.Type> =
-	Schema.typeSchema(SemVerFromString);
+export const SemVerFromSelf: Schema.Schema<CVSemVer.Type> = Schema.typeSchema(SemVerFromString);
 
 /**
- * A Schema that transforms a number into an CVBrand.Real.Type
+ * A Schema that transforms a number into an CVReal.Type
  *
  * @category Schema transformations
  */
-export const RealFromNumber: Schema.Schema<CVBrand.Real.Type, number> = Schema.Number.pipe(
-	Schema.fromBrand(CVBrand.Real.constructor)
+export const RealFromNumber: Schema.Schema<CVReal.Type, number> = Schema.Number.pipe(
+	Schema.fromBrand(CVReal.constructor)
 );
 
 /**
- * A Schema that represents a CVBrand.Real.Type
+ * A Schema that represents a CVReal.Type
  *
  * @category Schema instances
  */
-export const RealFromSelf: Schema.Schema<CVBrand.Real.Type> = Schema.typeSchema(RealFromNumber);
+export const RealFromSelf: Schema.Schema<CVReal.Type> = Schema.typeSchema(RealFromNumber);
 
 /**
- * A Schema that transforms a number into a CVBrand.RealInt.Type
+ * A Schema that transforms a number into a CVRealInt.Type
  *
  * @category Schema transformations
  */
-export const RealIntFromNumber: Schema.Schema<CVBrand.RealInt.Type, number> = Schema.Number.pipe(
-	Schema.fromBrand(CVBrand.RealInt.constructor)
+export const RealIntFromNumber: Schema.Schema<CVRealInt.Type, number> = Schema.Number.pipe(
+	Schema.fromBrand(CVRealInt.constructor)
 );
 
 /**
- * A Schema that represents a CVBrand.RealInt.Type
+ * A Schema that represents a CVRealInt.Type
  *
  * @category Schema instances
  */
-export const RealIntFromSelf: Schema.Schema<CVBrand.RealInt.Type> =
-	Schema.typeSchema(RealIntFromNumber);
+export const RealIntFromSelf: Schema.Schema<CVRealInt.Type> = Schema.typeSchema(RealIntFromNumber);
 
 /**
- * A Schema that transforms a number into a CVBrand.PositiveRealInt.Type
+ * A Schema that transforms a number into a CVPositiveRealInt.Type
  *
  * @category Schema transformations
  */
-export const RealPositiveIntFromNumber: Schema.Schema<CVBrand.PositiveRealInt.Type, number> =
-	Schema.Number.pipe(Schema.fromBrand(CVBrand.PositiveRealInt.constructor));
+export const PositiveRealIntFromNumber: Schema.Schema<CVPositiveRealInt.Type, number> =
+	Schema.Number.pipe(Schema.fromBrand(CVPositiveRealInt.constructor));
 
 /**
- * A Schema that represents a CVBrand.PositiveRealInt.Type
+ * A Schema that represents a CVPositiveRealInt.Type
  *
  * @category Schema instances
  */
-export const RealPositiveIntFromSelf: Schema.Schema<CVBrand.PositiveRealInt.Type> =
-	Schema.typeSchema(RealPositiveIntFromNumber);
+export const PositiveRealIntFromSelf: Schema.Schema<CVPositiveRealInt.Type> =
+	Schema.typeSchema(PositiveRealIntFromNumber);
+
+/**
+ * A Schema that transforms a number into a CVPositiveReal.Type
+ *
+ * @category Schema transformations
+ */
+export const PositiveRealFromNumber: Schema.Schema<CVPositiveReal.Type, number> =
+	Schema.Number.pipe(Schema.fromBrand(CVPositiveReal.constructor));
+
+/**
+ * A Schema that represents a CVPositiveReal.Type
+ *
+ * @category Schema instances
+ */
+export const PositiveRealFromSelf: Schema.Schema<CVPositiveReal.Type> =
+	Schema.typeSchema(PositiveRealFromNumber);
 
 /**
  * A Schema that transforms a string into a BigDecimal using `format`.
@@ -113,25 +132,38 @@ const BigDecimalFromString = (
 export { BigDecimalFromString as BigDecimal };
 
 /**
- * A Schema that transforms a Brand.Real into a BigDecimal. When encoding, this Schema will fail if
- * the BigDecimal exceeds the 64-bit range of a number.
+ * A Schema that transforms a string into a Real using `format`.
  *
  * @category Schema transformations
  */
-export const BigDecimalFromReal: Schema.Schema<BigDecimal.BigDecimal, CVBrand.Real.Type> =
-	Schema.transformOrFail(RealFromSelf, Schema.BigDecimalFromSelf, {
+// Do not use Schema.compose with BigDecimalFromString and BigDecimalFromReal here because BigDecimal has no negative 0. See CVNumberBase10Format.toNumberWriter
+export const RealFromString = (
+	format: CVNumberBase10Format.Type
+): Schema.Schema<CVReal.Type, string> => {
+	const reader = CVNumberBase10Format.toNumberReader(format);
+	const writer = CVNumberBase10Format.toNumberWriter(format);
+	return Schema.transformOrFail(Schema.String, RealFromSelf, {
 		strict: true,
-		decode: flow(BigDecimal.unsafeFromNumber, ParseResult.succeed),
-		encode: (input, _options, ast) =>
+		decode: (input, _options, ast) =>
 			pipe(
 				input,
-				CVBrand.Real.fromBigDecimal,
-				Either.mapLeft(
+				reader,
+				Either.fromOption(
+					() => new ParseResult.Type(ast, input, 'Failed to convert string to Real')
+				),
+				Either.flatMap(
 					flow(
-						Array.map(Struct.get('message')),
-						Array.join('. '),
-						(message) => new ParseResult.Type(ast, input, message)
+						CVReal.fromBigDecimal,
+						Either.mapLeft(
+							flow(
+								Array.map(Struct.get('message')),
+								Array.join('. '),
+								(message) => new ParseResult.Type(ast, input, message)
+							)
+						)
 					)
 				)
-			)
+			),
+		encode: flow(writer, ParseResult.succeed)
 	});
+};
