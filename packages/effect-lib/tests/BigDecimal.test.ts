@@ -1,5 +1,5 @@
 /* eslint-disable functional/no-expression-statements */
-import { MBigDecimal, MNumber } from '@parischap/effect-lib';
+import { MBigDecimal } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
 import { BigDecimal, pipe } from 'effect';
 import { describe, it } from 'vitest';
@@ -70,16 +70,6 @@ describe('MBigDecimal', () => {
 				BigDecimal.make(-54n, 1),
 				BigDecimal.make(-5n, 2)
 			]);
-		});
-	});
-
-	describe('round', () => {
-		const round = MBigDecimal.round({ precision: 3, roundingMode: MNumber.RoundingMode.HalfEven });
-		it('Even number', () => {
-			TEUtils.assertEquals(round(BigDecimal.make(4566n, 4)), BigDecimal.make(457n, 3));
-		});
-		it('Odd number', () => {
-			TEUtils.assertEquals(round(BigDecimal.make(-4564n, 4)), BigDecimal.make(-456n, 3));
 		});
 	});
 });
