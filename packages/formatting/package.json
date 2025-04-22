@@ -40,7 +40,7 @@
 		"devDependencies": {},
 		"peerDependencies": {
 			"@parischap/effect-lib": "^0.5.0",
-			"effect": "^3.14.5"
+			"effect": "^3.14.11"
 		},
 		"publishConfig": {},
 		"packageManager": "",
@@ -82,7 +82,7 @@
 	},
 	"peerDependencies": {
 		"@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
-		"effect": "^3.14.5"
+		"effect": "^3.14.11"
 	},
 	"repository": {
 		"type": "git",

@@ -15,9 +15,6 @@
 			"path": "packages/pretty-print",
 		},
 		{
-			"path": "packages/templater",
-		},
-		{
 			"path": "packages/date",
 		},
 		{
