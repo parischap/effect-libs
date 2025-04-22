@@ -8,7 +8,7 @@ import { Brand, Number } from 'effect';
 /**
  * Module tag
  *
- * @category Models
+ * @category Module tag
  */
 export const moduleTag = '@parischap/formatting/Positive/';
 

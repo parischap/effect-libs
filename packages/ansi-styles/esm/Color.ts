@@ -23,7 +23,7 @@ import * as ASAnsiString from './AnsiString.js';
 /**
  * Module tag
  *
- * @category Models
+ * @category Module tag
  */
 export const moduleTag = '@parischap/ansi-styles/Color/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;

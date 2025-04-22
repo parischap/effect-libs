@@ -9,7 +9,7 @@ import { Brand, Either } from 'effect';
 /**
  * Module tag
  *
- * @category Models
+ * @category Module tag
  */
 export const moduleTag = '@parischap/formatting/Int/';
 

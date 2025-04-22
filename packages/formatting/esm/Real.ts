@@ -7,7 +7,7 @@ import * as CVInt from './Int.js';
 /**
  * Module tag
  *
- * @category Models
+ * @category Module tag
  */
 export const moduleTag = '@parischap/formatting/Real/';
 

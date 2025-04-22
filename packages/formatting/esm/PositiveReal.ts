@@ -12,7 +12,7 @@ import * as CVReal from './Real.js';
 /**
  * Module tag
  *
- * @category Models
+ * @category Module tag
  */
 export const moduleTag = '@parischap/formatting/PositiveReal/';
 

@@ -37,7 +37,7 @@ import * as MTypes from './types.js';
 /**
  * Module tag
  *
- * @category Models
+ * @category Module tag
  */
 export const moduleTag = '@parischap/effect-lib/Tree/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;

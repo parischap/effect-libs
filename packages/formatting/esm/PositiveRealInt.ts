@@ -14,7 +14,7 @@ import * as CVRealInt from './RealInt.js';
 /**
  * Module tag
  *
- * @category Models
+ * @category Module tag
  */
 export const moduleTag = '@parischap/formatting/PositiveRealInt/';
 

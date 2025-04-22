@@ -38,7 +38,7 @@ import * as ASColor from './Color.js';
 /**
  * Module tag
  *
- * @category Models
+ * @category Module tag
  */
 export const moduleTag = '@parischap/ansi-styles/StyleCharacteristics/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;

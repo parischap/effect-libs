@@ -39,7 +39,7 @@ import * as PPValueBasedStylerConstructor from './ValueBasedStylerConstructor.js
 /**
  * Module tag
  *
- * @category Models
+ * @category Module tag
  */
 export const moduleTag = '@parischap/pretty-print/ByPasser/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
