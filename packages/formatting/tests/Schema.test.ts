@@ -205,4 +205,57 @@ describe('CVSchema', () => {
 			TEUtils.assertRight(pipe(CVReal.unsafeFromNumber(-0), Schema.encodeEither(schema)), '-0');
 		});
 	});
+
+	describe('Unpad', () => {
+		const schema1 = CVSchema.Unpad({
+			paddedLength: 5,
+			fillChar: '0',
+			disallowEmptyString: true,
+			padAtStart: true
+		});
+		const schema2 = CVSchema.Unpad({
+			paddedLength: 5,
+			fillChar: '0',
+			disallowEmptyString: false,
+			padAtStart: true
+		});
+		const schema3 = CVSchema.Unpad({
+			paddedLength: 5,
+			fillChar: '0',
+			disallowEmptyString: true,
+			padAtStart: false
+		});
+		const schema4 = CVSchema.Unpad({
+			paddedLength: 5,
+			fillChar: '0',
+			disallowEmptyString: false,
+			padAtStart: false
+		});
+		describe('Decoding', () => {
+			it('Not enough characters', () => {
+				TEUtils.assertTrue(pipe('', Schema.decodeEither(schema1), Either.isLeft));
+				TEUtils.assertTrue(pipe('1', Schema.decodeEither(schema1), Either.isLeft));
+				TEUtils.assertTrue(pipe('', Schema.decodeEither(schema3), Either.isLeft));
+				TEUtils.assertTrue(pipe('1', Schema.decodeEither(schema3), Either.isLeft));
+			});
+			it('Too many characters', () => {
+				TEUtils.assertTrue(pipe('000001', Schema.decodeEither(schema1), Either.isLeft));
+				TEUtils.assertTrue(pipe('100000', Schema.decodeEither(schema3), Either.isLeft));
+			});
+			it('String containing some characters different from the fillChar', () => {
+				TEUtils.assertRight(pipe('00110', Schema.decodeEither(schema1)), '110');
+				TEUtils.assertRight(pipe('00110', Schema.decodeEither(schema3)), '0011');
+			});
+			it('String containing only the fillChar', () => {
+				TEUtils.assertRight(pipe('00000', Schema.decodeEither(schema1)), '0');
+				TEUtils.assertRight(pipe('00000', Schema.decodeEither(schema2)), '');
+				TEUtils.assertRight(pipe('00000', Schema.decodeEither(schema3)), '0');
+				TEUtils.assertRight(pipe('00000', Schema.decodeEither(schema4)), '');
+			});
+		});
+		it('Encoding', () => {
+			TEUtils.assertRight(pipe('11', Schema.encodeEither(schema1)), '00011');
+			TEUtils.assertRight(pipe('11', Schema.encodeEither(schema3)), '11000');
+		});
+	});
 });

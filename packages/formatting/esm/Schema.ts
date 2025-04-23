@@ -1,4 +1,17 @@
-import { Array, BigDecimal, Either, flow, Option, ParseResult, pipe, Schema, Struct } from 'effect';
+import { MFunction, MString } from '@parischap/effect-lib';
+import {
+	Array,
+	BigDecimal,
+	Either,
+	flow,
+	Function,
+	Option,
+	ParseResult,
+	pipe,
+	Schema,
+	String,
+	Struct
+} from 'effect';
 import * as CVEmail from './Email.js';
 import * as CVNumberBase10Format from './NumberBase10Format.js';
 import * as CVPositiveReal from './PositiveReal.js';
@@ -165,5 +178,62 @@ export const RealFromString = (
 				)
 			),
 		encode: flow(writer, ParseResult.succeed)
+	});
+};
+
+/**
+ * A Schema that transforms a string padded into an unpadded string. `paddedLength` must be a
+ * strictly positive integer indicating the fixed length of the padded string. When encoding, no
+ * error is reported if the string to encode has strictly more than `paddedLength` characters.
+ * `fillChar` must be a one-character string representing the character used for padding.
+ * `disallowEmptyString` is used only when decoding. If true and if trimming the fillChar results in
+ * an empty string, the fillChar is returned instead of an empty string. This is useful for instance
+ * if you have numbers padded with 0's and you prefer the result of unpadding a string containing
+ * only 0's to be '0' rather than an empty string.
+ *
+ * @category Schema transformations
+ */
+export const Unpad = ({
+	paddedLength,
+	fillChar,
+	disallowEmptyString,
+	padAtStart
+}: {
+	readonly paddedLength: number;
+	readonly fillChar: string;
+	readonly disallowEmptyString: boolean;
+	readonly padAtStart: boolean;
+}): Schema.Schema<string, string> => {
+	const trimmer = flow(
+		padAtStart ? MString.trimStart(fillChar) : MString.trimEnd(fillChar),
+		MFunction.fIfTrue({
+			condition: disallowEmptyString,
+			f: flow(
+				Option.liftPredicate(String.isNonEmpty),
+				Option.getOrElse(Function.constant(fillChar))
+			)
+		})
+	);
+
+	const padder =
+		padAtStart ? String.padStart(paddedLength, fillChar) : String.padEnd(paddedLength, fillChar);
+
+	return Schema.transformOrFail(Schema.String, Schema.String, {
+		strict: true,
+		decode: (input, _options, ast) =>
+			pipe(
+				input,
+				Either.liftPredicate(
+					MString.hasLength(paddedLength),
+					(s) =>
+						new ParseResult.Type(
+							ast,
+							input,
+							`Expected ${paddedLength} characters. Actual: ${s.length}`
+						)
+				),
+				Either.map(trimmer)
+			),
+		encode: flow(padder, ParseResult.succeed)
 	});
 };
