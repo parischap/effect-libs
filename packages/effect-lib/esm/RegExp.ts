@@ -108,8 +108,8 @@ export const semVer: RegExp = pipe(MRegExpString.semVer, MRegExpString.makeLine,
 export const email: RegExp = pipe(MRegExpString.email, MRegExpString.makeLine, RegExp);
 
 /**
- * A regular expression representing a strictly positive digit
+ * A regular expression representing a digit
  *
  * @category Instances
  */
-export const nonZeroDigit: RegExp = pipe(MRegExpString.nonZeroDigit, RegExp);
+export const digit: RegExp = pipe(MRegExpString.digit, RegExp);
