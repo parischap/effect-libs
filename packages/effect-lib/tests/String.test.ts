@@ -494,4 +494,15 @@ describe('MString', () => {
 			'1foobarbaz'
 		);
 	});
+
+	describe('fulfillsRegExp', () => {
+		const isDigit = MString.fulfillsRegExp(/\d/);
+		it('Matching', () => {
+			TEUtils.assertTrue(isDigit('9'));
+		});
+
+		it('Non matching', () => {
+			TEUtils.assertFalse(isDigit('a'));
+		});
+	});
 });

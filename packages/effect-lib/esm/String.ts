@@ -603,3 +603,11 @@ export const removeNCharsEveryMCharsFromRight = ({
 	n === 0 ?
 		Function.identity
 	:	flow(splitEquallyRestAtStart(m + n), Array.map(String.takeRight(m)), Array.join(''));
+
+/**
+ * Returns `true` if `self` fulfills regExp. `false` otherwise.
+ *
+ * @category Utils
+ */
+export const fulfillsRegExp = (regExp: RegExp): Predicate.Predicate<string> =>
+	regExp.test.bind(regExp);
