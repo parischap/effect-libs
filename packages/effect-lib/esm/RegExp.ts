@@ -113,3 +113,10 @@ export const email: RegExp = pipe(MRegExpString.email, MRegExpString.makeLine, R
  * @category Instances
  */
 export const digit: RegExp = pipe(MRegExpString.digit, RegExp);
+
+/**
+ * A regular expression representing a space
+ *
+ * @category Instances
+ */
+export const space: RegExp = pipe(MRegExpString.space, RegExp);
