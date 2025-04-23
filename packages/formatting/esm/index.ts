@@ -1,5 +1,6 @@
 export * as CVEmail from './Email.js';
 export * as CVNumberBase10Format from './NumberBase10Format.js';
+export * as CVPlaceHolder from './PlaceHolder.js';
 export * as CVPositiveReal from './PositiveReal.js';
 export * as CVPositiveRealInt from './PositiveRealInt.js';
 export * as CVReal from './Real.js';

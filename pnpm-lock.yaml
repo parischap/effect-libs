@@ -226,19 +226,6 @@ importers:
         specifier: ^3.14.5
         version: 3.14.5
 
-  packages/templater:
-    dependencies:
-      '@parischap/effect-lib':
-        specifier: workspace:@parischap-dev/effect-lib@*
-        version: link:../effect-lib
-      effect:
-        specifier: ^3.14.11
-        version: 3.14.11
-    devDependencies:
-      '@parischap/templater':
-        specifier: link:.
-        version: 'link:'
-
 packages:
 
   '@ampproject/remapping@2.3.0':
