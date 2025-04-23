@@ -5,15 +5,6 @@ import { Function, Option, pipe, Tuple } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('MRegExpString', () => {
-	describe('escape', () => {
-		it('All together', () => {
-			TEUtils.strictEqual(
-				MRegExpString.escape('\\ ^ $ * + ? . ( ) | { } [ ]'),
-				'\\\\ \\^ \\$ \\* \\+ \\? \\. \\( \\) \\| \\{ \\} \\[ \\]'
-			);
-		});
-	});
-
 	describe('unsignedNonNullBase10Int', () => {
 		describe('No thousand separator', () => {
 			const regExp = pipe(

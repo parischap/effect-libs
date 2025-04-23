@@ -1,6 +1,6 @@
 /** Very simple regular expression string module */
 
-import { Array, Function, pipe, String } from 'effect';
+import { Array, Function, pipe, RegExp, String } from 'effect';
 import * as MArray from './Array.js';
 import * as MTypes from './types.js';
 
@@ -131,13 +131,6 @@ export const capture: MTypes.StringTransformer = (self) => `(${self})`;
  * @category Utils
  */
 export const optionalCapture: MTypes.StringTransformer = (self) => `(${self})?`;
-
-/**
- * Escapes all regex special characters
- *
- * @category Constructors
- */
-export const escape: MTypes.StringTransformer = (s) => s.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&');
 
 /**
  * A regular expression string representing an empty capturing group
@@ -284,7 +277,7 @@ const _unsignedNonNullIntTo999 = _unsignedNonNullIntNPlusOneDigits(2);
  */
 export const unsignedNonNullBase10Int = (thousandSeparator: string): string =>
 	thousandSeparator === '' ? _unsignedNonNullInt : (
-		_unsignedNonNullIntTo999 + zeroOrMore(escape(thousandSeparator) + _digitGroup)
+		_unsignedNonNullIntTo999 + zeroOrMore(RegExp.escape(thousandSeparator) + _digitGroup)
 	);
 
 /**
@@ -331,8 +324,14 @@ export const base10Number = ({
 }): string =>
 	_signPart +
 	pipe(thousandSeparator, unsignedBase10Int, optionalCapture) +
-	pipe(fractionalSeparator, escape, String.concat(capture(_fractionalPart)), optional) +
-	pipe(eNotationChars, Array.map(escape), _tupledCharacterClass, String.concat(_expPart), optional);
+	pipe(fractionalSeparator, RegExp.escape, String.concat(capture(_fractionalPart)), optional) +
+	pipe(
+		eNotationChars,
+		Array.map(RegExp.escape),
+		_tupledCharacterClass,
+		String.concat(_expPart),
+		optional
+	);
 
 /**
  * A regular expression string representing an integer in base 2.
