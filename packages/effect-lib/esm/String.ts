@@ -29,7 +29,7 @@ import * as MTypes from './types.js';
 /**
  * Module tag
  *
- * @category Module tag
+ * @category Models
  */
 export const moduleTag = '@parischap/effect-lib/String/';
 
@@ -342,7 +342,8 @@ export const takeRightBut =
 		String.takeRight(self, self.length - n);
 
 /**
- * Same as String.trimStart but the character to remove can be specified
+ * Same as String.trimStart but the character to remove can be specified. `charToRemove` must be a
+ * one-character string
  *
  * @category Utils
  */
@@ -350,7 +351,8 @@ export const trimStart = (charToRemove: string): MTypes.StringTransformer =>
 	flow(Array.dropWhile(MFunction.strictEquals(charToRemove)), Array.join(''));
 
 /**
- * Same as String.trimEnd but the character to remove can be specified
+ * Same as String.trimEnd but the character to remove can be specified. `charToRemove` must be a
+ * one-character string
  *
  * @category Utils
  */
