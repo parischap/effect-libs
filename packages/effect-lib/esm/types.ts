@@ -231,23 +231,19 @@ type Enumerate<N extends number, Acc extends Array<number> = []> =
 	[Acc['length']] extends [N] ? Acc[number] : Enumerate<N, [...Acc, Acc['length']]>;
 
 /**
- * Utility type that retuns `never` if two types are equal. `unknown` otherwise
- *
- * @category Utility types
- */
-export type Equals<A, B> =
-	readonly [A] extends readonly [B] ?
-		readonly [B] extends readonly [A] ?
-			never
-		:	unknown
-	:	unknown;
-
-/**
- * Function that reports an error if the type it receives is not `never`
+ * Function that returns a `true` type the two type parameters are equal. Returns a `false` type
+ * otherwise
  *
  * @category Utils
  */
-export function checkNever<_A extends never>(): void {}
+
+export function areEqualTypes<A, B>(): readonly [A] extends readonly [B] ?
+	readonly [B] extends readonly [A] ?
+		true
+	:	false
+:	false {
+	return true as never;
+}
 
 /**
  * Utilityy type that generates a tuple of `N` `T`'s
