@@ -67,8 +67,7 @@ namespace ValueContainer {
 	export const has = (u: unknown): u is Type<unknown> => Predicate.hasProperty(u, _TypeId);
 
 	/** Prototype */
-	/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-	const proto: MTypes.Proto<Type<any>> = {
+	const proto: MTypes.Proto<Type<never>> = {
 		[_TypeId]: {
 			_A: MTypes.covariantValue
 		},

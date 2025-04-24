@@ -48,8 +48,7 @@ export const has = (u: unknown): u is Type<unknown, unknown, unknown> =>
 	Predicate.hasProperty(u, _TypeId);
 
 /** Prototype */
-/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-const proto: MTypes.Proto<Type<any, any, any>> = {
+const proto: MTypes.Proto<Type<never, never, never>> = {
 	[_TypeId]: {
 		_Input: MTypes.covariantValue,
 		_Output: MTypes.covariantValue,

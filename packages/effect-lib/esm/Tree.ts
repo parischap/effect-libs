@@ -183,8 +183,7 @@ export const equivalence: Equivalence.Equivalence<Type<unknown, unknown>> = getE
 );
 
 /** Prototype */
-/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-const proto: MTypes.Proto<Type<any, any>> = {
+const proto: MTypes.Proto<Type<never, never>> = {
 	[_TypeId]: {
 		_A: MTypes.covariantValue,
 		_B: MTypes.covariantValue
