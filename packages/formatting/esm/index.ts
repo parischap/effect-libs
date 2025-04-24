@@ -9,3 +9,4 @@ export * as CVRoundingMode from './RoundingMode.js';
 export * as CVRoundingOption from './RoundingOption.js';
 export * as CVSchema from './Schema.js';
 export * as CVSemVer from './SemVer.js';
+export * as CVTemplate from './Template.js';

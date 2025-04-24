@@ -1,5 +1,5 @@
 /* eslint-disable functional/no-expression-statements */
-import { MFunction, MRegExp, MString } from '@parischap/effect-lib';
+import { MTypes } from '@parischap/effect-lib';
 import { CVPlaceHolder } from '@parischap/formatting';
 import { TEUtils } from '@parischap/test-utils';
 import { Either, pipe, Tuple } from 'effect';
@@ -7,6 +7,7 @@ import { describe, it } from 'vitest';
 
 describe('CVPlaceHolder', () => {
 	const threeChars = CVPlaceHolder.fixedLength({ name: 'foo', length: 3 });
+	MTypes.areEqualTypes<typeof threeChars, CVPlaceHolder.Type<'foo'>>() satisfies true;
 
 	describe('Tag, prototype and guards', () => {
 		it('moduleTag', () => {
@@ -66,85 +67,13 @@ describe('CVPlaceHolder', () => {
 		});
 	});
 
-	describe('leftPadded', () => {
-		const leftPadded = CVPlaceHolder.leftPadded({ name: 'foo', length: 3, fillString: '0' });
-
-		describe('Reading', () => {
-			it('Not enough characters left', () => {
-				TEUtils.assertTrue(pipe('', leftPadded.reader, Either.isLeft));
-				TEUtils.assertTrue(pipe('11', leftPadded.reader, Either.isLeft));
-			});
-
-			it('Just enough characters left', () => {
-				TEUtils.assertEquals(leftPadded.reader('010'), Either.right(Tuple.make('10', '')));
-			});
-
-			it('Template longer than size to read - placeholder contains only fillString character', () => {
-				TEUtils.assertEquals(
-					leftPadded.reader('000and baz'),
-					Either.right(Tuple.make('0', 'and baz'))
-				);
-			});
-		});
-
-		describe('Writing', () => {
-			it('Too many characters', () => {
-				TEUtils.assertTrue(pipe('00aa', leftPadded.writer, Either.isLeft));
-			});
-
-			it('Too few characters', () => {
-				TEUtils.assertRight(pipe('', leftPadded.writer), '000');
-				TEUtils.assertRight(pipe('1', leftPadded.writer), '001');
-			});
-
-			it('Just the expected number of characters', () => {
-				TEUtils.assertRight(pipe('110', leftPadded.writer), '110');
-			});
-		});
-	});
-
-	describe('rightPadded', () => {
-		const rightPadded = CVPlaceHolder.rightPadded({ name: 'foo', length: 3, fillString: '0' });
-
-		describe('Reading', () => {
-			it('Not enough characters left', () => {
-				TEUtils.assertTrue(pipe('', rightPadded.reader, Either.isLeft));
-				TEUtils.assertTrue(pipe('11', rightPadded.reader, Either.isLeft));
-			});
-
-			it('Just enough characters left', () => {
-				TEUtils.assertEquals(rightPadded.reader('010'), Either.right(Tuple.make('01', '')));
-			});
-
-			it('Template longer than size to read - placeholder contains only fillString character', () => {
-				TEUtils.assertEquals(
-					rightPadded.reader('000and baz'),
-					Either.right(Tuple.make('0', 'and baz'))
-				);
-			});
-		});
-
-		describe('Writing', () => {
-			it('Too many characters', () => {
-				TEUtils.assertTrue(pipe('00aa', rightPadded.writer, Either.isLeft));
-			});
-
-			it('Too few characters', () => {
-				TEUtils.assertRight(pipe('', rightPadded.writer), '000');
-				TEUtils.assertRight(pipe('1', rightPadded.writer), '100');
-			});
-
-			it('Just the expected number of characters', () => {
-				TEUtils.assertRight(pipe('011', rightPadded.writer), '011');
-			});
-		});
-	});
-
 	describe('literals', () => {
 		const literals = CVPlaceHolder.literals({ name: 'foo', strings: ['foo', 'barbaz'] });
 
+		MTypes.areEqualTypes<typeof literals, CVPlaceHolder.Type<'foo'>>() satisfies true;
+
 		describe('Reading', () => {
-			it('Not matching', () => {
+			it('Not starting by one of the literals', () => {
 				TEUtils.assertTrue(pipe('', literals.reader, Either.isLeft));
 				TEUtils.assertTrue(pipe('fo1 and bar', literals.reader, Either.isLeft));
 			});
@@ -165,85 +94,113 @@ describe('CVPlaceHolder', () => {
 		});
 
 		describe('Writing', () => {
-			it('Not matching', () => {
+			it('Not starting by one of the literals', () => {
 				TEUtils.assertTrue(pipe('', literals.writer, Either.isLeft));
 				TEUtils.assertTrue(pipe('foo1', literals.writer, Either.isLeft));
 			});
 
 			it('First option', () => {
-				TEUtils.assertRight(pipe('foo', literals.writer), 'foo');
+				TEUtils.assertRight(literals.writer('foo'), 'foo');
 			});
 
 			it('Second option', () => {
-				TEUtils.assertRight(pipe('barbaz', literals.writer), 'barbaz');
+				TEUtils.assertRight(literals.writer('barbaz'), 'barbaz');
 			});
 		});
 	});
 
-	describe('takeWhile', () => {
-		const takeWhileDigit = CVPlaceHolder.takeWhile({
-			name: 'foo',
-			predicate: MString.fulfillsRegExp(MRegExp.digit)
+	describe('digits', () => {
+		const digits = CVPlaceHolder.digits({
+			name: 'foo'
 		});
+
+		MTypes.areEqualTypes<typeof digits, CVPlaceHolder.Type<'foo'>>() satisfies true;
 
 		describe('Reading', () => {
 			it('Empty string', () => {
-				TEUtils.assertEquals(takeWhileDigit.reader(''), Either.right(Tuple.make('', '')));
+				TEUtils.assertEquals(digits.reader(''), Either.right(Tuple.make('', '')));
 			});
 
 			it('Predicate not matched before the end', () => {
 				TEUtils.assertEquals(
-					takeWhileDigit.reader('001 and 002'),
+					digits.reader('001 and 002'),
 					Either.right(Tuple.make('001', ' and 002'))
 				);
 			});
 
 			it('Predicate matched till the end', () => {
-				TEUtils.assertEquals(takeWhileDigit.reader('001'), Either.right(Tuple.make('001', '')));
+				TEUtils.assertEquals(digits.reader('001'), Either.right(Tuple.make('001', '')));
 			});
 		});
 
 		describe('Writing', () => {
 			it('Containing a non-digit', () => {
-				TEUtils.assertTrue(pipe('0f0', takeWhileDigit.writer, Either.isLeft));
+				TEUtils.assertTrue(pipe('0f0', digits.writer, Either.isLeft));
 			});
 
 			it('Empty string', () => {
-				TEUtils.assertRight(pipe('', takeWhileDigit.writer), '');
+				TEUtils.assertRight(digits.writer(''), '');
 			});
 
 			it('Matching string', () => {
-				TEUtils.assertRight(pipe('001', takeWhileDigit.writer), '001');
+				TEUtils.assertRight(digits.writer('001'), '001');
 			});
 		});
 	});
 
-	describe('takeWhileNot', () => {
-		const takeWhileNotSpace = CVPlaceHolder.takeWhileNot({
-			name: 'foo',
-			predicate: MFunction.strictEquals(' ')
+	describe('noSpace', () => {
+		const noSpace = CVPlaceHolder.noSpace({
+			name: 'foo'
 		});
+
+		MTypes.areEqualTypes<typeof noSpace, CVPlaceHolder.Type<'foo'>>() satisfies true;
 
 		it('Reading', () => {
 			TEUtils.assertEquals(
-				takeWhileNotSpace.reader('001 and 002'),
+				noSpace.reader('001 and 002'),
 				Either.right(Tuple.make('001', ' and 002'))
 			);
 		});
 
 		describe('Writing', () => {
-			it('Passing', () => {
-				TEUtils.assertEquals(takeWhileNotSpace.writer('001'), Either.right('001'));
+			it('Not containing a non-digit', () => {
+				TEUtils.assertEquals(noSpace.writer('001'), Either.right('001'));
 			});
 
-			it('Not passing', () => {
-				TEUtils.assertTrue(pipe('00 1', takeWhileNotSpace.writer, Either.isLeft));
+			it('Containing a non-digit', () => {
+				TEUtils.assertTrue(pipe('00 1', noSpace.writer, Either.isLeft));
+			});
+		});
+	});
+
+	describe('allBut', () => {
+		const allButSlash = CVPlaceHolder.allBut({
+			name: 'foo',
+			separator: '/'
+		});
+
+		MTypes.areEqualTypes<typeof allButSlash, CVPlaceHolder.Type<'foo'>>() satisfies true;
+
+		it('Reading', () => {
+			TEUtils.assertEquals(allButSlash.reader('11/12'), Either.right(Tuple.make('11', '/12')));
+		});
+
+		describe('Writing', () => {
+			it('Not containing a slash', () => {
+				TEUtils.assertEquals(allButSlash.writer('001'), Either.right('001'));
+			});
+
+			it('Containing a slash', () => {
+				TEUtils.assertTrue(pipe('11/12', allButSlash.writer, Either.isLeft));
 			});
 		});
 	});
 
 	describe('final', () => {
 		const final = CVPlaceHolder.final({ name: 'foo' });
+
+		MTypes.areEqualTypes<typeof final, CVPlaceHolder.Type<'foo'>>() satisfies true;
+
 		it('Reading', () => {
 			TEUtils.assertEquals(
 				final.reader('001 and 002'),

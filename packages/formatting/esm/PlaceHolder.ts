@@ -1,7 +1,24 @@
+/**
+ * This module implements a PlaceHolder type. PlaceHolder's are the constituents of Template's (see
+ * Template.ts). A PlaceHolder defines what it can contain. For instance:
+ *
+ * - A fixedLength PlaceHolder contains a fixed number of characters.
+ * - A literals PlaceHolder can contain only a predefined set of strings.
+ * - A noSpace PlaceHolder can contain any string that does not contain a space...
+ *
+ * Each PlaceHolder defines a reader and a writer:
+ *
+ * - The reader takes a text, consumes what it can from that text that is coherent with what it can
+ *   contain and, if successful, returns a right of the consumed part and of what is left over. In
+ *   case of an error, it returns a left.
+ * - The writer takes a value, checks that this value is coherent with what it can contain and, if so,
+ *   returns a right of that value. Otherwise, it returns a left.
+ */
 import {
 	MFunction,
 	MInspectable,
 	MPipeable,
+	MRegExp,
 	MString,
 	MStruct,
 	MTuple,
@@ -12,15 +29,13 @@ import {
 	Array,
 	Either,
 	flow,
-	Function,
-	Number,
 	Option,
 	pipe,
 	Pipeable,
 	Predicate,
-	String,
 	Struct,
-	Tuple
+	Tuple,
+	Types
 } from 'effect';
 
 /**
@@ -39,16 +54,14 @@ type _TypeId = typeof _TypeId;
  */
 export namespace Reader {
 	/**
-	 * Type that describes a PlaceHolder Reader. A Reader takes a string and returns, if successful, a
-	 * `right` of a tuple containing `readPart` (the part that it managed to read) and `leftOver` (the
-	 * remaining part of the string). In case of failure, it returns a `left` of an error message.
+	 * Type that describes a PlaceHolder Reader
 	 *
 	 * @category Models
 	 */
 	export interface Type
 		extends MTypes.OneArgFunction<
 			string,
-			Either.Either<readonly [readPart: string, leftOver: string], string>
+			Either.Either<readonly [consumed: string, leftOver: string], string>
 		> {}
 }
 
@@ -59,8 +72,7 @@ export namespace Reader {
  */
 export namespace Writer {
 	/**
-	 * Type that describes a PlaceHolder Writer. A Writer takes a string and, if successful, return a
-	 * right of the written string. In case of failure, it returns a `left` of an error message.
+	 * Type that describes a PlaceHolder Writer
 	 *
 	 * @category Models
 	 */
@@ -72,9 +84,9 @@ export namespace Writer {
  *
  * @category Models
  */
-export interface Type extends MInspectable.Type, Pipeable.Pipeable {
-	/** Name of this Placeholder. Useful for error reporting */
-	readonly name: string;
+export interface Type<out N extends string> extends MInspectable.Type, Pipeable.Pipeable {
+	/** Name of this Placeholder */
+	readonly name: N;
 
 	/** Reader of this Placeholder */
 	readonly reader: Reader.Type;
@@ -83,7 +95,7 @@ export interface Type extends MInspectable.Type, Pipeable.Pipeable {
 	readonly writer: Writer.Type;
 
 	/** @internal */
-	readonly [_TypeId]: _TypeId;
+	readonly [_TypeId]: { readonly _N: Types.Covariant<N> };
 }
 
 /**
@@ -91,12 +103,12 @@ export interface Type extends MInspectable.Type, Pipeable.Pipeable {
  *
  * @category Guards
  */
-export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
+export const has = (u: unknown): u is Type<string> => Predicate.hasProperty(u, _TypeId);
 
 /** Proto */
-const proto: MTypes.Proto<Type> = {
-	[_TypeId]: _TypeId,
-	[MInspectable.IdSymbol](this: Type) {
+const proto: MTypes.Proto<Type<never>> = {
+	[_TypeId]: { _N: MTypes.covariantValue },
+	[MInspectable.IdSymbol]<N extends string>(this: Type<N>) {
 		return `Placeholder ${this.name}`;
 	},
 	...MInspectable.BaseProto(moduleTag),
@@ -108,7 +120,7 @@ const proto: MTypes.Proto<Type> = {
  *
  * @category Constructors
  */
-export const make = (params: MTypes.Data<Type>): Type =>
+export const make = <N extends string>(params: MTypes.Data<Type<N>>): Type<N> =>
 	MTypes.objectFromDataAndProto(proto, params);
 
 /**
@@ -116,78 +128,21 @@ export const make = (params: MTypes.Data<Type>): Type =>
  *
  * @category Destructors
  */
-export const name: MTypes.OneArgFunction<Type, string> = Struct.get('name');
+export const name: <N extends string>(self: Type<N>) => N = Struct.get('name');
 
 /**
  * Returns the `reader` property of `self`
  *
  * @category Destructors
  */
-export const reader: MTypes.OneArgFunction<Type, Reader.Type> = Struct.get('reader');
+export const reader: MTypes.OneArgFunction<Type<string>, Reader.Type> = Struct.get('reader');
 
 /**
  * Returns the `writer` property of `self`
  *
  * @category Destructors
  */
-export const writer: MTypes.OneArgFunction<Type, Writer.Type> = Struct.get('writer');
-
-const _fixedLength = ({
-	name,
-	length,
-	fillString = '',
-	padLeft = true
-}: {
-	readonly name: string;
-	readonly length: number;
-	readonly fillString?: string;
-	readonly padLeft?: boolean;
-}): Type => {
-	const hasFillString = String.isNonEmpty(fillString);
-
-	const lengthPredicate = flow(
-		String.length,
-		hasFillString ? Number.lessThanOrEqualTo(length) : MFunction.strictEquals(length)
-	);
-
-	const padder =
-		hasFillString ?
-			padLeft ? String.padStart(length, fillString)
-			:	String.padEnd(length, fillString)
-		:	Function.identity<string>;
-
-	const trimmer =
-		hasFillString ?
-			Tuple.mapFirst(
-				flow(
-					padLeft ? MString.trimStart(fillString) : MString.trimEnd(fillString),
-					// If trimming has emptied the string, we have trimmed too much
-					Option.liftPredicate(String.isNonEmpty),
-					Option.getOrElse(Function.constant(fillString))
-				)
-			)
-		:	Function.identity<readonly [string, string]>;
-
-	return make({
-		name,
-		reader: flow(
-			Either.liftPredicate(
-				flow(String.length, Number.greaterThanOrEqualTo(length)),
-				(s) =>
-					`Reading placeholder ${name}: expected ${length} characters, but only ${s.length} were left`
-			),
-			Either.map(flow(MString.splitAt(length), trimmer))
-		),
-		writer: flow(
-			Either.liftPredicate(
-				lengthPredicate,
-				(s) =>
-					`Writing placeholder ${name}: expected ${length} characters. But ${s.length} characters were received`
-			),
-			Either.map(padder)
-		)
-	});
-};
+export const writer: MTypes.OneArgFunction<Type<string>, Writer.Type> = Struct.get('writer');
 
 /**
  * PlaceHolder instance that reads/writes exactly `n` characters from a string. `length` must be a
@@ -195,63 +150,50 @@ const _fixedLength = ({
  *
  * @category Instances
  */
-export const fixedLength: MTypes.OneArgFunction<
-	{
-		readonly name: string;
-		readonly length: number;
-	},
-	Type
-> = _fixedLength;
-
-/**
- * PlaceHolder instance that reads/writes exactly `n` characters from a string but removes/adds a
- * padding character on the left. `length` must be a strictly positive integer. `fillString` must be
- * a one-character string. Note that the behaviour of the reader and of the writer is not completely
- * symmetrical. When writing an empty string and reading the result, the output will not be an empty
- * string but the `fillString` char.
- *
- * @category Instances
- */
-export const leftPadded: MTypes.OneArgFunction<
-	{
-		readonly name: string;
-		readonly length: number;
-		readonly fillString: string;
-	},
-	Type
-> = _fixedLength;
-
-/**
- * PlaceHolder instance that reads/writes exactly `n` characters from a string but removes/adds a
- * padding character on the right. `length` must be a strictly positive integer. `fillString` must
- * be a one-character string. Note that the behaviour of the reader and of the writer is not
- * completely symmetrical. When writing an empty string and reading the result, the output will not
- * be an empty string but the `fillString` char.
- *
- * @category Instances
- */
-export const rightPadded: MTypes.OneArgFunction<
-	{
-		readonly name: string;
-		readonly length: number;
-		readonly fillString: string;
-	},
-	Type
-> = flow(MStruct.append({ padLeft: false }), _fixedLength);
+export const fixedLength = <N extends string>({
+	name,
+	length
+}: {
+	readonly name: N;
+	readonly length: number;
+}): Type<N> => {
+	const lengthPredicate = MString.hasLength(length);
+	return make({
+		name,
+		reader: flow(
+			MString.splitAt(length),
+			Either.liftPredicate(
+				flow(Tuple.getFirst, lengthPredicate),
+				(s) =>
+					`Reading placeholder '${name}': expected ${length} characters. Actual: ${s[0].length}`
+			)
+		),
+		writer: flow(
+			Either.liftPredicate(
+				lengthPredicate,
+				(s) => `Writing placeholder '${name}': expected ${length} characters. Actual: ${s.length}`
+			)
+		)
+	});
+};
 
 /**
  * PlaceHolder instance that reads/writes a given list of strings.
  *
  * @category Instances
  */
-export const literals = ({
+export const literals = <N extends string>({
 	name,
 	strings
 }: {
-	readonly name: string;
-	readonly strings: ReadonlyArray<string>;
-}): Type => {
-	const allStrings = Array.join(strings, ', ');
+	readonly name: N;
+	readonly strings: MTypes.OverOne<string>;
+}): Type<N> => {
+	const allStrings =
+		strings.length === 1 ?
+			`'${strings[0]}'`
+		:	'one of ' +
+			pipe(strings, Array.map(flow(MString.prepend("'"), MString.append("'"))), Array.join(', '));
 	return make({
 		name,
 		reader: (toRead) =>
@@ -264,15 +206,14 @@ export const literals = ({
 					)
 				),
 				Either.fromOption(
-					() =>
-						`Reading placeholder ${name}: expected one of ${allStrings} at the start of ${toRead}`
+					() => `Reading placeholder '${name}': expected ${allStrings} at the start of '${toRead}'`
 				)
 			),
 		writer: (toWrite) =>
 			pipe(
 				Array.findFirst(strings, MFunction.strictEquals(toWrite)),
 				Either.fromOption(
-					() => `Writing placeholder ${name}: expected one of ${allStrings}. Received: ${toWrite}`
+					() => `Writing placeholder '${name}': expected ${allStrings}. Received: '${toWrite}'`
 				)
 			)
 	});
@@ -284,13 +225,13 @@ export const literals = ({
  *
  * @category Instances
  */
-export const takeWhile = ({
+export const fulfilling = <N extends string>({
 	name,
 	predicate
 }: {
-	readonly name: string;
+	readonly name: N;
 	readonly predicate: Predicate.Predicate<string>;
-}): Type => {
+}): Type<N> => {
 	const negativePredicate = Predicate.not(predicate);
 
 	return make({
@@ -300,11 +241,9 @@ export const takeWhile = ({
 			Tuple.mapBoth({ onFirst: Array.join(''), onSecond: Array.join('') }),
 			Either.right
 		),
-		writer: flow(
-			Either.liftPredicate(
-				flow(Array.fromIterable, Array.every(predicate)),
-				() => `Writing placeholder ${name}: received disallowed character`
-			)
+		writer: Either.liftPredicate(
+			flow(Array.fromIterable, Array.every(predicate)),
+			() => `Writing placeholder '${name}': received disallowed character`
 		)
 	});
 };
@@ -315,13 +254,46 @@ export const takeWhile = ({
  *
  * @category Instances
  */
-export const takeWhileNot: MTypes.OneArgFunction<
-	{
-		readonly name: string;
-		readonly predicate: Predicate.Predicate<string>;
-	},
-	Type
-> = flow(MStruct.evolve({ predicate: Predicate.not }), takeWhile);
+export const notFulfilling: <N extends string>(params: {
+	readonly name: N;
+	readonly predicate: Predicate.Predicate<string>;
+}) => Type<N> = flow(MStruct.evolve({ predicate: Predicate.not }), fulfilling);
+
+/**
+ * PlaceHolder instance that reads/writes anything that does not contain a space
+ *
+ * @category Instances
+ */
+export const noSpace: <N extends string>(params: { readonly name: N }) => Type<N> = flow(
+	MStruct.append({ predicate: MString.fulfillsRegExp(MRegExp.space) }),
+	notFulfilling
+);
+
+/**
+ * PlaceHolder instance that reads/writes anything that is an uninterrupted list of digits
+ *
+ * @category Instances
+ */
+export const digits: <N extends string>(params: { readonly name: N }) => Type<N> = flow(
+	MStruct.append({ predicate: MString.fulfillsRegExp(MRegExp.digit) }),
+	fulfilling
+);
+
+/**
+ * PlaceHolder instance that reads/writes anything that is different from `separator`. `separator`
+ * must be a one-character string
+ *
+ * @category Instances
+ */
+export const allBut: <N extends string>(params: {
+	readonly name: N;
+	readonly separator: string;
+}) => Type<N> = flow(
+	MStruct.enrichWith({
+		predicate: flow(Struct.get('separator'), MFunction.strictEquals)
+	}),
+	notFulfilling
+);
 
 /**
  * PlaceHolder instance that reads/writes the whole contents of what it receives. This PlaceHolder
@@ -329,7 +301,7 @@ export const takeWhileNot: MTypes.OneArgFunction<
  *
  * @category Instances
  */
-export const final = ({ name }: { readonly name: string }): Type =>
+export const final = <N extends string>({ name }: { readonly name: N }): Type<N> =>
 	make({
 		name,
 		reader: flow(Tuple.make, Tuple.appendElement(''), Either.right),
