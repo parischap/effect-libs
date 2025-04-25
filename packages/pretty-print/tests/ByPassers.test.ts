@@ -10,7 +10,7 @@ import {
 	PPValueBasedStylerConstructor
 } from '@parischap/pretty-print';
 import { TEUtils } from '@parischap/test-utils';
-import { Array, Option, pipe } from 'effect';
+import { Array, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('ByPassers', () => {
@@ -37,20 +37,20 @@ describe('ByPassers', () => {
 			function foo(): string {
 				return 'foo';
 			}
-			TEUtils.assertEquals(
+			TEUtils.assertSome(
 				pipe(foo, PPValue.fromTopValue, initializedSyntheticByPasser),
-				pipe('[Function: foo]', ASStyle.green, PPStringifiedValue.fromText, Option.some)
+				pipe('[Function: foo]', ASStyle.green, PPStringifiedValue.fromText)
 			);
 		});
 
 		it('Applied to object with a .toString method', () => {
-			TEUtils.assertEquals(
+			TEUtils.assertSome(
 				pipe(
 					{ a: 3, toString: (): string => 'foo\nbar' },
 					PPValue.fromTopValue,
 					initializedSyntheticByPasser
 				),
-				pipe(Array.make(ASStyle.yellow('foo'), ASStyle.yellow('bar')), Option.some)
+				Array.make(ASStyle.yellow('foo'), ASStyle.yellow('bar'))
 			);
 		});
 

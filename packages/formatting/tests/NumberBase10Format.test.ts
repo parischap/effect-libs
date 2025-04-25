@@ -377,44 +377,38 @@ describe('NumberBase10Format', () => {
 			});
 
 			it('Zero', () => {
-				TEUtils.assertEquals(
-					numberExtractor('0Dummy'),
-					Option.some(Tuple.make(BigDecimal.make(0n, 2), '0'))
-				);
+				TEUtils.assertSome(numberExtractor('0Dummy'), Tuple.make(BigDecimal.make(0n, 2), '0'));
 			});
 
 			it('Unsigned mantissa with no integer part', () => {
-				TEUtils.assertEquals(
+				TEUtils.assertSome(
 					numberExtractor('0,45Dummy'),
-					Option.some(Tuple.make(BigDecimal.make(45n, 2), '0,45'))
+					Tuple.make(BigDecimal.make(45n, 2), '0,45')
 				);
 			});
 
 			it('Signed mantissa with no integer part', () => {
-				TEUtils.assertEquals(
+				TEUtils.assertSome(
 					numberExtractor('-0,45Dummy'),
-					Option.some(Tuple.make(BigDecimal.make(-45n, 2), '-0,45'))
+					Tuple.make(BigDecimal.make(-45n, 2), '-0,45')
 				);
 			});
 
 			it('Signed mantissa with no fractional part', () => {
-				TEUtils.assertEquals(
-					numberExtractor('-45'),
-					Option.some(Tuple.make(BigDecimal.make(-45n, 0), '-45'))
-				);
+				TEUtils.assertSome(numberExtractor('-45'), Tuple.make(BigDecimal.make(-45n, 0), '-45'));
 			});
 
 			it('Signed mantissa', () => {
-				TEUtils.assertEquals(
+				TEUtils.assertSome(
 					numberExtractor('-45,45'),
-					Option.some(Tuple.make(BigDecimal.make(-4545n, 2), '-45,45'))
+					Tuple.make(BigDecimal.make(-4545n, 2), '-45,45')
 				);
 			});
 
 			it('Fractional part of mantissa starting with zeros', () => {
-				TEUtils.assertEquals(
+				TEUtils.assertSome(
 					numberExtractor('-45,00'),
-					Option.some(Tuple.make(BigDecimal.make(-45n, 0), '-45,00'))
+					Tuple.make(BigDecimal.make(-45n, 0), '-45,00')
 				);
 			});
 		});
@@ -441,16 +435,13 @@ describe('NumberBase10Format', () => {
 			});
 
 			it('Zero', () => {
-				TEUtils.assertEquals(
-					numberExtractor('0Dummy'),
-					Option.some(Tuple.make(BigDecimal.make(0n, 2), '0'))
-				);
+				TEUtils.assertSome(numberExtractor('0Dummy'), Tuple.make(BigDecimal.make(0n, 2), '0'));
 			});
 
 			it('A number respecting all conditions', () => {
-				TEUtils.assertEquals(
+				TEUtils.assertSome(
 					numberExtractor('512,45e12Dummy'),
-					Option.some(Tuple.make(BigDecimal.make(51245n, -10), '512,45e12'))
+					Tuple.make(BigDecimal.make(51245n, -10), '512,45e12')
 				);
 			});
 		});
@@ -460,17 +451,14 @@ describe('NumberBase10Format', () => {
 				const numberExtractor = CVNumberBase10Format.toNumberExtractor(commaAndSpace);
 
 				it('Non-null value with explicit 0', () => {
-					TEUtils.assertEquals(
+					TEUtils.assertSome(
 						numberExtractor('-0,45Dummy'),
-						Option.some(Tuple.make(BigDecimal.make(-45n, 2), '-0,45'))
+						Tuple.make(BigDecimal.make(-45n, 2), '-0,45')
 					);
 				});
 
 				it('Null value', () => {
-					TEUtils.assertEquals(
-						numberExtractor('0Dummy'),
-						Option.some(Tuple.make(MBigDecimal.zero, '0'))
-					);
+					TEUtils.assertSome(numberExtractor('0Dummy'), Tuple.make(MBigDecimal.zero, '0'));
 				});
 
 				it('Non-null value with implicit 0', () => {
@@ -490,16 +478,13 @@ describe('NumberBase10Format', () => {
 				});
 
 				it('Null value', () => {
-					TEUtils.assertEquals(
-						numberExtractor('0Dummy'),
-						Option.some(Tuple.make(MBigDecimal.zero, '0'))
-					);
+					TEUtils.assertSome(numberExtractor('0Dummy'), Tuple.make(MBigDecimal.zero, '0'));
 				});
 
 				it('Non-null value with implicit 0', () => {
-					TEUtils.assertEquals(
+					TEUtils.assertSome(
 						numberExtractor('-,45Dummy'),
-						Option.some(Tuple.make(BigDecimal.make(-45n, 2), '-,45'))
+						Tuple.make(BigDecimal.make(-45n, 2), '-,45')
 					);
 				});
 			});
@@ -522,9 +507,9 @@ describe('NumberBase10Format', () => {
 				});
 
 				it('Two decimals', () => {
-					TEUtils.assertEquals(
+					TEUtils.assertSome(
 						numberExtractor('8,10Dummy'),
-						Option.some(Tuple.make(BigDecimal.make(81n, 1), '8,10'))
+						Tuple.make(BigDecimal.make(81n, 1), '8,10')
 					);
 				});
 			});
@@ -535,16 +520,13 @@ describe('NumberBase10Format', () => {
 				const numberExtractor = CVNumberBase10Format.toNumberExtractor(commaAndSpace);
 
 				it('No decimal', () => {
-					TEUtils.assertEquals(
-						numberExtractor('8Dummy'),
-						Option.some(Tuple.make(BigDecimal.make(8n, 0), '8'))
-					);
+					TEUtils.assertSome(numberExtractor('8Dummy'), Tuple.make(BigDecimal.make(8n, 0), '8'));
 				});
 
 				it('Three decimals', () => {
-					TEUtils.assertEquals(
+					TEUtils.assertSome(
 						numberExtractor('8,100Dummy'),
-						Option.some(Tuple.make(BigDecimal.make(81n, 1), '8,100'))
+						Tuple.make(BigDecimal.make(81n, 1), '8,100')
 					);
 				});
 
@@ -561,9 +543,9 @@ describe('NumberBase10Format', () => {
 				);
 
 				it('Four decimals', () => {
-					TEUtils.assertEquals(
+					TEUtils.assertSome(
 						numberExtractor('0,1234Dummy'),
-						Option.some(Tuple.make(BigDecimal.make(1234n, 4), '0,1234'))
+						Tuple.make(BigDecimal.make(1234n, 4), '0,1234')
 					);
 				});
 			});
@@ -577,7 +559,7 @@ describe('NumberBase10Format', () => {
 			CVNumberBase10Format.toNumberReader
 		);
 		it('Passing', () => {
-			TEUtils.assertEquals(numberReader('-45,45e-2'), Option.some(BigDecimal.make(-4545n, 4)));
+			TEUtils.assertSome(numberReader('-45,45e-2'), BigDecimal.make(-4545n, 4));
 		});
 
 		it('Not passing', () => {

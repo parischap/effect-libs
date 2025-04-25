@@ -1,7 +1,7 @@
 /* eslint-disable functional/no-expression-statements */
 import { MRegExp } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
-import { Option, pipe, Tuple } from 'effect';
+import { pipe, Tuple } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('MRegExp', () => {
@@ -20,9 +20,9 @@ describe('MRegExp', () => {
 
 	describe('matchAndGroups', () => {
 		it('Matching', () => {
-			TEUtils.assertEquals(
+			TEUtils.assertSome(
 				pipe(regExp, MRegExp.matchAndGroups('afooa', 2)),
-				Option.some(Tuple.make('afooa', Tuple.make('o', '')))
+				Tuple.make('afooa', Tuple.make('o', ''))
 			);
 		});
 
@@ -33,10 +33,7 @@ describe('MRegExp', () => {
 
 	describe('capturedGroups', () => {
 		it('Matching', () => {
-			TEUtils.assertEquals(
-				pipe(regExp, MRegExp.capturedGroups('afooa', 2)),
-				Option.some(Tuple.make('o', ''))
-			);
+			TEUtils.assertSome(pipe(regExp, MRegExp.capturedGroups('afooa', 2)), Tuple.make('o', ''));
 		});
 	});
 });

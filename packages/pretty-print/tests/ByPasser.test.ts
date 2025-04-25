@@ -68,16 +68,16 @@ describe('ByPasser', () => {
 			function foo(): string {
 				return 'foo';
 			}
-			TEUtils.assertEquals(
+			TEUtils.assertSome(
 				pipe(foo, PPValue.fromTopValue, initializedFunctionToName),
-				pipe('[Function: foo]', ASStyle.green, PPStringifiedValue.fromText, Option.some)
+				pipe('[Function: foo]', ASStyle.green, PPStringifiedValue.fromText)
 			);
 		});
 
 		it('Applied to unnamed function', () => {
-			TEUtils.assertEquals(
+			TEUtils.assertSome(
 				pipe((n: number) => n + 1, PPValue.fromTopValue, initializedFunctionToName),
-				pipe('[Function: anonymous]', ASStyle.green, PPStringifiedValue.fromText, Option.some)
+				pipe('[Function: anonymous]', ASStyle.green, PPStringifiedValue.fromText)
 			);
 		});
 
@@ -97,13 +97,13 @@ describe('ByPasser', () => {
 		});
 
 		it('Applied to object with a .toString method', () => {
-			TEUtils.assertEquals(
+			TEUtils.assertSome(
 				pipe(
 					{ a: 3, toString: (): string => 'foo\nbar' },
 					PPValue.fromTopValue,
 					initializedObjectToString
 				),
-				pipe(Array.make(ASStyle.yellow('foo'), ASStyle.yellow('bar')), Option.some)
+				Array.make(ASStyle.yellow('foo'), ASStyle.yellow('bar'))
 			);
 		});
 

@@ -10,7 +10,7 @@
  * - A fixedLength PlaceHolder with a length of 4
  */
 
-import { MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
+import { MError, MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
 import {
 	Either,
 	Inspectable,
@@ -95,7 +95,10 @@ export const toReader =
 		self: Type<NS>
 	): MTypes.OneArgFunction<
 		string,
-		Either.Either<{ readonly [N in keyof NS as NS[N] extends string ? NS[N] : never]: string }>
+		Either.Either<
+			{ readonly [N in keyof NS as NS[N] extends string ? NS[N] : never]: string },
+			MError.Input.Type
+		>
 	> =>
 	(text) =>
 		Either.gen(function* () {
@@ -109,10 +112,12 @@ export const toReader =
 			}
 			if (text !== '')
 				yield* Either.left(
-					`'${text}' was not consumed by template. Consider adding the 'final' placeHolder at the end of your template`
+					new MError.Input.Type({
+						message: `'${text}' was not consumed by template. Consider adding the 'final' placeHolder at the end of your template`
+					})
 				);
-			return result;
-		}) as never;
+			return result as never;
+		});
 
 /**
  * Returns a function that writes an object into the template represented by 'self' . When
@@ -134,14 +139,14 @@ export const toWriter: {
 		strictMode: true
 	): MTypes.OneArgFunction<
 		{ readonly [N in keyof NS as NS[N] extends string ? NS[N] : never]: string },
-		Either.Either<string, string>
+		Either.Either<string, MError.Input.Type>
 	>;
 } = <NS extends ReadonlyArray<string>>(
 	self: Type<NS>,
 	strictMode = false
 ): MTypes.OneArgFunction<Record<string, string>, never> => {
-	const forceResult = (either: Either.Either<string, string>) =>
-		strictMode ? either : (either as Either.Right<string, string>).right;
+	const forceResult = (either: Either.Either<string, MError.Input.Type>) =>
+		strictMode ? either : Either.getOrThrow(either);
 
 	return (record) =>
 		forceResult(
@@ -154,7 +159,7 @@ export const toWriter: {
 						record,
 						Record.get(name),
 						// This error should not happen due to typing
-						Option.getOrElse(() => `'${name}': unknown placeholder name`)
+						Option.getOrThrowWith(() => new Error(`'${name}': unknown placeholder name`))
 					);
 					/* eslint-disable-next-line functional/no-expression-statements */
 					result += strictMode ? yield* placeHolder.writer(value) : value;

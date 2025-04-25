@@ -15,6 +15,7 @@
  *   returns a right of that value. Otherwise, it returns a left.
  */
 import {
+	MError,
 	MFunction,
 	MInspectable,
 	MPipeable,
@@ -61,7 +62,7 @@ export namespace Reader {
 	export interface Type
 		extends MTypes.OneArgFunction<
 			string,
-			Either.Either<readonly [consumed: string, leftOver: string], string>
+			Either.Either<readonly [consumed: string, leftOver: string], MError.Input.Type>
 		> {}
 }
 
@@ -76,7 +77,8 @@ export namespace Writer {
 	 *
 	 * @category Models
 	 */
-	export interface Type extends MTypes.OneArgFunction<string, Either.Either<string, string>> {}
+	export interface Type
+		extends MTypes.OneArgFunction<string, Either.Either<string, MError.Input.Type>> {}
 }
 
 /**
@@ -165,13 +167,18 @@ export const fixedLength = <N extends string>({
 			Either.liftPredicate(
 				flow(Tuple.getFirst, lengthPredicate),
 				(s) =>
-					`Reading placeholder '${name}': expected ${length} characters. Actual: ${s[0].length}`
+					new MError.Input.Type({
+						message: `Reading placeholder '${name}': expected ${length} characters. Actual: ${s[0].length}`
+					})
 			)
 		),
 		writer: flow(
 			Either.liftPredicate(
 				lengthPredicate,
-				(s) => `Writing placeholder '${name}': expected ${length} characters. Actual: ${s.length}`
+				(s) =>
+					new MError.Input.Type({
+						message: `Writing placeholder '${name}': expected ${length} characters. Actual: ${s.length}`
+					})
 			)
 		)
 	});
@@ -206,14 +213,20 @@ export const literals = <N extends string>({
 					)
 				),
 				Either.fromOption(
-					() => `Reading placeholder '${name}': expected ${allStrings} at the start of '${toRead}'`
+					() =>
+						new MError.Input.Type({
+							message: `Reading placeholder '${name}': expected ${allStrings} at the start of '${toRead}'`
+						})
 				)
 			),
 		writer: (toWrite) =>
 			pipe(
 				Array.findFirst(strings, MFunction.strictEquals(toWrite)),
 				Either.fromOption(
-					() => `Writing placeholder '${name}': expected ${allStrings}. Received: '${toWrite}'`
+					() =>
+						new MError.Input.Type({
+							message: `Writing placeholder '${name}': expected ${allStrings}. Received: '${toWrite}'`
+						})
 				)
 			)
 	});
@@ -243,7 +256,10 @@ export const fulfilling = <N extends string>({
 		),
 		writer: Either.liftPredicate(
 			flow(Array.fromIterable, Array.every(predicate)),
-			() => `Writing placeholder '${name}': received disallowed character`
+			() =>
+				new MError.Input.Type({
+					message: `Writing placeholder '${name}': received disallowed character`
+				})
 		)
 	});
 };

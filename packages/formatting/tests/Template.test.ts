@@ -1,5 +1,5 @@
 /* eslint-disable functional/no-expression-statements */
-import { MTypes } from '@parischap/effect-lib';
+import { MError, MTypes } from '@parischap/effect-lib';
 import { CVPlaceHolder, CVTemplate } from '@parischap/formatting';
 import { TEUtils } from '@parischap/test-utils';
 import { Either } from 'effect';
@@ -64,34 +64,47 @@ describe('CVTemplate', () => {
 						readonly separator2: string;
 						readonly yyyy: string;
 					},
-					never
+					MError.Input.Type
 				>
 			>
 		>() satisfies true;
 
 		it('Empty text', () => {
-			TEUtils.assertLeft(reader(''), "Reading placeholder 'dd': expected 2 characters. Actual: 0");
+			TEUtils.assertLeft(
+				reader(''),
+				new MError.Input.Type({
+					message: "Reading placeholder 'dd': expected 2 characters. Actual: 0"
+				})
+			);
 		});
 
 		it('Text too short', () => {
 			TEUtils.assertLeft(
 				reader('25/12'),
-				"Reading placeholder 'separator2': expected '/' at the start of ''"
+				new MError.Input.Type({
+					message: "Reading placeholder 'separator2': expected '/' at the start of ''"
+				})
 			);
 		});
 
 		it('Text too long', () => {
 			TEUtils.assertLeft(
 				reader('25/12/2025 is XMas'),
-				"' is XMas' was not consumed by template. Consider adding the 'final' placeHolder at the end of your template"
+				new MError.Input.Type({
+					message:
+						"' is XMas' was not consumed by template. Consider adding the 'final' placeHolder at the end of your template"
+				})
 			);
 		});
 
 		it('Matching text', () => {
-			TEUtils.assertEquals(
-				reader('25/12/2025'),
-				Either.right({ dd: '25', separator1: '/', MM: '12', separator2: '/', yyyy: '2025' })
-			);
+			TEUtils.assertRight(reader('25/12/2025'), {
+				dd: '25',
+				separator1: '/',
+				MM: '12',
+				separator2: '/',
+				yyyy: '2025'
+			});
 		});
 	});
 
@@ -141,7 +154,7 @@ describe('CVTemplate', () => {
 						readonly separator2: string;
 						readonly yyyy: string;
 					},
-					Either.Either<string, string>
+					Either.Either<string, MError.Input.Type>
 				>
 			>() satisfies true;
 
@@ -155,7 +168,9 @@ describe('CVTemplate', () => {
 			it('With incorrect values', () => {
 				TEUtils.assertLeft(
 					writer({ dd: '25', separator1: '\\', MM: '12', separator2: '\\', yyyy: '2025' }),
-					"Writing placeholder 'separator1': expected '/'. Received: '\\'"
+					new MError.Input.Type({
+						message: "Writing placeholder 'separator1': expected '/'. Received: '\\'"
+					})
 				);
 			});
 		});

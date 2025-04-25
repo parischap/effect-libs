@@ -1,7 +1,7 @@
 /* eslint-disable functional/no-expression-statements */
 import { MString } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
-import { Array, Equal, Option, pipe, String, Struct } from 'effect';
+import { Array, Equal, pipe, String, Struct } from 'effect';
 import { describe, it } from 'vitest';
 import { SearchResult } from '../esm/String.js';
 
@@ -107,23 +107,23 @@ describe('MString', () => {
 		});
 
 		it('string in string containing one occurence', () => {
-			TEUtils.assertEquals(
+			TEUtils.assertSome(
 				MString.search('foo', 4)('the foo is bar'),
-				Option.some(MString.SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }))
+				MString.SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' })
 			);
 		});
 
 		it('string in string containing two occurences with startIndex=4', () => {
-			TEUtils.assertEquals(
+			TEUtils.assertSome(
 				MString.search('foo', 4)('the foo is foo'),
-				Option.some(MString.SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }))
+				MString.SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' })
 			);
 		});
 
 		it('string in string containing two occurences with startIndex=5', () => {
-			TEUtils.assertEquals(
+			TEUtils.assertSome(
 				MString.search('foo', 5)('the foo is foo'),
-				Option.some(MString.SearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' }))
+				MString.SearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' })
 			);
 		});
 
@@ -132,23 +132,23 @@ describe('MString', () => {
 		});
 
 		it('RegExp in string containing one occurence', () => {
-			TEUtils.assertEquals(
+			TEUtils.assertSome(
 				MString.search(/f.o/, 4)('the foo is bar'),
-				Option.some(MString.SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }))
+				MString.SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' })
 			);
 		});
 
 		it('RegExp in string containing two occurences with startIndex=4', () => {
-			TEUtils.assertEquals(
+			TEUtils.assertSome(
 				MString.search(/f.o/, 4)('the foo is foo'),
-				Option.some(MString.SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }))
+				MString.SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' })
 			);
 		});
 
 		it('RegExp in string containing two occurences with startIndex=5', () => {
-			TEUtils.assertEquals(
+			TEUtils.assertSome(
 				MString.search(/f.o/, 5)('the foo is foo'),
-				Option.some(MString.SearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' }))
+				MString.SearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' })
 			);
 		});
 	});
@@ -189,16 +189,16 @@ describe('MString', () => {
 		});
 
 		it('string in string containing one occurence', () => {
-			TEUtils.assertEquals(
+			TEUtils.assertSome(
 				MString.searchRight('foo')('the bar is foo'),
-				Option.some(MString.SearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' }))
+				MString.SearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' })
 			);
 		});
 
 		it('string in string containing two occurences', () => {
-			TEUtils.assertEquals(
+			TEUtils.assertSome(
 				MString.searchRight('foo')('the foo is foo'),
-				Option.some(MString.SearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' }))
+				MString.SearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' })
 			);
 		});
 
@@ -207,16 +207,16 @@ describe('MString', () => {
 		});
 
 		it('RegExp in string containing one occurence', () => {
-			TEUtils.assertEquals(
+			TEUtils.assertSome(
 				MString.searchRight(/f.o/)('the foo is bar'),
-				Option.some(MString.SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }))
+				MString.SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' })
 			);
 		});
 
 		it('RegExp in string containing two occurences', () => {
-			TEUtils.assertEquals(
+			TEUtils.assertSome(
 				MString.searchRight(/f.o/)('the foo is foo'),
-				Option.some(MString.SearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' }))
+				MString.SearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' })
 			);
 		});
 	});

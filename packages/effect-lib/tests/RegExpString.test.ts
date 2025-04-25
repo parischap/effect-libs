@@ -1,7 +1,7 @@
 /* eslint-disable functional/no-expression-statements */
 import { MRegExpString, MString } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
-import { Function, Option, pipe, Tuple } from 'effect';
+import { Function, pipe, Tuple } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('MRegExpString', () => {
@@ -107,13 +107,13 @@ describe('MRegExpString', () => {
 				eNotationChars: ['E', 'e']
 			});
 			it('Simple number', () => {
-				TEUtils.assertEquals(getPartsWithNoSep('12'), Option.some(Tuple.make('', '12', '', '')));
+				TEUtils.assertSome(getPartsWithNoSep('12'), Tuple.make('', '12', '', ''));
 			});
 
 			it('Complex number', () => {
-				TEUtils.assertEquals(
+				TEUtils.assertSome(
 					getPartsWithNoSep('+  18320.45e-2'),
-					Option.some(Tuple.make('+', '18320', '45', '-2'))
+					Tuple.make('+', '18320', '45', '-2')
 				);
 			});
 		});
@@ -126,17 +126,11 @@ describe('MRegExpString', () => {
 			});
 
 			it('Simple number', () => {
-				TEUtils.assertEquals(
-					getPartsWithSep('12 430'),
-					Option.some(Tuple.make('', '12 430', '', ''))
-				);
+				TEUtils.assertSome(getPartsWithSep('12 430'), Tuple.make('', '12 430', '', ''));
 			});
 
 			it('Complex number', () => {
-				TEUtils.assertEquals(
-					getPartsWithSep('+18 320.45^2'),
-					Option.some(Tuple.make('+', '18 320', '45', '2'))
-				);
+				TEUtils.assertSome(getPartsWithSep('+18 320.45^2'), Tuple.make('+', '18 320', '45', '2'));
 			});
 		});
 	});
