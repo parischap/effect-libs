@@ -10,8 +10,8 @@ import * as MTypes from './types.js';
  * @category Utils
  */
 export const prepend =
-	<O extends MTypes.NonPrimitive>(that: O) =>
-	<O1 extends MTypes.NonPrimitive>(self: O1): MTypes.Data<Omit<O, keyof O1> & O1> => ({
+	<O1 extends MTypes.NonPrimitive>(that: O1) =>
+	<O extends MTypes.NonPrimitive>(self: O): MTypes.Data<O & Omit<O1, keyof O>> => ({
 		...that,
 		...self
 	});
