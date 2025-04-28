@@ -2,12 +2,17 @@
 import { pipe, Predicate } from 'effect';
 import * as MTypes from './types.js';
 
+/** Maximum safe integer in JavaScript (2^53 – 1). */
+export const MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER;
+
+/** Minimum safe integer in JavaScript -(2^53 – 1). */
+export const MIN_SAFE_INTEGER = Number.MIN_SAFE_INTEGER;
+
 /**
  * Constructs a number from a string. Does not check input format and can return NaN or Infinity
  *
  * @category Constructors
  */
-
 export const unsafeFromString: MTypes.NumberFromString = (s) => +s;
 
 /**
@@ -16,7 +21,6 @@ export const unsafeFromString: MTypes.NumberFromString = (s) => +s;
  *
  * @category Utils
  */
-
 export const intModulo =
 	(divisor: number) =>
 	(self: number): number => {
@@ -30,7 +34,6 @@ export const intModulo =
  *
  * @category Destructors
  */
-
 export const quotientAndRemainder =
 	(divisor: number) =>
 	(self: number): [quotient: number, remainder: number] => {
