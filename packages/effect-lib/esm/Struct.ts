@@ -2,6 +2,21 @@
 
 import { Function, Record, Struct, pipe } from 'effect';
 import * as MTypes from './types.js';
+
+/**
+ * Utility type that calculates the type of `{...first, ...second}` where `first` has type `First`
+ * and `second` type `Second`
+ */
+export type Append<First extends MTypes.NonPrimitive, Second extends MTypes.NonPrimitive> = {
+	readonly [k in keyof First | keyof Second]: k extends keyof Second ?
+		k extends keyof First ?
+			Extract<Second[k], undefined> extends never ?
+				Second[k]
+			:	Exclude<Second[k], undefined> | First[k]
+		:	Second[k]
+	:	First[k];
+};
+
 /**
  * Prepends `that` to `self`. If `that` contains fields that already exist in `self`, they will not
  * be taken into account. Use instead of the spread operator because it does not copy the prototype
@@ -11,7 +26,7 @@ import * as MTypes from './types.js';
  */
 export const prepend =
 	<O1 extends MTypes.NonPrimitive>(that: O1) =>
-	<O extends MTypes.NonPrimitive>(self: O): MTypes.Data<O & Omit<O1, keyof O>> => ({
+	<O extends MTypes.NonPrimitive>(self: O): MTypes.Data<Append<O1, O>> => ({
 		...that,
 		...self
 	});
@@ -25,7 +40,7 @@ export const prepend =
  */
 export const append =
 	<O1 extends MTypes.NonPrimitive>(that: O1) =>
-	<O extends MTypes.NonPrimitive>(self: O): MTypes.Data<Omit<O, keyof O1> & O1> => ({
+	<O extends MTypes.NonPrimitive>(self: O): MTypes.Data<Append<O, O1>> => ({
 		...self,
 		...that
 	});
