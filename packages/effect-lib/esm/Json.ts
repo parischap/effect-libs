@@ -1,7 +1,7 @@
 /** A port of JSON.stringify and JSON.parse in the effect world */
 
 import { Effect } from 'effect';
-import * as MError from './Error.js';
+import * as MPortError from './PortError.js';
 
 /**
  * Port of JSON.stringify
@@ -12,7 +12,7 @@ export const stringify = (value: unknown, replacer?: Parameters<typeof JSON.stri
 	Effect.try({
 		try: () => JSON.stringify(value, replacer),
 		catch: (e) =>
-			new MError.EffectPort.Type({
+			new MPortError.Type({
 				originalError: e,
 				originalFunctionName: 'JSON.stringify',
 				moduleName: 'json.ts',
@@ -29,7 +29,7 @@ export const parse = (text: string, reviver?: Parameters<typeof JSON.parse>[1]) 
 	Effect.try({
 		try: () => JSON.parse(text, reviver) as unknown,
 		catch: (e) =>
-			new MError.EffectPort.Type({
+			new MPortError.Type({
 				originalError: e,
 				originalFunctionName: 'JSON.parse',
 				moduleName: 'json.ts',
