@@ -11,7 +11,7 @@ import { Brand, Either } from 'effect';
  *
  * @category Module tag
  */
-export const moduleTag = '@parischap/formatting/Int/';
+export const moduleTag = '@parischap/conversions/Int/';
 
 export const TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof TypeId;

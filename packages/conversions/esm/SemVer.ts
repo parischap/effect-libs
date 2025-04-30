@@ -8,7 +8,7 @@ import { Brand } from 'effect';
  *
  * @category Module tag
  */
-export const moduleTag = '@parischap/formatting/SemVer/';
+export const moduleTag = '@parischap/conversions/SemVer/';
 
 export const TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof TypeId;

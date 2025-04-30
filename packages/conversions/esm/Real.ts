@@ -9,7 +9,7 @@ import * as CVInt from './Int.js';
  *
  * @category Module tag
  */
-export const moduleTag = '@parischap/formatting/Real/';
+export const moduleTag = '@parischap/conversions/Real/';
 
 export const TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof TypeId;

@@ -10,7 +10,7 @@
  * - A fixedLength PlaceHolder with a length of 4
  */
 
-import { MError, MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
+import { MInputError, MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
 import {
 	Either,
 	Inspectable,
@@ -24,7 +24,7 @@ import {
 } from 'effect';
 import * as CVPlaceHolder from './PlaceHolder.js';
 
-export const moduleTag = '@parischap/formatting/Template/';
+export const moduleTag = '@parischap/conversions/Template/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
@@ -97,7 +97,7 @@ export const toReader =
 		string,
 		Either.Either<
 			{ readonly [N in keyof NS as NS[N] extends string ? NS[N] : never]: string },
-			MError.Input.Type
+			MInputError.Type
 		>
 	> =>
 	(text) =>
@@ -110,12 +110,9 @@ export const toReader =
 				/* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements */
 				result[placeHolder.name] = consumed;
 			}
-			if (text !== '')
-				yield* Either.left(
-					new MError.Input.Type({
-						message: `'${text}' was not consumed by template. Consider adding the 'final' placeHolder at the end of your template`
-					})
-				);
+
+			yield* pipe(text, MInputError.assertEmpty({ name: 'text not consumed by template' }));
+
 			return result as never;
 		});
 
@@ -139,13 +136,13 @@ export const toWriter: {
 		strictMode: true
 	): MTypes.OneArgFunction<
 		{ readonly [N in keyof NS as NS[N] extends string ? NS[N] : never]: string },
-		Either.Either<string, MError.Input.Type>
+		Either.Either<string, MInputError.Type>
 	>;
 } = <NS extends ReadonlyArray<string>>(
 	self: Type<NS>,
 	strictMode = false
 ): MTypes.OneArgFunction<Record<string, string>, never> => {
-	const forceResult = (either: Either.Either<string, MError.Input.Type>) =>
+	const forceResult = (either: Either.Either<string, MInputError.Type>) =>
 		strictMode ? either : Either.getOrThrow(either);
 
 	return (record) =>

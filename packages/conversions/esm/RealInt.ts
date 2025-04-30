@@ -13,7 +13,7 @@ import * as CVReal from './Real.js';
  *
  * @category Module tag
  */
-export const moduleTag = '@parischap/formatting/RealInt/';
+export const moduleTag = '@parischap/conversions/RealInt/';
 
 /**
  * Constructs a RealInt from a number. Throws if the number is not a finite integer

@@ -14,7 +14,7 @@ import {
 import { BigDecimal, Equal, Equivalence, Hash, pipe, Pipeable, Predicate, Struct } from 'effect';
 import * as CVRoundingMode from './RoundingMode.js';
 
-export const moduleTag = '@parischap/formatting/RoundingOption/';
+export const moduleTag = '@parischap/conversions/RoundingOption/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 

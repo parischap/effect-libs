@@ -1,6 +1,6 @@
 /* eslint-disable functional/no-expression-statements */
+import { CVRoundingMode, CVRoundingOption } from '@parischap/conversions';
 import { MNumber } from '@parischap/effect-lib';
-import { CVRoundingMode, CVRoundingOption } from '@parischap/formatting';
 import { TEUtils } from '@parischap/test-utils';
 import { BigDecimal, Equal, pipe } from 'effect';
 import { describe, it } from 'vitest';

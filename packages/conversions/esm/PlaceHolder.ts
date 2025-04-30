@@ -15,8 +15,8 @@
  *   returns a right of that value. Otherwise, it returns a left.
  */
 import {
-	MError,
 	MFunction,
+	MInputError,
 	MInspectable,
 	MPipeable,
 	MRegExp,
@@ -26,25 +26,14 @@ import {
 	MTypes
 } from '@parischap/effect-lib';
 
-import {
-	Array,
-	Either,
-	flow,
-	Option,
-	pipe,
-	Pipeable,
-	Predicate,
-	Struct,
-	Tuple,
-	Types
-} from 'effect';
+import { Array, Either, flow, Pipeable, Predicate, Struct, Tuple, Types } from 'effect';
 
 /**
  * Module tag
  *
  * @category Module tag
  */
-export const moduleTag = '@parischap/formatting/PlaceHolder/';
+export const moduleTag = '@parischap/conversions/PlaceHolder/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
@@ -62,7 +51,7 @@ export namespace Reader {
 	export interface Type
 		extends MTypes.OneArgFunction<
 			string,
-			Either.Either<readonly [consumed: string, leftOver: string], MError.Input.Type>
+			Either.Either<readonly [consumed: string, leftOver: string], MInputError.Type>
 		> {}
 }
 
@@ -78,7 +67,7 @@ export namespace Writer {
 	 * @category Models
 	 */
 	export interface Type
-		extends MTypes.OneArgFunction<string, Either.Either<string, MError.Input.Type>> {}
+		extends MTypes.OneArgFunction<string, Either.Either<string, MInputError.Type>> {}
 }
 
 /**
@@ -164,71 +153,45 @@ export const fixedLength = <N extends string>({
 		name,
 		reader: flow(
 			MString.splitAt(length),
-			Either.liftPredicate(
-				flow(Tuple.getFirst, lengthPredicate),
-				(s) =>
-					new MError.Input.Type({
-						message: `Reading placeholder '${name}': expected ${length} characters. Actual: ${s[0].length}`
-					})
+			Either.liftPredicate(flow(Tuple.getFirst, lengthPredicate), (s) =>
+				MInputError.missized({
+					expected: length,
+					actual: s[0].length,
+					name: `'${name}'`
+				})
 			)
 		),
 		writer: flow(
-			Either.liftPredicate(
-				lengthPredicate,
-				(s) =>
-					new MError.Input.Type({
-						message: `Writing placeholder '${name}': expected ${length} characters. Actual: ${s.length}`
-					})
+			Either.liftPredicate(lengthPredicate, (s) =>
+				MInputError.missized({
+					expected: length,
+					actual: s.length,
+					name: `'${name}'`
+				})
 			)
 		)
 	});
 };
 
 /**
- * PlaceHolder instance that reads/writes a given list of strings.
+ * PlaceHolder instance that reads/writes a given strin.
  *
  * @category Instances
  */
-export const literals = <N extends string>({
+export const literal = <N extends string>({
 	name,
-	strings
+	value
 }: {
 	readonly name: N;
-	readonly strings: MTypes.OverOne<string>;
+	readonly value: string;
 }): Type<N> => {
-	const allStrings =
-		strings.length === 1 ?
-			`'${strings[0]}'`
-		:	'one of ' +
-			pipe(strings, Array.map(flow(MString.prepend("'"), MString.append("'"))), Array.join(', '));
 	return make({
 		name,
-		reader: (toRead) =>
-			pipe(
-				Array.findFirst(strings, (s) =>
-					pipe(
-						toRead,
-						MString.stripLeftOption(s),
-						Option.map(flow(Tuple.make, MTuple.prependElement(s)))
-					)
-				),
-				Either.fromOption(
-					() =>
-						new MError.Input.Type({
-							message: `Reading placeholder '${name}': expected ${allStrings} at the start of '${toRead}'`
-						})
-				)
-			),
-		writer: (toWrite) =>
-			pipe(
-				Array.findFirst(strings, MFunction.strictEquals(toWrite)),
-				Either.fromOption(
-					() =>
-						new MError.Input.Type({
-							message: `Writing placeholder '${name}': expected ${allStrings}. Received: '${toWrite}'`
-						})
-				)
-			)
+		reader: flow(
+			MInputError.assertStartsWithAndStrip({ startString: value, name: `'${name}'` }),
+			Either.map(flow(Tuple.make, MTuple.prependElement(value)))
+		),
+		writer: MInputError.assertValue({ expected: value, name: `'${name}'` })
 	});
 };
 
@@ -256,9 +219,9 @@ export const fulfilling = <N extends string>({
 		),
 		writer: Either.liftPredicate(
 			flow(Array.fromIterable, Array.every(predicate)),
-			() =>
-				new MError.Input.Type({
-					message: `Writing placeholder '${name}': received disallowed character`
+			(actual) =>
+				new MInputError.Type({
+					message: `Trying to write separator character in '${name}': '${actual}'`
 				})
 		)
 	});

@@ -14,7 +14,7 @@ import * as CVReal from './Real.js';
  *
  * @category Module tag
  */
-export const moduleTag = '@parischap/formatting/PositiveReal/';
+export const moduleTag = '@parischap/conversions/PositiveReal/';
 
 /**
  * Constructs a PositiveReal from a number. Throws if the number is not a finite positive integer

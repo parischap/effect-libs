@@ -78,7 +78,7 @@
 	},
 	"dependencies": {},
 	"devDependencies": {
-		"@parischap/formatting": "link:."
+		"@parischap/conversions": "link:."
 	},
 	"peerDependencies": {
 		"@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",

@@ -1,5 +1,5 @@
 /* eslint-disable functional/no-expression-statements */
-import { CVSemVer } from '@parischap/formatting';
+import { CVSemVer } from '@parischap/conversions';
 import { TEUtils } from '@parischap/test-utils';
 import { Either, pipe } from 'effect';
 import { describe, it } from 'vitest';

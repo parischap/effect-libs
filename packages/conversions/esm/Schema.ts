@@ -182,7 +182,7 @@ export const RealFromString = (
 };
 
 /**
- * A Schema that transforms a string padded into an unpadded string. `paddedLength` must be a
+ * A Schema that transforms a padded string into an unpadded string. `paddedLength` must be a
  * strictly positive integer indicating the fixed length of the padded string. When encoding, no
  * error is reported if the string to encode has strictly more than `paddedLength` characters.
  * `fillChar` must be a one-character string representing the character used for padding.

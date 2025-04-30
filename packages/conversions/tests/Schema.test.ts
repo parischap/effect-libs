@@ -7,7 +7,7 @@ import {
 	CVRealInt,
 	CVSchema,
 	CVSemVer
-} from '@parischap/formatting';
+} from '@parischap/conversions';
 import { TEUtils } from '@parischap/test-utils';
 import { BigDecimal, Either, pipe, Schema } from 'effect';
 import { describe, it } from 'vitest';

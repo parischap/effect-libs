@@ -16,7 +16,7 @@ import * as CVRealInt from './RealInt.js';
  *
  * @category Module tag
  */
-export const moduleTag = '@parischap/formatting/PositiveRealInt/';
+export const moduleTag = '@parischap/conversions/PositiveRealInt/';
 
 /**
  * Constructs a PositiveRealInt from a number. Throws if the number is not a finite positive integer

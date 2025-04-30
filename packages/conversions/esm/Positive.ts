@@ -10,7 +10,7 @@ import { Brand, Number } from 'effect';
  *
  * @category Module tag
  */
-export const moduleTag = '@parischap/formatting/Positive/';
+export const moduleTag = '@parischap/conversions/Positive/';
 
 export const TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof TypeId;

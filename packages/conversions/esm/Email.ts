@@ -8,7 +8,7 @@ import { Brand } from 'effect';
  *
  * @category Module tag
  */
-export const moduleTag = '@parischap/formatting/Email/';
+export const moduleTag = '@parischap/conversions/Email/';
 
 export const TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof TypeId;

@@ -1,6 +1,6 @@
 /* eslint-disable functional/no-expression-statements */
+import { CVPlaceHolder } from '@parischap/conversions';
 import { MTypes } from '@parischap/effect-lib';
-import { CVPlaceHolder } from '@parischap/formatting';
 import { TEUtils } from '@parischap/test-utils';
 import { Tuple } from 'effect';
 import { describe, it } from 'vitest';
@@ -64,38 +64,30 @@ describe('CVPlaceHolder', () => {
 		});
 	});
 
-	describe('literals', () => {
-		const literals = CVPlaceHolder.literals({ name: 'foo', strings: ['foo', 'barbaz'] });
+	describe('literal', () => {
+		const literal = CVPlaceHolder.literal({ name: 'foo', value: 'foo' });
 
-		MTypes.areEqualTypes<typeof literals, CVPlaceHolder.Type<'foo'>>() satisfies true;
+		MTypes.areEqualTypes<typeof literal, CVPlaceHolder.Type<'foo'>>() satisfies true;
 
 		describe('Reading', () => {
-			it('Not starting by one of the literals', () => {
-				TEUtils.assertLeft(literals.reader(''));
-				TEUtils.assertLeft(literals.reader('fo1 and bar'));
+			it('Not starting by value', () => {
+				TEUtils.assertLeft(literal.reader(''));
+				TEUtils.assertLeft(literal.reader('fo1 and bar'));
 			});
 
-			it('Matching first option', () => {
-				TEUtils.assertRight(literals.reader('foo and bar'), Tuple.make('foo', ' and bar'));
-			});
-
-			it('Matching second option', () => {
-				TEUtils.assertRight(literals.reader('barbaz and foo'), Tuple.make('barbaz', ' and foo'));
+			it('Passing', () => {
+				TEUtils.assertRight(literal.reader('foo and bar'), Tuple.make('foo', ' and bar'));
 			});
 		});
 
 		describe('Writing', () => {
-			it('Not starting by one of the literals', () => {
-				TEUtils.assertLeft(literals.writer(''));
-				TEUtils.assertLeft(literals.writer('foo1'));
+			it('Not passing', () => {
+				TEUtils.assertLeft(literal.writer(''));
+				TEUtils.assertLeft(literal.writer('foo1'));
 			});
 
-			it('First option', () => {
-				TEUtils.assertRight(literals.writer('foo'), 'foo');
-			});
-
-			it('Second option', () => {
-				TEUtils.assertRight(literals.writer('barbaz'), 'barbaz');
+			it('Passing', () => {
+				TEUtils.assertRight(literal.writer('foo'), 'foo');
 			});
 		});
 	});

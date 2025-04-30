@@ -1,5 +1,5 @@
 /* eslint-disable functional/no-expression-statements */
-import { CVPositiveReal, CVReal } from '@parischap/formatting';
+import { CVPositiveReal, CVReal } from '@parischap/conversions';
 import { TEUtils } from '@parischap/test-utils';
 import { BigDecimal, Either, pipe } from 'effect';
 import { describe, it } from 'vitest';

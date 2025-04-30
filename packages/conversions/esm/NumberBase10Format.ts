@@ -39,7 +39,7 @@ import * as CVReal from './Real.js';
 import * as CVRoundingMode from './RoundingMode.js';
 import * as CVRoundingOption from './RoundingOption.js';
 
-export const moduleTag = '@parischap/formatting/NumberBase10Format/';
+export const moduleTag = '@parischap/conversions/NumberBase10Format/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 

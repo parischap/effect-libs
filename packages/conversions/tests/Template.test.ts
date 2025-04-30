@@ -1,6 +1,6 @@
 /* eslint-disable functional/no-expression-statements */
-import { MError, MTypes } from '@parischap/effect-lib';
-import { CVPlaceHolder, CVTemplate } from '@parischap/formatting';
+import { CVPlaceHolder, CVTemplate } from '@parischap/conversions';
+import { MInputError, MTypes } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
 import { Either } from 'effect';
 import { describe, it } from 'vitest';
@@ -8,9 +8,9 @@ import { describe, it } from 'vitest';
 describe('CVTemplate', () => {
 	const template = CVTemplate.make([
 		CVPlaceHolder.fixedLength({ name: 'dd', length: 2 }),
-		CVPlaceHolder.literals({ name: 'separator1', strings: ['/'] }),
+		CVPlaceHolder.literal({ name: 'separator1', value: '/' }),
 		CVPlaceHolder.fixedLength({ name: 'MM', length: 2 }),
-		CVPlaceHolder.literals({ name: 'separator2', strings: ['/'] }),
+		CVPlaceHolder.literal({ name: 'separator2', value: '/' }),
 		CVPlaceHolder.fixedLength({ name: 'yyyy', length: 4 })
 	]);
 
@@ -27,7 +27,7 @@ describe('CVTemplate', () => {
 			TEUtils.strictEqual(
 				template.toString(),
 				`{
-  "_id": "@parischap/formatting/Template/",
+  "_id": "@parischap/conversions/Template/",
   "placeHolders": [
     "Placeholder dd",
     "Placeholder separator1",
@@ -64,36 +64,33 @@ describe('CVTemplate', () => {
 						readonly separator2: string;
 						readonly yyyy: string;
 					},
-					MError.Input.Type
+					MInputError.Type
 				>
 			>
 		>() satisfies true;
 
 		it('Empty text', () => {
-			TEUtils.assertLeft(
-				reader(''),
-				new MError.Input.Type({
-					message: "Reading placeholder 'dd': expected 2 characters. Actual: 0"
-				})
-			);
+			TEUtils.assertLeftMessage(reader(''), "Expected length of 'dd' to be: 2. Actual: 0");
 		});
 
 		it('Text too short', () => {
-			TEUtils.assertLeft(
+			TEUtils.assertLeftMessage(
 				reader('25/12'),
-				new MError.Input.Type({
-					message: "Reading placeholder 'separator2': expected '/' at the start of ''"
-				})
+				"Expected 'separator2' to start with '/'. Actual: ''"
+			);
+		});
+
+		it('Wrong separator', () => {
+			TEUtils.assertLeftMessage(
+				reader('25|12'),
+				"Expected 'separator1' to start with '/'. Actual: '|12'"
 			);
 		});
 
 		it('Text too long', () => {
-			TEUtils.assertLeft(
+			TEUtils.assertLeftMessage(
 				reader('25/12/2025 is XMas'),
-				new MError.Input.Type({
-					message:
-						"' is XMas' was not consumed by template. Consider adding the 'final' placeHolder at the end of your template"
-				})
+				"Expected text not consumed by template to be empty. Actual: ' is XMas'"
 			);
 		});
 
@@ -154,7 +151,7 @@ describe('CVTemplate', () => {
 						readonly separator2: string;
 						readonly yyyy: string;
 					},
-					Either.Either<string, MError.Input.Type>
+					Either.Either<string, MInputError.Type>
 				>
 			>() satisfies true;
 
@@ -166,11 +163,9 @@ describe('CVTemplate', () => {
 			});
 
 			it('With incorrect values', () => {
-				TEUtils.assertLeft(
-					writer({ dd: '25', separator1: '\\', MM: '12', separator2: '\\', yyyy: '2025' }),
-					new MError.Input.Type({
-						message: "Writing placeholder 'separator1': expected '/'. Received: '\\'"
-					})
+				TEUtils.assertLeftMessage(
+					writer({ dd: '25', separator1: '|', MM: '12', separator2: '|', yyyy: '2025' }),
+					"Expected 'separator1' to be: '/'. Actual: '|'"
 				);
 			});
 		});

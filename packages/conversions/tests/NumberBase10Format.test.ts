@@ -1,6 +1,6 @@
 /* eslint-disable functional/no-expression-statements */
+import { CVNumberBase10Format, CVReal } from '@parischap/conversions';
 import { MBigDecimal } from '@parischap/effect-lib';
-import { CVNumberBase10Format, CVReal } from '@parischap/formatting';
 import { TEUtils } from '@parischap/test-utils';
 import { BigDecimal, Equal, Option, pipe, Tuple } from 'effect';
 import { describe, it } from 'vitest';
