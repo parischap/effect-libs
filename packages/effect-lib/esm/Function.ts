@@ -59,7 +59,7 @@ export const name = (f: MTypes.AnyFunction): string => f.name;
 
 /**
  * Function to memoize a function that takes no argument. Useful to initialize a time-consuming
- * constant only when it is used (not at startup) privided it is used more than once. Otherwise,
+ * constant only when it is used (not at startup) provided it is used more than once. Otherwise,
  * this function is useless.
  *
  * Instead of exporting the result of calling this function (which would then take time at startup),
