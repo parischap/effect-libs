@@ -10,7 +10,6 @@ describe('MNumber', () => {
 		TEUtils.strictEqual(MNumber.intModulo(5)(3), 3);
 		TEUtils.strictEqual(MNumber.intModulo(3)(-5), 1);
 		TEUtils.strictEqual(MNumber.intModulo(5)(-3), 2);
-		TEUtils.strictEqual(MNumber.intModulo(5)(-3), 2);
 		TEUtils.strictEqual(pipe(-3, MNumber.intModulo(3), MNumber.abs), 0);
 		TEUtils.strictEqual(MNumber.intModulo(-3)(5), 2);
 		TEUtils.strictEqual(MNumber.intModulo(-5)(3), 3);

@@ -16,17 +16,18 @@ export const MIN_SAFE_INTEGER = Number.MIN_SAFE_INTEGER;
 export const unsafeFromString: MTypes.NumberFromString = (s) => +s;
 
 /**
- * Modulo - Use only with finite integers - Unlike javascript remainder operator (%), this function
- * always returns a positive integer even if `self` or `divisor` is negative
+ * This function always returns a positive integer even if `self` or `divisor` is negative. Use only
+ * with finite integers.
  *
  * @category Utils
  */
-export const intModulo =
-	(divisor: number) =>
-	(self: number): number => {
+export const intModulo = (divisor: number): MTypes.OneArgFunction<number> => {
+	const absDivisor = Math.abs(divisor);
+	return (self) => {
 		const rest = self % divisor;
-		return rest < 0 ? rest + Math.abs(divisor) : rest;
+		return rest + (rest >= 0 ? 0 : absDivisor);
 	};
+};
 
 /**
  * Returns the `quotient` and `remainder` of the division of `self` by `divisor`. `remainder` always
