@@ -8,11 +8,16 @@
  * DateTimeObject is `timeZoneOffset-dependent`, except `timestamp` which is relative to UTC.
  */
 import {
+	MArray,
+	MFunction,
 	MInputError,
 	MInspectable,
+	MMatch,
 	MNumber,
 	MPipeable,
+	MPredicate,
 	MStruct,
+	MTuple,
 	MTypes
 } from '@parischap/effect-lib';
 import {
@@ -58,28 +63,57 @@ const FOUR_HUNDRED_YEARS_MS = 4 * HUNDRED_YEARS_MS + DAY_MS;
 // Time in ms between 1/1/1970 00:00:00:000+0:00 and 1/1/2001 00:00:00:000+0:00
 const YEAR_START_2001_MS = 978_307_200_000;
 
-namespace MonthDescriptor {
-	export interface Type {
-		readonly nbDaysInMonth: number;
-		readonly monthStartMs: number;
-	}
+namespace DaysInMonth {
+	export interface Type extends ReadonlyArray<number> {}
+
+	export const normalYear: Type = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+	export const leapYear = Array.modify(normalYear, 1, Number.increment);
 }
 
 namespace MonthDescriptors {
 	export interface Type extends ReadonlyArray<MonthDescriptor.Type> {}
 
-	const fromDaysInMonth: MTypes.OneArgFunction<ReadonlyArray<number>, Type> = flow(
-		Array.mapAccum(0, (monthStartMs, nbDaysInMonth) =>
-			Tuple.make(monthStartMs + nbDaysInMonth * DAY_MS, { nbDaysInMonth, monthStartMs })
+	const fromDaysInMonth: MTypes.OneArgFunction<DaysInMonth.Type, Type> = flow(
+		Array.mapAccum(0, (monthStartMs, nbDaysInMonth, monthIndex) =>
+			Tuple.make(monthStartMs + nbDaysInMonth * DAY_MS, {
+				monthIndex,
+				lastDayIndex: nbDaysInMonth - 1,
+				monthStartMs
+			})
 		),
 		Tuple.getSecond
 	);
 
-	const normalYearDaysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-	const leapYearDaysInMonth = Array.modify(normalYearDaysInMonth, 1, Number.increment);
+	export const normalYear: Type = fromDaysInMonth(DaysInMonth.normalYear);
+	export const leapYear: Type = fromDaysInMonth(DaysInMonth.leapYear);
+}
 
-	export const normalYear: Type = fromDaysInMonth(normalYearDaysInMonth);
-	export const leapYear: Type = fromDaysInMonth(leapYearDaysInMonth);
+namespace MonthDescriptor {
+	export interface Type {
+		readonly monthIndex: number;
+		readonly lastDayIndex: number;
+		readonly monthStartMs: number;
+	}
+
+	/**
+	 * Builds a MonthDescriptor from a YearData
+	 *
+	 * @category Constructors
+	 */
+	export const fromYearData = (yearData: YearData.Type): Type =>
+		pipe(
+			yearData.isLeapYear ? MonthDescriptors.leapYear : MonthDescriptors.normalYear,
+			Array.findLast(flow(Struct.get('monthStartMs'), Number.lessThanOrEqualTo(yearData.r1Year))),
+			Option.getOrThrow
+		);
+
+	/**
+	 * Builds a MonthDescriptor from a monthIndex
+	 *
+	 * @category Constructors
+	 */
+	export const fromMonthIndex = (isLeapYear: boolean): MTypes.OneArgFunction<number, Type> =>
+		MArray.unsafeGetter(isLeapYear ? MonthDescriptors.leapYear : MonthDescriptors.normalYear);
 }
 
 /**
@@ -210,101 +244,56 @@ export const MAX_TIMESTAMP = pipe(
 export const MIN_TIMESTAMP = pipe(MIN_FULL_YEAR, YearData.fromYearStart, Struct.get('yearStartMs'));
 
 /**
- * Namespace for the data relative to the month and monthDay of a DateTime
- *
- * @category Models
- */
-export namespace MonthAndMonthDayData {
-	/**
-	 * Type of a DateTime YearData
-	 *
-	 * @category Models
-	 */
-	export interface Type {
-		/** Month of this DateTime, range:[1, 12] */
-		readonly month: number;
-		/** MonthDay of this DateTime, range:[1, 31] */
-		readonly monthDay: number;
-	}
-}
-
-/**
- * Namespace for the data relative to the isoWeek and weekDay of a DateTime
- *
- * @category Models
- */
-export namespace IsoWeekAndWeekDayData {
-	/**
-	 * Type of a DateTime YearData
-	 *
-	 * @category Models
-	 */
-	export interface Type {
-		/** IsoWeek of this DateTime, range:[1, 53] */
-		readonly isoWeek: number;
-		/** WeekDay of this DateTime, range:[1, 7], 1 is monday, 7 is sunday */
-		readonly weekDay: number;
-	}
-}
-
-/**
- * Namespace for the data relative to the hour12 and meridiem of a DateTime
- *
- * @category Models
- */
-export namespace Hour12AndMeridiemData {
-	/**
-	 * Type of a DateTime YearData
-	 *
-	 * @category Models
-	 */
-	export interface Type {
-		/** Hour12 of this DateTime, range:[0, 11] */
-		readonly hour12: number;
-		/** Meridiem offset of this DateTime in hours (0 for 'AM', 12 for 'PM') */
-		readonly meridiem: 0 | 12;
-	}
-}
-
-/**
  * Type of a DateTime
  *
  * @category Models
  */
 export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable {
 	/** Number of milliseconds since 1/1/1970 at 00:00:00:000+00:00. Is timezone-independent */
-	readonly timestamp: Option.Option<number>;
+	readonly timestamp: number;
 
 	/** YearData of this DateTime, expressed in given timezone */
 	readonly yearData: YearData.Type;
 
-	/** Number of days since the start of the current year. Expressed in given timezone, range:1..366 */
+	/** Number of days since the start of the current year. Expressed in given timezone, range:[0, 365] */
 	readonly ordinalDay: Option.Option<number>;
 
-	/** MonthAndMonthDayData of this DateTime, expressed in given timezone */
-	readonly monthAndMonthDayData: Option.Option<MonthAndMonthDayData.Type>;
+	/** Month of this DateTime. Expressed in given timezone, range:[0, 11] */
+	readonly month: Option.Option<number>;
 
-	/** IsoWeekAndWeekDayData of this DateTime, expressed in given timezone */
-	readonly isoWeekAndWeekDayData: Option.Option<IsoWeekAndWeekDayData.Type>;
+	/** MonthDay of this DateTime. Expressed in given timezone, range:[0, 30] */
+	readonly monthDay: Option.Option<number>;
 
-	/** Number of hours since the start of the current day. Expressed in given timezone, range:0..23 */
+	/** IsoWeek of this DateTime. Expressed in given timezone, range:[0, 52] */
+	readonly isoWeek: Option.Option<number>;
+
+	/** WeekDay of this DateTime. Expressed in given timezone, range:[0, 6], 0 is sunday, 6 is saturday */
+	readonly weekDay: Option.Option<number>;
+
+	/** Number of hours since the start of the current day. Expressed in given timezone, range:[0, 23] */
 	readonly hour24: Option.Option<number>;
 
-	/** Hour12AndMeridiemData of this DateTime, expressed in given timezone */
-	readonly hour12AndMeridiem: Option.Option<Hour12AndMeridiemData.Type>;
+	/** Hour12 of this DateTime. Expressed in given timezone, range:[0, 11] */
+	readonly hour12: Option.Option<number>;
 
-	/** Number of minutes since the start of the current hour. Expressed in given timezone, range:0..59 */
+	/** Meridiem offset of this DateTime in hours. Expressed in given timezone, 0 for 'AM', 12 for 'PM' */
+	readonly meridiem: Option.Option<0 | 12>;
+
+	/**
+	 * Number of minutes since the start of the current hour. Expressed in given timezone, range:[0,
+	 * 59]
+	 */
 	readonly minute: Option.Option<number>;
 
 	/**
 	 * Number of seconds, since sthe start of the current minute. Expressed in given timezone,
-	 * range:0..59
+	 * range:[0, 59]
 	 */
 	readonly second: Option.Option<number>;
 
 	/**
 	 * Number of milliseconds, since sthe start of the current second. Expressed in given timezone,
-	 * range:0..999
+	 * range:[0, 999]
 	 */
 	readonly millisecond: Option.Option<number>;
 
@@ -330,7 +319,8 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
  *
  * @category Equivalences
  */
-export const equivalence: Equivalence.Equivalence<Type> = (self, that) => true;
+export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
+	self.timestamp === that.timestamp;
 
 /** Proto */
 const _TypeIdHash = Hash.hash(_TypeId);
@@ -340,7 +330,7 @@ const proto: MTypes.Proto<Type> = {
 		return has(that) && equivalence(this, that);
 	},
 	[Hash.symbol](this: Type) {
-		return pipe(0, Hash.cached(this));
+		return pipe(this.timestamp, Hash.hash, Hash.combine(_TypeIdHash), Hash.cached(this));
 	},
 	[MInspectable.IdSymbol](this: Type) {
 		return '';
@@ -351,17 +341,10 @@ const proto: MTypes.Proto<Type> = {
 
 const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
 
-const _empty = {
-	timestamp: Option.none(),
-	ordinalDay: Option.none(),
-	monthAndMonthDayData: Option.none(),
-	isoWeekAndWeekDayData: Option.none(),
-	hour24: Option.none(),
-	hour12AndMeridiem: Option.none(),
-	minute: Option.none(),
-	second: Option.none(),
-	millisecond: Option.none()
-};
+// Returns the local time zone offset in hours of the machine on which this code runs. Result is cached. So result will become wrong if you change the local timeZoneOffset
+const _localTimeZoneOffset: () => number = MFunction.once(
+	() => new Date(0).getTimezoneOffset() / 60
+);
 
 /**
  * Tries to build a DateTime from `timestamp` and `timeZoneOffset`. Returns a `right` of this
@@ -385,24 +368,35 @@ export const fromTimestamp = ({
 		MInputError.assertInRange({
 			min: MIN_TIMESTAMP,
 			max: MAX_TIMESTAMP,
-			name: 'offset timestamp'
+			offset: -timeZoneOffset * HOUR_MS,
+			name: 'timestamp'
 		}),
 		Either.map(
 			flow(
 				YearData.fromTimestamp,
 				MStruct.make('yearData'),
-				MStruct.enrichWith({
-					timestamp: () => Option.some(timestamp),
-					timeZoneOffset: Function.constant(timeZoneOffset)
+				MStruct.prepend({
+					timestamp,
+					timeZoneOffset,
+					ordinalDay: Option.none(),
+					month: Option.none(),
+					monthDay: Option.none(),
+					isoWeek: Option.none(),
+					weekDay: Option.none(),
+					hour24: Option.none(),
+					hour12: Option.none(),
+					meridiem: Option.none(),
+					minute: Option.none(),
+					second: Option.none(),
+					millisecond: Option.none()
 				}),
-				MStruct.prepend(_empty),
 				_make
 			)
 		)
 	);
 
 /**
- * Same as fromTimestamp but returns directly the DateTime and throws
+ * Same as fromTimestamp but returns directly the DateTime or throws if it cannot be built
  *
  * @category Constructors
  */
@@ -415,45 +409,200 @@ export const unsafeFromTimestamp: MTypes.OneArgFunction<
 > = flow(fromTimestamp, Either.getOrThrowWith(Function.identity));
 
 /**
- * Tries to build a DateTime from `year`, `month`, `monthDay` and `timeZoneOffset`. Returns a
- * `right` of this DateTime if successful. Returns a `left` of an error otherwise. `year` must be an
- * integer comprised in the range [MIN_TIMESTAMP, MAX_TIMESTAMP] representing the number of
- * milliseconds since 1/1/1970 00:00:00:000+0:00. `timeZoneOffset` is a number, not necessarily an
- * integer, that represents the offset in hours of the zone for which all calculations of that
- * DateTime object will be carried out. It should be comprised in the range ]-12, 15[.
+ * Builds a DateTime using Date.now() as timestamp.
  *
  * @category Constructors
  */
-export const fromYMD = ({
-	year,
-	month,
-	monthDay,
-	hour24 = 0,
-	minute = 0,
-	second = 0,
-	millisecond = 0,
-	timeZoneOffset = 0
-}: {
+export const now = (timeZoneOffset = 0): Type =>
+	unsafeFromTimestamp({ timestamp: Date.now(), timeZoneOffset });
+
+/**
+ * Tries to build a DateTime from `params`. Returns a `right` of this DateTime if successful.
+ * Returns a `left` of an error otherwise.
+ *
+ * `timeZoneOffset` is a number, not necessarily an integer, that represents the offset in hours of
+ * the zone for which all other parameters are expressed. It should be comprised in the range ]-12,
+ * 15[.
+ *
+ * `year` must be an integer comprised in the range [MIN_FULL_YEAR, MAX_FULL_YEAR].
+ *
+ * `ordinalDay` must be an integer greater than or equal to 1 and less than or equal to the number
+ * of days of the current year. `month` must be an integer greater than or equal to 1 (January) and
+ * less than or equal to 12 (December). `monthDay` must be an integer greater than or equal to 1 and
+ * less than or equal to the number of days of the current month. `isoWeek` must be an integer
+ * greater than or equal to 1 and less than or equal to the number of iso weeks of the current year.
+ * `weekDay` must be an integer greater than or equal to 0 (sunday) and less than or equal to 6
+ * (saturday). If you don't pass sufficient information to determine the day of the year (e.g. you
+ * pass `month` and `weekDay` but `monthDay`, `ordinalDay`, and `isoWeek` are missing), the returned
+ * DayeTime will represent the first day of the year.
+ *
+ * `hour24` must be an integer greater than or equal to 0 and less than or equal to 23. `hour12`
+ * must be an integer greater than or equal to 0 and less than or equal to 11. `meridiem` must be
+ * one of 0 (AM) or 12 (PM). If you don't pass sufficient information to determine the hour of the
+ * day (e.g. you pass `hour12` but `hour24`, and `meridiem` are missing), the returned DayeTime will
+ * represent the first hour of the day.
+ *
+ * `minute` must be an integer greater than or equal to 0 and less than or equal to 59. `second`
+ * must be an integer greater than or equal to 0 and less than or equal to 59. `millisecond` must be
+ * an integer greater than or equal to 0 and less than or equal to 999.
+ *
+ * All parameters must be coherent. For instance, you will get an error if you pass `year=1970`,
+ * `month=1`, `monthDay=1`, `weekDay=0` and `timeZoneOffset=0` because 1/1/1970 00:00:00:000+0:00
+ * was a thursday. You will also get an error if you pass `hour24=13` and `meridiem=0`.
+ *
+ * @category Constructors
+ */
+export const fromParts = (params: {
 	readonly year: number;
-	readonly month: number;
-	readonly monthDay: number;
-	readonly hour24: number;
-	readonly minute: number;
-	readonly second: number;
-	readonly millisecond: number;
-	readonly timeZoneOffset: number;
+	readonly ordinalDay?: number;
+	readonly month?: number;
+	readonly monthDay?: number;
+	readonly isoWeek?: number;
+	readonly weekDay?: number;
+	readonly hour24?: number;
+	readonly hour12?: number;
+	readonly meridiem?: 0 | 12;
+	readonly minute?: number;
+	readonly second?: number;
+	readonly millisecond?: number;
+	readonly timeZoneOffset?: number;
 }): Either.Either<Type, MInputError.Type> =>
 	Either.gen(function* () {
+		const paramsAsOptions = {
+			year: params.year,
+			ordinalDay: pipe(
+				params.ordinalDay,
+				Option.fromNullable,
+				Option.map(Number.decrement),
+				Either.left
+			),
+			month: pipe(params.month, Option.fromNullable, Option.map(Number.decrement), Either.left),
+			monthDay: pipe(
+				params.monthDay,
+				Option.fromNullable,
+				Option.map(Number.decrement),
+				Either.left
+			),
+			isoWeek: pipe(params.isoWeek, Option.fromNullable, Option.map(Number.decrement), Either.left),
+			weekDay: pipe(params.weekDay, Option.fromNullable, Either.left),
+			hour24: pipe(params.hour24, Option.fromNullable, Either.left),
+			hour12: pipe(params.hour12, Option.fromNullable, Either.left),
+			meridiem: pipe(params.meridiem, Option.fromNullable, Either.left),
+			minute: pipe(params.minute, Option.fromNullable, Either.left),
+			second: pipe(params.second, Option.fromNullable, Either.left),
+			millisecond: pipe(params.millisecond, Option.fromNullable, Either.left),
+			timeZoneOffset: pipe(
+				params.timeZoneOffset,
+				Option.fromNullable,
+				Option.getOrElse(Function.constant(0))
+			)
+		};
+
 		const validatedYear = yield* pipe(
-			year,
+			paramsAsOptions.year,
 			MInputError.assertInRange({
 				min: MIN_FULL_YEAR,
 				max: MAX_FULL_YEAR,
+				offset: 0,
 				name: "'year'"
 			})
 		);
 
 		const yearData = YearData.fromYearStart(validatedYear);
+		const isLeapYear = yearData.isLeapYear;
+
+		const [yearStartOffsetMsEither, paramsToCheck] = pipe(
+			paramsAsOptions,
+			MMatch.make,
+			MMatch.when(
+				MPredicate.struct({ ordinalDay: Option.isSome }),
+				MTuple.makeBothBy({
+					toFirst: flow(
+						Struct.get('ordinalDay'),
+						Struct.get('value'),
+						MInputError.assertInRange({
+							min: 0,
+							max: isLeapYear ? 365 : 364,
+							offset: 1,
+							name: "'ordinalDay'"
+						}),
+						Either.map(Number.multiply(DAY_MS))
+					),
+					toSecond: MStruct.append({ ordinalDay: Option.none() })
+				})
+			),
+			MMatch.when(
+				MPredicate.struct({ month: Option.isSome, monthDay: Option.isSome }),
+				MTuple.makeBothBy({
+					toFirst: ({ month, monthDay }) =>
+						Either.gen(function* () {
+							const validatedMonth = yield* pipe(
+								month.value,
+								MInputError.assertInRange({
+									min: 0,
+									max: 11,
+									offset: 1,
+									name: "'month'"
+								})
+							);
+
+							const monthDescriptor = pipe(
+								validatedMonth,
+								MonthDescriptor.fromMonthIndex(isLeapYear)
+							);
+
+							const validatedMonthDay = yield* pipe(
+								monthDay.value,
+								MInputError.assertInRange({
+									min: 0,
+									max: monthDescriptor.lastDayIndex,
+									offset: 1,
+									name: "'monthDay'"
+								})
+							);
+							return monthDescriptor.monthStartMs + validatedMonthDay * DAY_MS;
+						}),
+					toSecond: MStruct.append({ month: Option.none(), monthDay: Option.none() })
+				})
+			),
+			MMatch.when(
+				MPredicate.struct({ isoWeek: Option.isSome, weekDay: Option.isSome }),
+				MTuple.makeBothBy({
+					toFirst: ({ isoWeek, weekDay }) =>
+						Either.gen(function* () {
+							const validatedMonth = yield* pipe(
+								month.value,
+								MInputError.assertInRange({
+									min: 0,
+									max: 11,
+									offset: 1,
+									name: "'month'"
+								})
+							);
+
+							const monthDescriptor = pipe(
+								validatedMonth,
+								MonthDescriptor.fromMonthIndex(isLeapYear)
+							);
+
+							const validatedMonthDay = yield* pipe(
+								monthDay.value,
+								MInputError.assertInRange({
+									min: 0,
+									max: monthDescriptor.lastDayIndex,
+									offset: 1,
+									name: "'monthDay'"
+								})
+							);
+							return monthDescriptor.monthStartMs + validatedMonthDay * DAY_MS;
+						}),
+					toSecond: MStruct.append({ month: Option.none(), monthDay: Option.none() })
+				})
+			),
+			MMatch.orElse(flow(Tuple.make, MTuple.prependElement(Either.right(0))))
+		);
+
+		const yearStartOffsetMs = yield* yearStartOffsetMsEither;
 
 		return 0 as never;
 	});

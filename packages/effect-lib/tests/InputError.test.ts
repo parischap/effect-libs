@@ -58,20 +58,20 @@ describe('MInputError', () => {
 	describe('assertInRange', () => {
 		it('Not passing without prefix', () => {
 			TEUtils.assertLeftMessage(
-				MInputError.assertInRange({ min: 3, max: 5 })(6),
+				MInputError.assertInRange({ min: 3, max: 5, offset: 0 })(6),
 				'Expected value to be between 3 and 5 included. Actual: 6'
 			);
 		});
 
 		it('Not passing with prefix', () => {
 			TEUtils.assertLeftMessage(
-				MInputError.assertInRange({ min: 3, max: 5, name: "'age'" })(6),
-				"Expected 'age' to be between 3 and 5 included. Actual: 6"
+				MInputError.assertInRange({ min: 3, max: 5, offset: 1, name: "'age'" })(6),
+				"Expected 'age' to be between 4 and 6 included. Actual: 7"
 			);
 		});
 
 		it('Passing', () => {
-			TEUtils.assertRight(MInputError.assertInRange({ min: 3, max: 5 })(4), 4);
+			TEUtils.assertRight(MInputError.assertInRange({ min: 3, max: 5, offset: 1 })(4), 4);
 		});
 	});
 

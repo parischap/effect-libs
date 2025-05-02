@@ -98,19 +98,21 @@ export const assertLength = <A extends ArrayLike<unknown> | string>(params: {
  *
  * @category Constructors
  */
-export const outOfBound = ({
+export const outOfBounds = ({
 	min,
 	max,
+	offset,
 	actual,
 	name
 }: {
 	readonly min: number;
 	readonly max: number;
+	readonly offset: number;
 	readonly actual: number;
 	readonly name?: string;
 }) =>
 	new Type({
-		message: `Expected ${_nameLabel(name)} to be between ${min} and ${max} included. Actual: ${actual}`
+		message: `Expected ${_nameLabel(name)} to be between ${min + offset} and ${max + offset} included. Actual: ${actual + offset}`
 	});
 
 /**
@@ -122,11 +124,12 @@ export const outOfBound = ({
 export const assertInRange = (params: {
 	readonly min: number;
 	readonly max: number;
+	readonly offset: number;
 	readonly name?: string;
 }): MTypes.OneArgFunction<number, Either.Either<number, Type>> =>
 	Either.liftPredicate(
 		Predicate.and(Number.greaterThanOrEqualTo(params.min), Number.lessThanOrEqualTo(params.max)),
-		(actual) => outOfBound({ ...params, actual })
+		(actual) => outOfBounds({ ...params, actual })
 	);
 
 /**
