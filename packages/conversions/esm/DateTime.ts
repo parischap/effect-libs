@@ -1,27 +1,25 @@
 /**
- * This module implements an apparently immutable DateTime object. The object does keep an internal
- * state. All the functions look pure insofar as they will always yield the same result, whatever
- * the state of the object. But depending on the state, they will yield it more or less quickly.
+ * This module implements an immutable DateTime object. However, DateTime objects do keep an
+ * internal state. All the functions look pure insofar as they will always yield the same result
+ * whatever the state the object is in. But depending on the state, they will yield it more or less
+ * quickly.
  *
  * A DateTime object has a `timeZoneOffset` which is difference in hours between 1/1/1970
  * 00:00:00:000+z:00 and 1/1/1970 00:00:00:000+00:00 (e.g 1 for timezone +1:00). All the data in the
- * DateTimeObject is `timeZoneOffset-dependent`, except `timestamp` which is relative to UTC.
+ * DateTimeObject is `timeZoneOffset-dependent`, except `timestamp` which is relative to 1/1/1970
+ * UTC.
  */
+
 import {
-	MArray,
-	MFunction,
 	MInputError,
 	MInspectable,
 	MMatch,
-	MNumber,
 	MPipeable,
 	MPredicate,
-	MStruct,
 	MTuple,
 	MTypes
 } from '@parischap/effect-lib';
 import {
-	Array,
 	Either,
 	Equal,
 	Equivalence,
@@ -31,183 +29,14 @@ import {
 	Option,
 	Pipeable,
 	Predicate,
-	Struct,
-	Tuple,
 	flow,
 	pipe
 } from 'effect';
+import * as CVDateTimeUtils from './DateTimeUtils.js';
 
 export const moduleTag = '@parischap/conversions/DateTime/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
-
-const SECOND_MS = 1_000;
-const MINUTE_MS = 60 * SECOND_MS;
-const HOUR_MS = 60 * MINUTE_MS;
-const DAY_MS = 24 * HOUR_MS;
-const WEEK_MS = 7 * DAY_MS;
-const NORMAL_YEAR_MS = 365 * DAY_MS;
-const LEAP_YEAR_MS = NORMAL_YEAR_MS + DAY_MS;
-
-/**
- * Year y and year y + kx400 (where k is any integer) have the same number of days (so they are both
- * leap years, or both normal years). We can therefore restrict the study of leap years to a
- * 400-year period.
- *
- * 2100, 2200, 2300 are not leap years. But 2400 is a leap year.
- */
-const FOUR_YEARS_MS = 3 * NORMAL_YEAR_MS + LEAP_YEAR_MS;
-const HUNDRED_YEARS_MS = 25 * FOUR_YEARS_MS - DAY_MS;
-const FOUR_HUNDRED_YEARS_MS = 4 * HUNDRED_YEARS_MS + DAY_MS;
-
-// Time in ms between 1/1/1970 00:00:00:000+0:00 and 1/1/2001 00:00:00:000+0:00
-const YEAR_START_2001_MS = 978_307_200_000;
-
-namespace DaysInMonth {
-	export interface Type extends ReadonlyArray<number> {}
-
-	export const normalYear: Type = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-	export const leapYear = Array.modify(normalYear, 1, Number.increment);
-}
-
-namespace MonthDescriptors {
-	export interface Type extends ReadonlyArray<MonthDescriptor.Type> {}
-
-	const fromDaysInMonth: MTypes.OneArgFunction<DaysInMonth.Type, Type> = flow(
-		Array.mapAccum(0, (monthStartMs, nbDaysInMonth, monthIndex) =>
-			Tuple.make(monthStartMs + nbDaysInMonth * DAY_MS, {
-				monthIndex,
-				lastDayIndex: nbDaysInMonth - 1,
-				monthStartMs
-			})
-		),
-		Tuple.getSecond
-	);
-
-	export const normalYear: Type = fromDaysInMonth(DaysInMonth.normalYear);
-	export const leapYear: Type = fromDaysInMonth(DaysInMonth.leapYear);
-}
-
-namespace MonthDescriptor {
-	export interface Type {
-		readonly monthIndex: number;
-		readonly lastDayIndex: number;
-		readonly monthStartMs: number;
-	}
-
-	/**
-	 * Builds a MonthDescriptor from a YearData
-	 *
-	 * @category Constructors
-	 */
-	export const fromYearData = (yearData: YearData.Type): Type =>
-		pipe(
-			yearData.isLeapYear ? MonthDescriptors.leapYear : MonthDescriptors.normalYear,
-			Array.findLast(flow(Struct.get('monthStartMs'), Number.lessThanOrEqualTo(yearData.r1Year))),
-			Option.getOrThrow
-		);
-
-	/**
-	 * Builds a MonthDescriptor from a monthIndex
-	 *
-	 * @category Constructors
-	 */
-	export const fromMonthIndex = (isLeapYear: boolean): MTypes.OneArgFunction<number, Type> =>
-		MArray.unsafeGetter(isLeapYear ? MonthDescriptors.leapYear : MonthDescriptors.normalYear);
-}
-
-/**
- * Namespace for the data relative to the year of a DateTime
- *
- * @category Models
- */
-export namespace YearData {
-	/**
-	 * Type of a DateTime YearData
-	 *
-	 * @category Models
-	 */
-	export interface Type {
-		/** The year of this DateTime, range: [MIN_FULL_YEAR, MAX_FULL_YEAR] */
-		readonly year: number;
-
-		/** True if `year` is a leap year. `false` otherwise */
-		readonly isLeapYear: boolean;
-
-		/**
-		 * Time in ms between 1/1/1970 00:00:00:000+0:00 and the first day of year `year` at
-		 * 00:00:00:000+0:00
-		 */
-		readonly yearStartMs: number;
-
-		/** Time in ms between this DateTime and the start of the current year */
-		readonly r1Year: number;
-	}
-
-	export const fromTimestamp = (timestamp: number): Type => {
-		/**
-		 * The 100-year periods [2001, 2100], [2101, 2200], and [2201, 2300] all last HUNDRED_YEARS_MS.
-		 * Those three 100-year periods can be divided in 24 periods that last FOUR_YEARS_MS
-		 * (4xNORMAL_YEAR_MS + DAY_MS) and a final 4-year period that lasts FOUR_YEARS_MS - DAY_MS
-		 * (4xNORMAL_YEAR_MS).
-		 *
-		 * The 100-year period [2301, 2400] lasts HUNDRED_YEARS_MS + DAY_MS. This period can be divided
-		 * in 25 periods that last FOUR_YEARS_MS (4xNORMAL_YEAR_MS + DAY_MS).
-		 */
-		const offset2001 = timestamp - YEAR_START_2001_MS;
-
-		const q400Years = Math.floor(offset2001 / FOUR_HUNDRED_YEARS_MS);
-		const offset400Years = q400Years * FOUR_HUNDRED_YEARS_MS;
-		const r400Years = offset2001 - offset400Years;
-
-		// q100Years is equal to 4 on the last day of the 400-year period.
-		const q100Years = Math.min(3, Math.floor(r400Years / HUNDRED_YEARS_MS));
-		const offset100Years = q100Years * HUNDRED_YEARS_MS;
-		// r100Years is superior to HUNDRED_YEARS_MS on the last day of the 400-year period
-		const r100Years = r400Years - offset100Years;
-
-		const q4Years = Math.floor(r100Years / FOUR_YEARS_MS);
-		const offset4Years = q4Years * FOUR_YEARS_MS;
-		const r4Years = r100Years - offset4Years;
-
-		// q1Year is equal to 4 on the last day of each 4-year period except the last day of years 2100, 2200 and 2300.
-		const q1Year = Math.min(3, Math.floor(r4Years / NORMAL_YEAR_MS));
-		const offset1Year = q1Year * NORMAL_YEAR_MS;
-		// r1Year is superior to NORMAL_YEAR_MS on very last day of each 4-year period except the last day of years 2100, 2200 and 2300.
-		const r1Year = r4Years - offset1Year;
-
-		return {
-			year: 2001 + 400 * q400Years + 100 * q100Years + 4 * q4Years + q1Year,
-			isLeapYear: q1Year === 3 && (q4Years !== 24 || q100Years === 3),
-			yearStartMs:
-				YEAR_START_2001_MS + offset400Years + offset100Years + offset4Years + offset1Year,
-			r1Year
-		};
-	};
-
-	export const fromYearStart = (year: number): Type => {
-		const offset2001 = year - 2001;
-
-		const [q400Years, r400Years] = MNumber.quotientAndRemainder(400)(offset2001);
-		const [q100Years, r100Years] = MNumber.quotientAndRemainder(100)(r400Years);
-		const [q4Years, r4Years] = MNumber.quotientAndRemainder(4)(r100Years);
-
-		const isLeapYear = r4Years === 3 && (r100Years !== 99 || r400Years === 399);
-		const yearStartMs =
-			YEAR_START_2001_MS +
-			q400Years * FOUR_HUNDRED_YEARS_MS +
-			q100Years * HUNDRED_YEARS_MS +
-			q4Years * FOUR_YEARS_MS +
-			r4Years * NORMAL_YEAR_MS;
-
-		return {
-			year,
-			isLeapYear,
-			yearStartMs,
-			r1Year: 0
-		};
-	};
-}
 
 const MAX_FULL_YEAR_OFFSET = 285_423;
 
@@ -232,8 +61,14 @@ export const MIN_FULL_YEAR = 1970 - MAX_FULL_YEAR_OFFSET - 1;
  */
 export const MAX_TIMESTAMP = pipe(
 	MAX_FULL_YEAR,
-	YearData.fromYearStart,
-	({ yearStartMs, isLeapYear }) => yearStartMs + (isLeapYear ? LEAP_YEAR_MS : NORMAL_YEAR_MS)
+	CVDateTimeUtils.YearDescriptor.fromTimestamp,
+	MTuple.makeBothBy({
+		toFirst: CVDateTimeUtils.YearDescriptor.startTimestamp,
+		toSecond: CVDateTimeUtils.YearDescriptor.getMsDuration
+	}),
+	Function.tupled(Number.sum),
+	// Substract DAY_MS so we can still safely add a timeZoneOffset
+	Number.subtract(CVDateTimeUtils.DAY_MS)
 );
 
 /**
@@ -241,7 +76,13 @@ export const MAX_TIMESTAMP = pipe(
  *
  * @category Constants
  */
-export const MIN_TIMESTAMP = pipe(MIN_FULL_YEAR, YearData.fromYearStart, Struct.get('yearStartMs'));
+export const MIN_TIMESTAMP = pipe(
+	MIN_FULL_YEAR,
+	CVDateTimeUtils.YearDescriptor.fromTimestamp,
+	CVDateTimeUtils.YearDescriptor.startTimestamp,
+	// Add DAY_MS so we can still safely substract a timeZoneOffset
+	Number.sum(CVDateTimeUtils.DAY_MS)
+);
 
 /**
  * Type of a DateTime
@@ -252,23 +93,32 @@ export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable 
 	/** Number of milliseconds since 1/1/1970 at 00:00:00:000+00:00. Is timezone-independent */
 	readonly timestamp: number;
 
-	/** YearData of this DateTime, expressed in given timezone */
-	readonly yearData: YearData.Type;
+	/** YearDescriptor of this DateTime, expressed in given timezone */
+	readonly yearDescriptor: CVDateTimeUtils.YearDescriptor.Type;
 
-	/** Number of days since the start of the current year. Expressed in given timezone, range:[0, 365] */
-	readonly ordinalDay: Option.Option<number>;
+	/**
+	 * Index of the day of this DateTime (in the current year). Expressed in given timezone, range:[0,
+	 * 365]
+	 */
+	readonly ordinalDayIndex: Option.Option<number>;
 
-	/** Month of this DateTime. Expressed in given timezone, range:[0, 11] */
-	readonly month: Option.Option<number>;
+	/** Index of the month of this DateTime. Expressed in given timezone, range:[0, 11] */
+	readonly monthIndex: Option.Option<number>;
 
-	/** MonthDay of this DateTime. Expressed in given timezone, range:[0, 30] */
-	readonly monthDay: Option.Option<number>;
+	/**
+	 * Index of the day of this DateTime (in the current month). Expressed in given timezone,
+	 * range:[0, 30]
+	 */
+	readonly monthDayIndex: Option.Option<number>;
 
-	/** IsoWeek of this DateTime. Expressed in given timezone, range:[0, 52] */
-	readonly isoWeek: Option.Option<number>;
+	/** Index of the week of this DateTime. Expressed in given timezone, range:[0, 52] */
+	readonly isoWeekIndex: Option.Option<number>;
 
-	/** WeekDay of this DateTime. Expressed in given timezone, range:[0, 6], 0 is sunday, 6 is saturday */
-	readonly weekDay: Option.Option<number>;
+	/**
+	 * Index of the day of this DateTime (in the current iso week). Expressed in given timezone,
+	 * range:[0, 6], 0 is monday, 6 is sunday
+	 */
+	readonly weekDayIndex: Option.Option<number>;
 
 	/** Number of hours since the start of the current day. Expressed in given timezone, range:[0, 23] */
 	readonly hour24: Option.Option<number>;
@@ -297,11 +147,8 @@ export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable 
 	 */
 	readonly millisecond: Option.Option<number>;
 
-	/**
-	 * Time in hours between 1/1/1970 00:00:00:000+z:00 and 1/1/1970 00:00:00:000+00:00 (e.g 1 for
-	 * timezone +1:00). Does not have to be an integer. Should be comprised in the range ]-12, 15[
-	 */
-	readonly timeZoneOffset: number;
+	/** Timestamp of 1/1/1970 00:00:00:000+z:00 */
+	readonly timeZoneOffsetMs: number;
 
 	/** @internal */
 	readonly [_TypeId]: _TypeId;
@@ -341,59 +188,61 @@ const proto: MTypes.Proto<Type> = {
 
 const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
 
-// Returns the local time zone offset in hours of the machine on which this code runs. Result is cached. So result will become wrong if you change the local timeZoneOffset
-const _localTimeZoneOffset: () => number = MFunction.once(
-	() => new Date(0).getTimezoneOffset() / 60
-);
-
 /**
  * Tries to build a DateTime from `timestamp` and `timeZoneOffset`. Returns a `right` of this
  * DateTime if successful. Returns a `left` of an error otherwise. `timestamp` must be an integer
  * comprised in the range [MIN_TIMESTAMP, MAX_TIMESTAMP] representing the number of milliseconds
  * since 1/1/1970 00:00:00:000+0:00. `timeZoneOffset` is a number, not necessarily an integer, that
  * represents the offset in hours of the zone for which all calculations of that DateTime object
- * will be carried out. It should be comprised in the range ]-12, 15[.
+ * will be carried out. It should be comprised in the range ]-12, 15[. If omitted, the offset of the
+ * local time zone of the machine this code is running on is used.
  *
  * @category Constructors
  */
 export const fromTimestamp = ({
 	timestamp,
-	timeZoneOffset = 0
+	timeZoneOffset
 }: {
 	readonly timestamp: number;
-	readonly timeZoneOffset?: number;
+	readonly timeZoneOffset?: number | undefined;
 }): Either.Either<Type, MInputError.Type> =>
-	pipe(
-		timestamp + timeZoneOffset * HOUR_MS,
-		MInputError.assertInRange({
-			min: MIN_TIMESTAMP,
-			max: MAX_TIMESTAMP,
-			offset: -timeZoneOffset * HOUR_MS,
-			name: 'timestamp'
-		}),
-		Either.map(
-			flow(
-				YearData.fromTimestamp,
-				MStruct.make('yearData'),
-				MStruct.prepend({
-					timestamp,
-					timeZoneOffset,
-					ordinalDay: Option.none(),
-					month: Option.none(),
-					monthDay: Option.none(),
-					isoWeek: Option.none(),
-					weekDay: Option.none(),
-					hour24: Option.none(),
-					hour12: Option.none(),
-					meridiem: Option.none(),
-					minute: Option.none(),
-					second: Option.none(),
-					millisecond: Option.none()
-				}),
-				_make
-			)
-		)
-	);
+	Either.gen(function* () {
+		const validatedTimestamp = yield* pipe(
+			timestamp,
+			MInputError.assertInRange({
+				min: MIN_TIMESTAMP,
+				max: MAX_TIMESTAMP,
+				offset: 0,
+				name: 'timestamp'
+			})
+		);
+
+		const timeZoneOffsetMs = pipe(
+			timeZoneOffset,
+			Option.fromNullable,
+			Option.map(Number.multiply(CVDateTimeUtils.HOUR_MS)),
+			Option.getOrElse(Function.constant(CVDateTimeUtils.localTimeZoneOffsetMs))
+		);
+
+		return _make({
+			timestamp,
+			yearDescriptor: CVDateTimeUtils.YearDescriptor.fromTimestamp(
+				validatedTimestamp + timeZoneOffsetMs
+			),
+			ordinalDayIndex: Option.none(),
+			monthIndex: Option.none(),
+			monthDayIndex: Option.none(),
+			isoWeekIndex: Option.none(),
+			weekDayIndex: Option.none(),
+			hour24: Option.none(),
+			hour12: Option.none(),
+			meridiem: Option.none(),
+			minute: Option.none(),
+			second: Option.none(),
+			millisecond: Option.none(),
+			timeZoneOffsetMs
+		});
+	});
 
 /**
  * Same as fromTimestamp but returns directly the DateTime or throws if it cannot be built
@@ -403,103 +252,101 @@ export const fromTimestamp = ({
 export const unsafeFromTimestamp: MTypes.OneArgFunction<
 	{
 		readonly timestamp: number;
-		readonly timeZoneOffset?: number;
+		readonly timeZoneOffset?: number | undefined;
 	},
 	Type
 > = flow(fromTimestamp, Either.getOrThrowWith(Function.identity));
 
 /**
- * Builds a DateTime using Date.now() as timestamp.
+ * Builds a DateTime using Date.now() as timestamp. You can optionally provide a timeZoneOffset. If
+ * omitted, the offset of the local time zone of the machine this code is running on is used.
  *
  * @category Constructors
  */
-export const now = (timeZoneOffset = 0): Type =>
+export const now = (timeZoneOffset?: number): Type =>
 	unsafeFromTimestamp({ timestamp: Date.now(), timeZoneOffset });
 
 /**
- * Tries to build a DateTime from `params`. Returns a `right` of this DateTime if successful.
- * Returns a `left` of an error otherwise.
+ * Tries to build a DateTime from the provided DateTime parts. Returns a `right` of this DateTime if
+ * successful. Returns a `left` of an error otherwise.
  *
  * `timeZoneOffset` is a number, not necessarily an integer, that represents the offset in hours of
  * the zone for which all other parameters are expressed. It should be comprised in the range ]-12,
- * 15[.
+ * 15[. If omitted, the offset of the local time zone of the machine this code is running on is
+ * used.
  *
  * `year` must be an integer comprised in the range [MIN_FULL_YEAR, MAX_FULL_YEAR].
  *
  * `ordinalDay` must be an integer greater than or equal to 1 and less than or equal to the number
- * of days of the current year. `month` must be an integer greater than or equal to 1 (January) and
+ * of days in the current year. `month` must be an integer greater than or equal to 1 (January) and
  * less than or equal to 12 (December). `monthDay` must be an integer greater than or equal to 1 and
- * less than or equal to the number of days of the current month. `isoWeek` must be an integer
- * greater than or equal to 1 and less than or equal to the number of iso weeks of the current year.
- * `weekDay` must be an integer greater than or equal to 0 (sunday) and less than or equal to 6
- * (saturday). If you don't pass sufficient information to determine the day of the year (e.g. you
- * pass `month` and `weekDay` but `monthDay`, `ordinalDay`, and `isoWeek` are missing), the returned
- * DayeTime will represent the first day of the year.
+ * less than or equal to the number of days in the current month. `isoWeek` must be an integer
+ * greater than or equal to 1 and less than or equal to the number of iso weeks in the current year.
+ * `weekDay` must be an integer greater than or equal to 1 (monday) and less than or equal to 7
+ * (sunday). If there is not sufficient information to determine the day of the year (e.g. `month`
+ * and `weekDay` are provided but `monthDay`, `ordinalDay`, and `isoWeek` are missing), the day of
+ * the year is assumed to be January, 1st.
  *
  * `hour24` must be an integer greater than or equal to 0 and less than or equal to 23. `hour12`
  * must be an integer greater than or equal to 0 and less than or equal to 11. `meridiem` must be
- * one of 0 (AM) or 12 (PM). If you don't pass sufficient information to determine the hour of the
- * day (e.g. you pass `hour12` but `hour24`, and `meridiem` are missing), the returned DayeTime will
- * represent the first hour of the day.
+ * one of 0 (AM) or 12 (PM). If there is not sufficient information to determine the hour of the day
+ * (e.g. `hour12` is provided but `hour24`, and `meridiem` are missing), the hour of the day is
+ * assumed to be 0.
  *
- * `minute` must be an integer greater than or equal to 0 and less than or equal to 59. `second`
- * must be an integer greater than or equal to 0 and less than or equal to 59. `millisecond` must be
- * an integer greater than or equal to 0 and less than or equal to 999.
+ * `minute` must be an integer greater than or equal to 0 and less than or equal to 59. If omitted,
+ * minute is assumed to be 0.
  *
- * All parameters must be coherent. For instance, you will get an error if you pass `year=1970`,
- * `month=1`, `monthDay=1`, `weekDay=0` and `timeZoneOffset=0` because 1/1/1970 00:00:00:000+0:00
- * was a thursday. You will also get an error if you pass `hour24=13` and `meridiem=0`.
+ * `second` must be an integer greater than or equal to 0 and less than or equal to 59. If omitted,
+ * second is assumed to be 0.
+ *
+ * `millisecond` must be an integer greater than or equal to 0 and less than or equal to 999. If
+ * omitted, millisecond is assumed to be 0.
+ *
+ * All parameters must be coherent. For instance, `year=1970`, `month=1`, `monthDay=1`, `weekDay=0`
+ * and `timeZoneOffset=0` will trigger an error because 1/1/1970 00:00:00:000+0:00 is a thursday.
+ * `hour24=13` and `meridiem=0` will also trigger an error.
  *
  * @category Constructors
  */
-export const fromParts = (params: {
+export const fromParts = ({
+	year,
+	ordinalDay,
+	month,
+	monthDay,
+	isoWeek,
+	weekDay,
+	hour24,
+	hour12,
+	meridiem,
+	minute,
+	second,
+	millisecond,
+	timeZoneOffset
+}: {
 	readonly year: number;
-	readonly ordinalDay?: number;
-	readonly month?: number;
-	readonly monthDay?: number;
-	readonly isoWeek?: number;
-	readonly weekDay?: number;
-	readonly hour24?: number;
-	readonly hour12?: number;
-	readonly meridiem?: 0 | 12;
-	readonly minute?: number;
-	readonly second?: number;
-	readonly millisecond?: number;
-	readonly timeZoneOffset?: number;
+	readonly ordinalDay?: number | undefined;
+	readonly month?: number | undefined;
+	readonly monthDay?: number | undefined;
+	readonly isoWeek?: number | undefined;
+	readonly weekDay?: number | undefined;
+	readonly hour24?: number | undefined;
+	readonly hour12?: number | undefined;
+	readonly meridiem?: 0 | 12 | undefined;
+	readonly minute?: number | undefined;
+	readonly second?: number | undefined;
+	readonly millisecond?: number | undefined;
+	readonly timeZoneOffset?: number | undefined;
 }): Either.Either<Type, MInputError.Type> =>
 	Either.gen(function* () {
-		const paramsAsOptions = {
-			year: params.year,
-			ordinalDay: pipe(
-				params.ordinalDay,
-				Option.fromNullable,
-				Option.map(Number.decrement),
-				Either.left
-			),
-			month: pipe(params.month, Option.fromNullable, Option.map(Number.decrement), Either.left),
-			monthDay: pipe(
-				params.monthDay,
-				Option.fromNullable,
-				Option.map(Number.decrement),
-				Either.left
-			),
-			isoWeek: pipe(params.isoWeek, Option.fromNullable, Option.map(Number.decrement), Either.left),
-			weekDay: pipe(params.weekDay, Option.fromNullable, Either.left),
-			hour24: pipe(params.hour24, Option.fromNullable, Either.left),
-			hour12: pipe(params.hour12, Option.fromNullable, Either.left),
-			meridiem: pipe(params.meridiem, Option.fromNullable, Either.left),
-			minute: pipe(params.minute, Option.fromNullable, Either.left),
-			second: pipe(params.second, Option.fromNullable, Either.left),
-			millisecond: pipe(params.millisecond, Option.fromNullable, Either.left),
-			timeZoneOffset: pipe(
-				params.timeZoneOffset,
-				Option.fromNullable,
-				Option.getOrElse(Function.constant(0))
-			)
-		};
+		const timeZoneOffsetMs = pipe(
+			timeZoneOffset,
+			Option.fromNullable,
+			Option.map(Number.multiply(CVDateTimeUtils.HOUR_MS)),
+			Option.getOrElse(Function.constant(CVDateTimeUtils.localTimeZoneOffsetMs))
+		);
 
 		const validatedYear = yield* pipe(
-			paramsAsOptions.year,
+			year,
 			MInputError.assertInRange({
 				min: MIN_FULL_YEAR,
 				max: MAX_FULL_YEAR,
@@ -508,107 +355,202 @@ export const fromParts = (params: {
 			})
 		);
 
-		const yearData = YearData.fromYearStart(validatedYear);
-		const isLeapYear = yearData.isLeapYear;
+		const yearDescriptor = CVDateTimeUtils.YearDescriptor.fromYear(validatedYear);
 
-		const [yearStartOffsetMsEither, paramsToCheck] = pipe(
-			paramsAsOptions,
+		const optionalParams = {
+			ordinalDayIndex: pipe(ordinalDay, Option.fromNullable, Option.map(Number.decrement)),
+			monthIndex: pipe(month, Option.fromNullable, Option.map(Number.decrement)),
+			monthDayIndex: pipe(monthDay, Option.fromNullable, Option.map(Number.decrement)),
+			isoWeekIndex: pipe(isoWeek, Option.fromNullable, Option.map(Number.decrement)),
+			weekDayIndex: pipe(weekDay, Option.fromNullable, Option.map(Number.decrement)),
+			hour24: Option.fromNullable(hour24),
+			hour12: Option.fromNullable(hour12),
+			meridiem: Option.fromNullable(meridiem),
+			minute: Option.fromNullable(minute),
+			second: Option.fromNullable(second),
+			millisecond: Option.fromNullable(millisecond)
+		};
+
+		const dayOffsetMs = yield* pipe(
+			optionalParams,
 			MMatch.make,
-			MMatch.when(
-				MPredicate.struct({ ordinalDay: Option.isSome }),
-				MTuple.makeBothBy({
-					toFirst: flow(
-						Struct.get('ordinalDay'),
-						Struct.get('value'),
+			MMatch.when(MPredicate.struct({ ordinalDayIndex: Option.isSome }), ({ ordinalDayIndex }) =>
+				Either.gen(function* () {
+					const validatedOrdinalDay = yield* pipe(
+						ordinalDayIndex.value,
 						MInputError.assertInRange({
 							min: 0,
-							max: isLeapYear ? 365 : 364,
+							max: CVDateTimeUtils.YearDescriptor.getLastOrdinalDayIndex(yearDescriptor),
 							offset: 1,
 							name: "'ordinalDay'"
-						}),
-						Either.map(Number.multiply(DAY_MS))
-					),
-					toSecond: MStruct.append({ ordinalDay: Option.none() })
+						})
+					);
+
+					return validatedOrdinalDay * CVDateTimeUtils.DAY_MS;
 				})
 			),
 			MMatch.when(
-				MPredicate.struct({ month: Option.isSome, monthDay: Option.isSome }),
-				MTuple.makeBothBy({
-					toFirst: ({ month, monthDay }) =>
-						Either.gen(function* () {
-							const validatedMonth = yield* pipe(
-								month.value,
-								MInputError.assertInRange({
-									min: 0,
-									max: 11,
-									offset: 1,
-									name: "'month'"
-								})
-							);
+				MPredicate.struct({ monthIndex: Option.isSome, monthDayIndex: Option.isSome }),
+				({ monthIndex, monthDayIndex }) =>
+					Either.gen(function* () {
+						const validatedMonthIndex = yield* pipe(
+							monthIndex.value,
+							MInputError.assertInRange({
+								min: 0,
+								max: 11,
+								offset: 1,
+								name: "'month'"
+							})
+						);
 
-							const monthDescriptor = pipe(
-								validatedMonth,
-								MonthDescriptor.fromMonthIndex(isLeapYear)
-							);
+						const monthDescriptor = pipe(
+							yearDescriptor,
+							CVDateTimeUtils.YearDescriptor.getMonthDescriptorFromMonthIndex(validatedMonthIndex)
+						);
 
-							const validatedMonthDay = yield* pipe(
-								monthDay.value,
-								MInputError.assertInRange({
-									min: 0,
-									max: monthDescriptor.lastDayIndex,
-									offset: 1,
-									name: "'monthDay'"
-								})
-							);
-							return monthDescriptor.monthStartMs + validatedMonthDay * DAY_MS;
-						}),
-					toSecond: MStruct.append({ month: Option.none(), monthDay: Option.none() })
-				})
+						const validatedMonthDayIndex = yield* pipe(
+							monthDayIndex.value,
+							MInputError.assertInRange({
+								min: 0,
+								max: monthDescriptor.lastDayIndex,
+								offset: 1,
+								name: "'monthDay'"
+							})
+						);
+						return monthDescriptor.monthStartMs + validatedMonthDayIndex * CVDateTimeUtils.DAY_MS;
+					})
 			),
 			MMatch.when(
-				MPredicate.struct({ isoWeek: Option.isSome, weekDay: Option.isSome }),
-				MTuple.makeBothBy({
-					toFirst: ({ isoWeek, weekDay }) =>
-						Either.gen(function* () {
-							const validatedMonth = yield* pipe(
-								month.value,
-								MInputError.assertInRange({
-									min: 0,
-									max: 11,
-									offset: 1,
-									name: "'month'"
-								})
-							);
+				MPredicate.struct({ isoWeekIndex: Option.isSome, weekDayIndex: Option.isSome }),
+				({ isoWeekIndex, weekDayIndex }) =>
+					Either.gen(function* () {
+						const isoWeekDescriptor =
+							CVDateTimeUtils.YearDescriptor.getIsoWeekDescriptor(yearDescriptor);
 
-							const monthDescriptor = pipe(
-								validatedMonth,
-								MonthDescriptor.fromMonthIndex(isLeapYear)
-							);
+						const validatedIsoWeekIndex = yield* pipe(
+							isoWeekIndex.value,
+							MInputError.assertInRange({
+								min: 0,
+								max: isoWeekDescriptor.lastIsoWeekIndex,
+								offset: 1,
+								name: "'isoWeek'"
+							})
+						);
 
-							const validatedMonthDay = yield* pipe(
-								monthDay.value,
-								MInputError.assertInRange({
-									min: 0,
-									max: monthDescriptor.lastDayIndex,
-									offset: 1,
-									name: "'monthDay'"
-								})
-							);
-							return monthDescriptor.monthStartMs + validatedMonthDay * DAY_MS;
-						}),
-					toSecond: MStruct.append({ month: Option.none(), monthDay: Option.none() })
-				})
+						const validatedWeekDayIndex = yield* pipe(
+							weekDayIndex.value,
+							MInputError.assertInRange({
+								min: 0,
+								max: 6,
+								offset: 1,
+								name: "'weekDay'"
+							})
+						);
+
+						return (
+							isoWeekDescriptor.firstIsoWeekMs +
+							validatedIsoWeekIndex * CVDateTimeUtils.WEEK_MS +
+							validatedWeekDayIndex * CVDateTimeUtils.DAY_MS
+						);
+					})
 			),
-			MMatch.orElse(flow(Tuple.make, MTuple.prependElement(Either.right(0))))
+			MMatch.orElse(() => Either.right(0))
 		);
 
-		const yearStartOffsetMs = yield* yearStartOffsetMsEither;
+		const hourOffsetMs = yield* pipe(
+			optionalParams,
+			MMatch.make,
+			MMatch.when(MPredicate.struct({ hour24: Option.isSome }), ({ hour24 }) =>
+				Either.gen(function* () {
+					const validatedHour = yield* pipe(
+						hour24.value,
+						MInputError.assertInRange({
+							min: 0,
+							max: 23,
+							offset: 0,
+							name: "'hour24'"
+						})
+					);
 
-		return 0 as never;
+					return validatedHour * CVDateTimeUtils.HOUR_MS;
+				})
+			),
+			MMatch.when(
+				MPredicate.struct({ hour12: Option.isSome, meridiem: Option.isSome }),
+				({ hour12, meridiem }) =>
+					Either.gen(function* () {
+						const validatedHour12 = yield* pipe(
+							hour12.value,
+							MInputError.assertInRange({
+								min: 0,
+								max: 11,
+								offset: 0,
+								name: "'hour12'"
+							})
+						);
+
+						return (validatedHour12 + meridiem.value) * CVDateTimeUtils.HOUR_MS;
+					})
+			),
+			MMatch.orElse(() => Either.right(0))
+		);
+
+		const validatedMinute = yield* pipe(
+			optionalParams.minute,
+			Option.map(
+				MInputError.assertInRange({
+					min: 0,
+					max: 59,
+					offset: 0,
+					name: "'minute'"
+				})
+			),
+			Option.getOrElse(() => Either.right(0))
+		);
+
+		const validatedSecond = yield* pipe(
+			optionalParams.second,
+			Option.map(
+				MInputError.assertInRange({
+					min: 0,
+					max: 59,
+					offset: 0,
+					name: "'second'"
+				})
+			),
+			Option.getOrElse(() => Either.right(0))
+		);
+
+		const validatedMillisecond = yield* pipe(
+			optionalParams.millisecond,
+			Option.map(
+				MInputError.assertInRange({
+					min: 0,
+					max: 999,
+					offset: 0,
+					name: "'millisecond'"
+				})
+			),
+			Option.getOrElse(() => Either.right(0))
+		);
+
+		return _make({
+			timestamp:
+				yearDescriptor.startTimestamp +
+				dayOffsetMs +
+				hourOffsetMs +
+				validatedMinute * CVDateTimeUtils.MINUTE_MS +
+				validatedSecond * CVDateTimeUtils.SECOND_MS +
+				validatedMillisecond +
+				timeZoneOffsetMs,
+			yearDescriptor,
+			...optionalParams,
+			timeZoneOffsetMs
+		});
 	});
 /*const ordinalDay0 = Math.floor(r1Year / DAY_MS);
 		const offsetOrdinalDay = ordinalDay0 * DAY_MS;
-		const dayMs = yearStartMs + offsetOrdinalDay;
+		const dayMs = startTimestamp + offsetOrdinalDay;
 		const rOrdinalDay0 = r1Year - offsetOrdinalDay;
 
 		const hour24 = Math.floor(rOrdinalDay0 / HOUR_MS);
@@ -622,40 +564,3 @@ export const fromParts = (params: {
 		const second = Math.floor(rMinute / SECOND_MS);
 		const secondMs = second * SECOND_MS;
 		const millisecond = rMinute - secondMs;*/
-
-/** Returns the number of days in a year */
-//const _getNbDaysInYear = (isLeapYear: boolean): number => (isLeapYear ? 366 : 365);
-
-/**
- * Calculates the UTC week day of a timestamp. Calculation is based on the fact that 4/1/1970 was a
- * UTC sunday.
- */
-/*const _getWeekDayFromTimestamp = (timestamp: number): number => {
-	const weekDay0 = MNumber.intModulo(7)(Math.floor(timestamp / DAY_MS) - 3);
-	return weekDay0 === 0 ? 7 : weekDay0;
-};*/
-
-/**
- * Offset in ms between the 1st day of the year at 00:00:00:000 and the first day of the first iso
- * week of the year at 00:00:00:000. No input parameters check!
- */
-/*const _unsafeGetFirstIsoWeekMs = (firstDayOfYearWeekDay: number): number =>
-	(firstDayOfYearWeekDay <= 4 ? 1 - firstDayOfYearWeekDay : 8 - firstDayOfYearWeekDay) * DAY_MS;*/
-
-/** Determines if an iso year is long (53 weeks) or short (52 weeks). No input parameters check! */
-/*const _unsafeIsLongIsoYear = (firstDayOfYearWeekDay: number, isLeapYear: boolean): boolean =>
-	firstDayOfYearWeekDay === 4 || (firstDayOfYearWeekDay === 3 && isLeapYear);*/
-
-/** Calculates the number of iso weeks in a year. No input parameters check! */
-/*const _unsafeGetNbIsoWeeksInYear = (firstDayOfYearWeekDay: number, isLeapYear: boolean): number =>
-	_unsafeIsLongIsoYear(firstDayOfYearWeekDay, isLeapYear) ? 53 : 52;*/
-
-/**
- * Returns the local time zone offset in hours of the machine on which this code runs. Result is
- * cached. So result will become wrong if you change the local timeZoneOffset
- *
- * @category Utils
- */
-/*export const localTimeZoneOffset: () => number = MFunction.once(
-	() => new Date(0).getTimezoneOffset() / 60
-);*/

@@ -39,7 +39,7 @@ describe('CVDateTime', () => {
 		});*/
 	});
 
-	describe('YearData', () => {
+	describe('YearDescriptor', () => {
 		it('MAX_TIMESTAMP', () => {
 			TEUtils.strictEqual(
 				CVDateTime.MAX_TIMESTAMP,
@@ -57,10 +57,10 @@ describe('CVDateTime', () => {
 					const year = 2800;
 					const endOfLastYearDay = Date.UTC(year, 11, 31, 23, 59, 59, 999);
 					const startOfFirstYearDay = Date.UTC(year, 0, 1);
-					TEUtils.assertEquals(CVDateTime.YearData.fromTimestamp(endOfLastYearDay), {
+					TEUtils.assertEquals(CVDateTime.YearDescriptor.fromTimestamp(endOfLastYearDay), {
 						year: year,
 						isLeapYear: true,
-						yearStartMs: startOfFirstYearDay,
+						startTimestamp: startOfFirstYearDay,
 						r1Year: endOfLastYearDay - startOfFirstYearDay
 					});
 				});
@@ -69,10 +69,10 @@ describe('CVDateTime', () => {
 					const year = 2000;
 					const startOfLastYearDay = Date.UTC(year, 11, 31);
 					const startOfFirstYearDay = Date.UTC(year, 0, 1);
-					TEUtils.assertEquals(CVDateTime.YearData.fromTimestamp(startOfLastYearDay), {
+					TEUtils.assertEquals(CVDateTime.YearDescriptor.fromTimestamp(startOfLastYearDay), {
 						year: year,
 						isLeapYear: true,
-						yearStartMs: startOfFirstYearDay,
+						startTimestamp: startOfFirstYearDay,
 						r1Year: startOfLastYearDay - startOfFirstYearDay
 					});
 				});
@@ -83,10 +83,10 @@ describe('CVDateTime', () => {
 					const year = 2600;
 					const endOfLastYearDay = Date.UTC(year, 11, 31, 23, 59, 59, 999);
 					const startOfFirstYearDay = Date.UTC(year, 0, 1);
-					TEUtils.assertEquals(CVDateTime.YearData.fromTimestamp(endOfLastYearDay), {
+					TEUtils.assertEquals(CVDateTime.YearDescriptor.fromTimestamp(endOfLastYearDay), {
 						year: year,
 						isLeapYear: false,
-						yearStartMs: startOfFirstYearDay,
+						startTimestamp: startOfFirstYearDay,
 						r1Year: endOfLastYearDay - startOfFirstYearDay
 					});
 				});
@@ -95,10 +95,10 @@ describe('CVDateTime', () => {
 					const year = 1900;
 					const startOfLastYearDay = Date.UTC(year, 11, 31);
 					const startOfFirstYearDay = Date.UTC(year, 0, 1);
-					TEUtils.assertEquals(CVDateTime.YearData.fromTimestamp(startOfLastYearDay), {
+					TEUtils.assertEquals(CVDateTime.YearDescriptor.fromTimestamp(startOfLastYearDay), {
 						year: year,
 						isLeapYear: false,
-						yearStartMs: startOfFirstYearDay,
+						startTimestamp: startOfFirstYearDay,
 						r1Year: startOfLastYearDay - startOfFirstYearDay
 					});
 				});
@@ -109,10 +109,10 @@ describe('CVDateTime', () => {
 					const year = 2944;
 					const anyYearDay = Date.UTC(year, 8, 15);
 					const startOfFirstYearDay = Date.UTC(year, 0, 1);
-					TEUtils.assertEquals(CVDateTime.YearData.fromTimestamp(anyYearDay), {
+					TEUtils.assertEquals(CVDateTime.YearDescriptor.fromTimestamp(anyYearDay), {
 						year: year,
 						isLeapYear: true,
-						yearStartMs: startOfFirstYearDay,
+						startTimestamp: startOfFirstYearDay,
 						r1Year: anyYearDay - startOfFirstYearDay
 					});
 				});
@@ -121,10 +121,10 @@ describe('CVDateTime', () => {
 					const year = 111;
 					const anyYearDay = Date.UTC(year, 2, 31);
 					const startOfFirstYearDay = Date.UTC(year, 0, 1);
-					TEUtils.assertEquals(CVDateTime.YearData.fromTimestamp(anyYearDay), {
+					TEUtils.assertEquals(CVDateTime.YearDescriptor.fromTimestamp(anyYearDay), {
 						year: year,
 						isLeapYear: false,
-						yearStartMs: startOfFirstYearDay,
+						startTimestamp: startOfFirstYearDay,
 						r1Year: anyYearDay - startOfFirstYearDay
 					});
 				});
@@ -136,10 +136,10 @@ describe('CVDateTime', () => {
 				it('After 1/1/2001', () => {
 					const year = 2800;
 					const startOfFirstYearDay = Date.UTC(year, 0, 1);
-					TEUtils.assertEquals(CVDateTime.YearData.fromYearStart(year), {
+					TEUtils.assertEquals(CVDateTime.YearDescriptor.fromYearStart(year), {
 						year: year,
 						isLeapYear: true,
-						yearStartMs: startOfFirstYearDay,
+						startTimestamp: startOfFirstYearDay,
 						r1Year: 0
 					});
 				});
@@ -147,10 +147,10 @@ describe('CVDateTime', () => {
 				it('Before 1/1/2001', () => {
 					const year = 2000;
 					const startOfFirstYearDay = Date.UTC(year, 0, 1);
-					TEUtils.assertEquals(CVDateTime.YearData.fromYearStart(year), {
+					TEUtils.assertEquals(CVDateTime.YearDescriptor.fromYearStart(year), {
 						year: year,
 						isLeapYear: true,
-						yearStartMs: startOfFirstYearDay,
+						startTimestamp: startOfFirstYearDay,
 						r1Year: 0
 					});
 				});
@@ -160,10 +160,10 @@ describe('CVDateTime', () => {
 				it('After 1/1/2001', () => {
 					const year = 2600;
 					const startOfFirstYearDay = Date.UTC(year, 0, 1);
-					TEUtils.assertEquals(CVDateTime.YearData.fromYearStart(year), {
+					TEUtils.assertEquals(CVDateTime.YearDescriptor.fromYearStart(year), {
 						year: year,
 						isLeapYear: false,
-						yearStartMs: startOfFirstYearDay,
+						startTimestamp: startOfFirstYearDay,
 						r1Year: 0
 					});
 				});
@@ -171,10 +171,10 @@ describe('CVDateTime', () => {
 				it('Before 1/1/2001', () => {
 					const year = 1900;
 					const startOfFirstYearDay = Date.UTC(year, 0, 1);
-					TEUtils.assertEquals(CVDateTime.YearData.fromYearStart(year), {
+					TEUtils.assertEquals(CVDateTime.YearDescriptor.fromYearStart(year), {
 						year: year,
 						isLeapYear: false,
-						yearStartMs: startOfFirstYearDay,
+						startTimestamp: startOfFirstYearDay,
 						r1Year: 0
 					});
 				});
@@ -184,10 +184,10 @@ describe('CVDateTime', () => {
 				it('After 1/1/2001', () => {
 					const year = 2944;
 					const startOfFirstYearDay = Date.UTC(year, 0, 1);
-					TEUtils.assertEquals(CVDateTime.YearData.fromYearStart(year), {
+					TEUtils.assertEquals(CVDateTime.YearDescriptor.fromYearStart(year), {
 						year: year,
 						isLeapYear: true,
-						yearStartMs: startOfFirstYearDay,
+						startTimestamp: startOfFirstYearDay,
 						r1Year: 0
 					});
 				});
@@ -195,10 +195,10 @@ describe('CVDateTime', () => {
 				it('Before 1/1/2001', () => {
 					const year = 111;
 					const startOfFirstYearDay = Date.UTC(year, 0, 1);
-					TEUtils.assertEquals(CVDateTime.YearData.fromYearStart(year), {
+					TEUtils.assertEquals(CVDateTime.YearDescriptor.fromYearStart(year), {
 						year: year,
 						isLeapYear: false,
-						yearStartMs: startOfFirstYearDay,
+						startTimestamp: startOfFirstYearDay,
 						r1Year: 0
 					});
 				});

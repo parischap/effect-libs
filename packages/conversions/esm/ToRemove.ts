@@ -62,13 +62,13 @@ const leapYearMonths = [
 ];
 
 /** @category Models */
-export interface YearData {
+export interface YearDescriptor {
 	// expressed in given timezone, range: MIN_FULL_YEAR..MAX_FULL_YEAR
 	readonly year: number;
 	// true if `year` expressed in given timezone is a leap year
 	readonly isLeapYear: boolean;
 	// time in ms between 1/1/1970 00:00:00:000+z:00 and the first day of year `year` at 00:00:00:000+z:00
-	readonly yearStartMs: number;
+	readonly startTimestamp: number;
 }
 
 /** @category Models */
@@ -99,7 +99,7 @@ export interface Hour12AndMeridiem {
 export interface Type {
 	// milliseconds since 1/1/1970 at 00:00:00:000+00:00
 	readonly timestamp: Option.Option<number>;
-	readonly yearData: Option.Option<YearData>;
+	readonly yearData: Option.Option<YearDescriptor>;
 	// expressed in given timezone, range:1..366
 	readonly ordinalDay: Option.Option<number>;
 	readonly monthAndMonthDayData: Option.Option<MonthAndMonthDayData>;
@@ -155,7 +155,7 @@ const _unsafeGetNbIsoWeeksInYear = (firstDayOfYearWeekDay: number, isLeapYear: b
 	_unsafeIsLongIsoYear(firstDayOfYearWeekDay, isLeapYear) ? 53 : 52;
 
 /** Calculates yearData from a year. No input parameters check */
-const _unsafeCalcYearData = (year: number): YearData => {
+const _unsafeCalcYearData = (year: number): YearDescriptor => {
 	// 2001 is the start of a 400-year period whose last year is bissextile
 	const offset2001 = year - 2001;
 	const q400Years = Math.floor(offset2001 / 400);
@@ -169,7 +169,7 @@ const _unsafeCalcYearData = (year: number): YearData => {
 	const r4Years = r100Years - offset4Years;
 
 	const isLeapYear = r4Years === 3 && (r100Years !== 99 || r400Years === 399);
-	const yearStartMs =
+	const startTimestamp =
 		YEAR_START_2001_MS +
 		q400Years * FOUR_HUNDRED_YEARS_MS +
 		q100Years * HUNDRED_YEARS_MS +
@@ -179,12 +179,12 @@ const _unsafeCalcYearData = (year: number): YearData => {
 	return {
 		year,
 		isLeapYear,
-		yearStartMs
+		startTimestamp
 	};
 };
 
 /** Calculates yearData from a year */
-const _calcYearData = (year: number): Either.Either<YearData, MBadArgumentError.OutOfRange> =>
+const _calcYearData = (year: number): Either.Either<YearDescriptor, MBadArgumentError.OutOfRange> =>
 	pipe(
 		year,
 		MBadArgumentError.OutOfRange.check({
@@ -313,12 +313,12 @@ export const unsafeMakeFromTimestamp = (timestamp: number, timeZoneOffset: numbe
 
 	const year = 2001 + 400 * q400Years + 100 * q100Years + 4 * q4Years + q1Year;
 	const isLeapYear = q1Year === 3 && (q4Years !== 24 || q100Years === 3);
-	const yearStartMs =
+	const startTimestamp =
 		YEAR_START_2001_MS + offset100Years + offset4Years + offset1Year + offset400Years;
 
 	const ordinalDay0 = Math.floor(r1Year / DAY_MS);
 	const offsetOrdinalDay = ordinalDay0 * DAY_MS;
-	const dayMs = yearStartMs + offsetOrdinalDay;
+	const dayMs = startTimestamp + offsetOrdinalDay;
 	const rOrdinalDay0 = r1Year - offsetOrdinalDay;
 
 	const hour24 = Math.floor(rOrdinalDay0 / HOUR_MS);
@@ -339,7 +339,7 @@ export const unsafeMakeFromTimestamp = (timestamp: number, timeZoneOffset: numbe
 		yearData: Option.some({
 			year,
 			isLeapYear,
-			yearStartMs: yearStartMs
+			startTimestamp: startTimestamp
 		}),
 		ordinalDay: Option.some(ordinalDay0 + 1),
 		hour24: Option.some(hour24),
@@ -404,7 +404,7 @@ export const unsafeSetYearAndOrdinalDay =
 			ordinalDay: Option.some(ordinalDay),
 			monthAndMonthDayData: Option.none(),
 			isoWeekAndWeekDayData: Option.none(),
-			dayMs: Option.some(yearData.yearStartMs + (ordinalDay - 1) * DAY_MS)
+			dayMs: Option.some(yearData.startTimestamp + (ordinalDay - 1) * DAY_MS)
 		};
 	};
 
@@ -435,7 +435,7 @@ export const setYearAndOrdinalDay =
 				ordinalDay: Option.some(checkedOrdinalDay),
 				monthAndMonthDayData: Option.none(),
 				isoWeekAndWeekDayData: Option.none(),
-				dayMs: Option.some(checkedYearData.yearStartMs + (checkedOrdinalDay - 1) * DAY_MS)
+				dayMs: Option.some(checkedYearData.startTimestamp + (checkedOrdinalDay - 1) * DAY_MS)
 			};
 		});
 
@@ -463,7 +463,7 @@ export const unsafeSetYearMonthAndMonthDay =
 			}),
 			isoWeekAndWeekDayData: Option.none(),
 			dayMs: Option.some(
-				yearData.yearStartMs + monthDescriptor.monthStartMs + (monthDay - 1) * DAY_MS
+				yearData.startTimestamp + monthDescriptor.monthStartMs + (monthDay - 1) * DAY_MS
 			)
 		};
 	};
@@ -513,7 +513,7 @@ export const setYearMonthAndMonthDay =
 				}),
 				isoWeekAndWeekDayData: Option.none(),
 				dayMs: Option.some(
-					checkedYearData.yearStartMs +
+					checkedYearData.startTimestamp +
 						checkedMonthDescriptor.monthStartMs +
 						(checkedMonthDay - 1) * DAY_MS
 				)
@@ -539,8 +539,8 @@ export const unsafeSetYearIsoWeekAndWeekDay =
 			monthAndMonthDayData: Option.none(),
 			isoWeekAndWeekDayData: Option.some({ isoWeek, weekDay }),
 			dayMs: Option.some(
-				yearData.yearStartMs +
-					_unsafeGetFirstIsoWeekMs(_getWeekDayFromTimestamp(yearData.yearStartMs)) +
+				yearData.startTimestamp +
+					_unsafeGetFirstIsoWeekMs(_getWeekDayFromTimestamp(yearData.startTimestamp)) +
 					(isoWeek - 1) * WEEK_MS +
 					(weekDay - 1) * DAY_MS
 			)
@@ -557,7 +557,7 @@ export const setYearIsoWeekAndWeekDay =
 	(self: Type): Either.Either<Type, MBadArgumentError.OutOfRange> =>
 		Either.gen(function* () {
 			const checkedYearData = yield* pipe(_calcYearData(year));
-			const firstDayOfYearWeekDay = _getWeekDayFromTimestamp(checkedYearData.yearStartMs);
+			const firstDayOfYearWeekDay = _getWeekDayFromTimestamp(checkedYearData.startTimestamp);
 			const checkedIsoWeek = yield* pipe(
 				isoWeek,
 				MBadArgumentError.OutOfRange.check({
@@ -589,7 +589,7 @@ export const setYearIsoWeekAndWeekDay =
 					weekDay: checkedWeekDay
 				}),
 				dayMs: Option.some(
-					checkedYearData.yearStartMs +
+					checkedYearData.startTimestamp +
 						_unsafeGetFirstIsoWeekMs(firstDayOfYearWeekDay) +
 						(checkedIsoWeek - 1) * WEEK_MS +
 						(checkedWeekDay - 1) * DAY_MS
@@ -907,8 +907,8 @@ export const getMonthAndMonthDay = (
 		Option.orElse(() =>
 			pipe(
 				Option.product(self.dayMs, self.yearData),
-				Option.map(([dayMs, { yearStartMs, isLeapYear }]) => {
-					const offset = dayMs - yearStartMs;
+				Option.map(([dayMs, { startTimestamp, isLeapYear }]) => {
+					const offset = dayMs - startTimestamp;
 					// Raw coding for performance sake
 					const months = isLeapYear ? leapYearMonths : normalYearMonths;
 					let month0 = 11;
@@ -965,9 +965,11 @@ export const getIsoWeekAndWeekDay = (
 		Option.orElse(() =>
 			pipe(
 				Option.product(self.dayMs, self.yearData),
-				Option.map(([dayMs, { yearStartMs }]) => {
+				Option.map(([dayMs, { startTimestamp }]) => {
 					const offset =
-						dayMs - yearStartMs - _unsafeGetFirstIsoWeekMs(_getWeekDayFromTimestamp(yearStartMs));
+						dayMs -
+						startTimestamp -
+						_unsafeGetFirstIsoWeekMs(_getWeekDayFromTimestamp(startTimestamp));
 					const isoWeek0 = Math.floor(offset / WEEK_MS);
 					return {
 						isoWeek: isoWeek0 + 1,
