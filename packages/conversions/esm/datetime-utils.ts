@@ -3,7 +3,7 @@
  * use this module
  */
 import { MArray, MNumber, MTypes } from '@parischap/effect-lib';
-import { Array, Number, Option, Struct, Tuple, flow, pipe } from 'effect';
+import { Array, Number, Option, Struct, flow, pipe } from 'effect';
 
 export const SECOND_MS = 1_000;
 export const MINUTE_MS = 60 * SECOND_MS;
@@ -39,7 +39,7 @@ const _modulo7 = MNumber.intModulo(7);
  * Calculates the UTC weekDay (0 for monday, 6 for sunday) of a timestamp. Calculation is based on
  * the fact that 1/1/1970 was a UTC thursday.
  */
-const _weekDayFromTimestamp = (timestamp: number): number =>
+export const weekDayFromTimestamp = (timestamp: number): number =>
 	_modulo7(Math.floor(timestamp / DAY_MS) + 3);
 
 /**
@@ -98,22 +98,35 @@ export namespace MonthDescriptor {
 namespace MonthDescriptorCache {
 	export interface Type extends ReadonlyArray<MonthDescriptor.Type> {}
 
-	const normalYearDaysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-	const leapYearDaysInMonth = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+	const normalYear: Type = [
+		{ monthIndex: 0, lastDayIndex: 30, monthStartMs: 0 },
+		{ monthIndex: 1, lastDayIndex: 27, monthStartMs: 2678400000 },
+		{ monthIndex: 2, lastDayIndex: 30, monthStartMs: 5097600000 },
+		{ monthIndex: 3, lastDayIndex: 29, monthStartMs: 7776000000 },
+		{ monthIndex: 4, lastDayIndex: 30, monthStartMs: 10368000000 },
+		{ monthIndex: 5, lastDayIndex: 29, monthStartMs: 13046400000 },
+		{ monthIndex: 6, lastDayIndex: 30, monthStartMs: 15638400000 },
+		{ monthIndex: 7, lastDayIndex: 30, monthStartMs: 18316800000 },
+		{ monthIndex: 8, lastDayIndex: 29, monthStartMs: 20995200000 },
+		{ monthIndex: 9, lastDayIndex: 30, monthStartMs: 23587200000 },
+		{ monthIndex: 10, lastDayIndex: 29, monthStartMs: 26265600000 },
+		{ monthIndex: 11, lastDayIndex: 30, monthStartMs: 28857600000 }
+	];
 
-	const fromDaysInMonth: MTypes.OneArgFunction<ReadonlyArray<number>, Type> = flow(
-		Array.mapAccum(0, (monthStartMs, nbDaysInMonth, monthIndex) =>
-			Tuple.make(monthStartMs + nbDaysInMonth * DAY_MS, {
-				monthIndex,
-				lastDayIndex: nbDaysInMonth - 1,
-				monthStartMs
-			})
-		),
-		Tuple.getSecond
-	);
-
-	const normalYear: Type = fromDaysInMonth(normalYearDaysInMonth);
-	const leapYear: Type = fromDaysInMonth(leapYearDaysInMonth);
+	const leapYear: Type = [
+		{ monthIndex: 0, lastDayIndex: 30, monthStartMs: 0 },
+		{ monthIndex: 1, lastDayIndex: 28, monthStartMs: 2678400000 },
+		{ monthIndex: 2, lastDayIndex: 30, monthStartMs: 5184000000 },
+		{ monthIndex: 3, lastDayIndex: 29, monthStartMs: 7862400000 },
+		{ monthIndex: 4, lastDayIndex: 30, monthStartMs: 10454400000 },
+		{ monthIndex: 5, lastDayIndex: 29, monthStartMs: 13132800000 },
+		{ monthIndex: 6, lastDayIndex: 30, monthStartMs: 15724800000 },
+		{ monthIndex: 7, lastDayIndex: 30, monthStartMs: 18403200000 },
+		{ monthIndex: 8, lastDayIndex: 29, monthStartMs: 21081600000 },
+		{ monthIndex: 9, lastDayIndex: 30, monthStartMs: 23673600000 },
+		{ monthIndex: 10, lastDayIndex: 29, monthStartMs: 26352000000 },
+		{ monthIndex: 11, lastDayIndex: 30, monthStartMs: 28944000000 }
+	];
 
 	export const get = (isLeapYear: boolean): Type => (isLeapYear ? leapYear : normalYear);
 }
@@ -248,7 +261,7 @@ export namespace YearDescriptor {
 
 	/**
 	 * Builds the MonthDescriptor of the month to which the date provided as an offset in milliseconds
-	 * from the start of the year described by `yearDescriptor` belongs.
+	 * from the start of the year described by `self` belongs.
 	 *
 	 * @category Destructors
 	 */
@@ -279,7 +292,7 @@ export namespace YearDescriptor {
 	 * @category Destructors
 	 */
 	export const getIsoWeekDescriptor = (self: Type): IsoWeekDescriptor.Type => {
-		const firstYearDayWeekDay = _weekDayFromTimestamp(self.startTimestamp);
+		const firstYearDayWeekDay = weekDayFromTimestamp(self.startTimestamp);
 		return {
 			firstYearDayWeekDay,
 			firstIsoWeekMs: (_modulo7(3 - firstYearDayWeekDay) - 3) * DAY_MS,

@@ -32,7 +32,7 @@ import {
 	flow,
 	pipe
 } from 'effect';
-import * as CVDateTimeUtils from './DateTimeUtils.js';
+import * as CVDateTimeUtils from './datetime-utils.js';
 
 export const moduleTag = '@parischap/conversions/DateTime/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;

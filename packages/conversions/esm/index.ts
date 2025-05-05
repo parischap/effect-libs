@@ -1,5 +1,5 @@
+export * as CVDateTimeUtils from './datetime-utils.js';
 export * as CVDateTime from './DateTime.js';
-export * as CVDateTimeUtils from './DateTimeUtils.js';
 export * as CVEmail from './Email.js';
 export * as CVNumberBase10Format from './NumberBase10Format.js';
 export * as CVPlaceHolder from './PlaceHolder.js';
