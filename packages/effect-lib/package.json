@@ -39,7 +39,7 @@
 		"scripts": {},
 		"devDependencies": {},
 		"peerDependencies": {
-			"effect": "^3.14.11"
+			"effect": "^3.14.19"
 		},
 		"publishConfig": {},
 		"packageManager": "",
@@ -72,7 +72,7 @@
 		"@parischap/effect-lib": "link:."
 	},
 	"peerDependencies": {
-		"effect": "^3.14.11"
+		"effect": "^3.14.19"
 	},
 	"repository": {
 		"type": "git",

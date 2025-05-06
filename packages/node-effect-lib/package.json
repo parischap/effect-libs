@@ -40,9 +40,9 @@
 		"devDependencies": {},
 		"peerDependencies": {
 			"@parischap/effect-lib": "^0.5.0",
-			"effect": "^3.14.11",
-			"@effect/platform": "^0.80.11",
-			"@effect/platform-node": "^0.76.21"
+			"effect": "^3.14.19",
+			"@effect/platform": "^0.80.19",
+			"@effect/platform-node": "^0.77.8"
 		},
 		"publishConfig": {},
 		"packageManager": "",
@@ -76,9 +76,9 @@
 	},
 	"peerDependencies": {
 		"@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
-		"effect": "^3.14.11",
-		"@effect/platform": "^0.80.11",
-		"@effect/platform-node": "^0.76.21"
+		"effect": "^3.14.19",
+		"@effect/platform": "^0.80.19",
+		"@effect/platform-node": "^0.77.8"
 	},
 	"repository": {
 		"type": "git",
