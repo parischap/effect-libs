@@ -9,6 +9,13 @@ export const MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER;
 export const MIN_SAFE_INTEGER = Number.MIN_SAFE_INTEGER;
 
 /**
+ * Returns the opposite of self
+ *
+ * @category Utils
+ */
+export const opposite = (self: number) => -self;
+
+/**
  * Constructs a number from a string. Does not check input format and can return NaN or Infinity
  *
  * @category Constructors
