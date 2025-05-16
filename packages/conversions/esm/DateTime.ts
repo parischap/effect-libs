@@ -1,24 +1,18 @@
 /**
- * This module implements an immutable DateTime object. However, DateTime objects do keep an
- * internal state. All the functions look pure insofar as they will always yield the same result
- * whatever the state the object is in. But depending on the state, they will yield it more or less
- * quickly.
+ * This module implements an immutable DateTime object. DateTime objects do keep an internal state.
+ * But all provided functions look pure insofar as they will always yield the same result whatever
+ * the state the object is in. The state is only used to improve performance but does not alter the
+ * results.
  *
- * A DateTime object has a `timeZoneOffset` which is difference in hours between 1/1/1970
- * 00:00:00:000+z:00 and 1/1/1970 00:00:00:000+00:00 (e.g 1 for timezone +1:00). All the data in the
- * DateTimeObject is `timeZoneOffset-dependent`, except `timestamp` which is relative to 1/1/1970
- * UTC.
+ * A DateTime object has a `timeZoneOffsetMs` which is the timestamp of date 1/1/1970 00:00:00:000
+ * in zone +z (e.g timeZoneOffsetMs=-3_600_000 for timezone +1:00). All the data in a DateTime
+ * object is `time-zone-offset-dependent`, except `timestamp` which is relative to 1/1/1970 UTC. An
+ * important thing to note is that of a DateTime object with a timestamp t and a timeZoneOffsetMs
+ * tzoMs has exactly the same date parts (year, ordinalDay, month, monthDay,iso year...) as a
+ * DateTime object with a timestamp t-tzoMs and a 0 timeZoneOffset.
  */
 
-import {
-	MInputError,
-	MInspectable,
-	MMatch,
-	MPipeable,
-	MPredicate,
-	MTuple,
-	MTypes
-} from '@parischap/effect-lib';
+import { MInputError, MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
 import {
 	Either,
 	Equal,
@@ -38,51 +32,35 @@ export const moduleTag = '@parischap/conversions/DateTime/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
-const MAX_FULL_YEAR_OFFSET = 285_423;
+const MAX_FULL_YEAR_OFFSET = 273_790;
 
 /**
- * Maximal usable year
+ * Maximal usable year (ECMA-262)
  *
  * @category Constants
  */
 export const MAX_FULL_YEAR = 1970 + MAX_FULL_YEAR_OFFSET;
 
 /**
- * Minimal usable year
+ * Minimal usable year (ECMA-262)
  *
  * @category Constants
  */
 export const MIN_FULL_YEAR = 1970 - MAX_FULL_YEAR_OFFSET - 1;
 
 /**
- * Maximal usable timestamp.
+ * Maximal usable timestamp (ECMA-262)
  *
  * @category Constants
  */
-export const MAX_TIMESTAMP = pipe(
-	MAX_FULL_YEAR,
-	CVDateTimeUtils.YearDescriptor.fromTimestamp,
-	MTuple.makeBothBy({
-		toFirst: CVDateTimeUtils.YearDescriptor.startTimestamp,
-		toSecond: CVDateTimeUtils.YearDescriptor.getMsDuration
-	}),
-	Function.tupled(Number.sum),
-	// Substract DAY_MS so we can still safely add a timeZoneOffset
-	Number.subtract(CVDateTimeUtils.DAY_MS)
-);
+export const MAX_TIMESTAMP = 8_640_000_000_000_000;
 
 /**
- * Minimal usable timestamp
+ * Minimal usable timestamp (ECMA-262)
  *
  * @category Constants
  */
-export const MIN_TIMESTAMP = pipe(
-	MIN_FULL_YEAR,
-	CVDateTimeUtils.YearDescriptor.fromTimestamp,
-	CVDateTimeUtils.YearDescriptor.startTimestamp,
-	// Add DAY_MS so we can still safely substract a timeZoneOffset
-	Number.sum(CVDateTimeUtils.DAY_MS)
-);
+export const MIN_TIMESTAMP = -MAX_TIMESTAMP;
 
 /**
  * Type of a DateTime
@@ -91,10 +69,13 @@ export const MIN_TIMESTAMP = pipe(
  */
 export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable {
 	/** Number of milliseconds since 1/1/1970 at 00:00:00:000+00:00. Is timezone-independent */
-	readonly timestamp: number;
+	readonly timestamp: Option.Option<number>;
 
 	/** YearDescriptor of this DateTime, expressed in given timezone */
-	readonly yearDescriptor: CVDateTimeUtils.YearDescriptor.Type;
+	readonly yearDescriptor: Option.Option<CVDateTimeUtils.YearDescriptor.Type>;
+
+	/** IsoYearDescriptor of this DateTime, expressed in given timezone */
+	readonly isoYearDescriptor: Option.Option<CVDateTimeUtils.IsoYearDescriptor.Type>;
 
 	/**
 	 * Index of the day of this DateTime (in the current year). Expressed in given timezone, range:[0,
@@ -111,7 +92,7 @@ export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable 
 	 */
 	readonly monthDayIndex: Option.Option<number>;
 
-	/** Index of the week of this DateTime. Expressed in given timezone, range:[0, 52] */
+	/** Index of the iso week of this DateTime. Expressed in given timezone, range:[0, 52] */
 	readonly isoWeekIndex: Option.Option<number>;
 
 	/**
@@ -147,7 +128,7 @@ export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable 
 	 */
 	readonly millisecond: Option.Option<number>;
 
-	/** Timestamp of 1/1/1970 00:00:00:000+z:00 */
+	/** Timestamp of 1/1/1970 00:00:00:000 in zone +z */
 	readonly timeZoneOffsetMs: number;
 
 	/** @internal */
@@ -221,14 +202,13 @@ export const fromTimestamp = ({
 			timeZoneOffset,
 			Option.fromNullable,
 			Option.map(Number.multiply(CVDateTimeUtils.HOUR_MS)),
-			Option.getOrElse(Function.constant(CVDateTimeUtils.localTimeZoneOffsetMs))
+			Option.getOrElse(Function.constant(CVDateTimeUtils.LOCAL_TIME_ZONE_OFFSET_MS))
 		);
 
 		return _make({
-			timestamp,
-			yearDescriptor: CVDateTimeUtils.YearDescriptor.fromTimestamp(
-				validatedTimestamp + timeZoneOffsetMs
-			),
+			timestamp: Option.some(validatedTimestamp),
+			yearDescriptor: Option.none(),
+			isoYearDescriptor: Option.none(),
 			ordinalDayIndex: Option.none(),
 			monthIndex: Option.none(),
 			monthDayIndex: Option.none(),
@@ -308,7 +288,7 @@ export const now = (timeZoneOffset?: number): Type =>
  *
  * @category Constructors
  */
-export const fromParts = ({
+/*export const fromParts = ({
 	year,
 	ordinalDay,
 	month,
@@ -338,12 +318,10 @@ export const fromParts = ({
 	readonly timeZoneOffset?: number | undefined;
 }): Either.Either<Type, MInputError.Type> =>
 	Either.gen(function* () {
-		const timeZoneOffsetMs = pipe(
-			timeZoneOffset,
-			Option.fromNullable,
-			Option.map(Number.multiply(CVDateTimeUtils.HOUR_MS)),
-			Option.getOrElse(Function.constant(CVDateTimeUtils.localTimeZoneOffsetMs))
-		);
+		const timeZoneOffsetMs =
+			timeZoneOffset === undefined ?
+				CVDateTimeUtils.LOCAL_TIME_ZONE_OFFSET_MS
+			:	timeZoneOffset * CVDateTimeUtils.HOUR_MS;
 
 		const validatedYear = yield* pipe(
 			year,
@@ -357,105 +335,99 @@ export const fromParts = ({
 
 		const yearDescriptor = CVDateTimeUtils.YearDescriptor.fromYear(validatedYear);
 
-		const optionalParams = {
-			ordinalDayIndex: pipe(ordinalDay, Option.fromNullable, Option.map(Number.decrement)),
-			monthIndex: pipe(month, Option.fromNullable, Option.map(Number.decrement)),
-			monthDayIndex: pipe(monthDay, Option.fromNullable, Option.map(Number.decrement)),
-			isoWeekIndex: pipe(isoWeek, Option.fromNullable, Option.map(Number.decrement)),
-			weekDayIndex: pipe(weekDay, Option.fromNullable, Option.map(Number.decrement)),
-			hour24: Option.fromNullable(hour24),
-			hour12: Option.fromNullable(hour12),
-			meridiem: Option.fromNullable(meridiem),
-			minute: Option.fromNullable(minute),
-			second: Option.fromNullable(second),
-			millisecond: Option.fromNullable(millisecond)
-		};
+		const ordinalDayIndexOption = pipe(
+			ordinalDay,
+			Option.fromNullable,
+			Option.map(Number.decrement)
+		);
+		const monthIndexOption = pipe(month, Option.fromNullable, Option.map(Number.decrement));
+		const monthDayIndexOption = pipe(monthDay, Option.fromNullable, Option.map(Number.decrement));
+		const isoWeekIndexOption = pipe(isoWeek, Option.fromNullable, Option.map(Number.decrement));
+		const weekDayIndexOption = pipe(weekDay, Option.fromNullable, Option.map(Number.decrement));
+		const hour24Option = Option.fromNullable(hour24);
+		const hour12Option = Option.fromNullable(hour12);
+		const meridiemOption = Option.fromNullable(meridiem);
+		const minuteOption = Option.fromNullable(minute);
+		const secondOption = Option.fromNullable(second);
+		const millisecondOption = Option.fromNullable(millisecond);
 
-		const dayOffsetMs = yield* pipe(
-			optionalParams,
-			MMatch.make,
-			MMatch.when(MPredicate.struct({ ordinalDayIndex: Option.isSome }), ({ ordinalDayIndex }) =>
+		const dayOffsetMs = yield* Option.match(ordinalDayIndexOption, {
+			onSome: (ordinalDayIndex) =>
 				Either.gen(function* () {
 					const validatedOrdinalDay = yield* pipe(
-						ordinalDayIndex.value,
-						MInputError.assertInRange({
-							min: 0,
-							max: CVDateTimeUtils.YearDescriptor.getLastOrdinalDayIndex(yearDescriptor),
-							offset: 1,
-							name: "'ordinalDay'"
-						})
+						ordinalDayIndex,
+						CVDateTimeUtils.YearDescriptor.ordinalDayIndexChecker(yearDescriptor)
 					);
 
 					return validatedOrdinalDay * CVDateTimeUtils.DAY_MS;
+				}),
+			onNone: () =>
+				Option.match(Option.product(monthIndexOption, monthDayIndexOption), {
+					onSome: ([monthIndex, monthDayIndex]) =>
+						Either.gen(function* () {
+							const validatedMonthIndex = yield* pipe(
+								monthIndex.value,
+								MInputError.assertInRange({
+									min: 0,
+									max: 11,
+									offset: 1,
+									name: "'month'"
+								})
+							);
+
+							const monthDescriptor = pipe(
+								yearDescriptor,
+								CVDateTimeUtils.YearDescriptor.getMonthDescriptorFromMonthIndex(validatedMonthIndex)
+							);
+
+							const validatedMonthDayIndex = yield* pipe(
+								monthDayIndex.value,
+								MInputError.assertInRange({
+									min: 0,
+									max: monthDescriptor.lastDayIndex,
+									offset: 1,
+									name: "'monthDay'"
+								})
+							);
+							return monthDescriptor.monthStartMs + validatedMonthDayIndex * CVDateTimeUtils.DAY_MS;
+						}),
+					onNone: () =>
+						Option.match(Option.product(isoWeekIndexOption, weekDayIndexOption), {
+							onSome: ([isoWeekIndex, weekDayIndex]) =>
+								Either.gen(function* () {
+									const isoWeekDescriptor =
+										CVDateTimeUtils.YearDescriptor.getIsoWeekDescriptor(yearDescriptor);
+
+									const validatedIsoWeekIndex = yield* pipe(
+										isoWeekIndex.value,
+										MInputError.assertInRange({
+											min: 0,
+											max: isoWeekDescriptor.lastIsoWeekIndex,
+											offset: 1,
+											name: "'isoWeek'"
+										})
+									);
+
+									const validatedWeekDayIndex = yield* pipe(
+										weekDayIndex.value,
+										MInputError.assertInRange({
+											min: 0,
+											max: 6,
+											offset: 1,
+											name: "'weekDay'"
+										})
+									);
+
+									return (
+										isoWeekDescriptor.firstIsoWeekMs +
+										validatedIsoWeekIndex * CVDateTimeUtils.WEEK_MS +
+										validatedWeekDayIndex * CVDateTimeUtils.DAY_MS
+									);
+								}),
+							onNone: () => Either.right(0)
+						})
 				})
-			),
-			MMatch.when(
-				MPredicate.struct({ monthIndex: Option.isSome, monthDayIndex: Option.isSome }),
-				({ monthIndex, monthDayIndex }) =>
-					Either.gen(function* () {
-						const validatedMonthIndex = yield* pipe(
-							monthIndex.value,
-							MInputError.assertInRange({
-								min: 0,
-								max: 11,
-								offset: 1,
-								name: "'month'"
-							})
-						);
-
-						const monthDescriptor = pipe(
-							yearDescriptor,
-							CVDateTimeUtils.YearDescriptor.getMonthDescriptorFromMonthIndex(validatedMonthIndex)
-						);
-
-						const validatedMonthDayIndex = yield* pipe(
-							monthDayIndex.value,
-							MInputError.assertInRange({
-								min: 0,
-								max: monthDescriptor.lastDayIndex,
-								offset: 1,
-								name: "'monthDay'"
-							})
-						);
-						return monthDescriptor.monthStartMs + validatedMonthDayIndex * CVDateTimeUtils.DAY_MS;
-					})
-			),
-			MMatch.when(
-				MPredicate.struct({ isoWeekIndex: Option.isSome, weekDayIndex: Option.isSome }),
-				({ isoWeekIndex, weekDayIndex }) =>
-					Either.gen(function* () {
-						const isoWeekDescriptor =
-							CVDateTimeUtils.YearDescriptor.getIsoWeekDescriptor(yearDescriptor);
-
-						const validatedIsoWeekIndex = yield* pipe(
-							isoWeekIndex.value,
-							MInputError.assertInRange({
-								min: 0,
-								max: isoWeekDescriptor.lastIsoWeekIndex,
-								offset: 1,
-								name: "'isoWeek'"
-							})
-						);
-
-						const validatedWeekDayIndex = yield* pipe(
-							weekDayIndex.value,
-							MInputError.assertInRange({
-								min: 0,
-								max: 6,
-								offset: 1,
-								name: "'weekDay'"
-							})
-						);
-
-						return (
-							isoWeekDescriptor.firstIsoWeekMs +
-							validatedIsoWeekIndex * CVDateTimeUtils.WEEK_MS +
-							validatedWeekDayIndex * CVDateTimeUtils.DAY_MS
-						);
-					})
-			),
-			MMatch.orElse(() => Either.right(0))
-		);
+		});
 
 		const hourOffsetMs = yield* pipe(
 			optionalParams,
@@ -541,13 +513,217 @@ export const fromParts = ({
 				hourOffsetMs +
 				validatedMinute * CVDateTimeUtils.MINUTE_MS +
 				validatedSecond * CVDateTimeUtils.SECOND_MS +
-				validatedMillisecond +
+				validatedMillisecond -
 				timeZoneOffsetMs,
 			yearDescriptor,
 			...optionalParams,
 			timeZoneOffsetMs
 		});
-	});
+	}) as never;*/
+
+/**
+ * Returns the timestamp of `self`
+ *
+ * @category Destructors
+ */
+export const timestamp = (self: Type): number =>
+	pipe(
+		Option.getOrElse(self.timestamp, () => {
+			const result = pipe(
+				self.isoYearDescriptor,
+				Option.map(CVDateTimeUtils.IsoYearDescriptor.startTimestamp),
+				Option.getOrElse(() => 1)
+			);
+			/* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements */ /* @ts-expect-error ordinalDayIndex must look immutable from the outer world*/
+			self.yearDescriptor = Option.some(result);
+			return result as never;
+		})
+	);
+
+/**
+ * Returns the offset in milliseconds between the date represented by `self` and the start of the
+ * year this date belongs to
+ */
+const _getYearOffsetMs = (self: Type): number =>
+	self.timestamp - self.timeZoneOffsetMs - self.yearDescriptor.startTimestamp;
+
+/** Returns the yearDescriptor of `self` */
+const _yearDescriptor = (self: Type): CVDateTimeUtils.YearDescriptor.Type =>
+	pipe(
+		self.yearDescriptor,
+		Option.getOrElse(() => {
+			const result = 1;
+			/* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements */ /* @ts-expect-error ordinalDayIndex must look immutable from the outer world*/
+			self.yearDescriptor = Option.some(result);
+			return result;
+		})
+	);
+
+/** Returns the ordinalDayIndex of `self` */
+const _ordinalDayIndex = (self: Type): number =>
+	pipe(
+		self.ordinalDayIndex,
+		Option.getOrElse(() => {
+			const result = pipe(
+				self,
+				_getYearOffsetMs,
+				Number.unsafeDivide(CVDateTimeUtils.DAY_MS),
+				Math.floor
+			);
+			/* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements */ /* @ts-expect-error ordinalDayIndex must look immutable from the outer world*/
+			self.ordinalDayIndex = Option.some(result);
+			return result;
+		})
+	);
+
+/**
+ * Returns the ordinalDay of `self`
+ *
+ * @category Destructors
+ */
+export const ordinalDay: MTypes.OneArgFunction<Type, number> = flow(
+	_ordinalDayIndex,
+	Number.increment
+);
+
+/** Returns the monthIndex of `self` */
+const _monthIndex = (self: Type): number =>
+	pipe(
+		self.monthIndex,
+		Option.getOrElse(() => {
+			const result = pipe(
+				self,
+				_getYearOffsetMs,
+				CVDateTimeUtils.MonthDescriptorCache.getFromYearOffset(self.yearDescriptor.isLeapYear),
+				CVDateTimeUtils.MonthDescriptor.monthIndex
+			);
+			/* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements */ /* @ts-expect-error ordinalDayIndex must look immutable from the outer world*/
+			self.monthIndex = Option.some(result);
+			return result;
+		})
+	);
+
+/**
+ * Returns the month of `self`
+ *
+ * @category Destructors
+ */
+export const month: MTypes.OneArgFunction<Type, number> = flow(_monthIndex, Number.increment);
+
+/** Returns the monthDayIndex of `self` */
+const _monthDayIndex = (self: Type): number =>
+	pipe(
+		self.monthDayIndex,
+		Option.getOrElse(() => {
+			const monthStartMs = pipe(
+				self,
+				_monthIndex,
+				CVDateTimeUtils.MonthDescriptorCache.getFromMonthIndex(self.yearDescriptor.isLeapYear),
+				CVDateTimeUtils.MonthDescriptor.monthStartMs
+			);
+			const result = pipe(
+				self,
+				_getYearOffsetMs,
+				Number.subtract(monthStartMs),
+				Number.unsafeDivide(CVDateTimeUtils.DAY_MS),
+				Math.floor
+			);
+			/* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements */ /* @ts-expect-error ordinalDayIndex must look immutable from the outer world*/
+			self.monthDayIndex = Option.some(result);
+			return result;
+		})
+	);
+
+/**
+ * Returns the monthDay of `self`
+ *
+ * @category Destructors
+ */
+export const monthDay: MTypes.OneArgFunction<Type, number> = flow(_monthDayIndex, Number.increment);
+
+/** Returns the isoYear of `self` */
+export const isoYear = (self: Type): number =>
+	pipe(
+		self.isoYear,
+		Option.getOrElse(() => {
+			const yearOffsetMs = _getYearOffsetMs(self);
+			const yearDescriptor = self.yearDescriptor;
+			const year = yearDescriptor.year;
+			const firstYearDayWeekDayIndex = CVDateTimeUtils.weekDayIndexFromTimestamp(
+				self.yearDescriptor.startTimestamp
+			);
+			const firstIsoWeekStartOffsetMs = CVDateTimeUtils.isoYearOffsetMs(firstYearDayWeekDayIndex);
+			const lastIsoWeekEndOffsetMs =
+				firstIsoWeekStartOffsetMs +
+				CVDateTimeUtils.isoYearDuration(firstYearDayWeekDayIndex, yearDescriptor.isLeapYear);
+			const result =
+				year +
+				(yearOffsetMs < firstIsoWeekStartOffsetMs ? -1
+				: yearOffsetMs >= lastIsoWeekEndOffsetMs ? +1
+				: 0);
+
+			/* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements */ /* @ts-expect-error ordinalDayIndex must look immutable from the outer world*/
+			self.isoYear = Option.some(result);
+			return result;
+		})
+	);
+
+const _isoWeekIndex = (self: Type): number =>
+	pipe(
+		self.isoWeekIndex,
+		Option.getOrElse(() => {
+			const _isoYear = isoYear(self);
+
+			const result = 0;
+			/* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements */ /* @ts-expect-error ordinalDayIndex must look immutable from the outer world*/
+			self.isoWeekIndex = Option.some(result);
+			return result;
+		})
+	);
+
+/**
+ * Returns the isoWeek of `self`
+ *
+ * @category Destructors
+ */
+export const isoWeek: MTypes.OneArgFunction<Type, number> = flow(_isoWeekIndex, Number.increment);
+
+/**
+ * If successful, returns a right of a copy of `self` with the ordinalDay set to `ordinalDay`.
+ * Otherwise returns a left of an inputError. `ordinalDay` must be an integer greater than or equal
+ * to 1 and less than or equal to the number of days in the current year.
+ *
+ * @category Utils
+ */
+export const setOrdinalDay =
+	(ordinalDay: number) =>
+	(self: Type): Either.Either<Type, MInputError.Type> =>
+		Either.gen(function* () {
+			const ordinalDayIndex = ordinalDay - 1;
+
+			const validatedOrdinalDayIndex = yield* pipe(
+				ordinalDayIndex,
+				MInputError.assertInRange({
+					min: 0,
+					max: CVDateTimeUtils.YearDescriptor.getLastOrdinalDayIndex(self.yearDescriptor),
+					offset: 1,
+					name: "'ordinalDay'"
+				})
+			);
+			return _make({
+				...self,
+				timestamp:
+					self.yearDescriptor.startTimestamp + validatedOrdinalDayIndex * CVDateTimeUtils.DAY_MS,
+				ordinalDayIndex: Option.some(ordinalDayIndex),
+				monthIndex: Option.none(),
+				monthDayIndex: Option.none(),
+				isoWeekIndex: Option.none(),
+				weekDayIndex: Option.none()
+			});
+		});
+
+//`monthDay` must be an integer greater than or equal to 1 and less than or equal to the number of days in the current month.
+
 /*const ordinalDay0 = Math.floor(r1Year / DAY_MS);
 		const offsetOrdinalDay = ordinalDay0 * DAY_MS;
 		const dayMs = startTimestamp + offsetOrdinalDay;
