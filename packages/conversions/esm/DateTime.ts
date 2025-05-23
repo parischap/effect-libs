@@ -1,8 +1,9 @@
 /**
- * This module implements an immutable DateTime object. DateTime objects do keep an internal state.
- * But all provided functions look pure insofar as they will always yield the same result whatever
- * the state the object is in. The state is only used to improve performance but does not alter the
- * results.
+ * This module implements an immutable DateTime object.
+ *
+ * DateTime objects keep an internal state. But all provided functions look pure insofar as they
+ * will always yield the same result whatever the state the object is in. The state is only used to
+ * improve performance but does not alter the results.
  *
  * A DateTime object has a `timeZoneOffsetMs` which is the timestamp of date 1/1/1970 00:00:00:000
  * in zone +z (e.g timeZoneOffsetMs=-3_600_000 for timezone +1:00). All the data in a DateTime
@@ -12,7 +13,7 @@
  * DateTime object with a timestamp t-tzoMs and a 0 timeZoneOffset.
  */
 
-import { MInputError, MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
+import { MInputError, MInspectable, MNumber, MPipeable, MTypes } from '@parischap/effect-lib';
 import {
 	Either,
 	Equal,
@@ -23,14 +24,63 @@ import {
 	Option,
 	Pipeable,
 	Predicate,
+	Struct,
 	flow,
 	pipe
 } from 'effect';
-import * as CVDateTimeUtils from './datetime-utils.js';
 
 export const moduleTag = '@parischap/conversions/DateTime/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
+
+/**
+ * Duration of a second in milliseconds
+ *
+ * @category Constants
+ */
+const SECOND_MS = 1_000;
+
+/**
+ * Duration of a minute in milliseconds
+ *
+ * @category Constants
+ */
+const MINUTE_MS = 60 * SECOND_MS;
+
+/**
+ * Duration of an hour in milliseconds
+ *
+ * @category Constants
+ */
+const HOUR_MS = 60 * MINUTE_MS;
+
+/**
+ * Duration of a day in milliseconds
+ *
+ * @category Constants
+ */
+const DAY_MS = 24 * HOUR_MS;
+
+/**
+ * Duration of a week in milliseconds
+ *
+ * @category Constants
+ */
+const WEEK_MS = 7 * DAY_MS;
+
+/**
+ * Local time zone offset in hours of the machine on which this code runs. The value is calculated
+ * once at startup.
+ *
+ * @category Constants
+ */
+const LOCAL_TIME_ZONE_OFFSET = new Date(0).getTimezoneOffset() / 60;
+
+/**
+ * Namespace for the data relative to a Month
+ *
+ * @category Models
+ */
 
 const MAX_FULL_YEAR_OFFSET = 273_790;
 
@@ -63,34 +113,529 @@ export const MAX_TIMESTAMP = 8_640_000_000_000_000;
 export const MIN_TIMESTAMP = -MAX_TIMESTAMP;
 
 /**
+ * Namespace for the data relative to a Gregorian year
+ *
+ * It is important to note that the Gregorian calendar is periodic with a 400-year period as far as
+ * leap years are concerned. Leap years are those that can be divided by 4, except those that can be
+ * divided by 100 except those that can be divided by 400. So 2100, 2200, 2300 are not leap years.
+ * But 2400 is a leap year.
+ *
+ * @category Models
+ */
+namespace GregorianYear {
+	/**
+	 * Duration of a normal year in milliseconds
+	 *
+	 * @category Constants
+	 */
+	const NORMAL_YEAR_MS = 365 * DAY_MS;
+
+	/**
+	 * Duration of a leap year in milliseconds
+	 *
+	 * @category Constants
+	 */
+	const LEAP_YEAR_MS = NORMAL_YEAR_MS + DAY_MS;
+
+	/**
+	 * Duration in milliseconds of a four-year period containing a leap year
+	 *
+	 * @category Constants
+	 */
+	const FOUR_YEARS_MS = 3 * NORMAL_YEAR_MS + LEAP_YEAR_MS;
+
+	/**
+	 * Duration in milliseconds of a 100-year period that has a leap year every 4th year except the
+	 * 100th year
+	 *
+	 * @category Constants
+	 */
+	const HUNDRED_YEARS_MS = 25 * FOUR_YEARS_MS - DAY_MS;
+
+	/**
+	 * Duration in milliseconds of a 400-year period that has a leap year every 4th year except the
+	 * 100th year. But the 400th year is a leap year
+	 *
+	 * @category Constants
+	 */
+	const FOUR_HUNDRED_YEARS_MS = 4 * HUNDRED_YEARS_MS + DAY_MS;
+
+	/** Timestamp of 1/1/2001 00:00:00:000+0:00 */
+	const YEAR_START_2001_MS = 978_307_200_000;
+
+	/**
+	 * Type of a GregorianYear
+	 *
+	 * @category Models
+	 */
+	export interface Type {
+		/** The year described by this GregorianYear, range: [MIN_FULL_YEAR, MAX_FULL_YEAR] */
+		readonly year: number;
+
+		/** `true` if `year` is a leap year. `false` otherwise */
+		readonly isLeap: boolean;
+
+		/** Timestamp of the first millisecond of UTC `year` */
+		readonly startTimestamp: number;
+	}
+
+	/**
+	 * Constructs the GregorianYear to which `timestamp` belongs
+	 *
+	 * @category Constructors
+	 */
+	export const fromTimestamp = (timestamp: number): Type => {
+		/**
+		 * The 100-year periods [2001, 2100], [2101, 2200], and [2201, 2300] all last HUNDRED_YEARS_MS.
+		 * Those three 100-year periods can be divided in 24 periods that last FOUR_YEARS_MS
+		 * (4xNORMAL_YEAR_MS + DAY_MS) and a final 4-year period that lasts FOUR_YEARS_MS - DAY_MS
+		 * (4xNORMAL_YEAR_MS).
+		 *
+		 * The 100-year period [2301, 2400] lasts HUNDRED_YEARS_MS + DAY_MS. This period can be divided
+		 * in 25 periods that last FOUR_YEARS_MS (4xNORMAL_YEAR_MS + DAY_MS).
+		 */
+		const offset2001 = timestamp - YEAR_START_2001_MS;
+
+		const q400Years = Math.floor(offset2001 / FOUR_HUNDRED_YEARS_MS);
+		const offset400Years = q400Years * FOUR_HUNDRED_YEARS_MS;
+		const r400Years = offset2001 - offset400Years;
+
+		// q100Years is equal to 4 on the last day of the 400-year period.
+		const q100Years = Math.min(3, Math.floor(r400Years / HUNDRED_YEARS_MS));
+		const offset100Years = q100Years * HUNDRED_YEARS_MS;
+		// r100Years is superior to HUNDRED_YEARS_MS on the last day of the 400-year period
+		const r100Years = r400Years - offset100Years;
+
+		const q4Years = Math.floor(r100Years / FOUR_YEARS_MS);
+		const offset4Years = q4Years * FOUR_YEARS_MS;
+		const r4Years = r100Years - offset4Years;
+
+		// q1Year is equal to 4 on the last day of each 4-year period except the last day of years 2100, 2200 and 2300.
+		const q1Year = Math.min(3, Math.floor(r4Years / NORMAL_YEAR_MS));
+		const offset1Year = q1Year * NORMAL_YEAR_MS;
+
+		const isLeap = q1Year === 3 && (q4Years !== 24 || q100Years === 3);
+
+		return {
+			year: 2001 + 400 * q400Years + 100 * q100Years + 4 * q4Years + q1Year,
+			isLeap,
+			startTimestamp:
+				YEAR_START_2001_MS + offset400Years + offset100Years + offset4Years + offset1Year
+		};
+	};
+
+	/**
+	 * Constructs the GregorianYear corresponding to UTC year `year`.
+	 *
+	 * @category Constructors
+	 */
+	export const fromYear = (year: number): Type => {
+		const offset2001 = year - 2001;
+
+		const [q400Years, r400Years] = MNumber.quotientAndRemainder(400)(offset2001);
+		const [q100Years, r100Years] = MNumber.quotientAndRemainder(100)(r400Years);
+		const [q4Years, r4Years] = MNumber.quotientAndRemainder(4)(r100Years);
+
+		const isLeap = r4Years === 3 && (r100Years !== 99 || r400Years === 399);
+
+		return {
+			year,
+			isLeap,
+			startTimestamp:
+				YEAR_START_2001_MS +
+				q400Years * FOUR_HUNDRED_YEARS_MS +
+				q100Years * HUNDRED_YEARS_MS +
+				q4Years * FOUR_YEARS_MS +
+				r4Years * NORMAL_YEAR_MS
+		};
+	};
+
+	/**
+	 * Returns the `year` property of `self`
+	 *
+	 * @category Destructors
+	 */
+	export const year: MTypes.OneArgFunction<Type, number> = Struct.get('year');
+
+	/**
+	 * Returns the `isLeap` property of `self`
+	 *
+	 * @category Destructors
+	 */
+	export const isLeap: MTypes.OneArgFunction<Type, boolean> = Struct.get('isLeap');
+
+	/**
+	 * Returns the `startTimestamp` property of `self`
+	 *
+	 * @category Destructors
+	 */
+	export const startTimestamp: MTypes.OneArgFunction<Type, number> = Struct.get('startTimestamp');
+
+	/**
+	 * Returns the duration of the year described by `self` in milliseconds
+	 *
+	 * @category Destructors
+	 */
+	export const getMsDuration = (self: Type): number =>
+		self.isLeap ? LEAP_YEAR_MS : NORMAL_YEAR_MS;
+}
+
+/**
+ * Namespace for the data relative to an iso year.
+ *
+ * An iso year starts on the first day of the first iso week. An iso week starts on a monday and
+ * ends on a sunday. The first iso week of the year is the one that contains January 4th (see
+ * Wikipedia).
+ *
+ * @category Models
+ */
+namespace IsoYear {
+	/**
+	 * Duration of a short iso year in milliseconds
+	 *
+	 * @category Constants
+	 */
+	export const SHORT_YEAR_MS = 52 * WEEK_MS;
+
+	/**
+	 * Duration of a long iso year in milliseconds
+	 *
+	 * @category Constants
+	 */
+	export const LONG_YEAR_MS = SHORT_YEAR_MS + WEEK_MS;
+
+	/**
+	 * Duration in milliseconds of an 6-iso-year period comprised of 1 long year and 5 short years
+	 * (see Wikipedia)
+	 *
+	 * @category Constants
+	 */
+	const SIX_YEARS_MS = LONG_YEAR_MS + 5 * SHORT_YEAR_MS;
+
+	/**
+	 * Duration in milliseconds of an 11-iso-year period comprised of 2 long years and 9 short years
+	 * (see Wikipedia)
+	 *
+	 * @category Constants
+	 */
+	const ELEVEN_YEARS_MS = 2 * LONG_YEAR_MS + 9 * SHORT_YEAR_MS;
+
+	/**
+	 * Duration in milliseconds of a 28-iso-year period comprised of 5 long years and 23 short years
+	 * (see Wikipedia)
+	 *
+	 * @category Constants
+	 */
+	const TWENTY_EIGHT_YEARS_MS = 5 * LONG_YEAR_MS + 23 * SHORT_YEAR_MS;
+
+	/**
+	 * Duration in milliseconds of a 96-iso-year period comprised of 17 long years and 79 short years
+	 * (see Wikipedia)
+	 *
+	 * @category Constants
+	 */
+	const NINETY_SIX_YEARS_MS = 17 * LONG_YEAR_MS + 79 * SHORT_YEAR_MS;
+
+	/**
+	 * Duration in milliseconds of a 100-iso-year period comprised of 18 long years and 82 short years
+	 * (see Wikipedia)
+	 *
+	 * @category Constants
+	 */
+	const ONE_HUNDRED_YEARS_MS = 18 * LONG_YEAR_MS + 82 * SHORT_YEAR_MS;
+
+	/**
+	 * Duration in milliseconds of a 400-iso-year period comprised of 71 long years and 329 short
+	 * years (see Wikipedia)
+	 *
+	 * @category Constants
+	 */
+	const FOUR_HUNDRED_YEARS_MS = 71 * LONG_YEAR_MS + 329 * SHORT_YEAR_MS;
+
+	/**
+	 * Timestamp of 03/01/2000 00:00:00:000+0:00
+	 *
+	 * @category Constants
+	 */
+	const YEAR_START_2000_MS = 946_857_600_000;
+
+	/**
+	 * Timestamp of 04/01/2010 00:00:00:000+0:00
+	 *
+	 * @category Constants
+	 */
+	const YEAR_START_2010_MS = 1_262_563_200_000;
+
+	/**
+	 * Type of an IsoYear
+	 *
+	 * @category Models
+	 */
+	export interface Type {
+		/** The iso year described by this IsoYear, range: [MIN_FULL_YEAR, MAX_FULL_YEAR] */
+		readonly year: number;
+
+		/** Timestamp of the start of UTC iso year `year` */
+		readonly startTimestamp: number;
+
+		/** If true, iso year `year` counts 53 weeks. Otherwise, it counts 52 weeks */
+		readonly isLong: boolean;
+	}
+
+	/**
+	 * Constructs the IsoYear to which `timestamp` belongs
+	 *
+	 * @category Constructors
+	 */
+	export const fromTimestamp = (timestamp: number): Type => {
+		const [q400Years, r400Years] = pipe(
+			timestamp,
+			Number.subtract(YEAR_START_2000_MS),
+			MNumber.quotientAndRemainder(FOUR_HUNDRED_YEARS_MS)
+		);
+
+		// The second one-hundred year period is a week shorter because it has 17 long years instead of 18
+		// Also the hundred-th year must be put in the first one-hundred year period because it is not long
+		const q100Years =
+			r400Years < ONE_HUNDRED_YEARS_MS + SHORT_YEAR_MS ?
+				0
+			:	pipe(r400Years + WEEK_MS, Number.unsafeDivide(ONE_HUNDRED_YEARS_MS), Math.floor);
+
+		const [q28Years, r28Years] = MNumber.quotientAndRemainder(TWENTY_EIGHT_YEARS_MS)(
+			r400Years - q100Years * NINETY_SIX_YEARS_MS + SHORT_YEAR_MS
+		);
+
+		const [q11Years, r11Years] = MNumber.quotientAndRemainder(ELEVEN_YEARS_MS)(
+			r28Years - ELEVEN_YEARS_MS
+		);
+
+		const [q6Years, r6Years] = MNumber.quotientAndRemainder(SIX_YEARS_MS)(r11Years);
+		const isFirstSixYearPeriod = q6Years === 0;
+		const q1Year = Math.min(Math.floor(r6Years / SHORT_YEAR_MS), isFirstSixYearPeriod ? 5 : 4);
+
+		//console.log(q400Years, q100Years, q28Years, q11Years, q6Years, q1Year);
+		return {
+			year:
+				2010 +
+				q400Years * 400 +
+				q100Years * 96 +
+				q28Years * 28 +
+				q11Years * 11 +
+				q6Years * 6 +
+				q1Year,
+			startTimestamp:
+				YEAR_START_2010_MS +
+				q400Years * FOUR_HUNDRED_YEARS_MS +
+				q100Years * NINETY_SIX_YEARS_MS +
+				q28Years * TWENTY_EIGHT_YEARS_MS +
+				q11Years * ELEVEN_YEARS_MS +
+				q6Years * SIX_YEARS_MS +
+				q1Year * SHORT_YEAR_MS,
+			isLong: (isFirstSixYearPeriod && q1Year == 5) || (!isFirstSixYearPeriod && q1Year == 4)
+		};
+	};
+
+	/**
+	 * Builds the IsoYear correspondiong to UTC iso year `year`
+	 *
+	 * @category Constructors
+	 */
+	export const fromIsoYear = (isoYear: number): Type => {
+		const [q400Years, r400Years] = pipe(
+			isoYear,
+			Number.subtract(2000),
+			MNumber.quotientAndRemainder(400)
+		);
+		// year 100 needs to be treated in the first one-hundred year period because it is not a long year
+		const q100Years = r400Years === 100 ? 0 : Math.floor(r400Years / 100);
+		const [q28Years, r28Years] = MNumber.quotientAndRemainder(28)(r400Years - q100Years * 96 + 1);
+		const [q11Years, r11Years] = MNumber.quotientAndRemainder(11)(r28Years - 11);
+
+		return {
+			year: isoYear,
+			startTimestamp:
+				YEAR_START_2010_MS +
+				q400Years * FOUR_HUNDRED_YEARS_MS +
+				q100Years * NINETY_SIX_YEARS_MS +
+				q28Years * TWENTY_EIGHT_YEARS_MS +
+				q11Years * ELEVEN_YEARS_MS +
+				r11Years * SHORT_YEAR_MS +
+				(r11Years > 5 ? WEEK_MS : 0),
+			isLong: r11Years === 5 || r11Years === 10
+		};
+	};
+
+	/**
+	 * Returns the `year` property of `self`
+	 *
+	 * @category Destructors
+	 */
+	export const year: MTypes.OneArgFunction<Type, number> = Struct.get('year');
+
+	/**
+	 * Returns the `startTimestamp` property of `self`
+	 *
+	 * @category Destructors
+	 */
+	export const startTimestamp: MTypes.OneArgFunction<Type, number> = Struct.get('startTimestamp');
+
+	/**
+	 * Returns the `isLong` property of `self`
+	 *
+	 * @category Destructors
+	 */
+	export const isLong: MTypes.OneArgFunction<Type, boolean> = Struct.get('isLong');
+
+	/**
+	 * Returns the duration of the year described by `self` in milliseconds
+	 *
+	 * @category Destructors
+	 */
+	export const getMsDuration = (self: Type): number => (self.isLong ? LONG_YEAR_MS : SHORT_YEAR_MS);
+
+	/**
+	 * Returns the duration of the year described by `self` in milliseconds
+	 *
+	 * @category Destructors
+	 */
+	export const getLastIsoWeekIndex = (self: Type): number => (self.isLong ? 52 : 51);
+}
+
+/**
+ * Namespace for the data relative to the day in a year.
+ *
+ * @category Models
+ */
+namespace GregorianDay {
+	/**
+	 * Type of a Day
+	 *
+	 * @category Models
+	 */
+	export interface Type {
+		/** Position this GregorianDay (in the current year), range:[1, 366] */
+		readonly ordinalDay: number;
+
+		/** Month of this GregorianDay, range:[1, 12] */
+		readonly month: number;
+
+		/** Position of this GregorianDay (in the current month), range:[1, 31] */
+		readonly monthDay: number;
+
+		/** Timestamp of the start of the day described by this GregorianDay */
+		readonly startTimestamp: number;
+	}
+
+	/**
+	 * Returns the number of days from the start of the year to the day before the first day of month
+	 * `month`
+	 */
+	const _monthOffset = (month: number, isLeap: boolean): number =>
+		month === 1 ? 0
+		: month === 2 ? 31
+		: 30 * (month - 1) + Math.floor(0.6 * (month + 1)) - (isLeap ? 2 : 3);
+	/**
+	 * Constructs the GregorianDay that corresponds to ordinalDayIndex `ordinalDayIndex` of year
+	 * `gregorianYear`.
+	 *
+	 * @category Constructors
+	 */
+	export const fromOrdinalDay = (gregorianYear: GregorianYear.Type, ordinalDay: number): Type => {
+		const isLeap = gregorianYear.isLeap;
+		const adjustedOrdinalDay = ordinalDay - (isLeap ? 1 : 0);
+		const month =
+			ordinalDay <= 31 ? 1
+			: adjustedOrdinalDay <= 59 ? 2
+			: Math.floor((adjustedOrdinalDay - 59) / 30.6 - 0.018) + 3;
+
+		return {
+			ordinalDay,
+			month,
+			monthDay: ordinalDay - _monthOffset(month, isLeap),
+			startTimestamp: gregorianYear.startTimestamp + (ordinalDay - 1) * DAY_MS
+		};
+	};
+
+	/**
+	 * Constructs the GregorianDay that corresponds to day `day` of month `month` of year
+	 * `gregorianYear`.
+	 *
+	 * @category Constructors
+	 */
+	export const fromYearMonthDay = (
+		gregorianYear: GregorianYear.Type,
+		month: number,
+		monthDay: number
+	): Type => {
+		const ordinalDay = monthDay + _monthOffset(month, gregorianYear.isLeap);
+		return {
+			ordinalDay,
+			month,
+			monthDay,
+			startTimestamp: gregorianYear.startTimestamp + (ordinalDay - 1) * DAY_MS
+		};
+	};
+
+	/**
+	 * Constructs the GregorianDay that contains the timestamp calculated as a `timestampOffset` from
+	 * the start of `gregorianYear`
+	 *
+	 * @category Constructors
+	 */
+	export const fromTimestamp = (
+		timestampOffset: number,
+		gregorianYear: GregorianYear.Type
+	): Type => {
+		const ordinalDayIndex = Math.floor(timestampOffset / DAY_MS);
+		return fromOrdinalDay(gregorianYear, ordinalDayIndex);
+	};
+
+	/**
+	 * Returns the `ordinalDay` property of `self`
+	 *
+	 * @category Destructors
+	 */
+	export const ordinalDay: MTypes.OneArgFunction<Type, number> = Struct.get('ordinalDay');
+
+	/**
+	 * Returns the `month` property of `self`
+	 *
+	 * @category Destructors
+	 */
+	export const month: MTypes.OneArgFunction<Type, number> = Struct.get('month');
+
+	/**
+	 * Returns the `monthDay` property of `self`
+	 *
+	 * @category Destructors
+	 */
+	export const monthDay: MTypes.OneArgFunction<Type, number> = Struct.get('monthDay');
+
+	/**
+	 * Returns the `startTimestamp` property of `self`
+	 *
+	 * @category Destructors
+	 */
+	export const startTimestamp: MTypes.OneArgFunction<Type, number> = Struct.get('startTimestamp');
+}
+
+/**
  * Type of a DateTime
  *
  * @category Models
  */
 export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable {
-	/** Number of milliseconds since 1/1/1970 at 00:00:00:000+00:00. Is timezone-independent */
-	readonly timestamp: Option.Option<number>;
+	/** Number of milliseconds since 1/1/1970 at 00:00:00:000+00:00 (timezone-independent) */
+	readonly timestamp: number;
 
-	/** YearDescriptor of this DateTime, expressed in given timezone */
-	readonly yearDescriptor: Option.Option<CVDateTimeUtils.YearDescriptor.Type>;
+	/** GregorianYear of this DateTime, expressed in given timezone */
+	readonly gregorianYear: Option.Option<GregorianYear.Type>;
 
-	/** IsoYearDescriptor of this DateTime, expressed in given timezone */
-	readonly isoYearDescriptor: Option.Option<CVDateTimeUtils.IsoYearDescriptor.Type>;
+	/** GregorianDay of this DateTime, expressed in given timezone */
+	readonly gregorianDay: Option.Option<GregorianDay.Type>;
 
-	/**
-	 * Index of the day of this DateTime (in the current year). Expressed in given timezone, range:[0,
-	 * 365]
-	 */
-	readonly ordinalDayIndex: Option.Option<number>;
-
-	/** Index of the month of this DateTime. Expressed in given timezone, range:[0, 11] */
-	readonly monthIndex: Option.Option<number>;
-
-	/**
-	 * Index of the day of this DateTime (in the current month). Expressed in given timezone,
-	 * range:[0, 30]
-	 */
-	readonly monthDayIndex: Option.Option<number>;
+	/** IsoYear of this DateTime, expressed in given timezone */
+	readonly isoYear: Option.Option<IsoYear.Type>;
 
 	/** Index of the iso week of this DateTime. Expressed in given timezone, range:[0, 52] */
 	readonly isoWeekIndex: Option.Option<number>;
@@ -128,10 +673,14 @@ export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable 
 	 */
 	readonly millisecond: Option.Option<number>;
 
-	/** Timestamp of 1/1/1970 00:00:00:000 in zone +z */
-	readonly timeZoneOffsetMs: number;
+	/**
+	 * Offset in hours of the zone for which all calculations of that DateTime object will be carried
+	 * out. Not necessarily an integer, range: [-12, 14]
+	 */
+	readonly timeZoneOffset: number;
 
 	/** @internal */
+	readonly _zonedTimestamp: number;
 	readonly [_TypeId]: _TypeId;
 }
 
@@ -170,12 +719,12 @@ const proto: MTypes.Proto<Type> = {
 const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
 
 /**
- * Tries to build a DateTime from `timestamp` and `timeZoneOffset`. Returns a `right` of this
- * DateTime if successful. Returns a `left` of an error otherwise. `timestamp` must be an integer
- * comprised in the range [MIN_TIMESTAMP, MAX_TIMESTAMP] representing the number of milliseconds
- * since 1/1/1970 00:00:00:000+0:00. `timeZoneOffset` is a number, not necessarily an integer, that
+ * Tries to build a DateTime from `timestamp` and `timeZoneOffset`. Returns a `right` of a DateTime
+ * if successful. Returns a `left` of an error otherwise. `timestamp` must be an integer comprised
+ * in the range [MIN_TIMESTAMP, MAX_TIMESTAMP] representing the number of milliseconds since
+ * 1/1/1970 00:00:00:000+0:00. `timeZoneOffset` is a number, not necessarily an integer, that
  * represents the offset in hours of the zone for which all calculations of that DateTime object
- * will be carried out. It should be comprised in the range ]-12, 15[. If omitted, the offset of the
+ * will be carried out. It must be comprised in the range [-12, 14]. If omitted, the offset of the
  * local time zone of the machine this code is running on is used.
  *
  * @category Constructors
@@ -198,20 +747,27 @@ export const fromTimestamp = ({
 			})
 		);
 
-		const timeZoneOffsetMs = pipe(
+		const validatedTimeZoneOffset = yield* pipe(
 			timeZoneOffset,
 			Option.fromNullable,
-			Option.map(Number.multiply(CVDateTimeUtils.HOUR_MS)),
-			Option.getOrElse(Function.constant(CVDateTimeUtils.LOCAL_TIME_ZONE_OFFSET_MS))
+			Option.map(
+				flow(
+					MInputError.assertInRange({
+						min: -12,
+						max: 14,
+						offset: 0,
+						name: 'timeZoneOffset'
+					})
+				)
+			),
+			Option.getOrElse(() => Either.right(LOCAL_TIME_ZONE_OFFSET))
 		);
 
 		return _make({
-			timestamp: Option.some(validatedTimestamp),
-			yearDescriptor: Option.none(),
-			isoYearDescriptor: Option.none(),
-			ordinalDayIndex: Option.none(),
-			monthIndex: Option.none(),
-			monthDayIndex: Option.none(),
+			timestamp: validatedTimestamp,
+			gregorianYear: Option.none(),
+			gregorianDay: Option.none(),
+			isoYear: Option.none(),
 			isoWeekIndex: Option.none(),
 			weekDayIndex: Option.none(),
 			hour24: Option.none(),
@@ -220,7 +776,8 @@ export const fromTimestamp = ({
 			minute: Option.none(),
 			second: Option.none(),
 			millisecond: Option.none(),
-			timeZoneOffsetMs
+			timeZoneOffset: validatedTimeZoneOffset,
+			_zonedTimestamp: validatedTimestamp - validatedTimeZoneOffset
 		});
 	});
 
@@ -238,8 +795,10 @@ export const unsafeFromTimestamp: MTypes.OneArgFunction<
 > = flow(fromTimestamp, Either.getOrThrowWith(Function.identity));
 
 /**
- * Builds a DateTime using Date.now() as timestamp. You can optionally provide a timeZoneOffset. If
- * omitted, the offset of the local time zone of the machine this code is running on is used.
+ * Builds a DateTime using Date.now() as timestamp. `timeZoneOffset` is a number, not necessarily an
+ * integer, that represents the offset in hours of the zone for which all calculations of that
+ * DateTime object will be carried out. It must be comprised in the range [-12, 14]. If omitted, the
+ * offset of the local time zone of the machine this code is running on is used.
  *
  * @category Constructors
  */
@@ -333,7 +892,7 @@ export const now = (timeZoneOffset?: number): Type =>
 			})
 		);
 
-		const yearDescriptor = CVDateTimeUtils.YearDescriptor.fromYear(validatedYear);
+		const yearDescriptor = CVDateTimeUtils.GregorianDate.fromYear(validatedYear);
 
 		const ordinalDayIndexOption = pipe(
 			ordinalDay,
@@ -356,7 +915,7 @@ export const now = (timeZoneOffset?: number): Type =>
 				Either.gen(function* () {
 					const validatedOrdinalDay = yield* pipe(
 						ordinalDayIndex,
-						CVDateTimeUtils.YearDescriptor.ordinalDayIndexChecker(yearDescriptor)
+						CVDateTimeUtils.GregorianDate.ordinalDayIndexChecker(yearDescriptor)
 					);
 
 					return validatedOrdinalDay * CVDateTimeUtils.DAY_MS;
@@ -377,7 +936,7 @@ export const now = (timeZoneOffset?: number): Type =>
 
 							const monthDescriptor = pipe(
 								yearDescriptor,
-								CVDateTimeUtils.YearDescriptor.getMonthDescriptorFromMonthIndex(validatedMonthIndex)
+								CVDateTimeUtils.GregorianDate.getMonthDescriptorFromMonthIndex(validatedMonthIndex)
 							);
 
 							const validatedMonthDayIndex = yield* pipe(
@@ -396,7 +955,7 @@ export const now = (timeZoneOffset?: number): Type =>
 							onSome: ([isoWeekIndex, weekDayIndex]) =>
 								Either.gen(function* () {
 									const isoWeekDescriptor =
-										CVDateTimeUtils.YearDescriptor.getIsoWeekDescriptor(yearDescriptor);
+										CVDateTimeUtils.GregorianDate.getIsoWeekDescriptor(yearDescriptor);
 
 									const validatedIsoWeekIndex = yield* pipe(
 										isoWeekIndex.value,
@@ -526,38 +1085,64 @@ export const now = (timeZoneOffset?: number): Type =>
  *
  * @category Destructors
  */
-export const timestamp = (self: Type): number =>
+export const timestamp: MTypes.OneArgFunction<Type, number> = Struct.get('timestamp');
+
+/** Returns the gregorianYear of `self` for the given time zone */
+const _gregorianYear = (self: Type): GregorianYear.Type =>
 	pipe(
-		Option.getOrElse(self.timestamp, () => {
-			const result = pipe(
-				self.isoYearDescriptor,
-				Option.map(CVDateTimeUtils.IsoYearDescriptor.startTimestamp),
-				Option.getOrElse(() => 1)
-			);
+		self.gregorianYear,
+		Option.getOrElse(() => {
+			const result = GregorianYear.fromTimestamp(self._zonedTimestamp);
 			/* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements */ /* @ts-expect-error ordinalDayIndex must look immutable from the outer world*/
-			self.yearDescriptor = Option.some(result);
-			return result as never;
+			self.gregorianYear = Option.some(result);
+			return result;
 		})
 	);
 
 /**
- * Returns the offset in milliseconds between the date represented by `self` and the start of the
- * year this date belongs to
+ * Returns the (Gregorian) year of `self` for the given time zone
+ *
+ * @category Destructors
  */
-const _getYearOffsetMs = (self: Type): number =>
-	self.timestamp - self.timeZoneOffsetMs - self.yearDescriptor.startTimestamp;
+export const year: MTypes.OneArgFunction<Type, number> = flow(_gregorianYear, GregorianYear.year);
 
-/** Returns the yearDescriptor of `self` */
-const _yearDescriptor = (self: Type): CVDateTimeUtils.YearDescriptor.Type =>
+/**
+ * Returns true if the (Gregorian) year of `self` for the given time zone is a leap year. Returns
+ * false otherwise
+ *
+ * @category Destructors
+ */
+export const isLeap: MTypes.OneArgFunction<Type, boolean> = flow(
+	_gregorianYear,
+	GregorianYear.isLeap
+);
+
+/** Returns the isoYear of `self` for the given time zone */
+const _isoYear = (self: Type): IsoYear.Type =>
 	pipe(
-		self.yearDescriptor,
+		self.isoYear,
 		Option.getOrElse(() => {
-			const result = 1;
+			const result = IsoYear.fromTimestamp(self._zonedTimestamp);
 			/* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements */ /* @ts-expect-error ordinalDayIndex must look immutable from the outer world*/
-			self.yearDescriptor = Option.some(result);
+			self.isoYear = Option.some(result);
 			return result;
 		})
 	);
+
+/**
+ * Returns the isoYear of `self` for the given time zone
+ *
+ * @category Destructors
+ */
+export const isoYear: MTypes.OneArgFunction<Type, number> = flow(_isoYear, IsoYear.year);
+
+/**
+ * Returns true if the (Gregorian) year of `self` for the given time zone is a leap year. Returns
+ * false otherwise
+ *
+ * @category Destructors
+ */
+export const islong: MTypes.OneArgFunction<Type, boolean> = flow(_isoYear, IsoYear.isLong);
 
 /** Returns the ordinalDayIndex of `self` */
 const _ordinalDayIndex = (self: Type): number =>
@@ -566,8 +1151,11 @@ const _ordinalDayIndex = (self: Type): number =>
 		Option.getOrElse(() => {
 			const result = pipe(
 				self,
-				_getYearOffsetMs,
-				Number.unsafeDivide(CVDateTimeUtils.DAY_MS),
+				_gregorianYear,
+				GregorianYear.startTimestamp,
+				MNumber.opposite,
+				Number.sum(self._zonedTimestamp),
+				Number.unsafeDivide(DAY_MS),
 				Math.floor
 			);
 			/* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements */ /* @ts-expect-error ordinalDayIndex must look immutable from the outer world*/
@@ -641,33 +1229,6 @@ const _monthDayIndex = (self: Type): number =>
  */
 export const monthDay: MTypes.OneArgFunction<Type, number> = flow(_monthDayIndex, Number.increment);
 
-/** Returns the isoYear of `self` */
-export const isoYear = (self: Type): number =>
-	pipe(
-		self.isoYear,
-		Option.getOrElse(() => {
-			const yearOffsetMs = _getYearOffsetMs(self);
-			const yearDescriptor = self.yearDescriptor;
-			const year = yearDescriptor.year;
-			const firstYearDayWeekDayIndex = CVDateTimeUtils.weekDayIndexFromTimestamp(
-				self.yearDescriptor.startTimestamp
-			);
-			const firstIsoWeekStartOffsetMs = CVDateTimeUtils.isoYearOffsetMs(firstYearDayWeekDayIndex);
-			const lastIsoWeekEndOffsetMs =
-				firstIsoWeekStartOffsetMs +
-				CVDateTimeUtils.isoYearDuration(firstYearDayWeekDayIndex, yearDescriptor.isLeapYear);
-			const result =
-				year +
-				(yearOffsetMs < firstIsoWeekStartOffsetMs ? -1
-				: yearOffsetMs >= lastIsoWeekEndOffsetMs ? +1
-				: 0);
-
-			/* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements */ /* @ts-expect-error ordinalDayIndex must look immutable from the outer world*/
-			self.isoYear = Option.some(result);
-			return result;
-		})
-	);
-
 const _isoWeekIndex = (self: Type): number =>
 	pipe(
 		self.isoWeekIndex,
@@ -705,7 +1266,7 @@ export const setOrdinalDay =
 				ordinalDayIndex,
 				MInputError.assertInRange({
 					min: 0,
-					max: CVDateTimeUtils.YearDescriptor.getLastOrdinalDayIndex(self.yearDescriptor),
+					max: CVDateTimeUtils.GregorianDate.getLastOrdinalDayIndex(self.yearDescriptor),
 					offset: 1,
 					name: "'ordinalDay'"
 				})

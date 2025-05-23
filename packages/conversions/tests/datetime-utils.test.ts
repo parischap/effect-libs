@@ -106,7 +106,7 @@ describe('CVDateTimeUtils', () => {
 		});
 	});
 
-	describe('YearDescriptor', () => {
+	describe('GregorianDate', () => {
 		it('fromTimestamp', () => {
 			const [actualVector, expectedVector] = pipe(
 				yearVector,
@@ -127,21 +127,21 @@ describe('CVDateTimeUtils', () => {
 						Tuple.make(
 							{
 								startInput: startTimestamp,
-								...CVDateTimeUtils.YearDescriptor.fromTimestamp(startTimestamp)
+								...CVDateTimeUtils.GregorianDate.fromTimestamp(startTimestamp)
 							},
 							{ startInput: startTimestamp, ...expected }
 						),
 						Tuple.make(
 							{
 								randomInput: randomTimestamp,
-								...CVDateTimeUtils.YearDescriptor.fromTimestamp(randomTimestamp)
+								...CVDateTimeUtils.GregorianDate.fromTimestamp(randomTimestamp)
 							},
 							{ randomInput: randomTimestamp, ...expected }
 						),
 						Tuple.make(
 							{
 								endInput: endTimestamp,
-								...CVDateTimeUtils.YearDescriptor.fromTimestamp(endTimestamp)
+								...CVDateTimeUtils.GregorianDate.fromTimestamp(endTimestamp)
 							},
 							{ endInput: endTimestamp, ...expected }
 						)
@@ -165,7 +165,7 @@ describe('CVDateTimeUtils', () => {
 
 			TEUtils.assertEquals(actualVector, expectedVector);
 			/*TEUtils.assertEquals(
-				CVDateTimeUtils.YearDescriptor.fromTimestamp(Date.UTC(571, 11, 31, 23, 59, 59, 999)),
+				CVDateTimeUtils.GregorianDate.fromTimestamp(Date.UTC(571, 11, 31, 23, 59, 59, 999)),
 				{
 					year: 571,
 					startTimestamp: -44148153600000,
@@ -175,7 +175,7 @@ describe('CVDateTimeUtils', () => {
 		});
 
 		it('fromYear', () => {
-			const actualVector = Array.map(yearVector, CVDateTimeUtils.YearDescriptor.fromYear);
+			const actualVector = Array.map(yearVector, CVDateTimeUtils.GregorianDate.fromYear);
 			const expectedVector = Array.map(yearVector, (year) => ({
 				year,
 				isLeap: isLeapYear(year),
@@ -232,7 +232,7 @@ describe('CVDateTimeUtils', () => {
 				Array.unzip
 			);
 
-			const zippedVector = Array.zip(actualVector, expectedVector);
+			/*const zippedVector = Array.zip(actualVector, expectedVector);
 			for (const [actual, expected] of zippedVector) {
 				if (
 					actual.year !== expected.year ||
@@ -242,13 +242,13 @@ describe('CVDateTimeUtils', () => {
 					console.log(actual, expected);
 					break;
 				}
-			}
+			}*/
 
 			TEUtils.assertEquals(actualVector, expectedVector);
-			/*TEUtils.assertEquals(CVDateTimeUtils.IsoYearDescriptor.fromTimestamp(16756934399999), {
-				year: 2500,
-				startTimestamp: 16725484800000,
-				isLong: false
+			/*TEUtils.assertEquals(CVDateTimeUtils.IsoYearDescriptor.fromTimestamp(19029167999999), {
+				year: 2572,
+				startTimestamp: 18997113600000,
+				isLong: true
 			});*/
 		});
 
