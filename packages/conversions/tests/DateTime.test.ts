@@ -18,8 +18,9 @@ describe('CVDateTime', () => {
 			});
 
 			it('Non-matching', () => {
-				TEUtils.assertFalse(
-					Equal.equals(utilInspectLike, PPMarkMap.make({ ...utilInspectLike, id: 'Dummy' }))
+				TEUtils.assertNotEquals(
+					utilInspectLike,
+					PPMarkMap.make({ ...utilInspectLike, id: 'Dummy' })
 				);
 			});
 		});

@@ -30,14 +30,12 @@ describe('CVRoundingOption', () => {
 			});
 
 			it('Non-matching', () => {
-				TEUtils.assertFalse(
-					Equal.equals(
-						roundingOption,
-						CVRoundingOption.make({
-							precision: 2,
-							roundingMode: CVRoundingMode.Type.HalfEven
-						})
-					)
+				TEUtils.assertNotEquals(
+					roundingOption,
+					CVRoundingOption.make({
+						precision: 2,
+						roundingMode: CVRoundingMode.Type.HalfEven
+					})
 				);
 			});
 		});

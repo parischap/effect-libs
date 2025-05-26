@@ -10,7 +10,7 @@ import {
 	PPValueBasedStylerConstructor
 } from '@parischap/pretty-print';
 import { TEUtils } from '@parischap/test-utils';
-import { Array, Equal, Function, pipe } from 'effect';
+import { Array, Function, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('PropertyFormatter', () => {
@@ -46,7 +46,7 @@ describe('PropertyFormatter', () => {
 			});
 
 			it('Non-matching', () => {
-				TEUtils.assertFalse(Equal.equals(valueOnly, PPPropertyFormatter.keyAndValue));
+				TEUtils.assertNotEquals(valueOnly, PPPropertyFormatter.keyAndValue);
 			});
 		});
 

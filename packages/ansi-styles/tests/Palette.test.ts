@@ -1,7 +1,7 @@
 /* eslint-disable functional/no-expression-statements */
 import { ASPalette, ASStyle } from '@parischap/ansi-styles';
 import { TEUtils } from '@parischap/test-utils';
-import { Equal, pipe } from 'effect';
+import { pipe } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('ASPalette', () => {
@@ -18,7 +18,7 @@ describe('ASPalette', () => {
 			});
 
 			it('Non-matching', () => {
-				TEUtils.assertFalse(Equal.equals(ASPalette.allOriginalColors, blackRed));
+				TEUtils.assertNotEquals(ASPalette.allOriginalColors, blackRed);
 			});
 		});
 

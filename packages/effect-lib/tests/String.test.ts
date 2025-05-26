@@ -1,7 +1,7 @@
 /* eslint-disable functional/no-expression-statements */
 import { MString } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
-import { Array, Equal, pipe, String, Struct } from 'effect';
+import { Array, pipe, String, Struct } from 'effect';
 import { describe, it } from 'vitest';
 import { SearchResult } from '../esm/String.js';
 
@@ -22,11 +22,9 @@ describe('MString', () => {
 					);
 				});
 				it('Non matching', () => {
-					TEUtils.assertFalse(
-						Equal.equals(
-							testSearchResult,
-							SearchResult.make({ startIndex: 3, endIndex: 6, match: 'baz' })
-						)
+					TEUtils.assertNotEquals(
+						testSearchResult,
+						SearchResult.make({ startIndex: 3, endIndex: 6, match: 'baz' })
 					);
 				});
 			});

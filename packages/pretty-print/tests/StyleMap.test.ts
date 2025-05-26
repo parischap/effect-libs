@@ -2,7 +2,7 @@
 import { ASContextStyler, ASText } from '@parischap/ansi-styles';
 import { PPStyleMap, PPValue } from '@parischap/pretty-print';
 import { TEUtils } from '@parischap/test-utils';
-import { Equal, Function, pipe } from 'effect';
+import { Function, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('StyleMap', () => {
@@ -18,7 +18,7 @@ describe('StyleMap', () => {
 			});
 
 			it('Non-matching', () => {
-				TEUtils.assertFalse(Equal.equals(none, PPStyleMap.darkMode));
+				TEUtils.assertNotEquals(none, PPStyleMap.darkMode);
 			});
 		});
 

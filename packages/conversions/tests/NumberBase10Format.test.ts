@@ -24,7 +24,7 @@ describe('NumberBase10Format', () => {
 			});
 
 			it('Non-matching', () => {
-				TEUtils.assertFalse(Equal.equals(commaAndSpace, CVNumberBase10Format.commaAndDot));
+				TEUtils.assertNotEquals(commaAndSpace, CVNumberBase10Format.commaAndDot);
 			});
 		});
 

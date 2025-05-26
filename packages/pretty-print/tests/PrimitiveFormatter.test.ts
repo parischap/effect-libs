@@ -1,7 +1,7 @@
 /* eslint-disable functional/no-expression-statements */
 import { PPOption, PPPrimitiveFormatter, PPValue } from '@parischap/pretty-print';
 import { TEUtils } from '@parischap/test-utils';
-import { Equal, pipe } from 'effect';
+import { pipe } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('PrimitiveFormatter', () => {
@@ -26,8 +26,9 @@ describe('PrimitiveFormatter', () => {
 			});
 
 			it('Non-matching', () => {
-				TEUtils.assertFalse(
-					Equal.equals(utilInspectLikeFormatter, utilInspectLikeFormatterWithOtherDefaults)
+				TEUtils.assertNotEquals(
+					utilInspectLikeFormatter,
+					utilInspectLikeFormatterWithOtherDefaults
 				);
 			});
 		});

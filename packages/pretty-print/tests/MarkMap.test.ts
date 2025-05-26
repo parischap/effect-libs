@@ -1,7 +1,6 @@
 /* eslint-disable functional/no-expression-statements */
 import { PPMarkMap } from '@parischap/pretty-print';
 import { TEUtils } from '@parischap/test-utils';
-import { Equal } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('MarkMap', () => {
@@ -18,8 +17,9 @@ describe('MarkMap', () => {
 			});
 
 			it('Non-matching', () => {
-				TEUtils.assertFalse(
-					Equal.equals(utilInspectLike, PPMarkMap.make({ ...utilInspectLike, id: 'Dummy' }))
+				TEUtils.assertNotEquals(
+					utilInspectLike,
+					PPMarkMap.make({ ...utilInspectLike, id: 'Dummy' })
 				);
 			});
 		});

@@ -1,7 +1,7 @@
 /* eslint-disable functional/no-expression-statements */
 import { ASStyle, ASStyleCharacteristics, ASText } from '@parischap/ansi-styles';
 import { TEUtils } from '@parischap/test-utils';
-import { Equal, pipe } from 'effect';
+import { pipe } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('ASStyle', () => {
@@ -22,7 +22,7 @@ describe('ASStyle', () => {
 			});
 
 			it('Non-matching', () => {
-				TEUtils.assertFalse(Equal.equals(boldRed2, bold));
+				TEUtils.assertNotEquals(boldRed2, bold);
 			});
 		});
 

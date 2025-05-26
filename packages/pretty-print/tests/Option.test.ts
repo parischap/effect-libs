@@ -12,7 +12,7 @@ import {
 	PPValueOrder
 } from '@parischap/pretty-print';
 import { TEUtils } from '@parischap/test-utils';
-import { Array, Equal, HashMap, HashSet, Option, pipe, Predicate } from 'effect';
+import { Array, HashMap, HashSet, Option, pipe, Predicate } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('Option', () => {
@@ -25,7 +25,7 @@ describe('Option', () => {
 				});
 
 				it('Non-matching', () => {
-					TEUtils.assertFalse(Equal.equals(record, PPOption.NonPrimitive.array));
+					TEUtils.assertNotEquals(record, PPOption.NonPrimitive.array);
 				});
 			});
 
@@ -206,7 +206,7 @@ describe('Option', () => {
 			});
 
 			it('Non-matching', () => {
-				TEUtils.assertFalse(Equal.equals(utilInspectLike, PPOption.darkModeUtilInspectLike));
+				TEUtils.assertNotEquals(utilInspectLike, PPOption.darkModeUtilInspectLike);
 			});
 		});
 

@@ -9,7 +9,7 @@ import {
 	PPValueBasedStylerConstructor
 } from '@parischap/pretty-print';
 import { TEUtils } from '@parischap/test-utils';
-import { Array, Equal, Function, pipe } from 'effect';
+import { Array, Function, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('NonPrimitiveFormatter', () => {
@@ -81,7 +81,7 @@ describe('NonPrimitiveFormatter', () => {
 			});
 
 			it('Non-matching', () => {
-				TEUtils.assertFalse(Equal.equals(singleLine, PPNonPrimitiveFormatter.tabify));
+				TEUtils.assertNotEquals(singleLine, PPNonPrimitiveFormatter.tabify);
 			});
 		});
 

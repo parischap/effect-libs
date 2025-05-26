@@ -2,7 +2,7 @@
 import { MFunction } from '@parischap/effect-lib';
 import { PPPropertyFilter, PPValue, PPValues } from '@parischap/pretty-print';
 import { TEUtils } from '@parischap/test-utils';
-import { Array, Equal, Function, pipe } from 'effect';
+import { Array, Function, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('PropertyFilter', () => {
@@ -44,7 +44,7 @@ describe('PropertyFilter', () => {
 			});
 
 			it('Non-matching', () => {
-				TEUtils.assertFalse(Equal.equals(removeFunctions, PPPropertyFilter.removeNonFunctions));
+				TEUtils.assertNotEquals(removeFunctions, PPPropertyFilter.removeNonFunctions);
 			});
 		});
 

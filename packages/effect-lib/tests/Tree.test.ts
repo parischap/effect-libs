@@ -1,7 +1,7 @@
 /* eslint-disable functional/no-expression-statements */
 import { MMatch, MString, MTree, MTuple, MTypes } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
-import { Array, Either, Equal, flow, Function, Option, pipe, Record } from 'effect';
+import { Array, Either, flow, Function, Option, pipe, Record } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('MTree', () => {
@@ -74,7 +74,7 @@ describe('MTree', () => {
 				TEUtils.assertEquals(testTree1, testTree2);
 			});
 			it('Non matching', () => {
-				TEUtils.assertFalse(Equal.equals(testTree1, testTree3));
+				TEUtils.assertNotEquals(testTree1, testTree3);
 			});
 		});
 

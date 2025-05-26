@@ -9,7 +9,7 @@ import {
 	PPValueBasedStylerConstructor
 } from '@parischap/pretty-print';
 import { TEUtils } from '@parischap/test-utils';
-import { Array, Equal, Option, pipe } from 'effect';
+import { Array, Option, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('ByPasser', () => {
@@ -40,7 +40,7 @@ describe('ByPasser', () => {
 			});
 
 			it('Non-matching', () => {
-				TEUtils.assertFalse(Equal.equals(empty, PPByPasser.functionToName));
+				TEUtils.assertNotEquals(empty, PPByPasser.functionToName);
 			});
 		});
 

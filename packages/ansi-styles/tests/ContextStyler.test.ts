@@ -1,7 +1,6 @@
 /* eslint-disable functional/no-expression-statements */
 import { ASContextStyler, ASPalette, ASStyle } from '@parischap/ansi-styles';
 import { TEUtils } from '@parischap/test-utils';
-import { Equal } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('ContextStyler', () => {
@@ -44,7 +43,7 @@ describe('ContextStyler', () => {
 			});
 
 			it('Non-matching', () => {
-				TEUtils.assertFalse(Equal.equals(red, ASContextStyler.black()));
+				TEUtils.assertNotEquals(red, ASContextStyler.black());
 			});
 		});
 

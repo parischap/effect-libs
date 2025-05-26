@@ -1,7 +1,6 @@
 /* eslint-disable functional/no-expression-statements */
 import { ASColor } from '@parischap/ansi-styles';
 import { TEUtils } from '@parischap/test-utils';
-import { Equal } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('Color', () => {
@@ -60,9 +59,9 @@ describe('Color', () => {
 				});
 
 				it('Non-matching', () => {
-					TEUtils.assertFalse(Equal.equals(ASColor.threeBitBlack, new Date()));
-					TEUtils.assertFalse(Equal.equals(ASColor.threeBitBlack, ASColor.threeBitRed));
-					TEUtils.assertFalse(Equal.equals(ASColor.threeBitBlack, ASColor.eightBitBlack));
+					TEUtils.assertNotEquals(ASColor.threeBitBlack, new Date());
+					TEUtils.assertNotEquals(ASColor.threeBitBlack, ASColor.threeBitRed);
+					TEUtils.assertNotEquals(ASColor.threeBitBlack, ASColor.eightBitBlack);
 				});
 			});
 
@@ -90,9 +89,9 @@ describe('Color', () => {
 				});
 
 				it('Non-matching', () => {
-					TEUtils.assertFalse(Equal.equals(ASColor.eightBitBlack, new Date()));
-					TEUtils.assertFalse(Equal.equals(ASColor.eightBitBlack, ASColor.eightBitRed));
-					TEUtils.assertFalse(Equal.equals(ASColor.eightBitBlack, ASColor.threeBitBlack));
+					TEUtils.assertNotEquals(ASColor.eightBitBlack, new Date());
+					TEUtils.assertNotEquals(ASColor.eightBitBlack, ASColor.eightBitRed);
+					TEUtils.assertNotEquals(ASColor.eightBitBlack, ASColor.threeBitBlack);
 				});
 			});
 
@@ -120,9 +119,9 @@ describe('Color', () => {
 				});
 
 				it('Non-matching', () => {
-					TEUtils.assertFalse(Equal.equals(ASColor.rgbBlack, new Date()));
-					TEUtils.assertFalse(Equal.equals(ASColor.rgbBlack, ASColor.rgbRed));
-					TEUtils.assertFalse(Equal.equals(ASColor.rgbBlack, ASColor.eightBitBlack));
+					TEUtils.assertNotEquals(ASColor.rgbBlack, new Date());
+					TEUtils.assertNotEquals(ASColor.rgbBlack, ASColor.rgbRed);
+					TEUtils.assertNotEquals(ASColor.rgbBlack, ASColor.eightBitBlack);
 				});
 			});
 
