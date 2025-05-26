@@ -281,6 +281,124 @@ namespace GregorianYear {
 }
 
 /**
+ * Namespace for the data relative to the day in a year.
+ *
+ * @category Models
+ */
+namespace GregorianDay {
+	/**
+	 * Type of a GregorianDay
+	 *
+	 * @category Models
+	 */
+	export interface Type {
+		/** Position this GregorianDay (in the current year), range:[1, 366] */
+		readonly ordinalDay: number;
+
+		/** Month of this GregorianDay, range:[1, 12] */
+		readonly month: number;
+
+		/** Position of this GregorianDay (in the current month), range:[1, 31] */
+		readonly monthDay: number;
+
+		/** Timestamp of the start of the day described by this GregorianDay */
+		readonly startTimestamp: number;
+	}
+
+	/**
+	 * Returns the number of days from the start of the year to the day before the first day of month
+	 * `month`
+	 */
+	const _monthOffset = (month: number, isLeap: boolean): number =>
+		month === 1 ? 0
+		: month === 2 ? 31
+		: 30 * (month - 1) + Math.floor(0.6 * (month + 1)) - (isLeap ? 2 : 3);
+	/**
+	 * Constructs the GregorianDay that corresponds to ordinal day `ordinalDay` of year
+	 * `gregorianYear`.
+	 *
+	 * @category Constructors
+	 */
+	export const fromOrdinalDay = (gregorianYear: GregorianYear.Type, ordinalDay: number): Type => {
+		const isLeap = gregorianYear.isLeap;
+		const adjustedOrdinalDay = ordinalDay - (isLeap ? 1 : 0);
+		const month =
+			ordinalDay <= 31 ? 1
+			: adjustedOrdinalDay <= 59 ? 2
+			: Math.floor((adjustedOrdinalDay - 59) / 30.6 - 0.018) + 3;
+
+		return {
+			ordinalDay,
+			month,
+			monthDay: ordinalDay - _monthOffset(month, isLeap),
+			startTimestamp: gregorianYear.startTimestamp + (ordinalDay - 1) * DAY_MS
+		};
+	};
+
+	/**
+	 * Constructs the GregorianDay that corresponds to day `day` of month `month` of year
+	 * `gregorianYear`.
+	 *
+	 * @category Constructors
+	 */
+	export const fromYearMonthDay = (
+		gregorianYear: GregorianYear.Type,
+		month: number,
+		monthDay: number
+	): Type => {
+		const ordinalDay = monthDay + _monthOffset(month, gregorianYear.isLeap);
+		return {
+			ordinalDay,
+			month,
+			monthDay,
+			startTimestamp: gregorianYear.startTimestamp + (ordinalDay - 1) * DAY_MS
+		};
+	};
+
+	/**
+	 * Constructs the GregorianDay that contains the timestamp calculated as a `timestampOffset` from
+	 * the start of `gregorianYear`
+	 *
+	 * @category Constructors
+	 */
+	export const fromTimestamp = (
+		gregorianYear: GregorianYear.Type,
+		timestampOffset: number
+	): Type => {
+		const ordinalDay = Math.floor(timestampOffset / DAY_MS) + 1;
+		return fromOrdinalDay(gregorianYear, ordinalDay);
+	};
+
+	/**
+	 * Returns the `ordinalDay` property of `self`
+	 *
+	 * @category Destructors
+	 */
+	export const ordinalDay: MTypes.OneArgFunction<Type, number> = Struct.get('ordinalDay');
+
+	/**
+	 * Returns the `month` property of `self`
+	 *
+	 * @category Destructors
+	 */
+	export const month: MTypes.OneArgFunction<Type, number> = Struct.get('month');
+
+	/**
+	 * Returns the `monthDay` property of `self`
+	 *
+	 * @category Destructors
+	 */
+	export const monthDay: MTypes.OneArgFunction<Type, number> = Struct.get('monthDay');
+
+	/**
+	 * Returns the `startTimestamp` property of `self`
+	 *
+	 * @category Destructors
+	 */
+	export const startTimestamp: MTypes.OneArgFunction<Type, number> = Struct.get('startTimestamp');
+}
+
+/**
  * Namespace for the data relative to an iso year.
  *
  * An iso year starts on the first day of the first iso week. An iso week starts on a monday and
@@ -502,114 +620,72 @@ namespace IsoYear {
 }
 
 /**
- * Namespace for the data relative to the day in a year.
+ * Namespace for the data relative to an iso day of an iso year.
  *
  * @category Models
  */
-namespace GregorianDay {
+namespace IsoDay {
 	/**
-	 * Type of a Day
+	 * Type of an IsoDay
 	 *
 	 * @category Models
 	 */
 	export interface Type {
-		/** Position this GregorianDay (in the current year), range:[1, 366] */
-		readonly ordinalDay: number;
+		/** IsoWeek of this IsoDay, range:[1, 53] */
+		readonly isoWeek: number;
 
-		/** Month of this GregorianDay, range:[1, 12] */
-		readonly month: number;
+		/** WeekDay of this IsoDay, range:[1, 7], 1 is monday, 7 is sunday */
+		readonly weekDay: number;
 
-		/** Position of this GregorianDay (in the current month), range:[1, 31] */
-		readonly monthDay: number;
-
-		/** Timestamp of the start of the day described by this GregorianDay */
+		/** Timestamp of the start of the day described by this IsoDay */
 		readonly startTimestamp: number;
 	}
 
 	/**
-	 * Returns the number of days from the start of the year to the day before the first day of month
-	 * `month`
-	 */
-	const _monthOffset = (month: number, isLeap: boolean): number =>
-		month === 1 ? 0
-		: month === 2 ? 31
-		: 30 * (month - 1) + Math.floor(0.6 * (month + 1)) - (isLeap ? 2 : 3);
-	/**
-	 * Constructs the GregorianDay that corresponds to ordinalDayIndex `ordinalDayIndex` of year
-	 * `gregorianYear`.
+	 * Constructs the IsoDay that corresponds to week day `weekDay` of iso week `isoWeek` of year
+	 * `isoYear`.
 	 *
 	 * @category Constructors
 	 */
-	export const fromOrdinalDay = (gregorianYear: GregorianYear.Type, ordinalDay: number): Type => {
-		const isLeap = gregorianYear.isLeap;
-		const adjustedOrdinalDay = ordinalDay - (isLeap ? 1 : 0);
-		const month =
-			ordinalDay <= 31 ? 1
-			: adjustedOrdinalDay <= 59 ? 2
-			: Math.floor((adjustedOrdinalDay - 59) / 30.6 - 0.018) + 3;
+	export const fromWeekAndWeekDay = (
+		isoYear: IsoYear.Type,
+		isoWeek: number,
+		weekDay: number
+	): Type => ({
+		isoWeek,
+		weekDay,
+		startTimestamp: isoYear.startTimestamp + (isoWeek - 1) * WEEK_MS + (weekDay - 1) * DAY_MS
+	});
 
+	/**
+	 * Constructs the IsoDay that contains the timestamp calculated as a `timestampOffset` from the
+	 * start of `isoYear`
+	 *
+	 * @category Constructors
+	 */
+	export const fromTimestamp = (isoYear: IsoYear.Type, timestampOffset: number): Type => {
+		const [isoWeekIndex, weekOffsetMs] = MNumber.quotientAndRemainder(WEEK_MS)(timestampOffset);
+		const weekDayIndex = Math.floor(weekOffsetMs / DAY_MS);
 		return {
-			ordinalDay,
-			month,
-			monthDay: ordinalDay - _monthOffset(month, isLeap),
-			startTimestamp: gregorianYear.startTimestamp + (ordinalDay - 1) * DAY_MS
+			isoWeek: isoWeekIndex + 1,
+			weekDay: weekDayIndex + 1,
+			startTimestamp: isoYear.startTimestamp + isoWeekIndex * WEEK_MS + weekDayIndex * DAY_MS
 		};
 	};
 
 	/**
-	 * Constructs the GregorianDay that corresponds to day `day` of month `month` of year
-	 * `gregorianYear`.
-	 *
-	 * @category Constructors
-	 */
-	export const fromYearMonthDay = (
-		gregorianYear: GregorianYear.Type,
-		month: number,
-		monthDay: number
-	): Type => {
-		const ordinalDay = monthDay + _monthOffset(month, gregorianYear.isLeap);
-		return {
-			ordinalDay,
-			month,
-			monthDay,
-			startTimestamp: gregorianYear.startTimestamp + (ordinalDay - 1) * DAY_MS
-		};
-	};
-
-	/**
-	 * Constructs the GregorianDay that contains the timestamp calculated as a `timestampOffset` from
-	 * the start of `gregorianYear`
-	 *
-	 * @category Constructors
-	 */
-	export const fromTimestamp = (
-		timestampOffset: number,
-		gregorianYear: GregorianYear.Type
-	): Type => {
-		const ordinalDayIndex = Math.floor(timestampOffset / DAY_MS);
-		return fromOrdinalDay(gregorianYear, ordinalDayIndex);
-	};
-
-	/**
-	 * Returns the `ordinalDay` property of `self`
+	 * Returns the `isoWeek` property of `self`
 	 *
 	 * @category Destructors
 	 */
-	export const ordinalDay: MTypes.OneArgFunction<Type, number> = Struct.get('ordinalDay');
+	export const isoWeek: MTypes.OneArgFunction<Type, number> = Struct.get('isoWeek');
 
 	/**
-	 * Returns the `month` property of `self`
+	 * Returns the `weekDay` property of `self`
 	 *
 	 * @category Destructors
 	 */
-	export const month: MTypes.OneArgFunction<Type, number> = Struct.get('month');
-
-	/**
-	 * Returns the `monthDay` property of `self`
-	 *
-	 * @category Destructors
-	 */
-	export const monthDay: MTypes.OneArgFunction<Type, number> = Struct.get('monthDay');
+	export const weekDay: MTypes.OneArgFunction<Type, number> = Struct.get('weekDay');
 
 	/**
 	 * Returns the `startTimestamp` property of `self`
@@ -617,6 +693,101 @@ namespace GregorianDay {
 	 * @category Destructors
 	 */
 	export const startTimestamp: MTypes.OneArgFunction<Type, number> = Struct.get('startTimestamp');
+}
+
+/**
+ * Namespace for the data relative to the time.
+ *
+ * @category Models
+ */
+namespace Time {
+	/**
+	 * Type of a Time
+	 *
+	 * @category Models
+	 */
+	export interface Type {
+		/** Number of hours since the start of the current day, range:[0, 23] */
+		readonly hour24: number;
+
+		/** Hour12 of this DateTime, range:[0, 11] */
+		readonly hour12: number;
+
+		/** Meridiem offset of this DateTime in hours, 0 for 'AM', 12 for 'PM' */
+		readonly meridiem: 0 | 12;
+
+		/** Number of minutes since the start of the current hour, range:[0, 59] */
+		readonly minute: number;
+
+		/** Number of seconds, since sthe start of the current minute, range:[0, 59] */
+		readonly second: number;
+
+		/** Number of milliseconds, since sthe start of the current second, range:[0, 999] */
+		readonly millisecond: number;
+	}
+
+	/**
+	 * Constructs the Time that corresponds to `timestampOffset` which is the offset in milliseconds
+	 * to the start of a day
+	 *
+	 * @category Constructors
+	 */
+	export const fromTimestamp = (timestampOffset: number): Type => {
+		const [hour24, rHour24] = MNumber.quotientAndRemainder(HOUR_MS)(timestampOffset);
+		const [hour12, meridiem] = hour24 > 11 ? ([hour24 - 12, 12] as const) : ([hour24, 0] as const);
+		const [minute, rMinute] = MNumber.quotientAndRemainder(MINUTE_MS)(rHour24);
+		const [second, millisecond] = MNumber.quotientAndRemainder(SECOND_MS)(rMinute);
+		return {
+			hour24,
+			hour12,
+			meridiem,
+			minute,
+			second,
+			millisecond
+		};
+	};
+
+	/**
+	 * Returns the `hour24` property of `self`
+	 *
+	 * @category Destructors
+	 */
+	export const hour24: MTypes.OneArgFunction<Type, number> = Struct.get('hour24');
+
+	/**
+	 * Returns the `hour12` property of `self`
+	 *
+	 * @category Destructors
+	 */
+	export const hour12: MTypes.OneArgFunction<Type, number> = Struct.get('hour12');
+
+	/**
+	 * Returns the `meridiem` property of `self`
+	 *
+	 * @category Destructors
+	 */
+	export const meridiem: MTypes.OneArgFunction<Type, 0 | 12> = Struct.get('meridiem');
+
+	/**
+	 * Returns the `minute` property of `self`
+	 *
+	 * @category Destructors
+	 */
+	export const minute: MTypes.OneArgFunction<Type, number> = Struct.get('minute');
+
+	/**
+	 * Returns the `second` property of `self`
+	 *
+	 * @category Destructors
+	 */
+	export const second: MTypes.OneArgFunction<Type, number> = Struct.get('second');
+
+	/**
+	 * Returns the `millisecond` property of `self`
+	 *
+	 * @category Destructors
+	 */
+	export const millisecond: MTypes.OneArgFunction<Type, number> = Struct.get('millisecond');
 }
 
 /**
@@ -637,41 +808,11 @@ export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable 
 	/** IsoYear of this DateTime, expressed in given timezone */
 	readonly isoYear: Option.Option<IsoYear.Type>;
 
-	/** Index of the iso week of this DateTime. Expressed in given timezone, range:[0, 52] */
-	readonly isoWeekIndex: Option.Option<number>;
+	/** IsoDay of this DateTime, expressed in given timezone */
+	readonly isoDay: Option.Option<IsoDay.Type>;
 
-	/**
-	 * Index of the day of this DateTime (in the current iso week). Expressed in given timezone,
-	 * range:[0, 6], 0 is monday, 6 is sunday
-	 */
-	readonly weekDayIndex: Option.Option<number>;
-
-	/** Number of hours since the start of the current day. Expressed in given timezone, range:[0, 23] */
-	readonly hour24: Option.Option<number>;
-
-	/** Hour12 of this DateTime. Expressed in given timezone, range:[0, 11] */
-	readonly hour12: Option.Option<number>;
-
-	/** Meridiem offset of this DateTime in hours. Expressed in given timezone, 0 for 'AM', 12 for 'PM' */
-	readonly meridiem: Option.Option<0 | 12>;
-
-	/**
-	 * Number of minutes since the start of the current hour. Expressed in given timezone, range:[0,
-	 * 59]
-	 */
-	readonly minute: Option.Option<number>;
-
-	/**
-	 * Number of seconds, since sthe start of the current minute. Expressed in given timezone,
-	 * range:[0, 59]
-	 */
-	readonly second: Option.Option<number>;
-
-	/**
-	 * Number of milliseconds, since sthe start of the current second. Expressed in given timezone,
-	 * range:[0, 999]
-	 */
-	readonly millisecond: Option.Option<number>;
+	/** Time of this DateTime, expressed in given timezone */
+	readonly time: Option.Option<Time.Type>;
 
 	/**
 	 * Offset in hours of the zone for which all calculations of that DateTime object will be carried
@@ -729,13 +870,10 @@ const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto
  *
  * @category Constructors
  */
-export const fromTimestamp = ({
-	timestamp,
-	timeZoneOffset
-}: {
-	readonly timestamp: number;
-	readonly timeZoneOffset?: number | undefined;
-}): Either.Either<Type, MInputError.Type> =>
+export const fromTimestamp = (
+	timestamp: number,
+	timeZoneOffset?: number
+): Either.Either<Type, MInputError.Type> =>
 	Either.gen(function* () {
 		const validatedTimestamp = yield* pipe(
 			timestamp,
@@ -751,14 +889,12 @@ export const fromTimestamp = ({
 			timeZoneOffset,
 			Option.fromNullable,
 			Option.map(
-				flow(
-					MInputError.assertInRange({
-						min: -12,
-						max: 14,
-						offset: 0,
-						name: 'timeZoneOffset'
-					})
-				)
+				MInputError.assertInRange({
+					min: -12,
+					max: 14,
+					offset: 0,
+					name: 'timeZoneOffset'
+				})
 			),
 			Option.getOrElse(() => Either.right(LOCAL_TIME_ZONE_OFFSET))
 		);
@@ -768,14 +904,8 @@ export const fromTimestamp = ({
 			gregorianYear: Option.none(),
 			gregorianDay: Option.none(),
 			isoYear: Option.none(),
-			isoWeekIndex: Option.none(),
-			weekDayIndex: Option.none(),
-			hour24: Option.none(),
-			hour12: Option.none(),
-			meridiem: Option.none(),
-			minute: Option.none(),
-			second: Option.none(),
-			millisecond: Option.none(),
+			isoDay: Option.none(),
+			time: Option.none(),
 			timeZoneOffset: validatedTimeZoneOffset,
 			_zonedTimestamp: validatedTimestamp - validatedTimeZoneOffset
 		});
@@ -786,13 +916,8 @@ export const fromTimestamp = ({
  *
  * @category Constructors
  */
-export const unsafeFromTimestamp: MTypes.OneArgFunction<
-	{
-		readonly timestamp: number;
-		readonly timeZoneOffset?: number | undefined;
-	},
-	Type
-> = flow(fromTimestamp, Either.getOrThrowWith(Function.identity));
+export const unsafeFromTimestamp = (timestamp: number, timeZoneOffset?: number): Type =>
+	Either.getOrThrowWith(fromTimestamp(timestamp, timeZoneOffset), Function.identity);
 
 /**
  * Builds a DateTime using Date.now() as timestamp. `timeZoneOffset` is a number, not necessarily an
@@ -1117,6 +1242,49 @@ export const isLeap: MTypes.OneArgFunction<Type, boolean> = flow(
 	GregorianYear.isLeap
 );
 
+/** Returns the gregorianDay of `self` for the given time zone */
+const _gregorianDay = (self: Type): GregorianDay.Type =>
+	pipe(
+		self.gregorianDay,
+		Option.getOrElse(() => {
+			const gregorianYear = _gregorianYear(self);
+			const result = GregorianDay.fromTimestamp(
+				gregorianYear,
+				self._zonedTimestamp - gregorianYear.startTimestamp
+			);
+			/* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements */ /* @ts-expect-error ordinalDayIndex must look immutable from the outer world*/
+			self.gregorianDay = Option.some(result);
+			return result;
+		})
+	);
+
+/**
+ * Returns the ordinalDay of `self` for the given time zone
+ *
+ * @category Destructors
+ */
+export const ordinalDay: MTypes.OneArgFunction<Type, number> = flow(
+	_gregorianDay,
+	GregorianDay.ordinalDay
+);
+
+/**
+ * Returns the month of `self` for the given time zone
+ *
+ * @category Destructors
+ */
+export const month: MTypes.OneArgFunction<Type, number> = flow(_gregorianDay, GregorianDay.month);
+
+/**
+ * Returns the monthDay of `self` for the given time zone
+ *
+ * @category Destructors
+ */
+export const monthDay: MTypes.OneArgFunction<Type, number> = flow(
+	_gregorianDay,
+	GregorianDay.monthDay
+);
+
 /** Returns the isoYear of `self` for the given time zone */
 const _isoYear = (self: Type): IsoYear.Type =>
 	pipe(
@@ -1137,167 +1305,100 @@ const _isoYear = (self: Type): IsoYear.Type =>
 export const isoYear: MTypes.OneArgFunction<Type, number> = flow(_isoYear, IsoYear.year);
 
 /**
- * Returns true if the (Gregorian) year of `self` for the given time zone is a leap year. Returns
- * false otherwise
+ * Returns true if the isoYear of `self` for the given time zone is a long year. Returns false
+ * otherwise
  *
  * @category Destructors
  */
-export const islong: MTypes.OneArgFunction<Type, boolean> = flow(_isoYear, IsoYear.isLong);
+export const isLong: MTypes.OneArgFunction<Type, boolean> = flow(_isoYear, IsoYear.isLong);
 
-/** Returns the ordinalDayIndex of `self` */
-const _ordinalDayIndex = (self: Type): number =>
+/** Returns the isoDay of `self` for the given time zone */
+const _isoDay = (self: Type): IsoDay.Type =>
 	pipe(
-		self.ordinalDayIndex,
+		self.isoDay,
 		Option.getOrElse(() => {
-			const result = pipe(
-				self,
-				_gregorianYear,
-				GregorianYear.startTimestamp,
-				MNumber.opposite,
-				Number.sum(self._zonedTimestamp),
-				Number.unsafeDivide(DAY_MS),
-				Math.floor
-			);
+			const isoYear = _isoYear(self);
+			const result = IsoDay.fromTimestamp(isoYear, self._zonedTimestamp - isoYear.startTimestamp);
 			/* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements */ /* @ts-expect-error ordinalDayIndex must look immutable from the outer world*/
-			self.ordinalDayIndex = Option.some(result);
+			self.gregorianDay = Option.some(result);
 			return result;
 		})
 	);
 
 /**
- * Returns the ordinalDay of `self`
+ * Returns the isoWeek of `self` for the given time zone
  *
  * @category Destructors
  */
-export const ordinalDay: MTypes.OneArgFunction<Type, number> = flow(
-	_ordinalDayIndex,
-	Number.increment
-);
+export const isoWeek: MTypes.OneArgFunction<Type, number> = flow(_isoDay, IsoDay.isoWeek);
 
-/** Returns the monthIndex of `self` */
-const _monthIndex = (self: Type): number =>
+/**
+ * Returns the weekDay of `self` for the given time zone
+ *
+ * @category Destructors
+ */
+export const weekDay: MTypes.OneArgFunction<Type, number> = flow(_isoDay, IsoDay.weekDay);
+
+/** Returns the time of `self` for the given time zone */
+const _time = (self: Type): Time.Type =>
 	pipe(
-		self.monthIndex,
+		self.time,
 		Option.getOrElse(() => {
-			const result = pipe(
-				self,
-				_getYearOffsetMs,
-				CVDateTimeUtils.MonthDescriptorCache.getFromYearOffset(self.yearDescriptor.isLeapYear),
-				CVDateTimeUtils.MonthDescriptor.monthIndex
+			const day = pipe(
+				self.gregorianDay,
+				Option.orElse(Function.constant(self.isoDay)),
+				Option.getOrElse(() =>
+					Option.match(self.gregorianYear, {
+						onSome: Function.constant(_gregorianDay),
+						onNone: Function.constant(_isoDay)
+					})(self)
+				)
 			);
+			const result = Time.fromTimestamp(self._zonedTimestamp - day.startTimestamp);
 			/* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements */ /* @ts-expect-error ordinalDayIndex must look immutable from the outer world*/
-			self.monthIndex = Option.some(result);
+			self.gregorianDay = Option.some(result);
 			return result;
 		})
 	);
 
 /**
- * Returns the month of `self`
+ * Returns the hour24 of `self` for the given time zone
  *
  * @category Destructors
  */
-export const month: MTypes.OneArgFunction<Type, number> = flow(_monthIndex, Number.increment);
-
-/** Returns the monthDayIndex of `self` */
-const _monthDayIndex = (self: Type): number =>
-	pipe(
-		self.monthDayIndex,
-		Option.getOrElse(() => {
-			const monthStartMs = pipe(
-				self,
-				_monthIndex,
-				CVDateTimeUtils.MonthDescriptorCache.getFromMonthIndex(self.yearDescriptor.isLeapYear),
-				CVDateTimeUtils.MonthDescriptor.monthStartMs
-			);
-			const result = pipe(
-				self,
-				_getYearOffsetMs,
-				Number.subtract(monthStartMs),
-				Number.unsafeDivide(CVDateTimeUtils.DAY_MS),
-				Math.floor
-			);
-			/* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements */ /* @ts-expect-error ordinalDayIndex must look immutable from the outer world*/
-			self.monthDayIndex = Option.some(result);
-			return result;
-		})
-	);
+export const hour24: MTypes.OneArgFunction<Type, number> = flow(_time, Time.hour24);
 
 /**
- * Returns the monthDay of `self`
+ * Returns the hour12 of `self` for the given time zone
  *
  * @category Destructors
  */
-export const monthDay: MTypes.OneArgFunction<Type, number> = flow(_monthDayIndex, Number.increment);
-
-const _isoWeekIndex = (self: Type): number =>
-	pipe(
-		self.isoWeekIndex,
-		Option.getOrElse(() => {
-			const _isoYear = isoYear(self);
-
-			const result = 0;
-			/* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements */ /* @ts-expect-error ordinalDayIndex must look immutable from the outer world*/
-			self.isoWeekIndex = Option.some(result);
-			return result;
-		})
-	);
+export const hour12: MTypes.OneArgFunction<Type, number> = flow(_time, Time.hour12);
 
 /**
- * Returns the isoWeek of `self`
+ * Returns the meridiem of `self` for the given time zone
  *
  * @category Destructors
  */
-export const isoWeek: MTypes.OneArgFunction<Type, number> = flow(_isoWeekIndex, Number.increment);
+export const meridiem: MTypes.OneArgFunction<Type, number> = flow(_time, Time.meridiem);
 
 /**
- * If successful, returns a right of a copy of `self` with the ordinalDay set to `ordinalDay`.
- * Otherwise returns a left of an inputError. `ordinalDay` must be an integer greater than or equal
- * to 1 and less than or equal to the number of days in the current year.
+ * Returns the minute of `self` for the given time zone
  *
- * @category Utils
+ * @category Destructors
  */
-export const setOrdinalDay =
-	(ordinalDay: number) =>
-	(self: Type): Either.Either<Type, MInputError.Type> =>
-		Either.gen(function* () {
-			const ordinalDayIndex = ordinalDay - 1;
+export const minute: MTypes.OneArgFunction<Type, number> = flow(_time, Time.minute);
 
-			const validatedOrdinalDayIndex = yield* pipe(
-				ordinalDayIndex,
-				MInputError.assertInRange({
-					min: 0,
-					max: CVDateTimeUtils.GregorianDate.getLastOrdinalDayIndex(self.yearDescriptor),
-					offset: 1,
-					name: "'ordinalDay'"
-				})
-			);
-			return _make({
-				...self,
-				timestamp:
-					self.yearDescriptor.startTimestamp + validatedOrdinalDayIndex * CVDateTimeUtils.DAY_MS,
-				ordinalDayIndex: Option.some(ordinalDayIndex),
-				monthIndex: Option.none(),
-				monthDayIndex: Option.none(),
-				isoWeekIndex: Option.none(),
-				weekDayIndex: Option.none()
-			});
-		});
+/**
+ * Returns the second of `self` for the given time zone
+ *
+ * @category Destructors
+ */
+export const second: MTypes.OneArgFunction<Type, number> = flow(_time, Time.second);
 
-//`monthDay` must be an integer greater than or equal to 1 and less than or equal to the number of days in the current month.
-
-/*const ordinalDay0 = Math.floor(r1Year / DAY_MS);
-		const offsetOrdinalDay = ordinalDay0 * DAY_MS;
-		const dayMs = startTimestamp + offsetOrdinalDay;
-		const rOrdinalDay0 = r1Year - offsetOrdinalDay;
-
-		const hour24 = Math.floor(rOrdinalDay0 / HOUR_MS);
-		const hourMs = hour24 * HOUR_MS;
-		const rHour24 = rOrdinalDay0 - hourMs;
-
-		const minute = Math.floor(rHour24 / MINUTE_MS);
-		const minuteMs = minute * MINUTE_MS;
-		const rMinute = rHour24 - minuteMs;
-
-		const second = Math.floor(rMinute / SECOND_MS);
-		const secondMs = second * SECOND_MS;
-		const millisecond = rMinute - secondMs;*/
+/**
+ * Returns the millisecond of `self` for the given time zone
+ *
+ * @category Destructors
+ */
+export const millisecond: MTypes.OneArgFunction<Type, number> = flow(_time, Time.millisecond);
