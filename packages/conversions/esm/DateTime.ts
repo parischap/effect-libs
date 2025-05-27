@@ -5,12 +5,12 @@
  * will always yield the same result whatever the state the object is in. The state is only used to
  * improve performance but does not alter the results.
  *
- * A DateTime object has a `timeZoneOffsetMs` which is the timestamp of date 1/1/1970 00:00:00:000
- * in zone +z (e.g timeZoneOffsetMs=-3_600_000 for timezone +1:00). All the data in a DateTime
+ * A DateTime object has a `timeZoneOffset` which is the difference in hours between UTC time and
+ * time in the local zone (e.g timeZoneOffset=-1 for timezone +1:00). All the data in a DateTime
  * object is `time-zone-offset-dependent`, except `timestamp` which is relative to 1/1/1970 UTC. An
- * important thing to note is that of a DateTime object with a timestamp t and a timeZoneOffsetMs
- * tzoMs has exactly the same date parts (year, ordinalDay, month, monthDay,iso year...) as a
- * DateTime object with a timestamp t-tzoMs and a 0 timeZoneOffset.
+ * important thing to note is that of a DateTime object with a timestamp t and a timeZoneOffset tzo
+ * has exactly the same date parts (year, ordinalDay, month, monthDay,iso year...) as a DateTime
+ * object with a timestamp t-tzox3600 and a 0 timeZoneOffset.
  */
 
 import { MInputError, MInspectable, MNumber, MPipeable, MTypes } from '@parischap/effect-lib';
@@ -38,35 +38,63 @@ type _TypeId = typeof _TypeId;
  *
  * @category Constants
  */
-const SECOND_MS = 1_000;
+export const SECOND_MS = 1_000;
 
 /**
  * Duration of a minute in milliseconds
  *
  * @category Constants
  */
-const MINUTE_MS = 60 * SECOND_MS;
+export const MINUTE_MS = 60 * SECOND_MS;
 
 /**
  * Duration of an hour in milliseconds
  *
  * @category Constants
  */
-const HOUR_MS = 60 * MINUTE_MS;
+export const HOUR_MS = 60 * MINUTE_MS;
 
 /**
  * Duration of a day in milliseconds
  *
  * @category Constants
  */
-const DAY_MS = 24 * HOUR_MS;
+export const DAY_MS = 24 * HOUR_MS;
 
 /**
  * Duration of a week in milliseconds
  *
  * @category Constants
  */
-const WEEK_MS = 7 * DAY_MS;
+export const WEEK_MS = 7 * DAY_MS;
+
+/**
+ * Duration of a normal year in milliseconds
+ *
+ * @category Constants
+ */
+export const NORMAL_YEAR_MS = 365 * DAY_MS;
+
+/**
+ * Duration of a leap year in milliseconds
+ *
+ * @category Constants
+ */
+export const LEAP_YEAR_MS = NORMAL_YEAR_MS + DAY_MS;
+
+/**
+ * Duration of a short iso year in milliseconds
+ *
+ * @category Constants
+ */
+export const SHORT_YEAR_MS = 52 * WEEK_MS;
+
+/**
+ * Duration of a long iso year in milliseconds
+ *
+ * @category Constants
+ */
+export const LONG_YEAR_MS = SHORT_YEAR_MS + WEEK_MS;
 
 /**
  * Local time zone offset in hours of the machine on which this code runs. The value is calculated
@@ -74,7 +102,7 @@ const WEEK_MS = 7 * DAY_MS;
  *
  * @category Constants
  */
-const LOCAL_TIME_ZONE_OFFSET = new Date(0).getTimezoneOffset() / 60;
+export const LOCAL_TIME_ZONE_OFFSET = new Date(0).getTimezoneOffset() / 60;
 
 /**
  * Namespace for the data relative to a Month
@@ -123,20 +151,6 @@ export const MIN_TIMESTAMP = -MAX_TIMESTAMP;
  * @category Models
  */
 namespace GregorianYear {
-	/**
-	 * Duration of a normal year in milliseconds
-	 *
-	 * @category Constants
-	 */
-	const NORMAL_YEAR_MS = 365 * DAY_MS;
-
-	/**
-	 * Duration of a leap year in milliseconds
-	 *
-	 * @category Constants
-	 */
-	const LEAP_YEAR_MS = NORMAL_YEAR_MS + DAY_MS;
-
 	/**
 	 * Duration in milliseconds of a four-year period containing a leap year
 	 *
@@ -408,20 +422,6 @@ namespace GregorianDay {
  * @category Models
  */
 namespace IsoYear {
-	/**
-	 * Duration of a short iso year in milliseconds
-	 *
-	 * @category Constants
-	 */
-	export const SHORT_YEAR_MS = 52 * WEEK_MS;
-
-	/**
-	 * Duration of a long iso year in milliseconds
-	 *
-	 * @category Constants
-	 */
-	export const LONG_YEAR_MS = SHORT_YEAR_MS + WEEK_MS;
-
 	/**
 	 * Duration in milliseconds of an 6-iso-year period comprised of 1 long year and 5 short years
 	 * (see Wikipedia)
@@ -928,7 +928,7 @@ export const unsafeFromTimestamp = (timestamp: number, timeZoneOffset?: number):
  * @category Constructors
  */
 export const now = (timeZoneOffset?: number): Type =>
-	unsafeFromTimestamp({ timestamp: Date.now(), timeZoneOffset });
+	unsafeFromTimestamp(Date.now(), timeZoneOffset);
 
 /**
  * Tries to build a DateTime from the provided DateTime parts. Returns a `right` of this DateTime if
