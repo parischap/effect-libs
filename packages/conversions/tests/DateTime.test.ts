@@ -156,7 +156,7 @@ describe('CVDateTime', () => {
 		 */
 	});
 
-	it('isoYear, isLong, week, weekDay', () => {
+	it('isoYearDescriptor, isLong, week, weekDay', () => {
 		// Timestamp of 31/12/1770 00:00:00:000+0:00
 		const YEAR_START_1771_MS = -6_279_897_600_000;
 		const FOUR_HUNDRED_YEARS_MS = 12_622_780_800_000;
@@ -185,14 +185,14 @@ describe('CVDateTime', () => {
 						Tuple.make(
 							{
 								startInput: startTimestamp,
-								isoYear: CVDateTime.isoYear(startDate),
+								isoYearDescriptor: CVDateTime.isoYearDescriptor(startDate),
 								isLong: CVDateTime.isLong(startDate),
 								isoWeek: CVDateTime.isoWeek(startDate),
 								weekDay: CVDateTime.weekDay(startDate)
 							},
 							{
 								startInput: startTimestamp,
-								isoYear: year,
+								isoYearDescriptor: year,
 								isLong,
 								isoWeek: 1,
 								weekDay: 1
@@ -201,14 +201,14 @@ describe('CVDateTime', () => {
 						Tuple.make(
 							{
 								randomInput: randomTimestamp,
-								isoYear: CVDateTime.isoYear(randomDate),
+								isoYearDescriptor: CVDateTime.isoYearDescriptor(randomDate),
 								isLong: CVDateTime.isLong(randomDate),
 								isoWeek: CVDateTime.isoWeek(randomDate),
 								weekDay: CVDateTime.weekDay(randomDate)
 							},
 							{
 								randomInput: randomTimestamp,
-								isoYear: year,
+								isoYearDescriptor: year,
 								isLong,
 								isoWeek: isoWeekIndex + 1,
 								weekDay: weekDayIndex + 1
@@ -217,14 +217,14 @@ describe('CVDateTime', () => {
 						Tuple.make(
 							{
 								endInput: endTimestamp,
-								isoYear: CVDateTime.isoYear(endDate),
+								isoYearDescriptor: CVDateTime.isoYearDescriptor(endDate),
 								isLong: CVDateTime.isLong(endDate),
 								isoWeek: CVDateTime.isoWeek(endDate),
 								weekDay: CVDateTime.weekDay(endDate)
 							},
 							{
 								endInput: endTimestamp,
-								isoYear: year,
+								isoYearDescriptor: year,
 								isLong,
 								isoWeek: isLong ? 53 : 52,
 								weekDay: 7
@@ -252,7 +252,7 @@ describe('CVDateTime', () => {
 		/*const zippedVector = Array.zip(actualVector, expectedVector);
 		for (const [actual, expected] of zippedVector) {
 			if (
-				actual.isoYear !== expected.isoYear ||
+				actual.isoYearDescriptor !== expected.isoYearDescriptor ||
 				actual.isLong !== expected.isLong ||
 				actual.isoWeek !== expected.isoWeek ||
 				actual.weekDay !== expected.weekDay
@@ -267,13 +267,13 @@ describe('CVDateTime', () => {
 		/*const date = CVDateTime.unsafeFromTimestamp(-6216393600000, 0);
 		TEUtils.assertEquals(
 			{
-				isoYear: CVDateTime.isoYear(date),
+				isoYearDescriptor: CVDateTime.isoYearDescriptor(date),
 				isLong: CVDateTime.isLong(date),
 				isoWeek: CVDateTime.isoWeek(date),
 				weekDay: CVDateTime.weekDay(date)
 			},
 			{
-				isoYear: 1773,
+				isoYearDescriptor: 1773,
 				isLong: false,
 				isoWeek: 1,
 				weekDay: 1
