@@ -246,7 +246,20 @@ export function areEqualTypes<A, B>(): readonly [A] extends readonly [B] ?
 }
 
 /**
- * Utilityy type that generates a tuple of `N` `T`'s
+ * Utility type that makes field `field` of target type `X` mutable
+ *
+ * @category Utility types
+ */
+export type WithMutable<X, field extends string | symbol> =
+	/* eslint-disable-next-line functional/prefer-readonly-type */
+	{
+		[k in keyof X as readonly [k] extends readonly [field] ? never : k]: X[k];
+	} /* eslint-disable-next-line functional/prefer-readonly-type */ & {
+		-readonly [k in keyof X as readonly [k] extends readonly [field] ? k : never]: X[k];
+	};
+
+/**
+ * Utility type that generates a tuple of `N` `T`'s
  *
  * @category Utility types
  */
