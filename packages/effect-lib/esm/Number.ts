@@ -50,13 +50,6 @@ export const quotientAndRemainder =
 	};
 
 /**
- * Returns the absolute value of `self`
- *
- * @category Utils
- */
-export const abs: MTypes.OneArgFunction<number> = Math.abs;
-
-/**
  * Predicate that returns true if two numbers are equal
  *
  * @category Predicates
