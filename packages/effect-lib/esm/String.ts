@@ -177,7 +177,7 @@ export const fromNonNullablePrimitive = (u: MTypes.NonNullablePrimitive): string
 
 /**
  * Builds a string from a primitive value. `null` is converted to the string "null" and `undefined`
- * to the string "undefined". . For numbers and bigints, base-10 conversion is assumed.
+ * to the string "undefined". For numbers and bigints, base-10 conversion is assumed.
  *
  * @category Constructors
  */
