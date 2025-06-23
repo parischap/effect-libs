@@ -70,3 +70,12 @@ export const catchTag =
 				f(e as Extract<E, { readonly _tag: K }>)
 			:	(e as Exclude<E, { readonly _tag: K }>)
 		);
+
+/**
+ * Same as getOrThrow but throws an 'Abnormal exception' Error
+ *
+ * @category Utils
+ */
+export const getOrThrow: <A, L>(self: Either.Either<A, L>) => A = Either.getOrThrowWith(
+	() => new Error('Abnormal error')
+);
