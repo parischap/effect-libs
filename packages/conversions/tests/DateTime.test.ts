@@ -793,13 +793,13 @@ describe('CVDateTime', () => {
 			TEUtils.assertSome(testDate.time);
 
 			TEUtils.strictEqual(CVDateTime.getMinute(testDate), 14);
-			TEUtils.strictEqual(CVDateTime.second(testDate), 40);
+			TEUtils.strictEqual(CVDateTime.getSecond(testDate), 40);
 			TEUtils.strictEqual(CVDateTime.getMillisecond(testDate), 496);
 		});
 
 		it('Get seconds then monthDay', () => {
 			const testDate = CVDateTime.unsafeFromTimestamp(1750670080496, 0);
-			TEUtils.strictEqual(CVDateTime.second(testDate), 40);
+			TEUtils.strictEqual(CVDateTime.getSecond(testDate), 40);
 			TEUtils.assertNone(testDate.yearDescriptor);
 			TEUtils.assertNone(testDate.dayDescriptor);
 			TEUtils.assertNone(testDate.isoYearDescriptor);
@@ -1010,6 +1010,19 @@ describe('CVDateTime', () => {
 		});
 	});
 
+	describe('isFirstMonthDay', () => {
+		it('Passing', () => {
+			TEUtils.assertRight(
+				pipe(feb29_2020, CVDateTime.offsetDays(1), Either.map(CVDateTime.isFirstMonthDay)),
+				true
+			);
+		});
+
+		it('Not passing', () => {
+			TEUtils.assertFalse(pipe(CVDateTime.isFirstMonthDay(feb29_2020)));
+		});
+	});
+
 	describe('isLastMonthDay', () => {
 		it('Passing', () => {
 			TEUtils.assertTrue(CVDateTime.isLastMonthDay(feb29_2020));
@@ -1023,9 +1036,98 @@ describe('CVDateTime', () => {
 		});
 	});
 
+	describe('isFirstYearDay', () => {
+		it('Passing', () => {
+			TEUtils.assertRight(
+				pipe(feb29_2020, CVDateTime.offsetDays(-59), Either.map(CVDateTime.isFirstYearDay)),
+				true
+			);
+		});
+
+		it('Not passing', () => {
+			TEUtils.assertFalse(pipe(CVDateTime.isFirstYearDay(feb29_2020)));
+		});
+	});
+
+	describe('isLastYearDay', () => {
+		it('Passing', () => {
+			TEUtils.assertRight(
+				pipe(feb29_2020, CVDateTime.offsetDays(-60), Either.map(CVDateTime.isLastYearDay)),
+				true
+			);
+		});
+
+		it('Not passing', () => {
+			TEUtils.assertFalse(pipe(CVDateTime.isLastYearDay(feb29_2020)));
+		});
+	});
+
+	describe('isFirstIsoYearDay', () => {
+		it('Passing', () => {
+			TEUtils.assertRight(
+				pipe(feb29_2020, CVDateTime.offsetDays(-61), Either.map(CVDateTime.isFirstIsoYearDay)),
+				true
+			);
+		});
+
+		it('Not passing', () => {
+			TEUtils.assertFalse(pipe(CVDateTime.isFirstIsoYearDay(feb29_2020)));
+		});
+	});
+
+	describe('isLastIsoYearDay', () => {
+		it('Passing', () => {
+			TEUtils.assertRight(
+				pipe(feb29_2020, CVDateTime.offsetDays(-62), Either.map(CVDateTime.isLastIsoYearDay)),
+				true
+			);
+		});
+
+		it('Not passing', () => {
+			TEUtils.assertFalse(pipe(CVDateTime.isLastIsoYearDay(feb29_2020)));
+		});
+	});
+
+	it('toFirstMonthDay', () => {
+		TEUtils.strictEqual(
+			pipe(feb29_2020, CVDateTime.toFirstMonthDay, CVDateTime.timestamp),
+			Date.UTC(2020, 1, 1)
+		);
+	});
+
 	it('toLastMonthDay', () => {
-		const testDate = CVDateTime.unsafeFromTimestamp(Date.UTC(2020, 1, 4), 0);
-		TEUtils.assertEquals(CVDateTime.toLastMonthDay(testDate), feb29_2020);
+		TEUtils.assertRight(
+			pipe(feb29_2020, CVDateTime.offsetDays(-10), Either.map(CVDateTime.toLastMonthDay)),
+			feb29_2020
+		);
+	});
+
+	it('toFirstYearDay', () => {
+		TEUtils.strictEqual(
+			pipe(feb29_2020, CVDateTime.toFirstYearDay, CVDateTime.timestamp),
+			Date.UTC(2020, 0, 1)
+		);
+	});
+
+	it('toLastYearDay', () => {
+		TEUtils.strictEqual(
+			pipe(feb29_2020, CVDateTime.toLastYearDay, CVDateTime.timestamp),
+			Date.UTC(2020, 11, 31)
+		);
+	});
+
+	it('toFirstIsoYearDay', () => {
+		TEUtils.strictEqual(
+			pipe(feb29_2020, CVDateTime.toFirstIsoYearDay, CVDateTime.timestamp),
+			Date.UTC(2019, 11, 30)
+		);
+	});
+
+	it('toLastIsoYearDay', () => {
+		TEUtils.strictEqual(
+			pipe(feb29_2020, CVDateTime.toLastIsoYearDay, CVDateTime.timestamp),
+			Date.UTC(2021, 0, 3)
+		);
 	});
 
 	describe('offsetMonths', () => {
