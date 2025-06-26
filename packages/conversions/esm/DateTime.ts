@@ -938,36 +938,44 @@ namespace IsoDate {
 		const yearStartWeekDay = MNumber.intModulo(7)(
 			Math.floor(gregorianDate.yearStartTimestamp - DAY_MS) / DAY_MS
 		);
-		const minOrdinalDay = 4 - yearStartWeekDay;
+		const isLeap = gregorianDate.isLeap;
+		const minOrdinalDayIndex = 3 - yearStartWeekDay;
 		const ordinalDay = GregorianDate.getOrdinalDay(gregorianDate);
 
-		if (ordinalDay < minOrdinalDay) {
+		if (ordinalDay <= minOrdinalDayIndex) {
 			const isoYear = gregorianDate.year - 1;
 			const isLong =
 				yearStartWeekDay === 0 ||
 				(yearStartWeekDay === 1 &&
-					!gregorianDate.isLeap &&
+					!isLeap &&
 					((isoYear % 4 == 0 && isoYear % 100 != 0) || isoYear % 400 == 0));
 			return _make({
 				timestamp: gregorianDate.timestamp,
 				isoYear,
 				yearStartTimestamp:
-					gregorianDate.yearStartTimestamp + (minOrdinalDay - (isLong ? 372 : 365)) * DAY_MS,
+					gregorianDate.yearStartTimestamp + (minOrdinalDayIndex - (isLong ? 371 : 364)) * DAY_MS,
 				isLong,
 				isoWeek: Option.none(),
 				weekDay: Option.none()
 			});
 		}
 
+		const isLong = yearStartWeekDay === 6 || (yearStartWeekDay === 5 && isLeap);
+		const maxOrdinalDay = minOrdinalDayIndex + (isLong ? 371 : 364);
+
 		if (ordinalDay > maxOrdinalDay) {
 			const isoYear = gregorianDate.year + 1;
-			const isLeap = (isoYear % 4 == 0 && isoYear % 100 != 0) || isoYear % 400 == 0;
-			const isLong = yearStartWeekDay === 0 || (isLeap && yearStartWeekDay === 1);
+			const isLong =
+				isLeap ?
+					yearStartWeekDay === 4
+				:	yearStartWeekDay === 5 ||
+					(yearStartWeekDay === 4 &&
+						((isoYear % 4 == 0 && isoYear % 100 != 0) || isoYear % 400 == 0));
+
 			return _make({
 				timestamp: gregorianDate.timestamp,
 				isoYear,
-				yearStartTimestamp:
-					gregorianDate.yearStartTimestamp + (minOrdinalDay - (isLong ? 372 : 365)) * DAY_MS,
+				yearStartTimestamp: gregorianDate.yearStartTimestamp + maxOrdinalDay * DAY_MS,
 				isLong,
 				isoWeek: Option.none(),
 				weekDay: Option.none()
@@ -977,8 +985,8 @@ namespace IsoDate {
 		return _make({
 			timestamp: gregorianDate.timestamp,
 			isoYear: gregorianDate.year,
-			yearStartTimestamp: gregorianDate.yearStartTimestamp + (minOrdinalDay - 1) * DAY_MS,
-			isLong: yearStartWeekDay === 6 || (gregorianDate.isLeap && yearStartWeekDay === 5),
+			yearStartTimestamp: gregorianDate.yearStartTimestamp + minOrdinalDayIndex * DAY_MS,
+			isLong,
 			isoWeek: Option.none(),
 			weekDay: Option.none()
 		});
