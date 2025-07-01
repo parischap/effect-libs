@@ -15,7 +15,6 @@
 
 import {
 	MArray,
-	MEither,
 	MFunction,
 	MInputError,
 	MInspectable,
@@ -1513,6 +1512,36 @@ const _unsafeFromZonedTimestamp = (params: Omit<MTypes.Data<Type>, 'timestamp'>)
 	});
 
 /**
+ * Retunrns an instance of a DateTime that represents 1/1/1970 00:00:00:000 in the given time zone
+ *
+ * @category Instances
+ */
+export const zonedOrigin = (timeZoneOffset?: number): Either.Either<Type, MInputError.Type> =>
+	Either.gen(function* () {
+		const validatedTimeZoneOffset = yield* pipe(
+			timeZoneOffset,
+			Option.fromNullable,
+			Option.map(
+				MInputError.assertInRange({
+					min: -12,
+					max: 14,
+					offset: 0,
+					name: "'timeZoneOffset'"
+				})
+			),
+			Option.getOrElse(() => Either.right(LOCAL_TIME_ZONE_OFFSET))
+		);
+
+		return _unsafeFromZonedTimestamp({
+			gregorianDate: Option.some(GregorianDate.origin),
+			isoDate: Option.some(IsoDate.origin),
+			time: Option.some(Time.origin),
+			timeZoneOffset: validatedTimeZoneOffset,
+			_zonedTimestamp: 0
+		});
+	});
+
+/**
  * Tries to build a DateTime from `timestamp` and `timeZoneOffset`. Returns a `right` of a DateTime
  * if successful. Returns a `left` of an error otherwise. `timestamp` must be an integer comprised
  * in the range [MIN_TIMESTAMP, MAX_TIMESTAMP] representing the number of milliseconds since
@@ -1527,7 +1556,7 @@ export const fromTimestamp = (
 	timestamp: number,
 	timeZoneOffset?: number
 ): Either.Either<Type, MInputError.Type> =>
-	pipe(origin, setTimestamp(timestamp), Either.flatMap(setTimeZoneOffset(timeZoneOffset)));
+	pipe(timeZoneOffset, zonedOrigin, Either.flatMap(setTimestamp(timestamp)));
 
 /**
  * Same as fromTimestamp but returns directly the DateTime or throws if it cannot be built
@@ -1796,36 +1825,6 @@ export const unsafeFromParts: MTypes.OneArgFunction<Parts.Type, Type> = flow(
 );
 
 /**
- * Retunrns an instance of a DateTime that represents 1/1/1970 00:00:00:000 in the given time zone
- *
- * @category Instances
- */
-export const zonedOrigin = (timeZoneOffset?: number): Either.Either<Type, MInputError.Type> =>
-	Either.gen(function* () {
-		const validatedTimeZoneOffset = yield* pipe(
-			timeZoneOffset,
-			Option.fromNullable,
-			Option.map(
-				MInputError.assertInRange({
-					min: -12,
-					max: 14,
-					offset: 0,
-					name: "'timeZoneOffset'"
-				})
-			),
-			Option.getOrElse(() => Either.right(LOCAL_TIME_ZONE_OFFSET))
-		);
-
-		return _unsafeFromZonedTimestamp({
-			gregorianDate: Option.some(GregorianDate.origin),
-			isoDate: Option.some(IsoDate.origin),
-			time: Option.some(Time.origin),
-			timeZoneOffset: validatedTimeZoneOffset,
-			_zonedTimestamp: 0
-		});
-	});
-
-/**
  * Returns the timestamp of `self` as a number
  *
  * @category Destructors
@@ -1895,7 +1894,7 @@ export const getMonthDay: MTypes.OneArgFunction<Type, number> = flow(
 	GregorianDate.getMonthDay
 );
 
-/** Returns the isoYearDescriptor of `self` for the given time zone */
+/** Returns the isoDate of `self` for the given time zone */
 const _isoDate = (self: Type): IsoDate.Type =>
 	pipe(
 		self.isoDate,
@@ -1997,172 +1996,39 @@ export const getSecond: MTypes.OneArgFunction<Type, number> = flow(_time, Time.s
  */
 export const getMillisecond: MTypes.OneArgFunction<Type, number> = flow(_time, Time.millisecond);
 
-const _setYearMonthAndMonthDay =
-	({
-		year,
-		month,
-		monthDay,
-		ordinalDay
-	}: {
-		readonly year: number;
-		readonly month?: number;
-		readonly monthDay?: number;
-		readonly ordinalDay?: number;
-	}) =>
-	(self: Type): Either.Either<Type, MInputError.Type> =>
-		Either.gen(function* () {
-			const selfYearDescriptor = self.yearDescriptor;
-			const yearDescriptor =
-				Option.isSome(selfYearDescriptor) && selfYearDescriptor.value.year === year ?
-					selfYearDescriptor.value
-				:	yield* pipe(
-						year,
-						MInputError.assertInRange({
-							min: MIN_FULL_YEAR,
-							max: MAX_FULL_YEAR,
-							offset: 0,
-							name: "'year'"
-						}),
-						Either.map(YearDescriptor.fromYear)
-					);
+const _gregorianDateSetter = (self: Type): MTypes.OneArgFunction<GregorianDate.Type, Type> => {
+	const selfTimestamp = _gregorianDate(self).timestamp;
+	return (gregorianDate) => {
+		const offset = gregorianDate.timestamp - selfTimestamp;
+		return pipe(
+			self,
+			MStruct.evolve({
+				timestamp: Number.sum(offset),
+				gregorianDate: pipe(gregorianDate, Option.some, Function.constant),
+				isoDate: Function.constant(Option.none()),
+				_zonedTimestamp: Number.sum(offset)
+			}),
+			_make
+		);
+	};
+};
 
-			const dayDescriptor = yield* ordinalDay !== undefined ?
-				Either.gen(function* () {
-					const validatedOrdinalDay = yield* pipe(
-						ordinalDay,
-						MInputError.assertInRange({
-							min: 1,
-							max: YearDescriptor.getDayDuration(yearDescriptor),
-							offset: 0,
-							name: "'ordinalDay'"
-						})
-					);
-					const dayDescriptor = DayDescriptor.fromOrdinalDay(yearDescriptor, validatedOrdinalDay);
-					if (month !== undefined)
-						yield* pipe(
-							month,
-							MInputError.assertValue({ expected: dayDescriptor.month, name: "'month'" })
-						);
-					if (monthDay !== undefined)
-						yield* pipe(
-							monthDay,
-							MInputError.assertValue({ expected: dayDescriptor.monthDay, name: "'monthDay'" })
-						);
-					return dayDescriptor;
-				})
-			:	Either.gen(function* () {
-					const validatedMonth =
-						month === undefined ? 1 : (
-							yield* pipe(
-								month,
-								MInputError.assertInRange({
-									min: 1,
-									max: 12,
-									offset: 0,
-									name: "'month'"
-								})
-							)
-						);
-					const validatedMonthDay =
-						monthDay === undefined ? 1 : (
-							yield* pipe(
-								monthDay,
-								MInputError.assertInRange({
-									min: 1,
-									max: YearDescriptor.getNumberOfDaysInMonth(validatedMonth)(yearDescriptor),
-									offset: 0,
-									name: "'monthDay'"
-								})
-							)
-						);
-					return DayDescriptor.fromYearMonthDay(yearDescriptor, validatedMonth, validatedMonthDay);
-				});
-			return _unsafeFromZonedTimestamp({
-				yearDescriptor: Option.some(yearDescriptor),
-				dayDescriptor: Option.some(dayDescriptor),
-				isoYearDescriptor: Option.none(),
-				isoDayDescriptor: Option.none(),
-				time: self.time,
-				timeZoneOffset: self.timeZoneOffset,
-				_zonedTimestamp: pipe(
-					self._zonedTimestamp,
-					Timestamp.setDayPart(dayDescriptor.startTimestamp)
-				)
-			});
-		});
-
-const _setIsoYearAndDay =
-	({
-		isoYear,
-		isoWeek,
-		weekDay
-	}: {
-		readonly isoYear: number;
-		readonly isoWeek?: number;
-		readonly weekDay?: number;
-	}) =>
-	(self: Type): Either.Either<Type, MInputError.Type> =>
-		Either.gen(function* () {
-			const selfIsoYearDescriptor = self.isoYearDescriptor;
-			const isoYearDescriptor =
-				Option.isSome(selfIsoYearDescriptor) && selfIsoYearDescriptor.value.isoYear === isoYear ?
-					selfIsoYearDescriptor.value
-				:	yield* pipe(
-						isoYear,
-						MInputError.assertInRange({
-							min: MIN_FULL_YEAR,
-							max: MAX_FULL_YEAR,
-							offset: 0,
-							name: "'isoYear'"
-						}),
-						Either.map(IsoYearDescriptor.fromIsoYear)
-					);
-
-			const validatedIsoWeek =
-				isoWeek === undefined ? 1 : (
-					yield* pipe(
-						isoWeek,
-						MInputError.assertInRange({
-							min: 1,
-							max: IsoYearDescriptor.getLastIsoWeek(isoYearDescriptor),
-							offset: 0,
-							name: "'isoWeek'"
-						})
-					)
-				);
-
-			const validatedWeekDay =
-				weekDay === undefined ? 1 : (
-					yield* pipe(
-						weekDay,
-						MInputError.assertInRange({
-							min: 1,
-							max: 7,
-							offset: 0,
-							name: "'weekDay'"
-						})
-					)
-				);
-
-			const isoDayDescriptor = IsoDayDescriptor.fromWeekAndWeekDay(
-				isoYearDescriptor,
-				validatedIsoWeek,
-				validatedWeekDay
-			);
-
-			return _unsafeFromZonedTimestamp({
-				yearDescriptor: Option.none(),
-				dayDescriptor: Option.none(),
-				isoYearDescriptor: Option.some(isoYearDescriptor),
-				isoDayDescriptor: Option.some(isoDayDescriptor),
-				time: self.time,
-				timeZoneOffset: self.timeZoneOffset,
-				_zonedTimestamp: pipe(
-					self._zonedTimestamp,
-					Timestamp.setDayPart(isoDayDescriptor.startTimestamp)
-				)
-			});
-		});
+const _isoDateSetter = (self: Type): MTypes.OneArgFunction<IsoDate.Type, Type> => {
+	const selfTimestamp = _isoDate(self).timestamp;
+	return (isoDate) => {
+		const offset = isoDate.timestamp - selfTimestamp;
+		return pipe(
+			self,
+			MStruct.evolve({
+				timestamp: Number.sum(offset),
+				gregorianDate: Function.constant(Option.none()),
+				isoDate: pipe(isoDate, Option.some, Function.constant),
+				_zonedTimestamp: Number.sum(offset)
+			}),
+			_make
+		);
+	};
+};
 
 const _timeSetter = (self: Type): MTypes.OneArgFunction<Time.Type, Type> => {
 	const selfTimestampOffset = _time(self).timestampOffset;
@@ -2191,11 +2057,7 @@ const _timeSetter = (self: Type): MTypes.OneArgFunction<Time.Type, Type> => {
 export const setYear =
 	(year: number) =>
 	(self: Type): Either.Either<Type, MInputError.Type> =>
-		_setYearMonthAndMonthDay({
-			year,
-			month: getMonth(self),
-			monthDay: getMonthDay(self)
-		})(self);
+		pipe(self, _gregorianDate, GregorianDate.setYear(year), Either.map(_gregorianDateSetter(self)));
 
 /**
  * Same as setYear but returns directly a DateTime or throws in case of an error
@@ -2216,10 +2078,12 @@ export const unsafeSetYear = (year: number): MTypes.OneArgFunction<Type> =>
 export const setOrdinalDay =
 	(ordinalDay: number) =>
 	(self: Type): Either.Either<Type, MInputError.Type> =>
-		_setYearMonthAndMonthDay({
-			year: getYear(self),
-			ordinalDay
-		})(self);
+		pipe(
+			self,
+			_gregorianDate,
+			GregorianDate.setOrdinalDay(ordinalDay),
+			Either.map(_gregorianDateSetter(self))
+		);
 
 /**
  * Same as setOrdinalDay but returns directly a DateTime or throws in case of an error
@@ -2240,11 +2104,12 @@ export const unsafeSetOrdinalDay = (ordinalDay: number): MTypes.OneArgFunction<T
 export const setMonth =
 	(month: number) =>
 	(self: Type): Either.Either<Type, MInputError.Type> =>
-		_setYearMonthAndMonthDay({
-			year: getYear(self),
-			month,
-			monthDay: getMonthDay(self)
-		})(self);
+		pipe(
+			self,
+			_gregorianDate,
+			GregorianDate.setMonth(month),
+			Either.map(_gregorianDateSetter(self))
+		);
 
 /**
  * Same as setMonth but returns directly a DateTime or throws in case of an error
@@ -2265,11 +2130,12 @@ export const unsafeSetMonth = (month: number): MTypes.OneArgFunction<Type> =>
 export const setMonthDay =
 	(monthDay: number) =>
 	(self: Type): Either.Either<Type, MInputError.Type> =>
-		_setYearMonthAndMonthDay({
-			year: getYear(self),
-			month: getMonth(self),
-			monthDay
-		})(self);
+		pipe(
+			self,
+			_gregorianDate,
+			GregorianDate.setMonthDay(monthDay),
+			Either.map(_gregorianDateSetter(self))
+		);
 
 /**
  * Same as setMonthDay but returns directly a DateTime or throws in case of an error
@@ -2290,11 +2156,7 @@ export const unsafeSetMonthDay = (monthDay: number): MTypes.OneArgFunction<Type>
 export const setIsoYear =
 	(isoYear: number) =>
 	(self: Type): Either.Either<Type, MInputError.Type> =>
-		_setIsoYearAndDay({
-			isoYear,
-			isoWeek: getIsoWeek(self),
-			weekDay: getWeekDay(self)
-		})(self);
+		pipe(self, _isoDate, IsoDate.setYear(isoYear), Either.map(_isoDateSetter(self)));
 
 /**
  * Same as setIsoYear but returns directly a DateTime or throws in case of an error
@@ -2315,11 +2177,7 @@ export const unsafeSetIsoYear = (isoYear: number): MTypes.OneArgFunction<Type> =
 export const setIsoWeek =
 	(isoWeek: number) =>
 	(self: Type): Either.Either<Type, MInputError.Type> =>
-		_setIsoYearAndDay({
-			isoYear: getIsoYear(self),
-			isoWeek,
-			weekDay: getWeekDay(self)
-		})(self);
+		pipe(self, _isoDate, IsoDate.setIsoWeek(isoWeek), Either.map(_isoDateSetter(self)));
 
 /**
  * Same as setIsoWeek but returns directly a DateTime or throws in case of an error
@@ -2340,11 +2198,7 @@ export const unsafeSetIsoWeek = (isoWeek: number): MTypes.OneArgFunction<Type> =
 export const setWeekDay =
 	(weekDay: number) =>
 	(self: Type): Either.Either<Type, MInputError.Type> =>
-		_setIsoYearAndDay({
-			isoYear: getIsoYear(self),
-			isoWeek: getIsoWeek(self),
-			weekDay
-		})(self);
+		pipe(self, _isoDate, IsoDate.setWeekDay(weekDay), Either.map(_isoDateSetter(self)));
 
 /**
  * Same as setWeekDay but returns directly a DateTime or throws in case of an error
@@ -2542,7 +2396,7 @@ export const isFirstMonthDay: Predicate.Predicate<Type> = (self) => getMonthDay(
 
 export const isLastMonthDay: Predicate.Predicate<Type> = (self) =>
 	getMonthDay(self) ===
-	pipe(self, _yearDescriptor, YearDescriptor.getNumberOfDaysInMonth(getMonth(self)));
+	pipe(self, _gregorianDate, GregorianDate.getNumberOfDaysInMonth(getMonth(self)));
 
 /**
  * Returns true if self is the first day of a year in the given timezone
@@ -2559,7 +2413,7 @@ export const isFirstYearDay: Predicate.Predicate<Type> = (self) => getOrdinalDay
  */
 
 export const isLastYearDay: Predicate.Predicate<Type> = (self) =>
-	getOrdinalDay(self) === pipe(self, _yearDescriptor, YearDescriptor.getDayDuration);
+	getOrdinalDay(self) === pipe(self, _gregorianDate, GregorianDate.getYearDurationInDays);
 
 /**
  * Returns true if self is the first day of an iso year in the given timezone
@@ -2576,8 +2430,7 @@ export const isFirstIsoYearDay: Predicate.Predicate<Type> = (self) =>
  * @category Predicates
  */
 export const isLastIsoYearDay: Predicate.Predicate<Type> = (self) =>
-	getIsoWeek(self) === pipe(self, _isoYearDescriptor, IsoYearDescriptor.getLastIsoWeek) &&
-	getWeekDay(self) === 7;
+	getIsoWeek(self) === pipe(self, _isoDate, IsoDate.getLastIsoWeek) && getWeekDay(self) === 7;
 
 /**
  * Returns a copy of `self` where `monthDay` is set to the first day of the current month. All time
@@ -2585,7 +2438,7 @@ export const isLastIsoYearDay: Predicate.Predicate<Type> = (self) =>
  *
  * @category Offsetters
  */
-export const toFirstMonthDay = (self: Type): Type => pipe(self, setMonthDay(1), MEither.getOrThrow);
+export const toFirstMonthDay: MTypes.OneArgFunction<Type> = unsafeSetMonthDay(1);
 
 /**
  * Returns a copy of `self` where `monthDay` is set to the last day of the current month. All time
@@ -2594,11 +2447,9 @@ export const toFirstMonthDay = (self: Type): Type => pipe(self, setMonthDay(1), 
  * @category Offsetters
  */
 export const toLastMonthDay = (self: Type): Type =>
-	pipe(
-		self,
-		setMonthDay(pipe(self, _yearDescriptor, YearDescriptor.getNumberOfDaysInMonth(getMonth(self)))),
-		MEither.getOrThrow
-	);
+	unsafeSetMonthDay(
+		pipe(self, _gregorianDate, GregorianDate.getNumberOfDaysInMonth(getMonth(self)))
+	)(self);
 
 /**
  * Returns a copy of `self` where `ordinalDay` is set to the first day of the current year. All time
@@ -2606,8 +2457,7 @@ export const toLastMonthDay = (self: Type): Type =>
  *
  * @category Offsetters
  */
-export const toFirstYearDay = (self: Type): Type =>
-	pipe(self, setOrdinalDay(1), MEither.getOrThrow);
+export const toFirstYearDay = (self: Type): Type => unsafeSetOrdinalDay(1)(self);
 
 /**
  * Returns a copy of `self` where `ordinalDay` is set to the last day of the current year. All time
@@ -2616,11 +2466,7 @@ export const toFirstYearDay = (self: Type): Type =>
  * @category Offsetters
  */
 export const toLastYearDay = (self: Type): Type =>
-	pipe(
-		self,
-		setOrdinalDay(pipe(self, _yearDescriptor, YearDescriptor.getDayDuration)),
-		MEither.getOrThrow
-	);
+	unsafeSetOrdinalDay(pipe(self, _gregorianDate, GregorianDate.getYearDurationInDays))(self);
 
 /**
  * Returns a copy of `self` where `isoWeek` and `weekDay` are set to 1. All time parts (`hour24`,
@@ -2628,12 +2474,20 @@ export const toLastYearDay = (self: Type): Type =>
  *
  * @category Offsetters
  */
-export const toFirstIsoYearDay = (self: Type): Type =>
-	pipe(
-		self,
-		_setIsoYearAndDay({ isoYear: getIsoYear(self), isoWeek: 1, weekDay: 1 }),
-		MEither.getOrThrow
-	);
+export const toFirstIsoYearDay: MTypes.OneArgFunction<Type> = flow(
+	unsafeSetIsoWeek(1),
+	unsafeSetWeekDay(1)
+);
+
+/**
+ * Returns a copy of `self` where `isoWeek` is set to the last week of the current iso year.
+ * `weekDay` and all time parts (`hour24`, `hour12`, `meridiem`, `minute`, `second`, `millisecond`)
+ * are left unchanged
+ *
+ * @category Offsetters
+ */
+export const toLastIsoYearWeek = (self: Type): Type =>
+	pipe(self, unsafeSetIsoWeek(pipe(self, _isoDate, IsoDate.getLastIsoWeek)));
 
 /**
  * Returns a copy of `self` where `isoWeek` is set to the last week of the current iso year and
@@ -2643,15 +2497,7 @@ export const toFirstIsoYearDay = (self: Type): Type =>
  * @category Offsetters
  */
 export const toLastIsoYearDay = (self: Type): Type =>
-	pipe(
-		self,
-		_setIsoYearAndDay({
-			isoYear: getIsoYear(self),
-			isoWeek: pipe(self, _isoYearDescriptor, IsoYearDescriptor.getLastIsoWeek),
-			weekDay: 7
-		}),
-		MEither.getOrThrow
-	);
+	pipe(self, toLastIsoYearWeek, unsafeSetWeekDay(7));
 
 /**
  * If possible, returns a copy of `self` offset by `offset` years and having the same `month`,
@@ -2701,11 +2547,9 @@ export const offsetMonths =
 
 		return pipe(
 			self,
-			_setYearMonthAndMonthDay({
-				year: getYear(self) + yearOffset,
-				month: targetMonthIndex + 1,
-				monthDay: offsetToLastMonthDay ? 1 : getMonthDay(self)
-			}),
+			offsetToLastMonthDay ? unsafeSetMonthDay(1) : Function.identity,
+			unsafeSetMonth(targetMonthIndex + 1),
+			setYear(getYear(self) + yearOffset),
 			Either.map(MFunction.fIfTrue({ condition: offsetToLastMonthDay, f: toLastMonthDay }))
 		);
 	};
@@ -2750,15 +2594,17 @@ export const unsafeOffsetDays = (offset: number): MTypes.OneArgFunction<Type> =>
  */
 export const offsetIsoYears =
 	(offset: number, respectYearEnd: boolean) =>
-	(self: Type): Either.Either<Type, MInputError.Type> =>
-		pipe(
+	(self: Type): Either.Either<Type, MInputError.Type> => {
+		const offsetToLastIsoYearDay = respectYearEnd && isLastIsoYearDay(self);
+
+		return pipe(
 			self,
-			_setIsoYearAndDay({
-				isoYear: getIsoYear(self) + offset,
-				isoWeek: getIsoWeek(self),
-				weekDay: getWeekDay(self)
-			})
+			offsetToLastIsoYearDay ? unsafeSetIsoWeek(1) : Function.identity,
+			setIsoYear(getIsoYear(self) + offset),
+			Either.map(MFunction.fIfTrue({ condition: offsetToLastIsoYearDay, f: toLastIsoYearWeek }))
 		);
+	};
+
 /**
  * Same as offsetIsoYears but returns directly a DateTime or throws in case of an error
  *
@@ -2771,6 +2617,60 @@ export const unsafeOffsetIsoYears = (
 	flow(offsetIsoYears(offset, respectYearEnd), Either.getOrThrowWith(Function.identity));
 
 /**
+ * Returns a copy of `self` offset by `offset` hours
+ *
+ * @category Offsetters
+ */
+export const offsetHours = (
+	offset: number
+): MTypes.OneArgFunction<Type, Either.Either<Type, MInputError.Type>> =>
+	offsetMilliseconds(offset * HOUR_MS);
+
+/**
+ * Same as offsetHours but returns directly a DateTime or throws in case of an error
+ *
+ * @category Setters
+ */
+export const unsafeOffsetHours = (offset: number): MTypes.OneArgFunction<Type> =>
+	flow(offsetHours(offset), Either.getOrThrowWith(Function.identity));
+
+/**
+ * Returns a copy of `self` offset by `offset` minutes
+ *
+ * @category Offsetters
+ */
+export const offsetMinutes = (
+	offset: number
+): MTypes.OneArgFunction<Type, Either.Either<Type, MInputError.Type>> =>
+	offsetMilliseconds(offset * MINUTE_MS);
+
+/**
+ * Same as offsetMinutes but returns directly a DateTime or throws in case of an error
+ *
+ * @category Setters
+ */
+export const unsafeOffsetMinutes = (offset: number): MTypes.OneArgFunction<Type> =>
+	flow(offsetMinutes(offset), Either.getOrThrowWith(Function.identity));
+
+/**
+ * Returns a copy of `self` offset by `offset` seconds
+ *
+ * @category Offsetters
+ */
+export const offsetSeconds = (
+	offset: number
+): MTypes.OneArgFunction<Type, Either.Either<Type, MInputError.Type>> =>
+	offsetMilliseconds(offset * SECOND_MS);
+
+/**
+ * Same as offsetSeconds but returns directly a DateTime or throws in case of an error
+ *
+ * @category Setters
+ */
+export const unsafeOffsetSeconds = (offset: number): MTypes.OneArgFunction<Type> =>
+	flow(offsetSeconds(offset), Either.getOrThrowWith(Function.identity));
+
+/**
  * Returns a copy of `self` offset by `offset` milliseconds
  *
  * @category Offsetters
@@ -2781,8 +2681,7 @@ export const offsetMilliseconds =
 		setTimestamp(timestamp(self) + offset)(self);
 
 /**
- * Same as ooffsetMillisecondsffsetDays but returns directly a DateTime or throws in case of an
- * error
+ * Same as offsetMilliseconds but returns directly a DateTime or throws in case of an error
  *
  * @category Setters
  */
