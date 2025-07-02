@@ -255,7 +255,7 @@ namespace GregorianDate {
 		});
 
 	/**
-	 * Instance for the year to which timestamp = 0 belong
+	 * Instance of the GregorianDate to which timestamp = 0 belongs
 	 *
 	 * @cayegory: Instances
 	 */
@@ -746,7 +746,7 @@ namespace IsoDate {
 	const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
 
 	/**
-	 * Instance for the iso year to which timestamp = 0 belong
+	 * Instance of the IsoDate to which timestamp = 0 belongs
 	 *
 	 * @cayegory: Instances
 	 */
@@ -1154,7 +1154,7 @@ namespace Time {
 	 */
 
 	/**
-	 * Instance for the start of the day
+	 * Instance of a Time that represents the first millisecond of a day
 	 *
 	 * @cayegory: Instances
 	 */
@@ -1512,7 +1512,11 @@ const _unsafeFromZonedTimestamp = (params: Omit<MTypes.Data<Type>, 'timestamp'>)
 	});
 
 /**
- * Retunrns an instance of a DateTime that represents 1/1/1970 00:00:00:000 in the given time zone
+ * Returns an instance of a DateTime that represents 1/1/1970 00:00:00:000 in the given time zone.
+ * `timeZoneOffset` is a number, not necessarily an integer, that represents the offset in hours of
+ * the zone for which all calculations of that DateTime object will be carried out. It must be
+ * comprised in the range [-12, 14]. If omitted, the offset of the local time zone of the machine
+ * this code is running on is used.
  *
  * @category Instances
  */
@@ -1540,6 +1544,13 @@ export const zonedOrigin = (timeZoneOffset?: number): Either.Either<Type, MInput
 			_zonedTimestamp: 0
 		});
 	});
+
+/**
+ * Instance of a DateTime that represents 1/1/1970 00:00:00:000+0:00
+ *
+ * @category Instances
+ */
+export const origin = pipe(0, zonedOrigin, Either.getOrThrowWith(Function.identity));
 
 /**
  * Tries to build a DateTime from `timestamp` and `timeZoneOffset`. Returns a `right` of a DateTime
@@ -1780,10 +1791,8 @@ export const fromParts = ({
 			);
 
 		const withIsoYear = yield* setIsoYear(isoYear)(withMillisecond);
-		const withIsoWeek =
-			isoWeek !== undefined ? yield* setIsoWeek(isoWeek)(withIsoYear) : withIsoYear;
-		const withWeekDay =
-			weekDay !== undefined ? yield* setWeekDay(weekDay)(withIsoWeek) : withIsoWeek;
+		const withIsoWeek = yield* setIsoWeek(isoWeek ?? 1)(withIsoYear);
+		const withWeekDay = yield* setWeekDay(weekDay ?? 1)(withIsoWeek);
 		if (hasYear)
 			yield* pipe(
 				year,
@@ -2368,8 +2377,7 @@ export const setTimestamp =
 				})
 			);
 
-			const timeZoneOffset = self.timeZoneOffset;
-			return _uncalculatedFromTimestamp(validatedTimestamp, timeZoneOffset);
+			return _uncalculatedFromTimestamp(validatedTimestamp, self.timeZoneOffset);
 		});
 
 /**
@@ -2379,6 +2387,28 @@ export const setTimestamp =
  */
 export const unsafeSetTimestamp = (timestamp: number): MTypes.OneArgFunction<Type> =>
 	flow(setTimestamp(timestamp), Either.getOrThrowWith(Function.identity));
+
+/**
+ * If possible, returns a right of a copy of `self` with timeZoneOffset set to `timeZoneOffset`.
+ * Returns a `left` of an error otherwise. `timeZoneOffset` is a number, not necessarily an integer,
+ * that represents the offset in hours of the zone for which all calculations of that DateTime
+ * object will be carried out. It must be comprised in the range [-12, 14]. If omitted, the offset
+ * of the local time zone of the machine this code is running on is used.
+ *
+ * @category Setters
+ */
+export const setTimeZoneOffset =
+	(timeZoneOffset?: number) =>
+	(self: Type): Either.Either<Type, MInputError.Type> =>
+		pipe(timeZoneOffset, zonedOrigin, Either.flatMap(setTimestamp(self.timestamp)));
+
+/**
+ * Same as setTimeZoneOffset but returns directly a DateTime or throws in case of an error
+ *
+ * @category Setters
+ */
+export const unsafeSetTimeZoneOffset = (timeZoneOffset?: number): MTypes.OneArgFunction<Type> =>
+	flow(setTimeZoneOffset(timeZoneOffset), Either.getOrThrowWith(Function.identity));
 
 /**
  * Returns true if self is the first day of a month in the given timezone
