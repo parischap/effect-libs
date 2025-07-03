@@ -241,7 +241,7 @@ namespace GregorianDate {
 	/** Proto */
 	const proto: MTypes.Proto<Type> = {
 		[_TypeId]: _TypeId,
-		...MInspectable.BaseProto(moduleTag),
+		...MInspectable.BaseProto(_namespaceTag),
 		...MPipeable.BaseProto
 	};
 
@@ -253,22 +253,6 @@ namespace GregorianDate {
 			...params,
 			_daysInMonth: params.yearIsLeap ? LEAP_YEAR_DAYS_IN_MONTH : COMMON_YEAR_DAYS_IN_MONTH
 		});
-
-	/**
-	 * Instance of the GregorianDate to which timestamp = 0 belongs
-	 *
-	 * @cayegory: Instances
-	 */
-
-	export const origin: Type = _makeWithInternals({
-		timestamp: 0,
-		year: 1970,
-		yearIsLeap: false,
-		yearStartTimestamp: 0,
-		ordinalDay: 1,
-		month: Option.some(1),
-		monthDay: Option.some(1)
-	});
 
 	/**
 	 * Constructs a GregorianDate from a timestamp
@@ -366,25 +350,28 @@ namespace GregorianDate {
 				const selfYearIsLeap = self.yearIsLeap;
 				const selfOrdinalDay = self.ordinalDay;
 
-				const ordinalDay =
-					selfOrdinalDay +
-					(yield* selfYearIsLeap === yearIsLeap || selfOrdinalDay < 60 ? Either.right(0)
-					: selfYearIsLeap ?
-						selfOrdinalDay === 60 ?
-							Either.left(
-								new MInputError.Type({
-									message: `No February 29th on year ${year} which is not a leap year`
-								})
-							)
-						:	Either.right(-1)
-					:	Either.right(1));
+				const ordinalDayOffset = yield* selfYearIsLeap === yearIsLeap || selfOrdinalDay < 60 ?
+					Either.right(0)
+				: selfYearIsLeap ?
+					selfOrdinalDay === 60 ?
+						Either.left(
+							new MInputError.Type({
+								message: `No February 29th on year ${year} which is not a leap year`
+							})
+						)
+					:	Either.right(-1)
+				:	Either.right(1);
 
 				return _makeWithInternals({
-					timestamp: yearStartTimestamp + (ordinalDay - 1) * DAY_MS,
+					timestamp:
+						self.timestamp +
+						yearStartTimestamp -
+						self.yearStartTimestamp +
+						ordinalDayOffset * DAY_MS,
 					year: validatedYear,
 					yearIsLeap,
 					yearStartTimestamp,
-					ordinalDay,
+					ordinalDay: selfOrdinalDay + ordinalDayOffset,
 					month: self.month,
 					monthDay: self.monthDay
 				});
@@ -432,7 +419,7 @@ namespace GregorianDate {
 				return pipe(
 					self,
 					MStruct.append({
-						timestamp: self.yearStartTimestamp + (ordinalDay - 1) * DAY_MS,
+						timestamp: self.timestamp + (ordinalDay - self.ordinalDay) * DAY_MS,
 						ordinalDay,
 						month: Option.some(validatedMonth)
 					}),
@@ -465,13 +452,13 @@ namespace GregorianDate {
 						)
 					);
 
-				const ordinalDay = self.ordinalDay - getMonthDay(self) + validatedMonthDay;
+				const ordinalDayOffset = validatedMonthDay - getMonthDay(self);
 
 				return pipe(
 					self,
 					MStruct.append({
-						timestamp: self.yearStartTimestamp + (ordinalDay - 1) * DAY_MS,
-						ordinalDay,
+						timestamp: self.timestamp + ordinalDayOffset * DAY_MS,
+						ordinalDay: self.ordinalDay + ordinalDayOffset,
 						monthDay: Option.some(validatedMonthDay)
 					}),
 					_make
@@ -502,7 +489,7 @@ namespace GregorianDate {
 				return pipe(
 					self,
 					MStruct.append({
-						timestamp: self.yearStartTimestamp + (validatedOrdinalDay - 1) * DAY_MS,
+						timestamp: self.timestamp + (validatedOrdinalDay - self.ordinalDay) * DAY_MS,
 						ordinalDay: validatedOrdinalDay,
 						month: Option.none(),
 						monthDay: Option.none()
@@ -738,26 +725,12 @@ namespace IsoDate {
 	/** Proto */
 	const proto: MTypes.Proto<Type> = {
 		[_TypeId]: _TypeId,
-		...MInspectable.BaseProto(moduleTag),
+		...MInspectable.BaseProto(_namespaceTag),
 		...MPipeable.BaseProto
 	};
 
 	/** Constructor */
 	const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
-
-	/**
-	 * Instance of the IsoDate to which timestamp = 0 belongs
-	 *
-	 * @cayegory: Instances
-	 */
-	export const origin: Type = _make({
-		timestamp: 0,
-		year: 1970,
-		yearIsLong: true,
-		yearStartTimestamp: -3 * DAY_MS,
-		isoWeek: Option.some(1),
-		weekDay: Option.some(4)
-	});
 
 	/**
 	 * Constructs an IsoDate from a timestamp
@@ -928,7 +901,7 @@ namespace IsoDate {
 
 				return yield* pipe(
 					_make({
-						timestamp: yearStartTimestamp + self.timestamp - self.yearStartTimestamp,
+						timestamp: self.timestamp + yearStartTimestamp - self.yearStartTimestamp,
 						year: validatedYear,
 						yearStartTimestamp,
 						yearIsLong: r11Years === 5 || r11Years === 10,
@@ -1140,33 +1113,12 @@ namespace Time {
 	/** Proto */
 	const proto: MTypes.Proto<Type> = {
 		[_TypeId]: _TypeId,
-		...MInspectable.BaseProto(moduleTag),
+		...MInspectable.BaseProto(_namespaceTag),
 		...MPipeable.BaseProto
 	};
 
 	/** Constructor */
 	const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
-
-	/**
-	 * Instance for the year to which timestamp = 0 belong
-	 *
-	 * @cayegory: Instances
-	 */
-
-	/**
-	 * Instance of a Time that represents the first millisecond of a day
-	 *
-	 * @cayegory: Instances
-	 */
-	export const origin: Type = _make({
-		timestampOffset: 0,
-		hour24: 0,
-		hour12: 0,
-		meridiem: 0,
-		minute: 0,
-		second: 0,
-		millisecond: 0
-	});
 
 	/**
 	 * Constructs the Time that corresponds to the passed `timestampOffset` which is the number of
@@ -1486,6 +1438,12 @@ const proto: MTypes.Proto<Type> = {
 /** Constructor */
 const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
 
+const _uncalculated = {
+	gregorianDate: Option.none(),
+	isoDate: Option.none(),
+	time: Option.none()
+};
+
 /**
  * Constructor that creates a DateTime from a timestamp and a timeZoneOffset for which no
  * calculations have been carried out yet. The `_zonedTimestamp` field is automatically calculated.
@@ -1493,64 +1451,28 @@ const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto
  */
 const _uncalculatedFromTimestamp = (timestamp: number, timeZoneOffset: number): Type =>
 	_make({
+		..._uncalculated,
 		timestamp,
-		gregorianDate: Option.none(),
-		isoDate: Option.none(),
-		time: Option.none(),
 		timeZoneOffset,
 		_zonedTimestamp: timestamp + timeZoneOffset * HOUR_MS
 	});
 
 /**
- * Constructor that calculates the `timestamp` field from the `_zonedTimestamp` and `timeZoneOffset`
- * fields. Does not check any input parameters
+ * Constructor that creates a DateTime from a zonedTimestamp and a timeZoneOffset for which no
+ * calculations have been carried out yet. The `timestamp` field is automatically calculated. Does
+ * not check any input parameters
  */
-const _unsafeFromZonedTimestamp = (params: Omit<MTypes.Data<Type>, 'timestamp'>): Type =>
+const _uncalculatedFromZonedTimestamp = (zonedTimestamp: number, timeZoneOffset: number): Type =>
 	_make({
-		...params,
-		timestamp: params._zonedTimestamp - params.timeZoneOffset * HOUR_MS
+		..._uncalculated,
+		timestamp: zonedTimestamp - timeZoneOffset * HOUR_MS,
+		timeZoneOffset,
+		_zonedTimestamp: zonedTimestamp
 	});
 
-/**
- * Returns an instance of a DateTime that represents 1/1/1970 00:00:00:000 in the given time zone.
- * `timeZoneOffset` is a number, not necessarily an integer, that represents the offset in hours of
- * the zone for which all calculations of that DateTime object will be carried out. It must be
- * comprised in the range [-12, 14]. If omitted, the offset of the local time zone of the machine
- * this code is running on is used.
- *
- * @category Instances
- */
-export const zonedOrigin = (timeZoneOffset?: number): Either.Either<Type, MInputError.Type> =>
-	Either.gen(function* () {
-		const validatedTimeZoneOffset = yield* pipe(
-			timeZoneOffset,
-			Option.fromNullable,
-			Option.map(
-				MInputError.assertInRange({
-					min: -12,
-					max: 14,
-					offset: 0,
-					name: "'timeZoneOffset'"
-				})
-			),
-			Option.getOrElse(() => Either.right(LOCAL_TIME_ZONE_OFFSET))
-		);
+/** Instance of an uncalculated DateTime that represents 1/1/1970 00:00:00:000+0:00 */
 
-		return _unsafeFromZonedTimestamp({
-			gregorianDate: Option.some(GregorianDate.origin),
-			isoDate: Option.some(IsoDate.origin),
-			time: Option.some(Time.origin),
-			timeZoneOffset: validatedTimeZoneOffset,
-			_zonedTimestamp: 0
-		});
-	});
-
-/**
- * Instance of a DateTime that represents 1/1/1970 00:00:00:000+0:00
- *
- * @category Instances
- */
-export const origin = pipe(0, zonedOrigin, Either.getOrThrowWith(Function.identity));
+const _uncalculatedOrigin = _uncalculatedFromTimestamp(0, 0);
 
 /**
  * Tries to build a DateTime from `timestamp` and `timeZoneOffset`. Returns a `right` of a DateTime
@@ -1567,7 +1489,11 @@ export const fromTimestamp = (
 	timestamp: number,
 	timeZoneOffset?: number
 ): Either.Either<Type, MInputError.Type> =>
-	pipe(timeZoneOffset, zonedOrigin, Either.flatMap(setTimestamp(timestamp)));
+	pipe(
+		_uncalculatedOrigin,
+		setTimestamp(timestamp),
+		Either.flatMap(_setTimeZoneOffset(true, timeZoneOffset))
+	);
 
 /**
  * Same as fromTimestamp but returns directly the DateTime or throws if it cannot be built
@@ -1707,11 +1633,11 @@ export const fromParts = ({
 	timeZoneOffset
 }: Parts.Type): Either.Either<Type, MInputError.Type> =>
 	Either.gen(function* () {
-		const origin = yield* zonedOrigin(timeZoneOffset);
+		const zonedOrigin = yield* pipe(_uncalculatedOrigin, _setTimeZoneOffset(false, timeZoneOffset));
 
 		const withHour = yield* Either.gen(function* () {
 			if (hour24 !== undefined) {
-				const result = yield* setHour24(hour24)(origin);
+				const result = yield* setHour24(hour24)(zonedOrigin);
 				if (hour12 !== undefined)
 					yield* pipe(
 						hour12,
@@ -1724,7 +1650,7 @@ export const fromParts = ({
 					);
 				return result;
 			}
-			const withHour12 = hour12 !== undefined ? yield* setHour12(hour12)(origin) : origin;
+			const withHour12 = hour12 !== undefined ? yield* setHour12(hour12)(zonedOrigin) : zonedOrigin;
 			return meridiem === 12 ? setMeridiem(12)(withHour12) : withHour12;
 		});
 
@@ -2009,6 +1935,7 @@ const _gregorianDateSetter = (self: Type): MTypes.OneArgFunction<GregorianDate.T
 	const selfTimestamp = _gregorianDate(self).timestamp;
 	return (gregorianDate) => {
 		const offset = gregorianDate.timestamp - selfTimestamp;
+
 		return pipe(
 			self,
 			MStruct.evolve({
@@ -2334,28 +2261,6 @@ export const unsafeSetMillisecond = (millisecond: number): MTypes.OneArgFunction
 	flow(setMillisecond(millisecond), Either.getOrThrowWith(Function.identity));
 
 /**
- * If possible, returns a right of a copy of `self` with timeZoneOffset set to `timeZoneOffset`.
- * Returns a `left` of an error otherwise. `timeZoneOffset` is a number, not necessarily an integer,
- * that represents the offset in hours of the zone for which all calculations of that DateTime
- * object will be carried out. It must be comprised in the range [-12, 14]. If omitted, the offset
- * of the local time zone of the machine this code is running on is used.
- *
- * @category Setters
- */
-/*export const setTimeZoneOffset =
-	(timeZoneOffset?: number) =>
-	(self: Type): Either.Either<Type, MInputError.Type> =>
-		pipe(timeZoneOffset, _zonedOrigin, Either.flatMap(setTimestamp(self.timestamp)));*/
-
-/**
- * Same as setTimeZoneOffset but returns directly a DateTime or throws in case of an error
- *
- * @category Setters
- */
-/*export const unsafeSetTimeZoneOffset = (timeZoneOffset?: number): MTypes.OneArgFunction<Type> =>
-	flow(setTimeZoneOffset(timeZoneOffset), Either.getOrThrowWith(Function.identity));*/
-
-/**
  * If possible, returns a right of a copy of `self` with timestamp set to `timestamp`. Returns a
  * `left` of an error otherwise. `timestamp` must be an integer comprised in the range
  * [MIN_TIMESTAMP, MAX_TIMESTAMP] representing the number of milliseconds since 1/1/1970
@@ -2390,6 +2295,36 @@ export const unsafeSetTimestamp = (timestamp: number): MTypes.OneArgFunction<Typ
 
 /**
  * If possible, returns a right of a copy of `self` with timeZoneOffset set to `timeZoneOffset`.
+ * Returns a `left` of an error otherwise. If `keepTimestamp` is true, `_zonedTimestamp` is also
+ * modified. Otherwise `timestamp` is also modified.
+ *
+ * @category Setters
+ */
+const _setTimeZoneOffset =
+	(keepTimestamp: boolean, timeZoneOffset?: number) =>
+	(self: Type): Either.Either<Type, MInputError.Type> =>
+		Either.gen(function* () {
+			const validatedTimeZoneOffset = yield* pipe(
+				timeZoneOffset,
+				Option.fromNullable,
+				Option.map(
+					MInputError.assertInRange({
+						min: -12,
+						max: 14,
+						offset: 0,
+						name: "'timeZoneOffset'"
+					})
+				),
+				Option.getOrElse(() => Either.right(LOCAL_TIME_ZONE_OFFSET))
+			);
+
+			return keepTimestamp ?
+					_uncalculatedFromTimestamp(self.timestamp, validatedTimeZoneOffset)
+				:	_uncalculatedFromZonedTimestamp(self._zonedTimestamp, validatedTimeZoneOffset);
+		});
+
+/**
+ * If possible, returns a right of a copy of `self` with timeZoneOffset set to `timeZoneOffset`.
  * Returns a `left` of an error otherwise. `timeZoneOffset` is a number, not necessarily an integer,
  * that represents the offset in hours of the zone for which all calculations of that DateTime
  * object will be carried out. It must be comprised in the range [-12, 14]. If omitted, the offset
@@ -2397,10 +2332,10 @@ export const unsafeSetTimestamp = (timestamp: number): MTypes.OneArgFunction<Typ
  *
  * @category Setters
  */
-export const setTimeZoneOffset =
-	(timeZoneOffset?: number) =>
-	(self: Type): Either.Either<Type, MInputError.Type> =>
-		pipe(timeZoneOffset, zonedOrigin, Either.flatMap(setTimestamp(self.timestamp)));
+export const setTimeZoneOffset = (
+	timeZoneOffset?: number
+): MTypes.OneArgFunction<Type, Either.Either<Type, MInputError.Type>> =>
+	_setTimeZoneOffset(true, timeZoneOffset);
 
 /**
  * Same as setTimeZoneOffset but returns directly a DateTime or throws in case of an error

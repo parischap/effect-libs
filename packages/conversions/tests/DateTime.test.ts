@@ -10,8 +10,8 @@ describe('CVDateTime', () => {
 	const intRandom = (range: number): number =>
 		pipe(Math.random(), Number.multiply(range), Math.floor);
 
+	const origin = CVDateTime.unsafeFromTimestamp(0, 0);
 	const now = CVDateTime.now();
-
 	const feb29_2020 = CVDateTime.unsafeFromTimestamp(Date.UTC(2020, 1, 29), 0);
 
 	describe('Tag, prototype and guards', () => {
@@ -21,16 +21,16 @@ describe('CVDateTime', () => {
 
 		describe('Equal.equals', () => {
 			it('Matching', () => {
-				TEUtils.assertEquals(CVDateTime.origin, CVDateTime.unsafeFromTimestamp(0, 1));
+				TEUtils.assertEquals(origin, CVDateTime.unsafeFromTimestamp(0, 1));
 			});
 
 			it('Non-matching', () => {
-				TEUtils.assertNotEquals(CVDateTime.origin, now);
+				TEUtils.assertNotEquals(origin, now);
 			});
 		});
 
 		it('.toString()', () => {
-			TEUtils.strictEqual(CVDateTime.origin.toString(), `1970-01-01 00:00:00:000 GMT+0000`);
+			TEUtils.strictEqual(origin.toString(), `1970-01-01 00:00:00:000 GMT+0000`);
 			TEUtils.strictEqual(
 				CVDateTime.unsafeFromTimestamp(1_749_823_231_774, -3.75).toString(),
 				'2025-06-13 10:15:31:774 GMT-0345'
@@ -360,7 +360,7 @@ describe('CVDateTime', () => {
 				TEUtils.strictEqual(CVDateTime.timestamp(testDate), Date.UTC(2025, 0, 1));
 				TEUtils.assertSome(testDate.gregorianDate);
 				TEUtils.assertNone(testDate.isoDate);
-				TEUtils.assertSome(testDate.time);
+				TEUtils.assertNone(testDate.time);
 			});
 
 			it('year and month are set', () => {
@@ -444,7 +444,7 @@ describe('CVDateTime', () => {
 				TEUtils.strictEqual(CVDateTime.timestamp(testDate), Date.UTC(2024, 11, 30));
 				TEUtils.assertSome(testDate.gregorianDate);
 				TEUtils.assertSome(testDate.isoDate);
-				TEUtils.assertSome(testDate.time);
+				TEUtils.assertNone(testDate.time);
 			});
 
 			it('An isoDay is set and year is passed', () => {
@@ -460,7 +460,7 @@ describe('CVDateTime', () => {
 				TEUtils.strictEqual(CVDateTime.timestamp(testDate), Date.UTC(2025, 0, 16));
 				TEUtils.assertSome(testDate.gregorianDate);
 				TEUtils.assertSome(testDate.isoDate);
-				TEUtils.assertSome(testDate.time);
+				TEUtils.assertNone(testDate.time);
 			});
 
 			it('Only meridiem is set', () => {
@@ -846,7 +846,7 @@ describe('CVDateTime', () => {
 
 		describe('Get year, isoYear, isoWeek, weekDay', () => {
 			describe('isoYear and year are equal', () => {
-				describe('Start of year', () => {
+				it('Start of year', () => {
 					const testDate = CVDateTime.unsafeFromParts({
 						year: 2022,
 						month: 1,
@@ -859,7 +859,7 @@ describe('CVDateTime', () => {
 					TEUtils.strictEqual(CVDateTime.getWeekDay(testDate), 1);
 				});
 
-				describe('End of year', () => {
+				it('End of year', () => {
 					const testDate = CVDateTime.unsafeFromParts({
 						year: 2025,
 						month: 12,
@@ -873,7 +873,7 @@ describe('CVDateTime', () => {
 				});
 			});
 
-			it('isoYear is year -1 1', () => {
+			it('isoYear is year -1', () => {
 				const testDate = CVDateTime.unsafeFromParts({
 					year: 2022,
 					month: 1,
@@ -946,7 +946,7 @@ describe('CVDateTime', () => {
 
 		it('Passing', () => {
 			const testDate = CVDateTime.unsafeFromParts({
-				year: 2025,
+				year: 2024,
 				month: 6,
 				monthDay: 23,
 				hour24: 17,
@@ -960,82 +960,238 @@ describe('CVDateTime', () => {
 				Date.UTC(2019, 5, 23, 16, 43, 27, 654)
 			);
 			TEUtils.assertRight(
-				pipe(testDate, CVDateTime.setMonth(4), Either.map(CVDateTime.timestamp)),
-				Date.UTC(2025, 3, 23, 16, 43, 27, 654)
+				pipe(testDate, CVDateTime.setMonth(1), Either.map(CVDateTime.timestamp)),
+				Date.UTC(2024, 0, 23, 16, 43, 27, 654)
 			);
 			TEUtils.assertRight(
 				pipe(testDate, CVDateTime.setMonthDay(4), Either.map(CVDateTime.timestamp)),
-				Date.UTC(2025, 5, 4, 16, 43, 27, 654)
+				Date.UTC(2024, 5, 4, 16, 43, 27, 654)
 			);
 			TEUtils.assertRight(
 				pipe(testDate, CVDateTime.setOrdinalDay(4), Either.map(CVDateTime.timestamp)),
-				Date.UTC(2025, 0, 4, 16, 43, 27, 654)
+				Date.UTC(2024, 0, 4, 16, 43, 27, 654)
 			);
 			TEUtils.assertRight(
 				pipe(testDate, CVDateTime.setIsoYear(2027), Either.map(CVDateTime.timestamp)),
-				Date.UTC(2027, 5, 28, 16, 43, 27, 654)
+				Date.UTC(2027, 5, 27, 16, 43, 27, 654)
 			);
 			TEUtils.assertRight(
 				pipe(testDate, CVDateTime.setIsoWeek(4), Either.map(CVDateTime.timestamp)),
-				Date.UTC(2025, 0, 20, 16, 43, 27, 654)
+				Date.UTC(2024, 0, 28, 16, 43, 27, 654)
 			);
 			TEUtils.assertRight(
 				pipe(testDate, CVDateTime.setWeekDay(4), Either.map(CVDateTime.timestamp)),
-				Date.UTC(2025, 5, 26, 16, 43, 27, 654)
+				Date.UTC(2024, 5, 20, 16, 43, 27, 654)
 			);
 			TEUtils.assertRight(
 				pipe(testDate, CVDateTime.setHour24(4), Either.map(CVDateTime.timestamp)),
-				Date.UTC(2025, 5, 23, 3, 43, 27, 654)
+				Date.UTC(2024, 5, 23, 3, 43, 27, 654)
 			);
 			TEUtils.assertRight(
 				pipe(testDate, CVDateTime.setHour12(4), Either.map(CVDateTime.timestamp)),
-				Date.UTC(2025, 5, 23, 15, 43, 27, 654)
+				Date.UTC(2024, 5, 23, 15, 43, 27, 654)
 			);
 			TEUtils.strictEqual(
 				pipe(testDate, CVDateTime.setMeridiem(0), CVDateTime.timestamp),
-				Date.UTC(2025, 5, 23, 4, 43, 27, 654)
+				Date.UTC(2024, 5, 23, 4, 43, 27, 654)
 			);
 			TEUtils.assertRight(
 				pipe(testDate, CVDateTime.setMinute(15), Either.map(CVDateTime.timestamp)),
-				Date.UTC(2025, 5, 23, 16, 15, 27, 654)
+				Date.UTC(2024, 5, 23, 16, 15, 27, 654)
 			);
 			TEUtils.assertRight(
 				pipe(testDate, CVDateTime.setSecond(15), Either.map(CVDateTime.timestamp)),
-				Date.UTC(2025, 5, 23, 16, 43, 15, 654)
+				Date.UTC(2024, 5, 23, 16, 43, 15, 654)
 			);
 			TEUtils.assertRight(
 				pipe(testDate, CVDateTime.setMillisecond(15), Either.map(CVDateTime.timestamp)),
-				Date.UTC(2025, 5, 23, 16, 43, 27, 15)
+				Date.UTC(2024, 5, 23, 16, 43, 27, 15)
 			);
 		});
 
-		it('Set weekDay, set monthDay, get weekDay', () => {
-			const either = CVDateTime.fromParts({
-				isoYear: 2027,
-				isoWeek: 18,
-				weekDay: 2,
-				monthDay: 4,
-				timeZoneOffset: 0
-			});
-			TEUtils.assertRight(either);
-			const modifiedDate = Either.flatMap(either, CVDateTime.setMonthDay(20));
-			TEUtils.assertRight(modifiedDate);
-			TEUtils.strictEqual(CVDateTime.getWeekDay(modifiedDate.right), 4);
+		it('From non leap year to non leap year', () => {
+			TEUtils.assertRight(
+				pipe(
+					{
+						year: 2023,
+						month: 2,
+						monthDay: 28,
+						timeZoneOffset: 0
+					},
+					CVDateTime.unsafeFromParts,
+					CVDateTime.setYear(2019),
+					Either.map(CVDateTime.timestamp)
+				),
+				Date.UTC(2019, 1, 28)
+			);
+			TEUtils.assertRight(
+				pipe(
+					{
+						year: 2023,
+						month: 3,
+						monthDay: 1,
+						timeZoneOffset: 0
+					},
+					CVDateTime.unsafeFromParts,
+					CVDateTime.setYear(2019),
+					Either.map(CVDateTime.timestamp)
+				),
+				Date.UTC(2019, 2, 1)
+			);
+		});
+
+		it('From non leap year to leap year', () => {
+			TEUtils.assertRight(
+				pipe(
+					{
+						year: 2023,
+						month: 2,
+						monthDay: 28,
+						timeZoneOffset: 0
+					},
+					CVDateTime.unsafeFromParts,
+					CVDateTime.setYear(2024),
+					Either.map(CVDateTime.timestamp)
+				),
+				Date.UTC(2024, 1, 28)
+			);
+			TEUtils.assertRight(
+				pipe(
+					{
+						year: 2023,
+						month: 3,
+						monthDay: 1,
+						timeZoneOffset: 0
+					},
+					CVDateTime.unsafeFromParts,
+					CVDateTime.setYear(2024),
+					Either.map(CVDateTime.timestamp)
+				),
+				Date.UTC(2024, 2, 1)
+			);
+		});
+
+		it('From leap year to non leap year', () => {
+			TEUtils.assertRight(
+				pipe(
+					{
+						year: 2024,
+						month: 2,
+						monthDay: 28,
+						timeZoneOffset: 0
+					},
+					CVDateTime.unsafeFromParts,
+					CVDateTime.setYear(2023),
+					Either.map(CVDateTime.timestamp)
+				),
+				Date.UTC(2023, 1, 28)
+			);
+			TEUtils.assertLeft(
+				pipe(
+					{
+						year: 2024,
+						month: 2,
+						monthDay: 29,
+						timeZoneOffset: 0
+					},
+					CVDateTime.unsafeFromParts,
+					CVDateTime.setYear(2023)
+				)
+			);
+			TEUtils.assertRight(
+				pipe(
+					{
+						year: 2024,
+						month: 3,
+						monthDay: 1,
+						timeZoneOffset: 0
+					},
+					CVDateTime.unsafeFromParts,
+					CVDateTime.setYear(2023),
+					Either.map(CVDateTime.timestamp)
+				),
+				Date.UTC(2023, 2, 1)
+			);
+		});
+
+		it('From leap year to leap year', () => {
+			TEUtils.assertRight(
+				pipe(
+					{
+						year: 2024,
+						month: 2,
+						monthDay: 28,
+						timeZoneOffset: 0
+					},
+					CVDateTime.unsafeFromParts,
+					CVDateTime.setYear(2020),
+					Either.map(CVDateTime.timestamp)
+				),
+				Date.UTC(2020, 1, 28)
+			);
+			TEUtils.assertRight(
+				pipe(
+					{
+						year: 2024,
+						month: 2,
+						monthDay: 29,
+						timeZoneOffset: 0
+					},
+					CVDateTime.unsafeFromParts,
+					CVDateTime.setYear(2020),
+					Either.map(CVDateTime.timestamp)
+				),
+				Date.UTC(2020, 1, 29)
+			);
+			TEUtils.assertRight(
+				pipe(
+					{
+						year: 2024,
+						month: 3,
+						monthDay: 1,
+						timeZoneOffset: 0
+					},
+					CVDateTime.unsafeFromParts,
+					CVDateTime.setYear(2020),
+					Either.map(CVDateTime.timestamp)
+				),
+				Date.UTC(2020, 2, 1)
+			);
+		});
+
+		it('From isoDate to weekDay with a setMonDay in between', () => {
+			TEUtils.assertRight(
+				pipe(
+					{
+						isoYear: 2027,
+						isoWeek: 18,
+						weekDay: 2,
+						timeZoneOffset: 0
+					},
+					CVDateTime.fromParts,
+					Either.flatMap(CVDateTime.setMonthDay(20)),
+					Either.map(CVDateTime.getWeekDay)
+				),
+				4
+			);
 		});
 
 		it('Change timeZoneOffset', () => {
-			const testDate = CVDateTime.fromParts({
-				year: 2025,
-				ordinalDay: 114,
-				hour12: 7,
-				meridiem: 0,
-				timeZoneOffset: 1
-			});
-			TEUtils.assertRight(testDate);
-			const modifiedDate = Either.flatMap(testDate, CVDateTime.setTimeZoneOffset(-8));
-			TEUtils.assertRight(modifiedDate);
-			TEUtils.strictEqual(CVDateTime.getHour24(modifiedDate.right), 22);
-			TEUtils.strictEqual(CVDateTime.getOrdinalDay(modifiedDate.right), 113);
+			TEUtils.assertRight(
+				pipe(
+					{
+						year: 2024,
+						ordinalDay: 61,
+						hour12: 7,
+						meridiem: 0,
+						timeZoneOffset: 1
+					},
+					CVDateTime.fromParts,
+					Either.flatMap(CVDateTime.setTimeZoneOffset(-8)),
+					Either.map((d) => d.toString())
+				),
+				'2024-02-29 22:00:00:000 GMT-0800'
+			);
 		});
 	});
 
@@ -1152,10 +1308,24 @@ describe('CVDateTime', () => {
 		);
 	});
 
+	it('toLastIsoYearWeek', () => {
+		TEUtils.strictEqual(
+			pipe(feb29_2020, CVDateTime.toLastIsoYearWeek, CVDateTime.timestamp),
+			Date.UTC(2021, 0, 2)
+		);
+	});
+
 	it('toLastIsoYearDay', () => {
 		TEUtils.strictEqual(
 			pipe(feb29_2020, CVDateTime.toLastIsoYearDay, CVDateTime.timestamp),
 			Date.UTC(2021, 0, 3)
+		);
+	});
+
+	it('offsetYears', () => {
+		TEUtils.assertRight(
+			pipe(feb29_2020, CVDateTime.offsetYears(4, false), Either.map(CVDateTime.timestamp)),
+			Date.UTC(2024, 1, 29)
 		);
 	});
 
@@ -1201,6 +1371,73 @@ describe('CVDateTime', () => {
 		TEUtils.assertRight(
 			pipe(feb29_2020, CVDateTime.offsetDays(-29), Either.map(CVDateTime.timestamp)),
 			Date.UTC(2020, 0, 31)
+		);
+	});
+
+	describe('offsetIsoYears', () => {
+		const jan3_2021 = CVDateTime.unsafeFromTimestamp(Date.UTC(2021, 0, 3), 0);
+		describe('Without respectYearEnd', () => {
+			it('Forward', () => {
+				TEUtils.assertRight(
+					pipe(jan3_2021, CVDateTime.offsetIsoYears(6, false), Either.map(CVDateTime.timestamp)),
+					Date.UTC(2027, 0, 3)
+				);
+			});
+
+			it('Backward', () => {
+				TEUtils.assertRight(
+					pipe(jan3_2021, CVDateTime.offsetIsoYears(-5, false), Either.map(CVDateTime.timestamp)),
+					Date.UTC(2016, 0, 3)
+				);
+			});
+
+			it('Not passing', () => {
+				TEUtils.assertLeft(pipe(jan3_2021, CVDateTime.offsetIsoYears(1, false)));
+			});
+		});
+
+		describe('With respectYearEnd', () => {
+			it('Forward', () => {
+				TEUtils.assertRight(
+					pipe(jan3_2021, CVDateTime.offsetIsoYears(1, true), Either.map(CVDateTime.timestamp)),
+					Date.UTC(2022, 0, 2)
+				);
+			});
+
+			it('Backward', () => {
+				TEUtils.assertRight(
+					pipe(jan3_2021, CVDateTime.offsetIsoYears(-1, true), Either.map(CVDateTime.timestamp)),
+					Date.UTC(2019, 11, 29)
+				);
+			});
+		});
+	});
+
+	it('offsetHours', () => {
+		TEUtils.assertRight(
+			pipe(feb29_2020, CVDateTime.offsetHours(48), Either.map(CVDateTime.timestamp)),
+			Date.UTC(2020, 2, 2)
+		);
+	});
+
+	it('offsetMinutes', () => {
+		TEUtils.assertRight(
+			pipe(feb29_2020, CVDateTime.offsetMinutes(-60), Either.map(CVDateTime.timestamp)),
+			Date.UTC(2020, 1, 28, 23)
+		);
+	});
+
+	it('offsetSeconds', () => {
+		TEUtils.assertRight(
+			pipe(feb29_2020, CVDateTime.offsetSeconds(-3600), Either.map(CVDateTime.timestamp)),
+			Date.UTC(2020, 1, 28, 23)
+		);
+	});
+
+	it('offsetMilliseconds', () => {
+		TEUtils.assertRight(
+			pipe(feb29_2020, CVDateTime.offsetMilliseconds(340), Either.map(CVDateTime.timestamp)),
+			Date.UTC(2020, 1, 29, 0, 0, 0, 340)
 		);
 	});
 });
