@@ -1,8 +1,7 @@
 /** A module that implements an error that occurs upon receiving an unexpected input */
 
-import { Data, Either, flow, Function, Number, Option, pipe, Predicate, String } from 'effect';
+import { Data, Either, flow, Function, Number, Option, Predicate, String } from 'effect';
 import * as MFunction from './Function.js';
-import * as MString from './String.js';
 import * as MTypes from './types.js';
 
 /**
@@ -151,19 +150,18 @@ export const notStartingWith = ({
 	});
 
 /**
- * Returns a `right` of `input` stripped of `startString` if `input` starts with `startString`.
- * Otherwise, returns a `left` of an InputError
+ * Returns a `right` of `input`` if `input`starts with`startString`. Otherwise, returns a `left` of
+ * an InputError
  *
  * @category Constructors
  */
-export const assertStartsWithAndStrip =
-	(params: { readonly startString: string; readonly name?: string }) =>
-	(actual: string): Either.Either<string, Type> =>
-		pipe(
-			actual,
-			MString.stripLeftOption(params.startString),
-			Either.fromOption(() => notStartingWith({ ...params, actual }))
-		);
+export const assertStartsWith = (params: {
+	readonly startString: string;
+	readonly name?: string;
+}): MTypes.OneArgFunction<string, Either.Either<string, Type>> =>
+	Either.liftPredicate(String.startsWith(params.startString), (actual) =>
+		notStartingWith({ ...params, actual })
+	);
 
 /**
  * Builds an Input error that signals a string that is not empty
