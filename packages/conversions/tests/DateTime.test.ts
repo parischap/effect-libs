@@ -2,7 +2,7 @@
 import { CVDateTime } from '@parischap/conversions';
 import { MArray } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
-import { Array, Either, flow, Number, Option, pipe, Struct, Tuple } from 'effect';
+import { Array, Either, flow, Number, Option, pipe, Tuple } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('CVDateTime', () => {
@@ -285,7 +285,10 @@ describe('CVDateTime', () => {
 
 	describe('fromParts', () => {
 		it('From nothing', () => {
-			TEUtils.assertLeft(CVDateTime.fromParts({}));
+			TEUtils.assertLeftMessage(
+				CVDateTime.fromParts({}),
+				"One of 'year' and 'isoYear' must be be set"
+			);
 		});
 
 		it('From date with hour24 and timeZoneOffset', () => {
@@ -497,94 +500,54 @@ describe('CVDateTime', () => {
 		});
 
 		it('Out of range data', () => {
-			TEUtils.assertLeft(
-				pipe(
-					{ year: 2025, timeZoneOffset: 15 },
-					CVDateTime.fromParts,
-					Either.mapLeft(Struct.get('message'))
-				),
+			TEUtils.assertLeftMessage(
+				pipe({ year: 2025, timeZoneOffset: 15 }, CVDateTime.fromParts),
 				"Expected 'timeZoneOffset' to be between -12 and 14 included. Actual: 15"
 			);
 
-			TEUtils.assertLeft(
-				pipe({ year: 2025, month: 0 }, CVDateTime.fromParts, Either.mapLeft(Struct.get('message'))),
+			TEUtils.assertLeftMessage(
+				pipe({ year: 2025, month: 0 }, CVDateTime.fromParts),
 				"Expected 'month' to be between 1 and 12 included. Actual: 0"
 			);
-			TEUtils.assertLeft(
-				pipe(
-					{ year: 2025, month: 2, monthDay: 32 },
-					CVDateTime.fromParts,
-					Either.mapLeft(Struct.get('message'))
-				),
+			TEUtils.assertLeftMessage(
+				pipe({ year: 2025, month: 2, monthDay: 32 }, CVDateTime.fromParts),
 				"Expected 'monthDay' to be between 1 and 28 included. Actual: 32"
 			);
-			TEUtils.assertLeft(
-				pipe(
-					{ year: 2024, ordinalDay: 412 },
-					CVDateTime.fromParts,
-					Either.mapLeft(Struct.get('message'))
-				),
+			TEUtils.assertLeftMessage(
+				pipe({ year: 2024, ordinalDay: 412 }, CVDateTime.fromParts),
 				"Expected 'ordinalDay' to be between 1 and 366 included. Actual: 412"
 			);
-			TEUtils.assertLeft(
-				pipe(
-					{ isoYear: 2027, isoWeek: 53 },
-					CVDateTime.fromParts,
-					Either.mapLeft(Struct.get('message'))
-				),
+			TEUtils.assertLeftMessage(
+				pipe({ isoYear: 2027, isoWeek: 53 }, CVDateTime.fromParts),
 				"Expected 'isoWeek' to be between 1 and 52 included. Actual: 53"
 			);
-			TEUtils.assertLeft(
-				pipe(
-					{ isoYear: 2027, weekDay: 0 },
-					CVDateTime.fromParts,
-					Either.mapLeft(Struct.get('message'))
-				),
+			TEUtils.assertLeftMessage(
+				pipe({ isoYear: 2027, weekDay: 0 }, CVDateTime.fromParts),
 				"Expected 'weekDay' to be between 1 and 7 included. Actual: 0"
 			);
-			TEUtils.assertLeft(
-				pipe(
-					{ year: 2024, hour24: 24 },
-					CVDateTime.fromParts,
-					Either.mapLeft(Struct.get('message'))
-				),
+			TEUtils.assertLeftMessage(
+				pipe({ year: 2024, hour24: 24 }, CVDateTime.fromParts),
 				"Expected 'hour24' to be between 0 and 23 included. Actual: 24"
 			);
-			TEUtils.assertLeft(
-				pipe(
-					{ year: 2024, meridiem: 0, hour12: -4 },
-					CVDateTime.fromParts,
-					Either.mapLeft(Struct.get('message'))
-				),
+			TEUtils.assertLeftMessage(
+				pipe({ year: 2024, meridiem: 0, hour12: -4 }, CVDateTime.fromParts),
 				"Expected 'hour12' to be between 0 and 11 included. Actual: -4"
 			);
-			TEUtils.assertLeft(
-				pipe(
-					{ year: 2024, minute: 60 },
-					CVDateTime.fromParts,
-					Either.mapLeft(Struct.get('message'))
-				),
+			TEUtils.assertLeftMessage(
+				pipe({ year: 2024, minute: 60 }, CVDateTime.fromParts),
 				"Expected 'minute' to be between 0 and 59 included. Actual: 60"
 			);
-			TEUtils.assertLeft(
-				pipe(
-					{ year: 2024, second: 67 },
-					CVDateTime.fromParts,
-					Either.mapLeft(Struct.get('message'))
-				),
+			TEUtils.assertLeftMessage(
+				pipe({ year: 2024, second: 67 }, CVDateTime.fromParts),
 				"Expected 'second' to be between 0 and 59 included. Actual: 67"
 			);
-			TEUtils.assertLeft(
-				pipe(
-					{ year: 2024, millisecond: 1023 },
-					CVDateTime.fromParts,
-					Either.mapLeft(Struct.get('message'))
-				),
+			TEUtils.assertLeftMessage(
+				pipe({ year: 2024, millisecond: 1023 }, CVDateTime.fromParts),
 				"Expected 'millisecond' to be between 0 and 999 included. Actual: 1023"
 			);
 		});
 		it('Incoherent parts', () => {
-			TEUtils.assertLeft(
+			TEUtils.assertLeftMessage(
 				pipe(
 					{
 						year: 2024,
@@ -592,12 +555,11 @@ describe('CVDateTime', () => {
 						meridiem: 12,
 						timeZoneOffset: 0
 					},
-					CVDateTime.fromParts,
-					Either.mapLeft(Struct.get('message'))
+					CVDateTime.fromParts
 				),
 				"Expected 'meridiem' to be: 0. Actual: 12"
 			);
-			TEUtils.assertLeft(
+			TEUtils.assertLeftMessage(
 				pipe(
 					{
 						year: 2024,
@@ -606,12 +568,11 @@ describe('CVDateTime', () => {
 						hour12: 4,
 						timeZoneOffset: 0
 					},
-					CVDateTime.fromParts,
-					Either.mapLeft(Struct.get('message'))
+					CVDateTime.fromParts
 				),
 				"Expected 'hour12' to be: 5. Actual: 4"
 			);
-			TEUtils.assertLeft(
+			TEUtils.assertLeftMessage(
 				pipe(
 					{
 						year: 2024,
@@ -619,12 +580,11 @@ describe('CVDateTime', () => {
 						month: 2,
 						timeZoneOffset: 0
 					},
-					CVDateTime.fromParts,
-					Either.mapLeft(Struct.get('message'))
+					CVDateTime.fromParts
 				),
 				"Expected 'month' to be: 3. Actual: 2"
 			);
-			TEUtils.assertLeft(
+			TEUtils.assertLeftMessage(
 				pipe(
 					{
 						year: 2024,
@@ -632,12 +592,11 @@ describe('CVDateTime', () => {
 						monthDay: 2,
 						timeZoneOffset: 0
 					},
-					CVDateTime.fromParts,
-					Either.mapLeft(Struct.get('message'))
+					CVDateTime.fromParts
 				),
 				"Expected 'monthDay' to be: 1. Actual: 2"
 			);
-			TEUtils.assertLeft(
+			TEUtils.assertLeftMessage(
 				pipe(
 					{
 						year: 2024,
@@ -645,12 +604,11 @@ describe('CVDateTime', () => {
 						isoWeek: 12,
 						timeZoneOffset: 0
 					},
-					CVDateTime.fromParts,
-					Either.mapLeft(Struct.get('message'))
+					CVDateTime.fromParts
 				),
 				"Expected 'isoWeek' to be: 9. Actual: 12"
 			);
-			TEUtils.assertLeft(
+			TEUtils.assertLeftMessage(
 				pipe(
 					{
 						year: 2024,
@@ -658,12 +616,11 @@ describe('CVDateTime', () => {
 						weekDay: 17,
 						timeZoneOffset: 0
 					},
-					CVDateTime.fromParts,
-					Either.mapLeft(Struct.get('message'))
+					CVDateTime.fromParts
 				),
 				"Expected 'weekDay' to be: 5. Actual: 17"
 			);
-			TEUtils.assertLeft(
+			TEUtils.assertLeftMessage(
 				pipe(
 					{
 						year: 2024,
@@ -672,12 +629,11 @@ describe('CVDateTime', () => {
 						weekDay: 17,
 						timeZoneOffset: 0
 					},
-					CVDateTime.fromParts,
-					Either.mapLeft(Struct.get('message'))
+					CVDateTime.fromParts
 				),
 				"Expected 'weekDay' to be: 5. Actual: 17"
 			);
-			TEUtils.assertLeft(
+			TEUtils.assertLeftMessage(
 				pipe(
 					{
 						year: 2024,
@@ -686,12 +642,11 @@ describe('CVDateTime', () => {
 						isoYear: 2024,
 						timeZoneOffset: 0
 					},
-					CVDateTime.fromParts,
-					Either.mapLeft(Struct.get('message'))
+					CVDateTime.fromParts
 				),
 				"Expected 'isoYear' to be: 2025. Actual: 2024"
 			);
-			TEUtils.assertLeft(
+			TEUtils.assertLeftMessage(
 				pipe(
 					{
 						isoYear: 2027,
@@ -700,12 +655,11 @@ describe('CVDateTime', () => {
 						year: 2027,
 						timeZoneOffset: 0
 					},
-					CVDateTime.fromParts,
-					Either.mapLeft(Struct.get('message'))
+					CVDateTime.fromParts
 				),
 				"Expected 'year' to be: 2028. Actual: 2027"
 			);
-			TEUtils.assertLeft(
+			TEUtils.assertLeftMessage(
 				pipe(
 					{
 						isoYear: 2027,
@@ -714,12 +668,11 @@ describe('CVDateTime', () => {
 						month: 12,
 						timeZoneOffset: 0
 					},
-					CVDateTime.fromParts,
-					Either.mapLeft(Struct.get('message'))
+					CVDateTime.fromParts
 				),
 				"Expected 'month' to be: 1. Actual: 12"
 			);
-			TEUtils.assertLeft(
+			TEUtils.assertLeftMessage(
 				pipe(
 					{
 						isoYear: 2027,
@@ -728,12 +681,11 @@ describe('CVDateTime', () => {
 						monthDay: 5,
 						timeZoneOffset: 0
 					},
-					CVDateTime.fromParts,
-					Either.mapLeft(Struct.get('message'))
+					CVDateTime.fromParts
 				),
 				"Expected 'monthDay' to be: 1. Actual: 5"
 			);
-			TEUtils.assertLeft(
+			TEUtils.assertLeftMessage(
 				pipe(
 					{
 						isoYear: 2027,
@@ -742,8 +694,7 @@ describe('CVDateTime', () => {
 						ordinalDay: 5,
 						timeZoneOffset: 0
 					},
-					CVDateTime.fromParts,
-					Either.mapLeft(Struct.get('message'))
+					CVDateTime.fromParts
 				),
 				"Expected 'ordinalDay' to be: 1. Actual: 5"
 			);
@@ -904,13 +855,13 @@ describe('CVDateTime', () => {
 	describe('Setters', () => {
 		describe('Not passing', () => {
 			it('No February,29th in 2021', () => {
-				TEUtils.assertLeft(
-					pipe(feb29_2020, CVDateTime.setYear(2021), Either.mapLeft(Struct.get('message'))),
+				TEUtils.assertLeftMessage(
+					pipe(feb29_2020, CVDateTime.setYear(2021)),
 					'No February 29th on year 2021 which is not a leap year'
 				);
 			});
 			it('No june, 31st', () => {
-				TEUtils.assertLeft(
+				TEUtils.assertLeftMessage(
 					pipe(
 						{
 							isoYear: 2027,
@@ -919,15 +870,14 @@ describe('CVDateTime', () => {
 							timeZoneOffset: 0
 						},
 						CVDateTime.unsafeFromParts,
-						CVDateTime.setMonth(6),
-						Either.mapLeft(Struct.get('message'))
+						CVDateTime.setMonth(6)
 					),
 					'Month 6 of year 2027 does not have 31 days'
 				);
 			});
 
 			it('No 53rd week in 2024', () => {
-				TEUtils.assertLeft(
+				TEUtils.assertLeftMessage(
 					pipe(
 						{
 							year: 2026,
@@ -936,8 +886,7 @@ describe('CVDateTime', () => {
 							timeZoneOffset: 0
 						},
 						CVDateTime.unsafeFromParts,
-						CVDateTime.setIsoYear(2024),
-						Either.mapLeft(Struct.get('message'))
+						CVDateTime.setIsoYear(2024)
 					),
 					'No 53rd week on iso year 2024 which is not a short year'
 				);
