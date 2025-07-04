@@ -5,12 +5,17 @@
  * will always yield the same result whatever the state the object is in. The state is only used to
  * improve performance but does not alter the results.
  *
- * A DateTime object has a `timeZoneOffset` which is the difference in hours between UTC time and
- * time in the local zone (e.g timeZoneOffset=-1 for timezone +1:00). All the data in a DateTime
- * object is `time-zone-offset-dependent`, except `timestamp` which is relative to 1/1/1970 UTC. An
- * important thing to note is that of a DateTime object with a timestamp t and a timeZoneOffset tzo
- * has exactly the same date parts (year, ordinalDay, month, monthDay,iso year...) as a DateTime
- * object with a timestamp t-tzox3600 and a 0 timeZoneOffset.
+ * Unlike the native Date object, DateTime objects handle both the Gregorian and Iso calendars. So
+ * you can easily get/set the iso year and iso week of a DateTime object.
+ *
+ * A DateTime object has a `timeZoneOffset` which is the difference in hours between the time in the
+ * local zone and UTC time (e.g timeZoneOffset=1 for timezone +1:00). All the data in a DateTime
+ * object is `timezone-offset-dependent`, except `timestamp`, `_zonedTimestamp`. An important thing
+ * to note is that of a DateTime object with a timestamp t and a timeZoneOffset tzo has exactly the
+ * same date parts (year, ordinalDay, month, monthDay,iso year...) as a DateTime object with a
+ * timestamp t+tzox3600 and a 0 timeZoneOffset. That's the reason for the _zonedTimestamp field
+ * which is equal to t+tzox3600. All calculations are performed UTC using _zonedTimestamp instead of
+ * timestamp.
  */
 
 import {
