@@ -9,7 +9,7 @@ export default Configs.configSubRepo({
 	externalPeerDependencies: {
 		effect: Configs.constants.effectVersion
 	},
-	examples: ['stupid.ts'],
+	examples: ['perf.ts'],
 	scripts: {},
 	bundled: false,
 	visibility: Configs.Visibility.Type.Public,
