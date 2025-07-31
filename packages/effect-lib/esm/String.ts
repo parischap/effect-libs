@@ -372,31 +372,31 @@ export enum PadPosition {
 }
 
 /**
- * Pads a string to the left or to the right (depending on `padPosition`) with up to `padLength`
- * characters `fillChar`. `padLength` should be a positive integer. `fillChar` should be a
- * one-character string. Returns a `none` if the string to pad has more than `padLength` characters.
+ * Pads a string to the left or to the right (depending on `padPosition`) with up to `length`
+ * characters `fillChar`. `length` should be a positive integer. `fillChar` should be a
+ * one-character string. Returns a `none` if the string to pad has more than `length` characters.
  * Returns a `some` of the padded string otherwise.
  *
  * @category Utils
  */
 
 export const pad = ({
-	padLength,
+	length,
 	fillChar,
 	padPosition
 }: {
-	readonly padLength: number;
+	readonly length: number;
 	readonly fillChar: string;
 	readonly padPosition: PadPosition;
 }): MTypes.OneArgFunction<string, Option.Option<string>> =>
 	flow(
-		Option.liftPredicate(flow(Struct.get('length'), Number.lessThanOrEqualTo(padLength))),
+		Option.liftPredicate(flow(Struct.get('length'), Number.lessThanOrEqualTo(length))),
 		Option.map(
 			pipe(
 				padPosition,
 				MMatch.make,
-				MMatch.whenIs(PadPosition.Left, () => String.padStart(padLength, fillChar)),
-				MMatch.whenIs(PadPosition.Right, () => String.padEnd(padLength, fillChar)),
+				MMatch.whenIs(PadPosition.Left, () => String.padStart(length, fillChar)),
+				MMatch.whenIs(PadPosition.Right, () => String.padEnd(length, fillChar)),
 				MMatch.exhaustive
 			)
 		)
@@ -407,26 +407,26 @@ export const pad = ({
  * `fillChar`. If `disallowEmptyString` is true and the result of trimming is an empty string, the
  * fillChar is returned instead of an empty string. This is useful, for instance, if you have
  * numbers padded with 0's and you prefer the result of unpadding a string containing only 0's to be
- * '0' rather than an empty string. `fillChar` should be a one-character string. `padLength` should
- * be a positive integer. Returns a `none` if the string to unpad does not contain exactly
- * `padLength` characters. Returns a `some` of the unpadded string otherwise.
+ * '0' rather than an empty string. `fillChar` should be a one-character string. `length` should be
+ * a positive integer. Returns a `none` if the string to unpad does not contain exactly `length`
+ * characters. Returns a `some` of the unpadded string otherwise.
  *
  * @category Utils
  */
 
 export const unpad = ({
-	padLength,
+	length,
 	fillChar,
 	padPosition,
 	disallowEmptyString
 }: {
-	readonly padLength: number;
+	readonly length: number;
 	readonly fillChar: string;
 	readonly padPosition: PadPosition;
 	readonly disallowEmptyString: boolean;
 }): MTypes.OneArgFunction<string, Option.Option<string>> =>
 	flow(
-		Option.liftPredicate(hasLength(padLength)),
+		Option.liftPredicate(hasLength(length)),
 		Option.map(
 			flow(
 				pipe(
