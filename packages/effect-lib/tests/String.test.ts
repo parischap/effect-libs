@@ -291,6 +291,113 @@ describe('MString', () => {
 		});
 	});
 
+	describe('pad', () => {
+		it('Left padding', () => {
+			TEUtils.assertSome(
+				pipe(
+					'a',
+					MString.pad({ padLength: 3, fillChar: 'b', padPosition: MString.PadPosition.Left })
+				),
+				'bba'
+			);
+		});
+
+		it('Right padding less than padLength characters', () => {
+			TEUtils.assertSome(
+				pipe(
+					'aa',
+					MString.pad({ padLength: 3, fillChar: 'b', padPosition: MString.PadPosition.Right })
+				),
+				'aab'
+			);
+		});
+
+		it('Right padding strictly more than padLength characters', () => {
+			TEUtils.assertNone(
+				pipe(
+					'abcd',
+					MString.pad({ padLength: 3, fillChar: 'b', padPosition: MString.PadPosition.Right })
+				)
+			);
+		});
+	});
+
+	describe('unpad', () => {
+		it('Unpadding less than padLength characters', () => {
+			TEUtils.assertNone(
+				pipe(
+					'a',
+					MString.unpad({
+						padLength: 3,
+						fillChar: 'b',
+						padPosition: MString.PadPosition.Right,
+						disallowEmptyString: false
+					})
+				)
+			);
+		});
+
+		it('Left unpadding', () => {
+			TEUtils.assertSome(
+				pipe(
+					'bba',
+					MString.unpad({
+						padLength: 3,
+						fillChar: 'b',
+						padPosition: MString.PadPosition.Left,
+						disallowEmptyString: false
+					})
+				),
+				'a'
+			);
+		});
+
+		it('Right unpadding', () => {
+			TEUtils.assertSome(
+				pipe(
+					'aab',
+					MString.unpad({
+						padLength: 3,
+						fillChar: 'b',
+						padPosition: MString.PadPosition.Right,
+						disallowEmptyString: false
+					})
+				),
+				'aa'
+			);
+		});
+
+		it('Unpadding string containing only fillChars with disallowEmptyString = false', () => {
+			TEUtils.assertSome(
+				pipe(
+					'000',
+					MString.unpad({
+						padLength: 3,
+						fillChar: '0',
+						padPosition: MString.PadPosition.Right,
+						disallowEmptyString: false
+					})
+				),
+				''
+			);
+		});
+
+		it('Unpadding string containing only fillChars with disallowEmptyString = true', () => {
+			TEUtils.assertSome(
+				pipe(
+					'000',
+					MString.unpad({
+						padLength: 3,
+						fillChar: '0',
+						padPosition: MString.PadPosition.Left,
+						disallowEmptyString: true
+					})
+				),
+				'0'
+			);
+		});
+	});
+
 	describe('stripLeftOption', () => {
 		it('Empty string', () => {
 			TEUtils.assertNone(MString.stripLeftOption('foo')(''));
