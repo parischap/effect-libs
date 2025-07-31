@@ -8,6 +8,7 @@ import {
 	CVSchema,
 	CVSemVer
 } from '@parischap/conversions';
+import { MString } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
 import { BigDecimal, Either, pipe, Schema } from 'effect';
 import { describe, it } from 'vitest';
@@ -207,55 +208,31 @@ describe('CVSchema', () => {
 	});
 
 	describe('Unpad', () => {
-		const schema1 = CVSchema.Unpad({
-			paddedLength: 5,
+		const schema = CVSchema.Unpad({
+			padLength: 3,
 			fillChar: '0',
 			disallowEmptyString: true,
-			padAtStart: true
+			padPosition: MString.PadPosition.Left
 		});
-		const schema2 = CVSchema.Unpad({
-			paddedLength: 5,
-			fillChar: '0',
-			disallowEmptyString: false,
-			padAtStart: true
-		});
-		const schema3 = CVSchema.Unpad({
-			paddedLength: 5,
-			fillChar: '0',
-			disallowEmptyString: true,
-			padAtStart: false
-		});
-		const schema4 = CVSchema.Unpad({
-			paddedLength: 5,
-			fillChar: '0',
-			disallowEmptyString: false,
-			padAtStart: false
-		});
+
 		describe('Decoding', () => {
-			it('Not enough characters', () => {
-				TEUtils.assertTrue(pipe('', Schema.decodeEither(schema1), Either.isLeft));
-				TEUtils.assertTrue(pipe('1', Schema.decodeEither(schema1), Either.isLeft));
-				TEUtils.assertTrue(pipe('', Schema.decodeEither(schema3), Either.isLeft));
-				TEUtils.assertTrue(pipe('1', Schema.decodeEither(schema3), Either.isLeft));
+			it('Without error', () => {
+				TEUtils.assertRight(pipe('001', Schema.decodeEither(schema)), '1');
 			});
-			it('Too many characters', () => {
-				TEUtils.assertTrue(pipe('000001', Schema.decodeEither(schema1), Either.isLeft));
-				TEUtils.assertTrue(pipe('100000', Schema.decodeEither(schema3), Either.isLeft));
-			});
-			it('String containing some characters different from the fillChar', () => {
-				TEUtils.assertRight(pipe('00110', Schema.decodeEither(schema1)), '110');
-				TEUtils.assertRight(pipe('00110', Schema.decodeEither(schema3)), '0011');
-			});
-			it('String containing only the fillChar', () => {
-				TEUtils.assertRight(pipe('00000', Schema.decodeEither(schema1)), '0');
-				TEUtils.assertRight(pipe('00000', Schema.decodeEither(schema2)), '');
-				TEUtils.assertRight(pipe('00000', Schema.decodeEither(schema3)), '0');
-				TEUtils.assertRight(pipe('00000', Schema.decodeEither(schema4)), '');
+
+			it('With error', () => {
+				TEUtils.assertLeft(pipe('01', Schema.decodeEither(schema)));
 			});
 		});
-		it('Encoding', () => {
-			TEUtils.assertRight(pipe('11', Schema.encodeEither(schema1)), '00011');
-			TEUtils.assertRight(pipe('11', Schema.encodeEither(schema3)), '11000');
+
+		describe('Encoding', () => {
+			it('Without error', () => {
+				TEUtils.assertRight(pipe('1', Schema.encodeEither(schema)), '001');
+			});
+
+			it('With error', () => {
+				TEUtils.assertLeft(pipe('0001', Schema.encodeEither(schema)));
+			});
 		});
 	});
 });
