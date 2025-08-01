@@ -93,6 +93,39 @@ export const assertLength = (params: {
 	);
 
 /**
+ * Builds an Input error that signals an oversized ArrayLike
+ *
+ * @category Constructors
+ */
+export const oversized = ({
+	expected,
+	actual,
+	name
+}: {
+	readonly expected: number;
+	readonly actual: number;
+	readonly name?: string;
+}) =>
+	new Type({
+		message: `Expected length of ${_nameLabel(name)} to be at most(included): ${expected}. Actual: ${actual}`
+	});
+
+/**
+ * Returns a `right` of `input` if the size of `input` is less than or equal to `expected`.
+ * Otherwise, returns a `left` of an InputError
+ *
+ * @category Constructors
+ */
+export const assertMaxLength = (params: {
+	readonly expected: number;
+	readonly name?: string;
+}): (<A extends ArrayLike<unknown> | string>(self: A) => Either.Either<A, Type>) =>
+	Either.liftPredicate(
+		(arrayLike) => arrayLike.length <= params.expected,
+		(actual) => oversized({ ...params, actual: actual.length })
+	);
+
+/**
  * Builds an Input error that signals a value out of bounds
  *
  * @category Constructors

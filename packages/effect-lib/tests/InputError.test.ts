@@ -55,6 +55,26 @@ describe('MInputError', () => {
 		});
 	});
 
+	describe('assertMaxLength', () => {
+		it('Not passing without name', () => {
+			TEUtils.assertLeftMessage(
+				MInputError.assertMaxLength({ expected: 2 })('foo'),
+				'Expected length of value to be at most(included): 2. Actual: 3'
+			);
+		});
+
+		it('Not passing with name', () => {
+			TEUtils.assertLeftMessage(
+				MInputError.assertMaxLength({ expected: 2, name: "'name'" })('foo'),
+				"Expected length of 'name' to be at most(included): 2. Actual: 3"
+			);
+		});
+
+		it('Passing', () => {
+			TEUtils.assertRight(MInputError.assertMaxLength({ expected: 3 })('foo'), 'foo');
+		});
+	});
+
 	describe('assertInRange', () => {
 		it('Not passing without name', () => {
 			TEUtils.assertLeftMessage(
