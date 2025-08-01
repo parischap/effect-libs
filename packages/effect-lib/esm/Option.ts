@@ -40,12 +40,3 @@ export const fromNextIteratorValue = <A>(iterator: Iterator<A>): Option.Option<A
 	const next = iterator.next();
 	return next.done === false ? Option.some(next.value) : Option.none();
 };
-
-/**
- * Same as getOrThrow but throws an 'Abnormal exception' Error
- *
- * @category Utils
- */
-export const getOrThrow: <A>(self: Option.Option<A>) => A = Option.getOrThrowWith(
-	() => new Error('Abnormal error')
-);
