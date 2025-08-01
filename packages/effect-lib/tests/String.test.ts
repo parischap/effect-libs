@@ -293,14 +293,14 @@ describe('MString', () => {
 
 	describe('pad', () => {
 		it('Left padding', () => {
-			TEUtils.assertSome(
+			TEUtils.strictEqual(
 				pipe('a', MString.pad({ length: 3, fillChar: 'b', padPosition: MString.PadPosition.Left })),
 				'bba'
 			);
 		});
 
 		it('Right padding less than length characters', () => {
-			TEUtils.assertSome(
+			TEUtils.strictEqual(
 				pipe(
 					'aa',
 					MString.pad({ length: 3, fillChar: 'b', padPosition: MString.PadPosition.Right })
@@ -310,36 +310,22 @@ describe('MString', () => {
 		});
 
 		it('Right padding strictly more than length characters', () => {
-			TEUtils.assertNone(
+			TEUtils.strictEqual(
 				pipe(
 					'abcd',
 					MString.pad({ length: 3, fillChar: 'b', padPosition: MString.PadPosition.Right })
-				)
+				),
+				'abcd'
 			);
 		});
 	});
 
 	describe('trim', () => {
-		it('Unpadding less than length characters', () => {
-			TEUtils.assertNone(
-				pipe(
-					'a',
-					MString.trim({
-						length: 3,
-						fillChar: 'b',
-						padPosition: MString.PadPosition.Right,
-						disallowEmptyString: false
-					})
-				)
-			);
-		});
-
-		it('Left unpadding', () => {
-			TEUtils.assertSome(
+		it('Left trimming', () => {
+			TEUtils.strictEqual(
 				pipe(
 					'bba',
 					MString.trim({
-						length: 3,
 						fillChar: 'b',
 						padPosition: MString.PadPosition.Left,
 						disallowEmptyString: false
@@ -349,12 +335,11 @@ describe('MString', () => {
 			);
 		});
 
-		it('Right unpadding', () => {
-			TEUtils.assertSome(
+		it('Right trimming', () => {
+			TEUtils.strictEqual(
 				pipe(
 					'aab',
 					MString.trim({
-						length: 3,
 						fillChar: 'b',
 						padPosition: MString.PadPosition.Right,
 						disallowEmptyString: false
@@ -364,12 +349,11 @@ describe('MString', () => {
 			);
 		});
 
-		it('Unpadding string containing only fillChars with disallowEmptyString = false', () => {
-			TEUtils.assertSome(
+		it('Trimming string containing only fillChars with disallowEmptyString = false', () => {
+			TEUtils.strictEqual(
 				pipe(
 					'000',
 					MString.trim({
-						length: 3,
 						fillChar: '0',
 						padPosition: MString.PadPosition.Right,
 						disallowEmptyString: false
@@ -379,12 +363,11 @@ describe('MString', () => {
 			);
 		});
 
-		it('Unpadding string containing only fillChars with disallowEmptyString = true', () => {
-			TEUtils.assertSome(
+		it('Trimming string containing only fillChars with disallowEmptyString = true', () => {
+			TEUtils.strictEqual(
 				pipe(
 					'000',
 					MString.trim({
-						length: 3,
 						fillChar: '0',
 						padPosition: MString.PadPosition.Left,
 						disallowEmptyString: true

@@ -7,7 +7,6 @@ import {
 	Function,
 	Hash,
 	Inspectable,
-	Number,
 	Option,
 	Order,
 	Pipeable,
@@ -398,8 +397,7 @@ export namespace PadPosition {
 /**
  * Pads a string to the left or to the right (depending on `padPosition`) with up to `length`
  * characters `fillChar`. `length` should be a positive integer. `fillChar` should be a
- * one-character string. Returns a `none` if the string to pad has more than `length` characters.
- * Returns a `some` of the padded string otherwise.
+ * one-character string. Does nothing of the string to pad has more than `length` characters.
  *
  * @category Utils
  */
@@ -411,19 +409,14 @@ export const pad = ({
 }: {
 	readonly length: number;
 	readonly fillChar: string;
-	readonly padPosition: PadPosition.Type;
-}): MTypes.OneArgFunction<string, Option.Option<string>> =>
-	flow(
-		Option.liftPredicate(flow(Struct.get('length'), Number.lessThanOrEqualTo(length))),
-		Option.map(
-			pipe(
-				padPosition,
-				MMatch.make,
-				MMatch.whenIs(PadPosition.Left, () => String.padStart(length, fillChar)),
-				MMatch.whenIs(PadPosition.Right, () => String.padEnd(length, fillChar)),
-				MMatch.exhaustive
-			)
-		)
+	readonly padPosition: PadPosition;
+}): MTypes.OneArgFunction<string> =>
+	pipe(
+		padPosition,
+		MMatch.make,
+		MMatch.whenIs(PadPosition.Left, () => String.padStart(length, fillChar)),
+		MMatch.whenIs(PadPosition.Right, () => String.padEnd(length, fillChar)),
+		MMatch.exhaustive
 	);
 
 /**
@@ -432,43 +425,35 @@ export const pad = ({
  * fillChar is returned instead of an empty string. This is useful, for instance, if you have
  * numbers padded with 0's and you prefer the result of unpadding a string containing only 0's to be
  * '0' rather than an empty string. `fillChar` should be a one-character string. `length` should be
- * a positive integer. Returns a `none` if the string to unpad does not contain exactly `length`
- * characters. Returns a `some` of the unpadded string otherwise.
+ * a positive integer.
  *
  * @category Utils
  */
 
 export const trim = ({
-	length,
 	fillChar,
 	padPosition,
 	disallowEmptyString
 }: {
-	readonly length: number;
 	readonly fillChar: string;
-	readonly padPosition: PadPosition.Type;
+	readonly padPosition: PadPosition;
 	readonly disallowEmptyString: boolean;
-}): MTypes.OneArgFunction<string, Option.Option<string>> =>
+}): MTypes.OneArgFunction<string, string> =>
 	flow(
-		Option.liftPredicate(hasLength(length)),
-		Option.map(
-			flow(
-				pipe(
-					padPosition,
-					MMatch.make,
-					MMatch.whenIs(PadPosition.Left, () => trimStart(fillChar)),
-					MMatch.whenIs(PadPosition.Right, () => trimEnd(fillChar)),
-					MMatch.exhaustive
-				),
-				MFunction.fIfTrue({
-					condition: disallowEmptyString,
-					f: flow(
-						Option.liftPredicate(String.isNonEmpty),
-						Option.getOrElse(Function.constant(fillChar))
-					)
-				})
+		pipe(
+			padPosition,
+			MMatch.make,
+			MMatch.whenIs(PadPosition.Left, () => trimStart(fillChar)),
+			MMatch.whenIs(PadPosition.Right, () => trimEnd(fillChar)),
+			MMatch.exhaustive
+		),
+		MFunction.fIfTrue({
+			condition: disallowEmptyString,
+			f: flow(
+				Option.liftPredicate(String.isNonEmpty),
+				Option.getOrElse(Function.constant(fillChar))
 			)
-		)
+		})
 	);
 
 /**
