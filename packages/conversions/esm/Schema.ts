@@ -170,7 +170,7 @@ export const RealFromString = (
 };
 
 /**
- * A Schema that transforms a padded string into an unpadded string. `padLength` must be a positive
+ * A Schema that transforms a padded string into an unpadded string. `length` must be a positive
  * integer indicating the fixed length of the padded string. When encoding, no error is reported if
  * the string to encode has strictly more than `paddedLength` characters. `fillChar` must be a
  * one-character string representing the character used for padding. `disallowEmptyString` is used
@@ -182,32 +182,32 @@ export const RealFromString = (
  * @category Schema transformations
  */
 export const Unpad = ({
-	padLength,
+	length,
 	fillChar,
 	padPosition,
 	disallowEmptyString
 }: {
-	readonly padLength: number;
+	readonly length: number;
 	readonly fillChar: string;
 	readonly padPosition: MString.PadPosition;
 	readonly disallowEmptyString: boolean;
 }): Schema.Schema<string, string> => {
-	const unpadder = MString.unpad({ padLength, fillChar, padPosition, disallowEmptyString });
+	const trimmer = MString.trim({ length, fillChar, padPosition, disallowEmptyString });
 
-	const padder = MString.pad({ padLength, fillChar, padPosition });
+	const padder = MString.pad({ length, fillChar, padPosition });
 
 	return Schema.transformOrFail(Schema.String, Schema.String, {
 		strict: true,
 		decode: (input, _options, ast) =>
 			pipe(
 				input,
-				unpadder,
+				trimmer,
 				Either.fromOption(
 					() =>
 						new ParseResult.Type(
 							ast,
 							input,
-							`Expected ${padLength} characters. Actual: ${input.length}`
+							`Expected ${length} characters. Actual: ${input.length}`
 						)
 				)
 			),
@@ -220,7 +220,7 @@ export const Unpad = ({
 						new ParseResult.Type(
 							ast,
 							input,
-							`Expected at most ${padLength} characters. Actual: ${input.length}`
+							`Expected at most ${length} characters. Actual: ${input.length}`
 						)
 				)
 			)

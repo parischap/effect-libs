@@ -294,41 +294,38 @@ describe('MString', () => {
 	describe('pad', () => {
 		it('Left padding', () => {
 			TEUtils.assertSome(
-				pipe(
-					'a',
-					MString.pad({ padLength: 3, fillChar: 'b', padPosition: MString.PadPosition.Left })
-				),
+				pipe('a', MString.pad({ length: 3, fillChar: 'b', padPosition: MString.PadPosition.Left })),
 				'bba'
 			);
 		});
 
-		it('Right padding less than padLength characters', () => {
+		it('Right padding less than length characters', () => {
 			TEUtils.assertSome(
 				pipe(
 					'aa',
-					MString.pad({ padLength: 3, fillChar: 'b', padPosition: MString.PadPosition.Right })
+					MString.pad({ length: 3, fillChar: 'b', padPosition: MString.PadPosition.Right })
 				),
 				'aab'
 			);
 		});
 
-		it('Right padding strictly more than padLength characters', () => {
+		it('Right padding strictly more than length characters', () => {
 			TEUtils.assertNone(
 				pipe(
 					'abcd',
-					MString.pad({ padLength: 3, fillChar: 'b', padPosition: MString.PadPosition.Right })
+					MString.pad({ length: 3, fillChar: 'b', padPosition: MString.PadPosition.Right })
 				)
 			);
 		});
 	});
 
-	describe('unpad', () => {
-		it('Unpadding less than padLength characters', () => {
+	describe('trim', () => {
+		it('Unpadding less than length characters', () => {
 			TEUtils.assertNone(
 				pipe(
 					'a',
-					MString.unpad({
-						padLength: 3,
+					MString.trim({
+						length: 3,
 						fillChar: 'b',
 						padPosition: MString.PadPosition.Right,
 						disallowEmptyString: false
@@ -341,8 +338,8 @@ describe('MString', () => {
 			TEUtils.assertSome(
 				pipe(
 					'bba',
-					MString.unpad({
-						padLength: 3,
+					MString.trim({
+						length: 3,
 						fillChar: 'b',
 						padPosition: MString.PadPosition.Left,
 						disallowEmptyString: false
@@ -356,8 +353,8 @@ describe('MString', () => {
 			TEUtils.assertSome(
 				pipe(
 					'aab',
-					MString.unpad({
-						padLength: 3,
+					MString.trim({
+						length: 3,
 						fillChar: 'b',
 						padPosition: MString.PadPosition.Right,
 						disallowEmptyString: false
@@ -371,8 +368,8 @@ describe('MString', () => {
 			TEUtils.assertSome(
 				pipe(
 					'000',
-					MString.unpad({
-						padLength: 3,
+					MString.trim({
+						length: 3,
 						fillChar: '0',
 						padPosition: MString.PadPosition.Right,
 						disallowEmptyString: false
@@ -386,8 +383,8 @@ describe('MString', () => {
 			TEUtils.assertSome(
 				pipe(
 					'000',
-					MString.unpad({
-						padLength: 3,
+					MString.trim({
+						length: 3,
 						fillChar: '0',
 						padPosition: MString.PadPosition.Left,
 						disallowEmptyString: true

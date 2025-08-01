@@ -414,7 +414,7 @@ export const pad = ({
  * @category Utils
  */
 
-export const unpad = ({
+export const trim = ({
 	length,
 	fillChar,
 	padPosition,
