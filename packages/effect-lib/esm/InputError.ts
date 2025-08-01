@@ -83,10 +83,10 @@ export const missized = ({
  *
  * @category Constructors
  */
-export const assertLength = <A extends ArrayLike<unknown> | string>(params: {
+export const assertLength = (params: {
 	readonly expected: number;
 	readonly name?: string;
-}): MTypes.OneArgFunction<A, Either.Either<A, Type>> =>
+}): (<A extends ArrayLike<unknown> | string>(self: A) => Either.Either<A, Type>) =>
 	Either.liftPredicate(
 		(arrayLike) => arrayLike.length === params.expected,
 		(actual) => missized({ ...params, actual: actual.length })
