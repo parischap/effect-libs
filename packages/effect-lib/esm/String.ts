@@ -366,9 +366,33 @@ export const trimEnd = (charToRemove: string): MTypes.StringTransformer =>
 		Array.join('')
 	);
 
+/**
+ * Enum that defines the padding position
+ *
+ * @category Models
+ */
 export enum PadPosition {
 	Right = 0,
 	Left = 1
+}
+
+/**
+ * PadPosition namespace
+ *
+ * @category Models
+ */
+export namespace PadPosition {
+	/**
+	 * Builds the id of a PadPosition
+	 *
+	 * @category Destructors
+	 */
+	export const toId: MTypes.OneArgFunction<PadPosition, string> = flow(
+		MMatch.make,
+		MMatch.whenIs(PadPosition.Right, Function.constant('right')),
+		MMatch.whenIs(PadPosition.Left, Function.constant('left')),
+		MMatch.exhaustive
+	);
 }
 
 /**
@@ -387,7 +411,7 @@ export const pad = ({
 }: {
 	readonly length: number;
 	readonly fillChar: string;
-	readonly padPosition: PadPosition;
+	readonly padPosition: PadPosition.Type;
 }): MTypes.OneArgFunction<string, Option.Option<string>> =>
 	flow(
 		Option.liftPredicate(flow(Struct.get('length'), Number.lessThanOrEqualTo(length))),
@@ -422,7 +446,7 @@ export const trim = ({
 }: {
 	readonly length: number;
 	readonly fillChar: string;
-	readonly padPosition: PadPosition;
+	readonly padPosition: PadPosition.Type;
 	readonly disallowEmptyString: boolean;
 }): MTypes.OneArgFunction<string, Option.Option<string>> =>
 	flow(
