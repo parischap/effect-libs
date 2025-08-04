@@ -108,9 +108,7 @@ describe('ByPasser', () => {
 		});
 
 		it('Applied to a date', () => {
-			TEUtils.assertTrue(
-				pipe(new Date(0), PPValue.fromTopValue, initializedObjectToString, Option.isSome)
-			);
+			TEUtils.assertSome(pipe(new Date(0), PPValue.fromTopValue, initializedObjectToString));
 		});
 
 		it('Applied to an array', () => {

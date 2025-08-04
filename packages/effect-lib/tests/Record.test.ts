@@ -50,15 +50,14 @@ describe('MRecord', () => {
 		});
 
 		it('toString on Date object', () => {
-			TEUtils.assertTrue(
+			TEUtils.assertSome(
 				pipe(
 					new Date(),
 					MRecord.tryZeroParamStringFunction({
 						functionName: 'toString',
 						/* eslint-disable-next-line @typescript-eslint/unbound-method */
 						exception: Object.prototype.toString
-					}),
-					Option.isSome
+					})
 				)
 			);
 		});
