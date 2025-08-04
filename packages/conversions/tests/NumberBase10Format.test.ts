@@ -271,97 +271,103 @@ describe('NumberBase10Format', () => {
 				const checker = CVNumberBase10Format.ScientificNotation.toMantissaChecker(
 					CVNumberBase10Format.ScientificNotation.None
 				);
-				TEUtils.assertTrue(pipe(checker(BigDecimal.make(15n, 1)), Option.isSome));
-			});
+				TEUtils.assertSome(pipe(checker(BigDecimal.make(15n, 1))));
 
-			it('Standard', () => {
-				const checker = CVNumberBase10Format.ScientificNotation.toMantissaChecker(
-					CVNumberBase10Format.ScientificNotation.Standard
-				);
-				TEUtils.assertTrue(pipe(checker(BigDecimal.make(0n, 1)), Option.isSome));
-			});
-
-			describe('Normalized', () => {
-				const checker = CVNumberBase10Format.ScientificNotation.toMantissaChecker(
-					CVNumberBase10Format.ScientificNotation.Normalized
-				);
-				it('Passing', () => {
-					TEUtils.assertTrue(pipe(checker(BigDecimal.make(95n, 1)), Option.isSome));
+				it('Standard', () => {
+					const checker = CVNumberBase10Format.ScientificNotation.toMantissaChecker(
+						CVNumberBase10Format.ScientificNotation.Standard
+					);
+					TEUtils.assertSome(pipe(checker(BigDecimal.make(0n, 1))));
 				});
-				it('Not-passing', () => {
-					TEUtils.assertNone(checker(BigDecimal.make(95n, 2)));
-				});
-			});
 
-			describe('Engineering', () => {
-				const checker = CVNumberBase10Format.ScientificNotation.toMantissaChecker(
-					CVNumberBase10Format.ScientificNotation.Engineering
-				);
-				it('Passing', () => {
-					TEUtils.assertTrue(pipe(checker(BigDecimal.make(59527n, 2)), Option.isSome));
+				describe('Normalized', () => {
+					const checker = CVNumberBase10Format.ScientificNotation.toMantissaChecker(
+						CVNumberBase10Format.ScientificNotation.Normalized
+					);
+					it('Passing', () => {
+						TEUtils.assertSome(pipe(checker(BigDecimal.make(95n, 1))));
+					});
+					it('Not-passing', () => {
+						TEUtils.assertNone(checker(BigDecimal.make(95n, 2)));
+					});
 				});
-				it('Not-passing', () => {
-					TEUtils.assertNone(checker(BigDecimal.make(100198n, 2)));
-				});
-			});
-		});
 
-		describe('toMantissaAdjuster', () => {
-			const aBigNumber = BigDecimal.make(15_654_543_234n, 2);
-			const aSmallNumber = BigDecimal.make(-15n, 4);
-			it('None', () => {
-				const adjuster = CVNumberBase10Format.ScientificNotation.toMantissaAdjuster(
-					CVNumberBase10Format.ScientificNotation.None
-				);
-				TEUtils.assertEquals(adjuster(aBigNumber), [aBigNumber, Option.none()]);
-			});
-
-			it('Standard', () => {
-				const adjuster = CVNumberBase10Format.ScientificNotation.toMantissaAdjuster(
-					CVNumberBase10Format.ScientificNotation.Standard
-				);
-				TEUtils.assertEquals(adjuster(aBigNumber), [aBigNumber, Option.none()]);
-			});
-
-			describe('Normalized', () => {
-				const adjuster = CVNumberBase10Format.ScientificNotation.toMantissaAdjuster(
-					CVNumberBase10Format.ScientificNotation.Normalized
-				);
-				it('Big number', () => {
-					TEUtils.assertEquals(adjuster(aBigNumber), [
-						BigDecimal.make(15654543234n, 10),
-						Option.some(8)
-					]);
-				});
-				it('Small number', () => {
-					TEUtils.assertEquals(adjuster(aSmallNumber), [BigDecimal.make(-15n, 1), Option.some(-3)]);
+				describe('Engineering', () => {
+					const checker = CVNumberBase10Format.ScientificNotation.toMantissaChecker(
+						CVNumberBase10Format.ScientificNotation.Engineering
+					);
+					it('Passing', () => {
+						TEUtils.assertSome(pipe(checker(BigDecimal.make(59527n, 2))));
+					});
+					it('Not-passing', () => {
+						TEUtils.assertNone(checker(BigDecimal.make(100198n, 2)));
+					});
 				});
 			});
 
-			describe('Engineering', () => {
-				const adjuster = CVNumberBase10Format.ScientificNotation.toMantissaAdjuster(
-					CVNumberBase10Format.ScientificNotation.Engineering
-				);
-				it('Big number', () => {
-					TEUtils.assertEquals(adjuster(aBigNumber), [
-						BigDecimal.make(15_654_543_234n, 8),
-						Option.some(6)
-					]);
+			describe('toMantissaAdjuster', () => {
+				const aBigNumber = BigDecimal.make(15_654_543_234n, 2);
+				const aSmallNumber = BigDecimal.make(-15n, 4);
+				it('None', () => {
+					const adjuster = CVNumberBase10Format.ScientificNotation.toMantissaAdjuster(
+						CVNumberBase10Format.ScientificNotation.None
+					);
+					TEUtils.assertEquals(adjuster(aBigNumber), [aBigNumber, Option.none()]);
 				});
-				it('Small number', () => {
-					TEUtils.assertEquals(adjuster(aSmallNumber), [BigDecimal.make(-15n, 1), Option.some(-3)]);
+
+				it('Standard', () => {
+					const adjuster = CVNumberBase10Format.ScientificNotation.toMantissaAdjuster(
+						CVNumberBase10Format.ScientificNotation.Standard
+					);
+					TEUtils.assertEquals(adjuster(aBigNumber), [aBigNumber, Option.none()]);
+				});
+
+				describe('Normalized', () => {
+					const adjuster = CVNumberBase10Format.ScientificNotation.toMantissaAdjuster(
+						CVNumberBase10Format.ScientificNotation.Normalized
+					);
+					it('Big number', () => {
+						TEUtils.assertEquals(adjuster(aBigNumber), [
+							BigDecimal.make(15654543234n, 10),
+							Option.some(8)
+						]);
+					});
+					it('Small number', () => {
+						TEUtils.assertEquals(adjuster(aSmallNumber), [
+							BigDecimal.make(-15n, 1),
+							Option.some(-3)
+						]);
+					});
+				});
+
+				describe('Engineering', () => {
+					const adjuster = CVNumberBase10Format.ScientificNotation.toMantissaAdjuster(
+						CVNumberBase10Format.ScientificNotation.Engineering
+					);
+					it('Big number', () => {
+						TEUtils.assertEquals(adjuster(aBigNumber), [
+							BigDecimal.make(15_654_543_234n, 8),
+							Option.some(6)
+						]);
+					});
+					it('Small number', () => {
+						TEUtils.assertEquals(adjuster(aSmallNumber), [
+							BigDecimal.make(-15n, 1),
+							Option.some(-3)
+						]);
+					});
 				});
 			});
 		});
 	});
 
-	describe('toNumberExtractor', () => {
+	describe('toBigDecimalExtractor', () => {
 		describe('General tests with commaAndSpace', () => {
 			//Use withSignDisplayForNegativeExceptZero to make sure that SignDisplay.toReader is called properly
 			const numberExtractor = pipe(
 				commaAndSpace,
 				CVNumberBase10Format.withSignDisplayForNegativeExceptZero,
-				CVNumberBase10Format.toNumberExtractor
+				CVNumberBase10Format.toBigDecimalExtractor
 			);
 
 			it('String not starting by number', () => {
@@ -418,7 +424,7 @@ describe('NumberBase10Format', () => {
 			const numberExtractor = pipe(
 				commaAndSpace,
 				CVNumberBase10Format.withEngineeringScientificNotation,
-				CVNumberBase10Format.toNumberExtractor
+				CVNumberBase10Format.toBigDecimalExtractor
 			);
 
 			it('Only an exponent', () => {
@@ -448,7 +454,7 @@ describe('NumberBase10Format', () => {
 
 		describe('ShowNullInteger part tests', () => {
 			describe('True', () => {
-				const numberExtractor = CVNumberBase10Format.toNumberExtractor(commaAndSpace);
+				const numberExtractor = CVNumberBase10Format.toBigDecimalExtractor(commaAndSpace);
 
 				it('Non-null value with explicit 0', () => {
 					TEUtils.assertSome(
@@ -470,7 +476,7 @@ describe('NumberBase10Format', () => {
 				const numberExtractor = pipe(
 					commaAndSpace,
 					CVNumberBase10Format.withNullIntegerPartNotShowing,
-					CVNumberBase10Format.toNumberExtractor
+					CVNumberBase10Format.toBigDecimalExtractor
 				);
 
 				it('Non-null value with explicit 0', () => {
@@ -495,7 +501,7 @@ describe('NumberBase10Format', () => {
 				const numberExtractor = pipe(
 					commaAndSpace,
 					CVNumberBase10Format.withNDecimals(2),
-					CVNumberBase10Format.toNumberExtractor
+					CVNumberBase10Format.toBigDecimalExtractor
 				);
 
 				it('No decimal', () => {
@@ -517,7 +523,7 @@ describe('NumberBase10Format', () => {
 
 		describe('maximumFractionDigits tests', () => {
 			describe('Three decimals', () => {
-				const numberExtractor = CVNumberBase10Format.toNumberExtractor(commaAndSpace);
+				const numberExtractor = CVNumberBase10Format.toBigDecimalExtractor(commaAndSpace);
 
 				it('No decimal', () => {
 					TEUtils.assertSome(numberExtractor('8Dummy'), Tuple.make(BigDecimal.make(8n, 0), '8'));
@@ -539,7 +545,7 @@ describe('NumberBase10Format', () => {
 				const numberExtractor = pipe(
 					commaAndSpace,
 					CVNumberBase10Format.withMaxNDecimals(+Infinity),
-					CVNumberBase10Format.toNumberExtractor
+					CVNumberBase10Format.toBigDecimalExtractor
 				);
 
 				it('Four decimals', () => {
@@ -552,11 +558,25 @@ describe('NumberBase10Format', () => {
 		});
 	});
 
-	describe('toNumberReader', () => {
+	describe('toRealExtractor', () => {
+		const numberExtractor = CVNumberBase10Format.toRealExtractor(commaAndSpace);
+		it('passing', () => {
+			TEUtils.assertSome(
+				numberExtractor('0,45Dummy'),
+				Tuple.make(CVReal.unsafeFromNumber(0.45), '0,45')
+			);
+		});
+
+		it('Not passing', () => {
+			TEUtils.assertNone(numberExtractor('Dummy'));
+		});
+	});
+
+	describe('toBigDecimalReader', () => {
 		const numberReader = pipe(
 			commaAndSpace,
 			CVNumberBase10Format.withStandardScientificNotation,
-			CVNumberBase10Format.toNumberReader
+			CVNumberBase10Format.toBigDecimalReader
 		);
 		it('Passing', () => {
 			TEUtils.assertSome(numberReader('-45,45e-2'), BigDecimal.make(-4545n, 4));
@@ -564,6 +584,17 @@ describe('NumberBase10Format', () => {
 
 		it('Not passing', () => {
 			TEUtils.assertNone(numberReader('-45,45e-'));
+		});
+	});
+
+	describe('toRealReader', () => {
+		const numberReader = CVNumberBase10Format.toRealReader(commaAndSpace);
+		it('Passing', () => {
+			TEUtils.assertSome(numberReader('0,45'), CVReal.unsafeFromNumber(0.45));
+		});
+
+		it('Not passing', () => {
+			TEUtils.assertNone(numberReader('0.45'));
 		});
 	});
 

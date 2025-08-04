@@ -601,7 +601,7 @@ export const signDisplay: MTypes.OneArgFunction<Type, SignDisplay> = Struct.get(
  *
  * @category Destructors
  */
-export const toNumberExtractor = (
+export const toBigDecimalExtractor = (
 	self: Type
 ): MTypes.OneArgFunction<
 	string,
@@ -686,16 +686,37 @@ export const toNumberExtractor = (
 };
 
 /**
+ * Same as `toBigDecimalExtractor` but returns a `Real` which is the most usual use case
+ *
+ * @category Destructors
+ */
+export const toRealExtractor = (
+	self: Type
+): MTypes.OneArgFunction<string, Option.Option<[value: CVReal.Type, readText: string]>> =>
+	flow(
+		toBigDecimalExtractor(self),
+		Option.flatMap(
+			flow(
+				Tuple.mapBoth({
+					onFirst: CVReal.fromBigDecimalOption,
+					onSecond: Option.some
+				}),
+				Option.all
+			)
+		)
+	);
+
+/**
  * Returns a function that tries to read a number respecting the options represented by `self` from
  * the whole of a string `text`. If successful, that function returns a `some` of a BigDecimal.
  * Otherwise, it returns a `none`.
  *
  * @category Destructors
  */
-export const toNumberReader = (
+export const toBigDecimalReader = (
 	self: Type
 ): MTypes.OneArgFunction<string, Option.Option<BigDecimal.BigDecimal>> => {
-	const extractor = toNumberExtractor(self);
+	const extractor = toBigDecimalExtractor(self);
 	return (text) =>
 		pipe(
 			text,
@@ -710,6 +731,16 @@ export const toNumberReader = (
 			)
 		);
 };
+
+/**
+ * Same as `toBigDecimalReader` but returns a `Real` which is the most usual use case
+ *
+ * @category Destructors
+ */
+export const toRealReader = (
+	self: Type
+): MTypes.OneArgFunction<string, Option.Option<CVReal.Type>> =>
+	flow(toBigDecimalReader(self), Option.flatMap(CVReal.fromBigDecimalOption));
 
 /**
  * Returns a function that tries to write `number` respecting the options represented by `self`. If
