@@ -1,6 +1,6 @@
 /** A simple extension to the Effect Option module */
 
-import { Either, Option, flow } from 'effect';
+import { Option } from 'effect';
 
 /**
  * Type that synthesizes two different ways to represent an optional value. Useful to open a dev to
@@ -17,19 +17,6 @@ export type OptionOrNullable<A> = Option.Option<A> | null | undefined | A;
  */
 export const fromOptionOrNullable = <A>(a: OptionOrNullable<A>): Option.Option<A> =>
 	Option.isOption(a) ? a : Option.fromNullable(a);
-
-/**
- * Transforms an `Option` of an `Either` in an `Either` of an `Option`
- *
- * @category Utils
- */
-export const traverseEither = <R, L>(
-	o: Option.Option<Either.Either<R, L>>
-): Either.Either<Option.Option<R>, L> =>
-	Option.match(o, {
-		onNone: () => Either.right(Option.none()),
-		onSome: Either.match({ onLeft: Either.left, onRight: flow(Option.some, Either.right) })
-	});
 
 /**
  * Reads the next value of an Iterator into an Option
