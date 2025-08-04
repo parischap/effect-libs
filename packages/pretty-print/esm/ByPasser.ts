@@ -227,8 +227,7 @@ export const objectToString: Type = make({
 				),
 				Option.map(
 					flow(
-						// split resets RegExp.prototype.lastIndex after executing
-						String.split(MRegExp.globalLineBreak),
+						String.split(MRegExp.globalLineBreak()),
 						Array.map((s, _i) => inContextToStringedObjectTextFormatter(s))
 					)
 				)

@@ -70,14 +70,17 @@ export const capturedGroups = <N extends number>(
 ): MTypes.OneArgFunction<RegExp, Option.Option<MTypes.Tuple<string, N>>> =>
 	flow(matchAndGroups(s, capturingGroupNumber), Option.map(Tuple.getSecond));
 
+const _globalLineBreak: RegExp = new RegExp(MRegExpString.lineBreak, 'g');
 /**
- * A regular expression representing a linebreak in all systems with the `g` flag. ATTENTION: MUST
- * NOT BE USED WITH `exec` or `test` because these functions will modify the lastIndex property of
- * this global RegExp
+ * A regular expression representing a linebreak in all systems with the `g` flag.
  *
  * @category Instances
  */
-export const globalLineBreak: RegExp = new RegExp(MRegExpString.lineBreak, 'g');
+export const globalLineBreak = (): RegExp => {
+	/* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements */
+	_globalLineBreak.lastIndex = 0;
+	return _globalLineBreak;
+};
 
 /**
  * A regular expression representing a linebreak in all systems without the `g` flag.

@@ -645,7 +645,7 @@ export const tabify =
 	(self) => {
 		const tab = tabChar.repeat(count);
 		// replace resets RegExp.prototype.lastIndex after executing
-		return tab + self.replace(MRegExp.globalLineBreak, '$&' + tab);
+		return tab + self.replace(MRegExp.globalLineBreak(), '$&' + tab);
 	};
 
 /**
