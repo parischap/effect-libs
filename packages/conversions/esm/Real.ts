@@ -1,7 +1,7 @@
 /** This module implements a finite number brand (Infinity or Nan disallowed) */
 
 import { MBigDecimal, MBigInt, MNumber, MTypes } from '@parischap/effect-lib';
-import { BigDecimal, BigInt, Brand, Either, flow } from 'effect';
+import { BigDecimal, BigInt, Brand, Either, flow, Option, pipe } from 'effect';
 import * as CVInt from './Int.js';
 
 /**
@@ -39,6 +39,16 @@ export const constructor = Brand.refined<Type>(MNumber.isFinite, (n) =>
 );
 
 /**
+ * Constructs an Option of a Real from a number.
+ *
+ * @category Constructors
+ */
+export const fromNumberOption: MTypes.OneArgFunction<
+	number,
+	Option.Option<Type>
+> = constructor.option.bind(constructor);
+
+/**
  * Constructs an Either of a Real from a number.
  *
  * @category Constructors
@@ -49,30 +59,52 @@ export const fromNumber: MTypes.OneArgFunction<
 > = constructor.either.bind(constructor);
 
 /**
+ * Constructs an Option of a Real from a BigDecimal.
+ *
+ * @category Constructors
+ */
+export const fromBigDecimalOption: MTypes.OneArgFunction<
+	BigDecimal.BigDecimal,
+	Option.Option<Type>
+> = MBigDecimal.toNumber as never;
+
+/**
  * Constructs an Either of a Real from a BigDecimal.
  *
  * @category Constructors
  */
-export const fromBigDecimal: MTypes.OneArgFunction<
-	BigDecimal.BigDecimal,
-	Either.Either<Type, Brand.Brand.BrandErrors>
-> = flow(
-	MBigDecimal.toNumber,
-	Either.fromOption(() => Brand.error('BigDecimal too big to be converted to number'))
-) as never;
+export const fromBigDecimal = (
+	bigDecimal: BigDecimal.BigDecimal
+): Either.Either<Type, Brand.Brand.BrandErrors> =>
+	pipe(
+		bigDecimal,
+		MBigDecimal.toNumber,
+		Either.fromOption(() =>
+			Brand.error(`BigDecimal '${bigDecimal.toString()}' too big to be converted to number`)
+		)
+	) as never;
+
+/**
+ * Constructs an Option of a Real from a bigint.
+ *
+ * @category Constructors
+ */
+export const fromBigIntOption: MTypes.OneArgFunction<
+	bigint,
+	Option.Option<Type>
+> = BigInt.toNumber as never;
 
 /**
  * Constructs an Either of a Real from a bigint.
  *
  * @category Constructors
  */
-export const fromBigInt: MTypes.OneArgFunction<
-	bigint,
-	Either.Either<Type, Brand.Brand.BrandErrors>
-> = flow(
-	BigInt.toNumber,
-	Either.fromOption(() => Brand.error('BigInt too big to be converted to number'))
-) as never;
+export const fromBigInt = (b: bigint): Either.Either<Type, Brand.Brand.BrandErrors> =>
+	pipe(
+		b,
+		BigInt.toNumber,
+		Either.fromOption(() => Brand.error(`BigInt ${b} too big to be converted to number`))
+	) as never;
 
 /**
  * Constructs a BigDecimal from a Real.

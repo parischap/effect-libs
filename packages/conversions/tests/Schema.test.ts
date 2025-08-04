@@ -8,158 +8,109 @@ import {
 	CVSchema,
 	CVSemVer
 } from '@parischap/conversions';
-import { MString } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
-import { BigDecimal, Either, pipe, Schema } from 'effect';
+import { BigDecimal, pipe, Schema } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('CVSchema', () => {
 	describe('EmailFromString', () => {
 		it('Not passing', () => {
-			TEUtils.assertTrue(pipe('foo', Schema.decodeEither(CVSchema.EmailFromString), Either.isLeft));
+			TEUtils.assertLeft(pipe('foo', Schema.decodeEither(CVSchema.EmailFromString)));
 		});
 		it('Passing', () => {
-			TEUtils.assertTrue(
-				pipe('foo@bar.baz', Schema.decodeEither(CVSchema.EmailFromString), Either.isRight)
-			);
+			TEUtils.assertRight(pipe('foo@bar.baz', Schema.decodeEither(CVSchema.EmailFromString)));
 		});
 	});
 
 	it('EmailFromSelf', () => {
-		TEUtils.assertTrue(
-			pipe(
-				'foo@bar.baz',
-				CVEmail.unsafeFromString,
-				Schema.decodeEither(CVSchema.EmailFromSelf),
-				Either.isRight
-			)
+		TEUtils.assertRight(
+			pipe('foo@bar.baz', CVEmail.unsafeFromString, Schema.decodeEither(CVSchema.EmailFromSelf))
 		);
 	});
 
 	describe('SemVerFromString', () => {
 		it('Not passing', () => {
-			TEUtils.assertTrue(
-				pipe('foo', Schema.decodeEither(CVSchema.SemVerFromString), Either.isLeft)
-			);
+			TEUtils.assertLeft(pipe('foo', Schema.decodeEither(CVSchema.SemVerFromString)));
 		});
 		it('Passing', () => {
-			TEUtils.assertTrue(
-				pipe('1.0.1', Schema.decodeEither(CVSchema.SemVerFromString), Either.isRight)
-			);
+			TEUtils.assertRight(pipe('1.0.1', Schema.decodeEither(CVSchema.SemVerFromString)));
 		});
 	});
 
 	it('SemVerFromSelf', () => {
-		TEUtils.assertTrue(
-			pipe(
-				'1.0.1',
-				CVSemVer.unsafeFromString,
-				Schema.decodeEither(CVSchema.SemVerFromSelf),
-				Either.isRight
-			)
+		TEUtils.assertRight(
+			pipe('1.0.1', CVSemVer.unsafeFromString, Schema.decodeEither(CVSchema.SemVerFromSelf))
 		);
 	});
 
 	describe('RealFromNumber', () => {
 		it('Not passing', () => {
-			TEUtils.assertTrue(
-				pipe(Infinity, Schema.decodeEither(CVSchema.RealFromNumber), Either.isLeft)
-			);
+			TEUtils.assertLeft(pipe(Infinity, Schema.decodeEither(CVSchema.RealFromNumber)));
 		});
 		it('Passing', () => {
-			TEUtils.assertTrue(pipe(15.4, Schema.decodeEither(CVSchema.RealFromNumber), Either.isRight));
+			TEUtils.assertRight(pipe(15.4, Schema.decodeEither(CVSchema.RealFromNumber)));
 		});
 	});
 
 	it('RealFromSelf', () => {
-		TEUtils.assertTrue(
-			pipe(
-				15.4,
-				CVReal.unsafeFromNumber,
-				Schema.decodeEither(CVSchema.RealFromSelf),
-				Either.isRight
-			)
+		TEUtils.assertRight(
+			pipe(15.4, CVReal.unsafeFromNumber, Schema.decodeEither(CVSchema.RealFromSelf))
 		);
 	});
 
 	describe('RealIntFromNumber', () => {
 		it('Not passing', () => {
-			TEUtils.assertTrue(
-				pipe(Infinity, Schema.decodeEither(CVSchema.RealIntFromNumber), Either.isLeft)
-			);
-			TEUtils.assertTrue(
-				pipe(15.4, Schema.decodeEither(CVSchema.RealIntFromNumber), Either.isLeft)
-			);
+			TEUtils.assertLeft(pipe(Infinity, Schema.decodeEither(CVSchema.RealIntFromNumber)));
+			TEUtils.assertLeft(pipe(15.4, Schema.decodeEither(CVSchema.RealIntFromNumber)));
 		});
 		it('Passing', () => {
-			TEUtils.assertTrue(pipe(15, Schema.decodeEither(CVSchema.RealIntFromNumber), Either.isRight));
+			TEUtils.assertRight(pipe(15, Schema.decodeEither(CVSchema.RealIntFromNumber)));
 		});
 	});
 
 	it('RealIntFromSelf', () => {
-		TEUtils.assertTrue(
-			pipe(
-				15,
-				CVRealInt.unsafeFromNumber,
-				Schema.decodeEither(CVSchema.RealIntFromSelf),
-				Either.isRight
-			)
+		TEUtils.assertRight(
+			pipe(15, CVRealInt.unsafeFromNumber, Schema.decodeEither(CVSchema.RealIntFromSelf))
 		);
 	});
 
 	describe('PositiveRealIntFromNumber', () => {
 		it('Not passing', () => {
-			TEUtils.assertTrue(
-				pipe(Infinity, Schema.decodeEither(CVSchema.PositiveRealIntFromNumber), Either.isLeft)
-			);
-			TEUtils.assertTrue(
-				pipe(15.4, Schema.decodeEither(CVSchema.PositiveRealIntFromNumber), Either.isLeft)
-			);
-			TEUtils.assertTrue(
-				pipe(-15, Schema.decodeEither(CVSchema.PositiveRealIntFromNumber), Either.isLeft)
-			);
+			TEUtils.assertLeft(pipe(Infinity, Schema.decodeEither(CVSchema.PositiveRealIntFromNumber)));
+			TEUtils.assertLeft(pipe(15.4, Schema.decodeEither(CVSchema.PositiveRealIntFromNumber)));
+			TEUtils.assertLeft(pipe(-15, Schema.decodeEither(CVSchema.PositiveRealIntFromNumber)));
 		});
 		it('Passing', () => {
-			TEUtils.assertTrue(
-				pipe(15, Schema.decodeEither(CVSchema.PositiveRealIntFromNumber), Either.isRight)
-			);
+			TEUtils.assertRight(pipe(15, Schema.decodeEither(CVSchema.PositiveRealIntFromNumber)));
 		});
 	});
 
 	it('PositiveRealIntFromSelf', () => {
-		TEUtils.assertTrue(
+		TEUtils.assertRight(
 			pipe(
 				15,
 				CVPositiveRealInt.unsafeFromNumber,
-				Schema.decodeEither(CVSchema.PositiveRealIntFromSelf),
-				Either.isRight
+				Schema.decodeEither(CVSchema.PositiveRealIntFromSelf)
 			)
 		);
 	});
 
 	describe('PositiveRealFromNumber', () => {
 		it('Not passing', () => {
-			TEUtils.assertTrue(
-				pipe(Infinity, Schema.decodeEither(CVSchema.PositiveRealFromNumber), Either.isLeft)
-			);
-			TEUtils.assertTrue(
-				pipe(-15.4, Schema.decodeEither(CVSchema.PositiveRealFromNumber), Either.isLeft)
-			);
+			TEUtils.assertLeft(pipe(Infinity, Schema.decodeEither(CVSchema.PositiveRealFromNumber)));
+			TEUtils.assertLeft(pipe(-15.4, Schema.decodeEither(CVSchema.PositiveRealFromNumber)));
 		});
 		it('Passing', () => {
-			TEUtils.assertTrue(
-				pipe(15.4, Schema.decodeEither(CVSchema.PositiveRealFromNumber), Either.isRight)
-			);
+			TEUtils.assertRight(pipe(15.4, Schema.decodeEither(CVSchema.PositiveRealFromNumber)));
 		});
 	});
 
 	it('PositiveRealFromSelf', () => {
-		TEUtils.assertTrue(
+		TEUtils.assertRight(
 			pipe(
 				15.4,
 				CVPositiveRealInt.unsafeFromNumber,
-				Schema.decodeEither(CVSchema.PositiveRealFromSelf),
-				Either.isRight
+				Schema.decodeEither(CVSchema.PositiveRealFromSelf)
 			)
 		);
 	});
@@ -168,7 +119,7 @@ describe('CVSchema', () => {
 		const schema = CVSchema.BigDecimal(CVNumberBase10Format.commaAndSpace);
 		describe('Decoding', () => {
 			it('Not passing', () => {
-				TEUtils.assertTrue(pipe('', Schema.decodeEither(schema), Either.isLeft));
+				TEUtils.assertLeft(pipe('', Schema.decodeEither(schema)));
 			});
 			it('Passing', () => {
 				TEUtils.assertRight(
@@ -189,7 +140,7 @@ describe('CVSchema', () => {
 		const schema = CVSchema.RealFromString(CVNumberBase10Format.commaAndSpace);
 		describe('Decoding', () => {
 			it('Not passing', () => {
-				TEUtils.assertTrue(pipe('', Schema.decodeEither(schema), Either.isLeft));
+				TEUtils.assertLeft(pipe('', Schema.decodeEither(schema)));
 			});
 			it('Passing', () => {
 				TEUtils.assertRight(
@@ -204,35 +155,6 @@ describe('CVSchema', () => {
 				'1 024,56'
 			);
 			TEUtils.assertRight(pipe(CVReal.unsafeFromNumber(-0), Schema.encodeEither(schema)), '-0');
-		});
-	});
-
-	describe('Unpad', () => {
-		const schema = CVSchema.Unpad({
-			padLength: 3,
-			fillChar: '0',
-			disallowEmptyString: true,
-			padPosition: MString.PadPosition.Left
-		});
-
-		describe('Decoding', () => {
-			it('Without error', () => {
-				TEUtils.assertRight(pipe('001', Schema.decodeEither(schema)), '1');
-			});
-
-			it('With error', () => {
-				TEUtils.assertLeft(pipe('01', Schema.decodeEither(schema)));
-			});
-		});
-
-		describe('Encoding', () => {
-			it('Without error', () => {
-				TEUtils.assertRight(pipe('1', Schema.encodeEither(schema)), '001');
-			});
-
-			it('With error', () => {
-				TEUtils.assertLeft(pipe('0001', Schema.encodeEither(schema)));
-			});
 		});
 	});
 });

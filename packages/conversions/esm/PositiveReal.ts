@@ -4,7 +4,8 @@
  */
 
 import { MTypes } from '@parischap/effect-lib';
-import { BigDecimal, Brand, Either, flow, Function } from 'effect';
+import { BigDecimal, Brand, Either, flow, Function, Option } from 'effect';
+import { TypeId } from 'effect/Differ';
 import * as CVPositive from './Positive.js';
 import type * as CVPositiveRealInt from './PositiveRealInt.js';
 import * as CVReal from './Real.js';
@@ -31,12 +32,25 @@ export const constructor = Brand.all(CVReal.constructor, CVPositive.constructor)
 export type Type = Brand.Brand.FromConstructor<typeof constructor>;
 
 /**
+ * Constructs an Option of a PositiveReal from a number.
+ *
+ * @category Constructors
+ */
+export const fromNumberOption: MTypes.OneArgFunction<
+	number,
+	Option.Option<Type>
+> = constructor.option.bind(constructor);
+
+/**
  * Constructs an Either of a PositiveReal from a number. Constructs an Either of a PositiveReal from
  * a number.
  *
  * @category Constructors
  */
-export const fromNumber = constructor.either.bind(constructor);
+export const fromNumber: MTypes.OneArgFunction<
+	number,
+	Either.Either<Type, Brand.Brand.BrandErrors>
+> = constructor.either.bind(constructor);
 
 /**
  * Constructs a PositiveReal from a number without any verifications
@@ -44,6 +58,16 @@ export const fromNumber = constructor.either.bind(constructor);
  * @category Constructors
  */
 export const unsafeFromNumber = Brand.nominal<Type>();
+
+/**
+ * Constructs an Option of a PositiveReal from a BigDecimal.
+ *
+ * @category Constructors
+ */
+export const fromBigDecimalOption: MTypes.OneArgFunction<
+	BigDecimal.BigDecimal,
+	Option.Option<Type>
+> = flow(CVReal.fromBigDecimalOption, Option.flatMap(CVPositive.fromNumberOption)) as never;
 
 /**
  * Constructs an Either of a PositiveReal from a BigDecimal.
@@ -56,6 +80,16 @@ export const fromBigDecimal: MTypes.OneArgFunction<
 > = flow(CVReal.fromBigDecimal, Either.flatMap(CVPositive.fromNumber)) as never;
 
 /**
+ * Constructs an Option of a PositiveReal from a bigint.
+ *
+ * @category Constructors
+ */
+export const fromBigIntOption: MTypes.OneArgFunction<bigint, Option.Option<TypeId>> = flow(
+	CVReal.fromBigIntOption,
+	Option.flatMap(CVPositive.fromNumberOption)
+) as never;
+
+/**
  * Constructs an Either of a PositiveReal from a bigint.
  *
  * @category Constructors
@@ -64,6 +98,16 @@ export const fromBigInt: MTypes.OneArgFunction<
 	bigint,
 	Either.Either<Type, Brand.Brand.BrandErrors>
 > = flow(CVReal.fromBigInt, Either.flatMap(CVPositive.fromNumber)) as never;
+
+/**
+ * Constructs an Option of a PositiveReal from a Real
+ *
+ * @category Constructors
+ */
+export const fromRealOption: MTypes.OneArgFunction<
+	CVReal.Type,
+	Option.Option<Type>
+> = CVPositive.fromNumberOption as never;
 
 /**
  * Constructs an Either of a PositiveReal from a Real
@@ -76,11 +120,9 @@ export const fromReal: MTypes.OneArgFunction<
 > = CVPositive.fromNumber as never;
 
 /**
- * Constructs an Either of a PositiveReal from a PositiveRealInt.
+ * Constructs a PositiveReal from a PositiveRealInt.
  *
  * @category Constructors
  */
-export const fromPositiveRealInt: MTypes.OneArgFunction<
-	CVPositiveRealInt.Type,
-	Either.Either<Type, Brand.Brand.BrandErrors>
-> = Function.identity as never;
+export const fromPositiveRealInt: MTypes.OneArgFunction<CVPositiveRealInt.Type, Type> =
+	Function.identity;

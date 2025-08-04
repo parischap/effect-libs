@@ -1,7 +1,6 @@
 /* eslint-disable functional/no-expression-statements */
 import { CVEmail } from '@parischap/conversions';
 import { TEUtils } from '@parischap/test-utils';
-import { Either, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('CVEmail', () => {
@@ -13,12 +12,21 @@ describe('CVEmail', () => {
 		TEUtils.strictEqual(CVEmail.unsafeFromString('foo'), 'foo');
 	});
 
-	describe('fromString', () => {
+	describe('fromStringOption', () => {
 		it('Not passing', () => {
-			TEUtils.assertTrue(pipe('foo', CVEmail.fromString, Either.isLeft));
+			TEUtils.assertNone(CVEmail.fromStringOption('foo'));
 		});
 		it('Passing', () => {
-			TEUtils.assertTrue(pipe('foo@bar.baz', CVEmail.fromString, Either.isRight));
+			TEUtils.assertSome(CVEmail.fromStringOption('foo@bar.baz'));
+		});
+	});
+
+	describe('fromString', () => {
+		it('Not passing', () => {
+			TEUtils.assertLeft(CVEmail.fromString('foo'));
+		});
+		it('Passing', () => {
+			TEUtils.assertRight(CVEmail.fromString('foo@bar.baz'));
 		});
 	});
 });

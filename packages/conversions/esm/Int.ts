@@ -4,7 +4,7 @@
  */
 
 import { MNumber, MTypes } from '@parischap/effect-lib';
-import { Brand, Either } from 'effect';
+import { Brand, Either, Option } from 'effect';
 
 /**
  * Module tag
@@ -31,6 +31,16 @@ export type Type = Brand.Branded<number, _TypeId>;
 export const constructor = Brand.refined<Type>(MNumber.isInt, (n) =>
 	Brand.error(`'${n}' does not represent an integer`)
 );
+
+/**
+ * Constructs an Option of an Int from a number.
+ *
+ * @category Constructors
+ */
+export const fromNumberOption: MTypes.OneArgFunction<
+	number,
+	Option.Option<Type>
+> = constructor.option.bind(constructor);
 
 /**
  * Constructs an Either of an Int from a number.

@@ -1,7 +1,7 @@
 /* eslint-disable functional/no-expression-statements */
 import { CVPositiveRealInt, CVReal, CVRealInt } from '@parischap/conversions';
 import { TEUtils } from '@parischap/test-utils';
-import { BigDecimal, Either, pipe } from 'effect';
+import { BigDecimal, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('CVRealInt', () => {
@@ -15,40 +15,69 @@ describe('CVRealInt', () => {
 		TEUtils.strictEqual(CVRealInt.unsafeFromNumber(15), 15);
 	});
 
-	describe('fromNumber', () => {
+	describe('fromNumberOption', () => {
 		it('Not passing: not finite', () => {
-			TEUtils.assertTrue(pipe(NaN, CVRealInt.fromNumber, Either.isLeft));
+			TEUtils.assertNone(CVRealInt.fromNumberOption(NaN));
 		});
 		it('Not passing: not integer', () => {
-			TEUtils.assertTrue(pipe(15.4, CVRealInt.fromNumber, Either.isLeft));
+			TEUtils.assertNone(CVRealInt.fromNumberOption(15.4));
 		});
 		it('Passing', () => {
-			TEUtils.assertTrue(pipe(15, CVRealInt.fromNumber, Either.isRight));
+			TEUtils.assertSome(CVRealInt.fromNumberOption(15));
+		});
+	});
+
+	describe('fromNumber', () => {
+		it('Not passing: not finite', () => {
+			TEUtils.assertLeft(CVRealInt.fromNumber(NaN));
+		});
+		it('Not passing: not integer', () => {
+			TEUtils.assertLeft(CVRealInt.fromNumber(15.4));
+		});
+		it('Passing', () => {
+			TEUtils.assertRight(CVRealInt.fromNumber(15));
+		});
+	});
+
+	describe('fromBigDecimalOption', () => {
+		it('Not passing: too big', () => {
+			TEUtils.assertNone(pipe(BigDecimal.make(1n, -25), CVRealInt.fromBigDecimalOption));
+		});
+		it('Not passing: not an integer', () => {
+			TEUtils.assertNone(pipe(BigDecimal.make(1543367754n, 2), CVRealInt.fromBigDecimalOption));
+		});
+		it('Passing', () => {
+			TEUtils.assertSome(pipe(BigDecimal.make(1543367754n, 0), CVRealInt.fromBigDecimalOption));
 		});
 	});
 
 	describe('fromBigDecimal', () => {
 		it('Not passing: too big', () => {
-			TEUtils.assertTrue(pipe(BigDecimal.make(1n, -25), CVRealInt.fromBigDecimal, Either.isLeft));
+			TEUtils.assertLeft(pipe(BigDecimal.make(1n, -25), CVRealInt.fromBigDecimal));
 		});
 		it('Not passing: not an integer', () => {
-			TEUtils.assertTrue(
-				pipe(BigDecimal.make(1543367754n, 2), CVRealInt.fromBigDecimal, Either.isLeft)
-			);
+			TEUtils.assertLeft(pipe(BigDecimal.make(1543367754n, 2), CVRealInt.fromBigDecimal));
 		});
 		it('Passing', () => {
-			TEUtils.assertTrue(
-				pipe(BigDecimal.make(1543367754n, 0), CVRealInt.fromBigDecimal, Either.isRight)
-			);
+			TEUtils.assertRight(pipe(BigDecimal.make(1543367754n, 0), CVRealInt.fromBigDecimal));
+		});
+	});
+
+	describe('fromBigIntOption', () => {
+		it('Not passing: too big', () => {
+			TEUtils.assertNone(pipe(BigInt(1e15) * BigInt(1e15), CVRealInt.fromBigIntOption));
+		});
+		it('Passing', () => {
+			TEUtils.assertSome(pipe(BigInt(1e15), CVRealInt.fromBigIntOption));
 		});
 	});
 
 	describe('fromBigInt', () => {
 		it('Not passing: too big', () => {
-			TEUtils.assertTrue(pipe(BigInt(1e15) * BigInt(1e15), CVRealInt.fromBigInt, Either.isLeft));
+			TEUtils.assertLeft(pipe(BigInt(1e15) * BigInt(1e15), CVRealInt.fromBigInt));
 		});
 		it('Passing', () => {
-			TEUtils.assertTrue(pipe(BigInt(1e15), CVRealInt.fromBigInt, Either.isRight));
+			TEUtils.assertRight(pipe(BigInt(1e15), CVRealInt.fromBigInt));
 		});
 	});
 
@@ -68,13 +97,23 @@ describe('CVRealInt', () => {
 		TEUtils.strictEqual(pipe(18, CVPositiveRealInt.unsafeFromNumber, CVRealInt.toBigInt), 18n);
 	});
 
-	describe('fromReal', () => {
+	describe('fromRealOption', () => {
 		it('Not passing: not an integer', () => {
-			TEUtils.assertTrue(pipe(18.4, CVReal.unsafeFromNumber, CVRealInt.fromReal, Either.isLeft));
+			TEUtils.assertNone(pipe(18.4, CVReal.unsafeFromNumber, CVRealInt.fromRealOption));
 		});
 		it('Passing', () => {
-			pipe(18, CVReal.unsafeFromNumber, CVRealInt.fromReal, Either.isRight);
-			pipe(18, CVPositiveRealInt.unsafeFromNumber, CVRealInt.fromReal, Either.isRight);
+			TEUtils.assertSome(pipe(18, CVReal.unsafeFromNumber, CVRealInt.fromRealOption));
+			TEUtils.assertSome(pipe(18, CVPositiveRealInt.unsafeFromNumber, CVRealInt.fromRealOption));
+		});
+	});
+
+	describe('fromReal', () => {
+		it('Not passing: not an integer', () => {
+			TEUtils.assertLeft(pipe(18.4, CVReal.unsafeFromNumber, CVRealInt.fromReal));
+		});
+		it('Passing', () => {
+			TEUtils.assertRight(pipe(18, CVReal.unsafeFromNumber, CVRealInt.fromReal));
+			TEUtils.assertRight(pipe(18, CVPositiveRealInt.unsafeFromNumber, CVRealInt.fromReal));
 		});
 	});
 });

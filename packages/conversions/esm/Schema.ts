@@ -1,5 +1,4 @@
-import { MString } from '@parischap/effect-lib';
-import { Array, BigDecimal, Either, flow, Option, ParseResult, pipe, Schema, Struct } from 'effect';
+import { BigDecimal, Either, flow, Option, ParseResult, pipe, Schema } from 'effect';
 import * as CVEmail from './Email.js';
 import * as CVNumberBase10Format from './NumberBase10Format.js';
 import * as CVPositiveReal from './PositiveReal.js';
@@ -112,7 +111,7 @@ export const PositiveRealFromSelf: Schema.Schema<CVPositiveReal.Type> =
 const BigDecimalFromString = (
 	format: CVNumberBase10Format.Type
 ): Schema.Schema<BigDecimal.BigDecimal, string> => {
-	const reader = CVNumberBase10Format.toNumberReader(format);
+	const reader = CVNumberBase10Format.toBigDecimalReader(format);
 	const writer = CVNumberBase10Format.toNumberWriter(format);
 	return Schema.transformOrFail(Schema.String, Schema.BigDecimalFromSelf, {
 		strict: true,
@@ -137,11 +136,10 @@ export { BigDecimalFromString as BigDecimal };
  *
  * @category Schema transformations
  */
-// Do not use Schema.compose with BigDecimalFromString and BigDecimalFromReal here because BigDecimal has no negative 0. See CVNumberBase10Format.toNumberWriter
 export const RealFromString = (
 	format: CVNumberBase10Format.Type
 ): Schema.Schema<CVReal.Type, string> => {
-	const reader = CVNumberBase10Format.toNumberReader(format);
+	const reader = CVNumberBase10Format.toRealReader(format);
 	const writer = CVNumberBase10Format.toNumberWriter(format);
 	return Schema.transformOrFail(Schema.String, RealFromSelf, {
 		strict: true,
@@ -151,78 +149,8 @@ export const RealFromString = (
 				reader,
 				Either.fromOption(
 					() => new ParseResult.Type(ast, input, 'Failed to convert string to Real')
-				),
-				Either.flatMap(
-					flow(
-						CVReal.fromBigDecimal,
-						Either.mapLeft(
-							flow(
-								Array.map(Struct.get('message')),
-								Array.join('. '),
-								(message) => new ParseResult.Type(ast, input, message)
-							)
-						)
-					)
 				)
 			),
 		encode: flow(writer, ParseResult.succeed)
-	});
-};
-
-/**
- * A Schema that transforms a padded string into an unpadded string. `length` must be a positive
- * integer indicating the fixed length of the padded string. When encoding, no error is reported if
- * the string to encode has strictly more than `paddedLength` characters. `fillChar` must be a
- * one-character string representing the character used for padding. `disallowEmptyString` is used
- * only when decoding. If true and if trimming the fillChar results in an empty string, the fillChar
- * is returned instead of an empty string. This is useful for instance if you have numbers padded
- * with 0's and you prefer the result of unpadding a string containing only 0's to be '0' rather
- * than an empty string.
- *
- * @category Schema transformations
- */
-export const Unpad = ({
-	length,
-	fillChar,
-	padPosition,
-	disallowEmptyString
-}: {
-	readonly length: number;
-	readonly fillChar: string;
-	readonly padPosition: MString.PadPosition;
-	readonly disallowEmptyString: boolean;
-}): Schema.Schema<string, string> => {
-	const trimmer = MString.trim({ length, fillChar, padPosition, disallowEmptyString });
-
-	const padder = MString.pad({ length, fillChar, padPosition });
-
-	return Schema.transformOrFail(Schema.String, Schema.String, {
-		strict: true,
-		decode: (input, _options, ast) =>
-			pipe(
-				input,
-				trimmer,
-				Either.fromOption(
-					() =>
-						new ParseResult.Type(
-							ast,
-							input,
-							`Expected ${length} characters. Actual: ${input.length}`
-						)
-				)
-			),
-		encode: (input, _options, ast) =>
-			pipe(
-				input,
-				padder,
-				Either.fromOption(
-					() =>
-						new ParseResult.Type(
-							ast,
-							input,
-							`Expected at most ${length} characters. Actual: ${input.length}`
-						)
-				)
-			)
 	});
 };

@@ -1,7 +1,7 @@
 /* eslint-disable functional/no-expression-statements */
 import { CVPositiveReal, CVPositiveRealInt, CVReal, CVRealInt } from '@parischap/conversions';
 import { TEUtils } from '@parischap/test-utils';
-import { BigDecimal, Either, pipe } from 'effect';
+import { BigDecimal, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('CVPositiveReal', () => {
@@ -14,71 +14,110 @@ describe('CVPositiveReal', () => {
 		TEUtils.strictEqual(CVPositiveReal.unsafeFromNumber(15.4), 15.4);
 	});
 
-	describe('fromNumber', () => {
+	describe('fromNumberOption', () => {
 		it('Not passing: not finite', () => {
-			TEUtils.assertTrue(pipe(NaN, CVPositiveReal.fromNumber, Either.isLeft));
+			TEUtils.assertNone(pipe(NaN, CVPositiveReal.fromNumberOption));
 		});
 		it('Not passing: not positive', () => {
-			TEUtils.assertTrue(pipe(-18, CVPositiveReal.fromNumber, Either.isLeft));
+			TEUtils.assertNone(pipe(-18, CVPositiveReal.fromNumberOption));
 		});
 		it('Passing', () => {
-			TEUtils.assertTrue(pipe(18, CVPositiveReal.fromNumber, Either.isRight));
+			TEUtils.assertSome(pipe(18, CVPositiveReal.fromNumberOption));
+		});
+	});
+
+	describe('fromNumber', () => {
+		it('Not passing: not finite', () => {
+			TEUtils.assertLeft(pipe(NaN, CVPositiveReal.fromNumber));
+		});
+		it('Not passing: not positive', () => {
+			TEUtils.assertLeft(pipe(-18, CVPositiveReal.fromNumber));
+		});
+		it('Passing', () => {
+			TEUtils.assertRight(pipe(18, CVPositiveReal.fromNumber));
+		});
+	});
+
+	describe('fromBigDecimalOption', () => {
+		it('Not passing: too big', () => {
+			TEUtils.assertNone(pipe(BigDecimal.make(1n, -25), CVPositiveReal.fromBigDecimalOption));
+		});
+		it('Not passing: not positive', () => {
+			TEUtils.assertNone(
+				pipe(BigDecimal.make(-1543367754n, 2), CVPositiveReal.fromBigDecimalOption)
+			);
+		});
+		it('Passing', () => {
+			TEUtils.assertSome(
+				pipe(BigDecimal.make(1543367754n, 2), CVPositiveReal.fromBigDecimalOption)
+			);
 		});
 	});
 
 	describe('fromBigDecimal', () => {
 		it('Not passing: too big', () => {
-			TEUtils.assertTrue(
-				pipe(BigDecimal.make(1n, -25), CVPositiveReal.fromBigDecimal, Either.isLeft)
-			);
+			TEUtils.assertLeft(pipe(BigDecimal.make(1n, -25), CVPositiveReal.fromBigDecimal));
 		});
 		it('Not passing: not positive', () => {
-			TEUtils.assertTrue(
-				pipe(BigDecimal.make(-1543367754n, 2), CVPositiveReal.fromBigDecimal, Either.isLeft)
-			);
+			TEUtils.assertLeft(pipe(BigDecimal.make(-1543367754n, 2), CVPositiveReal.fromBigDecimal));
 		});
 		it('Passing', () => {
-			TEUtils.assertTrue(
-				pipe(BigDecimal.make(1543367754n, 2), CVPositiveReal.fromBigDecimal, Either.isRight)
-			);
+			TEUtils.assertRight(pipe(BigDecimal.make(1543367754n, 2), CVPositiveReal.fromBigDecimal));
+		});
+	});
+
+	describe('fromBigIntOption', () => {
+		it('Not passing: too big', () => {
+			TEUtils.assertNone(pipe(BigInt(1e15) * BigInt(1e15), CVPositiveReal.fromBigIntOption));
+		});
+		it('Not passing: not positive', () => {
+			TEUtils.assertNone(pipe(BigInt(-1e15), CVPositiveReal.fromBigIntOption));
+		});
+		it('Passing', () => {
+			TEUtils.assertSome(pipe(BigInt(1e15), CVPositiveReal.fromBigIntOption));
 		});
 	});
 
 	describe('fromBigInt', () => {
 		it('Not passing: too big', () => {
-			TEUtils.assertTrue(
-				pipe(BigInt(1e15) * BigInt(1e15), CVPositiveReal.fromBigInt, Either.isLeft)
-			);
+			TEUtils.assertLeft(pipe(BigInt(1e15) * BigInt(1e15), CVPositiveReal.fromBigInt));
 		});
 		it('Not passing: not positive', () => {
-			TEUtils.assertTrue(pipe(BigInt(-1e15), CVPositiveReal.fromBigInt, Either.isLeft));
+			TEUtils.assertLeft(pipe(BigInt(-1e15), CVPositiveReal.fromBigInt));
 		});
 		it('Passing', () => {
-			TEUtils.assertTrue(pipe(BigInt(1e15), CVPositiveReal.fromBigInt, Either.isRight));
+			TEUtils.assertRight(pipe(BigInt(1e15), CVPositiveReal.fromBigInt));
+		});
+	});
+
+	describe('fromRealOption', () => {
+		it('Not passing: not positive', () => {
+			TEUtils.assertNone(pipe(-15.4, CVReal.unsafeFromNumber, CVPositiveReal.fromRealOption));
+		});
+		it('Passing', () => {
+			TEUtils.assertSome(pipe(15.4, CVReal.unsafeFromNumber, CVPositiveReal.fromRealOption));
+			TEUtils.assertSome(pipe(-15, CVRealInt.unsafeFromNumber, CVPositiveReal.fromRealOption));
+			TEUtils.assertSome(
+				pipe(15, CVPositiveRealInt.unsafeFromNumber, CVPositiveReal.fromRealOption)
+			);
 		});
 	});
 
 	describe('fromReal', () => {
 		it('Not passing: not positive', () => {
-			TEUtils.assertTrue(
-				pipe(-15.4, CVReal.unsafeFromNumber, CVPositiveReal.fromReal, Either.isLeft)
-			);
+			TEUtils.assertLeft(pipe(-15.4, CVReal.unsafeFromNumber, CVPositiveReal.fromReal));
 		});
 		it('Passing', () => {
-			pipe(15.4, CVReal.unsafeFromNumber, CVPositiveReal.fromReal, Either.isRight);
-			pipe(-15, CVRealInt.unsafeFromNumber, CVPositiveReal.fromReal, Either.isRight);
-			pipe(15, CVPositiveRealInt.unsafeFromNumber, CVPositiveReal.fromReal, Either.isRight);
+			TEUtils.assertRight(pipe(15.4, CVReal.unsafeFromNumber, CVPositiveReal.fromReal));
+			TEUtils.assertRight(pipe(-15, CVRealInt.unsafeFromNumber, CVPositiveReal.fromReal));
+			TEUtils.assertRight(pipe(15, CVPositiveRealInt.unsafeFromNumber, CVPositiveReal.fromReal));
 		});
 	});
 
-	describe('fromPositiveRealInt', () => {
-		it('Passing', () => {
-			pipe(
-				15,
-				CVPositiveRealInt.unsafeFromNumber,
-				CVPositiveReal.fromPositiveRealInt,
-				Either.isRight
-			);
-		});
+	it('fromPositiveRealInt', () => {
+		TEUtils.strictEqual(
+			pipe(15, CVPositiveRealInt.unsafeFromNumber, CVPositiveReal.fromPositiveRealInt),
+			15
+		);
 	});
 });

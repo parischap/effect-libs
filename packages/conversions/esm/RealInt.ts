@@ -4,7 +4,7 @@
  */
 
 import { MBigInt, MTypes } from '@parischap/effect-lib';
-import { BigDecimal, Brand, Either, flow } from 'effect';
+import { BigDecimal, Brand, Either, flow, Option } from 'effect';
 import * as CVInt from './Int.js';
 import * as CVReal from './Real.js';
 
@@ -30,11 +30,24 @@ export const constructor = Brand.all(CVReal.constructor, CVInt.constructor);
 export type Type = Brand.Brand.FromConstructor<typeof constructor>;
 
 /**
+ * Constructs an Option of a RealInt from a number.
+ *
+ * @category Constructors
+ */
+export const fromNumberOption: MTypes.OneArgFunction<
+	number,
+	Option.Option<Type>
+> = constructor.option.bind(constructor);
+
+/**
  * Constructs an Either of a RealInt from a number.
  *
  * @category Constructors
  */
-export const fromNumber = constructor.either.bind(constructor);
+export const fromNumber: MTypes.OneArgFunction<
+	number,
+	Either.Either<Type, Brand.Brand.BrandErrors>
+> = constructor.either.bind(constructor);
 
 /**
  * Constructs a RealInt from a number without any verifications
@@ -42,6 +55,16 @@ export const fromNumber = constructor.either.bind(constructor);
  * @category Constructors
  */
 export const unsafeFromNumber = Brand.nominal<Type>();
+
+/**
+ * Constructs an Option of a RealInt from a BigDecimal.
+ *
+ * @category Constructors
+ */
+export const fromBigDecimalOption: MTypes.OneArgFunction<
+	BigDecimal.BigDecimal,
+	Option.Option<Type>
+> = flow(CVReal.fromBigDecimalOption, Option.flatMap(CVInt.fromNumberOption)) as never;
 
 /**
  * Constructs an Either of a RealInt from a BigDecimal.
@@ -52,6 +75,16 @@ export const fromBigDecimal: MTypes.OneArgFunction<
 	BigDecimal.BigDecimal,
 	Either.Either<Type, Brand.Brand.BrandErrors>
 > = flow(CVReal.fromBigDecimal, Either.flatMap(CVInt.fromNumber)) as never;
+
+/**
+ * Constructs an Option of a RealInt from a bigint.
+ *
+ * @category Constructors
+ */
+export const fromBigIntOption: MTypes.OneArgFunction<
+	bigint,
+	Option.Option<Type>
+> = CVReal.fromBigIntOption as never;
 
 /**
  * Constructs an Either of a RealInt from a bigint.
@@ -77,6 +110,16 @@ export const toBigDecimal: MTypes.OneArgFunction<Type, BigDecimal.BigDecimal> =
  * @category Destructors
  */
 export const toBigInt: MTypes.OneArgFunction<Type, bigint> = MBigInt.unsafeFromNumber;
+
+/**
+ * Constructs an Option of a RealInt from a Real.
+ *
+ * @category Constructors
+ */
+export const fromRealOption: MTypes.OneArgFunction<
+	CVReal.Type,
+	Option.Option<Type>
+> = CVInt.fromNumberOption as never;
 
 /**
  * Constructs an Either of a RealInt from a Real.

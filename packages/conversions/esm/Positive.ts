@@ -3,7 +3,8 @@
  * used internally
  */
 
-import { Brand, Number } from 'effect';
+import { MTypes } from '@parischap/effect-lib';
+import { Brand, Either, Number, Option } from 'effect';
 
 /**
  * Module tag
@@ -32,8 +33,21 @@ export const constructor = Brand.refined<Type>(Number.greaterThanOrEqualTo(0), (
 );
 
 /**
+ * Constructs an Option of a Positive from a number.
+ *
+ * @category Constructors
+ */
+export const fromNumberOption: MTypes.OneArgFunction<
+	number,
+	Option.Option<Type>
+> = constructor.option.bind(constructor);
+
+/**
  * Constructs an Either of a Positive from a number.
  *
  * @category Constructors
  */
-export const fromNumber = constructor.either.bind(constructor);
+export const fromNumber: MTypes.OneArgFunction<
+	number,
+	Either.Either<Type, Brand.Brand.BrandErrors>
+> = constructor.either.bind(constructor);

@@ -1,7 +1,7 @@
 /** A module that implements an Email brand */
 
-import { MString } from '@parischap/effect-lib';
-import { Brand } from 'effect';
+import { MString, MTypes } from '@parischap/effect-lib';
+import { Brand, Either, Option } from 'effect';
 
 /**
  * Module tag
@@ -38,11 +38,24 @@ export const constructor = Brand.refined<Type>(MString.isEmail, (s) =>
 );
 
 /**
+ * Constructs an Option of an Email from a string.
+ *
+ * @category Constructors
+ */
+export const fromStringOption: MTypes.OneArgFunction<
+	string,
+	Option.Option<Type>
+> = constructor.option.bind(constructor);
+
+/**
  * Constructs an Either of an Email from a string.
  *
  * @category Constructors
  */
-export const fromString = constructor.either.bind(constructor);
+export const fromString: MTypes.OneArgFunction<
+	string,
+	Either.Either<Type, Brand.Brand.BrandErrors>
+> = constructor.either.bind(constructor);
 
 /**
  * Checks if a string is an email
