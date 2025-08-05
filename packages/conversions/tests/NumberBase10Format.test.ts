@@ -2,11 +2,11 @@
 import { CVNumberBase10Format, CVReal } from '@parischap/conversions';
 import { MBigDecimal } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
-import { BigDecimal, Equal, Option, pipe, Tuple } from 'effect';
+import { BigDecimal, Option, pipe, Tuple } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('NumberBase10Format', () => {
-	const commaAndSpace = CVNumberBase10Format.commaAndSpace;
+	const frenchStyleThreeDecimalNumber = CVNumberBase10Format.frenchStyleThreeDecimalNumber;
 
 	describe('Tag, prototype and guards', () => {
 		it('moduleTag', () => {
@@ -16,29 +16,20 @@ describe('NumberBase10Format', () => {
 			);
 		});
 
-		describe('Equal.equals', () => {
-			it('Matching', () => {
-				TEUtils.assertTrue(
-					Equal.equals(commaAndSpace, CVNumberBase10Format.make({ ...commaAndSpace }))
-				);
-			});
-
-			it('Non-matching', () => {
-				TEUtils.assertNotEquals(commaAndSpace, CVNumberBase10Format.commaAndDot);
-			});
-		});
-
 		it('.toString()', () => {
-			TEUtils.strictEqual(commaAndSpace.toString(), 'CommaAndSpace');
+			TEUtils.strictEqual(
+				frenchStyleThreeDecimalNumber.toString(),
+				'French-style three-decimal number'
+			);
 		});
 
 		it('.pipe()', () => {
-			TEUtils.assertTrue(commaAndSpace.pipe(CVNumberBase10Format.has));
+			TEUtils.assertTrue(frenchStyleThreeDecimalNumber.pipe(CVNumberBase10Format.has));
 		});
 
 		describe('has', () => {
 			it('Matching', () => {
-				TEUtils.assertTrue(CVNumberBase10Format.has(commaAndSpace));
+				TEUtils.assertTrue(CVNumberBase10Format.has(frenchStyleThreeDecimalNumber));
 			});
 			it('Non matching', () => {
 				TEUtils.assertFalse(CVNumberBase10Format.has(new Date()));
@@ -267,7 +258,7 @@ describe('NumberBase10Format', () => {
 		});
 
 		describe('toMantissaChecker', () => {
-			it('None', () => {
+			describe('None', () => {
 				const checker = CVNumberBase10Format.ScientificNotation.toMantissaChecker(
 					CVNumberBase10Format.ScientificNotation.None
 				);
@@ -362,11 +353,11 @@ describe('NumberBase10Format', () => {
 	});
 
 	describe('toBigDecimalExtractor', () => {
-		describe('General tests with commaAndSpace', () => {
+		describe('General tests with frenchStyleThreeDecimalNumber', () => {
 			//Use withSignDisplayForNegativeExceptZero to make sure that SignDisplay.toReader is called properly
 			const numberExtractor = pipe(
-				commaAndSpace,
-				CVNumberBase10Format.withSignDisplayForNegativeExceptZero,
+				frenchStyleThreeDecimalNumber,
+				CVNumberBase10Format.withSignDisplayForNegativeExceptZero(),
 				CVNumberBase10Format.toBigDecimalExtractor
 			);
 
@@ -422,8 +413,8 @@ describe('NumberBase10Format', () => {
 		describe('Allow scientific notation', () => {
 			//Use withEngineeringScientificNotation to make sure that ScientificNotation.toReader is called properly
 			const numberExtractor = pipe(
-				commaAndSpace,
-				CVNumberBase10Format.withEngineeringScientificNotation,
+				frenchStyleThreeDecimalNumber,
+				CVNumberBase10Format.withEngineeringScientificNotation(),
 				CVNumberBase10Format.toBigDecimalExtractor
 			);
 
@@ -454,7 +445,9 @@ describe('NumberBase10Format', () => {
 
 		describe('ShowNullInteger part tests', () => {
 			describe('True', () => {
-				const numberExtractor = CVNumberBase10Format.toBigDecimalExtractor(commaAndSpace);
+				const numberExtractor = CVNumberBase10Format.toBigDecimalExtractor(
+					frenchStyleThreeDecimalNumber
+				);
 
 				it('Non-null value with explicit 0', () => {
 					TEUtils.assertSome(
@@ -474,8 +467,8 @@ describe('NumberBase10Format', () => {
 
 			describe('False', () => {
 				const numberExtractor = pipe(
-					commaAndSpace,
-					CVNumberBase10Format.withNullIntegerPartNotShowing,
+					frenchStyleThreeDecimalNumber,
+					CVNumberBase10Format.withNullIntegerPartNotShowing(),
 					CVNumberBase10Format.toBigDecimalExtractor
 				);
 
@@ -499,7 +492,7 @@ describe('NumberBase10Format', () => {
 		describe('minimumFractionDigits tests', () => {
 			describe('Two decimals', () => {
 				const numberExtractor = pipe(
-					commaAndSpace,
+					frenchStyleThreeDecimalNumber,
 					CVNumberBase10Format.withNDecimals(2),
 					CVNumberBase10Format.toBigDecimalExtractor
 				);
@@ -523,7 +516,9 @@ describe('NumberBase10Format', () => {
 
 		describe('maximumFractionDigits tests', () => {
 			describe('Three decimals', () => {
-				const numberExtractor = CVNumberBase10Format.toBigDecimalExtractor(commaAndSpace);
+				const numberExtractor = CVNumberBase10Format.toBigDecimalExtractor(
+					frenchStyleThreeDecimalNumber
+				);
 
 				it('No decimal', () => {
 					TEUtils.assertSome(numberExtractor('8Dummy'), Tuple.make(BigDecimal.make(8n, 0), '8'));
@@ -543,7 +538,7 @@ describe('NumberBase10Format', () => {
 
 			describe('Unbounded', () => {
 				const numberExtractor = pipe(
-					commaAndSpace,
+					frenchStyleThreeDecimalNumber,
 					CVNumberBase10Format.withMaxNDecimals(+Infinity),
 					CVNumberBase10Format.toBigDecimalExtractor
 				);
@@ -559,7 +554,7 @@ describe('NumberBase10Format', () => {
 	});
 
 	describe('toRealExtractor', () => {
-		const numberExtractor = CVNumberBase10Format.toRealExtractor(commaAndSpace);
+		const numberExtractor = CVNumberBase10Format.toRealExtractor(frenchStyleThreeDecimalNumber);
 		it('passing', () => {
 			TEUtils.assertSome(
 				numberExtractor('0,45Dummy'),
@@ -574,8 +569,8 @@ describe('NumberBase10Format', () => {
 
 	describe('toBigDecimalReader', () => {
 		const numberReader = pipe(
-			commaAndSpace,
-			CVNumberBase10Format.withStandardScientificNotation,
+			frenchStyleThreeDecimalNumber,
+			CVNumberBase10Format.withStandardScientificNotation(),
 			CVNumberBase10Format.toBigDecimalReader
 		);
 		it('Passing', () => {
@@ -588,7 +583,7 @@ describe('NumberBase10Format', () => {
 	});
 
 	describe('toRealReader', () => {
-		const numberReader = CVNumberBase10Format.toRealReader(commaAndSpace);
+		const numberReader = CVNumberBase10Format.toRealReader(frenchStyleThreeDecimalNumber);
 		it('Passing', () => {
 			TEUtils.assertSome(numberReader('0,45'), CVReal.unsafeFromNumber(0.45));
 		});
@@ -599,8 +594,8 @@ describe('NumberBase10Format', () => {
 	});
 
 	describe('toNumberWriter', () => {
-		describe('General tests with commaAndSpace', () => {
-			const numberWriter = CVNumberBase10Format.toNumberWriter(commaAndSpace);
+		describe('General tests with frenchStyleThreeDecimalNumber', () => {
+			const numberWriter = CVNumberBase10Format.toNumberWriter(frenchStyleThreeDecimalNumber);
 			it('Zero', () => {
 				TEUtils.assertEquals(numberWriter(CVReal.unsafeFromNumber(0)), '0');
 			});
@@ -620,8 +615,8 @@ describe('NumberBase10Format', () => {
 
 		describe('Tests with withNullIntegerPartNotShowing', () => {
 			const numberWriter = pipe(
-				commaAndSpace,
-				CVNumberBase10Format.withNullIntegerPartNotShowing,
+				frenchStyleThreeDecimalNumber,
+				CVNumberBase10Format.withNullIntegerPartNotShowing(),
 				CVNumberBase10Format.toNumberWriter
 			);
 			it('Zero', () => {
@@ -639,9 +634,9 @@ describe('NumberBase10Format', () => {
 
 		describe('Tests with withNDecimals(2) and withNullIntegerPartNotShowing', () => {
 			const numberWriter = pipe(
-				commaAndSpace,
+				frenchStyleThreeDecimalNumber,
 				CVNumberBase10Format.withNDecimals(2),
-				CVNumberBase10Format.withNullIntegerPartNotShowing,
+				CVNumberBase10Format.withNullIntegerPartNotShowing(),
 				CVNumberBase10Format.toNumberWriter
 			);
 			it('Zero', () => {
@@ -659,8 +654,8 @@ describe('NumberBase10Format', () => {
 
 		describe('Tests with withEngineeringScientificNotation', () => {
 			const numberWriter = pipe(
-				commaAndSpace,
-				CVNumberBase10Format.withEngineeringScientificNotation,
+				frenchStyleThreeDecimalNumber,
+				CVNumberBase10Format.withEngineeringScientificNotation(),
 				CVNumberBase10Format.withMinNDecimals(2),
 				CVNumberBase10Format.toNumberWriter
 			);

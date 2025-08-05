@@ -14,6 +14,7 @@ import {
 	MPredicate,
 	MRegExpString,
 	MString,
+	MStruct,
 	MTypes
 } from '@parischap/effect-lib';
 import {
@@ -21,11 +22,8 @@ import {
 	BigDecimal,
 	BigInt,
 	Either,
-	Equal,
-	Equivalence,
 	flow,
 	Function,
-	Hash,
 	Number,
 	Option,
 	pipe,
@@ -396,9 +394,9 @@ export namespace ScientificNotation {
  *
  * @category Models
  */
-export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable {
-	/** Id of this NumberFormat instance. Useful for equality and debugging */
-	readonly id: string;
+export interface Type extends MInspectable.Type, Pipeable.Pipeable {
+	/** Descriptor of this NumberFormat instance. Used for debugging purposes only */
+	readonly descriptor: string;
 
 	/**
 	 * Thousand separator. Use an empty string for no separator. Usually a string made of at most one
@@ -482,25 +480,11 @@ export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable 
  */
 export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
 
-/**
- * Equivalence
- *
- * @category Equivalences
- */
-export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
-
 /** Prototype */
-const _TypeIdHash = Hash.hash(_TypeId);
 const proto: MTypes.Proto<Type> = {
 	[_TypeId]: _TypeId,
-	[Equal.symbol](this: Type, that: unknown): boolean {
-		return has(that) && equivalence(this, that);
-	},
-	[Hash.symbol](this: Type) {
-		return pipe(this.id, Hash.hash, Hash.combine(_TypeIdHash), Hash.cached(this));
-	},
 	[MInspectable.IdSymbol](this: Type) {
-		return this.id;
+		return this.descriptor;
 	},
 	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto
@@ -515,11 +499,11 @@ export const make = (params: MTypes.Data<Type>): Type =>
 	MTypes.objectFromDataAndProto(proto, params);
 
 /**
- * Returns the `id` property of `self`
+ * Returns the `descriptor` property of `self`
  *
  * @category Destructors
  */
-export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
+export const descriptor: MTypes.OneArgFunction<Type, string> = Struct.get('descriptor');
 
 /**
  * Returns the `thousandSeparator` property of `self`
@@ -838,82 +822,35 @@ export const toNumberWriter = (
 };
 
 /**
- * NumberBase10Format instance that uses a comma as fractional separator and a space as thousand
- * separator. Used in countries like France, French-speaking Canada, French-speaking Belgium,
- * Denmark, Finland, Sweden...
- *
- * @category Instances
- */
-export const commaAndSpace: Type = make({
-	id: 'CommaAndSpace',
-	thousandSeparator: ' ',
-	fractionalSeparator: ',',
-	showNullIntegerPart: true,
-	minimumFractionDigits: 0,
-	maximumFractionDigits: 3,
-	eNotationChars: ['E', 'e'],
-	scientificNotation: ScientificNotation.None,
-	roundingMode: CVRoundingMode.Type.HalfExpand,
-	signDisplay: SignDisplay.Auto
-});
-
-/**
- * NumberBase10Format instance that uses a comma as fractional separator and a dot as thousand
- * separator. Used in countries like Dutch-speaking Belgium, the Netherlands, Germany, Italy,
- * Norway, Croatia, Spain...
- *
- * @category Instances
- */
-export const commaAndDot: Type = make({
-	...commaAndSpace,
-	id: 'CommaAndDot',
-	thousandSeparator: '.'
-});
-
-/**
- * NumberBase10Format instance that uses a dot as fractional separator and a comma as thousand
- * separator. Used in countries like the UK, the US, English-speaking Canada, Australia, Thaïland,
- * Bosnia...
- *
- * @category Instances
- */
-export const dotAndComma: Type = make({
-	...commaAndSpace,
-	id: 'DotAndComma',
-	fractionalSeparator: '.',
-	thousandSeparator: ','
-});
-
-/**
  * Combinator that returns a copy of self with `minimumFractionDigits` and `maximumFractionDigits`
  * set to `n`. `n` must be a finite positive integer.
  *
  * @category Utils
  */
 export const withNDecimals =
-	(n: number) =>
+	(decimalNumber: number, descriptor = '') =>
 	(self: Type): Type =>
 		make({
 			...self,
-			id: self.id + 'WithNoDecimals',
-			minimumFractionDigits: n,
-			maximumFractionDigits: n
+			descriptor,
+			minimumFractionDigits: decimalNumber,
+			maximumFractionDigits: decimalNumber
 		});
 
 /**
- * Combinator that returns a copy of self with `maximumFractionDigits` set to `n`. `n` must be
- * positive integer.
+ * Combinator that returns a copy of self with `maximumFractionDigits` set to `n`. `n` must be a
+ * positive integer. Pass 0 for an integer format.
  *
  * @category Utils
  */
 export const withMaxNDecimals =
-	(n: number) =>
+	(maxDecimalNumber: number, descriptor = '') =>
 	(self: Type): Type =>
 		make({
 			...self,
-			id: self.id + 'WithTwoDecimals',
-			minimumFractionDigits: Math.min(self.minimumFractionDigits, n),
-			maximumFractionDigits: n
+			descriptor,
+			minimumFractionDigits: Math.min(self.minimumFractionDigits, maxDecimalNumber),
+			maximumFractionDigits: maxDecimalNumber
 		});
 
 /**
@@ -923,13 +860,13 @@ export const withMaxNDecimals =
  * @category Utils
  */
 export const withMinNDecimals =
-	(n: number) =>
+	(minDecimalNumber: number, descriptor = '') =>
 	(self: Type): Type =>
 		make({
 			...self,
-			id: self.id + 'WithTwoDecimals',
-			minimumFractionDigits: n,
-			maximumFractionDigits: Math.max(self.maximumFractionDigits, n)
+			descriptor,
+			minimumFractionDigits: minDecimalNumber,
+			maximumFractionDigits: Math.max(self.maximumFractionDigits, minDecimalNumber)
 		});
 
 /**
@@ -937,249 +874,414 @@ export const withMinNDecimals =
  *
  * @category Utils
  */
-export const withNoScientificNotation = (self: Type): Type =>
-	make({
-		...self,
-		id: self.id + 'WithNoScientificNotation',
-		scientificNotation: ScientificNotation.None
-	});
+export const withNoScientificNotation =
+	(descriptor = '') =>
+	(self: Type): Type =>
+		make({
+			...self,
+			descriptor,
+			scientificNotation: ScientificNotation.None
+		});
 
 /**
  * Combinator that returns a copy of self with `scientificNotation` set to `Standard`.
  *
  * @category Utils
  */
-export const withStandardScientificNotation = (self: Type): Type =>
-	make({
-		...self,
-		id: self.id + 'WithStandardScientificNotation',
-		scientificNotation: ScientificNotation.Standard
-	});
+export const withStandardScientificNotation =
+	(descriptor = '') =>
+	(self: Type): Type =>
+		make({
+			...self,
+			descriptor,
+			scientificNotation: ScientificNotation.Standard
+		});
 
 /**
  * Combinator that returns a copy of self with `scientificNotation` set to `Normalized`.
  *
  * @category Utils
  */
-export const withNormalizedScientificNotation = (self: Type): Type =>
-	make({
-		...self,
-		id: self.id + 'WithNormalizedScientificNotation',
-		scientificNotation: ScientificNotation.Normalized
-	});
+export const withNormalizedScientificNotation =
+	(descriptor = '') =>
+	(self: Type): Type =>
+		make({
+			...self,
+			descriptor,
+			scientificNotation: ScientificNotation.Normalized
+		});
 
 /**
  * Combinator that returns a copy of self with `scientificNotation` set to `Engineering`.
  *
  * @category Utils
  */
-export const withEngineeringScientificNotation = (self: Type): Type =>
-	make({
-		...self,
-		id: self.id + 'WithEngineeringScientificNotation',
-		scientificNotation: ScientificNotation.Engineering
-	});
+export const withEngineeringScientificNotation =
+	(descriptor = '') =>
+	(self: Type): Type =>
+		make({
+			...self,
+			descriptor,
+			scientificNotation: ScientificNotation.Engineering
+		});
 
 /**
  * Combinator that returns a copy of self with `thousandSeparator` set to ''.
  *
  * @category Utils
  */
-export const withoutThousandSeparator = (self: Type): Type =>
-	make({
-		...self,
-		id: self.id + 'WithoutThousandSeparator',
-		thousandSeparator: ''
-	});
+export const withoutThousandSeparator =
+	(descriptor = '') =>
+	(self: Type): Type =>
+		make({
+			...self,
+			descriptor,
+			thousandSeparator: ''
+		});
 
 /**
  * Combinator that returns a copy of self with `signDisplay` set to `Auto`.
  *
  * @category Utils
  */
-export const withSignDisplayForNegative = (self: Type): Type =>
-	make({
-		...self,
-		id: self.id + 'WithSignDisplayForNegative',
-		signDisplay: SignDisplay.Auto
-	});
+export const withSignDisplayForNegative =
+	(descriptor = '') =>
+	(self: Type): Type =>
+		make({
+			...self,
+			descriptor,
+			signDisplay: SignDisplay.Auto
+		});
 
 /**
  * Combinator that returns a copy of self with `signDisplay` set to `Always`.
  *
  * @category Utils
  */
-export const withSignDisplay = (self: Type): Type =>
-	make({
-		...self,
-		id: self.id + 'WithSignDisplay',
-		signDisplay: SignDisplay.Always
-	});
+export const withSignDisplay =
+	(descriptor = '') =>
+	(self: Type): Type =>
+		make({
+			...self,
+			descriptor,
+			signDisplay: SignDisplay.Always
+		});
 
 /**
  * Combinator that returns a copy of self with `signDisplay` set to `ExceptZero`.
  *
  * @category Utils
  */
-export const withSignDisplayExceptZero = (self: Type): Type =>
-	make({
-		...self,
-		id: self.id + 'WithSignDisplayExceptZero',
-		signDisplay: SignDisplay.ExceptZero
-	});
+export const withSignDisplayExceptZero =
+	(descriptor = '') =>
+	(self: Type): Type =>
+		make({
+			...self,
+			descriptor,
+			signDisplay: SignDisplay.ExceptZero
+		});
 
 /**
  * Combinator that returns a copy of self with `signDisplay` set to `Negative`.
  *
  * @category Utils
  */
-export const withSignDisplayForNegativeExceptZero = (self: Type): Type =>
-	make({
-		...self,
-		id: self.id + 'WithSignDisplayForNegativeExceptZero',
-		signDisplay: SignDisplay.Negative
-	});
+export const withSignDisplayForNegativeExceptZero =
+	(descriptor = '') =>
+	(self: Type): Type =>
+		make({
+			...self,
+			descriptor,
+			signDisplay: SignDisplay.Negative
+		});
 
 /**
  * Combinator that returns a copy of self with `signDisplay` set to `Never`.
  *
  * @category Utils
  */
-export const withoutSignDisplay = (self: Type): Type =>
-	make({
-		...self,
-		id: self.id + 'WithoutSignDisplay',
-		signDisplay: SignDisplay.Never
-	});
+export const withoutSignDisplay =
+	(descriptor = '') =>
+	(self: Type): Type =>
+		make({
+			...self,
+			descriptor,
+			signDisplay: SignDisplay.Never
+		});
 
 /**
  * Combinator that returns a copy of self with `roundingMode` set to `Ceil`.
  *
  * @category Utils
  */
-export const withCeilRoundingMode = (self: Type): Type =>
-	make({
-		...self,
-		id: self.id + 'WithCeilRoundingMode',
-		roundingMode: CVRoundingMode.Type.Ceil
-	});
+export const withCeilRoundingMode =
+	(descriptor = '') =>
+	(self: Type): Type =>
+		make({
+			...self,
+			descriptor,
+			roundingMode: CVRoundingMode.Type.Ceil
+		});
 
 /**
  * Combinator that returns a copy of self with `roundingMode` set to `Floor`.
  *
  * @category Utils
  */
-export const withFloorRoundingMode = (self: Type): Type =>
-	make({
-		...self,
-		id: self.id + 'WithFloorRoundingMode',
-		roundingMode: CVRoundingMode.Type.Floor
-	});
+export const withFloorRoundingMode =
+	(descriptor = '') =>
+	(self: Type): Type =>
+		make({
+			...self,
+			descriptor,
+			roundingMode: CVRoundingMode.Type.Floor
+		});
 
 /**
  * Combinator that returns a copy of self with `roundingMode` set to `Expand`.
  *
  * @category Utils
  */
-export const withExpandRoundingMode = (self: Type): Type =>
-	make({
-		...self,
-		id: self.id + 'WithExpandRoundingMode',
-		roundingMode: CVRoundingMode.Type.Expand
-	});
+export const withExpandRoundingMode =
+	(descriptor = '') =>
+	(self: Type): Type =>
+		make({
+			...self,
+			descriptor,
+			roundingMode: CVRoundingMode.Type.Expand
+		});
 
 /**
  * Combinator that returns a copy of self with `roundingMode` set to `Trunc`.
  *
  * @category Utils
  */
-export const withTruncRoundingMode = (self: Type): Type =>
-	make({
-		...self,
-		id: self.id + 'WithTruncRoundingMode',
-		roundingMode: CVRoundingMode.Type.Trunc
-	});
+export const withTruncRoundingMode =
+	(descriptor = '') =>
+	(self: Type): Type =>
+		make({
+			...self,
+			descriptor,
+			roundingMode: CVRoundingMode.Type.Trunc
+		});
 
 /**
  * Combinator that returns a copy of self with `roundingMode` set to `HalfCeil`.
  *
  * @category Utils
  */
-export const withHalfCeilRoundingMode = (self: Type): Type =>
-	make({
-		...self,
-		id: self.id + 'WithHalfCeilRoundingMode',
-		roundingMode: CVRoundingMode.Type.HalfCeil
-	});
+export const withHalfCeilRoundingMode =
+	(descriptor = '') =>
+	(self: Type): Type =>
+		make({
+			...self,
+			descriptor,
+			roundingMode: CVRoundingMode.Type.HalfCeil
+		});
 
 /**
  * Combinator that returns a copy of self with `roundingMode` set to `HalfFloor`.
  *
  * @category Utils
  */
-export const withHalfFloorRoundingMode = (self: Type): Type =>
-	make({
-		...self,
-		id: self.id + 'WithHalfFloorRoundingMode',
-		roundingMode: CVRoundingMode.Type.HalfFloor
-	});
+export const withHalfFloorRoundingMode =
+	(descriptor = '') =>
+	(self: Type): Type =>
+		make({
+			...self,
+			descriptor,
+			roundingMode: CVRoundingMode.Type.HalfFloor
+		});
 
 /**
  * Combinator that returns a copy of self with `roundingMode` set to `HalfExpand`.
  *
  * @category Utils
  */
-export const withHalfExpandRoundingMode = (self: Type): Type =>
-	make({
-		...self,
-		id: self.id + 'WithHalfExpandRoundingMode',
-		roundingMode: CVRoundingMode.Type.HalfExpand
-	});
+export const withHalfExpandRoundingMode =
+	(descriptor = '') =>
+	(self: Type): Type =>
+		make({
+			...self,
+			descriptor,
+			roundingMode: CVRoundingMode.Type.HalfExpand
+		});
 
 /**
  * Combinator that returns a copy of self with `roundingMode` set to `HalfTrunc`.
  *
  * @category Utils
  */
-export const withHalfTruncRoundingMode = (self: Type): Type =>
-	make({
-		...self,
-		id: self.id + 'WithHalfTruncRoundingMode',
-		roundingMode: CVRoundingMode.Type.HalfTrunc
-	});
+export const withHalfTruncRoundingMode =
+	(descriptor = '') =>
+	(self: Type): Type =>
+		make({
+			...self,
+			descriptor,
+			roundingMode: CVRoundingMode.Type.HalfTrunc
+		});
 
 /**
  * Combinator that returns a copy of self with `roundingMode` set to `HalfEven`.
  *
  * @category Utils
  */
-export const withHalfEvenRoundingMode = (self: Type): Type =>
-	make({
-		...self,
-		id: self.id + 'WithHalfEvenRoundingMode',
-		roundingMode: CVRoundingMode.Type.HalfEven
-	});
+export const withHalfEvenRoundingMode =
+	(descriptor = '') =>
+	(self: Type): Type =>
+		make({
+			...self,
+			descriptor,
+			roundingMode: CVRoundingMode.Type.HalfEven
+		});
 
 /**
  * Combinator that returns a copy of self with `showNullIntegerPart` set to `false`.
  *
  * @category Utils
  */
-export const withNullIntegerPartNotShowing = (self: Type): Type =>
-	make({
-		...self,
-		id: self.id + 'WithNullIntegerPartNotShowing',
-		showNullIntegerPart: false
-	});
+export const withNullIntegerPartNotShowing =
+	(descriptor = '') =>
+	(self: Type): Type =>
+		make({
+			...self,
+			descriptor,
+			showNullIntegerPart: false
+		});
 
 /**
  * Combinator that returns a copy of self with `showNullIntegerPart` set to `true`.
  *
  * @category Utils
  */
-export const withNullIntegerPartShowing = (self: Type): Type =>
-	make({
-		...self,
-		id: self.id + 'WithNullIntegerPartShowing',
-		showNullIntegerPart: true
-	});
+export const withNullIntegerPartShowing =
+	(descriptor = '') =>
+	(self: Type): Type =>
+		make({
+			...self,
+			descriptor,
+			showNullIntegerPart: true
+		});
+
+/**
+ * NumberBase10Format instance that uses a comma as fractional separator and a space as thousand
+ * separator. Used in countries like France, French-speaking Canada, French-speaking Belgium,
+ * Denmark, Finland, Sweden...
+ *
+ * @category Instances
+ */
+export const frenchStyleThreeDecimalNumber: Type = make({
+	descriptor: 'French-style three-decimal number',
+	thousandSeparator: ' ',
+	fractionalSeparator: ',',
+	showNullIntegerPart: true,
+	minimumFractionDigits: 0,
+	maximumFractionDigits: 3,
+	eNotationChars: ['E', 'e'],
+	scientificNotation: ScientificNotation.None,
+	roundingMode: CVRoundingMode.Type.HalfExpand,
+	signDisplay: SignDisplay.Negative
+});
+
+/**
+ * NumberBase10Format instance that uses a comma as fractional separator and no thousand separator
+ *
+ * @category Instances
+ */
+export const frenchStyleUndividedThreeDecimalNumber: Type = pipe(
+	frenchStyleThreeDecimalNumber,
+	withoutThousandSeparator('French-style undivided three-decimal number')
+);
+
+/**
+ * NumberBase10Format instance that uses a comma as fractional separator and a dot as thousand
+ * separator. Used in countries like Dutch-speaking Belgium, the Netherlands, Germany, Italy,
+ * Norway, Croatia, Spain...
+ *
+ * @category Instances
+ */
+export const dutchStyleThreeDecimalNumber: Type = pipe(
+	frenchStyleThreeDecimalNumber,
+	MStruct.append({
+		descriptor: 'Dutch-style three-decimal number',
+		thousandSeparator: '.'
+	}),
+	make
+);
+
+/**
+ * NumberBase10Format instance that uses a comma as fractional separator and no thousand separator..
+ *
+ * @category Instances
+ */
+export const dutchStyleUndividedThreeDecimalNumber: Type = pipe(
+	dutchStyleThreeDecimalNumber,
+	withoutThousandSeparator('Dutch-style undivided three-decimal number')
+);
+
+/**
+ * NumberBase10Format instance that uses a dot as fractional separator and a comma as thousand
+ * separator. Used in countries like the UK, the US, English-speaking Canada, Australia, Thaïland,
+ * Bosnia...
+ *
+ * @category Instances
+ */
+export const ukStyleThreeDecimalNumber: Type = pipe(
+	frenchStyleThreeDecimalNumber,
+	MStruct.append({
+		descriptor: 'Uk-style three-decimal number',
+		fractionalSeparator: '.',
+		thousandSeparator: ','
+	}),
+	make
+);
+
+/**
+ * NumberBase10Format instance that uses a dot as fractional separator and no thousand separator.
+ *
+ * @category Instances
+ */
+export const ukStyleUndividedThreeDecimalNumber: Type = pipe(
+	ukStyleThreeDecimalNumber,
+	withoutThousandSeparator('Uk-style undivided three-decimal number')
+);
+
+/**
+ * French-style integer NumberBase10Format instance
+ *
+ * @category Instances
+ */
+export const frenchStyleInteger: Type = pipe(
+	frenchStyleThreeDecimalNumber,
+	withMaxNDecimals(0, 'French-style integer')
+);
+
+/**
+ * Dutch-style integer NumberBase10Format instance
+ *
+ * @category Instances
+ */
+export const dutchStyleInteger: Type = pipe(
+	dutchStyleThreeDecimalNumber,
+	withMaxNDecimals(0, 'Dutch-style integer')
+);
+
+/**
+ * Uk-style integer NumberBase10Format instance
+ *
+ * @category Instances
+ */
+export const ukStyleInteger: Type = pipe(
+	ukStyleThreeDecimalNumber,
+	withMaxNDecimals(0, 'Uk-style integer')
+);
+
+/**
+ * Integer NumberBase10Format instance with no thousand separator
+ *
+ * @category Instances
+ */
+export const undividedInteger: Type = pipe(
+	frenchStyleInteger,
+	withoutThousandSeparator('undivided integer')
+);
