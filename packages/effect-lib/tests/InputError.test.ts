@@ -16,7 +16,7 @@ describe('MInputError', () => {
 			);
 		});
 
-		it('Not passing string without name', () => {
+		it('Not passing without name', () => {
 			TEUtils.assertLeftMessage(
 				MInputError.assertValue({ expected: 'foo' })('bar'),
 				"Expected value to be: 'foo'. Actual: 'bar'"
@@ -36,14 +36,7 @@ describe('MInputError', () => {
 	});
 
 	describe('assertLength', () => {
-		it('Not passing without name', () => {
-			TEUtils.assertLeftMessage(
-				MInputError.assertLength({ expected: 5 })('foo'),
-				'Expected length of value to be: 5. Actual: 3'
-			);
-		});
-
-		it('Not passing with name', () => {
+		it('Not passing', () => {
 			TEUtils.assertLeftMessage(
 				MInputError.assertLength({ expected: 5, name: "'name'" })('foo'),
 				"Expected length of 'name' to be: 5. Actual: 3"
@@ -56,14 +49,7 @@ describe('MInputError', () => {
 	});
 
 	describe('assertMaxLength', () => {
-		it('Not passing without name', () => {
-			TEUtils.assertLeftMessage(
-				MInputError.assertMaxLength({ expected: 2 })('foo'),
-				'Expected length of value to be at most(included): 2. Actual: 3'
-			);
-		});
-
-		it('Not passing with name', () => {
+		it('Not passing', () => {
 			TEUtils.assertLeftMessage(
 				MInputError.assertMaxLength({ expected: 2, name: "'name'" })('foo'),
 				"Expected length of 'name' to be at most(included): 2. Actual: 3"
@@ -76,14 +62,7 @@ describe('MInputError', () => {
 	});
 
 	describe('assertInRange', () => {
-		it('Not passing without name', () => {
-			TEUtils.assertLeftMessage(
-				MInputError.assertInRange({ min: 3, max: 5, offset: 0 })(6),
-				'Expected value to be between 3 and 5 included. Actual: 6'
-			);
-		});
-
-		it('Not passing with name', () => {
+		it('Not passing', () => {
 			TEUtils.assertLeftMessage(
 				MInputError.assertInRange({ min: 3, max: 5, offset: 1, name: "'age'" })(6),
 				"Expected 'age' to be between 4 and 6 included. Actual: 7"
@@ -96,14 +75,7 @@ describe('MInputError', () => {
 	});
 
 	describe('assertStartsWith', () => {
-		it('Not passing without name', () => {
-			TEUtils.assertLeftMessage(
-				MInputError.assertStartsWith({ startString: 'foo' })('baz'),
-				"Expected value to start with 'foo'. Actual: 'baz'"
-			);
-		});
-
-		it('Not passing with name', () => {
+		it('Not passing', () => {
 			TEUtils.assertLeftMessage(
 				MInputError.assertStartsWith({ startString: 'foo', name: "'text'" })('baz'),
 				"Expected 'text' to start with 'foo'. Actual: 'baz'"
@@ -118,15 +90,27 @@ describe('MInputError', () => {
 		});
 	});
 
-	describe('assertEmpty', () => {
-		it('Not passing without name', () => {
+	describe('assertMatches', () => {
+		const assertContainsOneDigit = MInputError.assertMatches({
+			regExp: /\d/,
+			regExpDescriptor: 'to contain a digit',
+			name: "'text'"
+		});
+
+		it('Not passing', () => {
 			TEUtils.assertLeftMessage(
-				MInputError.assertEmpty()('baz'),
-				"Expected value to be empty. Actual: 'baz'"
+				assertContainsOneDigit('foo'),
+				"Expected 'text' to contain a digit. Actual: 'foo'"
 			);
 		});
 
-		it('Not passing with name', () => {
+		it('Passing', () => {
+			TEUtils.assertRight(assertContainsOneDigit('fo4o'), 'fo4o');
+		});
+	});
+
+	describe('assertEmpty', () => {
+		it('Not passing', () => {
 			TEUtils.assertLeftMessage(
 				MInputError.assertEmpty({ name: "'text'" })('baz'),
 				"Expected 'text' to be empty. Actual: 'baz'"

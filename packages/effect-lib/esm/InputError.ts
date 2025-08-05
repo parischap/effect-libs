@@ -2,6 +2,7 @@
 
 import { Data, Either, flow, Function, Number, Option, Predicate, String } from 'effect';
 import * as MFunction from './Function.js';
+import * as MString from './String.js';
 import * as MTypes from './types.js';
 
 /**
@@ -165,7 +166,7 @@ export const assertInRange = (params: {
 	);
 
 /**
- * Builds an Input error that signals a string not starting with
+ * Builds an Input error that signals a string not starting with `startString`
  *
  * @category Constructors
  */
@@ -183,7 +184,7 @@ export const notStartingWith = ({
 	});
 
 /**
- * Returns a `right` of `input`` if `input`starts with`startString`. Otherwise, returns a `left` of
+ * Returns a `right` of `input` if `input` starts with `startString`. Otherwise, returns a `left` of
  * an InputError
  *
  * @category Constructors
@@ -194,6 +195,39 @@ export const assertStartsWith = (params: {
 }): MTypes.OneArgFunction<string, Either.Either<string, Type>> =>
 	Either.liftPredicate(String.startsWith(params.startString), (actual) =>
 		notStartingWith({ ...params, actual })
+	);
+
+/**
+ * Builds an Input error that signals a string not matching `regExp`
+ *
+ * @category Constructors
+ */
+export const notMatching = ({
+	regExpDescriptor,
+	actual,
+	name
+}: {
+	readonly regExpDescriptor: string;
+	readonly actual: string;
+	readonly name?: string;
+}) =>
+	new Type({
+		message: `Expected ${_nameLabel(name)} ${regExpDescriptor}. Actual: '${actual}'`
+	});
+
+/**
+ * Returns a `right` of `input` if `input` matches `regExp`. Otherwise, returns a `left` of an
+ * InputError
+ *
+ * @category Constructors
+ */
+export const assertMatches = (params: {
+	readonly regExp: RegExp;
+	readonly regExpDescriptor: string;
+	readonly name?: string;
+}): MTypes.OneArgFunction<string, Either.Either<string, Type>> =>
+	Either.liftPredicate(MString.matches(params.regExp), (actual) =>
+		notMatching({ ...params, actual })
 	);
 
 /**
