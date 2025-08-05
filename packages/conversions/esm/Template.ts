@@ -8,6 +8,12 @@
  * - A fixedLength PlaceHolder with a length of 2
  * - A literals PlaceHolder containing the string '/'
  * - A fixedLength PlaceHolder with a length of 4
+ *
+ * Note that Effect does provide the Schema.TemplateLiteralParser API which partly addresses the
+ * same problems. But there are some limitations to that API. For instance, how would you describe
+ * an input representing a date in the form YYYYMMDD? There is no way you can describe a type that
+ * represents a fixed-length string. In the same manner, how would you describe a type that
+ * represents a string composed only of capital letters?
  */
 
 import { MInputError, MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
@@ -86,7 +92,7 @@ export const placeHolders: <NS extends ReadonlyArray<string>>(
 ) => NamesToPlaceHolders<NS> = Struct.get('placeHolders');
 
 /**
- * Returns a function that reads a text into record according to 'self' .
+ * Returns a function that reads a text into a record according to 'self' .
  *
  * @category Destructors
  */

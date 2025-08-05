@@ -8,25 +8,41 @@
  *
  * Each PlaceHolder defines a reader and a writer:
  *
- * - The reader takes a text, consumes what it can from that text that is coherent with what it can
- *   contain and, if successful, returns a right of the consumed part and of what is left over. In
- *   case of an error, it returns a left.
- * - The writer takes a value, checks that this value is coherent with what it can contain and, if so,
- *   returns a right of that value. Otherwise, it returns a left.
+ * - The reader takes a string, consumes what it can from that string that is coherent with what the
+ *   PlaceHolder can contain and, if successful, returns a right of the consumed part and of what is
+ *   left over. In case of an error, it returns a left.
+ * - The writer takes a string, checks that this string is coherent with what the PlaceHolder can
+ *   contain and, if so, returns a right of that string. Otherwise, it returns a left.
+ *
+ * A PlaceHolder also defines a Transformer which tries to convert a string into a type T (for
+ * instance a number) and vice-versa. Transformer's can be combined (for instance, you can combine
+ * the unpad and toNumber Transformer's).
  */
+
 import {
-	MFunction,
 	MInputError,
 	MInspectable,
 	MPipeable,
-	MRegExp,
 	MString,
-	MStruct,
 	MTuple,
 	MTypes
 } from '@parischap/effect-lib';
 
-import { Array, Either, flow, Pipeable, Predicate, Struct, Tuple, Types } from 'effect';
+import {
+	Either,
+	flow,
+	Function,
+	pipe,
+	Pipeable,
+	Predicate,
+	String,
+	Struct,
+	Tuple,
+	Types
+} from 'effect';
+
+import * as CVNumberBase10Format from './NumberBase10Format.js';
+import * as CVReal from './Real.js';
 
 /**
  * Module tag
@@ -48,10 +64,10 @@ export namespace Reader {
 	 *
 	 * @category Models
 	 */
-	export interface Type
+	export interface Type<out T>
 		extends MTypes.OneArgFunction<
 			string,
-			Either.Either<readonly [consumed: string, leftOver: string], MInputError.Type>
+			Either.Either<readonly [consumed: T, leftOver: string], MInputError.Type>
 		> {}
 }
 
@@ -66,8 +82,8 @@ export namespace Writer {
 	 *
 	 * @category Models
 	 */
-	export interface Type
-		extends MTypes.OneArgFunction<string, Either.Either<string, MInputError.Type>> {}
+	export interface Type<in T>
+		extends MTypes.OneArgFunction<T, Either.Either<string, MInputError.Type>> {}
 }
 
 /**
@@ -75,18 +91,21 @@ export namespace Writer {
  *
  * @category Models
  */
-export interface Type<out N extends string> extends MInspectable.Type, Pipeable.Pipeable {
-	/** Name of this Placeholder */
-	readonly name: N;
+export interface Type<out N extends string, in out T> extends MInspectable.Type, Pipeable.Pipeable {
+	/** Id of this Placeholder */
+	readonly id: N;
+
+	/** Descriptor of this Placeholder */
+	readonly descriptor: string;
 
 	/** Reader of this Placeholder */
-	readonly reader: Reader.Type;
+	readonly reader: Reader.Type<T>;
 
 	/** Writer of this PlaceHolder */
-	readonly writer: Writer.Type;
+	readonly writer: Writer.Type<T>;
 
 	/** @internal */
-	readonly [_TypeId]: { readonly _N: Types.Covariant<N> };
+	readonly [_TypeId]: { readonly _N: Types.Covariant<N>; readonly _T: Types.Invariant<T> };
 }
 
 /**
@@ -94,13 +113,14 @@ export interface Type<out N extends string> extends MInspectable.Type, Pipeable.
  *
  * @category Guards
  */
-export const has = (u: unknown): u is Type<string> => Predicate.hasProperty(u, _TypeId);
+export const has = (u: unknown): u is Type<string, unknown> => Predicate.hasProperty(u, _TypeId);
 
 /** Proto */
-const proto: MTypes.Proto<Type<never>> = {
-	[_TypeId]: { _N: MTypes.covariantValue },
-	[MInspectable.IdSymbol]<N extends string>(this: Type<N>) {
-		return `Placeholder ${this.name}`;
+/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+const proto: MTypes.Proto<Type<never, any>> = {
+	[_TypeId]: { _N: MTypes.covariantValue, _T: MTypes.invariantValue },
+	[MInspectable.IdSymbol]<N extends string, T>(this: Type<N, T>) {
+		return this.descriptor;
 	},
 	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto
@@ -111,178 +131,242 @@ const proto: MTypes.Proto<Type<never>> = {
  *
  * @category Constructors
  */
-export const make = <N extends string>(params: MTypes.Data<Type<N>>): Type<N> =>
+export const make = <N extends string, T>(params: MTypes.Data<Type<N, T>>): Type<N, T> =>
 	MTypes.objectFromDataAndProto(proto, params);
 
 /**
- * Returns the `name` property of `self`
+ * Returns the `id` property of `self`
  *
  * @category Destructors
  */
-export const name: <N extends string>(self: Type<N>) => N = Struct.get('name');
+export const id: <N extends string, T>(self: Type<N, T>) => N = Struct.get('id');
+
+/**
+ * Returns the `descriptor` property of `self`
+ *
+ * @category Destructors
+ */
+export const descriptor: <N extends string, T>(self: Type<N, T>) => string =
+	Struct.get('descriptor');
 
 /**
  * Returns the `reader` property of `self`
  *
  * @category Destructors
  */
-export const reader: MTypes.OneArgFunction<Type<string>, Reader.Type> = Struct.get('reader');
+export const reader: <N extends string, T>(self: Type<N, T>) => Reader.Type<T> =
+	Struct.get('reader');
 
 /**
  * Returns the `writer` property of `self`
  *
  * @category Destructors
  */
-export const writer: MTypes.OneArgFunction<Type<string>, Writer.Type> = Struct.get('writer');
+export const writer: <N extends string, T>(self: Type<N, T>) => Writer.Type<T> =
+	Struct.get('writer');
 
 /**
- * PlaceHolder instance that reads/writes exactly `n` characters from a string. `length` must be a
- * strictly positive integer.
+ * Builds a PlaceHolder instance that reads/writes exactly `length` characters from a string.
+ * `length` must be a strictly positive integer.
  *
- * @category Instances
+ * @category Instance builders
  */
 export const fixedLength = <N extends string>({
-	name,
+	id,
 	length
 }: {
-	readonly name: N;
+	readonly id: N;
 	readonly length: number;
-}): Type<N> => {
-	const lengthPredicate = MString.hasLength(length);
+}): Type<N, string> => {
+	const name = `placeholder '${id}'`;
 	return make({
-		name,
+		id,
+		descriptor: `${id}: ${length}-character string`,
 		reader: flow(
 			MString.splitAt(length),
-			Either.liftPredicate(flow(Tuple.getFirst, lengthPredicate), (s) =>
-				MInputError.missized({
-					expected: length,
-					actual: s[0].length,
-					name: `'${name}'`
-				})
-			)
+			Tuple.mapBoth({
+				onFirst: MInputError.assertLength({ expected: length, name }),
+				onSecond: Either.right
+			}),
+			Either.all
 		),
-		writer: flow(
-			Either.liftPredicate(lengthPredicate, (s) =>
-				MInputError.missized({
-					expected: length,
-					actual: s.length,
-					name: `'${name}'`
-				})
-			)
-		)
+		writer: MInputError.assertLength({ expected: length, name })
 	});
 };
 
 /**
- * PlaceHolder instance that reads/writes a given strin.
+ * Builds a PlaceHolder instance that reads/writes exactly `length` characters from a string and
+ * trims/pads the result at `padPosition` with `fillChar`. `fillChar` should be a one-character
+ * string. `length` must be a strictly positive integer. See the meaning of `disallowEmptyString` in
+ * String.trim.
  *
- * @category Instances
+ * @category Instance builders
+ */
+export const paddedFixedLength = <N extends string>(params: {
+	readonly id: N;
+	readonly length: number;
+	readonly fillChar: string;
+	readonly padPosition: MString.PadPosition;
+	readonly disallowEmptyString: boolean;
+}): Type<N, string> => {
+	const id = params.id;
+	const placeHolder = fixedLength(params);
+	const trimmer = MString.trim(params);
+	const padder = MString.pad(params);
+	const name = `placeholder '${id}'`;
+	return make({
+		id,
+		descriptor: `${placeHolder.descriptor} ${MString.PadPosition.toId(params.padPosition)}-padded with '${params.fillChar}'`,
+		reader: flow(placeHolder.reader, Either.map(Tuple.mapFirst(trimmer))),
+		writer: flow(MInputError.assertMaxLength({ expected: params.length, name }), Either.map(padder))
+	});
+};
+
+/**
+ * Builds a PlaceHolder instance that reads/writes a Real in the given `numberBase10Format`. If the
+ * number to read/write does not occupy length characters, trimming/padding is applied. See the
+ * paddedFixedLength instance builder.
+ *
+ * @category Instance builders
+ */
+export const fixedLengthToReal = <N extends string>(params: {
+	readonly id: N;
+	readonly length: number;
+	readonly fillChar: string;
+	readonly padPosition: MString.PadPosition;
+	readonly disallowEmptyString: boolean;
+	readonly numberBase10Format: CVNumberBase10Format.Type;
+}): Type<N, CVReal.Type> => {
+	const id = params.id;
+	const placeHolder = paddedFixedLength(params);
+	const numberBase10Format = params.numberBase10Format;
+	const numberReader = CVNumberBase10Format.toRealReader(numberBase10Format);
+	const numberWriter = CVNumberBase10Format.toNumberWriter(numberBase10Format);
+
+	return make({
+		id,
+		descriptor: `${placeHolder.descriptor} to ${numberBase10Format.id}-formatted base-10 number`,
+		reader: flow(
+			placeHolder.reader,
+			Either.flatMap(
+				flow(
+					Tuple.mapBoth({
+						onFirst: (consumed) =>
+							pipe(
+								consumed,
+								numberReader,
+								Either.fromOption(
+									() =>
+										new MInputError.Type({
+											message: `Placeholder '${id}' contains '${consumed}' which cannot be converted to a ${numberBase10Format.id}-formatted base-10 number`
+										})
+								)
+							),
+						onSecond: Either.right
+					}),
+					Either.all
+				)
+			)
+		),
+		writer: flow(CVReal.toBigDecimal, numberWriter, placeHolder.writer)
+	});
+};
+
+/**
+ * Builds a PlaceHolder instance that reads/writes a Real provided in `numberBase10Format`.
+ *
+ * @category Instance builders
+ */
+export const real = <N extends string>({
+	id,
+	numberBase10Format
+}: {
+	readonly id: N;
+	readonly numberBase10Format: CVNumberBase10Format.Type;
+}): Type<N, CVReal.Type> => {
+	const numberReader = CVNumberBase10Format.toRealExtractor(numberBase10Format);
+	const numberWriter = CVNumberBase10Format.toNumberWriter(numberBase10Format);
+	const flippedTakeRightBut = Function.flip(MString.takeRightBut);
+	return make({
+		id,
+		descriptor: `${numberBase10Format.id}-formatted base-10 number`,
+		reader: (text) =>
+			pipe(
+				text,
+				numberReader,
+				Either.fromOption(
+					() =>
+						new MInputError.Type({
+							message: `Placeholder '${id}' contains '${text}' from the start of which a ${numberBase10Format.id}-formatted base-10 number could not be extracted`
+						})
+				),
+				Either.map(Tuple.mapSecond(flow(String.length, flippedTakeRightBut(text))))
+			),
+		writer: flow(numberWriter, Either.right)
+	});
+};
+
+/**
+ * Builds a PlaceHolder instance that reads/writes a given string.
+ *
+ * @category Instance builders
  */
 export const literal = <N extends string>({
-	name,
+	id,
 	value
 }: {
-	readonly name: N;
+	readonly id: N;
 	readonly value: string;
-}): Type<N> => {
+}): Type<N, string> => {
+	const name = `placeholder '${id}'`;
 	return make({
-		name,
+		id,
+		descriptor: `'${value}' string`,
 		reader: flow(
-			MInputError.assertStartsWithAndStrip({ startString: value, name: `'${name}'` }),
-			Either.map(flow(Tuple.make, MTuple.prependElement(value)))
+			MInputError.assertStartsWith({ startString: value, name }),
+			Either.map(flow(MString.takeRightBut(value.length), Tuple.make, MTuple.prependElement(value)))
 		),
-		writer: MInputError.assertValue({ expected: value, name: `'${name}'` })
+		writer: MInputError.assertValue({ expected: value, name })
 	});
 };
 
 /**
- * PlaceHolder instance that reads/writes as long as `predicate` is fulfilled. `predicate` must be a
- * predicate of a one-char string
+ * Builds a PlaceHolder instance that reads/writes the regular expression regExp. `regExp` should
+ * start with the ^ character. Otherwise, the reader will read all the remaining text in case of a
+ * match.
  *
- * @category Instances
+ * @category Instance builders
  */
 export const fulfilling = <N extends string>({
-	name,
-	predicate
+	id,
+	regExp,
+	descriptor
 }: {
-	readonly name: N;
-	readonly predicate: Predicate.Predicate<string>;
-}): Type<N> => {
-	const negativePredicate = Predicate.not(predicate);
+	readonly id: N;
+	readonly regExp: RegExp;
+	readonly descriptor: string;
+}): Type<N, string> => {
+	const flippedTakeRightBut = Function.flip(MString.takeRightBut);
+	const assertMatches = MInputError.assertMatches({
+		regExp,
+		regExpDescriptor: descriptor,
+		name: `placeholder '${id}'`
+	});
 
 	return make({
-		name,
-		reader: flow(
-			Array.splitWhere(negativePredicate),
-			Tuple.mapBoth({ onFirst: Array.join(''), onSecond: Array.join('') }),
-			Either.right
-		),
-		writer: Either.liftPredicate(
-			flow(Array.fromIterable, Array.every(predicate)),
-			(actual) =>
-				new MInputError.Type({
-					message: `Trying to write separator character in '${name}': '${actual}'`
-				})
-		)
+		id,
+		descriptor,
+		reader: (text) =>
+			pipe(
+				text,
+				assertMatches,
+				Either.map(
+					MTuple.makeBothBy({
+						toFirst: Function.identity,
+						toSecond: flow(String.length, flippedTakeRightBut(text))
+					})
+				)
+			),
+		writer: assertMatches
 	});
 };
-
-/**
- * PlaceHolder instance that reads/writes as long as `predicate` is not fulfilled. `predicate` must
- * be a predicate of a one-char string
- *
- * @category Instances
- */
-export const notFulfilling: <N extends string>(params: {
-	readonly name: N;
-	readonly predicate: Predicate.Predicate<string>;
-}) => Type<N> = flow(MStruct.evolve({ predicate: Predicate.not }), fulfilling);
-
-/**
- * PlaceHolder instance that reads/writes anything that does not contain a space
- *
- * @category Instances
- */
-export const noSpace: <N extends string>(params: { readonly name: N }) => Type<N> = flow(
-	MStruct.append({ predicate: MString.fulfillsRegExp(MRegExp.space) }),
-	notFulfilling
-);
-
-/**
- * PlaceHolder instance that reads/writes anything that is an uninterrupted list of digits
- *
- * @category Instances
- */
-export const digits: <N extends string>(params: { readonly name: N }) => Type<N> = flow(
-	MStruct.append({ predicate: MString.fulfillsRegExp(MRegExp.digit) }),
-	fulfilling
-);
-
-/**
- * PlaceHolder instance that reads/writes anything that is different from `separator`. `separator`
- * must be a one-character string
- *
- * @category Instances
- */
-export const allBut: <N extends string>(params: {
-	readonly name: N;
-	readonly separator: string;
-}) => Type<N> = flow(
-	MStruct.enrichWith({
-		predicate: flow(Struct.get('separator'), MFunction.strictEquals)
-	}),
-	notFulfilling
-);
-
-/**
- * PlaceHolder instance that reads/writes the whole contents of what it receives. This PlaceHolder
- * should be used in final position only.
- *
- * @category Instances
- */
-export const final = <N extends string>({ name }: { readonly name: N }): Type<N> =>
-	make({
-		name,
-		reader: flow(Tuple.make, Tuple.appendElement(''), Either.right),
-		writer: Either.right
-	});
