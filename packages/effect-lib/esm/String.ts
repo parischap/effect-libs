@@ -559,6 +559,16 @@ export const match =
 		pipe(regExp, MRegExp.match(self));
 
 /**
+ * Returns `true` if `self` fulfills regExp. `false` otherwise. Does the same as
+ * RegExp.prototype.test but does not take the g flag into account even if it is set and so does not
+ * care for the lastIndex property of `regExp`
+ *
+ * @category Utils
+ */
+export const matches = (regExp: RegExp): Predicate.Predicate<string> =>
+	flow(match(regExp), Option.match({ onNone: Function.constFalse, onSome: Function.constTrue }));
+
+/**
  * Same as match but also returns capturing groups.
  *
  * @category Destructors
@@ -649,7 +659,7 @@ export const tabify =
 	};
 
 /**
- * Returns true if `self` contains an eol character
+ * Returns true if `self` contains at least an eol character
  *
  * @category Utils
  */
@@ -694,11 +704,3 @@ export const removeNCharsEveryMCharsFromRight = ({
 	n === 0 ?
 		Function.identity
 	:	flow(splitEquallyRestAtStart(m + n), Array.map(String.takeRight(m)), Array.join(''));
-
-/**
- * Returns `true` if `self` fulfills regExp. `false` otherwise.
- *
- * @category Utils
- */
-export const fulfillsRegExp = (regExp: RegExp): Predicate.Predicate<string> =>
-	regExp.test.bind(regExp);

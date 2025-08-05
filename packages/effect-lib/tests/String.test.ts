@@ -481,6 +481,17 @@ describe('MString', () => {
 		});
 	});
 
+	describe('matches', () => {
+		const containsDigit = MString.matches(/\d/);
+		it('Matching', () => {
+			TEUtils.assertTrue(containsDigit('a9b'));
+		});
+
+		it('Non matching', () => {
+			TEUtils.assertFalse(containsDigit('a'));
+		});
+	});
+
 	describe('splitAt', () => {
 		it('Empty string', () => {
 			TEUtils.deepStrictEqual(MString.splitAt(2)(''), ['', '']);
@@ -578,16 +589,5 @@ describe('MString', () => {
 			MString.removeNCharsEveryMCharsFromRight({ n: 2, m: 3 })('1aafooaabaraabaz'),
 			'1foobarbaz'
 		);
-	});
-
-	describe('fulfillsRegExp', () => {
-		const isDigit = MString.fulfillsRegExp(/\d/);
-		it('Matching', () => {
-			TEUtils.assertTrue(isDigit('9'));
-		});
-
-		it('Non matching', () => {
-			TEUtils.assertFalse(isDigit('a'));
-		});
 	});
 });
