@@ -33,14 +33,16 @@ export interface Type extends Inspectable.Inspectable {
 	readonly [IdSymbol]: () => string;
 }
 /**
- * Prototype of an `Inspectable` that overloads the `toJSON` method. If the object (usually its
- * prototype) has a `[IdSymbol]` function, returns the result of this function. Otherwise, return
- * this with an extra '_id' field containing the moduleTag.
+ * Prototype of an `Inspectable` that overloads the `toJSON` and `toString` methods.
  *
  * @category Constants
  */
 export const BaseProto = (moduleTag: string): Inspectable.Inspectable => ({
 	...Inspectable.BaseProto,
+	/**
+	 * If the object (usually its prototype) has an `[IdSymbol]` function, returns the result of this
+	 * function. Otherwise, returns this with an extra '_id' field containing the moduleTag.
+	 */
 	toJSON(this: {}): unknown {
 		return pipe(
 			this,
@@ -50,6 +52,10 @@ export const BaseProto = (moduleTag: string): Inspectable.Inspectable => ({
 			Option.getOrElse(() => ({ _id: moduleTag, ...this }))
 		);
 	},
+	/**
+	 * If the object (usually its prototype) has an `[IdSymbol]` function, returns the result of this
+	 * function. Otherwise, calls the Inspectable.toString function
+	 */
 	toString(this: {}): string {
 		return pipe(
 			this,
