@@ -354,13 +354,9 @@ describe('NumberBase10Format', () => {
 
 	describe('toBigDecimalExtractor', () => {
 		describe('General tests with frenchStyleThreeDecimalNumber', () => {
-			//Use withSignDisplayForNegativeExceptZero to make sure that SignDisplay.toReader is called properly
-			const numberExtractor = pipe(
-				frenchStyleThreeDecimalNumber,
-				CVNumberBase10Format.withSignDisplayForNegativeExceptZero(),
-				CVNumberBase10Format.toBigDecimalExtractor
+			const numberExtractor = CVNumberBase10Format.toBigDecimalExtractor(
+				frenchStyleThreeDecimalNumber
 			);
-
 			it('String not starting by number', () => {
 				TEUtils.assertNone(numberExtractor('Dummy'));
 			});

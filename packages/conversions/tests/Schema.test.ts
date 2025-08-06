@@ -116,7 +116,7 @@ describe('CVSchema', () => {
 	});
 
 	describe('BigDecimal', () => {
-		const schema = CVSchema.BigDecimal(CVNumberBase10Format.commaAndSpace);
+		const schema = CVSchema.BigDecimal(CVNumberBase10Format.frenchStyleThreeDecimalNumber);
 		describe('Decoding', () => {
 			it('Not passing', () => {
 				TEUtils.assertLeft(pipe('', Schema.decodeEither(schema)));
@@ -137,7 +137,7 @@ describe('CVSchema', () => {
 	});
 
 	describe('RealFromString', () => {
-		const schema = CVSchema.RealFromString(CVNumberBase10Format.commaAndSpace);
+		const schema = CVSchema.RealFromString(CVNumberBase10Format.frenchStyleThreeDecimalNumber);
 		describe('Decoding', () => {
 			it('Not passing', () => {
 				TEUtils.assertLeft(pipe('', Schema.decodeEither(schema)));

@@ -178,10 +178,10 @@ export const fixedLength = <N extends string>({
 	readonly id: N;
 	readonly length: number;
 }): Type<N, string> => {
-	const name = `placeholder '${id}'`;
+	const name = `'${id}' placeholder`;
 	return make({
 		id,
-		descriptor: `${id}: ${length}-character string`,
+		descriptor: `${name}: ${length}-character string`,
 		reader: flow(
 			MString.splitAt(length),
 			Tuple.mapBoth({
@@ -213,7 +213,7 @@ export const paddedFixedLength = <N extends string>(params: {
 	const placeHolder = fixedLength(params);
 	const trimmer = MString.trim(params);
 	const padder = MString.pad(params);
-	const name = `placeholder '${id}'`;
+	const name = `'${id}' placeholder`;
 	return make({
 		id,
 		descriptor: `${placeHolder.descriptor} ${MString.PadPosition.toId(params.padPosition)}-padded with '${params.fillChar}'`,
@@ -245,7 +245,7 @@ export const fixedLengthToReal = <N extends string>(params: {
 
 	return make({
 		id,
-		descriptor: `${placeHolder.descriptor} to ${numberBase10Format.id}-formatted base-10 number`,
+		descriptor: `${placeHolder.descriptor} to ${numberBase10Format.descriptor}`,
 		reader: flow(
 			placeHolder.reader,
 			Either.flatMap(
@@ -258,7 +258,7 @@ export const fixedLengthToReal = <N extends string>(params: {
 								Either.fromOption(
 									() =>
 										new MInputError.Type({
-											message: `Placeholder '${id}' contains '${consumed}' which cannot be converted to a ${numberBase10Format.id}-formatted base-10 number`
+											message: `'${id}' placeholder contains '${consumed}' which cannot be converted to a ${numberBase10Format.descriptor}-formatted base-10 number`
 										})
 								)
 							),
@@ -287,9 +287,10 @@ export const real = <N extends string>({
 	const numberReader = CVNumberBase10Format.toRealExtractor(numberBase10Format);
 	const numberWriter = CVNumberBase10Format.toNumberWriter(numberBase10Format);
 	const flippedTakeRightBut = Function.flip(MString.takeRightBut);
+	const name = `'${id}' placeholder`;
 	return make({
 		id,
-		descriptor: `${numberBase10Format.id}-formatted base-10 number`,
+		descriptor: `${name}: ${numberBase10Format.descriptor}`,
 		reader: (text) =>
 			pipe(
 				text,
@@ -297,7 +298,7 @@ export const real = <N extends string>({
 				Either.fromOption(
 					() =>
 						new MInputError.Type({
-							message: `Placeholder '${id}' contains '${text}' from the start of which a ${numberBase10Format.id}-formatted base-10 number could not be extracted`
+							message: `${name} contains '${text}' from the start of which a ${numberBase10Format.descriptor} could not be extracted`
 						})
 				),
 				Either.map(Tuple.mapSecond(flow(String.length, flippedTakeRightBut(text))))
@@ -318,12 +319,12 @@ export const literal = <N extends string>({
 	readonly id: N;
 	readonly value: string;
 }): Type<N, string> => {
-	const name = `placeholder '${id}'`;
+	const name = `'${id}' placeholder`;
 	return make({
 		id,
-		descriptor: `'${value}' string`,
+		descriptor: `${name}: '${value}' string`,
 		reader: flow(
-			MInputError.assertStartsWith({ startString: value, name }),
+			MInputError.assertStartsWith({ startString: value, name: `remaining text for ${name}` }),
 			Either.map(flow(MString.takeRightBut(value.length), Tuple.make, MTuple.prependElement(value)))
 		),
 		writer: MInputError.assertValue({ expected: value, name })
@@ -331,35 +332,35 @@ export const literal = <N extends string>({
 };
 
 /**
- * Builds a PlaceHolder instance that reads/writes the regular expression regExp. `regExp` should
- * start with the ^ character. Otherwise, the reader will read all the remaining text in case of a
- * match.
+ * Builds a PlaceHolder instance that reads/writes the regular expression regExp. `regExp` must
+ * start with the ^ character. Otherwise, the reader and writer will not work properly.
  *
  * @category Instance builders
  */
 export const fulfilling = <N extends string>({
 	id,
 	regExp,
-	descriptor
+	regExpDescriptor
 }: {
 	readonly id: N;
 	readonly regExp: RegExp;
-	readonly descriptor: string;
+	readonly regExpDescriptor: string;
 }): Type<N, string> => {
 	const flippedTakeRightBut = Function.flip(MString.takeRightBut);
-	const assertMatches = MInputError.assertMatches({
+	const name = `'${id}' placeholder`;
+	const match = MInputError.match({
 		regExp,
-		regExpDescriptor: descriptor,
-		name: `placeholder '${id}'`
+		regExpDescriptor: 'to be ' + regExpDescriptor,
+		name
 	});
 
 	return make({
 		id,
-		descriptor,
+		descriptor: `${name}: ${regExpDescriptor}`,
 		reader: (text) =>
 			pipe(
 				text,
-				assertMatches,
+				match,
 				Either.map(
 					MTuple.makeBothBy({
 						toFirst: Function.identity,
@@ -367,6 +368,29 @@ export const fulfilling = <N extends string>({
 					})
 				)
 			),
-		writer: assertMatches
+		writer: (text) =>
+			pipe(
+				text,
+				match,
+				Either.filterOrLeft(
+					MString.hasLength(text.length),
+					() =>
+						new MInputError.Type({
+							message: `${name}: expected ${regExpDescriptor}. Actual: '${text}'`
+						})
+				)
+			)
 	});
 };
+
+/**
+ * Builds a PlaceHolder instance that reads/writes at least one non-space character.
+ *
+ * @category Instance builders
+ */
+export const atLeastOneNonSpaceChar = <N extends string>(id: N): Type<N, string> =>
+	fulfilling({
+		id,
+		regExp: /^[^\s]+/,
+		regExpDescriptor: 'a non-empty string containing non-space characters'
+	});

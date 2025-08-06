@@ -1,13 +1,12 @@
 /* eslint-disable functional/no-expression-statements */
-import { CVPlaceHolder } from '@parischap/conversions';
-import { MTypes } from '@parischap/effect-lib';
+import { CVNumberBase10Format, CVPlaceHolder, CVReal } from '@parischap/conversions';
+import { MString } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
 import { Tuple } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('CVPlaceHolder', () => {
-	const threeChars = CVPlaceHolder.fixedLength({ name: 'foo', length: 3 });
-	MTypes.areEqualTypes<typeof threeChars, CVPlaceHolder.Type<'foo'>>() satisfies true;
+	const threeChars = CVPlaceHolder.fixedLength({ id: 'foo', length: 3 });
 
 	describe('Tag, prototype and guards', () => {
 		it('moduleTag', () => {
@@ -16,10 +15,6 @@ describe('CVPlaceHolder', () => {
 
 		it('.pipe()', () => {
 			TEUtils.assertTrue(threeChars.pipe(CVPlaceHolder.has));
-		});
-
-		it('.toString()', () => {
-			TEUtils.strictEqual(threeChars.toString(), 'Placeholder foo');
 		});
 
 		describe('has', () => {
@@ -33,9 +28,16 @@ describe('CVPlaceHolder', () => {
 	});
 
 	describe('fixedLength', () => {
+		it('.toString()', () => {
+			TEUtils.strictEqual(threeChars.toString(), "'foo' placeholder: 3-character string");
+		});
+
 		describe('Reading', () => {
 			it('Not enough characters left', () => {
-				TEUtils.assertLeft(threeChars.reader(''));
+				TEUtils.assertLeftMessage(
+					threeChars.reader(''),
+					"Expected length of 'foo' placeholder to be: 3. Actual: 0"
+				);
 				TEUtils.assertLeft(threeChars.reader('aa'));
 			});
 
@@ -50,7 +52,10 @@ describe('CVPlaceHolder', () => {
 
 		describe('Writing', () => {
 			it('Too few characters', () => {
-				TEUtils.assertLeft(threeChars.reader(''));
+				TEUtils.assertLeftMessage(
+					threeChars.reader(''),
+					"Expected length of 'foo' placeholder to be: 3. Actual: 0"
+				);
 				TEUtils.assertLeft(threeChars.writer('aa'));
 			});
 
@@ -64,14 +69,141 @@ describe('CVPlaceHolder', () => {
 		});
 	});
 
-	describe('literal', () => {
-		const literal = CVPlaceHolder.literal({ name: 'foo', value: 'foo' });
+	describe('paddedFixedLength', () => {
+		const placeHolder = CVPlaceHolder.paddedFixedLength({
+			id: 'foo',
+			length: 3,
+			fillChar: '0',
+			padPosition: MString.PadPosition.Left,
+			disallowEmptyString: true
+		});
+		it('.toString()', () => {
+			TEUtils.strictEqual(
+				placeHolder.toString(),
+				"'foo' placeholder: 3-character string left-padded with '0'"
+			);
+		});
 
-		MTypes.areEqualTypes<typeof literal, CVPlaceHolder.Type<'foo'>>() satisfies true;
+		describe('Reading', () => {
+			it('Not passing', () => {
+				TEUtils.assertLeftMessage(
+					placeHolder.reader(''),
+					"Expected length of 'foo' placeholder to be: 3. Actual: 0"
+				);
+			});
+
+			it('Passing', () => {
+				TEUtils.assertRight(placeHolder.reader('001 and baz'), Tuple.make('1', ' and baz'));
+			});
+		});
+
+		describe('Writing', () => {
+			it('Not passing', () => {
+				TEUtils.assertLeftMessage(
+					placeHolder.writer('foo and baz'),
+					"Expected length of 'foo' placeholder to be at most(included): 3. Actual: 11"
+				);
+			});
+
+			it('Passing', () => {
+				TEUtils.assertRight(placeHolder.writer('a'), '00a');
+			});
+		});
+	});
+
+	describe('fixedLengthToReal', () => {
+		const placeHolder = CVPlaceHolder.fixedLengthToReal({
+			id: 'foo',
+			length: 3,
+			fillChar: '0',
+			padPosition: MString.PadPosition.Left,
+			disallowEmptyString: true,
+			numberBase10Format: CVNumberBase10Format.undividedInteger
+		});
+		it('.toString()', () => {
+			TEUtils.strictEqual(
+				placeHolder.toString(),
+				"'foo' placeholder: 3-character string left-padded with '0' to undivided integer"
+			);
+		});
+
+		describe('Reading', () => {
+			it('Not passing', () => {
+				TEUtils.assertLeftMessage(
+					placeHolder.reader(''),
+					"Expected length of 'foo' placeholder to be: 3. Actual: 0"
+				);
+			});
+
+			it('Passing', () => {
+				TEUtils.assertRight(
+					placeHolder.reader('0015'),
+					Tuple.make(CVReal.unsafeFromNumber(1), '5')
+				);
+			});
+		});
+
+		describe('Writing', () => {
+			it('Not passing: too long', () => {
+				TEUtils.assertLeftMessage(
+					placeHolder.writer(CVReal.unsafeFromNumber(1154)),
+					"Expected length of 'foo' placeholder to be at most(included): 3. Actual: 4"
+				);
+			});
+
+			it('Passing', () => {
+				TEUtils.assertRight(placeHolder.writer(CVReal.unsafeFromNumber(34)), '034');
+			});
+		});
+	});
+
+	describe('real', () => {
+		const placeHolder = CVPlaceHolder.real({
+			id: 'foo',
+			numberBase10Format: CVNumberBase10Format.frenchStyleThreeDecimalNumber
+		});
+		it('.toString()', () => {
+			TEUtils.strictEqual(
+				placeHolder.toString(),
+				"'foo' placeholder: French-style three-decimal number"
+			);
+		});
+
+		describe('Reading', () => {
+			it('Not passing', () => {
+				TEUtils.assertLeftMessage(
+					placeHolder.reader(''),
+					"'foo' placeholder contains '' from the start of which a French-style three-decimal number could not be extracted"
+				);
+				TEUtils.assertLeft(placeHolder.reader('1 014,1254 and foo'));
+			});
+
+			it('Passing', () => {
+				TEUtils.assertRight(
+					placeHolder.reader('1 014,125 and foo'),
+					Tuple.make(CVReal.unsafeFromNumber(1014.125), ' and foo')
+				);
+			});
+		});
+
+		it('Writing', () => {
+			TEUtils.assertRight(placeHolder.writer(CVReal.unsafeFromNumber(1014.1256)), '1 014,126');
+		});
+	});
+
+	describe('literal', () => {
+		const literal = CVPlaceHolder.literal({ id: 'foo', value: 'foo' });
+
+		it('.toString()', () => {
+			TEUtils.strictEqual(literal.toString(), "'foo' placeholder: 'foo' string");
+		});
 
 		describe('Reading', () => {
 			it('Not starting by value', () => {
-				TEUtils.assertLeft(literal.reader(''));
+				TEUtils.assertLeftMessage(
+					literal.reader(''),
+					"Expected remaining text for 'foo' placeholder to start with 'foo'. Actual: ''"
+				);
 				TEUtils.assertLeft(literal.reader('fo1 and bar'));
 			});
 
@@ -82,7 +214,10 @@ describe('CVPlaceHolder', () => {
 
 		describe('Writing', () => {
 			it('Not passing', () => {
-				TEUtils.assertLeft(literal.writer(''));
+				TEUtils.assertLeftMessage(
+					literal.writer(''),
+					"Expected 'foo' placeholder to be: 'foo'. Actual: ''"
+				);
 				TEUtils.assertLeft(literal.writer('foo1'));
 			});
 
@@ -92,98 +227,45 @@ describe('CVPlaceHolder', () => {
 		});
 	});
 
-	describe('digits', () => {
-		const digits = CVPlaceHolder.digits({
-			name: 'foo'
-		});
+	describe('atLeastOneNonSpaceChar', () => {
+		const atLeastOneNonSpaceChar = CVPlaceHolder.atLeastOneNonSpaceChar('foo');
 
-		MTypes.areEqualTypes<typeof digits, CVPlaceHolder.Type<'foo'>>() satisfies true;
+		it('.toString()', () => {
+			TEUtils.strictEqual(
+				atLeastOneNonSpaceChar.toString(),
+				"'foo' placeholder: a non-empty string containing non-space characters"
+			);
+		});
 
 		describe('Reading', () => {
-			it('Empty string', () => {
-				TEUtils.assertRight(digits.reader(''), Tuple.make('', ''));
+			it('Not passing', () => {
+				TEUtils.assertLeftMessage(
+					atLeastOneNonSpaceChar.reader(''),
+					"Expected 'foo' placeholder to be a non-empty string containing non-space characters. Actual: ''"
+				);
 			});
 
-			it('Predicate not matched before the end', () => {
-				TEUtils.assertRight(digits.reader('001 and 002'), Tuple.make('001', ' and 002'));
-			});
-
-			it('Predicate matched till the end', () => {
-				TEUtils.assertRight(digits.reader('001'), Tuple.make('001', ''));
+			it('Passing', () => {
+				TEUtils.assertRight(
+					atLeastOneNonSpaceChar.reader('foo and bar'),
+					Tuple.make('foo', ' and bar')
+				);
+				TEUtils.assertRight(atLeastOneNonSpaceChar.reader('foo'), Tuple.make('foo', ''));
 			});
 		});
 
 		describe('Writing', () => {
-			it('Containing a non-digit', () => {
-				TEUtils.assertLeft(digits.writer('0f0'));
+			it('Not passing', () => {
+				TEUtils.assertLeft(atLeastOneNonSpaceChar.writer(''));
+				TEUtils.assertLeftMessage(
+					atLeastOneNonSpaceChar.writer('fo o'),
+					"'foo' placeholder: expected a non-empty string containing non-space characters. Actual: 'fo o'"
+				);
 			});
 
-			it('Empty string', () => {
-				TEUtils.assertRight(digits.writer(''), '');
+			it('Passing', () => {
+				TEUtils.assertRight(atLeastOneNonSpaceChar.writer('foo'), 'foo');
 			});
-
-			it('Matching string', () => {
-				TEUtils.assertRight(digits.writer('001'), '001');
-			});
-		});
-	});
-
-	describe('noSpace', () => {
-		const noSpace = CVPlaceHolder.noSpace({
-			name: 'foo'
-		});
-
-		MTypes.areEqualTypes<typeof noSpace, CVPlaceHolder.Type<'foo'>>() satisfies true;
-
-		it('Reading', () => {
-			TEUtils.assertRight(noSpace.reader('001 and 002'), Tuple.make('001', ' and 002'));
-		});
-
-		describe('Writing', () => {
-			it('Not containing a non-digit', () => {
-				TEUtils.assertRight(noSpace.writer('001'), '001');
-			});
-
-			it('Containing a non-digit', () => {
-				TEUtils.assertLeft(noSpace.writer('00 1'));
-			});
-		});
-	});
-
-	describe('allBut', () => {
-		const allButSlash = CVPlaceHolder.allBut({
-			name: 'foo',
-			separator: '/'
-		});
-
-		MTypes.areEqualTypes<typeof allButSlash, CVPlaceHolder.Type<'foo'>>() satisfies true;
-
-		it('Reading', () => {
-			TEUtils.assertRight(allButSlash.reader('11/12'), Tuple.make('11', '/12'));
-		});
-
-		describe('Writing', () => {
-			it('Not containing a slash', () => {
-				TEUtils.assertRight(allButSlash.writer('001'), '001');
-			});
-
-			it('Containing a slash', () => {
-				TEUtils.assertLeft(allButSlash.writer('11/12'));
-			});
-		});
-	});
-
-	describe('final', () => {
-		const final = CVPlaceHolder.final({ name: 'foo' });
-
-		MTypes.areEqualTypes<typeof final, CVPlaceHolder.Type<'foo'>>() satisfies true;
-
-		it('Reading', () => {
-			TEUtils.assertRight(final.reader('001 and 002'), Tuple.make('001 and 002', ''));
-		});
-
-		it('Writing', () => {
-			TEUtils.assertRight(final.writer('001 and 002'), '001 and 002');
 		});
 	});
 });
