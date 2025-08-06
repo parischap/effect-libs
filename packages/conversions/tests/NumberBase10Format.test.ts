@@ -16,11 +16,38 @@ describe('NumberBase10Format', () => {
 			);
 		});
 
-		it('.toString()', () => {
-			TEUtils.strictEqual(
-				frenchStyleThreeDecimalNumber.toString(),
-				'French-style three-decimal number'
-			);
+		describe('.toString()', () => {
+			it('With descriptor', () => {
+				TEUtils.strictEqual(
+					frenchStyleThreeDecimalNumber.toString(),
+					'French-style three-decimal number'
+				);
+			});
+
+			it('Without descriptor', () => {
+				TEUtils.strictEqual(
+					pipe(
+						frenchStyleThreeDecimalNumber,
+						CVNumberBase10Format.withoutThousandSeparator()
+					).toString(),
+					`{
+  "_id": "@parischap/conversions/NumberBase10Format/",
+  "descriptor": "",
+  "thousandSeparator": "",
+  "fractionalSeparator": ",",
+  "showNullIntegerPart": true,
+  "minimumFractionDigits": 0,
+  "maximumFractionDigits": 3,
+  "eNotationChars": [
+    "E",
+    "e"
+  ],
+  "scientificNotation": 0,
+  "roundingMode": 6,
+  "signDisplay": 3
+}`
+				);
+			});
 		});
 
 		it('.pipe()', () => {
@@ -590,8 +617,14 @@ describe('NumberBase10Format', () => {
 	});
 
 	describe('toNumberWriter', () => {
-		describe('General tests with frenchStyleThreeDecimalNumber', () => {
-			const numberWriter = CVNumberBase10Format.toNumberWriter(frenchStyleThreeDecimalNumber);
+		const frenchStyleThreeDecimalNumberWithAutoSign = pipe(
+			CVNumberBase10Format.frenchStyleThreeDecimalNumber,
+			CVNumberBase10Format.withSignDisplayForNegative()
+		);
+		describe('General tests with frenchStyleThreeDecimalNumberWithAutoSign', () => {
+			const numberWriter = CVNumberBase10Format.toNumberWriter(
+				frenchStyleThreeDecimalNumberWithAutoSign
+			);
 			it('Zero', () => {
 				TEUtils.assertEquals(numberWriter(CVReal.unsafeFromNumber(0)), '0');
 			});
@@ -611,7 +644,7 @@ describe('NumberBase10Format', () => {
 
 		describe('Tests with withNullIntegerPartNotShowing', () => {
 			const numberWriter = pipe(
-				frenchStyleThreeDecimalNumber,
+				frenchStyleThreeDecimalNumberWithAutoSign,
 				CVNumberBase10Format.withNullIntegerPartNotShowing(),
 				CVNumberBase10Format.toNumberWriter
 			);
@@ -630,7 +663,7 @@ describe('NumberBase10Format', () => {
 
 		describe('Tests with withNDecimals(2) and withNullIntegerPartNotShowing', () => {
 			const numberWriter = pipe(
-				frenchStyleThreeDecimalNumber,
+				frenchStyleThreeDecimalNumberWithAutoSign,
 				CVNumberBase10Format.withNDecimals(2),
 				CVNumberBase10Format.withNullIntegerPartNotShowing(),
 				CVNumberBase10Format.toNumberWriter
@@ -650,7 +683,7 @@ describe('NumberBase10Format', () => {
 
 		describe('Tests with withEngineeringScientificNotation', () => {
 			const numberWriter = pipe(
-				frenchStyleThreeDecimalNumber,
+				frenchStyleThreeDecimalNumberWithAutoSign,
 				CVNumberBase10Format.withEngineeringScientificNotation(),
 				CVNumberBase10Format.withMinNDecimals(2),
 				CVNumberBase10Format.toNumberWriter

@@ -24,6 +24,7 @@ import {
 	Either,
 	flow,
 	Function,
+	Inspectable,
 	Number,
 	Option,
 	pipe,
@@ -487,6 +488,12 @@ const proto: MTypes.Proto<Type> = {
 		return this.descriptor;
 	},
 	...MInspectable.BaseProto(moduleTag),
+	toJSON(this: Type): unknown {
+		return this.descriptor !== '' ? this.descriptor : { _id: moduleTag, ...this };
+	},
+	toString(this: Type): string {
+		return this.descriptor !== '' ? this.descriptor : Inspectable.BaseProto.toString.call(this);
+	},
 	...MPipeable.BaseProto
 };
 
@@ -1184,13 +1191,26 @@ export const frenchStyleThreeDecimalNumber: Type = make({
 });
 
 /**
- * NumberBase10Format instance that uses a comma as fractional separator and no thousand separator
+ * NumberBase10Format instance that uses a comma as fractional separator and no thousand separator.
+ * Used in countries like France, French-speaking Canada, French-speaking Belgium, Denmark, Finland,
+ * Sweden...
  *
  * @category Instances
  */
-export const frenchStyleUndividedThreeDecimalNumber: Type = pipe(
+export const frenchStyleUngroupedThreeDecimalNumber: Type = pipe(
 	frenchStyleThreeDecimalNumber,
-	withoutThousandSeparator('French-style undivided three-decimal number')
+	withoutThousandSeparator('French-style three-decimal number (no digit grouping)')
+);
+
+/**
+ * French-style integer NumberBase10Format instance. Used in countries like France, French-speaking
+ * Canada, French-speaking Belgium, Denmark, Finland, Sweden...
+ *
+ * @category Instances
+ */
+export const frenchStyleInteger: Type = pipe(
+	frenchStyleThreeDecimalNumber,
+	withMaxNDecimals(0, 'French-style integer')
 );
 
 /**
@@ -1210,13 +1230,26 @@ export const dutchStyleThreeDecimalNumber: Type = pipe(
 );
 
 /**
- * NumberBase10Format instance that uses a comma as fractional separator and no thousand separator..
+ * NumberBase10Format instance that uses a comma as fractional separator and no thousand separator.
+ * Used in countries like Dutch-speaking Belgium, the Netherlands, Germany, Italy, Norway, Croatia,
+ * Spain...
  *
  * @category Instances
  */
-export const dutchStyleUndividedThreeDecimalNumber: Type = pipe(
+export const dutchStyleUngroupedThreeDecimalNumber: Type = pipe(
 	dutchStyleThreeDecimalNumber,
-	withoutThousandSeparator('Dutch-style undivided three-decimal number')
+	withoutThousandSeparator('Dutch-style three-decimal number (no digit grouping)')
+);
+
+/**
+ * Dutch-style integer NumberBase10Format instance. Used in countries like Dutch-speaking Belgium,
+ * the Netherlands, Germany, Italy, Norway, Croatia, Spain...
+ *
+ * @category Instances
+ */
+export const dutchStyleInteger: Type = pipe(
+	dutchStyleThreeDecimalNumber,
+	withMaxNDecimals(0, 'Dutch-style integer')
 );
 
 /**
@@ -1238,36 +1271,18 @@ export const ukStyleThreeDecimalNumber: Type = pipe(
 
 /**
  * NumberBase10Format instance that uses a dot as fractional separator and no thousand separator.
+ * Used in countries like the UK, the US, English-speaking Canada, Australia, Thaïland, Bosnia...
  *
  * @category Instances
  */
-export const ukStyleUndividedThreeDecimalNumber: Type = pipe(
+export const ukStyleUngroupedThreeDecimalNumber: Type = pipe(
 	ukStyleThreeDecimalNumber,
-	withoutThousandSeparator('Uk-style undivided three-decimal number')
+	withoutThousandSeparator('Uk-style three-decimal number (no digit grouping)')
 );
 
 /**
- * French-style integer NumberBase10Format instance
- *
- * @category Instances
- */
-export const frenchStyleInteger: Type = pipe(
-	frenchStyleThreeDecimalNumber,
-	withMaxNDecimals(0, 'French-style integer')
-);
-
-/**
- * Dutch-style integer NumberBase10Format instance
- *
- * @category Instances
- */
-export const dutchStyleInteger: Type = pipe(
-	dutchStyleThreeDecimalNumber,
-	withMaxNDecimals(0, 'Dutch-style integer')
-);
-
-/**
- * Uk-style integer NumberBase10Format instance
+ * Uk-style integer NumberBase10Format instance. Used in countries like the UK, the US,
+ * English-speaking Canada, Australia, Thaïland, Bosnia...
  *
  * @category Instances
  */
@@ -1281,7 +1296,4 @@ export const ukStyleInteger: Type = pipe(
  *
  * @category Instances
  */
-export const undividedInteger: Type = pipe(
-	frenchStyleInteger,
-	withoutThousandSeparator('undivided integer')
-);
+export const integer: Type = pipe(frenchStyleInteger, withoutThousandSeparator('integer'));
