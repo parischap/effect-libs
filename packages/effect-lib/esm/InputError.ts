@@ -1,6 +1,6 @@
 /** A module that implements an error that occurs upon receiving an unexpected input */
 
-import { Data, Either, flow, Function, Number, Option, Predicate, String } from 'effect';
+import { Data, Either, flow, Function, Number, Option, pipe, Predicate, String } from 'effect';
 import * as MFunction from './Function.js';
 import * as MString from './String.js';
 import * as MTypes from './types.js';
@@ -229,6 +229,25 @@ export const assertMatches = (params: {
 	Either.liftPredicate(MString.matches(params.regExp), (actual) =>
 		notMatching({ ...params, actual })
 	);
+
+/**
+ * Returns a `right` of the match if `input` matches `regExp`. Otherwise, returns a `left` of an
+ * InputError
+ *
+ * @category Constructors
+ */
+export const match =
+	(params: {
+		readonly regExp: RegExp;
+		readonly regExpDescriptor: string;
+		readonly name?: string;
+	}) =>
+	(self: string): Either.Either<string, Type> =>
+		pipe(
+			self,
+			MString.match(params.regExp),
+			Either.fromOption(() => notMatching({ ...params, actual: self }))
+		);
 
 /**
  * Builds an Input error that signals a string that is not empty
