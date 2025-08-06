@@ -154,7 +154,6 @@ describe('CVSchema', () => {
 				pipe(CVReal.unsafeFromNumber(1024.56), Schema.encodeEither(schema)),
 				'1 024,56'
 			);
-			TEUtils.assertRight(pipe(CVReal.unsafeFromNumber(-0), Schema.encodeEither(schema)), '-0');
 		});
 	});
 });

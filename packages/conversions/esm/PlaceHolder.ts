@@ -1,22 +1,16 @@
 /**
  * This module implements a PlaceHolder type. PlaceHolder's are the constituents of Template's (see
- * Template.ts). A PlaceHolder defines what it can contain. For instance:
- *
- * - A fixedLength PlaceHolder contains a fixed number of characters.
- * - A literals PlaceHolder can contain only a predefined set of strings.
- * - A noSpace PlaceHolder can contain any string that does not contain a space...
+ * Template.ts).
  *
  * Each PlaceHolder defines a reader and a writer:
  *
- * - The reader takes a string, consumes what it can from that string that is coherent with what the
- *   PlaceHolder can contain and, if successful, returns a right of the consumed part and of what is
- *   left over. In case of an error, it returns a left.
- * - The writer takes a string, checks that this string is coherent with what the PlaceHolder can
- *   contain and, if so, returns a right of that string. Otherwise, it returns a left.
- *
- * A PlaceHolder also defines a Transformer which tries to convert a string into a type T (for
- * instance a number) and vice-versa. Transformer's can be combined (for instance, you can combine
- * the unpad and toNumber Transformer's).
+ * - The reader takes a string, consumes what it can from that string that is coherent with the
+ *   PlaceHolder, optionnally converts the read part to a value of type N and, if successful,
+ *   returns a right of that value and of what remains to be read. In case of an error, it returns a
+ *   left.
+ * - The writer takes a value of type N, converts it to a string (if N is not string), checks that the
+ *   result is coherent with the PlaceHolder and, if so, returns a right of that string. Otherwise,
+ *   it returns a left.
  */
 
 import {

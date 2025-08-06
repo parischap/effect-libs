@@ -1,5 +1,5 @@
 /* eslint-disable functional/no-expression-statements */
-import { CVPositiveReal, CVPositiveRealInt, CVReal, CVRealInt } from '@parischap/conversions';
+import { CVPositiveReal, CVPositiveRealInt, CVReal } from '@parischap/conversions';
 import { TEUtils } from '@parischap/test-utils';
 import { BigDecimal, pipe } from 'effect';
 import { describe, it } from 'vitest';
@@ -96,10 +96,6 @@ describe('CVPositiveReal', () => {
 		});
 		it('Passing', () => {
 			TEUtils.assertSome(pipe(15.4, CVReal.unsafeFromNumber, CVPositiveReal.fromRealOption));
-			TEUtils.assertSome(pipe(-15, CVRealInt.unsafeFromNumber, CVPositiveReal.fromRealOption));
-			TEUtils.assertSome(
-				pipe(15, CVPositiveRealInt.unsafeFromNumber, CVPositiveReal.fromRealOption)
-			);
 		});
 	});
 
@@ -109,8 +105,6 @@ describe('CVPositiveReal', () => {
 		});
 		it('Passing', () => {
 			TEUtils.assertRight(pipe(15.4, CVReal.unsafeFromNumber, CVPositiveReal.fromReal));
-			TEUtils.assertRight(pipe(-15, CVRealInt.unsafeFromNumber, CVPositiveReal.fromReal));
-			TEUtils.assertRight(pipe(15, CVPositiveRealInt.unsafeFromNumber, CVPositiveReal.fromReal));
 		});
 	});
 

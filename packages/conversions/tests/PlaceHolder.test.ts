@@ -118,12 +118,12 @@ describe('CVPlaceHolder', () => {
 			fillChar: '0',
 			padPosition: MString.PadPosition.Left,
 			disallowEmptyString: true,
-			numberBase10Format: CVNumberBase10Format.undividedInteger
+			numberBase10Format: CVNumberBase10Format.integer
 		});
 		it('.toString()', () => {
 			TEUtils.strictEqual(
 				placeHolder.toString(),
-				"'foo' placeholder: 3-character string left-padded with '0' to undivided integer"
+				"'foo' placeholder: 3-character string left-padded with '0' to integer"
 			);
 		});
 
