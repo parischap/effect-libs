@@ -189,6 +189,15 @@ export const fromPrimitive: MTypes.OneArgFunction<MTypes.Primitive, string> = fl
 );
 
 /**
+ * Builds a string from an unknown value `u`. Calls fromPrimitive if `u` is a primitive value. Calls
+ * `JSON.stringify` otherwise.
+ *
+ * @category Constructors
+ */
+export const fromUnknown = (u: unknown): string =>
+	MTypes.isPrimitive(u) ? fromPrimitive(u) : JSON.stringify(u, null, 2);
+
+/**
  * Builds a string from a number using the passed `radix`.
  *
  * @category Constructors

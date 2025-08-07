@@ -99,6 +99,22 @@ describe('MString', () => {
 		});
 	});
 
+	describe('fromUnknown', () => {
+		it('Primitive value', () => {
+			TEUtils.strictEqual(MString.fromUnknown(null), 'null');
+		});
+
+		it('Non-primitive value', () => {
+			TEUtils.strictEqual(
+				MString.fromUnknown({ a: 1, b: true }),
+				`{
+  "a": 1,
+  "b": true
+}`
+			);
+		});
+	});
+
 	describe('search', () => {
 		it('string in empty string', () => {
 			TEUtils.assertNone(MString.search('foo', 4)(''));
