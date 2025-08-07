@@ -65,221 +65,221 @@ describe('NumberBase10Format', () => {
 	});
 
 	describe('SignDisplay', () => {
-		describe('toReader', () => {
+		describe('toParser', () => {
 			describe('Auto', () => {
-				const reader = CVNumberBase10Format.SignDisplay.toReader(
+				const parser = CVNumberBase10Format.SignDisplay.toParser(
 					CVNumberBase10Format.SignDisplay.Auto
 				);
 				it('No sign', () => {
-					TEUtils.assertSome(reader({ isZero: false, sign: '' }), 1);
-					TEUtils.assertSome(reader({ isZero: true, sign: '' }), 1);
+					TEUtils.assertSome(parser({ isZero: false, sign: '' }), 1);
+					TEUtils.assertSome(parser({ isZero: true, sign: '' }), 1);
 				});
 				it('Minus sign', () => {
-					TEUtils.assertSome(reader({ isZero: false, sign: '-' }), -1);
-					TEUtils.assertSome(reader({ isZero: true, sign: '-' }), -1);
+					TEUtils.assertSome(parser({ isZero: false, sign: '-' }), -1);
+					TEUtils.assertSome(parser({ isZero: true, sign: '-' }), -1);
 				});
 				it('Plus sign', () => {
-					TEUtils.assertNone(reader({ isZero: false, sign: '+' }));
-					TEUtils.assertNone(reader({ isZero: true, sign: '+' }));
+					TEUtils.assertNone(parser({ isZero: false, sign: '+' }));
+					TEUtils.assertNone(parser({ isZero: true, sign: '+' }));
 				});
 			});
 
 			describe('Always', () => {
-				const reader = CVNumberBase10Format.SignDisplay.toReader(
+				const parser = CVNumberBase10Format.SignDisplay.toParser(
 					CVNumberBase10Format.SignDisplay.Always
 				);
 				it('No sign', () => {
-					TEUtils.assertNone(reader({ isZero: false, sign: '' }));
-					TEUtils.assertNone(reader({ isZero: true, sign: '' }));
+					TEUtils.assertNone(parser({ isZero: false, sign: '' }));
+					TEUtils.assertNone(parser({ isZero: true, sign: '' }));
 				});
 				it('Minus sign', () => {
-					TEUtils.assertSome(reader({ isZero: false, sign: '-' }), -1);
-					TEUtils.assertSome(reader({ isZero: true, sign: '-' }), -1);
+					TEUtils.assertSome(parser({ isZero: false, sign: '-' }), -1);
+					TEUtils.assertSome(parser({ isZero: true, sign: '-' }), -1);
 				});
 				it('Plus sign', () => {
-					TEUtils.assertSome(reader({ isZero: false, sign: '+' }), 1);
-					TEUtils.assertSome(reader({ isZero: true, sign: '+' }), 1);
+					TEUtils.assertSome(parser({ isZero: false, sign: '+' }), 1);
+					TEUtils.assertSome(parser({ isZero: true, sign: '+' }), 1);
 				});
 			});
 
 			describe('ExceptZero', () => {
-				const reader = CVNumberBase10Format.SignDisplay.toReader(
+				const parser = CVNumberBase10Format.SignDisplay.toParser(
 					CVNumberBase10Format.SignDisplay.ExceptZero
 				);
 				it('No sign', () => {
-					TEUtils.assertNone(reader({ isZero: false, sign: '' }));
-					//TEUtils.assertSome(reader({ isZero: true, sign: '' }), 1);
+					TEUtils.assertNone(parser({ isZero: false, sign: '' }));
+					//TEUtils.assertSome(parser({ isZero: true, sign: '' }), 1);
 				});
 				it('Minus sign', () => {
-					TEUtils.assertSome(reader({ isZero: false, sign: '-' }), -1);
-					TEUtils.assertNone(reader({ isZero: true, sign: '-' }));
+					TEUtils.assertSome(parser({ isZero: false, sign: '-' }), -1);
+					TEUtils.assertNone(parser({ isZero: true, sign: '-' }));
 				});
 				it('Plus sign', () => {
-					TEUtils.assertSome(reader({ isZero: false, sign: '+' }), 1);
-					TEUtils.assertNone(reader({ isZero: true, sign: '+' }));
+					TEUtils.assertSome(parser({ isZero: false, sign: '+' }), 1);
+					TEUtils.assertNone(parser({ isZero: true, sign: '+' }));
 				});
 			});
 
 			describe('Negative', () => {
-				const reader = CVNumberBase10Format.SignDisplay.toReader(
+				const parser = CVNumberBase10Format.SignDisplay.toParser(
 					CVNumberBase10Format.SignDisplay.Negative
 				);
 				it('No sign', () => {
-					TEUtils.assertSome(reader({ isZero: false, sign: '' }), 1);
-					TEUtils.assertSome(reader({ isZero: true, sign: '' }), 1);
+					TEUtils.assertSome(parser({ isZero: false, sign: '' }), 1);
+					TEUtils.assertSome(parser({ isZero: true, sign: '' }), 1);
 				});
 				it('Minus sign', () => {
-					TEUtils.assertSome(reader({ isZero: false, sign: '-' }), -1);
-					TEUtils.assertNone(reader({ isZero: true, sign: '-' }));
+					TEUtils.assertSome(parser({ isZero: false, sign: '-' }), -1);
+					TEUtils.assertNone(parser({ isZero: true, sign: '-' }));
 				});
 				it('Plus sign', () => {
-					TEUtils.assertNone(reader({ isZero: false, sign: '+' }));
-					TEUtils.assertNone(reader({ isZero: true, sign: '+' }));
+					TEUtils.assertNone(parser({ isZero: false, sign: '+' }));
+					TEUtils.assertNone(parser({ isZero: true, sign: '+' }));
 				});
 			});
 
 			describe('Never', () => {
-				const reader = CVNumberBase10Format.SignDisplay.toReader(
+				const parser = CVNumberBase10Format.SignDisplay.toParser(
 					CVNumberBase10Format.SignDisplay.Never
 				);
 				it('No sign', () => {
-					TEUtils.assertSome(reader({ isZero: false, sign: '' }), 1);
-					TEUtils.assertSome(reader({ isZero: true, sign: '' }), 1);
+					TEUtils.assertSome(parser({ isZero: false, sign: '' }), 1);
+					TEUtils.assertSome(parser({ isZero: true, sign: '' }), 1);
 				});
 				it('Minus sign', () => {
-					TEUtils.assertNone(reader({ isZero: false, sign: '-' }));
-					TEUtils.assertNone(reader({ isZero: true, sign: '-' }));
+					TEUtils.assertNone(parser({ isZero: false, sign: '-' }));
+					TEUtils.assertNone(parser({ isZero: true, sign: '-' }));
 				});
 				it('Plus sign', () => {
-					TEUtils.assertNone(reader({ isZero: false, sign: '+' }));
-					TEUtils.assertNone(reader({ isZero: true, sign: '+' }));
+					TEUtils.assertNone(parser({ isZero: false, sign: '+' }));
+					TEUtils.assertNone(parser({ isZero: true, sign: '+' }));
 				});
 			});
 		});
 
-		describe('toWriter', () => {
+		describe('toFormatter', () => {
 			describe('Auto', () => {
-				const writer = CVNumberBase10Format.SignDisplay.toWriter(
+				const formatter = CVNumberBase10Format.SignDisplay.toFormatter(
 					CVNumberBase10Format.SignDisplay.Auto
 				);
 				it('Minus sign', () => {
-					TEUtils.strictEqual(writer({ isZero: false, sign: -1 }), '-');
-					TEUtils.strictEqual(writer({ isZero: true, sign: -1 }), '-');
+					TEUtils.strictEqual(formatter({ isZero: false, sign: -1 }), '-');
+					TEUtils.strictEqual(formatter({ isZero: true, sign: -1 }), '-');
 				});
 				it('Plus sign', () => {
-					TEUtils.strictEqual(writer({ isZero: false, sign: 1 }), '');
-					TEUtils.strictEqual(writer({ isZero: true, sign: 1 }), '');
+					TEUtils.strictEqual(formatter({ isZero: false, sign: 1 }), '');
+					TEUtils.strictEqual(formatter({ isZero: true, sign: 1 }), '');
 				});
 			});
 
 			describe('Always', () => {
-				const writer = CVNumberBase10Format.SignDisplay.toWriter(
+				const formatter = CVNumberBase10Format.SignDisplay.toFormatter(
 					CVNumberBase10Format.SignDisplay.Always
 				);
 				it('Minus sign', () => {
-					TEUtils.strictEqual(writer({ isZero: false, sign: -1 }), '-');
-					TEUtils.strictEqual(writer({ isZero: true, sign: -1 }), '-');
+					TEUtils.strictEqual(formatter({ isZero: false, sign: -1 }), '-');
+					TEUtils.strictEqual(formatter({ isZero: true, sign: -1 }), '-');
 				});
 				it('Plus sign', () => {
-					TEUtils.strictEqual(writer({ isZero: false, sign: 1 }), '+');
-					TEUtils.strictEqual(writer({ isZero: true, sign: 1 }), '+');
+					TEUtils.strictEqual(formatter({ isZero: false, sign: 1 }), '+');
+					TEUtils.strictEqual(formatter({ isZero: true, sign: 1 }), '+');
 				});
 			});
 
 			describe('ExceptZero', () => {
-				const writer = CVNumberBase10Format.SignDisplay.toWriter(
+				const formatter = CVNumberBase10Format.SignDisplay.toFormatter(
 					CVNumberBase10Format.SignDisplay.ExceptZero
 				);
 				it('Minus sign', () => {
-					TEUtils.strictEqual(writer({ isZero: false, sign: -1 }), '-');
-					TEUtils.strictEqual(writer({ isZero: true, sign: -1 }), '');
+					TEUtils.strictEqual(formatter({ isZero: false, sign: -1 }), '-');
+					TEUtils.strictEqual(formatter({ isZero: true, sign: -1 }), '');
 				});
 				it('Plus sign', () => {
-					TEUtils.strictEqual(writer({ isZero: false, sign: 1 }), '+');
-					TEUtils.strictEqual(writer({ isZero: true, sign: 1 }), '');
+					TEUtils.strictEqual(formatter({ isZero: false, sign: 1 }), '+');
+					TEUtils.strictEqual(formatter({ isZero: true, sign: 1 }), '');
 				});
 			});
 
 			describe('Negative', () => {
-				const writer = CVNumberBase10Format.SignDisplay.toWriter(
+				const formatter = CVNumberBase10Format.SignDisplay.toFormatter(
 					CVNumberBase10Format.SignDisplay.Negative
 				);
 				it('Minus sign', () => {
-					TEUtils.strictEqual(writer({ isZero: false, sign: -1 }), '-');
-					TEUtils.strictEqual(writer({ isZero: true, sign: -1 }), '');
+					TEUtils.strictEqual(formatter({ isZero: false, sign: -1 }), '-');
+					TEUtils.strictEqual(formatter({ isZero: true, sign: -1 }), '');
 				});
 				it('Plus sign', () => {
-					TEUtils.strictEqual(writer({ isZero: false, sign: 1 }), '');
-					TEUtils.strictEqual(writer({ isZero: true, sign: 1 }), '');
+					TEUtils.strictEqual(formatter({ isZero: false, sign: 1 }), '');
+					TEUtils.strictEqual(formatter({ isZero: true, sign: 1 }), '');
 				});
 			});
 
 			describe('Never', () => {
-				const writer = CVNumberBase10Format.SignDisplay.toWriter(
+				const formatter = CVNumberBase10Format.SignDisplay.toFormatter(
 					CVNumberBase10Format.SignDisplay.Never
 				);
 				it('Minus sign', () => {
-					TEUtils.strictEqual(writer({ isZero: false, sign: -1 }), '');
-					TEUtils.strictEqual(writer({ isZero: true, sign: -1 }), '');
+					TEUtils.strictEqual(formatter({ isZero: false, sign: -1 }), '');
+					TEUtils.strictEqual(formatter({ isZero: true, sign: -1 }), '');
 				});
 				it('Plus sign', () => {
-					TEUtils.strictEqual(writer({ isZero: false, sign: 1 }), '');
-					TEUtils.strictEqual(writer({ isZero: true, sign: 1 }), '');
+					TEUtils.strictEqual(formatter({ isZero: false, sign: 1 }), '');
+					TEUtils.strictEqual(formatter({ isZero: true, sign: 1 }), '');
 				});
 			});
 		});
 	});
 
 	describe('ScientificNotation', () => {
-		describe('toReader', () => {
+		describe('toParser', () => {
 			describe('None', () => {
-				const reader = CVNumberBase10Format.ScientificNotation.toReader(
+				const parser = CVNumberBase10Format.ScientificNotation.toParser(
 					CVNumberBase10Format.ScientificNotation.None
 				);
 				it('Empty string', () => {
-					TEUtils.assertSome(reader(''), 0);
+					TEUtils.assertSome(parser(''), 0);
 				});
 				it('Value', () => {
-					TEUtils.assertNone(reader('+15'));
+					TEUtils.assertNone(parser('+15'));
 				});
 			});
 
 			describe('Standard', () => {
-				const reader = CVNumberBase10Format.ScientificNotation.toReader(
+				const parser = CVNumberBase10Format.ScientificNotation.toParser(
 					CVNumberBase10Format.ScientificNotation.Standard
 				);
 				it('Empty string', () => {
-					TEUtils.assertSome(reader(''), 0);
+					TEUtils.assertSome(parser(''), 0);
 				});
 				it('Positive value', () => {
-					TEUtils.assertSome(reader('+15'), 15);
+					TEUtils.assertSome(parser('+15'), 15);
 				});
 			});
 
 			describe('Normalized', () => {
-				const reader = CVNumberBase10Format.ScientificNotation.toReader(
+				const parser = CVNumberBase10Format.ScientificNotation.toParser(
 					CVNumberBase10Format.ScientificNotation.Normalized
 				);
 				it('Empty string', () => {
-					TEUtils.assertSome(reader(''), 0);
+					TEUtils.assertSome(parser(''), 0);
 				});
 				it('Negative Value', () => {
-					TEUtils.assertSome(reader('-15'), -15);
+					TEUtils.assertSome(parser('-15'), -15);
 				});
 			});
 
 			describe('Engineering', () => {
-				const reader = CVNumberBase10Format.ScientificNotation.toReader(
+				const parser = CVNumberBase10Format.ScientificNotation.toParser(
 					CVNumberBase10Format.ScientificNotation.Engineering
 				);
 				it('Empty string', () => {
-					TEUtils.assertSome(reader(''), 0);
+					TEUtils.assertSome(parser(''), 0);
 				});
 				it('Multiple of 3', () => {
-					TEUtils.assertSome(reader('15'), 15);
+					TEUtils.assertSome(parser('15'), 15);
 				});
 				it('Non-multiple of 3', () => {
-					TEUtils.assertNone(reader('16'));
+					TEUtils.assertNone(parser('16'));
 				});
 			});
 		});
@@ -434,7 +434,7 @@ describe('NumberBase10Format', () => {
 		});
 
 		describe('Allow scientific notation', () => {
-			//Use withEngineeringScientificNotation to make sure that ScientificNotation.toReader is called properly
+			//Use withEngineeringScientificNotation to make sure that ScientificNotation.toParser is called properly
 			const numberExtractor = pipe(
 				frenchStyleThreeDecimalNumber,
 				CVNumberBase10Format.withEngineeringScientificNotation(),
@@ -590,114 +590,114 @@ describe('NumberBase10Format', () => {
 		});
 	});
 
-	describe('toBigDecimalReader', () => {
-		const numberReader = pipe(
+	describe('toBigDecimalParser', () => {
+		const numberParser = pipe(
 			frenchStyleThreeDecimalNumber,
 			CVNumberBase10Format.withStandardScientificNotation(),
-			CVNumberBase10Format.toBigDecimalReader
+			CVNumberBase10Format.toBigDecimalParser
 		);
 		it('Passing', () => {
-			TEUtils.assertSome(numberReader('-45,45e-2'), BigDecimal.make(-4545n, 4));
+			TEUtils.assertSome(numberParser('-45,45e-2'), BigDecimal.make(-4545n, 4));
 		});
 
 		it('Not passing', () => {
-			TEUtils.assertNone(numberReader('-45,45e-'));
+			TEUtils.assertNone(numberParser('-45,45e-'));
 		});
 	});
 
-	describe('toRealReader', () => {
-		const numberReader = CVNumberBase10Format.toRealReader(frenchStyleThreeDecimalNumber);
+	describe('toRealParser', () => {
+		const numberParser = CVNumberBase10Format.toRealParser(frenchStyleThreeDecimalNumber);
 		it('Passing', () => {
-			TEUtils.assertSome(numberReader('0,45'), CVReal.unsafeFromNumber(0.45));
+			TEUtils.assertSome(numberParser('0,45'), CVReal.unsafeFromNumber(0.45));
 		});
 
 		it('Not passing', () => {
-			TEUtils.assertNone(numberReader('0.45'));
+			TEUtils.assertNone(numberParser('0.45'));
 		});
 	});
 
-	describe('toNumberWriter', () => {
+	describe('toNumberFormatter', () => {
 		const frenchStyleThreeDecimalNumberWithAutoSign = pipe(
 			CVNumberBase10Format.frenchStyleThreeDecimalNumber,
 			CVNumberBase10Format.withSignDisplayForNegative()
 		);
 		describe('General tests with frenchStyleThreeDecimalNumberWithAutoSign', () => {
-			const numberWriter = CVNumberBase10Format.toNumberWriter(
+			const numberFormatter = CVNumberBase10Format.toNumberFormatter(
 				frenchStyleThreeDecimalNumberWithAutoSign
 			);
 			it('Zero', () => {
-				TEUtils.assertEquals(numberWriter(CVReal.unsafeFromNumber(0)), '0');
+				TEUtils.assertEquals(numberFormatter(CVReal.unsafeFromNumber(0)), '0');
 			});
 
 			it('Negative zero', () => {
-				TEUtils.assertEquals(numberWriter(CVReal.unsafeFromNumber(-0.0004)), '-0');
+				TEUtils.assertEquals(numberFormatter(CVReal.unsafeFromNumber(-0.0004)), '-0');
 			});
 
 			it('Number with less than maximumFractionDigits decimals', () => {
-				TEUtils.assertEquals(numberWriter(CVReal.unsafeFromNumber(1528.65)), '1 528,65');
+				TEUtils.assertEquals(numberFormatter(CVReal.unsafeFromNumber(1528.65)), '1 528,65');
 			});
 
 			it('BigDecimal as input, more than maximumFractionDigits decimals', () => {
-				TEUtils.assertEquals(numberWriter(BigDecimal.make(-14675435n, 4)), '-1 467,544');
+				TEUtils.assertEquals(numberFormatter(BigDecimal.make(-14675435n, 4)), '-1 467,544');
 			});
 		});
 
 		describe('Tests with withNullIntegerPartNotShowing', () => {
-			const numberWriter = pipe(
+			const numberFormatter = pipe(
 				frenchStyleThreeDecimalNumberWithAutoSign,
 				CVNumberBase10Format.withNullIntegerPartNotShowing(),
-				CVNumberBase10Format.toNumberWriter
+				CVNumberBase10Format.toNumberFormatter
 			);
 			it('Zero', () => {
-				TEUtils.assertEquals(numberWriter(CVReal.unsafeFromNumber(0)), '0');
+				TEUtils.assertEquals(numberFormatter(CVReal.unsafeFromNumber(0)), '0');
 			});
 
 			it('Number rounded down to zero', () => {
-				TEUtils.assertEquals(numberWriter(CVReal.unsafeFromNumber(-0.0004)), '-0');
+				TEUtils.assertEquals(numberFormatter(CVReal.unsafeFromNumber(-0.0004)), '-0');
 			});
 
 			it('Number rounded up from zero', () => {
-				TEUtils.assertEquals(numberWriter(CVReal.unsafeFromNumber(0.0005)), ',001');
+				TEUtils.assertEquals(numberFormatter(CVReal.unsafeFromNumber(0.0005)), ',001');
 			});
 		});
 
 		describe('Tests with withNDecimals(2) and withNullIntegerPartNotShowing', () => {
-			const numberWriter = pipe(
+			const numberFormatter = pipe(
 				frenchStyleThreeDecimalNumberWithAutoSign,
 				CVNumberBase10Format.withNDecimals(2),
 				CVNumberBase10Format.withNullIntegerPartNotShowing(),
-				CVNumberBase10Format.toNumberWriter
+				CVNumberBase10Format.toNumberFormatter
 			);
 			it('Zero', () => {
-				TEUtils.assertEquals(numberWriter(CVReal.unsafeFromNumber(0)), ',00');
+				TEUtils.assertEquals(numberFormatter(CVReal.unsafeFromNumber(0)), ',00');
 			});
 
 			it('Number rounded down to zero', () => {
-				TEUtils.assertEquals(numberWriter(CVReal.unsafeFromNumber(-0.004)), '-,00');
+				TEUtils.assertEquals(numberFormatter(CVReal.unsafeFromNumber(-0.004)), '-,00');
 			});
 
 			it('Number rounded up from zero', () => {
-				TEUtils.assertEquals(numberWriter(CVReal.unsafeFromNumber(0.005)), ',01');
+				TEUtils.assertEquals(numberFormatter(CVReal.unsafeFromNumber(0.005)), ',01');
 			});
 		});
 
 		describe('Tests with withEngineeringScientificNotation', () => {
-			const numberWriter = pipe(
+			const numberFormatter = pipe(
 				frenchStyleThreeDecimalNumberWithAutoSign,
 				CVNumberBase10Format.withEngineeringScientificNotation(),
 				CVNumberBase10Format.withMinNDecimals(2),
-				CVNumberBase10Format.toNumberWriter
+				CVNumberBase10Format.toNumberFormatter
 			);
 			it('Negative Zero', () => {
-				TEUtils.assertEquals(numberWriter(CVReal.unsafeFromNumber(-0)), '-0,00E0');
+				TEUtils.assertEquals(numberFormatter(CVReal.unsafeFromNumber(-0)), '-0,00E0');
 			});
 
 			it('Big positive number', () => {
-				TEUtils.assertEquals(numberWriter(CVReal.unsafeFromNumber(154321.5)), '154,322E3');
+				TEUtils.assertEquals(numberFormatter(CVReal.unsafeFromNumber(154321.5)), '154,322E3');
 			});
 
 			it('Small negative number', () => {
-				TEUtils.assertEquals(numberWriter(CVReal.unsafeFromNumber(-523e-5)), '-5,23E-3');
+				TEUtils.assertEquals(numberFormatter(CVReal.unsafeFromNumber(-523e-5)), '-5,23E-3');
 			});
 		});
 	});

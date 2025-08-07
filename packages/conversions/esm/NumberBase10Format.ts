@@ -105,11 +105,11 @@ export namespace SignDisplay {
 	export type SignValue = -1 | 1;
 
 	/**
-	 * Type of a SignDisplay Reader
+	 * Type of a SignDisplay Parser
 	 *
 	 * @category Models
 	 */
-	export interface Reader
+	export interface Parser
 		extends MTypes.OneArgFunction<
 			{ readonly sign: SignString; readonly isZero: boolean },
 			Option.Option<SignValue>
@@ -122,34 +122,34 @@ export namespace SignDisplay {
 		Option.as(-1 as const),
 		Option.getOrElse(Function.constant(1 as const))
 	);
-	const hasASign: Reader = flow(
+	const hasASign: Parser = flow(
 		Struct.get('sign'),
 		Option.liftPredicate(String.isNonEmpty),
 		Option.map(signStringToSignValue)
 	);
-	const hasNoSign: Reader = flow(
+	const hasNoSign: Parser = flow(
 		Struct.get('sign'),
 		Option.liftPredicate(String.isEmpty),
 		Option.map(signStringToSignValue)
 	);
-	const hasNotPlusSign: Reader = flow(
+	const hasNotPlusSign: Parser = flow(
 		Struct.get('sign'),
 		Option.liftPredicate(Predicate.not(isPlusSign)),
 		Option.map(signStringToSignValue)
 	);
 
 	/**
-	 * Builds a `Reader` implementing `self`
+	 * Builds a `Parser` implementing `self`
 	 *
 	 * @category Destructors
 	 */
-	export const toReader: MTypes.OneArgFunction<SignDisplay, Reader> = flow(
+	export const toParser: MTypes.OneArgFunction<SignDisplay, Parser> = flow(
 		MMatch.make,
 		MMatch.whenIs(SignDisplay.Auto, Function.constant(hasNotPlusSign)),
 		MMatch.whenIs(SignDisplay.Always, Function.constant(hasASign)),
 		MMatch.whenIs(
 			SignDisplay.ExceptZero,
-			(): Reader =>
+			(): Parser =>
 				flow(
 					MMatch.make,
 					MMatch.when(MPredicate.struct({ isZero: Function.identity }), hasNoSign),
@@ -158,7 +158,7 @@ export namespace SignDisplay {
 		),
 		MMatch.whenIs(
 			SignDisplay.Negative,
-			(): Reader =>
+			(): Parser =>
 				flow(
 					MMatch.make,
 					MMatch.when(MPredicate.struct({ isZero: Function.identity }), hasNoSign),
@@ -170,38 +170,38 @@ export namespace SignDisplay {
 	);
 
 	/**
-	 * Type of a SignDisplay Writer
+	 * Type of a SignDisplay Formatter
 	 *
 	 * @category Models
 	 */
-	export interface Writer
+	export interface Formatter
 		extends MTypes.OneArgFunction<
 			{ readonly sign: SignValue; readonly isZero: boolean },
 			SignString
 		> {}
 
 	/**
-	 * Builds a `Writer` implementing `self`
+	 * Builds a `Formatter` implementing `self`
 	 *
 	 * @category Destructors
 	 */
-	export const toWriter: MTypes.OneArgFunction<SignDisplay, Writer> = flow(
+	export const toFormatter: MTypes.OneArgFunction<SignDisplay, Formatter> = flow(
 		MMatch.make,
 		MMatch.whenIs(
 			SignDisplay.Auto,
-			(): Writer =>
+			(): Formatter =>
 				({ sign }) =>
 					sign === -1 ? '-' : ''
 		),
 		MMatch.whenIs(
 			SignDisplay.Always,
-			(): Writer =>
+			(): Formatter =>
 				({ sign }) =>
 					sign === -1 ? '-' : '+'
 		),
 		MMatch.whenIs(
 			SignDisplay.ExceptZero,
-			(): Writer =>
+			(): Formatter =>
 				({ sign, isZero }) =>
 					isZero ? ''
 					: sign === -1 ? '-'
@@ -209,11 +209,11 @@ export namespace SignDisplay {
 		),
 		MMatch.whenIs(
 			SignDisplay.Negative,
-			(): Writer =>
+			(): Formatter =>
 				({ sign, isZero }) =>
 					isZero || sign === 1 ? '' : '-'
 		),
-		MMatch.whenIs(SignDisplay.Never, (): Writer => MFunction.constEmptyString),
+		MMatch.whenIs(SignDisplay.Never, (): Formatter => MFunction.constEmptyString),
 		MMatch.exhaustive
 	);
 }
@@ -268,11 +268,11 @@ export enum ScientificNotation {
  */
 export namespace ScientificNotation {
 	/**
-	 * Type of a ScientificNotation Reader
+	 * Type of a ScientificNotation Parser
 	 *
 	 * @category Models
 	 */
-	export interface Reader extends MTypes.OneArgFunction<string, Option.Option<number>> {}
+	export interface Parser extends MTypes.OneArgFunction<string, Option.Option<number>> {}
 
 	const _stringToExponent = flow(
 		Option.liftPredicate(String.isNonEmpty),
@@ -281,11 +281,11 @@ export namespace ScientificNotation {
 	);
 
 	/**
-	 * Builds a `Reader` implementing `self`
+	 * Builds a `Parser` implementing `self`
 	 *
 	 * @category Destructors
 	 */
-	export const toReader: MTypes.OneArgFunction<ScientificNotation, Reader> = flow(
+	export const toParser: MTypes.OneArgFunction<ScientificNotation, Parser> = flow(
 		MMatch.make,
 		MMatch.whenIs(ScientificNotation.None, () =>
 			flow(Option.liftPredicate(String.isEmpty), Option.as(0))
@@ -322,7 +322,7 @@ export namespace ScientificNotation {
 	const zeroOrinOneToOneThousandRange = zeroOrinRange(1000);
 
 	/**
-	 * Builds a `Reader` implementing `self`
+	 * Builds a `Parser` implementing `self`
 	 *
 	 * @category Destructors
 	 */
@@ -352,7 +352,7 @@ export namespace ScientificNotation {
 		> {}
 
 	/**
-	 * Builds a `Reader` implementing `self`
+	 * Builds a `Parser` implementing `self`
 	 *
 	 * @category Destructors
 	 */
@@ -608,9 +608,9 @@ export const toBigDecimalExtractor = (
 		4
 	);
 
-	const signReader = SignDisplay.toReader(self.signDisplay);
+	const signParser = SignDisplay.toParser(self.signDisplay);
 
-	const exponentReader = ScientificNotation.toReader(self.scientificNotation);
+	const exponentParser = ScientificNotation.toParser(self.scientificNotation);
 
 	const mantissaChecker = ScientificNotation.toMantissaChecker(self.scientificNotation);
 
@@ -659,12 +659,12 @@ export const toBigDecimalExtractor = (
 
 			const checkedMantissa = yield* mantissaChecker(mantissa);
 
-			const sign = yield* signReader({
+			const sign = yield* signParser({
 				isZero: BigDecimal.isZero(checkedMantissa),
 				sign: signPart as SignDisplay.SignString
 			});
 
-			const exponent = yield* exponentReader(exponentPart);
+			const exponent = yield* exponentParser(exponentPart);
 
 			return Tuple.make(
 				pipe(
@@ -704,7 +704,7 @@ export const toRealExtractor = (
  *
  * @category Destructors
  */
-export const toBigDecimalReader = (
+export const toBigDecimalParser = (
 	self: Type
 ): MTypes.OneArgFunction<string, Option.Option<BigDecimal.BigDecimal>> => {
 	const extractor = toBigDecimalExtractor(self);
@@ -724,14 +724,14 @@ export const toBigDecimalReader = (
 };
 
 /**
- * Same as `toBigDecimalReader` but returns a `Real` which is the most usual use case
+ * Same as `toBigDecimalParser` but returns a `Real` which is the most usual use case
  *
  * @category Destructors
  */
-export const toRealReader = (
+export const toRealParser = (
 	self: Type
 ): MTypes.OneArgFunction<string, Option.Option<CVReal.Type>> =>
-	flow(toBigDecimalReader(self), Option.flatMap(CVReal.fromBigDecimalOption));
+	flow(toBigDecimalParser(self), Option.flatMap(CVReal.fromBigDecimalOption));
 
 /**
  * Returns a function that tries to write `number` respecting the options represented by `self`. If
@@ -744,7 +744,7 @@ export const toRealReader = (
  *
  * @category Destructors
  */
-export const toNumberWriter = (
+export const toNumberFormatter = (
 	self: Type
 ): MTypes.OneArgFunction<BigDecimal.BigDecimal | CVReal.Type, string> => {
 	const rounder =
@@ -758,7 +758,7 @@ export const toNumberWriter = (
 				CVRoundingOption.make,
 				CVRoundingOption.toBigDecimalRounder
 			);
-	const signWriter = SignDisplay.toWriter(self.signDisplay);
+	const signFormatter = SignDisplay.toFormatter(self.signDisplay);
 	const mantissaAdjuster = ScientificNotation.toMantissaAdjuster(self.scientificNotation);
 	const hasThousandSeparator = self.thousandSeparator !== '';
 	const eNotationChar = pipe(
@@ -783,7 +783,7 @@ export const toNumberWriter = (
 			MBigDecimal.truncatedAndFollowingParts()
 		);
 
-		const signAsString = signWriter({ sign, isZero: BigDecimal.isZero(absRounded) });
+		const signAsString = signFormatter({ sign, isZero: BigDecimal.isZero(absRounded) });
 
 		const normalizedFractionalPart = BigDecimal.normalize(fractionalPart);
 

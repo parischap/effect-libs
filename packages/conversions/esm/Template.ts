@@ -103,7 +103,7 @@ export const placeHolders: <const PS extends CVPlaceHolders.Type>(self: Type<PS>
  * @category Destructors
  */
 
-export const toReader =
+export const toParser =
 	<const PS extends CVPlaceHolders.Type>(
 		self: Type<PS>
 	): MTypes.OneArgFunction<
@@ -123,7 +123,7 @@ export const toReader =
 			const result = Record.empty<string, unknown>();
 			for (const placeHolder of self.placeHolders) {
 				/* eslint-disable-next-line functional/no-expression-statements, @typescript-eslint/no-unsafe-assignment */
-				[consumed, text] = yield* placeHolder.reader(text);
+				[consumed, text] = yield* placeHolder.parser(text);
 				const id = placeHolder.id;
 				if (!(id in result))
 					/* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements,  */
@@ -146,12 +146,12 @@ export const toReader =
 
 /**
  * Returns a function that writes an object into the template represented by 'self' . When
- * strictMode is false, the writer function of the placeHolder's is replaced by the Either.right
+ * strictMode is false, the formatter function of the placeHolder's is replaced by the Either.right
  * function, i.e. no checks are carried out when encoding
  *
  * @category Destructors
  */
-export const toWriter = <const PS extends CVPlaceHolders.Type>(
+export const toFormatter = <const PS extends CVPlaceHolders.Type>(
 	self: Type<PS>
 ): MTypes.OneArgFunction<
 	{
@@ -174,7 +174,7 @@ export const toWriter = <const PS extends CVPlaceHolders.Type>(
 					Option.getOrThrow
 				);
 				/* eslint-disable-next-line functional/no-expression-statements */
-				result += yield* placeHolder.writer(value);
+				result += yield* placeHolder.formatter(value);
 			}
 
 			return result;

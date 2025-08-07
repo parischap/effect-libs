@@ -2,15 +2,15 @@
  * This module implements a PlaceHolder type. PlaceHolder's are the constituents of Template's (see
  * Template.ts).
  *
- * Each PlaceHolder defines a reader and a writer:
+ * Each PlaceHolder defines a parser and a formatter:
  *
- * - The reader takes a string, consumes what it can from that string that is coherent with the
+ * - The parser takes a string, consumes what it can from that string that is coherent with the
  *   PlaceHolder, optionnally converts the read part to a value of type N and, if successful,
  *   returns a right of that value and of what remains to be read. In case of an error, it returns a
  *   left.
- * - The writer takes a value of type N, converts it to a string (if N is not string), checks that the
- *   result is coherent with the PlaceHolder and, if so, returns a right of that string. Otherwise,
- *   it returns a left.
+ * - The formatter takes a value of type N, converts it to a string (if N is not string), checks that
+ *   the result is coherent with the PlaceHolder and, if so, returns a right of that string.
+ *   Otherwise, it returns a left.
  */
 
 import {
@@ -48,13 +48,13 @@ const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
 /**
- * Namespace of a PlaceHolder Reader
+ * Namespace of a PlaceHolder Parser
  *
  * @category Models
  */
-export namespace Reader {
+export namespace Parser {
 	/**
-	 * Type that describes a PlaceHolder Reader
+	 * Type that describes a PlaceHolder Parser
 	 *
 	 * @category Models
 	 */
@@ -66,13 +66,13 @@ export namespace Reader {
 }
 
 /**
- * Namespace of a PlaceHolder Writer
+ * Namespace of a PlaceHolder Formatter
  *
  * @category Models
  */
-export namespace Writer {
+export namespace Formatter {
 	/**
-	 * Type that describes a PlaceHolder Writer
+	 * Type that describes a PlaceHolder Formatter
 	 *
 	 * @category Models
 	 */
@@ -92,11 +92,11 @@ export interface Type<out N extends string, in out T> extends MInspectable.Type,
 	/** Descriptor of this Placeholder */
 	readonly descriptor: string;
 
-	/** Reader of this Placeholder */
-	readonly reader: Reader.Type<T>;
+	/** Parser of this Placeholder */
+	readonly parser: Parser.Type<T>;
 
-	/** Writer of this PlaceHolder */
-	readonly writer: Writer.Type<T>;
+	/** Formatter of this PlaceHolder */
+	readonly formatter: Formatter.Type<T>;
 
 	/** @internal */
 	readonly [_TypeId]: { readonly _N: Types.Covariant<N>; readonly _T: Types.Invariant<T> };
@@ -161,20 +161,20 @@ export const descriptor: <const N extends string, T>(self: Type<N, T>) => string
 	Struct.get('descriptor');
 
 /**
- * Returns the `reader` property of `self`
+ * Returns the `parser` property of `self`
  *
  * @category Destructors
  */
-export const reader: <const N extends string, T>(self: Type<N, T>) => Reader.Type<T> =
-	Struct.get('reader');
+export const parser: <const N extends string, T>(self: Type<N, T>) => Parser.Type<T> =
+	Struct.get('parser');
 
 /**
- * Returns the `writer` property of `self`
+ * Returns the `formatter` property of `self`
  *
  * @category Destructors
  */
-export const writer: <const N extends string, T>(self: Type<N, T>) => Writer.Type<T> =
-	Struct.get('writer');
+export const formatter: <const N extends string, T>(self: Type<N, T>) => Formatter.Type<T> =
+	Struct.get('formatter');
 
 /**
  * Builds a PlaceHolder instance that reads/writes exactly `length` characters from a string.
@@ -193,7 +193,7 @@ export const fixedLength = <const N extends string>({
 	return make({
 		id,
 		descriptor: `${name}: ${length}-character string`,
-		reader: flow(
+		parser: flow(
 			MString.splitAt(length),
 			Tuple.mapBoth({
 				onFirst: MInputError.assertLength({ expected: length, name }),
@@ -201,7 +201,7 @@ export const fixedLength = <const N extends string>({
 			}),
 			Either.all
 		),
-		writer: MInputError.assertLength({ expected: length, name })
+		formatter: MInputError.assertLength({ expected: length, name })
 	});
 };
 
@@ -228,8 +228,11 @@ export const paddedFixedLength = <const N extends string>(params: {
 	return make({
 		id,
 		descriptor: `${placeHolder.descriptor} ${MString.PadPosition.toId(params.padPosition)}-padded with '${params.fillChar}'`,
-		reader: flow(placeHolder.reader, Either.map(Tuple.mapFirst(trimmer))),
-		writer: flow(MInputError.assertMaxLength({ expected: params.length, name }), Either.map(padder))
+		parser: flow(placeHolder.parser, Either.map(Tuple.mapFirst(trimmer))),
+		formatter: flow(
+			MInputError.assertMaxLength({ expected: params.length, name }),
+			Either.map(padder)
+		)
 	});
 };
 
@@ -251,21 +254,21 @@ export const fixedLengthToReal = <const N extends string>(params: {
 	const id = params.id;
 	const placeHolder = paddedFixedLength(params);
 	const numberBase10Format = params.numberBase10Format;
-	const numberReader = CVNumberBase10Format.toRealReader(numberBase10Format);
-	const numberWriter = CVNumberBase10Format.toNumberWriter(numberBase10Format);
+	const numberParser = CVNumberBase10Format.toRealParser(numberBase10Format);
+	const numberFormatter = CVNumberBase10Format.toNumberFormatter(numberBase10Format);
 
 	return make({
 		id,
 		descriptor: `${placeHolder.descriptor} to ${numberBase10Format.descriptor}`,
-		reader: flow(
-			placeHolder.reader,
+		parser: flow(
+			placeHolder.parser,
 			Either.flatMap(
 				flow(
 					Tuple.mapBoth({
 						onFirst: (consumed) =>
 							pipe(
 								consumed,
-								numberReader,
+								numberParser,
 								Either.fromOption(
 									() =>
 										new MInputError.Type({
@@ -279,7 +282,7 @@ export const fixedLengthToReal = <const N extends string>(params: {
 				)
 			)
 		),
-		writer: flow(CVReal.toBigDecimal, numberWriter, placeHolder.writer)
+		formatter: flow(CVReal.toBigDecimal, numberFormatter, placeHolder.formatter)
 	});
 };
 
@@ -295,17 +298,17 @@ export const real = <const N extends string>({
 	readonly id: N;
 	readonly numberBase10Format: CVNumberBase10Format.Type;
 }): Type<N, CVReal.Type> => {
-	const numberReader = CVNumberBase10Format.toRealExtractor(numberBase10Format);
-	const numberWriter = CVNumberBase10Format.toNumberWriter(numberBase10Format);
+	const numberParser = CVNumberBase10Format.toRealExtractor(numberBase10Format);
+	const numberFormatter = CVNumberBase10Format.toNumberFormatter(numberBase10Format);
 	const flippedTakeRightBut = Function.flip(MString.takeRightBut);
 	const name = `'${id}' placeholder`;
 	return make({
 		id,
 		descriptor: `${name}: ${numberBase10Format.descriptor}`,
-		reader: (text) =>
+		parser: (text) =>
 			pipe(
 				text,
-				numberReader,
+				numberParser,
 				Either.fromOption(
 					() =>
 						new MInputError.Type({
@@ -314,7 +317,7 @@ export const real = <const N extends string>({
 				),
 				Either.map(Tuple.mapSecond(flow(String.length, flippedTakeRightBut(text))))
 			),
-		writer: flow(numberWriter, Either.right)
+		formatter: flow(numberFormatter, Either.right)
 	});
 };
 
@@ -334,17 +337,17 @@ export const literal = <const N extends string>({
 	return make({
 		id,
 		descriptor: `${name}: '${value}' string`,
-		reader: flow(
+		parser: flow(
 			MInputError.assertStartsWith({ startString: value, name: `remaining text for ${name}` }),
 			Either.map(flow(MString.takeRightBut(value.length), Tuple.make, MTuple.prependElement(value)))
 		),
-		writer: MInputError.assertValue({ expected: value, name })
+		formatter: MInputError.assertValue({ expected: value, name })
 	});
 };
 
 /**
  * Builds a PlaceHolder instance that reads/writes the regular expression regExp. `regExp` must
- * start with the ^ character. Otherwise, the reader and writer will not work properly.
+ * start with the ^ character. Otherwise, the parser and formatter will not work properly.
  *
  * @category Constructors
  */
@@ -368,7 +371,7 @@ export const fulfilling = <const N extends string>({
 	return make({
 		id,
 		descriptor: `${name}: ${regExpDescriptor}`,
-		reader: (text) =>
+		parser: (text) =>
 			pipe(
 				text,
 				match,
@@ -379,7 +382,7 @@ export const fulfilling = <const N extends string>({
 					})
 				)
 			),
-		writer: (text) =>
+		formatter: (text) =>
 			pipe(
 				text,
 				match,
