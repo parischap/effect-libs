@@ -25,16 +25,6 @@ describe('MFunction', () => {
 		TEUtils.strictEqual(pipe(2, MFunction.flipDual(String.takeLeft)('foo')), 'fo');
 	});
 
-	describe('strictEquals', () => {
-		it('Matching', () => {
-			TEUtils.assertTrue(pipe(5, MFunction.strictEquals(5)));
-		});
-
-		it('Non matching', () => {
-			TEUtils.assertFalse(pipe(5, MFunction.strictEquals(2)));
-		});
-	});
-
 	it('parameterNumber', () => {
 		TEUtils.strictEqual(
 			pipe((m: number, n: number) => m + n, MFunction.parameterNumber),

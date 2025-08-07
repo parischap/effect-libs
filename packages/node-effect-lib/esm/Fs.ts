@@ -1,7 +1,7 @@
 /** FIX GLOB */
 import { Error as PlatformError, FileSystem as PlatformFs } from '@effect/platform';
 import { NodeFileSystem as PlatformNodeFs } from '@effect/platform-node';
-import { MFs, MFunction, MPredicate, MTuple, MTypes } from '@parischap/effect-lib';
+import { MFs, MPredicate, MTuple, MTypes } from '@parischap/effect-lib';
 import * as NPath from './Path.js';
 
 import {
@@ -425,8 +425,8 @@ export const layer = Layer.effect(
 							realPath,
 							Effect.map(
 								Predicate.or(
-									MFunction.strictEquals(nPath.homeDir),
-									MFunction.strictEquals(nPath.rootDir)
+									MPredicate.strictEquals(nPath.homeDir),
+									MPredicate.strictEquals(nPath.rootDir)
 								)
 							)
 						)

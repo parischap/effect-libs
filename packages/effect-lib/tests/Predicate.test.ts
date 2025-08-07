@@ -75,4 +75,14 @@ describe('MPredicate', () => {
 			);
 		});
 	});
+
+	describe('strictEquals', () => {
+		it('Matching', () => {
+			TEUtils.assertTrue(pipe(5, MPredicate.strictEquals(5)));
+		});
+
+		it('Non matching', () => {
+			TEUtils.assertFalse(pipe(5, MPredicate.strictEquals(2)));
+		});
+	});
 });

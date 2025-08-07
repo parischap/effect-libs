@@ -1,5 +1,5 @@
 /* eslint-disable functional/no-expression-statements */
-import { MFunction } from '@parischap/effect-lib';
+import { MPredicate } from '@parischap/effect-lib';
 import { PPPropertyFilter, PPValue, PPValues } from '@parischap/pretty-print';
 import { TEUtils } from '@parischap/test-utils';
 import { Array, Function, pipe } from 'effect';
@@ -105,7 +105,7 @@ describe('PropertyFilter', () => {
 				values,
 				PPPropertyFilter.removeNotFulfillingKeyPredicateMaker({
 					id: 'OnlyLength',
-					predicate: MFunction.strictEquals('length')
+					predicate: MPredicate.strictEquals('length')
 				})
 			),
 			Array.of(value3)

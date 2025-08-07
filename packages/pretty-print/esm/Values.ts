@@ -73,7 +73,7 @@ export const fromProperties =
 			Array.flatten,
 			// Removes __proto__ properties if there are some because we have already read that property with getPrototypeOf
 			Array.filter(
-				MPredicate.struct({ oneLineStringKey: Predicate.not(MFunction.strictEquals('__proto__')) })
+				MPredicate.struct({ oneLineStringKey: Predicate.not(MPredicate.strictEquals('__proto__')) })
 			)
 		);
 	};

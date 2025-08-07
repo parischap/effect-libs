@@ -115,8 +115,8 @@ export namespace SignDisplay {
 			Option.Option<SignValue>
 		> {}
 
-	const isPlusSign: Predicate.Predicate<SignString> = MFunction.strictEquals('+');
-	const isMinusSign: Predicate.Predicate<SignString> = MFunction.strictEquals('-');
+	const isPlusSign: Predicate.Predicate<SignString> = MPredicate.strictEquals('+');
+	const isMinusSign: Predicate.Predicate<SignString> = MPredicate.strictEquals('-');
 	const signStringToSignValue: MTypes.OneArgFunction<SignString, SignValue> = flow(
 		Option.liftPredicate(isMinusSign),
 		Option.as(-1 as const),
@@ -641,7 +641,7 @@ export const toBigDecimalExtractor = (
 					onSome: flow(
 						self.showNullIntegerPart || mantissaFractionalPartLength === 0 ?
 							Option.some
-						:	Option.liftPredicate(Predicate.not(MFunction.strictEquals('0'))),
+						:	Option.liftPredicate(Predicate.not(MPredicate.strictEquals('0'))),
 						Option.map(flow(removeThousandSeparator, MBigDecimal.unsafeFromIntString(0)))
 					)
 				}),
@@ -715,7 +715,7 @@ export const toBigDecimalReader = (
 			Option.flatMap(
 				flow(
 					Option.liftPredicate(
-						flow(Tuple.getSecond, String.length, MFunction.strictEquals(text.length))
+						flow(Tuple.getSecond, String.length, MPredicate.strictEquals(text.length))
 					),
 					Option.map(Tuple.getFirst)
 				)
@@ -810,7 +810,7 @@ export const toNumberWriter = (
 				)
 			}),
 			Either.liftPredicate(
-				Predicate.not(MFunction.strictEquals('0')),
+				Predicate.not(MPredicate.strictEquals('0')),
 				MFunction.fIfTrue({
 					condition: !self.showNullIntegerPart && fractionalPartAsString.length !== 0,
 					f: MFunction.constEmptyString

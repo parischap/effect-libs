@@ -22,6 +22,7 @@ import * as MFunction from './Function.js';
 import * as MInspectable from './Inspectable.js';
 import * as MMatch from './Match.js';
 import * as MPipeable from './Pipeable.js';
+import * as MPredicate from './Predicate.js';
 import * as MRegExp from './RegExp.js';
 import * as MTuple from './Tuple.js';
 import * as MTypes from './types.js';
@@ -348,7 +349,7 @@ export const takeRightBut =
  * @category Utils
  */
 export const trimStart = (charToRemove: string): MTypes.StringTransformer =>
-	flow(Array.dropWhile(MFunction.strictEquals(charToRemove)), Array.join(''));
+	flow(Array.dropWhile(MPredicate.strictEquals(charToRemove)), Array.join(''));
 
 /**
  * Same as String.trimEnd but the character to remove can be specified. `charToRemove` must be a
@@ -360,7 +361,7 @@ export const trimEnd = (charToRemove: string): MTypes.StringTransformer =>
 	flow(
 		Array.fromIterable,
 		Array.reverse,
-		Array.dropWhile(MFunction.strictEquals(charToRemove)),
+		Array.dropWhile(MPredicate.strictEquals(charToRemove)),
 		Array.reverse,
 		Array.join('')
 	);

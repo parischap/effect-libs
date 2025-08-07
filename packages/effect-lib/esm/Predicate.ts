@@ -98,3 +98,11 @@ export const struct =
 		:	O[key];
 	} =>
 		Predicate.struct(fields as never)(o as never) as never;
+
+/**
+ * Strict equality predicate
+ *
+ * @category Constructors
+ */
+export const strictEquals: <A>(that: NoInfer<A>) => Predicate.Predicate<A> = (that) => (self) =>
+	self === that;

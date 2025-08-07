@@ -1,9 +1,8 @@
 /* eslint-disable functional/no-expression-statements */
-import { MFunction, MMatch, MTypes } from '@parischap/effect-lib';
+import { MMatch, MPredicate, MTypes } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
 import { Array, flow, Function, Number, pipe, Struct } from 'effect';
 import { describe, it } from 'vitest';
-
 describe('MMatch', () => {
 	describe('Tag, prototype and guards', () => {
 		const testMatch = MMatch.make(5);
@@ -86,11 +85,11 @@ describe('MMatch', () => {
 					5,
 					MMatch.make,
 					MMatch.whenOr(
-						MFunction.strictEquals(4),
-						MFunction.strictEquals(5),
+						MPredicate.strictEquals(4),
+						MPredicate.strictEquals(5),
 						Function.constant('a')
 					),
-					MMatch.when(MFunction.strictEquals(6), Function.constant('b')),
+					MMatch.when(MPredicate.strictEquals(6), Function.constant('b')),
 					MMatch.orElse(Function.constant('c'))
 				),
 				'a'

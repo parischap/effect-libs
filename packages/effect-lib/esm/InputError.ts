@@ -1,7 +1,7 @@
 /** A module that implements an error that occurs upon receiving an unexpected input */
 
 import { Data, Either, flow, Function, Number, Option, pipe, Predicate, String } from 'effect';
-import * as MFunction from './Function.js';
+import * as MPredicate from './Predicate.js';
 import * as MString from './String.js';
 import * as MTypes from './types.js';
 
@@ -56,7 +56,7 @@ export const assertValue = <T extends MTypes.NonNullablePrimitive>(params: {
 	readonly expected: NoInfer<T>;
 	readonly name?: string;
 }): MTypes.OneArgFunction<T, Either.Either<T, Type>> =>
-	Either.liftPredicate(MFunction.strictEquals(params.expected), (actual) =>
+	Either.liftPredicate(MPredicate.strictEquals(params.expected), (actual) =>
 		wrongValue({ ...params, actual })
 	);
 

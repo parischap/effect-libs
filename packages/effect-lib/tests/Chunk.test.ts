@@ -1,5 +1,5 @@
 /* eslint-disable functional/no-expression-statements */
-import { MChunk, MFunction } from '@parischap/effect-lib';
+import { MChunk, MPredicate } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
 import { Chunk, pipe } from 'effect';
 import { describe, it } from 'vitest';
@@ -24,12 +24,12 @@ describe('MChunk', () => {
 	describe('findAll', () => {
 		it('Empty chunk', () => {
 			TEUtils.assertTrue(
-				pipe(Chunk.empty<number>(), MChunk.findAll(MFunction.strictEquals(3)), Chunk.isEmpty)
+				pipe(Chunk.empty<number>(), MChunk.findAll(MPredicate.strictEquals(3)), Chunk.isEmpty)
 			);
 		});
 		it('Non empty chunk', () => {
 			TEUtils.assertEquals(
-				pipe(Chunk.make(3, 2, 5, 3, 8, 3), MChunk.findAll(MFunction.strictEquals(3))),
+				pipe(Chunk.make(3, 2, 5, 3, 8, 3), MChunk.findAll(MPredicate.strictEquals(3))),
 				Chunk.make(0, 3, 5)
 			);
 		});

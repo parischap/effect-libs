@@ -1,5 +1,5 @@
 /* eslint-disable functional/no-expression-statements */
-import { MArray, MFunction, MTuple } from '@parischap/effect-lib';
+import { MArray, MPredicate, MTuple } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
 import {
 	Array,
@@ -92,12 +92,12 @@ describe('MArray', () => {
 	describe('findAll', () => {
 		it('Empty array', () => {
 			TEUtils.assertTrue(
-				pipe(Array.empty<number>(), MArray.findAll(MFunction.strictEquals(3)), Array.isEmptyArray)
+				pipe(Array.empty<number>(), MArray.findAll(MPredicate.strictEquals(3)), Array.isEmptyArray)
 			);
 		});
 		it('Non empty array', () => {
 			TEUtils.deepStrictEqual(
-				pipe(Array.make(3, 2, 5, 3, 8, 3), MArray.findAll(MFunction.strictEquals(3))),
+				pipe(Array.make(3, 2, 5, 3, 8, 3), MArray.findAll(MPredicate.strictEquals(3))),
 				[0, 3, 5]
 			);
 		});
@@ -154,13 +154,13 @@ describe('MArray', () => {
 	describe('extractFirst', () => {
 		it('Empty array', () => {
 			TEUtils.assertEquals(
-				pipe(Array.empty<number>(), MArray.extractFirst(MFunction.strictEquals(3))),
+				pipe(Array.empty<number>(), MArray.extractFirst(MPredicate.strictEquals(3))),
 				Tuple.make(Option.none(), Array.empty())
 			);
 		});
 		it('Non empty array', () => {
 			TEUtils.assertEquals(
-				pipe(Array.make(1, 2, 3, 4, 5), MArray.extractFirst(MFunction.strictEquals(3))),
+				pipe(Array.make(1, 2, 3, 4, 5), MArray.extractFirst(MPredicate.strictEquals(3))),
 				Tuple.make(Option.some(3), Array.make(1, 2, 4, 5))
 			);
 		});

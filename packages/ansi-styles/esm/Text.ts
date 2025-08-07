@@ -9,6 +9,7 @@ import {
 	MInspectable,
 	MMatch,
 	MPipeable,
+	MPredicate,
 	MString,
 	MStruct,
 	MTypes
@@ -270,7 +271,7 @@ export const toLength: MTypes.OneArgFunction<Type, number> = flow(
  * @category Predicates
  */
 
-export const isEmpty: Predicate.Predicate<Type> = flow(toLength, MFunction.strictEquals(0));
+export const isEmpty: Predicate.Predicate<Type> = flow(toLength, MPredicate.strictEquals(0));
 
 /**
  * Predicate that returns true if `self` is not empty

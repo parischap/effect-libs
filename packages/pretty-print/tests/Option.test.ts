@@ -1,6 +1,6 @@
 /* eslint-disable functional/no-expression-statements */
 import { ASStyle, ASText } from '@parischap/ansi-styles';
-import { MFunction } from '@parischap/effect-lib';
+import { MPredicate } from '@parischap/effect-lib';
 import {
 	PPByPasser,
 	PPMarkShowerConstructor,
@@ -240,7 +240,10 @@ describe('Option', () => {
 					propertyFilters: Array.of(
 						PPPropertyFilter.removeNotFulfillingKeyPredicateMaker({
 							id: 'keepAAndLength',
-							predicate: Predicate.or(MFunction.strictEquals('a'), MFunction.strictEquals('length'))
+							predicate: Predicate.or(
+								MPredicate.strictEquals('a'),
+								MPredicate.strictEquals('length')
+							)
 						})
 					),
 					maxPrototypeDepth: +Infinity

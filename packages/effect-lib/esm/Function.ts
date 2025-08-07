@@ -1,6 +1,6 @@
 /** A simple extension to the Effect Function module */
 
-import { Function, Option, pipe, Predicate } from 'effect';
+import { Function, Option, pipe } from 'effect';
 import * as MTypes from './types.js';
 
 /**
@@ -34,14 +34,6 @@ export const flipDual =
 	(first) =>
 	(...b) =>
 		self(first, ...b);
-
-/**
- * Strict equality predicate
- *
- * @category Utils
- */
-export const strictEquals: <A>(that: NoInfer<A>) => Predicate.Predicate<A> = (that) => (self) =>
-	self === that;
 
 /**
  * Returns the expected number of parameters of a function

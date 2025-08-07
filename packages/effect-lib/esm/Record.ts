@@ -2,6 +2,7 @@
 
 import { flow, Function, Option, pipe, Predicate, Record } from 'effect';
 import * as MFunction from './Function.js';
+import * as MPredicate from './Predicate.js';
 import * as MTypes from './types.js';
 
 /**
@@ -39,10 +40,10 @@ export const tryZeroParamFunction =
 					pipe(
 						exception,
 						Option.liftPredicate(MTypes.isNotUndefined),
-						Option.map(flow(MFunction.strictEquals<MTypes.AnyFunction>, Predicate.not)),
+						Option.map(flow(MPredicate.strictEquals<MTypes.AnyFunction>, Predicate.not)),
 						Option.getOrElse(() => Function.constTrue)
 					),
-					flow(MFunction.parameterNumber, MFunction.strictEquals(0))
+					flow(MFunction.parameterNumber, MPredicate.strictEquals(0))
 				)
 			),
 			Option.map(MFunction.applyAsThis(self))
