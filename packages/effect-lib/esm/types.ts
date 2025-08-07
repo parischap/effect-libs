@@ -246,6 +246,13 @@ export function areEqualTypes<A, B>(): readonly [A] extends readonly [B] ?
 }
 
 /**
+ * Utility type that returns removes from Array type all keys not representing an array index
+ *
+ * @category Utility types
+ */
+export type ArrayKeys<A extends AnyReadonlyArray> = Omit<A, keyof ReadonlyArray<unknown>>;
+
+/**
  * Utility type that makes field `field` of target type `X` mutable
  *
  * @category Utility types
