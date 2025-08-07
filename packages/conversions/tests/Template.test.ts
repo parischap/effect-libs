@@ -1,18 +1,26 @@
 /* eslint-disable functional/no-expression-statements */
-import { CVPlaceHolder, CVTemplate } from '@parischap/conversions';
-import { MInputError, MTypes } from '@parischap/effect-lib';
+import { CVNumberBase10Format, CVPlaceHolder, CVReal, CVTemplate } from '@parischap/conversions';
+import { MInputError, MString, MTypes } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
 import { Either } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('CVTemplate', () => {
-	const template = CVTemplate.make([
-		CVPlaceHolder.fixedLength({ name: 'dd', length: 2 }),
-		CVPlaceHolder.literal({ name: 'separator1', value: '/' }),
-		CVPlaceHolder.fixedLength({ name: 'MM', length: 2 }),
-		CVPlaceHolder.literal({ name: 'separator2', value: '/' }),
-		CVPlaceHolder.fixedLength({ name: 'yyyy', length: 4 })
-	]);
+	const params = {
+		fillChar: '0',
+		padPosition: MString.PadPosition.Left,
+		disallowEmptyString: true,
+		numberBase10Format: CVNumberBase10Format.integer
+	};
+	const template = CVTemplate.make(
+		CVPlaceHolder.fixedLengthToReal({ ...params, id: 'dd', length: 2 }),
+		CVPlaceHolder.literal({ id: 'separator1', value: '/' }),
+		CVPlaceHolder.fixedLengthToReal({ ...params, id: 'MM', length: 2 }),
+		CVPlaceHolder.literal({ id: 'separator2', value: '/' }),
+		CVPlaceHolder.fixedLengthToReal({ ...params, id: 'yyyy', length: 4 }),
+		CVPlaceHolder.literal({ id: 'separator3', value: ' ' }),
+		CVPlaceHolder.real({ ...params, id: 'MM' })
+	);
 
 	describe('Tag, prototype and guards', () => {
 		it('moduleTag', () => {
@@ -29,11 +37,13 @@ describe('CVTemplate', () => {
 				`{
   "_id": "@parischap/conversions/Template/",
   "placeHolders": [
-    "Placeholder dd",
-    "Placeholder separator1",
-    "Placeholder MM",
-    "Placeholder separator2",
-    "Placeholder yyyy"
+    "'dd' placeholder: 2-character string left-padded with '0' to integer",
+    "'separator1' placeholder: '/' string",
+    "'MM' placeholder: 2-character string left-padded with '0' to integer",
+    "'separator2' placeholder: '/' string",
+    "'yyyy' placeholder: 4-character string left-padded with '0' to integer",
+    "'separator3' placeholder: ' ' string",
+    "'MM' placeholder: integer"
   ]
 }`
 			);
@@ -58,11 +68,12 @@ describe('CVTemplate', () => {
 				string,
 				Either.Either<
 					{
-						readonly dd: string;
+						readonly dd: CVReal.Type;
 						readonly separator1: string;
-						readonly MM: string;
+						readonly MM: CVReal.Type;
 						readonly separator2: string;
-						readonly yyyy: string;
+						readonly yyyy: CVReal.Type;
+						readonly separator3: string;
 					},
 					MInputError.Type
 				>
@@ -70,104 +81,96 @@ describe('CVTemplate', () => {
 		>() satisfies true;
 
 		it('Empty text', () => {
-			TEUtils.assertLeftMessage(reader(''), "Expected length of 'dd' to be: 2. Actual: 0");
+			TEUtils.assertLeftMessage(
+				reader(''),
+				"Expected length of 'dd' placeholder to be: 2. Actual: 0"
+			);
 		});
 
 		it('Text too short', () => {
 			TEUtils.assertLeftMessage(
 				reader('25/12'),
-				"Expected 'separator2' to start with '/'. Actual: ''"
+				"Expected remaining text for 'separator2' placeholder to start with '/'. Actual: ''"
 			);
 		});
 
 		it('Wrong separator', () => {
 			TEUtils.assertLeftMessage(
 				reader('25|12'),
-				"Expected 'separator1' to start with '/'. Actual: '|12'"
+				"Expected remaining text for 'separator1' placeholder to start with '/'. Actual: '|12'"
+			);
+		});
+
+		it('Same placeholder receives different values', () => {
+			TEUtils.assertLeftMessage(
+				reader('25/12/2025 13'),
+				"'MM' placeholder is present twice in template and receives differing values '12' and '13'"
 			);
 		});
 
 		it('Text too long', () => {
 			TEUtils.assertLeftMessage(
-				reader('25/12/2025 is XMas'),
-				"Expected text not consumed by template to be empty. Actual: ' is XMas'"
+				reader('25/12/2025 12is XMas'),
+				"Expected text not consumed by template to be empty. Actual: 'is XMas'"
 			);
 		});
 
 		it('Matching text', () => {
-			TEUtils.assertRight(reader('25/12/2025'), {
-				dd: '25',
+			TEUtils.assertRight(reader('05/12/2025 12'), {
+				dd: CVReal.unsafeFromNumber(5),
 				separator1: '/',
-				MM: '12',
+				MM: CVReal.unsafeFromNumber(12),
 				separator2: '/',
-				yyyy: '2025'
+				yyyy: CVReal.unsafeFromNumber(2025),
+				separator3: ' '
 			});
 		});
 	});
 
 	describe('toWriter', () => {
-		describe('StrictMode = false', () => {
-			const writer = CVTemplate.toWriter(template);
+		const writer = CVTemplate.toWriter(template);
 
-			MTypes.areEqualTypes<
-				typeof writer,
-				MTypes.OneArgFunction<
-					{
-						readonly dd: string;
-						readonly separator1: string;
-						readonly MM: string;
-						readonly separator2: string;
-						readonly yyyy: string;
-					},
-					string
-				>
-			>() satisfies true;
+		MTypes.areEqualTypes<
+			typeof writer,
+			MTypes.OneArgFunction<
+				{
+					readonly dd: CVReal.Type;
+					readonly separator1: string;
+					readonly MM: CVReal.Type;
+					readonly separator2: string;
+					readonly yyyy: CVReal.Type;
+					readonly separator3: string;
+				},
+				Either.Either<string, MInputError.Type>
+			>
+		>() satisfies true;
 
-			it('With correct values', () => {
-				TEUtils.strictEqual(
-					writer({ dd: '25', separator1: '/', MM: '12', separator2: '/', yyyy: '2025' }),
-					'25/12/2025'
-				);
-			});
-
-			it('With incorrect values', () => {
-				TEUtils.strictEqual(
-					writer({ dd: '25', separator1: '\\', MM: '12', separator2: '\\', yyyy: '2025' }),
-					'25\\12\\2025'
-				);
-			});
+		it('With correct values', () => {
+			TEUtils.assertRight(
+				writer({
+					dd: CVReal.unsafeFromNumber(5),
+					separator1: '/',
+					MM: CVReal.unsafeFromNumber(12),
+					separator2: '/',
+					yyyy: CVReal.unsafeFromNumber(2025),
+					separator3: ' '
+				}),
+				'05/12/2025 12'
+			);
 		});
 
-		describe('StrictMode = true', () => {
-			const writer = CVTemplate.toWriter(template, true);
-
-			MTypes.areEqualTypes<
-				typeof writer,
-				MTypes.OneArgFunction<
-					{
-						readonly dd: string;
-						readonly separator1: string;
-						readonly MM: string;
-						readonly separator2: string;
-						readonly yyyy: string;
-					},
-					Either.Either<string, MInputError.Type>
-				>
-			>() satisfies true;
-
-			it('With correct values', () => {
-				TEUtils.assertRight(
-					writer({ dd: '25', separator1: '/', MM: '12', separator2: '/', yyyy: '2025' }),
-					'25/12/2025'
-				);
-			});
-
-			it('With incorrect values', () => {
-				TEUtils.assertLeftMessage(
-					writer({ dd: '25', separator1: '|', MM: '12', separator2: '|', yyyy: '2025' }),
-					"Expected 'separator1' to be: '/'. Actual: '|'"
-				);
-			});
+		it('With incorrect values', () => {
+			TEUtils.assertLeftMessage(
+				writer({
+					dd: CVReal.unsafeFromNumber(115),
+					separator1: '/',
+					MM: CVReal.unsafeFromNumber(12),
+					separator2: '/',
+					yyyy: CVReal.unsafeFromNumber(2025),
+					separator3: ' '
+				}),
+				"Expected length of 'dd' placeholder to be at most(included): 2. Actual: 3"
+			);
 		});
 	});
 });

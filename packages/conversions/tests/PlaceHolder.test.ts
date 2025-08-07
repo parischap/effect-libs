@@ -1,12 +1,15 @@
 /* eslint-disable functional/no-expression-statements */
 import { CVNumberBase10Format, CVPlaceHolder, CVReal } from '@parischap/conversions';
-import { MString } from '@parischap/effect-lib';
+import { MString, MTypes } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
 import { Tuple } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('CVPlaceHolder', () => {
 	const threeChars = CVPlaceHolder.fixedLength({ id: 'foo', length: 3 });
+
+	MTypes.areEqualTypes<CVPlaceHolder.ExtractName<typeof threeChars>, 'foo'>() satisfies true;
+	MTypes.areEqualTypes<CVPlaceHolder.ExtractType<typeof threeChars>, string>() satisfies true;
 
 	describe('Tag, prototype and guards', () => {
 		it('moduleTag', () => {
@@ -227,12 +230,12 @@ describe('CVPlaceHolder', () => {
 		});
 	});
 
-	describe('atLeastOneNonSpaceChar', () => {
-		const atLeastOneNonSpaceChar = CVPlaceHolder.atLeastOneNonSpaceChar('foo');
+	describe('noSpaceChars', () => {
+		const noSpaceChars = CVPlaceHolder.noSpaceChars('foo');
 
 		it('.toString()', () => {
 			TEUtils.strictEqual(
-				atLeastOneNonSpaceChar.toString(),
+				noSpaceChars.toString(),
 				"'foo' placeholder: a non-empty string containing non-space characters"
 			);
 		});
@@ -240,31 +243,28 @@ describe('CVPlaceHolder', () => {
 		describe('Reading', () => {
 			it('Not passing', () => {
 				TEUtils.assertLeftMessage(
-					atLeastOneNonSpaceChar.reader(''),
+					noSpaceChars.reader(''),
 					"Expected 'foo' placeholder to be a non-empty string containing non-space characters. Actual: ''"
 				);
 			});
 
 			it('Passing', () => {
-				TEUtils.assertRight(
-					atLeastOneNonSpaceChar.reader('foo and bar'),
-					Tuple.make('foo', ' and bar')
-				);
-				TEUtils.assertRight(atLeastOneNonSpaceChar.reader('foo'), Tuple.make('foo', ''));
+				TEUtils.assertRight(noSpaceChars.reader('foo and bar'), Tuple.make('foo', ' and bar'));
+				TEUtils.assertRight(noSpaceChars.reader('foo'), Tuple.make('foo', ''));
 			});
 		});
 
 		describe('Writing', () => {
 			it('Not passing', () => {
-				TEUtils.assertLeft(atLeastOneNonSpaceChar.writer(''));
+				TEUtils.assertLeft(noSpaceChars.writer(''));
 				TEUtils.assertLeftMessage(
-					atLeastOneNonSpaceChar.writer('fo o'),
+					noSpaceChars.writer('fo o'),
 					"'foo' placeholder: expected a non-empty string containing non-space characters. Actual: 'fo o'"
 				);
 			});
 
 			it('Passing', () => {
-				TEUtils.assertRight(atLeastOneNonSpaceChar.writer('foo'), 'foo');
+				TEUtils.assertRight(noSpaceChars.writer('foo'), 'foo');
 			});
 		});
 	});

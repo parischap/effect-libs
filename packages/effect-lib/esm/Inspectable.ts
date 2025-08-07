@@ -32,6 +32,7 @@ export type IdSymbol = typeof IdSymbol;
 export interface Type extends Inspectable.Inspectable {
 	readonly [IdSymbol]: () => string;
 }
+
 /**
  * Prototype of an `Inspectable` that overloads the `toJSON` and `toString` methods.
  *

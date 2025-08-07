@@ -102,6 +102,23 @@ export interface Type<out N extends string, in out T> extends MInspectable.Type,
 	readonly [_TypeId]: { readonly _N: Types.Covariant<N>; readonly _T: Types.Invariant<T> };
 }
 
+/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+export interface All extends Type<string, any> {}
+
+/**
+ * Utility type that extracts the Name type of a PlaceHolder
+ *
+ * @category Utility types
+ */
+export type ExtractName<P extends All> = P extends Type<infer N, infer _> ? N : never;
+
+/**
+ * Utility type that extracts the Type type of a PlaceHolder
+ *
+ * @category Utility types
+ */
+export type ExtractType<P extends All> = P extends Type<string, infer T> ? T : never;
+
 /**
  * Type guard
  *
@@ -125,7 +142,7 @@ const proto: MTypes.Proto<Type<never, any>> = {
  *
  * @category Constructors
  */
-export const make = <N extends string, T>(params: MTypes.Data<Type<N, T>>): Type<N, T> =>
+export const make = <const N extends string, T>(params: MTypes.Data<Type<N, T>>): Type<N, T> =>
 	MTypes.objectFromDataAndProto(proto, params);
 
 /**
@@ -133,14 +150,14 @@ export const make = <N extends string, T>(params: MTypes.Data<Type<N, T>>): Type
  *
  * @category Destructors
  */
-export const id: <N extends string, T>(self: Type<N, T>) => N = Struct.get('id');
+export const id: <const N extends string, T>(self: Type<N, T>) => N = Struct.get('id');
 
 /**
  * Returns the `descriptor` property of `self`
  *
  * @category Destructors
  */
-export const descriptor: <N extends string, T>(self: Type<N, T>) => string =
+export const descriptor: <const N extends string, T>(self: Type<N, T>) => string =
 	Struct.get('descriptor');
 
 /**
@@ -148,7 +165,7 @@ export const descriptor: <N extends string, T>(self: Type<N, T>) => string =
  *
  * @category Destructors
  */
-export const reader: <N extends string, T>(self: Type<N, T>) => Reader.Type<T> =
+export const reader: <const N extends string, T>(self: Type<N, T>) => Reader.Type<T> =
 	Struct.get('reader');
 
 /**
@@ -156,16 +173,16 @@ export const reader: <N extends string, T>(self: Type<N, T>) => Reader.Type<T> =
  *
  * @category Destructors
  */
-export const writer: <N extends string, T>(self: Type<N, T>) => Writer.Type<T> =
+export const writer: <const N extends string, T>(self: Type<N, T>) => Writer.Type<T> =
 	Struct.get('writer');
 
 /**
  * Builds a PlaceHolder instance that reads/writes exactly `length` characters from a string.
  * `length` must be a strictly positive integer.
  *
- * @category Instance builders
+ * @category Constructors
  */
-export const fixedLength = <N extends string>({
+export const fixedLength = <const N extends string>({
 	id,
 	length
 }: {
@@ -194,9 +211,9 @@ export const fixedLength = <N extends string>({
  * string. `length` must be a strictly positive integer. See the meaning of `disallowEmptyString` in
  * String.trim.
  *
- * @category Instance builders
+ * @category Constructors
  */
-export const paddedFixedLength = <N extends string>(params: {
+export const paddedFixedLength = <const N extends string>(params: {
 	readonly id: N;
 	readonly length: number;
 	readonly fillChar: string;
@@ -221,9 +238,9 @@ export const paddedFixedLength = <N extends string>(params: {
  * number to read/write does not occupy length characters, trimming/padding is applied. See the
  * paddedFixedLength instance builder.
  *
- * @category Instance builders
+ * @category Constructors
  */
-export const fixedLengthToReal = <N extends string>(params: {
+export const fixedLengthToReal = <const N extends string>(params: {
 	readonly id: N;
 	readonly length: number;
 	readonly fillChar: string;
@@ -269,9 +286,9 @@ export const fixedLengthToReal = <N extends string>(params: {
 /**
  * Builds a PlaceHolder instance that reads/writes a Real provided in `numberBase10Format`.
  *
- * @category Instance builders
+ * @category Constructors
  */
-export const real = <N extends string>({
+export const real = <const N extends string>({
 	id,
 	numberBase10Format
 }: {
@@ -304,9 +321,9 @@ export const real = <N extends string>({
 /**
  * Builds a PlaceHolder instance that reads/writes a given string.
  *
- * @category Instance builders
+ * @category Constructors
  */
-export const literal = <N extends string>({
+export const literal = <const N extends string>({
 	id,
 	value
 }: {
@@ -329,9 +346,9 @@ export const literal = <N extends string>({
  * Builds a PlaceHolder instance that reads/writes the regular expression regExp. `regExp` must
  * start with the ^ character. Otherwise, the reader and writer will not work properly.
  *
- * @category Instance builders
+ * @category Constructors
  */
-export const fulfilling = <N extends string>({
+export const fulfilling = <const N extends string>({
 	id,
 	regExp,
 	regExpDescriptor
@@ -380,9 +397,9 @@ export const fulfilling = <N extends string>({
 /**
  * Builds a PlaceHolder instance that reads/writes at least one non-space character.
  *
- * @category Instance builders
+ * @category Constructors
  */
-export const atLeastOneNonSpaceChar = <N extends string>(id: N): Type<N, string> =>
+export const noSpaceChars = <const N extends string>(id: N): Type<N, string> =>
 	fulfilling({
 		id,
 		regExp: /^[^\s]+/,
