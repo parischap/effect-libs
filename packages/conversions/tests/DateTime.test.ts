@@ -161,7 +161,7 @@ describe('CVDateTime', () => {
 		 */
 	});
 
-	it('fromTimestamp, isoYear, isoYearIsLong, week, weekDay', () => {
+	it('fromTimestamp, isoYear, isoYearIsLong, week, weekday', () => {
 		// Timestamp of 31/12/1770 00:00:00:000+0:00
 		const YEAR_START_1771_MS = -6_279_897_600_000;
 		const FOUR_HUNDRED_YEARS_MS = 12_622_780_800_000;
@@ -182,9 +182,9 @@ describe('CVDateTime', () => {
 				const yearDurationMs = endTimestamp - startTimestamp + 1;
 
 				const isoWeekIndex = intRandom(yearDurationInWeeks);
-				const weekDayIndex = intRandom(6);
+				const weekdayIndex = intRandom(6);
 				const randomTimestamp =
-					startTimestamp + isoWeekIndex * CVDateTime.WEEK_MS + weekDayIndex * CVDateTime.DAY_MS;
+					startTimestamp + isoWeekIndex * CVDateTime.WEEK_MS + weekdayIndex * CVDateTime.DAY_MS;
 				const randomDate = CVDateTime.unsafeFromTimestamp(randomTimestamp, 0);
 
 				return Tuple.make(
@@ -195,14 +195,14 @@ describe('CVDateTime', () => {
 								isoYear: CVDateTime.getIsoYear(startDate),
 								isoYearIsLong: CVDateTime.isoYearIsLong(startDate),
 								isoWeek: CVDateTime.getIsoWeek(startDate),
-								weekDay: CVDateTime.getWeekDay(startDate)
+								weekday: CVDateTime.getWeekday(startDate)
 							},
 							{
 								startInput: startTimestamp,
 								isoYear: year,
 								isoYearIsLong,
 								isoWeek: 1,
-								weekDay: 1
+								weekday: 1
 							}
 						),
 						Tuple.make(
@@ -211,14 +211,14 @@ describe('CVDateTime', () => {
 								isoYear: CVDateTime.getIsoYear(randomDate),
 								isoYearIsLong: CVDateTime.isoYearIsLong(randomDate),
 								isoWeek: CVDateTime.getIsoWeek(randomDate),
-								weekDay: CVDateTime.getWeekDay(randomDate)
+								weekday: CVDateTime.getWeekday(randomDate)
 							},
 							{
 								randomInput: randomTimestamp,
 								isoYear: year,
 								isoYearIsLong,
 								isoWeek: isoWeekIndex + 1,
-								weekDay: weekDayIndex + 1
+								weekday: weekdayIndex + 1
 							}
 						),
 						Tuple.make(
@@ -227,14 +227,14 @@ describe('CVDateTime', () => {
 								isoYear: CVDateTime.getIsoYear(endDate),
 								isoYearIsLong: CVDateTime.isoYearIsLong(endDate),
 								isoWeek: CVDateTime.getIsoWeek(endDate),
-								weekDay: CVDateTime.getWeekDay(endDate)
+								weekday: CVDateTime.getWeekday(endDate)
 							},
 							{
 								endInput: endTimestamp,
 								isoYear: year,
 								isoYearIsLong,
 								isoWeek: yearDurationInWeeks,
-								weekDay: 7
+								weekday: 7
 							}
 						)
 					),
@@ -257,7 +257,7 @@ describe('CVDateTime', () => {
 				actual.isoYear !== expected.isoYear ||
 				actual.isoYearIsLong !== expected.isoYearIsLong ||
 				actual.isoWeek !== expected.isoWeek ||
-				actual.weekDay !== expected.weekDay
+				actual.weekday !== expected.weekday
 			) {
 				console.log(actual, expected);
 				break;
@@ -272,13 +272,13 @@ describe('CVDateTime', () => {
 				isoYearDescriptor: CVDateTime.isoYearDescriptor(date),
 				isoYearIsLong: CVDateTime.isoYearIsLong(date),
 				isoWeek: CVDateTime.isoWeek(date),
-				weekDay: CVDateTime.weekDay(date)
+				weekday: CVDateTime.weekday(date)
 			},
 			{
 				isoYearDescriptor: 1773,
 				isoYearIsLong: false,
 				isoWeek: 1,
-				weekDay: 1
+				weekday: 1
 			}
 		);*/
 	});
@@ -334,7 +334,7 @@ describe('CVDateTime', () => {
 			const either = CVDateTime.fromParts({
 				isoYear: 2027,
 				isoWeek: 52,
-				weekDay: 6,
+				weekday: 6,
 				meridiem: 12,
 				hour12: 5,
 				minute: 43,
@@ -421,12 +421,12 @@ describe('CVDateTime', () => {
 					Date.UTC(2025, 0, 27)
 				);
 			});
-			it('isoYear and weekDay are set', () => {
+			it('isoYear and weekday are set', () => {
 				TEUtils.assertRight(
 					pipe(
 						{
 							isoYear: 2025,
-							weekDay: 5,
+							weekday: 5,
 							timeZoneOffset: 0
 						},
 						CVDateTime.fromParts,
@@ -455,7 +455,7 @@ describe('CVDateTime', () => {
 					year: 2025,
 					isoYear: 2025,
 					isoWeek: 3,
-					weekDay: 4,
+					weekday: 4,
 					timeZoneOffset: 0
 				});
 				TEUtils.assertRight(either);
@@ -522,8 +522,8 @@ describe('CVDateTime', () => {
 				"Expected 'isoWeek' to be between 1 and 52 included. Actual: 53"
 			);
 			TEUtils.assertLeftMessage(
-				pipe({ isoYear: 2027, weekDay: 0 }, CVDateTime.fromParts),
-				"Expected 'weekDay' to be between 1 and 7 included. Actual: 0"
+				pipe({ isoYear: 2027, weekday: 0 }, CVDateTime.fromParts),
+				"Expected 'weekday' to be between 1 and 7 included. Actual: 0"
 			);
 			TEUtils.assertLeftMessage(
 				pipe({ year: 2024, hour24: 24 }, CVDateTime.fromParts),
@@ -613,12 +613,12 @@ describe('CVDateTime', () => {
 					{
 						year: 2024,
 						ordinalDay: 61,
-						weekDay: 17,
+						weekday: 17,
 						timeZoneOffset: 0
 					},
 					CVDateTime.fromParts
 				),
-				"Expected 'weekDay' to be: 5. Actual: 17"
+				"Expected 'weekday' to be: 5. Actual: 17"
 			);
 			TEUtils.assertLeftMessage(
 				pipe(
@@ -626,12 +626,12 @@ describe('CVDateTime', () => {
 						year: 2024,
 						month: 3,
 						monthDay: 1,
-						weekDay: 17,
+						weekday: 17,
 						timeZoneOffset: 0
 					},
 					CVDateTime.fromParts
 				),
-				"Expected 'weekDay' to be: 5. Actual: 17"
+				"Expected 'weekday' to be: 5. Actual: 17"
 			);
 			TEUtils.assertLeftMessage(
 				pipe(
@@ -651,7 +651,7 @@ describe('CVDateTime', () => {
 					{
 						isoYear: 2027,
 						isoWeek: 52,
-						weekDay: 6,
+						weekday: 6,
 						year: 2027,
 						timeZoneOffset: 0
 					},
@@ -664,7 +664,7 @@ describe('CVDateTime', () => {
 					{
 						isoYear: 2027,
 						isoWeek: 52,
-						weekDay: 6,
+						weekday: 6,
 						month: 12,
 						timeZoneOffset: 0
 					},
@@ -677,7 +677,7 @@ describe('CVDateTime', () => {
 					{
 						isoYear: 2027,
 						isoWeek: 52,
-						weekDay: 6,
+						weekday: 6,
 						monthDay: 5,
 						timeZoneOffset: 0
 					},
@@ -690,7 +690,7 @@ describe('CVDateTime', () => {
 					{
 						isoYear: 2027,
 						isoWeek: 52,
-						weekDay: 6,
+						weekday: 6,
 						ordinalDay: 5,
 						timeZoneOffset: 0
 					},
@@ -748,7 +748,7 @@ describe('CVDateTime', () => {
 			TEUtils.assertSome(testDate.time);
 		});
 
-		it('Get isoYear, isoWeek, weekDay and milliseconds', () => {
+		it('Get isoYear, isoWeek, weekday and milliseconds', () => {
 			const testDate = CVDateTime.unsafeFromTimestamp(1750670080496, 0);
 			TEUtils.strictEqual(CVDateTime.getIsoYear(testDate), 2025);
 			TEUtils.assertNone(testDate.gregorianDate);
@@ -760,14 +760,14 @@ describe('CVDateTime', () => {
 			TEUtils.assertSome(testDate.isoDate);
 			TEUtils.assertNone(testDate.time);
 
-			TEUtils.strictEqual(CVDateTime.getWeekDay(testDate), 1);
+			TEUtils.strictEqual(CVDateTime.getWeekday(testDate), 1);
 			TEUtils.strictEqual(CVDateTime.getMillisecond(testDate), 496);
 			TEUtils.assertNone(testDate.gregorianDate);
 			TEUtils.assertSome(testDate.isoDate);
 			TEUtils.assertSome(testDate.time);
 		});
 
-		it('Get minutes, isoYear, weekDay, year and monthDay', () => {
+		it('Get minutes, isoYear, weekday, year and monthDay', () => {
 			const testDate = CVDateTime.unsafeFromTimestamp(1750670080496, 0);
 			TEUtils.strictEqual(CVDateTime.getMinute(testDate), 14);
 			TEUtils.assertNone(testDate.gregorianDate);
@@ -779,7 +779,7 @@ describe('CVDateTime', () => {
 			TEUtils.assertSome(testDate.isoDate);
 			TEUtils.assertSome(testDate.time);
 
-			TEUtils.strictEqual(CVDateTime.getWeekDay(testDate), 1);
+			TEUtils.strictEqual(CVDateTime.getWeekday(testDate), 1);
 			TEUtils.assertNone(testDate.gregorianDate);
 			TEUtils.assertSome(testDate.isoDate);
 			TEUtils.assertSome(testDate.time);
@@ -795,7 +795,7 @@ describe('CVDateTime', () => {
 			TEUtils.assertSome(testDate.time);
 		});
 
-		describe('Get year, isoYear, isoWeek, weekDay', () => {
+		describe('Get year, isoYear, isoWeek, weekday', () => {
 			describe('isoYear and year are equal', () => {
 				it('Start of year', () => {
 					const testDate = CVDateTime.unsafeFromParts({
@@ -807,7 +807,7 @@ describe('CVDateTime', () => {
 					TEUtils.strictEqual(CVDateTime.getYear(testDate), 2022);
 					TEUtils.strictEqual(CVDateTime.getIsoYear(testDate), 2022);
 					TEUtils.strictEqual(CVDateTime.getIsoWeek(testDate), 1);
-					TEUtils.strictEqual(CVDateTime.getWeekDay(testDate), 1);
+					TEUtils.strictEqual(CVDateTime.getWeekday(testDate), 1);
 				});
 
 				it('End of year', () => {
@@ -820,7 +820,7 @@ describe('CVDateTime', () => {
 					TEUtils.strictEqual(CVDateTime.getYear(testDate), 2025);
 					TEUtils.strictEqual(CVDateTime.getIsoYear(testDate), 2025);
 					TEUtils.strictEqual(CVDateTime.getIsoWeek(testDate), 52);
-					TEUtils.strictEqual(CVDateTime.getWeekDay(testDate), 7);
+					TEUtils.strictEqual(CVDateTime.getWeekday(testDate), 7);
 				});
 			});
 
@@ -834,7 +834,7 @@ describe('CVDateTime', () => {
 				TEUtils.strictEqual(CVDateTime.getYear(testDate), 2022);
 				TEUtils.strictEqual(CVDateTime.getIsoYear(testDate), 2021);
 				TEUtils.strictEqual(CVDateTime.getIsoWeek(testDate), 52);
-				TEUtils.strictEqual(CVDateTime.getWeekDay(testDate), 7);
+				TEUtils.strictEqual(CVDateTime.getWeekday(testDate), 7);
 			});
 
 			it('isoYear is year + 1', () => {
@@ -847,7 +847,7 @@ describe('CVDateTime', () => {
 				TEUtils.strictEqual(CVDateTime.getYear(testDate), 2025);
 				TEUtils.strictEqual(CVDateTime.getIsoYear(testDate), 2026);
 				TEUtils.strictEqual(CVDateTime.getIsoWeek(testDate), 1);
-				TEUtils.strictEqual(CVDateTime.getWeekDay(testDate), 1);
+				TEUtils.strictEqual(CVDateTime.getWeekday(testDate), 1);
 			});
 		});
 	});
@@ -866,7 +866,7 @@ describe('CVDateTime', () => {
 						{
 							isoYear: 2027,
 							isoWeek: 22,
-							weekDay: 1,
+							weekday: 1,
 							timeZoneOffset: 0
 						},
 						CVDateTime.unsafeFromParts,
@@ -929,7 +929,7 @@ describe('CVDateTime', () => {
 				Date.UTC(2024, 0, 28, 16, 43, 27, 654)
 			);
 			TEUtils.assertRight(
-				pipe(testDate, CVDateTime.setWeekDay(4), Either.map(CVDateTime.timestamp)),
+				pipe(testDate, CVDateTime.setWeekday(4), Either.map(CVDateTime.timestamp)),
 				Date.UTC(2024, 5, 20, 16, 43, 27, 654)
 			);
 			TEUtils.assertRight(
@@ -1108,18 +1108,18 @@ describe('CVDateTime', () => {
 			);
 		});
 
-		it('From isoDate to weekDay with a setMonDay in between', () => {
+		it('From isoDate to weekday with a setMonDay in between', () => {
 			TEUtils.assertRight(
 				pipe(
 					{
 						isoYear: 2027,
 						isoWeek: 18,
-						weekDay: 2,
+						weekday: 2,
 						timeZoneOffset: 0
 					},
 					CVDateTime.fromParts,
 					Either.flatMap(CVDateTime.setMonthDay(20)),
-					Either.map(CVDateTime.getWeekDay)
+					Either.map(CVDateTime.getWeekday)
 				),
 				4
 			);
