@@ -38,36 +38,36 @@ describe('CVPlaceHolder', () => {
 		describe('Reading', () => {
 			it('Not enough characters left', () => {
 				TEUtils.assertLeftMessage(
-					threeChars.reader(''),
+					threeChars.parser(''),
 					"Expected length of 'foo' placeholder to be: 3. Actual: 0"
 				);
-				TEUtils.assertLeft(threeChars.reader('aa'));
+				TEUtils.assertLeft(threeChars.parser('aa'));
 			});
 
 			it('Just enough characters left', () => {
-				TEUtils.assertRight(threeChars.reader('foo'), Tuple.make('foo', ''));
+				TEUtils.assertRight(threeChars.parser('foo'), Tuple.make('foo', ''));
 			});
 
 			it('More characters than necessary', () => {
-				TEUtils.assertRight(threeChars.reader('foo and baz'), Tuple.make('foo', ' and baz'));
+				TEUtils.assertRight(threeChars.parser('foo and baz'), Tuple.make('foo', ' and baz'));
 			});
 		});
 
 		describe('Writing', () => {
 			it('Too few characters', () => {
 				TEUtils.assertLeftMessage(
-					threeChars.reader(''),
+					threeChars.parser(''),
 					"Expected length of 'foo' placeholder to be: 3. Actual: 0"
 				);
-				TEUtils.assertLeft(threeChars.writer('aa'));
+				TEUtils.assertLeft(threeChars.formatter('aa'));
 			});
 
 			it('Too many characters', () => {
-				TEUtils.assertLeft(threeChars.writer('foo and baz'));
+				TEUtils.assertLeft(threeChars.formatter('foo and baz'));
 			});
 
 			it('Just the expected number of characters', () => {
-				TEUtils.assertRight(threeChars.writer('foo'), 'foo');
+				TEUtils.assertRight(threeChars.formatter('foo'), 'foo');
 			});
 		});
 	});
@@ -90,26 +90,26 @@ describe('CVPlaceHolder', () => {
 		describe('Reading', () => {
 			it('Not passing', () => {
 				TEUtils.assertLeftMessage(
-					placeHolder.reader(''),
+					placeHolder.parser(''),
 					"Expected length of 'foo' placeholder to be: 3. Actual: 0"
 				);
 			});
 
 			it('Passing', () => {
-				TEUtils.assertRight(placeHolder.reader('001 and baz'), Tuple.make('1', ' and baz'));
+				TEUtils.assertRight(placeHolder.parser('001 and baz'), Tuple.make('1', ' and baz'));
 			});
 		});
 
 		describe('Writing', () => {
 			it('Not passing', () => {
 				TEUtils.assertLeftMessage(
-					placeHolder.writer('foo and baz'),
+					placeHolder.formatter('foo and baz'),
 					"Expected length of 'foo' placeholder to be at most(included): 3. Actual: 11"
 				);
 			});
 
 			it('Passing', () => {
-				TEUtils.assertRight(placeHolder.writer('a'), '00a');
+				TEUtils.assertRight(placeHolder.formatter('a'), '00a');
 			});
 		});
 	});
@@ -133,14 +133,14 @@ describe('CVPlaceHolder', () => {
 		describe('Reading', () => {
 			it('Not passing', () => {
 				TEUtils.assertLeftMessage(
-					placeHolder.reader(''),
+					placeHolder.parser(''),
 					"Expected length of 'foo' placeholder to be: 3. Actual: 0"
 				);
 			});
 
 			it('Passing', () => {
 				TEUtils.assertRight(
-					placeHolder.reader('0015'),
+					placeHolder.parser('0015'),
 					Tuple.make(CVReal.unsafeFromNumber(1), '5')
 				);
 			});
@@ -149,13 +149,13 @@ describe('CVPlaceHolder', () => {
 		describe('Writing', () => {
 			it('Not passing: too long', () => {
 				TEUtils.assertLeftMessage(
-					placeHolder.writer(CVReal.unsafeFromNumber(1154)),
+					placeHolder.formatter(CVReal.unsafeFromNumber(1154)),
 					"Expected length of 'foo' placeholder to be at most(included): 3. Actual: 4"
 				);
 			});
 
 			it('Passing', () => {
-				TEUtils.assertRight(placeHolder.writer(CVReal.unsafeFromNumber(34)), '034');
+				TEUtils.assertRight(placeHolder.formatter(CVReal.unsafeFromNumber(34)), '034');
 			});
 		});
 	});
@@ -175,22 +175,22 @@ describe('CVPlaceHolder', () => {
 		describe('Reading', () => {
 			it('Not passing', () => {
 				TEUtils.assertLeftMessage(
-					placeHolder.reader(''),
+					placeHolder.parser(''),
 					"'foo' placeholder contains '' from the start of which a French-style three-decimal number could not be extracted"
 				);
-				TEUtils.assertLeft(placeHolder.reader('1 014,1254 and foo'));
+				TEUtils.assertLeft(placeHolder.parser('1 014,1254 and foo'));
 			});
 
 			it('Passing', () => {
 				TEUtils.assertRight(
-					placeHolder.reader('1 014,125 and foo'),
+					placeHolder.parser('1 014,125 and foo'),
 					Tuple.make(CVReal.unsafeFromNumber(1014.125), ' and foo')
 				);
 			});
 		});
 
 		it('Writing', () => {
-			TEUtils.assertRight(placeHolder.writer(CVReal.unsafeFromNumber(1014.1256)), '1 014,126');
+			TEUtils.assertRight(placeHolder.formatter(CVReal.unsafeFromNumber(1014.1256)), '1 014,126');
 		});
 	});
 
@@ -204,28 +204,69 @@ describe('CVPlaceHolder', () => {
 		describe('Reading', () => {
 			it('Not starting by value', () => {
 				TEUtils.assertLeftMessage(
-					literal.reader(''),
+					literal.parser(''),
 					"Expected remaining text for 'foo' placeholder to start with 'foo'. Actual: ''"
 				);
-				TEUtils.assertLeft(literal.reader('fo1 and bar'));
+				TEUtils.assertLeft(literal.parser('fo1 and bar'));
 			});
 
 			it('Passing', () => {
-				TEUtils.assertRight(literal.reader('foo and bar'), Tuple.make('foo', ' and bar'));
+				TEUtils.assertRight(literal.parser('foo and bar'), Tuple.make('foo', ' and bar'));
 			});
 		});
 
 		describe('Writing', () => {
 			it('Not passing', () => {
 				TEUtils.assertLeftMessage(
-					literal.writer(''),
+					literal.formatter(''),
 					"Expected 'foo' placeholder to be: 'foo'. Actual: ''"
 				);
-				TEUtils.assertLeft(literal.writer('foo1'));
+				TEUtils.assertLeft(literal.formatter('foo1'));
 			});
 
 			it('Passing', () => {
-				TEUtils.assertRight(literal.writer('foo'), 'foo');
+				TEUtils.assertRight(literal.formatter('foo'), 'foo');
+			});
+		});
+	});
+
+	describe('map', () => {
+		const map = CVPlaceHolder.map({
+			id: 'foo',
+			keyValuePairs: [
+				['foo', 6],
+				['bazbar', 12]
+			]
+		});
+
+		it('.toString()', () => {
+			TEUtils.strictEqual(map.toString(), "'foo' placeholder: from [foo, bazbar] to [6, 12]");
+		});
+
+		describe('Reading', () => {
+			it('Not starting by value', () => {
+				TEUtils.assertLeftMessage(
+					map.parser(''),
+					"Expected remaining text for 'foo' placeholder to start with one of [foo, bazbar]. Actual: ''"
+				);
+				TEUtils.assertLeft(map.parser('baz is away'));
+			});
+
+			it('Passing', () => {
+				TEUtils.assertRight(map.parser('bazbar is away'), Tuple.make(12, ' is away'));
+			});
+		});
+
+		describe('Writing', () => {
+			it('Not passing', () => {
+				TEUtils.assertLeftMessage(
+					map.formatter(4),
+					"'foo' placeholder: expected one of [6, 12]. Actual: 4"
+				);
+			});
+
+			it('Passing', () => {
+				TEUtils.assertRight(map.formatter(6), 'foo');
 			});
 		});
 	});
@@ -243,28 +284,28 @@ describe('CVPlaceHolder', () => {
 		describe('Reading', () => {
 			it('Not passing', () => {
 				TEUtils.assertLeftMessage(
-					noSpaceChars.reader(''),
+					noSpaceChars.parser(''),
 					"Expected 'foo' placeholder to be a non-empty string containing non-space characters. Actual: ''"
 				);
 			});
 
 			it('Passing', () => {
-				TEUtils.assertRight(noSpaceChars.reader('foo and bar'), Tuple.make('foo', ' and bar'));
-				TEUtils.assertRight(noSpaceChars.reader('foo'), Tuple.make('foo', ''));
+				TEUtils.assertRight(noSpaceChars.parser('foo and bar'), Tuple.make('foo', ' and bar'));
+				TEUtils.assertRight(noSpaceChars.parser('foo'), Tuple.make('foo', ''));
 			});
 		});
 
 		describe('Writing', () => {
 			it('Not passing', () => {
-				TEUtils.assertLeft(noSpaceChars.writer(''));
+				TEUtils.assertLeft(noSpaceChars.formatter(''));
 				TEUtils.assertLeftMessage(
-					noSpaceChars.writer('fo o'),
+					noSpaceChars.formatter('fo o'),
 					"'foo' placeholder: expected a non-empty string containing non-space characters. Actual: 'fo o'"
 				);
 			});
 
 			it('Passing', () => {
-				TEUtils.assertRight(noSpaceChars.writer('foo'), 'foo');
+				TEUtils.assertRight(noSpaceChars.formatter('foo'), 'foo');
 			});
 		});
 	});

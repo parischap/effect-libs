@@ -23,9 +23,11 @@ import {
 } from '@parischap/effect-lib';
 
 import {
+	Array,
 	Either,
 	flow,
 	Function,
+	HashMap,
 	pipe,
 	Pipeable,
 	Predicate,
@@ -342,6 +344,79 @@ export const literal = <const N extends string>({
 			Either.map(flow(MString.takeRightBut(value.length), Tuple.make, MTuple.prependElement(value)))
 		),
 		formatter: MInputError.assertValue({ expected: value, name })
+	});
+};
+
+/**
+ * Builds a PlaceHolder instance that works as a map:
+ *
+ * The parser expects one of the keys of `keyValuePairs` and will return the associated value. The
+ * formatter expects one of the values of `keyValuePairs` and will return the associated key.
+ *
+ * `keyValuePairs` should define a bijection (each key and each value must be present only once). It
+ * is best if the type of the values defines a toString method. Value equality is checked with The
+ * Effect Equal.equals function.
+ *
+ * @category Constructors
+ */
+export const map = <const N extends string, T>({
+	id,
+	keyValuePairs
+}: {
+	readonly id: N;
+	readonly keyValuePairs: ReadonlyArray<readonly [string, T]>;
+}): Type<N, T> => {
+	const name = `'${id}' placeholder`;
+	const keys = pipe(
+		keyValuePairs,
+		Array.map(Tuple.getFirst),
+		Array.join(', '),
+		MString.prepend('['),
+		MString.append(']')
+	);
+	const values = pipe(
+		keyValuePairs,
+		Array.map(flow(Tuple.getSecond, MString.fromUnknown)),
+		Array.join(', '),
+		MString.prepend('['),
+		MString.append(']')
+	);
+	const valueNameMap = pipe(keyValuePairs, Array.map(Tuple.swap), HashMap.fromIterable);
+
+	const isTheStartOf = Function.flip(String.startsWith);
+	const flippedTakeRightBut = Function.flip(MString.takeRightBut);
+
+	return make({
+		id,
+		descriptor: `${name}: from ${keys} to ${values}`,
+		parser: (text) =>
+			pipe(
+				keyValuePairs,
+				Array.findFirst(flow(Tuple.getFirst, isTheStartOf(text))),
+				Either.fromOption(
+					() =>
+						new MInputError.Type({
+							message: `Expected remaining text for ${name} to start with one of ${keys}. Actual: '${text}'`
+						})
+				),
+				Either.map(
+					MTuple.makeBothBy({
+						toFirst: Tuple.getSecond,
+						toSecond: flow(Tuple.getFirst, String.length, flippedTakeRightBut(text))
+					})
+				)
+			),
+		formatter: (value) =>
+			pipe(
+				valueNameMap,
+				HashMap.get(value),
+				Either.fromOption(
+					() =>
+						new MInputError.Type({
+							message: `${name}: expected one of ${values}. Actual: ${MString.fromUnknown(value)}`
+						})
+				)
+			)
 	});
 };
 
