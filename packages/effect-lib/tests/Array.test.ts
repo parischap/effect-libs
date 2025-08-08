@@ -383,18 +383,39 @@ describe('MArray', () => {
 		});
 	});
 
-	describe('firstSomeResult', () => {
+	describe('mapUntilFirstSome', () => {
 		const f = Option.liftPredicate(Number.greaterThanOrEqualTo(3));
 		it('Empty array', () => {
-			TEUtils.assertNone(pipe(Array.empty(), MArray.firstSomeResult(f)));
+			TEUtils.assertNone(pipe(Array.empty(), MArray.mapUntilFirstSome(f)));
 		});
 
 		it('Array with matching element', () => {
-			TEUtils.assertSome(pipe(Array.make(1, 2, 3, 4), MArray.firstSomeResult(f)), 3);
+			TEUtils.assertSome(pipe(Array.make(1, 2, 3, 4), MArray.mapUntilFirstSome(f)), 3);
 		});
 
 		it('Array with no matching element', () => {
-			TEUtils.assertNone(pipe(Array.make(1, 2, 2, 1), MArray.firstSomeResult(f)));
+			TEUtils.assertNone(pipe(Array.make(1, 2, 2, 1), MArray.mapUntilFirstSome(f)));
+		});
+	});
+
+	describe('mapUnlessNone', () => {
+		const f = flow(
+			Option.liftPredicate(Number.greaterThanOrEqualTo(3)),
+			Option.map(Number.multiply(2))
+		);
+		it('Empty array', () => {
+			TEUtils.assertSome(pipe(Array.empty(), MArray.mapUnlessNone(f)), Array.empty());
+		});
+
+		it('Array with all matching elements', () => {
+			TEUtils.assertSome(
+				pipe(Array.make(3, 4, 6, 5), MArray.mapUnlessNone(f)),
+				Array.make(6, 8, 12, 10)
+			);
+		});
+
+		it('Array with some non matching element', () => {
+			TEUtils.assertNone(pipe(Array.make(3, 4, 2, 5), MArray.mapUnlessNone(f)));
 		});
 	});
 

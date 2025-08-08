@@ -22,5 +22,5 @@ export const toSyntheticByPasser = (self: Type): PPByPasser.Action.Type =>
 	function (this, constructors) {
 		const initializedByPassers = Array.map(self, (byPasser) => byPasser.call(this, constructors));
 
-		return (value) => pipe(initializedByPassers, MArray.firstSomeResult(Function.apply(value)));
+		return (value) => pipe(initializedByPassers, MArray.mapUntilFirstSome(Function.apply(value)));
 	};

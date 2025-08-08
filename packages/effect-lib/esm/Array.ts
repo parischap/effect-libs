@@ -411,7 +411,7 @@ export const splitNonEmptyAtFromRight =
  *
  * @category Destructors
  */
-export const firstSomeResult =
+export const mapUntilFirstSome =
 	<A, B>(f: (a: NoInfer<A>) => Option.Option<B>) =>
 	(self: Iterable<A>): Option.Option<B> => {
 		for (const a of self) {
@@ -420,6 +420,17 @@ export const firstSomeResult =
 		}
 		return Option.none();
 	};
+
+/**
+ * Applies a function `f` that returns an option to each element of `self`. Returns a `none` if any
+ * result is a `none`. Otherwise, returns a `some` of the mapped array.
+ *
+ * @category Destructors
+ */
+export const mapUnlessNone =
+	<A, B>(f: (a: NoInfer<A>) => Option.Option<B>) =>
+	(self: ReadonlyArray<A>): Option.Option<ReadonlyArray<B>> =>
+		pipe(self, Array.filterMapWhile(f), Option.liftPredicate(hasLength(self.length)));
 
 /**
  * Merges two sorted Iterables into a sorted array. Elements in `self` are assured to be before
