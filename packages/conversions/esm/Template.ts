@@ -171,7 +171,9 @@ export const toFormatter = <const PS extends CVPlaceHolders.Type>(
 					record as Record<string, unknown>,
 					Record.get(id),
 					// This error should not happen due to typing
-					Option.getOrThrow
+					Option.getOrThrowWith(
+						() => new MInputError.Type({ message: `No value passed for '${id}' placeholder` })
+					)
 				);
 				/* eslint-disable-next-line functional/no-expression-statements */
 				result += yield* placeHolder.formatter(value);
