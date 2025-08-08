@@ -47,6 +47,11 @@ import {
 	pipe
 } from 'effect';
 
+/**
+ * Module tag
+ *
+ * @category Module tag
+ */
 export const moduleTag = '@parischap/conversions/DateTime/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
@@ -714,8 +719,8 @@ namespace IsoDate {
 		/** The iso week of this IsoYear, range:[1, 53] */
 		readonly isoWeek: Option.Option<number>;
 
-		/** The weekDay of this DateTime, range:[1, 7], 1 is monday, 7 is sunday */
-		readonly weekDay: Option.Option<number>;
+		/** The weekday of this DateTime, range:[1, 7], 1 is monday, 7 is sunday */
+		readonly weekday: Option.Option<number>;
 
 		/** @internal */
 		readonly [_TypeId]: _TypeId;
@@ -791,7 +796,7 @@ namespace IsoDate {
 				q1Year * SHORT_YEAR_MS,
 			yearIsLong: (isFirstSixYearPeriod && q1Year == 5) || (!isFirstSixYearPeriod && q1Year == 4),
 			isoWeek: Option.none(),
-			weekDay: Option.none()
+			weekday: Option.none()
 		});
 	};
 
@@ -802,18 +807,18 @@ namespace IsoDate {
 	 */
 	export const fromGregorianDate = (gregorianDate: GregorianDate.Type): Type => {
 		// 0 is friday, 6 is thursday
-		const yearStartWeekDay = MNumber.intModulo(7)(
+		const yearStartWeekday = MNumber.intModulo(7)(
 			Math.floor((gregorianDate.yearStartTimestamp - DAY_MS) / DAY_MS)
 		);
 		const yearIsLeap = gregorianDate.yearIsLeap;
-		const minOrdinalDayIndex = 3 - yearStartWeekDay;
+		const minOrdinalDayIndex = 3 - yearStartWeekday;
 		const ordinalDay = gregorianDate.ordinalDay;
 
 		if (ordinalDay <= minOrdinalDayIndex) {
 			const year = gregorianDate.year - 1;
 			const yearIsLong =
-				yearStartWeekDay === 0 ||
-				(yearStartWeekDay === 1 &&
+				yearStartWeekday === 0 ||
+				(yearStartWeekday === 1 &&
 					!yearIsLeap &&
 					((year % 4 == 0 && year % 100 != 0) || year % 400 == 0));
 			return _make({
@@ -824,20 +829,20 @@ namespace IsoDate {
 					(minOrdinalDayIndex - (yearIsLong ? 371 : 364)) * DAY_MS,
 				yearIsLong,
 				isoWeek: Option.none(),
-				weekDay: Option.none()
+				weekday: Option.none()
 			});
 		}
 
-		const yearIsLong = yearStartWeekDay === 6 || (yearStartWeekDay === 5 && yearIsLeap);
+		const yearIsLong = yearStartWeekday === 6 || (yearStartWeekday === 5 && yearIsLeap);
 		const maxOrdinalDay = minOrdinalDayIndex + (yearIsLong ? 371 : 364);
 
 		if (ordinalDay > maxOrdinalDay) {
 			const year = gregorianDate.year + 1;
 			const yearIsLong =
 				yearIsLeap ?
-					yearStartWeekDay === 4
-				:	yearStartWeekDay === 5 ||
-					(yearStartWeekDay === 4 && ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0));
+					yearStartWeekday === 4
+				:	yearStartWeekday === 5 ||
+					(yearStartWeekday === 4 && ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0));
 
 			return _make({
 				timestamp: gregorianDate.timestamp,
@@ -845,7 +850,7 @@ namespace IsoDate {
 				yearStartTimestamp: gregorianDate.yearStartTimestamp + maxOrdinalDay * DAY_MS,
 				yearIsLong,
 				isoWeek: Option.none(),
-				weekDay: Option.none()
+				weekday: Option.none()
 			});
 		}
 
@@ -855,13 +860,13 @@ namespace IsoDate {
 			yearStartTimestamp: gregorianDate.yearStartTimestamp + minOrdinalDayIndex * DAY_MS,
 			yearIsLong,
 			isoWeek: Option.none(),
-			weekDay: Option.none()
+			weekday: Option.none()
 		});
 	};
 
 	/**
 	 * If possible, returns a new IsoDate having `year` set to `year` and the same `isoWeek` and
-	 * `weekDay` as `self`. Returns a left of an error otherwise. `year` must be an integer comprised
+	 * `weekday` as `self`. Returns a left of an error otherwise. `year` must be an integer comprised
 	 * in the range [MIN_FULL_YEAR, MAX_FULL_YEAR]. If the isoWeek of `self` is equal to 53, `year`
 	 * must be a long year.
 	 *
@@ -912,7 +917,7 @@ namespace IsoDate {
 						yearStartTimestamp,
 						yearIsLong: r11Years === 5 || r11Years === 10,
 						isoWeek: Option.some(getIsoWeek(self)),
-						weekDay: Option.some(getWeekDay(self))
+						weekday: Option.some(getWeekday(self))
 					}),
 					Either.liftPredicate(
 						Predicate.or(yearIsLong, flow(getIsoWeek, Number.lessThan(53))),
@@ -926,7 +931,7 @@ namespace IsoDate {
 
 	/**
 	 * If possible, returns a new IsoDate having `isoWeek` set to `isoWeek` and the same `year` and
-	 * `weekDay` as `self`. Returns a left of an error otherwise. `isoWeek` must be an integer greater
+	 * `weekday` as `self`. Returns a left of an error otherwise. `isoWeek` must be an integer greater
 	 * than or equal to 1 and less than or equal to the number of iso weeks in the current year.
 	 *
 	 * @category Setters
@@ -957,32 +962,32 @@ namespace IsoDate {
 			});
 
 	/**
-	 * If possible, returns a new IsoDate having `weekDay` set to `weekDay` and the same `year` and
-	 * `isoWeek` as `self`. Returns a left of an error otherwise. `weekDay` must be an integer greater
+	 * If possible, returns a new IsoDate having `weekday` set to `weekday` and the same `year` and
+	 * `isoWeek` as `self`. Returns a left of an error otherwise. `weekday` must be an integer greater
 	 * than or equal to 1 (monday) and less than or equal to 7 (sunday).
 	 *
 	 * @category Setters
 	 */
-	export const setWeekDay =
-		(weekDay: number) =>
+	export const setWeekday =
+		(weekday: number) =>
 		(self: Type): Either.Either<Type, MInputError.Type> =>
 			Either.gen(function* () {
-				const validatedWeekDay = yield* pipe(
-					weekDay,
+				const validatedWeekday = yield* pipe(
+					weekday,
 					MInputError.assertInRange({
 						min: 1,
 						max: 7,
 						offset: 0,
-						name: "'weekDay'"
+						name: "'weekday'"
 					})
 				);
 
-				const offset = validatedWeekDay - getWeekDay(self);
+				const offset = validatedWeekday - getWeekday(self);
 				return pipe(
 					self,
 					MStruct.evolve({
 						timestamp: Number.sum(offset * DAY_MS),
-						weekDay: pipe(validatedWeekDay, Option.some, Function.constant)
+						weekday: pipe(validatedWeekday, Option.some, Function.constant)
 					}),
 					_make
 				);
@@ -1034,20 +1039,20 @@ namespace IsoDate {
 		);
 
 	/**
-	 * Returns the `weekDay` of `self`
+	 * Returns the `weekday` of `self`
 	 *
 	 * @category Destructors
 	 */
-	export const getWeekDay = (self: Type): number =>
+	export const getWeekday = (self: Type): number =>
 		pipe(
-			self.weekDay,
+			self.weekday,
 			Option.getOrElse(() => {
 				const result =
 					Math.floor(
 						(self.timestamp - self.yearStartTimestamp - (getIsoWeek(self) - 1) * WEEK_MS) / DAY_MS
 					) + 1;
 				/* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements */
-				(self as MTypes.WithMutable<Type, 'weekDay'>).weekDay = Option.some(result);
+				(self as MTypes.WithMutable<Type, 'weekday'>).weekday = Option.some(result);
 				return result;
 			})
 		);
@@ -1541,7 +1546,7 @@ export namespace Parts {
 		/** The iso week in the current iso year, range:[1, 53] */
 		readonly isoWeek?: number;
 		/** Week day in the current iso week, range:[1, 7], 1 is monday, 7 is sunday */
-		readonly weekDay?: number;
+		readonly weekday?: number;
 		/** Number of hours since the start of the current day, range:[0, 23] */
 		readonly hour24?: number;
 		/** Number of hours since the start of the current meridiem, range:[0, 11] */
@@ -1578,21 +1583,21 @@ export namespace Parts {
  *
  * `isoYear` must be an integer comprised in the range [MIN_FULL_YEAR, MAX_FULL_YEAR]. `isoWeek`
  * must be an integer greater than or equal to 1 and less than or equal to the number of iso weeks
- * in the current year. `weekDay` must be an integer greater than or equal to 1 (monday) and less
+ * in the current year. `weekday` must be an integer greater than or equal to 1 (monday) and less
  * than or equal to 7 (sunday).
  *
  * If there is not sufficient information to determine the exact day of the year, i.e. none of the
  * three following tuples is fully determined [year, ordinalDay], [year, month, monthDay], [isoYear,
- * isoWeek, weekDay], default values are determined in the following order (the first match stops
+ * isoWeek, weekday], default values are determined in the following order (the first match stops
  * the process):
  *
  * - If `year` and `month` are defined, `monthDay` is taken equal to 1.
  * - If `year` and `monthDay` are defined, `month` is taken equal to 1.
  * - If `year` is defined and both `month` and `monthDay` are undefined, the day is taken to be the
  *   first one in the year.
- * - If `isoYear` and `isoWeek` are defined, `weekDay` is taken equal to 1.
- * - If `isoYear` and `weekDay` are defined, `isoWeek` is taken equal to 1.
- * - If `isoYear` is defined and both `isoWeek` and `weekDay` are undefined, the day is taken to be
+ * - If `isoYear` and `isoWeek` are defined, `weekday` is taken equal to 1.
+ * - If `isoYear` and `weekday` are defined, `isoWeek` is taken equal to 1.
+ * - If `isoYear` is defined and both `isoWeek` and `weekday` are undefined, the day is taken to be
  *   the first one in the isoyear.
  * - If both `year` and `isoYear` are undefined, an error is raised.
  *
@@ -1615,7 +1620,7 @@ export namespace Parts {
  * `millisecond` must be an integer greater than or equal to 0 and less than or equal to 999. If
  * omitted, millisecond is assumed to be 0.
  *
- * All parameters must be coherent. For instance, `year=1970`, `month=1`, `monthDay=1`, `weekDay=0`
+ * All parameters must be coherent. For instance, `year=1970`, `month=1`, `monthDay=1`, `weekday=0`
  * and `timeZoneOffset=0` will trigger an error because 1/1/1970 00:00:00:000+0:00 is a thursday.
  * `hour24=13` and `meridiem=0` will also trigger an error.
  *
@@ -1629,7 +1634,7 @@ export const fromParts = ({
 	monthDay,
 	isoYear,
 	isoWeek,
-	weekDay,
+	weekday,
 	hour24,
 	hour12,
 	meridiem,
@@ -1668,9 +1673,9 @@ export const fromParts = ({
 		const hasYear = year !== undefined;
 		const hasIsoYear = isoYear !== undefined;
 		const hasIsoWeek = isoWeek !== undefined;
-		const hasWeekDay = weekDay !== undefined;
+		const hasWeekday = weekday !== undefined;
 
-		if (hasYear && !(hasIsoYear && hasIsoWeek && hasWeekDay)) {
+		if (hasYear && !(hasIsoYear && hasIsoWeek && hasWeekday)) {
 			const withYear = yield* setYear(year)(withMillisecond);
 			const withDay = yield* Either.gen(function* () {
 				if (ordinalDay !== undefined) {
@@ -1704,12 +1709,12 @@ export const fromParts = ({
 					MInputError.assertValue({ expected: getIsoWeek(withDay), name: "'isoWeek'" })
 				);
 
-			if (hasWeekDay)
+			if (hasWeekday)
 				yield* pipe(
-					weekDay,
+					weekday,
 					MInputError.assertValue({
-						expected: getWeekDay(withDay),
-						name: "'weekDay'"
+						expected: getWeekday(withDay),
+						name: "'weekday'"
 					})
 				);
 			return withDay;
@@ -1724,35 +1729,35 @@ export const fromParts = ({
 
 		const withIsoYear = yield* setIsoYear(isoYear)(withMillisecond);
 		const withIsoWeek = yield* setIsoWeek(isoWeek ?? 1)(withIsoYear);
-		const withWeekDay = yield* setWeekDay(weekDay ?? 1)(withIsoWeek);
+		const withWeekday = yield* setWeekday(weekday ?? 1)(withIsoWeek);
 		if (hasYear)
 			yield* pipe(
 				year,
-				MInputError.assertValue({ expected: getYear(withWeekDay), name: "'year'" })
+				MInputError.assertValue({ expected: getYear(withWeekday), name: "'year'" })
 			);
 
 		if (month !== undefined)
 			yield* pipe(
 				month,
-				MInputError.assertValue({ expected: getMonth(withWeekDay), name: "'month'" })
+				MInputError.assertValue({ expected: getMonth(withWeekday), name: "'month'" })
 			);
 
 		if (monthDay !== undefined)
 			yield* pipe(
 				monthDay,
-				MInputError.assertValue({ expected: getMonthDay(withWeekDay), name: "'monthDay'" })
+				MInputError.assertValue({ expected: getMonthDay(withWeekday), name: "'monthDay'" })
 			);
 
 		if (ordinalDay !== undefined)
 			yield* pipe(
 				ordinalDay,
 				MInputError.assertValue({
-					expected: getOrdinalDay(withWeekDay),
+					expected: getOrdinalDay(withWeekday),
 					name: "'ordinalDay'"
 				})
 			);
 
-		return withWeekDay;
+		return withWeekday;
 	});
 
 /**
@@ -1877,11 +1882,11 @@ export const isoYearIsLong: MTypes.OneArgFunction<Type, boolean> = flow(
 export const getIsoWeek: MTypes.OneArgFunction<Type, number> = flow(_isoDate, IsoDate.getIsoWeek);
 
 /**
- * Returns the weekDay of `self` for the given time zone
+ * Returns the weekday of `self` for the given time zone
  *
  * @category Destructors
  */
-export const getWeekDay: MTypes.OneArgFunction<Type, number> = flow(_isoDate, IsoDate.getWeekDay);
+export const getWeekday: MTypes.OneArgFunction<Type, number> = flow(_isoDate, IsoDate.getWeekday);
 
 /** Returns the time of `self` for the given time zone */
 const _time = (self: Type): Time.Type =>
@@ -2089,7 +2094,7 @@ export const unsafeSetMonthDay = (monthDay: number): MTypes.OneArgFunction<Type>
 
 /**
  * If possible, returns a right of a DateTime having isoYear `isoYear` and the same `isoWeek`,
- * `weekDay`, `hour24`, `minute`, `second`, `millisecond` and `timeZoneOffset` as `self`. Returns a
+ * `weekday`, `hour24`, `minute`, `second`, `millisecond` and `timeZoneOffset` as `self`. Returns a
  * `left` of an error otherwise. `isoYear` must be an integer comprised in the range [MIN_FULL_YEAR,
  * MAX_FULL_YEAR].
  *
@@ -2110,7 +2115,7 @@ export const unsafeSetIsoYear = (isoYear: number): MTypes.OneArgFunction<Type> =
 
 /**
  * If possible, returns a right of a DateTime having isoWeek `isoWeek` and the same `isoYear`,
- * `weekDay`, `hour24`, `minute`, `second`, `millisecond` and `timeZoneOffset` as `self`. Returns a
+ * `weekday`, `hour24`, `minute`, `second`, `millisecond` and `timeZoneOffset` as `self`. Returns a
  * `left` of an error otherwise. `isoWeek` must be an integer greater than or equal to 1 and less
  * than or equal to the number of iso weeks in the current year.
  *
@@ -2130,25 +2135,25 @@ export const unsafeSetIsoWeek = (isoWeek: number): MTypes.OneArgFunction<Type> =
 	flow(setIsoWeek(isoWeek), Either.getOrThrowWith(Function.identity));
 
 /**
- * If possible, returns a right of a DateTime having weekDay `weekDay` and the same `isoYear`,
+ * If possible, returns a right of a DateTime having weekday `weekday` and the same `isoYear`,
  * `isoWeek`, `hour24`, `minute`, `second`, `millisecond` and `timeZoneOffset` as `self`. Returns a
- * `left` of an error otherwise. `weekDay` must be an integer greater than or equal to 1 (monday)
+ * `left` of an error otherwise. `weekday` must be an integer greater than or equal to 1 (monday)
  * and less than or equal to 7 (sunday).
  *
  * @category Setters
  */
-export const setWeekDay =
-	(weekDay: number) =>
+export const setWeekday =
+	(weekday: number) =>
 	(self: Type): Either.Either<Type, MInputError.Type> =>
-		pipe(self, _isoDate, IsoDate.setWeekDay(weekDay), Either.map(_isoDateSetter(self)));
+		pipe(self, _isoDate, IsoDate.setWeekday(weekday), Either.map(_isoDateSetter(self)));
 
 /**
- * Same as setWeekDay but returns directly a DateTime or throws in case of an error
+ * Same as setWeekday but returns directly a DateTime or throws in case of an error
  *
  * @category Setters
  */
-export const unsafeSetWeekDay = (weekDay: number): MTypes.OneArgFunction<Type> =>
-	flow(setWeekDay(weekDay), Either.getOrThrowWith(Function.identity));
+export const unsafeSetWeekday = (weekday: number): MTypes.OneArgFunction<Type> =>
+	flow(setWeekday(weekday), Either.getOrThrowWith(Function.identity));
 
 /**
  * If possible, returns a right of a DateTime having hour24 `hour24` and the same `year`,
@@ -2393,7 +2398,7 @@ export const isLastYearDay: Predicate.Predicate<Type> = (self) =>
  */
 
 export const isFirstIsoYearDay: Predicate.Predicate<Type> = (self) =>
-	getIsoWeek(self) === 1 && getWeekDay(self) === 1;
+	getIsoWeek(self) === 1 && getWeekday(self) === 1;
 
 /**
  * Returns true if self is the last day of an iso year in the given timezone
@@ -2401,7 +2406,7 @@ export const isFirstIsoYearDay: Predicate.Predicate<Type> = (self) =>
  * @category Predicates
  */
 export const isLastIsoYearDay: Predicate.Predicate<Type> = (self) =>
-	getIsoWeek(self) === pipe(self, _isoDate, IsoDate.getLastIsoWeek) && getWeekDay(self) === 7;
+	getIsoWeek(self) === pipe(self, _isoDate, IsoDate.getLastIsoWeek) && getWeekday(self) === 7;
 
 /**
  * Returns a copy of `self` where `monthDay` is set to the first day of the current month. All time
@@ -2440,19 +2445,19 @@ export const toLastYearDay = (self: Type): Type =>
 	unsafeSetOrdinalDay(pipe(self, _gregorianDate, GregorianDate.getYearDurationInDays))(self);
 
 /**
- * Returns a copy of `self` where `isoWeek` and `weekDay` are set to 1. All time parts (`hour24`,
+ * Returns a copy of `self` where `isoWeek` and `weekday` are set to 1. All time parts (`hour24`,
  * `hour12`, `meridiem`, `minute`, `second`, `millisecond`) are left unchanged
  *
  * @category Offsetters
  */
 export const toFirstIsoYearDay: MTypes.OneArgFunction<Type> = flow(
 	unsafeSetIsoWeek(1),
-	unsafeSetWeekDay(1)
+	unsafeSetWeekday(1)
 );
 
 /**
  * Returns a copy of `self` where `isoWeek` is set to the last week of the current iso year.
- * `weekDay` and all time parts (`hour24`, `hour12`, `meridiem`, `minute`, `second`, `millisecond`)
+ * `weekday` and all time parts (`hour24`, `hour12`, `meridiem`, `minute`, `second`, `millisecond`)
  * are left unchanged
  *
  * @category Offsetters
@@ -2462,13 +2467,13 @@ export const toLastIsoYearWeek = (self: Type): Type =>
 
 /**
  * Returns a copy of `self` where `isoWeek` is set to the last week of the current iso year and
- * `weekDay` is set to 7. All time parts (`hour24`, `hour12`, `meridiem`, `minute`, `second`,
+ * `weekday` is set to 7. All time parts (`hour24`, `hour12`, `meridiem`, `minute`, `second`,
  * `millisecond`) are left unchanged
  *
  * @category Offsetters
  */
 export const toLastIsoYearDay = (self: Type): Type =>
-	pipe(self, toLastIsoYearWeek, unsafeSetWeekDay(7));
+	pipe(self, toLastIsoYearWeek, unsafeSetWeekday(7));
 
 /**
  * If possible, returns a copy of `self` offset by `offset` years and having the same `month`,
@@ -2555,7 +2560,7 @@ export const unsafeOffsetDays = (offset: number): MTypes.OneArgFunction<Type> =>
 	flow(offsetDays(offset), Either.getOrThrowWith(Function.identity));
 
 /**
- * If possible, returns a copy of `self` offset by `offset` iso years and having the same `weekDay`,
+ * If possible, returns a copy of `self` offset by `offset` iso years and having the same `weekday`,
  * `hour24`, `minute`, `second`, `millisecond` and `timeZoneOffset` as `self`. If `respectYearEnd`
  * is true and `self` is on the last day of an iso year, the new DateTime object's isoWeek will be
  * the last of the target iso year. Otherwise, it will be the same as `self`'s. Returns a `left` of
