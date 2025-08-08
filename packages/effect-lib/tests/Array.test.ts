@@ -383,21 +383,6 @@ describe('MArray', () => {
 		});
 	});
 
-	describe('mapUntilFirstSome', () => {
-		const f = Option.liftPredicate(Number.greaterThanOrEqualTo(3));
-		it('Empty array', () => {
-			TEUtils.assertNone(pipe(Array.empty(), MArray.mapUntilFirstSome(f)));
-		});
-
-		it('Array with matching element', () => {
-			TEUtils.assertSome(pipe(Array.make(1, 2, 3, 4), MArray.mapUntilFirstSome(f)), 3);
-		});
-
-		it('Array with no matching element', () => {
-			TEUtils.assertNone(pipe(Array.make(1, 2, 2, 1), MArray.mapUntilFirstSome(f)));
-		});
-	});
-
 	describe('mapUnlessNone', () => {
 		const f = flow(
 			Option.liftPredicate(Number.greaterThanOrEqualTo(3)),

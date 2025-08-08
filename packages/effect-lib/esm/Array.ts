@@ -406,31 +406,15 @@ export const splitNonEmptyAtFromRight =
 		pipe(self, splitAtFromRight(n)) as never;
 
 /**
- * Applies a function `f` that returns an option to each element of `self`. Returns the first `some`
- * encountered if any. Returns `none` otherwise.
- *
- * @category Destructors
- */
-export const mapUntilFirstSome =
-	<A, B>(f: (a: NoInfer<A>) => Option.Option<B>) =>
-	(self: Iterable<A>): Option.Option<B> => {
-		for (const a of self) {
-			const b = f(a);
-			if (Option.isSome(b)) return b;
-		}
-		return Option.none();
-	};
-
-/**
  * Applies a function `f` that returns an option to each element of `self`. Returns a `none` if any
  * result is a `none`. Otherwise, returns a `some` of the mapped array.
  *
  * @category Destructors
  */
 export const mapUnlessNone =
-	<A, B>(f: (a: NoInfer<A>) => Option.Option<B>) =>
-	(self: ReadonlyArray<A>): Option.Option<ReadonlyArray<B>> =>
-		pipe(self, Array.filterMapWhile(f), Option.liftPredicate(hasLength(self.length)));
+	<A, B>(f: (a: A) => Option.Option<B>) =>
+	<S extends ReadonlyArray<A>>(self: S): Option.Option<Array.ReadonlyArray.With<S, B>> =>
+		pipe(self, Array.filterMapWhile(f), Option.liftPredicate(hasLength(self.length))) as never;
 
 /**
  * Merges two sorted Iterables into a sorted array. Elements in `self` are assured to be before
@@ -565,4 +549,4 @@ export const differenceSorted =
 export const pad = <A, T, N extends number>(
 	n: N,
 	fill: T
-): MTypes.OneArgFunction<Array<A>, MTypes.Tuple<A | T, N>> => Array.pad(n, fill) as never;
+): MTypes.OneArgFunction<ReadonlyArray<A>, MTypes.Tuple<A | T, N>> => Array.pad(n, fill) as never;

@@ -1,6 +1,5 @@
 /** This module implements a Type that represents an array of ByPasser's (see ByPasser.ts) */
 
-import { MArray } from '@parischap/effect-lib';
 import { Array, Function, pipe } from 'effect';
 import * as PPByPasser from './ByPasser.js';
 
@@ -22,5 +21,5 @@ export const toSyntheticByPasser = (self: Type): PPByPasser.Action.Type =>
 	function (this, constructors) {
 		const initializedByPassers = Array.map(self, (byPasser) => byPasser.call(this, constructors));
 
-		return (value) => pipe(initializedByPassers, MArray.mapUntilFirstSome(Function.apply(value)));
+		return (value) => pipe(initializedByPassers, Array.findFirst(Function.apply(value)));
 	};
