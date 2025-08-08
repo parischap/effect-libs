@@ -407,7 +407,7 @@ export namespace PadPosition {
 /**
  * Pads a string to the left or to the right (depending on `padPosition`) with up to `length`
  * characters `fillChar`. `length` should be a positive integer. `fillChar` should be a
- * one-character string. Does nothing of the string to pad has more than `length` characters.
+ * one-character string. Does nothing if the string to pad has more than `length` characters.
  *
  * @category Utils
  */
