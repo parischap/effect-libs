@@ -149,8 +149,8 @@ export const outOfBounds = ({
 	});
 
 /**
- * Returns a `right` of `input` if `input` has the expected size. Otherwise, returns a `left` of an
- * InputError
+ * Returns a `right` of `input` if `input` in between `min` and `max` included. Otherwise, returns a
+ * `left` of an InputError
  *
  * @category Constructors
  */
