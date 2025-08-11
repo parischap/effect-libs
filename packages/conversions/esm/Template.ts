@@ -35,15 +35,11 @@ import {
 	Types
 } from 'effect';
 import * as CVPlaceHolder from './PlaceHolder.js';
+import * as CVPlaceHolders from './PlaceHolders.js';
 
 export const moduleTag = '@parischap/conversions/Template/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
-
-namespace CVPlaceHolders {
-	/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-	export interface Type extends ReadonlyArray<CVPlaceHolder.Type<string, any>> {}
-}
 
 /**
  * Type that represents a Template.
@@ -54,7 +50,7 @@ namespace CVPlaceHolders {
 export interface Type<out PS extends CVPlaceHolders.Type>
 	extends Inspectable.Inspectable,
 		Pipeable.Pipeable {
-	/** Array of the PlaceHolders composing this template */
+	/** Array of the CVPlaceHolders composing this template */
 	readonly placeHolders: PS;
 
 	/** @internal */

@@ -179,6 +179,34 @@ export const formatter: <const N extends string, T>(self: Type<N, T>) => Formatt
 	Struct.get('formatter');
 
 /**
+ * Returns the `formatter` property of `self`
+ *
+ * @category Destructors
+ */
+export const modify =
+	<T, T1>({
+		descriptorMapper,
+		parserOutputFunction,
+		formatterInputFunction
+	}: {
+		readonly descriptorMapper: MTypes.OneArgFunction<string>;
+		readonly parserOutputFunction: MTypes.OneArgFunction<T, Either.Either<T1, MInputError.Type>>;
+		readonly formatterInputFunction: MTypes.OneArgFunction<T1, Either.Either<T, MInputError.Type>>;
+	}) =>
+	<const N extends string>(self: Type<N, T>): Type<N, T1> =>
+		make({
+			id: self.id,
+			descriptor: descriptorMapper(self.descriptor),
+			parser: flow(
+				self.parser,
+				Either.flatMap(
+					flow(Tuple.mapBoth({ onFirst: parserOutputFunction, onSecond: Either.right }), Either.all)
+				)
+			),
+			formatter: flow(formatterInputFunction, Either.flatMap(self.formatter))
+		});
+
+/**
  * Builds a PlaceHolder instance that reads/writes exactly `length` characters from a string.
  * `length` must be a strictly positive integer.
  *
@@ -222,20 +250,19 @@ export const paddedFixedLength = <const N extends string>(params: {
 	readonly padPosition: MString.PadPosition;
 	readonly disallowEmptyString: boolean;
 }): Type<N, string> => {
-	const id = params.id;
-	const placeHolder = fixedLength(params);
-	const trimmer = MString.trim(params);
-	const padder = MString.pad(params);
-	const name = `'${id}' placeholder`;
-	return make({
-		id,
-		descriptor: `${placeHolder.descriptor} ${MString.PadPosition.toId(params.padPosition)}-padded with '${params.fillChar}'`,
-		parser: flow(placeHolder.parser, Either.map(Tuple.mapFirst(trimmer))),
-		formatter: flow(
-			MInputError.assertMaxLength({ expected: params.length, name }),
-			Either.map(padder)
-		)
-	});
+	const trimmer = flow(MString.trim(params), Either.right);
+	const padder = flow(MString.pad(params), Either.right);
+
+	return pipe(
+		fixedLength(params),
+		modify({
+			descriptorMapper: MString.append(
+				` ${MString.PadPosition.toId(params.padPosition)}-padded with '${params.fillChar}'`
+			),
+			parserOutputFunction: trimmer,
+			formatterInputFunction: padder
+		})
+	);
 };
 
 /**
@@ -253,39 +280,31 @@ export const fixedLengthToReal = <const N extends string>(params: {
 	readonly disallowEmptyString: boolean;
 	readonly numberBase10Format: CVNumberBase10Format.Type;
 }): Type<N, CVReal.Type> => {
-	const id = params.id;
-	const placeHolder = paddedFixedLength(params);
 	const numberBase10Format = params.numberBase10Format;
-	const numberParser = CVNumberBase10Format.toRealParser(numberBase10Format);
-	const numberFormatter = CVNumberBase10Format.toNumberFormatter(numberBase10Format);
-
-	return make({
-		id,
-		descriptor: `${placeHolder.descriptor} to ${numberBase10Format.descriptor}`,
-		parser: flow(
-			placeHolder.parser,
-			Either.flatMap(
-				flow(
-					Tuple.mapBoth({
-						onFirst: (consumed) =>
-							pipe(
-								consumed,
-								numberParser,
-								Either.fromOption(
-									() =>
-										new MInputError.Type({
-											message: `'${id}' placeholder contains '${consumed}' which cannot be converted to a ${numberBase10Format.descriptor}-formatted base-10 number`
-										})
-								)
-							),
-						onSecond: Either.right
-					}),
-					Either.all
-				)
+	const numberParser = (input: string) =>
+		pipe(
+			input,
+			CVNumberBase10Format.toRealParser(numberBase10Format),
+			Either.fromOption(
+				() =>
+					new MInputError.Type({
+						message: `'${params.id}' placeholder's value '${input}' cannot be converted to a ${numberBase10Format.descriptor}-formatted base-10 number`
+					})
 			)
-		),
-		formatter: flow(CVReal.toBigDecimal, numberFormatter, placeHolder.formatter)
-	});
+		);
+	const numberFormatter = flow(
+		CVNumberBase10Format.toNumberFormatter(numberBase10Format),
+		Either.right
+	);
+
+	return pipe(
+		paddedFixedLength(params),
+		modify({
+			descriptorMapper: MString.append(` to ${numberBase10Format.descriptor}`),
+			parserOutputFunction: numberParser,
+			formatterInputFunction: numberFormatter
+		})
+	);
 };
 
 /**
@@ -359,7 +378,7 @@ export const literal = <const N extends string>({
  *
  * @category Constructors
  */
-export const map = <const N extends string, T>({
+export const mappedLiterals = <const N extends string, T>({
 	id,
 	keyValuePairs
 }: {

@@ -104,7 +104,7 @@ describe('CVPlaceHolder', () => {
 			it('Not passing', () => {
 				TEUtils.assertLeftMessage(
 					placeHolder.formatter('foo and baz'),
-					"Expected length of 'foo' placeholder to be at most(included): 3. Actual: 11"
+					"Expected length of 'foo' placeholder to be: 3. Actual: 11"
 				);
 			});
 
@@ -150,7 +150,7 @@ describe('CVPlaceHolder', () => {
 			it('Not passing: too long', () => {
 				TEUtils.assertLeftMessage(
 					placeHolder.formatter(CVReal.unsafeFromNumber(1154)),
-					"Expected length of 'foo' placeholder to be at most(included): 3. Actual: 4"
+					"Expected length of 'foo' placeholder to be: 3. Actual: 4"
 				);
 			});
 
@@ -230,8 +230,8 @@ describe('CVPlaceHolder', () => {
 		});
 	});
 
-	describe('map', () => {
-		const map = CVPlaceHolder.map({
+	describe('mappedLiterals', () => {
+		const map = CVPlaceHolder.mappedLiterals({
 			id: 'foo',
 			keyValuePairs: [
 				['foo', 6],

@@ -1,3 +1,4 @@
+export * as CVPlaceHolders from './CVPlaceHolders.js';
 export * as CVDateTime from './DateTime.js';
 export * as CVDateTimeTemplate from './DateTimeTemplate.js';
 export * as CVEmail from './Email.js';

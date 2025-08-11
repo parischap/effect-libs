@@ -59,11 +59,11 @@ describe('CVTemplate', () => {
 		});
 	});
 
-	describe('toReader', () => {
-		const reader = CVTemplate.toReader(template);
+	describe('toParser', () => {
+		const parser = CVTemplate.toParser(template);
 
 		MTypes.areEqualTypes<
-			typeof reader,
+			typeof parser,
 			MTypes.OneArgFunction<
 				string,
 				Either.Either<
@@ -82,41 +82,41 @@ describe('CVTemplate', () => {
 
 		it('Empty text', () => {
 			TEUtils.assertLeftMessage(
-				reader(''),
+				parser(''),
 				"Expected length of 'dd' placeholder to be: 2. Actual: 0"
 			);
 		});
 
 		it('Text too short', () => {
 			TEUtils.assertLeftMessage(
-				reader('25/12'),
+				parser('25/12'),
 				"Expected remaining text for 'separator2' placeholder to start with '/'. Actual: ''"
 			);
 		});
 
 		it('Wrong separator', () => {
 			TEUtils.assertLeftMessage(
-				reader('25|12'),
+				parser('25|12'),
 				"Expected remaining text for 'separator1' placeholder to start with '/'. Actual: '|12'"
 			);
 		});
 
 		it('Same placeholder receives different values', () => {
 			TEUtils.assertLeftMessage(
-				reader('25/12/2025 13'),
+				parser('25/12/2025 13'),
 				"'MM' placeholder is present twice in template and receives differing values '12' and '13'"
 			);
 		});
 
 		it('Text too long', () => {
 			TEUtils.assertLeftMessage(
-				reader('25/12/2025 12is XMas'),
+				parser('25/12/2025 12is XMas'),
 				"Expected text not consumed by template to be empty. Actual: 'is XMas'"
 			);
 		});
 
 		it('Matching text', () => {
-			TEUtils.assertRight(reader('05/12/2025 12'), {
+			TEUtils.assertRight(parser('05/12/2025 12'), {
 				dd: CVReal.unsafeFromNumber(5),
 				separator1: '/',
 				MM: CVReal.unsafeFromNumber(12),
@@ -127,11 +127,11 @@ describe('CVTemplate', () => {
 		});
 	});
 
-	describe('toWriter', () => {
-		const writer = CVTemplate.toWriter(template);
+	describe('toFormatter', () => {
+		const formatter = CVTemplate.toFormatter(template);
 
 		MTypes.areEqualTypes<
-			typeof writer,
+			typeof formatter,
 			MTypes.OneArgFunction<
 				{
 					readonly dd: CVReal.Type;
@@ -147,7 +147,7 @@ describe('CVTemplate', () => {
 
 		it('With correct values', () => {
 			TEUtils.assertRight(
-				writer({
+				formatter({
 					dd: CVReal.unsafeFromNumber(5),
 					separator1: '/',
 					MM: CVReal.unsafeFromNumber(12),
@@ -161,7 +161,7 @@ describe('CVTemplate', () => {
 
 		it('With incorrect values', () => {
 			TEUtils.assertLeftMessage(
-				writer({
+				formatter({
 					dd: CVReal.unsafeFromNumber(115),
 					separator1: '/',
 					MM: CVReal.unsafeFromNumber(12),
