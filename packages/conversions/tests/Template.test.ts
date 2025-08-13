@@ -13,13 +13,13 @@ describe('CVTemplate', () => {
 		numberBase10Format: CVNumberBase10Format.integer
 	};
 	const template = CVTemplate.make(
-		CVPlaceHolder.fixedLengthToReal({ ...params, id: 'dd', length: 2 }),
-		CVPlaceHolder.literal({ id: 'separator1', value: '/' }),
-		CVPlaceHolder.fixedLengthToReal({ ...params, id: 'MM', length: 2 }),
-		CVPlaceHolder.literal({ id: 'separator2', value: '/' }),
-		CVPlaceHolder.fixedLengthToReal({ ...params, id: 'yyyy', length: 4 }),
-		CVPlaceHolder.literal({ id: 'separator3', value: ' ' }),
-		CVPlaceHolder.real({ ...params, id: 'MM' })
+		CVPlaceHolder.Tag.fixedLengthToReal({ ...params, name: 'dd', length: 2 }),
+		CVPlaceHolder.Separator.make({ pos: 2, value: '/' }),
+		CVPlaceHolder.Tag.fixedLengthToReal({ ...params, name: 'MM', length: 2 }),
+		CVPlaceHolder.Separator.make({ pos: 4, value: '/' }),
+		CVPlaceHolder.Tag.fixedLengthToReal({ ...params, name: 'yyyy', length: 4 }),
+		CVPlaceHolder.Separator.make({ pos: 6, value: ' ' }),
+		CVPlaceHolder.Tag.real({ ...params, name: 'MM' })
 	);
 
 	describe('Tag, prototype and guards', () => {
@@ -38,11 +38,11 @@ describe('CVTemplate', () => {
   "_id": "@parischap/conversions/Template/",
   "placeHolders": [
     "'dd' placeholder: 2-character string left-padded with '0' to integer",
-    "'separator1' placeholder: '/' string",
+    "'/' separator at position 2",
     "'MM' placeholder: 2-character string left-padded with '0' to integer",
-    "'separator2' placeholder: '/' string",
+    "'/' separator at position 4",
     "'yyyy' placeholder: 4-character string left-padded with '0' to integer",
-    "'separator3' placeholder: ' ' string",
+    "' ' separator at position 6",
     "'MM' placeholder: integer"
   ]
 }`
@@ -69,11 +69,8 @@ describe('CVTemplate', () => {
 				Either.Either<
 					{
 						readonly dd: CVReal.Type;
-						readonly separator1: string;
 						readonly MM: CVReal.Type;
-						readonly separator2: string;
 						readonly yyyy: CVReal.Type;
-						readonly separator3: string;
 					},
 					MInputError.Type
 				>
@@ -90,14 +87,14 @@ describe('CVTemplate', () => {
 		it('Text too short', () => {
 			TEUtils.assertLeftMessage(
 				parser('25/12'),
-				"Expected remaining text for 'separator2' placeholder to start with '/'. Actual: ''"
+				"Expected remaining text for separator at position 4 to start with '/'. Actual: ''"
 			);
 		});
 
 		it('Wrong separator', () => {
 			TEUtils.assertLeftMessage(
 				parser('25|12'),
-				"Expected remaining text for 'separator1' placeholder to start with '/'. Actual: '|12'"
+				"Expected remaining text for separator at position 2 to start with '/'. Actual: '|12'"
 			);
 		});
 
@@ -118,11 +115,8 @@ describe('CVTemplate', () => {
 		it('Matching text', () => {
 			TEUtils.assertRight(parser('05/12/2025 12'), {
 				dd: CVReal.unsafeFromNumber(5),
-				separator1: '/',
 				MM: CVReal.unsafeFromNumber(12),
-				separator2: '/',
-				yyyy: CVReal.unsafeFromNumber(2025),
-				separator3: ' '
+				yyyy: CVReal.unsafeFromNumber(2025)
 			});
 		});
 	});
@@ -135,11 +129,8 @@ describe('CVTemplate', () => {
 			MTypes.OneArgFunction<
 				{
 					readonly dd: CVReal.Type;
-					readonly separator1: string;
 					readonly MM: CVReal.Type;
-					readonly separator2: string;
 					readonly yyyy: CVReal.Type;
-					readonly separator3: string;
 				},
 				Either.Either<string, MInputError.Type>
 			>
@@ -149,11 +140,8 @@ describe('CVTemplate', () => {
 			TEUtils.assertRight(
 				formatter({
 					dd: CVReal.unsafeFromNumber(5),
-					separator1: '/',
 					MM: CVReal.unsafeFromNumber(12),
-					separator2: '/',
-					yyyy: CVReal.unsafeFromNumber(2025),
-					separator3: ' '
+					yyyy: CVReal.unsafeFromNumber(2025)
 				}),
 				'05/12/2025 12'
 			);
@@ -163,13 +151,10 @@ describe('CVTemplate', () => {
 			TEUtils.assertLeftMessage(
 				formatter({
 					dd: CVReal.unsafeFromNumber(115),
-					separator1: '/',
 					MM: CVReal.unsafeFromNumber(12),
-					separator2: '/',
-					yyyy: CVReal.unsafeFromNumber(2025),
-					separator3: ' '
+					yyyy: CVReal.unsafeFromNumber(2025)
 				}),
-				"Expected length of 'dd' placeholder to be at most(included): 2. Actual: 3"
+				"Expected length of 'dd' placeholder to be: 2. Actual: 3"
 			);
 		});
 	});

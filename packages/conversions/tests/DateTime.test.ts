@@ -30,7 +30,7 @@ describe('CVDateTime', () => {
 		});
 
 		it('.toString()', () => {
-			TEUtils.strictEqual(origin.toString(), `1970-01-01 00:00:00:000 GMT+0000`);
+			TEUtils.strictEqual(origin.toString(), '1970-01-01 00:00:00:000 GMT+0000');
 			TEUtils.strictEqual(
 				CVDateTime.unsafeFromTimestamp(1_749_823_231_774, -3.75).toString(),
 				'2025-06-13 10:15:31:774 GMT-0345'

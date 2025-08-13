@@ -35,11 +35,15 @@ import {
 	Types
 } from 'effect';
 import * as CVPlaceHolder from './PlaceHolder.js';
-import * as CVPlaceHolders from './PlaceHolders.js';
 
 export const moduleTag = '@parischap/conversions/Template/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
+
+namespace PlaceHolders {
+	/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+	export interface Type extends ReadonlyArray<CVPlaceHolder.Type<string, any>> {}
+}
 
 /**
  * Type that represents a Template.
@@ -47,10 +51,10 @@ type _TypeId = typeof _TypeId;
  * @category Models
  */
 
-export interface Type<out PS extends CVPlaceHolders.Type>
+export interface Type<out PS extends PlaceHolders.Type>
 	extends Inspectable.Inspectable,
 		Pipeable.Pipeable {
-	/** Array of the CVPlaceHolders composing this template */
+	/** Array of the PlaceHolders composing this template */
 	readonly placeHolders: PS;
 
 	/** @internal */
@@ -74,7 +78,7 @@ const proto: MTypes.Proto<Type<never>> = {
 	...MPipeable.BaseProto
 };
 
-const _make = <const PS extends CVPlaceHolders.Type>(params: MTypes.Data<Type<PS>>): Type<PS> =>
+const _make = <const PS extends PlaceHolders.Type>(params: MTypes.Data<Type<PS>>): Type<PS> =>
 	MTypes.objectFromDataAndProto(proto, params);
 
 /**
@@ -82,7 +86,7 @@ const _make = <const PS extends CVPlaceHolders.Type>(params: MTypes.Data<Type<PS
  *
  * @category Constructors
  */
-export const make = <const PS extends CVPlaceHolders.Type>(...placeHolders: PS): Type<PS> =>
+export const make = <const PS extends PlaceHolders.Type>(...placeHolders: PS): Type<PS> =>
 	_make({ placeHolders });
 
 /**
@@ -90,25 +94,25 @@ export const make = <const PS extends CVPlaceHolders.Type>(...placeHolders: PS):
  *
  * @category Destructors
  */
-export const placeHolders: <const PS extends CVPlaceHolders.Type>(self: Type<PS>) => PS =
+export const placeHolders: <const PS extends PlaceHolders.Type>(self: Type<PS>) => PS =
 	Struct.get('placeHolders');
 
 /**
- * Returns a function that reads a text into a record according to 'self' .
+ * Returns a function that parses a text into a record according to 'self' .
  *
  * @category Destructors
  */
 
 export const toParser =
-	<const PS extends CVPlaceHolders.Type>(
+	<const PS extends PlaceHolders.Type>(
 		self: Type<PS>
 	): MTypes.OneArgFunction<
 		string,
 		Either.Either<
 			{
-				readonly [k in keyof MTypes.ArrayKeys<PS> as PS[k] extends CVPlaceHolder.All ?
-					CVPlaceHolder.ExtractName<PS[k]>
-				:	never]: PS[k] extends CVPlaceHolder.All ? CVPlaceHolder.ExtractType<PS[k]> : never;
+				readonly [k in keyof MTypes.ArrayKeys<PS> as PS[k] extends CVPlaceHolder.Tag.All ?
+					CVPlaceHolder.Tag.ExtractName<PS[k]>
+				:	never]: PS[k] extends CVPlaceHolder.Tag.All ? CVPlaceHolder.Tag.ExtractType<PS[k]> : never;
 			},
 			MInputError.Type
 		>
@@ -120,18 +124,20 @@ export const toParser =
 			for (const placeHolder of self.placeHolders) {
 				/* eslint-disable-next-line functional/no-expression-statements, @typescript-eslint/no-unsafe-assignment */
 				[consumed, text] = yield* placeHolder.parser(text);
-				const id = placeHolder.id;
-				if (!(id in result))
-					/* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements,  */
-					result[id] = consumed;
-				else {
-					const oldValue = result[id];
-					if (!Equal.equals(oldValue, consumed))
-						yield* Either.left(
-							new MInputError.Type({
-								message: `'${id}' placeholder is present twice in template and receives differing values '${MString.fromUnknown(oldValue)}' and '${MString.fromUnknown(consumed)}'`
-							})
-						);
+				if (CVPlaceHolder.isTag(placeHolder)) {
+					const name = placeHolder.name;
+					if (!(name in result))
+						/* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements,  */
+						result[name] = consumed;
+					else {
+						const oldValue = result[name];
+						if (!Equal.equals(oldValue, consumed))
+							yield* Either.left(
+								new MInputError.Type({
+									message: `'${name}' placeholder is present twice in template and receives differing values '${MString.fromUnknown(oldValue)}' and '${MString.fromUnknown(consumed)}'`
+								})
+							);
+					}
 				}
 			}
 
@@ -141,19 +147,19 @@ export const toParser =
 		});
 
 /**
- * Returns a function that writes an object into the template represented by 'self' . When
+ * Returns a function that formats an object into the template represented by 'self' . When
  * strictMode is false, the formatter function of the placeHolder's is replaced by the Either.right
  * function, i.e. no checks are carried out when encoding
  *
  * @category Destructors
  */
-export const toFormatter = <const PS extends CVPlaceHolders.Type>(
+export const toFormatter = <const PS extends PlaceHolders.Type>(
 	self: Type<PS>
 ): MTypes.OneArgFunction<
 	{
-		readonly [k in keyof MTypes.ArrayKeys<PS> as PS[k] extends CVPlaceHolder.All ?
-			CVPlaceHolder.ExtractName<PS[k]>
-		:	never]: PS[k] extends CVPlaceHolder.All ? CVPlaceHolder.ExtractType<PS[k]> : never;
+		readonly [k in keyof MTypes.ArrayKeys<PS> as PS[k] extends CVPlaceHolder.Tag.All ?
+			CVPlaceHolder.Tag.ExtractName<PS[k]>
+		:	never]: PS[k] extends CVPlaceHolder.Tag.All ? CVPlaceHolder.Tag.ExtractType<PS[k]> : never;
 	},
 	Either.Either<string, MInputError.Type>
 > => {
@@ -162,17 +168,22 @@ export const toFormatter = <const PS extends CVPlaceHolders.Type>(
 			let result = '';
 
 			for (const placeHolder of self.placeHolders) {
-				const id = placeHolder.id;
-				const value = pipe(
-					record as Record<string, unknown>,
-					Record.get(id),
-					// This error should not happen due to typing
-					Option.getOrThrowWith(
-						() => new MInputError.Type({ message: `No value passed for '${id}' placeholder` })
-					)
-				);
-				/* eslint-disable-next-line functional/no-expression-statements */
-				result += yield* placeHolder.formatter(value);
+				if (CVPlaceHolder.isSeparator(placeHolder)) {
+					/* eslint-disable-next-line functional/no-expression-statements */
+					result += placeHolder.formatter();
+				} else {
+					const name = placeHolder.name;
+					const value = pipe(
+						record as Record<string, unknown>,
+						Record.get(name),
+						// This error should not happen due to typing
+						Option.getOrThrowWith(
+							() => new Error(`Abnormal error: no value passed for '${name}' placeholder`)
+						)
+					);
+					/* eslint-disable-next-line functional/no-expression-statements */
+					result += yield* placeHolder.formatter(value);
+				}
 			}
 
 			return result;

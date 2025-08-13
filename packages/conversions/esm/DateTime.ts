@@ -120,12 +120,12 @@ export const SHORT_YEAR_MS = 52 * WEEK_MS;
 export const LONG_YEAR_MS = SHORT_YEAR_MS + WEEK_MS;
 
 /**
- * Local time zone offset in milliseconds of the machine on which this code runs. The value is
- * calculated once at startup.
+ * Local time zone offset in hours of the machine on which this code runs. The value is calculated
+ * once at startup.
  *
  * @category Constants
  */
-export const LOCAL_TIME_ZONE_OFFSET = new Date(0).getTimezoneOffset() / 60;
+export const LOCAL_TIME_ZONE_OFFSET = -(new Date().getTimezoneOffset() / 60);
 
 /**
  * Namespace for the data relative to a Month
