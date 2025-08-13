@@ -291,11 +291,11 @@ describe('CVDateTime', () => {
 			);
 		});
 
-		it('From date with hour24 and timeZoneOffset', () => {
+		it('From date with hour23 and timeZoneOffset', () => {
 			const either = CVDateTime.fromParts({
 				year: 2024,
 				ordinalDay: 61,
-				hour24: 17,
+				hour23: 17,
 				minute: 43,
 				second: 27,
 				millisecond: 654,
@@ -310,14 +310,14 @@ describe('CVDateTime', () => {
 			TEUtils.assertSome(testDate.time);
 		});
 
-		it('From date with hour12 and meridiem', () => {
+		it('From date with hour11 and meridiem', () => {
 			TEUtils.assertRight(
 				pipe(
 					{
 						year: 2024,
 						ordinalDay: 61,
 						meridiem: 12,
-						hour12: 5,
+						hour11: 5,
 						minute: 43,
 						second: 27,
 						millisecond: 654,
@@ -336,7 +336,7 @@ describe('CVDateTime', () => {
 				isoWeek: 52,
 				weekday: 6,
 				meridiem: 12,
-				hour12: 5,
+				hour11: 5,
 				minute: 43,
 				second: 27,
 				millisecond: 654,
@@ -482,13 +482,13 @@ describe('CVDateTime', () => {
 				);
 			});
 
-			it('Only hour12 is set', () => {
+			it('Only hour11 is set', () => {
 				TEUtils.assertRight(
 					pipe(
 						{
 							year: 2024,
 							ordinalDay: 75,
-							hour12: 5,
+							hour11: 5,
 							timeZoneOffset: 0
 						},
 						CVDateTime.fromParts,
@@ -526,12 +526,12 @@ describe('CVDateTime', () => {
 				"Expected 'weekday' to be between 1 and 7 included. Actual: 0"
 			);
 			TEUtils.assertLeftMessage(
-				pipe({ year: 2024, hour24: 24 }, CVDateTime.fromParts),
-				"Expected 'hour24' to be between 0 and 23 included. Actual: 24"
+				pipe({ year: 2024, hour23: 24 }, CVDateTime.fromParts),
+				"Expected 'hour23' to be between 0 and 23 included. Actual: 24"
 			);
 			TEUtils.assertLeftMessage(
-				pipe({ year: 2024, meridiem: 0, hour12: -4 }, CVDateTime.fromParts),
-				"Expected 'hour12' to be between 0 and 11 included. Actual: -4"
+				pipe({ year: 2024, meridiem: 0, hour11: -4 }, CVDateTime.fromParts),
+				"Expected 'hour11' to be between 0 and 11 included. Actual: -4"
 			);
 			TEUtils.assertLeftMessage(
 				pipe({ year: 2024, minute: 60 }, CVDateTime.fromParts),
@@ -551,7 +551,7 @@ describe('CVDateTime', () => {
 				pipe(
 					{
 						year: 2024,
-						hour24: 5,
+						hour23: 5,
 						meridiem: 12,
 						timeZoneOffset: 0
 					},
@@ -563,14 +563,14 @@ describe('CVDateTime', () => {
 				pipe(
 					{
 						year: 2024,
-						hour24: 5,
+						hour23: 5,
 						meridiem: 0,
-						hour12: 4,
+						hour11: 4,
 						timeZoneOffset: 0
 					},
 					CVDateTime.fromParts
 				),
-				"Expected 'hour12' to be: 5. Actual: 4"
+				"Expected 'hour11' to be: 5. Actual: 4"
 			);
 			TEUtils.assertLeftMessage(
 				pipe(
@@ -720,7 +720,7 @@ describe('CVDateTime', () => {
 			TEUtils.assertNone(testDate.time);
 
 			TEUtils.strictEqual(CVDateTime.getMonthDay(testDate), 23);
-			TEUtils.strictEqual(CVDateTime.getHour24(testDate), 9);
+			TEUtils.strictEqual(CVDateTime.getHour23(testDate), 9);
 			TEUtils.assertSome(testDate.gregorianDate);
 			TEUtils.assertNone(testDate.isoDate);
 			TEUtils.assertSome(testDate.time);
@@ -742,7 +742,7 @@ describe('CVDateTime', () => {
 			TEUtils.assertNone(testDate.isoDate);
 			TEUtils.assertSome(testDate.time);
 
-			TEUtils.strictEqual(CVDateTime.getHour24(testDate), 9);
+			TEUtils.strictEqual(CVDateTime.getHour23(testDate), 9);
 			TEUtils.assertSome(testDate.gregorianDate);
 			TEUtils.assertNone(testDate.isoDate);
 			TEUtils.assertSome(testDate.time);
@@ -898,7 +898,7 @@ describe('CVDateTime', () => {
 				year: 2024,
 				month: 6,
 				monthDay: 23,
-				hour24: 17,
+				hour23: 17,
 				minute: 43,
 				second: 27,
 				millisecond: 654,
@@ -933,11 +933,11 @@ describe('CVDateTime', () => {
 				Date.UTC(2024, 5, 20, 16, 43, 27, 654)
 			);
 			TEUtils.assertRight(
-				pipe(testDate, CVDateTime.setHour24(4), Either.map(CVDateTime.timestamp)),
+				pipe(testDate, CVDateTime.setHour23(4), Either.map(CVDateTime.timestamp)),
 				Date.UTC(2024, 5, 23, 3, 43, 27, 654)
 			);
 			TEUtils.assertRight(
-				pipe(testDate, CVDateTime.setHour12(4), Either.map(CVDateTime.timestamp)),
+				pipe(testDate, CVDateTime.setHour11(4), Either.map(CVDateTime.timestamp)),
 				Date.UTC(2024, 5, 23, 15, 43, 27, 654)
 			);
 			TEUtils.strictEqual(
@@ -1131,7 +1131,7 @@ describe('CVDateTime', () => {
 					{
 						year: 2024,
 						ordinalDay: 61,
-						hour12: 7,
+						hour11: 7,
 						meridiem: 0,
 						timeZoneOffset: 1
 					},

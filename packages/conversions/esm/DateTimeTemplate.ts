@@ -22,7 +22,6 @@ import {
 	Pipeable,
 	Predicate,
 	Record,
-	String,
 	Struct,
 	Tuple
 } from 'effect';
@@ -47,7 +46,67 @@ type _TypeId = typeof _TypeId;
  *
  * @category Models
  */
-export type TagName = 'y' | 'yy' | 'yyyy';
+export type TagName =
+	/* Gregorian year (ex: 2005) */
+	| 'y'
+	/* Gregorian year on 2 digits left-padded with 0's corresponding to years 2000-2099 (ex: 05 for 2005) */
+	| 'yy'
+	/* Gregorian year on 4 digits left-padded with 0's (ex: 2005, 0965) */
+	| 'yyyy'
+	/* Iso year (ex: 2005) */
+	| 'R'
+	/* Iso year on 2 digits left-padded with 0's corresponding to years 2000-2099 (ex: 05 for 2005) */
+	| 'RR'
+	/* Iso year on 4 digits left-padded with 0's (ex: 2005, 0965)*/
+	| 'RRRR'
+	/* Month (ex: 6) */
+	| 'M'
+	/* Month on 2 digits left-padded with 0's (ex: 06) */
+	| 'MM'
+	/* Short month name (ex: Jun) */
+	| 'MMM'
+	/* Long month name (ex: June) */
+	| 'MMMM'
+	/* IsoWeek (ex: 6) */
+	| 'I'
+	/* IsoWeek (ex: 06) */
+	| 'II'
+	/* Day of month (ex: 5) */
+	| 'd'
+	/* Day of month on 2 digits left-padded with 0's (ex: 05) */
+	| 'dd'
+	/* Day of year (ex: 97) */
+	| 'D'
+	/* Day of year on 3 digits left-padded with 0's (ex: 097) */
+	| 'DDD'
+	/* Weekday (ex: 1 for monday, 7 for sunday) */
+	| 'i'
+	/* Short weekday name (ex: Mon) */
+	| 'iii'
+	/* Long weekday name (ex: Monday) */
+	| 'iiii'
+	/* Meridiem (ex: 'AM' for 0, 'PM' for 12) */
+	| 'a'
+	/* Hour in the range 0..23 (ex:5, 14) */
+	| 'H'
+	/* Hour on 2 digits in the range 0..23 left-padded with 0's (ex:05, 14) */
+	| 'HH'
+	/* Hour in the range 0..11 (ex:5, 2) */
+	| 'K'
+	/* Hour on 2 digits in the range 0..11 left-padded with 0's (ex:05, 02) */
+	| 'KK'
+	/* Minute (ex: 5) */
+	| 'm'
+	/* Minute on 2 digits left-padded with 0's (ex: 05) */
+	| 'mm'
+	/* Second (ex: 5) */
+	| 's'
+	/* Second on 2 digits left-padded with 0's (ex: 05) */
+	| 'ss'
+	/* Millisecond (ex: 5) */
+	| 'S'
+	/* Millisecond on 3 digits left-padded with 0's (ex: 005) */
+	| 'SSS';
 
 namespace CVPlaceHolderMap {
 	export interface Type
@@ -250,11 +309,6 @@ export namespace Context {
 		Array.map((timestamp) => pipe(new Date(timestamp)))
 	);
 
-	const DAY_PERIOD_DATES = pipe(
-		Array.make(0, 13 * CVDateTime.HOUR_MS),
-		Array.map((timestamp) => pipe(new Date(timestamp)))
-	);
-
 	/**
 	 * Type that represents a Context.
 	 *
@@ -302,8 +356,7 @@ export namespace Context {
 		longWeekdayNames,
 		shortMonthNames,
 		longMonthNames,
-		shortDayPeriodNames,
-		longDayPeriodNames
+		dayPeriodNames
 	}: {
 		/* Name of this Context*/
 		readonly name: string;
@@ -320,11 +373,8 @@ export namespace Context {
 		/** Array of the long month names */
 		readonly longMonthNames: MonthNames;
 
-		/** Array of the short day period names */
-		readonly shortDayPeriodNames: DayPeriodNames;
-
-		/** Array of the long day period names */
-		readonly longDayPeriodNames: DayPeriodNames;
+		/** Array of the day period names ('AM', 'PM') */
+		readonly dayPeriodNames: DayPeriodNames;
 	}): Type => {
 		const params = {
 			fillChar: '0',
@@ -333,31 +383,124 @@ export namespace Context {
 			numberBase10Format: CVNumberBase10Format.integer
 		};
 
+		const placeHolderEntries: ReadonlyArray<
+			readonly [TagName, CVPlaceHolder.Tag.Type<string, CVReal.Type>]
+		> = [
+			['y', CVPlaceHolder.Tag.real({ ...params, name: 'year' })],
+			[
+				'yy',
+				pipe(
+					CVPlaceHolder.Tag.fixedLengthToReal({ ...params, name: 'year', length: 2 }),
+					CVPlaceHolder.Tag.modify({
+						descriptorMapper: MString.append(' between 2000 and 2099 included'),
+						postParser: (value, name) =>
+							pipe(
+								value,
+								MInputError.assertInRange({ min: 2000, max: 2000, offset: 0, name }),
+								Either.map(flow(Number.subtract(2000), CVReal.unsafeFromNumber))
+							),
+						preFormatter: flow(Number.sum(2000), CVReal.unsafeFromNumber, Either.right)
+					})
+				)
+			],
+			['yyyy', CVPlaceHolder.Tag.fixedLengthToReal({ ...params, name: 'year', length: 4 })],
+			['R', CVPlaceHolder.Tag.real({ ...params, name: 'isoYear' })],
+			[
+				'RR',
+				pipe(
+					CVPlaceHolder.Tag.fixedLengthToReal({ ...params, name: 'isoYear', length: 2 }),
+					CVPlaceHolder.Tag.modify({
+						descriptorMapper: MString.append(' between 2000 and 2099 included'),
+						postParser: (value, name) =>
+							pipe(
+								value,
+								MInputError.assertInRange({ min: 2000, max: 2000, offset: 0, name }),
+								Either.map(flow(Number.subtract(2000), CVReal.unsafeFromNumber))
+							),
+						preFormatter: flow(Number.sum(2000), CVReal.unsafeFromNumber, Either.right)
+					})
+				)
+			],
+			['RRRR', CVPlaceHolder.Tag.fixedLengthToReal({ ...params, name: 'isoYear', length: 4 })],
+			['M', CVPlaceHolder.Tag.real({ ...params, name: 'month' })],
+			['MM', CVPlaceHolder.Tag.fixedLengthToReal({ ...params, name: 'month', length: 2 })],
+			[
+				'MMM',
+				CVPlaceHolder.Tag.mappedLiterals({
+					...params,
+					name: 'month',
+					keyValuePairs: pipe(
+						shortMonthNames,
+						Array.map((name, i) => Tuple.make(name, CVReal.unsafeFromNumber(i + 1)))
+					)
+				})
+			],
+			[
+				'MMMM',
+				CVPlaceHolder.Tag.mappedLiterals({
+					...params,
+					name: 'month',
+					keyValuePairs: pipe(
+						longMonthNames,
+						Array.map((name, i) => Tuple.make(name, CVReal.unsafeFromNumber(i + 1)))
+					)
+				})
+			],
+			['I', CVPlaceHolder.Tag.real({ ...params, name: 'isoWeek' })],
+			['II', CVPlaceHolder.Tag.fixedLengthToReal({ ...params, name: 'isoWeek', length: 2 })],
+			['d', CVPlaceHolder.Tag.real({ ...params, name: 'monthDay' })],
+			['dd', CVPlaceHolder.Tag.fixedLengthToReal({ ...params, name: 'monthDay', length: 2 })],
+			['D', CVPlaceHolder.Tag.real({ ...params, name: 'ordinalDay' })],
+			['DDD', CVPlaceHolder.Tag.fixedLengthToReal({ ...params, name: 'ordinalDay', length: 3 })],
+			['i', CVPlaceHolder.Tag.real({ ...params, name: 'weekday' })],
+			[
+				'iii',
+				CVPlaceHolder.Tag.mappedLiterals({
+					...params,
+					name: 'weekday',
+					keyValuePairs: pipe(
+						shortWeekdayNames,
+						Array.map((name, i) => Tuple.make(name, CVReal.unsafeFromNumber(i + 1)))
+					)
+				})
+			],
+			[
+				'iiii',
+				CVPlaceHolder.Tag.mappedLiterals({
+					...params,
+					name: 'weekday',
+					keyValuePairs: pipe(
+						longWeekdayNames,
+						Array.map((name, i) => Tuple.make(name, CVReal.unsafeFromNumber(i + 1)))
+					)
+				})
+			],
+			[
+				'a',
+				CVPlaceHolder.Tag.mappedLiterals({
+					...params,
+					name: 'meridiem',
+					keyValuePairs: pipe(
+						dayPeriodNames,
+						Array.map((name, i) => Tuple.make(name, CVReal.unsafeFromNumber(i * 12)))
+					)
+				})
+			],
+			['H', CVPlaceHolder.Tag.real({ ...params, name: 'hour23' })],
+			['HH', CVPlaceHolder.Tag.fixedLengthToReal({ ...params, name: 'hour23', length: 2 })],
+			['K', CVPlaceHolder.Tag.real({ ...params, name: 'hour11' })],
+			['KK', CVPlaceHolder.Tag.fixedLengthToReal({ ...params, name: 'hour11', length: 2 })],
+			['m', CVPlaceHolder.Tag.real({ ...params, name: 'minute' })],
+			['mm', CVPlaceHolder.Tag.fixedLengthToReal({ ...params, name: 'minute', length: 2 })],
+			['s', CVPlaceHolder.Tag.real({ ...params, name: 'second' })],
+			['ss', CVPlaceHolder.Tag.fixedLengthToReal({ ...params, name: 'second', length: 2 })],
+			['S', CVPlaceHolder.Tag.real({ ...params, name: 'millisecond' })],
+			['SSS', CVPlaceHolder.Tag.fixedLengthToReal({ ...params, name: 'millisecond', length: 3 })]
+		];
+
 		return _make({
 			name,
-			placeHolderMap: HashMap.make(
-				['y' as const, CVPlaceHolder.Tag.real({ ...params, name: 'year' })],
-				[
-					'yy' as const,
-					pipe(
-						CVPlaceHolder.Tag.fixedLengthToReal({ ...params, name: 'year', length: 2 }),
-						CVPlaceHolder.Tag.modify({
-							descriptorMapper: MString.append(' between 2000 and 2099 included'),
-							postParser: (value, name) =>
-								pipe(
-									value,
-									MInputError.assertInRange({ min: 2000, max: 2000, offset: 0, name }),
-									Either.map(flow(Number.subtract(2000), CVReal.unsafeFromNumber))
-								),
-							preFormatter: flow(Number.sum(2000), CVReal.unsafeFromNumber, Either.right)
-						})
-					)
-				],
-				[
-					'yyyy' as const,
-					CVPlaceHolder.Tag.fixedLengthToReal({ ...params, name: 'year', length: 4 })
-				]
-			)
+			placeHolderMap: HashMap.make(...placeHolderEntries)
 		});
 	};
 
@@ -401,14 +544,13 @@ export namespace Context {
 			'Nov',
 			'Dec'
 		],
-		longDayPeriodNames: ['in the morning', 'in the afternoon'],
-		shortDayPeriodNames: ['am', 'pm']
+		dayPeriodNames: ['AM', 'PM']
 	});
 
 	const _safeDateTimeFormat = Option.liftThrowable(Intl.DateTimeFormat);
 
 	const _extractType = (
-		type: 'weekday' | 'month' | 'dayPeriod'
+		type: 'weekday' | 'month'
 	): MTypes.OneArgFunction<ReadonlyArray<Intl.DateTimeFormatPart>, Option.Option<string>> =>
 		flow(
 			Array.findFirst(flow(Struct.get('type'), MPredicate.strictEquals(type))),
@@ -417,7 +559,6 @@ export namespace Context {
 
 	const _extractWeekday = _extractType('weekday');
 	const _extractMonth = _extractType('month');
-	const _extractDayPeriod = _extractType('dayPeriod');
 
 	/**
 	 * Tries to build a DateTimeTemplate from locale `locale`. Returns a `some` if successful.
@@ -430,9 +571,7 @@ export namespace Context {
 			const longDateTimeFormatInLocale = yield* _safeDateTimeFormat(locale, {
 				timeZone: 'UTC',
 				weekday: 'long',
-				month: 'long',
-				dayPeriod: 'long',
-				hourCycle: 'h11'
+				month: 'long'
 			});
 
 			const toLongParts = Intl.DateTimeFormat.prototype.formatToParts.bind(
@@ -442,9 +581,7 @@ export namespace Context {
 			const shortDateTimeFormatInLocale = yield* _safeDateTimeFormat(locale, {
 				timeZone: 'UTC',
 				weekday: 'short',
-				month: 'short',
-				dayPeriod: 'short',
-				hourCycle: 'h11'
+				month: 'short'
 			});
 
 			const toShortParts = Intl.DateTimeFormat.prototype.formatToParts.bind(
@@ -461,11 +598,6 @@ export namespace Context {
 				MArray.mapUnlessNone(flow(toLongParts, _extractMonth))
 			)) as unknown as MonthNames;
 
-			const longDayPeriodNames = (yield* pipe(
-				DAY_PERIOD_DATES,
-				MArray.mapUnlessNone(flow(toLongParts, _extractDayPeriod))
-			)) as unknown as DayPeriodNames;
-
 			const shortWeekdayNames = (yield* pipe(
 				WEEKDAY_DATES,
 				MArray.mapUnlessNone(flow(toShortParts, _extractWeekday))
@@ -476,12 +608,7 @@ export namespace Context {
 				MArray.mapUnlessNone(flow(toShortParts, _extractMonth))
 			)) as unknown as MonthNames;
 
-			const shortDayPeriodNames = (String.takeLeft(2)(locale) === 'en' ?
-				['am', 'pm']
-			:	yield* pipe(
-					DAY_PERIOD_DATES,
-					MArray.mapUnlessNone(flow(toShortParts, _extractDayPeriod))
-				)) as unknown as DayPeriodNames;
+			const dayPeriodNames: DayPeriodNames = ['am', 'pm'];
 
 			return fromNames({
 				name: locale,
@@ -489,8 +616,7 @@ export namespace Context {
 				longWeekdayNames,
 				shortMonthNames,
 				longMonthNames,
-				shortDayPeriodNames,
-				longDayPeriodNames
+				dayPeriodNames
 			});
 		});
 
@@ -705,12 +831,12 @@ export const toFormatter = (self: Type): Formatter.Type => {
 								flow(Tuple.make, Tuple.appendElement(CVDateTime.getWeekday), Option.some)
 							),
 							MMatch.whenIs(
-								'hour24',
-								flow(Tuple.make, Tuple.appendElement(CVDateTime.getHour24), Option.some)
+								'hour23',
+								flow(Tuple.make, Tuple.appendElement(CVDateTime.getHour23), Option.some)
 							),
 							MMatch.whenIs(
-								'hour12',
-								flow(Tuple.make, Tuple.appendElement(CVDateTime.getHour12), Option.some)
+								'hour11',
+								flow(Tuple.make, Tuple.appendElement(CVDateTime.getHour11), Option.some)
 							)
 						),
 						MMatch.whenIs(

@@ -1092,11 +1092,11 @@ namespace Time {
 		/** This Time expressed in milliseconds, range:[0, DAY_MS[ */
 		readonly timestampOffset: number;
 
-		/** Hour24 of this Time, range:[0, 23] */
-		readonly hour24: number;
+		/** Hour23 of this Time, range:[0, 23] */
+		readonly hour23: number;
 
-		/** Hour12 of this Time, range:[0, 11] */
-		readonly hour12: number;
+		/** Hour11 of this Time, range:[0, 11] */
+		readonly hour11: number;
 
 		/** Meridiem of this Time, 0 for 'AM', 12 for 'PM' */
 		readonly meridiem: 0 | 12;
@@ -1138,20 +1138,20 @@ namespace Time {
 	 * @category Constructors
 	 */
 	export const fromTimestamp = (timestampOffset: number): Type => {
-		const hour24 = Math.floor(timestampOffset / HOUR_MS);
-		const rHour24 = timestampOffset - hour24 * HOUR_MS;
+		const hour23 = Math.floor(timestampOffset / HOUR_MS);
+		const rHour23 = timestampOffset - hour23 * HOUR_MS;
 
-		const [hour12, meridiem] = hour24 >= 12 ? ([hour24 - 12, 12] as const) : ([hour24, 0] as const);
+		const [hour11, meridiem] = hour23 >= 12 ? ([hour23 - 12, 12] as const) : ([hour23, 0] as const);
 
-		const minute = Math.floor(rHour24 / MINUTE_MS);
-		const rMinute = rHour24 - minute * MINUTE_MS;
+		const minute = Math.floor(rHour23 / MINUTE_MS);
+		const rMinute = rHour23 - minute * MINUTE_MS;
 
 		const second = Math.floor(rMinute / SECOND_MS);
 
 		return _make({
 			timestampOffset,
-			hour24,
-			hour12,
+			hour23,
+			hour11,
 			meridiem,
 			minute,
 			second,
@@ -1160,62 +1160,62 @@ namespace Time {
 	};
 
 	/**
-	 * If possible, returns a right of a copy of `self` with `hour24` set to `hour24`. Returns a left
-	 * of an error otherwise. `hour24` must be an integer greater than or equal to 0 and less than or
+	 * If possible, returns a right of a copy of `self` with `hour23` set to `hour23`. Returns a left
+	 * of an error otherwise. `hour23` must be an integer greater than or equal to 0 and less than or
 	 * equal to 23
 	 *
 	 * @category Setters
 	 */
-	export const setHour24 =
-		(hour24: number) =>
+	export const setHour23 =
+		(hour23: number) =>
 		(self: Type): Either.Either<Type, MInputError.Type> =>
 			Either.gen(function* () {
-				const validatedHour24 = yield* pipe(
-					hour24,
+				const validatedHour23 = yield* pipe(
+					hour23,
 					MInputError.assertInRange({
 						min: 0,
 						max: 23,
 						offset: 0,
-						name: "'hour24'"
+						name: "'hour23'"
 					})
 				);
 
-				const isPast12 = validatedHour24 >= 12;
+				const isPast12 = validatedHour23 >= 12;
 				return _make({
 					...self,
-					timestampOffset: self.timestampOffset + (validatedHour24 - self.hour24) * HOUR_MS,
-					hour24: validatedHour24,
-					hour12: isPast12 ? hour24 - 12 : hour24,
+					timestampOffset: self.timestampOffset + (validatedHour23 - self.hour23) * HOUR_MS,
+					hour23: validatedHour23,
+					hour11: isPast12 ? hour23 - 12 : hour23,
 					meridiem: isPast12 ? 12 : 0
 				});
 			});
 
 	/**
-	 * If possible, returns a right of a copy of `self` with `hour12` set to `hour12`. Returns a left
-	 * of an error otherwise. `hour12` must be an integer greater than or equal to 0 and less than or
+	 * If possible, returns a right of a copy of `self` with `hour11` set to `hour11`. Returns a left
+	 * of an error otherwise. `hour11` must be an integer greater than or equal to 0 and less than or
 	 * equal to 11
 	 *
 	 * @category Setters
 	 */
-	export const setHour12 =
-		(hour12: number) =>
+	export const setHour11 =
+		(hour11: number) =>
 		(self: Type): Either.Either<Type, MInputError.Type> =>
 			Either.gen(function* () {
-				const validatedHour12 = yield* pipe(
-					hour12,
+				const validatedHour11 = yield* pipe(
+					hour11,
 					MInputError.assertInRange({
 						min: 0,
 						max: 11,
 						offset: 0,
-						name: "'hour12'"
+						name: "'hour11'"
 					})
 				);
-				const validatedHour24 = self.meridiem + validatedHour12;
+				const validatedHour23 = self.meridiem + validatedHour11;
 				return _make({
 					...self,
-					timestampOffset: self.timestampOffset + (validatedHour24 - self.hour24) * HOUR_MS,
-					hour24: validatedHour24,
-					hour12: validatedHour12
+					timestampOffset: self.timestampOffset + (validatedHour23 - self.hour23) * HOUR_MS,
+					hour23: validatedHour23,
+					hour11: validatedHour11
 				});
 			});
 
@@ -1227,11 +1227,11 @@ namespace Time {
 	export const setMeridiem =
 		(meridiem: 0 | 12) =>
 		(self: Type): Type => {
-			const validatedHour24 = self.hour12 + meridiem;
+			const validatedHour23 = self.hour11 + meridiem;
 			return _make({
 				...self,
-				timestampOffset: self.timestampOffset + (validatedHour24 - self.hour24) * HOUR_MS,
-				hour24: validatedHour24,
+				timestampOffset: self.timestampOffset + (validatedHour23 - self.hour23) * HOUR_MS,
+				hour23: validatedHour23,
 				meridiem
 			});
 		};
@@ -1328,17 +1328,17 @@ namespace Time {
 	export const timestampOffset: MTypes.OneArgFunction<Type, number> = Struct.get('timestampOffset');
 
 	/**
-	 * Returns the `hour24` property of `self`
+	 * Returns the `hour23` property of `self`
 	 *
 	 * @category Destructors
 	 */
-	export const hour24: MTypes.OneArgFunction<Type, number> = Struct.get('hour24');
+	export const hour23: MTypes.OneArgFunction<Type, number> = Struct.get('hour23');
 	/**
-	 * Returns the `hour12` property of `self`
+	 * Returns the `hour11` property of `self`
 	 *
 	 * @category Destructors
 	 */
-	export const hour12: MTypes.OneArgFunction<Type, number> = Struct.get('hour12');
+	export const hour11: MTypes.OneArgFunction<Type, number> = Struct.get('hour11');
 
 	/**
 	 * Returns the `meridiem` property of `self`
@@ -1433,14 +1433,14 @@ const proto: MTypes.Proto<Type> = {
 		const yearString = _intToFixedLengthString(4)(getYear(this));
 		const monthString = _intToFixedLengthString(2)(getMonth(this));
 		const monthDayString = _intToFixedLengthString(2)(getMonthDay(this));
-		const hour24String = _intToFixedLengthString(2)(getHour24(this));
+		const hour23String = _intToFixedLengthString(2)(getHour23(this));
 		const minuteString = _intToFixedLengthString(2)(getMinute(this));
 		const secondString = _intToFixedLengthString(2)(getSecond(this));
 		const millisecondString = _intToFixedLengthString(3)(getMillisecond(this));
 		const zoneHoursString = _intToFixedLengthString(2)(Math.abs(zoneHours));
 		const zoneMinuteString = _intToFixedLengthString(2)(Math.abs(timeZoneOffset - zoneHours) * 60);
 
-		return `${yearString}-${monthString}-${monthDayString} ${hour24String}:${minuteString}:${secondString}:${millisecondString} GMT${zoneHoursSign}${zoneHoursString}${zoneMinuteString}`;
+		return `${yearString}-${monthString}-${monthDayString} ${hour23String}:${minuteString}:${secondString}:${millisecondString} GMT${zoneHoursSign}${zoneHoursString}${zoneMinuteString}`;
 	},
 	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto
@@ -1548,9 +1548,9 @@ export namespace Parts {
 		/** Week day in the current iso week, range:[1, 7], 1 is monday, 7 is sunday */
 		readonly weekday?: number;
 		/** Number of hours since the start of the current day, range:[0, 23] */
-		readonly hour24?: number;
+		readonly hour23?: number;
 		/** Number of hours since the start of the current meridiem, range:[0, 11] */
-		readonly hour12?: number;
+		readonly hour11?: number;
 		/** Meridiem offset of this DateTime in hours, 0 for 'AM', 12 for 'PM' */
 		readonly meridiem?: 0 | 12;
 		/** Number of minutes since the start of the current hour, range:[0, 59] */
@@ -1601,15 +1601,15 @@ export namespace Parts {
  *   the first one in the isoyear.
  * - If both `year` and `isoYear` are undefined, an error is raised.
  *
- * `hour24` must be an integer greater than or equal to 0 and less than or equal to 23. `hour12`
+ * `hour23` must be an integer greater than or equal to 0 and less than or equal to 23. `hour11`
  * must be an integer greater than or equal to 0 and less than or equal to 11. `meridiem` must be
  * one of 0 (AM) or 12 (PM). If there is not sufficient information to determine the hour of the
- * day, i.e. none of the two following tuples is fully determined [hour24], [hour12, meridiem],
+ * day, i.e. none of the two following tuples is fully determined [hour23], [hour11, meridiem],
  * default values are determined as follows:
  *
- * - If `meridiem` is set, `hour12` is taken equal to 0.
- * - If `hour12` is set, `meridiem` is taken equal to 0.
- * - Otherwise, `meridiem` and `hour12` are taken equal to 0.
+ * - If `meridiem` is set, `hour11` is taken equal to 0.
+ * - If `hour11` is set, `meridiem` is taken equal to 0.
+ * - Otherwise, `meridiem` and `hour11` are taken equal to 0.
  *
  * `minute` must be an integer greater than or equal to 0 and less than or equal to 59. If omitted,
  * minute is assumed to be 0.
@@ -1622,7 +1622,7 @@ export namespace Parts {
  *
  * All parameters must be coherent. For instance, `year=1970`, `month=1`, `monthDay=1`, `weekday=0`
  * and `timeZoneOffset=0` will trigger an error because 1/1/1970 00:00:00:000+0:00 is a thursday.
- * `hour24=13` and `meridiem=0` will also trigger an error.
+ * `hour23=13` and `meridiem=0` will also trigger an error.
  *
  * @category Constructors
  */
@@ -1635,8 +1635,8 @@ export const fromParts = ({
 	isoYear,
 	isoWeek,
 	weekday,
-	hour24,
-	hour12,
+	hour23,
+	hour11,
 	meridiem,
 	minute,
 	second,
@@ -1647,12 +1647,12 @@ export const fromParts = ({
 		const zonedOrigin = yield* pipe(_uncalculatedOrigin, _setTimeZoneOffset(false, timeZoneOffset));
 
 		const withHour = yield* Either.gen(function* () {
-			if (hour24 !== undefined) {
-				const result = yield* setHour24(hour24)(zonedOrigin);
-				if (hour12 !== undefined)
+			if (hour23 !== undefined) {
+				const result = yield* setHour23(hour23)(zonedOrigin);
+				if (hour11 !== undefined)
 					yield* pipe(
-						hour12,
-						MInputError.assertValue({ expected: getHour12(result), name: "'hour12'" })
+						hour11,
+						MInputError.assertValue({ expected: getHour11(result), name: "'hour11'" })
 					);
 				if (meridiem !== undefined)
 					yield* pipe(
@@ -1661,8 +1661,8 @@ export const fromParts = ({
 					);
 				return result;
 			}
-			const withHour12 = hour12 !== undefined ? yield* setHour12(hour12)(zonedOrigin) : zonedOrigin;
-			return meridiem === 12 ? setMeridiem(12)(withHour12) : withHour12;
+			const withHour11 = hour11 !== undefined ? yield* setHour11(hour11)(zonedOrigin) : zonedOrigin;
+			return meridiem === 12 ? setMeridiem(12)(withHour11) : withHour11;
 		});
 
 		const withMinute = minute !== undefined ? yield* setMinute(minute)(withHour) : withHour;
@@ -1901,18 +1901,18 @@ const _time = (self: Type): Time.Type =>
 	);
 
 /**
- * Returns the hour24 of `self` for the given time zone
+ * Returns the hour23 of `self` for the given time zone
  *
  * @category Destructors
  */
-export const getHour24: MTypes.OneArgFunction<Type, number> = flow(_time, Time.hour24);
+export const getHour23: MTypes.OneArgFunction<Type, number> = flow(_time, Time.hour23);
 
 /**
- * Returns the hour12 of `self` for the given time zone
+ * Returns the hour11 of `self` for the given time zone
  *
  * @category Destructors
  */
-export const getHour12: MTypes.OneArgFunction<Type, number> = flow(_time, Time.hour12);
+export const getHour11: MTypes.OneArgFunction<Type, number> = flow(_time, Time.hour11);
 
 /**
  * Returns the meridiem of `self` for the given time zone
@@ -1995,7 +1995,7 @@ const _timeSetter = (self: Type): MTypes.OneArgFunction<Time.Type, Type> => {
 
 /**
  * If possible, returns a right of a DateTime having year `year` and the same `month`, `monthDay`,
- * `hour24`, `minute`, `second`, `millisecond` and `timeZoneOffset` as `self`. Returns a `left` of
+ * `hour23`, `minute`, `second`, `millisecond` and `timeZoneOffset` as `self`. Returns a `left` of
  * an error otherwise. `year` must be an integer comprised in the range [MIN_FULL_YEAR,
  * MAX_FULL_YEAR].
  *
@@ -2016,7 +2016,7 @@ export const unsafeSetYear = (year: number): MTypes.OneArgFunction<Type> =>
 
 /**
  * If possible, returns a right of a DateTime having ordinalDay `ordinalDay` and the same `year`,
- * `hour24`, `minute`, `second`, `millisecond` and `timeZoneOffset` as `self`. Returns a `left` of
+ * `hour23`, `minute`, `second`, `millisecond` and `timeZoneOffset` as `self`. Returns a `left` of
  * an error otherwise. `ordinalDay` must be an integer greater than or equal to 1 and less than or
  * equal to the number of days in the current year
  *
@@ -2042,7 +2042,7 @@ export const unsafeSetOrdinalDay = (ordinalDay: number): MTypes.OneArgFunction<T
 
 /**
  * If possible, returns a right of a DateTime having month `month` and the same `year`, `monthDay`,
- * `hour24`, `minute`, `second`, `millisecond` and `timeZoneOffset` as `self`. Returns a `left` of
+ * `hour23`, `minute`, `second`, `millisecond` and `timeZoneOffset` as `self`. Returns a `left` of
  * an error otherwise. `month` must be an integer greater than or equal to 1 (January) and less than
  * or equal to 12 (December)
  *
@@ -2068,7 +2068,7 @@ export const unsafeSetMonth = (month: number): MTypes.OneArgFunction<Type> =>
 
 /**
  * If possible, returns a right of a DateTime having monthDay `monthDay` and the same `year`,
- * `month`, `hour24`, `minute`, `second`, `millisecond` and `timeZoneOffset` as `self`. Returns a
+ * `month`, `hour23`, `minute`, `second`, `millisecond` and `timeZoneOffset` as `self`. Returns a
  * `left` of an error otherwise. `monthDay` must be an integer greater than or equal to 1 and less
  * than or equal to the number of days in the current month.
  *
@@ -2094,7 +2094,7 @@ export const unsafeSetMonthDay = (monthDay: number): MTypes.OneArgFunction<Type>
 
 /**
  * If possible, returns a right of a DateTime having isoYear `isoYear` and the same `isoWeek`,
- * `weekday`, `hour24`, `minute`, `second`, `millisecond` and `timeZoneOffset` as `self`. Returns a
+ * `weekday`, `hour23`, `minute`, `second`, `millisecond` and `timeZoneOffset` as `self`. Returns a
  * `left` of an error otherwise. `isoYear` must be an integer comprised in the range [MIN_FULL_YEAR,
  * MAX_FULL_YEAR].
  *
@@ -2115,7 +2115,7 @@ export const unsafeSetIsoYear = (isoYear: number): MTypes.OneArgFunction<Type> =
 
 /**
  * If possible, returns a right of a DateTime having isoWeek `isoWeek` and the same `isoYear`,
- * `weekday`, `hour24`, `minute`, `second`, `millisecond` and `timeZoneOffset` as `self`. Returns a
+ * `weekday`, `hour23`, `minute`, `second`, `millisecond` and `timeZoneOffset` as `self`. Returns a
  * `left` of an error otherwise. `isoWeek` must be an integer greater than or equal to 1 and less
  * than or equal to the number of iso weeks in the current year.
  *
@@ -2136,7 +2136,7 @@ export const unsafeSetIsoWeek = (isoWeek: number): MTypes.OneArgFunction<Type> =
 
 /**
  * If possible, returns a right of a DateTime having weekday `weekday` and the same `isoYear`,
- * `isoWeek`, `hour24`, `minute`, `second`, `millisecond` and `timeZoneOffset` as `self`. Returns a
+ * `isoWeek`, `hour23`, `minute`, `second`, `millisecond` and `timeZoneOffset` as `self`. Returns a
  * `left` of an error otherwise. `weekday` must be an integer greater than or equal to 1 (monday)
  * and less than or equal to 7 (sunday).
  *
@@ -2156,49 +2156,49 @@ export const unsafeSetWeekday = (weekday: number): MTypes.OneArgFunction<Type> =
 	flow(setWeekday(weekday), Either.getOrThrowWith(Function.identity));
 
 /**
- * If possible, returns a right of a DateTime having hour24 `hour24` and the same `year`,
+ * If possible, returns a right of a DateTime having hour23 `hour23` and the same `year`,
  * `ordinalDay`, `minute`, `second`, `millisecond` and `timeZoneOffset` as `self`. Returns a `left`
- * of an error otherwise. `hour24` must be an integer greater than or equal to 0 and less than or
+ * of an error otherwise. `hour23` must be an integer greater than or equal to 0 and less than or
  * equal to 23
  *
  * @category Setters
  */
-export const setHour24 =
-	(hour24: number) =>
+export const setHour23 =
+	(hour23: number) =>
 	(self: Type): Either.Either<Type, MInputError.Type> =>
-		pipe(self, _time, Time.setHour24(hour24), Either.map(_timeSetter(self)));
+		pipe(self, _time, Time.setHour23(hour23), Either.map(_timeSetter(self)));
 
 /**
- * Same as setHour24 but returns directly a DateTime or throws in case of an error
+ * Same as setHour23 but returns directly a DateTime or throws in case of an error
  *
  * @category Setters
  */
-export const unsafeSetHour24 = (hour24: number): MTypes.OneArgFunction<Type> =>
-	flow(setHour24(hour24), Either.getOrThrowWith(Function.identity));
+export const unsafeSetHour23 = (hour23: number): MTypes.OneArgFunction<Type> =>
+	flow(setHour23(hour23), Either.getOrThrowWith(Function.identity));
 
 /**
- * If possible, returns a right of a DateTime having hour12 `hour12` and the same `year`,
+ * If possible, returns a right of a DateTime having hour11 `hour11` and the same `year`,
  * `ordinalDay`, `meridiem`, `minute`, `second`, `millisecond` and `timeZoneOffset` as `self`.
- * Returns a `left` of an error otherwise. `hour12` must be an integer greater than or equal to 0
+ * Returns a `left` of an error otherwise. `hour11` must be an integer greater than or equal to 0
  * and less than or equal to 11.
  *
  * @category Setters
  */
-export const setHour12 =
-	(hour12: number) =>
+export const setHour11 =
+	(hour11: number) =>
 	(self: Type): Either.Either<Type, MInputError.Type> =>
-		pipe(self, _time, Time.setHour12(hour12), Either.map(_timeSetter(self)));
+		pipe(self, _time, Time.setHour11(hour11), Either.map(_timeSetter(self)));
 
 /**
- * Same as setHour12 but returns directly a DateTime or throws in case of an error
+ * Same as setHour11 but returns directly a DateTime or throws in case of an error
  *
  * @category Setters
  */
-export const unsafeSetHour12 = (hour12: number): MTypes.OneArgFunction<Type> =>
-	flow(setHour12(hour12), Either.getOrThrowWith(Function.identity));
+export const unsafeSetHour11 = (hour11: number): MTypes.OneArgFunction<Type> =>
+	flow(setHour11(hour11), Either.getOrThrowWith(Function.identity));
 
 /**
- * Returns a DateTime having meridiem `meridiem` and the same `year`, `ordinalDay`, `hour12`,
+ * Returns a DateTime having meridiem `meridiem` and the same `year`, `ordinalDay`, `hour11`,
  * `minute`, `second`, `millisecond` and `timeZoneOffset` as `self`
  *
  * @category Setters
@@ -2210,7 +2210,7 @@ export const setMeridiem =
 
 /**
  * If possible, returns a right of a DateTime having minute `minute` and the same `year`,
- * `ordinalDay`, `hour24`, `second`, `millisecond` and `timeZoneOffset` as `self`. Returns a `left`
+ * `ordinalDay`, `hour23`, `second`, `millisecond` and `timeZoneOffset` as `self`. Returns a `left`
  * of an error otherwise. `minute` must be an integer greater than or equal to 0 and less than or
  * equal to 59
  *
@@ -2231,7 +2231,7 @@ export const unsafeSetMinute = (minute: number): MTypes.OneArgFunction<Type> =>
 
 /**
  * If possible, returns a right of a DateTime having second `second` and the same `year`,
- * `ordinalDay`, `hour24`, `minute`, `millisecond` and `timeZoneOffset` as `self`. Returns a `left`
+ * `ordinalDay`, `hour23`, `minute`, `millisecond` and `timeZoneOffset` as `self`. Returns a `left`
  * of an error otherwise. `second` must be an integer greater than or equal to 0 and less than or
  * equal to 59
  *
@@ -2252,7 +2252,7 @@ export const unsafeSetSecond = (second: number): MTypes.OneArgFunction<Type> =>
 
 /**
  * If possible, returns a right of a DateTime having millisecond `millisecond` and the same `year`,
- * `ordinalDay`, `hour24`, `minute`, `second` and `timeZoneOffset` as `self`. Returns a `left` of an
+ * `ordinalDay`, `hour23`, `minute`, `second` and `timeZoneOffset` as `self`. Returns a `left` of an
  * error otherwise. `millisecond` must be an integer greater than or equal to 0 and less than or
  * equal to 999.
  *
@@ -2410,7 +2410,7 @@ export const isLastIsoYearDay: Predicate.Predicate<Type> = (self) =>
 
 /**
  * Returns a copy of `self` where `monthDay` is set to the first day of the current month. All time
- * parts (`hour24`, `hour12`, `meridiem`, `minute`, `second`, `millisecond`) are left unchanged
+ * parts (`hour23`, `hour11`, `meridiem`, `minute`, `second`, `millisecond`) are left unchanged
  *
  * @category Offsetters
  */
@@ -2418,7 +2418,7 @@ export const toFirstMonthDay: MTypes.OneArgFunction<Type> = unsafeSetMonthDay(1)
 
 /**
  * Returns a copy of `self` where `monthDay` is set to the last day of the current month. All time
- * parts (`hour24`, `hour12`, `meridiem`, `minute`, `second`, `millisecond`) are left unchanged
+ * parts (`hour23`, `hour11`, `meridiem`, `minute`, `second`, `millisecond`) are left unchanged
  *
  * @category Offsetters
  */
@@ -2429,7 +2429,7 @@ export const toLastMonthDay = (self: Type): Type =>
 
 /**
  * Returns a copy of `self` where `ordinalDay` is set to the first day of the current year. All time
- * parts (`hour24`, `hour12`, `meridiem`, `minute`, `second`, `millisecond`) are left unchanged
+ * parts (`hour23`, `hour11`, `meridiem`, `minute`, `second`, `millisecond`) are left unchanged
  *
  * @category Offsetters
  */
@@ -2437,7 +2437,7 @@ export const toFirstYearDay = (self: Type): Type => unsafeSetOrdinalDay(1)(self)
 
 /**
  * Returns a copy of `self` where `ordinalDay` is set to the last day of the current year. All time
- * parts (`hour24`, `hour12`, `meridiem`, `minute`, `second`, `millisecond`) are left unchanged
+ * parts (`hour23`, `hour11`, `meridiem`, `minute`, `second`, `millisecond`) are left unchanged
  *
  * @category Offsetters
  */
@@ -2445,8 +2445,8 @@ export const toLastYearDay = (self: Type): Type =>
 	unsafeSetOrdinalDay(pipe(self, _gregorianDate, GregorianDate.getYearDurationInDays))(self);
 
 /**
- * Returns a copy of `self` where `isoWeek` and `weekday` are set to 1. All time parts (`hour24`,
- * `hour12`, `meridiem`, `minute`, `second`, `millisecond`) are left unchanged
+ * Returns a copy of `self` where `isoWeek` and `weekday` are set to 1. All time parts (`hour23`,
+ * `hour11`, `meridiem`, `minute`, `second`, `millisecond`) are left unchanged
  *
  * @category Offsetters
  */
@@ -2457,7 +2457,7 @@ export const toFirstIsoYearDay: MTypes.OneArgFunction<Type> = flow(
 
 /**
  * Returns a copy of `self` where `isoWeek` is set to the last week of the current iso year.
- * `weekday` and all time parts (`hour24`, `hour12`, `meridiem`, `minute`, `second`, `millisecond`)
+ * `weekday` and all time parts (`hour23`, `hour11`, `meridiem`, `minute`, `second`, `millisecond`)
  * are left unchanged
  *
  * @category Offsetters
@@ -2467,7 +2467,7 @@ export const toLastIsoYearWeek = (self: Type): Type =>
 
 /**
  * Returns a copy of `self` where `isoWeek` is set to the last week of the current iso year and
- * `weekday` is set to 7. All time parts (`hour24`, `hour12`, `meridiem`, `minute`, `second`,
+ * `weekday` is set to 7. All time parts (`hour23`, `hour11`, `meridiem`, `minute`, `second`,
  * `millisecond`) are left unchanged
  *
  * @category Offsetters
@@ -2477,7 +2477,7 @@ export const toLastIsoYearDay = (self: Type): Type =>
 
 /**
  * If possible, returns a copy of `self` offset by `offset` years and having the same `month`,
- * `hour24`, `minute`, `second`, `millisecond` and `timeZoneOffset` as `self`. If `respectMonthEnd`
+ * `hour23`, `minute`, `second`, `millisecond` and `timeZoneOffset` as `self`. If `respectMonthEnd`
  * is true and `self` is on the last day of a month, the new DateTime object's monthDay will be the
  * last of the target month. Otherwise, it will be the same as `self`'s. Returns a `left` of an
  * error otherwise.
@@ -2502,7 +2502,7 @@ export const unsafeOffsetYears = (
 	flow(offsetYears(offset, respectMonthEnd), Either.getOrThrowWith(Function.identity));
 
 /**
- * If possible, returns a copy of `self` offset by `offset` months and having the same `hour24`,
+ * If possible, returns a copy of `self` offset by `offset` months and having the same `hour23`,
  * `minute`, `second`, `millisecond` and `timeZoneOffset` as `self`. If `respectMonthEnd` is true
  * and `self` is on the last day of a month, the new DateTime object's monthDay will be the last of
  * the target month. Otherwise, it will be the same as `self`'s. Returns a `left` of an error if the
@@ -2561,7 +2561,7 @@ export const unsafeOffsetDays = (offset: number): MTypes.OneArgFunction<Type> =>
 
 /**
  * If possible, returns a copy of `self` offset by `offset` iso years and having the same `weekday`,
- * `hour24`, `minute`, `second`, `millisecond` and `timeZoneOffset` as `self`. If `respectYearEnd`
+ * `hour23`, `minute`, `second`, `millisecond` and `timeZoneOffset` as `self`. If `respectYearEnd`
  * is true and `self` is on the last day of an iso year, the new DateTime object's isoWeek will be
  * the last of the target iso year. Otherwise, it will be the same as `self`'s. Returns a `left` of
  * an error otherwise.
