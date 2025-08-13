@@ -35,15 +35,11 @@ import {
 	Types
 } from 'effect';
 import * as CVPlaceHolder from './PlaceHolder.js';
+import * as CVPlaceHolders from './PlaceHolders.js';
 
 export const moduleTag = '@parischap/conversions/Template/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
-
-namespace PlaceHolders {
-	/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-	export interface Type extends ReadonlyArray<CVPlaceHolder.Type<string, any>> {}
-}
 
 /**
  * Type that represents a Template.
@@ -51,10 +47,10 @@ namespace PlaceHolders {
  * @category Models
  */
 
-export interface Type<out PS extends PlaceHolders.Type>
+export interface Type<out PS extends CVPlaceHolders.Type>
 	extends Inspectable.Inspectable,
 		Pipeable.Pipeable {
-	/** Array of the PlaceHolders composing this template */
+	/** Array of the PlaceHolder's composing this template */
 	readonly placeHolders: PS;
 
 	/** @internal */
@@ -78,7 +74,7 @@ const proto: MTypes.Proto<Type<never>> = {
 	...MPipeable.BaseProto
 };
 
-const _make = <const PS extends PlaceHolders.Type>(params: MTypes.Data<Type<PS>>): Type<PS> =>
+const _make = <const PS extends CVPlaceHolders.Type>(params: MTypes.Data<Type<PS>>): Type<PS> =>
 	MTypes.objectFromDataAndProto(proto, params);
 
 /**
@@ -86,7 +82,7 @@ const _make = <const PS extends PlaceHolders.Type>(params: MTypes.Data<Type<PS>>
  *
  * @category Constructors
  */
-export const make = <const PS extends PlaceHolders.Type>(...placeHolders: PS): Type<PS> =>
+export const make = <const PS extends CVPlaceHolders.Type>(...placeHolders: PS): Type<PS> =>
 	_make({ placeHolders });
 
 /**
@@ -94,7 +90,7 @@ export const make = <const PS extends PlaceHolders.Type>(...placeHolders: PS): T
  *
  * @category Destructors
  */
-export const placeHolders: <const PS extends PlaceHolders.Type>(self: Type<PS>) => PS =
+export const placeHolders: <const PS extends CVPlaceHolders.Type>(self: Type<PS>) => PS =
 	Struct.get('placeHolders');
 
 /**
@@ -104,7 +100,7 @@ export const placeHolders: <const PS extends PlaceHolders.Type>(self: Type<PS>) 
  */
 
 export const toParser =
-	<const PS extends PlaceHolders.Type>(
+	<const PS extends CVPlaceHolders.Type>(
 		self: Type<PS>
 	): MTypes.OneArgFunction<
 		string,
@@ -153,7 +149,7 @@ export const toParser =
  *
  * @category Destructors
  */
-export const toFormatter = <const PS extends PlaceHolders.Type>(
+export const toFormatter = <const PS extends CVPlaceHolders.Type>(
 	self: Type<PS>
 ): MTypes.OneArgFunction<
 	{

@@ -111,8 +111,8 @@ export const PositiveRealFromSelf: Schema.Schema<CVPositiveReal.Type> =
 const BigDecimalFromString = (
 	format: CVNumberBase10Format.Type
 ): Schema.Schema<BigDecimal.BigDecimal, string> => {
-	const reader = CVNumberBase10Format.toBigDecimalReader(format);
-	const writer = CVNumberBase10Format.toNumberWriter(format);
+	const reader = CVNumberBase10Format.toBigDecimalParser(format);
+	const writer = CVNumberBase10Format.toNumberFormatter(format);
 	return Schema.transformOrFail(Schema.String, Schema.BigDecimalFromSelf, {
 		strict: true,
 		decode: (input, _options, ast) =>
@@ -139,8 +139,8 @@ export { BigDecimalFromString as BigDecimal };
 export const RealFromString = (
 	format: CVNumberBase10Format.Type
 ): Schema.Schema<CVReal.Type, string> => {
-	const reader = CVNumberBase10Format.toRealReader(format);
-	const writer = CVNumberBase10Format.toNumberWriter(format);
+	const reader = CVNumberBase10Format.toRealParser(format);
+	const writer = CVNumberBase10Format.toNumberFormatter(format);
 	return Schema.transformOrFail(Schema.String, RealFromSelf, {
 		strict: true,
 		decode: (input, _options, ast) =>

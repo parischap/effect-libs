@@ -89,16 +89,15 @@ export type Type<N extends string, T> = Separator.Type | Tag.Type<N, T>;
  *
  * @category Guards
  */
-/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-export const isTag = (u: Type<string, any>): u is Tag.Type<string, unknown> => Tag.has(u);
+export const isTag = <const N extends string, T>(u: Type<N, T>): u is Tag.Type<N, T> => Tag.has(u);
 
 /**
  * Type guard
  *
  * @category Guards
  */
-/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-export const isSeparator = (u: Type<string, any>): u is Separator.Type => Separator.has(u);
+export const isSeparator = <const N extends string, T>(u: Type<N, T>): u is Separator.Type =>
+	Separator.has(u);
 
 /** Namespace for Separator PlaceHolder's. */
 export namespace Separator {

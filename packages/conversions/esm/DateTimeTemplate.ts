@@ -29,6 +29,7 @@ import {
 import * as CVDateTime from './DateTime.js';
 import * as CVNumberBase10Format from './NumberBase10Format.js';
 import * as CVPlaceHolder from './PlaceHolder.js';
+import * as CVPlaceHolders from './PlaceHolders.js';
 import * as CVReal from './Real.js';
 import * as CVTemplate from './Template.js';
 
@@ -49,7 +50,8 @@ type _TypeId = typeof _TypeId;
 export type TagName = 'y' | 'yy' | 'yyyy';
 
 namespace CVPlaceHolderMap {
-	export interface Type extends HashMap.HashMap<TagName, CVPlaceHolder.Type<string, CVReal.Type>> {}
+	export interface Type
+		extends HashMap.HashMap<TagName, CVPlaceHolder.Tag.Type<string, CVReal.Type>> {}
 }
 /**
  * Type that represents the names of the seven days of a week
@@ -543,7 +545,6 @@ export namespace Formatter {
  *
  * @category Models
  */
-
 export interface Type extends MInspectable.Type, Pipeable.Pipeable {
 	/** The Context of this DateTimeTemplate */
 	readonly context: Context.Type;
@@ -552,9 +553,7 @@ export interface Type extends MInspectable.Type, Pipeable.Pipeable {
 	readonly placeHolders: PlaceHolders.Type;
 
 	/** @internal */
-	readonly _template: CVTemplate.Type<
-		ReadonlyArray<CVPlaceHolder.Type<string, string | CVReal.Type>>
-	>;
+	readonly _template: CVTemplate.Type<CVPlaceHolders.Type<CVReal.Type>>;
 
 	readonly [_TypeId]: _TypeId;
 }
@@ -596,7 +595,7 @@ export const make = ({
 	readonly context: Context.Type;
 	readonly placeHolders: ReadonlyArray<PlaceHolder.Type>;
 }): Type => {
-	const getter = (name: TagName): CVPlaceHolder.Type<string, CVReal.Type> =>
+	const getter = (name: TagName): CVPlaceHolder.Tag.Type<string, CVReal.Type> =>
 		pipe(
 			context.placeHolderMap,
 			HashMap.get(name),
@@ -605,7 +604,7 @@ export const make = ({
 			)
 		);
 
-	const template = pipe(
+	const template: CVTemplate.Type<CVPlaceHolders.Type<CVReal.Type>> = pipe(
 		placeHolders,
 		Array.map((p, pos) =>
 			pipe(
@@ -624,9 +623,7 @@ export const make = ({
 	return _make({
 		context,
 		placeHolders,
-		_template: template as CVTemplate.Type<
-			ReadonlyArray<CVPlaceHolder.Type<string, string | CVReal.Type>>
-		>
+		_template: template
 	});
 };
 
@@ -667,69 +664,77 @@ export const toParser = (self: Type): Parser.Type => {
  */
 
 export const toFormatter = (self: Type): Formatter.Type => {
-	const toParts = pipe(
+	const toParts: Record<string, MTypes.OneArgFunction<CVDateTime.Type, number>> = pipe(
 		self._template.placeHolders,
-		Array.map(CVPlaceHolder.Tag.name),
 		Array.filterMap(
 			flow(
 				MMatch.make,
-				flow(
-					MMatch.whenIs(
-						'year',
-						flow(Tuple.make, Tuple.appendElement(CVDateTime.getYear), Option.some)
-					),
-					MMatch.whenIs(
-						'ordinalDay',
-						flow(Tuple.make, Tuple.appendElement(CVDateTime.getOrdinalDay), Option.some)
-					),
-					MMatch.whenIs(
-						'month',
-						flow(Tuple.make, Tuple.appendElement(CVDateTime.getMonth), Option.some)
-					),
-					MMatch.whenIs(
-						'monthDay',
-						flow(Tuple.make, Tuple.appendElement(CVDateTime.getMonthDay), Option.some)
-					),
-					MMatch.whenIs(
-						'isoYear',
-						flow(Tuple.make, Tuple.appendElement(CVDateTime.getIsoYear), Option.some)
-					),
-					MMatch.whenIs(
-						'isoWeek',
-						flow(Tuple.make, Tuple.appendElement(CVDateTime.getIsoWeek), Option.some)
-					),
-					MMatch.whenIs(
-						'weekday',
-						flow(Tuple.make, Tuple.appendElement(CVDateTime.getWeekday), Option.some)
-					),
-					MMatch.whenIs(
-						'hour24',
-						flow(Tuple.make, Tuple.appendElement(CVDateTime.getHour24), Option.some)
-					),
-					MMatch.whenIs(
-						'hour12',
-						flow(Tuple.make, Tuple.appendElement(CVDateTime.getHour12), Option.some)
+				MMatch.when(CVPlaceHolder.isSeparator, () => Option.none()),
+				MMatch.when(
+					CVPlaceHolder.isTag,
+					flow(
+						CVPlaceHolder.Tag.name,
+						MMatch.make,
+						flow(
+							MMatch.whenIs(
+								'year',
+								flow(Tuple.make, Tuple.appendElement(CVDateTime.getYear), Option.some)
+							),
+							MMatch.whenIs(
+								'ordinalDay',
+								flow(Tuple.make, Tuple.appendElement(CVDateTime.getOrdinalDay), Option.some)
+							),
+							MMatch.whenIs(
+								'month',
+								flow(Tuple.make, Tuple.appendElement(CVDateTime.getMonth), Option.some)
+							),
+							MMatch.whenIs(
+								'monthDay',
+								flow(Tuple.make, Tuple.appendElement(CVDateTime.getMonthDay), Option.some)
+							),
+							MMatch.whenIs(
+								'isoYear',
+								flow(Tuple.make, Tuple.appendElement(CVDateTime.getIsoYear), Option.some)
+							),
+							MMatch.whenIs(
+								'isoWeek',
+								flow(Tuple.make, Tuple.appendElement(CVDateTime.getIsoWeek), Option.some)
+							),
+							MMatch.whenIs(
+								'weekday',
+								flow(Tuple.make, Tuple.appendElement(CVDateTime.getWeekday), Option.some)
+							),
+							MMatch.whenIs(
+								'hour24',
+								flow(Tuple.make, Tuple.appendElement(CVDateTime.getHour24), Option.some)
+							),
+							MMatch.whenIs(
+								'hour12',
+								flow(Tuple.make, Tuple.appendElement(CVDateTime.getHour12), Option.some)
+							)
+						),
+						MMatch.whenIs(
+							'meridiem',
+							flow(Tuple.make, Tuple.appendElement(CVDateTime.getMeridiem), Option.some)
+						),
+						MMatch.whenIs(
+							'minute',
+							flow(Tuple.make, Tuple.appendElement(CVDateTime.getMinute), Option.some)
+						),
+						MMatch.whenIs(
+							'second',
+							flow(Tuple.make, Tuple.appendElement(CVDateTime.getSecond), Option.some)
+						),
+						MMatch.whenIs(
+							'millisecond',
+							flow(Tuple.make, Tuple.appendElement(CVDateTime.getMillisecond), Option.some)
+						),
+						MMatch.orElse(() => Option.none())
 					)
 				),
-				MMatch.whenIs(
-					'meridiem',
-					flow(Tuple.make, Tuple.appendElement(CVDateTime.getMeridiem), Option.some)
-				),
-				MMatch.whenIs(
-					'minute',
-					flow(Tuple.make, Tuple.appendElement(CVDateTime.getMinute), Option.some)
-				),
-				MMatch.whenIs(
-					'second',
-					flow(Tuple.make, Tuple.appendElement(CVDateTime.getSecond), Option.some)
-				),
-				MMatch.whenIs(
-					'millisecond',
-					flow(Tuple.make, Tuple.appendElement(CVDateTime.getMillisecond), Option.some)
-				),
-				MMatch.orElse(() => Option.none())
+				MMatch.exhaustive
 			) as MTypes.OneArgFunction<
-				string,
+				CVPlaceHolder.Type<string, CVReal.Type>,
 				Option.Option<readonly [string, MTypes.OneArgFunction<CVDateTime.Type, number>]>
 			>
 		),
