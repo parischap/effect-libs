@@ -98,7 +98,7 @@ Separator at position 6: ' ',
 		it('Same placeholder receives different values', () => {
 			TEUtils.assertLeftMessage(
 				parser('25/12/2025 13'),
-				"'MM' placeholder is present twice in template and receives differing values '12' and '13'"
+				"'MM' placeholder is present more than onece in template and receives differing values '12' and '13'"
 			);
 		});
 

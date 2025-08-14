@@ -148,27 +148,35 @@ describe('CVDateTimeFormat', () => {
 			const parser = CVDateTimeFormat.toParser(exhaustiveFormat);
 			it('Non matching', () => {
 				TEUtils.assertLeftMessage(
-					parser('2025-13-01T22:54:12,543'),
-					"Expected 'month' to be between 1 and 12 included. Actual: 13"
+					parser(
+						'2025 2520252026 26202612 12DecDecember1 0130 30364 3641 MonMondayPM13 131 015 0553 53234 234'
+					),
+					"Expected 'monthDay' to be: 29. Actual: 30"
+				);
+				TEUtils.assertLeftMessage(
+					parser(
+						'2025 2520252026 26202612 12DecDecember1 0130 30364 3642 TueMondayPM13 131 015 0553 53234 234'
+					),
+					"'weekday' placeholder is present more than once in template and receives differing values '2' and '1'"
 				);
 			});
 
 			it('Matching', () => {
 				TEUtils.assertRight(
 					pipe(
-						'2025 2520252026 26202612 12DecDecember1 01',
+						'2025 2520252026 26202612 12DecDecember1 0130 30364 3642 TueTuesdayPM13 131 015 0553 53234 234',
 						parser,
 						Either.map(CVDateTime.timestamp)
 					),
-					Date.UTC(2025, 11, 1, 22, 54, 12, 543) - localTimeZoneOffsetMs
+					Date.UTC(2025, 11, 30, 13, 5, 53, 234) - localTimeZoneOffsetMs
 				);
 			});
 		});
 	});
 
 	describe('toFormatter', () => {
-		describe('Exhaustive Format', () => {
-			const formatter = CVDateTimeFormat.toFormatter(exhaustiveFormat);
+		describe('iso Format', () => {
+			const formatter = CVDateTimeFormat.toFormatter(isoFormat);
 			it('Non matching', () => {
 				TEUtils.assertLeftMessage(
 					formatter(CVDateTime.unsafeFromParts({ year: 10024 })),
@@ -180,6 +188,28 @@ describe('CVDateTimeFormat', () => {
 				TEUtils.assertRight(
 					pipe(formatter(CVDateTime.unsafeFromParts({ year: 2025, month: 8, monthDay: 13 }))),
 					'2025-08-13T00:00:00,000'
+				);
+			});
+		});
+
+		describe('Exhaustive Format', () => {
+			const formatter = CVDateTimeFormat.toFormatter(exhaustiveFormat);
+
+			it('Non matching', () => {
+				TEUtils.assertLeftMessage(
+					formatter(CVDateTime.unsafeFromParts({ year: 2025, month: 2, monthDay: 29 })),
+					"Expected length of 'year' placeholder to be: 4. Actual: 5"
+				);
+			});
+
+			it('Matching', () => {
+				TEUtils.assertRight(
+					pipe(
+						formatter(
+							CVDateTime.unsafeFromParts({ year: 2025, month: 2, monthDay: 28, minute: 54 })
+						)
+					),
+					'2025 2520252025 2520252 02FebFebruary9 0928 2859 0595 FriFridayAM0 000 0054 540 000 000'
 				);
 			});
 		});

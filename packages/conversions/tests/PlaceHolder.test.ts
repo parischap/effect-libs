@@ -240,7 +240,7 @@ describe('CVPlaceholder', () => {
 				it('Not passing', () => {
 					TEUtils.assertLeftMessage(
 						placeholder.parser(''),
-						"'foo' placeholder contains '' from the start of which a French-style three-decimal number could not be extracted"
+						"'foo' placeholder contains '' from the start of which a(n) French-style three-decimal number could not be extracted"
 					);
 					TEUtils.assertLeft(placeholder.parser('1 014,1254 and foo'));
 				});

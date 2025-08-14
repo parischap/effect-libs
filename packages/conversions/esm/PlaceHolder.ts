@@ -483,7 +483,7 @@ export namespace Tag {
 					Either.fromOption(
 						() =>
 							new MInputError.Type({
-								message: `${label} contains '${text}' from the start of which a ${numberBase10Format.descriptor} could not be extracted`
+								message: `${label} contains '${text}' from the start of which a(n) ${numberBase10Format.descriptor} could not be extracted`
 							})
 					),
 					Either.map(Tuple.mapSecond(flow(String.length, flippedTakeRightBut(text))))

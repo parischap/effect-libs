@@ -160,7 +160,7 @@ export const toParser =
 						if (!Equal.equals(oldValue, consumed))
 							yield* Either.left(
 								new MInputError.Type({
-									message: `'${name}' placeholder is present twice in template and receives differing values '${MString.fromUnknown(oldValue)}' and '${MString.fromUnknown(consumed)}'`
+									message: `'${name}' placeholder is present more than once in template and receives differing values '${MString.fromUnknown(oldValue)}' and '${MString.fromUnknown(consumed)}'`
 								})
 							);
 					}
