@@ -197,8 +197,8 @@ describe('CVDateTimeFormat', () => {
 
 			it('Non matching', () => {
 				TEUtils.assertLeftMessage(
-					formatter(CVDateTime.unsafeFromParts({ year: 2025, month: 2, monthDay: 29 })),
-					"Expected length of 'year' placeholder to be: 4. Actual: 5"
+					formatter(CVDateTime.unsafeFromParts({ year: 1925, month: 2, monthDay: 28 })),
+					"Expected 'year' placeholder to be between 2000 and 2099 included. Actual: 1925"
 				);
 			});
 
