@@ -1425,24 +1425,24 @@ const _params = {
 };
 
 const _tag = CVPlaceholder.Tag.fixedLengthToReal;
-const _sep = CVPlaceholder.Separator.make;
+const _sep = CVPlaceholder.Separator;
 const _dateFormatter = flow(
 	CVTemplate.toFormatter(
 		CVTemplate.make(
 			_tag({ ..._params, name: 'yyyy', length: 4 }),
-			_sep({ pos: 2, value: '-' }),
+			_sep.hyphen,
 			_tag({ ..._params, name: 'MM', length: 2 }),
-			_sep({ pos: 4, value: '-' }),
+			_sep.hyphen,
 			_tag({ ..._params, name: 'dd', length: 2 }),
-			_sep({ pos: 6, value: ' ' }),
+			_sep.space,
 			_tag({ ..._params, name: 'HH', length: 2 }),
-			_sep({ pos: 8, value: ':' }),
+			_sep.colon,
 			_tag({ ..._params, name: 'mm', length: 2 }),
-			_sep({ pos: 10, value: ':' }),
+			_sep.colon,
 			_tag({ ..._params, name: 'ss', length: 2 }),
-			_sep({ pos: 12, value: ':' }),
+			_sep.colon,
 			_tag({ ..._params, name: 'SSS', length: 3 }),
-			_sep({ pos: 14, value: ' GMT' }),
+			_sep.make(' GMT'),
 			CVPlaceholder.Tag.mappedLiterals({
 				name: 'zoneSign',
 				keyValuePairs: [

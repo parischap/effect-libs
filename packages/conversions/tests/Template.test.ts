@@ -14,11 +14,11 @@ describe('CVTemplate', () => {
 	};
 	const template = CVTemplate.make(
 		CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'dd', length: 2 }),
-		CVPlaceholder.Separator.make({ pos: 2, value: '/' }),
+		CVPlaceholder.Separator.make('/'),
 		CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'MM', length: 2 }),
-		CVPlaceholder.Separator.make({ pos: 4, value: '/' }),
+		CVPlaceholder.Separator.make('/'),
 		CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'yyyy', length: 4 }),
-		CVPlaceholder.Separator.make({ pos: 6, value: ' ' }),
+		CVPlaceholder.Separator.make(' '),
 		CVPlaceholder.Tag.real({ ...params, name: 'MM' })
 	);
 
@@ -34,18 +34,15 @@ describe('CVTemplate', () => {
 		it('.toString()', () => {
 			TEUtils.strictEqual(
 				template.toString(),
-				`{
-  "_id": "@parischap/conversions/Template/",
-  "placeholders": [
-    "'dd' placeholder: 2-character string left-padded with '0' to integer",
-    "'/' separator at position 2",
-    "'MM' placeholder: 2-character string left-padded with '0' to integer",
-    "'/' separator at position 4",
-    "'yyyy' placeholder: 4-character string left-padded with '0' to integer",
-    "' ' separator at position 6",
-    "'MM' placeholder: integer"
-  ]
-}`
+				`[
+'dd' placeholder: 2-character string left-padded with '0' to integer,
+Separator at position 2: '/',
+'MM' placeholder: 2-character string left-padded with '0' to integer,
+Separator at position 4: '/',
+'yyyy' placeholder: 4-character string left-padded with '0' to integer,
+Separator at position 6: ' ',
+'MM' placeholder: integer
+]`
 			);
 		});
 

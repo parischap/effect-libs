@@ -37,7 +37,7 @@ import * as CVTemplate from './Template.js';
  *
  * @category Module tag
  */
-export const moduleTag = '@parischap/conversions/DateTimeTemplate/';
+export const moduleTag = '@parischap/conversions/DateTimeFormat/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
@@ -172,7 +172,7 @@ export namespace Placeholder {
 		type _TypeId = typeof _TypeId;
 
 		/**
-		 * Type that represents a DateTimePlaceholder
+		 * Type that represents a Tag
 		 *
 		 * @category Model
 		 */
@@ -205,7 +205,7 @@ export namespace Placeholder {
 		const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
 
 		/**
-		 * DateTimePlaceholder constructor
+		 * Tag constructor
 		 *
 		 * @category Constructors
 		 */
@@ -263,7 +263,7 @@ export namespace Placeholder {
 		const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
 
 		/**
-		 * DateTimePlaceholder constructor
+		 * Tag constructor
 		 *
 		 * @category Constructors
 		 */
@@ -275,6 +275,55 @@ export namespace Placeholder {
 		 * @category Destructors
 		 */
 		export const value: MTypes.OneArgFunction<Type, string> = Struct.get('value');
+
+		/**
+		 * Slash Separator instance
+		 *
+		 * @category Instances
+		 */
+		export const slash: Type = make('/');
+
+		/**
+		 * Backslash Separator instance
+		 *
+		 * @category Instances
+		 */
+		export const backslash: Type = make('\\');
+
+		/**
+		 * Dot Separator instance
+		 *
+		 * @category Instances
+		 */
+		export const dot: Type = make('.');
+
+		/**
+		 * Hyphen Separator instance
+		 *
+		 * @category Instances
+		 */
+		export const hyphen: Type = make('-');
+
+		/**
+		 * Colon Separator instance
+		 *
+		 * @category Instances
+		 */
+		export const colon: Type = make(':');
+
+		/**
+		 * Comma Separator instance
+		 *
+		 * @category Instances
+		 */
+		export const comma: Type = make(',');
+
+		/**
+		 * Space Separator instance
+		 *
+		 * @category Instances
+		 */
+		export const space: Type = make(' ');
 	}
 }
 
@@ -288,7 +337,7 @@ export namespace Placeholders {
 }
 
 /**
- * Namespace for the context of a DateTimeTemplate.
+ * Namespace for the context of a DateTimeFormat.
  *
  * @category Models
  */
@@ -556,8 +605,8 @@ export namespace Context {
 	const _extractMonth = _extractType('month');
 
 	/**
-	 * Tries to build a DateTimeTemplate from locale `locale`. Returns a `some` if successful.
-	 * Otherwise (non-existent or unavailable locale,...), returns a `none`
+	 * Tries to build a DateTimeFormat from locale `locale`. Returns a `some` if successful. Otherwise
+	 * (non-existent or unavailable locale,...), returns a `none`
 	 *
 	 * @category Constructors
 	 */
@@ -632,13 +681,13 @@ export namespace Context {
 }
 
 /**
- * Namespace of a DateTimeTemplate Parser
+ * Namespace of a DateTimeFormat Parser
  *
  * @category Models
  */
 export namespace Parser {
 	/**
-	 * Type that describes a DateTimeTemplate Parser
+	 * Type that describes a DateTimeFormat Parser
 	 *
 	 * @category Models
 	 */
@@ -647,13 +696,13 @@ export namespace Parser {
 }
 
 /**
- * Namespace of a DateTimeTemplate Formatter
+ * Namespace of a DateTimeFormat Formatter
  *
  * @category Models
  */
 export namespace Formatter {
 	/**
-	 * Type that describes a DateTimeTemplate Formatter
+	 * Type that describes a DateTimeFormat Formatter
 	 *
 	 * @category Models
 	 */
@@ -662,15 +711,15 @@ export namespace Formatter {
 }
 
 /**
- * Type that represents a DateTimeTemplate.
+ * Type that represents a DateTimeFormat.
  *
  * @category Models
  */
 export interface Type extends MInspectable.Type, Pipeable.Pipeable {
-	/** The Context of this DateTimeTemplate */
+	/** The Context of this DateTimeFormat */
 	readonly context: Context.Type;
 
-	/** The array of Placeholder's contituting this DateTimeTemplate */
+	/** The array of Placeholder's contituting this DateTimeFormat */
 	readonly placeholders: Placeholders.Type;
 
 	/** @internal */
@@ -705,7 +754,7 @@ const proto: MTypes.Proto<Type> = {
 const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
 
 /**
- * Builds a DateTimeTemplate from a Context `context` and an array of Placeholder's `placeholders`
+ * Builds a DateTimeFormat from a Context `context` and an array of Placeholder's `placeholders`
  *
  * @category Constructors
  */
@@ -727,18 +776,15 @@ export const make = ({
 
 	const template: CVTemplate.Type<CVPlaceholders.Type<CVReal.Type>> = pipe(
 		placeholders,
-		Array.map((p, pos) =>
-			pipe(
-				p,
+		Array.map(
+			flow(
 				MMatch.make,
 				MMatch.when(Placeholder.isTag, flow(Placeholder.Tag.name, getter)),
-				MMatch.when(Placeholder.isSeparator, ({ value }) =>
-					CVPlaceholder.Separator.make({ pos: pos + 1, value })
-				),
+				MMatch.when(Placeholder.isSeparator, ({ value }) => CVPlaceholder.Separator.make(value)),
 				MMatch.exhaustive
 			)
 		),
-		(p) => CVTemplate.make(...p)
+		Function.tupled(CVTemplate.make)
 	);
 
 	return _make({

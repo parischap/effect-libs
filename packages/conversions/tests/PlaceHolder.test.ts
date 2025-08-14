@@ -6,7 +6,7 @@ import { Tuple } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('CVPlaceholder', () => {
-	const separator = CVPlaceholder.Separator.make({ pos: 1, value: 'foo' });
+	const separator = CVPlaceholder.Separator.make('foo');
 	const threeChars = CVPlaceholder.Tag.fixedLength({ name: 'foo', length: 3 });
 
 	describe('Tag, prototype and guards', () => {
@@ -42,7 +42,7 @@ describe('CVPlaceholder', () => {
 			});
 
 			it('.toString()', () => {
-				TEUtils.strictEqual(separator.toString(), "'foo' separator at position 1");
+				TEUtils.strictEqual(separator.toString(), 'foo');
 			});
 
 			describe('has', () => {
@@ -56,16 +56,17 @@ describe('CVPlaceholder', () => {
 		});
 
 		describe('Parsing', () => {
+			const parser = separator.parser(1);
 			it('Not starting by value', () => {
 				TEUtils.assertLeftMessage(
-					separator.parser(''),
+					parser(''),
 					"Expected remaining text for separator at position 1 to start with 'foo'. Actual: ''"
 				);
-				TEUtils.assertLeft(separator.parser('fo1 and bar'));
+				TEUtils.assertLeft(parser('fo1 and bar'));
 			});
 
 			it('Passing', () => {
-				TEUtils.assertRight(separator.parser('foo and bar'), Tuple.make('foo', ' and bar'));
+				TEUtils.assertRight(parser('foo and bar'), ' and bar');
 			});
 		});
 

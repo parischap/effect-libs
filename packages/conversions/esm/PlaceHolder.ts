@@ -111,11 +111,11 @@ export namespace Separator {
 	 * @category Models
 	 */
 	export interface Type extends MInspectable.Type, Pipeable.Pipeable {
-		/** Descriptor of this Separator Placeholder */
-		readonly descriptor: string;
+		/** The string representing this separator */
+		readonly value: string;
 
 		/** Parser of this Separator Placeholder */
-		readonly parser: Parser.Type<string>;
+		readonly parser: (pos: number) => (text: string) => Either.Either<string, MInputError.Type>;
 
 		/** Formatter of this Separator Placeholder */
 		readonly formatter: Function.LazyArg<string>;
@@ -135,7 +135,7 @@ export namespace Separator {
 	const proto: MTypes.Proto<Type> = {
 		[_TypeId]: _TypeId,
 		[MInspectable.IdSymbol](this: Type) {
-			return this.descriptor;
+			return this.value;
 		},
 		...MInspectable.BaseProto(moduleTag),
 		...MPipeable.BaseProto
@@ -148,22 +148,68 @@ export namespace Separator {
 	 *
 	 * @category Constructors
 	 */
-	export const make = ({ pos, value }: { readonly pos: number; readonly value: string }): Type => {
-		const label = `separator at position ${pos}`;
-		return _make({
-			descriptor: `'${value}' ${label}`,
-			parser: flow(
-				MInputError.assertStartsWith({
-					startString: value,
-					name: `remaining text for ${label}`
-				}),
-				Either.map(
-					flow(MString.takeRightBut(value.length), Tuple.make, MTuple.prependElement(value))
-				)
-			),
+	export const make = (value: string): Type =>
+		_make({
+			value,
+			parser: (pos) =>
+				flow(
+					MInputError.assertStartsWith({
+						startString: value,
+						name: `remaining text for separator at position ${pos}`
+					}),
+					Either.map(MString.takeRightBut(value.length))
+				),
 			formatter: Function.constant(value)
 		});
-	};
+
+	/**
+	 * Slash Separator instance
+	 *
+	 * @category Instances
+	 */
+	export const slash: Type = make('/');
+
+	/**
+	 * Backslash Separator instance
+	 *
+	 * @category Instances
+	 */
+	export const backslash: Type = make('\\');
+
+	/**
+	 * Dot Separator instance
+	 *
+	 * @category Instances
+	 */
+	export const dot: Type = make('.');
+
+	/**
+	 * Hyphen Separator instance
+	 *
+	 * @category Instances
+	 */
+	export const hyphen: Type = make('-');
+
+	/**
+	 * Colon Separator instance
+	 *
+	 * @category Instances
+	 */
+	export const colon: Type = make(':');
+
+	/**
+	 * Comma Separator instance
+	 *
+	 * @category Instances
+	 */
+	export const comma: Type = make(',');
+
+	/**
+	 * Space Separator instance
+	 *
+	 * @category Instances
+	 */
+	export const space: Type = make(' ');
 }
 
 /** Namespace for Tag Placeholder's. */

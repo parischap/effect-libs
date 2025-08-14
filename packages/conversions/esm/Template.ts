@@ -21,11 +21,18 @@
  * Would not work as the first NumberFromString combinator would read the whole date.
  */
 
-import { MInputError, MInspectable, MPipeable, MString, MTypes } from '@parischap/effect-lib';
 import {
+	MInputError,
+	MInspectable,
+	MMatch,
+	MPipeable,
+	MString,
+	MTypes
+} from '@parischap/effect-lib';
+import {
+	Array,
 	Either,
 	Equal,
-	Inspectable,
 	Option,
 	pipe,
 	Pipeable,
@@ -48,7 +55,7 @@ type _TypeId = typeof _TypeId;
  */
 
 export interface Type<out PS extends CVPlaceholders.Type>
-	extends Inspectable.Inspectable,
+	extends MInspectable.Type,
 		Pipeable.Pipeable {
 	/** Array of the Placeholder's composing this template */
 	readonly placeholders: PS;
@@ -70,6 +77,26 @@ export const has = (u: unknown): u is Type<ReadonlyArray<CVPlaceholder.Type<stri
 /** Prototype */
 const proto: MTypes.Proto<Type<never>> = {
 	[_TypeId]: { _P: MTypes.covariantValue },
+	[MInspectable.IdSymbol](this: Type<CVPlaceholders.Type>) {
+		return pipe(
+			this.placeholders,
+			Array.map((p, pos) =>
+				pipe(
+					p,
+					MMatch.make,
+					MMatch.when(CVPlaceholder.isTag, (tag) => tag.toString()),
+					MMatch.when(
+						CVPlaceholder.isSeparator,
+						(sep) => `Separator at position ${pos + 1}: '${sep.toString()}'`
+					),
+					MMatch.exhaustive
+				)
+			),
+			Array.join(',\n'),
+			MString.prepend('[\n'),
+			MString.append('\n]')
+		);
+	},
 	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto
 };
@@ -117,10 +144,13 @@ export const toParser =
 		Either.gen(function* () {
 			let consumed: unknown;
 			const result = Record.empty<string, unknown>();
-			for (const placeholder of self.placeholders) {
-				/* eslint-disable-next-line functional/no-expression-statements, @typescript-eslint/no-unsafe-assignment */
-				[consumed, text] = yield* placeholder.parser(text);
+			const placeholders = self.placeholders;
+
+			for (let pos = 0; pos < placeholders.length; pos++) {
+				const placeholder = placeholders[pos] as CVPlaceholder.Type<string, unknown>;
 				if (CVPlaceholder.isTag(placeholder)) {
+					/* eslint-disable-next-line functional/no-expression-statements */
+					[consumed, text] = yield* placeholder.parser(text);
 					const name = placeholder.name;
 					if (!(name in result))
 						/* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements,  */
@@ -134,7 +164,9 @@ export const toParser =
 								})
 							);
 					}
-				}
+				} else
+					/* eslint-disable-next-line functional/no-expression-statements */
+					text = yield* placeholder.parser(pos + 1)(text);
 			}
 
 			yield* pipe(text, MInputError.assertEmpty({ name: 'text not consumed by template' }));
