@@ -28,13 +28,17 @@ describe('CVDateTimeTemplate', () => {
 				});
 			});
 		});
+
+		it('fromLocale', () => {
+			TEUtils.assertSome(CVDateTimeTemplate.Context.fromLocale('en-US'));
+		});
 	});
 
-	const tag = CVDateTimeTemplate.PlaceHolder.Tag.make;
-	const sep = CVDateTimeTemplate.PlaceHolder.Separator.make;
+	const tag = CVDateTimeTemplate.Placeholder.Tag.make;
+	const sep = CVDateTimeTemplate.Placeholder.Separator.make;
 	const template = CVDateTimeTemplate.make({
 		context: usContext,
-		placeHolders: [tag('y'), sep('/'), tag('yyyy')]
+		placeholders: [tag('y'), sep('/'), tag('yyyy')]
 	});
 
 	describe('Tag, prototype and guards', () => {
@@ -83,7 +87,10 @@ describe('CVDateTimeTemplate', () => {
 	describe('toFormatter', () => {
 		const formatter = CVDateTimeTemplate.toFormatter(template);
 		it('Non matching', () => {
-			TEUtils.assertLeftMessage(formatter(CVDateTime.unsafeFromParts({ year: 10024 })), '');
+			TEUtils.assertLeftMessage(
+				formatter(CVDateTime.unsafeFromParts({ year: 10024 })),
+				"Expected length of 'year' placeholder to be: 4. Actual: 5"
+			);
 		});
 
 		it('Matching', () => {

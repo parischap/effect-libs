@@ -1,13 +1,13 @@
 /**
  * This module implements a Template type, i.e. a tool that permits reading from/writing into a text
- * made up of several PlaceHolder's (see PlaceHolder.ts). For instance a date in the form dd/MM/YYYY
- * would be templated with five PlaceHolder's:
+ * made up of several Placeholder's (see Placeholder.ts). For instance a date in the form dd/MM/YYYY
+ * would be templated with five Placeholder's:
  *
- * - A fixedLength PlaceHolder with a length of 2
- * - A literal PlaceHolder containing the string '/'
- * - A fixedLength PlaceHolder with a length of 2
- * - A literal PlaceHolder containing the string '/'
- * - A fixedLength PlaceHolder with a length of 4
+ * - A fixedLength Placeholder with a length of 2
+ * - A literal Placeholder containing the string '/'
+ * - A fixedLength Placeholder with a length of 2
+ * - A literal Placeholder containing the string '/'
+ * - A fixedLength Placeholder with a length of 4
  *
  * Note that Effect does provide the Schema.TemplateLiteralParser API which partly addresses the
  * same problems. But there are some limitations to that API. For instance, template literal types
@@ -34,8 +34,8 @@ import {
 	Struct,
 	Types
 } from 'effect';
-import * as CVPlaceHolder from './PlaceHolder.js';
-import * as CVPlaceHolders from './PlaceHolders.js';
+import * as CVPlaceholder from './Placeholder.js';
+import * as CVPlaceholders from './Placeholders.js';
 
 export const moduleTag = '@parischap/conversions/Template/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
@@ -47,11 +47,11 @@ type _TypeId = typeof _TypeId;
  * @category Models
  */
 
-export interface Type<out PS extends CVPlaceHolders.Type>
+export interface Type<out PS extends CVPlaceholders.Type>
 	extends Inspectable.Inspectable,
 		Pipeable.Pipeable {
-	/** Array of the PlaceHolder's composing this template */
-	readonly placeHolders: PS;
+	/** Array of the Placeholder's composing this template */
+	readonly placeholders: PS;
 
 	/** @internal */
 	readonly [_TypeId]: {
@@ -64,7 +64,7 @@ export interface Type<out PS extends CVPlaceHolders.Type>
  *
  * @category Guards
  */
-export const has = (u: unknown): u is Type<ReadonlyArray<CVPlaceHolder.Type<string, unknown>>> =>
+export const has = (u: unknown): u is Type<ReadonlyArray<CVPlaceholder.Type<string, unknown>>> =>
 	Predicate.hasProperty(u, _TypeId);
 
 /** Prototype */
@@ -74,7 +74,7 @@ const proto: MTypes.Proto<Type<never>> = {
 	...MPipeable.BaseProto
 };
 
-const _make = <const PS extends CVPlaceHolders.Type>(params: MTypes.Data<Type<PS>>): Type<PS> =>
+const _make = <const PS extends CVPlaceholders.Type>(params: MTypes.Data<Type<PS>>): Type<PS> =>
 	MTypes.objectFromDataAndProto(proto, params);
 
 /**
@@ -82,16 +82,16 @@ const _make = <const PS extends CVPlaceHolders.Type>(params: MTypes.Data<Type<PS
  *
  * @category Constructors
  */
-export const make = <const PS extends CVPlaceHolders.Type>(...placeHolders: PS): Type<PS> =>
-	_make({ placeHolders });
+export const make = <const PS extends CVPlaceholders.Type>(...placeholders: PS): Type<PS> =>
+	_make({ placeholders });
 
 /**
- * Returns the `placeHolders` property of `self`
+ * Returns the `placeholders` property of `self`
  *
  * @category Destructors
  */
-export const placeHolders: <const PS extends CVPlaceHolders.Type>(self: Type<PS>) => PS =
-	Struct.get('placeHolders');
+export const placeholders: <const PS extends CVPlaceholders.Type>(self: Type<PS>) => PS =
+	Struct.get('placeholders');
 
 /**
  * Returns a function that parses a text into a record according to 'self' .
@@ -100,15 +100,15 @@ export const placeHolders: <const PS extends CVPlaceHolders.Type>(self: Type<PS>
  */
 
 export const toParser =
-	<const PS extends CVPlaceHolders.Type>(
+	<const PS extends CVPlaceholders.Type>(
 		self: Type<PS>
 	): MTypes.OneArgFunction<
 		string,
 		Either.Either<
 			{
-				readonly [k in keyof MTypes.ArrayKeys<PS> as PS[k] extends CVPlaceHolder.Tag.All ?
-					CVPlaceHolder.Tag.ExtractName<PS[k]>
-				:	never]: PS[k] extends CVPlaceHolder.Tag.All ? CVPlaceHolder.Tag.ExtractType<PS[k]> : never;
+				readonly [k in keyof MTypes.ArrayKeys<PS> as PS[k] extends CVPlaceholder.Tag.All ?
+					CVPlaceholder.Tag.ExtractName<PS[k]>
+				:	never]: PS[k] extends CVPlaceholder.Tag.All ? CVPlaceholder.Tag.ExtractType<PS[k]> : never;
 			},
 			MInputError.Type
 		>
@@ -117,11 +117,11 @@ export const toParser =
 		Either.gen(function* () {
 			let consumed: unknown;
 			const result = Record.empty<string, unknown>();
-			for (const placeHolder of self.placeHolders) {
+			for (const placeholder of self.placeholders) {
 				/* eslint-disable-next-line functional/no-expression-statements, @typescript-eslint/no-unsafe-assignment */
-				[consumed, text] = yield* placeHolder.parser(text);
-				if (CVPlaceHolder.isTag(placeHolder)) {
-					const name = placeHolder.name;
+				[consumed, text] = yield* placeholder.parser(text);
+				if (CVPlaceholder.isTag(placeholder)) {
+					const name = placeholder.name;
 					if (!(name in result))
 						/* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements,  */
 						result[name] = consumed;
@@ -144,18 +144,18 @@ export const toParser =
 
 /**
  * Returns a function that formats an object into the template represented by 'self' . When
- * strictMode is false, the formatter function of the placeHolder's is replaced by the Either.right
+ * strictMode is false, the formatter function of the placeholder's is replaced by the Either.right
  * function, i.e. no checks are carried out when encoding
  *
  * @category Destructors
  */
-export const toFormatter = <const PS extends CVPlaceHolders.Type>(
+export const toFormatter = <const PS extends CVPlaceholders.Type>(
 	self: Type<PS>
 ): MTypes.OneArgFunction<
 	{
-		readonly [k in keyof MTypes.ArrayKeys<PS> as PS[k] extends CVPlaceHolder.Tag.All ?
-			CVPlaceHolder.Tag.ExtractName<PS[k]>
-		:	never]: PS[k] extends CVPlaceHolder.Tag.All ? CVPlaceHolder.Tag.ExtractType<PS[k]> : never;
+		readonly [k in keyof MTypes.ArrayKeys<PS> as PS[k] extends CVPlaceholder.Tag.All ?
+			CVPlaceholder.Tag.ExtractName<PS[k]>
+		:	never]: PS[k] extends CVPlaceholder.Tag.All ? CVPlaceholder.Tag.ExtractType<PS[k]> : never;
 	},
 	Either.Either<string, MInputError.Type>
 > => {
@@ -163,12 +163,12 @@ export const toFormatter = <const PS extends CVPlaceHolders.Type>(
 		Either.gen(function* () {
 			let result = '';
 
-			for (const placeHolder of self.placeHolders) {
-				if (CVPlaceHolder.isSeparator(placeHolder)) {
+			for (const placeholder of self.placeholders) {
+				if (CVPlaceholder.isSeparator(placeholder)) {
 					/* eslint-disable-next-line functional/no-expression-statements */
-					result += placeHolder.formatter();
+					result += placeholder.formatter();
 				} else {
-					const name = placeHolder.name;
+					const name = placeholder.name;
 					const value = pipe(
 						record as Record<string, unknown>,
 						Record.get(name),
@@ -178,7 +178,7 @@ export const toFormatter = <const PS extends CVPlaceHolders.Type>(
 						)
 					);
 					/* eslint-disable-next-line functional/no-expression-statements */
-					result += yield* placeHolder.formatter(value);
+					result += yield* placeholder.formatter(value);
 				}
 			}
 

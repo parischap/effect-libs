@@ -1,5 +1,5 @@
 /* eslint-disable functional/no-expression-statements */
-import { CVNumberBase10Format, CVPlaceHolder, CVReal, CVTemplate } from '@parischap/conversions';
+import { CVNumberBase10Format, CVPlaceholder, CVReal, CVTemplate } from '@parischap/conversions';
 import { MInputError, MString, MTypes } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
 import { Either } from 'effect';
@@ -13,13 +13,13 @@ describe('CVTemplate', () => {
 		numberBase10Format: CVNumberBase10Format.integer
 	};
 	const template = CVTemplate.make(
-		CVPlaceHolder.Tag.fixedLengthToReal({ ...params, name: 'dd', length: 2 }),
-		CVPlaceHolder.Separator.make({ pos: 2, value: '/' }),
-		CVPlaceHolder.Tag.fixedLengthToReal({ ...params, name: 'MM', length: 2 }),
-		CVPlaceHolder.Separator.make({ pos: 4, value: '/' }),
-		CVPlaceHolder.Tag.fixedLengthToReal({ ...params, name: 'yyyy', length: 4 }),
-		CVPlaceHolder.Separator.make({ pos: 6, value: ' ' }),
-		CVPlaceHolder.Tag.real({ ...params, name: 'MM' })
+		CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'dd', length: 2 }),
+		CVPlaceholder.Separator.make({ pos: 2, value: '/' }),
+		CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'MM', length: 2 }),
+		CVPlaceholder.Separator.make({ pos: 4, value: '/' }),
+		CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'yyyy', length: 4 }),
+		CVPlaceholder.Separator.make({ pos: 6, value: ' ' }),
+		CVPlaceholder.Tag.real({ ...params, name: 'MM' })
 	);
 
 	describe('Tag, prototype and guards', () => {
@@ -36,7 +36,7 @@ describe('CVTemplate', () => {
 				template.toString(),
 				`{
   "_id": "@parischap/conversions/Template/",
-  "placeHolders": [
+  "placeholders": [
     "'dd' placeholder: 2-character string left-padded with '0' to integer",
     "'/' separator at position 2",
     "'MM' placeholder: 2-character string left-padded with '0' to integer",

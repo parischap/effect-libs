@@ -1,15 +1,15 @@
 /**
- * This module implements a PlaceHolder type. PlaceHolder's are the constituents of Template's (see
+ * This module implements a Placeholder type. Placeholder's are the constituents of Template's (see
  * Template.ts).
  *
- * Each PlaceHolder defines a parser and a formatter:
+ * Each Placeholder defines a parser and a formatter:
  *
  * - The parser takes a string, consumes what it can from that string that is coherent with the
- *   PlaceHolder, optionnally converts the parsed part to a value of type N and, if successful,
+ *   Placeholder, optionnally converts the parsed part to a value of type N and, if successful,
  *   returns a right of that value and of what remains to be parsed. In case of an error, it returns
  *   a left.
  * - The formatter takes a value of type N, converts it to a string (if N is not string), checks that
- *   the result is coherent with the PlaceHolder and, if so, returns a right of that string.
+ *   the result is coherent with the Placeholder and, if so, returns a right of that string.
  *   Otherwise, it returns a left.
  */
 
@@ -45,18 +45,18 @@ import * as CVReal from './Real.js';
  *
  * @category Module tag
  */
-export const moduleTag = '@parischap/conversions/PlaceHolder/';
+export const moduleTag = '@parischap/conversions/Placeholder/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
 /**
- * Namespace of a PlaceHolder Parser
+ * Namespace of a Placeholder Parser
  *
  * @category Models
  */
 export namespace Parser {
 	/**
-	 * Type that describes a PlaceHolder Parser
+	 * Type that describes a Placeholder Parser
 	 *
 	 * @category Models
 	 */
@@ -68,13 +68,13 @@ export namespace Parser {
 }
 
 /**
- * Namespace of a PlaceHolder Formatter
+ * Namespace of a Placeholder Formatter
  *
  * @category Models
  */
 export namespace Formatter {
 	/**
-	 * Type that describes a PlaceHolder Formatter
+	 * Type that describes a Placeholder Formatter
 	 *
 	 * @category Models
 	 */
@@ -99,14 +99,14 @@ export const isTag = <const N extends string, T>(u: Type<N, T>): u is Tag.Type<N
 export const isSeparator = <const N extends string, T>(u: Type<N, T>): u is Separator.Type =>
 	Separator.has(u);
 
-/** Namespace for Separator PlaceHolder's. */
+/** Namespace for Separator Placeholder's. */
 export namespace Separator {
 	const _namespaceTag = moduleTag + 'Separator/';
 	const _TypeId: unique symbol = Symbol.for(_namespaceTag) as _TypeId;
 	type _TypeId = typeof _TypeId;
 
 	/**
-	 * Type that represents a Separator PlaceHolder
+	 * Type that represents a Separator Placeholder
 	 *
 	 * @category Models
 	 */
@@ -117,7 +117,7 @@ export namespace Separator {
 		/** Parser of this Separator Placeholder */
 		readonly parser: Parser.Type<string>;
 
-		/** Formatter of this Separator PlaceHolder */
+		/** Formatter of this Separator Placeholder */
 		readonly formatter: Function.LazyArg<string>;
 
 		/** @internal */
@@ -166,14 +166,14 @@ export namespace Separator {
 	};
 }
 
-/** Namespace for Tag PlaceHolder's. */
+/** Namespace for Tag Placeholder's. */
 export namespace Tag {
 	const _namespaceTag = moduleTag + 'Tag/';
 	const _TypeId: unique symbol = Symbol.for(_namespaceTag) as _TypeId;
 	type _TypeId = typeof _TypeId;
 
 	/**
-	 * Type that represents a Tag PlaceHolder
+	 * Type that represents a Tag Placeholder
 	 *
 	 * @category Models
 	 */
@@ -189,7 +189,7 @@ export namespace Tag {
 		/** Parser of this Tag Placeholder */
 		readonly parser: Parser.Type<T>;
 
-		/** Formatter of this Tag PlaceHolder */
+		/** Formatter of this Tag Placeholder */
 		readonly formatter: Formatter.Type<T>;
 
 		/** @internal */
@@ -200,14 +200,14 @@ export namespace Tag {
 	export interface All extends Type<string, any> {}
 
 	/**
-	 * Utility type that extracts the Name type of a Tag PlaceHolder
+	 * Utility type that extracts the Name type of a Tag Placeholder
 	 *
 	 * @category Utility types
 	 */
 	export type ExtractName<P extends All> = P extends Type<infer N, infer _> ? N : never;
 
 	/**
-	 * Utility type that extracts the Type type of a Tag PlaceHolder
+	 * Utility type that extracts the Type type of a Tag Placeholder
 	 *
 	 * @category Utility types
 	 */
@@ -310,7 +310,7 @@ export namespace Tag {
 		};
 
 	/**
-	 * Builds a PlaceHolder instance that parses/formats exactly `length` characters from a string.
+	 * Builds a Placeholder instance that parses/formats exactly `length` characters from a string.
 	 * `length` must be a strictly positive integer.
 	 *
 	 * @category Constructors
@@ -339,7 +339,7 @@ export namespace Tag {
 	};
 
 	/**
-	 * Builds a PlaceHolder instance that parses/formats exactly `length` characters from a string and
+	 * Builds a Placeholder instance that parses/formats exactly `length` characters from a string and
 	 * trims/pads the result at `padPosition` with `fillChar`. `fillChar` should be a one-character
 	 * string. `length` must be a strictly positive integer. See the meaning of `disallowEmptyString`
 	 * in String.trim.
@@ -369,7 +369,7 @@ export namespace Tag {
 	};
 
 	/**
-	 * Builds a PlaceHolder instance that parses/formats a Real in the given `numberBase10Format`. If
+	 * Builds a Placeholder instance that parses/formats a Real in the given `numberBase10Format`. If
 	 * the number to parse/format does not occupy length characters, trimming/padding is applied. See
 	 * the paddedFixedLength instance builder.
 	 *
@@ -412,7 +412,7 @@ export namespace Tag {
 	};
 
 	/**
-	 * Builds a PlaceHolder instance that parses/formats a Real provided in `numberBase10Format`.
+	 * Builds a Placeholder instance that parses/formats a Real provided in `numberBase10Format`.
 	 *
 	 * @category Constructors
 	 */
@@ -447,7 +447,7 @@ export namespace Tag {
 	};
 
 	/**
-	 * Builds a PlaceHolder instance that works as a map:
+	 * Builds a Placeholder instance that works as a map:
 	 *
 	 * The parser expects one of the keys of `keyValuePairs` and will return the associated value. The
 	 * formatter expects one of the values of `keyValuePairs` and will return the associated key.
@@ -520,7 +520,7 @@ export namespace Tag {
 	};
 
 	/**
-	 * Builds a PlaceHolder instance that parses/formats the regular expression regExp. `regExp` must
+	 * Builds a Placeholder instance that parses/formats the regular expression regExp. `regExp` must
 	 * start with the ^ character. Otherwise, the parser and formatter will not work properly.
 	 *
 	 * @category Constructors
@@ -572,7 +572,7 @@ export namespace Tag {
 	};
 
 	/**
-	 * Builds a PlaceHolder instance that parses/formats at least one non-space character.
+	 * Builds a Placeholder instance that parses/formats at least one non-space character.
 	 *
 	 * @category Constructors
 	 */

@@ -1,36 +1,36 @@
 /* eslint-disable functional/no-expression-statements */
-import { CVNumberBase10Format, CVPlaceHolder, CVReal } from '@parischap/conversions';
+import { CVNumberBase10Format, CVPlaceholder, CVReal } from '@parischap/conversions';
 import { MString, MTypes } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
 import { Tuple } from 'effect';
 import { describe, it } from 'vitest';
 
-describe('CVPlaceHolder', () => {
-	const separator = CVPlaceHolder.Separator.make({ pos: 1, value: 'foo' });
-	const threeChars = CVPlaceHolder.Tag.fixedLength({ name: 'foo', length: 3 });
+describe('CVPlaceholder', () => {
+	const separator = CVPlaceholder.Separator.make({ pos: 1, value: 'foo' });
+	const threeChars = CVPlaceholder.Tag.fixedLength({ name: 'foo', length: 3 });
 
 	describe('Tag, prototype and guards', () => {
 		it('moduleTag', () => {
-			TEUtils.assertSome(TEUtils.moduleTagFromTestFilePath(__filename), CVPlaceHolder.moduleTag);
+			TEUtils.assertSome(TEUtils.moduleTagFromTestFilePath(__filename), CVPlaceholder.moduleTag);
 		});
 
 		describe('isTag', () => {
 			it('Not passing', () => {
-				TEUtils.assertFalse(CVPlaceHolder.isTag(separator));
+				TEUtils.assertFalse(CVPlaceholder.isTag(separator));
 			});
 
 			it('Passing', () => {
-				TEUtils.assertTrue(CVPlaceHolder.isTag(threeChars));
+				TEUtils.assertTrue(CVPlaceholder.isTag(threeChars));
 			});
 		});
 
 		describe('isSeparator', () => {
 			it('Not passing', () => {
-				TEUtils.assertFalse(CVPlaceHolder.isSeparator(threeChars));
+				TEUtils.assertFalse(CVPlaceholder.isSeparator(threeChars));
 			});
 
 			it('Passing', () => {
-				TEUtils.assertTrue(CVPlaceHolder.isSeparator(separator));
+				TEUtils.assertTrue(CVPlaceholder.isSeparator(separator));
 			});
 		});
 	});
@@ -38,7 +38,7 @@ describe('CVPlaceHolder', () => {
 	describe('Separator', () => {
 		describe('Tag, prototype and guards', () => {
 			it('.pipe()', () => {
-				TEUtils.assertTrue(separator.pipe(CVPlaceHolder.Separator.has));
+				TEUtils.assertTrue(separator.pipe(CVPlaceholder.Separator.has));
 			});
 
 			it('.toString()', () => {
@@ -47,10 +47,10 @@ describe('CVPlaceHolder', () => {
 
 			describe('has', () => {
 				it('Matching', () => {
-					TEUtils.assertTrue(CVPlaceHolder.Separator.has(separator));
+					TEUtils.assertTrue(CVPlaceholder.Separator.has(separator));
 				});
 				it('Non matching', () => {
-					TEUtils.assertFalse(CVPlaceHolder.Separator.has(new Date()));
+					TEUtils.assertFalse(CVPlaceholder.Separator.has(new Date()));
 				});
 			});
 		});
@@ -75,20 +75,20 @@ describe('CVPlaceHolder', () => {
 	});
 
 	describe('Tag', () => {
-		MTypes.areEqualTypes<CVPlaceHolder.Tag.ExtractName<typeof threeChars>, 'foo'>() satisfies true;
-		MTypes.areEqualTypes<CVPlaceHolder.Tag.ExtractType<typeof threeChars>, string>() satisfies true;
+		MTypes.areEqualTypes<CVPlaceholder.Tag.ExtractName<typeof threeChars>, 'foo'>() satisfies true;
+		MTypes.areEqualTypes<CVPlaceholder.Tag.ExtractType<typeof threeChars>, string>() satisfies true;
 
 		describe('Tag, prototype and guards', () => {
 			it('.pipe()', () => {
-				TEUtils.assertTrue(threeChars.pipe(CVPlaceHolder.Tag.has));
+				TEUtils.assertTrue(threeChars.pipe(CVPlaceholder.Tag.has));
 			});
 
 			describe('has', () => {
 				it('Matching', () => {
-					TEUtils.assertTrue(CVPlaceHolder.Tag.has(threeChars));
+					TEUtils.assertTrue(CVPlaceholder.Tag.has(threeChars));
 				});
 				it('Non matching', () => {
-					TEUtils.assertFalse(CVPlaceHolder.Tag.has(new Date()));
+					TEUtils.assertFalse(CVPlaceholder.Tag.has(new Date()));
 				});
 			});
 		});
@@ -136,7 +136,7 @@ describe('CVPlaceHolder', () => {
 		});
 
 		describe('paddedFixedLength', () => {
-			const placeHolder = CVPlaceHolder.Tag.paddedFixedLength({
+			const placeholder = CVPlaceholder.Tag.paddedFixedLength({
 				name: 'foo',
 				length: 3,
 				fillChar: '0',
@@ -145,7 +145,7 @@ describe('CVPlaceHolder', () => {
 			});
 			it('.toString()', () => {
 				TEUtils.strictEqual(
-					placeHolder.toString(),
+					placeholder.toString(),
 					"'foo' placeholder: 3-character string left-padded with '0'"
 				);
 			});
@@ -153,32 +153,32 @@ describe('CVPlaceHolder', () => {
 			describe('Parsing', () => {
 				it('Not passing', () => {
 					TEUtils.assertLeftMessage(
-						placeHolder.parser(''),
+						placeholder.parser(''),
 						"Expected length of 'foo' placeholder to be: 3. Actual: 0"
 					);
 				});
 
 				it('Passing', () => {
-					TEUtils.assertRight(placeHolder.parser('001 and baz'), Tuple.make('1', ' and baz'));
+					TEUtils.assertRight(placeholder.parser('001 and baz'), Tuple.make('1', ' and baz'));
 				});
 			});
 
 			describe('Formatting', () => {
 				it('Not passing', () => {
 					TEUtils.assertLeftMessage(
-						placeHolder.formatter('foo and baz'),
+						placeholder.formatter('foo and baz'),
 						"Expected length of 'foo' placeholder to be: 3. Actual: 11"
 					);
 				});
 
 				it('Passing', () => {
-					TEUtils.assertRight(placeHolder.formatter('a'), '00a');
+					TEUtils.assertRight(placeholder.formatter('a'), '00a');
 				});
 			});
 		});
 
 		describe('fixedLengthToReal', () => {
-			const placeHolder = CVPlaceHolder.Tag.fixedLengthToReal({
+			const placeholder = CVPlaceholder.Tag.fixedLengthToReal({
 				name: 'foo',
 				length: 3,
 				fillChar: '0',
@@ -188,7 +188,7 @@ describe('CVPlaceHolder', () => {
 			});
 			it('.toString()', () => {
 				TEUtils.strictEqual(
-					placeHolder.toString(),
+					placeholder.toString(),
 					"'foo' placeholder: 3-character string left-padded with '0' to integer"
 				);
 			});
@@ -196,14 +196,14 @@ describe('CVPlaceHolder', () => {
 			describe('Parsing', () => {
 				it('Not passing', () => {
 					TEUtils.assertLeftMessage(
-						placeHolder.parser(''),
+						placeholder.parser(''),
 						"Expected length of 'foo' placeholder to be: 3. Actual: 0"
 					);
 				});
 
 				it('Passing', () => {
 					TEUtils.assertRight(
-						placeHolder.parser('0015'),
+						placeholder.parser('0015'),
 						Tuple.make(CVReal.unsafeFromNumber(1), '5')
 					);
 				});
@@ -212,25 +212,25 @@ describe('CVPlaceHolder', () => {
 			describe('Formatting', () => {
 				it('Not passing: too long', () => {
 					TEUtils.assertLeftMessage(
-						placeHolder.formatter(CVReal.unsafeFromNumber(1154)),
+						placeholder.formatter(CVReal.unsafeFromNumber(1154)),
 						"Expected length of 'foo' placeholder to be: 3. Actual: 4"
 					);
 				});
 
 				it('Passing', () => {
-					TEUtils.assertRight(placeHolder.formatter(CVReal.unsafeFromNumber(34)), '034');
+					TEUtils.assertRight(placeholder.formatter(CVReal.unsafeFromNumber(34)), '034');
 				});
 			});
 		});
 
 		describe('real', () => {
-			const placeHolder = CVPlaceHolder.Tag.real({
+			const placeholder = CVPlaceholder.Tag.real({
 				name: 'foo',
 				numberBase10Format: CVNumberBase10Format.frenchStyleThreeDecimalNumber
 			});
 			it('.toString()', () => {
 				TEUtils.strictEqual(
-					placeHolder.toString(),
+					placeholder.toString(),
 					"'foo' placeholder: French-style three-decimal number"
 				);
 			});
@@ -238,27 +238,27 @@ describe('CVPlaceHolder', () => {
 			describe('Parsing', () => {
 				it('Not passing', () => {
 					TEUtils.assertLeftMessage(
-						placeHolder.parser(''),
+						placeholder.parser(''),
 						"'foo' placeholder contains '' from the start of which a French-style three-decimal number could not be extracted"
 					);
-					TEUtils.assertLeft(placeHolder.parser('1 014,1254 and foo'));
+					TEUtils.assertLeft(placeholder.parser('1 014,1254 and foo'));
 				});
 
 				it('Passing', () => {
 					TEUtils.assertRight(
-						placeHolder.parser('1 014,125 and foo'),
+						placeholder.parser('1 014,125 and foo'),
 						Tuple.make(CVReal.unsafeFromNumber(1014.125), ' and foo')
 					);
 				});
 			});
 
 			it('Formatting', () => {
-				TEUtils.assertRight(placeHolder.formatter(CVReal.unsafeFromNumber(1014.1256)), '1 014,126');
+				TEUtils.assertRight(placeholder.formatter(CVReal.unsafeFromNumber(1014.1256)), '1 014,126');
 			});
 		});
 
 		describe('mappedLiterals', () => {
-			const map = CVPlaceHolder.Tag.mappedLiterals({
+			const map = CVPlaceholder.Tag.mappedLiterals({
 				name: 'foo',
 				keyValuePairs: [
 					['foo', 6],
@@ -299,7 +299,7 @@ describe('CVPlaceHolder', () => {
 		});
 
 		describe('noSpaceChars', () => {
-			const noSpaceChars = CVPlaceHolder.Tag.noSpaceChars('foo');
+			const noSpaceChars = CVPlaceholder.Tag.noSpaceChars('foo');
 
 			it('.toString()', () => {
 				TEUtils.strictEqual(

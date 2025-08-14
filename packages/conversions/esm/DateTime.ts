@@ -41,11 +41,14 @@ import {
 	Option,
 	Pipeable,
 	Predicate,
-	String,
 	Struct,
 	flow,
 	pipe
 } from 'effect';
+import * as CVNumberBase10Format from './NumberBase10Format.js';
+import * as CVPlaceholder from './Placeholder.js';
+import * as CVReal from './Real.js';
+import * as CVTemplate from './Template.js';
 
 /**
  * Module tag
@@ -1413,9 +1416,48 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
 	self.timestamp === that.timestamp;
 
-const _intToFixedLengthString = (length: number): MTypes.OneArgFunction<number, string> =>
-	flow(MString.fromNumber(10), String.padStart(length, '0'));
 /** Proto */
+const _params = {
+	fillChar: '0',
+	padPosition: MString.PadPosition.Left,
+	disallowEmptyString: true,
+	numberBase10Format: CVNumberBase10Format.integer
+};
+
+const _tag = CVPlaceholder.Tag.fixedLengthToReal;
+const _sep = CVPlaceholder.Separator.make;
+const _dateFormatter = flow(
+	CVTemplate.toFormatter(
+		CVTemplate.make(
+			_tag({ ..._params, name: 'yyyy', length: 4 }),
+			_sep({ pos: 2, value: '-' }),
+			_tag({ ..._params, name: 'MM', length: 2 }),
+			_sep({ pos: 4, value: '-' }),
+			_tag({ ..._params, name: 'dd', length: 2 }),
+			_sep({ pos: 6, value: ' ' }),
+			_tag({ ..._params, name: 'HH', length: 2 }),
+			_sep({ pos: 8, value: ':' }),
+			_tag({ ..._params, name: 'mm', length: 2 }),
+			_sep({ pos: 10, value: ':' }),
+			_tag({ ..._params, name: 'ss', length: 2 }),
+			_sep({ pos: 12, value: ':' }),
+			_tag({ ..._params, name: 'SSS', length: 3 }),
+			_sep({ pos: 14, value: ' GMT' }),
+			CVPlaceholder.Tag.mappedLiterals({
+				name: 'zoneSign',
+				keyValuePairs: [
+					['-', -1],
+					['+', 0],
+					['+', 1]
+				]
+			}),
+			_tag({ ..._params, name: 'zoneHours', length: 2 }),
+			_tag({ ..._params, name: 'zoneMinutes', length: 2 })
+		)
+	),
+	Either.getOrThrowWith(Function.identity)
+);
+
 const _TypeIdHash = Hash.hash(_TypeId);
 const proto: MTypes.Proto<Type> = {
 	[_TypeId]: _TypeId,
@@ -1426,21 +1468,19 @@ const proto: MTypes.Proto<Type> = {
 		return pipe(this.timestamp, Hash.hash, Hash.combine(_TypeIdHash), Hash.cached(this));
 	},
 	[MInspectable.IdSymbol](this: Type) {
-		const timeZoneOffset = this.timeZoneOffset;
-		const zoneHours = Math.trunc(timeZoneOffset);
-		const zoneHoursSign = zoneHours >= 0 ? '+' : '-';
-
-		const yearString = _intToFixedLengthString(4)(getYear(this));
-		const monthString = _intToFixedLengthString(2)(getMonth(this));
-		const monthDayString = _intToFixedLengthString(2)(getMonthDay(this));
-		const hour23String = _intToFixedLengthString(2)(getHour23(this));
-		const minuteString = _intToFixedLengthString(2)(getMinute(this));
-		const secondString = _intToFixedLengthString(2)(getSecond(this));
-		const millisecondString = _intToFixedLengthString(3)(getMillisecond(this));
-		const zoneHoursString = _intToFixedLengthString(2)(Math.abs(zoneHours));
-		const zoneMinuteString = _intToFixedLengthString(2)(Math.abs(timeZoneOffset - zoneHours) * 60);
-
-		return `${yearString}-${monthString}-${monthDayString} ${hour23String}:${minuteString}:${secondString}:${millisecondString} GMT${zoneHoursSign}${zoneHoursString}${zoneMinuteString}`;
+		const zoneHours = getZoneOffsetHours(this);
+		return _dateFormatter({
+			yyyy: pipe(this, getYear, CVReal.unsafeFromNumber),
+			MM: pipe(this, getMonth, CVReal.unsafeFromNumber),
+			dd: pipe(this, getMonthDay, CVReal.unsafeFromNumber),
+			HH: pipe(this, getHour23, CVReal.unsafeFromNumber),
+			mm: pipe(this, getMinute, CVReal.unsafeFromNumber),
+			ss: pipe(this, getSecond, CVReal.unsafeFromNumber),
+			SSS: pipe(this, getMillisecond, CVReal.unsafeFromNumber),
+			zoneSign: Math.sign(zoneHours),
+			zoneHours: pipe(zoneHours, Math.abs, CVReal.unsafeFromNumber),
+			zoneMinutes: pipe(this, getZoneOffsetMinutes, CVReal.unsafeFromNumber)
+		});
 	},
 	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto
@@ -1776,6 +1816,24 @@ export const unsafeFromParts: MTypes.OneArgFunction<Parts.Type, Type> = flow(
  * @category Destructors
  */
 export const timestamp: MTypes.OneArgFunction<Type, number> = Struct.get('timestamp');
+
+/**
+ * Returns the hours of the timeZoneOffset of `self`
+ *
+ * @category Destructors
+ */
+export const getZoneOffsetHours: MTypes.OneArgFunction<Type, number> = flow(
+	Struct.get('timeZoneOffset'),
+	Math.trunc
+);
+
+/**
+ * Returns the minutes of the timeZoneOffset of `self`
+ *
+ * @category Destructors
+ */
+export const getZoneOffsetMinutes = (self: Type): number =>
+	Math.abs(self.timeZoneOffset - Math.trunc(self.timeZoneOffset)) * 60;
 
 /** Returns the gregorianDate of `self` for the given time zone */
 const _gregorianDate = (self: Type): GregorianDate.Type =>

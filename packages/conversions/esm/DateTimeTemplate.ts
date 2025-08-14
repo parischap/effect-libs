@@ -27,8 +27,8 @@ import {
 } from 'effect';
 import * as CVDateTime from './DateTime.js';
 import * as CVNumberBase10Format from './NumberBase10Format.js';
-import * as CVPlaceHolder from './PlaceHolder.js';
-import * as CVPlaceHolders from './PlaceHolders.js';
+import * as CVPlaceholder from './Placeholder.js';
+import * as CVPlaceholders from './Placeholders.js';
 import * as CVReal from './Real.js';
 import * as CVTemplate from './Template.js';
 
@@ -108,9 +108,9 @@ export type TagName =
 	/* Millisecond on 3 digits left-padded with 0's (ex: 005) */
 	| 'SSS';
 
-namespace CVPlaceHolderMap {
+namespace CVPlaceholderMap {
 	export interface Type
-		extends HashMap.HashMap<TagName, CVPlaceHolder.Tag.Type<string, CVReal.Type>> {}
+		extends HashMap.HashMap<TagName, CVPlaceholder.Tag.Type<string, CVReal.Type>> {}
 }
 /**
  * Type that represents the names of the seven days of a week
@@ -134,14 +134,14 @@ export type MonthNames = MTypes.Tuple<string, 12>;
 export type DayPeriodNames = MTypes.Tuple<string, 2>;
 
 /**
- * Namespace for a PlaceHolder
+ * Namespace for a Placeholder
  *
  * @category Models
  */
-export namespace PlaceHolder {
-	const _tag = moduleTag + 'PlaceHolder/';
+export namespace Placeholder {
+	const _tag = moduleTag + 'Placeholder/';
 	/**
-	 * Type of a PlaceHolder
+	 * Type of a Placeholder
 	 *
 	 * @category Models
 	 */
@@ -162,7 +162,7 @@ export namespace PlaceHolder {
 	export const isSeparator = (u: Type): u is Separator.Type => Separator.has(u);
 
 	/**
-	 * Namespace for a PlaceHolder that represents a part of a date time
+	 * Namespace for a Placeholder that represents a part of a date time
 	 *
 	 * @category Models
 	 */
@@ -172,13 +172,13 @@ export namespace PlaceHolder {
 		type _TypeId = typeof _TypeId;
 
 		/**
-		 * Type that represents a DateTimePlaceHolder
+		 * Type that represents a DateTimePlaceholder
 		 *
 		 * @category Model
 		 */
 
 		export interface Type extends MInspectable.Type, Pipeable.Pipeable {
-			/** Name of this PlaceHolder */
+			/** Name of this Placeholder */
 			readonly name: TagName;
 
 			/** @internal */
@@ -205,7 +205,7 @@ export namespace PlaceHolder {
 		const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
 
 		/**
-		 * DateTimePlaceHolder constructor
+		 * DateTimePlaceholder constructor
 		 *
 		 * @category Constructors
 		 */
@@ -220,7 +220,7 @@ export namespace PlaceHolder {
 	}
 
 	/**
-	 * Namespace for a PlaceHolder that represents separator
+	 * Namespace for a Placeholder that represents separator
 	 *
 	 * @category Models
 	 */
@@ -230,7 +230,7 @@ export namespace PlaceHolder {
 		type _TypeId = typeof _TypeId;
 
 		/**
-		 * Type that represents a SeparatorPlaceHolder
+		 * Type that represents a SeparatorPlaceholder
 		 *
 		 * @category Model
 		 */
@@ -263,7 +263,7 @@ export namespace PlaceHolder {
 		const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
 
 		/**
-		 * DateTimePlaceHolder constructor
+		 * DateTimePlaceholder constructor
 		 *
 		 * @category Constructors
 		 */
@@ -279,12 +279,12 @@ export namespace PlaceHolder {
 }
 
 /**
- * Namespace PlaceHolders
+ * Namespace Placeholders
  *
  * @category Models
  */
-export namespace PlaceHolders {
-	export interface Type extends ReadonlyArray<PlaceHolder.Type> {}
+export namespace Placeholders {
+	export interface Type extends ReadonlyArray<Placeholder.Type> {}
 }
 
 /**
@@ -319,8 +319,8 @@ export namespace Context {
 		/** Name of this Context: usually the locale this Context wes built from. Or a country name */
 		readonly name: string;
 
-		/** Maps that contains all the possible PlaceHolder's for that Congtext */
-		readonly placeHolderMap: CVPlaceHolderMap.Type;
+		/** Maps that contains all the possible Placeholder's for that Congtext */
+		readonly placeholderMap: CVPlaceholderMap.Type;
 
 		/** @internal */
 		readonly [_TypeId]: _TypeId;
@@ -383,15 +383,15 @@ export namespace Context {
 			numberBase10Format: CVNumberBase10Format.integer
 		};
 
-		const placeHolderEntries: ReadonlyArray<
-			readonly [TagName, CVPlaceHolder.Tag.Type<string, CVReal.Type>]
+		const placeholderEntries: ReadonlyArray<
+			readonly [TagName, CVPlaceholder.Tag.Type<string, CVReal.Type>]
 		> = [
-			['y', CVPlaceHolder.Tag.real({ ...params, name: 'year' })],
+			['y', CVPlaceholder.Tag.real({ ...params, name: 'year' })],
 			[
 				'yy',
 				pipe(
-					CVPlaceHolder.Tag.fixedLengthToReal({ ...params, name: 'year', length: 2 }),
-					CVPlaceHolder.Tag.modify({
+					CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'year', length: 2 }),
+					CVPlaceholder.Tag.modify({
 						descriptorMapper: MString.append(' between 2000 and 2099 included'),
 						postParser: (value, name) =>
 							pipe(
@@ -403,13 +403,13 @@ export namespace Context {
 					})
 				)
 			],
-			['yyyy', CVPlaceHolder.Tag.fixedLengthToReal({ ...params, name: 'year', length: 4 })],
-			['R', CVPlaceHolder.Tag.real({ ...params, name: 'isoYear' })],
+			['yyyy', CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'year', length: 4 })],
+			['R', CVPlaceholder.Tag.real({ ...params, name: 'isoYear' })],
 			[
 				'RR',
 				pipe(
-					CVPlaceHolder.Tag.fixedLengthToReal({ ...params, name: 'isoYear', length: 2 }),
-					CVPlaceHolder.Tag.modify({
+					CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'isoYear', length: 2 }),
+					CVPlaceholder.Tag.modify({
 						descriptorMapper: MString.append(' between 2000 and 2099 included'),
 						postParser: (value, name) =>
 							pipe(
@@ -421,13 +421,12 @@ export namespace Context {
 					})
 				)
 			],
-			['RRRR', CVPlaceHolder.Tag.fixedLengthToReal({ ...params, name: 'isoYear', length: 4 })],
-			['M', CVPlaceHolder.Tag.real({ ...params, name: 'month' })],
-			['MM', CVPlaceHolder.Tag.fixedLengthToReal({ ...params, name: 'month', length: 2 })],
+			['RRRR', CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'isoYear', length: 4 })],
+			['M', CVPlaceholder.Tag.real({ ...params, name: 'month' })],
+			['MM', CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'month', length: 2 })],
 			[
 				'MMM',
-				CVPlaceHolder.Tag.mappedLiterals({
-					...params,
+				CVPlaceholder.Tag.mappedLiterals({
 					name: 'month',
 					keyValuePairs: pipe(
 						shortMonthNames,
@@ -437,8 +436,7 @@ export namespace Context {
 			],
 			[
 				'MMMM',
-				CVPlaceHolder.Tag.mappedLiterals({
-					...params,
+				CVPlaceholder.Tag.mappedLiterals({
 					name: 'month',
 					keyValuePairs: pipe(
 						longMonthNames,
@@ -446,17 +444,16 @@ export namespace Context {
 					)
 				})
 			],
-			['I', CVPlaceHolder.Tag.real({ ...params, name: 'isoWeek' })],
-			['II', CVPlaceHolder.Tag.fixedLengthToReal({ ...params, name: 'isoWeek', length: 2 })],
-			['d', CVPlaceHolder.Tag.real({ ...params, name: 'monthDay' })],
-			['dd', CVPlaceHolder.Tag.fixedLengthToReal({ ...params, name: 'monthDay', length: 2 })],
-			['D', CVPlaceHolder.Tag.real({ ...params, name: 'ordinalDay' })],
-			['DDD', CVPlaceHolder.Tag.fixedLengthToReal({ ...params, name: 'ordinalDay', length: 3 })],
-			['i', CVPlaceHolder.Tag.real({ ...params, name: 'weekday' })],
+			['I', CVPlaceholder.Tag.real({ ...params, name: 'isoWeek' })],
+			['II', CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'isoWeek', length: 2 })],
+			['d', CVPlaceholder.Tag.real({ ...params, name: 'monthDay' })],
+			['dd', CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'monthDay', length: 2 })],
+			['D', CVPlaceholder.Tag.real({ ...params, name: 'ordinalDay' })],
+			['DDD', CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'ordinalDay', length: 3 })],
+			['i', CVPlaceholder.Tag.real({ ...params, name: 'weekday' })],
 			[
 				'iii',
-				CVPlaceHolder.Tag.mappedLiterals({
-					...params,
+				CVPlaceholder.Tag.mappedLiterals({
 					name: 'weekday',
 					keyValuePairs: pipe(
 						shortWeekdayNames,
@@ -466,8 +463,7 @@ export namespace Context {
 			],
 			[
 				'iiii',
-				CVPlaceHolder.Tag.mappedLiterals({
-					...params,
+				CVPlaceholder.Tag.mappedLiterals({
 					name: 'weekday',
 					keyValuePairs: pipe(
 						longWeekdayNames,
@@ -477,8 +473,7 @@ export namespace Context {
 			],
 			[
 				'a',
-				CVPlaceHolder.Tag.mappedLiterals({
-					...params,
+				CVPlaceholder.Tag.mappedLiterals({
 					name: 'meridiem',
 					keyValuePairs: pipe(
 						dayPeriodNames,
@@ -486,21 +481,21 @@ export namespace Context {
 					)
 				})
 			],
-			['H', CVPlaceHolder.Tag.real({ ...params, name: 'hour23' })],
-			['HH', CVPlaceHolder.Tag.fixedLengthToReal({ ...params, name: 'hour23', length: 2 })],
-			['K', CVPlaceHolder.Tag.real({ ...params, name: 'hour11' })],
-			['KK', CVPlaceHolder.Tag.fixedLengthToReal({ ...params, name: 'hour11', length: 2 })],
-			['m', CVPlaceHolder.Tag.real({ ...params, name: 'minute' })],
-			['mm', CVPlaceHolder.Tag.fixedLengthToReal({ ...params, name: 'minute', length: 2 })],
-			['s', CVPlaceHolder.Tag.real({ ...params, name: 'second' })],
-			['ss', CVPlaceHolder.Tag.fixedLengthToReal({ ...params, name: 'second', length: 2 })],
-			['S', CVPlaceHolder.Tag.real({ ...params, name: 'millisecond' })],
-			['SSS', CVPlaceHolder.Tag.fixedLengthToReal({ ...params, name: 'millisecond', length: 3 })]
+			['H', CVPlaceholder.Tag.real({ ...params, name: 'hour23' })],
+			['HH', CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'hour23', length: 2 })],
+			['K', CVPlaceholder.Tag.real({ ...params, name: 'hour11' })],
+			['KK', CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'hour11', length: 2 })],
+			['m', CVPlaceholder.Tag.real({ ...params, name: 'minute' })],
+			['mm', CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'minute', length: 2 })],
+			['s', CVPlaceholder.Tag.real({ ...params, name: 'second' })],
+			['ss', CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'second', length: 2 })],
+			['S', CVPlaceholder.Tag.real({ ...params, name: 'millisecond' })],
+			['SSS', CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'millisecond', length: 3 })]
 		];
 
 		return _make({
 			name,
-			placeHolderMap: HashMap.make(...placeHolderEntries)
+			placeholderMap: HashMap.make(...placeholderEntries)
 		});
 	};
 
@@ -628,12 +623,12 @@ export namespace Context {
 	export const name: MTypes.OneArgFunction<Type, string> = Struct.get('name');
 
 	/**
-	 * Returns the `placeHolderMap` property of `self`
+	 * Returns the `placeholderMap` property of `self`
 	 *
 	 * @category Destructors
 	 */
-	export const placeHolderMap: MTypes.OneArgFunction<Type, CVPlaceHolderMap.Type> =
-		Struct.get('placeHolderMap');
+	export const placeholderMap: MTypes.OneArgFunction<Type, CVPlaceholderMap.Type> =
+		Struct.get('placeholderMap');
 }
 
 /**
@@ -675,11 +670,11 @@ export interface Type extends MInspectable.Type, Pipeable.Pipeable {
 	/** The Context of this DateTimeTemplate */
 	readonly context: Context.Type;
 
-	/** The array of PlaceHolder's contituting this DateTimeTemplate */
-	readonly placeHolders: PlaceHolders.Type;
+	/** The array of Placeholder's contituting this DateTimeTemplate */
+	readonly placeholders: Placeholders.Type;
 
 	/** @internal */
-	readonly _template: CVTemplate.Type<CVPlaceHolders.Type<CVReal.Type>>;
+	readonly _template: CVTemplate.Type<CVPlaceholders.Type<CVReal.Type>>;
 
 	readonly [_TypeId]: _TypeId;
 }
@@ -696,7 +691,7 @@ const proto: MTypes.Proto<Type> = {
 	[_TypeId]: _TypeId,
 	[MInspectable.IdSymbol](this: Type) {
 		return pipe(
-			this.placeHolders,
+			this.placeholders,
 			Array.map((p) => p.toString()),
 			Array.join(''),
 			MString.prepend("'"),
@@ -710,35 +705,35 @@ const proto: MTypes.Proto<Type> = {
 const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
 
 /**
- * Builds a DateTimeTemplate from a Context `context` and an array of PlaceHolder's `placeHolders`
+ * Builds a DateTimeTemplate from a Context `context` and an array of Placeholder's `placeholders`
  *
  * @category Constructors
  */
 export const make = ({
 	context,
-	placeHolders
+	placeholders
 }: {
 	readonly context: Context.Type;
-	readonly placeHolders: ReadonlyArray<PlaceHolder.Type>;
+	readonly placeholders: ReadonlyArray<Placeholder.Type>;
 }): Type => {
-	const getter = (name: TagName): CVPlaceHolder.Tag.Type<string, CVReal.Type> =>
+	const getter = (name: TagName): CVPlaceholder.Tag.Type<string, CVReal.Type> =>
 		pipe(
-			context.placeHolderMap,
+			context.placeholderMap,
 			HashMap.get(name),
 			Option.getOrThrowWith(
-				() => new Error(`Abnormal error: no PlaceHolder was defined for tag name '${name}'`)
+				() => new Error(`Abnormal error: no Placeholder was defined for tag name '${name}'`)
 			)
 		);
 
-	const template: CVTemplate.Type<CVPlaceHolders.Type<CVReal.Type>> = pipe(
-		placeHolders,
+	const template: CVTemplate.Type<CVPlaceholders.Type<CVReal.Type>> = pipe(
+		placeholders,
 		Array.map((p, pos) =>
 			pipe(
 				p,
 				MMatch.make,
-				MMatch.when(PlaceHolder.isTag, flow(PlaceHolder.Tag.name, getter)),
-				MMatch.when(PlaceHolder.isSeparator, ({ value }) =>
-					CVPlaceHolder.Separator.make({ pos: pos + 1, value })
+				MMatch.when(Placeholder.isTag, flow(Placeholder.Tag.name, getter)),
+				MMatch.when(Placeholder.isSeparator, ({ value }) =>
+					CVPlaceholder.Separator.make({ pos: pos + 1, value })
 				),
 				MMatch.exhaustive
 			)
@@ -748,7 +743,7 @@ export const make = ({
 
 	return _make({
 		context,
-		placeHolders,
+		placeholders,
 		_template: template
 	});
 };
@@ -761,12 +756,12 @@ export const make = ({
 export const context: MTypes.OneArgFunction<Type, Context.Type> = Struct.get('context');
 
 /**
- * Returns the `placeHolders` property of `self`
+ * Returns the `placeholders` property of `self`
  *
  * @category Destructors
  */
-export const placeHolders: MTypes.OneArgFunction<Type, PlaceHolders.Type> =
-	Struct.get('placeHolders');
+export const placeholders: MTypes.OneArgFunction<Type, Placeholders.Type> =
+	Struct.get('placeholders');
 
 /**
  * Returns a function that parses a text into a DateTime according to 'self' . The returned DateTime
@@ -791,15 +786,15 @@ export const toParser = (self: Type): Parser.Type => {
 
 export const toFormatter = (self: Type): Formatter.Type => {
 	const toParts: Record<string, MTypes.OneArgFunction<CVDateTime.Type, number>> = pipe(
-		self._template.placeHolders,
+		self._template.placeholders,
 		Array.filterMap(
 			flow(
 				MMatch.make,
-				MMatch.when(CVPlaceHolder.isSeparator, () => Option.none()),
+				MMatch.when(CVPlaceholder.isSeparator, () => Option.none()),
 				MMatch.when(
-					CVPlaceHolder.isTag,
+					CVPlaceholder.isTag,
 					flow(
-						CVPlaceHolder.Tag.name,
+						CVPlaceholder.Tag.name,
 						MMatch.make,
 						flow(
 							MMatch.whenIs(
@@ -860,7 +855,7 @@ export const toFormatter = (self: Type): Formatter.Type => {
 				),
 				MMatch.exhaustive
 			) as MTypes.OneArgFunction<
-				CVPlaceHolder.Type<string, CVReal.Type>,
+				CVPlaceholder.Type<string, CVReal.Type>,
 				Option.Option<readonly [string, MTypes.OneArgFunction<CVDateTime.Type, number>]>
 			>
 		),
