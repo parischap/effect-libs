@@ -337,6 +337,8 @@ namespace GregorianDate {
 					MInputError.assertInRange({
 						min: MIN_FULL_YEAR,
 						max: MAX_FULL_YEAR,
+						minIncluded: true,
+						maxIncluded: true,
 						offset: 0,
 						name: "'year'"
 					})
@@ -408,6 +410,8 @@ namespace GregorianDate {
 					MInputError.assertInRange({
 						min: 1,
 						max: 12,
+						minIncluded: true,
+						maxIncluded: true,
 						offset: 0,
 						name: "'month'"
 					})
@@ -460,6 +464,8 @@ namespace GregorianDate {
 							MInputError.assertInRange({
 								min: 1,
 								max: getNumberOfDaysInMonth(getMonth(self))(self),
+								minIncluded: true,
+								maxIncluded: true,
 								offset: 0,
 								name: "'monthDay'"
 							})
@@ -495,6 +501,8 @@ namespace GregorianDate {
 					MInputError.assertInRange({
 						min: 1,
 						max: getYearDurationInDays(self),
+						minIncluded: true,
+						maxIncluded: true,
 						offset: 0,
 						name: "'ordinalDay'"
 					})
@@ -884,6 +892,8 @@ namespace IsoDate {
 					MInputError.assertInRange({
 						min: MIN_FULL_YEAR,
 						max: MAX_FULL_YEAR,
+						minIncluded: true,
+						maxIncluded: true,
 						offset: 0,
 						name: "'year'"
 					})
@@ -948,6 +958,8 @@ namespace IsoDate {
 					MInputError.assertInRange({
 						min: 1,
 						max: getLastIsoWeek(self),
+						minIncluded: true,
+						maxIncluded: true,
 						offset: 0,
 						name: "'isoWeek'"
 					})
@@ -980,6 +992,8 @@ namespace IsoDate {
 					MInputError.assertInRange({
 						min: 1,
 						max: 7,
+						minIncluded: true,
+						maxIncluded: true,
 						offset: 0,
 						name: "'weekday'"
 					})
@@ -1178,6 +1192,8 @@ namespace Time {
 					MInputError.assertInRange({
 						min: 0,
 						max: 23,
+						minIncluded: true,
+						maxIncluded: true,
 						offset: 0,
 						name: "'hour23'"
 					})
@@ -1209,6 +1225,8 @@ namespace Time {
 					MInputError.assertInRange({
 						min: 0,
 						max: 11,
+						minIncluded: true,
+						maxIncluded: true,
 						offset: 0,
 						name: "'hour11'"
 					})
@@ -1255,6 +1273,8 @@ namespace Time {
 					MInputError.assertInRange({
 						min: 0,
 						max: 59,
+						minIncluded: true,
+						maxIncluded: true,
 						offset: 0,
 						name: "'minute'"
 					})
@@ -1283,6 +1303,8 @@ namespace Time {
 					MInputError.assertInRange({
 						min: 0,
 						max: 59,
+						minIncluded: true,
+						maxIncluded: true,
 						offset: 0,
 						name: "'second'"
 					})
@@ -1311,6 +1333,8 @@ namespace Time {
 					MInputError.assertInRange({
 						min: 0,
 						max: 999,
+						minIncluded: true,
+						maxIncluded: true,
 						offset: 0,
 						name: "'millisecond'"
 					})
@@ -1391,8 +1415,9 @@ export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable 
 	readonly time: Option.Option<Time.Type>;
 
 	/**
-	 * Offset in hours of the zone for which all calculations of that DateTime object will be carried
-	 * out. Not necessarily an integer, range: [-12, 14]
+	 * Offset in hours between the time of the zone for which all calculations of that DateTime object
+	 * will be carried out and UTC time (e.g timeZoneOffset=1 for timezone +1:00). Not necessarily an
+	 * integer, range: ]-13, 15[
 	 */
 	readonly timeZoneOffset: number;
 
@@ -1447,12 +1472,12 @@ const _dateFormatter = flow(
 				name: 'zoneSign',
 				keyValuePairs: [
 					['-', -1],
-					['+', 0],
 					['+', 1]
 				]
 			}),
-			_tag({ ..._params, name: 'zoneHours', length: 2 }),
-			_tag({ ..._params, name: 'zoneMinutes', length: 2 })
+			_tag({ ..._params, name: 'zHzH', length: 2 }),
+			_tag({ ..._params, name: 'zMzM', length: 2 }),
+			_tag({ ..._params, name: 'zSzS', length: 2 })
 		)
 	),
 	Either.getOrThrowWith(Function.identity)
@@ -1468,7 +1493,8 @@ const proto: MTypes.Proto<Type> = {
 		return pipe(this.timestamp, Hash.hash, Hash.combine(_TypeIdHash), Hash.cached(this));
 	},
 	[MInspectable.IdSymbol](this: Type) {
-		const zoneHours = getZoneOffsetHours(this);
+		const { timeZoneOffsetSign, timeZoneOffsetHour, timeZoneOffsetMinute, timeZoneOffsetSecond } =
+			getTimeZoneOffsetParts(this);
 		return _dateFormatter({
 			yyyy: pipe(this, getYear, CVReal.unsafeFromNumber),
 			MM: pipe(this, getMonth, CVReal.unsafeFromNumber),
@@ -1477,9 +1503,10 @@ const proto: MTypes.Proto<Type> = {
 			mm: pipe(this, getMinute, CVReal.unsafeFromNumber),
 			ss: pipe(this, getSecond, CVReal.unsafeFromNumber),
 			SSS: pipe(this, getMillisecond, CVReal.unsafeFromNumber),
-			zoneSign: Math.sign(zoneHours),
-			zoneHours: pipe(zoneHours, Math.abs, CVReal.unsafeFromNumber),
-			zoneMinutes: pipe(this, getZoneOffsetMinutes, CVReal.unsafeFromNumber)
+			zoneSign: timeZoneOffsetSign,
+			zHzH: CVReal.unsafeFromNumber(timeZoneOffsetHour),
+			zMzM: CVReal.unsafeFromNumber(timeZoneOffsetMinute),
+			zSzS: CVReal.unsafeFromNumber(timeZoneOffsetSecond)
 		});
 	},
 	...MInspectable.BaseProto(moduleTag),
@@ -1526,19 +1553,39 @@ const _uncalculatedFromZonedTimestamp = (zonedTimestamp: number, timeZoneOffset:
 const _uncalculatedOrigin = _uncalculatedFromTimestamp(0, 0);
 
 /**
- * Tries to build a DateTime from `timestamp` and `timeZoneOffset`. Returns a `right` of a DateTime
- * if successful. Returns a `left` of an error otherwise. `timestamp` must be an integer comprised
- * in the range [MIN_TIMESTAMP, MAX_TIMESTAMP] representing the number of milliseconds since
- * 1/1/1970 00:00:00:000+0:00. `timeZoneOffset` is a number, not necessarily an integer, that
- * represents the offset in hours of the zone for which all calculations of that DateTime object
- * will be carried out. It must be comprised in the range [-12, 14]. If omitted, the offset of the
- * local time zone of the machine this code is running on is used.
+ * Tries to build a DateTime from `timestamp`, the number of milliseconds since 1/1/1970
+ * 00:00:00:000+0:00, and `timeZoneOffset` which gives the offset between the local time and the UTC
+ * time. Returns a `right` of a DateTime if successful.
+ *
+ * `timestamp` must be greater than or equal to MIN_TIMESTAMP and less than or equal to
+ * MAX_TIMESTAMP.
+ *
+ * If `timeZoneOffset` is omitted, the local time zone offset of the machine this code is running on
+ * is used.
+ *
+ * `timeZoneOffset` can be expressed as as a number of hours. In this case, it must be strictly
+ * greater to -13 and strictly less than 15.
+ *
+ * It can also be expressed as an object containing three components:
+ *
+ * - `timeZoneOffsetHour` which must be greater than or equal to -12 and less than or equal to 14.
+ * - `timeZoneOffsetMinute` which must be greater than or equal to 0 and less than or equal to 59.
+ * - `timeZoneOffsetSecond` which must be greater than or equal to 0 and less than or equal to 59.
+ *
+ * `timestamp`, `timeZoneOffsetHour`, `timeZoneOffsetMinute` and `timeZoneOffsetSecond` should be
+ * integers. `timeZoneOffset`, when expressed as a number of hours, does not need to be an integer.
  *
  * @category Constructors
  */
 export const fromTimestamp = (
 	timestamp: number,
-	timeZoneOffset?: number
+	timeZoneOffset?:
+		| number
+		| {
+				readonly timeZoneOffsetHour: number;
+				readonly timeZoneOffsetMinute: number;
+				readonly timeZoneOffsetSecond: number;
+		  }
 ): Either.Either<Type, MInputError.Type> =>
 	pipe(
 		_uncalculatedOrigin,
@@ -1551,8 +1598,16 @@ export const fromTimestamp = (
  *
  * @category Constructors
  */
-export const unsafeFromTimestamp = (timestamp: number, timeZoneOffset?: number): Type =>
-	Either.getOrThrowWith(fromTimestamp(timestamp, timeZoneOffset), Function.identity);
+export const unsafeFromTimestamp = (
+	timestamp: number,
+	timeZoneOffset?:
+		| number
+		| {
+				readonly timeZoneOffsetHour: number;
+				readonly timeZoneOffsetMinute: number;
+				readonly timeZoneOffsetSecond: number;
+		  }
+): Type => Either.getOrThrowWith(fromTimestamp(timestamp, timeZoneOffset), Function.identity);
 
 /**
  * Builds a DateTime using Date.now() as timestamp. `timeZoneOffset` is set to 0.
@@ -1600,69 +1655,87 @@ export namespace Parts {
 		/** Number of milliseconds, since sthe start of the current second, range:[0, 999] */
 		readonly millisecond?: number;
 		/**
-		 * Offset in hours of the zone for which all calculations will be carried out. Not necessarily
-		 * an integer, range: [-12, 14]
+		 * Offset in hours between the time in the local zone and UTC time (e.g timeZoneOffset=1 for
+		 * timezone +1:00). Not necessarily an integer, range: ]-13, 15[
 		 */
 		readonly timeZoneOffset?: number;
+		/** Hour part of the timeZoneOffset. Should be an integer in the range: [-12, 14] */
+		readonly timeZoneOffsetHour?: number;
+		/** Minute part of the timeZoneOffset. Should be an integer in the range: [0, 59] */
+		readonly timeZoneOffsetMinute?: number;
+		/** Second part of the timeZoneOffset. Should be an integer in the range: [0, 59] */
+		readonly timeZoneOffsetSecond?: number;
 	}
 }
 /**
  * Tries to build a DateTime from the provided DateTime parts. Returns a `right` of this DateTime if
  * successful. Returns a `left` of an error otherwise.
  *
- * `timeZoneOffset` is a number, not necessarily an integer, that represents the offset in hours of
- * the zone relative to which all other parameters are expressed. It should be comprised in the
- * range [-12, 14]. If omitted, the offset of the local time zone of the machine this code is
- * running on is used.
+ * `year` must comprised in the range [MIN_FULL_YEAR, MAX_FULL_YEAR]. `ordinalDay` must be greater
+ * than or equal to 1 and less than or equal to the number of days in the current year. `month` must
+ * be greater than or equal to 1 (January) and less than or equal to 12 (December). `monthDay` must
+ * be greater than or equal to 1 and less than or equal to the number of days in the current month.
  *
- * `year` must be an integer comprised in the range [MIN_FULL_YEAR, MAX_FULL_YEAR]. `ordinalDay`
- * must be an integer greater than or equal to 1 and less than or equal to the number of days in the
- * current year. `month` must be an integer greater than or equal to 1 (January) and less than or
- * equal to 12 (December). `monthDay` must be an integer greater than or equal to 1 and less than or
- * equal to the number of days in the current month.
- *
- * `isoYear` must be an integer comprised in the range [MIN_FULL_YEAR, MAX_FULL_YEAR]. `isoWeek`
- * must be an integer greater than or equal to 1 and less than or equal to the number of iso weeks
- * in the current year. `weekday` must be an integer greater than or equal to 1 (monday) and less
- * than or equal to 7 (sunday).
+ * `isoYear` must be comprised in the range [MIN_FULL_YEAR, MAX_FULL_YEAR]. `isoWeek` must be
+ * greater than or equal to 1 and less than or equal to the number of iso weeks in the current year.
+ * `weekday` must be greater than or equal to 1 (monday) and less than or equal to 7 (sunday).
  *
  * If there is not sufficient information to determine the exact day of the year, i.e. none of the
  * three following tuples is fully determined [year, ordinalDay], [year, month, monthDay], [isoYear,
  * isoWeek, weekday], default values are determined in the following order (the first match stops
  * the process):
  *
- * - If `year` and `month` are defined, `monthDay` is taken equal to 1.
- * - If `year` and `monthDay` are defined, `month` is taken equal to 1.
- * - If `year` is defined and both `month` and `monthDay` are undefined, the day is taken to be the
- *   first one in the year.
- * - If `isoYear` and `isoWeek` are defined, `weekday` is taken equal to 1.
- * - If `isoYear` and `weekday` are defined, `isoWeek` is taken equal to 1.
- * - If `isoYear` is defined and both `isoWeek` and `weekday` are undefined, the day is taken to be
- *   the first one in the isoyear.
+ * - If `year` and `month` are set, `monthDay` is taken equal to 1.
+ * - If `year` and `monthDay` are set, `month` is taken equal to 1.
+ * - If `year` is set and both `month` and `monthDay` are undefined, the day is taken to be the first
+ *   one in the year.
+ * - If `isoYear` and `isoWeek` are set, `weekday` is taken equal to 1.
+ * - If `isoYear` and `weekday` are set, `isoWeek` is taken equal to 1.
+ * - If `isoYear` is set and both `isoWeek` and `weekday` are undefined, the day is taken to be the
+ *   first one in the iso year.
  * - If both `year` and `isoYear` are undefined, an error is raised.
  *
- * `hour23` must be an integer greater than or equal to 0 and less than or equal to 23. `hour11`
- * must be an integer greater than or equal to 0 and less than or equal to 11. `meridiem` must be
- * one of 0 (AM) or 12 (PM). If there is not sufficient information to determine the hour of the
- * day, i.e. none of the two following tuples is fully determined [hour23], [hour11, meridiem],
- * default values are determined as follows:
+ * `hour23` must be greater than or equal to 0 and less than or equal to 23. `hour11` must be
+ * greater than or equal to 0 and less than or equal to 11. `meridiem` must be one of 0 (AM) or 12
+ * (PM). If there is not sufficient information to determine the hour of the day, i.e. none of the
+ * two following tuples is fully determined [hour23], [hour11, meridiem], default values are
+ * determined as follows:
  *
  * - If `meridiem` is set, `hour11` is taken equal to 0.
  * - If `hour11` is set, `meridiem` is taken equal to 0.
  * - Otherwise, `meridiem` and `hour11` are taken equal to 0.
  *
- * `minute` must be an integer greater than or equal to 0 and less than or equal to 59. If omitted,
- * minute is assumed to be 0.
+ * `minute` must be greater than or equal to 0 and less than or equal to 59. If omitted, minute is
+ * assumed to be 0.
  *
- * `second` must be an integer greater than or equal to 0 and less than or equal to 59. If omitted,
- * second is assumed to be 0.
+ * `second` must be greater than or equal to 0 and less than or equal to 59. If omitted, second is
+ * assumed to be 0.
  *
- * `millisecond` must be an integer greater than or equal to 0 and less than or equal to 999. If
- * omitted, millisecond is assumed to be 0.
+ * `millisecond` must be greater than or equal to 0 and less than or equal to 999. If omitted,
+ * millisecond is assumed to be 0.
+ *
+ * `timeZoneOffset` must be strictly greater to -13 and strictly less than 15. `timeZoneOffsetHour`
+ * which must be greater than or equal to -12 and less than or equal to 14. `timeZoneOffsetMinute`
+ * which must be greater than or equal to 0 and less than or equal to 59 `timeZoneOffsetSecond`
+ * which must be greater than or equal to 0 and less than or equal to 59.
+ *
+ * If there is not sufficient information to determine the exact time zone offset, i.e. none of the
+ * two following tuples is fully determined [timeZoneOffset], [timeZoneOffsetHour,
+ * timeZoneOffsetMinute, timeZoneOffsetSecond], default values are determined as follows :
+ *
+ * - If all parameters are undefined, the local time zone offset of the machine this code is running
+ *   on is used.
+ * - If any of `timeZoneOffsetHour`, `timeZoneOffsetMinute`, `timeZoneOffsetSecond`, the undefined
+ *   parameters are taken equal to 0.
+ *
+ * `year`, `ordinalDay`, `month`, `monthDay`, `isoYear`, `isoWeek`, `weekDay`, `hour23`, `hour11`,
+ * `minute`, `second`, `millisecond`, `timeZoneOffsetHour`, `timeZoneOffsetMinute` and
+ * `timeZoneOffsetSecond` should be integers. `timeZoneOffset` does not need to be an integer.
  *
  * All parameters must be coherent. For instance, `year=1970`, `month=1`, `monthDay=1`, `weekday=0`
- * and `timeZoneOffset=0` will trigger an error because 1/1/1970 00:00:00:000+0:00 is a thursday.
- * `hour23=13` and `meridiem=0` will also trigger an error.
+ * `timeZoneOffsetHour=0`, `timeZoneOffsetMinute=0` and `timeZoneOffsetSecond=0` will trigger an
+ * error because 1/1/1970 00:00:00:000+0:00 is a thursday. `hour23=13` and `meridiem=0` will also
+ * trigger an error.
  *
  * @category Constructors
  */
@@ -1681,10 +1754,55 @@ export const fromParts = ({
 	minute,
 	second,
 	millisecond,
-	timeZoneOffset
+	timeZoneOffset,
+	timeZoneOffsetHour,
+	timeZoneOffsetMinute,
+	timeZoneOffsetSecond
 }: Parts.Type): Either.Either<Type, MInputError.Type> =>
 	Either.gen(function* () {
-		const zonedOrigin = yield* pipe(_uncalculatedOrigin, _setTimeZoneOffset(false, timeZoneOffset));
+		const zonedOrigin = yield* Either.gen(function* () {
+			if (
+				timeZoneOffset !== undefined ||
+				(timeZoneOffsetHour === undefined &&
+					timeZoneOffsetMinute === undefined &&
+					timeZoneOffsetSecond === undefined)
+			) {
+				const result = yield* pipe(_uncalculatedOrigin, _setTimeZoneOffset(false, timeZoneOffset));
+				const {
+					timeZoneOffsetSign: derivedSign,
+					timeZoneOffsetHour: derivedHour,
+					timeZoneOffsetMinute: derivedMinute,
+					timeZoneOffsetSecond: derivedSecond
+				} = getTimeZoneOffsetParts(result);
+				if (timeZoneOffsetHour !== undefined)
+					yield* pipe(
+						timeZoneOffsetHour,
+						MInputError.assertValue({
+							expected: derivedSign * derivedHour,
+							name: "'timeZoneOffsetHour'"
+						})
+					);
+				if (timeZoneOffsetMinute !== undefined)
+					yield* pipe(
+						timeZoneOffsetMinute,
+						MInputError.assertValue({ expected: derivedMinute, name: "'timeZoneOffsetMinute'" })
+					);
+				if (timeZoneOffsetSecond !== undefined)
+					yield* pipe(
+						timeZoneOffsetSecond,
+						MInputError.assertValue({ expected: derivedSecond, name: "'timeZoneOffsetSecond'" })
+					);
+				return result;
+			}
+			return yield* pipe(
+				_uncalculatedOrigin,
+				_setTimeZoneOffset(false, {
+					timeZoneOffsetHour: timeZoneOffsetHour ?? 0,
+					timeZoneOffsetMinute: timeZoneOffsetMinute ?? 0,
+					timeZoneOffsetSecond: timeZoneOffsetSecond ?? 0
+				})
+			);
+		});
 
 		const withHour = yield* Either.gen(function* () {
 			if (hour23 !== undefined) {
@@ -1805,10 +1923,8 @@ export const fromParts = ({
  *
  * @category Constructors
  */
-export const unsafeFromParts: MTypes.OneArgFunction<Parts.Type, Type> = flow(
-	fromParts,
-	Either.getOrThrowWith(Function.identity)
-);
+export const unsafeFromParts = (parts: Parts.Type) =>
+	Either.getOrThrowWith(fromParts(parts), Function.identity);
 
 /**
  * Returns the timestamp of `self` as a number
@@ -1822,18 +1938,25 @@ export const timestamp: MTypes.OneArgFunction<Type, number> = Struct.get('timest
  *
  * @category Destructors
  */
-export const getZoneOffsetHours: MTypes.OneArgFunction<Type, number> = flow(
-	Struct.get('timeZoneOffset'),
-	Math.trunc
-);
+export const getTimeZoneOffsetParts = (
+	self: Type
+): {
+	readonly timeZoneOffsetSign: 1 | -1;
+	readonly timeZoneOffsetHour: number;
+	readonly timeZoneOffsetMinute: number;
+	readonly timeZoneOffsetSecond: number;
+} => {
+	const timeZoneOffsetSign = self.timeZoneOffset >= 0 ? 1 : -1;
+	const timeZoneOffset = Math.abs(self.timeZoneOffset);
+	const timeZoneOffsetHour = Math.trunc(timeZoneOffset);
+	const timeZoneOffsetMinutesSeconds = (timeZoneOffset - timeZoneOffsetHour) * 60;
+	const timeZoneOffsetMinute = Math.trunc(timeZoneOffsetMinutesSeconds);
+	const timeZoneOffsetSecond = Math.trunc(
+		(timeZoneOffsetMinutesSeconds - timeZoneOffsetMinute) * 60
+	);
 
-/**
- * Returns the minutes of the timeZoneOffset of `self`
- *
- * @category Destructors
- */
-export const getZoneOffsetMinutes = (self: Type): number =>
-	Math.abs(self.timeZoneOffset - Math.trunc(self.timeZoneOffset)) * 60;
+	return { timeZoneOffsetSign, timeZoneOffsetHour, timeZoneOffsetMinute, timeZoneOffsetSecond };
+};
 
 /** Returns the gregorianDate of `self` for the given time zone */
 const _gregorianDate = (self: Type): GregorianDate.Type =>
@@ -2346,6 +2469,8 @@ export const setTimestamp =
 				MInputError.assertInRange({
 					min: MIN_TIMESTAMP,
 					max: MAX_TIMESTAMP,
+					minIncluded: true,
+					maxIncluded: true,
 					offset: 0,
 					name: 'timestamp'
 				})
@@ -2362,30 +2487,69 @@ export const setTimestamp =
 export const unsafeSetTimestamp = (timestamp: number): MTypes.OneArgFunction<Type> =>
 	flow(setTimestamp(timestamp), Either.getOrThrowWith(Function.identity));
 
-/**
- * If possible, returns a right of a copy of `self` with timeZoneOffset set to `timeZoneOffset`.
- * Returns a `left` of an error otherwise. If `keepTimestamp` is true, `_zonedTimestamp` is also
- * modified. Otherwise `timestamp` is also modified.
- *
- * @category Setters
- */
+/*
+ * If `keepTimestamp` is true, `_zonedTimestamp` is also modified. Otherwise `timestamp` is also
+ * modified.
+ * */
 const _setTimeZoneOffset =
-	(keepTimestamp: boolean, timeZoneOffset?: number) =>
+	(
+		keepTimestamp: boolean,
+		timeZoneOffset:
+			| number
+			| {
+					readonly timeZoneOffsetHour: number;
+					readonly timeZoneOffsetMinute: number;
+					readonly timeZoneOffsetSecond: number;
+			  } = LOCAL_TIME_ZONE_OFFSET
+	) =>
 	(self: Type): Either.Either<Type, MInputError.Type> =>
 		Either.gen(function* () {
-			const validatedTimeZoneOffset = yield* pipe(
-				timeZoneOffset,
-				Option.fromNullable,
-				Option.map(
+			const validatedTimeZoneOffset = yield* MTypes.isPrimitive(timeZoneOffset) ?
+				pipe(
+					timeZoneOffset,
 					MInputError.assertInRange({
-						min: -12,
-						max: 14,
+						min: -13,
+						max: 15,
+						minIncluded: false,
+						maxIncluded: false,
 						offset: 0,
 						name: "'timeZoneOffset'"
 					})
-				),
-				Option.getOrElse(() => Either.right(LOCAL_TIME_ZONE_OFFSET))
-			);
+				)
+			:	pipe(
+					timeZoneOffset,
+					MStruct.evolve({
+						timeZoneOffsetHour: MInputError.assertInRange({
+							min: -12,
+							max: 14,
+							minIncluded: true,
+							maxIncluded: true,
+							offset: 0,
+							name: "'timeZoneOffsetHour'"
+						}),
+						timeZoneOffsetMinute: MInputError.assertInRange({
+							min: 0,
+							max: 59,
+							minIncluded: true,
+							maxIncluded: true,
+							offset: 0,
+							name: "'timeZoneOffsetMinute'"
+						}),
+						timeZoneOffsetSecond: MInputError.assertInRange({
+							min: 0,
+							max: 59,
+							minIncluded: true,
+							maxIncluded: true,
+							offset: 0,
+							name: "'timeZoneOffsetSecond'"
+						})
+					}),
+					Either.all,
+					Either.map(
+						({ timeZoneOffsetHour, timeZoneOffsetMinute, timeZoneOffsetSecond }) =>
+							timeZoneOffsetHour + timeZoneOffsetMinute / 60 + timeZoneOffsetSecond / 3600
+					)
+				);
 
 			return keepTimestamp ?
 					_uncalculatedFromTimestamp(self.timestamp, validatedTimeZoneOffset)
@@ -2394,15 +2558,32 @@ const _setTimeZoneOffset =
 
 /**
  * If possible, returns a right of a copy of `self` with timeZoneOffset set to `timeZoneOffset`.
- * Returns a `left` of an error otherwise. `timeZoneOffset` is a number, not necessarily an integer,
- * that represents the offset in hours of the zone for which all calculations of that DateTime
- * object will be carried out. It must be comprised in the range [-12, 14]. If omitted, the offset
- * of the local time zone of the machine this code is running on is used.
+ *
+ * If `timeZoneOffset` is omitted, the local time zone offset of the machine this code is running on
+ * is used.
+ *
+ * `timeZoneOffset` can be expressed as as a number of hours. In this case, it must be strictly
+ * greater to -13 and strictly less than 15.
+ *
+ * It can also be expressed as an object containing three components:
+ *
+ * - `timeZoneOffsetHour` which must be greater than or equal to -12 and less than or equal to 14.
+ * - `timeZoneOffsetMinute` which must be greater than or equal to 0 and less than or equal to 59.
+ * - `timeZoneOffsetSecond` which must be greater than or equal to 0 and less than or equal to 59.
+ *
+ * `timeZoneOffsetHour`, `timeZoneOffsetMinute` and `timeZoneOffsetSecond` should be integers.
+ * `timeZoneOffset`, when expressed as a number of hours, does not need to be an integer.
  *
  * @category Setters
  */
 export const setTimeZoneOffset = (
-	timeZoneOffset?: number
+	timeZoneOffset?:
+		| number
+		| {
+				readonly timeZoneOffsetHour: number;
+				readonly timeZoneOffsetMinute: number;
+				readonly timeZoneOffsetSecond: number;
+		  }
 ): MTypes.OneArgFunction<Type, Either.Either<Type, MInputError.Type>> =>
 	_setTimeZoneOffset(true, timeZoneOffset);
 
@@ -2411,7 +2592,15 @@ export const setTimeZoneOffset = (
  *
  * @category Setters
  */
-export const unsafeSetTimeZoneOffset = (timeZoneOffset?: number): MTypes.OneArgFunction<Type> =>
+export const unsafeSetTimeZoneOffset = (
+	timeZoneOffset?:
+		| number
+		| {
+				readonly timeZoneOffsetHour: number;
+				readonly timeZoneOffsetMinute: number;
+				readonly timeZoneOffsetSecond: number;
+		  }
+): MTypes.OneArgFunction<Type> =>
 	flow(setTimeZoneOffset(timeZoneOffset), Either.getOrThrowWith(Function.identity));
 
 /**

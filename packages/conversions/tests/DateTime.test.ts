@@ -30,10 +30,10 @@ describe('CVDateTime', () => {
 		});
 
 		it('.toString()', () => {
-			TEUtils.strictEqual(origin.toString(), '1970-01-01 00:00:00:000 GMT+0000');
+			TEUtils.strictEqual(origin.toString(), '1970-01-01 00:00:00:000 GMT+000000');
 			TEUtils.strictEqual(
-				CVDateTime.unsafeFromTimestamp(1_749_823_231_774, -3.75).toString(),
-				'2025-06-13 10:15:31:774 GMT-0345'
+				CVDateTime.unsafeFromTimestamp(1_749_823_231_774, -3.765).toString(),
+				'2025-06-13 10:14:37:774 GMT-034554'
 			);
 		});
 
@@ -310,6 +310,49 @@ describe('CVDateTime', () => {
 			TEUtils.assertSome(testDate.time);
 		});
 
+		it('From date with hour23 and timeZoneOffsetHour, timeZoneOffsetMinute, timeZoneOffsetSecond', () => {
+			TEUtils.assertRight(
+				pipe(
+					{
+						year: 2024,
+						ordinalDay: 61,
+						hour23: 17,
+						minute: 43,
+						second: 27,
+						millisecond: 654,
+						timeZoneOffsetHour: 1,
+						timeZoneOffsetMinute: 12,
+						timeZoneOffsetSecond: 30
+					},
+					CVDateTime.fromParts,
+					Either.map(CVDateTime.timestamp)
+				),
+				Date.UTC(2024, 2, 1, 16, 30, 57, 654)
+			);
+		});
+
+		it('From date with hour23 and timeZoneOffset, timeZoneOffsetHour, timeZoneOffsetMinute, timeZoneOffsetSecond', () => {
+			TEUtils.assertRight(
+				pipe(
+					{
+						year: 2024,
+						ordinalDay: 61,
+						hour23: 17,
+						minute: 43,
+						second: 27,
+						millisecond: 654,
+						timeZoneOffset: 1.215,
+						timeZoneOffsetHour: 1,
+						timeZoneOffsetMinute: 12,
+						timeZoneOffsetSecond: 54
+					},
+					CVDateTime.fromParts,
+					Either.map(CVDateTime.timestamp)
+				),
+				Date.UTC(2024, 2, 1, 16, 30, 33, 654)
+			);
+		});
+
 		it('From date with hour11 and meridiem', () => {
 			TEUtils.assertRight(
 				pipe(
@@ -497,54 +540,125 @@ describe('CVDateTime', () => {
 					Date.UTC(2024, 2, 15, 5)
 				);
 			});
+
+			it('Only timeZoneOffsetMinute is set', () => {
+				TEUtils.assertRight(
+					pipe(
+						{
+							year: 2024,
+							ordinalDay: 61,
+							hour23: 17,
+							minute: 43,
+							second: 27,
+							millisecond: 654,
+							timeZoneOffsetMinute: 5
+						},
+						CVDateTime.fromParts,
+						Either.map(CVDateTime.timestamp)
+					),
+					Date.UTC(2024, 2, 1, 17, 38, 27, 654)
+				);
+			});
 		});
 
-		it('Out of range data', () => {
-			TEUtils.assertLeftMessage(
-				pipe({ year: 2025, timeZoneOffset: 15 }, CVDateTime.fromParts),
-				"Expected 'timeZoneOffset' to be between -12 and 14 included. Actual: 15"
-			);
+		describe('Out of range data', () => {
+			it('timeZoneOffset', () => {
+				TEUtils.assertLeftMessage(
+					pipe({ year: 2025, timeZoneOffset: 15 }, CVDateTime.fromParts),
+					"Expected 'timeZoneOffset' to be between -13 (excluded) and 15 (excluded). Actual: 15"
+				);
+			});
 
-			TEUtils.assertLeftMessage(
-				pipe({ year: 2025, month: 0 }, CVDateTime.fromParts),
-				"Expected 'month' to be between 1 and 12 included. Actual: 0"
-			);
-			TEUtils.assertLeftMessage(
-				pipe({ year: 2025, month: 2, monthDay: 32 }, CVDateTime.fromParts),
-				"Expected 'monthDay' to be between 1 and 28 included. Actual: 32"
-			);
-			TEUtils.assertLeftMessage(
-				pipe({ year: 2024, ordinalDay: 412 }, CVDateTime.fromParts),
-				"Expected 'ordinalDay' to be between 1 and 366 included. Actual: 412"
-			);
-			TEUtils.assertLeftMessage(
-				pipe({ isoYear: 2027, isoWeek: 53 }, CVDateTime.fromParts),
-				"Expected 'isoWeek' to be between 1 and 52 included. Actual: 53"
-			);
-			TEUtils.assertLeftMessage(
-				pipe({ isoYear: 2027, weekday: 0 }, CVDateTime.fromParts),
-				"Expected 'weekday' to be between 1 and 7 included. Actual: 0"
-			);
-			TEUtils.assertLeftMessage(
-				pipe({ year: 2024, hour23: 24 }, CVDateTime.fromParts),
-				"Expected 'hour23' to be between 0 and 23 included. Actual: 24"
-			);
-			TEUtils.assertLeftMessage(
-				pipe({ year: 2024, meridiem: 0, hour11: -4 }, CVDateTime.fromParts),
-				"Expected 'hour11' to be between 0 and 11 included. Actual: -4"
-			);
-			TEUtils.assertLeftMessage(
-				pipe({ year: 2024, minute: 60 }, CVDateTime.fromParts),
-				"Expected 'minute' to be between 0 and 59 included. Actual: 60"
-			);
-			TEUtils.assertLeftMessage(
-				pipe({ year: 2024, second: 67 }, CVDateTime.fromParts),
-				"Expected 'second' to be between 0 and 59 included. Actual: 67"
-			);
-			TEUtils.assertLeftMessage(
-				pipe({ year: 2024, millisecond: 1023 }, CVDateTime.fromParts),
-				"Expected 'millisecond' to be between 0 and 999 included. Actual: 1023"
-			);
+			it('timeZoneOffsetHour', () => {
+				TEUtils.assertLeftMessage(
+					pipe({ year: 2025, timeZoneOffsetHour: 15 }, CVDateTime.fromParts),
+					"Expected 'timeZoneOffsetHour' to be between -12 (included) and 14 (included). Actual: 15"
+				);
+			});
+
+			it('timeZoneOffsetMinute', () => {
+				TEUtils.assertLeftMessage(
+					pipe({ year: 2025, timeZoneOffsetMinute: 63 }, CVDateTime.fromParts),
+					"Expected 'timeZoneOffsetMinute' to be between 0 (included) and 59 (included). Actual: 63"
+				);
+			});
+
+			it('timeZoneOffsetSecond', () => {
+				TEUtils.assertLeftMessage(
+					pipe({ year: 2025, timeZoneOffsetSecond: -5 }, CVDateTime.fromParts),
+					"Expected 'timeZoneOffsetSecond' to be between 0 (included) and 59 (included). Actual: -5"
+				);
+			});
+
+			it('month', () => {
+				TEUtils.assertLeftMessage(
+					pipe({ year: 2025, month: 0 }, CVDateTime.fromParts),
+					"Expected 'month' to be between 1 (included) and 12 (included). Actual: 0"
+				);
+			});
+
+			it('monthDay', () => {
+				TEUtils.assertLeftMessage(
+					pipe({ year: 2025, month: 2, monthDay: 32 }, CVDateTime.fromParts),
+					"Expected 'monthDay' to be between 1 (included) and 28 (included). Actual: 32"
+				);
+			});
+
+			it('ordinalDay', () => {
+				TEUtils.assertLeftMessage(
+					pipe({ year: 2024, ordinalDay: 412 }, CVDateTime.fromParts),
+					"Expected 'ordinalDay' to be between 1 (included) and 366 (included). Actual: 412"
+				);
+			});
+
+			it('isoWeek', () => {
+				TEUtils.assertLeftMessage(
+					pipe({ isoYear: 2027, isoWeek: 53 }, CVDateTime.fromParts),
+					"Expected 'isoWeek' to be between 1 (included) and 52 (included). Actual: 53"
+				);
+			});
+
+			it('weekDay', () => {
+				TEUtils.assertLeftMessage(
+					pipe({ isoYear: 2027, weekday: 0 }, CVDateTime.fromParts),
+					"Expected 'weekday' to be between 1 (included) and 7 (included). Actual: 0"
+				);
+			});
+
+			it('hour23', () => {
+				TEUtils.assertLeftMessage(
+					pipe({ year: 2024, hour23: 24 }, CVDateTime.fromParts),
+					"Expected 'hour23' to be between 0 (included) and 23 (included). Actual: 24"
+				);
+			});
+
+			it('hour11', () => {
+				TEUtils.assertLeftMessage(
+					pipe({ year: 2024, meridiem: 0, hour11: -4 }, CVDateTime.fromParts),
+					"Expected 'hour11' to be between 0 (included) and 11 (included). Actual: -4"
+				);
+			});
+
+			it('minute', () => {
+				TEUtils.assertLeftMessage(
+					pipe({ year: 2024, minute: 60 }, CVDateTime.fromParts),
+					"Expected 'minute' to be between 0 (included) and 59 (included). Actual: 60"
+				);
+			});
+
+			it('second', () => {
+				TEUtils.assertLeftMessage(
+					pipe({ year: 2024, second: 67 }, CVDateTime.fromParts),
+					"Expected 'second' to be between 0 (included) and 59 (included). Actual: 67"
+				);
+			});
+
+			it('millisecond', () => {
+				TEUtils.assertLeftMessage(
+					pipe({ year: 2024, millisecond: 1023 }, CVDateTime.fromParts),
+					"Expected 'millisecond' to be between 0 (included) and 999 (included). Actual: 1023"
+				);
+			});
 		});
 		it('Incoherent parts', () => {
 			TEUtils.assertLeftMessage(
@@ -697,6 +811,24 @@ describe('CVDateTime', () => {
 					CVDateTime.fromParts
 				),
 				"Expected 'ordinalDay' to be: 1. Actual: 5"
+			);
+			TEUtils.assertLeftMessage(
+				pipe(
+					{
+						year: 2024,
+						ordinalDay: 61,
+						hour23: 17,
+						minute: 43,
+						second: 27,
+						millisecond: 654,
+						timeZoneOffset: 1.215,
+						timeZoneOffsetHour: 1,
+						timeZoneOffsetMinute: 12,
+						timeZoneOffsetSecond: 53
+					},
+					CVDateTime.fromParts
+				),
+				"Expected 'timeZoneOffsetSecond' to be: 54. Actual: 53"
 			);
 		});
 	});
@@ -1139,7 +1271,7 @@ describe('CVDateTime', () => {
 					Either.flatMap(CVDateTime.setTimeZoneOffset(-8)),
 					Either.map((d) => d.toString())
 				),
-				'2024-02-29 22:00:00:000 GMT-0800'
+				'2024-02-29 22:00:00:000 GMT-080000'
 			);
 		});
 	});
