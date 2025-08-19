@@ -64,13 +64,85 @@ describe('MInputError', () => {
 	describe('assertInRange', () => {
 		it('Not passing', () => {
 			TEUtils.assertLeftMessage(
-				MInputError.assertInRange({ min: 3, max: 5, offset: 1, name: "'age'" })(6),
-				"Expected 'age' to be between 4 and 6 included. Actual: 7"
+				MInputError.assertInRange({
+					min: 3,
+					max: 5,
+					minIncluded: false,
+					maxIncluded: false,
+					offset: 1,
+					name: "'age'"
+				})(3),
+				"Expected 'age' to be between 4 (excluded) and 6 (excluded). Actual: 4"
+			);
+			TEUtils.assertLeftMessage(
+				MInputError.assertInRange({
+					min: 3,
+					max: 5,
+					minIncluded: true,
+					maxIncluded: false,
+					offset: 0,
+					name: "'age'"
+				})(2),
+				"Expected 'age' to be between 3 (included) and 5 (excluded). Actual: 2"
+			);
+			TEUtils.assertLeftMessage(
+				MInputError.assertInRange({
+					min: 3,
+					max: 5,
+					minIncluded: false,
+					maxIncluded: false,
+					offset: 0,
+					name: "'age'"
+				})(5),
+				"Expected 'age' to be between 3 (excluded) and 5 (excluded). Actual: 5"
+			);
+			TEUtils.assertLeftMessage(
+				MInputError.assertInRange({
+					min: 3,
+					max: 5,
+					minIncluded: false,
+					maxIncluded: true,
+					offset: 0,
+					name: "'age'"
+				})(6),
+				"Expected 'age' to be between 3 (excluded) and 5 (included). Actual: 6"
 			);
 		});
 
 		it('Passing', () => {
-			TEUtils.assertRight(MInputError.assertInRange({ min: 3, max: 5, offset: 1 })(4), 4);
+			TEUtils.assertRight(
+				MInputError.assertInRange({
+					min: 3,
+					max: 5,
+					minIncluded: false,
+					maxIncluded: false,
+					offset: 0,
+					name: "'age'"
+				})(4),
+				4
+			);
+			TEUtils.assertRight(
+				MInputError.assertInRange({
+					min: 3,
+					max: 5,
+					minIncluded: true,
+					maxIncluded: false,
+					offset: 0,
+					name: "'age'"
+				})(3),
+				3
+			);
+			TEUtils.assertRight(
+				MInputError.assertInRange({
+					min: 3,
+					max: 5,
+					minIncluded: true,
+					maxIncluded: true,
+					offset: 0,
+					name: "'age'"
+				})(5),
+				5
+			);
 		});
 	});
 

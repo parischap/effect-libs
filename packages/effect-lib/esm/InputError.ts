@@ -134,18 +134,22 @@ export const assertMaxLength = (params: {
 export const outOfBounds = ({
 	min,
 	max,
+	minIncluded,
+	maxIncluded,
 	offset,
 	actual,
 	name
 }: {
 	readonly min: number;
 	readonly max: number;
+	readonly minIncluded: boolean;
+	readonly maxIncluded: boolean;
 	readonly offset: number;
 	readonly actual: number;
 	readonly name?: string;
 }) =>
 	new Type({
-		message: `Expected ${_nameLabel(name)} to be between ${min + offset} and ${max + offset} included. Actual: ${actual + offset}`
+		message: `Expected ${_nameLabel(name)} to be between ${min + offset} (${minIncluded ? 'included' : 'excluded'}) and ${max + offset} (${maxIncluded ? 'included' : 'excluded'}). Actual: ${actual + offset}`
 	});
 
 /**
@@ -157,11 +161,16 @@ export const outOfBounds = ({
 export const assertInRange = (params: {
 	readonly min: number;
 	readonly max: number;
+	readonly minIncluded: boolean;
+	readonly maxIncluded: boolean;
 	readonly offset: number;
 	readonly name?: string;
 }): MTypes.OneArgFunction<number, Either.Either<number, Type>> =>
 	Either.liftPredicate(
-		Predicate.and(Number.greaterThanOrEqualTo(params.min), Number.lessThanOrEqualTo(params.max)),
+		Predicate.and(
+			params.minIncluded ? Number.greaterThanOrEqualTo(params.min) : Number.greaterThan(params.min),
+			params.maxIncluded ? Number.lessThanOrEqualTo(params.max) : Number.lessThan(params.max)
+		),
 		(actual) => outOfBounds({ ...params, actual })
 	);
 
