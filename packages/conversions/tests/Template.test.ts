@@ -1,6 +1,6 @@
 /* eslint-disable functional/no-expression-statements */
 import { CVNumberBase10Format, CVPlaceholder, CVReal, CVTemplate } from '@parischap/conversions';
-import { MInputError, MString, MTypes } from '@parischap/effect-lib';
+import { MInputError, MTypes } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
 import { Either } from 'effect';
 import { describe, it } from 'vitest';
@@ -8,8 +8,6 @@ import { describe, it } from 'vitest';
 describe('CVTemplate', () => {
 	const params = {
 		fillChar: '0',
-		padPosition: MString.PadPosition.Left,
-		disallowEmptyString: true,
 		numberBase10Format: CVNumberBase10Format.integer
 	};
 	const template = CVTemplate.make(
@@ -98,7 +96,7 @@ Separator at position 6: ' ',
 		it('Same placeholder receives different values', () => {
 			TEUtils.assertLeftMessage(
 				parser('25/12/2025 13'),
-				"'MM' placeholder is present more than onece in template and receives differing values '12' and '13'"
+				"'MM' placeholder is present more than once in template and receives differing values '12' and '13'"
 			);
 		});
 

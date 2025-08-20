@@ -182,15 +182,13 @@ describe('CVPlaceholder', () => {
 			const placeholder = CVPlaceholder.Tag.fixedLengthToReal({
 				name: 'foo',
 				length: 3,
-				fillChar: '0',
-				padPosition: MString.PadPosition.Left,
-				disallowEmptyString: true,
+				fillChar: ' ',
 				numberBase10Format: CVNumberBase10Format.integer
 			});
 			it('.toString()', () => {
 				TEUtils.strictEqual(
 					placeholder.toString(),
-					"'foo' placeholder: 3-character string left-padded with '0' to integer"
+					"'foo' placeholder: 3-character string left-padded with ' ' to integer"
 				);
 			});
 
@@ -204,7 +202,7 @@ describe('CVPlaceholder', () => {
 
 				it('Passing', () => {
 					TEUtils.assertRight(
-						placeholder.parser('0015'),
+						placeholder.parser('  15'),
 						Tuple.make(CVReal.unsafeFromNumber(1), '5')
 					);
 				});
@@ -219,7 +217,8 @@ describe('CVPlaceholder', () => {
 				});
 
 				it('Passing', () => {
-					TEUtils.assertRight(placeholder.formatter(CVReal.unsafeFromNumber(34)), '034');
+					TEUtils.assertRight(placeholder.formatter(CVReal.unsafeFromNumber(34)), ' 34');
+					TEUtils.assertRight(placeholder.formatter(CVReal.unsafeFromNumber(-4)), '- 4');
 				});
 			});
 		});

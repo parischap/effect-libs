@@ -291,7 +291,7 @@ describe('CVDateTime', () => {
 			);
 		});
 
-		it('From date with hour23 and timeZoneOffset', () => {
+		it('From date with hour23 and zoneOffset', () => {
 			const either = CVDateTime.fromParts({
 				year: 2024,
 				ordinalDay: 61,
@@ -299,7 +299,7 @@ describe('CVDateTime', () => {
 				minute: 43,
 				second: 27,
 				millisecond: 654,
-				timeZoneOffset: 1
+				zoneOffset: 1
 			});
 
 			TEUtils.assertRight(either);
@@ -310,7 +310,7 @@ describe('CVDateTime', () => {
 			TEUtils.assertSome(testDate.time);
 		});
 
-		it('From date with hour23 and timeZoneOffsetHour, timeZoneOffsetMinute, timeZoneOffsetSecond', () => {
+		it('From date with hour23 and zoneHour, zoneMinute, zoneSecond', () => {
 			TEUtils.assertRight(
 				pipe(
 					{
@@ -320,9 +320,9 @@ describe('CVDateTime', () => {
 						minute: 43,
 						second: 27,
 						millisecond: 654,
-						timeZoneOffsetHour: 1,
-						timeZoneOffsetMinute: 12,
-						timeZoneOffsetSecond: 30
+						zoneHour: 1,
+						zoneMinute: 12,
+						zoneSecond: 30
 					},
 					CVDateTime.fromParts,
 					Either.map(CVDateTime.timestamp)
@@ -331,7 +331,7 @@ describe('CVDateTime', () => {
 			);
 		});
 
-		it('From date with hour23 and timeZoneOffset, timeZoneOffsetHour, timeZoneOffsetMinute, timeZoneOffsetSecond', () => {
+		it('From date with hour23 and zoneOffset, zoneHour, zoneMinute, zoneSecond', () => {
 			TEUtils.assertRight(
 				pipe(
 					{
@@ -341,10 +341,10 @@ describe('CVDateTime', () => {
 						minute: 43,
 						second: 27,
 						millisecond: 654,
-						timeZoneOffset: 1.215,
-						timeZoneOffsetHour: 1,
-						timeZoneOffsetMinute: 12,
-						timeZoneOffsetSecond: 54
+						zoneOffset: 1.215,
+						zoneHour: 1,
+						zoneMinute: 12,
+						zoneSecond: 54
 					},
 					CVDateTime.fromParts,
 					Either.map(CVDateTime.timestamp)
@@ -364,7 +364,7 @@ describe('CVDateTime', () => {
 						minute: 43,
 						second: 27,
 						millisecond: 654,
-						timeZoneOffset: -1
+						zoneOffset: -1
 					},
 					CVDateTime.fromParts,
 					Either.map(CVDateTime.timestamp)
@@ -383,7 +383,7 @@ describe('CVDateTime', () => {
 				minute: 43,
 				second: 27,
 				millisecond: 654,
-				timeZoneOffset: 0
+				zoneOffset: 0
 			});
 
 			TEUtils.assertRight(either);
@@ -398,7 +398,7 @@ describe('CVDateTime', () => {
 			it('Only year is set', () => {
 				const either = CVDateTime.fromParts({
 					year: 2025,
-					timeZoneOffset: 0
+					zoneOffset: 0
 				});
 
 				TEUtils.assertRight(either);
@@ -415,7 +415,7 @@ describe('CVDateTime', () => {
 						{
 							year: 2025,
 							month: 5,
-							timeZoneOffset: 0
+							zoneOffset: 0
 						},
 						CVDateTime.fromParts,
 						Either.map(CVDateTime.timestamp)
@@ -429,7 +429,7 @@ describe('CVDateTime', () => {
 						{
 							year: 2025,
 							monthDay: 5,
-							timeZoneOffset: 0
+							zoneOffset: 0
 						},
 						CVDateTime.fromParts,
 						Either.map(CVDateTime.timestamp)
@@ -442,7 +442,7 @@ describe('CVDateTime', () => {
 					pipe(
 						{
 							isoYear: 2025,
-							timeZoneOffset: 0
+							zoneOffset: 0
 						},
 						CVDateTime.fromParts,
 						Either.map(CVDateTime.timestamp)
@@ -456,7 +456,7 @@ describe('CVDateTime', () => {
 						{
 							isoYear: 2025,
 							isoWeek: 5,
-							timeZoneOffset: 0
+							zoneOffset: 0
 						},
 						CVDateTime.fromParts,
 						Either.map(CVDateTime.timestamp)
@@ -470,7 +470,7 @@ describe('CVDateTime', () => {
 						{
 							isoYear: 2025,
 							weekday: 5,
-							timeZoneOffset: 0
+							zoneOffset: 0
 						},
 						CVDateTime.fromParts,
 						Either.map(CVDateTime.timestamp)
@@ -483,7 +483,7 @@ describe('CVDateTime', () => {
 					year: 2024,
 					ordinalDay: 365,
 					isoYear: 2025,
-					timeZoneOffset: 0
+					zoneOffset: 0
 				});
 				TEUtils.assertRight(either);
 				const testDate = either.right;
@@ -499,7 +499,7 @@ describe('CVDateTime', () => {
 					isoYear: 2025,
 					isoWeek: 3,
 					weekday: 4,
-					timeZoneOffset: 0
+					zoneOffset: 0
 				});
 				TEUtils.assertRight(either);
 				const testDate = either.right;
@@ -516,7 +516,7 @@ describe('CVDateTime', () => {
 							year: 2024,
 							ordinalDay: 75,
 							meridiem: 12,
-							timeZoneOffset: 2
+							zoneOffset: 2
 						},
 						CVDateTime.fromParts,
 						Either.map(CVDateTime.timestamp)
@@ -532,7 +532,7 @@ describe('CVDateTime', () => {
 							year: 2024,
 							ordinalDay: 75,
 							hour11: 5,
-							timeZoneOffset: 0
+							zoneOffset: 0
 						},
 						CVDateTime.fromParts,
 						Either.map(CVDateTime.timestamp)
@@ -541,7 +541,7 @@ describe('CVDateTime', () => {
 				);
 			});
 
-			it('Only timeZoneOffsetMinute is set', () => {
+			it('Only zoneMinute is set', () => {
 				TEUtils.assertRight(
 					pipe(
 						{
@@ -551,7 +551,7 @@ describe('CVDateTime', () => {
 							minute: 43,
 							second: 27,
 							millisecond: 654,
-							timeZoneOffsetMinute: 5
+							zoneMinute: 5
 						},
 						CVDateTime.fromParts,
 						Either.map(CVDateTime.timestamp)
@@ -562,31 +562,31 @@ describe('CVDateTime', () => {
 		});
 
 		describe('Out of range data', () => {
-			it('timeZoneOffset', () => {
+			it('zoneOffset', () => {
 				TEUtils.assertLeftMessage(
-					pipe({ year: 2025, timeZoneOffset: 15 }, CVDateTime.fromParts),
-					"Expected 'timeZoneOffset' to be between -13 (excluded) and 15 (excluded). Actual: 15"
+					pipe({ year: 2025, zoneOffset: 15 }, CVDateTime.fromParts),
+					"Expected 'zoneOffset' to be between -13 (excluded) and 15 (excluded). Actual: 15"
 				);
 			});
 
-			it('timeZoneOffsetHour', () => {
+			it('zoneHour', () => {
 				TEUtils.assertLeftMessage(
-					pipe({ year: 2025, timeZoneOffsetHour: 15 }, CVDateTime.fromParts),
-					"Expected 'timeZoneOffsetHour' to be between -12 (included) and 14 (included). Actual: 15"
+					pipe({ year: 2025, zoneHour: 15 }, CVDateTime.fromParts),
+					"Expected 'zoneHour' to be between -12 (included) and 14 (included). Actual: 15"
 				);
 			});
 
-			it('timeZoneOffsetMinute', () => {
+			it('zoneMinute', () => {
 				TEUtils.assertLeftMessage(
-					pipe({ year: 2025, timeZoneOffsetMinute: 63 }, CVDateTime.fromParts),
-					"Expected 'timeZoneOffsetMinute' to be between 0 (included) and 59 (included). Actual: 63"
+					pipe({ year: 2025, zoneMinute: 63 }, CVDateTime.fromParts),
+					"Expected 'zoneMinute' to be between 0 (included) and 59 (included). Actual: 63"
 				);
 			});
 
-			it('timeZoneOffsetSecond', () => {
+			it('zoneSecond', () => {
 				TEUtils.assertLeftMessage(
-					pipe({ year: 2025, timeZoneOffsetSecond: -5 }, CVDateTime.fromParts),
-					"Expected 'timeZoneOffsetSecond' to be between 0 (included) and 59 (included). Actual: -5"
+					pipe({ year: 2025, zoneSecond: -5 }, CVDateTime.fromParts),
+					"Expected 'zoneSecond' to be between 0 (included) and 59 (included). Actual: -5"
 				);
 			});
 
@@ -667,7 +667,7 @@ describe('CVDateTime', () => {
 						year: 2024,
 						hour23: 5,
 						meridiem: 12,
-						timeZoneOffset: 0
+						zoneOffset: 0
 					},
 					CVDateTime.fromParts
 				),
@@ -680,7 +680,7 @@ describe('CVDateTime', () => {
 						hour23: 5,
 						meridiem: 0,
 						hour11: 4,
-						timeZoneOffset: 0
+						zoneOffset: 0
 					},
 					CVDateTime.fromParts
 				),
@@ -692,7 +692,7 @@ describe('CVDateTime', () => {
 						year: 2024,
 						ordinalDay: 61,
 						month: 2,
-						timeZoneOffset: 0
+						zoneOffset: 0
 					},
 					CVDateTime.fromParts
 				),
@@ -704,7 +704,7 @@ describe('CVDateTime', () => {
 						year: 2024,
 						ordinalDay: 61,
 						monthDay: 2,
-						timeZoneOffset: 0
+						zoneOffset: 0
 					},
 					CVDateTime.fromParts
 				),
@@ -716,7 +716,7 @@ describe('CVDateTime', () => {
 						year: 2024,
 						ordinalDay: 61,
 						isoWeek: 12,
-						timeZoneOffset: 0
+						zoneOffset: 0
 					},
 					CVDateTime.fromParts
 				),
@@ -728,7 +728,7 @@ describe('CVDateTime', () => {
 						year: 2024,
 						ordinalDay: 61,
 						weekday: 17,
-						timeZoneOffset: 0
+						zoneOffset: 0
 					},
 					CVDateTime.fromParts
 				),
@@ -741,7 +741,7 @@ describe('CVDateTime', () => {
 						month: 3,
 						monthDay: 1,
 						weekday: 17,
-						timeZoneOffset: 0
+						zoneOffset: 0
 					},
 					CVDateTime.fromParts
 				),
@@ -754,7 +754,7 @@ describe('CVDateTime', () => {
 						month: 12,
 						monthDay: 30,
 						isoYear: 2024,
-						timeZoneOffset: 0
+						zoneOffset: 0
 					},
 					CVDateTime.fromParts
 				),
@@ -767,7 +767,7 @@ describe('CVDateTime', () => {
 						isoWeek: 52,
 						weekday: 6,
 						year: 2027,
-						timeZoneOffset: 0
+						zoneOffset: 0
 					},
 					CVDateTime.fromParts
 				),
@@ -780,7 +780,7 @@ describe('CVDateTime', () => {
 						isoWeek: 52,
 						weekday: 6,
 						month: 12,
-						timeZoneOffset: 0
+						zoneOffset: 0
 					},
 					CVDateTime.fromParts
 				),
@@ -793,7 +793,7 @@ describe('CVDateTime', () => {
 						isoWeek: 52,
 						weekday: 6,
 						monthDay: 5,
-						timeZoneOffset: 0
+						zoneOffset: 0
 					},
 					CVDateTime.fromParts
 				),
@@ -806,7 +806,7 @@ describe('CVDateTime', () => {
 						isoWeek: 52,
 						weekday: 6,
 						ordinalDay: 5,
-						timeZoneOffset: 0
+						zoneOffset: 0
 					},
 					CVDateTime.fromParts
 				),
@@ -821,14 +821,14 @@ describe('CVDateTime', () => {
 						minute: 43,
 						second: 27,
 						millisecond: 654,
-						timeZoneOffset: 1.215,
-						timeZoneOffsetHour: 1,
-						timeZoneOffsetMinute: 12,
-						timeZoneOffsetSecond: 53
+						zoneOffset: 1.215,
+						zoneHour: 1,
+						zoneMinute: 12,
+						zoneSecond: 53
 					},
 					CVDateTime.fromParts
 				),
-				"Expected 'timeZoneOffsetSecond' to be: 54. Actual: 53"
+				"Expected 'zoneSecond' to be: 54. Actual: 53"
 			);
 		});
 	});
@@ -934,7 +934,7 @@ describe('CVDateTime', () => {
 						year: 2022,
 						month: 1,
 						monthDay: 3,
-						timeZoneOffset: 0
+						zoneOffset: 0
 					});
 					TEUtils.strictEqual(CVDateTime.getYear(testDate), 2022);
 					TEUtils.strictEqual(CVDateTime.getIsoYear(testDate), 2022);
@@ -947,7 +947,7 @@ describe('CVDateTime', () => {
 						year: 2025,
 						month: 12,
 						monthDay: 28,
-						timeZoneOffset: 0
+						zoneOffset: 0
 					});
 					TEUtils.strictEqual(CVDateTime.getYear(testDate), 2025);
 					TEUtils.strictEqual(CVDateTime.getIsoYear(testDate), 2025);
@@ -961,7 +961,7 @@ describe('CVDateTime', () => {
 					year: 2022,
 					month: 1,
 					monthDay: 2,
-					timeZoneOffset: 0
+					zoneOffset: 0
 				});
 				TEUtils.strictEqual(CVDateTime.getYear(testDate), 2022);
 				TEUtils.strictEqual(CVDateTime.getIsoYear(testDate), 2021);
@@ -974,7 +974,7 @@ describe('CVDateTime', () => {
 					year: 2025,
 					month: 12,
 					monthDay: 29,
-					timeZoneOffset: 0
+					zoneOffset: 0
 				});
 				TEUtils.strictEqual(CVDateTime.getYear(testDate), 2025);
 				TEUtils.strictEqual(CVDateTime.getIsoYear(testDate), 2026);
@@ -999,7 +999,7 @@ describe('CVDateTime', () => {
 							isoYear: 2027,
 							isoWeek: 22,
 							weekday: 1,
-							timeZoneOffset: 0
+							zoneOffset: 0
 						},
 						CVDateTime.unsafeFromParts,
 						CVDateTime.setMonth(6)
@@ -1015,7 +1015,7 @@ describe('CVDateTime', () => {
 							year: 2026,
 							month: 12,
 							monthDay: 29,
-							timeZoneOffset: 0
+							zoneOffset: 0
 						},
 						CVDateTime.unsafeFromParts,
 						CVDateTime.setIsoYear(2024)
@@ -1034,7 +1034,7 @@ describe('CVDateTime', () => {
 				minute: 43,
 				second: 27,
 				millisecond: 654,
-				timeZoneOffset: 1
+				zoneOffset: 1
 			});
 			TEUtils.assertRight(
 				pipe(testDate, CVDateTime.setYear(2019), Either.map(CVDateTime.timestamp)),
@@ -1097,7 +1097,7 @@ describe('CVDateTime', () => {
 						year: 2023,
 						month: 2,
 						monthDay: 28,
-						timeZoneOffset: 0
+						zoneOffset: 0
 					},
 					CVDateTime.unsafeFromParts,
 					CVDateTime.setYear(2019),
@@ -1111,7 +1111,7 @@ describe('CVDateTime', () => {
 						year: 2023,
 						month: 3,
 						monthDay: 1,
-						timeZoneOffset: 0
+						zoneOffset: 0
 					},
 					CVDateTime.unsafeFromParts,
 					CVDateTime.setYear(2019),
@@ -1128,7 +1128,7 @@ describe('CVDateTime', () => {
 						year: 2023,
 						month: 2,
 						monthDay: 28,
-						timeZoneOffset: 0
+						zoneOffset: 0
 					},
 					CVDateTime.unsafeFromParts,
 					CVDateTime.setYear(2024),
@@ -1142,7 +1142,7 @@ describe('CVDateTime', () => {
 						year: 2023,
 						month: 3,
 						monthDay: 1,
-						timeZoneOffset: 0
+						zoneOffset: 0
 					},
 					CVDateTime.unsafeFromParts,
 					CVDateTime.setYear(2024),
@@ -1159,7 +1159,7 @@ describe('CVDateTime', () => {
 						year: 2024,
 						month: 2,
 						monthDay: 28,
-						timeZoneOffset: 0
+						zoneOffset: 0
 					},
 					CVDateTime.unsafeFromParts,
 					CVDateTime.setYear(2023),
@@ -1173,7 +1173,7 @@ describe('CVDateTime', () => {
 						year: 2024,
 						month: 2,
 						monthDay: 29,
-						timeZoneOffset: 0
+						zoneOffset: 0
 					},
 					CVDateTime.unsafeFromParts,
 					CVDateTime.setYear(2023)
@@ -1185,7 +1185,7 @@ describe('CVDateTime', () => {
 						year: 2024,
 						month: 3,
 						monthDay: 1,
-						timeZoneOffset: 0
+						zoneOffset: 0
 					},
 					CVDateTime.unsafeFromParts,
 					CVDateTime.setYear(2023),
@@ -1202,7 +1202,7 @@ describe('CVDateTime', () => {
 						year: 2024,
 						month: 2,
 						monthDay: 28,
-						timeZoneOffset: 0
+						zoneOffset: 0
 					},
 					CVDateTime.unsafeFromParts,
 					CVDateTime.setYear(2020),
@@ -1216,7 +1216,7 @@ describe('CVDateTime', () => {
 						year: 2024,
 						month: 2,
 						monthDay: 29,
-						timeZoneOffset: 0
+						zoneOffset: 0
 					},
 					CVDateTime.unsafeFromParts,
 					CVDateTime.setYear(2020),
@@ -1230,7 +1230,7 @@ describe('CVDateTime', () => {
 						year: 2024,
 						month: 3,
 						monthDay: 1,
-						timeZoneOffset: 0
+						zoneOffset: 0
 					},
 					CVDateTime.unsafeFromParts,
 					CVDateTime.setYear(2020),
@@ -1247,7 +1247,7 @@ describe('CVDateTime', () => {
 						isoYear: 2027,
 						isoWeek: 18,
 						weekday: 2,
-						timeZoneOffset: 0
+						zoneOffset: 0
 					},
 					CVDateTime.fromParts,
 					Either.flatMap(CVDateTime.setMonthDay(20)),
@@ -1257,7 +1257,7 @@ describe('CVDateTime', () => {
 			);
 		});
 
-		it('Change timeZoneOffset', () => {
+		it('Change zoneOffset', () => {
 			TEUtils.assertRight(
 				pipe(
 					{
@@ -1265,10 +1265,10 @@ describe('CVDateTime', () => {
 						ordinalDay: 61,
 						hour11: 7,
 						meridiem: 0,
-						timeZoneOffset: 1
+						zoneOffset: 1
 					},
 					CVDateTime.fromParts,
-					Either.flatMap(CVDateTime.setTimeZoneOffset(-8)),
+					Either.flatMap(CVDateTime.setZoneOffset(-8)),
 					Either.map((d) => d.toString())
 				),
 				'2024-02-29 22:00:00:000 GMT-080000'
@@ -1296,7 +1296,7 @@ describe('CVDateTime', () => {
 
 		it('Not passing', () => {
 			TEUtils.assertRight(
-				pipe(feb29_2020, CVDateTime.setTimeZoneOffset(-1), Either.map(CVDateTime.isLastMonthDay)),
+				pipe(feb29_2020, CVDateTime.setZoneOffset(-1), Either.map(CVDateTime.isLastMonthDay)),
 				false
 			);
 		});

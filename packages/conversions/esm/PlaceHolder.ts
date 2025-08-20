@@ -416,25 +416,25 @@ export namespace Tag {
 
 	/**
 	 * Builds a Placeholder instance that parses/formats a Real in the given `numberBase10Format`. If
-	 * the number to parse/format does not occupy length characters, trimming/padding is applied. See
-	 * the paddedFixedLength instance builder.
+	 * the number to parse/format is less than `length` characters, `fillChar` is trimmed/padded
+	 * between the sign and the number so that the length condition is respected. fillChar must be a
+	 * one-character string (but no error is triggered if you do not respect that condition)
 	 *
 	 * @category Constructors
 	 */
+
 	export const fixedLengthToReal = <const N extends string>(params: {
 		readonly name: N;
 		readonly length: number;
 		readonly fillChar: string;
-		readonly padPosition: MString.PadPosition;
-		readonly disallowEmptyString: boolean;
 		readonly numberBase10Format: CVNumberBase10Format.Type;
 	}): Type<N, CVReal.Type> => {
 		const label = _labelFromName(params.name);
-		const numberBase10Format = params.numberBase10Format;
+		const { numberBase10Format, fillChar } = params;
 		const numberParser = (input: string) =>
 			pipe(
 				input,
-				CVNumberBase10Format.toRealParser(numberBase10Format),
+				CVNumberBase10Format.toRealParser(numberBase10Format, fillChar),
 				Either.fromOption(
 					() =>
 						new MInputError.Type({
@@ -443,14 +443,19 @@ export namespace Tag {
 				)
 			);
 		const numberFormatter = flow(
-			CVNumberBase10Format.toNumberFormatter(numberBase10Format),
+			CVNumberBase10Format.toNumberFormatter(
+				numberBase10Format,
+				pipe(fillChar, String.repeat(params.length))
+			),
 			Either.right
 		);
 
 		return pipe(
-			paddedFixedLength(params),
+			fixedLength(params),
 			modify({
-				descriptorMapper: MString.append(` to ${numberBase10Format.descriptor}`),
+				descriptorMapper: MString.append(
+					` left-padded with '${fillChar}' to ${numberBase10Format.descriptor}`
+				),
 				postParser: numberParser,
 				preFormatter: numberFormatter
 			})

@@ -99,7 +99,16 @@ describe('CVDateTimeFormat', () => {
 			tag('ss'),
 			tag('S'),
 			sep.space,
-			tag('SSS')
+			tag('SSS'),
+			tag('zH'),
+			sep.space,
+			tag('zHzH'),
+			tag('zm'),
+			sep.space,
+			tag('zmzm'),
+			tag('zs'),
+			sep.space,
+			tag('zszs')
 		]
 	});
 

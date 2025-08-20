@@ -390,6 +390,7 @@ export namespace ScientificNotation {
 			MMatch.exhaustive
 		);
 }
+
 /**
  * Type that represents a NumberBase10Format.
  *
@@ -585,18 +586,25 @@ export const roundingMode: MTypes.OneArgFunction<Type, CVRoundingMode.Type> =
 export const signDisplay: MTypes.OneArgFunction<Type, SignDisplay> = Struct.get('signDisplay');
 
 /**
- * Returns a function that tries to read a number respecting the options represented by `self` from
- * the start of a string `text`. If successful, that function returns a `some` containing `readText`
- * (the part of `text` that could be analyzed as representing a number) and `value` (`readText`
- * converted to a BigDecimal value). Otherwise, it returns a `none`.
+ * Returns a function that tries to parse, from the start of a string `text`, a number respecting
+ * the options represented by `self` and an optional `fillChar` parameter. If successful, that
+ * function returns a `some` containing `parsedText` (the part of `text` that could be analyzed as
+ * representing a number) and `value` (`parsedText` converted to a BigDecimal value). Otherwise, it
+ * returns a `none`.
  *
- * @category Destructors
+ * `fillChar` is a character that may be used as filler between the sign and the number (or at the
+ * start of the number if it is unsigned). It must be a one-character string (but no error is
+ * triggered if it's not). Beware if you use a digit as `fillChar` because the digits composing the
+ * number might get trimmed when parsing (e.g. trying to parse '0000' with `fillChar` '0' will
+ * result in an error)
  */
+
 export const toBigDecimalExtractor = (
-	self: Type
+	self: Type,
+	fillChar = ''
 ): MTypes.OneArgFunction<
 	string,
-	Option.Option<[value: BigDecimal.BigDecimal, readText: string]>
+	Option.Option<[value: BigDecimal.BigDecimal, parsedText: string]>
 > => {
 	const removeThousandSeparator = MString.removeNCharsEveryMCharsFromRight({
 		m: MRegExpString.DIGIT_GROUP_SIZE,
@@ -604,7 +612,13 @@ export const toBigDecimalExtractor = (
 	});
 
 	const getParts = MString.matchAndGroups(
-		pipe(self, MRegExpString.base10Number, MRegExpString.atStart, RegExp),
+		pipe(
+			self,
+			MStruct.append({ fillChar }),
+			MRegExpString.base10Number,
+			MRegExpString.atStart,
+			RegExp
+		),
 		4
 	);
 
@@ -618,7 +632,6 @@ export const toBigDecimalExtractor = (
 		Option.gen(function* () {
 			const [match, [signPart, mantissaIntegerPart, mantissaFractionalPart, exponentPart]] =
 				yield* getParts(text);
-
 			const mantissaFractionalPartLength = yield* pipe(
 				mantissaFractionalPart,
 				String.length,
@@ -682,10 +695,11 @@ export const toBigDecimalExtractor = (
  * @category Destructors
  */
 export const toRealExtractor = (
-	self: Type
-): MTypes.OneArgFunction<string, Option.Option<[value: CVReal.Type, readText: string]>> =>
+	self: Type,
+	fillChar?: string
+): MTypes.OneArgFunction<string, Option.Option<[value: CVReal.Type, parsedText: string]>> =>
 	flow(
-		toBigDecimalExtractor(self),
+		toBigDecimalExtractor(self, fillChar),
 		Option.flatMap(
 			flow(
 				Tuple.mapBoth({
@@ -698,16 +712,23 @@ export const toRealExtractor = (
 	);
 
 /**
- * Returns a function that tries to read a number respecting the options represented by `self` from
- * the whole of a string `text`. If successful, that function returns a `some` of a BigDecimal.
- * Otherwise, it returns a `none`.
+ * Returns a function that tries to parse, from the whole of a string `text`, a number respecting
+ * the options represented by `self` and an optional `fillChar` parameter. If successful, that
+ * function returns a `some` of a BigDecimal. Otherwise, it returns a `none`.
+ *
+ * `fillChar` is a character that may be used as filler between the sign and the number (or at the
+ * start of the number if it is unsigned). It must be a one-character string (but no error is
+ * triggered if it's not). Beware if you use a digit as `fillChar` because the digits composing the
+ * number might get trimmed when parsing (e.g. trying to parse '0000' with `fillChar` '0' will
+ * result in an error)
  *
  * @category Destructors
  */
 export const toBigDecimalParser = (
-	self: Type
+	self: Type,
+	fillChar?: string
 ): MTypes.OneArgFunction<string, Option.Option<BigDecimal.BigDecimal>> => {
-	const extractor = toBigDecimalExtractor(self);
+	const extractor = toBigDecimalExtractor(self, fillChar);
 	return (text) =>
 		pipe(
 			text,
@@ -729,23 +750,31 @@ export const toBigDecimalParser = (
  * @category Destructors
  */
 export const toRealParser = (
-	self: Type
+	self: Type,
+	fillChar?: string
 ): MTypes.OneArgFunction<string, Option.Option<CVReal.Type>> =>
-	flow(toBigDecimalParser(self), Option.flatMap(CVReal.fromBigDecimalOption));
+	flow(toBigDecimalParser(self, fillChar), Option.flatMap(CVReal.fromBigDecimalOption));
 
 /**
- * Returns a function that tries to write `number` respecting the options represented by `self`. If
- * successful, that function returns a `some` of `number` converted to a string. Otherwise, it
- * returns a `none`. `number` can be of type number or BigDecimal for better accuracy. There is a
- * difference between number and BigDecimal (and bigint) regarding the sign of 0. In Javascript,
- * Object.is(0,-0) is false whereas Object.is(0n,-0n) is true. So if the sign of zero is important
- * to you, prefer passing a number to the function. `0` as a BigDecimal will always be interpreted
- * as a positive `0` as we have no means of knowing if it is negative or positive.
+ * Returns a function that tries to format a `number` respecting the options represented by
+ * `self`and an optional parameter `fillChars`. If successful, that function returns a `some` of the
+ * formatted number. Otherwise, it returns a `none`. `number` can be of type number or BigDecimal
+ * for better accuracy. There is a difference between number and BigDecimal (and bigint) regarding
+ * the sign of 0. In Javascript, Object.is(0,-0) is false whereas Object.is(0n,-0n) is true. So if
+ * the sign of zero is important to you, prefer passing a number to the function. `0` as a
+ * BigDecimal will always be interpreted as a positive `0` as we have no means of knowing if it is
+ * negative or positive.
+ *
+ * `fillChars` is a string whose first characters will be inserted between the sign and the number
+ * (or at the start of the number if it is unsigned) so that the formatted number has at least the
+ * same number of characters as fillChars (e.g. the result will be '-02' if you try to format the
+ * value -2 with fillChars = '000')
  *
  * @category Destructors
  */
 export const toNumberFormatter = (
-	self: Type
+	self: Type,
+	fillChars = ''
 ): MTypes.OneArgFunction<BigDecimal.BigDecimal | CVReal.Type, string> => {
 	const rounder =
 		self.maximumFractionDigits === +Infinity ?
@@ -766,6 +795,7 @@ export const toNumberFormatter = (
 		Array.get(0),
 		Option.getOrElse(MFunction.constEmptyString)
 	);
+	const takeNFirstCharsOfFillChars = MFunction.flipDual(String.takeLeft)(fillChars);
 
 	return (number) => {
 		const [sign, selfAsBigDecimal] =
@@ -783,11 +813,11 @@ export const toNumberFormatter = (
 			MBigDecimal.truncatedAndFollowingParts()
 		);
 
-		const signAsString = signFormatter({ sign, isZero: BigDecimal.isZero(absRounded) });
+		const signString = signFormatter({ sign, isZero: BigDecimal.isZero(absRounded) });
 
 		const normalizedFractionalPart = BigDecimal.normalize(fractionalPart);
 
-		const fractionalPartAsString = pipe(
+		const fractionalPartString = pipe(
 			normalizedFractionalPart.value,
 			Option.liftPredicate(Predicate.not(MBigInt.isZero)),
 			Option.map(MString.fromNonNullablePrimitive),
@@ -799,7 +829,7 @@ export const toNumberFormatter = (
 			Option.getOrElse(MFunction.constEmptyString)
 		);
 
-		const integerPartAsString = pipe(
+		const integerPartString = pipe(
 			integerPart.value.toString(),
 			MFunction.fIfTrue({
 				condition: hasThousandSeparator,
@@ -812,19 +842,30 @@ export const toNumberFormatter = (
 			Either.liftPredicate(
 				Predicate.not(MPredicate.strictEquals('0')),
 				MFunction.fIfTrue({
-					condition: !self.showNullIntegerPart && fractionalPartAsString.length !== 0,
+					condition: !self.showNullIntegerPart && fractionalPartString.length !== 0,
 					f: MFunction.constEmptyString
 				})
 			),
 			Either.merge
 		);
 
-		const exponentAsString = pipe(
+		const exponentString = pipe(
 			exponent,
 			Option.map(flow(MString.fromNumber(10), MString.prepend(eNotationChar))),
 			Option.getOrElse(MFunction.constEmptyString)
 		);
-		return signAsString + integerPartAsString + fractionalPartAsString + exponentAsString;
+
+		const numberString = integerPartString + fractionalPartString + exponentString;
+
+		const pad = pipe(
+			fillChars.length,
+			Number.subtract(signString.length),
+			Number.subtract(numberString.length),
+			Number.max(0),
+			takeNFirstCharsOfFillChars
+		);
+
+		return signString + pad + numberString;
 	};
 };
 
@@ -834,15 +875,18 @@ export const toNumberFormatter = (
  *
  * @category Utils
  */
-export const withNDecimals =
-	(decimalNumber: number, descriptor = '') =>
-	(self: Type): Type =>
-		make({
-			...self,
+export const withNDecimals = (
+	decimalNumber: number,
+	descriptor = ''
+): MTypes.OneArgFunction<Type> =>
+	flow(
+		MStruct.append({
 			descriptor,
 			minimumFractionDigits: decimalNumber,
 			maximumFractionDigits: decimalNumber
-		});
+		}),
+		make
+	);
 
 /**
  * Combinator that returns a copy of self with `maximumFractionDigits` set to `n`. `n` must be a
@@ -853,12 +897,15 @@ export const withNDecimals =
 export const withMaxNDecimals =
 	(maxDecimalNumber: number, descriptor = '') =>
 	(self: Type): Type =>
-		make({
-			...self,
-			descriptor,
-			minimumFractionDigits: Math.min(self.minimumFractionDigits, maxDecimalNumber),
-			maximumFractionDigits: maxDecimalNumber
-		});
+		pipe(
+			self,
+			MStruct.append({
+				descriptor,
+				minimumFractionDigits: Math.min(self.minimumFractionDigits, maxDecimalNumber),
+				maximumFractionDigits: maxDecimalNumber
+			}),
+			make
+		);
 
 /**
  * Combinator that returns a copy of self with `minimumFractionDigits` set to `n`. `n` must be a
@@ -869,306 +916,338 @@ export const withMaxNDecimals =
 export const withMinNDecimals =
 	(minDecimalNumber: number, descriptor = '') =>
 	(self: Type): Type =>
-		make({
-			...self,
-			descriptor,
-			minimumFractionDigits: minDecimalNumber,
-			maximumFractionDigits: Math.max(self.maximumFractionDigits, minDecimalNumber)
-		});
+		pipe(
+			self,
+			MStruct.append({
+				descriptor,
+				minimumFractionDigits: minDecimalNumber,
+				maximumFractionDigits: Math.max(self.maximumFractionDigits, minDecimalNumber)
+			}),
+			make
+		);
 
 /**
  * Combinator that returns a copy of self with `scientificNotation` set to `None`.
  *
  * @category Utils
  */
-export const withNoScientificNotation =
-	(descriptor = '') =>
-	(self: Type): Type =>
-		make({
-			...self,
+export const withNoScientificNotation = (descriptor = ''): MTypes.OneArgFunction<Type> =>
+	flow(
+		MStruct.append({
 			descriptor,
 			scientificNotation: ScientificNotation.None
-		});
+		}),
+		make
+	);
 
 /**
  * Combinator that returns a copy of self with `scientificNotation` set to `Standard`.
  *
  * @category Utils
  */
-export const withStandardScientificNotation =
-	(descriptor = '') =>
-	(self: Type): Type =>
-		make({
-			...self,
+export const withStandardScientificNotation = (descriptor = ''): MTypes.OneArgFunction<Type> =>
+	flow(
+		MStruct.append({
 			descriptor,
 			scientificNotation: ScientificNotation.Standard
-		});
+		}),
+		make
+	);
 
 /**
  * Combinator that returns a copy of self with `scientificNotation` set to `Normalized`.
  *
  * @category Utils
  */
-export const withNormalizedScientificNotation =
-	(descriptor = '') =>
-	(self: Type): Type =>
-		make({
-			...self,
+export const withNormalizedScientificNotation = (descriptor = ''): MTypes.OneArgFunction<Type> =>
+	flow(
+		MStruct.append({
 			descriptor,
 			scientificNotation: ScientificNotation.Normalized
-		});
+		}),
+		make
+	);
 
 /**
  * Combinator that returns a copy of self with `scientificNotation` set to `Engineering`.
  *
  * @category Utils
  */
-export const withEngineeringScientificNotation =
-	(descriptor = '') =>
-	(self: Type): Type =>
-		make({
-			...self,
+export const withEngineeringScientificNotation = (descriptor = ''): MTypes.OneArgFunction<Type> =>
+	flow(
+		MStruct.append({
 			descriptor,
 			scientificNotation: ScientificNotation.Engineering
-		});
+		}),
+		make
+	);
+
+/**
+ * Combinator that returns a copy of self with `thousandSeparator` set to `thousandSeparator`.
+ *
+ * @category Utils
+ */
+export const withThousandSeparator = (
+	thousandSeparator: string,
+	descriptor = ''
+): MTypes.OneArgFunction<Type> =>
+	flow(
+		MStruct.append({
+			descriptor,
+			thousandSeparator
+		}),
+		make
+	);
 
 /**
  * Combinator that returns a copy of self with `thousandSeparator` set to ''.
  *
  * @category Utils
  */
-export const withoutThousandSeparator =
-	(descriptor = '') =>
-	(self: Type): Type =>
-		make({
-			...self,
+export const withoutThousandSeparator = (descriptor = ''): MTypes.OneArgFunction<Type> =>
+	withThousandSeparator('', descriptor);
+
+/**
+ * Combinator that returns a copy of self with `fractionalSeparator` set to `fractionalSeparator`.
+ *
+ * @category Utils
+ */
+export const withFractionalSeparator = (
+	fractionalSeparator: string,
+	descriptor = ''
+): MTypes.OneArgFunction<Type> =>
+	flow(
+		MStruct.append({
 			descriptor,
-			thousandSeparator: ''
-		});
+			fractionalSeparator
+		}),
+		make
+	);
 
 /**
  * Combinator that returns a copy of self with `signDisplay` set to `Auto`.
  *
  * @category Utils
  */
-export const withSignDisplayForNegative =
-	(descriptor = '') =>
-	(self: Type): Type =>
-		make({
-			...self,
+export const withSignDisplayForNegative = (descriptor = ''): MTypes.OneArgFunction<Type> =>
+	flow(
+		MStruct.append({
 			descriptor,
 			signDisplay: SignDisplay.Auto
-		});
+		}),
+		make
+	);
 
 /**
  * Combinator that returns a copy of self with `signDisplay` set to `Always`.
  *
  * @category Utils
  */
-export const withSignDisplay =
-	(descriptor = '') =>
-	(self: Type): Type =>
-		make({
-			...self,
+export const withSignDisplay = (descriptor = ''): MTypes.OneArgFunction<Type> =>
+	flow(
+		MStruct.append({
 			descriptor,
 			signDisplay: SignDisplay.Always
-		});
+		}),
+		make
+	);
 
 /**
  * Combinator that returns a copy of self with `signDisplay` set to `ExceptZero`.
  *
  * @category Utils
  */
-export const withSignDisplayExceptZero =
-	(descriptor = '') =>
-	(self: Type): Type =>
-		make({
-			...self,
+export const withSignDisplayExceptZero = (descriptor = ''): MTypes.OneArgFunction<Type> =>
+	flow(
+		MStruct.append({
 			descriptor,
 			signDisplay: SignDisplay.ExceptZero
-		});
+		}),
+		make
+	);
 
 /**
  * Combinator that returns a copy of self with `signDisplay` set to `Negative`.
  *
  * @category Utils
  */
-export const withSignDisplayForNegativeExceptZero =
-	(descriptor = '') =>
-	(self: Type): Type =>
-		make({
-			...self,
+export const withSignDisplayForNegativeExceptZero = (
+	descriptor = ''
+): MTypes.OneArgFunction<Type> =>
+	flow(
+		MStruct.append({
 			descriptor,
 			signDisplay: SignDisplay.Negative
-		});
+		}),
+		make
+	);
 
 /**
  * Combinator that returns a copy of self with `signDisplay` set to `Never`.
  *
  * @category Utils
  */
-export const withoutSignDisplay =
-	(descriptor = '') =>
-	(self: Type): Type =>
-		make({
-			...self,
+export const withoutSignDisplay = (descriptor = ''): MTypes.OneArgFunction<Type> =>
+	flow(
+		MStruct.append({
 			descriptor,
 			signDisplay: SignDisplay.Never
-		});
+		}),
+		make
+	);
 
 /**
  * Combinator that returns a copy of self with `roundingMode` set to `Ceil`.
  *
  * @category Utils
  */
-export const withCeilRoundingMode =
-	(descriptor = '') =>
-	(self: Type): Type =>
-		make({
-			...self,
+export const withCeilRoundingMode = (descriptor = ''): MTypes.OneArgFunction<Type> =>
+	flow(
+		MStruct.append({
 			descriptor,
 			roundingMode: CVRoundingMode.Type.Ceil
-		});
-
+		}),
+		make
+	);
 /**
  * Combinator that returns a copy of self with `roundingMode` set to `Floor`.
  *
  * @category Utils
  */
-export const withFloorRoundingMode =
-	(descriptor = '') =>
-	(self: Type): Type =>
-		make({
-			...self,
+export const withFloorRoundingMode = (descriptor = ''): MTypes.OneArgFunction<Type> =>
+	flow(
+		MStruct.append({
 			descriptor,
 			roundingMode: CVRoundingMode.Type.Floor
-		});
+		}),
+		make
+	);
 
 /**
  * Combinator that returns a copy of self with `roundingMode` set to `Expand`.
  *
  * @category Utils
  */
-export const withExpandRoundingMode =
-	(descriptor = '') =>
-	(self: Type): Type =>
-		make({
-			...self,
+export const withExpandRoundingMode = (descriptor = ''): MTypes.OneArgFunction<Type> =>
+	flow(
+		MStruct.append({
 			descriptor,
 			roundingMode: CVRoundingMode.Type.Expand
-		});
+		}),
+		make
+	);
 
 /**
  * Combinator that returns a copy of self with `roundingMode` set to `Trunc`.
  *
  * @category Utils
  */
-export const withTruncRoundingMode =
-	(descriptor = '') =>
-	(self: Type): Type =>
-		make({
-			...self,
+export const withTruncRoundingMode = (descriptor = ''): MTypes.OneArgFunction<Type> =>
+	flow(
+		MStruct.append({
 			descriptor,
 			roundingMode: CVRoundingMode.Type.Trunc
-		});
+		}),
+		make
+	);
 
 /**
  * Combinator that returns a copy of self with `roundingMode` set to `HalfCeil`.
  *
  * @category Utils
  */
-export const withHalfCeilRoundingMode =
-	(descriptor = '') =>
-	(self: Type): Type =>
-		make({
-			...self,
+export const withHalfCeilRoundingMode = (descriptor = ''): MTypes.OneArgFunction<Type> =>
+	flow(
+		MStruct.append({
 			descriptor,
 			roundingMode: CVRoundingMode.Type.HalfCeil
-		});
+		}),
+		make
+	);
 
 /**
  * Combinator that returns a copy of self with `roundingMode` set to `HalfFloor`.
  *
  * @category Utils
  */
-export const withHalfFloorRoundingMode =
-	(descriptor = '') =>
-	(self: Type): Type =>
-		make({
-			...self,
+export const withHalfFloorRoundingMode = (descriptor = ''): MTypes.OneArgFunction<Type> =>
+	flow(
+		MStruct.append({
 			descriptor,
 			roundingMode: CVRoundingMode.Type.HalfFloor
-		});
+		}),
+		make
+	);
 
 /**
  * Combinator that returns a copy of self with `roundingMode` set to `HalfExpand`.
  *
  * @category Utils
  */
-export const withHalfExpandRoundingMode =
-	(descriptor = '') =>
-	(self: Type): Type =>
-		make({
-			...self,
+export const withHalfExpandRoundingMode = (descriptor = ''): MTypes.OneArgFunction<Type> =>
+	flow(
+		MStruct.append({
 			descriptor,
 			roundingMode: CVRoundingMode.Type.HalfExpand
-		});
+		}),
+		make
+	);
 
 /**
  * Combinator that returns a copy of self with `roundingMode` set to `HalfTrunc`.
  *
  * @category Utils
  */
-export const withHalfTruncRoundingMode =
-	(descriptor = '') =>
-	(self: Type): Type =>
-		make({
-			...self,
+export const withHalfTruncRoundingMode = (descriptor = ''): MTypes.OneArgFunction<Type> =>
+	flow(
+		MStruct.append({
 			descriptor,
 			roundingMode: CVRoundingMode.Type.HalfTrunc
-		});
+		}),
+		make
+	);
 
 /**
  * Combinator that returns a copy of self with `roundingMode` set to `HalfEven`.
  *
  * @category Utils
  */
-export const withHalfEvenRoundingMode =
-	(descriptor = '') =>
-	(self: Type): Type =>
-		make({
-			...self,
+export const withHalfEvenRoundingMode = (descriptor = ''): MTypes.OneArgFunction<Type> =>
+	flow(
+		MStruct.append({
 			descriptor,
 			roundingMode: CVRoundingMode.Type.HalfEven
-		});
+		}),
+		make
+	);
 
 /**
  * Combinator that returns a copy of self with `showNullIntegerPart` set to `false`.
  *
  * @category Utils
  */
-export const withNullIntegerPartNotShowing =
-	(descriptor = '') =>
-	(self: Type): Type =>
-		make({
-			...self,
+export const withNullIntegerPartNotShowing = (descriptor = ''): MTypes.OneArgFunction<Type> =>
+	flow(
+		MStruct.append({
 			descriptor,
 			showNullIntegerPart: false
-		});
+		}),
+		make
+	);
 
 /**
  * Combinator that returns a copy of self with `showNullIntegerPart` set to `true`.
  *
  * @category Utils
  */
-export const withNullIntegerPartShowing =
-	(descriptor = '') =>
-	(self: Type): Type =>
-		make({
-			...self,
+export const withNullIntegerPartShowing = (descriptor = ''): MTypes.OneArgFunction<Type> =>
+	flow(
+		MStruct.append({
 			descriptor,
 			showNullIntegerPart: true
-		});
+		}),
+		make
+	);
 
 /**
  * NumberBase10Format instance that uses a comma as fractional separator and a space as thousand

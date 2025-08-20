@@ -396,8 +396,13 @@ describe('NumberBase10Format', () => {
 				TEUtils.assertNone(numberExtractor('-0Dummy'));
 			});
 
+			it('Unexpected fillChar', () => {
+				TEUtils.assertNone(numberExtractor('- 5Dummy'));
+				TEUtils.assertNone(numberExtractor(' 5Dummy'));
+			});
+
 			it('Zero', () => {
-				TEUtils.assertSome(numberExtractor('0Dummy'), Tuple.make(BigDecimal.make(0n, 2), '0'));
+				TEUtils.assertSome(numberExtractor('0Dummy'), Tuple.make(BigDecimal.make(0n, 0), '0'));
 			});
 
 			it('Unsigned mantissa with no integer part', () => {
@@ -455,7 +460,7 @@ describe('NumberBase10Format', () => {
 			});
 
 			it('Zero', () => {
-				TEUtils.assertSome(numberExtractor('0Dummy'), Tuple.make(BigDecimal.make(0n, 2), '0'));
+				TEUtils.assertSome(numberExtractor('0Dummy'), Tuple.make(BigDecimal.make(0n, 0), '0'));
 			});
 
 			it('A number respecting all conditions', () => {
@@ -572,6 +577,33 @@ describe('NumberBase10Format', () => {
 						Tuple.make(BigDecimal.make(1234n, 4), '0,1234')
 					);
 				});
+			});
+		});
+
+		describe('With a fillChar', () => {
+			const numberExtractor = CVNumberBase10Format.toBigDecimalExtractor(
+				frenchStyleThreeDecimalNumber,
+				' '
+			);
+
+			it('String not starting by number', () => {
+				TEUtils.assertNone(numberExtractor(' Dummy'));
+			});
+
+			it('Only a sign', () => {
+				TEUtils.assertNone(numberExtractor('- Dummy'));
+			});
+
+			it('Negative zero', () => {
+				TEUtils.assertNone(numberExtractor('-0Dummy'));
+			});
+
+			it('Negative value', () => {
+				TEUtils.assertSome(numberExtractor('- 5Dummy'), Tuple.make(BigDecimal.make(-5n, 0), '- 5'));
+			});
+
+			it('Positive value', () => {
+				TEUtils.assertSome(numberExtractor(' 5Dummy'), Tuple.make(BigDecimal.make(5n, 0), ' 5'));
 			});
 		});
 	});

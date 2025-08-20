@@ -106,7 +106,19 @@ export type TagName =
 	/* Millisecond (ex: 5) */
 	| 'S'
 	/* Millisecond on 3 digits left-padded with 0's (ex: 005) */
-	| 'SSS';
+	| 'SSS'
+	/* Hour part of the timezone offset (ex: 5) */
+	| 'zH'
+	/* Hour part of the timezone offset on 2 digits left-padded with 0's (ex: 05) */
+	| 'zHzH'
+	/* Minute part of the timezone offset (ex: 5) */
+	| 'zm'
+	/* Minute part of the timezone offset on 2 digits left-padded with 0's (ex: 05) */
+	| 'zmzm'
+	/* Second part of the timezone offset (ex: 5) */
+	| 'zs'
+	/* Second part of the timezone offset on 2 digits left-padded with 0's (ex: 05) */
+	| 'zszs';
 
 namespace CVPlaceholderMap {
 	export interface Type
@@ -425,12 +437,7 @@ export namespace Context {
 		/** Array of the day period names ('AM', 'PM') */
 		readonly dayPeriodNames: DayPeriodNames;
 	}): Type => {
-		const params = {
-			fillChar: '0',
-			padPosition: MString.PadPosition.Left,
-			disallowEmptyString: true,
-			numberBase10Format: CVNumberBase10Format.integer
-		};
+		const params = { fillChar: '0', numberBase10Format: CVNumberBase10Format.integer };
 
 		const placeholderEntries: ReadonlyArray<
 			readonly [TagName, CVPlaceholder.Tag.Type<string, CVReal.Type>]
@@ -446,13 +453,27 @@ export namespace Context {
 							pipe(
 								value,
 								Number.sum(2000),
-								MInputError.assertInRange({ min: 2000, max: 2099, offset: -2000, name: label }),
+								MInputError.assertInRange({
+									min: 2000,
+									max: 2099,
+									minIncluded: true,
+									maxIncluded: true,
+									offset: -2000,
+									name: label
+								}),
 								Either.map(CVReal.unsafeFromNumber)
 							),
 						preFormatter: (value, label) =>
 							pipe(
 								value,
-								MInputError.assertInRange({ min: 2000, max: 2099, offset: 0, name: label }),
+								MInputError.assertInRange({
+									min: 2000,
+									max: 2099,
+									minIncluded: true,
+									maxIncluded: true,
+									offset: 0,
+									name: label
+								}),
 								Either.map(flow(Number.subtract(2000), CVReal.unsafeFromNumber))
 							)
 					})
@@ -470,13 +491,27 @@ export namespace Context {
 							pipe(
 								value,
 								Number.sum(2000),
-								MInputError.assertInRange({ min: 2000, max: 2099, offset: -2000, name: label }),
+								MInputError.assertInRange({
+									min: 2000,
+									max: 2099,
+									minIncluded: true,
+									maxIncluded: true,
+									offset: -2000,
+									name: label
+								}),
 								Either.map(CVReal.unsafeFromNumber)
 							),
 						preFormatter: (value, label) =>
 							pipe(
 								value,
-								MInputError.assertInRange({ min: 2000, max: 2099, offset: 0, name: label }),
+								MInputError.assertInRange({
+									min: 2000,
+									max: 2099,
+									minIncluded: true,
+									maxIncluded: true,
+									offset: 0,
+									name: label
+								}),
 								Either.map(flow(Number.subtract(2000), CVReal.unsafeFromNumber))
 							)
 					})
@@ -505,7 +540,13 @@ export namespace Context {
 					)
 				})
 			],
-			['I', CVPlaceholder.Tag.real({ ...params, name: 'isoWeek' })],
+			[
+				'I',
+				CVPlaceholder.Tag.real({
+					name: 'isoWeek',
+					numberBase10Format: CVNumberBase10Format.integer
+				})
+			],
 			['II', CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'isoWeek', length: 2 })],
 			['d', CVPlaceholder.Tag.real({ ...params, name: 'monthDay' })],
 			['dd', CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'monthDay', length: 2 })],
@@ -551,7 +592,13 @@ export namespace Context {
 			['s', CVPlaceholder.Tag.real({ ...params, name: 'second' })],
 			['ss', CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'second', length: 2 })],
 			['S', CVPlaceholder.Tag.real({ ...params, name: 'millisecond' })],
-			['SSS', CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'millisecond', length: 3 })]
+			['SSS', CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'millisecond', length: 3 })],
+			['zH', CVPlaceholder.Tag.real({ ...params, name: 'zoneHour' })],
+			['zHzH', CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'zoneHour', length: 2 })],
+			['zm', CVPlaceholder.Tag.real({ ...params, name: 'zoneMinute' })],
+			['zmzm', CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'zoneMinute', length: 2 })],
+			['zs', CVPlaceholder.Tag.real({ ...params, name: 'zoneSecond' })],
+			['zszs', CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'zoneSecond', length: 2 })]
 		];
 
 		return _make({
@@ -822,8 +869,8 @@ export const placeholders: MTypes.OneArgFunction<Type, Placeholders.Type> =
 	Struct.get('placeholders');
 
 /**
- * Returns a function that parses a text into a DateTime according to 'self' . The returned DateTime
- * timeZoneOffset is set to the time zone offset of the machine this code is running on.
+ * Returns a function that parses a text into a DateTime according to 'self'. See DateTime.fromParts
+ * for more information on default values and errors.
  *
  * @category Destructors
  */
@@ -836,8 +883,7 @@ export const toParser = (self: Type): Parser.Type => {
 };
 
 /**
- * Returns a function that formats a DateTime according to 'self'. The timeZoneOffset used to format
- * the DateTime is this of the DateTime object.
+ * Returns a function that formats a DateTime according to 'self'.
  *
  * @category Destructors
  */
