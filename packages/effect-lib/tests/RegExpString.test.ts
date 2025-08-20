@@ -89,6 +89,7 @@ describe('MRegExpString', () => {
 			readonly thousandSeparator: string;
 			readonly fractionalSeparator: string;
 			readonly eNotationChars: ReadonlyArray<string>;
+			readonly fillChar: string;
 		}) =>
 			pipe(
 				params,
@@ -104,10 +105,15 @@ describe('MRegExpString', () => {
 			const getPartsWithNoSep = getParts({
 				thousandSeparator: '',
 				fractionalSeparator: '.',
-				eNotationChars: ['E', 'e']
+				eNotationChars: ['E', 'e'],
+				fillChar: ' '
 			});
 			it('Simple number', () => {
 				TEUtils.assertSome(getPartsWithNoSep('12'), Tuple.make('', '12', '', ''));
+			});
+
+			it('Simple number starting with fillChar', () => {
+				TEUtils.assertSome(getPartsWithNoSep('  12'), Tuple.make('', '12', '', ''));
 			});
 
 			it('Complex number', () => {
@@ -116,21 +122,63 @@ describe('MRegExpString', () => {
 					Tuple.make('+', '18320', '45', '-2')
 				);
 			});
+
+			it('Not passing', () => {
+				TEUtils.assertNone(getPartsWithNoSep(' +18320.45e-2'));
+				TEUtils.assertNone(getPartsWithNoSep('18A'));
+			});
 		});
 
 		describe('With space thousand separator and ^ as exponent', () => {
 			const getPartsWithSep = getParts({
 				thousandSeparator: ' ',
 				fractionalSeparator: '.',
-				eNotationChars: ['^']
+				eNotationChars: ['^'],
+				fillChar: ' '
 			});
 
 			it('Simple number', () => {
 				TEUtils.assertSome(getPartsWithSep('12 430'), Tuple.make('', '12 430', '', ''));
 			});
 
+			it('Simple number starting with fillChar', () => {
+				TEUtils.assertSome(getPartsWithSep('  12 430'), Tuple.make('', '12 430', '', ''));
+			});
+
 			it('Complex number', () => {
-				TEUtils.assertSome(getPartsWithSep('+18 320.45^2'), Tuple.make('+', '18 320', '45', '2'));
+				TEUtils.assertSome(getPartsWithSep('+  18 320.45^2'), Tuple.make('+', '18 320', '45', '2'));
+			});
+
+			it('Not passing', () => {
+				TEUtils.assertNone(getPartsWithSep(' +18 320.45^2'));
+				TEUtils.assertNone(getPartsWithSep('18A'));
+			});
+		});
+
+		describe('With no fillChar', () => {
+			const getPartsWithNoFillChar = getParts({
+				thousandSeparator: ' ',
+				fractionalSeparator: '.',
+				eNotationChars: ['E', 'e'],
+				fillChar: ''
+			});
+
+			it('Simple number', () => {
+				TEUtils.assertSome(getPartsWithNoFillChar('12'), Tuple.make('', '12', '', ''));
+			});
+
+			it('Complex number', () => {
+				TEUtils.assertSome(
+					getPartsWithNoFillChar('+18 320.45e-2'),
+					Tuple.make('+', '18 320', '45', '-2')
+				);
+			});
+
+			it('Not passing', () => {
+				TEUtils.assertNone(getPartsWithNoFillChar(' +18 320.45e-2'));
+				TEUtils.assertNone(getPartsWithNoFillChar('18A'));
+				TEUtils.assertNone(getPartsWithNoFillChar('  12'));
+				TEUtils.assertNone(getPartsWithNoFillChar('+  18 320.45e-2'));
 			});
 		});
 	});

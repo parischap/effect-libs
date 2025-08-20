@@ -289,8 +289,8 @@ export const unsignedNonNullBase10Int = (thousandSeparator: string): string =>
 export const unsignedBase10Int = (thousandSeparator: string): string =>
 	either('0', unsignedNonNullBase10Int(thousandSeparator));
 
-// Regular expression string representing a captured optional sign potentially followed by spaces
-const _signPart = pipe(sign, capture, String.concat(spaces), optional);
+// Regular expression string representing a captured optional sign
+const _signPart = pipe(sign, capture, optional);
 // Regular expression string representing the captured exponent of a number
 const _expPart = pipe(sign, optional, String.concat(unsignedBase10Int('')), capture);
 // Regular expression string representing the captured fractional part of a floating-point number
@@ -310,19 +310,26 @@ const _tupledCharacterClass = Function.tupled(characterClass);
  *   unexpected results might occur.
  * - `eNotationChars`: array of possible chracters that can be used to represent an exponent (e.g.
  *   value: ['E', 'e']).
+ * - `fillChar`: usually a one-character string but not mandatory (e.g. ' '). If not an empty string,
+ *   zero or more fillChars are tolerated between the sign and the number (or at the start of the
+ *   number if it is unsigned). Beware if you use a number as fillChar (e.g. you use '0' as
+ *   `fillChar` and try to parse '0000')
  *
  * @category Instances
  */
 export const base10Number = ({
 	thousandSeparator,
 	fractionalSeparator,
-	eNotationChars
+	eNotationChars,
+	fillChar
 }: {
 	readonly thousandSeparator: string;
 	readonly fractionalSeparator: string;
 	readonly eNotationChars: ReadonlyArray<string>;
+	readonly fillChar: string;
 }): string =>
 	_signPart +
+	(fillChar === '' ? '' : zeroOrMore(fillChar)) +
 	pipe(thousandSeparator, unsignedBase10Int, optionalCapture) +
 	pipe(fractionalSeparator, RegExp.escape, String.concat(capture(_fractionalPart)), optional) +
 	pipe(
