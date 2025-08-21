@@ -109,17 +109,3 @@ export const semVer: RegExp = pipe(MRegExpString.semVer, MRegExpString.makeLine,
  * @category Instances
  */
 export const email: RegExp = pipe(MRegExpString.email, MRegExpString.makeLine, RegExp);
-
-/**
- * A regular expression representing a digit
- *
- * @category Instances
- */
-export const digit: RegExp = pipe(MRegExpString.digit, RegExp);
-
-/**
- * A regular expression representing a space
- *
- * @category Instances
- */
-export const space: RegExp = pipe(MRegExpString.space, RegExp);
