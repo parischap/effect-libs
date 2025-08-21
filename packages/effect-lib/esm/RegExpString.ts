@@ -329,7 +329,7 @@ export const base10Number = ({
 	readonly fillChar: string;
 }): string =>
 	_signPart +
-	(fillChar === '' ? '' : zeroOrMore(fillChar)) +
+	capture(fillChar === '' ? '' : zeroOrMore(fillChar)) +
 	pipe(thousandSeparator, unsignedBase10Int, optionalCapture) +
 	pipe(fractionalSeparator, RegExp.escape, String.concat(capture(_fractionalPart)), optional) +
 	pipe(
