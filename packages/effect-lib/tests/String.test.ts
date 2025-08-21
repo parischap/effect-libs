@@ -606,4 +606,17 @@ describe('MString', () => {
 			'1foobarbaz'
 		);
 	});
+
+	describe('isDigit', () => {
+		it('Non matching', () => {
+			TEUtils.assertFalse(MString.isDigit(''));
+			TEUtils.assertFalse(MString.isDigit('1A'));
+			TEUtils.assertFalse(MString.isDigit('A'));
+		});
+		it('Matching', () => {
+			TEUtils.assertTrue(MString.isDigit('1'));
+			TEUtils.assertTrue(MString.isDigit('5'));
+			TEUtils.assertTrue(MString.isDigit('9'));
+		});
+	});
 });

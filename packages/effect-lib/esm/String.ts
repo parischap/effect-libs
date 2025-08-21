@@ -714,3 +714,15 @@ export const removeNCharsEveryMCharsFromRight = ({
 	n === 0 ?
 		Function.identity
 	:	flow(splitEquallyRestAtStart(m + n), Array.map(String.takeRight(m)), Array.join(''));
+
+/**
+ * Returns true if a string represents a digit. False otherwise
+ *
+ * @category Predicates
+ */
+
+export const isDigit: Predicate.Predicate<string> = (self) => {
+	if (self.length !== 1) return false;
+	const code = self.charCodeAt(0);
+	return code >= 48 && code <= 57;
+};
