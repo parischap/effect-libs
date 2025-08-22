@@ -4,8 +4,6 @@ import { TEUtils } from '@parischap/test-utils';
 import { Either, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
-const localTimeZoneOffsetMs = CVDateTime.LOCAL_TIME_ZONE_OFFSET * CVDateTime.HOUR_MS;
-
 describe('CVDateTimeFormat', () => {
 	const usContext = CVDateTimeFormat.Context.us;
 
@@ -51,7 +49,10 @@ describe('CVDateTimeFormat', () => {
 			sep.colon,
 			tag('ss'),
 			sep.comma,
-			tag('SSS')
+			tag('SSS'),
+			tag('zHzH'),
+			sep.colon,
+			tag('zmzm')
 		]
 	});
 
@@ -118,7 +119,10 @@ describe('CVDateTimeFormat', () => {
 		});
 
 		it('.toString()', () => {
-			TEUtils.strictEqual(isoFormat.toString(), "'yyyy-MM-ddTHH:mm:ss,SSS' in 'en-US' context");
+			TEUtils.strictEqual(
+				isoFormat.toString(),
+				"'yyyy-MM-ddTHH:mm:ss,SSSzHzH:zmzm' in 'en-US' context"
+			);
 		});
 
 		it('.pipe()', () => {
@@ -140,15 +144,15 @@ describe('CVDateTimeFormat', () => {
 			const parser = CVDateTimeFormat.toParser(isoFormat);
 			it('Non matching', () => {
 				TEUtils.assertLeftMessage(
-					parser('2025-13-01T22:54:12,543'),
-					"Expected 'month' to be between 1 and 12 included. Actual: 13"
+					parser('2025-13-01T22:54:12,543+00:00'),
+					"Expected 'month' to be between 1 (included) and 12 (included). Actual: 13"
 				);
 			});
 
 			it('Matching', () => {
 				TEUtils.assertRight(
-					pipe('2025-12-01T22:54:12,543', parser, Either.map(CVDateTime.timestamp)),
-					Date.UTC(2025, 11, 1, 22, 54, 12, 543) - localTimeZoneOffsetMs
+					pipe('2025-12-01T22:54:12,543-03:22', parser, Either.map(CVDateTime.timestamp)),
+					Date.UTC(2025, 11, 2, 2, 16, 12, 543)
 				);
 			});
 		});
@@ -158,13 +162,13 @@ describe('CVDateTimeFormat', () => {
 			it('Non matching', () => {
 				TEUtils.assertLeftMessage(
 					parser(
-						'2025 2520252026 26202612 12DecDecember1 0130 30364 3641 MonMondayPM13 131 015 0553 53234 234'
+						'2025 2520252026 26202612 12DecDecember1 0130 30364 3641 MonMondayPM13 131 015 0553 53234 234+1 +0112 125 05'
 					),
 					"Expected 'monthDay' to be: 29. Actual: 30"
 				);
 				TEUtils.assertLeftMessage(
 					parser(
-						'2025 2520252026 26202612 12DecDecember1 0130 30364 3642 TueMondayPM13 131 015 0553 53234 234'
+						'2025 2520252026 26202612 12DecDecember1 0130 30364 3642 TueMondayPM13 131 015 0553 53234 234+1 +0112 125 05'
 					),
 					"'weekday' placeholder is present more than once in template and receives differing values '2' and '1'"
 				);
@@ -173,11 +177,11 @@ describe('CVDateTimeFormat', () => {
 			it('Matching', () => {
 				TEUtils.assertRight(
 					pipe(
-						'2025 2520252026 26202612 12DecDecember1 0130 30364 3642 TueTuesdayPM13 131 015 0553 53234 234',
+						'2025 2520252026 26202612 12DecDecember1 0130 30364 3642 TueTuesdayPM13 131 015 0553 53234 234+1 +0112 125 05',
 						parser,
 						Either.map(CVDateTime.timestamp)
 					),
-					Date.UTC(2025, 11, 30, 13, 5, 53, 234) - localTimeZoneOffsetMs
+					Date.UTC(2025, 11, 30, 11, 53, 48, 234)
 				);
 			});
 		});
@@ -195,8 +199,12 @@ describe('CVDateTimeFormat', () => {
 
 			it('Matching', () => {
 				TEUtils.assertRight(
-					pipe(formatter(CVDateTime.unsafeFromParts({ year: 2025, month: 8, monthDay: 13 }))),
-					'2025-08-13T00:00:00,000'
+					pipe(
+						formatter(
+							CVDateTime.unsafeFromParts({ year: 2025, month: 8, monthDay: 13, zoneMinute: 42 })
+						)
+					),
+					'2025-08-13T00:00:00,000+00:42'
 				);
 			});
 		});
@@ -207,7 +215,7 @@ describe('CVDateTimeFormat', () => {
 			it('Non matching', () => {
 				TEUtils.assertLeftMessage(
 					formatter(CVDateTime.unsafeFromParts({ year: 1925, month: 2, monthDay: 28 })),
-					"Expected 'year' placeholder to be between 2000 and 2099 included. Actual: 1925"
+					"Expected 'year' placeholder to be between 2000 (included) and 2099 (included). Actual: 1925"
 				);
 			});
 
@@ -215,10 +223,16 @@ describe('CVDateTimeFormat', () => {
 				TEUtils.assertRight(
 					pipe(
 						formatter(
-							CVDateTime.unsafeFromParts({ year: 2025, month: 2, monthDay: 28, minute: 54 })
+							CVDateTime.unsafeFromParts({
+								year: 2025,
+								month: 2,
+								monthDay: 28,
+								minute: 54,
+								zoneHour: -5
+							})
 						)
 					),
-					'2025 2520252025 2520252 02FebFebruary9 0928 2859 0595 FriFridayAM0 000 0054 540 000 000'
+					'2025 2520252025 2520252 02FebFebruary9 0928 2859 0595 FriFridayAM0 000 0054 540 000 000-5 -050 000 00'
 				);
 			});
 		});

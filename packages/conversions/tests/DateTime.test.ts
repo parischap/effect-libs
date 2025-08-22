@@ -30,10 +30,10 @@ describe('CVDateTime', () => {
 		});
 
 		it('.toString()', () => {
-			TEUtils.strictEqual(origin.toString(), '1970-01-01 00:00:00:000 GMT+000000');
+			TEUtils.strictEqual(origin.toString(), '1970-01-01T00:00:00,000+00:00');
 			TEUtils.strictEqual(
 				CVDateTime.unsafeFromTimestamp(1_749_823_231_774, -3.765).toString(),
-				'2025-06-13 10:14:37:774 GMT-034554'
+				'2025-06-13T10:14:37,774-03:45'
 			);
 		});
 
@@ -310,25 +310,69 @@ describe('CVDateTime', () => {
 			TEUtils.assertSome(testDate.time);
 		});
 
-		it('From date with hour23 and zoneHour, zoneMinute, zoneSecond', () => {
-			TEUtils.assertRight(
-				pipe(
-					{
-						year: 2024,
-						ordinalDay: 61,
-						hour23: 17,
-						minute: 43,
-						second: 27,
-						millisecond: 654,
-						zoneHour: 1,
-						zoneMinute: 12,
-						zoneSecond: 30
-					},
-					CVDateTime.fromParts,
-					Either.map(CVDateTime.timestamp)
-				),
-				Date.UTC(2024, 2, 1, 16, 30, 57, 654)
-			);
+		describe('From date with hour23 and zoneHour, zoneMinute, zoneSecond', () => {
+			it('Positive offset', () => {
+				TEUtils.assertRight(
+					pipe(
+						{
+							year: 2024,
+							ordinalDay: 61,
+							hour23: 17,
+							minute: 43,
+							second: 27,
+							millisecond: 654,
+							zoneHour: 1,
+							zoneMinute: 12,
+							zoneSecond: 30
+						},
+						CVDateTime.fromParts,
+						Either.map(CVDateTime.timestamp)
+					),
+					Date.UTC(2024, 2, 1, 16, 30, 57, 654)
+				);
+			});
+
+			it('Negative offset, zoneHour !== 0', () => {
+				TEUtils.assertRight(
+					pipe(
+						{
+							year: 2024,
+							ordinalDay: 61,
+							hour23: 17,
+							minute: 43,
+							second: 27,
+							millisecond: 654,
+							zoneHour: -1,
+							zoneMinute: 12,
+							zoneSecond: 30
+						},
+						CVDateTime.fromParts,
+						Either.map(CVDateTime.timestamp)
+					),
+					Date.UTC(2024, 2, 1, 18, 55, 57, 654)
+				);
+			});
+
+			it('Negative offset, zoneHour=0', () => {
+				TEUtils.assertRight(
+					pipe(
+						{
+							year: 2024,
+							ordinalDay: 61,
+							hour23: 17,
+							minute: 43,
+							second: 27,
+							millisecond: 654,
+							zoneHour: -0,
+							zoneMinute: 12,
+							zoneSecond: 30
+						},
+						CVDateTime.fromParts,
+						Either.map(CVDateTime.timestamp)
+					),
+					Date.UTC(2024, 2, 1, 17, 55, 57, 654)
+				);
+			});
 		});
 
 		it('From date with hour23 and zoneOffset, zoneHour, zoneMinute, zoneSecond', () => {
@@ -1271,7 +1315,7 @@ describe('CVDateTime', () => {
 					Either.flatMap(CVDateTime.setZoneOffset(-8)),
 					Either.map((d) => d.toString())
 				),
-				'2024-02-29 22:00:00:000 GMT-080000'
+				'2024-02-29T22:00:00,000-08:00'
 			);
 		});
 	});

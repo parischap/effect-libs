@@ -437,7 +437,9 @@ export namespace Context {
 		/** Array of the day period names ('AM', 'PM') */
 		readonly dayPeriodNames: DayPeriodNames;
 	}): Type => {
-		const params = { fillChar: '0', numberBase10Format: CVNumberBase10Format.integer };
+		const integer = CVNumberBase10Format.integer;
+		const signedInteger = pipe(integer, CVNumberBase10Format.withSignDisplay('signed integer'));
+		const params = { fillChar: '0', numberBase10Format: integer };
 
 		const placeholderEntries: ReadonlyArray<
 			readonly [TagName, CVPlaceholder.Tag.Type<string, CVReal.Type>]
@@ -593,8 +595,19 @@ export namespace Context {
 			['ss', CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'second', length: 2 })],
 			['S', CVPlaceholder.Tag.real({ ...params, name: 'millisecond' })],
 			['SSS', CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'millisecond', length: 3 })],
-			['zH', CVPlaceholder.Tag.real({ ...params, name: 'zoneHour' })],
-			['zHzH', CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'zoneHour', length: 2 })],
+			[
+				'zH',
+				CVPlaceholder.Tag.real({ ...params, name: 'zoneHour', numberBase10Format: signedInteger })
+			],
+			[
+				'zHzH',
+				CVPlaceholder.Tag.fixedLengthToReal({
+					...params,
+					name: 'zoneHour',
+					length: 3,
+					numberBase10Format: signedInteger
+				})
+			],
 			['zm', CVPlaceholder.Tag.real({ ...params, name: 'zoneMinute' })],
 			['zmzm', CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'zoneMinute', length: 2 })],
 			['zs', CVPlaceholder.Tag.real({ ...params, name: 'zoneSecond' })],
@@ -938,21 +951,35 @@ export const toFormatter = (self: Type): Formatter.Type => {
 								flow(Tuple.make, Tuple.appendElement(CVDateTime.getHour11), Option.some)
 							)
 						),
-						MMatch.whenIs(
-							'meridiem',
-							flow(Tuple.make, Tuple.appendElement(CVDateTime.getMeridiem), Option.some)
-						),
-						MMatch.whenIs(
-							'minute',
-							flow(Tuple.make, Tuple.appendElement(CVDateTime.getMinute), Option.some)
-						),
-						MMatch.whenIs(
-							'second',
-							flow(Tuple.make, Tuple.appendElement(CVDateTime.getSecond), Option.some)
-						),
-						MMatch.whenIs(
-							'millisecond',
-							flow(Tuple.make, Tuple.appendElement(CVDateTime.getMillisecond), Option.some)
+						flow(
+							MMatch.whenIs(
+								'meridiem',
+								flow(Tuple.make, Tuple.appendElement(CVDateTime.getMeridiem), Option.some)
+							),
+							MMatch.whenIs(
+								'minute',
+								flow(Tuple.make, Tuple.appendElement(CVDateTime.getMinute), Option.some)
+							),
+							MMatch.whenIs(
+								'second',
+								flow(Tuple.make, Tuple.appendElement(CVDateTime.getSecond), Option.some)
+							),
+							MMatch.whenIs(
+								'millisecond',
+								flow(Tuple.make, Tuple.appendElement(CVDateTime.getMillisecond), Option.some)
+							),
+							MMatch.whenIs(
+								'zoneHour',
+								flow(Tuple.make, Tuple.appendElement(CVDateTime.getZoneHour), Option.some)
+							),
+							MMatch.whenIs(
+								'zoneMinute',
+								flow(Tuple.make, Tuple.appendElement(CVDateTime.getZoneMinute), Option.some)
+							),
+							MMatch.whenIs(
+								'zoneSecond',
+								flow(Tuple.make, Tuple.appendElement(CVDateTime.getZoneSecond), Option.some)
+							)
 						),
 						MMatch.orElse(() => Option.none())
 					)
@@ -965,7 +992,7 @@ export const toFormatter = (self: Type): Formatter.Type => {
 		),
 		Record.fromEntries
 	);
+	const formatter = CVTemplate.toFormatter(self._template);
 
-	return (d) =>
-		pipe(toParts, Record.map(Function.apply(d)), CVTemplate.toFormatter(self._template));
+	return (d) => pipe(toParts, Record.map(Function.apply(d)), formatter);
 };

@@ -585,26 +585,12 @@ export const roundingMode: MTypes.OneArgFunction<Type, CVRoundingMode.Type> =
  */
 export const signDisplay: MTypes.OneArgFunction<Type, SignDisplay> = Struct.get('signDisplay');
 
-/**
- * Returns a function that tries to parse, from the start of a string `text`, a number respecting
- * the options represented by `self` and an optional `fillChar` parameter. If successful, that
- * function returns a `some` containing `parsedText` (the part of `text` that could be analyzed as
- * representing a number) and `value` (`parsedText` converted to a BigDecimal value). Otherwise, it
- * returns a `none`.
- *
- * `fillChar` is a character that may be used as filler between the sign and the number (or at the
- * start of the number if it is unsigned). It must be a one-character string (but no error is
- * triggered if it's not). Beware if you use a digit as `fillChar` because the digits composing the
- * number might get trimmed when parsing (e.g. trying to parse '0000' with `fillChar` '0' will
- * result in an error)
- */
-
-export const toBigDecimalExtractor = (
+const _toBigDecimalExtractor = (
 	self: Type,
 	fillChar = ''
 ): MTypes.OneArgFunction<
 	string,
-	Option.Option<[value: BigDecimal.BigDecimal, parsedText: string]>
+	Option.Option<[value: BigDecimal.BigDecimal, parsedText: string, sign: -1 | 1]>
 > => {
 	const removeThousandSeparator = MString.removeNCharsEveryMCharsFromRight({
 		m: MRegExpString.DIGIT_GROUP_SIZE,
@@ -619,7 +605,7 @@ export const toBigDecimalExtractor = (
 			MRegExpString.atStart,
 			RegExp
 		),
-		4
+		5
 	);
 
 	const signParser = SignDisplay.toParser(self.signDisplay);
@@ -628,10 +614,15 @@ export const toBigDecimalExtractor = (
 
 	const mantissaChecker = ScientificNotation.toMantissaChecker(self.scientificNotation);
 
+	const fillCharIsZero = fillChar === '0';
+
 	return (text) =>
 		Option.gen(function* () {
-			const [match, [signPart, mantissaIntegerPart, mantissaFractionalPart, exponentPart]] =
-				yield* getParts(text);
+			const [
+				match,
+				[signPart, fillChars, mantissaIntegerPart, mantissaFractionalPart, exponentPart]
+			] = yield* getParts(text);
+
 			const mantissaFractionalPartLength = yield* pipe(
 				mantissaFractionalPart,
 				String.length,
@@ -647,10 +638,15 @@ export const toBigDecimalExtractor = (
 				mantissaIntegerPart,
 				Option.liftPredicate(String.isNonEmpty),
 				Option.match({
+					// No integer part
 					onNone: () =>
-						self.showNullIntegerPart || mantissaFractionalPartLength === 0 ?
-							Option.none()
-						:	Option.some(MBigDecimal.zero),
+						(
+							(!self.showNullIntegerPart && mantissaFractionalPartLength !== 0) ||
+							(fillCharIsZero && fillChars.length !== 0)
+						) ?
+							Option.some(MBigDecimal.zero)
+						:	Option.none(),
+					// With integer part
 					onSome: flow(
 						self.showNullIntegerPart || mantissaFractionalPartLength === 0 ?
 							Option.some
@@ -680,47 +676,71 @@ export const toBigDecimalExtractor = (
 			const exponent = yield* exponentParser(exponentPart);
 
 			return Tuple.make(
-				pipe(
-					BigDecimal.make(checkedMantissa.value, checkedMantissa.scale - exponent),
-					BigDecimal.multiply(BigDecimal.unsafeFromNumber(sign))
-				),
-				match
+				BigDecimal.make(checkedMantissa.value, checkedMantissa.scale - exponent),
+				match,
+				sign
 			);
 		});
 };
 
 /**
- * Same as `toBigDecimalExtractor` but returns a `Real` which is the most usual use case
+ * Returns a function that tries to parse, from the start of a string `text`, a number respecting
+ * the options represented by `self` and an optional `fillChar` parameter. If successful, that
+ * function returns a `some` containing `parsedText` (the part of `text` that could be analyzed as
+ * representing a number) and `value` (`parsedText` converted to a BigDecimal value). Otherwise, it
+ * returns a `none`. As there is no way to distinguish `-0n` and `0n` in Javascript, parsing '-0',
+ * '0', '+0' will yield the same result.
  *
- * @category Destructors
+ * `fillChar` is a character that may be used as filler between the sign and the number (or at the
+ * start of the number if it is unsigned). It must be a one-character string (but no error is
+ * triggered if it's not). You can use '0' as `fillChar` but you shoud not use any other digit
+ * because the value of the number to parse would depend on the number of removed `fillChar`'s.
  */
-export const toRealExtractor = (
+
+export const toBigDecimalExtractor: (
 	self: Type,
 	fillChar?: string
-): MTypes.OneArgFunction<string, Option.Option<[value: CVReal.Type, parsedText: string]>> =>
+) => MTypes.OneArgFunction<string, Option.Option<MTypes.Pair<BigDecimal.BigDecimal, string>>> =
 	flow(
-		toBigDecimalExtractor(self, fillChar),
-		Option.flatMap(
-			flow(
-				Tuple.mapBoth({
-					onFirst: CVReal.fromBigDecimalOption,
-					onSecond: Option.some
-				}),
-				Option.all
+		_toBigDecimalExtractor,
+		Function.compose(
+			Option.map(([value, parsedText, sign]) =>
+				Tuple.make(BigDecimal.multiply(value, BigDecimal.unsafeFromNumber(sign)), parsedText)
 			)
 		)
 	);
 
 /**
- * Returns a function that tries to parse, from the whole of a string `text`, a number respecting
- * the options represented by `self` and an optional `fillChar` parameter. If successful, that
- * function returns a `some` of a BigDecimal. Otherwise, it returns a `none`.
+ * Same as `toBigDecimalExtractor` but returns a `Real` which is the most usual use case.
+ * Furthermore, this function will return -0 if your parse '-0' and 0 if you parse '0' or '+0'.
  *
- * `fillChar` is a character that may be used as filler between the sign and the number (or at the
- * start of the number if it is unsigned). It must be a one-character string (but no error is
- * triggered if it's not). Beware if you use a digit as `fillChar` because the digits composing the
- * number might get trimmed when parsing (e.g. trying to parse '0000' with `fillChar` '0' will
- * result in an error)
+ * @category Destructors
+ */
+export const toRealExtractor: (
+	self: Type,
+	fillChar?: string
+) => MTypes.OneArgFunction<string, Option.Option<MTypes.Pair<CVReal.Type, string>>> = flow(
+	_toBigDecimalExtractor,
+	Function.compose(
+		Option.flatMap(([value, parsedText, sign]) =>
+			pipe(
+				value,
+				CVReal.fromBigDecimalOption,
+				Option.map(
+					flow(
+						Number.multiply(sign) as unknown as MTypes.OneArgFunction<CVReal.Type>,
+						Tuple.make,
+						Tuple.appendElement(parsedText)
+					)
+				)
+			)
+		)
+	)
+);
+
+/**
+ * Same as toBigDecimalExtractor but the whole of the input text must represent a number, not just
+ * its start
  *
  * @category Destructors
  */
@@ -745,15 +765,30 @@ export const toBigDecimalParser = (
 };
 
 /**
- * Same as `toBigDecimalParser` but returns a `Real` which is the most usual use case
+ * Same as `toRealExtractor` but the whole of the input text must represent a number, not just its
+ * start
  *
  * @category Destructors
  */
 export const toRealParser = (
 	self: Type,
 	fillChar?: string
-): MTypes.OneArgFunction<string, Option.Option<CVReal.Type>> =>
-	flow(toBigDecimalParser(self, fillChar), Option.flatMap(CVReal.fromBigDecimalOption));
+): MTypes.OneArgFunction<string, Option.Option<CVReal.Type>> => {
+	const extractor = toRealExtractor(self, fillChar);
+	return (text) =>
+		pipe(
+			text,
+			extractor,
+			Option.flatMap(
+				flow(
+					Option.liftPredicate(
+						flow(Tuple.getSecond, String.length, MPredicate.strictEquals(text.length))
+					),
+					Option.map(Tuple.getFirst)
+				)
+			)
+		);
+};
 
 /**
  * Returns a function that tries to format a `number` respecting the options represented by

@@ -438,7 +438,7 @@ export namespace Tag {
 				Either.fromOption(
 					() =>
 						new MInputError.Type({
-							message: `${label}: value '${input}' cannot be converted to a ${numberBase10Format.descriptor}-formatted base-10 number`
+							message: `${label}: value '${input}' cannot be converted to a(n) ${numberBase10Format.descriptor}-formatted base-10 number`
 						})
 				)
 			);

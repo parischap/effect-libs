@@ -1,12 +1,16 @@
 /* eslint-disable functional/no-expression-statements */
 import { CVNumberBase10Format, CVReal } from '@parischap/conversions';
-import { MBigDecimal } from '@parischap/effect-lib';
+import { MBigDecimal, MNumber } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
 import { BigDecimal, Option, pipe, Tuple } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('NumberBase10Format', () => {
 	const frenchStyleThreeDecimalNumber = CVNumberBase10Format.frenchStyleThreeDecimalNumber;
+	const frenchStyleThreeDecimalNumberWithAutoSign = pipe(
+		frenchStyleThreeDecimalNumber,
+		CVNumberBase10Format.withSignDisplayForNegative()
+	);
 
 	describe('Tag, prototype and guards', () => {
 		it('moduleTag', () => {
@@ -381,91 +385,73 @@ describe('NumberBase10Format', () => {
 
 	describe('toBigDecimalExtractor', () => {
 		describe('General tests with frenchStyleThreeDecimalNumber', () => {
-			const numberExtractor = CVNumberBase10Format.toBigDecimalExtractor(
-				frenchStyleThreeDecimalNumber
-			);
+			const extractor = CVNumberBase10Format.toBigDecimalExtractor(frenchStyleThreeDecimalNumber);
 			it('String not starting by number', () => {
-				TEUtils.assertNone(numberExtractor('Dummy'));
+				TEUtils.assertNone(extractor('Dummy'));
 			});
 
 			it('Only a sign', () => {
-				TEUtils.assertNone(numberExtractor('- Dummy'));
+				TEUtils.assertNone(extractor('- Dummy'));
 			});
 
 			it('Negative zero', () => {
-				TEUtils.assertNone(numberExtractor('-0Dummy'));
+				TEUtils.assertNone(extractor('-0Dummy'));
 			});
 
 			it('Unexpected fillChar', () => {
-				TEUtils.assertNone(numberExtractor('- 5Dummy'));
-				TEUtils.assertNone(numberExtractor(' 5Dummy'));
-			});
-
-			it('Zero', () => {
-				TEUtils.assertSome(numberExtractor('0Dummy'), Tuple.make(BigDecimal.make(0n, 0), '0'));
+				TEUtils.assertNone(extractor('- 5Dummy'));
+				TEUtils.assertNone(extractor(' 5Dummy'));
 			});
 
 			it('Unsigned mantissa with no integer part', () => {
-				TEUtils.assertSome(
-					numberExtractor('0,45Dummy'),
-					Tuple.make(BigDecimal.make(45n, 2), '0,45')
-				);
+				TEUtils.assertSome(extractor('0,45Dummy'), Tuple.make(BigDecimal.make(45n, 2), '0,45'));
 			});
 
 			it('Signed mantissa with no integer part', () => {
-				TEUtils.assertSome(
-					numberExtractor('-0,45Dummy'),
-					Tuple.make(BigDecimal.make(-45n, 2), '-0,45')
-				);
+				TEUtils.assertSome(extractor('-0,45Dummy'), Tuple.make(BigDecimal.make(-45n, 2), '-0,45'));
 			});
 
 			it('Signed mantissa with no fractional part', () => {
-				TEUtils.assertSome(numberExtractor('-45'), Tuple.make(BigDecimal.make(-45n, 0), '-45'));
+				TEUtils.assertSome(extractor('-45'), Tuple.make(BigDecimal.make(-45n, 0), '-45'));
 			});
 
 			it('Signed mantissa', () => {
-				TEUtils.assertSome(
-					numberExtractor('-45,45'),
-					Tuple.make(BigDecimal.make(-4545n, 2), '-45,45')
-				);
+				TEUtils.assertSome(extractor('-45,45'), Tuple.make(BigDecimal.make(-4545n, 2), '-45,45'));
 			});
 
 			it('Fractional part of mantissa starting with zeros', () => {
-				TEUtils.assertSome(
-					numberExtractor('-45,00'),
-					Tuple.make(BigDecimal.make(-45n, 0), '-45,00')
-				);
+				TEUtils.assertSome(extractor('-45,00'), Tuple.make(BigDecimal.make(-45n, 0), '-45,00'));
 			});
 		});
 
 		describe('Allow scientific notation', () => {
 			//Use withEngineeringScientificNotation to make sure that ScientificNotation.toParser is called properly
-			const numberExtractor = pipe(
+			const extractor = pipe(
 				frenchStyleThreeDecimalNumber,
 				CVNumberBase10Format.withEngineeringScientificNotation(),
 				CVNumberBase10Format.toBigDecimalExtractor
 			);
 
 			it('Only an exponent', () => {
-				TEUtils.assertNone(numberExtractor('e12Dummy'));
+				TEUtils.assertNone(extractor('e12Dummy'));
 			});
 
 			it('An exponent that is not a multiple of 3', () => {
-				TEUtils.assertNone(numberExtractor('512,45e13Dummy'));
+				TEUtils.assertNone(extractor('512,45e13Dummy'));
 			});
 
 			it('A mantissa out of range', () => {
-				TEUtils.assertNone(numberExtractor('1 512,45e12Dummy'));
-				TEUtils.assertNone(numberExtractor('0,45Dummy'));
+				TEUtils.assertNone(extractor('1 512,45e12Dummy'));
+				TEUtils.assertNone(extractor('0,45Dummy'));
 			});
 
 			it('Zero', () => {
-				TEUtils.assertSome(numberExtractor('0Dummy'), Tuple.make(BigDecimal.make(0n, 0), '0'));
+				TEUtils.assertSome(extractor('0Dummy'), Tuple.make(BigDecimal.make(0n, 0), '0'));
 			});
 
 			it('A number respecting all conditions', () => {
 				TEUtils.assertSome(
-					numberExtractor('512,45e12Dummy'),
+					extractor('512,45e12Dummy'),
 					Tuple.make(BigDecimal.make(51245n, -10), '512,45e12')
 				);
 			});
@@ -473,99 +459,86 @@ describe('NumberBase10Format', () => {
 
 		describe('ShowNullInteger part tests', () => {
 			describe('True', () => {
-				const numberExtractor = CVNumberBase10Format.toBigDecimalExtractor(
-					frenchStyleThreeDecimalNumber
-				);
+				const extractor = CVNumberBase10Format.toBigDecimalExtractor(frenchStyleThreeDecimalNumber);
 
 				it('Non-null value with explicit 0', () => {
 					TEUtils.assertSome(
-						numberExtractor('-0,45Dummy'),
+						extractor('-0,45Dummy'),
 						Tuple.make(BigDecimal.make(-45n, 2), '-0,45')
 					);
 				});
 
 				it('Null value', () => {
-					TEUtils.assertSome(numberExtractor('0Dummy'), Tuple.make(MBigDecimal.zero, '0'));
+					TEUtils.assertSome(extractor('0Dummy'), Tuple.make(MBigDecimal.zero, '0'));
 				});
 
 				it('Non-null value with implicit 0', () => {
-					TEUtils.assertNone(numberExtractor('-,45Dummy'));
+					TEUtils.assertNone(extractor('-,45Dummy'));
 				});
 			});
 
 			describe('False', () => {
-				const numberExtractor = pipe(
+				const extractor = pipe(
 					frenchStyleThreeDecimalNumber,
 					CVNumberBase10Format.withNullIntegerPartNotShowing(),
 					CVNumberBase10Format.toBigDecimalExtractor
 				);
 
 				it('Non-null value with explicit 0', () => {
-					TEUtils.assertNone(numberExtractor('-0,45Dummy'));
+					TEUtils.assertNone(extractor('-0,45Dummy'));
 				});
 
 				it('Null value', () => {
-					TEUtils.assertSome(numberExtractor('0Dummy'), Tuple.make(MBigDecimal.zero, '0'));
+					TEUtils.assertSome(extractor('0Dummy'), Tuple.make(MBigDecimal.zero, '0'));
 				});
 
 				it('Non-null value with implicit 0', () => {
-					TEUtils.assertSome(
-						numberExtractor('-,45Dummy'),
-						Tuple.make(BigDecimal.make(-45n, 2), '-,45')
-					);
+					TEUtils.assertSome(extractor('-,45Dummy'), Tuple.make(BigDecimal.make(-45n, 2), '-,45'));
 				});
 			});
 		});
 
 		describe('minimumFractionDigits tests', () => {
 			describe('Two decimals', () => {
-				const numberExtractor = pipe(
+				const extractor = pipe(
 					frenchStyleThreeDecimalNumber,
 					CVNumberBase10Format.withNDecimals(2),
 					CVNumberBase10Format.toBigDecimalExtractor
 				);
 
 				it('No decimal', () => {
-					TEUtils.assertNone(numberExtractor('8Dummy'));
+					TEUtils.assertNone(extractor('8Dummy'));
 				});
 
 				it('One decimal', () => {
-					TEUtils.assertNone(numberExtractor('8,1Dummy'));
+					TEUtils.assertNone(extractor('8,1Dummy'));
 				});
 
 				it('Two decimals', () => {
-					TEUtils.assertSome(
-						numberExtractor('8,10Dummy'),
-						Tuple.make(BigDecimal.make(81n, 1), '8,10')
-					);
+					TEUtils.assertSome(extractor('8,10Dummy'), Tuple.make(BigDecimal.make(81n, 1), '8,10'));
 				});
 			});
 		});
 
 		describe('maximumFractionDigits tests', () => {
 			describe('Three decimals', () => {
-				const numberExtractor = CVNumberBase10Format.toBigDecimalExtractor(
-					frenchStyleThreeDecimalNumber
-				);
+				const extractor = CVNumberBase10Format.toBigDecimalExtractor(frenchStyleThreeDecimalNumber);
 
 				it('No decimal', () => {
-					TEUtils.assertSome(numberExtractor('8Dummy'), Tuple.make(BigDecimal.make(8n, 0), '8'));
+					TEUtils.assertSome(extractor('8Dummy'), Tuple.make(BigDecimal.make(8n, 0), '8'));
 				});
 
 				it('Three decimals', () => {
-					TEUtils.assertSome(
-						numberExtractor('8,100Dummy'),
-						Tuple.make(BigDecimal.make(81n, 1), '8,100')
-					);
+					TEUtils.assertSome(extractor('8,100Dummy'), Tuple.make(BigDecimal.make(81n, 1), '8,100'));
 				});
 
 				it('Four decimals', () => {
-					TEUtils.assertNone(numberExtractor('0,1234Dummy'));
+					TEUtils.assertNone(extractor('0,1234Dummy'));
 				});
 			});
 
 			describe('Unbounded', () => {
-				const numberExtractor = pipe(
+				const extractor = pipe(
 					frenchStyleThreeDecimalNumber,
 					CVNumberBase10Format.withMaxNDecimals(+Infinity),
 					CVNumberBase10Format.toBigDecimalExtractor
@@ -573,7 +546,7 @@ describe('NumberBase10Format', () => {
 
 				it('Four decimals', () => {
 					TEUtils.assertSome(
-						numberExtractor('0,1234Dummy'),
+						extractor('0,1234Dummy'),
 						Tuple.make(BigDecimal.make(1234n, 4), '0,1234')
 					);
 				});
@@ -581,96 +554,175 @@ describe('NumberBase10Format', () => {
 		});
 
 		describe('With a fillChar', () => {
-			const numberExtractor = CVNumberBase10Format.toBigDecimalExtractor(
+			const extractor = CVNumberBase10Format.toBigDecimalExtractor(
 				frenchStyleThreeDecimalNumber,
 				' '
 			);
 
 			it('String not starting by number', () => {
-				TEUtils.assertNone(numberExtractor(' Dummy'));
+				TEUtils.assertNone(extractor(' Dummy'));
 			});
 
 			it('Only a sign', () => {
-				TEUtils.assertNone(numberExtractor('- Dummy'));
+				TEUtils.assertNone(extractor('- Dummy'));
 			});
 
 			it('Negative zero', () => {
-				TEUtils.assertNone(numberExtractor('-0Dummy'));
+				TEUtils.assertNone(extractor('-0Dummy'));
 			});
 
 			it('Negative value', () => {
-				TEUtils.assertSome(numberExtractor('- 5Dummy'), Tuple.make(BigDecimal.make(-5n, 0), '- 5'));
+				TEUtils.assertSome(extractor('- 5Dummy'), Tuple.make(BigDecimal.make(-5n, 0), '- 5'));
 			});
 
 			it('Positive value', () => {
-				TEUtils.assertSome(numberExtractor(' 5Dummy'), Tuple.make(BigDecimal.make(5n, 0), ' 5'));
+				TEUtils.assertSome(extractor(' 5Dummy'), Tuple.make(BigDecimal.make(5n, 0), ' 5'));
 			});
 		});
 	});
 
 	describe('toRealExtractor', () => {
-		const numberExtractor = CVNumberBase10Format.toRealExtractor(frenchStyleThreeDecimalNumber);
+		const extractor = CVNumberBase10Format.toRealExtractor(frenchStyleThreeDecimalNumber);
 		it('passing', () => {
-			TEUtils.assertSome(
-				numberExtractor('0,45Dummy'),
-				Tuple.make(CVReal.unsafeFromNumber(0.45), '0,45')
-			);
+			TEUtils.assertSome(extractor('0,45Dummy'), Tuple.make(CVReal.unsafeFromNumber(0.45), '0,45'));
 		});
 
 		it('Not passing', () => {
-			TEUtils.assertNone(numberExtractor('Dummy'));
+			TEUtils.assertNone(extractor('Dummy'));
 		});
 	});
 
 	describe('toBigDecimalParser', () => {
-		const numberParser = pipe(
+		const parser = pipe(
 			frenchStyleThreeDecimalNumber,
 			CVNumberBase10Format.withStandardScientificNotation(),
 			CVNumberBase10Format.toBigDecimalParser
 		);
 		it('Passing', () => {
-			TEUtils.assertSome(numberParser('-45,45e-2'), BigDecimal.make(-4545n, 4));
+			TEUtils.assertSome(parser('-45,45e-2'), BigDecimal.make(-4545n, 4));
 		});
 
 		it('Not passing', () => {
-			TEUtils.assertNone(numberParser('-45,45e-'));
+			TEUtils.assertNone(parser('-45,45e-'));
 		});
 	});
 
 	describe('toRealParser', () => {
-		const numberParser = CVNumberBase10Format.toRealParser(frenchStyleThreeDecimalNumber);
+		const parser = CVNumberBase10Format.toRealParser(frenchStyleThreeDecimalNumberWithAutoSign);
 		it('Passing', () => {
-			TEUtils.assertSome(numberParser('0,45'), CVReal.unsafeFromNumber(0.45));
+			TEUtils.assertSome(parser('0,45'), CVReal.unsafeFromNumber(0.45));
+		});
+
+		it('Zero', () => {
+			TEUtils.assertSome(parser('0'), CVReal.unsafeFromNumber(0));
+			TEUtils.assertSome(pipe('-0', parser, Option.map(MNumber.sign2)), -1);
 		});
 
 		it('Not passing', () => {
-			TEUtils.assertNone(numberParser('0.45'));
+			TEUtils.assertNone(parser('0.45'));
 		});
 	});
 
 	describe('toNumberFormatter', () => {
-		const frenchStyleThreeDecimalNumberWithAutoSign = pipe(
-			CVNumberBase10Format.frenchStyleThreeDecimalNumber,
-			CVNumberBase10Format.withSignDisplayForNegative()
-		);
 		describe('General tests with frenchStyleThreeDecimalNumberWithAutoSign', () => {
-			const numberFormatter = CVNumberBase10Format.toNumberFormatter(
+			const formatter = CVNumberBase10Format.toNumberFormatter(
 				frenchStyleThreeDecimalNumberWithAutoSign
 			);
 			it('Zero', () => {
-				TEUtils.assertEquals(numberFormatter(CVReal.unsafeFromNumber(0)), '0');
-			});
-
-			it('Negative zero', () => {
-				TEUtils.assertEquals(numberFormatter(CVReal.unsafeFromNumber(-0.0004)), '-0');
+				TEUtils.assertEquals(formatter(CVReal.unsafeFromNumber(0)), '0');
+				TEUtils.assertEquals(formatter(CVReal.unsafeFromNumber(-0)), '-0');
+				TEUtils.assertEquals(formatter(BigDecimal.make(-0n, 0)), '0');
+				TEUtils.assertEquals(formatter(CVReal.unsafeFromNumber(-0.0004)), '-0');
 			});
 
 			it('Number with less than maximumFractionDigits decimals', () => {
-				TEUtils.assertEquals(numberFormatter(CVReal.unsafeFromNumber(1528.65)), '1 528,65');
+				TEUtils.assertEquals(formatter(CVReal.unsafeFromNumber(1528.65)), '1 528,65');
 			});
 
 			it('BigDecimal as input, more than maximumFractionDigits decimals', () => {
-				TEUtils.assertEquals(numberFormatter(BigDecimal.make(-14675435n, 4)), '-1 467,544');
+				TEUtils.assertEquals(formatter(BigDecimal.make(-14675435n, 4)), '-1 467,544');
+			});
+		});
+
+		describe('Tests with withNullIntegerPartNotShowing', () => {
+			const formatter = pipe(
+				frenchStyleThreeDecimalNumberWithAutoSign,
+				CVNumberBase10Format.withNullIntegerPartNotShowing(),
+				CVNumberBase10Format.toNumberFormatter
+			);
+			it('Zero', () => {
+				TEUtils.assertEquals(formatter(CVReal.unsafeFromNumber(0)), '0');
+			});
+
+			it('Number rounded down to zero', () => {
+				TEUtils.assertEquals(formatter(CVReal.unsafeFromNumber(-0.0004)), '-0');
+			});
+
+			it('Number rounded up from zero', () => {
+				TEUtils.assertEquals(formatter(CVReal.unsafeFromNumber(0.0005)), ',001');
+			});
+		});
+
+		describe('Tests with withNDecimals(2) and withNullIntegerPartNotShowing', () => {
+			const formatter = pipe(
+				frenchStyleThreeDecimalNumberWithAutoSign,
+				CVNumberBase10Format.withNDecimals(2),
+				CVNumberBase10Format.withNullIntegerPartNotShowing(),
+				CVNumberBase10Format.toNumberFormatter
+			);
+			it('Zero', () => {
+				TEUtils.assertEquals(formatter(CVReal.unsafeFromNumber(0)), ',00');
+			});
+
+			it('Number rounded down to zero', () => {
+				TEUtils.assertEquals(formatter(CVReal.unsafeFromNumber(-0.004)), '-,00');
+			});
+
+			it('Number rounded up from zero', () => {
+				TEUtils.assertEquals(formatter(CVReal.unsafeFromNumber(0.005)), ',01');
+			});
+		});
+
+		describe('Tests with withEngineeringScientificNotation', () => {
+			const formatter = pipe(
+				frenchStyleThreeDecimalNumberWithAutoSign,
+				CVNumberBase10Format.withEngineeringScientificNotation(),
+				CVNumberBase10Format.withMinNDecimals(2),
+				CVNumberBase10Format.toNumberFormatter
+			);
+			it('Negative Zero', () => {
+				TEUtils.assertEquals(formatter(CVReal.unsafeFromNumber(-0)), '-0,00E0');
+			});
+
+			it('Big positive number', () => {
+				TEUtils.assertEquals(formatter(CVReal.unsafeFromNumber(154321.5)), '154,322E3');
+			});
+
+			it('Small negative number', () => {
+				TEUtils.assertEquals(formatter(CVReal.unsafeFromNumber(-523e-5)), '-5,23E-3');
+			});
+		});
+	});
+
+	describe('toRealFormatter', () => {
+		describe('General tests with frenchStyleThreeDecimalNumberWithAutoSign', () => {
+			const formatter = CVNumberBase10Format.toNumberFormatter(
+				frenchStyleThreeDecimalNumberWithAutoSign
+			);
+			it('Zero', () => {
+				TEUtils.assertEquals(formatter(CVReal.unsafeFromNumber(0)), '0');
+			});
+
+			it('Negative zero', () => {
+				TEUtils.assertEquals(formatter(CVReal.unsafeFromNumber(-0.0004)), '-0');
+			});
+
+			it('Number with less than maximumFractionDigits decimals', () => {
+				TEUtils.assertEquals(formatter(CVReal.unsafeFromNumber(1528.65)), '1 528,65');
+			});
+
+			it('BigDecimal as input, more than maximumFractionDigits decimals', () => {
+				TEUtils.assertEquals(formatter(BigDecimal.make(-14675435n, 4)), '-1 467,544');
 			});
 		});
 

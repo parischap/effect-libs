@@ -25,7 +25,6 @@ import {
 	MInspectable,
 	MNumber,
 	MPipeable,
-	MString,
 	MStruct,
 	MTypes
 } from '@parischap/effect-lib';
@@ -46,7 +45,6 @@ import {
 } from 'effect';
 import * as CVNumberBase10Format from './NumberBase10Format.js';
 import * as CVPlaceholder from './Placeholder.js';
-import * as CVReal from './Real.js';
 import * as CVTemplate from './Template.js';
 
 /**
@@ -164,6 +162,15 @@ export const MAX_TIMESTAMP = 8_640_000_000_000_000;
  * @category Constants
  */
 export const MIN_TIMESTAMP = -MAX_TIMESTAMP;
+
+const _integer = CVNumberBase10Format.integer;
+const _params = {
+	fillChar: '0',
+	numberBase10Format: _integer
+};
+
+const _tag = CVPlaceholder.Tag.fixedLengthToReal;
+const _sep = CVPlaceholder.Separator;
 
 /**
  * Namespace for the a Gregorian date
@@ -630,6 +637,32 @@ namespace GregorianDate {
 	 */
 	export const getNumberOfDaysInMonth = (month: number): MTypes.OneArgFunction<Type, number> =>
 		flow(Struct.get('_daysInMonth'), MArray.unsafeGet(month - 1));
+
+	const _formatter = flow(
+		CVTemplate.toFormatter(
+			CVTemplate.make(
+				_tag({ ..._params, name: 'year', length: 4 }),
+				_sep.hyphen,
+				_tag({ ..._params, name: 'month', length: 2 }),
+				_sep.hyphen,
+				_tag({ ..._params, name: 'monthDay', length: 2 })
+			)
+		),
+		Either.getOrThrowWith(Function.identity)
+	) as MTypes.OneArgFunction<
+		{ readonly year: number; readonly month: number; readonly monthDay: number },
+		string
+	>;
+
+	/**
+	 * Returns the ISO representation of this Gregorian Date
+	 *
+	 * @category Destructors
+	 */
+	export const toIsoString: MTypes.OneArgFunction<Type, string> = flow(
+		MStruct.enrichWith({ month: getMonth, monthDay: getMonthDay }),
+		_formatter
+	);
 }
 
 /**
@@ -1087,6 +1120,32 @@ namespace IsoDate {
 	 * @category Destructors
 	 */
 	export const getLastIsoWeek = (self: Type): number => (self.yearIsLong ? 53 : 52);
+
+	const _formatter = flow(
+		CVTemplate.toFormatter(
+			CVTemplate.make(
+				_tag({ ..._params, name: 'year', length: 4 }),
+				_sep.make('-W'),
+				_tag({ ..._params, name: 'isoWeek', length: 2 }),
+				_sep.hyphen,
+				_tag({ ..._params, name: 'weekday', length: 2 })
+			)
+		),
+		Either.getOrThrowWith(Function.identity)
+	) as MTypes.OneArgFunction<
+		{ readonly year: number; readonly isoWeek: number; readonly weekday: number },
+		string
+	>;
+
+	/**
+	 * Returns the ISO representation of this Gregorian Date
+	 *
+	 * @category Destructors
+	 */
+	export const toIsoString: MTypes.OneArgFunction<Type, string> = flow(
+		MStruct.enrichWith({ isoWeek: getIsoWeek, weekday: getWeekday }),
+		_formatter
+	);
 }
 
 /**
@@ -1393,6 +1452,216 @@ namespace Time {
 	 * @category Destructors
 	 */
 	export const millisecond: MTypes.OneArgFunction<Type, number> = Struct.get('millisecond');
+
+	const _formatter = flow(
+		CVTemplate.toFormatter(
+			CVTemplate.make(
+				_tag({ ..._params, name: 'hour23', length: 2 }),
+				_sep.colon,
+				_tag({ ..._params, name: 'minute', length: 2 }),
+				_sep.colon,
+				_tag({ ..._params, name: 'second', length: 2 }),
+				_sep.comma,
+				_tag({ ..._params, name: 'millisecond', length: 3 })
+			)
+		),
+		Either.getOrThrowWith(Function.identity)
+	) as MTypes.OneArgFunction<
+		{
+			readonly hour23: number;
+			readonly minute: number;
+			readonly second: number;
+			readonly millisecond: number;
+		},
+		string
+	>;
+
+	/**
+	 * Returns the ISO representation of this Gregorian Date
+	 *
+	 * @category Destructors
+	 */
+	export const toIsoString: MTypes.OneArgFunction<Type, string> = _formatter;
+}
+
+/**
+ * Namespace for the data relative to the parts of a zone offset
+ *
+ * @category Models
+ */
+namespace ZoneOffsetParts {
+	const _namespaceTag = moduleTag + 'ZoneOffsetParts/';
+	const _TypeId: unique symbol = Symbol.for(_namespaceTag) as _TypeId;
+	type _TypeId = typeof _TypeId;
+
+	/**
+	 * Type of a ZoneOffsetParts. Note that ZoneOffsetParts with hour=-0, minute=10, second=0 is
+	 * different from hour=0, minute=10, second=0. The first corresponds to the string 'GMT-00:10', a
+	 * negative 10-minute offset, the second one to the string 'GMT+00:10', a positive 10-minute
+	 * offset.
+	 *
+	 * @category Models
+	 */
+	export interface Type extends Inspectable.Inspectable, Pipeable.Pipeable {
+		/** Hour part, range: [-12,14] */
+		readonly zoneHour: number;
+
+		/** Minute part, range: [0, 59] */
+		readonly zoneMinute: number;
+
+		/** Second part, range: [0, 59] */
+		readonly zoneSecond: number;
+
+		/** @internal */
+		readonly [_TypeId]: _TypeId;
+	}
+
+	/**
+	 * Type guard
+	 *
+	 * @category Guards
+	 */
+	export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
+
+	/** Proto */
+	const proto: MTypes.Proto<Type> = {
+		[_TypeId]: _TypeId,
+		...MInspectable.BaseProto(_namespaceTag),
+		...MPipeable.BaseProto
+	};
+
+	export const _make = (params: MTypes.Data<Type>): Type =>
+		MTypes.objectFromDataAndProto(proto, params);
+
+	/**
+	 * Builds a ZoneOffsetParts from `zoneOffset`
+	 *
+	 * @category Constructors
+	 */
+	export const fromZoneOffset = (zoneOffset: number): Type => {
+		const zoneHour = Math.trunc(zoneOffset);
+		const minutesSeconds = Math.abs(zoneOffset - zoneHour) * 60;
+		const zoneMinute = Math.trunc(minutesSeconds);
+		const zoneSecond = Math.trunc((minutesSeconds - zoneMinute) * 60);
+
+		return _make({ zoneHour, zoneMinute, zoneSecond });
+	};
+
+	/**
+	 * Tries to build a ZoneOffsetParts from `zoneHour`, `zoneMinute`, `zoneSecond`. Returns a `some`
+	 * if successful. A `none` otherwise.
+	 *
+	 * - `zoneHour` must be greater than or equal to -12 and less than or equal to 14.
+	 * - `zoneMinute` must be greater than or equal to 0 and less than or equal to 59.
+	 * - `zoneSecond` must be greater than or equal to 0 and less than or equal to 59.
+	 *
+	 * @category Constructors
+	 */
+	export const fromParts = ({
+		zoneHour,
+		zoneMinute,
+		zoneSecond
+	}: {
+		readonly zoneHour: number;
+		readonly zoneMinute: number;
+		readonly zoneSecond: number;
+	}): Either.Either<Type, MInputError.Type> =>
+		Either.gen(function* () {
+			const validatedHour = yield* pipe(
+				zoneHour,
+				MInputError.assertInRange({
+					min: -12,
+					max: 14,
+					minIncluded: true,
+					maxIncluded: true,
+					offset: 0,
+					name: "'zoneHour'"
+				})
+			);
+
+			const validatedMinute = yield* pipe(
+				zoneMinute,
+				MInputError.assertInRange({
+					min: 0,
+					max: 59,
+					minIncluded: true,
+					maxIncluded: true,
+					offset: 0,
+					name: "'zoneMinute'"
+				})
+			);
+			const validatedSecond = yield* pipe(
+				zoneSecond,
+				MInputError.assertInRange({
+					min: 0,
+					max: 59,
+					minIncluded: true,
+					maxIncluded: true,
+					offset: 0,
+					name: "'zoneSecond'"
+				})
+			);
+
+			return _make({
+				zoneHour: validatedHour,
+				zoneMinute: validatedMinute,
+				zoneSecond: validatedSecond
+			});
+		});
+
+	/**
+	 * Returns the `zoneHour` property of `self`
+	 *
+	 * @category Destructors
+	 */
+	export const zoneHour: MTypes.OneArgFunction<Type, number> = Struct.get('zoneHour');
+
+	/**
+	 * Returns the `zoneMinute` property of `self`
+	 *
+	 * @category Destructors
+	 */
+	export const zoneMinute: MTypes.OneArgFunction<Type, number> = Struct.get('zoneMinute');
+	/**
+	 * Returns the `zoneSecond` property of `self`
+	 *
+	 * @category Destructors
+	 */
+	export const zoneSecond: MTypes.OneArgFunction<Type, number> = Struct.get('zoneSecond');
+
+	const _formatter = flow(
+		CVTemplate.toFormatter(
+			CVTemplate.make(
+				_tag({
+					..._params,
+					name: 'zoneHour',
+					length: 3,
+					numberBase10Format: pipe(_integer, CVNumberBase10Format.withSignDisplay('signed integer'))
+				}),
+				_sep.colon,
+				_tag({ ..._params, name: 'zoneMinute', length: 2 })
+			)
+		),
+		Either.getOrThrowWith(Function.identity)
+	) as MTypes.OneArgFunction<{ readonly zoneHour: number; readonly zoneMinute: number }, string>;
+
+	/**
+	 * Returns the ISO representation of this Gregorian Date
+	 *
+	 * @category Destructors
+	 */
+	export const toIsoString: MTypes.OneArgFunction<Type, string> = _formatter;
+
+	/**
+	 * Returns the value of `self` expressed in hours
+	 *
+	 * @category Destructors
+	 */
+	export const toHour = (self: Type): number => {
+		const hour = self.zoneHour;
+		const sign = MNumber.sign2(hour);
+		return hour + sign * (self.zoneMinute / 60 + self.zoneSecond / 3600);
+	};
 }
 
 /**
@@ -1420,6 +1689,9 @@ export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable 
 	 */
 	readonly zoneOffset: number;
 
+	/** ZoneOffset decomposed into its parts */
+	readonly zoneOffsetParts: Option.Option<ZoneOffsetParts.Type>;
+
 	/** @internal */
 	readonly _zonedTimestamp: number;
 	readonly [_TypeId]: _TypeId;
@@ -1441,47 +1713,6 @@ export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
 	self.timestamp === that.timestamp;
 
 /** Proto */
-const _params = {
-	fillChar: '0',
-	padPosition: MString.PadPosition.Left,
-	disallowEmptyString: true,
-	numberBase10Format: CVNumberBase10Format.integer
-};
-
-const _tag = CVPlaceholder.Tag.fixedLengthToReal;
-const _sep = CVPlaceholder.Separator;
-const _dateFormatter = flow(
-	CVTemplate.toFormatter(
-		CVTemplate.make(
-			_tag({ ..._params, name: 'yyyy', length: 4 }),
-			_sep.hyphen,
-			_tag({ ..._params, name: 'MM', length: 2 }),
-			_sep.hyphen,
-			_tag({ ..._params, name: 'dd', length: 2 }),
-			_sep.space,
-			_tag({ ..._params, name: 'HH', length: 2 }),
-			_sep.colon,
-			_tag({ ..._params, name: 'mm', length: 2 }),
-			_sep.colon,
-			_tag({ ..._params, name: 'ss', length: 2 }),
-			_sep.colon,
-			_tag({ ..._params, name: 'SSS', length: 3 }),
-			_sep.make(' GMT'),
-			CVPlaceholder.Tag.mappedLiterals({
-				name: 'zS',
-				keyValuePairs: [
-					['-', -1],
-					['+', 1]
-				]
-			}),
-			_tag({ ..._params, name: 'zHzH', length: 2 }),
-			_tag({ ..._params, name: 'zmzm', length: 2 }),
-			_tag({ ..._params, name: 'zszs', length: 2 })
-		)
-	),
-	Either.getOrThrowWith(Function.identity)
-);
-
 const _TypeIdHash = Hash.hash(_TypeId);
 const proto: MTypes.Proto<Type> = {
 	[_TypeId]: _TypeId,
@@ -1492,20 +1723,7 @@ const proto: MTypes.Proto<Type> = {
 		return pipe(this.timestamp, Hash.hash, Hash.combine(_TypeIdHash), Hash.cached(this));
 	},
 	[MInspectable.IdSymbol](this: Type) {
-		const { zoneSign, zoneHour, zoneMinute, zoneSecond } = getZoneParts(this);
-		return _dateFormatter({
-			yyyy: pipe(this, getYear, CVReal.unsafeFromNumber),
-			MM: pipe(this, getMonth, CVReal.unsafeFromNumber),
-			dd: pipe(this, getMonthDay, CVReal.unsafeFromNumber),
-			HH: pipe(this, getHour23, CVReal.unsafeFromNumber),
-			mm: pipe(this, getMinute, CVReal.unsafeFromNumber),
-			ss: pipe(this, getSecond, CVReal.unsafeFromNumber),
-			SSS: pipe(this, getMillisecond, CVReal.unsafeFromNumber),
-			zS: zoneSign,
-			zHzH: CVReal.unsafeFromNumber(zoneHour),
-			zmzm: CVReal.unsafeFromNumber(zoneMinute),
-			zszs: CVReal.unsafeFromNumber(zoneSecond)
-		});
+		return toIsoString(this);
 	},
 	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto
@@ -1514,10 +1732,22 @@ const proto: MTypes.Proto<Type> = {
 /** Constructor */
 const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
 
+/**
+ * Returns the ISO representation of this DateTime
+ *
+ * @category Destructors
+ */
+export const toIsoString = (self: Type): string =>
+	GregorianDate.toIsoString(_gregorianDate(self)) +
+	'T' +
+	Time.toIsoString(_time(self)) +
+	ZoneOffsetParts.toIsoString(_zoneOffsetParts(self));
+
 const _uncalculated = {
 	gregorianDate: Option.none(),
 	isoDate: Option.none(),
-	time: Option.none()
+	time: Option.none(),
+	zoneOffsetParts: Option.none()
 };
 
 /**
@@ -1569,6 +1799,10 @@ const _uncalculatedOrigin = _uncalculatedFromTimestamp(0, 0);
  * - `zoneHour` which must be greater than or equal to -12 and less than or equal to 14.
  * - `zoneMinute` which must be greater than or equal to 0 and less than or equal to 59.
  * - `zoneSecond` which must be greater than or equal to 0 and less than or equal to 59.
+ *
+ * Note that zoneHour=-0, zoneMinute=10, zoneSecond=0 is different from zoneHour=0, zoneMinute=10,
+ * zoneSecond=0. The first corresponds to the string 'GMT-00:10', a negative 10-minute offset, the
+ * second one to the string 'GMT+00:10', a positive 10-minute offset.
  *
  * `timestamp`, `zoneHour`, `zoneMinute` and `zoneSecond` should be integers. `zoneOffset`, when
  * expressed as a number of hours, does not need to be an integer.
@@ -1712,10 +1946,10 @@ export namespace Parts {
  * `millisecond` must be greater than or equal to 0 and less than or equal to 999. If omitted,
  * millisecond is assumed to be 0.
  *
- * `zoneOffset` must be strictly greater to -13 and strictly less than 15. `zoneHour` which must be
- * greater than or equal to -12 and less than or equal to 14. `zoneMinute` which must be greater
- * than or equal to 0 and less than or equal to 59 `zoneSecond` which must be greater than or equal
- * to 0 and less than or equal to 59.
+ * `zoneOffset` must be strictly greater to -13 and strictly less than 15. `zoneHour` must be
+ * greater than or equal to -12 and less than or equal to 14. `zoneMinute` must be greater than or
+ * equal to 0 and less than or equal to 59. `zoneSecond` must be greater than or equal to 0 and less
+ * than or equal to 59.
  *
  * If there is not sufficient information to determine the exact time zone offset, i.e. none of the
  * two following tuples is fully determined [zoneOffset], [zoneHour, zoneMinute, zoneSecond],
@@ -1724,6 +1958,10 @@ export namespace Parts {
  * - If all parameters are undefined, the local time zone offset of the machine this code is running
  *   on is used.
  * - If any of `zoneHour`, `zoneMinute`, `zoneSecond`, the undefined parameters are taken equal to 0.
+ *
+ * Note that zoneHour=-0, zoneMinute=10, zoneSecond=0 is different from zoneHour=0, zoneMinute=10,
+ * zoneSecond=0. The first corresponds to the string 'GMT-00:10', a negative 10-minute offset, the
+ * second one to the string 'GMT+00:10', a positive 10-minute offset.
  *
  * `year`, `ordinalDay`, `month`, `monthDay`, `isoYear`, `isoWeek`, `weekDay`, `hour23`, `hour11`,
  * `minute`, `second`, `millisecond`, `zoneHour`, `zoneMinute` and `zoneSecond` should be integers.
@@ -1762,29 +2000,24 @@ export const fromParts = ({
 				(zoneHour === undefined && zoneMinute === undefined && zoneSecond === undefined)
 			) {
 				const result = yield* pipe(_uncalculatedOrigin, _setZoneOffset(false, zoneOffset));
-				const {
-					zoneSign: derivedSign,
-					zoneHour: derivedHour,
-					zoneMinute: derivedMinute,
-					zoneSecond: derivedSecond
-				} = getZoneOffsetParts(result);
+
 				if (zoneHour !== undefined)
 					yield* pipe(
 						zoneHour,
 						MInputError.assertValue({
-							expected: derivedSign * derivedHour,
+							expected: getZoneHour(result),
 							name: "'zoneHour'"
 						})
 					);
 				if (zoneMinute !== undefined)
 					yield* pipe(
 						zoneMinute,
-						MInputError.assertValue({ expected: derivedMinute, name: "'zoneMinute'" })
+						MInputError.assertValue({ expected: getZoneMinute(result), name: "'zoneMinute'" })
 					);
 				if (zoneSecond !== undefined)
 					yield* pipe(
 						zoneSecond,
-						MInputError.assertValue({ expected: derivedSecond, name: "'zoneSecond'" })
+						MInputError.assertValue({ expected: getZoneSecond(result), name: "'zoneSecond'" })
 					);
 				return result;
 			}
@@ -1926,27 +2159,6 @@ export const unsafeFromParts = (parts: Parts.Type) =>
  * @category Destructors
  */
 export const timestamp: MTypes.OneArgFunction<Type, number> = Struct.get('timestamp');
-
-/**
- * Returns the hour, minute and second parts of `self.zoneOffset`
- *
- * @category Destructors
- */
-export const getZoneParts = (
-	self: Type
-): {
-	readonly zoneHour: number;
-	readonly zoneMinute: number;
-	readonly zoneSecond: number;
-} => {
-	const zoneOffset = self.zoneOffset;
-	const zoneHour = Math.trunc(zoneOffset);
-	const timeZoneOffsetMinutesSeconds = Math.abs(zoneOffset - zoneHour) * 60;
-	const zoneMinute = Math.trunc(timeZoneOffsetMinutesSeconds);
-	const zoneSecond = Math.trunc((timeZoneOffsetMinutesSeconds - zoneMinute) * 60);
-
-	return { zoneHour, zoneMinute, zoneSecond };
-};
 
 /** Returns the gregorianDate of `self` for the given time zone */
 const _gregorianDate = (self: Type): GregorianDate.Type =>
@@ -2112,6 +2324,48 @@ export const getSecond: MTypes.OneArgFunction<Type, number> = flow(_time, Time.s
  * @category Destructors
  */
 export const getMillisecond: MTypes.OneArgFunction<Type, number> = flow(_time, Time.millisecond);
+
+/** Returns the zoneOffsetParts of `self` */
+const _zoneOffsetParts = (self: Type): ZoneOffsetParts.Type =>
+	pipe(
+		self.zoneOffsetParts,
+		Option.getOrElse(() => {
+			const result = ZoneOffsetParts.fromZoneOffset(self.zoneOffset);
+			/* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements */
+			(self as MTypes.WithMutable<Type, 'zoneOffsetParts'>).zoneOffsetParts = Option.some(result);
+			return result;
+		})
+	);
+
+/**
+ * Returns the hour part of the zoneOffset of `self`
+ *
+ * @category Destructors
+ */
+export const getZoneHour: MTypes.OneArgFunction<Type, number> = flow(
+	_zoneOffsetParts,
+	ZoneOffsetParts.zoneHour
+);
+
+/**
+ * Returns the minute part of the zoneOffset of `self`
+ *
+ * @category Destructors
+ */
+export const getZoneMinute: MTypes.OneArgFunction<Type, number> = flow(
+	_zoneOffsetParts,
+	ZoneOffsetParts.zoneMinute
+);
+
+/**
+ * Returns the minute part of the zoneOffset of `self`
+ *
+ * @category Destructors
+ */
+export const getZoneSecond: MTypes.OneArgFunction<Type, number> = flow(
+	_zoneOffsetParts,
+	ZoneOffsetParts.zoneSecond
+);
 
 const _gregorianDateSetter = (self: Type): MTypes.OneArgFunction<GregorianDate.Type, Type> => {
 	const selfTimestamp = _gregorianDate(self).timestamp;
@@ -2494,8 +2748,13 @@ const _setZoneOffset =
 	) =>
 	(self: Type): Either.Either<Type, MInputError.Type> =>
 		Either.gen(function* () {
-			const validatedTimeZoneOffset = yield* MTypes.isPrimitive(zoneOffset) ?
-				pipe(
+			const buildFromZoneOffset = (validatedZoneOffset: number) =>
+				keepTimestamp ?
+					_uncalculatedFromTimestamp(self.timestamp, validatedZoneOffset)
+				:	_uncalculatedFromZonedTimestamp(self._zonedTimestamp, validatedZoneOffset);
+
+			if (MTypes.isPrimitive(zoneOffset)) {
+				const validatedZoneOffset = yield* pipe(
 					zoneOffset,
 					MInputError.assertInRange({
 						min: -13,
@@ -2505,44 +2764,19 @@ const _setZoneOffset =
 						offset: 0,
 						name: "'zoneOffset'"
 					})
-				)
-			:	pipe(
-					zoneOffset,
-					MStruct.evolve({
-						zoneHour: MInputError.assertInRange({
-							min: -12,
-							max: 14,
-							minIncluded: true,
-							maxIncluded: true,
-							offset: 0,
-							name: "'zoneHour'"
-						}),
-						zoneMinute: MInputError.assertInRange({
-							min: 0,
-							max: 59,
-							minIncluded: true,
-							maxIncluded: true,
-							offset: 0,
-							name: "'zoneMinute'"
-						}),
-						zoneSecond: MInputError.assertInRange({
-							min: 0,
-							max: 59,
-							minIncluded: true,
-							maxIncluded: true,
-							offset: 0,
-							name: "'zoneSecond'"
-						})
-					}),
-					Either.all,
-					Either.map(
-						({ zoneHour, zoneMinute, zoneSecond }) => zoneHour + zoneMinute / 60 + zoneSecond / 3600
-					)
 				);
+				return buildFromZoneOffset(validatedZoneOffset);
+			}
 
-			return keepTimestamp ?
-					_uncalculatedFromTimestamp(self.timestamp, validatedTimeZoneOffset)
-				:	_uncalculatedFromZonedTimestamp(self._zonedTimestamp, validatedTimeZoneOffset);
+			const zoneOffsetParts = yield* ZoneOffsetParts.fromParts(zoneOffset);
+
+			const result = pipe(zoneOffsetParts, ZoneOffsetParts.toHour, buildFromZoneOffset);
+
+			/* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements */
+			(result as MTypes.WithMutable<Type, 'zoneOffsetParts'>).zoneOffsetParts =
+				Option.some(zoneOffsetParts);
+
+			return result;
 		});
 
 /**
