@@ -112,3 +112,11 @@ export const isMultipleOf: (a: number) => Predicate.Predicate<number> = (a) => (
  * @category Utils
  */
 export const shift = (n: number) => (self: number) => self * 10 ** n;
+
+/**
+ * Returns the sign of `self`. Same as Math.sign but 0 and +0 are considered positive while -0 is
+ * considered negative.
+ *
+ * @category Utils
+ */
+export const sign2 = (n: number) => (Object.is(n, -0) || n < 0 ? -1 : 1);

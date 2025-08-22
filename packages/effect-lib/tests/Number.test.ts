@@ -86,4 +86,26 @@ describe('MNumber', () => {
 			TEUtils.strictEqual(pipe(504, MNumber.shift(-2)), 5.04);
 		});
 	});
+
+	describe('sign2', () => {
+		it('Strictly positive value', () => {
+			TEUtils.strictEqual(MNumber.sign2(5), 1);
+		});
+
+		it('+0', () => {
+			TEUtils.strictEqual(MNumber.sign2(+0), 1);
+		});
+
+		it('0', () => {
+			TEUtils.strictEqual(MNumber.sign2(0), 1);
+		});
+
+		it('-0', () => {
+			TEUtils.strictEqual(MNumber.sign2(-0), -1);
+		});
+
+		it('Strictly negative value', () => {
+			TEUtils.strictEqual(MNumber.sign2(-5), -1);
+		});
+	});
 });
