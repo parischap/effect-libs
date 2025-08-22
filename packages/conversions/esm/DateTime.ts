@@ -1461,7 +1461,7 @@ namespace Time {
 				_tag({ ..._params, name: 'minute', length: 2 }),
 				_sep.colon,
 				_tag({ ..._params, name: 'second', length: 2 }),
-				_sep.comma,
+				_sep.dot,
 				_tag({ ..._params, name: 'millisecond', length: 3 })
 			)
 		),

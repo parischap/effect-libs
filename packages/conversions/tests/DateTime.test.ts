@@ -30,10 +30,10 @@ describe('CVDateTime', () => {
 		});
 
 		it('.toString()', () => {
-			TEUtils.strictEqual(origin.toString(), '1970-01-01T00:00:00,000+00:00');
+			TEUtils.strictEqual(origin.toString(), '1970-01-01T00:00:00.000+00:00');
 			TEUtils.strictEqual(
 				CVDateTime.unsafeFromTimestamp(1_749_823_231_774, -3.765).toString(),
-				'2025-06-13T10:14:37,774-03:45'
+				'2025-06-13T10:14:37.774-03:45'
 			);
 		});
 
@@ -1315,7 +1315,7 @@ describe('CVDateTime', () => {
 					Either.flatMap(CVDateTime.setZoneOffset(-8)),
 					Either.map((d) => d.toString())
 				),
-				'2024-02-29T22:00:00,000-08:00'
+				'2024-02-29T22:00:00.000-08:00'
 			);
 		});
 	});
