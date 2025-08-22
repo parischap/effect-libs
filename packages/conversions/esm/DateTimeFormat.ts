@@ -737,6 +737,20 @@ export namespace Context {
 		});
 
 	/**
+	 * Same as fromLocale but returns directly the Context or throws if it cannot be built
+	 *
+	 * @category Constructors
+	 */
+	export const unsafeFromLocale = (locale: string): Type =>
+		pipe(
+			locale,
+			fromLocale,
+			Option.getOrThrowWith(
+				() => new Error(`A CVDateTimeFormat.Context could not be built for locale '${locale}'`)
+			)
+		);
+
+	/**
 	 * Returns the `name` property of `self`
 	 *
 	 * @category Destructors
