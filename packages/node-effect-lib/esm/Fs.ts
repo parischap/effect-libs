@@ -375,15 +375,17 @@ export const layer = Layer.effect(
 							);
 							const newParents = yield* pipe(
 								realNextSeeds,
-								Either.liftPredicate(flow(Array.intersection(parents), MTypes.isOverOne), () =>
-									PlatformError.SystemError({
-										reason: 'BadResource',
-										pathOrDescriptor: path,
-										module: 'FileSystem',
-										method: 'glob',
-										message: 'Circularity detected. Following paths are cycling'
-										//message: `Circularity detected. Following paths are cycling: ${Array.join(duplicates, ', ')}`
-									})
+								Either.liftPredicate(
+									flow(Array.intersection(parents), MTypes.isOverOne),
+									() =>
+										new PlatformError.SystemError({
+											reason: 'BadResource',
+											pathOrDescriptor: path,
+											module: 'FileSystem',
+											method: 'glob',
+											description: 'Circularity detected. Following paths are cycling'
+											//description: `Circularity detected. Following paths are cycling: ${Array.join(duplicates, ', ')}`
+										})
 								),
 								Either.map(Array.appendAll(parents))
 							);
