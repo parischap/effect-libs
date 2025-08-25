@@ -41,7 +41,7 @@
 		"peerDependencies": {
 			"@parischap/effect-lib": "^0.5.0",
 			"@parischap/ansi-styles": "^0.2.1",
-			"effect": "^3.17.3"
+			"effect": "^3.17.9"
 		},
 		"publishConfig": {},
 		"packageManager": "",
@@ -63,7 +63,7 @@
 	"peerDependencies": {
 		"@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
 		"@parischap/ansi-styles": "workspace:@parischap-dev/ansi-styles@*",
-		"effect": "^3.17.3"
+		"effect": "^3.17.9"
 	},
 	"repository": {
 		"type": "git",
