@@ -1,4 +1,6 @@
 import { BigDecimal, Either, flow, Option, ParseResult, pipe, Schema } from 'effect';
+import * as CVDateTime from './DateTime.js';
+import * as CVDateTimeFormat from './DateTimeFormat.js';
 import * as CVEmail from './Email.js';
 import * as CVNumberBase10Format from './NumberBase10Format.js';
 import * as CVPositiveReal from './PositiveReal.js';
@@ -12,7 +14,7 @@ import * as CVSemVer from './SemVer.js';
  *
  * @category Schema transformations
  */
-export const EmailFromString: Schema.Schema<CVEmail.Type, string> = Schema.String.pipe(
+export const Email: Schema.Schema<CVEmail.Type, string> = Schema.String.pipe(
 	Schema.fromBrand(CVEmail.constructor)
 );
 
@@ -21,14 +23,14 @@ export const EmailFromString: Schema.Schema<CVEmail.Type, string> = Schema.Strin
  *
  * @category Schema instances
  */
-export const EmailFromSelf: Schema.Schema<CVEmail.Type> = Schema.typeSchema(EmailFromString);
+export const EmailFromSelf: Schema.Schema<CVEmail.Type> = Schema.typeSchema(Email);
 
 /**
  * A Schema that transforms a string into an CVBrand.SemVer.Type
  *
  * @category Schema transformations
  */
-export const SemVerFromString: Schema.Schema<CVSemVer.Type, string> = Schema.String.pipe(
+export const SemVer: Schema.Schema<CVSemVer.Type, string> = Schema.String.pipe(
 	Schema.fromBrand(CVSemVer.constructor)
 );
 
@@ -37,7 +39,7 @@ export const SemVerFromString: Schema.Schema<CVSemVer.Type, string> = Schema.Str
  *
  * @category Schema instances
  */
-export const SemVerFromSelf: Schema.Schema<CVSemVer.Type> = Schema.typeSchema(SemVerFromString);
+export const SemVerFromSelf: Schema.Schema<CVSemVer.Type> = Schema.typeSchema(SemVer);
 
 /**
  * A Schema that transforms a number into an CVReal.Type
@@ -54,6 +56,30 @@ export const RealFromNumber: Schema.Schema<CVReal.Type, number> = Schema.Number.
  * @category Schema instances
  */
 export const RealFromSelf: Schema.Schema<CVReal.Type> = Schema.typeSchema(RealFromNumber);
+
+/**
+ * A Schema that transforms a string into a Real according to the CVNumberBase10Format `format`.
+ * Read documentation of CVNumberBase10Format.toRealParser and
+ * CVNumberBase10Format.toNumberFormatter for more details
+ *
+ * @category Schema transformations
+ */
+export const Real = (format: CVNumberBase10Format.Type): Schema.Schema<CVReal.Type, string> => {
+	const parser = CVNumberBase10Format.toRealParser(format);
+	const formatter = CVNumberBase10Format.toNumberFormatter(format);
+	return Schema.transformOrFail(Schema.String, RealFromSelf, {
+		strict: true,
+		decode: (input, _options, ast) =>
+			pipe(
+				input,
+				parser,
+				Either.fromOption(
+					() => new ParseResult.Type(ast, input, 'Failed to convert string to Real')
+				)
+			),
+		encode: flow(formatter, ParseResult.succeed)
+	});
+};
 
 /**
  * A Schema that transforms a number into a CVRealInt.Type
@@ -104,21 +130,23 @@ export const PositiveRealFromSelf: Schema.Schema<CVPositiveReal.Type> =
 	Schema.typeSchema(PositiveRealFromNumber);
 
 /**
- * A Schema that transforms a string into a BigDecimal using `format`.
+ * A Schema that transforms a string into a BigDecimal according to the CVNumberBase10Format
+ * `format`. Read documentation of CVNumberBase10Format.toBigDecimalParser and
+ * CVNumberBase10Format.toNumberFormatter for more details
  *
  * @category Schema transformations
  */
 const BigDecimalFromString = (
 	format: CVNumberBase10Format.Type
 ): Schema.Schema<BigDecimal.BigDecimal, string> => {
-	const reader = CVNumberBase10Format.toBigDecimalParser(format);
-	const writer = CVNumberBase10Format.toNumberFormatter(format);
+	const parser = CVNumberBase10Format.toBigDecimalParser(format);
+	const formatter = CVNumberBase10Format.toNumberFormatter(format);
 	return Schema.transformOrFail(Schema.String, Schema.BigDecimalFromSelf, {
 		strict: true,
 		decode: (input, _options, ast) =>
 			pipe(
 				input,
-				reader,
+				parser,
 				Option.map(ParseResult.succeed),
 				Option.getOrElse(() =>
 					ParseResult.fail(
@@ -126,31 +154,45 @@ const BigDecimalFromString = (
 					)
 				)
 			),
-		encode: flow(writer, ParseResult.succeed)
+		encode: flow(formatter, ParseResult.succeed)
 	});
 };
 export { BigDecimalFromString as BigDecimal };
 
 /**
- * A Schema that transforms a string into a Real using `format`.
+ * A Schema that represents a CVDateTime
+ *
+ * @category Schema instances
+ */
+export const DateTimeFromSelf = Schema.declare((input: unknown): input is CVDateTime.Type =>
+	CVDateTime.has(input)
+);
+
+/**
+ * A Schema that transforms a string into a CVDateTime according to the CVDateTimeFormat `format`.
+ * Read documentation of CVDateTimeFormat.toParser and CVDateTimeFormat.toFormatter for more
+ * details
  *
  * @category Schema transformations
  */
-export const RealFromString = (
-	format: CVNumberBase10Format.Type
-): Schema.Schema<CVReal.Type, string> => {
-	const reader = CVNumberBase10Format.toRealParser(format);
-	const writer = CVNumberBase10Format.toNumberFormatter(format);
-	return Schema.transformOrFail(Schema.String, RealFromSelf, {
+export const DateTimeFromString = (
+	format: CVDateTimeFormat.Type
+): Schema.Schema<CVDateTime.Type, string> => {
+	const parser = CVDateTimeFormat.toParser(format);
+	const formatter = CVDateTimeFormat.toFormatter(format);
+	return Schema.transformOrFail(Schema.String, DateTimeFromSelf, {
 		strict: true,
 		decode: (input, _options, ast) =>
 			pipe(
 				input,
-				reader,
-				Either.fromOption(
-					() => new ParseResult.Type(ast, input, 'Failed to convert string to Real')
-				)
+				parser,
+				Either.mapLeft((inputError) => new ParseResult.Type(ast, input, inputError.message))
 			),
-		encode: flow(writer, ParseResult.succeed)
+		encode: (input, _options, ast) =>
+			pipe(
+				input,
+				formatter,
+				Either.mapLeft((inputError) => new ParseResult.Type(ast, input, inputError.message))
+			)
 	});
 };
