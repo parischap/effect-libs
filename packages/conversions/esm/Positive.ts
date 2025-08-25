@@ -9,10 +9,15 @@ import { Brand, Either, Number, Option } from 'effect';
 /**
  * Module tag
  *
- * @category Module tag
+ * @category Module markers
  */
 export const moduleTag = '@parischap/conversions/Positive/';
 
+/**
+ * Module TypeId
+ *
+ * @category Module markers
+ */
 export const TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof TypeId;
 

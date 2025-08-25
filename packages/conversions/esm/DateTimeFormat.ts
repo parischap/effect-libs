@@ -35,7 +35,7 @@ import * as CVTemplate from './Template.js';
 /**
  * Module tag
  *
- * @category Module tag
+ * @category Module markers
  */
 export const moduleTag = '@parischap/conversions/DateTimeFormat/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
@@ -121,6 +121,11 @@ export type TagName =
 	| 'zszs';
 
 namespace CVPlaceholderMap {
+	/**
+	 * Type that represents a PlaceHolderMap
+	 *
+	 * @category Models
+	 */
 	export interface Type
 		extends HashMap.HashMap<TagName, CVPlaceholder.Tag.Type<string, CVReal.Type>> {}
 }
@@ -188,7 +193,6 @@ export namespace Placeholder {
 		 *
 		 * @category Model
 		 */
-
 		export interface Type extends MInspectable.Type, Pipeable.Pipeable {
 			/** Name of this Placeholder */
 			readonly name: TagName;
@@ -246,7 +250,6 @@ export namespace Placeholder {
 		 *
 		 * @category Model
 		 */
-
 		export interface Type extends MInspectable.Type, Pipeable.Pipeable {
 			/** The separator */
 			readonly value: string;
@@ -345,6 +348,11 @@ export namespace Placeholder {
  * @category Models
  */
 export namespace Placeholders {
+	/**
+	 * Type of an array of PlaceHolder's
+	 *
+	 * @category Models
+	 */
 	export interface Type extends ReadonlyArray<Placeholder.Type> {}
 }
 
@@ -375,7 +383,6 @@ export namespace Context {
 	 *
 	 * @category Model
 	 */
-
 	export interface Type extends MInspectable.Type, Pipeable.Pipeable {
 		/** Name of this Context: usually the locale this Context wes built from. Or a country name */
 		readonly name: string;

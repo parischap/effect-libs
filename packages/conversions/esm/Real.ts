@@ -7,10 +7,15 @@ import * as CVInt from './Int.js';
 /**
  * Module tag
  *
- * @category Module tag
+ * @category Module markers
  */
 export const moduleTag = '@parischap/conversions/Real/';
 
+/**
+ * Module TypeId
+ *
+ * @category Module markers
+ */
 export const TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof TypeId;
 

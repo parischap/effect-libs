@@ -1,4 +1,4 @@
-/** This module defines the available rounding modes (see Intl.NumberFormat) */
+/** This module defines possible rounding modes (see Intl.NumberFormat) */
 
 import { MMatch, MTypes } from '@parischap/effect-lib';
 import { flow, Function, Struct } from 'effect';
@@ -72,6 +72,11 @@ export const toName: MTypes.OneArgFunction<Type, string> = flow(
 	MMatch.exhaustive
 );
 
+/**
+ * Type of a Correcter
+ *
+ * @category Models
+ */
 export interface Correcter
 	extends MTypes.OneArgFunction<
 		{

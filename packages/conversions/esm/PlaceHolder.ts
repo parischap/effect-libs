@@ -43,7 +43,7 @@ import * as CVReal from './Real.js';
 /**
  * Module tag
  *
- * @category Module tag
+ * @category Module markers
  */
 export const moduleTag = '@parischap/conversions/Placeholder/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
@@ -82,6 +82,11 @@ export namespace Formatter {
 		extends MTypes.OneArgFunction<T, Either.Either<string, MInputError.Type>> {}
 }
 
+/**
+ * Type of a PlaceHolder
+ *
+ * @category Models
+ */
 export type Type<N extends string, T> = Separator.Type | Tag.Type<N, T>;
 
 /**
@@ -242,6 +247,11 @@ export namespace Tag {
 		readonly [_TypeId]: { readonly _N: Types.Covariant<N>; readonly _T: Types.Invariant<T> };
 	}
 
+	/**
+	 * Type that represents a PlaceHolder from and to any type
+	 *
+	 * @category Models
+	 */
 	/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 	export interface All extends Type<string, any> {}
 

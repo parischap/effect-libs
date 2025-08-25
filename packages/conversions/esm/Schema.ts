@@ -1,4 +1,9 @@
-import { BigDecimal, Either, flow, Option, ParseResult, pipe, Schema } from 'effect';
+/**
+ * An extension to the Effect Schema module that adds Schema instances for data conversion like
+ * number and date formatting and parsing
+ */
+
+import { BigDecimal, DateTime, Either, flow, Option, ParseResult, pipe, Schema } from 'effect';
 import * as CVDateTime from './DateTime.js';
 import * as CVDateTimeFormat from './DateTimeFormat.js';
 import * as CVEmail from './Email.js';
@@ -129,13 +134,6 @@ export const PositiveRealFromNumber: Schema.Schema<CVPositiveReal.Type, number> 
 export const PositiveRealFromSelf: Schema.Schema<CVPositiveReal.Type> =
 	Schema.typeSchema(PositiveRealFromNumber);
 
-/**
- * A Schema that transforms a string into a BigDecimal according to the CVNumberBase10Format
- * `format`. Read documentation of CVNumberBase10Format.toBigDecimalParser and
- * CVNumberBase10Format.toNumberFormatter for more details
- *
- * @category Schema transformations
- */
 const BigDecimalFromString = (
 	format: CVNumberBase10Format.Type
 ): Schema.Schema<BigDecimal.BigDecimal, string> => {
@@ -157,7 +155,17 @@ const BigDecimalFromString = (
 		encode: flow(formatter, ParseResult.succeed)
 	});
 };
-export { BigDecimalFromString as BigDecimal };
+
+export {
+	/**
+	 * A Schema that transforms a string into a BigDecimal according to the CVNumberBase10Format
+	 * `format`. Read documentation of CVNumberBase10Format.toBigDecimalParser and
+	 * CVNumberBase10Format.toNumberFormatter for more details
+	 *
+	 * @category Schema transformations
+	 */
+	BigDecimalFromString as BigDecimal
+};
 
 /**
  * A Schema that represents a CVDateTime
@@ -167,6 +175,37 @@ export { BigDecimalFromString as BigDecimal };
 export const DateTimeFromSelf = Schema.declare((input: unknown): input is CVDateTime.Type =>
 	CVDateTime.has(input)
 );
+
+/**
+ * A Schema that transforms a Date into a CVDateTime. The CVDateTimeObject is created with the
+ * default timeZoneOffset of the machine this code is running on
+ *
+ * @category Schema instances
+ */
+export const DateTimeFromDate: Schema.Schema<CVDateTime.Type, Date> = Schema.transform(
+	Schema.DateFromSelf,
+	DateTimeFromSelf,
+	{
+		strict: true,
+		decode: (input) => CVDateTime.unsafeFromTimestamp(input.getTime()),
+		encode: (input) => new Date(CVDateTime.timestamp(input))
+	}
+);
+
+/**
+ * A Schema that transforms an Effect DateTime.Zoned into a CVDateTime. Both objects share the same
+ * time zone offset.
+ *
+ * @category Schema instances
+ */
+export const DateTimeFromEffectDateTime: Schema.Schema<CVDateTime.Type, DateTime.Zoned> =
+	Schema.transform(Schema.DateTimeZonedFromSelf, DateTimeFromSelf, {
+		strict: true,
+		decode: (input) =>
+			CVDateTime.unsafeFromTimestamp(DateTime.toEpochMillis(input), DateTime.zonedOffset(input)),
+		encode: (input) =>
+			DateTime.unsafeMakeZoned(CVDateTime.timestamp(input), { timeZone: input.zoneOffset })
+	});
 
 /**
  * A Schema that transforms a string into a CVDateTime according to the CVDateTimeFormat `format`.

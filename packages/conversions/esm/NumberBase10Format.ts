@@ -38,6 +38,11 @@ import * as CVReal from './Real.js';
 import * as CVRoundingMode from './RoundingMode.js';
 import * as CVRoundingOption from './RoundingOption.js';
 
+/**
+ * Module tag
+ *
+ * @category Module markers
+ */
 export const moduleTag = '@parischap/conversions/NumberBase10Format/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
@@ -89,6 +94,11 @@ export enum SignDisplay {
 	Never = 4
 }
 
+/**
+ * SignDisplay namespace
+ *
+ * @category Models
+ */
 export namespace SignDisplay {
 	/**
 	 * Type that represents the possible strings for a sign

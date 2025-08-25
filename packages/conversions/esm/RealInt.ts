@@ -11,7 +11,7 @@ import * as CVReal from './Real.js';
 /**
  * Module tag
  *
- * @category Module tag
+ * @category Module markers
  */
 export const moduleTag = '@parischap/conversions/RealInt/';
 

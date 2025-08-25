@@ -44,6 +44,11 @@ import {
 import * as CVPlaceholder from './Placeholder.js';
 import * as CVPlaceholders from './Placeholders.js';
 
+/**
+ * Module tag
+ *
+ * @category Module markers
+ */
 export const moduleTag = '@parischap/conversions/Template/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;

@@ -116,10 +116,10 @@ importers:
     dependencies:
       '@parischap/effect-lib':
         specifier: ^0.5.0
-        version: 0.5.0(effect@3.17.3)
+        version: 0.5.0(effect@3.17.9)
       effect:
-        specifier: ^3.14.5
-        version: 3.17.3
+        specifier: ^3.17.9
+        version: 3.17.9
 
   packages/conversions:
     dependencies:
@@ -134,6 +134,15 @@ importers:
         specifier: link:.
         version: 'link:'
 
+  packages/conversions/dist:
+    dependencies:
+      '@parischap/effect-lib':
+        specifier: ^0.5.0
+        version: 0.5.0(effect@3.17.9)
+      effect:
+        specifier: ^3.17.9
+        version: 3.17.9
+
   packages/effect-lib:
     dependencies:
       effect:
@@ -147,8 +156,8 @@ importers:
   packages/effect-lib/dist:
     dependencies:
       effect:
-        specifier: ^3.14.1
-        version: 3.17.3
+        specifier: ^3.17.9
+        version: 3.17.9
 
   packages/effect-report:
     dependencies:
@@ -185,6 +194,21 @@ importers:
         specifier: link:.
         version: 'link:'
 
+  packages/node-effect-lib/dist:
+    dependencies:
+      '@effect/platform':
+        specifier: ^0.90.6
+        version: 0.90.6(effect@3.17.9)
+      '@effect/platform-node':
+        specifier: ^0.96.0
+        version: 0.96.0(@effect/cluster@0.29.3(@effect/platform@0.90.6(effect@3.17.9))(@effect/rpc@0.55.1(@effect/platform@0.90.6(effect@3.17.9))(effect@3.17.9))(@effect/sql@0.33.1(@effect/experimental@0.44.1(@effect/platform@0.90.6(effect@3.17.9))(effect@3.17.9))(@effect/platform@0.90.6(effect@3.17.9))(effect@3.17.9))(effect@3.17.9))(@effect/platform@0.90.6(effect@3.17.9))(@effect/rpc@0.55.1(@effect/platform@0.90.6(effect@3.17.9))(effect@3.17.9))(@effect/sql@0.33.1(@effect/experimental@0.44.1(@effect/platform@0.90.6(effect@3.17.9))(effect@3.17.9))(@effect/platform@0.90.6(effect@3.17.9))(effect@3.17.9))(effect@3.17.9)
+      '@parischap/effect-lib':
+        specifier: ^0.5.0
+        version: 0.5.0(effect@3.17.9)
+      effect:
+        specifier: ^3.17.9
+        version: 3.17.9
+
   packages/pretty-print:
     dependencies:
       '@parischap/ansi-styles':
@@ -205,13 +229,13 @@ importers:
     dependencies:
       '@parischap/ansi-styles':
         specifier: ^0.2.1
-        version: 0.2.1(@parischap/effect-lib@0.5.0(effect@3.17.3))(effect@3.17.3)
+        version: 0.2.1(@parischap/effect-lib@0.5.0(effect@3.17.9))(effect@3.17.9)
       '@parischap/effect-lib':
         specifier: ^0.5.0
-        version: 0.5.0(effect@3.17.3)
+        version: 0.5.0(effect@3.17.9)
       effect:
-        specifier: ^3.14.5
-        version: 3.17.3
+        specifier: ^3.17.9
+        version: 3.17.9
 
 packages:
 
@@ -1422,9 +1446,6 @@ packages:
 
   eastasianwidth@0.2.0:
     resolution: {integrity: sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==}
-
-  effect@3.17.3:
-    resolution: {integrity: sha512-FbFMr6xBXPII5Od8QJnkHz+2GTmQgq+8NPQev6C2k9cf1lcUjQ4vpw1kjbMc2X0UkjIkIWe0EtNK2RV6bl34UQ==}
 
   effect@3.17.9:
     resolution: {integrity: sha512-Nkkn9n1zhy30Dq0MpQatDCH7nfYnOIiebkOHNxmmvoVnEDKCto+2ZwDDWFGzcN/ojwfqjRXWGC9Lo91K5kwZCg==}
@@ -3340,16 +3361,16 @@ snapshots:
       '@parcel/watcher-win32-ia32': 2.5.1
       '@parcel/watcher-win32-x64': 2.5.1
 
-  '@parischap/ansi-styles@0.2.1(@parischap/effect-lib@0.5.0(effect@3.17.3))(effect@3.17.3)':
+  '@parischap/ansi-styles@0.2.1(@parischap/effect-lib@0.5.0(effect@3.17.9))(effect@3.17.9)':
     dependencies:
-      '@parischap/effect-lib': 0.5.0(effect@3.17.3)
-      effect: 3.17.3
+      '@parischap/effect-lib': 0.5.0(effect@3.17.9)
+      effect: 3.17.9
 
   '@parischap/configs@1.28.0': {}
 
-  '@parischap/effect-lib@0.5.0(effect@3.17.3)':
+  '@parischap/effect-lib@0.5.0(effect@3.17.9)':
     dependencies:
-      effect: 3.17.3
+      effect: 3.17.9
 
   '@parischap/test-utils@0.9.0(effect@3.17.9)':
     dependencies:
@@ -3989,11 +4010,6 @@ snapshots:
       esutils: 2.0.3
 
   eastasianwidth@0.2.0: {}
-
-  effect@3.17.3:
-    dependencies:
-      '@standard-schema/spec': 1.0.0
-      fast-check: 3.23.2
 
   effect@3.17.9:
     dependencies:
