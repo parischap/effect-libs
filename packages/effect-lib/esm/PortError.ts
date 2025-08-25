@@ -5,7 +5,7 @@ import { Data } from 'effect';
 /**
  * Module tag
  *
- * @category Module tag
+ * @category Module markers
  */
 export const moduleTag = '@parischap/effect-lib/PortError/';
 

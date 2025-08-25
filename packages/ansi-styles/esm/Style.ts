@@ -13,7 +13,7 @@ import * as ASText from './Text.js';
 /**
  * Module tag
  *
- * @category Module tag
+ * @category Module markers
  */
 export const moduleTag = '@parischap/ansi-styles/Style/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;

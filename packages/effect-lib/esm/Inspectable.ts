@@ -6,7 +6,7 @@ import * as MRecord from './Record.js';
 /**
  * Module tag
  *
- * @category Module tag
+ * @category Module markers
  */
 export const moduleTag = '@parischap/effect-lib/Inspectable/';
 

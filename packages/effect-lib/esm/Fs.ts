@@ -5,7 +5,7 @@ import { Brand } from 'effect';
 /**
  * Module tag
  *
- * @category Module tag
+ * @category Module markers
  */
 export const moduleTag = '@parischap/effect-lib/Fs/';
 type moduleTag = typeof moduleTag;

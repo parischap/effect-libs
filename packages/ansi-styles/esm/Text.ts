@@ -36,7 +36,7 @@ import * as ASStyleCharacteristics from './StyleCharacteristics.js';
 /**
  * Module tag
  *
- * @category Module tag
+ * @category Module markers
  */
 export const moduleTag = '@parischap/ansi-styles/Text/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;

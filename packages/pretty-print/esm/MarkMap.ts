@@ -11,7 +11,7 @@ import { Equal, Equivalence, Hash, HashMap, pipe, Pipeable, Predicate, Struct } 
 /**
  * Module tag
  *
- * @category Module tag
+ * @category Module markers
  */
 export const moduleTag = '@parischap/pretty-print/MarkMap/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
