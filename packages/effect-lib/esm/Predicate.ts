@@ -106,5 +106,5 @@ export const struct = <
  *
  * @category Constructors
  */
-export const strictEquals: <A, B extends A>(that: A) => Predicate.Predicate<B> = (that) => (self) =>
+export const strictEquals: <B, A extends B>(that: A) => Predicate.Predicate<B> = (that) => (self) =>
 	self === that;
