@@ -181,14 +181,14 @@ export type Unknown = Primitive | NonPrimitive;
  *
  * @category Models
  */
-export type AnyPredicate = Predicate.Predicate<any>;
+export type AnyPredicate = Predicate.Predicate.Any;
 
 /**
  * Type that represents any refinement
  *
  * @category Models
  */
-export type AnyRefinement = Predicate.Refinement<any, any>;
+export type AnyRefinement = Predicate.Refinement.Any;
 
 /**
  * Type that represents any refinement from a given type
