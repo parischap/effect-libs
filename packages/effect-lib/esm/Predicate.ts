@@ -84,20 +84,22 @@ export type SourcesToPredicates<T extends MTypes.NonPrimitive> = {
  *
  * @category Utils
  */
-export const struct =
-	<O extends MTypes.NonPrimitive, F extends Partial<SourcesToPredicates<MTypes.Data<O>>>>(
-		fields: F
-	) =>
-	(
-		o: O
-	): o is {
-		readonly [key in keyof O]: key extends keyof F ?
-			F[key] extends MTypes.AnyPredicate ?
-				Target<F[key]> & O[key]
-			:	never
-		:	O[key];
-	} =>
-		Predicate.struct(fields as never)(o as never) as never;
+export const struct = <
+	O extends MTypes.NonPrimitive,
+	F extends Partial<SourcesToPredicates<MTypes.Data<O>>>
+>(
+	fields: F
+): [Extract<F[keyof F], MTypes.AnyRefinement>] extends [never] ? Predicate.Predicate<O>
+:	Predicate.Refinement<
+		O,
+		{
+			readonly [key in keyof O]: key extends keyof F ?
+				F[key] extends MTypes.AnyPredicate ?
+					Target<F[key]> & O[key]
+				:	never
+			:	O[key];
+		}
+	> => Predicate.struct(fields as never) as never;
 
 /**
  * Strict equality predicate
