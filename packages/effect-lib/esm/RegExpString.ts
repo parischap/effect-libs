@@ -73,7 +73,7 @@ export const either = (...args: ReadonlyArray<string>): string =>
  *
  * @category Utils
  */
-export const characterClass = (...args: ReadonlyArray<string>): string =>
+export const range = (args: ReadonlyArray<string>): string =>
 	pipe(
 		args,
 		MArray.match012({
@@ -82,6 +82,13 @@ export const characterClass = (...args: ReadonlyArray<string>): string =>
 			onOverTwo: (args) => `[${args.join('')}]`
 		})
 	);
+
+/**
+ * Returns a regular expression string that will match none of the provided characters
+ *
+ * @category Utils
+ */
+export const notInRange = (args: MTypes.OverOne<string>): string => `[^${args.join('')}]`;
 
 /**
  * Returns a new regular expression string where `self` must fill a whole line
@@ -151,7 +158,7 @@ export const anyChar = '.';
  *
  * @category Instances
  */
-export const anythingButDot = '[^.]';
+export const anythingButDot = notInRange(['.']);
 
 const backslashString = '\\';
 
@@ -174,7 +181,7 @@ export const slash = backslashString + '/';
  *
  * @category Instances
  */
-export const universalPathSep = characterClass(slash, backslash);
+export const universalPathSep = range([slash, backslash]);
 
 /**
  * A regular expression string representing a dollar sign
@@ -295,7 +302,6 @@ const _signPart = pipe(sign, capture, optional);
 const _expPart = pipe(sign, optional, String.concat(unsignedBase10Int('')), capture);
 // Regular expression string representing the captured fractional part of a floating-point number
 const _fractionalPart = repeatBetween(0, +Infinity)(digit);
-const _tupledCharacterClass = Function.tupled(characterClass);
 
 /**
  * Returns a regular expression string representing a number in base 10 using `thousandSeparator` as
@@ -332,13 +338,7 @@ export const base10Number = ({
 	capture(fillChar === '' ? '' : zeroOrMore(fillChar)) +
 	pipe(thousandSeparator, unsignedBase10Int, optionalCapture) +
 	pipe(fractionalSeparator, RegExp.escape, String.concat(capture(_fractionalPart)), optional) +
-	pipe(
-		eNotationChars,
-		Array.map(RegExp.escape),
-		_tupledCharacterClass,
-		String.concat(_expPart),
-		optional
-	);
+	pipe(eNotationChars, Array.map(RegExp.escape), range, String.concat(_expPart), optional);
 
 /**
  * A regular expression string representing an integer in base 2.
