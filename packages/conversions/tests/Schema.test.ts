@@ -340,22 +340,22 @@ describe('CVSchema', () => {
 	});
 
 	describe('DateTime', () => {
-		const tag = CVDateTimeFormat.Placeholder.Tag.make;
-		const sep = CVDateTimeFormat.Placeholder.Separator;
+		const placeholder = CVDateTimeFormat.TemplatePart.Placeholder.make;
+		const sep = CVDateTimeFormat.TemplatePart.Separator;
 		const frenchDateFormat = CVDateTimeFormat.make({
 			context: CVDateTimeFormat.Context.unsafeFromLocale('fr-FR'),
-			placeholders: [
-				tag('dd'),
+			templateparts: [
+				placeholder('dd'),
 				sep.slash,
-				tag('MM'),
+				placeholder('MM'),
 				sep.slash,
-				tag('yyyy'),
+				placeholder('yyyy'),
 				sep.space,
-				tag('HH'),
+				placeholder('HH'),
 				sep.colon,
-				tag('mm'),
+				placeholder('mm'),
 				sep.colon,
-				tag('ss'),
+				placeholder('ss'),
 				sep.make(' Paris time')
 			]
 		});

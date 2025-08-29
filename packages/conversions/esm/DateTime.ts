@@ -44,8 +44,9 @@ import {
 	pipe
 } from 'effect';
 import * as CVNumberBase10Format from './NumberBase10Format.js';
-import * as CVPlaceholder from './Placeholder.js';
 import * as CVTemplate from './Template.js';
+import * as CVTemplatePlaceholder from './TemplatePlaceholder.js';
+import * as CVTemplateSeparator from './TemplateSeparator.js';
 
 /**
  * Module tag
@@ -169,8 +170,8 @@ const _params = {
 	numberBase10Format: _integer
 };
 
-const _tag = CVPlaceholder.Tag.fixedLengthToReal;
-const _sep = CVPlaceholder.Separator;
+const _fixedLengthToReal = CVTemplatePlaceholder.fixedLengthToReal;
+const _sep = CVTemplateSeparator;
 
 /**
  * Namespace for the a Gregorian date
@@ -641,11 +642,11 @@ namespace GregorianDate {
 	const _formatter = flow(
 		CVTemplate.toFormatter(
 			CVTemplate.make(
-				_tag({ ..._params, name: 'year', length: 4 }),
+				_fixedLengthToReal({ ..._params, name: 'year', length: 4 }),
 				_sep.hyphen,
-				_tag({ ..._params, name: 'month', length: 2 }),
+				_fixedLengthToReal({ ..._params, name: 'month', length: 2 }),
 				_sep.hyphen,
-				_tag({ ..._params, name: 'monthDay', length: 2 })
+				_fixedLengthToReal({ ..._params, name: 'monthDay', length: 2 })
 			)
 		),
 		Either.getOrThrowWith(Function.identity)
@@ -1124,11 +1125,11 @@ namespace IsoDate {
 	const _formatter = flow(
 		CVTemplate.toFormatter(
 			CVTemplate.make(
-				_tag({ ..._params, name: 'year', length: 4 }),
+				_fixedLengthToReal({ ..._params, name: 'year', length: 4 }),
 				_sep.make('-W'),
-				_tag({ ..._params, name: 'isoWeek', length: 2 }),
+				_fixedLengthToReal({ ..._params, name: 'isoWeek', length: 2 }),
 				_sep.hyphen,
-				_tag({ ..._params, name: 'weekday', length: 2 })
+				_fixedLengthToReal({ ..._params, name: 'weekday', length: 2 })
 			)
 		),
 		Either.getOrThrowWith(Function.identity)
@@ -1456,13 +1457,13 @@ namespace Time {
 	const _formatter = flow(
 		CVTemplate.toFormatter(
 			CVTemplate.make(
-				_tag({ ..._params, name: 'hour23', length: 2 }),
+				_fixedLengthToReal({ ..._params, name: 'hour23', length: 2 }),
 				_sep.colon,
-				_tag({ ..._params, name: 'minute', length: 2 }),
+				_fixedLengthToReal({ ..._params, name: 'minute', length: 2 }),
 				_sep.colon,
-				_tag({ ..._params, name: 'second', length: 2 }),
+				_fixedLengthToReal({ ..._params, name: 'second', length: 2 }),
 				_sep.dot,
-				_tag({ ..._params, name: 'millisecond', length: 3 })
+				_fixedLengthToReal({ ..._params, name: 'millisecond', length: 3 })
 			)
 		),
 		Either.getOrThrowWith(Function.identity)
@@ -1632,14 +1633,14 @@ namespace ZoneOffsetParts {
 	const _formatter = flow(
 		CVTemplate.toFormatter(
 			CVTemplate.make(
-				_tag({
+				_fixedLengthToReal({
 					..._params,
 					name: 'zoneHour',
 					length: 3,
 					numberBase10Format: pipe(_integer, CVNumberBase10Format.withSignDisplay)
 				}),
 				_sep.colon,
-				_tag({ ..._params, name: 'zoneMinute', length: 2 })
+				_fixedLengthToReal({ ..._params, name: 'zoneMinute', length: 2 })
 			)
 		),
 		Either.getOrThrowWith(Function.identity)

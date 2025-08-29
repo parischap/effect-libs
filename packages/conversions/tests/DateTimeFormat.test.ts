@@ -32,84 +32,84 @@ describe('CVDateTimeFormat', () => {
 		});
 	});
 
-	const tag = CVDateTimeFormat.Placeholder.Tag.make;
-	const sep = CVDateTimeFormat.Placeholder.Separator;
+	const placeholder = CVDateTimeFormat.TemplatePart.Placeholder.make;
+	const sep = CVDateTimeFormat.TemplatePart.Separator;
 	const isoFormat = CVDateTimeFormat.make({
 		context: usContext,
-		placeholders: [
-			tag('yyyy'),
+		templateparts: [
+			placeholder('yyyy'),
 			sep.hyphen,
-			tag('MM'),
+			placeholder('MM'),
 			sep.hyphen,
-			tag('dd'),
+			placeholder('dd'),
 			sep.make('T'),
-			tag('HH'),
+			placeholder('HH'),
 			sep.colon,
-			tag('mm'),
+			placeholder('mm'),
 			sep.colon,
-			tag('ss'),
+			placeholder('ss'),
 			sep.comma,
-			tag('SSS'),
-			tag('zHzH'),
+			placeholder('SSS'),
+			placeholder('zHzH'),
 			sep.colon,
-			tag('zmzm')
+			placeholder('zmzm')
 		]
 	});
 
 	const exhaustiveFormat = CVDateTimeFormat.make({
 		context: usContext,
-		placeholders: [
-			tag('y'),
+		templateparts: [
+			placeholder('y'),
 			sep.space,
-			tag('yy'),
-			tag('yyyy'),
-			tag('R'),
+			placeholder('yy'),
+			placeholder('yyyy'),
+			placeholder('R'),
 			sep.space,
-			tag('RR'),
-			tag('RRRR'),
-			tag('M'),
+			placeholder('RR'),
+			placeholder('RRRR'),
+			placeholder('M'),
 			sep.space,
-			tag('MM'),
-			tag('MMM'),
-			tag('MMMM'),
-			tag('I'),
+			placeholder('MM'),
+			placeholder('MMM'),
+			placeholder('MMMM'),
+			placeholder('I'),
 			sep.space,
-			tag('II'),
-			tag('d'),
+			placeholder('II'),
+			placeholder('d'),
 			sep.space,
-			tag('dd'),
-			tag('D'),
+			placeholder('dd'),
+			placeholder('D'),
 			sep.space,
-			tag('DDD'),
-			tag('i'),
+			placeholder('DDD'),
+			placeholder('i'),
 			sep.space,
-			tag('iii'),
-			tag('iiii'),
-			tag('a'),
-			tag('H'),
+			placeholder('iii'),
+			placeholder('iiii'),
+			placeholder('a'),
+			placeholder('H'),
 			sep.space,
-			tag('HH'),
-			tag('K'),
+			placeholder('HH'),
+			placeholder('K'),
 			sep.space,
-			tag('KK'),
-			tag('m'),
+			placeholder('KK'),
+			placeholder('m'),
 			sep.space,
-			tag('mm'),
-			tag('s'),
+			placeholder('mm'),
+			placeholder('s'),
 			sep.space,
-			tag('ss'),
-			tag('S'),
+			placeholderceholder('ss'),
+			placeholder('S'),
 			sep.space,
-			tag('SSS'),
-			tag('zH'),
+			placeholder('SSS'),
+			placeholder('zH'),
 			sep.space,
-			tag('zHzH'),
-			tag('zm'),
+			placeholder('zHzH'),
+			placeholder('zm'),
 			sep.space,
-			tag('zmzm'),
-			tag('zs'),
+			placeholder('zmzm'),
+			placeholder('zs'),
 			sep.space,
-			tag('zszs')
+			placeholder('zszs')
 		]
 	});
 
@@ -170,7 +170,7 @@ describe('CVDateTimeFormat', () => {
 					parser(
 						'2025 2520252026 26202612 12DecDecember1 0130 30364 3642 TueMondayPM13 131 015 0553 53234 234+1 +0112 125 05'
 					),
-					"'weekday' placeholder is present more than once in template and receives differing values '2' and '1'"
+					"'weekday' templatepart is present more than once in template and receives differing values '2' and '1'"
 				);
 			});
 
@@ -193,7 +193,7 @@ describe('CVDateTimeFormat', () => {
 			it('Non matching', () => {
 				TEUtils.assertLeftMessage(
 					formatter(CVDateTime.unsafeFromParts({ year: 10024 })),
-					"Expected length of 'year' placeholder to be: 4. Actual: 5"
+					"Expected length of 'year' templatepart to be: 4. Actual: 5"
 				);
 			});
 
@@ -215,7 +215,7 @@ describe('CVDateTimeFormat', () => {
 			it('Non matching', () => {
 				TEUtils.assertLeftMessage(
 					formatter(CVDateTime.unsafeFromParts({ year: 1925, month: 2, monthDay: 28 })),
-					"Expected 'year' placeholder to be between 2000 (included) and 2099 (included). Actual: 1925"
+					"Expected 'year' templatepart to be between 2000 (included) and 2099 (included). Actual: 1925"
 				);
 			});
 

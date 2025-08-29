@@ -6,46 +6,56 @@ import {
 	CVTemplatePlaceholder,
 	CVTemplateSeparator
 } from '@parischap/conversions';
-import { MRegExpString } from '@parischap/effect-lib';
 
 // Let's define useful shortcuts
 const placeholder = CVTemplatePlaceholder;
 const sep = CVTemplateSeparator;
 
-// Let's define a template
+// Let's put in an object parameters that are common to all tags
+const params = {
+	// Padding character used on the left of fixed-length templateparts
+	fillChar: '0',
+	// NumberBase10 format used by all tags
+	numberBase10Format: CVNumberBase10Format.integer
+};
+
+// Let's define a date template that will look like: 'dd/MM/yyyy MM'
+// Note that the MM CVTemplatePart.Placeholder appears twice, once as a real and once as a fixedLengthToReal
 const template = CVTemplate.make(
-	// field named 'dd' that must be a non-empty string containing no-space character
-	placeholder.anythingBut({ name: 'name', forbiddenChars: [MRegExpString.space] }),
+	// 2-character field named 'dd' that must represent an integer left-padded with '0'
+	placeholder.fixedLengthToReal({ ...params, name: 'dd', length: 2 }),
 	// Separator
-	sep.make(' is a '),
-	// Field named 'age' that must represent an integer
-	placeholder.real({ name: 'age', numberBase10Format: CVNumberBase10Format.integer }),
+	sep.slash,
+	// 2-character field named 'MM' that must represent an integer left-padded with '0'
+	placeholder.fixedLengthToReal({ ...params, name: 'MM', length: 2 }),
 	// Separator
-	sep.make('-year old '),
-	// field named 'kind' that must be a non-empty string containing no-dot character
-	placeholder.anythingBut({ name: 'kind', forbiddenChars: ['.'] }),
+	sep.slash,
+	// 2-character field named 'MM' that must represent an integer left-padded with '0'
+	placeholder.fixedLengthToReal({ ...params, name: 'yyyy', length: 4 }),
 	// Separator
-	sep.dot
+	sep.space,
+	// Field named 'MM' that must represent an integer
+	placeholder.real({ ...params, name: 'MM' })
 );
 
-// Let's define a parser
+// Let's define a parser. Note that there is only one MM property
 // Type: (value: string) => Either.Either<{
-//    readonly name: string;
-//    readonly age: CVReal.Type;
-//    readonly kind: string;
+//    readonly dd: CVReal.Type;
+//    readonly MM: CVReal.Type;
+//    readonly yyyy: CVReal.Type;
 // }, MInputError.Type>>
 const parser = CVTemplate.toParser(template);
 
 // Let's define a formatter
 // Type: (value: {
-//    readonly name: string;
-//    readonly age: CVReal.Type;
-//    readonly kind: string;
+//   readonly dd: CVReal.Type;
+//   readonly MM: CVReal.Type;
+//   readonly yyyy: CVReal.Type;
 //   }) => Either.Either<string, MInputError.Type>
 const formatter = CVTemplate.toFormatter(template);
 
 // Result: { _id: 'Either', _tag: 'Right', right: { dd: 5, MM: 1, yyyy: 2025 } }
-console.log(parser(''));
+console.log(parser('05/01/2025 1'));
 
 // Result: {
 //   _id: 'Either',

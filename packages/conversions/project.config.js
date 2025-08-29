@@ -16,7 +16,8 @@ export default Configs.configSubRepo({
 		'RoundingOption_3.ts',
 		'NumberBase10Format_1.ts',
 		'NumberBase10Format_2.ts',
-		'Template_1.ts'
+		'Template_1.ts',
+		'Template_2.ts'
 	],
 	scripts: {},
 	bundled: false,

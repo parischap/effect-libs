@@ -27,10 +27,12 @@ import {
 } from 'effect';
 import * as CVDateTime from './DateTime.js';
 import * as CVNumberBase10Format from './NumberBase10Format.js';
-import * as CVPlaceholder from './Placeholder.js';
-import * as CVPlaceholders from './Placeholders.js';
 import * as CVReal from './Real.js';
 import * as CVTemplate from './Template.js';
+import * as CVTemplatePart from './TemplatePart.js';
+import * as CVTemplateParts from './TemplateParts.js';
+import * as CVTemplatePlaceholder from './TemplatePlaceholder.js';
+import * as CVTemplateSeparator from './TemplateSeparator.js';
 
 /**
  * Module tag
@@ -120,14 +122,14 @@ export type TagName =
 	/* Second part of the timezone offset on 2 digits left-padded with 0's (ex: 05) */
 	| 'zszs';
 
-namespace CVPlaceholderMap {
+namespace CVTemplatePartMap {
 	/**
-	 * Type that represents a PlaceHolderMap
+	 * Type that represents a TemplatePartMap
 	 *
 	 * @category Models
 	 */
 	export interface Type
-		extends HashMap.HashMap<TagName, CVPlaceholder.Tag.Type<string, CVReal.Type>> {}
+		extends HashMap.HashMap<TagName, CVTemplatePlaceholder.Type<string, CVReal.Type>> {}
 }
 /**
  * Type that represents the names of the seven days of a week
@@ -151,25 +153,25 @@ export type MonthNames = MTypes.Tuple<string, 12>;
 export type DayPeriodNames = MTypes.Tuple<string, 2>;
 
 /**
- * Namespace for a Placeholder
+ * Namespace for a TemplatePart
  *
  * @category Models
  */
-export namespace Placeholder {
-	const _tag = moduleTag + 'Placeholder/';
+export namespace TemplatePart {
+	const _tag = moduleTag + 'TemplatePart/';
 	/**
-	 * Type of a Placeholder
+	 * Type of a TemplatePart
 	 *
 	 * @category Models
 	 */
-	export type Type = Tag.Type | Separator.Type;
+	export type Type = Placeholder.Type | Separator.Type;
 
 	/**
 	 * Type guard
 	 *
 	 * @category Guards
 	 */
-	export const isTag = (u: Type): u is Tag.Type => Tag.has(u);
+	export const isPlaceholder = (u: Type): u is Placeholder.Type => Placeholder.has(u);
 
 	/**
 	 * Type guard
@@ -179,22 +181,22 @@ export namespace Placeholder {
 	export const isSeparator = (u: Type): u is Separator.Type => Separator.has(u);
 
 	/**
-	 * Namespace for a Placeholder that represents a part of a date time
+	 * Namespace for a TemplatePart that represents a part of a date time
 	 *
 	 * @category Models
 	 */
-	export namespace Tag {
-		const _namespaceTag = _tag + 'Tag/';
+	export namespace Placeholder {
+		const _namespaceTag = _tag + 'Placeholder/';
 		const _TypeId: unique symbol = Symbol.for(_namespaceTag) as _TypeId;
 		type _TypeId = typeof _TypeId;
 
 		/**
-		 * Type that represents a Tag
+		 * Type that represents a Placeholder
 		 *
 		 * @category Model
 		 */
 		export interface Type extends MInspectable.Type, Pipeable.Pipeable {
-			/** Name of this Placeholder */
+			/** Name of this TemplatePart */
 			readonly name: TagName;
 
 			/** @internal */
@@ -221,7 +223,7 @@ export namespace Placeholder {
 		const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
 
 		/**
-		 * Tag constructor
+		 * Placeholder constructor
 		 *
 		 * @category Constructors
 		 */
@@ -236,7 +238,7 @@ export namespace Placeholder {
 	}
 
 	/**
-	 * Namespace for a Placeholder that represents separator
+	 * Namespace for a TemplatePart that represents separator
 	 *
 	 * @category Models
 	 */
@@ -246,7 +248,7 @@ export namespace Placeholder {
 		type _TypeId = typeof _TypeId;
 
 		/**
-		 * Type that represents a SeparatorPlaceholder
+		 * Type that represents a SeparatorTemplatePart
 		 *
 		 * @category Model
 		 */
@@ -278,7 +280,7 @@ export namespace Placeholder {
 		const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
 
 		/**
-		 * Tag constructor
+		 * Placeholder constructor
 		 *
 		 * @category Constructors
 		 */
@@ -343,17 +345,17 @@ export namespace Placeholder {
 }
 
 /**
- * Namespace Placeholders
+ * Namespace TemplateParts
  *
  * @category Models
  */
-export namespace Placeholders {
+export namespace TemplateParts {
 	/**
-	 * Type of an array of PlaceHolder's
+	 * Type of an array of TemplatePart's
 	 *
 	 * @category Models
 	 */
-	export interface Type extends ReadonlyArray<Placeholder.Type> {}
+	export interface Type extends ReadonlyArray<TemplatePart.Type> {}
 }
 
 /**
@@ -387,8 +389,8 @@ export namespace Context {
 		/** Name of this Context: usually the locale this Context wes built from. Or a country name */
 		readonly name: string;
 
-		/** Maps that contains all the possible Placeholder's for that Congtext */
-		readonly placeholderMap: CVPlaceholderMap.Type;
+		/** Maps that contains all the possible TemplatePart's for that Congtext */
+		readonly templatepartMap: CVTemplatePartMap.Type;
 
 		/** @internal */
 		readonly [_TypeId]: _TypeId;
@@ -448,15 +450,15 @@ export namespace Context {
 		const signedInteger = pipe(integer, CVNumberBase10Format.withSignDisplay);
 		const params = { fillChar: '0', numberBase10Format: integer };
 
-		const placeholderEntries: ReadonlyArray<
-			readonly [TagName, CVPlaceholder.Tag.Type<string, CVReal.Type>]
+		const templatepartEntries: ReadonlyArray<
+			readonly [TagName, CVTemplatePlaceholder.Type<string, CVReal.Type>]
 		> = [
-			['y', CVPlaceholder.Tag.real({ ...params, name: 'year' })],
+			['y', CVTemplatePlaceholder.real({ ...params, name: 'year' })],
 			[
 				'yy',
 				pipe(
-					CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'year', length: 2 }),
-					CVPlaceholder.Tag.modify({
+					CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'year', length: 2 }),
+					CVTemplatePlaceholder.modify({
 						descriptorMapper: MString.append(' between 2000 and 2099 included'),
 						postParser: (value, label) =>
 							pipe(
@@ -488,13 +490,13 @@ export namespace Context {
 					})
 				)
 			],
-			['yyyy', CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'year', length: 4 })],
-			['R', CVPlaceholder.Tag.real({ ...params, name: 'isoYear' })],
+			['yyyy', CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'year', length: 4 })],
+			['R', CVTemplatePlaceholder.real({ ...params, name: 'isoYear' })],
 			[
 				'RR',
 				pipe(
-					CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'isoYear', length: 2 }),
-					CVPlaceholder.Tag.modify({
+					CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'isoYear', length: 2 }),
+					CVTemplatePlaceholder.modify({
 						descriptorMapper: MString.append(' between 2000 and 2099 included'),
 						postParser: (value, label) =>
 							pipe(
@@ -526,12 +528,12 @@ export namespace Context {
 					})
 				)
 			],
-			['RRRR', CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'isoYear', length: 4 })],
-			['M', CVPlaceholder.Tag.real({ ...params, name: 'month' })],
-			['MM', CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'month', length: 2 })],
+			['RRRR', CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'isoYear', length: 4 })],
+			['M', CVTemplatePlaceholder.real({ ...params, name: 'month' })],
+			['MM', CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'month', length: 2 })],
 			[
 				'MMM',
-				CVPlaceholder.Tag.mappedLiterals({
+				CVTemplatePlaceholder.mappedLiterals({
 					name: 'month',
 					keyValuePairs: pipe(
 						shortMonthNames,
@@ -541,7 +543,7 @@ export namespace Context {
 			],
 			[
 				'MMMM',
-				CVPlaceholder.Tag.mappedLiterals({
+				CVTemplatePlaceholder.mappedLiterals({
 					name: 'month',
 					keyValuePairs: pipe(
 						longMonthNames,
@@ -551,20 +553,23 @@ export namespace Context {
 			],
 			[
 				'I',
-				CVPlaceholder.Tag.real({
+				CVTemplatePlaceholder.real({
 					name: 'isoWeek',
 					numberBase10Format: CVNumberBase10Format.integer
 				})
 			],
-			['II', CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'isoWeek', length: 2 })],
-			['d', CVPlaceholder.Tag.real({ ...params, name: 'monthDay' })],
-			['dd', CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'monthDay', length: 2 })],
-			['D', CVPlaceholder.Tag.real({ ...params, name: 'ordinalDay' })],
-			['DDD', CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'ordinalDay', length: 3 })],
-			['i', CVPlaceholder.Tag.real({ ...params, name: 'weekday' })],
+			['II', CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'isoWeek', length: 2 })],
+			['d', CVTemplatePlaceholder.real({ ...params, name: 'monthDay' })],
+			['dd', CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'monthDay', length: 2 })],
+			['D', CVTemplatePlaceholder.real({ ...params, name: 'ordinalDay' })],
+			[
+				'DDD',
+				CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'ordinalDay', length: 3 })
+			],
+			['i', CVTemplatePlaceholder.real({ ...params, name: 'weekday' })],
 			[
 				'iii',
-				CVPlaceholder.Tag.mappedLiterals({
+				CVTemplatePlaceholder.mappedLiterals({
 					name: 'weekday',
 					keyValuePairs: pipe(
 						shortWeekdayNames,
@@ -574,7 +579,7 @@ export namespace Context {
 			],
 			[
 				'iiii',
-				CVPlaceholder.Tag.mappedLiterals({
+				CVTemplatePlaceholder.mappedLiterals({
 					name: 'weekday',
 					keyValuePairs: pipe(
 						longWeekdayNames,
@@ -584,7 +589,7 @@ export namespace Context {
 			],
 			[
 				'a',
-				CVPlaceholder.Tag.mappedLiterals({
+				CVTemplatePlaceholder.mappedLiterals({
 					name: 'meridiem',
 					keyValuePairs: pipe(
 						dayPeriodNames,
@@ -592,38 +597,51 @@ export namespace Context {
 					)
 				})
 			],
-			['H', CVPlaceholder.Tag.real({ ...params, name: 'hour23' })],
-			['HH', CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'hour23', length: 2 })],
-			['K', CVPlaceholder.Tag.real({ ...params, name: 'hour11' })],
-			['KK', CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'hour11', length: 2 })],
-			['m', CVPlaceholder.Tag.real({ ...params, name: 'minute' })],
-			['mm', CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'minute', length: 2 })],
-			['s', CVPlaceholder.Tag.real({ ...params, name: 'second' })],
-			['ss', CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'second', length: 2 })],
-			['S', CVPlaceholder.Tag.real({ ...params, name: 'millisecond' })],
-			['SSS', CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'millisecond', length: 3 })],
+			['H', CVTemplatePlaceholder.real({ ...params, name: 'hour23' })],
+			['HH', CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'hour23', length: 2 })],
+			['K', CVTemplatePlaceholder.real({ ...params, name: 'hour11' })],
+			['KK', CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'hour11', length: 2 })],
+			['m', CVTemplatePlaceholder.real({ ...params, name: 'minute' })],
+			['mm', CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'minute', length: 2 })],
+			['s', CVTemplatePlaceholder.real({ ...params, name: 'second' })],
+			['ss', CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'second', length: 2 })],
+			['S', CVTemplatePlaceholder.real({ ...params, name: 'millisecond' })],
+			[
+				'SSS',
+				CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'millisecond', length: 3 })
+			],
 			[
 				'zH',
-				CVPlaceholder.Tag.real({ ...params, name: 'zoneHour', numberBase10Format: signedInteger })
+				CVTemplatePlaceholder.real({
+					...params,
+					name: 'zoneHour',
+					numberBase10Format: signedInteger
+				})
 			],
 			[
 				'zHzH',
-				CVPlaceholder.Tag.fixedLengthToReal({
+				CVTemplatePlaceholder.fixedLengthToReal({
 					...params,
 					name: 'zoneHour',
 					length: 3,
 					numberBase10Format: signedInteger
 				})
 			],
-			['zm', CVPlaceholder.Tag.real({ ...params, name: 'zoneMinute' })],
-			['zmzm', CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'zoneMinute', length: 2 })],
-			['zs', CVPlaceholder.Tag.real({ ...params, name: 'zoneSecond' })],
-			['zszs', CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'zoneSecond', length: 2 })]
+			['zm', CVTemplatePlaceholder.real({ ...params, name: 'zoneMinute' })],
+			[
+				'zmzm',
+				CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'zoneMinute', length: 2 })
+			],
+			['zs', CVTemplatePlaceholder.real({ ...params, name: 'zoneSecond' })],
+			[
+				'zszs',
+				CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'zoneSecond', length: 2 })
+			]
 		];
 
 		return _make({
 			name,
-			placeholderMap: HashMap.make(...placeholderEntries)
+			templatepartMap: HashMap.make(...templatepartEntries)
 		});
 	};
 
@@ -765,12 +783,12 @@ export namespace Context {
 	export const name: MTypes.OneArgFunction<Type, string> = Struct.get('name');
 
 	/**
-	 * Returns the `placeholderMap` property of `self`
+	 * Returns the `templatepartMap` property of `self`
 	 *
 	 * @category Destructors
 	 */
-	export const placeholderMap: MTypes.OneArgFunction<Type, CVPlaceholderMap.Type> =
-		Struct.get('placeholderMap');
+	export const templatepartMap: MTypes.OneArgFunction<Type, CVTemplatePartMap.Type> =
+		Struct.get('templatepartMap');
 }
 
 /**
@@ -812,11 +830,11 @@ export interface Type extends MInspectable.Type, Pipeable.Pipeable {
 	/** The Context of this DateTimeFormat */
 	readonly context: Context.Type;
 
-	/** The array of Placeholder's contituting this DateTimeFormat */
-	readonly placeholders: Placeholders.Type;
+	/** The array of TemplatePart's contituting this DateTimeFormat */
+	readonly templateparts: TemplateParts.Type;
 
 	/** @internal */
-	readonly _template: CVTemplate.Type<CVPlaceholders.Type<CVReal.Type>>;
+	readonly _template: CVTemplate.Type<CVTemplateParts.Type<CVReal.Type>>;
 
 	readonly [_TypeId]: _TypeId;
 }
@@ -833,7 +851,7 @@ const proto: MTypes.Proto<Type> = {
 	[_TypeId]: _TypeId,
 	[MInspectable.IdSymbol](this: Type) {
 		return pipe(
-			this.placeholders,
+			this.templateparts,
 			Array.map((p) => p.toString()),
 			Array.join(''),
 			MString.prepend("'"),
@@ -847,33 +865,33 @@ const proto: MTypes.Proto<Type> = {
 const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
 
 /**
- * Builds a DateTimeFormat from a Context `context` and an array of Placeholder's `placeholders`
+ * Builds a DateTimeFormat from a Context `context` and an array of TemplatePart's `templateparts`
  *
  * @category Constructors
  */
 export const make = ({
 	context,
-	placeholders
+	templateparts
 }: {
 	readonly context: Context.Type;
-	readonly placeholders: ReadonlyArray<Placeholder.Type>;
+	readonly templateparts: ReadonlyArray<TemplatePart.Type>;
 }): Type => {
-	const getter = (name: TagName): CVPlaceholder.Tag.Type<string, CVReal.Type> =>
+	const getter = (name: TagName): CVTemplatePlaceholder.Type<string, CVReal.Type> =>
 		pipe(
-			context.placeholderMap,
+			context.templatepartMap,
 			HashMap.get(name),
 			Option.getOrThrowWith(
-				() => new Error(`Abnormal error: no Placeholder was defined for tag name '${name}'`)
+				() => new Error(`Abnormal error: no TemplatePart was defined with name '${name}'`)
 			)
 		);
 
-	const template: CVTemplate.Type<CVPlaceholders.Type<CVReal.Type>> = pipe(
-		placeholders,
+	const template: CVTemplate.Type<CVTemplateParts.Type<CVReal.Type>> = pipe(
+		templateparts,
 		Array.map(
 			flow(
 				MMatch.make,
-				MMatch.when(Placeholder.isTag, flow(Placeholder.Tag.name, getter)),
-				MMatch.when(Placeholder.isSeparator, ({ value }) => CVPlaceholder.Separator.make(value)),
+				MMatch.when(TemplatePart.isPlaceholder, flow(TemplatePart.Placeholder.name, getter)),
+				MMatch.when(TemplatePart.isSeparator, ({ value }) => CVTemplateSeparator.make(value)),
 				MMatch.exhaustive
 			)
 		),
@@ -882,7 +900,7 @@ export const make = ({
 
 	return _make({
 		context,
-		placeholders,
+		templateparts,
 		_template: template
 	});
 };
@@ -895,12 +913,12 @@ export const make = ({
 export const context: MTypes.OneArgFunction<Type, Context.Type> = Struct.get('context');
 
 /**
- * Returns the `placeholders` property of `self`
+ * Returns the `templateparts` property of `self`
  *
  * @category Destructors
  */
-export const placeholders: MTypes.OneArgFunction<Type, Placeholders.Type> =
-	Struct.get('placeholders');
+export const templateparts: MTypes.OneArgFunction<Type, TemplateParts.Type> =
+	Struct.get('templateparts');
 
 /**
  * Returns a function that parses a text into a DateTime according to 'self'. See DateTime.fromParts
@@ -924,15 +942,15 @@ export const toParser = (self: Type): Parser.Type => {
 
 export const toFormatter = (self: Type): Formatter.Type => {
 	const toParts: Record<string, MTypes.OneArgFunction<CVDateTime.Type, number>> = pipe(
-		self._template.placeholders,
+		self._template.templateParts,
 		Array.filterMap(
 			flow(
 				MMatch.make,
-				MMatch.when(CVPlaceholder.isSeparator, () => Option.none()),
+				MMatch.when(CVTemplatePart.isSeparator, () => Option.none()),
 				MMatch.when(
-					CVPlaceholder.isTag,
+					CVTemplatePart.isPlaceholder,
 					flow(
-						CVPlaceholder.Tag.name,
+						CVTemplatePlaceholder.name,
 						MMatch.make,
 						flow(
 							MMatch.whenIs(
@@ -1007,7 +1025,7 @@ export const toFormatter = (self: Type): Formatter.Type => {
 				),
 				MMatch.exhaustive
 			) as MTypes.OneArgFunction<
-				CVPlaceholder.Type<string, CVReal.Type>,
+				CVTemplatePart.Type<string, CVReal.Type>,
 				Option.Option<readonly [string, MTypes.OneArgFunction<CVDateTime.Type, number>]>
 			>
 		),
