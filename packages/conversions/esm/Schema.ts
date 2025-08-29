@@ -207,14 +207,7 @@ export const DateTimeFromEffectDateTime: Schema.Schema<CVDateTime.Type, DateTime
 			DateTime.unsafeMakeZoned(CVDateTime.timestamp(input), { timeZone: input.zoneOffset })
 	});
 
-/**
- * A Schema that transforms a string into a CVDateTime according to the CVDateTimeFormat `format`.
- * Read documentation of CVDateTimeFormat.toParser and CVDateTimeFormat.toFormatter for more
- * details
- *
- * @category Schema transformations
- */
-export const DateTimeFromString = (
+const DateTimeFromString = (
 	format: CVDateTimeFormat.Type
 ): Schema.Schema<CVDateTime.Type, string> => {
 	const parser = CVDateTimeFormat.toParser(format);
@@ -234,4 +227,15 @@ export const DateTimeFromString = (
 				Either.mapLeft((inputError) => new ParseResult.Type(ast, input, inputError.message))
 			)
 	});
+};
+
+export {
+	/**
+	 * A Schema that transforms a string into a CVDateTime according to the CVDateTimeFormat `format`.
+	 * Read documentation of CVDateTimeFormat.toParser and CVDateTimeFormat.toFormatter for more
+	 * details
+	 *
+	 * @category Schema transformations
+	 */
+	DateTimeFromString as DateTime
 };

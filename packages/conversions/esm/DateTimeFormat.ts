@@ -445,7 +445,7 @@ export namespace Context {
 		readonly dayPeriodNames: DayPeriodNames;
 	}): Type => {
 		const integer = CVNumberBase10Format.integer;
-		const signedInteger = pipe(integer, CVNumberBase10Format.withSignDisplay('signed integer'));
+		const signedInteger = pipe(integer, CVNumberBase10Format.withSignDisplay);
 		const params = { fillChar: '0', numberBase10Format: integer };
 
 		const placeholderEntries: ReadonlyArray<

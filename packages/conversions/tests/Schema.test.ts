@@ -131,7 +131,7 @@ describe('CVSchema', () => {
 	});
 
 	describe('Real', () => {
-		const schema = CVSchema.Real(CVNumberBase10Format.frenchStyleThreeDecimalNumber);
+		const schema = CVSchema.Real(CVNumberBase10Format.frenchStyleNumber);
 		const target = CVReal.unsafeFromNumber(1024.56);
 		const targetAsString = '1 024,56';
 		describe('Decoding', () => {
@@ -268,7 +268,7 @@ describe('CVSchema', () => {
 	});
 
 	describe('BigDecimal', () => {
-		const schema = CVSchema.BigDecimal(CVNumberBase10Format.frenchStyleThreeDecimalNumber);
+		const schema = CVSchema.BigDecimal(CVNumberBase10Format.frenchStyleNumber);
 		const target = BigDecimal.make(102456n, 2);
 		const targetAsString = '1 024,56';
 		describe('Decoding', () => {
@@ -339,7 +339,7 @@ describe('CVSchema', () => {
 		});
 	});
 
-	describe('DateTimeFromString', () => {
+	describe('DateTime', () => {
 		const tag = CVDateTimeFormat.Placeholder.Tag.make;
 		const sep = CVDateTimeFormat.Placeholder.Separator;
 		const frenchDateFormat = CVDateTimeFormat.make({
@@ -359,7 +359,7 @@ describe('CVSchema', () => {
 				sep.make(' Paris time')
 			]
 		});
-		const schema = CVSchema.DateTimeFromString(frenchDateFormat);
+		const schema = CVSchema.DateTime(frenchDateFormat);
 		const target = CVDateTime.unsafeFromTimestamp(new Date(2025, 7, 25, 10, 24, 47).getTime());
 		const targetAsString = '25/08/2025 10:24:47 Paris time';
 

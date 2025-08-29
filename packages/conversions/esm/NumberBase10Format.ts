@@ -54,42 +54,38 @@ type _TypeId = typeof _TypeId;
  */
 export enum SignDisplay {
 	/**
-	 * Conversion from number to string: sign display for negative numbers only, including negative
-	 * zero.
+	 * Formatting: sign display for negative numbers only, including negative zero.
 	 *
-	 * Conversion from string to number: conversion will fail if a positive sign is used.
+	 * Parsing: conversion will fail if a positive sign is used.
 	 */
 	Auto = 0,
 
 	/**
-	 * Conversion from number to string: sign display for all numbers.
+	 * Formatting: sign display for all numbers.
 	 *
-	 * Conversion from string to number: conversion will fail if no sign is present
+	 * Parsing: conversion will fail if no sign is present
 	 */
 	Always = 1,
 
 	/**
-	 * Conversion from number to string: sign display for positive and negative numbers, but not zero
+	 * Formatting: sign display for positive and negative numbers, but not zero
 	 *
-	 * Conversion from string to number: conversion will fail if a sign is not present for a value
-	 * other than 0 or if a sign is present for 0.
+	 * Parsing: conversion will fail if a sign is not present for a value other than 0 or if a sign is
+	 * present for 0.
 	 */
 	ExceptZero = 2,
 
 	/**
-	 * Conversion from number to string: sign display for negative numbers only, excluding negative
-	 * zero.
+	 * Formatting: sign display for negative numbers only, excluding negative zero.
 	 *
-	 * Conversion from string to number: conversion will fail if a positive sign is used or if a
-	 * negative sign is used for 0.
+	 * Parsing: conversion will fail if a positive sign is used or if a negative sign is used for 0.
 	 */
 	Negative = 3,
 
 	/**
-	 * Conversion from number to string: no sign display.
+	 * Formatting: no sign display.
 	 *
-	 * Conversion from string to number: conversion will fail if any sign is present. The number will
-	 * be treated as positive.
+	 * Parsing: conversion will fail if any sign is present. The number will be treated as positive.
 	 */
 	Never = 4
 }
@@ -235,38 +231,37 @@ export namespace SignDisplay {
  */
 export enum ScientificNotation {
 	/**
-	 * Conversion from number to string: scientific notation is not used.
+	 * Formatting: scientific notation is not used.
 	 *
-	 * Conversion from string to number: conversion will fail if a scientific notation is present.
+	 * Parsing: conversion will fail if a scientific notation is present.
 	 */
 	None = 0,
 
 	/**
-	 * Conversion from number to string: scientific notation is not used.
+	 * Formatting: scientific notation is not used.
 	 *
-	 * Conversion from string to number: scientific notation may be used but is not mandatory.
+	 * Parsing: scientific notation may be used but is not mandatory.
 	 */
 	Standard = 1,
 
 	/**
-	 * Conversion from number to string: scientific notation is used so that the absolute value of the
-	 * mantissa m fulfills 1 ≤ |m| < 10. Number 0 will be displayed as `0e0`.
+	 * Formatting: scientific notation is used so that the absolute value of the mantissa m fulfills 1
+	 * ≤ |m| < 10. Number 0 will be displayed as `0e0`.
 	 *
-	 * Conversion from string to number: the conversion will fail if the mantissa is not null and its
-	 * value m does not fulfill 1 ≤ |m| < 10. Scientific notation may be used but is not mandatory. A
-	 * string that does not contain a scientific notation is deemed equivalent to a string with a null
-	 * exponent.
+	 * Parsing: the conversion will fail if the mantissa is not null and its value m does not fulfill
+	 * 1 ≤ |m| < 10. Scientific notation may be used but is not mandatory. A string that does not
+	 * contain a scientific notation is deemed equivalent to a string with a null exponent.
 	 */
 	Normalized = 2,
 
 	/**
-	 * Conversion from number to string: scientific notation is used so that the mantissa m fulfills 1
-	 * ≤ |m| < 1000 and the exponent is a multiple of 3. Number 0 will be displayed as `0e0`.
+	 * Formatting: scientific notation is used so that the mantissa m fulfills 1 ≤ |m| < 1000 and the
+	 * exponent is a multiple of 3. Number 0 will be displayed as `0e0`.
 	 *
-	 * Conversion from string to number: the conversion will fail if the mantissa is not null and its
-	 * value m does not fulfill 1 ≤ |m| < 1000 or if the exponent is not a multiple of 3. Scientific
-	 * notation may be used but is not mandatory. A string that does not contain a scientific notation
-	 * is deemed equivalent to a string with a null exponent.
+	 * Parsing: the conversion will fail if the mantissa is not null and its value m does not fulfill
+	 * 1 ≤ |m| < 1000 or if the exponent is not a multiple of 3. Scientific notation may be used but
+	 * is not mandatory. A string that does not contain a scientific notation is deemed equivalent to
+	 * a string with a null exponent.
 	 */
 	Engineering = 3
 }
@@ -402,14 +397,11 @@ export namespace ScientificNotation {
 }
 
 /**
- * Type that represents a NumberBase10Format.
+ * Type that represents a NumberBase10Format
  *
  * @category Models
  */
-export interface Type extends MInspectable.Type, Pipeable.Pipeable {
-	/** Descriptor of this NumberFormat instance. Used for debugging purposes only */
-	readonly descriptor: string;
-
+export interface Type extends Inspectable.Inspectable, Pipeable.Pipeable {
 	/**
 	 * Thousand separator. Use an empty string for no separator. Usually a string made of at most one
 	 * character different from `fractionalSeparator`. Will not throw otherwise but unexpected results
@@ -424,61 +416,60 @@ export interface Type extends MInspectable.Type, Pipeable.Pipeable {
 	readonly fractionalSeparator: string;
 
 	/**
-	 * Conversion from number to string:
+	 * Formatting:
 	 *
-	 * - If `true` or if `maximumFractionDigits===0`, numbers with a null integer part are displayed
-	 *   starting with '0'. Otherwise, they are displayed starting with '.'.
+	 * - If `true`, numbers with a null integer part are displayed starting with `0`. Otherwise, they
+	 *   are displayed starting with `.` unless `maximumFractionalDigits===0`, in which case they are
+	 *   displayed starting wiyh `0`.
 	 *
-	 * Conversion from string to number
+	 * Parsing
 	 *
-	 * - If `true`, conversion will fail for numbers starting with '.' (after an optional sign).
-	 * - If `false`, conversion will fail for numbers starting with '0.' (after an optional sign).
+	 * - If `true`, conversion will fail for numbers starting with `.` (after an optional sign).
+	 * - If `false`, conversion will fail for numbers starting with `0.` (after an optional sign).
 	 */
 	readonly showNullIntegerPart: boolean;
 
 	/**
 	 * Minimim number of digits forming the fractional part of a number. Must be a positive integer
-	 * (>=0) less than or equal to `maximumFractionDigits`.
+	 * (>=0) less than or equal to `maximumFractionalDigits`.
 	 *
-	 * Conversion from number to string: the string will be right-padded with `0`'s if necessary to
-	 * respect the condition
+	 * Formatting: the string will be right-padded with `0`'s if necessary to respect the condition
 	 *
-	 * Conversion from string to number: will fail if the input string does not respect this condition
-	 * (the string must be right-padded with `0`'s to respect the condition if necessary).
+	 * Parsing: will fail if the input string does not respect this condition (the string must be
+	 * right-padded with `0`'s to respect the condition if necessary).
 	 */
-	readonly minimumFractionDigits: number;
+	readonly minimumFractionalDigits: number;
 
 	/**
 	 * Maximum number of digits forming the fractional part of a number. Must be an integer value
-	 * greater than or equal to `minimumFractionDigits`. Can take the +Infinity value.
+	 * greater than or equal to `minimumFractionalDigits`. Can take the +Infinity value.
 	 *
-	 * Conversion from number to string: the number will be rounded using the roundingMode to respect
-	 * the condition.
+	 * Formatting: the number will be rounded using the roundingMode to respect the condition (unless
+	 * `maximumFractionalDigits` is `+Infinity`).
 	 *
-	 * Conversion from string to number: will fail if the input string does not respect this
-	 * condition.
+	 * Parsing: will fail if the input string has too many fractional digits.
 	 */
-	readonly maximumFractionDigits: number;
+	readonly maximumFractionalDigits: number;
 
 	/**
 	 * Possible characters to use to represent e-notation. Usually ['e','E']. Must be an array of
 	 * one-character strings. Will not throw otherwise but unexpected results will occur. Not used if
 	 * `scientificNotation === None`
 	 *
-	 * Conversion from number to string: the string at index 0 is used
+	 * Formatting: the string at index 0 is used
 	 *
-	 * Conversion from string to number: the first character of the e-notation must be one of the
-	 * one-character strings present in the array
+	 * Parsing: the first character of the e-notation must be one of the one-character strings present
+	 * in the array
 	 */
 	readonly eNotationChars: ReadonlyArray<string>;
 
 	/** Scientific notation options. See ScientificNotation */
 	readonly scientificNotation: ScientificNotation;
 
-	/** Rounding mode options. See RoundingMode */
+	/** Rounding mode options. See RoundingMode.ts */
 	readonly roundingMode: CVRoundingMode.Type;
 
-	/** Sign display options. See SignDisplay */
+	/** Sign display options. See SignDisplay.ts */
 	readonly signDisplay: SignDisplay;
 
 	/** @internal */
@@ -495,16 +486,7 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
 /** Prototype */
 const proto: MTypes.Proto<Type> = {
 	[_TypeId]: _TypeId,
-	[MInspectable.IdSymbol](this: Type) {
-		return this.descriptor;
-	},
 	...MInspectable.BaseProto(moduleTag),
-	toJSON(this: Type): unknown {
-		return this.descriptor !== '' ? this.descriptor : { _id: moduleTag, ...this };
-	},
-	toString(this: Type): string {
-		return this.descriptor !== '' ? this.descriptor : Inspectable.BaseProto.toString.call(this);
-	},
 	...MPipeable.BaseProto
 };
 
@@ -515,13 +497,6 @@ const proto: MTypes.Proto<Type> = {
  */
 export const make = (params: MTypes.Data<Type>): Type =>
 	MTypes.objectFromDataAndProto(proto, params);
-
-/**
- * Returns the `descriptor` property of `self`
- *
- * @category Destructors
- */
-export const descriptor: MTypes.OneArgFunction<Type, string> = Struct.get('descriptor');
 
 /**
  * Returns the `thousandSeparator` property of `self`
@@ -548,20 +523,20 @@ export const showNullIntegerPart: MTypes.OneArgFunction<Type, boolean> =
 	Struct.get('showNullIntegerPart');
 
 /**
- * Returns the `minimumFractionDigits` property of `self`
+ * Returns the `minimumFractionalDigits` property of `self`
  *
  * @category Destructors
  */
-export const minimumFractionDigits: MTypes.OneArgFunction<Type, number> =
-	Struct.get('minimumFractionDigits');
+export const minimumFractionalDigits: MTypes.OneArgFunction<Type, number> =
+	Struct.get('minimumFractionalDigits');
 
 /**
- * Returns the `maximumFractionDigits` property of `self`
+ * Returns the `maximumFractionalDigits` property of `self`
  *
  * @category Destructors
  */
-export const maximumFractionDigits: MTypes.OneArgFunction<Type, number> =
-	Struct.get('maximumFractionDigits');
+export const maximumFractionalDigits: MTypes.OneArgFunction<Type, number> =
+	Struct.get('maximumFractionalDigits');
 
 /**
  * Returns the `eNotationChar` property of `self`
@@ -594,6 +569,60 @@ export const roundingMode: MTypes.OneArgFunction<Type, CVRoundingMode.Type> =
  * @category Destructors
  */
 export const signDisplay: MTypes.OneArgFunction<Type, SignDisplay> = Struct.get('signDisplay');
+
+/**
+ * Returns a short description of `self`
+ *
+ * @category Destructors
+ */
+export const toDescription = (self: Type): string => {
+	const {
+		thousandSeparator,
+		fractionalSeparator,
+		minimumFractionalDigits,
+		maximumFractionalDigits,
+		scientificNotation,
+		signDisplay
+	} = self;
+
+	const isInteger = maximumFractionalDigits <= 0;
+	const isUngrouped = thousandSeparator === '';
+	return (
+		pipe(
+			signDisplay,
+			MMatch.make,
+			MMatch.whenIs(SignDisplay.Always, Function.constant('signed ')),
+			MMatch.whenIs(SignDisplay.Never, Function.constant('unsigned ')),
+			MMatch.orElse(Function.constant('potentially signed '))
+		) +
+		(isUngrouped && isInteger ? ''
+		: (isUngrouped || thousandSeparator === ' ') && (fractionalSeparator === ',' || isInteger) ?
+			'French-style '
+		: thousandSeparator === '.' && (fractionalSeparator === ',' || isInteger) ? 'Dutch-style '
+		: (isUngrouped || thousandSeparator === ',') && (fractionalSeparator === '.' || isInteger) ?
+			'UK-style '
+		:	'') +
+		(isInteger ? 'integer'
+		: minimumFractionalDigits === maximumFractionalDigits ?
+			`${minimumFractionalDigits}-decimal number`
+		:	'number') +
+		pipe(
+			scientificNotation,
+			MMatch.make,
+			MMatch.whenIs(ScientificNotation.None, MFunction.constEmptyString),
+			MMatch.whenIs(
+				ScientificNotation.Standard,
+				Function.constant(' in standard scientific notation')
+			),
+			MMatch.whenIs(
+				ScientificNotation.Normalized,
+				Function.constant(' in normalized scientific notation')
+			),
+			MMatch.whenIs(ScientificNotation.Engineering, Function.constant(' in engineering notation')),
+			MMatch.exhaustive
+		)
+	);
+};
 
 const _toBigDecimalExtractor = (
 	self: Type,
@@ -638,8 +667,8 @@ const _toBigDecimalExtractor = (
 				String.length,
 				Option.liftPredicate(
 					Number.between({
-						minimum: self.minimumFractionDigits,
-						maximum: self.maximumFractionDigits
+						minimum: self.minimumFractionalDigits,
+						maximum: self.maximumFractionalDigits
 					})
 				)
 			);
@@ -822,11 +851,11 @@ export const toNumberFormatter = (
 	fillChars = ''
 ): MTypes.OneArgFunction<BigDecimal.BigDecimal | CVReal.Type, string> => {
 	const rounder =
-		self.maximumFractionDigits === +Infinity ?
+		self.maximumFractionalDigits === +Infinity ?
 			Function.identity
 		:	pipe(
 				{
-					precision: self.maximumFractionDigits,
+					precision: self.maximumFractionalDigits,
 					roundingMode: self.roundingMode
 				},
 				CVRoundingOption.make,
@@ -868,7 +897,7 @@ export const toNumberFormatter = (
 			Option.map(MString.fromNonNullablePrimitive),
 			Option.getOrElse(MFunction.constEmptyString),
 			String.padStart(normalizedFractionalPart.scale, '0'),
-			String.padEnd(self.minimumFractionDigits, '0'),
+			String.padEnd(self.minimumFractionalDigits, '0'),
 			Option.liftPredicate(String.isNonEmpty),
 			Option.map(MString.prepend(self.fractionalSeparator)),
 			Option.getOrElse(MFunction.constEmptyString)
@@ -915,58 +944,52 @@ export const toNumberFormatter = (
 };
 
 /**
- * Combinator that returns a copy of self with `minimumFractionDigits` and `maximumFractionDigits`
- * set to `n`. `n` must be a finite positive integer.
+ * Combinator that returns a copy of self with `minimumFractionalDigits` and
+ * `maximumFractionalDigits` set to `n`. `n` must be a finite positive integer.
  *
  * @category Utils
  */
-export const withNDecimals = (
-	decimalNumber: number,
-	descriptor = ''
-): MTypes.OneArgFunction<Type> =>
+export const withNDecimals = (decimalNumber: number): MTypes.OneArgFunction<Type> =>
 	flow(
 		MStruct.append({
-			descriptor,
-			minimumFractionDigits: decimalNumber,
-			maximumFractionDigits: decimalNumber
+			minimumFractionalDigits: decimalNumber,
+			maximumFractionalDigits: decimalNumber
 		}),
 		make
 	);
 
 /**
- * Combinator that returns a copy of self with `maximumFractionDigits` set to `n`. `n` must be a
+ * Combinator that returns a copy of self with `maximumFractionalDigits` set to `n`. `n` must be a
  * positive integer. Pass 0 for an integer format.
  *
  * @category Utils
  */
 export const withMaxNDecimals =
-	(maxDecimalNumber: number, descriptor = '') =>
+	(maxDecimalNumber: number) =>
 	(self: Type): Type =>
 		pipe(
 			self,
 			MStruct.append({
-				descriptor,
-				minimumFractionDigits: Math.min(self.minimumFractionDigits, maxDecimalNumber),
-				maximumFractionDigits: maxDecimalNumber
+				minimumFractionalDigits: Math.min(self.minimumFractionalDigits, maxDecimalNumber),
+				maximumFractionalDigits: maxDecimalNumber
 			}),
 			make
 		);
 
 /**
- * Combinator that returns a copy of self with `minimumFractionDigits` set to `n`. `n` must be a
+ * Combinator that returns a copy of self with `minimumFractionalDigits` set to `n`. `n` must be a
  * finite positive integer.
  *
  * @category Utils
  */
 export const withMinNDecimals =
-	(minDecimalNumber: number, descriptor = '') =>
+	(minDecimalNumber: number) =>
 	(self: Type): Type =>
 		pipe(
 			self,
 			MStruct.append({
-				descriptor,
-				minimumFractionDigits: minDecimalNumber,
-				maximumFractionDigits: Math.max(self.maximumFractionDigits, minDecimalNumber)
+				minimumFractionalDigits: minDecimalNumber,
+				maximumFractionalDigits: Math.max(self.maximumFractionalDigits, minDecimalNumber)
 			}),
 			make
 		);
@@ -976,69 +999,57 @@ export const withMinNDecimals =
  *
  * @category Utils
  */
-export const withNoScientificNotation = (descriptor = ''): MTypes.OneArgFunction<Type> =>
-	flow(
-		MStruct.append({
-			descriptor,
-			scientificNotation: ScientificNotation.None
-		}),
-		make
-	);
+export const withNoScientificNotation: MTypes.OneArgFunction<Type> = flow(
+	MStruct.append({
+		scientificNotation: ScientificNotation.None
+	}),
+	make
+);
 
 /**
  * Combinator that returns a copy of self with `scientificNotation` set to `Standard`.
  *
  * @category Utils
  */
-export const withStandardScientificNotation = (descriptor = ''): MTypes.OneArgFunction<Type> =>
-	flow(
-		MStruct.append({
-			descriptor,
-			scientificNotation: ScientificNotation.Standard
-		}),
-		make
-	);
+export const withStandardScientificNotation: MTypes.OneArgFunction<Type> = flow(
+	MStruct.append({
+		scientificNotation: ScientificNotation.Standard
+	}),
+	make
+);
 
 /**
  * Combinator that returns a copy of self with `scientificNotation` set to `Normalized`.
  *
  * @category Utils
  */
-export const withNormalizedScientificNotation = (descriptor = ''): MTypes.OneArgFunction<Type> =>
-	flow(
-		MStruct.append({
-			descriptor,
-			scientificNotation: ScientificNotation.Normalized
-		}),
-		make
-	);
+export const withNormalizedScientificNotation: MTypes.OneArgFunction<Type> = flow(
+	MStruct.append({
+		scientificNotation: ScientificNotation.Normalized
+	}),
+	make
+);
 
 /**
  * Combinator that returns a copy of self with `scientificNotation` set to `Engineering`.
  *
  * @category Utils
  */
-export const withEngineeringScientificNotation = (descriptor = ''): MTypes.OneArgFunction<Type> =>
-	flow(
-		MStruct.append({
-			descriptor,
-			scientificNotation: ScientificNotation.Engineering
-		}),
-		make
-	);
+export const withEngineeringScientificNotation: MTypes.OneArgFunction<Type> = flow(
+	MStruct.append({
+		scientificNotation: ScientificNotation.Engineering
+	}),
+	make
+);
 
 /**
  * Combinator that returns a copy of self with `thousandSeparator` set to `thousandSeparator`.
  *
  * @category Utils
  */
-export const withThousandSeparator = (
-	thousandSeparator: string,
-	descriptor = ''
-): MTypes.OneArgFunction<Type> =>
+export const withThousandSeparator = (thousandSeparator: string): MTypes.OneArgFunction<Type> =>
 	flow(
 		MStruct.append({
-			descriptor,
 			thousandSeparator
 		}),
 		make
@@ -1049,22 +1060,17 @@ export const withThousandSeparator = (
  *
  * @category Utils
  */
-export const withoutThousandSeparator = (descriptor = ''): MTypes.OneArgFunction<Type> =>
-	withThousandSeparator('', descriptor);
+export const withoutThousandSeparator: MTypes.OneArgFunction<Type> = withThousandSeparator('');
 
 /**
  * Combinator that returns a copy of self with `fractionalSeparator` set to `fractionalSeparator`.
  *
  * @category Utils
  */
-export const withFractionalSeparator = (
-	fractionalSeparator: string,
-	descriptor = ''
-): MTypes.OneArgFunction<Type> =>
+export const withFractionalSeparator = (fractionalSeparator: string): MTypes.OneArgFunction<Type> =>
 	flow(
 		MStruct.append({
-			descriptor,
-			fractionalSeparator
+			fractionalSeparator: fractionalSeparator
 		}),
 		make
 	);
@@ -1074,257 +1080,219 @@ export const withFractionalSeparator = (
  *
  * @category Utils
  */
-export const withSignDisplayForNegative = (descriptor = ''): MTypes.OneArgFunction<Type> =>
-	flow(
-		MStruct.append({
-			descriptor,
-			signDisplay: SignDisplay.Auto
-		}),
-		make
-	);
+export const withSignDisplayForNegative: MTypes.OneArgFunction<Type> = flow(
+	MStruct.append({
+		signDisplay: SignDisplay.Auto
+	}),
+	make
+);
 
 /**
  * Combinator that returns a copy of self with `signDisplay` set to `Always`.
  *
  * @category Utils
  */
-export const withSignDisplay = (descriptor = ''): MTypes.OneArgFunction<Type> =>
-	flow(
-		MStruct.append({
-			descriptor,
-			signDisplay: SignDisplay.Always
-		}),
-		make
-	);
+export const withSignDisplay: MTypes.OneArgFunction<Type> = flow(
+	MStruct.append({
+		signDisplay: SignDisplay.Always
+	}),
+	make
+);
 
 /**
  * Combinator that returns a copy of self with `signDisplay` set to `ExceptZero`.
  *
  * @category Utils
  */
-export const withSignDisplayExceptZero = (descriptor = ''): MTypes.OneArgFunction<Type> =>
-	flow(
-		MStruct.append({
-			descriptor,
-			signDisplay: SignDisplay.ExceptZero
-		}),
-		make
-	);
+export const withSignDisplayExceptZero: MTypes.OneArgFunction<Type> = flow(
+	MStruct.append({
+		signDisplay: SignDisplay.ExceptZero
+	}),
+	make
+);
 
 /**
  * Combinator that returns a copy of self with `signDisplay` set to `Negative`.
  *
  * @category Utils
  */
-export const withSignDisplayForNegativeExceptZero = (
-	descriptor = ''
-): MTypes.OneArgFunction<Type> =>
-	flow(
-		MStruct.append({
-			descriptor,
-			signDisplay: SignDisplay.Negative
-		}),
-		make
-	);
+export const withSignDisplayForNegativeExceptZero: MTypes.OneArgFunction<Type> = flow(
+	MStruct.append({
+		signDisplay: SignDisplay.Negative
+	}),
+	make
+);
 
 /**
  * Combinator that returns a copy of self with `signDisplay` set to `Never`.
  *
  * @category Utils
  */
-export const withoutSignDisplay = (descriptor = ''): MTypes.OneArgFunction<Type> =>
-	flow(
-		MStruct.append({
-			descriptor,
-			signDisplay: SignDisplay.Never
-		}),
-		make
-	);
+export const withoutSignDisplay: MTypes.OneArgFunction<Type> = flow(
+	MStruct.append({
+		signDisplay: SignDisplay.Never
+	}),
+	make
+);
 
 /**
  * Combinator that returns a copy of self with `roundingMode` set to `Ceil`.
  *
  * @category Utils
  */
-export const withCeilRoundingMode = (descriptor = ''): MTypes.OneArgFunction<Type> =>
-	flow(
-		MStruct.append({
-			descriptor,
-			roundingMode: CVRoundingMode.Type.Ceil
-		}),
-		make
-	);
+export const withCeilRoundingMode: MTypes.OneArgFunction<Type> = flow(
+	MStruct.append({
+		roundingMode: CVRoundingMode.Type.Ceil
+	}),
+	make
+);
 /**
  * Combinator that returns a copy of self with `roundingMode` set to `Floor`.
  *
  * @category Utils
  */
-export const withFloorRoundingMode = (descriptor = ''): MTypes.OneArgFunction<Type> =>
-	flow(
-		MStruct.append({
-			descriptor,
-			roundingMode: CVRoundingMode.Type.Floor
-		}),
-		make
-	);
+export const withFloorRoundingMode: MTypes.OneArgFunction<Type> = flow(
+	MStruct.append({
+		roundingMode: CVRoundingMode.Type.Floor
+	}),
+	make
+);
 
 /**
  * Combinator that returns a copy of self with `roundingMode` set to `Expand`.
  *
  * @category Utils
  */
-export const withExpandRoundingMode = (descriptor = ''): MTypes.OneArgFunction<Type> =>
-	flow(
-		MStruct.append({
-			descriptor,
-			roundingMode: CVRoundingMode.Type.Expand
-		}),
-		make
-	);
+export const withExpandRoundingMode: MTypes.OneArgFunction<Type> = flow(
+	MStruct.append({
+		roundingMode: CVRoundingMode.Type.Expand
+	}),
+	make
+);
 
 /**
  * Combinator that returns a copy of self with `roundingMode` set to `Trunc`.
  *
  * @category Utils
  */
-export const withTruncRoundingMode = (descriptor = ''): MTypes.OneArgFunction<Type> =>
-	flow(
-		MStruct.append({
-			descriptor,
-			roundingMode: CVRoundingMode.Type.Trunc
-		}),
-		make
-	);
+export const withTruncRoundingMode: MTypes.OneArgFunction<Type> = flow(
+	MStruct.append({
+		roundingMode: CVRoundingMode.Type.Trunc
+	}),
+	make
+);
 
 /**
  * Combinator that returns a copy of self with `roundingMode` set to `HalfCeil`.
  *
  * @category Utils
  */
-export const withHalfCeilRoundingMode = (descriptor = ''): MTypes.OneArgFunction<Type> =>
-	flow(
-		MStruct.append({
-			descriptor,
-			roundingMode: CVRoundingMode.Type.HalfCeil
-		}),
-		make
-	);
+export const withHalfCeilRoundingMode: MTypes.OneArgFunction<Type> = flow(
+	MStruct.append({
+		roundingMode: CVRoundingMode.Type.HalfCeil
+	}),
+	make
+);
 
 /**
  * Combinator that returns a copy of self with `roundingMode` set to `HalfFloor`.
  *
  * @category Utils
  */
-export const withHalfFloorRoundingMode = (descriptor = ''): MTypes.OneArgFunction<Type> =>
-	flow(
-		MStruct.append({
-			descriptor,
-			roundingMode: CVRoundingMode.Type.HalfFloor
-		}),
-		make
-	);
+export const withHalfFloorRoundingMode: MTypes.OneArgFunction<Type> = flow(
+	MStruct.append({
+		roundingMode: CVRoundingMode.Type.HalfFloor
+	}),
+	make
+);
 
 /**
  * Combinator that returns a copy of self with `roundingMode` set to `HalfExpand`.
  *
  * @category Utils
  */
-export const withHalfExpandRoundingMode = (descriptor = ''): MTypes.OneArgFunction<Type> =>
-	flow(
-		MStruct.append({
-			descriptor,
-			roundingMode: CVRoundingMode.Type.HalfExpand
-		}),
-		make
-	);
+export const withHalfExpandRoundingMode: MTypes.OneArgFunction<Type> = flow(
+	MStruct.append({
+		roundingMode: CVRoundingMode.Type.HalfExpand
+	}),
+	make
+);
 
 /**
  * Combinator that returns a copy of self with `roundingMode` set to `HalfTrunc`.
  *
  * @category Utils
  */
-export const withHalfTruncRoundingMode = (descriptor = ''): MTypes.OneArgFunction<Type> =>
-	flow(
-		MStruct.append({
-			descriptor,
-			roundingMode: CVRoundingMode.Type.HalfTrunc
-		}),
-		make
-	);
+export const withHalfTruncRoundingMode: MTypes.OneArgFunction<Type> = flow(
+	MStruct.append({
+		roundingMode: CVRoundingMode.Type.HalfTrunc
+	}),
+	make
+);
 
 /**
  * Combinator that returns a copy of self with `roundingMode` set to `HalfEven`.
  *
  * @category Utils
  */
-export const withHalfEvenRoundingMode = (descriptor = ''): MTypes.OneArgFunction<Type> =>
-	flow(
-		MStruct.append({
-			descriptor,
-			roundingMode: CVRoundingMode.Type.HalfEven
-		}),
-		make
-	);
+export const withHalfEvenRoundingMode: MTypes.OneArgFunction<Type> = flow(
+	MStruct.append({
+		roundingMode: CVRoundingMode.Type.HalfEven
+	}),
+	make
+);
 
 /**
  * Combinator that returns a copy of self with `showNullIntegerPart` set to `false`.
  *
  * @category Utils
  */
-export const withNullIntegerPartNotShowing = (descriptor = ''): MTypes.OneArgFunction<Type> =>
-	flow(
-		MStruct.append({
-			descriptor,
-			showNullIntegerPart: false
-		}),
-		make
-	);
+export const withNullIntegerPartNotShowing: MTypes.OneArgFunction<Type> = flow(
+	MStruct.append({
+		showNullIntegerPart: false
+	}),
+	make
+);
 
 /**
  * Combinator that returns a copy of self with `showNullIntegerPart` set to `true`.
  *
  * @category Utils
  */
-export const withNullIntegerPartShowing = (descriptor = ''): MTypes.OneArgFunction<Type> =>
-	flow(
-		MStruct.append({
-			descriptor,
-			showNullIntegerPart: true
-		}),
-		make
-	);
+export const withNullIntegerPartShowing: MTypes.OneArgFunction<Type> = flow(
+	MStruct.append({
+		showNullIntegerPart: true
+	}),
+	make
+);
 
 /**
- * NumberBase10Format instance that uses a comma as fractional separator and a space as thousand
- * separator. Used in countries like France, French-speaking Canada, French-speaking Belgium,
- * Denmark, Finland, Sweden...
+ * NumberBase10Format instance that uses a comma as fractional separator, a space as thousand
+ * separator and shows at most three fractional digits. Used in countries like France,
+ * French-speaking Canada, French-speaking Belgium, Denmark, Finland, Sweden...
  *
  * @category Instances
  */
-export const frenchStyleThreeDecimalNumber: Type = make({
-	descriptor: 'French-style three-decimal number',
+export const frenchStyleNumber: Type = make({
 	thousandSeparator: ' ',
 	fractionalSeparator: ',',
 	showNullIntegerPart: true,
-	minimumFractionDigits: 0,
-	maximumFractionDigits: 3,
-	eNotationChars: ['E', 'e'],
+	minimumFractionalDigits: 0,
+	maximumFractionalDigits: 3,
+	eNotationChars: ['e', 'E'],
 	scientificNotation: ScientificNotation.None,
 	roundingMode: CVRoundingMode.Type.HalfExpand,
 	signDisplay: SignDisplay.Negative
 });
 
 /**
- * NumberBase10Format instance that uses a comma as fractional separator and no thousand separator.
- * Used in countries like France, French-speaking Canada, French-speaking Belgium, Denmark, Finland,
- * Sweden...
+ * NumberBase10Format instance that uses a comma as fractional separator, no thousand separator and
+ * shows at most three fractional digits. Used in countries like France, French-speaking Canada,
+ * French-speaking Belgium, Denmark, Finland, Sweden...
  *
  * @category Instances
  */
-export const frenchStyleUngroupedThreeDecimalNumber: Type = pipe(
-	frenchStyleThreeDecimalNumber,
-	withoutThousandSeparator('French-style three-decimal number (no digit grouping)')
-);
+export const frenchStyleUngroupedNumber: Type = pipe(frenchStyleNumber, withoutThousandSeparator);
 
 /**
  * French-style integer NumberBase10Format instance. Used in countries like France, French-speaking
@@ -1332,38 +1300,31 @@ export const frenchStyleUngroupedThreeDecimalNumber: Type = pipe(
  *
  * @category Instances
  */
-export const frenchStyleInteger: Type = pipe(
-	frenchStyleThreeDecimalNumber,
-	withMaxNDecimals(0, 'French-style integer')
-);
+export const frenchStyleInteger: Type = pipe(frenchStyleNumber, withMaxNDecimals(0));
 
 /**
- * NumberBase10Format instance that uses a comma as fractional separator and a dot as thousand
- * separator. Used in countries like Dutch-speaking Belgium, the Netherlands, Germany, Italy,
- * Norway, Croatia, Spain...
+ * NumberBase10Format instance that uses a comma as fractional separator, a dot as thousand
+ * separator and shows at most three fractional digits. Used in countries like Dutch-speaking
+ * Belgium, the Netherlands, Germany, Italy, Norway, Croatia, Spain...
  *
  * @category Instances
  */
-export const dutchStyleThreeDecimalNumber: Type = pipe(
-	frenchStyleThreeDecimalNumber,
+export const dutchStyleNumber: Type = pipe(
+	frenchStyleNumber,
 	MStruct.append({
-		descriptor: 'Dutch-style three-decimal number',
 		thousandSeparator: '.'
 	}),
 	make
 );
 
 /**
- * NumberBase10Format instance that uses a comma as fractional separator and no thousand separator.
- * Used in countries like Dutch-speaking Belgium, the Netherlands, Germany, Italy, Norway, Croatia,
- * Spain...
+ * NumberBase10Format instance that uses a comma as fractional separator, no thousand separator and
+ * shows at most three fractional digits. Used in countries like Dutch-speaking Belgium, the
+ * Netherlands, Germany, Italy, Norway, Croatia, Spain...
  *
  * @category Instances
  */
-export const dutchStyleUngroupedThreeDecimalNumber: Type = pipe(
-	dutchStyleThreeDecimalNumber,
-	withoutThousandSeparator('Dutch-style three-decimal number (no digit grouping)')
-);
+export const dutchStyleUngroupedNumber: Type = pipe(dutchStyleNumber, withoutThousandSeparator);
 
 /**
  * Dutch-style integer NumberBase10Format instance. Used in countries like Dutch-speaking Belgium,
@@ -1371,22 +1332,18 @@ export const dutchStyleUngroupedThreeDecimalNumber: Type = pipe(
  *
  * @category Instances
  */
-export const dutchStyleInteger: Type = pipe(
-	dutchStyleThreeDecimalNumber,
-	withMaxNDecimals(0, 'Dutch-style integer')
-);
+export const dutchStyleInteger: Type = pipe(dutchStyleNumber, withMaxNDecimals(0));
 
 /**
- * NumberBase10Format instance that uses a dot as fractional separator and a comma as thousand
- * separator. Used in countries like the UK, the US, English-speaking Canada, Australia, Thaïland,
- * Bosnia...
+ * NumberBase10Format instance that uses a dot as fractional separator, a comma as thousand
+ * separator and shows at most three fractional digits. Used in countries like the UK, the US,
+ * English-speaking Canada, Australia, Thaïland, Bosnia...
  *
  * @category Instances
  */
-export const ukStyleThreeDecimalNumber: Type = pipe(
-	frenchStyleThreeDecimalNumber,
+export const ukStyleNumber: Type = pipe(
+	frenchStyleNumber,
 	MStruct.append({
-		descriptor: 'Uk-style three-decimal number',
 		fractionalSeparator: '.',
 		thousandSeparator: ','
 	}),
@@ -1394,15 +1351,13 @@ export const ukStyleThreeDecimalNumber: Type = pipe(
 );
 
 /**
- * NumberBase10Format instance that uses a dot as fractional separator and no thousand separator.
- * Used in countries like the UK, the US, English-speaking Canada, Australia, Thaïland, Bosnia...
+ * NumberBase10Format instance that uses a dot as fractional separator, no thousand separator and
+ * shows at most three fractional digits. Used in countries like the UK, the US, English-speaking
+ * Canada, Australia, Thaïland, Bosnia...
  *
  * @category Instances
  */
-export const ukStyleUngroupedThreeDecimalNumber: Type = pipe(
-	ukStyleThreeDecimalNumber,
-	withoutThousandSeparator('Uk-style three-decimal number (no digit grouping)')
-);
+export const ukStyleUngroupedNumber: Type = pipe(ukStyleNumber, withoutThousandSeparator);
 
 /**
  * Uk-style integer NumberBase10Format instance. Used in countries like the UK, the US,
@@ -1410,14 +1365,11 @@ export const ukStyleUngroupedThreeDecimalNumber: Type = pipe(
  *
  * @category Instances
  */
-export const ukStyleInteger: Type = pipe(
-	ukStyleThreeDecimalNumber,
-	withMaxNDecimals(0, 'Uk-style integer')
-);
+export const ukStyleInteger: Type = pipe(ukStyleNumber, withMaxNDecimals(0));
 
 /**
  * Integer NumberBase10Format instance with no thousand separator
  *
  * @category Instances
  */
-export const integer: Type = pipe(frenchStyleInteger, withoutThousandSeparator('integer'));
+export const integer: Type = pipe(frenchStyleInteger, withoutThousandSeparator);

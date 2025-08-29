@@ -17,6 +17,8 @@ import {
 	MInputError,
 	MInspectable,
 	MPipeable,
+	MRegExp,
+	MRegExpString,
 	MString,
 	MTuple,
 	MTypes
@@ -234,7 +236,7 @@ export namespace Tag {
 		/** Name of this Tag Placeholder */
 		readonly name: N;
 
-		/** Descriptor of this Tag Placeholder */
+		/** Descriptor of this Tag Placeholder (used for debugging purposes) */
 		readonly descriptor: string;
 
 		/** Parser of this Tag Placeholder */
@@ -448,7 +450,7 @@ export namespace Tag {
 				Either.fromOption(
 					() =>
 						new MInputError.Type({
-							message: `${label}: value '${input}' cannot be converted to a(n) ${numberBase10Format.descriptor}-formatted base-10 number`
+							message: `${label}: value '${input}' cannot be converted to a(n) ${CVNumberBase10Format.toDescription(numberBase10Format)}`
 						})
 				)
 			);
@@ -464,7 +466,7 @@ export namespace Tag {
 			fixedLength(params),
 			modify({
 				descriptorMapper: MString.append(
-					` left-padded with '${fillChar}' to ${numberBase10Format.descriptor}`
+					` left-padded with '${fillChar}' to ${CVNumberBase10Format.toDescription(numberBase10Format)}`
 				),
 				postParser: numberParser,
 				preFormatter: numberFormatter
@@ -490,7 +492,7 @@ export namespace Tag {
 		const label = _labelFromName(name);
 		return make({
 			name,
-			descriptor: `${label}: ${numberBase10Format.descriptor}`,
+			descriptor: `${label}: ${CVNumberBase10Format.toDescription(numberBase10Format)}`,
 			parser: (text) =>
 				pipe(
 					text,
@@ -498,7 +500,7 @@ export namespace Tag {
 					Either.fromOption(
 						() =>
 							new MInputError.Type({
-								message: `${label} contains '${text}' from the start of which a(n) ${numberBase10Format.descriptor} could not be extracted`
+								message: `${label} contains '${text}' from the start of which a(n) ${CVNumberBase10Format.toDescription(numberBase10Format)} could not be extracted`
 							})
 					),
 					Either.map(Tuple.mapSecond(flow(String.length, flippedTakeRightBut(text))))
@@ -633,14 +635,40 @@ export namespace Tag {
 	};
 
 	/**
-	 * Builds a Placeholder instance that parses/formats at least one non-space character.
+	 * Builds a Placeholder instance that parses/formats a non-empty string made up of characters
+	 * other than those contained in `forbiddenChars`. `forbiddenChars` should be an array of
+	 * 1-character strings (will not throw otherwise but strange behaviors can be expected)
 	 *
 	 * @category Constructors
 	 */
-	export const noSpaceChars = <const N extends string>(name: N): Type<N, string> =>
+	export const noForbiddenChars = <const N extends string>({
+		name,
+		forbiddenChars
+	}: {
+		readonly name: N;
+		readonly forbiddenChars: MTypes.OverOne<string>;
+	}): Type<N, string> =>
 		fulfilling({
 			name,
-			regExp: /^[^\s]+/,
+			regExp: pipe(
+				forbiddenChars,
+				MRegExpString.notInRange,
+				MRegExpString.oneOrMore,
+				MRegExpString.atStart,
+				MRegExp.fromRegExpString()
+			),
 			regExpDescriptor: 'a non-empty string containing non-space characters'
+		});
+
+	/**
+	 * Builds a Placeholder instance that parses/formats all the remaining text.
+	 *
+	 * @category Constructors
+	 */
+	export const toEnd = <const N extends string>(name: N): Type<N, string> =>
+		fulfilling({
+			name,
+			regExp: /^.*/,
+			regExpDescriptor: 'a string'
 		});
 }

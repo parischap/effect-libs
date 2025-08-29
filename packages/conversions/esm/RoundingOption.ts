@@ -93,6 +93,14 @@ export const make = ({
 	_make({ precision, roundingMode });
 
 /**
+ * RoundingOption instance that uses the HalfExpand Rounding mode and precision=2. Can be used in
+ * accounting apps of most countries.
+ *
+ * @category Instances
+ */
+export const halfExpand2 = make({ precision: 2, roundingMode: CVRoundingMode.Type.HalfExpand });
+
+/**
  * Returns the `precision` property of `self`
  *
  * @category Destructors

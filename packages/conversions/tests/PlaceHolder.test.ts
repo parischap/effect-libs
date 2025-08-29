@@ -1,6 +1,6 @@
 /* eslint-disable functional/no-expression-statements */
 import { CVNumberBase10Format, CVPlaceholder, CVReal } from '@parischap/conversions';
-import { MString, MTypes } from '@parischap/effect-lib';
+import { MRegExpString, MString, MTypes } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
 import { Tuple } from 'effect';
 import { describe, it } from 'vitest';
@@ -188,7 +188,7 @@ describe('CVPlaceholder', () => {
 			it('.toString()', () => {
 				TEUtils.strictEqual(
 					placeholder.toString(),
-					"'foo' placeholder: 3-character string left-padded with ' ' to integer"
+					"'foo' placeholder: 3-character string left-padded with ' ' to potentially signed integer"
 				);
 			});
 
@@ -226,12 +226,12 @@ describe('CVPlaceholder', () => {
 		describe('real', () => {
 			const placeholder = CVPlaceholder.Tag.real({
 				name: 'foo',
-				numberBase10Format: CVNumberBase10Format.frenchStyleThreeDecimalNumber
+				numberBase10Format: CVNumberBase10Format.frenchStyleNumber
 			});
 			it('.toString()', () => {
 				TEUtils.strictEqual(
 					placeholder.toString(),
-					"'foo' placeholder: French-style three-decimal number"
+					"'foo' placeholder: potentially signed French-style number"
 				);
 			});
 
@@ -239,7 +239,7 @@ describe('CVPlaceholder', () => {
 				it('Not passing', () => {
 					TEUtils.assertLeftMessage(
 						placeholder.parser(''),
-						"'foo' placeholder contains '' from the start of which a(n) French-style three-decimal number could not be extracted"
+						"'foo' placeholder contains '' from the start of which a(n) potentially signed French-style number could not be extracted"
 					);
 					TEUtils.assertLeft(placeholder.parser('1 014,1254 and foo'));
 				});
@@ -298,8 +298,11 @@ describe('CVPlaceholder', () => {
 			});
 		});
 
-		describe('noSpaceChars', () => {
-			const noSpaceChars = CVPlaceholder.Tag.noSpaceChars('foo');
+		describe('noForbiddenChars', () => {
+			const noSpaceChars = CVPlaceholder.Tag.noForbiddenChars({
+				name: 'foo',
+				forbiddenChars: [MRegExpString.space]
+			});
 
 			it('.toString()', () => {
 				TEUtils.strictEqual(
@@ -334,6 +337,22 @@ describe('CVPlaceholder', () => {
 				it('Passing', () => {
 					TEUtils.assertRight(noSpaceChars.formatter('foo'), 'foo');
 				});
+			});
+		});
+
+		describe('toEnd', () => {
+			const toEnd = CVPlaceholder.Tag.toEnd('foo');
+
+			it('.toString()', () => {
+				TEUtils.strictEqual(toEnd.toString(), "'foo' placeholder: a string");
+			});
+
+			it('Parsing', () => {
+				TEUtils.assertRight(toEnd.parser('foo and bar'), Tuple.make('foo and bar', ''));
+			});
+
+			it('Formatting', () => {
+				TEUtils.assertRight(toEnd.formatter('foo'), 'foo');
 			});
 		});
 	});

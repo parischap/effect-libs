@@ -24,7 +24,7 @@
 		"install-prod": "cd dist && pnpm i && cd ..",
 		"build": "pnpm clean-prod && pnpm --if-present pre-build && pnpm compile && pnpm --if-present post-build && pnpm --if-present generate-types && pnpm install-prod",
 		"prodify": "prodify",
-		"examples": "vite-node examples/perf.ts"
+		"examples": "vite-node examples/Template_1.ts"
 	},
 	"publishConfig": {
 		"main": "./cjs/index.js",

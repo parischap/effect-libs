@@ -10,14 +10,17 @@ describe('CVTemplate', () => {
 		fillChar: '0',
 		numberBase10Format: CVNumberBase10Format.integer
 	};
+	const tag = CVPlaceholder.Tag;
+	const sep = CVPlaceholder.Separator;
+
 	const template = CVTemplate.make(
-		CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'dd', length: 2 }),
-		CVPlaceholder.Separator.make('/'),
-		CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'MM', length: 2 }),
-		CVPlaceholder.Separator.make('/'),
-		CVPlaceholder.Tag.fixedLengthToReal({ ...params, name: 'yyyy', length: 4 }),
-		CVPlaceholder.Separator.make(' '),
-		CVPlaceholder.Tag.real({ ...params, name: 'MM' })
+		tag.fixedLengthToReal({ ...params, name: 'dd', length: 2 }),
+		sep.slash,
+		tag.fixedLengthToReal({ ...params, name: 'MM', length: 2 }),
+		sep.slash,
+		tag.fixedLengthToReal({ ...params, name: 'yyyy', length: 4 }),
+		sep.space,
+		tag.real({ ...params, name: 'MM' })
 	);
 
 	describe('Tag, prototype and guards', () => {
@@ -33,13 +36,13 @@ describe('CVTemplate', () => {
 			TEUtils.strictEqual(
 				template.toString(),
 				`[
-'dd' placeholder: 2-character string left-padded with '0' to integer,
+'dd' placeholder: 2-character string left-padded with '0' to potentially signed integer,
 Separator at position 2: '/',
-'MM' placeholder: 2-character string left-padded with '0' to integer,
+'MM' placeholder: 2-character string left-padded with '0' to potentially signed integer,
 Separator at position 4: '/',
-'yyyy' placeholder: 4-character string left-padded with '0' to integer,
+'yyyy' placeholder: 4-character string left-padded with '0' to potentially signed integer,
 Separator at position 6: ' ',
-'MM' placeholder: integer
+'MM' placeholder: potentially signed integer
 ]`
 			);
 		});

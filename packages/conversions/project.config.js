@@ -9,7 +9,15 @@ export default Configs.configSubRepo({
 	externalPeerDependencies: {
 		effect: Configs.constants.effectVersion
 	},
-	examples: ['perf.ts'],
+	examples: [
+		'perf.ts',
+		'RoundingOption_1.ts',
+		'RoundingOption_2.ts',
+		'RoundingOption_3.ts',
+		'NumberBase10Format_1.ts',
+		'NumberBase10Format_2.ts',
+		'Template_1.ts'
+	],
 	scripts: {},
 	bundled: false,
 	visibility: Configs.Visibility.Type.Public,

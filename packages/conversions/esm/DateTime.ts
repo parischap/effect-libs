@@ -1636,7 +1636,7 @@ namespace ZoneOffsetParts {
 					..._params,
 					name: 'zoneHour',
 					length: 3,
-					numberBase10Format: pipe(_integer, CVNumberBase10Format.withSignDisplay('signed integer'))
+					numberBase10Format: pipe(_integer, CVNumberBase10Format.withSignDisplay)
 				}),
 				_sep.colon,
 				_tag({ ..._params, name: 'zoneMinute', length: 2 })

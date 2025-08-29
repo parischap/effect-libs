@@ -54,7 +54,7 @@ const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
 /**
- * Type that represents a Template.
+ * Type that represents a Template
  *
  * @category Models
  */
