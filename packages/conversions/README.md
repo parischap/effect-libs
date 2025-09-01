@@ -424,7 +424,89 @@ console.log(
 
 ### <a name="Templating"></a>C) Templating
 
-#### 1. Definitions
+#### 1. Usage example
+
+```ts
+import {
+	CVNumberBase10Format,
+	CVReal,
+	CVTemplate,
+	CVTemplatePlaceholder,
+	CVTemplateSeparator,
+} from "@parischap/conversions";
+import { MRegExpString } from "@parischap/effect-lib";
+import { pipe } from "effect";
+
+// Let's define useful shortcuts
+const ph = CVTemplatePlaceholder;
+const sep = CVTemplateSeparator;
+
+// Let's define a template: "#name is a #age-year old #kind."
+const template = CVTemplate.make(
+	// field named 'name' that must be a non-empty string containing no space characters
+	ph.anythingBut({ name: "name", forbiddenChars: [MRegExpString.space] }),
+	// Immutable text
+	sep.make(" is a "),
+	// Field named 'age' that must represent an unsigned integer
+	ph.real({
+		name: "age",
+		numberBase10Format: pipe(
+			CVNumberBase10Format.integer,
+			CVNumberBase10Format.withoutSignDisplay,
+		),
+	}),
+	// Immutable text
+	sep.make("-year old "),
+	// field named 'kind' that must be a non-empty string containing no dot character
+	ph.anythingBut({ name: "kind", forbiddenChars: ["."] }),
+	// Immutable text
+	sep.dot,
+);
+
+// Let's define a parser. See how the return type matches the names and types of the placeholders
+// Type: (value: string) => Either.Either<{
+//    readonly name: string;
+//    readonly age: CVReal.Type;
+//    readonly kind: string;
+// }, MInputError.Type>>
+const parser = CVTemplate.toParser(template);
+
+// Let's define a formatter. See how the return type matches the names and types of the placeholders
+// Type: (value: {
+//    readonly name: string;
+//    readonly age: CVReal.Type;
+//    readonly kind: string;
+//   }) => Either.Either<string, MInputError.Type>
+const formatter = CVTemplate.toFormatter(template);
+
+// Result: {
+//   _id: 'Either',
+//   _tag: 'Left',
+//   left: {
+//     message: "Expected remaining text for separator at position 2 to start with ' is a '. Actual: ''",
+//     _tag: '@parischap/effect-lib/InputError/'
+//   }
+// }
+console.log(parser("John"));
+
+// Result: {
+//   _id: 'Either',
+//   _tag: 'Right',
+//   right: { name: 'John', age: 47, kind: 'man' }
+// }
+console.log(parser("John is a 47-year old man."));
+
+// Result: { _id: 'Either', _tag: 'Right', right: 'Tom is a 15-year old boy.' }
+console.log(
+	formatter({
+		name: "Tom",
+		age: CVReal.unsafeFromNumber(15),
+		kind: "boy",
+	}),
+);
+```
+
+#### 2. Definitions
 
 A template is a model of a text that has always the same structure. In such a text, there are immutable and mutable parts. Let's take the following two texts as an example:
 
@@ -435,156 +517,183 @@ These two texts obviously share the same structure which is the template:
 
 Placeholder1 is a Placeholder2-year old Placeholder3.
 
-Placeholder1, Placeholder2 and Placeholder3 are the mutable parts of the template. They contain valuable information. We call them `Placeholder`'s.
-" is a " and "-year old " are the immutable parts of the template. We call them `Seperator`'s.
+Placeholder1, Placeholder2 and Placeholder3 are the mutable parts of the template. They contain valuable information. We call them `TemplatePlaceholder`'s.
+
+" is a " and "-year old " are the immutable parts of the template. We call them `TemplateSeperator`'s.
 
 From a text with the above structure, we can extract the values of Placeholder1, Placeholder2, and Placeholder3. In the present case:
 
-- For text1: Placeholder1 = 'John', Placeholder2 = '47', Placeholder3 = 'man'
-- For text2: Placeholder1 = 'Jehnny', Placeholder2 = '5', Placeholder3 = 'girl'
+- For text1: { Placeholder1 : 'John', Placeholder2 : '47', Placeholder3 : 'man' }
+- For text2: { Placeholder1 : 'Jehnny', Placeholder2 : '5', Placeholder3 : 'girl'}
 
-Extracting the values of placeholders from a text according to a template is called parsing.
+Extracting the values of placeholders from a text according to a template is called parsing. The result of parsing is an object whose properties are named after the name of the placeholders they represent.
 
-Inversely, given a template and the values of the placeholders that compose it, we can generate a text. This is called formatting. In the present case, with:
+Inversely, given a template and the values of the placeholders that compose it (provided as the properties of an object), we can generate a text. This is called formatting. In the present case, with the object:
 
-Placeholder1 = 'Tom', Placeholder2 = '15', Placeholder3 = 'boy'
+{ Placeholder1 : 'Tom', Placeholder2 : '15', Placeholder3 : 'boy' }
 
 we will obtain the text: "Tom is a 15-year old boy."
 
-#### 2. CVTemplatePart's
+#### 3. CVTemplateSeparator's
 
-CVTemplatePart's are the constituents of CVTemplate's (see TemplatePart.ts). A CVTemplatePart is either a Separator or a Placeholder (see preceeding paragraph).
+A `CVTemplateSeparator` represents the immutable part of a template. Upon parsing, we must check that it is present as is in the text. Upon formatting, it must be inserted as is into the text. A `CVTemplateSeparator` contains no valuable information
 
-#### a) Separator's
+To create a `CVTemplateSeparator`, you usually call the `CVTemplateSeparator.make` constructor. However, the TemplateSeparator.ts module exports a series of predefined `CVTemplateSeparator` instances, such as `CVTemplateSeparator.slash` and `CVTemplateSeparator.space`. You can find the list of all predefined `CVTemplateSeparator` instances in the [API](https://parischap.github.io/effect-libs/conversions/TemplatePart.ts).
 
-A Separator represents the immutable part of a template. Upon parsing, we must check that it is present as is in the text. Upon formatting, it must be inserted as is into the text. A Separator contains no valuable information
+#### 4. CVTemplatePlaceholder's
 
-To create a Separator, you usually call the `CVTemplatePart.Separator.make` constructor. However, the TemplatePart.ts module exports a series of predefined Separator instances, such as `CVTemplatePart.Separator.slash` and `CVTemplatePart.Separator.space`. You can find the list of all predefined Separator instances in the [API](https://parischap.github.io/effect-libs/conversions/TemplatePart.ts).
-
-#### b) Placeholder's
-
-A Placeholder represents the mutable part of a template. Each Placeholder defines a parser and a formatter: the parser takes a string, consumes a part of that string, optionnally converts the consumed part to a value of type T and, if successful, returns a right of that value and of what has not been consumed. In case of an error, it returns a left. The formatter takes a value of type T, converts it to a string (if T is not string), checks that the result is coherent and, if so, returns a right of that string. Otherwise, it returns a left.
+A Placeholder represents the mutable part of a template. Each Placeholder defines a parser and a formatter: the parser takes a text, consumes a part of that text, optionnally converts the consumed part to a value of type T and, if successful, returns a right of that value and of what has not been consumed. In case of an error, it returns a left. The formatter takes a value of type T, converts it to a string (if T is not string), checks that the result is coherent and, if so, inserts that string into the text. Otherwise, it returns a left.
 
 There are several predefined Placeholder's:
 
 - `fixedLength`: this Placeholder always reads/writes the same number of characters from/into the text.
 - `paddedFixedLength`: same as `fixedLength` but the consumed text is trimmed from a `fillChar` on the left or right and the written text is padded with a `fillChar` on the left or right.
-- `fixedLengthToReal`: same as fixedLength but the parser tries to convert the consumed text into a `CVReal` using the passed `numberBase10Format`. The formatter takes a `CVReal` and tries to convert and write it as an n-character string. You can pass a `fillChar` that is trimmed from the consumed text upon parsing and padded to the written text upon formatting.
+- `fixedLengthToReal`: same as fixedLength but the parser tries to convert the consumed text into a `CVReal` using the passed `CVNumberBase10Format`. The formatter takes a `CVReal` and tries to convert and write it as an n-character string. You can pass a `fillChar` that is trimmed from the consumed text upon parsing and padded to the written text upon formatting.
 - `real`: the parser of this Placeholder reads from the text all the characters that it can interpret as a number in the provided `CVNumberBase10Format` and converts the consumed text into a `CVReal`. The formatter takes a `CVReal` and converts it into a string according to the provided `CVNumberBase10Format`.
 - `mappedLiterals`: this Placeholder takes as input a map that must define a bijection between a list of strings and a list of values. The parser tries to read from the text one of the strings in the list. Upon success, it returns the corresponding value. The formatter takes a value and tries to find it in the list. Upon success, it writes the corresponding string into the text.
 - `fulfilling`: the parser of this Placeholder reads as much of the text as it can that fulfills the passed regular expression. The formatter only accepts a string that matches the passed regular expression and writes it into the text.
-- `anythingBut`: the parser of this Placeholder reads from the text until it meets one of the `forbidenChars` passed as parameter (the result must be a non-empty string). The formatter will only accept a non-empty string that does not contain any of the forbidden chars and write it to the text.
-- `toEnd`: the parser of this Placeholder reads all the remaining text. The formatter accepts any string and writes it. This Placeholder should only be used as the last CVTemplatePart of a CVTemplate.
+- `anythingBut`: this is a special case of the `fulfilling` placeholder. The parser of this Placeholder reads from the text until it meets one of the `forbiddenChars` passed as parameter (the result must be a non-empty string). The formatter will only accept a non-empty string that does not contain any of the forbidden chars and write it to the text.
+- `toEnd`: this is another special case of the `fulfilling` placeholder. The parser of this Placeholder reads all the remaining text. The formatter accepts any string and writes it. This Placeholder should only be used as the last `CVTemplatePart` of a `CVTemplate`.
+
+Each CVTemplatePlaceholder must be given a name that will be used as the name of the corresponding property in the result object of parsing or the input object of formatting. This name needs not be unique inside a template. The same name can appear several times. However, even if there are several `CVTemplatePlaceholder`'s with the same name, there will be only one property with that name in the result object of parsing or the input object of formatting. When parsing, this implies that all `CVTemplatePlaceholder`'s with the same name must yield the same value. When formatting, this implies that the value needs only be provided once and will be shared by all `CVTemplatePlaceholder`'s.
 
 If none of these Placeholder instances suits you, you can define you own with the `make` constructor. You will find detailed explanations of the predefined Placeholder instances and of the make constructor in the [API](https://parischap.github.io/effect-libs/conversions/TemplatePart.ts).
 
-##### c) CVTemplate's
-
-From the above example, we can give a more precise definition of a CVTemplate: a CVTemplate is composed of a series of CVTemplatePart's. There are two kinds of CVTemplatePart's:
-
-- CVTemplatePart.Separator's: they are the immutable parts of the template. Upon parsing, we must check they are present as is in the text. Upon formatting, they must be inserted as is into the text. They contain no valuable information.
-- CVTemplatePart.Placeholder's: they are the mutable parts of the template.
+#### 5. A more complex example
 
 ```ts
 import {
 	CVNumberBase10Format,
-	CVTemplatePart,
 	CVReal,
 	CVTemplate,
+	CVTemplatePlaceholder,
+	CVTemplateSeparator,
 } from "@parischap/conversions";
 
 // Let's define useful shortcuts
-const placeholder = CVTemplatePart.Placeholder;
-const sep = CVTemplatePart.Separator;
+const placeholder = CVTemplatePlaceholder;
+const sep = CVTemplateSeparator;
 
-// Let's put in an object parameters that are common to all tags
-const params = {
-	// Padding character used on the left of fixed-length templateparts
-	fillChar: "0",
-	// NumberBase10 format used by all tags
-	numberBase10Format: CVNumberBase10Format.integer,
-};
-
-// Let's define a date template that will look like: 'dd/MM/yyyy MM'
-// Note that the MM CVTemplatePart.Placeholder appears twice, once as a real and once as a fixedLengthToReal
+// Let's define a date template that will look like: 'Today is #weekday, day number #weekday of the week.'
+// Note that weekDay appears twice, once as a mappedLiterals placeholder, once as a real placeholder.
 const template = CVTemplate.make(
-	// 2-character field named 'dd' that must represent an integer left-padded with '0'
-	placeholder.fixedLengthToReal({ ...params, name: "dd", length: 2 }),
 	// Separator
-	sep.slash,
-	// 2-character field named 'MM' that must represent an integer left-padded with '0'
-	placeholder.fixedLengthToReal({ ...params, name: "MM", length: 2 }),
+	sep.make("Today is "),
+	// mappedLiterals placeHolder
+	placeholder.mappedLiterals({
+		name: "weekday",
+		keyValuePairs: [
+			["Monday", CVReal.unsafeFromNumber(1)],
+			["Tuesday", CVReal.unsafeFromNumber(2)],
+			["Wednesday", CVReal.unsafeFromNumber(3)],
+			["Thursday", CVReal.unsafeFromNumber(4)],
+			["Friday", CVReal.unsafeFromNumber(5)],
+			["Saturday", CVReal.unsafeFromNumber(6)],
+			["Sunday", CVReal.unsafeFromNumber(7)],
+		],
+	}),
 	// Separator
-	sep.slash,
-	// 2-character field named 'MM' that must represent an integer left-padded with '0'
-	placeholder.fixedLengthToReal({ ...params, name: "yyyy", length: 4 }),
+	sep.make(", day number "),
+	// Field named 'weekday' that must represent an integer
+	placeholder.real({
+		name: "weekday",
+		numberBase10Format: CVNumberBase10Format.integer,
+	}),
 	// Separator
-	sep.space,
-	// Field named 'MM' that must represent an integer
-	placeholder.real({ ...params, name: "MM" }),
+	sep.make(" of the week."),
 );
 
-// Let's define a parser. Note that there is only one MM property
+// Let's define a parser. Note that there is only one `weekday` property
 // Type: (value: string) => Either.Either<{
-//    readonly dd: CVReal.Type;
-//    readonly MM: CVReal.Type;
-//    readonly yyyy: CVReal.Type;
+//    readonly weekday: CVReal.Type;
 // }, MInputError.Type>>
 const parser = CVTemplate.toParser(template);
 
-// Let's define a formatter
+// Let's define a formatter. Note that there is only one `weekday` property
 // Type: (value: {
-//   readonly dd: CVReal.Type;
-//   readonly MM: CVReal.Type;
-//   readonly yyyy: CVReal.Type;
+//   readonly weekday: CVReal.Type;
 //   }) => Either.Either<string, MInputError.Type>
 const formatter = CVTemplate.toFormatter(template);
 
-// Result: { _id: 'Either', _tag: 'Right', right: { dd: 5, MM: 1, yyyy: 2025 } }
-console.log(parser("05/01/2025 1"));
+// Result: { _id: 'Either', _tag: 'Right', right: { weekday: 2 } }
+console.log(parser("Today is Tuesday, day number 2 of the week."));
 
 // Result: {
 //   _id: 'Either',
 //   _tag: 'Left',
 //   left: {
-//     message: "'MM' templatepart is present more than once in template and receives differing values '12' and '1'",
+//     message: "#weekday is present more than once in template and receives differing values '4' and '2'",
 //     _tag: '@parischap/effect-lib/InputError/'
 //   }
 // }
-console.log(parser("05/12/2025 1"));
+console.log(parser("Today is Thursday, day number 2 of the week."));
+
+// Result: {
+//   _id: 'Either',
+//   _tag: 'Right',
+//   right: 'Today is Saturday, day number 6 of the week.'
+// }
+console.log(formatter({ weekday: CVReal.unsafeFromNumber(6) }));
 
 // Result: {
 //   _id: 'Either',
 //   _tag: 'Left',
 //   left: {
-//     message: "Expected remaining text for separator at position 2 to start with '/'. Actual: '|01|2025 1'",
+//     message: '#weekday: expected one of [1, 2, 3, 4, 5, 6, 7]. Actual: 10',
 //     _tag: '@parischap/effect-lib/InputError/'
 //   }
 // }
-console.log(parser("05|01|2025 1"));
+console.log(formatter({ weekday: CVReal.unsafeFromNumber(10) }));
+```
 
-// Result: { _id: 'Either', _tag: 'Right', right: '05/12/2025 12' }
-console.log(
-	formatter({
-		dd: CVReal.unsafeFromNumber(5),
-		MM: CVReal.unsafeFromNumber(12),
-		yyyy: CVReal.unsafeFromNumber(2025),
+#### 6. Debugging
+
+CVTemplate objects implement a `.toString()` method.
+The `.toString()` method will display a synthetic description of the template followed by the description of each CVPlaceholder.
+
+For instance:
+
+```ts
+import {
+	CVNumberBase10Format,
+	CVTemplate,
+	CVTemplatePlaceholder,
+	CVTemplateSeparator,
+} from "@parischap/conversions";
+import { MRegExpString } from "@parischap/effect-lib";
+import { pipe } from "effect";
+
+// Let's define useful shortcuts
+const ph = CVTemplatePlaceholder;
+const sep = CVTemplateSeparator;
+
+// Let's define a template: "#name is a #age-year old #kind."
+const template = CVTemplate.make(
+	// field named 'name' that must be a non-empty string containing no space characters
+	ph.anythingBut({ name: "name", forbiddenChars: [MRegExpString.space] }),
+	// Immutable text
+	sep.make(" is a "),
+	// Field named 'age' that must represent an unsigned integer
+	ph.real({
+		name: "age",
+		numberBase10Format: pipe(
+			CVNumberBase10Format.integer,
+			CVNumberBase10Format.withoutSignDisplay,
+		),
 	}),
+	// Immutable text
+	sep.make("-year old "),
+	// field named 'kind' that must be a non-empty string containing no dot character
+	ph.anythingBut({ name: "kind", forbiddenChars: ["."] }),
+	// Immutable text
+	sep.dot,
 );
 
-// Result: {
-//   _id: 'Either',
-//   _tag: 'Left',
-//   left: {
-//    message: "Expected length of 'dd' templatepart to be: 2. Actual: 3",
-//    _tag: '@parischap/effect-lib/InputError/'
-//  }
-// }
-console.log(
-	formatter({
-		dd: CVReal.unsafeFromNumber(115),
-		MM: CVReal.unsafeFromNumber(12),
-		yyyy: CVReal.unsafeFromNumber(2025),
-	}),
-);
+// Result:
+// #name is a #age-year old #kind.
+
+// #name: a non-empty string containing non of the following characters: [ \s ].
+// #age: unsigned integer.
+// #kind: a non-empty string containing non of the following characters: [ . ]
+console.log(template);
 ```

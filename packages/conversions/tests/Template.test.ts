@@ -41,15 +41,11 @@ describe('CVTemplate', () => {
 		it('.toString()', () => {
 			TEUtils.strictEqual(
 				template.toString(),
-				`[
-'dd' templatepart: 2-character string left-padded with '0' to potentially signed integer,
-Separator at position 2: '/',
-'MM' templatepart: 2-character string left-padded with '0' to potentially signed integer,
-Separator at position 4: '/',
-'yyyy' templatepart: 4-character string left-padded with '0' to potentially signed integer,
-Separator at position 6: ' ',
-'MM' templatepart: potentially signed integer
-]`
+				`#dd/#MM/#yyyy #MM,
+#dd: 2-character string left-padded with '0' to potentially signed integer,
+#MM: 2-character string left-padded with '0' to potentially signed integer,
+#yyyy: 4-character string left-padded with '0' to potentially signed integer,
+#MM: potentially signed integer`
 			);
 		});
 
@@ -82,10 +78,7 @@ Separator at position 6: ' ',
 		>() satisfies true;
 
 		it('Empty text', () => {
-			TEUtils.assertLeftMessage(
-				parser(''),
-				"Expected length of 'dd' templatepart to be: 2. Actual: 0"
-			);
+			TEUtils.assertLeftMessage(parser(''), 'Expected length of #dd to be: 2. Actual: 0');
 		});
 
 		it('Text too short', () => {
@@ -105,7 +98,7 @@ Separator at position 6: ' ',
 		it('Same templatepart receives different values', () => {
 			TEUtils.assertLeftMessage(
 				parser('25/12/2025 13'),
-				"'MM' placeholder is present more than once in template and receives differing values '12' and '13'"
+				"#MM is present more than once in template and receives differing values '12' and '13'"
 			);
 		});
 
@@ -158,7 +151,7 @@ Separator at position 6: ' ',
 					MM: CVReal.unsafeFromNumber(12),
 					yyyy: CVReal.unsafeFromNumber(2025)
 				}),
-				"Expected length of 'dd' templatepart to be: 2. Actual: 3"
+				'Expected length of #dd to be: 2. Actual: 3'
 			);
 		});
 	});

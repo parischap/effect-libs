@@ -9,7 +9,7 @@
 
 import { MInputError, MInspectable, MPipeable, MString, MTypes } from '@parischap/effect-lib';
 
-import { Either, flow, Function, Pipeable, Predicate } from 'effect';
+import { Either, flow, Function, Pipeable, Predicate, Struct } from 'effect';
 
 /**
  * Module tag
@@ -21,6 +21,38 @@ const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
 /**
+ * Namespace of a Parser
+ *
+ * @category Models
+ */
+export namespace Parser {
+	/**
+	 * Type that describes a Parser
+	 *
+	 * @category Models
+	 */
+	export interface Type
+		extends MTypes.OneArgFunction<
+			number,
+			MTypes.OneArgFunction<string, Either.Either<string, MInputError.Type>>
+		> {}
+}
+
+/**
+ * Namespace of a Formatter
+ *
+ * @category Models
+ */
+export namespace Formatter {
+	/**
+	 * Type that describes a Formatter
+	 *
+	 * @category Models
+	 */
+	export interface Type extends Function.LazyArg<string> {}
+}
+
+/**
  * Type that represents a TemplateSeparator
  *
  * @category Models
@@ -30,10 +62,10 @@ export interface Type extends MInspectable.Type, Pipeable.Pipeable {
 	readonly value: string;
 
 	/** Parser of this TemplateSeparator */
-	readonly parser: (pos: number) => (text: string) => Either.Either<string, MInputError.Type>;
+	readonly parser: Parser.Type;
 
 	/** Formatter of this TemplateSeparator */
-	readonly formatter: Function.LazyArg<string>;
+	readonly formatter: Formatter.Type;
 
 	/** @internal */
 	readonly [_TypeId]: _TypeId;
@@ -76,6 +108,27 @@ export const make = (value: string): Type =>
 			),
 		formatter: Function.constant(value)
 	});
+
+/**
+ * Returns the `value` property of `self`
+ *
+ * @category Destructors
+ */
+export const value: MTypes.OneArgFunction<Type, string> = Struct.get('value');
+
+/**
+ * Returns the `parser` property of `self`
+ *
+ * @category Destructors
+ */
+export const parser: MTypes.OneArgFunction<Type, Parser.Type> = Struct.get('parser');
+
+/**
+ * Returns the `formatter` property of `self`
+ *
+ * @category Destructors
+ */
+export const formatter: MTypes.OneArgFunction<Type, Formatter.Type> = Struct.get('formatter');
 
 /**
  * Slash Separator instance

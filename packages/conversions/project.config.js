@@ -17,7 +17,8 @@ export default Configs.configSubRepo({
 		'NumberBase10Format_1.ts',
 		'NumberBase10Format_2.ts',
 		'Template_1.ts',
-		'Template_2.ts'
+		'Template_2.ts',
+		'Template_3.ts'
 	],
 	scripts: {},
 	bundled: false,

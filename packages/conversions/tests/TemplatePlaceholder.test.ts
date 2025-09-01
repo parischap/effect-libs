@@ -41,14 +41,14 @@ describe('CVTemplatePlaceholder', () => {
 
 	describe('fixedLength', () => {
 		it('.toString()', () => {
-			TEUtils.strictEqual(threeChars.toString(), "'foo' templatepart: 3-character string");
+			TEUtils.strictEqual(threeChars.toString(), '#foo: 3-character string');
 		});
 
 		describe('Parsing', () => {
 			it('Not enough characters left', () => {
 				TEUtils.assertLeftMessage(
 					threeChars.parser(''),
-					"Expected length of 'foo' templatepart to be: 3. Actual: 0"
+					'Expected length of #foo to be: 3. Actual: 0'
 				);
 				TEUtils.assertLeft(threeChars.parser('aa'));
 			});
@@ -66,7 +66,7 @@ describe('CVTemplatePlaceholder', () => {
 			it('Too few characters', () => {
 				TEUtils.assertLeftMessage(
 					threeChars.parser(''),
-					"Expected length of 'foo' templatepart to be: 3. Actual: 0"
+					'Expected length of #foo to be: 3. Actual: 0'
 				);
 				TEUtils.assertLeft(threeChars.formatter('aa'));
 			});
@@ -90,17 +90,14 @@ describe('CVTemplatePlaceholder', () => {
 			disallowEmptyString: true
 		});
 		it('.toString()', () => {
-			TEUtils.strictEqual(
-				templatepart.toString(),
-				"'foo' templatepart: 3-character string left-padded with '0'"
-			);
+			TEUtils.strictEqual(templatepart.toString(), "#foo: 3-character string left-padded with '0'");
 		});
 
 		describe('Parsing', () => {
 			it('Not passing', () => {
 				TEUtils.assertLeftMessage(
 					templatepart.parser(''),
-					"Expected length of 'foo' templatepart to be: 3. Actual: 0"
+					'Expected length of #foo to be: 3. Actual: 0'
 				);
 			});
 
@@ -113,7 +110,7 @@ describe('CVTemplatePlaceholder', () => {
 			it('Not passing', () => {
 				TEUtils.assertLeftMessage(
 					templatepart.formatter('foo and baz'),
-					"Expected length of 'foo' templatepart to be: 3. Actual: 11"
+					'Expected length of #foo to be: 3. Actual: 11'
 				);
 			});
 
@@ -133,7 +130,7 @@ describe('CVTemplatePlaceholder', () => {
 		it('.toString()', () => {
 			TEUtils.strictEqual(
 				templatepart.toString(),
-				"'foo' templatepart: 3-character string left-padded with ' ' to potentially signed integer"
+				"#foo: 3-character string left-padded with ' ' to potentially signed integer"
 			);
 		});
 
@@ -141,7 +138,7 @@ describe('CVTemplatePlaceholder', () => {
 			it('Not passing', () => {
 				TEUtils.assertLeftMessage(
 					templatepart.parser(''),
-					"Expected length of 'foo' templatepart to be: 3. Actual: 0"
+					'Expected length of #foo to be: 3. Actual: 0'
 				);
 			});
 
@@ -157,7 +154,7 @@ describe('CVTemplatePlaceholder', () => {
 			it('Not passing: too long', () => {
 				TEUtils.assertLeftMessage(
 					templatepart.formatter(CVReal.unsafeFromNumber(1154)),
-					"Expected length of 'foo' templatepart to be: 3. Actual: 4"
+					'Expected length of #foo to be: 3. Actual: 4'
 				);
 			});
 
@@ -174,17 +171,14 @@ describe('CVTemplatePlaceholder', () => {
 			numberBase10Format: CVNumberBase10Format.frenchStyleNumber
 		});
 		it('.toString()', () => {
-			TEUtils.strictEqual(
-				templatepart.toString(),
-				"'foo' templatepart: potentially signed French-style number"
-			);
+			TEUtils.strictEqual(templatepart.toString(), '#foo: potentially signed French-style number');
 		});
 
 		describe('Parsing', () => {
 			it('Not passing', () => {
 				TEUtils.assertLeftMessage(
 					templatepart.parser(''),
-					"'foo' templatepart contains '' from the start of which a(n) potentially signed French-style number could not be extracted"
+					"#foo contains '' from the start of which a(n) potentially signed French-style number could not be extracted"
 				);
 				TEUtils.assertLeft(templatepart.parser('1 014,1254 and foo'));
 			});
@@ -212,14 +206,14 @@ describe('CVTemplatePlaceholder', () => {
 		});
 
 		it('.toString()', () => {
-			TEUtils.strictEqual(map.toString(), "'foo' templatepart: from [foo, bazbar] to [6, 12]");
+			TEUtils.strictEqual(map.toString(), '#foo: from [foo, bazbar] to [6, 12]');
 		});
 
 		describe('Parsing', () => {
 			it('Not starting by value', () => {
 				TEUtils.assertLeftMessage(
 					map.parser(''),
-					"Expected remaining text for 'foo' templatepart to start with one of [foo, bazbar]. Actual: ''"
+					"Expected remaining text for #foo to start with one of [foo, bazbar]. Actual: ''"
 				);
 				TEUtils.assertLeft(map.parser('baz is away'));
 			});
@@ -231,10 +225,7 @@ describe('CVTemplatePlaceholder', () => {
 
 		describe('Formatting', () => {
 			it('Not passing', () => {
-				TEUtils.assertLeftMessage(
-					map.formatter(4),
-					"'foo' templatepart: expected one of [6, 12]. Actual: 4"
-				);
+				TEUtils.assertLeftMessage(map.formatter(4), '#foo: expected one of [6, 12]. Actual: 4');
 			});
 
 			it('Passing', () => {
@@ -252,7 +243,7 @@ describe('CVTemplatePlaceholder', () => {
 		it('.toString()', () => {
 			TEUtils.strictEqual(
 				noSpaceChars.toString(),
-				"'foo' templatepart: a non-empty string containing non-space characters"
+				'#foo: a non-empty string containing non-space characters'
 			);
 		});
 
@@ -260,7 +251,7 @@ describe('CVTemplatePlaceholder', () => {
 			it('Not passing', () => {
 				TEUtils.assertLeftMessage(
 					noSpaceChars.parser(''),
-					"Expected 'foo' templatepart to be a non-empty string containing non-space characters. Actual: ''"
+					"Expected #foo to be a non-empty string containing non-space characters. Actual: ''"
 				);
 			});
 
@@ -275,7 +266,7 @@ describe('CVTemplatePlaceholder', () => {
 				TEUtils.assertLeft(noSpaceChars.formatter(''));
 				TEUtils.assertLeftMessage(
 					noSpaceChars.formatter('fo o'),
-					"'foo' templatepart: expected a non-empty string containing non-space characters. Actual: 'fo o'"
+					"#foo: expected a non-empty string containing non-space characters. Actual: 'fo o'"
 				);
 			});
 
@@ -289,7 +280,7 @@ describe('CVTemplatePlaceholder', () => {
 		const toEnd = CVTemplatePlaceholder.toEnd('foo');
 
 		it('.toString()', () => {
-			TEUtils.strictEqual(toEnd.toString(), "'foo' templatepart: a string");
+			TEUtils.strictEqual(toEnd.toString(), '#foo: a string');
 		});
 
 		it('Parsing', () => {

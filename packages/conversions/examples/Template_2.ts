@@ -11,93 +11,70 @@ import {
 const placeholder = CVTemplatePlaceholder;
 const sep = CVTemplateSeparator;
 
-// Let's put in an object parameters that are common to all tags
-const params = {
-	// Padding character used on the left of fixed-length templateparts
-	fillChar: '0',
-	// NumberBase10 format used by all tags
-	numberBase10Format: CVNumberBase10Format.integer
-};
-
-// Let's define a date template that will look like: 'dd/MM/yyyy MM'
-// Note that the MM CVTemplatePart.Placeholder appears twice, once as a real and once as a fixedLengthToReal
+// Let's define a date template that will look like: 'Today is #weekday, day number #weekday of the week.'
+// Note that weekDay appears twice, once as a mappedLiterals placeholder, once as a real placeholder.
 const template = CVTemplate.make(
-	// 2-character field named 'dd' that must represent an integer left-padded with '0'
-	placeholder.fixedLengthToReal({ ...params, name: 'dd', length: 2 }),
 	// Separator
-	sep.slash,
-	// 2-character field named 'MM' that must represent an integer left-padded with '0'
-	placeholder.fixedLengthToReal({ ...params, name: 'MM', length: 2 }),
+	sep.make('Today is '),
+	// mappedLiterals placeHolder
+	placeholder.mappedLiterals({
+		name: 'weekday',
+		keyValuePairs: [
+			['Monday', CVReal.unsafeFromNumber(1)],
+			['Tuesday', CVReal.unsafeFromNumber(2)],
+			['Wednesday', CVReal.unsafeFromNumber(3)],
+			['Thursday', CVReal.unsafeFromNumber(4)],
+			['Friday', CVReal.unsafeFromNumber(5)],
+			['Saturday', CVReal.unsafeFromNumber(6)],
+			['Sunday', CVReal.unsafeFromNumber(7)]
+		]
+	}),
 	// Separator
-	sep.slash,
-	// 2-character field named 'MM' that must represent an integer left-padded with '0'
-	placeholder.fixedLengthToReal({ ...params, name: 'yyyy', length: 4 }),
+	sep.make(', day number '),
+	// Field named 'weekday' that must represent an integer
+	placeholder.real({ name: 'weekday', numberBase10Format: CVNumberBase10Format.integer }),
 	// Separator
-	sep.space,
-	// Field named 'MM' that must represent an integer
-	placeholder.real({ ...params, name: 'MM' })
+	sep.make(' of the week.')
 );
 
-// Let's define a parser. Note that there is only one MM property
+// Let's define a parser. Note that there is only one `weekday` property
 // Type: (value: string) => Either.Either<{
-//    readonly dd: CVReal.Type;
-//    readonly MM: CVReal.Type;
-//    readonly yyyy: CVReal.Type;
+//    readonly weekday: CVReal.Type;
 // }, MInputError.Type>>
 const parser = CVTemplate.toParser(template);
 
-// Let's define a formatter
+// Let's define a formatter. Note that there is only one `weekday` property
 // Type: (value: {
-//   readonly dd: CVReal.Type;
-//   readonly MM: CVReal.Type;
-//   readonly yyyy: CVReal.Type;
+//   readonly weekday: CVReal.Type;
 //   }) => Either.Either<string, MInputError.Type>
 const formatter = CVTemplate.toFormatter(template);
 
-// Result: { _id: 'Either', _tag: 'Right', right: { dd: 5, MM: 1, yyyy: 2025 } }
-console.log(parser('05/01/2025 1'));
+// Result: { _id: 'Either', _tag: 'Right', right: { weekday: 2 } }
+console.log(parser('Today is Tuesday, day number 2 of the week.'));
 
 // Result: {
 //   _id: 'Either',
 //   _tag: 'Left',
 //   left: {
-//     message: "'MM' templatepart is present more than once in template and receives differing values '12' and '1'",
+//     message: "#weekday is present more than once in template and receives differing values '4' and '2'",
 //     _tag: '@parischap/effect-lib/InputError/'
 //   }
 // }
-console.log(parser('05/12/2025 1'));
+console.log(parser('Today is Thursday, day number 2 of the week.'));
+
+// Result: {
+//   _id: 'Either',
+//   _tag: 'Right',
+//   right: 'Today is Saturday, day number 6 of the week.'
+// }
+console.log(formatter({ weekday: CVReal.unsafeFromNumber(6) }));
 
 // Result: {
 //   _id: 'Either',
 //   _tag: 'Left',
 //   left: {
-//     message: "Expected remaining text for separator at position 2 to start with '/'. Actual: '|01|2025 1'",
+//     message: '#weekday: expected one of [1, 2, 3, 4, 5, 6, 7]. Actual: 10',
 //     _tag: '@parischap/effect-lib/InputError/'
 //   }
 // }
-console.log(parser('05|01|2025 1'));
-
-// Result: { _id: 'Either', _tag: 'Right', right: '05/12/2025 12' }
-console.log(
-	formatter({
-		dd: CVReal.unsafeFromNumber(5),
-		MM: CVReal.unsafeFromNumber(12),
-		yyyy: CVReal.unsafeFromNumber(2025)
-	})
-);
-
-// Result: {
-//   _id: 'Either',
-//   _tag: 'Left',
-//   left: {
-//    message: "Expected length of 'dd' templatepart to be: 2. Actual: 3",
-//    _tag: '@parischap/effect-lib/InputError/'
-//  }
-// }
-console.log(
-	formatter({
-		dd: CVReal.unsafeFromNumber(115),
-		MM: CVReal.unsafeFromNumber(12),
-		yyyy: CVReal.unsafeFromNumber(2025)
-	})
-);
+console.log(formatter({ weekday: CVReal.unsafeFromNumber(10) }));

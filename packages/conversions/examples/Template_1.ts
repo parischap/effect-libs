@@ -7,28 +7,32 @@ import {
 	CVTemplateSeparator
 } from '@parischap/conversions';
 import { MRegExpString } from '@parischap/effect-lib';
+import { pipe } from 'effect';
 
 // Let's define useful shortcuts
-const placeholder = CVTemplatePlaceholder;
+const ph = CVTemplatePlaceholder;
 const sep = CVTemplateSeparator;
 
-// Let's define a template
+// Let's define a template: "#name is a #age-year old #kind."
 const template = CVTemplate.make(
-	// field named 'dd' that must be a non-empty string containing no-space character
-	placeholder.anythingBut({ name: 'name', forbiddenChars: [MRegExpString.space] }),
-	// Separator
+	// field named 'name' that must be a non-empty string containing no space characters
+	ph.anythingBut({ name: 'name', forbiddenChars: [MRegExpString.space] }),
+	// Immutable text
 	sep.make(' is a '),
-	// Field named 'age' that must represent an integer
-	placeholder.real({ name: 'age', numberBase10Format: CVNumberBase10Format.integer }),
-	// Separator
+	// Field named 'age' that must represent an unsigned integer
+	ph.real({
+		name: 'age',
+		numberBase10Format: pipe(CVNumberBase10Format.integer, CVNumberBase10Format.withoutSignDisplay)
+	}),
+	// Immutable text
 	sep.make('-year old '),
-	// field named 'kind' that must be a non-empty string containing no-dot character
-	placeholder.anythingBut({ name: 'kind', forbiddenChars: ['.'] }),
-	// Separator
+	// field named 'kind' that must be a non-empty string containing no dot character
+	ph.anythingBut({ name: 'kind', forbiddenChars: ['.'] }),
+	// Immutable text
 	sep.dot
 );
 
-// Let's define a parser
+// Let's define a parser. See how the return type matches the names and types of the placeholders
 // Type: (value: string) => Either.Either<{
 //    readonly name: string;
 //    readonly age: CVReal.Type;
@@ -36,7 +40,7 @@ const template = CVTemplate.make(
 // }, MInputError.Type>>
 const parser = CVTemplate.toParser(template);
 
-// Let's define a formatter
+// Let's define a formatter. See how the return type matches the names and types of the placeholders
 // Type: (value: {
 //    readonly name: string;
 //    readonly age: CVReal.Type;
@@ -44,50 +48,28 @@ const parser = CVTemplate.toParser(template);
 //   }) => Either.Either<string, MInputError.Type>
 const formatter = CVTemplate.toFormatter(template);
 
-// Result: { _id: 'Either', _tag: 'Right', right: { dd: 5, MM: 1, yyyy: 2025 } }
-console.log(parser(''));
-
 // Result: {
 //   _id: 'Either',
 //   _tag: 'Left',
 //   left: {
-//     message: "'MM' templatepart is present more than once in template and receives differing values '12' and '1'",
+//     message: "Expected remaining text for separator at position 2 to start with ' is a '. Actual: ''",
 //     _tag: '@parischap/effect-lib/InputError/'
 //   }
 // }
-console.log(parser('05/12/2025 1'));
+console.log(parser('John'));
 
 // Result: {
 //   _id: 'Either',
-//   _tag: 'Left',
-//   left: {
-//     message: "Expected remaining text for separator at position 2 to start with '/'. Actual: '|01|2025 1'",
-//     _tag: '@parischap/effect-lib/InputError/'
-//   }
+//   _tag: 'Right',
+//   right: { name: 'John', age: 47, kind: 'man' }
 // }
-console.log(parser('05|01|2025 1'));
+console.log(parser('John is a 47-year old man.'));
 
-// Result: { _id: 'Either', _tag: 'Right', right: '05/12/2025 12' }
+// Result: { _id: 'Either', _tag: 'Right', right: 'Tom is a 15-year old boy.' }
 console.log(
 	formatter({
-		dd: CVReal.unsafeFromNumber(5),
-		MM: CVReal.unsafeFromNumber(12),
-		yyyy: CVReal.unsafeFromNumber(2025)
-	})
-);
-
-// Result: {
-//   _id: 'Either',
-//   _tag: 'Left',
-//   left: {
-//    message: "Expected length of 'dd' templatepart to be: 2. Actual: 3",
-//    _tag: '@parischap/effect-lib/InputError/'
-//  }
-// }
-console.log(
-	formatter({
-		dd: CVReal.unsafeFromNumber(115),
-		MM: CVReal.unsafeFromNumber(12),
-		yyyy: CVReal.unsafeFromNumber(2025)
+		name: 'Tom',
+		age: CVReal.unsafeFromNumber(15),
+		kind: 'boy'
 	})
 );

@@ -660,7 +660,7 @@ namespace GregorianDate {
 	 *
 	 * @category Destructors
 	 */
-	export const toIsoString: MTypes.OneArgFunction<Type, string> = flow(
+	export const getIsoString: MTypes.OneArgFunction<Type, string> = flow(
 		MStruct.enrichWith({ month: getMonth, monthDay: getMonthDay }),
 		_formatter
 	);
@@ -1143,7 +1143,7 @@ namespace IsoDate {
 	 *
 	 * @category Destructors
 	 */
-	export const toIsoString: MTypes.OneArgFunction<Type, string> = flow(
+	export const getIsoString: MTypes.OneArgFunction<Type, string> = flow(
 		MStruct.enrichWith({ isoWeek: getIsoWeek, weekday: getWeekday }),
 		_formatter
 	);
@@ -1482,7 +1482,7 @@ namespace Time {
 	 *
 	 * @category Destructors
 	 */
-	export const toIsoString: MTypes.OneArgFunction<Type, string> = _formatter;
+	export const getIsoString: MTypes.OneArgFunction<Type, string> = _formatter;
 }
 
 /**
@@ -1651,7 +1651,7 @@ namespace ZoneOffsetParts {
 	 *
 	 * @category Destructors
 	 */
-	export const toIsoString: MTypes.OneArgFunction<Type, string> = _formatter;
+	export const getIsoString: MTypes.OneArgFunction<Type, string> = _formatter;
 
 	/**
 	 * Returns the value of `self` expressed in hours
@@ -1724,7 +1724,7 @@ const proto: MTypes.Proto<Type> = {
 		return pipe(this.timestamp, Hash.hash, Hash.combine(_TypeIdHash), Hash.cached(this));
 	},
 	[MInspectable.IdSymbol](this: Type) {
-		return toIsoString(this);
+		return getIsoString(this);
 	},
 	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto
@@ -1738,11 +1738,11 @@ const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto
  *
  * @category Destructors
  */
-export const toIsoString = (self: Type): string =>
-	GregorianDate.toIsoString(_gregorianDate(self)) +
+export const getIsoString = (self: Type): string =>
+	GregorianDate.getIsoString(_gregorianDate(self)) +
 	'T' +
-	Time.toIsoString(_time(self)) +
-	ZoneOffsetParts.toIsoString(_zoneOffsetParts(self));
+	Time.getIsoString(_time(self)) +
+	ZoneOffsetParts.getIsoString(_zoneOffsetParts(self));
 
 const _uncalculated = {
 	gregorianDate: Option.none(),

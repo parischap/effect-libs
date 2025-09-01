@@ -20,6 +20,7 @@ import {
 	MRegExp,
 	MRegExpString,
 	MString,
+	MStruct,
 	MTuple,
 	MTypes
 } from '@parischap/effect-lib';
@@ -93,8 +94,11 @@ export interface Type<out N extends string, in out T> extends MInspectable.Type,
 	/** Name of this TemplatePlaceholder */
 	readonly name: N;
 
+	/** Label of this TemplatePlaceholder(usually the name prefixed with '#') */
+	readonly label: string;
+
 	/** Descriptor of this TemplatePlaceholder (used for debugging purposes) */
-	readonly descriptor: string;
+	readonly description: string;
 
 	/** Parser of this TemplatePlaceholder */
 	readonly parser: Parser.Type<T>;
@@ -140,19 +144,26 @@ export const has = (u: unknown): u is Type<string, unknown> => Predicate.hasProp
 const proto: MTypes.Proto<Type<never, any>> = {
 	[_TypeId]: { _N: MTypes.covariantValue, _T: MTypes.invariantValue },
 	[MInspectable.IdSymbol]<N extends string, T>(this: Type<N, T>) {
-		return this.descriptor;
+		return getLabelledDescription(this);
 	},
 	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto
 };
+
+const _make = <const N extends string, T>(params: MTypes.Data<Type<N, T>>): Type<N, T> =>
+	MTypes.objectFromDataAndProto(proto, params);
 
 /**
  * Constructor
  *
  * @category Constructors
  */
-export const make = <const N extends string, T>(params: MTypes.Data<Type<N, T>>): Type<N, T> =>
-	MTypes.objectFromDataAndProto(proto, params);
+export const make: <const N extends string, T>(
+	params: Omit<MTypes.Data<Type<N, T>>, 'label'>
+) => Type<N, T> = flow(
+	MStruct.enrichWith({ label: ({ name }) => MString.prepend('#')(name) }),
+	_make
+);
 
 /**
  * Returns the `name` property of `self`
@@ -162,12 +173,19 @@ export const make = <const N extends string, T>(params: MTypes.Data<Type<N, T>>)
 export const name: <const N extends string, T>(self: Type<N, T>) => N = Struct.get('name');
 
 /**
- * Returns the `descriptor` property of `self`
+ * Returns the `label` property of `self`
  *
  * @category Destructors
  */
-export const descriptor: <const N extends string, T>(self: Type<N, T>) => string =
-	Struct.get('descriptor');
+export const label: <const N extends string, T>(self: Type<N, T>) => string = Struct.get('label');
+
+/**
+ * Returns the `description` property of `self`
+ *
+ * @category Destructors
+ */
+export const description: <const N extends string, T>(self: Type<N, T>) => string =
+	Struct.get('description');
 
 /**
  * Returns the `parser` property of `self`
@@ -185,10 +203,17 @@ export const parser: <const N extends string, T>(self: Type<N, T>) => Parser.Typ
 export const formatter: <const N extends string, T>(self: Type<N, T>) => Formatter.Type<T> =
 	Struct.get('formatter');
 
-const _labelFromName = (name: string): string => `'${name}' templatepart`;
+/**
+ * Returns the description of `self`
+ *
+ * @category Destructors
+ */
+export const getLabelledDescription = <N extends string, T>(self: Type<N, T>) =>
+	`${self.label}: ${self.description}`;
 
 /**
- * Returns the `formatter` property of `self`
+ * Returns a modified copy of `self` where a postParser function is executed after the parser of
+ * `self` and a preFormatter function is executed before the formatter of `self`
  *
  * @category Destructors
  */
@@ -198,31 +223,33 @@ export const modify =
 		postParser,
 		preFormatter
 	}: {
-		readonly descriptorMapper: (oldDescriptor: string, label: string) => string;
-		readonly postParser: (value: T, label: string) => Either.Either<T1, MInputError.Type>;
-		readonly preFormatter: (value: T1, label: string) => Either.Either<T, MInputError.Type>;
+		readonly descriptorMapper: MTypes.OneArgFunction<string>;
+		readonly postParser: MTypes.OneArgFunction<T, Either.Either<T1, MInputError.Type>>;
+		readonly preFormatter: MTypes.OneArgFunction<T1, Either.Either<T, MInputError.Type>>;
 	}) =>
-	<const N extends string>(self: Type<N, T>): Type<N, T1> => {
-		const name = self.name;
-		const label = _labelFromName(name);
-		return make({
+	<const N extends string>(self: Type<N, T>): Type<N, T1> =>
+		make({
 			name: self.name,
-			descriptor: descriptorMapper(self.descriptor, label),
-			parser: flow(
-				self.parser,
-				Either.flatMap(
+			description: descriptorMapper(self.description),
+			parser: function (this: Type<N, T1>, text) {
+				return Either.flatMap(
+					self.parser.call(this, text),
 					flow(
 						Tuple.mapBoth({
-							onFirst: (value) => postParser(value, label),
+							onFirst: (t) => postParser.call(this, t),
 							onSecond: Either.right
 						}),
 						Either.all
 					)
-				)
-			),
-			formatter: (value) => pipe(preFormatter(value, label), Either.flatMap(self.formatter))
+				);
+			},
+			formatter: function (this: Type<N, T1>, t1) {
+				return pipe(
+					preFormatter.call(this, t1),
+					Either.flatMap((t) => self.formatter.call(this, t))
+				);
+			}
 		});
-	};
 
 /**
  * Builds a TemplatePart instance that parses/formats exactly `length` characters from a string.
@@ -237,19 +264,23 @@ export const fixedLength = <const N extends string>({
 	readonly name: N;
 	readonly length: number;
 }): Type<N, string> => {
-	const label = _labelFromName(name);
 	return make({
 		name,
-		descriptor: `${label}: ${length}-character string`,
-		parser: flow(
-			MString.splitAt(length),
-			Tuple.mapBoth({
-				onFirst: MInputError.assertLength({ expected: length, name: label }),
-				onSecond: Either.right
-			}),
-			Either.all
-		),
-		formatter: MInputError.assertLength({ expected: length, name: label })
+		description: `${length}-character string`,
+		parser: function (this: Type<N, string>, text) {
+			return pipe(
+				text,
+				MString.splitAt(length),
+				Tuple.mapBoth({
+					onFirst: MInputError.assertLength({ expected: length, name: this.label }),
+					onSecond: Either.right
+				}),
+				Either.all
+			);
+		},
+		formatter: function (this: Type<N, string>, value) {
+			return MInputError.assertLength({ expected: length, name: this.label })(value);
+		}
 	});
 };
 
@@ -298,19 +329,20 @@ export const fixedLengthToReal = <const N extends string>(params: {
 	readonly fillChar: string;
 	readonly numberBase10Format: CVNumberBase10Format.Type;
 }): Type<N, CVReal.Type> => {
-	const label = _labelFromName(params.name);
 	const { numberBase10Format, fillChar } = params;
-	const numberParser = (input: string) =>
-		pipe(
+	const numberParser = function (this: Type<N, CVReal.Type>, input: string) {
+		return pipe(
 			input,
 			CVNumberBase10Format.toRealParser(numberBase10Format, fillChar),
 			Either.fromOption(
 				() =>
 					new MInputError.Type({
-						message: `${label}: value '${input}' cannot be converted to a(n) ${CVNumberBase10Format.toDescription(numberBase10Format)}`
+						message: `${this.label}: value '${input}' cannot be converted to a(n) ${CVNumberBase10Format.toDescription(numberBase10Format)}`
 					})
 			)
 		);
+	};
+
 	const numberFormatter = flow(
 		CVNumberBase10Format.toNumberFormatter(
 			numberBase10Format,
@@ -346,22 +378,23 @@ export const real = <const N extends string>({
 	const numberParser = CVNumberBase10Format.toRealExtractor(numberBase10Format);
 	const numberFormatter = CVNumberBase10Format.toNumberFormatter(numberBase10Format);
 	const flippedTakeRightBut = Function.flip(MString.takeRightBut);
-	const label = _labelFromName(name);
+
 	return make({
 		name,
-		descriptor: `${label}: ${CVNumberBase10Format.toDescription(numberBase10Format)}`,
-		parser: (text) =>
-			pipe(
+		description: `${CVNumberBase10Format.toDescription(numberBase10Format)}`,
+		parser: function (this: Type<N, CVReal.Type>, text) {
+			return pipe(
 				text,
 				numberParser,
 				Either.fromOption(
 					() =>
 						new MInputError.Type({
-							message: `${label} contains '${text}' from the start of which a(n) ${CVNumberBase10Format.toDescription(numberBase10Format)} could not be extracted`
+							message: `${this.label} contains '${text}' from the start of which a(n) ${CVNumberBase10Format.toDescription(numberBase10Format)} could not be extracted`
 						})
 				),
 				Either.map(Tuple.mapSecond(flow(String.length, flippedTakeRightBut(text))))
-			),
+			);
+		},
 		formatter: flow(numberFormatter, Either.right)
 	});
 };
@@ -385,7 +418,6 @@ export const mappedLiterals = <const N extends string, T>({
 	readonly name: N;
 	readonly keyValuePairs: ReadonlyArray<readonly [string, T]>;
 }): Type<N, T> => {
-	const label = _labelFromName(name);
 	const keys = pipe(
 		keyValuePairs,
 		Array.map(Tuple.getFirst),
@@ -407,15 +439,15 @@ export const mappedLiterals = <const N extends string, T>({
 
 	return make({
 		name,
-		descriptor: `${label}: from ${keys} to ${values}`,
-		parser: (text) =>
-			pipe(
+		description: `from ${keys} to ${values}`,
+		parser: function (this: Type<N, T>, text) {
+			return pipe(
 				keyValuePairs,
 				Array.findFirst(flow(Tuple.getFirst, isTheStartOf(text))),
 				Either.fromOption(
 					() =>
 						new MInputError.Type({
-							message: `Expected remaining text for ${label} to start with one of ${keys}. Actual: '${text}'`
+							message: `Expected remaining text for ${this.label} to start with one of ${keys}. Actual: '${text}'`
 						})
 				),
 				Either.map(
@@ -424,18 +456,20 @@ export const mappedLiterals = <const N extends string, T>({
 						toSecond: flow(Tuple.getFirst, String.length, flippedTakeRightBut(text))
 					})
 				)
-			),
-		formatter: (value) =>
-			pipe(
+			);
+		},
+		formatter: function (this: Type<N, T>, value) {
+			return pipe(
 				valueNameMap,
 				HashMap.get(value),
 				Either.fromOption(
 					() =>
 						new MInputError.Type({
-							message: `${label}: expected one of ${values}. Actual: ${MString.fromUnknown(value)}`
+							message: `${this.label}: expected one of ${values}. Actual: ${MString.fromUnknown(value)}`
 						})
 				)
-			)
+			);
+		}
 	});
 };
 
@@ -455,39 +489,42 @@ export const fulfilling = <const N extends string>({
 	readonly regExpDescriptor: string;
 }): Type<N, string> => {
 	const flippedTakeRightBut = Function.flip(MString.takeRightBut);
-	const label = _labelFromName(name);
-	const match = MInputError.match({
-		regExp,
-		regExpDescriptor: 'to be ' + regExpDescriptor,
-		name: label
-	});
+
+	const match = (label: string) =>
+		MInputError.match({
+			regExp,
+			regExpDescriptor,
+			name: label
+		});
 
 	return make({
 		name,
-		descriptor: `${label}: ${regExpDescriptor}`,
-		parser: (text) =>
-			pipe(
+		description: `${regExpDescriptor}`,
+		parser: function (this: Type<N, string>, text) {
+			return pipe(
 				text,
-				match,
+				match(this.label),
 				Either.map(
 					MTuple.makeBothBy({
 						toFirst: Function.identity,
 						toSecond: flow(String.length, flippedTakeRightBut(text))
 					})
 				)
-			),
-		formatter: (text) =>
-			pipe(
+			);
+		},
+		formatter: function (this: Type<N, string>, text) {
+			return pipe(
 				text,
-				match,
+				match(this.label),
 				Either.filterOrLeft(
 					MString.hasLength(text.length),
 					() =>
 						new MInputError.Type({
-							message: `${label}: expected ${regExpDescriptor}. Actual: '${text}'`
+							message: `${this.label}: expected ${regExpDescriptor}. Actual: '${text}'`
 						})
 				)
-			)
+			);
+		}
 	});
 };
 
@@ -504,8 +541,14 @@ export const anythingBut = <const N extends string>({
 }: {
 	readonly name: N;
 	readonly forbiddenChars: MTypes.OverOne<string>;
-}): Type<N, string> =>
-	fulfilling({
+}): Type<N, string> => {
+	const forbiddenCharsAsString = pipe(
+		forbiddenChars,
+		Array.join(', '),
+		MString.prepend('[ '),
+		MString.append(' ]')
+	);
+	return fulfilling({
 		name,
 		regExp: pipe(
 			forbiddenChars,
@@ -514,8 +557,9 @@ export const anythingBut = <const N extends string>({
 			MRegExpString.atStart,
 			MRegExp.fromRegExpString()
 		),
-		regExpDescriptor: 'a non-empty string containing non-space characters'
+		regExpDescriptor: `a non-empty string containing non of the following characters: ${forbiddenCharsAsString}`
 	});
+};
 
 /**
  * Builds a TemplatePart instance that parses/formats all the remaining text.

@@ -46,9 +46,9 @@
 import {
 	MInputError,
 	MInspectable,
-	MMatch,
 	MPipeable,
 	MString,
+	MTuple,
 	MTypes
 } from '@parischap/effect-lib';
 import {
@@ -108,21 +108,11 @@ const proto: MTypes.Proto<Type<never>> = {
 	[MInspectable.IdSymbol](this: Type<CVTemplateParts.Type>) {
 		return pipe(
 			this.templateParts,
-			Array.map((p, pos) =>
-				pipe(
-					p,
-					MMatch.make,
-					MMatch.when(CVTemplatePart.isPlaceholder, (placeholder) => placeholder.toString()),
-					MMatch.when(
-						CVTemplatePart.isSeparator,
-						(sep) => `Separator at position ${pos + 1}: '${sep.toString()}'`
-					),
-					MMatch.exhaustive
-				)
-			),
-			Array.join(',\n'),
-			MString.prepend('[\n'),
-			MString.append('\n]')
+			MTuple.makeBothBy({
+				toFirst: CVTemplateParts.getSyntheticDescription,
+				toSecond: CVTemplateParts.getPlaceholderDescription
+			}),
+			Array.join('\n\n')
 		);
 	},
 	...MInspectable.BaseProto(moduleTag),
@@ -189,7 +179,7 @@ export const toParser =
 						if (!Equal.equals(oldValue, consumed))
 							yield* Either.left(
 								new MInputError.Type({
-									message: `'${name}' placeholder is present more than once in template and receives differing values '${MString.fromUnknown(oldValue)}' and '${MString.fromUnknown(consumed)}'`
+									message: `${templatePart.label} is present more than once in template and receives differing values '${MString.fromUnknown(oldValue)}' and '${MString.fromUnknown(consumed)}'`
 								})
 							);
 					}
@@ -230,13 +220,13 @@ export const toFormatter = <const PS extends CVTemplateParts.Type>(
 					/* eslint-disable-next-line functional/no-expression-statements */
 					result += templatePart.formatter();
 				} else {
-					const name = templatePart.name;
 					const value = pipe(
 						record as Record<string, unknown>,
-						Record.get(name),
+						Record.get(templatePart.name),
 						// This error should not happen due to typing
 						Option.getOrThrowWith(
-							() => new Error(`Abnormal error: no value passed for '${name}' templatepart`)
+							() =>
+								new Error(`Abnormal error: no value passed for ${templatePart.label} templatepart`)
 						)
 					);
 					/* eslint-disable-next-line functional/no-expression-statements */
