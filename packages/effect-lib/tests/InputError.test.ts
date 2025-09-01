@@ -165,19 +165,38 @@ describe('MInputError', () => {
 	describe('assertMatches', () => {
 		const assertContainsOneDigit = MInputError.assertMatches({
 			regExp: /\d/,
-			regExpDescriptor: 'to contain a digit',
+			regExpDescriptor: 'a string with a digit',
 			name: "'text'"
 		});
 
 		it('Not passing', () => {
 			TEUtils.assertLeftMessage(
 				assertContainsOneDigit('foo'),
-				"Expected 'text' to contain a digit. Actual: 'foo'"
+				"Expected 'text' to be a string with a digit. Actual: 'foo'"
 			);
 		});
 
 		it('Passing', () => {
 			TEUtils.assertRight(assertContainsOneDigit('fo4o'), 'fo4o');
+		});
+	});
+
+	describe('match', () => {
+		const matchOneDigit = MInputError.match({
+			regExp: /\d/,
+			regExpDescriptor: 'a string with a digit',
+			name: "'text'"
+		});
+
+		it('Not passing', () => {
+			TEUtils.assertLeftMessage(
+				matchOneDigit('foo'),
+				"Expected 'text' to be a string with a digit. Actual: 'foo'"
+			);
+		});
+
+		it('Passing', () => {
+			TEUtils.assertRight(matchOneDigit('fo4o'), '4');
 		});
 	});
 

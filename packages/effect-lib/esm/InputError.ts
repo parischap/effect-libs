@@ -221,7 +221,7 @@ export const notMatching = ({
 	readonly name?: string;
 }) =>
 	new Type({
-		message: `Expected ${_nameLabel(name)} ${regExpDescriptor}. Actual: '${actual}'`
+		message: `Expected ${_nameLabel(name)} to be ${regExpDescriptor}. Actual: '${actual}'`
 	});
 
 /**
