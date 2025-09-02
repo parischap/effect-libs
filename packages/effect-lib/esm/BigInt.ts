@@ -1,22 +1,27 @@
 /** A simple extension to the Effect BigInt module */
 
-import { flow, Number, Option, pipe, Predicate, String } from 'effect';
+import { Brand, Either, flow, Number, Option, pipe, Predicate, String } from 'effect';
 import * as MTypes from './types.js';
 
 /**
- * Constructs a bigint from a number. Will only fail if the number is NaN, Infinity or not an
+ * Constructs a bigint from a number. Will only throw if the number is NaN, Infinity or not an
  * integer.
  *
  * @category Constructors
  */
-export const unsafeFromNumber: MTypes.OneArgFunction<number, bigint> = BigInt;
+export const fromPrimitiveOrThrows: MTypes.OneArgFunction<string | number | boolean, bigint> =
+	BigInt;
 
 /**
- * Constructs a bigint from a string. Will only fail if the string does not represent an integer.
+ * Constructs an Either of a bigint from a number. Will only return a left if the number is NaN,
+ * Infinity or not an integer.
  *
  * @category Constructors
  */
-export const unsafeFromString: MTypes.OneArgFunction<string, bigint> = BigInt;
+export const fromPrimitive = (
+	i: string | number | boolean
+): Either.Either<bigint, Brand.Brand.BrandErrors> =>
+	Either.try({ try: () => BigInt(i), catch: (e) => Brand.error((e as Error).message) });
 
 /**
  * Returns `true` if `self` is positive
