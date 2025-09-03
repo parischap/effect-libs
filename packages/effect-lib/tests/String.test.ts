@@ -82,8 +82,24 @@ describe('MString', () => {
 			TEUtils.strictEqual(MString.fromPrimitive(undefined), 'undefined');
 		});
 
-		it('Integer', () => {
+		it('Finite integer', () => {
 			TEUtils.strictEqual(MString.fromPrimitive(5), '5');
+		});
+
+		it('Infinity', () => {
+			TEUtils.strictEqual(MString.fromPrimitive(Infinity), 'Infinity');
+		});
+
+		it('+Infinity', () => {
+			TEUtils.strictEqual(MString.fromPrimitive(+Infinity), 'Infinity');
+		});
+
+		it('-Infinity', () => {
+			TEUtils.strictEqual(MString.fromPrimitive(-Infinity), '-Infinity');
+		});
+
+		it('NaN', () => {
+			TEUtils.strictEqual(MString.fromPrimitive(NaN), 'NaN');
 		});
 
 		it('Irrational number', () => {

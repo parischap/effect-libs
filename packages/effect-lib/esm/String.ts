@@ -22,6 +22,7 @@ import * as MBigInt from './BigInt.js';
 import * as MFunction from './Function.js';
 import * as MInspectable from './Inspectable.js';
 import * as MMatch from './Match.js';
+import * as MNumber from './Number.js';
 import * as MPipeable from './Pipeable.js';
 import * as MPredicate from './Predicate.js';
 import * as MRegExp from './RegExp.js';
@@ -170,7 +171,8 @@ export namespace SearchResult {
 
 /**
  * Builds a string from a primitive value other than `null` and `undefined`. For numbers and
- * bigints, base-10 conversion is assumed.
+ * bigints, base-10 conversion is assumed. We don't use the .toString() method for numbers because
+ * it uses scientific notation for certain numbers
  *
  * @category Constructors
  */
@@ -199,7 +201,7 @@ export const fromUnknown = (u: unknown): string =>
 	MTypes.isPrimitive(u) ? fromPrimitive(u) : JSON.stringify(u, null, 2);
 
 /**
- * Builds a string from a number using the passed `radix`.
+ * Builds a string from a number using the passed `radix`
  *
  * @category Constructors
  */
@@ -207,7 +209,7 @@ export const fromNumber =
 	(radix?: number): MTypes.NumberToString =>
 	(u) => {
 		// If this condition is not respected, Javascript will use an exponent in the converted string
-		if (radix !== 10 || (u >= 1e-6 && u < 1e21)) return u.toString(radix);
+		if (radix !== 10 || (u >= 1e-6 && u < 1e21) || MNumber.isNotFinite(u)) return u.toString(radix);
 		const integerPart = Math.trunc(u);
 		const decimalPart = Math.trunc((u - integerPart) * 1e16);
 		return (
