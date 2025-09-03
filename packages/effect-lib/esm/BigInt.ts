@@ -9,7 +9,7 @@ import * as MTypes from './types.js';
  *
  * @category Constructors
  */
-export const fromPrimitiveOrThrows: MTypes.OneArgFunction<string | number | boolean, bigint> =
+export const fromPrimitiveOrThrow: MTypes.OneArgFunction<string | number | boolean, bigint> =
 	BigInt;
 
 /**

@@ -29,10 +29,10 @@ export const fromPrimitive = (
  *
  * @category Constructors
  */
-export const fromPrimitiveOrThrows = (
+export const fromPrimitiveOrThrow = (
 	scale: number
 ): MTypes.OneArgFunction<string | number | boolean, BigDecimal.BigDecimal> =>
-	flow(MBigInt.fromPrimitiveOrThrows, Tuple.make, Tuple.appendElement(scale), _tupledMake);
+	flow(MBigInt.fromPrimitiveOrThrow, Tuple.make, Tuple.appendElement(scale), _tupledMake);
 
 /**
  * Function that converts a BigDecimal to a number. No checks are carried out. If the number is too
