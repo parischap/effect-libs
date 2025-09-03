@@ -4,6 +4,17 @@ import { TEUtils } from '@parischap/test-utils';
 import { describe, it } from 'vitest';
 
 describe('MBigInt', () => {
+	describe('fromPrimitiveOrThrow', () => {
+		it('Passing', () => {
+			TEUtils.strictEqual(MBigInt.fromPrimitiveOrThrow(10), 10n);
+		});
+		it('Not passing', () => {
+			TEUtils.throws(() => MBigInt.fromPrimitiveOrThrow(10.4));
+			TEUtils.throws(() => MBigInt.fromPrimitiveOrThrow(Infinity));
+			TEUtils.throws(() => MBigInt.fromPrimitiveOrThrow(NaN));
+		});
+	});
+
 	describe('fromPrimitive', () => {
 		it('Passing', () => {
 			TEUtils.assertRight(MBigInt.fromPrimitive(10), 10n);

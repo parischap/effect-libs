@@ -1,5 +1,6 @@
 /** A simple extension to the Effect Number module */
-import { pipe, Predicate } from 'effect';
+import { BigDecimal, BigInt, Brand, Either, flow, Function, Option, pipe, Predicate } from 'effect';
+import * as MBigInt from './BigInt.js';
 import * as MTypes from './types.js';
 
 /** Maximum safe integer in JavaScript (2^53 – 1). */
@@ -7,6 +8,105 @@ export const MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER;
 
 /** Minimum safe integer in JavaScript -(2^53 – 1). */
 export const MIN_SAFE_INTEGER = Number.MIN_SAFE_INTEGER;
+
+const _bigIntMinSafeInteger = MBigInt.fromPrimitiveOrThrow(MIN_SAFE_INTEGER);
+const _bigIntMaxSafeInteger = MBigInt.fromPrimitiveOrThrow(MAX_SAFE_INTEGER);
+const _bigDecimalMinSafeInteger = BigDecimal.make(_bigIntMinSafeInteger, 0);
+const _bigDecimalMaxSafeInteger = BigDecimal.make(_bigIntMaxSafeInteger, 0);
+
+/**
+ * Builds a number from a BigInt. No checks are carried out. If the number is too big or too small,
+ * it is turned into +Infinity or -Infinity
+ *
+ * @category Constructors
+ */
+export const unsafeFromBigInt: MTypes.OneArgFunction<bigint, number> = Number;
+
+/**
+ * Builds a number from a BigInt. Returns a `some` if the BigInt is in the 64-bit range of a number.
+ * Returns a `none` otherwise
+ *
+ * @category Constructors
+ */
+export const fromBigIntOption: MTypes.OneArgFunction<bigint, Option.Option<number>> = flow(
+	Option.liftPredicate(
+		BigInt.between({ minimum: _bigIntMinSafeInteger, maximum: _bigIntMaxSafeInteger })
+	),
+	Option.map(unsafeFromBigInt)
+);
+
+/**
+ * Same as `fromBigIntOption` but returns an Either of a number.
+ *
+ * @category Constructors
+ */
+export const fromBigInt = (self: bigint): Either.Either<number, Brand.Brand.BrandErrors> =>
+	pipe(
+		self,
+		fromBigIntOption,
+		Either.fromOption(() => Brand.error(`BigInt '${self}' too big to be converted to number`))
+	);
+
+/**
+ * Same as `fromBigInt` but throws in case of an error
+ *
+ * @category Constructors
+ */
+export const fromBigIntOrThrow: MTypes.OneArgFunction<bigint, number> = flow(
+	fromBigInt,
+	Either.getOrThrowWith(Function.identity)
+);
+
+/**
+ * Builds a number from a BigDecimal. No checks are carried out. If the number is too big or too
+ * small, it is turned into +Infinity or -Infinity
+ *
+ * @category Constructors
+ */
+export const unsafeFromBigDecimal: MTypes.OneArgFunction<BigDecimal.BigDecimal, number> =
+	BigDecimal.unsafeToNumber;
+
+/**
+ * Builds a number from a BigDecimal. Returns a `some` if the BigDecimal is in the 64-bit range of a
+ * number. Returns a `none` otherwise
+ *
+ * @category Constructors
+ */
+export const fromBigDecimalOption: MTypes.OneArgFunction<
+	BigDecimal.BigDecimal,
+	Option.Option<number>
+> = flow(
+	Option.liftPredicate(
+		BigDecimal.between({ minimum: _bigDecimalMinSafeInteger, maximum: _bigDecimalMaxSafeInteger })
+	),
+	Option.map(unsafeFromBigDecimal)
+);
+
+/**
+ * Same as `fromBigDecimalOption` but returns an Either of a number.
+ *
+ * @category Constructors
+ */
+export const fromBigDecimal = (
+	self: BigDecimal.BigDecimal
+): Either.Either<number, Brand.Brand.BrandErrors> =>
+	pipe(
+		self,
+		fromBigDecimalOption,
+		Either.fromOption(() =>
+			Brand.error(`BigDecimal '${self.toString()}' too big to be converted to number`)
+		)
+	);
+
+/**
+ * Same as `fromBigDecimal` but throws in case of an error
+ *
+ * @category Constructors
+ */
+export const fromBigDecimalOrThrow: MTypes.OneArgFunction<BigDecimal.BigDecimal, number> = flow(
+	fromBigDecimal,
+	Either.getOrThrowWith(Function.identity)
+);
 
 /**
  * Returns the opposite of self

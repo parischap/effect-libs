@@ -5,6 +5,30 @@ import { BigDecimal, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('MBigDecimal', () => {
+	describe('fromPrimitiveOrThrow', () => {
+		const fromPrimitiveOrThrow = MBigDecimal.fromPrimitiveOrThrow(4);
+		it('Passing', () => {
+			TEUtils.deepStrictEqual(fromPrimitiveOrThrow(10), BigDecimal.make(10n, 4));
+		});
+		it('Not passing', () => {
+			TEUtils.throws(() => fromPrimitiveOrThrow(10.4));
+			TEUtils.throws(() => fromPrimitiveOrThrow(Infinity));
+			TEUtils.throws(() => fromPrimitiveOrThrow(NaN));
+		});
+	});
+
+	describe('fromPrimitive', () => {
+		const fromPrimitive = MBigDecimal.fromPrimitive(4);
+		it('Passing', () => {
+			TEUtils.assertRight(fromPrimitive(10), BigDecimal.make(10n, 4));
+		});
+		it('Not passing', () => {
+			TEUtils.assertLeft(fromPrimitive(10.4));
+			TEUtils.assertLeft(fromPrimitive(Infinity));
+			TEUtils.assertLeft(fromPrimitive(NaN));
+		});
+	});
+
 	describe('trunc', () => {
 		it('Number that does not need to be truncated', () => {
 			TEUtils.assertEquals(

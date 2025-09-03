@@ -18,6 +18,7 @@ import {
 	pipe
 } from 'effect';
 import * as MArray from './Array.js';
+import * as MBigInt from './BigInt.js';
 import * as MFunction from './Function.js';
 import * as MInspectable from './Inspectable.js';
 import * as MMatch from './Match.js';
@@ -213,7 +214,7 @@ export const fromNumber =
 			BigInt(integerPart).toString(10) +
 			pipe(
 				decimalPart,
-				BigInt,
+				MBigInt.fromPrimitiveOrThrow,
 				(b) => b.toString(10),
 				String.padStart(16, '0'),
 				trimEnd('0'),

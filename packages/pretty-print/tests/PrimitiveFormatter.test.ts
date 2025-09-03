@@ -1,4 +1,5 @@
 /* eslint-disable functional/no-expression-statements */
+import { MBigInt } from '@parischap/effect-lib';
 import { PPOption, PPPrimitiveFormatter, PPValue } from '@parischap/pretty-print';
 import { TEUtils } from '@parischap/test-utils';
 import { pipe } from 'effect';
@@ -93,7 +94,7 @@ describe('PrimitiveFormatter', () => {
 				pipe(
 					utilInspectLikeFormatterWithOtherDefaults.call(
 						utilInspectLike,
-						PPValue.fromTopValue(BigInt(5))
+						PPValue.fromTopValue(MBigInt.fromPrimitiveOrThrow(5))
 					)
 				),
 				'5n'
