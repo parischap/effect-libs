@@ -17,6 +17,18 @@ describe('MBigDecimal', () => {
 		});
 	});
 
+	describe('fromPrimitiveOption', () => {
+		const fromPrimitiveOption = MBigDecimal.fromPrimitiveOption(4);
+		it('Passing', () => {
+			TEUtils.assertSome(fromPrimitiveOption(10), BigDecimal.make(10n, 4));
+		});
+		it('Not passing', () => {
+			TEUtils.assertNone(fromPrimitiveOption(10.4));
+			TEUtils.assertNone(fromPrimitiveOption(-Infinity));
+			TEUtils.assertNone(fromPrimitiveOption(NaN));
+		});
+	});
+
 	describe('fromPrimitive', () => {
 		const fromPrimitive = MBigDecimal.fromPrimitive(4);
 		it('Passing', () => {

@@ -15,6 +15,17 @@ describe('MBigInt', () => {
 		});
 	});
 
+	describe('fromPrimitiveOption', () => {
+		it('Passing', () => {
+			TEUtils.assertSome(MBigInt.fromPrimitiveOption(10), 10n);
+		});
+		it('Not passing', () => {
+			TEUtils.assertNone(MBigInt.fromPrimitiveOption(10.4));
+			TEUtils.assertNone(MBigInt.fromPrimitiveOption(-Infinity));
+			TEUtils.assertNone(MBigInt.fromPrimitiveOption(NaN));
+		});
+	});
+
 	describe('fromPrimitive', () => {
 		it('Passing', () => {
 			TEUtils.assertRight(MBigInt.fromPrimitive(10), 10n);

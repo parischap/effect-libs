@@ -13,7 +13,18 @@ export const fromPrimitiveOrThrow: MTypes.OneArgFunction<string | number | boole
 	BigInt;
 
 /**
- * Constructs an Either of a bigint from a number. Will only return a left if the number is NaN,
+ * Constructs an Option of a bigint from a number. Will only return a `none` if the number is NaN,
+ * Infinity or not an integer.
+ *
+ * @category Constructors
+ */
+export const fromPrimitiveOption: MTypes.OneArgFunction<
+	string | number | boolean,
+	Option.Option<bigint>
+> = Option.liftThrowable(fromPrimitiveOrThrow);
+
+/**
+ * Constructs an Either of a bigint from a number. Will only return a `left` if the number is NaN,
  * Infinity or not an integer.
  *
  * @category Constructors

@@ -1,6 +1,6 @@
 /** A simple extension to the Effect BigDecimal module */
 
-import { BigDecimal, Brand, Either, flow, Function, pipe, Tuple } from 'effect';
+import { BigDecimal, Brand, Either, flow, Function, Option, pipe, Tuple } from 'effect';
 import * as MBigInt from './BigInt.js';
 import * as MTypes from './types.js';
 
@@ -20,6 +20,20 @@ export const fromPrimitive = (
 	flow(
 		MBigInt.fromPrimitive,
 		Either.map(flow(Tuple.make, Tuple.appendElement(scale), _tupledMake))
+	);
+
+/**
+ * Function that creates an Option of a Bigdecimal from a scale and a primitive representing a
+ * bigint
+ *
+ * @category Constructors
+ */
+export const fromPrimitiveOption = (
+	scale: number
+): MTypes.OneArgFunction<string | number | boolean, Option.Option<BigDecimal.BigDecimal>> =>
+	flow(
+		MBigInt.fromPrimitiveOption,
+		Option.map(flow(Tuple.make, Tuple.appendElement(scale), _tupledMake))
 	);
 
 /**
