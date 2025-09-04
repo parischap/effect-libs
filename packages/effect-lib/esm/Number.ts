@@ -116,7 +116,9 @@ export const fromBigDecimalOrThrow: MTypes.OneArgFunction<BigDecimal.BigDecimal,
 export const opposite = (self: number) => -self;
 
 /**
- * Constructs a number from a string. Does not check input format and can return NaN or Infinity
+ * Constructs a number from a string. Return `NaN` if the string does not represent a number.
+ * Returns Infinity if the string is 'Infinity' or '+Infinity' and -Infinity if the string is
+ * '-Infinity'
  *
  * @category Constructors
  */

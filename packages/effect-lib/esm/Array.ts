@@ -279,7 +279,7 @@ export const groupBy =
 /**
  * Same as get but with flipped parameters
  *
- * @category Utils
+ * @category Destructors
  */
 export const getter =
 	<A>(self: ReadonlyArray<A>): MTypes.OneArgFunction<number, Option.Option<A>> =>
@@ -300,7 +300,7 @@ export const unsafeGet =
 /**
  * Same as unsafeGet but with flipped parameters
  *
- * @category Utils
+ * @category Destructors
  */
 export const unsafeGetter =
 	<A>(self: ReadonlyArray<A>): MTypes.OneArgFunction<number, A> =>

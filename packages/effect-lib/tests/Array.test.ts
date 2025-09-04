@@ -257,6 +257,39 @@ describe('MArray', () => {
 		});
 	});
 
+	describe('getter', () => {
+		const getter = MArray.getter([1, 3, 2]);
+		it('Out of range', () => {
+			TEUtils.assertNone(getter(3));
+		});
+		it('Within range', () => {
+			TEUtils.assertSome(getter(1), 3);
+		});
+	});
+
+	describe('unsafeGet', () => {
+		it('Not passing', () => {
+			TEUtils.doesNotThrow(() => MArray.unsafeGet(3)([]));
+			TEUtils.doesNotThrow(() => MArray.unsafeGet(NaN)([]));
+			TEUtils.doesNotThrow(() => MArray.unsafeGet(Infinity)([]));
+		});
+		it('Passing', () => {
+			TEUtils.strictEqual(MArray.unsafeGet(0)([2, 1]), 2);
+		});
+	});
+
+	describe('unsafeGetter', () => {
+		const unsafeGetter = MArray.unsafeGetter([1, 3, 2]);
+		it('Not passing', () => {
+			TEUtils.doesNotThrow(() => unsafeGetter(3));
+			TEUtils.doesNotThrow(() => unsafeGetter(NaN));
+			TEUtils.doesNotThrow(() => unsafeGetter(Infinity));
+		});
+		it('Passing', () => {
+			TEUtils.strictEqual(unsafeGetter(1), 3);
+		});
+	});
+
 	describe('modifyInit', () => {
 		it('One element', () => {
 			TEUtils.deepStrictEqual(pipe(Array.of(1), MArray.modifyInit(Number.sum(1))), [1]);

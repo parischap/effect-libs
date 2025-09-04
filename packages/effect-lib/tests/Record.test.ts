@@ -5,8 +5,13 @@ import { Option, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('MRecord', () => {
-	it('unsafeGet', () => {
-		TEUtils.strictEqual(pipe({ a: 1, b: true }, MRecord.unsafeGet('a')), 1);
+	describe('unsafeGet', () => {
+		it('Not passing', () => {
+			TEUtils.doesNotThrow(() => pipe({ a: 1, b: true }, MRecord.unsafeGet('z')));
+		});
+		it('Passing', () => {
+			TEUtils.strictEqual(pipe({ a: 1, b: true }, MRecord.unsafeGet('a')), 1);
+		});
 	});
 
 	describe('tryZeroParamFunction', () => {

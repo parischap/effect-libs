@@ -83,6 +83,21 @@ describe('MNumber', () => {
 		});
 	});
 
+	it('opposite', () => {
+		TEUtils.strictEqual(MNumber.opposite(3), -3);
+		TEUtils.strictEqual(MNumber.opposite(-3), 3);
+	});
+
+	describe('unsafeFromString', () => {
+		it('Not passing', () => {
+			TEUtils.doesNotThrow(() => MNumber.unsafeFromString('a'));
+			TEUtils.doesNotThrow(() => MNumber.unsafeFromString('NaN'));
+		});
+		it('Passing', () => {
+			TEUtils.strictEqual(MNumber.unsafeFromString('31'), 31);
+		});
+	});
+
 	it('intModulo', () => {
 		TEUtils.strictEqual(MNumber.intModulo(3)(5), 2);
 		TEUtils.strictEqual(MNumber.intModulo(5)(3), 3);

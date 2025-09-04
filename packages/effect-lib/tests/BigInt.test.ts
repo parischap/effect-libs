@@ -46,6 +46,15 @@ describe('MBigInt', () => {
 		});
 	});
 
+	describe('unsafeLog10', () => {
+		it('Not passing', () => {
+			TEUtils.doesNotThrow(() => MBigInt.unsafeLog10(-3n));
+		});
+		it('Passing', () => {
+			TEUtils.strictEqual(MBigInt.unsafeLog10(1248n), 3);
+		});
+	});
+
 	describe('log10', () => {
 		it('Negative value', () => {
 			TEUtils.assertNone(MBigInt.log10(-3n));
