@@ -97,7 +97,7 @@ describe('CVDateTimeFormat', () => {
 			placeholder('mm'),
 			placeholder('s'),
 			sep.space,
-			placeholderceholder('ss'),
+			placeholder('ss'),
 			placeholder('S'),
 			sep.space,
 			placeholder('SSS'),
@@ -170,7 +170,7 @@ describe('CVDateTimeFormat', () => {
 					parser(
 						'2025 2520252026 26202612 12DecDecember1 0130 30364 3642 TueMondayPM13 131 015 0553 53234 234+1 +0112 125 05'
 					),
-					"'weekday' templatepart is present more than once in template and receives differing values '2' and '1'"
+					"#weekday is present more than once in template and receives differing values '2' and '1'"
 				);
 			});
 
@@ -192,8 +192,8 @@ describe('CVDateTimeFormat', () => {
 			const formatter = CVDateTimeFormat.toFormatter(isoFormat);
 			it('Non matching', () => {
 				TEUtils.assertLeftMessage(
-					formatter(CVDateTime.unsafeFromParts({ year: 10024 })),
-					"Expected length of 'year' templatepart to be: 4. Actual: 5"
+					formatter(CVDateTime.fromPartsOrThrow({ year: 10024 })),
+					'Expected length of #year to be: 4. Actual: 5'
 				);
 			});
 
@@ -201,7 +201,7 @@ describe('CVDateTimeFormat', () => {
 				TEUtils.assertRight(
 					pipe(
 						formatter(
-							CVDateTime.unsafeFromParts({ year: 2025, month: 8, monthDay: 13, zoneMinute: 42 })
+							CVDateTime.fromPartsOrThrow({ year: 2025, month: 8, monthDay: 13, zoneMinute: 42 })
 						)
 					),
 					'2025-08-13T00:00:00,000+00:42'
@@ -214,8 +214,8 @@ describe('CVDateTimeFormat', () => {
 
 			it('Non matching', () => {
 				TEUtils.assertLeftMessage(
-					formatter(CVDateTime.unsafeFromParts({ year: 1925, month: 2, monthDay: 28 })),
-					"Expected 'year' templatepart to be between 2000 (included) and 2099 (included). Actual: 1925"
+					formatter(CVDateTime.fromPartsOrThrow({ year: 1925, month: 2, monthDay: 28 })),
+					'Expected #year to be between 2000 (included) and 2099 (included). Actual: 1925'
 				);
 			});
 
@@ -223,7 +223,7 @@ describe('CVDateTimeFormat', () => {
 				TEUtils.assertRight(
 					pipe(
 						formatter(
-							CVDateTime.unsafeFromParts({
+							CVDateTime.fromPartsOrThrow({
 								year: 2025,
 								month: 2,
 								monthDay: 28,

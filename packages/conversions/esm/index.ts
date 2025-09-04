@@ -1,11 +1,13 @@
+export * as CVBigDecimal from './BigDecimal.js';
+export * as CVBigInt from './BigInt.js';
 export * as CVDateTime from './DateTime.js';
 export * as CVDateTimeFormat from './DateTimeFormat.js';
 export * as CVEmail from './Email.js';
+export * as CVInteger from './Integer.js';
 export * as CVNumberBase10Format from './NumberBase10Format.js';
+export * as CVPositiveInteger from './PositiveInteger.js';
 export * as CVPositiveReal from './PositiveReal.js';
-export * as CVPositiveRealInt from './PositiveRealInt.js';
 export * as CVReal from './Real.js';
-export * as CVRealInt from './RealInt.js';
 export * as CVRoundingMode from './RoundingMode.js';
 export * as CVRoundingOption from './RoundingOption.js';
 export * as CVSchema from './Schema.js';

@@ -62,11 +62,7 @@ console.log(parser('Today is Tuesday, day number 2 of the week.'));
 // }
 console.log(parser('Today is Thursday, day number 2 of the week.'));
 
-// Result: {
-//   _id: 'Either',
-//   _tag: 'Right',
-//   right: 'Today is Saturday, day number 6 of the week.'
-// }
+// Result: { _id: 'Either', _tag: 'Right', right: 'Today is Saturday, day number 6 of the week.' }
 console.log(formatter({ weekday: CVReal.unsafeFromNumber(6) }));
 
 // Result: {

@@ -10,8 +10,13 @@ import { Brand, Either, Option } from 'effect';
  */
 export const moduleTag = '@parischap/conversions/SemVer/';
 
-const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
-type _TypeId = typeof _TypeId;
+/**
+ * Module TypeId
+ *
+ * @category Module markers
+ */
+export const TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
+type _TypeId = typeof TypeId;
 
 /**
  * SemVer type
@@ -29,7 +34,7 @@ export const unsafeFromString = Brand.nominal<Type>();
 
 /**
  * Constructs a SemVer from a string. Throws an error if the provided string does not represent a
- * semver
+ * SemVer
  *
  * @category Constructors
  */
@@ -56,3 +61,17 @@ export const fromString: MTypes.OneArgFunction<
 	string,
 	Either.Either<Type, Brand.Brand.BrandErrors>
 > = constructor.either.bind(constructor);
+
+/**
+ * Constructs a SemVer or throws.
+ *
+ * @category Constructors
+ */
+export const fromStringOrThrow: MTypes.OneArgFunction<string, Type> = constructor;
+
+/**
+ * Checks if a string is a semver
+ *
+ * @category Refinement
+ */
+export const has = (input: string): input is Type => MString.isSemVer(input);

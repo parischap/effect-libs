@@ -460,8 +460,8 @@ export namespace Context {
 					CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'year', length: 2 }),
 					CVTemplatePlaceholder.modify({
 						descriptorMapper: MString.append(' between 2000 and 2099 included'),
-						postParser: (value, label) =>
-							pipe(
+						postParser: function (this: CVTemplatePlaceholder.Type<'year', CVReal.Type>, value) {
+							return pipe(
 								value,
 								Number.sum(2000),
 								MInputError.assertInRange({
@@ -470,12 +470,13 @@ export namespace Context {
 									minIncluded: true,
 									maxIncluded: true,
 									offset: -2000,
-									name: label
+									name: this.label
 								}),
 								Either.map(CVReal.unsafeFromNumber)
-							),
-						preFormatter: (value, label) =>
-							pipe(
+							);
+						},
+						preFormatter: function (this: CVTemplatePlaceholder.Type<'year', CVReal.Type>, value) {
+							return pipe(
 								value,
 								MInputError.assertInRange({
 									min: 2000,
@@ -483,10 +484,11 @@ export namespace Context {
 									minIncluded: true,
 									maxIncluded: true,
 									offset: 0,
-									name: label
+									name: this.label
 								}),
 								Either.map(flow(Number.subtract(2000), CVReal.unsafeFromNumber))
-							)
+							);
+						}
 					})
 				)
 			],
@@ -498,8 +500,8 @@ export namespace Context {
 					CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'isoYear', length: 2 }),
 					CVTemplatePlaceholder.modify({
 						descriptorMapper: MString.append(' between 2000 and 2099 included'),
-						postParser: (value, label) =>
-							pipe(
+						postParser: function (this: CVTemplatePlaceholder.Type<'isoYear', CVReal.Type>, value) {
+							return pipe(
 								value,
 								Number.sum(2000),
 								MInputError.assertInRange({
@@ -508,12 +510,16 @@ export namespace Context {
 									minIncluded: true,
 									maxIncluded: true,
 									offset: -2000,
-									name: label
+									name: this.label
 								}),
 								Either.map(CVReal.unsafeFromNumber)
-							),
-						preFormatter: (value, label) =>
-							pipe(
+							);
+						},
+						preFormatter: function (
+							this: CVTemplatePlaceholder.Type<'isoYear', CVReal.Type>,
+							value
+						) {
+							return pipe(
 								value,
 								MInputError.assertInRange({
 									min: 2000,
@@ -521,10 +527,11 @@ export namespace Context {
 									minIncluded: true,
 									maxIncluded: true,
 									offset: 0,
-									name: label
+									name: this.label
 								}),
 								Either.map(flow(Number.subtract(2000), CVReal.unsafeFromNumber))
-							)
+							);
+						}
 					})
 				)
 			],
@@ -924,7 +931,7 @@ export const templateparts: MTypes.OneArgFunction<Type, TemplateParts.Type> =
  * Returns a function that parses a text into a DateTime according to 'self'. See DateTime.fromParts
  * for more information on default values and errors.
  *
- * @category Destructors
+ * @category Parsing
  */
 
 export const toParser = (self: Type): Parser.Type => {
@@ -935,9 +942,19 @@ export const toParser = (self: Type): Parser.Type => {
 };
 
 /**
+ * Same as toParser but the returned parser returns directly a CVDateTime or throws in case of error
+ *
+ * @category Parsing
+ */
+export const toThrowingParser: MTypes.OneArgFunction<
+	Type,
+	MTypes.OneArgFunction<string, CVDateTime.Type>
+> = flow(toParser, Function.compose(Either.getOrThrowWith(Function.identity)));
+
+/**
  * Returns a function that formats a DateTime according to 'self'.
  *
- * @category Destructors
+ * @category Formatting
  */
 
 export const toFormatter = (self: Type): Formatter.Type => {
@@ -1035,3 +1052,14 @@ export const toFormatter = (self: Type): Formatter.Type => {
 
 	return (d) => pipe(toParts, Record.map(Function.apply(d)), formatter);
 };
+
+/**
+ * Same as toFormatter but the returned formatter returns directly a string or throws in case of
+ * error
+ *
+ * @category Formatting
+ */
+export const toThrowingFormatter: MTypes.OneArgFunction<
+	Type,
+	MTypes.OneArgFunction<CVDateTime.Type, string>
+> = flow(toFormatter, Function.compose(Either.getOrThrowWith(Function.identity)));

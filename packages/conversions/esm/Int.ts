@@ -3,8 +3,8 @@
  * Only used internally
  */
 
-import { MNumber, MTypes } from '@parischap/effect-lib';
-import { Brand, Either, Option } from 'effect';
+import { MNumber, MString, MTypes } from '@parischap/effect-lib';
+import { Brand, Either, flow, Option } from 'effect';
 
 /**
  * Module tag
@@ -29,12 +29,18 @@ type _TypeId = typeof TypeId;
 export type Type = Brand.Branded<number, _TypeId>;
 
 /**
- * Constructs an Int from a number. Throws if the number is not an integer
+ * Brand constructor. Should not be used directly
  *
  * @category Constructors
  */
-export const constructor = Brand.refined<Type>(MNumber.isInt, (n) =>
-	Brand.error(`'${n}' does not represent an integer`)
+export const constructor = Brand.refined<Type>(
+	MNumber.isInt,
+	flow(
+		MString.fromNumber(10),
+		MString.prepend("'"),
+		MString.append("' does not represent an integer"),
+		Brand.error
+	)
 );
 
 /**
@@ -56,3 +62,10 @@ export const fromNumber: MTypes.OneArgFunction<
 	number,
 	Either.Either<Type, Brand.Brand.BrandErrors>
 > = constructor.either.bind(constructor);
+
+/**
+ * Constructs an Int from a number or throws
+ *
+ * @category Constructors
+ */
+export const fromNumberOrThrow: MTypes.OneArgFunction<number, Type> = constructor;

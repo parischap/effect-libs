@@ -1,8 +1,7 @@
 /** This module implements a finite number brand (Infinity or Nan disallowed) */
 
-import { MBigDecimal, MBigInt, MNumber, MTypes } from '@parischap/effect-lib';
-import { BigDecimal, BigInt, Brand, Either, flow, Option, pipe } from 'effect';
-import * as CVInt from './Int.js';
+import { MNumber, MString, MTypes } from '@parischap/effect-lib';
+import { BigDecimal, Brand, Either, flow, Option } from 'effect';
 
 /**
  * Module tag
@@ -27,6 +26,21 @@ type _TypeId = typeof TypeId;
 export type Type = Brand.Branded<number, _TypeId>;
 
 /**
+ * Brand constructor. Should not be used directly
+ *
+ * @category Constructors
+ */
+export const constructor = Brand.refined<Type>(
+	MNumber.isFinite,
+	flow(
+		MString.fromNumber(10),
+		MString.prepend("'"),
+		MString.append("' does not represent a finite number"),
+		Brand.error
+	)
+);
+
+/**
  * Constructs a Real from a number without any verifications
  *
  * @category Constructors
@@ -34,17 +48,7 @@ export type Type = Brand.Branded<number, _TypeId>;
 export const unsafeFromNumber = Brand.nominal<Type>();
 
 /**
- * Constructs a Real from a number. Throws an error if the provided number does not represent a
- * finite number
- *
- * @category Constructors
- */
-export const constructor = Brand.refined<Type>(MNumber.isFinite, (n) =>
-	Brand.error(`'${n}' does not represent a finite number`)
-);
-
-/**
- * Constructs an Option of a Real from a number.
+ * Constructs an Option of a Real from a number
  *
  * @category Constructors
  */
@@ -54,7 +58,7 @@ export const fromNumberOption: MTypes.OneArgFunction<
 > = constructor.option.bind(constructor);
 
 /**
- * Constructs an Either of a Real from a number.
+ * Constructs an Either of a Real from a number
  *
  * @category Constructors
  */
@@ -64,6 +68,21 @@ export const fromNumber: MTypes.OneArgFunction<
 > = constructor.either.bind(constructor);
 
 /**
+ * Constructs a Real from a number or throws
+ *
+ * @category Constructors
+ */
+export const fromNumberOrThrow: MTypes.OneArgFunction<number, Type> = constructor;
+
+/**
+ * Constructs a Real from a BigDecimal without any checks
+ *
+ * @category Constructors
+ */
+export const unsafeFromBigDecimal: MTypes.OneArgFunction<BigDecimal.BigDecimal, Type> =
+	MNumber.unsafeFromBigDecimal as never;
+
+/**
  * Constructs an Option of a Real from a BigDecimal.
  *
  * @category Constructors
@@ -71,60 +90,58 @@ export const fromNumber: MTypes.OneArgFunction<
 export const fromBigDecimalOption: MTypes.OneArgFunction<
 	BigDecimal.BigDecimal,
 	Option.Option<Type>
-> = MBigDecimal.toNumber as never;
+> = MNumber.fromBigDecimalOption as never;
 
 /**
  * Constructs an Either of a Real from a BigDecimal.
  *
  * @category Constructors
  */
-export const fromBigDecimal = (
-	bigDecimal: BigDecimal.BigDecimal
-): Either.Either<Type, Brand.Brand.BrandErrors> =>
-	pipe(
-		bigDecimal,
-		MBigDecimal.toNumber,
-		Either.fromOption(() =>
-			Brand.error(`BigDecimal '${bigDecimal.toString()}' too big to be converted to number`)
-		)
-	) as never;
+export const fromBigDecimal: MTypes.OneArgFunction<
+	BigDecimal.BigDecimal,
+	Either.Either<Type, Brand.Brand.BrandErrors>
+> = MNumber.fromBigDecimal as never;
 
 /**
- * Constructs an Option of a Real from a bigint.
+ * Constructs a Real from a BigDecimal or throws
+ *
+ * @category Constructors
+ */
+export const fromBigDecimalOrThrow: MTypes.OneArgFunction<BigDecimal.BigDecimal, Type> =
+	MNumber.fromBigDecimalOrThrow as never;
+
+/**
+ * Constructs a Real from a BigInt without any checks
+ *
+ * @category Constructors
+ */
+export const unsafeFromBigInt: MTypes.OneArgFunction<bigint, Type> =
+	MNumber.unsafeFromBigInt as never;
+
+/**
+ * Constructs an Option of a Real from a BigInt.
  *
  * @category Constructors
  */
 export const fromBigIntOption: MTypes.OneArgFunction<
 	bigint,
 	Option.Option<Type>
-> = BigInt.toNumber as never;
+> = MNumber.fromBigIntOption as never;
 
 /**
- * Constructs an Either of a Real from a bigint.
+ * Constructs an Either of a Real from a BigInt.
  *
  * @category Constructors
  */
-export const fromBigInt = (b: bigint): Either.Either<Type, Brand.Brand.BrandErrors> =>
-	pipe(
-		b,
-		BigInt.toNumber,
-		Either.fromOption(() => Brand.error(`BigInt ${b} too big to be converted to number`))
-	) as never;
+export const fromBigInt: MTypes.OneArgFunction<
+	bigint,
+	Either.Either<Type, Brand.Brand.BrandErrors>
+> = MNumber.fromBigInt as never;
 
 /**
- * Constructs a BigDecimal from a Real.
+ * Constructs a Real from a BigInt or throws
  *
- * @category Destructors
+ * @category Constructors
  */
-export const toBigDecimal: MTypes.OneArgFunction<Type, BigDecimal.BigDecimal> =
-	BigDecimal.unsafeFromNumber;
-
-/**
- * Constructs an Either of a bigint from a Real.
- *
- * @category Destructors
- */
-export const toBigInt: MTypes.OneArgFunction<
-	Type,
-	Either.Either<bigint, Brand.Brand.BrandErrors>
-> = flow(CVInt.fromNumber, Either.map(MBigInt.unsafeFromNumber));
+export const fromBigIntOrThrow: MTypes.OneArgFunction<bigint, Type> =
+	MNumber.fromBigIntOrThrow as never;

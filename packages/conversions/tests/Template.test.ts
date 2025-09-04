@@ -8,13 +8,13 @@ import {
 } from '@parischap/conversions';
 import { MInputError, MTypes } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
-import { Either } from 'effect';
+import { Either, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('CVTemplate', () => {
 	const params = {
 		fillChar: '0',
-		numberBase10Format: CVNumberBase10Format.integer
+		numberBase10Format: pipe(CVNumberBase10Format.integer, CVNumberBase10Format.withoutSignDisplay)
 	};
 	const placeholder = CVTemplatePlaceholder;
 	const sep = CVTemplateSeparator;
@@ -41,11 +41,12 @@ describe('CVTemplate', () => {
 		it('.toString()', () => {
 			TEUtils.strictEqual(
 				template.toString(),
-				`#dd/#MM/#yyyy #MM,
-#dd: 2-character string left-padded with '0' to potentially signed integer,
-#MM: 2-character string left-padded with '0' to potentially signed integer,
-#yyyy: 4-character string left-padded with '0' to potentially signed integer,
-#MM: potentially signed integer`
+				`#dd/#MM/#yyyy #MM
+
+#dd: 2-character string left-padded with '0' to unsigned integer.
+#MM: 2-character string left-padded with '0' to unsigned integer.
+#yyyy: 4-character string left-padded with '0' to unsigned integer.
+#MM: unsigned integer`
 			);
 		});
 

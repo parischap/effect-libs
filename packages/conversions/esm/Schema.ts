@@ -7,11 +7,11 @@ import { BigDecimal, DateTime, Either, flow, Option, ParseResult, pipe, Schema }
 import * as CVDateTime from './DateTime.js';
 import * as CVDateTimeFormat from './DateTimeFormat.js';
 import * as CVEmail from './Email.js';
+import * as CVInteger from './Integer.js';
 import * as CVNumberBase10Format from './NumberBase10Format.js';
+import * as CVPositiveInteger from './PositiveInteger.js';
 import * as CVPositiveReal from './PositiveReal.js';
-import * as CVPositiveRealInt from './PositiveRealInt.js';
 import * as CVReal from './Real.js';
-import * as CVRealInt from './RealInt.js';
 import * as CVSemVer from './SemVer.js';
 
 /**
@@ -87,36 +87,36 @@ export const Real = (format: CVNumberBase10Format.Type): Schema.Schema<CVReal.Ty
 };
 
 /**
- * A Schema that transforms a number into a CVRealInt.Type
+ * A Schema that transforms a number into a CVInteger.Type
  *
  * @category Schema transformations
  */
-export const RealIntFromNumber: Schema.Schema<CVRealInt.Type, number> = Schema.Number.pipe(
-	Schema.fromBrand(CVRealInt.constructor)
+export const IntegerFromNumber: Schema.Schema<CVInteger.Type, number> = Schema.Number.pipe(
+	Schema.fromBrand(CVInteger.constructor)
 );
 
 /**
- * A Schema that represents a CVRealInt.Type
+ * A Schema that represents a CVInteger.Type
  *
  * @category Schema instances
  */
-export const RealIntFromSelf: Schema.Schema<CVRealInt.Type> = Schema.typeSchema(RealIntFromNumber);
+export const IntegerFromSelf: Schema.Schema<CVInteger.Type> = Schema.typeSchema(IntegerFromNumber);
 
 /**
- * A Schema that transforms a number into a CVPositiveRealInt.Type
+ * A Schema that transforms a number into a CVPositiveInteger.Type
  *
  * @category Schema transformations
  */
-export const PositiveRealIntFromNumber: Schema.Schema<CVPositiveRealInt.Type, number> =
-	Schema.Number.pipe(Schema.fromBrand(CVPositiveRealInt.constructor));
+export const PositiveIntegerFromNumber: Schema.Schema<CVPositiveInteger.Type, number> =
+	Schema.Number.pipe(Schema.fromBrand(CVPositiveInteger.constructor));
 
 /**
- * A Schema that represents a CVPositiveRealInt.Type
+ * A Schema that represents a CVPositiveInteger.Type
  *
  * @category Schema instances
  */
-export const PositiveRealIntFromSelf: Schema.Schema<CVPositiveRealInt.Type> =
-	Schema.typeSchema(PositiveRealIntFromNumber);
+export const PositiveIntegerFromSelf: Schema.Schema<CVPositiveInteger.Type> =
+	Schema.typeSchema(PositiveIntegerFromNumber);
 
 /**
  * A Schema that transforms a number into a CVPositiveReal.Type
@@ -187,7 +187,7 @@ export const DateTimeFromDate: Schema.Schema<CVDateTime.Type, Date> = Schema.tra
 	DateTimeFromSelf,
 	{
 		strict: true,
-		decode: (input) => CVDateTime.unsafeFromTimestamp(input.getTime()),
+		decode: (input) => CVDateTime.fromTimestampOrThrow(input.getTime()),
 		encode: (input) => new Date(CVDateTime.timestamp(input))
 	}
 );
@@ -202,7 +202,7 @@ export const DateTimeFromEffectDateTime: Schema.Schema<CVDateTime.Type, DateTime
 	Schema.transform(Schema.DateTimeZonedFromSelf, DateTimeFromSelf, {
 		strict: true,
 		decode: (input) =>
-			CVDateTime.unsafeFromTimestamp(DateTime.toEpochMillis(input), DateTime.zonedOffset(input)),
+			CVDateTime.fromTimestampOrThrow(DateTime.toEpochMillis(input), DateTime.zonedOffset(input)),
 		encode: (input) =>
 			DateTime.unsafeMakeZoned(CVDateTime.timestamp(input), { timeZone: input.zoneOffset })
 	});

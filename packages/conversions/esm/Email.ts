@@ -63,6 +63,13 @@ export const fromString: MTypes.OneArgFunction<
 > = constructor.either.bind(constructor);
 
 /**
+ * Constructs an Email or throws.
+ *
+ * @category Constructors
+ */
+export const fromStringOrThrow: MTypes.OneArgFunction<string, Type> = constructor;
+
+/**
  * Checks if a string is an email
  *
  * @category Refinement

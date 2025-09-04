@@ -7,7 +7,7 @@ CVDateTime.fromParts({ year: 2025 });
 DateTime.makeZoned(new Date(), { timeZone: 'Europe/London' });
 
 const start = performance.now();
-CVDateTime.getYear(CVDateTime.unsafeFromParts({ year: 2025 }));
+CVDateTime.getYear(CVDateTime.fromPartsOrThrow({ year: 2025 }));
 const end = performance.now();
 console.log(end - start);
 

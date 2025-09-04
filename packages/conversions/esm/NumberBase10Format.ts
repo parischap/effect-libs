@@ -690,7 +690,7 @@ const _toBigDecimalExtractor = (
 						self.showNullIntegerPart || mantissaFractionalPartLength === 0 ?
 							Option.some
 						:	Option.liftPredicate(Predicate.not(MPredicate.strictEquals('0'))),
-						Option.map(flow(removeThousandSeparator, MBigDecimal.unsafeFromIntString(0)))
+						Option.map(flow(removeThousandSeparator, MBigDecimal.fromPrimitiveOrThrow(0)))
 					)
 				}),
 				Option.map(
@@ -698,7 +698,7 @@ const _toBigDecimalExtractor = (
 						pipe(
 							mantissaFractionalPart,
 							Option.liftPredicate(String.isNonEmpty),
-							Option.map(MBigDecimal.unsafeFromIntString(mantissaFractionalPartLength)),
+							Option.map(MBigDecimal.fromPrimitiveOrThrow(mantissaFractionalPartLength)),
 							Option.getOrElse(Function.constant(MBigDecimal.zero))
 						)
 					)
@@ -734,6 +734,8 @@ const _toBigDecimalExtractor = (
  * start of the number if it is unsigned). It must be a one-character string (but no error is
  * triggered if it's not). You can use '0' as `fillChar` but you shoud not use any other digit
  * because the value of the number to parse would depend on the number of removed `fillChar`'s.
+ *
+ * @category Parsing
  */
 
 export const toBigDecimalExtractor: (
@@ -750,10 +752,27 @@ export const toBigDecimalExtractor: (
 	);
 
 /**
+ * Same as toBigDecimalExtractor but the returned parser throws in case of error
+ *
+ * @category Parsing
+ */
+
+export const toThrowingBigDecimalExtractor =
+	(self: Type, fillChar?: string) =>
+	(text: string): MTypes.Pair<BigDecimal.BigDecimal, string> =>
+		pipe(
+			text,
+			toBigDecimalExtractor(self, fillChar),
+			Option.getOrThrowWith(
+				() => new Error(`A BigDecimal could not be parsed from the start of '${text}'`)
+			)
+		);
+
+/**
  * Same as `toBigDecimalExtractor` but returns a `Real` which is the most usual use case.
  * Furthermore, this function will return -0 if your parse '-0' and 0 if you parse '0' or '+0'.
  *
- * @category Destructors
+ * @category Parsing
  */
 export const toRealExtractor: (
 	self: Type,
@@ -778,10 +797,27 @@ export const toRealExtractor: (
 );
 
 /**
+ * Same as toRealExtractor but the returned parser throws in case of error
+ *
+ * @category Parsing
+ */
+
+export const toThrowingRealExtractor =
+	(self: Type, fillChar?: string) =>
+	(text: string): MTypes.Pair<CVReal.Type, string> =>
+		pipe(
+			text,
+			toRealExtractor(self, fillChar),
+			Option.getOrThrowWith(
+				() => new Error(`A Real could not be parsed from the start of '${text}'`)
+			)
+		);
+
+/**
  * Same as toBigDecimalExtractor but the whole of the input text must represent a number, not just
  * its start
  *
- * @category Destructors
+ * @category Parsing
  */
 export const toBigDecimalParser = (
 	self: Type,
@@ -804,10 +840,25 @@ export const toBigDecimalParser = (
 };
 
 /**
+ * Same as toRealExtractor but the returned parser throws in case of error
+ *
+ * @category Parsing
+ */
+
+export const toThrowingBigDecimalParser =
+	(self: Type, fillChar?: string) =>
+	(text: string): BigDecimal.BigDecimal =>
+		pipe(
+			text,
+			toBigDecimalParser(self, fillChar),
+			Option.getOrThrowWith(() => new Error(`A BigDecimal could not be parsed from '${text}'`))
+		);
+
+/**
  * Same as `toRealExtractor` but the whole of the input text must represent a number, not just its
  * start
  *
- * @category Destructors
+ * @category Parsing
  */
 export const toRealParser = (
 	self: Type,
@@ -830,6 +881,21 @@ export const toRealParser = (
 };
 
 /**
+ * Same as toRealParser but the returned parser throws in case of error
+ *
+ * @category Parsing
+ */
+
+export const toThrowingRealParser =
+	(self: Type, fillChar?: string) =>
+	(text: string): CVReal.Type =>
+		pipe(
+			text,
+			toRealParser(self, fillChar),
+			Option.getOrThrowWith(() => new Error(`A Real could not be parsed from '${text}'`))
+		);
+
+/**
  * Returns a function that tries to format a `number` respecting the options represented by
  * `self`and an optional parameter `fillChars`. If successful, that function returns a `some` of the
  * formatted number. Otherwise, it returns a `none`. `number` can be of type number or BigDecimal
@@ -844,7 +910,7 @@ export const toRealParser = (
  * same number of characters as fillChars (e.g. the result will be '-02' if you try to format the
  * value -2 with fillChars = '000')
  *
- * @category Destructors
+ * @category Formatting
  */
 export const toNumberFormatter = (
 	self: Type,
@@ -947,7 +1013,7 @@ export const toNumberFormatter = (
  * Combinator that returns a copy of self with `minimumFractionalDigits` and
  * `maximumFractionalDigits` set to `n`. `n` must be a finite positive integer.
  *
- * @category Utils
+ * @category Modifiers
  */
 export const withNDecimals = (decimalNumber: number): MTypes.OneArgFunction<Type> =>
 	flow(
@@ -962,7 +1028,7 @@ export const withNDecimals = (decimalNumber: number): MTypes.OneArgFunction<Type
  * Combinator that returns a copy of self with `maximumFractionalDigits` set to `n`. `n` must be a
  * positive integer. Pass 0 for an integer format.
  *
- * @category Utils
+ * @category Modifiers
  */
 export const withMaxNDecimals =
 	(maxDecimalNumber: number) =>
@@ -980,7 +1046,7 @@ export const withMaxNDecimals =
  * Combinator that returns a copy of self with `minimumFractionalDigits` set to `n`. `n` must be a
  * finite positive integer.
  *
- * @category Utils
+ * @category Modifiers
  */
 export const withMinNDecimals =
 	(minDecimalNumber: number) =>
@@ -997,7 +1063,7 @@ export const withMinNDecimals =
 /**
  * Combinator that returns a copy of self with `scientificNotation` set to `None`.
  *
- * @category Utils
+ * @category Modifiers
  */
 export const withNoScientificNotation: MTypes.OneArgFunction<Type> = flow(
 	MStruct.append({
@@ -1009,7 +1075,7 @@ export const withNoScientificNotation: MTypes.OneArgFunction<Type> = flow(
 /**
  * Combinator that returns a copy of self with `scientificNotation` set to `Standard`.
  *
- * @category Utils
+ * @category Modifiers
  */
 export const withStandardScientificNotation: MTypes.OneArgFunction<Type> = flow(
 	MStruct.append({
@@ -1021,7 +1087,7 @@ export const withStandardScientificNotation: MTypes.OneArgFunction<Type> = flow(
 /**
  * Combinator that returns a copy of self with `scientificNotation` set to `Normalized`.
  *
- * @category Utils
+ * @category Modifiers
  */
 export const withNormalizedScientificNotation: MTypes.OneArgFunction<Type> = flow(
 	MStruct.append({
@@ -1033,7 +1099,7 @@ export const withNormalizedScientificNotation: MTypes.OneArgFunction<Type> = flo
 /**
  * Combinator that returns a copy of self with `scientificNotation` set to `Engineering`.
  *
- * @category Utils
+ * @category Modifiers
  */
 export const withEngineeringScientificNotation: MTypes.OneArgFunction<Type> = flow(
 	MStruct.append({
@@ -1045,7 +1111,7 @@ export const withEngineeringScientificNotation: MTypes.OneArgFunction<Type> = fl
 /**
  * Combinator that returns a copy of self with `thousandSeparator` set to `thousandSeparator`.
  *
- * @category Utils
+ * @category Modifiers
  */
 export const withThousandSeparator = (thousandSeparator: string): MTypes.OneArgFunction<Type> =>
 	flow(
@@ -1058,14 +1124,14 @@ export const withThousandSeparator = (thousandSeparator: string): MTypes.OneArgF
 /**
  * Combinator that returns a copy of self with `thousandSeparator` set to ''.
  *
- * @category Utils
+ * @category Modifiers
  */
 export const withoutThousandSeparator: MTypes.OneArgFunction<Type> = withThousandSeparator('');
 
 /**
  * Combinator that returns a copy of self with `fractionalSeparator` set to `fractionalSeparator`.
  *
- * @category Utils
+ * @category Modifiers
  */
 export const withFractionalSeparator = (fractionalSeparator: string): MTypes.OneArgFunction<Type> =>
 	flow(
@@ -1078,7 +1144,7 @@ export const withFractionalSeparator = (fractionalSeparator: string): MTypes.One
 /**
  * Combinator that returns a copy of self with `signDisplay` set to `Auto`.
  *
- * @category Utils
+ * @category Modifiers
  */
 export const withSignDisplayForNegative: MTypes.OneArgFunction<Type> = flow(
 	MStruct.append({
@@ -1090,7 +1156,7 @@ export const withSignDisplayForNegative: MTypes.OneArgFunction<Type> = flow(
 /**
  * Combinator that returns a copy of self with `signDisplay` set to `Always`.
  *
- * @category Utils
+ * @category Modifiers
  */
 export const withSignDisplay: MTypes.OneArgFunction<Type> = flow(
 	MStruct.append({
@@ -1102,7 +1168,7 @@ export const withSignDisplay: MTypes.OneArgFunction<Type> = flow(
 /**
  * Combinator that returns a copy of self with `signDisplay` set to `ExceptZero`.
  *
- * @category Utils
+ * @category Modifiers
  */
 export const withSignDisplayExceptZero: MTypes.OneArgFunction<Type> = flow(
 	MStruct.append({
@@ -1114,7 +1180,7 @@ export const withSignDisplayExceptZero: MTypes.OneArgFunction<Type> = flow(
 /**
  * Combinator that returns a copy of self with `signDisplay` set to `Negative`.
  *
- * @category Utils
+ * @category Modifiers
  */
 export const withSignDisplayForNegativeExceptZero: MTypes.OneArgFunction<Type> = flow(
 	MStruct.append({
@@ -1126,7 +1192,7 @@ export const withSignDisplayForNegativeExceptZero: MTypes.OneArgFunction<Type> =
 /**
  * Combinator that returns a copy of self with `signDisplay` set to `Never`.
  *
- * @category Utils
+ * @category Modifiers
  */
 export const withoutSignDisplay: MTypes.OneArgFunction<Type> = flow(
 	MStruct.append({
@@ -1138,7 +1204,7 @@ export const withoutSignDisplay: MTypes.OneArgFunction<Type> = flow(
 /**
  * Combinator that returns a copy of self with `roundingMode` set to `Ceil`.
  *
- * @category Utils
+ * @category Modifiers
  */
 export const withCeilRoundingMode: MTypes.OneArgFunction<Type> = flow(
 	MStruct.append({
@@ -1149,7 +1215,7 @@ export const withCeilRoundingMode: MTypes.OneArgFunction<Type> = flow(
 /**
  * Combinator that returns a copy of self with `roundingMode` set to `Floor`.
  *
- * @category Utils
+ * @category Modifiers
  */
 export const withFloorRoundingMode: MTypes.OneArgFunction<Type> = flow(
 	MStruct.append({
@@ -1161,7 +1227,7 @@ export const withFloorRoundingMode: MTypes.OneArgFunction<Type> = flow(
 /**
  * Combinator that returns a copy of self with `roundingMode` set to `Expand`.
  *
- * @category Utils
+ * @category Modifiers
  */
 export const withExpandRoundingMode: MTypes.OneArgFunction<Type> = flow(
 	MStruct.append({
@@ -1173,7 +1239,7 @@ export const withExpandRoundingMode: MTypes.OneArgFunction<Type> = flow(
 /**
  * Combinator that returns a copy of self with `roundingMode` set to `Trunc`.
  *
- * @category Utils
+ * @category Modifiers
  */
 export const withTruncRoundingMode: MTypes.OneArgFunction<Type> = flow(
 	MStruct.append({
@@ -1185,7 +1251,7 @@ export const withTruncRoundingMode: MTypes.OneArgFunction<Type> = flow(
 /**
  * Combinator that returns a copy of self with `roundingMode` set to `HalfCeil`.
  *
- * @category Utils
+ * @category Modifiers
  */
 export const withHalfCeilRoundingMode: MTypes.OneArgFunction<Type> = flow(
 	MStruct.append({
@@ -1197,7 +1263,7 @@ export const withHalfCeilRoundingMode: MTypes.OneArgFunction<Type> = flow(
 /**
  * Combinator that returns a copy of self with `roundingMode` set to `HalfFloor`.
  *
- * @category Utils
+ * @category Modifiers
  */
 export const withHalfFloorRoundingMode: MTypes.OneArgFunction<Type> = flow(
 	MStruct.append({
@@ -1209,7 +1275,7 @@ export const withHalfFloorRoundingMode: MTypes.OneArgFunction<Type> = flow(
 /**
  * Combinator that returns a copy of self with `roundingMode` set to `HalfExpand`.
  *
- * @category Utils
+ * @category Modifiers
  */
 export const withHalfExpandRoundingMode: MTypes.OneArgFunction<Type> = flow(
 	MStruct.append({
@@ -1221,7 +1287,7 @@ export const withHalfExpandRoundingMode: MTypes.OneArgFunction<Type> = flow(
 /**
  * Combinator that returns a copy of self with `roundingMode` set to `HalfTrunc`.
  *
- * @category Utils
+ * @category Modifiers
  */
 export const withHalfTruncRoundingMode: MTypes.OneArgFunction<Type> = flow(
 	MStruct.append({
@@ -1233,7 +1299,7 @@ export const withHalfTruncRoundingMode: MTypes.OneArgFunction<Type> = flow(
 /**
  * Combinator that returns a copy of self with `roundingMode` set to `HalfEven`.
  *
- * @category Utils
+ * @category Modifiers
  */
 export const withHalfEvenRoundingMode: MTypes.OneArgFunction<Type> = flow(
 	MStruct.append({
@@ -1245,7 +1311,7 @@ export const withHalfEvenRoundingMode: MTypes.OneArgFunction<Type> = flow(
 /**
  * Combinator that returns a copy of self with `showNullIntegerPart` set to `false`.
  *
- * @category Utils
+ * @category Modifiers
  */
 export const withNullIntegerPartNotShowing: MTypes.OneArgFunction<Type> = flow(
 	MStruct.append({
@@ -1257,7 +1323,7 @@ export const withNullIntegerPartNotShowing: MTypes.OneArgFunction<Type> = flow(
 /**
  * Combinator that returns a copy of self with `showNullIntegerPart` set to `true`.
  *
- * @category Utils
+ * @category Modifiers
  */
 export const withNullIntegerPartShowing: MTypes.OneArgFunction<Type> = flow(
 	MStruct.append({

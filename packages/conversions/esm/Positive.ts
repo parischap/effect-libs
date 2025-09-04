@@ -3,8 +3,8 @@
  * used internally
  */
 
-import { MTypes } from '@parischap/effect-lib';
-import { Brand, Either, Number, Option } from 'effect';
+import { MString, MTypes } from '@parischap/effect-lib';
+import { Brand, Either, flow, Number, Option } from 'effect';
 
 /**
  * Module tag
@@ -29,12 +29,18 @@ type _TypeId = typeof TypeId;
 export type Type = Brand.Branded<number, _TypeId>;
 
 /**
- * Constructs a Positive from a number. Throws if the number is not an integer
+ * Brand constructor. Should not be used directly
  *
  * @category Constructors
  */
-export const constructor = Brand.refined<Type>(Number.greaterThanOrEqualTo(0), (n) =>
-	Brand.error(`'${n}' is not positive`)
+export const constructor = Brand.refined<Type>(
+	Number.greaterThanOrEqualTo(0),
+	flow(
+		MString.fromNumber(10),
+		MString.prepend("'"),
+		MString.append("' is not positive"),
+		Brand.error
+	)
 );
 
 /**
@@ -56,3 +62,10 @@ export const fromNumber: MTypes.OneArgFunction<
 	number,
 	Either.Either<Type, Brand.Brand.BrandErrors>
 > = constructor.either.bind(constructor);
+
+/**
+ * Constructs a Positive from a number or throws
+ *
+ * @category Constructors
+ */
+export const fromNumberOrThrow: MTypes.OneArgFunction<number, Type> = constructor;

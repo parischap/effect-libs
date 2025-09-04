@@ -58,11 +58,7 @@ const formatter = CVTemplate.toFormatter(template);
 // }
 console.log(parser('John'));
 
-// Result: {
-//   _id: 'Either',
-//   _tag: 'Right',
-//   right: { name: 'John', age: 47, kind: 'man' }
-// }
+// Result: { _id: 'Either', _tag: 'Right', right: { name: 'John', age: 47, kind: 'man' } }
 console.log(parser('John is a 47-year old man.'));
 
 // Result: { _id: 'Either', _tag: 'Right', right: 'Tom is a 15-year old boy.' }

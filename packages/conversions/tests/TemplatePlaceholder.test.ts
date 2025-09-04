@@ -243,7 +243,7 @@ describe('CVTemplatePlaceholder', () => {
 		it('.toString()', () => {
 			TEUtils.strictEqual(
 				noSpaceChars.toString(),
-				'#foo: a non-empty string containing non-space characters'
+				"#foo: a non-empty string containing non of the following characters: [ '\\s' ]"
 			);
 		});
 
@@ -251,7 +251,7 @@ describe('CVTemplatePlaceholder', () => {
 			it('Not passing', () => {
 				TEUtils.assertLeftMessage(
 					noSpaceChars.parser(''),
-					"Expected #foo to be a non-empty string containing non-space characters. Actual: ''"
+					"Expected #foo to be a non-empty string containing non of the following characters: [ '\\s' ]. Actual: ''"
 				);
 			});
 
@@ -266,7 +266,7 @@ describe('CVTemplatePlaceholder', () => {
 				TEUtils.assertLeft(noSpaceChars.formatter(''));
 				TEUtils.assertLeftMessage(
 					noSpaceChars.formatter('fo o'),
-					"#foo: expected a non-empty string containing non-space characters. Actual: 'fo o'"
+					"#foo: expected a non-empty string containing non of the following characters: [ '\\s' ]. Actual: 'fo o'"
 				);
 			});
 

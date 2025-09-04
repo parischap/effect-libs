@@ -3,11 +3,11 @@ import {
 	CVDateTime,
 	CVDateTimeFormat,
 	CVEmail,
+	CVInteger,
 	CVNumberBase10Format,
+	CVPositiveInteger,
 	CVPositiveReal,
-	CVPositiveRealInt,
 	CVReal,
-	CVRealInt,
 	CVSchema,
 	CVSemVer
 } from '@parischap/conversions';
@@ -149,10 +149,10 @@ describe('CVSchema', () => {
 		});
 	});
 
-	describe('RealIntFromNumber', () => {
-		const target = CVRealInt.unsafeFromNumber(15);
+	describe('IntegerFromNumber', () => {
+		const target = CVInteger.unsafeFromNumber(15);
 		describe('Decoding', () => {
-			const decoder = Schema.decodeEither(CVSchema.RealIntFromNumber);
+			const decoder = Schema.decodeEither(CVSchema.IntegerFromNumber);
 			it('Not passing', () => {
 				TEUtils.assertLeft(decoder(+Infinity));
 				TEUtils.assertLeft(decoder(15.4));
@@ -163,7 +163,7 @@ describe('CVSchema', () => {
 		});
 
 		describe('Encoding', () => {
-			const encoder = Schema.encodeEither(CVSchema.RealIntFromNumber);
+			const encoder = Schema.encodeEither(CVSchema.IntegerFromNumber);
 
 			it('Passing', () => {
 				TEUtils.assertRight(encoder(target), target);
@@ -171,27 +171,27 @@ describe('CVSchema', () => {
 		});
 	});
 
-	describe('RealIntFromSelf', () => {
-		const target = CVRealInt.unsafeFromNumber(15);
+	describe('IntegerFromSelf', () => {
+		const target = CVInteger.unsafeFromNumber(15);
 		describe('Decoding', () => {
-			const decoder = Schema.decodeEither(CVSchema.RealIntFromSelf);
+			const decoder = Schema.decodeEither(CVSchema.IntegerFromSelf);
 			it('Passing', () => {
 				TEUtils.assertRight(decoder(target), target);
 			});
 		});
 
 		describe('Encoding', () => {
-			const encoder = Schema.encodeEither(CVSchema.RealIntFromSelf);
+			const encoder = Schema.encodeEither(CVSchema.IntegerFromSelf);
 			it('Passing', () => {
 				TEUtils.assertRight(encoder(target), target);
 			});
 		});
 	});
 
-	describe('PositiveRealIntFromNumber', () => {
-		const target = CVPositiveRealInt.unsafeFromNumber(15);
+	describe('PositiveIntegerFromNumber', () => {
+		const target = CVPositiveInteger.unsafeFromNumber(15);
 		describe('Decoding', () => {
-			const decoder = Schema.decodeEither(CVSchema.PositiveRealIntFromNumber);
+			const decoder = Schema.decodeEither(CVSchema.PositiveIntegerFromNumber);
 			it('Not passing', () => {
 				TEUtils.assertLeft(decoder(+Infinity));
 				TEUtils.assertLeft(decoder(15.4));
@@ -203,7 +203,7 @@ describe('CVSchema', () => {
 		});
 
 		describe('Encoding', () => {
-			const encoder = Schema.encodeEither(CVSchema.PositiveRealIntFromNumber);
+			const encoder = Schema.encodeEither(CVSchema.PositiveIntegerFromNumber);
 
 			it('Passing', () => {
 				TEUtils.assertRight(encoder(target), target);
@@ -211,17 +211,17 @@ describe('CVSchema', () => {
 		});
 	});
 
-	describe('PositiveRealIntFromSelf', () => {
-		const target = CVPositiveRealInt.unsafeFromNumber(15);
+	describe('PositiveIntegerFromSelf', () => {
+		const target = CVPositiveInteger.unsafeFromNumber(15);
 		describe('Decoding', () => {
-			const decoder = Schema.decodeEither(CVSchema.PositiveRealIntFromSelf);
+			const decoder = Schema.decodeEither(CVSchema.PositiveIntegerFromSelf);
 			it('Passing', () => {
 				TEUtils.assertRight(decoder(target), target);
 			});
 		});
 
 		describe('Encoding', () => {
-			const encoder = Schema.encodeEither(CVSchema.PositiveRealIntFromSelf);
+			const encoder = Schema.encodeEither(CVSchema.PositiveIntegerFromSelf);
 			it('Passing', () => {
 				TEUtils.assertRight(encoder(target), target);
 			});
@@ -287,7 +287,7 @@ describe('CVSchema', () => {
 	});
 
 	describe('DateTimeFromSelf', () => {
-		const target = CVDateTime.unsafeFromTimestamp(0);
+		const target = CVDateTime.fromTimestampOrThrow(0);
 		describe('Decoding', () => {
 			const decoder = Schema.decodeEither(CVSchema.DateTimeFromSelf);
 			it('Passing', () => {
@@ -304,7 +304,7 @@ describe('CVSchema', () => {
 	});
 
 	describe('DateTimeFromDate', () => {
-		const target = CVDateTime.unsafeFromTimestamp(0);
+		const target = CVDateTime.fromTimestampOrThrow(0);
 		const targetAsDate = new Date(0);
 		describe('Decoding', () => {
 			const decoder = Schema.decodeEither(CVSchema.DateTimeFromDate);
@@ -322,7 +322,7 @@ describe('CVSchema', () => {
 	});
 
 	describe('DateTimeFromEffectDateTime', () => {
-		const target = CVDateTime.unsafeFromTimestamp(1756128920881, 8);
+		const target = CVDateTime.fromTimestampOrThrow(1756128920881, 8);
 		const targetAsEFfectDateTime = DateTime.unsafeMakeZoned(1756128920881, { timeZone: 8 });
 		describe('Decoding', () => {
 			const decoder = Schema.decodeEither(CVSchema.DateTimeFromEffectDateTime);
@@ -360,7 +360,7 @@ describe('CVSchema', () => {
 			]
 		});
 		const schema = CVSchema.DateTime(frenchDateFormat);
-		const target = CVDateTime.unsafeFromTimestamp(new Date(2025, 7, 25, 10, 24, 47).getTime());
+		const target = CVDateTime.fromTimestampOrThrow(new Date(2025, 7, 25, 10, 24, 47).getTime());
 		const targetAsString = '25/08/2025 10:24:47 Paris time';
 
 		describe('Decoding', () => {
@@ -383,7 +383,7 @@ describe('CVSchema', () => {
 				TEUtils.assertLeft(
 					pipe(
 						new Date(12025, 7, 25, 10, 24, 47).getTime(),
-						CVDateTime.unsafeFromTimestamp,
+						CVDateTime.fromTimestampOrThrow,
 						encoder
 					)
 				);

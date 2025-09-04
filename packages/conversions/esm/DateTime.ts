@@ -11,11 +11,11 @@
  *
  * A DateTime object has a `zoneOffset` which is the difference in hours between the time in the
  * local zone and UTC time (e.g zoneOffset=1 for timezone +1:00). All the data in a DateTime object
- * is `zoneOffset-dependent`, except `timestamp` and `_zonedTimestamp`. An important thing to note
- * is that a DateTime object with a timestamp t and a zoneOffset zo has exactly the same date parts
- * (year, ordinalDay, month, monthDay, isoYear...) as a DateTime object with a timestamp t+zox3600
- * and a 0 zoneOffset. That's the reason for the _zonedTimestamp field which is equal to t+zox3600.
- * All calculations are performed UTC using _zonedTimestamp instead of timestamp.
+ * is `zoneOffset-dependent`, except `timestamp`. An important thing to note is that a DateTime
+ * object with a timestamp t and a zoneOffset zo has exactly the same date parts (year, ordinalDay,
+ * month, monthDay, isoYear...) as a DateTime object with a timestamp t+zox3600 and a 0 zoneOffset.
+ * That's the reason for the _zonedTimestamp field which is equal to t+zox3600. All calculations are
+ * performed UTC using _zonedTimestamp instead of timestamp.
  */
 
 import {
@@ -1822,8 +1822,8 @@ export const fromTimestamp = (
 ): Either.Either<Type, MInputError.Type> =>
 	pipe(
 		_uncalculatedOrigin,
-		setTimestamp(timestamp),
-		Either.flatMap(_setZoneOffset(true, zoneOffset))
+		_setTimestamp(timestamp),
+		Either.flatMap(setZoneOffsetKeepTimestamp(zoneOffset))
 	);
 
 /**
@@ -1831,7 +1831,7 @@ export const fromTimestamp = (
  *
  * @category Constructors
  */
-export const unsafeFromTimestamp: (
+export const fromTimestampOrThrow: (
 	timestamp: number,
 	zoneOffset?:
 		| number
@@ -2000,7 +2000,7 @@ export const fromParts = ({
 				zoneOffset !== undefined ||
 				(zoneHour === undefined && zoneMinute === undefined && zoneSecond === undefined)
 			) {
-				const result = yield* pipe(_uncalculatedOrigin, _setZoneOffset(false, zoneOffset));
+				const result = yield* pipe(_uncalculatedOrigin, setZoneOffsetKeepParts(zoneOffset));
 
 				if (zoneHour !== undefined)
 					yield* pipe(
@@ -2024,7 +2024,7 @@ export const fromParts = ({
 			}
 			return yield* pipe(
 				_uncalculatedOrigin,
-				_setZoneOffset(false, {
+				setZoneOffsetKeepParts({
 					zoneHour: zoneHour ?? 0,
 					zoneMinute: zoneMinute ?? 0,
 					zoneSecond: zoneSecond ?? 0
@@ -2151,7 +2151,7 @@ export const fromParts = ({
  *
  * @category Constructors
  */
-export const unsafeFromParts: (parts: Parts.Type) => Type = flow(
+export const fromPartsOrThrow: (parts: Parts.Type) => Type = flow(
 	fromParts,
 	Either.getOrThrowWith(Function.identity)
 );
@@ -2159,7 +2159,7 @@ export const unsafeFromParts: (parts: Parts.Type) => Type = flow(
 /**
  * Returns the timestamp of `self` as a number
  *
- * @category Destructors
+ * @category Getters
  */
 export const timestamp: MTypes.OneArgFunction<Type, number> = Struct.get('timestamp');
 
@@ -2178,7 +2178,7 @@ const _gregorianDate = (self: Type): GregorianDate.Type =>
 /**
  * Returns the (Gregorian) year of `self` for the given time zone
  *
- * @category Destructors
+ * @category Getters
  */
 export const getYear: MTypes.OneArgFunction<Type, number> = flow(
 	_gregorianDate,
@@ -2189,7 +2189,7 @@ export const getYear: MTypes.OneArgFunction<Type, number> = flow(
  * Returns true if the (Gregorian) year of `self` for the given time zone is a leap year. Returns
  * false otherwise
  *
- * @category Destructors
+ * @category Getters
  */
 export const yearIsLeap: MTypes.OneArgFunction<Type, boolean> = flow(
 	_gregorianDate,
@@ -2199,7 +2199,7 @@ export const yearIsLeap: MTypes.OneArgFunction<Type, boolean> = flow(
 /**
  * Returns the ordinalDay of `self` for the given time zone
  *
- * @category Destructors
+ * @category Getters
  */
 export const getOrdinalDay: MTypes.OneArgFunction<Type, number> = flow(
 	_gregorianDate,
@@ -2209,7 +2209,7 @@ export const getOrdinalDay: MTypes.OneArgFunction<Type, number> = flow(
 /**
  * Returns the month of `self` for the given time zone
  *
- * @category Destructors
+ * @category Getters
  */
 export const getMonth: MTypes.OneArgFunction<Type, number> = flow(
 	_gregorianDate,
@@ -2219,7 +2219,7 @@ export const getMonth: MTypes.OneArgFunction<Type, number> = flow(
 /**
  * Returns the monthDay of `self` for the given time zone
  *
- * @category Destructors
+ * @category Getters
  */
 export const getMonthDay: MTypes.OneArgFunction<Type, number> = flow(
 	_gregorianDate,
@@ -2245,7 +2245,7 @@ const _isoDate = (self: Type): IsoDate.Type =>
 /**
  * Returns the isoYear of `self` for the given time zone
  *
- * @category Destructors
+ * @category Getters
  */
 export const getIsoYear: MTypes.OneArgFunction<Type, number> = flow(_isoDate, IsoDate.year);
 
@@ -2253,7 +2253,7 @@ export const getIsoYear: MTypes.OneArgFunction<Type, number> = flow(_isoDate, Is
  * Returns true if the isoYear of `self` for the given time zone is a long year. Returns false
  * otherwise
  *
- * @category Destructors
+ * @category Getters
  */
 export const isoYearIsLong: MTypes.OneArgFunction<Type, boolean> = flow(
 	_isoDate,
@@ -2263,14 +2263,14 @@ export const isoYearIsLong: MTypes.OneArgFunction<Type, boolean> = flow(
 /**
  * Returns the isoWeek of `self` for the given time zone
  *
- * @category Destructors
+ * @category Getters
  */
 export const getIsoWeek: MTypes.OneArgFunction<Type, number> = flow(_isoDate, IsoDate.getIsoWeek);
 
 /**
  * Returns the weekday of `self` for the given time zone
  *
- * @category Destructors
+ * @category Getters
  */
 export const getWeekday: MTypes.OneArgFunction<Type, number> = flow(_isoDate, IsoDate.getWeekday);
 
@@ -2289,42 +2289,42 @@ const _time = (self: Type): Time.Type =>
 /**
  * Returns the hour23 of `self` for the given time zone
  *
- * @category Destructors
+ * @category Getters
  */
 export const getHour23: MTypes.OneArgFunction<Type, number> = flow(_time, Time.hour23);
 
 /**
  * Returns the hour11 of `self` for the given time zone
  *
- * @category Destructors
+ * @category Getters
  */
 export const getHour11: MTypes.OneArgFunction<Type, number> = flow(_time, Time.hour11);
 
 /**
  * Returns the meridiem of `self` for the given time zone
  *
- * @category Destructors
+ * @category Getters
  */
 export const getMeridiem: MTypes.OneArgFunction<Type, 0 | 12> = flow(_time, Time.meridiem);
 
 /**
  * Returns the minute of `self` for the given time zone
  *
- * @category Destructors
+ * @category Getters
  */
 export const getMinute: MTypes.OneArgFunction<Type, number> = flow(_time, Time.minute);
 
 /**
  * Returns the second of `self` for the given time zone
  *
- * @category Destructors
+ * @category Getters
  */
 export const getSecond: MTypes.OneArgFunction<Type, number> = flow(_time, Time.second);
 
 /**
  * Returns the millisecond of `self` for the given time zone
  *
- * @category Destructors
+ * @category Getters
  */
 export const getMillisecond: MTypes.OneArgFunction<Type, number> = flow(_time, Time.millisecond);
 
@@ -2343,7 +2343,7 @@ const _zoneOffsetParts = (self: Type): ZoneOffsetParts.Type =>
 /**
  * Returns the hour part of the zoneOffset of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const getZoneHour: MTypes.OneArgFunction<Type, number> = flow(
 	_zoneOffsetParts,
@@ -2353,7 +2353,7 @@ export const getZoneHour: MTypes.OneArgFunction<Type, number> = flow(
 /**
  * Returns the minute part of the zoneOffset of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const getZoneMinute: MTypes.OneArgFunction<Type, number> = flow(
 	_zoneOffsetParts,
@@ -2363,7 +2363,7 @@ export const getZoneMinute: MTypes.OneArgFunction<Type, number> = flow(
 /**
  * Returns the minute part of the zoneOffset of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const getZoneSecond: MTypes.OneArgFunction<Type, number> = flow(
 	_zoneOffsetParts,
@@ -2439,7 +2439,7 @@ export const setYear =
  *
  * @category Setters
  */
-export const unsafeSetYear: MTypes.OneArgFunction<number, MTypes.OneArgFunction<Type>> = flow(
+export const setYearOrThrow: MTypes.OneArgFunction<number, MTypes.OneArgFunction<Type>> = flow(
 	setYear,
 	Function.compose(Either.getOrThrowWith(Function.identity))
 );
@@ -2467,10 +2467,10 @@ export const setOrdinalDay =
  *
  * @category Setters
  */
-export const unsafeSetOrdinalDay: MTypes.OneArgFunction<number, MTypes.OneArgFunction<Type>> = flow(
-	setOrdinalDay,
-	Function.compose(Either.getOrThrowWith(Function.identity))
-);
+export const setOrdinalDayOrThrow: MTypes.OneArgFunction<
+	number,
+	MTypes.OneArgFunction<Type>
+> = flow(setOrdinalDay, Function.compose(Either.getOrThrowWith(Function.identity)));
 
 /**
  * If possible, returns a right of a DateTime having month `month` and the same `year`, `monthDay`,
@@ -2495,7 +2495,7 @@ export const setMonth =
  *
  * @category Setters
  */
-export const unsafeSetMonth: MTypes.OneArgFunction<number, MTypes.OneArgFunction<Type>> = flow(
+export const setMonthOrThrow: MTypes.OneArgFunction<number, MTypes.OneArgFunction<Type>> = flow(
 	setMonth,
 	Function.compose(Either.getOrThrowWith(Function.identity))
 );
@@ -2523,7 +2523,7 @@ export const setMonthDay =
  *
  * @category Setters
  */
-export const unsafeSetMonthDay: MTypes.OneArgFunction<number, MTypes.OneArgFunction<Type>> = flow(
+export const setMonthDayOrThrow: MTypes.OneArgFunction<number, MTypes.OneArgFunction<Type>> = flow(
 	setMonthDay,
 	Function.compose(Either.getOrThrowWith(Function.identity))
 );
@@ -2546,7 +2546,7 @@ export const setIsoYear =
  *
  * @category Setters
  */
-export const unsafeSetIsoYear: MTypes.OneArgFunction<number, MTypes.OneArgFunction<Type>> = flow(
+export const setIsoYearOrThrow: MTypes.OneArgFunction<number, MTypes.OneArgFunction<Type>> = flow(
 	setIsoYear,
 	Function.compose(Either.getOrThrowWith(Function.identity))
 );
@@ -2569,7 +2569,7 @@ export const setIsoWeek =
  *
  * @category Setters
  */
-export const unsafeSetIsoWeek: MTypes.OneArgFunction<number, MTypes.OneArgFunction<Type>> = flow(
+export const setIsoWeekOrThrow: MTypes.OneArgFunction<number, MTypes.OneArgFunction<Type>> = flow(
 	setIsoWeek,
 	Function.compose(Either.getOrThrowWith(Function.identity))
 );
@@ -2592,7 +2592,7 @@ export const setWeekday =
  *
  * @category Setters
  */
-export const unsafeSetWeekday: MTypes.OneArgFunction<number, MTypes.OneArgFunction<Type>> = flow(
+export const setWeekdayOrThrow: MTypes.OneArgFunction<number, MTypes.OneArgFunction<Type>> = flow(
 	setWeekday,
 	Function.compose(Either.getOrThrowWith(Function.identity))
 );
@@ -2615,7 +2615,7 @@ export const setHour23 =
  *
  * @category Setters
  */
-export const unsafeSetHour23: MTypes.OneArgFunction<number, MTypes.OneArgFunction<Type>> = flow(
+export const setHour23OrThrow: MTypes.OneArgFunction<number, MTypes.OneArgFunction<Type>> = flow(
 	setHour23,
 	Function.compose(Either.getOrThrowWith(Function.identity))
 );
@@ -2638,7 +2638,7 @@ export const setHour11 =
  *
  * @category Setters
  */
-export const unsafeSetHour11: MTypes.OneArgFunction<number, MTypes.OneArgFunction<Type>> = flow(
+export const setHour11OrThrow: MTypes.OneArgFunction<number, MTypes.OneArgFunction<Type>> = flow(
 	setHour11,
 	Function.compose(Either.getOrThrowWith(Function.identity))
 );
@@ -2672,7 +2672,7 @@ export const setMinute =
  *
  * @category Setters
  */
-export const unsafeSetMinute: MTypes.OneArgFunction<number, MTypes.OneArgFunction<Type>> = flow(
+export const setMinuteOrThrow: MTypes.OneArgFunction<number, MTypes.OneArgFunction<Type>> = flow(
 	setMinute,
 	Function.compose(Either.getOrThrowWith(Function.identity))
 );
@@ -2695,7 +2695,7 @@ export const setSecond =
  *
  * @category Setters
  */
-export const unsafeSetSecond: MTypes.OneArgFunction<number, MTypes.OneArgFunction<Type>> = flow(
+export const setSecondOrThrow: MTypes.OneArgFunction<number, MTypes.OneArgFunction<Type>> = flow(
 	setSecond,
 	Function.compose(Either.getOrThrowWith(Function.identity))
 );
@@ -2718,7 +2718,7 @@ export const setMillisecond =
  *
  * @category Setters
  */
-export const unsafeSetMillisecond: MTypes.OneArgFunction<
+export const setMillisecondOrThrow: MTypes.OneArgFunction<
 	number,
 	MTypes.OneArgFunction<Type>
 > = flow(setMillisecond, Function.compose(Either.getOrThrowWith(Function.identity)));
@@ -2728,10 +2728,8 @@ export const unsafeSetMillisecond: MTypes.OneArgFunction<
  * `left` of an error otherwise. `timestamp` must be an integer comprised in the range
  * [MIN_TIMESTAMP, MAX_TIMESTAMP] representing the number of milliseconds since 1/1/1970
  * 00:00:00:000+0:00.
- *
- * @category Setters
  */
-export const setTimestamp =
+const _setTimestamp =
 	(timestamp: number) =>
 	(self: Type): Either.Either<Type, MInputError.Type> =>
 		Either.gen(function* () {
@@ -2750,20 +2748,6 @@ export const setTimestamp =
 			return _uncalculatedFromTimestamp(validatedTimestamp, self.zoneOffset);
 		});
 
-/**
- * Same as setTimestamp but returns directly a DateTime or throws in case of an error
- *
- * @category Setters
- */
-export const unsafeSetTimestamp: MTypes.OneArgFunction<number, MTypes.OneArgFunction<Type>> = flow(
-	setTimestamp,
-	Function.compose(Either.getOrThrowWith(Function.identity))
-);
-
-/*
- * If `keepTimestamp` is true, `_zonedTimestamp` is also modified. Otherwise `timestamp` is also
- * modified.
- * */
 const _setZoneOffset =
 	(
 		keepTimestamp: boolean,
@@ -2809,7 +2793,8 @@ const _setZoneOffset =
 		});
 
 /**
- * If possible, returns a right of a copy of `self` with zoneOffset set to `zoneOffset`.
+ * If possible, returns a right of a copy of `self` with the same timestamp and zoneOffset set to
+ * `zoneOffset`.
  *
  * If `zoneOffset` is omitted, the local time zone offset of the machine this code is running on is
  * used.
@@ -2828,7 +2813,7 @@ const _setZoneOffset =
  *
  * @category Setters
  */
-export const setZoneOffset = (
+export const setZoneOffsetKeepTimestamp = (
 	zoneOffset?:
 		| number
 		| {
@@ -2840,11 +2825,11 @@ export const setZoneOffset = (
 	_setZoneOffset(true, zoneOffset);
 
 /**
- * Same as setZoneOffset but returns directly a DateTime or throws in case of an error
+ * Same as setZoneOffsetKeepTimestamp but returns directly a DateTime or throws in case of an error
  *
  * @category Setters
  */
-export const unsafeSetZoneOffset: MTypes.OneArgFunction<
+export const setZoneOffsetKeepTimestampOrThrow: MTypes.OneArgFunction<
 	| number
 	| {
 			readonly zoneHour: number;
@@ -2852,8 +2837,41 @@ export const unsafeSetZoneOffset: MTypes.OneArgFunction<
 			readonly zoneSecond: number;
 	  },
 	MTypes.OneArgFunction<Type>
-> = flow(setZoneOffset, Function.compose(Either.getOrThrowWith(Function.identity)));
+> = flow(setZoneOffsetKeepTimestamp, Function.compose(Either.getOrThrowWith(Function.identity)));
 
+/**
+ * If possible, returns a right of a copy of `self` with the same CVDateTime.Parts (except
+ * zoneOffset) and zoneOffset set to `zoneOffset`.
+ *
+ * See setZoneOffsetKeepTimestamp for more details
+ *
+ * @category Setters
+ */
+export const setZoneOffsetKeepParts = (
+	zoneOffset?:
+		| number
+		| {
+				readonly zoneHour: number;
+				readonly zoneMinute: number;
+				readonly zoneSecond: number;
+		  }
+): MTypes.OneArgFunction<Type, Either.Either<Type, MInputError.Type>> =>
+	_setZoneOffset(false, zoneOffset);
+
+/**
+ * Same as setZoneOffsetKeepTimestamp but returns directly a DateTime or throws in case of an error
+ *
+ * @category Setters
+ */
+export const setZoneOffsetKeepPartsOrThrow: MTypes.OneArgFunction<
+	| number
+	| {
+			readonly zoneHour: number;
+			readonly zoneMinute: number;
+			readonly zoneSecond: number;
+	  },
+	MTypes.OneArgFunction<Type>
+> = flow(setZoneOffsetKeepParts, Function.compose(Either.getOrThrowWith(Function.identity)));
 /**
  * Returns true if self is the first day of a month in the given timezone
  *
@@ -2912,7 +2930,7 @@ export const isLastIsoYearDay: Predicate.Predicate<Type> = (self) =>
  *
  * @category Offsetters
  */
-export const toFirstMonthDay: MTypes.OneArgFunction<Type> = unsafeSetMonthDay(1);
+export const toFirstMonthDay: MTypes.OneArgFunction<Type> = setMonthDayOrThrow(1);
 
 /**
  * Returns a copy of `self` where `monthDay` is set to the last day of the current month. All time
@@ -2921,7 +2939,7 @@ export const toFirstMonthDay: MTypes.OneArgFunction<Type> = unsafeSetMonthDay(1)
  * @category Offsetters
  */
 export const toLastMonthDay = (self: Type): Type =>
-	unsafeSetMonthDay(
+	setMonthDayOrThrow(
 		pipe(self, _gregorianDate, GregorianDate.getNumberOfDaysInMonth(getMonth(self)))
 	)(self);
 
@@ -2931,7 +2949,7 @@ export const toLastMonthDay = (self: Type): Type =>
  *
  * @category Offsetters
  */
-export const toFirstYearDay = (self: Type): Type => unsafeSetOrdinalDay(1)(self);
+export const toFirstYearDay = (self: Type): Type => setOrdinalDayOrThrow(1)(self);
 
 /**
  * Returns a copy of `self` where `ordinalDay` is set to the last day of the current year. All time
@@ -2940,7 +2958,7 @@ export const toFirstYearDay = (self: Type): Type => unsafeSetOrdinalDay(1)(self)
  * @category Offsetters
  */
 export const toLastYearDay = (self: Type): Type =>
-	unsafeSetOrdinalDay(pipe(self, _gregorianDate, GregorianDate.getYearDurationInDays))(self);
+	setOrdinalDayOrThrow(pipe(self, _gregorianDate, GregorianDate.getYearDurationInDays))(self);
 
 /**
  * Returns a copy of `self` where `isoWeek` and `weekday` are set to 1. All time parts (`hour23`,
@@ -2949,8 +2967,8 @@ export const toLastYearDay = (self: Type): Type =>
  * @category Offsetters
  */
 export const toFirstIsoYearDay: MTypes.OneArgFunction<Type> = flow(
-	unsafeSetIsoWeek(1),
-	unsafeSetWeekday(1)
+	setIsoWeekOrThrow(1),
+	setWeekdayOrThrow(1)
 );
 
 /**
@@ -2961,7 +2979,7 @@ export const toFirstIsoYearDay: MTypes.OneArgFunction<Type> = flow(
  * @category Offsetters
  */
 export const toLastIsoYearWeek = (self: Type): Type =>
-	pipe(self, unsafeSetIsoWeek(pipe(self, _isoDate, IsoDate.getLastIsoWeek)));
+	pipe(self, setIsoWeekOrThrow(pipe(self, _isoDate, IsoDate.getLastIsoWeek)));
 
 /**
  * Returns a copy of `self` where `isoWeek` is set to the last week of the current iso year and
@@ -2971,7 +2989,7 @@ export const toLastIsoYearWeek = (self: Type): Type =>
  * @category Offsetters
  */
 export const toLastIsoYearDay = (self: Type): Type =>
-	pipe(self, toLastIsoYearWeek, unsafeSetWeekday(7));
+	pipe(self, toLastIsoYearWeek, setWeekdayOrThrow(7));
 
 /**
  * If possible, returns a copy of `self` offset by `offset` years and having the same `month`,
@@ -2993,7 +3011,7 @@ export const offsetYears = (
  *
  * @category Setters
  */
-export const unsafeOffsetYears: (
+export const offsetYearsOrThrow: (
 	offset: number,
 	respectMonthEnd: boolean
 ) => MTypes.OneArgFunction<Type> = flow(
@@ -3023,8 +3041,8 @@ export const offsetMonths =
 
 		return pipe(
 			self,
-			offsetToLastMonthDay ? unsafeSetMonthDay(1) : Function.identity,
-			unsafeSetMonth(targetMonthIndex + 1),
+			offsetToLastMonthDay ? setMonthDayOrThrow(1) : Function.identity,
+			setMonthOrThrow(targetMonthIndex + 1),
 			setYear(getYear(self) + yearOffset),
 			Either.map(MFunction.fIfTrue({ condition: offsetToLastMonthDay, f: toLastMonthDay }))
 		);
@@ -3035,7 +3053,7 @@ export const offsetMonths =
  *
  * @category Setters
  */
-export const unsafeOffsetMonths: (
+export const offsetMonthsOrThrow: (
 	offset: number,
 	respectMonthEnd: boolean
 ) => MTypes.OneArgFunction<Type> = flow(
@@ -3058,7 +3076,7 @@ export const offsetDays = (
  *
  * @category Setters
  */
-export const unsafeOffsetDays: MTypes.OneArgFunction<number, MTypes.OneArgFunction<Type>> = flow(
+export const offsetDaysOrThrow: MTypes.OneArgFunction<number, MTypes.OneArgFunction<Type>> = flow(
 	offsetDays,
 	Function.compose(Either.getOrThrowWith(Function.identity))
 );
@@ -3079,7 +3097,7 @@ export const offsetIsoYears =
 
 		return pipe(
 			self,
-			offsetToLastIsoYearDay ? unsafeSetIsoWeek(1) : Function.identity,
+			offsetToLastIsoYearDay ? setIsoWeekOrThrow(1) : Function.identity,
 			setIsoYear(getIsoYear(self) + offset),
 			Either.map(MFunction.fIfTrue({ condition: offsetToLastIsoYearDay, f: toLastIsoYearWeek }))
 		);
@@ -3090,7 +3108,7 @@ export const offsetIsoYears =
  *
  * @category Setters
  */
-export const unsafeOffsetIsoYears: (
+export const offsetIsoYearsOrThrow: (
 	offset: number,
 	respectYearEnd: boolean
 ) => MTypes.OneArgFunction<Type> = flow(
@@ -3113,7 +3131,7 @@ export const offsetHours = (
  *
  * @category Setters
  */
-export const unsafeOffsetHours: MTypes.OneArgFunction<number, MTypes.OneArgFunction<Type>> = flow(
+export const offsetHoursOrThrow: MTypes.OneArgFunction<number, MTypes.OneArgFunction<Type>> = flow(
 	offsetHours,
 	Function.compose(Either.getOrThrowWith(Function.identity))
 );
@@ -3133,10 +3151,10 @@ export const offsetMinutes = (
  *
  * @category Setters
  */
-export const unsafeOffsetMinutes: MTypes.OneArgFunction<number, MTypes.OneArgFunction<Type>> = flow(
-	offsetMinutes,
-	Function.compose(Either.getOrThrowWith(Function.identity))
-);
+export const offsetMinutesOrThrow: MTypes.OneArgFunction<
+	number,
+	MTypes.OneArgFunction<Type>
+> = flow(offsetMinutes, Function.compose(Either.getOrThrowWith(Function.identity)));
 
 /**
  * Returns a copy of `self` offset by `offset` seconds
@@ -3153,10 +3171,10 @@ export const offsetSeconds = (
  *
  * @category Setters
  */
-export const unsafeOffsetSeconds: MTypes.OneArgFunction<number, MTypes.OneArgFunction<Type>> = flow(
-	offsetSeconds,
-	Function.compose(Either.getOrThrowWith(Function.identity))
-);
+export const offsetSecondsOrThrow: MTypes.OneArgFunction<
+	number,
+	MTypes.OneArgFunction<Type>
+> = flow(offsetSeconds, Function.compose(Either.getOrThrowWith(Function.identity)));
 
 /**
  * Returns a copy of `self` offset by `offset` milliseconds
@@ -3166,14 +3184,14 @@ export const unsafeOffsetSeconds: MTypes.OneArgFunction<number, MTypes.OneArgFun
 export const offsetMilliseconds =
 	(offset: number) =>
 	(self: Type): Either.Either<Type, MInputError.Type> =>
-		setTimestamp(timestamp(self) + offset)(self);
+		_setTimestamp(timestamp(self) + offset)(self);
 
 /**
  * Same as offsetMilliseconds but returns directly a DateTime or throws in case of an error
  *
  * @category Setters
  */
-export const unsafeOffsetMilliseconds: MTypes.OneArgFunction<
+export const offsetMillisecondsOrThrow: MTypes.OneArgFunction<
 	number,
 	MTypes.OneArgFunction<Type>
 > = flow(offsetMilliseconds, Function.compose(Either.getOrThrowWith(Function.identity)));

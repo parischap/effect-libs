@@ -1,12 +1,11 @@
 /**
- * This module implements a positive finite number brand (NaN, Infinity and negative numbers
- * disallowed). Useful for a price, a physical quantity...
+ * This module implements a finite integer brand (Infinity, NaN or non-null fractional part
+ * disallowed)
  */
 
-import { MNumber, MTypes } from '@parischap/effect-lib';
+import { MTypes } from '@parischap/effect-lib';
 import { BigDecimal, Brand, Either, flow, Function, Option } from 'effect';
-import * as CVPositive from './Positive.js';
-import * as CVPositiveInteger from './PositiveInteger.js';
+import * as CVInt from './Int.js';
 import * as CVReal from './Real.js';
 
 /**
@@ -14,31 +13,31 @@ import * as CVReal from './Real.js';
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/conversions/PositiveReal/';
+export const moduleTag = '@parischap/conversions/Integer/';
 
 /**
  * Brand constructor. Should not be used directly
  *
  * @category Constructors
  */
-export const constructor = Brand.all(CVReal.constructor, CVPositive.constructor);
+export const constructor = Brand.all(CVReal.constructor, CVInt.constructor);
 
 /**
- * PositiveReal type
+ * Integer type
  *
  * @category Models
  */
 export type Type = Brand.Brand.FromConstructor<typeof constructor>;
 
 /**
- * Constructs a PositiveReal from a number without any verifications
+ * Constructs an Integer from a number without any verifications
  *
  * @category Constructors
  */
 export const unsafeFromNumber = Brand.nominal<Type>();
 
 /**
- * Constructs an Option of a PositiveReal from a number
+ * Constructs an Option of an Integer from a number
  *
  * @category Constructors
  */
@@ -48,7 +47,7 @@ export const fromNumberOption: MTypes.OneArgFunction<
 > = constructor.option.bind(constructor);
 
 /**
- * Constructs an Either of a PositiveReal from a number
+ * Constructs an Either of an Integer from a number
  *
  * @category Constructors
  */
@@ -58,127 +57,117 @@ export const fromNumber: MTypes.OneArgFunction<
 > = constructor.either.bind(constructor);
 
 /**
- * Constructs a PositiveReal from a number or throws
+ * Constructs an Integer from a number or throws
  *
  * @category Constructors
  */
 export const fromNumberOrThrow: MTypes.OneArgFunction<number, Type> = constructor;
 
 /**
- * Constructs a PositiveReal from a BigDecimal without any checks
+ * Constructs an Integer from a BigDecimal without any checks
  *
  * @category Constructors
  */
 export const unsafeFromBigDecimal: MTypes.OneArgFunction<BigDecimal.BigDecimal, Type> =
-	MNumber.unsafeFromBigDecimal as never;
+	CVReal.unsafeFromBigDecimal as never;
 
 /**
- * Constructs an Option of a PositiveReal from a BigDecimal
+ * Constructs an Option of an Integer from a BigDecimal
  *
  * @category Constructors
  */
 export const fromBigDecimalOption: MTypes.OneArgFunction<
 	BigDecimal.BigDecimal,
 	Option.Option<Type>
-> = flow(CVReal.fromBigDecimalOption, Option.flatMap(CVPositive.fromNumberOption)) as never;
+> = flow(CVReal.fromBigDecimalOption, Option.flatMap(CVInt.fromNumberOption)) as never;
 
 /**
- * Constructs an Either of a PositiveReal from a BigDecimal
+ * Constructs an Either of an Integer from a BigDecimal
  *
  * @category Constructors
  */
 export const fromBigDecimal: MTypes.OneArgFunction<
 	BigDecimal.BigDecimal,
 	Either.Either<Type, Brand.Brand.BrandErrors>
-> = flow(CVReal.fromBigDecimal, Either.flatMap(CVPositive.fromNumber)) as never;
+> = flow(CVReal.fromBigDecimal, Either.flatMap(CVInt.fromNumber)) as never;
 
 /**
- * Constructs a PositiveReal from a BigDecimal or throws
+ * Constructs an Integer from a BigDecimal or throws
  *
  * @category Constructors
  */
 export const fromBigDecimalOrThrow: MTypes.OneArgFunction<BigDecimal.BigDecimal, Type> = flow(
 	CVReal.fromBigDecimalOrThrow,
-	CVPositive.fromNumberOrThrow
+	CVInt.fromNumberOrThrow
 ) as never;
 
 /**
- * Constructs a PositiveReal from a BigInt without any checks
+ * Constructs an Integer from a BigInt without any checks
  *
  * @category Constructors
  */
 export const unsafeFromBigInt: MTypes.OneArgFunction<bigint, Type> =
-	MNumber.unsafeFromBigInt as never;
+	CVReal.unsafeFromBigInt as never;
 
 /**
- * Constructs an Option of a PositiveReal from a BigInt
+ * Constructs an Option of an Integer from a BigInt
  *
  * @category Constructors
  */
 export const fromBigIntOption: MTypes.OneArgFunction<bigint, Option.Option<Type>> = flow(
-	CVReal.fromBigIntOption,
-	Option.flatMap(CVPositive.fromNumberOption)
+	CVReal.fromBigIntOption
 ) as never;
 
 /**
- * Constructs an Either of a PositiveReal from a BigInt
+ * Constructs an Either of an Integer from a BigInt
  *
  * @category Constructors
  */
 export const fromBigInt: MTypes.OneArgFunction<
 	bigint,
 	Either.Either<Type, Brand.Brand.BrandErrors>
-> = flow(CVReal.fromBigInt, Either.flatMap(CVPositive.fromNumber)) as never;
+> = flow(CVReal.fromBigInt, Either.flatMap(CVInt.fromNumber)) as never;
 
 /**
- * Constructs a PositiveReal from a BigInt or throws
+ * Constructs an Integer from a BigInt or throws
  *
  * @category Constructors
  */
 export const fromBigIntOrThrow: MTypes.OneArgFunction<bigint, Type> = flow(
-	CVReal.fromBigIntOrThrow,
-	CVPositive.fromNumberOrThrow
+	CVReal.fromBigIntOrThrow
 ) as never;
 
 /**
- * Constructs a PositiveReal from a Real without any checks
+ * Constructs an Integer from a Real without any checks
  *
  * @category Constructors
  */
 export const unsafeFromReal: MTypes.OneArgFunction<CVReal.Type, Type> = Function.identity as never;
 
 /**
- * Constructs an Option of a PositiveReal from a Real
+ * Constructs an Option of an Integer from a Real
  *
  * @category Constructors
  */
 export const fromRealOption: MTypes.OneArgFunction<
 	CVReal.Type,
 	Option.Option<Type>
-> = CVPositive.fromNumberOption as never;
+> = CVInt.fromNumberOption as never;
 
 /**
- * Constructs an Either of a PositiveReal from a Real
+ * Constructs an Either of an Integer from a Real
  *
  * @category Constructors
  */
 export const fromReal: MTypes.OneArgFunction<
 	CVReal.Type,
 	Either.Either<Type, Brand.Brand.BrandErrors>
-> = CVPositive.fromNumber as never;
+> = CVInt.fromNumber as never;
 
 /**
- * Constructs a PositiveReal from a Real or throws
+ * Constructs an Integer from a Real or throws
  *
  * @category Constructors
  */
 export const fromRealOrThrow: MTypes.OneArgFunction<CVReal.Type, Type> =
-	CVPositive.fromNumberOrThrow as never;
-
-/**
- * Constructs a PositiveReal from a PositiveInteger
- *
- * @category Constructors
- */
-export const fromPositiveInteger: MTypes.OneArgFunction<CVPositiveInteger.Type, Type> =
-	Function.identity as never;
+	CVInt.fromNumberOrThrow as never;

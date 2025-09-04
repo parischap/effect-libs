@@ -48,9 +48,11 @@ This package contains:
 - a [module to round numbers and BigDecimals](#RoundingModule) with the same rounding options as those offered by the javascript INTL namespace: Ceil, Floor, Expand, Trunc, HalfCeil...
 - a safe, easy-to-use [number/BigDecimal parser/formatter](#NumberParserFormatter) with almost all the options offered by the javascript INTL namespace: choice of the thousand separator, of the fractional separator, of the minimum and maximum number of fractional digits, of the rounding mode, of the sign display mode, of whether to show or not the integer part when it's zero, of whether to use a scientific or engineering notation, of the character to use as exponent mark... It can directly be used as a Schema instead of the existing Schema.NumberFromString transformer.
 - an equivalent to the PHP [sprintf and sscanf functions](#Templating) with real typing of the placeholders. Although Effect Schema does offer the [TemplateLiteralParser API](https://effect.website/docs/schema/basic-usage/#templateliteralparser), the latter does not provide a solution to situations such as fixed length fields (potentially padded), numbers formatted otherwise than in the english format...
-- a very easy to use DateTime module that implements natively the Iso calendar (Iso year and iso week). It is also faster than its Effect counterpart because it uses an internal state that's only used to speed up calculation times (but does not alter the result of functions; so DateTime functions can be viewed as pure from a user's perspective). It can therefore be useful in applications where time is of essence.
+- a very easy to use [DateTime module](#DateTimeModule) that implements natively the Iso calendar (Iso year and iso week). It is also faster than its Effect counterpart because it implements an internal state that's only used to speed up calculation times (but does not alter the result of functions; so DateTime functions can be viewed as pure from a user's perspective). It can therefore be useful in applications where time is of essence.
 - a DateTime parser/formatter which supports many of the available [unicode tokens](https://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table). It can directly be used as a Schema instead of the existing Schema.Date transformer.
 - a few brands which come in handy in many projects such as email, semantic versioning, integer numbers, positive integer numbers, real numbers and positive real numbers. All these brands are also defined as Schemas.
+
+Most functions of this package return an Either or an Option to signify the possibility of an error. However, if you are not an Effect user and do not want to learn more about it, you can simply use the `OrThrow` variant of the function. For instance, use `CVDateTime.setWeekdayOrThrow` instead of `CVDateTime.setWeekday`. As its name suggests, it will throw in case of an `Error`. Some functions return functions that return an `Either` or throw. In that case, the variant for non Effect users contains the word `Throwing`, e.g. use `CVDateTimeFormat.toThrowingFormatter` instead of `CVDateTimeFormat.toThrowingFormatter`.
 
 ### <a name="RoundingModule"></a>A) Rounding module
 
@@ -697,3 +699,21 @@ const template = CVTemplate.make(
 // #kind: a non-empty string containing non of the following characters: [ . ]
 console.log(template);
 ```
+
+### <a name="DateTimeModule"></a>D) DateTime module
+
+#### 1. Introduction
+
+This package implements an immutable `CVDateTime` object: once created, the characteristics of a `CVDateTime` object will never change. However, the Setters functions allow you to get a copy of an existing `CVDateTime` object with just one charactreristic modified.
+
+Although immutable from the outer world, `CVDateTime` objects do keep an internal state. But all functions available from the outside are pure: they will always yield the same result whatever the state the object is in. The state is only used to improve performance but does not alter the results.
+
+Unlike the Javascript Date objects and the Effect DateTime objects, `CVDateTime` objects handle both
+the Gregorian and Iso calendars. So you can easily get/set the iso year and iso week of a
+`CVDateTime` object.
+
+A `CVDateTime` object has a `zoneOffset` which is the difference in hours between the time in the local zone and UTC time (e.g zoneOffset=1 for timezone +1:00). All the data in a `CVDateTime` object is `zoneOffset-dependent`, except `timestamp`.
+
+You cannot create a `CVDateTime` object from a string. In that case, use the `CVDateTimeFormat` module.
+
+#### 2. Usage example

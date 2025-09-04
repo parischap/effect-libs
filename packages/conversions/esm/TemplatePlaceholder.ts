@@ -544,9 +544,9 @@ export const anythingBut = <const N extends string>({
 }): Type<N, string> => {
 	const forbiddenCharsAsString = pipe(
 		forbiddenChars,
-		Array.join(', '),
-		MString.prepend('[ '),
-		MString.append(' ]')
+		Array.join("', '"),
+		MString.prepend("[ '"),
+		MString.append("' ]")
 	);
 	return fulfilling({
 		name,
