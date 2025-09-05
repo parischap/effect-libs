@@ -1,7 +1,7 @@
 /** A module that implements an Email brand */
 
 import { MString, MTypes } from '@parischap/effect-lib';
-import { Brand, Either, Option } from 'effect';
+import { Brand, Either, Option, Schema } from 'effect';
 
 /**
  * Module tag
@@ -75,3 +75,19 @@ export const fromStringOrThrow: MTypes.OneArgFunction<string, Type> = constructo
  * @category Refinement
  */
 export const has = (input: string): input is Type => MString.isEmail(input);
+
+/**
+ * A Schema that transforms a string into a CVBrand.Email.Type
+ *
+ * @internal
+ */
+export const SchemaFromString: Schema.Schema<Type, string> = Schema.String.pipe(
+	Schema.fromBrand(constructor)
+);
+
+/**
+ * A Schema that represents a CVBrand.Email.Type
+ *
+ * @internal
+ */
+export const SchemaFromSelf: Schema.Schema<Type> = Schema.typeSchema(SchemaFromString);

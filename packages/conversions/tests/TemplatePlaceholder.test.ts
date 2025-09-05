@@ -2,7 +2,7 @@
 import { CVNumberBase10Format, CVReal, CVTemplatePlaceholder } from '@parischap/conversions';
 import { MRegExpString, MString, MTypes } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
-import { Tuple } from 'effect';
+import { Schema, Tuple } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('CVTemplatePlaceholder', () => {
@@ -202,7 +202,8 @@ describe('CVTemplatePlaceholder', () => {
 			keyValuePairs: [
 				['foo', 6],
 				['bazbar', 12]
-			]
+			],
+			schemaInstance: Schema.Number
 		});
 
 		it('.toString()', () => {

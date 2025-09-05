@@ -26,6 +26,7 @@
 		"module": "NodeNext",
 		"incremental": true,
 		"removeComments": false,
+		"stripInternal": true,
 		"lib": [],
 		"types": [],
 		"plugins": [{ "name": "@effect/language-service" }]

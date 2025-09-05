@@ -34,6 +34,7 @@ import {
 	pipe,
 	Pipeable,
 	Predicate,
+	Schema,
 	String,
 	Struct,
 	Tuple,
@@ -106,12 +107,14 @@ export interface Type<out N extends string, in out T> extends MInspectable.Type,
 	/** Formatter of this TemplatePlaceholder */
 	readonly formatter: Formatter.Type<T>;
 
+	readonly schemaInstance: Schema.Schema<T, T>;
+
 	/** @internal */
 	readonly [_TypeId]: { readonly _N: Types.Covariant<N>; readonly _T: Types.Invariant<T> };
 }
 
 /**
- * Type that represents a TemplatePart from and to any type
+ * Type that represents a TemplatePlaceholder from and to any type
  *
  * @category Models
  */
@@ -204,6 +207,14 @@ export const formatter: <const N extends string, T>(self: Type<N, T>) => Formatt
 	Struct.get('formatter');
 
 /**
+ * Returns the `schemaInstance` property of `self`
+ *
+ * @category Destructors
+ */
+export const schemaInstance: <const N extends string, T>(self: Type<N, T>) => Schema.Schema<T, T> =
+	Struct.get('schemaInstance');
+
+/**
  * Returns the description of `self`
  *
  * @category Destructors
@@ -217,15 +228,38 @@ export const getLabelledDescription = <N extends string, T>(self: Type<N, T>) =>
  *
  * @category Destructors
  */
-export const modify =
-	<T, T1>({
+export const modify: {
+	<T>({
 		descriptorMapper,
 		postParser,
 		preFormatter
 	}: {
 		readonly descriptorMapper: MTypes.OneArgFunction<string>;
+		readonly postParser: MTypes.OneArgFunction<T, Either.Either<T, MInputError.Type>>;
+		readonly preFormatter: MTypes.OneArgFunction<T, Either.Either<T, MInputError.Type>>;
+	}): <const N extends string>(self: Type<N, T>) => Type<N, T>;
+	<T, T1>({
+		descriptorMapper,
+		postParser,
+		preFormatter,
+		t1SchemaInstance
+	}: {
+		readonly descriptorMapper: MTypes.OneArgFunction<string>;
 		readonly postParser: MTypes.OneArgFunction<T, Either.Either<T1, MInputError.Type>>;
 		readonly preFormatter: MTypes.OneArgFunction<T1, Either.Either<T, MInputError.Type>>;
+		readonly t1SchemaInstance: Schema.Schema<T1, T1>;
+	}): <const N extends string>(self: Type<N, T>) => Type<N, T1>;
+} =
+	<T, T1>({
+		descriptorMapper,
+		postParser,
+		preFormatter,
+		t1SchemaInstance
+	}: {
+		readonly descriptorMapper: MTypes.OneArgFunction<string>;
+		readonly postParser: MTypes.OneArgFunction<T, Either.Either<T1, MInputError.Type>>;
+		readonly preFormatter: MTypes.OneArgFunction<T1, Either.Either<T, MInputError.Type>>;
+		readonly t1SchemaInstance?: Schema.Schema<T1, T1>;
 	}) =>
 	<const N extends string>(self: Type<N, T>): Type<N, T1> =>
 		make({
@@ -248,12 +282,16 @@ export const modify =
 					preFormatter.call(this, t1),
 					Either.flatMap((t) => self.formatter.call(this, t))
 				);
-			}
+			},
+			schemaInstance:
+				t1SchemaInstance === undefined ?
+					(self.schemaInstance as unknown as Schema.Schema<T1, T1>)
+				:	t1SchemaInstance
 		});
 
 /**
- * Builds a TemplatePart instance that parses/formats exactly `length` characters from a string.
- * `length` must be a strictly positive integer.
+ * Builds a TemplatePlaceholder instance that parses/formats exactly `length` characters from a
+ * string. `length` must be a strictly positive integer.
  *
  * @category Constructors
  */
@@ -280,15 +318,16 @@ export const fixedLength = <const N extends string>({
 		},
 		formatter: function (this: Type<N, string>, value) {
 			return MInputError.assertLength({ expected: length, name: this.label })(value);
-		}
+		},
+		schemaInstance: Schema.String
 	});
 };
 
 /**
- * Builds a TemplatePart instance that parses/formats exactly `length` characters from a string and
- * trims/pads the result at `padPosition` with `fillChar`. `fillChar` should be a one-character
- * string. `length` must be a strictly positive integer. See the meaning of `disallowEmptyString` in
- * String.trim.
+ * Builds a TemplatePlaceholder instance that parses/formats exactly `length` characters from a
+ * string and trims/pads the result at `padPosition` with `fillChar`. `fillChar` should be a
+ * one-character string. `length` must be a strictly positive integer. See the meaning of
+ * `disallowEmptyString` in String.trim.
  *
  * @category Constructors
  */
@@ -315,10 +354,11 @@ export const paddedFixedLength = <const N extends string>(params: {
 };
 
 /**
- * Builds a TemplatePart instance that parses/formats a Real in the given `numberBase10Format`. If
- * the number to parse/format is less than `length` characters, `fillChar` is trimmed/padded between
- * the sign and the number so that the length condition is respected. fillChar must be a
- * one-character string (but no error is triggered if you do not respect that condition)
+ * Builds a TemplatePlaceholder instance that parses/formats a Real in the given
+ * `numberBase10Format`. If the number to parse/format is less than `length` characters, `fillChar`
+ * is trimmed/padded between the sign and the number so that the length condition is respected.
+ * fillChar must be a one-character string (but no error is triggered if you do not respect that
+ * condition)
  *
  * @category Constructors
  */
@@ -358,13 +398,15 @@ export const fixedLengthToReal = <const N extends string>(params: {
 				` left-padded with '${fillChar}' to ${CVNumberBase10Format.toDescription(numberBase10Format)}`
 			),
 			postParser: numberParser,
-			preFormatter: numberFormatter
+			preFormatter: numberFormatter,
+			t1SchemaInstance: CVReal.SchemaFromSelf
 		})
 	);
 };
 
 /**
- * Builds a TemplatePart instance that parses/formats a Real provided in `numberBase10Format`.
+ * Builds a TemplatePlaceholder instance that parses/formats a Real provided in
+ * `numberBase10Format`.
  *
  * @category Constructors
  */
@@ -395,12 +437,13 @@ export const real = <const N extends string>({
 				Either.map(Tuple.mapSecond(flow(String.length, flippedTakeRightBut(text))))
 			);
 		},
-		formatter: flow(numberFormatter, Either.right)
+		formatter: flow(numberFormatter, Either.right),
+		schemaInstance: CVReal.SchemaFromSelf
 	});
 };
 
 /**
- * Builds a TemplatePart instance that works as a map:
+ * Builds a TemplatePlaceholder instance that works as a map:
  *
  * The parser expects one of the keys of `keyValuePairs` and will return the associated value. The
  * formatter expects one of the values of `keyValuePairs` and will return the associated key.
@@ -409,14 +452,22 @@ export const real = <const N extends string>({
  * is best if the type of the values defines a toString method. Value equality is checked with The
  * Effect Equal.equals function.
  *
+ * `schemaInstance` is a Schema instance that transforms a value of type T into a value of type T.
+ * It is an optional parameter. You need only provide it if you intend to use a CVTemplate built
+ * from it within the Effect Schema module. In that case, you can build such a Schema with the
+ * Schema.declare function. If you don't provide it and use a CVTemplate built from it within the
+ * Effect Schema module, it will not work.
+ *
  * @category Constructors
  */
 export const mappedLiterals = <const N extends string, T>({
 	name,
-	keyValuePairs
+	keyValuePairs,
+	schemaInstance = Schema.declare((_input: unknown): _input is T => false)
 }: {
 	readonly name: N;
 	readonly keyValuePairs: ReadonlyArray<readonly [string, T]>;
+	readonly schemaInstance?: Schema.Schema<T, T>;
 }): Type<N, T> => {
 	const keys = pipe(
 		keyValuePairs,
@@ -469,13 +520,25 @@ export const mappedLiterals = <const N extends string, T>({
 						})
 				)
 			);
-		}
+		},
+		schemaInstance
 	});
 };
 
 /**
- * Builds a TemplatePart instance that parses/formats the regular expression regExp. `regExp` must
- * start with the ^ character. Otherwise, the parser and formatter will not work properly.
+ * Same as `mappedLiterals` but `T` is assumed to be `CVReal.Type` which should be the most usual
+ * use case
+ *
+ * @category Constructors
+ */
+export const realMappedLiterals = <const N extends string>(params: {
+	readonly name: N;
+	readonly keyValuePairs: ReadonlyArray<readonly [string, CVReal.Type]>;
+}): Type<N, CVReal.Type> => mappedLiterals({ ...params, schemaInstance: CVReal.SchemaFromSelf });
+
+/**
+ * Builds a TemplatePlaceholder instance that parses/formats the regular expression regExp. `regExp`
+ * must start with the ^ character. Otherwise, the parser and formatter will not work properly.
  *
  * @category Constructors
  */
@@ -524,14 +587,15 @@ export const fulfilling = <const N extends string>({
 						})
 				)
 			);
-		}
+		},
+		schemaInstance: Schema.String
 	});
 };
 
 /**
- * Builds a TemplatePart instance that parses/formats a non-empty string made up of characters other
- * than those contained in `forbiddenChars`. `forbiddenChars` should be an array of 1-character
- * strings (will not throw otherwise but strange behaviors can be expected)
+ * Builds a TemplatePlaceholder instance that parses/formats a non-empty string made up of
+ * characters other than those contained in `forbiddenChars`. `forbiddenChars` should be an array of
+ * 1-character strings (will not throw otherwise but strange behaviors can be expected)
  *
  * @category Constructors
  */
@@ -562,7 +626,7 @@ export const anythingBut = <const N extends string>({
 };
 
 /**
- * Builds a TemplatePart instance that parses/formats all the remaining text.
+ * Builds a TemplatePlaceholder instance that parses/formats all the remaining text.
  *
  * @category Constructors
  */

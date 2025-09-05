@@ -9,29 +9,29 @@ import { Brand, Either, flow, Number, Option } from 'effect';
 /**
  * Module tag
  *
- * @category Module markers
+ * @internal
  */
-export const moduleTag = '@parischap/conversions/Positive/';
+export const _moduleTag = '@parischap/conversions/Positive/';
 
 /**
  * Module TypeId
  *
- * @category Module markers
+ * @internal
  */
-export const TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
-type _TypeId = typeof TypeId;
+export const _TypeId: unique symbol = Symbol.for(_moduleTag) as _TypeId;
+type _TypeId = typeof _TypeId;
 
 /**
  * Positive type
  *
- * @category Models
+ * @internal
  */
 export type Type = Brand.Branded<number, _TypeId>;
 
 /**
  * Brand constructor. Should not be used directly
  *
- * @category Constructors
+ * @internal
  */
 export const constructor = Brand.refined<Type>(
 	Number.greaterThanOrEqualTo(0),
@@ -46,7 +46,7 @@ export const constructor = Brand.refined<Type>(
 /**
  * Constructs an Option of a Positive from a number.
  *
- * @category Constructors
+ * @internal
  */
 export const fromNumberOption: MTypes.OneArgFunction<
 	number,
@@ -56,7 +56,7 @@ export const fromNumberOption: MTypes.OneArgFunction<
 /**
  * Constructs an Either of a Positive from a number.
  *
- * @category Constructors
+ * @internal
  */
 export const fromNumber: MTypes.OneArgFunction<
 	number,
@@ -66,6 +66,6 @@ export const fromNumber: MTypes.OneArgFunction<
 /**
  * Constructs a Positive from a number or throws
  *
- * @category Constructors
+ * @internal
  */
 export const fromNumberOrThrow: MTypes.OneArgFunction<number, Type> = constructor;

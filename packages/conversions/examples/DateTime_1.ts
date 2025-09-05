@@ -78,8 +78,8 @@ console.log(
 );
 
 /**
- * Once a CVDateTime is created, you can get any CVDateTime.Parts from it. Here are a few examples.
- * However, you can see the whole list of getters in the API.
+ * Once a CVDateTime is created, you can get any CVDateTime.Parts from it ising the provided
+ * getters. Here are a few examples (you can see the whole list of getters in the API).
  */
 
 const aDate = CVDateTime.fromPartsOrThrow({ year: 1970, month: 8, monthDay: 31, zoneOffset: 0 });
@@ -102,9 +102,9 @@ console.log(
 );
 
 /**
- * Once a CVDateTime is created, you can modify any CVDateTime.Parts. However, the initial
- * CVDateTime object is unchanged. You get a copy with the modified part. Here are a few examples.
- * You can see the whole list of setters in the API.
+ * Once a CVDateTime is created, you can modify any CVDateTime.Parts with the provided setters. Do
+ * keep in mind that the initial CVDateTime object is unchanged: you get a copy with the modified
+ * part. Here are a few examples (you can see the whole list of setters in the API).
  */
 // Result: { _id: 'Either', _tag: 'Right', right: '1970-03-01T00:00:00.000+00:00' }
 console.log(pipe(aDate, CVDateTime.setMonth(3)));
@@ -121,3 +121,46 @@ console.log(pipe(aDate, CVDateTime.setMonth(6)));
 
 // Result: { _id: 'Either', _tag: 'Right', right: '1970-08-31T05:45:00.000+05:45' }
 console.log(pipe(aDate, CVDateTime.setZoneOffsetKeepTimestamp(5.75)));
+
+// Result: { _id: 'Either', _tag: 'Right', right: '1970-08-31T00:00:00.000+05:45' }
+console.log(pipe(aDate, CVDateTime.setZoneOffsetKeepParts(5.75)));
+
+/**
+ * You can also modify the CVDateTime.Parts of an existing CVDateTime object with the provided
+ * offsetters. Do keep in mind that the initial CVDateTime object is unchanged: you get a copy with
+ * the modified part. Here are a few examples (you can see the whole list of offsetters in the
+ * API).
+ */
+// Result: '1970-01-01T00:00:00.000+00:00'
+console.log(pipe(aDate, CVDateTime.toFirstYearDay));
+
+// Result: {
+//   _id: 'Either',
+//   _tag: 'Left',
+//   left: {
+//     message: 'No February 29th on year 2027 which is not a leap year',
+//     _tag: '@parischap/effect-lib/InputError/'
+//   }
+// }
+console.log(
+	pipe(
+		CVDateTime.fromPartsOrThrow({ year: 2024, month: 2, monthDay: 29, zoneOffset: 0 }),
+		CVDateTime.offsetYears(3, false)
+	)
+);
+
+// Result: { _id: 'Either', _tag: 'Right', right: '2028-02-29T00:00:00.000+00:00' }
+console.log(
+	pipe(
+		CVDateTime.fromPartsOrThrow({ year: 2024, month: 2, monthDay: 29, zoneOffset: 0 }),
+		CVDateTime.offsetYears(4, false)
+	)
+);
+
+/** And finally you can use one of the few provided predicates whose list you will find in the API */
+
+// Result: true
+console.log(CVDateTime.isLastMonthDay(aDate));
+
+// Result: false
+console.log(CVDateTime.isFirstMonthDay(aDate));

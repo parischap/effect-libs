@@ -307,16 +307,16 @@ describe('CVSchema', () => {
 		const target = CVDateTime.fromTimestampOrThrow(0);
 		const targetAsDate = new Date(0);
 		describe('Decoding', () => {
-			const decoder = Schema.decodeEither(CVSchema.DateTimeFromDate);
+			const decoder = Schema.decodeEither(CVSchema.DateFromDateTime);
 			it('Passing', () => {
-				TEUtils.assertRight(decoder(targetAsDate), target);
+				TEUtils.assertRight(decoder(target), targetAsDate);
 			});
 		});
 
 		describe('Encoding', () => {
-			const encoder = Schema.encodeEither(CVSchema.DateTimeFromDate);
+			const encoder = Schema.encodeEither(CVSchema.DateFromDateTime);
 			it('Passing', () => {
-				TEUtils.assertRight(encoder(target), targetAsDate);
+				TEUtils.assertRight(encoder(targetAsDate), target);
 			});
 		});
 	});
@@ -325,16 +325,16 @@ describe('CVSchema', () => {
 		const target = CVDateTime.fromTimestampOrThrow(1756128920881, 8);
 		const targetAsEFfectDateTime = DateTime.unsafeMakeZoned(1756128920881, { timeZone: 8 });
 		describe('Decoding', () => {
-			const decoder = Schema.decodeEither(CVSchema.DateTimeFromEffectDateTime);
+			const decoder = Schema.decodeEither(CVSchema.DateTimeZonedFromDateTime);
 			it('Passing', () => {
-				TEUtils.assertRight(decoder(targetAsEFfectDateTime), target);
+				TEUtils.assertRight(decoder(target), targetAsEFfectDateTime);
 			});
 		});
 
 		describe('Encoding', () => {
-			const encoder = Schema.encodeEither(CVSchema.DateTimeFromEffectDateTime);
+			const encoder = Schema.encodeEither(CVSchema.DateTimeZonedFromDateTime);
 			it('Passing', () => {
-				TEUtils.assertRight(encoder(target), targetAsEFfectDateTime);
+				TEUtils.assertRight(encoder(targetAsEFfectDateTime), target);
 			});
 		});
 	});
@@ -343,7 +343,7 @@ describe('CVSchema', () => {
 		const placeholder = CVDateTimeFormat.TemplatePart.Placeholder.make;
 		const sep = CVDateTimeFormat.TemplatePart.Separator;
 		const frenchDateFormat = CVDateTimeFormat.make({
-			context: CVDateTimeFormat.Context.unsafeFromLocale('fr-FR'),
+			context: CVDateTimeFormat.Context.fromLocaleOrThrow('fr-FR'),
 			templateparts: [
 				placeholder('dd'),
 				sep.slash,

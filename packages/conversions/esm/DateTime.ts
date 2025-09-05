@@ -29,6 +29,7 @@ import {
 	MTypes
 } from '@parischap/effect-lib';
 import {
+	DateTime,
 	Either,
 	Equal,
 	Equivalence,
@@ -2155,6 +2156,36 @@ export const fromPartsOrThrow: (parts: Parts.Type) => Type = flow(
 	fromParts,
 	Either.getOrThrowWith(Function.identity)
 );
+
+/**
+ * Builds a CVDateTime from a Javascript Date
+ *
+ * @category Constructors
+ */
+export const fromDate = (date: Date): Type => fromTimestampOrThrow(date.getTime());
+
+/**
+ * Builds a CVDateTime from an Effect DateTime
+ *
+ * @category Constructors
+ */
+export const fromEffectDateTime = (date: DateTime.Zoned): Type =>
+	fromTimestampOrThrow(DateTime.toEpochMillis(date), DateTime.zonedOffset(date));
+
+/**
+ * Builds a Javascript Date from a CVDateTime
+ *
+ * @category Conversions
+ */
+export const toDate = (self: Type): Date => new Date(timestamp(self));
+
+/**
+ * Builds an Effect DateTime from a CVDateTime
+ *
+ * @category Conversions
+ */
+export const toEffectDateTime = (self: Type): DateTime.Zoned =>
+	DateTime.unsafeMakeZoned(timestamp(self), { timeZone: self.zoneOffset });
 
 /**
  * Returns the timestamp of `self` as a number

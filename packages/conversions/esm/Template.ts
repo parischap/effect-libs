@@ -55,6 +55,8 @@ import {
 	Array,
 	Either,
 	Equal,
+	flow,
+	Function,
 	Option,
 	pipe,
 	Pipeable,
@@ -141,7 +143,7 @@ export const templateParts: <const PS extends CVTemplateParts.Type>(self: Type<P
 /**
  * Returns a function that parses a text into a record according to 'self' .
  *
- * @category Destructors
+ * @category Parsing
  */
 
 export const toParser =
@@ -194,11 +196,29 @@ export const toParser =
 		});
 
 /**
+ * Same as toParser but the returned parser throws in case of error
+ *
+ * @category Parsing
+ */
+
+export const toThrowingParser: <const PS extends CVTemplateParts.Type>(
+	self: Type<PS>
+) => MTypes.OneArgFunction<
+	string,
+	{
+		readonly [k in keyof MTypes.ArrayKeys<PS> as PS[k] extends CVTemplatePlaceholder.All ?
+			CVTemplatePlaceholder.ExtractName<PS[k]>
+		:	never]: PS[k] extends CVTemplatePlaceholder.All ? CVTemplatePlaceholder.ExtractType<PS[k]>
+		:	never;
+	}
+> = flow(toParser, Function.compose(Either.getOrThrowWith(Function.identity))) as never;
+
+/**
  * Returns a function that formats an object into the template represented by 'self' . When
  * strictMode is false, the formatter function of the templatepart's is replaced by the Either.right
  * function, i.e. no checks are carried out when encoding
  *
- * @category Destructors
+ * @category Formatting
  */
 export const toFormatter = <const PS extends CVTemplateParts.Type>(
 	self: Type<PS>
@@ -237,3 +257,21 @@ export const toFormatter = <const PS extends CVTemplateParts.Type>(
 			return result;
 		});
 };
+
+/**
+ * Same as toFormatter but the returned formatter throws in case of error
+ *
+ * @category Formatting
+ */
+
+export const toThrowingFormatter: <const PS extends CVTemplateParts.Type>(
+	self: Type<PS>
+) => MTypes.OneArgFunction<
+	{
+		readonly [k in keyof MTypes.ArrayKeys<PS> as PS[k] extends CVTemplatePlaceholder.All ?
+			CVTemplatePlaceholder.ExtractName<PS[k]>
+		:	never]: PS[k] extends CVTemplatePlaceholder.All ? CVTemplatePlaceholder.ExtractType<PS[k]>
+		:	never;
+	},
+	string
+> = flow(toFormatter, Function.compose(Either.getOrThrowWith(Function.identity))) as never;

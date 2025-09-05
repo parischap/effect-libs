@@ -4,9 +4,9 @@
  */
 
 import { MNumber, MTypes } from '@parischap/effect-lib';
-import { BigDecimal, Brand, Either, flow, Function, Option } from 'effect';
-import * as CVPositive from './Positive.js';
-import * as CVPositiveInteger from './PositiveInteger.js';
+import { BigDecimal, Brand, Either, flow, Function, Option, Schema } from 'effect';
+import * as CVPositive from './internal/Positive.js';
+import type * as CVPositiveInteger from './PositiveInteger.js';
 import * as CVReal from './Real.js';
 
 /**
@@ -182,3 +182,19 @@ export const fromRealOrThrow: MTypes.OneArgFunction<CVReal.Type, Type> =
  */
 export const fromPositiveInteger: MTypes.OneArgFunction<CVPositiveInteger.Type, Type> =
 	Function.identity as never;
+
+/**
+ * A Schema that transforms a number into a CVPositiveReal.Type
+ *
+ * @internal
+ */
+export const SchemaFromNumber: Schema.Schema<Type, number> = Schema.Number.pipe(
+	Schema.fromBrand(constructor)
+);
+
+/**
+ * A Schema that represents a CVPositiveReal.Type
+ *
+ * @internal
+ */
+export const SchemaFromSelf: Schema.Schema<Type> = Schema.typeSchema(SchemaFromNumber);

@@ -1,41 +1,16 @@
 /* eslint-disable functional/no-expression-statements */
-import { CVDateTime, CVDateTimeFormat } from '@parischap/conversions';
+import { CVDateTime, CVDateTimeFormat, CVDateTimeFormatContext } from '@parischap/conversions';
 import { TEUtils } from '@parischap/test-utils';
 import { Either, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('CVDateTimeFormat', () => {
-	const usContext = CVDateTimeFormat.Context.us;
-
-	describe('Context', () => {
-		describe('Prototype and guards', () => {
-			it('.toString()', () => {
-				TEUtils.strictEqual(usContext.toString(), 'en-US');
-			});
-
-			it('.pipe()', () => {
-				TEUtils.assertTrue(usContext.pipe(CVDateTimeFormat.Context.has));
-			});
-
-			describe('has', () => {
-				it('Matching', () => {
-					TEUtils.assertTrue(CVDateTimeFormat.Context.has(usContext));
-				});
-				it('Non matching', () => {
-					TEUtils.assertFalse(CVDateTimeFormat.Context.has(new Date()));
-				});
-			});
-		});
-
-		it('fromLocale', () => {
-			TEUtils.assertSome(CVDateTimeFormat.Context.fromLocale('en-US'));
-		});
-	});
+	const enGBContext = CVDateTimeFormatContext.enGB;
 
 	const placeholder = CVDateTimeFormat.TemplatePart.Placeholder.make;
 	const sep = CVDateTimeFormat.TemplatePart.Separator;
 	const isoFormat = CVDateTimeFormat.make({
-		context: usContext,
+		context: enGBContext,
 		templateparts: [
 			placeholder('yyyy'),
 			sep.hyphen,
@@ -57,7 +32,7 @@ describe('CVDateTimeFormat', () => {
 	});
 
 	const exhaustiveFormat = CVDateTimeFormat.make({
-		context: usContext,
+		context: enGBContext,
 		templateparts: [
 			placeholder('y'),
 			sep.space,
@@ -121,7 +96,7 @@ describe('CVDateTimeFormat', () => {
 		it('.toString()', () => {
 			TEUtils.strictEqual(
 				isoFormat.toString(),
-				"'yyyy-MM-ddTHH:mm:ss,SSSzHzH:zmzm' in 'en-US' context"
+				"'yyyy-MM-ddTHH:mm:ss,SSSzHzH:zmzm' in 'en-GB' context"
 			);
 		});
 

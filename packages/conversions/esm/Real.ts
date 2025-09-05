@@ -1,7 +1,7 @@
 /** This module implements a finite number brand (Infinity or Nan disallowed) */
 
 import { MNumber, MString, MTypes } from '@parischap/effect-lib';
-import { BigDecimal, Brand, Either, flow, Option } from 'effect';
+import { BigDecimal, Brand, Either, flow, Option, Schema } from 'effect';
 
 /**
  * Module tag
@@ -145,3 +145,19 @@ export const fromBigInt: MTypes.OneArgFunction<
  */
 export const fromBigIntOrThrow: MTypes.OneArgFunction<bigint, Type> =
 	MNumber.fromBigIntOrThrow as never;
+
+/**
+ * A Schema that transforms a number into an CVReal.Type
+ *
+ * @internal
+ */
+export const SchemaFromNumber: Schema.Schema<Type, number> = Schema.Number.pipe(
+	Schema.fromBrand(constructor)
+);
+
+/**
+ * A Schema that represents a CVReal.Type
+ *
+ * @internal
+ */
+export const SchemaFromSelf: Schema.Schema<Type> = Schema.typeSchema(SchemaFromNumber);

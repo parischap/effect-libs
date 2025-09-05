@@ -37,16 +37,32 @@ const template = CVTemplate.make(
 //    readonly name: string;
 //    readonly age: CVReal.Type;
 //    readonly kind: string;
-// }, MInputError.Type>>
+// }, MInputError.Type>
 const parser = CVTemplate.toParser(template);
 
-// Let's define a formatter. See how the return type matches the names and types of the placeholders
+// Let's define a parser that throws for Effect users.
+// Type: (value: string) => {
+//    readonly name: string;
+//    readonly age: CVReal.Type;
+//    readonly kind: string;
+// }
+const throwingParser = CVTemplate.toThrowingParser(template);
+
+// Let's define a formatter.
 // Type: (value: {
 //    readonly name: string;
 //    readonly age: CVReal.Type;
 //    readonly kind: string;
 //   }) => Either.Either<string, MInputError.Type>
 const formatter = CVTemplate.toFormatter(template);
+
+// Let's define a formatter that throws for Effect users.
+// Type: (value: {
+//    readonly name: string;
+//    readonly age: CVReal.Type;
+//    readonly kind: string;
+//   }) => string, MInputError.Type
+const throwingFormatter = CVTemplate.toThrowingFormatter(template);
 
 // Result: {
 //   _id: 'Either',
@@ -61,9 +77,21 @@ console.log(parser('John'));
 // Result: { _id: 'Either', _tag: 'Right', right: { name: 'John', age: 47, kind: 'man' } }
 console.log(parser('John is a 47-year old man.'));
 
+// Result: { name: 'John', age: 47, kind: 'man' }
+console.log(throwingParser('John is a 47-year old man.'));
+
 // Result: { _id: 'Either', _tag: 'Right', right: 'Tom is a 15-year old boy.' }
 console.log(
 	formatter({
+		name: 'Tom',
+		age: CVReal.unsafeFromNumber(15),
+		kind: 'boy'
+	})
+);
+
+// Result: 'Tom is a 15-year old boy.'
+console.log(
+	throwingFormatter({
 		name: 'Tom',
 		age: CVReal.unsafeFromNumber(15),
 		kind: 'boy'

@@ -3,7 +3,12 @@
 	"examplesCompilerOptions": "./tsconfig.docgen.json",
 	"srcDir": "./esm",
 	"outDir": "docs",
-	"exclude": ["esm/index.ts"],
+	"exclude": [
+		"esm\\internal/**\\*.ts",
+		"esm\\internal/**\\*.mts",
+		"esm\\internal/**\\*.cts",
+		"esm/index.ts"
+	],
 	"enforceDescriptions": true,
 	"enforceVersion": false
 }

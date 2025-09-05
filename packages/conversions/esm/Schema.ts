@@ -19,48 +19,42 @@ import * as CVSemVer from './SemVer.js';
  *
  * @category Schema transformations
  */
-export const Email: Schema.Schema<CVEmail.Type, string> = Schema.String.pipe(
-	Schema.fromBrand(CVEmail.constructor)
-);
+export const Email: Schema.Schema<CVEmail.Type, string> = CVEmail.SchemaFromString;
 
 /**
  * A Schema that represents a CVBrand.Email.Type
  *
  * @category Schema instances
  */
-export const EmailFromSelf: Schema.Schema<CVEmail.Type> = Schema.typeSchema(Email);
+export const EmailFromSelf: Schema.Schema<CVEmail.Type> = CVEmail.SchemaFromSelf;
 
 /**
  * A Schema that transforms a string into an CVBrand.SemVer.Type
  *
  * @category Schema transformations
  */
-export const SemVer: Schema.Schema<CVSemVer.Type, string> = Schema.String.pipe(
-	Schema.fromBrand(CVSemVer.constructor)
-);
+export const SemVer: Schema.Schema<CVSemVer.Type, string> = CVSemVer.SchemaFromString;
 
 /**
  * A Schema that represents a CVBrand.SemVer.Type
  *
  * @category Schema instances
  */
-export const SemVerFromSelf: Schema.Schema<CVSemVer.Type> = Schema.typeSchema(SemVer);
+export const SemVerFromSelf: Schema.Schema<CVSemVer.Type> = CVSemVer.SchemaFromSelf;
 
 /**
  * A Schema that transforms a number into an CVReal.Type
  *
  * @category Schema transformations
  */
-export const RealFromNumber: Schema.Schema<CVReal.Type, number> = Schema.Number.pipe(
-	Schema.fromBrand(CVReal.constructor)
-);
+export const RealFromNumber: Schema.Schema<CVReal.Type, number> = CVReal.SchemaFromNumber;
 
 /**
  * A Schema that represents a CVReal.Type
  *
  * @category Schema instances
  */
-export const RealFromSelf: Schema.Schema<CVReal.Type> = Schema.typeSchema(RealFromNumber);
+export const RealFromSelf: Schema.Schema<CVReal.Type> = CVReal.SchemaFromSelf;
 
 /**
  * A Schema that transforms a string into a Real according to the CVNumberBase10Format `format`.
@@ -79,7 +73,12 @@ export const Real = (format: CVNumberBase10Format.Type): Schema.Schema<CVReal.Ty
 				input,
 				parser,
 				Either.fromOption(
-					() => new ParseResult.Type(ast, input, 'Failed to convert string to Real')
+					() =>
+						new ParseResult.Type(
+							ast,
+							input,
+							'Failed to convert string to a(n) ' + CVNumberBase10Format.toDescription(format)
+						)
 				)
 			),
 		encode: flow(formatter, ParseResult.succeed)
@@ -91,16 +90,14 @@ export const Real = (format: CVNumberBase10Format.Type): Schema.Schema<CVReal.Ty
  *
  * @category Schema transformations
  */
-export const IntegerFromNumber: Schema.Schema<CVInteger.Type, number> = Schema.Number.pipe(
-	Schema.fromBrand(CVInteger.constructor)
-);
+export const IntegerFromNumber: Schema.Schema<CVInteger.Type, number> = CVInteger.SchemaFromNumber;
 
 /**
  * A Schema that represents a CVInteger.Type
  *
  * @category Schema instances
  */
-export const IntegerFromSelf: Schema.Schema<CVInteger.Type> = Schema.typeSchema(IntegerFromNumber);
+export const IntegerFromSelf: Schema.Schema<CVInteger.Type> = CVInteger.SchemaFromSelf;
 
 /**
  * A Schema that transforms a number into a CVPositiveInteger.Type
@@ -108,7 +105,7 @@ export const IntegerFromSelf: Schema.Schema<CVInteger.Type> = Schema.typeSchema(
  * @category Schema transformations
  */
 export const PositiveIntegerFromNumber: Schema.Schema<CVPositiveInteger.Type, number> =
-	Schema.Number.pipe(Schema.fromBrand(CVPositiveInteger.constructor));
+	CVPositiveInteger.SchemaFromNumber;
 
 /**
  * A Schema that represents a CVPositiveInteger.Type
@@ -116,7 +113,7 @@ export const PositiveIntegerFromNumber: Schema.Schema<CVPositiveInteger.Type, nu
  * @category Schema instances
  */
 export const PositiveIntegerFromSelf: Schema.Schema<CVPositiveInteger.Type> =
-	Schema.typeSchema(PositiveIntegerFromNumber);
+	CVPositiveInteger.SchemaFromSelf;
 
 /**
  * A Schema that transforms a number into a CVPositiveReal.Type
@@ -124,7 +121,7 @@ export const PositiveIntegerFromSelf: Schema.Schema<CVPositiveInteger.Type> =
  * @category Schema transformations
  */
 export const PositiveRealFromNumber: Schema.Schema<CVPositiveReal.Type, number> =
-	Schema.Number.pipe(Schema.fromBrand(CVPositiveReal.constructor));
+	CVPositiveReal.SchemaFromNumber;
 
 /**
  * A Schema that represents a CVPositiveReal.Type
@@ -132,7 +129,7 @@ export const PositiveRealFromNumber: Schema.Schema<CVPositiveReal.Type, number> 
  * @category Schema instances
  */
 export const PositiveRealFromSelf: Schema.Schema<CVPositiveReal.Type> =
-	Schema.typeSchema(PositiveRealFromNumber);
+	CVPositiveReal.SchemaFromSelf;
 
 const BigDecimalFromString = (
 	format: CVNumberBase10Format.Type
@@ -148,7 +145,11 @@ const BigDecimalFromString = (
 				Option.map(ParseResult.succeed),
 				Option.getOrElse(() =>
 					ParseResult.fail(
-						new ParseResult.Type(ast, input, 'Failed to convert string to BigDecimal')
+						new ParseResult.Type(
+							ast,
+							input,
+							'Failed to convert string to a(n) ' + CVNumberBase10Format.toDescription(format)
+						)
 					)
 				)
 			),
@@ -177,34 +178,32 @@ export const DateTimeFromSelf = Schema.declare((input: unknown): input is CVDate
 );
 
 /**
- * A Schema that transforms a Date into a CVDateTime. The CVDateTimeObject is created with the
+ * A Schema that transforms a CVDateTime into a Date. The CVDateTime object is created with the
  * default timeZoneOffset of the machine this code is running on
  *
  * @category Schema instances
  */
-export const DateTimeFromDate: Schema.Schema<CVDateTime.Type, Date> = Schema.transform(
-	Schema.DateFromSelf,
+export const DateFromDateTime: Schema.Schema<Date, CVDateTime.Type> = Schema.transform(
 	DateTimeFromSelf,
+	Schema.DateFromSelf,
 	{
 		strict: true,
-		decode: (input) => CVDateTime.fromTimestampOrThrow(input.getTime()),
-		encode: (input) => new Date(CVDateTime.timestamp(input))
+		decode: CVDateTime.toDate,
+		encode: CVDateTime.fromDate
 	}
 );
 
 /**
- * A Schema that transforms an Effect DateTime.Zoned into a CVDateTime. Both objects share the same
+ * A Schema that transforms a CVDateTime into an Effect DateTime.Zoned. Both objects share the same
  * time zone offset.
  *
  * @category Schema instances
  */
-export const DateTimeFromEffectDateTime: Schema.Schema<CVDateTime.Type, DateTime.Zoned> =
-	Schema.transform(Schema.DateTimeZonedFromSelf, DateTimeFromSelf, {
+export const DateTimeZonedFromDateTime: Schema.Schema<DateTime.Zoned, CVDateTime.Type> =
+	Schema.transform(DateTimeFromSelf, Schema.DateTimeZonedFromSelf, {
 		strict: true,
-		decode: (input) =>
-			CVDateTime.fromTimestampOrThrow(DateTime.toEpochMillis(input), DateTime.zonedOffset(input)),
-		encode: (input) =>
-			DateTime.unsafeMakeZoned(CVDateTime.timestamp(input), { timeZone: input.zoneOffset })
+		decode: CVDateTime.toEffectDateTime,
+		encode: CVDateTime.fromEffectDateTime
 	});
 
 const DateTimeFromString = (
@@ -239,3 +238,23 @@ export {
 	 */
 	DateTimeFromString as DateTime
 };
+
+/**
+ * A Schema that transforms a string into a Date according to the CVDateTimeFormat `format`. Read
+ * documentation of CVDateTimeFormat.toParser and CVDateTimeFormat.toFormatter for more details
+ *
+ * @category Schema transformations
+ */
+export const Date = (format: CVDateTimeFormat.Type): Schema.Schema<Date, string> =>
+	Schema.compose(DateTimeFromString(format), DateFromDateTime);
+
+/**
+ * A Schema that transforms a string into a Date according to the CVDateTimeFormat `format`. Read
+ * documentation of CVDateTimeFormat.toParser and CVDateTimeFormat.toFormatter for more details
+ *
+ * @category Schema transformations
+ */
+export const DateTimeZoned = (
+	format: CVDateTimeFormat.Type
+): Schema.Schema<DateTime.Zoned, string> =>
+	Schema.compose(DateTimeFromString(format), DateTimeZonedFromDateTime);

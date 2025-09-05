@@ -19,7 +19,9 @@ export default Configs.configSubRepo({
 		'Template_1.ts',
 		'Template_2.ts',
 		'Template_3.ts',
-		'DateTime_1.ts'
+		'DateTime_1.ts',
+		'DateTimeFormat_1.ts',
+		'DateTimeFormat_2.ts'
 	],
 	scripts: {},
 	bundled: false,

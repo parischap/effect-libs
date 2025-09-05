@@ -4,8 +4,8 @@
  */
 
 import { MTypes } from '@parischap/effect-lib';
-import { BigDecimal, Brand, Either, flow, Function, Option } from 'effect';
-import * as CVInt from './Int.js';
+import { BigDecimal, Brand, Either, flow, Function, Option, Schema } from 'effect';
+import * as CVInt from './internal/Int.js';
 import * as CVReal from './Real.js';
 
 /**
@@ -171,3 +171,19 @@ export const fromReal: MTypes.OneArgFunction<
  */
 export const fromRealOrThrow: MTypes.OneArgFunction<CVReal.Type, Type> =
 	CVInt.fromNumberOrThrow as never;
+
+/**
+ * A Schema that transforms a number into a CVInteger.Type
+ *
+ * @internal
+ */
+export const SchemaFromNumber: Schema.Schema<Type, number> = Schema.Number.pipe(
+	Schema.fromBrand(constructor)
+);
+
+/**
+ * A Schema that represents a CVInteger.Type
+ *
+ * @internal
+ */
+export const SchemaFromSelf: Schema.Schema<Type> = Schema.typeSchema(SchemaFromNumber);
