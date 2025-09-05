@@ -2,12 +2,13 @@
 import {
 	CVNumberBase10Format,
 	CVReal,
+	CVSchema,
 	CVTemplate,
 	CVTemplatePlaceholder,
 	CVTemplateSeparator
 } from '@parischap/conversions';
 import { MRegExpString } from '@parischap/effect-lib';
-import { pipe } from 'effect';
+import { pipe, Schema } from 'effect';
 
 // Let's define useful shortcuts
 const ph = CVTemplatePlaceholder;
@@ -92,6 +93,35 @@ console.log(
 // Result: 'Tom is a 15-year old boy.'
 console.log(
 	throwingFormatter({
+		name: 'Tom',
+		age: CVReal.unsafeFromNumber(15),
+		kind: 'boy'
+	})
+);
+
+// Using Schema
+const schema = CVSchema.Template(template);
+
+// Type:(i: string) => Either<{
+//     readonly name: string;
+//     readonly age: CVReal.Type;
+//     readonly kind: string;
+// }, ParseError>
+const decoder = Schema.decodeEither(schema);
+
+// Type: (a: {
+//     readonly name: string;
+//     readonly age: CVReal.Type;
+//     readonly kind: string;
+// }) => Either<string, ParseError>
+const encoder = Schema.encodeEither(schema);
+
+// Result: { _id: 'Either', _tag: 'Right', right: { name: 'John', age: 47, kind: 'man' } }
+console.log(decoder('John is a 47-year old man.'));
+
+// Result: { _id: 'Either', _tag: 'Right', right: 'Tom is a 15-year old boy.' }
+console.log(
+	encoder({
 		name: 'Tom',
 		age: CVReal.unsafeFromNumber(15),
 		kind: 'boy'

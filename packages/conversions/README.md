@@ -46,10 +46,10 @@ After reading this introduction, you may take a look at the [API](https://parisc
 This package contains:
 
 - a [module to round numbers and BigDecimal's](#RoundingModule) with the same rounding options as those offered by the javascript INTL namespace: Ceil, Floor, Expand, Trunc, HalfCeil...
-- a safe, easy-to-use [number/BigDecimal parser/formatter](#NumberParserFormatter) with almost all the options offered by the javascript INTL namespace: choice of the thousand separator, of the fractional separator, of the minimum and maximum number of fractional digits, of the rounding mode, of the sign display mode, of whether to show or not the integer part when it's zero, of whether to use a scientific or engineering notation, of the character to use as exponent mark... It can directly be used as a Schema instead of the existing Schema.NumberFromString transformer.
-- an equivalent to the PHP [sprintf and sscanf functions](#Templating) with real typing of the placeholders. Although Effect Schema does offer the [TemplateLiteralParser API](https://effect.website/docs/schema/basic-usage/#templateliteralparser), the latter does not provide a solution to situations such as fixed length fields (potentially padded), numbers formatted otherwise than in the English format...
+- a safe, easy-to-use [number/BigDecimal parser/formatter](#NumberParserFormatter) with almost all the options offered by the javascript INTL namespace: choice of the thousand separator, of the fractional separator, of the minimum and maximum number of fractional digits, of the rounding mode, of the sign display mode, of whether to show or not the integer part when it's zero, of whether to use a scientific or engineering notation, of the character to use as exponent mark... It can also be used as a Schema instead of the existing Schema.NumberFromString transformer.
+- an equivalent to the PHP [sprintf and sscanf functions](#Templating) with real typing of the placeholders. Although Effect Schema does offer the [TemplateLiteralParser API](https://effect.website/docs/schema/basic-usage/#templateliteralparser), the latter does not provide a solution to situations such as fixed length fields (potentially padded), numbers formatted otherwise than in the English format... It can also be used as a Schema
 - a very easy to use [DateTime module](#DateTimeModule) that implements natively the Iso calendar (Iso year and Iso week). It is also faster than its Effect counterpart because it implements an internal state that's only used to speed up calculation times (but does not alter the result of functions; so DateTime functions can be viewed as pure from a user's perspective). It can therefore be useful in applications where time is of essence.
-- a [DateTime parser/formatter](#DateTimeParserFormatter) which supports many of the available [unicode tokens](https://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table). It can directly be used as a Schema instead of the existing Schema.Date transformer.
+- a [DateTime parser/formatter](#DateTimeParserFormatter) which supports many of the available [unicode tokens](https://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table). It can also be used as a Schema instead of the existing Schema.Date transformer.
 - a few [brands](#Branding) which come in handy in many projects such as email, semantic versioning, integer numbers, positive integer numbers, real numbers and positive real numbers. All these brands are also defined as Schemas.
 
 Most functions of this package return an Either or an Option to signify the possibility of an error. However, if you are not an Effect user and do not care to learn more about it, you can simply use the `OrThrow` variant of the function. For instance, use `CVDateTime.setWeekdayOrThrow` instead of `CVDateTime.setWeekday`. As its name suggests, it will throw in case of an `Error`. Some functions return functions that return an `Either` or throw. In that case, the variant for non Effect users contains the word `Throwing`, e.g. use `CVDateTimeFormat.toThrowingFormatter` instead of `CVDateTimeFormat.toFormatter`.
@@ -441,15 +441,17 @@ console.log(
 #### 1. Usage example
 
 ```ts
+/* eslint-disable functional/no-expression-statements */
 import {
 	CVNumberBase10Format,
 	CVReal,
+	CVSchema,
 	CVTemplate,
 	CVTemplatePlaceholder,
 	CVTemplateSeparator,
 } from "@parischap/conversions";
 import { MRegExpString } from "@parischap/effect-lib";
-import { pipe } from "effect";
+import { pipe, Schema } from "effect";
 
 // Let's define useful shortcuts
 const ph = CVTemplatePlaceholder;
@@ -537,6 +539,35 @@ console.log(
 // Result: 'Tom is a 15-year old boy.'
 console.log(
 	throwingFormatter({
+		name: "Tom",
+		age: CVReal.unsafeFromNumber(15),
+		kind: "boy",
+	}),
+);
+
+// Using Schema
+const schema = CVSchema.Template(template);
+
+// Type:(i: string) => Either<{
+//     readonly name: string;
+//     readonly age: CVReal.Type;
+//     readonly kind: string;
+// }, ParseError>
+const decoder = Schema.decodeEither(schema);
+
+// Type: (a: {
+//     readonly name: string;
+//     readonly age: CVReal.Type;
+//     readonly kind: string;
+// }) => Either<string, ParseError>
+const encoder = Schema.encodeEither(schema);
+
+// Result: { _id: 'Either', _tag: 'Right', right: { name: 'John', age: 47, kind: 'man' } }
+console.log(decoder("John is a 47-year old man."));
+
+// Result: { _id: 'Either', _tag: 'Right', right: 'Tom is a 15-year old boy.' }
+console.log(
+	encoder({
 		name: "Tom",
 		age: CVReal.unsafeFromNumber(15),
 		kind: "boy",

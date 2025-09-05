@@ -3,7 +3,19 @@
  * number and date formatting and parsing
  */
 
-import { BigDecimal, DateTime, Either, flow, Option, ParseResult, pipe, Schema } from 'effect';
+import { MMatch, MTuple, MTypes } from '@parischap/effect-lib';
+import {
+	Array,
+	BigDecimal,
+	DateTime,
+	Either,
+	flow,
+	Option,
+	ParseResult,
+	pipe,
+	Record,
+	Schema
+} from 'effect';
 import * as CVDateTime from './DateTime.js';
 import * as CVDateTimeFormat from './DateTimeFormat.js';
 import * as CVEmail from './Email.js';
@@ -13,6 +25,10 @@ import * as CVPositiveInteger from './PositiveInteger.js';
 import * as CVPositiveReal from './PositiveReal.js';
 import * as CVReal from './Real.js';
 import * as CVSemVer from './SemVer.js';
+import * as CVTemplate from './Template.js';
+import * as CVTemplatePart from './TemplatePart.js';
+import * as CVTemplateParts from './TemplateParts.js';
+import * as CVTemplatePlaceholder from './TemplatePlaceholder.js';
 
 /**
  * A Schema that transforms a string into a CVBrand.Email.Type
@@ -258,3 +274,62 @@ export const DateTimeZoned = (
 	format: CVDateTimeFormat.Type
 ): Schema.Schema<DateTime.Zoned, string> =>
 	Schema.compose(DateTimeFromString(format), DateTimeZonedFromDateTime);
+
+/**
+ * A Schema that transforms a string into an object according to a CVTemplate (see Template.ts)
+ *
+ * @category Schema transformations
+ */
+export const Template = <const PS extends CVTemplateParts.Type>(
+	template: CVTemplate.Type<PS>
+): Schema.Schema<
+	{
+		readonly [k in keyof MTypes.ArrayKeys<PS> as PS[k] extends CVTemplatePlaceholder.All ?
+			CVTemplatePlaceholder.ExtractName<PS[k]>
+		:	never]: PS[k] extends CVTemplatePlaceholder.All ? CVTemplatePlaceholder.ExtractType<PS[k]>
+		:	never;
+	},
+	string
+> => {
+	const parser = CVTemplate.toParser(template);
+	const formatter = CVTemplate.toFormatter(template);
+
+	const schemaOutput = pipe(
+		template.templateParts,
+		Array.filterMap(
+			flow(
+				MMatch.make,
+				MMatch.when(CVTemplatePart.isSeparator, () => Option.none()),
+				MMatch.when(
+					CVTemplatePart.isPlaceholder,
+					flow(
+						MTuple.makeBothBy({
+							toFirst: CVTemplatePlaceholder.name,
+							toSecond: CVTemplatePlaceholder.schemaInstance
+						}),
+						Option.some
+					)
+				),
+				MMatch.exhaustive
+			)
+		),
+		Record.fromEntries,
+		Schema.Struct
+	);
+
+	return Schema.transformOrFail(Schema.String, schemaOutput, {
+		strict: true,
+		decode: (input, _options, ast) =>
+			pipe(
+				input,
+				parser,
+				Either.mapLeft((inputError) => new ParseResult.Type(ast, input, inputError.message))
+			) as never,
+		encode: (input, _options, ast) =>
+			pipe(
+				input as never,
+				formatter,
+				Either.mapLeft((inputError) => new ParseResult.Type(ast, input, inputError.message))
+			)
+	}) as never;
+};
