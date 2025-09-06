@@ -31,7 +31,7 @@ importers:
         version: 9.35.0
       '@parischap/configs':
         specifier: latest
-        version: 1.31.0
+        version: 1.32.0
       '@parischap/test-utils':
         specifier: latest
         version: 0.10.0(effect@3.17.13)
@@ -115,11 +115,11 @@ importers:
   packages/ansi-styles/dist:
     dependencies:
       '@parischap/effect-lib':
-        specifier: ^0.5.0
-        version: 0.5.0(effect@3.17.9)
+        specifier: ^0.6.0
+        version: 0.6.0(effect@3.17.13)
       effect:
-        specifier: ^3.17.9
-        version: 3.17.9
+        specifier: ^3.17.13
+        version: 3.17.13
 
   packages/conversions:
     dependencies:
@@ -822,14 +822,19 @@ packages:
       '@parischap/effect-lib': ^0.5.0
       effect: ^3.13.6
 
-  '@parischap/configs@1.31.0':
-    resolution: {integrity: sha512-TfvYVSa0elUU1iSEAFAlcF96BZlHe2U0pC+M89P6lBjjxmZ+mrbDX7BERim/2u8IdTQP/OGz7MTQdr6TW+eCWw==}
+  '@parischap/configs@1.32.0':
+    resolution: {integrity: sha512-lyVKJ40ywpVmi0SdbZ6jwGQAWVLOb5kmVC4MFCP/RtYqPBSD6zKyFnvIlBLEOgpceAfZ8A2/UiWo+UySUSQQDw==}
     hasBin: true
 
   '@parischap/effect-lib@0.5.0':
     resolution: {integrity: sha512-Wx/yGsHHvHvDxXhOzdPQtgzuSEommN6yNG9rZUQLSeuSphZogEwlMDJvID2gs5Wim43ct9Dw4leN6YOqGEktuA==}
     peerDependencies:
       effect: ^3.13.6
+
+  '@parischap/effect-lib@0.6.0':
+    resolution: {integrity: sha512-v1DswA9/pbvRMoJkli/7vvI4x49QHdEzTOACY1WTZgNXo2IHaEoLB7UBSD51wzSFyi1f/38F6wlO37r3g9TI6w==}
+    peerDependencies:
+      effect: ^3.17.13
 
   '@parischap/test-utils@0.10.0':
     resolution: {integrity: sha512-iXJFgYCXdlWFDPM7qfd7RhdIV124g+Us921VZNTPEY1cdxR49Qi3e3wslSrYevu8lcLBNt+F9ENtKLO/0sVB7Q==}
@@ -3423,7 +3428,7 @@ snapshots:
       '@parischap/effect-lib': 0.5.0(effect@3.17.9)
       effect: 3.17.9
 
-  '@parischap/configs@1.31.0': {}
+  '@parischap/configs@1.32.0': {}
 
   '@parischap/effect-lib@0.5.0(effect@3.17.11)':
     dependencies:
@@ -3432,6 +3437,10 @@ snapshots:
   '@parischap/effect-lib@0.5.0(effect@3.17.9)':
     dependencies:
       effect: 3.17.9
+
+  '@parischap/effect-lib@0.6.0(effect@3.17.13)':
+    dependencies:
+      effect: 3.17.13
 
   '@parischap/test-utils@0.10.0(effect@3.17.13)':
     dependencies:
