@@ -1,6 +1,6 @@
 /**
- * This module implements conversions from number to string and string to number in base-10
- * notation.
+ * This module implements a `CVNumberBase10Format` which describes the possible options to
+ * format/parse a base-10 number or `BigDecimal` and implements the formatting/parsing algortithms
  */
 
 import {
@@ -48,7 +48,7 @@ const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
 /**
- * Possible sign display options
+ * Type that represents the possible sign display options
  *
  * @category Models
  */
@@ -97,14 +97,14 @@ export enum SignDisplay {
  */
 export namespace SignDisplay {
 	/**
-	 * Type that represents the possible strings for a sign
+	 * Type that represents the possible strings used to represent a sign
 	 *
 	 * @category Models
 	 */
 	export type SignString = '-' | '+' | '';
 
 	/**
-	 * Type that represents the possible values for a sign
+	 * Type that represents the possible values of a sign
 	 *
 	 * @category Models
 	 */
@@ -225,7 +225,7 @@ export namespace SignDisplay {
 }
 
 /**
- * Possible scientific notation options
+ * Type that represents the possible scientific notation options
  *
  * @category Models
  */
@@ -267,7 +267,7 @@ export enum ScientificNotation {
 }
 
 /**
- * Namespace for possible scientific notation options
+ * ScientificNotation namespace
  *
  * @category Models
  */
@@ -397,7 +397,7 @@ export namespace ScientificNotation {
 }
 
 /**
- * Type that represents a NumberBase10Format
+ * Type that represents a `CVNumberBase10Format`
  *
  * @category Models
  */
@@ -571,7 +571,7 @@ export const roundingMode: MTypes.OneArgFunction<Type, CVRoundingMode.Type> =
 export const signDisplay: MTypes.OneArgFunction<Type, SignDisplay> = Struct.get('signDisplay');
 
 /**
- * Returns a short description of `self`
+ * Returns a short description of `self`, e.g. 'signed integer'
  *
  * @category Destructors
  */
@@ -725,14 +725,14 @@ const _toBigDecimalExtractor = (
 /**
  * Returns a function that tries to parse, from the start of a string `text`, a number respecting
  * the options represented by `self` and an optional `fillChar` parameter. If successful, that
- * function returns a `some` containing `parsedText` (the part of `text` that could be analyzed as
+ * function returns a `Some` containing `parsedText` (the part of `text` that could be analyzed as
  * representing a number) and `value` (`parsedText` converted to a BigDecimal value). Otherwise, it
- * returns a `none`. As there is no way to distinguish `-0n` and `0n` in Javascript, parsing '-0',
- * '0', '+0' will yield the same result.
+ * returns a `None`. As `BigDecimal`'s provide no possibility to distinguish `-0n` and `0n`, parsing
+ * '-0', '0', '+0' will yield the same result.
  *
  * `fillChar` is a character that may be used as filler between the sign and the number (or at the
  * start of the number if it is unsigned). It must be a one-character string (but no error is
- * triggered if it's not). You can use '0' as `fillChar` but you shoud not use any other digit
+ * triggered if it's not). You can use '0' as `fillChar` but you should not use any other digit
  * because the value of the number to parse would depend on the number of removed `fillChar`'s.
  *
  * @category Parsing
@@ -752,7 +752,7 @@ export const toBigDecimalExtractor: (
 	);
 
 /**
- * Same as toBigDecimalExtractor but the returned parser throws in case of error
+ * Same as `toBigDecimalExtractor` but the returned parser throws in case of failure
  *
  * @category Parsing
  */
@@ -769,8 +769,8 @@ export const toThrowingBigDecimalExtractor =
 		);
 
 /**
- * Same as `toBigDecimalExtractor` but returns a `Real` which is the most usual use case.
- * Furthermore, this function will return -0 if your parse '-0' and 0 if you parse '0' or '+0'.
+ * Same as `toBigDecimalExtractor` but returns a `CVReal`. This is the most usual use case.
+ * Furthermore, this function will return `-0` if your parse '-0' and `0` if you parse '0' or '+0'.
  *
  * @category Parsing
  */
@@ -797,7 +797,7 @@ export const toRealExtractor: (
 );
 
 /**
- * Same as toRealExtractor but the returned parser throws in case of error
+ * Same as `toRealExtractor` but the returned parser throws in case of failure
  *
  * @category Parsing
  */
@@ -814,7 +814,7 @@ export const toThrowingRealExtractor =
 		);
 
 /**
- * Same as toBigDecimalExtractor but the whole of the input text must represent a number, not just
+ * Same as `toBigDecimalExtractor` but the whole of the input text must represent a number, not just
  * its start
  *
  * @category Parsing
@@ -840,7 +840,7 @@ export const toBigDecimalParser = (
 };
 
 /**
- * Same as toRealExtractor but the returned parser throws in case of error
+ * Same as `toBigDecimalParser` but the returned parser throws in case of failure
  *
  * @category Parsing
  */
@@ -881,7 +881,7 @@ export const toRealParser = (
 };
 
 /**
- * Same as toRealParser but the returned parser throws in case of error
+ * Same as `toRealParser` but the returned parser throws in case of failure
  *
  * @category Parsing
  */
@@ -897,9 +897,9 @@ export const toThrowingRealParser =
 
 /**
  * Returns a function that tries to format a `number` respecting the options represented by
- * `self`and an optional parameter `fillChars`. If successful, that function returns a `some` of the
- * formatted number. Otherwise, it returns a `none`. `number` can be of type number or BigDecimal
- * for better accuracy. There is a difference between number and BigDecimal (and bigint) regarding
+ * `self`and an optional parameter `fillChars`. If successful, that function returns a `Some` of the
+ * formatted number. Otherwise, it returns a `None`. `number` can be of type number or `BigDecimal`
+ * for better accuracy. There is a difference between number and `BigDecimal` (and bigint) regarding
  * the sign of 0. In Javascript, Object.is(0,-0) is false whereas Object.is(0n,-0n) is true. So if
  * the sign of zero is important to you, prefer passing a number to the function. `0` as a
  * BigDecimal will always be interpreted as a positive `0` as we have no means of knowing if it is
@@ -1010,8 +1010,8 @@ export const toNumberFormatter = (
 };
 
 /**
- * Combinator that returns a copy of self with `minimumFractionalDigits` and
- * `maximumFractionalDigits` set to `n`. `n` must be a finite positive integer.
+ * Returns a copy of `self` with `minimumFractionalDigits` and `maximumFractionalDigits` set to `n`.
+ * `n` must be a finite positive integer
  *
  * @category Modifiers
  */
@@ -1025,8 +1025,8 @@ export const withNDecimals = (decimalNumber: number): MTypes.OneArgFunction<Type
 	);
 
 /**
- * Combinator that returns a copy of self with `maximumFractionalDigits` set to `n`. `n` must be a
- * positive integer. Pass 0 for an integer format.
+ * Returns a copy of `self` with `maximumFractionalDigits` set to `n`. `n` must be a positive
+ * integer (`+Infinity` allowed). Pass 0 for an integer format
  *
  * @category Modifiers
  */
@@ -1043,8 +1043,8 @@ export const withMaxNDecimals =
 		);
 
 /**
- * Combinator that returns a copy of self with `minimumFractionalDigits` set to `n`. `n` must be a
- * finite positive integer.
+ * Returns a copy of `self` with `minimumFractionalDigits` set to `n`. `n` must be a finite positive
+ * integer
  *
  * @category Modifiers
  */
@@ -1061,7 +1061,7 @@ export const withMinNDecimals =
 		);
 
 /**
- * Combinator that returns a copy of self with `scientificNotation` set to `None`.
+ * Returns a copy of `self` with `scientificNotation` set to `None`
  *
  * @category Modifiers
  */
@@ -1073,7 +1073,7 @@ export const withNoScientificNotation: MTypes.OneArgFunction<Type> = flow(
 );
 
 /**
- * Combinator that returns a copy of self with `scientificNotation` set to `Standard`.
+ * Returns a copy of `self` with `scientificNotation` set to `Standard`
  *
  * @category Modifiers
  */
@@ -1085,7 +1085,7 @@ export const withStandardScientificNotation: MTypes.OneArgFunction<Type> = flow(
 );
 
 /**
- * Combinator that returns a copy of self with `scientificNotation` set to `Normalized`.
+ * Returns a copy of `self` with `scientificNotation` set to `Normalized`
  *
  * @category Modifiers
  */
@@ -1097,7 +1097,7 @@ export const withNormalizedScientificNotation: MTypes.OneArgFunction<Type> = flo
 );
 
 /**
- * Combinator that returns a copy of self with `scientificNotation` set to `Engineering`.
+ * Returns a copy of `self` with `scientificNotation` set to `Engineering`
  *
  * @category Modifiers
  */
@@ -1109,7 +1109,7 @@ export const withEngineeringScientificNotation: MTypes.OneArgFunction<Type> = fl
 );
 
 /**
- * Combinator that returns a copy of self with `thousandSeparator` set to `thousandSeparator`.
+ * Returns a copy of `self` with `thousandSeparator` set to `thousandSeparator`
  *
  * @category Modifiers
  */
@@ -1122,14 +1122,14 @@ export const withThousandSeparator = (thousandSeparator: string): MTypes.OneArgF
 	);
 
 /**
- * Combinator that returns a copy of self with `thousandSeparator` set to ''.
+ * Returns a copy of `self` with `thousandSeparator` set to ''
  *
  * @category Modifiers
  */
 export const withoutThousandSeparator: MTypes.OneArgFunction<Type> = withThousandSeparator('');
 
 /**
- * Combinator that returns a copy of self with `fractionalSeparator` set to `fractionalSeparator`.
+ * Returns a copy of `self` with `fractionalSeparator` set to `fractionalSeparator`
  *
  * @category Modifiers
  */
@@ -1142,7 +1142,7 @@ export const withFractionalSeparator = (fractionalSeparator: string): MTypes.One
 	);
 
 /**
- * Combinator that returns a copy of self with `signDisplay` set to `Auto`.
+ * Returns a copy of `self` with `signDisplay` set to `Auto`
  *
  * @category Modifiers
  */
@@ -1154,7 +1154,7 @@ export const withSignDisplayForNegative: MTypes.OneArgFunction<Type> = flow(
 );
 
 /**
- * Combinator that returns a copy of self with `signDisplay` set to `Always`.
+ * Returns a copy of `self` with `signDisplay` set to `Always`
  *
  * @category Modifiers
  */
@@ -1166,7 +1166,7 @@ export const withSignDisplay: MTypes.OneArgFunction<Type> = flow(
 );
 
 /**
- * Combinator that returns a copy of self with `signDisplay` set to `ExceptZero`.
+ * Returns a copy of `self` with `signDisplay` set to `ExceptZero`
  *
  * @category Modifiers
  */
@@ -1178,7 +1178,7 @@ export const withSignDisplayExceptZero: MTypes.OneArgFunction<Type> = flow(
 );
 
 /**
- * Combinator that returns a copy of self with `signDisplay` set to `Negative`.
+ * Returns a copy of `self` with `signDisplay` set to `Negative`
  *
  * @category Modifiers
  */
@@ -1190,7 +1190,7 @@ export const withSignDisplayForNegativeExceptZero: MTypes.OneArgFunction<Type> =
 );
 
 /**
- * Combinator that returns a copy of self with `signDisplay` set to `Never`.
+ * Returns a copy of `self` with `signDisplay` set to `Never`
  *
  * @category Modifiers
  */
@@ -1202,7 +1202,7 @@ export const withoutSignDisplay: MTypes.OneArgFunction<Type> = flow(
 );
 
 /**
- * Combinator that returns a copy of self with `roundingMode` set to `Ceil`.
+ * Returns a copy of `self` with `roundingMode` set to `Ceil`
  *
  * @category Modifiers
  */
@@ -1213,7 +1213,7 @@ export const withCeilRoundingMode: MTypes.OneArgFunction<Type> = flow(
 	make
 );
 /**
- * Combinator that returns a copy of self with `roundingMode` set to `Floor`.
+ * Returns a copy of `self` with `roundingMode` set to `Floor`
  *
  * @category Modifiers
  */
@@ -1225,7 +1225,7 @@ export const withFloorRoundingMode: MTypes.OneArgFunction<Type> = flow(
 );
 
 /**
- * Combinator that returns a copy of self with `roundingMode` set to `Expand`.
+ * Returns a copy of `self` with `roundingMode` set to `Expand`
  *
  * @category Modifiers
  */
@@ -1237,7 +1237,7 @@ export const withExpandRoundingMode: MTypes.OneArgFunction<Type> = flow(
 );
 
 /**
- * Combinator that returns a copy of self with `roundingMode` set to `Trunc`.
+ * Returns a copy of `self` with `roundingMode` set to `Trunc`
  *
  * @category Modifiers
  */
@@ -1249,7 +1249,7 @@ export const withTruncRoundingMode: MTypes.OneArgFunction<Type> = flow(
 );
 
 /**
- * Combinator that returns a copy of self with `roundingMode` set to `HalfCeil`.
+ * Returns a copy of `self` with `roundingMode` set to `HalfCeil`
  *
  * @category Modifiers
  */
@@ -1261,7 +1261,7 @@ export const withHalfCeilRoundingMode: MTypes.OneArgFunction<Type> = flow(
 );
 
 /**
- * Combinator that returns a copy of self with `roundingMode` set to `HalfFloor`.
+ * Returns a copy of `self` with `roundingMode` set to `HalfFloor`
  *
  * @category Modifiers
  */
@@ -1273,7 +1273,7 @@ export const withHalfFloorRoundingMode: MTypes.OneArgFunction<Type> = flow(
 );
 
 /**
- * Combinator that returns a copy of self with `roundingMode` set to `HalfExpand`.
+ * Returns a copy of `self` with `roundingMode` set to `HalfExpand`
  *
  * @category Modifiers
  */
@@ -1285,7 +1285,7 @@ export const withHalfExpandRoundingMode: MTypes.OneArgFunction<Type> = flow(
 );
 
 /**
- * Combinator that returns a copy of self with `roundingMode` set to `HalfTrunc`.
+ * Returns a copy of `self` with `roundingMode` set to `HalfTrunc`
  *
  * @category Modifiers
  */
@@ -1297,7 +1297,7 @@ export const withHalfTruncRoundingMode: MTypes.OneArgFunction<Type> = flow(
 );
 
 /**
- * Combinator that returns a copy of self with `roundingMode` set to `HalfEven`.
+ * Returns a copy of `self` with `roundingMode` set to `HalfEven`
  *
  * @category Modifiers
  */
@@ -1309,7 +1309,7 @@ export const withHalfEvenRoundingMode: MTypes.OneArgFunction<Type> = flow(
 );
 
 /**
- * Combinator that returns a copy of self with `showNullIntegerPart` set to `false`.
+ * Returns a copy of `self` with `showNullIntegerPart` set to `false`
  *
  * @category Modifiers
  */
@@ -1321,7 +1321,7 @@ export const withNullIntegerPartNotShowing: MTypes.OneArgFunction<Type> = flow(
 );
 
 /**
- * Combinator that returns a copy of self with `showNullIntegerPart` set to `true`.
+ * Returns a copy of `self` with `showNullIntegerPart` set to `true`
  *
  * @category Modifiers
  */
@@ -1333,7 +1333,7 @@ export const withNullIntegerPartShowing: MTypes.OneArgFunction<Type> = flow(
 );
 
 /**
- * NumberBase10Format instance that uses a comma as fractional separator, a space as thousand
+ * `CVNumberBase10Format` instance that uses a comma as fractional separator, a space as thousand
  * separator and shows at most three fractional digits. Used in countries like France,
  * French-speaking Canada, French-speaking Belgium, Denmark, Finland, Sweden...
  *
@@ -1352,8 +1352,8 @@ export const frenchStyleNumber: Type = make({
 });
 
 /**
- * NumberBase10Format instance that uses a comma as fractional separator, no thousand separator and
- * shows at most three fractional digits. Used in countries like France, French-speaking Canada,
+ * `CVNumberBase10Format` instance that uses a comma as fractional separator, no thousand separator
+ * and shows at most three fractional digits. Used in countries like France, French-speaking Canada,
  * French-speaking Belgium, Denmark, Finland, Sweden...
  *
  * @category Instances
@@ -1361,15 +1361,15 @@ export const frenchStyleNumber: Type = make({
 export const frenchStyleUngroupedNumber: Type = pipe(frenchStyleNumber, withoutThousandSeparator);
 
 /**
- * French-style integer NumberBase10Format instance. Used in countries like France, French-speaking
- * Canada, French-speaking Belgium, Denmark, Finland, Sweden...
+ * French-style integer `CVNumberBase10Format` instance. Used in countries like France,
+ * French-speaking Canada, French-speaking Belgium, Denmark, Finland, Sweden...
  *
  * @category Instances
  */
 export const frenchStyleInteger: Type = pipe(frenchStyleNumber, withMaxNDecimals(0));
 
 /**
- * NumberBase10Format instance that uses a comma as fractional separator, a dot as thousand
+ * `CVNumberBase10Format` instance that uses a comma as fractional separator, a dot as thousand
  * separator and shows at most three fractional digits. Used in countries like Dutch-speaking
  * Belgium, the Netherlands, Germany, Italy, Norway, Croatia, Spain...
  *
@@ -1384,8 +1384,8 @@ export const dutchStyleNumber: Type = pipe(
 );
 
 /**
- * NumberBase10Format instance that uses a comma as fractional separator, no thousand separator and
- * shows at most three fractional digits. Used in countries like Dutch-speaking Belgium, the
+ * `CVNumberBase10Format` instance that uses a comma as fractional separator, no thousand separator
+ * and shows at most three fractional digits. Used in countries like Dutch-speaking Belgium, the
  * Netherlands, Germany, Italy, Norway, Croatia, Spain...
  *
  * @category Instances
@@ -1393,15 +1393,15 @@ export const dutchStyleNumber: Type = pipe(
 export const dutchStyleUngroupedNumber: Type = pipe(dutchStyleNumber, withoutThousandSeparator);
 
 /**
- * Dutch-style integer NumberBase10Format instance. Used in countries like Dutch-speaking Belgium,
- * the Netherlands, Germany, Italy, Norway, Croatia, Spain...
+ * Dutch-style integer `CVNumberBase10Format` instance. Used in countries like Dutch-speaking
+ * Belgium, the Netherlands, Germany, Italy, Norway, Croatia, Spain...
  *
  * @category Instances
  */
 export const dutchStyleInteger: Type = pipe(dutchStyleNumber, withMaxNDecimals(0));
 
 /**
- * NumberBase10Format instance that uses a dot as fractional separator, a comma as thousand
+ * `CVNumberBase10Format` instance that uses a dot as fractional separator, a comma as thousand
  * separator and shows at most three fractional digits. Used in countries like the UK, the US,
  * English-speaking Canada, Australia, Thaïland, Bosnia...
  *
@@ -1417,16 +1417,16 @@ export const ukStyleNumber: Type = pipe(
 );
 
 /**
- * NumberBase10Format instance that uses a dot as fractional separator, no thousand separator and
- * shows at most three fractional digits. Used in countries like the UK, the US, English-speaking
- * Canada, Australia, Thaïland, Bosnia...
+ * `CVNumberBase10Format` instance that uses a dot as fractional separator, no thousand separator
+ * and shows at most three fractional digits. Used in countries like the UK, the US,
+ * English-speaking Canada, Australia, Thaïland, Bosnia...
  *
  * @category Instances
  */
 export const ukStyleUngroupedNumber: Type = pipe(ukStyleNumber, withoutThousandSeparator);
 
 /**
- * Uk-style integer NumberBase10Format instance. Used in countries like the UK, the US,
+ * Uk-style integer `CVNumberBase10Format` instance. Used in countries like the UK, the US,
  * English-speaking Canada, Australia, Thaïland, Bosnia...
  *
  * @category Instances
@@ -1434,7 +1434,7 @@ export const ukStyleUngroupedNumber: Type = pipe(ukStyleNumber, withoutThousandS
 export const ukStyleInteger: Type = pipe(ukStyleNumber, withMaxNDecimals(0));
 
 /**
- * Integer NumberBase10Format instance with no thousand separator
+ * Integer `CVNumberBase10Format` instance with no thousand separator
  *
  * @category Instances
  */

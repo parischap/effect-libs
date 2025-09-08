@@ -383,32 +383,32 @@ export const trimEnd = (charToRemove: string): MTypes.StringTransformer =>
  *
  * @category Models
  */
-export enum PadPosition {
+export enum FillPosition {
 	Right = 0,
 	Left = 1
 }
 
 /**
- * PadPosition namespace
+ * FillPosition namespace
  *
  * @category Models
  */
-export namespace PadPosition {
+export namespace FillPosition {
 	/**
-	 * Builds the id of a PadPosition
+	 * Builds the id of a FillPosition
 	 *
 	 * @category Destructors
 	 */
-	export const toId: MTypes.OneArgFunction<PadPosition, string> = flow(
+	export const toId: MTypes.OneArgFunction<FillPosition, string> = flow(
 		MMatch.make,
-		MMatch.whenIs(PadPosition.Right, Function.constant('right')),
-		MMatch.whenIs(PadPosition.Left, Function.constant('left')),
+		MMatch.whenIs(FillPosition.Right, Function.constant('right')),
+		MMatch.whenIs(FillPosition.Left, Function.constant('left')),
 		MMatch.exhaustive
 	);
 }
 
 /**
- * Pads a string to the left or to the right (depending on `padPosition`) with up to `length`
+ * Pads a string to the left or to the right (depending on `fillPosition`) with up to `length`
  * characters `fillChar`. `length` should be a positive integer. `fillChar` should be a
  * one-character string. Does nothing if the string to pad has more than `length` characters.
  *
@@ -418,22 +418,22 @@ export namespace PadPosition {
 export const pad = ({
 	length,
 	fillChar,
-	padPosition
+	fillPosition
 }: {
 	readonly length: number;
 	readonly fillChar: string;
-	readonly padPosition: PadPosition;
+	readonly fillPosition: FillPosition;
 }): MTypes.OneArgFunction<string> =>
 	pipe(
-		padPosition,
+		fillPosition,
 		MMatch.make,
-		MMatch.whenIs(PadPosition.Left, () => String.padStart(length, fillChar)),
-		MMatch.whenIs(PadPosition.Right, () => String.padEnd(length, fillChar)),
+		MMatch.whenIs(FillPosition.Left, () => String.padStart(length, fillChar)),
+		MMatch.whenIs(FillPosition.Right, () => String.padEnd(length, fillChar)),
 		MMatch.exhaustive
 	);
 
 /**
- * Trims a string to the left or to the right (depending on `padPosition`) from character
+ * Trims a string to the left or to the right (depending on `fillPosition`) from character
  * `fillChar`. If `disallowEmptyString` is true and the result of trimming is an empty string, the
  * fillChar is returned instead of an empty string. This is useful, for instance, if you have
  * numbers padded with 0's and you prefer the result of unpadding a string containing only 0's to be
@@ -445,19 +445,19 @@ export const pad = ({
 
 export const trim = ({
 	fillChar,
-	padPosition,
+	fillPosition,
 	disallowEmptyString
 }: {
 	readonly fillChar: string;
-	readonly padPosition: PadPosition;
+	readonly fillPosition: FillPosition;
 	readonly disallowEmptyString: boolean;
 }): MTypes.OneArgFunction<string, string> =>
 	flow(
 		pipe(
-			padPosition,
+			fillPosition,
 			MMatch.make,
-			MMatch.whenIs(PadPosition.Left, () => trimStart(fillChar)),
-			MMatch.whenIs(PadPosition.Right, () => trimEnd(fillChar)),
+			MMatch.whenIs(FillPosition.Left, () => trimStart(fillChar)),
+			MMatch.whenIs(FillPosition.Right, () => trimEnd(fillChar)),
 			MMatch.exhaustive
 		),
 		MFunction.fIfTrue({
