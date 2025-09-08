@@ -1,6 +1,6 @@
 /**
- * This module allows you to round numbers and BigDecimal's according to diverse RoundingMode's with
- * a given precision
+ * This module implements a `CVRoundingOption` which describes the possible options to round a
+ * number or `BigDecimal` and implements the rounding algortithm
  */
 
 import {
@@ -26,7 +26,7 @@ type _TypeId = typeof _TypeId;
 const _bigDecimal10 = BigDecimal.make(10n, 0);
 
 /**
- * Type that represents a Rounder.
+ * `CVRoundingOption` Type
  *
  * @category Models
  */
@@ -72,7 +72,7 @@ const proto: MTypes.Proto<Type> = {
 		);
 	},
 	[MInspectable.IdSymbol](this: Type) {
-		return `${CVRoundingMode.toName(this.roundingMode)}RounderWith${this.precision}Precision`;
+		return `${CVRoundingMode.getName(this.roundingMode)}RounderWith${this.precision}Precision`;
 	},
 	...MInspectable.BaseProto(moduleTag),
 	...MPipeable.BaseProto
@@ -82,7 +82,7 @@ const proto: MTypes.Proto<Type> = {
 const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
 
 /**
- * Constructor
+ * Constructs a `CVRoundingOption` with the specified `precision` and `roundingMode`
  *
  * @category Constructors
  */
@@ -93,8 +93,8 @@ export const make = ({
 	_make({ precision, roundingMode });
 
 /**
- * RoundingOption instance that uses the HalfExpand Rounding mode and precision=2. Can be used in
- * accounting apps of most countries.
+ * `CVRoundingOption` instance that uses the `HalfExpand` `CVRoundingMode` and `precision=2`. Can be
+ * used in accounting apps of most countries througout the world
  *
  * @category Instances
  */

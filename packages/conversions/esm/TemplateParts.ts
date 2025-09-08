@@ -1,4 +1,4 @@
-/** This module implements an array of TemplatePart's (see TemplatePart.ts) */
+/** This module implements an array of `CVTemplatePart`'s (see TemplatePart.ts) */
 import { MMatch, MTypes } from '@parischap/effect-lib';
 import { Array, flow, Function, Option } from 'effect';
 import * as CVTemplatePart from './TemplatePart.js';
@@ -6,7 +6,7 @@ import * as CVTemplatePlaceholder from './TemplatePlaceholder.js';
 import * as CVTemplateSeparator from './TemplateSeparator.js';
 
 /**
- * Type of a TemplateParts
+ * `CVTemplateParts` Type
  *
  * @category Models
  */
@@ -31,7 +31,8 @@ export const getSyntheticDescription: MTypes.OneArgFunction<Type, string> = flow
 );
 
 /**
- * Shows a description of the placeholders of `self`, e.g.' #name is a #age-year-old #kind.'
+ * Shows a description of the `CVTemplatePlaceholder`'s of `self` (see description of
+ * `CVTemplatePlaceholder.getLabelledDescription`)
  *
  * @category Destructors
  */

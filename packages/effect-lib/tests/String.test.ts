@@ -326,7 +326,10 @@ describe('MString', () => {
 	describe('pad', () => {
 		it('Left padding', () => {
 			TEUtils.strictEqual(
-				pipe('a', MString.pad({ length: 3, fillChar: 'b', padPosition: MString.PadPosition.Left })),
+				pipe(
+					'a',
+					MString.pad({ length: 3, fillChar: 'b', fillPosition: MString.FillPosition.Left })
+				),
 				'bba'
 			);
 		});
@@ -335,7 +338,7 @@ describe('MString', () => {
 			TEUtils.strictEqual(
 				pipe(
 					'aa',
-					MString.pad({ length: 3, fillChar: 'b', padPosition: MString.PadPosition.Right })
+					MString.pad({ length: 3, fillChar: 'b', fillPosition: MString.FillPosition.Right })
 				),
 				'aab'
 			);
@@ -345,7 +348,7 @@ describe('MString', () => {
 			TEUtils.strictEqual(
 				pipe(
 					'abcd',
-					MString.pad({ length: 3, fillChar: 'b', padPosition: MString.PadPosition.Right })
+					MString.pad({ length: 3, fillChar: 'b', fillPosition: MString.FillPosition.Right })
 				),
 				'abcd'
 			);
@@ -359,7 +362,7 @@ describe('MString', () => {
 					'bba',
 					MString.trim({
 						fillChar: 'b',
-						padPosition: MString.PadPosition.Left,
+						fillPosition: MString.FillPosition.Left,
 						disallowEmptyString: false
 					})
 				),
@@ -373,7 +376,7 @@ describe('MString', () => {
 					'aab',
 					MString.trim({
 						fillChar: 'b',
-						padPosition: MString.PadPosition.Right,
+						fillPosition: MString.FillPosition.Right,
 						disallowEmptyString: false
 					})
 				),
@@ -387,7 +390,7 @@ describe('MString', () => {
 					'000',
 					MString.trim({
 						fillChar: '0',
-						padPosition: MString.PadPosition.Right,
+						fillPosition: MString.FillPosition.Right,
 						disallowEmptyString: false
 					})
 				),
@@ -401,7 +404,7 @@ describe('MString', () => {
 					'000',
 					MString.trim({
 						fillChar: '0',
-						padPosition: MString.PadPosition.Left,
+						fillPosition: MString.FillPosition.Left,
 						disallowEmptyString: true
 					})
 				),

@@ -1,6 +1,7 @@
 /**
- * This module implements a CVDateFormatContext used when parsing or formatting dates (see
- * DateTimeFormat.ts). It provides the translations used by language specific tokens (e.g. `MMMM`).
+ * This module implements a `CVDateFormatContext` which is used when parsing or formatting dates
+ * (see DateTimeFormat.ts) to provide the translations used by language specific tokens (e.g.
+ * `MMMM`)
  */
 
 import {
@@ -40,7 +41,7 @@ const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
 /**
- * Type that represents all the possible tokens that can be used to format a DateTime
+ * Type that represents all the possible tokens that can be used to format a `CVDateTime`
  *
  * @category Models
  */
@@ -120,13 +121,14 @@ export type Token =
 
 namespace TokenMap {
 	/**
-	 * Type that represents a TokenMap
+	 * Type that represents a map between a `Token` and the `CVPlaceholder` that implements it
 	 *
 	 * @category Models
 	 */
 	export interface Type
 		extends HashMap.HashMap<Token, CVTemplatePlaceholder.Type<string, CVReal.Type>> {}
 }
+
 /**
  * Type that represents the names of the seven days of a week
  *
@@ -142,7 +144,7 @@ export type WeekDayNames = MTypes.Tuple<string, 7>;
 export type MonthNames = MTypes.Tuple<string, 12>;
 
 /**
- * Type that represents the names of the day periods
+ * Type that represents the names of the day periods, e.g. AM or PM
  *
  * @category Models
  */
@@ -161,15 +163,15 @@ const MONTH_DATES = pipe(
 );
 
 /**
- * Type that represents a Context.
+ * Type that represents a `CVDateTimeFormatContext`
  *
  * @category Model
  */
 export interface Type extends MInspectable.Type, Pipeable.Pipeable {
-	/** Name of this Context: usually the locale this Context wes built from. Or a country name */
+	/** Name : usually the locale this `CVDateTimeFormatContext` was built from. Or a country name */
 	readonly name: string;
 
-	/** Maps that contains all the possible TemplatePart's for that Congtext */
+	/** TokenMap of this `CVDateTimeFormatContext` */
 	readonly tokenMap: TokenMap.Type;
 
 	/** @internal */
@@ -196,7 +198,7 @@ const proto: MTypes.Proto<Type> = {
 const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
 
 /**
- * Context constructor
+ * Constructs a `CVDateTimeFormatContext` from translations provided as strings
  *
  * @category Constructors
  */
@@ -418,7 +420,7 @@ export const fromNames = ({
 };
 
 /**
- * CVDateTimeFormatContext instance for Great-Britain English language
+ * `CVDateTimeFormatContext` instance for Great-Britain English language
  *
  * @category Instances
  */
@@ -471,8 +473,8 @@ const _extractWeekday = _extractType('weekday');
 const _extractMonth = _extractType('month');
 
 /**
- * Tries to build a DateTimeFormat from locale `locale`. Returns a `some` if successful. Otherwise
- * (non-existent or unavailable locale,...), returns a `none`
+ * Tries to build a `CVDateTimeFormatContext` from locale `locale`. Returns a `Some` if successful.
+ * Returns a `None` otherwise (non-existent or unavailable locale,...),
  *
  * @category Constructors
  */
@@ -531,7 +533,8 @@ export const fromLocale = (locale: string): Option.Option<Type> =>
 	});
 
 /**
- * Same as fromLocale but returns directly the Context or throws if it cannot be built
+ * Same as `fromLocale` but returns directly a `CVDateTimeFormatContext` or throws in case of an
+ * error
  *
  * @category Constructors
  */

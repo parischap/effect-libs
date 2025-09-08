@@ -86,7 +86,7 @@ describe('CVTemplatePlaceholder', () => {
 			name: 'foo',
 			length: 3,
 			fillChar: '0',
-			padPosition: MString.PadPosition.Left,
+			fillPosition: MString.FillPosition.Left,
 			disallowEmptyString: true
 		});
 		it('.toString()', () => {
@@ -203,7 +203,7 @@ describe('CVTemplatePlaceholder', () => {
 				['foo', 6],
 				['bazbar', 12]
 			],
-			schemaInstance: Schema.Number
+			tSchemaInstance: Schema.Number
 		});
 
 		it('.toString()', () => {

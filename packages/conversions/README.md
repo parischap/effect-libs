@@ -47,12 +47,12 @@ This package contains:
 
 - a [module to round numbers and BigDecimal's](#RoundingModule) with the same rounding options as those offered by the javascript INTL namespace: Ceil, Floor, Expand, Trunc, HalfCeil...
 - a safe, easy-to-use [number/BigDecimal parser/formatter](#NumberParserFormatter) with almost all the options offered by the javascript INTL namespace: choice of the thousand separator, of the fractional separator, of the minimum and maximum number of fractional digits, of the rounding mode, of the sign display mode, of whether to show or not the integer part when it's zero, of whether to use a scientific or engineering notation, of the character to use as exponent mark... It can also be used as a Schema instead of the existing Schema.NumberFromString transformer.
-- an equivalent to the PHP [sprintf and sscanf functions](#Templating) with real typing of the placeholders. Although Effect Schema does offer the [TemplateLiteralParser API](https://effect.website/docs/schema/basic-usage/#templateliteralparser), the latter does not provide a solution to situations such as fixed length fields (potentially padded), numbers formatted otherwise than in the English format... It can also be used as a Schema
+- an equivalent to the PHP [sprintf and sscanf functions](#Templating) with real typing of the placeholders. Although `Effect.Schema` does offer the [TemplateLiteralParser API](https://effect.website/docs/schema/basic-usage/#templateliteralparser), the latter does not provide a solution to situations such as fixed length fields (potentially padded), numbers formatted otherwise than in the English format... It can also be used as a Schema
 - a very easy to use [DateTime module](#DateTimeModule) that implements natively the Iso calendar (Iso year and Iso week). It is also faster than its Effect counterpart because it implements an internal state that's only used to speed up calculation times (but does not alter the result of functions; so DateTime functions can be viewed as pure from a user's perspective). It can therefore be useful in applications where time is of essence.
 - a [DateTime parser/formatter](#DateTimeParserFormatter) which supports many of the available [unicode tokens](https://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table). It can also be used as a Schema instead of the existing Schema.Date transformer.
 - a few [brands](#Branding) which come in handy in many projects such as email, semantic versioning, integer numbers, positive integer numbers, real numbers and positive real numbers. All these brands are also defined as Schemas.
 
-Most functions of this package return an Either or an Option to signify the possibility of an error. However, if you are not an Effect user and do not care to learn more about it, you can simply use the `OrThrow` variant of the function. For instance, use `CVDateTime.setWeekdayOrThrow` instead of `CVDateTime.setWeekday`. As its name suggests, it will throw in case of an `Error`. Some functions return functions that return an `Either` or throw. In that case, the variant for non Effect users contains the word `Throwing`, e.g. use `CVDateTimeFormat.toThrowingFormatter` instead of `CVDateTimeFormat.toFormatter`.
+Most functions of this package return an `Either` or an `Option` to signify the possibility of an error. However, if you are not an Effect user and do not care to learn more about it, you can simply use the `OrThrow` variant of the function. For instance, use `CVDateTime.setWeekdayOrThrow` instead of `CVDateTime.setWeekday`. As its name suggests, it will throw in case of an `Error`. Some functions return functions that return an `Either` or throw. In that case, the variant for non Effect users contains the word `Throwing`, e.g. use `CVDateTimeFormat.toThrowingFormatter` instead of `CVDateTimeFormat.toFormatter`.
 
 ### <a name="RoundingModule"></a>A) Rounding module
 
@@ -586,9 +586,9 @@ These two texts obviously share the same structure which is the template:
 
 Placeholder1 is a Placeholder2-year old Placeholder3.
 
-Placeholder1, Placeholder2 and Placeholder3 are the mutable parts of the template. They contain valuable information. We call them `TemplatePlaceholder`'s.
+Placeholder1, Placeholder2 and Placeholder3 are the mutable parts of the template. They contain valuable information. We call them `CVTemplatePlaceholder`'s.
 
-" is a " and "-year old " are the immutable parts of the template. We call them `TemplateSeperator`'s.
+" is a ", "-year old " and "." are the immutable parts of the template. We call them `CVTemplateSeperator`'s.
 
 From a text with the above structure, we can extract the values of Placeholder1, Placeholder2, and Placeholder3. In the present case:
 
@@ -611,7 +611,7 @@ To create a `CVTemplateSeparator`, you usually call the `CVTemplateSeparator.mak
 
 #### 4. CVTemplatePlaceholder's
 
-A Placeholder represents the mutable part of a template. Each Placeholder defines a parser and a formatter: the parser takes a text, consumes a part of that text, optionnally converts the consumed part to a value of type T and, if successful, returns a right of that value and of what has not been consumed. In case of an error, it returns a left. The formatter takes a value of type T, converts it to a string (if T is not string), checks that the result is coherent and, if so, inserts that string into the text. Otherwise, it returns a left.
+A `CVTemplatePlaceholder` represents the mutable part of a template. Each Placeholder defines a parser and a formatter: the parser takes a text, consumes a part of that text, optionnally converts the consumed part to a value of type T and, if successful, returns a right of that value and of what has not been consumed. In case of an error, it returns a left. The formatter takes a value of type T, converts it to a string (if T is not string), checks that the result is coherent and, if so, inserts that string into the text. Otherwise, it returns a left.
 
 There are several predefined Placeholder's:
 
@@ -620,7 +620,7 @@ There are several predefined Placeholder's:
 - `fixedLengthToReal`: same as fixedLength but the parser tries to convert the consumed text into a `CVReal` using the passed `CVNumberBase10Format`. The formatter takes a `CVReal` and tries to convert and write it as an n-character string. You can pass a `fillChar` that is trimmed off the consumed text upon parsing and padded to the written text upon formatting.
 - `real`: the parser of this Placeholder reads from the text all the characters that it can interpret as a number in the provided `CVNumberBase10Format` and converts the consumed text into a `CVReal`. The formatter takes a `CVReal` and converts it into a string according to the provided `CVNumberBase10Format`.
 - `mappedLiterals`: this Placeholder takes as input a map that must define a bijection between a list of strings and a list of values. The parser tries to read from the text one of the strings in the list. Upon success, it returns the corresponding value. The formatter takes a value and tries to find it in the list. Upon success, it writes the corresponding string into the text.
-- `realMappedLiterals`: same as `mappedLiterals` but values are assumed to be of type CVReal.Type which is the most usual use case.
+- `realMappedLiterals`: same as `mappedLiterals` but values are assumed to be of type `CVReal` which is the most usual use case.
 - `fulfilling`: the parser of this Placeholder reads as much of the text as it can that fulfills the passed regular expression. The formatter only accepts a string that matches the passed regular expression and writes it into the text.
 - `anythingBut`: this is a special case of the `fulfilling` placeholder. The parser of this Placeholder reads from the text until it meets one of the `forbiddenChars` passed as parameter (the result must be a non-empty string). The formatter will only accept a non-empty string that does not contain any of the forbidden chars and write it to the text.
 - `toEnd`: this is another special case of the `fulfilling` placeholder. The parser of this Placeholder reads all the remaining text. The formatter accepts any string and writes it. This Placeholder should only be used as the last `CVTemplatePart` of a `CVTemplate`.

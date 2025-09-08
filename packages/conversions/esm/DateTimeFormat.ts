@@ -398,7 +398,8 @@ export const toParser = (self: Type): Parser.Type => {
 };
 
 /**
- * Same as toParser but the returned parser returns directly a CVDateTime or throws in case of error
+ * Same as toParser but the returned parser returns directly a CVDateTime or throws in case of
+ * failure
  *
  * @category Parsing
  */

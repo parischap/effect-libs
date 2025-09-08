@@ -1,10 +1,13 @@
-/** This module defines possible rounding modes (see Intl.NumberFormat) */
+/**
+ * This module defines the list of available rounding modes (see Intl.NumberFormat) that can be used
+ * by a `CVRoundingOption` (see RoundingOption.ts)
+ */
 
 import { MMatch, MTypes } from '@parischap/effect-lib';
 import { flow, Function, Struct } from 'effect';
 
 /**
- * Possible rounding modes
+ * Type that represents the possible rounding modes
  *
  * @category Models
  */
@@ -56,7 +59,7 @@ export enum Type {
  *
  * @category Destructors
  */
-export const toName: MTypes.OneArgFunction<Type, string> = flow(
+export const getName: MTypes.OneArgFunction<Type, string> = flow(
 	MMatch.make,
 	flow(
 		MMatch.whenIs(Type.Ceil, Function.constant('Ceil')),

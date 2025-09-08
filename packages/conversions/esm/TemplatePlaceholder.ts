@@ -1,16 +1,15 @@
 /**
- * This module implements a TemplatePlaceholder type which is a sub-type of the TemplatePart type
- * (see TemplatePart.ts)
+ * This module implements a `CVTemplatePlaceholder` type which is one of the constituents of
+ * `CVTemplate`'s (see Template.ts and TemplatePart.ts)
  *
- * A TemplatePlaceholder represents the mutable part of a template. Each Placeholder defines a
- * parser and a formatter:
+ * Each `CVTemplatePlaceholder` defines a parser and a formatter:
  *
- * - The parser takes a string, consumes a part of that string, optionnally converts the consumed part
- *   to a value of type T and, if successful, returns a right of that value and of what has not been
- *   consumed. In case of an error, it returns a left.
+ * - The parser takes a text, consumes a part of that text, optionnally converts the consumed part to
+ *   a value of type T and, if successful, returns a `Right` of that value and of what has not been
+ *   consumed. In case of failure, it returns a `Left`.
  * - The formatter takes a value of type T, converts it to a string (if T is not string), checks that
- *   the result is coherent and, if so, returns a right of that string. Otherwise, it returns a
- *   left.
+ *   the result is coherent and, if so, returns a `Right` of that string. Otherwise, it returns a
+ *   `Left`
  */
 
 import {
@@ -87,7 +86,7 @@ export namespace Formatter {
 }
 
 /**
- * Type that represents a TemplatePlaceholder
+ * `CVTemplatePlaceholder` Type
  *
  * @category Models
  */
@@ -107,14 +106,15 @@ export interface Type<out N extends string, in out T> extends MInspectable.Type,
 	/** Formatter of this TemplatePlaceholder */
 	readonly formatter: Formatter.Type<T>;
 
-	readonly schemaInstance: Schema.Schema<T, T>;
+	/** Schema instance that represents type T */
+	readonly tSchemaInstance: Schema.Schema<T, T>;
 
 	/** @internal */
 	readonly [_TypeId]: { readonly _N: Types.Covariant<N>; readonly _T: Types.Invariant<T> };
 }
 
 /**
- * Type that represents a TemplatePlaceholder from and to any type
+ * Type that represents a `CVTemplatePlaceholder` from and to any type
  *
  * @category Models
  */
@@ -122,14 +122,14 @@ export interface Type<out N extends string, in out T> extends MInspectable.Type,
 export interface All extends Type<string, any> {}
 
 /**
- * Utility type that extracts the Name type of a TemplatePlaceholder
+ * Utility type that extracts the Name type of a `CVTemplatePlaceholder`
  *
  * @category Utility types
  */
 export type ExtractName<P extends All> = P extends Type<infer N, infer _> ? N : never;
 
 /**
- * Utility type that extracts the Type type of a TemplatePlaceholder
+ * Utility type that extracts the output type of a `CVTemplatePlaceholder`
  *
  * @category Utility types
  */
@@ -207,15 +207,16 @@ export const formatter: <const N extends string, T>(self: Type<N, T>) => Formatt
 	Struct.get('formatter');
 
 /**
- * Returns the `schemaInstance` property of `self`
+ * Returns the `tSchemaInstance` property of `self`
  *
  * @category Destructors
  */
-export const schemaInstance: <const N extends string, T>(self: Type<N, T>) => Schema.Schema<T, T> =
-	Struct.get('schemaInstance');
+export const tSchemaInstance: <const N extends string, T>(self: Type<N, T>) => Schema.Schema<T, T> =
+	Struct.get('tSchemaInstance');
 
 /**
- * Returns the description of `self`
+ * Returns a description of `self`, e.g. "#dd: 2-character string left-padded with '0' to unsigned
+ * integer."
  *
  * @category Destructors
  */
@@ -223,8 +224,8 @@ export const getLabelledDescription = <N extends string, T>(self: Type<N, T>) =>
 	`${self.label}: ${self.description}`;
 
 /**
- * Returns a modified copy of `self` where a postParser function is executed after the parser of
- * `self` and a preFormatter function is executed before the formatter of `self`
+ * Returns a copy of `self` where a postParser function is executed after the parser of `self` and a
+ * preFormatter function is executed before the formatter of `self`
  *
  * @category Destructors
  */
@@ -283,14 +284,14 @@ export const modify: {
 					Either.flatMap((t) => self.formatter.call(this, t))
 				);
 			},
-			schemaInstance:
+			tSchemaInstance:
 				t1SchemaInstance === undefined ?
-					(self.schemaInstance as unknown as Schema.Schema<T1, T1>)
+					(self.tSchemaInstance as unknown as Schema.Schema<T1, T1>)
 				:	t1SchemaInstance
 		});
 
 /**
- * Builds a TemplatePlaceholder instance that parses/formats exactly `length` characters from a
+ * Builds a `CVTemplatePlaceholder` instance that parses/formats exactly `length` characters from a
  * string. `length` must be a strictly positive integer.
  *
  * @category Constructors
@@ -319,15 +320,15 @@ export const fixedLength = <const N extends string>({
 		formatter: function (this: Type<N, string>, value) {
 			return MInputError.assertLength({ expected: length, name: this.label })(value);
 		},
-		schemaInstance: Schema.String
+		tSchemaInstance: Schema.String
 	});
 };
 
 /**
- * Builds a TemplatePlaceholder instance that parses/formats exactly `length` characters from a
- * string and trims/pads the result at `padPosition` with `fillChar`. `fillChar` should be a
+ * Same as `fixedLength` but the consumed text is trimmed off of a `fillChar` at `fillPosition` and
+ * the written text is padded with a `fillChar` at `fillPosition`. `fillChar` should be a
  * one-character string. `length` must be a strictly positive integer. See the meaning of
- * `disallowEmptyString` in String.trim.
+ * `disallowEmptyString` in `MString.trim`
  *
  * @category Constructors
  */
@@ -335,7 +336,7 @@ export const paddedFixedLength = <const N extends string>(params: {
 	readonly name: N;
 	readonly length: number;
 	readonly fillChar: string;
-	readonly padPosition: MString.PadPosition;
+	readonly fillPosition: MString.FillPosition;
 	readonly disallowEmptyString: boolean;
 }): Type<N, string> => {
 	const trimmer = flow(MString.trim(params), Either.right);
@@ -345,7 +346,7 @@ export const paddedFixedLength = <const N extends string>(params: {
 		fixedLength(params),
 		modify({
 			descriptorMapper: MString.append(
-				` ${MString.PadPosition.toId(params.padPosition)}-padded with '${params.fillChar}'`
+				` ${MString.FillPosition.toId(params.fillPosition)}-padded with '${params.fillChar}'`
 			),
 			postParser: trimmer,
 			preFormatter: padder
@@ -354,11 +355,12 @@ export const paddedFixedLength = <const N extends string>(params: {
 };
 
 /**
- * Builds a TemplatePlaceholder instance that parses/formats a Real in the given
- * `numberBase10Format`. If the number to parse/format is less than `length` characters, `fillChar`
- * is trimmed/padded between the sign and the number so that the length condition is respected.
- * fillChar must be a one-character string (but no error is triggered if you do not respect that
- * condition)
+ * Same as `fixedLength` but the parser tries to convert the consumed text into a `CVReal` using the
+ * passed `CVNumberBase10Format`. The formatter takes a `CVReal` and tries to convert and write it
+ * as an n-character string. If the number to parse/format is less than `length` characters,
+ * `fillChar` is trimmed/padded between the sign and the number so that the length condition is
+ * respected. `fillChar` must be a one-character string (but no error is triggered if you do not
+ * respect that condition)
  *
  * @category Constructors
  */
@@ -405,7 +407,9 @@ export const fixedLengthToReal = <const N extends string>(params: {
 };
 
 /**
- * Builds a TemplatePlaceholder instance that parses/formats a Real provided in
+ * Builds a `CVTemplatePlaceholder` whose parser reads from the text all the characters that it can
+ * interpret as a number in the provided `numberBase10Format` and converts the consumed text into a
+ * `CVReal`. The formatter takes a `CVReal` and converts it into a string according to the provided
  * `numberBase10Format`.
  *
  * @category Constructors
@@ -438,12 +442,12 @@ export const real = <const N extends string>({
 			);
 		},
 		formatter: flow(numberFormatter, Either.right),
-		schemaInstance: CVReal.SchemaFromSelf
+		tSchemaInstance: CVReal.SchemaFromSelf
 	});
 };
 
 /**
- * Builds a TemplatePlaceholder instance that works as a map:
+ * Builds a `CVTemplatePlaceholder` instance that works as a map:
  *
  * The parser expects one of the keys of `keyValuePairs` and will return the associated value. The
  * formatter expects one of the values of `keyValuePairs` and will return the associated key.
@@ -452,11 +456,11 @@ export const real = <const N extends string>({
  * is best if the type of the values defines a toString method. Value equality is checked with The
  * Effect Equal.equals function.
  *
- * `schemaInstance` is a Schema instance that transforms a value of type T into a value of type T.
- * It is an optional parameter. You need only provide it if you intend to use a CVTemplate built
- * from it within the Effect Schema module. In that case, you can build such a Schema with the
- * Schema.declare function. If you don't provide it and use a CVTemplate built from it within the
- * Effect Schema module, it will not work.
+ * `schemaInstance` is a `Schema` instance that transforms a value of type T into a value of type T.
+ * It is an optional parameter. You need only provide it if you intend to use a `CVTemplate` built
+ * from this `CVTemplatePlaceholder` within the `Effect.Schema` module. In that case, you can build
+ * such a `Schema` with the `Schema.declare` function (if you don't provide it, the `Schema` will
+ * return an error)
  *
  * @category Constructors
  */
@@ -521,13 +525,13 @@ export const mappedLiterals = <const N extends string, T>({
 				)
 			);
 		},
-		schemaInstance
+		tSchemaInstance: schemaInstance
 	});
 };
 
 /**
- * Same as `mappedLiterals` but `T` is assumed to be `CVReal.Type` which should be the most usual
- * use case
+ * Same as `mappedLiterals` but `T` is assumed to be `CVReal` which should be the most usual use
+ * case
  *
  * @category Constructors
  */
@@ -537,8 +541,10 @@ export const realMappedLiterals = <const N extends string>(params: {
 }): Type<N, CVReal.Type> => mappedLiterals({ ...params, schemaInstance: CVReal.SchemaFromSelf });
 
 /**
- * Builds a TemplatePlaceholder instance that parses/formats the regular expression regExp. `regExp`
- * must start with the ^ character. Otherwise, the parser and formatter will not work properly.
+ * Builds a `CVTemplatePlaceholder` whose parser reads as much of the text as it can that fulfills
+ * the passed regular expression. The formatter only accepts a string that matches the passed
+ * regular expression and writes it into the text. `regExp` must start with the ^ character.
+ * Otherwise, the parser and formatter will not work properly.
  *
  * @category Constructors
  */
@@ -588,14 +594,17 @@ export const fulfilling = <const N extends string>({
 				)
 			);
 		},
-		schemaInstance: Schema.String
+		tSchemaInstance: Schema.String
 	});
 };
 
 /**
- * Builds a TemplatePlaceholder instance that parses/formats a non-empty string made up of
- * characters other than those contained in `forbiddenChars`. `forbiddenChars` should be an array of
- * 1-character strings (will not throw otherwise but strange behaviors can be expected)
+ * This `CVTemplatePlaceholder` instance is a special case of the `fulfilling`
+ * `CVTemplatePlaceholder` instance. The parser of this Placeholder reads from the text until it
+ * meets one of the `forbiddenChars` passed as parameter (the result must be a non-empty string).
+ * The formatter only accepts a non-empty string that does not contain any of the forbidden chars
+ * and write it to the text. `forbiddenChars` should be an array of 1-character strings (will not
+ * throw otherwise but strange behaviors can be expected)
  *
  * @category Constructors
  */
@@ -626,7 +635,10 @@ export const anythingBut = <const N extends string>({
 };
 
 /**
- * Builds a TemplatePlaceholder instance that parses/formats all the remaining text.
+ * This `CVTemplatePlaceholder` instance is another special case of the `fulfilling`
+ * `CVTemplatePlaceholder` instance. The parser of this `CVTemplatePlaceholder` reads all the
+ * remaining text. The formatter accepts any string and writes it. This `CVTemplatePlaceholder`
+ * should only be used as the last `CVTemplatePart` of a `CVTemplate`.
  *
  * @category Constructors
  */

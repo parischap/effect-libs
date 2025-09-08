@@ -1,6 +1,7 @@
 /**
- * A template is a model of a text that has always the same structure. In such a text, there are
- * immutable and mutable parts. Let's take the following two texts as an example:
+ * This module implements a `CVTemplate` which is a model of a text that has always the same
+ * structure. In such a text, there are immutable and mutable parts. Let's take the following two
+ * texts as an example:
  *
  * - Text1 = "John is a 47-year old man."
  * - Text2 = "Jehnny is a 5-year old girl."
@@ -10,37 +11,37 @@
  * Placeholder1 is a Placeholder2-year old Placeholder3.
  *
  * Placeholder1, Placeholder2 and Placeholder3 are the mutable parts of the template. They contain
- * valuable information. We call them `TemplatePlaceholder`'s.
+ * valuable information. We call them `CVTemplatePlaceholder`'s.
  *
- * " is a " and "-year old " are the immutable parts of the template. We call them
- * `TemplateSeperator`'s.
+ * " is a ", "-year old " and "." are the immutable parts of the template. We call them
+ * `CVTemplateSeperator`'s.
  *
  * From a text with the above structure, we can extract the values of Placeholder1, Placeholder2,
  * and Placeholder3. In the present case:
  *
- * - For text1: Placeholder1 = 'John', Placeholder2 = '47', Placeholder3 = 'man'
- * - For text2: Placeholder1 = 'Jehnny', Placeholder2 = '5', Placeholder3 = 'girl'
+ * - For text1: { Placeholder1 : 'John', Placeholder2 : '47', Placeholder3 : 'man' }
+ * - For text2: { Placeholder1 : 'Jehnny', Placeholder2 : '5', Placeholder3 : 'girl'}
  *
- * Extracting the values of placeholders from a text according to a template is called parsing.
+ * Extracting the values of placeholders from a text according to a template is called parsing. The
+ * result of parsing is an object whose properties are named after the name of the placeholders they
+ * represent.
  *
- * Inversely, given a template and the values of the placeholders that compose it, we can generate a
- * text. This is called formatting. In the present case, with:
+ * Inversely, given a template and the values of the placeholders that compose it (provided as the
+ * properties of an object), we can generate a text. This is called formatting. In the present case,
+ * with the object:
  *
- * Placeholder1 = 'Tom', Placeholder2 = '15', Placeholder3 = 'boy'
+ * { Placeholder1 : 'Tom', Placeholder2 : '15', Placeholder3 : 'boy' }
  *
  * We will obtain the text: "Tom is a 15-year old boy."
  *
- * A TemplatePart is either a TemplateSeparator or a TemplatePlaceholder. This module implements a
- * Template which is composed of a series of TemplatePart's. Note that Effect does provide the
- * Schema.TemplateLiteralParser API which partly addresses the same problem. But there are some
- * limitations to that API. For instance, template literal types cannot represent a fixed-length
- * string or a string composed only of capital letters... It is for instance impossible to represent
- * a date in the form YYYYMMDD with the TemplateLiteralParser. A schema in the form:
- *
- * `const schema = Schema.TemplateLiteralParser(Schema.NumberFromString,Schema.NumberFromString,
- * Schema.NumberFromString)`
- *
- * Would not work as the first NumberFromString combinator would read the whole date.
+ * Note that `Effect` does provide the `Schema.TemplateLiteralParser` API which partly addresses the
+ * same problem. But there are some limitations to that API. For instance, template literal types
+ * cannot represent a fixed-length string or a string composed only of capital letters... It is for
+ * instance impossible to represent a date in the form YYYYMMDD with the
+ * `Schema.TemplateLiteralParser`. A schema in the form `const schema =
+ * Schema.TemplateLiteralParser(Schema.NumberFromString,Schema.NumberFromString,
+ * Schema.NumberFromString)` does not work as the first NumberFromString combinator reads the whole
+ * date
  */
 
 import {
@@ -79,7 +80,7 @@ const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
 /**
- * Type that represents a Template
+ * `CVTemplate` Type
  *
  * @category Models
  */
@@ -141,7 +142,8 @@ export const templateParts: <const PS extends CVTemplateParts.Type>(self: Type<P
 	Struct.get('templateParts');
 
 /**
- * Returns a function that parses a text into a record according to 'self' .
+ * Returns a function that tries to parse a text into an object according to 'self'. The generated
+ * parser returns a `Right` of an object upon success, a `Left` otherwise.
  *
  * @category Parsing
  */
@@ -196,7 +198,7 @@ export const toParser =
 		});
 
 /**
- * Same as toParser but the returned parser throws in case of error
+ * Same as `toParser` but the generated parser throws in case of failure
  *
  * @category Parsing
  */
@@ -214,9 +216,8 @@ export const toThrowingParser: <const PS extends CVTemplateParts.Type>(
 > = flow(toParser, Function.compose(Either.getOrThrowWith(Function.identity))) as never;
 
 /**
- * Returns a function that formats an object into the template represented by 'self' . When
- * strictMode is false, the formatter function of the templatepart's is replaced by the Either.right
- * function, i.e. no checks are carried out when encoding
+ * Returns a function that tries to format an object into a string according to 'self'. The
+ * generated formatter returns a `Right` of a string upon success, a `Left` otherwise.
  *
  * @category Formatting
  */
@@ -259,7 +260,7 @@ export const toFormatter = <const PS extends CVTemplateParts.Type>(
 };
 
 /**
- * Same as toFormatter but the returned formatter throws in case of error
+ * Same as `toFormatter` but the generated formatter throws in case of failure
  *
  * @category Formatting
  */
