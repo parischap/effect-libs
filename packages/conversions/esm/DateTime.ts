@@ -1,21 +1,21 @@
 /**
  * This module implements an immutable DateTime object.
  *
- * DateTime objects keep an internal state. But all provided functions look pure insofar as they
- * will always yield the same result whatever the state the object is in. The state is only used to
+ * `DateTime` objects keep an internal state. But all provided functions are pure insofar as they
+ * always yield the same result whatever the state the object is in. The state is only used to
  * improve performance but does not alter the results.
  *
- * Unlike the Javascript Date objects and the Effect DateTime objects, DateTime objects handle both
- * the Gregorian and Iso calendars. So you can easily get/set the iso year and iso week of a
+ * Unlike the Javascript Date objects and the Effect DateTime objects, `DateTime` objects handle
+ * both the Gregorian and Iso calendars. So you can easily get/set the iso year and iso week of a
  * DateTime object.
  *
- * A DateTime object has a `zoneOffset` which is the difference in hours between the time in the
- * local zone and UTC time (e.g zoneOffset=1 for timezone +1:00). All the data in a DateTime object
- * is `zoneOffset-dependent`, except `timestamp`. An important thing to note is that a DateTime
- * object with a timestamp t and a zoneOffset zo has exactly the same date parts (year, ordinalDay,
- * month, monthDay, isoYear...) as a DateTime object with a timestamp t+zox3600 and a 0 zoneOffset.
- * That's the reason for the _zonedTimestamp field which is equal to t+zox3600. All calculations are
- * performed UTC using _zonedTimestamp instead of timestamp.
+ * A `DateTime` object has a `zoneOffset` which is the difference in hours between the time in the
+ * local zone and UTC time (e.g `zoneOffset=1` for timezone +1:00). All the data in a `DateTime`
+ * object is `zoneOffset-dependent`, except `timestamp`. An important thing to note is that a
+ * DateTime object with a timestamp `t` and a zoneOffset `zo` has exactly the same date parts
+ * (`year`, `ordinalDay`, `month`, `monthDay`, `isoYear`...) as a `DateTime` object with a timestamp
+ * `t+zox3600` and a 0 zoneOffset. That's the reason for the _zonedTimestamp field which is equal to
+ * `t+zox3600`. All calculations are performed UTC using _zonedTimestamp instead of timestamp.
  */
 
 import {
@@ -545,7 +545,7 @@ namespace GregorianDate {
 	/**
 	 * Returns the `yearIsLeap` property of `self`
 	 *
-	 * @category Destructors
+	 * @category Predicates
 	 */
 	export const yearIsLeap: Predicate.Predicate<Type> = Struct.get('yearIsLeap');
 
@@ -1069,7 +1069,7 @@ namespace IsoDate {
 	/**
 	 * Returns the `yearIsLong` property of `self`
 	 *
-	 * @category Destructors
+	 * @category Predicates
 	 */
 	export const yearIsLong: Predicate.Predicate<Type> = Struct.get('yearIsLong');
 
@@ -2217,17 +2217,6 @@ export const getYear: MTypes.OneArgFunction<Type, number> = flow(
 );
 
 /**
- * Returns true if the (Gregorian) year of `self` for the given time zone is a leap year. Returns
- * false otherwise
- *
- * @category Getters
- */
-export const yearIsLeap: MTypes.OneArgFunction<Type, boolean> = flow(
-	_gregorianDate,
-	GregorianDate.yearIsLeap
-);
-
-/**
  * Returns the ordinalDay of `self` for the given time zone
  *
  * @category Getters
@@ -2279,17 +2268,6 @@ const _isoDate = (self: Type): IsoDate.Type =>
  * @category Getters
  */
 export const getIsoYear: MTypes.OneArgFunction<Type, number> = flow(_isoDate, IsoDate.year);
-
-/**
- * Returns true if the isoYear of `self` for the given time zone is a long year. Returns false
- * otherwise
- *
- * @category Getters
- */
-export const isoYearIsLong: MTypes.OneArgFunction<Type, boolean> = flow(
-	_isoDate,
-	IsoDate.yearIsLong
-);
 
 /**
  * Returns the isoWeek of `self` for the given time zone
@@ -2903,6 +2881,23 @@ export const setZoneOffsetKeepPartsOrThrow: MTypes.OneArgFunction<
 	  },
 	MTypes.OneArgFunction<Type>
 > = flow(setZoneOffsetKeepParts, Function.compose(Either.getOrThrowWith(Function.identity)));
+
+/**
+ * Returns true if the (Gregorian) year of `self` for the given time zone is a leap year. Returns
+ * false otherwise
+ *
+ * @category Predicates
+ */
+export const yearIsLeap: Predicate.Predicate<Type> = flow(_gregorianDate, GregorianDate.yearIsLeap);
+
+/**
+ * Returns true if the isoYear of `self` for the given time zone is a long year. Returns false
+ * otherwise
+ *
+ * @category Predicates
+ */
+export const isoYearIsLong: Predicate.Predicate<Type> = flow(_isoDate, IsoDate.yearIsLong);
+
 /**
  * Returns true if self is the first day of a month in the given timezone
  *
@@ -3040,7 +3035,7 @@ export const offsetYears = (
 /**
  * Same as offsetYears but returns directly a DateTime or throws in case of an error
  *
- * @category Setters
+ * @category Offsetters
  */
 export const offsetYearsOrThrow: (
 	offset: number,
@@ -3082,7 +3077,7 @@ export const offsetMonths =
 /**
  * Same as offsetMonths but returns directly a DateTime or throws in case of an error
  *
- * @category Setters
+ * @category Offsetters
  */
 export const offsetMonthsOrThrow: (
 	offset: number,
@@ -3105,7 +3100,7 @@ export const offsetDays = (
 /**
  * Same as offsetDays but returns directly a DateTime or throws in case of an error
  *
- * @category Setters
+ * @category Offsetters
  */
 export const offsetDaysOrThrow: MTypes.OneArgFunction<number, MTypes.OneArgFunction<Type>> = flow(
 	offsetDays,
@@ -3137,7 +3132,7 @@ export const offsetIsoYears =
 /**
  * Same as offsetIsoYears but returns directly a DateTime or throws in case of an error
  *
- * @category Setters
+ * @category Offsetters
  */
 export const offsetIsoYearsOrThrow: (
 	offset: number,
@@ -3160,7 +3155,7 @@ export const offsetHours = (
 /**
  * Same as offsetHours but returns directly a DateTime or throws in case of an error
  *
- * @category Setters
+ * @category Offsetters
  */
 export const offsetHoursOrThrow: MTypes.OneArgFunction<number, MTypes.OneArgFunction<Type>> = flow(
 	offsetHours,
@@ -3180,7 +3175,7 @@ export const offsetMinutes = (
 /**
  * Same as offsetMinutes but returns directly a DateTime or throws in case of an error
  *
- * @category Setters
+ * @category Offsetters
  */
 export const offsetMinutesOrThrow: MTypes.OneArgFunction<
 	number,
@@ -3200,7 +3195,7 @@ export const offsetSeconds = (
 /**
  * Same as offsetSeconds but returns directly a DateTime or throws in case of an error
  *
- * @category Setters
+ * @category Offsetters
  */
 export const offsetSecondsOrThrow: MTypes.OneArgFunction<
 	number,
@@ -3220,7 +3215,7 @@ export const offsetMilliseconds =
 /**
  * Same as offsetMilliseconds but returns directly a DateTime or throws in case of an error
  *
- * @category Setters
+ * @category Offsetters
  */
 export const offsetMillisecondsOrThrow: MTypes.OneArgFunction<
 	number,
