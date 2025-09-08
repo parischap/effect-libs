@@ -14,7 +14,7 @@
 		"clean-all-prod-files": "pnpm -r clean-prod",
 		"clean-all-config-files": "pnpm -r -include-workspace-root=true clean-config-files",
 		"build-all": "pnpm -r build",
-		"prepare-docs": "pnpm --recursive docgen && compile-docs"
+		"prepare-docs": "tsx -v && pnpm --recursive --parallel docgen && compile-docs"
 	},
 	"packageManager": "pnpm@10.15.0",
 	"devDependencies": {
