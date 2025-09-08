@@ -33,21 +33,17 @@ describe('CVTemplateSeparator', () => {
 	});
 
 	describe('Parsing', () => {
-		const parser = separator.parser(1);
+		const parser = CVTemplateSeparator.toParser(separator);
 		it('Not starting by value', () => {
 			TEUtils.assertLeftMessage(
-				parser(''),
+				parser(1, ''),
 				"Expected remaining text for separator at position 1 to start with 'foo'. Actual: ''"
 			);
-			TEUtils.assertLeft(parser('fo1 and bar'));
+			TEUtils.assertLeft(parser(1, 'fo1 and bar'));
 		});
 
 		it('Passing', () => {
-			TEUtils.assertRight(parser('foo and bar'), ' and bar');
+			TEUtils.assertRight(parser(1, 'foo and bar'), ' and bar');
 		});
-	});
-
-	it('Formatting', () => {
-		TEUtils.strictEqual(separator.formatter(), 'foo');
 	});
 });

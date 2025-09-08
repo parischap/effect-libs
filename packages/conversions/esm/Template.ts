@@ -69,7 +69,7 @@ import {
 import * as CVTemplatePart from './TemplatePart.js';
 import * as CVTemplateParts from './TemplateParts.js';
 import * as CVTemplatePlaceholder from './TemplatePlaceholder.js';
-import { CVTemplateSeparator } from './index.js';
+import * as CVTemplateSeparator from './TemplateSeparator.js';
 
 /**
  * Module tag
