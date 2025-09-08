@@ -1784,9 +1784,9 @@ const _uncalculatedFromZonedTimestamp = (zonedTimestamp: number, zoneOffset: num
 const _uncalculatedOrigin = _uncalculatedFromTimestamp(0, 0);
 
 /**
- * Tries to build a DateTime from `timestamp`, the number of milliseconds since 1/1/1970
+ * Tries to build a `CVDateTime` from `timestamp`, the number of milliseconds since 1/1/1970
  * 00:00:00:000+0:00, and `zoneOffset` which gives the offset between the local time and the UTC
- * time. Returns a `right` of a DateTime if successful.
+ * time. Returns a `Right` if successful, a `Left` otherwise.
  *
  * `timestamp` must be greater than or equal to MIN_TIMESTAMP and less than or equal to
  * MAX_TIMESTAMP.
@@ -1829,7 +1829,7 @@ export const fromTimestamp = (
 	);
 
 /**
- * Same as fromTimestamp but returns directly the DateTime or throws if it cannot be built
+ * Same as `fromTimestamp` but returns directly a `CVDateTime` or throws if it cannot be built
  *
  * @category Constructors
  */
@@ -1845,7 +1845,7 @@ export const fromTimestampOrThrow: (
 ) => Type = flow(fromTimestamp, Either.getOrThrowWith(Function.identity));
 
 /**
- * Builds a DateTime using Date.now() as timestamp. `zoneOffset` is set to 0.
+ * Builds a `CVDateTime` using Date.now() as `timestamp`. `zoneOffset` is set to 0.
  *
  * @category Constructors
  */
@@ -1903,8 +1903,8 @@ export namespace Parts {
 	}
 }
 /**
- * Tries to build a DateTime from the provided DateTime parts. Returns a `right` of this DateTime if
- * successful. Returns a `left` of an error otherwise.
+ * Tries to build a `CVDateTime` from the provided parts. Returns a `Right` if successful, a `Left`
+ * otherwise.
  *
  * `year` must comprised in the range [MIN_FULL_YEAR, MAX_FULL_YEAR]. `ordinalDay` must be greater
  * than or equal to 1 and less than or equal to the number of days in the current year. `month` must
@@ -2149,7 +2149,7 @@ export const fromParts = ({
 	});
 
 /**
- * Same as fromParts but returns directly the DateTime or throws if it cannot be built
+ * Same as `fromParts` but returns directly a `CVDateTime` or throws if it cannot be built
  *
  * @category Constructors
  */
@@ -2159,14 +2159,14 @@ export const fromPartsOrThrow: (parts: Parts.Type) => Type = flow(
 );
 
 /**
- * Builds a CVDateTime from a Javascript Date
+ * Builds a `CVDateTime` from a Javascript `Date`
  *
  * @category Constructors
  */
 export const fromDate = (date: Date): Type => fromTimestampOrThrow(date.getTime());
 
 /**
- * Builds a CVDateTime from an Effect DateTime
+ * Builds a `CVDateTime` from an `Effect.DateTime.Zoned`
  *
  * @category Constructors
  */
@@ -2174,14 +2174,14 @@ export const fromEffectDateTime = (date: DateTime.Zoned): Type =>
 	fromTimestampOrThrow(DateTime.toEpochMillis(date), DateTime.zonedOffset(date));
 
 /**
- * Builds a Javascript Date from a CVDateTime
+ * Builds a Javascript `Date` from a `CVDateTime`
  *
  * @category Conversions
  */
 export const toDate = (self: Type): Date => new Date(timestamp(self));
 
 /**
- * Builds an Effect DateTime from a CVDateTime
+ * Builds an `Effect.DateTime.Zoned` from a `CVDateTime`
  *
  * @category Conversions
  */
@@ -2195,7 +2195,7 @@ export const toEffectDateTime = (self: Type): DateTime.Zoned =>
  */
 export const timestamp: MTypes.OneArgFunction<Type, number> = Struct.get('timestamp');
 
-/** Returns the gregorianDate of `self` for the given time zone */
+/** Returns the `gregorianDate` of `self` for the given time zone */
 const _gregorianDate = (self: Type): GregorianDate.Type =>
 	pipe(
 		self.gregorianDate,
@@ -2432,9 +2432,9 @@ const _timeSetter = (self: Type): MTypes.OneArgFunction<Time.Type, Type> => {
 };
 
 /**
- * If possible, returns a right of a DateTime having year `year` and the same `month`, `monthDay`,
- * `hour23`, `minute`, `second`, `millisecond` and `zoneOffset` as `self`. Returns a `left` of an
- * error otherwise. `year` must be an integer comprised in the range [MIN_FULL_YEAR,
+ * If possible, returns a `Right` of a `CVDateTime` having year `year` and the same `month`,
+ * `monthDay`, `hour23`, `minute`, `second`, `millisecond` and `zoneOffset` as `self`. Returns a
+ * `Left` otherwise. `year` must be an integer comprised in the range [MIN_FULL_YEAR,
  * MAX_FULL_YEAR].
  *
  * @category Setters
@@ -2445,7 +2445,7 @@ export const setYear =
 		pipe(self, _gregorianDate, GregorianDate.setYear(year), Either.map(_gregorianDateSetter(self)));
 
 /**
- * Same as setYear but returns directly a DateTime or throws in case of an error
+ * Same as `setYear` but returns directly a `CVDateTime` or throws in case of an error
  *
  * @category Setters
  */
@@ -2455,10 +2455,10 @@ export const setYearOrThrow: MTypes.OneArgFunction<number, MTypes.OneArgFunction
 );
 
 /**
- * If possible, returns a right of a DateTime having ordinalDay `ordinalDay` and the same `year`,
- * `hour23`, `minute`, `second`, `millisecond` and `zoneOffset` as `self`. Returns a `left` of an
- * error otherwise. `ordinalDay` must be an integer greater than or equal to 1 and less than or
- * equal to the number of days in the current year
+ * If possible, returns a `Right` of a `CVDateTime` having ordinalDay `ordinalDay` and the same
+ * `year`, `hour23`, `minute`, `second`, `millisecond` and `zoneOffset` as `self`. Returns a `Left`
+ * of an error otherwise. `ordinalDay` must be an integer greater than or equal to 1 and less than
+ * or equal to the number of days in the current year
  *
  * @category Setters
  */
@@ -2473,7 +2473,7 @@ export const setOrdinalDay =
 		);
 
 /**
- * Same as setOrdinalDay but returns directly a DateTime or throws in case of an error
+ * Same as `setOrdinalDay` but returns directly a `CVDateTime` or throws in case of an error
  *
  * @category Setters
  */
@@ -2483,10 +2483,10 @@ export const setOrdinalDayOrThrow: MTypes.OneArgFunction<
 > = flow(setOrdinalDay, Function.compose(Either.getOrThrowWith(Function.identity)));
 
 /**
- * If possible, returns a right of a DateTime having month `month` and the same `year`, `monthDay`,
- * `hour23`, `minute`, `second`, `millisecond` and `zoneOffset` as `self`. Returns a `left` of an
- * error otherwise. `month` must be an integer greater than or equal to 1 (January) and less than or
- * equal to 12 (December)
+ * If possible, returns a `Right` of a `CVDateTime` having month `month` and the same `year`,
+ * `monthDay`, `hour23`, `minute`, `second`, `millisecond` and `zoneOffset` as `self`. Returns a
+ * `Left` of an error otherwise. `month` must be an integer greater than or equal to 1 (January) and
+ * less than or equal to 12 (December)
  *
  * @category Setters
  */
@@ -2501,7 +2501,7 @@ export const setMonth =
 		);
 
 /**
- * Same as setMonth but returns directly a DateTime or throws in case of an error
+ * Same as `setMonth` but returns directly a `CVDateTime` or throws in case of an error
  *
  * @category Setters
  */
@@ -2511,8 +2511,8 @@ export const setMonthOrThrow: MTypes.OneArgFunction<number, MTypes.OneArgFunctio
 );
 
 /**
- * If possible, returns a right of a DateTime having monthDay `monthDay` and the same `year`,
- * `month`, `hour23`, `minute`, `second`, `millisecond` and `zoneOffset` as `self`. Returns a `left`
+ * If possible, returns a `Right` of a `CVDateTime` having monthDay `monthDay` and the same `year`,
+ * `month`, `hour23`, `minute`, `second`, `millisecond` and `zoneOffset` as `self`. Returns a `Left`
  * of an error otherwise. `monthDay` must be an integer greater than or equal to 1 and less than or
  * equal to the number of days in the current month.
  *
@@ -2529,7 +2529,7 @@ export const setMonthDay =
 		);
 
 /**
- * Same as setMonthDay but returns directly a DateTime or throws in case of an error
+ * Same as `setMonthDay` but returns directly a `CVDateTime` or throws in case of an error
  *
  * @category Setters
  */
@@ -2539,9 +2539,9 @@ export const setMonthDayOrThrow: MTypes.OneArgFunction<number, MTypes.OneArgFunc
 );
 
 /**
- * If possible, returns a right of a DateTime having isoYear `isoYear` and the same `isoWeek`,
+ * If possible, returns a `Right` of a `CVDateTime` having isoYear `isoYear` and the same `isoWeek`,
  * `weekday`, `hour23`, `minute`, `second`, `millisecond` and `zoneOffset` as `self`. Returns a
- * `left` of an error otherwise. `isoYear` must be an integer comprised in the range [MIN_FULL_YEAR,
+ * `Left` of an error otherwise. `isoYear` must be an integer comprised in the range [MIN_FULL_YEAR,
  * MAX_FULL_YEAR].
  *
  * @category Setters
@@ -2552,7 +2552,7 @@ export const setIsoYear =
 		pipe(self, _isoDate, IsoDate.setYear(isoYear), Either.map(_isoDateSetter(self)));
 
 /**
- * Same as setIsoYear but returns directly a DateTime or throws in case of an error
+ * Same as `setIsoYear` but returns directly a `CVDateTime` or throws in case of an error
  *
  * @category Setters
  */
@@ -2562,9 +2562,9 @@ export const setIsoYearOrThrow: MTypes.OneArgFunction<number, MTypes.OneArgFunct
 );
 
 /**
- * If possible, returns a right of a DateTime having isoWeek `isoWeek` and the same `isoYear`,
+ * If possible, returns a Right of a `CVDateTime` having isoWeek `isoWeek` and the same `isoYear`,
  * `weekday`, `hour23`, `minute`, `second`, `millisecond` and `zoneOffset` as `self`. Returns a
- * `left` of an error otherwise. `isoWeek` must be an integer greater than or equal to 1 and less
+ * `Left` of an error otherwise. `isoWeek` must be an integer greater than or equal to 1 and less
  * than or equal to the number of iso weeks in the current year.
  *
  * @category Setters
@@ -2575,7 +2575,7 @@ export const setIsoWeek =
 		pipe(self, _isoDate, IsoDate.setIsoWeek(isoWeek), Either.map(_isoDateSetter(self)));
 
 /**
- * Same as setIsoWeek but returns directly a DateTime or throws in case of an error
+ * Same as `setIsoWeek` but returns directly a `CVDateTime` or throws in case of an error
  *
  * @category Setters
  */
@@ -2585,9 +2585,9 @@ export const setIsoWeekOrThrow: MTypes.OneArgFunction<number, MTypes.OneArgFunct
 );
 
 /**
- * If possible, returns a right of a DateTime having weekday `weekday` and the same `isoYear`,
+ * If possible, returns a `Right` of a `CVDateTime` having weekday `weekday` and the same `isoYear`,
  * `isoWeek`, `hour23`, `minute`, `second`, `millisecond` and `zoneOffset` as `self`. Returns a
- * `left` of an error otherwise. `weekday` must be an integer greater than or equal to 1 (monday)
+ * `Left` of an error otherwise. `weekday` must be an integer greater than or equal to 1 (monday)
  * and less than or equal to 7 (sunday).
  *
  * @category Setters
@@ -2598,7 +2598,7 @@ export const setWeekday =
 		pipe(self, _isoDate, IsoDate.setWeekday(weekday), Either.map(_isoDateSetter(self)));
 
 /**
- * Same as setWeekday but returns directly a DateTime or throws in case of an error
+ * Same as `setWeekday` but returns directly a `CVDateTime` or throws in case of an error
  *
  * @category Setters
  */
@@ -2608,8 +2608,8 @@ export const setWeekdayOrThrow: MTypes.OneArgFunction<number, MTypes.OneArgFunct
 );
 
 /**
- * If possible, returns a right of a DateTime having hour23 `hour23` and the same `year`,
- * `ordinalDay`, `minute`, `second`, `millisecond` and `zoneOffset` as `self`. Returns a `left` of
+ * If possible, returns a `Right` of a `CVDateTime` having hour23 `hour23` and the same `year`,
+ * `ordinalDay`, `minute`, `second`, `millisecond` and `zoneOffset` as `self`. Returns a `Left` of
  * an error otherwise. `hour23` must be an integer greater than or equal to 0 and less than or equal
  * to 23
  *
@@ -2621,7 +2621,7 @@ export const setHour23 =
 		pipe(self, _time, Time.setHour23(hour23), Either.map(_timeSetter(self)));
 
 /**
- * Same as setHour23 but returns directly a DateTime or throws in case of an error
+ * Same as `setHour23` but returns directly a `CVDateTime` or throws in case of an error
  *
  * @category Setters
  */
@@ -2631,9 +2631,9 @@ export const setHour23OrThrow: MTypes.OneArgFunction<number, MTypes.OneArgFuncti
 );
 
 /**
- * If possible, returns a right of a DateTime having hour11 `hour11` and the same `year`,
+ * If possible, returns a Right of a `CVDateTime` having hour11 `hour11` and the same `year`,
  * `ordinalDay`, `meridiem`, `minute`, `second`, `millisecond` and `zoneOffset` as `self`. Returns a
- * `left` of an error otherwise. `hour11` must be an integer greater than or equal to 0 and less
+ * `Left` of an error otherwise. `hour11` must be an integer greater than or equal to 0 and less
  * than or equal to 11.
  *
  * @category Setters
@@ -2644,7 +2644,7 @@ export const setHour11 =
 		pipe(self, _time, Time.setHour11(hour11), Either.map(_timeSetter(self)));
 
 /**
- * Same as setHour11 but returns directly a DateTime or throws in case of an error
+ * Same as `setHour11` but returns directly a `CVDateTime` or throws in case of an error
  *
  * @category Setters
  */
@@ -2654,7 +2654,7 @@ export const setHour11OrThrow: MTypes.OneArgFunction<number, MTypes.OneArgFuncti
 );
 
 /**
- * Returns a DateTime having meridiem `meridiem` and the same `year`, `ordinalDay`, `hour11`,
+ * Returns a `CVDateTime` having meridiem `meridiem` and the same `year`, `ordinalDay`, `hour11`,
  * `minute`, `second`, `millisecond` and `zoneOffset` as `self`
  *
  * @category Setters
@@ -2665,8 +2665,8 @@ export const setMeridiem =
 		pipe(self, _time, Time.setMeridiem(meridiem), _timeSetter(self));
 
 /**
- * If possible, returns a right of a DateTime having minute `minute` and the same `year`,
- * `ordinalDay`, `hour23`, `second`, `millisecond` and `zoneOffset` as `self`. Returns a `left` of
+ * If possible, returns a `Right` of a `CVDateTime` having minute `minute` and the same `year`,
+ * `ordinalDay`, `hour23`, `second`, `millisecond` and `zoneOffset` as `self`. Returns a `Left` of
  * an error otherwise. `minute` must be an integer greater than or equal to 0 and less than or equal
  * to 59
  *
@@ -2678,7 +2678,7 @@ export const setMinute =
 		pipe(self, _time, Time.setMinute(minute), Either.map(_timeSetter(self)));
 
 /**
- * Same as setMinute but returns directly a DateTime or throws in case of an error
+ * Same as `setMinute` but returns directly a `CVDateTime` or throws in case of an error
  *
  * @category Setters
  */
@@ -2688,8 +2688,8 @@ export const setMinuteOrThrow: MTypes.OneArgFunction<number, MTypes.OneArgFuncti
 );
 
 /**
- * If possible, returns a right of a DateTime having second `second` and the same `year`,
- * `ordinalDay`, `hour23`, `minute`, `millisecond` and `zoneOffset` as `self`. Returns a `left` of
+ * If possible, returns a Right of a `CVDateTime` having second `second` and the same `year`,
+ * `ordinalDay`, `hour23`, `minute`, `millisecond` and `zoneOffset` as `self`. Returns a `Left` of
  * an error otherwise. `second` must be an integer greater than or equal to 0 and less than or equal
  * to 59
  *
@@ -2701,7 +2701,7 @@ export const setSecond =
 		pipe(self, _time, Time.setSecond(second), Either.map(_timeSetter(self)));
 
 /**
- * Same as setSecond but returns directly a DateTime or throws in case of an error
+ * Same as `setSecond` but returns directly a `CVDateTime` or throws in case of an error
  *
  * @category Setters
  */
@@ -2711,10 +2711,10 @@ export const setSecondOrThrow: MTypes.OneArgFunction<number, MTypes.OneArgFuncti
 );
 
 /**
- * If possible, returns a right of a DateTime having millisecond `millisecond` and the same `year`,
- * `ordinalDay`, `hour23`, `minute`, `second` and `zoneOffset` as `self`. Returns a `left` of an
- * error otherwise. `millisecond` must be an integer greater than or equal to 0 and less than or
- * equal to 999.
+ * If possible, returns a `Right` of a `CVDateTime` having millisecond `millisecond` and the same
+ * `year`, `ordinalDay`, `hour23`, `minute`, `second` and `zoneOffset` as `self`. Returns a `Left`
+ * of an error otherwise. `millisecond` must be an integer greater than or equal to 0 and less than
+ * or equal to 999.
  *
  * @category Setters
  */
@@ -2724,7 +2724,7 @@ export const setMillisecond =
 		pipe(self, _time, Time.setMillisecond(millisecond), Either.map(_timeSetter(self)));
 
 /**
- * Same as setMillisecond but returns directly a DateTime or throws in case of an error
+ * Same as `setMillisecond` but returns directly a `CVDateTime` or throws in case of an error
  *
  * @category Setters
  */
@@ -2734,8 +2734,8 @@ export const setMillisecondOrThrow: MTypes.OneArgFunction<
 > = flow(setMillisecond, Function.compose(Either.getOrThrowWith(Function.identity)));
 
 /**
- * If possible, returns a right of a copy of `self` with timestamp set to `timestamp`. Returns a
- * `left` of an error otherwise. `timestamp` must be an integer comprised in the range
+ * If possible, returns a `Right` of a copy of `self` with timestamp set to `timestamp`. Returns a
+ * `Left` of an error otherwise. `timestamp` must be an integer comprised in the range
  * [MIN_TIMESTAMP, MAX_TIMESTAMP] representing the number of milliseconds since 1/1/1970
  * 00:00:00:000+0:00.
  */
@@ -2803,8 +2803,8 @@ const _setZoneOffset =
 		});
 
 /**
- * If possible, returns a right of a copy of `self` with the same timestamp and zoneOffset set to
- * `zoneOffset`.
+ * If possible, returns a `Right` of a copy of `self` with the same `timestamp` and zoneOffset set
+ * to `zoneOffset`.
  *
  * If `zoneOffset` is omitted, the local time zone offset of the machine this code is running on is
  * used.
@@ -2835,7 +2835,8 @@ export const setZoneOffsetKeepTimestamp = (
 	_setZoneOffset(true, zoneOffset);
 
 /**
- * Same as setZoneOffsetKeepTimestamp but returns directly a DateTime or throws in case of an error
+ * Same as `setZoneOffsetKeepTimestamp` but returns directly a `CVDateTime` or throws in case of an
+ * error
  *
  * @category Setters
  */
@@ -2850,10 +2851,10 @@ export const setZoneOffsetKeepTimestampOrThrow: MTypes.OneArgFunction<
 > = flow(setZoneOffsetKeepTimestamp, Function.compose(Either.getOrThrowWith(Function.identity)));
 
 /**
- * If possible, returns a right of a copy of `self` with the same CVDateTime.Parts (except
- * zoneOffset) and zoneOffset set to `zoneOffset`.
+ * If possible, returns a `Right` of a copy of `self` with the same parts (except `zoneOffset`) and
+ * zoneOffset set to `zoneOffset`.
  *
- * See setZoneOffsetKeepTimestamp for more details
+ * See `setZoneOffsetKeepTimestamp` for more details
  *
  * @category Setters
  */
@@ -2869,7 +2870,8 @@ export const setZoneOffsetKeepParts = (
 	_setZoneOffset(false, zoneOffset);
 
 /**
- * Same as setZoneOffsetKeepTimestamp but returns directly a DateTime or throws in case of an error
+ * Same as `setZoneOffsetKeepTimestamp` but returns directly a `CVDateTime` or throws in case of an
+ * error
  *
  * @category Setters
  */
@@ -2900,7 +2902,7 @@ export const yearIsLeap: Predicate.Predicate<Type> = flow(_gregorianDate, Gregor
 export const isoYearIsLong: Predicate.Predicate<Type> = flow(_isoDate, IsoDate.yearIsLong);
 
 /**
- * Returns true if self is the first day of a month in the given timezone
+ * Returns true if `self` is the first day of a month in the given timezone
  *
  * @category Predicates
  */
@@ -2908,7 +2910,7 @@ export const isoYearIsLong: Predicate.Predicate<Type> = flow(_isoDate, IsoDate.y
 export const isFirstMonthDay: Predicate.Predicate<Type> = (self) => getMonthDay(self) === 1;
 
 /**
- * Returns true if self is the last day of a month in the given timezone
+ * Returns true if `self` is the last day of a month in the given timezone
  *
  * @category Predicates
  */
@@ -2918,7 +2920,7 @@ export const isLastMonthDay: Predicate.Predicate<Type> = (self) =>
 	pipe(self, _gregorianDate, GregorianDate.getNumberOfDaysInMonth(getMonth(self)));
 
 /**
- * Returns true if self is the first day of a year in the given timezone
+ * Returns true if `self` is the first day of a year in the given timezone
  *
  * @category Predicates
  */
@@ -2926,7 +2928,7 @@ export const isLastMonthDay: Predicate.Predicate<Type> = (self) =>
 export const isFirstYearDay: Predicate.Predicate<Type> = (self) => getOrdinalDay(self) === 1;
 
 /**
- * Returns true if self is the last day of a year in the given timezone
+ * Returns true if `self` is the last day of a year in the given timezone
  *
  * @category Predicates
  */
@@ -2935,7 +2937,7 @@ export const isLastYearDay: Predicate.Predicate<Type> = (self) =>
 	getOrdinalDay(self) === pipe(self, _gregorianDate, GregorianDate.getYearDurationInDays);
 
 /**
- * Returns true if self is the first day of an iso year in the given timezone
+ * Returns true if `self` is the first day of an iso year in the given timezone
  *
  * @category Predicates
  */
@@ -2944,7 +2946,7 @@ export const isFirstIsoYearDay: Predicate.Predicate<Type> = (self) =>
 	getIsoWeek(self) === 1 && getWeekday(self) === 1;
 
 /**
- * Returns true if self is the last day of an iso year in the given timezone
+ * Returns true if `self` is the last day of an iso year in the given timezone
  *
  * @category Predicates
  */
@@ -3019,11 +3021,11 @@ export const toLastIsoYearDay = (self: Type): Type =>
 	pipe(self, toLastIsoYearWeek, setWeekdayOrThrow(7));
 
 /**
- * If possible, returns a copy of `self` offset by `offset` years and having the same `month`,
- * `hour23`, `minute`, `second`, `millisecond` and `zoneOffset` as `self`. If `respectMonthEnd` is
- * true and `self` is on the last day of a month, the new DateTime object's monthDay will be the
- * last of the target month. Otherwise, it will be the same as `self`'s. Returns a `left` of an
- * error otherwise.
+ * If possible, returns a `Right` of a copy of `self` offset by `offset` years and having the same
+ * `month`, `hour23`, `minute`, `second`, `millisecond` and `zoneOffset` as `self`. Returns a `Left`
+ * of an error otherwise. If `respectMonthEnd` is true and `self` is on the last day of a month, the
+ * new DateTime object's monthDay will be the last of the target month. Otherwise, it will be the
+ * same as `self`
  *
  * @category Offsetters
  */
@@ -3034,7 +3036,7 @@ export const offsetYears = (
 	offsetMonths(offset * 12, respectMonthEnd);
 
 /**
- * Same as offsetYears but returns directly a DateTime or throws in case of an error
+ * Same as `offsetYears` but returns directly a `CVDateTime` or throws in case of an error
  *
  * @category Offsetters
  */
@@ -3047,11 +3049,11 @@ export const offsetYearsOrThrow: (
 );
 
 /**
- * If possible, returns a copy of `self` offset by `offset` months and having the same `hour23`,
- * `minute`, `second`, `millisecond` and `zoneOffset` as `self`. If `respectMonthEnd` is true and
- * `self` is on the last day of a month, the new DateTime object's monthDay will be the last of the
- * target month. Otherwise, it will be the same as `self`'s. Returns a `left` of an error if the
- * DateTime object can
+ * If possible, returns a `Right` of a copy of `self` offset by `offset` months and having the same
+ * `hour23`, `minute`, `second`, `millisecond` and `zoneOffset` as `self`. Returns a `Left` of an
+ * error otherwise. If `respectMonthEnd` is true and `self` is on the last day of a month, the new
+ * DateTime object's monthDay will be the last of the target month. Otherwise, it will be the same
+ * as `self`'s
  *
  * @category Offsetters
  */
@@ -3076,7 +3078,7 @@ export const offsetMonths =
 	};
 
 /**
- * Same as offsetMonths but returns directly a DateTime or throws in case of an error
+ * Same as `offsetMonths` but returns directly a `CVDateTime` or throws in case of an error
  *
  * @category Offsetters
  */
@@ -3089,7 +3091,8 @@ export const offsetMonthsOrThrow: (
 );
 
 /**
- * Returns a copy of `self` offset by `offset` days
+ * If possible, returns a `Right` of a copy of `self` offset by `offset` days. Returns a `Left` of
+ * an error otherwise.
  *
  * @category Offsetters
  */
@@ -3099,7 +3102,7 @@ export const offsetDays = (
 	offsetMilliseconds(offset * DAY_MS);
 
 /**
- * Same as offsetDays but returns directly a DateTime or throws in case of an error
+ * Same as `offsetDays` but returns directly a `CVDateTime` or throws in case of an error
  *
  * @category Offsetters
  */
@@ -3109,11 +3112,11 @@ export const offsetDaysOrThrow: MTypes.OneArgFunction<number, MTypes.OneArgFunct
 );
 
 /**
- * If possible, returns a copy of `self` offset by `offset` iso years and having the same `weekday`,
- * `hour23`, `minute`, `second`, `millisecond` and `zoneOffset` as `self`. If `respectYearEnd` is
- * true and `self` is on the last day of an iso year, the new DateTime object's isoWeek will be the
- * last of the target iso year. Otherwise, it will be the same as `self`'s. Returns a `left` of an
- * error otherwise.
+ * If possible, returns a `Right` of a copy of `self` offset by `offset` iso years and having the
+ * same `weekday`, `hour23`, `minute`, `second`, `millisecond` and `zoneOffset` as `self`. Returns a
+ * `Left` of an error otherwise. If `respectYearEnd` is true and `self` is on the last day of an iso
+ * year, the new DateTime object's isoWeek will be the last of the target iso year. Otherwise, it
+ * will be the same as `self`'s.
  *
  * @category Offsetters
  */
@@ -3131,7 +3134,7 @@ export const offsetIsoYears =
 	};
 
 /**
- * Same as offsetIsoYears but returns directly a DateTime or throws in case of an error
+ * Same as `offsetIsoYears` but returns directly a `CVDateTime` or throws in case of an error
  *
  * @category Offsetters
  */
@@ -3144,7 +3147,8 @@ export const offsetIsoYearsOrThrow: (
 );
 
 /**
- * Returns a copy of `self` offset by `offset` hours
+ * If possible, returns a `Right` of a copy of `self` offset by `offset` hours. Returns a `Left` of
+ * an error otherwise.
  *
  * @category Offsetters
  */
@@ -3154,7 +3158,7 @@ export const offsetHours = (
 	offsetMilliseconds(offset * HOUR_MS);
 
 /**
- * Same as offsetHours but returns directly a DateTime or throws in case of an error
+ * Same as `offsetHours` but returns directly a `CVDateTime` or throws in case of an error
  *
  * @category Offsetters
  */
@@ -3164,7 +3168,8 @@ export const offsetHoursOrThrow: MTypes.OneArgFunction<number, MTypes.OneArgFunc
 );
 
 /**
- * Returns a copy of `self` offset by `offset` minutes
+ * If possible, returns a `Right` of a copy of `self` offset by `offset` minutes. Returns a `Left`
+ * of an error otherwise.
  *
  * @category Offsetters
  */
@@ -3174,7 +3179,7 @@ export const offsetMinutes = (
 	offsetMilliseconds(offset * MINUTE_MS);
 
 /**
- * Same as offsetMinutes but returns directly a DateTime or throws in case of an error
+ * Same as `offsetMinutes` but returns directly a `CVDateTime` or throws in case of an error
  *
  * @category Offsetters
  */
@@ -3184,7 +3189,8 @@ export const offsetMinutesOrThrow: MTypes.OneArgFunction<
 > = flow(offsetMinutes, Function.compose(Either.getOrThrowWith(Function.identity)));
 
 /**
- * Returns a copy of `self` offset by `offset` seconds
+ * If possible, returns a `Right` of a copy of `self` offset by `offset` seconds. Returns a `Left`
+ * of an error otherwise.
  *
  * @category Offsetters
  */
@@ -3194,7 +3200,7 @@ export const offsetSeconds = (
 	offsetMilliseconds(offset * SECOND_MS);
 
 /**
- * Same as offsetSeconds but returns directly a DateTime or throws in case of an error
+ * Same as `offsetSeconds` but returns directly a `CVDateTime` or throws in case of an error
  *
  * @category Offsetters
  */
@@ -3204,7 +3210,8 @@ export const offsetSecondsOrThrow: MTypes.OneArgFunction<
 > = flow(offsetSeconds, Function.compose(Either.getOrThrowWith(Function.identity)));
 
 /**
- * Returns a copy of `self` offset by `offset` milliseconds
+ * If possible, returns a `Right` of a copy of `self` offset by `offset` milliseconds. Returns a
+ * `Left` of an error otherwise.
  *
  * @category Offsetters
  */
@@ -3214,7 +3221,7 @@ export const offsetMilliseconds =
 		_setTimestamp(timestamp(self) + offset)(self);
 
 /**
- * Same as offsetMilliseconds but returns directly a DateTime or throws in case of an error
+ * Same as `offsetMilliseconds` but returns directly a `CVDateTime` or throws in case of an error
  *
  * @category Offsetters
  */

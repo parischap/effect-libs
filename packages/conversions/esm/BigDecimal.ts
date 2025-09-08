@@ -1,4 +1,4 @@
-/** A simple extension to the Effect `BigDecimal` module */
+/** A simple extension to the `Effect.BigDecimal` module */
 
 import { MTypes } from '@parischap/effect-lib';
 import { BigDecimal } from 'effect';

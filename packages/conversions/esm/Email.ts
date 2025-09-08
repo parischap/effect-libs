@@ -73,13 +73,6 @@ export const fromString: MTypes.OneArgFunction<
 export const fromStringOrThrow: MTypes.OneArgFunction<string, Type> = constructor;
 
 /**
- * Checks if a string is an email
- *
- * @category Refinement
- */
-export const has = (input: string): input is Type => MString.isEmail(input);
-
-/**
  * A Schema that transforms a string into a CVBrand.Email.Type
  *
  * @ignore

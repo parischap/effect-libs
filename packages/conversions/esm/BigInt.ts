@@ -1,4 +1,4 @@
-/** A simple extension to the Effect `BigInt` module */
+/** A simple extension to the `Effect.BigInt` module */
 
 import { MBigInt, MTypes } from '@parischap/effect-lib';
 import { Brand, Either, Option } from 'effect';
