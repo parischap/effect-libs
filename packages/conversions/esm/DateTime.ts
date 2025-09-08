@@ -1,5 +1,5 @@
 /**
- * This module implements an immutable DateTime object.
+ * This module implements an immutable `DateTime` object.
  *
  * `DateTime` objects keep an internal state. But all provided functions are pure insofar as they
  * always yield the same result whatever the state the object is in. The state is only used to
@@ -7,15 +7,15 @@
  *
  * Unlike the Javascript Date objects and the Effect DateTime objects, `DateTime` objects handle
  * both the Gregorian and Iso calendars. So you can easily get/set the iso year and iso week of a
- * DateTime object.
+ * `DateTime` object.
  *
  * A `DateTime` object has a `zoneOffset` which is the difference in hours between the time in the
  * local zone and UTC time (e.g `zoneOffset=1` for timezone +1:00). All the data in a `DateTime`
  * object is `zoneOffset-dependent`, except `timestamp`. An important thing to note is that a
- * DateTime object with a timestamp `t` and a zoneOffset `zo` has exactly the same date parts
- * (`year`, `ordinalDay`, `month`, `monthDay`, `isoYear`...) as a `DateTime` object with a timestamp
- * `t+zox3600` and a 0 zoneOffset. That's the reason for the _zonedTimestamp field which is equal to
- * `t+zox3600`. All calculations are performed UTC using _zonedTimestamp instead of timestamp.
+ * `DateTime` object with a timestamp `t` and a zoneOffset `zo` has exactly the same date parts
+ * (`year`, `ordinalDay`, `month`, `monthDay`, `isoYear`...) as a `DateTime` object with `timestamp
+ * = t+zox3600` and `zoneOffset = 0`. That's the reason for the _zonedTimestamp field which is equal
+ * to `t+zox3600`. All calculations are performed UTC using _zonedTimestamp instead of timestamp.
  */
 
 import {

@@ -1,4 +1,8 @@
-/** A module that implements an Email brand */
+/**
+ * A module that implements an Email brand. See the Effect documentation about Branding
+ * (https://effect.website/docs/code-style/branded-types/) if you are not familiar with this
+ * concept.
+ */
 
 import { MString, MTypes } from '@parischap/effect-lib';
 import { Brand, Either, Option, Schema } from 'effect';
@@ -36,7 +40,7 @@ export const unsafeFromString = Brand.nominal<Type>();
  * Constructs an Email from a string. Throws an error if the provided string does not represent an
  * email
  *
- * @category Constructors
+ * @internal
  */
 export const constructor = Brand.refined<Type>(MString.isEmail, (s) =>
 	Brand.error(`'${s}' does not represent a email`)

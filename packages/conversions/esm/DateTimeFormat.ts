@@ -1,4 +1,8 @@
-/** This module implements a Template (see Template.ts) dedicated to parsing and formatting dates */
+/**
+ * This module implements a `CVTemplate` (see Template.ts) dedicated to parsing and formatting
+ * dates. It supports many of the available unicode tokens (see
+ * https://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table).
+ */
 
 import {
 	MInputError,

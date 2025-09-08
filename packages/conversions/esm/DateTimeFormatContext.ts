@@ -1,4 +1,7 @@
-/** This module implements a Template (see Template.ts) dedicated to parsing and formatting dates */
+/**
+ * This module implements a CVDateFormatContext used when parsing or formatting dates (see
+ * DateTimeFormat.ts). It provides the translations used by language specific tokens (e.g. `MMMM`).
+ */
 
 import {
 	MArray,
