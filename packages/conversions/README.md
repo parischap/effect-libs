@@ -35,7 +35,7 @@ Depending on the package manager you use, run one of the following commands in y
   yarn add effect @parischap/effect-lib @parischap/conversions
   ```
 
-Bundled and tree-shaken, this module is only about [30kB](https://bundlephobia.com/package/@parischap/conversions). Minified and gzipped, it falls to [7kB](https://bundlephobia.com/package/@parischap/conversions)! (source bundlephobia)
+We use two peerDependencies. If you are not an Effect user, the size may seem important. But, in fact, we use little of each peerDependency. Bundled and tree-shaken, this module is only about [69kB](https://bundlephobia.com/package/@parischap/conversions). Minified and gzipped, it falls to [15kB](https://bundlephobia.com/package/@parischap/conversions)! (source bundlephobia)
 
 ## API
 
