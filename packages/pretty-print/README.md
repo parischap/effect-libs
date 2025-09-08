@@ -2,11 +2,11 @@
 
 # pretty-print
 
-An [Effect](https://effect.website/docs/introduction) library that produces the string representation of any value, in Node or the browser. Similar to util.inspect but with plenty of extra options: **treeifying, coloring, sorting, choosing what to display and how to display it...**. It supports natively Effect iterables like HashMap, HashSet,...
+An [`Effect`](https://effect.website/docs/introduction) library that produces the string representation of any value, in Node or the browser. Similar to util.inspect but with plenty of extra options: **treeifying, coloring, sorting, choosing what to display and how to display it...**. It supports natively Effect iterables like HashMap, HashSet,...
 
 Non-recursive, tested and documented, 100% Typescript, 100% functional, 100% parametrizable.
 
-Can also be used by non-Effect users.
+Can also be used by non-`Effect` users.
 
 </div>
 
@@ -35,7 +35,7 @@ Depending on the package manager you use, run one of the following commands in y
   yarn add effect @parischap/effect-lib @parischap/ansi-styles @parischap/pretty-print
   ```
 
-We use three peerDependencies. If you are not an Effect user, the size may seem important. But, in fact, we use little of each peerDependency. Bundled and tree-shaken, it's only about [30kB](https://bundlephobia.com/package/@parischap/pretty-print). Minified and gzipped, it falls to [7kB](https://bundlephobia.com/package/@parischap/pretty-print)! (source bundlephobia)
+We use three peerDependencies. If you are not an `Effect` user, the size may seem important. But, in fact, we use little of each peerDependency. Bundled and tree-shaken, it's only about [30kB](https://bundlephobia.com/package/@parischap/pretty-print). Minified and gzipped, it falls to [7kB](https://bundlephobia.com/package/@parischap/pretty-print)! (source bundlephobia)
 
 ## API
 

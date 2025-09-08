@@ -2,11 +2,11 @@
 
 # conversions
 
-An [Effect](https://effect.website/docs/introduction) library to replace the native javascript INTL namespace.
+An [`Effect`](https://effect.website/docs/introduction) library to partially replace the native javascript INTL namespace.
 
 Non machine-dependent, safe, bidirectional (implements parsing and formatting), tested and documented, 100% Typescript, 100% functional.
 
-Can also come in handy to non-Effect users.
+Can also come in handy to non-`Effect` users.
 
 </div>
 
@@ -35,7 +35,7 @@ Depending on the package manager you use, run one of the following commands in y
   yarn add effect @parischap/effect-lib @parischap/conversions
   ```
 
-We use two peerDependencies. If you are not an Effect user, the size may seem important. But, in fact, we use little of each peerDependency. Bundled and tree-shaken, this module is only about [69kB](https://bundlephobia.com/package/@parischap/conversions). Minified and gzipped, it falls to [15kB](https://bundlephobia.com/package/@parischap/conversions)! (source bundlephobia)
+We use two peerDependencies. If you are not an `Effect` user, the size may seem important. But, in fact, we use little of each peerDependency. Bundled and tree-shaken, this module is only about [69kB](https://bundlephobia.com/package/@parischap/conversions). Minified and gzipped, it falls to [15kB](https://bundlephobia.com/package/@parischap/conversions)! (source bundlephobia)
 
 ## API
 
@@ -45,14 +45,14 @@ After reading this introduction, you may take a look at the [API](https://parisc
 
 This package contains:
 
-- a [module to round numbers and BigDecimal's](#RoundingModule) with the same rounding options as those offered by the javascript INTL namespace: Ceil, Floor, Expand, Trunc, HalfCeil...
-- a safe, easy-to-use [number/BigDecimal parser/formatter](#NumberParserFormatter) with almost all the options offered by the javascript INTL namespace: choice of the thousand separator, of the fractional separator, of the minimum and maximum number of fractional digits, of the rounding mode, of the sign display mode, of whether to show or not the integer part when it's zero, of whether to use a scientific or engineering notation, of the character to use as exponent mark... It can also be used as a Schema instead of the existing Schema.NumberFromString transformer.
-- an equivalent to the PHP [sprintf and sscanf functions](#Templating) with real typing of the placeholders. Although `Effect.Schema` does offer the [TemplateLiteralParser API](https://effect.website/docs/schema/basic-usage/#templateliteralparser), the latter does not provide a solution to situations such as fixed length fields (potentially padded), numbers formatted otherwise than in the English format... It can also be used as a Schema
-- a very easy to use [DateTime module](#DateTimeModule) that implements natively the Iso calendar (Iso year and Iso week). It is also faster than its Effect counterpart because it implements an internal state that's only used to speed up calculation times (but does not alter the result of functions; so DateTime functions can be viewed as pure from a user's perspective). It can therefore be useful in applications where time is of essence.
-- a [DateTime parser/formatter](#DateTimeParserFormatter) which supports many of the available [unicode tokens](https://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table). It can also be used as a Schema instead of the existing Schema.Date transformer.
-- a few [brands](#Branding) which come in handy in many projects such as email, semantic versioning, integer numbers, positive integer numbers, real numbers and positive real numbers. All these brands are also defined as Schemas.
+- a [module to round numbers and `BigDecimal`'s](#RoundingModule) with the same rounding options as those offered by the javascript INTL namespace: Ceil, Floor, Expand, Trunc, HalfCeil...
+- a safe, easy-to-use [number/`BigDecimal` parser/formatter](#NumberParserFormatter) with almost all the options offered by the javascript INTL namespace: choice of the thousand separator, of the fractional separator, of the minimum and maximum number of fractional digits, of the rounding mode, of the sign display mode, of whether to show or not the integer part when it's zero, of whether to use a scientific or engineering notation, of the character to use as exponent mark... It can also be used as a `Schema` instead of the `Effect.Schema.NumberFromString` transformer.
+- an equivalent to the PHP [sprintf and sscanf functions](#Templating) with real typing of the placeholders. Although `Effect.Schema` does offer the [`TemplateLiteralParser` API](https://effect.website/docs/schema/basic-usage/#templateliteralparser), the latter does not provide a solution to situations such as fixed length fields (potentially padded), numbers formatted otherwise than in the English format... This module can also be used as a `Schema`.
+- a very easy to use [`CVDateTime` module](#DateTimeModule) that implements natively the Iso calendar (Iso year and Iso week). It is also faster than its `Effect` counterpart as it implements an internal state that's only used to speed up calculation times (but does not alter the result of functions; so `CVDateTime` functions can be viewed as pure from a user's perspective). It can therefore be useful in applications where time is of essence.
+- a [`CVDateTime` parser/formatter](#DateTimeParserFormatter) which supports many of the available [unicode tokens](https://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table). It can also be used as a `Schema` instead of the `Effect.Schema.Date` transformer.
+- a few [brands](#Branding) which come in handy in many projects such as email, semantic versioning, integer numbers, positive integer numbers, real numbers and positive real numbers. All these brands are also defined as `Schemas`. Please read the [`Effect` documentation about Branding](https://effect.website/docs/code-style/branded-types/) if you are not familiar with this concept
 
-Most functions of this package return an `Either` or an `Option` to signify the possibility of an error. However, if you are not an Effect user and do not care to learn more about it, you can simply use the `OrThrow` variant of the function. For instance, use `CVDateTime.setWeekdayOrThrow` instead of `CVDateTime.setWeekday`. As its name suggests, it will throw in case of an `Error`. Some functions return functions that return an `Either` or throw. In that case, the variant for non Effect users contains the word `Throwing`, e.g. use `CVDateTimeFormat.toThrowingFormatter` instead of `CVDateTimeFormat.toFormatter`.
+Most functions of this package return an `Either` or an `Option` to signify the possibility of an error. However, if you are not an `Effect` user and do not care to learn more about it, you can simply use the `OrThrow` variant of the function. For instance, use `CVDateTime.setWeekdayOrThrow` instead of `CVDateTime.setWeekday`. As its name suggests, it will throw in case failure. Some functions return functions that return an `Either` or throw. In that case, the variant for non-`Effect` users contains the word `Throwing`, e.g. use `CVDateTimeFormat.toThrowingFormatter` instead of `CVDateTimeFormat.toFormatter`.
 
 ### <a name="RoundingModule"></a>A) Rounding module
 
@@ -177,9 +177,9 @@ export enum Type {
 }
 ```
 
-#### 3. CVRoundingOption instances
+#### 3. `CVRoundingOption` instances
 
-Instead of building your own CVRoundingOption, you can use the `halfExpand2` CVRoundingOption instance (`HalfExpand` rounding mode with a precision of two fractional digits). It will come in handy in accounting apps of most countries. For example:
+Instead of building your own `CVRoundingOption`, you can use the `halfExpand2` `CVRoundingOption` instance (`HalfExpand` rounding mode with a precision of two fractional digits). It will come in handy in accounting apps of most countries. For example:
 
 ```ts
 import { CVRoundingOption } from "@parischap/conversions";
@@ -200,7 +200,7 @@ console.log(numberRounder(-12.457));
 
 #### 4. Debugging and equality
 
-CVRoundingOption objects implement Effect equivalence and equality based on equivalence and equality of the precision and roundingMode properties. They also implement a .toString() method. For instance:
+`CVRoundingOption` objects implement `Effect` equivalence and equality based on equivalence and equality of the `precision` and `roundingMode` properties. They also implement a `.toString()` method. For instance:
 
 ```ts
 import { CVRoundingMode, CVRoundingOption } from "@parischap/conversions";
@@ -226,7 +226,7 @@ console.log(Equal.equals(CVRoundingOption.halfExpand2, dummyOption1));
 console.log(Equal.equals(CVRoundingOption.halfExpand2, dummyOption2));
 ```
 
-### <a name="NumberParserFormatter"></a>B) Number and BigDecimal parser/formatter
+### <a name="NumberParserFormatter"></a>B) Number and `BigDecimal` parser/formatter
 
 #### 1. Usage example
 
@@ -293,19 +293,19 @@ console.log(frenchStyleDecoder("1 024,56"));
 console.log(frenchStyleEncoder(CVReal.unsafeFromNumber(1024.56)));
 ```
 
-#### 2. CVNumberBase10Format instances
+#### 2. `CVNumberBase10Format` instances
 
-In the previous example, we used the `ukStyleNumber`, `ukStyleUngroupedNumber` and `frenchStyleInteger` CVNumberBase10Format instances.
+In the previous example, we used the `ukStyleNumber`, `ukStyleUngroupedNumber` and `frenchStyleInteger` `CVNumberBase10Format` instances.
 
 You will find in the [API](https://parischap.github.io/effect-libs/conversions/NumberBase10Format.ts) the list of all pre-defined instances.
 
-#### 3. CVNumberBase10Format Instance modifiers
+#### 3. `CVNumberBase10Format` Instance modifiers
 
-Sometimes, you will need to bring some small modifications to a pre-defined CVNumberBase10Format instance. For instance, in the previous example, we defined the `ukStyleNumberWithEngineeringNotation` instance by using the `withEngineeringScientificNotation` modifier on the `ukStyleNumber` pre-defined instance.
+Sometimes, you will need to bring some small modifications to a pre-defined `CVNumberBase10Format` instance. For instance, in the previous example, we defined the `ukStyleNumberWithEngineeringNotation` instance by using the `withEngineeringScientificNotation` modifier on the `ukStyleNumber` pre-defined instance.
 
 There are quite a few such modifiers whose list you will find in the [API](https://parischap.github.io/effect-libs/conversions/NumberBase10Format.ts).
 
-#### 4. CVNumberBase10Format in more details
+#### 4. `CVNumberBase10Format` in more details
 
 If you have very specific needs, you can define your own CVNumberBase10Format instance that must comply with the following interface:
 
@@ -401,7 +401,7 @@ const frenchStyleNumber = CVNumberBase10Format.make({
 
 #### 5. Debugging and equality
 
-CVNumberBase10Format objects implement a `.toString()` method and a `toDescription` destructor.
+`CVNumberBase10Format` objects implement a `.toString()` method and a `toDescription` destructor.
 The `.toString()` method will display the name of the object and all available properties. The `toDescription` destructor will produce a short summary of the format.
 
 For instance:
@@ -586,7 +586,7 @@ These two texts obviously share the same structure which is the template:
 
 Placeholder1 is a Placeholder2-year old Placeholder3.
 
-Placeholder1, Placeholder2 and Placeholder3 are the mutable parts of the template. They contain valuable information. We call them `CVTemplatePlaceholder`'s.
+Placeholder1, Placeholder2 and Placeholder3 are the mutable parts of the template. We call them `CVTemplatePlaceholder`'s.
 
 " is a ", "-year old " and "." are the immutable parts of the template. We call them `CVTemplateSeperator`'s.
 
@@ -603,31 +603,34 @@ Inversely, given a template and the values of the placeholders that compose it (
 
 we will obtain the text: "Tom is a 15-year old boy."
 
-#### 3. CVTemplateSeparator's
+#### 3. `CVTemplateSeparator`'s
 
-A `CVTemplateSeparator` represents the immutable part of a template. Upon parsing, we must check that it is present as is in the text. Upon formatting, it must be inserted as is into the text. A `CVTemplateSeparator` contains no valuable information.
+A `CVTemplateSeparator` represents the immutable part of a template. Upon parsing, we must check that it is present as is in the text. Upon formatting, it must be inserted as is into the text.
 
 To create a `CVTemplateSeparator`, you usually call the `CVTemplateSeparator.make` constructor. However, the TemplateSeparator.ts module exports a series of predefined `CVTemplateSeparator` instances, such as `CVTemplateSeparator.slash` and `CVTemplateSeparator.space`. You can find the list of all predefined `CVTemplateSeparator` instances in the [API](https://parischap.github.io/effect-libs/conversions/TemplatePart.ts).
 
 #### 4. CVTemplatePlaceholder's
 
-A `CVTemplatePlaceholder` represents the mutable part of a template. Each Placeholder defines a parser and a formatter: the parser takes a text, consumes a part of that text, optionnally converts the consumed part to a value of type T and, if successful, returns a right of that value and of what has not been consumed. In case of an error, it returns a left. The formatter takes a value of type T, converts it to a string (if T is not string), checks that the result is coherent and, if so, inserts that string into the text. Otherwise, it returns a left.
+A `CVTemplatePlaceholder` represents the mutable part of a template. Each `CVTemplatePlaceholder` defines a parser and a formatter:
+
+- the parser takes a text, consumes a part of that text, optionnally converts the consumed part to a value of type T and, if successful, returns a `Right` of that value and of what has not been consumed. In case of failure, it returns a `Left`.
+- the formatter takes a value of type T, converts it to a string (if T is not string), checks that the result is coherent and, if so, inserts that string into the text. Otherwise, it returns a `Left`.
 
 There are several predefined Placeholder's:
 
 - `fixedLength`: this Placeholder always reads/writes the same number of characters from/into the text.
 - `paddedFixedLength`: same as `fixedLength` but the consumed text is trimmed off of a `fillChar` on the left or right and the written text is padded with a `fillChar` on the left or right.
-- `fixedLengthToReal`: same as fixedLength but the parser tries to convert the consumed text into a `CVReal` using the passed `CVNumberBase10Format`. The formatter takes a `CVReal` and tries to convert and write it as an n-character string. You can pass a `fillChar` that is trimmed off the consumed text upon parsing and padded to the written text upon formatting.
+- `fixedLengthToReal`: same as `fixedLength` but the parser tries to convert the consumed text into a `CVReal` using the passed `CVNumberBase10Format`. The formatter takes a `CVReal` and tries to convert and write it as an n-character string. You can pass a `fillChar` that is trimmed off the consumed text upon parsing and padded to the written text upon formatting.
 - `real`: the parser of this Placeholder reads from the text all the characters that it can interpret as a number in the provided `CVNumberBase10Format` and converts the consumed text into a `CVReal`. The formatter takes a `CVReal` and converts it into a string according to the provided `CVNumberBase10Format`.
 - `mappedLiterals`: this Placeholder takes as input a map that must define a bijection between a list of strings and a list of values. The parser tries to read from the text one of the strings in the list. Upon success, it returns the corresponding value. The formatter takes a value and tries to find it in the list. Upon success, it writes the corresponding string into the text.
 - `realMappedLiterals`: same as `mappedLiterals` but values are assumed to be of type `CVReal` which is the most usual use case.
 - `fulfilling`: the parser of this Placeholder reads as much of the text as it can that fulfills the passed regular expression. The formatter only accepts a string that matches the passed regular expression and writes it into the text.
-- `anythingBut`: this is a special case of the `fulfilling` placeholder. The parser of this Placeholder reads from the text until it meets one of the `forbiddenChars` passed as parameter (the result must be a non-empty string). The formatter will only accept a non-empty string that does not contain any of the forbidden chars and write it to the text.
-- `toEnd`: this is another special case of the `fulfilling` placeholder. The parser of this Placeholder reads all the remaining text. The formatter accepts any string and writes it. This Placeholder should only be used as the last `CVTemplatePart` of a `CVTemplate`.
+- `anythingBut`: this is a special case of the `fulfilling` `CVTemplatePlaceholder`. The parser reads from the text until it meets one of the `forbiddenChars` passed as parameter (the result must be a non-empty string). The formatter will only accept a non-empty string that does not contain any of the forbidden chars and write it to the text.
+- `toEnd`: this is another special case of the `fulfilling` `CVTemplatePlaceholder`. The parser reads all the remaining text. The formatter accepts any string and writes it. This `CVTemplatePlaceholder` should only be used as the last `CVTemplatePart` of a `CVTemplate`.
 
-Each `CVTemplatePlaceholder` must be given a name that will be used as the name of the property of the result object of parsing or of the input object of formatting. This name needs not be unique inside a template. The same name can appear several times. However, even if there are several `CVTemplatePlaceholder`'s with the same name, there will be only one property with that name. When parsing, this implies that all `CVTemplatePlaceholder`'s with the same name must yield the same value. When formatting, this implies that the value needs only be provided once and will be shared by all `CVTemplatePlaceholder`'s.
+Each `CVTemplatePlaceholder` must be given a name that will be used as the name of the property of the result object of parsing or of the input object of formatting. This name needs not be unique inside a CVTemplate. The same name can appear several times. However, even if there are several `CVTemplatePlaceholder`'s with the same name, there will be only one property with that name. When parsing, this implies that all `CVTemplatePlaceholder`'s with the same name must yield the same value. When formatting, this implies that the value needs only be provided once and will be shared by all `CVTemplatePlaceholder`'s with that name.
 
-If none of these Placeholder instances suits you, you can define you own with the `make` constructor. You will find detailed explanations of the predefined Placeholder instances and of the make constructor in the [API](https://parischap.github.io/effect-libs/conversions/TemplatePart.ts).
+If none of these `CVTemplatePlaceholder` instances suits you, you can define you own with the `make` constructor. You will find detailed explanations of the predefined `CVTemplatePlaceholder` instances and of the make constructor in the [API](https://parischap.github.io/effect-libs/conversions/TemplatePart.ts).
 
 #### 5. A more complex example
 
@@ -714,8 +717,7 @@ console.log(formatter({ weekday: CVReal.unsafeFromNumber(10) }));
 
 #### 6. Debugging
 
-CVTemplate objects implement a `.toString()` method.
-The `.toString()` method will display a synthetic description of the template followed by the description of each CVPlaceholder.
+`CVTemplate` objects implement a `.toString()` method that displays a synthetic description of the template followed by the description of each contained `CVTemplatePlaceholder`.
 
 For instance:
 
@@ -770,15 +772,15 @@ console.log(template);
 
 This package implements an immutable `CVDateTime` object: once created, the characteristics of a `CVDateTime` object will never change. However, the provided Setters functions allow you to get a copy of an existing `CVDateTime` object with just one charactreristic modified.
 
-Although immutable when considered from the outer world, `CVDateTime` objects do keep an internal state that is only used to improve performance (but does not alter results). CVDateTime functions can therefore be regarded as pure: they will always yield the same result whatever the state the object is in.
+Although immutable when considered from the outer world, `CVDateTime` objects do keep an internal state that is only used to improve performance (but does not alter results). `CVDateTime` functions can therefore be regarded as pure: they will always yield the same result whatever the state the object is in.
 
-Unlike the Javascript Date objects and the Effect DateTime objects, `CVDateTime` objects handle both
+Unlike the Javascript `Date` objects and the `Effect.DateTime` objects, `CVDateTime` objects handle both
 the Gregorian and Iso calendars. So you can easily get/set the iso year and iso week of a
 `CVDateTime` object.
 
 A `CVDateTime` object has a `zoneOffset` which is the difference in hours between the time in the local zone and UTC time (e.g zoneOffset=1 for timezone +1:00). All the data in a `CVDateTime` object is zoneOffset-dependent, except `timestamp`.
 
-You cannot create a `CVDateTime` object from a string. In that case, use the `CVDateTimeFormat` module.
+You cannot create a `CVDateTime` object from a string. If this is your need, use the `CVDateTimeFormat` module.
 
 #### 2. Usage example
 
@@ -1169,7 +1171,7 @@ console.log(jsEncoder(new Date(0)));
 
 #### 2. Available tokens
 
-Many of the available [unicode tokens](https://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table) can be used to define DateTimeFormats. Here is a list of all currently available tokens:
+Many of the available [unicode tokens](https://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table) can be used to define `CVDateTimeFormat`'s. Here is a list of all currently available tokens:
 
 ```ts
 export type Token =
@@ -1247,16 +1249,17 @@ export type Token =
 	| "zszs";
 ```
 
-#### 3. CVDateTimeFormatContext
+#### 3. `CVDateTimeFormatContext`
 
-Some of the available tokens are language specific. For instance the `MMMM` token is expected to display `december` in English and `décembre` in French. For this reason, you need to build a `CVDateTimeFormatContext` before building a `CVDateTimeFormat`. You can either use the provided `enGB` instance (for Great Britain English language), or build a `CVDateTimeFormatContext` from the name of a locale (e.g. `const frenchContext = CVDateTimeFormatContext.fromLocaleOrThrow("fr-FR")`) or, if you have very specific needs or your locale is not available, build a `CVDateTimeFormatContext` by providing directly your translations by using the `CVDateTimeFormatContext.fromNames` constructor.
+Some of the available tokens are language specific. For instance the `MMMM` token is expected to display `december` in English and `décembre` in French. For this reason, you need to build a `CVDateTimeFormatContext` before building a `CVDateTimeFormat`. You can build a `CVDateTimeFormatContext` in one of the three following ways:
+
+- you can use the provided `CVDateTimeFormatContext.enGB` instance (for Great Britain English language)
+- you can build a `CVDateTimeFormatContext` from the name of a locale, e.g. `const frenchContext = CVDateTimeFormatContext.fromLocaleOrThrow("fr-FR")`
+- if you have very specific needs or your locale is not available, you can build a `CVDateTimeFormatContext` by providing directly your translations to the `CVDateTimeFormatContext.fromNames` constructor.
 
 #### 4. Debugging
 
-CVDateTimeFormat objects implement a `.toString()` method.
-The `.toString()` method will display a synthetic description of the template followed by the description of each CVPlaceholder.
-
-For instance:
+`CVDateTimeFormat` objects implement a `.toString()` method which displays a synthetic description of the template followed by the description of each CVPlaceholder. For instance:
 
 ```ts
 import {
@@ -1290,15 +1293,13 @@ console.log(frenchFormat);
 
 #### 1. Introduction
 
-Read the [Effect documentation about Branding](https://effect.website/docs/code-style/branded-types/) if you are not familiar with this concept.
-
-In this package you will find the following Brands:
+In this package you will find the following [`Brand`'s](https://effect.website/docs/code-style/branded-types/):
 
 - `CVEmail`: represents a valid email string
 - `CVSemVer`: represents a valid semantic versioning string
 - `CVReal`: represents a valid floating-point number (+Infinity, Infinity, -Infinity, NaN not allowed). Can be used to represent a temperature, a height from sea-level,...
-- `CVPositiveReal`: same as CVReal but the number must be positive. Can be used to represent a price, a speed,...
-- `CVInteger`: same as CVReal but the number must be an integer. Can be used to represent a floor in a lift, a signed quantity...
-- `CVPositiveInteger`: same as CVInteger but the number must be positive. Can be used to represent an age, a quantity,...
+- `CVPositiveReal`: same as `CVReal` but the number must be positive. Can be used to represent a price, a speed,...
+- `CVInteger`: same as `CVReal` but the number must be an integer. Can be used to represent a floor in a lift, a signed quantity...
+- `CVPositiveInteger`: same as `CVInteger` but the number must be positive. Can be used to represent an age, a quantity,...
 
 You will also find all the functions to convert from one brand to another. Do not hesitate to take a look at the [API](https://parischap.github.io/effect-libs/docs/conversions) to learn more about what this module offers in terms of branding.
