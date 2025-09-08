@@ -1,15 +1,11 @@
 /**
- * This module implements a TemplateSeparator type which is a sub-type of the TemplatePart type (see
- * TemplatePart.ts)
- *
- * A TemplateSeparator represents the immutable part of a template. Upon parsing, we must check that
- * it is present as is in the text. Upon formatting, it must be inserted as is into the text. A
- * Separator contains no valuable information
+ * This module implements a `CVTemplateSeparator` type which is one of the constituents of
+ * `CVTemplate`'s (see Template.ts and TemplatePart.ts)
  */
 
 import { MInputError, MInspectable, MPipeable, MString, MTypes } from '@parischap/effect-lib';
 
-import { Either, flow, Function, Pipeable, Predicate, Struct } from 'effect';
+import { Either, pipe, Pipeable, Predicate, Struct } from 'effect';
 
 /**
  * Module tag
@@ -21,51 +17,13 @@ const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
 /**
- * Namespace of a Parser
- *
- * @category Models
- */
-export namespace Parser {
-	/**
-	 * Type that describes a Parser
-	 *
-	 * @category Models
-	 */
-	export interface Type
-		extends MTypes.OneArgFunction<
-			number,
-			MTypes.OneArgFunction<string, Either.Either<string, MInputError.Type>>
-		> {}
-}
-
-/**
- * Namespace of a Formatter
- *
- * @category Models
- */
-export namespace Formatter {
-	/**
-	 * Type that describes a Formatter
-	 *
-	 * @category Models
-	 */
-	export interface Type extends Function.LazyArg<string> {}
-}
-
-/**
- * Type that represents a TemplateSeparator
+ * `CVTemplateSeparator` Type
  *
  * @category Models
  */
 export interface Type extends MInspectable.Type, Pipeable.Pipeable {
 	/** The string representing this separator */
 	readonly value: string;
-
-	/** Parser of this TemplateSeparator */
-	readonly parser: Parser.Type;
-
-	/** Formatter of this TemplateSeparator */
-	readonly formatter: Formatter.Type;
 
 	/** @internal */
 	readonly [_TypeId]: _TypeId;
@@ -91,23 +49,31 @@ const proto: MTypes.Proto<Type> = {
 const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
 
 /**
- * Builds a Separator instance that parses/formats a given string.
+ * Constructor
  *
  * @category Constructors
  */
-export const make = (value: string): Type =>
-	_make({
-		value,
-		parser: (pos) =>
-			flow(
-				MInputError.assertStartsWith({
-					startString: value,
-					name: `remaining text for separator at position ${pos}`
-				}),
-				Either.map(MString.takeRightBut(value.length))
-			),
-		formatter: Function.constant(value)
-	});
+export const make = (value: string): Type => _make({ value });
+
+/**
+ * Builds a parser that implements this `CVTemplateSeparator`
+ *
+ * @category Destructors
+ */
+export const toParser =
+	(self: Type) =>
+	(pos: number, text: string): Either.Either<string, MInputError.Type> => {
+		const value = self.value;
+		const length = value.length;
+		return pipe(
+			text,
+			MInputError.assertStartsWith({
+				startString: value,
+				name: `remaining text for separator at position ${pos}`
+			}),
+			Either.map(MString.takeRightBut(length))
+		);
+	};
 
 /**
  * Returns the `value` property of `self`
@@ -115,20 +81,6 @@ export const make = (value: string): Type =>
  * @category Destructors
  */
 export const value: MTypes.OneArgFunction<Type, string> = Struct.get('value');
-
-/**
- * Returns the `parser` property of `self`
- *
- * @category Destructors
- */
-export const parser: MTypes.OneArgFunction<Type, Parser.Type> = Struct.get('parser');
-
-/**
- * Returns the `formatter` property of `self`
- *
- * @category Destructors
- */
-export const formatter: MTypes.OneArgFunction<Type, Formatter.Type> = Struct.get('formatter');
 
 /**
  * Slash Separator instance

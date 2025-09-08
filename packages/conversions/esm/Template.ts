@@ -69,6 +69,7 @@ import {
 import * as CVTemplatePart from './TemplatePart.js';
 import * as CVTemplateParts from './TemplateParts.js';
 import * as CVTemplatePlaceholder from './TemplatePlaceholder.js';
+import { CVTemplateSeparator } from './index.js';
 
 /**
  * Module tag
@@ -187,9 +188,11 @@ export const toParser =
 								})
 							);
 					}
-				} else
+				} else {
+					const parser = CVTemplateSeparator.toParser(templatePart);
 					/* eslint-disable-next-line functional/no-expression-statements */
-					text = yield* templatePart.parser(pos + 1)(text);
+					text = yield* parser(pos + 1, text);
+				}
 			}
 
 			yield* pipe(text, MInputError.assertEmpty({ name: 'text not consumed by template' }));
@@ -239,7 +242,7 @@ export const toFormatter = <const PS extends CVTemplateParts.Type>(
 			for (const templatePart of self.templateParts) {
 				if (CVTemplatePart.isSeparator(templatePart)) {
 					/* eslint-disable-next-line functional/no-expression-statements */
-					result += templatePart.formatter();
+					result += templatePart.value;
 				} else {
 					const value = pipe(
 						record as Record<string, unknown>,
