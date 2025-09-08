@@ -1,8 +1,3 @@
-/**
- * A module that implements an integer brand (non-null fractional part disallowed). Not exported.
- * Only used internally
- */
-
 import { MNumber, MString, MTypes } from '@parischap/effect-lib';
 import { Brand, Either, flow, Option } from 'effect';
 
@@ -22,7 +17,7 @@ export const _TypeId: unique symbol = Symbol.for(_moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
 /**
- * Int type
+ * CVInt type
  *
  * @internal
  */
@@ -44,7 +39,8 @@ export const constructor = Brand.refined<Type>(
 );
 
 /**
- * Constructs an Option of an Int from a number.
+ * Tries to construct a CVInt from a number. Returns a `Some` if the conversion can be performed, a
+ * `None` otherwise
  *
  * @internal
  */
@@ -54,7 +50,8 @@ export const fromNumberOption: MTypes.OneArgFunction<
 > = constructor.option.bind(constructor);
 
 /**
- * Constructs an Either of an Int from a number.
+ * Tries to constructs a `CVInt` from a number. Returns a `Right` if the conversion can be
+ * performed, a `Left` otherwise
  *
  * @internal
  */
@@ -64,7 +61,7 @@ export const fromNumber: MTypes.OneArgFunction<
 > = constructor.either.bind(constructor);
 
 /**
- * Constructs an Int from a number or throws
+ * Constructs a `CVInt` from a number if possible. Throws otherwise
  *
  * @internal
  */

@@ -1,6 +1,8 @@
 /**
- * This module implements a finite integer brand (Infinity, NaN or non-null fractional part
- * disallowed)
+ * This module implements a CVInteger brand, i.e. a number that represents an integer (Infinity, NaN
+ * disallowed). Can be used to represent a floor in a lift, a signed quantity... See the `Effect`
+ * documentation about Branding (https://effect.website/docs/code-style/branded-types/) if you are
+ * not familiar with this concept.
  */
 
 import { MTypes } from '@parischap/effect-lib';
@@ -18,26 +20,27 @@ export const moduleTag = '@parischap/conversions/Integer/';
 /**
  * Brand constructor. Should not be used directly
  *
- * @category Constructors
+ * @ignore
  */
 export const constructor = Brand.all(CVReal.constructor, CVInt.constructor);
 
 /**
- * Integer type
+ * `CVInteger` type
  *
  * @category Models
  */
 export type Type = Brand.Brand.FromConstructor<typeof constructor>;
 
 /**
- * Constructs an Integer from a number without any verifications
+ * Constructs a `CVInteger` from a number without any verifications
  *
  * @category Constructors
  */
 export const unsafeFromNumber = Brand.nominal<Type>();
 
 /**
- * Constructs an Option of an Integer from a number
+ * Tries to construct a `CVInteger` from a number. Returns a `Some` if the conversion can be
+ * performed, a `None` otherwise
  *
  * @category Constructors
  */
@@ -47,7 +50,8 @@ export const fromNumberOption: MTypes.OneArgFunction<
 > = constructor.option.bind(constructor);
 
 /**
- * Constructs an Either of an Integer from a number
+ * Tries to construct a `CVnteger` from a number. Returns a `Right` if the conversion can be
+ * performed, a `Left` otherwise
  *
  * @category Constructors
  */
@@ -57,14 +61,14 @@ export const fromNumber: MTypes.OneArgFunction<
 > = constructor.either.bind(constructor);
 
 /**
- * Constructs an Integer from a number or throws
+ * Constructs a `CVInteger` from a number if possible. Throws otherwise
  *
  * @category Constructors
  */
 export const fromNumberOrThrow: MTypes.OneArgFunction<number, Type> = constructor;
 
 /**
- * Constructs an Integer from a BigDecimal without any checks
+ * Constructs a `CVInteger` from a `BigDecimal` without any checks
  *
  * @category Constructors
  */
@@ -72,7 +76,8 @@ export const unsafeFromBigDecimal: MTypes.OneArgFunction<BigDecimal.BigDecimal, 
 	CVReal.unsafeFromBigDecimal as never;
 
 /**
- * Constructs an Option of an Integer from a BigDecimal
+ * Tries to construct a `CVInteger` from a `BigDecimal`. Returns a `Some` if the conversion can be
+ * performed, a `None` otherwise
  *
  * @category Constructors
  */
@@ -82,7 +87,8 @@ export const fromBigDecimalOption: MTypes.OneArgFunction<
 > = flow(CVReal.fromBigDecimalOption, Option.flatMap(CVInt.fromNumberOption)) as never;
 
 /**
- * Constructs an Either of an Integer from a BigDecimal
+ * Tries to construct a `CVInteger` from a `BigDecimal`. Returns a `Right` if the conversion can be
+ * performed, a `Left` otherwise
  *
  * @category Constructors
  */
@@ -92,7 +98,7 @@ export const fromBigDecimal: MTypes.OneArgFunction<
 > = flow(CVReal.fromBigDecimal, Either.flatMap(CVInt.fromNumber)) as never;
 
 /**
- * Constructs an Integer from a BigDecimal or throws
+ * Constructs a `CVInteger` from a `BigDecimal` if possible. Throws otherwise
  *
  * @category Constructors
  */
@@ -102,7 +108,7 @@ export const fromBigDecimalOrThrow: MTypes.OneArgFunction<BigDecimal.BigDecimal,
 ) as never;
 
 /**
- * Constructs an Integer from a BigInt without any checks
+ * Constructs a `CVInteger` from a `BigInt` without any checks
  *
  * @category Constructors
  */
@@ -110,7 +116,8 @@ export const unsafeFromBigInt: MTypes.OneArgFunction<bigint, Type> =
 	CVReal.unsafeFromBigInt as never;
 
 /**
- * Constructs an Option of an Integer from a BigInt
+ * Tries to construct a `CVInteger` from a `BigInt`. Returns a `Some` if the conversion can be
+ * performed, a `None` otherwise
  *
  * @category Constructors
  */
@@ -119,7 +126,8 @@ export const fromBigIntOption: MTypes.OneArgFunction<bigint, Option.Option<Type>
 ) as never;
 
 /**
- * Constructs an Either of an Integer from a BigInt
+ * Tries to construct a `CVInteger` from a `BigInt`. Returns a `Right` if the conversion can be
+ * performed, a `Left` otherwise
  *
  * @category Constructors
  */
@@ -129,7 +137,7 @@ export const fromBigInt: MTypes.OneArgFunction<
 > = flow(CVReal.fromBigInt, Either.flatMap(CVInt.fromNumber)) as never;
 
 /**
- * Constructs an Integer from a BigInt or throws
+ * Constructs a `CVInteger` from a `BigInt` if possible. Throws otherwise
  *
  * @category Constructors
  */
@@ -138,14 +146,15 @@ export const fromBigIntOrThrow: MTypes.OneArgFunction<bigint, Type> = flow(
 ) as never;
 
 /**
- * Constructs an Integer from a Real without any checks
+ * Constructs a `CVInteger` from a `CVReal` without any checks
  *
  * @category Constructors
  */
 export const unsafeFromReal: MTypes.OneArgFunction<CVReal.Type, Type> = Function.identity as never;
 
 /**
- * Constructs an Option of an Integer from a Real
+ * Tries to construct a `CVInteger` from a `CVReal`. Returns a `Some` if the conversion can be
+ * performed, a `None` otherwise
  *
  * @category Constructors
  */
@@ -155,7 +164,8 @@ export const fromRealOption: MTypes.OneArgFunction<
 > = CVInt.fromNumberOption as never;
 
 /**
- * Constructs an Either of an Integer from a Real
+ * Tries to construct a `CVInteger` from a `CVReal`. Returns a `Right` if the conversion can be
+ * performed, a `Left` otherwise
  *
  * @category Constructors
  */
@@ -165,7 +175,7 @@ export const fromReal: MTypes.OneArgFunction<
 > = CVInt.fromNumber as never;
 
 /**
- * Constructs an Integer from a Real or throws
+ * Constructs a `CVInteger` from a `CVReal` if possible. Throws otherwise
  *
  * @category Constructors
  */
@@ -173,17 +183,17 @@ export const fromRealOrThrow: MTypes.OneArgFunction<CVReal.Type, Type> =
 	CVInt.fromNumberOrThrow as never;
 
 /**
- * A Schema that transforms a number into a CVInteger.Type
+ * A `Schema` that transforms a number into a `CVInteger`
  *
- * @internal
+ * @ignore
  */
 export const SchemaFromNumber: Schema.Schema<Type, number> = Schema.Number.pipe(
 	Schema.fromBrand(constructor)
 );
 
 /**
- * A Schema that represents a CVInteger.Type
+ * A `Schema` that represents a `CVInteger`
  *
- * @internal
+ * @ignore
  */
 export const SchemaFromSelf: Schema.Schema<Type> = Schema.typeSchema(SchemaFromNumber);

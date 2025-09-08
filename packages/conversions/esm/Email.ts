@@ -1,7 +1,7 @@
 /**
- * A module that implements an Email brand. See the Effect documentation about Branding
- * (https://effect.website/docs/code-style/branded-types/) if you are not familiar with this
- * concept.
+ * A module that implements a `CVEmail` brand, i.e. a string that represents a valid email. See the
+ * `Effect` documentation about Branding (https://effect.website/docs/code-style/branded-types/) if
+ * you are not familiar with this concept.
  */
 
 import { MString, MTypes } from '@parischap/effect-lib';
@@ -37,8 +37,7 @@ export type Type = Brand.Branded<string, _TypeId>;
 export const unsafeFromString = Brand.nominal<Type>();
 
 /**
- * Constructs an Email from a string. Throws an error if the provided string does not represent an
- * email
+ * Brand constructor. Should not be used directly
  *
  * @internal
  */
@@ -67,7 +66,7 @@ export const fromString: MTypes.OneArgFunction<
 > = constructor.either.bind(constructor);
 
 /**
- * Constructs an Email or throws.
+ * Constructs an Email if possible. Throws otherwise.
  *
  * @category Constructors
  */
@@ -83,7 +82,7 @@ export const has = (input: string): input is Type => MString.isEmail(input);
 /**
  * A Schema that transforms a string into a CVBrand.Email.Type
  *
- * @internal
+ * @ignore
  */
 export const SchemaFromString: Schema.Schema<Type, string> = Schema.String.pipe(
 	Schema.fromBrand(constructor)
@@ -92,6 +91,6 @@ export const SchemaFromString: Schema.Schema<Type, string> = Schema.String.pipe(
 /**
  * A Schema that represents a CVBrand.Email.Type
  *
- * @internal
+ * @ignore
  */
 export const SchemaFromSelf: Schema.Schema<Type> = Schema.typeSchema(SchemaFromString);

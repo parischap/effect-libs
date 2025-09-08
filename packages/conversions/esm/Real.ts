@@ -1,4 +1,9 @@
-/** This module implements a finite number brand (Infinity or Nan disallowed) */
+/**
+ * This module implements a CVReal brand, i.e. a number that disallows Infinity and NaN. Can be used
+ * to represent a temperature, a height from sea-level,... See the `Effect` documentation about
+ * Branding (https://effect.website/docs/code-style/branded-types/) if you are not familiar with
+ * this concept.
+ */
 
 import { MNumber, MString, MTypes } from '@parischap/effect-lib';
 import { BigDecimal, Brand, Either, flow, Option, Schema } from 'effect';
@@ -19,7 +24,7 @@ export const TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof TypeId;
 
 /**
- * Real type
+ * `CVReal` type
  *
  * @category Models
  */
@@ -28,7 +33,7 @@ export type Type = Brand.Branded<number, _TypeId>;
 /**
  * Brand constructor. Should not be used directly
  *
- * @category Constructors
+ * @ignore
  */
 export const constructor = Brand.refined<Type>(
 	MNumber.isFinite,
@@ -41,14 +46,15 @@ export const constructor = Brand.refined<Type>(
 );
 
 /**
- * Constructs a Real from a number without any verifications
+ * Constructs a `CVReal` from a number without any verifications
  *
  * @category Constructors
  */
 export const unsafeFromNumber = Brand.nominal<Type>();
 
 /**
- * Constructs an Option of a Real from a number
+ * Tries to construct a `CVReal` from a number. Returns a `Some` if the conversion can be performed,
+ * a `None` otherwise
  *
  * @category Constructors
  */
@@ -58,7 +64,8 @@ export const fromNumberOption: MTypes.OneArgFunction<
 > = constructor.option.bind(constructor);
 
 /**
- * Constructs an Either of a Real from a number
+ * Tries to construct a `CVReal` from a number. Returns a `Right` if the conversion can be
+ * performed, a `Left` otherwise
  *
  * @category Constructors
  */
@@ -68,14 +75,14 @@ export const fromNumber: MTypes.OneArgFunction<
 > = constructor.either.bind(constructor);
 
 /**
- * Constructs a Real from a number or throws
+ * Constructs a `CVReal` from a number if possible. Throws otherwise
  *
  * @category Constructors
  */
 export const fromNumberOrThrow: MTypes.OneArgFunction<number, Type> = constructor;
 
 /**
- * Constructs a Real from a BigDecimal without any checks
+ * Constructs a `CVReal` from a `BigDecimal` without any checks
  *
  * @category Constructors
  */
@@ -83,7 +90,8 @@ export const unsafeFromBigDecimal: MTypes.OneArgFunction<BigDecimal.BigDecimal, 
 	MNumber.unsafeFromBigDecimal as never;
 
 /**
- * Constructs an Option of a Real from a BigDecimal.
+ * Tries to construct a `CVReal` from a `BigDecimal`. Returns a `Some` if the conversion can be
+ * performed, a `None` otherwise
  *
  * @category Constructors
  */
@@ -93,7 +101,8 @@ export const fromBigDecimalOption: MTypes.OneArgFunction<
 > = MNumber.fromBigDecimalOption as never;
 
 /**
- * Constructs an Either of a Real from a BigDecimal.
+ * Tries to construct a `CVReal` from a `BigDecimal`. Returns a `Right` if the conversion can be
+ * performed, a `Left` otherwise
  *
  * @category Constructors
  */
@@ -103,7 +112,7 @@ export const fromBigDecimal: MTypes.OneArgFunction<
 > = MNumber.fromBigDecimal as never;
 
 /**
- * Constructs a Real from a BigDecimal or throws
+ * Constructs a `CVReal` from a `BigDecimal` if possible. Throws otherwise
  *
  * @category Constructors
  */
@@ -111,7 +120,7 @@ export const fromBigDecimalOrThrow: MTypes.OneArgFunction<BigDecimal.BigDecimal,
 	MNumber.fromBigDecimalOrThrow as never;
 
 /**
- * Constructs a Real from a BigInt without any checks
+ * Constructs a `CVReal` from a `BigInt` without any checks
  *
  * @category Constructors
  */
@@ -119,7 +128,8 @@ export const unsafeFromBigInt: MTypes.OneArgFunction<bigint, Type> =
 	MNumber.unsafeFromBigInt as never;
 
 /**
- * Constructs an Option of a Real from a BigInt.
+ * Tries to construct a `CVReal` from a `BigInt`. Returns a `Some` if the conversion can be
+ * performed, a `None` otherwise
  *
  * @category Constructors
  */
@@ -129,7 +139,8 @@ export const fromBigIntOption: MTypes.OneArgFunction<
 > = MNumber.fromBigIntOption as never;
 
 /**
- * Constructs an Either of a Real from a BigInt.
+ * Tries to construct a `CVReal` from a `BigInt`. Returns a `Right` if the conversion can be
+ * performed, a `Left` otherwise
  *
  * @category Constructors
  */
@@ -139,7 +150,7 @@ export const fromBigInt: MTypes.OneArgFunction<
 > = MNumber.fromBigInt as never;
 
 /**
- * Constructs a Real from a BigInt or throws
+ * Constructs a `CVReal` from a `BigInt` if possible. Throws otherwise
  *
  * @category Constructors
  */
@@ -147,17 +158,17 @@ export const fromBigIntOrThrow: MTypes.OneArgFunction<bigint, Type> =
 	MNumber.fromBigIntOrThrow as never;
 
 /**
- * A Schema that transforms a number into an CVReal.Type
+ * A `Schema` that transforms a number into a `CVReal`
  *
- * @internal
+ * @ignore
  */
 export const SchemaFromNumber: Schema.Schema<Type, number> = Schema.Number.pipe(
 	Schema.fromBrand(constructor)
 );
 
 /**
- * A Schema that represents a CVReal.Type
+ * A `Schema` that represents a `CVReal`
  *
- * @internal
+ * @ignore
  */
 export const SchemaFromSelf: Schema.Schema<Type> = Schema.typeSchema(SchemaFromNumber);

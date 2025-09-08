@@ -1,21 +1,22 @@
 /**
- * This module implements an immutable `DateTime` object.
+ * This module implements an immutable `CVDateTime` object.
  *
- * `DateTime` objects keep an internal state. But all provided functions are pure insofar as they
+ * `CVDateTime` objects keep an internal state. But all provided functions are pure insofar as they
  * always yield the same result whatever the state the object is in. The state is only used to
  * improve performance but does not alter the results.
  *
- * Unlike the Javascript Date objects and the Effect DateTime objects, `DateTime` objects handle
- * both the Gregorian and Iso calendars. So you can easily get/set the iso year and iso week of a
- * `DateTime` object.
+ * Unlike the Javascript `Date` objects and the Effect `DateTime` objects, `CVDateTime` objects
+ * handle both the Gregorian and Iso calendars. So you can easily get/set the iso year and iso week
+ * of a `CVDateTime` object.
  *
- * A `DateTime` object has a `zoneOffset` which is the difference in hours between the time in the
- * local zone and UTC time (e.g `zoneOffset=1` for timezone +1:00). All the data in a `DateTime`
+ * A `CVDateTime` object has a `zoneOffset` which is the difference in hours between the time in the
+ * local zone and UTC time (e.g `zoneOffset=1` for timezone +1:00). All the data in a `CVDateTime`
  * object is `zoneOffset-dependent`, except `timestamp`. An important thing to note is that a
- * `DateTime` object with a timestamp `t` and a zoneOffset `zo` has exactly the same date parts
- * (`year`, `ordinalDay`, `month`, `monthDay`, `isoYear`...) as a `DateTime` object with `timestamp
- * = t+zox3600` and `zoneOffset = 0`. That's the reason for the _zonedTimestamp field which is equal
- * to `t+zox3600`. All calculations are performed UTC using _zonedTimestamp instead of timestamp.
+ * `CVDateTime` object with a timestamp `t` and a zoneOffset `zo` has exactly the same date parts
+ * (`year`, `ordinalDay`, `month`, `monthDay`, `isoYear`...) as a `CVDateTime` object with
+ * `timestamp = t+zox3600` and `zoneOffset = 0`. That's the reason for the _zonedTimestamp field
+ * which is equal to `t+zox3600`. All calculations are performed UTC using _zonedTimestamp instead
+ * of timestamp.
  */
 
 import {
@@ -744,7 +745,7 @@ namespace IsoDate {
 	const YEAR_START_2010_MS = 1_262_563_200_000;
 
 	/**
-	 * Type of an IsoYearDescriptor
+	 * Type of an IsoDate
 	 *
 	 * @category Models
 	 */
@@ -752,7 +753,7 @@ namespace IsoDate {
 		/** Timestamp of any moment of the day represented by this IsoDate */
 		readonly timestamp: number;
 
-		/** The iso year of this IsoDate, range: [MIN_FULL_YEAR, MAX_FULL_YEAR] */
+		/** The Iso year of this IsoDate, range: [MIN_FULL_YEAR, MAX_FULL_YEAR] */
 		readonly year: number;
 
 		/** If true, iso year `year` counts 53 weeks. Otherwise, it counts 52 weeks */
@@ -761,10 +762,10 @@ namespace IsoDate {
 		/** Timestamp of the first millisecond of UTC iso year `year` */
 		readonly yearStartTimestamp: number;
 
-		/** The iso week of this IsoYear, range:[1, 53] */
+		/** The Iso week of this IsoDate, range:[1, 53] */
 		readonly isoWeek: Option.Option<number>;
 
-		/** The weekday of this DateTime, range:[1, 7], 1 is monday, 7 is sunday */
+		/** The weekday of this IsoDate, range:[1, 7], 1 is monday, 7 is sunday */
 		readonly weekday: Option.Option<number>;
 
 		/** @internal */
