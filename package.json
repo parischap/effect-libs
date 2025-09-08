@@ -14,7 +14,7 @@
 		"clean-all-prod-files": "pnpm -r clean-prod",
 		"clean-all-config-files": "pnpm -r -include-workspace-root=true clean-config-files",
 		"build-all": "pnpm -r build",
-		"prepare-docs": "tsx -v && pnpm --recursive --parallel docgen && compile-docs"
+		"prepare-docs": "pnpm --recursive --parallel docgen && compile-docs"
 	},
 	"packageManager": "pnpm@10.15.0",
 	"devDependencies": {
@@ -47,7 +47,8 @@
 		"babel-plugin-annotate-pure-calls": "latest",
 		"@babel/cli": "latest",
 		"@effect/docgen": "latest",
-		"prettier-plugin-jsdoc": "latest"
+		"prettier-plugin-jsdoc": "latest",
+		"tsx": "latest"
 	},
 	"pnpm": {
 		"patchedDependencies": {},
