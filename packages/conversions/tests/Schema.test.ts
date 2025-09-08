@@ -2,6 +2,7 @@
 import {
 	CVDateTime,
 	CVDateTimeFormat,
+	CVDateTimeFormatContext,
 	CVEmail,
 	CVInteger,
 	CVNumberBase10Format,
@@ -343,7 +344,7 @@ describe('CVSchema', () => {
 		const placeholder = CVDateTimeFormat.TemplatePart.Placeholder.make;
 		const sep = CVDateTimeFormat.TemplatePart.Separator;
 		const frenchDateFormat = CVDateTimeFormat.make({
-			context: CVDateTimeFormat.Context.fromLocaleOrThrow('fr-FR'),
+			context: CVDateTimeFormatContext.fromLocaleOrThrow('fr-FR'),
 			templateparts: [
 				placeholder('dd'),
 				sep.slash,
