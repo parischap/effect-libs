@@ -31,7 +31,7 @@ importers:
         version: 9.35.0
       '@parischap/configs':
         specifier: latest
-        version: 1.32.0
+        version: 1.33.0
       '@parischap/test-utils':
         specifier: latest
         version: 0.10.0(effect@3.17.13)
@@ -137,11 +137,11 @@ importers:
   packages/conversions/dist:
     dependencies:
       '@parischap/effect-lib':
-        specifier: ^0.5.0
-        version: 0.5.0(effect@3.17.11)
+        specifier: ^0.6.0
+        version: 0.6.0(effect@3.17.13)
       effect:
-        specifier: ^3.17.10
-        version: 3.17.11
+        specifier: ^3.17.13
+        version: 3.17.13
 
   packages/effect-lib:
     dependencies:
@@ -822,8 +822,8 @@ packages:
       '@parischap/effect-lib': ^0.5.0
       effect: ^3.13.6
 
-  '@parischap/configs@1.32.0':
-    resolution: {integrity: sha512-lyVKJ40ywpVmi0SdbZ6jwGQAWVLOb5kmVC4MFCP/RtYqPBSD6zKyFnvIlBLEOgpceAfZ8A2/UiWo+UySUSQQDw==}
+  '@parischap/configs@1.33.0':
+    resolution: {integrity: sha512-P+EvAdn0ZorwG9zb+wGr0kLln48QZUGyrfIQx+GEcKmrQhe86uL0D7FT5IMB3h7OGSTg7r7KxQN+l+tv2oNG+g==}
     hasBin: true
 
   '@parischap/effect-lib@0.5.0':
@@ -1453,9 +1453,6 @@ packages:
 
   eastasianwidth@0.2.0:
     resolution: {integrity: sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==}
-
-  effect@3.17.11:
-    resolution: {integrity: sha512-JnRJXPP1S0dGrIWAUxqLK1d1YoxBfopOu03ybssY7GdGippPx2y7BJHeMiRqz4/kO5Uyq2GRgWw27xr+Bfq1Tw==}
 
   effect@3.17.13:
     resolution: {integrity: sha512-JMz5oBxs/6mu4FP9Csjub4jYMUwMLrp+IzUmSDVIzn2NoeoyOXMl7x1lghfr3dLKWffWrdnv/d8nFFdgrHXPqw==}
@@ -3428,11 +3425,7 @@ snapshots:
       '@parischap/effect-lib': 0.6.0(effect@3.17.13)
       effect: 3.17.13
 
-  '@parischap/configs@1.32.0': {}
-
-  '@parischap/effect-lib@0.5.0(effect@3.17.11)':
-    dependencies:
-      effect: 3.17.11
+  '@parischap/configs@1.33.0': {}
 
   '@parischap/effect-lib@0.5.0(effect@3.17.9)':
     dependencies:
@@ -4080,11 +4073,6 @@ snapshots:
       esutils: 2.0.3
 
   eastasianwidth@0.2.0: {}
-
-  effect@3.17.11:
-    dependencies:
-      '@standard-schema/spec': 1.0.0
-      fast-check: 3.23.2
 
   effect@3.17.13:
     dependencies:
