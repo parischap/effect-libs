@@ -23,6 +23,9 @@
 		{
 			"path": "packages/conversions",
 		},
+		{
+			"path": "packages/playground",
+		},
 	],
 	"settings": {
 		"typescript.tsdk": "effect-libs\\node_modules\\typescript\\lib",

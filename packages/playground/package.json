@@ -1,5 +1,5 @@
 {
-	"name": "@parischap-dev/node-effect-lib",
+	"name": "@parischap-dev/playground",
 	"type": "module",
 	"author": "Jérôme MARTIN",
 	"license": "MIT",
@@ -10,11 +10,10 @@
 		"lint-rules": "pnpx @eslint/config-inspector",
 		"update-config-files": "update-config-files",
 		"clean-config-files": "shx rm -rf package.json && shx rm -rf tsconfig.json",
-		"transpile-esm": "tsc -b tsconfig.esm.json",
-		"transpile-cjs": "babel dist/esm --plugins @babel/transform-export-namespace-from --plugins @babel/transform-modules-commonjs --out-dir dist/cjs --source-maps",
-		"transpile-annotate": "babel dist --plugins annotate-pure-calls --out-dir dist --source-maps",
-		"compile": "pnpm transpile-esm && pnpm transpile-cjs && pnpm transpile-annotate && pnpm prodify",
-		"build-and-publish": "pnpm build && pnpm checks && pnpm publish-to-npm",
+		"bundle": "bundle-files",
+		"generate-types": "tsc -b tsconfig.esm.json --emitDeclarationOnly",
+		"compile": "pnpm bundle && pnpm prodify",
+		"build-and-publish": "echo \"private package cannot be published\"",
 		"docgen": "echo \"docgen not activated for this package\"",
 		"circular": "madge --extensions ts --circular --no-color --no-spinner esm",
 		"checks": "pnpm circular && pnpm lint && pnpm tscheck && pnpm test",
@@ -24,66 +23,53 @@
 		"install-prod": "cd dist && pnpm i && cd ..",
 		"build": "pnpm clean-prod && pnpm --if-present pre-build && pnpm compile && pnpm --if-present post-build && pnpm --if-present generate-types && pnpm install-prod",
 		"prodify": "prodify",
-		"examples": ""
+		"examples": "vite-node examples/playground.ts"
 	},
+	"dependencies": {
+		"@effect/experimental": "^0.54.6"
+	},
+	"sideEffects": false,
 	"publishConfig": {
-		"main": "./cjs/index.js",
-		"types": "./dts/index.d.ts",
 		"exports": {
 			".": {
-				"default": "./cjs/index.js",
-				"import": "./esm/index.js",
-				"types": "./dts/index.d.ts"
+				"types": "./dts/index.d.ts",
+				"import": "./esm/index.js"
 			}
 		},
+		"dependencies": {},
+		"sideEffects": [],
 		"scripts": {},
 		"devDependencies": {},
 		"peerDependencies": {
-			"@parischap/effect-lib": "^0.7.0",
 			"effect": "^3.17.13",
-			"@effect/platform": "^0.90.7",
-			"@effect/platform-node": "^0.96.1"
+			"@parischap/effect-lib": "^0.7.0",
+			"@parischap/conversions": "^0.2.0"
 		},
 		"publishConfig": {},
 		"packageManager": "",
 		"pnpm": {},
 		"type": ""
 	},
-	"bugs": {
-		"url": "https://github.com/parischap/effect-libs/issues"
-	},
-	"funding": [
-		{
-			"type": "ko-fi",
-			"url": "https://ko-fi.com/parischap"
-		}
-	],
-	"keywords": [
-		"effect",
-		"typescript",
-		"functional-programming"
-	],
-	"description": "A complement to the official @effect/platform library with add-ons for Node.js",
+	"private": true,
+	"description": "A playground",
 	"module": "./esm/index.js",
 	"exports": {
 		".": {
 			"import": "./esm/index.ts"
 		}
 	},
-	"dependencies": {},
 	"devDependencies": {
-		"@parischap/node-effect-lib": "link:."
+		"@parischap/playground": "link:."
 	},
 	"peerDependencies": {
-		"@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
 		"effect": "^3.17.13",
-		"@effect/platform": "^0.90.7",
-		"@effect/platform-node": "^0.96.1"
+		"@parischap/effect-lib": "^0.7.0",
+		"@parischap/conversions": "^0.2.0"
 	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/parischap/effect-libs.git",
-		"directory": "packages/node-effect-lib"
+		"directory": "packages/playground"
 	},
-	"homepage": "https://github.com/parischap/effect-libs/tree/master/packages/node-effect-lib"
+	"homepage": "https://github.com/parischap/effect-libs/tree/master/packages/playground"
 }

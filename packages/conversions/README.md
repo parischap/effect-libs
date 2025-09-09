@@ -45,16 +45,16 @@ After reading this introduction, you may take a look at the [API](https://parisc
 
 This package contains:
 
-- a [module to round numbers and `BigDecimal`'s](#RoundingModule) with the same rounding options as those offered by the javascript INTL namespace: Ceil, Floor, Expand, Trunc, HalfCeil...
-- a safe, easy-to-use [number/`BigDecimal` parser/formatter](#NumberParserFormatter) with almost all the options offered by the javascript INTL namespace: choice of the thousand separator, of the fractional separator, of the minimum and maximum number of fractional digits, of the rounding mode, of the sign display mode, of whether to show or not the integer part when it's zero, of whether to use a scientific or engineering notation, of the character to use as exponent mark... It can also be used as a `Schema` instead of the `Effect.Schema.NumberFromString` transformer.
+- a [module to round numbers and BigDecimal's](#RoundingModule) with the same rounding options as those offered by the javascript INTL namespace: Ceil, Floor, Expand, Trunc, HalfCeil...
+- a safe, easy-to-use [number/BigDecimal parser/formatter](#NumberParserFormatter) with almost all the options offered by the javascript INTL namespace: choice of the thousand separator, of the fractional separator, of the minimum and maximum number of fractional digits, of the rounding mode, of the sign display mode, of whether to show or not the integer part when it's zero, of whether to use a scientific or engineering notation, of the character to use as exponent mark... It can also be used as a `Schema` instead of the `Effect.Schema.NumberFromString` transformer.
 - an equivalent to the PHP [sprintf and sscanf functions](#Templating) with real typing of the placeholders. Although `Effect.Schema` does offer the [`TemplateLiteralParser` API](https://effect.website/docs/schema/basic-usage/#templateliteralparser), the latter does not provide a solution to situations such as fixed length fields (potentially padded), numbers formatted otherwise than in the English format... This module can also be used as a `Schema`.
-- a very easy to use [`CVDateTime` module](#DateTimeModule) that implements natively the Iso calendar (Iso year and Iso week). It is also faster than its `Effect` counterpart as it implements an internal state that's only used to speed up calculation times (but does not alter the result of functions; so `CVDateTime` functions can be viewed as pure from a user's perspective). It can therefore be useful in applications where time is of essence.
-- a [`CVDateTime` parser/formatter](#DateTimeParserFormatter) which supports many of the available [unicode tokens](https://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table). It can also be used as a `Schema` instead of the `Effect.Schema.Date` transformer.
+- a very easy to use [DateTime module](#DateTimeModule) that implements natively the Iso calendar (Iso year and Iso week). It is also faster than its `Effect` counterpart as it implements an internal state that's only used to speed up calculation times (but does not alter the result of functions; so `CVDateTime` functions can be viewed as pure from a user's perspective). It can therefore be useful in applications where time is of essence.
+- a [DateTime parser/formatter](#DateTimeParserFormatter) which supports many of the available [unicode tokens](https://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table). It can also be used as a `Schema` instead of the `Effect.Schema.Date` transformer.
 - a few [brands](#Branding) which come in handy in many projects such as email, semantic versioning, integer numbers, positive integer numbers, real numbers and positive real numbers. All these brands are also defined as `Schemas`. Please read the [`Effect` documentation about Branding](https://effect.website/docs/code-style/branded-types/) if you are not familiar with this concept
 
 Most functions of this package return an `Either` or an `Option` to signify the possibility of an error. However, if you are not an `Effect` user and do not care to learn more about it, you can simply use the `OrThrow` variant of the function. For instance, use `CVDateTime.setWeekdayOrThrow` instead of `CVDateTime.setWeekday`. As its name suggests, it will throw in case failure. Some functions return functions that return an `Either` or throw. In that case, the variant for non-`Effect` users contains the word `Throwing`, e.g. use `CVDateTimeFormat.toThrowingFormatter` instead of `CVDateTimeFormat.toFormatter`.
 
-### <a name="RoundingModule"></a>A) Rounding module
+### <a id="RoundingModule"></a>A) Rounding module
 
 #### 1. Usage example
 
@@ -226,7 +226,7 @@ console.log(Equal.equals(CVRoundingOption.halfExpand2, dummyOption1));
 console.log(Equal.equals(CVRoundingOption.halfExpand2, dummyOption2));
 ```
 
-### <a name="NumberParserFormatter"></a>B) Number and `BigDecimal` parser/formatter
+### <a id="NumberParserFormatter"></a>B) Number and BigDecimal parser/formatter
 
 #### 1. Usage example
 
@@ -293,19 +293,19 @@ console.log(frenchStyleDecoder("1 024,56"));
 console.log(frenchStyleEncoder(CVReal.unsafeFromNumber(1024.56)));
 ```
 
-#### 2. `CVNumberBase10Format` instances
+#### 2. CVNumberBase10Format instances
 
 In the previous example, we used the `ukStyleNumber`, `ukStyleUngroupedNumber` and `frenchStyleInteger` `CVNumberBase10Format` instances.
 
 You will find in the [API](https://parischap.github.io/effect-libs/conversions/NumberBase10Format.ts) the list of all pre-defined instances.
 
-#### 3. `CVNumberBase10Format` Instance modifiers
+#### 3. CVNumberBase10Format Instance modifiers
 
 Sometimes, you will need to bring some small modifications to a pre-defined `CVNumberBase10Format` instance. For instance, in the previous example, we defined the `ukStyleNumberWithEngineeringNotation` instance by using the `withEngineeringScientificNotation` modifier on the `ukStyleNumber` pre-defined instance.
 
 There are quite a few such modifiers whose list you will find in the [API](https://parischap.github.io/effect-libs/conversions/NumberBase10Format.ts).
 
-#### 4. `CVNumberBase10Format` in more details
+#### 4. CVNumberBase10Format in more details
 
 If you have very specific needs, you can define your own CVNumberBase10Format instance that must comply with the following interface:
 
@@ -436,7 +436,7 @@ console.log(
 );
 ```
 
-### <a name="Templating"></a>C) Templating
+### <a id="Templating"></a>C) Templating
 
 #### 1. Usage example
 
@@ -603,7 +603,7 @@ Inversely, given a template and the values of the placeholders that compose it (
 
 we will obtain the text: "Tom is a 15-year old boy."
 
-#### 3. `CVTemplateSeparator`'s
+#### 3. CVTemplateSeparator's
 
 A `CVTemplateSeparator` represents the immutable part of a template. Upon parsing, we must check that it is present as is in the text. Upon formatting, it must be inserted as is into the text.
 
@@ -766,7 +766,7 @@ const template = CVTemplate.make(
 console.log(template);
 ```
 
-### <a name="DateTimeModule"></a>D) DateTime module
+### <a id="DateTimeModule"></a>D) DateTime module
 
 #### 1. Introduction
 
@@ -1009,7 +1009,7 @@ console.log(CVDateTime.isLastMonthDay(aDate));
 console.log(CVDateTime.isFirstMonthDay(aDate));
 ```
 
-### <a name="DateTimeParserFormatter"></a>E) DateTime parser/formatter
+### <a id="DateTimeParserFormatter"></a>E) DateTime parser/formatter
 
 #### 1. Usage example
 
@@ -1249,7 +1249,7 @@ export type Token =
 	| "zszs";
 ```
 
-#### 3. `CVDateTimeFormatContext`
+#### 3. CVDateTimeFormatContext
 
 Some of the available tokens are language specific. For instance the `MMMM` token is expected to display `december` in English and `décembre` in French. For this reason, you need to build a `CVDateTimeFormatContext` before building a `CVDateTimeFormat`. You can build a `CVDateTimeFormatContext` in one of the three following ways:
 
@@ -1289,7 +1289,7 @@ const frenchFormat = CVDateTimeFormat.make({
 console.log(frenchFormat);
 ```
 
-### <a name="Branding"></a>F) Branding
+### <a id="Branding"></a>F) Branding
 
 #### 1. Introduction
 

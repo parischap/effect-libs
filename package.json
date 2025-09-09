@@ -36,6 +36,7 @@
 		"eslint-plugin-yml": "latest",
 		"prettier": "latest",
 		"typescript": "latest",
+		"tsx": "latest",
 		"typescript-eslint": "latest",
 		"vite": "latest",
 		"vite-node": "latest",
@@ -47,8 +48,7 @@
 		"babel-plugin-annotate-pure-calls": "latest",
 		"@babel/cli": "latest",
 		"@effect/docgen": "latest",
-		"prettier-plugin-jsdoc": "latest",
-		"tsx": "latest"
+		"prettier-plugin-jsdoc": "latest"
 	},
 	"pnpm": {
 		"patchedDependencies": {},
