@@ -4,7 +4,7 @@ This library extends the official [Effect](https://effect.website/) library. It 
 
 ## Donate
 
-[Any donations would be much appreciated](https://ko-fi.com/parischap). 😄
+[Any donations would be much appreciated](https://ko-fi.com/parischap) 😄
 
 ## Documentation
 

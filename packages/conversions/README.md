@@ -12,7 +12,7 @@ Can also come in handy to non-`Effect` users.
 
 ## Donate
 
-[Any donations would be much appreciated](https://ko-fi.com/parischap). 😄
+[Any donations would be much appreciated](https://ko-fi.com/parischap) 😄
 
 ## Installation
 
@@ -45,8 +45,8 @@ After reading this introduction, you may take a look at the [API](https://parisc
 
 This package contains:
 
-- a [module to round numbers and BigDecimal's](./readme-assets/Rounding.md) with the same rounding options as those offered by the javascript INTL namespace: Ceil, Floor, Expand, Trunc, HalfCeil...
-- a safe, easy-to-use [number/BigDecimal parser/formatter](./readme-assets/NumberParserFormatter.md) with almost all the options offered by the javascript INTL namespace: choice of the thousand separator, of the fractional separator, of the minimum and maximum number of fractional digits, of the rounding mode, of the sign display mode, of whether to show or not the integer part when it's zero, of whether to use a scientific or engineering notation, of the character to use as exponent mark... It can also be used as a `Schema` instead of the `Effect.Schema.NumberFromString` transformer.
+- a [module to round numbers and BigDecimal's](./readme-assets/Rounding.md) with the same rounding options as those offered by the javascript INTL API: Ceil, Floor, Expand, Trunc, HalfCeil...
+- a safe, easy-to-use [number/BigDecimal parser/formatter](./readme-assets/NumberParserFormatter.md) with almost all the options offered by the javascript INTL API: choice of the thousand separator, of the fractional separator, of the minimum and maximum number of fractional digits, of the rounding mode, of the sign display mode, of whether to show or not the integer part when it's zero, of whether to use a scientific or engineering notation, of the character to use as exponent mark... It can also be used as a `Schema` instead of the `Effect.Schema.NumberFromString` transformer.
 - an equivalent to the PHP [sprintf and sscanf functions](./readme-assets/Templating.md) with real typing of the placeholders. Although `Effect.Schema` does offer the [`TemplateLiteralParser` API](https://effect.website/docs/schema/basic-usage/#templateliteralparser), the latter does not provide a solution to situations such as fixed length fields (potentially padded), numbers formatted otherwise than in the English format... This module can also be used as a `Schema`.
 - a very easy to use [DateTime module](./readme-assets/DateTime.md) that implements natively the Iso calendar (Iso year and Iso week). It is also faster than its `Effect` counterpart as it implements an internal state that's only used to speed up calculation times (but does not alter the result of functions; so `CVDateTime` functions can be viewed as pure from a user's perspective). It can therefore be useful in applications where time is of essence.
 - a [DateTime parser/formatter](./readme-assets/DateTimeFormatter.md) which supports many of the available [unicode tokens](https://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table). It can also be used as a `Schema` instead of the `Effect.Schema.Date` transformer.

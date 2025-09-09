@@ -12,7 +12,7 @@ Can also be used by non-`Effect` users.
 
 ## Donate
 
-[Any donations would be much appreciated](https://ko-fi.com/parischap). 😄
+[Any donations would be much appreciated](https://ko-fi.com/parischap) 😄
 
 ## Installation
 
