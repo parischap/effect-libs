@@ -82,7 +82,7 @@ describe('CVTemplatePlaceholder', () => {
 	});
 
 	describe('paddedFixedLength', () => {
-		const templatepart = CVTemplatePlaceholder.paddedFixedLength({
+		const placeholder = CVTemplatePlaceholder.paddedFixedLength({
 			name: 'foo',
 			length: 3,
 			fillChar: '0',
@@ -90,38 +90,38 @@ describe('CVTemplatePlaceholder', () => {
 			disallowEmptyString: true
 		});
 		it('.toString()', () => {
-			TEUtils.strictEqual(templatepart.toString(), "#foo: 3-character string left-padded with '0'");
+			TEUtils.strictEqual(placeholder.toString(), "#foo: 3-character string left-padded with '0'");
 		});
 
 		describe('Parsing', () => {
 			it('Not passing', () => {
 				TEUtils.assertLeftMessage(
-					templatepart.parser(''),
+					placeholder.parser(''),
 					'Expected length of #foo to be: 3. Actual: 0'
 				);
 			});
 
 			it('Passing', () => {
-				TEUtils.assertRight(templatepart.parser('001 and baz'), Tuple.make('1', ' and baz'));
+				TEUtils.assertRight(placeholder.parser('001 and baz'), Tuple.make('1', ' and baz'));
 			});
 		});
 
 		describe('Formatting', () => {
 			it('Not passing', () => {
 				TEUtils.assertLeftMessage(
-					templatepart.formatter('foo and baz'),
+					placeholder.formatter('foo and baz'),
 					'Expected length of #foo to be: 3. Actual: 11'
 				);
 			});
 
 			it('Passing', () => {
-				TEUtils.assertRight(templatepart.formatter('a'), '00a');
+				TEUtils.assertRight(placeholder.formatter('a'), '00a');
 			});
 		});
 	});
 
 	describe('fixedLengthToReal', () => {
-		const templatepart = CVTemplatePlaceholder.fixedLengthToReal({
+		const placeholder = CVTemplatePlaceholder.fixedLengthToReal({
 			name: 'foo',
 			length: 3,
 			fillChar: ' ',
@@ -129,7 +129,7 @@ describe('CVTemplatePlaceholder', () => {
 		});
 		it('.toString()', () => {
 			TEUtils.strictEqual(
-				templatepart.toString(),
+				placeholder.toString(),
 				"#foo: 3-character string left-padded with ' ' to potentially signed integer"
 			);
 		});
@@ -137,14 +137,14 @@ describe('CVTemplatePlaceholder', () => {
 		describe('Parsing', () => {
 			it('Not passing', () => {
 				TEUtils.assertLeftMessage(
-					templatepart.parser(''),
+					placeholder.parser(''),
 					'Expected length of #foo to be: 3. Actual: 0'
 				);
 			});
 
 			it('Passing', () => {
 				TEUtils.assertRight(
-					templatepart.parser('  15'),
+					placeholder.parser('  15'),
 					Tuple.make(CVReal.unsafeFromNumber(1), '5')
 				);
 			});
@@ -153,46 +153,46 @@ describe('CVTemplatePlaceholder', () => {
 		describe('Formatting', () => {
 			it('Not passing: too long', () => {
 				TEUtils.assertLeftMessage(
-					templatepart.formatter(CVReal.unsafeFromNumber(1154)),
+					placeholder.formatter(CVReal.unsafeFromNumber(1154)),
 					'Expected length of #foo to be: 3. Actual: 4'
 				);
 			});
 
 			it('Passing', () => {
-				TEUtils.assertRight(templatepart.formatter(CVReal.unsafeFromNumber(34)), ' 34');
-				TEUtils.assertRight(templatepart.formatter(CVReal.unsafeFromNumber(-4)), '- 4');
+				TEUtils.assertRight(placeholder.formatter(CVReal.unsafeFromNumber(34)), ' 34');
+				TEUtils.assertRight(placeholder.formatter(CVReal.unsafeFromNumber(-4)), '- 4');
 			});
 		});
 	});
 
 	describe('real', () => {
-		const templatepart = CVTemplatePlaceholder.real({
+		const placeholder = CVTemplatePlaceholder.real({
 			name: 'foo',
 			numberBase10Format: CVNumberBase10Format.frenchStyleNumber
 		});
 		it('.toString()', () => {
-			TEUtils.strictEqual(templatepart.toString(), '#foo: potentially signed French-style number');
+			TEUtils.strictEqual(placeholder.toString(), '#foo: potentially signed French-style number');
 		});
 
 		describe('Parsing', () => {
 			it('Not passing', () => {
 				TEUtils.assertLeftMessage(
-					templatepart.parser(''),
+					placeholder.parser(''),
 					"#foo contains '' from the start of which a(n) potentially signed French-style number could not be extracted"
 				);
-				TEUtils.assertLeft(templatepart.parser('1 014,1254 and foo'));
+				TEUtils.assertLeft(placeholder.parser('1 014,1254 and foo'));
 			});
 
 			it('Passing', () => {
 				TEUtils.assertRight(
-					templatepart.parser('1 014,125 and foo'),
+					placeholder.parser('1 014,125 and foo'),
 					Tuple.make(CVReal.unsafeFromNumber(1014.125), ' and foo')
 				);
 			});
 		});
 
 		it('Formatting', () => {
-			TEUtils.assertRight(templatepart.formatter(CVReal.unsafeFromNumber(1014.1256)), '1 014,126');
+			TEUtils.assertRight(placeholder.formatter(CVReal.unsafeFromNumber(1014.1256)), '1 014,126');
 		});
 	});
 

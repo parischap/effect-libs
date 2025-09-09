@@ -96,7 +96,7 @@ describe('CVTemplate', () => {
 			);
 		});
 
-		it('Same templatepart receives different values', () => {
+		it('Same placeholder receives different values', () => {
 			TEUtils.assertLeftMessage(
 				parser('25/12/2025 13'),
 				"#MM is present more than once in template and receives differing values '12' and '13'"
