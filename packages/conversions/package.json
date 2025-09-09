@@ -24,7 +24,7 @@
 		"install-prod": "cd dist && pnpm i && cd ..",
 		"build": "pnpm clean-prod && pnpm --if-present pre-build && pnpm compile && pnpm --if-present post-build && pnpm --if-present generate-types && pnpm install-prod",
 		"prodify": "prodify",
-		"examples": "vite-node examples/perf.ts&&vite-node examples/RoundingOption_1.ts&&vite-node examples/RoundingOption_2.ts&&vite-node examples/RoundingOption_3.ts&&vite-node examples/NumberBase10Format_1.ts&&vite-node examples/NumberBase10Format_2.ts&&vite-node examples/Template_1.ts&&vite-node examples/Template_2.ts&&vite-node examples/Template_3.ts&&vite-node examples/DateTime_1.ts&&vite-node examples/DateTimeFormat_1.ts&&vite-node examples/DateTimeFormat_2.ts"
+		"examples": "vite-node examples/perf.ts&&vite-node examples/RoundingOption_1.ts&&vite-node examples/RoundingOption_2.ts&&vite-node examples/RoundingOption_3.ts&&vite-node examples/NumberBase10Format_1.ts&&vite-node examples/NumberBase10Format_2.ts&&vite-node examples/Template_1.ts&&vite-node examples/Template_2.ts&&vite-node examples/Template_3.ts&&vite-node examples/DateTime_1.ts&&vite-node examples/DateTimeFormat_1.ts&&vite-node examples/DateTimeFormat_2.ts&&vite-node examples/Branding.ts"
 	},
 	"publishConfig": {
 		"main": "./cjs/index.js",
@@ -58,8 +58,17 @@
 	],
 	"keywords": [
 		"number",
-		"text",
+		"date",
+		"format",
+		"parse",
+		"formatting",
+		"parsing",
+		"rounding",
+		"templating",
 		"conversion",
+		"sscanf",
+		"sprintf",
+		"text",
 		"n2t",
 		"num2text",
 		"convert",
@@ -69,7 +78,7 @@
 		"typescript",
 		"functional-programming"
 	],
-	"description": "A functional library to convert number and dates to string and vice-versa",
+	"description": "A functional library to replace partially the native Intl API",
 	"module": "./esm/index.js",
 	"exports": {
 		".": {
