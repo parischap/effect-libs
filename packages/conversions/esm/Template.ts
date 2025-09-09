@@ -249,8 +249,7 @@ export const toFormatter = <const PS extends CVTemplateParts.Type>(
 						Record.get(templatePart.name),
 						// This error should not happen due to typing
 						Option.getOrThrowWith(
-							() =>
-								new Error(`Abnormal error: no value passed for ${templatePart.label} templatepart`)
+							() => new Error(`Abnormal error: no value passed for ${templatePart.label}`)
 						)
 					);
 					/* eslint-disable-next-line functional/no-expression-statements */

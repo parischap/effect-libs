@@ -17,7 +17,7 @@ const frenchContext = CVDateTimeFormatContext.fromLocaleOrThrow('fr-FR');
 // Let's define a DateTimeFormat: iiii d MMMM yyyy
 const frenchFormat = CVDateTimeFormat.make({
 	context: frenchContext,
-	templateparts: [
+	templateParts: [
 		placeholder('iiii'),
 		sep.space,
 		placeholder('d'),

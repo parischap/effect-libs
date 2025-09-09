@@ -11,7 +11,7 @@ describe('CVDateTimeFormat', () => {
 	const sep = CVDateTimeFormat.TemplatePart.Separator;
 	const isoFormat = CVDateTimeFormat.make({
 		context: enGBContext,
-		templateparts: [
+		templateParts: [
 			placeholder('yyyy'),
 			sep.hyphen,
 			placeholder('MM'),
@@ -33,7 +33,7 @@ describe('CVDateTimeFormat', () => {
 
 	const exhaustiveFormat = CVDateTimeFormat.make({
 		context: enGBContext,
-		templateparts: [
+		templateParts: [
 			placeholder('y'),
 			sep.space,
 			placeholder('yy'),

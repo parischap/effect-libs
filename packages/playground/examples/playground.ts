@@ -1,5 +1,30 @@
 /* eslint-disable functional/no-expression-statements */
-import { CVPositiveInteger } from '@parischap/conversions';
+import { CVDateTimeFormat, CVDateTimeFormatContext } from '@parischap/conversions';
 
-console.log(CVPositiveInteger.fromNumber(12));
-console.log(CVPositiveInteger.fromNumber(-12));
+// Let's define useful shortcuts
+const placeholder = CVDateTimeFormat.TemplatePart.Placeholder.make;
+const sep = CVDateTimeFormat.TemplatePart.Separator;
+
+// Let's define a context
+const frenchContext = CVDateTimeFormatContext.fromLocaleOrThrow('fr-FR');
+
+// Let's define a DateTimeFormat: iiii d MMMM yyyy
+const frenchFormat = CVDateTimeFormat.make({
+	context: frenchContext,
+	: [
+		placeholder('iiii'),
+		sep.space,
+		placeholder('d'),
+		sep.space,
+		placeholder('MMMM'),
+		sep.space,
+		placeholder('yyyy')
+	]
+});
+
+// Let's define a parser
+// Type: (dateString: string) => Either.Either<CVDateTime.Type, MInputError.Type>
+const parser = CVDateTimeFormat.toParser(frenchFormat);
+
+// Result: { _id: 'Either', _tag: 'Right', right: '2025-09-04T00:00:00.000+02:00' }
+console.log(parser('jeudi 4 septembre 2025'));

@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /* eslint-disable functional/no-expression-statements */
 import { CVDateTimeFormat, CVDateTimeFormatContext } from '@parischap/conversions';
 
@@ -5,10 +6,13 @@ import { CVDateTimeFormat, CVDateTimeFormatContext } from '@parischap/conversion
 const placeholder = CVDateTimeFormat.TemplatePart.Placeholder.make;
 const sep = CVDateTimeFormat.TemplatePart.Separator;
 
+// Let's define a context
+const frenchContext = CVDateTimeFormatContext.fromLocaleOrThrow('fr-FR');
+
 // Let's define a DateTimeFormat: iiii d MMMM yyyy
 const frenchFormat = CVDateTimeFormat.make({
-	context: CVDateTimeFormatContext.enGB,
-	templateParts: [
+	context: frenchContext,
+	: [
 		placeholder('iiii'),
 		sep.space,
 		placeholder('d'),
@@ -19,5 +23,9 @@ const frenchFormat = CVDateTimeFormat.make({
 	]
 });
 
-// Result: "'iiii d MMMM yyyy' in 'en-GB' context"
-console.log(frenchFormat);
+// Let's define a parser
+// Type: (dateString: string) => Either.Either<CVDateTime.Type, MInputError.Type>
+const parser = CVDateTimeFormat.toParser(frenchFormat);
+
+// Result: { _id: 'Either', _tag: 'Right', right: '2025-09-04T00:00:00.000+02:00' }
+console.log(parser('jeudi 4 septembre 2025'));

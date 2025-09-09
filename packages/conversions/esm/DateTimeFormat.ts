@@ -325,16 +325,16 @@ const proto: MTypes.Proto<Type> = {
 const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
 
 /**
- * Builds a DateTimeFormat from a Context `context` and an array of TemplatePart's `templateparts`
+ * Builds a DateTimeFormat from a Context `context` and an array of TemplatePart's `templateParts`
  *
  * @category Constructors
  */
 export const make = ({
 	context,
-	templateparts
+	templateParts
 }: {
 	readonly context: CVDateTimeFormatContext.Type;
-	readonly templateparts: ReadonlyArray<TemplatePart.Type>;
+	readonly templateParts: ReadonlyArray<TemplatePart.Type>;
 }): Type => {
 	const getter = (
 		name: CVDateTimeFormatContext.Token
@@ -348,7 +348,7 @@ export const make = ({
 		);
 
 	const template: CVTemplate.Type<CVTemplateParts.Type<CVReal.Type>> = pipe(
-		templateparts,
+		templateParts,
 		Array.map(
 			flow(
 				MMatch.make,
@@ -362,7 +362,7 @@ export const make = ({
 
 	return _make({
 		context,
-		templateParts: templateparts,
+		templateParts: templateParts,
 		_template: template
 	});
 };

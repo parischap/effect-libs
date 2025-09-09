@@ -26,7 +26,10 @@
 		"examples": "vite-node examples/playground.ts"
 	},
 	"dependencies": {
-		"@effect/experimental": "^0.54.6"
+		"@effect/experimental": "^0.54.6",
+		"effect": "^3.17.13",
+		"@parischap/effect-lib": "^0.7.0",
+		"@parischap/ansi-styles": "^0.2.3"
 	},
 	"sideEffects": false,
 	"publishConfig": {
@@ -40,11 +43,7 @@
 		"sideEffects": [],
 		"scripts": {},
 		"devDependencies": {},
-		"peerDependencies": {
-			"effect": "^3.17.13",
-			"@parischap/effect-lib": "^0.7.0",
-			"@parischap/conversions": "^0.2.0"
-		},
+		"peerDependencies": {},
 		"publishConfig": {},
 		"packageManager": "",
 		"pnpm": {},
@@ -61,11 +60,7 @@
 	"devDependencies": {
 		"@parischap/playground": "link:."
 	},
-	"peerDependencies": {
-		"effect": "^3.17.13",
-		"@parischap/effect-lib": "^0.7.0",
-		"@parischap/conversions": "^0.2.0"
-	},
+	"peerDependencies": {},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/parischap/effect-libs.git",

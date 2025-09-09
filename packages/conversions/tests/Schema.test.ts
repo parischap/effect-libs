@@ -345,7 +345,7 @@ describe('CVSchema', () => {
 		const sep = CVDateTimeFormat.TemplatePart.Separator;
 		const frenchDateFormat = CVDateTimeFormat.make({
 			context: CVDateTimeFormatContext.fromLocaleOrThrow('fr-FR'),
-			templateparts: [
+			templateParts: [
 				placeholder('dd'),
 				sep.slash,
 				placeholder('MM'),

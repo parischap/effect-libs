@@ -217,9 +217,9 @@ importers:
       '@effect/experimental':
         specifier: ^0.54.6
         version: 0.54.6(@effect/platform@0.90.7(effect@3.17.13))(effect@3.17.13)
-      '@parischap/conversions':
-        specifier: ^0.2.0
-        version: 0.2.0(@parischap/effect-lib@0.7.0(effect@3.17.13))(effect@3.17.13)
+      '@parischap/ansi-styles':
+        specifier: ^0.2.3
+        version: 0.2.3(@parischap/effect-lib@0.7.0(effect@3.17.13))(effect@3.17.13)
       '@parischap/effect-lib':
         specifier: ^0.7.0
         version: 0.7.0(effect@3.17.13)
@@ -230,6 +230,8 @@ importers:
       '@parischap/playground':
         specifier: link:.
         version: 'link:'
+
+  packages/playground/dist: {}
 
   packages/pretty-print:
     dependencies:
@@ -847,12 +849,6 @@ packages:
   '@parischap/configs@1.34.0':
     resolution: {integrity: sha512-QqAwh7YvDx73wRfTnJ6alCu9Lodtz5pTSvAzMpFpidWN+7zi3Nx9iOaVmNgCkUND6f1lnFD7G9KB+S34/nbJvQ==}
     hasBin: true
-
-  '@parischap/conversions@0.2.0':
-    resolution: {integrity: sha512-ibU7ImrrWUhNCjfh5nyflxp/lRMMJ5E6pIDYFdr4C70M/YkiXaBAB7hI/V4jzt96Z2WCmQvrAKa59LDHDyGNRw==}
-    peerDependencies:
-      '@parischap/effect-lib': ^0.7.0
-      effect: ^3.17.13
 
   '@parischap/effect-lib@0.5.0':
     resolution: {integrity: sha512-Wx/yGsHHvHvDxXhOzdPQtgzuSEommN6yNG9rZUQLSeuSphZogEwlMDJvID2gs5Wim43ct9Dw4leN6YOqGEktuA==}
@@ -3458,11 +3454,6 @@ snapshots:
       effect: 3.17.13
 
   '@parischap/configs@1.34.0': {}
-
-  '@parischap/conversions@0.2.0(@parischap/effect-lib@0.7.0(effect@3.17.13))(effect@3.17.13)':
-    dependencies:
-      '@parischap/effect-lib': 0.7.0(effect@3.17.13)
-      effect: 3.17.13
 
   '@parischap/effect-lib@0.5.0(effect@3.17.9)':
     dependencies:
