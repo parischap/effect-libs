@@ -70,6 +70,7 @@
 			"import": "./esm/index.ts"
 		}
 	},
+	"sideEffects": false,
 	"dependencies": {},
 	"devDependencies": {
 		"@parischap/node-effect-lib": "link:."

@@ -82,6 +82,7 @@
 			"import": "./esm/index.ts"
 		}
 	},
+	"sideEffects": false,
 	"dependencies": {},
 	"devDependencies": {
 		"@parischap/pretty-print": "link:."

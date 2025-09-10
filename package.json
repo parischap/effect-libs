@@ -16,7 +16,7 @@
 		"build-all": "pnpm -r build",
 		"prepare-docs": "pnpm --recursive --parallel docgen && compile-docs"
 	},
-	"packageManager": "pnpm@10.15.0",
+	"packageManager": "pnpm@10.15.1",
 	"devDependencies": {
 		"globals": "latest",
 		"ts-deepmerge": "latest",
