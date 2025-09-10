@@ -140,8 +140,8 @@ importers:
   packages/conversions/dist:
     dependencies:
       '@parischap/effect-lib':
-        specifier: ^0.7.0
-        version: 0.7.0(effect@3.17.13)
+        specifier: ^0.8.0
+        version: 0.8.0(effect@3.17.13)
       effect:
         specifier: ^3.17.13
         version: 3.17.13
