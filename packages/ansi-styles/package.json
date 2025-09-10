@@ -39,7 +39,7 @@
 		"scripts": {},
 		"devDependencies": {},
 		"peerDependencies": {
-			"@parischap/effect-lib": "^0.7.0",
+			"@parischap/effect-lib": "^0.8.0",
 			"effect": "^3.17.13"
 		},
 		"publishConfig": {},
@@ -81,7 +81,7 @@
 		"typescript",
 		"functional-programming"
 	],
-	"description": "A functional library to read from (PHP sscanf equivalent) and write to (PHP sprintf equivalent) a string with type checking",
+	"description": "A functional library to style your strings in terminals",
 	"module": "./esm/index.js",
 	"exports": {
 		".": {

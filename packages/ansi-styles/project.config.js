@@ -1,8 +1,7 @@
 import * as Configs from '@parischap/configs';
 
 export default Configs.configSubRepo({
-	description:
-		'A functional library to read from (PHP sscanf equivalent) and write to (PHP sprintf equivalent) a string with type checking',
+	description: 'A functional library to style your strings in terminals',
 	dependencies: {},
 	devDependencies: {},
 	internalPeerDependencies: { 'effect-lib': Configs.constants.effectLibVersion },

@@ -6,7 +6,7 @@ An [`Effect`](https://effect.website/docs/introduction) library for terminal out
 
 Tested and documented, 100% Typescript, 100% functional.
 
-Can also be used by non-`Effect` users.
+Can also be used by non-Effect users.
 
 </div>
 
@@ -36,6 +36,8 @@ Depending on the package manager you use, run one of the following commands in y
   ```
 
 We use two peerDependencies. If you are not an `Effect` user, the size may seem important. But, in fact, we use little of each peerDependency. Bundled and tree-shaken, it's only about [80kB](https://bundlephobia.com/package/@parischap/ansi-styles). Minified and gzipped, it falls to [16kB](https://bundlephobia.com/package/@parischap/ansi-styles)! (source bundlephobia)
+
+This is a modern tree-shakable library: keep in mind that your bundler will tree-shake all which you don't use. For example, this package comes in esm and cjs versions, with Typescript typings. So if you don't use cjs, the size will be highly reduced. That's also true if you only use a few of the many pre-defined colors...
 
 ## Note
 

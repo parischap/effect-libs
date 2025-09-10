@@ -6,7 +6,7 @@ An [`Effect`](https://effect.website/docs/introduction) library that produces th
 
 Non-recursive, tested and documented, 100% Typescript, 100% functional, 100% parametrizable.
 
-Can also be used by non-`Effect` users.
+Can also be used by non-Effect users.
 
 </div>
 
@@ -36,6 +36,8 @@ Depending on the package manager you use, run one of the following commands in y
   ```
 
 We use three peerDependencies. If you are not an `Effect` user, the size may seem important. But, in fact, we use little of each peerDependency. Bundled and tree-shaken, it's only about [30kB](https://bundlephobia.com/package/@parischap/pretty-print). Minified and gzipped, it falls to [7kB](https://bundlephobia.com/package/@parischap/pretty-print)! (source bundlephobia)
+
+This is a modern tree-shakable library: keep in mind that your bundler will tree-shake all which you don't use. For example, this package comes in esm and cjs versions, with Typescript typings. So if you don't use cjs, the size will be highly reduced.
 
 ## API
 

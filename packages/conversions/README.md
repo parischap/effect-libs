@@ -6,7 +6,7 @@ An [`Effect`](https://effect.website/docs/introduction) library to partially rep
 
 Non machine-dependent, safe, bidirectional (implements parsing and formatting), tested, documented, with lots of examples, 100% Typescript, 100% functional.
 
-Can also come in handy to non-`Effect` users.
+Can also come in handy to non-Effect users.
 
 </div>
 
@@ -37,7 +37,7 @@ Depending on the package manager you use, run one of the following commands in y
 
 We use two peerDependencies. If you are not an `Effect` user, the size may seem important. But, in fact, we use little of each peerDependency. Bundled and tree-shaken, this module is only about [69kB](https://bundlephobia.com/package/@parischap/conversions). Minified and gzipped, it falls to [15kB](https://bundlephobia.com/package/@parischap/conversions)! (source bundlephobia).
 
-Also, keep in mind that your bundler will tree-shake all which you don't use. For example, this package comes in esm and cjs versions, with Typescript typings. So if you don't use cjs, the size will be highly reduced. That's also true if you only use the DateTime parser/formatter and not the number parser/formatter...
+This is a modern tree-shakable library: keep in mind that your bundler will tree-shake all which you don't use. For example, this package comes in esm and cjs versions, with Typescript typings. So if you don't use cjs, the size will be highly reduced. That's also true if you only use the DateTime parser/formatter and not the number parser/formatter...
 
 ## API
 
