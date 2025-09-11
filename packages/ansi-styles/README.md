@@ -37,7 +37,28 @@ Depending on the package manager you use, run one of the following commands in y
 
 ## Package size and tree-shaking
 
-This is a modern library optimized for tree-shaking. Don't put too much focus on package size: most of it will go away at bundling. To give you an idea of how this library will impact the size of your project, this [code](#code_example) has a size of kB after bundling.
+This is a modern library optimized for tree-shaking. Don't put too much focus on package size: most of it will go away at bundling. To give you an idea of how this library will impact the size of your project, the following code has a size of 45kB after bundling:
+
+```ts
+import * as ASStyle from "@parischap/ansi-styles/ASStyle";
+
+console.log(
+	ASStyle.red(
+		"ansi-styles is an ",
+		ASStyle.bold(
+			"Effect library ",
+			ASStyle.magenta(
+				ASStyle.dim("for terminal output styling with "),
+				ASStyle.yellow("ANSI "),
+				"colors ",
+			),
+		),
+		"and formats.",
+	),
+);
+```
+
+[Bundlephobia](https://bundlephobia.com/package/@parischap/ansi-styles) announces a size 16kB once minified and gzipped.
 
 ## How to import?
 
@@ -68,7 +89,6 @@ After reading this introduction, you may take a look at the [API](https://parisc
 ### 1) Basic usage
 
 Just import ASStyle and build simple styled strings in the following manner:
-<a id="code_example"></a>
 
 ```ts
 import { ASStyle } from "@parischap/ansi-styles";

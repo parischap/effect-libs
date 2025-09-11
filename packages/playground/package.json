@@ -29,7 +29,7 @@
 		"@effect/experimental": "^0.54.6",
 		"effect": "^3.17.13",
 		"@parischap/effect-lib": "^0.11.0",
-		"@parischap/ansi-styles": "workspace:@parischap-dev/ansi-styles@*"
+		"@parischap/ansi-styles": "^0.2.5"
 	},
 	"publishConfig": {
 		"exports": {
