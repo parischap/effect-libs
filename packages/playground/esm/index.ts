@@ -1,21 +1,32 @@
 #!/usr/bin/env node
 /* eslint-disable functional/no-expression-statements */
-import * as PPOption from '@parischap/pretty-print/PPOption';
-import * as PPStringifiedValue from '@parischap/pretty-print/PPStringifiedValue';
-import { pipe } from 'effect';
-import * as HashMap from 'effect/HashMap';
+import * as CVDateTimeFormat from '@parischap/conversions/CVDateTimeFormat';
+import * as CVDateTimeFormatContext from '@parischap/conversions/CVDateTimeFormatContext';
 
-const stringifier = PPOption.toStringifier(PPOption.darkModeUtilInspectLike);
+// Let's define useful shortcuts
+const placeholder = CVDateTimeFormat.TemplatePart.Placeholder.make;
+const sep = CVDateTimeFormat.TemplatePart.Separator;
 
-const toPrint = {
-	a: [7, 8],
-	e: HashMap.make(['key1', 3], ['key2', 6]),
-	b: { a: 5, c: 8 },
-	f: Math.max,
-	d: {
-		e: true,
-		f: { a: { k: { z: 'foo', y: 'bar' } } }
-	}
-};
+// Let's define a context
+const frenchContext = CVDateTimeFormatContext.fromLocaleOrThrow('fr-FR');
 
-console.log(pipe(toPrint, stringifier, PPStringifiedValue.toAnsiString()));
+// Let's define a DateTimeFormat: iiii d MMMM yyyy
+const frenchFormat = CVDateTimeFormat.make({
+	context: frenchContext,
+	templateParts: [
+		placeholder('iiii'),
+		sep.space,
+		placeholder('d'),
+		sep.space,
+		placeholder('MMMM'),
+		sep.space,
+		placeholder('yyyy')
+	]
+});
+
+// Let's define a parser
+// Type: (dateString: string) => Either.Either<CVDateTime.Type, MInputError.Type>
+const parser = CVDateTimeFormat.toParser(frenchFormat);
+
+// Result: { _id: 'Either', _tag: 'Right', right: '2025-09-04T00:00:00.000+02:00' }
+console.log(parser('jeudi 4 septembre 2025'));
