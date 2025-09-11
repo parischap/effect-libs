@@ -196,7 +196,7 @@ export const DateTimeFromSelf = Schema.declare((input: unknown): input is CVDate
  * `CVDateTime` object is created with the default timeZoneOffset of the machine this code is
  * running on
  *
- * @category Schema instances
+ * @category Schema transformations
  */
 export const DateFromDateTime: Schema.Schema<Date, CVDateTime.Type> = Schema.transform(
 	DateTimeFromSelf,
@@ -212,7 +212,7 @@ export const DateFromDateTime: Schema.Schema<Date, CVDateTime.Type> = Schema.tra
  * A `Schema` that transforms a `CVDateTime` into an `Effect.DateTime.Zoned`. Both objects share the
  * same time zone offset
  *
- * @category Schema instances
+ * @category Schema transformations
  */
 export const DateTimeZonedFromDateTime: Schema.Schema<DateTime.Zoned, CVDateTime.Type> =
 	Schema.transform(DateTimeFromSelf, Schema.DateTimeZonedFromSelf, {
