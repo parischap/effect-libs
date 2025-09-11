@@ -252,11 +252,11 @@ importers:
   packages/pretty-print/dist:
     dependencies:
       '@parischap/ansi-styles':
-        specifier: ^0.2.4
-        version: 0.2.4(@parischap/effect-lib@0.8.0(effect@3.17.13))(effect@3.17.13)
+        specifier: ^0.2.6
+        version: 0.2.6(@parischap/effect-lib@0.11.0(effect@3.17.13))(effect@3.17.13)
       '@parischap/effect-lib':
-        specifier: ^0.8.0
-        version: 0.8.0(effect@3.17.13)
+        specifier: ^0.11.0
+        version: 0.11.0(effect@3.17.13)
       effect:
         specifier: ^3.17.13
         version: 3.17.13
@@ -840,14 +840,14 @@ packages:
     resolution: {integrity: sha512-dfUnCxiN9H4ap84DvD2ubjw+3vUNpstxa0TneY/Paat8a3R4uQZDLSvWjmznAY/DoahqTHl9V46HF/Zs3F29pg==}
     engines: {node: '>= 10.0.0'}
 
-  '@parischap/ansi-styles@0.2.4':
-    resolution: {integrity: sha512-1hr043Ch3qJAhOPBrLFZ+ppx0QCh0AZSYrkEwwJvl2vJBEsWK64b6lrZfvOnloaZ9JFHy90paycPGV2Ao8Rbyw==}
-    peerDependencies:
-      '@parischap/effect-lib': ^0.8.0
-      effect: ^3.17.13
-
   '@parischap/ansi-styles@0.2.5':
     resolution: {integrity: sha512-PqIcX6LO1k5YllCqMKKOYdFmRUdNn3jWj0fhTwNUVDpcckHBxl62bh/sH4lNEBcaBNyXi93lhtLRrzeGxPV3tw==}
+    peerDependencies:
+      '@parischap/effect-lib': ^0.11.0
+      effect: ^3.17.13
+
+  '@parischap/ansi-styles@0.2.6':
+    resolution: {integrity: sha512-kW+h5UnTmqiPGTeXK3erktqabrLdvW0Wcc0xr5qPIQMf7vx6qFGqRzJJ+LXguRGR2X/Kt49HDSpTNosVwp7pkA==}
     peerDependencies:
       '@parischap/effect-lib': ^0.11.0
       effect: ^3.17.13
@@ -3459,12 +3459,12 @@ snapshots:
       '@parcel/watcher-win32-ia32': 2.5.1
       '@parcel/watcher-win32-x64': 2.5.1
 
-  '@parischap/ansi-styles@0.2.4(@parischap/effect-lib@0.8.0(effect@3.17.13))(effect@3.17.13)':
+  '@parischap/ansi-styles@0.2.5(@parischap/effect-lib@0.11.0(effect@3.17.13))(effect@3.17.13)':
     dependencies:
-      '@parischap/effect-lib': 0.8.0(effect@3.17.13)
+      '@parischap/effect-lib': 0.11.0(effect@3.17.13)
       effect: 3.17.13
 
-  '@parischap/ansi-styles@0.2.5(@parischap/effect-lib@0.11.0(effect@3.17.13))(effect@3.17.13)':
+  '@parischap/ansi-styles@0.2.6(@parischap/effect-lib@0.11.0(effect@3.17.13))(effect@3.17.13)':
     dependencies:
       '@parischap/effect-lib': 0.11.0(effect@3.17.13)
       effect: 3.17.13
