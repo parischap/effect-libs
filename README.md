@@ -2,7 +2,7 @@
 
 effect-libs is a set of open-source libraries to be used in complement to the [Effect](https://effect.website/docs/introduction) library.
 
-Although developped in Effect for Effect users, all packages may however be used by non-Effect users.
+Although developped in Effect for Effect users, all packages may be used by non-Effect users.
 
 Each package contains its own documentation.
 
