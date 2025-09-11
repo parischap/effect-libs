@@ -29,7 +29,8 @@
 		"@effect/experimental": "^0.54.6",
 		"effect": "^3.17.13",
 		"@parischap/effect-lib": "^0.11.0",
-		"@parischap/ansi-styles": "^0.2.5"
+		"@parischap/ansi-styles": "^0.2.6",
+		"@parischap/pretty-print": "^0.3.6"
 	},
 	"publishConfig": {
 		"exports": {

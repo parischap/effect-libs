@@ -37,13 +37,7 @@ Depending on the package manager you use, run one of the following commands in y
 
 ## Package size and tree-shaking
 
-This is a modern library optimized for tree-shaking. Don't put too much focus on package size: most of it will go away at bundling. To give you an idea of how this library will impact the size of your project, the following code has a size of 45kB after bundling:
-
-```ts
-
-```
-
-[Bundlephobia](https://bundlephobia.com/package/@parischap/pretty-print) announces a size kB once minified and gzipped.
+This is a modern library optimized for tree-shaking. Don't put too much focus on package size: most of it will go away at bundling. To give you an idea of how this library will impact the size of your project, [Bundlephobia](https://bundlephobia.com/package/@parischap/pretty-print) announces a size 7kB once minified and gzipped.
 
 ## How to import?
 

@@ -1,18 +1,21 @@
 #!/usr/bin/env node
 /* eslint-disable functional/no-expression-statements */
-import * as ASStyle from '@parischap/ansi-styles/ASStyle';
+import * as PPOption from '@parischap/pretty-print/PPOption';
+import * as PPStringifiedValue from '@parischap/pretty-print/PPStringifiedValue';
+import { pipe } from 'effect';
+import * as HashMap from 'effect/HashMap';
 
-console.log(
-	ASStyle.red(
-		'ansi-styles is an ',
-		ASStyle.bold(
-			'Effect library ',
-			ASStyle.magenta(
-				ASStyle.dim('for terminal output styling with '),
-				ASStyle.yellow('ANSI '),
-				'colors '
-			)
-		),
-		'and formats.'
-	)
-);
+const stringifier = PPOption.toStringifier(PPOption.darkModeUtilInspectLike);
+
+const toPrint = {
+	a: [7, 8],
+	e: HashMap.make(['key1', 3], ['key2', 6]),
+	b: { a: 5, c: 8 },
+	f: Math.max,
+	d: {
+		e: true,
+		f: { a: { k: { z: 'foo', y: 'bar' } } }
+	}
+};
+
+console.log(pipe(toPrint, stringifier, PPStringifiedValue.toAnsiString()));

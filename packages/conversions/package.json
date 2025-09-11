@@ -39,7 +39,7 @@
 		"scripts": {},
 		"devDependencies": {},
 		"peerDependencies": {
-			"@parischap/effect-lib": "^0.10.0",
+			"@parischap/effect-lib": "^0.11.0",
 			"effect": "^3.17.13"
 		},
 		"publishConfig": {},
