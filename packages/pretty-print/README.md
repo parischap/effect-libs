@@ -35,7 +35,11 @@ Depending on the package manager you use, run one of the following commands in y
   yarn add effect @parischap/effect-lib @parischap/ansi-styles @parischap/pretty-print
   ```
 
-This is a modern library optimized for tree-shaking. Don't put too much focus on bundle size: most of it will go away at bundling. For example, this package contains cjs versions out of historical reasons. So if you don't use cjs, the size will be highly reduced.
+## Package size and tree-shaking
+
+This is a modern library optimized for tree-shaking. Don't put too much focus on package size: most of it will go away at bundling. To give you an idea of how this library will impact the size of your project, this [code](#code_example) has a size of kB after bundling.
+
+## How to import?
 
 This library supports named imports:
 
@@ -66,6 +70,8 @@ Note that, throughout this document, the term `non-primitive value` refers to a 
 ### A) Using predefined `Option` instances
 
 For a start, you can use one of the 6 predefined `Option` instances.
+
+<a id="code_example"></a>
 
 ```ts
 import { PPOption, PPStringifiedValue } from "@parischap/pretty-print";

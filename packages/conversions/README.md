@@ -35,7 +35,15 @@ Depending on the package manager you use, run one of the following commands in y
   yarn add effect @parischap/effect-lib @parischap/conversions
   ```
 
-This is a modern library optimized for tree-shaking. Don't put too much focus on bundle size: most of it will go away at bundling. For example, this package contains cjs versions out of historical reasons. So if you don't use cjs, the size will be highly reduced.
+## Package size and tree-shaking
+
+This is a modern library optimized for tree-shaking. Don't put too much focus on package size: most of it will go away at bundling. To give you an idea of how this library will impact the size of your project, the following code has a size of kB after bundling:
+
+```ts
+
+```
+
+## How to import?
 
 This library supports named imports:
 

@@ -39,9 +39,9 @@
 		"scripts": {},
 		"devDependencies": {},
 		"peerDependencies": {
-			"@parischap/effect-lib": "^0.8.0",
+			"@parischap/effect-lib": "^0.10.0",
 			"effect": "^3.17.13",
-			"@effect/platform": "^0.90.7",
+			"@effect/platform": "^0.90.9",
 			"@effect/platform-node": "^0.96.1"
 		},
 		"publishConfig": {},
@@ -78,7 +78,7 @@
 	"peerDependencies": {
 		"@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
 		"effect": "^3.17.13",
-		"@effect/platform": "^0.90.7",
+		"@effect/platform": "^0.90.9",
 		"@effect/platform-node": "^0.96.1"
 	},
 	"repository": {
