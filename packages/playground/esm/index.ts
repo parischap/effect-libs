@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 import { MTypes } from '@parischap/effect-lib';
-import { Array, flow, Option } from 'effect';
-
+import { flow } from 'effect';
+import * as Array from 'effect/Array';
+import * as Option from 'effect/Option';
 /**
  * Type of an ANSI string
  *

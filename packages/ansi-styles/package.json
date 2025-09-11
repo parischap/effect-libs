@@ -88,7 +88,7 @@
 			"import": "./esm/index.ts"
 		}
 	},
-	"sideEffects": false,
+	"sideEffects": [],
 	"dependencies": {},
 	"devDependencies": {
 		"@parischap/ansi-styles": "link:."

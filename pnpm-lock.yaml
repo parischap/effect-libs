@@ -31,7 +31,7 @@ importers:
         version: 9.35.0
       '@parischap/configs':
         specifier: latest
-        version: 1.36.0
+        version: 1.37.0
       '@parischap/test-utils':
         specifier: latest
         version: 0.10.0(effect@3.17.13)
@@ -846,8 +846,8 @@ packages:
       '@parischap/effect-lib': ^0.8.0
       effect: ^3.17.13
 
-  '@parischap/configs@1.36.0':
-    resolution: {integrity: sha512-hp+7ZYLXFoJwp7M5Q9dW9ILCA5ZMPZcgrquq/eUfvKcZfBWsX1u/skeOMjj8JdlqqJSrq8TPUZlnuJxLz1hdJA==}
+  '@parischap/configs@1.37.0':
+    resolution: {integrity: sha512-pYR/eYtPip9SuL1NORrm6n2yvTX66or+WSMKBB2KTx52B2MD4flEAAgmOSUobsQdmFzlcUMI3haAaWrT9wUM8w==}
     hasBin: true
 
   '@parischap/effect-lib@0.5.0':
@@ -3453,7 +3453,7 @@ snapshots:
       '@parischap/effect-lib': 0.8.0(effect@3.17.13)
       effect: 3.17.13
 
-  '@parischap/configs@1.36.0': {}
+  '@parischap/configs@1.37.0': {}
 
   '@parischap/effect-lib@0.5.0(effect@3.17.9)':
     dependencies:

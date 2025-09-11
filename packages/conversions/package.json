@@ -85,7 +85,7 @@
 			"import": "./esm/index.ts"
 		}
 	},
-	"sideEffects": false,
+	"sideEffects": [],
 	"dependencies": {},
 	"devDependencies": {
 		"@parischap/conversions": "link:."
