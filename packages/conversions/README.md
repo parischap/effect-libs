@@ -4,7 +4,7 @@
 
 An [`Effect`](https://effect.website/docs/introduction) library to partially replace the native javascript INTL API.
 
-Non machine-dependent, safe, bidirectional (implements parsing and formatting), tested, documented, with lots of examples, 100% Typescript, 100% functional.
+Non machine-dependent, safe, bidirectional (implements parsing and formatting), tested, documented, with lots of examples, optimized for tree-shaking, 100% Typescript, 100% functional.
 
 Can also come in handy to non-Effect users.
 
@@ -35,9 +35,21 @@ Depending on the package manager you use, run one of the following commands in y
   yarn add effect @parischap/effect-lib @parischap/conversions
   ```
 
-We use two peerDependencies. If you are not an `Effect` user, the size may seem important. But, in fact, we use little of each peerDependency. Bundled and tree-shaken, this module is only about [69kB](https://bundlephobia.com/package/@parischap/conversions). Minified and gzipped, it falls to [15kB](https://bundlephobia.com/package/@parischap/conversions)! (source bundlephobia).
+This is a modern library optimized for tree-shaking. Don't put too much focus on bundle size: most of it will go away at bundling. For example, this package contains cjs versions out of historical reasons. So if you don't use cjs, the size will be highly reduced.
 
-This is a modern tree-shakable library: keep in mind that your bundler will tree-shake all which you don't use. For example, this package comes in esm and cjs versions, with Typescript typings. So if you don't use cjs, the size will be highly reduced. That's also true if you only use the DateTime parser/formatter and not the number parser/formatter...
+This library supports named imports:
+
+```ts
+import { CVRoundingOption } from "@parischap/conversions";
+```
+
+and default imports:
+
+```ts
+import * as CVRoundingOption from "@parischap/conversions/CVRoundingOption";
+```
+
+In this documentation, we'll use the first option. But if you value tree-shaking, you should use the second.
 
 ## API
 

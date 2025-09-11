@@ -4,7 +4,7 @@
 
 An [`Effect`](https://effect.website/docs/introduction) library that produces the string representation of any value, in Node or the browser. Similar to util.inspect but with plenty of extra options: **treeifying, coloring, sorting, choosing what to display and how to display it...**. It supports natively Effect iterables like HashMap, HashSet,...
 
-Non-recursive, tested and documented, 100% Typescript, 100% functional, 100% parametrizable.
+Non-recursive, tested and documented, optimized for tree-shaking, 100% Typescript, 100% functional, 100% parametrizable.
 
 Can also be used by non-Effect users.
 
@@ -35,9 +35,21 @@ Depending on the package manager you use, run one of the following commands in y
   yarn add effect @parischap/effect-lib @parischap/ansi-styles @parischap/pretty-print
   ```
 
-We use three peerDependencies. If you are not an `Effect` user, the size may seem important. But, in fact, we use little of each peerDependency. Bundled and tree-shaken, it's only about [30kB](https://bundlephobia.com/package/@parischap/pretty-print). Minified and gzipped, it falls to [7kB](https://bundlephobia.com/package/@parischap/pretty-print)! (source bundlephobia)
+This is a modern library optimized for tree-shaking. Don't put too much focus on bundle size: most of it will go away at bundling. For example, this package contains cjs versions out of historical reasons. So if you don't use cjs, the size will be highly reduced.
 
-This is a modern tree-shakable library: keep in mind that your bundler will tree-shake all which you don't use. For example, this package comes in esm and cjs versions, with Typescript typings. So if you don't use cjs, the size will be highly reduced.
+This library supports named imports:
+
+```ts
+import { PPStringifiedValue } from "@parischap/pretty-print";
+```
+
+and default imports:
+
+```ts
+import * as PPStringifiedValue from "@parischap/pretty-print/PPStringifiedValue";
+```
+
+In this documentation, we'll use the first option. But if you value tree-shaking, you should use the second.
 
 ## API
 
