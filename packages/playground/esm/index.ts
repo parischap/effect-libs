@@ -1,66 +1,18 @@
 #!/usr/bin/env node
-import * as MTypes from '@parischap/effect-lib/MTypes';
-import { flow } from 'effect';
-import * as Array from 'effect/Array';
-import * as Option from 'effect/Option';
-/**
- * Type of an ANSI string
- *
- * @category Models
- */
-export type Type = string;
-
-/**
- * Type that represents the sequence of a command string (the numbers separated by a semicolon
- * between `\x1b[` and `m`, e.g. [1,31] for bold red)
- *
- * @category Models
- */
-export interface Sequence extends ReadonlyArray<number> {}
-
-/**
- * Same as Sequence but must constain at least one number
- *
- * @category Models
- */
-export interface NonEmptySequence extends MTypes.ReadonlyOverOne<number> {}
-
-/**
- * Builds an AnsiString from a NonEmptySequence
- *
- * @category Constructors
- */
-export const fromNonEmptySequence: MTypes.OneArgFunction<NonEmptySequence, string> = flow(
-	Array.map((s) => `${s}`),
-	Array.join(';'),
-	(s) => '\x1b[' + s,
-	(s) => s + 'm'
-);
-
-/**
- * Builds an AnsiString from a Sequence
- *
- * @category Constructors
- */
-export const fromSequence: MTypes.OneArgFunction<Sequence, string> = flow(
-	Option.liftPredicate(MTypes.isReadonlyOverOne),
-	Option.map(fromNonEmptySequence),
-	Option.getOrElse(() => '')
-);
-
-/**
- * Empty AnsiString instance
- *
- * @category Instances
- */
-export const empty: Type = '';
-
-/**
- * Reset AnsiString instance
- *
- * @category Instances
- */
-export const reset: Type = fromNonEmptySequence(Array.of(0));
-
 /* eslint-disable functional/no-expression-statements */
-console.log(fromNonEmptySequence([3, 4]));
+import { ASStyle } from '@parischap/ansi-styles';
+
+console.log(
+	ASStyle.red(
+		'ansi-styles is an ',
+		ASStyle.bold(
+			'Effect library ',
+			ASStyle.magenta(
+				ASStyle.dim('for terminal output styling with '),
+				ASStyle.yellow('ANSI '),
+				'colors '
+			)
+		),
+		'and formats.'
+	)
+);

@@ -118,8 +118,8 @@ importers:
   packages/ansi-styles/dist:
     dependencies:
       '@parischap/effect-lib':
-        specifier: ^0.8.0
-        version: 0.8.0(effect@3.17.13)
+        specifier: ^0.11.0
+        version: 0.11.0(effect@3.17.13)
       effect:
         specifier: ^3.17.13
         version: 3.17.13
@@ -218,11 +218,11 @@ importers:
         specifier: ^0.54.6
         version: 0.54.6(@effect/platform@0.90.9(effect@3.17.13))(effect@3.17.13)
       '@parischap/ansi-styles':
-        specifier: ^0.2.4
-        version: 0.2.4(@parischap/effect-lib@0.10.0(effect@3.17.13))(effect@3.17.13)
+        specifier: workspace:@parischap-dev/ansi-styles@*
+        version: link:../ansi-styles
       '@parischap/effect-lib':
-        specifier: ^0.10.0
-        version: 0.10.0(effect@3.17.13)
+        specifier: ^0.11.0
+        version: 0.11.0(effect@3.17.13)
       effect:
         specifier: ^3.17.13
         version: 3.17.13
@@ -850,8 +850,8 @@ packages:
     resolution: {integrity: sha512-ugyu2t1nZwaQhtTA2zd67LdT16QgLnx3Ep1ia72oXZMAA/da+6xSkUlaVmM3mHAvhOSi48dzGiZn3acwPIWyLg==}
     hasBin: true
 
-  '@parischap/effect-lib@0.10.0':
-    resolution: {integrity: sha512-MJ7skKFKcZj4BAx/HEQj/nd1+VDHJO9+7RfMUAXLwD7xvhh6ePrw35hE3yzZ7o3AAH9N73JF6dn1PzOcwZqkuw==}
+  '@parischap/effect-lib@0.11.0':
+    resolution: {integrity: sha512-s+m48EgGjqOxc1qRpNru6E62Hcbdc8rdNcH8SRHDS9tureE3ngm7Tci1qlPdlxhSwUGuCME+xJGkev2lqQxSIw==}
     peerDependencies:
       effect: ^3.17.13
 
@@ -3453,11 +3453,6 @@ snapshots:
       '@parcel/watcher-win32-ia32': 2.5.1
       '@parcel/watcher-win32-x64': 2.5.1
 
-  '@parischap/ansi-styles@0.2.4(@parischap/effect-lib@0.10.0(effect@3.17.13))(effect@3.17.13)':
-    dependencies:
-      '@parischap/effect-lib': 0.10.0(effect@3.17.13)
-      effect: 3.17.13
-
   '@parischap/ansi-styles@0.2.4(@parischap/effect-lib@0.8.0(effect@3.17.13))(effect@3.17.13)':
     dependencies:
       '@parischap/effect-lib': 0.8.0(effect@3.17.13)
@@ -3465,7 +3460,7 @@ snapshots:
 
   '@parischap/configs@1.38.0': {}
 
-  '@parischap/effect-lib@0.10.0(effect@3.17.13)':
+  '@parischap/effect-lib@0.11.0(effect@3.17.13)':
     dependencies:
       effect: 3.17.13
 
