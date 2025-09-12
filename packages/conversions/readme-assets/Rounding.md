@@ -2,7 +2,7 @@
 
 # CVRoundingOption
 
-A module to round numbers and BigDecimal's with the same rounding options as those offered by the javascript INTL namespace: Ceil, Floor, Expand, Trunc, HalfCeil...
+A module to round numbers and [BigDecimal](https://effect.website/docs/data-types/bigdecimal/)'s with the same rounding options as those offered by the javascript INTL namespace: Ceil, Floor, Expand, Trunc, HalfCeil...
 
 </div>
 
