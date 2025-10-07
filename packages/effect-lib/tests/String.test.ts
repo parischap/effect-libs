@@ -3,28 +3,31 @@ import { MString } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
 import { Array, pipe, String, Struct } from 'effect';
 import { describe, it } from 'vitest';
-import { SearchResult } from '../esm/String.js';
 
 describe('MString', () => {
 	it('moduleTag', () => {
 		TEUtils.assertSome(TEUtils.moduleTagFromTestFilePath(__filename), MString.moduleTag);
 	});
 
-	describe('SearchResult', () => {
-		const testSearchResult = SearchResult.make({ startIndex: 3, endIndex: 6, match: 'foo' });
+	describe('MString.SearchResult', () => {
+		const testSearchResult = MString.SearchResult.make({
+			startIndex: 3,
+			endIndex: 6,
+			match: 'foo'
+		});
 
 		describe('Tag, prototype and guards', () => {
 			describe('Equal.equals', () => {
 				it('Matching', () => {
 					TEUtils.assertEquals(
 						testSearchResult,
-						SearchResult.make({ startIndex: 3, endIndex: 6, match: 'foo' })
+						MString.SearchResult.make({ startIndex: 3, endIndex: 6, match: 'foo' })
 					);
 				});
 				it('Non matching', () => {
 					TEUtils.assertNotEquals(
 						testSearchResult,
-						SearchResult.make({ startIndex: 3, endIndex: 6, match: 'baz' })
+						MString.SearchResult.make({ startIndex: 3, endIndex: 6, match: 'baz' })
 					);
 				});
 			});
@@ -59,14 +62,14 @@ describe('MString', () => {
 			TEUtils.strictEqual(
 				MString.SearchResult.byLongestFirst(
 					testSearchResult,
-					SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' })
+					MString.SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' })
 				),
 				-1
 			);
 			TEUtils.strictEqual(
 				MString.SearchResult.byLongestFirst(
 					testSearchResult,
-					SearchResult.make({ startIndex: 3, endIndex: 7, match: 'foo1' })
+					MString.SearchResult.make({ startIndex: 3, endIndex: 7, match: 'foo1' })
 				),
 				1
 			);
