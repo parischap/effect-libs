@@ -23,7 +23,7 @@ describe('MTuple', () => {
 	describe('makeBothBy', () => {
 		it('From number', () => {
 			TEUtils.deepStrictEqual(
-				MTuple.makeBothBy({ toFirst: Number.sum(1), toSecond: Number.multiply(2) })(1),
+				pipe(1, MTuple.makeBothBy({ toFirst: Number.sum(1), toSecond: Number.multiply(2) })),
 				Tuple.make(2, 2)
 			);
 		});
