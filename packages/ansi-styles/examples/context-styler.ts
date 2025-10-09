@@ -1,4 +1,3 @@
-/* eslint-disable functional/no-expression-statements */
 import { ASContextStyler, ASPalette } from '@parischap/ansi-styles';
 
 interface Value {

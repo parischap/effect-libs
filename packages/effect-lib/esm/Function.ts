@@ -77,6 +77,7 @@ export const name = (f: MTypes.AnyFunction): string => f.name;
  */
 
 export const once = <A>(f: Function.LazyArg<A>): Function.LazyArg<A> => {
+	/* eslint-disable-next-line functional/no-let */
 	let store = Option.none<A>();
 	const cached: Function.LazyArg<A> = () =>
 		pipe(

@@ -18,7 +18,8 @@ import * as MOption from './Option.js';
 import * as MTypes from './types.js';
 
 /**
- * Returns true if the length of `self` is `l`
+ * https://typescript-eslint.io/rules/no-unnecessary-type-parameters Returns true if the length of
+ * `self` is `l`
  *
  * @category Predicates
  */
@@ -137,10 +138,10 @@ export const longestCommonSubArray =
 export const extractFirst: {
 	<A, B extends A>(
 		refinement: (a: NoInfer<A>, i: number) => a is B
-	): (self: ReadonlyArray<A>) => MTypes.Pair<Option.Option<B>, MTypes.MutableArray<A>>;
+	): (self: ReadonlyArray<A>) => MTypes.Pair<Option.Option<B>, Array<A>>;
 	<A>(
 		predicate: (a: NoInfer<A>, i: number) => boolean
-	): (self: ReadonlyArray<A>) => MTypes.Pair<Option.Option<A>, MTypes.MutableArray<A>>;
+	): (self: ReadonlyArray<A>) => MTypes.Pair<Option.Option<A>, Array<A>>;
 } =
 	<A>(predicate: (a: NoInfer<A>, i: number) => boolean) =>
 	(self: ReadonlyArray<A>): [match: Option.Option<A>, remaining: Array<A>] =>
@@ -226,10 +227,11 @@ export const groupByNum =
 	}) =>
 	(self: ReadonlyArray<A>): ReadonlyArray<ReadonlyArray<B>> => {
 		const out = Array.makeBy(size, () => Array.empty<B>());
+		/* eslint-disable-next-line functional/no-loop-statements, functional/no-let */
 		for (let i = 0; i < self.length; i++) {
 			const a = self[i] as A;
 			const key = fKey(a);
-			/* eslint-disable-next-line functional/immutable-data,functional/no-expression-statements,functional/prefer-readonly-type */
+			/* eslint-disable-next-line functional/immutable-data,functional/no-expression-statements */
 			if (key >= 0 && key < size) (out[key] as Array<B>).push(fValue(a));
 		}
 		return out;
@@ -402,7 +404,7 @@ export const splitAtFromRight =
  */
 export const splitNonEmptyAtFromRight =
 	(n: number) =>
-	<A>(self: MTypes.OverOne<A>): [beforeIndex: Array<A>, fromIndex: MTypes.OverOne<A>] =>
+	<A>(self: MTypes.ReadonlyOverOne<A>): [beforeIndex: Array<A>, fromIndex: MTypes.OverOne<A>] =>
 		pipe(self, splitAtFromRight(n)) as never;
 
 /**
@@ -532,9 +534,7 @@ export const differenceSorted =
 								)
 						}),
 					onNone: () =>
-						Option.none<
-							MTypes.Pair<MTypes.MutableArray<A>, MTypes.Pair<Option.Option<A>, Option.Option<A>>>
-						>()
+						Option.none<MTypes.Pair<Array<A>, MTypes.Pair<Option.Option<A>, Option.Option<A>>>>()
 				})
 			),
 			Array.flatten

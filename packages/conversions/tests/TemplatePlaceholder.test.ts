@@ -1,6 +1,6 @@
 /* eslint-disable functional/no-expression-statements */
 import { CVNumberBase10Format, CVReal, CVTemplatePlaceholder } from '@parischap/conversions';
-import { MRegExpString, MString, MTypes } from '@parischap/effect-lib';
+import { MRegExpString, MString } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
 import { Schema, Tuple } from 'effect';
 import { describe, it } from 'vitest';
@@ -8,11 +8,11 @@ import { describe, it } from 'vitest';
 describe('CVTemplatePlaceholder', () => {
 	const threeChars = CVTemplatePlaceholder.fixedLength({ name: 'foo', length: 3 });
 
-	MTypes.areEqualTypes<
+	TEUtils.areEqualTypes<
 		CVTemplatePlaceholder.ExtractName<typeof threeChars>,
 		'foo'
 	>() satisfies true;
-	MTypes.areEqualTypes<
+	TEUtils.areEqualTypes<
 		CVTemplatePlaceholder.ExtractType<typeof threeChars>,
 		string
 	>() satisfies true;

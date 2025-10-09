@@ -1,4 +1,3 @@
-/* eslint-disable functional/no-expression-statements */
 import { MArray, MPredicate, MTuple } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
 import {

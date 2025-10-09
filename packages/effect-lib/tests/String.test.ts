@@ -1,4 +1,3 @@
-/* eslint-disable functional/no-expression-statements */
 import { MString } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
 import { Array, pipe, String, Struct } from 'effect';
@@ -94,7 +93,7 @@ describe('MString', () => {
 		});
 
 		it('+Infinity', () => {
-			TEUtils.strictEqual(MString.fromPrimitive(+Infinity), 'Infinity');
+			TEUtils.strictEqual(MString.fromPrimitive(Infinity), 'Infinity');
 		});
 
 		it('-Infinity', () => {

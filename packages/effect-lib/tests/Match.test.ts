@@ -1,4 +1,3 @@
-/* eslint-disable functional/no-expression-statements */
 import { MMatch, MPredicate, MTypes } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
 import { Array, flow, Function, Number, pipe, Struct } from 'effect';

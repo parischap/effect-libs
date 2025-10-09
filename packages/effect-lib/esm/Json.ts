@@ -8,7 +8,10 @@ import * as MPortError from './PortError.js';
  *
  * @category Utils
  */
-export const stringify = (value: unknown, replacer?: Parameters<typeof JSON.stringify>[1]) =>
+export const stringify = (
+	value: unknown,
+	replacer?: (this: unknown, key: string, value: unknown) => unknown
+) =>
 	Effect.try({
 		try: () => JSON.stringify(value, replacer),
 		catch: (e) =>

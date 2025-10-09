@@ -1,7 +1,0 @@
-{
-	"extends": "./tsconfig.esm.json",
-	"compilerOptions": {
-		"noEmit": true,
-		"tsBuildInfoFile": ".tsbuildinfo/check.tsbuildinfo"
-	}
-}

@@ -1,4 +1,3 @@
-/* eslint-disable functional/no-expression-statements */
 import { MNumber } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
 import { BigDecimal, pipe } from 'effect';
@@ -186,7 +185,7 @@ describe('MNumber', () => {
 		});
 
 		it('+0', () => {
-			TEUtils.strictEqual(MNumber.sign2(+0), 1);
+			TEUtils.strictEqual(MNumber.sign2(0), 1);
 		});
 
 		it('0', () => {

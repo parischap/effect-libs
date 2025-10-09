@@ -86,7 +86,7 @@ const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto
  * @category Constructors
  */
 export const make = (...styles: ASStyles.Type): Type => _make({ styles });
-const _tupledMake = Function.tupled(make);
+const _tupledMake = Function.tupled<ASStyles.Type, Type>(make);
 
 /**
  * Gets the id of `self`

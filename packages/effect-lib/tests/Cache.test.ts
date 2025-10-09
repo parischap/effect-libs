@@ -1,4 +1,3 @@
-/* eslint-disable functional/no-expression-statements */
 import { MCache, MTypes } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
 import { Array, Order, Record, Tuple, pipe } from 'effect';
@@ -106,6 +105,7 @@ describe('MCache', () => {
 	});
 
 	describe('Non-recursive cache with capacity=3 and TTL=0', () => {
+		/* eslint-disable-next-line functional/no-let */
 		let state = 0;
 		const testCache = MCache.make<number, number>({
 			lookUp: ({ key }: { readonly key: number }) => Tuple.make(key * 2 + state++, key !== 8),
@@ -168,7 +168,6 @@ describe('MCache', () => {
 
 	describe('Recursive cache with capacity=2 and no TTL', () => {
 		interface RecursiveStructure {
-			/* eslint-disable-next-line functional/prefer-readonly-type */
 			[key: string]: string | RecursiveStructure;
 		}
 
@@ -195,7 +194,9 @@ describe('MCache', () => {
 
 		it('Without circularity', () => {
 			const z1: RecursiveStructure = { a: 'a', b: 'b', c: 'c' };
+
 			const z2: RecursiveStructure = { a: z1, d: 'd', c: z1 };
+
 			const z3: RecursiveStructure = { a: z1, b: z2, e: 'e' };
 			const value1 = pipe(testCache, MCache.get(z3));
 
@@ -207,9 +208,11 @@ describe('MCache', () => {
 
 		it('With circularity', () => {
 			const z1: RecursiveStructure = { a: 'a', b: 'b', c: 'c' };
+
 			const z2: RecursiveStructure = { a: z1, d: 'd', c: z1 };
+
 			const z3: RecursiveStructure = { a: z1, b: z2, e: 'e' };
-			/* eslint-disable-next-line functional/immutable-data */
+			/* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements*/
 			z2['c'] = z3;
 			const value1 = pipe(testCache, MCache.get(z3));
 			TEUtils.strictEqual(value1, 'abcabcdCirculare');

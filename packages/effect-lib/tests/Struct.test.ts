@@ -1,26 +1,26 @@
 /* eslint-disable functional/no-expression-statements */
-import { MStruct, MTypes } from '@parischap/effect-lib';
+import { MStruct } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
 import { flow, Number, pipe, Struct } from 'effect';
 import { describe, it } from 'vitest';
 
 /** Append */
-MTypes.areEqualTypes<
+TEUtils.areEqualTypes<
 	MStruct.Append<{ readonly a: boolean }, { readonly b: number }>,
 	{ readonly a: boolean; readonly b: number }
 >() satisfies true;
 
-MTypes.areEqualTypes<
+TEUtils.areEqualTypes<
 	MStruct.Append<{ readonly a: boolean; readonly b: boolean }, { readonly b: number }>,
 	{ readonly a: boolean; readonly b: number }
 >() satisfies true;
 
-MTypes.areEqualTypes<
+TEUtils.areEqualTypes<
 	MStruct.Append<{ readonly a: boolean; readonly b: boolean }, { readonly b?: number }>,
 	{ readonly a: boolean; readonly b: number | boolean }
 >() satisfies true;
 
-MTypes.areEqualTypes<
+TEUtils.areEqualTypes<
 	MStruct.Append<{ readonly a: boolean; readonly b: number }, { readonly b?: number }>,
 	{ readonly a: boolean; readonly b: number }
 >() satisfies true;

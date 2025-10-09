@@ -30,18 +30,10 @@ export interface AnyArray extends Array<any> {}
 export interface AnyReadonlyArray extends ReadonlyArray<any> {}
 
 /**
- * Type used to avoid warnings by eslint/functional when functions return a mutable array
- *
- * @category Models
- */
-export interface MutableArray<T> extends Array<T> {}
-
-/**
  * Type that represents an empty array or tuple
  *
  * @category Models
  */
-/* eslint-disable-next-line functional/prefer-readonly-type */
 export type EmptyArray = [];
 
 /**
@@ -56,7 +48,6 @@ export type EmptyReadonlyArray = readonly [];
  *
  * @category Models
  */
-/* eslint-disable-next-line functional/prefer-readonly-type */
 export type Singleton<A> = [A];
 
 /**
@@ -71,7 +62,6 @@ export type ReadonlySingleton<A> = readonly [A];
  *
  * @category Models
  */
-/* eslint-disable-next-line functional/prefer-readonly-type */
 export type Pair<A, B> = [A, B];
 
 /**
@@ -86,8 +76,6 @@ export type ReadonlyPair<A, B> = readonly [A, B];
  *
  * @category Models
  */
-
-/* eslint-disable-next-line functional/prefer-readonly-type */
 export type OverOne<A> = [A, ...Array<A>];
 
 /**
@@ -102,7 +90,6 @@ export type ReadonlyOverOne<A> = readonly [A, ...ReadonlyArray<A>];
  *
  * @category Models
  */
-/* eslint-disable-next-line functional/prefer-readonly-type */
 export type OverTwo<A> = [A, A, ...Array<A>];
 
 /**
@@ -225,25 +212,8 @@ export interface NumberFromString extends OneArgFunction<string, number> {}
  */
 export interface NumberToString extends OneArgFunction<number, string> {}
 
-/* eslint-disable-next-line functional/prefer-readonly-type */
 type Enumerate<N extends number, Acc extends Array<number> = []> =
-	/* eslint-disable-next-line functional/prefer-readonly-type */
 	[Acc['length']] extends [N] ? Acc[number] : Enumerate<N, [...Acc, Acc['length']]>;
-
-/**
- * Function that returns a `true` type the two type parameters are equal. Returns a `false` type
- * otherwise
- *
- * @category Utils
- */
-
-export function areEqualTypes<A, B>(): readonly [A] extends readonly [B] ?
-	readonly [B] extends readonly [A] ?
-		true
-	:	false
-:	false {
-	return true as never;
-}
 
 /**
  * Utility type that returns removes from Array type all keys not representing an array index
@@ -257,13 +227,11 @@ export type ArrayKeys<A extends AnyReadonlyArray> = Omit<A, keyof ReadonlyArray<
  *
  * @category Utility types
  */
-/* eslint-disable functional/prefer-readonly-type */
 export type WithMutable<X, field extends string | symbol> = {
 	readonly [k in keyof X as readonly [k] extends readonly [field] ? never : k]: X[k];
 } & {
 	-readonly [k in keyof X as readonly [k] extends readonly [field] ? k : never]: X[k];
 };
-/* eslint-enable functional/prefer-readonly-type */
 
 /**
  * Utility type that makes field `field` of target type `X` required
@@ -411,7 +379,7 @@ export const isArray = <T>(arg: T): arg is ArrayType<T> => Array.isArray(arg);
 type ArrayType<T> = Extract<
 	true extends T & false ? AnyArray
 	: T extends AnyReadonlyArray ? T
-	: /* eslint-disable functional/prefer-readonly-type */ Array<unknown> /* eslint-enable functional/prefer-readonly-type */,
+	: Array<unknown>,
 	T
 >;
 
@@ -530,7 +498,6 @@ export const isOneArgFunction = <A, R>(
  *
  * @category Guards
  */
-/* eslint-disable-next-line functional/prefer-readonly-type */
 export const isEmptyArray = <A>(u: Array<A>): u is EmptyArray => u.length === 0;
 
 /**
@@ -546,7 +513,6 @@ export const isEmptyReadonlyArray = <A>(u: ReadonlyArray<A>): u is EmptyReadonly
  *
  * @category Guards
  */
-/* eslint-disable-next-line functional/prefer-readonly-type */
 export const isOverOne = <A>(u: Array<A>): u is OverOne<A> => u.length >= 1;
 
 /**
@@ -561,7 +527,6 @@ export const isReadonlyOverOne = <A>(u: ReadonlyArray<A>): u is ReadonlyOverOne<
  *
  * @category Guards
  */
-/* eslint-disable-next-line functional/prefer-readonly-type */
 export const isOverTwo = <A>(u: Array<A>): u is OverTwo<A> => u.length >= 2;
 
 /**
@@ -576,7 +541,6 @@ export const isReadonlyOverTwo = <A>(u: ReadonlyArray<A>): u is ReadonlyOverTwo<
  *
  * @category Guards
  */
-/* eslint-disable-next-line functional/prefer-readonly-type */
 export const isSingleton = <A>(u: Array<A>): u is Singleton<A> => u.length === 1;
 
 /**
@@ -592,7 +556,6 @@ export const isReadonlySingleton = <A>(u: ReadonlyArray<A>): u is ReadonlySingle
  *
  * @category Guards
  */
-/* eslint-disable-next-line functional/prefer-readonly-type */
 export const isPair = <A>(u: Array<A>): u is Pair<A, A> => u.length === 2;
 
 /**

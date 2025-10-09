@@ -1,4 +1,3 @@
-/* eslint-disable functional/no-expression-statements */
 import { MTuple } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
 import { Array, Number, pipe, Tuple } from 'effect';

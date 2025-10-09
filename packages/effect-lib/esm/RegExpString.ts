@@ -42,7 +42,7 @@ export const oneOrMore: MTypes.StringTransformer = (self) => `(?:${self})+`;
 export const repeatBetween =
 	(low: number, high: number): MTypes.OneArgFunction<string> =>
 	(self) =>
-		`(?:${self}){${low},${high === +Infinity ? '' : high}}`;
+		`(?:${self}){${low},${high === Infinity ? '' : high}}`;
 
 /**
  * Returns a new regular expression string where `self` is optional
@@ -88,7 +88,7 @@ export const range = (args: ReadonlyArray<string>): string =>
  *
  * @category Utils
  */
-export const notInRange = (args: MTypes.OverOne<string>): string => `[^${args.join('')}]`;
+export const notInRange = (args: MTypes.ReadonlyOverOne<string>): string => `[^${args.join('')}]`;
 
 /**
  * Returns a new regular expression string where `self` must fill a whole line
@@ -272,7 +272,7 @@ const _digitGroup: string = repeatBetween(DIGIT_GROUP_SIZE, DIGIT_GROUP_SIZE)(di
 // A regular expression representing an unsigned non-null integer in base 10 to (10^(n+1))-1 without thousand separator
 const _unsignedNonNullIntNPlusOneDigits = (n: number) => nonZeroDigit + repeatBetween(0, n)(digit);
 // A regular expression representing an unsigned non-null integer in base 10 without thousand separator
-const _unsignedNonNullInt = _unsignedNonNullIntNPlusOneDigits(+Infinity);
+const _unsignedNonNullInt = _unsignedNonNullIntNPlusOneDigits(Infinity);
 // A regular expression representing an unsigned non-null integer in base 10 to 999 without thousand separator
 const _unsignedNonNullIntTo999 = _unsignedNonNullIntNPlusOneDigits(2);
 
@@ -301,7 +301,7 @@ const _signPart = pipe(sign, capture, optional);
 // Regular expression string representing the captured exponent of a number
 const _expPart = pipe(sign, optional, String.concat(unsignedBase10Int('')), capture);
 // Regular expression string representing the captured fractional part of a floating-point number
-const _fractionalPart = repeatBetween(0, +Infinity)(digit);
+const _fractionalPart = repeatBetween(0, Infinity)(digit);
 
 /**
  * Returns a regular expression string representing a number in base 10 using `thousandSeparator` as

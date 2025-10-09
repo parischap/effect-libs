@@ -7,7 +7,7 @@ export default Configs.configSubRepo({
 	},
 	internalPeerDependencies: {},
 	externalPeerDependencies: {
-		effect: Configs.constants.effectVersion
+		effect: '^3.18.1'
 	},
 	examples: [],
 	scripts: { },

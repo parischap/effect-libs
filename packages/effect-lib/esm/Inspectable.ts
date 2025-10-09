@@ -44,7 +44,7 @@ export const BaseProto = (moduleTag: string): Inspectable.Inspectable => ({
 	 * If the object (usually its prototype) has an `[IdSymbol]` function, returns the result of this
 	 * function. Otherwise, returns this with an extra '_id' field containing the moduleTag.
 	 */
-	toJSON(this: {}): unknown {
+	toJSON(this: object): unknown {
 		return pipe(
 			this,
 			MRecord.tryZeroParamStringFunction({
@@ -57,7 +57,7 @@ export const BaseProto = (moduleTag: string): Inspectable.Inspectable => ({
 	 * If the object (usually its prototype) has an `[IdSymbol]` function, returns the result of this
 	 * function. Otherwise, calls the Inspectable.toString function
 	 */
-	toString(this: {}): string {
+	toString(this: object): string {
 		return pipe(
 			this,
 			MRecord.tryZeroParamStringFunction({

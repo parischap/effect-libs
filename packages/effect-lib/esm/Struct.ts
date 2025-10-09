@@ -88,8 +88,7 @@ export const make =
 export const enrichWith =
 	<
 		O extends MTypes.NonPrimitive,
-		/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-		O1 extends Record<string | symbol, MTypes.OneArgFunction<O, any>>
+		O1 extends Record.ReadonlyRecord<string, MTypes.OneArgFunction<O, unknown>>
 	>(
 		fields: O1
 	) =>
@@ -105,8 +104,7 @@ export const enrichWith =
 export const mutableEnrichWith =
 	<
 		O extends MTypes.NonPrimitive,
-		/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-		O1 extends Record<string | symbol, MTypes.OneArgFunction<O, any>>
+		O1 extends Record.ReadonlyRecord<string, MTypes.OneArgFunction<O, unknown>>
 	>(
 		fields: O1
 	) =>

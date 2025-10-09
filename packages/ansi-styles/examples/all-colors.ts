@@ -1,4 +1,3 @@
-/* eslint-disable functional/no-expression-statements */
 import { ASColor, ASStyle } from '@parischap/ansi-styles';
 
 console.log(ASStyle.color(ASColor.rgbCoral)('I am a coral string'));

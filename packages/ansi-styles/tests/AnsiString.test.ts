@@ -1,4 +1,3 @@
-/* eslint-disable functional/no-expression-statements */
 import { ASAnsiString } from '@parischap/ansi-styles';
 import { TEUtils } from '@parischap/test-utils';
 import { Array } from 'effect';

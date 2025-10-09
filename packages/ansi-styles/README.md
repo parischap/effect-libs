@@ -45,12 +45,16 @@ This library supports named imports:
 
 ```ts
 import { ASStyle } from "@parischap/ansi-styles";
+
+console.log(ASStyle.red("foo"));
 ```
 
 and default imports:
 
 ```ts
 import * as ASStyle from "@parischap/ansi-styles/ASStyle";
+
+console.log(ASStyle.red("foo"));
 ```
 
 In this documentation, we'll use the first option. But if you value tree-shaking, you should use the second.

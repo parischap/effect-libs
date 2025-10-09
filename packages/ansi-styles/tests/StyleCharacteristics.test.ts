@@ -1,4 +1,3 @@
-/* eslint-disable functional/no-expression-statements */
 import { ASColor, ASStyleCharacteristics } from '@parischap/ansi-styles';
 import { TEUtils } from '@parischap/test-utils';
 import { pipe } from 'effect';

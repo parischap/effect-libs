@@ -1,4 +1,3 @@
-/* eslint-disable functional/no-expression-statements */
 import { MRecord, MTypes } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
 import { Option, pipe } from 'effect';

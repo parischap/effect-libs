@@ -5,11 +5,11 @@ export default Configs.configSubRepo({
 	dependencies: {},
 	devDependencies: {},
 	internalPeerDependencies: {
-		'effect-lib': Configs.constants.effectLibVersion,
-		'ansi-styles': Configs.constants.ansiStylesVersion
+		'effect-lib': '^0.11.0',
+		'ansi-styles': '^0.2.6'
 	},
 	externalPeerDependencies: {
-		effect: Configs.constants.effectVersion
+		effect: '^3.18.1'
 	},
 	examples: [
 		'util-inspect-like.ts',

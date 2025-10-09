@@ -5,9 +5,9 @@ export default Configs.configSubRepo({
 	environment: Configs.Environment.Type.Library,
 	dependencies: {},
 	devDependencies: {},
-	internalPeerDependencies: { 'effect-lib': Configs.constants.effectLibVersion },
+	internalPeerDependencies: { 'effect-lib': '^0.11.0' },
 	externalPeerDependencies: {
-		effect: Configs.constants.effectVersion
+		effect: '^3.18.1'
 	},
 	examples: [
 		'perf.ts',

@@ -1,4 +1,3 @@
-/* eslint-disable functional/no-expression-statements */
 import { MFunction } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
 import { Number, pipe, String } from 'effect';
@@ -37,6 +36,7 @@ describe('MFunction', () => {
 	});
 
 	it('once', () => {
+		/* eslint-disable-next-line functional/no-let */
 		let a = 0;
 		const complexFoo = () => a++;
 		const memoized = MFunction.once(complexFoo);

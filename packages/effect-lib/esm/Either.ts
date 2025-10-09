@@ -36,7 +36,7 @@ export const flatten: <R, L1, L2>(
  *
  * @category Utils
  */
-export const getRightWhenNoLeft = <A>(self: Either.Either<A, never>): A =>
+export const getRightWhenNoLeft = <A>(self: Either.Either<A>): A =>
 	(self as Either.Right<never, A>).right;
 
 /**

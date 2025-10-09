@@ -1,4 +1,3 @@
-/* eslint-disable functional/no-expression-statements */
 import { MBigDecimal } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
 import { BigDecimal, pipe } from 'effect';

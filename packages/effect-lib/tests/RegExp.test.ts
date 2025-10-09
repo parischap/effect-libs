@@ -1,4 +1,3 @@
-/* eslint-disable functional/no-expression-statements */
 import { MRegExp } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
 import { pipe, Tuple } from 'effect';

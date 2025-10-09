@@ -12,7 +12,7 @@ import * as ASStyle from './Style.js';
  *
  * @category Models
  */
-export type Type = MTypes.OverTwo<ASStyle.Type>;
+export type Type = MTypes.ReadonlyOverTwo<ASStyle.Type>;
 
 /**
  * Gets the id of `self`

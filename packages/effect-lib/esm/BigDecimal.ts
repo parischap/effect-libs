@@ -4,7 +4,9 @@ import { BigDecimal, Brand, Either, flow, Function, Option, pipe, Tuple } from '
 import * as MBigInt from './BigInt.js';
 import * as MTypes from './types.js';
 
-const _tupledMake = Function.tupled(BigDecimal.make);
+const _tupledMake = Function.tupled<readonly [value: bigint, scale: number], BigDecimal.BigDecimal>(
+	BigDecimal.make
+);
 
 /**
  * Function that creates a Bigdecimal from a scale and a primitive representing a bigint

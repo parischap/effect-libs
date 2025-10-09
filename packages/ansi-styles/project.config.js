@@ -4,9 +4,9 @@ export default Configs.configSubRepo({
 	description: 'A functional library to style your strings in terminals',
 	dependencies: {},
 	devDependencies: {},
-	internalPeerDependencies: { 'effect-lib': Configs.constants.effectLibVersion },
+	internalPeerDependencies: { 'effect-lib': '^0.11.0' },
 	externalPeerDependencies: {
-		effect: Configs.constants.effectVersion
+		effect: '^3.18.1'
 	},
 	examples: ['basic-usage.ts', 'cancelling-a-style.ts', 'simple-colors.ts', 'all-colors.ts'],
 	scripts: {},

@@ -1,4 +1,3 @@
-/* eslint-disable functional/no-expression-statements */
 import { ASContextStyler, ASPalette, ASStyle } from '@parischap/ansi-styles';
 import { TEUtils } from '@parischap/test-utils';
 import { describe, it } from 'vitest';

@@ -205,8 +205,8 @@ const _make = <A, B>(params: MTypes.Data<Type<A, B>>): Type<A, B> =>
  */
 export const make = <A, B>({
 	lookUp,
-	capacity = +Infinity,
-	lifeSpan = +Infinity
+	capacity = Infinity,
+	lifeSpan = Infinity
 }: {
 	readonly lookUp: LookUp<A, B>;
 	readonly capacity?: number;
@@ -287,7 +287,9 @@ export const get =
 							now - valueContainer.storeDate > lifeSpan
 						) {
 							if (hasBoundedCapacity) {
+								/* eslint-disable-next-line functional/no-let */
 								let head = MutableList.pop(keyListInOrder);
+								/* eslint-disable-next-line functional/no-loop-statements */
 								while (!Equal.equals(a, head)) {
 									/* eslint-disable-next-line functional/no-expression-statements */
 									MutableHashMap.remove(store, head);

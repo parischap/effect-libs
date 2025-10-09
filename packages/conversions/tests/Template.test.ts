@@ -63,7 +63,7 @@ describe('CVTemplate', () => {
 	describe('toParser', () => {
 		const parser = CVTemplate.toParser(template);
 
-		MTypes.areEqualTypes<
+		TEUtils.areEqualTypes<
 			typeof parser,
 			MTypes.OneArgFunction<
 				string,
@@ -122,7 +122,7 @@ describe('CVTemplate', () => {
 	describe('toFormatter', () => {
 		const formatter = CVTemplate.toFormatter(template);
 
-		MTypes.areEqualTypes<
+		TEUtils.areEqualTypes<
 			typeof formatter,
 			MTypes.OneArgFunction<
 				{

@@ -15,6 +15,7 @@ export type OptionOrNullable<A> = Option.Option<A> | null | undefined | A;
  *
  * @category Utils
  */
+
 export const fromOptionOrNullable = <A>(a: OptionOrNullable<A>): Option.Option<A> =>
 	Option.isOption(a) ? a : Option.fromNullable(a);
 

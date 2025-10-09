@@ -1,23 +1,22 @@
-/* eslint-disable functional/no-expression-statements */
-import { MPredicate, MTypes } from '@parischap/effect-lib';
+import { MPredicate } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
 import { pipe, Predicate } from 'effect';
 import { describe, it } from 'vitest';
 
 /** Source */
-MTypes.areEqualTypes<MPredicate.Source<Predicate.Predicate<number>>, number>() satisfies true;
-MTypes.areEqualTypes<MPredicate.Source<Predicate.Refinement<number, 5>>, number>() satisfies true;
+TEUtils.areEqualTypes<MPredicate.Source<Predicate.Predicate<number>>, number>() satisfies true;
+TEUtils.areEqualTypes<MPredicate.Source<Predicate.Refinement<number, 5>>, number>() satisfies true;
 
 /** Target */
-MTypes.areEqualTypes<MPredicate.Target<Predicate.Predicate<number>>, number>() satisfies true;
-MTypes.areEqualTypes<MPredicate.Target<Predicate.Refinement<number, 5>>, 5>() satisfies true;
+TEUtils.areEqualTypes<MPredicate.Target<Predicate.Predicate<number>>, number>() satisfies true;
+TEUtils.areEqualTypes<MPredicate.Target<Predicate.Refinement<number, 5>>, 5>() satisfies true;
 
 /** Coverage */
-MTypes.areEqualTypes<MPredicate.Coverage<Predicate.Predicate<number>>, never>() satisfies true;
-MTypes.areEqualTypes<MPredicate.Target<Predicate.Refinement<number, 5>>, 5>() satisfies true;
+TEUtils.areEqualTypes<MPredicate.Coverage<Predicate.Predicate<number>>, never>() satisfies true;
+TEUtils.areEqualTypes<MPredicate.Target<Predicate.Refinement<number, 5>>, 5>() satisfies true;
 
 /** PredicatesToSources */
-MTypes.areEqualTypes<
+TEUtils.areEqualTypes<
 	MPredicate.PredicatesToSources<
 		readonly [Predicate.Predicate<number>, Predicate.Refinement<boolean, true>]
 	>,
@@ -25,7 +24,7 @@ MTypes.areEqualTypes<
 >() satisfies true;
 
 /** PredicatesToTargets */
-MTypes.areEqualTypes<
+TEUtils.areEqualTypes<
 	MPredicate.PredicatesToTargets<
 		readonly [Predicate.Predicate<number>, Predicate.Refinement<boolean, true>]
 	>,
@@ -33,7 +32,7 @@ MTypes.areEqualTypes<
 >() satisfies true;
 
 /** PredicatesToCoverages */
-MTypes.areEqualTypes<
+TEUtils.areEqualTypes<
 	MPredicate.PredicatesToCoverages<
 		readonly [Predicate.Predicate<number>, Predicate.Refinement<boolean, true>]
 	>,
@@ -41,11 +40,11 @@ MTypes.areEqualTypes<
 >() satisfies true;
 
 /** SourcesToPredicates */
-MTypes.areEqualTypes<
+TEUtils.areEqualTypes<
 	MPredicate.SourcesToPredicates<readonly [number, boolean]>,
 	readonly [Predicate.Predicate<number>, Predicate.Predicate<boolean>]
 >() satisfies true;
-MTypes.areEqualTypes<
+TEUtils.areEqualTypes<
 	MPredicate.SourcesToPredicates<{ readonly a: number; readonly b: boolean }>,
 	{ readonly a: Predicate.Predicate<number>; readonly b: Predicate.Predicate<boolean> }
 >() satisfies true;

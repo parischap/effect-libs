@@ -4,10 +4,10 @@ export default Configs.configSubRepo({
 	description: 'A playground',
 	environment: Configs.Environment.Type.Node,
 	dependencies: {
-		effect: Configs.constants.effectVersion,
-		'@parischap/effect-lib': Configs.constants.effectLibVersion,
-		'@parischap/ansi-styles': Configs.constants.ansiStylesVersion
-		//'@parischap/conversions': Configs.constants.conversionsVersion
+		effect: '^3.18.1',
+		'@parischap/effect-lib': '^0.11.0',
+		'@parischap/ansi-styles': '^0.2.6'
+		//'@parischap/conversions': Configs.constants.'^0.8.0'
 	},
 	devDependencies: {},
 	internalPeerDependencies: {},

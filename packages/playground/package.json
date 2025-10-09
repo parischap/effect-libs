@@ -4,32 +4,31 @@
 	"author": "Jérôme MARTIN",
 	"license": "MIT",
 	"scripts": {
-		"tscheck": "tsc -b tsconfig.check.json --force",
+		"tscheck": "tsc -b tsconfig.json --force --noEmit",
 		"lint": "eslint .",
 		"lint-fix": "eslint . --fix",
 		"lint-rules": "pnpx @eslint/config-inspector",
 		"update-config-files": "update-config-files",
 		"clean-config-files": "shx rm -rf package.json && shx rm -rf tsconfig.json",
 		"bundle": "bundle-files",
-		"generate-types": "tsc -b tsconfig.esm.json --emitDeclarationOnly",
-		"compile": "pnpm bundle && pnpm prodify",
+		"compile": "pnpm bundle && pnpm prodify && tsc -b tsconfig.esm.json --emitDeclarationOnly --force",
 		"build-and-publish": "echo \"private package cannot be published\"",
 		"docgen": "echo \"docgen not activated for this package\"",
 		"circular": "madge --extensions ts --circular --no-color --no-spinner esm",
 		"checks": "pnpm circular && pnpm lint && pnpm tscheck && pnpm test",
 		"test": "vitest run",
-		"clean-prod": "shx rm -rf dist && shx rm -rf .tsbuildinfo && shx mkdir -p dist",
+		"clean-prod": "shx rm -rf dist && shx mkdir -p dist",
 		"publish-to-npm": "cd dist && npm publish --access=public && cd ..",
 		"install-prod": "cd dist && pnpm i && cd ..",
-		"build": "pnpm clean-prod && pnpm --if-present pre-build && pnpm compile && pnpm --if-present post-build && pnpm --if-present generate-types && pnpm install-prod",
+		"build": "pnpm clean-prod && pnpm --if-present pre-build && pnpm compile && pnpm --if-present post-build && pnpm install-prod",
 		"prodify": "prodify",
 		"examples": "vite-node examples/playground.ts"
 	},
 	"dependencies": {
-		"@effect/experimental": "^0.54.6",
-		"effect": "^3.17.13",
+		"@effect/experimental": "^0.56.0",
+		"effect": "^3.18.1",
 		"@parischap/effect-lib": "^0.11.0",
-		"@parischap/conversions": "^0.7.0"
+		"@parischap/ansi-styles": "^0.2.6"
 	},
 	"publishConfig": {
 		"exports": {

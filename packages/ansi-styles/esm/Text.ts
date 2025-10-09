@@ -159,7 +159,7 @@ namespace UniStyled {
 	 *
 	 * @category Constructors
 	 */
-	export const concat = (elems: MTypes.OverOne<Type>): Type =>
+	export const concat = (elems: MTypes.ReadonlyOverOne<Type>): Type =>
 		make({
 			text: pipe(elems, Array.map(text), Array.join('')),
 			style: pipe(elems, Array.headNonEmpty, style)
