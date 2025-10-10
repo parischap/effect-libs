@@ -1,4 +1,3 @@
-/* eslint-disable functional/no-expression-statements */
 import { CVReal } from '@parischap/conversions';
 import { TEUtils } from '@parischap/test-utils';
 import { BigDecimal } from 'effect';

@@ -1,4 +1,3 @@
-/* eslint-disable functional/no-expression-statements */
 import { PPOption, PPStringifiedValue } from '@parischap/pretty-print';
 import { pipe } from 'effect';
 

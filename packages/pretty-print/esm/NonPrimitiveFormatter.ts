@@ -10,7 +10,15 @@
  */
 
 import { ASText } from '@parischap/ansi-styles';
-import { MFunction, MInspectable, MMatch, MPipeable, MTuple, MTypes } from '@parischap/effect-lib';
+import {
+	MFunction,
+	MInspectable,
+	MMatch,
+	MPipeable,
+	MString,
+	MTuple,
+	MTypes
+} from '@parischap/effect-lib';
 import {
 	Array,
 	Equal,
@@ -288,7 +296,7 @@ export const treeify: Type = make({
  */
 export const splitOnConstituentNumberMaker = (limit: number): Type =>
 	make({
-		id: 'SplitWhenConstituentNumberExceeds' + limit,
+		id: pipe(limit, MString.fromNumber(10), MString.prepend('SplitWhenConstituentNumberExceeds')),
 		action: function (this, params) {
 			const initializedSingleLine = singleLine.call(this, params);
 			const initilizedTabify = tabify.call(this, params);
@@ -312,7 +320,7 @@ export const splitOnConstituentNumberMaker = (limit: number): Type =>
  */
 export const splitOnTotalLengthMaker = (limit: number): Type =>
 	make({
-		id: 'SplitWhenTotalLengthExceeds' + limit,
+		id: pipe(limit, MString.fromNumber(10), MString.prepend('SplitWhenTotalLengthExceeds')),
 		action: function (this, params) {
 			const initializedSingleLine = singleLine.call(this, params);
 			const initilizedTabify = tabify.call(this, params);
@@ -357,7 +365,7 @@ export const splitOnTotalLengthMaker = (limit: number): Type =>
  */
 export const splitOnLongestPropLengthMaker = (limit: number): Type =>
 	make({
-		id: 'SplitWhenLongestPropLengthExceeds' + limit,
+		id: pipe(limit, MString.fromNumber(10), MString.prepend('SplitWhenLongestPropLengthExceeds')),
 		action: function (this, params) {
 			const initializedSingleLine = singleLine.call(this, params);
 			const initilizedTabify = tabify.call(this, params);

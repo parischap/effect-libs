@@ -1,4 +1,3 @@
-/* eslint-disable functional/no-expression-statements */
 import { ASStyle, ASText } from '@parischap/ansi-styles';
 import {
 	PPMarkShowerConstructor,

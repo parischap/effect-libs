@@ -1,4 +1,3 @@
-/* eslint-disable functional/no-expression-statements */
 import { CVDateTimeFormat, CVDateTimeFormatContext } from '@parischap/conversions';
 
 // Let's define useful shortcuts

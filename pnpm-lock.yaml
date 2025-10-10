@@ -261,7 +261,7 @@ importers:
         specifier: ^0.11.0
         version: 0.11.0(effect@3.18.3)
       effect:
-        specifier: ^3.17.13
+        specifier: ^3.18.1
         version: 3.18.3
 
 packages:

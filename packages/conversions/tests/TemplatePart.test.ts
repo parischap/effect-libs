@@ -1,4 +1,3 @@
-/* eslint-disable functional/no-expression-statements */
 import { CVTemplatePart, CVTemplatePlaceholder, CVTemplateSeparator } from '@parischap/conversions';
 import { TEUtils } from '@parischap/test-utils';
 import { describe, it } from 'vitest';

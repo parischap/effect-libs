@@ -917,7 +917,7 @@ export const toNumberFormatter = (
 	fillChars = ''
 ): MTypes.OneArgFunction<BigDecimal.BigDecimal | CVReal.Type, string> => {
 	const rounder =
-		self.maximumFractionalDigits === +Infinity ?
+		self.maximumFractionalDigits === Infinity ?
 			Function.identity
 		:	pipe(
 				{

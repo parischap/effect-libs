@@ -1,4 +1,3 @@
-/* eslint-disable functional/no-expression-statements */
 import { CVRoundingMode, CVRoundingOption } from '@parischap/conversions';
 import { MNumber } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';

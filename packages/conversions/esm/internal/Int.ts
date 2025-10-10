@@ -1,5 +1,5 @@
 import { MNumber, MString, MTypes } from '@parischap/effect-lib';
-import { Brand, Either, flow } from 'effect';
+import { Brand, Either, flow, Option } from 'effect';
 
 /**
  * Module tag

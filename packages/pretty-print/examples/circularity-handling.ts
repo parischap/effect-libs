@@ -3,7 +3,7 @@ import { PPOption, PPStringifiedValue } from '@parischap/pretty-print';
 import { pipe } from 'effect';
 
 const stringifier = PPOption.toStringifier(
-	PPOption.make({ ...PPOption.utilInspectLike, maxDepth: +Infinity })
+	PPOption.make({ ...PPOption.utilInspectLike, maxDepth: Infinity })
 );
 
 const circular = { a: 1 as unknown, b: { inner: 1 as unknown, circular: 1 as unknown } };

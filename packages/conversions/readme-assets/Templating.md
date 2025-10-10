@@ -9,7 +9,6 @@ An equivalent to the PHP sprintf and sscanf functions with real typing of the pl
 ## 1. Usage example
 
 ```ts
-/* eslint-disable functional/no-expression-statements */
 import {
 	CVNumberBase10Format,
 	CVReal,

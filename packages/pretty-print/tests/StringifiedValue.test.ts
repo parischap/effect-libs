@@ -1,4 +1,3 @@
-/* eslint-disable functional/no-expression-statements */
 import { ASText } from '@parischap/ansi-styles';
 import { PPStringifiedValue } from '@parischap/pretty-print';
 import { TEUtils } from '@parischap/test-utils';

@@ -1,4 +1,3 @@
-/* eslint-disable functional/no-expression-statements */
 import { PPMarkMap } from '@parischap/pretty-print';
 import { TEUtils } from '@parischap/test-utils';
 import { describe, it } from 'vitest';

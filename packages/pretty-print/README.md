@@ -44,13 +44,17 @@ This is a modern library optimized for tree-shaking. Don't put too much focus on
 This library supports named imports:
 
 ```ts
-import { PPStringifiedValue } from "@parischap/pretty-print";
+import { PPOption } from "@parischap/pretty-print";
+
+pipe(3, PPOption.toStringifier(PPOption.darkModeUtilInspectLike), console.log);
 ```
 
 and default imports:
 
 ```ts
-import * as PPStringifiedValue from "@parischap/pretty-print/PPStringifiedValue";
+import * as PPOption from "@parischap/pretty-print/PPStringifiedValue";
+
+pipe(3, PPOption.toStringifier(PPOption.darkModeUtilInspectLike), console.log);
 ```
 
 In this documentation, we'll use the first option. But if you value tree-shaking, you should use the second.
@@ -244,7 +248,7 @@ You can use the make constructor to define your own ByPasser's if you need to. Y
 ```ts
 import { PPByPasser, PPOption } from "@parischap/pretty-print";
 
-const withoutFunctionByPasser = PPOption.make({
+export const withoutFunctionByPasser = PPOption.make({
 	...PPOption.utilInspectLike,
 	id: "WithoutFunctionByPasser",
 	byPassers: Array.of(PPByPasser.objectToString),
@@ -334,11 +338,10 @@ const circular = {
 	a: 1 as unknown,
 	b: { inner: 1 as unknown, circular: 1 as unknown },
 };
-/* eslint-disable functional/immutable-data */
+
 circular.a = [circular];
 circular.b.inner = circular.b;
 circular.b.circular = circular;
-/* eslint-enable functional/immutable-data*/
 
 console.log(pipe(circular, stringifier, PPStringifiedValue.toAnsiString()));
 ```

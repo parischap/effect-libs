@@ -45,6 +45,7 @@
  */
 
 import {
+	MArray,
 	MInputError,
 	MInspectable,
 	MPipeable,
@@ -64,6 +65,7 @@ import {
 	Predicate,
 	Record,
 	Struct,
+	Tuple,
 	Types
 } from 'effect';
 import * as CVTemplatePart from './TemplatePart.js';
@@ -165,41 +167,46 @@ export const toParser =
 		>
 	> =>
 	(text) =>
-		Either.gen(function* () {
-			let consumed: unknown;
-			const result = Record.empty<string, unknown>();
-			const templateParts = self.templateParts;
-
-			for (let pos = 0; pos < templateParts.length; pos++) {
-				const templatePart = templateParts[pos] as CVTemplatePart.Type<string, unknown>;
-				if (CVTemplatePart.isPlaceholder(templatePart)) {
-					/* eslint-disable-next-line functional/no-expression-statements */
-					[consumed, text] = yield* templatePart.parser(text);
-					const name = templatePart.name;
-					if (!(name in result))
-						/* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements,  */
-						result[name] = consumed;
-					else {
-						const oldValue = result[name];
-						if (!Equal.equals(oldValue, consumed))
-							yield* Either.left(
-								new MInputError.Type({
-									message: `${templatePart.label} is present more than once in template and receives differing values '${MString.fromUnknown(oldValue)}' and '${MString.fromUnknown(consumed)}'`
+		pipe(
+			self.templateParts as CVTemplateParts.Type<unknown>,
+			MArray.reduceUnlessLeft(
+				Tuple.make(text, Record.empty<string, unknown>()),
+				([remainingText, result], templatePart, pos) =>
+					Either.gen(function* () {
+						if (CVTemplatePart.isPlaceholder(templatePart)) {
+							const [consumed, leftOver] = yield* templatePart.parser(remainingText);
+							const name = templatePart.name;
+							return yield* pipe(
+								result,
+								Record.get(name),
+								Option.match({
+									onNone: () =>
+										Either.right(Tuple.make(leftOver, Record.set(result, name, consumed))),
+									onSome: flow(
+										Either.liftPredicate(
+											Equal.equals(consumed),
+											(oldValue) =>
+												new MInputError.Type({
+													message: `${templatePart.label} is present more than once in template and receives differing values '${MString.fromUnknown(oldValue)}' and '${MString.fromUnknown(consumed)}'`
+												})
+										),
+										Either.andThen(Tuple.make(leftOver, result))
+									)
 								})
 							);
-					}
-				} else {
-					const parser = CVTemplateSeparator.toParser(templatePart);
-					/* eslint-disable-next-line functional/no-expression-statements */
-					text = yield* parser(pos + 1, text);
-				}
-			}
-
-			yield* pipe(text, MInputError.assertEmpty({ name: 'text not consumed by template' }));
-
-			return result as never;
-		});
-
+						}
+						const parser = CVTemplateSeparator.toParser(templatePart);
+						const leftOver = yield* parser(pos + 1, remainingText);
+						return Tuple.make(leftOver, result);
+					})
+			),
+			Either.flatMap(([leftOver, result]) =>
+				Either.gen(function* () {
+					yield* pipe(leftOver, MInputError.assertEmpty({ name: 'text not consumed by template' }));
+					return result as never;
+				})
+			)
+		);
 /**
  * Same as `toParser` but the generated parser throws in case of failure
  *
@@ -235,30 +242,24 @@ export const toFormatter = <const PS extends CVTemplateParts.Type>(
 	},
 	Either.Either<string, MInputError.Type>
 > => {
-	return (record) =>
-		Either.gen(function* () {
-			let result = '';
-
-			for (const templatePart of self.templateParts) {
-				if (CVTemplatePart.isSeparator(templatePart)) {
-					/* eslint-disable-next-line functional/no-expression-statements */
-					result += templatePart.value;
-				} else {
-					const value = pipe(
-						record as Record<string, unknown>,
-						Record.get(templatePart.name),
-						// This error should not happen due to typing
-						Option.getOrThrowWith(
-							() => new Error(`Abnormal error: no value passed for ${templatePart.label}`)
-						)
-					);
-					/* eslint-disable-next-line functional/no-expression-statements */
-					result += yield* templatePart.formatter(value);
-				}
-			}
-
-			return result;
-		});
+	return (record: Record<string, unknown>) =>
+		pipe(
+			self.templateParts,
+			MArray.reduceUnlessLeft('', (result, templatePart) => {
+				return CVTemplatePart.isSeparator(templatePart) ?
+						pipe(templatePart.value, MString.prepend(result), Either.right)
+					:	pipe(
+							record,
+							Record.get(templatePart.name),
+							// This error should not happen due to typing
+							Option.getOrThrowWith(
+								() => new Error(`Abnormal error: no value passed for ${templatePart.label}`)
+							),
+							templatePart.formatter.bind(templatePart),
+							Either.map(MString.prepend(result))
+						);
+			})
+		);
 };
 
 /**

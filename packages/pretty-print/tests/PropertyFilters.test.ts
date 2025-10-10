@@ -1,4 +1,3 @@
-/* eslint-disable functional/no-expression-statements */
 import { PPPropertyFilter, PPPropertyFilters, PPValue, PPValues } from '@parischap/pretty-print';
 import { TEUtils } from '@parischap/test-utils';
 import { Array, pipe } from 'effect';

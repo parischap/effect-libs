@@ -1,4 +1,3 @@
-/* eslint-disable functional/no-expression-statements */
 import { CVRoundingMode, CVRoundingOption } from '@parischap/conversions';
 import { Equal } from 'effect';
 

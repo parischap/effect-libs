@@ -427,7 +427,7 @@ export const real = <const N extends string>({
 
 	return make({
 		name,
-		description: `${CVNumberBase10Format.toDescription(numberBase10Format)}`,
+		description: CVNumberBase10Format.toDescription(numberBase10Format),
 		parser: function (this: Type<N, CVReal.Type>, text) {
 			return pipe(
 				text,
@@ -568,7 +568,7 @@ export const fulfilling = <const N extends string>({
 
 	return make({
 		name,
-		description: `${regExpDescriptor}`,
+		description: regExpDescriptor,
 		parser: function (this: Type<N, string>, text) {
 			return pipe(
 				text,

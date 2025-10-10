@@ -1,4 +1,3 @@
-/* eslint-disable functional/no-expression-statements */
 import { CVEmail } from '@parischap/conversions';
 
 /** Let's try to create a CVEmail from a string that represents a valid email */

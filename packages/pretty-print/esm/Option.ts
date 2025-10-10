@@ -736,13 +736,13 @@ export const treeify: Type = make({
 	markMap: PPMarkMap.utilInspectLike,
 	byPassers: Array.empty(),
 	primitiveFormatter: PPPrimitiveFormatter.utilInspectLikeMaker(),
-	maxDepth: +Infinity,
+	maxDepth: Infinity,
 	generalNonPrimitiveOption: NonPrimitive.make({
 		...NonPrimitive.record,
 		propertyFilters: Array.empty(),
 		propertySortOrder: Option.none(),
 		dedupeProperties: false,
-		maxPropertyNumber: +Infinity,
+		maxPropertyNumber: Infinity,
 		propertyFormatter: PPPropertyFormatter.treeify,
 		nonPrimitiveFormatter: PPNonPrimitiveFormatter.treeify
 	}),
@@ -851,6 +851,7 @@ export const toStringifier = (self: Type): Stringifier.Type => {
 
 	const functionToNameByPasser = PPByPasser.functionToName.call(self, constructors);
 
+	/* eslint-disable-next-line functional/no-let */
 	let lastCyclicalIndex = 1;
 	const cyclicalMap = MutableHashMap.empty<PPValue.NonPrimitive, number>();
 

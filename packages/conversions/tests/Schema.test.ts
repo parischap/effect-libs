@@ -1,4 +1,3 @@
-/* eslint-disable functional/no-expression-statements */
 import {
 	CVDateTime,
 	CVDateTimeFormat,
@@ -98,7 +97,7 @@ describe('CVSchema', () => {
 		describe('Decoding', () => {
 			const decoder = Schema.decodeEither(CVSchema.RealFromNumber);
 			it('Not passing', () => {
-				TEUtils.assertLeft(decoder(+Infinity));
+				TEUtils.assertLeft(decoder(Infinity));
 			});
 			it('Passing', () => {
 				TEUtils.assertRight(decoder(target), target);
@@ -155,7 +154,7 @@ describe('CVSchema', () => {
 		describe('Decoding', () => {
 			const decoder = Schema.decodeEither(CVSchema.IntegerFromNumber);
 			it('Not passing', () => {
-				TEUtils.assertLeft(decoder(+Infinity));
+				TEUtils.assertLeft(decoder(Infinity));
 				TEUtils.assertLeft(decoder(15.4));
 			});
 			it('Passing', () => {
@@ -194,7 +193,7 @@ describe('CVSchema', () => {
 		describe('Decoding', () => {
 			const decoder = Schema.decodeEither(CVSchema.PositiveIntegerFromNumber);
 			it('Not passing', () => {
-				TEUtils.assertLeft(decoder(+Infinity));
+				TEUtils.assertLeft(decoder(Infinity));
 				TEUtils.assertLeft(decoder(15.4));
 				TEUtils.assertLeft(decoder(-15));
 			});
@@ -234,7 +233,7 @@ describe('CVSchema', () => {
 		describe('Decoding', () => {
 			const decoder = Schema.decodeEither(CVSchema.PositiveRealFromNumber);
 			it('Not passing', () => {
-				TEUtils.assertLeft(decoder(+Infinity));
+				TEUtils.assertLeft(decoder(Infinity));
 				TEUtils.assertLeft(decoder(-15.4));
 			});
 			it('Passing', () => {

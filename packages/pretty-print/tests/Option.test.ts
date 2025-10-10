@@ -246,12 +246,12 @@ describe('Option', () => {
 							)
 						})
 					),
-					maxPrototypeDepth: +Infinity
+					maxPrototypeDepth: Infinity
 				}
 			})
 		);
 		const stringifierWithInfiniteMaxDepth = PPOption.toStringifier(
-			PPOption.make({ ...PPOption.utilInspectLike, id: 'NoDepthLimit', maxDepth: +Infinity })
+			PPOption.make({ ...PPOption.utilInspectLike, id: 'NoDepthLimit', maxDepth: Infinity })
 		);
 		const stringifierWithLimitedPropertiesShowPropNumber = PPOption.toStringifier(
 			PPOption.make({

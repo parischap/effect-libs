@@ -1,4 +1,3 @@
-/* eslint-disable functional/no-expression-statements */
 import { CVDateTime } from '@parischap/conversions';
 import { MArray } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';

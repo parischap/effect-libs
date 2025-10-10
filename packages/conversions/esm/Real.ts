@@ -6,7 +6,7 @@
  */
 
 import { MNumber, MString, MTypes } from '@parischap/effect-lib';
-import { BigDecimal, Brand, Either, flow, Schema } from 'effect';
+import { BigDecimal, Brand, Either, flow, Option, Schema } from 'effect';
 
 /**
  * Module tag

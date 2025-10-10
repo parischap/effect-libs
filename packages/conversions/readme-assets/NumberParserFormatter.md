@@ -164,7 +164,7 @@ export interface Type {
 To build such an instance, you will need to use the `make` constructor. For instance, this is how you could redefine the `frenchStyleNumber` instance:
 
 ```ts
-const frenchStyleNumber = CVNumberBase10Format.make({
+export const frenchStyleNumber = CVNumberBase10Format.make({
 	thousandSeparator: " ",
 	fractionalSeparator: ",",
 	showNullIntegerPart: true,

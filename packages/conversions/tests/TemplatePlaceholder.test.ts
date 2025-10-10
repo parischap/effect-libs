@@ -1,4 +1,3 @@
-/* eslint-disable functional/no-expression-statements */
 import { CVNumberBase10Format, CVReal, CVTemplatePlaceholder } from '@parischap/conversions';
 import { MRegExpString, MString } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
@@ -203,7 +202,7 @@ describe('CVTemplatePlaceholder', () => {
 				['foo', 6],
 				['bazbar', 12]
 			],
-			tSchemaInstance: Schema.Number
+			schemaInstance: Schema.Number
 		});
 
 		it('.toString()', () => {

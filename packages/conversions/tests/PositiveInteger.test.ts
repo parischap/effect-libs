@@ -1,4 +1,3 @@
-/* eslint-disable functional/no-expression-statements */
 import { CVInteger, CVPositiveInteger, CVPositiveReal, CVReal } from '@parischap/conversions';
 import { TEUtils } from '@parischap/test-utils';
 import { BigDecimal } from 'effect';
@@ -10,7 +9,7 @@ describe('CVPositiveInteger', () => {
 	});
 
 	describe('Conversions from number', () => {
-		const notPassing1 = +Infinity;
+		const notPassing1 = Infinity;
 		const notPassing2 = 15.4;
 		const notPassing3 = -15;
 		const passing = 15 as CVPositiveInteger.Type;

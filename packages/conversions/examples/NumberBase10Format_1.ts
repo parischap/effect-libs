@@ -1,4 +1,3 @@
-/* eslint-disable functional/no-expression-statements */
 import { CVNumberBase10Format, CVReal, CVSchema } from '@parischap/conversions';
 import { pipe, Schema } from 'effect';
 

@@ -1,4 +1,3 @@
-/* eslint-disable functional/no-expression-statements */
 import { MPredicate } from '@parischap/effect-lib';
 import { PPPropertyFilter, PPValue, PPValues } from '@parischap/pretty-print';
 import { TEUtils } from '@parischap/test-utils';

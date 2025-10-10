@@ -1,4 +1,3 @@
-/* eslint-disable functional/no-expression-statements */
 import { CVNumberBase10Format, CVReal } from '@parischap/conversions';
 import { MBigDecimal, MNumber } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
@@ -585,7 +584,7 @@ describe('NumberBase10Format', () => {
 			describe('Unbounded', () => {
 				const extractor = pipe(
 					frenchStyleNumber,
-					CVNumberBase10Format.withMaxNDecimals(+Infinity),
+					CVNumberBase10Format.withMaxNDecimals(Infinity),
 					CVNumberBase10Format.toBigDecimalExtractor
 				);
 

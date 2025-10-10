@@ -1,4 +1,3 @@
-/* eslint-disable functional/no-expression-statements */
 import { ASContextStyler, ASText } from '@parischap/ansi-styles';
 import { PPStyleMap, PPValue } from '@parischap/pretty-print';
 import { TEUtils } from '@parischap/test-utils';

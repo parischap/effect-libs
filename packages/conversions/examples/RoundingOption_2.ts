@@ -1,4 +1,3 @@
-/* eslint-disable functional/no-expression-statements */
 import { CVRoundingOption } from '@parischap/conversions';
 
 // Let's define a number rounder from halfExpand2. Type: (value:number) => number

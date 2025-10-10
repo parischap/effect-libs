@@ -45,12 +45,16 @@ This library supports named imports:
 
 ```ts
 import { CVRoundingOption } from "@parischap/conversions";
+
+console.log(CVRoundingOption.toNumberRounder(CVRoundingOption.halfExpand2));
 ```
 
 and default imports:
 
 ```ts
 import * as CVRoundingOption from "@parischap/conversions/CVRoundingOption";
+
+console.log(CVRoundingOption.toNumberRounder(CVRoundingOption.halfExpand2));
 ```
 
 In this documentation, we'll use the first option. But if you value tree-shaking, you should use the second.
