@@ -2,6 +2,7 @@ import { MArray, MPredicate, MTuple } from '@parischap/effect-lib';
 import { TEUtils } from '@parischap/test-utils';
 import {
 	Array,
+	Either,
 	Equal,
 	flow,
 	Function,
@@ -433,6 +434,69 @@ describe('MArray', () => {
 
 		it('Array with some non matching element', () => {
 			TEUtils.assertNone(pipe(Array.make(3, 4, 2, 5), MArray.mapUnlessNone(f)));
+		});
+	});
+
+	describe('mapUnlessLeft', () => {
+		const f = flow(
+			Either.liftPredicate(Number.greaterThanOrEqualTo(3), () => new Error('boom')),
+			Either.map(Number.multiply(2))
+		);
+		it('Empty array', () => {
+			TEUtils.assertRight(pipe(Array.empty(), MArray.mapUnlessLeft(f)), Array.empty());
+		});
+
+		it('Array with all matching elements', () => {
+			TEUtils.assertRight(
+				pipe(Array.make(3, 4, 6, 5), MArray.mapUnlessLeft(f)),
+				Array.make(6, 8, 12, 10)
+			);
+		});
+
+		it('Array with some non matching element', () => {
+			TEUtils.assertLeft(pipe(Array.make(3, 4, 2, 5), MArray.mapUnlessLeft(f)));
+		});
+	});
+
+	describe('reduceUnlessNone', () => {
+		const f = (z: number, current: number) =>
+			pipe(
+				current,
+				Option.liftPredicate(Number.greaterThanOrEqualTo(3)),
+				Option.map(Number.sum(z))
+			);
+
+		it('Empty array', () => {
+			TEUtils.assertSome(pipe(Array.empty(), MArray.reduceUnlessNone(0, f)), 0);
+		});
+
+		it('Array with all matching elements', () => {
+			TEUtils.assertSome(pipe(Array.make(3, 4, 6, 5), MArray.reduceUnlessNone(0, f)), 18);
+		});
+
+		it('Array with some non matching element', () => {
+			TEUtils.assertNone(pipe(Array.make(3, 4, 2, 5), MArray.reduceUnlessNone(0, f)));
+		});
+	});
+
+	describe('reduceUnlessLeft', () => {
+		const f = (z: number, current: number) =>
+			pipe(
+				current,
+				Either.liftPredicate(Number.greaterThanOrEqualTo(3), () => new Error('boom')),
+				Either.map(Number.sum(z))
+			);
+
+		it('Empty array', () => {
+			TEUtils.assertRight(pipe(Array.empty(), MArray.reduceUnlessLeft(0, f)), 0);
+		});
+
+		it('Array with all matching elements', () => {
+			TEUtils.assertRight(pipe(Array.make(3, 4, 6, 5), MArray.reduceUnlessLeft(0, f)), 18);
+		});
+
+		it('Array with some non matching element', () => {
+			TEUtils.assertLeft(pipe(Array.make(3, 4, 2, 5), MArray.reduceUnlessLeft(0, f)));
 		});
 	});
 

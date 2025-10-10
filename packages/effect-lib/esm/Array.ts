@@ -3,6 +3,7 @@
 import {
 	Array,
 	Boolean,
+	Either,
 	Equal,
 	Equivalence,
 	Function,
@@ -408,15 +409,75 @@ export const splitNonEmptyAtFromRight =
 		pipe(self, splitAtFromRight(n)) as never;
 
 /**
- * Applies a function `f` that returns an option to each element of `self`. Returns a `none` if any
- * result is a `none`. Otherwise, returns a `some` of the mapped array.
+ * Mapping with early exit in case of failure (`none`)
  *
  * @category Destructors
  */
 export const mapUnlessNone =
-	<A, B>(f: (a: A) => Option.Option<B>) =>
+	<A, B>(f: (a: A, i: number) => Option.Option<B>) =>
 	<S extends ReadonlyArray<A>>(self: S): Option.Option<Array.ReadonlyArray.With<S, B>> =>
 		pipe(self, Array.filterMapWhile(f), Option.liftPredicate(hasLength(self.length))) as never;
+
+/**
+ * Mapping with early exit in case of failure (`left`)
+ *
+ * @category Destructors
+ */
+export const mapUnlessLeft =
+	<A, B, C>(f: (a: A, i: number) => Either.Either<B, C>) =>
+	<S extends ReadonlyArray<A>>(self: S): Either.Either<Array.ReadonlyArray.With<S, B>, C> =>
+		Either.gen(function* () {
+			const length = self.length;
+			const result = Array.allocate<B>(length);
+
+			/* eslint-disable-next-line functional/no-loop-statements, functional/no-let*/
+			for (let i = 0; i < length; i++) {
+				/* eslint-disable-next-line functional/no-expression-statements, functional/immutable-data*/
+				result[i] = yield* f(self[i] as A, i);
+			}
+			return result as never;
+		});
+/**
+ * Reduce with early exit in case of failure (`none`)
+ *
+ * @category Destructors
+ */
+export const reduceUnlessNone =
+	<B, A>(b: B, f: (b: B, a: A, i: number) => Option.Option<B>) =>
+	(self: Iterable<A>): Option.Option<B> =>
+		Option.gen(function* () {
+			/* eslint-disable-next-line functional/no-let */
+			let result = b,
+				i = 0;
+
+			/* eslint-disable-next-line functional/no-loop-statements */
+			for (const a of self) {
+				/* eslint-disable-next-line functional/no-expression-statements*/
+				result = yield* f(result, a, i++);
+			}
+			return result;
+		});
+
+/**
+ * Reduce with early exit in case of failure (`left`)
+ *
+ * @category Destructors
+ */
+export const reduceUnlessLeft =
+	<B, A, C>(b: B, f: (b: B, a: A, i: number) => Either.Either<B, C>) =>
+	(self: Iterable<A>): Either.Either<B, C> =>
+		Either.gen(function* () {
+			/* eslint-disable-next-line functional/no-let */
+			let result = b,
+				i = 0;
+
+			/* eslint-disable-next-line functional/no-loop-statements */
+			for (const a of self) {
+				/* eslint-disable-next-line functional/no-expression-statements*/
+				result = yield* f(result, a, i++);
+			}
+			return result;
+		});
 
 /**
  * Merges two sorted Iterables into a sorted array. Elements in `self` are assured to be before
