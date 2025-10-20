@@ -84,14 +84,14 @@ import { HashMap, pipe } from "effect";
 const stringifier = PPOption.toStringifier(PPOption.darkModeUtilInspectLike);
 
 const toPrint = {
-	a: [7, 8],
-	e: HashMap.make(["key1", 3], ["key2", 6]),
-	b: { a: 5, c: 8 },
-	f: Math.max,
-	d: {
-		e: true,
-		f: { a: { k: { z: "foo", y: "bar" } } },
-	},
+  a: [7, 8],
+  e: HashMap.make(["key1", 3], ["key2", 6]),
+  b: { a: 5, c: 8 },
+  f: Math.max,
+  d: {
+    e: true,
+    f: { a: { k: { z: "foo", y: "bar" } } },
+  },
 };
 
 console.log(pipe(toPrint, stringifier, PPStringifiedValue.toAnsiString()));
@@ -112,16 +112,16 @@ import { HashMap, pipe } from "effect";
 const stringifier = PPOption.toStringifier(PPOption.darkModeTreeifyHideLeaves);
 
 const toPrint = {
-	A: {
-		A1: {
-			A11: null,
-			A12: [{ A121: null, A122: null, A123: null }, { A124: null }],
-			A13: null,
-		},
-		A2: null,
-		A3: null,
-	},
-	B: HashMap.make(["B1", null], ["B2", null]),
+  A: {
+    A1: {
+      A11: null,
+      A12: [{ A121: null, A122: null, A123: null }, { A124: null }],
+      A13: null,
+    },
+    A2: null,
+    A3: null,
+  },
+  B: HashMap.make(["B1", null], ["B2", null]),
 };
 
 console.log(pipe(toPrint, stringifier, PPStringifiedValue.toAnsiString()));
@@ -141,19 +141,19 @@ import { pipe } from "effect";
 const stringifier = PPOption.toStringifier(PPOption.darkModeTreeify);
 
 const toPrint = {
-	Vegetal: {
-		Trees: {
-			Oaks: 8,
-			BirchTree: 3,
-		},
-		Fruit: { Apples: 8, Lemons: 5 },
-	},
-	Animal: {
-		Mammals: {
-			Dogs: 3,
-			Cats: 2,
-		},
-	},
+  Vegetal: {
+    Trees: {
+      Oaks: 8,
+      BirchTree: 3,
+    },
+    Fruit: { Apples: 8, Lemons: 5 },
+  },
+  Animal: {
+    Mammals: {
+      Dogs: 3,
+      Cats: 2,
+    },
+  },
 };
 
 console.log(pipe(toPrint, stringifier, PPStringifiedValue.toAnsiString()));
@@ -175,9 +175,9 @@ If you are not interested in going too deep into details, just remember that you
 import { PPOption, PPStyleMap } from "@parischap/pretty-print";
 
 export const darkModeUtilInspectLike: PPOption.Type = PPOption.make({
-	...PPOption.utilInspectLike,
-	id: "DarkModeUtilInspectLike",
-	styleMap: PPStyleMap.darkMode,
+  ...PPOption.utilInspectLike,
+  id: "DarkModeUtilInspectLike",
+  styleMap: PPStyleMap.darkMode,
 });
 ```
 
@@ -215,19 +215,15 @@ import { PPMarkMap, PPOption } from "@parischap/pretty-print";
 import { HashMap } from "effect";
 
 export const withParentheses: PPOption.Type = PPOption.make({
-	...PPOption.utilInspectLike,
-	id: "WithParentheses",
-	markMap: PPMarkMap.make({
-		id: "withParenteses",
-		marks: HashMap.set(
-			PPMarkMap.utilInspectLike.marks,
-			"FunctionNameEndDelimiter",
-			{
-				text: "()",
-				partName: "Message",
-			},
-		),
-	}),
+  ...PPOption.utilInspectLike,
+  id: "WithParentheses",
+  markMap: PPMarkMap.make({
+    id: "withParenteses",
+    marks: HashMap.set(PPMarkMap.utilInspectLike.marks, "FunctionNameEndDelimiter", {
+      text: "()",
+      partName: "Message",
+    }),
+  }),
 });
 ```
 
@@ -249,9 +245,9 @@ You can use the make constructor to define your own ByPasser's if you need to. Y
 import { PPByPasser, PPOption } from "@parischap/pretty-print";
 
 export const withoutFunctionByPasser = PPOption.make({
-	...PPOption.utilInspectLike,
-	id: "WithoutFunctionByPasser",
-	byPassers: Array.of(PPByPasser.objectToString),
+  ...PPOption.utilInspectLike,
+  id: "WithoutFunctionByPasser",
+  byPassers: Array.of(PPByPasser.objectToString),
 });
 ```
 
@@ -331,12 +327,12 @@ import { PPOption, PPStringifiedValue } from "@parischap/pretty-print";
 import { pipe } from "effect";
 
 const stringifier = PPOption.toStringifier(
-	PPOption.make({ ...PPOption.utilInspectLike, maxDepth: +Infinity }),
+  PPOption.make({ ...PPOption.utilInspectLike, maxDepth: +Infinity }),
 );
 
 const circular = {
-	a: 1 as unknown,
-	b: { inner: 1 as unknown, circular: 1 as unknown },
+  a: 1 as unknown,
+  b: { inner: 1 as unknown, circular: 1 as unknown },
 };
 
 circular.a = [circular];

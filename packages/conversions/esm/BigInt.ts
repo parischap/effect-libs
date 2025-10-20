@@ -11,7 +11,7 @@ import * as CVReal from './Real.js';
  * @category Constructors
  */
 export const fromInteger: MTypes.OneArgFunction<CVInteger.Type, bigint> =
-	MBigInt.fromPrimitiveOrThrow;
+  MBigInt.fromPrimitiveOrThrow;
 
 /**
  * Tries to construct a `BigInt` from a `CVReal`. Returns a `Some` if the conversion can be
@@ -20,8 +20,8 @@ export const fromInteger: MTypes.OneArgFunction<CVInteger.Type, bigint> =
  * @category Constructors
  */
 export const fromRealOption: MTypes.OneArgFunction<
-	CVReal.Type,
-	Option.Option<bigint>
+  CVReal.Type,
+  Option.Option<bigint>
 > = MBigInt.fromPrimitiveOption as never;
 
 /**
@@ -31,8 +31,8 @@ export const fromRealOption: MTypes.OneArgFunction<
  * @category Constructors
  */
 export const fromReal: MTypes.OneArgFunction<
-	CVReal.Type,
-	Either.Either<bigint, Brand.Brand.BrandErrors>
+  CVReal.Type,
+  Either.Either<bigint, Brand.Brand.BrandErrors>
 > = MBigInt.fromPrimitive as never;
 
 /**
@@ -41,4 +41,4 @@ export const fromReal: MTypes.OneArgFunction<
  * @category Constructors
  */
 export const fromRealOrThrow: MTypes.OneArgFunction<CVReal.Type, bigint> =
-	MBigInt.fromPrimitiveOrThrow as never;
+  MBigInt.fromPrimitiveOrThrow as never;

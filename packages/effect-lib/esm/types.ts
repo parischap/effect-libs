@@ -12,7 +12,7 @@ import { Array, Function, Option, pipe, Predicate } from 'effect';
  * @category Models
  */
 export interface NonPrimitive {
-	readonly [key: string | symbol]: any;
+  readonly [key: string | symbol]: any;
 }
 
 /**
@@ -100,21 +100,21 @@ export type OverTwo<A> = [A, A, ...Array<A>];
 export type ReadonlyOverTwo<A> = readonly [A, A, ...ReadonlyArray<A>];
 
 const _allTypedArrayConstructors = [
-	Int8Array,
-	Uint8Array,
-	Uint8ClampedArray,
-	Int16Array,
-	Uint16Array,
-	Int32Array,
-	Uint32Array,
-	Float32Array,
-	Float64Array,
-	BigInt64Array,
-	BigUint64Array
+  Int8Array,
+  Uint8Array,
+  Uint8ClampedArray,
+  Int16Array,
+  Uint16Array,
+  Int32Array,
+  Uint32Array,
+  Float32Array,
+  Float64Array,
+  BigInt64Array,
+  BigUint64Array,
 ] as const;
 type _allTypedArrayConstructorsType = typeof _allTypedArrayConstructors;
 type toTypedArrayInstances<A extends _allTypedArrayConstructorsType> = {
-	readonly [key in keyof A]: InstanceType<A[key]>;
+  readonly [key in keyof A]: InstanceType<A[key]>;
 };
 /**
  * Type that represents all typed arrays
@@ -129,7 +129,7 @@ export type TypedArray = toTypedArrayInstances<_allTypedArrayConstructorsType>[n
  * @category Models
  */
 export interface AnyFunction {
-	(...args: ReadonlyArray<any>): any;
+  (...args: ReadonlyArray<any>): any;
 }
 
 /**
@@ -138,7 +138,7 @@ export interface AnyFunction {
  * @category Models
  */
 export interface OneArgFunction<in A, out B = A> {
-	(a: A): B;
+  (a: A): B;
 }
 
 /**
@@ -213,7 +213,7 @@ export interface NumberFromString extends OneArgFunction<string, number> {}
 export interface NumberToString extends OneArgFunction<number, string> {}
 
 type Enumerate<N extends number, Acc extends Array<number> = []> =
-	[Acc['length']] extends [N] ? Acc[number] : Enumerate<N, [...Acc, Acc['length']]>;
+  [Acc['length']] extends [N] ? Acc[number] : Enumerate<N, [...Acc, Acc['length']]>;
 
 /**
  * Utility type that returns removes from Array type all keys not representing an array index
@@ -228,9 +228,9 @@ export type ArrayKeys<A extends AnyReadonlyArray> = Omit<A, keyof ReadonlyArray<
  * @category Utility types
  */
 export type WithMutable<X, field extends string | symbol> = {
-	readonly [k in keyof X as readonly [k] extends readonly [field] ? never : k]: X[k];
+  readonly [k in keyof X as readonly [k] extends readonly [field] ? never : k]: X[k];
 } & {
-	-readonly [k in keyof X as readonly [k] extends readonly [field] ? k : never]: X[k];
+  -readonly [k in keyof X as readonly [k] extends readonly [field] ? k : never]: X[k];
 };
 
 /**
@@ -239,9 +239,9 @@ export type WithMutable<X, field extends string | symbol> = {
  * @category Utility types
  */
 export type WithRequired<X, field extends string | symbol> = {
-	readonly [k in keyof X as readonly [k] extends readonly [field] ? never : k]: X[k];
+  readonly [k in keyof X as readonly [k] extends readonly [field] ? never : k]: X[k];
 } & {
-	readonly [k in keyof X as readonly [k] extends readonly [field] ? k : never]-?: X[k];
+  readonly [k in keyof X as readonly [k] extends readonly [field] ? k : never]-?: X[k];
 };
 
 /**
@@ -250,13 +250,13 @@ export type WithRequired<X, field extends string | symbol> = {
  * @category Utility types
  */
 export type Tuple<T, N extends number> =
-	N extends N ?
-		number extends N ?
-			ReadonlyArray<T>
-		:	_TupleOf<T, N, readonly []>
-	:	never;
+  N extends N ?
+    number extends N ?
+      ReadonlyArray<T>
+    : _TupleOf<T, N, readonly []>
+  : never;
 type _TupleOf<T, N extends number, R extends ReadonlyArray<unknown>> =
-	R['length'] extends N ? R : _TupleOf<T, N, readonly [T, ...R]>;
+  R['length'] extends N ? R : _TupleOf<T, N, readonly [T, ...R]>;
 
 /**
  * Utility type that generates a range of numeric literal types
@@ -271,8 +271,8 @@ export type IntRange<F extends number, T extends number> = Exclude<Enumerate<T>,
  * @category Utility types
  */
 export type ReadonlyTail<T> =
-	readonly [T] extends readonly [readonly [any, ...infer R]] ? { readonly [key in keyof R]: R[key] }
-	:	never;
+  readonly [T] extends readonly [readonly [any, ...infer R]] ? { readonly [key in keyof R]: R[key] }
+  : never;
 
 /**
  * Utility type that changes the types of all keys of a tuple, array, struct or record to Target
@@ -280,7 +280,7 @@ export type ReadonlyTail<T> =
  * @category Utility types
  */
 export type MapToReadonlyTarget<Tuple, Target> = {
-	readonly [k in keyof Tuple]: Target;
+  readonly [k in keyof Tuple]: Target;
 };
 
 type BaseProtoKeys = symbol | 'toString' | 'toJSON' | 'pipe';
@@ -291,8 +291,8 @@ type BaseProtoKeys = symbol | 'toString' | 'toJSON' | 'pipe';
  * @category Utility types
  */
 export type Data<T extends NonPrimitive, ProtoFunctions extends string | symbol = never> = {
-	readonly [k in keyof T as readonly [k] extends readonly [BaseProtoKeys | ProtoFunctions] ? never
-	:	k]: T[k];
+  readonly [k in keyof T as readonly [k] extends readonly [BaseProtoKeys | ProtoFunctions] ? never
+  : k]: T[k];
 };
 
 /**
@@ -301,8 +301,8 @@ export type Data<T extends NonPrimitive, ProtoFunctions extends string | symbol 
  * @category Utility types
  */
 export type Proto<T extends NonPrimitive, ProtoFunctions extends string | symbol = never> = Omit<
-	T,
-	keyof Data<T, ProtoFunctions>
+  T,
+  keyof Data<T, ProtoFunctions>
 >;
 
 /**
@@ -311,8 +311,8 @@ export type Proto<T extends NonPrimitive, ProtoFunctions extends string | symbol
  * @category Utils
  */
 export const objectFromDataAndProto = <P extends NonPrimitive, D extends NonPrimitive>(
-	proto: P,
-	data: D
+  proto: P,
+  data: D,
 ): P & D => Object.assign(Object.create(proto), data) as P & D;
 
 /**
@@ -322,12 +322,12 @@ export const objectFromDataAndProto = <P extends NonPrimitive, D extends NonPrim
  * @category Utility types
  */
 export type SetArgTypeTo<F, A> =
-	F extends Predicate.Refinement<infer _, infer R> ?
-		R extends A ?
-			Predicate.Refinement<A, R>
-		:	F
-	: F extends OneArgFunction<infer _, infer R> ? OneArgFunction<A, R>
-	: F;
+  F extends Predicate.Refinement<infer _, infer R> ?
+    R extends A ?
+      Predicate.Refinement<A, R>
+    : F
+  : F extends OneArgFunction<infer _, infer R> ? OneArgFunction<A, R>
+  : F;
 
 /**
  * Utility type that removes all private, symbolic and toString, toJSON keys from a type and makes
@@ -346,15 +346,15 @@ export type SetArgTypeTo<F, A> =
  * @category Utility types
  */
 export type ToKeyIntersection<T> =
-	{
-		readonly [K in keyof T]: (x: T[K]) => void;
-	} extends (
-		{
-			readonly [K: number]: (x: infer I) => void;
-		}
-	) ?
-		I
-	:	never;
+  {
+    readonly [K in keyof T]: (x: T[K]) => void;
+  } extends (
+    {
+      readonly [K: number]: (x: infer I) => void;
+    }
+  ) ?
+    I
+  : never;
 
 /**
  * Utility type that creates an intersection and simplifies it which Typescript does not do by
@@ -365,9 +365,9 @@ export type ToKeyIntersection<T> =
  */
 
 export type IntersectAndSimplify<T, U> =
-	readonly [T] extends readonly [U] ? T
-	: readonly [U] extends readonly [T] ? U
-	: T & U;
+  readonly [T] extends readonly [U] ? T
+  : readonly [U] extends readonly [T] ? U
+  : T & U;
 
 /**
  * From `unknown` to `Array`. Not based on Array.isArray from a Typescript perspective because it is
@@ -377,10 +377,10 @@ export type IntersectAndSimplify<T, U> =
  */
 export const isArray = <T>(arg: T): arg is ArrayType<T> => Array.isArray(arg);
 type ArrayType<T> = Extract<
-	true extends T & false ? AnyArray
-	: T extends AnyReadonlyArray ? T
-	: Array<unknown>,
-	T
+  true extends T & false ? AnyArray
+  : T extends AnyReadonlyArray ? T
+  : Array<unknown>,
+  T
 >;
 
 /**
@@ -452,7 +452,7 @@ export const isNotNull = <A>(input: A): input is Exclude<A, null> => input !== n
  * @category Guards
  */
 export const isNullable = <A>(input: A): input is Extract<A, null | undefined> =>
-	input === null || input === undefined;
+  input === null || input === undefined;
 
 /**
  * From a type `T` to the same type `T` without `null` and `undefined`
@@ -460,7 +460,7 @@ export const isNullable = <A>(input: A): input is Extract<A, null | undefined> =
  * @category Guards
  */
 export const isNotNullable = <A>(input: A): input is NonNullable<A> =>
-	input !== null && input !== undefined;
+  input !== null && input !== undefined;
 
 /**
  * From `unknown` to `NonPrimitive`
@@ -468,7 +468,7 @@ export const isNotNullable = <A>(input: A): input is NonNullable<A> =>
  * @category Guards
  */
 export const isNonPrimitive = <A>(input: A): input is Exclude<A, Primitive> & NonPrimitive =>
-	input !== null && (typeof input === 'object' || typeof input === 'function');
+  input !== null && (typeof input === 'object' || typeof input === 'function');
 
 /**
  * From `unknown` to `Primitive`
@@ -476,7 +476,7 @@ export const isNonPrimitive = <A>(input: A): input is Exclude<A, Primitive> & No
  * @category Guards
  */
 export const isPrimitive = <A>(input: A): input is Exclude<A, NonPrimitive> & Primitive =>
-	!isNonPrimitive(input);
+  !isNonPrimitive(input);
 
 /**
  * From `unknown` to `AnyFunction`
@@ -491,7 +491,7 @@ export const isFunction = (u: unknown): u is AnyFunction => typeof u === 'functi
  * @category Guards
  */
 export const isOneArgFunction = <A, R>(
-	f: (a: A, ...args: ReadonlyArray<any>) => R
+  f: (a: A, ...args: ReadonlyArray<any>) => R,
 ): f is (a: A) => R => f.length === 1;
 /**
  * From `Array<A>` to `EmptyArray`
@@ -506,7 +506,7 @@ export const isEmptyArray = <A>(u: Array<A>): u is EmptyArray => u.length === 0;
  * @category Guards
  */
 export const isEmptyReadonlyArray = <A>(u: ReadonlyArray<A>): u is EmptyReadonlyArray =>
-	u.length === 0;
+  u.length === 0;
 
 /**
  * From `Array<A>` to `OverOne<A>`
@@ -549,7 +549,7 @@ export const isSingleton = <A>(u: Array<A>): u is Singleton<A> => u.length === 1
  * @category Guards
  */
 export const isReadonlySingleton = <A>(u: ReadonlyArray<A>): u is ReadonlySingleton<A> =>
-	u.length === 1;
+  u.length === 1;
 
 /**
  * From `Array<A>` to `Pair<A,A>`
@@ -572,7 +572,7 @@ export const isReadonlyPair = <A>(u: ReadonlyArray<A>): u is ReadonlyPair<A, A> 
  * @category Guards
  */
 export const isIterable = (input: unknown): input is Iterable<unknown> =>
-	Predicate.hasProperty(input, Symbol.iterator);
+  Predicate.hasProperty(input, Symbol.iterator);
 
 /**
  * From `unknown` to `Errorish`
@@ -580,11 +580,11 @@ export const isIterable = (input: unknown): input is Iterable<unknown> =>
  * @category Guards
  */
 export const isErrorish = (u: unknown): u is Errorish =>
-	typeof u === 'object' &&
-	u !== null &&
-	'message' in u &&
-	typeof u.message === 'string' &&
-	(!('stack' in u) || typeof u.stack === 'string');
+  typeof u === 'object'
+  && u !== null
+  && 'message' in u
+  && typeof u.message === 'string'
+  && (!('stack' in u) || typeof u.stack === 'string');
 
 /**
  * If `u` is a TypedArray, returns a `some` of its name (e.g. UInt8Array). Otherwise, returns a
@@ -593,16 +593,16 @@ export const isErrorish = (u: unknown): u is Errorish =>
  * @category Information
  */
 export const typedArrayName = (u: unknown): Option.Option<string> =>
-	pipe(
-		_allTypedArrayConstructors,
-		Array.findFirst((constructor) => u instanceof constructor),
-		Option.map(
-			(constructor) =>
-				(constructor as unknown as { readonly [Symbol.species]: { readonly name: string } })[
-					Symbol.species
-				].name
-		)
-	);
+  pipe(
+    _allTypedArrayConstructors,
+    Array.findFirst((constructor) => u instanceof constructor),
+    Option.map(
+      (constructor) =>
+        (constructor as unknown as { readonly [Symbol.species]: { readonly name: string } })[
+          Symbol.species
+        ].name,
+    ),
+  );
 
 /**
  * From `unknown` to `TypedArray`
@@ -610,7 +610,7 @@ export const typedArrayName = (u: unknown): Option.Option<string> =>
  * @category Guards
  */
 export const isTypedArray = <A>(input: A): input is Extract<A, TypedArray> =>
-	pipe(input, typedArrayName, Option.isSome);
+  pipe(input, typedArrayName, Option.isSome);
 
 /**
  * Possible categories of a Javascript value
@@ -618,17 +618,17 @@ export const isTypedArray = <A>(input: A): input is Extract<A, TypedArray> =>
  * @category Models
  */
 export enum Category {
-	String = 0,
-	Number = 1,
-	Bigint = 2,
-	Boolean = 3,
-	Symbol = 4,
-	Null = 5,
-	Undefined = 6,
-	// Record is to be understood in its computer science usual meaning, so a list of values identified by a key. Not to be confused with a Typescript Record that also includes arrays and functions.
-	Record = 7,
-	Array = 8,
-	Function = 9
+  String = 0,
+  Number = 1,
+  Bigint = 2,
+  Boolean = 3,
+  Symbol = 4,
+  Null = 5,
+  Undefined = 6,
+  // Record is to be understood in its computer science usual meaning, so a list of values identified by a key. Not to be confused with a Typescript Record that also includes arrays and functions.
+  Record = 7,
+  Array = 8,
+  Function = 9,
 }
 
 /**
@@ -637,122 +637,122 @@ export enum Category {
  * @category Models
  */
 export namespace Category {
-	/**
-	 * Constructor
-	 *
-	 * @category Constructors
-	 */
-	export const fromValue = (u: unknown): Category => {
-		switch (typeof u) {
-			case 'string':
-				return Category.String;
-			case 'number':
-				return Category.Number;
-			case 'bigint':
-				return Category.Bigint;
-			case 'boolean':
-				return Category.Boolean;
-			case 'symbol':
-				return Category.Symbol;
-			case 'undefined':
-				return Category.Undefined;
-			case 'function':
-				return Category.Function;
-			case 'object':
-				return (
-					u === null ? Category.Null
-					: Array.isArray(u) ? Category.Array
-					: Category.Record
-				);
-			default:
-				return Function.absurd(u as never);
-		}
-	};
+  /**
+   * Constructor
+   *
+   * @category Constructors
+   */
+  export const fromValue = (u: unknown): Category => {
+    switch (typeof u) {
+      case 'string':
+        return Category.String;
+      case 'number':
+        return Category.Number;
+      case 'bigint':
+        return Category.Bigint;
+      case 'boolean':
+        return Category.Boolean;
+      case 'symbol':
+        return Category.Symbol;
+      case 'undefined':
+        return Category.Undefined;
+      case 'function':
+        return Category.Function;
+      case 'object':
+        return (
+          u === null ? Category.Null
+          : Array.isArray(u) ? Category.Array
+          : Category.Record
+        );
+      default:
+        return Function.absurd(u as never);
+    }
+  };
 
-	/**
-	 * Returns `true` if `self` represents a non-primitive. `false` otherwise
-	 *
-	 * @category Predicates
-	 */
-	export const isNonPrimitive: Predicate.Predicate<Category> = (self) =>
-		self === Category.Record || self === Category.Array || self === Category.Function;
+  /**
+   * Returns `true` if `self` represents a non-primitive. `false` otherwise
+   *
+   * @category Predicates
+   */
+  export const isNonPrimitive: Predicate.Predicate<Category> = (self) =>
+    self === Category.Record || self === Category.Array || self === Category.Function;
 
-	/**
-	 * Returns `true` if `self` represents a primitive. `false` otherwise
-	 *
-	 * @category Predicates
-	 */
-	export const isPrimitive: Predicate.Predicate<Category> = Predicate.not(isNonPrimitive);
+  /**
+   * Returns `true` if `self` represents a primitive. `false` otherwise
+   *
+   * @category Predicates
+   */
+  export const isPrimitive: Predicate.Predicate<Category> = Predicate.not(isNonPrimitive);
 
-	/**
-	 * Returns `true` if `self` represents a string. `false` otherwise
-	 *
-	 * @category Predicates
-	 */
-	export const isString: Predicate.Predicate<Category> = (self) => self === Category.String;
+  /**
+   * Returns `true` if `self` represents a string. `false` otherwise
+   *
+   * @category Predicates
+   */
+  export const isString: Predicate.Predicate<Category> = (self) => self === Category.String;
 
-	/**
-	 * Returns `true` if `self` represents a number. `false` otherwise
-	 *
-	 * @category Predicates
-	 */
-	export const isNumber: Predicate.Predicate<Category> = (self) => self === Category.Number;
+  /**
+   * Returns `true` if `self` represents a number. `false` otherwise
+   *
+   * @category Predicates
+   */
+  export const isNumber: Predicate.Predicate<Category> = (self) => self === Category.Number;
 
-	/**
-	 * Returns `true` if `self` represents a bigint. `false` otherwise
-	 *
-	 * @category Predicates
-	 */
-	export const isBigint: Predicate.Predicate<Category> = (self) => self === Category.Bigint;
+  /**
+   * Returns `true` if `self` represents a bigint. `false` otherwise
+   *
+   * @category Predicates
+   */
+  export const isBigint: Predicate.Predicate<Category> = (self) => self === Category.Bigint;
 
-	/**
-	 * Returns `true` if `self` represents a boolean. `false` otherwise
-	 *
-	 * @category Predicates
-	 */
-	export const isBoolean: Predicate.Predicate<Category> = (self) => self === Category.Boolean;
+  /**
+   * Returns `true` if `self` represents a boolean. `false` otherwise
+   *
+   * @category Predicates
+   */
+  export const isBoolean: Predicate.Predicate<Category> = (self) => self === Category.Boolean;
 
-	/**
-	 * Returns `true` if `self` represents a symbol. `false` otherwise
-	 *
-	 * @category Predicates
-	 */
-	export const isSymbol: Predicate.Predicate<Category> = (self) => self === Category.Symbol;
+  /**
+   * Returns `true` if `self` represents a symbol. `false` otherwise
+   *
+   * @category Predicates
+   */
+  export const isSymbol: Predicate.Predicate<Category> = (self) => self === Category.Symbol;
 
-	/**
-	 * Returns `true` if `self` is undefined. `false` otherwise
-	 *
-	 * @category Predicates
-	 */
-	export const isUndefined: Predicate.Predicate<Category> = (self) => self === Category.Undefined;
+  /**
+   * Returns `true` if `self` is undefined. `false` otherwise
+   *
+   * @category Predicates
+   */
+  export const isUndefined: Predicate.Predicate<Category> = (self) => self === Category.Undefined;
 
-	/**
-	 * Returns `true` if `self` is null. `false` otherwise
-	 *
-	 * @category Predicates
-	 */
-	export const isNull: Predicate.Predicate<Category> = (self) => self === Category.Null;
+  /**
+   * Returns `true` if `self` is null. `false` otherwise
+   *
+   * @category Predicates
+   */
+  export const isNull: Predicate.Predicate<Category> = (self) => self === Category.Null;
 
-	/**
-	 * Returns `true` if `self` represents a function. `false` otherwise
-	 *
-	 * @category Predicates
-	 */
-	export const isFunction: Predicate.Predicate<Category> = (self) => self === Category.Function;
+  /**
+   * Returns `true` if `self` represents a function. `false` otherwise
+   *
+   * @category Predicates
+   */
+  export const isFunction: Predicate.Predicate<Category> = (self) => self === Category.Function;
 
-	/**
-	 * Returns `true` if `self` represents an array. `false` otherwise
-	 *
-	 * @category Predicates
-	 */
-	export const isArray: Predicate.Predicate<Category> = (self) => self === Category.Array;
+  /**
+   * Returns `true` if `self` represents an array. `false` otherwise
+   *
+   * @category Predicates
+   */
+  export const isArray: Predicate.Predicate<Category> = (self) => self === Category.Array;
 
-	/**
-	 * Returns `true` if `self` represents a record. `false` otherwise
-	 *
-	 * @category Predicates
-	 */
-	export const isRecord: Predicate.Predicate<Category> = (self) => self === Category.Record;
+  /**
+   * Returns `true` if `self` represents a record. `false` otherwise
+   *
+   * @category Predicates
+   */
+  export const isRecord: Predicate.Predicate<Category> = (self) => self === Category.Record;
 }
 
 /**

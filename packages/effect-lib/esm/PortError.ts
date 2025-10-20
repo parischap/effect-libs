@@ -15,8 +15,8 @@ export const moduleTag = '@parischap/effect-lib/PortError/';
  * @category Models
  */
 export class Type extends Data.TaggedError(moduleTag)<{
-	readonly originalError: unknown;
-	readonly originalFunctionName: string;
-	readonly moduleName: string;
-	readonly libraryName: string;
+  readonly originalError: unknown;
+  readonly originalFunctionName: string;
+  readonly moduleName: string;
+  readonly libraryName: string;
 }> {}

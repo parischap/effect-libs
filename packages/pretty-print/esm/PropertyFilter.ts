@@ -8,15 +8,15 @@
 
 import { MFunction, MInspectable, MPipeable, MPredicate, MTypes } from '@parischap/effect-lib';
 import {
-	Array,
-	Boolean,
-	Equal,
-	Equivalence,
-	Hash,
-	pipe,
-	Pipeable,
-	Predicate,
-	Struct
+  Array,
+  Boolean,
+  Equal,
+  Equivalence,
+  Hash,
+  pipe,
+  Pipeable,
+  Predicate,
+  Struct,
 } from 'effect';
 import * as PPValue from './Value.js';
 import type * as PPValues from './Values.js';
@@ -36,12 +36,12 @@ type _TypeId = typeof _TypeId;
  * @category Models
  */
 export namespace Action {
-	/**
-	 * Type of the action
-	 *
-	 * @category Models
-	 */
-	export interface Type extends MTypes.OneArgFunction<PPValues.Type> {}
+  /**
+   * Type of the action
+   *
+   * @category Models
+   */
+  export interface Type extends MTypes.OneArgFunction<PPValues.Type> {}
 }
 
 /**
@@ -50,11 +50,11 @@ export namespace Action {
  * @category Models
  */
 export interface Type extends Action.Type, Equal.Equal, MInspectable.Type, Pipeable.Pipeable {
-	/** Id of this PropertyFilter instance. Useful for equality and debugging */
-	readonly id: string;
+  /** Id of this PropertyFilter instance. Useful for equality and debugging */
+  readonly id: string;
 
-	/** @internal */
-	readonly [_TypeId]: _TypeId;
+  /** @internal */
+  readonly [_TypeId]: _TypeId;
 }
 
 /**
@@ -74,18 +74,18 @@ export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.i
 /** Base */
 const _TypeIdHash = Hash.hash(_TypeId);
 const base: MTypes.Proto<Type> = {
-	[_TypeId]: _TypeId,
-	[Equal.symbol](this: Type, that: unknown): boolean {
-		return has(that) && equivalence(this, that);
-	},
-	[Hash.symbol](this: Type) {
-		return pipe(this.id, Hash.hash, Hash.combine(_TypeIdHash), Hash.cached(this));
-	},
-	[MInspectable.IdSymbol](this: Type) {
-		return this.id;
-	},
-	...MInspectable.BaseProto(moduleTag),
-	...MPipeable.BaseProto
+  [_TypeId]: _TypeId,
+  [Equal.symbol](this: Type, that: unknown): boolean {
+    return has(that) && equivalence(this, that);
+  },
+  [Hash.symbol](this: Type) {
+    return pipe(this.id, Hash.hash, Hash.combine(_TypeIdHash), Hash.cached(this));
+  },
+  [MInspectable.IdSymbol](this: Type) {
+    return this.id;
+  },
+  ...MInspectable.BaseProto(moduleTag),
+  ...MPipeable.BaseProto,
 };
 
 /**
@@ -94,10 +94,10 @@ const base: MTypes.Proto<Type> = {
  * @category Constructors
  */
 export const make = ({ id, action }: { readonly id: string; readonly action: Action.Type }): Type =>
-	Object.assign(MFunction.clone(action), {
-		id,
-		...base
-	});
+  Object.assign(MFunction.clone(action), {
+    id,
+    ...base,
+  });
 
 /**
  * Returns the `id` property of `self`
@@ -113,8 +113,8 @@ export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
  * @category Instances
  */
 export const removeNonFunctions: Type = make({
-	id: 'RemoveNonFunctions',
-	action: Array.filter(PPValue.isFunction)
+  id: 'RemoveNonFunctions',
+  action: Array.filter(PPValue.isFunction),
 });
 
 /**
@@ -123,8 +123,8 @@ export const removeNonFunctions: Type = make({
  * @category Instances
  */
 export const removeFunctions: Type = make({
-	id: 'RemoveFunctions',
-	action: Array.filter(Predicate.not(PPValue.isFunction))
+  id: 'RemoveFunctions',
+  action: Array.filter(Predicate.not(PPValue.isFunction)),
 });
 
 /**
@@ -133,8 +133,8 @@ export const removeFunctions: Type = make({
  * @category Instances
  */
 export const removeNonEnumerables: Type = make({
-	id: 'RemoveNonEnumerables',
-	action: Array.filter(PPValue.isEnumerable)
+  id: 'RemoveNonEnumerables',
+  action: Array.filter(PPValue.isEnumerable),
 });
 
 /**
@@ -143,8 +143,8 @@ export const removeNonEnumerables: Type = make({
  * @category Instances
  */
 export const removeEnumerables: Type = make({
-	id: 'RemoveEnumerables',
-	action: Array.filter(Predicate.not(PPValue.isEnumerable))
+  id: 'RemoveEnumerables',
+  action: Array.filter(Predicate.not(PPValue.isEnumerable)),
 });
 
 /**
@@ -153,8 +153,8 @@ export const removeEnumerables: Type = make({
  * @category Instances
  */
 export const removeStringKeys: Type = make({
-	id: 'RemoveStringKeys',
-	action: Array.filter(PPValue.hasSymbolicKey)
+  id: 'RemoveStringKeys',
+  action: Array.filter(PPValue.hasSymbolicKey),
 });
 
 /**
@@ -163,8 +163,8 @@ export const removeStringKeys: Type = make({
  * @category Instances
  */
 export const removeSymbolicKeys: Type = make({
-	id: 'RemoveSymbolicKeys',
-	action: Array.filter(Predicate.not(PPValue.hasSymbolicKey))
+  id: 'RemoveSymbolicKeys',
+  action: Array.filter(Predicate.not(PPValue.hasSymbolicKey)),
 });
 
 /**
@@ -177,15 +177,15 @@ export const removeSymbolicKeys: Type = make({
  * @category Constructors
  */
 export const removeNotFulfillingKeyPredicateMaker = ({
-	id,
-	predicate
+  id,
+  predicate,
 }: {
-	readonly id: string;
-	readonly predicate: Predicate.Predicate<string>;
+  readonly id: string;
+  readonly predicate: Predicate.Predicate<string>;
 }): Type =>
-	make({
-		id,
-		action: Array.filter(
-			MPredicate.struct({ oneLineStringKey: predicate, hasSymbolicKey: Boolean.not })
-		)
-	});
+  make({
+    id,
+    action: Array.filter(
+      MPredicate.struct({ oneLineStringKey: predicate, hasSymbolicKey: Boolean.not }),
+    ),
+  });

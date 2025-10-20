@@ -22,11 +22,11 @@ type _TypeId = typeof _TypeId;
  * @category Models
  */
 export interface Type extends MInspectable.Type, Pipeable.Pipeable {
-	/** The string representing this separator */
-	readonly value: string;
+  /** The string representing this separator */
+  readonly value: string;
 
-	/** @internal */
-	readonly [_TypeId]: _TypeId;
+  /** @internal */
+  readonly [_TypeId]: _TypeId;
 }
 
 /**
@@ -38,12 +38,12 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
 
 /** Proto */
 const proto: MTypes.Proto<Type> = {
-	[_TypeId]: _TypeId,
-	[MInspectable.IdSymbol](this: Type) {
-		return this.value;
-	},
-	...MInspectable.BaseProto(moduleTag),
-	...MPipeable.BaseProto
+  [_TypeId]: _TypeId,
+  [MInspectable.IdSymbol](this: Type) {
+    return this.value;
+  },
+  ...MInspectable.BaseProto(moduleTag),
+  ...MPipeable.BaseProto,
 };
 
 const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
@@ -61,19 +61,19 @@ export const make = (value: string): Type => _make({ value });
  * @category Destructors
  */
 export const toParser =
-	(self: Type) =>
-	(pos: number, text: string): Either.Either<string, MInputError.Type> => {
-		const value = self.value;
-		const length = value.length;
-		return pipe(
-			text,
-			MInputError.assertStartsWith({
-				startString: value,
-				name: `remaining text for separator at position ${pos}`
-			}),
-			Either.map(MString.takeRightBut(length))
-		);
-	};
+  (self: Type) =>
+  (pos: number, text: string): Either.Either<string, MInputError.Type> => {
+    const value = self.value;
+    const length = value.length;
+    return pipe(
+      text,
+      MInputError.assertStartsWith({
+        startString: value,
+        name: `remaining text for separator at position ${pos}`,
+      }),
+      Either.map(MString.takeRightBut(length)),
+    );
+  };
 
 /**
  * Returns the `value` property of `self`

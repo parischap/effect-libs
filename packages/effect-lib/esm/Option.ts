@@ -17,7 +17,7 @@ export type OptionOrNullable<A> = Option.Option<A> | null | undefined | A;
  */
 
 export const fromOptionOrNullable = <A>(a: OptionOrNullable<A>): Option.Option<A> =>
-	Option.isOption(a) ? a : Option.fromNullable(a);
+  Option.isOption(a) ? a : Option.fromNullable(a);
 
 /**
  * Reads the next value of an Iterator into an Option
@@ -25,6 +25,6 @@ export const fromOptionOrNullable = <A>(a: OptionOrNullable<A>): Option.Option<A
  * @category Utils
  */
 export const fromNextIteratorValue = <A>(iterator: Iterator<A>): Option.Option<A> => {
-	const next = iterator.next();
-	return next.done === false ? Option.some(next.value) : Option.none();
+  const next = iterator.next();
+  return next.done === false ? Option.some(next.value) : Option.none();
 };

@@ -1,101 +1,102 @@
 {
-	"name": "@parischap-dev/pretty-print",
-	"type": "module",
-	"author": "Jérôme MARTIN",
-	"license": "MIT",
-	"scripts": {
-		"tscheck": "tsc -b tsconfig.json --force --noEmit",
-		"lint": "eslint .",
-		"lint-fix": "eslint . --fix",
-		"lint-rules": "pnpx @eslint/config-inspector",
-		"update-config-files": "update-config-files",
-		"clean-config-files": "shx rm -rf package.json && shx rm -rf tsconfig.json",
-		"transpile-esm": "tsc -b tsconfig.esm.json --force",
-		"transpile-cjs": "babel dist/esm --plugins @babel/transform-export-namespace-from --plugins @babel/transform-modules-commonjs --out-dir dist/cjs --source-maps",
-		"transpile-annotate": "babel dist --plugins annotate-pure-calls --out-dir dist --source-maps",
-		"compile": "pnpm transpile-esm && pnpm transpile-cjs && pnpm transpile-annotate && pnpm prodify",
-		"build-and-publish": "pnpm build && pnpm checks && pnpm publish-to-npm",
-		"docgen": "docgen",
-		"circular": "madge --extensions ts --circular --no-color --no-spinner esm",
-		"checks": "pnpm circular && pnpm lint && pnpm tscheck && pnpm test",
-		"test": "vitest run",
-		"clean-prod": "shx rm -rf dist && shx mkdir -p dist",
-		"publish-to-npm": "cd dist && npm publish --access=public && cd ..",
-		"install-prod": "cd dist && pnpm i && cd ..",
-		"build": "pnpm clean-prod && pnpm --if-present pre-build && pnpm compile && pnpm --if-present post-build && pnpm install-prod",
-		"prodify": "prodify",
-		"examples": "vite-node examples/util-inspect-like.ts&&vite-node examples/treeify.ts&&vite-node examples/treeify-with-leaves.ts&&vite-node examples/circularity-handling.ts"
-	},
-	"publishConfig": {
-		"main": "./cjs/index.js",
-		"types": "./dts/index.d.ts",
-		"exports": {
-			".": {
-				"default": "./cjs/index.js",
-				"import": "./esm/index.js",
-				"types": "./dts/index.d.ts"
-			}
-		},
-		"scripts": {},
-		"devDependencies": {},
-		"peerDependencies": {
-			"@parischap/effect-lib": "^0.11.0",
-			"@parischap/ansi-styles": "^0.2.6",
-			"effect": "^3.18.1"
-		},
-		"publishConfig": {},
-		"packageManager": "",
-		"pnpm": {},
-		"type": ""
-	},
-	"bugs": {
-		"url": "https://github.com/parischap/effect-libs/issues"
-	},
-	"funding": [
-		{
-			"type": "ko-fi",
-			"url": "https://ko-fi.com/parischap"
-		}
-	],
-	"keywords": [
-		"inspect",
-		"util.inspect",
-		"object",
-		"stringify",
-		"pretty",
-		"tree",
-		"treeify",
-		"print",
-		"console",
-		"visualize",
-		"debug",
-		"typescript",
-		"effect",
-		"effect",
-		"typescript",
-		"functional-programming"
-	],
-	"description": "A functional library to pretty-print and treeify objects",
-	"module": "./esm/index.js",
-	"exports": {
-		".": {
-			"import": "./esm/index.ts"
-		}
-	},
-	"sideEffects": [],
-	"dependencies": {},
-	"devDependencies": {
-		"@parischap/pretty-print": "link:."
-	},
-	"peerDependencies": {
-		"@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
-		"@parischap/ansi-styles": "workspace:@parischap-dev/ansi-styles@*",
-		"effect": "^3.18.1"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/parischap/effect-libs.git",
-		"directory": "packages/pretty-print"
-	},
-	"homepage": "https://github.com/parischap/effect-libs/tree/master/packages/pretty-print"
+  "name": "@parischap-dev/pretty-print",
+  "type": "module",
+  "author": "Jérôme MARTIN",
+  "license": "MIT",
+  "scripts": {
+    "tscheck": "tsc -b tsconfig.json --force --noEmit",
+    "lint": "eslint .",
+    "lint-fix": "eslint . --fix",
+    "lint-rules": "pnpx @eslint/config-inspector",
+    "format": "prettier . --write",
+    "update-config-files": "update-config-files",
+    "clean-config-files": "shx rm -rf package.json && shx rm -rf tsconfig.json",
+    "transpile-esm": "tsc -b tsconfig.esm.json --force",
+    "transpile-cjs": "babel dist/esm --plugins @babel/transform-export-namespace-from --plugins @babel/transform-modules-commonjs --out-dir dist/cjs --source-maps",
+    "transpile-annotate": "babel dist --plugins annotate-pure-calls --out-dir dist --source-maps",
+    "compile": "pnpm transpile-esm && pnpm transpile-cjs && pnpm transpile-annotate && pnpm prodify",
+    "build-and-publish": "pnpm build && pnpm checks && pnpm publish-to-npm",
+    "docgen": "docgen",
+    "circular": "madge --extensions ts --circular --no-color --no-spinner esm",
+    "checks": "pnpm circular && pnpm lint && pnpm tscheck && pnpm test",
+    "test": "vitest run",
+    "clean-prod": "shx rm -rf dist && shx mkdir -p dist",
+    "publish-to-npm": "cd dist && npm publish --access=public && cd ..",
+    "install-prod": "cd dist && pnpm i && cd ..",
+    "build": "pnpm clean-prod && pnpm --if-present pre-build && pnpm compile && pnpm --if-present post-build && pnpm install-prod",
+    "prodify": "prodify",
+    "examples": "vite-node examples/util-inspect-like.ts&&vite-node examples/treeify.ts&&vite-node examples/treeify-with-leaves.ts&&vite-node examples/circularity-handling.ts"
+  },
+  "publishConfig": {
+    "main": "./cjs/index.js",
+    "types": "./dts/index.d.ts",
+    "exports": {
+      ".": {
+        "default": "./cjs/index.js",
+        "import": "./esm/index.js",
+        "types": "./dts/index.d.ts"
+      }
+    },
+    "scripts": {},
+    "devDependencies": {},
+    "peerDependencies": {
+      "@parischap/effect-lib": "^0.11.0",
+      "@parischap/ansi-styles": "^0.2.6",
+      "effect": "^3.18.1"
+    },
+    "publishConfig": {},
+    "packageManager": "",
+    "pnpm": {},
+    "type": ""
+  },
+  "bugs": {
+    "url": "https://github.com/parischap/effect-libs/issues"
+  },
+  "funding": [
+    {
+      "type": "ko-fi",
+      "url": "https://ko-fi.com/parischap"
+    }
+  ],
+  "keywords": [
+    "inspect",
+    "util.inspect",
+    "object",
+    "stringify",
+    "pretty",
+    "tree",
+    "treeify",
+    "print",
+    "console",
+    "visualize",
+    "debug",
+    "typescript",
+    "effect",
+    "effect",
+    "typescript",
+    "functional-programming"
+  ],
+  "description": "A functional library to pretty-print and treeify objects",
+  "module": "./esm/index.js",
+  "exports": {
+    ".": {
+      "import": "./esm/index.ts"
+    }
+  },
+  "sideEffects": [],
+  "dependencies": {},
+  "devDependencies": {
+    "@parischap/pretty-print": "link:."
+  },
+  "peerDependencies": {
+    "@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
+    "@parischap/ansi-styles": "workspace:@parischap-dev/ansi-styles@*",
+    "effect": "^3.18.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/parischap/effect-libs.git",
+    "directory": "packages/pretty-print"
+  },
+  "homepage": "https://github.com/parischap/effect-libs/tree/master/packages/pretty-print"
 }

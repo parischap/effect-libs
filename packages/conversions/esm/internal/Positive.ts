@@ -29,13 +29,13 @@ export type Type = Brand.Branded<number, _TypeId>;
  * @internal
  */
 export const constructor = Brand.refined<Type>(
-	Number.greaterThanOrEqualTo(0),
-	flow(
-		MString.fromNumber(10),
-		MString.prepend("'"),
-		MString.append("' is not positive"),
-		Brand.error
-	)
+  Number.greaterThanOrEqualTo(0),
+  flow(
+    MString.fromNumber(10),
+    MString.prepend("'"),
+    MString.append("' is not positive"),
+    Brand.error,
+  ),
 );
 
 /**
@@ -45,8 +45,8 @@ export const constructor = Brand.refined<Type>(
  * @internal
  */
 export const fromNumberOption: MTypes.OneArgFunction<
-	number,
-	Option.Option<Type>
+  number,
+  Option.Option<Type>
 > = constructor.option.bind(constructor);
 
 /**
@@ -56,8 +56,8 @@ export const fromNumberOption: MTypes.OneArgFunction<
  * @internal
  */
 export const fromNumber: MTypes.OneArgFunction<
-	number,
-	Either.Either<Type, Brand.Brand.BrandErrors>
+  number,
+  Either.Either<Type, Brand.Brand.BrandErrors>
 > = constructor.either.bind(constructor);
 
 /**

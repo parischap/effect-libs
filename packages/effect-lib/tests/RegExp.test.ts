@@ -4,35 +4,35 @@ import { pipe, Tuple } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('MRegExp', () => {
-	const regExp = /af(o)o(bar)?a/;
+  const regExp = /af(o)o(bar)?a/;
 
-	describe('match', () => {
-		it('Matching', () => {
-			TEUtils.assertSome(pipe(regExp, MRegExp.match('afooa')), 'afooa');
-			TEUtils.assertSome(pipe(regExp, MRegExp.match('afoobara')), 'afoobara');
-		});
+  describe('match', () => {
+    it('Matching', () => {
+      TEUtils.assertSome(pipe(regExp, MRegExp.match('afooa')), 'afooa');
+      TEUtils.assertSome(pipe(regExp, MRegExp.match('afoobara')), 'afoobara');
+    });
 
-		it('Non matching', () => {
-			TEUtils.assertNone(pipe(regExp, MRegExp.match('afoob')));
-		});
-	});
+    it('Non matching', () => {
+      TEUtils.assertNone(pipe(regExp, MRegExp.match('afoob')));
+    });
+  });
 
-	describe('matchAndGroups', () => {
-		it('Matching', () => {
-			TEUtils.assertSome(
-				pipe(regExp, MRegExp.matchAndGroups('afooa', 2)),
-				Tuple.make('afooa', Tuple.make('o', ''))
-			);
-		});
+  describe('matchAndGroups', () => {
+    it('Matching', () => {
+      TEUtils.assertSome(
+        pipe(regExp, MRegExp.matchAndGroups('afooa', 2)),
+        Tuple.make('afooa', Tuple.make('o', '')),
+      );
+    });
 
-		it('Non matching', () => {
-			TEUtils.assertNone(MRegExp.match('afoob')(regExp));
-		});
-	});
+    it('Non matching', () => {
+      TEUtils.assertNone(MRegExp.match('afoob')(regExp));
+    });
+  });
 
-	describe('capturedGroups', () => {
-		it('Matching', () => {
-			TEUtils.assertSome(pipe(regExp, MRegExp.capturedGroups('afooa', 2)), Tuple.make('o', ''));
-		});
-	});
+  describe('capturedGroups', () => {
+    it('Matching', () => {
+      TEUtils.assertSome(pipe(regExp, MRegExp.capturedGroups('afooa', 2)), Tuple.make('o', ''));
+    });
+  });
 });

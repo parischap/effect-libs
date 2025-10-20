@@ -4,60 +4,60 @@ import { Number, pipe, String } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('MFunction', () => {
-	describe('fIfTrue', () => {
-		it('Matching', () => {
-			TEUtils.strictEqual(
-				pipe(1 as number, MFunction.fIfTrue({ condition: true, f: Number.increment })),
-				2
-			);
-		});
+  describe('fIfTrue', () => {
+    it('Matching', () => {
+      TEUtils.strictEqual(
+        pipe(1 as number, MFunction.fIfTrue({ condition: true, f: Number.increment })),
+        2,
+      );
+    });
 
-		it('Non-matching', () => {
-			TEUtils.strictEqual(
-				pipe(1 as number, MFunction.fIfTrue({ condition: false, f: Number.increment })),
-				1
-			);
-		});
-	});
+    it('Non-matching', () => {
+      TEUtils.strictEqual(
+        pipe(1 as number, MFunction.fIfTrue({ condition: false, f: Number.increment })),
+        1,
+      );
+    });
+  });
 
-	it('flipDual', () => {
-		TEUtils.strictEqual(pipe(2, MFunction.flipDual(String.takeLeft)('foo')), 'fo');
-	});
+  it('flipDual', () => {
+    TEUtils.strictEqual(pipe(2, MFunction.flipDual(String.takeLeft)('foo')), 'fo');
+  });
 
-	it('parameterNumber', () => {
-		TEUtils.strictEqual(
-			pipe((m: number, n: number) => m + n, MFunction.parameterNumber),
-			2
-		);
-	});
+  it('parameterNumber', () => {
+    TEUtils.strictEqual(
+      pipe((m: number, n: number) => m + n, MFunction.parameterNumber),
+      2,
+    );
+  });
 
-	it('name', () => {
-		TEUtils.strictEqual(pipe(Math.max, MFunction.name), 'max');
-	});
+  it('name', () => {
+    TEUtils.strictEqual(pipe(Math.max, MFunction.name), 'max');
+  });
 
-	it('once', () => {
-		/* eslint-disable-next-line functional/no-let */
-		let a = 0;
-		const complexFoo = () => a++;
-		const memoized = MFunction.once(complexFoo);
-		TEUtils.strictEqual(memoized(), 0);
-		TEUtils.strictEqual(memoized(), 0);
-	});
+  it('once', () => {
+    /* eslint-disable-next-line functional/no-let */
+    let a = 0;
+    const complexFoo = () => a++;
+    const memoized = MFunction.once(complexFoo);
+    TEUtils.strictEqual(memoized(), 0);
+    TEUtils.strictEqual(memoized(), 0);
+  });
 
-	it('applyAsMethod', () => {
-		TEUtils.strictEqual(pipe(Array.prototype.pop, MFunction.applyAsThis([1, 2])), 2);
-	});
+  it('applyAsMethod', () => {
+    TEUtils.strictEqual(pipe(Array.prototype.pop, MFunction.applyAsThis([1, 2])), 2);
+  });
 
-	it('execute', () => {
-		TEUtils.strictEqual(
-			pipe(() => 1, MFunction.execute),
-			1
-		);
-	});
+  it('execute', () => {
+    TEUtils.strictEqual(
+      pipe(() => 1, MFunction.execute),
+      1,
+    );
+  });
 
-	it('clone', () => {
-		const incCopy = MFunction.clone(Number.increment);
-		TEUtils.assertFalse(incCopy === Number.increment);
-		TEUtils.strictEqual(incCopy(1), 2);
-	});
+  it('clone', () => {
+    const incCopy = MFunction.clone(Number.increment);
+    TEUtils.assertFalse(incCopy === Number.increment);
+    TEUtils.strictEqual(incCopy(1), 2);
+  });
 });

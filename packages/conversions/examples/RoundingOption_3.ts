@@ -5,13 +5,13 @@ import { Equal } from 'effect';
 console.log(CVRoundingOption.halfExpand2);
 
 const dummyOption1 = CVRoundingOption.make({
-	precision: 3,
-	roundingMode: CVRoundingMode.Type.HalfEven
+  precision: 3,
+  roundingMode: CVRoundingMode.Type.HalfEven,
 });
 
 const dummyOption2 = CVRoundingOption.make({
-	precision: 2,
-	roundingMode: CVRoundingMode.Type.HalfExpand
+  precision: 2,
+  roundingMode: CVRoundingMode.Type.HalfExpand,
 });
 
 // Result: false

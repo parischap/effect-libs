@@ -24,12 +24,12 @@ type _TypeId = typeof _TypeId;
  * @category Models
  */
 export namespace DirectAction {
-	/**
-	 * Type of the action
-	 *
-	 * @category Models
-	 */
-	export interface Type<in C> extends MTypes.OneArgFunction<C, ASStyle.Action.Type> {}
+  /**
+   * Type of the action
+   *
+   * @category Models
+   */
+  export interface Type<in C> extends MTypes.OneArgFunction<C, ASStyle.Action.Type> {}
 }
 
 /**
@@ -38,26 +38,26 @@ export namespace DirectAction {
  * @category Models
  */
 export namespace ReversedAction {
-	/**
-	 * Namespace of an initialized ContextStyler used as an action with flipped parameters
-	 *
-	 * @category Models
-	 */
-	export namespace Initialized {
-		/**
-		 * Type of the action
-		 *
-		 * @category Models
-		 */
-		export interface Type<in C> extends MTypes.OneArgFunction<C, ASText.Type> {}
-	}
+  /**
+   * Namespace of an initialized ContextStyler used as an action with flipped parameters
+   *
+   * @category Models
+   */
+  export namespace Initialized {
+    /**
+     * Type of the action
+     *
+     * @category Models
+     */
+    export interface Type<in C> extends MTypes.OneArgFunction<C, ASText.Type> {}
+  }
 
-	/**
-	 * Type of the action
-	 *
-	 * @category Models
-	 */
-	export interface Type<in C> extends MTypes.OneArgFunction<string, Initialized.Type<C>> {}
+  /**
+   * Type of the action
+   *
+   * @category Models
+   */
+  export interface Type<in C> extends MTypes.OneArgFunction<string, Initialized.Type<C>> {}
 }
 
 /**
@@ -66,14 +66,14 @@ export namespace ReversedAction {
  * @category Models
  */
 export namespace Action {
-	/**
-	 * Type of the action
-	 *
-	 * @category Models
-	 */
-	export interface Type<in C> extends DirectAction.Type<C> {
-		readonly withContextLast: ReversedAction.Type<C>;
-	}
+  /**
+   * Type of the action
+   *
+   * @category Models
+   */
+  export interface Type<in C> extends DirectAction.Type<C> {
+    readonly withContextLast: ReversedAction.Type<C>;
+  }
 }
 
 /**
@@ -82,14 +82,14 @@ export namespace Action {
  * @category Models
  */
 export namespace IndexFromContext {
-	/**
-	 * Type of an IndexFromContext
-	 *
-	 * @category Models
-	 */
-	export interface Type<in C> {
-		(c: C): number;
-	}
+  /**
+   * Type of an IndexFromContext
+   *
+   * @category Models
+   */
+  export interface Type<in C> {
+    (c: C): number;
+  }
 }
 
 /**
@@ -98,17 +98,17 @@ export namespace IndexFromContext {
  * @category Models
  */
 export interface Type<in C>
-	extends Action.Type<C>,
-		Equal.Equal,
-		MInspectable.Type,
-		Pipeable.Pipeable {
-	/** Id of this ContextStyler instance. Useful for equality and debugging */
-	readonly id: string;
+  extends Action.Type<C>,
+    Equal.Equal,
+    MInspectable.Type,
+    Pipeable.Pipeable {
+  /** Id of this ContextStyler instance. Useful for equality and debugging */
+  readonly id: string;
 
-	/** @internal */
-	readonly [_TypeId]: {
-		readonly _C: Types.Contravariant<C>;
-	};
+  /** @internal */
+  readonly [_TypeId]: {
+    readonly _C: Types.Contravariant<C>;
+  };
 }
 
 /**
@@ -124,23 +124,23 @@ export const has = (u: unknown): u is Type<unknown> => Predicate.hasProperty(u, 
  * @category Equivalences
  */
 export const equivalence: Equivalence.Equivalence<Type<unknown>> = (self, that) =>
-	that.id === self.id;
+  that.id === self.id;
 
 /** Base */
 const _TypeIdHash = Hash.hash(_TypeId);
 const base: MTypes.Proto<Type<unknown>> = {
-	[_TypeId]: { _C: MTypes.contravariantValue },
-	[Equal.symbol](this: Type<unknown>, that: unknown): boolean {
-		return has(that) && equivalence(this, that);
-	},
-	[Hash.symbol]<A>(this: Type<A>) {
-		return pipe(this.id, Hash.hash, Hash.combine(_TypeIdHash), Hash.cached(this));
-	},
-	[MInspectable.IdSymbol]<A>(this: Type<A>) {
-		return this.id;
-	},
-	...MInspectable.BaseProto(moduleTag),
-	...MPipeable.BaseProto
+  [_TypeId]: { _C: MTypes.contravariantValue },
+  [Equal.symbol](this: Type<unknown>, that: unknown): boolean {
+    return has(that) && equivalence(this, that);
+  },
+  [Hash.symbol]<A>(this: Type<A>) {
+    return pipe(this.id, Hash.hash, Hash.combine(_TypeIdHash), Hash.cached(this));
+  },
+  [MInspectable.IdSymbol]<A>(this: Type<A>) {
+    return this.id;
+  },
+  ...MInspectable.BaseProto(moduleTag),
+  ...MPipeable.BaseProto,
 };
 
 /**
@@ -150,14 +150,14 @@ const base: MTypes.Proto<Type<unknown>> = {
  * @category Constructors
  */
 export const fromSingleStyle = <C>(style: ASStyle.Type): Type<C> => {
-	return Object.assign((() => style) satisfies DirectAction.Type<unknown>, {
-		...base,
-		id: ASStyle.toId(style) + 'Formatter',
-		withContextLast: ((toStyle) => {
-			const styled = style(toStyle);
-			return () => styled;
-		}) satisfies ReversedAction.Type<unknown>
-	});
+  return Object.assign((() => style) satisfies DirectAction.Type<unknown>, {
+    ...base,
+    id: ASStyle.toId(style) + 'Formatter',
+    withContextLast: ((toStyle) => {
+      const styled = style(toStyle);
+      return () => styled;
+    }) satisfies ReversedAction.Type<unknown>,
+  });
 };
 
 /**
@@ -169,24 +169,24 @@ export const fromSingleStyle = <C>(style: ASStyle.Type): Type<C> => {
  * @category Constructors
  */
 export const fromPalette = <C>({
-	palette,
-	indexFromContext
+  palette,
+  indexFromContext,
 }: {
-	readonly palette: ASPalette.Type;
-	readonly indexFromContext: IndexFromContext.Type<C>;
+  readonly palette: ASPalette.Type;
+  readonly indexFromContext: IndexFromContext.Type<C>;
 }): Type<C> => {
-	const styles = palette.styles;
-	const n = styles.length;
+  const styles = palette.styles;
+  const n = styles.length;
 
-	const getStyle: DirectAction.Type<C> = (context) =>
-		pipe(styles, MArray.unsafeGet(indexFromContext(context) % n));
+  const getStyle: DirectAction.Type<C> = (context) =>
+    pipe(styles, MArray.unsafeGet(indexFromContext(context) % n));
 
-	return Object.assign(MFunction.clone(getStyle), {
-		...base,
-		id: String.capitalize(indexFromContext.name) + 'Based' + ASPalette.toId(palette) + 'Formatter',
-		withContextLast: ((toStyle) => (context) =>
-			getStyle(context)(toStyle)) satisfies ReversedAction.Type<C>
-	});
+  return Object.assign(MFunction.clone(getStyle), {
+    ...base,
+    id: String.capitalize(indexFromContext.name) + 'Based' + ASPalette.toId(palette) + 'Formatter',
+    withContextLast: ((toStyle) => (context) =>
+      getStyle(context)(toStyle)) satisfies ReversedAction.Type<C>,
+  });
 };
 
 /**

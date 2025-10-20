@@ -3,7 +3,7 @@ import { TEUtils } from '@parischap/test-utils';
 import { describe, it } from 'vitest';
 
 describe('Dummy', () => {
-	it('dummy', () => {
-		TEUtils.assertTrue(true);
-	});
+  it('dummy', () => {
+    TEUtils.assertTrue(true);
+  });
 });

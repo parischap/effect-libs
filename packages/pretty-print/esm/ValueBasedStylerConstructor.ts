@@ -22,6 +22,6 @@ export interface Type extends MTypes.OneArgFunction<string, PPValueBasedStyler.T
  * @category Constructors
  */
 export const fromOption =
-	(option: PPOption.Type): Type =>
-	(partName) =>
-		pipe(option.styleMap, PPStyleMap.get(partName));
+  (option: PPOption.Type): Type =>
+  (partName) =>
+    pipe(option.styleMap, PPStyleMap.get(partName));

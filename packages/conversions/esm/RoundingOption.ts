@@ -4,12 +4,12 @@
  */
 
 import {
-	MBigDecimal,
-	MBigInt,
-	MInspectable,
-	MNumber,
-	MPipeable,
-	MTypes
+  MBigDecimal,
+  MBigInt,
+  MInspectable,
+  MNumber,
+  MPipeable,
+  MTypes,
 } from '@parischap/effect-lib';
 import { BigDecimal, Equal, Equivalence, Hash, pipe, Pipeable, Predicate, Struct } from 'effect';
 import * as CVRoundingMode from './RoundingMode.js';
@@ -31,14 +31,14 @@ const _bigDecimal10 = BigDecimal.make(10n, 0);
  * @category Models
  */
 export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable {
-	/** The precision at which to round the number. Must be a finite positive integer. */
-	readonly precision: number;
+  /** The precision at which to round the number. Must be a finite positive integer. */
+  readonly precision: number;
 
-	/** The rounding mode to use */
-	readonly roundingMode: CVRoundingMode.Type;
+  /** The rounding mode to use */
+  readonly roundingMode: CVRoundingMode.Type;
 
-	/** @internal */
-	readonly [_TypeId]: _TypeId;
+  /** @internal */
+  readonly [_TypeId]: _TypeId;
 }
 
 /**
@@ -54,28 +54,28 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
  * @category Equivalences
  */
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
-	self.precision === that.precision && self.roundingMode === that.roundingMode;
+  self.precision === that.precision && self.roundingMode === that.roundingMode;
 
 /** Prototype */
 
 const proto: MTypes.Proto<Type> = {
-	[_TypeId]: _TypeId,
-	[Equal.symbol](this: Type, that: unknown): boolean {
-		return has(that) && equivalence(this, that);
-	},
-	[Hash.symbol](this: Type) {
-		return pipe(
-			this.precision,
-			Hash.hash,
-			Hash.combine(Hash.hash(this.roundingMode)),
-			Hash.cached(this)
-		);
-	},
-	[MInspectable.IdSymbol](this: Type) {
-		return `${CVRoundingMode.getName(this.roundingMode)}RounderWith${this.precision}Precision`;
-	},
-	...MInspectable.BaseProto(moduleTag),
-	...MPipeable.BaseProto
+  [_TypeId]: _TypeId,
+  [Equal.symbol](this: Type, that: unknown): boolean {
+    return has(that) && equivalence(this, that);
+  },
+  [Hash.symbol](this: Type) {
+    return pipe(
+      this.precision,
+      Hash.hash,
+      Hash.combine(Hash.hash(this.roundingMode)),
+      Hash.cached(this),
+    );
+  },
+  [MInspectable.IdSymbol](this: Type) {
+    return `${CVRoundingMode.getName(this.roundingMode)}RounderWith${this.precision}Precision`;
+  },
+  ...MInspectable.BaseProto(moduleTag),
+  ...MPipeable.BaseProto,
 };
 
 /** Constructor */
@@ -87,10 +87,10 @@ const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto
  * @category Constructors
  */
 export const make = ({
-	precision = 0,
-	roundingMode = CVRoundingMode.Type.HalfExpand
+  precision = 0,
+  roundingMode = CVRoundingMode.Type.HalfExpand,
 }: { readonly precision?: number; readonly roundingMode?: CVRoundingMode.Type } = {}): Type =>
-	_make({ precision, roundingMode });
+  _make({ precision, roundingMode });
 
 /**
  * `CVRoundingOption` instance that uses the `HalfExpand` `CVRoundingMode` and `precision=2`. Can be
@@ -113,7 +113,7 @@ export const precision: MTypes.OneArgFunction<Type, number> = Struct.get('precis
  * @category Destructors
  */
 export const roundingMode: MTypes.OneArgFunction<Type, CVRoundingMode.Type> =
-	Struct.get('roundingMode');
+  Struct.get('roundingMode');
 
 /**
  * Builds a number Rounder implementing `self`, i.e a function that rounds a number as specified by
@@ -122,19 +122,19 @@ export const roundingMode: MTypes.OneArgFunction<Type, CVRoundingMode.Type> =
  * @category Destructors
  */
 export const toNumberRounder = (self: Type): MTypes.OneArgFunction<number> => {
-	const shiftMultiplicand = pipe(1, MNumber.shift(self.precision));
-	const unshiftMultiplicand = 1.0 / shiftMultiplicand;
-	const correcter = CVRoundingMode.toCorrecter(self.roundingMode);
-	return (n) => {
-		const shiftedSelf = shiftMultiplicand * n;
-		const truncatedShiftedSelf = Math.trunc(shiftedSelf);
-		const firstFollowingDigit = Math.trunc((shiftedSelf - truncatedShiftedSelf) * 10);
-		return (
-			unshiftMultiplicand *
-			(truncatedShiftedSelf +
-				correcter({ firstFollowingDigit, isEven: truncatedShiftedSelf % 2 == 0 }))
-		);
-	};
+  const shiftMultiplicand = pipe(1, MNumber.shift(self.precision));
+  const unshiftMultiplicand = 1.0 / shiftMultiplicand;
+  const correcter = CVRoundingMode.toCorrecter(self.roundingMode);
+  return (n) => {
+    const shiftedSelf = shiftMultiplicand * n;
+    const truncatedShiftedSelf = Math.trunc(shiftedSelf);
+    const firstFollowingDigit = Math.trunc((shiftedSelf - truncatedShiftedSelf) * 10);
+    return (
+      unshiftMultiplicand
+      * (truncatedShiftedSelf
+        + correcter({ firstFollowingDigit, isEven: truncatedShiftedSelf % 2 == 0 }))
+    );
+  };
 };
 
 /**
@@ -144,30 +144,30 @@ export const toNumberRounder = (self: Type): MTypes.OneArgFunction<number> => {
  * @category Destructors
  */
 export const toBigDecimalRounder = (self: Type): MTypes.OneArgFunction<BigDecimal.BigDecimal> => {
-	const shiftValue = BigDecimal.make(1n, -self.precision);
-	const shift = BigDecimal.multiply(shiftValue);
-	const unshift = BigDecimal.unsafeDivide(shiftValue);
-	const correcter = CVRoundingMode.toCorrecter(self.roundingMode);
-	return (n) => {
-		const shiftedSelf = shift(n);
-		const truncatedShiftedSelf = pipe(shiftedSelf, MBigDecimal.trunc());
-		const firstFollowingDigit = pipe(
-			shiftedSelf,
-			BigDecimal.subtract(truncatedShiftedSelf),
-			BigDecimal.multiply(_bigDecimal10),
-			MBigDecimal.trunc(),
-			BigDecimal.unsafeToNumber
-		);
-		return pipe(
-			truncatedShiftedSelf,
-			BigDecimal.sum(
-				pipe(
-					{ firstFollowingDigit, isEven: MBigInt.isEven(truncatedShiftedSelf.value) },
-					correcter,
-					BigDecimal.unsafeFromNumber
-				)
-			),
-			unshift
-		);
-	};
+  const shiftValue = BigDecimal.make(1n, -self.precision);
+  const shift = BigDecimal.multiply(shiftValue);
+  const unshift = BigDecimal.unsafeDivide(shiftValue);
+  const correcter = CVRoundingMode.toCorrecter(self.roundingMode);
+  return (n) => {
+    const shiftedSelf = shift(n);
+    const truncatedShiftedSelf = pipe(shiftedSelf, MBigDecimal.trunc());
+    const firstFollowingDigit = pipe(
+      shiftedSelf,
+      BigDecimal.subtract(truncatedShiftedSelf),
+      BigDecimal.multiply(_bigDecimal10),
+      MBigDecimal.trunc(),
+      BigDecimal.unsafeToNumber,
+    );
+    return pipe(
+      truncatedShiftedSelf,
+      BigDecimal.sum(
+        pipe(
+          { firstFollowingDigit, isEven: MBigInt.isEven(truncatedShiftedSelf.value) },
+          correcter,
+          BigDecimal.unsafeFromNumber,
+        ),
+      ),
+      unshift,
+    );
+  };
 };

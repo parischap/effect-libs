@@ -6,26 +6,26 @@ import { inspect } from 'node:util';
 import { describe, it } from 'vitest';
 
 describe('Values', () => {
-	it('fromProperties', () => {
-		const topValueProto = {
-			toString(): string {
-				return 'MyName';
-			}
-		};
+  it('fromProperties', () => {
+    const topValueProto = {
+      toString(): string {
+        return 'MyName';
+      },
+    };
 
-		const topValue = Object.assign(Object.create(topValueProto), {
-			a: [1, 3],
-			b: true
-		}) as unknown;
+    const topValue = Object.assign(Object.create(topValueProto), {
+      a: [1, 3],
+      b: true,
+    }) as unknown;
 
-		TEUtils.strictEqual(
-			pipe(
-				PPValue.fromTopValue(topValue) as PPValue.NonPrimitive,
-				PPValues.fromProperties(1),
-				Array.map((p) => p.toString()),
-				Array.join('\n')
-			),
-			`{
+    TEUtils.strictEqual(
+      pipe(
+        PPValue.fromTopValue(topValue) as PPValue.NonPrimitive,
+        PPValues.fromProperties(1),
+        Array.map((p) => p.toString()),
+        Array.join('\n'),
+      ),
+      `{
   "_id": "@parischap/pretty-print/Value/",
   "content": [
     1,
@@ -65,19 +65,19 @@ describe('Values', () => {
   "oneLineStringKey": "toString",
   "hasSymbolicKey": false,
   "isEnumerable": true
-}`
-		);
-	});
+}`,
+    );
+  });
 
-	it('fromValueIterable', () => {
-		TEUtils.strictEqual(
-			pipe(
-				PPValue.fromTopValue([1, 'a']) as PPValue.NonPrimitive,
-				PPValues.fromValueIterable,
-				Array.map((p) => p.toString()),
-				Array.join('\n')
-			),
-			`{
+  it('fromValueIterable', () => {
+    TEUtils.strictEqual(
+      pipe(
+        PPValue.fromTopValue([1, 'a']) as PPValue.NonPrimitive,
+        PPValues.fromValueIterable,
+        Array.map((p) => p.toString()),
+        Array.join('\n'),
+      ),
+      `{
   "_id": "@parischap/pretty-print/Value/",
   "content": 1,
   "contentType": 1,
@@ -102,20 +102,20 @@ describe('Values', () => {
   "oneLineStringKey": "1",
   "hasSymbolicKey": false,
   "isEnumerable": true
-}`
-		);
-	});
+}`,
+    );
+  });
 
-	it('fromKeyValueIterable', () => {
-		const stringifier: PPOption.Stringifier.Type = flow(inspect, ASText.fromString, Array.of);
-		TEUtils.strictEqual(
-			pipe(
-				PPValue.fromTopValue(HashMap.make(['a', 1], ['b', 2])) as PPValue.NonPrimitive,
-				PPValues.fromKeyValueIterable(stringifier),
-				Array.map((p) => p.toString()),
-				Array.join('\n')
-			),
-			`{
+  it('fromKeyValueIterable', () => {
+    const stringifier: PPOption.Stringifier.Type = flow(inspect, ASText.fromString, Array.of);
+    TEUtils.strictEqual(
+      pipe(
+        PPValue.fromTopValue(HashMap.make(['a', 1], ['b', 2])) as PPValue.NonPrimitive,
+        PPValues.fromKeyValueIterable(stringifier),
+        Array.map((p) => p.toString()),
+        Array.join('\n'),
+      ),
+      `{
   "_id": "@parischap/pretty-print/Value/",
   "content": 1,
   "contentType": 1,
@@ -140,7 +140,7 @@ describe('Values', () => {
   "oneLineStringKey": "b",
   "hasSymbolicKey": false,
   "isEnumerable": true
-}`
-		);
-	});
+}`,
+    );
+  });
 });

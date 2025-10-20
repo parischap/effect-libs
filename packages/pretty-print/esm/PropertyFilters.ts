@@ -33,8 +33,8 @@ export const utilInspectLike: Type = Array.of(PPPropertyFilter.removeNonEnumerab
  * @category Destructors
  */
 export const toSyntheticPropertyFilter =
-	(self: Type): PPPropertyFilter.Action.Type =>
-	(properties) =>
-		Array.reduce(self, properties, (remainingProperties, propertyFilter) =>
-			propertyFilter(remainingProperties)
-		);
+  (self: Type): PPPropertyFilter.Action.Type =>
+  (properties) =>
+    Array.reduce(self, properties, (remainingProperties, propertyFilter) =>
+      propertyFilter(remainingProperties),
+    );

@@ -8,8 +8,8 @@ import { Pipeable } from 'effect';
  * @category Constants
  */
 export const BaseProto: Pipeable.Pipeable = {
-	pipe(this: object) {
-		/* eslint-disable-next-line prefer-rest-params, functional/functional-parameters */
-		return Pipeable.pipeArguments(this, arguments);
-	}
+  pipe(this: object) {
+    /* eslint-disable-next-line prefer-rest-params, functional/functional-parameters */
+    return Pipeable.pipeArguments(this, arguments);
+  },
 };

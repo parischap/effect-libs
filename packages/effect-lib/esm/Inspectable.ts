@@ -30,7 +30,7 @@ export type IdSymbol = typeof IdSymbol;
  * @category Models
  */
 export interface Type extends Inspectable.Inspectable {
-	readonly [IdSymbol]: () => string;
+  readonly [IdSymbol]: () => string;
 }
 
 /**
@@ -39,31 +39,31 @@ export interface Type extends Inspectable.Inspectable {
  * @category Constants
  */
 export const BaseProto = (moduleTag: string): Inspectable.Inspectable => ({
-	...Inspectable.BaseProto,
-	/**
-	 * If the object (usually its prototype) has an `[IdSymbol]` function, returns the result of this
-	 * function. Otherwise, returns this with an extra '_id' field containing the moduleTag.
-	 */
-	toJSON(this: object): unknown {
-		return pipe(
-			this,
-			MRecord.tryZeroParamStringFunction({
-				functionName: IdSymbol
-			}),
-			Option.getOrElse(() => ({ _id: moduleTag, ...this }))
-		);
-	},
-	/**
-	 * If the object (usually its prototype) has an `[IdSymbol]` function, returns the result of this
-	 * function. Otherwise, calls the Inspectable.toString function
-	 */
-	toString(this: object): string {
-		return pipe(
-			this,
-			MRecord.tryZeroParamStringFunction({
-				functionName: IdSymbol
-			}),
-			Option.getOrElse(() => Inspectable.BaseProto.toString.call(this))
-		);
-	}
+  ...Inspectable.BaseProto,
+  /**
+   * If the object (usually its prototype) has an `[IdSymbol]` function, returns the result of this
+   * function. Otherwise, returns this with an extra '_id' field containing the moduleTag.
+   */
+  toJSON(this: object): unknown {
+    return pipe(
+      this,
+      MRecord.tryZeroParamStringFunction({
+        functionName: IdSymbol,
+      }),
+      Option.getOrElse(() => ({ _id: moduleTag, ...this })),
+    );
+  },
+  /**
+   * If the object (usually its prototype) has an `[IdSymbol]` function, returns the result of this
+   * function. Otherwise, calls the Inspectable.toString function
+   */
+  toString(this: object): string {
+    return pipe(
+      this,
+      MRecord.tryZeroParamStringFunction({
+        functionName: IdSymbol,
+      }),
+      Option.getOrElse(() => Inspectable.BaseProto.toString.call(this)),
+    );
+  },
 });

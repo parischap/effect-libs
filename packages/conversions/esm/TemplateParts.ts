@@ -19,15 +19,15 @@ export interface Type<T = any> extends ReadonlyArray<CVTemplatePart.Type<string,
  * @category Destructors
  */
 export const getSyntheticDescription: MTypes.OneArgFunction<Type, string> = flow(
-	Array.map(
-		flow(
-			MMatch.make,
-			MMatch.when(CVTemplatePart.isPlaceholder, CVTemplatePlaceholder.label),
-			MMatch.when(CVTemplatePart.isSeparator, CVTemplateSeparator.value),
-			MMatch.exhaustive
-		)
-	),
-	Array.join('')
+  Array.map(
+    flow(
+      MMatch.make,
+      MMatch.when(CVTemplatePart.isPlaceholder, CVTemplatePlaceholder.label),
+      MMatch.when(CVTemplatePart.isSeparator, CVTemplateSeparator.value),
+      MMatch.exhaustive,
+    ),
+  ),
+  Array.join(''),
 );
 
 /**
@@ -37,16 +37,16 @@ export const getSyntheticDescription: MTypes.OneArgFunction<Type, string> = flow
  * @category Destructors
  */
 export const getPlaceholderDescription: MTypes.OneArgFunction<Type, string> = flow(
-	Array.filterMap(
-		flow(
-			MMatch.make,
-			MMatch.when(
-				CVTemplatePart.isPlaceholder,
-				flow(CVTemplatePlaceholder.getLabelledDescription, Option.some)
-			),
-			MMatch.when(CVTemplatePart.isSeparator, Function.constant(Option.none())),
-			MMatch.exhaustive
-		)
-	),
-	Array.join('.\n')
+  Array.filterMap(
+    flow(
+      MMatch.make,
+      MMatch.when(
+        CVTemplatePart.isPlaceholder,
+        flow(CVTemplatePlaceholder.getLabelledDescription, Option.some),
+      ),
+      MMatch.when(CVTemplatePart.isSeparator, Function.constant(Option.none())),
+      MMatch.exhaustive,
+    ),
+  ),
+  Array.join('.\n'),
 );

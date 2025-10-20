@@ -36,13 +36,13 @@ export type Type = Brand.Branded<number, _TypeId>;
  * @ignore
  */
 export const constructor = Brand.refined<Type>(
-	MNumber.isFinite,
-	flow(
-		MString.fromNumber(10),
-		MString.prepend("'"),
-		MString.append("' does not represent a finite number"),
-		Brand.error
-	)
+  MNumber.isFinite,
+  flow(
+    MString.fromNumber(10),
+    MString.prepend("'"),
+    MString.append("' does not represent a finite number"),
+    Brand.error,
+  ),
 );
 
 /**
@@ -59,8 +59,8 @@ export const unsafeFromNumber = Brand.nominal<Type>();
  * @category Constructors
  */
 export const fromNumberOption: MTypes.OneArgFunction<
-	number,
-	Option.Option<Type>
+  number,
+  Option.Option<Type>
 > = constructor.option.bind(constructor);
 
 /**
@@ -70,8 +70,8 @@ export const fromNumberOption: MTypes.OneArgFunction<
  * @category Constructors
  */
 export const fromNumber: MTypes.OneArgFunction<
-	number,
-	Either.Either<Type, Brand.Brand.BrandErrors>
+  number,
+  Either.Either<Type, Brand.Brand.BrandErrors>
 > = constructor.either.bind(constructor);
 
 /**
@@ -87,7 +87,7 @@ export const fromNumberOrThrow: MTypes.OneArgFunction<number, Type> = constructo
  * @category Constructors
  */
 export const unsafeFromBigDecimal: MTypes.OneArgFunction<BigDecimal.BigDecimal, Type> =
-	MNumber.unsafeFromBigDecimal as never;
+  MNumber.unsafeFromBigDecimal as never;
 
 /**
  * Tries to construct a `CVReal` from a `BigDecimal`. Returns a `Some` if the conversion can be
@@ -96,8 +96,8 @@ export const unsafeFromBigDecimal: MTypes.OneArgFunction<BigDecimal.BigDecimal, 
  * @category Constructors
  */
 export const fromBigDecimalOption: MTypes.OneArgFunction<
-	BigDecimal.BigDecimal,
-	Option.Option<Type>
+  BigDecimal.BigDecimal,
+  Option.Option<Type>
 > = MNumber.fromBigDecimalOption as never;
 
 /**
@@ -107,8 +107,8 @@ export const fromBigDecimalOption: MTypes.OneArgFunction<
  * @category Constructors
  */
 export const fromBigDecimal: MTypes.OneArgFunction<
-	BigDecimal.BigDecimal,
-	Either.Either<Type, Brand.Brand.BrandErrors>
+  BigDecimal.BigDecimal,
+  Either.Either<Type, Brand.Brand.BrandErrors>
 > = MNumber.fromBigDecimal as never;
 
 /**
@@ -117,7 +117,7 @@ export const fromBigDecimal: MTypes.OneArgFunction<
  * @category Constructors
  */
 export const fromBigDecimalOrThrow: MTypes.OneArgFunction<BigDecimal.BigDecimal, Type> =
-	MNumber.fromBigDecimalOrThrow as never;
+  MNumber.fromBigDecimalOrThrow as never;
 
 /**
  * Constructs a `CVReal` from a `BigInt` without any checks
@@ -125,7 +125,7 @@ export const fromBigDecimalOrThrow: MTypes.OneArgFunction<BigDecimal.BigDecimal,
  * @category Constructors
  */
 export const unsafeFromBigInt: MTypes.OneArgFunction<bigint, Type> =
-	MNumber.unsafeFromBigInt as never;
+  MNumber.unsafeFromBigInt as never;
 
 /**
  * Tries to construct a `CVReal` from a `BigInt`. Returns a `Some` if the conversion can be
@@ -134,8 +134,8 @@ export const unsafeFromBigInt: MTypes.OneArgFunction<bigint, Type> =
  * @category Constructors
  */
 export const fromBigIntOption: MTypes.OneArgFunction<
-	bigint,
-	Option.Option<Type>
+  bigint,
+  Option.Option<Type>
 > = MNumber.fromBigIntOption as never;
 
 /**
@@ -145,8 +145,8 @@ export const fromBigIntOption: MTypes.OneArgFunction<
  * @category Constructors
  */
 export const fromBigInt: MTypes.OneArgFunction<
-	bigint,
-	Either.Either<Type, Brand.Brand.BrandErrors>
+  bigint,
+  Either.Either<Type, Brand.Brand.BrandErrors>
 > = MNumber.fromBigInt as never;
 
 /**
@@ -155,7 +155,7 @@ export const fromBigInt: MTypes.OneArgFunction<
  * @category Constructors
  */
 export const fromBigIntOrThrow: MTypes.OneArgFunction<bigint, Type> =
-	MNumber.fromBigIntOrThrow as never;
+  MNumber.fromBigIntOrThrow as never;
 
 /**
  * A `Schema` that transforms a number into a `CVReal`
@@ -163,7 +163,7 @@ export const fromBigIntOrThrow: MTypes.OneArgFunction<bigint, Type> =
  * @ignore
  */
 export const SchemaFromNumber: Schema.Schema<Type, number> = Schema.Number.pipe(
-	Schema.fromBrand(constructor)
+  Schema.fromBrand(constructor),
 );
 
 /**

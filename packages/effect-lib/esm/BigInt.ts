@@ -10,7 +10,7 @@ import * as MTypes from './types.js';
  * @category Constructors
  */
 export const fromPrimitiveOrThrow: MTypes.OneArgFunction<string | number | boolean, bigint> =
-	BigInt;
+  BigInt;
 
 /**
  * Constructs an Option of a bigint from a number. Will only return a `none` if the number is NaN,
@@ -19,8 +19,8 @@ export const fromPrimitiveOrThrow: MTypes.OneArgFunction<string | number | boole
  * @category Constructors
  */
 export const fromPrimitiveOption: MTypes.OneArgFunction<
-	string | number | boolean,
-	Option.Option<bigint>
+  string | number | boolean,
+  Option.Option<bigint>
 > = Option.liftThrowable(fromPrimitiveOrThrow);
 
 /**
@@ -30,9 +30,9 @@ export const fromPrimitiveOption: MTypes.OneArgFunction<
  * @category Constructors
  */
 export const fromPrimitive = (
-	i: string | number | boolean
+  i: string | number | boolean,
 ): Either.Either<bigint, Brand.Brand.BrandErrors> =>
-	Either.try({ try: () => BigInt(i), catch: (e) => Brand.error((e as Error).message) });
+  Either.try({ try: () => BigInt(i), catch: (e) => Brand.error((e as Error).message) });
 
 /**
  * Returns `true` if `self` is positive
@@ -75,7 +75,7 @@ export const isOdd: Predicate.Predicate<bigint> = Predicate.not(isEven);
  * @category Destructors
  */
 export const unsafeLog10 = (self: bigint): number =>
-	pipe(self.toString(), String.length, Number.decrement);
+  pipe(self.toString(), String.length, Number.decrement);
 
 /**
  * Calculates the base-10 log of a bigint
@@ -83,6 +83,6 @@ export const unsafeLog10 = (self: bigint): number =>
  * @category Destructors
  */
 export const log10: MTypes.OneArgFunction<bigint, Option.Option<number>> = flow(
-	Option.liftPredicate(isPositive),
-	Option.map(unsafeLog10)
+  Option.liftPredicate(isPositive),
+  Option.map(unsafeLog10),
 );

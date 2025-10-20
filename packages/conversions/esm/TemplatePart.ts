@@ -22,7 +22,7 @@ export type Type<N extends string, T> = CVTemplateSeparator.Type | CVTemplatePla
  * @category Guards
  */
 export const isPlaceholder = <const N extends string, T>(
-	u: Type<N, T>
+  u: Type<N, T>,
 ): u is CVTemplatePlaceholder.Type<N, T> => CVTemplatePlaceholder.has(u);
 
 /**
@@ -31,5 +31,5 @@ export const isPlaceholder = <const N extends string, T>(
  * @category Guards
  */
 export const isSeparator = <const N extends string, T>(
-	u: Type<N, T>
+  u: Type<N, T>,
 ): u is CVTemplateSeparator.Type => CVTemplateSeparator.has(u);

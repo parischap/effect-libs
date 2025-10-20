@@ -11,10 +11,10 @@ import * as MTypes from './types.js';
  * @category Utils
  */
 export const unsafeGet =
-	(key: string | symbol) =>
-	<A>(self: Record.ReadonlyRecord<string, A>): A =>
-		// @ts-expect-error getting record content unsafely
-		self[key];
+  (key: string | symbol) =>
+  <A>(self: Record.ReadonlyRecord<string, A>): A =>
+    // @ts-expect-error getting record content unsafely
+    self[key];
 
 /**
  * Tries to call method `functionName` on `self` with no parameters. Returns a `some` of the result
@@ -24,30 +24,30 @@ export const unsafeGet =
  * @category Utils
  */
 export const tryZeroParamFunction =
-	({
-		functionName,
-		exception
-	}: {
-		readonly functionName: string | symbol;
-		readonly exception?: MTypes.AnyFunction;
-	}) =>
-	(self: MTypes.NonPrimitive): Option.Option<unknown> =>
-		pipe(
-			self[functionName],
-			Option.liftPredicate(MTypes.isFunction),
-			Option.filter(
-				Predicate.and(
-					pipe(
-						exception,
-						Option.liftPredicate(MTypes.isNotUndefined),
-						Option.map(flow(MPredicate.strictEquals, Predicate.not)),
-						Option.getOrElse(() => Function.constTrue)
-					),
-					flow(MFunction.parameterNumber, MPredicate.strictEquals(0))
-				)
-			),
-			Option.map(MFunction.applyAsThis(self))
-		);
+  ({
+    functionName,
+    exception,
+  }: {
+    readonly functionName: string | symbol;
+    readonly exception?: MTypes.AnyFunction;
+  }) =>
+  (self: MTypes.NonPrimitive): Option.Option<unknown> =>
+    pipe(
+      self[functionName],
+      Option.liftPredicate(MTypes.isFunction),
+      Option.filter(
+        Predicate.and(
+          pipe(
+            exception,
+            Option.liftPredicate(MTypes.isNotUndefined),
+            Option.map(flow(MPredicate.strictEquals, Predicate.not)),
+            Option.getOrElse(() => Function.constTrue),
+          ),
+          flow(MFunction.parameterNumber, MPredicate.strictEquals(0)),
+        ),
+      ),
+      Option.map(MFunction.applyAsThis(self)),
+    );
 
 /**
  * Same as `tryZeroParamStringFunction` but returns a `none` if the result of the function is not a
@@ -56,7 +56,7 @@ export const tryZeroParamFunction =
  * @category Utils
  */
 export const tryZeroParamStringFunction = (params: {
-	readonly functionName: string | symbol;
-	readonly exception?: MTypes.AnyFunction;
+  readonly functionName: string | symbol;
+  readonly exception?: MTypes.AnyFunction;
 }): MTypes.OneArgFunction<MTypes.NonPrimitive, Option.Option<string>> =>
-	flow(tryZeroParamFunction(params), Option.filter(MTypes.isString));
+  flow(tryZeroParamFunction(params), Option.filter(MTypes.isString));

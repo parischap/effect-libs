@@ -8,16 +8,16 @@
 
 import { MInspectable, MPipeable, MString, MTypes } from '@parischap/effect-lib';
 import {
-	Array,
-	Equal,
-	Equivalence,
-	flow,
-	Function,
-	Hash,
-	pipe,
-	Pipeable,
-	Predicate,
-	Struct
+  Array,
+  Equal,
+  Equivalence,
+  flow,
+  Function,
+  Hash,
+  pipe,
+  Pipeable,
+  Predicate,
+  Struct,
 } from 'effect';
 import * as ASStyle from './Style.js';
 import * as ASStyles from './Styles.js';
@@ -37,11 +37,11 @@ type _TypeId = typeof _TypeId;
  * @category Models
  */
 export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable {
-	/** Array of styles contained by this Palette */
-	readonly styles: ASStyles.Type;
+  /** Array of styles contained by this Palette */
+  readonly styles: ASStyles.Type;
 
-	/** @internal */
-	readonly [_TypeId]: _TypeId;
+  /** @internal */
+  readonly [_TypeId]: _TypeId;
 }
 
 /**
@@ -58,23 +58,23 @@ const _equivalence = Array.getEquivalence(ASStyle.equivalence);
  * @category Equivalences
  */
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
-	_equivalence(self.styles, that.styles);
+  _equivalence(self.styles, that.styles);
 
 /** Prototype */
 const _TypeIdHash = Hash.hash(_TypeId);
 const proto: MTypes.Proto<Type> = {
-	[_TypeId]: _TypeId,
-	[Equal.symbol](this: Type, that: unknown): boolean {
-		return has(that) && equivalence(this, that);
-	},
-	[Hash.symbol](this: Type) {
-		return pipe(this.styles, Hash.array, Hash.combine(_TypeIdHash), Hash.cached(this));
-	},
-	[MInspectable.IdSymbol](this: Type) {
-		return toId(this);
-	},
-	...MInspectable.BaseProto(moduleTag),
-	...MPipeable.BaseProto
+  [_TypeId]: _TypeId,
+  [Equal.symbol](this: Type, that: unknown): boolean {
+    return has(that) && equivalence(this, that);
+  },
+  [Hash.symbol](this: Type) {
+    return pipe(this.styles, Hash.array, Hash.combine(_TypeIdHash), Hash.cached(this));
+  },
+  [MInspectable.IdSymbol](this: Type) {
+    return toId(this);
+  },
+  ...MInspectable.BaseProto(moduleTag),
+  ...MPipeable.BaseProto,
 };
 
 /** Constructor */
@@ -94,9 +94,9 @@ const _tupledMake = Function.tupled<ASStyles.Type, Type>(make);
  * @category Destructors
  */
 export const toId: MTypes.OneArgFunction<Type, string> = flow(
-	Struct.get('styles'),
-	ASStyles.toId,
-	MString.append('Palette')
+  Struct.get('styles'),
+  ASStyles.toId,
+  MString.append('Palette'),
 );
 
 /**
@@ -112,9 +112,9 @@ export const styles: MTypes.OneArgFunction<Type, ASStyles.Type> = Struct.get('st
  * @category Utils
  */
 export const append =
-	(that: Type) =>
-	(self: Type): Type =>
-		pipe(self.styles, ASStyles.append(that.styles), _tupledMake);
+  (that: Type) =>
+  (self: Type): Type =>
+    pipe(self.styles, ASStyles.append(that.styles), _tupledMake);
 
 /**
  * Palette instance which contains all standard original colors
@@ -123,14 +123,14 @@ export const append =
  */
 
 export const allStandardOriginalColors: Type = make(
-	ASStyle.black,
-	ASStyle.red,
-	ASStyle.green,
-	ASStyle.yellow,
-	ASStyle.blue,
-	ASStyle.magenta,
-	ASStyle.cyan,
-	ASStyle.white
+  ASStyle.black,
+  ASStyle.red,
+  ASStyle.green,
+  ASStyle.yellow,
+  ASStyle.blue,
+  ASStyle.magenta,
+  ASStyle.cyan,
+  ASStyle.white,
 );
 
 /**
@@ -140,14 +140,14 @@ export const allStandardOriginalColors: Type = make(
  */
 
 export const allBrightOriginalColors: Type = make(
-	ASStyle.Bright.black,
-	ASStyle.Bright.red,
-	ASStyle.Bright.green,
-	ASStyle.Bright.yellow,
-	ASStyle.Bright.blue,
-	ASStyle.Bright.magenta,
-	ASStyle.Bright.cyan,
-	ASStyle.Bright.white
+  ASStyle.Bright.black,
+  ASStyle.Bright.red,
+  ASStyle.Bright.green,
+  ASStyle.Bright.yellow,
+  ASStyle.Bright.blue,
+  ASStyle.Bright.magenta,
+  ASStyle.Bright.cyan,
+  ASStyle.Bright.white,
 );
 
 /**
@@ -157,6 +157,6 @@ export const allBrightOriginalColors: Type = make(
  */
 
 export const allOriginalColors: Type = pipe(
-	allStandardOriginalColors,
-	append(allBrightOriginalColors)
+  allStandardOriginalColors,
+  append(allBrightOriginalColors),
 );

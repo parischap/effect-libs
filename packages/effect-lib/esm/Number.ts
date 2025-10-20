@@ -29,10 +29,10 @@ export const unsafeFromBigInt: MTypes.OneArgFunction<bigint, number> = Number;
  * @category Constructors
  */
 export const fromBigIntOption: MTypes.OneArgFunction<bigint, Option.Option<number>> = flow(
-	Option.liftPredicate(
-		BigInt.between({ minimum: _bigIntMinSafeInteger, maximum: _bigIntMaxSafeInteger })
-	),
-	Option.map(unsafeFromBigInt)
+  Option.liftPredicate(
+    BigInt.between({ minimum: _bigIntMinSafeInteger, maximum: _bigIntMaxSafeInteger }),
+  ),
+  Option.map(unsafeFromBigInt),
 );
 
 /**
@@ -41,11 +41,11 @@ export const fromBigIntOption: MTypes.OneArgFunction<bigint, Option.Option<numbe
  * @category Constructors
  */
 export const fromBigInt = (self: bigint): Either.Either<number, Brand.Brand.BrandErrors> =>
-	pipe(
-		self,
-		fromBigIntOption,
-		Either.fromOption(() => Brand.error(`BigInt '${self}' too big to be converted to number`))
-	);
+  pipe(
+    self,
+    fromBigIntOption,
+    Either.fromOption(() => Brand.error(`BigInt '${self}' too big to be converted to number`)),
+  );
 
 /**
  * Same as `fromBigInt` but throws in case of an error
@@ -53,8 +53,8 @@ export const fromBigInt = (self: bigint): Either.Either<number, Brand.Brand.Bran
  * @category Constructors
  */
 export const fromBigIntOrThrow: MTypes.OneArgFunction<bigint, number> = flow(
-	fromBigInt,
-	Either.getOrThrowWith(Function.identity)
+  fromBigInt,
+  Either.getOrThrowWith(Function.identity),
 );
 
 /**
@@ -64,7 +64,7 @@ export const fromBigIntOrThrow: MTypes.OneArgFunction<bigint, number> = flow(
  * @category Constructors
  */
 export const unsafeFromBigDecimal: MTypes.OneArgFunction<BigDecimal.BigDecimal, number> =
-	BigDecimal.unsafeToNumber;
+  BigDecimal.unsafeToNumber;
 
 /**
  * Builds a number from a BigDecimal. Returns a `some` if the BigDecimal is in the 64-bit range of a
@@ -73,13 +73,13 @@ export const unsafeFromBigDecimal: MTypes.OneArgFunction<BigDecimal.BigDecimal, 
  * @category Constructors
  */
 export const fromBigDecimalOption: MTypes.OneArgFunction<
-	BigDecimal.BigDecimal,
-	Option.Option<number>
+  BigDecimal.BigDecimal,
+  Option.Option<number>
 > = flow(
-	Option.liftPredicate(
-		BigDecimal.between({ minimum: _bigDecimalMinSafeInteger, maximum: _bigDecimalMaxSafeInteger })
-	),
-	Option.map(unsafeFromBigDecimal)
+  Option.liftPredicate(
+    BigDecimal.between({ minimum: _bigDecimalMinSafeInteger, maximum: _bigDecimalMaxSafeInteger }),
+  ),
+  Option.map(unsafeFromBigDecimal),
 );
 
 /**
@@ -88,15 +88,15 @@ export const fromBigDecimalOption: MTypes.OneArgFunction<
  * @category Constructors
  */
 export const fromBigDecimal = (
-	self: BigDecimal.BigDecimal
+  self: BigDecimal.BigDecimal,
 ): Either.Either<number, Brand.Brand.BrandErrors> =>
-	pipe(
-		self,
-		fromBigDecimalOption,
-		Either.fromOption(() =>
-			Brand.error(`BigDecimal '${self.toString()}' too big to be converted to number`)
-		)
-	);
+  pipe(
+    self,
+    fromBigDecimalOption,
+    Either.fromOption(() =>
+      Brand.error(`BigDecimal '${self.toString()}' too big to be converted to number`),
+    ),
+  );
 
 /**
  * Same as `fromBigDecimal` but throws in case of an error
@@ -104,8 +104,8 @@ export const fromBigDecimal = (
  * @category Constructors
  */
 export const fromBigDecimalOrThrow: MTypes.OneArgFunction<BigDecimal.BigDecimal, number> = flow(
-	fromBigDecimal,
-	Either.getOrThrowWith(Function.identity)
+  fromBigDecimal,
+  Either.getOrThrowWith(Function.identity),
 );
 
 /**
@@ -131,11 +131,11 @@ export const unsafeFromString: MTypes.NumberFromString = (s) => +s;
  * @category Utils
  */
 export const intModulo = (divisor: number): MTypes.OneArgFunction<number> => {
-	const absDivisor = Math.abs(divisor);
-	return (self) => {
-		const rest = self % divisor;
-		return rest + (rest >= 0 ? 0 : absDivisor);
-	};
+  const absDivisor = Math.abs(divisor);
+  return (self) => {
+    const rest = self % divisor;
+    return rest + (rest >= 0 ? 0 : absDivisor);
+  };
 };
 
 /**
@@ -145,11 +145,11 @@ export const intModulo = (divisor: number): MTypes.OneArgFunction<number> => {
  * @category Destructors
  */
 export const quotientAndRemainder =
-	(divisor: number) =>
-	(self: number): [quotient: number, remainder: number] => {
-		const quotient = Math.floor(self / divisor);
-		return [quotient, self - quotient * divisor];
-	};
+  (divisor: number) =>
+  (self: number): [quotient: number, remainder: number] => {
+    const quotient = Math.floor(self / divisor);
+    return [quotient, self - quotient * divisor];
+  };
 
 /**
  * Predicate that returns true if two numbers are equal
@@ -157,9 +157,9 @@ export const quotientAndRemainder =
  * @category Predicates
  */
 export const equals =
-	(n: number): Predicate.Predicate<number> =>
-	(self) =>
-		Math.abs(self - n) < Number.EPSILON;
+  (n: number): Predicate.Predicate<number> =>
+  (self) =>
+    Math.abs(self - n) < Number.EPSILON;
 
 /**
  * Truncates a number after `precision` decimal digits. `precision` must be a positive finite
@@ -168,9 +168,9 @@ export const equals =
  * @category Utils
  */
 export const trunc =
-	(precision = 0) =>
-	(self: number): number =>
-		pipe(self, shift(precision), Math.trunc, shift(-precision));
+  (precision = 0) =>
+  (self: number): number =>
+    pipe(self, shift(precision), Math.trunc, shift(-precision));
 
 /**
  * Returns true if the provided number is NaN, Infinity, +Infinity or -Infinity
@@ -206,7 +206,7 @@ export const isNotInt: Predicate.Predicate<number> = Predicate.not(Number.isInte
  * @category Predicates
  */
 export const isMultipleOf: (a: number) => Predicate.Predicate<number> = (a) => (self) =>
-	self % a === 0;
+  self % a === 0;
 
 /**
  * Returns `self` multiplied by 10^n

@@ -2,7 +2,7 @@
 import { describe, it } from 'vitest';
 
 describe('Dummy', () => {
-	it('dummy', () => {
-		TEUtils.strictEqual(1,1);
-	});
+  it('dummy', () => {
+    TEUtils.strictEqual(1, 1);
+  });
 });

@@ -44,7 +44,7 @@ export const empty: Type = pipe(ASText.empty, fromText);
  * @category Constructors
  */
 export const fromStringifiedProperties: MTypes.OneArgFunction<PPStringifiedProperties.Type, Type> =
-	Array.match({ onEmpty: Function.constant(empty), onNonEmpty: Array.flatten });
+  Array.match({ onEmpty: Function.constant(empty), onNonEmpty: Array.flatten });
 
 /**
  * Returns a single-line version of `self`
@@ -59,9 +59,9 @@ export const toSingleLine: MTypes.OneArgFunction<Type> = flow(ASText.join(ASText
  * @category Predicates
  */
 export const isEmpty: Predicate.Predicate<Type> = MArray.match012({
-	onEmpty: Function.constTrue,
-	onSingleton: ASText.isEmpty,
-	onOverTwo: Function.constFalse
+  onEmpty: Function.constTrue,
+  onSingleton: ASText.isEmpty,
+  onOverTwo: Function.constFalse,
 });
 
 /**
@@ -84,7 +84,7 @@ export const addLineAfter = (line: ASText.Type): MTypes.OneArgFunction<Type> => 
  * @category Utils
  */
 export const addLineBefore = (line: ASText.Type): MTypes.OneArgFunction<Type> =>
-	Array.prepend(line);
+  Array.prepend(line);
 
 /**
  * Returns a copy of `self` in which `text` has been prepended to each line
@@ -92,7 +92,7 @@ export const addLineBefore = (line: ASText.Type): MTypes.OneArgFunction<Type> =>
  * @category Utils
  */
 export const prependToAllLines = (text: ASText.Type): MTypes.OneArgFunction<Type> =>
-	Array.map(ASText.prepend(text));
+  Array.map(ASText.prepend(text));
 
 /**
  * Returns a copy of `self` in which `text` has been appended to the last line
@@ -100,7 +100,7 @@ export const prependToAllLines = (text: ASText.Type): MTypes.OneArgFunction<Type
  * @category Utils
  */
 export const appendToLastLine = (text: ASText.Type): MTypes.OneArgFunction<Type> =>
-	Array.modifyNonEmptyLast(ASText.append(text));
+  Array.modifyNonEmptyLast(ASText.append(text));
 
 /**
  * Returns a copy of `self` in which `text` has been prepended to the first line
@@ -108,7 +108,7 @@ export const appendToLastLine = (text: ASText.Type): MTypes.OneArgFunction<Type>
  * @category Utils
  */
 export const prependToFirstLine = (text: ASText.Type): MTypes.OneArgFunction<Type> =>
-	Array.modifyNonEmptyHead(ASText.prepend(text));
+  Array.modifyNonEmptyHead(ASText.prepend(text));
 
 /**
  * Returns a copy of `self` in which `text` has been prepended to all lines but the first
@@ -116,7 +116,7 @@ export const prependToFirstLine = (text: ASText.Type): MTypes.OneArgFunction<Typ
  * @category Utils
  */
 export const prependToTailLines = (text: ASText.Type): MTypes.OneArgFunction<Type> =>
-	MArray.modifyTail(ASText.prepend(text));
+  MArray.modifyTail(ASText.prepend(text));
 
 /**
  * Returns the length of `self`
@@ -124,8 +124,8 @@ export const prependToTailLines = (text: ASText.Type): MTypes.OneArgFunction<Typ
  * @category Destructors
  */
 export const toLength: MTypes.OneArgFunction<Type, number> = flow(
-	Array.map(ASText.toLength),
-	Number.sumAll
+  Array.map(ASText.toLength),
+  Number.sumAll,
 );
 
 /**
@@ -134,7 +134,7 @@ export const toLength: MTypes.OneArgFunction<Type, number> = flow(
  * @category Destructors
  */
 export const toAnsiString = (sep = ASText.lineBreak): MTypes.OneArgFunction<Type, string> =>
-	flow(ASText.join(sep), ASText.toAnsiString);
+  flow(ASText.join(sep), ASText.toAnsiString);
 
 /**
  * Returns the stringq corresponding to `self` without any styling
@@ -142,5 +142,5 @@ export const toAnsiString = (sep = ASText.lineBreak): MTypes.OneArgFunction<Type
  * @category Destructors
  */
 export const toUnstyledStrings: MTypes.OneArgFunction<Type, MTypes.OverOne<string>> = Array.map(
-	ASText.toUnstyledString
+  ASText.toUnstyledString,
 );

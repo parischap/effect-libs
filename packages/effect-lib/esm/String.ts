@@ -1,21 +1,21 @@
 /** A simple extension to the Effect String module */
 
 import {
-	Array,
-	Equal,
-	Equivalence,
-	Function,
-	Hash,
-	Inspectable,
-	Option,
-	Order,
-	Pipeable,
-	Predicate,
-	String,
-	Struct,
-	Tuple,
-	flow,
-	pipe
+  Array,
+  Equal,
+  Equivalence,
+  Function,
+  Hash,
+  Inspectable,
+  Option,
+  Order,
+  Pipeable,
+  Predicate,
+  String,
+  Struct,
+  Tuple,
+  flow,
+  pipe,
 } from 'effect';
 import * as MArray from './Array.js';
 import * as MBigInt from './BigInt.js';
@@ -43,130 +43,130 @@ export const moduleTag = '@parischap/effect-lib/String/';
  * @category Models
  */
 export namespace SearchResult {
-	const _namespaceTag = moduleTag + 'SearchResult/';
-	const _TypeId: unique symbol = Symbol.for(_namespaceTag) as _TypeId;
-	type _TypeId = typeof _TypeId;
+  const _namespaceTag = moduleTag + 'SearchResult/';
+  const _TypeId: unique symbol = Symbol.for(_namespaceTag) as _TypeId;
+  type _TypeId = typeof _TypeId;
 
-	/**
-	 * Interface that represents a SearchResult
-	 *
-	 * @category Models
-	 */
-	export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
-		/** The index where the match was found in the target string */
-		readonly startIndex: number;
-		/** The index of the character following the match in the target string */
-		readonly endIndex: number;
-		/** The match */
-		readonly match: string;
-		/** @internal */
-		readonly [_TypeId]: _TypeId;
-	}
+  /**
+   * Interface that represents a SearchResult
+   *
+   * @category Models
+   */
+  export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
+    /** The index where the match was found in the target string */
+    readonly startIndex: number;
+    /** The index of the character following the match in the target string */
+    readonly endIndex: number;
+    /** The match */
+    readonly match: string;
+    /** @internal */
+    readonly [_TypeId]: _TypeId;
+  }
 
-	/**
-	 * Type guard
-	 *
-	 * @category Guards
-	 */
-	export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
+  /**
+   * Type guard
+   *
+   * @category Guards
+   */
+  export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
 
-	/**
-	 * Equivalence
-	 *
-	 * @category Equivalences
-	 */
-	export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
-		that.startIndex === self.startIndex &&
-		that.endIndex === self.endIndex &&
-		that.match === self.match;
+  /**
+   * Equivalence
+   *
+   * @category Equivalences
+   */
+  export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
+    that.startIndex === self.startIndex
+    && that.endIndex === self.endIndex
+    && that.match === self.match;
 
-	/**
-	 * Equivalence that considers two SearchResult's to be equivalent when they overlap
-	 *
-	 * @since 0.0.6 Equivalence
-	 */
-	export const areOverlapping: Equivalence.Equivalence<Type> = (self, that) =>
-		self.endIndex >= that.startIndex && self.startIndex <= that.endIndex;
+  /**
+   * Equivalence that considers two SearchResult's to be equivalent when they overlap
+   *
+   * @since 0.0.6 Equivalence
+   */
+  export const areOverlapping: Equivalence.Equivalence<Type> = (self, that) =>
+    self.endIndex >= that.startIndex && self.startIndex <= that.endIndex;
 
-	/** Prototype */
-	const _TypeIdHash = Hash.hash(_TypeId);
-	const proto: MTypes.Proto<Type> = {
-		[_TypeId]: _TypeId,
-		[Equal.symbol](this: Type, that: unknown): boolean {
-			return has(that) && equivalence(this, that);
-		},
-		[Hash.symbol](this: Type) {
-			return pipe(
-				this.startIndex,
-				Hash.hash,
-				Hash.combine(Hash.hash(this.endIndex)),
-				Hash.combine(Hash.hash(this.match)),
-				Hash.combine(_TypeIdHash),
-				Hash.cached(this)
-			);
-		},
-		...MInspectable.BaseProto(_namespaceTag),
-		...MPipeable.BaseProto
-	};
+  /** Prototype */
+  const _TypeIdHash = Hash.hash(_TypeId);
+  const proto: MTypes.Proto<Type> = {
+    [_TypeId]: _TypeId,
+    [Equal.symbol](this: Type, that: unknown): boolean {
+      return has(that) && equivalence(this, that);
+    },
+    [Hash.symbol](this: Type) {
+      return pipe(
+        this.startIndex,
+        Hash.hash,
+        Hash.combine(Hash.hash(this.endIndex)),
+        Hash.combine(Hash.hash(this.match)),
+        Hash.combine(_TypeIdHash),
+        Hash.cached(this),
+      );
+    },
+    ...MInspectable.BaseProto(_namespaceTag),
+    ...MPipeable.BaseProto,
+  };
 
-	/**
-	 * Constructor
-	 *
-	 * @category Constructors
-	 */
-	export const make = (params: MTypes.Data<Type>): Type =>
-		MTypes.objectFromDataAndProto(proto, params);
+  /**
+   * Constructor
+   *
+   * @category Constructors
+   */
+  export const make = (params: MTypes.Data<Type>): Type =>
+    MTypes.objectFromDataAndProto(proto, params);
 
-	/**
-	 * SearchResult Order based on the startIndex
-	 *
-	 * @category Ordering
-	 */
-	export const byStartIndex: Order.Order<Type> = Order.mapInput(
-		Order.number,
-		(self: Type) => self.startIndex
-	);
+  /**
+   * SearchResult Order based on the startIndex
+   *
+   * @category Ordering
+   */
+  export const byStartIndex: Order.Order<Type> = Order.mapInput(
+    Order.number,
+    (self: Type) => self.startIndex,
+  );
 
-	/**
-	 * SearchResult Order based on the endIndex
-	 *
-	 * @category Ordering
-	 */
-	export const byEndIndex: Order.Order<Type> = Order.mapInput(
-		Order.number,
-		(self: Type) => self.endIndex
-	);
+  /**
+   * SearchResult Order based on the endIndex
+   *
+   * @category Ordering
+   */
+  export const byEndIndex: Order.Order<Type> = Order.mapInput(
+    Order.number,
+    (self: Type) => self.endIndex,
+  );
 
-	/**
-	 * SearchResult Order that gives precedence to the first longest SearchResult.
-	 *
-	 * @category Ordering
-	 */
-	export const byLongestFirst: Order.Order<Type> = Order.combine(
-		byStartIndex,
-		Order.reverse(byEndIndex)
-	);
+  /**
+   * SearchResult Order that gives precedence to the first longest SearchResult.
+   *
+   * @category Ordering
+   */
+  export const byLongestFirst: Order.Order<Type> = Order.combine(
+    byStartIndex,
+    Order.reverse(byEndIndex),
+  );
 
-	/**
-	 * Returns the `startIndex` property of `self`
-	 *
-	 * @category Destructors
-	 */
-	export const startIndex: MTypes.OneArgFunction<Type, number> = Struct.get('startIndex');
+  /**
+   * Returns the `startIndex` property of `self`
+   *
+   * @category Destructors
+   */
+  export const startIndex: MTypes.OneArgFunction<Type, number> = Struct.get('startIndex');
 
-	/**
-	 * Returns the `endIndex` property of `self`
-	 *
-	 * @category Destructors
-	 */
-	export const endIndex: MTypes.OneArgFunction<Type, number> = Struct.get('endIndex');
+  /**
+   * Returns the `endIndex` property of `self`
+   *
+   * @category Destructors
+   */
+  export const endIndex: MTypes.OneArgFunction<Type, number> = Struct.get('endIndex');
 
-	/**
-	 * Returns the `match` property of `self`
-	 *
-	 * @category Destructors
-	 */
-	export const match: MTypes.OneArgFunction<Type, string> = Struct.get('match');
+  /**
+   * Returns the `match` property of `self`
+   *
+   * @category Destructors
+   */
+  export const match: MTypes.OneArgFunction<Type, string> = Struct.get('match');
 }
 
 /**
@@ -177,7 +177,7 @@ export namespace SearchResult {
  * @category Constructors
  */
 export const fromNonNullablePrimitive = (u: MTypes.NonNullablePrimitive): string =>
-	MTypes.isNumber(u) ? fromNumber(10)(u) : u.toString();
+  MTypes.isNumber(u) ? fromNumber(10)(u) : u.toString();
 
 /**
  * Builds a string from a primitive value. `null` is converted to the string "null" and `undefined`
@@ -186,9 +186,9 @@ export const fromNonNullablePrimitive = (u: MTypes.NonNullablePrimitive): string
  * @category Constructors
  */
 export const fromPrimitive: MTypes.OneArgFunction<MTypes.Primitive, string> = flow(
-	MMatch.make,
-	MMatch.when(MTypes.isNotNullable, fromNonNullablePrimitive),
-	MMatch.orElse((s) => `${s}`)
+  MMatch.make,
+  MMatch.when(MTypes.isNotNullable, fromNonNullablePrimitive),
+  MMatch.orElse((s) => `${s}`),
 );
 
 /**
@@ -198,7 +198,7 @@ export const fromPrimitive: MTypes.OneArgFunction<MTypes.Primitive, string> = fl
  * @category Constructors
  */
 export const fromUnknown = (u: unknown): string =>
-	MTypes.isPrimitive(u) ? fromPrimitive(u) : JSON.stringify(u, null, 2);
+  MTypes.isPrimitive(u) ? fromPrimitive(u) : JSON.stringify(u, null, 2);
 
 /**
  * Builds a string from a number using the passed `radix`
@@ -206,26 +206,26 @@ export const fromUnknown = (u: unknown): string =>
  * @category Constructors
  */
 export const fromNumber =
-	(radix?: number): MTypes.NumberToString =>
-	(u) => {
-		// If this condition is not respected, Javascript will use an exponent in the converted string
-		if (radix !== 10 || (u >= 1e-6 && u < 1e21) || MNumber.isNotFinite(u)) return u.toString(radix);
-		const integerPart = Math.trunc(u);
-		const decimalPart = Math.trunc((u - integerPart) * 1e16);
-		return (
-			BigInt(integerPart).toString(10) +
-			pipe(
-				decimalPart,
-				MBigInt.fromPrimitiveOrThrow,
-				(b) => b.toString(10),
-				String.padStart(16, '0'),
-				trimEnd('0'),
-				Option.liftPredicate(String.isNonEmpty),
-				Option.map(prepend('.')),
-				Option.getOrElse(MFunction.constEmptyString)
-			)
-		);
-	};
+  (radix?: number): MTypes.NumberToString =>
+  (u) => {
+    // If this condition is not respected, Javascript will use an exponent in the converted string
+    if (radix !== 10 || (u >= 1e-6 && u < 1e21) || MNumber.isNotFinite(u)) return u.toString(radix);
+    const integerPart = Math.trunc(u);
+    const decimalPart = Math.trunc((u - integerPart) * 1e16);
+    return (
+      BigInt(integerPart).toString(10)
+      + pipe(
+        decimalPart,
+        MBigInt.fromPrimitiveOrThrow,
+        (b) => b.toString(10),
+        String.padStart(16, '0'),
+        trimEnd('0'),
+        Option.liftPredicate(String.isNonEmpty),
+        Option.map(prepend('.')),
+        Option.getOrElse(MFunction.constEmptyString),
+      )
+    );
+  };
 
 /**
  * Searches for the first occurence of `regexp` in `self` and returns a SearchResult. You can
@@ -236,26 +236,26 @@ export const fromNumber =
  * @category Utils
  */
 export const search =
-	(regexp: RegExp | string, startIndex = 0) =>
-	(self: string): Option.Option<SearchResult.Type> => {
-		if (MTypes.isString(regexp)) {
-			const pos = self.indexOf(regexp, startIndex);
-			if (pos === -1) return Option.none();
-			return Option.some(
-				SearchResult.make({ startIndex: pos, endIndex: pos + regexp.length, match: regexp })
-			);
-		}
-		const target = self.slice(startIndex);
-		/* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements */
-		regexp.lastIndex = 0;
-		const result = regexp.exec(target);
-		if (MTypes.isNull(result)) return Option.none();
-		const offsetPos = startIndex + result.index;
-		const match = result[0];
-		return Option.some(
-			SearchResult.make({ startIndex: offsetPos, endIndex: offsetPos + match.length, match })
-		);
-	};
+  (regexp: RegExp | string, startIndex = 0) =>
+  (self: string): Option.Option<SearchResult.Type> => {
+    if (MTypes.isString(regexp)) {
+      const pos = self.indexOf(regexp, startIndex);
+      if (pos === -1) return Option.none();
+      return Option.some(
+        SearchResult.make({ startIndex: pos, endIndex: pos + regexp.length, match: regexp }),
+      );
+    }
+    const target = self.slice(startIndex);
+    /* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements */
+    regexp.lastIndex = 0;
+    const result = regexp.exec(target);
+    if (MTypes.isNull(result)) return Option.none();
+    const offsetPos = startIndex + result.index;
+    const match = result[0];
+    return Option.some(
+      SearchResult.make({ startIndex: offsetPos, endIndex: offsetPos + match.length, match }),
+    );
+  };
 
 /**
  * Searches for all occurences of `regexp` in `self` and returns an array of SearchResults. 'g' flag
@@ -264,20 +264,20 @@ export const search =
  * @category Utils
  */
 export const searchAll =
-	(regexp: RegExp | string) =>
-	(self: string): Array<SearchResult.Type> =>
-		Array.unfold(0, (pos) =>
-			pipe(
-				self,
-				search(regexp, pos),
-				Option.map(
-					MTuple.makeBothBy({
-						toFirst: Function.identity,
-						toSecond: Struct.get('endIndex')
-					})
-				)
-			)
-		);
+  (regexp: RegExp | string) =>
+  (self: string): Array<SearchResult.Type> =>
+    Array.unfold(0, (pos) =>
+      pipe(
+        self,
+        search(regexp, pos),
+        Option.map(
+          MTuple.makeBothBy({
+            toFirst: Function.identity,
+            toSecond: Struct.get('endIndex'),
+          }),
+        ),
+      ),
+    );
 
 /**
  * Searches for the last occurence of `regexp` in `self` and returns a SearchResult. 'g' flag needs
@@ -286,17 +286,17 @@ export const searchAll =
  * @category Utils
  */
 export const searchRight =
-	(regexp: RegExp | string) =>
-	(self: string): Option.Option<SearchResult.Type> => {
-		if (MTypes.isString(regexp)) {
-			const pos = self.lastIndexOf(regexp);
-			if (pos === -1) return Option.none();
-			return Option.some(
-				SearchResult.make({ startIndex: pos, endIndex: pos + regexp.length, match: regexp })
-			);
-		}
-		return pipe(self, searchAll(regexp), Array.last);
-	};
+  (regexp: RegExp | string) =>
+  (self: string): Option.Option<SearchResult.Type> => {
+    if (MTypes.isString(regexp)) {
+      const pos = self.lastIndexOf(regexp);
+      if (pos === -1) return Option.none();
+      return Option.some(
+        SearchResult.make({ startIndex: pos, endIndex: pos + regexp.length, match: regexp }),
+      );
+    }
+    return pipe(self, searchAll(regexp), Array.last);
+  };
 
 /**
  * Looks from the left for the first substring of `self` that matches `regexp` and returns all
@@ -306,15 +306,15 @@ export const searchRight =
  * @category Utils
  */
 export const takeLeftTo =
-	(regexp: RegExp | string): MTypes.StringTransformer =>
-	(self) =>
-		pipe(
-			self,
-			search(regexp),
-			Option.map(SearchResult.startIndex),
-			Option.getOrElse(() => self.length),
-			MFunction.flipDual(String.takeLeft)(self)
-		);
+  (regexp: RegExp | string): MTypes.StringTransformer =>
+  (self) =>
+    pipe(
+      self,
+      search(regexp),
+      Option.map(SearchResult.startIndex),
+      Option.getOrElse(() => self.length),
+      MFunction.flipDual(String.takeLeft)(self),
+    );
 
 /**
  * Looks from the right for the first substring of `self` that matches `regexp` and returns all
@@ -324,15 +324,15 @@ export const takeLeftTo =
  * @category Utils
  */
 export const takeRightFrom =
-	(regexp: RegExp | string): MTypes.StringTransformer =>
-	(self) =>
-		pipe(
-			self,
-			searchRight(regexp),
-			Option.map((searchResult) => searchResult.endIndex),
-			Option.getOrElse(() => 0),
-			Function.flip(String.slice)(self)
-		);
+  (regexp: RegExp | string): MTypes.StringTransformer =>
+  (self) =>
+    pipe(
+      self,
+      searchRight(regexp),
+      Option.map((searchResult) => searchResult.endIndex),
+      Option.getOrElse(() => 0),
+      Function.flip(String.slice)(self),
+    );
 
 /**
  * Takes all characters from `self` except the `n` last characters
@@ -340,9 +340,9 @@ export const takeRightFrom =
  * @category Utils
  */
 export const takeLeftBut =
-	(n: number): MTypes.StringTransformer =>
-	(self) =>
-		String.takeLeft(self, self.length - n);
+  (n: number): MTypes.StringTransformer =>
+  (self) =>
+    String.takeLeft(self, self.length - n);
 
 /**
  * Takes all characters from `self` except the `n` first characters
@@ -350,9 +350,9 @@ export const takeLeftBut =
  * @category Utils
  */
 export const takeRightBut =
-	(n: number): MTypes.StringTransformer =>
-	(self) =>
-		String.takeRight(self, self.length - n);
+  (n: number): MTypes.StringTransformer =>
+  (self) =>
+    String.takeRight(self, self.length - n);
 
 /**
  * Same as String.trimStart but the character to remove can be specified. `charToRemove` must be a
@@ -361,7 +361,7 @@ export const takeRightBut =
  * @category Utils
  */
 export const trimStart = (charToRemove: string): MTypes.StringTransformer =>
-	flow(Array.dropWhile(MPredicate.strictEquals(charToRemove)), Array.join(''));
+  flow(Array.dropWhile(MPredicate.strictEquals(charToRemove)), Array.join(''));
 
 /**
  * Same as String.trimEnd but the character to remove can be specified. `charToRemove` must be a
@@ -370,13 +370,13 @@ export const trimStart = (charToRemove: string): MTypes.StringTransformer =>
  * @category Utils
  */
 export const trimEnd = (charToRemove: string): MTypes.StringTransformer =>
-	flow(
-		Array.fromIterable,
-		Array.reverse,
-		Array.dropWhile(MPredicate.strictEquals(charToRemove)),
-		Array.reverse,
-		Array.join('')
-	);
+  flow(
+    Array.fromIterable,
+    Array.reverse,
+    Array.dropWhile(MPredicate.strictEquals(charToRemove)),
+    Array.reverse,
+    Array.join(''),
+  );
 
 /**
  * Enum that defines the padding position
@@ -384,8 +384,8 @@ export const trimEnd = (charToRemove: string): MTypes.StringTransformer =>
  * @category Models
  */
 export enum FillPosition {
-	Right = 0,
-	Left = 1
+  Right = 0,
+  Left = 1,
 }
 
 /**
@@ -394,17 +394,17 @@ export enum FillPosition {
  * @category Models
  */
 export namespace FillPosition {
-	/**
-	 * Builds the id of a FillPosition
-	 *
-	 * @category Destructors
-	 */
-	export const toId: MTypes.OneArgFunction<FillPosition, string> = flow(
-		MMatch.make,
-		MMatch.whenIs(FillPosition.Right, Function.constant('right')),
-		MMatch.whenIs(FillPosition.Left, Function.constant('left')),
-		MMatch.exhaustive
-	);
+  /**
+   * Builds the id of a FillPosition
+   *
+   * @category Destructors
+   */
+  export const toId: MTypes.OneArgFunction<FillPosition, string> = flow(
+    MMatch.make,
+    MMatch.whenIs(FillPosition.Right, Function.constant('right')),
+    MMatch.whenIs(FillPosition.Left, Function.constant('left')),
+    MMatch.exhaustive,
+  );
 }
 
 /**
@@ -416,21 +416,21 @@ export namespace FillPosition {
  */
 
 export const pad = ({
-	length,
-	fillChar,
-	fillPosition
+  length,
+  fillChar,
+  fillPosition,
 }: {
-	readonly length: number;
-	readonly fillChar: string;
-	readonly fillPosition: FillPosition;
+  readonly length: number;
+  readonly fillChar: string;
+  readonly fillPosition: FillPosition;
 }): MTypes.OneArgFunction<string> =>
-	pipe(
-		fillPosition,
-		MMatch.make,
-		MMatch.whenIs(FillPosition.Left, () => String.padStart(length, fillChar)),
-		MMatch.whenIs(FillPosition.Right, () => String.padEnd(length, fillChar)),
-		MMatch.exhaustive
-	);
+  pipe(
+    fillPosition,
+    MMatch.make,
+    MMatch.whenIs(FillPosition.Left, () => String.padStart(length, fillChar)),
+    MMatch.whenIs(FillPosition.Right, () => String.padEnd(length, fillChar)),
+    MMatch.exhaustive,
+  );
 
 /**
  * Trims a string to the left or to the right (depending on `fillPosition`) from character
@@ -444,30 +444,30 @@ export const pad = ({
  */
 
 export const trim = ({
-	fillChar,
-	fillPosition,
-	disallowEmptyString
+  fillChar,
+  fillPosition,
+  disallowEmptyString,
 }: {
-	readonly fillChar: string;
-	readonly fillPosition: FillPosition;
-	readonly disallowEmptyString: boolean;
+  readonly fillChar: string;
+  readonly fillPosition: FillPosition;
+  readonly disallowEmptyString: boolean;
 }): MTypes.OneArgFunction<string, string> =>
-	flow(
-		pipe(
-			fillPosition,
-			MMatch.make,
-			MMatch.whenIs(FillPosition.Left, () => trimStart(fillChar)),
-			MMatch.whenIs(FillPosition.Right, () => trimEnd(fillChar)),
-			MMatch.exhaustive
-		),
-		MFunction.fIfTrue({
-			condition: disallowEmptyString,
-			f: flow(
-				Option.liftPredicate(String.isNonEmpty),
-				Option.getOrElse(Function.constant(fillChar))
-			)
-		})
-	);
+  flow(
+    pipe(
+      fillPosition,
+      MMatch.make,
+      MMatch.whenIs(FillPosition.Left, () => trimStart(fillChar)),
+      MMatch.whenIs(FillPosition.Right, () => trimEnd(fillChar)),
+      MMatch.exhaustive,
+    ),
+    MFunction.fIfTrue({
+      condition: disallowEmptyString,
+      f: flow(
+        Option.liftPredicate(String.isNonEmpty),
+        Option.getOrElse(Function.constant(fillChar)),
+      ),
+    }),
+  );
 
 /**
  * If `self` starts with `s`, returns a some of `self` stripped of `s`. Otherwise, returns a none
@@ -475,7 +475,7 @@ export const trim = ({
  * @category Utils
  */
 export const stripLeftOption = (s: string): MTypes.OneArgFunction<string, Option.Option<string>> =>
-	flow(Option.liftPredicate(String.startsWith(s)), Option.map(takeRightBut(s.length)));
+  flow(Option.liftPredicate(String.startsWith(s)), Option.map(takeRightBut(s.length)));
 
 /**
  * If `self` starts with `s`, returns `self` stripped of `s`. Otherwise, returns `self`
@@ -483,13 +483,13 @@ export const stripLeftOption = (s: string): MTypes.OneArgFunction<string, Option
  * @category Utils
  */
 export const stripLeft =
-	(s: string): MTypes.StringTransformer =>
-	(self) =>
-		pipe(
-			self,
-			stripLeftOption(s),
-			Option.getOrElse(() => self)
-		);
+  (s: string): MTypes.StringTransformer =>
+  (self) =>
+    pipe(
+      self,
+      stripLeftOption(s),
+      Option.getOrElse(() => self),
+    );
 
 /**
  * If `self` ends with `s`, returns a some of `self` stripped of `s`. Otherwise, returns a none
@@ -497,7 +497,7 @@ export const stripLeft =
  * @category Utils
  */
 export const stripRightOption = (s: string): MTypes.OneArgFunction<string, Option.Option<string>> =>
-	flow(Option.liftPredicate(String.endsWith(s)), Option.map(takeLeftBut(s.length)));
+  flow(Option.liftPredicate(String.endsWith(s)), Option.map(takeLeftBut(s.length)));
 
 /**
  * If `self` ends with `s`, returns `self` stripped of `s`. Otherwise, returns `self`
@@ -505,13 +505,13 @@ export const stripRightOption = (s: string): MTypes.OneArgFunction<string, Optio
  * @category Utils
  */
 export const stripRight =
-	(s: string): MTypes.StringTransformer =>
-	(self) =>
-		pipe(
-			self,
-			stripRightOption(s),
-			Option.getOrElse(() => self)
-		);
+  (s: string): MTypes.StringTransformer =>
+  (self) =>
+    pipe(
+      self,
+      stripRightOption(s),
+      Option.getOrElse(() => self),
+    );
 
 /**
  * Returns the number of occurences of `regexp` in `self`
@@ -520,9 +520,9 @@ export const stripRight =
  */
 
 export const count =
-	(regexp: RegExp | string): MTypes.NumberFromString =>
-	(self) =>
-		pipe(self, searchAll(regexp), Array.length);
+  (regexp: RegExp | string): MTypes.NumberFromString =>
+  (self) =>
+    pipe(self, searchAll(regexp), Array.length);
 
 /**
  * Appends `s` to `self`
@@ -530,9 +530,9 @@ export const count =
  * @category Utils
  */
 export const append =
-	(s: string): MTypes.StringTransformer =>
-	(self) =>
-		self + s;
+  (s: string): MTypes.StringTransformer =>
+  (self) =>
+    self + s;
 
 /**
  * Prepends `s` to `self`
@@ -540,9 +540,9 @@ export const append =
  * @category Utils
  */
 export const prepend =
-	(s: string): MTypes.StringTransformer =>
-	(self) =>
-		s + self;
+  (s: string): MTypes.StringTransformer =>
+  (self) =>
+    s + self;
 
 /**
  * Replaces the part of `self` between `startIndex` included and `endIndex` excluded by
@@ -555,9 +555,9 @@ export const prepend =
  * @category Utils
  */
 export const replaceBetween =
-	(replacement: string, startIndex: number, endIndex: number): MTypes.StringTransformer =>
-	(self) =>
-		self.substring(0, startIndex) + replacement + self.substring(endIndex);
+  (replacement: string, startIndex: number, endIndex: number): MTypes.StringTransformer =>
+  (self) =>
+    self.substring(0, startIndex) + replacement + self.substring(endIndex);
 
 /**
  * A slightly different version of match using RegExp.prototype.exec instead of
@@ -567,9 +567,9 @@ export const replaceBetween =
  * @category Utils
  */
 export const match =
-	(regExp: RegExp) =>
-	(self: string): Option.Option<string> =>
-		pipe(regExp, MRegExp.match(self));
+  (regExp: RegExp) =>
+  (self: string): Option.Option<string> =>
+    pipe(regExp, MRegExp.match(self));
 
 /**
  * Returns `true` if `self` fulfills regExp. `false` otherwise. Does the same as
@@ -579,7 +579,7 @@ export const match =
  * @category Utils
  */
 export const matches = (regExp: RegExp): Predicate.Predicate<string> =>
-	flow(match(regExp), Option.match({ onNone: Function.constFalse, onSome: Function.constTrue }));
+  flow(match(regExp), Option.match({ onNone: Function.constFalse, onSome: Function.constTrue }));
 
 /**
  * Same as match but also returns capturing groups.
@@ -587,9 +587,9 @@ export const matches = (regExp: RegExp): Predicate.Predicate<string> =>
  * @category Destructors
  */
 export const matchAndGroups =
-	<N extends number>(regExp: RegExp, capturingGroupNumber: N) =>
-	(self: string): Option.Option<[match: string, capturingGroups: MTypes.Tuple<string, N>]> =>
-		pipe(regExp, MRegExp.matchAndGroups(self, capturingGroupNumber));
+  <N extends number>(regExp: RegExp, capturingGroupNumber: N) =>
+  (self: string): Option.Option<[match: string, capturingGroups: MTypes.Tuple<string, N>]> =>
+    pipe(regExp, MRegExp.matchAndGroups(self, capturingGroupNumber));
 
 /**
  * Same as matchAndGroups but returns only the captured groups.
@@ -597,9 +597,9 @@ export const matchAndGroups =
  * @category Destructors
  */
 export const capturedGroups =
-	<N extends number>(regExp: RegExp, capturingGroupNumber: N) =>
-	(self: string): Option.Option<MTypes.Tuple<string, N>> =>
-		pipe(regExp, MRegExp.capturedGroups(self, capturingGroupNumber));
+  <N extends number>(regExp: RegExp, capturingGroupNumber: N) =>
+  (self: string): Option.Option<MTypes.Tuple<string, N>> =>
+    pipe(regExp, MRegExp.capturedGroups(self, capturingGroupNumber));
 
 /**
  * Splits `self` in two parts at position `n`. The length of the first string is `n` (characters `0`
@@ -609,9 +609,9 @@ export const capturedGroups =
  * @category Utils
  */
 export const splitAt =
-	(n: number) =>
-	(self: string): [left: string, right: string] =>
-		Tuple.make(self.substring(0, n), self.substring(n));
+  (n: number) =>
+  (self: string): [left: string, right: string] =>
+    Tuple.make(self.substring(0, n), self.substring(n));
 
 /**
  * Splits `self` in two parts at position `n` from the end of `self`. The length of the second
@@ -621,9 +621,9 @@ export const splitAt =
  * @category Utils
  */
 export const splitAtFromRight =
-	(n: number) =>
-	(self: string): [left: string, right: string] =>
-		pipe(self, splitAt(self.length - n));
+  (n: number) =>
+  (self: string): [left: string, right: string] =>
+    pipe(self, splitAt(self.length - n));
 
 /**
  * Splits `self` in substrings of `bitSize` characters. The length of the first string, if any, is
@@ -632,18 +632,18 @@ export const splitAtFromRight =
  * @category Utils
  */
 export const splitEquallyRestAtStart = (
-	bitSize: number
+  bitSize: number,
 ): MTypes.OneArgFunction<string, Array<string>> =>
-	flow(
-		MArray.unfoldNonEmpty(
-			flow(
-				splitAtFromRight(bitSize),
-				Tuple.swap,
-				Tuple.mapSecond(Option.liftPredicate(String.isNonEmpty))
-			)
-		),
-		Array.reverse
-	);
+  flow(
+    MArray.unfoldNonEmpty(
+      flow(
+        splitAtFromRight(bitSize),
+        Tuple.swap,
+        Tuple.mapSecond(Option.liftPredicate(String.isNonEmpty)),
+      ),
+    ),
+    Array.reverse,
+  );
 
 /**
  * Splits `self` in substrings of `bitSize` characters. The length of the last string, if any, is
@@ -652,11 +652,11 @@ export const splitEquallyRestAtStart = (
  * @category Utils
  */
 export const splitEquallyRestAtEnd = (
-	bitSize: number
+  bitSize: number,
 ): MTypes.OneArgFunction<string, MTypes.OverOne<string>> =>
-	MArray.unfoldNonEmpty(
-		flow(splitAt(bitSize), Tuple.mapSecond(Option.liftPredicate(String.isNonEmpty)))
-	);
+  MArray.unfoldNonEmpty(
+    flow(splitAt(bitSize), Tuple.mapSecond(Option.liftPredicate(String.isNonEmpty))),
+  );
 
 /**
  * Adds string `tabChar` `count` times at the beginning of each new line of `self`
@@ -664,12 +664,12 @@ export const splitEquallyRestAtEnd = (
  * @category Utils
  */
 export const tabify =
-	(tabChar: string, count = 1): MTypes.StringTransformer =>
-	(self) => {
-		const tab = tabChar.repeat(count);
-		// replace resets RegExp.prototype.lastIndex after executing
-		return tab + self.replace(MRegExp.globalLineBreak(), '$&' + tab);
-	};
+  (tabChar: string, count = 1): MTypes.StringTransformer =>
+  (self) => {
+    const tab = tabChar.repeat(count);
+    // replace resets RegExp.prototype.lastIndex after executing
+    return tab + self.replace(MRegExp.globalLineBreak(), '$&' + tab);
+  };
 
 /**
  * Returns true if `self` contains at least an eol character
@@ -698,9 +698,9 @@ export const isEmail: Predicate.Predicate<string> = (self) => MRegExp.email.test
  * @category Predicates
  */
 export const hasLength =
-	(l: number): Predicate.Predicate<string> =>
-	(self) =>
-		self.length === l;
+  (l: number): Predicate.Predicate<string> =>
+  (self) =>
+    self.length === l;
 
 /**
  * Function that removes n chars every m chars starting from the right
@@ -708,15 +708,15 @@ export const hasLength =
  * @category Utils
  */
 export const removeNCharsEveryMCharsFromRight = ({
-	m,
-	n
+  m,
+  n,
 }: {
-	readonly m: number;
-	readonly n: number;
+  readonly m: number;
+  readonly n: number;
 }): MTypes.StringTransformer =>
-	n === 0 ?
-		Function.identity
-	:	flow(splitEquallyRestAtStart(m + n), Array.map(String.takeRight(m)), Array.join(''));
+  n === 0 ?
+    Function.identity
+  : flow(splitEquallyRestAtStart(m + n), Array.map(String.takeRight(m)), Array.join(''));
 
 /**
  * Returns true if a string represents a digit. False otherwise
@@ -725,7 +725,7 @@ export const removeNCharsEveryMCharsFromRight = ({
  */
 
 export const isDigit: Predicate.Predicate<string> = (self) => {
-	if (self.length !== 1) return false;
-	const code = self.charCodeAt(0);
-	return code >= 48 && code <= 57;
+  if (self.length !== 1) return false;
+  const code = self.charCodeAt(0);
+  return code >= 48 && code <= 57;
 };

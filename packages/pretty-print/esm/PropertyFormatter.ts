@@ -10,17 +10,17 @@
 import { ASText } from '@parischap/ansi-styles';
 import { MFunction, MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
 import {
-	Array,
-	Equal,
-	Equivalence,
-	flow,
-	Function,
-	Hash,
-	pipe,
-	Pipeable,
-	Predicate,
-	String,
-	Struct
+  Array,
+  Equal,
+  Equivalence,
+  flow,
+  Function,
+  Hash,
+  pipe,
+  Pipeable,
+  Predicate,
+  String,
+  Struct,
 } from 'effect';
 import * as PPMarkShowerConstructor from './MarkShowerConstructor.js';
 import type * as PPOption from './Option.js';
@@ -43,51 +43,51 @@ type _TypeId = typeof _TypeId;
  * @category Models
  */
 export namespace Action {
-	/**
-	 * Namespace of an initialized PropertyFormatter used as an action
-	 *
-	 * @category Models
-	 */
-	export namespace Initialized {
-		/**
-		 * Type of the action. The action takes as input the Value (see Value.ts) being currently
-		 * printed, a boolean that indicates if the value is a leaf (i.e. it could be stringified
-		 * without stringifying each of its properties) and the stringified representation of that value
-		 * (see StringifiedValue.ts) . Based on these two parameters, it must return a stringified
-		 * representation of the whole property.
-		 *
-		 * @category Models
-		 */
-		export interface Type {
-			({
-				value,
-				isLeaf
-			}: {
-				readonly value: PPValue.All;
-				readonly isLeaf: boolean;
-			}): MTypes.OneArgFunction<PPStringifiedValue.Type>;
-		}
-	}
+  /**
+   * Namespace of an initialized PropertyFormatter used as an action
+   *
+   * @category Models
+   */
+  export namespace Initialized {
+    /**
+     * Type of the action. The action takes as input the Value (see Value.ts) being currently
+     * printed, a boolean that indicates if the value is a leaf (i.e. it could be stringified
+     * without stringifying each of its properties) and the stringified representation of that value
+     * (see StringifiedValue.ts) . Based on these two parameters, it must return a stringified
+     * representation of the whole property.
+     *
+     * @category Models
+     */
+    export interface Type {
+      ({
+        value,
+        isLeaf,
+      }: {
+        readonly value: PPValue.All;
+        readonly isLeaf: boolean;
+      }): MTypes.OneArgFunction<PPStringifiedValue.Type>;
+    }
+  }
 
-	/**
-	 * Type of the action. The action takes as input a ValueBasedStylerConstructor (see
-	 * ValueBasedStylerConstructor.ts), a MarkShowerConstructor (see MarkShowerConstructor.ts). Based
-	 * on these two parameters, it must return an Initialized Action.
-	 *
-	 * @category Models
-	 */
-	export interface Type {
-		(
-			this: PPOption.NonPrimitive.Type,
-			{
-				valueBasedStylerConstructor,
-				markShowerConstructor
-			}: {
-				readonly valueBasedStylerConstructor: PPValueBasedStylerConstructor.Type;
-				readonly markShowerConstructor: PPMarkShowerConstructor.Type;
-			}
-		): Initialized.Type;
-	}
+  /**
+   * Type of the action. The action takes as input a ValueBasedStylerConstructor (see
+   * ValueBasedStylerConstructor.ts), a MarkShowerConstructor (see MarkShowerConstructor.ts). Based
+   * on these two parameters, it must return an Initialized Action.
+   *
+   * @category Models
+   */
+  export interface Type {
+    (
+      this: PPOption.NonPrimitive.Type,
+      {
+        valueBasedStylerConstructor,
+        markShowerConstructor,
+      }: {
+        readonly valueBasedStylerConstructor: PPValueBasedStylerConstructor.Type;
+        readonly markShowerConstructor: PPMarkShowerConstructor.Type;
+      },
+    ): Initialized.Type;
+  }
 }
 
 /**
@@ -96,11 +96,11 @@ export namespace Action {
  * @category Models
  */
 export interface Type extends Action.Type, Equal.Equal, MInspectable.Type, Pipeable.Pipeable {
-	/** Id of this PropertyFormatter instance. Useful for equality and debugging */
-	readonly id: string;
+  /** Id of this PropertyFormatter instance. Useful for equality and debugging */
+  readonly id: string;
 
-	/** @internal */
-	readonly [_TypeId]: _TypeId;
+  /** @internal */
+  readonly [_TypeId]: _TypeId;
 }
 
 /**
@@ -120,18 +120,18 @@ export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.i
 /** Base */
 const _TypeIdHash = Hash.hash(_TypeId);
 const base: MTypes.Proto<Type> = {
-	[_TypeId]: _TypeId,
-	[Equal.symbol](this: Type, that: unknown): boolean {
-		return has(that) && equivalence(this, that);
-	},
-	[Hash.symbol](this: Type) {
-		return pipe(this.id, Hash.hash, Hash.combine(_TypeIdHash), Hash.cached(this));
-	},
-	[MInspectable.IdSymbol](this: Type) {
-		return this.id;
-	},
-	...MInspectable.BaseProto(moduleTag),
-	...MPipeable.BaseProto
+  [_TypeId]: _TypeId,
+  [Equal.symbol](this: Type, that: unknown): boolean {
+    return has(that) && equivalence(this, that);
+  },
+  [Hash.symbol](this: Type) {
+    return pipe(this.id, Hash.hash, Hash.combine(_TypeIdHash), Hash.cached(this));
+  },
+  [MInspectable.IdSymbol](this: Type) {
+    return this.id;
+  },
+  ...MInspectable.BaseProto(moduleTag),
+  ...MPipeable.BaseProto,
 };
 
 /**
@@ -140,10 +140,10 @@ const base: MTypes.Proto<Type> = {
  * @category Constructors
  */
 export const make = ({ id, action }: { readonly id: string; readonly action: Action.Type }): Type =>
-	Object.assign(MFunction.clone(action), {
-		id,
-		...base
-	});
+  Object.assign(MFunction.clone(action), {
+    id,
+    ...base,
+  });
 
 /**
  * Returns the `id` property of `self`
@@ -159,88 +159,88 @@ export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
  * @category Instances
  */
 export const valueOnly: Type = make({
-	id: 'ValueOnly',
-	action: () => () => Function.identity
+  id: 'ValueOnly',
+  action: () => () => Function.identity,
 });
 
 /* if onSameLine=false and isLeaf=false , the lines of the value are appended to the lines of the key and no keyValueSeparator is used. In all other cases, the last line of the key and the first line of the value are merged and separated by the keyValueSeparator. */
 const _keyAndValueAction = ({
-	onSameLine,
-	dontShowLeafValue
+  onSameLine,
+  dontShowLeafValue,
 }: {
-	readonly onSameLine: boolean;
-	readonly dontShowLeafValue: boolean;
+  readonly onSameLine: boolean;
+  readonly dontShowLeafValue: boolean;
 }): Action.Type =>
-	function (this, { valueBasedStylerConstructor }) {
-		const propertyKeyTextFormatter = valueBasedStylerConstructor('PropertyKey');
-		const prototypeDelimitersTextFormatter = valueBasedStylerConstructor('PrototypeDelimiters');
-		const KeyValueSeparatorTextFormatter = valueBasedStylerConstructor('KeyValueSeparator');
+  function (this, { valueBasedStylerConstructor }) {
+    const propertyKeyTextFormatter = valueBasedStylerConstructor('PropertyKey');
+    const prototypeDelimitersTextFormatter = valueBasedStylerConstructor('PrototypeDelimiters');
+    const KeyValueSeparatorTextFormatter = valueBasedStylerConstructor('KeyValueSeparator');
 
-		return ({ value, isLeaf }) => {
-			const stringKey = value.stringKey;
-			const protoDepth = value.protoDepth;
+    return ({ value, isLeaf }) => {
+      const stringKey = value.stringKey;
+      const protoDepth = value.protoDepth;
 
-			if (MTypes.isSingleton(stringKey) && String.isEmpty(stringKey[0])) return Function.identity;
-			const inContextPropertyKeyTextFormatter = propertyKeyTextFormatter(value);
-			const inContextPrototypeDelimitersTextFormatter = prototypeDelimitersTextFormatter(value);
+      if (MTypes.isSingleton(stringKey) && String.isEmpty(stringKey[0])) return Function.identity;
+      const inContextPropertyKeyTextFormatter = propertyKeyTextFormatter(value);
+      const inContextPrototypeDelimitersTextFormatter = prototypeDelimitersTextFormatter(value);
 
-			const keyValueSeparator = pipe(
-				this.keyValueSeparatorMark,
-				KeyValueSeparatorTextFormatter(value)
-			);
+      const keyValueSeparator = pipe(
+        this.keyValueSeparatorMark,
+        KeyValueSeparatorTextFormatter(value),
+      );
 
-			const key: PPStringifiedValue.Type = pipe(
-				stringKey,
-				Array.map((line, _i) => inContextPropertyKeyTextFormatter(line)),
-				MFunction.fIfTrue({
-					condition: protoDepth > 0,
-					f: flow(
-						PPStringifiedValue.prependToFirstLine(
-							pipe(
-								this.prototypeStartDelimiterMark,
-								inContextPrototypeDelimitersTextFormatter,
-								ASText.repeat(protoDepth)
-							)
-						),
-						PPStringifiedValue.appendToLastLine(
-							pipe(
-								this.prototypeEndDelimiterMark,
-								inContextPrototypeDelimitersTextFormatter,
-								ASText.repeat(protoDepth)
-							)
-						)
-					)
-				})
-			);
+      const key: PPStringifiedValue.Type = pipe(
+        stringKey,
+        Array.map((line, _i) => inContextPropertyKeyTextFormatter(line)),
+        MFunction.fIfTrue({
+          condition: protoDepth > 0,
+          f: flow(
+            PPStringifiedValue.prependToFirstLine(
+              pipe(
+                this.prototypeStartDelimiterMark,
+                inContextPrototypeDelimitersTextFormatter,
+                ASText.repeat(protoDepth),
+              ),
+            ),
+            PPStringifiedValue.appendToLastLine(
+              pipe(
+                this.prototypeEndDelimiterMark,
+                inContextPrototypeDelimitersTextFormatter,
+                ASText.repeat(protoDepth),
+              ),
+            ),
+          ),
+        }),
+      );
 
-			return (stringifiedValue) => {
-				if (!onSameLine && !isLeaf) return pipe(key, Array.appendAll(stringifiedValue));
+      return (stringifiedValue) => {
+        if (!onSameLine && !isLeaf) return pipe(key, Array.appendAll(stringifiedValue));
 
-				const firstLine = Array.headNonEmpty(stringifiedValue);
-				const showValue = !isLeaf || !dontShowLeafValue;
+        const firstLine = Array.headNonEmpty(stringifiedValue);
+        const showValue = !isLeaf || !dontShowLeafValue;
 
-				return pipe(
-					key,
-					Array.initNonEmpty,
-					Array.append(
-						pipe(
-							key,
-							// cannot be an empty string
-							Array.lastNonEmpty,
-							MFunction.fIfTrue({
-								condition: showValue && ASText.isNotEmpty(firstLine),
-								f: flow(ASText.append(keyValueSeparator), ASText.append(firstLine))
-							})
-						)
-					),
-					MFunction.fIfTrue({
-						condition: showValue,
-						f: Array.appendAll(Array.tailNonEmpty(stringifiedValue))
-					})
-				);
-			};
-		};
-	};
+        return pipe(
+          key,
+          Array.initNonEmpty,
+          Array.append(
+            pipe(
+              key,
+              // cannot be an empty string
+              Array.lastNonEmpty,
+              MFunction.fIfTrue({
+                condition: showValue && ASText.isNotEmpty(firstLine),
+                f: flow(ASText.append(keyValueSeparator), ASText.append(firstLine)),
+              }),
+            ),
+          ),
+          MFunction.fIfTrue({
+            condition: showValue,
+            f: Array.appendAll(Array.tailNonEmpty(stringifiedValue)),
+          }),
+        );
+      };
+    };
+  };
 
 /**
  * PropertyFormatter instance that prints the key and value of a property (similar to the usual way
@@ -250,8 +250,8 @@ const _keyAndValueAction = ({
  * @category Instances
  */
 export const keyAndValue: Type = make({
-	id: 'KeyAndValue',
-	action: _keyAndValueAction({ onSameLine: true, dontShowLeafValue: false })
+  id: 'KeyAndValue',
+  action: _keyAndValueAction({ onSameLine: true, dontShowLeafValue: false }),
 });
 
 /**
@@ -263,8 +263,8 @@ export const keyAndValue: Type = make({
  * @category Instances
  */
 export const treeify: Type = make({
-	id: 'Treeify',
-	action: _keyAndValueAction({ onSameLine: false, dontShowLeafValue: false })
+  id: 'Treeify',
+  action: _keyAndValueAction({ onSameLine: false, dontShowLeafValue: false }),
 });
 
 /**
@@ -276,6 +276,6 @@ export const treeify: Type = make({
  * @category Instances
  */
 export const treeifyHideLeafValues: Type = make({
-	id: 'Treeify',
-	action: _keyAndValueAction({ onSameLine: false, dontShowLeafValue: true })
+  id: 'Treeify',
+  action: _keyAndValueAction({ onSameLine: false, dontShowLeafValue: true }),
 });

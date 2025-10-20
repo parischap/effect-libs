@@ -43,7 +43,7 @@ export const unsafeFromString = Brand.nominal<Type>();
  * @ignore
  */
 export const constructor = Brand.refined<Type>(MString.isSemVer, (s) =>
-	Brand.error(`'${s}' does not represent a semver`)
+  Brand.error(`'${s}' does not represent a semver`),
 );
 
 /**
@@ -53,8 +53,8 @@ export const constructor = Brand.refined<Type>(MString.isSemVer, (s) =>
  * @category Constructors
  */
 export const fromStringOption: MTypes.OneArgFunction<
-	string,
-	Option.Option<Type>
+  string,
+  Option.Option<Type>
 > = constructor.option.bind(constructor);
 
 /**
@@ -64,8 +64,8 @@ export const fromStringOption: MTypes.OneArgFunction<
  * @category Constructors
  */
 export const fromString: MTypes.OneArgFunction<
-	string,
-	Either.Either<Type, Brand.Brand.BrandErrors>
+  string,
+  Either.Either<Type, Brand.Brand.BrandErrors>
 > = constructor.either.bind(constructor);
 
 /**
@@ -81,7 +81,7 @@ export const fromStringOrThrow: MTypes.OneArgFunction<string, Type> = constructo
  * @ignore
  */
 export const SchemaFromString: Schema.Schema<Type, string> = Schema.String.pipe(
-	Schema.fromBrand(constructor)
+  Schema.fromBrand(constructor),
 );
 
 /**

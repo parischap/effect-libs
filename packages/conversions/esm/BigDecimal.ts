@@ -10,4 +10,4 @@ import * as CVReal from './Real.js';
  * @category Constructors
  */
 export const fromReal: MTypes.OneArgFunction<CVReal.Type, BigDecimal.BigDecimal> =
-	BigDecimal.unsafeFromNumber;
+  BigDecimal.unsafeFromNumber;

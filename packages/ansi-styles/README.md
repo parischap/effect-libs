@@ -77,18 +77,18 @@ Just import ASStyle and build simple styled strings in the following manner:
 import { ASStyle } from "@parischap/ansi-styles";
 
 console.log(
-	ASStyle.red(
-		"ansi-styles is an ",
-		ASStyle.bold(
-			"Effect library ",
-			ASStyle.magenta(
-				ASStyle.dim("for terminal output styling with "),
-				ASStyle.yellow("ANSI "),
-				"colors ",
-			),
-		),
-		"and formats.",
-	),
+  ASStyle.red(
+    "ansi-styles is an ",
+    ASStyle.bold(
+      "Effect library ",
+      ASStyle.magenta(
+        ASStyle.dim("for terminal output styling with "),
+        ASStyle.yellow("ANSI "),
+        "colors ",
+      ),
+    ),
+    "and formats.",
+  ),
 );
 ```
 
@@ -175,11 +175,11 @@ Here is an example:
 import { ASStyle } from "@parischap/ansi-styles";
 
 console.log(
-	ASStyle.none(
-		ASStyle.green("I am "),
-		ASStyle.Bright.green("in different shades "),
-		ASStyle.Bg.Bright.green("of green", ASStyle.Bg.defaultColor(".")),
-	),
+  ASStyle.none(
+    ASStyle.green("I am "),
+    ASStyle.Bright.green("in different shades "),
+    ASStyle.Bg.Bright.green("of green", ASStyle.Bg.defaultColor(".")),
+  ),
 );
 ```
 
@@ -200,9 +200,9 @@ import { ASColor, ASStyle } from "@parischap/ansi-styles";
 
 console.log(ASStyle.color(ASColor.rgbCoral)("I am a coral string"));
 console.log(
-	ASStyle.color(ASColor.Rgb.make({ red: 176, green: 17, blue: 243 }))(
-		"I am a string colored with an RGB-user-defined color",
-	),
+  ASStyle.color(ASColor.Rgb.make({ red: 176, green: 17, blue: 243 }))(
+    "I am a string colored with an RGB-user-defined color",
+  ),
 );
 ```
 
@@ -221,8 +221,8 @@ Here is an example:
 import { ASContextStyler, ASPalette } from "@parischap/ansi-styles";
 
 interface Value {
-	readonly pos1: number;
-	readonly otherStuff: string;
+  readonly pos1: number;
+  readonly otherStuff: string;
 }
 
 const red: ASContextStyler.Type<Value> = ASContextStyler.red();
@@ -230,16 +230,15 @@ const red: ASContextStyler.Type<Value> = ASContextStyler.red();
 const pos1 = (value: Value): number => value.pos1;
 
 const pos1BasedAllColorsFormatter = ASContextStyler.fromPalette({
-	indexFromContext: pos1,
-	palette: ASPalette.allStandardOriginalColors,
+  indexFromContext: pos1,
+  palette: ASPalette.allStandardOriginalColors,
 });
 
 const value1: Value = {
-	pos1: 2,
-	otherStuff: "dummy",
+  pos1: 2,
+  otherStuff: "dummy",
 };
-const pos1BasedAllColorsFormatterInValue1Context =
-	pos1BasedAllColorsFormatter(value1);
+const pos1BasedAllColorsFormatterInValue1Context = pos1BasedAllColorsFormatter(value1);
 const redInValue1Context = red(value1);
 
 /* Prints `foo` in red */

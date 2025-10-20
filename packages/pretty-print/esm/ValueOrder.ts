@@ -31,8 +31,8 @@ export const byOneLineStringKey: Type = Order.mapInput(Order.string, PPValue.one
  * @category Ordering
  */
 export const byCallability: Type = Order.mapInput(
-	Order.boolean,
-	flow(PPValue.contentType, MTypes.Category.isFunction)
+  Order.boolean,
+  flow(PPValue.contentType, MTypes.Category.isFunction),
 );
 
 /**

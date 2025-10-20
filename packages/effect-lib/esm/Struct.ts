@@ -8,13 +8,13 @@ import * as MTypes from './types.js';
  * and `second` type `Second`
  */
 export type Append<First extends MTypes.NonPrimitive, Second extends MTypes.NonPrimitive> = {
-	readonly [k in keyof First | keyof Second]: k extends keyof Second ?
-		k extends keyof First ?
-			Extract<Second[k], undefined> extends never ?
-				Second[k]
-			:	Exclude<Second[k], undefined> | First[k]
-		:	Second[k]
-	:	First[k];
+  readonly [k in keyof First | keyof Second]: k extends keyof Second ?
+    k extends keyof First ?
+      Extract<Second[k], undefined> extends never ?
+        Second[k]
+      : Exclude<Second[k], undefined> | First[k]
+    : Second[k]
+  : First[k];
 };
 
 /**
@@ -25,11 +25,11 @@ export type Append<First extends MTypes.NonPrimitive, Second extends MTypes.NonP
  * @category Utils
  */
 export const prepend =
-	<O1 extends MTypes.NonPrimitive>(that: O1) =>
-	<O extends MTypes.NonPrimitive>(self: O): MTypes.Data<Append<O1, O>> => ({
-		...that,
-		...self
-	});
+  <O1 extends MTypes.NonPrimitive>(that: O1) =>
+  <O extends MTypes.NonPrimitive>(self: O): MTypes.Data<Append<O1, O>> => ({
+    ...that,
+    ...self,
+  });
 
 /**
  * Appends `that` to `self`. If `that` contains fields that already exist in `self`, they will
@@ -39,11 +39,11 @@ export const prepend =
  * @category Utils
  */
 export const append =
-	<O1 extends MTypes.NonPrimitive>(that: O1) =>
-	<O extends MTypes.NonPrimitive>(self: O): MTypes.Data<Append<O, O1>> => ({
-		...self,
-		...that
-	});
+  <O1 extends MTypes.NonPrimitive>(that: O1) =>
+  <O extends MTypes.NonPrimitive>(self: O): MTypes.Data<Append<O, O1>> => ({
+    ...self,
+    ...that,
+  });
 
 /**
  * Same as append but only existing properties of `self` can be overriden.
@@ -51,11 +51,11 @@ export const append =
  * @category Utils
  */
 export const set =
-	<O extends MTypes.NonPrimitive, O1 extends Partial<O>>(that: O1) =>
-	(self: O): MTypes.Data<Omit<O, keyof O1> & O1> => ({
-		...self,
-		...that
-	});
+  <O extends MTypes.NonPrimitive, O1 extends Partial<O>>(that: O1) =>
+  (self: O): MTypes.Data<Omit<O, keyof O1> & O1> => ({
+    ...self,
+    ...that,
+  });
 
 /**
  * Same as set but mutates `self`. To use in extreme situations only
@@ -63,10 +63,10 @@ export const set =
  * @category Utils
  */
 export const mutableSet =
-	<O extends MTypes.NonPrimitive, O1 extends Partial<O>>(that: O1) =>
-	(self: O): Omit<O, keyof O1> & O1 =>
-		/* eslint-disable-next-line functional/immutable-data */
-		Object.assign(self, that);
+  <O extends MTypes.NonPrimitive, O1 extends Partial<O>>(that: O1) =>
+  (self: O): Omit<O, keyof O1> & O1 =>
+    /* eslint-disable-next-line functional/immutable-data */
+    Object.assign(self, that);
 
 /**
  * Builds a one-key struct
@@ -74,9 +74,9 @@ export const mutableSet =
  * @category Constructors
  */
 export const make =
-	<K extends string | symbol>(key: K) =>
-	<V>(value: V): { readonly [key in K]: V } =>
-		({ [key]: value }) as never;
+  <K extends string | symbol>(key: K) =>
+  <V>(value: V): { readonly [key in K]: V } =>
+    ({ [key]: value }) as never;
 
 /**
  * Calculates a 'fields' struct whose values are based on functions taking `self` as argument and
@@ -86,14 +86,14 @@ export const make =
  */
 
 export const enrichWith =
-	<
-		O extends MTypes.NonPrimitive,
-		O1 extends Record.ReadonlyRecord<string, MTypes.OneArgFunction<O, unknown>>
-	>(
-		fields: O1
-	) =>
-	(self: O): MTypes.Data<Omit<O, keyof O1> & { readonly [key in keyof O1]: ReturnType<O1[key]> }> =>
-		pipe(fields, Record.map(Function.apply(self)), (newValues) => ({ ...self, ...newValues }));
+  <
+    O extends MTypes.NonPrimitive,
+    O1 extends Record.ReadonlyRecord<string, MTypes.OneArgFunction<O, unknown>>,
+  >(
+    fields: O1,
+  ) =>
+  (self: O): MTypes.Data<Omit<O, keyof O1> & { readonly [key in keyof O1]: ReturnType<O1[key]> }> =>
+    pipe(fields, Record.map(Function.apply(self)), (newValues) => ({ ...self, ...newValues }));
 
 /**
  * Same as enrichWith but mutates `self`. To use in extreme situations only
@@ -102,27 +102,27 @@ export const enrichWith =
  */
 
 export const mutableEnrichWith =
-	<
-		O extends MTypes.NonPrimitive,
-		O1 extends Record.ReadonlyRecord<string, MTypes.OneArgFunction<O, unknown>>
-	>(
-		fields: O1
-	) =>
-	(self: O): Omit<O, keyof O1> & { readonly [key in keyof O1]: ReturnType<O1[key]> } =>
-		/* eslint-disable-next-line functional/immutable-data */
-		Object.assign(self, Record.map(fields, Function.apply(self)));
+  <
+    O extends MTypes.NonPrimitive,
+    O1 extends Record.ReadonlyRecord<string, MTypes.OneArgFunction<O, unknown>>,
+  >(
+    fields: O1,
+  ) =>
+  (self: O): Omit<O, keyof O1> & { readonly [key in keyof O1]: ReturnType<O1[key]> } =>
+    /* eslint-disable-next-line functional/immutable-data */
+    Object.assign(self, Record.map(fields, Function.apply(self)));
 
 /* eslint-disable */
 // Copied from Struct.ts
 type Transformed<O, T> = unknown & {
-	[K in keyof O]: K extends keyof T ?
-		T[K] extends (...a: any) => any ?
-			ReturnType<T[K]>
-		:	O[K]
-	:	O[K];
+  [K in keyof O]: K extends keyof T ?
+    T[K] extends (...a: any) => any ?
+      ReturnType<T[K]>
+    : O[K]
+  : O[K];
 };
 type PartialTransform<O, T> = {
-	[K in keyof T]: T[K] extends (a: O[K & keyof O]) => any ? T[K] : (a: O[K & keyof O]) => unknown;
+  [K in keyof T]: T[K] extends (a: O[K & keyof O]) => any ? T[K] : (a: O[K & keyof O]) => unknown;
 };
 /* eslint-enable */
 
@@ -133,6 +133,6 @@ type PartialTransform<O, T> = {
  * @category Utils
  */
 export const evolve: {
-	<O, T>(t: PartialTransform<O, T>): (obj: O) => MTypes.Data<Transformed<O, T>>;
-	<O, T>(obj: O, t: PartialTransform<O, T>): MTypes.Data<Transformed<O, T>>;
+  <O, T>(t: PartialTransform<O, T>): (obj: O) => MTypes.Data<Transformed<O, T>>;
+  <O, T>(obj: O, t: PartialTransform<O, T>): MTypes.Data<Transformed<O, T>>;
 } = Struct.evolve;

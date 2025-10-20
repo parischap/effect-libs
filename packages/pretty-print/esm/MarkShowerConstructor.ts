@@ -23,16 +23,16 @@ export interface Type extends MTypes.OneArgFunction<string, PPMarkShower.Type> {
  * @category Constructors
  */
 export const fromOption = (option: PPOption.Type): Type => {
-	const markShowerMap = HashMap.map(option.markMap.marks, ({ text, partName }) =>
-		pipe(option.styleMap, PPStyleMap.get(partName), (contextStyler) =>
-			contextStyler.withContextLast(text)
-		)
-	);
+  const markShowerMap = HashMap.map(option.markMap.marks, ({ text, partName }) =>
+    pipe(option.styleMap, PPStyleMap.get(partName), (contextStyler) =>
+      contextStyler.withContextLast(text),
+    ),
+  );
 
-	return (markName) =>
-		pipe(
-			markShowerMap,
-			HashMap.get(markName),
-			Option.getOrElse(() => PPMarkShower.empty)
-		);
+  return (markName) =>
+    pipe(
+      markShowerMap,
+      HashMap.get(markName),
+      Option.getOrElse(() => PPMarkShower.empty),
+    );
 };

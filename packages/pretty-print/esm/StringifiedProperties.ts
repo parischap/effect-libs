@@ -22,7 +22,7 @@ export interface Type extends ReadonlyArray<PPStringifiedValue.Type> {}
  * @category Utils
  */
 export const addMarkInBetween = (mark: ASText.Type): MTypes.OneArgFunction<Type> =>
-	flow(MArray.modifyInit(PPStringifiedValue.appendToLastLine(mark)));
+  flow(MArray.modifyInit(PPStringifiedValue.appendToLastLine(mark)));
 
 /**
  * Return a copy of `self` with `property` added as a single-line StringifiedValue at the start
@@ -30,7 +30,7 @@ export const addMarkInBetween = (mark: ASText.Type): MTypes.OneArgFunction<Type>
  * @category Utils
  */
 export const prependProperty = (property: ASText.Type): MTypes.OneArgFunction<Type> =>
-	Array.prepend(PPStringifiedValue.fromText(property));
+  Array.prepend(PPStringifiedValue.fromText(property));
 
 /**
  * Return a copy of `self` with `property` added as a single-line StringifiedValue at the end
@@ -38,7 +38,7 @@ export const prependProperty = (property: ASText.Type): MTypes.OneArgFunction<Ty
  * @category Utils
  */
 export const appendProperty = (property: ASText.Type): MTypes.OneArgFunction<Type> =>
-	Array.append(PPStringifiedValue.fromText(property));
+  Array.append(PPStringifiedValue.fromText(property));
 
 /**
  * Returns a copy of `self` in which each stringified property has been tabified with `tab`
@@ -46,7 +46,7 @@ export const appendProperty = (property: ASText.Type): MTypes.OneArgFunction<Typ
  * @category Utils
  */
 export const tabify = (tab: ASText.Type): MTypes.OneArgFunction<Type> =>
-	Array.map(PPStringifiedValue.prependToAllLines(tab));
+  Array.map(PPStringifiedValue.prependToAllLines(tab));
 
 /**
  * Returns a copy of `self` in which `treeIndentForFirstLineOfInitProps` has been prepended to the
@@ -59,30 +59,30 @@ export const tabify = (tab: ASText.Type): MTypes.OneArgFunction<Type> =>
  * @category Utils
  */
 export const treeify = ({
-	treeIndentForFirstLineOfInitProps,
-	treeIndentForTailLinesOfInitProps,
-	treeIndentForFirstLineOfLastProp,
-	treeIndentForTailLinesOfLastProp
+  treeIndentForFirstLineOfInitProps,
+  treeIndentForTailLinesOfInitProps,
+  treeIndentForFirstLineOfLastProp,
+  treeIndentForTailLinesOfLastProp,
 }: {
-	readonly treeIndentForFirstLineOfInitProps: ASText.Type;
-	readonly treeIndentForTailLinesOfInitProps: ASText.Type;
-	readonly treeIndentForFirstLineOfLastProp: ASText.Type;
-	readonly treeIndentForTailLinesOfLastProp: ASText.Type;
+  readonly treeIndentForFirstLineOfInitProps: ASText.Type;
+  readonly treeIndentForTailLinesOfInitProps: ASText.Type;
+  readonly treeIndentForFirstLineOfLastProp: ASText.Type;
+  readonly treeIndentForTailLinesOfLastProp: ASText.Type;
 }): MTypes.OneArgFunction<Type> =>
-	flow(
-		MArray.modifyInit(
-			flow(
-				PPStringifiedValue.prependToFirstLine(treeIndentForFirstLineOfInitProps),
-				PPStringifiedValue.prependToTailLines(treeIndentForTailLinesOfInitProps)
-			)
-		),
-		MArray.modifyLast(
-			flow(
-				PPStringifiedValue.prependToFirstLine(treeIndentForFirstLineOfLastProp),
-				PPStringifiedValue.prependToTailLines(treeIndentForTailLinesOfLastProp)
-			)
-		)
-	);
+  flow(
+    MArray.modifyInit(
+      flow(
+        PPStringifiedValue.prependToFirstLine(treeIndentForFirstLineOfInitProps),
+        PPStringifiedValue.prependToTailLines(treeIndentForTailLinesOfInitProps),
+      ),
+    ),
+    MArray.modifyLast(
+      flow(
+        PPStringifiedValue.prependToFirstLine(treeIndentForFirstLineOfLastProp),
+        PPStringifiedValue.prependToTailLines(treeIndentForTailLinesOfLastProp),
+      ),
+    ),
+  );
 
 /**
  * Returns the length of `self`
@@ -90,8 +90,8 @@ export const treeify = ({
  * @category Destructors
  */
 export const toLength: MTypes.OneArgFunction<Type, number> = flow(
-	Array.map(PPStringifiedValue.toLength),
-	Number.sumAll
+  Array.map(PPStringifiedValue.toLength),
+  Number.sumAll,
 );
 
 /**
@@ -100,9 +100,9 @@ export const toLength: MTypes.OneArgFunction<Type, number> = flow(
  * @category Destructors
  */
 export const toLongestPropLength: MTypes.OneArgFunction<Type, number> = flow(
-	Array.map(PPStringifiedValue.toLength),
-	Array.match({
-		onEmpty: Function.constant(0),
-		onNonEmpty: Array.max(Order.number)
-	})
+  Array.map(PPStringifiedValue.toLength),
+  Array.match({
+    onEmpty: Function.constant(0),
+    onNonEmpty: Array.max(Order.number),
+  }),
 );

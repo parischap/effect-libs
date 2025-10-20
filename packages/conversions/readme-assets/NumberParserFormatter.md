@@ -15,33 +15,28 @@ import { pipe, Schema } from "effect";
 // Let's define some formats
 const ukStyleUngroupedNumber = CVNumberBase10Format.ukStyleUngroupedNumber;
 const ukStyleNumberWithEngineeringNotation = pipe(
-	CVNumberBase10Format.ukStyleNumber,
-	CVNumberBase10Format.withEngineeringScientificNotation,
+  CVNumberBase10Format.ukStyleNumber,
+  CVNumberBase10Format.withEngineeringScientificNotation,
 );
 
 const frenchStyleInteger = CVNumberBase10Format.frenchStyleInteger;
 
 // Let's define a formatter
 // Type: (value: BigDecimal | CVReal.Type) => string
-const ukStyleWithEngineeringNotationFormatter =
-	CVNumberBase10Format.toNumberFormatter(ukStyleNumberWithEngineeringNotation);
+const ukStyleWithEngineeringNotationFormatter = CVNumberBase10Format.toNumberFormatter(
+  ukStyleNumberWithEngineeringNotation,
+);
 
 // Let's define a parser
 // Type: (value: string ) => Option.Option<CVReal.Type>
-const ungroupedUkStyleParser = CVNumberBase10Format.toRealParser(
-	ukStyleUngroupedNumber,
-);
+const ungroupedUkStyleParser = CVNumberBase10Format.toRealParser(ukStyleUngroupedNumber);
 
 // Let's define a parser that throws for non Effect users
 // Type: (value: string ) => CVReal.Type
-const throwingParser = CVNumberBase10Format.toThrowingRealParser(
-	ukStyleUngroupedNumber,
-);
+const throwingParser = CVNumberBase10Format.toThrowingRealParser(ukStyleUngroupedNumber);
 
 // Result: '10.341e3'
-console.log(
-	ukStyleWithEngineeringNotationFormatter(CVReal.unsafeFromNumber(10340.548)),
-);
+console.log(ukStyleWithEngineeringNotationFormatter(CVReal.unsafeFromNumber(10340.548)));
 
 // result: { _id: 'Option', _tag: 'Some', value: 10340.548 }
 console.log(ungroupedUkStyleParser("10340.548"));
@@ -89,75 +84,75 @@ If you have very specific needs, you can define your own CVNumberBase10Format in
 
 ```ts
 export interface Type {
-	/**
-	 * Thousand separator. Use an empty string for no separator. Usually a string made of at most one
-	 * character different from `fractionalSeparator`. Will not throw otherwise but unexpected results
-	 * might occur.
-	 */
-	readonly thousandSeparator: string;
+  /**
+   * Thousand separator. Use an empty string for no separator. Usually a string made of at most one
+   * character different from `fractionalSeparator`. Will not throw otherwise but unexpected results
+   * might occur.
+   */
+  readonly thousandSeparator: string;
 
-	/**
-	 * Fractional separator. Usually a one-character string different from `thousandSeparator`. Will
-	 * not throw otherwise but unexpected results might occur.
-	 */
-	readonly fractionalSeparator: string;
+  /**
+   * Fractional separator. Usually a one-character string different from `thousandSeparator`. Will
+   * not throw otherwise but unexpected results might occur.
+   */
+  readonly fractionalSeparator: string;
 
-	/**
-	 * Formatting:
-	 *
-	 * - If `true`, numbers with a null integer part are displayed starting with `0`. Otherwise, they
-	 *   are displayed starting with `.` unless `maximumFractionalDigits===0`, in which case they are
-	 *   displayed starting wiyh `0`.
-	 *
-	 * Parsing
-	 *
-	 * - If `true`, conversion will fail for numbers starting with `.` (after an optional sign).
-	 * - If `false`, conversion will fail for numbers starting with `0.` (after an optional sign).
-	 */
-	readonly showNullIntegerPart: boolean;
+  /**
+   * Formatting:
+   *
+   * - If `true`, numbers with a null integer part are displayed starting with `0`. Otherwise, they
+   *   are displayed starting with `.` unless `maximumFractionalDigits===0`, in which case they are
+   *   displayed starting wiyh `0`.
+   *
+   * Parsing
+   *
+   * - If `true`, conversion will fail for numbers starting with `.` (after an optional sign).
+   * - If `false`, conversion will fail for numbers starting with `0.` (after an optional sign).
+   */
+  readonly showNullIntegerPart: boolean;
 
-	/**
-	 * Minimim number of digits forming the fractional part of a number. Must be a positive integer
-	 * (>=0) less than or equal to `maximumFractionalDigits`.
-	 *
-	 * Formatting: the string will be right-padded with `0`'s if necessary to respect the condition
-	 *
-	 * Parsing: will fail if the input string does not respect this condition (the string must be
-	 * right-padded with `0`'s to respect the condition if necessary).
-	 */
-	readonly minimumFractionalDigits: number;
+  /**
+   * Minimim number of digits forming the fractional part of a number. Must be a positive integer
+   * (>=0) less than or equal to `maximumFractionalDigits`.
+   *
+   * Formatting: the string will be right-padded with `0`'s if necessary to respect the condition
+   *
+   * Parsing: will fail if the input string does not respect this condition (the string must be
+   * right-padded with `0`'s to respect the condition if necessary).
+   */
+  readonly minimumFractionalDigits: number;
 
-	/**
-	 * Maximum number of digits forming the fractional part of a number. Must be an integer value
-	 * greater than or equal to `minimumFractionalDigits`. Can take the +Infinity value.
-	 *
-	 * Formatting: the number will be rounded using the roundingMode to respect the condition (unless
-	 * `maximumFractionalDigits` is `+Infinity`).
-	 *
-	 * Parsing: will fail if the input string has too many fractional digits.
-	 */
-	readonly maximumFractionalDigits: number;
+  /**
+   * Maximum number of digits forming the fractional part of a number. Must be an integer value
+   * greater than or equal to `minimumFractionalDigits`. Can take the +Infinity value.
+   *
+   * Formatting: the number will be rounded using the roundingMode to respect the condition (unless
+   * `maximumFractionalDigits` is `+Infinity`).
+   *
+   * Parsing: will fail if the input string has too many fractional digits.
+   */
+  readonly maximumFractionalDigits: number;
 
-	/**
-	 * Possible characters to use to represent e-notation. Usually ['e','E']. Must be an array of
-	 * one-character strings. Will not throw otherwise but unexpected results will occur. Not used if
-	 * `scientificNotation === None`
-	 *
-	 * Formatting: the string at index 0 is used
-	 *
-	 * Parsing: the first character of the e-notation must be one of the one-character strings present
-	 * in the array
-	 */
-	readonly eNotationChars: ReadonlyArray<string>;
+  /**
+   * Possible characters to use to represent e-notation. Usually ['e','E']. Must be an array of
+   * one-character strings. Will not throw otherwise but unexpected results will occur. Not used if
+   * `scientificNotation === None`
+   *
+   * Formatting: the string at index 0 is used
+   *
+   * Parsing: the first character of the e-notation must be one of the one-character strings present
+   * in the array
+   */
+  readonly eNotationChars: ReadonlyArray<string>;
 
-	/** Scientific notation options. See ScientificNotation */
-	readonly scientificNotation: ScientificNotation;
+  /** Scientific notation options. See ScientificNotation */
+  readonly scientificNotation: ScientificNotation;
 
-	/** Rounding mode options. See RoundingMode.ts */
-	readonly roundingMode: CVRoundingMode.Type;
+  /** Rounding mode options. See RoundingMode.ts */
+  readonly roundingMode: CVRoundingMode.Type;
 
-	/** Sign display options. See SignDisplay.ts */
-	readonly signDisplay: SignDisplay;
+  /** Sign display options. See SignDisplay.ts */
+  readonly signDisplay: SignDisplay;
 }
 ```
 
@@ -165,15 +160,15 @@ To build such an instance, you will need to use the `make` constructor. For inst
 
 ```ts
 export const frenchStyleNumber = CVNumberBase10Format.make({
-	thousandSeparator: " ",
-	fractionalSeparator: ",",
-	showNullIntegerPart: true,
-	minimumFractionalDigits: 0,
-	maximumFractionalDigits: 3,
-	eNotationChars: ["e", "E"],
-	scientificNotation: ScientificNotation.None,
-	roundingMode: CVRoundingMode.Type.HalfExpand,
-	signDisplay: SignDisplay.Negative,
+  thousandSeparator: " ",
+  fractionalSeparator: ",",
+  showNullIntegerPart: true,
+  minimumFractionalDigits: 0,
+  maximumFractionalDigits: 3,
+  eNotationChars: ["e", "E"],
+  scientificNotation: ScientificNotation.None,
+  roundingMode: CVRoundingMode.Type.HalfExpand,
+  signDisplay: SignDisplay.Negative,
 });
 ```
 
@@ -205,11 +200,11 @@ console.log(CVNumberBase10Format.ukStyleUngroupedNumber);
 
 // Result: 'signed integer'
 console.log(
-	pipe(
-		CVNumberBase10Format.ukStyleUngroupedNumber,
-		CVNumberBase10Format.withSignDisplay,
-		CVNumberBase10Format.withNDecimals(0),
-		CVNumberBase10Format.toDescription,
-	),
+  pipe(
+    CVNumberBase10Format.ukStyleUngroupedNumber,
+    CVNumberBase10Format.withSignDisplay,
+    CVNumberBase10Format.withNDecimals(0),
+    CVNumberBase10Format.toDescription,
+  ),
 );
 ```

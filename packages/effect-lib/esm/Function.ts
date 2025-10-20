@@ -9,15 +9,15 @@ import * as MTypes from './types.js';
  * @category Utils
  */
 export const fIfTrue =
-	<A>({
-		condition,
-		f
-	}: {
-		readonly condition: boolean;
-		readonly f: (a: NoInfer<A>) => NoInfer<A>;
-	}) =>
-	(a: A): A =>
-		condition ? f(a) : a;
+  <A>({
+    condition,
+    f,
+  }: {
+    readonly condition: boolean;
+    readonly f: (a: NoInfer<A>) => NoInfer<A>;
+  }) =>
+  (a: A): A =>
+    condition ? f(a) : a;
 
 /**
  * Flips a dual function by targetting the non-curried overload. If the dual function takes type
@@ -28,12 +28,12 @@ export const fIfTrue =
  */
 
 export const flipDual =
-	<First, Others extends ReadonlyArray<unknown>, R>(
-		self: (first: First, ...others: Others) => R
-	): ((first: First) => (...others: Others) => R) =>
-	(first) =>
-	(...b) =>
-		self(first, ...b);
+  <First, Others extends ReadonlyArray<unknown>, R>(
+    self: (first: First, ...others: Others) => R,
+  ): ((first: First) => (...others: Others) => R) =>
+  (first) =>
+  (...b) =>
+    self(first, ...b);
 
 /**
  * Returns the expected number of parameters of a function
@@ -62,37 +62,37 @@ export const name = (f: MTypes.AnyFunction): string => f.name;
  *
  * @category Utils
  * @example
- * 	import { MFunction } from '@parischap/effect-lib';
+ *   import { MFunction } from '@parischap/effect-lib';
  *
- * 	const complexFoo = () => 1;
- * 	const memoized = MFunction.once(complexFoo);
+ *   const complexFoo = () => 1;
+ *   const memoized = MFunction.once(complexFoo);
  *
- * 	export function foo1() {
- * 		return memoized() + 1;
- * 	}
+ *   export function foo1() {
+ *     return memoized() + 1;
+ *   }
  *
- * 	export function foo2() {
- * 		return memoized() + 2;
- * 	}
+ *   export function foo2() {
+ *     return memoized() + 2;
+ *   }
  */
 
 export const once = <A>(f: Function.LazyArg<A>): Function.LazyArg<A> => {
-	/* eslint-disable-next-line functional/no-let */
-	let store = Option.none<A>();
-	const cached: Function.LazyArg<A> = () =>
-		pipe(
-			store,
-			Option.match({
-				onNone: () => {
-					const result = f();
-					/* eslint-disable-next-line functional/no-expression-statements */
-					store = Option.some(result);
-					return result;
-				},
-				onSome: Function.identity
-			})
-		);
-	return cached;
+  /* eslint-disable-next-line functional/no-let */
+  let store = Option.none<A>();
+  const cached: Function.LazyArg<A> = () =>
+    pipe(
+      store,
+      Option.match({
+        onNone: () => {
+          const result = f();
+          /* eslint-disable-next-line functional/no-expression-statements */
+          store = Option.some(result);
+          return result;
+        },
+        onSome: Function.identity,
+      }),
+    );
+  return cached;
 };
 
 /**
@@ -101,9 +101,9 @@ export const once = <A>(f: Function.LazyArg<A>): Function.LazyArg<A> => {
  * @category Utils
  */
 export const applyAsThis =
-	(o: MTypes.NonPrimitive) =>
-	<A>(self: Function.LazyArg<A>): A =>
-		self.call(o);
+  (o: MTypes.NonPrimitive) =>
+  <A>(self: Function.LazyArg<A>): A =>
+    self.call(o);
 
 /**
  * Calls `self` without any argument
@@ -126,11 +126,11 @@ export const constEmptyString = Function.constant('' as const);
  */
 
 export const clone = <This, Args extends ReadonlyArray<unknown>, R>(
-	self: (this: This, ...args: Args) => R
+  self: (this: This, ...args: Args) => R,
 ): ((this: This, ...args: Args) => R) =>
-	function (this, ...args) {
-		return self.call(this, ...args);
-	};
+  function (this, ...args) {
+    return self.call(this, ...args);
+  };
 
 /**
  * The Function.prototype

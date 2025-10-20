@@ -4,8 +4,8 @@ import { BigDecimal } from 'effect';
 // Here we define our rounding options:
 // the result must have three fractional digits using the HalfEven rounding mode
 const roundingOption = CVRoundingOption.make({
-	precision: 3,
-	roundingMode: CVRoundingMode.Type.HalfEven
+  precision: 3,
+  roundingMode: CVRoundingMode.Type.HalfEven,
 });
 
 // Let's define a number rounder from our options. Type: (value:number) => number

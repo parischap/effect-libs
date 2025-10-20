@@ -18,10 +18,10 @@ console.log(CVNumberBase10Format.ukStyleUngroupedNumber);
 
 // Result: 'signed integer'
 console.log(
-	pipe(
-		CVNumberBase10Format.ukStyleUngroupedNumber,
-		CVNumberBase10Format.withSignDisplay,
-		CVNumberBase10Format.withNDecimals(0),
-		CVNumberBase10Format.toDescription
-	)
+  pipe(
+    CVNumberBase10Format.ukStyleUngroupedNumber,
+    CVNumberBase10Format.withSignDisplay,
+    CVNumberBase10Format.withNDecimals(0),
+    CVNumberBase10Format.toDescription,
+  ),
 );

@@ -1,30 +1,28 @@
-/* eslint-disable functional/no-expression-statements */
-import { CVDateTimeFormat, CVDateTimeFormatContext } from '@parischap/conversions';
+import { HttpApi, HttpApiBuilder, HttpApiEndpoint, HttpApiGroup } from '@effect/platform';
+import { NodeHttpServer, NodeRuntime } from '@effect/platform-node';
+import { Effect, Layer, Schema } from 'effect';
+import { createServer } from 'node:http';
 
-// Let's define useful shortcuts
-const placeholder = CVDateTimeFormat.TemplatePart.Placeholder.make;
-const sep = CVDateTimeFormat.TemplatePart.Separator;
+// Define our API with one group named "Greetings" and one endpoint called "hello-world"
+const MyApi = HttpApi.make('MyApi').add(
+  HttpApiGroup.make('Greetings').add(
+    HttpApiEndpoint.get('hello-world')`/`.addSuccess(Schema.String),
+  ),
+);
 
-// Let's define a context
-const frenchContext = CVDateTimeFormatContext.fromLocaleOrThrow('fr-FR');
+// Implement the "Greetings" group
+const GreetingsLive = HttpApiBuilder.group(MyApi, 'Greetings', (handlers) =>
+  handlers.handle('hello-world', () => Effect.succeed('Hello, World!')),
+);
 
-// Let's define a DateTimeFormat: iiii d MMMM yyyy
-const frenchFormat = CVDateTimeFormat.make({
-	context: frenchContext,
-	: [
-		placeholder('iiii'),
-		sep.space,
-		placeholder('d'),
-		sep.space,
-		placeholder('MMMM'),
-		sep.space,
-		placeholder('yyyy')
-	]
-});
+// Provide the implementation for the API
+const MyApiLive = HttpApiBuilder.api(MyApi).pipe(Layer.provide(GreetingsLive));
 
-// Let's define a parser
-// Type: (dateString: string) => Either.Either<CVDateTime.Type, MInputError.Type>
-const parser = CVDateTimeFormat.toParser(frenchFormat);
+// Set up the server using NodeHttpServer on port 3000
+const ServerLive = HttpApiBuilder.serve().pipe(
+  Layer.provide(MyApiLive),
+  Layer.provide(NodeHttpServer.layer(createServer, { port: 3000 })),
+);
 
-// Result: { _id: 'Either', _tag: 'Right', right: '2025-09-04T00:00:00.000+02:00' }
-console.log(parser('jeudi 4 septembre 2025'));
+// Launch the server
+Layer.launch(ServerLive).pipe(NodeRuntime.runMain);

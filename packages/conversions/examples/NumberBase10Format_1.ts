@@ -4,8 +4,8 @@ import { pipe, Schema } from 'effect';
 // Let's define some formats
 const ukStyleUngroupedNumber = CVNumberBase10Format.ukStyleUngroupedNumber;
 const ukStyleNumberWithEngineeringNotation = pipe(
-	CVNumberBase10Format.ukStyleNumber,
-	CVNumberBase10Format.withEngineeringScientificNotation
+  CVNumberBase10Format.ukStyleNumber,
+  CVNumberBase10Format.withEngineeringScientificNotation,
 );
 
 const frenchStyleInteger = CVNumberBase10Format.frenchStyleInteger;
@@ -13,7 +13,7 @@ const frenchStyleInteger = CVNumberBase10Format.frenchStyleInteger;
 // Let's define a formatter
 // Type: (value: BigDecimal | CVReal.Type) => string
 const ukStyleWithEngineeringNotationFormatter = CVNumberBase10Format.toNumberFormatter(
-	ukStyleNumberWithEngineeringNotation
+  ukStyleNumberWithEngineeringNotation,
 );
 
 // Let's define a parser

@@ -45,28 +45,28 @@
  */
 
 import {
-	MArray,
-	MInputError,
-	MInspectable,
-	MPipeable,
-	MString,
-	MTuple,
-	MTypes
+  MArray,
+  MInputError,
+  MInspectable,
+  MPipeable,
+  MString,
+  MTuple,
+  MTypes,
 } from '@parischap/effect-lib';
 import {
-	Array,
-	Either,
-	Equal,
-	flow,
-	Function,
-	Option,
-	pipe,
-	Pipeable,
-	Predicate,
-	Record,
-	Struct,
-	Tuple,
-	Types
+  Array,
+  Either,
+  Equal,
+  flow,
+  Function,
+  Option,
+  pipe,
+  Pipeable,
+  Predicate,
+  Record,
+  Struct,
+  Tuple,
+  Types,
 } from 'effect';
 import * as CVTemplatePart from './TemplatePart.js';
 import * as CVTemplateParts from './TemplateParts.js';
@@ -89,15 +89,15 @@ type _TypeId = typeof _TypeId;
  */
 
 export interface Type<out PS extends CVTemplateParts.Type>
-	extends MInspectable.Type,
-		Pipeable.Pipeable {
-	/** Array of the TemplatePart's composing this template */
-	readonly templateParts: PS;
+  extends MInspectable.Type,
+    Pipeable.Pipeable {
+  /** Array of the TemplatePart's composing this template */
+  readonly templateParts: PS;
 
-	/** @internal */
-	readonly [_TypeId]: {
-		readonly _P: Types.Covariant<PS>;
-	};
+  /** @internal */
+  readonly [_TypeId]: {
+    readonly _P: Types.Covariant<PS>;
+  };
 }
 
 /**
@@ -106,27 +106,27 @@ export interface Type<out PS extends CVTemplateParts.Type>
  * @category Guards
  */
 export const has = (u: unknown): u is Type<ReadonlyArray<CVTemplatePart.Type<string, unknown>>> =>
-	Predicate.hasProperty(u, _TypeId);
+  Predicate.hasProperty(u, _TypeId);
 
 /** Prototype */
 const proto: MTypes.Proto<Type<never>> = {
-	[_TypeId]: { _P: MTypes.covariantValue },
-	[MInspectable.IdSymbol](this: Type<CVTemplateParts.Type>) {
-		return pipe(
-			this.templateParts,
-			MTuple.makeBothBy({
-				toFirst: CVTemplateParts.getSyntheticDescription,
-				toSecond: CVTemplateParts.getPlaceholderDescription
-			}),
-			Array.join('\n\n')
-		);
-	},
-	...MInspectable.BaseProto(moduleTag),
-	...MPipeable.BaseProto
+  [_TypeId]: { _P: MTypes.covariantValue },
+  [MInspectable.IdSymbol](this: Type<CVTemplateParts.Type>) {
+    return pipe(
+      this.templateParts,
+      MTuple.makeBothBy({
+        toFirst: CVTemplateParts.getSyntheticDescription,
+        toSecond: CVTemplateParts.getPlaceholderDescription,
+      }),
+      Array.join('\n\n'),
+    );
+  },
+  ...MInspectable.BaseProto(moduleTag),
+  ...MPipeable.BaseProto,
 };
 
 const _make = <const PS extends CVTemplateParts.Type>(params: MTypes.Data<Type<PS>>): Type<PS> =>
-	MTypes.objectFromDataAndProto(proto, params);
+  MTypes.objectFromDataAndProto(proto, params);
 
 /**
  * Constructor
@@ -134,7 +134,7 @@ const _make = <const PS extends CVTemplateParts.Type>(params: MTypes.Data<Type<P
  * @category Constructors
  */
 export const make = <const PS extends CVTemplateParts.Type>(...templateParts: PS): Type<PS> =>
-	_make({ templateParts });
+  _make({ templateParts });
 
 /**
  * Returns the `templateParts` property of `self`
@@ -142,7 +142,7 @@ export const make = <const PS extends CVTemplateParts.Type>(...templateParts: PS
  * @category Destructors
  */
 export const templateParts: <const PS extends CVTemplateParts.Type>(self: Type<PS>) => PS =
-	Struct.get('templateParts');
+  Struct.get('templateParts');
 
 /**
  * Returns a function that tries to parse a text into an object according to 'self'. The generated
@@ -152,61 +152,61 @@ export const templateParts: <const PS extends CVTemplateParts.Type>(self: Type<P
  */
 
 export const toParser =
-	<const PS extends CVTemplateParts.Type>(
-		self: Type<PS>
-	): MTypes.OneArgFunction<
-		string,
-		Either.Either<
-			{
-				readonly [k in keyof MTypes.ArrayKeys<PS> as PS[k] extends CVTemplatePlaceholder.All ?
-					CVTemplatePlaceholder.ExtractName<PS[k]>
-				:	never]: PS[k] extends CVTemplatePlaceholder.All ? CVTemplatePlaceholder.ExtractType<PS[k]>
-				:	never;
-			},
-			MInputError.Type
-		>
-	> =>
-	(text) =>
-		pipe(
-			self.templateParts as CVTemplateParts.Type<unknown>,
-			MArray.reduceUnlessLeft(
-				Tuple.make(text, Record.empty<string, unknown>()),
-				([remainingText, result], templatePart, pos) =>
-					Either.gen(function* () {
-						if (CVTemplatePart.isPlaceholder(templatePart)) {
-							const [consumed, leftOver] = yield* templatePart.parser(remainingText);
-							const name = templatePart.name;
-							return yield* pipe(
-								result,
-								Record.get(name),
-								Option.match({
-									onNone: () =>
-										Either.right(Tuple.make(leftOver, Record.set(result, name, consumed))),
-									onSome: flow(
-										Either.liftPredicate(
-											Equal.equals(consumed),
-											(oldValue) =>
-												new MInputError.Type({
-													message: `${templatePart.label} is present more than once in template and receives differing values '${MString.fromUnknown(oldValue)}' and '${MString.fromUnknown(consumed)}'`
-												})
-										),
-										Either.andThen(Tuple.make(leftOver, result))
-									)
-								})
-							);
-						}
-						const parser = CVTemplateSeparator.toParser(templatePart);
-						const leftOver = yield* parser(pos + 1, remainingText);
-						return Tuple.make(leftOver, result);
-					})
-			),
-			Either.flatMap(([leftOver, result]) =>
-				Either.gen(function* () {
-					yield* pipe(leftOver, MInputError.assertEmpty({ name: 'text not consumed by template' }));
-					return result as never;
-				})
-			)
-		);
+  <const PS extends CVTemplateParts.Type>(
+    self: Type<PS>,
+  ): MTypes.OneArgFunction<
+    string,
+    Either.Either<
+      {
+        readonly [k in keyof MTypes.ArrayKeys<PS> as PS[k] extends CVTemplatePlaceholder.All ?
+          CVTemplatePlaceholder.ExtractName<PS[k]>
+        : never]: PS[k] extends CVTemplatePlaceholder.All ? CVTemplatePlaceholder.ExtractType<PS[k]>
+        : never;
+      },
+      MInputError.Type
+    >
+  > =>
+  (text) =>
+    pipe(
+      self.templateParts as CVTemplateParts.Type<unknown>,
+      MArray.reduceUnlessLeft(
+        Tuple.make(text, Record.empty<string, unknown>()),
+        ([remainingText, result], templatePart, pos) =>
+          Either.gen(function* () {
+            if (CVTemplatePart.isPlaceholder(templatePart)) {
+              const [consumed, leftOver] = yield* templatePart.parser(remainingText);
+              const name = templatePart.name;
+              return yield* pipe(
+                result,
+                Record.get(name),
+                Option.match({
+                  onNone: () =>
+                    Either.right(Tuple.make(leftOver, Record.set(result, name, consumed))),
+                  onSome: flow(
+                    Either.liftPredicate(
+                      Equal.equals(consumed),
+                      (oldValue) =>
+                        new MInputError.Type({
+                          message: `${templatePart.label} is present more than once in template and receives differing values '${MString.fromUnknown(oldValue)}' and '${MString.fromUnknown(consumed)}'`,
+                        }),
+                    ),
+                    Either.andThen(Tuple.make(leftOver, result)),
+                  ),
+                }),
+              );
+            }
+            const parser = CVTemplateSeparator.toParser(templatePart);
+            const leftOver = yield* parser(pos + 1, remainingText);
+            return Tuple.make(leftOver, result);
+          }),
+      ),
+      Either.flatMap(([leftOver, result]) =>
+        Either.gen(function* () {
+          yield* pipe(leftOver, MInputError.assertEmpty({ name: 'text not consumed by template' }));
+          return result as never;
+        }),
+      ),
+    );
 /**
  * Same as `toParser` but the generated parser throws in case of failure
  *
@@ -214,15 +214,15 @@ export const toParser =
  */
 
 export const toThrowingParser: <const PS extends CVTemplateParts.Type>(
-	self: Type<PS>
+  self: Type<PS>,
 ) => MTypes.OneArgFunction<
-	string,
-	{
-		readonly [k in keyof MTypes.ArrayKeys<PS> as PS[k] extends CVTemplatePlaceholder.All ?
-			CVTemplatePlaceholder.ExtractName<PS[k]>
-		:	never]: PS[k] extends CVTemplatePlaceholder.All ? CVTemplatePlaceholder.ExtractType<PS[k]>
-		:	never;
-	}
+  string,
+  {
+    readonly [k in keyof MTypes.ArrayKeys<PS> as PS[k] extends CVTemplatePlaceholder.All ?
+      CVTemplatePlaceholder.ExtractName<PS[k]>
+    : never]: PS[k] extends CVTemplatePlaceholder.All ? CVTemplatePlaceholder.ExtractType<PS[k]>
+    : never;
+  }
 > = flow(toParser, Function.compose(Either.getOrThrowWith(Function.identity))) as never;
 
 /**
@@ -232,34 +232,34 @@ export const toThrowingParser: <const PS extends CVTemplateParts.Type>(
  * @category Formatting
  */
 export const toFormatter = <const PS extends CVTemplateParts.Type>(
-	self: Type<PS>
+  self: Type<PS>,
 ): MTypes.OneArgFunction<
-	{
-		readonly [k in keyof MTypes.ArrayKeys<PS> as PS[k] extends CVTemplatePlaceholder.All ?
-			CVTemplatePlaceholder.ExtractName<PS[k]>
-		:	never]: PS[k] extends CVTemplatePlaceholder.All ? CVTemplatePlaceholder.ExtractType<PS[k]>
-		:	never;
-	},
-	Either.Either<string, MInputError.Type>
+  {
+    readonly [k in keyof MTypes.ArrayKeys<PS> as PS[k] extends CVTemplatePlaceholder.All ?
+      CVTemplatePlaceholder.ExtractName<PS[k]>
+    : never]: PS[k] extends CVTemplatePlaceholder.All ? CVTemplatePlaceholder.ExtractType<PS[k]>
+    : never;
+  },
+  Either.Either<string, MInputError.Type>
 > => {
-	return (record: Record<string, unknown>) =>
-		pipe(
-			self.templateParts,
-			MArray.reduceUnlessLeft('', (result, templatePart) => {
-				return CVTemplatePart.isSeparator(templatePart) ?
-						pipe(templatePart.value, MString.prepend(result), Either.right)
-					:	pipe(
-							record,
-							Record.get(templatePart.name),
-							// This error should not happen due to typing
-							Option.getOrThrowWith(
-								() => new Error(`Abnormal error: no value passed for ${templatePart.label}`)
-							),
-							templatePart.formatter.bind(templatePart),
-							Either.map(MString.prepend(result))
-						);
-			})
-		);
+  return (record: Record<string, unknown>) =>
+    pipe(
+      self.templateParts,
+      MArray.reduceUnlessLeft('', (result, templatePart) => {
+        return CVTemplatePart.isSeparator(templatePart) ?
+            pipe(templatePart.value, MString.prepend(result), Either.right)
+          : pipe(
+              record,
+              Record.get(templatePart.name),
+              // This error should not happen due to typing
+              Option.getOrThrowWith(
+                () => new Error(`Abnormal error: no value passed for ${templatePart.label}`),
+              ),
+              templatePart.formatter.bind(templatePart),
+              Either.map(MString.prepend(result)),
+            );
+      }),
+    );
 };
 
 /**
@@ -269,13 +269,13 @@ export const toFormatter = <const PS extends CVTemplateParts.Type>(
  */
 
 export const toThrowingFormatter: <const PS extends CVTemplateParts.Type>(
-	self: Type<PS>
+  self: Type<PS>,
 ) => MTypes.OneArgFunction<
-	{
-		readonly [k in keyof MTypes.ArrayKeys<PS> as PS[k] extends CVTemplatePlaceholder.All ?
-			CVTemplatePlaceholder.ExtractName<PS[k]>
-		:	never]: PS[k] extends CVTemplatePlaceholder.All ? CVTemplatePlaceholder.ExtractType<PS[k]>
-		:	never;
-	},
-	string
+  {
+    readonly [k in keyof MTypes.ArrayKeys<PS> as PS[k] extends CVTemplatePlaceholder.All ?
+      CVTemplatePlaceholder.ExtractName<PS[k]>
+    : never]: PS[k] extends CVTemplatePlaceholder.All ? CVTemplatePlaceholder.ExtractType<PS[k]>
+    : never;
+  },
+  string
 > = flow(toFormatter, Function.compose(Either.getOrThrowWith(Function.identity))) as never;

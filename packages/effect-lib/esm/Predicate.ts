@@ -9,7 +9,7 @@ import * as MTypes from './types.js';
  * @category Models
  */
 export interface EffectPredicate<in Z, out E, out R> {
-	(x: Z): Effect.Effect<boolean, E, R>;
+  (x: Z): Effect.Effect<boolean, E, R>;
 }
 
 /**
@@ -18,7 +18,7 @@ export interface EffectPredicate<in Z, out E, out R> {
  * @category Utility types
  */
 export type Source<R extends MTypes.AnyPredicate> =
-	readonly [R] extends readonly [Predicate.Predicate<infer A>] ? A : never;
+  readonly [R] extends readonly [Predicate.Predicate<infer A>] ? A : never;
 
 /**
  * Type utiliy that extracts the target of a predicate or refinement.
@@ -26,7 +26,7 @@ export type Source<R extends MTypes.AnyPredicate> =
  * @category Utility types
  */
 export type Target<R extends MTypes.AnyPredicate> =
-	readonly [R] extends readonly [Predicate.Refinement<infer _, infer A>] ? A : Source<R>;
+  readonly [R] extends readonly [Predicate.Refinement<infer _, infer A>] ? A : Source<R>;
 
 /**
  * Type utiliy that extracts the type covered by a refinement or predicate. Returns never when
@@ -35,7 +35,7 @@ export type Target<R extends MTypes.AnyPredicate> =
  * @category Utility types
  */
 export type Coverage<R extends MTypes.AnyPredicate> =
-	readonly [R] extends readonly [Predicate.Refinement<infer _, infer A>] ? A : never;
+  readonly [R] extends readonly [Predicate.Refinement<infer _, infer A>] ? A : never;
 
 // Do not use an interface here.
 type PredicateArray = ReadonlyArray<MTypes.AnyPredicate>;
@@ -47,7 +47,7 @@ type PredicateArray = ReadonlyArray<MTypes.AnyPredicate>;
  * @category Utility types
  */
 export type PredicatesToSources<T extends PredicateArray> = {
-	readonly [key in keyof T]: Source<T[key]>;
+  readonly [key in keyof T]: Source<T[key]>;
 };
 
 /**
@@ -57,7 +57,7 @@ export type PredicatesToSources<T extends PredicateArray> = {
  * @category Utility types
  */
 export type PredicatesToTargets<T extends PredicateArray> = {
-	readonly [key in keyof T]: Target<T[key]>;
+  readonly [key in keyof T]: Target<T[key]>;
 };
 /**
  * Type utiliy that takes an array/record of predicates or refinements and returns an array/record
@@ -66,7 +66,7 @@ export type PredicatesToTargets<T extends PredicateArray> = {
  * @category Utility types
  */
 export type PredicatesToCoverages<T extends PredicateArray> = {
-	readonly [key in keyof T]: Coverage<T[key]>;
+  readonly [key in keyof T]: Coverage<T[key]>;
 };
 
 /**
@@ -75,7 +75,7 @@ export type PredicatesToCoverages<T extends PredicateArray> = {
  * @category Utility types
  */
 export type SourcesToPredicates<T extends MTypes.NonPrimitive> = {
-	readonly [key in keyof T]: Predicate.Predicate<T[key]>;
+  readonly [key in keyof T]: Predicate.Predicate<T[key]>;
 };
 
 /**
@@ -85,21 +85,21 @@ export type SourcesToPredicates<T extends MTypes.NonPrimitive> = {
  * @category Utils
  */
 export const struct = <
-	O extends MTypes.NonPrimitive,
-	F extends Partial<SourcesToPredicates<MTypes.Data<O>>>
+  O extends MTypes.NonPrimitive,
+  F extends Partial<SourcesToPredicates<MTypes.Data<O>>>,
 >(
-	fields: F
+  fields: F,
 ): [Extract<F[keyof F], MTypes.AnyRefinement>] extends [never] ? Predicate.Predicate<O>
-:	Predicate.Refinement<
-		O,
-		{
-			readonly [key in keyof O]: key extends keyof F ?
-				F[key] extends MTypes.AnyPredicate ?
-					Target<F[key]> & O[key]
-				:	never
-			:	O[key];
-		}
-	> => Predicate.struct(fields as never) as never;
+: Predicate.Refinement<
+    O,
+    {
+      readonly [key in keyof O]: key extends keyof F ?
+        F[key] extends MTypes.AnyPredicate ?
+          Target<F[key]> & O[key]
+        : never
+      : O[key];
+    }
+  > => Predicate.struct(fields as never) as never;
 
 /**
  * Strict equality predicate
@@ -107,4 +107,4 @@ export const struct = <
  * @category Constructors
  */
 export const strictEquals: <B, A extends B>(that: A) => Predicate.Predicate<B> = (that) => (self) =>
-	self === that;
+  self === that;

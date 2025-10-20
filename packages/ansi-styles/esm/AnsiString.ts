@@ -31,10 +31,10 @@ export interface NonEmptySequence extends MTypes.ReadonlyOverOne<number> {}
  * @category Constructors
  */
 export const fromNonEmptySequence: MTypes.OneArgFunction<NonEmptySequence, string> = flow(
-	Array.map(MString.fromNumber(10)),
-	Array.join(';'),
-	MString.prepend('\x1b['),
-	MString.append('m')
+  Array.map(MString.fromNumber(10)),
+  Array.join(';'),
+  MString.prepend('\x1b['),
+  MString.append('m'),
 );
 
 /**
@@ -43,9 +43,9 @@ export const fromNonEmptySequence: MTypes.OneArgFunction<NonEmptySequence, strin
  * @category Constructors
  */
 export const fromSequence: MTypes.OneArgFunction<Sequence, string> = flow(
-	Option.liftPredicate(MTypes.isReadonlyOverOne),
-	Option.map(fromNonEmptySequence),
-	Option.getOrElse(MFunction.constEmptyString)
+  Option.liftPredicate(MTypes.isReadonlyOverOne),
+  Option.map(fromNonEmptySequence),
+  Option.getOrElse(MFunction.constEmptyString),
 );
 
 /**

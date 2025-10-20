@@ -3,7 +3,7 @@ import { TEUtils } from '@parischap/test-utils';
 import { describe, it } from 'vitest';
 
 describe('MPortError', () => {
-	it('moduleTag', () => {
-		TEUtils.assertSome(TEUtils.moduleTagFromTestFilePath(__filename), MPortError.moduleTag);
-	});
+  it('moduleTag', () => {
+    TEUtils.assertSome(TEUtils.moduleTagFromTestFilePath(__filename), MPortError.moduleTag);
+  });
 });

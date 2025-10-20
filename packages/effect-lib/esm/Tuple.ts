@@ -27,15 +27,15 @@ export const makeBoth = <A>(a: A): [A, A] => Tuple.make(a, a);
  * @category Constructors
  */
 export const makeBothBy =
-	<A, B, C = B>({
-		toFirst,
-		toSecond
-	}: {
-		readonly toFirst: (a: NoInfer<A>) => B;
-		readonly toSecond: (a: NoInfer<A>) => C;
-	}) =>
-	(a: A): [B, C] =>
-		pipe(a, makeBoth, Tuple.mapBoth({ onFirst: toFirst, onSecond: toSecond }));
+  <A, B, C = B>({
+    toFirst,
+    toSecond,
+  }: {
+    readonly toFirst: (a: NoInfer<A>) => B;
+    readonly toSecond: (a: NoInfer<A>) => C;
+  }) =>
+  (a: A): [B, C] =>
+    pipe(a, makeBoth, Tuple.mapBoth({ onFirst: toFirst, onSecond: toSecond }));
 
 /**
  * Prepends an element at the start of a tuple.
@@ -43,9 +43,9 @@ export const makeBothBy =
  * @category Utils
  */
 export const prependElement =
-	<B>(that: B) =>
-	<A extends ReadonlyArray<unknown>>(self: A): [B, ...A] =>
-		[that, ...self] as const;
+  <B>(that: B) =>
+  <A extends ReadonlyArray<unknown>>(self: A): [B, ...A] =>
+    [that, ...self] as const;
 
 /**
  * Returns the first two elements of a tuple
@@ -53,5 +53,5 @@ export const prependElement =
  * @category Utils
  */
 export const firstTwo = <A, B, C extends ReadonlyArray<unknown>>(
-	a: readonly [A, B, ...C]
+  a: readonly [A, B, ...C],
 ): [A, B] => Tuple.make(a[0], a[1]);

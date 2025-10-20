@@ -1,14 +1,14 @@
 {
-	"extends": "./tsconfig.base.json",
-	"include": ["esm/**/*"],
-	"compilerOptions": {
-		"rootDir": "esm",
-		"declarationDir": "dist/dts",
-		"declarationMap": true,
-		"outDir": "dist/esm",
-		"allowJs": true,
-		"checkJs": true,
-		"lib": ["ESNext"],
-		"types": ["node"]
-	}
+  "extends": "./tsconfig.base.json",
+  "include": ["esm/**/*"],
+  "compilerOptions": {
+    "rootDir": "esm",
+    "declarationDir": "dist/dts",
+    "declarationMap": true,
+    "outDir": "dist/esm",
+    "allowJs": true,
+    "checkJs": true,
+    "lib": ["ESNext"],
+    "types": ["node"]
+  }
 }

@@ -46,8 +46,8 @@ export const unsafeFromNumber = Brand.nominal<Type>();
  * @category Constructors
  */
 export const fromNumberOption: MTypes.OneArgFunction<
-	number,
-	Option.Option<Type>
+  number,
+  Option.Option<Type>
 > = constructor.option.bind(constructor);
 
 /**
@@ -57,8 +57,8 @@ export const fromNumberOption: MTypes.OneArgFunction<
  * @category Constructors
  */
 export const fromNumber: MTypes.OneArgFunction<
-	number,
-	Either.Either<Type, Brand.Brand.BrandErrors>
+  number,
+  Either.Either<Type, Brand.Brand.BrandErrors>
 > = constructor.either.bind(constructor);
 
 /**
@@ -74,7 +74,7 @@ export const fromNumberOrThrow: MTypes.OneArgFunction<number, Type> = constructo
  * @category Constructors
  */
 export const unsafeFromBigDecimal: MTypes.OneArgFunction<BigDecimal.BigDecimal, Type> =
-	MNumber.unsafeFromBigDecimal as never;
+  MNumber.unsafeFromBigDecimal as never;
 
 /**
  * Tries to construct a `CVPositiveReal` from a `BigDecimal`. Returns a `Some` if the conversion can
@@ -83,8 +83,8 @@ export const unsafeFromBigDecimal: MTypes.OneArgFunction<BigDecimal.BigDecimal, 
  * @category Constructors
  */
 export const fromBigDecimalOption: MTypes.OneArgFunction<
-	BigDecimal.BigDecimal,
-	Option.Option<Type>
+  BigDecimal.BigDecimal,
+  Option.Option<Type>
 > = flow(CVReal.fromBigDecimalOption, Option.flatMap(CVPositive.fromNumberOption)) as never;
 
 /**
@@ -94,8 +94,8 @@ export const fromBigDecimalOption: MTypes.OneArgFunction<
  * @category Constructors
  */
 export const fromBigDecimal: MTypes.OneArgFunction<
-	BigDecimal.BigDecimal,
-	Either.Either<Type, Brand.Brand.BrandErrors>
+  BigDecimal.BigDecimal,
+  Either.Either<Type, Brand.Brand.BrandErrors>
 > = flow(CVReal.fromBigDecimal, Either.flatMap(CVPositive.fromNumber)) as never;
 
 /**
@@ -104,8 +104,8 @@ export const fromBigDecimal: MTypes.OneArgFunction<
  * @category Constructors
  */
 export const fromBigDecimalOrThrow: MTypes.OneArgFunction<BigDecimal.BigDecimal, Type> = flow(
-	CVReal.fromBigDecimalOrThrow,
-	CVPositive.fromNumberOrThrow
+  CVReal.fromBigDecimalOrThrow,
+  CVPositive.fromNumberOrThrow,
 ) as never;
 
 /**
@@ -114,7 +114,7 @@ export const fromBigDecimalOrThrow: MTypes.OneArgFunction<BigDecimal.BigDecimal,
  * @category Constructors
  */
 export const unsafeFromBigInt: MTypes.OneArgFunction<bigint, Type> =
-	MNumber.unsafeFromBigInt as never;
+  MNumber.unsafeFromBigInt as never;
 
 /**
  * Tries to construct a `CVPositiveReal` from a `BigInt`. Returns a `Some` if the conversion can be
@@ -123,8 +123,8 @@ export const unsafeFromBigInt: MTypes.OneArgFunction<bigint, Type> =
  * @category Constructors
  */
 export const fromBigIntOption: MTypes.OneArgFunction<bigint, Option.Option<Type>> = flow(
-	CVReal.fromBigIntOption,
-	Option.flatMap(CVPositive.fromNumberOption)
+  CVReal.fromBigIntOption,
+  Option.flatMap(CVPositive.fromNumberOption),
 ) as never;
 
 /**
@@ -134,8 +134,8 @@ export const fromBigIntOption: MTypes.OneArgFunction<bigint, Option.Option<Type>
  * @category Constructors
  */
 export const fromBigInt: MTypes.OneArgFunction<
-	bigint,
-	Either.Either<Type, Brand.Brand.BrandErrors>
+  bigint,
+  Either.Either<Type, Brand.Brand.BrandErrors>
 > = flow(CVReal.fromBigInt, Either.flatMap(CVPositive.fromNumber)) as never;
 
 /**
@@ -144,8 +144,8 @@ export const fromBigInt: MTypes.OneArgFunction<
  * @category Constructors
  */
 export const fromBigIntOrThrow: MTypes.OneArgFunction<bigint, Type> = flow(
-	CVReal.fromBigIntOrThrow,
-	CVPositive.fromNumberOrThrow
+  CVReal.fromBigIntOrThrow,
+  CVPositive.fromNumberOrThrow,
 ) as never;
 
 /**
@@ -162,8 +162,8 @@ export const unsafeFromReal: MTypes.OneArgFunction<CVReal.Type, Type> = Function
  * @category Constructors
  */
 export const fromRealOption: MTypes.OneArgFunction<
-	CVReal.Type,
-	Option.Option<Type>
+  CVReal.Type,
+  Option.Option<Type>
 > = CVPositive.fromNumberOption as never;
 
 /**
@@ -173,8 +173,8 @@ export const fromRealOption: MTypes.OneArgFunction<
  * @category Constructors
  */
 export const fromReal: MTypes.OneArgFunction<
-	CVReal.Type,
-	Either.Either<Type, Brand.Brand.BrandErrors>
+  CVReal.Type,
+  Either.Either<Type, Brand.Brand.BrandErrors>
 > = CVPositive.fromNumber as never;
 
 /**
@@ -183,7 +183,7 @@ export const fromReal: MTypes.OneArgFunction<
  * @category Constructors
  */
 export const fromRealOrThrow: MTypes.OneArgFunction<CVReal.Type, Type> =
-	CVPositive.fromNumberOrThrow as never;
+  CVPositive.fromNumberOrThrow as never;
 
 /**
  * Constructs a `CVPositiveReal` from a `CVPositiveInteger`
@@ -191,7 +191,7 @@ export const fromRealOrThrow: MTypes.OneArgFunction<CVReal.Type, Type> =
  * @category Constructors
  */
 export const fromPositiveInteger: MTypes.OneArgFunction<CVPositiveInteger.Type, Type> =
-	Function.identity as never;
+  Function.identity as never;
 
 /**
  * A `Schema` that transforms a number into a `CVPositiveReal`
@@ -199,7 +199,7 @@ export const fromPositiveInteger: MTypes.OneArgFunction<CVPositiveInteger.Type, 
  * @ignore
  */
 export const SchemaFromNumber: Schema.Schema<Type, number> = Schema.Number.pipe(
-	Schema.fromBrand(constructor)
+  Schema.fromBrand(constructor),
 );
 
 /**

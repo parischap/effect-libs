@@ -40,9 +40,9 @@ export const oneOrMore: MTypes.StringTransformer = (self) => `(?:${self})+`;
  * @category Utils
  */
 export const repeatBetween =
-	(low: number, high: number): MTypes.OneArgFunction<string> =>
-	(self) =>
-		`(?:${self}){${low},${high === Infinity ? '' : high}}`;
+  (low: number, high: number): MTypes.OneArgFunction<string> =>
+  (self) =>
+    `(?:${self}){${low},${high === Infinity ? '' : high}}`;
 
 /**
  * Returns a new regular expression string where `self` is optional
@@ -58,15 +58,15 @@ export const optional: MTypes.StringTransformer = (self) => `(?:${self})?`;
  * @category Utils
  */
 export const either = (...args: ReadonlyArray<string>): string =>
-	pipe(
-		args,
-		Array.filter(String.isNonEmpty),
-		MArray.match012({
-			onEmpty: () => '',
-			onSingleton: Function.identity,
-			onOverTwo: (args) => `(?:${args.join('|')})`
-		})
-	);
+  pipe(
+    args,
+    Array.filter(String.isNonEmpty),
+    MArray.match012({
+      onEmpty: () => '',
+      onSingleton: Function.identity,
+      onOverTwo: (args) => `(?:${args.join('|')})`,
+    }),
+  );
 
 /**
  * Returns a regular expression string that will match one of the provided characters
@@ -74,14 +74,14 @@ export const either = (...args: ReadonlyArray<string>): string =>
  * @category Utils
  */
 export const range = (args: ReadonlyArray<string>): string =>
-	pipe(
-		args,
-		MArray.match012({
-			onEmpty: () => '',
-			onSingleton: Function.identity,
-			onOverTwo: (args) => `[${args.join('')}]`
-		})
-	);
+  pipe(
+    args,
+    MArray.match012({
+      onEmpty: () => '',
+      onSingleton: Function.identity,
+      onOverTwo: (args) => `[${args.join('')}]`,
+    }),
+  );
 
 /**
  * Returns a regular expression string that will match none of the provided characters
@@ -283,9 +283,9 @@ const _unsignedNonNullIntTo999 = _unsignedNonNullIntNPlusOneDigits(2);
  * @category Instances
  */
 export const unsignedNonNullBase10Int = (thousandSeparator: string): string =>
-	thousandSeparator === '' ? _unsignedNonNullInt : (
-		_unsignedNonNullIntTo999 + zeroOrMore(RegExp.escape(thousandSeparator) + _digitGroup)
-	);
+  thousandSeparator === '' ? _unsignedNonNullInt : (
+    _unsignedNonNullIntTo999 + zeroOrMore(RegExp.escape(thousandSeparator) + _digitGroup)
+  );
 
 /**
  * Returns a regular expression string representing an unsigned integer in base 10 using
@@ -294,7 +294,7 @@ export const unsignedNonNullBase10Int = (thousandSeparator: string): string =>
  * @category Instances
  */
 export const unsignedBase10Int = (thousandSeparator: string): string =>
-	either('0', unsignedNonNullBase10Int(thousandSeparator));
+  either('0', unsignedNonNullBase10Int(thousandSeparator));
 
 // Regular expression string representing a captured optional sign
 const _signPart = pipe(sign, capture, optional);
@@ -324,21 +324,21 @@ const _fractionalPart = repeatBetween(0, Infinity)(digit);
  * @category Instances
  */
 export const base10Number = ({
-	thousandSeparator,
-	fractionalSeparator,
-	eNotationChars,
-	fillChar
+  thousandSeparator,
+  fractionalSeparator,
+  eNotationChars,
+  fillChar,
 }: {
-	readonly thousandSeparator: string;
-	readonly fractionalSeparator: string;
-	readonly eNotationChars: ReadonlyArray<string>;
-	readonly fillChar: string;
+  readonly thousandSeparator: string;
+  readonly fractionalSeparator: string;
+  readonly eNotationChars: ReadonlyArray<string>;
+  readonly fillChar: string;
 }): string =>
-	_signPart +
-	capture(fillChar === '' ? '' : zeroOrMore(fillChar)) +
-	pipe(thousandSeparator, unsignedBase10Int, optionalCapture) +
-	pipe(fractionalSeparator, RegExp.escape, String.concat(capture(_fractionalPart)), optional) +
-	pipe(eNotationChars, Array.map(RegExp.escape), range, String.concat(_expPart), optional);
+  _signPart
+  + capture(fillChar === '' ? '' : zeroOrMore(fillChar))
+  + pipe(thousandSeparator, unsignedBase10Int, optionalCapture)
+  + pipe(fractionalSeparator, RegExp.escape, String.concat(capture(_fractionalPart)), optional)
+  + pipe(eNotationChars, Array.map(RegExp.escape), range, String.concat(_expPart), optional);
 
 /**
  * A regular expression string representing an integer in base 2.
@@ -430,8 +430,8 @@ export const lineBreak = either(CR + LF, CR, LF);
  * @category Instances
  */
 export const semVer =
-	/(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?/
-		.source;
+  /(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?/
+    .source;
 
 /**
  * A regular expression string representing an email - Imported from
@@ -440,6 +440,6 @@ export const semVer =
  * @category Instances
  */
 export const email =
-	/* eslint-disable-next-line no-control-regex */
-	/(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/
-		.source;
+  /* eslint-disable-next-line no-control-regex */
+  /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/
+    .source;

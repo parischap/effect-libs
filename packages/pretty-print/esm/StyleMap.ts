@@ -11,16 +11,16 @@
 import { ASContextStyler, ASPalette, ASStyle } from '@parischap/ansi-styles';
 import { MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
 import {
-	Equal,
-	Equivalence,
-	flow,
-	Hash,
-	HashMap,
-	Option,
-	pipe,
-	Pipeable,
-	Predicate,
-	Struct
+  Equal,
+  Equivalence,
+  flow,
+  Hash,
+  HashMap,
+  Option,
+  pipe,
+  Pipeable,
+  Predicate,
+  Struct,
 } from 'effect';
 import * as PPValueBasedStyler from './ValueBasedStyler.js';
 
@@ -39,12 +39,12 @@ type _TypeId = typeof _TypeId;
  * @category Models
  */
 export namespace Styles {
-	/**
-	 * Type of a Styles
-	 *
-	 * @category Models
-	 */
-	export interface Type extends HashMap.HashMap<string, PPValueBasedStyler.Type> {}
+  /**
+   * Type of a Styles
+   *
+   * @category Models
+   */
+  export interface Type extends HashMap.HashMap<string, PPValueBasedStyler.Type> {}
 }
 
 /**
@@ -53,13 +53,13 @@ export namespace Styles {
  * @category Models
  */
 export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable {
-	/** Id of this StyleMap instance. Useful for equality and debugging. */
-	readonly id: string;
-	/** Map of Sttyle's to be applied to the different parts of the value to stringify */
-	readonly styles: Styles.Type;
+  /** Id of this StyleMap instance. Useful for equality and debugging. */
+  readonly id: string;
+  /** Map of Sttyle's to be applied to the different parts of the value to stringify */
+  readonly styles: Styles.Type;
 
-	/** @internal */
-	readonly [_TypeId]: _TypeId;
+  /** @internal */
+  readonly [_TypeId]: _TypeId;
 }
 
 /**
@@ -79,18 +79,18 @@ export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.i
 /** Prototype */
 const _TypeIdHash = Hash.hash(_TypeId);
 const proto: MTypes.Proto<Type> = {
-	[_TypeId]: _TypeId,
-	[Equal.symbol](this: Type, that: unknown): boolean {
-		return has(that) && equivalence(this, that);
-	},
-	[Hash.symbol](this: Type) {
-		return pipe(this.id, Hash.hash, Hash.combine(_TypeIdHash), Hash.cached(this));
-	},
-	[MInspectable.IdSymbol](this: Type) {
-		return this.id;
-	},
-	...MInspectable.BaseProto(moduleTag),
-	...MPipeable.BaseProto
+  [_TypeId]: _TypeId,
+  [Equal.symbol](this: Type, that: unknown): boolean {
+    return has(that) && equivalence(this, that);
+  },
+  [Hash.symbol](this: Type) {
+    return pipe(this.id, Hash.hash, Hash.combine(_TypeIdHash), Hash.cached(this));
+  },
+  [MInspectable.IdSymbol](this: Type) {
+    return this.id;
+  },
+  ...MInspectable.BaseProto(moduleTag),
+  ...MPipeable.BaseProto,
 };
 
 /**
@@ -99,7 +99,7 @@ const proto: MTypes.Proto<Type> = {
  * @category Constructors
  */
 export const make = (params: MTypes.Data<Type>): Type =>
-	MTypes.objectFromDataAndProto(proto, params);
+  MTypes.objectFromDataAndProto(proto, params);
 
 /**
  * Returns the `id` property of `self`
@@ -122,11 +122,11 @@ export const styles: MTypes.OneArgFunction<Type, Styles.Type> = Struct.get('styl
  * @category Destructors
  */
 export const get = (partName: string): MTypes.OneArgFunction<Type, PPValueBasedStyler.Type> =>
-	flow(
-		styles,
-		HashMap.get(partName),
-		Option.getOrElse(() => ASContextStyler.none())
-	);
+  flow(
+    styles,
+    HashMap.get(partName),
+    Option.getOrElse(() => ASContextStyler.none()),
+  );
 
 /**
  * StyleMap instance for ansi dark mode
@@ -134,66 +134,66 @@ export const get = (partName: string): MTypes.OneArgFunction<Type, PPValueBasedS
  * @category Instances
  */
 export const darkMode: Type = make({
-	id: 'DarkMode',
-	styles: HashMap.make(
-		['Message', ASContextStyler.green()],
-		['ToStringedObject', ASContextStyler.yellow()],
-		[
-			'PrimitiveValue',
-			PPValueBasedStyler.makeTypeIndexed(
-				ASPalette.make(
-					// string
-					ASStyle.green,
-					// number
-					ASStyle.yellow,
-					// bigint
-					ASStyle.yellow,
-					// boolean
-					ASStyle.yellow,
-					// symbol
-					ASStyle.cyan,
-					// null
-					pipe(ASStyle.green, ASStyle.mergeOver(ASStyle.bold)),
-					// undefined
-					ASStyle.green
-				)
-			)
-		],
-		[
-			'PropertyKey',
-			PPValueBasedStyler.makeKeyTypeIndexed(
-				ASPalette.make(
-					// string key
-					ASStyle.red,
-					// symbolic key
-					ASStyle.cyan
-				)
-			)
-		],
-		['PrototypeDelimiters', ASContextStyler.green()],
-		['KeyValueSeparator', ASContextStyler.white()],
-		['InBetweenPropertySeparator', ASContextStyler.white()],
-		[
-			'NonPrimitiveValueDelimiters',
-			PPValueBasedStyler.makeDepthIndexed(
-				ASPalette.make(
-					ASStyle.red,
-					ASStyle.green,
-					ASStyle.yellow,
-					ASStyle.blue,
-					ASStyle.magenta,
-					ASStyle.cyan,
-					ASStyle.white
-				)
-			)
-		],
-		['Indentation', ASContextStyler.green()],
-		['NonPrimitiveValueId', ASContextStyler.green()],
-		['NonPrimitiveValueIdSeparator', ASContextStyler.green()],
-		['PropertyNumbers', ASContextStyler.green()],
-		['PropertyNumberSeparator', ASContextStyler.green()],
-		['PropertyNumberDelimiters', ASContextStyler.green()]
-	)
+  id: 'DarkMode',
+  styles: HashMap.make(
+    ['Message', ASContextStyler.green()],
+    ['ToStringedObject', ASContextStyler.yellow()],
+    [
+      'PrimitiveValue',
+      PPValueBasedStyler.makeTypeIndexed(
+        ASPalette.make(
+          // string
+          ASStyle.green,
+          // number
+          ASStyle.yellow,
+          // bigint
+          ASStyle.yellow,
+          // boolean
+          ASStyle.yellow,
+          // symbol
+          ASStyle.cyan,
+          // null
+          pipe(ASStyle.green, ASStyle.mergeOver(ASStyle.bold)),
+          // undefined
+          ASStyle.green,
+        ),
+      ),
+    ],
+    [
+      'PropertyKey',
+      PPValueBasedStyler.makeKeyTypeIndexed(
+        ASPalette.make(
+          // string key
+          ASStyle.red,
+          // symbolic key
+          ASStyle.cyan,
+        ),
+      ),
+    ],
+    ['PrototypeDelimiters', ASContextStyler.green()],
+    ['KeyValueSeparator', ASContextStyler.white()],
+    ['InBetweenPropertySeparator', ASContextStyler.white()],
+    [
+      'NonPrimitiveValueDelimiters',
+      PPValueBasedStyler.makeDepthIndexed(
+        ASPalette.make(
+          ASStyle.red,
+          ASStyle.green,
+          ASStyle.yellow,
+          ASStyle.blue,
+          ASStyle.magenta,
+          ASStyle.cyan,
+          ASStyle.white,
+        ),
+      ),
+    ],
+    ['Indentation', ASContextStyler.green()],
+    ['NonPrimitiveValueId', ASContextStyler.green()],
+    ['NonPrimitiveValueIdSeparator', ASContextStyler.green()],
+    ['PropertyNumbers', ASContextStyler.green()],
+    ['PropertyNumberSeparator', ASContextStyler.green()],
+    ['PropertyNumberDelimiters', ASContextStyler.green()],
+  ),
 });
 
 /**
@@ -203,6 +203,6 @@ export const darkMode: Type = make({
  * @category Instances
  */
 export const none: Type = make({
-	id: 'None',
-	styles: HashMap.empty()
+  id: 'None',
+  styles: HashMap.empty(),
 });

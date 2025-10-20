@@ -20,8 +20,8 @@ export type Type = MTypes.ReadonlyOverTwo<ASStyle.Type>;
  * @category Destructors
  */
 export const toId: MTypes.OneArgFunction<Type, string> = flow(
-	Array.map(ASStyle.toId),
-	Array.join('/')
+  Array.map(ASStyle.toId),
+  Array.join('/'),
 );
 
 /**
@@ -30,5 +30,5 @@ export const toId: MTypes.OneArgFunction<Type, string> = flow(
  * @category Utils
  */
 export const append =
-	(that: Type) =>
-	(self: Type): Type => [...self, ...that];
+  (that: Type) =>
+  (self: Type): Type => [...self, ...that];

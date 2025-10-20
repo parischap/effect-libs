@@ -1,8 +1,8 @@
 import {
-	CVDateTime,
-	CVDateTimeFormat,
-	CVDateTimeFormatContext,
-	CVSchema
+  CVDateTime,
+  CVDateTimeFormat,
+  CVDateTimeFormatContext,
+  CVSchema,
 } from '@parischap/conversions';
 import { DateTime, Either, flow, Schema } from 'effect';
 
@@ -15,16 +15,16 @@ const frenchContext = CVDateTimeFormatContext.fromLocaleOrThrow('fr-FR');
 
 // Let's define a DateTimeFormat: iiii d MMMM yyyy
 const frenchFormat = CVDateTimeFormat.make({
-	context: frenchContext,
-	templateParts: [
-		placeholder('iiii'),
-		sep.space,
-		placeholder('d'),
-		sep.space,
-		placeholder('MMMM'),
-		sep.space,
-		placeholder('yyyy')
-	]
+  context: frenchContext,
+  templateParts: [
+    placeholder('iiii'),
+    sep.space,
+    placeholder('d'),
+    sep.space,
+    placeholder('MMMM'),
+    sep.space,
+    placeholder('yyyy'),
+  ],
 });
 
 // Let's define a parser

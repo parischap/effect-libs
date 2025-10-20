@@ -9,19 +9,19 @@ import * as MPortError from './PortError.js';
  * @category Utils
  */
 export const stringify = (
-	value: unknown,
-	replacer?: (this: unknown, key: string, value: unknown) => unknown
+  value: unknown,
+  replacer?: (this: unknown, key: string, value: unknown) => unknown,
 ) =>
-	Effect.try({
-		try: () => JSON.stringify(value, replacer),
-		catch: (e) =>
-			new MPortError.Type({
-				originalError: e,
-				originalFunctionName: 'JSON.stringify',
-				moduleName: 'json.ts',
-				libraryName: 'effect-lib'
-			})
-	});
+  Effect.try({
+    try: () => JSON.stringify(value, replacer),
+    catch: (e) =>
+      new MPortError.Type({
+        originalError: e,
+        originalFunctionName: 'JSON.stringify',
+        moduleName: 'json.ts',
+        libraryName: 'effect-lib',
+      }),
+  });
 
 /**
  * Port of JSON.parse
@@ -29,13 +29,13 @@ export const stringify = (
  * @category Utils
  */
 export const parse = (text: string, reviver?: Parameters<typeof JSON.parse>[1]) =>
-	Effect.try({
-		try: () => JSON.parse(text, reviver) as unknown,
-		catch: (e) =>
-			new MPortError.Type({
-				originalError: e,
-				originalFunctionName: 'JSON.parse',
-				moduleName: 'json.ts',
-				libraryName: 'effect-lib'
-			})
-	});
+  Effect.try({
+    try: () => JSON.parse(text, reviver) as unknown,
+    catch: (e) =>
+      new MPortError.Type({
+        originalError: e,
+        originalFunctionName: 'JSON.parse',
+        moduleName: 'json.ts',
+        libraryName: 'effect-lib',
+      }),
+  });

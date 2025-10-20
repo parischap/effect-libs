@@ -34,12 +34,12 @@ console.log(CVDateTime.fromTimestampOrThrow(0));
 
 // Result: { _id: 'Either', _tag: 'Right', right: '2025-01-25T00:00:00.765+00:00' }
 console.log(
-	CVDateTime.fromParts({ year: 2025, month: 1, monthDay: 25, millisecond: 765, zoneOffset: 0 })
+  CVDateTime.fromParts({ year: 2025, month: 1, monthDay: 25, millisecond: 765, zoneOffset: 0 }),
 );
 
 // Result: { _id: 'Either', _tag: 'Right', right: '2025-12-30T11:00:00.000-12:00' }
 console.log(
-	CVDateTime.fromParts({ isoYear: 2026, isoWeek: 1, weekday: 2, hour23: 11, zoneOffset: -12 })
+  CVDateTime.fromParts({ isoYear: 2026, isoWeek: 1, weekday: 2, hour23: 11, zoneOffset: -12 }),
 );
 
 // Result: {
@@ -51,7 +51,7 @@ console.log(
 //   }
 // }
 console.log(
-	CVDateTime.fromParts({ isoYear: 2026, isoWeek: 1, weekday: 2, hour11: 12, zoneOffset: -12 })
+  CVDateTime.fromParts({ isoYear: 2026, isoWeek: 1, weekday: 2, hour11: 12, zoneOffset: -12 }),
 );
 
 // Result: {
@@ -73,7 +73,7 @@ console.log(CVDateTime.fromParts({ year: 2025, month: 2, monthDay: 29, zoneOffse
 //   }
 // }
 console.log(
-	CVDateTime.fromParts({ year: 2025, month: 2, monthDay: 28, isoWeek: 5, zoneOffset: 0 })
+  CVDateTime.fromParts({ year: 2025, month: 2, monthDay: 28, isoWeek: 5, zoneOffset: 0 }),
 );
 
 /**
@@ -92,12 +92,12 @@ console.log(CVDateTime.getIsoWeek(aDate));
 // DO NOT DO THIS. It works but is slower because intermediate calculations are not saved
 // Result: '1970 36'
 console.log(
-	CVDateTime.getYear(
-		CVDateTime.fromPartsOrThrow({ year: 1970, month: 8, monthDay: 31, zoneOffset: 0 })
-	),
-	CVDateTime.getIsoWeek(
-		CVDateTime.fromPartsOrThrow({ year: 1970, month: 8, monthDay: 31, zoneOffset: 0 })
-	)
+  CVDateTime.getYear(
+    CVDateTime.fromPartsOrThrow({ year: 1970, month: 8, monthDay: 31, zoneOffset: 0 }),
+  ),
+  CVDateTime.getIsoWeek(
+    CVDateTime.fromPartsOrThrow({ year: 1970, month: 8, monthDay: 31, zoneOffset: 0 }),
+  ),
 );
 
 /**
@@ -142,18 +142,18 @@ console.log(pipe(aDate, CVDateTime.toFirstYearDay));
 //   }
 // }
 console.log(
-	pipe(
-		CVDateTime.fromPartsOrThrow({ year: 2024, month: 2, monthDay: 29, zoneOffset: 0 }),
-		CVDateTime.offsetYears(3, false)
-	)
+  pipe(
+    CVDateTime.fromPartsOrThrow({ year: 2024, month: 2, monthDay: 29, zoneOffset: 0 }),
+    CVDateTime.offsetYears(3, false),
+  ),
 );
 
 // Result: { _id: 'Either', _tag: 'Right', right: '2028-02-29T00:00:00.000+00:00' }
 console.log(
-	pipe(
-		CVDateTime.fromPartsOrThrow({ year: 2024, month: 2, monthDay: 29, zoneOffset: 0 }),
-		CVDateTime.offsetYears(4, false)
-	)
+  pipe(
+    CVDateTime.fromPartsOrThrow({ year: 2024, month: 2, monthDay: 29, zoneOffset: 0 }),
+    CVDateTime.offsetYears(4, false),
+  ),
 );
 
 /** And finally you can use one of the few provided predicates whose list you will find in the API */

@@ -15,8 +15,8 @@ import { BigDecimal } from "effect";
 // Here we define our rounding options:
 // the result must have three fractional digits using the HalfEven rounding mode
 const roundingOption = CVRoundingOption.make({
-	precision: 3,
-	roundingMode: CVRoundingMode.Type.HalfEven,
+  precision: 3,
+  roundingMode: CVRoundingMode.Type.HalfEven,
 });
 
 // Let's define a number rounder from our options. Type: (value:number) => number
@@ -84,46 +84,46 @@ The available rounding modes are defined in module RoundingMode.ts:
 
 ```ts
 export enum Type {
-	/** Round toward +∞. Positive values round up. Negative values round "more positive" */
-	Ceil = 0,
-	/** Round toward -∞. Positive values round down. Negative values round "more negative" */
-	Floor = 1,
-	/**
-	 * Round away from 0. The magnitude of the value is always increased by rounding. Positive values
-	 * round up. Negative values round "more negative"
-	 */
-	Expand = 2,
-	/**
-	 * Round toward 0. The magnitude of the value is always reduced by rounding. Positive values round
-	 * down. Negative values round "less negative"
-	 */
-	Trunc = 3,
-	/**
-	 * Ties toward +∞. Values above the half-increment round like "ceil" (towards +∞), and below like
-	 * "floor" (towards -∞). On the half-increment, values round like "ceil"
-	 */
-	HalfCeil = 4,
-	/**
-	 * Ties toward -∞. Values above the half-increment round like "ceil" (towards +∞), and below like
-	 * "floor" (towards -∞). On the half-increment, values round like "floor"
-	 */
-	HalfFloor = 5,
-	/**
-	 * Ties away from 0. Values above the half-increment round like "expand" (away from zero), and
-	 * below like "trunc" (towards 0). On the half-increment, values round like "expand"
-	 */
-	HalfExpand = 6,
-	/**
-	 * Ties toward 0. Values above the half-increment round like "expand" (away from zero), and below
-	 * like "trunc" (towards 0). On the half-increment, values round like "trunc"
-	 */
-	HalfTrunc = 7,
-	/**
-	 * Ties towards the nearest even integer. Values above the half-increment round like "expand"
-	 * (away from zero), and below like "trunc" (towards 0). On the half-increment values round
-	 * towards the nearest even digit
-	 */
-	HalfEven = 8,
+  /** Round toward +∞. Positive values round up. Negative values round "more positive" */
+  Ceil = 0,
+  /** Round toward -∞. Positive values round down. Negative values round "more negative" */
+  Floor = 1,
+  /**
+   * Round away from 0. The magnitude of the value is always increased by rounding. Positive values
+   * round up. Negative values round "more negative"
+   */
+  Expand = 2,
+  /**
+   * Round toward 0. The magnitude of the value is always reduced by rounding. Positive values round
+   * down. Negative values round "less negative"
+   */
+  Trunc = 3,
+  /**
+   * Ties toward +∞. Values above the half-increment round like "ceil" (towards +∞), and below like
+   * "floor" (towards -∞). On the half-increment, values round like "ceil"
+   */
+  HalfCeil = 4,
+  /**
+   * Ties toward -∞. Values above the half-increment round like "ceil" (towards +∞), and below like
+   * "floor" (towards -∞). On the half-increment, values round like "floor"
+   */
+  HalfFloor = 5,
+  /**
+   * Ties away from 0. Values above the half-increment round like "expand" (away from zero), and
+   * below like "trunc" (towards 0). On the half-increment, values round like "expand"
+   */
+  HalfExpand = 6,
+  /**
+   * Ties toward 0. Values above the half-increment round like "expand" (away from zero), and below
+   * like "trunc" (towards 0). On the half-increment, values round like "trunc"
+   */
+  HalfTrunc = 7,
+  /**
+   * Ties towards the nearest even integer. Values above the half-increment round like "expand"
+   * (away from zero), and below like "trunc" (towards 0). On the half-increment values round
+   * towards the nearest even digit
+   */
+  HalfEven = 8,
 }
 ```
 
@@ -135,9 +135,7 @@ Instead of building your own `CVRoundingOption`, you can use the `halfExpand2` `
 import { CVRoundingOption } from "@parischap/conversions";
 
 // Let's define a number rounder from halfExpand2. Type: (value:number) => number
-const numberRounder = CVRoundingOption.toNumberRounder(
-	CVRoundingOption.halfExpand2,
-);
+const numberRounder = CVRoundingOption.toNumberRounder(CVRoundingOption.halfExpand2);
 
 /** Positive number */
 // Result: 12.456
@@ -160,13 +158,13 @@ import { Equal } from "effect";
 console.log(CVRoundingOption.halfExpand2);
 
 const dummyOption1 = CVRoundingOption.make({
-	precision: 3,
-	roundingMode: CVRoundingMode.Type.HalfEven,
+  precision: 3,
+  roundingMode: CVRoundingMode.Type.HalfEven,
 });
 
 const dummyOption2 = CVRoundingOption.make({
-	precision: 2,
-	roundingMode: CVRoundingMode.Type.HalfExpand,
+  precision: 2,
+  roundingMode: CVRoundingMode.Type.HalfExpand,
 });
 
 // Result: false
