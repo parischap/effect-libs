@@ -74,7 +74,7 @@ export namespace Stringifier {
 
 export enum PropertySource {
   /**
-   * Properties are obtained by calling Reflect.getOwnProperties on the non-primitive-value and its
+   * Properties are obtained by calling Reflect.ownKeys on the non-primitive-value and its
    * prototypes (until maxPrototypeDepth is reached). This is usually a good choice for records
    */
   FromProperties = 0,
