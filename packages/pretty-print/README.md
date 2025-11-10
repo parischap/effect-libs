@@ -280,7 +280,7 @@ You can see the documentation of all the properties of an Option.NonPrimitive in
 
 This package offers three ways of extracting the properties of a non-primitive value:
 
-- Properties are obtained by calling Reflect.getOwnProperties on the non-primitive-value and its prototypes (until maxPrototypeDepth is reached). This is usually a good choice for records
+- Properties are obtained by calling Reflect.ownKeys on the non-primitive-value and its prototypes (until maxPrototypeDepth is reached). This is usually a good choice for records
 - Properties are obtained by iterating over the non-primitive-value that must implement the Iterable protocol. Each value returned by the iterator is used to create a property with an auto-incremented numerical key (converted to a string). This is usually a good choice for arrays and sets.
 - Properties are obtained by iterating over the non-primitive-value that must implement the Iterable protocol. The iterator must return a key/value pair. Otherwise, the returned value is ignored. This is usually a good choice for maps,...
 

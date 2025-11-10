@@ -21,7 +21,7 @@
     "checks": "pnpm circular && pnpm lint && pnpm tscheck && pnpm test",
     "test": "vitest run",
     "clean-prod": "shx rm -rf dist && shx mkdir -p dist",
-    "publish-to-npm": "cd dist && npm publish --access=public && cd ..",
+    "publish-to-npm": "cd dist && npm publish --provenance --access=public && cd ..",
     "install-prod": "cd dist && pnpm i && cd ..",
     "build": "pnpm clean-prod && pnpm --if-present pre-build && pnpm compile && pnpm --if-present post-build && pnpm install-prod",
     "prodify": "prodify",
@@ -65,7 +65,7 @@
   "module": "./esm/index.js",
   "exports": {
     ".": {
-      "import": "./esm/index.ts"
+      "import": "./esm/index.js"
     }
   },
   "sideEffects": [],

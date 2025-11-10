@@ -1,7 +1,9 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "_version": "20.1.0",
-  "extends": ["@tsconfig/strictest/tsconfig.json"],
+  "extends": [
+    "@tsconfig/strictest/tsconfig.json"
+  ],
   "compilerOptions": {
     "moduleDetection": "force",
     "composite": true,
@@ -24,7 +26,11 @@
     "stripInternal": true,
     "lib": [],
     "types": [],
-    "plugins": [{ "name": "@effect/language-service" }],
+    "plugins": [
+      {
+        "name": "@effect/language-service"
+      }
+    ],
     "tsBuildInfoFile": ".tsbuildinfo/project.tsbuildinfo"
   }
 }

@@ -1,4 +1,11 @@
 {
   "include": [],
-  "references": [{ "path": "./tsconfig.esm.json" }, { "path": "./tsconfig.others.json" }]
+  "references": [
+    {
+      "path": "./tsconfig.esm.json"
+    },
+    {
+      "path": "./tsconfig.others.json"
+    }
+  ]
 }

@@ -19,7 +19,7 @@ export default Configs.configSubRepo({
   ],
   scripts: {},
   environment: Configs.Environment.Type.Library,
-  bundled: false,
+  packageType: 'NoBuild',
   visibility: Configs.Visibility.Type.Public,
   hasDocGen: true,
   keywords: [
