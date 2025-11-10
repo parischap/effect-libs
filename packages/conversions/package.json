@@ -1,104 +1,46 @@
 {
-  "name": "@parischap-dev/conversions",
+  "name": "@parischap-dev/configs",
   "type": "module",
+  "description": "Default subrepo",
   "author": "Jérôme MARTIN",
   "license": "MIT",
   "scripts": {
+    "update-config-files": "jiti node_modules/@parischap/configs/esm/bin/update-config-files.ts",
     "tscheck": "tsc -b tsconfig.json --force --noEmit",
     "lint": "eslint .",
-    "lint-fix": "eslint . --fix",
     "lint-rules": "pnpx @eslint/config-inspector",
     "format": "prettier . --write",
-    "update-config-files": "update-config-files",
-    "clean-config-files": "shx rm -rf package.json && shx rm -rf tsconfig.json",
-    "transpile-esm": "tsc -b tsconfig.esm.json --force",
-    "transpile-cjs": "babel dist/esm --plugins @babel/transform-export-namespace-from --plugins @babel/transform-modules-commonjs --out-dir dist/cjs --source-maps",
-    "transpile-annotate": "babel dist --plugins annotate-pure-calls --out-dir dist --source-maps",
-    "compile": "pnpm transpile-esm && pnpm transpile-cjs && pnpm transpile-annotate && pnpm prodify",
-    "build-and-publish": "pnpm build && pnpm checks && pnpm publish-to-npm",
-    "docgen": "docgen",
+    "clean-config-files": "shx rm -f package.json && shx rm -f tsconfig.json",
+    "clean-node-modules": "shx rm -rf node_modules",
+    "reinstall-all-dependencies": "pnpm i --force",
     "circular": "madge --extensions ts --circular --no-color --no-spinner esm",
     "checks": "pnpm circular && pnpm lint && pnpm tscheck && pnpm test",
     "test": "vitest run",
     "clean-prod": "shx rm -rf dist && shx mkdir -p dist",
-    "publish-to-npm": "cd dist && npm publish --access=public && cd ..",
-    "install-prod": "cd dist && pnpm i && cd ..",
-    "build": "pnpm clean-prod && pnpm --if-present pre-build && pnpm compile && pnpm --if-present post-build && pnpm install-prod",
-    "prodify": "prodify",
-    "examples": "vite-node examples/perf.ts&&vite-node examples/RoundingOption_1.ts&&vite-node examples/RoundingOption_2.ts&&vite-node examples/RoundingOption_3.ts&&vite-node examples/NumberBase10Format_1.ts&&vite-node examples/NumberBase10Format_2.ts&&vite-node examples/Template_1.ts&&vite-node examples/Template_2.ts&&vite-node examples/Template_3.ts&&vite-node examples/DateTime_1.ts&&vite-node examples/DateTimeFormat_1.ts&&vite-node examples/DateTimeFormat_2.ts&&vite-node examples/Branding.ts"
+    "build": "pnpm clean-prod && pnpm compile && cd ${prodFolderName} && pnpm i && cd ..",
+    "examples": "",
+    "compile": "tsc -b tsconfig.esm.json --force && babel dist --plugins annotate-pure-calls --out-dir dist --source-maps && pnpm prodify-lib"
   },
-  "publishConfig": {
-    "main": "./cjs/index.js",
-    "types": "./dts/index.d.ts",
-    "exports": {
-      ".": {
-        "default": "./cjs/index.js",
-        "import": "./esm/index.js",
-        "types": "./dts/index.d.ts"
-      }
-    },
-    "scripts": {},
-    "devDependencies": {},
-    "peerDependencies": {
-      "@parischap/effect-lib": "^0.11.0",
-      "effect": "^3.18.1"
-    },
-    "publishConfig": {},
-    "packageManager": "",
-    "pnpm": {},
-    "type": ""
+  "devDependencies": {
+    "@parischap/configs": "workspace:@parischap-dev/configs@*"
   },
-  "bugs": {
-    "url": "https://github.com/parischap/effect-libs/issues"
-  },
-  "funding": [
-    {
-      "type": "ko-fi",
-      "url": "https://ko-fi.com/parischap"
-    }
-  ],
-  "keywords": [
-    "number",
-    "date",
-    "format",
-    "parse",
-    "formatting",
-    "parsing",
-    "rounding",
-    "templating",
-    "conversion",
-    "sscanf",
-    "sprintf",
-    "text",
-    "n2t",
-    "num2text",
-    "convert",
-    "typescript",
-    "effect",
-    "effect",
-    "typescript",
-    "functional-programming"
-  ],
-  "description": "A functional library to replace partially the native Intl API",
   "module": "./esm/index.js",
   "exports": {
     ".": {
       "import": "./esm/index.ts"
     }
   },
-  "sideEffects": [],
-  "dependencies": {},
-  "devDependencies": {
-    "@parischap/conversions": "link:."
+  "dependencies": {
+    "effect": "^3.18.1",
+    "@effect/experimental": "0.57.0"
   },
-  "peerDependencies": {
-    "@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
-    "effect": "^3.18.1"
-  },
+  "publishConfig": {},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/parischap/effect-libs.git",
-    "directory": "packages/conversions"
+    "url": "git+https://github.com/parischap/myeffectdevs.git",
+    "directory": "packages/configs"
   },
-  "homepage": "https://github.com/parischap/effect-libs/tree/master/packages/conversions"
+  "homepage": "https://github.com/parischap/myeffectdevs/tree/master/packages/configs",
+  "sideEffects": [],
+  "private": true
 }

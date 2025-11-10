@@ -1,73 +1,46 @@
 {
-  "name": "@parischap-dev/playground",
+  "name": "@parischap-dev/configs",
   "type": "module",
+  "description": "Default subrepo",
   "author": "Jérôme MARTIN",
   "license": "MIT",
   "scripts": {
+    "update-config-files": "jiti node_modules/@parischap/configs/esm/bin/update-config-files.ts",
     "tscheck": "tsc -b tsconfig.json --force --noEmit",
     "lint": "eslint .",
-    "lint-fix": "eslint . --fix",
     "lint-rules": "pnpx @eslint/config-inspector",
     "format": "prettier . --write",
-    "update-config-files": "update-config-files",
-    "clean-config-files": "shx rm -rf package.json && shx rm -rf tsconfig.json",
-    "bundle": "bundle-files",
-    "compile": "pnpm bundle && pnpm prodify && tsc -b tsconfig.esm.json --emitDeclarationOnly --force",
-    "build-and-publish": "echo \"private package cannot be published\"",
-    "docgen": "echo \"docgen not activated for this package\"",
+    "clean-config-files": "shx rm -f package.json && shx rm -f tsconfig.json",
+    "clean-node-modules": "shx rm -rf node_modules",
+    "reinstall-all-dependencies": "pnpm i --force",
     "circular": "madge --extensions ts --circular --no-color --no-spinner esm",
     "checks": "pnpm circular && pnpm lint && pnpm tscheck && pnpm test",
     "test": "vitest run",
     "clean-prod": "shx rm -rf dist && shx mkdir -p dist",
-    "publish-to-npm": "cd dist && npm publish --access=public && cd ..",
-    "install-prod": "cd dist && pnpm i && cd ..",
-    "build": "pnpm clean-prod && pnpm --if-present pre-build && pnpm compile && pnpm --if-present post-build && pnpm install-prod",
-    "prodify": "prodify",
-    "examples": "vite-node examples/playground.ts"
+    "build": "pnpm clean-prod && pnpm compile && cd ${prodFolderName} && pnpm i && cd ..",
+    "examples": "",
+    "compile": "tsc -b tsconfig.esm.json --force && babel dist --plugins annotate-pure-calls --out-dir dist --source-maps && pnpm prodify-lib"
   },
-  "dependencies": {
-    "@effect/experimental": "^0.56.0",
-    "effect": "^3.18.1",
-    "@effect/platform": "^0.92.1",
-    "@effect/platform-node": "^0.98.3",
-    "@effect/cluster": "^0.50.3",
-    "@effect/rpc": "^0.71.0",
-    "@effect/sql": "^0.46.0",
-    "@effect/workflow": "^0.11.3"
+  "devDependencies": {
+    "@parischap/configs": "workspace:@parischap-dev/configs@*"
   },
-  "publishConfig": {
-    "exports": {
-      ".": {
-        "types": "./dts/index.d.ts",
-        "import": "./esm/index.js"
-      }
-    },
-    "dependencies": {},
-    "scripts": {},
-    "devDependencies": {},
-    "peerDependencies": {},
-    "publishConfig": {},
-    "packageManager": "",
-    "pnpm": {},
-    "type": ""
-  },
-  "private": true,
-  "description": "A playground",
   "module": "./esm/index.js",
   "exports": {
     ".": {
       "import": "./esm/index.ts"
     }
   },
-  "sideEffects": [],
-  "devDependencies": {
-    "@parischap/playground": "link:."
+  "dependencies": {
+    "effect": "^3.18.1",
+    "@effect/experimental": "0.57.0"
   },
-  "peerDependencies": {},
+  "publishConfig": {},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/parischap/effect-libs.git",
-    "directory": "packages/playground"
+    "url": "git+https://github.com/parischap/myeffectdevs.git",
+    "directory": "packages/configs"
   },
-  "homepage": "https://github.com/parischap/effect-libs/tree/master/packages/playground"
+  "homepage": "https://github.com/parischap/myeffectdevs/tree/master/packages/configs",
+  "sideEffects": [],
+  "private": true
 }
