@@ -1,11 +1,11 @@
 {
-  "name": "@parischap-dev/configs",
+  "name": "@parischap-dev/effect-libs",
   "type": "module",
-  "description": "Default monorepo",
+  "description": "effect-libs is a set of open-source libraries to be used in complement to the effect library. Offers Date and number parsing/formatting, sscanf/sprintf templating, number rounding, object pretty-printing and ansi-colors for terminal printing.",
   "author": "Jérôme MARTIN",
   "license": "MIT",
   "scripts": {
-    "update-config-files": "jiti node_modules/@parischap/configs/esm/bin/update-config-files.ts",
+    "update-config-files": "vite-node node_modules/@parischap/configs/esm/bin/update-config-files.ts",
     "tscheck": "tsc -b tsconfig.json --force --noEmit",
     "lint": "eslint .",
     "lint-rules": "pnpx @eslint/config-inspector",
@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "@parischap/configs": "workspace:@parischap-dev/configs@*",
+    "@parischap/test-utils": "workspace:@parischap-dev/test-utils@*",
     "globals": "^16.4.0",
     "eslint": "^9.37.0",
     "@eslint/eslintrc": "^3.3.1",
@@ -41,6 +42,7 @@
     "@types/node": "^24.7.0",
     "jiti": "2.6.1",
     "@effect/language-service": "^0.55.2",
+    "@effect/experimental": "0.57.0",
     "shx": "^0.4.0",
     "madge": "^8.0.0",
     "vite": "npm:rolldown-vite@^7.1.17",
@@ -49,9 +51,8 @@
     "babel-plugin-annotate-pure-calls": "^0.5.0",
     "@babel/plugin-transform-export-namespace-from": "^7.27.1",
     "@babel/plugin-transform-modules-commonjs": "^7.27.1",
-    "@parischap/test-utils": "workspace:@parischap-dev/test-utils@*",
     "@effect/docgen": "^0.5.2",
     "tsx": "^4.20.6"
   },
-  "packageManager": "pnpm@10.20.0"
+  "packageManager": "pnpm@10.22.0"
 }

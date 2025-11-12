@@ -1,14 +1,13 @@
 import * as Configs from '@parischap/configs';
+import { basename, dirname } from 'path';
 
 export default Configs.configSubRepo({
+  repoName: basename(dirname(dirname(import.meta.dirname))),
+  packageName: basename(import.meta.dirname),
   description: 'A functional library to pretty-print and treeify objects',
-  dependencies: {},
-  devDependencies: {},
-  internalPeerDependencies: {
-    'effect-lib': '^0.11.0',
-    'ansi-styles': '^0.2.6',
-  },
-  externalPeerDependencies: {
+  peerDependencies: {
+    '@parischap/effect-lib': '^0.11.0',
+    '@parischap/ansi-styles': '^0.2.6',
     effect: '^3.18.1',
   },
   examples: [
@@ -18,9 +17,9 @@ export default Configs.configSubRepo({
     'circularity-handling.ts',
   ],
   scripts: {},
-  environment: Configs.Environment.Type.Library,
-  packageType: 'NoBuild',
-  visibility: Configs.Visibility.Type.Public,
+  environment: 'Library',
+  packageType: 'Library',
+  isPublished: true,
   hasDocGen: true,
   keywords: [
     'inspect',

@@ -1,18 +1,18 @@
 import * as Configs from '@parischap/configs';
+import { basename, dirname } from 'path';
 
 export default Configs.configSubRepo({
+  repoName: basename(dirname(dirname(import.meta.dirname))),
+  packageName: basename(import.meta.dirname),
   description: 'A functional library to style your strings in terminals',
   dependencies: {},
   devDependencies: {},
-  internalPeerDependencies: { 'effect-lib': '^0.11.0' },
-  externalPeerDependencies: {
-    effect: '^3.18.1',
-  },
+  peerDependencies: { '@parischap/effect-lib': '^0.11.0', effect: '^3.18.1' },
   examples: ['basic-usage.ts', 'cancelling-a-style.ts', 'simple-colors.ts', 'all-colors.ts'],
   scripts: {},
-  environment: Configs.Environment.Type.Library,
-  bundled: false,
-  visibility: Configs.Visibility.Type.Public,
+  environment: 'Library',
+  packageType: 'Library',
+  isPublished: true,
   hasDocGen: true,
   keywords: [
     'terminal',

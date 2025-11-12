@@ -12,9 +12,6 @@
     "checkJs": true,
     "lib": [
       "ESNext"
-    ],
-    "types": [
-      "node"
     ]
   }
 }

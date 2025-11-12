@@ -1,18 +1,18 @@
 import * as Configs from '@parischap/configs';
+import { basename, dirname } from 'path';
 
 export default Configs.configSubRepo({
+  repoName: basename(dirname(dirname(import.meta.dirname))),
+  packageName: basename(import.meta.dirname),
   description: 'An extension to the official Effect library',
-  dependencies: {},
-  devDependencies: {},
-  internalPeerDependencies: {},
-  externalPeerDependencies: {
+  peerDependencies: {
     effect: '^3.18.1',
   },
   examples: [],
   scripts: {},
-  environment: Configs.Environment.Type.Library,
-  bundled: false,
-  visibility: Configs.Visibility.Type.Public,
+  environment: 'Library',
+  packageType: 'Library',
+  isPublished: true,
   hasDocGen: true,
   keywords: [],
 });

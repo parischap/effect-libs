@@ -1,11 +1,11 @@
 {
-  "name": "@parischap-dev/configs",
+  "name": "@parischap-dev/effect-report",
   "type": "module",
-  "description": "Default subrepo",
+  "description": "A functional library to prettify Effect logging",
   "author": "Jérôme MARTIN",
   "license": "MIT",
   "scripts": {
-    "update-config-files": "jiti node_modules/@parischap/configs/esm/bin/update-config-files.ts",
+    "update-config-files": "vite-node node_modules/@parischap/configs/esm/bin/update-config-files.ts",
     "tscheck": "tsc -b tsconfig.json --force --noEmit",
     "lint": "eslint .",
     "lint-rules": "pnpx @eslint/config-inspector",
@@ -22,25 +22,35 @@
     "compile": "tsc -b tsconfig.esm.json --force && babel dist --plugins annotate-pure-calls --out-dir dist --source-maps && pnpm prodify-lib"
   },
   "devDependencies": {
-    "@parischap/configs": "workspace:@parischap-dev/configs@*"
+    "@parischap/configs": "workspace:@parischap-dev/configs@*",
+    "@parischap/effect-report": "workspace:@parischap-dev/effect-report@*"
   },
   "module": "./esm/index.js",
   "exports": {
     ".": {
-      "import": "./esm/index.ts"
+      "import": "./esm/index.js"
     }
   },
   "dependencies": {
-    "effect": "^3.18.1",
-    "@effect/experimental": "0.57.0"
+    "effect": "^3.18.1"
   },
-  "publishConfig": {},
+  "peerDependencies": {
+    "@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
+    "@parischap/ansi-styles": "workspace:@parischap-dev/ansi-styles@*",
+    "effect": "^3.18.1"
+  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/parischap/myeffectdevs.git",
-    "directory": "packages/configs"
+    "url": "git+https://github.com/parischap/effect-libs.git",
+    "directory": "packages/effect-report"
   },
-  "homepage": "https://github.com/parischap/myeffectdevs/tree/master/packages/configs",
+  "homepage": "https://github.com/parischap/effect-libs/tree/master/packages/effect-report",
   "sideEffects": [],
-  "private": true
+  "private": true,
+  "publishConfig": {
+    "peerDependencies": {
+      "@parischap/effect-lib": "^0.11.0",
+      "@parischap/ansi-styles": "^0.2.6"
+    }
+  }
 }

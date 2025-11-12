@@ -1,11 +1,11 @@
 {
-  "name": "@parischap-dev/configs",
+  "name": "@parischap-dev/ansi-styles",
   "type": "module",
-  "description": "Default subrepo",
+  "description": "A functional library to style your strings in terminals",
   "author": "Jérôme MARTIN",
   "license": "MIT",
   "scripts": {
-    "update-config-files": "jiti node_modules/@parischap/configs/esm/bin/update-config-files.ts",
+    "update-config-files": "vite-node node_modules/@parischap/configs/esm/bin/update-config-files.ts",
     "tscheck": "tsc -b tsconfig.json --force --noEmit",
     "lint": "eslint .",
     "lint-rules": "pnpx @eslint/config-inspector",
@@ -18,29 +18,73 @@
     "test": "vitest run",
     "clean-prod": "shx rm -rf dist && shx mkdir -p dist",
     "build": "pnpm clean-prod && pnpm compile && cd ${prodFolderName} && pnpm i && cd ..",
-    "examples": "",
-    "compile": "tsc -b tsconfig.esm.json --force && babel dist --plugins annotate-pure-calls --out-dir dist --source-maps && pnpm prodify-lib"
+    "examples": "vite-node examples/basic-usage.ts&&vite-node examples/cancelling-a-style.ts&&vite-node examples/simple-colors.ts&&vite-node examples/all-colors.ts",
+    "compile": "tsc -b tsconfig.esm.json --force && babel dist/esm --out-dir dist/cjs--plugins @babel/transform-export-namespace-from --plugins @babel/transform-modules-commonjs  --source-maps && babel dist --plugins annotate-pure-calls --out-dir dist --source-maps && pnpm prodify-lib",
+    "build-and-publish": "pnpm build && pnpm checks && pnpm publish-to-npm",
+    "publish-to-npm": "cd dist && npm publish --access=public && cd ..",
+    "docgen": "docgen"
   },
   "devDependencies": {
-    "@parischap/configs": "workspace:@parischap-dev/configs@*"
+    "@parischap/configs": "workspace:@parischap-dev/configs@*",
+    "@parischap/ansi-styles": "workspace:@parischap-dev/ansi-styles@*"
   },
   "module": "./esm/index.js",
   "exports": {
     ".": {
-      "import": "./esm/index.ts"
+      "import": "./esm/index.js"
     }
   },
   "dependencies": {
-    "effect": "^3.18.1",
-    "@effect/experimental": "0.57.0"
+    "effect": "^3.18.1"
   },
-  "publishConfig": {},
+  "peerDependencies": {
+    "@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
+    "effect": "^3.18.1"
+  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/parischap/myeffectdevs.git",
-    "directory": "packages/configs"
+    "url": "git+https://github.com/parischap/effect-libs.git",
+    "directory": "packages/ansi-styles"
   },
-  "homepage": "https://github.com/parischap/myeffectdevs/tree/master/packages/configs",
+  "homepage": "https://github.com/parischap/effect-libs/tree/master/packages/ansi-styles",
   "sideEffects": [],
-  "private": true
+  "bugs": {
+    "url": "https://github.com/parischap/effect-libs/issues"
+  },
+  "funding": [
+    {
+      "type": "ko-fi",
+      "url": "https://ko-fi.com/parischap"
+    }
+  ],
+  "keywords": [
+    "terminal",
+    "color",
+    "colour",
+    "colors",
+    "formatting",
+    "cli",
+    "console",
+    "string",
+    "ansi",
+    "style",
+    "styles",
+    "tty",
+    "formatting",
+    "rgb256",
+    "shell",
+    "xterm",
+    "log",
+    "logging",
+    "command-line",
+    "text",
+    "effect",
+    "typescript",
+    "functional-programming"
+  ],
+  "publishConfig": {
+    "peerDependencies": {
+      "@parischap/effect-lib": "^0.11.0"
+    }
+  }
 }

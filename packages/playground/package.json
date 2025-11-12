@@ -1,11 +1,11 @@
 {
-  "name": "@parischap-dev/configs",
+  "name": "@parischap-dev/playground",
   "type": "module",
-  "description": "Default subrepo",
+  "description": "An Effect playground",
   "author": "Jérôme MARTIN",
   "license": "MIT",
   "scripts": {
-    "update-config-files": "jiti node_modules/@parischap/configs/esm/bin/update-config-files.ts",
+    "update-config-files": "vite-node node_modules/@parischap/configs/esm/bin/update-config-files.ts",
     "tscheck": "tsc -b tsconfig.json --force --noEmit",
     "lint": "eslint .",
     "lint-rules": "pnpx @eslint/config-inspector",
@@ -22,25 +22,33 @@
     "compile": "tsc -b tsconfig.esm.json --force && babel dist --plugins annotate-pure-calls --out-dir dist --source-maps && pnpm prodify-lib"
   },
   "devDependencies": {
-    "@parischap/configs": "workspace:@parischap-dev/configs@*"
+    "@parischap/configs": "workspace:@parischap-dev/configs@*",
+    "@parischap/playground": "workspace:@parischap-dev/playground@*"
   },
   "module": "./esm/index.js",
   "exports": {
     ".": {
-      "import": "./esm/index.ts"
+      "import": "./esm/index.js"
     }
   },
   "dependencies": {
-    "effect": "^3.18.1",
-    "@effect/experimental": "0.57.0"
+    "effect": "^3.18.1"
   },
-  "publishConfig": {},
+  "peerDependencies": {
+    "@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
+    "effect": "^3.18.1"
+  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/parischap/myeffectdevs.git",
-    "directory": "packages/configs"
+    "url": "git+https://github.com/parischap/effect-libs.git",
+    "directory": "packages/playground"
   },
-  "homepage": "https://github.com/parischap/myeffectdevs/tree/master/packages/configs",
+  "homepage": "https://github.com/parischap/effect-libs/tree/master/packages/playground",
   "sideEffects": [],
-  "private": true
+  "private": true,
+  "publishConfig": {
+    "peerDependencies": {
+      "@parischap/effect-lib": "^0.11.0"
+    }
+  }
 }

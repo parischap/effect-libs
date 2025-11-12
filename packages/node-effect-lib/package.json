@@ -1,11 +1,11 @@
 {
-  "name": "@parischap-dev/configs",
+  "name": "@parischap-dev/node-effect-lib",
   "type": "module",
-  "description": "Default subrepo",
+  "description": "A complement to the official @effect/platform library with add-ons for Node.js",
   "author": "Jérôme MARTIN",
   "license": "MIT",
   "scripts": {
-    "update-config-files": "jiti node_modules/@parischap/configs/esm/bin/update-config-files.ts",
+    "update-config-files": "vite-node node_modules/@parischap/configs/esm/bin/update-config-files.ts",
     "tscheck": "tsc -b tsconfig.json --force --noEmit",
     "lint": "eslint .",
     "lint-rules": "pnpx @eslint/config-inspector",
@@ -22,25 +22,39 @@
     "compile": "tsc -b tsconfig.esm.json --force && babel dist --plugins annotate-pure-calls --out-dir dist --source-maps && pnpm prodify-lib"
   },
   "devDependencies": {
-    "@parischap/configs": "workspace:@parischap-dev/configs@*"
+    "@parischap/configs": "workspace:@parischap-dev/configs@*",
+    "@parischap/node-effect-lib": "workspace:@parischap-dev/node-effect-lib@*"
   },
   "module": "./esm/index.js",
   "exports": {
     ".": {
-      "import": "./esm/index.ts"
+      "import": "./esm/index.js"
     }
   },
   "dependencies": {
-    "effect": "^3.18.1",
-    "@effect/experimental": "0.57.0"
+    "effect": "^3.18.1"
   },
-  "publishConfig": {},
+  "peerDependencies": {
+    "@parischap/effect-lib": "workspace:@parischap-dev/effect-lib@*",
+    "effect": "^3.18.1",
+    "@effect/platform": "^0.93.0",
+    "@effect/platform-node": "^0.100.0",
+    "@effect/cluster": "^0.52.5",
+    "@effect/rpc": "^0.72.1",
+    "@effect/sql": "^0.48.0",
+    "@effect/workflow": "^0.12.2"
+  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/parischap/myeffectdevs.git",
-    "directory": "packages/configs"
+    "url": "git+https://github.com/parischap/effect-libs.git",
+    "directory": "packages/node-effect-lib"
   },
-  "homepage": "https://github.com/parischap/myeffectdevs/tree/master/packages/configs",
+  "homepage": "https://github.com/parischap/effect-libs/tree/master/packages/node-effect-lib",
   "sideEffects": [],
-  "private": true
+  "private": true,
+  "publishConfig": {
+    "peerDependencies": {
+      "@parischap/effect-lib": "^0.11.0"
+    }
+  }
 }

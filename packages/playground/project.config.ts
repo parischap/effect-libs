@@ -4,11 +4,10 @@ import { basename, dirname } from 'path';
 export default Configs.configSubRepo({
   repoName: basename(dirname(dirname(import.meta.dirname))),
   packageName: basename(import.meta.dirname),
-  description: 'A complement to the official @effect/platform library with add-ons for Node.js',
+  description: 'An Effect playground',
   peerDependencies: {
     '@parischap/effect-lib': '^0.11.0',
     effect: '^3.18.1',
-    ...Configs.constants.effectPlatformDependencies,
   },
   examples: [],
   scripts: {},
