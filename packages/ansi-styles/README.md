@@ -1,3 +1,4 @@
+<!-- LTeX: language=en-US -->
 <div align="center">
 
 # ansi-styles
@@ -44,20 +45,20 @@ This is a modern library optimized for tree-shaking. Don't put too much focus on
 This library supports named imports:
 
 ```ts
-import { ASStyle } from "@parischap/ansi-styles";
+import { ASStyle } from '@parischap/ansi-styles';
 
-console.log(ASStyle.red("foo"));
+console.log(ASStyle.red('foo'));
 ```
 
-and default imports:
+and namespace imports:
 
 ```ts
-import * as ASStyle from "@parischap/ansi-styles/ASStyle";
+import * as ASStyle from '@parischap/ansi-styles/ASStyle';
 
-console.log(ASStyle.red("foo"));
+console.log(ASStyle.red('foo'));
 ```
 
-In this documentation, we'll use the first option. But if you value tree-shaking, you should use the second.
+In this documentation, we'll use the first option. But if you value tree-shaking, you should use the second unless you use a bundler that implements deep scope analysis as for instance rollup, vite, webpack 5+.
 
 ## Note
 
@@ -74,20 +75,20 @@ After reading this introduction, you may take a look at the [API](https://parisc
 Just import ASStyle and build simple styled strings in the following manner:
 
 ```ts
-import { ASStyle } from "@parischap/ansi-styles";
+import { ASStyle } from '@parischap/ansi-styles';
 
 console.log(
   ASStyle.red(
-    "ansi-styles is an ",
+    'ansi-styles is an ',
     ASStyle.bold(
-      "Effect library ",
+      'Effect library ',
       ASStyle.magenta(
-        ASStyle.dim("for terminal output styling with "),
-        ASStyle.yellow("ANSI "),
-        "colors ",
+        ASStyle.dim('for terminal output styling with '),
+        ASStyle.yellow('ANSI '),
+        'colors ',
       ),
     ),
-    "and formats.",
+    'and formats.',
   ),
 );
 ```
@@ -132,9 +133,9 @@ In some cases, you may need to cancel the effect of a style using one of the fol
 For instance:
 
 ```ts
-import { ASStyle } from "@parischap/ansi-styles";
+import { ASStyle } from '@parischap/ansi-styles';
 
-console.log(ASStyle.bold("I am ", ASStyle.notBold("not bold")));
+console.log(ASStyle.bold('I am ', ASStyle.notBold('not bold')));
 ```
 
 => Output:
@@ -172,13 +173,13 @@ In some cases, you may need to revert to the default terminal color. In that cas
 Here is an example:
 
 ```ts
-import { ASStyle } from "@parischap/ansi-styles";
+import { ASStyle } from '@parischap/ansi-styles';
 
 console.log(
   ASStyle.none(
-    ASStyle.green("I am "),
-    ASStyle.Bright.green("in different shades "),
-    ASStyle.Bg.Bright.green("of green", ASStyle.Bg.defaultColor(".")),
+    ASStyle.green('I am '),
+    ASStyle.Bright.green('in different shades '),
+    ASStyle.Bg.Bright.green('of green', ASStyle.Bg.defaultColor('.')),
   ),
 );
 ```
@@ -196,12 +197,12 @@ The ASColor module defines 16 three-bit color instances (8 normal + 8 bright), 2
 Here is an example:
 
 ```ts
-import { ASColor, ASStyle } from "@parischap/ansi-styles";
+import { ASColor, ASStyle } from '@parischap/ansi-styles';
 
-console.log(ASStyle.color(ASColor.rgbCoral)("I am a coral string"));
+console.log(ASStyle.color(ASColor.rgbCoral)('I am a coral string'));
 console.log(
   ASStyle.color(ASColor.Rgb.make({ red: 176, green: 17, blue: 243 }))(
-    "I am a string colored with an RGB-user-defined color",
+    'I am a string colored with an RGB-user-defined color',
   ),
 );
 ```
@@ -218,7 +219,7 @@ A `ContextStyler` is a curated `function` object that takes first a context valu
 Here is an example:
 
 ```ts
-import { ASContextStyler, ASPalette } from "@parischap/ansi-styles";
+import { ASContextStyler, ASPalette } from '@parischap/ansi-styles';
 
 interface Value {
   readonly pos1: number;
@@ -236,17 +237,17 @@ const pos1BasedAllColorsFormatter = ASContextStyler.fromPalette({
 
 const value1: Value = {
   pos1: 2,
-  otherStuff: "dummy",
+  otherStuff: 'dummy',
 };
 const pos1BasedAllColorsFormatterInValue1Context = pos1BasedAllColorsFormatter(value1);
 const redInValue1Context = red(value1);
 
 /* Prints `foo` in red */
-console.log(redInValue1Context("foo"));
+console.log(redInValue1Context('foo'));
 
 /* Prints `foo` in green */
-console.log(pos1BasedAllColorsFormatterInValue1Context("foo"));
+console.log(pos1BasedAllColorsFormatterInValue1Context('foo'));
 
 /* Prints `foo` in green using parameters in reversed order */
-console.log(pos1BasedAllColorsFormatter.withContextLast("foo")(value1));
+console.log(pos1BasedAllColorsFormatter.withContextLast('foo')(value1));
 ```

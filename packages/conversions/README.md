@@ -44,20 +44,20 @@ This is a modern library optimized for tree-shaking. Don't put too much focus on
 This library supports named imports:
 
 ```ts
-import { CVRoundingOption } from "@parischap/conversions";
+import { CVRoundingOption } from '@parischap/conversions';
 
 console.log(CVRoundingOption.toNumberRounder(CVRoundingOption.halfExpand2));
 ```
 
-and default imports:
+and namespace imports:
 
 ```ts
-import * as CVRoundingOption from "@parischap/conversions/CVRoundingOption";
+import * as CVRoundingOption from '@parischap/conversions/CVRoundingOption';
 
 console.log(CVRoundingOption.toNumberRounder(CVRoundingOption.halfExpand2));
 ```
 
-In this documentation, we'll use the first option. But if you value tree-shaking, you should use the second.
+In this documentation, we'll use the first option. But if you value tree-shaking, you should use the second unless you use a bundler that implements deep scope analysis as for instance rollup, vite, webpack 5+.
 
 ## API
 

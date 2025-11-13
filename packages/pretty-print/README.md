@@ -44,20 +44,20 @@ This is a modern library optimized for tree-shaking. Don't put too much focus on
 This library supports named imports:
 
 ```ts
-import { PPOption } from "@parischap/pretty-print";
+import { PPOption } from '@parischap/pretty-print';
 
 pipe(3, PPOption.toStringifier(PPOption.darkModeUtilInspectLike), console.log);
 ```
 
-and default imports:
+and namespace imports:
 
 ```ts
-import * as PPOption from "@parischap/pretty-print/PPStringifiedValue";
+import * as PPOption from '@parischap/pretty-print/PPStringifiedValue';
 
 pipe(3, PPOption.toStringifier(PPOption.darkModeUtilInspectLike), console.log);
 ```
 
-In this documentation, we'll use the first option. But if you value tree-shaking, you should use the second.
+In this documentation, we'll use the first option. But if you value tree-shaking, you should use the second unless you use a bundler that implements deep scope analysis as for instance rollup, vite, webpack 5+.
 
 ## API
 
@@ -78,19 +78,19 @@ For a start, you can use one of the 6 predefined `Option` instances.
 <a id="code_example"></a>
 
 ```ts
-import { PPOption, PPStringifiedValue } from "@parischap/pretty-print";
-import { HashMap, pipe } from "effect";
+import { PPOption, PPStringifiedValue } from '@parischap/pretty-print';
+import { HashMap, pipe } from 'effect';
 
 const stringifier = PPOption.toStringifier(PPOption.darkModeUtilInspectLike);
 
 const toPrint = {
   a: [7, 8],
-  e: HashMap.make(["key1", 3], ["key2", 6]),
+  e: HashMap.make(['key1', 3], ['key2', 6]),
   b: { a: 5, c: 8 },
   f: Math.max,
   d: {
     e: true,
-    f: { a: { k: { z: "foo", y: "bar" } } },
+    f: { a: { k: { z: 'foo', y: 'bar' } } },
   },
 };
 
@@ -106,8 +106,8 @@ In the previous example, we used the `darkModeUtilInspectLike` Option instance. 
 The remaining 4 predefined Option instances are all related to treeifying. For instance:
 
 ```ts
-import { PPOption, PPStringifiedValue } from "@parischap/pretty-print";
-import { HashMap, pipe } from "effect";
+import { PPOption, PPStringifiedValue } from '@parischap/pretty-print';
+import { HashMap, pipe } from 'effect';
 
 const stringifier = PPOption.toStringifier(PPOption.darkModeTreeifyHideLeaves);
 
@@ -121,7 +121,7 @@ const toPrint = {
     A2: null,
     A3: null,
   },
-  B: HashMap.make(["B1", null], ["B2", null]),
+  B: HashMap.make(['B1', null], ['B2', null]),
 };
 
 console.log(pipe(toPrint, stringifier, PPStringifiedValue.toAnsiString()));
@@ -135,8 +135,8 @@ Again, do note how an array and an Effect HashMap get directly treeified without
 As you have guessed, the `treeifyHideLeaves` Option instance does the same without coloring. And the treeify and darkModeTreeify Option instances also treeify without hiding the leaves (the `null` values in the previous example). Here's a simple example:
 
 ```ts
-import { PPOption, PPStringifiedValue } from "@parischap/pretty-print";
-import { pipe } from "effect";
+import { PPOption, PPStringifiedValue } from '@parischap/pretty-print';
+import { pipe } from 'effect';
 
 const stringifier = PPOption.toStringifier(PPOption.darkModeTreeify);
 
@@ -172,11 +172,11 @@ You can find a detailed description of the Option object in the [API](https://pa
 If you are not interested in going too deep into details, just remember that you need to use the `styleMap` property of the Option object to define the colors that the pretty-printer will use. For instance, this is how you could define the `darkModeUtilInspectLike` Option instance from the `utilInspectLike` Option instance if it didn't already exist:
 
 ```ts
-import { PPOption, PPStyleMap } from "@parischap/pretty-print";
+import { PPOption, PPStyleMap } from '@parischap/pretty-print';
 
 export const darkModeUtilInspectLike: PPOption.Type = PPOption.make({
   ...PPOption.utilInspectLike,
-  id: "DarkModeUtilInspectLike",
+  id: 'DarkModeUtilInspectLike',
   styleMap: PPStyleMap.darkMode,
 });
 ```
@@ -211,17 +211,17 @@ An Option instance has a `markMap` property which, as its name suggests, is a ma
 The [MarkMap.ts](https://parischap.github.io/effect-libs/pretty-print/MarkMap.ts.html) module defines a single instance named `utilInspectLike`. You can use the make constructor to define your own instances if you need to. For instance, if you wanted the function name to be followed by '()', this is how you would define your own Option instance:
 
 ```ts
-import { PPMarkMap, PPOption } from "@parischap/pretty-print";
-import { HashMap } from "effect";
+import { PPMarkMap, PPOption } from '@parischap/pretty-print';
+import { HashMap } from 'effect';
 
 export const withParentheses: PPOption.Type = PPOption.make({
   ...PPOption.utilInspectLike,
-  id: "WithParentheses",
+  id: 'WithParentheses',
   markMap: PPMarkMap.make({
-    id: "withParenteses",
-    marks: HashMap.set(PPMarkMap.utilInspectLike.marks, "FunctionNameEndDelimiter", {
-      text: "()",
-      partName: "Message",
+    id: 'withParenteses',
+    marks: HashMap.set(PPMarkMap.utilInspectLike.marks, 'FunctionNameEndDelimiter', {
+      text: '()',
+      partName: 'Message',
     }),
   }),
 });
@@ -242,11 +242,11 @@ The `utilInspectLike` Option instance makes use of the two pre-defined ByPasser 
 You can use the make constructor to define your own ByPasser's if you need to. You can also define your own Option instance with fewer ByPasser's. For instance, this is how you would define an Option instance that displays functions as any other non-primitive value (for instance if you want to show some properties of the function object):
 
 ```ts
-import { PPByPasser, PPOption } from "@parischap/pretty-print";
+import { PPByPasser, PPOption } from '@parischap/pretty-print';
 
 export const withoutFunctionByPasser = PPOption.make({
   ...PPOption.utilInspectLike,
-  id: "WithoutFunctionByPasser",
+  id: 'WithoutFunctionByPasser',
   byPassers: Array.of(PPByPasser.objectToString),
 });
 ```
@@ -323,8 +323,8 @@ But it also ships a `make` constructor in case you have some very specific needs
 This package handles recursivity similarly to the Javascript `util.inspect()` function. For instance:
 
 ```ts
-import { PPOption, PPStringifiedValue } from "@parischap/pretty-print";
-import { pipe } from "effect";
+import { PPOption, PPStringifiedValue } from '@parischap/pretty-print';
+import { pipe } from 'effect';
 
 const stringifier = PPOption.toStringifier(
   PPOption.make({ ...PPOption.utilInspectLike, maxDepth: +Infinity }),
