@@ -28,7 +28,7 @@ jobs:
           node-version: "latest"
           cache: pnpm
           registry-url: https://registry.npmjs.org/
-      - run: pnpm prepare-docs
+      - run: pnpm --if-present prepare-docs
       - name: Build pages Jekyll
         uses: actions/jekyll-build-pages@v1
         with:
