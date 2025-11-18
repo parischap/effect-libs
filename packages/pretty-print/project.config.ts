@@ -6,9 +6,11 @@ export default Configs.configSubRepo({
   packageName: basename(import.meta.dirname),
   description: 'A functional library to pretty-print and treeify objects',
   peerDependencies: {
-    '@parischap/effect-lib': '^0.11.0',
-    '@parischap/ansi-styles': '^0.2.6',
-    effect: '^3.18.1',
+    '@parischap/effect-lib':
+      "sourceInProd=NPM&versionInProd=^0.11.0&sourceInDev=WORKSPACE&buildStageInDev=DEV&parent=effect-libs",
+    '@parischap/ansi-styles':
+      "sourceInProd=NPM&versionInProd=^0.2.6&sourceInDev=WORKSPACE&buildStageInDev=DEV&parent=effect-libs",
+    ...Configs.constants.effectDependencies,
   },
   examples: [
     'util-inspect-like.ts',
@@ -18,7 +20,7 @@ export default Configs.configSubRepo({
   ],
   scripts: {},
   environment: 'Library',
-  packageType: 'Library',
+  buildMethod: 'Transpile',
   isPublished: true,
   hasDocGen: true,
   keywords: [

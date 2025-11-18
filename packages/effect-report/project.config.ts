@@ -8,14 +8,16 @@ export default Configs.configSubRepo({
   dependencies: {},
   devDependencies: {},
   peerDependencies: {
-    '@parischap/effect-lib': '^0.11.0',
-    '@parischap/ansi-styles': '^0.2.6',
-    effect: '^3.18.1',
+    '@parischap/effect-lib':
+      "sourceInProd=NPM&versionInProd=^0.11.0&sourceInDev=WORKSPACE&buildStageInDev=DEV&parent=effect-libs",
+    '@parischap/ansi-styles':
+      "sourceInProd=NPM&versionInProd=^0.2.6&sourceInDev=WORKSPACE&buildStageInDev=DEV&parent=effect-libs",
+    ...Configs.constants.effectDependencies,
   },
   examples: [],
   scripts: {},
   environment: 'Node',
-  packageType: 'Library',
+  buildMethod: 'Transpile',
   isPublished: false,
   hasDocGen: false,
   keywords: [],
