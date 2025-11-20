@@ -1,0 +1,17 @@
+{
+  "configName": "configSubRepo",
+  "description": "A functional library to prettify Effect logging",
+  "peerDependencies":{
+"@parischap/effect-lib":
+      "sourceInProd=NPM&versionInProd=^0.11.0&sourceInDev=WORKSPACE&buildStageInDev=DEV&parent=effect-libs",
+    "@parischap/ansi-styles":
+      "sourceInProd=NPM&versionInProd=^0.2.6&sourceInDev=WORKSPACE&buildStageInDev=DEV&parent=effect-libs"
+  },
+  "environment": "Node",
+  "buildMethod": "Transpile",
+  "isPublished": false,
+  "hasDocGen": false,
+  "keywords": [
+  ],
+  "useEffectAsPeerDependency": true
+} 

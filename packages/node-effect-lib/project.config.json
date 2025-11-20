@@ -1,0 +1,16 @@
+{
+  "configName": "configSubRepo",
+  "description": "A complement to the official @effect/platform library with add-ons for Node.js",
+  "peerDependencies":{
+"@parischap/effect-lib":
+      "sourceInProd=NPM&versionInProd=^0.11.0&sourceInDev=WORKSPACE&buildStageInDev=DEV&parent=effect-libs"
+  },
+  "environment": "Node",
+  "buildMethod": "Transpile",
+  "isPublished": false,
+  "hasDocGen": false,
+  "keywords": [
+  ],
+  "useEffectAsPeerDependency": true,
+  "useEffectPlatform": "asPeerDependency"
+} 

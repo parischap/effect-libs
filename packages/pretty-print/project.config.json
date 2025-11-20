@@ -1,0 +1,34 @@
+{
+  "configName": "configSubRepo",
+  "description": "A functional library to pretty-print and treeify objects",
+  "peerDependencies":{
+"@parischap/effect-lib":
+      "sourceInProd=NPM&versionInProd=^0.11.0&sourceInDev=WORKSPACE&buildStageInDev=DEV&parent=effect-libs",
+    "@parischap/ansi-styles":
+      "sourceInProd=NPM&versionInProd=^0.2.6&sourceInDev=WORKSPACE&buildStageInDev=DEV&parent=effect-libs"
+  },
+  "examples":["util-inspect-like.ts",
+    "treeify.ts",
+    "treeify-with-leaves.ts",
+    "circularity-handling.ts"],
+  "environment": "Library",
+  "buildMethod": "Transpile",
+  "isPublished": true,
+  "hasDocGen": true,
+  "keywords": [
+    "inspect",
+    "util.inspect",
+    "object",
+    "stringify",
+    "pretty",
+    "tree",
+    "treeify",
+    "print",
+    "console",
+    "visualize",
+    "debug",
+    "typescript",
+    "effect"
+  ],
+  "useEffectAsPeerDependency": true
+} 

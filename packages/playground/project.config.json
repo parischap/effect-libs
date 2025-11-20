@@ -1,0 +1,15 @@
+{
+  "configName": "configSubRepo",
+  "description": "An Effect playground",
+  "dependencies":{
+"@parischap/effect-lib":
+      "sourceInProd=NPM&versionInProd=^0.11.0&sourceInDev=WORKSPACE&buildStageInDev=DEV&parent=effect-libs",
+  },
+  "environment": "Node",
+  "buildMethod": "None",
+  "isPublished": false,
+  "hasDocGen": false,
+  "keywords": [
+  ],
+  "useEffectAsPeerDependency": false
+} 
