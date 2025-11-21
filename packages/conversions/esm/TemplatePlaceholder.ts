@@ -615,12 +615,7 @@ export const anythingBut = <const N extends string>({
   readonly name: N;
   readonly forbiddenChars: MTypes.OverOne<string>;
 }): Type<N, string> => {
-  const forbiddenCharsAsString = pipe(
-    forbiddenChars,
-    Array.join("', '"),
-    MString.prepend("[ '"),
-    MString.append("' ]"),
-  );
+  const forbiddenCharsAsString = JSON.stringify(forbiddenChars);
   return fulfilling({
     name,
     regExp: pipe(

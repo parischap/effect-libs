@@ -12,5 +12,5 @@
   "keywords": [
   ],
   "useEffectAsPeerDependency": true,
-  "useEffectPlatform": "asPeerDependency"
+  "useEffectPlatform": "AsPeerDependency"
 } 
