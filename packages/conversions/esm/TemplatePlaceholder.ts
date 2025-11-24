@@ -305,7 +305,7 @@ export const fixedLength = <const N extends string>({
 }): Type<N, string> => {
   return make({
     name,
-    description: `${length}-character string`,
+    description: `${MString.fromNumber(10)(length)}-character string`,
     parser: function (this: Type<N, string>, text) {
       return pipe(
         text,
@@ -615,7 +615,8 @@ export const anythingBut = <const N extends string>({
   readonly name: N;
   readonly forbiddenChars: MTypes.OverOne<string>;
 }): Type<N, string> => {
-  const forbiddenCharsAsString = JSON.stringify(forbiddenChars);
+  // Do not use JSON.stringify because it doubles backslashes
+  const forbiddenCharsAsString = `['${forbiddenChars.join("', '")}']`;
   return fulfilling({
     name,
     regExp: pipe(

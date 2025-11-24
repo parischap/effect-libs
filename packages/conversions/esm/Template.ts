@@ -242,7 +242,7 @@ export const toFormatter = <const PS extends CVTemplateParts.Type>(
   },
   Either.Either<string, MInputError.Type>
 > => {
-  return (record: Record<string, unknown>) =>
+  return (record: Record.ReadonlyRecord<string, unknown>) =>
     pipe(
       self.templateParts,
       MArray.reduceUnlessLeft('', (result, templatePart) => {

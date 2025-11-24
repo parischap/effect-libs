@@ -26,6 +26,7 @@ import {
   MInspectable,
   MNumber,
   MPipeable,
+  MString,
   MStruct,
   MTypes,
 } from '@parischap/effect-lib';
@@ -381,7 +382,7 @@ namespace GregorianDate {
           selfOrdinalDay === 60 ?
             Either.left(
               new MInputError.Type({
-                message: `No February 29th on year ${year} which is not a leap year`,
+                message: `No February 29th on year ${MString.fromNumber(10)(year)} which is not a leap year`,
               }),
             )
           : Either.right(-1)
@@ -436,7 +437,8 @@ namespace GregorianDate {
             ),
             (selfMonthDay) =>
               new MInputError.Type({
-                message: `Month ${month} of year ${self.year} does not have ${selfMonthDay} days`,
+                message: `Month ${MString.fromNumber(10)(month)} of year ${MString.fromNumber(10)(self.year)}\
+ does not have ${MString.fromNumber(10)(selfMonthDay)} days`,
               }),
           ),
         );
@@ -971,7 +973,7 @@ namespace IsoDate {
             Predicate.or(yearIsLong, flow(getIsoWeek, Number.lessThan(53))),
             () =>
               new MInputError.Type({
-                message: `No 53rd week on iso year ${year} which is not a short year`,
+                message: `No 53rd week on iso year ${MString.fromNumber(10)(year)} which is not a short year`,
               }),
           ),
         );
@@ -1949,7 +1951,7 @@ export namespace Parts {
  * `millisecond` must be greater than or equal to 0 and less than or equal to 999. If omitted,
  * millisecond is assumed to be 0.
  *
- * `zoneOffset` must be strictly greater to -13 and strictly less than 15. `zoneHour` must be
+ * `zoneOffset` must be strictly greater than -13 and strictly less than 15. `zoneHour` must be
  * greater than or equal to -12 and less than or equal to 14. `zoneMinute` must be greater than or
  * equal to 0 and less than or equal to 59. `zoneSecond` must be greater than or equal to 0 and less
  * than or equal to 59.
@@ -1959,8 +1961,11 @@ export namespace Parts {
  * default values are determined as follows :
  *
  * - If all parameters are undefined, the local time zone offset of the machine this code is running
- *   on is used.
- * - If any of `zoneHour`, `zoneMinute`, `zoneSecond`, the undefined parameters are taken equal to 0.
+ *   on is used. ATTENTION: unlike the javaScript Date constructor, fromParts uses the current time
+ *   zone offset, not the one that prevails at the given date (so, in Paris, in winter, the time
+ *   zone offset for date 20250714 is -1 and not -2).
+ * - If any of `zoneHour`, `zoneMinute`, `zoneSecond` is defined, the remaining undefined parameters
+ *   are taken equal to 0.
  *
  * Note that zoneHour=-0, zoneMinute=10, zoneSecond=0 is different from zoneHour=0, zoneMinute=10,
  * zoneSecond=0. The first corresponds to the string 'GMT-00:10', a negative 10-minute offset, the

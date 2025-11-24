@@ -105,7 +105,6 @@ describe('MCache', () => {
   });
 
   describe('Non-recursive cache with capacity=3 and TTL=0', () => {
-    /* eslint-disable-next-line functional/no-let */
     let state = 0;
     const testCache = MCache.make<number, number>({
       lookUp: ({ key }: { readonly key: number }) => Tuple.make(key * 2 + state++, key !== 8),

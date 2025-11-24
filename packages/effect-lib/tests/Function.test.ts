@@ -36,7 +36,6 @@ describe('MFunction', () => {
   });
 
   it('once', () => {
-    /* eslint-disable-next-line functional/no-let */
     let a = 0;
     const complexFoo = () => a++;
     const memoized = MFunction.once(complexFoo);

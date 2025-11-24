@@ -1,3 +1,4 @@
+import { JsAnsi } from '@parischap/ansi-styles';
 import { MArray, MFs, MString, MTypes } from '@parischap/effect-lib';
 import { Array, Cause, FiberId, Function, String, flow, pipe } from 'effect';
 import * as RErrors from './Errors.js';
@@ -23,8 +24,8 @@ export const toString =
         error instanceof RErrors.WithOriginalCause ?
           pipe(error.originalCause, toString({ eol, pathSep, stringify, tabChar, thisProgramPath }))
             + eol
-            + JsANSI.yellow(`Rethrown in:${error.message}`)
-        : JsANSI.red(title)
+            + JsAnsi.yellow(`Rethrown in:${error.message}`)
+        : JsAnsi.red(title)
             + eol
             + JsString.tabify(tabChar)(
               MTypes.isErrorish(error) ?
@@ -43,7 +44,7 @@ export const toString =
         onFail: formatUnknownError('SCRIPT ERRORED WITH:'),
         onDie: formatUnknownError('SCRIPT DIED WITH FOLLOWING DEFECT:'),
         onInterrupt: (fiberId) =>
-          Array.of(JsANSI.red(`FIBER ${FiberId.threadName(fiberId)} WAS INTERRUPTED`)),
+          Array.of(JsAnsi.red(`FIBER ${FiberId.threadName(fiberId)} WAS INTERRUPTED`)),
         onSequential: (left, right) => Array.appendAll(left, right),
         onParallel: (left, right) => Array.appendAll(left, right),
       }),

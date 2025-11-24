@@ -44,7 +44,9 @@ export const fromBigInt = (self: bigint): Either.Either<number, Brand.Brand.Bran
   pipe(
     self,
     fromBigIntOption,
-    Either.fromOption(() => Brand.error(`BigInt '${self}' too big to be converted to number`)),
+    Either.fromOption(() =>
+      Brand.error(`BigInt '${self.toString()}' too big to be converted to number`),
+    ),
   );
 
 /**

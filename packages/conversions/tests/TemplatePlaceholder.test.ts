@@ -7,14 +7,12 @@ import { describe, it } from 'vitest';
 describe('CVTemplatePlaceholder', () => {
   const threeChars = CVTemplatePlaceholder.fixedLength({ name: 'foo', length: 3 });
 
-  TEUtils.areEqualTypes<
-    CVTemplatePlaceholder.ExtractName<typeof threeChars>,
-    'foo'
-  >() satisfies true;
-  TEUtils.areEqualTypes<
-    CVTemplatePlaceholder.ExtractType<typeof threeChars>,
-    string
-  >() satisfies true;
+  TEUtils.assertTrueType(
+    TEUtils.areEqualTypes<CVTemplatePlaceholder.ExtractName<typeof threeChars>, 'foo'>(),
+  );
+  TEUtils.assertTrueType(
+    TEUtils.areEqualTypes<CVTemplatePlaceholder.ExtractType<typeof threeChars>, string>(),
+  );
 
   describe('Tag, prototype and guards', () => {
     it('moduleTag', () => {
@@ -243,7 +241,7 @@ describe('CVTemplatePlaceholder', () => {
     it('.toString()', () => {
       TEUtils.strictEqual(
         noSpaceChars.toString(),
-        "#foo: a non-empty string containing non of the following characters: [ '\\s' ]",
+        "#foo: a non-empty string containing non of the following characters: ['\\s']",
       );
     });
 
@@ -251,7 +249,7 @@ describe('CVTemplatePlaceholder', () => {
       it('Not passing', () => {
         TEUtils.assertLeftMessage(
           noSpaceChars.parser(''),
-          "Expected #foo to be a non-empty string containing non of the following characters: [ '\\s' ]. Actual: ''",
+          "Expected #foo to be a non-empty string containing non of the following characters: ['\\s']. Actual: ''",
         );
       });
 
@@ -266,7 +264,7 @@ describe('CVTemplatePlaceholder', () => {
         TEUtils.assertLeft(noSpaceChars.formatter(''));
         TEUtils.assertLeftMessage(
           noSpaceChars.formatter('fo o'),
-          "#foo: expected a non-empty string containing non of the following characters: [ '\\s' ]. Actual: 'fo o'",
+          "#foo: expected a non-empty string containing non of the following characters: ['\\s']. Actual: 'fo o'",
         );
       });
 

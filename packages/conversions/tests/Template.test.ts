@@ -62,20 +62,22 @@ describe('CVTemplate', () => {
   describe('toParser', () => {
     const parser = CVTemplate.toParser(template);
 
-    TEUtils.areEqualTypes<
-      typeof parser,
-      MTypes.OneArgFunction<
-        string,
-        Either.Either<
-          {
-            readonly dd: CVReal.Type;
-            readonly MM: CVReal.Type;
-            readonly yyyy: CVReal.Type;
-          },
-          MInputError.Type
+    TEUtils.assertTrueType(
+      TEUtils.areEqualTypes<
+        typeof parser,
+        MTypes.OneArgFunction<
+          string,
+          Either.Either<
+            {
+              readonly dd: CVReal.Type;
+              readonly MM: CVReal.Type;
+              readonly yyyy: CVReal.Type;
+            },
+            MInputError.Type
+          >
         >
-      >
-    >() satisfies true;
+      >(),
+    );
 
     it('Empty text', () => {
       TEUtils.assertLeftMessage(parser(''), 'Expected length of #dd to be: 2. Actual: 0');
@@ -121,17 +123,19 @@ describe('CVTemplate', () => {
   describe('toFormatter', () => {
     const formatter = CVTemplate.toFormatter(template);
 
-    TEUtils.areEqualTypes<
-      typeof formatter,
-      MTypes.OneArgFunction<
-        {
-          readonly dd: CVReal.Type;
-          readonly MM: CVReal.Type;
-          readonly yyyy: CVReal.Type;
-        },
-        Either.Either<string, MInputError.Type>
-      >
-    >() satisfies true;
+    TEUtils.assertTrueType(
+      TEUtils.areEqualTypes<
+        typeof formatter,
+        MTypes.OneArgFunction<
+          {
+            readonly dd: CVReal.Type;
+            readonly MM: CVReal.Type;
+            readonly yyyy: CVReal.Type;
+          },
+          Either.Either<string, MInputError.Type>
+        >
+      >(),
+    );
 
     it('With correct values', () => {
       TEUtils.assertRight(

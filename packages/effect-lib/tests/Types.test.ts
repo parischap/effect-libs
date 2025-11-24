@@ -35,79 +35,104 @@ type TestRefinement = typeof MTypes.isString;
 type TestOneArgFunction = typeof Number.increment;
 
 /** Tuple */
-TEUtils.areEqualTypes<
-  MTypes.Tuple<string, 2 | 3>,
-  readonly [string, string] | readonly [string, string, string]
->() satisfies true;
-TEUtils.areEqualTypes<MTypes.Tuple<string, number>, ReadonlyArray<string>>() satisfies true;
+TEUtils.assertTrueType(
+  TEUtils.areEqualTypes<
+    MTypes.Tuple<string, 2 | 3>,
+    readonly [string, string] | readonly [string, string, string]
+  >(),
+);
+TEUtils.assertTrueType(
+  TEUtils.areEqualTypes<MTypes.Tuple<string, number>, ReadonlyArray<string>>(),
+);
 
 /** IntRange */
-TEUtils.areEqualTypes<MTypes.IntRange<3, 6>, 3 | 4 | 5>() satisfies true;
+TEUtils.assertTrueType(TEUtils.areEqualTypes<MTypes.IntRange<3, 6>, 3 | 4 | 5>());
 
 /** ReadonlyTail */
-TEUtils.areEqualTypes<MTypes.ReadonlyTail<TestTuple>, readonly [boolean, string]>() satisfies true;
+TEUtils.assertTrueType(
+  TEUtils.areEqualTypes<MTypes.ReadonlyTail<TestTuple>, readonly [boolean, string]>(),
+);
 
 /** MapToReadonlyTarget */
-TEUtils.areEqualTypes<
-  MTypes.MapToReadonlyTarget<TestTuple, string>,
-  readonly [string, string, string]
->() satisfies true;
-TEUtils.areEqualTypes<
-  MTypes.MapToReadonlyTarget<ReadonlyArray<number>, string>,
-  ReadonlyArray<string>
->() satisfies true;
-TEUtils.areEqualTypes<
-  MTypes.MapToReadonlyTarget<TestInterface, string>,
-  {
-    readonly a: string;
-    readonly [testSymbol]: string;
-    readonly b: string;
-    readonly toString: string;
-  }
->() satisfies true;
-TEUtils.areEqualTypes<
-  MTypes.MapToReadonlyTarget<Record.ReadonlyRecord<string, number>, string>,
-  Record.ReadonlyRecord<string, string>
->() satisfies true;
+TEUtils.assertTrueType(
+  TEUtils.areEqualTypes<
+    MTypes.MapToReadonlyTarget<TestTuple, string>,
+    readonly [string, string, string]
+  >(),
+);
+TEUtils.assertTrueType(
+  TEUtils.areEqualTypes<
+    MTypes.MapToReadonlyTarget<ReadonlyArray<number>, string>,
+    ReadonlyArray<string>
+  >(),
+);
+TEUtils.assertTrueType(
+  TEUtils.areEqualTypes<
+    MTypes.MapToReadonlyTarget<TestInterface, string>,
+    {
+      readonly a: string;
+      readonly [testSymbol]: string;
+      readonly b: string;
+      readonly toString: string;
+    }
+  >(),
+);
+TEUtils.assertTrueType(
+  TEUtils.areEqualTypes<
+    MTypes.MapToReadonlyTarget<Record.ReadonlyRecord<string, number>, string>,
+    Record.ReadonlyRecord<string, string>
+  >(),
+);
 
 /** Data */
-TEUtils.areEqualTypes<
-  MTypes.Data<TestInterface>,
-  {
-    readonly a: number;
-    readonly b: string;
-  }
->() satisfies true;
-TEUtils.areEqualTypes<
-  MTypes.Data<TestInterface, 'a'>,
-  {
-    readonly b: string;
-  }
->() satisfies true;
+TEUtils.assertTrueType(
+  TEUtils.areEqualTypes<
+    MTypes.Data<TestInterface>,
+    {
+      readonly a: number;
+      readonly b: string;
+    }
+  >(),
+);
+TEUtils.assertTrueType(
+  TEUtils.areEqualTypes<
+    MTypes.Data<TestInterface, 'a'>,
+    {
+      readonly b: string;
+    }
+  >(),
+);
 
 /** Proto */
-TEUtils.areEqualTypes<MTypes.Proto<TestInterface, 'a'>, Omit<TestInterface, 'b'>>() satisfies true;
+TEUtils.assertTrueType(
+  TEUtils.areEqualTypes<MTypes.Proto<TestInterface, 'a'>, Omit<TestInterface, 'b'>>(),
+);
 
 /** SetArgTypeTo */
-TEUtils.areEqualTypes<
-  MTypes.SetArgTypeTo<TestRefinement, MTypes.Primitive>,
-  Predicate.Refinement<MTypes.Primitive, string>
->() satisfies true;
-TEUtils.areEqualTypes<
-  MTypes.SetArgTypeTo<TestOneArgFunction, string>,
-  MTypes.OneArgFunction<string, number>
->() satisfies true;
-TEUtils.areEqualTypes<MTypes.SetArgTypeTo<number, string>, number>() satisfies true;
+TEUtils.assertTrueType(
+  TEUtils.areEqualTypes<
+    MTypes.SetArgTypeTo<TestRefinement, MTypes.Primitive>,
+    Predicate.Refinement<MTypes.Primitive, string>
+  >(),
+);
+TEUtils.assertTrueType(
+  TEUtils.areEqualTypes<
+    MTypes.SetArgTypeTo<TestOneArgFunction, string>,
+    MTypes.OneArgFunction<string, number>
+  >(),
+);
+TEUtils.assertTrueType(TEUtils.areEqualTypes<MTypes.SetArgTypeTo<number, string>, number>());
 
 /** ToKeyIntersection */
-TEUtils.areEqualTypes<MTypes.ToKeyIntersection<readonly [5, 6]>, 5 & 6>() satisfies true;
+TEUtils.assertTrueType(TEUtils.areEqualTypes<MTypes.ToKeyIntersection<readonly [5, 6]>, 5 & 6>());
 
 /** IntersectAndSimplify */
-TEUtils.areEqualTypes<MTypes.IntersectAndSimplify<number, 5>, 5>() satisfies true;
+TEUtils.assertTrueType(TEUtils.areEqualTypes<MTypes.IntersectAndSimplify<number, 5>, 5>());
 
 describe('MTypes', () => {
   describe('isString', () => {
-    if (MTypes.isString(unknown)) TEUtils.areEqualTypes<typeof unknown, string>() satisfies true;
+    if (MTypes.isString(unknown))
+      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof unknown, string>());
 
     it('Matching', () => {
       TEUtils.assertTrue(MTypes.isString(testString));
@@ -119,7 +144,8 @@ describe('MTypes', () => {
   });
 
   describe('isNumber', () => {
-    if (MTypes.isNumber(unknown)) TEUtils.areEqualTypes<typeof unknown, number>() satisfies true;
+    if (MTypes.isNumber(unknown))
+      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof unknown, number>());
 
     it('Matching', () => {
       TEUtils.assertTrue(MTypes.isNumber(testNumber));
@@ -131,7 +157,8 @@ describe('MTypes', () => {
   });
 
   describe('isBigInt', () => {
-    if (MTypes.isBigInt(unknown)) TEUtils.areEqualTypes<typeof unknown, bigint>() satisfies true;
+    if (MTypes.isBigInt(unknown))
+      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof unknown, bigint>());
 
     it('Matching', () => {
       TEUtils.assertTrue(MTypes.isBigInt(testBigint));
@@ -143,7 +170,8 @@ describe('MTypes', () => {
   });
 
   describe('isBoolean', () => {
-    if (MTypes.isBoolean(unknown)) TEUtils.areEqualTypes<typeof unknown, boolean>() satisfies true;
+    if (MTypes.isBoolean(unknown))
+      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof unknown, boolean>());
 
     it('Matching', () => {
       TEUtils.assertTrue(MTypes.isBoolean(testBoolean));
@@ -155,7 +183,8 @@ describe('MTypes', () => {
   });
 
   describe('isSymbol', () => {
-    if (MTypes.isSymbol(unknown)) TEUtils.areEqualTypes<typeof unknown, symbol>() satisfies true;
+    if (MTypes.isSymbol(unknown))
+      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof unknown, symbol>());
 
     it('Matching', () => {
       TEUtils.assertTrue(MTypes.isSymbol(testSymbol));
@@ -168,7 +197,7 @@ describe('MTypes', () => {
 
   describe('isUndefined', () => {
     if (MTypes.isUndefined(unknown))
-      TEUtils.areEqualTypes<typeof unknown, undefined>() satisfies true;
+      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof unknown, undefined>());
 
     it('Matching', () => {
       TEUtils.assertTrue(MTypes.isUndefined(undefined));
@@ -182,7 +211,7 @@ describe('MTypes', () => {
   describe('isNotUndefined', () => {
     const undefinedOrNumber = undefined as undefined | number;
     if (MTypes.isNotUndefined(undefinedOrNumber))
-      TEUtils.areEqualTypes<typeof undefinedOrNumber, number>() satisfies true;
+      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof undefinedOrNumber, number>());
 
     it('Matching', () => {
       TEUtils.assertTrue(MTypes.isNotUndefined(testNumber));
@@ -194,7 +223,8 @@ describe('MTypes', () => {
   });
 
   describe('isNull', () => {
-    if (MTypes.isNull(unknown)) TEUtils.areEqualTypes<typeof unknown, null>() satisfies true;
+    if (MTypes.isNull(unknown))
+      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof unknown, null>());
 
     it('Matching', () => {
       TEUtils.assertTrue(MTypes.isNull(null));
@@ -208,7 +238,7 @@ describe('MTypes', () => {
   describe('isNotNull', () => {
     const nullOrNumber = null as null | number;
     if (MTypes.isNotNull(nullOrNumber))
-      TEUtils.areEqualTypes<typeof nullOrNumber, number>() satisfies true;
+      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof nullOrNumber, number>());
 
     it('Matching', () => {
       TEUtils.assertTrue(MTypes.isNotNull(testNumber));
@@ -222,7 +252,7 @@ describe('MTypes', () => {
   describe('isNullable', () => {
     const nullOrNumber = null as null | number;
     if (MTypes.isNullable(nullOrNumber))
-      TEUtils.areEqualTypes<typeof nullOrNumber, null>() satisfies true;
+      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof nullOrNumber, null>());
 
     it('Matching', () => {
       TEUtils.assertTrue(MTypes.isNullable(null));
@@ -237,7 +267,7 @@ describe('MTypes', () => {
   describe('isNotNullable', () => {
     const nullOrNumber = null as null | number;
     if (MTypes.isNotNullable(nullOrNumber))
-      TEUtils.areEqualTypes<typeof nullOrNumber, number>() satisfies true;
+      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof nullOrNumber, number>());
 
     it('Matching', () => {
       TEUtils.assertTrue(MTypes.isNotNullable(testNumber));
@@ -251,10 +281,10 @@ describe('MTypes', () => {
   describe('isPrimitive', () => {
     const numberOrArray = [3] as unknown as number | ReadonlyArray<number>;
     if (MTypes.isPrimitive(numberOrArray))
-      TEUtils.areEqualTypes<typeof numberOrArray, number>() satisfies true;
+      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof numberOrArray, number>());
 
     if (MTypes.isPrimitive(unknown))
-      TEUtils.areEqualTypes<typeof unknown, MTypes.Primitive>() satisfies true;
+      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof unknown, MTypes.Primitive>());
 
     it('Matching', () => {
       TEUtils.assertTrue(MTypes.isPrimitive(testNumber));
@@ -270,10 +300,10 @@ describe('MTypes', () => {
   describe('isNonPrimitive', () => {
     const numberOrArray = [3] as unknown as number | ReadonlyArray<number>;
     if (MTypes.isNonPrimitive(numberOrArray))
-      TEUtils.areEqualTypes<typeof numberOrArray, ReadonlyArray<number>>() satisfies true;
+      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof numberOrArray, ReadonlyArray<number>>());
 
     if (MTypes.isNonPrimitive(unknown))
-      TEUtils.areEqualTypes<typeof unknown, MTypes.NonPrimitive>() satisfies true;
+      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof unknown, MTypes.NonPrimitive>());
 
     it('Matching', () => {
       TEUtils.assertTrue(MTypes.isNonPrimitive(testArray2));
@@ -287,7 +317,7 @@ describe('MTypes', () => {
 
   describe('isFunction', () => {
     if (MTypes.isFunction(unknown))
-      TEUtils.areEqualTypes<typeof unknown, MTypes.AnyFunction>() satisfies true;
+      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof unknown, MTypes.AnyFunction>());
 
     it('Matching', () => {
       TEUtils.assertTrue(MTypes.isFunction(testFunction));
@@ -300,7 +330,9 @@ describe('MTypes', () => {
 
   describe('isOneArgFunction', () => {
     if (MTypes.isFunction(testFunction))
-      TEUtils.areEqualTypes<typeof testFunction, MTypes.OneArgFunction<number>>() satisfies true;
+      TEUtils.assertTrueType(
+        TEUtils.areEqualTypes<typeof testFunction, MTypes.OneArgFunction<number>>(),
+      );
 
     it('Matching', () => {
       TEUtils.assertTrue(MTypes.isOneArgFunction(testOneArgFunction));
@@ -313,7 +345,7 @@ describe('MTypes', () => {
 
   describe('isEmptyArray', () => {
     if (MTypes.isEmptyArray(testArray2))
-      TEUtils.areEqualTypes<typeof testArray2, MTypes.EmptyArray>() satisfies true;
+      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof testArray2, MTypes.EmptyArray>());
 
     it('Matching', () => {
       TEUtils.assertTrue(MTypes.isEmptyArray(testArray0));
@@ -326,7 +358,9 @@ describe('MTypes', () => {
 
   describe('isEmptyReadonlyArray', () => {
     if (MTypes.isEmptyReadonlyArray(testReadonlyArray))
-      TEUtils.areEqualTypes<typeof testReadonlyArray, MTypes.EmptyReadonlyArray>() satisfies true;
+      TEUtils.assertTrueType(
+        TEUtils.areEqualTypes<typeof testReadonlyArray, MTypes.EmptyReadonlyArray>(),
+      );
 
     it('Matching', () => {
       TEUtils.assertTrue(MTypes.isEmptyReadonlyArray(testArray0));
@@ -339,7 +373,7 @@ describe('MTypes', () => {
 
   describe('isOverOne', () => {
     if (MTypes.isOverOne(testArray2))
-      TEUtils.areEqualTypes<typeof testArray2, MTypes.OverOne<number>>() satisfies true;
+      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof testArray2, MTypes.OverOne<number>>());
 
     it('Matching', () => {
       TEUtils.assertTrue(MTypes.isOverOne(testArray1));
@@ -353,10 +387,9 @@ describe('MTypes', () => {
 
   describe('isReadonlyOverOne', () => {
     if (MTypes.isReadonlyOverOne(testReadonlyArray))
-      TEUtils.areEqualTypes<
-        typeof testReadonlyArray,
-        MTypes.ReadonlyOverOne<number>
-      >() satisfies true;
+      TEUtils.assertTrueType(
+        TEUtils.areEqualTypes<typeof testReadonlyArray, MTypes.ReadonlyOverOne<number>>(),
+      );
 
     it('Matching', () => {
       TEUtils.assertTrue(MTypes.isReadonlyOverOne(testArray1));
@@ -370,7 +403,7 @@ describe('MTypes', () => {
 
   describe('isOverTwo', () => {
     if (MTypes.isOverTwo(testArray2))
-      TEUtils.areEqualTypes<typeof testArray2, MTypes.OverTwo<number>>() satisfies true;
+      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof testArray2, MTypes.OverTwo<number>>());
 
     it('Matching', () => {
       TEUtils.assertTrue(MTypes.isOverTwo(testArray2));
@@ -384,10 +417,9 @@ describe('MTypes', () => {
 
   describe('isReadonlyOverTwo', () => {
     if (MTypes.isReadonlyOverTwo(testReadonlyArray))
-      TEUtils.areEqualTypes<
-        typeof testReadonlyArray,
-        MTypes.ReadonlyOverTwo<number>
-      >() satisfies true;
+      TEUtils.assertTrueType(
+        TEUtils.areEqualTypes<typeof testReadonlyArray, MTypes.ReadonlyOverTwo<number>>(),
+      );
 
     it('Matching', () => {
       TEUtils.assertTrue(MTypes.isReadonlyOverTwo(testArray2));
@@ -401,7 +433,7 @@ describe('MTypes', () => {
 
   describe('isSingleton', () => {
     if (MTypes.isSingleton(testArray2))
-      TEUtils.areEqualTypes<typeof testArray2, MTypes.Singleton<number>>() satisfies true;
+      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof testArray2, MTypes.Singleton<number>>());
 
     it('Matching', () => {
       TEUtils.assertTrue(MTypes.isSingleton(testArray1));
@@ -415,10 +447,9 @@ describe('MTypes', () => {
 
   describe('isReadonlySingleton', () => {
     if (MTypes.isReadonlySingleton(testReadonlyArray))
-      TEUtils.areEqualTypes<
-        typeof testReadonlyArray,
-        MTypes.ReadonlySingleton<number>
-      >() satisfies true;
+      TEUtils.assertTrueType(
+        TEUtils.areEqualTypes<typeof testReadonlyArray, MTypes.ReadonlySingleton<number>>(),
+      );
 
     it('Matching', () => {
       TEUtils.assertTrue(MTypes.isReadonlySingleton(testArray1));
@@ -432,7 +463,9 @@ describe('MTypes', () => {
 
   describe('isPair', () => {
     if (MTypes.isPair(testArray2))
-      TEUtils.areEqualTypes<typeof testArray2, MTypes.Pair<number, number>>() satisfies true;
+      TEUtils.assertTrueType(
+        TEUtils.areEqualTypes<typeof testArray2, MTypes.Pair<number, number>>(),
+      );
 
     it('Matching', () => {
       TEUtils.assertTrue(MTypes.isPair(testArray2));
@@ -446,10 +479,9 @@ describe('MTypes', () => {
 
   describe('isReadonlyPair', () => {
     if (MTypes.isReadonlyPair(testReadonlyArray))
-      TEUtils.areEqualTypes<
-        typeof testReadonlyArray,
-        MTypes.ReadonlyPair<number, number>
-      >() satisfies true;
+      TEUtils.assertTrueType(
+        TEUtils.areEqualTypes<typeof testReadonlyArray, MTypes.ReadonlyPair<number, number>>(),
+      );
 
     it('Matching', () => {
       TEUtils.assertTrue(MTypes.isReadonlyPair(testArray2));
@@ -463,7 +495,7 @@ describe('MTypes', () => {
 
   describe('isIterable', () => {
     if (MTypes.isIterable(unknown))
-      TEUtils.areEqualTypes<typeof unknown, Iterable<unknown>>() satisfies true;
+      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof unknown, Iterable<unknown>>());
 
     it('Matching', () => {
       TEUtils.assertTrue(MTypes.isIterable(testArray2));
@@ -477,7 +509,7 @@ describe('MTypes', () => {
 
   describe('isErrorish', () => {
     if (MTypes.isErrorish(unknown))
-      TEUtils.areEqualTypes<typeof unknown, MTypes.Errorish>() satisfies true;
+      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof unknown, MTypes.Errorish>());
 
     it('Matching', () => {
       TEUtils.assertTrue(MTypes.isErrorish({ message: 'foo' }));
@@ -505,7 +537,9 @@ describe('MTypes', () => {
   describe('isTypedArray', () => {
     const numberOrUint16Array = new Uint16Array(5) as number | Uint16Array<ArrayBuffer>;
     if (MTypes.isTypedArray(numberOrUint16Array))
-      TEUtils.areEqualTypes<typeof numberOrUint16Array, Uint16Array<ArrayBuffer>>() satisfies true;
+      TEUtils.assertTrueType(
+        TEUtils.areEqualTypes<typeof numberOrUint16Array, Uint16Array<ArrayBuffer>>(),
+      );
 
     it('Matching', () => {
       TEUtils.assertTrue(MTypes.isTypedArray(new Uint16Array(5)));

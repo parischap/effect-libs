@@ -75,7 +75,8 @@ export const missized = ({
   readonly name?: string;
 }) =>
   new Type({
-    message: `Expected length of ${_nameLabel(name)} to be: ${expected}. Actual: ${actual}`,
+    message: `Expected length of ${_nameLabel(name)} to be: ${MString.fromNumber(10)(expected)}.\
+ Actual: ${MString.fromNumber(10)(actual)}`,
   });
 
 /**
@@ -108,7 +109,8 @@ export const oversized = ({
   readonly name?: string;
 }) =>
   new Type({
-    message: `Expected length of ${_nameLabel(name)} to be at most(included): ${expected}. Actual: ${actual}`,
+    message: `Expected length of ${_nameLabel(name)} to be at most(included): ${MString.fromNumber(10)(expected)}.\
+ Actual: ${MString.fromNumber(10)(actual)}`,
   });
 
 /**
@@ -149,7 +151,9 @@ export const outOfBounds = ({
   readonly name?: string;
 }) =>
   new Type({
-    message: `Expected ${_nameLabel(name)} to be between ${min + offset} (${minIncluded ? 'included' : 'excluded'}) and ${max + offset} (${maxIncluded ? 'included' : 'excluded'}). Actual: ${actual + offset}`,
+    message: `Expected ${_nameLabel(name)} to be between ${MString.fromNumber(10)(min + offset)}\
+ (${minIncluded ? 'included' : 'excluded'}) and ${MString.fromNumber(10)(max + offset)}\
+ (${maxIncluded ? 'included' : 'excluded'}). Actual: ${MString.fromNumber(10)(actual + offset)}`,
   });
 
 /**

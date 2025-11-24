@@ -40,9 +40,9 @@ export const oneOrMore: MTypes.StringTransformer = (self) => `(?:${self})+`;
  * @category Utils
  */
 export const repeatBetween =
-  (low: number, high: number): MTypes.OneArgFunction<string> =>
-  (self) =>
-    `(?:${self}){${low},${high === Infinity ? '' : high}}`;
+  (low: number, high: number) =>
+  (self: string): string =>
+    `(?:${self}){${low.toString()},${high === Infinity ? '' : high.toString()}}`;
 
 /**
  * Returns a new regular expression string where `self` is optional

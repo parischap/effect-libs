@@ -5,25 +5,33 @@ import { flow, Number, pipe, Struct } from 'effect';
 import { describe, it } from 'vitest';
 
 /** Append */
-TEUtils.areEqualTypes<
-  MStruct.Append<{ readonly a: boolean }, { readonly b: number }>,
-  { readonly a: boolean; readonly b: number }
->() satisfies true;
+TEUtils.assertTrueType(
+  TEUtils.areEqualTypes<
+    MStruct.Append<{ readonly a: boolean }, { readonly b: number }>,
+    { readonly a: boolean; readonly b: number }
+  >(),
+);
 
-TEUtils.areEqualTypes<
-  MStruct.Append<{ readonly a: boolean; readonly b: boolean }, { readonly b: number }>,
-  { readonly a: boolean; readonly b: number }
->() satisfies true;
+TEUtils.assertTrueType(
+  TEUtils.areEqualTypes<
+    MStruct.Append<{ readonly a: boolean; readonly b: boolean }, { readonly b: number }>,
+    { readonly a: boolean; readonly b: number }
+  >(),
+);
 
-TEUtils.areEqualTypes<
-  MStruct.Append<{ readonly a: boolean; readonly b: boolean }, { readonly b?: number }>,
-  { readonly a: boolean; readonly b: number | boolean }
->() satisfies true;
+TEUtils.assertTrueType(
+  TEUtils.areEqualTypes<
+    MStruct.Append<{ readonly a: boolean; readonly b: boolean }, { readonly b?: number }>,
+    { readonly a: boolean; readonly b: number | boolean }
+  >(),
+);
 
-TEUtils.areEqualTypes<
-  MStruct.Append<{ readonly a: boolean; readonly b: number }, { readonly b?: number }>,
-  { readonly a: boolean; readonly b: number }
->() satisfies true;
+TEUtils.assertTrueType(
+  TEUtils.areEqualTypes<
+    MStruct.Append<{ readonly a: boolean; readonly b: number }, { readonly b?: number }>,
+    { readonly a: boolean; readonly b: number }
+  >(),
+);
 
 describe('MRecord', () => {
   describe('prepend', () => {

@@ -227,7 +227,7 @@ export const groupByNum =
   }) =>
   (self: ReadonlyArray<A>): ReadonlyArray<ReadonlyArray<B>> => {
     const out = Array.makeBy(size, () => Array.empty<B>());
-    /* eslint-disable-next-line functional/no-loop-statements, functional/no-let */
+
     for (let i = 0; i < self.length; i++) {
       const a = self[i] as A;
       const key = fKey(a);
@@ -429,7 +429,6 @@ export const mapUnlessLeft =
       const length = self.length;
       const result = Array.allocate<B>(length);
 
-      /* eslint-disable-next-line functional/no-loop-statements, functional/no-let*/
       for (let i = 0; i < length; i++) {
         /* eslint-disable-next-line functional/no-expression-statements, functional/immutable-data*/
         result[i] = yield* f(self[i] as A, i);
@@ -445,11 +444,9 @@ export const reduceUnlessNone =
   <B, A>(b: B, f: (b: B, a: A, i: number) => Option.Option<B>) =>
   (self: Iterable<A>): Option.Option<B> =>
     Option.gen(function* () {
-      /* eslint-disable-next-line functional/no-let */
       let result = b,
         i = 0;
 
-      /* eslint-disable-next-line functional/no-loop-statements */
       for (const a of self) {
         /* eslint-disable-next-line functional/no-expression-statements*/
         result = yield* f(result, a, i++);
@@ -466,11 +463,9 @@ export const reduceUnlessLeft =
   <B, A, C>(b: B, f: (b: B, a: A, i: number) => Either.Either<B, C>) =>
   (self: Iterable<A>): Either.Either<B, C> =>
     Either.gen(function* () {
-      /* eslint-disable-next-line functional/no-let */
       let result = b,
         i = 0;
 
-      /* eslint-disable-next-line functional/no-loop-statements */
       for (const a of self) {
         /* eslint-disable-next-line functional/no-expression-statements*/
         result = yield* f(result, a, i++);

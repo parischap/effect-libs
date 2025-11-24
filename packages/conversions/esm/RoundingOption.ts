@@ -9,6 +9,7 @@ import {
   MInspectable,
   MNumber,
   MPipeable,
+  MString,
   MTypes,
 } from '@parischap/effect-lib';
 import { BigDecimal, Equal, Equivalence, Hash, pipe, Pipeable, Predicate, Struct } from 'effect';
@@ -72,7 +73,7 @@ const proto: MTypes.Proto<Type> = {
     );
   },
   [MInspectable.IdSymbol](this: Type) {
-    return `${CVRoundingMode.getName(this.roundingMode)}RounderWith${this.precision}Precision`;
+    return `${CVRoundingMode.getName(this.roundingMode)}RounderWith${MString.fromNumber(10)(this.precision)}Precision`;
   },
   ...MInspectable.BaseProto(moduleTag),
   ...MPipeable.BaseProto,

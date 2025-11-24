@@ -287,9 +287,7 @@ export const get =
               || now - valueContainer.storeDate > lifeSpan
             ) {
               if (hasBoundedCapacity) {
-                /* eslint-disable-next-line functional/no-let */
                 let head = MutableList.pop(keyListInOrder);
-                /* eslint-disable-next-line functional/no-loop-statements */
                 while (!Equal.equals(a, head)) {
                   /* eslint-disable-next-line functional/no-expression-statements */
                   MutableHashMap.remove(store, head);

@@ -851,7 +851,6 @@ export const toStringifier = (self: Type): Stringifier.Type => {
 
   const functionToNameByPasser = PPByPasser.functionToName.call(self, constructors);
 
-  /* eslint-disable-next-line functional/no-let */
   let lastCyclicalIndex = 1;
   const cyclicalMap = MutableHashMap.empty<PPValue.NonPrimitive, number>();
 

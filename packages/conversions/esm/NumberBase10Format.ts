@@ -604,7 +604,7 @@ export const toDescription = (self: Type): string => {
     : '')
     + (isInteger ? 'integer'
     : minimumFractionalDigits === maximumFractionalDigits ?
-      `${minimumFractionalDigits}-decimal number`
+      `${MString.fromNumber(10)(minimumFractionalDigits)}-decimal number`
     : 'number')
     + pipe(
       scientificNotation,

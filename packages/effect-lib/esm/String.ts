@@ -188,7 +188,7 @@ export const fromNonNullablePrimitive = (u: MTypes.NonNullablePrimitive): string
 export const fromPrimitive: MTypes.OneArgFunction<MTypes.Primitive, string> = flow(
   MMatch.make,
   MMatch.when(MTypes.isNotNullable, fromNonNullablePrimitive),
-  MMatch.orElse((s) => `${s}`),
+  MMatch.orElse((s) => (s === undefined ? 'undefined' : 'null')),
 );
 
 /**

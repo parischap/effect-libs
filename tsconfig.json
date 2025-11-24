@@ -1,11 +1,23 @@
 {
-  "include": [],
-  "references": [
-    {
-      "path": "./tsconfig.esm.json"
-    },
-    {
-      "path": "./tsconfig.others.json"
-    }
-  ]
+  "extends": "./tsconfig.base.json",
+  "exclude": [
+    "esm",
+    "node_modules",
+    "dist",
+    "packages",
+    "projects",
+    "vite.config.ts.timestamp-*.mjs"
+  ],
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "dist/others",
+    "lib": [
+      "ESNext"
+    ],
+    "types": [
+      "node"
+    ],
+    "allowJs": true,
+    "checkJs": true
+  }
 }

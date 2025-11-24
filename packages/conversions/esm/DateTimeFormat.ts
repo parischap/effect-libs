@@ -415,7 +415,10 @@ export const toThrowingParser: MTypes.OneArgFunction<
  */
 
 export const toFormatter = (self: Type): Formatter.Type => {
-  const toParts: Record<string, MTypes.OneArgFunction<CVDateTime.Type, number>> = pipe(
+  const toParts: Record.ReadonlyRecord<
+    string,
+    MTypes.OneArgFunction<CVDateTime.Type, number>
+  > = pipe(
     self._template.templateParts,
     Array.filterMap(
       flow(

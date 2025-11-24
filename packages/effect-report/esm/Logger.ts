@@ -20,19 +20,19 @@ const colorizeByLogLevel = (logLevel: LogLevel.LogLevel): ((s: string) => string
   switch (logLevel) {
     case LogLevel.Fatal:
     case LogLevel.Error:
-      return JsANSI.red;
+      return JsAnsi.red;
     case LogLevel.Warning:
-      return JsANSI.yellow;
+      return JsAnsi.yellow;
     default:
-      return JsANSI.green;
+      return JsAnsi.green;
   }
 };
 
 const colorizeBySpanLevel = (spanLevel: number): ((s: string) => string) =>
   pipe(
-    Array.make(JsANSI.cyan, JsANSI.yellow, JsANSI.magenta),
+    Array.make(JsAnsi.cyan, JsAnsi.yellow, JsAnsi.magenta),
     Array.get(spanLevel),
-    Option.getOrElse(() => JsANSI.blue),
+    Option.getOrElse(() => JsAnsi.blue),
   );
 
 export const live = ({
@@ -76,7 +76,7 @@ export const live = ({
             pipe(
               (isMultiLine ? 'Multi-line message' : strMessage)
                 + ` (${FiberId.threadName(fiberId)})`,
-              isTitle ? colorizeBySpanLevel(spanLevel) : JsANSI.highContrastBlack,
+              isTitle ? colorizeBySpanLevel(spanLevel) : JsAnsi.highContrastBlack,
               MString.prepend(
                 colorizeByLogLevel(logLevel)(`${date.getTime() - latestSpanCreationTime}ms `),
               ),
@@ -87,7 +87,7 @@ export const live = ({
         }
       } catch (e) {
         console.log(
-          JsANSI.red('Logging error' + eol + (MTypes.isErrorish(e) ? e.message : stringify(e))),
+          JsAnsi.red('Logging error' + eol + (MTypes.isErrorish(e) ? e.message : stringify(e))),
         );
       }
     }),

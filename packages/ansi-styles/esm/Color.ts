@@ -4,7 +4,7 @@
  * You can use the RGB.make function to build more RGB colors
  */
 
-import { MInspectable, MMatch, MPipeable, MTypes } from '@parischap/effect-lib';
+import { MInspectable, MMatch, MPipeable, MString, MTypes } from '@parischap/effect-lib';
 import {
   Array,
   Equal,
@@ -1053,7 +1053,7 @@ export namespace Rgb {
     readonly blue: number;
   }): Type =>
     makeShort(
-      `${red}/${green}/${blue}`,
+      `${MString.fromNumber(10)(red)}/${MString.fromNumber(10)(green)}/${MString.fromNumber(10)(blue)}`,
       pipe(red, Number.round(0), Number.clamp({ minimum: 0, maximum: 255 })),
       pipe(green, Number.round(0), Number.clamp({ minimum: 0, maximum: 255 })),
       pipe(blue, Number.round(0), Number.clamp({ minimum: 0, maximum: 255 })),

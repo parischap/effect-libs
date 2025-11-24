@@ -1,6 +1,6 @@
 import { MArray, MString, MTypes } from '@parischap/effect-lib';
 
-import { JsANSI, JsString } from '@parischap/js-lib';
+import { JsAnsi, JsString } from '@parischap/js-lib';
 import { Array, String, pipe } from 'effect';
 
 const relative =
@@ -66,13 +66,13 @@ export const formatError = (
   const message =
     self.message === '' ?
       'Error object' + options.eol + options.stringify(self)
-    : JsANSI.highContrastBlack(self.message);
+    : JsAnsi.highContrastBlack(self.message);
 
   return self.stack !== undefined ?
       message
         + options.eol
         + options.tabChar
-        + JsANSI.green('Stack trace:')
+        + JsAnsi.green('Stack trace:')
         + JsString.tabify(options.tabChar, 2)(self.stack)
     : message;
 };
@@ -93,7 +93,7 @@ const showUncaughtErrorAndExit = ({
   readonly tabChar: string;
 }): never => {
   console.error(
-    JsANSI.red(message)
+    JsAnsi.red(message)
       + eol
       + JsString.tabify(tabChar)(
         MTypes.isErrorish(error) ?

@@ -69,7 +69,7 @@ export const toParser =
       text,
       MInputError.assertStartsWith({
         startString: value,
-        name: `remaining text for separator at position ${pos}`,
+        name: `remaining text for separator at position ${MString.fromNumber(10)(pos)}`,
       }),
       Either.map(MString.takeRightBut(length)),
     );
