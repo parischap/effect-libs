@@ -356,12 +356,21 @@ describe('CVSchema', () => {
         placeholder('mm'),
         sep.colon,
         placeholder('ss'),
-        sep.make(' Paris time'),
+        sep.make(' Local time'),
       ],
     });
     const schema = CVSchema.DateTime(frenchDateFormat);
-    const target = CVDateTime.fromTimestampOrThrow(new Date(2025, 7, 25, 10, 24, 47).getTime());
-    const targetAsString = '25/08/2025 10:24:47 Paris time';
+
+    const target = CVDateTime.fromPartsOrThrow({
+      year: 2025,
+      month: 8,
+      monthDay: 25,
+      hour23: 10,
+      minute: 24,
+      second: 47,
+    });
+
+    const targetAsString = '25/08/2025 10:24:47 Local time';
 
     describe('Decoding', () => {
       const decoder = Schema.decodeEither(schema);
