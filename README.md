@@ -11,3 +11,5 @@ You may also take a look at our [API](https://parischap.github.io/effect-libs/).
 ## Donate
 
 [Any donations would be much appreciated](https://ko-fi.com/parischap) 😄
+
+Please, star my repo if you think it's useful!

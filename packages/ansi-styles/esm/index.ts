@@ -1,3 +1,4 @@
+// ************** This file was automatically generated. DO NOT MODIFY ************************
 export * as ASAnsiString from './AnsiString.js';
 export * as ASColor from './Color.js';
 export * as ASContextStyler from './ContextStyler.js';

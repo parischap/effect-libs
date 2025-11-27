@@ -1,3 +1,4 @@
+// ************** This file was automatically generated. DO NOT MODIFY ************************
 export * as MArray from './Array.js';
 export * as MBigDecimal from './BigDecimal.js';
 export * as MBigInt from './BigInt.js';

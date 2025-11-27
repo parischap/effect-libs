@@ -14,6 +14,8 @@ Can also be used by non-Effect users.
 
 [Any donations would be much appreciated](https://ko-fi.com/parischap) 😄
 
+Please, star my repo if you think it's useful!
+
 ## Installation
 
 Depending on the package manager you use, run one of the following commands in your terminal:
