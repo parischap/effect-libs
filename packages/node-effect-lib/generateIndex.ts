@@ -23,7 +23,7 @@ const action = async () => {
     /* eslint-disable-next-line functional/no-expression-statements */
     noIndex = false;
   } catch (e:unknown) {
-    if (typeof e === 'object' && e !== null && 'code' in e && e['code'] === 'ENOENT')
+    if (e instanceof Error && 'code' in e && e['code'] === 'ENOENT')
       /* eslint-disable-next-line functional/no-expression-statements */
       noIndex = true;
     else throw e;

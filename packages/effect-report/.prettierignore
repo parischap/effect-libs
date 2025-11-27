@@ -1,4 +1,5 @@
-dist/
-vite.config.ts.timestamp-*.mjs
-.tsbuildinfo/
-node_modules/
+/dist/
+/.tsbuildinfo/
+/vite.config.ts.timestamp-*.mjs
+/packages/
+/node_modules/

@@ -313,12 +313,13 @@ const scopeConfig = ({
   }));
 
 export default defineConfig([
-  // This is a global ignore, files are ignored in all other config objects. node_modules files and .git are also ignored.
+  // This is a global ignore, files are ignored in all other config objects
+  // node_modules files and .git are also ignored.
+  // Must work at all levels (top, monorepo, one-package repo, and subrepo)
   globalIgnores(
     [
       'dist/',
       'packages/',
-      'projects/',
       'vite.config.ts.timestamp-*.mjs',
     ],
     'ignoreConfig',

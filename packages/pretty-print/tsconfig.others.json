@@ -5,7 +5,6 @@
     "node_modules",
     "dist",
     "packages",
-    "projects",
     "vite.config.ts.timestamp-*.mjs"
   ],
   "compilerOptions": {
