@@ -16,9 +16,9 @@ import {
   CVTemplate,
   CVTemplatePlaceholder,
   CVTemplateSeparator,
-} from "@parischap/conversions";
-import { MRegExpString } from "@parischap/effect-lib";
-import { pipe, Schema } from "effect";
+} from '@parischap/conversions';
+import { MRegExpString } from '@parischap/effect-lib';
+import { pipe, Schema } from 'effect';
 
 // Let's define useful shortcuts
 const ph = CVTemplatePlaceholder;
@@ -27,18 +27,18 @@ const sep = CVTemplateSeparator;
 // Let's define a template: "#name is a #age-year old #kind."
 const template = CVTemplate.make(
   // field named 'name' that must be a non-empty string containing no space characters
-  ph.anythingBut({ name: "name", forbiddenChars: [MRegExpString.space] }),
+  ph.anythingBut({ name: 'name', forbiddenChars: [MRegExpString.space] }),
   // Immutable text
-  sep.make(" is a "),
+  sep.make(' is a '),
   // Field named 'age' that must represent an unsigned integer
   ph.real({
-    name: "age",
+    name: 'age',
     numberBase10Format: pipe(CVNumberBase10Format.integer, CVNumberBase10Format.withoutSignDisplay),
   }),
   // Immutable text
-  sep.make("-year old "),
+  sep.make('-year old '),
   // field named 'kind' that must be a non-empty string containing no dot character
-  ph.anythingBut({ name: "kind", forbiddenChars: ["."] }),
+  ph.anythingBut({ name: 'kind', forbiddenChars: ['.'] }),
   // Immutable text
   sep.dot,
 );
@@ -83,29 +83,29 @@ const throwingFormatter = CVTemplate.toThrowingFormatter(template);
 //     _tag: '@parischap/effect-lib/InputError/'
 //   }
 // }
-console.log(parser("John"));
+console.log(parser('John'));
 
 // Result: { _id: 'Either', _tag: 'Right', right: { name: 'John', age: 47, kind: 'man' } }
-console.log(parser("John is a 47-year old man."));
+console.log(parser('John is a 47-year old man.'));
 
 // Result: { name: 'John', age: 47, kind: 'man' }
-console.log(throwingParser("John is a 47-year old man."));
+console.log(throwingParser('John is a 47-year old man.'));
 
 // Result: { _id: 'Either', _tag: 'Right', right: 'Tom is a 15-year old boy.' }
 console.log(
   formatter({
-    name: "Tom",
+    name: 'Tom',
     age: CVReal.unsafeFromNumber(15),
-    kind: "boy",
+    kind: 'boy',
   }),
 );
 
 // Result: 'Tom is a 15-year old boy.'
 console.log(
   throwingFormatter({
-    name: "Tom",
+    name: 'Tom',
     age: CVReal.unsafeFromNumber(15),
-    kind: "boy",
+    kind: 'boy',
   }),
 );
 
@@ -127,14 +127,14 @@ const decoder = Schema.decodeEither(schema);
 const encoder = Schema.encodeEither(schema);
 
 // Result: { _id: 'Either', _tag: 'Right', right: { name: 'John', age: 47, kind: 'man' } }
-console.log(decoder("John is a 47-year old man."));
+console.log(decoder('John is a 47-year old man.'));
 
 // Result: { _id: 'Either', _tag: 'Right', right: 'Tom is a 15-year old boy.' }
 console.log(
   encoder({
-    name: "Tom",
+    name: 'Tom',
     age: CVReal.unsafeFromNumber(15),
-    kind: "boy",
+    kind: 'boy',
   }),
 );
 ```
@@ -205,7 +205,7 @@ import {
   CVTemplate,
   CVTemplatePlaceholder,
   CVTemplateSeparator,
-} from "@parischap/conversions";
+} from '@parischap/conversions';
 
 // Let's define useful shortcuts
 const placeholder = CVTemplatePlaceholder;
@@ -215,29 +215,29 @@ const sep = CVTemplateSeparator;
 // Note that weekDay appears twice, once as a realMappedLiterals placeholder, once as a real placeholder.
 const template = CVTemplate.make(
   // Separator
-  sep.make("Today is "),
+  sep.make('Today is '),
   // realMappedLiterals placeHolder
   placeholder.realMappedLiterals({
-    name: "weekday",
+    name: 'weekday',
     keyValuePairs: [
-      ["Monday", CVReal.unsafeFromNumber(1)],
-      ["Tuesday", CVReal.unsafeFromNumber(2)],
-      ["Wednesday", CVReal.unsafeFromNumber(3)],
-      ["Thursday", CVReal.unsafeFromNumber(4)],
-      ["Friday", CVReal.unsafeFromNumber(5)],
-      ["Saturday", CVReal.unsafeFromNumber(6)],
-      ["Sunday", CVReal.unsafeFromNumber(7)],
+      ['Monday', CVReal.unsafeFromNumber(1)],
+      ['Tuesday', CVReal.unsafeFromNumber(2)],
+      ['Wednesday', CVReal.unsafeFromNumber(3)],
+      ['Thursday', CVReal.unsafeFromNumber(4)],
+      ['Friday', CVReal.unsafeFromNumber(5)],
+      ['Saturday', CVReal.unsafeFromNumber(6)],
+      ['Sunday', CVReal.unsafeFromNumber(7)],
     ],
   }),
   // Separator
-  sep.make(", day number "),
+  sep.make(', day number '),
   // Field named 'weekday' that must represent an integer
   placeholder.real({
-    name: "weekday",
+    name: 'weekday',
     numberBase10Format: CVNumberBase10Format.integer,
   }),
   // Separator
-  sep.make(" of the week."),
+  sep.make(' of the week.'),
 );
 
 // Let's define a parser. Note that there is only one `weekday` property
@@ -253,7 +253,7 @@ const parser = CVTemplate.toParser(template);
 const formatter = CVTemplate.toFormatter(template);
 
 // Result: { _id: 'Either', _tag: 'Right', right: { weekday: 2 } }
-console.log(parser("Today is Tuesday, day number 2 of the week."));
+console.log(parser('Today is Tuesday, day number 2 of the week.'));
 
 // Result: {
 //   _id: 'Either',
@@ -263,7 +263,7 @@ console.log(parser("Today is Tuesday, day number 2 of the week."));
 //     _tag: '@parischap/effect-lib/InputError/'
 //   }
 // }
-console.log(parser("Today is Thursday, day number 2 of the week."));
+console.log(parser('Today is Thursday, day number 2 of the week.'));
 
 // Result: { _id: 'Either', _tag: 'Right', right: 'Today is Saturday, day number 6 of the week.' }
 console.log(formatter({ weekday: CVReal.unsafeFromNumber(6) }));
@@ -291,9 +291,9 @@ import {
   CVTemplate,
   CVTemplatePlaceholder,
   CVTemplateSeparator,
-} from "@parischap/conversions";
-import { MRegExpString } from "@parischap/effect-lib";
-import { pipe } from "effect";
+} from '@parischap/conversions';
+import { MRegExpString } from '@parischap/effect-lib';
+import { pipe } from 'effect';
 
 // Let's define useful shortcuts
 const ph = CVTemplatePlaceholder;
@@ -302,18 +302,18 @@ const sep = CVTemplateSeparator;
 // Let's define a template: "#name is a #age-year old #kind."
 const template = CVTemplate.make(
   // field named 'name' that must be a non-empty string containing no space characters
-  ph.anythingBut({ name: "name", forbiddenChars: [MRegExpString.space] }),
+  ph.anythingBut({ name: 'name', forbiddenChars: [MRegExpString.space] }),
   // Immutable text
-  sep.make(" is a "),
+  sep.make(' is a '),
   // Field named 'age' that must represent an unsigned integer
   ph.real({
-    name: "age",
+    name: 'age',
     numberBase10Format: pipe(CVNumberBase10Format.integer, CVNumberBase10Format.withoutSignDisplay),
   }),
   // Immutable text
-  sep.make("-year old "),
+  sep.make('-year old '),
   // field named 'kind' that must be a non-empty string containing no dot character
-  ph.anythingBut({ name: "kind", forbiddenChars: ["."] }),
+  ph.anythingBut({ name: 'kind', forbiddenChars: ['.'] }),
   // Immutable text
   sep.dot,
 );

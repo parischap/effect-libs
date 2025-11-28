@@ -9,8 +9,8 @@ A module to round numbers and [BigDecimal](https://effect.website/docs/data-type
 ## 1. Usage example
 
 ```ts
-import { CVRoundingMode, CVRoundingOption } from "@parischap/conversions";
-import { BigDecimal } from "effect";
+import { CVRoundingMode, CVRoundingOption } from '@parischap/conversions';
+import { BigDecimal } from 'effect';
 
 // Here we define our rounding options:
 // the result must have three fractional digits using the HalfEven rounding mode
@@ -132,7 +132,7 @@ export enum Type {
 Instead of building your own `CVRoundingOption`, you can use the `halfExpand2` `CVRoundingOption` instance (`HalfExpand` rounding mode with a precision of two fractional digits). It will come in handy in accounting apps of most countries. For example:
 
 ```ts
-import { CVRoundingOption } from "@parischap/conversions";
+import { CVRoundingOption } from '@parischap/conversions';
 
 // Let's define a number rounder from halfExpand2. Type: (value:number) => number
 const numberRounder = CVRoundingOption.toNumberRounder(CVRoundingOption.halfExpand2);
@@ -151,8 +151,8 @@ console.log(numberRounder(-12.457));
 `CVRoundingOption` objects implement `Effect` equivalence and equality based on equivalence and equality of the `precision` and `roundingMode` properties. They also implement a `.toString()` method. For instance:
 
 ```ts
-import { CVRoundingMode, CVRoundingOption } from "@parischap/conversions";
-import { Equal } from "effect";
+import { CVRoundingMode, CVRoundingOption } from '@parischap/conversions';
+import { Equal } from 'effect';
 
 // Result: 'HalfExpandRounderWith2Precision'
 console.log(CVRoundingOption.halfExpand2);

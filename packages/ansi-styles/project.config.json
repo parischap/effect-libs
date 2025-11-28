@@ -2,7 +2,7 @@
   "configName": "configSubRepo",
   "description": "A functional library to style your strings in terminals",
   "peerDependencies": {
-    "@parischap/effect-lib": "sourceInProd=NPM&versionInProd=^0.11.0&sourceInDev=WORKSPACE&buildStageInDev=DEV&parent=effect-libs"
+    "@parischap/effect-lib": "^0.11.0"
   },
   "examples": ["basic-usage.ts", "cancelling-a-style.ts", "simple-colors.ts", "all-colors.ts"],
   "environment": "Library",

@@ -2,7 +2,7 @@
   "configName": "configSubRepo",
   "description": "A functional library to replace partially the native Intl API",
   "peerDependencies": {
-    "@parischap/effect-lib": "sourceInProd=NPM&versionInProd=^0.11.0&sourceInDev=WORKSPACE&buildStageInDev=DEV&parent=effect-libs"
+    "@parischap/effect-lib": "^0.11.0"
   },
   "examples": [
     "perf.ts",

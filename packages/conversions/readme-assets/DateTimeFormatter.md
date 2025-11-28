@@ -14,27 +14,27 @@ import {
   CVDateTimeFormat,
   CVDateTimeFormatContext,
   CVSchema,
-} from "@parischap/conversions";
-import { DateTime, Either, flow, Schema } from "effect";
+} from '@parischap/conversions';
+import { DateTime, Either, flow, Schema } from 'effect';
 
 // Let's define useful shortcuts
 const placeholder = CVDateTimeFormat.TemplatePart.Placeholder.make;
 const sep = CVDateTimeFormat.TemplatePart.Separator;
 
 // Let's define a context
-const frenchContext = CVDateTimeFormatContext.fromLocaleOrThrow("fr-FR");
+const frenchContext = CVDateTimeFormatContext.fromLocaleOrThrow('fr-FR');
 
 // Let's define a DateTimeFormat: iiii d MMMM yyyy
 const frenchFormat = CVDateTimeFormat.make({
   context: frenchContext,
   templateParts: [
-    placeholder("iiii"),
+    placeholder('iiii'),
     sep.space,
-    placeholder("d"),
+    placeholder('d'),
     sep.space,
-    placeholder("MMMM"),
+    placeholder('MMMM'),
     sep.space,
-    placeholder("yyyy"),
+    placeholder('yyyy'),
   ],
 });
 
@@ -70,7 +70,7 @@ const jsFormatter = flow(CVDateTime.fromDate, CVDateTimeFormat.toThrowingFormatt
 //     _tag: '@parischap/effect-lib/InputError/'
 //   }
 // }
-console.log(parser("20201210"));
+console.log(parser('20201210'));
 
 // Result: {
 //   _id: 'Either',
@@ -80,16 +80,16 @@ console.log(parser("20201210"));
 //     _tag: '@parischap/effect-lib/InputError/'
 //   }
 // }
-console.log(parser("lundi 4 septembre 2025"));
+console.log(parser('lundi 4 septembre 2025'));
 
 // Result: { _id: 'Either', _tag: 'Right', right: '2025-09-04T00:00:00.000+02:00' }
-console.log(parser("jeudi 4 septembre 2025"));
+console.log(parser('jeudi 4 septembre 2025'));
 
 // Result: { _id: 'Either', _tag: 'Right', right: '2025-09-03T22:00:00.000Z' }
-console.log(effectParser("jeudi 4 septembre 2025"));
+console.log(effectParser('jeudi 4 septembre 2025'));
 
 // Result: '2025-09-03T22:00:00.000Z'
-console.log(jsParser("jeudi 4 septembre 2025"));
+console.log(jsParser('jeudi 4 septembre 2025'));
 
 // Result: { _id: 'Either', _tag: 'Right', right: 'jeudi 1 janvier 1970' }
 console.log(formatter(CVDateTime.fromTimestampOrThrow(0, 0)));
@@ -137,22 +137,22 @@ const jsDecoder = Schema.decodeEither(jsSchema);
 const jsEncoder = Schema.encodeEither(jsSchema);
 
 // Result: { _id: 'Either', _tag: 'Right', right: '2025-09-04T00:00:00.000+02:00' }
-console.log(decoder("jeudi 4 septembre 2025"));
+console.log(decoder('jeudi 4 septembre 2025'));
 
 // Error: Expected 'weekday' to be: 4. Actual: 1
-console.log(decoder("lundi 4 septembre 2025"));
+console.log(decoder('lundi 4 septembre 2025'));
 
 // Result: { _id: 'Either', _tag: 'Right', right: 'jeudi 1 janvier 1970' }
 console.log(encoder(CVDateTime.fromTimestampOrThrow(0, 0)));
 
 // Result: { _id: 'Either', _tag: 'Right', right: '2025-09-03T22:00:00.000Z' }
-console.log(effectDecoder("jeudi 4 septembre 2025"));
+console.log(effectDecoder('jeudi 4 septembre 2025'));
 
 // Result: { _id: 'Either', _tag: 'Right', right: 'jeudi 1 janvier 1970' }
 console.log(effectEncoder(DateTime.unsafeMakeZoned(0, { timeZone: 0 })));
 
 // Result: { _id: 'Either', _tag: 'Right', right: 2025-09-03T22:00:00.000Z }
-console.log(jsDecoder("jeudi 4 septembre 2025"));
+console.log(jsDecoder('jeudi 4 septembre 2025'));
 
 // Result: { _id: 'Either', _tag: 'Right', right: 'jeudi 1 janvier 1970' }
 console.log(jsEncoder(new Date(0)));
@@ -165,77 +165,77 @@ Many of the available [unicode tokens](https://www.unicode.org/reports/tr35/tr35
 ```ts
 export type Token =
   /* Gregorian year (ex: 2005) */
-  | "y"
+  | 'y'
   /* Gregorian year on 2 digits left-padded with 0's corresponding to years 2000-2099 (ex: 05 for 2005) */
-  | "yy"
+  | 'yy'
   /* Gregorian year on 4 digits left-padded with 0's (ex: 2005, 0965) */
-  | "yyyy"
+  | 'yyyy'
   /* Iso year (ex: 2005) */
-  | "R"
+  | 'R'
   /* Iso year on 2 digits left-padded with 0's corresponding to years 2000-2099 (ex: 05 for 2005) */
-  | "RR"
+  | 'RR'
   /* Iso year on 4 digits left-padded with 0's (ex: 2005, 0965)*/
-  | "RRRR"
+  | 'RRRR'
   /* Month (ex: 6) */
-  | "M"
+  | 'M'
   /* Month on 2 digits left-padded with 0's (ex: 06) */
-  | "MM"
+  | 'MM'
   /* Short month name (ex: Jun) */
-  | "MMM"
+  | 'MMM'
   /* Long month name (ex: June) */
-  | "MMMM"
+  | 'MMMM'
   /* IsoWeek (ex: 6) */
-  | "I"
+  | 'I'
   /* IsoWeek (ex: 06) */
-  | "II"
+  | 'II'
   /* Day of month (ex: 5) */
-  | "d"
+  | 'd'
   /* Day of month on 2 digits left-padded with 0's (ex: 05) */
-  | "dd"
+  | 'dd'
   /* Day of year (ex: 97) */
-  | "D"
+  | 'D'
   /* Day of year on 3 digits left-padded with 0's (ex: 097) */
-  | "DDD"
+  | 'DDD'
   /* Weekday (ex: 1 for monday, 7 for sunday) */
-  | "i"
+  | 'i'
   /* Short weekday name (ex: Mon) */
-  | "iii"
+  | 'iii'
   /* Long weekday name (ex: Monday) */
-  | "iiii"
+  | 'iiii'
   /* Meridiem (ex: 'AM' for 0, 'PM' for 12) */
-  | "a"
+  | 'a'
   /* Hour in the range 0..23 (ex:5, 14) */
-  | "H"
+  | 'H'
   /* Hour on 2 digits in the range 0..23 left-padded with 0's (ex:05, 14) */
-  | "HH"
+  | 'HH'
   /* Hour in the range 0..11 (ex:5, 2) */
-  | "K"
+  | 'K'
   /* Hour on 2 digits in the range 0..11 left-padded with 0's (ex:05, 02) */
-  | "KK"
+  | 'KK'
   /* Minute (ex: 5) */
-  | "m"
+  | 'm'
   /* Minute on 2 digits left-padded with 0's (ex: 05) */
-  | "mm"
+  | 'mm'
   /* Second (ex: 5) */
-  | "s"
+  | 's'
   /* Second on 2 digits left-padded with 0's (ex: 05) */
-  | "ss"
+  | 'ss'
   /* Millisecond (ex: 5) */
-  | "S"
+  | 'S'
   /* Millisecond on 3 digits left-padded with 0's (ex: 005) */
-  | "SSS"
+  | 'SSS'
   /* Hour part of the timezone offset (ex: 5) */
-  | "zH"
+  | 'zH'
   /* Hour part of the timezone offset on 2 digits left-padded with 0's (ex: 05) */
-  | "zHzH"
+  | 'zHzH'
   /* Minute part of the timezone offset (ex: 5) */
-  | "zm"
+  | 'zm'
   /* Minute part of the timezone offset on 2 digits left-padded with 0's (ex: 05) */
-  | "zmzm"
+  | 'zmzm'
   /* Second part of the timezone offset (ex: 5) */
-  | "zs"
+  | 'zs'
   /* Second part of the timezone offset on 2 digits left-padded with 0's (ex: 05) */
-  | "zszs";
+  | 'zszs';
 ```
 
 ## 3. CVDateTimeFormatContext
@@ -251,7 +251,7 @@ Some of the available tokens are language specific. For instance the `MMMM` toke
 `CVDateTimeFormat` objects implement a `.toString()` method which displays a synthetic description of the template followed by the description of each CVPlaceholder. For instance:
 
 ```ts
-import { CVDateTimeFormat, CVDateTimeFormatContext } from "@parischap/conversions";
+import { CVDateTimeFormat, CVDateTimeFormatContext } from '@parischap/conversions';
 
 // Let's define useful shortcuts
 const placeholder = CVDateTimeFormat.TemplatePart.Placeholder.make;
@@ -261,13 +261,13 @@ const sep = CVDateTimeFormat.TemplatePart.Separator;
 const frenchFormat = CVDateTimeFormat.make({
   context: CVDateTimeFormatContext.enGB,
   templateParts: [
-    placeholder("iiii"),
+    placeholder('iiii'),
     sep.space,
-    placeholder("d"),
+    placeholder('d'),
     sep.space,
-    placeholder("MMMM"),
+    placeholder('MMMM'),
     sep.space,
-    placeholder("yyyy"),
+    placeholder('yyyy'),
   ],
 });
 

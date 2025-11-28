@@ -9,8 +9,8 @@ A safe, easy-to-use number/BigDecimal parser/formatter with almost all the optio
 ## 1. Usage example
 
 ```ts
-import { CVNumberBase10Format, CVReal, CVSchema } from "@parischap/conversions";
-import { pipe, Schema } from "effect";
+import { CVNumberBase10Format, CVReal, CVSchema } from '@parischap/conversions';
+import { pipe, Schema } from 'effect';
 
 // Let's define some formats
 const ukStyleUngroupedNumber = CVNumberBase10Format.ukStyleUngroupedNumber;
@@ -39,13 +39,13 @@ const throwingParser = CVNumberBase10Format.toThrowingRealParser(ukStyleUngroupe
 console.log(ukStyleWithEngineeringNotationFormatter(CVReal.unsafeFromNumber(10340.548)));
 
 // result: { _id: 'Option', _tag: 'Some', value: 10340.548 }
-console.log(ungroupedUkStyleParser("10340.548"));
+console.log(ungroupedUkStyleParser('10340.548'));
 
 // result: { _id: 'Option', _tag: 'None' }
-console.log(ungroupedUkStyleParser("10,340.548"));
+console.log(ungroupedUkStyleParser('10,340.548'));
 
 // result: 10340.548
-console.log(throwingParser("10340.548"));
+console.log(throwingParser('10340.548'));
 
 // Using Schema
 const schema = CVSchema.Real(frenchStyleInteger);
@@ -57,10 +57,10 @@ const frenchStyleDecoder = Schema.decodeEither(schema);
 const frenchStyleEncoder = Schema.encodeEither(schema);
 
 // Result: { _id: 'Either', _tag: 'Right', right: 1024 }
-console.log(frenchStyleDecoder("1 024"));
+console.log(frenchStyleDecoder('1 024'));
 
 // Error: Failed to convert string to a(n) potentially signed French-style integer
-console.log(frenchStyleDecoder("1 024,56"));
+console.log(frenchStyleDecoder('1 024,56'));
 
 // Result: { _id: 'Either', _tag: 'Right', right: '1 025' }
 console.log(frenchStyleEncoder(CVReal.unsafeFromNumber(1024.56)));
@@ -160,12 +160,12 @@ To build such an instance, you will need to use the `make` constructor. For inst
 
 ```ts
 export const frenchStyleNumber = CVNumberBase10Format.make({
-  thousandSeparator: " ",
-  fractionalSeparator: ",",
+  thousandSeparator: ' ',
+  fractionalSeparator: ',',
   showNullIntegerPart: true,
   minimumFractionalDigits: 0,
   maximumFractionalDigits: 3,
-  eNotationChars: ["e", "E"],
+  eNotationChars: ['e', 'E'],
   scientificNotation: ScientificNotation.None,
   roundingMode: CVRoundingMode.Type.HalfExpand,
   signDisplay: SignDisplay.Negative,
@@ -180,8 +180,8 @@ The `.toString()` method will display the name of the object and all available p
 For instance:
 
 ```ts
-import { CVNumberBase10Format } from "@parischap/conversions";
-import { pipe } from "effect";
+import { CVNumberBase10Format } from '@parischap/conversions';
+import { pipe } from 'effect';
 
 // Result:
 // {

@@ -34,7 +34,7 @@ export const fromNonEmptySequence: MTypes.OneArgFunction<NonEmptySequence, strin
   Array.map(MString.fromNumber(10)),
   Array.join(';'),
   MString.prepend('\x1b['),
-   MString.append('m'),
+  MString.append('m'),
 );
 
 /**

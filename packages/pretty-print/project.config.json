@@ -2,8 +2,8 @@
   "configName": "configSubRepo",
   "description": "A functional library to pretty-print and treeify objects",
   "peerDependencies": {
-    "@parischap/effect-lib": "sourceInProd=NPM&versionInProd=^0.11.0&sourceInDev=WORKSPACE&buildStageInDev=DEV&parent=effect-libs",
-    "@parischap/ansi-styles": "sourceInProd=NPM&versionInProd=^0.2.6&sourceInDev=WORKSPACE&buildStageInDev=DEV&parent=effect-libs"
+    "@parischap/effect-lib": "^0.11.0",
+    "@parischap/ansi-styles": "^0.2.6"
   },
   "examples": [
     "util-inspect-like.ts",

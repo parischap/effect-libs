@@ -1,8 +1,6 @@
 {
   "extends": "./tsconfig.base.json",
-  "include": [
-    "esm/**/*"
-  ],
+  "include": ["esm/**/*"],
   "compilerOptions": {
     "rootDir": "esm",
     "declarationDir": "dist/dts",
@@ -10,8 +8,6 @@
     "outDir": "dist/esm",
     "allowJs": true,
     "checkJs": true,
-    "lib": [
-      "ESNext"
-    ]
+    "lib": ["ESNext"]
   }
 }
