@@ -1,3 +1,4 @@
+
 # This workflow is triggered manually. It will create the documentation and push it to github pages
 
 name: Pages
@@ -24,7 +25,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 'latest'
+          node-version: "latest"
           cache: pnpm
           registry-url: https://registry.npmjs.org/
       - run: pnpm --if-present prepare-docs

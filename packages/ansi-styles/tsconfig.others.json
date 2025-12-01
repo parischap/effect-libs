@@ -1,12 +1,22 @@
 {
   "extends": "./tsconfig.base.json",
-  "exclude": ["esm", "node_modules", "dist", "packages", "vite.config.ts.timestamp-*.mjs"],
+  "exclude": [
+    "esm",
+    "examples",
+    "tests",
+    "dist",
+    ".tsbuildinfo",
+    "vite.config.ts.timestamp-*.mjs",
+    "packages",
+    "node_modules",
+    "*.code-workspace",
+    ".vscode",
+    "pnpm-lock.yaml"
+  ],
   "compilerOptions": {
+    "tsBuildInfoFile": ".tsbuildinfo/others.tsbuildinfo",
     "rootDir": ".",
     "outDir": "dist/others",
-    "lib": ["ESNext"],
-    "types": ["node"],
-    "allowJs": true,
-    "checkJs": true
+    "declarationDir": "dist/others/dts"
   }
 }

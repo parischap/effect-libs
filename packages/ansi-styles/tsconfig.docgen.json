@@ -2,9 +2,6 @@
   "extends": "./tsconfig.base.json",
   "include": "esm/**/*",
   "compilerOptions": {
-    "noEmit": true,
-    "lib": ["ESNext"],
-    "types": ["node"],
     "allowJs": false,
     "checkJs": false
   }

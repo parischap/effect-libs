@@ -17,7 +17,7 @@
     "clean-config-files": "pnpm rmrf tsconfig.json && pnpm rmrf package.json",
     "reinstall-all-dependencies": "pnpm i --force",
     "prepare-docs": "pnpm -r --if-present -include-workspace-root=true --parallel --aggregate-output docgen && compile-docs",
-    "checks": "pnpm lint && pnpm tscheck",
+    "checks": "pnpm tscheck && pnpm lint",
     "clean-all-node-modules": "pnpm -r -include-workspace-root=true --reverse clean-node-modules",
     "clean-all-config-files": "pnpm -r -include-workspace-root=true --reverse clean-config-files",
     "clean-all-prod": "pnpm -r --parallel --aggregate-output clean-prod",
@@ -28,7 +28,6 @@
     "checks-all": "pnpm -r -include-workspace-root=true checks",
     "format-all": "pnpm -r -include-workspace-root=true format"
   },
-  "packageManager": "pnpm@10.23.0",
   "devDependencies": {
     "globals": "16.4.0",
     "eslint": "9.39.1",
@@ -49,5 +48,6 @@
     "typescript": "5.9.3",
     "jiti": "2.6.1",
     "vitest": "4.0.7"
-  }
+  },
+  "packageManager": "pnpm@10.23.0"
 }

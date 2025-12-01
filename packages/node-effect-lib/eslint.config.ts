@@ -49,8 +49,8 @@ const javascriptConfigForNonMdFiles: ConfigArray = defineConfig(
       /* These rules are ts-eslint rules (not rules of the functional plugin) which the functional plugin recommends to activate because they make sense for a functional programmings style. They require typeChecking and are not cancelled by functional.configs.disableTypeChecked */
       functional.configs.externalTypeScriptRecommended as never,
     ],
-    settings: {
-      /*immutability: {
+    /*settings: {
+      immutability: {
         overrides: [
           {
             type: {
@@ -67,8 +67,8 @@ const javascriptConfigForNonMdFiles: ConfigArray = defineConfig(
             to: 'ReadonlyDeep',
           },
         ],
-      },*/
-    },
+      },
+    },*/
     languageOptions: {
       parserOptions: {
         projectService: true,
@@ -97,8 +97,8 @@ const javascriptConfigForNonMdFiles: ConfigArray = defineConfig(
       ],*/
       'functional/immutable-data': 'error',
       /* Only activate these rules every now and again to check my work. It takes a lot of time and it triggers errors for Option's and Either's which I did not manage to silence */
-      'functional/prefer-immutable-types': 'off',
-      'functional/type-declaration-immutability': 'off',
+      'functional/prefer-immutable-types':'off',
+      'functional/type-declaration-immutability':'off',
       /*'functional/prefer-immutable-types': [
         'error',
         {
@@ -134,7 +134,7 @@ const javascriptConfigForNonMdFiles: ConfigArray = defineConfig(
         'error',
         {
           ignoreVoid: true,
-          ignoreCodePattern: [],
+          ignoreCodePattern: ["^\\x64escribe\\("],
         },
       ],
       'functional/prefer-property-signatures': 'error',
@@ -152,30 +152,6 @@ const javascriptConfigForNonMdFiles: ConfigArray = defineConfig(
     },
   },
 );
-
-const javascriptConfigForNonProjectNonMdFiles: ConfigArray = defineConfig({
-  name: 'javascriptConfigForNonProjectNonMdFiles',
-  // Here, we can mitigate rules defined in javascriptConfigForNonMdFiles specifically in non project files
-  rules: {
-    /*'import-x/no-extraneous-dependencies': [
-      'error',
-      {
-        devDependencies: true,
-        peerDependencies: true,
-        optionalDependencies: false,
-        bundledDependencies: false,
-      },
-    ],*/
-    // Let's allow console.log in setting files and assertions in test files
-    'functional/no-expression-statements': [
-      'error',
-      {
-        ignoreVoid: true,
-        ignoreCodePattern: ['^\\x64escribe\\('],
-      },
-    ],
-  },
-});
 
 const javascriptConfigForMdFiles: ConfigArray = defineConfig(
   /**
@@ -196,17 +172,17 @@ const javascriptConfigForMdFiles: ConfigArray = defineConfig(
   },
 );
 
-const javascriptConfigForNonProjectFiles: ConfigArray = defineConfig({
-  name: 'javascriptConfigForNonProjectFiles',
+const javascriptConfigForNonSourceFiles: ConfigArray = defineConfig({
+  name: 'javascriptConfigForNonSourceFiles',
   languageOptions: {
     globals: {
       ...globals.nodeBuiltin,
     },
   },
 });
-
-const javascriptConfigForProjectFiles: ConfigArray = defineConfig({
-  name: 'javascriptConfigForProjectFiles',
+      
+const javascriptConfigForSourceFiles: ConfigArray = defineConfig({
+  name: 'javascriptConfigForSourceFiles',
   languageOptions: {
     globals: {
       ...globals.nodeBuiltin,
@@ -316,73 +292,42 @@ export default defineConfig([
   // This is a global ignore, files are ignored in all other config objects
   // node_modules files and .git are also ignored.
   // Must work at all levels (top, monorepo, one-package repo, and subrepo)
-  globalIgnores(['dist/', 'packages/', 'vite.config.ts.timestamp-*.mjs'], 'ignoreConfig'),
-  scopeConfig({
-    configs: javascriptPreConfig,
-    files: ['**/*.ts', '**/*.mts', '**/*.cts', '**/*.js', '**/*.mjs', '**/*.cjs'],
-  }),
+
+  globalIgnores(
+    [
+      'dist/',
+      '.tsbuildinfo/',
+      'vite.config.ts.timestamp-*.mjs',
+      'packages/',
+      '*.code-workspace',
+      '.vscode/',
+      'pnpm-lock.yaml'
+    ],
+    'ignoreConfig',
+  ),
+  scopeConfig({ configs: javascriptPreConfig, files: ["**/*.ts","**/*.mts","**/*.cts","**/*.js","**/*.mjs","**/*.cjs"] }),
   scopeConfig({
     configs: javascriptConfigForNonMdFiles,
-    files: ['**/*.ts', '**/*.mts', '**/*.cts', '**/*.js', '**/*.mjs', '**/*.cjs'],
-    ignores: [
-      '**/*.md/*.ts',
-      '**/*.md/*.mts',
-      '**/*.md/*.cts',
-      '**/*.md/*.js',
-      '**/*.md/*.mjs',
-      '**/*.md/*.cjs',
-    ],
+    files: ["**/*.ts","**/*.mts","**/*.cts","**/*.js","**/*.mjs","**/*.cjs"],
+    ignores: ["**/*.md/*.ts","**/*.md/*.mts","**/*.md/*.cts","**/*.md/*.js","**/*.md/*.mjs","**/*.md/*.cjs"],
   }),
+  scopeConfig({ configs: javascriptConfigForMdFiles, files: ["**/*.md/*.ts","**/*.md/*.mts","**/*.md/*.cts","**/*.md/*.js","**/*.md/*.mjs","**/*.md/*.cjs"] }),
   scopeConfig({
-    configs: javascriptConfigForNonProjectNonMdFiles,
-    files: ['**/*.ts', '**/*.mts', '**/*.cts', '**/*.js', '**/*.mjs', '**/*.cjs'],
-    ignores: [
-      'esm/**',
-      '**/*.md/*.ts',
-      '**/*.md/*.mts',
-      '**/*.md/*.cts',
-      '**/*.md/*.js',
-      '**/*.md/*.mjs',
-      '**/*.md/*.cjs',
-    ],
-  }),
-  scopeConfig({
-    configs: javascriptConfigForMdFiles,
-    files: [
-      '**/*.md/*.ts',
-      '**/*.md/*.mts',
-      '**/*.md/*.cts',
-      '**/*.md/*.js',
-      '**/*.md/*.mjs',
-      '**/*.md/*.cjs',
-    ],
-  }),
-  scopeConfig({
-    configs: javascriptConfigForNonProjectFiles,
-    files: ['**/*.ts', '**/*.mts', '**/*.cts', '**/*.js', '**/*.mjs', '**/*.cjs'],
+    configs: javascriptConfigForNonSourceFiles,
+    files: ["**/*.ts","**/*.mts","**/*.cts","**/*.js","**/*.mjs","**/*.cjs"],
     ignores: ['esm/**'],
   }),
   scopeConfig({
-    configs: javascriptConfigForProjectFiles,
-    files: [
-      'esm/**/*.ts',
-      'esm/**/*.mts',
-      'esm/**/*.cts',
-      'esm/**/*.js',
-      'esm/**/*.mjs',
-      'esm/**/*.cjs',
-    ],
+    configs: javascriptConfigForSourceFiles,
+    files: ["esm/**/*.ts","esm/**/*.mts","esm/**/*.cts","esm/**/*.js","esm/**/*.mjs","esm/**/*.cjs"],
   }),
-  scopeConfig({
-    configs: javascriptPostConfig,
-    files: ['**/*.ts', '**/*.mts', '**/*.cts', '**/*.js', '**/*.mjs', '**/*.cjs'],
-  }),
-  scopeConfig({ configs: htmlConfigs, files: ['**/*.html', '**/*.htm'] }),
-  scopeConfig({ configs: ymlConfigs, files: ['**/*.yml', '**/*.yaml'] }),
-  scopeConfig({ configs: markdownConfigs, files: ['**/*.md'] }),
-  scopeConfig({ configs: jsonConfigs, files: ['**/*.json'] }),
-  scopeConfig({ configs: jsoncConfigs, files: ['**/*.jsonc'] }),
-  scopeConfig({ configs: json5Configs, files: ['**/*.json5'] }),
+  scopeConfig({ configs: javascriptPostConfig, files: ["**/*.ts","**/*.mts","**/*.cts","**/*.js","**/*.mjs","**/*.cjs"] }),
+  scopeConfig({ configs: htmlConfigs, files: ["**/*.html","**/*.htm"] }),
+  scopeConfig({ configs: ymlConfigs, files: ["**/*.yml","**/*.yaml"] }),
+  scopeConfig({ configs: markdownConfigs, files: ["**/*.md"] }),
+  scopeConfig({ configs: jsonConfigs, files: ["**/*.json"] }),
+  scopeConfig({ configs: jsoncConfigs, files: ["**/*.jsonc"] }),
+  scopeConfig({ configs: json5Configs, files: ["**/*.json5"] }),
   // Do not specify a files directive. We want to cancel eslint rules for all types of files: *.js, *.ts, *.html...
   eslintConfigPrettier,
 ]);

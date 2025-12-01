@@ -2,4 +2,7 @@
 /.tsbuildinfo/
 /vite.config.ts.timestamp-*.mjs
 /packages/
-/node_modules/
+/node_modules/,
+/*.code-workspace,
+/.vscode/
+/pnpm-lock.yaml

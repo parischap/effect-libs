@@ -1,14 +1,13 @@
 {
   "extends": "./tsconfig.base.json",
-  "include": ["esm/**/*"],
+  "include": [
+    "esm/**/*"
+  ],
   "compilerOptions": {
-    "rootDir": "esm",
+    "tsBuildInfoFile": ".tsbuildinfo/esm.tsbuildinfo",
+    "rootDir": ".",
+    "outDir": "dist",
     "declarationDir": "dist/dts",
-    "declarationMap": true,
-    "outDir": "dist/esm",
-    "allowJs": true,
-    "checkJs": true,
-    "lib": ["ESNext"],
-    "types": ["node"]
+    "emitDeclarationOnly": true
   }
 }
