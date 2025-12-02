@@ -1,7 +1,7 @@
 {
   "configName": "configSubRepo",
   "description": "An extension to the official Effect library",
-  "environment": "Library",
+  "environment": "ESNext",
   "buildMethod": "Transpile",
   "isPublished": true,
   "hasDocGen": true,

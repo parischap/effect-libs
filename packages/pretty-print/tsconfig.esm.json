@@ -8,6 +8,7 @@
     "rootDir": ".",
     "outDir": "dist",
     "declarationDir": "dist/dts",
+    "noEmit": false,
     "emitDeclarationOnly": true,
     "types": []
   }

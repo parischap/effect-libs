@@ -180,15 +180,6 @@ const javascriptConfigForNonSourceFiles: ConfigArray = defineConfig({
     },
   },
 });
-      
-const javascriptConfigForSourceFiles: ConfigArray = defineConfig({
-  name: 'javascriptConfigForSourceFiles',
-  languageOptions: {
-    globals: {
-      ...globals['shared-node-browser'],
-    },
-  },
-});
 
 const javascriptPostConfig: ConfigArray = defineConfig({
   name: 'javascriptPostConfig',
@@ -316,10 +307,6 @@ export default defineConfig([
     configs: javascriptConfigForNonSourceFiles,
     files: ["**/*.ts","**/*.mts","**/*.cts","**/*.js","**/*.mjs","**/*.cjs"],
     ignores: ['esm/**'],
-  }),
-  scopeConfig({
-    configs: javascriptConfigForSourceFiles,
-    files: ["esm/**/*.ts","esm/**/*.mts","esm/**/*.cts","esm/**/*.js","esm/**/*.mjs","esm/**/*.cjs"],
   }),
   scopeConfig({ configs: javascriptPostConfig, files: ["**/*.ts","**/*.mts","**/*.cts","**/*.js","**/*.mjs","**/*.cjs"] }),
   scopeConfig({ configs: htmlConfigs, files: ["**/*.html","**/*.htm"] }),

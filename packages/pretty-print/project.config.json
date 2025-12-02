@@ -11,7 +11,7 @@
     "treeify-with-leaves.ts",
     "circularity-handling.ts"
   ],
-  "environment": "Library",
+  "environment": "ESNext",
   "buildMethod": "Transpile",
   "isPublished": true,
   "hasDocGen": true,

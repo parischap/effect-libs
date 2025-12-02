@@ -6,13 +6,13 @@
   "license": "MIT",
   "scripts": {
     "test": "vitest run",
-    "tscheck": "tsc -b tsconfig.json --force --noEmit",
+    "tscheck": "tsc -b tsconfig.json --force",
     "lint": "eslint .",
     "lint-and-analyze": "eslint . --stats -f json > eslint-stats.json",
     "lint-rules": "pnpx @eslint/config-inspector",
     "format": "prettier . --write",
-    "rmrf": "node rmrf.ts",
-    "mkdirp": "node mkdirp.ts",
+    "rmrf": "node utils/rmrf.ts",
+    "mkdirp": "node utils/mkdirp.ts",
     "clean-node-modules": "pnpm rmrf node_modules",
     "clean-config-files": "pnpm rmrf tsconfig.json && pnpm rmrf package.json",
     "reinstall-all-dependencies": "pnpm i --force",
@@ -23,6 +23,7 @@
     "clean-all-prod": "pnpm -r --parallel --aggregate-output clean-prod",
     "build-all": "pnpm --if-present -r build",
     "auto-generate-index-for-all": "pnpm --if-present -r --parallel --aggregate-output auto-generate-index",
+    "generate-index-for-all": "pnpm --if-present -r --parallel --aggregate-output generate-index",
     "tscheck-all": "pnpm -r -include-workspace-root=true tscheck",
     "lint-all": "pnpm -r -include-workspace-root=true lint",
     "checks-all": "pnpm -r -include-workspace-root=true checks",
@@ -49,5 +50,5 @@
     "jiti": "2.6.1",
     "vitest": "4.0.7"
   },
-  "packageManager": "pnpm@10.23.0"
+  "packageManager": "pnpm@10.24.0"
 }
