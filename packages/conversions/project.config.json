@@ -19,7 +19,7 @@
     "DateTimeFormat_2.ts",
     "Branding.ts"
   ],
-  "environment": "ESNext",
+  "environment": "Plain",
   "buildMethod": "Transpile",
   "isPublished": true,
   "hasDocGen": true,
