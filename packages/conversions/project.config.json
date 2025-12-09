@@ -1,5 +1,4 @@
 {
-  "configName": "configSubRepo",
   "description": "A functional library to replace partially the native Intl API",
   "peerDependencies": {
     "@parischap/effect-lib": "^0.11.0"

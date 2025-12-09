@@ -1,5 +1,4 @@
 {
-  "configName": "configSubRepo",
   "description": "A functional library to pretty-print and treeify objects",
   "peerDependencies": {
     "@parischap/effect-lib": "^0.11.0",

@@ -1,5 +1,4 @@
 {
-  "configName": "configSubRepo",
   "description": "An extension to the official Effect library",
   "environment": "Plain",
   "buildMethod": "Transpile",
