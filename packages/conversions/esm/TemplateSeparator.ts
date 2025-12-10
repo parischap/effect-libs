@@ -37,7 +37,7 @@ export interface Type extends MInspectable.Type, Pipeable.Pipeable {
 export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
 
 /** Proto */
-const proto: MTypes.Proto<Type> = {
+const _proto: MTypes.Proto<Type> = {
   [_TypeId]: _TypeId,
   [MInspectable.IdSymbol](this: Type) {
     return this.value;
@@ -46,7 +46,7 @@ const proto: MTypes.Proto<Type> = {
   ...MPipeable.BaseProto,
 };
 
-const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
+const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
 
 /**
  * Constructor

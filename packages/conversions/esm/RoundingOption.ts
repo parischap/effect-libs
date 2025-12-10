@@ -4,13 +4,13 @@
  */
 
 import {
-  MBigDecimal,
-  MBigInt,
-  MInspectable,
-  MNumber,
-  MPipeable,
-  MString,
-  MTypes,
+    MBigDecimal,
+    MBigInt,
+    MInspectable,
+    MNumber,
+    MPipeable,
+    MString,
+    MTypes,
 } from '@parischap/effect-lib';
 import { BigDecimal, Equal, Equivalence, Hash, pipe, Pipeable, Predicate, Struct } from 'effect';
 import * as CVRoundingMode from './RoundingMode.js';
@@ -59,7 +59,7 @@ export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
 
 /** Prototype */
 
-const proto: MTypes.Proto<Type> = {
+const _proto: MTypes.Proto<Type> = {
   [_TypeId]: _TypeId,
   [Equal.symbol](this: Type, that: unknown): boolean {
     return has(that) && equivalence(this, that);
@@ -80,7 +80,7 @@ const proto: MTypes.Proto<Type> = {
 };
 
 /** Constructor */
-const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
+const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
 
 /**
  * Constructs a `CVRoundingOption` with the specified `precision` and `roundingMode`

@@ -4,31 +4,31 @@
  */
 
 import {
-  MArray,
-  MFunction,
-  MInspectable,
-  MMatch,
-  MPipeable,
-  MPredicate,
-  MString,
-  MStruct,
-  MTypes,
+    MArray,
+    MFunction,
+    MInspectable,
+    MMatch,
+    MPipeable,
+    MPredicate,
+    MString,
+    MStruct,
+    MTypes,
 } from '@parischap/effect-lib';
 import {
-  Array,
-  Equal,
-  Equivalence,
-  Hash,
-  Inspectable,
-  Number,
-  Option,
-  Pipeable,
-  Predicate,
-  String,
-  Struct,
-  Tuple,
-  flow,
-  pipe,
+    Array,
+    Equal,
+    Equivalence,
+    Hash,
+    Inspectable,
+    Number,
+    Option,
+    Pipeable,
+    Predicate,
+    String,
+    Struct,
+    Tuple,
+    flow,
+    pipe,
 } from 'effect';
 import * as ASAnsiString from './AnsiString.js';
 import * as ASStyleCharacteristics from './StyleCharacteristics.js';
@@ -100,7 +100,7 @@ namespace UniStyled {
 
   /** Prototype */
   const _TypeIdHash = Hash.hash(_TypeId);
-  const proto: MTypes.Proto<Type> = {
+  const _proto: MTypes.Proto<Type> = {
     [_TypeId]: _TypeId,
     [Equal.symbol](this: Type, that: unknown): boolean {
       return has(that) && equivalence(this, that);
@@ -120,7 +120,7 @@ namespace UniStyled {
 
   /** Constructor */
   export const make = (params: MTypes.Data<Type>): Type =>
-    MTypes.objectFromDataAndProto(proto, params);
+    MTypes.objectFromDataAndProto(_proto, params);
 
   /**
    * Gets the `text` property of `self`
@@ -226,7 +226,7 @@ export const haveSameText: Equivalence.Equivalence<Type> = (self, that) =>
 
 /** Prototype */
 const _TypeIdHash = Hash.hash(_TypeId);
-const proto: MTypes.Proto<Type> = {
+const _proto: MTypes.Proto<Type> = {
   [_TypeId]: _TypeId,
   [Equal.symbol](this: Type, that: unknown): boolean {
     return has(that) && equivalence(this, that);
@@ -242,7 +242,7 @@ const proto: MTypes.Proto<Type> = {
 };
 
 /** Constructor */
-const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
+const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
 
 /**
  * Returns the `uniStyledTexts` property of `self`

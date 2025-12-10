@@ -20,31 +20,31 @@
  */
 
 import {
-  MArray,
-  MFunction,
-  MInputError,
-  MInspectable,
-  MNumber,
-  MPipeable,
-  MString,
-  MStruct,
-  MTypes,
+    MArray,
+    MFunction,
+    MInputError,
+    MInspectable,
+    MNumber,
+    MPipeable,
+    MString,
+    MStruct,
+    MTypes,
 } from '@parischap/effect-lib';
 import {
-  DateTime,
-  Either,
-  Equal,
-  Equivalence,
-  Function,
-  Hash,
-  Inspectable,
-  Number,
-  Option,
-  Pipeable,
-  Predicate,
-  Struct,
-  flow,
-  pipe,
+    DateTime,
+    Either,
+    Equal,
+    Equivalence,
+    Function,
+    Hash,
+    Inspectable,
+    Number,
+    Option,
+    Pipeable,
+    Predicate,
+    Struct,
+    flow,
+    pipe,
 } from 'effect';
 import * as CVNumberBase10Format from './NumberBase10Format.js';
 import * as CVTemplate from './Template.js';
@@ -263,14 +263,14 @@ namespace GregorianDate {
   export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
 
   /** Proto */
-  const proto: MTypes.Proto<Type> = {
+  const _proto: MTypes.Proto<Type> = {
     [_TypeId]: _TypeId,
     ...MInspectable.BaseProto(_namespaceTag),
     ...MPipeable.BaseProto,
   };
 
   /** Constructor */
-  const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
+  const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
 
   const _makeWithInternals = (params: Omit<MTypes.Data<Type>, '_daysInMonth'>): Type =>
     _make({
@@ -782,14 +782,14 @@ namespace IsoDate {
   export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
 
   /** Proto */
-  const proto: MTypes.Proto<Type> = {
+  const _proto: MTypes.Proto<Type> = {
     [_TypeId]: _TypeId,
     ...MInspectable.BaseProto(_namespaceTag),
     ...MPipeable.BaseProto,
   };
 
   /** Constructor */
-  const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
+  const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
 
   /**
    * Constructs an IsoDate from a timestamp
@@ -1202,14 +1202,14 @@ namespace Time {
   export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
 
   /** Proto */
-  const proto: MTypes.Proto<Type> = {
+  const _proto: MTypes.Proto<Type> = {
     [_TypeId]: _TypeId,
     ...MInspectable.BaseProto(_namespaceTag),
     ...MPipeable.BaseProto,
   };
 
   /** Constructor */
-  const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
+  const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
 
   /**
    * Constructs the Time that corresponds to the passed `timestampOffset` which is the number of
@@ -1529,14 +1529,14 @@ namespace ZoneOffsetParts {
   export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
 
   /** Proto */
-  const proto: MTypes.Proto<Type> = {
+  const _proto: MTypes.Proto<Type> = {
     [_TypeId]: _TypeId,
     ...MInspectable.BaseProto(_namespaceTag),
     ...MPipeable.BaseProto,
   };
 
   export const _make = (params: MTypes.Data<Type>): Type =>
-    MTypes.objectFromDataAndProto(proto, params);
+    MTypes.objectFromDataAndProto(_proto, params);
 
   /**
    * Builds a ZoneOffsetParts from `zoneOffset`
@@ -1719,7 +1719,7 @@ export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
 
 /** Proto */
 const _TypeIdHash = Hash.hash(_TypeId);
-const proto: MTypes.Proto<Type> = {
+const _proto: MTypes.Proto<Type> = {
   [_TypeId]: _TypeId,
   [Equal.symbol](this: Type, that: unknown): boolean {
     return has(that) && equivalence(this, that);
@@ -1735,7 +1735,7 @@ const proto: MTypes.Proto<Type> = {
 };
 
 /** Constructor */
-const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
+const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
 
 /**
  * Returns the ISO representation of this DateTime

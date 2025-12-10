@@ -1,21 +1,21 @@
 /** A simple extension to the Effect String module */
 
 import {
-  Array,
-  Equal,
-  Equivalence,
-  Function,
-  Hash,
-  Inspectable,
-  Option,
-  Order,
-  Pipeable,
-  Predicate,
-  String,
-  Struct,
-  Tuple,
-  flow,
-  pipe,
+    Array,
+    Equal,
+    Equivalence,
+    Function,
+    Hash,
+    Inspectable,
+    Option,
+    Order,
+    Pipeable,
+    Predicate,
+    String,
+    Struct,
+    Tuple,
+    flow,
+    pipe,
 } from 'effect';
 import * as MArray from './Array.js';
 import * as MBigInt from './BigInt.js';
@@ -90,7 +90,7 @@ export namespace SearchResult {
 
   /** Prototype */
   const _TypeIdHash = Hash.hash(_TypeId);
-  const proto: MTypes.Proto<Type> = {
+  const _proto: MTypes.Proto<Type> = {
     [_TypeId]: _TypeId,
     [Equal.symbol](this: Type, that: unknown): boolean {
       return has(that) && equivalence(this, that);
@@ -115,7 +115,7 @@ export namespace SearchResult {
    * @category Constructors
    */
   export const make = (params: MTypes.Data<Type>): Type =>
-    MTypes.objectFromDataAndProto(proto, params);
+    MTypes.objectFromDataAndProto(_proto, params);
 
   /**
    * SearchResult Order based on the startIndex

@@ -45,28 +45,28 @@
  */
 
 import {
-  MArray,
-  MInputError,
-  MInspectable,
-  MPipeable,
-  MString,
-  MTuple,
-  MTypes,
+    MArray,
+    MInputError,
+    MInspectable,
+    MPipeable,
+    MString,
+    MTuple,
+    MTypes,
 } from '@parischap/effect-lib';
 import {
-  Array,
-  Either,
-  Equal,
-  flow,
-  Function,
-  Option,
-  pipe,
-  Pipeable,
-  Predicate,
-  Record,
-  Struct,
-  Tuple,
-  Types,
+    Array,
+    Either,
+    Equal,
+    flow,
+    Function,
+    Option,
+    pipe,
+    Pipeable,
+    Predicate,
+    Record,
+    Struct,
+    Tuple,
+    Types,
 } from 'effect';
 import * as CVTemplatePart from './TemplatePart.js';
 import * as CVTemplateParts from './TemplateParts.js';
@@ -109,7 +109,7 @@ export const has = (u: unknown): u is Type<ReadonlyArray<CVTemplatePart.Type<str
   Predicate.hasProperty(u, _TypeId);
 
 /** Prototype */
-const proto: MTypes.Proto<Type<never>> = {
+const _proto: MTypes.Proto<Type<never>> = {
   [_TypeId]: { _P: MTypes.covariantValue },
   [MInspectable.IdSymbol](this: Type<CVTemplateParts.Type>) {
     return pipe(
@@ -126,7 +126,7 @@ const proto: MTypes.Proto<Type<never>> = {
 };
 
 const _make = <const PS extends CVTemplateParts.Type>(params: MTypes.Data<Type<PS>>): Type<PS> =>
-  MTypes.objectFromDataAndProto(proto, params);
+  MTypes.objectFromDataAndProto(_proto, params);
 
 /**
  * Constructor

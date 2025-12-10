@@ -2,13 +2,13 @@
 
 import { ASText } from '@parischap/ansi-styles';
 import {
-  MArray,
-  MFunction,
-  MPredicate,
-  MString,
-  MStruct,
-  MTuple,
-  MTypes,
+    MArray,
+    MFunction,
+    MPredicate,
+    MString,
+    MStruct,
+    MTuple,
+    MTypes,
 } from '@parischap/effect-lib';
 import { Array, Either, flow, Number, Option, pipe, Predicate } from 'effect';
 import type * as PPOption from './Option.js';
@@ -40,7 +40,7 @@ export const fromProperties =
           toFirst: ({ protoDepth, nonPrimitiveContent }) => {
             // Record.map will not return all keys
             const ownKeys = Reflect.ownKeys(nonPrimitiveContent);
-            const isFunctionProto = nonPrimitiveContent === MFunction.proto;
+            const isFunctionProto = nonPrimitiveContent === MFunction._proto;
 
             return Array.filterMap(ownKeys, (key) =>
               // The arguments and caller properties of the function prototype are deprecated, reading them causes an error

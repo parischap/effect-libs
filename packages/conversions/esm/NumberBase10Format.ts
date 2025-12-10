@@ -4,35 +4,35 @@
  */
 
 import {
-  MBigDecimal,
-  MBigInt,
-  MFunction,
-  MInspectable,
-  MMatch,
-  MNumber,
-  MPipeable,
-  MPredicate,
-  MRegExpString,
-  MString,
-  MStruct,
-  MTypes,
+    MBigDecimal,
+    MBigInt,
+    MFunction,
+    MInspectable,
+    MMatch,
+    MNumber,
+    MPipeable,
+    MPredicate,
+    MRegExpString,
+    MString,
+    MStruct,
+    MTypes,
 } from '@parischap/effect-lib';
 import {
-  Array,
-  BigDecimal,
-  BigInt,
-  Either,
-  flow,
-  Function,
-  Inspectable,
-  Number,
-  Option,
-  pipe,
-  Pipeable,
-  Predicate,
-  String,
-  Struct,
-  Tuple,
+    Array,
+    BigDecimal,
+    BigInt,
+    Either,
+    flow,
+    Function,
+    Inspectable,
+    Number,
+    Option,
+    pipe,
+    Pipeable,
+    Predicate,
+    String,
+    Struct,
+    Tuple,
 } from 'effect';
 import * as CVReal from './Real.js';
 import * as CVRoundingMode from './RoundingMode.js';
@@ -484,7 +484,7 @@ export interface Type extends Inspectable.Inspectable, Pipeable.Pipeable {
 export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
 
 /** Prototype */
-const proto: MTypes.Proto<Type> = {
+const _proto: MTypes.Proto<Type> = {
   [_TypeId]: _TypeId,
   ...MInspectable.BaseProto(moduleTag),
   ...MPipeable.BaseProto,
@@ -496,7 +496,7 @@ const proto: MTypes.Proto<Type> = {
  * @category Constructors
  */
 export const make = (params: MTypes.Data<Type>): Type =>
-  MTypes.objectFromDataAndProto(proto, params);
+  MTypes.objectFromDataAndProto(_proto, params);
 
 /**
  * Returns the `thousandSeparator` property of `self`

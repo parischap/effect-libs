@@ -48,7 +48,7 @@ export const has = (u: unknown): u is Type<unknown, unknown, unknown> =>
   Predicate.hasProperty(u, _TypeId);
 
 /** Prototype */
-const proto: MTypes.Proto<Type<never, never, never>> = {
+const _proto: MTypes.Proto<Type<never, never, never>> = {
   [_TypeId]: {
     _Input: MTypes.covariantValue,
     _Output: MTypes.covariantValue,
@@ -62,7 +62,7 @@ const proto: MTypes.Proto<Type<never, never, never>> = {
 const _make = <Input, Output, Rest extends Input>(params: {
   readonly input: Input;
   readonly output: Option.Option<Output>;
-}): Type<Input, Output, Rest> => MTypes.objectFromDataAndProto(proto, params);
+}): Type<Input, Output, Rest> => MTypes.objectFromDataAndProto(_proto, params);
 
 /**
  * Builds a new matcher

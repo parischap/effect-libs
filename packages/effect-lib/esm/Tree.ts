@@ -87,7 +87,7 @@ export namespace Leaf {
   export const equivalence: Equivalence.Equivalence<Type<unknown>> = getEquivalence(Equal.equals);
 
   const _make = <B>(params: MTypes.Data<Type<B>>): Type<B> =>
-    MTypes.objectFromDataAndProto(proto, params) as never;
+    MTypes.objectFromDataAndProto(_proto, params) as never;
 
   /**
    * Constructor
@@ -183,7 +183,7 @@ export const equivalence: Equivalence.Equivalence<Type<unknown, unknown>> = getE
 );
 
 /** Prototype */
-const proto: MTypes.Proto<Type<never, never>> = {
+const _proto: MTypes.Proto<Type<never, never>> = {
   [_TypeId]: {
     _A: MTypes.covariantValue,
     _B: MTypes.covariantValue,
@@ -574,7 +574,7 @@ export namespace NonLeaf {
   );
 
   const _make = <A, B>(params: MTypes.Data<Type<A, B>>): Type<A, B> =>
-    MTypes.objectFromDataAndProto(proto, params);
+    MTypes.objectFromDataAndProto(_proto, params);
 
   /**
    * Constructor

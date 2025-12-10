@@ -6,17 +6,17 @@
 
 import { MInspectable, MMatch, MPipeable, MString, MTypes } from '@parischap/effect-lib';
 import {
-  Array,
-  Equal,
-  Equivalence,
-  flow,
-  Function,
-  Hash,
-  Number,
-  pipe,
-  Pipeable,
-  Predicate,
-  Struct,
+    Array,
+    Equal,
+    Equivalence,
+    flow,
+    Function,
+    Hash,
+    Number,
+    pipe,
+    Pipeable,
+    Predicate,
+    Struct,
 } from 'effect';
 import * as ASAnsiString from './AnsiString.js';
 
@@ -164,7 +164,7 @@ export namespace ThreeBit {
     self.offset === that.offset && self.isBright === that.isBright;
 
   /** Proto */
-  const proto: MTypes.Proto<Type> = {
+  const _proto: MTypes.Proto<Type> = {
     [_TypeId]: _TypeId,
     [_tagSymbol]: _threeBitTag,
     [Equal.symbol](this: Type, that: unknown): boolean {
@@ -191,7 +191,7 @@ export namespace ThreeBit {
   };
 
   /** Constructor */
-  const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
+  const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
 
   /**
    * Gets the `offset` property of `self`
@@ -874,7 +874,7 @@ export namespace EightBit {
   export const equivalence: Equivalence.Equivalence<Type> = (self, that) => self.code === that.code;
 
   /** Base */
-  const proto: MTypes.Proto<Type> = {
+  const _proto: MTypes.Proto<Type> = {
     [_TypeId]: _TypeId,
     [_tagSymbol]: _eightBitTag,
     [Equal.symbol](this: Type, that: unknown): boolean {
@@ -905,7 +905,7 @@ export namespace EightBit {
    * @category Constructors
    */
   export const make = (params: MTypes.Data<Type>): Type =>
-    MTypes.objectFromDataAndProto(proto, params);
+    MTypes.objectFromDataAndProto(_proto, params);
 
   /**
    * Gets the `code` property of `self`
@@ -968,7 +968,7 @@ export namespace Rgb {
     && self.blueCode === that.blueCode;
 
   /** Base */
-  const proto: MTypes.Proto<Type> = {
+  const _proto: MTypes.Proto<Type> = {
     [_TypeId]: _TypeId,
     [_tagSymbol]: _rgbTag,
     [Equal.symbol](this: Type, that: unknown): boolean {
@@ -996,7 +996,7 @@ export namespace Rgb {
   };
 
   /** Constructor */
-  const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
+  const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
 
   /**
    * Gets the `id` property of `self`

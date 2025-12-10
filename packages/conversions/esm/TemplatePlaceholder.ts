@@ -13,31 +13,31 @@
  */
 
 import {
-  MInputError,
-  MInspectable,
-  MPipeable,
-  MRegExp,
-  MRegExpString,
-  MString,
-  MStruct,
-  MTuple,
-  MTypes,
+    MInputError,
+    MInspectable,
+    MPipeable,
+    MRegExp,
+    MRegExpString,
+    MString,
+    MStruct,
+    MTuple,
+    MTypes,
 } from '@parischap/effect-lib';
 
 import {
-  Array,
-  Either,
-  flow,
-  Function,
-  HashMap,
-  pipe,
-  Pipeable,
-  Predicate,
-  Schema,
-  String,
-  Struct,
-  Tuple,
-  Types,
+    Array,
+    Either,
+    flow,
+    Function,
+    HashMap,
+    pipe,
+    Pipeable,
+    Predicate,
+    Schema,
+    String,
+    Struct,
+    Tuple,
+    Types,
 } from 'effect';
 
 import * as CVNumberBase10Format from './NumberBase10Format.js';
@@ -144,7 +144,7 @@ export const has = (u: unknown): u is Type<string, unknown> => Predicate.hasProp
 
 /** Proto */
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-const proto: MTypes.Proto<Type<never, any>> = {
+const _proto: MTypes.Proto<Type<never, any>> = {
   [_TypeId]: { _N: MTypes.covariantValue, _T: MTypes.invariantValue },
   [MInspectable.IdSymbol]<N extends string, T>(this: Type<N, T>) {
     return getLabelledDescription(this);
@@ -154,7 +154,7 @@ const proto: MTypes.Proto<Type<never, any>> = {
 };
 
 const _make = <const N extends string, T>(params: MTypes.Data<Type<N, T>>): Type<N, T> =>
-  MTypes.objectFromDataAndProto(proto, params);
+  MTypes.objectFromDataAndProto(_proto, params);
 
 /**
  * Constructor

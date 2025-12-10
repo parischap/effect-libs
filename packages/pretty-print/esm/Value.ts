@@ -5,16 +5,16 @@
  */
 import { MInspectable, MPipeable, MString, MTypes } from '@parischap/effect-lib';
 import {
-  Array,
-  Equal,
-  Equivalence,
-  Hash,
-  Inspectable,
-  pipe,
-  Pipeable,
-  Predicate,
-  Struct,
-  Types,
+    Array,
+    Equal,
+    Equivalence,
+    Hash,
+    Inspectable,
+    pipe,
+    Pipeable,
+    Predicate,
+    Struct,
+    Types,
 } from 'effect';
 
 /**
@@ -116,7 +116,7 @@ export const equivalence: Equivalence.Equivalence<All> = (self, that) =>
 
 /** Prototype */
 const _TypeIdHash = Hash.hash(_TypeId);
-const proto: MTypes.Proto<Type<never>> = {
+const _proto: MTypes.Proto<Type<never>> = {
   [_TypeId]: { _V: MTypes.covariantValue },
   [Equal.symbol]<V>(this: Type<V>, that: unknown): boolean {
     return has(that) && equivalence(this, that);
@@ -130,7 +130,7 @@ const proto: MTypes.Proto<Type<never>> = {
 
 /** Constructor */
 const _make = <V>(params: MTypes.Data<Type<V>>): Type<V> =>
-  MTypes.objectFromDataAndProto(proto, params);
+  MTypes.objectFromDataAndProto(_proto, params);
 
 /**
  * Constructor from the top value to stringify

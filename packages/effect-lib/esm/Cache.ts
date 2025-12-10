@@ -7,18 +7,18 @@
  * Atention: a cache is a mutable object.
  */
 import {
-  Array,
-  Equal,
-  Inspectable,
-  MutableHashMap,
-  MutableList,
-  Option,
-  Pipeable,
-  Predicate,
-  Tuple,
-  Types,
-  flow,
-  pipe,
+    Array,
+    Equal,
+    Inspectable,
+    MutableHashMap,
+    MutableList,
+    Option,
+    Pipeable,
+    Predicate,
+    Tuple,
+    Types,
+    flow,
+    pipe,
 } from 'effect';
 import * as MInspectable from './Inspectable.js';
 import * as MNumber from './Number.js';
@@ -67,7 +67,7 @@ namespace ValueContainer {
   export const has = (u: unknown): u is Type<unknown> => Predicate.hasProperty(u, _TypeId);
 
   /** Prototype */
-  const proto: MTypes.Proto<Type<never>> = {
+  const _proto: MTypes.Proto<Type<never>> = {
     [_TypeId]: {
       _A: MTypes.covariantValue,
     },
@@ -81,7 +81,7 @@ namespace ValueContainer {
    * @category Constructors
    */
   export const make = <A>(params: MTypes.Data<Type<A>>): Type<A> =>
-    MTypes.objectFromDataAndProto(proto, params);
+    MTypes.objectFromDataAndProto(_proto, params);
 }
 
 /**
@@ -155,7 +155,7 @@ export const has = (u: unknown): u is Type<unknown, unknown> => Predicate.hasPro
 
 /** Prototype */
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-const proto: MTypes.Proto<Type<any, any>> = {
+const _proto: MTypes.Proto<Type<any, any>> = {
   [_TypeId]: {
     _A: MTypes.invariantValue,
     _B: MTypes.invariantValue,
@@ -166,7 +166,7 @@ const proto: MTypes.Proto<Type<any, any>> = {
 
 /** Constructor */
 const _make = <A, B>(params: MTypes.Data<Type<A, B>>): Type<A, B> =>
-  MTypes.objectFromDataAndProto(proto, params);
+  MTypes.objectFromDataAndProto(_proto, params);
 
 /**
  * Creates a new cache. The lookup function is used to populate the cache. If the capacity is

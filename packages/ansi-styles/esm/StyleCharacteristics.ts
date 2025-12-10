@@ -10,27 +10,27 @@
  */
 
 import {
-  MFunction,
-  MInspectable,
-  MPipeable,
-  MString,
-  MStruct,
-  MTypes,
+    MFunction,
+    MInspectable,
+    MPipeable,
+    MString,
+    MStruct,
+    MTypes,
 } from '@parischap/effect-lib';
 import {
-  Array,
-  Boolean,
-  Equal,
-  Equivalence,
-  flow,
-  Function,
-  Hash,
-  Number,
-  Option,
-  pipe,
-  Pipeable,
-  Predicate,
-  Struct,
+    Array,
+    Boolean,
+    Equal,
+    Equivalence,
+    flow,
+    Function,
+    Hash,
+    Number,
+    Option,
+    pipe,
+    Pipeable,
+    Predicate,
+    Struct,
 } from 'effect';
 import * as ASAnsiString from './AnsiString.js';
 import * as ASColor from './Color.js';
@@ -335,7 +335,7 @@ export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
   && ColorOption.equivalence(self.bgColor, that.bgColor);
 
 const _TypeIdHash = Hash.hash(_TypeId);
-const proto: MTypes.Proto<Type> = {
+const _proto: MTypes.Proto<Type> = {
   [_TypeId]: _TypeId,
   [Equal.symbol](this: Type, that: unknown): boolean {
     return has(that) && equivalence(this, that);
@@ -366,7 +366,7 @@ const proto: MTypes.Proto<Type> = {
 };
 
 /** Constructor */
-const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
+const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
 
 /**
  * Returns the `boldState` property of `self`

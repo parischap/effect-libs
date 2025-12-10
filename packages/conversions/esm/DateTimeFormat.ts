@@ -5,26 +5,26 @@
  */
 
 import {
-  MInputError,
-  MInspectable,
-  MMatch,
-  MPipeable,
-  MString,
-  MTypes,
+    MInputError,
+    MInspectable,
+    MMatch,
+    MPipeable,
+    MString,
+    MTypes,
 } from '@parischap/effect-lib';
 import {
-  Array,
-  Either,
-  flow,
-  Function,
-  HashMap,
-  Option,
-  pipe,
-  Pipeable,
-  Predicate,
-  Record,
-  Struct,
-  Tuple,
+    Array,
+    Either,
+    flow,
+    Function,
+    HashMap,
+    Option,
+    pipe,
+    Pipeable,
+    Predicate,
+    Record,
+    Struct,
+    Tuple,
 } from 'effect';
 import * as CVDateTime from './DateTime.js';
 import * as CVDateTimeFormatContext from './DateTimeFormatContext.js';
@@ -103,7 +103,7 @@ export namespace TemplatePart {
     export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
 
     /** Prototype */
-    const proto: MTypes.Proto<Type> = {
+    const _proto: MTypes.Proto<Type> = {
       [_TypeId]: _TypeId,
       [MInspectable.IdSymbol](this: Type) {
         return this.name;
@@ -112,7 +112,7 @@ export namespace TemplatePart {
       ...MPipeable.BaseProto,
     };
 
-    const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
+    const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
 
     /**
      * Placeholder constructor
@@ -161,7 +161,7 @@ export namespace TemplatePart {
     export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
 
     /** Prototype */
-    const proto: MTypes.Proto<Type> = {
+    const _proto: MTypes.Proto<Type> = {
       [_TypeId]: _TypeId,
       [MInspectable.IdSymbol](this: Type) {
         return this.value;
@@ -170,7 +170,7 @@ export namespace TemplatePart {
       ...MPipeable.BaseProto,
     };
 
-    const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
+    const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
 
     /**
      * Placeholder constructor
@@ -307,7 +307,7 @@ export interface Type extends MInspectable.Type, Pipeable.Pipeable {
 export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
 
 /** Prototype */
-const proto: MTypes.Proto<Type> = {
+const _proto: MTypes.Proto<Type> = {
   [_TypeId]: _TypeId,
   [MInspectable.IdSymbol](this: Type) {
     return pipe(
@@ -322,7 +322,7 @@ const proto: MTypes.Proto<Type> = {
   ...MPipeable.BaseProto,
 };
 
-const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
+const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
 
 /**
  * Builds a DateTimeFormat from a Context `context` and an array of TemplatePart's `templateParts`

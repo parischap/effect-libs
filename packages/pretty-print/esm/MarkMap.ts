@@ -63,7 +63,7 @@ export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.i
 
 /** Prototype */
 const _TypeIdHash = Hash.hash(_TypeId);
-const proto: MTypes.Proto<Type> = {
+const _proto: MTypes.Proto<Type> = {
   [_TypeId]: _TypeId,
   [Equal.symbol](this: Type, that: unknown): boolean {
     return has(that) && equivalence(this, that);
@@ -84,7 +84,7 @@ const proto: MTypes.Proto<Type> = {
  * @category Constructors
  */
 export const make = (params: MTypes.Data<Type>): Type =>
-  MTypes.objectFromDataAndProto(proto, params);
+  MTypes.objectFromDataAndProto(_proto, params);
 
 /**
  * Returns the `id` property of `self`

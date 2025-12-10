@@ -5,26 +5,26 @@
  */
 
 import {
-  MArray,
-  MInputError,
-  MInspectable,
-  MPipeable,
-  MPredicate,
-  MString,
-  MTypes,
+    MArray,
+    MInputError,
+    MInspectable,
+    MPipeable,
+    MPredicate,
+    MString,
+    MTypes,
 } from '@parischap/effect-lib';
 import {
-  Array,
-  Either,
-  flow,
-  HashMap,
-  Number,
-  Option,
-  pipe,
-  Pipeable,
-  Predicate,
-  Struct,
-  Tuple,
+    Array,
+    Either,
+    flow,
+    HashMap,
+    Number,
+    Option,
+    pipe,
+    Pipeable,
+    Predicate,
+    Struct,
+    Tuple,
 } from 'effect';
 import * as CVDateTime from './DateTime.js';
 import * as CVNumberBase10Format from './NumberBase10Format.js';
@@ -186,7 +186,7 @@ export interface Type extends MInspectable.Type, Pipeable.Pipeable {
 export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
 
 /** Prototype */
-const proto: MTypes.Proto<Type> = {
+const _proto: MTypes.Proto<Type> = {
   [_TypeId]: _TypeId,
   [MInspectable.IdSymbol](this: Type) {
     return this.name;
@@ -195,7 +195,7 @@ const proto: MTypes.Proto<Type> = {
   ...MPipeable.BaseProto,
 };
 
-const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(proto, params);
+const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
 
 /**
  * Constructs a `CVDateTimeFormatContext` from translations provided as strings
