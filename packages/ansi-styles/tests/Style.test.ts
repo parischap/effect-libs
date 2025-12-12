@@ -1,5 +1,5 @@
 import { ASStyle, ASStyleCharacteristics, ASText } from '@parischap/ansi-styles';
-import { TEUtils } from '@parischap/test-utils';
+import * as TestUtils from '@parischap/configs/TestUtils';
 import { pipe } from 'effect';
 import { describe, it } from 'vitest';
 
@@ -11,54 +11,54 @@ describe('ASStyle', () => {
 
   describe('Tag, prototype and guards', () => {
     it('moduleTag', () => {
-      TEUtils.assertSome(TEUtils.moduleTagFromTestFilePath(__filename), ASStyle.moduleTag);
+      TestUtils.assertSome(TestUtils.moduleTagFromTestFilePath(__filename), ASStyle.moduleTag);
     });
 
     describe('Equal.equals', () => {
       it('Matching', () => {
-        TEUtils.assertEquals(ASStyle.none, ASStyle.none);
-        TEUtils.assertEquals(boldRed1, boldRed2);
+        TestUtils.assertEquals(ASStyle.none, ASStyle.none);
+        TestUtils.assertEquals(boldRed1, boldRed2);
       });
 
       it('Non-matching', () => {
-        TEUtils.assertNotEquals(boldRed2, bold);
+        TestUtils.assertNotEquals(boldRed2, bold);
       });
     });
 
     describe('.toString()', () => {
       it('red before bold', () => {
-        TEUtils.strictEqual(boldRed1.toString(), 'BoldRed');
+        TestUtils.strictEqual(boldRed1.toString(), 'BoldRed');
       });
       it('bold before red', () => {
-        TEUtils.strictEqual(boldRed2.toString(), 'BoldRed');
+        TestUtils.strictEqual(boldRed2.toString(), 'BoldRed');
       });
       it('Other than color', () => {
-        TEUtils.strictEqual(ASStyle.struckThrough.toString(), 'StruckThrough');
+        TestUtils.strictEqual(ASStyle.struckThrough.toString(), 'StruckThrough');
       });
       it('Default foreground color', () => {
-        TEUtils.strictEqual(ASStyle.defaultColor.toString(), 'DefaultColor');
+        TestUtils.strictEqual(ASStyle.defaultColor.toString(), 'DefaultColor');
       });
       it('Default background color', () => {
-        TEUtils.strictEqual(ASStyle.Bg.defaultColor.toString(), 'InDefaultColor');
+        TestUtils.strictEqual(ASStyle.Bg.defaultColor.toString(), 'InDefaultColor');
       });
     });
 
     it('.pipe()', () => {
-      TEUtils.strictEqual(boldRed1.pipe(ASStyle.toId), 'BoldRed');
+      TestUtils.strictEqual(boldRed1.pipe(ASStyle.toId), 'BoldRed');
     });
 
     describe('has', () => {
       it('Matching', () => {
-        TEUtils.assertTrue(ASStyle.has(boldRed2));
+        TestUtils.assertTrue(ASStyle.has(boldRed2));
       });
       it('Non matching', () => {
-        TEUtils.assertFalse(ASStyle.has(new Date()));
+        TestUtils.assertFalse(ASStyle.has(new Date()));
       });
     });
   });
 
   it('mergeOver', () => {
-    TEUtils.strictEqual(
+    TestUtils.strictEqual(
       pipe(
         ASStyle.green,
         ASStyle.mergeOver(ASStyle.blinking),
@@ -69,7 +69,7 @@ describe('ASStyle', () => {
   });
 
   it('mergeUnder', () => {
-    TEUtils.strictEqual(
+    TestUtils.strictEqual(
       pipe(
         ASStyle.green,
         ASStyle.mergeUnder(ASStyle.blinking),
@@ -80,6 +80,6 @@ describe('ASStyle', () => {
   });
 
   it('Action', () => {
-    TEUtils.assertEquals(bold('foo'), ASText.fromStyleAndElems(ASStyleCharacteristics.bold)('foo'));
+    TestUtils.assertEquals(bold('foo'), ASText.fromStyleAndElems(ASStyleCharacteristics.bold)('foo'));
   });
 });

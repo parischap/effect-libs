@@ -1,4 +1,4 @@
 // ************** This file was automatically generated. DO NOT MODIFY ************************
 
-import prettierConfig from '@parischap/configs/PrettierConfig';
-export default prettierConfig
+import {config} from '@parischap/configs/PrettierConfig';
+export default config

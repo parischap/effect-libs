@@ -1,6 +1,6 @@
+import * as TestUtils from '@parischap/configs/TestUtils';
 import { MPredicate } from '@parischap/effect-lib';
 import { PPPropertyFilter, PPValue, PPValues } from '@parischap/pretty-print';
-import { TEUtils } from '@parischap/test-utils';
 import { Array, Function, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
@@ -28,12 +28,12 @@ describe('PropertyFilter', () => {
 
   describe('Tag, prototype and guards', () => {
     it('moduleTag', () => {
-      TEUtils.assertSome(TEUtils.moduleTagFromTestFilePath(__filename), PPPropertyFilter.moduleTag);
+      TestUtils.assertSome(TestUtils.moduleTagFromTestFilePath(__filename), PPPropertyFilter.moduleTag);
     });
 
     describe('Equal.equals', () => {
       it('Matching', () => {
-        TEUtils.assertEquals(
+        TestUtils.assertEquals(
           removeFunctions,
           PPPropertyFilter.make({
             id: 'RemoveFunctions',
@@ -43,63 +43,63 @@ describe('PropertyFilter', () => {
       });
 
       it('Non-matching', () => {
-        TEUtils.assertNotEquals(removeFunctions, PPPropertyFilter.removeNonFunctions);
+        TestUtils.assertNotEquals(removeFunctions, PPPropertyFilter.removeNonFunctions);
       });
     });
 
     it('.toString()', () => {
-      TEUtils.strictEqual(removeFunctions.toString(), `RemoveFunctions`);
+      TestUtils.strictEqual(removeFunctions.toString(), `RemoveFunctions`);
     });
 
     it('.pipe()', () => {
-      TEUtils.strictEqual(removeFunctions.pipe(PPPropertyFilter.id), 'RemoveFunctions');
+      TestUtils.strictEqual(removeFunctions.pipe(PPPropertyFilter.id), 'RemoveFunctions');
     });
 
     describe('has', () => {
       it('Matching', () => {
-        TEUtils.assertTrue(PPPropertyFilter.has(removeFunctions));
+        TestUtils.assertTrue(PPPropertyFilter.has(removeFunctions));
       });
       it('Non matching', () => {
-        TEUtils.assertFalse(PPPropertyFilter.has(new Date()));
+        TestUtils.assertFalse(PPPropertyFilter.has(new Date()));
       });
     });
   });
 
   it('removeNonFunctions', () => {
-    TEUtils.deepStrictEqual(pipe(values, PPPropertyFilter.removeNonFunctions), Array.of(value2));
+    TestUtils.deepStrictEqual(pipe(values, PPPropertyFilter.removeNonFunctions), Array.of(value2));
   });
 
   it('removeFunctions', () => {
-    TEUtils.deepStrictEqual(
+    TestUtils.deepStrictEqual(
       pipe(values, PPPropertyFilter.removeFunctions),
       Array.make(value1, value3, value4),
     );
   });
 
   it('removeNonEnumerables', () => {
-    TEUtils.deepStrictEqual(pipe(values, PPPropertyFilter.removeNonEnumerables), Array.of(value4));
+    TestUtils.deepStrictEqual(pipe(values, PPPropertyFilter.removeNonEnumerables), Array.of(value4));
   });
 
   it('removeEnumerables', () => {
-    TEUtils.deepStrictEqual(
+    TestUtils.deepStrictEqual(
       pipe(values, PPPropertyFilter.removeEnumerables),
       Array.make(value1, value2, value3),
     );
   });
 
   it('removeStringKeys', () => {
-    TEUtils.deepStrictEqual(pipe(values, PPPropertyFilter.removeStringKeys), Array.of(value4));
+    TestUtils.deepStrictEqual(pipe(values, PPPropertyFilter.removeStringKeys), Array.of(value4));
   });
 
   it('removeSymbolicKeys', () => {
-    TEUtils.deepStrictEqual(
+    TestUtils.deepStrictEqual(
       pipe(values, PPPropertyFilter.removeSymbolicKeys),
       Array.make(value1, value2, value3),
     );
   });
 
   it('removeNotFulfillingKeyPredicateMaker', () => {
-    TEUtils.deepStrictEqual(
+    TestUtils.deepStrictEqual(
       pipe(
         values,
         PPPropertyFilter.removeNotFulfillingKeyPredicateMaker({

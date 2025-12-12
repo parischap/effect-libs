@@ -1,6 +1,6 @@
 /* eslint-disable functional/no-expression-statements */
+import * as TestUtils from '@parischap/configs/TestUtils';
 import { MMatch, MString, MTree, MTuple, MTypes } from '@parischap/effect-lib';
-import { TEUtils } from '@parischap/test-utils';
 import { Array, Either, flow, Function, Option, pipe, Record } from 'effect';
 import { describe, it } from 'vitest';
 
@@ -66,34 +66,34 @@ describe('MTree', () => {
 
   describe('Tag, prototype and guards', () => {
     it('moduleTag', () => {
-      TEUtils.assertSome(TEUtils.moduleTagFromTestFilePath(__filename), MTree.moduleTag);
+      TestUtils.assertSome(TestUtils.moduleTagFromTestFilePath(__filename), MTree.moduleTag);
     });
 
     describe('Equal.equals', () => {
       it('Matching', () => {
-        TEUtils.assertEquals(testTree1, testTree2);
+        TestUtils.assertEquals(testTree1, testTree2);
       });
       it('Non matching', () => {
-        TEUtils.assertNotEquals(testTree1, testTree3);
+        TestUtils.assertNotEquals(testTree1, testTree3);
       });
     });
 
     it('pipe', () => {
-      TEUtils.assertTrue(testTree1.pipe(MTypes.isNonPrimitive));
+      TestUtils.assertTrue(testTree1.pipe(MTypes.isNonPrimitive));
     });
 
     describe('has', () => {
       it('Matching', () => {
-        TEUtils.assertTrue(testTree1.pipe(MTree.has));
+        TestUtils.assertTrue(testTree1.pipe(MTree.has));
       });
       it('Non matching', () => {
-        TEUtils.assertFalse(MTree.has(new Date()));
+        TestUtils.assertFalse(MTree.has(new Date()));
       });
     });
   });
 
   it('unfold and .toString()', () => {
-    TEUtils.strictEqual(
+    TestUtils.strictEqual(
       testTree1.toString(),
       `{
   "_id": "@parischap/effect-lib/Tree/",
@@ -197,7 +197,7 @@ describe('MTree', () => {
   });
 
   it('unfoldAndFold', () => {
-    TEUtils.strictEqual(
+    TestUtils.strictEqual(
       pipe(
         nonCyclicalObject1,
         MTree.unfoldAndFold({
@@ -212,21 +212,21 @@ describe('MTree', () => {
 
   describe('fold', () => {
     it('Non-cyclical value 1', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(testTree1, MTree.fold({ fNonLeaf: foldNonLeaf, fLeaf: Function.identity })),
         foldedTestTree1,
       );
     });
 
     it('Non-cyclical value 2', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(testTree3, MTree.fold({ fNonLeaf: foldNonLeaf, fLeaf: Function.identity })),
         '{ [{ { s1, s2 }, s3 }, [s4]], [{ { [s5] }, s6 }, s7, { { s1, s2 }, s3 }] }',
       );
     });
 
     it('Cyclical value', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(testTree4, MTree.fold({ fNonLeaf: foldNonLeaf, fLeaf: Function.identity })),
         '{ [{ { s1, s2 }, s3 }, [s4]], [{ { [s5, Cyclical Array] }, s6 }, s7] }',
       );
@@ -234,7 +234,7 @@ describe('MTree', () => {
   });
 
   it('mapAccum', () => {
-    TEUtils.strictEqual(
+    TestUtils.strictEqual(
       pipe(
         testTree1,
         MTree.mapAccum({
@@ -249,7 +249,7 @@ describe('MTree', () => {
   });
 
   it('map', () => {
-    TEUtils.strictEqual(
+    TestUtils.strictEqual(
       pipe(
         testTree1,
         MTree.map({
@@ -263,7 +263,7 @@ describe('MTree', () => {
   });
 
   it('reduce', () => {
-    TEUtils.strictEqual(
+    TestUtils.strictEqual(
       pipe(
         testTree1,
         MTree.reduce({
@@ -277,7 +277,7 @@ describe('MTree', () => {
   });
 
   it('reduceRight', () => {
-    TEUtils.strictEqual(
+    TestUtils.strictEqual(
       pipe(
         testTree1,
         MTree.reduceRight({
@@ -291,7 +291,7 @@ describe('MTree', () => {
   });
 
   it('extendDown', () => {
-    TEUtils.strictEqual(
+    TestUtils.strictEqual(
       pipe(
         testTree1,
         MTree.extendDown({
@@ -305,7 +305,7 @@ describe('MTree', () => {
   });
 
   it('extendUp', () => {
-    TEUtils.strictEqual(
+    TestUtils.strictEqual(
       pipe(
         testTree1,
         MTree.extendUp({

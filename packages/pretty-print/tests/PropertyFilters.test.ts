@@ -1,5 +1,5 @@
+import * as TestUtils from '@parischap/configs/TestUtils';
 import { PPPropertyFilter, PPPropertyFilters, PPValue, PPValues } from '@parischap/pretty-print';
-import { TEUtils } from '@parischap/test-utils';
 import { Array, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
@@ -29,6 +29,6 @@ describe('PropertyFilters', () => {
       PPPropertyFilter.removeNonEnumerables,
     );
     const removeFunctionsAndNonEnumerables = PPPropertyFilters.toSyntheticPropertyFilter(filters);
-    TEUtils.deepStrictEqual(pipe(values, removeFunctionsAndNonEnumerables), Array.of(value4));
+    TestUtils.deepStrictEqual(pipe(values, removeFunctionsAndNonEnumerables), Array.of(value4));
   });
 });

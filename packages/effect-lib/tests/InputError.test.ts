@@ -1,68 +1,68 @@
+import * as TestUtils from '@parischap/configs/TestUtils';
 import { MInputError } from '@parischap/effect-lib';
-import { TEUtils } from '@parischap/test-utils';
 import { describe, it } from 'vitest';
 
 describe('MInputError', () => {
   it('moduleTag', () => {
-    TEUtils.assertSome(TEUtils.moduleTagFromTestFilePath(__filename), MInputError.moduleTag);
+    TestUtils.assertSome(TestUtils.moduleTagFromTestFilePath(__filename), MInputError.moduleTag);
   });
 
   describe('assertValue', () => {
     it('Not passing number without name', () => {
-      TEUtils.assertLeftMessage(
+      TestUtils.assertLeftMessage(
         MInputError.assertValue({ expected: 5 })(10),
         'Expected value to be: 5. Actual: 10',
       );
     });
 
     it('Not passing without name', () => {
-      TEUtils.assertLeftMessage(
+      TestUtils.assertLeftMessage(
         MInputError.assertValue({ expected: 'foo' })('bar'),
         "Expected value to be: 'foo'. Actual: 'bar'",
       );
     });
 
     it('Not passing with name', () => {
-      TEUtils.assertLeftMessage(
+      TestUtils.assertLeftMessage(
         MInputError.assertValue({ expected: 5, name: "'age'" })(10),
         "Expected 'age' to be: 5. Actual: 10",
       );
     });
 
     it('Passing', () => {
-      TEUtils.assertRight(MInputError.assertValue({ expected: 5 })(5), 5);
+      TestUtils.assertRight(MInputError.assertValue({ expected: 5 })(5), 5);
     });
   });
 
   describe('assertLength', () => {
     it('Not passing', () => {
-      TEUtils.assertLeftMessage(
+      TestUtils.assertLeftMessage(
         MInputError.assertLength({ expected: 5, name: "'name'" })('foo'),
         "Expected length of 'name' to be: 5. Actual: 3",
       );
     });
 
     it('Passing', () => {
-      TEUtils.assertRight(MInputError.assertLength({ expected: 3 })('foo'), 'foo');
+      TestUtils.assertRight(MInputError.assertLength({ expected: 3 })('foo'), 'foo');
     });
   });
 
   describe('assertMaxLength', () => {
     it('Not passing', () => {
-      TEUtils.assertLeftMessage(
+      TestUtils.assertLeftMessage(
         MInputError.assertMaxLength({ expected: 2, name: "'name'" })('foo'),
         "Expected length of 'name' to be at most(included): 2. Actual: 3",
       );
     });
 
     it('Passing', () => {
-      TEUtils.assertRight(MInputError.assertMaxLength({ expected: 3 })('foo'), 'foo');
+      TestUtils.assertRight(MInputError.assertMaxLength({ expected: 3 })('foo'), 'foo');
     });
   });
 
   describe('assertInRange', () => {
     it('Not passing', () => {
-      TEUtils.assertLeftMessage(
+      TestUtils.assertLeftMessage(
         MInputError.assertInRange({
           min: 3,
           max: 5,
@@ -73,7 +73,7 @@ describe('MInputError', () => {
         })(3),
         "Expected 'age' to be between 4 (excluded) and 6 (excluded). Actual: 4",
       );
-      TEUtils.assertLeftMessage(
+      TestUtils.assertLeftMessage(
         MInputError.assertInRange({
           min: 3,
           max: 5,
@@ -84,7 +84,7 @@ describe('MInputError', () => {
         })(2),
         "Expected 'age' to be between 3 (included) and 5 (excluded). Actual: 2",
       );
-      TEUtils.assertLeftMessage(
+      TestUtils.assertLeftMessage(
         MInputError.assertInRange({
           min: 3,
           max: 5,
@@ -95,7 +95,7 @@ describe('MInputError', () => {
         })(5),
         "Expected 'age' to be between 3 (excluded) and 5 (excluded). Actual: 5",
       );
-      TEUtils.assertLeftMessage(
+      TestUtils.assertLeftMessage(
         MInputError.assertInRange({
           min: 3,
           max: 5,
@@ -109,7 +109,7 @@ describe('MInputError', () => {
     });
 
     it('Passing', () => {
-      TEUtils.assertRight(
+      TestUtils.assertRight(
         MInputError.assertInRange({
           min: 3,
           max: 5,
@@ -120,7 +120,7 @@ describe('MInputError', () => {
         })(4),
         4,
       );
-      TEUtils.assertRight(
+      TestUtils.assertRight(
         MInputError.assertInRange({
           min: 3,
           max: 5,
@@ -131,7 +131,7 @@ describe('MInputError', () => {
         })(3),
         3,
       );
-      TEUtils.assertRight(
+      TestUtils.assertRight(
         MInputError.assertInRange({
           min: 3,
           max: 5,
@@ -147,14 +147,14 @@ describe('MInputError', () => {
 
   describe('assertStartsWith', () => {
     it('Not passing', () => {
-      TEUtils.assertLeftMessage(
+      TestUtils.assertLeftMessage(
         MInputError.assertStartsWith({ startString: 'foo', name: "'text'" })('baz'),
         "Expected 'text' to start with 'foo'. Actual: 'baz'",
       );
     });
 
     it('Passing', () => {
-      TEUtils.assertRight(
+      TestUtils.assertRight(
         MInputError.assertStartsWith({ startString: 'foo' })('foo and baz'),
         'foo and baz',
       );
@@ -169,14 +169,14 @@ describe('MInputError', () => {
     });
 
     it('Not passing', () => {
-      TEUtils.assertLeftMessage(
+      TestUtils.assertLeftMessage(
         assertContainsOneDigit('foo'),
         "Expected 'text' to be a string with a digit. Actual: 'foo'",
       );
     });
 
     it('Passing', () => {
-      TEUtils.assertRight(assertContainsOneDigit('fo4o'), 'fo4o');
+      TestUtils.assertRight(assertContainsOneDigit('fo4o'), 'fo4o');
     });
   });
 
@@ -188,27 +188,27 @@ describe('MInputError', () => {
     });
 
     it('Not passing', () => {
-      TEUtils.assertLeftMessage(
+      TestUtils.assertLeftMessage(
         matchOneDigit('foo'),
         "Expected 'text' to be a string with a digit. Actual: 'foo'",
       );
     });
 
     it('Passing', () => {
-      TEUtils.assertRight(matchOneDigit('fo4o'), '4');
+      TestUtils.assertRight(matchOneDigit('fo4o'), '4');
     });
   });
 
   describe('assertEmpty', () => {
     it('Not passing', () => {
-      TEUtils.assertLeftMessage(
+      TestUtils.assertLeftMessage(
         MInputError.assertEmpty({ name: "'text'" })('baz'),
         "Expected 'text' to be empty. Actual: 'baz'",
       );
     });
 
     it('Passing', () => {
-      TEUtils.assertRight(MInputError.assertEmpty()(''), '');
+      TestUtils.assertRight(MInputError.assertEmpty()(''), '');
     });
   });
 });

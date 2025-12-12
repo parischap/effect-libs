@@ -1,14 +1,14 @@
+import * as TestUtils from '@parischap/configs/TestUtils';
 import { CVBigInt, CVInteger, CVPositiveInteger, CVReal } from '@parischap/conversions';
-import { TEUtils } from '@parischap/test-utils';
 import { describe, it } from 'vitest';
 
 describe('CVBigInt', () => {
   it('From Integer', () => {
-    TEUtils.deepStrictEqual(CVBigInt.fromInteger(CVInteger.unsafeFromNumber(-154)), -154n);
+    TestUtils.deepStrictEqual(CVBigInt.fromInteger(CVInteger.unsafeFromNumber(-154)), -154n);
   });
 
   it('From PositiveInteger', () => {
-    TEUtils.deepStrictEqual(CVBigInt.fromInteger(CVPositiveInteger.unsafeFromNumber(154)), 154n);
+    TestUtils.deepStrictEqual(CVBigInt.fromInteger(CVPositiveInteger.unsafeFromNumber(154)), 154n);
   });
 
   describe('Conversions from Real', () => {
@@ -18,28 +18,28 @@ describe('CVBigInt', () => {
 
     describe('fromRealOption', () => {
       it('Not passing', () => {
-        TEUtils.assertNone(CVBigInt.fromRealOption(notPassing));
+        TestUtils.assertNone(CVBigInt.fromRealOption(notPassing));
       });
       it('Passing', () => {
-        TEUtils.assertSome(CVBigInt.fromRealOption(passing), bigint);
+        TestUtils.assertSome(CVBigInt.fromRealOption(passing), bigint);
       });
     });
 
     describe('fromReal', () => {
       it('Not passing', () => {
-        TEUtils.assertLeft(CVBigInt.fromReal(notPassing));
+        TestUtils.assertLeft(CVBigInt.fromReal(notPassing));
       });
       it('Passing', () => {
-        TEUtils.assertRight(CVBigInt.fromReal(passing), bigint);
+        TestUtils.assertRight(CVBigInt.fromReal(passing), bigint);
       });
     });
 
     describe('fromRealOrThrow', () => {
       it('Not passing', () => {
-        TEUtils.throws(() => CVBigInt.fromRealOrThrow(notPassing));
+        TestUtils.throws(() => CVBigInt.fromRealOrThrow(notPassing));
       });
       it('Passing', () => {
-        TEUtils.strictEqual(CVBigInt.fromRealOrThrow(passing), bigint);
+        TestUtils.strictEqual(CVBigInt.fromRealOrThrow(passing), bigint);
       });
     });
   });

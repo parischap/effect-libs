@@ -1,4 +1,4 @@
 // ************** This file was automatically generated. DO NOT MODIFY ************************
 
-import eslintConfig from '@parischap/configs/EslintConfig';
-export default eslintConfig.plainEslintConfig({tsconfigRootDir:import.meta.dirname})
+import {plainEslintConfig} from '@parischap/configs/EslintConfig';
+export default plainEslintConfig({tsconfigRootDir:import.meta.dirname})

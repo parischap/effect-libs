@@ -1,13 +1,13 @@
 import { ASStyle } from '@parischap/ansi-styles';
+import * as TestUtils from '@parischap/configs/TestUtils';
 import {
-  PPByPasser,
-  PPMarkShowerConstructor,
-  PPOption,
-  PPStringifiedValue,
-  PPValue,
-  PPValueBasedStylerConstructor,
+    PPByPasser,
+    PPMarkShowerConstructor,
+    PPOption,
+    PPStringifiedValue,
+    PPValue,
+    PPValueBasedStylerConstructor,
 } from '@parischap/pretty-print';
-import { TEUtils } from '@parischap/test-utils';
 import { Array, Option, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
@@ -24,12 +24,12 @@ describe('ByPasser', () => {
 
   describe('Tag, prototype and guards', () => {
     it('moduleTag', () => {
-      TEUtils.assertSome(TEUtils.moduleTagFromTestFilePath(__filename), PPByPasser.moduleTag);
+      TestUtils.assertSome(TestUtils.moduleTagFromTestFilePath(__filename), PPByPasser.moduleTag);
     });
 
     describe('Equal.equals', () => {
       it('Matching', () => {
-        TEUtils.assertEquals(
+        TestUtils.assertEquals(
           empty,
           PPByPasser.make({
             id: 'Empty',
@@ -39,24 +39,24 @@ describe('ByPasser', () => {
       });
 
       it('Non-matching', () => {
-        TEUtils.assertNotEquals(empty, PPByPasser.functionToName);
+        TestUtils.assertNotEquals(empty, PPByPasser.functionToName);
       });
     });
 
     it('.toString()', () => {
-      TEUtils.strictEqual(empty.toString(), `Empty`);
+      TestUtils.strictEqual(empty.toString(), `Empty`);
     });
 
     it('.pipe()', () => {
-      TEUtils.strictEqual(empty.pipe(PPByPasser.id), 'Empty');
+      TestUtils.strictEqual(empty.pipe(PPByPasser.id), 'Empty');
     });
 
     describe('has', () => {
       it('Matching', () => {
-        TEUtils.assertTrue(PPByPasser.has(empty));
+        TestUtils.assertTrue(PPByPasser.has(empty));
       });
       it('Non matching', () => {
-        TEUtils.assertFalse(PPByPasser.has(new Date()));
+        TestUtils.assertFalse(PPByPasser.has(new Date()));
       });
     });
   });
@@ -67,36 +67,36 @@ describe('ByPasser', () => {
       function foo(): string {
         return 'foo';
       }
-      TEUtils.assertSome(
+      TestUtils.assertSome(
         pipe(foo, PPValue.fromTopValue, initializedFunctionToName),
         pipe('[Function: foo]', ASStyle.green, PPStringifiedValue.fromText),
       );
     });
 
     it('Applied to unnamed function', () => {
-      TEUtils.assertSome(
+      TestUtils.assertSome(
         pipe((n: number) => n + 1, PPValue.fromTopValue, initializedFunctionToName),
         pipe('[Function: anonymous]', ASStyle.green, PPStringifiedValue.fromText),
       );
     });
 
     it('Applied to non-function value', () => {
-      TEUtils.assertNone(pipe(3, PPValue.fromTopValue, initializedFunctionToName));
+      TestUtils.assertNone(pipe(3, PPValue.fromTopValue, initializedFunctionToName));
     });
   });
 
   describe('objectToString', () => {
     const initializedObjectToString = PPByPasser.objectToString.call(utilInspectLike, constructors);
     it('Applied to primitive', () => {
-      TEUtils.assertNone(pipe(3, PPValue.fromTopValue, initializedObjectToString));
+      TestUtils.assertNone(pipe(3, PPValue.fromTopValue, initializedObjectToString));
     });
 
     it('Applied to object without a .toString method', () => {
-      TEUtils.assertNone(pipe({ a: 3 }, PPValue.fromTopValue, initializedObjectToString));
+      TestUtils.assertNone(pipe({ a: 3 }, PPValue.fromTopValue, initializedObjectToString));
     });
 
     it('Applied to object with a .toString method', () => {
-      TEUtils.assertSome(
+      TestUtils.assertSome(
         pipe(
           { a: 3, toString: (): string => 'foo\nbar' },
           PPValue.fromTopValue,
@@ -107,11 +107,11 @@ describe('ByPasser', () => {
     });
 
     it('Applied to a date', () => {
-      TEUtils.assertSome(pipe(new Date(0), PPValue.fromTopValue, initializedObjectToString));
+      TestUtils.assertSome(pipe(new Date(0), PPValue.fromTopValue, initializedObjectToString));
     });
 
     it('Applied to an array', () => {
-      TEUtils.assertNone(pipe([1, 2], PPValue.fromTopValue, initializedObjectToString));
+      TestUtils.assertNone(pipe([1, 2], PPValue.fromTopValue, initializedObjectToString));
     });
   });
 });

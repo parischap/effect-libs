@@ -1,6 +1,6 @@
 import { ASText } from '@parischap/ansi-styles';
+import * as TestUtils from '@parischap/configs/TestUtils';
 import { PPStringifiedValue } from '@parischap/pretty-print';
-import { TEUtils } from '@parischap/test-utils';
 import { Array, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
@@ -12,7 +12,7 @@ describe('StringifiedValue', () => {
 
   describe('equivalence', () => {
     it('Matching', () => {
-      TEUtils.assertTrue(
+      TestUtils.assertTrue(
         PPStringifiedValue.equivalence(
           test1,
           Array.make(ASText.fromString('foo'), ASText.fromString('bar')),
@@ -21,12 +21,12 @@ describe('StringifiedValue', () => {
     });
 
     it('Non-matching', () => {
-      TEUtils.assertFalse(PPStringifiedValue.equivalence(test1, PPStringifiedValue.empty));
+      TestUtils.assertFalse(PPStringifiedValue.equivalence(test1, PPStringifiedValue.empty));
     });
   });
 
   it('toSingleLine', () => {
-    TEUtils.assertEquals(
+    TestUtils.assertEquals(
       PPStringifiedValue.toSingleLine(test1),
       Array.of(ASText.fromString('foobar')),
     );
@@ -34,29 +34,29 @@ describe('StringifiedValue', () => {
 
   describe('isEmpty', () => {
     it('Matching', () => {
-      TEUtils.assertTrue(pipe(PPStringifiedValue.isEmpty(PPStringifiedValue.empty)));
+      TestUtils.assertTrue(pipe(PPStringifiedValue.isEmpty(PPStringifiedValue.empty)));
     });
 
     it('Non-matching', () => {
-      TEUtils.assertFalse(PPStringifiedValue.isEmpty(test1));
+      TestUtils.assertFalse(PPStringifiedValue.isEmpty(test1));
     });
   });
 
   describe('length', () => {
     it('With empty StringifiedValue', () => {
-      TEUtils.strictEqual(PPStringifiedValue.toLength(PPStringifiedValue.empty), 0);
+      TestUtils.strictEqual(PPStringifiedValue.toLength(PPStringifiedValue.empty), 0);
     });
 
     it('With non-empty StringifiedValue', () => {
-      TEUtils.strictEqual(PPStringifiedValue.toLength(test1), 6);
+      TestUtils.strictEqual(PPStringifiedValue.toLength(test1), 6);
     });
   });
 
   it('toAnsiString', () => {
-    TEUtils.strictEqual(PPStringifiedValue.toAnsiString()(test1), 'foo\nbar');
+    TestUtils.strictEqual(PPStringifiedValue.toAnsiString()(test1), 'foo\nbar');
   });
 
   it('toUnstyledStrings', () => {
-    TEUtils.deepStrictEqual(PPStringifiedValue.toUnstyledStrings(test1), ['foo', 'bar']);
+    TestUtils.deepStrictEqual(PPStringifiedValue.toUnstyledStrings(test1), ['foo', 'bar']);
   });
 });

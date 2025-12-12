@@ -1,21 +1,21 @@
+import * as TestUtils from '@parischap/configs/TestUtils';
 import { MRecord, MTypes } from '@parischap/effect-lib';
-import { TEUtils } from '@parischap/test-utils';
 import { Option, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('MRecord', () => {
   describe('unsafeGet', () => {
     it('Not passing', () => {
-      TEUtils.doesNotThrow(() => pipe({ a: 1, b: true }, MRecord.unsafeGet('z')));
+      TestUtils.doesNotThrow(() => pipe({ a: 1, b: true }, MRecord.unsafeGet('z')));
     });
     it('Passing', () => {
-      TEUtils.strictEqual(pipe({ a: 1, b: true }, MRecord.unsafeGet('a')), 1);
+      TestUtils.strictEqual(pipe({ a: 1, b: true }, MRecord.unsafeGet('a')), 1);
     });
   });
 
   describe('tryZeroParamFunction', () => {
     it('Object with default prototype', () => {
-      TEUtils.assertNone(
+      TestUtils.assertNone(
         pipe(
           { a: 5 },
           MRecord.tryZeroParamFunction({
@@ -28,7 +28,7 @@ describe('MRecord', () => {
     });
 
     it('getDay on Date object', () => {
-      TEUtils.assertSome(
+      TestUtils.assertSome(
         pipe(
           new Date(0),
           MRecord.tryZeroParamFunction({
@@ -43,7 +43,7 @@ describe('MRecord', () => {
 
   describe('tryZeroParamStringFunction', () => {
     it('getDay on Date object', () => {
-      TEUtils.assertNone(
+      TestUtils.assertNone(
         pipe(
           new Date(0),
           MRecord.tryZeroParamStringFunction({
@@ -54,7 +54,7 @@ describe('MRecord', () => {
     });
 
     it('toString on Date object', () => {
-      TEUtils.assertSome(
+      TestUtils.assertSome(
         pipe(
           new Date(),
           MRecord.tryZeroParamStringFunction({

@@ -1,19 +1,19 @@
+import * as TestUtils from '@parischap/configs/TestUtils';
 import { MFunction } from '@parischap/effect-lib';
-import { TEUtils } from '@parischap/test-utils';
 import { Number, pipe, String } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('MFunction', () => {
   describe('fIfTrue', () => {
     it('Matching', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(1 as number, MFunction.fIfTrue({ condition: true, f: Number.increment })),
         2,
       );
     });
 
     it('Non-matching', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(1 as number, MFunction.fIfTrue({ condition: false, f: Number.increment })),
         1,
       );
@@ -21,34 +21,34 @@ describe('MFunction', () => {
   });
 
   it('flipDual', () => {
-    TEUtils.strictEqual(pipe(2, MFunction.flipDual(String.takeLeft)('foo')), 'fo');
+    TestUtils.strictEqual(pipe(2, MFunction.flipDual(String.takeLeft)('foo')), 'fo');
   });
 
   it('parameterNumber', () => {
-    TEUtils.strictEqual(
+    TestUtils.strictEqual(
       pipe((m: number, n: number) => m + n, MFunction.parameterNumber),
       2,
     );
   });
 
   it('name', () => {
-    TEUtils.strictEqual(pipe(Math.max, MFunction.name), 'max');
+    TestUtils.strictEqual(pipe(Math.max, MFunction.name), 'max');
   });
 
   it('once', () => {
     let a = 0;
     const complexFoo = () => a++;
     const memoized = MFunction.once(complexFoo);
-    TEUtils.strictEqual(memoized(), 0);
-    TEUtils.strictEqual(memoized(), 0);
+    TestUtils.strictEqual(memoized(), 0);
+    TestUtils.strictEqual(memoized(), 0);
   });
 
   it('applyAsMethod', () => {
-    TEUtils.strictEqual(pipe(Array.prototype.pop, MFunction.applyAsThis([1, 2])), 2);
+    TestUtils.strictEqual(pipe(Array.prototype.pop, MFunction.applyAsThis([1, 2])), 2);
   });
 
   it('execute', () => {
-    TEUtils.strictEqual(
+    TestUtils.strictEqual(
       pipe(() => 1, MFunction.execute),
       1,
     );
@@ -56,7 +56,7 @@ describe('MFunction', () => {
 
   it('clone', () => {
     const incCopy = MFunction.clone(Number.increment);
-    TEUtils.assertFalse(incCopy === Number.increment);
-    TEUtils.strictEqual(incCopy(1), 2);
+    TestUtils.assertFalse(incCopy === Number.increment);
+    TestUtils.strictEqual(incCopy(1), 2);
   });
 });

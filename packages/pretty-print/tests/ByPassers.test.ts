@@ -1,14 +1,14 @@
 import { ASStyle } from '@parischap/ansi-styles';
+import * as TestUtils from '@parischap/configs/TestUtils';
 import {
-  PPByPasser,
-  PPByPassers,
-  PPMarkShowerConstructor,
-  PPOption,
-  PPStringifiedValue,
-  PPValue,
-  PPValueBasedStylerConstructor,
+    PPByPasser,
+    PPByPassers,
+    PPMarkShowerConstructor,
+    PPOption,
+    PPStringifiedValue,
+    PPValue,
+    PPValueBasedStylerConstructor,
 } from '@parischap/pretty-print';
-import { TEUtils } from '@parischap/test-utils';
 import { Array, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
@@ -36,14 +36,14 @@ describe('ByPassers', () => {
       function foo(): string {
         return 'foo';
       }
-      TEUtils.assertSome(
+      TestUtils.assertSome(
         pipe(foo, PPValue.fromTopValue, initializedSyntheticByPasser),
         pipe('[Function: foo]', ASStyle.green, PPStringifiedValue.fromText),
       );
     });
 
     it('Applied to object with a .toString method', () => {
-      TEUtils.assertSome(
+      TestUtils.assertSome(
         pipe(
           { a: 3, toString: (): string => 'foo\nbar' },
           PPValue.fromTopValue,
@@ -54,7 +54,7 @@ describe('ByPassers', () => {
     });
 
     it('Applied to primitive', () => {
-      TEUtils.assertNone(pipe(3, PPValue.fromTopValue, initializedSyntheticByPasser));
+      TestUtils.assertNone(pipe(3, PPValue.fromTopValue, initializedSyntheticByPasser));
     });
   });
 });

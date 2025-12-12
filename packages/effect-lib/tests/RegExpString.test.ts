@@ -1,5 +1,5 @@
+import * as TestUtils from '@parischap/configs/TestUtils';
 import { MRegExpString, MString } from '@parischap/effect-lib';
-import { TEUtils } from '@parischap/test-utils';
 import { Function, pipe, Tuple } from 'effect';
 import { describe, it } from 'vitest';
 
@@ -13,14 +13,14 @@ describe('MRegExpString', () => {
       );
 
       it('Matching', () => {
-        TEUtils.assertTrue(regExp.test('1'));
-        TEUtils.assertTrue(regExp.test('18320'));
+        TestUtils.assertTrue(regExp.test('1'));
+        TestUtils.assertTrue(regExp.test('18320'));
       });
 
       it('Non-matching', () => {
-        TEUtils.assertFalse(regExp.test('0'));
-        TEUtils.assertFalse(regExp.test('18 320'));
-        TEUtils.assertFalse(regExp.test('018320'));
+        TestUtils.assertFalse(regExp.test('0'));
+        TestUtils.assertFalse(regExp.test('18 320'));
+        TestUtils.assertFalse(regExp.test('018320'));
       });
     });
 
@@ -32,19 +32,19 @@ describe('MRegExpString', () => {
       );
 
       it('Matching', () => {
-        TEUtils.assertTrue(regExp.test('1'));
-        TEUtils.assertTrue(regExp.test('999'));
-        TEUtils.assertTrue(regExp.test('18 320'));
+        TestUtils.assertTrue(regExp.test('1'));
+        TestUtils.assertTrue(regExp.test('999'));
+        TestUtils.assertTrue(regExp.test('18 320'));
       });
 
       it('Non-matching', () => {
-        TEUtils.assertFalse(regExp.test('0'));
-        TEUtils.assertFalse(regExp.test('18320'));
-        TEUtils.assertFalse(regExp.test('1 8320'));
-        TEUtils.assertFalse(regExp.test(' 18 320'));
-        TEUtils.assertFalse(regExp.test('18 320 '));
-        TEUtils.assertFalse(regExp.test('18  320'));
-        TEUtils.assertFalse(regExp.test('018 320'));
+        TestUtils.assertFalse(regExp.test('0'));
+        TestUtils.assertFalse(regExp.test('18320'));
+        TestUtils.assertFalse(regExp.test('1 8320'));
+        TestUtils.assertFalse(regExp.test(' 18 320'));
+        TestUtils.assertFalse(regExp.test('18 320 '));
+        TestUtils.assertFalse(regExp.test('18  320'));
+        TestUtils.assertFalse(regExp.test('018 320'));
       });
     });
   });
@@ -54,15 +54,15 @@ describe('MRegExpString', () => {
       const regExp = pipe(MRegExpString.unsignedBase10Int(''), MRegExpString.makeLine, RegExp);
 
       it('Matching', () => {
-        TEUtils.assertTrue(regExp.test('0'));
-        TEUtils.assertTrue(regExp.test('1'));
-        TEUtils.assertTrue(regExp.test('18320'));
+        TestUtils.assertTrue(regExp.test('0'));
+        TestUtils.assertTrue(regExp.test('1'));
+        TestUtils.assertTrue(regExp.test('18320'));
       });
 
       it('Non-matching', () => {
-        TEUtils.assertFalse(regExp.test('00'));
-        TEUtils.assertFalse(regExp.test('18 320'));
-        TEUtils.assertFalse(regExp.test('018320'));
+        TestUtils.assertFalse(regExp.test('00'));
+        TestUtils.assertFalse(regExp.test('18 320'));
+        TestUtils.assertFalse(regExp.test('018320'));
       });
     });
 
@@ -70,15 +70,15 @@ describe('MRegExpString', () => {
       const regExp = pipe(MRegExpString.unsignedBase10Int('.'), MRegExpString.makeLine, RegExp);
 
       it('Matching', () => {
-        TEUtils.assertTrue(regExp.test('0'));
-        TEUtils.assertTrue(regExp.test('1'));
-        TEUtils.assertTrue(regExp.test('999'));
-        TEUtils.assertTrue(regExp.test('18.320'));
+        TestUtils.assertTrue(regExp.test('0'));
+        TestUtils.assertTrue(regExp.test('1'));
+        TestUtils.assertTrue(regExp.test('999'));
+        TestUtils.assertTrue(regExp.test('18.320'));
       });
 
       it('Non-matching', () => {
-        TEUtils.assertFalse(regExp.test('18320'));
-        TEUtils.assertFalse(regExp.test('1.8320'));
+        TestUtils.assertFalse(regExp.test('18320'));
+        TestUtils.assertFalse(regExp.test('1.8320'));
       });
     });
   });
@@ -108,23 +108,23 @@ describe('MRegExpString', () => {
         fillChar: ' ',
       });
       it('Simple number', () => {
-        TEUtils.assertSome(getPartsWithNoSep('12'), Tuple.make('', '', '12', '', ''));
+        TestUtils.assertSome(getPartsWithNoSep('12'), Tuple.make('', '', '12', '', ''));
       });
 
       it('Simple number starting with fillChar', () => {
-        TEUtils.assertSome(getPartsWithNoSep('  12'), Tuple.make('', '  ', '12', '', ''));
+        TestUtils.assertSome(getPartsWithNoSep('  12'), Tuple.make('', '  ', '12', '', ''));
       });
 
       it('Complex number', () => {
-        TEUtils.assertSome(
+        TestUtils.assertSome(
           getPartsWithNoSep('+  18320.45e-2'),
           Tuple.make('+', '  ', '18320', '45', '-2'),
         );
       });
 
       it('Not passing', () => {
-        TEUtils.assertNone(getPartsWithNoSep(' +18320.45e-2'));
-        TEUtils.assertNone(getPartsWithNoSep('18A'));
+        TestUtils.assertNone(getPartsWithNoSep(' +18320.45e-2'));
+        TestUtils.assertNone(getPartsWithNoSep('18A'));
       });
     });
 
@@ -137,23 +137,23 @@ describe('MRegExpString', () => {
       });
 
       it('Simple number', () => {
-        TEUtils.assertSome(getPartsWithSep('12 430'), Tuple.make('', '', '12 430', '', ''));
+        TestUtils.assertSome(getPartsWithSep('12 430'), Tuple.make('', '', '12 430', '', ''));
       });
 
       it('Simple number starting with fillChar', () => {
-        TEUtils.assertSome(getPartsWithSep('  12 430'), Tuple.make('', '  ', '12 430', '', ''));
+        TestUtils.assertSome(getPartsWithSep('  12 430'), Tuple.make('', '  ', '12 430', '', ''));
       });
 
       it('Complex number', () => {
-        TEUtils.assertSome(
+        TestUtils.assertSome(
           getPartsWithSep('+  18 320.45^2'),
           Tuple.make('+', '  ', '18 320', '45', '2'),
         );
       });
 
       it('Not passing', () => {
-        TEUtils.assertNone(getPartsWithSep(' +18 320.45^2'));
-        TEUtils.assertNone(getPartsWithSep('18A'));
+        TestUtils.assertNone(getPartsWithSep(' +18 320.45^2'));
+        TestUtils.assertNone(getPartsWithSep('18A'));
       });
     });
 
@@ -166,21 +166,21 @@ describe('MRegExpString', () => {
       });
 
       it('Simple number', () => {
-        TEUtils.assertSome(getPartsWithNoFillChar('12'), Tuple.make('', '', '12', '', ''));
+        TestUtils.assertSome(getPartsWithNoFillChar('12'), Tuple.make('', '', '12', '', ''));
       });
 
       it('Complex number', () => {
-        TEUtils.assertSome(
+        TestUtils.assertSome(
           getPartsWithNoFillChar('+18 320.45e-2'),
           Tuple.make('+', '', '18 320', '45', '-2'),
         );
       });
 
       it('Not passing', () => {
-        TEUtils.assertNone(getPartsWithNoFillChar(' +18 320.45e-2'));
-        TEUtils.assertNone(getPartsWithNoFillChar('18A'));
-        TEUtils.assertNone(getPartsWithNoFillChar('  12'));
-        TEUtils.assertNone(getPartsWithNoFillChar('+  18 320.45e-2'));
+        TestUtils.assertNone(getPartsWithNoFillChar(' +18 320.45e-2'));
+        TestUtils.assertNone(getPartsWithNoFillChar('18A'));
+        TestUtils.assertNone(getPartsWithNoFillChar('  12'));
+        TestUtils.assertNone(getPartsWithNoFillChar('+  18 320.45e-2'));
       });
     });
   });

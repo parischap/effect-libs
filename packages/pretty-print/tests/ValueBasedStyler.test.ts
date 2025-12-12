@@ -1,6 +1,6 @@
 import { ASPalette, ASStyle } from '@parischap/ansi-styles';
+import * as TestUtils from '@parischap/configs/TestUtils';
 import { PPValue, PPValueBasedStyler } from '@parischap/pretty-print';
-import { TEUtils } from '@parischap/test-utils';
 import { describe, it } from 'vitest';
 
 describe('ValueBasedStyler', () => {
@@ -15,21 +15,21 @@ describe('ValueBasedStyler', () => {
   });
 
   it('makeDepthIndexed', () => {
-    TEUtils.assertEquals(
+    TestUtils.assertEquals(
       PPValueBasedStyler.makeDepthIndexed(palette)(context)('foo'),
       ASStyle.green('foo'),
     );
   });
 
   it('makeTypeIndexed', () => {
-    TEUtils.assertEquals(
+    TestUtils.assertEquals(
       PPValueBasedStyler.makeTypeIndexed(palette)(context)('foo'),
       ASStyle.red('foo'),
     );
   });
 
   it('makeKeyTypeIndexed', () => {
-    TEUtils.assertEquals(
+    TestUtils.assertEquals(
       PPValueBasedStyler.makeKeyTypeIndexed(palette)(context)('foo'),
       ASStyle.red('foo'),
     );

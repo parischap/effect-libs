@@ -1,6 +1,6 @@
 import { ASText } from '@parischap/ansi-styles';
+import * as TestUtils from '@parischap/configs/TestUtils';
 import { PPOption, PPValue, PPValues } from '@parischap/pretty-print';
-import { TEUtils } from '@parischap/test-utils';
 import { Array, flow, HashMap, pipe } from 'effect';
 import { inspect } from 'node:util';
 import { describe, it } from 'vitest';
@@ -18,7 +18,7 @@ describe('Values', () => {
       b: true,
     }) as unknown;
 
-    TEUtils.strictEqual(
+    TestUtils.strictEqual(
       pipe(
         PPValue.fromTopValue(topValue) as PPValue.NonPrimitive,
         PPValues.fromProperties(1),
@@ -70,7 +70,7 @@ describe('Values', () => {
   });
 
   it('fromValueIterable', () => {
-    TEUtils.strictEqual(
+    TestUtils.strictEqual(
       pipe(
         PPValue.fromTopValue([1, 'a']) as PPValue.NonPrimitive,
         PPValues.fromValueIterable,
@@ -108,7 +108,7 @@ describe('Values', () => {
 
   it('fromKeyValueIterable', () => {
     const stringifier: PPOption.Stringifier.Type = flow(inspect, ASText.fromString, Array.of);
-    TEUtils.strictEqual(
+    TestUtils.strictEqual(
       pipe(
         PPValue.fromTopValue(HashMap.make(['a', 1], ['b', 2])) as PPValue.NonPrimitive,
         PPValues.fromKeyValueIterable(stringifier),

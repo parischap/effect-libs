@@ -1,9 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "_version": "20.1.0",
-  "extends": [
-    "@tsconfig/strictest/tsconfig.json"
-  ],
+  "extends": ["@tsconfig/strictest/tsconfig.json"],
   "compilerOptions": {
     "moduleDetection": "force",
     "composite": true,
@@ -24,12 +22,8 @@
     "incremental": true,
     "removeComments": false,
     "stripInternal": true,
-    "lib": [
-      "ESNext"
-    ],
-    "types": [
-      "node"
-    ],
+    "lib": ["ESNext"],
+    "types": ["node"],
     "allowJs": true,
     "checkJs": true,
     "noEmit": true,

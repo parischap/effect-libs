@@ -1,14 +1,14 @@
 import { ASStyle, ASText } from '@parischap/ansi-styles';
+import * as TestUtils from '@parischap/configs/TestUtils';
 import {
-  PPMarkShowerConstructor,
-  PPNonPrimitiveFormatter,
-  PPOption,
-  PPPropertyFormatter,
-  PPStringifiedValue,
-  PPValue,
-  PPValueBasedStylerConstructor,
+    PPMarkShowerConstructor,
+    PPNonPrimitiveFormatter,
+    PPOption,
+    PPPropertyFormatter,
+    PPStringifiedValue,
+    PPValue,
+    PPValueBasedStylerConstructor,
 } from '@parischap/pretty-print';
-import { TEUtils } from '@parischap/test-utils';
 import { Array, Function, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
@@ -27,15 +27,15 @@ describe('PropertyFormatter', () => {
 
   describe('Tag, prototype and guards', () => {
     it('moduleTag', () => {
-      TEUtils.assertSome(
-        TEUtils.moduleTagFromTestFilePath(__filename),
+      TestUtils.assertSome(
+        TestUtils.moduleTagFromTestFilePath(__filename),
         PPPropertyFormatter.moduleTag,
       );
     });
 
     describe('Equal.equals', () => {
       it('Matching', () => {
-        TEUtils.assertEquals(
+        TestUtils.assertEquals(
           valueOnly,
           PPPropertyFormatter.make({
             id: 'ValueOnly',
@@ -45,31 +45,31 @@ describe('PropertyFormatter', () => {
       });
 
       it('Non-matching', () => {
-        TEUtils.assertNotEquals(valueOnly, PPPropertyFormatter.keyAndValue);
+        TestUtils.assertNotEquals(valueOnly, PPPropertyFormatter.keyAndValue);
       });
     });
 
     it('.toString()', () => {
-      TEUtils.strictEqual(valueOnly.toString(), `ValueOnly`);
+      TestUtils.strictEqual(valueOnly.toString(), `ValueOnly`);
     });
 
     it('.pipe()', () => {
-      TEUtils.strictEqual(valueOnly.pipe(PPPropertyFormatter.id), 'ValueOnly');
+      TestUtils.strictEqual(valueOnly.pipe(PPPropertyFormatter.id), 'ValueOnly');
     });
 
     describe('has', () => {
       it('Matching', () => {
-        TEUtils.assertTrue(PPPropertyFormatter.has(valueOnly));
+        TestUtils.assertTrue(PPPropertyFormatter.has(valueOnly));
       });
       it('Non matching', () => {
-        TEUtils.assertFalse(PPPropertyFormatter.has(new Date()));
+        TestUtils.assertFalse(PPPropertyFormatter.has(new Date()));
       });
     });
   });
 
   it('valueOnly', () => {
     const valueOnlyFormatter = PPPropertyFormatter.valueOnly.call(nonPrimitiveOption, constructors);
-    TEUtils.strictEqual(
+    TestUtils.strictEqual(
       pipe(
         valueOnlyFormatter({
           value: PPValue.fromNonPrimitiveValueAndKey({
@@ -100,7 +100,7 @@ describe('PropertyFormatter', () => {
       constructors,
     );
     it('With empty key', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(
           keyAndValueFormatter({ value: PPValue.fromTopValue(1), isLeaf: false }),
           Function.apply(stringified),
@@ -111,7 +111,7 @@ describe('PropertyFormatter', () => {
     });
 
     it('With one-line key at protoDepth=0', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(
           keyAndValueFormatter({
             value: PPValue.fromNonPrimitiveValueAndKey({
@@ -134,7 +134,7 @@ describe('PropertyFormatter', () => {
     });
 
     it('With one-line key at protoDepth=2', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(
           keyAndValueFormatter({
             value: PPValue.fromNonPrimitiveValueAndKey({
@@ -157,7 +157,7 @@ describe('PropertyFormatter', () => {
     });
 
     it('With multi-line key and multiline value', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(
           tabifiedKeyAndValueFormatter({
             value: PPValue.fromIterable({
@@ -198,7 +198,7 @@ describe('PropertyFormatter', () => {
 
     describe('With empty key', () => {
       it('isLeaf=false', () => {
-        TEUtils.deepStrictEqual(
+        TestUtils.deepStrictEqual(
           pipe(
             treeifyFormatter({ value: PPValue.fromTopValue(1), isLeaf: false }),
             Function.apply(stringified),
@@ -209,7 +209,7 @@ describe('PropertyFormatter', () => {
       });
 
       it('isLeaf=true', () => {
-        TEUtils.deepStrictEqual(
+        TestUtils.deepStrictEqual(
           pipe(
             treeifyFormatter({ value: PPValue.fromTopValue(1), isLeaf: true }),
             Function.apply(stringified),
@@ -222,7 +222,7 @@ describe('PropertyFormatter', () => {
 
     describe('With one-line key at protoDepth=0', () => {
       it('isLeaf=false', () => {
-        TEUtils.deepStrictEqual(
+        TestUtils.deepStrictEqual(
           pipe(
             treeifyFormatter({
               value: PPValue.fromNonPrimitiveValueAndKey({
@@ -241,7 +241,7 @@ describe('PropertyFormatter', () => {
       });
 
       it('isLeaf=true', () => {
-        TEUtils.deepStrictEqual(
+        TestUtils.deepStrictEqual(
           pipe(
             treeifyFormatter({
               value: PPValue.fromNonPrimitiveValueAndKey({

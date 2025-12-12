@@ -1,5 +1,5 @@
+import * as TestUtils from '@parischap/configs/TestUtils';
 import { MMatch, MPredicate, MTypes } from '@parischap/effect-lib';
-import { TEUtils } from '@parischap/test-utils';
 import { Array, flow, Function, Number, pipe, Struct } from 'effect';
 import { describe, it } from 'vitest';
 describe('MMatch', () => {
@@ -7,11 +7,11 @@ describe('MMatch', () => {
     const testMatch = MMatch.make(5);
 
     it('moduleTag', () => {
-      TEUtils.assertSome(TEUtils.moduleTagFromTestFilePath(__filename), MMatch.moduleTag);
+      TestUtils.assertSome(TestUtils.moduleTagFromTestFilePath(__filename), MMatch.moduleTag);
     });
 
     it('.toString()', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         testMatch.toString(),
         `{
   "_id": "@parischap/effect-lib/Match/",
@@ -25,22 +25,22 @@ describe('MMatch', () => {
     });
 
     it('.pipe()', () => {
-      TEUtils.strictEqual(testMatch.pipe(Struct.get('input')), 5);
+      TestUtils.strictEqual(testMatch.pipe(Struct.get('input')), 5);
     });
 
     describe('has', () => {
       it('Matching', () => {
-        TEUtils.assertTrue(MMatch.has(testMatch));
+        TestUtils.assertTrue(MMatch.has(testMatch));
       });
       it('Non matching', () => {
-        TEUtils.assertFalse(MMatch.has(new Date()));
+        TestUtils.assertFalse(MMatch.has(new Date()));
       });
     });
   });
 
   describe('Predicate matching', () => {
     it('when', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(
           5,
           MMatch.make,
@@ -53,7 +53,7 @@ describe('MMatch', () => {
     });
 
     it('whenIs', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(
           5,
           MMatch.make,
@@ -66,7 +66,7 @@ describe('MMatch', () => {
     });
 
     it('orElse', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(
           4,
           MMatch.make,
@@ -79,7 +79,7 @@ describe('MMatch', () => {
     });
 
     it('whenOr', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(
           5,
           MMatch.make,
@@ -96,7 +96,7 @@ describe('MMatch', () => {
     });
 
     it('whenAnd', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(
           5,
           MMatch.make,
@@ -109,7 +109,7 @@ describe('MMatch', () => {
     });
 
     it('tryFunction', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(
           [3, 4],
           MMatch.make,
@@ -133,7 +133,7 @@ describe('MMatch', () => {
     const isC = (value: TestEnum): value is TestEnum.C => value === TestEnum.C;
 
     it('when and exhaustive', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(
           TestEnum.B,
           MMatch.make,
@@ -147,7 +147,7 @@ describe('MMatch', () => {
     });
 
     it('whenIs and exhaustive passing', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(
           TestEnum.B,
           MMatch.make,
@@ -161,7 +161,7 @@ describe('MMatch', () => {
     });
 
     it('whenIs and exhaustive not passing', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(
           TestEnum.B,
           MMatch.make,
@@ -175,7 +175,7 @@ describe('MMatch', () => {
     });
 
     it('whenIsOr and exhaustive passing', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(
           TestEnum.B,
           MMatch.make,
@@ -192,7 +192,7 @@ describe('MMatch', () => {
     });
 
     it('whenIsOr and exhaustive not passing', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(
           TestEnum.B,
           MMatch.make,
@@ -209,7 +209,7 @@ describe('MMatch', () => {
     });
 
     it('orElse', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(
           TestEnum.B,
           MMatch.make,
@@ -222,7 +222,7 @@ describe('MMatch', () => {
     });
 
     it('whenOr and exhaustive passing', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(
           TestEnum.B,
           MMatch.make,
@@ -239,7 +239,7 @@ describe('MMatch', () => {
     });
 
     it('whenOr and exhaustive not passing', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(
           TestEnum.B,
           MMatch.make,
@@ -256,7 +256,7 @@ describe('MMatch', () => {
     });
 
     it('unsafeWhen', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(
           Array.of(0) as unknown,
           MMatch.make,

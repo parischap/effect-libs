@@ -3,6 +3,6 @@ import { describe, it } from 'vitest';
 
 describe('Dummy', () => {
   it('dummy', () => {
-    TEUtils.strictEqual(1, 1);
+    TestUtils.strictEqual(1, 1);
   });
 });

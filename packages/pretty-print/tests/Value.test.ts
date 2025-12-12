@@ -1,5 +1,5 @@
+import * as TestUtils from '@parischap/configs/TestUtils';
 import { PPValue } from '@parischap/pretty-print';
-import { TEUtils } from '@parischap/test-utils';
 import { describe, it } from 'vitest';
 
 describe('Value', () => {
@@ -9,21 +9,21 @@ describe('Value', () => {
 
   describe('Tag, prototype and guards', () => {
     it('moduleTag', () => {
-      TEUtils.assertSome(TEUtils.moduleTagFromTestFilePath(__filename), PPValue.moduleTag);
+      TestUtils.assertSome(TestUtils.moduleTagFromTestFilePath(__filename), PPValue.moduleTag);
     });
 
     describe('Equal.equals', () => {
       it('Matching', () => {
-        TEUtils.assertEquals(value1, value2);
+        TestUtils.assertEquals(value1, value2);
       });
 
       it('Non-matching', () => {
-        TEUtils.assertNotEquals(value1, value3);
+        TestUtils.assertNotEquals(value1, value3);
       });
     });
 
     it('.toString()', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         value1.toString(),
         `{
   "_id": "@parischap/pretty-print/Value/",
@@ -42,22 +42,22 @@ describe('Value', () => {
     });
 
     it('.pipe()', () => {
-      TEUtils.strictEqual(value1.pipe(PPValue.content), 3);
+      TestUtils.strictEqual(value1.pipe(PPValue.content), 3);
     });
 
     describe('has', () => {
       it('Matching', () => {
-        TEUtils.assertTrue(PPValue.has(value1));
+        TestUtils.assertTrue(PPValue.has(value1));
       });
       it('Non matching', () => {
-        TEUtils.assertFalse(PPValue.has(new Date()));
+        TestUtils.assertFalse(PPValue.has(new Date()));
       });
     });
   });
 
   describe('fromNonPrimitiveValueAndKey', () => {
     it('Enumerable property', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         PPValue.fromNonPrimitiveValueAndKey({
           nonPrimitiveContent: { a: 1, b: 'foo' },
           key: 'a',
@@ -81,7 +81,7 @@ describe('Value', () => {
     });
 
     it('Non-enumerable property', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         PPValue.fromNonPrimitiveValueAndKey({
           nonPrimitiveContent: [1, 2],
           key: 'length',
@@ -107,7 +107,7 @@ describe('Value', () => {
 });
 
 it('fromIterable', () => {
-  TEUtils.strictEqual(
+  TestUtils.strictEqual(
     PPValue.fromIterable({
       content: 'foo',
       stringKey: ['a : 1', 'b : 2'],

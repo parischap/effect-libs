@@ -1,38 +1,38 @@
+import * as TestUtils from '@parischap/configs/TestUtils';
 import { MPredicate } from '@parischap/effect-lib';
-import { TEUtils } from '@parischap/test-utils';
 import { pipe, Predicate } from 'effect';
 import { describe, it } from 'vitest';
 
 /** Source */
-TEUtils.assertTrueType(
-  TEUtils.areEqualTypes<MPredicate.Source<Predicate.Predicate<number>>, number>(),
+TestUtils.assertTrueType(
+  TestUtils.areEqualTypes<MPredicate.Source<Predicate.Predicate<number>>, number>(),
 );
-TEUtils.assertTrueType(
-  TEUtils.areEqualTypes<MPredicate.Source<Predicate.Refinement<number, 5>>, number>(),
+TestUtils.assertTrueType(
+  TestUtils.areEqualTypes<MPredicate.Source<Predicate.Refinement<number, 5>>, number>(),
 );
 
 /** Target */
-TEUtils.assertTrueType(
-  TEUtils.areEqualTypes<MPredicate.Target<Predicate.Predicate<number>>, number>(),
+TestUtils.assertTrueType(
+  TestUtils.areEqualTypes<MPredicate.Target<Predicate.Predicate<number>>, number>(),
 );
 
-TEUtils.assertTrueType(
-  TEUtils.areEqualTypes<MPredicate.Target<Predicate.Refinement<number, 5>>, 5>(),
+TestUtils.assertTrueType(
+  TestUtils.areEqualTypes<MPredicate.Target<Predicate.Refinement<number, 5>>, 5>(),
 );
 
 /** Coverage */
 
-TEUtils.assertTrueType(
-  TEUtils.areEqualTypes<MPredicate.Coverage<Predicate.Predicate<number>>, never>(),
+TestUtils.assertTrueType(
+  TestUtils.areEqualTypes<MPredicate.Coverage<Predicate.Predicate<number>>, never>(),
 );
 
-TEUtils.assertTrueType(
-  TEUtils.areEqualTypes<MPredicate.Target<Predicate.Refinement<number, 5>>, 5>(),
+TestUtils.assertTrueType(
+  TestUtils.areEqualTypes<MPredicate.Target<Predicate.Refinement<number, 5>>, 5>(),
 );
 
 /** PredicatesToSources */
-TEUtils.assertTrueType(
-  TEUtils.areEqualTypes<
+TestUtils.assertTrueType(
+  TestUtils.areEqualTypes<
     MPredicate.PredicatesToSources<
       readonly [Predicate.Predicate<number>, Predicate.Refinement<boolean, true>]
     >,
@@ -41,8 +41,8 @@ TEUtils.assertTrueType(
 );
 
 /** PredicatesToTargets */
-TEUtils.assertTrueType(
-  TEUtils.areEqualTypes<
+TestUtils.assertTrueType(
+  TestUtils.areEqualTypes<
     MPredicate.PredicatesToTargets<
       readonly [Predicate.Predicate<number>, Predicate.Refinement<boolean, true>]
     >,
@@ -51,8 +51,8 @@ TEUtils.assertTrueType(
 );
 
 /** PredicatesToCoverages */
-TEUtils.assertTrueType(
-  TEUtils.areEqualTypes<
+TestUtils.assertTrueType(
+  TestUtils.areEqualTypes<
     MPredicate.PredicatesToCoverages<
       readonly [Predicate.Predicate<number>, Predicate.Refinement<boolean, true>]
     >,
@@ -61,15 +61,15 @@ TEUtils.assertTrueType(
 );
 
 /** SourcesToPredicates */
-TEUtils.assertTrueType(
-  TEUtils.areEqualTypes<
+TestUtils.assertTrueType(
+  TestUtils.areEqualTypes<
     MPredicate.SourcesToPredicates<readonly [number, boolean]>,
     readonly [Predicate.Predicate<number>, Predicate.Predicate<boolean>]
   >(),
 );
 
-TEUtils.assertTrueType(
-  TEUtils.areEqualTypes<
+TestUtils.assertTrueType(
+  TestUtils.areEqualTypes<
     MPredicate.SourcesToPredicates<{ readonly a: number; readonly b: boolean }>,
     { readonly a: Predicate.Predicate<number>; readonly b: Predicate.Predicate<boolean> }
   >(),
@@ -79,11 +79,11 @@ describe('MPredicate', () => {
   describe('struct', () => {
     it('Type error expected', () => {
       /* @ts-expect-error c not present in object */
-      TEUtils.assertFalse(pipe({ a: 0, b: 1 }, MPredicate.struct({ c: Predicate.isNumber })));
+      TestUtils.assertFalse(pipe({ a: 0, b: 1 }, MPredicate.struct({ c: Predicate.isNumber })));
     });
 
     it('Passing', () => {
-      TEUtils.assertTrue(
+      TestUtils.assertTrue(
         pipe(
           { a: 0, b: 1, c: 2 },
           MPredicate.struct({ b: Predicate.isNumber, c: Predicate.isNumber }),
@@ -92,7 +92,7 @@ describe('MPredicate', () => {
     });
 
     it('Failing', () => {
-      TEUtils.assertFalse(
+      TestUtils.assertFalse(
         pipe(
           { a: 0, b: 1, c: 2 },
           MPredicate.struct({ b: Predicate.isNumber, c: Predicate.isString }),
@@ -103,11 +103,11 @@ describe('MPredicate', () => {
 
   describe('strictEquals', () => {
     it('Matching', () => {
-      TEUtils.assertTrue(pipe(5, MPredicate.strictEquals(5)));
+      TestUtils.assertTrue(pipe(5, MPredicate.strictEquals(5)));
     });
 
     it('Non matching', () => {
-      TEUtils.assertFalse(pipe(5, MPredicate.strictEquals(2)));
+      TestUtils.assertFalse(pipe(5, MPredicate.strictEquals(2)));
     });
   });
 });

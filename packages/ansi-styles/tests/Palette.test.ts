@@ -1,5 +1,5 @@
 import { ASPalette, ASStyle } from '@parischap/ansi-styles';
-import { TEUtils } from '@parischap/test-utils';
+import * as TestUtils from '@parischap/configs/TestUtils';
 import { pipe } from 'effect';
 import { describe, it } from 'vitest';
 
@@ -8,41 +8,41 @@ describe('ASPalette', () => {
 
   describe('Tag, prototype and guards', () => {
     it('moduleTag', () => {
-      TEUtils.assertSome(TEUtils.moduleTagFromTestFilePath(__filename), ASPalette.moduleTag);
+      TestUtils.assertSome(TestUtils.moduleTagFromTestFilePath(__filename), ASPalette.moduleTag);
     });
 
     describe('Equal.equals', () => {
       it('Matching', () => {
-        TEUtils.assertEquals(blackRed, ASPalette.make(ASStyle.black, ASStyle.red));
+        TestUtils.assertEquals(blackRed, ASPalette.make(ASStyle.black, ASStyle.red));
       });
 
       it('Non-matching', () => {
-        TEUtils.assertNotEquals(ASPalette.allOriginalColors, blackRed);
+        TestUtils.assertNotEquals(ASPalette.allOriginalColors, blackRed);
       });
     });
 
     describe('.toString()', () => {
       it('Black and red', () => {
-        TEUtils.strictEqual(blackRed.toString(), 'Black/RedPalette');
+        TestUtils.strictEqual(blackRed.toString(), 'Black/RedPalette');
       });
     });
 
     it('.pipe()', () => {
-      TEUtils.assertTrue(blackRed.pipe(ASPalette.has));
+      TestUtils.assertTrue(blackRed.pipe(ASPalette.has));
     });
 
     describe('has', () => {
       it('Matching', () => {
-        TEUtils.assertTrue(ASPalette.has(blackRed));
+        TestUtils.assertTrue(ASPalette.has(blackRed));
       });
       it('Non matching', () => {
-        TEUtils.assertFalse(ASPalette.has(new Date()));
+        TestUtils.assertFalse(ASPalette.has(new Date()));
       });
     });
   });
 
   it('append', () => {
-    TEUtils.assertEquals(
+    TestUtils.assertEquals(
       pipe(
         ASPalette.make(ASStyle.black, ASStyle.red, ASStyle.green, ASStyle.yellow),
         ASPalette.append(

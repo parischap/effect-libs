@@ -1,13 +1,13 @@
 import { ASStyle, ASText } from '@parischap/ansi-styles';
+import * as TestUtils from '@parischap/configs/TestUtils';
 import {
-  PPMarkShowerConstructor,
-  PPNonPrimitiveFormatter,
-  PPOption,
-  PPStringifiedValue,
-  PPValue,
-  PPValueBasedStylerConstructor,
+    PPMarkShowerConstructor,
+    PPNonPrimitiveFormatter,
+    PPOption,
+    PPStringifiedValue,
+    PPValue,
+    PPValueBasedStylerConstructor,
 } from '@parischap/pretty-print';
-import { TEUtils } from '@parischap/test-utils';
 import { Array, Function, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
@@ -62,15 +62,15 @@ describe('NonPrimitiveFormatter', () => {
 
   describe('Tag, prototype and guards', () => {
     it('moduleTag', () => {
-      TEUtils.assertSome(
-        TEUtils.moduleTagFromTestFilePath(__filename),
+      TestUtils.assertSome(
+        TestUtils.moduleTagFromTestFilePath(__filename),
         PPNonPrimitiveFormatter.moduleTag,
       );
     });
 
     describe('Equal.equals', () => {
       it('Matching', () => {
-        TEUtils.assertEquals(
+        TestUtils.assertEquals(
           singleLine,
           PPNonPrimitiveFormatter.make({
             id: 'SingleLine',
@@ -80,31 +80,31 @@ describe('NonPrimitiveFormatter', () => {
       });
 
       it('Non-matching', () => {
-        TEUtils.assertNotEquals(singleLine, PPNonPrimitiveFormatter.tabify);
+        TestUtils.assertNotEquals(singleLine, PPNonPrimitiveFormatter.tabify);
       });
     });
 
     it('.toString()', () => {
-      TEUtils.strictEqual(singleLine.toString(), `SingleLine`);
+      TestUtils.strictEqual(singleLine.toString(), `SingleLine`);
     });
 
     it('.pipe()', () => {
-      TEUtils.strictEqual(singleLine.pipe(PPNonPrimitiveFormatter.id), 'SingleLine');
+      TestUtils.strictEqual(singleLine.pipe(PPNonPrimitiveFormatter.id), 'SingleLine');
     });
 
     describe('has', () => {
       it('Matching', () => {
-        TEUtils.assertTrue(PPNonPrimitiveFormatter.has(singleLine));
+        TestUtils.assertTrue(PPNonPrimitiveFormatter.has(singleLine));
       });
       it('Non matching', () => {
-        TEUtils.assertFalse(PPNonPrimitiveFormatter.has(new Date()));
+        TestUtils.assertFalse(PPNonPrimitiveFormatter.has(new Date()));
       });
     });
   });
 
   describe('singleLine', () => {
     it('With strictly more than 0 children', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(
           valueAndHeader,
           singleLine.call(nonPrimitiveOption, constructors),
@@ -116,7 +116,7 @@ describe('NonPrimitiveFormatter', () => {
     });
 
     it('With 0 children', () => {
-      TEUtils.deepStrictEqual(
+      TestUtils.deepStrictEqual(
         pipe(
           valueAndHeader,
           singleLine.call(nonPrimitiveOption, constructors),
@@ -130,7 +130,7 @@ describe('NonPrimitiveFormatter', () => {
 
   describe('tabify', () => {
     it('With strictly more than 0 children', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(
           valueAndHeader,
           PPNonPrimitiveFormatter.tabify.call(nonPrimitiveOption, constructors),
@@ -142,7 +142,7 @@ describe('NonPrimitiveFormatter', () => {
     });
 
     it('With 0 children', () => {
-      TEUtils.deepStrictEqual(
+      TestUtils.deepStrictEqual(
         pipe(
           valueAndHeader,
           PPNonPrimitiveFormatter.tabify.call(nonPrimitiveOption, constructors),
@@ -156,7 +156,7 @@ describe('NonPrimitiveFormatter', () => {
 
   describe('treeify', () => {
     it('With strictly more than 0 children', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(
           valueAndHeader,
           PPNonPrimitiveFormatter.treeify.call(nonPrimitiveOption, constructors),
@@ -167,7 +167,7 @@ describe('NonPrimitiveFormatter', () => {
       );
     });
     it('With 0 children', () => {
-      TEUtils.assertTrue(
+      TestUtils.assertTrue(
         pipe(
           valueAndHeader,
           PPNonPrimitiveFormatter.treeify.call(nonPrimitiveOption, constructors),
@@ -180,7 +180,7 @@ describe('NonPrimitiveFormatter', () => {
 
   describe('splitOnConstituentNumberMaker', () => {
     it('Under limit', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(
           valueAndHeader,
           PPNonPrimitiveFormatter.splitOnConstituentNumberMaker(2).call(
@@ -195,7 +195,7 @@ describe('NonPrimitiveFormatter', () => {
     });
 
     it('Above limit', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(
           valueAndHeader,
           PPNonPrimitiveFormatter.splitOnConstituentNumberMaker(1).call(
@@ -213,7 +213,7 @@ describe('NonPrimitiveFormatter', () => {
   describe('splitOnTotalLengthMaker', () => {
     describe('With strictly more than 0 children', () => {
       it('Under limit', () => {
-        TEUtils.strictEqual(
+        TestUtils.strictEqual(
           pipe(
             valueAndHeader,
             PPNonPrimitiveFormatter.splitOnTotalLengthMaker(24).call(
@@ -228,7 +228,7 @@ describe('NonPrimitiveFormatter', () => {
       });
 
       it('Above limit', () => {
-        TEUtils.strictEqual(
+        TestUtils.strictEqual(
           pipe(
             valueAndHeader,
             PPNonPrimitiveFormatter.splitOnTotalLengthMaker(23).call(
@@ -245,7 +245,7 @@ describe('NonPrimitiveFormatter', () => {
 
     describe('With 0 children', () => {
       it('Under limit', () => {
-        TEUtils.deepStrictEqual(
+        TestUtils.deepStrictEqual(
           pipe(
             valueAndHeader,
             PPNonPrimitiveFormatter.splitOnTotalLengthMaker(9).call(
@@ -260,7 +260,7 @@ describe('NonPrimitiveFormatter', () => {
       });
 
       it('Above limit', () => {
-        TEUtils.deepStrictEqual(
+        TestUtils.deepStrictEqual(
           pipe(
             valueAndHeader,
             PPNonPrimitiveFormatter.splitOnTotalLengthMaker(8).call(
@@ -278,7 +278,7 @@ describe('NonPrimitiveFormatter', () => {
 
   describe('splitOnLongestPropLengthMaker', () => {
     it('Under limit', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(
           valueAndHeader,
           PPNonPrimitiveFormatter.splitOnLongestPropLengthMaker(6).call(
@@ -293,7 +293,7 @@ describe('NonPrimitiveFormatter', () => {
     });
 
     it('Above limit', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(
           valueAndHeader,
           PPNonPrimitiveFormatter.splitOnLongestPropLengthMaker(5).call(

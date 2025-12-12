@@ -1,5 +1,5 @@
 import { ASContextStyler, ASPalette, ASStyle } from '@parischap/ansi-styles';
-import { TEUtils } from '@parischap/test-utils';
+import * as TestUtils from '@parischap/configs/TestUtils';
 import { describe, it } from 'vitest';
 
 describe('ContextStyler', () => {
@@ -33,57 +33,57 @@ describe('ContextStyler', () => {
 
   describe('Tag, prototype and guards', () => {
     it('moduleTag', () => {
-      TEUtils.assertSome(TEUtils.moduleTagFromTestFilePath(__filename), ASContextStyler.moduleTag);
+      TestUtils.assertSome(TestUtils.moduleTagFromTestFilePath(__filename), ASContextStyler.moduleTag);
     });
 
     describe('Equal.equals', () => {
       it('Matching', () => {
-        TEUtils.assertEquals(red, ASContextStyler.fromSingleStyle(ASStyle.red));
+        TestUtils.assertEquals(red, ASContextStyler.fromSingleStyle(ASStyle.red));
       });
 
       it('Non-matching', () => {
-        TEUtils.assertNotEquals(red, ASContextStyler.black());
+        TestUtils.assertNotEquals(red, ASContextStyler.black());
       });
     });
 
     it('.toString()', () => {
-      TEUtils.strictEqual(red.toString(), 'RedFormatter');
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(red.toString(), 'RedFormatter');
+      TestUtils.strictEqual(
         pos1BasedAllColorsFormatter.toString(),
         'Pos1BasedBlack/Red/Green/Yellow/Blue/Magenta/Cyan/WhitePaletteFormatter',
       );
     });
 
     it('.pipe()', () => {
-      TEUtils.assertTrue(red.pipe(ASContextStyler.has));
+      TestUtils.assertTrue(red.pipe(ASContextStyler.has));
     });
 
     describe('has', () => {
       it('Matching', () => {
-        TEUtils.assertTrue(ASContextStyler.has(red));
-        TEUtils.assertTrue(ASContextStyler.has(pos1BasedAllColorsFormatter));
+        TestUtils.assertTrue(ASContextStyler.has(red));
+        TestUtils.assertTrue(ASContextStyler.has(pos1BasedAllColorsFormatter));
       });
       it('Non matching', () => {
-        TEUtils.assertFalse(ASContextStyler.has(new Date()));
+        TestUtils.assertFalse(ASContextStyler.has(new Date()));
       });
     });
   });
 
   describe('Action', () => {
     it('FromSingleStyle', () => {
-      TEUtils.assertEquals(redInValue1Context('foo'), ASStyle.red('foo'));
+      TestUtils.assertEquals(redInValue1Context('foo'), ASStyle.red('foo'));
     });
 
     it('From Palette context first within bounds', () => {
-      TEUtils.assertEquals(pos1BasedAllColorsFormatterInValue1Context('foo'), ASStyle.green('foo'));
+      TestUtils.assertEquals(pos1BasedAllColorsFormatterInValue1Context('foo'), ASStyle.green('foo'));
     });
 
     it('From Palette context first out of bounds', () => {
-      TEUtils.assertEquals(pos1BasedAllColorsFormatterInValue2Context('foo'), ASStyle.red('foo'));
+      TestUtils.assertEquals(pos1BasedAllColorsFormatterInValue2Context('foo'), ASStyle.red('foo'));
     });
 
     it('From Palette context last', () => {
-      TEUtils.assertEquals(
+      TestUtils.assertEquals(
         pos1BasedAllColorsFormatter.withContextLast('foo')(value1),
         ASStyle.green('foo'),
       );

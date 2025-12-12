@@ -1,5 +1,5 @@
 import { ASColor, ASStyleCharacteristics } from '@parischap/ansi-styles';
-import { TEUtils } from '@parischap/test-utils';
+import * as TestUtils from '@parischap/configs/TestUtils';
 import { pipe } from 'effect';
 import { describe, it } from 'vitest';
 
@@ -36,99 +36,99 @@ describe('ASStyleCharacteristics', () => {
 
   describe('Tag, prototype and guards', () => {
     it('moduleTag', () => {
-      TEUtils.assertSome(
-        TEUtils.moduleTagFromTestFilePath(__filename),
+      TestUtils.assertSome(
+        TestUtils.moduleTagFromTestFilePath(__filename),
         ASStyleCharacteristics.moduleTag,
       );
     });
 
     describe('Equal.equals', () => {
       it('Matching', () => {
-        TEUtils.assertEquals(ASStyleCharacteristics.bold, bold1);
-        TEUtils.assertEquals(ASStyleCharacteristics.none, ASStyleCharacteristics.none);
+        TestUtils.assertEquals(ASStyleCharacteristics.bold, bold1);
+        TestUtils.assertEquals(ASStyleCharacteristics.none, ASStyleCharacteristics.none);
       });
       it('Non matching', () => {
-        TEUtils.assertNotEquals(ASStyleCharacteristics.bold, boldItalic);
-        TEUtils.assertNotEquals(ASStyleCharacteristics.bold, new Date());
+        TestUtils.assertNotEquals(ASStyleCharacteristics.bold, boldItalic);
+        TestUtils.assertNotEquals(ASStyleCharacteristics.bold, new Date());
       });
     });
 
     it('.toString()', () => {
-      TEUtils.strictEqual(ASStyleCharacteristics.none.toString(), 'NoStyle');
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(ASStyleCharacteristics.none.toString(), 'NoStyle');
+      TestUtils.strictEqual(
         boldItalicBrightGreenInBlue.toString(),
         'BoldItalicBrightGreenInEightBitBlue',
       );
-      TEUtils.strictEqual(ASStyleCharacteristics.fgDefaultColor.toString(), 'DefaultColor');
-      TEUtils.strictEqual(ASStyleCharacteristics.bgDefaultColor.toString(), 'InDefaultColor');
+      TestUtils.strictEqual(ASStyleCharacteristics.fgDefaultColor.toString(), 'DefaultColor');
+      TestUtils.strictEqual(ASStyleCharacteristics.bgDefaultColor.toString(), 'InDefaultColor');
     });
 
     it('.pipe()', () => {
-      TEUtils.strictEqual(bold1.pipe(ASStyleCharacteristics.toId), 'Bold');
+      TestUtils.strictEqual(bold1.pipe(ASStyleCharacteristics.toId), 'Bold');
     });
 
     describe('has', () => {
       it('Matching', () => {
-        TEUtils.assertTrue(ASStyleCharacteristics.has(boldItalic));
+        TestUtils.assertTrue(ASStyleCharacteristics.has(boldItalic));
       });
       it('Non matching', () => {
-        TEUtils.assertFalse(ASStyleCharacteristics.has(new Date()));
+        TestUtils.assertFalse(ASStyleCharacteristics.has(new Date()));
       });
     });
   });
 
   it('italicState', () => {
-    TEUtils.assertSome(ASStyleCharacteristics.italicState(boldItalic), true);
-    TEUtils.assertNone(ASStyleCharacteristics.italicState(bold1));
+    TestUtils.assertSome(ASStyleCharacteristics.italicState(boldItalic), true);
+    TestUtils.assertNone(ASStyleCharacteristics.italicState(bold1));
   });
 
   it('hasBold', () => {
-    TEUtils.assertTrue(ASStyleCharacteristics.hasBold(boldItalic));
-    TEUtils.assertFalse(ASStyleCharacteristics.hasBold(ASStyleCharacteristics.none));
-    TEUtils.assertFalse(ASStyleCharacteristics.hasBold(notBoldNotDimRed));
+    TestUtils.assertTrue(ASStyleCharacteristics.hasBold(boldItalic));
+    TestUtils.assertFalse(ASStyleCharacteristics.hasBold(ASStyleCharacteristics.none));
+    TestUtils.assertFalse(ASStyleCharacteristics.hasBold(notBoldNotDimRed));
   });
 
   it('hasNotBold', () => {
-    TEUtils.assertTrue(ASStyleCharacteristics.hasNotBold(notBoldNotDimRed));
-    TEUtils.assertFalse(ASStyleCharacteristics.hasNotBold(boldItalic));
-    TEUtils.assertFalse(ASStyleCharacteristics.hasNotBold(ASStyleCharacteristics.none));
+    TestUtils.assertTrue(ASStyleCharacteristics.hasNotBold(notBoldNotDimRed));
+    TestUtils.assertFalse(ASStyleCharacteristics.hasNotBold(boldItalic));
+    TestUtils.assertFalse(ASStyleCharacteristics.hasNotBold(ASStyleCharacteristics.none));
   });
 
   it('hasDim', () => {
-    TEUtils.assertTrue(ASStyleCharacteristics.hasDim(notBoldDimRed));
-    TEUtils.assertFalse(ASStyleCharacteristics.hasDim(ASStyleCharacteristics.none));
-    TEUtils.assertFalse(ASStyleCharacteristics.hasDim(notBoldNotDimRed));
+    TestUtils.assertTrue(ASStyleCharacteristics.hasDim(notBoldDimRed));
+    TestUtils.assertFalse(ASStyleCharacteristics.hasDim(ASStyleCharacteristics.none));
+    TestUtils.assertFalse(ASStyleCharacteristics.hasDim(notBoldNotDimRed));
   });
 
   it('hasNotDim', () => {
-    TEUtils.assertTrue(ASStyleCharacteristics.hasNotDim(notBoldNotDimRed));
-    TEUtils.assertFalse(ASStyleCharacteristics.hasNotDim(boldItalic));
-    TEUtils.assertFalse(ASStyleCharacteristics.hasNotDim(ASStyleCharacteristics.none));
+    TestUtils.assertTrue(ASStyleCharacteristics.hasNotDim(notBoldNotDimRed));
+    TestUtils.assertFalse(ASStyleCharacteristics.hasNotDim(boldItalic));
+    TestUtils.assertFalse(ASStyleCharacteristics.hasNotDim(ASStyleCharacteristics.none));
   });
 
   describe('toSequence', () => {
     it('none', () => {
-      TEUtils.deepStrictEqual(ASStyleCharacteristics.toSequence(ASStyleCharacteristics.none), []);
+      TestUtils.deepStrictEqual(ASStyleCharacteristics.toSequence(ASStyleCharacteristics.none), []);
     });
 
     it('bold italic', () => {
-      TEUtils.deepStrictEqual(ASStyleCharacteristics.toSequence(boldItalic), [1, 3]);
+      TestUtils.deepStrictEqual(ASStyleCharacteristics.toSequence(boldItalic), [1, 3]);
     });
 
     it('Not bold not dim red', () => {
-      TEUtils.deepStrictEqual(ASStyleCharacteristics.toSequence(notBoldNotDimRed), [22, 31]);
+      TestUtils.deepStrictEqual(ASStyleCharacteristics.toSequence(notBoldNotDimRed), [22, 31]);
     });
 
     it('Bold not dim red', () => {
-      TEUtils.deepStrictEqual(ASStyleCharacteristics.toSequence(boldNotDimRed), [22, 1, 31]);
+      TestUtils.deepStrictEqual(ASStyleCharacteristics.toSequence(boldNotDimRed), [22, 1, 31]);
     });
 
     it('Not bold dim red', () => {
-      TEUtils.deepStrictEqual(ASStyleCharacteristics.toSequence(notBoldDimRed), [22, 2, 31]);
+      TestUtils.deepStrictEqual(ASStyleCharacteristics.toSequence(notBoldDimRed), [22, 2, 31]);
     });
 
     it('Bold default background color', () => {
-      TEUtils.deepStrictEqual(
+      TestUtils.deepStrictEqual(
         pipe(
           ASStyleCharacteristics.bold,
           ASStyleCharacteristics.mergeOver(ASStyleCharacteristics.bgDefaultColor),
@@ -140,7 +140,7 @@ describe('ASStyleCharacteristics', () => {
   });
 
   it('mergeUnder', () => {
-    TEUtils.strictEqual(
+    TestUtils.strictEqual(
       pipe(
         notBoldDimRed,
         ASStyleCharacteristics.mergeUnder(boldItalic),
@@ -151,7 +151,7 @@ describe('ASStyleCharacteristics', () => {
   });
 
   it('mergeOver', () => {
-    TEUtils.strictEqual(
+    TestUtils.strictEqual(
       pipe(
         notBoldDimRed,
         ASStyleCharacteristics.mergeOver(boldItalic),
@@ -163,7 +163,7 @@ describe('ASStyleCharacteristics', () => {
 
   describe('difference', () => {
     it('None with none', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(
           ASStyleCharacteristics.none,
           ASStyleCharacteristics.difference(ASStyleCharacteristics.none),
@@ -174,7 +174,7 @@ describe('ASStyleCharacteristics', () => {
     });
 
     it('Complex case 1', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(
           boldItalicBrightGreenInBlue,
           ASStyleCharacteristics.difference(boldNotDimRed),
@@ -185,7 +185,7 @@ describe('ASStyleCharacteristics', () => {
     });
 
     it('Complex case 2', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(
           notBoldNotDimRed,
           ASStyleCharacteristics.difference(boldNotDimRed),
@@ -197,7 +197,7 @@ describe('ASStyleCharacteristics', () => {
   });
 
   it('substractContext', () => {
-    TEUtils.strictEqual(
+    TestUtils.strictEqual(
       pipe(
         ASStyleCharacteristics.bold,
         ASStyleCharacteristics.mergeUnder(ASStyleCharacteristics.notDim),

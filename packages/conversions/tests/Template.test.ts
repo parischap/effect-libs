@@ -1,12 +1,12 @@
+import * as TestUtils from '@parischap/configs/TestUtils';
 import {
-  CVNumberBase10Format,
-  CVReal,
-  CVTemplate,
-  CVTemplatePlaceholder,
-  CVTemplateSeparator,
+    CVNumberBase10Format,
+    CVReal,
+    CVTemplate,
+    CVTemplatePlaceholder,
+    CVTemplateSeparator,
 } from '@parischap/conversions';
 import { MInputError, MTypes } from '@parischap/effect-lib';
-import { TEUtils } from '@parischap/test-utils';
 import { Either, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
@@ -30,15 +30,15 @@ describe('CVTemplate', () => {
 
   describe('Tag, prototype and guards', () => {
     it('moduleTag', () => {
-      TEUtils.assertSome(TEUtils.moduleTagFromTestFilePath(__filename), CVTemplate.moduleTag);
+      TestUtils.assertSome(TestUtils.moduleTagFromTestFilePath(__filename), CVTemplate.moduleTag);
     });
 
     it('.pipe()', () => {
-      TEUtils.assertTrue(template.pipe(CVTemplate.has));
+      TestUtils.assertTrue(template.pipe(CVTemplate.has));
     });
 
     it('.toString()', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         template.toString(),
         `#dd/#MM/#yyyy #MM
 
@@ -51,10 +51,10 @@ describe('CVTemplate', () => {
 
     describe('has', () => {
       it('Matching', () => {
-        TEUtils.assertTrue(CVTemplate.has(template));
+        TestUtils.assertTrue(CVTemplate.has(template));
       });
       it('Non matching', () => {
-        TEUtils.assertFalse(CVTemplate.has(new Date()));
+        TestUtils.assertFalse(CVTemplate.has(new Date()));
       });
     });
   });
@@ -62,8 +62,8 @@ describe('CVTemplate', () => {
   describe('toParser', () => {
     const parser = CVTemplate.toParser(template);
 
-    TEUtils.assertTrueType(
-      TEUtils.areEqualTypes<
+    TestUtils.assertTrueType(
+      TestUtils.areEqualTypes<
         typeof parser,
         MTypes.OneArgFunction<
           string,
@@ -80,39 +80,39 @@ describe('CVTemplate', () => {
     );
 
     it('Empty text', () => {
-      TEUtils.assertLeftMessage(parser(''), 'Expected length of #dd to be: 2. Actual: 0');
+      TestUtils.assertLeftMessage(parser(''), 'Expected length of #dd to be: 2. Actual: 0');
     });
 
     it('Text too short', () => {
-      TEUtils.assertLeftMessage(
+      TestUtils.assertLeftMessage(
         parser('25/12'),
         "Expected remaining text for separator at position 4 to start with '/'. Actual: ''",
       );
     });
 
     it('Wrong separator', () => {
-      TEUtils.assertLeftMessage(
+      TestUtils.assertLeftMessage(
         parser('25|12'),
         "Expected remaining text for separator at position 2 to start with '/'. Actual: '|12'",
       );
     });
 
     it('Same placeholder receives different values', () => {
-      TEUtils.assertLeftMessage(
+      TestUtils.assertLeftMessage(
         parser('25/12/2025 13'),
         "#MM is present more than once in template and receives differing values '12' and '13'",
       );
     });
 
     it('Text too long', () => {
-      TEUtils.assertLeftMessage(
+      TestUtils.assertLeftMessage(
         parser('25/12/2025 12is XMas'),
         "Expected text not consumed by template to be empty. Actual: 'is XMas'",
       );
     });
 
     it('Matching text', () => {
-      TEUtils.assertRight(parser('05/12/2025 12'), {
+      TestUtils.assertRight(parser('05/12/2025 12'), {
         dd: CVReal.unsafeFromNumber(5),
         MM: CVReal.unsafeFromNumber(12),
         yyyy: CVReal.unsafeFromNumber(2025),
@@ -123,8 +123,8 @@ describe('CVTemplate', () => {
   describe('toFormatter', () => {
     const formatter = CVTemplate.toFormatter(template);
 
-    TEUtils.assertTrueType(
-      TEUtils.areEqualTypes<
+    TestUtils.assertTrueType(
+      TestUtils.areEqualTypes<
         typeof formatter,
         MTypes.OneArgFunction<
           {
@@ -138,7 +138,7 @@ describe('CVTemplate', () => {
     );
 
     it('With correct values', () => {
-      TEUtils.assertRight(
+      TestUtils.assertRight(
         formatter({
           dd: CVReal.unsafeFromNumber(5),
           MM: CVReal.unsafeFromNumber(12),
@@ -149,7 +149,7 @@ describe('CVTemplate', () => {
     });
 
     it('With incorrect values', () => {
-      TEUtils.assertLeftMessage(
+      TestUtils.assertLeftMessage(
         formatter({
           dd: CVReal.unsafeFromNumber(115),
           MM: CVReal.unsafeFromNumber(12),

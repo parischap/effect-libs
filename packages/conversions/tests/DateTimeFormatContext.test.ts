@@ -1,5 +1,5 @@
+import * as TestUtils from '@parischap/configs/TestUtils';
 import { CVDateTimeFormatContext } from '@parischap/conversions';
-import { TEUtils } from '@parischap/test-utils';
 import { describe, it } from 'vitest';
 
 describe('CVDateTimeFormatContext', () => {
@@ -7,24 +7,24 @@ describe('CVDateTimeFormatContext', () => {
 
   describe('Prototype and guards', () => {
     it('.toString()', () => {
-      TEUtils.strictEqual(enGBContext.toString(), 'en-GB');
+      TestUtils.strictEqual(enGBContext.toString(), 'en-GB');
     });
 
     it('.pipe()', () => {
-      TEUtils.assertTrue(enGBContext.pipe(CVDateTimeFormatContext.has));
+      TestUtils.assertTrue(enGBContext.pipe(CVDateTimeFormatContext.has));
     });
 
     describe('has', () => {
       it('Matching', () => {
-        TEUtils.assertTrue(CVDateTimeFormatContext.has(enGBContext));
+        TestUtils.assertTrue(CVDateTimeFormatContext.has(enGBContext));
       });
       it('Non matching', () => {
-        TEUtils.assertFalse(CVDateTimeFormatContext.has(new Date()));
+        TestUtils.assertFalse(CVDateTimeFormatContext.has(new Date()));
       });
     });
   });
 
   it('fromLocale', () => {
-    TEUtils.assertSome(CVDateTimeFormatContext.fromLocale('en-US'));
+    TestUtils.assertSome(CVDateTimeFormatContext.fromLocale('en-US'));
   });
 });

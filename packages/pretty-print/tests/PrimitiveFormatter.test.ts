@@ -1,6 +1,6 @@
+import * as TestUtils from '@parischap/configs/TestUtils';
 import { MBigInt } from '@parischap/effect-lib';
 import { PPOption, PPPrimitiveFormatter, PPValue } from '@parischap/pretty-print';
-import { TEUtils } from '@parischap/test-utils';
 import { pipe } from 'effect';
 import { describe, it } from 'vitest';
 
@@ -14,19 +14,19 @@ describe('PrimitiveFormatter', () => {
   });
   describe('Tag, prototype and guards', () => {
     it('moduleTag', () => {
-      TEUtils.assertSome(
-        TEUtils.moduleTagFromTestFilePath(__filename),
+      TestUtils.assertSome(
+        TestUtils.moduleTagFromTestFilePath(__filename),
         PPPrimitiveFormatter.moduleTag,
       );
     });
 
     describe('Equal.equals', () => {
       it('Matching', () => {
-        TEUtils.assertEquals(utilInspectLikeFormatter, PPPrimitiveFormatter.utilInspectLikeMaker());
+        TestUtils.assertEquals(utilInspectLikeFormatter, PPPrimitiveFormatter.utilInspectLikeMaker());
       });
 
       it('Non-matching', () => {
-        TEUtils.assertNotEquals(
+        TestUtils.assertNotEquals(
           utilInspectLikeFormatter,
           utilInspectLikeFormatterWithOtherDefaults,
         );
@@ -34,11 +34,11 @@ describe('PrimitiveFormatter', () => {
     });
 
     it('.toString()', () => {
-      TEUtils.strictEqual(utilInspectLikeFormatter.toString(), `UtilInspectLike`);
+      TestUtils.strictEqual(utilInspectLikeFormatter.toString(), `UtilInspectLike`);
     });
 
     it('.pipe()', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         utilInspectLikeFormatter.pipe(PPPrimitiveFormatter.id),
         'UtilInspectLike',
       );
@@ -46,17 +46,17 @@ describe('PrimitiveFormatter', () => {
 
     describe('has', () => {
       it('Matching', () => {
-        TEUtils.assertTrue(PPPrimitiveFormatter.has(utilInspectLikeFormatter));
+        TestUtils.assertTrue(PPPrimitiveFormatter.has(utilInspectLikeFormatter));
       });
       it('Non matching', () => {
-        TEUtils.assertFalse(PPPrimitiveFormatter.has(new Date()));
+        TestUtils.assertFalse(PPPrimitiveFormatter.has(new Date()));
       });
     });
   });
 
   describe('utilInspectLikeMaker', () => {
     it('string under maxStringlength', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(
           utilInspectLikeFormatterWithOtherDefaults.call(
             utilInspectLike,
@@ -68,7 +68,7 @@ describe('PrimitiveFormatter', () => {
     });
 
     it('string under maxStringlength', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(
           utilInspectLikeFormatterWithOtherDefaults.call(
             utilInspectLike,
@@ -80,7 +80,7 @@ describe('PrimitiveFormatter', () => {
     });
 
     it('number', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(
           utilInspectLikeFormatterWithOtherDefaults.call(
             utilInspectLike,
@@ -92,7 +92,7 @@ describe('PrimitiveFormatter', () => {
     });
 
     it('bigint', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(
           utilInspectLikeFormatterWithOtherDefaults.call(
             utilInspectLike,
@@ -104,7 +104,7 @@ describe('PrimitiveFormatter', () => {
     });
 
     it('boolean', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(
           utilInspectLikeFormatterWithOtherDefaults.call(
             utilInspectLike,
@@ -116,7 +116,7 @@ describe('PrimitiveFormatter', () => {
     });
 
     it('symbol', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(
           utilInspectLikeFormatterWithOtherDefaults.call(
             utilInspectLike,
@@ -128,7 +128,7 @@ describe('PrimitiveFormatter', () => {
     });
 
     it('undefined', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(
           utilInspectLikeFormatterWithOtherDefaults.call(
             utilInspectLike,
@@ -140,7 +140,7 @@ describe('PrimitiveFormatter', () => {
     });
 
     it('null', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(
           utilInspectLikeFormatterWithOtherDefaults.call(
             utilInspectLike,

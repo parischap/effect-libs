@@ -1,5 +1,5 @@
+import * as TestUtils from '@parischap/configs/TestUtils';
 import { MTypes } from '@parischap/effect-lib';
-import { TEUtils } from '@parischap/test-utils';
 import { Number, Predicate, Record } from 'effect';
 import { describe, it } from 'vitest';
 
@@ -35,39 +35,39 @@ type TestRefinement = typeof MTypes.isString;
 type TestOneArgFunction = typeof Number.increment;
 
 /** Tuple */
-TEUtils.assertTrueType(
-  TEUtils.areEqualTypes<
+TestUtils.assertTrueType(
+  TestUtils.areEqualTypes<
     MTypes.Tuple<string, 2 | 3>,
     readonly [string, string] | readonly [string, string, string]
   >(),
 );
-TEUtils.assertTrueType(
-  TEUtils.areEqualTypes<MTypes.Tuple<string, number>, ReadonlyArray<string>>(),
+TestUtils.assertTrueType(
+  TestUtils.areEqualTypes<MTypes.Tuple<string, number>, ReadonlyArray<string>>(),
 );
 
 /** IntRange */
-TEUtils.assertTrueType(TEUtils.areEqualTypes<MTypes.IntRange<3, 6>, 3 | 4 | 5>());
+TestUtils.assertTrueType(TestUtils.areEqualTypes<MTypes.IntRange<3, 6>, 3 | 4 | 5>());
 
 /** ReadonlyTail */
-TEUtils.assertTrueType(
-  TEUtils.areEqualTypes<MTypes.ReadonlyTail<TestTuple>, readonly [boolean, string]>(),
+TestUtils.assertTrueType(
+  TestUtils.areEqualTypes<MTypes.ReadonlyTail<TestTuple>, readonly [boolean, string]>(),
 );
 
 /** MapToReadonlyTarget */
-TEUtils.assertTrueType(
-  TEUtils.areEqualTypes<
+TestUtils.assertTrueType(
+  TestUtils.areEqualTypes<
     MTypes.MapToReadonlyTarget<TestTuple, string>,
     readonly [string, string, string]
   >(),
 );
-TEUtils.assertTrueType(
-  TEUtils.areEqualTypes<
+TestUtils.assertTrueType(
+  TestUtils.areEqualTypes<
     MTypes.MapToReadonlyTarget<ReadonlyArray<number>, string>,
     ReadonlyArray<string>
   >(),
 );
-TEUtils.assertTrueType(
-  TEUtils.areEqualTypes<
+TestUtils.assertTrueType(
+  TestUtils.areEqualTypes<
     MTypes.MapToReadonlyTarget<TestInterface, string>,
     {
       readonly a: string;
@@ -77,16 +77,16 @@ TEUtils.assertTrueType(
     }
   >(),
 );
-TEUtils.assertTrueType(
-  TEUtils.areEqualTypes<
+TestUtils.assertTrueType(
+  TestUtils.areEqualTypes<
     MTypes.MapToReadonlyTarget<Record.ReadonlyRecord<string, number>, string>,
     Record.ReadonlyRecord<string, string>
   >(),
 );
 
 /** Data */
-TEUtils.assertTrueType(
-  TEUtils.areEqualTypes<
+TestUtils.assertTrueType(
+  TestUtils.areEqualTypes<
     MTypes.Data<TestInterface>,
     {
       readonly a: number;
@@ -94,8 +94,8 @@ TEUtils.assertTrueType(
     }
   >(),
 );
-TEUtils.assertTrueType(
-  TEUtils.areEqualTypes<
+TestUtils.assertTrueType(
+  TestUtils.areEqualTypes<
     MTypes.Data<TestInterface, 'a'>,
     {
       readonly b: string;
@@ -104,482 +104,482 @@ TEUtils.assertTrueType(
 );
 
 /** Proto */
-TEUtils.assertTrueType(
-  TEUtils.areEqualTypes<MTypes.Proto<TestInterface, 'a'>, Omit<TestInterface, 'b'>>(),
+TestUtils.assertTrueType(
+  TestUtils.areEqualTypes<MTypes.Proto<TestInterface, 'a'>, Omit<TestInterface, 'b'>>(),
 );
 
 /** SetArgTypeTo */
-TEUtils.assertTrueType(
-  TEUtils.areEqualTypes<
+TestUtils.assertTrueType(
+  TestUtils.areEqualTypes<
     MTypes.SetArgTypeTo<TestRefinement, MTypes.Primitive>,
     Predicate.Refinement<MTypes.Primitive, string>
   >(),
 );
-TEUtils.assertTrueType(
-  TEUtils.areEqualTypes<
+TestUtils.assertTrueType(
+  TestUtils.areEqualTypes<
     MTypes.SetArgTypeTo<TestOneArgFunction, string>,
     MTypes.OneArgFunction<string, number>
   >(),
 );
-TEUtils.assertTrueType(TEUtils.areEqualTypes<MTypes.SetArgTypeTo<number, string>, number>());
+TestUtils.assertTrueType(TestUtils.areEqualTypes<MTypes.SetArgTypeTo<number, string>, number>());
 
 /** ToKeyIntersection */
-TEUtils.assertTrueType(TEUtils.areEqualTypes<MTypes.ToKeyIntersection<readonly [5, 6]>, 5 & 6>());
+TestUtils.assertTrueType(TestUtils.areEqualTypes<MTypes.ToKeyIntersection<readonly [5, 6]>, 5 & 6>());
 
 /** IntersectAndSimplify */
-TEUtils.assertTrueType(TEUtils.areEqualTypes<MTypes.IntersectAndSimplify<number, 5>, 5>());
+TestUtils.assertTrueType(TestUtils.areEqualTypes<MTypes.IntersectAndSimplify<number, 5>, 5>());
 
 describe('MTypes', () => {
   describe('isString', () => {
     if (MTypes.isString(unknown))
-      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof unknown, string>());
+      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof unknown, string>());
 
     it('Matching', () => {
-      TEUtils.assertTrue(MTypes.isString(testString));
+      TestUtils.assertTrue(MTypes.isString(testString));
     });
 
     it('Non matching', () => {
-      TEUtils.assertFalse(MTypes.isString(testNumber));
+      TestUtils.assertFalse(MTypes.isString(testNumber));
     });
   });
 
   describe('isNumber', () => {
     if (MTypes.isNumber(unknown))
-      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof unknown, number>());
+      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof unknown, number>());
 
     it('Matching', () => {
-      TEUtils.assertTrue(MTypes.isNumber(testNumber));
+      TestUtils.assertTrue(MTypes.isNumber(testNumber));
     });
 
     it('Non matching', () => {
-      TEUtils.assertFalse(MTypes.isNumber(testString));
+      TestUtils.assertFalse(MTypes.isNumber(testString));
     });
   });
 
   describe('isBigInt', () => {
     if (MTypes.isBigInt(unknown))
-      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof unknown, bigint>());
+      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof unknown, bigint>());
 
     it('Matching', () => {
-      TEUtils.assertTrue(MTypes.isBigInt(testBigint));
+      TestUtils.assertTrue(MTypes.isBigInt(testBigint));
     });
 
     it('Non matching', () => {
-      TEUtils.assertFalse(MTypes.isBigInt(testNumber));
+      TestUtils.assertFalse(MTypes.isBigInt(testNumber));
     });
   });
 
   describe('isBoolean', () => {
     if (MTypes.isBoolean(unknown))
-      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof unknown, boolean>());
+      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof unknown, boolean>());
 
     it('Matching', () => {
-      TEUtils.assertTrue(MTypes.isBoolean(testBoolean));
+      TestUtils.assertTrue(MTypes.isBoolean(testBoolean));
     });
 
     it('Non matching', () => {
-      TEUtils.assertFalse(MTypes.isBoolean(testNumber));
+      TestUtils.assertFalse(MTypes.isBoolean(testNumber));
     });
   });
 
   describe('isSymbol', () => {
     if (MTypes.isSymbol(unknown))
-      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof unknown, symbol>());
+      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof unknown, symbol>());
 
     it('Matching', () => {
-      TEUtils.assertTrue(MTypes.isSymbol(testSymbol));
+      TestUtils.assertTrue(MTypes.isSymbol(testSymbol));
     });
 
     it('Non matching', () => {
-      TEUtils.assertFalse(MTypes.isSymbol(testNumber));
+      TestUtils.assertFalse(MTypes.isSymbol(testNumber));
     });
   });
 
   describe('isUndefined', () => {
     if (MTypes.isUndefined(unknown))
-      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof unknown, undefined>());
+      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof unknown, undefined>());
 
     it('Matching', () => {
-      TEUtils.assertTrue(MTypes.isUndefined(undefined));
+      TestUtils.assertTrue(MTypes.isUndefined(undefined));
     });
 
     it('Non matching', () => {
-      TEUtils.assertFalse(MTypes.isUndefined(testNumber));
+      TestUtils.assertFalse(MTypes.isUndefined(testNumber));
     });
   });
 
   describe('isNotUndefined', () => {
     const undefinedOrNumber = undefined as undefined | number;
     if (MTypes.isNotUndefined(undefinedOrNumber))
-      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof undefinedOrNumber, number>());
+      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof undefinedOrNumber, number>());
 
     it('Matching', () => {
-      TEUtils.assertTrue(MTypes.isNotUndefined(testNumber));
+      TestUtils.assertTrue(MTypes.isNotUndefined(testNumber));
     });
 
     it('Non matching', () => {
-      TEUtils.assertFalse(MTypes.isNotUndefined(undefined));
+      TestUtils.assertFalse(MTypes.isNotUndefined(undefined));
     });
   });
 
   describe('isNull', () => {
     if (MTypes.isNull(unknown))
-      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof unknown, null>());
+      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof unknown, null>());
 
     it('Matching', () => {
-      TEUtils.assertTrue(MTypes.isNull(null));
+      TestUtils.assertTrue(MTypes.isNull(null));
     });
 
     it('Non matching', () => {
-      TEUtils.assertFalse(MTypes.isNull(testNumber));
+      TestUtils.assertFalse(MTypes.isNull(testNumber));
     });
   });
 
   describe('isNotNull', () => {
     const nullOrNumber = null as null | number;
     if (MTypes.isNotNull(nullOrNumber))
-      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof nullOrNumber, number>());
+      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof nullOrNumber, number>());
 
     it('Matching', () => {
-      TEUtils.assertTrue(MTypes.isNotNull(testNumber));
+      TestUtils.assertTrue(MTypes.isNotNull(testNumber));
     });
 
     it('Non matching', () => {
-      TEUtils.assertFalse(MTypes.isNotNull(null));
+      TestUtils.assertFalse(MTypes.isNotNull(null));
     });
   });
 
   describe('isNullable', () => {
     const nullOrNumber = null as null | number;
     if (MTypes.isNullable(nullOrNumber))
-      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof nullOrNumber, null>());
+      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof nullOrNumber, null>());
 
     it('Matching', () => {
-      TEUtils.assertTrue(MTypes.isNullable(null));
-      TEUtils.assertTrue(MTypes.isNullable(undefined));
+      TestUtils.assertTrue(MTypes.isNullable(null));
+      TestUtils.assertTrue(MTypes.isNullable(undefined));
     });
 
     it('Non matching', () => {
-      TEUtils.assertFalse(MTypes.isNullable(testNumber));
+      TestUtils.assertFalse(MTypes.isNullable(testNumber));
     });
   });
 
   describe('isNotNullable', () => {
     const nullOrNumber = null as null | number;
     if (MTypes.isNotNullable(nullOrNumber))
-      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof nullOrNumber, number>());
+      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof nullOrNumber, number>());
 
     it('Matching', () => {
-      TEUtils.assertTrue(MTypes.isNotNullable(testNumber));
+      TestUtils.assertTrue(MTypes.isNotNullable(testNumber));
     });
 
     it('Non matching', () => {
-      TEUtils.assertFalse(MTypes.isNotNullable(null));
+      TestUtils.assertFalse(MTypes.isNotNullable(null));
     });
   });
 
   describe('isPrimitive', () => {
     const numberOrArray = [3] as unknown as number | ReadonlyArray<number>;
     if (MTypes.isPrimitive(numberOrArray))
-      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof numberOrArray, number>());
+      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof numberOrArray, number>());
 
     if (MTypes.isPrimitive(unknown))
-      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof unknown, MTypes.Primitive>());
+      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof unknown, MTypes.Primitive>());
 
     it('Matching', () => {
-      TEUtils.assertTrue(MTypes.isPrimitive(testNumber));
-      TEUtils.assertTrue(MTypes.isPrimitive(undefined));
+      TestUtils.assertTrue(MTypes.isPrimitive(testNumber));
+      TestUtils.assertTrue(MTypes.isPrimitive(undefined));
     });
 
     it('Non matching', () => {
-      TEUtils.assertFalse(MTypes.isPrimitive(testArray2));
-      TEUtils.assertFalse(MTypes.isPrimitive(testOneArgFunction));
+      TestUtils.assertFalse(MTypes.isPrimitive(testArray2));
+      TestUtils.assertFalse(MTypes.isPrimitive(testOneArgFunction));
     });
   });
 
   describe('isNonPrimitive', () => {
     const numberOrArray = [3] as unknown as number | ReadonlyArray<number>;
     if (MTypes.isNonPrimitive(numberOrArray))
-      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof numberOrArray, ReadonlyArray<number>>());
+      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof numberOrArray, ReadonlyArray<number>>());
 
     if (MTypes.isNonPrimitive(unknown))
-      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof unknown, MTypes.NonPrimitive>());
+      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof unknown, MTypes.NonPrimitive>());
 
     it('Matching', () => {
-      TEUtils.assertTrue(MTypes.isNonPrimitive(testArray2));
-      TEUtils.assertTrue(MTypes.isNonPrimitive(testOneArgFunction));
+      TestUtils.assertTrue(MTypes.isNonPrimitive(testArray2));
+      TestUtils.assertTrue(MTypes.isNonPrimitive(testOneArgFunction));
     });
 
     it('Non matching', () => {
-      TEUtils.assertFalse(MTypes.isNonPrimitive(testSymbol));
+      TestUtils.assertFalse(MTypes.isNonPrimitive(testSymbol));
     });
   });
 
   describe('isFunction', () => {
     if (MTypes.isFunction(unknown))
-      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof unknown, MTypes.AnyFunction>());
+      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof unknown, MTypes.AnyFunction>());
 
     it('Matching', () => {
-      TEUtils.assertTrue(MTypes.isFunction(testFunction));
+      TestUtils.assertTrue(MTypes.isFunction(testFunction));
     });
 
     it('Non matching', () => {
-      TEUtils.assertFalse(MTypes.isFunction(testNumber));
+      TestUtils.assertFalse(MTypes.isFunction(testNumber));
     });
   });
 
   describe('isOneArgFunction', () => {
     if (MTypes.isFunction(testFunction))
-      TEUtils.assertTrueType(
-        TEUtils.areEqualTypes<typeof testFunction, MTypes.OneArgFunction<number>>(),
+      TestUtils.assertTrueType(
+        TestUtils.areEqualTypes<typeof testFunction, MTypes.OneArgFunction<number>>(),
       );
 
     it('Matching', () => {
-      TEUtils.assertTrue(MTypes.isOneArgFunction(testOneArgFunction));
+      TestUtils.assertTrue(MTypes.isOneArgFunction(testOneArgFunction));
     });
 
     it('Non matching', () => {
-      TEUtils.assertFalse(MTypes.isOneArgFunction(testFunction));
+      TestUtils.assertFalse(MTypes.isOneArgFunction(testFunction));
     });
   });
 
   describe('isEmptyArray', () => {
     if (MTypes.isEmptyArray(testArray2))
-      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof testArray2, MTypes.EmptyArray>());
+      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof testArray2, MTypes.EmptyArray>());
 
     it('Matching', () => {
-      TEUtils.assertTrue(MTypes.isEmptyArray(testArray0));
+      TestUtils.assertTrue(MTypes.isEmptyArray(testArray0));
     });
 
     it('Non matching', () => {
-      TEUtils.assertFalse(MTypes.isEmptyArray(testArray3));
+      TestUtils.assertFalse(MTypes.isEmptyArray(testArray3));
     });
   });
 
   describe('isEmptyReadonlyArray', () => {
     if (MTypes.isEmptyReadonlyArray(testReadonlyArray))
-      TEUtils.assertTrueType(
-        TEUtils.areEqualTypes<typeof testReadonlyArray, MTypes.EmptyReadonlyArray>(),
+      TestUtils.assertTrueType(
+        TestUtils.areEqualTypes<typeof testReadonlyArray, MTypes.EmptyReadonlyArray>(),
       );
 
     it('Matching', () => {
-      TEUtils.assertTrue(MTypes.isEmptyReadonlyArray(testArray0));
+      TestUtils.assertTrue(MTypes.isEmptyReadonlyArray(testArray0));
     });
 
     it('Non matching', () => {
-      TEUtils.assertFalse(MTypes.isEmptyReadonlyArray(testArray3));
+      TestUtils.assertFalse(MTypes.isEmptyReadonlyArray(testArray3));
     });
   });
 
   describe('isOverOne', () => {
     if (MTypes.isOverOne(testArray2))
-      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof testArray2, MTypes.OverOne<number>>());
+      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof testArray2, MTypes.OverOne<number>>());
 
     it('Matching', () => {
-      TEUtils.assertTrue(MTypes.isOverOne(testArray1));
-      TEUtils.assertTrue(MTypes.isOverOne(testArray2));
+      TestUtils.assertTrue(MTypes.isOverOne(testArray1));
+      TestUtils.assertTrue(MTypes.isOverOne(testArray2));
     });
 
     it('Non matching', () => {
-      TEUtils.assertFalse(MTypes.isOverOne(testArray0));
+      TestUtils.assertFalse(MTypes.isOverOne(testArray0));
     });
   });
 
   describe('isReadonlyOverOne', () => {
     if (MTypes.isReadonlyOverOne(testReadonlyArray))
-      TEUtils.assertTrueType(
-        TEUtils.areEqualTypes<typeof testReadonlyArray, MTypes.ReadonlyOverOne<number>>(),
+      TestUtils.assertTrueType(
+        TestUtils.areEqualTypes<typeof testReadonlyArray, MTypes.ReadonlyOverOne<number>>(),
       );
 
     it('Matching', () => {
-      TEUtils.assertTrue(MTypes.isReadonlyOverOne(testArray1));
-      TEUtils.assertTrue(MTypes.isReadonlyOverOne(testArray2));
+      TestUtils.assertTrue(MTypes.isReadonlyOverOne(testArray1));
+      TestUtils.assertTrue(MTypes.isReadonlyOverOne(testArray2));
     });
 
     it('Non matching', () => {
-      TEUtils.assertFalse(MTypes.isReadonlyOverOne(testArray0));
+      TestUtils.assertFalse(MTypes.isReadonlyOverOne(testArray0));
     });
   });
 
   describe('isOverTwo', () => {
     if (MTypes.isOverTwo(testArray2))
-      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof testArray2, MTypes.OverTwo<number>>());
+      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof testArray2, MTypes.OverTwo<number>>());
 
     it('Matching', () => {
-      TEUtils.assertTrue(MTypes.isOverTwo(testArray2));
-      TEUtils.assertTrue(MTypes.isOverTwo(testArray3));
+      TestUtils.assertTrue(MTypes.isOverTwo(testArray2));
+      TestUtils.assertTrue(MTypes.isOverTwo(testArray3));
     });
 
     it('Non matching', () => {
-      TEUtils.assertFalse(MTypes.isOverTwo(testArray1));
+      TestUtils.assertFalse(MTypes.isOverTwo(testArray1));
     });
   });
 
   describe('isReadonlyOverTwo', () => {
     if (MTypes.isReadonlyOverTwo(testReadonlyArray))
-      TEUtils.assertTrueType(
-        TEUtils.areEqualTypes<typeof testReadonlyArray, MTypes.ReadonlyOverTwo<number>>(),
+      TestUtils.assertTrueType(
+        TestUtils.areEqualTypes<typeof testReadonlyArray, MTypes.ReadonlyOverTwo<number>>(),
       );
 
     it('Matching', () => {
-      TEUtils.assertTrue(MTypes.isReadonlyOverTwo(testArray2));
-      TEUtils.assertTrue(MTypes.isReadonlyOverTwo(testArray3));
+      TestUtils.assertTrue(MTypes.isReadonlyOverTwo(testArray2));
+      TestUtils.assertTrue(MTypes.isReadonlyOverTwo(testArray3));
     });
 
     it('Non matching', () => {
-      TEUtils.assertFalse(MTypes.isReadonlyOverTwo(testArray0));
+      TestUtils.assertFalse(MTypes.isReadonlyOverTwo(testArray0));
     });
   });
 
   describe('isSingleton', () => {
     if (MTypes.isSingleton(testArray2))
-      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof testArray2, MTypes.Singleton<number>>());
+      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof testArray2, MTypes.Singleton<number>>());
 
     it('Matching', () => {
-      TEUtils.assertTrue(MTypes.isSingleton(testArray1));
+      TestUtils.assertTrue(MTypes.isSingleton(testArray1));
     });
 
     it('Non matching', () => {
-      TEUtils.assertFalse(MTypes.isSingleton(testArray0));
-      TEUtils.assertFalse(MTypes.isSingleton(testArray2));
+      TestUtils.assertFalse(MTypes.isSingleton(testArray0));
+      TestUtils.assertFalse(MTypes.isSingleton(testArray2));
     });
   });
 
   describe('isReadonlySingleton', () => {
     if (MTypes.isReadonlySingleton(testReadonlyArray))
-      TEUtils.assertTrueType(
-        TEUtils.areEqualTypes<typeof testReadonlyArray, MTypes.ReadonlySingleton<number>>(),
+      TestUtils.assertTrueType(
+        TestUtils.areEqualTypes<typeof testReadonlyArray, MTypes.ReadonlySingleton<number>>(),
       );
 
     it('Matching', () => {
-      TEUtils.assertTrue(MTypes.isReadonlySingleton(testArray1));
+      TestUtils.assertTrue(MTypes.isReadonlySingleton(testArray1));
     });
 
     it('Non matching', () => {
-      TEUtils.assertFalse(MTypes.isReadonlySingleton(testArray0));
-      TEUtils.assertFalse(MTypes.isReadonlySingleton(testArray2));
+      TestUtils.assertFalse(MTypes.isReadonlySingleton(testArray0));
+      TestUtils.assertFalse(MTypes.isReadonlySingleton(testArray2));
     });
   });
 
   describe('isPair', () => {
     if (MTypes.isPair(testArray2))
-      TEUtils.assertTrueType(
-        TEUtils.areEqualTypes<typeof testArray2, MTypes.Pair<number, number>>(),
+      TestUtils.assertTrueType(
+        TestUtils.areEqualTypes<typeof testArray2, MTypes.Pair<number, number>>(),
       );
 
     it('Matching', () => {
-      TEUtils.assertTrue(MTypes.isPair(testArray2));
+      TestUtils.assertTrue(MTypes.isPair(testArray2));
     });
 
     it('Non matching', () => {
-      TEUtils.assertFalse(MTypes.isPair(testArray1));
-      TEUtils.assertFalse(MTypes.isPair(testArray3));
+      TestUtils.assertFalse(MTypes.isPair(testArray1));
+      TestUtils.assertFalse(MTypes.isPair(testArray3));
     });
   });
 
   describe('isReadonlyPair', () => {
     if (MTypes.isReadonlyPair(testReadonlyArray))
-      TEUtils.assertTrueType(
-        TEUtils.areEqualTypes<typeof testReadonlyArray, MTypes.ReadonlyPair<number, number>>(),
+      TestUtils.assertTrueType(
+        TestUtils.areEqualTypes<typeof testReadonlyArray, MTypes.ReadonlyPair<number, number>>(),
       );
 
     it('Matching', () => {
-      TEUtils.assertTrue(MTypes.isReadonlyPair(testArray2));
+      TestUtils.assertTrue(MTypes.isReadonlyPair(testArray2));
     });
 
     it('Non matching', () => {
-      TEUtils.assertFalse(MTypes.isReadonlyPair(testArray0));
-      TEUtils.assertFalse(MTypes.isReadonlyPair(testArray3));
+      TestUtils.assertFalse(MTypes.isReadonlyPair(testArray0));
+      TestUtils.assertFalse(MTypes.isReadonlyPair(testArray3));
     });
   });
 
   describe('isIterable', () => {
     if (MTypes.isIterable(unknown))
-      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof unknown, Iterable<unknown>>());
+      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof unknown, Iterable<unknown>>());
 
     it('Matching', () => {
-      TEUtils.assertTrue(MTypes.isIterable(testArray2));
+      TestUtils.assertTrue(MTypes.isIterable(testArray2));
     });
 
     it('Non matching', () => {
-      TEUtils.assertFalse(MTypes.isIterable(testNumber));
-      TEUtils.assertFalse(MTypes.isIterable(testString));
+      TestUtils.assertFalse(MTypes.isIterable(testNumber));
+      TestUtils.assertFalse(MTypes.isIterable(testString));
     });
   });
 
   describe('isErrorish', () => {
     if (MTypes.isErrorish(unknown))
-      TEUtils.assertTrueType(TEUtils.areEqualTypes<typeof unknown, MTypes.Errorish>());
+      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof unknown, MTypes.Errorish>());
 
     it('Matching', () => {
-      TEUtils.assertTrue(MTypes.isErrorish({ message: 'foo' }));
-      TEUtils.assertTrue(MTypes.isErrorish({ message: 'foo', stack: 'bar' }));
+      TestUtils.assertTrue(MTypes.isErrorish({ message: 'foo' }));
+      TestUtils.assertTrue(MTypes.isErrorish({ message: 'foo', stack: 'bar' }));
     });
 
     it('Non matching', () => {
-      TEUtils.assertFalse(MTypes.isErrorish(null));
-      TEUtils.assertFalse(MTypes.isErrorish({ message: false }));
-      TEUtils.assertFalse(MTypes.isErrorish({ message: 'foo', stack: 5 }));
-      TEUtils.assertFalse(MTypes.isErrorish(testRecord));
+      TestUtils.assertFalse(MTypes.isErrorish(null));
+      TestUtils.assertFalse(MTypes.isErrorish({ message: false }));
+      TestUtils.assertFalse(MTypes.isErrorish({ message: 'foo', stack: 5 }));
+      TestUtils.assertFalse(MTypes.isErrorish(testRecord));
     });
   });
 
   describe('typedArrayName', () => {
     it('Matching', () => {
-      TEUtils.assertSome(MTypes.typedArrayName(new Uint8Array(5)), 'Uint8Array');
+      TestUtils.assertSome(MTypes.typedArrayName(new Uint8Array(5)), 'Uint8Array');
     });
 
     it('Non matching', () => {
-      TEUtils.assertNone(MTypes.typedArrayName(5));
+      TestUtils.assertNone(MTypes.typedArrayName(5));
     });
   });
 
   describe('isTypedArray', () => {
     const numberOrUint16Array = new Uint16Array(5) as number | Uint16Array<ArrayBuffer>;
     if (MTypes.isTypedArray(numberOrUint16Array))
-      TEUtils.assertTrueType(
-        TEUtils.areEqualTypes<typeof numberOrUint16Array, Uint16Array<ArrayBuffer>>(),
+      TestUtils.assertTrueType(
+        TestUtils.areEqualTypes<typeof numberOrUint16Array, Uint16Array<ArrayBuffer>>(),
       );
 
     it('Matching', () => {
-      TEUtils.assertTrue(MTypes.isTypedArray(new Uint16Array(5)));
+      TestUtils.assertTrue(MTypes.isTypedArray(new Uint16Array(5)));
     });
 
     it('Non matching', () => {
-      TEUtils.assertFalse(MTypes.isTypedArray(5));
+      TestUtils.assertFalse(MTypes.isTypedArray(5));
     });
   });
 
   describe('Category', () => {
     describe('fromValue and predicates', () => {
       it('Matching', () => {
-        TEUtils.assertTrue(MTypes.Category.isString(MTypes.Category.fromValue(testString)));
-        TEUtils.assertTrue(MTypes.Category.isNumber(MTypes.Category.fromValue(testNumber)));
-        TEUtils.assertTrue(MTypes.Category.isBigint(MTypes.Category.fromValue(testBigint)));
-        TEUtils.assertTrue(MTypes.Category.isBoolean(MTypes.Category.fromValue(testBoolean)));
-        TEUtils.assertTrue(MTypes.Category.isSymbol(MTypes.Category.fromValue(testSymbol)));
-        TEUtils.assertTrue(MTypes.Category.isUndefined(MTypes.Category.fromValue(undefined)));
-        TEUtils.assertTrue(MTypes.Category.isNull(MTypes.Category.fromValue(null)));
-        TEUtils.assertTrue(MTypes.Category.isFunction(MTypes.Category.fromValue(testFunction)));
-        TEUtils.assertTrue(MTypes.Category.isArray(MTypes.Category.fromValue(testArray2)));
-        TEUtils.assertTrue(MTypes.Category.isRecord(MTypes.Category.fromValue(testRecord)));
-        TEUtils.assertTrue(MTypes.Category.isPrimitive(MTypes.Category.fromValue(testString)));
-        TEUtils.assertTrue(MTypes.Category.isNonPrimitive(MTypes.Category.fromValue(testArray2)));
+        TestUtils.assertTrue(MTypes.Category.isString(MTypes.Category.fromValue(testString)));
+        TestUtils.assertTrue(MTypes.Category.isNumber(MTypes.Category.fromValue(testNumber)));
+        TestUtils.assertTrue(MTypes.Category.isBigint(MTypes.Category.fromValue(testBigint)));
+        TestUtils.assertTrue(MTypes.Category.isBoolean(MTypes.Category.fromValue(testBoolean)));
+        TestUtils.assertTrue(MTypes.Category.isSymbol(MTypes.Category.fromValue(testSymbol)));
+        TestUtils.assertTrue(MTypes.Category.isUndefined(MTypes.Category.fromValue(undefined)));
+        TestUtils.assertTrue(MTypes.Category.isNull(MTypes.Category.fromValue(null)));
+        TestUtils.assertTrue(MTypes.Category.isFunction(MTypes.Category.fromValue(testFunction)));
+        TestUtils.assertTrue(MTypes.Category.isArray(MTypes.Category.fromValue(testArray2)));
+        TestUtils.assertTrue(MTypes.Category.isRecord(MTypes.Category.fromValue(testRecord)));
+        TestUtils.assertTrue(MTypes.Category.isPrimitive(MTypes.Category.fromValue(testString)));
+        TestUtils.assertTrue(MTypes.Category.isNonPrimitive(MTypes.Category.fromValue(testArray2)));
       });
 
       it('Non matching', () => {
-        TEUtils.assertFalse(MTypes.Category.isString(MTypes.Category.fromValue(testNumber)));
-        TEUtils.assertFalse(MTypes.Category.isNumber(MTypes.Category.fromValue(testString)));
-        TEUtils.assertFalse(MTypes.Category.isBigint(MTypes.Category.fromValue(testNumber)));
-        TEUtils.assertFalse(MTypes.Category.isBoolean(MTypes.Category.fromValue(testNumber)));
-        TEUtils.assertFalse(MTypes.Category.isSymbol(MTypes.Category.fromValue(testNumber)));
-        TEUtils.assertFalse(MTypes.Category.isUndefined(MTypes.Category.fromValue(testNumber)));
-        TEUtils.assertFalse(MTypes.Category.isNull(MTypes.Category.fromValue(testNumber)));
-        TEUtils.assertFalse(MTypes.Category.isFunction(MTypes.Category.fromValue(testNumber)));
-        TEUtils.assertFalse(MTypes.Category.isArray(MTypes.Category.fromValue(testNumber)));
-        TEUtils.assertFalse(MTypes.Category.isRecord(MTypes.Category.fromValue(testNumber)));
-        TEUtils.assertFalse(MTypes.Category.isPrimitive(MTypes.Category.fromValue(testArray2)));
-        TEUtils.assertFalse(MTypes.Category.isNonPrimitive(MTypes.Category.fromValue(testNumber)));
+        TestUtils.assertFalse(MTypes.Category.isString(MTypes.Category.fromValue(testNumber)));
+        TestUtils.assertFalse(MTypes.Category.isNumber(MTypes.Category.fromValue(testString)));
+        TestUtils.assertFalse(MTypes.Category.isBigint(MTypes.Category.fromValue(testNumber)));
+        TestUtils.assertFalse(MTypes.Category.isBoolean(MTypes.Category.fromValue(testNumber)));
+        TestUtils.assertFalse(MTypes.Category.isSymbol(MTypes.Category.fromValue(testNumber)));
+        TestUtils.assertFalse(MTypes.Category.isUndefined(MTypes.Category.fromValue(testNumber)));
+        TestUtils.assertFalse(MTypes.Category.isNull(MTypes.Category.fromValue(testNumber)));
+        TestUtils.assertFalse(MTypes.Category.isFunction(MTypes.Category.fromValue(testNumber)));
+        TestUtils.assertFalse(MTypes.Category.isArray(MTypes.Category.fromValue(testNumber)));
+        TestUtils.assertFalse(MTypes.Category.isRecord(MTypes.Category.fromValue(testNumber)));
+        TestUtils.assertFalse(MTypes.Category.isPrimitive(MTypes.Category.fromValue(testArray2)));
+        TestUtils.assertFalse(MTypes.Category.isNonPrimitive(MTypes.Category.fromValue(testNumber)));
       });
     });
   });

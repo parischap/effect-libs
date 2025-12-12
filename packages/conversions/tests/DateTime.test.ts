@@ -1,6 +1,6 @@
+import * as TestUtils from '@parischap/configs/TestUtils';
 import { CVDateTime } from '@parischap/conversions';
 import { MArray } from '@parischap/effect-lib';
-import { TEUtils } from '@parischap/test-utils';
 import { Array, Either, flow, Number, Option, pipe, Tuple } from 'effect';
 import { describe, it } from 'vitest';
 
@@ -15,37 +15,37 @@ describe('CVDateTime', () => {
 
   describe('Tag, prototype and guards', () => {
     it('moduleTag', () => {
-      TEUtils.assertSome(TEUtils.moduleTagFromTestFilePath(__filename), CVDateTime.moduleTag);
+      TestUtils.assertSome(TestUtils.moduleTagFromTestFilePath(__filename), CVDateTime.moduleTag);
     });
 
     describe('Equal.equals', () => {
       it('Matching', () => {
-        TEUtils.assertEquals(origin, CVDateTime.fromTimestampOrThrow(0, 1));
+        TestUtils.assertEquals(origin, CVDateTime.fromTimestampOrThrow(0, 1));
       });
 
       it('Non-matching', () => {
-        TEUtils.assertNotEquals(origin, now);
+        TestUtils.assertNotEquals(origin, now);
       });
     });
 
     it('.toString()', () => {
-      TEUtils.strictEqual(origin.toString(), '1970-01-01T00:00:00.000+00:00');
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(origin.toString(), '1970-01-01T00:00:00.000+00:00');
+      TestUtils.strictEqual(
         CVDateTime.fromTimestampOrThrow(1_749_823_231_774, -3.765).toString(),
         '2025-06-13T10:14:37.774-03:45',
       );
     });
 
     it('.pipe()', () => {
-      TEUtils.assertTrue(now.pipe(CVDateTime.has));
+      TestUtils.assertTrue(now.pipe(CVDateTime.has));
     });
 
     describe('has', () => {
       it('Matching', () => {
-        TEUtils.assertTrue(CVDateTime.has(now));
+        TestUtils.assertTrue(CVDateTime.has(now));
       });
       it('Non matching', () => {
-        TEUtils.assertFalse(CVDateTime.has(new Date()));
+        TestUtils.assertFalse(CVDateTime.has(new Date()));
       });
     });
   });
@@ -141,10 +141,10 @@ describe('CVDateTime', () => {
 			}
 		}*/
 
-    TEUtils.assertEquals(actualVector, expectedVector);
+    TestUtils.assertEquals(actualVector, expectedVector);
     /*
 		const date = CVDateTime.fromTimestampOrThrow(31620067199999, 0)
-		TEUtils.assertEquals({
+		TestUtils.assertEquals({
 							year: CVDateTime.year(date),
 							yearIsLeap: CVDateTime.yearIsLeap(date),
 							month: CVDateTime.month(date),
@@ -263,10 +263,10 @@ describe('CVDateTime', () => {
 			}
 		}*/
 
-    TEUtils.assertEquals(actualVector, expectedVector);
+    TestUtils.assertEquals(actualVector, expectedVector);
 
     /*const date = CVDateTime.fromTimestampOrThrow(-6216393600000, 0);
-		TEUtils.assertEquals(
+		TestUtils.assertEquals(
 			{
 				isoYearDescriptor: CVDateTime.isoYearDescriptor(date),
 				isoYearIsLong: CVDateTime.isoYearIsLong(date),
@@ -284,7 +284,7 @@ describe('CVDateTime', () => {
 
   describe('fromParts', () => {
     it('From nothing', () => {
-      TEUtils.assertLeftMessage(
+      TestUtils.assertLeftMessage(
         CVDateTime.fromParts({}),
         "One of 'year' and 'isoYear' must be be set",
       );
@@ -301,17 +301,17 @@ describe('CVDateTime', () => {
         zoneOffset: 1,
       });
 
-      TEUtils.assertRight(either);
+      TestUtils.assertRight(either);
       const testDate = either.right;
-      TEUtils.strictEqual(CVDateTime.timestamp(testDate), Date.UTC(2024, 2, 1, 16, 43, 27, 654));
-      TEUtils.assertSome(testDate.gregorianDate);
-      TEUtils.assertNone(testDate.isoDate);
-      TEUtils.assertSome(testDate.time);
+      TestUtils.strictEqual(CVDateTime.timestamp(testDate), Date.UTC(2024, 2, 1, 16, 43, 27, 654));
+      TestUtils.assertSome(testDate.gregorianDate);
+      TestUtils.assertNone(testDate.isoDate);
+      TestUtils.assertSome(testDate.time);
     });
 
     describe('From date with hour23 and zoneHour, zoneMinute, zoneSecond', () => {
       it('Positive offset', () => {
-        TEUtils.assertRight(
+        TestUtils.assertRight(
           pipe(
             {
               year: 2024,
@@ -332,7 +332,7 @@ describe('CVDateTime', () => {
       });
 
       it('Negative offset, zoneHour !== 0', () => {
-        TEUtils.assertRight(
+        TestUtils.assertRight(
           pipe(
             {
               year: 2024,
@@ -353,7 +353,7 @@ describe('CVDateTime', () => {
       });
 
       it('Negative offset, zoneHour=0', () => {
-        TEUtils.assertRight(
+        TestUtils.assertRight(
           pipe(
             {
               year: 2024,
@@ -375,7 +375,7 @@ describe('CVDateTime', () => {
     });
 
     it('From date with hour23 and zoneOffset, zoneHour, zoneMinute, zoneSecond', () => {
-      TEUtils.assertRight(
+      TestUtils.assertRight(
         pipe(
           {
             year: 2024,
@@ -397,7 +397,7 @@ describe('CVDateTime', () => {
     });
 
     it('From date with hour11 and meridiem', () => {
-      TEUtils.assertRight(
+      TestUtils.assertRight(
         pipe(
           {
             year: 2024,
@@ -429,12 +429,12 @@ describe('CVDateTime', () => {
         zoneOffset: 0,
       });
 
-      TEUtils.assertRight(either);
+      TestUtils.assertRight(either);
       const testDate = either.right;
-      TEUtils.strictEqual(CVDateTime.timestamp(testDate), Date.UTC(2028, 0, 1, 17, 43, 27, 654));
-      TEUtils.assertNone(testDate.gregorianDate);
-      TEUtils.assertSome(testDate.isoDate);
-      TEUtils.assertSome(testDate.time);
+      TestUtils.strictEqual(CVDateTime.timestamp(testDate), Date.UTC(2028, 0, 1, 17, 43, 27, 654));
+      TestUtils.assertNone(testDate.gregorianDate);
+      TestUtils.assertSome(testDate.isoDate);
+      TestUtils.assertSome(testDate.time);
     });
 
     describe('Default values', () => {
@@ -444,16 +444,16 @@ describe('CVDateTime', () => {
           zoneOffset: 0,
         });
 
-        TEUtils.assertRight(either);
+        TestUtils.assertRight(either);
         const testDate = either.right;
-        TEUtils.strictEqual(CVDateTime.timestamp(testDate), Date.UTC(2025, 0, 1));
-        TEUtils.assertSome(testDate.gregorianDate);
-        TEUtils.assertNone(testDate.isoDate);
-        TEUtils.assertNone(testDate.time);
+        TestUtils.strictEqual(CVDateTime.timestamp(testDate), Date.UTC(2025, 0, 1));
+        TestUtils.assertSome(testDate.gregorianDate);
+        TestUtils.assertNone(testDate.isoDate);
+        TestUtils.assertNone(testDate.time);
       });
 
       it('year and month are set', () => {
-        TEUtils.assertRight(
+        TestUtils.assertRight(
           pipe(
             {
               year: 2025,
@@ -467,7 +467,7 @@ describe('CVDateTime', () => {
         );
       });
       it('year and monthDay are set', () => {
-        TEUtils.assertRight(
+        TestUtils.assertRight(
           pipe(
             {
               year: 2025,
@@ -481,7 +481,7 @@ describe('CVDateTime', () => {
         );
       });
       it('Only isoYear is set', () => {
-        TEUtils.assertRight(
+        TestUtils.assertRight(
           pipe(
             {
               isoYear: 2025,
@@ -494,7 +494,7 @@ describe('CVDateTime', () => {
         );
       });
       it('isoYear and isoWeek are set', () => {
-        TEUtils.assertRight(
+        TestUtils.assertRight(
           pipe(
             {
               isoYear: 2025,
@@ -508,7 +508,7 @@ describe('CVDateTime', () => {
         );
       });
       it('isoYear and weekday are set', () => {
-        TEUtils.assertRight(
+        TestUtils.assertRight(
           pipe(
             {
               isoYear: 2025,
@@ -528,12 +528,12 @@ describe('CVDateTime', () => {
           isoYear: 2025,
           zoneOffset: 0,
         });
-        TEUtils.assertRight(either);
+        TestUtils.assertRight(either);
         const testDate = either.right;
-        TEUtils.strictEqual(CVDateTime.timestamp(testDate), Date.UTC(2024, 11, 30));
-        TEUtils.assertSome(testDate.gregorianDate);
-        TEUtils.assertSome(testDate.isoDate);
-        TEUtils.assertNone(testDate.time);
+        TestUtils.strictEqual(CVDateTime.timestamp(testDate), Date.UTC(2024, 11, 30));
+        TestUtils.assertSome(testDate.gregorianDate);
+        TestUtils.assertSome(testDate.isoDate);
+        TestUtils.assertNone(testDate.time);
       });
 
       it('An isoDay is set and year is passed', () => {
@@ -544,16 +544,16 @@ describe('CVDateTime', () => {
           weekday: 4,
           zoneOffset: 0,
         });
-        TEUtils.assertRight(either);
+        TestUtils.assertRight(either);
         const testDate = either.right;
-        TEUtils.strictEqual(CVDateTime.timestamp(testDate), Date.UTC(2025, 0, 16));
-        TEUtils.assertSome(testDate.gregorianDate);
-        TEUtils.assertSome(testDate.isoDate);
-        TEUtils.assertNone(testDate.time);
+        TestUtils.strictEqual(CVDateTime.timestamp(testDate), Date.UTC(2025, 0, 16));
+        TestUtils.assertSome(testDate.gregorianDate);
+        TestUtils.assertSome(testDate.isoDate);
+        TestUtils.assertNone(testDate.time);
       });
 
       it('Only meridiem is set', () => {
-        TEUtils.assertRight(
+        TestUtils.assertRight(
           pipe(
             {
               year: 2024,
@@ -569,7 +569,7 @@ describe('CVDateTime', () => {
       });
 
       it('Only hour11 is set', () => {
-        TEUtils.assertRight(
+        TestUtils.assertRight(
           pipe(
             {
               year: 2024,
@@ -585,7 +585,7 @@ describe('CVDateTime', () => {
       });
 
       it('Only zoneMinute is set', () => {
-        TEUtils.assertRight(
+        TestUtils.assertRight(
           pipe(
             {
               year: 2024,
@@ -606,105 +606,105 @@ describe('CVDateTime', () => {
 
     describe('Out of range data', () => {
       it('zoneOffset', () => {
-        TEUtils.assertLeftMessage(
+        TestUtils.assertLeftMessage(
           pipe({ year: 2025, zoneOffset: 15 }, CVDateTime.fromParts),
           "Expected 'zoneOffset' to be between -13 (excluded) and 15 (excluded). Actual: 15",
         );
       });
 
       it('zoneHour', () => {
-        TEUtils.assertLeftMessage(
+        TestUtils.assertLeftMessage(
           pipe({ year: 2025, zoneHour: 15 }, CVDateTime.fromParts),
           "Expected 'zoneHour' to be between -12 (included) and 14 (included). Actual: 15",
         );
       });
 
       it('zoneMinute', () => {
-        TEUtils.assertLeftMessage(
+        TestUtils.assertLeftMessage(
           pipe({ year: 2025, zoneMinute: 63 }, CVDateTime.fromParts),
           "Expected 'zoneMinute' to be between 0 (included) and 59 (included). Actual: 63",
         );
       });
 
       it('zoneSecond', () => {
-        TEUtils.assertLeftMessage(
+        TestUtils.assertLeftMessage(
           pipe({ year: 2025, zoneSecond: -5 }, CVDateTime.fromParts),
           "Expected 'zoneSecond' to be between 0 (included) and 59 (included). Actual: -5",
         );
       });
 
       it('month', () => {
-        TEUtils.assertLeftMessage(
+        TestUtils.assertLeftMessage(
           pipe({ year: 2025, month: 0 }, CVDateTime.fromParts),
           "Expected 'month' to be between 1 (included) and 12 (included). Actual: 0",
         );
       });
 
       it('monthDay', () => {
-        TEUtils.assertLeftMessage(
+        TestUtils.assertLeftMessage(
           pipe({ year: 2025, month: 2, monthDay: 32 }, CVDateTime.fromParts),
           "Expected 'monthDay' to be between 1 (included) and 28 (included). Actual: 32",
         );
       });
 
       it('ordinalDay', () => {
-        TEUtils.assertLeftMessage(
+        TestUtils.assertLeftMessage(
           pipe({ year: 2024, ordinalDay: 412 }, CVDateTime.fromParts),
           "Expected 'ordinalDay' to be between 1 (included) and 366 (included). Actual: 412",
         );
       });
 
       it('isoWeek', () => {
-        TEUtils.assertLeftMessage(
+        TestUtils.assertLeftMessage(
           pipe({ isoYear: 2027, isoWeek: 53 }, CVDateTime.fromParts),
           "Expected 'isoWeek' to be between 1 (included) and 52 (included). Actual: 53",
         );
       });
 
       it('weekDay', () => {
-        TEUtils.assertLeftMessage(
+        TestUtils.assertLeftMessage(
           pipe({ isoYear: 2027, weekday: 0 }, CVDateTime.fromParts),
           "Expected 'weekday' to be between 1 (included) and 7 (included). Actual: 0",
         );
       });
 
       it('hour23', () => {
-        TEUtils.assertLeftMessage(
+        TestUtils.assertLeftMessage(
           pipe({ year: 2024, hour23: 24 }, CVDateTime.fromParts),
           "Expected 'hour23' to be between 0 (included) and 23 (included). Actual: 24",
         );
       });
 
       it('hour11', () => {
-        TEUtils.assertLeftMessage(
+        TestUtils.assertLeftMessage(
           pipe({ year: 2024, meridiem: 0, hour11: -4 }, CVDateTime.fromParts),
           "Expected 'hour11' to be between 0 (included) and 11 (included). Actual: -4",
         );
       });
 
       it('minute', () => {
-        TEUtils.assertLeftMessage(
+        TestUtils.assertLeftMessage(
           pipe({ year: 2024, minute: 60 }, CVDateTime.fromParts),
           "Expected 'minute' to be between 0 (included) and 59 (included). Actual: 60",
         );
       });
 
       it('second', () => {
-        TEUtils.assertLeftMessage(
+        TestUtils.assertLeftMessage(
           pipe({ year: 2024, second: 67 }, CVDateTime.fromParts),
           "Expected 'second' to be between 0 (included) and 59 (included). Actual: 67",
         );
       });
 
       it('millisecond', () => {
-        TEUtils.assertLeftMessage(
+        TestUtils.assertLeftMessage(
           pipe({ year: 2024, millisecond: 1023 }, CVDateTime.fromParts),
           "Expected 'millisecond' to be between 0 (included) and 999 (included). Actual: 1023",
         );
       });
     });
     it('Incoherent parts', () => {
-      TEUtils.assertLeftMessage(
+      TestUtils.assertLeftMessage(
         pipe(
           {
             year: 2024,
@@ -716,7 +716,7 @@ describe('CVDateTime', () => {
         ),
         "Expected 'meridiem' to be: 0. Actual: 12",
       );
-      TEUtils.assertLeftMessage(
+      TestUtils.assertLeftMessage(
         pipe(
           {
             year: 2024,
@@ -729,7 +729,7 @@ describe('CVDateTime', () => {
         ),
         "Expected 'hour11' to be: 5. Actual: 4",
       );
-      TEUtils.assertLeftMessage(
+      TestUtils.assertLeftMessage(
         pipe(
           {
             year: 2024,
@@ -741,7 +741,7 @@ describe('CVDateTime', () => {
         ),
         "Expected 'month' to be: 3. Actual: 2",
       );
-      TEUtils.assertLeftMessage(
+      TestUtils.assertLeftMessage(
         pipe(
           {
             year: 2024,
@@ -753,7 +753,7 @@ describe('CVDateTime', () => {
         ),
         "Expected 'monthDay' to be: 1. Actual: 2",
       );
-      TEUtils.assertLeftMessage(
+      TestUtils.assertLeftMessage(
         pipe(
           {
             year: 2024,
@@ -765,7 +765,7 @@ describe('CVDateTime', () => {
         ),
         "Expected 'isoWeek' to be: 9. Actual: 12",
       );
-      TEUtils.assertLeftMessage(
+      TestUtils.assertLeftMessage(
         pipe(
           {
             year: 2024,
@@ -777,7 +777,7 @@ describe('CVDateTime', () => {
         ),
         "Expected 'weekday' to be: 5. Actual: 17",
       );
-      TEUtils.assertLeftMessage(
+      TestUtils.assertLeftMessage(
         pipe(
           {
             year: 2024,
@@ -790,7 +790,7 @@ describe('CVDateTime', () => {
         ),
         "Expected 'weekday' to be: 5. Actual: 17",
       );
-      TEUtils.assertLeftMessage(
+      TestUtils.assertLeftMessage(
         pipe(
           {
             year: 2024,
@@ -803,7 +803,7 @@ describe('CVDateTime', () => {
         ),
         "Expected 'isoYear' to be: 2025. Actual: 2024",
       );
-      TEUtils.assertLeftMessage(
+      TestUtils.assertLeftMessage(
         pipe(
           {
             isoYear: 2027,
@@ -816,7 +816,7 @@ describe('CVDateTime', () => {
         ),
         "Expected 'year' to be: 2028. Actual: 2027",
       );
-      TEUtils.assertLeftMessage(
+      TestUtils.assertLeftMessage(
         pipe(
           {
             isoYear: 2027,
@@ -829,7 +829,7 @@ describe('CVDateTime', () => {
         ),
         "Expected 'month' to be: 1. Actual: 12",
       );
-      TEUtils.assertLeftMessage(
+      TestUtils.assertLeftMessage(
         pipe(
           {
             isoYear: 2027,
@@ -842,7 +842,7 @@ describe('CVDateTime', () => {
         ),
         "Expected 'monthDay' to be: 1. Actual: 5",
       );
-      TEUtils.assertLeftMessage(
+      TestUtils.assertLeftMessage(
         pipe(
           {
             isoYear: 2027,
@@ -855,7 +855,7 @@ describe('CVDateTime', () => {
         ),
         "Expected 'ordinalDay' to be: 1. Actual: 5",
       );
-      TEUtils.assertLeftMessage(
+      TestUtils.assertLeftMessage(
         pipe(
           {
             year: 2024,
@@ -880,94 +880,94 @@ describe('CVDateTime', () => {
     it('Get year, month, monthDay then all time parts', () => {
       const testDate = CVDateTime.fromTimestampOrThrow(1750670080496, 0);
 
-      TEUtils.assertNone(testDate.gregorianDate);
-      TEUtils.assertNone(testDate.isoDate);
-      TEUtils.assertNone(testDate.time);
+      TestUtils.assertNone(testDate.gregorianDate);
+      TestUtils.assertNone(testDate.isoDate);
+      TestUtils.assertNone(testDate.time);
 
-      TEUtils.strictEqual(CVDateTime.getYear(testDate), 2025);
-      TEUtils.assertSome(testDate.gregorianDate);
-      TEUtils.assertNone(testDate.isoDate);
-      TEUtils.assertNone(testDate.time);
+      TestUtils.strictEqual(CVDateTime.getYear(testDate), 2025);
+      TestUtils.assertSome(testDate.gregorianDate);
+      TestUtils.assertNone(testDate.isoDate);
+      TestUtils.assertNone(testDate.time);
 
-      TEUtils.strictEqual(CVDateTime.getMonth(testDate), 6);
-      TEUtils.assertSome(testDate.gregorianDate);
-      TEUtils.assertNone(testDate.isoDate);
-      TEUtils.assertNone(testDate.time);
+      TestUtils.strictEqual(CVDateTime.getMonth(testDate), 6);
+      TestUtils.assertSome(testDate.gregorianDate);
+      TestUtils.assertNone(testDate.isoDate);
+      TestUtils.assertNone(testDate.time);
 
-      TEUtils.strictEqual(CVDateTime.getMonthDay(testDate), 23);
-      TEUtils.strictEqual(CVDateTime.getHour23(testDate), 9);
-      TEUtils.assertSome(testDate.gregorianDate);
-      TEUtils.assertNone(testDate.isoDate);
-      TEUtils.assertSome(testDate.time);
+      TestUtils.strictEqual(CVDateTime.getMonthDay(testDate), 23);
+      TestUtils.strictEqual(CVDateTime.getHour23(testDate), 9);
+      TestUtils.assertSome(testDate.gregorianDate);
+      TestUtils.assertNone(testDate.isoDate);
+      TestUtils.assertSome(testDate.time);
 
-      TEUtils.strictEqual(CVDateTime.getMinute(testDate), 14);
-      TEUtils.strictEqual(CVDateTime.getSecond(testDate), 40);
-      TEUtils.strictEqual(CVDateTime.getMillisecond(testDate), 496);
+      TestUtils.strictEqual(CVDateTime.getMinute(testDate), 14);
+      TestUtils.strictEqual(CVDateTime.getSecond(testDate), 40);
+      TestUtils.strictEqual(CVDateTime.getMillisecond(testDate), 496);
     });
 
     it('Get seconds then monthDay', () => {
       const testDate = CVDateTime.fromTimestampOrThrow(1750670080496, 0);
-      TEUtils.strictEqual(CVDateTime.getSecond(testDate), 40);
-      TEUtils.assertNone(testDate.gregorianDate);
-      TEUtils.assertNone(testDate.isoDate);
-      TEUtils.assertSome(testDate.time);
+      TestUtils.strictEqual(CVDateTime.getSecond(testDate), 40);
+      TestUtils.assertNone(testDate.gregorianDate);
+      TestUtils.assertNone(testDate.isoDate);
+      TestUtils.assertSome(testDate.time);
 
-      TEUtils.strictEqual(CVDateTime.getMonthDay(testDate), 23);
-      TEUtils.assertSome(testDate.gregorianDate);
-      TEUtils.assertNone(testDate.isoDate);
-      TEUtils.assertSome(testDate.time);
+      TestUtils.strictEqual(CVDateTime.getMonthDay(testDate), 23);
+      TestUtils.assertSome(testDate.gregorianDate);
+      TestUtils.assertNone(testDate.isoDate);
+      TestUtils.assertSome(testDate.time);
 
-      TEUtils.strictEqual(CVDateTime.getHour23(testDate), 9);
-      TEUtils.assertSome(testDate.gregorianDate);
-      TEUtils.assertNone(testDate.isoDate);
-      TEUtils.assertSome(testDate.time);
+      TestUtils.strictEqual(CVDateTime.getHour23(testDate), 9);
+      TestUtils.assertSome(testDate.gregorianDate);
+      TestUtils.assertNone(testDate.isoDate);
+      TestUtils.assertSome(testDate.time);
     });
 
     it('Get isoYear, isoWeek, weekday and milliseconds', () => {
       const testDate = CVDateTime.fromTimestampOrThrow(1750670080496, 0);
-      TEUtils.strictEqual(CVDateTime.getIsoYear(testDate), 2025);
-      TEUtils.assertNone(testDate.gregorianDate);
-      TEUtils.assertSome(testDate.isoDate);
-      TEUtils.assertNone(testDate.time);
+      TestUtils.strictEqual(CVDateTime.getIsoYear(testDate), 2025);
+      TestUtils.assertNone(testDate.gregorianDate);
+      TestUtils.assertSome(testDate.isoDate);
+      TestUtils.assertNone(testDate.time);
 
-      TEUtils.strictEqual(CVDateTime.getIsoWeek(testDate), 26);
-      TEUtils.assertNone(testDate.gregorianDate);
-      TEUtils.assertSome(testDate.isoDate);
-      TEUtils.assertNone(testDate.time);
+      TestUtils.strictEqual(CVDateTime.getIsoWeek(testDate), 26);
+      TestUtils.assertNone(testDate.gregorianDate);
+      TestUtils.assertSome(testDate.isoDate);
+      TestUtils.assertNone(testDate.time);
 
-      TEUtils.strictEqual(CVDateTime.getWeekday(testDate), 1);
-      TEUtils.strictEqual(CVDateTime.getMillisecond(testDate), 496);
-      TEUtils.assertNone(testDate.gregorianDate);
-      TEUtils.assertSome(testDate.isoDate);
-      TEUtils.assertSome(testDate.time);
+      TestUtils.strictEqual(CVDateTime.getWeekday(testDate), 1);
+      TestUtils.strictEqual(CVDateTime.getMillisecond(testDate), 496);
+      TestUtils.assertNone(testDate.gregorianDate);
+      TestUtils.assertSome(testDate.isoDate);
+      TestUtils.assertSome(testDate.time);
     });
 
     it('Get minutes, isoYear, weekday, year and monthDay', () => {
       const testDate = CVDateTime.fromTimestampOrThrow(1750670080496, 0);
-      TEUtils.strictEqual(CVDateTime.getMinute(testDate), 14);
-      TEUtils.assertNone(testDate.gregorianDate);
-      TEUtils.assertNone(testDate.isoDate);
-      TEUtils.assertSome(testDate.time);
+      TestUtils.strictEqual(CVDateTime.getMinute(testDate), 14);
+      TestUtils.assertNone(testDate.gregorianDate);
+      TestUtils.assertNone(testDate.isoDate);
+      TestUtils.assertSome(testDate.time);
 
-      TEUtils.strictEqual(CVDateTime.getIsoYear(testDate), 2025);
-      TEUtils.assertNone(testDate.gregorianDate);
-      TEUtils.assertSome(testDate.isoDate);
-      TEUtils.assertSome(testDate.time);
+      TestUtils.strictEqual(CVDateTime.getIsoYear(testDate), 2025);
+      TestUtils.assertNone(testDate.gregorianDate);
+      TestUtils.assertSome(testDate.isoDate);
+      TestUtils.assertSome(testDate.time);
 
-      TEUtils.strictEqual(CVDateTime.getWeekday(testDate), 1);
-      TEUtils.assertNone(testDate.gregorianDate);
-      TEUtils.assertSome(testDate.isoDate);
-      TEUtils.assertSome(testDate.time);
+      TestUtils.strictEqual(CVDateTime.getWeekday(testDate), 1);
+      TestUtils.assertNone(testDate.gregorianDate);
+      TestUtils.assertSome(testDate.isoDate);
+      TestUtils.assertSome(testDate.time);
 
-      TEUtils.strictEqual(CVDateTime.getYear(testDate), 2025);
-      TEUtils.assertSome(testDate.gregorianDate);
-      TEUtils.assertSome(testDate.isoDate);
-      TEUtils.assertSome(testDate.time);
+      TestUtils.strictEqual(CVDateTime.getYear(testDate), 2025);
+      TestUtils.assertSome(testDate.gregorianDate);
+      TestUtils.assertSome(testDate.isoDate);
+      TestUtils.assertSome(testDate.time);
 
-      TEUtils.strictEqual(CVDateTime.getMonthDay(testDate), 23);
-      TEUtils.assertSome(testDate.gregorianDate);
-      TEUtils.assertSome(testDate.isoDate);
-      TEUtils.assertSome(testDate.time);
+      TestUtils.strictEqual(CVDateTime.getMonthDay(testDate), 23);
+      TestUtils.assertSome(testDate.gregorianDate);
+      TestUtils.assertSome(testDate.isoDate);
+      TestUtils.assertSome(testDate.time);
     });
 
     describe('Get year, isoYear, isoWeek, weekday', () => {
@@ -979,10 +979,10 @@ describe('CVDateTime', () => {
             monthDay: 3,
             zoneOffset: 0,
           });
-          TEUtils.strictEqual(CVDateTime.getYear(testDate), 2022);
-          TEUtils.strictEqual(CVDateTime.getIsoYear(testDate), 2022);
-          TEUtils.strictEqual(CVDateTime.getIsoWeek(testDate), 1);
-          TEUtils.strictEqual(CVDateTime.getWeekday(testDate), 1);
+          TestUtils.strictEqual(CVDateTime.getYear(testDate), 2022);
+          TestUtils.strictEqual(CVDateTime.getIsoYear(testDate), 2022);
+          TestUtils.strictEqual(CVDateTime.getIsoWeek(testDate), 1);
+          TestUtils.strictEqual(CVDateTime.getWeekday(testDate), 1);
         });
 
         it('End of year', () => {
@@ -992,10 +992,10 @@ describe('CVDateTime', () => {
             monthDay: 28,
             zoneOffset: 0,
           });
-          TEUtils.strictEqual(CVDateTime.getYear(testDate), 2025);
-          TEUtils.strictEqual(CVDateTime.getIsoYear(testDate), 2025);
-          TEUtils.strictEqual(CVDateTime.getIsoWeek(testDate), 52);
-          TEUtils.strictEqual(CVDateTime.getWeekday(testDate), 7);
+          TestUtils.strictEqual(CVDateTime.getYear(testDate), 2025);
+          TestUtils.strictEqual(CVDateTime.getIsoYear(testDate), 2025);
+          TestUtils.strictEqual(CVDateTime.getIsoWeek(testDate), 52);
+          TestUtils.strictEqual(CVDateTime.getWeekday(testDate), 7);
         });
       });
 
@@ -1006,10 +1006,10 @@ describe('CVDateTime', () => {
           monthDay: 2,
           zoneOffset: 0,
         });
-        TEUtils.strictEqual(CVDateTime.getYear(testDate), 2022);
-        TEUtils.strictEqual(CVDateTime.getIsoYear(testDate), 2021);
-        TEUtils.strictEqual(CVDateTime.getIsoWeek(testDate), 52);
-        TEUtils.strictEqual(CVDateTime.getWeekday(testDate), 7);
+        TestUtils.strictEqual(CVDateTime.getYear(testDate), 2022);
+        TestUtils.strictEqual(CVDateTime.getIsoYear(testDate), 2021);
+        TestUtils.strictEqual(CVDateTime.getIsoWeek(testDate), 52);
+        TestUtils.strictEqual(CVDateTime.getWeekday(testDate), 7);
       });
 
       it('isoYear is year + 1', () => {
@@ -1019,10 +1019,10 @@ describe('CVDateTime', () => {
           monthDay: 29,
           zoneOffset: 0,
         });
-        TEUtils.strictEqual(CVDateTime.getYear(testDate), 2025);
-        TEUtils.strictEqual(CVDateTime.getIsoYear(testDate), 2026);
-        TEUtils.strictEqual(CVDateTime.getIsoWeek(testDate), 1);
-        TEUtils.strictEqual(CVDateTime.getWeekday(testDate), 1);
+        TestUtils.strictEqual(CVDateTime.getYear(testDate), 2025);
+        TestUtils.strictEqual(CVDateTime.getIsoYear(testDate), 2026);
+        TestUtils.strictEqual(CVDateTime.getIsoWeek(testDate), 1);
+        TestUtils.strictEqual(CVDateTime.getWeekday(testDate), 1);
       });
     });
   });
@@ -1030,13 +1030,13 @@ describe('CVDateTime', () => {
   describe('Setters', () => {
     describe('Not passing', () => {
       it('No February,29th in 2021', () => {
-        TEUtils.assertLeftMessage(
+        TestUtils.assertLeftMessage(
           pipe(feb29_2020, CVDateTime.setYear(2021)),
           'No February 29th on year 2021 which is not a leap year',
         );
       });
       it('No june, 31st', () => {
-        TEUtils.assertLeftMessage(
+        TestUtils.assertLeftMessage(
           pipe(
             {
               isoYear: 2027,
@@ -1052,7 +1052,7 @@ describe('CVDateTime', () => {
       });
 
       it('No 53rd week in 2024', () => {
-        TEUtils.assertLeftMessage(
+        TestUtils.assertLeftMessage(
           pipe(
             {
               year: 2026,
@@ -1079,62 +1079,62 @@ describe('CVDateTime', () => {
         millisecond: 654,
         zoneOffset: 1,
       });
-      TEUtils.assertRight(
+      TestUtils.assertRight(
         pipe(testDate, CVDateTime.setYear(2019), Either.map(CVDateTime.timestamp)),
         Date.UTC(2019, 5, 23, 16, 43, 27, 654),
       );
-      TEUtils.assertRight(
+      TestUtils.assertRight(
         pipe(testDate, CVDateTime.setMonth(1), Either.map(CVDateTime.timestamp)),
         Date.UTC(2024, 0, 23, 16, 43, 27, 654),
       );
-      TEUtils.assertRight(
+      TestUtils.assertRight(
         pipe(testDate, CVDateTime.setMonthDay(4), Either.map(CVDateTime.timestamp)),
         Date.UTC(2024, 5, 4, 16, 43, 27, 654),
       );
-      TEUtils.assertRight(
+      TestUtils.assertRight(
         pipe(testDate, CVDateTime.setOrdinalDay(4), Either.map(CVDateTime.timestamp)),
         Date.UTC(2024, 0, 4, 16, 43, 27, 654),
       );
-      TEUtils.assertRight(
+      TestUtils.assertRight(
         pipe(testDate, CVDateTime.setIsoYear(2027), Either.map(CVDateTime.timestamp)),
         Date.UTC(2027, 5, 27, 16, 43, 27, 654),
       );
-      TEUtils.assertRight(
+      TestUtils.assertRight(
         pipe(testDate, CVDateTime.setIsoWeek(4), Either.map(CVDateTime.timestamp)),
         Date.UTC(2024, 0, 28, 16, 43, 27, 654),
       );
-      TEUtils.assertRight(
+      TestUtils.assertRight(
         pipe(testDate, CVDateTime.setWeekday(4), Either.map(CVDateTime.timestamp)),
         Date.UTC(2024, 5, 20, 16, 43, 27, 654),
       );
-      TEUtils.assertRight(
+      TestUtils.assertRight(
         pipe(testDate, CVDateTime.setHour23(4), Either.map(CVDateTime.timestamp)),
         Date.UTC(2024, 5, 23, 3, 43, 27, 654),
       );
-      TEUtils.assertRight(
+      TestUtils.assertRight(
         pipe(testDate, CVDateTime.setHour11(4), Either.map(CVDateTime.timestamp)),
         Date.UTC(2024, 5, 23, 15, 43, 27, 654),
       );
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         pipe(testDate, CVDateTime.setMeridiem(0), CVDateTime.timestamp),
         Date.UTC(2024, 5, 23, 4, 43, 27, 654),
       );
-      TEUtils.assertRight(
+      TestUtils.assertRight(
         pipe(testDate, CVDateTime.setMinute(15), Either.map(CVDateTime.timestamp)),
         Date.UTC(2024, 5, 23, 16, 15, 27, 654),
       );
-      TEUtils.assertRight(
+      TestUtils.assertRight(
         pipe(testDate, CVDateTime.setSecond(15), Either.map(CVDateTime.timestamp)),
         Date.UTC(2024, 5, 23, 16, 43, 15, 654),
       );
-      TEUtils.assertRight(
+      TestUtils.assertRight(
         pipe(testDate, CVDateTime.setMillisecond(15), Either.map(CVDateTime.timestamp)),
         Date.UTC(2024, 5, 23, 16, 43, 27, 15),
       );
     });
 
     it('From non leap year to non leap year', () => {
-      TEUtils.assertRight(
+      TestUtils.assertRight(
         pipe(
           {
             year: 2023,
@@ -1148,7 +1148,7 @@ describe('CVDateTime', () => {
         ),
         Date.UTC(2019, 1, 28),
       );
-      TEUtils.assertRight(
+      TestUtils.assertRight(
         pipe(
           {
             year: 2023,
@@ -1165,7 +1165,7 @@ describe('CVDateTime', () => {
     });
 
     it('From non leap year to leap year', () => {
-      TEUtils.assertRight(
+      TestUtils.assertRight(
         pipe(
           {
             year: 2023,
@@ -1179,7 +1179,7 @@ describe('CVDateTime', () => {
         ),
         Date.UTC(2024, 1, 28),
       );
-      TEUtils.assertRight(
+      TestUtils.assertRight(
         pipe(
           {
             year: 2023,
@@ -1196,7 +1196,7 @@ describe('CVDateTime', () => {
     });
 
     it('From leap year to non leap year', () => {
-      TEUtils.assertRight(
+      TestUtils.assertRight(
         pipe(
           {
             year: 2024,
@@ -1210,7 +1210,7 @@ describe('CVDateTime', () => {
         ),
         Date.UTC(2023, 1, 28),
       );
-      TEUtils.assertLeft(
+      TestUtils.assertLeft(
         pipe(
           {
             year: 2024,
@@ -1222,7 +1222,7 @@ describe('CVDateTime', () => {
           CVDateTime.setYear(2023),
         ),
       );
-      TEUtils.assertRight(
+      TestUtils.assertRight(
         pipe(
           {
             year: 2024,
@@ -1239,7 +1239,7 @@ describe('CVDateTime', () => {
     });
 
     it('From leap year to leap year', () => {
-      TEUtils.assertRight(
+      TestUtils.assertRight(
         pipe(
           {
             year: 2024,
@@ -1253,7 +1253,7 @@ describe('CVDateTime', () => {
         ),
         Date.UTC(2020, 1, 28),
       );
-      TEUtils.assertRight(
+      TestUtils.assertRight(
         pipe(
           {
             year: 2024,
@@ -1267,7 +1267,7 @@ describe('CVDateTime', () => {
         ),
         Date.UTC(2020, 1, 29),
       );
-      TEUtils.assertRight(
+      TestUtils.assertRight(
         pipe(
           {
             year: 2024,
@@ -1284,7 +1284,7 @@ describe('CVDateTime', () => {
     });
 
     it('From isoDate to weekday with a setMonDay in between', () => {
-      TEUtils.assertRight(
+      TestUtils.assertRight(
         pipe(
           {
             isoYear: 2027,
@@ -1301,7 +1301,7 @@ describe('CVDateTime', () => {
     });
 
     it('Change zoneOffset', () => {
-      TEUtils.assertRight(
+      TestUtils.assertRight(
         pipe(
           {
             year: 2024,
@@ -1317,7 +1317,7 @@ describe('CVDateTime', () => {
         '2024-02-29T22:00:00.000-08:00',
       );
 
-      TEUtils.assertRight(
+      TestUtils.assertRight(
         pipe(
           {
             year: 2024,
@@ -1337,24 +1337,24 @@ describe('CVDateTime', () => {
 
   describe('isFirstMonthDay', () => {
     it('Passing', () => {
-      TEUtils.assertRight(
+      TestUtils.assertRight(
         pipe(feb29_2020, CVDateTime.offsetDays(1), Either.map(CVDateTime.isFirstMonthDay)),
         true,
       );
     });
 
     it('Not passing', () => {
-      TEUtils.assertFalse(pipe(CVDateTime.isFirstMonthDay(feb29_2020)));
+      TestUtils.assertFalse(pipe(CVDateTime.isFirstMonthDay(feb29_2020)));
     });
   });
 
   describe('isLastMonthDay', () => {
     it('Passing', () => {
-      TEUtils.assertTrue(CVDateTime.isLastMonthDay(feb29_2020));
+      TestUtils.assertTrue(CVDateTime.isLastMonthDay(feb29_2020));
     });
 
     it('Not passing', () => {
-      TEUtils.assertRight(
+      TestUtils.assertRight(
         pipe(
           feb29_2020,
           CVDateTime.setZoneOffsetKeepTimestamp(-1),
@@ -1367,107 +1367,107 @@ describe('CVDateTime', () => {
 
   describe('isFirstYearDay', () => {
     it('Passing', () => {
-      TEUtils.assertRight(
+      TestUtils.assertRight(
         pipe(feb29_2020, CVDateTime.offsetDays(-59), Either.map(CVDateTime.isFirstYearDay)),
         true,
       );
     });
 
     it('Not passing', () => {
-      TEUtils.assertFalse(pipe(CVDateTime.isFirstYearDay(feb29_2020)));
+      TestUtils.assertFalse(pipe(CVDateTime.isFirstYearDay(feb29_2020)));
     });
   });
 
   describe('isLastYearDay', () => {
     it('Passing', () => {
-      TEUtils.assertRight(
+      TestUtils.assertRight(
         pipe(feb29_2020, CVDateTime.offsetDays(-60), Either.map(CVDateTime.isLastYearDay)),
         true,
       );
     });
 
     it('Not passing', () => {
-      TEUtils.assertFalse(pipe(CVDateTime.isLastYearDay(feb29_2020)));
+      TestUtils.assertFalse(pipe(CVDateTime.isLastYearDay(feb29_2020)));
     });
   });
 
   describe('isFirstIsoYearDay', () => {
     it('Passing', () => {
-      TEUtils.assertRight(
+      TestUtils.assertRight(
         pipe(feb29_2020, CVDateTime.offsetDays(-61), Either.map(CVDateTime.isFirstIsoYearDay)),
         true,
       );
     });
 
     it('Not passing', () => {
-      TEUtils.assertFalse(pipe(CVDateTime.isFirstIsoYearDay(feb29_2020)));
+      TestUtils.assertFalse(pipe(CVDateTime.isFirstIsoYearDay(feb29_2020)));
     });
   });
 
   describe('isLastIsoYearDay', () => {
     it('Passing', () => {
-      TEUtils.assertRight(
+      TestUtils.assertRight(
         pipe(feb29_2020, CVDateTime.offsetDays(-62), Either.map(CVDateTime.isLastIsoYearDay)),
         true,
       );
     });
 
     it('Not passing', () => {
-      TEUtils.assertFalse(pipe(CVDateTime.isLastIsoYearDay(feb29_2020)));
+      TestUtils.assertFalse(pipe(CVDateTime.isLastIsoYearDay(feb29_2020)));
     });
   });
 
   it('toFirstMonthDay', () => {
-    TEUtils.strictEqual(
+    TestUtils.strictEqual(
       pipe(feb29_2020, CVDateTime.toFirstMonthDay, CVDateTime.timestamp),
       Date.UTC(2020, 1, 1),
     );
   });
 
   it('toLastMonthDay', () => {
-    TEUtils.assertRight(
+    TestUtils.assertRight(
       pipe(feb29_2020, CVDateTime.offsetDays(-10), Either.map(CVDateTime.toLastMonthDay)),
       feb29_2020,
     );
   });
 
   it('toFirstYearDay', () => {
-    TEUtils.strictEqual(
+    TestUtils.strictEqual(
       pipe(feb29_2020, CVDateTime.toFirstYearDay, CVDateTime.timestamp),
       Date.UTC(2020, 0, 1),
     );
   });
 
   it('toLastYearDay', () => {
-    TEUtils.strictEqual(
+    TestUtils.strictEqual(
       pipe(feb29_2020, CVDateTime.toLastYearDay, CVDateTime.timestamp),
       Date.UTC(2020, 11, 31),
     );
   });
 
   it('toFirstIsoYearDay', () => {
-    TEUtils.strictEqual(
+    TestUtils.strictEqual(
       pipe(feb29_2020, CVDateTime.toFirstIsoYearDay, CVDateTime.timestamp),
       Date.UTC(2019, 11, 30),
     );
   });
 
   it('toLastIsoYearWeek', () => {
-    TEUtils.strictEqual(
+    TestUtils.strictEqual(
       pipe(feb29_2020, CVDateTime.toLastIsoYearWeek, CVDateTime.timestamp),
       Date.UTC(2021, 0, 2),
     );
   });
 
   it('toLastIsoYearDay', () => {
-    TEUtils.strictEqual(
+    TestUtils.strictEqual(
       pipe(feb29_2020, CVDateTime.toLastIsoYearDay, CVDateTime.timestamp),
       Date.UTC(2021, 0, 3),
     );
   });
 
   it('offsetYears', () => {
-    TEUtils.assertRight(
+    TestUtils.assertRight(
       pipe(feb29_2020, CVDateTime.offsetYears(4, false), Either.map(CVDateTime.timestamp)),
       Date.UTC(2024, 1, 29),
     );
@@ -1476,34 +1476,34 @@ describe('CVDateTime', () => {
   describe('offsetMonths', () => {
     describe('Without respectMonthEnd', () => {
       it('Forward', () => {
-        TEUtils.assertRight(
+        TestUtils.assertRight(
           pipe(feb29_2020, CVDateTime.offsetMonths(48, false), Either.map(CVDateTime.timestamp)),
           Date.UTC(2024, 1, 29),
         );
       });
 
       it('Backward', () => {
-        TEUtils.assertRight(
+        TestUtils.assertRight(
           pipe(feb29_2020, CVDateTime.offsetMonths(-192, false), Either.map(CVDateTime.timestamp)),
           Date.UTC(2004, 1, 29),
         );
       });
 
       it('Not passing', () => {
-        TEUtils.assertLeft(pipe(feb29_2020, CVDateTime.offsetMonths(12, false)));
+        TestUtils.assertLeft(pipe(feb29_2020, CVDateTime.offsetMonths(12, false)));
       });
     });
 
     describe('With respectMonthEnd', () => {
       it('Forward', () => {
-        TEUtils.assertRight(
+        TestUtils.assertRight(
           pipe(feb29_2020, CVDateTime.offsetMonths(1, true), Either.map(CVDateTime.timestamp)),
           Date.UTC(2020, 2, 31),
         );
       });
 
       it('Backward', () => {
-        TEUtils.assertRight(
+        TestUtils.assertRight(
           pipe(feb29_2020, CVDateTime.offsetMonths(-2, true), Either.map(CVDateTime.timestamp)),
           Date.UTC(2019, 11, 31),
         );
@@ -1512,7 +1512,7 @@ describe('CVDateTime', () => {
   });
 
   it('offsetDays', () => {
-    TEUtils.assertRight(
+    TestUtils.assertRight(
       pipe(feb29_2020, CVDateTime.offsetDays(-29), Either.map(CVDateTime.timestamp)),
       Date.UTC(2020, 0, 31),
     );
@@ -1522,34 +1522,34 @@ describe('CVDateTime', () => {
     const jan3_2021 = CVDateTime.fromTimestampOrThrow(Date.UTC(2021, 0, 3), 0);
     describe('Without respectYearEnd', () => {
       it('Forward', () => {
-        TEUtils.assertRight(
+        TestUtils.assertRight(
           pipe(jan3_2021, CVDateTime.offsetIsoYears(6, false), Either.map(CVDateTime.timestamp)),
           Date.UTC(2027, 0, 3),
         );
       });
 
       it('Backward', () => {
-        TEUtils.assertRight(
+        TestUtils.assertRight(
           pipe(jan3_2021, CVDateTime.offsetIsoYears(-5, false), Either.map(CVDateTime.timestamp)),
           Date.UTC(2016, 0, 3),
         );
       });
 
       it('Not passing', () => {
-        TEUtils.assertLeft(pipe(jan3_2021, CVDateTime.offsetIsoYears(1, false)));
+        TestUtils.assertLeft(pipe(jan3_2021, CVDateTime.offsetIsoYears(1, false)));
       });
     });
 
     describe('With respectYearEnd', () => {
       it('Forward', () => {
-        TEUtils.assertRight(
+        TestUtils.assertRight(
           pipe(jan3_2021, CVDateTime.offsetIsoYears(1, true), Either.map(CVDateTime.timestamp)),
           Date.UTC(2022, 0, 2),
         );
       });
 
       it('Backward', () => {
-        TEUtils.assertRight(
+        TestUtils.assertRight(
           pipe(jan3_2021, CVDateTime.offsetIsoYears(-1, true), Either.map(CVDateTime.timestamp)),
           Date.UTC(2019, 11, 29),
         );
@@ -1558,28 +1558,28 @@ describe('CVDateTime', () => {
   });
 
   it('offsetHours', () => {
-    TEUtils.assertRight(
+    TestUtils.assertRight(
       pipe(feb29_2020, CVDateTime.offsetHours(48), Either.map(CVDateTime.timestamp)),
       Date.UTC(2020, 2, 2),
     );
   });
 
   it('offsetMinutes', () => {
-    TEUtils.assertRight(
+    TestUtils.assertRight(
       pipe(feb29_2020, CVDateTime.offsetMinutes(-60), Either.map(CVDateTime.timestamp)),
       Date.UTC(2020, 1, 28, 23),
     );
   });
 
   it('offsetSeconds', () => {
-    TEUtils.assertRight(
+    TestUtils.assertRight(
       pipe(feb29_2020, CVDateTime.offsetSeconds(-3600), Either.map(CVDateTime.timestamp)),
       Date.UTC(2020, 1, 28, 23),
     );
   });
 
   it('offsetMilliseconds', () => {
-    TEUtils.assertRight(
+    TestUtils.assertRight(
       pipe(feb29_2020, CVDateTime.offsetMilliseconds(340), Either.map(CVDateTime.timestamp)),
       Date.UTC(2020, 1, 29, 0, 0, 0, 340),
     );

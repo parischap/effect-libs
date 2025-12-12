@@ -1,17 +1,17 @@
+import * as TestUtils from '@parischap/configs/TestUtils';
 import {
-  CVDateTime,
-  CVDateTimeFormat,
-  CVDateTimeFormatContext,
-  CVEmail,
-  CVInteger,
-  CVNumberBase10Format,
-  CVPositiveInteger,
-  CVPositiveReal,
-  CVReal,
-  CVSchema,
-  CVSemVer,
+    CVDateTime,
+    CVDateTimeFormat,
+    CVDateTimeFormatContext,
+    CVEmail,
+    CVInteger,
+    CVNumberBase10Format,
+    CVPositiveInteger,
+    CVPositiveReal,
+    CVReal,
+    CVSchema,
+    CVSemVer,
 } from '@parischap/conversions';
-import { TEUtils } from '@parischap/test-utils';
 import { BigDecimal, DateTime, pipe, Schema } from 'effect';
 import { describe, it } from 'vitest';
 
@@ -21,10 +21,10 @@ describe('CVSchema', () => {
     describe('Decoding', () => {
       const decoder = Schema.decodeEither(CVSchema.Email);
       it('Not passing', () => {
-        TEUtils.assertLeft(decoder('foo'));
+        TestUtils.assertLeft(decoder('foo'));
       });
       it('Passing', () => {
-        TEUtils.assertRight(decoder(target), target);
+        TestUtils.assertRight(decoder(target), target);
       });
     });
 
@@ -32,7 +32,7 @@ describe('CVSchema', () => {
       const encoder = Schema.encodeEither(CVSchema.Email);
 
       it('Passing', () => {
-        TEUtils.assertRight(encoder(target), target);
+        TestUtils.assertRight(encoder(target), target);
       });
     });
   });
@@ -42,14 +42,14 @@ describe('CVSchema', () => {
     describe('Decoding', () => {
       const decoder = Schema.decodeEither(CVSchema.EmailFromSelf);
       it('Passing', () => {
-        TEUtils.assertRight(decoder(target), target);
+        TestUtils.assertRight(decoder(target), target);
       });
     });
 
     describe('Encoding', () => {
       const encoder = Schema.encodeEither(CVSchema.EmailFromSelf);
       it('Passing', () => {
-        TEUtils.assertRight(encoder(target), target);
+        TestUtils.assertRight(encoder(target), target);
       });
     });
   });
@@ -59,10 +59,10 @@ describe('CVSchema', () => {
     describe('Decoding', () => {
       const decoder = Schema.decodeEither(CVSchema.SemVer);
       it('Not passing', () => {
-        TEUtils.assertLeft(decoder('foo'));
+        TestUtils.assertLeft(decoder('foo'));
       });
       it('Passing', () => {
-        TEUtils.assertRight(decoder(target), target);
+        TestUtils.assertRight(decoder(target), target);
       });
     });
 
@@ -70,7 +70,7 @@ describe('CVSchema', () => {
       const encoder = Schema.encodeEither(CVSchema.SemVer);
 
       it('Passing', () => {
-        TEUtils.assertRight(encoder(target), target);
+        TestUtils.assertRight(encoder(target), target);
       });
     });
   });
@@ -80,14 +80,14 @@ describe('CVSchema', () => {
     describe('Decoding', () => {
       const decoder = Schema.decodeEither(CVSchema.SemVerFromSelf);
       it('Passing', () => {
-        TEUtils.assertRight(decoder(target), target);
+        TestUtils.assertRight(decoder(target), target);
       });
     });
 
     describe('Encoding', () => {
       const encoder = Schema.encodeEither(CVSchema.SemVerFromSelf);
       it('Passing', () => {
-        TEUtils.assertRight(encoder(target), target);
+        TestUtils.assertRight(encoder(target), target);
       });
     });
   });
@@ -97,10 +97,10 @@ describe('CVSchema', () => {
     describe('Decoding', () => {
       const decoder = Schema.decodeEither(CVSchema.RealFromNumber);
       it('Not passing', () => {
-        TEUtils.assertLeft(decoder(Infinity));
+        TestUtils.assertLeft(decoder(Infinity));
       });
       it('Passing', () => {
-        TEUtils.assertRight(decoder(target), target);
+        TestUtils.assertRight(decoder(target), target);
       });
     });
 
@@ -108,7 +108,7 @@ describe('CVSchema', () => {
       const encoder = Schema.encodeEither(CVSchema.RealFromNumber);
 
       it('Passing', () => {
-        TEUtils.assertRight(encoder(target), target);
+        TestUtils.assertRight(encoder(target), target);
       });
     });
   });
@@ -118,14 +118,14 @@ describe('CVSchema', () => {
     describe('Decoding', () => {
       const decoder = Schema.decodeEither(CVSchema.RealFromSelf);
       it('Passing', () => {
-        TEUtils.assertRight(decoder(target), target);
+        TestUtils.assertRight(decoder(target), target);
       });
     });
 
     describe('Encoding', () => {
       const encoder = Schema.encodeEither(CVSchema.RealFromSelf);
       it('Passing', () => {
-        TEUtils.assertRight(encoder(target), target);
+        TestUtils.assertRight(encoder(target), target);
       });
     });
   });
@@ -137,15 +137,15 @@ describe('CVSchema', () => {
     describe('Decoding', () => {
       const decoder = Schema.decodeEither(schema);
       it('Not passing', () => {
-        TEUtils.assertLeft(decoder(''));
+        TestUtils.assertLeft(decoder(''));
       });
       it('Passing', () => {
-        TEUtils.assertRight(decoder(targetAsString), target);
+        TestUtils.assertRight(decoder(targetAsString), target);
       });
     });
     it('Encoding', () => {
       const encoder = Schema.encodeEither(schema);
-      TEUtils.assertRight(encoder(target), targetAsString);
+      TestUtils.assertRight(encoder(target), targetAsString);
     });
   });
 
@@ -154,11 +154,11 @@ describe('CVSchema', () => {
     describe('Decoding', () => {
       const decoder = Schema.decodeEither(CVSchema.IntegerFromNumber);
       it('Not passing', () => {
-        TEUtils.assertLeft(decoder(Infinity));
-        TEUtils.assertLeft(decoder(15.4));
+        TestUtils.assertLeft(decoder(Infinity));
+        TestUtils.assertLeft(decoder(15.4));
       });
       it('Passing', () => {
-        TEUtils.assertRight(decoder(target), target);
+        TestUtils.assertRight(decoder(target), target);
       });
     });
 
@@ -166,7 +166,7 @@ describe('CVSchema', () => {
       const encoder = Schema.encodeEither(CVSchema.IntegerFromNumber);
 
       it('Passing', () => {
-        TEUtils.assertRight(encoder(target), target);
+        TestUtils.assertRight(encoder(target), target);
       });
     });
   });
@@ -176,14 +176,14 @@ describe('CVSchema', () => {
     describe('Decoding', () => {
       const decoder = Schema.decodeEither(CVSchema.IntegerFromSelf);
       it('Passing', () => {
-        TEUtils.assertRight(decoder(target), target);
+        TestUtils.assertRight(decoder(target), target);
       });
     });
 
     describe('Encoding', () => {
       const encoder = Schema.encodeEither(CVSchema.IntegerFromSelf);
       it('Passing', () => {
-        TEUtils.assertRight(encoder(target), target);
+        TestUtils.assertRight(encoder(target), target);
       });
     });
   });
@@ -193,12 +193,12 @@ describe('CVSchema', () => {
     describe('Decoding', () => {
       const decoder = Schema.decodeEither(CVSchema.PositiveIntegerFromNumber);
       it('Not passing', () => {
-        TEUtils.assertLeft(decoder(Infinity));
-        TEUtils.assertLeft(decoder(15.4));
-        TEUtils.assertLeft(decoder(-15));
+        TestUtils.assertLeft(decoder(Infinity));
+        TestUtils.assertLeft(decoder(15.4));
+        TestUtils.assertLeft(decoder(-15));
       });
       it('Passing', () => {
-        TEUtils.assertRight(decoder(target), target);
+        TestUtils.assertRight(decoder(target), target);
       });
     });
 
@@ -206,7 +206,7 @@ describe('CVSchema', () => {
       const encoder = Schema.encodeEither(CVSchema.PositiveIntegerFromNumber);
 
       it('Passing', () => {
-        TEUtils.assertRight(encoder(target), target);
+        TestUtils.assertRight(encoder(target), target);
       });
     });
   });
@@ -216,14 +216,14 @@ describe('CVSchema', () => {
     describe('Decoding', () => {
       const decoder = Schema.decodeEither(CVSchema.PositiveIntegerFromSelf);
       it('Passing', () => {
-        TEUtils.assertRight(decoder(target), target);
+        TestUtils.assertRight(decoder(target), target);
       });
     });
 
     describe('Encoding', () => {
       const encoder = Schema.encodeEither(CVSchema.PositiveIntegerFromSelf);
       it('Passing', () => {
-        TEUtils.assertRight(encoder(target), target);
+        TestUtils.assertRight(encoder(target), target);
       });
     });
   });
@@ -233,11 +233,11 @@ describe('CVSchema', () => {
     describe('Decoding', () => {
       const decoder = Schema.decodeEither(CVSchema.PositiveRealFromNumber);
       it('Not passing', () => {
-        TEUtils.assertLeft(decoder(Infinity));
-        TEUtils.assertLeft(decoder(-15.4));
+        TestUtils.assertLeft(decoder(Infinity));
+        TestUtils.assertLeft(decoder(-15.4));
       });
       it('Passing', () => {
-        TEUtils.assertRight(decoder(target), target);
+        TestUtils.assertRight(decoder(target), target);
       });
     });
 
@@ -245,7 +245,7 @@ describe('CVSchema', () => {
       const encoder = Schema.encodeEither(CVSchema.PositiveRealFromNumber);
 
       it('Passing', () => {
-        TEUtils.assertRight(encoder(target), target);
+        TestUtils.assertRight(encoder(target), target);
       });
     });
   });
@@ -255,14 +255,14 @@ describe('CVSchema', () => {
     describe('Decoding', () => {
       const decoder = Schema.decodeEither(CVSchema.PositiveRealFromSelf);
       it('Passing', () => {
-        TEUtils.assertRight(decoder(target), target);
+        TestUtils.assertRight(decoder(target), target);
       });
     });
 
     describe('Encoding', () => {
       const encoder = Schema.encodeEither(CVSchema.PositiveRealFromSelf);
       it('Passing', () => {
-        TEUtils.assertRight(encoder(target), target);
+        TestUtils.assertRight(encoder(target), target);
       });
     });
   });
@@ -274,15 +274,15 @@ describe('CVSchema', () => {
     describe('Decoding', () => {
       const decoder = Schema.decodeEither(schema);
       it('Not passing', () => {
-        TEUtils.assertLeft(decoder(''));
+        TestUtils.assertLeft(decoder(''));
       });
       it('Passing', () => {
-        TEUtils.assertRight(decoder(targetAsString), target);
+        TestUtils.assertRight(decoder(targetAsString), target);
       });
     });
     it('Encoding', () => {
       const encoder = Schema.encodeEither(schema);
-      TEUtils.assertRight(encoder(target), targetAsString);
+      TestUtils.assertRight(encoder(target), targetAsString);
     });
   });
 
@@ -291,14 +291,14 @@ describe('CVSchema', () => {
     describe('Decoding', () => {
       const decoder = Schema.decodeEither(CVSchema.DateTimeFromSelf);
       it('Passing', () => {
-        TEUtils.assertRight(decoder(target), target);
+        TestUtils.assertRight(decoder(target), target);
       });
     });
 
     describe('Encoding', () => {
       const encoder = Schema.encodeEither(CVSchema.DateTimeFromSelf);
       it('Passing', () => {
-        TEUtils.assertRight(encoder(target), target);
+        TestUtils.assertRight(encoder(target), target);
       });
     });
   });
@@ -309,14 +309,14 @@ describe('CVSchema', () => {
     describe('Decoding', () => {
       const decoder = Schema.decodeEither(CVSchema.DateFromDateTime);
       it('Passing', () => {
-        TEUtils.assertRight(decoder(target), targetAsDate);
+        TestUtils.assertRight(decoder(target), targetAsDate);
       });
     });
 
     describe('Encoding', () => {
       const encoder = Schema.encodeEither(CVSchema.DateFromDateTime);
       it('Passing', () => {
-        TEUtils.assertRight(encoder(targetAsDate), target);
+        TestUtils.assertRight(encoder(targetAsDate), target);
       });
     });
   });
@@ -327,14 +327,14 @@ describe('CVSchema', () => {
     describe('Decoding', () => {
       const decoder = Schema.decodeEither(CVSchema.DateTimeZonedFromDateTime);
       it('Passing', () => {
-        TEUtils.assertRight(decoder(target), targetAsEFfectDateTime);
+        TestUtils.assertRight(decoder(target), targetAsEFfectDateTime);
       });
     });
 
     describe('Encoding', () => {
       const encoder = Schema.encodeEither(CVSchema.DateTimeZonedFromDateTime);
       it('Passing', () => {
-        TEUtils.assertRight(encoder(targetAsEFfectDateTime), target);
+        TestUtils.assertRight(encoder(targetAsEFfectDateTime), target);
       });
     });
   });
@@ -375,21 +375,21 @@ describe('CVSchema', () => {
     describe('Decoding', () => {
       const decoder = Schema.decodeEither(schema);
       it('Not passing', () => {
-        TEUtils.assertLeft(decoder(''));
-        TEUtils.assertLeft(decoder('2025/12/14'));
+        TestUtils.assertLeft(decoder(''));
+        TestUtils.assertLeft(decoder('2025/12/14'));
       });
       it('Passing', () => {
-        TEUtils.assertRight(decoder(targetAsString), target);
+        TestUtils.assertRight(decoder(targetAsString), target);
       });
     });
     describe('Encoding', () => {
       const encoder = Schema.encodeEither(schema);
       it('Passing', () => {
-        TEUtils.assertRight(encoder(target), targetAsString);
+        TestUtils.assertRight(encoder(target), targetAsString);
       });
 
       it('Not passing', () => {
-        TEUtils.assertLeft(
+        TestUtils.assertLeft(
           pipe(
             new Date(12025, 7, 25, 10, 24, 47).getTime(),
             CVDateTime.fromTimestampOrThrow,

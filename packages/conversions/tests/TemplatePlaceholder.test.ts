@@ -1,79 +1,79 @@
+import * as TestUtils from '@parischap/configs/TestUtils';
 import { CVNumberBase10Format, CVReal, CVTemplatePlaceholder } from '@parischap/conversions';
 import { MRegExpString, MString } from '@parischap/effect-lib';
-import { TEUtils } from '@parischap/test-utils';
 import { Schema, Tuple } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('CVTemplatePlaceholder', () => {
   const threeChars = CVTemplatePlaceholder.fixedLength({ name: 'foo', length: 3 });
 
-  TEUtils.assertTrueType(
-    TEUtils.areEqualTypes<CVTemplatePlaceholder.ExtractName<typeof threeChars>, 'foo'>(),
+  TestUtils.assertTrueType(
+    TestUtils.areEqualTypes<CVTemplatePlaceholder.ExtractName<typeof threeChars>, 'foo'>(),
   );
-  TEUtils.assertTrueType(
-    TEUtils.areEqualTypes<CVTemplatePlaceholder.ExtractType<typeof threeChars>, string>(),
+  TestUtils.assertTrueType(
+    TestUtils.areEqualTypes<CVTemplatePlaceholder.ExtractType<typeof threeChars>, string>(),
   );
 
   describe('Tag, prototype and guards', () => {
     it('moduleTag', () => {
-      TEUtils.assertSome(
-        TEUtils.moduleTagFromTestFilePath(__filename),
+      TestUtils.assertSome(
+        TestUtils.moduleTagFromTestFilePath(__filename),
         CVTemplatePlaceholder.moduleTag,
       );
     });
 
     it('.pipe()', () => {
-      TEUtils.assertTrue(threeChars.pipe(CVTemplatePlaceholder.has));
+      TestUtils.assertTrue(threeChars.pipe(CVTemplatePlaceholder.has));
     });
 
     describe('has', () => {
       it('Matching', () => {
-        TEUtils.assertTrue(CVTemplatePlaceholder.has(threeChars));
+        TestUtils.assertTrue(CVTemplatePlaceholder.has(threeChars));
       });
       it('Non matching', () => {
-        TEUtils.assertFalse(CVTemplatePlaceholder.has(new Date()));
+        TestUtils.assertFalse(CVTemplatePlaceholder.has(new Date()));
       });
     });
   });
 
   describe('fixedLength', () => {
     it('.toString()', () => {
-      TEUtils.strictEqual(threeChars.toString(), '#foo: 3-character string');
+      TestUtils.strictEqual(threeChars.toString(), '#foo: 3-character string');
     });
 
     describe('Parsing', () => {
       it('Not enough characters left', () => {
-        TEUtils.assertLeftMessage(
+        TestUtils.assertLeftMessage(
           threeChars.parser(''),
           'Expected length of #foo to be: 3. Actual: 0',
         );
-        TEUtils.assertLeft(threeChars.parser('aa'));
+        TestUtils.assertLeft(threeChars.parser('aa'));
       });
 
       it('Just enough characters left', () => {
-        TEUtils.assertRight(threeChars.parser('foo'), Tuple.make('foo', ''));
+        TestUtils.assertRight(threeChars.parser('foo'), Tuple.make('foo', ''));
       });
 
       it('More characters than necessary', () => {
-        TEUtils.assertRight(threeChars.parser('foo and baz'), Tuple.make('foo', ' and baz'));
+        TestUtils.assertRight(threeChars.parser('foo and baz'), Tuple.make('foo', ' and baz'));
       });
     });
 
     describe('Formatting', () => {
       it('Too few characters', () => {
-        TEUtils.assertLeftMessage(
+        TestUtils.assertLeftMessage(
           threeChars.parser(''),
           'Expected length of #foo to be: 3. Actual: 0',
         );
-        TEUtils.assertLeft(threeChars.formatter('aa'));
+        TestUtils.assertLeft(threeChars.formatter('aa'));
       });
 
       it('Too many characters', () => {
-        TEUtils.assertLeft(threeChars.formatter('foo and baz'));
+        TestUtils.assertLeft(threeChars.formatter('foo and baz'));
       });
 
       it('Just the expected number of characters', () => {
-        TEUtils.assertRight(threeChars.formatter('foo'), 'foo');
+        TestUtils.assertRight(threeChars.formatter('foo'), 'foo');
       });
     });
   });
@@ -87,32 +87,32 @@ describe('CVTemplatePlaceholder', () => {
       disallowEmptyString: true,
     });
     it('.toString()', () => {
-      TEUtils.strictEqual(placeholder.toString(), "#foo: 3-character string left-padded with '0'");
+      TestUtils.strictEqual(placeholder.toString(), "#foo: 3-character string left-padded with '0'");
     });
 
     describe('Parsing', () => {
       it('Not passing', () => {
-        TEUtils.assertLeftMessage(
+        TestUtils.assertLeftMessage(
           placeholder.parser(''),
           'Expected length of #foo to be: 3. Actual: 0',
         );
       });
 
       it('Passing', () => {
-        TEUtils.assertRight(placeholder.parser('001 and baz'), Tuple.make('1', ' and baz'));
+        TestUtils.assertRight(placeholder.parser('001 and baz'), Tuple.make('1', ' and baz'));
       });
     });
 
     describe('Formatting', () => {
       it('Not passing', () => {
-        TEUtils.assertLeftMessage(
+        TestUtils.assertLeftMessage(
           placeholder.formatter('foo and baz'),
           'Expected length of #foo to be: 3. Actual: 11',
         );
       });
 
       it('Passing', () => {
-        TEUtils.assertRight(placeholder.formatter('a'), '00a');
+        TestUtils.assertRight(placeholder.formatter('a'), '00a');
       });
     });
   });
@@ -125,7 +125,7 @@ describe('CVTemplatePlaceholder', () => {
       numberBase10Format: CVNumberBase10Format.integer,
     });
     it('.toString()', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         placeholder.toString(),
         "#foo: 3-character string left-padded with ' ' to potentially signed integer",
       );
@@ -133,14 +133,14 @@ describe('CVTemplatePlaceholder', () => {
 
     describe('Parsing', () => {
       it('Not passing', () => {
-        TEUtils.assertLeftMessage(
+        TestUtils.assertLeftMessage(
           placeholder.parser(''),
           'Expected length of #foo to be: 3. Actual: 0',
         );
       });
 
       it('Passing', () => {
-        TEUtils.assertRight(
+        TestUtils.assertRight(
           placeholder.parser('  15'),
           Tuple.make(CVReal.unsafeFromNumber(1), '5'),
         );
@@ -149,15 +149,15 @@ describe('CVTemplatePlaceholder', () => {
 
     describe('Formatting', () => {
       it('Not passing: too long', () => {
-        TEUtils.assertLeftMessage(
+        TestUtils.assertLeftMessage(
           placeholder.formatter(CVReal.unsafeFromNumber(1154)),
           'Expected length of #foo to be: 3. Actual: 4',
         );
       });
 
       it('Passing', () => {
-        TEUtils.assertRight(placeholder.formatter(CVReal.unsafeFromNumber(34)), ' 34');
-        TEUtils.assertRight(placeholder.formatter(CVReal.unsafeFromNumber(-4)), '- 4');
+        TestUtils.assertRight(placeholder.formatter(CVReal.unsafeFromNumber(34)), ' 34');
+        TestUtils.assertRight(placeholder.formatter(CVReal.unsafeFromNumber(-4)), '- 4');
       });
     });
   });
@@ -168,20 +168,20 @@ describe('CVTemplatePlaceholder', () => {
       numberBase10Format: CVNumberBase10Format.frenchStyleNumber,
     });
     it('.toString()', () => {
-      TEUtils.strictEqual(placeholder.toString(), '#foo: potentially signed French-style number');
+      TestUtils.strictEqual(placeholder.toString(), '#foo: potentially signed French-style number');
     });
 
     describe('Parsing', () => {
       it('Not passing', () => {
-        TEUtils.assertLeftMessage(
+        TestUtils.assertLeftMessage(
           placeholder.parser(''),
           "#foo contains '' from the start of which a(n) potentially signed French-style number could not be extracted",
         );
-        TEUtils.assertLeft(placeholder.parser('1 014,1254 and foo'));
+        TestUtils.assertLeft(placeholder.parser('1 014,1254 and foo'));
       });
 
       it('Passing', () => {
-        TEUtils.assertRight(
+        TestUtils.assertRight(
           placeholder.parser('1 014,125 and foo'),
           Tuple.make(CVReal.unsafeFromNumber(1014.125), ' and foo'),
         );
@@ -189,7 +189,7 @@ describe('CVTemplatePlaceholder', () => {
     });
 
     it('Formatting', () => {
-      TEUtils.assertRight(placeholder.formatter(CVReal.unsafeFromNumber(1014.1256)), '1 014,126');
+      TestUtils.assertRight(placeholder.formatter(CVReal.unsafeFromNumber(1014.1256)), '1 014,126');
     });
   });
 
@@ -204,30 +204,30 @@ describe('CVTemplatePlaceholder', () => {
     });
 
     it('.toString()', () => {
-      TEUtils.strictEqual(map.toString(), '#foo: from [foo, bazbar] to [6, 12]');
+      TestUtils.strictEqual(map.toString(), '#foo: from [foo, bazbar] to [6, 12]');
     });
 
     describe('Parsing', () => {
       it('Not starting by value', () => {
-        TEUtils.assertLeftMessage(
+        TestUtils.assertLeftMessage(
           map.parser(''),
           "Expected remaining text for #foo to start with one of [foo, bazbar]. Actual: ''",
         );
-        TEUtils.assertLeft(map.parser('baz is away'));
+        TestUtils.assertLeft(map.parser('baz is away'));
       });
 
       it('Passing', () => {
-        TEUtils.assertRight(map.parser('bazbar is away'), Tuple.make(12, ' is away'));
+        TestUtils.assertRight(map.parser('bazbar is away'), Tuple.make(12, ' is away'));
       });
     });
 
     describe('Formatting', () => {
       it('Not passing', () => {
-        TEUtils.assertLeftMessage(map.formatter(4), '#foo: expected one of [6, 12]. Actual: 4');
+        TestUtils.assertLeftMessage(map.formatter(4), '#foo: expected one of [6, 12]. Actual: 4');
       });
 
       it('Passing', () => {
-        TEUtils.assertRight(map.formatter(6), 'foo');
+        TestUtils.assertRight(map.formatter(6), 'foo');
       });
     });
   });
@@ -239,7 +239,7 @@ describe('CVTemplatePlaceholder', () => {
     });
 
     it('.toString()', () => {
-      TEUtils.strictEqual(
+      TestUtils.strictEqual(
         noSpaceChars.toString(),
         "#foo: a non-empty string containing non of the following characters: ['\\s']",
       );
@@ -247,29 +247,29 @@ describe('CVTemplatePlaceholder', () => {
 
     describe('Parsing', () => {
       it('Not passing', () => {
-        TEUtils.assertLeftMessage(
+        TestUtils.assertLeftMessage(
           noSpaceChars.parser(''),
           "Expected #foo to be a non-empty string containing non of the following characters: ['\\s']. Actual: ''",
         );
       });
 
       it('Passing', () => {
-        TEUtils.assertRight(noSpaceChars.parser('foo and bar'), Tuple.make('foo', ' and bar'));
-        TEUtils.assertRight(noSpaceChars.parser('foo'), Tuple.make('foo', ''));
+        TestUtils.assertRight(noSpaceChars.parser('foo and bar'), Tuple.make('foo', ' and bar'));
+        TestUtils.assertRight(noSpaceChars.parser('foo'), Tuple.make('foo', ''));
       });
     });
 
     describe('Formatting', () => {
       it('Not passing', () => {
-        TEUtils.assertLeft(noSpaceChars.formatter(''));
-        TEUtils.assertLeftMessage(
+        TestUtils.assertLeft(noSpaceChars.formatter(''));
+        TestUtils.assertLeftMessage(
           noSpaceChars.formatter('fo o'),
           "#foo: expected a non-empty string containing non of the following characters: ['\\s']. Actual: 'fo o'",
         );
       });
 
       it('Passing', () => {
-        TEUtils.assertRight(noSpaceChars.formatter('foo'), 'foo');
+        TestUtils.assertRight(noSpaceChars.formatter('foo'), 'foo');
       });
     });
   });
@@ -278,15 +278,15 @@ describe('CVTemplatePlaceholder', () => {
     const toEnd = CVTemplatePlaceholder.toEnd('foo');
 
     it('.toString()', () => {
-      TEUtils.strictEqual(toEnd.toString(), '#foo: a string');
+      TestUtils.strictEqual(toEnd.toString(), '#foo: a string');
     });
 
     it('Parsing', () => {
-      TEUtils.assertRight(toEnd.parser('foo and bar'), Tuple.make('foo and bar', ''));
+      TestUtils.assertRight(toEnd.parser('foo and bar'), Tuple.make('foo and bar', ''));
     });
 
     it('Formatting', () => {
-      TEUtils.assertRight(toEnd.formatter('foo'), 'foo');
+      TestUtils.assertRight(toEnd.formatter('foo'), 'foo');
     });
   });
 });

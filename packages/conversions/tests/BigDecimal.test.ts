@@ -1,38 +1,38 @@
+import * as TestUtils from '@parischap/configs/TestUtils';
 import {
-  CVBigDecimal,
-  CVInteger,
-  CVPositiveInteger,
-  CVPositiveReal,
-  CVReal,
+    CVBigDecimal,
+    CVInteger,
+    CVPositiveInteger,
+    CVPositiveReal,
+    CVReal,
 } from '@parischap/conversions';
-import { TEUtils } from '@parischap/test-utils';
 import { BigDecimal } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('CVBigDecimal', () => {
   it('From Real', () => {
-    TEUtils.deepStrictEqual(
+    TestUtils.deepStrictEqual(
       CVBigDecimal.fromReal(CVReal.unsafeFromNumber(-154)),
       BigDecimal.make(-154n, 0),
     );
   });
 
   it('From PositiveReal', () => {
-    TEUtils.deepStrictEqual(
+    TestUtils.deepStrictEqual(
       CVBigDecimal.fromReal(CVPositiveReal.unsafeFromNumber(154)),
       BigDecimal.make(154n, 0),
     );
   });
 
   it('From PositiveInteger', () => {
-    TEUtils.deepStrictEqual(
+    TestUtils.deepStrictEqual(
       CVBigDecimal.fromReal(CVPositiveInteger.unsafeFromNumber(154)),
       BigDecimal.make(154n, 0),
     );
   });
 
   it('From Integer', () => {
-    TEUtils.deepStrictEqual(
+    TestUtils.deepStrictEqual(
       CVBigDecimal.fromReal(CVInteger.unsafeFromNumber(-154)),
       BigDecimal.make(-154n, 0),
     );

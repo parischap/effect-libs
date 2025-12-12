@@ -1,17 +1,17 @@
 /* eslint-disable functional/no-expression-statements */
 import { ASStyle, ASText } from '@parischap/ansi-styles';
+import * as TestUtils from '@parischap/configs/TestUtils';
 import { MPredicate } from '@parischap/effect-lib';
 import {
-  PPByPasser,
-  PPMarkShowerConstructor,
-  PPOption,
-  PPPropertyFilter,
-  PPStringifiedValue,
-  PPValue,
-  PPValueBasedStylerConstructor,
-  PPValueOrder,
+    PPByPasser,
+    PPMarkShowerConstructor,
+    PPOption,
+    PPPropertyFilter,
+    PPStringifiedValue,
+    PPValue,
+    PPValueBasedStylerConstructor,
+    PPValueOrder,
 } from '@parischap/pretty-print';
-import { TEUtils } from '@parischap/test-utils';
 import { Array, HashMap, HashSet, Option, pipe, Predicate } from 'effect';
 import { describe, it } from 'vitest';
 
@@ -21,28 +21,28 @@ describe('Option', () => {
     describe('Prototype and guards', () => {
       describe('Equal.equals', () => {
         it('Matching', () => {
-          TEUtils.assertEquals(record, PPOption.NonPrimitive.make(record));
+          TestUtils.assertEquals(record, PPOption.NonPrimitive.make(record));
         });
 
         it('Non-matching', () => {
-          TEUtils.assertNotEquals(record, PPOption.NonPrimitive.array);
+          TestUtils.assertNotEquals(record, PPOption.NonPrimitive.array);
         });
       });
 
       it('.toString()', () => {
-        TEUtils.strictEqual(record.toString(), `Object`);
+        TestUtils.strictEqual(record.toString(), `Object`);
       });
 
       it('.pipe()', () => {
-        TEUtils.strictEqual(record.pipe(PPOption.NonPrimitive.id), 'Object');
+        TestUtils.strictEqual(record.pipe(PPOption.NonPrimitive.id), 'Object');
       });
 
       describe('has', () => {
         it('Matching', () => {
-          TEUtils.assertTrue(PPOption.NonPrimitive.has(record));
+          TestUtils.assertTrue(PPOption.NonPrimitive.has(record));
         });
         it('Non matching', () => {
-          TEUtils.assertFalse(PPOption.NonPrimitive.has(new Date()));
+          TestUtils.assertFalse(PPOption.NonPrimitive.has(new Date()));
         });
       });
     });
@@ -67,7 +67,7 @@ describe('Option', () => {
           const headerMarkShower = fromNonPrimitive(
             PPOption.NonPrimitive.record,
           ).toHeaderMarkShower(differingPropertyNumbers);
-          TEUtils.assertTrue(pipe(value, headerMarkShower, ASText.isEmpty));
+          TestUtils.assertTrue(pipe(value, headerMarkShower, ASText.isEmpty));
         });
 
         it('showId = false, propertyNumberDisplayOption = All', () => {
@@ -79,7 +79,7 @@ describe('Option', () => {
             nonPrimitiveMake,
             fromNonPrimitive,
           ).toHeaderMarkShower(differingPropertyNumbers);
-          TEUtils.assertEquals(pipe(value, headerMarkShower), ASStyle.green('(5) '));
+          TestUtils.assertEquals(pipe(value, headerMarkShower), ASStyle.green('(5) '));
         });
 
         it('showId = false, propertyNumberDisplayOption = Actual', () => {
@@ -91,7 +91,7 @@ describe('Option', () => {
             nonPrimitiveMake,
             fromNonPrimitive,
           ).toHeaderMarkShower(differingPropertyNumbers);
-          TEUtils.assertEquals(pipe(value, headerMarkShower), ASStyle.green('(3) '));
+          TestUtils.assertEquals(pipe(value, headerMarkShower), ASStyle.green('(3) '));
         });
 
         it('showId = false, propertyNumberDisplayOption = AllAndActual', () => {
@@ -103,7 +103,7 @@ describe('Option', () => {
             nonPrimitiveMake,
             fromNonPrimitive,
           ).toHeaderMarkShower(equalPropertyNumbers);
-          TEUtils.assertEquals(pipe(value, headerMarkShower), ASStyle.green('(3,3) '));
+          TestUtils.assertEquals(pipe(value, headerMarkShower), ASStyle.green('(3,3) '));
         });
 
         describe('showId = false, propertyNumberDisplayOption = AllAndActualIfDifferent', () => {
@@ -117,7 +117,7 @@ describe('Option', () => {
               nonPrimitiveMake,
               fromNonPrimitive,
             ).toHeaderMarkShower(equalPropertyNumbers);
-            TEUtils.assertTrue(pipe(value, headerMarkShower, ASText.isEmpty));
+            TestUtils.assertTrue(pipe(value, headerMarkShower, ASText.isEmpty));
           });
 
           it('With differing property numbers', () => {
@@ -130,7 +130,7 @@ describe('Option', () => {
               nonPrimitiveMake,
               fromNonPrimitive,
             ).toHeaderMarkShower(differingPropertyNumbers);
-            TEUtils.assertEquals(pipe(value, headerMarkShower), ASStyle.green('(5,3) '));
+            TestUtils.assertEquals(pipe(value, headerMarkShower), ASStyle.green('(5,3) '));
           });
         });
 
@@ -144,7 +144,7 @@ describe('Option', () => {
             nonPrimitiveMake,
             fromNonPrimitive,
           ).toHeaderMarkShower(differingPropertyNumbers);
-          TEUtils.assertEquals(pipe(value, headerMarkShower), ASStyle.green('Object '));
+          TestUtils.assertEquals(pipe(value, headerMarkShower), ASStyle.green('Object '));
         });
 
         it('showId = true, propertyNumberDisplayOption = AllAndActual', () => {
@@ -157,7 +157,7 @@ describe('Option', () => {
             nonPrimitiveMake,
             fromNonPrimitive,
           ).toHeaderMarkShower(differingPropertyNumbers);
-          TEUtils.assertEquals(pipe(value, headerMarkShower), ASStyle.green('Object(5,3) '));
+          TestUtils.assertEquals(pipe(value, headerMarkShower), ASStyle.green('Object(5,3) '));
         });
 
         describe('showId = true, propertyNumberDisplayOption = AllAndActualIfDifferent', () => {
@@ -172,7 +172,7 @@ describe('Option', () => {
               nonPrimitiveMake,
               fromNonPrimitive,
             ).toHeaderMarkShower(differingPropertyNumbers);
-            TEUtils.assertEquals(pipe(value, headerMarkShower), ASStyle.green('Object(5,3) '));
+            TestUtils.assertEquals(pipe(value, headerMarkShower), ASStyle.green('Object(5,3) '));
           });
 
           it('With equal property numbers', () => {
@@ -186,7 +186,7 @@ describe('Option', () => {
               nonPrimitiveMake,
               fromNonPrimitive,
             ).toHeaderMarkShower(equalPropertyNumbers);
-            TEUtils.assertEquals(pipe(value, headerMarkShower), ASStyle.green('Object '));
+            TestUtils.assertEquals(pipe(value, headerMarkShower), ASStyle.green('Object '));
           });
         });
       });
@@ -197,33 +197,33 @@ describe('Option', () => {
     const utilInspectLike = PPOption.utilInspectLike;
 
     it('moduleTag', () => {
-      TEUtils.assertSome(TEUtils.moduleTagFromTestFilePath(__filename), PPOption.moduleTag);
+      TestUtils.assertSome(TestUtils.moduleTagFromTestFilePath(__filename), PPOption.moduleTag);
     });
 
     describe('Equal.equals', () => {
       it('Matching', () => {
-        TEUtils.assertEquals(utilInspectLike, PPOption.make(utilInspectLike));
+        TestUtils.assertEquals(utilInspectLike, PPOption.make(utilInspectLike));
       });
 
       it('Non-matching', () => {
-        TEUtils.assertNotEquals(utilInspectLike, PPOption.darkModeUtilInspectLike);
+        TestUtils.assertNotEquals(utilInspectLike, PPOption.darkModeUtilInspectLike);
       });
     });
 
     it('.toString()', () => {
-      TEUtils.strictEqual(utilInspectLike.toString(), `UtilInspectLike`);
+      TestUtils.strictEqual(utilInspectLike.toString(), `UtilInspectLike`);
     });
 
     it('.pipe()', () => {
-      TEUtils.strictEqual(utilInspectLike.pipe(PPOption.id), 'UtilInspectLike');
+      TestUtils.strictEqual(utilInspectLike.pipe(PPOption.id), 'UtilInspectLike');
     });
 
     describe('has', () => {
       it('Matching', () => {
-        TEUtils.assertTrue(PPOption.has(utilInspectLike));
+        TestUtils.assertTrue(PPOption.has(utilInspectLike));
       });
       it('Non matching', () => {
-        TEUtils.assertFalse(PPOption.has(new Date()));
+        TestUtils.assertFalse(PPOption.has(new Date()));
       });
     });
   });
@@ -284,7 +284,7 @@ describe('Option', () => {
 
     describe('Check bypasser handling', () => {
       it('With function', () => {
-        TEUtils.deepStrictEqual(
+        TestUtils.deepStrictEqual(
           pipe(fooFunction, stringifier, PPStringifiedValue.toUnstyledStrings),
           Array.of('[Function: foo]'),
         );
@@ -292,7 +292,7 @@ describe('Option', () => {
 
       it('With date', () => {
         const dummy = new Date(0);
-        TEUtils.deepStrictEqual(
+        TestUtils.deepStrictEqual(
           pipe(dummy, stringifier, PPStringifiedValue.toUnstyledStrings),
           Array.of(dummy.toString()),
         );
@@ -300,7 +300,7 @@ describe('Option', () => {
     });
 
     it('Check primitive handling', () => {
-      TEUtils.deepStrictEqual(
+      TestUtils.deepStrictEqual(
         pipe(5, stringifier, PPStringifiedValue.toUnstyledStrings),
         Array.of('5'),
       );
@@ -308,7 +308,7 @@ describe('Option', () => {
 
     describe('Check maxDepth handling', () => {
       it('With object', () => {
-        TEUtils.strictEqual(
+        TestUtils.strictEqual(
           pipe({ a: { a: { a: 1 } } }, stringifier, PPStringifiedValue.toAnsiString()),
           pipe(
             ASStyle.red(
@@ -326,7 +326,7 @@ describe('Option', () => {
       });
 
       it('With map', () => {
-        TEUtils.deepStrictEqual(
+        TestUtils.deepStrictEqual(
           pipe({ a: { a: new Map() } }, stringifier, PPStringifiedValue.toUnstyledStrings),
           Array.of('{ a: { a: [Map] } }'),
         );
@@ -339,7 +339,7 @@ describe('Option', () => {
         /* eslint-disable-next-line functional/immutable-data */
         circular.a = circular;
 
-        TEUtils.strictEqual(
+        TestUtils.strictEqual(
           pipe(circular, stringifier, PPStringifiedValue.toAnsiString()),
           pipe(
             ASStyle.green(
@@ -361,7 +361,7 @@ describe('Option', () => {
         circular.b.inner = circular.b;
         circular.b.circular = circular;
         /* eslint-enable functional/immutable-data*/
-        TEUtils.deepStrictEqual(
+        TestUtils.deepStrictEqual(
           pipe(circular, stringifierWithInfiniteMaxDepth, PPStringifiedValue.toUnstyledStrings),
           [
             '<Ref *1> {',
@@ -375,21 +375,21 @@ describe('Option', () => {
 
     describe('Check non-primitive handling', () => {
       it('Empty array', () => {
-        TEUtils.deepStrictEqual(
+        TestUtils.deepStrictEqual(
           pipe([], stringifier, PPStringifiedValue.toUnstyledStrings),
           Array.of('[]'),
         );
       });
 
       it('Empty record', () => {
-        TEUtils.deepStrictEqual(
+        TestUtils.deepStrictEqual(
           pipe({}, stringifier, PPStringifiedValue.toUnstyledStrings),
           Array.of('{}'),
         );
       });
 
       it('Simple array', () => {
-        TEUtils.deepStrictEqual(
+        TestUtils.deepStrictEqual(
           pipe([3, 4], stringifier, PPStringifiedValue.toUnstyledStrings),
           Array.of('[ 3, 4 ]'),
         );
@@ -406,7 +406,7 @@ describe('Option', () => {
           a: ['r', { c: HashSet.make(new Uint8Array(3), new Uint8Array(3)) }],
           b: 't',
         };
-        TEUtils.deepStrictEqual(
+        TestUtils.deepStrictEqual(
           pipe(test, stringifierWithInfiniteMaxDepth, PPStringifiedValue.toUnstyledStrings),
           Array.make(
             '{',
@@ -423,7 +423,7 @@ describe('Option', () => {
       });
 
       it('Show property number when necessary', () => {
-        TEUtils.deepStrictEqual(
+        TestUtils.deepStrictEqual(
           pipe(
             { b: 1, a: 2, c: 3 },
             stringifierWithLimitedPropertiesShowPropNumber,
@@ -434,7 +434,7 @@ describe('Option', () => {
       });
 
       it('Sort properties', () => {
-        TEUtils.deepStrictEqual(
+        TestUtils.deepStrictEqual(
           pipe(
             { b: 1, a: 2, c: 3 },
             stringifierWithSortedProperties,
@@ -445,7 +445,7 @@ describe('Option', () => {
       });
 
       it('Unbypassed function with some prototype properties', () => {
-        TEUtils.deepStrictEqual(
+        TestUtils.deepStrictEqual(
           pipe(
             fooFunction,
             stringifierWithoutFunctionByPasserShowingPrototype,
@@ -469,7 +469,7 @@ describe('Option', () => {
           B: HashMap.make(['B1', null], ['B2', null]),
         };
         it('Show leaves', () => {
-          TEUtils.deepStrictEqual(
+          TestUtils.deepStrictEqual(
             pipe(
               toTreeify,
               PPOption.toStringifier(PPOption.treeify),
@@ -497,7 +497,7 @@ describe('Option', () => {
         });
 
         it('Hide leaves', () => {
-          TEUtils.deepStrictEqual(
+          TestUtils.deepStrictEqual(
             pipe(
               toTreeify,
               PPOption.toStringifier(PPOption.treeifyHideLeaves),
