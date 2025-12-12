@@ -1,16 +1,16 @@
 {
   "extends": "./tsconfig.base.json",
   "exclude": [
+    ".git",
+    "dist",
+    ".tsbuildinfo",
+    "node_modules",
+    "packages",
     "esm",
     "examples",
     "tests",
-    "dist",
-    ".tsbuildinfo",
+    "readme-assets",
     "vite.config.ts.timestamp-*.mjs",
-    "packages",
-    "node_modules",
-    "*.code-workspace",
-    ".vscode",
     "pnpm-lock.yaml"
   ],
   "compilerOptions": {

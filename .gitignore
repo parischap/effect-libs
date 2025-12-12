@@ -1,5 +1,9 @@
+# ************** This file was automatically generated. DO NOT MODIFY ************************
+
+/.git/
 /dist/
 /.tsbuildinfo/
-/vite.config.ts.timestamp-*.mjs
-/packages/
 /node_modules/
+/packages/
+/vite.config.ts.timestamp-*.mjs
+/pnpm-lock.yaml

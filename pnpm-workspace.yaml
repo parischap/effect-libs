@@ -1,3 +1,8 @@
+# ************** This file was automatically generated. DO NOT MODIFY ************************
+
 packages:
   - 'packages/*'
   - 'packages/*/packages/*'
+  
+trustPolicy: no-downgrade
+shellEmulator: true

@@ -8,6 +8,5 @@
   "isPublished": false,
   "hasDocGen": false,
   "keywords": [],
-  "useEffectAsPeerDependency": false,
-  "packagePrefix": ""
+  "useEffectAsPeerDependency": false
 }
