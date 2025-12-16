@@ -11,6 +11,7 @@ import { Array, Function, Option, pipe, Predicate } from 'effect';
  * @category Models
  */
 export interface NonPrimitive {
+  // DO NOT REPLACE any by unknown: a simple object wouldn't be assignable to a NonPrimitive
   readonly [key: string | symbol]: any;
 }
 

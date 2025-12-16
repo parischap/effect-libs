@@ -54,7 +54,7 @@ export const stackTraceFormatter =
     );
 
 export const formatError = (
-  self: MTypes.Errorish,
+  self: Error,
   options: {
     readonly eol: string;
     readonly pathSep: string;

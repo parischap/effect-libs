@@ -1,16 +1,16 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
 import {
-    CVDateTime,
-    CVDateTimeFormat,
-    CVDateTimeFormatContext,
-    CVEmail,
-    CVInteger,
-    CVNumberBase10Format,
-    CVPositiveInteger,
-    CVPositiveReal,
-    CVReal,
-    CVSchema,
-    CVSemVer,
+  CVDateTime,
+  CVDateTimeFormat,
+  CVDateTimeFormatContext,
+  CVEmail,
+  CVInteger,
+  CVNumberBase10Format,
+  CVPositiveInteger,
+  CVPositiveReal,
+  CVReal,
+  CVSchema,
+  CVSemVer,
 } from '@parischap/conversions';
 import { BigDecimal, DateTime, pipe, Schema } from 'effect';
 import { describe, it } from 'vitest';

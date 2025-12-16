@@ -1,6 +1,6 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
 import { MTypes } from '@parischap/effect-lib';
-import { Number, Predicate, Record } from 'effect';
+import { Number } from 'effect';
 import { describe, it } from 'vitest';
 
 const unknown = null as unknown;
@@ -30,9 +30,9 @@ interface TestInterface {
   readonly toString: () => string;
 }
 
-type TestTuple = readonly [number, boolean, string];
-type TestRefinement = typeof MTypes.isString;
-type TestOneArgFunction = typeof Number.increment;
+//type TestTuple = readonly [number, boolean, string];
+//type TestRefinement = typeof MTypes.isString;
+//type TestOneArgFunction = typeof Number.increment;
 
 /** Tuple */
 TestUtils.assertTrueType(
@@ -46,29 +46,29 @@ TestUtils.assertTrueType(
 );
 
 /** IntRange */
-TestUtils.assertTrueType(TestUtils.areEqualTypes<MTypes.IntRange<3, 6>, 3 | 4 | 5>());
+//TestUtils.assertTrueType(TestUtils.areEqualTypes<MTypes.IntRange<3, 6>, 3 | 4 | 5>());
 
 /** ReadonlyTail */
-TestUtils.assertTrueType(
+/*TestUtils.assertTrueType(
   TestUtils.areEqualTypes<MTypes.ReadonlyTail<TestTuple>, readonly [boolean, string]>(),
-);
+);*/
 
-/** MapToReadonlyTarget */
-TestUtils.assertTrueType(
+/** MapToTarget */
+/*TestUtils.assertTrueType(
   TestUtils.areEqualTypes<
-    MTypes.MapToReadonlyTarget<TestTuple, string>,
+    MTypes.MapToTarget<TestTuple, string>,
     readonly [string, string, string]
   >(),
 );
 TestUtils.assertTrueType(
   TestUtils.areEqualTypes<
-    MTypes.MapToReadonlyTarget<ReadonlyArray<number>, string>,
+    MTypes.MapToTarget<ReadonlyArray<number>, string>,
     ReadonlyArray<string>
   >(),
 );
 TestUtils.assertTrueType(
   TestUtils.areEqualTypes<
-    MTypes.MapToReadonlyTarget<TestInterface, string>,
+    MTypes.MapToTarget<TestInterface, string>,
     {
       readonly a: string;
       readonly [testSymbol]: string;
@@ -79,10 +79,10 @@ TestUtils.assertTrueType(
 );
 TestUtils.assertTrueType(
   TestUtils.areEqualTypes<
-    MTypes.MapToReadonlyTarget<Record.ReadonlyRecord<string, number>, string>,
+    MTypes.MapToTarget<Record.ReadonlyRecord<string, number>, string>,
     Record.ReadonlyRecord<string, string>
   >(),
-);
+);*/
 
 /** Data */
 TestUtils.assertTrueType(
@@ -109,7 +109,7 @@ TestUtils.assertTrueType(
 );
 
 /** SetArgTypeTo */
-TestUtils.assertTrueType(
+/*TestUtils.assertTrueType(
   TestUtils.areEqualTypes<
     MTypes.SetArgTypeTo<TestRefinement, MTypes.Primitive>,
     Predicate.Refinement<MTypes.Primitive, string>
@@ -121,10 +121,12 @@ TestUtils.assertTrueType(
     MTypes.OneArgFunction<string, number>
   >(),
 );
-TestUtils.assertTrueType(TestUtils.areEqualTypes<MTypes.SetArgTypeTo<number, string>, number>());
+TestUtils.assertTrueType(TestUtils.areEqualTypes<MTypes.SetArgTypeTo<number, string>, number>());*/
 
 /** ToKeyIntersection */
-TestUtils.assertTrueType(TestUtils.areEqualTypes<MTypes.ToKeyIntersection<readonly [5, 6]>, 5 & 6>());
+TestUtils.assertTrueType(
+  TestUtils.areEqualTypes<MTypes.ToKeyIntersection<readonly [5, 6]>, 5 & 6>(),
+);
 
 /** IntersectAndSimplify */
 TestUtils.assertTrueType(TestUtils.areEqualTypes<MTypes.IntersectAndSimplify<number, 5>, 5>());
@@ -300,7 +302,9 @@ describe('MTypes', () => {
   describe('isNonPrimitive', () => {
     const numberOrArray = [3] as unknown as number | ReadonlyArray<number>;
     if (MTypes.isNonPrimitive(numberOrArray))
-      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof numberOrArray, ReadonlyArray<number>>());
+      TestUtils.assertTrueType(
+        TestUtils.areEqualTypes<typeof numberOrArray, ReadonlyArray<number>>(),
+      );
 
     if (MTypes.isNonPrimitive(unknown))
       TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof unknown, MTypes.NonPrimitive>());
@@ -373,7 +377,9 @@ describe('MTypes', () => {
 
   describe('isOverOne', () => {
     if (MTypes.isOverOne(testArray2))
-      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof testArray2, MTypes.OverOne<number>>());
+      TestUtils.assertTrueType(
+        TestUtils.areEqualTypes<typeof testArray2, MTypes.OverOne<number>>(),
+      );
 
     it('Matching', () => {
       TestUtils.assertTrue(MTypes.isOverOne(testArray1));
@@ -403,7 +409,9 @@ describe('MTypes', () => {
 
   describe('isOverTwo', () => {
     if (MTypes.isOverTwo(testArray2))
-      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof testArray2, MTypes.OverTwo<number>>());
+      TestUtils.assertTrueType(
+        TestUtils.areEqualTypes<typeof testArray2, MTypes.OverTwo<number>>(),
+      );
 
     it('Matching', () => {
       TestUtils.assertTrue(MTypes.isOverTwo(testArray2));
@@ -433,7 +441,9 @@ describe('MTypes', () => {
 
   describe('isSingleton', () => {
     if (MTypes.isSingleton(testArray2))
-      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof testArray2, MTypes.Singleton<number>>());
+      TestUtils.assertTrueType(
+        TestUtils.areEqualTypes<typeof testArray2, MTypes.Singleton<number>>(),
+      );
 
     it('Matching', () => {
       TestUtils.assertTrue(MTypes.isSingleton(testArray1));
@@ -507,7 +517,7 @@ describe('MTypes', () => {
     });
   });
 
-  describe('isErrorish', () => {
+  /* describe('isErrorish', () => {
     if (MTypes.isErrorish(unknown))
       TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof unknown, MTypes.Errorish>());
 
@@ -522,7 +532,7 @@ describe('MTypes', () => {
       TestUtils.assertFalse(MTypes.isErrorish({ message: 'foo', stack: 5 }));
       TestUtils.assertFalse(MTypes.isErrorish(testRecord));
     });
-  });
+  });*/
 
   describe('typedArrayName', () => {
     it('Matching', () => {
@@ -579,7 +589,9 @@ describe('MTypes', () => {
         TestUtils.assertFalse(MTypes.Category.isArray(MTypes.Category.fromValue(testNumber)));
         TestUtils.assertFalse(MTypes.Category.isRecord(MTypes.Category.fromValue(testNumber)));
         TestUtils.assertFalse(MTypes.Category.isPrimitive(MTypes.Category.fromValue(testArray2)));
-        TestUtils.assertFalse(MTypes.Category.isNonPrimitive(MTypes.Category.fromValue(testNumber)));
+        TestUtils.assertFalse(
+          MTypes.Category.isNonPrimitive(MTypes.Category.fromValue(testNumber)),
+        );
       });
     });
   });

@@ -1,10 +1,10 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
 import {
-    CVBigDecimal,
-    CVInteger,
-    CVPositiveInteger,
-    CVPositiveReal,
-    CVReal,
+  CVBigDecimal,
+  CVInteger,
+  CVPositiveInteger,
+  CVPositiveReal,
+  CVReal,
 } from '@parischap/conversions';
 import { BigDecimal } from 'effect';
 import { describe, it } from 'vitest';
