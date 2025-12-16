@@ -1,8 +1,7 @@
 /** A simple type module */
+/* eslint-disable @typescript-eslint/no-explicit-any -- Unknown or never don't work as well as any when it comes to inference because any is both at the top and bottom of the tree type */
 
 import { Array, Function, Option, pipe, Predicate } from 'effect';
-
-/* eslint-disable @typescript-eslint/no-explicit-any -- Unknown or never don't work as well as any when it comes to inference because any is both at the top and bottom of the tree type */
 
 /**
  * Type that represents a non-null object as defined in javascript. It includes records (in their
@@ -185,13 +184,6 @@ export type AnyRefinement = Predicate.Refinement.Any;
 export type RefinementFrom<Source> = Predicate.Refinement<Source, any>;
 
 /**
- * Type that represents a value that can be used as an error
- *
- * @category Models
- */
-export type Errorish = { readonly message: string; readonly stack?: string | undefined };
-
-/**
  * Type of a string transformer, i.e. a function that transforms a string into another one
  *
  * @category Models
@@ -212,25 +204,15 @@ export interface NumberFromString extends OneArgFunction<string, number> {}
  */
 export interface NumberToString extends OneArgFunction<number, string> {}
 
-type Enumerate<N extends number, Acc extends Array<number> = []> =
-  [Acc['length']] extends [N] ? Acc[number] : Enumerate<N, [...Acc, Acc['length']]>;
-
-/**
- * Utility type that returns removes from Array type all keys not representing an array index
- *
- * @category Utility types
- */
-export type ArrayKeys<A extends AnyReadonlyArray> = Omit<A, keyof ReadonlyArray<unknown>>;
-
 /**
  * Utility type that makes field `field` of target type `X` mutable
  *
  * @category Utility types
  */
 export type WithMutable<X, field extends string | symbol> = {
-  readonly [k in keyof X as readonly [k] extends readonly [field] ? never : k]: X[k];
+  readonly [k in keyof X as [k] extends [field] ? never : k]: X[k];
 } & {
-  -readonly [k in keyof X as readonly [k] extends readonly [field] ? k : never]: X[k];
+  -readonly [k in keyof X as [k] extends readonly [field] ? k : never]: X[k];
 };
 
 /**
@@ -263,26 +245,28 @@ type _TupleOf<T, N extends number, R extends ReadonlyArray<unknown>> =
  *
  * @category Utility types
  */
-export type IntRange<F extends number, T extends number> = Exclude<Enumerate<T>, Enumerate<F>>;
+/*export type IntRange<F extends number, T extends number> = Exclude<Enumerate<T>, Enumerate<F>>;
+type Enumerate<N extends number, Acc extends Array<number> = []> =
+  [Acc['length']] extends [N] ? Acc[number] : Enumerate<N, [...Acc, Acc['length']]>;*/
 
 /**
  * Utility type that extracts all elements of a tuple but the first
  *
  * @category Utility types
  */
-export type ReadonlyTail<T> =
-  readonly [T] extends readonly [readonly [any, ...infer R]] ? { readonly [key in keyof R]: R[key] }
-  : never;
+/*export type ReadonlyTail<T> =
+  [T] extends [[any, ...infer R]] ? { [key in keyof R]: R[key] } : never;*/
 
 /**
  * Utility type that changes the types of all keys of a tuple, array, struct or record to Target
  *
  * @category Utility types
  */
-export type MapToReadonlyTarget<Tuple, Target> = {
-  readonly [k in keyof Tuple]: Target;
+export type MapToTarget<T, Target> = {
+  [k in keyof T]: Target;
 };
 
+/** Keys that will always be on the prototype: symbolic keys, toString, toJSON and pipe */
 type BaseProtoKeys = symbol | 'toString' | 'toJSON' | 'pipe';
 
 /**
@@ -290,9 +274,8 @@ type BaseProtoKeys = symbol | 'toString' | 'toJSON' | 'pipe';
  *
  * @category Utility types
  */
-export type Data<T extends NonPrimitive, ProtoFunctions extends string | symbol = never> = {
-  readonly [k in keyof T as readonly [k] extends readonly [BaseProtoKeys | ProtoFunctions] ? never
-  : k]: T[k];
+export type Data<T extends NonPrimitive, ExtraKeys extends string = never> = {
+  [k in keyof T as [k] extends [BaseProtoKeys | ExtraKeys] ? never : k]: T[k];
 };
 
 /**
@@ -300,9 +283,9 @@ export type Data<T extends NonPrimitive, ProtoFunctions extends string | symbol 
  *
  * @category Utility types
  */
-export type Proto<T extends NonPrimitive, ProtoFunctions extends string | symbol = never> = Omit<
+export type Proto<T extends NonPrimitive, ExtraKeys extends string = never> = Omit<
   T,
-  keyof Data<T, ProtoFunctions>
+  keyof Data<T, ExtraKeys>
 >;
 
 /**
@@ -313,7 +296,7 @@ export type Proto<T extends NonPrimitive, ProtoFunctions extends string | symbol
 export const objectFromDataAndProto = <P extends NonPrimitive, D extends NonPrimitive>(
   proto: P,
   data: D,
-): P & D => Object.assign(Object.create(proto), data) as P & D;
+): P & D => Object.assign(Object.create(proto) as P, data);
 
 /**
  * Utility type that changes the type of the unique parameter of `F` to `A` if `F` is a Refinement
@@ -321,37 +304,31 @@ export const objectFromDataAndProto = <P extends NonPrimitive, D extends NonPrim
  *
  * @category Utility types
  */
-export type SetArgTypeTo<F, A> =
-  F extends Predicate.Refinement<infer _, infer R> ?
-    R extends A ?
+/*export type SetArgTypeTo<F, A> =
+  [F] extends [Predicate.Refinement<infer _, infer R>] ?
+    [R] extends [A] ?
       Predicate.Refinement<A, R>
     : F
-  : F extends OneArgFunction<infer _, infer R> ? OneArgFunction<A, R>
-  : F;
+  : [F] extends [OneArgFunction<infer _, infer R>] ? OneArgFunction<A, R>
+  : F;*/
 
 /**
- * Utility type that removes all private, symbolic and toString, toJSON keys from a type and makes
- * all remaining properties optional
- *
- * @category Utility types
- */
-/*export type ToPredicates<R extends NonPrimitive> = {
-	readonly [k in keyof Data<R>]: Predicate.Predicate<R[k]>;
-};*/
-
-/**
- * Utility type that creates an intersection of all keys of a type. Meant to be used with Tuples
- * even though not set as a constraint
+ * Utility type that creates an intersection of the types all keys of a type. Meant to be used with
+ * Tuples even though not set as a constraint
  *
  * @category Utility types
  */
 export type ToKeyIntersection<T> =
-  {
-    readonly [K in keyof T]: (x: T[K]) => void;
-  } extends (
+  [
     {
-      readonly [K: number]: (x: infer I) => void;
-    }
+      [K in keyof T]: (x: T[K]) => void;
+    },
+  ] extends (
+    [
+      {
+        [K: number]: (x: infer I) => void;
+      },
+    ]
   ) ?
     I
   : never;
@@ -365,8 +342,8 @@ export type ToKeyIntersection<T> =
  */
 
 export type IntersectAndSimplify<T, U> =
-  readonly [T] extends readonly [U] ? T
-  : readonly [U] extends readonly [T] ? U
+  [T] extends [U] ? T
+  : [U] extends [T] ? U
   : T & U;
 
 /**
@@ -467,6 +444,7 @@ export const isNotNullable = <A>(input: A): input is NonNullable<A> =>
  *
  * @category Guards
  */
+// The `& NonPrimitive` part is useful in case A is `unknown`
 export const isNonPrimitive = <A>(input: A): input is Exclude<A, Primitive> & NonPrimitive =>
   input !== null && (typeof input === 'object' || typeof input === 'function');
 
@@ -475,6 +453,7 @@ export const isNonPrimitive = <A>(input: A): input is Exclude<A, Primitive> & No
  *
  * @category Guards
  */
+// The `& Primitive` part is useful in case A is `unknown`
 export const isPrimitive = <A>(input: A): input is Exclude<A, NonPrimitive> & Primitive =>
   !isNonPrimitive(input);
 
@@ -573,18 +552,6 @@ export const isReadonlyPair = <A>(u: ReadonlyArray<A>): u is ReadonlyPair<A, A> 
  */
 export const isIterable = (input: unknown): input is Iterable<unknown> =>
   Predicate.hasProperty(input, Symbol.iterator);
-
-/**
- * From `unknown` to `Errorish`
- *
- * @category Guards
- */
-export const isErrorish = (u: unknown): u is Errorish =>
-  typeof u === 'object'
-  && u !== null
-  && 'message' in u
-  && typeof u.message === 'string'
-  && (!('stack' in u) || typeof u.stack === 'string');
 
 /**
  * If `u` is a TypedArray, returns a `some` of its name (e.g. UInt8Array). Otherwise, returns a
