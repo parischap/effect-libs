@@ -9,7 +9,7 @@ import * as PPValue from './Value.js';
  *
  * @category Models
  */
-export interface Type extends Order.Order<PPValue.All> {}
+export interface Type extends Order.Order<PPValue.Any> {}
 /**
  * Order instance based on the `protoDepth` property, lowest depth first
  *

@@ -13,31 +13,31 @@
  */
 
 import {
-    MInputError,
-    MInspectable,
-    MPipeable,
-    MRegExp,
-    MRegExpString,
-    MString,
-    MStruct,
-    MTuple,
-    MTypes,
+  MInputError,
+  MInspectable,
+  MPipeable,
+  MRegExp,
+  MRegExpString,
+  MString,
+  MStruct,
+  MTuple,
+  MTypes,
 } from '@parischap/effect-lib';
 
 import {
-    Array,
-    Either,
-    flow,
-    Function,
-    HashMap,
-    pipe,
-    Pipeable,
-    Predicate,
-    Schema,
-    String,
-    Struct,
-    Tuple,
-    Types,
+  Array,
+  Either,
+  flow,
+  Function,
+  HashMap,
+  pipe,
+  Pipeable,
+  Predicate,
+  Schema,
+  String,
+  Struct,
+  Tuple,
+  Types,
 } from 'effect';
 
 import * as CVNumberBase10Format from './NumberBase10Format.js';
@@ -119,21 +119,21 @@ export interface Type<out N extends string, in out T> extends MInspectable.Type,
  * @category Models
  */
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-export interface All extends Type<string, any> {}
+export interface Any extends Type<string, any> {}
 
 /**
  * Utility type that extracts the Name type of a `CVTemplatePlaceholder`
  *
  * @category Utility types
  */
-export type ExtractName<P extends All> = P extends Type<infer N, infer _> ? N : never;
+export type ExtractName<P extends Any> = P extends Type<infer N, infer _> ? N : never;
 
 /**
  * Utility type that extracts the output type of a `CVTemplatePlaceholder`
  *
  * @category Utility types
  */
-export type ExtractType<P extends All> = P extends Type<string, infer T> ? T : never;
+export type ExtractType<P extends Any> = P extends Type<string, infer T> ? T : never;
 
 /**
  * Type guard

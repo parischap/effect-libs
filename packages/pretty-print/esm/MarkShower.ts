@@ -10,7 +10,7 @@ import * as PPValue from './Value.js';
  *
  * @category Models
  */
-export interface Type extends ASContextStyler.ReversedAction.Initialized.Type<PPValue.All> {}
+export interface Type extends ASContextStyler.ReversedAction.Initialized.Type<PPValue.Any> {}
 
 /**
  * MarkShower instance that always prints an empty Text

@@ -70,7 +70,7 @@ export namespace Action {
         readonly valueBasedStylerConstructor: PPValueBasedStylerConstructor.Type;
         readonly markShowerConstructor: PPMarkShowerConstructor.Type;
       },
-    ): MTypes.OneArgFunction<PPValue.All, Option.Option<PPStringifiedValue.Type>>;
+    ): MTypes.OneArgFunction<PPValue.Any, Option.Option<PPStringifiedValue.Type>>;
   }
 }
 

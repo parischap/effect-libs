@@ -11,7 +11,7 @@ import * as PPValue from './Value.js';
  *
  * @category Models
  */
-export type Type = ASContextStyler.Type<PPValue.All>;
+export type Type = ASContextStyler.Type<PPValue.Any>;
 
 /**
  * Constructor of a depth-indexed ValueBasedStyler
@@ -21,7 +21,7 @@ export type Type = ASContextStyler.Type<PPValue.All>;
 export const makeDepthIndexed = (palette: ASPalette.Type): Type =>
   ASContextStyler.fromPalette({
     // Use named function so the name gets printed by the toString function
-    indexFromContext: function valueDepth(value: PPValue.All) {
+    indexFromContext: function valueDepth(value: PPValue.Any) {
       return PPValue.depth(value);
     },
     palette,
@@ -35,7 +35,7 @@ export const makeDepthIndexed = (palette: ASPalette.Type): Type =>
 export const makeTypeIndexed = (palette: ASPalette.Type): Type =>
   ASContextStyler.fromPalette({
     // Use named function so the name gets printed by the toString function
-    indexFromContext: function valueType(value: PPValue.All) {
+    indexFromContext: function valueType(value: PPValue.Any) {
       return value.contentType;
     },
     palette,
@@ -49,7 +49,7 @@ export const makeTypeIndexed = (palette: ASPalette.Type): Type =>
 export const makeKeyTypeIndexed = (palette: ASPalette.Type): Type =>
   ASContextStyler.fromPalette({
     // Use named function so the name gets printed by the toString function
-    indexFromContext: function keyType(value: PPValue.All) {
+    indexFromContext: function keyType(value: PPValue.Any) {
       // `1` for symbolic key, `0` for string key
       return +value.hasSymbolicKey;
     },

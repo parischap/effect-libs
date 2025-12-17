@@ -283,9 +283,9 @@ export const Template = <const PS extends CVTemplateParts.Type>(
   template: CVTemplate.Type<PS>,
 ): Schema.Schema<
   {
-    readonly [k in keyof MTypes.ArrayKeys<PS> as PS[k] extends CVTemplatePlaceholder.All ?
+    readonly [k in keyof MTypes.ArrayKeys<PS> as PS[k] extends CVTemplatePlaceholder.Any ?
       CVTemplatePlaceholder.ExtractName<PS[k]>
-    : never]: PS[k] extends CVTemplatePlaceholder.All ? CVTemplatePlaceholder.ExtractType<PS[k]>
+    : never]: PS[k] extends CVTemplatePlaceholder.Any ? CVTemplatePlaceholder.ExtractType<PS[k]>
     : never;
   },
   string

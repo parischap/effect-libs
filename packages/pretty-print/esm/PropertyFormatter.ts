@@ -63,7 +63,7 @@ export namespace Action {
         value,
         isLeaf,
       }: {
-        readonly value: PPValue.All;
+        readonly value: PPValue.Any;
         readonly isLeaf: boolean;
       }): MTypes.OneArgFunction<PPStringifiedValue.Type>;
     }

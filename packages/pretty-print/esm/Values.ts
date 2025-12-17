@@ -2,13 +2,13 @@
 
 import { ASText } from '@parischap/ansi-styles';
 import {
-    MArray,
-    MFunction,
-    MPredicate,
-    MString,
-    MStruct,
-    MTuple,
-    MTypes,
+  MArray,
+  MFunction,
+  MPredicate,
+  MString,
+  MStruct,
+  MTuple,
+  MTypes,
 } from '@parischap/effect-lib';
 import { Array, Either, flow, Number, Option, pipe, Predicate } from 'effect';
 import type * as PPOption from './Option.js';
@@ -20,7 +20,7 @@ import * as PPValue from './Value.js';
  *
  * @category Models
  */
-export interface Type extends ReadonlyArray<PPValue.All> {}
+export interface Type extends ReadonlyArray<PPValue.Any> {}
 
 /**
  * Builds a Values from the keys of a non-primitive value and its prototypes

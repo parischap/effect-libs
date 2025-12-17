@@ -8,20 +8,20 @@
 import { ASText } from '@parischap/ansi-styles';
 import { MCache, MFunction, MMatch, MString, MStruct, MTree, MTypes } from '@parischap/effect-lib';
 import {
-    Array,
-    Either,
-    flow,
-    Function,
-    HashMap,
-    HashSet,
-    MutableHashMap,
-    Number,
-    Option,
-    pipe,
-    SortedMap,
-    SortedSet,
-    Struct,
-    Tuple,
+  Array,
+  Either,
+  flow,
+  Function,
+  HashMap,
+  HashSet,
+  MutableHashMap,
+  Number,
+  Option,
+  pipe,
+  SortedMap,
+  SortedSet,
+  Struct,
+  Tuple,
 } from 'effect';
 
 import { MInspectable, MPipeable } from '@parischap/effect-lib';
@@ -862,8 +862,8 @@ export const toStringifier = (self: Type): Stringifier.Type => {
         nonPrimitiveOption: NonPrimitive.Initialized.Type,
         allPropertyNumber: number,
       ],
-      readonly [stringified: PPStringifiedValue.Type, value: PPValue.All, isLeaf: boolean],
-      PPValue.All
+      readonly [stringified: PPStringifiedValue.Type, value: PPValue.Any, isLeaf: boolean],
+      PPValue.Any
     >({
       unfold: (seed, cyclicalRef) =>
         pipe(
@@ -879,7 +879,7 @@ export const toStringifier = (self: Type): Stringifier.Type => {
               notByPassed,
               Either.liftPredicate(
                 PPValue.isNonPrimitive,
-                Function.unsafeCoerce<PPValue.All, PPValue.Primitive>,
+                Function.unsafeCoerce<PPValue.Any, PPValue.Primitive>,
               ),
               Either.mapLeft(
                 flow(

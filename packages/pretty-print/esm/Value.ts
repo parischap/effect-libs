@@ -5,16 +5,16 @@
  */
 import { MInspectable, MPipeable, MString, MTypes } from '@parischap/effect-lib';
 import {
-    Array,
-    Equal,
-    Equivalence,
-    Hash,
-    Inspectable,
-    pipe,
-    Pipeable,
-    Predicate,
-    Struct,
-    Types,
+  Array,
+  Equal,
+  Equivalence,
+  Hash,
+  Inspectable,
+  pipe,
+  Pipeable,
+  Predicate,
+  Struct,
+  Types,
 } from 'effect';
 
 /**
@@ -83,7 +83,7 @@ export interface Type<out V> extends Equal.Equal, Inspectable.Inspectable, Pipea
  *
  * @category Models
  */
-export interface All extends Type<unknown> {}
+export interface Any extends Type<unknown> {}
 
 /**
  * Type that represents a primitive value in its stringification context
@@ -104,14 +104,14 @@ export interface NonPrimitive extends Type<MTypes.NonPrimitive> {}
  *
  * @category Guards
  */
-export const has = (u: unknown): u is All => Predicate.hasProperty(u, _TypeId);
+export const has = (u: unknown): u is Any => Predicate.hasProperty(u, _TypeId);
 
 /**
  * Value equivalence based on strict equality of the content properties. Used for cycle detection
  *
  * @category Equivalences
  */
-export const equivalence: Equivalence.Equivalence<All> = (self, that) =>
+export const equivalence: Equivalence.Equivalence<Any> = (self, that) =>
   that.content === self.content;
 
 /** Prototype */
@@ -164,7 +164,7 @@ export const fromNonPrimitiveValueAndKey = ({
   readonly key: string | symbol;
   readonly depth: number;
   readonly protoDepth: number;
-}): All => {
+}): Any => {
   const oneLineStringKey = MString.fromNonNullablePrimitive(key);
   const content: unknown = nonPrimitiveContent[key];
   return _make({
@@ -210,14 +210,14 @@ export const fromIterable = <V>({
  *
  * @category Guards
  */
-export const isPrimitive = (u: All): u is Primitive => MTypes.Category.isPrimitive(u.contentType);
+export const isPrimitive = (u: Any): u is Primitive => MTypes.Category.isPrimitive(u.contentType);
 
 /**
  * Type guard
  *
  * @category Guards
  */
-export const isNonPrimitive = (u: All): u is NonPrimitive =>
+export const isNonPrimitive = (u: Any): u is NonPrimitive =>
   MTypes.Category.isNonPrimitive(u.contentType);
 
 /**
@@ -225,7 +225,7 @@ export const isNonPrimitive = (u: All): u is NonPrimitive =>
  *
  * @category Guards
  */
-export const isFunction = (u: All): u is Type<MTypes.AnyFunction> =>
+export const isFunction = (u: Any): u is Type<MTypes.AnyFunction> =>
   MTypes.Category.isFunction(u.contentType);
 
 /**
@@ -240,28 +240,28 @@ export const content: <V>(self: Type<V>) => V = Struct.get('content');
  *
  * @category Destructors
  */
-export const contentType: MTypes.OneArgFunction<All, MTypes.Category> = Struct.get('contentType');
+export const contentType: MTypes.OneArgFunction<Any, MTypes.Category> = Struct.get('contentType');
 
 /**
  * Returns the `depth` property of `self`
  *
  * @category Destructors
  */
-export const depth: MTypes.OneArgFunction<All, number> = Struct.get('depth');
+export const depth: MTypes.OneArgFunction<Any, number> = Struct.get('depth');
 
 /**
  * Returns the `protoDepth` property of `self`
  *
  * @category Destructors
  */
-export const protoDepth: MTypes.OneArgFunction<All, number> = Struct.get('protoDepth');
+export const protoDepth: MTypes.OneArgFunction<Any, number> = Struct.get('protoDepth');
 
 /**
  * Returns the `stringKey` property of `self`
  *
  * @category Destructors
  */
-export const stringKey: MTypes.OneArgFunction<All, MTypes.OverOne<string>> = Struct.get(
+export const stringKey: MTypes.OneArgFunction<Any, MTypes.OverOne<string>> = Struct.get(
   'stringKey',
 );
 
@@ -270,18 +270,18 @@ export const stringKey: MTypes.OneArgFunction<All, MTypes.OverOne<string>> = Str
  *
  * @category Destructors
  */
-export const oneLineStringKey: MTypes.OneArgFunction<All, string> = Struct.get('oneLineStringKey');
+export const oneLineStringKey: MTypes.OneArgFunction<Any, string> = Struct.get('oneLineStringKey');
 
 /**
  * Returns the `hasSymbolicKey` property of `self`
  *
  * @category Destructors
  */
-export const hasSymbolicKey: MTypes.OneArgFunction<All, boolean> = Struct.get('hasSymbolicKey');
+export const hasSymbolicKey: MTypes.OneArgFunction<Any, boolean> = Struct.get('hasSymbolicKey');
 
 /**
  * Returns the `isEnumerable` property of `self`
  *
  * @category Destructors
  */
-export const isEnumerable: MTypes.OneArgFunction<All, boolean> = Struct.get('isEnumerable');
+export const isEnumerable: MTypes.OneArgFunction<Any, boolean> = Struct.get('isEnumerable');
