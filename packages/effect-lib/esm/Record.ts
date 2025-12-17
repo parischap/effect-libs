@@ -11,7 +11,7 @@ import * as MTypes from './types.js';
  * @category Utils
  */
 export const unsafeGet =
-  (key: string | symbol) =>
+  (key: string) =>
   <A>(self: Record.ReadonlyRecord<string, A>): A =>
     // @ts-expect-error getting record content unsafely
     self[key];
