@@ -445,7 +445,7 @@ export const isNotNullable = <A>(input: A): input is NonNullable<A> =>
  *
  * @category Guards
  */
-// The `& NonPrimitive` part is useful in case A is `unknown`
+// The `& NonPrimitive` part is useful in case A is `unknown`. A JavaScript object only has string and symbolic keys. So this needs not be checked.
 export const isNonPrimitive = <A>(input: A): input is Exclude<A, Primitive> & NonPrimitive =>
   input !== null && (typeof input === 'object' || typeof input === 'function');
 
