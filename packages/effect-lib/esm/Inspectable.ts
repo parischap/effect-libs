@@ -15,14 +15,7 @@ export const moduleTag = '@parischap/effect-lib/Inspectable/';
  *
  * @category Models
  */
-export const IdSymbol: unique symbol = Symbol.for(moduleTag + 'IdSymbol/') as IdSymbol;
-
-/**
- * Type used to define a special prototype function that must return an id for the object
- *
- * @category Models
- */
-export type IdSymbol = typeof IdSymbol;
+export const IdSymbol: unique symbol = Symbol.for(moduleTag + 'IdSymbol/');
 
 /**
  * Interface that an object should implement when an id can be used to represent it
