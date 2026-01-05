@@ -1,8 +1,8 @@
 /** Very simple regular expression string module */
 
-import { Array, Function, pipe, RegExp, String } from 'effect';
-import * as MArray from './Array.js';
-import * as MTypes from './types.js';
+import { Array, Function, pipe, RegExp, String } from "effect";
+import * as MArray from "./Array.js";
+import * as MTypes from "./types.js";
 
 /**
  * Size of a group of digits
@@ -42,7 +42,7 @@ export const oneOrMore: MTypes.StringTransformer = (self) => `(?:${self})+`;
 export const repeatBetween =
   (low: number, high: number) =>
   (self: string): string =>
-    `(?:${self}){${low.toString()},${high === Infinity ? '' : high.toString()}}`;
+    `(?:${self}){${low.toString()},${high === Infinity ? "" : high.toString()}}`;
 
 /**
  * Returns a new regular expression string where `self` is optional
@@ -62,9 +62,9 @@ export const either = (...args: ReadonlyArray<string>): string =>
     args,
     Array.filter(String.isNonEmpty),
     MArray.match012({
-      onEmpty: () => '',
+      onEmpty: () => "",
       onSingleton: Function.identity,
-      onOverTwo: (args) => `(?:${args.join('|')})`,
+      onOverTwo: (args) => `(?:${args.join("|")})`,
     }),
   );
 
@@ -77,9 +77,9 @@ export const range = (args: ReadonlyArray<string>): string =>
   pipe(
     args,
     MArray.match012({
-      onEmpty: () => '',
+      onEmpty: () => "",
       onSingleton: Function.identity,
-      onOverTwo: (args) => `[${args.join('')}]`,
+      onOverTwo: (args) => `[${args.join("")}]`,
     }),
   );
 
@@ -88,7 +88,7 @@ export const range = (args: ReadonlyArray<string>): string =>
  *
  * @category Utils
  */
-export const notInRange = (args: MTypes.ReadonlyOverOne<string>): string => `[^${args.join('')}]`;
+export const notInRange = (args: MTypes.ReadonlyOverOne<string>): string => `[^${args.join("")}]`;
 
 /**
  * Returns a new regular expression string where `self` must fill a whole line
@@ -144,23 +144,23 @@ export const optionalCapture: MTypes.StringTransformer = (self) => `(${self})?`;
  *
  * @category Instances
  */
-export const emptyCapture = capture('');
+export const emptyCapture = capture("");
 
 /**
  * A regular expression string representing any character
  *
  * @category Instances
  */
-export const anyChar = '.';
+export const anyChar = ".";
 
 /**
  * A regular expression string representing anything but a dot
  *
  * @category Instances
  */
-export const anythingButDot = notInRange(['.']);
+export const anythingButDot = notInRange(["."]);
 
-const backslashString = '\\';
+const backslashString = "\\";
 
 /**
  * A regular expression string representing a backslashString
@@ -174,7 +174,7 @@ export const backslash = backslashString + backslashString;
  *
  * @category Instances
  */
-export const slash = backslashString + '/';
+export const slash = backslashString + "/";
 
 /**
  * A path separator regular expression string to split all possible paths
@@ -188,21 +188,21 @@ export const universalPathSep = range([slash, backslash]);
  *
  * @category Instances
  */
-export const dollar = backslashString + '$';
+export const dollar = backslashString + "$";
 
 /**
  * A regular expression string representing a plus sign
  *
  * @category Instances
  */
-export const plus = backslashString + '+';
+export const plus = backslashString + "+";
 
 /**
  * A regular expression string representing a minus sign
  *
  * @category Instances
  */
-export const minus = '-';
+export const minus = "-";
 
 /**
  * A regular expression string representing a plus or a minus sign
@@ -216,35 +216,35 @@ export const sign = either(plus, minus);
  *
  * @category Instances
  */
-export const star = backslashString + '*';
+export const star = backslashString + "*";
 
 /**
  * A regular expression string representing a dot
  *
  * @category Instances
  */
-export const dot = backslashString + '.';
+export const dot = backslashString + ".";
 
 /**
  * A regular expression string representing the arrowbase
  *
  * @category Instances
  */
-export const arrowbase = '@';
+export const arrowbase = "@";
 
 /**
  * A regular expression string representing a tab
  *
  * @category Instances
  */
-export const tab = backslashString + 't';
+export const tab = backslashString + "t";
 
 /**
  * A regular expression string representing a space
  *
  * @category Instances
  */
-export const space = backslashString + 's';
+export const space = backslashString + "s";
 
 /**
  * A regular expression string representing zero or more spaces
@@ -258,14 +258,14 @@ export const spaces = zeroOrMore(space);
  *
  * @category Instances
  */
-export const digit = backslashString + 'd';
+export const digit = backslashString + "d";
 
 /**
  * A regular expression string representing a strictly positive digit
  *
  * @category Instances
  */
-export const nonZeroDigit = '[1-9]';
+export const nonZeroDigit = "[1-9]";
 
 // A regular expression string representing a group of `DIGIT_GROUP_SIZE` digits.
 const _digitGroup: string = repeatBetween(DIGIT_GROUP_SIZE, DIGIT_GROUP_SIZE)(digit);
@@ -283,9 +283,9 @@ const _unsignedNonNullIntTo999 = _unsignedNonNullIntNPlusOneDigits(2);
  * @category Instances
  */
 export const unsignedNonNullBase10Int = (thousandSeparator: string): string =>
-  thousandSeparator === '' ? _unsignedNonNullInt : (
-    _unsignedNonNullIntTo999 + zeroOrMore(RegExp.escape(thousandSeparator) + _digitGroup)
-  );
+  thousandSeparator === ""
+    ? _unsignedNonNullInt
+    : _unsignedNonNullIntTo999 + zeroOrMore(RegExp.escape(thousandSeparator) + _digitGroup);
 
 /**
  * Returns a regular expression string representing an unsigned integer in base 10 using
@@ -294,12 +294,12 @@ export const unsignedNonNullBase10Int = (thousandSeparator: string): string =>
  * @category Instances
  */
 export const unsignedBase10Int = (thousandSeparator: string): string =>
-  either('0', unsignedNonNullBase10Int(thousandSeparator));
+  either("0", unsignedNonNullBase10Int(thousandSeparator));
 
 // Regular expression string representing a captured optional sign
 const _signPart = pipe(sign, capture, optional);
 // Regular expression string representing the captured exponent of a number
-const _expPart = pipe(sign, optional, String.concat(unsignedBase10Int('')), capture);
+const _expPart = pipe(sign, optional, String.concat(unsignedBase10Int("")), capture);
 // Regular expression string representing the captured fractional part of a floating-point number
 const _fractionalPart = repeatBetween(0, Infinity)(digit);
 
@@ -334,67 +334,67 @@ export const base10Number = ({
   readonly eNotationChars: ReadonlyArray<string>;
   readonly fillChar: string;
 }): string =>
-  _signPart
-  + capture(fillChar === '' ? '' : zeroOrMore(fillChar))
-  + pipe(thousandSeparator, unsignedBase10Int, optionalCapture)
-  + pipe(fractionalSeparator, RegExp.escape, String.concat(capture(_fractionalPart)), optional)
-  + pipe(eNotationChars, Array.map(RegExp.escape), range, String.concat(_expPart), optional);
+  _signPart +
+  capture(fillChar === "" ? "" : zeroOrMore(fillChar)) +
+  pipe(thousandSeparator, unsignedBase10Int, optionalCapture) +
+  pipe(fractionalSeparator, RegExp.escape, String.concat(capture(_fractionalPart)), optional) +
+  pipe(eNotationChars, Array.map(RegExp.escape), range, String.concat(_expPart), optional);
 
 /**
  * A regular expression string representing an integer in base 2.
  *
  * @category Instances
  */
-export const binaryInt: string = oneOrMore('[0-1]');
+export const binaryInt: string = oneOrMore("[0-1]");
 
 /**
  * A regular expression string representing an integer in base 8.
  *
  * @category Instances
  */
-export const octalInt: string = oneOrMore('[0-7]');
+export const octalInt: string = oneOrMore("[0-7]");
 
 /**
  * A regular expression string representing an integer in base 16.
  *
  * @category Instances
  */
-export const hexaInt: string = oneOrMore('[0-9A-Fa-f]');
+export const hexaInt: string = oneOrMore("[0-9A-Fa-f]");
 
 /**
  * A regular expression string representing a letter
  *
  * @category Instances
  */
-export const letter = '[A-Za-z]';
+export const letter = "[A-Za-z]";
 
 /**
  * A regular expression string representing a lowercase letter
  *
  * @category Instances
  */
-export const lowerCaseLetter = '[a-z]';
+export const lowerCaseLetter = "[a-z]";
 
 /**
  * A regular expression string representing an uppercase letter
  *
  * @category Instances
  */
-export const upperCaseLetter = '[A-Z]';
+export const upperCaseLetter = "[A-Z]";
 
 /**
  * A regular expression string representing a lowercase letter
  *
  * @category Instances
  */
-export const lowerCaseLetterOrDigit = '[a-z0-9]';
+export const lowerCaseLetterOrDigit = "[a-z0-9]";
 
 /**
  * A regular expression string representing a word letter
  *
  * @category Instances
  */
-export const anyWordLetter = backslashString + 'w';
+export const anyWordLetter = backslashString + "w";
 
 /**
  * A regular expression string representing a word
@@ -408,14 +408,14 @@ export const anyWord = oneOrMore(anyWordLetter);
  *
  * @category Instances
  */
-export const CR = backslashString + 'r';
+export const CR = backslashString + "r";
 
 /**
  * A regular expression string representing a line-feed
  *
  * @category Instances
  */
-export const LF = backslashString + 'n';
+export const LF = backslashString + "n";
 
 /**
  * A regular expression string representing a linebreak in Windows, Unix and Mac Os

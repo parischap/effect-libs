@@ -1,40 +1,40 @@
 /** A simple extension to the Effect String module */
 
 import {
-    Array,
-    Equal,
-    Equivalence,
-    Function,
-    Hash,
-    Inspectable,
-    Option,
-    Order,
-    Pipeable,
-    Predicate,
-    String,
-    Struct,
-    Tuple,
-    flow,
-    pipe,
-} from 'effect';
-import * as MArray from './Array.js';
-import * as MBigInt from './BigInt.js';
-import * as MFunction from './Function.js';
-import * as MInspectable from './Inspectable.js';
-import * as MMatch from './Match.js';
-import * as MNumber from './Number.js';
-import * as MPipeable from './Pipeable.js';
-import * as MPredicate from './Predicate.js';
-import * as MRegExp from './RegExp.js';
-import * as MTuple from './Tuple.js';
-import * as MTypes from './types.js';
+  Array,
+  Equal,
+  Equivalence,
+  Function,
+  Hash,
+  Inspectable,
+  Option,
+  Order,
+  Pipeable,
+  Predicate,
+  String,
+  Struct,
+  Tuple,
+  flow,
+  pipe,
+} from "effect";
+import * as MArray from "./Array.js";
+import * as MBigInt from "./BigInt.js";
+import * as MFunction from "./Function.js";
+import * as MInspectable from "./Inspectable.js";
+import * as MMatch from "./Match.js";
+import * as MNumber from "./Number.js";
+import * as MPipeable from "./Pipeable.js";
+import * as MPredicate from "./Predicate.js";
+import * as MRegExp from "./RegExp.js";
+import * as MTuple from "./Tuple.js";
+import * as MTypes from "./types.js";
 
 /**
  * Module tag
  *
  * @category Models
  */
-export const moduleTag = '@parischap/effect-lib/String/';
+export const moduleTag = "@parischap/effect-lib/String/";
 
 /**
  * This namespace implements a type that represents the result of the search of a string in another
@@ -43,7 +43,7 @@ export const moduleTag = '@parischap/effect-lib/String/';
  * @category Models
  */
 export namespace SearchResult {
-  const _namespaceTag = moduleTag + 'SearchResult/';
+  const _namespaceTag = moduleTag + "SearchResult/";
   const _TypeId: unique symbol = Symbol.for(_namespaceTag) as _TypeId;
   type _TypeId = typeof _TypeId;
 
@@ -76,9 +76,9 @@ export namespace SearchResult {
    * @category Equivalences
    */
   export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
-    that.startIndex === self.startIndex
-    && that.endIndex === self.endIndex
-    && that.match === self.match;
+    that.startIndex === self.startIndex &&
+    that.endIndex === self.endIndex &&
+    that.match === self.match;
 
   /**
    * Equivalence that considers two SearchResult's to be equivalent when they overlap
@@ -152,21 +152,21 @@ export namespace SearchResult {
    *
    * @category Destructors
    */
-  export const startIndex: MTypes.OneArgFunction<Type, number> = Struct.get('startIndex');
+  export const startIndex: MTypes.OneArgFunction<Type, number> = Struct.get("startIndex");
 
   /**
    * Returns the `endIndex` property of `self`
    *
    * @category Destructors
    */
-  export const endIndex: MTypes.OneArgFunction<Type, number> = Struct.get('endIndex');
+  export const endIndex: MTypes.OneArgFunction<Type, number> = Struct.get("endIndex");
 
   /**
    * Returns the `match` property of `self`
    *
    * @category Destructors
    */
-  export const match: MTypes.OneArgFunction<Type, string> = Struct.get('match');
+  export const match: MTypes.OneArgFunction<Type, string> = Struct.get("match");
 }
 
 /**
@@ -188,7 +188,7 @@ export const fromNonNullablePrimitive = (u: MTypes.NonNullablePrimitive): string
 export const fromPrimitive: MTypes.OneArgFunction<MTypes.Primitive, string> = flow(
   MMatch.make,
   MMatch.when(MTypes.isNotNullable, fromNonNullablePrimitive),
-  MMatch.orElse((s) => (s === undefined ? 'undefined' : 'null')),
+  MMatch.orElse((s) => (s === undefined ? "undefined" : "null")),
 );
 
 /**
@@ -213,15 +213,15 @@ export const fromNumber =
     const integerPart = Math.trunc(u);
     const decimalPart = Math.trunc((u - integerPart) * 1e16);
     return (
-      BigInt(integerPart).toString(10)
-      + pipe(
+      BigInt(integerPart).toString(10) +
+      pipe(
         decimalPart,
         MBigInt.fromPrimitiveOrThrow,
         (b) => b.toString(10),
-        String.padStart(16, '0'),
-        trimEnd('0'),
+        String.padStart(16, "0"),
+        trimEnd("0"),
         Option.liftPredicate(String.isNonEmpty),
-        Option.map(prepend('.')),
+        Option.map(prepend(".")),
         Option.getOrElse(MFunction.constEmptyString),
       )
     );
@@ -273,7 +273,7 @@ export const searchAll =
         Option.map(
           MTuple.makeBothBy({
             toFirst: Function.identity,
-            toSecond: Struct.get('endIndex'),
+            toSecond: Struct.get("endIndex"),
           }),
         ),
       ),
@@ -361,7 +361,7 @@ export const takeRightBut =
  * @category Utils
  */
 export const trimStart = (charToRemove: string): MTypes.StringTransformer =>
-  flow(Array.dropWhile(MPredicate.strictEquals(charToRemove)), Array.join(''));
+  flow(Array.dropWhile(MPredicate.strictEquals(charToRemove)), Array.join(""));
 
 /**
  * Same as String.trimEnd but the character to remove can be specified. `charToRemove` must be a
@@ -375,7 +375,7 @@ export const trimEnd = (charToRemove: string): MTypes.StringTransformer =>
     Array.reverse,
     Array.dropWhile(MPredicate.strictEquals(charToRemove)),
     Array.reverse,
-    Array.join(''),
+    Array.join(""),
   );
 
 /**
@@ -401,8 +401,8 @@ export namespace FillPosition {
    */
   export const toId: MTypes.OneArgFunction<FillPosition, string> = flow(
     MMatch.make,
-    MMatch.whenIs(FillPosition.Right, Function.constant('right')),
-    MMatch.whenIs(FillPosition.Left, Function.constant('left')),
+    MMatch.whenIs(FillPosition.Right, Function.constant("right")),
+    MMatch.whenIs(FillPosition.Left, Function.constant("left")),
     MMatch.exhaustive,
   );
 }
@@ -668,7 +668,7 @@ export const tabify =
   (self) => {
     const tab = tabChar.repeat(count);
     // replace resets RegExp.prototype.lastIndex after executing
-    return tab + self.replace(MRegExp.globalLineBreak(), '$&' + tab);
+    return tab + self.replace(MRegExp.globalLineBreak(), "$&" + tab);
   };
 
 /**
@@ -714,9 +714,9 @@ export const removeNCharsEveryMCharsFromRight = ({
   readonly m: number;
   readonly n: number;
 }): MTypes.StringTransformer =>
-  n === 0 ?
-    Function.identity
-  : flow(splitEquallyRestAtStart(m + n), Array.map(String.takeRight(m)), Array.join(''));
+  n === 0
+    ? Function.identity
+    : flow(splitEquallyRestAtStart(m + n), Array.map(String.takeRight(m)), Array.join(""));
 
 /**
  * Returns true if a string represents a digit. False otherwise

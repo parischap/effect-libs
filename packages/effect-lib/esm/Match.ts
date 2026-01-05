@@ -4,18 +4,18 @@
  * simplifies its use.
  */
 
-import { Array, Inspectable, Option, Pipeable, Predicate, Types, pipe } from 'effect';
-import * as MInspectable from './Inspectable.js';
-import * as MPipeable from './Pipeable.js';
-import * as MPredicate from './Predicate.js';
-import * as MTypes from './types.js';
+import { Array, Inspectable, Option, Pipeable, Predicate, Types, pipe } from "effect";
+import * as MInspectable from "./Inspectable.js";
+import * as MPipeable from "./Pipeable.js";
+import * as MPredicate from "./Predicate.js";
+import * as MTypes from "./types.js";
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/effect-lib/Match/';
+export const moduleTag = "@parischap/effect-lib/Match/";
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
@@ -25,8 +25,7 @@ type _TypeId = typeof _TypeId;
  * @category Models
  */
 export interface Type<out Input, out Output, out Rest extends Input>
-  extends Inspectable.Inspectable,
-    Pipeable.Pipeable {
+  extends Inspectable.Inspectable, Pipeable.Pipeable {
   /** The input to match */
   readonly input: Input;
   /** The output of the matcher when it has been found */

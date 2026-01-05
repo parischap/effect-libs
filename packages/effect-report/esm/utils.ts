@@ -1,7 +1,7 @@
-import { MArray, MString, MTypes } from '@parischap/effect-lib';
+import { MArray, MString, MTypes } from "@parischap/effect-lib";
 
-import { JsAnsi, JsString } from '@parischap/js-lib';
-import { Array, String, pipe } from 'effect';
+import { JsAnsi, JsString } from "@parischap/js-lib";
+import { Array, String, pipe } from "effect";
 
 const relative =
   (from: string, pathSep: string) =>
@@ -13,7 +13,7 @@ const relative =
     return pipe(
       toArray,
       MArray.takeRightBut(commonLength),
-      Array.prependAll(diff <= 0 ? Array.of('.') : Array.makeBy(diff, () => '..')),
+      Array.prependAll(diff <= 0 ? Array.of(".") : Array.makeBy(diff, () => "..")),
       Array.join(pathSep),
     );
   };
@@ -28,26 +28,29 @@ export const stackTraceFormatter =
         const methodName = stackTrace.getMethodName();
         const functionName = stackTrace.getFunctionName();
         const functionAndMethod =
-          (methodName !== null ? `${methodName}.` : '')
-          + (functionName !== null ? `${functionName}()` : '');
+          (methodName !== null ? `${methodName}.` : "") +
+          (functionName !== null ? `${functionName}()` : "");
         const fileName = stackTrace.getFileName();
         const lineNumber = stackTrace.getLineNumber();
         const columnNumber = stackTrace.getColumnNumber();
         return (
-          (typeName !== null ?
-            functionAndMethod ? `${typeName}.${functionAndMethod}`
-            : `Class '${typeName}'`
-          : functionAndMethod ? `${functionAndMethod}`
-          : '')
-          + (fileName !== undefined ?
-            ` in ${pipe(fileName, relative(thisProgramPath, pathSep), MString.takeRightFrom('node_modules'))}`
-          : '')
-          + (lineNumber !== null ?
-            columnNumber !== null ?
-              `pos ${lineNumber},${columnNumber}`
-            : `line ${lineNumber}`
-          : columnNumber !== null ? `col ${columnNumber}`
-          : '')
+          (typeName !== null
+            ? functionAndMethod
+              ? `${typeName}.${functionAndMethod}`
+              : `Class '${typeName}'`
+            : functionAndMethod
+              ? `${functionAndMethod}`
+              : "") +
+          (fileName !== undefined
+            ? ` in ${pipe(fileName, relative(thisProgramPath, pathSep), MString.takeRightFrom("node_modules"))}`
+            : "") +
+          (lineNumber !== null
+            ? columnNumber !== null
+              ? `pos ${lineNumber},${columnNumber}`
+              : `line ${lineNumber}`
+            : columnNumber !== null
+              ? `col ${columnNumber}`
+              : "")
         );
       }),
       Array.join(eol),
@@ -64,16 +67,16 @@ export const formatError = (
 ) => {
   // if there is no message, there might be other useful information in the object
   const message =
-    self.message === '' ?
-      'Error object' + options.eol + options.stringify(self)
-    : JsAnsi.highContrastBlack(self.message);
+    self.message === ""
+      ? "Error object" + options.eol + options.stringify(self)
+      : JsAnsi.highContrastBlack(self.message);
 
-  return self.stack !== undefined ?
-      message
-        + options.eol
-        + options.tabChar
-        + JsAnsi.green('Stack trace:')
-        + JsString.tabify(options.tabChar, 2)(self.stack)
+  return self.stack !== undefined
+    ? message +
+        options.eol +
+        options.tabChar +
+        JsAnsi.green("Stack trace:") +
+        JsString.tabify(options.tabChar, 2)(self.stack)
     : message;
 };
 
@@ -93,15 +96,15 @@ const showUncaughtErrorAndExit = ({
   readonly tabChar: string;
 }): never => {
   console.error(
-    JsAnsi.red(message)
-      + eol
-      + JsString.tabify(tabChar)(
-        MTypes.isErrorish(error) ?
-          formatError(error, { eol, pathSep, stringify, tabChar })
-        : stringify(error),
-      )
-      + eol
-      + eol,
+    JsAnsi.red(message) +
+      eol +
+      JsString.tabify(tabChar)(
+        MTypes.isErrorish(error)
+          ? formatError(error, { eol, pathSep, stringify, tabChar })
+          : stringify(error),
+      ) +
+      eol +
+      eol,
   );
   return process.exit(1);
 };
@@ -119,21 +122,21 @@ export const catchUnexpectedErrors = ({
 }): void => {
   // eslint-disable-next-line functional/no-expression-statements
   process
-    .on('unhandledRejection', (reason) => {
+    .on("unhandledRejection", (reason) => {
       return showUncaughtErrorAndExit({
         eol,
         error: reason,
-        message: 'UNHANDLED REJECTION',
+        message: "UNHANDLED REJECTION",
         pathSep,
         stringify,
         tabChar,
       });
     })
-    .on('uncaughtException', (error) => {
+    .on("uncaughtException", (error) => {
       return showUncaughtErrorAndExit({
         eol,
         error: error,
-        message: 'UNCAUGHT EXCEPTION',
+        message: "UNCAUGHT EXCEPTION",
         pathSep,
         stringify,
         tabChar,

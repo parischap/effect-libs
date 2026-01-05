@@ -1,7 +1,7 @@
 /** A simple extension to the Effect Function module */
 
-import { Function, Option, pipe } from 'effect';
-import * as MTypes from './types.js';
+import { Function, Option, pipe } from "effect";
+import * as MTypes from "./types.js";
 
 /**
  * Applies function f if condition is true
@@ -116,7 +116,7 @@ export const execute = <A>(self: Function.LazyArg<A>): A => self();
  *
  * @category Utils
  */
-export const constEmptyString = Function.constant('' as const);
+export const constEmptyString = Function.constant("" as const);
 
 /**
  * Returns a copy of `self`

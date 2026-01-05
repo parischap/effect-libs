@@ -1,4 +1,4 @@
-import { CVDateTimeFormat, CVDateTimeFormatContext } from '@parischap/conversions';
+import { CVDateTimeFormat, CVDateTimeFormatContext } from "@parischap/conversions";
 
 // Let's define useful shortcuts
 const placeholder = CVDateTimeFormat.TemplatePart.Placeholder.make;
@@ -8,13 +8,13 @@ const sep = CVDateTimeFormat.TemplatePart.Separator;
 const frenchFormat = CVDateTimeFormat.make({
   context: CVDateTimeFormatContext.enGB,
   templateParts: [
-    placeholder('iiii'),
+    placeholder("iiii"),
     sep.space,
-    placeholder('d'),
+    placeholder("d"),
     sep.space,
-    placeholder('MMMM'),
+    placeholder("MMMM"),
     sep.space,
-    placeholder('yyyy'),
+    placeholder("yyyy"),
   ],
 });
 

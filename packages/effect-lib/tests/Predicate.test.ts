@@ -1,7 +1,7 @@
-import * as TestUtils from '@parischap/configs/TestUtils';
-import { MPredicate } from '@parischap/effect-lib';
-import { pipe, Predicate } from 'effect';
-import { describe, it } from 'vitest';
+import * as TestUtils from "@parischap/configs/TestUtils";
+import { MPredicate } from "@parischap/effect-lib";
+import { pipe, Predicate } from "effect";
+import { describe, it } from "vitest";
 
 /** Source */
 TestUtils.assertTrueType(
@@ -75,14 +75,14 @@ TestUtils.assertTrueType(
   >(),
 );
 
-describe('MPredicate', () => {
-  describe('struct', () => {
-    it('Type error expected', () => {
+describe("MPredicate", () => {
+  describe("struct", () => {
+    it("Type error expected", () => {
       /* @ts-expect-error c not present in object */
       TestUtils.assertFalse(pipe({ a: 0, b: 1 }, MPredicate.struct({ c: Predicate.isNumber })));
     });
 
-    it('Passing', () => {
+    it("Passing", () => {
       TestUtils.assertTrue(
         pipe(
           { a: 0, b: 1, c: 2 },
@@ -91,7 +91,7 @@ describe('MPredicate', () => {
       );
     });
 
-    it('Failing', () => {
+    it("Failing", () => {
       TestUtils.assertFalse(
         pipe(
           { a: 0, b: 1, c: 2 },
@@ -101,12 +101,12 @@ describe('MPredicate', () => {
     });
   });
 
-  describe('strictEquals', () => {
-    it('Matching', () => {
+  describe("strictEquals", () => {
+    it("Matching", () => {
       TestUtils.assertTrue(pipe(5, MPredicate.strictEquals(5)));
     });
 
-    it('Non matching', () => {
+    it("Non matching", () => {
       TestUtils.assertFalse(pipe(5, MPredicate.strictEquals(2)));
     });
   });

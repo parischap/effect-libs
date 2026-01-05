@@ -5,17 +5,17 @@
  * not familiar with this concept.
  */
 
-import { MTypes } from '@parischap/effect-lib';
-import { BigDecimal, Brand, Either, flow, Function, Option, Schema } from 'effect';
-import * as CVInt from './internal/Int.js';
-import * as CVReal from './Real.js';
+import { MTypes } from "@parischap/effect-lib";
+import { BigDecimal, Brand, Either, flow, Function, Option, Schema } from "effect";
+import * as CVInt from "./internal/Int.js";
+import * as CVReal from "./Real.js";
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/conversions/Integer/';
+export const moduleTag = "@parischap/conversions/Integer/";
 
 /**
  * Brand constructor. Should not be used directly

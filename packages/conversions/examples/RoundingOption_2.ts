@@ -1,4 +1,4 @@
-import { CVRoundingOption } from '@parischap/conversions';
+import { CVRoundingOption } from "@parischap/conversions";
 
 // Let's define a number rounder from halfExpand2. Type: (value:number) => number
 const numberRounder = CVRoundingOption.toNumberRounder(CVRoundingOption.halfExpand2);

@@ -4,23 +4,23 @@
  */
 
 import {
-    MBigDecimal,
-    MBigInt,
-    MInspectable,
-    MNumber,
-    MPipeable,
-    MString,
-    MTypes,
-} from '@parischap/effect-lib';
-import { BigDecimal, Equal, Equivalence, Hash, pipe, Pipeable, Predicate, Struct } from 'effect';
-import * as CVRoundingMode from './RoundingMode.js';
+  MBigDecimal,
+  MBigInt,
+  MInspectable,
+  MNumber,
+  MPipeable,
+  MString,
+  MTypes,
+} from "@parischap/effect-lib";
+import { BigDecimal, Equal, Equivalence, Hash, pipe, Pipeable, Predicate, Struct } from "effect";
+import * as CVRoundingMode from "./RoundingMode.js";
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/conversions/RoundingOption/';
+export const moduleTag = "@parischap/conversions/RoundingOption/";
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
@@ -90,8 +90,10 @@ const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto
 export const make = ({
   precision = 0,
   roundingMode = CVRoundingMode.Type.HalfExpand,
-}: { readonly precision?: number; readonly roundingMode?: CVRoundingMode.Type } = {}): Type =>
-  _make({ precision, roundingMode });
+}: {
+  readonly precision?: number;
+  readonly roundingMode?: CVRoundingMode.Type;
+} = {}): Type => _make({ precision, roundingMode });
 
 /**
  * `CVRoundingOption` instance that uses the `HalfExpand` `CVRoundingMode` and `precision=2`. Can be
@@ -106,7 +108,7 @@ export const halfExpand2 = make({ precision: 2, roundingMode: CVRoundingMode.Typ
  *
  * @category Destructors
  */
-export const precision: MTypes.OneArgFunction<Type, number> = Struct.get('precision');
+export const precision: MTypes.OneArgFunction<Type, number> = Struct.get("precision");
 
 /**
  * Returns the `roundingMode` property of `self`
@@ -114,7 +116,7 @@ export const precision: MTypes.OneArgFunction<Type, number> = Struct.get('precis
  * @category Destructors
  */
 export const roundingMode: MTypes.OneArgFunction<Type, CVRoundingMode.Type> =
-  Struct.get('roundingMode');
+  Struct.get("roundingMode");
 
 /**
  * Builds a number Rounder implementing `self`, i.e a function that rounds a number as specified by
@@ -131,9 +133,9 @@ export const toNumberRounder = (self: Type): MTypes.OneArgFunction<number> => {
     const truncatedShiftedSelf = Math.trunc(shiftedSelf);
     const firstFollowingDigit = Math.trunc((shiftedSelf - truncatedShiftedSelf) * 10);
     return (
-      unshiftMultiplicand
-      * (truncatedShiftedSelf
-        + correcter({ firstFollowingDigit, isEven: truncatedShiftedSelf % 2 == 0 }))
+      unshiftMultiplicand *
+      (truncatedShiftedSelf +
+        correcter({ firstFollowingDigit, isEven: truncatedShiftedSelf % 2 == 0 }))
     );
   };
 };

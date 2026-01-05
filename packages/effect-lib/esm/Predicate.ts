@@ -1,7 +1,7 @@
 /** A simple extension to the Effect Predicate module */
 
-import { Effect, Predicate } from 'effect';
-import * as MTypes from './types.js';
+import { Effect, Predicate } from "effect";
+import * as MTypes from "./types.js";
 
 /**
  * Effectful predicate that returns an effectful boolean
@@ -17,16 +17,22 @@ export interface EffectPredicate<in Z, out E, out R> {
  *
  * @category Utility types
  */
-export type Source<R extends MTypes.AnyPredicate> =
-  readonly [R] extends readonly [Predicate.Predicate<infer A>] ? A : never;
+export type Source<R extends MTypes.AnyPredicate> = readonly [R] extends readonly [
+  Predicate.Predicate<infer A>,
+]
+  ? A
+  : never;
 
 /**
  * Type utiliy that extracts the target of a predicate or refinement.
  *
  * @category Utility types
  */
-export type Target<R extends MTypes.AnyPredicate> =
-  readonly [R] extends readonly [Predicate.Refinement<infer _, infer A>] ? A : Source<R>;
+export type Target<R extends MTypes.AnyPredicate> = readonly [R] extends readonly [
+  Predicate.Refinement<infer _, infer A>,
+]
+  ? A
+  : Source<R>;
 
 /**
  * Type utiliy that extracts the type covered by a refinement or predicate. Returns never when
@@ -34,8 +40,11 @@ export type Target<R extends MTypes.AnyPredicate> =
  *
  * @category Utility types
  */
-export type Coverage<R extends MTypes.AnyPredicate> =
-  readonly [R] extends readonly [Predicate.Refinement<infer _, infer A>] ? A : never;
+export type Coverage<R extends MTypes.AnyPredicate> = readonly [R] extends readonly [
+  Predicate.Refinement<infer _, infer A>,
+]
+  ? A
+  : never;
 
 // Do not use an interface here.
 type PredicateArray = ReadonlyArray<MTypes.AnyPredicate>;
@@ -89,17 +98,18 @@ export const struct = <
   F extends Partial<SourcesToPredicates<MTypes.Data<O>>>,
 >(
   fields: F,
-): [Extract<F[keyof F], MTypes.AnyRefinement>] extends [never] ? Predicate.Predicate<O>
-: Predicate.Refinement<
-    O,
-    {
-      readonly [key in keyof O]: key extends keyof F ?
-        F[key] extends MTypes.AnyPredicate ?
-          Target<F[key]> & O[key]
-        : never
-      : O[key];
-    }
-  > => Predicate.struct(fields as never) as never;
+): [Extract<F[keyof F], MTypes.AnyRefinement>] extends [never]
+  ? Predicate.Predicate<O>
+  : Predicate.Refinement<
+      O,
+      {
+        readonly [key in keyof O]: key extends keyof F
+          ? F[key] extends MTypes.AnyPredicate
+            ? Target<F[key]> & O[key]
+            : never
+          : O[key];
+      }
+    > => Predicate.struct(fields as never) as never;
 
 /**
  * Strict equality predicate

@@ -1,8 +1,8 @@
-import { ASContextStyler, ASPalette, ASStyle } from '@parischap/ansi-styles';
-import * as TestUtils from '@parischap/configs/TestUtils';
-import { describe, it } from 'vitest';
+import { ASContextStyler, ASPalette, ASStyle } from "@parischap/ansi-styles";
+import * as TestUtils from "@parischap/configs/TestUtils";
+import { describe, it } from "vitest";
 
-describe('ContextStyler', () => {
+describe("ContextStyler", () => {
   interface Value {
     readonly pos1: number;
     readonly otherStuff: string;
@@ -19,73 +19,79 @@ describe('ContextStyler', () => {
 
   const value1: Value = {
     pos1: 2,
-    otherStuff: 'dummy',
+    otherStuff: "dummy",
   };
 
   const value2: Value = {
     pos1: 9,
-    otherStuff: 'dummy',
+    otherStuff: "dummy",
   };
 
   const redInValue1Context = red(value1);
   const pos1BasedAllColorsFormatterInValue1Context = pos1BasedAllColorsFormatter(value1);
   const pos1BasedAllColorsFormatterInValue2Context = pos1BasedAllColorsFormatter(value2);
 
-  describe('Tag, prototype and guards', () => {
-    it('moduleTag', () => {
-      TestUtils.assertSome(TestUtils.moduleTagFromTestFilePath(__filename), ASContextStyler.moduleTag);
+  describe("Tag, prototype and guards", () => {
+    it("moduleTag", () => {
+      TestUtils.assertSome(
+        TestUtils.moduleTagFromTestFilePath(__filename),
+        ASContextStyler.moduleTag,
+      );
     });
 
-    describe('Equal.equals', () => {
-      it('Matching', () => {
+    describe("Equal.equals", () => {
+      it("Matching", () => {
         TestUtils.assertEquals(red, ASContextStyler.fromSingleStyle(ASStyle.red));
       });
 
-      it('Non-matching', () => {
+      it("Non-matching", () => {
         TestUtils.assertNotEquals(red, ASContextStyler.black());
       });
     });
 
-    it('.toString()', () => {
-      TestUtils.strictEqual(red.toString(), 'RedFormatter');
+    it(".toString()", () => {
+      TestUtils.strictEqual(red.toString(), "RedFormatter");
       TestUtils.strictEqual(
         pos1BasedAllColorsFormatter.toString(),
-        'Pos1BasedBlack/Red/Green/Yellow/Blue/Magenta/Cyan/WhitePaletteFormatter',
+        "Pos1BasedBlack/Red/Green/Yellow/Blue/Magenta/Cyan/WhitePaletteFormatter",
       );
     });
 
-    it('.pipe()', () => {
+    it(".pipe()", () => {
       TestUtils.assertTrue(red.pipe(ASContextStyler.has));
     });
 
-    describe('has', () => {
-      it('Matching', () => {
+    describe("has", () => {
+      it("Matching", () => {
         TestUtils.assertTrue(ASContextStyler.has(red));
         TestUtils.assertTrue(ASContextStyler.has(pos1BasedAllColorsFormatter));
       });
-      it('Non matching', () => {
+      it("Non matching", () => {
         TestUtils.assertFalse(ASContextStyler.has(new Date()));
       });
     });
   });
 
-  describe('Action', () => {
-    it('FromSingleStyle', () => {
-      TestUtils.assertEquals(redInValue1Context('foo'), ASStyle.red('foo'));
+  describe("Action", () => {
+    it("FromSingleStyle", () => {
+      TestUtils.assertEquals(redInValue1Context("foo"), ASStyle.red("foo"));
     });
 
-    it('From Palette context first within bounds', () => {
-      TestUtils.assertEquals(pos1BasedAllColorsFormatterInValue1Context('foo'), ASStyle.green('foo'));
-    });
-
-    it('From Palette context first out of bounds', () => {
-      TestUtils.assertEquals(pos1BasedAllColorsFormatterInValue2Context('foo'), ASStyle.red('foo'));
-    });
-
-    it('From Palette context last', () => {
+    it("From Palette context first within bounds", () => {
       TestUtils.assertEquals(
-        pos1BasedAllColorsFormatter.withContextLast('foo')(value1),
-        ASStyle.green('foo'),
+        pos1BasedAllColorsFormatterInValue1Context("foo"),
+        ASStyle.green("foo"),
+      );
+    });
+
+    it("From Palette context first out of bounds", () => {
+      TestUtils.assertEquals(pos1BasedAllColorsFormatterInValue2Context("foo"), ASStyle.red("foo"));
+    });
+
+    it("From Palette context last", () => {
+      TestUtils.assertEquals(
+        pos1BasedAllColorsFormatter.withContextLast("foo")(value1),
+        ASStyle.green("foo"),
       );
     });
   });

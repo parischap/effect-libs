@@ -3,8 +3,8 @@
  * by a `CVRoundingOption` (see RoundingOption.ts)
  */
 
-import { MMatch, MTypes } from '@parischap/effect-lib';
-import { flow, Function, Struct } from 'effect';
+import { MMatch, MTypes } from "@parischap/effect-lib";
+import { flow, Function, Struct } from "effect";
 
 /**
  * Type that represents the possible rounding modes
@@ -62,15 +62,15 @@ export enum Type {
 export const getName: MTypes.OneArgFunction<Type, string> = flow(
   MMatch.make,
   flow(
-    MMatch.whenIs(Type.Ceil, Function.constant('Ceil')),
-    MMatch.whenIs(Type.Floor, Function.constant('Floor')),
-    MMatch.whenIs(Type.Expand, Function.constant('Expand')),
-    MMatch.whenIs(Type.Trunc, Function.constant('Trunc')),
-    MMatch.whenIs(Type.HalfCeil, Function.constant('HalfCeil')),
-    MMatch.whenIs(Type.HalfFloor, Function.constant('HalfFloor')),
-    MMatch.whenIs(Type.HalfExpand, Function.constant('HalfExpand')),
-    MMatch.whenIs(Type.HalfTrunc, Function.constant('HalfTrunc')),
-    MMatch.whenIs(Type.HalfEven, Function.constant('HalfEven')),
+    MMatch.whenIs(Type.Ceil, Function.constant("Ceil")),
+    MMatch.whenIs(Type.Floor, Function.constant("Floor")),
+    MMatch.whenIs(Type.Expand, Function.constant("Expand")),
+    MMatch.whenIs(Type.Trunc, Function.constant("Trunc")),
+    MMatch.whenIs(Type.HalfCeil, Function.constant("HalfCeil")),
+    MMatch.whenIs(Type.HalfFloor, Function.constant("HalfFloor")),
+    MMatch.whenIs(Type.HalfExpand, Function.constant("HalfExpand")),
+    MMatch.whenIs(Type.HalfTrunc, Function.constant("HalfTrunc")),
+    MMatch.whenIs(Type.HalfEven, Function.constant("HalfEven")),
   ),
   MMatch.exhaustive,
 );
@@ -80,14 +80,13 @@ export const getName: MTypes.OneArgFunction<Type, string> = flow(
  *
  * @category Models
  */
-export interface Correcter
-  extends MTypes.OneArgFunction<
-    {
-      readonly firstFollowingDigit: number;
-      readonly isEven: boolean;
-    },
-    number
-  > {}
+export interface Correcter extends MTypes.OneArgFunction<
+  {
+    readonly firstFollowingDigit: number;
+    readonly isEven: boolean;
+  },
+  number
+> {}
 
 /**
  * Builds a `Correcter` implementing `self`
@@ -109,53 +108,49 @@ export const toCorrecter: MTypes.OneArgFunction<Type, Correcter> = flow(
         ({ firstFollowingDigit }) =>
           firstFollowingDigit < 0 ? -1 : 0,
     ),
-    MMatch.whenIs(Type.Expand, (): Correcter => flow(Struct.get('firstFollowingDigit'), Math.sign)),
+    MMatch.whenIs(Type.Expand, (): Correcter => flow(Struct.get("firstFollowingDigit"), Math.sign)),
     MMatch.whenIs(Type.Trunc, (): Correcter => Function.constant(0)),
     MMatch.whenIs(
       Type.HalfCeil,
       (): Correcter =>
         ({ firstFollowingDigit }) =>
-          firstFollowingDigit >= 5 ? 1
-          : firstFollowingDigit < -5 ? -1
-          : 0,
+          firstFollowingDigit >= 5 ? 1 : firstFollowingDigit < -5 ? -1 : 0,
     ),
     MMatch.whenIs(
       Type.HalfFloor,
       (): Correcter =>
         ({ firstFollowingDigit }) =>
-          firstFollowingDigit > 5 ? 1
-          : firstFollowingDigit <= -5 ? -1
-          : 0,
+          firstFollowingDigit > 5 ? 1 : firstFollowingDigit <= -5 ? -1 : 0,
     ),
     MMatch.whenIs(
       Type.HalfExpand,
       (): Correcter =>
         ({ firstFollowingDigit }) =>
-          firstFollowingDigit >= 5 ? 1
-          : firstFollowingDigit <= -5 ? -1
-          : 0,
+          firstFollowingDigit >= 5 ? 1 : firstFollowingDigit <= -5 ? -1 : 0,
     ),
     MMatch.whenIs(
       Type.HalfTrunc,
       (): Correcter =>
         ({ firstFollowingDigit }) =>
-          firstFollowingDigit > 5 ? 1
-          : firstFollowingDigit < -5 ? -1
-          : 0,
+          firstFollowingDigit > 5 ? 1 : firstFollowingDigit < -5 ? -1 : 0,
     ),
     MMatch.whenIs(
       Type.HalfEven,
       (): Correcter =>
         ({ firstFollowingDigit, isEven }) =>
-          firstFollowingDigit > 5 ? 1
-          : firstFollowingDigit < -5 ? -1
-          : firstFollowingDigit === 5 ?
-            isEven ? 0
-            : 1
-          : firstFollowingDigit === -5 ?
-            isEven ? 0
-            : -1
-          : 0,
+          firstFollowingDigit > 5
+            ? 1
+            : firstFollowingDigit < -5
+              ? -1
+              : firstFollowingDigit === 5
+                ? isEven
+                  ? 0
+                  : 1
+                : firstFollowingDigit === -5
+                  ? isEven
+                    ? 0
+                    : -1
+                  : 0,
     ),
   ),
   MMatch.exhaustive,

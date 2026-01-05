@@ -1,8 +1,8 @@
-import { CVEmail } from '@parischap/conversions';
+import { CVEmail } from "@parischap/conversions";
 
 /** Let's try to create a CVEmail from a string that represents a valid email */
 // Result: { _id: 'Either', _tag: 'Right', right: 'foo@bar.baz' }
-console.log(CVEmail.fromString('foo@bar.baz'));
+console.log(CVEmail.fromString("foo@bar.baz"));
 
 /** Let's try to create a CVEmail from a string that does not represents a valid email */
 // Result: {
@@ -10,7 +10,7 @@ console.log(CVEmail.fromString('foo@bar.baz'));
 //   _tag: 'Left',
 //   left: [ { message: "'foo' does not represent a email", meta: undefined } ]
 // }
-console.log(CVEmail.fromString('foo'));
+console.log(CVEmail.fromString("foo"));
 
 /**
  * Thanks to Typescript type-checking, whenever we use a variable of type CVEmail, we know for sure
@@ -20,4 +20,4 @@ console.log(CVEmail.fromString('foo'));
  */
 
 // Result: 'foo'
-console.log(CVEmail.unsafeFromString('foo'));
+console.log(CVEmail.unsafeFromString("foo"));

@@ -1,4 +1,4 @@
-import { ASContextStyler, ASPalette } from '@parischap/ansi-styles';
+import { ASContextStyler, ASPalette } from "@parischap/ansi-styles";
 
 interface Value {
   readonly pos1: number;
@@ -16,16 +16,16 @@ const pos1BasedAllColorsFormatter = ASContextStyler.fromPalette({
 
 const value1: Value = {
   pos1: 2,
-  otherStuff: 'dummy',
+  otherStuff: "dummy",
 };
 const pos1BasedAllColorsFormatterInValue1Context = pos1BasedAllColorsFormatter(value1);
 const redInValue1Context = red(value1);
 
 /* Prints `foo` in red */
-console.log(redInValue1Context('foo'));
+console.log(redInValue1Context("foo"));
 
 /* Prints `foo` in green */
-console.log(pos1BasedAllColorsFormatterInValue1Context('foo'));
+console.log(pos1BasedAllColorsFormatterInValue1Context("foo"));
 
 /* Prints `foo` in green */
-console.log(pos1BasedAllColorsFormatter.withContextLast('foo')(value1));
+console.log(pos1BasedAllColorsFormatter.withContextLast("foo")(value1));

@@ -19,7 +19,7 @@
     "Branding.ts"
   ],
   "environment": "Plain",
-  "buildMethod": "Transpile",
+  "buildMethod": "NoBundling",
   "isPublished": true,
   "hasDocGen": true,
   "keywords": [

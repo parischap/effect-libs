@@ -52,7 +52,7 @@ import {
   MString,
   MTuple,
   MTypes,
-} from '@parischap/effect-lib';
+} from "@parischap/effect-lib";
 import {
   Array,
   Either,
@@ -67,18 +67,18 @@ import {
   Struct,
   Tuple,
   Types,
-} from 'effect';
-import * as CVTemplatePart from './TemplatePart.js';
-import * as CVTemplateParts from './TemplateParts.js';
-import * as CVTemplatePlaceholder from './TemplatePlaceholder.js';
-import * as CVTemplateSeparator from './TemplateSeparator.js';
+} from "effect";
+import * as CVTemplatePart from "./TemplatePart.js";
+import * as CVTemplateParts from "./TemplateParts.js";
+import * as CVTemplatePlaceholder from "./TemplatePlaceholder.js";
+import * as CVTemplateSeparator from "./TemplateSeparator.js";
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/conversions/Template/';
+export const moduleTag = "@parischap/conversions/Template/";
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
@@ -89,8 +89,7 @@ type _TypeId = typeof _TypeId;
  */
 
 export interface Type<out PS extends CVTemplateParts.Type>
-  extends MInspectable.Type,
-    Pipeable.Pipeable {
+  extends MInspectable.Type, Pipeable.Pipeable {
   /** Array of the TemplatePart's composing this template */
   readonly templateParts: PS;
 
@@ -118,7 +117,7 @@ const _proto: MTypes.Proto<Type<never>> = {
         toFirst: CVTemplateParts.getSyntheticDescription,
         toSecond: CVTemplateParts.getPlaceholderDescription,
       }),
-      Array.join('\n\n'),
+      Array.join("\n\n"),
     );
   },
   ...MInspectable.BaseProto(moduleTag),
@@ -142,7 +141,7 @@ export const make = <const PS extends CVTemplateParts.Type>(...templateParts: PS
  * @category Destructors
  */
 export const templateParts: <const PS extends CVTemplateParts.Type>(self: Type<PS>) => PS =
-  Struct.get('templateParts');
+  Struct.get("templateParts");
 
 /**
  * Returns a function that tries to parse a text into an object according to 'self'. The generated
@@ -158,10 +157,11 @@ export const toParser =
     string,
     Either.Either<
       {
-        readonly [k in keyof MTypes.ArrayKeys<PS> as PS[k] extends CVTemplatePlaceholder.Any ?
-          CVTemplatePlaceholder.ExtractName<PS[k]>
-        : never]: PS[k] extends CVTemplatePlaceholder.Any ? CVTemplatePlaceholder.ExtractType<PS[k]>
-        : never;
+        readonly [k in keyof MTypes.ArrayKeys<PS> as PS[k] extends CVTemplatePlaceholder.Any
+          ? CVTemplatePlaceholder.ExtractName<PS[k]>
+          : never]: PS[k] extends CVTemplatePlaceholder.Any
+          ? CVTemplatePlaceholder.ExtractType<PS[k]>
+          : never;
       },
       MInputError.Type
     >
@@ -202,7 +202,7 @@ export const toParser =
       ),
       Either.flatMap(([leftOver, result]) =>
         Either.gen(function* () {
-          yield* pipe(leftOver, MInputError.assertEmpty({ name: 'text not consumed by template' }));
+          yield* pipe(leftOver, MInputError.assertEmpty({ name: "text not consumed by template" }));
           return result as never;
         }),
       ),
@@ -218,10 +218,11 @@ export const toThrowingParser: <const PS extends CVTemplateParts.Type>(
 ) => MTypes.OneArgFunction<
   string,
   {
-    readonly [k in keyof MTypes.ArrayKeys<PS> as PS[k] extends CVTemplatePlaceholder.Any ?
-      CVTemplatePlaceholder.ExtractName<PS[k]>
-    : never]: PS[k] extends CVTemplatePlaceholder.Any ? CVTemplatePlaceholder.ExtractType<PS[k]>
-    : never;
+    readonly [k in keyof MTypes.ArrayKeys<PS> as PS[k] extends CVTemplatePlaceholder.Any
+      ? CVTemplatePlaceholder.ExtractName<PS[k]>
+      : never]: PS[k] extends CVTemplatePlaceholder.Any
+      ? CVTemplatePlaceholder.ExtractType<PS[k]>
+      : never;
   }
 > = flow(toParser, Function.compose(Either.getOrThrowWith(Function.identity))) as never;
 
@@ -235,19 +236,20 @@ export const toFormatter = <const PS extends CVTemplateParts.Type>(
   self: Type<PS>,
 ): MTypes.OneArgFunction<
   {
-    readonly [k in keyof MTypes.ArrayKeys<PS> as PS[k] extends CVTemplatePlaceholder.Any ?
-      CVTemplatePlaceholder.ExtractName<PS[k]>
-    : never]: PS[k] extends CVTemplatePlaceholder.Any ? CVTemplatePlaceholder.ExtractType<PS[k]>
-    : never;
+    readonly [k in keyof MTypes.ArrayKeys<PS> as PS[k] extends CVTemplatePlaceholder.Any
+      ? CVTemplatePlaceholder.ExtractName<PS[k]>
+      : never]: PS[k] extends CVTemplatePlaceholder.Any
+      ? CVTemplatePlaceholder.ExtractType<PS[k]>
+      : never;
   },
   Either.Either<string, MInputError.Type>
 > => {
   return (record: Record.ReadonlyRecord<string, unknown>) =>
     pipe(
       self.templateParts,
-      MArray.reduceUnlessLeft('', (result, templatePart) => {
-        return CVTemplatePart.isSeparator(templatePart) ?
-            pipe(templatePart.value, MString.prepend(result), Either.right)
+      MArray.reduceUnlessLeft("", (result, templatePart) => {
+        return CVTemplatePart.isSeparator(templatePart)
+          ? pipe(templatePart.value, MString.prepend(result), Either.right)
           : pipe(
               record,
               Record.get(templatePart.name),
@@ -272,10 +274,11 @@ export const toThrowingFormatter: <const PS extends CVTemplateParts.Type>(
   self: Type<PS>,
 ) => MTypes.OneArgFunction<
   {
-    readonly [k in keyof MTypes.ArrayKeys<PS> as PS[k] extends CVTemplatePlaceholder.Any ?
-      CVTemplatePlaceholder.ExtractName<PS[k]>
-    : never]: PS[k] extends CVTemplatePlaceholder.Any ? CVTemplatePlaceholder.ExtractType<PS[k]>
-    : never;
+    readonly [k in keyof MTypes.ArrayKeys<PS> as PS[k] extends CVTemplatePlaceholder.Any
+      ? CVTemplatePlaceholder.ExtractName<PS[k]>
+      : never]: PS[k] extends CVTemplatePlaceholder.Any
+      ? CVTemplatePlaceholder.ExtractType<PS[k]>
+      : never;
   },
   string
 > = flow(toFormatter, Function.compose(Either.getOrThrowWith(Function.identity))) as never;

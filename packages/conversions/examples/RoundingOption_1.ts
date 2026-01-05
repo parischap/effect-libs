@@ -1,5 +1,5 @@
-import { CVRoundingMode, CVRoundingOption } from '@parischap/conversions';
-import { BigDecimal } from 'effect';
+import { CVRoundingMode, CVRoundingOption } from "@parischap/conversions";
+import { BigDecimal } from "effect";
 
 // Here we define our rounding options:
 // the result must have three fractional digits using the HalfEven rounding mode

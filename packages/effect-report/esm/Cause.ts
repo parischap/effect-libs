@@ -1,8 +1,8 @@
-import { JsAnsi } from '@parischap/ansi-styles';
-import { MArray, MFs, MString, MTypes } from '@parischap/effect-lib';
-import { Array, Cause, FiberId, Function, String, flow, pipe } from 'effect';
-import * as RErrors from './Errors.js';
-import { formatError } from './utils.js';
+import { JsAnsi } from "@parischap/ansi-styles";
+import { MArray, MFs, MString, MTypes } from "@parischap/effect-lib";
+import { Array, Cause, FiberId, Function, String, flow, pipe } from "effect";
+import * as RErrors from "./Errors.js";
+import { formatError } from "./utils.js";
 
 export const toString =
   ({
@@ -21,28 +21,31 @@ export const toString =
   (self: Cause.Cause<unknown>): string => {
     const formatUnknownError = (title: string) => (error: unknown) =>
       Array.of(
-        error instanceof RErrors.WithOriginalCause ?
-          pipe(error.originalCause, toString({ eol, pathSep, stringify, tabChar, thisProgramPath }))
-            + eol
-            + JsAnsi.yellow(`Rethrown in:${error.message}`)
-        : JsAnsi.red(title)
-            + eol
-            + JsString.tabify(tabChar)(
-              MTypes.isErrorish(error) ?
-                formatError(error, {
-                  eol,
-                  pathSep,
-                  stringify,
-                  tabChar,
-                })
-              : stringify(error),
-            ),
+        error instanceof RErrors.WithOriginalCause
+          ? pipe(
+              error.originalCause,
+              toString({ eol, pathSep, stringify, tabChar, thisProgramPath }),
+            ) +
+              eol +
+              JsAnsi.yellow(`Rethrown in:${error.message}`)
+          : JsAnsi.red(title) +
+              eol +
+              JsString.tabify(tabChar)(
+                MTypes.isErrorish(error)
+                  ? formatError(error, {
+                      eol,
+                      pathSep,
+                      stringify,
+                      tabChar,
+                    })
+                  : stringify(error),
+              ),
       );
     return pipe(
       Cause.match(self, {
-        onEmpty: Array.of(''),
-        onFail: formatUnknownError('SCRIPT ERRORED WITH:'),
-        onDie: formatUnknownError('SCRIPT DIED WITH FOLLOWING DEFECT:'),
+        onEmpty: Array.of(""),
+        onFail: formatUnknownError("SCRIPT ERRORED WITH:"),
+        onDie: formatUnknownError("SCRIPT DIED WITH FOLLOWING DEFECT:"),
         onInterrupt: (fiberId) =>
           Array.of(JsAnsi.red(`FIBER ${FiberId.threadName(fiberId)} WAS INTERRUPTED`)),
         onSequential: (left, right) => Array.appendAll(left, right),
@@ -50,10 +53,10 @@ export const toString =
       }),
       Array.filter(String.isNonEmpty),
       MArray.match012({
-        onEmpty: () => '',
+        onEmpty: () => "",
         onSingleton: Function.identity,
         onOverTwo: flow(
-          Array.map(flow(MString.prepend('- '), JsString.tabify(tabChar))),
+          Array.map(flow(MString.prepend("- "), JsString.tabify(tabChar))),
           Array.join(eol),
         ),
       }),

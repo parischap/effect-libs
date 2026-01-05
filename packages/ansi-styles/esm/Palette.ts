@@ -6,28 +6,28 @@
  * needs.
  */
 
-import { MInspectable, MPipeable, MString, MTypes } from '@parischap/effect-lib';
+import { MInspectable, MPipeable, MString, MTypes } from "@parischap/effect-lib";
 import {
-    Array,
-    Equal,
-    Equivalence,
-    flow,
-    Function,
-    Hash,
-    pipe,
-    Pipeable,
-    Predicate,
-    Struct,
-} from 'effect';
-import * as ASStyle from './Style.js';
-import * as ASStyles from './Styles.js';
+  Array,
+  Equal,
+  Equivalence,
+  flow,
+  Function,
+  Hash,
+  pipe,
+  Pipeable,
+  Predicate,
+  Struct,
+} from "effect";
+import * as ASStyle from "./Style.js";
+import * as ASStyles from "./Styles.js";
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/ansi-styles/Palette/';
+export const moduleTag = "@parischap/ansi-styles/Palette/";
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
@@ -94,9 +94,9 @@ const _tupledMake = Function.tupled<ASStyles.Type, Type>(make);
  * @category Destructors
  */
 export const toId: MTypes.OneArgFunction<Type, string> = flow(
-  Struct.get('styles'),
+  Struct.get("styles"),
   ASStyles.toId,
-  MString.append('Palette'),
+  MString.append("Palette"),
 );
 
 /**
@@ -104,7 +104,7 @@ export const toId: MTypes.OneArgFunction<Type, string> = flow(
  *
  * @category Destructors
  */
-export const styles: MTypes.OneArgFunction<Type, ASStyles.Type> = Struct.get('styles');
+export const styles: MTypes.OneArgFunction<Type, ASStyles.Type> = Struct.get("styles");
 
 /**
  * Appends `that` to `self`

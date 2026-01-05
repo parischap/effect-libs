@@ -1,7 +1,7 @@
 /** This modules implements a command string that produces an ANSI style, e.g. `\x1b[1m` for bold */
 
-import { MFunction, MString, MTypes } from '@parischap/effect-lib';
-import { Array, flow, Option } from 'effect';
+import { MFunction, MString, MTypes } from "@parischap/effect-lib";
+import { Array, flow, Option } from "effect";
 
 /**
  * Type of an ANSI string
@@ -32,9 +32,9 @@ export interface NonEmptySequence extends MTypes.ReadonlyOverOne<number> {}
  */
 export const fromNonEmptySequence: MTypes.OneArgFunction<NonEmptySequence, string> = flow(
   Array.map(MString.fromNumber(10)),
-  Array.join(';'),
-  MString.prepend('\x1b['),
-  MString.append('m'),
+  Array.join(";"),
+  MString.prepend("\x1b["),
+  MString.append("m"),
 );
 
 /**
@@ -53,7 +53,7 @@ export const fromSequence: MTypes.OneArgFunction<Sequence, string> = flow(
  *
  * @category Instances
  */
-export const empty: Type = '';
+export const empty: Type = "";
 
 /**
  * Reset AnsiString instance

@@ -1,6 +1,6 @@
 /** A simple extension to the Effect Pipeable module */
 
-import { Pipeable } from 'effect';
+import { Pipeable } from "effect";
 
 /**
  * Default prototype of a Pipeable

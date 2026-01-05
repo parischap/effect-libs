@@ -1,9 +1,9 @@
 /** A simple extension to the `Effect.BigInt` module */
 
-import { MBigInt, MTypes } from '@parischap/effect-lib';
-import { Brand, Either, Option } from 'effect';
-import * as CVInteger from './Integer.js';
-import * as CVReal from './Real.js';
+import { MBigInt, MTypes } from "@parischap/effect-lib";
+import { Brand, Either, Option } from "effect";
+import * as CVInteger from "./Integer.js";
+import * as CVReal from "./Real.js";
 
 /**
  * Constructs a `BigInt` from a `CVInteger`

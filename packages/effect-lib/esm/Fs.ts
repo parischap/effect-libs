@@ -1,13 +1,13 @@
 /** A module that applies the concept of branding to filepaths */
 
-import { Brand } from 'effect';
+import { Brand } from "effect";
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/effect-lib/Fs/';
+export const moduleTag = "@parischap/effect-lib/Fs/";
 type moduleTag = typeof moduleTag;
 
 /**
@@ -127,17 +127,19 @@ export const Path = Brand.nominal<Path>();
  *
  * @category Utility types
  */
-export type ToName<P extends Path> =
-  readonly [P] extends readonly [Filepath] ? Filename
-  : readonly [P] extends readonly [Folderpath] ? Foldername
-  : Name;
+export type ToName<P extends Path> = readonly [P] extends readonly [Filepath]
+  ? Filename
+  : readonly [P] extends readonly [Folderpath]
+    ? Foldername
+    : Name;
 
 /**
  * Type utility that turns a file system name into a path
  *
  * @category Utility types
  */
-export type ToPath<N extends Name> =
-  readonly [N] extends readonly [Filename] ? Filepath
-  : readonly [N] extends readonly [Foldername] ? Folderpath
-  : Path;
+export type ToPath<N extends Name> = readonly [N] extends readonly [Filename]
+  ? Filepath
+  : readonly [N] extends readonly [Foldername]
+    ? Folderpath
+    : Path;

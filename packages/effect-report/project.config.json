@@ -5,7 +5,7 @@
     "@parischap/ansi-styles": "^0.2.6"
   },
   "environment": "Node",
-  "buildMethod": "Transpile",
+  "buildMethod": "NoBundling",
   "isPublished": false,
   "hasDocGen": false,
   "keywords": [],

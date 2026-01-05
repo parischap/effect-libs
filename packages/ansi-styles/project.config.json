@@ -5,7 +5,7 @@
   },
   "examples": ["basic-usage.ts", "cancelling-a-style.ts", "simple-colors.ts", "all-colors.ts"],
   "environment": "Plain",
-  "buildMethod": "Transpile",
+  "buildMethod": "NoBundling",
   "isPublished": true,
   "hasDocGen": true,
   "keywords": [

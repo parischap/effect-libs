@@ -4,41 +4,41 @@
  * You can use the RGB.make function to build more RGB colors
  */
 
-import { MInspectable, MMatch, MPipeable, MString, MTypes } from '@parischap/effect-lib';
+import { MInspectable, MMatch, MPipeable, MString, MTypes } from "@parischap/effect-lib";
 import {
-    Array,
-    Equal,
-    Equivalence,
-    flow,
-    Function,
-    Hash,
-    Number,
-    pipe,
-    Pipeable,
-    Predicate,
-    Struct,
-} from 'effect';
-import * as ASAnsiString from './AnsiString.js';
+  Array,
+  Equal,
+  Equivalence,
+  flow,
+  Function,
+  Hash,
+  Number,
+  pipe,
+  Pipeable,
+  Predicate,
+  Struct,
+} from "effect";
+import * as ASAnsiString from "./AnsiString.js";
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/ansi-styles/Color/';
+export const moduleTag = "@parischap/ansi-styles/Color/";
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 const _TypeIdHash = Hash.hash(_TypeId);
 
-const _tagSymbol: unique symbol = Symbol.for(moduleTag + '_tagSymbol/');
-const _threeBitTag = 'ThreeBit';
-const _eightBitTag = 'EightBit';
-const _rgbTag = 'Rgb';
+const _tagSymbol: unique symbol = Symbol.for(moduleTag + "_tagSymbol/");
+const _threeBitTag = "ThreeBit";
+const _eightBitTag = "EightBit";
+const _rgbTag = "Rgb";
 const _threeBitTagHash = Hash.hash(_threeBitTag);
 const _eightBitTagHash = Hash.hash(_eightBitTag);
 const _rgbTagHash = Hash.hash(_rgbTag);
 
-const _sequenceSymbol: unique symbol = Symbol.for(moduleTag + '_sequenceSymbol/');
+const _sequenceSymbol: unique symbol = Symbol.for(moduleTag + "_sequenceSymbol/");
 
 /**
  * Type of a Color
@@ -112,14 +112,14 @@ export namespace ThreeBit {
     export const toId: MTypes.OneArgFunction<Offset, string> = flow(
       MMatch.make,
       flow(
-        MMatch.whenIs(Offset.Black, Function.constant('Black')),
-        MMatch.whenIs(Offset.Red, Function.constant('Red')),
-        MMatch.whenIs(Offset.Green, Function.constant('Green')),
-        MMatch.whenIs(Offset.Yellow, Function.constant('Yellow')),
-        MMatch.whenIs(Offset.Blue, Function.constant('Blue')),
-        MMatch.whenIs(Offset.Magenta, Function.constant('Magenta')),
-        MMatch.whenIs(Offset.Cyan, Function.constant('Cyan')),
-        MMatch.whenIs(Offset.White, Function.constant('White')),
+        MMatch.whenIs(Offset.Black, Function.constant("Black")),
+        MMatch.whenIs(Offset.Red, Function.constant("Red")),
+        MMatch.whenIs(Offset.Green, Function.constant("Green")),
+        MMatch.whenIs(Offset.Yellow, Function.constant("Yellow")),
+        MMatch.whenIs(Offset.Blue, Function.constant("Blue")),
+        MMatch.whenIs(Offset.Magenta, Function.constant("Magenta")),
+        MMatch.whenIs(Offset.Cyan, Function.constant("Cyan")),
+        MMatch.whenIs(Offset.White, Function.constant("White")),
       ),
       MMatch.exhaustive,
     );
@@ -184,7 +184,7 @@ export namespace ThreeBit {
       return Array.of((this.isBright ? 90 : 30) + this.offset);
     },
     [MInspectable.IdSymbol](this: Type) {
-      return (this.isBright ? 'Bright' : '') + Offset.toId(this.offset);
+      return (this.isBright ? "Bright" : "") + Offset.toId(this.offset);
     },
     ...MInspectable.BaseProto(moduleTag),
     ...MPipeable.BaseProto,
@@ -198,14 +198,14 @@ export namespace ThreeBit {
    *
    * @category Destructors
    */
-  export const offset: MTypes.OneArgFunction<Type, Offset> = Struct.get('offset');
+  export const offset: MTypes.OneArgFunction<Type, Offset> = Struct.get("offset");
 
   /**
    * Gets the `isBright` property of `self`
    *
    * @category Destructors
    */
-  export const isBright: MTypes.OneArgFunction<Type, boolean> = Struct.get('isBright');
+  export const isBright: MTypes.OneArgFunction<Type, boolean> = Struct.get("isBright");
 
   /**
    * Constructor of normal colors
@@ -515,324 +515,324 @@ export namespace EightBit {
       flow(
         flow(
           flow(
-            MMatch.whenIs(Code.Black, Function.constant('Black')),
-            MMatch.whenIs(Code.Maroon, Function.constant('Maroon')),
-            MMatch.whenIs(Code.Green, Function.constant('Green')),
-            MMatch.whenIs(Code.Olive, Function.constant('Olive')),
-            MMatch.whenIs(Code.Navy, Function.constant('Navy')),
-            MMatch.whenIs(Code.Purple_1, Function.constant('Purple_1')),
-            MMatch.whenIs(Code.Teal, Function.constant('Teal')),
-            MMatch.whenIs(Code.Silver, Function.constant('Silver')),
-            MMatch.whenIs(Code.Grey, Function.constant('Grey')),
+            MMatch.whenIs(Code.Black, Function.constant("Black")),
+            MMatch.whenIs(Code.Maroon, Function.constant("Maroon")),
+            MMatch.whenIs(Code.Green, Function.constant("Green")),
+            MMatch.whenIs(Code.Olive, Function.constant("Olive")),
+            MMatch.whenIs(Code.Navy, Function.constant("Navy")),
+            MMatch.whenIs(Code.Purple_1, Function.constant("Purple_1")),
+            MMatch.whenIs(Code.Teal, Function.constant("Teal")),
+            MMatch.whenIs(Code.Silver, Function.constant("Silver")),
+            MMatch.whenIs(Code.Grey, Function.constant("Grey")),
           ),
           flow(
-            MMatch.whenIs(Code.Red, Function.constant('Red')),
-            MMatch.whenIs(Code.Lime, Function.constant('Lime')),
-            MMatch.whenIs(Code.Yellow, Function.constant('Yellow')),
-            MMatch.whenIs(Code.Blue, Function.constant('Blue')),
-            MMatch.whenIs(Code.Fuchsia, Function.constant('Fuchsia')),
-            MMatch.whenIs(Code.Aqua, Function.constant('Aqua')),
-            MMatch.whenIs(Code.White, Function.constant('White')),
-            MMatch.whenIs(Code.Grey0, Function.constant('Grey0')),
-            MMatch.whenIs(Code.NavyBlue, Function.constant('NavyBlue')),
+            MMatch.whenIs(Code.Red, Function.constant("Red")),
+            MMatch.whenIs(Code.Lime, Function.constant("Lime")),
+            MMatch.whenIs(Code.Yellow, Function.constant("Yellow")),
+            MMatch.whenIs(Code.Blue, Function.constant("Blue")),
+            MMatch.whenIs(Code.Fuchsia, Function.constant("Fuchsia")),
+            MMatch.whenIs(Code.Aqua, Function.constant("Aqua")),
+            MMatch.whenIs(Code.White, Function.constant("White")),
+            MMatch.whenIs(Code.Grey0, Function.constant("Grey0")),
+            MMatch.whenIs(Code.NavyBlue, Function.constant("NavyBlue")),
           ),
           flow(
-            MMatch.whenIs(Code.DarkBlue, Function.constant('DarkBlue')),
-            MMatch.whenIs(Code.Blue3_1, Function.constant('Blue3_1')),
-            MMatch.whenIs(Code.Blue3_2, Function.constant('Blue3_2')),
-            MMatch.whenIs(Code.Blue1, Function.constant('Blue1')),
-            MMatch.whenIs(Code.DarkGreen, Function.constant('DarkGreen')),
-            MMatch.whenIs(Code.DeepSkyBlue4_1, Function.constant('DeepSkyBlue4_1')),
-            MMatch.whenIs(Code.DeepSkyBlue4_2, Function.constant('DeepSkyBlue4_2')),
-            MMatch.whenIs(Code.DeepSkyBlue4_3, Function.constant('DeepSkyBlue4_3')),
-            MMatch.whenIs(Code.DodgerBlue3, Function.constant('DodgerBlue3')),
+            MMatch.whenIs(Code.DarkBlue, Function.constant("DarkBlue")),
+            MMatch.whenIs(Code.Blue3_1, Function.constant("Blue3_1")),
+            MMatch.whenIs(Code.Blue3_2, Function.constant("Blue3_2")),
+            MMatch.whenIs(Code.Blue1, Function.constant("Blue1")),
+            MMatch.whenIs(Code.DarkGreen, Function.constant("DarkGreen")),
+            MMatch.whenIs(Code.DeepSkyBlue4_1, Function.constant("DeepSkyBlue4_1")),
+            MMatch.whenIs(Code.DeepSkyBlue4_2, Function.constant("DeepSkyBlue4_2")),
+            MMatch.whenIs(Code.DeepSkyBlue4_3, Function.constant("DeepSkyBlue4_3")),
+            MMatch.whenIs(Code.DodgerBlue3, Function.constant("DodgerBlue3")),
           ),
           flow(
-            MMatch.whenIs(Code.DodgerBlue2, Function.constant('DodgerBlue2')),
-            MMatch.whenIs(Code.Green4, Function.constant('Green4')),
-            MMatch.whenIs(Code.SpringGreen4, Function.constant('SpringGreen4')),
-            MMatch.whenIs(Code.Turquoise4, Function.constant('Turquoise4')),
-            MMatch.whenIs(Code.DeepSkyBlue3_1, Function.constant('DeepSkyBlue3_1')),
-            MMatch.whenIs(Code.DeepSkyBlue3_2, Function.constant('DeepSkyBlue3_2')),
-            MMatch.whenIs(Code.DodgerBlue1, Function.constant('DodgerBlue1')),
-            MMatch.whenIs(Code.Green3_1, Function.constant('Green3_1')),
-            MMatch.whenIs(Code.SpringGreen3_1, Function.constant('SpringGreen3_1')),
+            MMatch.whenIs(Code.DodgerBlue2, Function.constant("DodgerBlue2")),
+            MMatch.whenIs(Code.Green4, Function.constant("Green4")),
+            MMatch.whenIs(Code.SpringGreen4, Function.constant("SpringGreen4")),
+            MMatch.whenIs(Code.Turquoise4, Function.constant("Turquoise4")),
+            MMatch.whenIs(Code.DeepSkyBlue3_1, Function.constant("DeepSkyBlue3_1")),
+            MMatch.whenIs(Code.DeepSkyBlue3_2, Function.constant("DeepSkyBlue3_2")),
+            MMatch.whenIs(Code.DodgerBlue1, Function.constant("DodgerBlue1")),
+            MMatch.whenIs(Code.Green3_1, Function.constant("Green3_1")),
+            MMatch.whenIs(Code.SpringGreen3_1, Function.constant("SpringGreen3_1")),
           ),
           flow(
-            MMatch.whenIs(Code.DarkCyan, Function.constant('DarkCyan')),
-            MMatch.whenIs(Code.LightSeaGreen, Function.constant('LightSeaGreen')),
-            MMatch.whenIs(Code.DeepSkyBlue2, Function.constant('DeepSkyBlue2')),
-            MMatch.whenIs(Code.DeepSkyBlue1, Function.constant('DeepSkyBlue1')),
-            MMatch.whenIs(Code.Green3_2, Function.constant('Green3_2')),
-            MMatch.whenIs(Code.SpringGreen3_2, Function.constant('SpringGreen3_2')),
-            MMatch.whenIs(Code.SpringGreen2_1, Function.constant('SpringGreen2_1')),
-            MMatch.whenIs(Code.Cyan3, Function.constant('Cyan3')),
-            MMatch.whenIs(Code.DarkTurquoise, Function.constant('DarkTurquoise')),
+            MMatch.whenIs(Code.DarkCyan, Function.constant("DarkCyan")),
+            MMatch.whenIs(Code.LightSeaGreen, Function.constant("LightSeaGreen")),
+            MMatch.whenIs(Code.DeepSkyBlue2, Function.constant("DeepSkyBlue2")),
+            MMatch.whenIs(Code.DeepSkyBlue1, Function.constant("DeepSkyBlue1")),
+            MMatch.whenIs(Code.Green3_2, Function.constant("Green3_2")),
+            MMatch.whenIs(Code.SpringGreen3_2, Function.constant("SpringGreen3_2")),
+            MMatch.whenIs(Code.SpringGreen2_1, Function.constant("SpringGreen2_1")),
+            MMatch.whenIs(Code.Cyan3, Function.constant("Cyan3")),
+            MMatch.whenIs(Code.DarkTurquoise, Function.constant("DarkTurquoise")),
           ),
           flow(
-            MMatch.whenIs(Code.Turquoise2, Function.constant('Turquoise2')),
-            MMatch.whenIs(Code.Green1, Function.constant('Green1')),
-            MMatch.whenIs(Code.SpringGreen2_2, Function.constant('SpringGreen2_2')),
-            MMatch.whenIs(Code.SpringGreen1, Function.constant('SpringGreen1')),
-            MMatch.whenIs(Code.MediumSpringGreen, Function.constant('MediumSpringGreen')),
-            MMatch.whenIs(Code.Cyan2, Function.constant('Cyan2')),
-            MMatch.whenIs(Code.Cyan1, Function.constant('Cyan1')),
-            MMatch.whenIs(Code.DarkRed_1, Function.constant('DarkRed_1')),
-            MMatch.whenIs(Code.DeepPink4_1, Function.constant('DeepPink4_1')),
+            MMatch.whenIs(Code.Turquoise2, Function.constant("Turquoise2")),
+            MMatch.whenIs(Code.Green1, Function.constant("Green1")),
+            MMatch.whenIs(Code.SpringGreen2_2, Function.constant("SpringGreen2_2")),
+            MMatch.whenIs(Code.SpringGreen1, Function.constant("SpringGreen1")),
+            MMatch.whenIs(Code.MediumSpringGreen, Function.constant("MediumSpringGreen")),
+            MMatch.whenIs(Code.Cyan2, Function.constant("Cyan2")),
+            MMatch.whenIs(Code.Cyan1, Function.constant("Cyan1")),
+            MMatch.whenIs(Code.DarkRed_1, Function.constant("DarkRed_1")),
+            MMatch.whenIs(Code.DeepPink4_1, Function.constant("DeepPink4_1")),
           ),
           flow(
-            MMatch.whenIs(Code.Purple4_1, Function.constant('Purple4_1')),
-            MMatch.whenIs(Code.Purple4_2, Function.constant('Purple4_2')),
-            MMatch.whenIs(Code.Purple3, Function.constant('Purple3')),
-            MMatch.whenIs(Code.BlueViolet, Function.constant('BlueViolet')),
-            MMatch.whenIs(Code.Orange4_1, Function.constant('Orange4_1')),
-            MMatch.whenIs(Code.Grey37, Function.constant('Grey37')),
-            MMatch.whenIs(Code.MediumPurple4, Function.constant('MediumPurple4')),
-            MMatch.whenIs(Code.SlateBlue3_1, Function.constant('SlateBlue3_1')),
-            MMatch.whenIs(Code.SlateBlue3_2, Function.constant('SlateBlue3_2')),
+            MMatch.whenIs(Code.Purple4_1, Function.constant("Purple4_1")),
+            MMatch.whenIs(Code.Purple4_2, Function.constant("Purple4_2")),
+            MMatch.whenIs(Code.Purple3, Function.constant("Purple3")),
+            MMatch.whenIs(Code.BlueViolet, Function.constant("BlueViolet")),
+            MMatch.whenIs(Code.Orange4_1, Function.constant("Orange4_1")),
+            MMatch.whenIs(Code.Grey37, Function.constant("Grey37")),
+            MMatch.whenIs(Code.MediumPurple4, Function.constant("MediumPurple4")),
+            MMatch.whenIs(Code.SlateBlue3_1, Function.constant("SlateBlue3_1")),
+            MMatch.whenIs(Code.SlateBlue3_2, Function.constant("SlateBlue3_2")),
           ),
           flow(
-            MMatch.whenIs(Code.RoyalBlue1, Function.constant('RoyalBlue1')),
-            MMatch.whenIs(Code.Chartreuse4, Function.constant('Chartreuse4')),
-            MMatch.whenIs(Code.DarkSeaGreen4_1, Function.constant('DarkSeaGreen4_1')),
-            MMatch.whenIs(Code.PaleTurquoise4, Function.constant('PaleTurquoise4')),
-            MMatch.whenIs(Code.SteelBlue, Function.constant('SteelBlue')),
-            MMatch.whenIs(Code.SteelBlue3, Function.constant('SteelBlue3')),
-            MMatch.whenIs(Code.CornflowerBlue, Function.constant('CornflowerBlue')),
-            MMatch.whenIs(Code.Chartreuse3_1, Function.constant('Chartreuse3_1')),
-            MMatch.whenIs(Code.DarkSeaGreen4_2, Function.constant('DarkSeaGreen4_2')),
+            MMatch.whenIs(Code.RoyalBlue1, Function.constant("RoyalBlue1")),
+            MMatch.whenIs(Code.Chartreuse4, Function.constant("Chartreuse4")),
+            MMatch.whenIs(Code.DarkSeaGreen4_1, Function.constant("DarkSeaGreen4_1")),
+            MMatch.whenIs(Code.PaleTurquoise4, Function.constant("PaleTurquoise4")),
+            MMatch.whenIs(Code.SteelBlue, Function.constant("SteelBlue")),
+            MMatch.whenIs(Code.SteelBlue3, Function.constant("SteelBlue3")),
+            MMatch.whenIs(Code.CornflowerBlue, Function.constant("CornflowerBlue")),
+            MMatch.whenIs(Code.Chartreuse3_1, Function.constant("Chartreuse3_1")),
+            MMatch.whenIs(Code.DarkSeaGreen4_2, Function.constant("DarkSeaGreen4_2")),
           ),
           flow(
-            MMatch.whenIs(Code.CadetBlue_1, Function.constant('CadetBlue_1')),
-            MMatch.whenIs(Code.CadetBlue_2, Function.constant('CadetBlue_2')),
-            MMatch.whenIs(Code.SkyBlue3, Function.constant('SkyBlue3')),
-            MMatch.whenIs(Code.SteelBlue1_1, Function.constant('SteelBlue1_1')),
-            MMatch.whenIs(Code.Chartreuse3_2, Function.constant('Chartreuse3_2')),
-            MMatch.whenIs(Code.PaleGreen3_1, Function.constant('PaleGreen3_1')),
-            MMatch.whenIs(Code.SeaGreen3, Function.constant('SeaGreen3')),
-            MMatch.whenIs(Code.Aquamarine3, Function.constant('Aquamarine3')),
-            MMatch.whenIs(Code.MediumTurquoise, Function.constant('MediumTurquoise')),
-          ),
-        ),
-        flow(
-          flow(
-            MMatch.whenIs(Code.SteelBlue1_2, Function.constant('SteelBlue1_2')),
-            MMatch.whenIs(Code.Chartreuse2_1, Function.constant('Chartreuse2_1')),
-            MMatch.whenIs(Code.SeaGreen2, Function.constant('SeaGreen2')),
-            MMatch.whenIs(Code.SeaGreen1_1, Function.constant('SeaGreen1_1')),
-            MMatch.whenIs(Code.SeaGreen1_2, Function.constant('SeaGreen1_2')),
-            MMatch.whenIs(Code.Aquamarine1_1, Function.constant('Aquamarine1_1')),
-            MMatch.whenIs(Code.DarkSlateGray2, Function.constant('DarkSlateGray2')),
-            MMatch.whenIs(Code.DarkRed_2, Function.constant('DarkRed_2')),
-            MMatch.whenIs(Code.DeepPink4_2, Function.constant('DeepPink4_2')),
-          ),
-          flow(
-            MMatch.whenIs(Code.DarkMagenta_1, Function.constant('DarkMagenta_1')),
-            MMatch.whenIs(Code.DarkMagenta_2, Function.constant('DarkMagenta_2')),
-            MMatch.whenIs(Code.DarkViolet_1, Function.constant('DarkViolet_1')),
-            MMatch.whenIs(Code.Purple_2, Function.constant('Purple_2')),
-            MMatch.whenIs(Code.Orange4_2, Function.constant('Orange4_2')),
-            MMatch.whenIs(Code.LightPink4, Function.constant('LightPink4')),
-            MMatch.whenIs(Code.Plum4, Function.constant('Plum4')),
-            MMatch.whenIs(Code.MediumPurple3_1, Function.constant('MediumPurple3_1')),
-            MMatch.whenIs(Code.MediumPurple3_2, Function.constant('MediumPurple3_2')),
-          ),
-          flow(
-            MMatch.whenIs(Code.SlateBlue1, Function.constant('SlateBlue1')),
-            MMatch.whenIs(Code.Yellow4_1, Function.constant('Yellow4_1')),
-            MMatch.whenIs(Code.Wheat4, Function.constant('Wheat4')),
-            MMatch.whenIs(Code.Grey53, Function.constant('Grey53')),
-            MMatch.whenIs(Code.LightSlateGrey, Function.constant('LightSlateGrey')),
-            MMatch.whenIs(Code.MediumPurple, Function.constant('MediumPurple')),
-            MMatch.whenIs(Code.LightSlateBlue, Function.constant('LightSlateBlue')),
-            MMatch.whenIs(Code.Yellow4_2, Function.constant('Yellow4_2')),
-            MMatch.whenIs(Code.DarkOliveGreen3_1, Function.constant('DarkOliveGreen3_1')),
-          ),
-          flow(
-            MMatch.whenIs(Code.DarkSeaGreen, Function.constant('DarkSeaGreen')),
-            MMatch.whenIs(Code.LightSkyBlue3_1, Function.constant('LightSkyBlue3_1')),
-            MMatch.whenIs(Code.LightSkyBlue3_2, Function.constant('LightSkyBlue3_2')),
-            MMatch.whenIs(Code.SkyBlue2, Function.constant('SkyBlue2')),
-            MMatch.whenIs(Code.Chartreuse2_2, Function.constant('Chartreuse2_2')),
-            MMatch.whenIs(Code.DarkOliveGreen3_2, Function.constant('DarkOliveGreen3_2')),
-            MMatch.whenIs(Code.PaleGreen3_2, Function.constant('PaleGreen3_2')),
-            MMatch.whenIs(Code.DarkSeaGreen3_1, Function.constant('DarkSeaGreen3_1')),
-            MMatch.whenIs(Code.DarkSlateGray3, Function.constant('DarkSlateGray3')),
-          ),
-          flow(
-            MMatch.whenIs(Code.SkyBlue1, Function.constant('SkyBlue1')),
-            MMatch.whenIs(Code.Chartreuse1, Function.constant('Chartreuse1')),
-            MMatch.whenIs(Code.LightGreen_1, Function.constant('LightGreen_1')),
-            MMatch.whenIs(Code.LightGreen_2, Function.constant('LightGreen_2')),
-            MMatch.whenIs(Code.PaleGreen1_1, Function.constant('PaleGreen1_1')),
-            MMatch.whenIs(Code.Aquamarine1_2, Function.constant('Aquamarine1_2')),
-            MMatch.whenIs(Code.DarkSlateGray1, Function.constant('DarkSlateGray1')),
-            MMatch.whenIs(Code.Red3_1, Function.constant('Red3_1')),
-            MMatch.whenIs(Code.DeepPink4_3, Function.constant('DeepPink4_3')),
-          ),
-          flow(
-            MMatch.whenIs(Code.MediumVioletRed, Function.constant('MediumVioletRed')),
-            MMatch.whenIs(Code.Magenta3_1, Function.constant('Magenta3_1')),
-            MMatch.whenIs(Code.DarkViolet_2, Function.constant('DarkViolet_2')),
-            MMatch.whenIs(Code.Purple_3, Function.constant('Purple_3')),
-            MMatch.whenIs(Code.DarkOrange3_1, Function.constant('DarkOrange3_1')),
-            MMatch.whenIs(Code.IndianRed_1, Function.constant('IndianRed_1')),
-            MMatch.whenIs(Code.HotPink3_1, Function.constant('HotPink3_1')),
-            MMatch.whenIs(Code.MediumOrchid3, Function.constant('MediumOrchid3')),
-            MMatch.whenIs(Code.MediumOrchid, Function.constant('MediumOrchid')),
-          ),
-          flow(
-            MMatch.whenIs(Code.MediumPurple2_1, Function.constant('MediumPurple2_1')),
-            MMatch.whenIs(Code.DarkGoldenRod, Function.constant('DarkGoldenRod')),
-            MMatch.whenIs(Code.LightSalmon3_1, Function.constant('LightSalmon3_1')),
-            MMatch.whenIs(Code.RosyBrown, Function.constant('RosyBrown')),
-            MMatch.whenIs(Code.Grey63, Function.constant('Grey63')),
-            MMatch.whenIs(Code.MediumPurple2_2, Function.constant('MediumPurple2_2')),
-            MMatch.whenIs(Code.MediumPurple1, Function.constant('MediumPurple1')),
-            MMatch.whenIs(Code.Gold3_1, Function.constant('Gold3_1')),
-            MMatch.whenIs(Code.DarkKhaki, Function.constant('DarkKhaki')),
-          ),
-          flow(
-            MMatch.whenIs(Code.NavajoWhite3, Function.constant('NavajoWhite3')),
-            MMatch.whenIs(Code.Grey69, Function.constant('Grey69')),
-            MMatch.whenIs(Code.LightSteelBlue3, Function.constant('LightSteelBlue3')),
-            MMatch.whenIs(Code.LightSteelBlue, Function.constant('LightSteelBlue')),
-            MMatch.whenIs(Code.Yellow3_1, Function.constant('Yellow3_1')),
-            MMatch.whenIs(Code.DarkOliveGreen3_3, Function.constant('DarkOliveGreen3_3')),
-            MMatch.whenIs(Code.DarkSeaGreen3_2, Function.constant('DarkSeaGreen3_2')),
-            MMatch.whenIs(Code.DarkSeaGreen2_1, Function.constant('DarkSeaGreen2_1')),
-            MMatch.whenIs(Code.LightCyan3, Function.constant('LightCyan3')),
-          ),
-          flow(
-            MMatch.whenIs(Code.LightSkyBlue1, Function.constant('LightSkyBlue1')),
-            MMatch.whenIs(Code.GreenYellow, Function.constant('GreenYellow')),
-            MMatch.whenIs(Code.DarkOliveGreen2, Function.constant('DarkOliveGreen2')),
-            MMatch.whenIs(Code.PaleGreen1_2, Function.constant('PaleGreen1_2')),
-            MMatch.whenIs(Code.DarkSeaGreen2_2, Function.constant('DarkSeaGreen2_2')),
-            MMatch.whenIs(Code.DarkSeaGreen1_1, Function.constant('DarkSeaGreen1_1')),
-            MMatch.whenIs(Code.PaleTurquoise1, Function.constant('PaleTurquoise1')),
-            MMatch.whenIs(Code.Red3_2, Function.constant('Red3_2')),
-            MMatch.whenIs(Code.DeepPink3_1, Function.constant('DeepPink3_1')),
+            MMatch.whenIs(Code.CadetBlue_1, Function.constant("CadetBlue_1")),
+            MMatch.whenIs(Code.CadetBlue_2, Function.constant("CadetBlue_2")),
+            MMatch.whenIs(Code.SkyBlue3, Function.constant("SkyBlue3")),
+            MMatch.whenIs(Code.SteelBlue1_1, Function.constant("SteelBlue1_1")),
+            MMatch.whenIs(Code.Chartreuse3_2, Function.constant("Chartreuse3_2")),
+            MMatch.whenIs(Code.PaleGreen3_1, Function.constant("PaleGreen3_1")),
+            MMatch.whenIs(Code.SeaGreen3, Function.constant("SeaGreen3")),
+            MMatch.whenIs(Code.Aquamarine3, Function.constant("Aquamarine3")),
+            MMatch.whenIs(Code.MediumTurquoise, Function.constant("MediumTurquoise")),
           ),
         ),
         flow(
           flow(
-            MMatch.whenIs(Code.DeepPink3_2, Function.constant('DeepPink3_2')),
-            MMatch.whenIs(Code.Magenta3_2, Function.constant('Magenta3_2')),
-            MMatch.whenIs(Code.Magenta3_3, Function.constant('Magenta3_3')),
-            MMatch.whenIs(Code.Magenta2_1, Function.constant('Magenta2_1')),
-            MMatch.whenIs(Code.DarkOrange3_2, Function.constant('DarkOrange3_2')),
-            MMatch.whenIs(Code.IndianRed_2, Function.constant('IndianRed_2')),
-            MMatch.whenIs(Code.HotPink3_2, Function.constant('HotPink3_2')),
-            MMatch.whenIs(Code.HotPink2, Function.constant('HotPink2')),
-            MMatch.whenIs(Code.Orchid, Function.constant('Orchid')),
+            MMatch.whenIs(Code.SteelBlue1_2, Function.constant("SteelBlue1_2")),
+            MMatch.whenIs(Code.Chartreuse2_1, Function.constant("Chartreuse2_1")),
+            MMatch.whenIs(Code.SeaGreen2, Function.constant("SeaGreen2")),
+            MMatch.whenIs(Code.SeaGreen1_1, Function.constant("SeaGreen1_1")),
+            MMatch.whenIs(Code.SeaGreen1_2, Function.constant("SeaGreen1_2")),
+            MMatch.whenIs(Code.Aquamarine1_1, Function.constant("Aquamarine1_1")),
+            MMatch.whenIs(Code.DarkSlateGray2, Function.constant("DarkSlateGray2")),
+            MMatch.whenIs(Code.DarkRed_2, Function.constant("DarkRed_2")),
+            MMatch.whenIs(Code.DeepPink4_2, Function.constant("DeepPink4_2")),
           ),
           flow(
-            MMatch.whenIs(Code.MediumOrchid1_1, Function.constant('MediumOrchid1_1')),
-            MMatch.whenIs(Code.Orange3, Function.constant('Orange3')),
-            MMatch.whenIs(Code.LightSalmon3_2, Function.constant('LightSalmon3_2')),
-            MMatch.whenIs(Code.LightPink3, Function.constant('LightPink3')),
-            MMatch.whenIs(Code.Pink3, Function.constant('Pink3')),
-            MMatch.whenIs(Code.Plum3, Function.constant('Plum3')),
-            MMatch.whenIs(Code.Violet, Function.constant('Violet')),
-            MMatch.whenIs(Code.Gold3_2, Function.constant('Gold3_2')),
-            MMatch.whenIs(Code.LightGoldenRod3, Function.constant('LightGoldenRod3')),
+            MMatch.whenIs(Code.DarkMagenta_1, Function.constant("DarkMagenta_1")),
+            MMatch.whenIs(Code.DarkMagenta_2, Function.constant("DarkMagenta_2")),
+            MMatch.whenIs(Code.DarkViolet_1, Function.constant("DarkViolet_1")),
+            MMatch.whenIs(Code.Purple_2, Function.constant("Purple_2")),
+            MMatch.whenIs(Code.Orange4_2, Function.constant("Orange4_2")),
+            MMatch.whenIs(Code.LightPink4, Function.constant("LightPink4")),
+            MMatch.whenIs(Code.Plum4, Function.constant("Plum4")),
+            MMatch.whenIs(Code.MediumPurple3_1, Function.constant("MediumPurple3_1")),
+            MMatch.whenIs(Code.MediumPurple3_2, Function.constant("MediumPurple3_2")),
           ),
           flow(
-            MMatch.whenIs(Code.Tan, Function.constant('Tan')),
-            MMatch.whenIs(Code.MistyRose3, Function.constant('MistyRose3')),
-            MMatch.whenIs(Code.Thistle3, Function.constant('Thistle3')),
-            MMatch.whenIs(Code.Plum2, Function.constant('Plum2')),
-            MMatch.whenIs(Code.Yellow3_2, Function.constant('Yellow3_2')),
-            MMatch.whenIs(Code.Khaki3, Function.constant('Khaki3')),
-            MMatch.whenIs(Code.LightGoldenRod2_1, Function.constant('LightGoldenRod2_1')),
-            MMatch.whenIs(Code.LightYellow3, Function.constant('LightYellow3')),
-            MMatch.whenIs(Code.Grey84, Function.constant('Grey84')),
+            MMatch.whenIs(Code.SlateBlue1, Function.constant("SlateBlue1")),
+            MMatch.whenIs(Code.Yellow4_1, Function.constant("Yellow4_1")),
+            MMatch.whenIs(Code.Wheat4, Function.constant("Wheat4")),
+            MMatch.whenIs(Code.Grey53, Function.constant("Grey53")),
+            MMatch.whenIs(Code.LightSlateGrey, Function.constant("LightSlateGrey")),
+            MMatch.whenIs(Code.MediumPurple, Function.constant("MediumPurple")),
+            MMatch.whenIs(Code.LightSlateBlue, Function.constant("LightSlateBlue")),
+            MMatch.whenIs(Code.Yellow4_2, Function.constant("Yellow4_2")),
+            MMatch.whenIs(Code.DarkOliveGreen3_1, Function.constant("DarkOliveGreen3_1")),
           ),
           flow(
-            MMatch.whenIs(Code.LightSteelBlue1, Function.constant('LightSteelBlue1')),
-            MMatch.whenIs(Code.Yellow2, Function.constant('Yellow2')),
-            MMatch.whenIs(Code.DarkOliveGreen1_1, Function.constant('DarkOliveGreen1_1')),
-            MMatch.whenIs(Code.DarkOliveGreen1_2, Function.constant('DarkOliveGreen1_2')),
-            MMatch.whenIs(Code.DarkSeaGreen1_2, Function.constant('DarkSeaGreen1_2')),
-            MMatch.whenIs(Code.HoneyDew2, Function.constant('HoneyDew2')),
-            MMatch.whenIs(Code.LightCyan1, Function.constant('LightCyan1')),
-            MMatch.whenIs(Code.Red1, Function.constant('Red1')),
-            MMatch.whenIs(Code.DeepPink2, Function.constant('DeepPink2')),
+            MMatch.whenIs(Code.DarkSeaGreen, Function.constant("DarkSeaGreen")),
+            MMatch.whenIs(Code.LightSkyBlue3_1, Function.constant("LightSkyBlue3_1")),
+            MMatch.whenIs(Code.LightSkyBlue3_2, Function.constant("LightSkyBlue3_2")),
+            MMatch.whenIs(Code.SkyBlue2, Function.constant("SkyBlue2")),
+            MMatch.whenIs(Code.Chartreuse2_2, Function.constant("Chartreuse2_2")),
+            MMatch.whenIs(Code.DarkOliveGreen3_2, Function.constant("DarkOliveGreen3_2")),
+            MMatch.whenIs(Code.PaleGreen3_2, Function.constant("PaleGreen3_2")),
+            MMatch.whenIs(Code.DarkSeaGreen3_1, Function.constant("DarkSeaGreen3_1")),
+            MMatch.whenIs(Code.DarkSlateGray3, Function.constant("DarkSlateGray3")),
           ),
           flow(
-            MMatch.whenIs(Code.DeepPink1_1, Function.constant('DeepPink1_1')),
-            MMatch.whenIs(Code.DeepPink1_2, Function.constant('DeepPink1_2')),
-            MMatch.whenIs(Code.Magenta2_2, Function.constant('Magenta2_2')),
-            MMatch.whenIs(Code.Magenta1, Function.constant('Magenta1')),
-            MMatch.whenIs(Code.OrangeRed1, Function.constant('OrangeRed1')),
-            MMatch.whenIs(Code.IndianRed1_1, Function.constant('IndianRed1_1')),
-            MMatch.whenIs(Code.IndianRed1_2, Function.constant('IndianRed1_2')),
-            MMatch.whenIs(Code.HotPink_1, Function.constant('HotPink_1')),
-            MMatch.whenIs(Code.HotPink_2, Function.constant('HotPink_2')),
+            MMatch.whenIs(Code.SkyBlue1, Function.constant("SkyBlue1")),
+            MMatch.whenIs(Code.Chartreuse1, Function.constant("Chartreuse1")),
+            MMatch.whenIs(Code.LightGreen_1, Function.constant("LightGreen_1")),
+            MMatch.whenIs(Code.LightGreen_2, Function.constant("LightGreen_2")),
+            MMatch.whenIs(Code.PaleGreen1_1, Function.constant("PaleGreen1_1")),
+            MMatch.whenIs(Code.Aquamarine1_2, Function.constant("Aquamarine1_2")),
+            MMatch.whenIs(Code.DarkSlateGray1, Function.constant("DarkSlateGray1")),
+            MMatch.whenIs(Code.Red3_1, Function.constant("Red3_1")),
+            MMatch.whenIs(Code.DeepPink4_3, Function.constant("DeepPink4_3")),
           ),
           flow(
-            MMatch.whenIs(Code.MediumOrchid1_2, Function.constant('MediumOrchid1_2')),
-            MMatch.whenIs(Code.DarkOrange, Function.constant('DarkOrange')),
-            MMatch.whenIs(Code.Salmon1, Function.constant('Salmon1')),
-            MMatch.whenIs(Code.LightCoral, Function.constant('LightCoral')),
-            MMatch.whenIs(Code.PaleVioletRed1, Function.constant('PaleVioletRed1')),
-            MMatch.whenIs(Code.Orchid2, Function.constant('Orchid2')),
-            MMatch.whenIs(Code.Orchid1, Function.constant('Orchid1')),
-            MMatch.whenIs(Code.Orange1, Function.constant('Orange1')),
-            MMatch.whenIs(Code.SandyBrown, Function.constant('SandyBrown')),
+            MMatch.whenIs(Code.MediumVioletRed, Function.constant("MediumVioletRed")),
+            MMatch.whenIs(Code.Magenta3_1, Function.constant("Magenta3_1")),
+            MMatch.whenIs(Code.DarkViolet_2, Function.constant("DarkViolet_2")),
+            MMatch.whenIs(Code.Purple_3, Function.constant("Purple_3")),
+            MMatch.whenIs(Code.DarkOrange3_1, Function.constant("DarkOrange3_1")),
+            MMatch.whenIs(Code.IndianRed_1, Function.constant("IndianRed_1")),
+            MMatch.whenIs(Code.HotPink3_1, Function.constant("HotPink3_1")),
+            MMatch.whenIs(Code.MediumOrchid3, Function.constant("MediumOrchid3")),
+            MMatch.whenIs(Code.MediumOrchid, Function.constant("MediumOrchid")),
           ),
           flow(
-            MMatch.whenIs(Code.LightSalmon1, Function.constant('LightSalmon1')),
-            MMatch.whenIs(Code.LightPink1, Function.constant('LightPink1')),
-            MMatch.whenIs(Code.Pink1, Function.constant('Pink1')),
-            MMatch.whenIs(Code.Plum1, Function.constant('Plum1')),
-            MMatch.whenIs(Code.Gold1, Function.constant('Gold1')),
-            MMatch.whenIs(Code.LightGoldenRod2_2, Function.constant('LightGoldenRod2_2')),
-            MMatch.whenIs(Code.LightGoldenRod2_3, Function.constant('LightGoldenRod2_3')),
-            MMatch.whenIs(Code.NavajoWhite1, Function.constant('NavajoWhite1')),
-            MMatch.whenIs(Code.MistyRose1, Function.constant('MistyRose1')),
+            MMatch.whenIs(Code.MediumPurple2_1, Function.constant("MediumPurple2_1")),
+            MMatch.whenIs(Code.DarkGoldenRod, Function.constant("DarkGoldenRod")),
+            MMatch.whenIs(Code.LightSalmon3_1, Function.constant("LightSalmon3_1")),
+            MMatch.whenIs(Code.RosyBrown, Function.constant("RosyBrown")),
+            MMatch.whenIs(Code.Grey63, Function.constant("Grey63")),
+            MMatch.whenIs(Code.MediumPurple2_2, Function.constant("MediumPurple2_2")),
+            MMatch.whenIs(Code.MediumPurple1, Function.constant("MediumPurple1")),
+            MMatch.whenIs(Code.Gold3_1, Function.constant("Gold3_1")),
+            MMatch.whenIs(Code.DarkKhaki, Function.constant("DarkKhaki")),
           ),
           flow(
-            MMatch.whenIs(Code.Thistle1, Function.constant('Thistle1')),
-            MMatch.whenIs(Code.Yellow1, Function.constant('Yellow1')),
-            MMatch.whenIs(Code.LightGoldenRod1, Function.constant('LightGoldenRod1')),
-            MMatch.whenIs(Code.Khaki1, Function.constant('Khaki1')),
-            MMatch.whenIs(Code.Wheat1, Function.constant('Wheat1')),
-            MMatch.whenIs(Code.Cornsilk1, Function.constant('Cornsilk1')),
-            MMatch.whenIs(Code.Grey100, Function.constant('Grey100')),
-            MMatch.whenIs(Code.Grey3, Function.constant('Grey3')),
-            MMatch.whenIs(Code.Grey7, Function.constant('Grey7')),
+            MMatch.whenIs(Code.NavajoWhite3, Function.constant("NavajoWhite3")),
+            MMatch.whenIs(Code.Grey69, Function.constant("Grey69")),
+            MMatch.whenIs(Code.LightSteelBlue3, Function.constant("LightSteelBlue3")),
+            MMatch.whenIs(Code.LightSteelBlue, Function.constant("LightSteelBlue")),
+            MMatch.whenIs(Code.Yellow3_1, Function.constant("Yellow3_1")),
+            MMatch.whenIs(Code.DarkOliveGreen3_3, Function.constant("DarkOliveGreen3_3")),
+            MMatch.whenIs(Code.DarkSeaGreen3_2, Function.constant("DarkSeaGreen3_2")),
+            MMatch.whenIs(Code.DarkSeaGreen2_1, Function.constant("DarkSeaGreen2_1")),
+            MMatch.whenIs(Code.LightCyan3, Function.constant("LightCyan3")),
           ),
           flow(
-            MMatch.whenIs(Code.Grey11, Function.constant('Grey11')),
-            MMatch.whenIs(Code.Grey15, Function.constant('Grey15')),
-            MMatch.whenIs(Code.Grey19, Function.constant('Grey19')),
-            MMatch.whenIs(Code.Grey23, Function.constant('Grey23')),
-            MMatch.whenIs(Code.Grey27, Function.constant('Grey27')),
-            MMatch.whenIs(Code.Grey30, Function.constant('Grey30')),
-            MMatch.whenIs(Code.Grey35, Function.constant('Grey35')),
-            MMatch.whenIs(Code.Grey39, Function.constant('Grey39')),
-            MMatch.whenIs(Code.Grey42, Function.constant('Grey42')),
+            MMatch.whenIs(Code.LightSkyBlue1, Function.constant("LightSkyBlue1")),
+            MMatch.whenIs(Code.GreenYellow, Function.constant("GreenYellow")),
+            MMatch.whenIs(Code.DarkOliveGreen2, Function.constant("DarkOliveGreen2")),
+            MMatch.whenIs(Code.PaleGreen1_2, Function.constant("PaleGreen1_2")),
+            MMatch.whenIs(Code.DarkSeaGreen2_2, Function.constant("DarkSeaGreen2_2")),
+            MMatch.whenIs(Code.DarkSeaGreen1_1, Function.constant("DarkSeaGreen1_1")),
+            MMatch.whenIs(Code.PaleTurquoise1, Function.constant("PaleTurquoise1")),
+            MMatch.whenIs(Code.Red3_2, Function.constant("Red3_2")),
+            MMatch.whenIs(Code.DeepPink3_1, Function.constant("DeepPink3_1")),
           ),
         ),
         flow(
           flow(
-            MMatch.whenIs(Code.Grey46, Function.constant('Grey46')),
-            MMatch.whenIs(Code.Grey50, Function.constant('Grey50')),
-            MMatch.whenIs(Code.Grey54, Function.constant('Grey54')),
-            MMatch.whenIs(Code.Grey58, Function.constant('Grey58')),
-            MMatch.whenIs(Code.Grey62, Function.constant('Grey62')),
-            MMatch.whenIs(Code.Grey66, Function.constant('Grey66')),
-            MMatch.whenIs(Code.Grey70, Function.constant('Grey70')),
-            MMatch.whenIs(Code.Grey74, Function.constant('Grey74')),
-            MMatch.whenIs(Code.Grey78, Function.constant('Grey78')),
+            MMatch.whenIs(Code.DeepPink3_2, Function.constant("DeepPink3_2")),
+            MMatch.whenIs(Code.Magenta3_2, Function.constant("Magenta3_2")),
+            MMatch.whenIs(Code.Magenta3_3, Function.constant("Magenta3_3")),
+            MMatch.whenIs(Code.Magenta2_1, Function.constant("Magenta2_1")),
+            MMatch.whenIs(Code.DarkOrange3_2, Function.constant("DarkOrange3_2")),
+            MMatch.whenIs(Code.IndianRed_2, Function.constant("IndianRed_2")),
+            MMatch.whenIs(Code.HotPink3_2, Function.constant("HotPink3_2")),
+            MMatch.whenIs(Code.HotPink2, Function.constant("HotPink2")),
+            MMatch.whenIs(Code.Orchid, Function.constant("Orchid")),
           ),
           flow(
-            MMatch.whenIs(Code.Grey82, Function.constant('Grey82')),
-            MMatch.whenIs(Code.Grey85, Function.constant('Grey85')),
-            MMatch.whenIs(Code.Grey89, Function.constant('Grey89')),
-            MMatch.whenIs(Code.Grey93, Function.constant('Grey93')),
+            MMatch.whenIs(Code.MediumOrchid1_1, Function.constant("MediumOrchid1_1")),
+            MMatch.whenIs(Code.Orange3, Function.constant("Orange3")),
+            MMatch.whenIs(Code.LightSalmon3_2, Function.constant("LightSalmon3_2")),
+            MMatch.whenIs(Code.LightPink3, Function.constant("LightPink3")),
+            MMatch.whenIs(Code.Pink3, Function.constant("Pink3")),
+            MMatch.whenIs(Code.Plum3, Function.constant("Plum3")),
+            MMatch.whenIs(Code.Violet, Function.constant("Violet")),
+            MMatch.whenIs(Code.Gold3_2, Function.constant("Gold3_2")),
+            MMatch.whenIs(Code.LightGoldenRod3, Function.constant("LightGoldenRod3")),
+          ),
+          flow(
+            MMatch.whenIs(Code.Tan, Function.constant("Tan")),
+            MMatch.whenIs(Code.MistyRose3, Function.constant("MistyRose3")),
+            MMatch.whenIs(Code.Thistle3, Function.constant("Thistle3")),
+            MMatch.whenIs(Code.Plum2, Function.constant("Plum2")),
+            MMatch.whenIs(Code.Yellow3_2, Function.constant("Yellow3_2")),
+            MMatch.whenIs(Code.Khaki3, Function.constant("Khaki3")),
+            MMatch.whenIs(Code.LightGoldenRod2_1, Function.constant("LightGoldenRod2_1")),
+            MMatch.whenIs(Code.LightYellow3, Function.constant("LightYellow3")),
+            MMatch.whenIs(Code.Grey84, Function.constant("Grey84")),
+          ),
+          flow(
+            MMatch.whenIs(Code.LightSteelBlue1, Function.constant("LightSteelBlue1")),
+            MMatch.whenIs(Code.Yellow2, Function.constant("Yellow2")),
+            MMatch.whenIs(Code.DarkOliveGreen1_1, Function.constant("DarkOliveGreen1_1")),
+            MMatch.whenIs(Code.DarkOliveGreen1_2, Function.constant("DarkOliveGreen1_2")),
+            MMatch.whenIs(Code.DarkSeaGreen1_2, Function.constant("DarkSeaGreen1_2")),
+            MMatch.whenIs(Code.HoneyDew2, Function.constant("HoneyDew2")),
+            MMatch.whenIs(Code.LightCyan1, Function.constant("LightCyan1")),
+            MMatch.whenIs(Code.Red1, Function.constant("Red1")),
+            MMatch.whenIs(Code.DeepPink2, Function.constant("DeepPink2")),
+          ),
+          flow(
+            MMatch.whenIs(Code.DeepPink1_1, Function.constant("DeepPink1_1")),
+            MMatch.whenIs(Code.DeepPink1_2, Function.constant("DeepPink1_2")),
+            MMatch.whenIs(Code.Magenta2_2, Function.constant("Magenta2_2")),
+            MMatch.whenIs(Code.Magenta1, Function.constant("Magenta1")),
+            MMatch.whenIs(Code.OrangeRed1, Function.constant("OrangeRed1")),
+            MMatch.whenIs(Code.IndianRed1_1, Function.constant("IndianRed1_1")),
+            MMatch.whenIs(Code.IndianRed1_2, Function.constant("IndianRed1_2")),
+            MMatch.whenIs(Code.HotPink_1, Function.constant("HotPink_1")),
+            MMatch.whenIs(Code.HotPink_2, Function.constant("HotPink_2")),
+          ),
+          flow(
+            MMatch.whenIs(Code.MediumOrchid1_2, Function.constant("MediumOrchid1_2")),
+            MMatch.whenIs(Code.DarkOrange, Function.constant("DarkOrange")),
+            MMatch.whenIs(Code.Salmon1, Function.constant("Salmon1")),
+            MMatch.whenIs(Code.LightCoral, Function.constant("LightCoral")),
+            MMatch.whenIs(Code.PaleVioletRed1, Function.constant("PaleVioletRed1")),
+            MMatch.whenIs(Code.Orchid2, Function.constant("Orchid2")),
+            MMatch.whenIs(Code.Orchid1, Function.constant("Orchid1")),
+            MMatch.whenIs(Code.Orange1, Function.constant("Orange1")),
+            MMatch.whenIs(Code.SandyBrown, Function.constant("SandyBrown")),
+          ),
+          flow(
+            MMatch.whenIs(Code.LightSalmon1, Function.constant("LightSalmon1")),
+            MMatch.whenIs(Code.LightPink1, Function.constant("LightPink1")),
+            MMatch.whenIs(Code.Pink1, Function.constant("Pink1")),
+            MMatch.whenIs(Code.Plum1, Function.constant("Plum1")),
+            MMatch.whenIs(Code.Gold1, Function.constant("Gold1")),
+            MMatch.whenIs(Code.LightGoldenRod2_2, Function.constant("LightGoldenRod2_2")),
+            MMatch.whenIs(Code.LightGoldenRod2_3, Function.constant("LightGoldenRod2_3")),
+            MMatch.whenIs(Code.NavajoWhite1, Function.constant("NavajoWhite1")),
+            MMatch.whenIs(Code.MistyRose1, Function.constant("MistyRose1")),
+          ),
+          flow(
+            MMatch.whenIs(Code.Thistle1, Function.constant("Thistle1")),
+            MMatch.whenIs(Code.Yellow1, Function.constant("Yellow1")),
+            MMatch.whenIs(Code.LightGoldenRod1, Function.constant("LightGoldenRod1")),
+            MMatch.whenIs(Code.Khaki1, Function.constant("Khaki1")),
+            MMatch.whenIs(Code.Wheat1, Function.constant("Wheat1")),
+            MMatch.whenIs(Code.Cornsilk1, Function.constant("Cornsilk1")),
+            MMatch.whenIs(Code.Grey100, Function.constant("Grey100")),
+            MMatch.whenIs(Code.Grey3, Function.constant("Grey3")),
+            MMatch.whenIs(Code.Grey7, Function.constant("Grey7")),
+          ),
+          flow(
+            MMatch.whenIs(Code.Grey11, Function.constant("Grey11")),
+            MMatch.whenIs(Code.Grey15, Function.constant("Grey15")),
+            MMatch.whenIs(Code.Grey19, Function.constant("Grey19")),
+            MMatch.whenIs(Code.Grey23, Function.constant("Grey23")),
+            MMatch.whenIs(Code.Grey27, Function.constant("Grey27")),
+            MMatch.whenIs(Code.Grey30, Function.constant("Grey30")),
+            MMatch.whenIs(Code.Grey35, Function.constant("Grey35")),
+            MMatch.whenIs(Code.Grey39, Function.constant("Grey39")),
+            MMatch.whenIs(Code.Grey42, Function.constant("Grey42")),
+          ),
+        ),
+        flow(
+          flow(
+            MMatch.whenIs(Code.Grey46, Function.constant("Grey46")),
+            MMatch.whenIs(Code.Grey50, Function.constant("Grey50")),
+            MMatch.whenIs(Code.Grey54, Function.constant("Grey54")),
+            MMatch.whenIs(Code.Grey58, Function.constant("Grey58")),
+            MMatch.whenIs(Code.Grey62, Function.constant("Grey62")),
+            MMatch.whenIs(Code.Grey66, Function.constant("Grey66")),
+            MMatch.whenIs(Code.Grey70, Function.constant("Grey70")),
+            MMatch.whenIs(Code.Grey74, Function.constant("Grey74")),
+            MMatch.whenIs(Code.Grey78, Function.constant("Grey78")),
+          ),
+          flow(
+            MMatch.whenIs(Code.Grey82, Function.constant("Grey82")),
+            MMatch.whenIs(Code.Grey85, Function.constant("Grey85")),
+            MMatch.whenIs(Code.Grey89, Function.constant("Grey89")),
+            MMatch.whenIs(Code.Grey93, Function.constant("Grey93")),
           ),
         ),
       ),
@@ -893,7 +893,7 @@ export namespace EightBit {
       return Array.make(38, 5, this.code);
     },
     [MInspectable.IdSymbol](this: Type) {
-      return 'EightBit' + Code.toId(this.code);
+      return "EightBit" + Code.toId(this.code);
     },
     ...MInspectable.BaseProto(moduleTag),
     ...MPipeable.BaseProto,
@@ -912,7 +912,7 @@ export namespace EightBit {
    *
    * @category Destructors
    */
-  export const code: MTypes.OneArgFunction<Type, Code> = Struct.get('code');
+  export const code: MTypes.OneArgFunction<Type, Code> = Struct.get("code");
 }
 
 /**
@@ -963,9 +963,9 @@ export namespace Rgb {
    * @category Equivalences
    */
   export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
-    self.redCode === that.redCode
-    && self.greenCode === that.greenCode
-    && self.blueCode === that.blueCode;
+    self.redCode === that.redCode &&
+    self.greenCode === that.greenCode &&
+    self.blueCode === that.blueCode;
 
   /** Base */
   const _proto: MTypes.Proto<Type> = {
@@ -1003,28 +1003,28 @@ export namespace Rgb {
    *
    * @category Destructors
    */
-  export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
+  export const id: MTypes.OneArgFunction<Type, string> = Struct.get("id");
 
   /**
    * Gets the `redCode` property of `self`
    *
    * @category Destructors
    */
-  export const redCode: MTypes.OneArgFunction<Type, number> = Struct.get('redCode');
+  export const redCode: MTypes.OneArgFunction<Type, number> = Struct.get("redCode");
 
   /**
    * Gets the `greenCode` property of `self`
    *
    * @category Destructors
    */
-  export const greenCode: MTypes.OneArgFunction<Type, number> = Struct.get('greenCode');
+  export const greenCode: MTypes.OneArgFunction<Type, number> = Struct.get("greenCode");
 
   /**
    * Gets the `blueCode` property of `self`
    *
    * @category Destructors
    */
-  export const blueCode: MTypes.OneArgFunction<Type, number> = Struct.get('blueCode');
+  export const blueCode: MTypes.OneArgFunction<Type, number> = Struct.get("blueCode");
 
   /**
    * Constructor of predefined RGB colors
@@ -1036,7 +1036,7 @@ export namespace Rgb {
     redCode: number,
     greenCode: number,
     blueCode: number,
-  ): Type => _make({ id: 'Rgb' + id, redCode, greenCode, blueCode });
+  ): Type => _make({ id: "Rgb" + id, redCode, greenCode, blueCode });
 
   /**
    * Constructor
@@ -1066,10 +1066,13 @@ export namespace Rgb {
  * @category Equivalences
  */
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
-  isThreeBit(self) && isThreeBit(that) ? ThreeBit.equivalence(self, that)
-  : isEightBit(self) && isEightBit(that) ? EightBit.equivalence(self, that)
-  : isRgb(self) && isRgb(that) ? Rgb.equivalence(self, that)
-  : false;
+  isThreeBit(self) && isThreeBit(that)
+    ? ThreeBit.equivalence(self, that)
+    : isEightBit(self) && isEightBit(that)
+      ? EightBit.equivalence(self, that)
+      : isRgb(self) && isRgb(that)
+        ? Rgb.equivalence(self, that)
+        : false;
 
 /**
  * Gets the id of `self`
@@ -3046,398 +3049,398 @@ export const eightBitGrey93: EightBit.Type = EightBit.make({ code: EightBit.Code
  *
  * @category EightBit instances
  */
-export const rgbAliceBlue: Rgb.Type = Rgb.makeShort('AliceBlue', 240, 248, 255);
+export const rgbAliceBlue: Rgb.Type = Rgb.makeShort("AliceBlue", 240, 248, 255);
 /**
  * RGB AntiqueWhite Color instance
  *
  * @category RGB instances
  */
-export const rgbAntiqueWhite: Rgb.Type = Rgb.makeShort('AntiqueWhite', 250, 235, 215);
+export const rgbAntiqueWhite: Rgb.Type = Rgb.makeShort("AntiqueWhite", 250, 235, 215);
 /**
  * RGB Aqua Color instance
  *
  * @category RGB instances
  */
-export const rgbAqua: Rgb.Type = Rgb.makeShort('Aqua', 0, 255, 255);
+export const rgbAqua: Rgb.Type = Rgb.makeShort("Aqua", 0, 255, 255);
 /**
  * RGB AquaMarine Color instance
  *
  * @category RGB instances
  */
-export const rgbAquaMarine: Rgb.Type = Rgb.makeShort('AquaMarine', 127, 255, 212);
+export const rgbAquaMarine: Rgb.Type = Rgb.makeShort("AquaMarine", 127, 255, 212);
 /**
  * RGB Azure Color instance
  *
  * @category RGB instances
  */
-export const rgbAzure: Rgb.Type = Rgb.makeShort('Azure', 240, 255, 255);
+export const rgbAzure: Rgb.Type = Rgb.makeShort("Azure", 240, 255, 255);
 /**
  * RGB Beige Color instance
  *
  * @category RGB instances
  */
-export const rgbBeige: Rgb.Type = Rgb.makeShort('Beige', 245, 245, 220);
+export const rgbBeige: Rgb.Type = Rgb.makeShort("Beige", 245, 245, 220);
 /**
  * RGB Bisque Color instance
  *
  * @category RGB instances
  */
-export const rgbBisque: Rgb.Type = Rgb.makeShort('Bisque', 255, 228, 196);
+export const rgbBisque: Rgb.Type = Rgb.makeShort("Bisque", 255, 228, 196);
 /**
  * RGB Black Color instance
  *
  * @category RGB instances
  */
-export const rgbBlack: Rgb.Type = Rgb.makeShort('Black', 0, 0, 0);
+export const rgbBlack: Rgb.Type = Rgb.makeShort("Black", 0, 0, 0);
 /**
  * RGB BlanchedAlmond Color instance
  *
  * @category RGB instances
  */
-export const rgbBlanchedAlmond: Rgb.Type = Rgb.makeShort('BlanchedAlmond', 255, 235, 205);
+export const rgbBlanchedAlmond: Rgb.Type = Rgb.makeShort("BlanchedAlmond", 255, 235, 205);
 /**
  * RGB Blue Color instance
  *
  * @category RGB instances
  */
-export const rgbBlue: Rgb.Type = Rgb.makeShort('Blue', 0, 0, 255);
+export const rgbBlue: Rgb.Type = Rgb.makeShort("Blue", 0, 0, 255);
 /**
  * RGB BlueViolet Color instance
  *
  * @category RGB instances
  */
-export const rgbBlueViolet: Rgb.Type = Rgb.makeShort('BlueViolet', 138, 43, 226);
+export const rgbBlueViolet: Rgb.Type = Rgb.makeShort("BlueViolet", 138, 43, 226);
 /**
  * RGB Brown Color instance
  *
  * @category RGB instances
  */
-export const rgbBrown: Rgb.Type = Rgb.makeShort('Brown', 165, 42, 42);
+export const rgbBrown: Rgb.Type = Rgb.makeShort("Brown", 165, 42, 42);
 /**
  * RGB BurlyWood Color instance
  *
  * @category RGB instances
  */
-export const rgbBurlyWood: Rgb.Type = Rgb.makeShort('BurlyWood', 222, 184, 135);
+export const rgbBurlyWood: Rgb.Type = Rgb.makeShort("BurlyWood", 222, 184, 135);
 /**
  * RGB CadetBlue Color instance
  *
  * @category RGB instances
  */
-export const rgbCadetBlue: Rgb.Type = Rgb.makeShort('CadetBlue', 95, 158, 160);
+export const rgbCadetBlue: Rgb.Type = Rgb.makeShort("CadetBlue", 95, 158, 160);
 /**
  * RGB Chartreuse Color instance
  *
  * @category RGB instances
  */
-export const rgbChartreuse: Rgb.Type = Rgb.makeShort('Chartreuse', 127, 255, 0);
+export const rgbChartreuse: Rgb.Type = Rgb.makeShort("Chartreuse", 127, 255, 0);
 /**
  * RGB Chocolate Color instance
  *
  * @category RGB instances
  */
-export const rgbChocolate: Rgb.Type = Rgb.makeShort('Chocolate', 210, 105, 30);
+export const rgbChocolate: Rgb.Type = Rgb.makeShort("Chocolate", 210, 105, 30);
 /**
  * RGB Coral Color instance
  *
  * @category RGB instances
  */
-export const rgbCoral: Rgb.Type = Rgb.makeShort('Coral', 255, 127, 80);
+export const rgbCoral: Rgb.Type = Rgb.makeShort("Coral", 255, 127, 80);
 /**
  * RGB CornFlowerBlue Color instance
  *
  * @category RGB instances
  */
-export const rgbCornFlowerBlue: Rgb.Type = Rgb.makeShort('CornFlowerBlue', 100, 149, 237);
+export const rgbCornFlowerBlue: Rgb.Type = Rgb.makeShort("CornFlowerBlue", 100, 149, 237);
 /**
  * RGB CornSilk Color instance
  *
  * @category RGB instances
  */
-export const rgbCornSilk: Rgb.Type = Rgb.makeShort('CornSilk', 255, 248, 220);
+export const rgbCornSilk: Rgb.Type = Rgb.makeShort("CornSilk", 255, 248, 220);
 /**
  * RGB Crimson Color instance
  *
  * @category RGB instances
  */
-export const rgbCrimson: Rgb.Type = Rgb.makeShort('Crimson', 220, 20, 60);
+export const rgbCrimson: Rgb.Type = Rgb.makeShort("Crimson", 220, 20, 60);
 /**
  * RGB Cyan Color instance
  *
  * @category RGB instances
  */
-export const rgbCyan: Rgb.Type = Rgb.makeShort('Cyan', 0, 255, 255);
+export const rgbCyan: Rgb.Type = Rgb.makeShort("Cyan", 0, 255, 255);
 /**
  * RGB DarkBlue Color instance
  *
  * @category RGB instances
  */
-export const rgbDarkBlue: Rgb.Type = Rgb.makeShort('DarkBlue', 0, 0, 139);
+export const rgbDarkBlue: Rgb.Type = Rgb.makeShort("DarkBlue", 0, 0, 139);
 /**
  * RGB DarkCyan Color instance
  *
  * @category RGB instances
  */
-export const rgbDarkCyan: Rgb.Type = Rgb.makeShort('DarkCyan', 0, 139, 139);
+export const rgbDarkCyan: Rgb.Type = Rgb.makeShort("DarkCyan", 0, 139, 139);
 /**
  * RGB DarkGoldenRod Color instance
  *
  * @category RGB instances
  */
-export const rgbDarkGoldenRod: Rgb.Type = Rgb.makeShort('DarkGoldenRod', 184, 134, 11);
+export const rgbDarkGoldenRod: Rgb.Type = Rgb.makeShort("DarkGoldenRod", 184, 134, 11);
 /**
  * RGB DarkGray Color instance
  *
  * @category RGB instances
  */
-export const rgbDarkGray: Rgb.Type = Rgb.makeShort('DarkGray', 169, 169, 169);
+export const rgbDarkGray: Rgb.Type = Rgb.makeShort("DarkGray", 169, 169, 169);
 /**
  * RGB DarkGreen Color instance
  *
  * @category RGB instances
  */
-export const rgbDarkGreen: Rgb.Type = Rgb.makeShort('DarkGreen', 0, 100, 0);
+export const rgbDarkGreen: Rgb.Type = Rgb.makeShort("DarkGreen", 0, 100, 0);
 /**
  * RGB DarkKhaki Color instance
  *
  * @category RGB instances
  */
-export const rgbDarkKhaki: Rgb.Type = Rgb.makeShort('DarkKhaki', 189, 183, 107);
+export const rgbDarkKhaki: Rgb.Type = Rgb.makeShort("DarkKhaki", 189, 183, 107);
 /**
  * RGB DarkMagenta Color instance
  *
  * @category RGB instances
  */
-export const rgbDarkMagenta: Rgb.Type = Rgb.makeShort('DarkMagenta', 139, 0, 139);
+export const rgbDarkMagenta: Rgb.Type = Rgb.makeShort("DarkMagenta", 139, 0, 139);
 /**
  * RGB DarkOliveGreen Color instance
  *
  * @category RGB instances
  */
-export const rgbDarkOliveGreen: Rgb.Type = Rgb.makeShort('DarkOliveGreen', 85, 107, 47);
+export const rgbDarkOliveGreen: Rgb.Type = Rgb.makeShort("DarkOliveGreen", 85, 107, 47);
 /**
  * RGB DarkOrange Color instance
  *
  * @category RGB instances
  */
-export const rgbDarkOrange: Rgb.Type = Rgb.makeShort('DarkOrange', 255, 140, 0);
+export const rgbDarkOrange: Rgb.Type = Rgb.makeShort("DarkOrange", 255, 140, 0);
 /**
  * RGB DarkOrchid Color instance
  *
  * @category RGB instances
  */
-export const rgbDarkOrchid: Rgb.Type = Rgb.makeShort('DarkOrchid', 153, 50, 204);
+export const rgbDarkOrchid: Rgb.Type = Rgb.makeShort("DarkOrchid", 153, 50, 204);
 /**
  * RGB DarkRed Color instance
  *
  * @category RGB instances
  */
-export const rgbDarkRed: Rgb.Type = Rgb.makeShort('DarkRed', 139, 0, 0);
+export const rgbDarkRed: Rgb.Type = Rgb.makeShort("DarkRed", 139, 0, 0);
 /**
  * RGB DarkSalmon Color instance
  *
  * @category RGB instances
  */
-export const rgbDarkSalmon: Rgb.Type = Rgb.makeShort('DarkSalmon', 233, 150, 122);
+export const rgbDarkSalmon: Rgb.Type = Rgb.makeShort("DarkSalmon", 233, 150, 122);
 /**
  * RGB DarkSeaGreen Color instance
  *
  * @category RGB instances
  */
-export const rgbDarkSeaGreen: Rgb.Type = Rgb.makeShort('DarkSeaGreen', 143, 188, 143);
+export const rgbDarkSeaGreen: Rgb.Type = Rgb.makeShort("DarkSeaGreen", 143, 188, 143);
 /**
  * RGB DarkSlateBlue Color instance
  *
  * @category RGB instances
  */
-export const rgbDarkSlateBlue: Rgb.Type = Rgb.makeShort('DarkSlateBlue', 72, 61, 139);
+export const rgbDarkSlateBlue: Rgb.Type = Rgb.makeShort("DarkSlateBlue", 72, 61, 139);
 /**
  * RGB DarkSlateGray Color instance
  *
  * @category RGB instances
  */
-export const rgbDarkSlateGray: Rgb.Type = Rgb.makeShort('DarkSlateGray', 47, 79, 79);
+export const rgbDarkSlateGray: Rgb.Type = Rgb.makeShort("DarkSlateGray", 47, 79, 79);
 /**
  * RGB DarkTurquoise Color instance
  *
  * @category RGB instances
  */
-export const rgbDarkTurquoise: Rgb.Type = Rgb.makeShort('DarkTurquoise', 0, 206, 209);
+export const rgbDarkTurquoise: Rgb.Type = Rgb.makeShort("DarkTurquoise", 0, 206, 209);
 /**
  * RGB DarkViolet Color instance
  *
  * @category RGB instances
  */
-export const rgbDarkViolet: Rgb.Type = Rgb.makeShort('DarkViolet', 148, 0, 211);
+export const rgbDarkViolet: Rgb.Type = Rgb.makeShort("DarkViolet", 148, 0, 211);
 /**
  * RGB DeepPink Color instance
  *
  * @category RGB instances
  */
-export const rgbDeepPink: Rgb.Type = Rgb.makeShort('DeepPink', 255, 20, 147);
+export const rgbDeepPink: Rgb.Type = Rgb.makeShort("DeepPink", 255, 20, 147);
 /**
  * RGB DeepSkyBlue Color instance
  *
  * @category RGB instances
  */
-export const rgbDeepSkyBlue: Rgb.Type = Rgb.makeShort('DeepSkyBlue', 0, 191, 255);
+export const rgbDeepSkyBlue: Rgb.Type = Rgb.makeShort("DeepSkyBlue", 0, 191, 255);
 /**
  * RGB DimGray Color instance
  *
  * @category RGB instances
  */
-export const rgbDimGray: Rgb.Type = Rgb.makeShort('DimGray', 105, 105, 105);
+export const rgbDimGray: Rgb.Type = Rgb.makeShort("DimGray", 105, 105, 105);
 /**
  * RGB DodgerBlue Color instance
  *
  * @category RGB instances
  */
-export const rgbDodgerBlue: Rgb.Type = Rgb.makeShort('DodgerBlue', 30, 144, 255);
+export const rgbDodgerBlue: Rgb.Type = Rgb.makeShort("DodgerBlue", 30, 144, 255);
 /**
  * RGB Firebrick Color instance
  *
  * @category RGB instances
  */
-export const rgbFirebrick: Rgb.Type = Rgb.makeShort('Firebrick', 178, 34, 34);
+export const rgbFirebrick: Rgb.Type = Rgb.makeShort("Firebrick", 178, 34, 34);
 /**
  * RGB FloralWhite Color instance
  *
  * @category RGB instances
  */
-export const rgbFloralWhite: Rgb.Type = Rgb.makeShort('FloralWhite', 255, 250, 240);
+export const rgbFloralWhite: Rgb.Type = Rgb.makeShort("FloralWhite", 255, 250, 240);
 /**
  * RGB ForestGreen Color instance
  *
  * @category RGB instances
  */
-export const rgbForestGreen: Rgb.Type = Rgb.makeShort('ForestGreen', 34, 139, 34);
+export const rgbForestGreen: Rgb.Type = Rgb.makeShort("ForestGreen", 34, 139, 34);
 /**
  * RGB Gainsboro Color instance
  *
  * @category RGB instances
  */
-export const rgbGainsboro: Rgb.Type = Rgb.makeShort('Gainsboro', 220, 220, 220);
+export const rgbGainsboro: Rgb.Type = Rgb.makeShort("Gainsboro", 220, 220, 220);
 /**
  * RGB GhostWhite Color instance
  *
  * @category RGB instances
  */
-export const rgbGhostWhite: Rgb.Type = Rgb.makeShort('GhostWhite', 248, 248, 255);
+export const rgbGhostWhite: Rgb.Type = Rgb.makeShort("GhostWhite", 248, 248, 255);
 /**
  * RGB Gold Color instance
  *
  * @category RGB instances
  */
-export const rgbGold: Rgb.Type = Rgb.makeShort('Gold', 255, 215, 0);
+export const rgbGold: Rgb.Type = Rgb.makeShort("Gold", 255, 215, 0);
 /**
  * RGB GoldenRod Color instance
  *
  * @category RGB instances
  */
-export const rgbGoldenRod: Rgb.Type = Rgb.makeShort('GoldenRod', 218, 165, 32);
+export const rgbGoldenRod: Rgb.Type = Rgb.makeShort("GoldenRod", 218, 165, 32);
 /**
  * RGB Gray Color instance
  *
  * @category RGB instances
  */
-export const rgbGray: Rgb.Type = Rgb.makeShort('Gray', 128, 128, 128);
+export const rgbGray: Rgb.Type = Rgb.makeShort("Gray", 128, 128, 128);
 /**
  * RGB Green Color instance
  *
  * @category RGB instances
  */
-export const rgbGreen: Rgb.Type = Rgb.makeShort('Green', 0, 128, 0);
+export const rgbGreen: Rgb.Type = Rgb.makeShort("Green", 0, 128, 0);
 /**
  * RGB GreenYellow Color instance
  *
  * @category RGB instances
  */
-export const rgbGreenYellow: Rgb.Type = Rgb.makeShort('GreenYellow', 173, 255, 47);
+export const rgbGreenYellow: Rgb.Type = Rgb.makeShort("GreenYellow", 173, 255, 47);
 /**
  * RGB HoneyDew Color instance
  *
  * @category RGB instances
  */
-export const rgbHoneyDew: Rgb.Type = Rgb.makeShort('HoneyDew', 240, 255, 240);
+export const rgbHoneyDew: Rgb.Type = Rgb.makeShort("HoneyDew", 240, 255, 240);
 /**
  * RGB HotPink Color instance
  *
  * @category RGB instances
  */
-export const rgbHotPink: Rgb.Type = Rgb.makeShort('HotPink', 255, 105, 180);
+export const rgbHotPink: Rgb.Type = Rgb.makeShort("HotPink", 255, 105, 180);
 /**
  * RGB IndianRed Color instance
  *
  * @category RGB instances
  */
-export const rgbIndianRed: Rgb.Type = Rgb.makeShort('IndianRed', 205, 92, 92);
+export const rgbIndianRed: Rgb.Type = Rgb.makeShort("IndianRed", 205, 92, 92);
 /**
  * RGB Indigo Color instance
  *
  * @category RGB instances
  */
-export const rgbIndigo: Rgb.Type = Rgb.makeShort('Indigo', 75, 0, 130);
+export const rgbIndigo: Rgb.Type = Rgb.makeShort("Indigo", 75, 0, 130);
 /**
  * RGB Ivory Color instance
  *
  * @category RGB instances
  */
-export const rgbIvory: Rgb.Type = Rgb.makeShort('Ivory', 255, 255, 240);
+export const rgbIvory: Rgb.Type = Rgb.makeShort("Ivory", 255, 255, 240);
 /**
  * RGB Khaki Color instance
  *
  * @category RGB instances
  */
-export const rgbKhaki: Rgb.Type = Rgb.makeShort('Khaki', 240, 230, 140);
+export const rgbKhaki: Rgb.Type = Rgb.makeShort("Khaki", 240, 230, 140);
 /**
  * RGB Lavender Color instance
  *
  * @category RGB instances
  */
-export const rgbLavender: Rgb.Type = Rgb.makeShort('Lavender', 230, 230, 250);
+export const rgbLavender: Rgb.Type = Rgb.makeShort("Lavender", 230, 230, 250);
 /**
  * RGB LavenderBlush Color instance
  *
  * @category RGB instances
  */
-export const rgbLavenderBlush: Rgb.Type = Rgb.makeShort('LavenderBlush', 255, 240, 245);
+export const rgbLavenderBlush: Rgb.Type = Rgb.makeShort("LavenderBlush", 255, 240, 245);
 /**
  * RGB LawnGreen Color instance
  *
  * @category RGB instances
  */
-export const rgbLawnGreen: Rgb.Type = Rgb.makeShort('LawnGreen', 124, 252, 0);
+export const rgbLawnGreen: Rgb.Type = Rgb.makeShort("LawnGreen", 124, 252, 0);
 /**
  * RGB LemonChiffon Color instance
  *
  * @category RGB instances
  */
-export const rgbLemonChiffon: Rgb.Type = Rgb.makeShort('LemonChiffon', 255, 250, 205);
+export const rgbLemonChiffon: Rgb.Type = Rgb.makeShort("LemonChiffon", 255, 250, 205);
 /**
  * RGB LightBlue Color instance
  *
  * @category RGB instances
  */
-export const rgbLightBlue: Rgb.Type = Rgb.makeShort('LightBlue', 173, 216, 230);
+export const rgbLightBlue: Rgb.Type = Rgb.makeShort("LightBlue", 173, 216, 230);
 /**
  * RGB LightCoral Color instance
  *
  * @category RGB instances
  */
-export const rgbLightCoral: Rgb.Type = Rgb.makeShort('LightCoral', 240, 128, 128);
+export const rgbLightCoral: Rgb.Type = Rgb.makeShort("LightCoral", 240, 128, 128);
 /**
  * RGB LightCyan Color instance
  *
  * @category RGB instances
  */
-export const rgbLightCyan: Rgb.Type = Rgb.makeShort('LightCyan', 224, 255, 255);
+export const rgbLightCyan: Rgb.Type = Rgb.makeShort("LightCyan", 224, 255, 255);
 /**
  * RGB LightGoldenRodYellow Color instance
  *
  * @category RGB instances
  */
 export const rgbLightGoldenRodYellow: Rgb.Type = Rgb.makeShort(
-  'LightGoldenRodYellow',
+  "LightGoldenRodYellow",
   250,
   250,
   210,
@@ -3447,436 +3450,436 @@ export const rgbLightGoldenRodYellow: Rgb.Type = Rgb.makeShort(
  *
  * @category RGB instances
  */
-export const rgbLightGray: Rgb.Type = Rgb.makeShort('LightGray', 211, 211, 211);
+export const rgbLightGray: Rgb.Type = Rgb.makeShort("LightGray", 211, 211, 211);
 /**
  * RGB LightGreen Color instance
  *
  * @category RGB instances
  */
-export const rgbLightGreen: Rgb.Type = Rgb.makeShort('LightGreen', 144, 238, 144);
+export const rgbLightGreen: Rgb.Type = Rgb.makeShort("LightGreen", 144, 238, 144);
 /**
  * RGB LightPink Color instance
  *
  * @category RGB instances
  */
-export const rgbLightPink: Rgb.Type = Rgb.makeShort('LightPink', 255, 182, 193);
+export const rgbLightPink: Rgb.Type = Rgb.makeShort("LightPink", 255, 182, 193);
 /**
  * RGB LightSalmon Color instance
  *
  * @category RGB instances
  */
-export const rgbLightSalmon: Rgb.Type = Rgb.makeShort('LightSalmon', 255, 160, 122);
+export const rgbLightSalmon: Rgb.Type = Rgb.makeShort("LightSalmon", 255, 160, 122);
 /**
  * RGB LightSeaGreen Color instance
  *
  * @category RGB instances
  */
-export const rgbLightSeaGreen: Rgb.Type = Rgb.makeShort('LightSeaGreen', 32, 178, 170);
+export const rgbLightSeaGreen: Rgb.Type = Rgb.makeShort("LightSeaGreen", 32, 178, 170);
 /**
  * RGB LightSkyBlue Color instance
  *
  * @category RGB instances
  */
-export const rgbLightSkyBlue: Rgb.Type = Rgb.makeShort('LightSkyBlue', 135, 206, 250);
+export const rgbLightSkyBlue: Rgb.Type = Rgb.makeShort("LightSkyBlue", 135, 206, 250);
 /**
  * RGB LightSlateGray Color instance
  *
  * @category RGB instances
  */
-export const rgbLightSlateGray: Rgb.Type = Rgb.makeShort('LightSlateGray', 119, 136, 153);
+export const rgbLightSlateGray: Rgb.Type = Rgb.makeShort("LightSlateGray", 119, 136, 153);
 /**
  * RGB LightSteelBlue Color instance
  *
  * @category RGB instances
  */
-export const rgbLightSteelBlue: Rgb.Type = Rgb.makeShort('LightSteelBlue', 176, 196, 222);
+export const rgbLightSteelBlue: Rgb.Type = Rgb.makeShort("LightSteelBlue", 176, 196, 222);
 /**
  * RGB LightYellow Color instance
  *
  * @category RGB instances
  */
-export const rgbLightYellow: Rgb.Type = Rgb.makeShort('LightYellow', 255, 255, 224);
+export const rgbLightYellow: Rgb.Type = Rgb.makeShort("LightYellow", 255, 255, 224);
 /**
  * RGB Lime Color instance
  *
  * @category RGB instances
  */
-export const rgbLime: Rgb.Type = Rgb.makeShort('Lime', 0, 255, 0);
+export const rgbLime: Rgb.Type = Rgb.makeShort("Lime", 0, 255, 0);
 /**
  * RGB LimeGreen Color instance
  *
  * @category RGB instances
  */
-export const rgbLimeGreen: Rgb.Type = Rgb.makeShort('LimeGreen', 50, 205, 50);
+export const rgbLimeGreen: Rgb.Type = Rgb.makeShort("LimeGreen", 50, 205, 50);
 /**
  * RGB Linen Color instance
  *
  * @category RGB instances
  */
-export const rgbLinen: Rgb.Type = Rgb.makeShort('Linen', 250, 240, 230);
+export const rgbLinen: Rgb.Type = Rgb.makeShort("Linen", 250, 240, 230);
 /**
  * RGB Magenta Color instance
  *
  * @category RGB instances
  */
-export const rgbMagenta: Rgb.Type = Rgb.makeShort('Magenta', 255, 0, 255);
+export const rgbMagenta: Rgb.Type = Rgb.makeShort("Magenta", 255, 0, 255);
 /**
  * RGB Maroon Color instance
  *
  * @category RGB instances
  */
-export const rgbMaroon: Rgb.Type = Rgb.makeShort('Maroon', 128, 0, 0);
+export const rgbMaroon: Rgb.Type = Rgb.makeShort("Maroon", 128, 0, 0);
 /**
  * RGB MediumAquaMarine Color instance
  *
  * @category RGB instances
  */
-export const rgbMediumAquaMarine: Rgb.Type = Rgb.makeShort('MediumAquaMarine', 102, 205, 170);
+export const rgbMediumAquaMarine: Rgb.Type = Rgb.makeShort("MediumAquaMarine", 102, 205, 170);
 /**
  * RGB MediumBlue Color instance
  *
  * @category RGB instances
  */
-export const rgbMediumBlue: Rgb.Type = Rgb.makeShort('MediumBlue', 0, 0, 205);
+export const rgbMediumBlue: Rgb.Type = Rgb.makeShort("MediumBlue", 0, 0, 205);
 /**
  * RGB MediumOrchid2 Color instance
  *
  * @category RGB instances
  */
-export const rgbMediumOrchid2: Rgb.Type = Rgb.makeShort('MediumOrchid2', 186, 85, 211);
+export const rgbMediumOrchid2: Rgb.Type = Rgb.makeShort("MediumOrchid2", 186, 85, 211);
 /**
  * RGB MediumPurple Color instance
  *
  * @category RGB instances
  */
-export const rgbMediumPurple: Rgb.Type = Rgb.makeShort('MediumPurple', 147, 112, 219);
+export const rgbMediumPurple: Rgb.Type = Rgb.makeShort("MediumPurple", 147, 112, 219);
 /**
  * RGB MediumSeaGreen Color instance
  *
  * @category RGB instances
  */
-export const rgbMediumSeaGreen: Rgb.Type = Rgb.makeShort('MediumSeaGreen', 60, 179, 113);
+export const rgbMediumSeaGreen: Rgb.Type = Rgb.makeShort("MediumSeaGreen", 60, 179, 113);
 /**
  * RGB MediumSlateBlue Color instance
  *
  * @category RGB instances
  */
-export const rgbMediumSlateBlue: Rgb.Type = Rgb.makeShort('MediumSlateBlue', 123, 104, 238);
+export const rgbMediumSlateBlue: Rgb.Type = Rgb.makeShort("MediumSlateBlue", 123, 104, 238);
 /**
  * RGB MediumSpringGreen Color instance
  *
  * @category RGB instances
  */
-export const rgbMediumSpringGreen: Rgb.Type = Rgb.makeShort('MediumSpringGreen', 0, 250, 154);
+export const rgbMediumSpringGreen: Rgb.Type = Rgb.makeShort("MediumSpringGreen", 0, 250, 154);
 /**
  * RGB MediumTurquoise Color instance
  *
  * @category RGB instances
  */
-export const rgbMediumTurquoise: Rgb.Type = Rgb.makeShort('MediumTurquoise', 72, 209, 204);
+export const rgbMediumTurquoise: Rgb.Type = Rgb.makeShort("MediumTurquoise", 72, 209, 204);
 /**
  * RGB MediumVioletRed Color instance
  *
  * @category RGB instances
  */
-export const rgbMediumVioletRed: Rgb.Type = Rgb.makeShort('MediumVioletRed', 199, 21, 133);
+export const rgbMediumVioletRed: Rgb.Type = Rgb.makeShort("MediumVioletRed", 199, 21, 133);
 /**
  * RGB MidnightBlue Color instance
  *
  * @category RGB instances
  */
-export const rgbMidnightBlue: Rgb.Type = Rgb.makeShort('MidnightBlue', 25, 25, 112);
+export const rgbMidnightBlue: Rgb.Type = Rgb.makeShort("MidnightBlue", 25, 25, 112);
 /**
  * RGB MintCream Color instance
  *
  * @category RGB instances
  */
-export const rgbMintCream: Rgb.Type = Rgb.makeShort('MintCream', 245, 255, 250);
+export const rgbMintCream: Rgb.Type = Rgb.makeShort("MintCream", 245, 255, 250);
 /**
  * RGB MistyRose Color instance
  *
  * @category RGB instances
  */
-export const rgbMistyRose: Rgb.Type = Rgb.makeShort('MistyRose', 255, 228, 225);
+export const rgbMistyRose: Rgb.Type = Rgb.makeShort("MistyRose", 255, 228, 225);
 /**
  * RGB Moccasin Color instance
  *
  * @category RGB instances
  */
-export const rgbMoccasin: Rgb.Type = Rgb.makeShort('Moccasin', 255, 228, 181);
+export const rgbMoccasin: Rgb.Type = Rgb.makeShort("Moccasin", 255, 228, 181);
 /**
  * RGB NavajoWhite Color instance
  *
  * @category RGB instances
  */
-export const rgbNavajoWhite: Rgb.Type = Rgb.makeShort('NavajoWhite', 255, 222, 173);
+export const rgbNavajoWhite: Rgb.Type = Rgb.makeShort("NavajoWhite", 255, 222, 173);
 /**
  * RGB Navy Color instance
  *
  * @category RGB instances
  */
-export const rgbNavy: Rgb.Type = Rgb.makeShort('Navy', 0, 0, 128);
+export const rgbNavy: Rgb.Type = Rgb.makeShort("Navy", 0, 0, 128);
 /**
  * RGB OldLace Color instance
  *
  * @category RGB instances
  */
-export const rgbOldLace: Rgb.Type = Rgb.makeShort('OldLace', 253, 245, 230);
+export const rgbOldLace: Rgb.Type = Rgb.makeShort("OldLace", 253, 245, 230);
 /**
  * RGB Olive Color instance
  *
  * @category RGB instances
  */
-export const rgbOlive: Rgb.Type = Rgb.makeShort('Olive', 128, 128, 0);
+export const rgbOlive: Rgb.Type = Rgb.makeShort("Olive", 128, 128, 0);
 /**
  * RGB OliveDrab Color instance
  *
  * @category RGB instances
  */
-export const rgbOliveDrab: Rgb.Type = Rgb.makeShort('OliveDrab', 107, 142, 35);
+export const rgbOliveDrab: Rgb.Type = Rgb.makeShort("OliveDrab", 107, 142, 35);
 /**
  * RGB Orange Color instance
  *
  * @category RGB instances
  */
-export const rgbOrange: Rgb.Type = Rgb.makeShort('Orange', 255, 165, 0);
+export const rgbOrange: Rgb.Type = Rgb.makeShort("Orange", 255, 165, 0);
 /**
  * RGB OrangeRed Color instance
  *
  * @category RGB instances
  */
-export const rgbOrangeRed: Rgb.Type = Rgb.makeShort('OrangeRed', 255, 69, 0);
+export const rgbOrangeRed: Rgb.Type = Rgb.makeShort("OrangeRed", 255, 69, 0);
 /**
  * RGB Orchid Color instance
  *
  * @category RGB instances
  */
-export const rgbOrchid: Rgb.Type = Rgb.makeShort('Orchid', 218, 112, 214);
+export const rgbOrchid: Rgb.Type = Rgb.makeShort("Orchid", 218, 112, 214);
 /**
  * RGB PaleGoldenRod Color instance
  *
  * @category RGB instances
  */
-export const rgbPaleGoldenRod: Rgb.Type = Rgb.makeShort('PaleGoldenRod', 238, 232, 170);
+export const rgbPaleGoldenRod: Rgb.Type = Rgb.makeShort("PaleGoldenRod", 238, 232, 170);
 /**
  * RGB PaleGreen Color instance
  *
  * @category RGB instances
  */
-export const rgbPaleGreen: Rgb.Type = Rgb.makeShort('PaleGreen', 152, 251, 152);
+export const rgbPaleGreen: Rgb.Type = Rgb.makeShort("PaleGreen", 152, 251, 152);
 /**
  * RGB PaleTurquoise Color instance
  *
  * @category RGB instances
  */
-export const rgbPaleTurquoise: Rgb.Type = Rgb.makeShort('PaleTurquoise', 175, 238, 238);
+export const rgbPaleTurquoise: Rgb.Type = Rgb.makeShort("PaleTurquoise", 175, 238, 238);
 /**
  * RGB PaleVioletRed Color instance
  *
  * @category RGB instances
  */
-export const rgbPaleVioletRed: Rgb.Type = Rgb.makeShort('PaleVioletRed', 219, 112, 147);
+export const rgbPaleVioletRed: Rgb.Type = Rgb.makeShort("PaleVioletRed", 219, 112, 147);
 /**
  * RGB PapayaWhip Color instance
  *
  * @category RGB instances
  */
-export const rgbPapayaWhip: Rgb.Type = Rgb.makeShort('PapayaWhip', 255, 239, 213);
+export const rgbPapayaWhip: Rgb.Type = Rgb.makeShort("PapayaWhip", 255, 239, 213);
 /**
  * RGB PeachPuff Color instance
  *
  * @category RGB instances
  */
-export const rgbPeachPuff: Rgb.Type = Rgb.makeShort('PeachPuff', 255, 218, 185);
+export const rgbPeachPuff: Rgb.Type = Rgb.makeShort("PeachPuff", 255, 218, 185);
 /**
  * RGB Peru Color instance
  *
  * @category RGB instances
  */
-export const rgbPeru: Rgb.Type = Rgb.makeShort('Peru', 205, 133, 63);
+export const rgbPeru: Rgb.Type = Rgb.makeShort("Peru", 205, 133, 63);
 /**
  * RGB Pink Color instance
  *
  * @category RGB instances
  */
-export const rgbPink: Rgb.Type = Rgb.makeShort('Pink', 255, 192, 203);
+export const rgbPink: Rgb.Type = Rgb.makeShort("Pink", 255, 192, 203);
 /**
  * RGB Plum Color instance
  *
  * @category RGB instances
  */
-export const rgbPlum: Rgb.Type = Rgb.makeShort('Plum', 221, 160, 221);
+export const rgbPlum: Rgb.Type = Rgb.makeShort("Plum", 221, 160, 221);
 /**
  * RGB PowderBlue Color instance
  *
  * @category RGB instances
  */
-export const rgbPowderBlue: Rgb.Type = Rgb.makeShort('PowderBlue', 176, 224, 230);
+export const rgbPowderBlue: Rgb.Type = Rgb.makeShort("PowderBlue", 176, 224, 230);
 /**
  * RGB Purple Color instance
  *
  * @category RGB instances
  */
-export const rgbPurple: Rgb.Type = Rgb.makeShort('Purple', 128, 0, 128);
+export const rgbPurple: Rgb.Type = Rgb.makeShort("Purple", 128, 0, 128);
 /**
  * RGB Red Color instance
  *
  * @category RGB instances
  */
-export const rgbRed: Rgb.Type = Rgb.makeShort('Red', 255, 0, 0);
+export const rgbRed: Rgb.Type = Rgb.makeShort("Red", 255, 0, 0);
 /**
  * RGB RosyBrown Color instance
  *
  * @category RGB instances
  */
-export const rgbRosyBrown: Rgb.Type = Rgb.makeShort('RosyBrown', 188, 143, 143);
+export const rgbRosyBrown: Rgb.Type = Rgb.makeShort("RosyBrown", 188, 143, 143);
 /**
  * RGB RoyalBlue Color instance
  *
  * @category RGB instances
  */
-export const rgbRoyalBlue: Rgb.Type = Rgb.makeShort('RoyalBlue', 65, 105, 225);
+export const rgbRoyalBlue: Rgb.Type = Rgb.makeShort("RoyalBlue", 65, 105, 225);
 /**
  * RGB SaddleBrown Color instance
  *
  * @category RGB instances
  */
-export const rgbSaddleBrown: Rgb.Type = Rgb.makeShort('SaddleBrown', 139, 69, 19);
+export const rgbSaddleBrown: Rgb.Type = Rgb.makeShort("SaddleBrown", 139, 69, 19);
 /**
  * RGB Salmon Color instance
  *
  * @category RGB instances
  */
-export const rgbSalmon: Rgb.Type = Rgb.makeShort('Salmon', 250, 128, 114);
+export const rgbSalmon: Rgb.Type = Rgb.makeShort("Salmon", 250, 128, 114);
 /**
  * RGB SandyBrown Color instance
  *
  * @category RGB instances
  */
-export const rgbSandyBrown: Rgb.Type = Rgb.makeShort('SandyBrown', 244, 164, 96);
+export const rgbSandyBrown: Rgb.Type = Rgb.makeShort("SandyBrown", 244, 164, 96);
 /**
  * RGB SeaGreen Color instance
  *
  * @category RGB instances
  */
-export const rgbSeaGreen: Rgb.Type = Rgb.makeShort('SeaGreen', 46, 139, 87);
+export const rgbSeaGreen: Rgb.Type = Rgb.makeShort("SeaGreen", 46, 139, 87);
 /**
  * RGB SeaShell Color instance
  *
  * @category RGB instances
  */
-export const rgbSeaShell: Rgb.Type = Rgb.makeShort('SeaShell', 255, 245, 238);
+export const rgbSeaShell: Rgb.Type = Rgb.makeShort("SeaShell", 255, 245, 238);
 /**
  * RGB Sienna Color instance
  *
  * @category RGB instances
  */
-export const rgbSienna: Rgb.Type = Rgb.makeShort('Sienna', 160, 82, 45);
+export const rgbSienna: Rgb.Type = Rgb.makeShort("Sienna", 160, 82, 45);
 /**
  * RGB Silver Color instance
  *
  * @category RGB instances
  */
-export const rgbSilver: Rgb.Type = Rgb.makeShort('Silver', 192, 192, 192);
+export const rgbSilver: Rgb.Type = Rgb.makeShort("Silver", 192, 192, 192);
 /**
  * RGB SkyBlue Color instance
  *
  * @category RGB instances
  */
-export const rgbSkyBlue: Rgb.Type = Rgb.makeShort('SkyBlue', 135, 206, 235);
+export const rgbSkyBlue: Rgb.Type = Rgb.makeShort("SkyBlue", 135, 206, 235);
 /**
  * RGB SlateBlue Color instance
  *
  * @category RGB instances
  */
-export const rgbSlateBlue: Rgb.Type = Rgb.makeShort('SlateBlue', 106, 90, 205);
+export const rgbSlateBlue: Rgb.Type = Rgb.makeShort("SlateBlue", 106, 90, 205);
 /**
  * RGB SlateGray Color instance
  *
  * @category RGB instances
  */
-export const rgbSlateGray: Rgb.Type = Rgb.makeShort('SlateGray', 112, 128, 144);
+export const rgbSlateGray: Rgb.Type = Rgb.makeShort("SlateGray", 112, 128, 144);
 /**
  * RGB Snow Color instance
  *
  * @category RGB instances
  */
-export const rgbSnow: Rgb.Type = Rgb.makeShort('Snow', 255, 250, 250);
+export const rgbSnow: Rgb.Type = Rgb.makeShort("Snow", 255, 250, 250);
 /**
  * RGB SpringGreen Color instance
  *
  * @category RGB instances
  */
-export const rgbSpringGreen: Rgb.Type = Rgb.makeShort('SpringGreen', 0, 255, 127);
+export const rgbSpringGreen: Rgb.Type = Rgb.makeShort("SpringGreen", 0, 255, 127);
 /**
  * RGB SteelBlue Color instance
  *
  * @category RGB instances
  */
-export const rgbSteelBlue: Rgb.Type = Rgb.makeShort('SteelBlue', 70, 130, 180);
+export const rgbSteelBlue: Rgb.Type = Rgb.makeShort("SteelBlue", 70, 130, 180);
 /**
  * RGB Tan Color instance
  *
  * @category RGB instances
  */
-export const rgbTan: Rgb.Type = Rgb.makeShort('Tan', 210, 180, 140);
+export const rgbTan: Rgb.Type = Rgb.makeShort("Tan", 210, 180, 140);
 /**
  * RGB Teal Color instance
  *
  * @category RGB instances
  */
-export const rgbTeal: Rgb.Type = Rgb.makeShort('Teal', 0, 128, 128);
+export const rgbTeal: Rgb.Type = Rgb.makeShort("Teal", 0, 128, 128);
 /**
  * RGB Thistle Color instance
  *
  * @category RGB instances
  */
-export const rgbThistle: Rgb.Type = Rgb.makeShort('Thistle', 216, 191, 216);
+export const rgbThistle: Rgb.Type = Rgb.makeShort("Thistle", 216, 191, 216);
 /**
  * RGB Tomato Color instance
  *
  * @category RGB instances
  */
-export const rgbTomato: Rgb.Type = Rgb.makeShort('Tomato', 255, 99, 71);
+export const rgbTomato: Rgb.Type = Rgb.makeShort("Tomato", 255, 99, 71);
 /**
  * RGB Turquoise Color instance
  *
  * @category RGB instances
  */
-export const rgbTurquoise: Rgb.Type = Rgb.makeShort('Turquoise', 64, 224, 208);
+export const rgbTurquoise: Rgb.Type = Rgb.makeShort("Turquoise", 64, 224, 208);
 /**
  * RGB Violet Color instance
  *
  * @category RGB instances
  */
-export const rgbViolet: Rgb.Type = Rgb.makeShort('Violet', 238, 130, 238);
+export const rgbViolet: Rgb.Type = Rgb.makeShort("Violet", 238, 130, 238);
 /**
  * RGB Wheat Color instance
  *
  * @category RGB instances
  */
-export const rgbWheat: Rgb.Type = Rgb.makeShort('Wheat', 245, 222, 179);
+export const rgbWheat: Rgb.Type = Rgb.makeShort("Wheat", 245, 222, 179);
 /**
  * RGB White Color instance
  *
  * @category RGB instances
  */
-export const rgbWhite: Rgb.Type = Rgb.makeShort('White', 255, 255, 255);
+export const rgbWhite: Rgb.Type = Rgb.makeShort("White", 255, 255, 255);
 /**
  * RGB WhiteSmoke Color instance
  *
  * @category RGB instances
  */
-export const rgbWhiteSmoke: Rgb.Type = Rgb.makeShort('WhiteSmoke', 245, 245, 245);
+export const rgbWhiteSmoke: Rgb.Type = Rgb.makeShort("WhiteSmoke", 245, 245, 245);
 /**
  * RGB Yellow Color instance
  *
  * @category RGB instances
  */
-export const rgbYellow: Rgb.Type = Rgb.makeShort('Yellow', 255, 255, 0);
+export const rgbYellow: Rgb.Type = Rgb.makeShort("Yellow", 255, 255, 0);
 /**
  * RGB YellowGreen Color instance
  *
  * @category RGB instances
  */
-export const rgbYellowGreen: Rgb.Type = Rgb.makeShort('YellowGreen', 154, 205, 50);
+export const rgbYellowGreen: Rgb.Type = Rgb.makeShort("YellowGreen", 154, 205, 50);

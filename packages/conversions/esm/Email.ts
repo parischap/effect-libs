@@ -4,15 +4,15 @@
  * you are not familiar with this concept.
  */
 
-import { MString, MTypes } from '@parischap/effect-lib';
-import { Brand, Either, Option, Schema } from 'effect';
+import { MString, MTypes } from "@parischap/effect-lib";
+import { Brand, Either, Option, Schema } from "effect";
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/conversions/Email/';
+export const moduleTag = "@parischap/conversions/Email/";
 
 /**
  * Module TypeId

@@ -1,7 +1,7 @@
 /** A simple extension to the Effect Number module */
-import { BigDecimal, BigInt, Brand, Either, flow, Function, Option, pipe, Predicate } from 'effect';
-import * as MBigInt from './BigInt.js';
-import * as MTypes from './types.js';
+import { BigDecimal, BigInt, Brand, Either, flow, Function, Option, pipe, Predicate } from "effect";
+import * as MBigInt from "./BigInt.js";
+import * as MTypes from "./types.js";
 
 /** Maximum safe integer in JavaScript (2^53 – 1). */
 export const MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER;

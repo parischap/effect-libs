@@ -1,47 +1,47 @@
-import * as TestUtils from '@parischap/configs/TestUtils';
-import { CVSemVer } from '@parischap/conversions';
-import { describe, it } from 'vitest';
+import * as TestUtils from "@parischap/configs/TestUtils";
+import { CVSemVer } from "@parischap/conversions";
+import { describe, it } from "vitest";
 
-describe('CVSemVer', () => {
-  const notPassing = 'foo';
-  const passing = '1.0.1' as CVSemVer.Type;
+describe("CVSemVer", () => {
+  const notPassing = "foo";
+  const passing = "1.0.1" as CVSemVer.Type;
 
-  it('moduleTag', () => {
+  it("moduleTag", () => {
     TestUtils.assertSome(TestUtils.moduleTagFromTestFilePath(__filename), CVSemVer.moduleTag);
   });
 
-  describe('unsafeFromString', () => {
-    it('Not passing', () => {
+  describe("unsafeFromString", () => {
+    it("Not passing", () => {
       TestUtils.doesNotThrow(() => CVSemVer.unsafeFromString(notPassing));
     });
-    it('Passing', () => {
+    it("Passing", () => {
       TestUtils.strictEqual(CVSemVer.unsafeFromString(passing), passing);
     });
   });
 
-  describe('fromStringOption', () => {
-    it('Not passing', () => {
+  describe("fromStringOption", () => {
+    it("Not passing", () => {
       TestUtils.assertNone(CVSemVer.fromStringOption(notPassing));
     });
-    it('Passing', () => {
+    it("Passing", () => {
       TestUtils.assertSome(CVSemVer.fromStringOption(passing), passing);
     });
   });
 
-  describe('fromString', () => {
-    it('Not passing', () => {
+  describe("fromString", () => {
+    it("Not passing", () => {
       TestUtils.assertLeft(CVSemVer.fromString(notPassing));
     });
-    it('Passing', () => {
+    it("Passing", () => {
       TestUtils.assertRight(CVSemVer.fromString(passing), passing);
     });
   });
 
-  describe('fromStringOrThrow', () => {
-    it('Not passing', () => {
+  describe("fromStringOrThrow", () => {
+    it("Not passing", () => {
       TestUtils.throws(() => CVSemVer.fromStringOrThrow(notPassing));
     });
-    it('Passing', () => {
+    it("Passing", () => {
       TestUtils.strictEqual(CVSemVer.fromStringOrThrow(passing), passing);
     });
   });

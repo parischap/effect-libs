@@ -30,7 +30,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 'latest'
+          node-version: "latest"
           cache: pnpm
           registry-url: https://registry.npmjs.org/
       - name: Get latest release when entering by workflow_dispatch
@@ -68,7 +68,7 @@ jobs:
         id: update-package-json
         uses: jaywcjlove/github-action-package@main
         with:
-          path: '${{steps.get-repo.outputs.repo}}/package.json'
+          path: "${{steps.get-repo.outputs.repo}}/package.json"
           version: ${{steps.get-version.outputs.version}}
       - name: Build and publish
         working-directory: ${{steps.get-repo.outputs.repo}}

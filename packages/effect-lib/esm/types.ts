@@ -1,7 +1,7 @@
 /** A simple type module */
 /* eslint-disable @typescript-eslint/no-explicit-any -- Unknown or never don't work as well as any when it comes to inference because any is both at the top and bottom of the tree type */
 
-import { Array, Function, Option, pipe, Predicate } from 'effect';
+import { Array, Function, Option, pipe, Predicate } from "effect";
 
 /**
  * Type that represents a non-null object as defined in javascript. It includes records (in their
@@ -232,14 +232,14 @@ export type WithRequired<X, field extends string | symbol> = {
  *
  * @category Utility types
  */
-export type Tuple<T, N extends number> =
-  N extends N ?
-    number extends N ?
-      ReadonlyArray<T>
+export type Tuple<T, N extends number> = N extends N
+  ? number extends N
+    ? ReadonlyArray<T>
     : _TupleOf<T, N, readonly []>
   : never;
-type _TupleOf<T, N extends number, R extends ReadonlyArray<unknown>> =
-  R['length'] extends N ? R : _TupleOf<T, N, readonly [T, ...R]>;
+type _TupleOf<T, N extends number, R extends ReadonlyArray<unknown>> = R["length"] extends N
+  ? R
+  : _TupleOf<T, N, readonly [T, ...R]>;
 
 /**
  * Utility type that generates a range of numeric literal types
@@ -268,7 +268,7 @@ export type MapToTarget<T, Target> = {
 };
 
 /** Keys that will always be on the prototype: symbolic keys, toString, toJSON and pipe */
-type BaseProtoKeys = symbol | 'toString' | 'toJSON' | 'pipe';
+type BaseProtoKeys = symbol | "toString" | "toJSON" | "pipe";
 
 /**
  * Utility type that removes all non-data from a type.
@@ -319,19 +319,16 @@ export const objectFromDataAndProto = <P extends NonPrimitive, D extends NonPrim
  *
  * @category Utility types
  */
-export type ToKeyIntersection<T> =
-  [
-    {
-      [K in keyof T]: (x: T[K]) => void;
-    },
-  ] extends (
-    [
-      {
-        [K: number]: (x: infer I) => void;
-      },
-    ]
-  ) ?
-    I
+export type ToKeyIntersection<T> = [
+  {
+    [K in keyof T]: (x: T[K]) => void;
+  },
+] extends [
+  {
+    [K: number]: (x: infer I) => void;
+  },
+]
+  ? I
   : never;
 
 /**
@@ -342,10 +339,7 @@ export type ToKeyIntersection<T> =
  * @category Utility types
  */
 
-export type IntersectAndSimplify<T, U> =
-  [T] extends [U] ? T
-  : [U] extends [T] ? U
-  : T & U;
+export type IntersectAndSimplify<T, U> = [T] extends [U] ? T : [U] extends [T] ? U : T & U;
 
 /**
  * From `unknown` to `Array`. Not based on Array.isArray from a Typescript perspective because it is
@@ -355,9 +349,7 @@ export type IntersectAndSimplify<T, U> =
  */
 export const isArray = <T>(arg: T): arg is ArrayType<T> => Array.isArray(arg);
 type ArrayType<T> = Extract<
-  true extends T & false ? AnyArray
-  : T extends AnyReadonlyArray ? T
-  : Array<unknown>,
+  true extends T & false ? AnyArray : T extends AnyReadonlyArray ? T : Array<unknown>,
   T
 >;
 
@@ -366,35 +358,35 @@ type ArrayType<T> = Extract<
  *
  * @category Guards
  */
-export const isString = (input: unknown): input is string => typeof input === 'string';
+export const isString = (input: unknown): input is string => typeof input === "string";
 
 /**
  * From `unknown` to `number`
  *
  * @category Guards
  */
-export const isNumber = (input: unknown): input is number => typeof input === 'number';
+export const isNumber = (input: unknown): input is number => typeof input === "number";
 
 /**
  * From `unknown` to `bigint`
  *
  * @category Guards
  */
-export const isBigInt = (input: unknown): input is bigint => typeof input === 'bigint';
+export const isBigInt = (input: unknown): input is bigint => typeof input === "bigint";
 
 /**
  * From `unknown` to `boolean`
  *
  * @category Guards
  */
-export const isBoolean = (input: unknown): input is boolean => typeof input === 'boolean';
+export const isBoolean = (input: unknown): input is boolean => typeof input === "boolean";
 
 /**
  * From `unknown` to `symbol`
  *
  * @category Guards
  */
-export const isSymbol = (input: unknown): input is symbol => typeof input === 'symbol';
+export const isSymbol = (input: unknown): input is symbol => typeof input === "symbol";
 
 /**
  * From `unknown` to `undefined`
@@ -447,7 +439,7 @@ export const isNotNullable = <A>(input: A): input is NonNullable<A> =>
  */
 // The `& NonPrimitive` part is useful in case A is `unknown`. A JavaScript object only has string and symbolic keys. So this needs not be checked.
 export const isNonPrimitive = <A>(input: A): input is Exclude<A, Primitive> & NonPrimitive =>
-  input !== null && (typeof input === 'object' || typeof input === 'function');
+  input !== null && (typeof input === "object" || typeof input === "function");
 
 /**
  * From `unknown` to `Primitive`
@@ -463,7 +455,7 @@ export const isPrimitive = <A>(input: A): input is Exclude<A, NonPrimitive> & Pr
  *
  * @category Guards
  */
-export const isFunction = (u: unknown): u is AnyFunction => typeof u === 'function';
+export const isFunction = (u: unknown): u is AnyFunction => typeof u === "function";
 
 /**
  * From a function with many arguments to a function with a single argument
@@ -612,26 +604,22 @@ export namespace Category {
    */
   export const fromValue = (u: unknown): Category => {
     switch (typeof u) {
-      case 'string':
+      case "string":
         return Category.String;
-      case 'number':
+      case "number":
         return Category.Number;
-      case 'bigint':
+      case "bigint":
         return Category.Bigint;
-      case 'boolean':
+      case "boolean":
         return Category.Boolean;
-      case 'symbol':
+      case "symbol":
         return Category.Symbol;
-      case 'undefined':
+      case "undefined":
         return Category.Undefined;
-      case 'function':
+      case "function":
         return Category.Function;
-      case 'object':
-        return (
-          u === null ? Category.Null
-          : Array.isArray(u) ? Category.Array
-          : Category.Record
-        );
+      case "object":
+        return u === null ? Category.Null : Array.isArray(u) ? Category.Array : Category.Record;
       default:
         return Function.absurd(u as never);
     }

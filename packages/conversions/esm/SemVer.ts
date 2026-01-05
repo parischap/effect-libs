@@ -5,15 +5,15 @@
  * concept.
  */
 
-import { MString, MTypes } from '@parischap/effect-lib';
-import { Brand, Either, Option, Schema } from 'effect';
+import { MString, MTypes } from "@parischap/effect-lib";
+import { Brand, Either, Option, Schema } from "effect";
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/conversions/SemVer/';
+export const moduleTag = "@parischap/conversions/SemVer/";
 
 /**
  * Module TypeId

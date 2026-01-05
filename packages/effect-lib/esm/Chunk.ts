@@ -1,6 +1,6 @@
 /** A simple extension to the Effect Chunk module */
 
-import { Boolean, Chunk, Option, Predicate, pipe } from 'effect';
+import { Boolean, Chunk, Option, Predicate, pipe } from "effect";
 
 /**
  * Returns true if the length of `self` is `l`

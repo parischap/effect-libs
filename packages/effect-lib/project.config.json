@@ -1,7 +1,7 @@
 {
   "description": "An extension to the official Effect library",
   "environment": "Plain",
-  "buildMethod": "Transpile",
+  "buildMethod": "NoBundling",
   "isPublished": true,
   "hasDocGen": true,
   "keywords": [],

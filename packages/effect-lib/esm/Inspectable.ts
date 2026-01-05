@@ -1,21 +1,21 @@
 /** A simple extension to the Effect Inspectable module */
 
-import { Inspectable, Option, pipe } from 'effect';
-import * as MRecord from './Record.js';
+import { Inspectable, Option, pipe } from "effect";
+import * as MRecord from "./Record.js";
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/effect-lib/Inspectable/';
+export const moduleTag = "@parischap/effect-lib/Inspectable/";
 
 /**
  * Symbol used to define a special prototype function that must return an id for the object
  *
  * @category Models
  */
-export const IdSymbol: unique symbol = Symbol.for(moduleTag + 'IdSymbol/');
+export const IdSymbol: unique symbol = Symbol.for(moduleTag + "IdSymbol/");
 
 /**
  * Interface that an object should implement when an id can be used to represent it

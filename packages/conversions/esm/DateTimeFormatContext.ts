@@ -5,38 +5,38 @@
  */
 
 import {
-    MArray,
-    MInputError,
-    MInspectable,
-    MPipeable,
-    MPredicate,
-    MString,
-    MTypes,
-} from '@parischap/effect-lib';
+  MArray,
+  MInputError,
+  MInspectable,
+  MPipeable,
+  MPredicate,
+  MString,
+  MTypes,
+} from "@parischap/effect-lib";
 import {
-    Array,
-    Either,
-    flow,
-    HashMap,
-    Number,
-    Option,
-    pipe,
-    Pipeable,
-    Predicate,
-    Struct,
-    Tuple,
-} from 'effect';
-import * as CVDateTime from './DateTime.js';
-import * as CVNumberBase10Format from './NumberBase10Format.js';
-import * as CVReal from './Real.js';
-import * as CVTemplatePlaceholder from './TemplatePlaceholder.js';
+  Array,
+  Either,
+  flow,
+  HashMap,
+  Number,
+  Option,
+  pipe,
+  Pipeable,
+  Predicate,
+  Struct,
+  Tuple,
+} from "effect";
+import * as CVDateTime from "./DateTime.js";
+import * as CVNumberBase10Format from "./NumberBase10Format.js";
+import * as CVReal from "./Real.js";
+import * as CVTemplatePlaceholder from "./TemplatePlaceholder.js";
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/conversions/DateTimeFormatTemplate/';
+export const moduleTag = "@parischap/conversions/DateTimeFormatTemplate/";
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
@@ -47,77 +47,77 @@ type _TypeId = typeof _TypeId;
  */
 export type Token =
   /* Gregorian year (ex: 2005) */
-  | 'y'
+  | "y"
   /* Gregorian year on 2 digits left-padded with 0's corresponding to years 2000-2099 (ex: 05 for 2005) */
-  | 'yy'
+  | "yy"
   /* Gregorian year on 4 digits left-padded with 0's (ex: 2005, 0965) */
-  | 'yyyy'
+  | "yyyy"
   /* Iso year (ex: 2005) */
-  | 'R'
+  | "R"
   /* Iso year on 2 digits left-padded with 0's corresponding to years 2000-2099 (ex: 05 for 2005) */
-  | 'RR'
+  | "RR"
   /* Iso year on 4 digits left-padded with 0's (ex: 2005, 0965)*/
-  | 'RRRR'
+  | "RRRR"
   /* Month (ex: 6) */
-  | 'M'
+  | "M"
   /* Month on 2 digits left-padded with 0's (ex: 06) */
-  | 'MM'
+  | "MM"
   /* Short month name (ex: Jun) */
-  | 'MMM'
+  | "MMM"
   /* Long month name (ex: June) */
-  | 'MMMM'
+  | "MMMM"
   /* IsoWeek (ex: 6) */
-  | 'I'
+  | "I"
   /* IsoWeek (ex: 06) */
-  | 'II'
+  | "II"
   /* Day of month (ex: 5) */
-  | 'd'
+  | "d"
   /* Day of month on 2 digits left-padded with 0's (ex: 05) */
-  | 'dd'
+  | "dd"
   /* Day of year (ex: 97) */
-  | 'D'
+  | "D"
   /* Day of year on 3 digits left-padded with 0's (ex: 097) */
-  | 'DDD'
+  | "DDD"
   /* Weekday (ex: 1 for monday, 7 for sunday) */
-  | 'i'
+  | "i"
   /* Short weekday name (ex: Mon) */
-  | 'iii'
+  | "iii"
   /* Long weekday name (ex: Monday) */
-  | 'iiii'
+  | "iiii"
   /* Meridiem (ex: 'AM' for 0, 'PM' for 12) */
-  | 'a'
+  | "a"
   /* Hour in the range 0..23 (ex:5, 14) */
-  | 'H'
+  | "H"
   /* Hour on 2 digits in the range 0..23 left-padded with 0's (ex:05, 14) */
-  | 'HH'
+  | "HH"
   /* Hour in the range 0..11 (ex:5, 2) */
-  | 'K'
+  | "K"
   /* Hour on 2 digits in the range 0..11 left-padded with 0's (ex:05, 02) */
-  | 'KK'
+  | "KK"
   /* Minute (ex: 5) */
-  | 'm'
+  | "m"
   /* Minute on 2 digits left-padded with 0's (ex: 05) */
-  | 'mm'
+  | "mm"
   /* Second (ex: 5) */
-  | 's'
+  | "s"
   /* Second on 2 digits left-padded with 0's (ex: 05) */
-  | 'ss'
+  | "ss"
   /* Millisecond (ex: 5) */
-  | 'S'
+  | "S"
   /* Millisecond on 3 digits left-padded with 0's (ex: 005) */
-  | 'SSS'
+  | "SSS"
   /* Hour part of the timezone offset (ex: 5) */
-  | 'zH'
+  | "zH"
   /* Hour part of the timezone offset on 2 digits left-padded with 0's (ex: 05) */
-  | 'zHzH'
+  | "zHzH"
   /* Minute part of the timezone offset (ex: 5) */
-  | 'zm'
+  | "zm"
   /* Minute part of the timezone offset on 2 digits left-padded with 0's (ex: 05) */
-  | 'zmzm'
+  | "zmzm"
   /* Second part of the timezone offset (ex: 5) */
-  | 'zs'
+  | "zs"
   /* Second part of the timezone offset on 2 digits left-padded with 0's (ex: 05) */
-  | 'zszs';
+  | "zszs";
 
 namespace TokenMap {
   /**
@@ -125,8 +125,10 @@ namespace TokenMap {
    *
    * @category Models
    */
-  export interface Type
-    extends HashMap.HashMap<Token, CVTemplatePlaceholder.Type<string, CVReal.Type>> {}
+  export interface Type extends HashMap.HashMap<
+    Token,
+    CVTemplatePlaceholder.Type<string, CVReal.Type>
+  > {}
 }
 
 /**
@@ -230,19 +232,19 @@ export const fromNames = ({
 }): Type => {
   const integer = CVNumberBase10Format.integer;
   const signedInteger = pipe(integer, CVNumberBase10Format.withSignDisplay);
-  const params = { fillChar: '0', numberBase10Format: integer };
+  const params = { fillChar: "0", numberBase10Format: integer };
 
   const templatepartEntries: ReadonlyArray<
     readonly [Token, CVTemplatePlaceholder.Type<string, CVReal.Type>]
   > = [
-    ['y', CVTemplatePlaceholder.real({ ...params, name: 'year' })],
+    ["y", CVTemplatePlaceholder.real({ ...params, name: "year" })],
     [
-      'yy',
+      "yy",
       pipe(
-        CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'year', length: 2 }),
+        CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: "year", length: 2 }),
         CVTemplatePlaceholder.modify({
-          descriptorMapper: MString.append(' between 2000 and 2099 included'),
-          postParser: function (this: CVTemplatePlaceholder.Type<'year', CVReal.Type>, value) {
+          descriptorMapper: MString.append(" between 2000 and 2099 included"),
+          postParser: function (this: CVTemplatePlaceholder.Type<"year", CVReal.Type>, value) {
             return pipe(
               value,
               Number.sum(2000),
@@ -257,7 +259,7 @@ export const fromNames = ({
               Either.map(CVReal.unsafeFromNumber),
             );
           },
-          preFormatter: function (this: CVTemplatePlaceholder.Type<'year', CVReal.Type>, value) {
+          preFormatter: function (this: CVTemplatePlaceholder.Type<"year", CVReal.Type>, value) {
             return pipe(
               value,
               MInputError.assertInRange({
@@ -274,15 +276,15 @@ export const fromNames = ({
         }),
       ),
     ],
-    ['yyyy', CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'year', length: 4 })],
-    ['R', CVTemplatePlaceholder.real({ ...params, name: 'isoYear' })],
+    ["yyyy", CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: "year", length: 4 })],
+    ["R", CVTemplatePlaceholder.real({ ...params, name: "isoYear" })],
     [
-      'RR',
+      "RR",
       pipe(
-        CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'isoYear', length: 2 }),
+        CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: "isoYear", length: 2 }),
         CVTemplatePlaceholder.modify({
-          descriptorMapper: MString.append(' between 2000 and 2099 included'),
-          postParser: function (this: CVTemplatePlaceholder.Type<'isoYear', CVReal.Type>, value) {
+          descriptorMapper: MString.append(" between 2000 and 2099 included"),
+          postParser: function (this: CVTemplatePlaceholder.Type<"isoYear", CVReal.Type>, value) {
             return pipe(
               value,
               Number.sum(2000),
@@ -297,7 +299,7 @@ export const fromNames = ({
               Either.map(CVReal.unsafeFromNumber),
             );
           },
-          preFormatter: function (this: CVTemplatePlaceholder.Type<'isoYear', CVReal.Type>, value) {
+          preFormatter: function (this: CVTemplatePlaceholder.Type<"isoYear", CVReal.Type>, value) {
             return pipe(
               value,
               MInputError.assertInRange({
@@ -314,13 +316,13 @@ export const fromNames = ({
         }),
       ),
     ],
-    ['RRRR', CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'isoYear', length: 4 })],
-    ['M', CVTemplatePlaceholder.real({ ...params, name: 'month' })],
-    ['MM', CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'month', length: 2 })],
+    ["RRRR", CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: "isoYear", length: 4 })],
+    ["M", CVTemplatePlaceholder.real({ ...params, name: "month" })],
+    ["MM", CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: "month", length: 2 })],
     [
-      'MMM',
+      "MMM",
       CVTemplatePlaceholder.realMappedLiterals({
-        name: 'month',
+        name: "month",
         keyValuePairs: pipe(
           shortMonthNames,
           Array.map((name, i) => Tuple.make(name, CVReal.unsafeFromNumber(i + 1))),
@@ -328,9 +330,9 @@ export const fromNames = ({
       }),
     ],
     [
-      'MMMM',
+      "MMMM",
       CVTemplatePlaceholder.realMappedLiterals({
-        name: 'month',
+        name: "month",
         keyValuePairs: pipe(
           longMonthNames,
           Array.map((name, i) => Tuple.make(name, CVReal.unsafeFromNumber(i + 1))),
@@ -338,22 +340,22 @@ export const fromNames = ({
       }),
     ],
     [
-      'I',
+      "I",
       CVTemplatePlaceholder.real({
-        name: 'isoWeek',
+        name: "isoWeek",
         numberBase10Format: CVNumberBase10Format.integer,
       }),
     ],
-    ['II', CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'isoWeek', length: 2 })],
-    ['d', CVTemplatePlaceholder.real({ ...params, name: 'monthDay' })],
-    ['dd', CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'monthDay', length: 2 })],
-    ['D', CVTemplatePlaceholder.real({ ...params, name: 'ordinalDay' })],
-    ['DDD', CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'ordinalDay', length: 3 })],
-    ['i', CVTemplatePlaceholder.real({ ...params, name: 'weekday' })],
+    ["II", CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: "isoWeek", length: 2 })],
+    ["d", CVTemplatePlaceholder.real({ ...params, name: "monthDay" })],
+    ["dd", CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: "monthDay", length: 2 })],
+    ["D", CVTemplatePlaceholder.real({ ...params, name: "ordinalDay" })],
+    ["DDD", CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: "ordinalDay", length: 3 })],
+    ["i", CVTemplatePlaceholder.real({ ...params, name: "weekday" })],
     [
-      'iii',
+      "iii",
       CVTemplatePlaceholder.realMappedLiterals({
-        name: 'weekday',
+        name: "weekday",
         keyValuePairs: pipe(
           shortWeekdayNames,
           Array.map((name, i) => Tuple.make(name, CVReal.unsafeFromNumber(i + 1))),
@@ -361,9 +363,9 @@ export const fromNames = ({
       }),
     ],
     [
-      'iiii',
+      "iiii",
       CVTemplatePlaceholder.realMappedLiterals({
-        name: 'weekday',
+        name: "weekday",
         keyValuePairs: pipe(
           longWeekdayNames,
           Array.map((name, i) => Tuple.make(name, CVReal.unsafeFromNumber(i + 1))),
@@ -371,46 +373,46 @@ export const fromNames = ({
       }),
     ],
     [
-      'a',
+      "a",
       CVTemplatePlaceholder.realMappedLiterals({
-        name: 'meridiem',
+        name: "meridiem",
         keyValuePairs: pipe(
           dayPeriodNames,
           Array.map((name, i) => Tuple.make(name, CVReal.unsafeFromNumber(i * 12))),
         ),
       }),
     ],
-    ['H', CVTemplatePlaceholder.real({ ...params, name: 'hour23' })],
-    ['HH', CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'hour23', length: 2 })],
-    ['K', CVTemplatePlaceholder.real({ ...params, name: 'hour11' })],
-    ['KK', CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'hour11', length: 2 })],
-    ['m', CVTemplatePlaceholder.real({ ...params, name: 'minute' })],
-    ['mm', CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'minute', length: 2 })],
-    ['s', CVTemplatePlaceholder.real({ ...params, name: 'second' })],
-    ['ss', CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'second', length: 2 })],
-    ['S', CVTemplatePlaceholder.real({ ...params, name: 'millisecond' })],
-    ['SSS', CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'millisecond', length: 3 })],
+    ["H", CVTemplatePlaceholder.real({ ...params, name: "hour23" })],
+    ["HH", CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: "hour23", length: 2 })],
+    ["K", CVTemplatePlaceholder.real({ ...params, name: "hour11" })],
+    ["KK", CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: "hour11", length: 2 })],
+    ["m", CVTemplatePlaceholder.real({ ...params, name: "minute" })],
+    ["mm", CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: "minute", length: 2 })],
+    ["s", CVTemplatePlaceholder.real({ ...params, name: "second" })],
+    ["ss", CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: "second", length: 2 })],
+    ["S", CVTemplatePlaceholder.real({ ...params, name: "millisecond" })],
+    ["SSS", CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: "millisecond", length: 3 })],
     [
-      'zH',
+      "zH",
       CVTemplatePlaceholder.real({
         ...params,
-        name: 'zoneHour',
+        name: "zoneHour",
         numberBase10Format: signedInteger,
       }),
     ],
     [
-      'zHzH',
+      "zHzH",
       CVTemplatePlaceholder.fixedLengthToReal({
         ...params,
-        name: 'zoneHour',
+        name: "zoneHour",
         length: 3,
         numberBase10Format: signedInteger,
       }),
     ],
-    ['zm', CVTemplatePlaceholder.real({ ...params, name: 'zoneMinute' })],
-    ['zmzm', CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'zoneMinute', length: 2 })],
-    ['zs', CVTemplatePlaceholder.real({ ...params, name: 'zoneSecond' })],
-    ['zszs', CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'zoneSecond', length: 2 })],
+    ["zm", CVTemplatePlaceholder.real({ ...params, name: "zoneMinute" })],
+    ["zmzm", CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: "zoneMinute", length: 2 })],
+    ["zs", CVTemplatePlaceholder.real({ ...params, name: "zoneSecond" })],
+    ["zszs", CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: "zoneSecond", length: 2 })],
   ];
 
   return _make({
@@ -425,52 +427,52 @@ export const fromNames = ({
  * @category Instances
  */
 export const enGB: Type = fromNames({
-  name: 'en-GB',
-  longWeekdayNames: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-  shortWeekdayNames: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+  name: "en-GB",
+  longWeekdayNames: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+  shortWeekdayNames: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
   longMonthNames: [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ],
   shortMonthNames: [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
   ],
-  dayPeriodNames: ['AM', 'PM'],
+  dayPeriodNames: ["AM", "PM"],
 });
 
 const _safeDateTimeFormat = Option.liftThrowable(Intl.DateTimeFormat);
 
 const _extractType = (
-  type: 'weekday' | 'month',
+  type: "weekday" | "month",
 ): MTypes.OneArgFunction<ReadonlyArray<Intl.DateTimeFormatPart>, Option.Option<string>> =>
   flow(
-    Array.findFirst(flow(Struct.get('type'), MPredicate.strictEquals(type))),
-    Option.map(Struct.get('value')),
+    Array.findFirst(flow(Struct.get("type"), MPredicate.strictEquals(type))),
+    Option.map(Struct.get("value")),
   );
 
-const _extractWeekday = _extractType('weekday');
-const _extractMonth = _extractType('month');
+const _extractWeekday = _extractType("weekday");
+const _extractMonth = _extractType("month");
 
 /**
  * Tries to build a `CVDateTimeFormatContext` from locale `locale`. Returns a `Some` if successful.
@@ -481,9 +483,9 @@ const _extractMonth = _extractType('month');
 export const fromLocale = (locale: string): Option.Option<Type> =>
   Option.gen(function* () {
     const longDateTimeFormatInLocale = yield* _safeDateTimeFormat(locale, {
-      timeZone: 'UTC',
-      weekday: 'long',
-      month: 'long',
+      timeZone: "UTC",
+      weekday: "long",
+      month: "long",
     });
 
     const toLongParts = Intl.DateTimeFormat.prototype.formatToParts.bind(
@@ -491,9 +493,9 @@ export const fromLocale = (locale: string): Option.Option<Type> =>
     );
 
     const shortDateTimeFormatInLocale = yield* _safeDateTimeFormat(locale, {
-      timeZone: 'UTC',
-      weekday: 'short',
-      month: 'short',
+      timeZone: "UTC",
+      weekday: "short",
+      month: "short",
     });
 
     const toShortParts = Intl.DateTimeFormat.prototype.formatToParts.bind(
@@ -520,7 +522,7 @@ export const fromLocale = (locale: string): Option.Option<Type> =>
       MArray.mapUnlessNone(flow(toShortParts, _extractMonth)),
     )) as unknown as MonthNames;
 
-    const dayPeriodNames: DayPeriodNames = ['am', 'pm'];
+    const dayPeriodNames: DayPeriodNames = ["am", "pm"];
 
     return fromNames({
       name: locale,
@@ -552,11 +554,11 @@ export const fromLocaleOrThrow = (locale: string): Type =>
  *
  * @category Destructors
  */
-export const name: MTypes.OneArgFunction<Type, string> = Struct.get('name');
+export const name: MTypes.OneArgFunction<Type, string> = Struct.get("name");
 
 /**
  * Returns the `tokenMap` property of `self`
  *
  * @category Destructors
  */
-export const tokenMap: MTypes.OneArgFunction<Type, TokenMap.Type> = Struct.get('tokenMap');
+export const tokenMap: MTypes.OneArgFunction<Type, TokenMap.Type> = Struct.get("tokenMap");

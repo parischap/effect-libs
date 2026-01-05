@@ -3,7 +3,7 @@
  * formatting and parsing and implements new brands
  */
 
-import { MMatch, MTuple, MTypes } from '@parischap/effect-lib';
+import { MMatch, MTuple, MTypes } from "@parischap/effect-lib";
 import {
   Array,
   BigDecimal,
@@ -15,20 +15,20 @@ import {
   pipe,
   Record,
   Schema,
-} from 'effect';
-import * as CVDateTime from './DateTime.js';
-import * as CVDateTimeFormat from './DateTimeFormat.js';
-import * as CVEmail from './Email.js';
-import * as CVInteger from './Integer.js';
-import * as CVNumberBase10Format from './NumberBase10Format.js';
-import * as CVPositiveInteger from './PositiveInteger.js';
-import * as CVPositiveReal from './PositiveReal.js';
-import * as CVReal from './Real.js';
-import * as CVSemVer from './SemVer.js';
-import * as CVTemplate from './Template.js';
-import * as CVTemplatePart from './TemplatePart.js';
-import * as CVTemplateParts from './TemplateParts.js';
-import * as CVTemplatePlaceholder from './TemplatePlaceholder.js';
+} from "effect";
+import * as CVDateTime from "./DateTime.js";
+import * as CVDateTimeFormat from "./DateTimeFormat.js";
+import * as CVEmail from "./Email.js";
+import * as CVInteger from "./Integer.js";
+import * as CVNumberBase10Format from "./NumberBase10Format.js";
+import * as CVPositiveInteger from "./PositiveInteger.js";
+import * as CVPositiveReal from "./PositiveReal.js";
+import * as CVReal from "./Real.js";
+import * as CVSemVer from "./SemVer.js";
+import * as CVTemplate from "./Template.js";
+import * as CVTemplatePart from "./TemplatePart.js";
+import * as CVTemplateParts from "./TemplateParts.js";
+import * as CVTemplatePlaceholder from "./TemplatePlaceholder.js";
 
 /**
  * A `Schema` that transforms a string into a `CVEmail`
@@ -92,7 +92,7 @@ export const Real = (format: CVNumberBase10Format.Type): Schema.Schema<CVReal.Ty
             new ParseResult.Type(
               ast,
               input,
-              'Failed to convert string to a(n) ' + CVNumberBase10Format.toDescription(format),
+              "Failed to convert string to a(n) " + CVNumberBase10Format.toDescription(format),
             ),
         ),
       ),
@@ -163,7 +163,7 @@ const BigDecimalFromString = (
             new ParseResult.Type(
               ast,
               input,
-              'Failed to convert string to a(n) ' + CVNumberBase10Format.toDescription(format),
+              "Failed to convert string to a(n) " + CVNumberBase10Format.toDescription(format),
             ),
           ),
         ),
@@ -283,10 +283,11 @@ export const Template = <const PS extends CVTemplateParts.Type>(
   template: CVTemplate.Type<PS>,
 ): Schema.Schema<
   {
-    readonly [k in keyof MTypes.ArrayKeys<PS> as PS[k] extends CVTemplatePlaceholder.Any ?
-      CVTemplatePlaceholder.ExtractName<PS[k]>
-    : never]: PS[k] extends CVTemplatePlaceholder.Any ? CVTemplatePlaceholder.ExtractType<PS[k]>
-    : never;
+    readonly [k in keyof MTypes.ArrayKeys<PS> as PS[k] extends CVTemplatePlaceholder.Any
+      ? CVTemplatePlaceholder.ExtractName<PS[k]>
+      : never]: PS[k] extends CVTemplatePlaceholder.Any
+      ? CVTemplatePlaceholder.ExtractType<PS[k]>
+      : never;
   },
   string
 > => {

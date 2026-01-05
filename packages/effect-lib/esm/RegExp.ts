@@ -1,10 +1,10 @@
 /** Very simple regular expression module */
 
-import { Array, flow, Option, pipe, Tuple } from 'effect';
-import * as MArray from './Array.js';
-import * as MFunction from './Function.js';
-import * as MRegExpString from './RegExpString.js';
-import * as MTypes from './types.js';
+import { Array, flow, Option, pipe, Tuple } from "effect";
+import * as MArray from "./Array.js";
+import * as MFunction from "./Function.js";
+import * as MRegExpString from "./RegExpString.js";
+import * as MTypes from "./types.js";
 
 /**
  * Creates a RegExp from a string
@@ -46,7 +46,7 @@ export const matchAndGroups =
           Tuple.mapBoth({
             onFirst: MArray.unsafeGet(0),
             onSecond: flow(
-              Array.pad(capturingGroupNumber, ''),
+              Array.pad(capturingGroupNumber, ""),
               Array.map(
                 flow(
                   Option.liftPredicate(MTypes.isNotUndefined),
@@ -70,7 +70,7 @@ export const capturedGroups = <N extends number>(
 ): MTypes.OneArgFunction<RegExp, Option.Option<MTypes.Tuple<string, N>>> =>
   flow(matchAndGroups(s, capturingGroupNumber), Option.map(Tuple.getSecond));
 
-const _globalLineBreak: RegExp = new RegExp(MRegExpString.lineBreak, 'g');
+const _globalLineBreak: RegExp = new RegExp(MRegExpString.lineBreak, "g");
 /**
  * A regular expression representing a linebreak in all systems with the `g` flag.
  *

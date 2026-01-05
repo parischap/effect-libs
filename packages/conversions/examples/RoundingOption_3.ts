@@ -1,5 +1,5 @@
-import { CVRoundingMode, CVRoundingOption } from '@parischap/conversions';
-import { Equal } from 'effect';
+import { CVRoundingMode, CVRoundingOption } from "@parischap/conversions";
+import { Equal } from "effect";
 
 // Result: 'HalfExpandRounderWith2Precision'
 console.log(CVRoundingOption.halfExpand2);

@@ -3,9 +3,9 @@
  * the Palette module (see Palette.ts)
  */
 
-import { MTypes } from '@parischap/effect-lib';
-import { Array, flow } from 'effect';
-import * as ASStyle from './Style.js';
+import { MTypes } from "@parischap/effect-lib";
+import { Array, flow } from "effect";
+import * as ASStyle from "./Style.js";
 
 /**
  * Type that represents an array of Style's.
@@ -21,7 +21,7 @@ export type Type = MTypes.ReadonlyOverTwo<ASStyle.Type>;
  */
 export const toId: MTypes.OneArgFunction<Type, string> = flow(
   Array.map(ASStyle.toId),
-  Array.join('/'),
+  Array.join("/"),
 );
 
 /**

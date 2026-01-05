@@ -1,25 +1,25 @@
-import * as TestUtils from '@parischap/configs/TestUtils';
-import { MRecord, MTypes } from '@parischap/effect-lib';
-import { Option, pipe } from 'effect';
-import { describe, it } from 'vitest';
+import * as TestUtils from "@parischap/configs/TestUtils";
+import { MRecord, MTypes } from "@parischap/effect-lib";
+import { Option, pipe } from "effect";
+import { describe, it } from "vitest";
 
-describe('MRecord', () => {
-  describe('unsafeGet', () => {
-    it('Not passing', () => {
-      TestUtils.doesNotThrow(() => pipe({ a: 1, b: true }, MRecord.unsafeGet('z')));
+describe("MRecord", () => {
+  describe("unsafeGet", () => {
+    it("Not passing", () => {
+      TestUtils.doesNotThrow(() => pipe({ a: 1, b: true }, MRecord.unsafeGet("z")));
     });
-    it('Passing', () => {
-      TestUtils.strictEqual(pipe({ a: 1, b: true }, MRecord.unsafeGet('a')), 1);
+    it("Passing", () => {
+      TestUtils.strictEqual(pipe({ a: 1, b: true }, MRecord.unsafeGet("a")), 1);
     });
   });
 
-  describe('tryZeroParamFunction', () => {
-    it('Object with default prototype', () => {
+  describe("tryZeroParamFunction", () => {
+    it("Object with default prototype", () => {
       TestUtils.assertNone(
         pipe(
           { a: 5 },
           MRecord.tryZeroParamFunction({
-            functionName: 'toString',
+            functionName: "toString",
             /* eslint-disable-next-line @typescript-eslint/unbound-method */
             exception: Object.prototype.toString,
           }),
@@ -27,12 +27,12 @@ describe('MRecord', () => {
       );
     });
 
-    it('getDay on Date object', () => {
+    it("getDay on Date object", () => {
       TestUtils.assertSome(
         pipe(
           new Date(0),
           MRecord.tryZeroParamFunction({
-            functionName: 'getDay',
+            functionName: "getDay",
           }),
           Option.filter(MTypes.isNumber),
         ),
@@ -41,24 +41,24 @@ describe('MRecord', () => {
     });
   });
 
-  describe('tryZeroParamStringFunction', () => {
-    it('getDay on Date object', () => {
+  describe("tryZeroParamStringFunction", () => {
+    it("getDay on Date object", () => {
       TestUtils.assertNone(
         pipe(
           new Date(0),
           MRecord.tryZeroParamStringFunction({
-            functionName: 'getDay',
+            functionName: "getDay",
           }),
         ),
       );
     });
 
-    it('toString on Date object', () => {
+    it("toString on Date object", () => {
       TestUtils.assertSome(
         pipe(
           new Date(),
           MRecord.tryZeroParamStringFunction({
-            functionName: 'toString',
+            functionName: "toString",
             /* eslint-disable-next-line @typescript-eslint/unbound-method */
             exception: Object.prototype.toString,
           }),

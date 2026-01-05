@@ -1,5 +1,5 @@
-import { MString, MTypes } from '@parischap/effect-lib';
-import { Array, Effect, FiberId, List, LogLevel, Logger, Option, String, pipe } from 'effect';
+import { MString, MTypes } from "@parischap/effect-lib";
+import { Array, Effect, FiberId, List, LogLevel, Logger, Option, String, pipe } from "effect";
 
 //const moduleTag = '@parischap/effect-lib/Logger/';
 
@@ -52,7 +52,7 @@ export const live = ({
       try {
         const isString = MTypes.isString(message);
         // Don't show time and threadName if we print an empty message
-        if (isString && String.isEmpty(message.trim())) console.log('');
+        if (isString && String.isEmpty(message.trim())) console.log("");
         else {
           const isTitle = message instanceof TitleMessage;
 
@@ -65,29 +65,26 @@ export const live = ({
             Option.getOrElse(() => startTime),
           );
 
-          const strMessage =
-            isTitle ? message.title
-            : isString ? message
-            : stringify(message);
+          const strMessage = isTitle ? message.title : isString ? message : stringify(message);
 
           const isMultiLine = JsString.isMultiLine(strMessage);
 
           console.log(
             pipe(
-              (isMultiLine ? 'Multi-line message' : strMessage)
-                + ` (${FiberId.threadName(fiberId)})`,
+              (isMultiLine ? "Multi-line message" : strMessage) +
+                ` (${FiberId.threadName(fiberId)})`,
               isTitle ? colorizeBySpanLevel(spanLevel) : JsAnsi.highContrastBlack,
               MString.prepend(
                 colorizeByLogLevel(logLevel)(`${date.getTime() - latestSpanCreationTime}ms `),
               ),
-              String.concat(isMultiLine ? eol + JsString.tabify(tabChar)(strMessage) : ''),
+              String.concat(isMultiLine ? eol + JsString.tabify(tabChar)(strMessage) : ""),
               JsString.tabify(tabChar, spanLevel),
             ),
           );
         }
       } catch (e) {
         console.log(
-          JsAnsi.red('Logging error' + eol + (MTypes.isErrorish(e) ? e.message : stringify(e))),
+          JsAnsi.red("Logging error" + eol + (MTypes.isErrorish(e) ? e.message : stringify(e))),
         );
       }
     }),

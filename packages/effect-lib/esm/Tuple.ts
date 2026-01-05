@@ -1,6 +1,6 @@
 /** A simple extension to the Effect Tuple module */
 
-import { Tuple, pipe } from 'effect';
+import { Tuple, pipe } from "effect";
 
 /**
  * Creates a one element tuple. `MTuple.fromSingleValue` must be used preferably to `Tuple.make` in

@@ -4,46 +4,46 @@
  */
 
 import {
-    MBigDecimal,
-    MBigInt,
-    MFunction,
-    MInspectable,
-    MMatch,
-    MNumber,
-    MPipeable,
-    MPredicate,
-    MRegExpString,
-    MString,
-    MStruct,
-    MTypes,
-} from '@parischap/effect-lib';
+  MBigDecimal,
+  MBigInt,
+  MFunction,
+  MInspectable,
+  MMatch,
+  MNumber,
+  MPipeable,
+  MPredicate,
+  MRegExpString,
+  MString,
+  MStruct,
+  MTypes,
+} from "@parischap/effect-lib";
 import {
-    Array,
-    BigDecimal,
-    BigInt,
-    Either,
-    flow,
-    Function,
-    Inspectable,
-    Number,
-    Option,
-    pipe,
-    Pipeable,
-    Predicate,
-    String,
-    Struct,
-    Tuple,
-} from 'effect';
-import * as CVReal from './Real.js';
-import * as CVRoundingMode from './RoundingMode.js';
-import * as CVRoundingOption from './RoundingOption.js';
+  Array,
+  BigDecimal,
+  BigInt,
+  Either,
+  flow,
+  Function,
+  Inspectable,
+  Number,
+  Option,
+  pipe,
+  Pipeable,
+  Predicate,
+  String,
+  Struct,
+  Tuple,
+} from "effect";
+import * as CVReal from "./Real.js";
+import * as CVRoundingMode from "./RoundingMode.js";
+import * as CVRoundingOption from "./RoundingOption.js";
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/conversions/NumberBase10Format/';
+export const moduleTag = "@parischap/conversions/NumberBase10Format/";
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
@@ -101,7 +101,7 @@ export namespace SignDisplay {
    *
    * @category Models
    */
-  export type SignString = '-' | '+' | '';
+  export type SignString = "-" | "+" | "";
 
   /**
    * Type that represents the possible values of a sign
@@ -115,31 +115,30 @@ export namespace SignDisplay {
    *
    * @category Models
    */
-  export interface Parser
-    extends MTypes.OneArgFunction<
-      { readonly sign: SignString; readonly isZero: boolean },
-      Option.Option<SignValue>
-    > {}
+  export interface Parser extends MTypes.OneArgFunction<
+    { readonly sign: SignString; readonly isZero: boolean },
+    Option.Option<SignValue>
+  > {}
 
-  const isPlusSign: Predicate.Predicate<SignString> = MPredicate.strictEquals('+');
-  const isMinusSign: Predicate.Predicate<SignString> = MPredicate.strictEquals('-');
+  const isPlusSign: Predicate.Predicate<SignString> = MPredicate.strictEquals("+");
+  const isMinusSign: Predicate.Predicate<SignString> = MPredicate.strictEquals("-");
   const signStringToSignValue: MTypes.OneArgFunction<SignString, SignValue> = flow(
     Option.liftPredicate(isMinusSign),
     Option.as(-1 as const),
     Option.getOrElse(Function.constant(1 as const)),
   );
   const hasASign: Parser = flow(
-    Struct.get('sign'),
+    Struct.get("sign"),
     Option.liftPredicate(String.isNonEmpty),
     Option.map(signStringToSignValue),
   );
   const hasNoSign: Parser = flow(
-    Struct.get('sign'),
+    Struct.get("sign"),
     Option.liftPredicate(String.isEmpty),
     Option.map(signStringToSignValue),
   );
   const hasNotPlusSign: Parser = flow(
-    Struct.get('sign'),
+    Struct.get("sign"),
     Option.liftPredicate(Predicate.not(isPlusSign)),
     Option.map(signStringToSignValue),
   );
@@ -180,11 +179,10 @@ export namespace SignDisplay {
    *
    * @category Models
    */
-  export interface Formatter
-    extends MTypes.OneArgFunction<
-      { readonly sign: SignValue; readonly isZero: boolean },
-      SignString
-    > {}
+  export interface Formatter extends MTypes.OneArgFunction<
+    { readonly sign: SignValue; readonly isZero: boolean },
+    SignString
+  > {}
 
   /**
    * Builds a `Formatter` implementing `self`
@@ -197,27 +195,25 @@ export namespace SignDisplay {
       SignDisplay.Auto,
       (): Formatter =>
         ({ sign }) =>
-          sign === -1 ? '-' : '',
+          sign === -1 ? "-" : "",
     ),
     MMatch.whenIs(
       SignDisplay.Always,
       (): Formatter =>
         ({ sign }) =>
-          sign === -1 ? '-' : '+',
+          sign === -1 ? "-" : "+",
     ),
     MMatch.whenIs(
       SignDisplay.ExceptZero,
       (): Formatter =>
         ({ sign, isZero }) =>
-          isZero ? ''
-          : sign === -1 ? '-'
-          : '+',
+          isZero ? "" : sign === -1 ? "-" : "+",
     ),
     MMatch.whenIs(
       SignDisplay.Negative,
       (): Formatter =>
         ({ sign, isZero }) =>
-          isZero || sign === 1 ? '' : '-',
+          isZero || sign === 1 ? "" : "-",
     ),
     MMatch.whenIs(SignDisplay.Never, (): Formatter => MFunction.constEmptyString),
     MMatch.exhaustive,
@@ -311,8 +307,10 @@ export namespace ScientificNotation {
    *
    * @category Models
    */
-  export interface MantissaChecker
-    extends MTypes.OneArgFunction<BigDecimal.BigDecimal, Option.Option<BigDecimal.BigDecimal>> {}
+  export interface MantissaChecker extends MTypes.OneArgFunction<
+    BigDecimal.BigDecimal,
+    Option.Option<BigDecimal.BigDecimal>
+  > {}
 
   const zeroOrinRange = (rangeTop: number): Predicate.Predicate<BigDecimal.BigDecimal> =>
     Predicate.or(
@@ -350,11 +348,10 @@ export namespace ScientificNotation {
    *
    * @category Models
    */
-  export interface MantissaAdjuster
-    extends MTypes.OneArgFunction<
-      BigDecimal.BigDecimal,
-      readonly [adjustedMantissa: BigDecimal.BigDecimal, exponent: Option.Option<number>]
-    > {}
+  export interface MantissaAdjuster extends MTypes.OneArgFunction<
+    BigDecimal.BigDecimal,
+    readonly [adjustedMantissa: BigDecimal.BigDecimal, exponent: Option.Option<number>]
+  > {}
 
   /**
    * Builds a `Parser` implementing `self`
@@ -504,7 +501,7 @@ export const make = (params: MTypes.Data<Type>): Type =>
  * @category Destructors
  */
 export const thousandSeparator: MTypes.OneArgFunction<Type, string> =
-  Struct.get('thousandSeparator');
+  Struct.get("thousandSeparator");
 
 /**
  * Returns the `fractionalSeparator` property of `self`
@@ -512,7 +509,7 @@ export const thousandSeparator: MTypes.OneArgFunction<Type, string> =
  * @category Destructors
  */
 export const fractionalSeparator: MTypes.OneArgFunction<Type, string> =
-  Struct.get('fractionalSeparator');
+  Struct.get("fractionalSeparator");
 
 /**
  * Returns the `showNullIntegerPart` property of `self`
@@ -520,7 +517,7 @@ export const fractionalSeparator: MTypes.OneArgFunction<Type, string> =
  * @category Destructors
  */
 export const showNullIntegerPart: MTypes.OneArgFunction<Type, boolean> =
-  Struct.get('showNullIntegerPart');
+  Struct.get("showNullIntegerPart");
 
 /**
  * Returns the `minimumFractionalDigits` property of `self`
@@ -528,7 +525,7 @@ export const showNullIntegerPart: MTypes.OneArgFunction<Type, boolean> =
  * @category Destructors
  */
 export const minimumFractionalDigits: MTypes.OneArgFunction<Type, number> =
-  Struct.get('minimumFractionalDigits');
+  Struct.get("minimumFractionalDigits");
 
 /**
  * Returns the `maximumFractionalDigits` property of `self`
@@ -536,7 +533,7 @@ export const minimumFractionalDigits: MTypes.OneArgFunction<Type, number> =
  * @category Destructors
  */
 export const maximumFractionalDigits: MTypes.OneArgFunction<Type, number> =
-  Struct.get('maximumFractionalDigits');
+  Struct.get("maximumFractionalDigits");
 
 /**
  * Returns the `eNotationChar` property of `self`
@@ -544,7 +541,7 @@ export const maximumFractionalDigits: MTypes.OneArgFunction<Type, number> =
  * @category Destructors
  */
 export const eNotationChars: MTypes.OneArgFunction<Type, ReadonlyArray<string>> = Struct.get(
-  'eNotationChars',
+  "eNotationChars",
 );
 
 /**
@@ -553,7 +550,7 @@ export const eNotationChars: MTypes.OneArgFunction<Type, ReadonlyArray<string>> 
  * @category Destructors
  */
 export const scientificNotation: MTypes.OneArgFunction<Type, ScientificNotation> =
-  Struct.get('scientificNotation');
+  Struct.get("scientificNotation");
 
 /**
  * Returns the `roundingMode` property of `self`
@@ -561,14 +558,14 @@ export const scientificNotation: MTypes.OneArgFunction<Type, ScientificNotation>
  * @category Destructors
  */
 export const roundingMode: MTypes.OneArgFunction<Type, CVRoundingMode.Type> =
-  Struct.get('roundingMode');
+  Struct.get("roundingMode");
 
 /**
  * Returns the `signDisplay` property of `self`
  *
  * @category Destructors
  */
-export const signDisplay: MTypes.OneArgFunction<Type, SignDisplay> = Struct.get('signDisplay');
+export const signDisplay: MTypes.OneArgFunction<Type, SignDisplay> = Struct.get("signDisplay");
 
 /**
  * Returns a short description of `self`, e.g. 'signed integer'
@@ -586,39 +583,42 @@ export const toDescription = (self: Type): string => {
   } = self;
 
   const isInteger = maximumFractionalDigits <= 0;
-  const isUngrouped = thousandSeparator === '';
+  const isUngrouped = thousandSeparator === "";
   return (
     pipe(
       signDisplay,
       MMatch.make,
-      MMatch.whenIs(SignDisplay.Always, Function.constant('signed ')),
-      MMatch.whenIs(SignDisplay.Never, Function.constant('unsigned ')),
-      MMatch.orElse(Function.constant('potentially signed ')),
-    )
-    + (isUngrouped && isInteger ? ''
-    : (isUngrouped || thousandSeparator === ' ') && (fractionalSeparator === ',' || isInteger) ?
-      'French-style '
-    : thousandSeparator === '.' && (fractionalSeparator === ',' || isInteger) ? 'Dutch-style '
-    : (isUngrouped || thousandSeparator === ',') && (fractionalSeparator === '.' || isInteger) ?
-      'UK-style '
-    : '')
-    + (isInteger ? 'integer'
-    : minimumFractionalDigits === maximumFractionalDigits ?
-      `${MString.fromNumber(10)(minimumFractionalDigits)}-decimal number`
-    : 'number')
-    + pipe(
+      MMatch.whenIs(SignDisplay.Always, Function.constant("signed ")),
+      MMatch.whenIs(SignDisplay.Never, Function.constant("unsigned ")),
+      MMatch.orElse(Function.constant("potentially signed ")),
+    ) +
+    (isUngrouped && isInteger
+      ? ""
+      : (isUngrouped || thousandSeparator === " ") && (fractionalSeparator === "," || isInteger)
+        ? "French-style "
+        : thousandSeparator === "." && (fractionalSeparator === "," || isInteger)
+          ? "Dutch-style "
+          : (isUngrouped || thousandSeparator === ",") && (fractionalSeparator === "." || isInteger)
+            ? "UK-style "
+            : "") +
+    (isInteger
+      ? "integer"
+      : minimumFractionalDigits === maximumFractionalDigits
+        ? `${MString.fromNumber(10)(minimumFractionalDigits)}-decimal number`
+        : "number") +
+    pipe(
       scientificNotation,
       MMatch.make,
       MMatch.whenIs(ScientificNotation.None, MFunction.constEmptyString),
       MMatch.whenIs(
         ScientificNotation.Standard,
-        Function.constant(' in standard scientific notation'),
+        Function.constant(" in standard scientific notation"),
       ),
       MMatch.whenIs(
         ScientificNotation.Normalized,
-        Function.constant(' in normalized scientific notation'),
+        Function.constant(" in normalized scientific notation"),
       ),
-      MMatch.whenIs(ScientificNotation.Engineering, Function.constant(' in engineering notation')),
+      MMatch.whenIs(ScientificNotation.Engineering, Function.constant(" in engineering notation")),
       MMatch.exhaustive,
     )
   );
@@ -626,7 +626,7 @@ export const toDescription = (self: Type): string => {
 
 const _toBigDecimalExtractor = (
   self: Type,
-  fillChar = '',
+  fillChar = "",
 ): MTypes.OneArgFunction<
   string,
   Option.Option<[value: BigDecimal.BigDecimal, parsedText: string, sign: -1 | 1]>
@@ -653,7 +653,7 @@ const _toBigDecimalExtractor = (
 
   const mantissaChecker = ScientificNotation.toMantissaChecker(self.scientificNotation);
 
-  const fillCharIsZero = fillChar === '0';
+  const fillCharIsZero = fillChar === "0";
 
   return (text) =>
     Option.gen(function* () {
@@ -679,17 +679,15 @@ const _toBigDecimalExtractor = (
         Option.match({
           // No integer part
           onNone: () =>
-            (
-              (!self.showNullIntegerPart && mantissaFractionalPartLength !== 0)
-              || (fillCharIsZero && fillChars.length !== 0)
-            ) ?
-              Option.some(MBigDecimal.zero)
-            : Option.none(),
+            (!self.showNullIntegerPart && mantissaFractionalPartLength !== 0) ||
+            (fillCharIsZero && fillChars.length !== 0)
+              ? Option.some(MBigDecimal.zero)
+              : Option.none(),
           // With integer part
           onSome: flow(
-            self.showNullIntegerPart || mantissaFractionalPartLength === 0 ?
-              Option.some
-            : Option.liftPredicate(Predicate.not(MPredicate.strictEquals('0'))),
+            self.showNullIntegerPart || mantissaFractionalPartLength === 0
+              ? Option.some
+              : Option.liftPredicate(Predicate.not(MPredicate.strictEquals("0"))),
             Option.map(flow(removeThousandSeparator, MBigDecimal.fromPrimitiveOrThrow(0))),
           ),
         }),
@@ -914,22 +912,22 @@ export const toThrowingRealParser =
  */
 export const toNumberFormatter = (
   self: Type,
-  fillChars = '',
+  fillChars = "",
 ): MTypes.OneArgFunction<BigDecimal.BigDecimal | CVReal.Type, string> => {
   const rounder =
-    self.maximumFractionalDigits === Infinity ?
-      Function.identity
-    : pipe(
-        {
-          precision: self.maximumFractionalDigits,
-          roundingMode: self.roundingMode,
-        },
-        CVRoundingOption.make,
-        CVRoundingOption.toBigDecimalRounder,
-      );
+    self.maximumFractionalDigits === Infinity
+      ? Function.identity
+      : pipe(
+          {
+            precision: self.maximumFractionalDigits,
+            roundingMode: self.roundingMode,
+          },
+          CVRoundingOption.make,
+          CVRoundingOption.toBigDecimalRounder,
+        );
   const signFormatter = SignDisplay.toFormatter(self.signDisplay);
   const mantissaAdjuster = ScientificNotation.toMantissaAdjuster(self.scientificNotation);
-  const hasThousandSeparator = self.thousandSeparator !== '';
+  const hasThousandSeparator = self.thousandSeparator !== "";
   const eNotationChar = pipe(
     self.eNotationChars,
     Array.get(0),
@@ -938,9 +936,8 @@ export const toNumberFormatter = (
   const takeNFirstCharsOfFillChars = MFunction.flipDual(String.takeLeft)(fillChars);
 
   return (number) => {
-    const [sign, selfAsBigDecimal] =
-      MTypes.isNumber(number) ?
-        Tuple.make(
+    const [sign, selfAsBigDecimal] = MTypes.isNumber(number)
+      ? Tuple.make(
           number < 0 || Object.is(-0, number) ? (-1 as const) : (1 as const),
           BigDecimal.unsafeFromNumber(number),
         )
@@ -962,8 +959,8 @@ export const toNumberFormatter = (
       Option.liftPredicate(Predicate.not(MBigInt.isZero)),
       Option.map(MString.fromNonNullablePrimitive),
       Option.getOrElse(MFunction.constEmptyString),
-      String.padStart(normalizedFractionalPart.scale, '0'),
-      String.padEnd(self.minimumFractionalDigits, '0'),
+      String.padStart(normalizedFractionalPart.scale, "0"),
+      String.padEnd(self.minimumFractionalDigits, "0"),
       Option.liftPredicate(String.isNonEmpty),
       Option.map(MString.prepend(self.fractionalSeparator)),
       Option.getOrElse(MFunction.constEmptyString),
@@ -976,11 +973,11 @@ export const toNumberFormatter = (
         f: flow(
           MString.splitEquallyRestAtStart(MRegExpString.DIGIT_GROUP_SIZE),
           Array.intersperse(self.thousandSeparator),
-          Array.join(''),
+          Array.join(""),
         ),
       }),
       Either.liftPredicate(
-        Predicate.not(MPredicate.strictEquals('0')),
+        Predicate.not(MPredicate.strictEquals("0")),
         MFunction.fIfTrue({
           condition: !self.showNullIntegerPart && fractionalPartString.length !== 0,
           f: MFunction.constEmptyString,
@@ -1126,7 +1123,7 @@ export const withThousandSeparator = (thousandSeparator: string): MTypes.OneArgF
  *
  * @category Modifiers
  */
-export const withoutThousandSeparator: MTypes.OneArgFunction<Type> = withThousandSeparator('');
+export const withoutThousandSeparator: MTypes.OneArgFunction<Type> = withThousandSeparator("");
 
 /**
  * Returns a copy of `self` with `fractionalSeparator` set to `fractionalSeparator`
@@ -1340,12 +1337,12 @@ export const withNullIntegerPartShowing: MTypes.OneArgFunction<Type> = flow(
  * @category Instances
  */
 export const frenchStyleNumber: Type = make({
-  thousandSeparator: ' ',
-  fractionalSeparator: ',',
+  thousandSeparator: " ",
+  fractionalSeparator: ",",
   showNullIntegerPart: true,
   minimumFractionalDigits: 0,
   maximumFractionalDigits: 3,
-  eNotationChars: ['e', 'E'],
+  eNotationChars: ["e", "E"],
   scientificNotation: ScientificNotation.None,
   roundingMode: CVRoundingMode.Type.HalfExpand,
   signDisplay: SignDisplay.Negative,
@@ -1378,7 +1375,7 @@ export const frenchStyleInteger: Type = pipe(frenchStyleNumber, withMaxNDecimals
 export const dutchStyleNumber: Type = pipe(
   frenchStyleNumber,
   MStruct.append({
-    thousandSeparator: '.',
+    thousandSeparator: ".",
   }),
   make,
 );
@@ -1410,8 +1407,8 @@ export const dutchStyleInteger: Type = pipe(dutchStyleNumber, withMaxNDecimals(0
 export const ukStyleNumber: Type = pipe(
   frenchStyleNumber,
   MStruct.append({
-    fractionalSeparator: '.',
-    thousandSeparator: ',',
+    fractionalSeparator: ".",
+    thousandSeparator: ",",
   }),
   make,
 );

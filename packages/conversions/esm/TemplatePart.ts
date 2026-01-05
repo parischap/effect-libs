@@ -6,8 +6,8 @@
  * `CVTemplatePlaceholder`'s (see TemplatePlaceholder.ts)
  */
 
-import * as CVTemplatePlaceholder from './TemplatePlaceholder.js';
-import * as CVTemplateSeparator from './TemplateSeparator.js';
+import * as CVTemplatePlaceholder from "./TemplatePlaceholder.js";
+import * as CVTemplateSeparator from "./TemplateSeparator.js";
 
 /**
  * Type of a TemplatePart
