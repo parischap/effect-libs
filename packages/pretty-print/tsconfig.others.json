@@ -12,8 +12,7 @@
     "examples",
     "tests",
     "readme-assets",
-    "vite.config.ts.timestamp-*.mjs",
-    "pnpm-lock.yaml"
+    "vite.config.ts.timestamp-*.mjs"
   ],
   "compilerOptions": {
     "tsBuildInfoFile": ".tsbuildinfo/others.tsbuildinfo",

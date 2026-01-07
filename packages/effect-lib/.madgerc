@@ -1,7 +1,7 @@
 {
-	"detectiveOptions": {
-		"ts": {
-			"skipTypeImports": true
-		}
-	}
+  "detectiveOptions": {
+    "ts": {
+      "skipTypeImports": true
+    }
+  }
 }
