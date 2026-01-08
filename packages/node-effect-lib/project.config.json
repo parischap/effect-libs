@@ -9,6 +9,6 @@
   "hasDocGen": false,
   "keywords": [],
   "useEffectAsPeerDependency": true,
-  "useEffectPlatform": "AsPeerDependency",
+  "useEffectPlatform": true,
   "packagePrefix": "N"
 }
