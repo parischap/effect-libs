@@ -4,9 +4,8 @@
   "srcDir": "./esm",
   "outDir": "docs",
   "exclude": [
-    "esm/internal/**/*.ts",
-    "esm/internal/**/*.mts",
-    "esm/internal/**/*.cts",
+    "esm/internal/**/*",
+    "esm/bin/**/*",
     "esm/index.ts"
   ],
   "enforceDescriptions": true,
