@@ -13,10 +13,10 @@ import {
   Record,
   Tuple,
   pipe,
-} from "effect";
-import * as MMatch from "./Match.js";
-import * as MOption from "./Option.js";
-import * as MTypes from "./types.js";
+} from 'effect';
+import * as MMatch from './Match.js';
+import * as MOption from './Option.js';
+import * as MTypes from './types.js';
 /**
  * https://typescript-eslint.io/rules/no-unnecessary-type-parameters Returns true if the length of
  * `self` is `l`
@@ -426,7 +426,7 @@ export const mapUnlessLeft =
   <A, B, C>(f: (a: A, i: number) => Either.Either<B, C>) =>
   <S extends ReadonlyArray<A>>(self: S): Either.Either<Array.ReadonlyArray.With<S, B>, C> =>
     Either.gen(function* () {
-      const length = self.length;
+      const { length } = self;
       const result = Array.allocate<B>(length);
 
       for (let i = 0; i < length; i++) {
@@ -497,19 +497,19 @@ export const mergeSorted =
           onSome: (selfValue) =>
             Option.match(thatValueOption, {
               onSome: (thatValue) =>
-                lessThanOrEqualTo(selfValue, thatValue)
-                  ? Option.some(
-                      Tuple.make(
-                        selfValue,
-                        Tuple.make(MOption.fromNextIteratorValue(selfIterator), thatValueOption),
-                      ),
-                    )
-                  : Option.some(
-                      Tuple.make(
-                        thatValue,
-                        Tuple.make(selfValueOption, MOption.fromNextIteratorValue(thatIterator)),
-                      ),
+                lessThanOrEqualTo(selfValue, thatValue) ?
+                  Option.some(
+                    Tuple.make(
+                      selfValue,
+                      Tuple.make(MOption.fromNextIteratorValue(selfIterator), thatValueOption),
                     ),
+                  )
+                : Option.some(
+                    Tuple.make(
+                      thatValue,
+                      Tuple.make(selfValueOption, MOption.fromNextIteratorValue(thatIterator)),
+                    ),
+                  ),
               onNone: () =>
                 Option.some(
                   Tuple.make(
@@ -557,29 +557,29 @@ export const differenceSorted =
           onSome: (selfValue) =>
             Option.match(thatValueOption, {
               onSome: (thatValue) =>
-                lessThan(selfValue, thatValue)
-                  ? Option.some(
+                lessThan(selfValue, thatValue) ?
+                  Option.some(
+                    Tuple.make(
+                      Array.of(selfValue),
+                      Tuple.make(MOption.fromNextIteratorValue(selfIterator), thatValueOption),
+                    ),
+                  )
+                : Equal.equals(selfValue, thatValue) ?
+                  Option.some(
+                    Tuple.make(
+                      Array.empty(),
                       Tuple.make(
-                        Array.of(selfValue),
-                        Tuple.make(MOption.fromNextIteratorValue(selfIterator), thatValueOption),
+                        MOption.fromNextIteratorValue(selfIterator),
+                        MOption.fromNextIteratorValue(thatIterator),
                       ),
-                    )
-                  : Equal.equals(selfValue, thatValue)
-                    ? Option.some(
-                        Tuple.make(
-                          Array.empty(),
-                          Tuple.make(
-                            MOption.fromNextIteratorValue(selfIterator),
-                            MOption.fromNextIteratorValue(thatIterator),
-                          ),
-                        ),
-                      )
-                    : Option.some(
-                        Tuple.make(
-                          Array.empty(),
-                          Tuple.make(selfValueOption, MOption.fromNextIteratorValue(thatIterator)),
-                        ),
-                      ),
+                    ),
+                  )
+                : Option.some(
+                    Tuple.make(
+                      Array.empty(),
+                      Tuple.make(selfValueOption, MOption.fromNextIteratorValue(thatIterator)),
+                    ),
+                  ),
               onNone: () =>
                 Option.some(
                   Tuple.make(

@@ -19,18 +19,18 @@ import {
   Types,
   flow,
   pipe,
-} from "effect";
-import * as MInspectable from "./Inspectable.js";
-import * as MNumber from "./Number.js";
-import * as MPipeable from "./Pipeable.js";
-import * as MTypes from "./types.js";
+} from 'effect';
+import * as MInspectable from './Inspectable.js';
+import * as MNumber from './Number.js';
+import * as MPipeable from './Pipeable.js';
+import * as MTypes from './types.js';
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = "@parischap/effect-lib/Cache/";
+export const moduleTag = '@parischap/effect-lib/Cache/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
@@ -39,7 +39,7 @@ type _TypeId = typeof _TypeId;
  * cache.
  */
 namespace ValueContainer {
-  const _namespaceTag = moduleTag + "ValueContainer/";
+  const _namespaceTag = moduleTag + 'ValueContainer/';
   const _TypeId: unique symbol = Symbol.for(_namespaceTag) as _TypeId;
   type _TypeId = typeof _TypeId;
 
@@ -239,12 +239,9 @@ export const make = <A, B>({
 export const get =
   <A>(a: A) =>
   <B>(self: Type<A, B>): B => {
-    const lifeSpan = self.lifeSpan;
+    const { lifeSpan, capacity, store, keyListInOrder } = self;
     const now = MNumber.isFinite(lifeSpan) ? Date.now() : 0;
-    const capacity = self.capacity;
     const hasBoundedCapacity = MNumber.isFinite(capacity);
-    const store = self.store;
-    const keyListInOrder = self.keyListInOrder;
 
     return pipe(
       store,
@@ -283,8 +280,8 @@ export const get =
           onSome: (valueContainer) => {
             if (
               // if lifespan===0, we don't do the test because it could return false if the two values are stored in the same millisecond.
-              lifeSpan <= 0 ||
-              now - valueContainer.storeDate > lifeSpan
+              lifeSpan <= 0
+              || now - valueContainer.storeDate > lifeSpan
             ) {
               if (hasBoundedCapacity) {
                 let head = MutableList.pop(keyListInOrder);

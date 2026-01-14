@@ -11,30 +11,32 @@ import {
   Order,
   Pipeable,
   Predicate,
+  Record,
   String,
   Struct,
   Tuple,
   flow,
   pipe,
-} from "effect";
-import * as MArray from "./Array.js";
-import * as MBigInt from "./BigInt.js";
-import * as MFunction from "./Function.js";
-import * as MInspectable from "./Inspectable.js";
-import * as MMatch from "./Match.js";
-import * as MNumber from "./Number.js";
-import * as MPipeable from "./Pipeable.js";
-import * as MPredicate from "./Predicate.js";
-import * as MRegExp from "./RegExp.js";
-import * as MTuple from "./Tuple.js";
-import * as MTypes from "./types.js";
+} from 'effect';
+import * as MArray from './Array.js';
+import * as MBigInt from './BigInt.js';
+import * as MFunction from './Function.js';
+import * as MInspectable from './Inspectable.js';
+import * as MMatch from './Match.js';
+import * as MNumber from './Number.js';
+import * as MPipeable from './Pipeable.js';
+import * as MPredicate from './Predicate.js';
+import * as MRegExp from './RegExp.js';
+import * as MRegExpString from './RegExpString.js';
+import * as MTuple from './Tuple.js';
+import * as MTypes from './types.js';
 
 /**
  * Module tag
  *
  * @category Models
  */
-export const moduleTag = "@parischap/effect-lib/String/";
+export const moduleTag = '@parischap/effect-lib/String/';
 
 /**
  * This namespace implements a type that represents the result of the search of a string in another
@@ -43,7 +45,7 @@ export const moduleTag = "@parischap/effect-lib/String/";
  * @category Models
  */
 export namespace SearchResult {
-  const _namespaceTag = moduleTag + "SearchResult/";
+  const _namespaceTag = moduleTag + 'SearchResult/';
   const _TypeId: unique symbol = Symbol.for(_namespaceTag) as _TypeId;
   type _TypeId = typeof _TypeId;
 
@@ -76,9 +78,9 @@ export namespace SearchResult {
    * @category Equivalences
    */
   export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
-    that.startIndex === self.startIndex &&
-    that.endIndex === self.endIndex &&
-    that.match === self.match;
+    that.startIndex === self.startIndex
+    && that.endIndex === self.endIndex
+    && that.match === self.match;
 
   /**
    * Equivalence that considers two SearchResult's to be equivalent when they overlap
@@ -152,21 +154,21 @@ export namespace SearchResult {
    *
    * @category Destructors
    */
-  export const startIndex: MTypes.OneArgFunction<Type, number> = Struct.get("startIndex");
+  export const startIndex: MTypes.OneArgFunction<Type, number> = Struct.get('startIndex');
 
   /**
    * Returns the `endIndex` property of `self`
    *
    * @category Destructors
    */
-  export const endIndex: MTypes.OneArgFunction<Type, number> = Struct.get("endIndex");
+  export const endIndex: MTypes.OneArgFunction<Type, number> = Struct.get('endIndex');
 
   /**
    * Returns the `match` property of `self`
    *
    * @category Destructors
    */
-  export const match: MTypes.OneArgFunction<Type, string> = Struct.get("match");
+  export const match: MTypes.OneArgFunction<Type, string> = Struct.get('match');
 }
 
 /**
@@ -188,7 +190,7 @@ export const fromNonNullablePrimitive = (u: MTypes.NonNullablePrimitive): string
 export const fromPrimitive: MTypes.OneArgFunction<MTypes.Primitive, string> = flow(
   MMatch.make,
   MMatch.when(MTypes.isNotNullable, fromNonNullablePrimitive),
-  MMatch.orElse((s) => (s === undefined ? "undefined" : "null")),
+  MMatch.orElse((s) => (s === undefined ? 'undefined' : 'null')),
 );
 
 /**
@@ -213,15 +215,15 @@ export const fromNumber =
     const integerPart = Math.trunc(u);
     const decimalPart = Math.trunc((u - integerPart) * 1e16);
     return (
-      BigInt(integerPart).toString(10) +
-      pipe(
+      BigInt(integerPart).toString(10)
+      + pipe(
         decimalPart,
         MBigInt.fromPrimitiveOrThrow,
         (b) => b.toString(10),
-        String.padStart(16, "0"),
-        trimEnd("0"),
+        String.padStart(16, '0'),
+        trimEnd('0'),
         Option.liftPredicate(String.isNonEmpty),
-        Option.map(prepend(".")),
+        Option.map(prepend('.')),
         Option.getOrElse(MFunction.constEmptyString),
       )
     );
@@ -251,7 +253,7 @@ export const search =
     const result = regexp.exec(target);
     if (MTypes.isNull(result)) return Option.none();
     const offsetPos = startIndex + result.index;
-    const match = result[0];
+    const [match] = result;
     return Option.some(
       SearchResult.make({ startIndex: offsetPos, endIndex: offsetPos + match.length, match }),
     );
@@ -273,7 +275,7 @@ export const searchAll =
         Option.map(
           MTuple.makeBothBy({
             toFirst: Function.identity,
-            toSecond: Struct.get("endIndex"),
+            toSecond: Struct.get('endIndex'),
           }),
         ),
       ),
@@ -361,7 +363,7 @@ export const takeRightBut =
  * @category Utils
  */
 export const trimStart = (charToRemove: string): MTypes.StringTransformer =>
-  flow(Array.dropWhile(MPredicate.strictEquals(charToRemove)), Array.join(""));
+  flow(Array.dropWhile(MPredicate.strictEquals(charToRemove)), Array.join(''));
 
 /**
  * Same as String.trimEnd but the character to remove can be specified. `charToRemove` must be a
@@ -375,7 +377,7 @@ export const trimEnd = (charToRemove: string): MTypes.StringTransformer =>
     Array.reverse,
     Array.dropWhile(MPredicate.strictEquals(charToRemove)),
     Array.reverse,
-    Array.join(""),
+    Array.join(''),
   );
 
 /**
@@ -401,8 +403,8 @@ export namespace FillPosition {
    */
   export const toId: MTypes.OneArgFunction<FillPosition, string> = flow(
     MMatch.make,
-    MMatch.whenIs(FillPosition.Right, Function.constant("right")),
-    MMatch.whenIs(FillPosition.Left, Function.constant("left")),
+    MMatch.whenIs(FillPosition.Right, Function.constant('right')),
+    MMatch.whenIs(FillPosition.Left, Function.constant('left')),
     MMatch.exhaustive,
   );
 }
@@ -562,18 +564,27 @@ export const replaceBetween =
 /**
  * A slightly different version of match using RegExp.prototype.exec instead of
  * String.prototype.match. This function will always return only the first match, even if the `g`
- * flag is set. Good to use in a library when you have no control over the RegExp you receive.
+ * flag is set. Also, it does not care for the lastIndex property of `regExp`. Good to use in a
+ * library when you have no control over the RegExp you receive.
  *
  * @category Utils
  */
 export const match =
   (regExp: RegExp) =>
-  (self: string): Option.Option<string> =>
-    pipe(regExp, MRegExp.match(self));
+  (self: string): Option.Option<string> => {
+    /* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements*/
+    regExp.lastIndex = 0;
+    return pipe(
+      self,
+      RegExp.prototype.exec.bind(regExp),
+      Option.fromNullable,
+      Option.map(MArray.unsafeGet(0)),
+    );
+  };
 
 /**
  * Returns `true` if `self` fulfills regExp. `false` otherwise. Does the same as
- * RegExp.prototype.test but does not take the g flag into account even if it is set and so does not
+ * RegExp.prototype.test but does not take the g flag into account even if it is set and does not
  * care for the lastIndex property of `regExp`
  *
  * @category Utils
@@ -582,24 +593,50 @@ export const matches = (regExp: RegExp): Predicate.Predicate<string> =>
   flow(match(regExp), Option.match({ onNone: Function.constFalse, onSome: Function.constTrue }));
 
 /**
- * Same as match but also returns capturing groups.
+ * Same as String.match but handles capturing groups. Throws if the global flag of `regExp` is set
+ * or if `regExp` does not contain the named groups `capturingGroupNames`.
  *
  * @category Destructors
  */
-export const matchAndGroups =
-  <N extends number>(regExp: RegExp, capturingGroupNumber: N) =>
-  (self: string): Option.Option<[match: string, capturingGroups: MTypes.Tuple<string, N>]> =>
-    pipe(regExp, MRegExp.matchAndGroups(self, capturingGroupNumber));
-
-/**
- * Same as matchAndGroups but returns only the captured groups.
- *
- * @category Destructors
- */
-export const capturedGroups =
-  <N extends number>(regExp: RegExp, capturingGroupNumber: N) =>
-  (self: string): Option.Option<MTypes.Tuple<string, N>> =>
-    pipe(regExp, MRegExp.capturedGroups(self, capturingGroupNumber));
+export const matchWithCapturingGroups =
+  <const Names extends ReadonlyArray<string>>(regExp: RegExp, capturingGroupNames: Names) =>
+  (
+    self: string,
+  ): Option.Option<{
+    match: string;
+    /* eslint-disable-next-line functional/prefer-readonly-type */
+    groups: {
+      [k in keyof Names as [k] extends [number] ? Names[k] : never]: string;
+    };
+  }> => {
+    if (regExp.global)
+      throw new Error(
+        `'matchWithCapturingGroups' was called with global regular expression '${regExp.source}'`,
+      );
+    return pipe(
+      self,
+      String.match(regExp),
+      // RegExpExecArray extends from Array<string>. But this is a Typescript bug. When there are optional capturing groups, there can be some undefined elements. So let's make javascript and Typescript coherent.
+      Option.map((matchArray) => {
+        const { groups } = matchArray;
+        if (
+          groups === undefined
+          || pipe(capturingGroupNames, Array.difference(Object.keys(groups)), Array.isNonEmptyArray)
+        )
+          throw new Error(
+            `'matchWithCapturingGroups' was called with regular expression '${regExp.source}' that does not contain expected named capturing groups '${capturingGroupNames.join("', '")}'`,
+          );
+        return {
+          match: matchArray[0],
+          // Optional capturing groups can return an undefined value
+          groups: pipe(
+            groups,
+            Record.map(flow(Option.fromNullable, Option.getOrElse(MFunction.constEmptyString))),
+          ),
+        } as never;
+      }),
+    );
+  };
 
 /**
  * Splits `self` in two parts at position `n`. The length of the first string is `n` (characters `0`
@@ -658,6 +695,7 @@ export const splitEquallyRestAtEnd = (
     flow(splitAt(bitSize), Tuple.mapSecond(Option.liftPredicate(String.isNonEmpty))),
   );
 
+const _tabifyLineBreak: RegExp = new RegExp(MRegExpString.lineBreak, 'g');
 /**
  * Adds string `tabChar` `count` times at the beginning of each new line of `self`
  *
@@ -668,7 +706,7 @@ export const tabify =
   (self) => {
     const tab = tabChar.repeat(count);
     // replace resets RegExp.prototype.lastIndex after executing
-    return tab + self.replace(MRegExp.globalLineBreak(), "$&" + tab);
+    return tab + self.replace(_tabifyLineBreak, '$&' + tab);
   };
 
 /**
@@ -714,9 +752,9 @@ export const removeNCharsEveryMCharsFromRight = ({
   readonly m: number;
   readonly n: number;
 }): MTypes.StringTransformer =>
-  n === 0
-    ? Function.identity
-    : flow(splitEquallyRestAtStart(m + n), Array.map(String.takeRight(m)), Array.join(""));
+  n === 0 ?
+    Function.identity
+  : flow(splitEquallyRestAtStart(m + n), Array.map(String.takeRight(m)), Array.join(''));
 
 /**
  * Returns true if a string represents a digit. False otherwise

@@ -227,7 +227,7 @@ export const objectToString: Type = make({
         ),
         Option.map(
           flow(
-            String.split(MRegExp.globalLineBreak()),
+            String.split(MRegExp.lineBreak),
             Array.map((s, _i) => inContextToStringedObjectTextFormatter(s)),
           ),
         ),
