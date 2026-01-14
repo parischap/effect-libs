@@ -18,6 +18,8 @@
     "tsBuildInfoFile": ".tsbuildinfo/others.tsbuildinfo",
     "rootDir": ".",
     "outDir": "dist/others",
-    "declarationDir": "dist/others/dts"
+    "declarationDir": "dist/others/dts",
+    "allowJs": true,
+    "checkJs": true
   }
 }
