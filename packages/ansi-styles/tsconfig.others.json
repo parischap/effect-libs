@@ -19,6 +19,8 @@
     "rootDir": ".",
     "outDir": "dist/others",
     "declarationDir": "dist/others/dts",
+    "isolatedModules": false,
+    "isolatedDeclarations": false,
     "allowJs": true,
     "checkJs": true
   }

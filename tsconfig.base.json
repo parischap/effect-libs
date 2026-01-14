@@ -7,6 +7,7 @@
   "compilerOptions": {
     "moduleDetection": "force",
     "composite": true,
+    "incremental": true,
     "resolveJsonModule": true,
     "esModuleInterop": false,
     "declaration": true,
@@ -14,16 +15,16 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "moduleResolution": "NodeNext",
-    "isolatedModules": true,
     "sourceMap": true,
     "declarationMap": true,
     "noEmitOnError": false,
     "noErrorTruncation": true,
     "target": "ES2022",
     "module": "NodeNext",
-    "incremental": true,
     "removeComments": false,
     "stripInternal": true,
+    "isolatedModules": true,
+    "isolatedDeclarations": true,
     "lib": [
       "ESNext"
     ],
