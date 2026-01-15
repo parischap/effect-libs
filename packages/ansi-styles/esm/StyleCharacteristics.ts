@@ -16,7 +16,7 @@ import {
   MString,
   MStruct,
   MTypes,
-} from "@parischap/effect-lib";
+} from '@parischap/effect-lib';
 import {
   Array,
   Boolean,
@@ -31,16 +31,16 @@ import {
   Pipeable,
   Predicate,
   Struct,
-} from "effect";
-import * as ASAnsiString from "./AnsiString.js";
-import * as ASColor from "./Color.js";
+} from 'effect';
+import * as ASAnsiString from './AnsiString.js';
+import * as ASColor from './Color.js';
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = "@parischap/ansi-styles/StyleCharacteristics/";
+export const moduleTag = '@parischap/ansi-styles/StyleCharacteristics/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
@@ -65,7 +65,7 @@ namespace OptionalCharacteristic {
    *
    * @category Equivalences
    */
-  export const getEquivalence = Option.getEquivalence;
+  export const { getEquivalence } = Option;
 
   /**
    * Returns the id of `self`
@@ -172,10 +172,10 @@ namespace BoolOption {
    *
    * @category Utils
    */
-  export const mergeUnder: MTypes.OneArgFunction<
-    Type,
-    MTypes.OneArgFunction<Type, Type>
-  > = OptionalCharacteristic.mergeUnder;
+  export const {
+    mergeUnder,
+  }: { readonly mergeUnder: MTypes.OneArgFunction<Type, MTypes.OneArgFunction<Type, Type>> } =
+    OptionalCharacteristic;
 
   /**
    * Builds a new Characteristic by substracting `that` from `self`. `that` can be substracted from
@@ -220,7 +220,7 @@ namespace ColorOption {
     OptionalCharacteristic.toId(
       flow(
         Option.match({
-          onNone: Function.constant("DefaultColor"),
+          onNone: Function.constant('DefaultColor'),
           onSome: ASColor.toId,
         }),
         MString.prepend(prefix),
@@ -249,10 +249,10 @@ namespace ColorOption {
    *
    * @category Utils
    */
-  export const mergeUnder: MTypes.OneArgFunction<
-    Type,
-    MTypes.OneArgFunction<Type, Type>
-  > = OptionalCharacteristic.mergeUnder;
+  export const {
+    mergeUnder,
+  }: { readonly mergeUnder: MTypes.OneArgFunction<Type, MTypes.OneArgFunction<Type, Type>> } =
+    OptionalCharacteristic;
 
   /**
    * Builds a new ColorOption by substracting `that` from `self`. `that` can be substracted from
@@ -322,17 +322,17 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
  * @category Equivalences
  */
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
-  BoolOption.equivalence(self.boldState, that.boldState) &&
-  BoolOption.equivalence(self.dimState, that.dimState) &&
-  BoolOption.equivalence(self.italicState, that.italicState) &&
-  BoolOption.equivalence(self.underlinedState, that.underlinedState) &&
-  BoolOption.equivalence(self.struckThroughState, that.struckThroughState) &&
-  BoolOption.equivalence(self.overlinedState, that.overlinedState) &&
-  BoolOption.equivalence(self.inversedState, that.inversedState) &&
-  BoolOption.equivalence(self.hiddenState, that.hiddenState) &&
-  BoolOption.equivalence(self.blinkingState, that.blinkingState) &&
-  ColorOption.equivalence(self.fgColor, that.fgColor) &&
-  ColorOption.equivalence(self.bgColor, that.bgColor);
+  BoolOption.equivalence(self.boldState, that.boldState)
+  && BoolOption.equivalence(self.dimState, that.dimState)
+  && BoolOption.equivalence(self.italicState, that.italicState)
+  && BoolOption.equivalence(self.underlinedState, that.underlinedState)
+  && BoolOption.equivalence(self.struckThroughState, that.struckThroughState)
+  && BoolOption.equivalence(self.overlinedState, that.overlinedState)
+  && BoolOption.equivalence(self.inversedState, that.inversedState)
+  && BoolOption.equivalence(self.hiddenState, that.hiddenState)
+  && BoolOption.equivalence(self.blinkingState, that.blinkingState)
+  && ColorOption.equivalence(self.fgColor, that.fgColor)
+  && ColorOption.equivalence(self.bgColor, that.bgColor);
 
 const _TypeIdHash = Hash.hash(_TypeId);
 const _proto: MTypes.Proto<Type> = {
@@ -373,21 +373,21 @@ const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto
  *
  * @category Destructors
  */
-export const boldState: MTypes.OneArgFunction<Type, BoolOption.Type> = Struct.get("boldState");
+export const boldState: MTypes.OneArgFunction<Type, BoolOption.Type> = Struct.get('boldState');
 
 /**
  * Returns the `dimState` property of `self`
  *
  * @category Destructors
  */
-export const dimState: MTypes.OneArgFunction<Type, BoolOption.Type> = Struct.get("dimState");
+export const dimState: MTypes.OneArgFunction<Type, BoolOption.Type> = Struct.get('dimState');
 
 /**
  * Returns the `italicState` property of `self`
  *
  * @category Destructors
  */
-export const italicState: MTypes.OneArgFunction<Type, BoolOption.Type> = Struct.get("italicState");
+export const italicState: MTypes.OneArgFunction<Type, BoolOption.Type> = Struct.get('italicState');
 
 /**
  * Returns the `underlinedState` property of `self`
@@ -395,7 +395,7 @@ export const italicState: MTypes.OneArgFunction<Type, BoolOption.Type> = Struct.
  * @category Destructors
  */
 export const underlinedState: MTypes.OneArgFunction<Type, BoolOption.Type> =
-  Struct.get("underlinedState");
+  Struct.get('underlinedState');
 
 /**
  * Returns the `struckThroughState` property of `self`
@@ -403,7 +403,7 @@ export const underlinedState: MTypes.OneArgFunction<Type, BoolOption.Type> =
  * @category Destructors
  */
 export const struckThroughState: MTypes.OneArgFunction<Type, BoolOption.Type> =
-  Struct.get("struckThroughState");
+  Struct.get('struckThroughState');
 
 /**
  * Returns the `overlinedState` property of `self`
@@ -411,7 +411,7 @@ export const struckThroughState: MTypes.OneArgFunction<Type, BoolOption.Type> =
  * @category Destructors
  */
 export const overlinedState: MTypes.OneArgFunction<Type, BoolOption.Type> =
-  Struct.get("overlinedState");
+  Struct.get('overlinedState');
 
 /**
  * Returns the `inversedState` property of `self`
@@ -419,14 +419,14 @@ export const overlinedState: MTypes.OneArgFunction<Type, BoolOption.Type> =
  * @category Destructors
  */
 export const inversedState: MTypes.OneArgFunction<Type, BoolOption.Type> =
-  Struct.get("inversedState");
+  Struct.get('inversedState');
 
 /**
  * Returns the `hiddenState` property of `self`
  *
  * @category Destructors
  */
-export const hiddenState: MTypes.OneArgFunction<Type, BoolOption.Type> = Struct.get("hiddenState");
+export const hiddenState: MTypes.OneArgFunction<Type, BoolOption.Type> = Struct.get('hiddenState');
 
 /**
  * Returns the `blinkingState` property of `self`
@@ -434,21 +434,21 @@ export const hiddenState: MTypes.OneArgFunction<Type, BoolOption.Type> = Struct.
  * @category Destructors
  */
 export const blinkingState: MTypes.OneArgFunction<Type, BoolOption.Type> =
-  Struct.get("blinkingState");
+  Struct.get('blinkingState');
 
 /**
  * Returns the `fgColor` property of `self`
  *
  * @category Destructors
  */
-export const fgColor: MTypes.OneArgFunction<Type, ColorOption.Type> = Struct.get("fgColor");
+export const fgColor: MTypes.OneArgFunction<Type, ColorOption.Type> = Struct.get('fgColor');
 
 /**
  * Returns the `bgColor` property of `self`
  *
  * @category Destructors
  */
-export const bgColor: MTypes.OneArgFunction<Type, ColorOption.Type> = Struct.get("bgColor");
+export const bgColor: MTypes.OneArgFunction<Type, ColorOption.Type> = Struct.get('bgColor');
 
 /**
  * Returns true if `self` has the bold state
@@ -482,32 +482,32 @@ export const hasDim: Predicate.Predicate<Type> = (self) =>
 export const hasNotDim: Predicate.Predicate<Type> = (self) =>
   BoolOption.equivalence(self.dimState, _falseSome);
 
-const _boldStateId = BoolOption.toId(Function.constant("NotBold"), Function.constant("Bold"));
-const _dimStateId = BoolOption.toId(Function.constant("NotDim"), Function.constant("Dim"));
-const _italicStateId = BoolOption.toId(Function.constant("NotItalic"), Function.constant("Italic"));
+const _boldStateId = BoolOption.toId(Function.constant('NotBold'), Function.constant('Bold'));
+const _dimStateId = BoolOption.toId(Function.constant('NotDim'), Function.constant('Dim'));
+const _italicStateId = BoolOption.toId(Function.constant('NotItalic'), Function.constant('Italic'));
 const _underlinedStateId = BoolOption.toId(
-  Function.constant("NotUnderlined"),
-  Function.constant("Underlined"),
+  Function.constant('NotUnderlined'),
+  Function.constant('Underlined'),
 );
 const _struckThroughStateId = BoolOption.toId(
-  Function.constant("NotStruckThrough"),
-  Function.constant("StruckThrough"),
+  Function.constant('NotStruckThrough'),
+  Function.constant('StruckThrough'),
 );
 const _overlinedStateId = BoolOption.toId(
-  Function.constant("NotOverlined"),
-  Function.constant("Overlined"),
+  Function.constant('NotOverlined'),
+  Function.constant('Overlined'),
 );
 const _inversedStateId = BoolOption.toId(
-  Function.constant("NotInversed"),
-  Function.constant("Inversed"),
+  Function.constant('NotInversed'),
+  Function.constant('Inversed'),
 );
-const _hiddenStateId = BoolOption.toId(Function.constant("NotHidden"), Function.constant("Hidden"));
+const _hiddenStateId = BoolOption.toId(Function.constant('NotHidden'), Function.constant('Hidden'));
 const _blinkingStateId = BoolOption.toId(
-  Function.constant("NotBlinking"),
-  Function.constant("Blinking"),
+  Function.constant('NotBlinking'),
+  Function.constant('Blinking'),
 );
-const _fgColorId = ColorOption.toId("");
-const _bgColorId = ColorOption.toId("In");
+const _fgColorId = ColorOption.toId('');
+const _bgColorId = ColorOption.toId('In');
 
 /**
  * Returns the id of `self`
@@ -516,18 +516,18 @@ const _bgColorId = ColorOption.toId("In");
  */
 export const toId = (self: Type): string => {
   const result =
-    _boldStateId(self.boldState) +
-    _dimStateId(self.dimState) +
-    _italicStateId(self.italicState) +
-    _underlinedStateId(self.underlinedState) +
-    _struckThroughStateId(self.struckThroughState) +
-    _overlinedStateId(self.overlinedState) +
-    _inversedStateId(self.inversedState) +
-    _hiddenStateId(self.hiddenState) +
-    _blinkingStateId(self.blinkingState) +
-    _fgColorId(self.fgColor) +
-    _bgColorId(self.bgColor);
-  return result === "" ? "NoStyle" : result;
+    _boldStateId(self.boldState)
+    + _dimStateId(self.dimState)
+    + _italicStateId(self.italicState)
+    + _underlinedStateId(self.underlinedState)
+    + _struckThroughStateId(self.struckThroughState)
+    + _overlinedStateId(self.overlinedState)
+    + _inversedStateId(self.inversedState)
+    + _hiddenStateId(self.hiddenState)
+    + _blinkingStateId(self.blinkingState)
+    + _fgColorId(self.fgColor)
+    + _bgColorId(self.bgColor);
+  return result === '' ? 'NoStyle' : result;
 };
 
 const _boldStateToSequence = BoolOption.toSequence(22, 1);
@@ -551,12 +551,11 @@ export const toSequence = (self: Type): ASAnsiString.Sequence => {
   const isNotDimPresent = hasNotDim(self);
   return pipe(
     // Useless to send both notBold and notDim because they have the same value
-    hasNotBold(self) && isNotDimPresent
-      ? Array.of(_boldStateToSequence(self.boldState))
-      : // Send notDim before bold otherwise bold will never take effect
-        isNotDimPresent
-        ? Array.make(_dimStateToSequence(self.dimState), _boldStateToSequence(self.boldState))
-        : Array.make(_boldStateToSequence(self.boldState), _dimStateToSequence(self.dimState)),
+    hasNotBold(self) && isNotDimPresent ? Array.of(_boldStateToSequence(self.boldState))
+      // Send notDim before bold otherwise bold will never take effect
+    : isNotDimPresent ?
+      Array.make(_dimStateToSequence(self.dimState), _boldStateToSequence(self.boldState))
+    : Array.make(_boldStateToSequence(self.boldState), _dimStateToSequence(self.dimState)),
     Array.appendAll(
       Array.make(
         _italicStateToSequence(self.italicState),
@@ -661,11 +660,13 @@ export const substractContext =
   (context: Type) =>
   (self: Type): Type => {
     const target = pipe(self, difference(context));
-    return hasBold(self) && hasNotDim(target)
-      ? pipe(target, MStruct.set({ boldState: _trueSome }), _make)
-      : hasDim(self) && hasNotBold(target)
-        ? pipe(target, MStruct.set({ dimState: _trueSome }), _make)
-        : target;
+    return (
+      hasBold(self) && hasNotDim(target) ?
+        pipe(target, MStruct.set({ boldState: _trueSome }), _make)
+      : hasDim(self) && hasNotBold(target) ?
+        pipe(target, MStruct.set({ dimState: _trueSome }), _make)
+      : target
+    );
   };
 
 /**

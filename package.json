@@ -4,10 +4,24 @@
   "type": "module",
   "author": "Jérôme MARTIN",
   "license": "MIT",
+  "devDependencies": {
+    "@parischap/configs": "git+ssh://github.com/parischap/configs",
+    "@effect/language-service": "0.64.1",
+    "@types/node": "24.10.1",
+    "@typescript/native-preview": "7.0.0-dev.20260109.1",
+    "prettier-plugin-jsdoc": "1.8.0",
+    "prettier-plugin-organize-imports": "4.3.0",
+    "@tsconfig/strictest": "2.0.8",
+    "eslint": "9.39.2",
+    "prettier": "3.7.4",
+    "unrun": "0.2.24",
+    "vitest": "4.0.17"
+  },
   "scripts": {
     "test": "vitest run",
     "tscheck": "tsgo -b tsconfig.json --force",
-    "lint": "eslint .",
+    "lint": "oxlint --type-aware --type-check --report-unused-disable-directives --disable-nested-config",
+    "lint-fix": "oxlint --type-aware --fix",
     "format": "prettier .",
     "clean": "unrun node_modules/@parischap/configs/esm/bin/clean.ts -activePackageOnly",
     "clean-config-files": "unrun node_modules/@parischap/configs/esm/bin/clean-config-files.ts -activePackageOnly",
@@ -29,18 +43,5 @@
     "checks-all": "pnpm -r -include-workspace-root=true checks",
     "format-all": "pnpm -r -include-workspace-root=true format",
     "prepare-docs": "pnpm -r --if-present -include-workspace-root=true --parallel --aggregate-output docgen && compile-docs"
-  },
-  "devDependencies": {
-    "@parischap/configs": "git+ssh://github.com/parischap/configs",
-    "@effect/language-service": "0.64.1",
-    "@types/node": "24.10.1",
-    "@typescript/native-preview": "7.0.0-dev.20260109.1",
-    "prettier-plugin-jsdoc": "1.8.0",
-    "prettier-plugin-organize-imports": "4.3.0",
-    "@tsconfig/strictest": "2.0.8",
-    "eslint": "9.39.2",
-    "prettier": "3.7.4",
-    "unrun": "0.2.24",
-    "vitest": "4.0.17"
   }
 }

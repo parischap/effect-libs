@@ -2,5 +2,12 @@
   "extends": [
     "./tsconfig.base.json"
   ],
-  "include": "esm/**/*"
+  "include": [
+    "esm/**/*.js",
+    "esm/**/*.mjs",
+    "esm/**/*.cjs",
+    "esm/**/*.ts",
+    "esm/**/*.mts",
+    "esm/**/*.cts"
+  ]
 }

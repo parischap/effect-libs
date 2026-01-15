@@ -1,9 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "_version": "20.1.0",
-  "extends": [
-    "@tsconfig/strictest/tsconfig.json"
-  ],
   "compilerOptions": {
     "moduleDetection": "force",
     "composite": true,
@@ -16,7 +13,6 @@
     "experimentalDecorators": true,
     "moduleResolution": "NodeNext",
     "sourceMap": true,
-    "declarationMap": true,
     "noEmitOnError": false,
     "noErrorTruncation": true,
     "target": "ES2022",
@@ -38,5 +34,8 @@
       }
     ],
     "tsBuildInfoFile": "..tsbuildinfo/project..tsbuildinfo"
-  }
+  },
+  "extends": [
+    "@tsconfig/strictest/tsconfig.json"
+  ]
 }

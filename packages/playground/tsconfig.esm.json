@@ -1,16 +1,21 @@
 {
+  "compilerOptions": {
+    "tsBuildInfoFile": ".tsbuildinfo/esm.tsbuildinfo",
+    "rootDir": "esm",
+    "outDir": "dist/esm",
+    "declarationDir": "dist/dts",
+    "noEmit": false,
+    "emitDeclarationOnly": true
+  },
   "extends": [
     "./tsconfig.base.json"
   ],
   "include": [
-    "esm/**/*"
-  ],
-  "compilerOptions": {
-    "tsBuildInfoFile": ".tsbuildinfo/esm.tsbuildinfo",
-    "rootDir": ".",
-    "outDir": "dist",
-    "declarationDir": "dist/dts",
-    "noEmit": false,
-    "emitDeclarationOnly": true
-  }
+    "esm/**/*.js",
+    "esm/**/*.mjs",
+    "esm/**/*.cjs",
+    "esm/**/*.ts",
+    "esm/**/*.mts",
+    "esm/**/*.cts"
+  ]
 }

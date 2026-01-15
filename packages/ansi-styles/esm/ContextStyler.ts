@@ -3,18 +3,18 @@
  * of a context object.
  */
 
-import { MArray, MFunction, MInspectable, MPipeable, MTypes } from "@parischap/effect-lib";
-import { Equal, Equivalence, Hash, pipe, Pipeable, Predicate, String, Struct, Types } from "effect";
-import * as ASPalette from "./Palette.js";
-import * as ASStyle from "./Style.js";
-import type * as ASText from "./Text.js";
+import { MArray, MFunction, MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
+import { Equal, Equivalence, Hash, pipe, Pipeable, Predicate, String, Struct, Types } from 'effect';
+import * as ASPalette from './Palette.js';
+import * as ASStyle from './Style.js';
+import type * as ASText from './Text.js';
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = "@parischap/ansi-styles/ContextStyler/";
+export const moduleTag = '@parischap/ansi-styles/ContextStyler/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
@@ -149,7 +149,7 @@ const base: MTypes.Proto<Type<unknown>> = {
 export const fromSingleStyle = <C>(style: ASStyle.Type): Type<C> => {
   return Object.assign((() => style) satisfies DirectAction.Type<unknown>, {
     ...base,
-    id: ASStyle.toId(style) + "Formatter",
+    id: ASStyle.toId(style) + 'Formatter',
     withContextLast: ((toStyle) => {
       const styled = style(toStyle);
       return () => styled;
@@ -172,7 +172,7 @@ export const fromPalette = <C>({
   readonly palette: ASPalette.Type;
   readonly indexFromContext: IndexFromContext.Type<C>;
 }): Type<C> => {
-  const styles = palette.styles;
+  const { styles } = palette;
   const n = styles.length;
 
   const getStyle: DirectAction.Type<C> = (context) =>
@@ -180,7 +180,7 @@ export const fromPalette = <C>({
 
   return Object.assign(MFunction.clone(getStyle), {
     ...base,
-    id: String.capitalize(indexFromContext.name) + "Based" + ASPalette.toId(palette) + "Formatter",
+    id: String.capitalize(indexFromContext.name) + 'Based' + ASPalette.toId(palette) + 'Formatter',
     withContextLast: ((toStyle) => (context) =>
       getStyle(context)(toStyle)) satisfies ReversedAction.Type<C>,
   });
@@ -191,7 +191,7 @@ export const fromPalette = <C>({
  *
  * @category Destructors
  */
-export const id: MTypes.OneArgFunction<Type<never>, string> = Struct.get("id");
+export const id: MTypes.OneArgFunction<Type<never>, string> = Struct.get('id');
 
 /**
  * None ContextStyler instance: does not apply any style, does not provide a defaultText
