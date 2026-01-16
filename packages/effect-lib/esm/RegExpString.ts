@@ -1,8 +1,8 @@
 /** Very simple regular expression string module */
 
-import { Array, Function, pipe, RegExp, String } from 'effect';
 import * as MArray from './Array.js';
-import * as MTypes from './types.js';
+import type * as MTypes from './types.js';
+import { Array, String as EString, Function, RegExp, pipe } from 'effect';
 
 /**
  * Size of a group of digits
@@ -60,7 +60,7 @@ export const optional: MTypes.StringTransformer = (self) => `(?:${self})?`;
 export const either = (...args: ReadonlyArray<string>): string =>
   pipe(
     args,
-    Array.filter(String.isNonEmpty),
+    Array.filter(EString.isNonEmpty),
     MArray.match012({
       onEmpty: () => '',
       onSingleton: Function.identity,
@@ -284,9 +284,9 @@ const _unsignedInt = either('0', nonZeroDigit + zeroOrMore(digit));
  * @category Instances
  */
 export const unsignedNonNullBase10Int = (thousandSeparator: string): string =>
-  thousandSeparator === '' ? _unsignedNonNullInt : (
-    _unsignedNonNullIntTo999 + zeroOrMore(RegExp.escape(thousandSeparator) + _digitGroup)
-  );
+  thousandSeparator === ''
+    ? _unsignedNonNullInt
+    : _unsignedNonNullIntTo999 + zeroOrMore(RegExp.escape(thousandSeparator) + _digitGroup);
 
 /**
  * Returns a regular expression string representing an unsigned integer in base 10 using
@@ -303,7 +303,7 @@ const _signPart = pipe(sign, capture('signPart'), optional);
 const _exponentPart = pipe(
   sign,
   optional,
-  String.concat(unsignedBase10Int('')),
+  EString.concat(unsignedBase10Int('')),
   capture('exponentPart'),
 );
 // Regular expression string representing the captured fractional part of a floating-point number
@@ -340,16 +340,16 @@ export const base10Number = ({
   readonly eNotationChars: ReadonlyArray<string>;
   readonly fillChar: string;
 }): string =>
-  _signPart
-  + capture('fillChars')(fillChar === '' ? '' : zeroOrMore(fillChar))
-  + pipe(thousandSeparator, unsignedBase10Int, optionalCapture('mantissaIntegerPart'))
-  + pipe(
+  _signPart +
+  capture('fillChars')(fillChar === '' ? '' : zeroOrMore(fillChar)) +
+  pipe(thousandSeparator, unsignedBase10Int, optionalCapture('mantissaIntegerPart')) +
+  pipe(
     fractionalSeparator,
     RegExp.escape,
-    String.concat(capture('mantissaFractionalPart')(_fractionalPart)),
+    EString.concat(capture('mantissaFractionalPart')(_fractionalPart)),
     optional,
-  )
-  + pipe(eNotationChars, Array.map(RegExp.escape), range, String.concat(_exponentPart), optional);
+  ) +
+  pipe(eNotationChars, Array.map(RegExp.escape), range, EString.concat(_exponentPart), optional);
 
 /**
  * A regular expression string representing an integer in base 2.
@@ -449,7 +449,7 @@ export const semVer = `${_unsignedInt}${dot}${_unsignedInt}${dot}${_unsignedInt}
  *
  * @category Instances
  */
-export const email =
-  /* eslint-disable-next-line no-control-regex */
-  /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(?:2(?:5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(?:2(?:5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/
-    .source;
+const _emailNamePart = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+";
+const _emailNumberPart = '5[0-5]|[0-4]';
+const _lowerCaseLettersOrDigitsOrMinus = '[a-z0-9-]*';
+export const email = String.raw`(?:${_emailNamePart}(?:\.${_emailNamePart})*|"(?:[\u0001-\u0008\u000B\u000C\u000E-\u001F\u0021\u0023-\u005B\u005D-\u007F]|\\[\u0001-\u0009\u000B\u000C\u000E-\u007F])*")@(?:(?:${lowerCaseLetterOrDigit}(?:${_lowerCaseLettersOrDigitsOrMinus}${lowerCaseLetterOrDigit})?\.)+${lowerCaseLetterOrDigit}(?:${_lowerCaseLettersOrDigitsOrMinus}${lowerCaseLetterOrDigit})?|\[(?:(?:(?:2(?:${_emailNumberPart}${digit})|1${digit}${digit}|${nonZeroDigit}?${digit}))\.){3}(?:(?:2(?:${_emailNumberPart}${digit})|1${digit}${digit}|${nonZeroDigit}?${digit})|${_lowerCaseLettersOrDigitsOrMinus}${lowerCaseLetterOrDigit}:(?:[\u0001-\u0008\u000B\u000C\u000E-\u001F\u0021-\u005A\u0053-\u007F]|\\[\u0001-\u0009\u000B\u000C\u000E-\u007F])+)\])`;
