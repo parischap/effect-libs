@@ -11,11 +11,6 @@
     "./tsconfig.base.json"
   ],
   "include": [
-    "esm/**/*.js",
-    "esm/**/*.mjs",
-    "esm/**/*.cjs",
-    "esm/**/*.ts",
-    "esm/**/*.mts",
-    "esm/**/*.cts"
+    "esm/**/*.ts"
   ]
 }
