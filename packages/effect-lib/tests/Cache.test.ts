@@ -167,7 +167,6 @@ describe('MCache', () => {
 
   describe('Recursive cache with capacity=2 and no TTL', () => {
     interface RecursiveStructure {
-      /* eslint-disable-next-line functional/prefer-readonly-type */
       [key: string]: string | RecursiveStructure;
     }
 
@@ -212,7 +211,6 @@ describe('MCache', () => {
       const z2: RecursiveStructure = { a: z1, d: 'd', c: z1 };
 
       const z3: RecursiveStructure = { a: z1, b: z2, e: 'e' };
-      /* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements*/
       z2['c'] = z3;
       const value1 = pipe(testCache, MCache.get(z3));
       TestUtils.strictEqual(value1, 'abcabcdCirculare');

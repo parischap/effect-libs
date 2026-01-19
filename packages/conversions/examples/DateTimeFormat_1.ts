@@ -96,7 +96,7 @@ console.log(jsFormatter(new Date(0)));
 //     message: 'Expected length of #year to be: 4. Actual: 5',
 //     _tag: '@parischap/effect-lib/InputError/'
 //   }
-console.log(formatter(CVDateTime.fromPartsOrThrow({ year: 10024 })));
+console.log(formatter(CVDateTime.fromPartsOrThrow({ year: 10_024 })));
 
 // Using Schema
 const schema = CVSchema.DateTime(frenchFormat);

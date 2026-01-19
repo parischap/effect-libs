@@ -3,7 +3,7 @@ import { PPMarkMap } from '@parischap/pretty-print';
 import { describe, it } from 'vitest';
 
 describe('MarkMap', () => {
-  const utilInspectLike = PPMarkMap.utilInspectLike;
+  const {utilInspectLike} = PPMarkMap;
 
   describe('Tag, prototype and guards', () => {
     it('moduleTag', () => {

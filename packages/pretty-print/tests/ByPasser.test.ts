@@ -20,7 +20,7 @@ describe('ByPasser', () => {
     markShowerConstructor,
   };
 
-  const empty = PPByPasser.empty;
+  const {empty} = PPByPasser;
 
   describe('Tag, prototype and guards', () => {
     it('moduleTag', () => {

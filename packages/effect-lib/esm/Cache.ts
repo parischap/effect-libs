@@ -154,7 +154,6 @@ export interface Type<in out A, in out B> extends Inspectable.Inspectable, Pipea
 export const has = (u: unknown): u is Type<unknown, unknown> => Predicate.hasProperty(u, _TypeId);
 
 /** Prototype */
-/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 const _proto: MTypes.Proto<Type<any, any>> = {
   [_TypeId]: {
     _A: MTypes.invariantValue,
@@ -183,7 +182,6 @@ const _make = <A, B>(params: MTypes.Data<Type<A, B>>): Type<A, B> =>
  *   });
  *
  *   interface RecursiveStructure {
- *     // eslint-disable-next-line functional/prefer-readonly-type
  *     [key: string]: string | RecursiveStructure;
  *   }
  *
@@ -214,8 +212,8 @@ export const make = <A, B>({
 }) =>
   _make({
     lookUp,
-    capacity: isNaN(capacity) || capacity < 0 ? 0 : capacity,
-    lifeSpan: isNaN(lifeSpan) || lifeSpan < 0 ? 0 : lifeSpan,
+    capacity: Number.isNaN(capacity) || capacity < 0 ? 0 : capacity,
+    lifeSpan: Number.isNaN(lifeSpan) || lifeSpan < 0 ? 0 : lifeSpan,
     store: MutableHashMap.empty<A, Option.Option<ValueContainer.Type<B>>>(),
     keyListInOrder: MutableList.empty<A>(),
   });
@@ -248,7 +246,6 @@ export const get =
       MutableHashMap.get(a),
       Option.match({
         onNone: () => {
-          /* eslint-disable-next-line functional/no-expression-statements */
           MutableHashMap.set(store, a, Option.none());
           const [result, storeInCache] = self.lookUp({
             key: a,
@@ -256,21 +253,17 @@ export const get =
             isCircular: false,
           });
           if (storeInCache) {
-            /* eslint-disable-next-line functional/no-expression-statements */
             MutableHashMap.set(
               store,
               a,
               Option.some(ValueContainer.make({ value: result, storeDate: now })),
             );
             if (hasBoundedCapacity) {
-              /* eslint-disable-next-line functional/no-expression-statements */
               MutableList.prepend(keyListInOrder, a);
               if (MutableList.length(keyListInOrder) > capacity) {
-                /* eslint-disable-next-line functional/no-expression-statements */
                 MutableHashMap.remove(store, MutableList.pop(keyListInOrder));
               }
             }
-            /* eslint-disable-next-line functional/no-expression-statements */
           } else MutableHashMap.remove(store, a);
           return result;
         },
@@ -286,13 +279,12 @@ export const get =
               if (hasBoundedCapacity) {
                 let head = MutableList.pop(keyListInOrder);
                 while (!Equal.equals(a, head)) {
-                  /* eslint-disable-next-line functional/no-expression-statements */
                   MutableHashMap.remove(store, head);
-                  /* eslint-disable-next-line functional/no-expression-statements */
+
                   head = MutableList.pop(keyListInOrder);
                 }
               }
-              /* eslint-disable-next-line functional/no-expression-statements */
+
               MutableHashMap.set(store, a, Option.none());
               const [result, storeInCache] = self.lookUp({
                 key: a,
@@ -300,21 +292,16 @@ export const get =
                 isCircular: false,
               });
               if (storeInCache) {
-                /* eslint-disable-next-line functional/no-expression-statements */
                 MutableHashMap.set(
                   store,
                   a,
                   Option.some(ValueContainer.make({ value: result, storeDate: now })),
                 );
-                if (hasBoundedCapacity)
-                  /* eslint-disable-next-line functional/no-expression-statements */
-                  MutableList.prepend(keyListInOrder, a);
-                /* eslint-disable-next-line functional/no-expression-statements */
+                if (hasBoundedCapacity) MutableList.prepend(keyListInOrder, a);
               } else MutableHashMap.remove(store, a);
               return result;
-            } else {
-              return valueContainer.value;
             }
+            return valueContainer.value;
           },
         }),
       }),

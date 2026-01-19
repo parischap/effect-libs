@@ -63,8 +63,8 @@ export const make = (value: string): Type => _make({ value });
 export const toParser =
   (self: Type) =>
   (pos: number, text: string): Either.Either<string, MInputError.Type> => {
-    const value = self.value;
-    const length = value.length;
+    const {value} = self;
+    const {length} = value;
     return pipe(
       text,
       MInputError.assertStartsWith({

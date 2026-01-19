@@ -5,7 +5,7 @@ import { pipe } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('PrimitiveFormatter', () => {
-  const utilInspectLike = PPOption.utilInspectLike;
+  const {utilInspectLike} = PPOption;
   const utilInspectLikeFormatter = PPPrimitiveFormatter.utilInspectLikeMaker();
   const utilInspectLikeFormatterWithOtherDefaults = PPPrimitiveFormatter.utilInspectLikeMaker({
     maxStringLength: 3,

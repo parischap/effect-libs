@@ -1,9 +1,9 @@
-import { ASAnsiString, ASColor, ASStyleCharacteristics, ASText } from "@parischap/ansi-styles";
-import * as TestUtils from "@parischap/configs/TestUtils";
-import { Array, flow, pipe } from "effect";
-import { describe, it } from "vitest";
+import { ASAnsiString, ASColor, ASStyleCharacteristics, ASText } from '@parischap/ansi-styles';
+import * as TestUtils from '@parischap/configs/TestUtils';
+import { Array, flow, pipe } from 'effect';
+import { describe, it } from 'vitest';
 
-describe("ASText", () => {
+describe('ASText', () => {
   const none = ASText.concat;
   const bold = ASText.fromStyleAndElems(ASStyleCharacteristics.bold);
   const dim = ASText.fromStyleAndElems(ASStyleCharacteristics.dim);
@@ -24,134 +24,134 @@ describe("ASText", () => {
   );
 
   const boldRed = flow(bold, red);
-  const boldRedFoo = pipe("foo", boldRed);
-  const foo = ASText.fromString("foo");
-  const bar = ASText.fromString("bar");
-  const baz = ASText.fromString("baz");
+  const boldRedFoo = pipe('foo', boldRed);
+  const foo = ASText.fromString('foo');
+  const bar = ASText.fromString('bar');
+  const baz = ASText.fromString('baz');
 
-  describe("Tag, prototype and guards", () => {
-    it("moduleTag", () => {
+  describe('Tag, prototype and guards', () => {
+    it('moduleTag', () => {
       TestUtils.assertSome(TestUtils.moduleTagFromTestFilePath(__filename), ASText.moduleTag);
     });
 
-    describe("haveSameText", () => {
-      it("Matching", () => {
-        TestUtils.assertTrue(ASText.haveSameText(boldRedFoo, ASText.fromString("foo")));
+    describe('haveSameText', () => {
+      it('Matching', () => {
+        TestUtils.assertTrue(ASText.haveSameText(boldRedFoo, ASText.fromString('foo')));
       });
-      it("Non matching", () => {
-        TestUtils.assertFalse(ASText.haveSameText(boldRedFoo, boldRed("bar")));
-      });
-    });
-
-    describe("Equal.equals", () => {
-      it("Matching", () => {
-        TestUtils.assertEquals(boldRedFoo, pipe("foo", red, bold));
-        TestUtils.assertEquals(boldRed(""), none(""));
-      });
-      it("Non matching", () => {
-        TestUtils.assertNotEquals(boldRedFoo, pipe("foo", bold));
+      it('Non matching', () => {
+        TestUtils.assertFalse(ASText.haveSameText(boldRedFoo, boldRed('bar')));
       });
     });
 
-    describe(".toString()", () => {
-      it("Empty", () => {
-        TestUtils.strictEqual(ASText.empty.toString(), "");
+    describe('Equal.equals', () => {
+      it('Matching', () => {
+        TestUtils.assertEquals(boldRedFoo, pipe('foo', red, bold));
+        TestUtils.assertEquals(boldRed(''), none(''));
       });
-
-      it("Simple string with no style", () => {
-        TestUtils.strictEqual(none("foo").toString(), "foo");
-      });
-
-      it("Bold red string", () => {
-        TestUtils.strictEqual(boldRedFoo.toString(), `\x1b[1;31mfoo${ASAnsiString.reset}`);
+      it('Non matching', () => {
+        TestUtils.assertNotEquals(boldRedFoo, pipe('foo', bold));
       });
     });
 
-    it(".pipe()", () => {
+    describe('.toString()', () => {
+      it('Empty', () => {
+        TestUtils.strictEqual(ASText.empty.toString(), '');
+      });
+
+      it('Simple string with no style', () => {
+        TestUtils.strictEqual(none('foo').toString(), 'foo');
+      });
+
+      it('Bold red string', () => {
+        TestUtils.strictEqual(boldRedFoo.toString(), `\x1B[1;31mfoo${ASAnsiString.reset}`);
+      });
+    });
+
+    it('.pipe()', () => {
       TestUtils.strictEqual(boldRedFoo.pipe(ASText.toLength), 3);
     });
 
-    describe("has", () => {
-      it("Matching", () => {
+    describe('has', () => {
+      it('Matching', () => {
         TestUtils.assertTrue(ASText.has(boldRedFoo));
       });
-      it("Non matching", () => {
+      it('Non matching', () => {
         TestUtils.assertFalse(ASText.has(new Date()));
       });
     });
   });
 
-  it("length", () => {
-    TestUtils.strictEqual(ASText.toLength(dim(pink("foo"), red("bar"))), 6);
+  it('length', () => {
+    TestUtils.strictEqual(ASText.toLength(dim(pink('foo'), red('bar'))), 6);
   });
 
-  it("concat", () => {
+  it('concat', () => {
     TestUtils.strictEqual(
       ASText.toUnstyledString(ASText.concat(foo, bar, boldRedFoo)),
-      "foobarfoo",
+      'foobarfoo',
     );
   });
 
-  describe("empty, isEmpty", () => {
-    it("Matching", () => {
+  describe('empty, isEmpty', () => {
+    it('Matching', () => {
       TestUtils.assertTrue(ASText.isEmpty(ASText.empty));
     });
-    it("Non matching", () => {
+    it('Non matching', () => {
       TestUtils.assertFalse(ASText.isEmpty(boldRedFoo));
     });
   });
 
-  it("fromStyleAndElems", () => {
-    const weird = bold("foo", "bar", italic("foo"), italic("bar"), "", "baz");
+  it('fromStyleAndElems', () => {
+    const weird = bold('foo', 'bar', italic('foo'), italic('bar'), '', 'baz');
     TestUtils.strictEqual(pipe(weird, ASText.uniStyledTexts, Array.length), 3);
-    TestUtils.assertEquals(weird, bold("foobar", italic("foobar"), "baz"));
+    TestUtils.assertEquals(weird, bold('foobar', italic('foobar'), 'baz'));
   });
 
-  it("toAnsiString", () => {
+  it('toAnsiString', () => {
     const text = notUnderlined(
-      "foo ",
+      'foo ',
       boldRed(
-        "goes ",
-        italic("to "),
-        pink("the ", notBold("beach ")),
-        dim("to swim "),
-        underlined("with bar"),
+        'goes ',
+        italic('to '),
+        pink('the ', notBold('beach ')),
+        dim('to swim '),
+        underlined('with bar'),
       ),
     );
 
     TestUtils.strictEqual(
       ASText.toAnsiString(text),
-      "foo \x1b[1;31mgoes \x1b[3mto \x1b[23;38;2;255;192;203mthe \x1b[22mbeach \x1b[1;2;31mto swim \x1b[22;1;4mwith bar\x1b[0m",
+      'foo \x1B[1;31mgoes \x1B[3mto \x1B[23;38;2;255;192;203mthe \x1B[22mbeach \x1B[1;2;31mto swim \x1B[22;1;4mwith bar\x1B[0m',
     );
   });
 
-  it("toUnstyledString", () => {
-    TestUtils.strictEqual(ASText.toUnstyledString(dim(pink("foo"), red("bar"))), "foobar");
+  it('toUnstyledString', () => {
+    TestUtils.strictEqual(ASText.toUnstyledString(dim(pink('foo'), red('bar'))), 'foobar');
   });
 
-  it("append", () => {
-    TestUtils.strictEqual(ASText.toUnstyledString(foo.pipe(ASText.append(bar))), "foobar");
+  it('append', () => {
+    TestUtils.strictEqual(ASText.toUnstyledString(foo.pipe(ASText.append(bar))), 'foobar');
   });
 
-  it("prepend", () => {
-    TestUtils.strictEqual(ASText.toUnstyledString(bar.pipe(ASText.prepend(foo))), "foobar");
+  it('prepend', () => {
+    TestUtils.strictEqual(ASText.toUnstyledString(bar.pipe(ASText.prepend(foo))), 'foobar');
   });
 
-  it("surround", () => {
+  it('surround', () => {
     TestUtils.strictEqual(
       ASText.toUnstyledString(bar.pipe(ASText.surround(foo, foo))),
-      "foobarfoo",
+      'foobarfoo',
     );
   });
 
-  it("join", () => {
+  it('join', () => {
     TestUtils.strictEqual(
       pipe(Array.make(foo, bar, foo), ASText.join(baz), ASText.toUnstyledString),
-      "foobazbarbazfoo",
+      'foobazbarbazfoo',
     );
   });
 
-  it("repeat", () => {
-    TestUtils.strictEqual(ASText.toUnstyledString(bar.pipe(ASText.repeat(3))), "barbarbar");
+  it('repeat', () => {
+    TestUtils.strictEqual(ASText.toUnstyledString(bar.pipe(ASText.repeat(3))), 'barbarbar');
   });
 });

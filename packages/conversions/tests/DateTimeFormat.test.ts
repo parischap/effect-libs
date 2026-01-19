@@ -169,7 +169,7 @@ describe("CVDateTimeFormat", () => {
       const formatter = CVDateTimeFormat.toFormatter(isoFormat);
       it("Non matching", () => {
         TestUtils.assertLeftMessage(
-          formatter(CVDateTime.fromPartsOrThrow({ year: 10024 })),
+          formatter(CVDateTime.fromPartsOrThrow({ year: 10_024 })),
           "Expected length of #year to be: 4. Actual: 5",
         );
       });

@@ -228,11 +228,9 @@ export const groupByNum =
   (self: ReadonlyArray<A>): ReadonlyArray<ReadonlyArray<B>> => {
     const out = Array.makeBy(size, () => Array.empty<B>());
 
-    for (let i = 0; i < self.length; i++) {
-      const a = self[i] as A;
+    for (const a of self) {
       const key = fKey(a);
-      /* eslint-disable-next-line functional/immutable-data,functional/no-expression-statements */
-      if (key >= 0 && key < size) (out[key] as Array<B>).push(fValue(a));
+      if (key >= 0 && key < size) out[key]!.push(fValue(a));
     }
     return out;
   };
@@ -365,7 +363,6 @@ export const unfold =
     const knownAs = Array.empty<A>();
     const internalF = (a: A) => {
       const isCyclical = Array.contains(knownAs, a);
-      /* eslint-disable-next-line functional/no-expression-statements, functional/immutable-data */
       knownAs.push(a);
       return f(a, isCyclical);
     };
@@ -430,7 +427,6 @@ export const mapUnlessLeft =
       const result = Array.allocate<B>(length);
 
       for (let i = 0; i < length; i++) {
-        /* eslint-disable-next-line functional/no-expression-statements, functional/immutable-data*/
         result[i] = yield* f(self[i] as A, i);
       }
       return result as never;
@@ -448,7 +444,6 @@ export const reduceUnlessNone =
         i = 0;
 
       for (const a of self) {
-        /* eslint-disable-next-line functional/no-expression-statements*/
         result = yield* f(result, a, i++);
       }
       return result;
@@ -467,7 +462,6 @@ export const reduceUnlessLeft =
         i = 0;
 
       for (const a of self) {
-        /* eslint-disable-next-line functional/no-expression-statements*/
         result = yield* f(result, a, i++);
       }
       return result;

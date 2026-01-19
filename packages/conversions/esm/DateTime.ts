@@ -29,7 +29,7 @@ import {
   MString,
   MStruct,
   MTypes,
-} from "@parischap/effect-lib";
+} from '@parischap/effect-lib';
 import {
   DateTime,
   Either,
@@ -45,18 +45,18 @@ import {
   Struct,
   flow,
   pipe,
-} from "effect";
-import * as CVNumberBase10Format from "./NumberBase10Format.js";
-import * as CVTemplate from "./Template.js";
-import * as CVTemplatePlaceholder from "./TemplatePlaceholder.js";
-import * as CVTemplateSeparator from "./TemplateSeparator.js";
+} from 'effect';
+import * as CVNumberBase10Format from './NumberBase10Format.js';
+import * as CVTemplate from './Template.js';
+import * as CVTemplatePlaceholder from './TemplatePlaceholder.js';
+import * as CVTemplateSeparator from './TemplateSeparator.js';
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = "@parischap/conversions/DateTime/";
+export const moduleTag = '@parischap/conversions/DateTime/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
@@ -65,7 +65,7 @@ type _TypeId = typeof _TypeId;
  *
  * @category Constants
  */
-export const SECOND_MS = 1_000;
+export const SECOND_MS = 1000;
 
 /**
  * Duration of a minute in milliseconds
@@ -169,7 +169,7 @@ export const MIN_TIMESTAMP = -MAX_TIMESTAMP;
 
 const _integer = CVNumberBase10Format.integer;
 const _params = {
-  fillChar: "0",
+  fillChar: '0',
   numberBase10Format: _integer,
 };
 
@@ -187,7 +187,7 @@ const _sep = CVTemplateSeparator;
  * @category Models
  */
 namespace GregorianDate {
-  const _namespaceTag = moduleTag + "GregorianDate/";
+  const _namespaceTag = moduleTag + 'GregorianDate/';
   const _TypeId: unique symbol = Symbol.for(_namespaceTag) as _TypeId;
   type _TypeId = typeof _TypeId;
 
@@ -272,7 +272,7 @@ namespace GregorianDate {
   /** Constructor */
   const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
 
-  const _makeWithInternals = (params: Omit<MTypes.Data<Type>, "_daysInMonth">): Type =>
+  const _makeWithInternals = (params: Omit<MTypes.Data<Type>, '_daysInMonth'>): Type =>
     _make({
       ...params,
       _daysInMonth: params.yearIsLeap ? LEAP_YEAR_DAYS_IN_MONTH : COMMON_YEAR_DAYS_IN_MONTH,
@@ -367,33 +367,33 @@ namespace GregorianDate {
         const yearIsLeap = r4Years === 3 && (r100Years !== 99 || r400Years === 399);
 
         const yearStartTimestamp =
-          YEAR_START_2001_MS +
-          q400Years * FOUR_HUNDRED_YEARS_MS +
-          q100Years * HUNDRED_YEARS_MS +
-          q4Years * FOUR_YEARS_MS +
-          r4Years * COMMON_YEAR_MS;
+          YEAR_START_2001_MS
+          + q400Years * FOUR_HUNDRED_YEARS_MS
+          + q100Years * HUNDRED_YEARS_MS
+          + q4Years * FOUR_YEARS_MS
+          + r4Years * COMMON_YEAR_MS;
 
         const selfYearIsLeap = self.yearIsLeap;
         const selfOrdinalDay = self.ordinalDay;
 
-        const ordinalDayOffset = yield* selfYearIsLeap === yearIsLeap || selfOrdinalDay < 60
-          ? Either.right(0)
-          : selfYearIsLeap
-            ? selfOrdinalDay === 60
-              ? Either.left(
-                  new MInputError.Type({
-                    message: `No February 29th on year ${MString.fromNumber(10)(year)} which is not a leap year`,
-                  }),
-                )
-              : Either.right(-1)
-            : Either.right(1);
+        const ordinalDayOffset = yield* selfYearIsLeap === yearIsLeap || selfOrdinalDay < 60 ?
+          Either.right(0)
+        : selfYearIsLeap ?
+          selfOrdinalDay === 60 ?
+            Either.left(
+              new MInputError.Type({
+                message: `No February 29th on year ${MString.fromNumber(10)(year)} which is not a leap year`,
+              }),
+            )
+          : Either.right(-1)
+        : Either.right(1);
 
         return _makeWithInternals({
           timestamp:
-            self.timestamp +
-            yearStartTimestamp -
-            self.yearStartTimestamp +
-            ordinalDayOffset * DAY_MS,
+            self.timestamp
+            + yearStartTimestamp
+            - self.yearStartTimestamp
+            + ordinalDayOffset * DAY_MS,
           year: validatedYear,
           yearIsLeap,
           yearStartTimestamp,
@@ -469,19 +469,19 @@ namespace GregorianDate {
     (self: Type): Either.Either<Type, MInputError.Type> =>
       Either.gen(function* () {
         const validatedMonthDay =
-          monthDay <= 28
-            ? monthDay
-            : yield* pipe(
-                monthDay,
-                MInputError.assertInRange({
-                  min: 1,
-                  max: getNumberOfDaysInMonth(getMonth(self))(self),
-                  minIncluded: true,
-                  maxIncluded: true,
-                  offset: 0,
-                  name: "'monthDay'",
-                }),
-              );
+          monthDay <= 28 ? monthDay : (
+            yield* pipe(
+              monthDay,
+              MInputError.assertInRange({
+                min: 1,
+                max: getNumberOfDaysInMonth(getMonth(self))(self),
+                minIncluded: true,
+                maxIncluded: true,
+                offset: 0,
+                name: "'monthDay'",
+              }),
+            )
+          );
 
         const ordinalDayOffset = validatedMonthDay - getMonthDay(self);
 
@@ -536,21 +536,21 @@ namespace GregorianDate {
    *
    * @category Destructors
    */
-  export const timestamp: MTypes.OneArgFunction<Type, number> = Struct.get("timestamp");
+  export const timestamp: MTypes.OneArgFunction<Type, number> = Struct.get('timestamp');
 
   /**
    * Returns the `year` property of `self`
    *
    * @category Destructors
    */
-  export const year: MTypes.OneArgFunction<Type, number> = Struct.get("year");
+  export const year: MTypes.OneArgFunction<Type, number> = Struct.get('year');
 
   /**
    * Returns the `yearIsLeap` property of `self`
    *
    * @category Predicates
    */
-  export const yearIsLeap: Predicate.Predicate<Type> = Struct.get("yearIsLeap");
+  export const yearIsLeap: Predicate.Predicate<Type> = Struct.get('yearIsLeap');
 
   /**
    * Returns the `yearStartTimestamp` property of `self`
@@ -558,14 +558,14 @@ namespace GregorianDate {
    * @category Destructors
    */
   export const yearStartTimestamp: MTypes.OneArgFunction<Type, number> =
-    Struct.get("yearStartTimestamp");
+    Struct.get('yearStartTimestamp');
 
   /**
    * Returns the `ordinalDay` property of `self`
    *
    * @category Destructors
    */
-  export const ordinalDay: MTypes.OneArgFunction<Type, number> = Struct.get("ordinalDay");
+  export const ordinalDay: MTypes.OneArgFunction<Type, number> = Struct.get('ordinalDay');
 
   /**
    * Returns the `month` of `self`
@@ -576,18 +576,15 @@ namespace GregorianDate {
     pipe(
       self.month,
       Option.getOrElse(() => {
-        const ordinalDay = self.ordinalDay;
-        const yearIsLeap = self.yearIsLeap;
+        const { ordinalDay } = self;
+        const { yearIsLeap } = self;
         const adjustedOrdinalDay = ordinalDay - (yearIsLeap ? 1 : 0);
         const result =
-          ordinalDay <= 31
-            ? 1
-            : adjustedOrdinalDay <= 59
-              ? 2
-              : Math.floor((adjustedOrdinalDay - 59) / 30.6 - 0.018) + 3;
+          ordinalDay <= 31 ? 1
+          : adjustedOrdinalDay <= 59 ? 2
+          : Math.floor((adjustedOrdinalDay - 59) / 30.6 - 0.018) + 3;
 
-        /* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements */
-        (self as MTypes.WithMutable<Type, "month">).month = Option.some(result);
+        (self as MTypes.WithMutable<Type, 'month'>).month = Option.some(result);
         return result;
       }),
     );
@@ -603,8 +600,7 @@ namespace GregorianDate {
       Option.getOrElse(() => {
         const result = self.ordinalDay - getMonthOffset(getMonth(self))(self);
 
-        /* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements */
-        (self as MTypes.WithMutable<Type, "monthDay">).monthDay = Option.some(result);
+        (self as MTypes.WithMutable<Type, 'monthDay'>).monthDay = Option.some(result);
         return result;
       }),
     );
@@ -633,11 +629,9 @@ namespace GregorianDate {
   export const getMonthOffset =
     (month: number) =>
     (self: Type): number =>
-      month === 1
-        ? 0
-        : month === 2
-          ? 31
-          : 30 * (month - 1) + Math.floor(0.6 * (month + 1)) - (self.yearIsLeap ? 2 : 3);
+      month === 1 ? 0
+      : month === 2 ? 31
+      : 30 * (month - 1) + Math.floor(0.6 * (month + 1)) - (self.yearIsLeap ? 2 : 3);
 
   /**
    * Returns the number of days of month `month` of the `year` property of `self`
@@ -645,16 +639,16 @@ namespace GregorianDate {
    * @category Destructors
    */
   export const getNumberOfDaysInMonth = (month: number): MTypes.OneArgFunction<Type, number> =>
-    flow(Struct.get("_daysInMonth"), MArray.unsafeGet(month - 1));
+    flow(Struct.get('_daysInMonth'), MArray.unsafeGet(month - 1));
 
   const _formatter = flow(
     CVTemplate.toFormatter(
       CVTemplate.make(
-        _fixedLengthToReal({ ..._params, name: "year", length: 4 }),
+        _fixedLengthToReal({ ..._params, name: 'year', length: 4 }),
         _sep.hyphen,
-        _fixedLengthToReal({ ..._params, name: "month", length: 2 }),
+        _fixedLengthToReal({ ..._params, name: 'month', length: 2 }),
         _sep.hyphen,
-        _fixedLengthToReal({ ..._params, name: "monthDay", length: 2 }),
+        _fixedLengthToReal({ ..._params, name: 'monthDay', length: 2 }),
       ),
     ),
     Either.getOrThrowWith(Function.identity),
@@ -684,7 +678,7 @@ namespace GregorianDate {
  * @category Models
  */
 namespace IsoDate {
-  const _namespaceTag = moduleTag + "IsoDate/";
+  const _namespaceTag = moduleTag + 'IsoDate/';
   const _TypeId: unique symbol = Symbol.for(_namespaceTag) as _TypeId;
   type _TypeId = typeof _TypeId;
 
@@ -809,9 +803,9 @@ namespace IsoDate {
     // The second one-hundred year period is a week shorter because it has 17 long years instead of 18
     // Also the hundred-th year must be put in the first one-hundred year period because it is not long
     const q100Years =
-      r400Years < ONE_HUNDRED_YEARS_MS + SHORT_YEAR_MS
-        ? 0
-        : Math.floor((r400Years + WEEK_MS) / ONE_HUNDRED_YEARS_MS);
+      r400Years < ONE_HUNDRED_YEARS_MS + SHORT_YEAR_MS ?
+        0
+      : Math.floor((r400Years + WEEK_MS) / ONE_HUNDRED_YEARS_MS);
 
     const adjustedR400Years = r400Years - q100Years * NINETY_SIX_YEARS_MS + SHORT_YEAR_MS;
     const q28Years = Math.floor(adjustedR400Years / TWENTY_EIGHT_YEARS_MS);
@@ -831,22 +825,22 @@ namespace IsoDate {
     return _make({
       timestamp,
       year:
-        2010 +
-        q400Years * 400 +
-        q100Years * 96 +
-        q28Years * 28 +
-        q11Years * 11 +
-        q6Years * 6 +
-        q1Year,
+        2010
+        + q400Years * 400
+        + q100Years * 96
+        + q28Years * 28
+        + q11Years * 11
+        + q6Years * 6
+        + q1Year,
       yearStartTimestamp:
-        YEAR_START_2010_MS +
-        q400Years * FOUR_HUNDRED_YEARS_MS +
-        q100Years * NINETY_SIX_YEARS_MS +
-        q28Years * TWENTY_EIGHT_YEARS_MS +
-        q11Years * ELEVEN_YEARS_MS +
-        q6Years * SIX_YEARS_MS +
-        q1Year * SHORT_YEAR_MS,
-      yearIsLong: (isFirstSixYearPeriod && q1Year == 5) || (!isFirstSixYearPeriod && q1Year == 4),
+        YEAR_START_2010_MS
+        + q400Years * FOUR_HUNDRED_YEARS_MS
+        + q100Years * NINETY_SIX_YEARS_MS
+        + q28Years * TWENTY_EIGHT_YEARS_MS
+        + q11Years * ELEVEN_YEARS_MS
+        + q6Years * SIX_YEARS_MS
+        + q1Year * SHORT_YEAR_MS,
+      yearIsLong: (isFirstSixYearPeriod && q1Year === 5) || (!isFirstSixYearPeriod && q1Year === 4),
       isoWeek: Option.none(),
       weekday: Option.none(),
     });
@@ -862,23 +856,23 @@ namespace IsoDate {
     const yearStartWeekday = MNumber.intModulo(7)(
       Math.floor((gregorianDate.yearStartTimestamp - DAY_MS) / DAY_MS),
     );
-    const yearIsLeap = gregorianDate.yearIsLeap;
+    const { yearIsLeap } = gregorianDate;
     const minOrdinalDayIndex = 3 - yearStartWeekday;
-    const ordinalDay = gregorianDate.ordinalDay;
+    const { ordinalDay } = gregorianDate;
 
     if (ordinalDay <= minOrdinalDayIndex) {
       const year = gregorianDate.year - 1;
       const yearIsLong =
-        yearStartWeekday === 0 ||
-        (yearStartWeekday === 1 &&
-          !yearIsLeap &&
-          ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0));
+        yearStartWeekday === 0
+        || (yearStartWeekday === 1
+          && !yearIsLeap
+          && ((year % 4 === 0 && year % 100 !== 0) || year % 400 === 0));
       return _make({
         timestamp: gregorianDate.timestamp,
         year,
         yearStartTimestamp:
-          gregorianDate.yearStartTimestamp +
-          (minOrdinalDayIndex - (yearIsLong ? 371 : 364)) * DAY_MS,
+          gregorianDate.yearStartTimestamp
+          + (minOrdinalDayIndex - (yearIsLong ? 371 : 364)) * DAY_MS,
         yearIsLong,
         isoWeek: Option.none(),
         weekday: Option.none(),
@@ -890,10 +884,11 @@ namespace IsoDate {
 
     if (ordinalDay > maxOrdinalDay) {
       const year = gregorianDate.year + 1;
-      const yearIsLong = yearIsLeap
-        ? yearStartWeekday === 4
-        : yearStartWeekday === 5 ||
-          (yearStartWeekday === 4 && ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0));
+      const yearIsLong =
+        yearIsLeap ?
+          yearStartWeekday === 4
+        : yearStartWeekday === 5
+          || (yearStartWeekday === 4 && ((year % 4 === 0 && year % 100 !== 0) || year % 400 === 0));
 
       return _make({
         timestamp: gregorianDate.timestamp,
@@ -955,13 +950,13 @@ namespace IsoDate {
         const r11Years = adjustedR28Years - q11Years * 11;
 
         const yearStartTimestamp =
-          YEAR_START_2010_MS +
-          q400Years * FOUR_HUNDRED_YEARS_MS +
-          q100Years * NINETY_SIX_YEARS_MS +
-          q28Years * TWENTY_EIGHT_YEARS_MS +
-          q11Years * ELEVEN_YEARS_MS +
-          r11Years * SHORT_YEAR_MS +
-          (r11Years > 5 ? WEEK_MS : 0);
+          YEAR_START_2010_MS
+          + q400Years * FOUR_HUNDRED_YEARS_MS
+          + q100Years * NINETY_SIX_YEARS_MS
+          + q28Years * TWENTY_EIGHT_YEARS_MS
+          + q11Years * ELEVEN_YEARS_MS
+          + r11Years * SHORT_YEAR_MS
+          + (r11Years > 5 ? WEEK_MS : 0);
 
         return yield* pipe(
           _make({
@@ -1055,14 +1050,14 @@ namespace IsoDate {
    *
    * @category Destructors
    */
-  export const timestamp: MTypes.OneArgFunction<Type, number> = Struct.get("timestamp");
+  export const timestamp: MTypes.OneArgFunction<Type, number> = Struct.get('timestamp');
 
   /**
    * Returns the `year` property of `self`
    *
    * @category Destructors
    */
-  export const year: MTypes.OneArgFunction<Type, number> = Struct.get("year");
+  export const year: MTypes.OneArgFunction<Type, number> = Struct.get('year');
 
   /**
    * Returns the `yearStartTimestamp` property of `self`
@@ -1070,14 +1065,14 @@ namespace IsoDate {
    * @category Destructors
    */
   export const yearStartTimestamp: MTypes.OneArgFunction<Type, number> =
-    Struct.get("yearStartTimestamp");
+    Struct.get('yearStartTimestamp');
 
   /**
    * Returns the `yearIsLong` property of `self`
    *
    * @category Predicates
    */
-  export const yearIsLong: Predicate.Predicate<Type> = Struct.get("yearIsLong");
+  export const yearIsLong: Predicate.Predicate<Type> = Struct.get('yearIsLong');
 
   /**
    * Returns the `isoWeek` of `self`
@@ -1089,8 +1084,7 @@ namespace IsoDate {
       self.isoWeek,
       Option.getOrElse(() => {
         const result = Math.floor((self.timestamp - self.yearStartTimestamp) / WEEK_MS) + 1;
-        /* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements */
-        (self as MTypes.WithMutable<Type, "isoWeek">).isoWeek = Option.some(result);
+        (self as MTypes.WithMutable<Type, 'isoWeek'>).isoWeek = Option.some(result);
         return result;
       }),
     );
@@ -1108,8 +1102,7 @@ namespace IsoDate {
           Math.floor(
             (self.timestamp - self.yearStartTimestamp - (getIsoWeek(self) - 1) * WEEK_MS) / DAY_MS,
           ) + 1;
-        /* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements */
-        (self as MTypes.WithMutable<Type, "weekday">).weekday = Option.some(result);
+        (self as MTypes.WithMutable<Type, 'weekday'>).weekday = Option.some(result);
         return result;
       }),
     );
@@ -1132,11 +1125,11 @@ namespace IsoDate {
   const _formatter = flow(
     CVTemplate.toFormatter(
       CVTemplate.make(
-        _fixedLengthToReal({ ..._params, name: "year", length: 4 }),
-        _sep.make("-W"),
-        _fixedLengthToReal({ ..._params, name: "isoWeek", length: 2 }),
+        _fixedLengthToReal({ ..._params, name: 'year', length: 4 }),
+        _sep.make('-W'),
+        _fixedLengthToReal({ ..._params, name: 'isoWeek', length: 2 }),
         _sep.hyphen,
-        _fixedLengthToReal({ ..._params, name: "weekday", length: 2 }),
+        _fixedLengthToReal({ ..._params, name: 'weekday', length: 2 }),
       ),
     ),
     Either.getOrThrowWith(Function.identity),
@@ -1162,7 +1155,7 @@ namespace IsoDate {
  * @category Models
  */
 namespace Time {
-  const _namespaceTag = moduleTag + "Time/";
+  const _namespaceTag = moduleTag + 'Time/';
   const _TypeId: unique symbol = Symbol.for(_namespaceTag) as _TypeId;
   type _TypeId = typeof _TypeId;
 
@@ -1418,59 +1411,59 @@ namespace Time {
    *
    * @category Destructors
    */
-  export const timestampOffset: MTypes.OneArgFunction<Type, number> = Struct.get("timestampOffset");
+  export const timestampOffset: MTypes.OneArgFunction<Type, number> = Struct.get('timestampOffset');
 
   /**
    * Returns the `hour23` property of `self`
    *
    * @category Destructors
    */
-  export const hour23: MTypes.OneArgFunction<Type, number> = Struct.get("hour23");
+  export const hour23: MTypes.OneArgFunction<Type, number> = Struct.get('hour23');
   /**
    * Returns the `hour11` property of `self`
    *
    * @category Destructors
    */
-  export const hour11: MTypes.OneArgFunction<Type, number> = Struct.get("hour11");
+  export const hour11: MTypes.OneArgFunction<Type, number> = Struct.get('hour11');
 
   /**
    * Returns the `meridiem` property of `self`
    *
    * @category Destructors
    */
-  export const meridiem: MTypes.OneArgFunction<Type, 0 | 12> = Struct.get("meridiem");
+  export const meridiem: MTypes.OneArgFunction<Type, 0 | 12> = Struct.get('meridiem');
 
   /**
    * Returns the `minute` property of `self`
    *
    * @category Destructors
    */
-  export const minute: MTypes.OneArgFunction<Type, number> = Struct.get("minute");
+  export const minute: MTypes.OneArgFunction<Type, number> = Struct.get('minute');
 
   /**
    * Returns the `second` property of `self`
    *
    * @category Destructors
    */
-  export const second: MTypes.OneArgFunction<Type, number> = Struct.get("second");
+  export const second: MTypes.OneArgFunction<Type, number> = Struct.get('second');
 
   /**
    * Returns the `millisecond` property of `self`
    *
    * @category Destructors
    */
-  export const millisecond: MTypes.OneArgFunction<Type, number> = Struct.get("millisecond");
+  export const millisecond: MTypes.OneArgFunction<Type, number> = Struct.get('millisecond');
 
   const _formatter = flow(
     CVTemplate.toFormatter(
       CVTemplate.make(
-        _fixedLengthToReal({ ..._params, name: "hour23", length: 2 }),
+        _fixedLengthToReal({ ..._params, name: 'hour23', length: 2 }),
         _sep.colon,
-        _fixedLengthToReal({ ..._params, name: "minute", length: 2 }),
+        _fixedLengthToReal({ ..._params, name: 'minute', length: 2 }),
         _sep.colon,
-        _fixedLengthToReal({ ..._params, name: "second", length: 2 }),
+        _fixedLengthToReal({ ..._params, name: 'second', length: 2 }),
         _sep.dot,
-        _fixedLengthToReal({ ..._params, name: "millisecond", length: 3 }),
+        _fixedLengthToReal({ ..._params, name: 'millisecond', length: 3 }),
       ),
     ),
     Either.getOrThrowWith(Function.identity),
@@ -1498,7 +1491,7 @@ namespace Time {
  * @category Models
  */
 namespace ZoneOffsetParts {
-  const _namespaceTag = moduleTag + "ZoneOffsetParts/";
+  const _namespaceTag = moduleTag + 'ZoneOffsetParts/';
   const _TypeId: unique symbol = Symbol.for(_namespaceTag) as _TypeId;
   type _TypeId = typeof _TypeId;
 
@@ -1622,32 +1615,32 @@ namespace ZoneOffsetParts {
    *
    * @category Destructors
    */
-  export const zoneHour: MTypes.OneArgFunction<Type, number> = Struct.get("zoneHour");
+  export const zoneHour: MTypes.OneArgFunction<Type, number> = Struct.get('zoneHour');
 
   /**
    * Returns the `zoneMinute` property of `self`
    *
    * @category Destructors
    */
-  export const zoneMinute: MTypes.OneArgFunction<Type, number> = Struct.get("zoneMinute");
+  export const zoneMinute: MTypes.OneArgFunction<Type, number> = Struct.get('zoneMinute');
   /**
    * Returns the `zoneSecond` property of `self`
    *
    * @category Destructors
    */
-  export const zoneSecond: MTypes.OneArgFunction<Type, number> = Struct.get("zoneSecond");
+  export const zoneSecond: MTypes.OneArgFunction<Type, number> = Struct.get('zoneSecond');
 
   const _formatter = flow(
     CVTemplate.toFormatter(
       CVTemplate.make(
         _fixedLengthToReal({
           ..._params,
-          name: "zoneHour",
+          name: 'zoneHour',
           length: 3,
           numberBase10Format: pipe(_integer, CVNumberBase10Format.withSignDisplay),
         }),
         _sep.colon,
-        _fixedLengthToReal({ ..._params, name: "zoneMinute", length: 2 }),
+        _fixedLengthToReal({ ..._params, name: 'zoneMinute', length: 2 }),
       ),
     ),
     Either.getOrThrowWith(Function.identity),
@@ -1746,10 +1739,10 @@ const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto
  * @category Destructors
  */
 export const getIsoString = (self: Type): string =>
-  GregorianDate.getIsoString(_gregorianDate(self)) +
-  "T" +
-  Time.getIsoString(_time(self)) +
-  ZoneOffsetParts.getIsoString(_zoneOffsetParts(self));
+  GregorianDate.getIsoString(_gregorianDate(self))
+  + 'T'
+  + Time.getIsoString(_time(self))
+  + ZoneOffsetParts.getIsoString(_zoneOffsetParts(self));
 
 const _uncalculated = {
   gregorianDate: Option.none(),
@@ -2007,8 +2000,8 @@ export const fromParts = ({
   Either.gen(function* () {
     const zonedOrigin = yield* Either.gen(function* () {
       if (
-        zoneOffset !== undefined ||
-        (zoneHour === undefined && zoneMinute === undefined && zoneSecond === undefined)
+        zoneOffset !== undefined
+        || (zoneHour === undefined && zoneMinute === undefined && zoneSecond === undefined)
       ) {
         const result = yield* pipe(_uncalculatedOrigin, setZoneOffsetKeepParts(zoneOffset));
 
@@ -2201,7 +2194,7 @@ export const toEffectDateTime = (self: Type): DateTime.Zoned =>
  *
  * @category Getters
  */
-export const timestamp: MTypes.OneArgFunction<Type, number> = Struct.get("timestamp");
+export const timestamp: MTypes.OneArgFunction<Type, number> = Struct.get('timestamp');
 
 /** Returns the `gregorianDate` of `self` for the given time zone */
 const _gregorianDate = (self: Type): GregorianDate.Type =>
@@ -2209,8 +2202,7 @@ const _gregorianDate = (self: Type): GregorianDate.Type =>
     self.gregorianDate,
     Option.getOrElse(() => {
       const result = GregorianDate.fromTimestamp(self._zonedTimestamp);
-      /* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements */
-      (self as MTypes.WithMutable<Type, "gregorianDate">).gregorianDate = Option.some(result);
+      (self as MTypes.WithMutable<Type, 'gregorianDate'>).gregorianDate = Option.some(result);
       return result;
     }),
   );
@@ -2265,8 +2257,7 @@ const _isoDate = (self: Type): IsoDate.Type =>
         Option.map(IsoDate.fromGregorianDate),
         Option.getOrElse(() => IsoDate.fromTimestamp(self._zonedTimestamp)),
       );
-      /* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements */
-      (self as MTypes.WithMutable<Type, "isoDate">).isoDate = Option.some(result);
+      (self as MTypes.WithMutable<Type, 'isoDate'>).isoDate = Option.some(result);
       return result;
     }),
   );
@@ -2298,8 +2289,7 @@ const _time = (self: Type): Time.Type =>
     self.time,
     Option.getOrElse(() => {
       const result = pipe(self._zonedTimestamp, MNumber.intModulo(DAY_MS), Time.fromTimestamp);
-      /* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements */
-      (self as MTypes.WithMutable<Type, "time">).time = Option.some(result);
+      (self as MTypes.WithMutable<Type, 'time'>).time = Option.some(result);
       return result as never;
     }),
   );
@@ -2352,8 +2342,7 @@ const _zoneOffsetParts = (self: Type): ZoneOffsetParts.Type =>
     self.zoneOffsetParts,
     Option.getOrElse(() => {
       const result = ZoneOffsetParts.fromZoneOffset(self.zoneOffset);
-      /* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements */
-      (self as MTypes.WithMutable<Type, "zoneOffsetParts">).zoneOffsetParts = Option.some(result);
+      (self as MTypes.WithMutable<Type, 'zoneOffsetParts'>).zoneOffsetParts = Option.some(result);
       return result;
     }),
   );
@@ -2759,7 +2748,7 @@ const _setTimestamp =
           minIncluded: true,
           maxIncluded: true,
           offset: 0,
-          name: "timestamp",
+          name: 'timestamp',
         }),
       );
 
@@ -2780,9 +2769,9 @@ const _setZoneOffset =
   (self: Type): Either.Either<Type, MInputError.Type> =>
     Either.gen(function* () {
       const buildFromZoneOffset = (validatedZoneOffset: number) =>
-        keepTimestamp
-          ? _uncalculatedFromTimestamp(self.timestamp, validatedZoneOffset)
-          : _uncalculatedFromZonedTimestamp(self._zonedTimestamp, validatedZoneOffset);
+        keepTimestamp ?
+          _uncalculatedFromTimestamp(self.timestamp, validatedZoneOffset)
+        : _uncalculatedFromZonedTimestamp(self._zonedTimestamp, validatedZoneOffset);
 
       if (MTypes.isPrimitive(zoneOffset)) {
         const validatedZoneOffset = yield* pipe(
@@ -2803,8 +2792,7 @@ const _setZoneOffset =
 
       const result = pipe(zoneOffsetParts, ZoneOffsetParts.toHour, buildFromZoneOffset);
 
-      /* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements */
-      (result as MTypes.WithMutable<Type, "zoneOffsetParts">).zoneOffsetParts =
+      (result as MTypes.WithMutable<Type, 'zoneOffsetParts'>).zoneOffsetParts =
         Option.some(zoneOffsetParts);
 
       return result;
@@ -2924,8 +2912,8 @@ export const isFirstMonthDay: Predicate.Predicate<Type> = (self) => getMonthDay(
  */
 
 export const isLastMonthDay: Predicate.Predicate<Type> = (self) =>
-  getMonthDay(self) ===
-  pipe(self, _gregorianDate, GregorianDate.getNumberOfDaysInMonth(getMonth(self)));
+  getMonthDay(self)
+  === pipe(self, _gregorianDate, GregorianDate.getNumberOfDaysInMonth(getMonth(self)));
 
 /**
  * Returns true if `self` is the first day of a year in the given timezone

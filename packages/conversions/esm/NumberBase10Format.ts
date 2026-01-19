@@ -680,7 +680,7 @@ const _toBigDecimalExtractor = (
           onNone: () =>
             (
               (!self.showNullIntegerPart && mantissaFractionalPartLength !== 0)
-              || (fillCharIsZero && fillChars.length !== 0)
+              || (fillCharIsZero && fillChars.length > 0)
             ) ?
               Option.some(MBigDecimal.zero)
             : Option.none(),
@@ -981,7 +981,7 @@ export const toNumberFormatter = (
       Either.liftPredicate(
         Predicate.not(MPredicate.strictEquals('0')),
         MFunction.fIfTrue({
-          condition: !self.showNullIntegerPart && fractionalPartString.length !== 0,
+          condition: !self.showNullIntegerPart && fractionalPartString.length > 0,
           f: MFunction.constEmptyString,
         }),
       ),

@@ -248,7 +248,6 @@ export const search =
       );
     }
     const target = self.slice(startIndex);
-    /* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements */
     regexp.lastIndex = 0;
     const result = regexp.exec(target);
     if (MTypes.isNull(result)) return Option.none();
@@ -559,7 +558,7 @@ export const prepend =
 export const replaceBetween =
   (replacement: string, startIndex: number, endIndex: number): MTypes.StringTransformer =>
   (self) =>
-    self.substring(0, startIndex) + replacement + self.substring(endIndex);
+    self.slice(0, startIndex) + replacement + self.slice(endIndex);
 
 /**
  * A slightly different version of match using RegExp.prototype.exec instead of
@@ -572,7 +571,6 @@ export const replaceBetween =
 export const match =
   (regExp: RegExp) =>
   (self: string): Option.Option<string> => {
-    /* eslint-disable-next-line functional/immutable-data, functional/no-expression-statements*/
     regExp.lastIndex = 0;
     return pipe(
       self,
@@ -604,7 +602,6 @@ export const matchWithCapturingGroups =
     self: string,
   ): Option.Option<{
     match: string;
-    /* eslint-disable-next-line functional/prefer-readonly-type */
     groups: {
       [k in keyof Names as [k] extends [number] ? Names[k] : never]: string;
     };
@@ -648,7 +645,7 @@ export const matchWithCapturingGroups =
 export const splitAt =
   (n: number) =>
   (self: string): [left: string, right: string] =>
-    Tuple.make(self.substring(0, n), self.substring(n));
+    Tuple.make(self.slice(0, n), self.slice(n));
 
 /**
  * Splits `self` in two parts at position `n` from the end of `self`. The length of the second
@@ -763,7 +760,7 @@ export const removeNCharsEveryMCharsFromRight = ({
  */
 
 export const isDigit: Predicate.Predicate<string> = (self) => {
-  if (self.length !== 1) return false;
-  const code = self.charCodeAt(0);
+  const code = self.codePointAt(0);
+  if (code === undefined || self.length > 1) return false;
   return code >= 48 && code <= 57;
 };

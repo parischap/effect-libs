@@ -12,7 +12,7 @@ import { Array, Function, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('NonPrimitiveFormatter', () => {
-  const singleLine = PPNonPrimitiveFormatter.singleLine;
+  const {singleLine} = PPNonPrimitiveFormatter;
   const utilInspectLike = PPOption.darkModeUtilInspectLike;
   const valueBasedStylerConstructor = PPValueBasedStylerConstructor.fromOption(utilInspectLike);
   const markShowerConstructor = PPMarkShowerConstructor.fromOption(utilInspectLike);

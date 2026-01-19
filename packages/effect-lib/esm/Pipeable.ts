@@ -9,7 +9,6 @@ import { Pipeable } from 'effect';
  */
 export const BaseProto: Pipeable.Pipeable = {
   pipe(this: object) {
-    /* eslint-disable-next-line prefer-rest-params */
     return Pipeable.pipeArguments(this, arguments);
   },
 };

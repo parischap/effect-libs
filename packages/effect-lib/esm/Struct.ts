@@ -65,7 +65,6 @@ export const set =
 export const mutableSet =
   <O extends MTypes.NonPrimitive, O1 extends Partial<O>>(that: O1) =>
   (self: O): Omit<O, keyof O1> & O1 =>
-    /* eslint-disable-next-line functional/immutable-data */
     Object.assign(self, that);
 
 /**
@@ -109,7 +108,6 @@ export const mutableEnrichWith =
     fields: O1,
   ) =>
   (self: O): Omit<O, keyof O1> & { readonly [key in keyof O1]: ReturnType<O1[key]> } =>
-    /* eslint-disable-next-line functional/immutable-data */
     Object.assign(self, Record.map(fields, Function.apply(self)));
 
 /* eslint-disable */

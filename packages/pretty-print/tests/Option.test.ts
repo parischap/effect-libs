@@ -1,23 +1,22 @@
-/* eslint-disable functional/no-expression-statements */
 import { ASStyle, ASText } from '@parischap/ansi-styles';
 import * as TestUtils from '@parischap/configs/TestUtils';
 import { MPredicate } from '@parischap/effect-lib';
 import {
-    PPByPasser,
-    PPMarkShowerConstructor,
-    PPOption,
-    PPPropertyFilter,
-    PPStringifiedValue,
-    PPValue,
-    PPValueBasedStylerConstructor,
-    PPValueOrder,
+  PPByPasser,
+  PPMarkShowerConstructor,
+  PPOption,
+  PPPropertyFilter,
+  PPStringifiedValue,
+  PPValue,
+  PPValueBasedStylerConstructor,
+  PPValueOrder,
 } from '@parischap/pretty-print';
 import { Array, HashMap, HashSet, Option, pipe, Predicate } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('Option', () => {
   describe('NonPrimitive', () => {
-    const record = PPOption.NonPrimitive.record;
+    const { record } = PPOption.NonPrimitive;
     describe('Prototype and guards', () => {
       describe('Equal.equals', () => {
         it('Matching', () => {
@@ -194,7 +193,7 @@ describe('Option', () => {
   });
 
   describe('Tag, prototype and guards', () => {
-    const utilInspectLike = PPOption.utilInspectLike;
+    const { utilInspectLike } = PPOption;
 
     it('moduleTag', () => {
       TestUtils.assertSome(TestUtils.moduleTagFromTestFilePath(__filename), PPOption.moduleTag);
@@ -336,7 +335,6 @@ describe('Option', () => {
     describe('Check circularity handling', () => {
       it('Simple example with color', () => {
         const circular = { a: 1 as unknown };
-        /* eslint-disable-next-line functional/immutable-data */
         circular.a = circular;
 
         TestUtils.strictEqual(
@@ -356,11 +354,9 @@ describe('Option', () => {
 
       it('More complex example without color', () => {
         const circular = { a: 1 as unknown, b: { inner: 1 as unknown, circular: 1 as unknown } };
-        /* eslint-disable functional/immutable-data */
         circular.a = [circular];
         circular.b.inner = circular.b;
         circular.b.circular = circular;
-        /* eslint-enable functional/immutable-data*/
         TestUtils.deepStrictEqual(
           pipe(circular, stringifierWithInfiniteMaxDepth, PPStringifiedValue.toUnstyledStrings),
           [
@@ -397,9 +393,7 @@ describe('Option', () => {
 
       it('Nested objects and arrays', () => {
         const map = new Map();
-        /* eslint-disable-next-line functional/immutable-data */
         map.set({ mapA: 1, mapB: 2 }, 1);
-        /* eslint-disable-next-line functional/immutable-data */
         map.set({ mapA: 6, mapB: 5 }, 3);
         const test = {
           c: { e: ['a', 'b'], d: [3, 4], a: map },

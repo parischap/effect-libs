@@ -5,7 +5,7 @@ import { BigDecimal, Option, pipe, Tuple } from "effect";
 import { describe, it } from "vitest";
 
 describe("NumberBase10Format", () => {
-  const frenchStyleNumber = CVNumberBase10Format.frenchStyleNumber;
+  const {frenchStyleNumber} = CVNumberBase10Format;
   const frenchStyleThreeDecimalNumberWithSignDisplayForNegative = pipe(
     frenchStyleNumber,
     CVNumberBase10Format.withSignDisplayForNegative,
@@ -305,10 +305,10 @@ describe("NumberBase10Format", () => {
             CVNumberBase10Format.ScientificNotation.Engineering,
           );
           it("Passing", () => {
-            TestUtils.assertSome(pipe(checker(BigDecimal.make(59527n, 2))));
+            TestUtils.assertSome(pipe(checker(BigDecimal.make(59_527n, 2))));
           });
           it("Not-passing", () => {
-            TestUtils.assertNone(checker(BigDecimal.make(100198n, 2)));
+            TestUtils.assertNone(checker(BigDecimal.make(100_198n, 2)));
           });
         });
       });
@@ -336,7 +336,7 @@ describe("NumberBase10Format", () => {
           );
           it("Big number", () => {
             TestUtils.assertEquals(adjuster(aBigNumber), [
-              BigDecimal.make(15654543234n, 10),
+              BigDecimal.make(15_654_543_234n, 10),
               Option.some(8),
             ]);
           });
@@ -499,7 +499,7 @@ describe("NumberBase10Format", () => {
       it("A number respecting all conditions", () => {
         TestUtils.assertSome(
           extractor("512,45e12Dummy"),
-          Tuple.make(BigDecimal.make(51245n, -10), "512,45e12"),
+          Tuple.make(BigDecimal.make(51_245n, -10), "512,45e12"),
         );
       });
     });
@@ -695,7 +695,7 @@ describe("NumberBase10Format", () => {
       });
 
       it("BigDecimal as input, more than maximumFractionalDigits decimals", () => {
-        TestUtils.assertEquals(formatter(BigDecimal.make(-14675435n, 4)), "-1 467,544");
+        TestUtils.assertEquals(formatter(BigDecimal.make(-14_675_435n, 4)), "-1 467,544");
       });
     });
 
@@ -750,7 +750,7 @@ describe("NumberBase10Format", () => {
       });
 
       it("Big positive number", () => {
-        TestUtils.assertEquals(formatter(CVReal.unsafeFromNumber(154321.5)), "154,322e3");
+        TestUtils.assertEquals(formatter(CVReal.unsafeFromNumber(154_321.5)), "154,322e3");
       });
 
       it("Small negative number", () => {
@@ -777,7 +777,7 @@ describe("NumberBase10Format", () => {
       });
 
       it("BigDecimal as input, more than maximumFractionalDigits decimals", () => {
-        TestUtils.assertEquals(formatter(BigDecimal.make(-14675435n, 4)), "-1 467,544");
+        TestUtils.assertEquals(formatter(BigDecimal.make(-14_675_435n, 4)), "-1 467,544");
       });
     });
 
@@ -832,7 +832,7 @@ describe("NumberBase10Format", () => {
       });
 
       it("Big positive number", () => {
-        TestUtils.assertEquals(numberFormatter(CVReal.unsafeFromNumber(154321.5)), "154,322e3");
+        TestUtils.assertEquals(numberFormatter(CVReal.unsafeFromNumber(154_321.5)), "154,322e3");
       });
 
       it("Small negative number", () => {

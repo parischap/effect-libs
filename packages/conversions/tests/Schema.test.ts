@@ -269,7 +269,7 @@ describe("CVSchema", () => {
 
   describe("BigDecimal", () => {
     const schema = CVSchema.BigDecimal(CVNumberBase10Format.frenchStyleNumber);
-    const target = BigDecimal.make(102456n, 2);
+    const target = BigDecimal.make(102_456n, 2);
     const targetAsString = "1 024,56";
     describe("Decoding", () => {
       const decoder = Schema.decodeEither(schema);
@@ -322,8 +322,8 @@ describe("CVSchema", () => {
   });
 
   describe("DateTimeFromEffectDateTime", () => {
-    const target = CVDateTime.fromTimestampOrThrow(1756128920881, 8);
-    const targetAsEFfectDateTime = DateTime.unsafeMakeZoned(1756128920881, { timeZone: 8 });
+    const target = CVDateTime.fromTimestampOrThrow(1_756_128_920_881, 8);
+    const targetAsEFfectDateTime = DateTime.unsafeMakeZoned(1_756_128_920_881, { timeZone: 8 });
     describe("Decoding", () => {
       const decoder = Schema.decodeEither(CVSchema.DateTimeZonedFromDateTime);
       it("Passing", () => {
@@ -391,7 +391,7 @@ describe("CVSchema", () => {
       it("Not passing", () => {
         TestUtils.assertLeft(
           pipe(
-            new Date(12025, 7, 25, 10, 24, 47).getTime(),
+            new Date(12_025, 7, 25, 10, 24, 47).getTime(),
             CVDateTime.fromTimestampOrThrow,
             encoder,
           ),

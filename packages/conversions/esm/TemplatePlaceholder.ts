@@ -22,7 +22,7 @@ import {
   MStruct,
   MTuple,
   MTypes,
-} from "@parischap/effect-lib";
+} from '@parischap/effect-lib';
 
 import {
   Array,
@@ -38,17 +38,17 @@ import {
   Struct,
   Tuple,
   Types,
-} from "effect";
+} from 'effect';
 
-import * as CVNumberBase10Format from "./NumberBase10Format.js";
-import * as CVReal from "./Real.js";
+import * as CVNumberBase10Format from './NumberBase10Format.js';
+import * as CVReal from './Real.js';
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = "@parischap/conversions/TemplatePlaceholder/";
+export const moduleTag = '@parischap/conversions/TemplatePlaceholder/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
@@ -119,7 +119,6 @@ export interface Type<out N extends string, in out T> extends MInspectable.Type,
  *
  * @category Models
  */
-/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 export interface Any extends Type<string, any> {}
 
 /**
@@ -144,7 +143,6 @@ export type ExtractType<P extends Any> = P extends Type<string, infer T> ? T : n
 export const has = (u: unknown): u is Type<string, unknown> => Predicate.hasProperty(u, _TypeId);
 
 /** Proto */
-/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 const _proto: MTypes.Proto<Type<never, any>> = {
   [_TypeId]: { _N: MTypes.covariantValue, _T: MTypes.invariantValue },
   [MInspectable.IdSymbol]<N extends string, T>(this: Type<N, T>) {
@@ -163,9 +161,9 @@ const _make = <const N extends string, T>(params: MTypes.Data<Type<N, T>>): Type
  * @category Constructors
  */
 export const make: <const N extends string, T>(
-  params: Omit<MTypes.Data<Type<N, T>>, "label">,
+  params: Omit<MTypes.Data<Type<N, T>>, 'label'>,
 ) => Type<N, T> = flow(
-  MStruct.enrichWith({ label: ({ name }) => MString.prepend("#")(name) }),
+  MStruct.enrichWith({ label: ({ name }) => MString.prepend('#')(name) }),
   _make,
 );
 
@@ -174,14 +172,14 @@ export const make: <const N extends string, T>(
  *
  * @category Destructors
  */
-export const name: <const N extends string, T>(self: Type<N, T>) => N = Struct.get("name");
+export const name: <const N extends string, T>(self: Type<N, T>) => N = Struct.get('name');
 
 /**
  * Returns the `label` property of `self`
  *
  * @category Destructors
  */
-export const label: <const N extends string, T>(self: Type<N, T>) => string = Struct.get("label");
+export const label: <const N extends string, T>(self: Type<N, T>) => string = Struct.get('label');
 
 /**
  * Returns the `description` property of `self`
@@ -189,7 +187,7 @@ export const label: <const N extends string, T>(self: Type<N, T>) => string = St
  * @category Destructors
  */
 export const description: <const N extends string, T>(self: Type<N, T>) => string =
-  Struct.get("description");
+  Struct.get('description');
 
 /**
  * Returns the `parser` property of `self`
@@ -197,7 +195,7 @@ export const description: <const N extends string, T>(self: Type<N, T>) => strin
  * @category Destructors
  */
 export const parser: <const N extends string, T>(self: Type<N, T>) => Parser.Type<T> =
-  Struct.get("parser");
+  Struct.get('parser');
 
 /**
  * Returns the `formatter` property of `self`
@@ -205,7 +203,7 @@ export const parser: <const N extends string, T>(self: Type<N, T>) => Parser.Typ
  * @category Destructors
  */
 export const formatter: <const N extends string, T>(self: Type<N, T>) => Formatter.Type<T> =
-  Struct.get("formatter");
+  Struct.get('formatter');
 
 /**
  * Returns the `tSchemaInstance` property of `self`
@@ -213,7 +211,7 @@ export const formatter: <const N extends string, T>(self: Type<N, T>) => Formatt
  * @category Destructors
  */
 export const tSchemaInstance: <const N extends string, T>(self: Type<N, T>) => Schema.Schema<T, T> =
-  Struct.get("tSchemaInstance");
+  Struct.get('tSchemaInstance');
 
 /**
  * Returns a description of `self`, e.g. "#dd: 2-character string left-padded with '0' to unsigned
@@ -286,9 +284,9 @@ export const modify: {
         );
       },
       tSchemaInstance:
-        t1SchemaInstance === undefined
-          ? (self.tSchemaInstance as unknown as Schema.Schema<T1, T1>)
-          : t1SchemaInstance,
+        t1SchemaInstance === undefined ?
+          (self.tSchemaInstance as unknown as Schema.Schema<T1, T1>)
+        : t1SchemaInstance,
     });
 
 /**
@@ -477,16 +475,16 @@ export const mappedLiterals = <const N extends string, T>({
   const keys = pipe(
     keyValuePairs,
     Array.map(Tuple.getFirst),
-    Array.join(", "),
-    MString.prepend("["),
-    MString.append("]"),
+    Array.join(', '),
+    MString.prepend('['),
+    MString.append(']'),
   );
   const values = pipe(
     keyValuePairs,
     Array.map(flow(Tuple.getSecond, MString.fromUnknown)),
-    Array.join(", "),
-    MString.prepend("["),
-    MString.append("]"),
+    Array.join(', '),
+    MString.prepend('['),
+    MString.append(']'),
   );
   const valueNameMap = pipe(keyValuePairs, Array.map(Tuple.swap), HashMap.fromIterable);
 
@@ -643,5 +641,5 @@ export const toEnd = <const N extends string>(name: N): Type<N, string> =>
   fulfilling({
     name,
     regExp: /^.*/,
-    regExpDescriptor: "a string",
+    regExpDescriptor: 'a string',
   });

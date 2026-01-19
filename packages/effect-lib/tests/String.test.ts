@@ -102,11 +102,11 @@ describe('MString', () => {
     });
 
     it('NaN', () => {
-      TestUtils.strictEqual(MString.fromPrimitive(NaN), 'NaN');
+      TestUtils.strictEqual(MString.fromPrimitive(Number.NaN), 'NaN');
     });
 
     it('Irrational number', () => {
-      TestUtils.strictEqual(MString.fromPrimitive(16.0 / 3.0), '5.333333333333333');
+      TestUtils.strictEqual(MString.fromPrimitive(16 / 3), '5.333333333333333');
     });
 
     it('Very small number', () => {
@@ -552,7 +552,6 @@ describe('MString', () => {
     TestUtils.assertTrueType(
       TestUtils.areEqualTypes<
         Option.Value<ReturnType<typeof matcher>>,
-        /* eslint-disable-next-line functional/prefer-readonly-type */
         { match: string; groups: { first: string; second: string } }
       >(),
     );

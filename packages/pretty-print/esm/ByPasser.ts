@@ -220,7 +220,7 @@ export const objectToString: Type = make({
           flow(
             MRecord.tryZeroParamStringFunction({
               functionName: 'toString',
-              /* eslint-disable-next-line @typescript-eslint/unbound-method */
+              /* oxlint-disable-next-line @typescript-eslint/unbound-method */
               exception: Object.prototype.toString,
             }),
           ),

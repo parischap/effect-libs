@@ -58,10 +58,10 @@ console.log(numberRounder(-12.45));
 
 /** Diverse BigDecimal numbers */
 // Result: BigDecimal.make(12457n, 3)
-console.log(bigDecimalRounder(BigDecimal.make(124566n, 4)));
+console.log(bigDecimalRounder(BigDecimal.make(124_566n, 4)));
 
 // Result: BigDecimal.make(-12456n, 3)
-console.log(bigDecimalRounder(BigDecimal.make(-124565n, 4)));
+console.log(bigDecimalRounder(BigDecimal.make(-124_565n, 4)));
 
 // Result: BigDecimal.make(12450n, 3)
 console.log(bigDecimalRounder(BigDecimal.make(1245n, 2)));

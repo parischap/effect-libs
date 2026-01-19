@@ -125,7 +125,7 @@ export const utilInspectLikeMaker = (
     readonly id: string;
     readonly maxStringLength: number;
     readonly numberFormatter: Intl.NumberFormat;
-  } = { id: 'UtilInspectLike', maxStringLength: 10000, numberFormatter: new Intl.NumberFormat() },
+  } = { id: 'UtilInspectLike', maxStringLength: 10_000, numberFormatter: new Intl.NumberFormat() },
 ): Type =>
   make({
     id,

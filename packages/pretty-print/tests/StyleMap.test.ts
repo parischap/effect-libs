@@ -5,7 +5,7 @@ import { Function, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('StyleMap', () => {
-  const none = PPStyleMap.none;
+  const {none} = PPStyleMap;
   describe('Tag, prototype and guards', () => {
     it('moduleTag', () => {
       TestUtils.assertSome(TestUtils.moduleTagFromTestFilePath(__filename), PPStyleMap.moduleTag);

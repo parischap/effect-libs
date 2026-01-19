@@ -171,14 +171,14 @@ const _keyAndValueAction = ({
   readonly onSameLine: boolean;
   readonly dontShowLeafValue: boolean;
 }): Action.Type =>
-  function (this, { valueBasedStylerConstructor }) {
+  function _keyAndValueAction(this, { valueBasedStylerConstructor }) {
     const propertyKeyTextFormatter = valueBasedStylerConstructor('PropertyKey');
     const prototypeDelimitersTextFormatter = valueBasedStylerConstructor('PrototypeDelimiters');
     const KeyValueSeparatorTextFormatter = valueBasedStylerConstructor('KeyValueSeparator');
 
     return ({ value, isLeaf }) => {
-      const stringKey = value.stringKey;
-      const protoDepth = value.protoDepth;
+      const {stringKey} = value;
+      const {protoDepth} = value;
 
       if (MTypes.isSingleton(stringKey) && String.isEmpty(stringKey[0])) return Function.identity;
       const inContextPropertyKeyTextFormatter = propertyKeyTextFormatter(value);

@@ -458,7 +458,7 @@ export namespace NonPrimitive {
       readonly valueBasedStylerConstructor: PPValueBasedStylerConstructor.Type;
       readonly markShowerConstructor: PPMarkShowerConstructor.Type;
     }): MTypes.OneArgFunction<NonPrimitive.Type, Type> => {
-      const valueBasedStylerConstructor = params.valueBasedStylerConstructor;
+      const { valueBasedStylerConstructor } = params;
       const nonPrimitiveValueIdTextFormatter = valueBasedStylerConstructor('NonPrimitiveValueId');
       const nonPrimitiveValueIdSeparatorTextFormatter = valueBasedStylerConstructor(
         'NonPrimitiveValueIdSeparator',
@@ -481,7 +481,7 @@ export namespace NonPrimitive {
           toHeaderMarkShower: (nonPrimitiveOption): Type['toHeaderMarkShower'] => {
             const emptyText = Function.constant(ASText.empty);
 
-            const propertyNumberDisplayOption = nonPrimitiveOption.propertyNumberDisplayOption;
+            const { propertyNumberDisplayOption } = nonPrimitiveOption;
             const isNone = propertyNumberDisplayOption === PropertyNumberDisplayOption.None;
             const isAll = propertyNumberDisplayOption === PropertyNumberDisplayOption.All;
             const isActual = propertyNumberDisplayOption === PropertyNumberDisplayOption.Actual;
@@ -489,7 +489,7 @@ export namespace NonPrimitive {
               propertyNumberDisplayOption === PropertyNumberDisplayOption.AllAndActual;
             const isAllAndActualIfDifferent =
               propertyNumberDisplayOption === PropertyNumberDisplayOption.AllAndActualIfDifferent;
-            const showId = nonPrimitiveOption.showId;
+            const { showId } = nonPrimitiveOption;
 
             const [propertyNumberStartDelimiter, propertyNumberEndDelimiter] =
               isNone ?
@@ -698,7 +698,7 @@ export const utilInspectLike: Type = make({
   maxDepth: 2,
   generalNonPrimitiveOption: NonPrimitive.record,
   specificNonPrimitiveOption: (value) => {
-    const content = value.content;
+    const { content } = value;
     if (MTypes.isArray(content)) return Option.some(NonPrimitive.array);
     if (content instanceof Map) return Option.some(NonPrimitive.maps('Map'));
     if (content instanceof Set) return Option.some(NonPrimitive.setsAndArrays('Set'));
@@ -926,7 +926,6 @@ export const toStringifier = (self: Type): Stringifier.Type => {
                   cyclicalMap,
                   MutableHashMap.get(cyclicalValue),
                   Option.getOrElse(() => {
-                    /* eslint-disable-next-line functional/no-expression-statements */
                     MutableHashMap.set(cyclicalMap, cyclicalValue, lastCyclicalIndex);
                     return lastCyclicalIndex++;
                   }),

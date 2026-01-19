@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-/* eslint-disable functional/no-expression-statements */
 import * as CVDateTimeFormat from '@parischap/conversions/CVDateTimeFormat';
 import * as CVDateTimeFormatContext from '@parischap/conversions/CVDateTimeFormatContext';
 

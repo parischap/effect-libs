@@ -1,9 +1,9 @@
-import { ASStyle } from "@parischap/ansi-styles";
-import { MFs } from "@parischap/effect-lib";
-import { Effect, flow, pipe } from "effect";
-import * as MCause from "./Cause.js";
-import * as RErrors from "./Errors.js";
-import * as RLogger from "./Logger.js";
+import { ASStyle } from '@parischap/ansi-styles';
+import { MFs } from '@parischap/effect-lib';
+import { Effect, flow, pipe } from 'effect';
+import * as MCause from './Cause.js';
+import * as RErrors from './Errors.js';
+import * as RLogger from './Logger.js';
 
 export const presentAndWrapErrors = (
   message: string,
@@ -26,7 +26,7 @@ export const logIntermediateResult =
   <A extends string, E, R>(self: Effect.Effect<A, E, R>): Effect.Effect<A, E, R> =>
     Effect.andThen(self, (result) =>
       Effect.gen(function* () {
-        yield* pipe(Effect.logDebug(""));
+        yield* pipe(Effect.logDebug(''));
         yield* pipe(Effect.logDebug(message(result)));
         return result;
       }),
@@ -64,12 +64,10 @@ export const presentAndShowErrors =
           }),
           (errorText) => {
             // Do not use Effect.log here because it has a special formatting
-            if (errorText.trim() === "") {
-              /* eslint-disable-next-line functional/no-expression-statements */
-              console.log(ASStyle.green("SCRIPT EXITED SUCCESSFULLY"));
+            if (errorText.trim() === '') {
+              console.log(ASStyle.green('SCRIPT EXITED SUCCESSFULLY'));
             } else {
-              /* eslint-disable-next-line functional/no-expression-statements */
-              console.error(ASStyle.red("SCRIPT FAILED WITH FOLLOWING ERROR(S)"), eol + errorText);
+              console.error(ASStyle.red('SCRIPT FAILED WITH FOLLOWING ERROR(S)'), eol + errorText);
             }
             return Effect.void;
           },

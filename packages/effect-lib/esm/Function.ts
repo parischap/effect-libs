@@ -84,7 +84,7 @@ export const once = <A>(f: Function.LazyArg<A>): Function.LazyArg<A> => {
       Option.match({
         onNone: () => {
           const result = f();
-          /* eslint-disable-next-line functional/no-expression-statements */
+
           store = Option.some(result);
           return result;
         },

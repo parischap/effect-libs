@@ -33,7 +33,7 @@ export interface NonEmptySequence extends MTypes.ReadonlyOverOne<number> {}
 export const fromNonEmptySequence: MTypes.OneArgFunction<NonEmptySequence, string> = flow(
   Array.map(MString.fromNumber(10)),
   Array.join(";"),
-  MString.prepend("\x1b["),
+  MString.prepend("\x1B["),
   MString.append("m"),
 );
 

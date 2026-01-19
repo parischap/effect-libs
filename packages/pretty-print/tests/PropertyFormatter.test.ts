@@ -21,7 +21,7 @@ describe('PropertyFormatter', () => {
     valueBasedStylerConstructor,
     markShowerConstructor,
   };
-  const valueOnly = PPPropertyFormatter.valueOnly;
+  const {valueOnly} = PPPropertyFormatter;
 
   const stringified = pipe('1', ASText.fromString, PPStringifiedValue.fromText);
 

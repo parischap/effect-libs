@@ -1,5 +1,4 @@
 /** A simple type module */
-/* eslint-disable @typescript-eslint/no-explicit-any -- Unknown or never don't work as well as any when it comes to inference because any is both at the top and bottom of the tree type */
 
 import { Array, Function, Option, pipe, Predicate } from 'effect';
 
@@ -210,13 +209,11 @@ export interface NumberToString extends OneArgFunction<number, string> {}
  *
  * @category Utility types
  */
-/* eslint-disable functional/prefer-readonly-type */
 export type WithMutable<X, field extends string | symbol> = {
   readonly [k in keyof X as [k] extends [field] ? never : k]: X[k];
 } & {
   -readonly [k in keyof X as [k] extends readonly [field] ? k : never]: X[k];
 };
-/* eslint-enable functional/prefer-readonly-type */
 
 /**
  * Utility type that makes field `field` of target type `X` required
@@ -265,7 +262,6 @@ type Enumerate<N extends number, Acc extends Array<number> = []> =
  *
  * @category Utility types
  */
-/* eslint-disable-next-line functional/prefer-readonly-type */
 export type MapToTarget<T, Target> = {
   [k in keyof T]: Target;
 };
@@ -278,7 +274,6 @@ type BaseProtoKeys = symbol | 'toString' | 'toJSON' | 'pipe';
  *
  * @category Utility types
  */
-/* eslint-disable-next-line functional/prefer-readonly-type */
 export type Data<T extends NonPrimitive, ExtraKeys extends string = never> = {
   [k in keyof T as [k] extends [BaseProtoKeys | ExtraKeys] ? never : k]: T[k];
 };
@@ -497,14 +492,14 @@ export const isEmptyReadonlyArray = <A>(u: ReadonlyArray<A>): u is EmptyReadonly
  *
  * @category Guards
  */
-export const isOverOne = <A>(u: Array<A>): u is OverOne<A> => u.length >= 1;
+export const isOverOne = <A>(u: Array<A>): u is OverOne<A> => u.length > 0;
 
 /**
  * From `ReadonlyArray<A>` to `ReadonlyOverOne<A>`
  *
  * @category Guards
  */
-export const isReadonlyOverOne = <A>(u: ReadonlyArray<A>): u is ReadonlyOverOne<A> => u.length >= 1;
+export const isReadonlyOverOne = <A>(u: ReadonlyArray<A>): u is ReadonlyOverOne<A> => u.length > 0;
 
 /**
  * From `Array<A>` to `OverTwo<A>`
@@ -616,28 +611,37 @@ export namespace Category {
    */
   export const fromValue = (u: unknown): Category => {
     switch (typeof u) {
-      case 'string':
+      case 'string': {
         return Category.String;
-      case 'number':
+      }
+      case 'number': {
         return Category.Number;
-      case 'bigint':
+      }
+      case 'bigint': {
         return Category.Bigint;
-      case 'boolean':
+      }
+      case 'boolean': {
         return Category.Boolean;
-      case 'symbol':
+      }
+      case 'symbol': {
         return Category.Symbol;
-      case 'undefined':
+      }
+      case 'undefined': {
         return Category.Undefined;
-      case 'function':
+      }
+      case 'function': {
         return Category.Function;
-      case 'object':
+      }
+      case 'object': {
         return (
           u === null ? Category.Null
           : Array.isArray(u) ? Category.Array
           : Category.Record
         );
-      default:
+      }
+      default: {
         return Function.absurd(u as never);
+      }
     }
   };
 
@@ -746,5 +750,4 @@ export const contravariantValue = (_: unknown) => _;
  *
  * @category Constants
  */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
 export const invariantValue = (_: any) => _;

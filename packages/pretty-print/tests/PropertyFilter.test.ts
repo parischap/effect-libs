@@ -5,7 +5,7 @@ import { Array, Function, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('PropertyFilter', () => {
-  const removeFunctions = PPPropertyFilter.removeFunctions;
+  const {removeFunctions} = PPPropertyFilter;
 
   const value1 = PPValue.fromTopValue({
     content: 1,

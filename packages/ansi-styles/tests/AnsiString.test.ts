@@ -10,7 +10,7 @@ describe("AnsiString", () => {
     });
 
     it("From non-empty sequence", () => {
-      TestUtils.strictEqual(ASAnsiString.fromSequence(Array.make(0, 1)), "\x1b[0;1m");
+      TestUtils.strictEqual(ASAnsiString.fromSequence(Array.make(0, 1)), "\x1B[0;1m");
     });
   });
 });

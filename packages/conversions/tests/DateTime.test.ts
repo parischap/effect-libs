@@ -878,7 +878,7 @@ describe("CVDateTime", () => {
 
   describe("Getters", () => {
     it("Get year, month, monthDay then all time parts", () => {
-      const testDate = CVDateTime.fromTimestampOrThrow(1750670080496, 0);
+      const testDate = CVDateTime.fromTimestampOrThrow(1_750_670_080_496, 0);
 
       TestUtils.assertNone(testDate.gregorianDate);
       TestUtils.assertNone(testDate.isoDate);
@@ -906,7 +906,7 @@ describe("CVDateTime", () => {
     });
 
     it("Get seconds then monthDay", () => {
-      const testDate = CVDateTime.fromTimestampOrThrow(1750670080496, 0);
+      const testDate = CVDateTime.fromTimestampOrThrow(1_750_670_080_496, 0);
       TestUtils.strictEqual(CVDateTime.getSecond(testDate), 40);
       TestUtils.assertNone(testDate.gregorianDate);
       TestUtils.assertNone(testDate.isoDate);
@@ -924,7 +924,7 @@ describe("CVDateTime", () => {
     });
 
     it("Get isoYear, isoWeek, weekday and milliseconds", () => {
-      const testDate = CVDateTime.fromTimestampOrThrow(1750670080496, 0);
+      const testDate = CVDateTime.fromTimestampOrThrow(1_750_670_080_496, 0);
       TestUtils.strictEqual(CVDateTime.getIsoYear(testDate), 2025);
       TestUtils.assertNone(testDate.gregorianDate);
       TestUtils.assertSome(testDate.isoDate);
@@ -943,7 +943,7 @@ describe("CVDateTime", () => {
     });
 
     it("Get minutes, isoYear, weekday, year and monthDay", () => {
-      const testDate = CVDateTime.fromTimestampOrThrow(1750670080496, 0);
+      const testDate = CVDateTime.fromTimestampOrThrow(1_750_670_080_496, 0);
       TestUtils.strictEqual(CVDateTime.getMinute(testDate), 14);
       TestUtils.assertNone(testDate.gregorianDate);
       TestUtils.assertNone(testDate.isoDate);
