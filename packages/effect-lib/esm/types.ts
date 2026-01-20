@@ -267,15 +267,15 @@ export type MapToTarget<T, Target> = {
 };
 
 /** Keys that will always be on the prototype: symbolic keys, toString, toJSON and pipe */
-type BaseProtoKeys = symbol | 'toString' | 'toJSON' | 'pipe';
+type BaseProtoKeys = symbol | `_${string}` | 'toString' | 'toJSON' | 'pipe';
 
 /**
  * Utility type that removes all non-data from a type.
  *
  * @category Utility types
  */
-export type Data<T extends NonPrimitive, ExtraKeys extends string = never> = {
-  [k in keyof T as [k] extends [BaseProtoKeys | ExtraKeys] ? never : k]: T[k];
+export type Data<T extends NonPrimitive> = {
+  [k in keyof T as [k] extends [BaseProtoKeys] ? never : k]: T[k];
 };
 
 /**
@@ -283,20 +283,7 @@ export type Data<T extends NonPrimitive, ExtraKeys extends string = never> = {
  *
  * @category Utility types
  */
-export type Proto<T extends NonPrimitive, ExtraKeys extends string = never> = Omit<
-  T,
-  keyof Data<T, ExtraKeys>
->;
-
-/**
- * Constructs an object with prototype `proto` and data `data`
- *
- * @category Utils
- */
-export const objectFromDataAndProto = <P extends NonPrimitive, D extends NonPrimitive>(
-  proto: P,
-  data: D,
-): P & D => Object.assign(Object.create(proto) as P, data);
+export type Proto<T extends NonPrimitive> = Omit<T, keyof Data<T>>;
 
 /**
  * Utility type that changes the type of the unique parameter of `F` to `A` if `F` is a Refinement

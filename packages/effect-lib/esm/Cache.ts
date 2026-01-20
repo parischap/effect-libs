@@ -48,17 +48,33 @@ namespace ValueContainer {
    *
    * @category Models
    */
-  export interface Type<out A> extends Inspectable.Inspectable, Pipeable.Pipeable {
+  export class Type<out A> extends MPipeable.Type implements Inspectable.Inspectable {
     /** The value calculated by the LookUp function */
     readonly value: A;
     /** The time at which the value was calculated */
     readonly storeDate: number;
-    /** @internal */
-    readonly [_TypeId]: {
-      readonly _A: Types.Covariant<A>;
-    };
-  }
+    /** Class constructor */
+    private constructor(params: MTypes.Data<Type<A>>) {
+      this.value = params.value;
+      this.storeDate = params.storeDate;
+    }
 
+    /** Static constructor */
+    static make<A>(params: MTypes.Data<Type<A>>): Type<A> {
+      return new Type(params);
+    }
+
+    /** @internal */
+    get [_TypeId](): { readonly _A: Types.Covariant<A> } {
+      return {
+        _A: MTypes.covariantValue,
+      };
+    }
+
+    pipe(this: object) {
+      return Pipeable.pipeArguments(this, arguments);
+    }
+  }
   /**
    * Type guard
    *

@@ -136,4 +136,4 @@ export const clone = <This, Args extends ReadonlyArray<unknown>, R>(
  *
  * @category Constants
  */
-export const _proto = Object.getPrototypeOf(Math.max) as MTypes.NonPrimitive;
+export const proto = Object.getPrototypeOf(Math.max) as MTypes.NonPrimitive;
