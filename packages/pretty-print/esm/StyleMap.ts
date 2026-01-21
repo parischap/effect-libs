@@ -11,16 +11,16 @@
 import { ASContextStyler, ASPalette, ASStyle } from '@parischap/ansi-styles';
 import { MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
 import {
-    Equal,
-    Equivalence,
-    flow,
-    Hash,
-    HashMap,
-    Option,
-    pipe,
-    Pipeable,
-    Predicate,
-    Struct,
+  Equal,
+  Equivalence,
+  flow,
+  Hash,
+  HashMap,
+  Option,
+  pipe,
+  Pipeable,
+  Predicate,
+  Struct,
 } from 'effect';
 import * as PPValueBasedStyler from './ValueBasedStyler.js';
 
@@ -98,7 +98,7 @@ const _proto: MTypes.Proto<Type> = {
  *
  * @category Constructors
  */
-export const make = (params: MTypes.Data<Type>): Type =>
+export const make = (params: MData.Extract<Type>): Type =>
   MTypes.objectFromDataAndProto(_proto, params);
 
 /**

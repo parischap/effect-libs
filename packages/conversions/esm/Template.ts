@@ -124,7 +124,7 @@ const _proto: MTypes.Proto<Type<never>> = {
   ...MPipeable.BaseProto,
 };
 
-const _make = <const PS extends CVTemplateParts.Type>(params: MTypes.Data<Type<PS>>): Type<PS> =>
+const _make = <const PS extends CVTemplateParts.Type>(params: MData.Extract<Type<PS>>): Type<PS> =>
   MTypes.objectFromDataAndProto(_proto, params);
 
 /**

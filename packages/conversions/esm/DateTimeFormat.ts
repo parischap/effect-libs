@@ -11,7 +11,7 @@ import {
   MPipeable,
   MString,
   MTypes,
-} from "@parischap/effect-lib";
+} from '@parischap/effect-lib';
 import {
   Array,
   Either,
@@ -25,22 +25,22 @@ import {
   Record,
   Struct,
   Tuple,
-} from "effect";
-import * as CVDateTime from "./DateTime.js";
-import * as CVDateTimeFormatContext from "./DateTimeFormatContext.js";
-import * as CVReal from "./Real.js";
-import * as CVTemplate from "./Template.js";
-import * as CVTemplatePart from "./TemplatePart.js";
-import * as CVTemplateParts from "./TemplateParts.js";
-import * as CVTemplatePlaceholder from "./TemplatePlaceholder.js";
-import * as CVTemplateSeparator from "./TemplateSeparator.js";
+} from 'effect';
+import * as CVDateTime from './DateTime.js';
+import * as CVDateTimeFormatContext from './DateTimeFormatContext.js';
+import * as CVReal from './Real.js';
+import * as CVTemplate from './Template.js';
+import * as CVTemplatePart from './TemplatePart.js';
+import * as CVTemplateParts from './TemplateParts.js';
+import * as CVTemplatePlaceholder from './TemplatePlaceholder.js';
+import * as CVTemplateSeparator from './TemplateSeparator.js';
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = "@parischap/conversions/DateTimeFormat/";
+export const moduleTag = '@parischap/conversions/DateTimeFormat/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
@@ -50,7 +50,7 @@ type _TypeId = typeof _TypeId;
  * @category Models
  */
 export namespace TemplatePart {
-  const _tag = moduleTag + "TemplatePart/";
+  const _tag = moduleTag + 'TemplatePart/';
   /**
    * Type of a TemplatePart
    *
@@ -78,7 +78,7 @@ export namespace TemplatePart {
    * @category Models
    */
   export namespace Placeholder {
-    const _namespaceTag = _tag + "Placeholder/";
+    const _namespaceTag = _tag + 'Placeholder/';
     const _TypeId: unique symbol = Symbol.for(_namespaceTag) as _TypeId;
     type _TypeId = typeof _TypeId;
 
@@ -112,7 +112,7 @@ export namespace TemplatePart {
       ...MPipeable.BaseProto,
     };
 
-    const _make = (params: MTypes.Data<Type>): Type =>
+    const _make = (params: MData.Extract<Type>): Type =>
       MTypes.objectFromDataAndProto(_proto, params);
 
     /**
@@ -128,7 +128,7 @@ export namespace TemplatePart {
      * @category Destructors
      */
     export const name: MTypes.OneArgFunction<Type, CVDateTimeFormatContext.Token> =
-      Struct.get("name");
+      Struct.get('name');
   }
 
   /**
@@ -137,7 +137,7 @@ export namespace TemplatePart {
    * @category Models
    */
   export namespace Separator {
-    const _namespaceTag = _tag + "Separator/";
+    const _namespaceTag = _tag + 'Separator/';
     const _TypeId: unique symbol = Symbol.for(_namespaceTag) as _TypeId;
     type _TypeId = typeof _TypeId;
 
@@ -171,7 +171,7 @@ export namespace TemplatePart {
       ...MPipeable.BaseProto,
     };
 
-    const _make = (params: MTypes.Data<Type>): Type =>
+    const _make = (params: MData.Extract<Type>): Type =>
       MTypes.objectFromDataAndProto(_proto, params);
 
     /**
@@ -186,56 +186,56 @@ export namespace TemplatePart {
      *
      * @category Destructors
      */
-    export const value: MTypes.OneArgFunction<Type, string> = Struct.get("value");
+    export const value: MTypes.OneArgFunction<Type, string> = Struct.get('value');
 
     /**
      * Slash Separator instance
      *
      * @category Instances
      */
-    export const slash: Type = make("/");
+    export const slash: Type = make('/');
 
     /**
      * Backslash Separator instance
      *
      * @category Instances
      */
-    export const backslash: Type = make("\\");
+    export const backslash: Type = make('\\');
 
     /**
      * Dot Separator instance
      *
      * @category Instances
      */
-    export const dot: Type = make(".");
+    export const dot: Type = make('.');
 
     /**
      * Hyphen Separator instance
      *
      * @category Instances
      */
-    export const hyphen: Type = make("-");
+    export const hyphen: Type = make('-');
 
     /**
      * Colon Separator instance
      *
      * @category Instances
      */
-    export const colon: Type = make(":");
+    export const colon: Type = make(':');
 
     /**
      * Comma Separator instance
      *
      * @category Instances
      */
-    export const comma: Type = make(",");
+    export const comma: Type = make(',');
 
     /**
      * Space Separator instance
      *
      * @category Instances
      */
-    export const space: Type = make(" ");
+    export const space: Type = make(' ');
   }
 }
 
@@ -319,7 +319,7 @@ const _proto: MTypes.Proto<Type> = {
     return pipe(
       this.templateParts,
       Array.map((p) => p.toString()),
-      Array.join(""),
+      Array.join(''),
       MString.prepend("'"),
       MString.append(`' in '${this.context.name}' context`),
     );
@@ -328,7 +328,7 @@ const _proto: MTypes.Proto<Type> = {
   ...MPipeable.BaseProto,
 };
 
-const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
+const _make = (params: MData.Extract<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
 
 /**
  * Builds a DateTimeFormat from a Context `context` and an array of TemplatePart's `templateParts`
@@ -379,7 +379,7 @@ export const make = ({
  * @category Destructors
  */
 export const context: MTypes.OneArgFunction<Type, CVDateTimeFormatContext.Type> =
-  Struct.get("context");
+  Struct.get('context');
 
 /**
  * Returns the `templateParts` property of `self`
@@ -387,7 +387,7 @@ export const context: MTypes.OneArgFunction<Type, CVDateTimeFormatContext.Type> 
  * @category Destructors
  */
 export const templateParts: MTypes.OneArgFunction<Type, TemplateParts.Type> =
-  Struct.get("templateParts");
+  Struct.get('templateParts');
 
 /**
  * Returns a function that parses a text into a DateTime according to 'self'. See DateTime.fromParts
@@ -437,69 +437,69 @@ export const toFormatter = (self: Type): Formatter.Type => {
             MMatch.make,
             flow(
               MMatch.whenIs(
-                "year",
+                'year',
                 flow(Tuple.make, Tuple.appendElement(CVDateTime.getYear), Option.some),
               ),
               MMatch.whenIs(
-                "ordinalDay",
+                'ordinalDay',
                 flow(Tuple.make, Tuple.appendElement(CVDateTime.getOrdinalDay), Option.some),
               ),
               MMatch.whenIs(
-                "month",
+                'month',
                 flow(Tuple.make, Tuple.appendElement(CVDateTime.getMonth), Option.some),
               ),
               MMatch.whenIs(
-                "monthDay",
+                'monthDay',
                 flow(Tuple.make, Tuple.appendElement(CVDateTime.getMonthDay), Option.some),
               ),
               MMatch.whenIs(
-                "isoYear",
+                'isoYear',
                 flow(Tuple.make, Tuple.appendElement(CVDateTime.getIsoYear), Option.some),
               ),
               MMatch.whenIs(
-                "isoWeek",
+                'isoWeek',
                 flow(Tuple.make, Tuple.appendElement(CVDateTime.getIsoWeek), Option.some),
               ),
               MMatch.whenIs(
-                "weekday",
+                'weekday',
                 flow(Tuple.make, Tuple.appendElement(CVDateTime.getWeekday), Option.some),
               ),
               MMatch.whenIs(
-                "hour23",
+                'hour23',
                 flow(Tuple.make, Tuple.appendElement(CVDateTime.getHour23), Option.some),
               ),
               MMatch.whenIs(
-                "hour11",
+                'hour11',
                 flow(Tuple.make, Tuple.appendElement(CVDateTime.getHour11), Option.some),
               ),
             ),
             flow(
               MMatch.whenIs(
-                "meridiem",
+                'meridiem',
                 flow(Tuple.make, Tuple.appendElement(CVDateTime.getMeridiem), Option.some),
               ),
               MMatch.whenIs(
-                "minute",
+                'minute',
                 flow(Tuple.make, Tuple.appendElement(CVDateTime.getMinute), Option.some),
               ),
               MMatch.whenIs(
-                "second",
+                'second',
                 flow(Tuple.make, Tuple.appendElement(CVDateTime.getSecond), Option.some),
               ),
               MMatch.whenIs(
-                "millisecond",
+                'millisecond',
                 flow(Tuple.make, Tuple.appendElement(CVDateTime.getMillisecond), Option.some),
               ),
               MMatch.whenIs(
-                "zoneHour",
+                'zoneHour',
                 flow(Tuple.make, Tuple.appendElement(CVDateTime.getZoneHour), Option.some),
               ),
               MMatch.whenIs(
-                "zoneMinute",
+                'zoneMinute',
                 flow(Tuple.make, Tuple.appendElement(CVDateTime.getZoneMinute), Option.some),
               ),
               MMatch.whenIs(
-                "zoneSecond",
+                'zoneSecond',
                 flow(Tuple.make, Tuple.appendElement(CVDateTime.getZoneSecond), Option.some),
               ),
             ),

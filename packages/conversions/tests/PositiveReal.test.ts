@@ -1,11 +1,14 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
 import { CVPositiveReal, CVReal } from '@parischap/conversions';
-import { BigDecimal } from 'effect';
+import { BigDecimal, Option } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('CVPositiveReal', () => {
   it('moduleTag', () => {
-    TestUtils.assertSome(TestUtils.moduleTagFromTestFilePath(__filename), CVPositiveReal.moduleTag);
+    TestUtils.assertEquals(
+      Option.some(CVPositiveReal.moduleTag),
+      TestUtils.moduleTagFromTestFilePath(import.meta.filename),
+    );
   });
 
   describe('Conversions from number', () => {

@@ -64,7 +64,7 @@ export interface FilepathWithStat extends WithStat<MFs.Filepath> {}
 export interface FolderpathWithStat extends WithStat<MFs.Folderpath> {}
 
 const makeExpandedWithStat = <P extends MFs.Path | MFs.Name>(
-  params: MTypes.Data<WithStat<P>>,
+  params: MData.Extract<WithStat<P>>,
 ): ExpandedWithStat<P> => params as ExpandedWithStat<P>;
 
 /** @category Type guards */

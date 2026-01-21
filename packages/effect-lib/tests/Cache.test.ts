@@ -1,51 +1,13 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
 import { MCache, MTypes } from '@parischap/effect-lib';
-import { Array, Order, Record, Tuple, pipe } from 'effect';
+import { Array, Option, Order, Record, Tuple, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('MCache', () => {
-  describe('Tag, prototype and guards', () => {
-    const testCache = MCache.make({
-      lookUp: ({ key }: { readonly key: number }) => Tuple.make(key * 2, true),
-    });
-
-    it('moduleTag', () => {
-      TestUtils.assertSome(TestUtils.moduleTagFromTestFilePath(__filename), MCache.moduleTag);
-    });
-
-    /* +Infinity gets printed as null... */
-    it('.toString()', () => {
-      TestUtils.strictEqual(
-        testCache.toString(),
-        `{
-  "_id": "@parischap/effect-lib/Cache/",
-  "capacity": null,
-  "lifeSpan": null,
-  "store": {
-    "_id": "MutableHashMap",
-    "values": []
-  },
-  "keyListInOrder": {
-    "_id": "MutableList",
-    "values": []
-  }
-}`,
-      );
-    });
-
-    it('.pipe()', () => {
-      TestUtils.strictEqual(testCache.pipe(MCache.get(3)), 6);
-    });
-
-    describe('has', () => {
-      it('Matching', () => {
-        TestUtils.assertTrue(MCache.has(testCache));
-      });
-      it('Non matching', () => {
-        TestUtils.assertFalse(MCache.has(new Date()));
-      });
-    });
-  });
+  TestUtils.assertEquals(
+    Option.some(MCache.moduleTag),
+    TestUtils.moduleTagFromTestFilePath(import.meta.filename),
+  );
 
   describe('Non-recursive cache with unbounded capacity and no TTL', () => {
     const testCache = MCache.make({

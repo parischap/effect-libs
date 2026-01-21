@@ -331,7 +331,7 @@ export namespace NonPrimitive {
    *
    * @category Constructors
    */
-  export const make = (params: MTypes.Data<Type>): Type =>
+  export const make = (params: MData.Extract<Type>): Type =>
     MTypes.objectFromDataAndProto(_proto, params);
 
   /**
@@ -436,7 +436,7 @@ export namespace NonPrimitive {
      *
      * @category Models
      */
-    export interface Type extends MTypes.Data<NonPrimitive.Type> {
+    export interface Type extends MData.Extract<NonPrimitive.Type> {
       readonly syntheticPropertyFilter: PPPropertyFilter.Action.Type;
       readonly initializedPropertyFormatter: PPPropertyFormatter.Action.Initialized.Type;
       readonly initializedNonPrimitiveFormatter: PPNonPrimitiveFormatter.Action.Initialized.Type;
@@ -674,7 +674,7 @@ const _proto: MTypes.Proto<Type> = {
  *
  * @category Constructors
  */
-export const make = (params: MTypes.Data<Type>): Type =>
+export const make = (params: MData.Extract<Type>): Type =>
   MTypes.objectFromDataAndProto(_proto, params);
 
 /**

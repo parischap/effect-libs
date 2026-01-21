@@ -266,25 +266,6 @@ export type MapToTarget<T, Target> = {
   [k in keyof T]: Target;
 };
 
-/** Keys that will always be on the prototype: symbolic keys, toString, toJSON and pipe */
-type BaseProtoKeys = symbol | `_${string}` | 'toString' | 'toJSON' | 'pipe';
-
-/**
- * Utility type that removes all non-data from a type.
- *
- * @category Utility types
- */
-export type Data<T extends NonPrimitive> = {
-  [k in keyof T as [k] extends [BaseProtoKeys] ? never : k]: T[k];
-};
-
-/**
- * Utility type that removes all data from a type
- *
- * @category Utility types
- */
-export type Proto<T extends NonPrimitive> = Omit<T, keyof Data<T>>;
-
 /**
  * Utility type that changes the type of the unique parameter of `F` to `A` if `F` is a Refinement
  * or a OneArgFunction. Returns `F` otherwise
@@ -717,24 +698,3 @@ export namespace Category {
    */
   export const isRecord: Predicate.Predicate<Category> = (self) => self === Category.Record;
 }
-
-/**
- * A value with a covariant type
- *
- * @category Constants
- */
-export const covariantValue = (_: never) => _;
-
-/**
- * A value with a contravariant type
- *
- * @category Constants
- */
-export const contravariantValue = (_: unknown) => _;
-
-/**
- * A value with an invariant type
- *
- * @category Constants
- */
-export const invariantValue = (_: any) => _;

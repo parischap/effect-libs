@@ -152,7 +152,7 @@ const _proto: MTypes.Proto<Type<never, any>> = {
   ...MPipeable.BaseProto,
 };
 
-const _make = <const N extends string, T>(params: MTypes.Data<Type<N, T>>): Type<N, T> =>
+const _make = <const N extends string, T>(params: MData.Extract<Type<N, T>>): Type<N, T> =>
   MTypes.objectFromDataAndProto(_proto, params);
 
 /**
@@ -161,7 +161,7 @@ const _make = <const N extends string, T>(params: MTypes.Data<Type<N, T>>): Type
  * @category Constructors
  */
 export const make: <const N extends string, T>(
-  params: Omit<MTypes.Data<Type<N, T>>, 'label'>,
+  params: Omit<MData.Extract<Type<N, T>>, 'label'>,
 ) => Type<N, T> = flow(
   MStruct.enrichWith({ label: ({ name }) => MString.prepend('#')(name) }),
   _make,

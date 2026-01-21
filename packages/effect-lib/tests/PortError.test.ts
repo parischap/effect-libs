@@ -1,9 +1,13 @@
-import * as TestUtils from "@parischap/configs/TestUtils";
-import { MPortError } from "@parischap/effect-lib";
-import { describe, it } from "vitest";
+import * as TestUtils from '@parischap/configs/TestUtils';
+import { MPortError } from '@parischap/effect-lib';
+import { Option } from 'effect';
+import { describe, it } from 'vitest';
 
-describe("MPortError", () => {
-  it("moduleTag", () => {
-    TestUtils.assertSome(TestUtils.moduleTagFromTestFilePath(__filename), MPortError.moduleTag);
+describe('MPortError', () => {
+  it('moduleTag', () => {
+    TestUtils.assertEquals(
+      Option.some(MPortError.moduleTag),
+      TestUtils.moduleTagFromTestFilePath(import.meta.filename),
+    );
   });
 });

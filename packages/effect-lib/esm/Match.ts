@@ -4,18 +4,17 @@
  * simplifies its use.
  */
 
-import { Array, Inspectable, Option, Pipeable, Predicate, Types, pipe } from "effect";
-import * as MInspectable from "./Inspectable.js";
-import * as MPipeable from "./Pipeable.js";
-import * as MPredicate from "./Predicate.js";
-import * as MTypes from "./types.js";
+import { Array, Equal, Hash, Inspectable, Option, Pipeable, Predicate, pipe } from 'effect';
+import * as MData from './Data.js';
+import * as MPredicate from './Predicate.js';
+import * as MTypes from './types.js';
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = "@parischap/effect-lib/Match/";
+export const moduleTag = '@parischap/effect-lib/Match/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
@@ -24,44 +23,35 @@ type _TypeId = typeof _TypeId;
  *
  * @category Models
  */
-export interface Type<out Input, out Output, out Rest extends Input>
-  extends Inspectable.Inspectable, Pipeable.Pipeable {
+export class Type<out Input, out Output, out Rest extends Input>
+  extends MData.Class({ id: moduleTag, uniqueSymbol: _TypeId })
+  implements Pipeable.Pipeable, Inspectable.Inspectable, Hash.Hash, Equal.Equal
+{
   /** The input to match */
   readonly input: Input;
   /** The output of the matcher when it has been found */
   readonly output: Option.Option<Output>;
-  /** @internal */
-  readonly [_TypeId]: {
-    readonly _Input: Types.Covariant<Input>;
-    readonly _Output: Types.Covariant<Output>;
-    readonly _Rest: Types.Covariant<Rest>;
-  };
+
+  /** Class constructor */
+  private constructor({ input, output }: MData.Extract<Type<Input, Output, Rest>>) {
+    super();
+    this.input = input;
+    this.output = output;
+  }
+
+  /** Static constructor */
+  static make<Input, Output, Rest extends Input>(
+    params: MData.Extract<Type<Input, Output, Rest>>,
+  ): Type<Input, Output, Rest> {
+    return new Type(params);
+  }
 }
-
-/**
- * Type guard
- *
- * @category Guards
- */
-export const has = (u: unknown): u is Type<unknown, unknown, unknown> =>
-  Predicate.hasProperty(u, _TypeId);
-
-/** Prototype */
-const _proto: MTypes.Proto<Type<never, never, never>> = {
-  [_TypeId]: {
-    _Input: MTypes.covariantValue,
-    _Output: MTypes.covariantValue,
-    _Rest: MTypes.covariantValue,
-  },
-  ...MInspectable.BaseProto(moduleTag),
-  ...MPipeable.BaseProto,
-};
 
 /** Constructor */
 const _make = <Input, Output, Rest extends Input>(params: {
   readonly input: Input;
   readonly output: Option.Option<Output>;
-}): Type<Input, Output, Rest> => MTypes.objectFromDataAndProto(_proto, params);
+}): Type<Input, Output, Rest> => Type.make(params);
 
 /**
  * Builds a new matcher

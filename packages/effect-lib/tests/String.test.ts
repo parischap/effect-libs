@@ -1,12 +1,14 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
 import { MString } from '@parischap/effect-lib';
-import { Array, pipe, String, Struct } from 'effect';
-import { Option } from 'effect/Option';
+import { Array, Option, pipe, String, Struct } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('MString', () => {
   it('moduleTag', () => {
-    TestUtils.assertSome(TestUtils.moduleTagFromTestFilePath(__filename), MString.moduleTag);
+    TestUtils.assertEquals(
+      Option.some(MString.moduleTag),
+      TestUtils.moduleTagFromTestFilePath(import.meta.filename),
+    );
   });
 
   describe('MString.SearchResult', () => {

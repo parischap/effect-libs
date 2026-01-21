@@ -4,18 +4,18 @@
  * ASStyle.red('foo')` will create a text containing the string 'foo' styled in red.
  */
 
-import { MInspectable, MPipeable, MTypes } from "@parischap/effect-lib";
-import { Equal, Equivalence, Hash, pipe, Pipeable, Predicate, Struct } from "effect";
-import * as ASColor from "./Color.js";
-import * as ASStyleCharacteristics from "./StyleCharacteristics.js";
-import * as ASText from "./Text.js";
+import { MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
+import { Equal, Equivalence, Hash, pipe, Pipeable, Predicate, Struct } from 'effect';
+import * as ASColor from './Color.js';
+import * as ASStyleCharacteristics from './StyleCharacteristics.js';
+import * as ASText from './Text.js';
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = "@parischap/ansi-styles/Style/";
+export const moduleTag = '@parischap/ansi-styles/Style/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
@@ -81,7 +81,7 @@ const base: MTypes.Proto<Type> = {
 };
 
 /** Constructor */
-const _make = (params: MTypes.Data<Type>): Type =>
+const _make = (params: MData.Extract<Type>): Type =>
   Object.assign(
     ((...args) => ASText.fromStyleAndElems(params.style)(...args)) satisfies Action.Type,
     {
@@ -95,7 +95,7 @@ const _make = (params: MTypes.Data<Type>): Type =>
  *
  * @category Destructors
  */
-export const style: MTypes.OneArgFunction<Type, ASStyleCharacteristics.Type> = Struct.get("style");
+export const style: MTypes.OneArgFunction<Type, ASStyleCharacteristics.Type> = Struct.get('style');
 
 /**
  * Returns the id of `self`

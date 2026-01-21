@@ -9,20 +9,19 @@
 import {
   Array,
   Equal,
+  Hash,
   Inspectable,
   MutableHashMap,
   MutableList,
   Option,
   Pipeable,
-  Predicate,
   Tuple,
-  Types,
   flow,
   pipe,
 } from 'effect';
-import * as MInspectable from './Inspectable.js';
+import * as MData from './Data.js';
+import * as MCacheValueContainer from './internal/CacheValueContainer.js';
 import * as MNumber from './Number.js';
-import * as MPipeable from './Pipeable.js';
 import * as MTypes from './types.js';
 
 /**
@@ -33,72 +32,6 @@ import * as MTypes from './types.js';
 export const moduleTag = '@parischap/effect-lib/Cache/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
-
-/**
- * This namespace implements a ValueContainer which is a container for a value to be stored in a
- * cache.
- */
-namespace ValueContainer {
-  const _namespaceTag = moduleTag + 'ValueContainer/';
-  const _TypeId: unique symbol = Symbol.for(_namespaceTag) as _TypeId;
-  type _TypeId = typeof _TypeId;
-
-  /**
-   * Interface that represents a ValueContainer
-   *
-   * @category Models
-   */
-  export class Type<out A> extends MPipeable.Type implements Inspectable.Inspectable {
-    /** The value calculated by the LookUp function */
-    readonly value: A;
-    /** The time at which the value was calculated */
-    readonly storeDate: number;
-    /** Class constructor */
-    private constructor(params: MTypes.Data<Type<A>>) {
-      this.value = params.value;
-      this.storeDate = params.storeDate;
-    }
-
-    /** Static constructor */
-    static make<A>(params: MTypes.Data<Type<A>>): Type<A> {
-      return new Type(params);
-    }
-
-    /** @internal */
-    get [_TypeId](): { readonly _A: Types.Covariant<A> } {
-      return {
-        _A: MTypes.covariantValue,
-      };
-    }
-
-    pipe(this: object) {
-      return Pipeable.pipeArguments(this, arguments);
-    }
-  }
-  /**
-   * Type guard
-   *
-   * @category Guards
-   */
-  export const has = (u: unknown): u is Type<unknown> => Predicate.hasProperty(u, _TypeId);
-
-  /** Prototype */
-  const _proto: MTypes.Proto<Type<never>> = {
-    [_TypeId]: {
-      _A: MTypes.covariantValue,
-    },
-    ...MInspectable.BaseProto(_namespaceTag),
-    ...MPipeable.BaseProto,
-  };
-
-  /**
-   * Constructor
-   *
-   * @category Constructors
-   */
-  export const make = <A>(params: MTypes.Data<Type<A>>): Type<A> =>
-    MTypes.objectFromDataAndProto(_proto, params);
-}
 
 /**
  * Type that represents the lookup function. In addition to the key, the lookup function receives a
@@ -127,12 +60,15 @@ export type LookUp<A, B> = ({
  *
  * @category Models
  */
-export interface Type<in out A, in out B> extends Inspectable.Inspectable, Pipeable.Pipeable {
+export class Type<in out A, in out B>
+  extends MData.Class({ id: moduleTag, uniqueSymbol: _TypeId })
+  implements Pipeable.Pipeable, Inspectable.Inspectable, Hash.Hash, Equal.Equal
+{
   /**
    * The key/value cache. A None value means the value is currently under calculation. A circular
    * flag will be sent if the value needs to be retreived while it is being calculated.
    */
-  readonly store: MutableHashMap.MutableHashMap<A, Option.Option<ValueContainer.Type<B>>>;
+  readonly store: MutableHashMap.MutableHashMap<A, Option.Option<MCacheValueContainer.Type<B>>>;
 
   /**
    * A list used to track the order in which keys were inserted so as to remove the oldest keys
@@ -155,33 +91,24 @@ export interface Type<in out A, in out B> extends Inspectable.Inspectable, Pipea
    */
   readonly lifeSpan: number;
 
-  /** @internal */
-  readonly [_TypeId]: {
-    readonly _A: Types.Invariant<A>;
-    readonly _B: Types.Invariant<B>;
-  };
+  /** Class constructor */
+  private constructor(params: MData.Extract<Type<A, B>>) {
+    super();
+    this.store = params.store;
+    this.keyListInOrder = params.keyListInOrder;
+    this.lookUp = params.lookUp;
+    this.capacity = params.capacity;
+    this.lifeSpan = params.lifeSpan;
+  }
+
+  /** Static constructor */
+  static make<A, B>(params: MData.Extract<Type<A, B>>): Type<A, B> {
+    return new Type(params);
+  }
 }
 
-/**
- * Type guard
- *
- * @category Guards
- */
-export const has = (u: unknown): u is Type<unknown, unknown> => Predicate.hasProperty(u, _TypeId);
-
-/** Prototype */
-const _proto: MTypes.Proto<Type<any, any>> = {
-  [_TypeId]: {
-    _A: MTypes.invariantValue,
-    _B: MTypes.invariantValue,
-  },
-  ...MInspectable.BaseProto(moduleTag),
-  ...MPipeable.BaseProto,
-};
-
 /** Constructor */
-const _make = <A, B>(params: MTypes.Data<Type<A, B>>): Type<A, B> =>
-  MTypes.objectFromDataAndProto(_proto, params);
+const _make = <A, B>(params: MData.Extract<Type<A, B>>): Type<A, B> => Type.make(params);
 
 /**
  * Creates a new cache. The lookup function is used to populate the cache. If the capacity is
@@ -230,7 +157,7 @@ export const make = <A, B>({
     lookUp,
     capacity: Number.isNaN(capacity) || capacity < 0 ? 0 : capacity,
     lifeSpan: Number.isNaN(lifeSpan) || lifeSpan < 0 ? 0 : lifeSpan,
-    store: MutableHashMap.empty<A, Option.Option<ValueContainer.Type<B>>>(),
+    store: MutableHashMap.empty<A, Option.Option<MCacheValueContainer.Type<B>>>(),
     keyListInOrder: MutableList.empty<A>(),
   });
 
@@ -272,7 +199,7 @@ export const get =
             MutableHashMap.set(
               store,
               a,
-              Option.some(ValueContainer.make({ value: result, storeDate: now })),
+              Option.some(MCacheValueContainer.make({ value: result, storeDate: now })),
             );
             if (hasBoundedCapacity) {
               MutableList.prepend(keyListInOrder, a);
@@ -311,7 +238,7 @@ export const get =
                 MutableHashMap.set(
                   store,
                   a,
-                  Option.some(ValueContainer.make({ value: result, storeDate: now })),
+                  Option.some(MCacheValueContainer.make({ value: result, storeDate: now })),
                 );
                 if (hasBoundedCapacity) MutableList.prepend(keyListInOrder, a);
               } else MutableHashMap.remove(store, a);

@@ -87,7 +87,7 @@ TestUtils.assertTrueType(
 /** Data */
 TestUtils.assertTrueType(
   TestUtils.areEqualTypes<
-    MTypes.Data<TestInterface>,
+    MData.Extract<TestInterface>,
     {
       readonly a: number;
       readonly b: string;
@@ -96,7 +96,7 @@ TestUtils.assertTrueType(
 );
 TestUtils.assertTrueType(
   TestUtils.areEqualTypes<
-    MTypes.Data<TestInterface, 'a'>,
+    MData.Extract<TestInterface, 'a'>,
     {
       readonly b: string;
     }

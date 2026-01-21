@@ -25,21 +25,21 @@ import {
   Struct,
   Tuple,
   Types,
-} from "effect";
-import * as MArray from "./Array.js";
-import * as MInspectable from "./Inspectable.js";
-import * as MMatch from "./Match.js";
-import * as MPipeable from "./Pipeable.js";
-import * as MStruct from "./Struct.js";
-import * as MTuple from "./Tuple.js";
-import * as MTypes from "./types.js";
+} from 'effect';
+import * as MArray from './Array.js';
+import * as MInspectable from './Inspectable.js';
+import * as MMatch from './Match.js';
+import * as MPipeable from './Pipeable.js';
+import * as MStruct from './Struct.js';
+import * as MTuple from './Tuple.js';
+import * as MTypes from './types.js';
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = "@parischap/effect-lib/Tree/";
+export const moduleTag = '@parischap/effect-lib/Tree/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 const _TypeIdHash = Hash.hash(_TypeId);
@@ -57,7 +57,7 @@ export namespace Leaf {
    */
   export interface Type<out B> extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
     /** Identifier of a Leaf */
-    readonly _tag: "Leaf";
+    readonly _tag: 'Leaf';
 
     /** Value of a Leaf node */
     readonly value: B;
@@ -86,7 +86,7 @@ export namespace Leaf {
    */
   export const equivalence: Equivalence.Equivalence<Type<unknown>> = getEquivalence(Equal.equals);
 
-  const _make = <B>(params: MTypes.Data<Type<B>>): Type<B> =>
+  const _make = <B>(params: MData.Extract<Type<B>>): Type<B> =>
     MTypes.objectFromDataAndProto(_proto, params) as never;
 
   /**
@@ -94,14 +94,14 @@ export namespace Leaf {
    *
    * @category Constructors
    */
-  export const make = <B>(value: B): Type<B> => _make({ value, _tag: "Leaf" });
+  export const make = <B>(value: B): Type<B> => _make({ value, _tag: 'Leaf' });
 
   /**
    * Returns the `value` property of `self`
    *
    * @category Destructors
    */
-  export const value: <B>(self: Type<B>) => B = Struct.get("value");
+  export const value: <B>(self: Type<B>) => B = Struct.get('value');
 }
 
 /**
@@ -151,7 +151,7 @@ export const has = (u: unknown): u is Type<unknown, unknown> => Predicate.hasPro
  *
  * @category Guards
  */
-export const isLeaf = <A, B>(u: Type<A, B>): u is Leaf.Type<B> => u._tag === "Leaf";
+export const isLeaf = <A, B>(u: Type<A, B>): u is Leaf.Type<B> => u._tag === 'Leaf';
 
 /**
  * Returns an equivalence based on an equivalence of the subtypes
@@ -165,11 +165,10 @@ export const getEquivalence = <A, B>(
   const leafEq = Leaf.getEquivalence(bEquivalence);
   // Do not create a variable with NonLeaf.getEquivalence(aEquivalence, bEquivalence) here. Equivalences on recursive structures must respect the structure termination process. So _getEquivalence(aEquivalence, bEquivalence) must only be called when this and that are not leaves.
   return (self, that) =>
-    isLeaf(self) && isLeaf(that)
-      ? leafEq(self, that)
-      : !isLeaf(self) && !isLeaf(that)
-        ? NonLeaf.getEquivalence(aEquivalence, bEquivalence)(self, that)
-        : false;
+    isLeaf(self) && isLeaf(that) ? leafEq(self, that)
+    : !isLeaf(self) && !isLeaf(that) ?
+      NonLeaf.getEquivalence(aEquivalence, bEquivalence)(self, that)
+    : false;
 };
 const _getEquivalence = getEquivalence;
 
@@ -193,8 +192,8 @@ const _proto: MTypes.Proto<Type<never, never>> = {
     return has(that) && equivalence(this, that);
   },
   [Hash.symbol]<A, B>(this: Type<A, B>) {
-    return isLeaf(this)
-      ? pipe(
+    return isLeaf(this) ?
+        pipe(
           this.value,
           Hash.hash,
           Hash.combine(Hash.hash(this._tag)),
@@ -218,7 +217,7 @@ const _proto: MTypes.Proto<Type<never, never>> = {
  *
  * @category Destructors
  */
-export const value: <A, B>(self: Type<A, B>) => A | B = Struct.get("value");
+export const value: <A, B>(self: Type<A, B>) => A | B = Struct.get('value');
 
 const _unfold =
   <S, A, B>(
@@ -261,16 +260,16 @@ const _unfold =
                       Tuple.make(
                         seed,
                         dontHandleCycles ? predecessors : Array.append(predecessors, currentSeed),
-                        dontHandleCycles
-                          ? predecessorsValue
-                          : Array.append(predecessorsValue, nextValue),
+                        dontHandleCycles ? predecessorsValue : (
+                          Array.append(predecessorsValue, nextValue)
+                        ),
                       ),
                     ),
                   );
                   return pipe(
                     node,
                     MStruct.mutableEnrichWith({
-                      _tag: Function.constant("NonLeaf" as const),
+                      _tag: Function.constant('NonLeaf' as const),
                       value: Function.constant(nextValue),
                       forest: Function.constant(nextNodes),
                     }),
@@ -344,7 +343,7 @@ export const unfoldAndFold = <A, B, S = A, C = B>({
       ),
     ),
     Array.lastNonEmpty,
-    Struct.get("value"),
+    Struct.get('value'),
   );
 
 /**
@@ -534,7 +533,7 @@ export namespace NonLeaf {
   export interface Type<out A, out B>
     extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
     /** Identifier of a NonLeaf */
-    readonly _tag: "NonLeaf";
+    readonly _tag: 'NonLeaf';
 
     /** The value of a NonLeaf */
     readonly value: A;
@@ -572,7 +571,7 @@ export namespace NonLeaf {
     Equal.equals,
   );
 
-  const _make = <A, B>(params: MTypes.Data<Type<A, B>>): Type<A, B> =>
+  const _make = <A, B>(params: MData.Extract<Type<A, B>>): Type<A, B> =>
     MTypes.objectFromDataAndProto(_proto, params);
 
   /**
@@ -580,13 +579,13 @@ export namespace NonLeaf {
    *
    * @category Constructors
    */
-  export const make = <A, B>(params: Omit<MTypes.Data<Type<A, B>>, "_tag">): Type<A, B> =>
-    _make({ ...params, _tag: "NonLeaf" });
+  export const make = <A, B>(params: Omit<MData.Extract<Type<A, B>>, '_tag'>): Type<A, B> =>
+    _make({ ...params, _tag: 'NonLeaf' });
 
   /**
    * Returns the `value` property of `self`
    *
    * @category Destructors
    */
-  export const value: <A, B>(self: Type<A, B>) => A = Struct.get("value");
+  export const value: <A, B>(self: Type<A, B>) => A = Struct.get('value');
 }

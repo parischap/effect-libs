@@ -3,16 +3,16 @@
  * `CVTemplate`'s (see Template.ts and TemplatePart.ts)
  */
 
-import { MInputError, MInspectable, MPipeable, MString, MTypes } from "@parischap/effect-lib";
+import { MInputError, MInspectable, MPipeable, MString, MTypes } from '@parischap/effect-lib';
 
-import { Either, pipe, Pipeable, Predicate, Struct } from "effect";
+import { Either, pipe, Pipeable, Predicate, Struct } from 'effect';
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = "@parischap/conversions/TemplateSeparator/";
+export const moduleTag = '@parischap/conversions/TemplateSeparator/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
@@ -46,7 +46,7 @@ const _proto: MTypes.Proto<Type> = {
   ...MPipeable.BaseProto,
 };
 
-const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
+const _make = (params: MData.Extract<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
 
 /**
  * Constructor
@@ -63,8 +63,8 @@ export const make = (value: string): Type => _make({ value });
 export const toParser =
   (self: Type) =>
   (pos: number, text: string): Either.Either<string, MInputError.Type> => {
-    const {value} = self;
-    const {length} = value;
+    const { value } = self;
+    const { length } = value;
     return pipe(
       text,
       MInputError.assertStartsWith({
@@ -80,53 +80,53 @@ export const toParser =
  *
  * @category Destructors
  */
-export const value: MTypes.OneArgFunction<Type, string> = Struct.get("value");
+export const value: MTypes.OneArgFunction<Type, string> = Struct.get('value');
 
 /**
  * Slash Separator instance
  *
  * @category Instances
  */
-export const slash: Type = make("/");
+export const slash: Type = make('/');
 
 /**
  * Backslash Separator instance
  *
  * @category Instances
  */
-export const backslash: Type = make("\\");
+export const backslash: Type = make('\\');
 
 /**
  * Dot Separator instance
  *
  * @category Instances
  */
-export const dot: Type = make(".");
+export const dot: Type = make('.');
 
 /**
  * Hyphen Separator instance
  *
  * @category Instances
  */
-export const hyphen: Type = make("-");
+export const hyphen: Type = make('-');
 
 /**
  * Colon Separator instance
  *
  * @category Instances
  */
-export const colon: Type = make(":");
+export const colon: Type = make(':');
 
 /**
  * Comma Separator instance
  *
  * @category Instances
  */
-export const comma: Type = make(",");
+export const comma: Type = make(',');
 
 /**
  * Space Separator instance
  *
  * @category Instances
  */
-export const space: Type = make(" ");
+export const space: Type = make(' ');

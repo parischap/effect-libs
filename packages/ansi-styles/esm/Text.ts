@@ -13,7 +13,7 @@ import {
   MString,
   MStruct,
   MTypes,
-} from "@parischap/effect-lib";
+} from '@parischap/effect-lib';
 import {
   Array,
   Equal,
@@ -29,16 +29,16 @@ import {
   Tuple,
   flow,
   pipe,
-} from "effect";
-import * as ASAnsiString from "./AnsiString.js";
-import * as ASStyleCharacteristics from "./StyleCharacteristics.js";
+} from 'effect';
+import * as ASAnsiString from './AnsiString.js';
+import * as ASStyleCharacteristics from './StyleCharacteristics.js';
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = "@parischap/ansi-styles/Text/";
+export const moduleTag = '@parischap/ansi-styles/Text/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
@@ -47,7 +47,7 @@ type _TypeId = typeof _TypeId;
  * style)
  */
 namespace UniStyled {
-  const _namespaceTag = moduleTag + "UniStyled/";
+  const _namespaceTag = moduleTag + 'UniStyled/';
   const _TypeId: unique symbol = Symbol.for(_namespaceTag) as _TypeId;
   type _TypeId = typeof _TypeId;
 
@@ -119,7 +119,7 @@ namespace UniStyled {
   };
 
   /** Constructor */
-  export const make = (params: MTypes.Data<Type>): Type =>
+  export const make = (params: MData.Extract<Type>): Type =>
     MTypes.objectFromDataAndProto(_proto, params);
 
   /**
@@ -127,7 +127,7 @@ namespace UniStyled {
    *
    * @category Destructors
    */
-  export const text: MTypes.OneArgFunction<Type, string> = Struct.get("text");
+  export const text: MTypes.OneArgFunction<Type, string> = Struct.get('text');
 
   /**
    * Gets the `style` property of `self`
@@ -135,7 +135,7 @@ namespace UniStyled {
    * @category Destructors
    */
   export const style: MTypes.OneArgFunction<Type, ASStyleCharacteristics.Type> =
-    Struct.get("style");
+    Struct.get('style');
 
   /**
    * Merges the characteristics of `style` with the `style` property of `self`. In case of conflict,
@@ -161,7 +161,7 @@ namespace UniStyled {
    */
   export const concat = (elems: MTypes.ReadonlyOverOne<Type>): Type =>
     make({
-      text: pipe(elems, Array.map(text), Array.join("")),
+      text: pipe(elems, Array.map(text), Array.join('')),
       style: pipe(elems, Array.headNonEmpty, style),
     });
 
@@ -171,7 +171,7 @@ namespace UniStyled {
    * @category Utils
    */
   export const toLength: MTypes.OneArgFunction<Type, number> = flow(
-    Struct.get("text"),
+    Struct.get('text'),
     String.length,
   );
 
@@ -182,7 +182,7 @@ namespace UniStyled {
    */
   export const toAnsiString = (self: Type): string => {
     const ansiStart = ASStyleCharacteristics.toAnsiString(self.style);
-    return ansiStart === "" ? self.text : ansiStart + self.text + ASAnsiString.reset;
+    return ansiStart === '' ? self.text : ansiStart + self.text + ASAnsiString.reset;
   };
 }
 
@@ -242,7 +242,7 @@ const _proto: MTypes.Proto<Type> = {
 };
 
 /** Constructor */
-const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
+const _make = (params: MData.Extract<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
 
 /**
  * Returns the `uniStyledTexts` property of `self`
@@ -252,7 +252,7 @@ const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto
 export const uniStyledTexts: MTypes.OneArgFunction<
   Type,
   ReadonlyArray<UniStyled.Type>
-> = Struct.get("uniStyledTexts");
+> = Struct.get('uniStyledTexts');
 
 /**
  * Returns the length of `self` without the length of the styling
@@ -305,7 +305,7 @@ export const fromStyleAndElems =
             ),
             MMatch.orElse(
               flow(
-                Struct.get("uniStyledTexts"),
+                Struct.get('uniStyledTexts'),
                 Array.map(UniStyled.applyStyleUnder(style)),
                 Option.some,
               ),
@@ -363,7 +363,7 @@ export const toAnsiString: MTypes.OneArgFunction<Type, string> = flow(
     onOverTwo: flow(
       Array.map(UniStyled.applyStyleUnder(ASStyleCharacteristics.defaults)),
       Array.reduce(
-        Tuple.make("", ASStyleCharacteristics.defaults),
+        Tuple.make('', ASStyleCharacteristics.defaults),
         ([text, context], uniStyled) => {
           const toApply = pipe(uniStyled.style, ASStyleCharacteristics.substractContext(context));
 
@@ -391,7 +391,7 @@ export const toAnsiString: MTypes.OneArgFunction<Type, string> = flow(
 export const toUnstyledString: MTypes.OneArgFunction<Type, string> = flow(
   uniStyledTexts,
   Array.map(UniStyled.text),
-  Array.join(""),
+  Array.join(''),
 );
 
 /**

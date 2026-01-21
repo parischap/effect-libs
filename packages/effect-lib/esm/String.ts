@@ -116,7 +116,7 @@ export namespace SearchResult {
    *
    * @category Constructors
    */
-  export const make = (params: MTypes.Data<Type>): Type =>
+  export const make = (params: MData.Extract<Type>): Type =>
     MTypes.objectFromDataAndProto(_proto, params);
 
   /**

@@ -26,7 +26,7 @@ export type Append<First extends MTypes.NonPrimitive, Second extends MTypes.NonP
  */
 export const prepend =
   <O1 extends MTypes.NonPrimitive>(that: O1) =>
-  <O extends MTypes.NonPrimitive>(self: O): MTypes.Data<Append<O1, O>> => ({
+  <O extends MTypes.NonPrimitive>(self: O): MData.Extract<Append<O1, O>> => ({
     ...that,
     ...self,
   });
@@ -40,7 +40,7 @@ export const prepend =
  */
 export const append =
   <O1 extends MTypes.NonPrimitive>(that: O1) =>
-  <O extends MTypes.NonPrimitive>(self: O): MTypes.Data<Append<O, O1>> => ({
+  <O extends MTypes.NonPrimitive>(self: O): MData.Extract<Append<O, O1>> => ({
     ...self,
     ...that,
   });
@@ -52,7 +52,7 @@ export const append =
  */
 export const set =
   <O extends MTypes.NonPrimitive, O1 extends Partial<O>>(that: O1) =>
-  (self: O): MTypes.Data<Omit<O, keyof O1> & O1> => ({
+  (self: O): MData.Extract<Omit<O, keyof O1> & O1> => ({
     ...self,
     ...that,
   });
@@ -91,7 +91,9 @@ export const enrichWith =
   >(
     fields: O1,
   ) =>
-  (self: O): MTypes.Data<Omit<O, keyof O1> & { readonly [key in keyof O1]: ReturnType<O1[key]> }> =>
+  (
+    self: O,
+  ): MData.Extract<Omit<O, keyof O1> & { readonly [key in keyof O1]: ReturnType<O1[key]> }> =>
     pipe(fields, Record.map(Function.apply(self)), (newValues) => ({ ...self, ...newValues }));
 
 /**
@@ -134,7 +136,7 @@ export const {
   evolve,
 }: {
   readonly evolve: {
-    <O, T>(t: PartialTransform<O, T>): (obj: O) => MTypes.Data<Transformed<O, T>>;
-    <O, T>(obj: O, t: PartialTransform<O, T>): MTypes.Data<Transformed<O, T>>;
+    <O, T>(t: PartialTransform<O, T>): (obj: O) => MData.Extract<Transformed<O, T>>;
+    <O, T>(obj: O, t: PartialTransform<O, T>): MData.Extract<Transformed<O, T>>;
   };
 } = Struct;
