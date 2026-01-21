@@ -4,9 +4,10 @@ import { Array, Either, flow, Function, Option, pipe, Record } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('MTree', () => {
-  const unfoldObject = (seed: MTypes.Unknown, cyclicalRef: Option.Option<'Array' | 'Record'>) =>
+  /** Function used to unfold an object with Tree.unfold. */
+  const unfoldObject = (seed: MTypes.Unknown, cycleSource: Option.Option<'Array' | 'Record'>) =>
     pipe(
-      cyclicalRef,
+      cycleSource,
       Option.map(flow(MString.prepend('Cyclical '), Either.left)),
       Option.getOrElse(
         pipe(
@@ -57,40 +58,20 @@ describe('MTree', () => {
   cyclicalObject.b[0].a.a.push(cyclicalObject.b);
 
   const testTree1 = pipe(nonCyclicalObject1, MTree.unfold(unfoldObject));
-  const testTree2 = pipe(nonCyclicalObject1, MTree.unfold(unfoldObject));
-  const testTree3 = pipe(nonCyclicalObject2, MTree.unfold(unfoldObject));
-  const testTree4 = pipe(cyclicalObject, MTree.unfold(unfoldObject));
+  const testTree2 = pipe(nonCyclicalObject2, MTree.unfold(unfoldObject));
+  const testTree3 = pipe(cyclicalObject, MTree.unfold(unfoldObject));
 
   const foldedTestTree1 = '{ [{ { s1, s2 }, s3 }, [s4]], [{ { [s5] }, s6 }, s7] }';
   const mappedTestTree1 = '[{ [[s1@, s2@], s3@], { s4@ } }, { [[{ s5@ }], s6@], s7@ }]';
 
-  describe('Tag, prototype and guards', () => {
-    it('moduleTag', () => {
-      TestUtils.assertSome(TestUtils.moduleTagFromTestFilePath(__filename), MTree.moduleTag);
-    });
-
-    describe('Equal.equals', () => {
-      it('Matching', () => {
-        TestUtils.assertEquals(testTree1, testTree2);
-      });
-      it('Non matching', () => {
-        TestUtils.assertNotEquals(testTree1, testTree3);
-      });
-    });
-
-    it('pipe', () => {
-      TestUtils.assertTrue(testTree1.pipe(MTypes.isNonPrimitive));
-    });
-
-    describe('has', () => {
-      it('Matching', () => {
-        TestUtils.assertTrue(testTree1.pipe(MTree.has));
-      });
-      it('Non matching', () => {
-        TestUtils.assertFalse(MTree.has(new Date()));
-      });
-    });
+  it('moduleTag', () => {
+    TestUtils.assertEquals(
+      Option.some(MTree.moduleTag),
+      TestUtils.moduleTagFromTestFilePath(import.meta.filename),
+    );
   });
+
+  const a = testTree1.toString();
 
   it('unfold and .toString()', () => {
     TestUtils.strictEqual(
@@ -220,14 +201,14 @@ describe('MTree', () => {
 
     it('Non-cyclical value 2', () => {
       TestUtils.strictEqual(
-        pipe(testTree3, MTree.fold({ fNonLeaf: foldNonLeaf, fLeaf: Function.identity })),
+        pipe(testTree2, MTree.fold({ fNonLeaf: foldNonLeaf, fLeaf: Function.identity })),
         '{ [{ { s1, s2 }, s3 }, [s4]], [{ { [s5] }, s6 }, s7, { { s1, s2 }, s3 }] }',
       );
     });
 
     it('Cyclical value', () => {
       TestUtils.strictEqual(
-        pipe(testTree4, MTree.fold({ fNonLeaf: foldNonLeaf, fLeaf: Function.identity })),
+        pipe(testTree3, MTree.fold({ fNonLeaf: foldNonLeaf, fLeaf: Function.identity })),
         '{ [{ { s1, s2 }, s3 }, [s4]], [{ { [s5, Cyclical Array] }, s6 }, s7] }',
       );
     });

@@ -352,34 +352,53 @@ export const modifyHead =
     Array.modify(self, 0, f);
 
 /**
- * Same as Array.unfold but with cycle detection and curried
+ * Same as Array.unfold but with cycle detection and curried. A cycle is detected if the same seed
+ * `s` is sent a second time to function f (equivalence based on the `seedEquivalence` equivalence
+ * if provided or on Equal.equals otherwise). In that case, `cycleSource` is a `some` of the `a`
+ * generated the first time `s` was processed, hence giving the user a chance to modify it.
+ * Otherwise, `cycleSource` is a `none`.
  *
  * @category Constructors
  */
 export const unfold =
-  <A, B>(f: (a: A, isCyclical: boolean) => Option.Option<MTypes.Pair<B, A>>) =>
-  (a: A): Array<B> => {
-    if (MTypes.isOneArgFunction(f)) return Array.unfold(a, f);
-    const knownAs = Array.empty<A>();
-    const internalF = (a: A) => {
-      const isCyclical = Array.contains(knownAs, a);
-      knownAs.push(a);
-      return f(a, isCyclical);
+  <S, A>(
+    f: (s: S, cycleSource: Option.Option<NoInfer<A>>) => Option.Option<MTypes.Pair<A, S>>,
+    seedEquivalence: Equivalence.Equivalence<S> = Equal.equals,
+  ) =>
+  (s: S): Array<A> => {
+    if (MTypes.isOneArgFunction(f)) return Array.unfold(s, f);
+    const knownAsAndBs = Array.empty<[S, A]>();
+    const internalF = (s: S) => {
+      const knownB = pipe(
+        knownAsAndBs,
+        Array.findFirst(([s1]) => seedEquivalence(s, s1)),
+        Option.map(Tuple.getSecond),
+      );
+      const result = f(s, knownB);
+      if (Option.isSome(result)) knownAsAndBs.push([s, Tuple.getFirst(result.value)]);
+      return result;
     };
-    return Array.unfold(a, internalF);
+    return Array.unfold(s, internalF);
   };
 
 /**
- * Same as unfold but f always returns a B and an Option<A>
+ * Same as `MArray.unfold` but f always returns an `A` and optionnaly an `S`. A cycle is detected if
+ * the same seed `s` is sent a second time to function f (equivalence based on the `seedEquivalence`
+ * equivalence if provided or on Equal.equals otherwise). In that case, `cycleSource` is a `some` of
+ * the `a` generated the first time `s` was processed, hence giving the user a chance to modify it.
+ * Otherwise, `cycleSource` is a `none`.
  *
  * @category Constructors
  */
 export const unfoldNonEmpty =
-  <A, B>(f: (a: A, isCyclical: boolean) => MTypes.Pair<B, Option.Option<A>>) =>
-  (a: A): MTypes.OverOne<B> => {
-    const internalF = (aOption: Option.Option<A>, isCyclical: boolean) =>
-      Option.map(aOption, (a) => f(a, isCyclical));
-    return pipe(a, Option.some, unfold(internalF)) as unknown as MTypes.OverOne<B>;
+  <S, A>(
+    f: (s: S, cycleSource: Option.Option<NoInfer<A>>) => MTypes.Pair<A, Option.Option<S>>,
+    seedEquivalence: Equivalence.Equivalence<S>,
+  ) =>
+  (s: S): MTypes.OverOne<A> => {
+    const internalF = (sOption: Option.Option<S>, cycleSource: Option.Option<A>) =>
+      Option.map(sOption, (s) => f(s, cycleSource));
+    return pipe(s, Option.some, unfold(internalF, seedEquivalence)) as unknown as MTypes.OverOne<A>;
   };
 
 /**

@@ -20,11 +20,10 @@ import {
 } from 'effect';
 import * as MArray from './Array.js';
 import * as MBigInt from './BigInt.js';
+import * as MData from './Data.js';
 import * as MFunction from './Function.js';
-import * as MInspectable from './Inspectable.js';
 import * as MMatch from './Match.js';
 import * as MNumber from './Number.js';
-import * as MPipeable from './Pipeable.js';
 import * as MPredicate from './Predicate.js';
 import * as MRegExp from './RegExp.js';
 import * as MRegExpString from './RegExpString.js';
@@ -54,33 +53,30 @@ export namespace SearchResult {
    *
    * @category Models
    */
-  export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
+  export class Type
+    extends MData.Class({ id: _namespaceTag, uniqueSymbol: _TypeId })
+    implements Pipeable.Pipeable, Inspectable.Inspectable, Equal.Equal, Hash.Hash
+  {
     /** The index where the match was found in the target string */
     readonly startIndex: number;
     /** The index of the character following the match in the target string */
     readonly endIndex: number;
     /** The match */
     readonly match: string;
-    /** @internal */
-    readonly [_TypeId]: _TypeId;
+
+    /** Class constructor */
+    private constructor({ startIndex, endIndex, match }: MData.Extract<Type>) {
+      super();
+      this.startIndex = startIndex;
+      this.endIndex = endIndex;
+      this.match = match;
+    }
+
+    /** Static constructor */
+    static make(params: MData.Extract<Type>): Type {
+      return new Type(params);
+    }
   }
-
-  /**
-   * Type guard
-   *
-   * @category Guards
-   */
-  export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
-
-  /**
-   * Equivalence
-   *
-   * @category Equivalences
-   */
-  export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
-    that.startIndex === self.startIndex
-    && that.endIndex === self.endIndex
-    && that.match === self.match;
 
   /**
    * Equivalence that considers two SearchResult's to be equivalent when they overlap
@@ -90,34 +86,12 @@ export namespace SearchResult {
   export const areOverlapping: Equivalence.Equivalence<Type> = (self, that) =>
     self.endIndex >= that.startIndex && self.startIndex <= that.endIndex;
 
-  /** Prototype */
-  const _TypeIdHash = Hash.hash(_TypeId);
-  const _proto: MTypes.Proto<Type> = {
-    [_TypeId]: _TypeId,
-    [Equal.symbol](this: Type, that: unknown): boolean {
-      return has(that) && equivalence(this, that);
-    },
-    [Hash.symbol](this: Type) {
-      return pipe(
-        this.startIndex,
-        Hash.hash,
-        Hash.combine(Hash.hash(this.endIndex)),
-        Hash.combine(Hash.hash(this.match)),
-        Hash.combine(_TypeIdHash),
-        Hash.cached(this),
-      );
-    },
-    ...MInspectable.BaseProto(_namespaceTag),
-    ...MPipeable.BaseProto,
-  };
-
   /**
    * Constructor
    *
    * @category Constructors
    */
-  export const make = (params: MData.Extract<Type>): Type =>
-    MTypes.objectFromDataAndProto(_proto, params);
+  export const make = (params: MData.Extract<Type>): Type => Type.make(params);
 
   /**
    * SearchResult Order based on the startIndex

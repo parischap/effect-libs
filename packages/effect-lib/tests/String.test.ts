@@ -1,6 +1,6 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
 import { MString } from '@parischap/effect-lib';
-import { Array, Option, pipe, String, Struct } from 'effect';
+import { Array, Option, pipe, String } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('MString', () => {
@@ -16,48 +16,6 @@ describe('MString', () => {
       startIndex: 3,
       endIndex: 6,
       match: 'foo',
-    });
-
-    describe('Tag, prototype and guards', () => {
-      describe('Equal.equals', () => {
-        it('Matching', () => {
-          TestUtils.assertEquals(
-            testSearchResult,
-            MString.SearchResult.make({ startIndex: 3, endIndex: 6, match: 'foo' }),
-          );
-        });
-        it('Non matching', () => {
-          TestUtils.assertNotEquals(
-            testSearchResult,
-            MString.SearchResult.make({ startIndex: 3, endIndex: 6, match: 'baz' }),
-          );
-        });
-      });
-
-      it('.toString()', () => {
-        TestUtils.strictEqual(
-          testSearchResult.toString(),
-          `{
-  "_id": "@parischap/effect-lib/String/SearchResult/",
-  "startIndex": 3,
-  "endIndex": 6,
-  "match": "foo"
-}`,
-        );
-      });
-
-      it('.pipe()', () => {
-        TestUtils.strictEqual(testSearchResult.pipe(Struct.get('startIndex')), 3);
-      });
-
-      describe('has', () => {
-        it('Matching', () => {
-          TestUtils.assertTrue(MString.SearchResult.has(testSearchResult));
-        });
-        it('Non matching', () => {
-          TestUtils.assertFalse(MString.SearchResult.has(new Date()));
-        });
-      });
     });
 
     it('byLongestFirst', () => {

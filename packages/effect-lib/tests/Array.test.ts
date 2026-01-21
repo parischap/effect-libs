@@ -374,14 +374,18 @@ describe('MArray', () => {
       TestUtils.deepStrictEqual(
         pipe(
           0,
-          MArray.unfold((b, isCyclical) =>
-            isCyclical ?
-              Option.none()
-            : pipe(
-                b,
-                MTuple.makeBothBy({ toFirst: Function.identity, toSecond: cyclical }),
-                Option.some,
-              ),
+          MArray.unfold<number, number>(
+            (b, cycleSource) =>
+              Option.match(cycleSource, {
+                onSome: () => Option.none(),
+                onNone: () =>
+                  pipe(
+                    b,
+                    MTuple.makeBothBy({ toFirst: Function.identity, toSecond: cyclical }),
+                    Option.some,
+                  ),
+              }),
+            ENumber.Equivalence,
           ),
         ),
         [0, 1, 2, 3],
@@ -394,12 +398,10 @@ describe('MArray', () => {
       pipe(
         0,
         MArray.unfoldNonEmpty(
-          flow(
-            MTuple.makeBothBy({
-              toFirst: Function.identity,
-              toSecond: flow(ENumber.increment, Option.liftPredicate(ENumber.lessThanOrEqualTo(3))),
-            }),
-          ),
+          MTuple.makeBothBy({
+            toFirst: Function.identity,
+            toSecond: flow(ENumber.increment, Option.liftPredicate(ENumber.lessThanOrEqualTo(3))),
+          }),
         ),
       ),
       [0, 1, 2, 3],

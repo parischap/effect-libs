@@ -1,11 +1,11 @@
 /**
  * Module that implements a Tree<A,B> where the value of a non-leaf node is of type A and the value
- * of a leaf node is of type B.
+ * of a leaf node is of type B. A non-leaf node also contains a forest, i.e. an array of trees.
  *
- * A node may have no leaf.
+ * A Tree may have no leaf.
  *
  * A Tree may be composed of a single leaf. If this situation does not correspond to your need, you
- * may work with the type NonLeaf<A,B> instead. In all the provided functions, self can be a
+ * may work with the type NonLeaf<A,B> instead. In all the provided functions, `self` can be a
  * Tree<A,B> or a NonLeaf<A,B>
  */
 
@@ -15,21 +15,17 @@ import {
   Equal,
   Equivalence,
   flow,
-  Function,
   Hash,
   Inspectable,
   Option,
   pipe,
   Pipeable,
-  Predicate,
   Struct,
   Tuple,
-  Types,
 } from 'effect';
 import * as MArray from './Array.js';
-import * as MInspectable from './Inspectable.js';
+import * as MData from './Data.js';
 import * as MMatch from './Match.js';
-import * as MPipeable from './Pipeable.js';
 import * as MStruct from './Struct.js';
 import * as MTuple from './Tuple.js';
 import * as MTypes from './types.js';
@@ -42,7 +38,6 @@ import * as MTypes from './types.js';
 export const moduleTag = '@parischap/effect-lib/Tree/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
-const _TypeIdHash = Hash.hash(_TypeId);
 
 /**
  * Namespace of a Leaf
@@ -50,23 +45,31 @@ const _TypeIdHash = Hash.hash(_TypeId);
  * @category Models
  */
 export namespace Leaf {
+  const _namespaceTag = '@parischap/effect-lib/Tree/Leaf/';
+  const _TypeId: unique symbol = Symbol.for(_namespaceTag) as _TypeId;
+  type _TypeId = typeof _TypeId;
   /**
    * Typeof a Leaf node
    *
    * @category Models
    */
-  export interface Type<out B> extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
-    /** Identifier of a Leaf */
-    readonly _tag: 'Leaf';
-
+  export class Type<out B>
+    extends MData.Class({ id: _namespaceTag, uniqueSymbol: _TypeId })
+    implements Pipeable.Pipeable, Inspectable.Inspectable, Equal.Equal, Hash.Hash
+  {
     /** Value of a Leaf node */
     readonly value: B;
 
-    /** @internal */
-    readonly [_TypeId]: {
-      readonly _A: Types.Covariant<never>;
-      readonly _B: Types.Covariant<B>;
-    };
+    /** Class constructor */
+    private constructor({ value }: MData.Extract<Type<B>>) {
+      super();
+      this.value = value;
+    }
+
+    /** Static constructor */
+    static make<B>(params: MData.Extract<Type<B>>): Type<B> {
+      return new Type(params);
+    }
   }
 
   /**
@@ -80,21 +83,11 @@ export namespace Leaf {
       bEquivalence(self.value, that.value);
 
   /**
-   * Equivalence based on Equal.equals
-   *
-   * @category Equivalences
-   */
-  export const equivalence: Equivalence.Equivalence<Type<unknown>> = getEquivalence(Equal.equals);
-
-  const _make = <B>(params: MData.Extract<Type<B>>): Type<B> =>
-    MTypes.objectFromDataAndProto(_proto, params) as never;
-
-  /**
    * Constructor
    *
    * @category Constructors
    */
-  export const make = <B>(value: B): Type<B> => _make({ value, _tag: 'Leaf' });
+  export const make = <B>(value: B): Type<B> => Type.make({ value });
 
   /**
    * Returns the `value` property of `self`
@@ -104,6 +97,121 @@ export namespace Leaf {
   export const value: <B>(self: Type<B>) => B = Struct.get('value');
 }
 
+/**
+ * Namespace of a NonLeaf
+ *
+ * @category Models
+ */
+export namespace NonLeaf {
+  const _namespaceTag = '@parischap/effect-lib/Tree/NonLeaf/';
+  const _TypeId: unique symbol = Symbol.for(_namespaceTag) as _TypeId;
+  type _TypeId = typeof _TypeId;
+
+  /**
+   * Typeof a NonLeaf
+   *
+   * @category Models
+   */
+  export class Type<out A, out B>
+    extends MData.Class({ id: _namespaceTag, uniqueSymbol: _TypeId })
+    implements Pipeable.Pipeable, Inspectable.Inspectable, Equal.Equal, Hash.Hash
+  {
+    /** The value of a NonLeaf */
+    readonly value: A;
+    /** The children of a NonLeaf */
+    readonly forest: Forest.Type<A, B>;
+
+    /** Class constructor */
+    private constructor({ value, forest }: MData.Extract<Type<A, B>>) {
+      super();
+      this.value = value;
+      this.forest = forest;
+    }
+
+    /** Static constructor */
+    static make<A, B>(params: MData.Extract<Type<A, B>>): Type<A, B> {
+      return new Type(params);
+    }
+  }
+
+  /**
+   * Returns an equivalence based on an equivalence of the subtypes
+   *
+   * @since 0.5.0 Equivalence
+   */
+  export const getEquivalence = <A, B>(
+    aEquivalence: Equivalence.Equivalence<A>,
+    bEquivalence: Equivalence.Equivalence<B>,
+  ): Equivalence.Equivalence<Type<A, B>> => {
+    const forestEq = Forest.getEquivalence(aEquivalence, bEquivalence);
+    return (self, that) =>
+      aEquivalence(self.value, that.value) && forestEq(self.forest, that.forest);
+  };
+
+  /**
+   * Constructor
+   *
+   * @category Constructors
+   */
+  export const make = <A, B>(params: MData.Extract<Type<A, B>>): Type<A, B> => Type.make(params);
+
+  /**
+   * Returns the `value` property of `self`
+   *
+   * @category Destructors
+   */
+  export const value: <A, B>(self: Type<A, B>) => A = Struct.get('value');
+}
+
+/**
+ * Type of a Tree
+ *
+ * @category Models
+ */
+export type Type<A, B> = Leaf.Type<B> | NonLeaf.Type<A, B>;
+
+/**
+ * Type guard
+ *
+ * @category Guards
+ */
+export const isLeaf = <A, B>(u: Type<A, B>): u is Leaf.Type<B> => u instanceof Leaf.Type;
+
+/**
+ * Type guard
+ *
+ * @category Guards
+ */
+export const isNonLeaf = <A, B>(u: Type<A, B>): u is NonLeaf.Type<A, B> =>
+  u instanceof NonLeaf.Type;
+
+/**
+ * Returns an equivalence based on an equivalence of the subtypes
+ *
+ * @category Equivalences
+ */
+export const getEquivalence = <A, B>(
+  aEquivalence: Equivalence.Equivalence<A>,
+  bEquivalence: Equivalence.Equivalence<B>,
+): Equivalence.Equivalence<Type<A, B>> => {
+  const leafEq = Leaf.getEquivalence(bEquivalence);
+  // Do not create a variable with NonLeaf.getEquivalence(aEquivalence, bEquivalence) here. Equivalences on recursive structures must respect the structure termination process. So getEquivalence(aEquivalence, bEquivalence) must only be called when this and that are not leaves.
+  return (self, that) =>
+    isLeaf(self) && isLeaf(that) ? leafEq(self, that)
+    : isNonLeaf(self) && isNonLeaf(that) ?
+      NonLeaf.getEquivalence(aEquivalence, bEquivalence)(self, that)
+    : false;
+};
+
+/**
+ * Returns the `value` property of `self`
+ *
+ * @category Destructors
+ */
+export const value: <A, B>(self: Type<A, B>) => A | B = Struct.get('value');
+
+type _Type<A, B> = Type<A, B>;
+const _getEquivalence = getEquivalence;
 /**
  * Namespace of a Forest
  *
@@ -131,155 +239,48 @@ export namespace Forest {
   };
 }
 
-type _Type<A, B> = Type<A, B>;
-/**
- * Type of a Tree
- *
- * @category Models
- */
-export type Type<A, B> = Leaf.Type<B> | NonLeaf.Type<A, B>;
-
-/**
- * Type guard
- *
- * @category Guards
- */
-export const has = (u: unknown): u is Type<unknown, unknown> => Predicate.hasProperty(u, _TypeId);
-
-/**
- * Type guard
- *
- * @category Guards
- */
-export const isLeaf = <A, B>(u: Type<A, B>): u is Leaf.Type<B> => u._tag === 'Leaf';
-
-/**
- * Returns an equivalence based on an equivalence of the subtypes
- *
- * @category Equivalences
- */
-export const getEquivalence = <A, B>(
-  aEquivalence: Equivalence.Equivalence<A>,
-  bEquivalence: Equivalence.Equivalence<B>,
-): Equivalence.Equivalence<Type<A, B>> => {
-  const leafEq = Leaf.getEquivalence(bEquivalence);
-  // Do not create a variable with NonLeaf.getEquivalence(aEquivalence, bEquivalence) here. Equivalences on recursive structures must respect the structure termination process. So _getEquivalence(aEquivalence, bEquivalence) must only be called when this and that are not leaves.
-  return (self, that) =>
-    isLeaf(self) && isLeaf(that) ? leafEq(self, that)
-    : !isLeaf(self) && !isLeaf(that) ?
-      NonLeaf.getEquivalence(aEquivalence, bEquivalence)(self, that)
-    : false;
-};
-const _getEquivalence = getEquivalence;
-
-/**
- * Equivalence based on Equal.equals
- *
- * @category Equivalences
- */
-export const equivalence: Equivalence.Equivalence<Type<unknown, unknown>> = getEquivalence(
-  Equal.equals,
-  Equal.equals,
-);
-
-/** Prototype */
-const _proto: MTypes.Proto<Type<never, never>> = {
-  [_TypeId]: {
-    _A: MTypes.covariantValue,
-    _B: MTypes.covariantValue,
-  },
-  [Equal.symbol]<A, B>(this: Type<A, B>, that: unknown): boolean {
-    return has(that) && equivalence(this, that);
-  },
-  [Hash.symbol]<A, B>(this: Type<A, B>) {
-    return isLeaf(this) ?
-        pipe(
-          this.value,
-          Hash.hash,
-          Hash.combine(Hash.hash(this._tag)),
-          Hash.combine(_TypeIdHash),
-          Hash.cached(this),
-        )
-      : pipe(
-          this.value,
-          Hash.hash,
-          Hash.combine(Hash.array(this.forest)),
-          Hash.combine(_TypeIdHash),
-          Hash.cached(this),
-        );
-  },
-  ...MInspectable.BaseProto(moduleTag),
-  ...MPipeable.BaseProto,
-};
-
-/**
- * Returns the `value` property of `self`
- *
- * @category Destructors
- */
-export const value: <A, B>(self: Type<A, B>) => A | B = Struct.get('value');
-
 const _unfold =
   <S, A, B>(
     f: (
       seed: S,
-      cyclicalRef: Option.Option<A>,
+      cycleSource: Option.Option<A>,
     ) => Either.Either<MTypes.Pair<A, ReadonlyArray<S>>, B>,
+    seedEquivalence: Equivalence.Equivalence<S>,
   ) =>
   (seed: S): MTypes.OverOne<Type<A, B>> => {
     const dontHandleCycles = MTypes.isOneArgFunction(f);
 
     return pipe(
-      Array.of(
-        Leaf.make(
-          // MArray.unfold cycle detection will not work here. So we have to reimplement it
-          Tuple.make(seed, Array.empty<S>(), Array.empty<A>()),
-        ),
-      ),
+      Array.of(Tuple.make(seed, Array.empty<[parent: S, parentValue: NonLeaf.Type<A, B>]>())),
       MArray.unfoldNonEmpty(
         flow(
-          Array.map((node) => {
-            const [currentSeed, predecessors, predecessorsValue] = node.value;
-            const index = Array.findFirstIndex(predecessors, Equal.equals(currentSeed));
-
-            return pipe(
-              f(currentSeed, pipe(index, Option.map(MArray.unsafeGetter(predecessorsValue)))),
-              Either.mapBoth({
-                onLeft: (nextValue) =>
-                  pipe(
-                    node,
-                    MStruct.mutableEnrichWith({
-                      value: Function.constant(nextValue),
-                    }),
-                    (node) => Tuple.make(node as Leaf.Type<B>),
-                    Tuple.appendElement(Array.empty()),
-                  ),
-                onRight: ([nextValue, nextSeeds]) => {
-                  const nextNodes = Array.map(nextSeeds, (seed) =>
-                    Leaf.make(
-                      Tuple.make(
-                        seed,
-                        dontHandleCycles ? predecessors : Array.append(predecessors, currentSeed),
-                        dontHandleCycles ? predecessorsValue : (
-                          Array.append(predecessorsValue, nextValue)
-                        ),
-                      ),
+          Array.map(([currentSeed, parents]) => {
+            const containingNonLeafOption = pipe(parents, Array.last, Option.map(Tuple.getSecond));
+            const [nextNode, nextSeeds]: [Leaf.Type<B> | NonLeaf.Type<A, B>, ReadonlyArray<S>] =
+              pipe(
+                f(
+                  currentSeed,
+                  dontHandleCycles ?
+                    Option.none<A>()
+                  : pipe(
+                      parents,
+                      Array.findFirst(([parentSeed]) => seedEquivalence(parentSeed, currentSeed)),
+                      Option.map(flow(Tuple.getSecond, NonLeaf.value)),
                     ),
-                  );
-                  return pipe(
-                    node,
-                    MStruct.mutableEnrichWith({
-                      _tag: Function.constant('NonLeaf' as const),
-                      value: Function.constant(nextValue),
-                      forest: Function.constant(nextNodes),
-                    }),
-                    (node) => Tuple.make(node as unknown as NonLeaf.Type<A, B>),
-                    Tuple.appendElement(nextNodes),
-                  );
-                },
-              }),
-              Either.merge,
-            );
+                ),
+                Either.mapBoth({
+                  onLeft: flow(Leaf.make, Tuple.make, Tuple.appendElement(Array.empty<S>())),
+                  onRight: Tuple.mapFirst((value) =>
+                    NonLeaf.make({ value, forest: Array.empty<Type<A, B>>() }),
+                  ),
+                }),
+                Either.merge,
+              );
+
+            if (Option.isSome(containingNonLeafOption))
+              (containingNonLeafOption.value.forest as Array<Type<A, B>>).push(nextNode);
+
+            return 0 as never;
           }),
           Array.unzip,
           Tuple.mapSecond(flow(Array.flatten, Option.liftPredicate(Array.isNonEmptyArray))),
@@ -291,23 +292,30 @@ const _unfold =
 
 /**
  * Non recursive function that builds a (possibly infinite) tree from a seed value and an unfold
- * function. A cycle is reported when a seed has a value equal to itself (in terms of Equal.equals)
- * as a direct parent. In that case, function `f` receives as `cyclicalRef` argument a `some` of the
- * value of the non-leaf that was created from that seed.
+ * function. The unfold function takes a seed and returns either a left of a value of type B from
+ * which a leaf is created or a right of a value of type A and an array of new seeds (possibly
+ * empty). A non leaf is created from this value of type A and from the result of calling the unfold
+ * function on each value of the array of new seeds. A cycle is detected if the same seed `s` is
+ * sent a second time to function f (equivalence based on the `seedEquivalence` equivalence if
+ * provided or on Equal.equals otherwise). In that case, `cycleSource` is a `some` of the `A`
+ * generated the first time `s` was processed, hence giving the user a chance to modify it.
+ * Otherwise, `cycleSource` is a `none`.
  *
  * @category Constructors
  */
 
 export const unfold = <S, A, B>(
-  f: (seed: S, cyclicalRef: Option.Option<A>) => Either.Either<MTypes.Pair<A, ReadonlyArray<S>>, B>,
-): MTypes.OneArgFunction<S, Type<A, B>> => flow(_unfold(f), Array.headNonEmpty);
+  f: (seed: S, cycleSource: Option.Option<A>) => Either.Either<MTypes.Pair<A, ReadonlyArray<S>>, B>,
+  seedEquivalence: Equivalence.Equivalence<S> = Equal.equals,
+): MTypes.OneArgFunction<S, Type<A, B>> => flow(_unfold(f, seedEquivalence), Array.headNonEmpty);
 
 /**
  * Non recursive function that builds a (possibly infinite) tree from a seed value and an unfold
- * function, then applies a function f to the value of each node and the result of applying f to the
- * children of the node (see fold below).A cycle is reported when a seed has a value equal to itself
- * (in terms of Equal.equals) as a direct parent. In that case, function `f` receives as
- * `cyclicalRef` argument a `some` of the value of the non-leaf that was created from that seed.
+ * function (see unfold), then applies a function f to the value of each node and the result of
+ * applying f to the children of the node (see fold below).A cycle is reported when a seed has a
+ * value equal to itself (in terms of Equal.equals) as a direct parent. In that case, function `f`
+ * receives as `cycleSource` argument a `some` of the value of the non-leaf that was created from
+ * that seed.
  *
  * @category Constructors
  */
@@ -316,16 +324,18 @@ export const unfoldAndFold = <A, B, S = A, C = B>({
   unfold,
   foldNonLeaf,
   foldLeaf,
+  seedEquivalence = Equal.equals,
 }: {
   readonly unfold: (
     seed: S,
-    cyclicalRef: Option.Option<A>,
+    cycleSource: Option.Option<A>,
   ) => Either.Either<MTypes.Pair<A, ReadonlyArray<S>>, B>;
   readonly foldNonLeaf: (value: A, children: ReadonlyArray<C>) => C;
   readonly foldLeaf: (value: B) => C;
+  readonly seedEquivalence?: Equivalence.Equivalence<S>;
 }): MTypes.OneArgFunction<S, C> =>
   flow(
-    _unfold(unfold),
+    _unfold(unfold, seedEquivalence),
     Array.reverse,
     Array.map(
       flow(
@@ -518,74 +528,3 @@ export const extendUp = <A, B, C, D>({
 
   return go(0);
 };
-
-/**
- * Namespace of a NonLeaf
- *
- * @category Models
- */
-export namespace NonLeaf {
-  /**
-   * Typeof a NonLeaf
-   *
-   * @category Models
-   */
-  export interface Type<out A, out B>
-    extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
-    /** Identifier of a NonLeaf */
-    readonly _tag: 'NonLeaf';
-
-    /** The value of a NonLeaf */
-    readonly value: A;
-    /** The children of a NonLeaf */
-    readonly forest: Forest.Type<A, B>;
-
-    /** @internal */
-    readonly [_TypeId]: {
-      readonly _A: Types.Covariant<A>;
-      readonly _B: Types.Covariant<B>;
-    };
-  }
-
-  /**
-   * Returns an equivalence based on an equivalence of the subtypes
-   *
-   * @since 0.5.0 Equivalence
-   */
-  export const getEquivalence = <A, B>(
-    aEquivalence: Equivalence.Equivalence<A>,
-    bEquivalence: Equivalence.Equivalence<B>,
-  ): Equivalence.Equivalence<Type<A, B>> => {
-    const forestEq = Forest.getEquivalence(aEquivalence, bEquivalence);
-    return (self, that) =>
-      aEquivalence(self.value, that.value) && forestEq(self.forest, that.forest);
-  };
-
-  /**
-   * Equivalence based on Equal.equals
-   *
-   * @category Equivalences
-   */
-  export const equivalence: Equivalence.Equivalence<Type<unknown, unknown>> = getEquivalence(
-    Equal.equals,
-    Equal.equals,
-  );
-
-  const _make = <A, B>(params: MData.Extract<Type<A, B>>): Type<A, B> =>
-    MTypes.objectFromDataAndProto(_proto, params);
-
-  /**
-   * Constructor
-   *
-   * @category Constructors
-   */
-  export const make = <A, B>(params: Omit<MData.Extract<Type<A, B>>, '_tag'>): Type<A, B> =>
-    _make({ ...params, _tag: 'NonLeaf' });
-
-  /**
-   * Returns the `value` property of `self`
-   *
-   * @category Destructors
-   */
-  export const value: <A, B>(self: Type<A, B>) => A = Struct.get('value');
-}

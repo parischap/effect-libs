@@ -865,7 +865,7 @@ export const toStringifier = (self: Type): Stringifier.Type => {
       readonly [stringified: PPStringifiedValue.Type, value: PPValue.Any, isLeaf: boolean],
       PPValue.Any
     >({
-      unfold: (seed, cyclicalRef) =>
+      unfold: (seed, cycleSource) =>
         pipe(
           Either.gen(function* () {
             const notByPassed = yield* pipe(
@@ -920,7 +920,7 @@ export const toStringifier = (self: Type): Stringifier.Type => {
             );
 
             const unCyclicalUnBypassedNonPrimitiveUnderMaxDepth = yield* pipe(
-              cyclicalRef,
+              cycleSource,
               Option.map(([cyclicalValue]) =>
                 pipe(
                   cyclicalMap,
