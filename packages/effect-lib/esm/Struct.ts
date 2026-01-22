@@ -1,6 +1,7 @@
 /** A simple extension to the Effect Struct module */
 
 import { Function, Record, Struct, pipe } from 'effect';
+import * as MData from './Data.js';
 import * as MTypes from './types.js';
 
 /**

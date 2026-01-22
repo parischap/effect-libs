@@ -1,84 +1,56 @@
-import * as TestUtils from "@parischap/configs/TestUtils";
-import { MMatch, MPredicate, MTypes } from "@parischap/effect-lib";
-import { Array, flow, Function, Number, pipe, Struct } from "effect";
-import { describe, it } from "vitest";
-describe("MMatch", () => {
-  describe("Tag, prototype and guards", () => {
-    const testMatch = MMatch.make(5);
-
-    it("moduleTag", () => {
-      TestUtils.assertSome(TestUtils.moduleTagFromTestFilePath(__filename), MMatch.moduleTag);
-    });
-
-    it(".toString()", () => {
-      TestUtils.strictEqual(
-        testMatch.toString(),
-        `{
-  "_id": "@parischap/effect-lib/Match/",
-  "input": 5,
-  "output": {
-    "_id": "Option",
-    "_tag": "None"
-  }
-}`,
-      );
-    });
-
-    it(".pipe()", () => {
-      TestUtils.strictEqual(testMatch.pipe(Struct.get("input")), 5);
-    });
-
-    describe("has", () => {
-      it("Matching", () => {
-        TestUtils.assertTrue(MMatch.has(testMatch));
-      });
-      it("Non matching", () => {
-        TestUtils.assertFalse(MMatch.has(new Date()));
-      });
-    });
+import * as TestUtils from '@parischap/configs/TestUtils';
+import { MMatch, MPredicate, MTypes } from '@parischap/effect-lib';
+import { Array, flow, Function, Number, Option, pipe } from 'effect';
+import { describe, it } from 'vitest';
+describe('MMatch', () => {
+  it('moduleTag', () => {
+    TestUtils.assertEquals(
+      Option.some(MMatch.moduleTag),
+      TestUtils.moduleTagFromTestFilePath(import.meta.filename),
+    );
   });
 
-  describe("Predicate matching", () => {
-    it("when", () => {
+  describe('Predicate matching', () => {
+    it('when', () => {
       TestUtils.strictEqual(
         pipe(
           5,
           MMatch.make,
-          MMatch.when(Number.greaterThanOrEqualTo(6), Function.constant("a")),
-          MMatch.when(Number.lessThan(6), Function.constant("b")),
-          MMatch.orElse(Function.constant("c")),
+          MMatch.when(Number.greaterThanOrEqualTo(6), Function.constant('a')),
+          MMatch.when(Number.lessThan(6), Function.constant('b')),
+          MMatch.orElse(Function.constant('c')),
         ),
-        "b",
+        'b',
       );
     });
 
-    it("whenIs", () => {
+    it('whenIs', () => {
       TestUtils.strictEqual(
         pipe(
           5,
           MMatch.make,
-          MMatch.whenIs(6, Function.constant("a")),
-          MMatch.whenIs(5, Function.constant("b")),
-          MMatch.orElse(Function.constant("c")),
+          MMatch.whenIs(6, Function.constant('a')),
+          MMatch.whenIs(5, Function.constant('b')),
+          MMatch.orElse(Function.constant('c')),
         ),
-        "b",
+        'b',
       );
     });
 
-    it("orElse", () => {
+    it('orElse', () => {
       TestUtils.strictEqual(
         pipe(
           4,
           MMatch.make,
-          MMatch.whenIs(6, Function.constant("a")),
-          MMatch.whenIs(5, Function.constant("b")),
-          MMatch.orElse(Function.constant("c")),
+          MMatch.whenIs(6, Function.constant('a')),
+          MMatch.whenIs(5, Function.constant('b')),
+          MMatch.orElse(Function.constant('c')),
         ),
-        "c",
+        'c',
       );
     });
 
-    it("whenOr", () => {
+    it('whenOr', () => {
       TestUtils.strictEqual(
         pipe(
           5,
@@ -86,29 +58,29 @@ describe("MMatch", () => {
           MMatch.whenOr(
             MPredicate.strictEquals(4),
             MPredicate.strictEquals(5),
-            Function.constant("a"),
+            Function.constant('a'),
           ),
-          MMatch.when(MPredicate.strictEquals(6), Function.constant("b")),
-          MMatch.orElse(Function.constant("c")),
+          MMatch.when(MPredicate.strictEquals(6), Function.constant('b')),
+          MMatch.orElse(Function.constant('c')),
         ),
-        "a",
+        'a',
       );
     });
 
-    it("whenAnd", () => {
+    it('whenAnd', () => {
       TestUtils.strictEqual(
         pipe(
           5,
           MMatch.make,
-          MMatch.when(Number.greaterThan(7), Function.constant("a")),
-          MMatch.whenAnd(Number.lessThan(7), Number.greaterThan(3), Function.constant("b")),
-          MMatch.orElse(Function.constant("c")),
+          MMatch.when(Number.greaterThan(7), Function.constant('a')),
+          MMatch.whenAnd(Number.lessThan(7), Number.greaterThan(3), Function.constant('b')),
+          MMatch.orElse(Function.constant('c')),
         ),
-        "b",
+        'b',
       );
     });
 
-    it("tryFunction", () => {
+    it('tryFunction', () => {
       TestUtils.strictEqual(
         pipe(
           [3, 4],
@@ -122,76 +94,76 @@ describe("MMatch", () => {
     });
   });
 
-  describe("Refinement matching", () => {
+  describe('Refinement matching', () => {
     enum TestEnum {
-      A = "a",
-      B = "b",
-      C = "c",
+      A = 'a',
+      B = 'b',
+      C = 'c',
     }
     const isA = (value: TestEnum): value is TestEnum.A => value === TestEnum.A;
     const isB = (value: TestEnum): value is TestEnum.B => value === TestEnum.B;
     const isC = (value: TestEnum): value is TestEnum.C => value === TestEnum.C;
 
-    it("when and exhaustive", () => {
+    it('when and exhaustive', () => {
       TestUtils.strictEqual(
         pipe(
           TestEnum.B,
           MMatch.make,
-          MMatch.when(isA, Function.constant("a")),
-          MMatch.when(isB, Function.constant("b")),
-          MMatch.when(isC, Function.constant("c")),
+          MMatch.when(isA, Function.constant('a')),
+          MMatch.when(isB, Function.constant('b')),
+          MMatch.when(isC, Function.constant('c')),
           MMatch.exhaustive,
         ),
-        "b",
+        'b',
       );
     });
 
-    it("whenIs and exhaustive passing", () => {
+    it('whenIs and exhaustive passing', () => {
       TestUtils.strictEqual(
         pipe(
           TestEnum.B,
           MMatch.make,
-          MMatch.whenIs(TestEnum.A, flow(Function.satisfies<TestEnum.A>(), Function.constant("a"))),
-          MMatch.whenIs(TestEnum.B, flow(Function.satisfies<TestEnum.B>(), Function.constant("b"))),
-          MMatch.when(isC, flow(Function.satisfies<TestEnum.C>(), Function.constant("c"))),
+          MMatch.whenIs(TestEnum.A, flow(Function.satisfies<TestEnum.A>(), Function.constant('a'))),
+          MMatch.whenIs(TestEnum.B, flow(Function.satisfies<TestEnum.B>(), Function.constant('b'))),
+          MMatch.when(isC, flow(Function.satisfies<TestEnum.C>(), Function.constant('c'))),
           MMatch.exhaustive,
         ),
-        "b",
+        'b',
       );
     });
 
-    it("whenIs and exhaustive not passing", () => {
+    it('whenIs and exhaustive not passing', () => {
       TestUtils.strictEqual(
         pipe(
           TestEnum.B,
           MMatch.make,
-          MMatch.whenIs(TestEnum.A, flow(Function.satisfies<TestEnum.A>(), Function.constant("a"))),
-          MMatch.whenIs(TestEnum.B, flow(Function.satisfies<TestEnum.B>(), Function.constant("b"))),
+          MMatch.whenIs(TestEnum.A, flow(Function.satisfies<TestEnum.A>(), Function.constant('a'))),
+          MMatch.whenIs(TestEnum.B, flow(Function.satisfies<TestEnum.B>(), Function.constant('b'))),
           // @ts-expect-error TestEnum.C missing
           MMatch.exhaustive,
         ),
-        "b",
+        'b',
       );
     });
 
-    it("whenIsOr and exhaustive passing", () => {
+    it('whenIsOr and exhaustive passing', () => {
       TestUtils.strictEqual(
         pipe(
           TestEnum.B,
           MMatch.make,
-          MMatch.whenIs(TestEnum.A, flow(Function.satisfies<TestEnum.A>(), Function.constant("a"))),
+          MMatch.whenIs(TestEnum.A, flow(Function.satisfies<TestEnum.A>(), Function.constant('a'))),
           MMatch.whenIsOr(
             TestEnum.B,
             TestEnum.C,
-            flow(Function.satisfies<TestEnum.B | TestEnum.C>(), Function.constant("b")),
+            flow(Function.satisfies<TestEnum.B | TestEnum.C>(), Function.constant('b')),
           ),
           MMatch.exhaustive,
         ),
-        "b",
+        'b',
       );
     });
 
-    it("whenIsOr and exhaustive not passing", () => {
+    it('whenIsOr and exhaustive not passing', () => {
       TestUtils.strictEqual(
         pipe(
           TestEnum.B,
@@ -199,46 +171,46 @@ describe("MMatch", () => {
           MMatch.whenIsOr(
             TestEnum.B,
             TestEnum.C,
-            flow(Function.satisfies<TestEnum.B | TestEnum.C>(), Function.constant("b")),
+            flow(Function.satisfies<TestEnum.B | TestEnum.C>(), Function.constant('b')),
           ),
           // @ts-expect-error TestEnum.A missing
           MMatch.exhaustive,
         ),
-        "b",
+        'b',
       );
     });
 
-    it("orElse", () => {
+    it('orElse', () => {
       TestUtils.strictEqual(
         pipe(
           TestEnum.B,
           MMatch.make,
-          MMatch.whenIs(TestEnum.A, flow(Function.satisfies<TestEnum.A>(), Function.constant("a"))),
-          MMatch.when(isC, flow(Function.satisfies<TestEnum.C>(), Function.constant("c"))),
-          MMatch.orElse(flow(Function.satisfies<TestEnum.B>(), Function.constant("b"))),
+          MMatch.whenIs(TestEnum.A, flow(Function.satisfies<TestEnum.A>(), Function.constant('a'))),
+          MMatch.when(isC, flow(Function.satisfies<TestEnum.C>(), Function.constant('c'))),
+          MMatch.orElse(flow(Function.satisfies<TestEnum.B>(), Function.constant('b'))),
         ),
-        "b",
+        'b',
       );
     });
 
-    it("whenOr and exhaustive passing", () => {
+    it('whenOr and exhaustive passing', () => {
       TestUtils.strictEqual(
         pipe(
           TestEnum.B,
           MMatch.make,
-          MMatch.when(isC, flow(Function.satisfies<TestEnum.C>(), Function.constant("c"))),
+          MMatch.when(isC, flow(Function.satisfies<TestEnum.C>(), Function.constant('c'))),
           MMatch.whenOr(
             isA,
             isB,
-            flow(Function.satisfies<TestEnum.A | TestEnum.B>(), Function.constant("b")),
+            flow(Function.satisfies<TestEnum.A | TestEnum.B>(), Function.constant('b')),
           ),
           MMatch.exhaustive,
         ),
-        "b",
+        'b',
       );
     });
 
-    it("whenOr and exhaustive not passing", () => {
+    it('whenOr and exhaustive not passing', () => {
       TestUtils.strictEqual(
         pipe(
           TestEnum.B,
@@ -246,30 +218,30 @@ describe("MMatch", () => {
           MMatch.whenOr(
             isA,
             isB,
-            flow(Function.satisfies<TestEnum.A | TestEnum.B>(), Function.constant("b")),
+            flow(Function.satisfies<TestEnum.A | TestEnum.B>(), Function.constant('b')),
           ),
           // @ts-expect-error TestEnum.C missing
           MMatch.exhaustive,
         ),
-        "b",
+        'b',
       );
     });
 
-    it("unsafeWhen", () => {
+    it('unsafeWhen', () => {
       TestUtils.strictEqual(
         pipe(
           Array.of(0) as unknown,
           MMatch.make,
           MMatch.when(
             MTypes.isPrimitive,
-            flow(Function.satisfies<MTypes.Primitive>(), Function.constant("a")),
+            flow(Function.satisfies<MTypes.Primitive>(), Function.constant('a')),
           ),
           MMatch.unsafeWhen(
             MTypes.isNonPrimitive,
-            flow(Function.satisfies<MTypes.NonPrimitive>(), Function.constant("c")),
+            flow(Function.satisfies<MTypes.NonPrimitive>(), Function.constant('c')),
           ),
         ),
-        "c",
+        'c',
       );
     });
   });

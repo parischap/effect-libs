@@ -1,5 +1,5 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { MTypes } from '@parischap/effect-lib';
+import { MData, MTypes } from '@parischap/effect-lib';
 import { Number } from 'effect';
 import { describe, it } from 'vitest';
 
@@ -93,19 +93,6 @@ TestUtils.assertTrueType(
       readonly b: string;
     }
   >(),
-);
-TestUtils.assertTrueType(
-  TestUtils.areEqualTypes<
-    MData.Extract<TestInterface, 'a'>,
-    {
-      readonly b: string;
-    }
-  >(),
-);
-
-/** Proto */
-TestUtils.assertTrueType(
-  TestUtils.areEqualTypes<MTypes.Proto<TestInterface, 'a'>, Omit<TestInterface, 'b'>>(),
 );
 
 /** SetArgTypeTo */

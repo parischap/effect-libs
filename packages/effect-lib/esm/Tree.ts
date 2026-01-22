@@ -239,6 +239,18 @@ export namespace Forest {
   };
 }
 
+/**
+ * Non recursive function that generates an array of nodes from a seed value and an unfold function.
+ * The unfold function takes a seed and returns either a left of a value of type B from which a leaf
+ * is created or a right of a value of type A and an array of new seeds (possibly empty). A non leaf
+ * is created from this value of type A and from the result of calling the unfold function on each
+ * value of the array of new seeds. A cycle is detected if the same seed `s` is sent a second time
+ * to function f (equivalence based on the `seedEquivalence` equivalence if provided or on
+ * Equal.equals otherwise). In that case, `cycleSource` is a `some` of the `A` generated the first
+ * time `s` was processed, hence giving the user a chance to modify it. Otherwise, `cycleSource` is
+ * a `none`. The resulting array of nodes is ordered from the top of the tree and from left to
+ * right.
+ */
 const _unfold =
   <S, A, B>(
     f: (
@@ -248,39 +260,53 @@ const _unfold =
     seedEquivalence: Equivalence.Equivalence<S>,
   ) =>
   (seed: S): MTypes.OverOne<Type<A, B>> => {
+    type Parent = [parent: S, parentValue: NonLeaf.Type<A, B>];
+    type SeedAndParents = [seed: S, parents: Array<Parent>];
     const dontHandleCycles = MTypes.isOneArgFunction(f);
 
     return pipe(
-      Array.of(Tuple.make(seed, Array.empty<[parent: S, parentValue: NonLeaf.Type<A, B>]>())),
-      MArray.unfoldNonEmpty(
+      Array.of(Tuple.make(seed, Array.empty<Parent>())),
+      MArray.unfoldNonEmpty<MTypes.OverOne<SeedAndParents>, MTypes.OverOne<Type<A, B>>>(
         flow(
           Array.map(([currentSeed, parents]) => {
+            // Get the node that was created from the seed that generated currentSeed
             const containingNonLeafOption = pipe(parents, Array.last, Option.map(Tuple.getSecond));
-            const [nextNode, nextSeeds]: [Leaf.Type<B> | NonLeaf.Type<A, B>, ReadonlyArray<S>] =
-              pipe(
-                f(
-                  currentSeed,
-                  dontHandleCycles ?
-                    Option.none<A>()
-                  : pipe(
-                      parents,
-                      Array.findFirst(([parentSeed]) => seedEquivalence(parentSeed, currentSeed)),
-                      Option.map(flow(Tuple.getSecond, NonLeaf.value)),
-                    ),
-                ),
-                Either.mapBoth({
-                  onLeft: flow(Leaf.make, Tuple.make, Tuple.appendElement(Array.empty<S>())),
-                  onRight: Tuple.mapFirst((value) =>
-                    NonLeaf.make({ value, forest: Array.empty<Type<A, B>>() }),
+            const [nextNode, nextSeedAndParents]: [Type<A, B>, Array<SeedAndParents>] = pipe(
+              f(
+                currentSeed,
+                dontHandleCycles ?
+                  Option.none<A>()
+                : pipe(
+                    parents,
+                    Array.findFirst(([parentSeed]) => seedEquivalence(parentSeed, currentSeed)),
+                    Option.map(flow(Tuple.getSecond, NonLeaf.value)),
                   ),
-                }),
-                Either.merge,
-              );
+              ),
+              Either.mapBoth({
+                onLeft: flow(
+                  Leaf.make,
+                  Tuple.make,
+                  Tuple.appendElement(Array.empty<SeedAndParents>()),
+                ),
+                onRight: ([value, nextSeeds]) => {
+                  const nonLeaf = NonLeaf.make({ value, forest: Array.empty<Type<A, B>>() });
+                  const nextParents = Array.append(
+                    parents,
+                    Tuple.make<Parent>(currentSeed, nonLeaf),
+                  );
+                  return Tuple.make(
+                    nonLeaf,
+                    Array.map(nextSeeds, (seed) => Tuple.make<SeedAndParents>(seed, nextParents)),
+                  );
+                },
+              }),
+              Either.merge,
+            );
 
             if (Option.isSome(containingNonLeafOption))
               (containingNonLeafOption.value.forest as Array<Type<A, B>>).push(nextNode);
 
-            return 0 as never;
+            return Tuple.make(nextNode, nextSeedAndParents);
           }),
           Array.unzip,
           Tuple.mapSecond(flow(Array.flatten, Option.liftPredicate(Array.isNonEmptyArray))),
@@ -340,7 +366,12 @@ export const unfoldAndFold = <A, B, S = A, C = B>({
     Array.map(
       flow(
         MMatch.make,
-        MMatch.when(isLeaf, Struct.evolve({ value: foldLeaf })),
+        MMatch.when(
+          isLeaf,
+          MStruct.mutableEnrichWith({
+            value: (node) => foldLeaf(node.value),
+          }),
+        ),
         MMatch.orElse(
           MStruct.mutableEnrichWith({
             value: (node) =>
@@ -348,6 +379,8 @@ export const unfoldAndFold = <A, B, S = A, C = B>({
                 node.value,
                 Array.map(node.forest as unknown as Forest.Type<C, C>, value),
               ),
+            // Allow garbage collection
+            forest: () => Array.empty(),
           }),
         ),
       ),
@@ -368,11 +401,11 @@ export const unfoldAndFold = <A, B, S = A, C = B>({
  * @category Utils
  */
 export const fold = <A, B, C>({
-  fNonLeaf,
-  fLeaf,
+  foldNonLeaf: fNonLeaf,
+  foldLeaf: fLeaf,
 }: {
-  readonly fNonLeaf: (a: NoInfer<A>, bs: ReadonlyArray<C>, level: number) => C;
-  readonly fLeaf: (a: NoInfer<B>, level: number) => C;
+  readonly foldNonLeaf: (a: NoInfer<A>, bs: ReadonlyArray<C>, level: number) => C;
+  readonly foldLeaf: (a: NoInfer<B>, level: number) => C;
 }): MTypes.OneArgFunction<Type<A, B>, C> => {
   const go = (level: number): MTypes.OneArgFunction<Type<A, B>, C> =>
     flow(

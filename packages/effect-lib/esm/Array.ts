@@ -368,7 +368,7 @@ export const unfold =
   (s: S): Array<A> => {
     if (MTypes.isOneArgFunction(f)) return Array.unfold(s, f);
     const knownAsAndBs = Array.empty<[S, A]>();
-    const internalF = (s: S) => {
+    const internalF = (s: S): Option.Option<MTypes.Pair<A, S>> => {
       const knownB = pipe(
         knownAsAndBs,
         Array.findFirst(([s1]) => seedEquivalence(s, s1)),
@@ -393,12 +393,20 @@ export const unfold =
 export const unfoldNonEmpty =
   <S, A>(
     f: (s: S, cycleSource: Option.Option<NoInfer<A>>) => MTypes.Pair<A, Option.Option<S>>,
-    seedEquivalence: Equivalence.Equivalence<S>,
+    seedEquivalence: Equivalence.Equivalence<S> = Equal.equals,
   ) =>
   (s: S): MTypes.OverOne<A> => {
-    const internalF = (sOption: Option.Option<S>, cycleSource: Option.Option<A>) =>
+    const internalF = (
+      sOption: Option.Option<S>,
+      cycleSource: Option.Option<A>,
+    ): Option.Option<MTypes.Pair<A, Option.Option<S>>> =>
       Option.map(sOption, (s) => f(s, cycleSource));
-    return pipe(s, Option.some, unfold(internalF, seedEquivalence)) as unknown as MTypes.OverOne<A>;
+    const seedOptionEquivalence = Option.getEquivalence(seedEquivalence);
+    return pipe(
+      s,
+      Option.some,
+      unfold(internalF, seedOptionEquivalence),
+    ) as unknown as MTypes.OverOne<A>;
   };
 
 /**

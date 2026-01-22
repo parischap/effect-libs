@@ -511,7 +511,7 @@ describe('MString', () => {
 
     TestUtils.assertTrueType(
       TestUtils.areEqualTypes<
-        Option.Value<ReturnType<typeof matcher>>,
+        Option.Option.Value<ReturnType<typeof matcher>>,
         { match: string; groups: { first: string; second: string } }
       >(),
     );
