@@ -74,7 +74,7 @@ const base: MTypes.Proto<Type> = {
     return pipe(this.style, Hash.hash, Hash.combine(_TypeIdHash), Hash.cached(this));
   },
   [MInspectable.IdSymbol](this: Type) {
-    return toId(this);
+    return toString(this);
   },
   ...MInspectable.BaseProto(moduleTag),
   ...MPipeable.BaseProto,
@@ -102,7 +102,7 @@ export const style: MTypes.OneArgFunction<Type, ASStyleCharacteristics.Type> = S
  *
  * @category Destructors
  */
-export const toId = (self: Type): string => ASStyleCharacteristics.toId(self.style);
+export const toString = (self: Type): string => ASStyleCharacteristics.toString(self.style);
 /**
  * Builds a new Style by merging `self` and `that`. In case of conflict (e.g `self` contains `Bold`
  * and `that` contains `NotBold`), the style in `that` will prevail.

@@ -43,7 +43,7 @@ describe('ASStyle', () => {
     });
 
     it('.pipe()', () => {
-      TestUtils.strictEqual(boldRed1.pipe(ASStyle.toId), 'BoldRed');
+      TestUtils.strictEqual(boldRed1.pipe(ASStyle.toString), 'BoldRed');
     });
 
     describe('has', () => {

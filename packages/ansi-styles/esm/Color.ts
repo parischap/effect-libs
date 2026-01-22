@@ -4,7 +4,7 @@
  * You can use the RGB.make function to build more RGB colors
  */
 
-import { MInspectable, MMatch, MPipeable, MString, MTypes } from '@parischap/effect-lib';
+import { MData, MMatch, MString, MTypes } from '@parischap/effect-lib';
 import {
   Array,
   Equal,
@@ -12,10 +12,10 @@ import {
   flow,
   Function,
   Hash,
+  Inspectable,
   Number,
   pipe,
   Pipeable,
-  Predicate,
   Struct,
 } from 'effect';
 import * as ASAnsiString from './AnsiString.js';
@@ -26,19 +26,6 @@ import * as ASAnsiString from './AnsiString.js';
  * @category Module markers
  */
 export const moduleTag = '@parischap/ansi-styles/Color/';
-const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
-type _TypeId = typeof _TypeId;
-const _TypeIdHash = Hash.hash(_TypeId);
-
-const _tagSymbol: unique symbol = Symbol.for(moduleTag + '_tagSymbol/');
-const _threeBitTag = 'ThreeBit';
-const _eightBitTag = 'EightBit';
-const _rgbTag = 'Rgb';
-const _threeBitTagHash = Hash.hash(_threeBitTag);
-const _eightBitTagHash = Hash.hash(_eightBitTag);
-const _rgbTagHash = Hash.hash(_rgbTag);
-
-const _sequenceSymbol: unique symbol = Symbol.for(moduleTag + '_sequenceSymbol/');
 
 /**
  * Type of a Color
@@ -52,29 +39,21 @@ export type Type = ThreeBit.Type | EightBit.Type | Rgb.Type;
  *
  * @category Guards
  */
-export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
-const _has = has;
+export const isThreeBit = (u: Type): u is ThreeBit.Type => u instanceof ThreeBit.Type;
 
 /**
  * Type guard
  *
  * @category Guards
  */
-export const isThreeBit = (u: Type): u is ThreeBit.Type => u[_tagSymbol] === _threeBitTag;
+export const isEightBit = (u: Type): u is EightBit.Type => u instanceof EightBit.Type;
 
 /**
  * Type guard
  *
  * @category Guards
  */
-export const isEightBit = (u: Type): u is EightBit.Type => u[_tagSymbol] === _eightBitTag;
-
-/**
- * Type guard
- *
- * @category Guards
- */
-export const isRgb = (u: Type): u is Rgb.Type => u[_tagSymbol] === _rgbTag;
+export const isRgb = (u: Type): u is Rgb.Type => u instanceof Rgb.Type;
 
 /**
  * Namespace for three-bit colors
@@ -82,6 +61,10 @@ export const isRgb = (u: Type): u is Rgb.Type => u[_tagSymbol] === _rgbTag;
  * @category Models
  */
 export namespace ThreeBit {
+  const _namespaceTag = `${moduleTag}ThreeBit/`;
+  const _TypeId: unique symbol = Symbol.for(_namespaceTag) as _TypeId;
+  type _TypeId = typeof _TypeId;
+
   /**
    * Possible three-bit color offsets
    *
@@ -109,7 +92,7 @@ export namespace ThreeBit {
      *
      * @category Destructors
      */
-    export const toId: MTypes.OneArgFunction<Offset, string> = flow(
+    export const toString: MTypes.OneArgFunction<Offset, string> = flow(
       MMatch.make,
       flow(
         MMatch.whenIs(Offset.Black, Function.constant('Black')),
@@ -130,7 +113,10 @@ export namespace ThreeBit {
    *
    * @category Models
    */
-  export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable {
+  export class Type
+    extends MData.Class({ id: _namespaceTag, uniqueSymbol: _TypeId })
+    implements Pipeable.Pipeable, Inspectable.Inspectable, Equal.Equal, Hash.Hash
+  {
     /** Offset of this color */
     readonly offset: Offset;
 
@@ -138,22 +124,26 @@ export namespace ThreeBit {
     readonly isBright: boolean;
 
     /** Gets the sequence of `this` */
-    readonly [_sequenceSymbol]: () => ASAnsiString.NonEmptySequence;
+    _sequence(this: this): ASAnsiString.NonEmptySequence {
+      return Array.of((this.isBright ? 90 : 30) + this.offset);
+    }
 
-    /** @internal */
-    readonly [_tagSymbol]: typeof _threeBitTag;
+    override toString(this: this): string {
+      return (this.isBright ? 'Bright' : '') + Offset.toString(this.offset);
+    }
 
-    /** @internal */
-    readonly [_TypeId]: _TypeId;
+    /** Class constructor */
+    private constructor({ offset, isBright }: MData.Extract<Type>) {
+      super();
+      this.offset = offset;
+      this.isBright = isBright;
+    }
+
+    /** Static constructor */
+    static make(params: MData.Extract<Type>): Type {
+      return new Type(params);
+    }
   }
-
-  /**
-   * Type guard
-   *
-   * @category Guards
-   */
-
-  export const has = (u: unknown): u is Type => _has(u) && isThreeBit(u);
 
   /**
    * Equivalence
@@ -161,38 +151,7 @@ export namespace ThreeBit {
    * @category Equivalences
    */
   export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
-    self.offset === that.offset && self.isBright === that.isBright;
-
-  /** Proto */
-  const _proto: MTypes.Proto<Type> = {
-    [_TypeId]: _TypeId,
-    [_tagSymbol]: _threeBitTag,
-    [Equal.symbol](this: Type, that: unknown): boolean {
-      return has(that) && equivalence(this, that);
-    },
-    [Hash.symbol](this: Type) {
-      return pipe(
-        this.offset,
-        Hash.hash,
-        Hash.combine(Hash.hash(this.isBright)),
-        Hash.combine(_threeBitTagHash),
-        Hash.combine(_TypeIdHash),
-        Hash.cached(this),
-      );
-    },
-    [_sequenceSymbol](this: Type) {
-      return Array.of((this.isBright ? 90 : 30) + this.offset);
-    },
-    [MInspectable.IdSymbol](this: Type) {
-      return (this.isBright ? 'Bright' : '') + Offset.toId(this.offset);
-    },
-    ...MInspectable.BaseProto(moduleTag),
-    ...MPipeable.BaseProto,
-  };
-
-  /** Constructor */
-  const _make = (params: MData.Extract<Type>): Type =>
-    MTypes.objectFromDataAndProto(_proto, params);
+    self.isEquivalentTo(that);
 
   /**
    * Gets the `offset` property of `self`
@@ -213,7 +172,7 @@ export namespace ThreeBit {
    *
    * @category Constructors
    */
-  export const make = (offset: Offset) => _make({ offset, isBright: false });
+  export const make = (offset: Offset): Type => Type.make({ offset, isBright: false });
 
   /**
    * Namespace for bright three-bit colors
@@ -226,7 +185,7 @@ export namespace ThreeBit {
      *
      * @category Original instances
      */
-    export const make = (offset: Offset) => _make({ offset, isBright: true });
+    export const make = (offset: Offset) => Type.make({ offset, isBright: true });
   }
 }
 
@@ -236,6 +195,10 @@ export namespace ThreeBit {
  * @category Models
  */
 export namespace EightBit {
+  const _namespaceTag = `${moduleTag}EightBit/`;
+  const _TypeId: unique symbol = Symbol.for(_namespaceTag) as _TypeId;
+  type _TypeId = typeof _TypeId;
+
   /**
    * Possible eight-bit color codes
    *
@@ -511,7 +474,7 @@ export namespace EightBit {
      *
      * @category Destructors
      */
-    export const toId: MTypes.OneArgFunction<Code, string> = flow(
+    export const toString: MTypes.OneArgFunction<Code, string> = flow(
       MMatch.make,
       flow(
         flow(
@@ -846,67 +809,48 @@ export namespace EightBit {
    *
    * @category Models
    */
-  export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable {
+  export class Type
+    extends MData.Class({ id: _namespaceTag, uniqueSymbol: _TypeId })
+    implements Pipeable.Pipeable, Inspectable.Inspectable, Equal.Equal, Hash.Hash
+  {
     /** Code of this color */
     readonly code: Code;
 
     /** Gets the sequence of `this` */
-    readonly [_sequenceSymbol]: () => ASAnsiString.NonEmptySequence;
+    _sequence(this: this): ASAnsiString.NonEmptySequence {
+      return Array.make(38, 5, this.code);
+    }
 
-    /** @internal */
-    readonly [_tagSymbol]: typeof _eightBitTag;
+    override toString(this: this): string {
+      return 'EightBit' + Code.toString(this.code);
+    }
 
-    /** @internal */
-    readonly [_TypeId]: _TypeId;
+    /** Class constructor */
+    private constructor({ code }: MData.Extract<Type>) {
+      super();
+      this.code = code;
+    }
+
+    /** Static constructor */
+    static make(params: MData.Extract<Type>): Type {
+      return new Type(params);
+    }
   }
-
-  /**
-   * Type guard
-   *
-   * @category Guards
-   */
-  export const has = (u: unknown): u is Type => _has(u) && isEightBit(u);
 
   /**
    * Equivalence
    *
    * @category Equivalences
    */
-  export const equivalence: Equivalence.Equivalence<Type> = (self, that) => self.code === that.code;
-
-  /** Base */
-  const _proto: MTypes.Proto<Type> = {
-    [_TypeId]: _TypeId,
-    [_tagSymbol]: _eightBitTag,
-    [Equal.symbol](this: Type, that: unknown): boolean {
-      return has(that) && equivalence(this, that);
-    },
-    [Hash.symbol](this: Type) {
-      return pipe(
-        this.code,
-        Hash.hash,
-        Hash.combine(_eightBitTagHash),
-        Hash.combine(_TypeIdHash),
-        Hash.cached(this),
-      );
-    },
-    [_sequenceSymbol](this: Type) {
-      return Array.make(38, 5, this.code);
-    },
-    [MInspectable.IdSymbol](this: Type) {
-      return 'EightBit' + Code.toId(this.code);
-    },
-    ...MInspectable.BaseProto(moduleTag),
-    ...MPipeable.BaseProto,
-  };
+  export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
+    self.isEquivalentTo(that);
 
   /**
    * Constructor
    *
    * @category Constructors
    */
-  export const make = (params: MData.Extract<Type>): Type =>
-    MTypes.objectFromDataAndProto(_proto, params);
+  export const make = (params: MData.Extract<Type>): Type => Type.make(params);
 
   /**
    * Gets the `code` property of `self`
@@ -922,12 +866,19 @@ export namespace EightBit {
  * @category Models
  */
 export namespace Rgb {
+  const _namespaceTag = `${moduleTag}Rgb/`;
+  const _TypeId: unique symbol = Symbol.for(_namespaceTag) as _TypeId;
+  type _TypeId = typeof _TypeId;
+
   /**
    * ThreeBit color Type
    *
    * @category Models
    */
-  export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable {
+  export class Type
+    extends MData.Class({ id: _namespaceTag, uniqueSymbol: _TypeId })
+    implements Pipeable.Pipeable, Inspectable.Inspectable, Equal.Equal, Hash.Hash
+  {
     /** Id of this RGB color */
     readonly id: string;
 
@@ -941,22 +892,36 @@ export namespace Rgb {
     readonly blueCode: number;
 
     /** Gets the sequence of `this` */
-    readonly [_sequenceSymbol]: () => ASAnsiString.NonEmptySequence;
+    _sequence(this: this): ASAnsiString.NonEmptySequence {
+      return Array.make(38, 2, this.redCode, this.greenCode, this.blueCode);
+    }
 
-    /** @internal */
-    readonly [_tagSymbol]: typeof _rgbTag;
+    override isEquivalentTo(this: this, that: this): boolean {
+      return (
+        this.redCode === that.redCode
+        && this.greenCode === that.greenCode
+        && this.blueCode === that.blueCode
+      );
+    }
 
-    /** @internal */
-    readonly [_TypeId]: _TypeId;
+    override toString(this: this): string {
+      return this.id;
+    }
+
+    /** Class constructor */
+    private constructor({ id, redCode, greenCode, blueCode }: MData.Extract<Type>) {
+      super();
+      this.id = id;
+      this.redCode = redCode;
+      this.greenCode = greenCode;
+      this.blueCode = blueCode;
+    }
+
+    /** Static constructor */
+    static make(params: MData.Extract<Type>): Type {
+      return new Type(params);
+    }
   }
-
-  /**
-   * Type guard
-   *
-   * @category Guards
-   */
-
-  export const has = (u: unknown): u is Type => _has(u) && isRgb(u);
 
   /**
    * Equivalence
@@ -964,41 +929,7 @@ export namespace Rgb {
    * @category Equivalences
    */
   export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
-    self.redCode === that.redCode
-    && self.greenCode === that.greenCode
-    && self.blueCode === that.blueCode;
-
-  /** Base */
-  const _proto: MTypes.Proto<Type> = {
-    [_TypeId]: _TypeId,
-    [_tagSymbol]: _rgbTag,
-    [Equal.symbol](this: Type, that: unknown): boolean {
-      return has(that) && equivalence(this, that);
-    },
-    [Hash.symbol](this: Type) {
-      return pipe(
-        this.redCode,
-        Hash.hash,
-        Hash.combine(Hash.hash(this.greenCode)),
-        Hash.combine(Hash.hash(this.blueCode)),
-        Hash.combine(_rgbTagHash),
-        Hash.combine(_TypeIdHash),
-        Hash.cached(this),
-      );
-    },
-    [_sequenceSymbol](this: Type) {
-      return Array.make(38, 2, this.redCode, this.greenCode, this.blueCode);
-    },
-    [MInspectable.IdSymbol](this: Type) {
-      return this.id;
-    },
-    ...MInspectable.BaseProto(moduleTag),
-    ...MPipeable.BaseProto,
-  };
-
-  /** Constructor */
-  const _make = (params: MData.Extract<Type>): Type =>
-    MTypes.objectFromDataAndProto(_proto, params);
+    self.isEquivalentTo(that);
 
   /**
    * Gets the `id` property of `self`
@@ -1038,7 +969,7 @@ export namespace Rgb {
     redCode: number,
     greenCode: number,
     blueCode: number,
-  ): Type => _make({ id: 'Rgb' + id, redCode, greenCode, blueCode });
+  ): Type => Type.make({ id: 'Rgb' + id, redCode, greenCode, blueCode });
 
   /**
    * Constructor
@@ -1078,14 +1009,16 @@ export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
  *
  * @category Destructors
  */
-export const toId = (self: Type): string => self[MInspectable.IdSymbol]();
+// @ts-expect-error This is an Typescript inconsitency with union types
+export const toString = (self: Type): string => self.toString();
 
 /**
  * Gets the sequence of `self`
  *
  * @category Destructors
  */
-export const toSequence = (self: Type): ASAnsiString.NonEmptySequence => self[_sequenceSymbol]();
+// @ts-expect-error This is an Typescript inconsitency with union types
+export const toSequence = (self: Type): ASAnsiString.NonEmptySequence => self._sequence();
 
 // Color instances have been placed outside the namespaces because namespace content does not get documented by docgen
 /**

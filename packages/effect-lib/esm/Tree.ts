@@ -60,6 +60,11 @@ export namespace Leaf {
     /** Value of a Leaf node */
     readonly value: B;
 
+    /** Equivalence - Override default equivalence as this class contains objects */
+    override isEquivalentTo(this: this, that: this): boolean {
+      return this === that;
+    }
+
     /** Class constructor */
     private constructor({ value }: MData.Extract<Type<B>>) {
       super();
@@ -120,6 +125,11 @@ export namespace NonLeaf {
     readonly value: A;
     /** The children of a NonLeaf */
     readonly forest: Forest.Type<A, B>;
+
+    /** Equivalence - Override default equivalence as this class contains objects */
+    override isEquivalentTo(this: this, that: this): boolean {
+      return this === that;
+    }
 
     /** Class constructor */
     private constructor({ value, forest }: MData.Extract<Type<A, B>>) {

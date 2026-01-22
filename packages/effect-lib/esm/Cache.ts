@@ -91,6 +91,11 @@ export class Type<in out A, in out B>
    */
   readonly lifeSpan: number;
 
+  /** Equivalence - Override default equivalence as this class contains objects */
+  override isEquivalentTo(this: this, that: this): boolean {
+    return this === that;
+  }
+
   /** Class constructor */
   private constructor(params: MData.Extract<Type<A, B>>) {
     super();

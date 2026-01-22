@@ -149,7 +149,7 @@ const base: MTypes.Proto<Type<unknown>> = {
 export const fromSingleStyle = <C>(style: ASStyle.Type): Type<C> => {
   return Object.assign((() => style) satisfies DirectAction.Type<unknown>, {
     ...base,
-    id: ASStyle.toId(style) + 'Formatter',
+    id: ASStyle.toString(style) + 'Formatter',
     withContextLast: ((toStyle) => {
       const styled = style(toStyle);
       return () => styled;
@@ -180,7 +180,11 @@ export const fromPalette = <C>({
 
   return Object.assign(MFunction.clone(getStyle), {
     ...base,
-    id: String.capitalize(indexFromContext.name) + 'Based' + ASPalette.toId(palette) + 'Formatter',
+    id:
+      String.capitalize(indexFromContext.name)
+      + 'Based'
+      + ASPalette.toString(palette)
+      + 'Formatter',
     withContextLast: ((toStyle) => (context) =>
       getStyle(context)(toStyle)) satisfies ReversedAction.Type<C>,
   });

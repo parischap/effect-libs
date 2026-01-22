@@ -9,14 +9,7 @@
  * same time, or just bold, or just dim).
  */
 
-import {
-  MFunction,
-  MInspectable,
-  MPipeable,
-  MString,
-  MStruct,
-  MTypes,
-} from '@parischap/effect-lib';
+import { MData, MFunction, MString, MStruct, MTypes } from '@parischap/effect-lib';
 import {
   Array,
   Boolean,
@@ -25,6 +18,7 @@ import {
   flow,
   Function,
   Hash,
+  Inspectable,
   Number,
   Option,
   pipe,
@@ -48,7 +42,7 @@ const _falseSome = Option.some(false);
 const _trueSome = Option.some(true);
 
 /**
- * Namespace of an optional style charcateristic
+ * Namespace of an optional style characteristic
  *
  * @category Models
  */
@@ -68,29 +62,30 @@ namespace OptionalCharacteristic {
   export const { getEquivalence } = Option;
 
   /**
-   * Returns the id of `self`
+   * Returns a function that stringifies `self` given a function that stringifies an `A`
    *
    * @category Destructors
    */
-  export const toId = <A>(
-    someId: MTypes.OneArgFunction<A, string>,
+  export const getToString = <A>(
+    aToString: MTypes.OneArgFunction<A, string>,
   ): MTypes.OneArgFunction<Type<A>, string> =>
     Option.match({
       onNone: MFunction.constEmptyString,
-      onSome: someId,
+      onSome: aToString,
     });
 
   /**
-   * Returns the sequence corresponding to `self`
+   * Returns a function that returns the sequence of `self` given a function that returns the
+   * sequence of an `A`
    *
    * @category Destructors
    */
-  export const toSequence = <A>(
-    someSequence: MTypes.OneArgFunction<A, ASAnsiString.Sequence>,
+  export const getToSequence = <A>(
+    aToSequence: MTypes.OneArgFunction<A, ASAnsiString.Sequence>,
   ): MTypes.OneArgFunction<Type<A>, ASAnsiString.Sequence> =>
     Option.match({
       onNone: () => Array.empty(),
-      onSome: someSequence,
+      onSome: aToSequence,
     });
 
   /**
@@ -116,7 +111,7 @@ namespace OptionalCharacteristic {
 }
 
 /**
- * Namespace of an optional style charcateristic with two possible values
+ * Namespace of an optional style characteristic with two possible values
  *
  * @category Models
  */
@@ -136,34 +131,36 @@ namespace BoolOption {
   export const equivalence = OptionalCharacteristic.getEquivalence(Boolean.Equivalence);
 
   /**
-   * Returns the id of `self`
+   * Returns a function that stringifies `self` given the string to display for a false and the
+   * string to display for a true
    *
    * @category Destructors
    */
-  export const toId = (
-    onFalse: Function.LazyArg<string>,
-    onTrue: Function.LazyArg<string>,
+  export const getToString = (
+    onFalseString: Function.LazyArg<string>,
+    onTrueString: Function.LazyArg<string>,
   ): MTypes.OneArgFunction<Type, string> =>
-    OptionalCharacteristic.toId(
+    OptionalCharacteristic.getToString(
       Boolean.match({
-        onFalse,
-        onTrue,
+        onFalse: onFalseString,
+        onTrue: onTrueString,
       }),
     );
 
   /**
-   * Returns the sequence corresponding to `self`
+   * Returns a function that returns the sequence of `self` given the sequence of a `false` and the
+   * sequence of a `true`
    *
    * @category Destructors
    */
-  export const toSequence = (
-    onFalse: number,
-    onTrue: number,
+  export const getToSequence = (
+    onFalseSequence: number,
+    onTrueSequence: number,
   ): MTypes.OneArgFunction<Type, ASAnsiString.Sequence> =>
-    OptionalCharacteristic.toSequence(
+    OptionalCharacteristic.getToSequence(
       Boolean.match({
-        onFalse: pipe(onFalse, Array.of, Function.constant),
-        onTrue: pipe(onTrue, Array.of, Function.constant),
+        onFalse: pipe(onFalseSequence, Array.of, Function.constant),
+        onTrue: pipe(onTrueSequence, Array.of, Function.constant),
       }),
     );
 
@@ -190,7 +187,7 @@ namespace BoolOption {
 }
 
 /**
- * Namespace of an optional color style charcateristic
+ * Namespace of an optional color style characteristic
  *
  * @category Models
  */
@@ -212,28 +209,30 @@ namespace ColorOption {
   );
 
   /**
-   * Returns the id of `self`
+   * Returns a function that stringifies `self`
    *
    * @category Destructors
    */
-  export const toId = (prefix: string): MTypes.OneArgFunction<Type, string> =>
-    OptionalCharacteristic.toId(
+  export const getToString = (prefix: string): MTypes.OneArgFunction<Type, string> =>
+    OptionalCharacteristic.getToString(
       flow(
         Option.match({
           onNone: Function.constant('DefaultColor'),
-          onSome: ASColor.toId,
+          onSome: ASColor.toString,
         }),
         MString.prepend(prefix),
       ),
     );
 
   /**
-   * Returns the sequence corresponding to `self`
+   * Returns a function that returns the sequence of `self`
    *
    * @category Destructors
    */
-  export const toSequence = (offset: number): MTypes.OneArgFunction<Type, ASAnsiString.Sequence> =>
-    OptionalCharacteristic.toSequence(
+  export const getToSequence = (
+    offset: number,
+  ): MTypes.OneArgFunction<Type, ASAnsiString.Sequence> =>
+    OptionalCharacteristic.getToSequence(
       flow(
         Option.match({
           onNone: pipe(39, Array.of, Function.constant),
@@ -271,7 +270,10 @@ namespace ColorOption {
  *
  * @category Models
  */
-export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable {
+export class Type
+  extends MData.Class({ id: moduleTag, uniqueSymbol: _TypeId })
+  implements Pipeable.Pipeable, Inspectable.Inspectable, Equal.Equal, Hash.Hash
+{
   /** BoldState of this style */
   readonly boldState: BoolOption.Type;
 
@@ -305,68 +307,80 @@ export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable 
   /** Background color of this style. */
   readonly bgColor: ColorOption.Type;
 
-  /** @internal */
-  readonly [_TypeId]: _TypeId;
-}
+  /** Equivalence - Override default equivalence as this class contains objects */
+  override isEquivalentTo(this: this, that: this): boolean {
+    return (
+      BoolOption.equivalence(this.boldState, that.boldState)
+      && BoolOption.equivalence(this.dimState, that.dimState)
+      && BoolOption.equivalence(this.italicState, that.italicState)
+      && BoolOption.equivalence(this.underlinedState, that.underlinedState)
+      && BoolOption.equivalence(this.struckThroughState, that.struckThroughState)
+      && BoolOption.equivalence(this.overlinedState, that.overlinedState)
+      && BoolOption.equivalence(this.inversedState, that.inversedState)
+      && BoolOption.equivalence(this.hiddenState, that.hiddenState)
+      && BoolOption.equivalence(this.blinkingState, that.blinkingState)
+      && ColorOption.equivalence(this.fgColor, that.fgColor)
+      && ColorOption.equivalence(this.bgColor, that.bgColor)
+    );
+  }
 
-/**
- * Type guard
- *
- * @category Guards
- */
-export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
+  /** Returns a printable version of this */
+  override toString(this: this): string {
+    const result =
+      _boldStateId(this.boldState)
+      + _dimStateId(this.dimState)
+      + _italicStateId(this.italicState)
+      + _underlinedStateId(this.underlinedState)
+      + _struckThroughStateId(this.struckThroughState)
+      + _overlinedStateId(this.overlinedState)
+      + _inversedStateId(this.inversedState)
+      + _hiddenStateId(this.hiddenState)
+      + _blinkingStateId(this.blinkingState)
+      + _fgColorId(this.fgColor)
+      + _bgColorId(this.bgColor);
+    return result === '' ? 'NoStyle' : result;
+  }
+
+  /** Class constructor */
+  private constructor({
+    boldState,
+    dimState,
+    italicState,
+    underlinedState,
+    struckThroughState,
+    overlinedState,
+    inversedState,
+    hiddenState,
+    blinkingState,
+    fgColor,
+    bgColor,
+  }: MData.Extract<Type>) {
+    super();
+    this.boldState = boldState;
+    this.dimState = dimState;
+    this.italicState = italicState;
+    this.underlinedState = underlinedState;
+    this.struckThroughState = struckThroughState;
+    this.overlinedState = overlinedState;
+    this.inversedState = inversedState;
+    this.hiddenState = hiddenState;
+    this.blinkingState = blinkingState;
+    this.fgColor = fgColor;
+    this.bgColor = bgColor;
+  }
+
+  /** Static constructor */
+  static make(params: MData.Extract<Type>): Type {
+    return new Type(params);
+  }
+}
 
 /**
  * Equivalence
  *
  * @category Equivalences
  */
-export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
-  BoolOption.equivalence(self.boldState, that.boldState)
-  && BoolOption.equivalence(self.dimState, that.dimState)
-  && BoolOption.equivalence(self.italicState, that.italicState)
-  && BoolOption.equivalence(self.underlinedState, that.underlinedState)
-  && BoolOption.equivalence(self.struckThroughState, that.struckThroughState)
-  && BoolOption.equivalence(self.overlinedState, that.overlinedState)
-  && BoolOption.equivalence(self.inversedState, that.inversedState)
-  && BoolOption.equivalence(self.hiddenState, that.hiddenState)
-  && BoolOption.equivalence(self.blinkingState, that.blinkingState)
-  && ColorOption.equivalence(self.fgColor, that.fgColor)
-  && ColorOption.equivalence(self.bgColor, that.bgColor);
-
-const _TypeIdHash = Hash.hash(_TypeId);
-const _proto: MTypes.Proto<Type> = {
-  [_TypeId]: _TypeId,
-  [Equal.symbol](this: Type, that: unknown): boolean {
-    return has(that) && equivalence(this, that);
-  },
-  [Hash.symbol](this: Type) {
-    return pipe(
-      this.boldState,
-      Hash.hash,
-      Hash.combine(Hash.hash(this.dimState)),
-      Hash.combine(Hash.hash(this.italicState)),
-      Hash.combine(Hash.hash(this.underlinedState)),
-      Hash.combine(Hash.hash(this.struckThroughState)),
-      Hash.combine(Hash.hash(this.overlinedState)),
-      Hash.combine(Hash.hash(this.inversedState)),
-      Hash.combine(Hash.hash(this.hiddenState)),
-      Hash.combine(Hash.hash(this.blinkingState)),
-      Hash.combine(Hash.hash(this.fgColor)),
-      Hash.combine(Hash.hash(this.bgColor)),
-      Hash.combine(_TypeIdHash),
-      Hash.cached(this),
-    );
-  },
-  [MInspectable.IdSymbol](this: Type) {
-    return toId(this);
-  },
-  ...MInspectable.BaseProto(moduleTag),
-  ...MPipeable.BaseProto,
-};
-
-/** Constructor */
-const _make = (params: MData.Extract<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
+export const equivalence: Equivalence.Equivalence<Type> = (self, that) => self.isEquivalentTo(that);
 
 /**
  * Returns the `boldState` property of `self`
@@ -482,65 +496,60 @@ export const hasDim: Predicate.Predicate<Type> = (self) =>
 export const hasNotDim: Predicate.Predicate<Type> = (self) =>
   BoolOption.equivalence(self.dimState, _falseSome);
 
-const _boldStateId = BoolOption.toId(Function.constant('NotBold'), Function.constant('Bold'));
-const _dimStateId = BoolOption.toId(Function.constant('NotDim'), Function.constant('Dim'));
-const _italicStateId = BoolOption.toId(Function.constant('NotItalic'), Function.constant('Italic'));
-const _underlinedStateId = BoolOption.toId(
+const _boldStateId = BoolOption.getToString(
+  Function.constant('NotBold'),
+  Function.constant('Bold'),
+);
+const _dimStateId = BoolOption.getToString(Function.constant('NotDim'), Function.constant('Dim'));
+const _italicStateId = BoolOption.getToString(
+  Function.constant('NotItalic'),
+  Function.constant('Italic'),
+);
+const _underlinedStateId = BoolOption.getToString(
   Function.constant('NotUnderlined'),
   Function.constant('Underlined'),
 );
-const _struckThroughStateId = BoolOption.toId(
+const _struckThroughStateId = BoolOption.getToString(
   Function.constant('NotStruckThrough'),
   Function.constant('StruckThrough'),
 );
-const _overlinedStateId = BoolOption.toId(
+const _overlinedStateId = BoolOption.getToString(
   Function.constant('NotOverlined'),
   Function.constant('Overlined'),
 );
-const _inversedStateId = BoolOption.toId(
+const _inversedStateId = BoolOption.getToString(
   Function.constant('NotInversed'),
   Function.constant('Inversed'),
 );
-const _hiddenStateId = BoolOption.toId(Function.constant('NotHidden'), Function.constant('Hidden'));
-const _blinkingStateId = BoolOption.toId(
+const _hiddenStateId = BoolOption.getToString(
+  Function.constant('NotHidden'),
+  Function.constant('Hidden'),
+);
+const _blinkingStateId = BoolOption.getToString(
   Function.constant('NotBlinking'),
   Function.constant('Blinking'),
 );
-const _fgColorId = ColorOption.toId('');
-const _bgColorId = ColorOption.toId('In');
+const _fgColorId = ColorOption.getToString('');
+const _bgColorId = ColorOption.getToString('In');
 
 /**
  * Returns the id of `self`
  *
  * @category Destructors
  */
-export const toId = (self: Type): string => {
-  const result =
-    _boldStateId(self.boldState)
-    + _dimStateId(self.dimState)
-    + _italicStateId(self.italicState)
-    + _underlinedStateId(self.underlinedState)
-    + _struckThroughStateId(self.struckThroughState)
-    + _overlinedStateId(self.overlinedState)
-    + _inversedStateId(self.inversedState)
-    + _hiddenStateId(self.hiddenState)
-    + _blinkingStateId(self.blinkingState)
-    + _fgColorId(self.fgColor)
-    + _bgColorId(self.bgColor);
-  return result === '' ? 'NoStyle' : result;
-};
+export const toString = (self: Type): string => self.toString();
 
-const _boldStateToSequence = BoolOption.toSequence(22, 1);
-const _dimStateToSequence = BoolOption.toSequence(22, 2);
-const _italicStateToSequence = BoolOption.toSequence(23, 3);
-const _underlinedStateToSequence = BoolOption.toSequence(24, 4);
-const _struckThroughStateToSequence = BoolOption.toSequence(29, 9);
-const _overlinedStateToSequence = BoolOption.toSequence(55, 53);
-const _inversedStateToSequence = BoolOption.toSequence(27, 7);
-const _hiddenStateToSequence = BoolOption.toSequence(28, 8);
-const _blinkingStateToSequence = BoolOption.toSequence(25, 5);
-const _fgColorToSequence = ColorOption.toSequence(0);
-const _bgColorToSequence = ColorOption.toSequence(10);
+const _boldStateToSequence = BoolOption.getToSequence(22, 1);
+const _dimStateToSequence = BoolOption.getToSequence(22, 2);
+const _italicStateToSequence = BoolOption.getToSequence(23, 3);
+const _underlinedStateToSequence = BoolOption.getToSequence(24, 4);
+const _struckThroughStateToSequence = BoolOption.getToSequence(29, 9);
+const _overlinedStateToSequence = BoolOption.getToSequence(55, 53);
+const _inversedStateToSequence = BoolOption.getToSequence(27, 7);
+const _hiddenStateToSequence = BoolOption.getToSequence(28, 8);
+const _blinkingStateToSequence = BoolOption.getToSequence(25, 5);
+const _fgColorToSequence = ColorOption.getToSequence(0);
+const _bgColorToSequence = ColorOption.getToSequence(10);
 
 /**
  * Returns the sequence corresponding to `self`
@@ -592,7 +601,7 @@ export const toAnsiString: MTypes.OneArgFunction<Type, ASAnsiString.Type> = flow
 export const mergeUnder =
   (that: Type) =>
   (self: Type): Type =>
-    _make({
+    Type.make({
       boldState: pipe(self.boldState, BoolOption.mergeUnder(that.boldState)),
       dimState: pipe(self.dimState, BoolOption.mergeUnder(that.dimState)),
       italicState: pipe(self.italicState, BoolOption.mergeUnder(that.italicState)),
@@ -628,7 +637,7 @@ export const mergeOver =
 export const difference =
   (that: Type) =>
   (self: Type): Type =>
-    _make({
+    Type.make({
       boldState: pipe(self.boldState, BoolOption.difference(that.boldState)),
       dimState: pipe(self.dimState, BoolOption.difference(that.dimState)),
       italicState: pipe(self.italicState, BoolOption.difference(that.italicState)),
@@ -662,9 +671,9 @@ export const substractContext =
     const target = pipe(self, difference(context));
     return (
       hasBold(self) && hasNotDim(target) ?
-        pipe(target, MStruct.set({ boldState: _trueSome }), _make)
+        Type.make(pipe(target, MStruct.set({ boldState: _trueSome })))
       : hasDim(self) && hasNotBold(target) ?
-        pipe(target, MStruct.set({ dimState: _trueSome }), _make)
+        Type.make(pipe(target, MStruct.set({ dimState: _trueSome })))
       : target
     );
   };
@@ -674,7 +683,7 @@ export const substractContext =
  *
  * @category Instances
  */
-export const none: Type = _make({
+export const none: Type = Type.make({
   boldState: Option.none(),
   dimState: Option.none(),
   italicState: Option.none(),
@@ -693,7 +702,7 @@ export const none: Type = _make({
  *
  * @category Instances
  */
-export const defaults: Type = _make({
+export const defaults: Type = Type.make({
   boldState: _falseSome,
   dimState: _falseSome,
   italicState: _falseSome,
@@ -712,66 +721,66 @@ export const defaults: Type = _make({
  *
  * @category Instances
  */
-export const bold: Type = pipe(none, MStruct.set({ boldState: _trueSome }), _make);
+export const bold: Type = Type.make(pipe(none, MStruct.set({ boldState: _trueSome })));
 
 /**
  * NotBold StyleCharacteristics
  *
  * @category Instances
  */
-export const notBold: Type = pipe(none, MStruct.set({ boldState: _falseSome }), _make);
+export const notBold: Type = Type.make(pipe(none, MStruct.set({ boldState: _falseSome })));
 
 /**
  * Dim StyleCharacteristics
  *
  * @category Instances
  */
-export const dim: Type = pipe(none, MStruct.set({ dimState: _trueSome }), _make);
+export const dim: Type = Type.make(pipe(none, MStruct.set({ dimState: _trueSome })));
 
 /**
  * NotDim StyleCharacteristics
  *
  * @category Instances
  */
-export const notDim: Type = pipe(none, MStruct.set({ dimState: _falseSome }), _make);
+export const notDim: Type = Type.make(pipe(none, MStruct.set({ dimState: _falseSome })));
 
 /**
  * Italic StyleCharacteristics
  *
  * @category Instances
  */
-export const italic: Type = pipe(none, MStruct.set({ italicState: _trueSome }), _make);
+export const italic: Type = Type.make(pipe(none, MStruct.set({ italicState: _trueSome })));
 
 /**
  * NotItalic StyleCharacteristics
  *
  * @category Instances
  */
-export const notItalic: Type = pipe(none, MStruct.set({ italicState: _falseSome }), _make);
+export const notItalic: Type = Type.make(pipe(none, MStruct.set({ italicState: _falseSome })));
 
 /**
  * Underlined StyleCharacteristics
  *
  * @category Instances
  */
-export const underlined: Type = pipe(none, MStruct.set({ underlinedState: _trueSome }), _make);
+export const underlined: Type = Type.make(pipe(none, MStruct.set({ underlinedState: _trueSome })));
 
 /**
  * NotUnderlined StyleCharacteristics
  *
  * @category Instances
  */
-export const notUnderlined: Type = pipe(none, MStruct.set({ underlinedState: _falseSome }), _make);
+export const notUnderlined: Type = Type.make(
+  pipe(none, MStruct.set({ underlinedState: _falseSome })),
+);
 
 /**
  * StruckThrough StyleCharacteristics
  *
  * @category Instances
  */
-export const struckThrough: Type = pipe(
-  none,
-  MStruct.set({ struckThroughState: _trueSome }),
-  _make,
+export const struckThrough: Type = Type.make(
+  pipe(none, MStruct.set({ struckThroughState: _trueSome })),
 );
 
 /**
@@ -779,10 +788,8 @@ export const struckThrough: Type = pipe(
  *
  * @category Instances
  */
-export const notStruckThrough: Type = pipe(
-  none,
-  MStruct.set({ struckThroughState: _falseSome }),
-  _make,
+export const notStruckThrough: Type = Type.make(
+  pipe(none, MStruct.set({ struckThroughState: _falseSome })),
 );
 
 /**
@@ -790,66 +797,66 @@ export const notStruckThrough: Type = pipe(
  *
  * @category Instances
  */
-export const overlined: Type = pipe(none, MStruct.set({ overlinedState: _trueSome }), _make);
+export const overlined: Type = Type.make(pipe(none, MStruct.set({ overlinedState: _trueSome })));
 
 /**
  * NotOverlined StyleCharacteristics
  *
  * @category Instances
  */
-export const notOverlined: Type = pipe(none, MStruct.set({ overlinedState: _falseSome }), _make);
+export const notOverlined: Type = Type.make(
+  pipe(none, MStruct.set({ overlinedState: _falseSome })),
+);
 
 /**
  * Inversed StyleCharacteristics
  *
  * @category Instances
  */
-export const inversed: Type = pipe(none, MStruct.set({ inversedState: _trueSome }), _make);
+export const inversed: Type = Type.make(pipe(none, MStruct.set({ inversedState: _trueSome })));
 
 /**
  * NotInversed StyleCharacteristics
  *
  * @category Instances
  */
-export const notInversed: Type = pipe(none, MStruct.set({ inversedState: _falseSome }), _make);
+export const notInversed: Type = Type.make(pipe(none, MStruct.set({ inversedState: _falseSome })));
 
 /**
  * Hidden StyleCharacteristics
  *
  * @category Instances
  */
-export const hidden: Type = pipe(none, MStruct.set({ hiddenState: _trueSome }), _make);
+export const hidden: Type = Type.make(pipe(none, MStruct.set({ hiddenState: _trueSome })));
 
 /**
  * NotHidden StyleCharacteristics
  *
  * @category Instances
  */
-export const notHidden: Type = pipe(none, MStruct.set({ hiddenState: _falseSome }), _make);
+export const notHidden: Type = Type.make(pipe(none, MStruct.set({ hiddenState: _falseSome })));
 
 /**
  * Blinking StyleCharacteristics
  *
  * @category Instances
  */
-export const blinking: Type = pipe(none, MStruct.set({ blinkingState: _trueSome }), _make);
+export const blinking: Type = Type.make(pipe(none, MStruct.set({ blinkingState: _trueSome })));
 
 /**
  * NotBlinking StyleCharacteristics
  *
  * @category Instances
  */
-export const notBlinking: Type = pipe(none, MStruct.set({ blinkingState: _falseSome }), _make);
+export const notBlinking: Type = Type.make(pipe(none, MStruct.set({ blinkingState: _falseSome })));
 
 /**
  * Default foreground color StyleCharacteristics
  *
  * @category Instances
  */
-export const fgDefaultColor: Type = pipe(
-  none,
-  MStruct.set({ fgColor: Option.some(Option.none()) }),
-  _make,
+export const fgDefaultColor: Type = Type.make(
+  pipe(none, MStruct.set({ fgColor: Option.some(Option.none()) })),
 );
 
 /**
@@ -858,17 +865,15 @@ export const fgDefaultColor: Type = pipe(
  * @category Constructors
  */
 export const fromColorAsForegroundColor = (color: ASColor.Type): Type =>
-  pipe(none, MStruct.set({ fgColor: Option.some(Option.some(color)) }), _make);
+  Type.make(pipe(none, MStruct.set({ fgColor: Option.some(Option.some(color)) })));
 
 /**
  * Default foreground color StyleCharacteristics
  *
  * @category Instances
  */
-export const bgDefaultColor: Type = pipe(
-  none,
-  MStruct.set({ bgColor: Option.some(Option.none()) }),
-  _make,
+export const bgDefaultColor: Type = Type.make(
+  pipe(none, MStruct.set({ bgColor: Option.some(Option.none()) })),
 );
 
 /**
@@ -877,4 +882,4 @@ export const bgDefaultColor: Type = pipe(
  * @category Constructors
  */
 export const fromColorAsBackgroundColor = (color: ASColor.Type): Type =>
-  pipe(none, MStruct.set({ bgColor: Option.some(Option.some(color)) }), _make);
+  Type.make(pipe(none, MStruct.set({ bgColor: Option.some(Option.some(color)) })));

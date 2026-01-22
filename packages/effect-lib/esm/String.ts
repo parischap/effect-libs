@@ -44,7 +44,7 @@ export const moduleTag = '@parischap/effect-lib/String/';
  * @category Models
  */
 export namespace SearchResult {
-  const _namespaceTag = moduleTag + 'SearchResult/';
+  const _namespaceTag = `${moduleTag}SearchResult/`;
   const _TypeId: unique symbol = Symbol.for(_namespaceTag) as _TypeId;
   type _TypeId = typeof _TypeId;
 
@@ -374,7 +374,7 @@ export namespace FillPosition {
    *
    * @category Destructors
    */
-  export const toId: MTypes.OneArgFunction<FillPosition, string> = flow(
+  export const toString: MTypes.OneArgFunction<FillPosition, string> = flow(
     MMatch.make,
     MMatch.whenIs(FillPosition.Right, Function.constant('right')),
     MMatch.whenIs(FillPosition.Left, Function.constant('left')),

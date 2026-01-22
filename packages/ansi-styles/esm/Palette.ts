@@ -6,17 +6,16 @@
  * needs.
  */
 
-import { MInspectable, MPipeable, MString, MTypes } from '@parischap/effect-lib';
+import { MData, MString, MTypes } from '@parischap/effect-lib';
 import {
   Array,
   Equal,
   Equivalence,
-  flow,
   Function,
   Hash,
+  Inspectable,
   pipe,
   Pipeable,
-  Predicate,
   Struct,
 } from 'effect';
 import * as ASStyle from './Style.js';
@@ -36,56 +35,48 @@ type _TypeId = typeof _TypeId;
  *
  * @category Models
  */
-export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable {
+export class Type
+  extends MData.Class({ id: moduleTag, uniqueSymbol: _TypeId })
+  implements Pipeable.Pipeable, Inspectable.Inspectable, Equal.Equal, Hash.Hash
+{
   /** Array of styles contained by this Palette */
   readonly styles: ASStyles.Type;
 
-  /** @internal */
-  readonly [_TypeId]: _TypeId;
+  /** Equivalence - Override default equivalence as this class contains objects */
+  override isEquivalentTo(this: this, that: this): boolean {
+    return Array.getEquivalence(ASStyle.equivalence)(this.styles, that.styles);
+  }
+
+  /** Returns a printable version of this */
+  override toString(this: this): string {
+    return pipe(this.styles, ASStyles.toString, MString.append('Palette'));
+  }
+
+  /** Class constructor */
+  private constructor({ styles }: MData.Extract<Type>) {
+    super();
+    this.styles = styles;
+  }
+
+  /** Static constructor */
+  static make(params: MData.Extract<Type>): Type {
+    return new Type(params);
+  }
 }
 
-/**
- * Type guard
- *
- * @category Guards
- */
-export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
-
-const _equivalence = Array.getEquivalence(ASStyle.equivalence);
 /**
  * Equivalence
  *
  * @category Equivalences
  */
-export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
-  _equivalence(self.styles, that.styles);
-
-/** Prototype */
-const _TypeIdHash = Hash.hash(_TypeId);
-const _proto: MTypes.Proto<Type> = {
-  [_TypeId]: _TypeId,
-  [Equal.symbol](this: Type, that: unknown): boolean {
-    return has(that) && equivalence(this, that);
-  },
-  [Hash.symbol](this: Type) {
-    return pipe(this.styles, Hash.array, Hash.combine(_TypeIdHash), Hash.cached(this));
-  },
-  [MInspectable.IdSymbol](this: Type) {
-    return toId(this);
-  },
-  ...MInspectable.BaseProto(moduleTag),
-  ...MPipeable.BaseProto,
-};
-
-/** Constructor */
-const _make = (params: MData.Extract<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
+export const equivalence: Equivalence.Equivalence<Type> = (self, that) => self.isEquivalentTo(that);
 
 /**
  * Constructor
  *
  * @category Constructors
  */
-export const make = (...styles: ASStyles.Type): Type => _make({ styles });
+export const make = (...styles: ASStyles.Type): Type => Type.make({ styles });
 const _tupledMake = Function.tupled<ASStyles.Type, Type>(make);
 
 /**
@@ -93,11 +84,7 @@ const _tupledMake = Function.tupled<ASStyles.Type, Type>(make);
  *
  * @category Destructors
  */
-export const toId: MTypes.OneArgFunction<Type, string> = flow(
-  Struct.get('styles'),
-  ASStyles.toId,
-  MString.append('Palette'),
-);
+export const toString = (self: Type): string => self.toString();
 
 /**
  * Gets the underlying styles of `self`

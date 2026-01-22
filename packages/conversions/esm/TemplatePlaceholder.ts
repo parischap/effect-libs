@@ -345,7 +345,7 @@ export const paddedFixedLength = <const N extends string>(params: {
     fixedLength(params),
     modify({
       descriptorMapper: MString.append(
-        ` ${MString.FillPosition.toId(params.fillPosition)}-padded with '${params.fillChar}'`,
+        ` ${MString.FillPosition.toString(params.fillPosition)}-padded with '${params.fillChar}'`,
       ),
       postParser: trimmer,
       preFormatter: padder,
