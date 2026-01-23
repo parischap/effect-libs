@@ -9,12 +9,10 @@
 import {
   Array,
   Equal,
-  Hash,
-  Inspectable,
   MutableHashMap,
   MutableList,
   Option,
-  Pipeable,
+  Predicate,
   Tuple,
   flow,
   pipe,
@@ -60,10 +58,7 @@ export type LookUp<A, B> = ({
  *
  * @category Models
  */
-export class Type<in out A, in out B>
-  extends MData.Class({ id: moduleTag, uniqueSymbol: _TypeId })
-  implements Pipeable.Pipeable, Inspectable.Inspectable, Hash.Hash, Equal.Equal
-{
+export class Type<in out A, in out B> extends MData.Type {
   /**
    * The key/value cache. A None value means the value is currently under calculation. A circular
    * flag will be sent if the value needs to be retreived while it is being calculated.
@@ -91,11 +86,6 @@ export class Type<in out A, in out B>
    */
   readonly lifeSpan: number;
 
-  /** Equivalence - Override default equivalence as this class contains objects */
-  override isEquivalentTo(this: this, that: this): boolean {
-    return this === that;
-  }
-
   /** Class constructor */
   private constructor(params: MData.Extract<Type<A, B>>) {
     super();
@@ -110,10 +100,22 @@ export class Type<in out A, in out B>
   static make<A, B>(params: MData.Extract<Type<A, B>>): Type<A, B> {
     return new Type(params);
   }
-}
 
-/** Constructor */
-const _make = <A, B>(params: MData.Extract<Type<A, B>>): Type<A, B> => Type.make(params);
+  /** Tag */
+  get [MData.tagGetterSymbol](): string {
+    return moduleTag;
+  }
+
+  /** internal */
+  protected [MData.hasSameTypeMarkerAsSymbol](this: this, u: unknown): u is this {
+    return Predicate.hasProperty(u, _TypeId) && this[_TypeId] === u[_TypeId];
+  }
+
+  /** internal */
+  private get [_TypeId](): _TypeId {
+    return _TypeId;
+  }
+}
 
 /**
  * Creates a new cache. The lookup function is used to populate the cache. If the capacity is
@@ -158,7 +160,7 @@ export const make = <A, B>({
   readonly capacity?: number;
   readonly lifeSpan?: number;
 }) =>
-  _make({
+  Type.make({
     lookUp,
     capacity: Number.isNaN(capacity) || capacity < 0 ? 0 : capacity,
     lifeSpan: Number.isNaN(lifeSpan) || lifeSpan < 0 ? 0 : lifeSpan,

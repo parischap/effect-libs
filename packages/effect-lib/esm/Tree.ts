@@ -15,11 +15,9 @@ import {
   Equal,
   Equivalence,
   flow,
-  Hash,
-  Inspectable,
   Option,
   pipe,
-  Pipeable,
+  Predicate,
   Struct,
   Tuple,
 } from 'effect';
@@ -53,17 +51,9 @@ export namespace Leaf {
    *
    * @category Models
    */
-  export class Type<out B>
-    extends MData.Class({ id: _namespaceTag, uniqueSymbol: _TypeId })
-    implements Pipeable.Pipeable, Inspectable.Inspectable, Equal.Equal, Hash.Hash
-  {
+  export class Type<out B> extends MData.Type {
     /** Value of a Leaf node */
     readonly value: B;
-
-    /** Equivalence - Override default equivalence as this class contains objects */
-    override isEquivalentTo(this: this, that: this): boolean {
-      return this === that;
-    }
 
     /** Class constructor */
     private constructor({ value }: MData.Extract<Type<B>>) {
@@ -74,6 +64,21 @@ export namespace Leaf {
     /** Static constructor */
     static make<B>(params: MData.Extract<Type<B>>): Type<B> {
       return new Type(params);
+    }
+
+    /** Tag */
+    get [MData.tagGetterSymbol](): string {
+      return _namespaceTag;
+    }
+
+    /** internal */
+    protected [MData.hasSameTypeMarkerAsSymbol](this: this, u: unknown): u is this {
+      return Predicate.hasProperty(u, _TypeId) && this[_TypeId] === u[_TypeId];
+    }
+
+    /** internal */
+    private get [_TypeId](): _TypeId {
+      return _TypeId;
     }
   }
 
@@ -117,19 +122,11 @@ export namespace NonLeaf {
    *
    * @category Models
    */
-  export class Type<out A, out B>
-    extends MData.Class({ id: _namespaceTag, uniqueSymbol: _TypeId })
-    implements Pipeable.Pipeable, Inspectable.Inspectable, Equal.Equal, Hash.Hash
-  {
+  export class Type<out A, out B> extends MData.Type {
     /** The value of a NonLeaf */
     readonly value: A;
     /** The children of a NonLeaf */
     readonly forest: Forest.Type<A, B>;
-
-    /** Equivalence - Override default equivalence as this class contains objects */
-    override isEquivalentTo(this: this, that: this): boolean {
-      return this === that;
-    }
 
     /** Class constructor */
     private constructor({ value, forest }: MData.Extract<Type<A, B>>) {
@@ -141,6 +138,21 @@ export namespace NonLeaf {
     /** Static constructor */
     static make<A, B>(params: MData.Extract<Type<A, B>>): Type<A, B> {
       return new Type(params);
+    }
+
+    /** Tag */
+    get [MData.tagGetterSymbol](): string {
+      return _namespaceTag;
+    }
+
+    /** internal */
+    protected [MData.hasSameTypeMarkerAsSymbol](this: this, u: unknown): u is this {
+      return Predicate.hasProperty(u, _TypeId) && this[_TypeId] === u[_TypeId];
+    }
+
+    /** internal */
+    private get [_TypeId](): _TypeId {
+      return _TypeId;
     }
   }
 

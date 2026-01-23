@@ -2,14 +2,10 @@
 
 import {
   Array,
-  Equal,
   Equivalence,
   Function,
-  Hash,
-  Inspectable,
   Option,
   Order,
-  Pipeable,
   Predicate,
   Record,
   String,
@@ -53,10 +49,7 @@ export namespace SearchResult {
    *
    * @category Models
    */
-  export class Type
-    extends MData.Class({ id: _namespaceTag, uniqueSymbol: _TypeId })
-    implements Pipeable.Pipeable, Inspectable.Inspectable, Equal.Equal, Hash.Hash
-  {
+  export class Type extends MData.Type {
     /** The index where the match was found in the target string */
     readonly startIndex: number;
     /** The index of the character following the match in the target string */
@@ -75,6 +68,30 @@ export namespace SearchResult {
     /** Static constructor */
     static make(params: MData.Extract<Type>): Type {
       return new Type(params);
+    }
+
+    /** Tag */
+    get [MData.tagGetterSymbol](): string {
+      return _namespaceTag;
+    }
+
+    /** Implements the Effect Equivalence.Equivalence interface */
+    override [MData.isEquivalentToSymbol](this: this, that: this): boolean {
+      return (
+        this.startIndex === that.startIndex
+        && this.endIndex === that.endIndex
+        && this.match === that.match
+      );
+    }
+
+    /** internal */
+    protected [MData.hasSameTypeMarkerAsSymbol](this: this, u: unknown): u is this {
+      return Predicate.hasProperty(u, _TypeId) && this[_TypeId] === u[_TypeId];
+    }
+
+    /** internal */
+    private get [_TypeId](): _TypeId {
+      return _TypeId;
     }
   }
 

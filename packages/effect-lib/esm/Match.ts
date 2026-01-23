@@ -4,7 +4,7 @@
  * simplifies its use.
  */
 
-import { Array, Equal, Hash, Inspectable, Option, Pipeable, Predicate, pipe } from 'effect';
+import { Array, Option, Predicate, pipe } from 'effect';
 import * as MData from './Data.js';
 import * as MPredicate from './Predicate.js';
 import * as MTypes from './types.js';
@@ -23,19 +23,11 @@ type _TypeId = typeof _TypeId;
  *
  * @category Models
  */
-export class Type<out Input, out Output, out Rest extends Input>
-  extends MData.Class({ id: moduleTag, uniqueSymbol: _TypeId })
-  implements Pipeable.Pipeable, Inspectable.Inspectable, Hash.Hash, Equal.Equal
-{
+export class Type<out Input, out Output, out Rest extends Input> extends MData.Type {
   /** The input to match */
   readonly input: Input;
   /** The output of the matcher when it has been found */
   readonly output: Option.Option<Output>;
-
-  /** Equivalence - Override default equivalence as this class contains objects */
-  override isEquivalentTo(this: this, that: this): boolean {
-    return this === that;
-  }
 
   /** Class constructor */
   private constructor({ input, output }: MData.Extract<Type<Input, Output, Rest>>) {
@@ -50,13 +42,22 @@ export class Type<out Input, out Output, out Rest extends Input>
   ): Type<Input, Output, Rest> {
     return new Type(params);
   }
-}
 
-/** Constructor */
-const _make = <Input, Output, Rest extends Input>(params: {
-  readonly input: Input;
-  readonly output: Option.Option<Output>;
-}): Type<Input, Output, Rest> => Type.make(params);
+  /** Tag */
+  get [MData.tagGetterSymbol](): string {
+    return moduleTag;
+  }
+
+  /** internal */
+  protected [MData.hasSameTypeMarkerAsSymbol](this: this, u: unknown): u is this {
+    return Predicate.hasProperty(u, _TypeId) && this[_TypeId] === u[_TypeId];
+  }
+
+  /** internal */
+  private get [_TypeId](): _TypeId {
+    return _TypeId;
+  }
+}
 
 /**
  * Builds a new matcher
@@ -64,7 +65,7 @@ const _make = <Input, Output, Rest extends Input>(params: {
  * @category Constructors
  */
 export const make = <Input>(input: Input): Type<Input, never, Input> =>
-  _make({ input, output: Option.none() });
+  Type.make({ input, output: Option.none() });
 
 /**
  * Matches against a refinement or a predicate. Returns a copy of `self` if `self` already has an
@@ -108,7 +109,7 @@ export const when: {
     f: (value: Rest) => Output1,
   ) =>
   <Output>(self: Type<Input, Output, Rest>) =>
-    _make({
+    Type.make({
       input: self.input,
       output: Option.orElse(self.output, () =>
         pipe(
@@ -154,7 +155,7 @@ export const whenIs =
     f: (value: A) => Output1,
   ) =>
   <Output>(self: Type<Input, Output, Rest>): Type<Input, Output | Output1, Exclude<Rest, A>> =>
-    _make({
+    Type.make({
       input: self.input,
       output: Option.orElse(self.output, () =>
         pipe(
@@ -200,7 +201,7 @@ export const whenIsOr =
   <Output>(
     self: Type<Input, Output, Rest>,
   ): Type<Input, Output | Output1, Exclude<Rest, R[number]>> =>
-    _make({
+    Type.make({
       input: self.input,
       output: Option.orElse(self.output, () =>
         pipe(
@@ -244,7 +245,7 @@ export const whenIsOr =
 export const tryFunction =
   <Input, Rest extends Input, Output1>(f: (value: NoInfer<Rest>) => Option.Option<Output1>) =>
   <Output>(self: Type<Input, Output, Rest>): Type<Input, Output | Output1, Rest> =>
-    _make({
+    Type.make({
       input: self.input,
       output: Option.orElse(self.output, () => f(self.input as Rest)),
     });
@@ -271,7 +272,7 @@ export const whenOr =
   <Output>(
     self: Type<Input, Output, Rest>,
   ): Type<Input, Output | Output1, Exclude<Rest, MPredicate.PredicatesToCoverages<R>[number]>> =>
-    _make({
+    Type.make({
       input: self.input,
       output: Option.orElse(self.output, () =>
         pipe(
@@ -313,7 +314,7 @@ export const whenAnd =
     Output | Output1,
     Exclude<Rest, MTypes.ToKeyIntersection<MPredicate.PredicatesToCoverages<R>>>
   > =>
-    _make({
+    Type.make({
       input: self.input,
       output: Option.orElse(self.output, () =>
         pipe(

@@ -433,13 +433,23 @@ export const isPrimitive = <A>(input: A): input is Exclude<A, NonPrimitive> & Pr
 export const isFunction = (u: unknown): u is AnyFunction => typeof u === 'function';
 
 /**
- * From a function with many arguments to a function with a single argument
+ * From a function with an unknown number of arguments to a function with a single argument
  *
  * @category Guards
  */
 export const isOneArgFunction = <A, R>(
   f: (a: A, ...args: ReadonlyArray<any>) => R,
 ): f is (a: A) => R => f.length === 1;
+
+/**
+ * From a function with an unknown number of arguments to a function with a two arguments
+ *
+ * @category Guards
+ */
+export const isTwoArgFunction = <A, B, R>(
+  f: (a: A, b: B, ...args: ReadonlyArray<any>) => R,
+): f is (a: A, b: B) => R => f.length === 2;
+
 /**
  * From `Array<A>` to `EmptyArray`
  *
