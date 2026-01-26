@@ -46,7 +46,7 @@ const _proto: MTypes.Proto<Type> = {
   ...MPipeable.BaseProto,
 };
 
-const _make = (params: MData.Extract<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
+const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
 
 /**
  * Constructor

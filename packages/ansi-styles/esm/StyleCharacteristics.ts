@@ -354,7 +354,7 @@ export class Type
     blinkingState,
     fgColor,
     bgColor,
-  }: MData.Extract<Type>) {
+  }: MTypes.Data<Type>) {
     super();
     this.boldState = boldState;
     this.dimState = dimState;
@@ -370,7 +370,7 @@ export class Type
   }
 
   /** Static constructor */
-  static make(params: MData.Extract<Type>): Type {
+  static make(params: MTypes.Data<Type>): Type {
     return new Type(params);
   }
 }

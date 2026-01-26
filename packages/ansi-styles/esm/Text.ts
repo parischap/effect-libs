@@ -119,7 +119,7 @@ namespace UniStyled {
   };
 
   /** Constructor */
-  export const make = (params: MData.Extract<Type>): Type =>
+  export const make = (params: MTypes.Data<Type>): Type =>
     MTypes.objectFromDataAndProto(_proto, params);
 
   /**
@@ -242,7 +242,7 @@ const _proto: MTypes.Proto<Type> = {
 };
 
 /** Constructor */
-const _make = (params: MData.Extract<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
+const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
 
 /**
  * Returns the `uniStyledTexts` property of `self`

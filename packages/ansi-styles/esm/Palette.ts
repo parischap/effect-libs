@@ -53,13 +53,13 @@ export class Type
   }
 
   /** Class constructor */
-  private constructor({ styles }: MData.Extract<Type>) {
+  private constructor({ styles }: MTypes.Data<Type>) {
     super();
     this.styles = styles;
   }
 
   /** Static constructor */
-  static make(params: MData.Extract<Type>): Type {
+  static make(params: MTypes.Data<Type>): Type {
     return new Type(params);
   }
 }

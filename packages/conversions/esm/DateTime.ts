@@ -270,10 +270,9 @@ namespace GregorianDate {
   };
 
   /** Constructor */
-  const _make = (params: MData.Extract<Type>): Type =>
-    MTypes.objectFromDataAndProto(_proto, params);
+  const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
 
-  const _makeWithInternals = (params: Omit<MData.Extract<Type>, '_daysInMonth'>): Type =>
+  const _makeWithInternals = (params: Omit<MTypes.Data<Type>, '_daysInMonth'>): Type =>
     _make({
       ...params,
       _daysInMonth: params.yearIsLeap ? LEAP_YEAR_DAYS_IN_MONTH : COMMON_YEAR_DAYS_IN_MONTH,
@@ -788,8 +787,7 @@ namespace IsoDate {
   };
 
   /** Constructor */
-  const _make = (params: MData.Extract<Type>): Type =>
-    MTypes.objectFromDataAndProto(_proto, params);
+  const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
 
   /**
    * Constructs an IsoDate from a timestamp
@@ -1207,8 +1205,7 @@ namespace Time {
   };
 
   /** Constructor */
-  const _make = (params: MData.Extract<Type>): Type =>
-    MTypes.objectFromDataAndProto(_proto, params);
+  const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
 
   /**
    * Constructs the Time that corresponds to the passed `timestampOffset` which is the number of
@@ -1534,7 +1531,7 @@ namespace ZoneOffsetParts {
     ...MPipeable.BaseProto,
   };
 
-  export const _make = (params: MData.Extract<Type>): Type =>
+  export const _make = (params: MTypes.Data<Type>): Type =>
     MTypes.objectFromDataAndProto(_proto, params);
 
   /**
@@ -1734,7 +1731,7 @@ const _proto: MTypes.Proto<Type> = {
 };
 
 /** Constructor */
-const _make = (params: MData.Extract<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
+const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
 
 /**
  * Returns the ISO representation of this DateTime

@@ -1,23 +1,13 @@
 /**
- * This module implements a mutable cache with an optional capacity and and an optional
- * time-to-live. The contents of the cache is populated by a lookup function which may be recursive.
- * The cache capacity may temporarily be exceeded if the lookup function is recursive (because the
- * cache is also used to determine circularity). Keys are compared using Equal.equals.
- *
- * Atention: a cache is a mutable object.
+ * This module implements a mutable cache with an optional capacity and an optional time-to-live for
+ * the result of a function called lookup function that takes values of type A and returns values of
+ * type B. The lookup function may be recursive. The cache capacity may temporarily be exceeded if
+ * the lookup function is recursive (because the cache is also used to determine circularity).
+ * Values of type A are compared using the Effect Equal.equals operator for caching purposes
+ * (because it uses a MutableHashMap under the hood for the store implementation)
  */
-import {
-  Array,
-  Equal,
-  MutableHashMap,
-  MutableList,
-  Option,
-  Predicate,
-  Tuple,
-  flow,
-  pipe,
-} from 'effect';
-import * as MData from './Data.js';
+import { Array, Equal, MutableHashMap, MutableList, Option, Tuple, flow, pipe } from 'effect';
+import * as MDataBase from './Data/Base.js';
 import * as MCacheValueContainer from './internal/CacheValueContainer.js';
 import * as MNumber from './Number.js';
 import * as MTypes from './types.js';
@@ -32,13 +22,14 @@ const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
 /**
- * Type that represents the lookup function. In addition to the key, the lookup function receives a
- * memoized version of itself if it needs to perform recursion. It also receives a flag indicating
- * whether circularity was detected. In that case, the memoized version of the function is not
- * passed as recursion should be stopped to avoid an infinite loop. The output of the function must
- * contain the result of the lookup and a boolean indicating whether the result should be stored in
- * the cache. Note that when isCircular is true, the result is not stored in the cache even if the
- * result of the function indicates it should.
+ * Type that represents the lookup function. In addition to the value of type A, the lookup function
+ * receives a memoized version of itself if it needs to perform recursion. It also receives a flag
+ * indicating whether circularity was detected. In that case, the memoized version of the function
+ * is not passed as recursion should be stopped to avoid an infinite loop. The output of the
+ * function must contain the result of applying the value of type A to the lookup function and a
+ * boolean indicating whether the result should be stored in the cache. Note that when isCircular is
+ * true, the result is not stored in the cache even if the result of the function indicates it
+ * should.
  *
  * @category Models
  */
@@ -58,16 +49,17 @@ export type LookUp<A, B> = ({
  *
  * @category Models
  */
-export class Type<in out A, in out B> extends MData.Type {
+export class Type<in out A, in out B> extends MDataBase.Type<_TypeId> {
   /**
-   * The key/value cache. A None value means the value is currently under calculation. A circular
-   * flag will be sent if the value needs to be retreived while it is being calculated.
+   * The lookup function cache associating values of type A to values of type B. A `None` B value
+   * means the B value is currently under calculation. A circular flag will be sent if the value
+   * needs to be retreived while it is being calculated.
    */
   readonly store: MutableHashMap.MutableHashMap<A, Option.Option<MCacheValueContainer.Type<B>>>;
 
   /**
-   * A list used to track the order in which keys were inserted so as to remove the oldest keys
-   * first in case the cache has bounded capacity
+   * A list used to track the order in which values of type A were inserted in the store so as to
+   * remove the oldest keys first in case the cache has bounded capacity
    */
   readonly keyListInOrder: MutableList.MutableList<A>;
 
@@ -75,19 +67,19 @@ export class Type<in out A, in out B> extends MData.Type {
   readonly lookUp: LookUp<A, B>;
 
   /**
-   * The capicity of the cache. If +Infinity, the cache is unbounded. If Nan or a negative value,
-   * capacity is set to 0
+   * The capicity of the cache. If `Infinity` is passed, the cache is unbounded. If `NaN` or a
+   * negative value is passed, capacity is set to 0
    */
   readonly capacity: number;
 
   /**
-   * The lifespan of the values in the cache. If +Infinity, the values never expire. If Nan or a
-   * negative value, the lifespan is set to 0
+   * The lifespan of the values in the cache. If `Infinity` is passed, the values never expire. If
+   * `NaN` or a negative value is passed, the lifespan is set to 0
    */
   readonly lifeSpan: number;
 
   /** Class constructor */
-  private constructor(params: MData.Extract<Type<A, B>>) {
+  private constructor(params: MTypes.Data<Type<A, B>>) {
     super();
     this.store = params.store;
     this.keyListInOrder = params.keyListInOrder;
@@ -97,22 +89,17 @@ export class Type<in out A, in out B> extends MData.Type {
   }
 
   /** Static constructor */
-  static make<A, B>(params: MData.Extract<Type<A, B>>): Type<A, B> {
+  static make<A, B>(params: MTypes.Data<Type<A, B>>): Type<A, B> {
     return new Type(params);
   }
 
-  /** Tag */
-  get [MData.tagGetterSymbol](): string {
+  /** Returns the `id` of `this` */
+  protected [MDataBase.idSymbol](this: this): string | (() => string) {
     return moduleTag;
   }
 
-  /** internal */
-  protected [MData.hasSameTypeMarkerAsSymbol](this: this, u: unknown): u is this {
-    return Predicate.hasProperty(u, _TypeId) && this[_TypeId] === u[_TypeId];
-  }
-
-  /** internal */
-  private get [_TypeId](): _TypeId {
+  /** Returns the TypeMarker of the class */
+  protected get [MDataBase.typeMarkerSymbol](): _TypeId {
     return _TypeId;
   }
 }

@@ -6,7 +6,7 @@ import { Array, Effect, FiberId, List, LogLevel, Logger, Option, String, pipe } 
 class TitleMessage {
   readonly title: string;
 
-  constructor({ title }: MData.Extract<TitleMessage>) {
+  constructor({ title }: MTypes.Data<TitleMessage>) {
     this.title = title;
   }
 }

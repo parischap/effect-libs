@@ -81,7 +81,7 @@ const base: MTypes.Proto<Type> = {
 };
 
 /** Constructor */
-const _make = (params: MData.Extract<Type>): Type =>
+const _make = (params: MTypes.Data<Type>): Type =>
   Object.assign(
     ((...args) => ASText.fromStyleAndElems(params.style)(...args)) satisfies Action.Type,
     {

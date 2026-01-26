@@ -129,7 +129,7 @@ const _proto: MTypes.Proto<Type<never>> = {
 };
 
 /** Constructor */
-const _make = <V>(params: MData.Extract<Type<V>>): Type<V> =>
+const _make = <V>(params: MTypes.Data<Type<V>>): Type<V> =>
   MTypes.objectFromDataAndProto(_proto, params);
 
 /**

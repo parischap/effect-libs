@@ -204,6 +204,18 @@ export interface NumberFromString extends OneArgFunction<string, number> {}
  */
 export interface NumberToString extends OneArgFunction<number, string> {}
 
+/** Keys that will always be on the prototype: symbolic keys, toString, toJSON and pipe */
+type BaseProtoKeys = symbol | 'toString' | 'toJSON' | 'pipe';
+
+/**
+ * Utility type that removes all non-data from a type.
+ *
+ * @category Utility types
+ */
+export type Data<T extends NonPrimitive> = {
+  [k in keyof T as [k] extends [BaseProtoKeys] ? never : k]: T[k];
+};
+
 /**
  * Utility type that makes field `field` of target type `X` mutable
  *

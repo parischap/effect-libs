@@ -112,7 +112,7 @@ export namespace TemplatePart {
       ...MPipeable.BaseProto,
     };
 
-    const _make = (params: MData.Extract<Type>): Type =>
+    const _make = (params: MTypes.Data<Type>): Type =>
       MTypes.objectFromDataAndProto(_proto, params);
 
     /**
@@ -171,7 +171,7 @@ export namespace TemplatePart {
       ...MPipeable.BaseProto,
     };
 
-    const _make = (params: MData.Extract<Type>): Type =>
+    const _make = (params: MTypes.Data<Type>): Type =>
       MTypes.objectFromDataAndProto(_proto, params);
 
     /**
@@ -328,7 +328,7 @@ const _proto: MTypes.Proto<Type> = {
   ...MPipeable.BaseProto,
 };
 
-const _make = (params: MData.Extract<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
+const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
 
 /**
  * Builds a DateTimeFormat from a Context `context` and an array of TemplatePart's `templateParts`

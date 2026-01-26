@@ -5,7 +5,7 @@
  */
 
 import { Array, Option, Predicate, pipe } from 'effect';
-import * as MData from './Data.js';
+import * as MDataBase from './Data/Base.js';
 import * as MPredicate from './Predicate.js';
 import * as MTypes from './types.js';
 
@@ -23,14 +23,14 @@ type _TypeId = typeof _TypeId;
  *
  * @category Models
  */
-export class Type<out Input, out Output, out Rest extends Input> extends MData.Type {
+export class Type<out Input, out Output, out Rest extends Input> extends MDataBase.Type<_TypeId> {
   /** The input to match */
   readonly input: Input;
   /** The output of the matcher when it has been found */
   readonly output: Option.Option<Output>;
 
   /** Class constructor */
-  private constructor({ input, output }: MData.Extract<Type<Input, Output, Rest>>) {
+  private constructor({ input, output }: MTypes.Data<Type<Input, Output, Rest>>) {
     super();
     this.input = input;
     this.output = output;
@@ -38,23 +38,18 @@ export class Type<out Input, out Output, out Rest extends Input> extends MData.T
 
   /** Static constructor */
   static make<Input, Output, Rest extends Input>(
-    params: MData.Extract<Type<Input, Output, Rest>>,
+    params: MTypes.Data<Type<Input, Output, Rest>>,
   ): Type<Input, Output, Rest> {
     return new Type(params);
   }
 
-  /** Tag */
-  get [MData.tagGetterSymbol](): string {
+  /** Returns the `id` of `this` */
+  protected [MDataBase.idSymbol](this: this): string | (() => string) {
     return moduleTag;
   }
 
-  /** internal */
-  protected [MData.hasSameTypeMarkerAsSymbol](this: this, u: unknown): u is this {
-    return Predicate.hasProperty(u, _TypeId) && this[_TypeId] === u[_TypeId];
-  }
-
-  /** internal */
-  private get [_TypeId](): _TypeId {
+  /** Returns the TypeMarker of the class */
+  protected get [MDataBase.typeMarkerSymbol](): _TypeId {
     return _TypeId;
   }
 }

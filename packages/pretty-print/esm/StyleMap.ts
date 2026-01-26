@@ -98,7 +98,7 @@ const _proto: MTypes.Proto<Type> = {
  *
  * @category Constructors
  */
-export const make = (params: MData.Extract<Type>): Type =>
+export const make = (params: MTypes.Data<Type>): Type =>
   MTypes.objectFromDataAndProto(_proto, params);
 
 /**

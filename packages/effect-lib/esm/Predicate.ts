@@ -1,7 +1,6 @@
 /** A simple extension to the Effect Predicate module */
 
 import { Effect, Predicate } from 'effect';
-import * as MData from './Data.js';
 import * as MTypes from './types.js';
 
 /**
@@ -87,7 +86,7 @@ export type SourcesToPredicates<T extends MTypes.NonPrimitive> = {
  */
 export const struct = <
   O extends MTypes.NonPrimitive,
-  F extends Partial<SourcesToPredicates<MData.Extract<O>>>,
+  F extends Partial<SourcesToPredicates<MTypes.Data<O>>>,
 >(
   fields: F,
 ): [Extract<F[keyof F], MTypes.AnyRefinement>] extends [never] ? Predicate.Predicate<O>

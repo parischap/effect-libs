@@ -4,6 +4,7 @@ import {
   Array,
   Equivalence,
   Function,
+  Hash,
   Option,
   Order,
   Predicate,
@@ -16,7 +17,8 @@ import {
 } from 'effect';
 import * as MArray from './Array.js';
 import * as MBigInt from './BigInt.js';
-import * as MData from './Data.js';
+import * as MDataBase from './Data/Base.js';
+import * as MDataEquivalenceBasedEquality from './Data/EquivalenceBasedEquality.js';
 import * as MFunction from './Function.js';
 import * as MMatch from './Match.js';
 import * as MNumber from './Number.js';
@@ -49,7 +51,7 @@ export namespace SearchResult {
    *
    * @category Models
    */
-  export class Type extends MData.Type {
+  export class Type extends MDataEquivalenceBasedEquality.Type<_TypeId> {
     /** The index where the match was found in the target string */
     readonly startIndex: number;
     /** The index of the character following the match in the target string */
@@ -58,7 +60,7 @@ export namespace SearchResult {
     readonly match: string;
 
     /** Class constructor */
-    private constructor({ startIndex, endIndex, match }: MData.Extract<Type>) {
+    private constructor({ startIndex, endIndex, match }: MTypes.Data<Type>) {
       super();
       this.startIndex = startIndex;
       this.endIndex = endIndex;
@@ -66,17 +68,22 @@ export namespace SearchResult {
     }
 
     /** Static constructor */
-    static make(params: MData.Extract<Type>): Type {
+    static make(params: MTypes.Data<Type>): Type {
       return new Type(params);
     }
 
-    /** Tag */
-    get [MData.tagGetterSymbol](): string {
+    /** Returns the `id` of `this` */
+    protected [MDataBase.idSymbol](this: this): string | (() => string) {
       return _namespaceTag;
     }
 
-    /** Implements the Effect Equivalence.Equivalence interface */
-    override [MData.isEquivalentToSymbol](this: this, that: this): boolean {
+    /** Calculates the hash value of `this` */
+    [Hash.symbol](this: this): number {
+      return 0;
+    }
+
+    /** Function that implements the equivalence of `this` and `that` */
+    [MDataEquivalenceBasedEquality.isEquivalentToSymbol](this: this, that: this): boolean {
       return (
         this.startIndex === that.startIndex
         && this.endIndex === that.endIndex
@@ -84,13 +91,8 @@ export namespace SearchResult {
       );
     }
 
-    /** internal */
-    protected [MData.hasSameTypeMarkerAsSymbol](this: this, u: unknown): u is this {
-      return Predicate.hasProperty(u, _TypeId) && this[_TypeId] === u[_TypeId];
-    }
-
-    /** internal */
-    private get [_TypeId](): _TypeId {
+    /** Returns the TypeMarker of the class */
+    protected get [MDataBase.typeMarkerSymbol](): _TypeId {
       return _TypeId;
     }
   }
@@ -108,7 +110,7 @@ export namespace SearchResult {
    *
    * @category Constructors
    */
-  export const make = (params: MData.Extract<Type>): Type => Type.make(params);
+  export const make = (params: MTypes.Data<Type>): Type => Type.make(params);
 
   /**
    * SearchResult Order based on the startIndex
