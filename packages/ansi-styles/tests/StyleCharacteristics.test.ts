@@ -1,4 +1,4 @@
-import { ASColor, ASStyleCharacteristics } from '@parischap/ansi-styles';
+import { ASColorEightBit, ASColorThreeBit, ASStyleCharacteristics } from '@parischap/ansi-styles';
 import * as TestUtils from '@parischap/configs/TestUtils';
 import { Option, pipe } from 'effect';
 import { describe, it } from 'vitest';
@@ -11,25 +11,25 @@ describe('ASStyleCharacteristics', () => {
   const boldItalicBrightGreenInBlue = pipe(
     boldItalic,
     ASStyleCharacteristics.mergeUnder(
-      ASStyleCharacteristics.fromColorAsForegroundColor(ASColor.threeBitBrightGreen),
+      ASStyleCharacteristics.fromColorAsForegroundColor(ASColorThreeBit.BrightGreen),
     ),
     ASStyleCharacteristics.mergeUnder(
-      ASStyleCharacteristics.fromColorAsBackgroundColor(ASColor.eightBitBlue),
+      ASStyleCharacteristics.fromColorAsBackgroundColor(ASColorEightBit.Blue),
     ),
   );
   const bold1 = pipe(boldItalic, ASStyleCharacteristics.difference(ASStyleCharacteristics.italic));
   const notBoldNotDimRed = pipe(
-    ASStyleCharacteristics.fromColorAsForegroundColor(ASColor.threeBitRed),
+    ASStyleCharacteristics.fromColorAsForegroundColor(ASColorThreeBit.Red),
     ASStyleCharacteristics.mergeUnder(ASStyleCharacteristics.notBold),
     ASStyleCharacteristics.mergeUnder(ASStyleCharacteristics.notDim),
   );
   const boldNotDimRed = pipe(
-    ASStyleCharacteristics.fromColorAsForegroundColor(ASColor.threeBitRed),
+    ASStyleCharacteristics.fromColorAsForegroundColor(ASColorThreeBit.Red),
     ASStyleCharacteristics.mergeUnder(ASStyleCharacteristics.bold),
     ASStyleCharacteristics.mergeUnder(ASStyleCharacteristics.notDim),
   );
   const notBoldDimRed = pipe(
-    ASStyleCharacteristics.fromColorAsForegroundColor(ASColor.threeBitRed),
+    ASStyleCharacteristics.fromColorAsForegroundColor(ASColorThreeBit.Red),
     ASStyleCharacteristics.mergeUnder(ASStyleCharacteristics.notBold),
     ASStyleCharacteristics.mergeUnder(ASStyleCharacteristics.dim),
   );

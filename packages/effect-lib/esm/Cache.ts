@@ -49,7 +49,7 @@ export type LookUp<A, B> = ({
  *
  * @category Models
  */
-export class Type<in out A, in out B> extends MDataBase.Type<_TypeId> {
+export class Type<in out A, in out B> extends MDataBase.Type {
   /**
    * The lookup function cache associating values of type A to values of type B. A `None` B value
    * means the B value is currently under calculation. A circular flag will be sent if the value
@@ -99,7 +99,7 @@ export class Type<in out A, in out B> extends MDataBase.Type<_TypeId> {
   }
 
   /** Returns the TypeMarker of the class */
-  protected get [MDataBase.typeMarkerSymbol](): _TypeId {
+  protected get [_TypeId](): _TypeId {
     return _TypeId;
   }
 }

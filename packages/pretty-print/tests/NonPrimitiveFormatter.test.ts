@@ -1,18 +1,18 @@
 import { ASStyle, ASText } from '@parischap/ansi-styles';
 import * as TestUtils from '@parischap/configs/TestUtils';
 import {
-    PPMarkShowerConstructor,
-    PPNonPrimitiveFormatter,
-    PPOption,
-    PPStringifiedValue,
-    PPValue,
-    PPValueBasedStylerConstructor,
+  PPMarkShowerConstructor,
+  PPNonPrimitiveFormatter,
+  PPOption,
+  PPStringifiedValue,
+  PPValue,
+  PPValueBasedStylerConstructor,
 } from '@parischap/pretty-print';
 import { Array, Function, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('NonPrimitiveFormatter', () => {
-  const {singleLine} = PPNonPrimitiveFormatter;
+  const { singleLine } = PPNonPrimitiveFormatter;
   const utilInspectLike = PPOption.darkModeUtilInspectLike;
   const valueBasedStylerConstructor = PPValueBasedStylerConstructor.fromOption(utilInspectLike);
   const markShowerConstructor = PPMarkShowerConstructor.fromOption(utilInspectLike);

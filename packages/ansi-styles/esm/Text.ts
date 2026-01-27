@@ -5,24 +5,20 @@
 
 import {
   MArray,
+  MDataBase,
+  MDataEquivalenceBasedEquality,
   MFunction,
-  MInspectable,
   MMatch,
-  MPipeable,
   MPredicate,
   MString,
-  MStruct,
   MTypes,
 } from '@parischap/effect-lib';
 import {
   Array,
-  Equal,
   Equivalence,
   Hash,
-  Inspectable,
   Number,
   Option,
-  Pipeable,
   Predicate,
   String,
   Struct,
@@ -30,8 +26,9 @@ import {
   flow,
   pipe,
 } from 'effect';
-import * as ASAnsiString from './AnsiString.js';
+import * as ASAnsiCode from './AnsiCode.js';
 import * as ASStyleCharacteristics from './StyleCharacteristics.js';
+import * as ASUnistyledText from './internal/UnistyledText.js';
 
 /**
  * Module tag
@@ -43,170 +40,49 @@ const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
 /**
- * Namespace of a unformly styled text (that is a text that is thorougly formatted with the same
- * style)
- */
-namespace UniStyled {
-  const _namespaceTag = moduleTag + 'UniStyled/';
-  const _TypeId: unique symbol = Symbol.for(_namespaceTag) as _TypeId;
-  type _TypeId = typeof _TypeId;
-
-  /**
-   * Interface that represents a Unistyled text
-   *
-   * @category Models
-   */
-  export interface Type extends Equal.Equal, Inspectable.Inspectable, Pipeable.Pipeable {
-    /** The text to be styled */
-    readonly text: string;
-
-    /** The style to apply to the text */
-    readonly style: ASStyleCharacteristics.Type;
-
-    /* @internal */
-    readonly [_TypeId]: _TypeId;
-  }
-
-  /**
-   * Type guard
-   *
-   * @category Guards
-   */
-  export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
-
-  /**
-   * Equivalence based on the style
-   *
-   * @category Equivalences
-   */
-  export const haveSameStyle: Equivalence.Equivalence<Type> = (self, that) =>
-    ASStyleCharacteristics.equivalence(self.style, that.style);
-
-  /**
-   * Equivalence based on the text
-   *
-   * @category Equivalences
-   */
-  export const haveSameText: Equivalence.Equivalence<Type> = (self, that) =>
-    self.text === that.text;
-
-  /**
-   * Equivalence
-   *
-   * @category Equivalences
-   */
-  export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
-    haveSameText(self, that) && haveSameStyle(self, that);
-
-  /** Prototype */
-  const _TypeIdHash = Hash.hash(_TypeId);
-  const _proto: MTypes.Proto<Type> = {
-    [_TypeId]: _TypeId,
-    [Equal.symbol](this: Type, that: unknown): boolean {
-      return has(that) && equivalence(this, that);
-    },
-    [Hash.symbol](this: Type) {
-      return pipe(
-        this.text,
-        Hash.hash,
-        Hash.combine(Hash.hash(this.style)),
-        Hash.combine(_TypeIdHash),
-        Hash.cached(this),
-      );
-    },
-    ...MInspectable.BaseProto(_namespaceTag),
-    ...MPipeable.BaseProto,
-  };
-
-  /** Constructor */
-  export const make = (params: MTypes.Data<Type>): Type =>
-    MTypes.objectFromDataAndProto(_proto, params);
-
-  /**
-   * Gets the `text` property of `self`
-   *
-   * @category Destructors
-   */
-  export const text: MTypes.OneArgFunction<Type, string> = Struct.get('text');
-
-  /**
-   * Gets the `style` property of `self`
-   *
-   * @category Destructors
-   */
-  export const style: MTypes.OneArgFunction<Type, ASStyleCharacteristics.Type> =
-    Struct.get('style');
-
-  /**
-   * Merges the characteristics of `style` with the `style` property of `self`. In case of conflict,
-   * the characteristics in the `style` property of `self` will prevail.
-   *
-   * @category Utils
-   */
-  export const applyStyleUnder = (
-    style: ASStyleCharacteristics.Type,
-  ): MTypes.OneArgFunction<Type, Type> =>
-    flow(
-      MStruct.evolve({
-        style: ASStyleCharacteristics.mergeUnder(style),
-      }),
-      make,
-    );
-
-  /**
-   * Builds a new UniStyled from the concatenation of several UniStyled. The style of the resulting
-   * Unistyled is the one of the first Unistyled to be concatenated
-   *
-   * @category Constructors
-   */
-  export const concat = (elems: MTypes.ReadonlyOverOne<Type>): Type =>
-    make({
-      text: pipe(elems, Array.map(text), Array.join('')),
-      style: pipe(elems, Array.headNonEmpty, style),
-    });
-
-  /**
-   * Gets the length of `self` without the formatting
-   *
-   * @category Utils
-   */
-  export const toLength: MTypes.OneArgFunction<Type, number> = flow(
-    Struct.get('text'),
-    String.length,
-  );
-
-  /**
-   * Returns the ANSI string corresponding to self
-   *
-   * @category Destructors
-   */
-  export const toAnsiString = (self: Type): string => {
-    const ansiStart = ASStyleCharacteristics.toAnsiString(self.style);
-    return ansiStart === '' ? self.text : ansiStart + self.text + ASAnsiString.reset;
-  };
-}
-
-/**
  * Interface that represents a Text
  *
  * @category Models
  */
-export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable {
+export class Type extends MDataEquivalenceBasedEquality.Type<_TypeId> {
   /* The text as an array of UniStyled */
-  readonly uniStyledTexts: ReadonlyArray<UniStyled.Type>;
+  readonly uniStyledTexts: ReadonlyArray<ASUnistyledText.Type>;
 
-  /* @internal */
-  readonly [_TypeId]: _TypeId;
+  /** Class constructor */
+  private constructor({ uniStyledTexts }: MTypes.Data<Type>) {
+    super();
+    this.uniStyledTexts = uniStyledTexts;
+  }
+
+  /** Static constructor */
+  static make(params: MTypes.Data<Type>): Type {
+    return new Type(params);
+  }
+
+  /** Returns the `id` of `this` */
+  protected [MDataBase.idSymbol](): string | (() => string) {
+    return function idSymbol(this: Type) {
+      return toAnsiString(this);
+    };
+  }
+
+  /** Calculates the hash value of `this` */
+  [Hash.symbol](): number {
+    return pipe(this.uniStyledTexts, Hash.array, Hash.cached(this));
+  }
+
+  /** Function that implements the equivalence of `this` and `that` */
+  protected [MDataEquivalenceBasedEquality.isEquivalentToSymbol](this: this, that: this): boolean {
+    return equivalence(this, that);
+  }
+
+  /** Returns the TypeMarker of the class */
+  protected get [MDataBase.typeMarkerSymbol](): _TypeId {
+    return _TypeId;
+  }
 }
 
-/**
- * Type guard
- *
- * @category Guards
- */
-export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
-
-const _equivalence = Array.getEquivalence(UniStyled.equivalence);
+const _equivalence = Array.getEquivalence(ASUnistyledText.equivalence);
 /**
  * Equivalence
  *
@@ -215,7 +91,7 @@ const _equivalence = Array.getEquivalence(UniStyled.equivalence);
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
   _equivalence(self.uniStyledTexts, that.uniStyledTexts);
 
-const _haveSameTextequivalence = Array.getEquivalence(UniStyled.haveSameText);
+const _haveSameTextequivalence = Array.getEquivalence(ASUnistyledText.haveSameText);
 /**
  * Equivalence
  *
@@ -224,26 +100,6 @@ const _haveSameTextequivalence = Array.getEquivalence(UniStyled.haveSameText);
 export const haveSameText: Equivalence.Equivalence<Type> = (self, that) =>
   _haveSameTextequivalence(self.uniStyledTexts, that.uniStyledTexts);
 
-/** Prototype */
-const _TypeIdHash = Hash.hash(_TypeId);
-const _proto: MTypes.Proto<Type> = {
-  [_TypeId]: _TypeId,
-  [Equal.symbol](this: Type, that: unknown): boolean {
-    return has(that) && equivalence(this, that);
-  },
-  [Hash.symbol](this: Type) {
-    return pipe(this.uniStyledTexts, Hash.array, Hash.combine(_TypeIdHash), Hash.cached(this));
-  },
-  [MInspectable.IdSymbol](this: Type) {
-    return toAnsiString(this);
-  },
-  ...MInspectable.BaseProto(moduleTag),
-  ...MPipeable.BaseProto,
-};
-
-/** Constructor */
-const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
-
 /**
  * Returns the `uniStyledTexts` property of `self`
  *
@@ -251,7 +107,7 @@ const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto
  */
 export const uniStyledTexts: MTypes.OneArgFunction<
   Type,
-  ReadonlyArray<UniStyled.Type>
+  ReadonlyArray<ASUnistyledText.Type>
 > = Struct.get('uniStyledTexts');
 
 /**
@@ -261,7 +117,7 @@ export const uniStyledTexts: MTypes.OneArgFunction<
  */
 export const toLength: MTypes.OneArgFunction<Type, number> = flow(
   uniStyledTexts,
-  Array.map(UniStyled.toLength),
+  Array.map(ASUnistyledText.toLength),
   Number.sumAll,
 );
 
@@ -290,7 +146,7 @@ export const isNotEmpty: Predicate.Predicate<Type> = Predicate.not(isEmpty);
 export const fromStyleAndElems =
   (style: ASStyleCharacteristics.Type) =>
   (...elems: ReadonlyArray<string | Type>): Type =>
-    _make({
+    Type.make({
       uniStyledTexts: pipe(
         elems,
         Array.filterMap(
@@ -300,13 +156,13 @@ export const fromStyleAndElems =
               MTypes.isString,
               flow(
                 Option.liftPredicate(String.isNonEmpty),
-                Option.map((text) => pipe({ text, style }, UniStyled.make, Array.of)),
+                Option.map((text) => pipe({ text, style }, ASUnistyledText.make, Array.of)),
               ),
             ),
             MMatch.orElse(
               flow(
                 Struct.get('uniStyledTexts'),
-                Array.map(UniStyled.applyStyleUnder(style)),
+                Array.map(ASUnistyledText.applyStyleUnder(style)),
                 Option.some,
               ),
             ),
@@ -314,8 +170,11 @@ export const fromStyleAndElems =
         ),
         Array.flatten,
         Array.match({
-          onEmpty: () => Array.empty<UniStyled.Type>(),
-          onNonEmpty: flow(Array.groupWith(UniStyled.haveSameStyle), Array.map(UniStyled.concat)),
+          onEmpty: () => Array.empty<ASUnistyledText.Type>(),
+          onNonEmpty: flow(
+            Array.groupWith(ASUnistyledText.haveSameStyle),
+            Array.map(ASUnistyledText.concat),
+          ),
         }),
       ),
     });
@@ -359,9 +218,9 @@ export const toAnsiString: MTypes.OneArgFunction<Type, string> = flow(
   uniStyledTexts,
   MArray.match012({
     onEmpty: MFunction.constEmptyString,
-    onSingleton: UniStyled.toAnsiString,
+    onSingleton: ASUnistyledText.toAnsiString,
     onOverTwo: flow(
-      Array.map(UniStyled.applyStyleUnder(ASStyleCharacteristics.defaults)),
+      Array.map(ASUnistyledText.applyStyleUnder(ASStyleCharacteristics.defaults)),
       Array.reduce(
         Tuple.make('', ASStyleCharacteristics.defaults),
         ([text, context], uniStyled) => {
@@ -369,7 +228,7 @@ export const toAnsiString: MTypes.OneArgFunction<Type, string> = flow(
 
           return pipe(
             toApply,
-            ASStyleCharacteristics.toAnsiString,
+            ASStyleCharacteristics.toAnsiCode,
             MString.prepend(text),
             MString.append(uniStyled.text),
             Tuple.make,
@@ -378,7 +237,7 @@ export const toAnsiString: MTypes.OneArgFunction<Type, string> = flow(
         },
       ),
       Tuple.getFirst,
-      MString.append(ASAnsiString.reset),
+      MString.append(ASAnsiCode.reset),
     ),
   }),
 );
@@ -390,7 +249,7 @@ export const toAnsiString: MTypes.OneArgFunction<Type, string> = flow(
  */
 export const toUnstyledString: MTypes.OneArgFunction<Type, string> = flow(
   uniStyledTexts,
-  Array.map(UniStyled.text),
+  Array.map(ASUnistyledText.text),
   Array.join(''),
 );
 

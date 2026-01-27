@@ -1,13 +1,13 @@
 import { ASStyle, ASText } from '@parischap/ansi-styles';
 import * as TestUtils from '@parischap/configs/TestUtils';
 import {
-    PPMarkShowerConstructor,
-    PPNonPrimitiveFormatter,
-    PPOption,
-    PPPropertyFormatter,
-    PPStringifiedValue,
-    PPValue,
-    PPValueBasedStylerConstructor,
+  PPMarkShowerConstructor,
+  PPNonPrimitiveFormatter,
+  PPOption,
+  PPPropertyFormatter,
+  PPStringifiedValue,
+  PPValue,
+  PPValueBasedStylerConstructor,
 } from '@parischap/pretty-print';
 import { Array, Function, pipe } from 'effect';
 import { describe, it } from 'vitest';
@@ -21,7 +21,7 @@ describe('PropertyFormatter', () => {
     valueBasedStylerConstructor,
     markShowerConstructor,
   };
-  const {valueOnly} = PPPropertyFormatter;
+  const { valueOnly } = PPPropertyFormatter;
 
   const stringified = pipe('1', ASText.fromString, PPStringifiedValue.fromText);
 

@@ -1,16 +1,16 @@
-import { ASAnsiString } from "@parischap/ansi-styles";
-import * as TestUtils from "@parischap/configs/TestUtils";
-import { Array } from "effect";
-import { describe, it } from "vitest";
+import { ASAnsiCode } from '@parischap/ansi-styles';
+import * as TestUtils from '@parischap/configs/TestUtils';
+import { Array } from 'effect';
+import { describe, it } from 'vitest';
 
-describe("AnsiString", () => {
-  describe("fromSequence", () => {
-    it("From empty sequence", () => {
-      TestUtils.strictEqual(ASAnsiString.fromSequence(Array.empty()), "");
+describe('AnsiCode', () => {
+  describe('fromSequence', () => {
+    it('From empty sequence', () => {
+      TestUtils.strictEqual(ASAnsiCode.fromSequence(Array.empty()), '');
     });
 
-    it("From non-empty sequence", () => {
-      TestUtils.strictEqual(ASAnsiString.fromSequence(Array.make(0, 1)), "\x1B[0;1m");
+    it('From non-empty sequence', () => {
+      TestUtils.strictEqual(ASAnsiCode.fromSequence(Array.make(0, 1)), '\x1B[0;1m');
     });
   });
 });

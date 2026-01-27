@@ -1,4 +1,10 @@
-import { ASAnsiString, ASColor, ASStyleCharacteristics, ASText } from '@parischap/ansi-styles';
+import {
+  ASAnsiCode,
+  ASColorRgb,
+  ASColorThreeBit,
+  ASStyleCharacteristics,
+  ASText,
+} from '@parischap/ansi-styles';
 import * as TestUtils from '@parischap/configs/TestUtils';
 import { Array, flow, pipe } from 'effect';
 import { describe, it } from 'vitest';
@@ -13,12 +19,12 @@ describe('ASText', () => {
   const notUnderlined = ASText.fromStyleAndElems(ASStyleCharacteristics.notUnderlined);
 
   const red = pipe(
-    ASColor.threeBitRed,
+    ASColorThreeBit.Red,
     ASStyleCharacteristics.fromColorAsForegroundColor,
     ASText.fromStyleAndElems,
   );
   const pink = pipe(
-    ASColor.rgbPink,
+    ASColorRgb.Pink,
     ASStyleCharacteristics.fromColorAsForegroundColor,
     ASText.fromStyleAndElems,
   );
@@ -63,20 +69,7 @@ describe('ASText', () => {
       });
 
       it('Bold red string', () => {
-        TestUtils.strictEqual(boldRedFoo.toString(), `\x1B[1;31mfoo${ASAnsiString.reset}`);
-      });
-    });
-
-    it('.pipe()', () => {
-      TestUtils.strictEqual(boldRedFoo.pipe(ASText.toLength), 3);
-    });
-
-    describe('has', () => {
-      it('Matching', () => {
-        TestUtils.assertTrue(ASText.has(boldRedFoo));
-      });
-      it('Non matching', () => {
-        TestUtils.assertFalse(ASText.has(new Date()));
+        TestUtils.strictEqual(boldRedFoo.toString(), `\x1B[1;31mfoo${ASAnsiCode.reset}`);
       });
     });
   });

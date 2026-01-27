@@ -23,7 +23,7 @@ type _TypeId = typeof _TypeId;
  *
  * @category Models
  */
-export class Type<out Input, out Output, out Rest extends Input> extends MDataBase.Type<_TypeId> {
+export class Type<out Input, out Output, out Rest extends Input> extends MDataBase.Type {
   /** The input to match */
   readonly input: Input;
   /** The output of the matcher when it has been found */
@@ -49,7 +49,7 @@ export class Type<out Input, out Output, out Rest extends Input> extends MDataBa
   }
 
   /** Returns the TypeMarker of the class */
-  protected get [MDataBase.typeMarkerSymbol](): _TypeId {
+  protected get [_TypeId](): _TypeId {
     return _TypeId;
   }
 }

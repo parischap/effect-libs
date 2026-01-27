@@ -47,11 +47,11 @@ export namespace SearchResult {
   type _TypeId = typeof _TypeId;
 
   /**
-   * Interface that represents a SearchResult
+   * Type that represents a SearchResult
    *
    * @category Models
    */
-  export class Type extends MDataEquivalenceBasedEquality.Type<_TypeId> {
+  export class Type extends MDataEquivalenceBasedEquality.Type {
     /** The index where the match was found in the target string */
     readonly startIndex: number;
     /** The index of the character following the match in the target string */
@@ -73,34 +73,48 @@ export namespace SearchResult {
     }
 
     /** Returns the `id` of `this` */
-    protected [MDataBase.idSymbol](this: this): string | (() => string) {
+    protected [MDataBase.idSymbol](): string | (() => string) {
       return _namespaceTag;
     }
 
     /** Calculates the hash value of `this` */
-    [Hash.symbol](this: this): number {
+    [Hash.symbol](): number {
       return 0;
     }
 
     /** Function that implements the equivalence of `this` and `that` */
-    [MDataEquivalenceBasedEquality.isEquivalentToSymbol](this: this, that: this): boolean {
-      return (
-        this.startIndex === that.startIndex
-        && this.endIndex === that.endIndex
-        && this.match === that.match
-      );
+    protected [MDataEquivalenceBasedEquality.isEquivalentToSymbol](
+      this: this,
+      that: this,
+    ): boolean {
+      return equivalence(this, that);
+    }
+
+    /** Predicate that returns true if `that` has the same type marker as `this` */
+    protected [MDataEquivalenceBasedEquality.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
+      return Predicate.hasProperty(that, _TypeId);
     }
 
     /** Returns the TypeMarker of the class */
-    protected get [MDataBase.typeMarkerSymbol](): _TypeId {
+    protected get [_TypeId](): _TypeId {
       return _TypeId;
     }
   }
 
   /**
+   * Equivalence that considers two SearchResult's to be equivalent when all their fields are equal
+   *
+   * @category Equivalences
+   */
+  export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
+    self.startIndex === that.startIndex
+    && self.endIndex === that.endIndex
+    && self.match === that.match;
+
+  /**
    * Equivalence that considers two SearchResult's to be equivalent when they overlap
    *
-   * @since 0.0.6 Equivalence
+   * @category Equivalences
    */
   export const areOverlapping: Equivalence.Equivalence<Type> = (self, that) =>
     self.endIndex >= that.startIndex && self.startIndex <= that.endIndex;

@@ -5,7 +5,7 @@ import { Function, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('StyleMap', () => {
-  const {none} = PPStyleMap;
+  const { none } = PPStyleMap;
   describe('Tag, prototype and guards', () => {
     it('moduleTag', () => {
       TestUtils.assertSome(TestUtils.moduleTagFromTestFilePath(__filename), PPStyleMap.moduleTag);
@@ -41,7 +41,9 @@ describe('StyleMap', () => {
 
   describe('get', () => {
     it('Existing partname', () => {
-      TestUtils.assertTrue(pipe(PPStyleMap.darkMode, PPStyleMap.get('Message'), ASContextStyler.has));
+      TestUtils.assertTrue(
+        pipe(PPStyleMap.darkMode, PPStyleMap.get('Message'), ASContextStyler.has),
+      );
     });
 
     it('Missing partname', () => {
