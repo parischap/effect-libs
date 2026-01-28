@@ -114,8 +114,8 @@ export class Type extends MDataEquivalenceBasedEquality.Type {
   protected [MDataBase.idSymbol](): string | (() => string) {
     return function idSymbol(this: Type) {
       const result = `${this.bold.toString()}${this.dim.toString()}${this.italic.toString()}${this.underlined.toString()}\
-  ${this.struckThrough.toString()}${this.overlined.toString()}${this.inversed.toString()}${this.hidden.toString()}\
-  ${this.blinking.toString()}${this.foregroundColor.toString()}${this.backgroundColor.toString()}`;
+${this.struckThrough.toString()}${this.overlined.toString()}${this.inversed.toString()}${this.hidden.toString()}\
+${this.blinking.toString()}${this.foregroundColor.toString()}${this.backgroundColor.toString()}`;
       return result === '' ? 'NoStyle' : result;
     };
   }
@@ -246,32 +246,37 @@ export const toAnsiCode: MTypes.OneArgFunction<Type, ASAnsiCode.Type> = flow(
  *
  * @category Utils
  */
-export const mergeSelfFirst = (self: Type, that: Type): Type =>
-  Type.make({
-    bold: ASStyleCharacteristicPresentOrMissing.PresentOrElse(self.bold, that.bold),
-    dim: ASStyleCharacteristicPresentOrMissing.PresentOrElse(self.dim, that.dim),
-    italic: ASStyleCharacteristicPresentOrMissing.PresentOrElse(self.italic, that.italic),
-    underlined: ASStyleCharacteristicPresentOrMissing.PresentOrElse(
-      self.underlined,
-      that.underlined,
-    ),
-    struckThrough: ASStyleCharacteristicPresentOrMissing.PresentOrElse(
-      self.struckThrough,
-      that.struckThrough,
-    ),
-    overlined: ASStyleCharacteristicPresentOrMissing.PresentOrElse(self.overlined, that.overlined),
-    inversed: ASStyleCharacteristicPresentOrMissing.PresentOrElse(self.inversed, that.inversed),
-    hidden: ASStyleCharacteristicPresentOrMissing.PresentOrElse(self.hidden, that.hidden),
-    blinking: ASStyleCharacteristicPresentOrMissing.PresentOrElse(self.blinking, that.blinking),
-    foregroundColor: ASStyleCharacteristicPresentOrMissing.PresentOrElse(
-      self.foregroundColor,
-      that.foregroundColor,
-    ),
-    backgroundColor: ASStyleCharacteristicPresentOrMissing.PresentOrElse(
-      self.backgroundColor,
-      that.backgroundColor,
-    ),
-  });
+export const mergeUnder =
+  (that: Type) =>
+  (self: Type): Type =>
+    Type.make({
+      bold: ASStyleCharacteristicPresentOrMissing.PresentOrElse(self.bold, that.bold),
+      dim: ASStyleCharacteristicPresentOrMissing.PresentOrElse(self.dim, that.dim),
+      italic: ASStyleCharacteristicPresentOrMissing.PresentOrElse(self.italic, that.italic),
+      underlined: ASStyleCharacteristicPresentOrMissing.PresentOrElse(
+        self.underlined,
+        that.underlined,
+      ),
+      struckThrough: ASStyleCharacteristicPresentOrMissing.PresentOrElse(
+        self.struckThrough,
+        that.struckThrough,
+      ),
+      overlined: ASStyleCharacteristicPresentOrMissing.PresentOrElse(
+        self.overlined,
+        that.overlined,
+      ),
+      inversed: ASStyleCharacteristicPresentOrMissing.PresentOrElse(self.inversed, that.inversed),
+      hidden: ASStyleCharacteristicPresentOrMissing.PresentOrElse(self.hidden, that.hidden),
+      blinking: ASStyleCharacteristicPresentOrMissing.PresentOrElse(self.blinking, that.blinking),
+      foregroundColor: ASStyleCharacteristicPresentOrMissing.PresentOrElse(
+        self.foregroundColor,
+        that.foregroundColor,
+      ),
+      backgroundColor: ASStyleCharacteristicPresentOrMissing.PresentOrElse(
+        self.backgroundColor,
+        that.backgroundColor,
+      ),
+    });
 
 /**
  * Builds a new StyleCharacteristics by merging `self` and `that`. In case of conflict (e.g `self`
@@ -279,71 +284,76 @@ export const mergeSelfFirst = (self: Type, that: Type): Type =>
  *
  * @category Utils
  */
-export const mergeSelfLast = (self: Type, that: Type): Type => mergeSelfFirst(self, that);
+export const mergeOver =
+  (that: Type) =>
+  (self: Type): Type =>
+    pipe(that, mergeUnder(self));
 
 /**
  * Builds a new StyleCharacteristics by removing from `self` the StyleCharacteristic's of `that`.
  *
  * @category Utils
  */
-export const difference = (self: Type, that: Type): Type =>
-  Type.make({
-    bold: ASStyleCharacteristicPresentOrMissing.orWhenEquals(
-      self.bold,
-      that.bold,
-      ASStyleCharacteristicBold.missing,
-    ),
-    dim: ASStyleCharacteristicPresentOrMissing.orWhenEquals(
-      self.dim,
-      that.dim,
-      ASStyleCharacteristicDim.missing,
-    ),
-    italic: ASStyleCharacteristicPresentOrMissing.orWhenEquals(
-      self.italic,
-      that.italic,
-      ASStyleCharacteristicItalic.missing,
-    ),
-    underlined: ASStyleCharacteristicPresentOrMissing.orWhenEquals(
-      self.underlined,
-      that.underlined,
-      ASStyleCharacteristicUnderlined.missing,
-    ),
-    struckThrough: ASStyleCharacteristicPresentOrMissing.orWhenEquals(
-      self.struckThrough,
-      that.struckThrough,
-      ASStyleCharacteristicStruckThrough.missing,
-    ),
-    overlined: ASStyleCharacteristicPresentOrMissing.orWhenEquals(
-      self.overlined,
-      that.overlined,
-      ASStyleCharacteristicOverlined.missing,
-    ),
-    inversed: ASStyleCharacteristicPresentOrMissing.orWhenEquals(
-      self.inversed,
-      that.inversed,
-      ASStyleCharacteristicInversed.missing,
-    ),
-    hidden: ASStyleCharacteristicPresentOrMissing.orWhenEquals(
-      self.hidden,
-      that.hidden,
-      ASStyleCharacteristicHidden.missing,
-    ),
-    blinking: ASStyleCharacteristicPresentOrMissing.orWhenEquals(
-      self.blinking,
-      that.blinking,
-      ASStyleCharacteristicBlinking.missing,
-    ),
-    foregroundColor: ASStyleCharacteristicPresentOrMissing.orWhenEquals(
-      self.foregroundColor,
-      that.foregroundColor,
-      ASStyleCharacteristicForegroundColor.missing,
-    ),
-    backgroundColor: ASStyleCharacteristicPresentOrMissing.orWhenEquals(
-      self.backgroundColor,
-      that.backgroundColor,
-      ASStyleCharacteristicBackgroundColor.missing,
-    ),
-  });
+export const difference =
+  (that: Type) =>
+  (self: Type): Type =>
+    Type.make({
+      bold: ASStyleCharacteristicPresentOrMissing.orWhenEquals(
+        self.bold,
+        that.bold,
+        ASStyleCharacteristicBold.missing,
+      ),
+      dim: ASStyleCharacteristicPresentOrMissing.orWhenEquals(
+        self.dim,
+        that.dim,
+        ASStyleCharacteristicDim.missing,
+      ),
+      italic: ASStyleCharacteristicPresentOrMissing.orWhenEquals(
+        self.italic,
+        that.italic,
+        ASStyleCharacteristicItalic.missing,
+      ),
+      underlined: ASStyleCharacteristicPresentOrMissing.orWhenEquals(
+        self.underlined,
+        that.underlined,
+        ASStyleCharacteristicUnderlined.missing,
+      ),
+      struckThrough: ASStyleCharacteristicPresentOrMissing.orWhenEquals(
+        self.struckThrough,
+        that.struckThrough,
+        ASStyleCharacteristicStruckThrough.missing,
+      ),
+      overlined: ASStyleCharacteristicPresentOrMissing.orWhenEquals(
+        self.overlined,
+        that.overlined,
+        ASStyleCharacteristicOverlined.missing,
+      ),
+      inversed: ASStyleCharacteristicPresentOrMissing.orWhenEquals(
+        self.inversed,
+        that.inversed,
+        ASStyleCharacteristicInversed.missing,
+      ),
+      hidden: ASStyleCharacteristicPresentOrMissing.orWhenEquals(
+        self.hidden,
+        that.hidden,
+        ASStyleCharacteristicHidden.missing,
+      ),
+      blinking: ASStyleCharacteristicPresentOrMissing.orWhenEquals(
+        self.blinking,
+        that.blinking,
+        ASStyleCharacteristicBlinking.missing,
+      ),
+      foregroundColor: ASStyleCharacteristicPresentOrMissing.orWhenEquals(
+        self.foregroundColor,
+        that.foregroundColor,
+        ASStyleCharacteristicForegroundColor.missing,
+      ),
+      backgroundColor: ASStyleCharacteristicPresentOrMissing.orWhenEquals(
+        self.backgroundColor,
+        that.backgroundColor,
+        ASStyleCharacteristicBackgroundColor.missing,
+      ),
+    });
 
 /**
  * Builds a new StyleCharacteristics by removing from `self` the StyleCharacteristic's of `context`.
@@ -356,16 +366,18 @@ export const difference = (self: Type, that: Type): Type =>
  *
  * @category Utils
  */
-export const substractContext = (self: Type, context: Type): Type => {
-  const target = difference(self, context);
-  return (
-    hasBold(self) && hasNotDim(target) ?
-      Type.make(pipe(target, MStruct.set({ bold: ASStyleCharacteristicBold.on })))
-    : hasDim(self) && hasNotBold(target) ?
-      Type.make(pipe(target, MStruct.set({ dim: ASStyleCharacteristicDim.on })))
-    : target
-  );
-};
+export const substractContext =
+  (context: Type) =>
+  (self: Type): Type => {
+    const target = pipe(self, difference(context));
+    return (
+      hasBold(self) && hasNotDim(target) ?
+        Type.make(pipe(target, MStruct.set({ bold: ASStyleCharacteristicBold.on })))
+      : hasDim(self) && hasNotBold(target) ?
+        Type.make(pipe(target, MStruct.set({ dim: ASStyleCharacteristicDim.on })))
+      : target
+    );
+  };
 
 /**
  * Empty StyleCharacteristics

@@ -41,11 +41,6 @@ describe('ASStyleCharacteristics', () => {
     );
   });
 
-  it('italicState', () => {
-    TestUtils.assertSome(ASStyleCharacteristics.italicState(boldItalic), true);
-    TestUtils.assertNone(ASStyleCharacteristics.italicState(bold1));
-  });
-
   it('hasBold', () => {
     TestUtils.assertTrue(ASStyleCharacteristics.hasBold(boldItalic));
     TestUtils.assertFalse(ASStyleCharacteristics.hasBold(ASStyleCharacteristics.none));
@@ -95,7 +90,7 @@ describe('ASStyleCharacteristics', () => {
       TestUtils.deepStrictEqual(
         pipe(
           ASStyleCharacteristics.bold,
-          ASStyleCharacteristics.mergeOver(ASStyleCharacteristics.bgDefaultColor),
+          ASStyleCharacteristics.mergeOver(ASStyleCharacteristics.backgroundDefaultColor),
           ASStyleCharacteristics.toSequence,
         ),
         [1, 49],
