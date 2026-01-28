@@ -44,7 +44,7 @@ type _TypeId = typeof _TypeId;
  *
  * @category Models
  */
-export class Type extends MDataEquivalenceBasedEquality.Type<_TypeId> {
+export class Type extends MDataEquivalenceBasedEquality.Type {
   /* The text as an array of UniStyled */
   readonly uniStyledTexts: ReadonlyArray<ASUnistyledText.Type>;
 
