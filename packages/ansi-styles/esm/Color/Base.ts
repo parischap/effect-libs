@@ -5,8 +5,7 @@
  */
 
 import { MDataEquivalenceBasedEquality } from '@parischap/effect-lib';
-import { Array,
-Equal, Hash, Inspectable, Number, Pipeable } from 'effect';
+import { Array, Equal, Equivalence, Hash, Inspectable, Number, Pipeable } from 'effect';
 import type * as ASSequence from '../Sequence.js';
 
 /**
@@ -78,3 +77,11 @@ export const toForegroundSequence = (self: Type): ASSequence.NonEmptyType =>
  */
 export const toBackgroundSequence = (self: Type): ASSequence.NonEmptyType =>
   Array.modifyNonEmptyHead(self[toForegroundSequenceSymbol](), Number.sum(10));
+
+/**
+ * Equivalence
+ *
+ * @category Equivalences
+ */
+export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
+  self[MDataEquivalenceBasedEquality.isEquivalentToSymbol](that);
