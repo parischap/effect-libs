@@ -140,8 +140,20 @@
     "./MDataBase": {
       "default": "./esm/Data/Base.ts"
     },
-    "./MDataEffectBasedEquality": {
-      "default": "./esm/Data/EffectBasedEquality.ts"
+    "./MDataEquivalenceBasedEquality": {
+      "default": "./esm/Data/EquivalenceBasedEquality.ts"
+    },
+    "./MTreeAll": {
+      "default": "./esm/Tree/All.ts"
+    },
+    "./MTreeLeaf": {
+      "default": "./esm/Tree/Leaf.ts"
+    },
+    "./MTreeNode": {
+      "default": "./esm/Tree/Node.ts"
+    },
+    "./MTreeNonLeaf": {
+      "default": "./esm/Tree/NonLeaf.ts"
     }
   },
   "module": "./esm/index.ts",
