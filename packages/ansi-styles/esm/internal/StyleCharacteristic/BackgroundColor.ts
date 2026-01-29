@@ -1,0 +1,85 @@
+/** Module that implements an optional background color style characteristic */
+
+import { MDataEquivalenceBasedEquality, MTypes } from '@parischap/effect-lib';
+import { Function, Option, Predicate } from 'effect';
+import * as ASColorAll from '../../Color/All.js';
+import * as ASSequence from '../../Sequence.js';
+import * as ASStyleCharacteristicColor from './Color.js';
+import * as ASStyleCharacteristicPresentOrMissing from './PresentOrMissing.js';
+/**
+ * Module tag
+ *
+ * @category Module markers
+ */
+export const moduleTag = '@parischap/ansi-styles/internal/StyleCharacteristic/BackgroundColor/';
+const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
+type _TypeId = typeof _TypeId;
+
+/**
+ * Type that represents an ASStyleCharacteristicBackgroundColor
+ *
+ * @category Models
+ */
+export class Type extends ASStyleCharacteristicColor.Type {
+  /** Class constructor */
+  protected constructor(params: MTypes.Data<Type>) {
+    super(params);
+  }
+
+  /** Static constructor */
+  static make(params: MTypes.Data<Type>): Type {
+    return new Type(params);
+  }
+
+  /** Function that returns the id to show when the style characteristic is present */
+  [ASStyleCharacteristicPresentOrMissing.toPresentIdSymbol](
+    value: Option.Option<ASColorAll.Type>,
+  ): string {
+    return Option.match(value, {
+      onNone: Function.constant('InDefaultColor'),
+      onSome: ASColorAll.toBackgroundId,
+    });
+  }
+
+  /** Function that returns the sequence when the style characteristic is present */
+  [ASStyleCharacteristicPresentOrMissing.toPresentSequenceSymbol](
+    value: Option.Option<ASColorAll.Type>,
+  ): ASSequence.NonEmptyType {
+    return Option.match(value, {
+      onNone: Function.constant(ASSequence.defaultBackgroundColor),
+      onSome: ASColorAll.toBackgroundSequence,
+    });
+  }
+
+  /** Predicate that returns true if `that` has the same type marker as `this` */
+  protected [MDataEquivalenceBasedEquality.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
+    return Predicate.hasProperty(that, _TypeId);
+  }
+
+  /** Returns the TypeMarker of the class */
+  protected get [_TypeId](): _TypeId {
+    return _TypeId;
+  }
+}
+
+/**
+ * Missing BackgroundColor instance
+ *
+ * @category Instances
+ */
+export const missing: Type = Type.make({ value: Option.none() });
+
+/**
+ * Default BackgroundColor instance
+ *
+ * @category Instances
+ */
+export const defaultColor: Type = Type.make({ value: Option.some(Option.none()) });
+
+/**
+ * Constructor from color
+ *
+ * @category Constructors
+ */
+export const fromColor = (color: ASColorAll.Type): Type =>
+  Type.make({ value: Option.some(Option.some(color)) });

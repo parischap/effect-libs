@@ -71,11 +71,17 @@
     "./tests": {
       "default": "./esm/index.tests.ts"
     },
+    "./ASAnsiCode": {
+      "default": "./esm/AnsiCode.ts"
+    },
     "./ASContextStyler": {
       "default": "./esm/ContextStyler.ts"
     },
     "./ASPalette": {
       "default": "./esm/Palette.ts"
+    },
+    "./ASSequence": {
+      "default": "./esm/Sequence.ts"
     },
     "./ASStyle": {
       "default": "./esm/Style.ts"
@@ -88,6 +94,21 @@
     },
     "./ASText": {
       "default": "./esm/Text.ts"
+    },
+    "./ASColorAll": {
+      "default": "./esm/Color/All.ts"
+    },
+    "./ASColorBase": {
+      "default": "./esm/Color/Base.ts"
+    },
+    "./ASColorEightBit": {
+      "default": "./esm/Color/EightBit.ts"
+    },
+    "./ASColorRgb": {
+      "default": "./esm/Color/Rgb.ts"
+    },
+    "./ASColorThreeBit": {
+      "default": "./esm/Color/ThreeBit.ts"
     }
   },
   "module": "./esm/index.ts",

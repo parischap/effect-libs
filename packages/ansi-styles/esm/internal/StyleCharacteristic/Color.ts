@@ -1,73 +1,45 @@
-/** Module that implements an optional style characteristic */
+/**
+ * Module that implements an optional foreground color style characteristic. A `none` represents a
+ * missing characteristic, a `some(some(color))` represents a color, a `some(none())` represents the
+ * default color
+ */
 
-import { MDataBase, MDataEquivalenceBasedEquality, MFunction, MTypes } from '@parischap/effect-lib';
-import { Function, Option, pipe } from 'effect';
-import * as ASSequence from '../../Sequence.js';
+import { MDataEquivalenceBasedEquality, MTypes } from '@parischap/effect-lib';
+import { Equivalence, Hash, Option } from 'effect';
+import * as ASColorAll from '../../Color/All.js';
+import * as ASStyleCharacteristicPresentOrMissing from './PresentOrMissing.js';
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/ansi-styles/internal/StyleCharacteristic/PresentOrMissing/';
+export const moduleTag = '@parischap/ansi-styles/internal/StyleCharacteristic/Color/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
 /**
- * Symbol used to name the getIdWhenPresent function
- *
- * @category Model symbols
- */
-export const getIdWhenPresentSymbol: unique symbol = Symbol.for(
-  `${moduleTag}getIdWhenPresent/`,
-) as getIdWhenPresentSymbol;
-type getIdWhenPresentSymbol = typeof getIdWhenPresentSymbol;
-
-/**
- * Symbol used to name the sequencePresentGetter function
- *
- * @category Model symbols
- */
-export const getSequenceWhenPresentSymbol: unique symbol = Symbol.for(
-  `${moduleTag}getSequenceWhenPresent/`,
-) as getSequenceWhenPresentSymbol;
-type getSequenceWhenPresentSymbol = typeof getSequenceWhenPresentSymbol;
-
-/**
- * Type that represents an ASStyleCharacteristicOnOfforMissing
+ * Type that represents an ASStyleCharacteristicColor
  *
  * @category Models
  */
-export abstract class Type<A> extends MDataEquivalenceBasedEquality.Type {
-  /**
-   * The value of the style characteristic:
-   *
-   * - none: it is missing
-   * - some: it's present
-   */
-  readonly value: Option.Option<A>;
-
+export abstract class Type extends ASStyleCharacteristicPresentOrMissing.Type<
+  Option.Option<ASColorAll.Type>
+> {
   /** Class constructor */
-  protected constructor({ value }: MTypes.Data<Type<A>>) {
-    super();
-    this.value = value;
+  protected constructor(params: MTypes.Data<Type>) {
+    super(params);
   }
 
-  /** Function that returns the id to show when the style characteristic is present */
-  abstract [getIdWhenPresentSymbol](presentValue: A): string;
-
-  /** Returns the `id` of `this` */
-  protected [MDataBase.idSymbol](): string | (() => string) {
-    return function idSymbol(this: Type<A>) {
-      return Option.match(this.value, {
-        onNone: MFunction.constEmptyString,
-        onSome: this[getIdWhenPresentSymbol],
-      });
-    };
+  /** Calculates the hash value of `this` */
+  [Hash.symbol](): number {
+    return 0;
   }
 
-  /** Function that returns the sequence when the style characteristic is present */
-  abstract [getSequenceWhenPresentSymbol](presentValue: A): ASSequence.NonEmptyType;
+  /** Function that implements the equivalence of `this` and `that` */
+  protected [MDataEquivalenceBasedEquality.isEquivalentToSymbol](this: this, that: this): boolean {
+    return equivalence(this, that);
+  }
 
   /** Returns the TypeMarker of the class */
   protected get [_TypeId](): _TypeId {
@@ -75,33 +47,13 @@ export abstract class Type<A> extends MDataEquivalenceBasedEquality.Type {
   }
 }
 
-/**
- * Returns the sequence of `self`
- *
- * @category Destructors
- */
-export const getSequence = <A>(self: Type<symbol, A>): ASSequence.Type =>
-  Option.match(self.value, {
-    onNone: Function.constant(ASSequence.empty),
-    onSome: self[getSequenceWhenPresentSymbol],
-  });
+const _equivalence: Equivalence.Equivalence<Option.Option<Option.Option<ASColorAll.Type>>> =
+  Option.getEquivalence(Option.getEquivalence(ASColorAll.equivalence));
 
 /**
- * Returns `self` if `self` contains a `some`. Otherwise, returns `that`.
+ * Equivalence
  *
- * @category Utils
+ * @category Equivalences
  */
-export const orElse =
-  <S extends symbol, A>(that: Type<S, A>) =>
-  (self: Type<S, A>): Type<S, A> =>
-    pipe(self.value, Option.as(self), Option.getOrElse(Function.constant(that)));
-
-/**
- * Returns `whenEqual` if `self` is equal to 'that'. Otherwise, returns `self`.
- *
- * @category Utils
- */
-export const orWhenEquals =
-  <S extends symbol, A>(that: Type<S, A>, whenEqual: Type<S, A>) =>
-  (self: Type<S, A>): Type<S, A> =>
-    self[MDataEquivalenceBasedEquality.isEquivalentToSymbol](that) ? whenEqual : self;
+export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
+  _equivalence(self.value, that.value);
