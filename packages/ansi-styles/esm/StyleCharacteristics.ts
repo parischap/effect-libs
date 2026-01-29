@@ -12,7 +12,7 @@
 import { MDataBase, MDataEquivalenceBasedEquality, MStruct, MTypes } from '@parischap/effect-lib';
 import { Equivalence, flow, Hash, pipe, Predicate } from 'effect';
 import * as ASAnsiCode from './AnsiCode.js';
-import * as ASColorAll from './Color/All.js';
+import * as AsColorBase from './Color/Base.js';
 import { ASSequence } from './index.js';
 import * as ASStyleCharacteristicBackgroundColor from './internal/StyleCharacteristic/BackgroundColor.js';
 import * as ASStyleCharacteristicBlinking from './internal/StyleCharacteristic/Blinking.js';
@@ -591,7 +591,7 @@ export const foregroundDefaultColor: Type = Type.make(
  *
  * @category Constructors
  */
-export const fromColorAsForegroundColor = (color: ASColorAll.Type): Type =>
+export const fromColorAsForegroundColor = (color: AsColorBase.Type): Type =>
   Type.make(
     pipe(
       none,
@@ -613,7 +613,7 @@ export const backgroundDefaultColor: Type = Type.make(
  *
  * @category Constructors
  */
-export const fromColorAsBackgroundColor = (color: ASColorAll.Type): Type =>
+export const fromColorAsBackgroundColor = (color: AsColorBase.Type): Type =>
   Type.make(
     pipe(
       none,

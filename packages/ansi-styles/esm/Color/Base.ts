@@ -5,7 +5,8 @@
  */
 
 import { MDataEquivalenceBasedEquality } from '@parischap/effect-lib';
-import { Equal, Hash, Inspectable, Pipeable } from 'effect';
+import { Array,
+Equal, Hash, Inspectable, Number, Pipeable } from 'effect';
 import type * as ASSequence from '../Sequence.js';
 
 /**
@@ -40,3 +41,40 @@ export abstract class Type
     return _TypeId;
   }
 }
+
+/**
+ * Gets the id of `self`
+ *
+ * @category Destructors
+ */
+export const toString = (self: Type): string => self.toString();
+
+/**
+ * Gets the foreground id of `self`
+ *
+ * @category Destructors
+ */
+export const toForegroundId = (self: Type): string => self.toString();
+
+/**
+ * Gets the background id of `self`
+ *
+ * @category Destructors
+ */
+export const toBackgroundId = (self: Type): string => `In${self.toString()}`;
+
+/**
+ * Gets the foreground sequence of `self`
+ *
+ * @category Destructors
+ */
+export const toForegroundSequence = (self: Type): ASSequence.NonEmptyType =>
+  self[toForegroundSequenceSymbol]();
+
+/**
+ * Gets the background sequence of `self`
+ *
+ * @category Destructors
+ */
+export const toBackgroundSequence = (self: Type): ASSequence.NonEmptyType =>
+  Array.modifyNonEmptyHead(self[toForegroundSequenceSymbol](), Number.sum(10));

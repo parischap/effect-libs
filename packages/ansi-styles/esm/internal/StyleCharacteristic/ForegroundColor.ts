@@ -2,7 +2,7 @@
 
 import { MDataEquivalenceBasedEquality, MTypes } from '@parischap/effect-lib';
 import { Function, Option, Predicate } from 'effect';
-import * as ASColorAll from '../../Color/All.js';
+import * as AsColorBase from '../../Color/Base.js';
 import * as ASSequence from '../../Sequence.js';
 import * as ASStyleCharacteristicColor from './Color.js';
 import * as ASStyleCharacteristicPresentOrMissing from './PresentOrMissing.js';
@@ -33,21 +33,21 @@ export class Type extends ASStyleCharacteristicColor.Type {
 
   /** Function that returns the id to show when the style characteristic is present */
   [ASStyleCharacteristicPresentOrMissing.toPresentIdSymbol](
-    value: Option.Option<ASColorAll.Type>,
+    value: Option.Option<AsColorBase.Type>,
   ): string {
     return Option.match(value, {
       onNone: Function.constant('DefaultColor'),
-      onSome: ASColorAll.toForegroundId,
+      onSome: AsColorBase.toForegroundId,
     });
   }
 
   /** Function that returns the sequence when the style characteristic is present */
   [ASStyleCharacteristicPresentOrMissing.toPresentSequenceSymbol](
-    value: Option.Option<ASColorAll.Type>,
+    value: Option.Option<AsColorBase.Type>,
   ): ASSequence.NonEmptyType {
     return Option.match(value, {
       onNone: Function.constant(ASSequence.defaultForegroundColor),
-      onSome: ASColorAll.toForegroundSequence,
+      onSome: AsColorBase.toForegroundSequence,
     });
   }
 
@@ -81,5 +81,5 @@ export const defaultColor: Type = Type.make({ value: Option.some(Option.none()) 
  *
  * @category Constructors
  */
-export const fromColor = (color: ASColorAll.Type): Type =>
+export const fromColor = (color: AsColorBase.Type): Type =>
   Type.make({ value: Option.some(Option.some(color)) });

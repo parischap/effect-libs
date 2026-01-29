@@ -6,7 +6,7 @@
 
 import { MDataEquivalenceBasedEquality, MTypes } from '@parischap/effect-lib';
 import { Equivalence, Hash, Option } from 'effect';
-import * as ASColorAll from '../../Color/All.js';
+import * as AsColorBase from '../../Color/Base.js';
 import * as ASStyleCharacteristicPresentOrMissing from './PresentOrMissing.js';
 
 /**
@@ -24,7 +24,7 @@ type _TypeId = typeof _TypeId;
  * @category Models
  */
 export abstract class Type extends ASStyleCharacteristicPresentOrMissing.Type<
-  Option.Option<ASColorAll.Type>
+  Option.Option<AsColorBase.Type>
 > {
   /** Class constructor */
   protected constructor(params: MTypes.Data<Type>) {
@@ -47,8 +47,8 @@ export abstract class Type extends ASStyleCharacteristicPresentOrMissing.Type<
   }
 }
 
-const _equivalence: Equivalence.Equivalence<Option.Option<Option.Option<ASColorAll.Type>>> =
-  Option.getEquivalence(Option.getEquivalence(ASColorAll.equivalence));
+const _equivalence: Equivalence.Equivalence<Option.Option<Option.Option<AsColorBase.Type>>> =
+  Option.getEquivalence(Option.getEquivalence(AsColorBase.equivalence));
 
 /**
  * Equivalence

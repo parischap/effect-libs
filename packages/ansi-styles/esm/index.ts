@@ -6,7 +6,6 @@ export * as ASStyle from './Style.js';
 export * as ASStyleCharacteristics from './StyleCharacteristics.js';
 export * as ASStyles from './Styles.js';
 export * as ASText from './Text.js';
-export * as ASColorAll from './Color/All.js';
 export * as ASColorBase from './Color/Base.js';
 export * as ASColorEightBit from './Color/EightBit.js';
 export * as ASColorRgb from './Color/Rgb.js';

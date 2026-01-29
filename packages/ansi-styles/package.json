@@ -95,9 +95,6 @@
     "./ASText": {
       "default": "./esm/Text.ts"
     },
-    "./ASColorAll": {
-      "default": "./esm/Color/All.ts"
-    },
     "./ASColorBase": {
       "default": "./esm/Color/Base.ts"
     },
