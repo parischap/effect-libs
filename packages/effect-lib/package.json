@@ -146,6 +146,9 @@
     "./MTreeAll": {
       "default": "./esm/Tree/All.ts"
     },
+    "./MTreeForest": {
+      "default": "./esm/Tree/Forest.ts"
+    },
     "./MTreeLeaf": {
       "default": "./esm/Tree/Leaf.ts"
     },

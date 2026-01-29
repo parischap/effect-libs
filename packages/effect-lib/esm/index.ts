@@ -23,6 +23,7 @@ export * as MTypes from './types.js';
 export * as MDataBase from './Data/Base.js';
 export * as MDataEquivalenceBasedEquality from './Data/EquivalenceBasedEquality.js';
 export * as MTreeAll from './Tree/All.js';
+export * as MTreeForest from './Tree/Forest.js';
 export * as MTreeLeaf from './Tree/Leaf.js';
 export * as MTreeNode from './Tree/Node.js';
 export * as MTreeNonLeaf from './Tree/NonLeaf.js';
