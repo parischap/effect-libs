@@ -1,0 +1,18 @@
+{
+  "extends": [
+    "./tsconfig.base.json"
+  ],
+  "include": [
+    "examples/**/*.ts"
+  ],
+  "references": [
+    {
+      "path": "tsconfig.esm.json"
+    }
+  ],
+  "compilerOptions": {
+    "declarationDir": "dist/dts",
+    "outDir": "dist",
+    "tsBuildInfoFile": ".tsbuildinfo/examples.tsbuildinfo"
+  }
+}

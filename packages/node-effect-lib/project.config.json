@@ -1,0 +1,14 @@
+{
+  "description": "A complement to the official @effect/platform library with add-ons for Node.js",
+  "peerDependencies": {
+    "@parischap/effect-lib": "^0.11.0"
+  },
+  "environment": "Node",
+  "buildMethod": "NoBundling",
+  "isPublished": false,
+  "hasDocGen": false,
+  "keywords": [],
+  "useEffectAsPeerDependency": true,
+  "useEffectPlatform": true,
+  "packagePrefix": "N"
+}

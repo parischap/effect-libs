@@ -1,0 +1,7 @@
+/.git/
+/dist/
+/.tsbuildinfo/
+/node_modules/
+/packages/
+/vite.config.ts.timestamp-*.mjs
+/pnpm-lock.yaml

@@ -1,0 +1,34 @@
+{
+  "description": "A functional library to pretty-print and treeify objects",
+  "peerDependencies": {
+    "@parischap/effect-lib": "^0.11.0",
+    "@parischap/ansi-styles": "^0.2.6"
+  },
+  "examples": [
+    "util-inspect-like.ts",
+    "treeify.ts",
+    "treeify-with-leaves.ts",
+    "circularity-handling.ts"
+  ],
+  "environment": "Plain",
+  "buildMethod": "NoBundling",
+  "isPublished": true,
+  "hasDocGen": true,
+  "keywords": [
+    "inspect",
+    "util.inspect",
+    "object",
+    "stringify",
+    "pretty",
+    "tree",
+    "treeify",
+    "print",
+    "console",
+    "visualize",
+    "debug",
+    "typescript",
+    "effect"
+  ],
+  "useEffectAsPeerDependency": true,
+  "packagePrefix": "PP"
+}

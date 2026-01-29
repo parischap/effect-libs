@@ -1,0 +1,75 @@
+{
+  "name": "@parischap/playground",
+  "description": "An Effect playground",
+  "type": "module",
+  "author": "Jérôme MARTIN",
+  "license": "MIT",
+  "devDependencies": {
+    "@parischap/configs": "git+ssh://github.com/parischap/configs",
+    "@effect/language-service": "0.64.1",
+    "@types/node": "25.0.9",
+    "@typescript/native-preview": "7.0.0-dev.20260122.3",
+    "prettier-plugin-jsdoc": "1.8.0",
+    "prettier-plugin-organize-imports": "4.3.0",
+    "@tsconfig/strictest": "2.0.8",
+    "prettier": "3.7.4",
+    "oxlint": "1.41.0",
+    "oxlint-tsgolint": "0.11.1",
+    "unrun": "0.2.24",
+    "vitest": "4.0.17",
+    "madge": "8.0.0",
+    "@effect/experimental": "0.58.0",
+    "vite": "npm:rolldown-vite@7.3.0",
+    "@babel/core": "7.28.5",
+    "babel-plugin-annotate-pure-calls": "0.5.0",
+    "@babel/plugin-transform-export-namespace-from": "7.27.1",
+    "@babel/plugin-transform-modules-commonjs": "7.27.1",
+    "@effect/cluster": "0.56.1",
+    "@effect/platform": "0.94.1",
+    "@effect/platform-node": "0.104.0",
+    "@effect/rpc": "0.73.0",
+    "@effect/sql": "0.49.0",
+    "@effect/workflow": "0.16.0"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "tscheck": "tsgo -b tsconfig.json --force",
+    "lint": "oxlint --type-aware --type-check --report-unused-disable-directives --disable-nested-config",
+    "lint-fix": "oxlint --type-aware --fix",
+    "format": "prettier .",
+    "clean": "unrun node_modules/@parischap/configs/esm/bin/clean.ts -activePackageOnly",
+    "clean-config-files": "unrun node_modules/@parischap/configs/esm/bin/clean-config-files.ts -activePackageOnly",
+    "clean-node-modules": "unrun node_modules/@parischap/configs/esm/bin/clean-node-modules.ts -activePackageOnly",
+    "clean-prod": "pnpm rmrf dist && pnpm mkdirp dist",
+    "generate-config-files": "unrun node_modules/@parischap/configs/esm/bin/generate-config-files.ts -activePackageOnly",
+    "clean-all": "unrun node_modules/@parischap/configs/esm/bin/clean.ts",
+    "clean-all-config-files": "unrun node_modules/@parischap/configs/esm/bin/clean-config-files.ts",
+    "clean-all-node-modules": "unrun node_modules/@parischap/configs/esm/bin/clean-node-modules.ts",
+    "clean-all-prod": "unrun node_modules/@parischap/configs/esm/bin/clean-prod.ts",
+    "generate-all-config-files": "unrun node_modules/@parischap/configs/esm/bin/generate-config-files.ts",
+    "update-all-exports": "unrun node_modules/@parischap/configs/esm/bin/update-exports.ts",
+    "watch-all-for-exports": "unrun node_modules/@parischap/configs/esm/bin/update-exports.ts -watch",
+    "reinstall-all-dependencies": "pnpm i --force",
+    "build": "pnpm clean-prod && pnpm compile && cd dist && pnpm i && cd ..",
+    "checks": "pnpm circular && pnpm lint && pnpm test",
+    "circular": "madge --extensions ts --circular --no-color --no-spinner esm",
+    "examples": "",
+    "tsconfig": "tsc --showConfig --project tsconfig.esm.json",
+    "update-exports": "unrun node_modules/@parischap/configs/esm/bin/update-exports.ts -activePackageOnly",
+    "watch-for-exports": "unrun node_modules/@parischap/configs/esm/bin/update-exports.ts -watch -activePackageOnly",
+    "compile": "vite build"
+  },
+  "exports": {
+    ".": {
+      "default": "./esm/index.ts"
+    },
+    "./tests": {
+      "default": "./esm/index.tests.ts"
+    }
+  },
+  "module": "./esm/index.ts",
+  "dependencies": {
+    "@parischap/effect-lib": "^0.11.0",
+    "effect": "3.19.14"
+  }
+}

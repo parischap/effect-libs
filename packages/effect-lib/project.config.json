@@ -1,0 +1,10 @@
+{
+  "description": "An extension to the official Effect library",
+  "environment": "Plain",
+  "buildMethod": "NoBundling",
+  "isPublished": true,
+  "hasDocGen": true,
+  "keywords": [],
+  "useEffectAsPeerDependency": true,
+  "packagePrefix": "M"
+}

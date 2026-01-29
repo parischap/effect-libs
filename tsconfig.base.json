@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "_version": "20.1.0",
+  "compilerOptions": {
+    "moduleDetection": "force",
+    "composite": true,
+    "incremental": true,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "moduleResolution": "NodeNext",
+    "sourceMap": true,
+    "noEmitOnError": false,
+    "noErrorTruncation": true,
+    "target": "ESNext",
+    "module": "NodeNext",
+    "removeComments": false,
+    "stripInternal": true,
+    "isolatedDeclarations": true,
+    "lib": [
+      "ESNext"
+    ],
+    "types": [
+      "node"
+    ],
+    "noEmit": true,
+    "plugins": [
+      {
+        "name": "@effect/language-service"
+      }
+    ],
+    "tsBuildInfoFile": "..tsbuildinfo/project..tsbuildinfo"
+  },
+  "extends": [
+    "@tsconfig/strictest/tsconfig.json"
+  ]
+}

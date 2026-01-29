@@ -1,0 +1,12 @@
+{
+  "description": "An Effect playground",
+  "dependencies": {
+    "@parischap/effect-lib": "^0.11.0"
+  },
+  "environment": "Node",
+  "buildMethod": "NoBundling",
+  "isPublished": false,
+  "hasDocGen": false,
+  "keywords": [],
+  "useEffectAsPeerDependency": false
+}

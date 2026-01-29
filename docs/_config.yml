@@ -1,0 +1,5 @@
+aux_links:
+  "GitHub":
+    - "//github.com/parischap/effect-libs"
+remote_theme: mikearnaldi/just-the-docs
+search_enabled: true

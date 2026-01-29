@@ -1,0 +1,15 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "experimentalSortImports": {
+    "groups": [
+      "^[./]",
+      "^@parischap/",
+      "^effect",
+      "^@effect/",
+      "<BUILTIN_MODULES>",
+      "<THIRD_PARTY_MODULES>"
+    ]
+  },
+  "printWidth": 100,
+  "singleQuote": true
+}
