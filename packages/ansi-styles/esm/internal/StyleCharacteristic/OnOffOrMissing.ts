@@ -99,7 +99,7 @@ export abstract class Type extends ASStyleCharacteristicPresentOrMissing.Type<bo
 
   /** Calculates the hash value of `this` */
   [Hash.symbol](): number {
-    return Hash.cached(this, Hash.hash(this.value));
+    return 0;
   }
 
   /** Function that implements the equivalence of `this` and `that` */
