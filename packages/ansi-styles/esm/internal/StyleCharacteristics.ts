@@ -122,7 +122,21 @@ ${this.blinking.toString()}${this.foregroundColor.toString()}${this.backgroundCo
 
   /** Calculates the hash value of `this` */
   [Hash.symbol](): number {
-    return Hash.cached(this, Hash.structure(this));
+    return pipe(
+      this.bold,
+      Hash.hash,
+      Hash.combine(Hash.hash(this.dim)),
+      Hash.combine(Hash.hash(this.italic)),
+      Hash.combine(Hash.hash(this.underlined)),
+      Hash.combine(Hash.hash(this.struckThrough)),
+      Hash.combine(Hash.hash(this.overlined)),
+      Hash.combine(Hash.hash(this.inversed)),
+      Hash.combine(Hash.hash(this.hidden)),
+      Hash.combine(Hash.hash(this.blinking)),
+      Hash.combine(Hash.hash(this.foregroundColor)),
+      Hash.combine(Hash.hash(this.backgroundColor)),
+      Hash.cached(this),
+    );
   }
 
   /** Function that implements the equivalence of `this` and `that` */
