@@ -26,8 +26,8 @@ import {
   flow,
   pipe,
 } from 'effect';
-import * as ASCode from './Code.js';
-import * as ASStyleCharacteristics from './StyleCharacteristics.js';
+import * as ASCode from './internal/Code.js';
+import * as ASStyleCharacteristics from './internal/StyleCharacteristics.js';
 import * as ASUnistyledText from './internal/UnistyledText.js';
 
 /**
@@ -76,8 +76,13 @@ export class Type extends MDataEquivalenceBasedEquality.Type {
     return equivalence(this, that);
   }
 
+  /** Predicate that returns true if `that` has the same type marker as `this` */
+  protected [MDataEquivalenceBasedEquality.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
+    return Predicate.hasProperty(that, _TypeId);
+  }
+
   /** Returns the TypeMarker of the class */
-  protected get [MDataBase.typeMarkerSymbol](): _TypeId {
+  protected get [_TypeId](): _TypeId {
     return _TypeId;
   }
 }

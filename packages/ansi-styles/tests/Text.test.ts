@@ -1,10 +1,5 @@
-import {
-  ASCode,
-  ASColorRgb,
-  ASColorThreeBit,
-  ASStyleCharacteristics,
-  ASText,
-} from '@parischap/ansi-styles';
+import { ASColorRgb, ASColorThreeBit, ASText } from '@parischap/ansi-styles';
+import { ASCode, ASStyleCharacteristics } from '@parischap/ansi-styles/tests';
 import * as TestUtils from '@parischap/configs/TestUtils';
 import { Array, flow, pipe } from 'effect';
 import { describe, it } from 'vitest';
