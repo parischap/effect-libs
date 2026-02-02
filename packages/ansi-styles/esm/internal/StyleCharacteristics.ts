@@ -34,7 +34,7 @@ import * as ASStyleCharacteristicUnderlined from './StyleCharacteristic/Underlin
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/ansi-styles/StyleCharacteristics/';
+export const moduleTag = '@parischap/ansi-styles/internal/StyleCharacteristics/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 

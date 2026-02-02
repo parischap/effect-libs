@@ -1,4 +1,4 @@
-import { ASStyleCharacteristics, ASUnistyledText } from '@parischap/ansi-styles/tests';
+import { ASCode, ASStyleCharacteristics, ASUnistyledText } from '@parischap/ansi-styles/tests';
 import * as TestUtils from '@parischap/configs/TestUtils';
 import { Option, pipe } from 'effect';
 import { describe, it } from 'vitest';
@@ -61,7 +61,10 @@ describe('UnistyledText', () => {
 
   describe('toAnsiString', () => {
     it('wraps text with bold ANSI codes', () => {
-      TestUtils.assertEquals(ASUnistyledText.toAnsiString(simpleBoldText), '\x1B[1mHello\x1B[0m');
+      TestUtils.assertEquals(
+        ASUnistyledText.toAnsiString(simpleBoldText),
+        `${ASCode.bold}Hello${ASCode.reset}`,
+      );
     });
 
     it('returns plain text when style is none', () => {
@@ -75,13 +78,19 @@ describe('UnistyledText', () => {
     });
 
     it('applies multiple styles together', () => {
-      TestUtils.strictEqual(ASUnistyledText.toAnsiString(simpleBoldItalicText), 'Hello');
+      TestUtils.strictEqual(
+        ASUnistyledText.toAnsiString(simpleBoldItalicText),
+        '\x1B[1;3mHello\x1B[0m',
+      );
     });
   });
 
   describe('applyStyleUnder', () => {
     it('applies style under existing style', () => {
-      const result = pipe(simpleBoldText, ASUnistyledText.applyStyleUnder(italicStyle));
+      const result = pipe(
+        simpleBoldText,
+        ASUnistyledText.applyStyleUnder(ASStyleCharacteristics.notBold),
+      );
       TestUtils.strictEqual(ASUnistyledText.text(result), simpleText);
       // Bold should take precedence as it's already in the text
       TestUtils.deepStrictEqual(ASUnistyledText.style(result), boldStyle);

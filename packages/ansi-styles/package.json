@@ -71,23 +71,14 @@
     "./tests": {
       "default": "./esm/index.tests.ts"
     },
-    "./ASCode": {
-      "default": "./esm/Code.ts"
-    },
     "./ASContextStyler": {
       "default": "./esm/ContextStyler.ts"
     },
     "./ASPalette": {
       "default": "./esm/Palette.ts"
     },
-    "./ASSequence": {
-      "default": "./esm/Sequence.ts"
-    },
     "./ASStyle": {
       "default": "./esm/Style.ts"
-    },
-    "./ASStyleCharacteristics": {
-      "default": "./esm/StyleCharacteristics.ts"
     },
     "./ASStyles": {
       "default": "./esm/Styles.ts"

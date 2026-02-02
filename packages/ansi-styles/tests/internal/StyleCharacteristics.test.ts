@@ -18,7 +18,7 @@ describe('ASStyleCharacteristics', () => {
       ASStyleCharacteristics.fromColorAsBackgroundColor(ASColorEightBit.Blue),
     ),
   );
-  const bold1 = pipe(boldItalic, ASStyleCharacteristics.difference(ASStyleCharacteristics.italic));
+
   const notBoldNotDimRed = pipe(
     ASStyleCharacteristics.fromColorAsForegroundColor(ASColorThreeBit.Red),
     ASStyleCharacteristics.mergeUnder(ASStyleCharacteristics.notBold),
