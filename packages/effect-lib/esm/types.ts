@@ -217,6 +217,13 @@ export type Data<T extends NonPrimitive> = {
 };
 
 /**
+ * Utility type that removes all data from a type.
+ *
+ * @category Utility types
+ */
+export type Proto<T extends NonPrimitive> = Omit<T, keyof Data<T>>;
+
+/**
  * Utility type that makes field `field` of target type `X` mutable
  *
  * @category Utility types

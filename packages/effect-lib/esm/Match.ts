@@ -23,7 +23,7 @@ type _TypeId = typeof _TypeId;
  *
  * @category Models
  */
-export class Type<out Input, out Output, out Rest extends Input> extends MDataBase.Type {
+export class Type<out Input, out Output, out Rest extends Input> extends MDataBase.Class {
   /** The input to match */
   readonly input: Input;
   /** The output of the matcher when it has been found */
@@ -44,7 +44,7 @@ export class Type<out Input, out Output, out Rest extends Input> extends MDataBa
   }
 
   /** Returns the `id` of `this` */
-  protected [MDataBase.idSymbol](this: this): string | (() => string) {
+  [MDataBase.idSymbol](): string | (() => string) {
     return moduleTag;
   }
 

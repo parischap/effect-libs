@@ -13,7 +13,7 @@ type _TypeId = typeof _TypeId;
  *
  * @category Models
  */
-export abstract class Type<out A> extends MDataBase.Type {
+export abstract class Type<out A> extends MDataBase.Class {
   /** Value of a node */
   readonly value: A;
 

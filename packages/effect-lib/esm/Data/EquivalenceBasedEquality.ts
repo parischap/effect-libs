@@ -9,7 +9,7 @@
  * - for generic classes where the equivalence bears on fields not dependant on the generic type
  */
 
-import { Equal, Hash } from 'effect';
+import { Equal, Hash, Inspectable, Pipeable } from 'effect';
 import * as MDataBase from './Base.js';
 
 /**
@@ -42,11 +42,35 @@ export const isEquivalentToSymbol: unique symbol = Symbol.for(
 type isEquivalentToSymbol = typeof isEquivalentToSymbol;
 
 /**
+ * Type of an MDataEquivalenceBasedEquality
+ *
+ * @category Models
+ */
+export type Type = MDataBase.Type
+  & Equal.Equal & {
+    [isEquivalentToSymbol](this: Type, that: Type): boolean;
+    [hasSameTypeMarkerAsSymbol](that: unknown): boolean;
+  };
+
+/**
  * Type of a DataEquivalenceBasedEquality
  *
  * @category Models
  */
-export abstract class Type extends MDataBase.Type implements Equal.Equal {
+export abstract class Class extends MDataBase.Class implements Type {
+  /**
+   * Function that implements the equivalence of `this` and `that`. Must be defined at the same
+   * level as [hasSameTypeMarkerAsSymbol]()
+   */
+  abstract [isEquivalentToSymbol](this: this, that: this): boolean;
+
+  /**
+   * Predicate that returns true if `that` has the same type marker as `this`. It would be tempting
+   * to make it a type guard. But two instances of the same generic class that have the same type
+   * marker do not necessaraly have the same type
+   */
+  abstract [hasSameTypeMarkerAsSymbol](that: unknown): boolean;
+
   /**
    * Calculates the hash value of `this`. For classes with few fields, calculating a hash will be
    * more costly than carring out an equivalence. In that case, deactivate hashing by simply
@@ -54,26 +78,16 @@ export abstract class Type extends MDataBase.Type implements Equal.Equal {
    */
   abstract [Hash.symbol](): number;
 
-  /**
-   * Function that implements the equivalence of `this` and `that`. Must be defined at the same
-   * level as [hasSameTypeMarkerAsSymbol]()
-   */
-  protected abstract [isEquivalentToSymbol](this: this, that: this): boolean;
-
-  /**
-   * Predicate that returns true if `that` has the same type marker as `this`. It would be tempting
-   * to make it a type guard. But two instances of the same generic class that have the same type
-   * marker do not necessaraly have the same type
-   */
-  protected abstract [hasSameTypeMarkerAsSymbol](that: unknown): boolean;
-
   /** Implements the Effect Equal.Equal interface */
   [Equal.symbol](this: this, that: Equal.Equal): boolean {
     return this[hasSameTypeMarkerAsSymbol](that) && this[isEquivalentToSymbol](that as this);
   }
-
-  /** Type marker of this class */
-  protected get [_TypeId](): _TypeId {
-    return _TypeId;
-  }
 }
+
+/**
+ * Same as Type but we export a prototype instead of a class. It can come in handy when the the
+ * target object represents a function which cannot be modeled as a class
+ *
+ * @category Prototypes
+ */
+export const Prototype: Pipeable.Pipeable & Inspectable.Inspectable & Equal.Equal = Class.prototype;

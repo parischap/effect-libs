@@ -19,8 +19,6 @@ import { Inspectable, Pipeable } from 'effect';
  * @category Module markers
  */
 export const moduleTag = '@parischap/effect-lib/Data/Base/';
-const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
-type _TypeId = typeof _TypeId;
 
 /**
  * Symbol used to name the id function
@@ -31,21 +29,26 @@ export const idSymbol: unique symbol = Symbol.for(`${moduleTag}id/`) as idSymbol
 type idSymbol = typeof idSymbol;
 
 /**
+ * Type of an MDataBase
+ *
+ * @category Models
+ */
+export type Type = Pipeable.Pipeable
+  & Inspectable.Inspectable & { [idSymbol](): string | (() => string) };
+
+/**
  * Type of a DataBase
  *
  * @category Models
  */
-export abstract class Type
-  extends Pipeable.Class()
-  implements Inspectable.Inspectable, Pipeable.Pipeable
-{
+export abstract class Class extends Pipeable.Class() implements Type {
   /**
    * Returns the `id` of `this`. If it returns a string, the `.toString()` function will return that
    * string under the `_id` key, and then all the own enumerable string keys of the instance. If it
    * returns a function, the result of calling this function will be the result of the `.toString()`
    * function
    */
-  protected abstract [idSymbol](): string | (() => string);
+  abstract [idSymbol](): string | (() => string);
 
   /** Returns the properties of `this` to stringify */
   toJSON(): unknown {
@@ -65,9 +68,12 @@ export abstract class Type
         Inspectable.format(Object.assign({ _id: id }, this))
       : id.call(this);
   }
-
-  /** Type marker of this class */
-  protected get [_TypeId](): _TypeId {
-    return _TypeId;
-  }
 }
+
+/**
+ * Same as Type but we export a prototype instead of a class. It can come in handy when the the
+ * target object represents a function which cannot be modeled as a class
+ *
+ * @category Prototypes
+ */
+export const Prototype: Pipeable.Pipeable & Inspectable.Inspectable = Class.prototype;

@@ -24,7 +24,7 @@ export class Type<out B> extends MTreeNode.Type<B> {
   }
 
   /** Returns the `id` of `this` */
-  protected [MDataBase.idSymbol](this: this): string | (() => string) {
+  [MDataBase.idSymbol](): string | (() => string) {
     return moduleTag;
   }
 

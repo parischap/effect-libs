@@ -10,7 +10,7 @@ type _TypeId = typeof _TypeId;
  *
  * @category Models
  */
-export class Type<out B> extends MDataBase.Type {
+export class Type<out B> extends MDataBase.Class {
   /** The value calculated by the LookUp function */
   readonly value: B;
   /** The time at which the value was calculated */
@@ -29,7 +29,7 @@ export class Type<out B> extends MDataBase.Type {
   }
 
   /** Returns the `id` of `this` */
-  protected [MDataBase.idSymbol](this: this): string | (() => string) {
+  [MDataBase.idSymbol](): string | (() => string) {
     return moduleTag;
   }
 

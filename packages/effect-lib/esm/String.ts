@@ -51,7 +51,7 @@ export namespace SearchResult {
    *
    * @category Models
    */
-  export class Type extends MDataEquivalenceBasedEquality.Type {
+  export class Type extends MDataEquivalenceBasedEquality.Class {
     /** The index where the match was found in the target string */
     readonly startIndex: number;
     /** The index of the character following the match in the target string */
@@ -73,7 +73,7 @@ export namespace SearchResult {
     }
 
     /** Returns the `id` of `this` */
-    protected [MDataBase.idSymbol](): string | (() => string) {
+    [MDataBase.idSymbol](): string | (() => string) {
       return _namespaceTag;
     }
 
@@ -83,15 +83,12 @@ export namespace SearchResult {
     }
 
     /** Function that implements the equivalence of `this` and `that` */
-    protected [MDataEquivalenceBasedEquality.isEquivalentToSymbol](
-      this: this,
-      that: this,
-    ): boolean {
+    [MDataEquivalenceBasedEquality.isEquivalentToSymbol](this: this, that: this): boolean {
       return equivalence(this, that);
     }
 
     /** Predicate that returns true if `that` has the same type marker as `this` */
-    protected [MDataEquivalenceBasedEquality.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
+    [MDataEquivalenceBasedEquality.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
       return Predicate.hasProperty(that, _TypeId);
     }
 
