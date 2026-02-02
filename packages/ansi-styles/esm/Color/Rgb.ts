@@ -6,7 +6,7 @@
 
 import { MDataBase, MDataEquivalenceBasedEquality, MString, MTypes } from '@parischap/effect-lib';
 import { Array, Equivalence, Hash, Number, pipe, Predicate, Struct } from 'effect';
-import * as ASSequence from '../Sequence.js';
+import * as ASSequence from '../internal/Sequence.js';
 import * as ASColorBase from './Base.js';
 
 /**

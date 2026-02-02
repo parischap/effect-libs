@@ -1,5 +1,6 @@
-import { ASColorRgb, ASSequence } from '@parischap/ansi-styles';
+import { ASColorRgb } from '@parischap/ansi-styles';
 import {
+  ASSequence,
   ASStyleCharacteristicBackgroundColor,
   ASStyleCharacteristicBlinking,
   ASStyleCharacteristicBold,

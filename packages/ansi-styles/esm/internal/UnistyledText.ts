@@ -4,9 +4,9 @@
  */
 
 import { MDataBase, MDataEquivalenceBasedEquality, MStruct, MTypes } from '@parischap/effect-lib';
-import { Array, Equivalence, Hash, String, Struct, flow, pipe } from 'effect';
-import * as ASAnsiCode from '../AnsiCode.js';
-import * as ASStyleCharacteristics from '../StyleCharacteristics.js';
+import { Array, Equivalence, Hash, Predicate, String, Struct, flow, pipe } from 'effect';
+import * as ASCode from './Code.js';
+import * as ASStyleCharacteristics from './StyleCharacteristics.js';
 
 export const moduleTag = '@parischap/ansi-styles/internal/UnistyledText/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
@@ -43,7 +43,7 @@ export class Type extends MDataEquivalenceBasedEquality.Type {
 
   /** Calculates the hash value of `this` */
   [Hash.symbol](): number {
-    return 0;
+    return pipe(this.text, Hash.hash, Hash.combine(Hash.hash(this.style)), Hash.cached(this));
   }
 
   /** Function that implements the equivalence of `this` and `that` */
@@ -51,8 +51,13 @@ export class Type extends MDataEquivalenceBasedEquality.Type {
     return equivalence(this, that);
   }
 
+  /** Predicate that returns true if `that` has the same type marker as `this` */
+  protected [MDataEquivalenceBasedEquality.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
+    return Predicate.hasProperty(that, _TypeId);
+  }
+
   /** Returns the TypeMarker of the class */
-  protected get [MDataBase.typeMarkerSymbol](): _TypeId {
+  protected get [_TypeId](): _TypeId {
     return _TypeId;
   }
 }
@@ -142,6 +147,6 @@ export const toLength: MTypes.OneArgFunction<Type, number> = flow(
  */
 export const toAnsiString = (self: Type): string => {
   if (self.text === '') return '';
-  const startAnsiCode = ASStyleCharacteristics.toAnsiCode(self.style);
-  return startAnsiCode === '' ? self.text : startAnsiCode + self.text + ASAnsiCode.reset;
+  const startCode = ASStyleCharacteristics.toCode(self.style);
+  return startCode === '' ? self.text : startCode + self.text + ASCode.reset;
 };

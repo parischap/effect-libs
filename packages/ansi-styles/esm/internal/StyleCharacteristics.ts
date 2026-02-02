@@ -11,23 +11,23 @@
 
 import { MDataBase, MDataEquivalenceBasedEquality, MStruct, MTypes } from '@parischap/effect-lib';
 import { Equivalence, flow, Hash, pipe, Predicate } from 'effect';
-import * as ASAnsiCode from './AnsiCode.js';
-import * as AsColorBase from './Color/Base.js';
-import { ASSequence } from './index.js';
-import * as ASStyleCharacteristicBackgroundColor from './internal/StyleCharacteristic/BackgroundColor.js';
-import * as ASStyleCharacteristicBlinking from './internal/StyleCharacteristic/Blinking.js';
-import * as ASStyleCharacteristicBold from './internal/StyleCharacteristic/Bold.js';
-import * as ASStyleCharacteristicColor from './internal/StyleCharacteristic/Color.js';
-import * as ASStyleCharacteristicDim from './internal/StyleCharacteristic/Dim.js';
-import * as ASStyleCharacteristicForegroundColor from './internal/StyleCharacteristic/ForegroundColor.js';
-import * as ASStyleCharacteristicHidden from './internal/StyleCharacteristic/Hidden.js';
-import * as ASStyleCharacteristicInversed from './internal/StyleCharacteristic/Inversed.js';
-import * as ASStyleCharacteristicItalic from './internal/StyleCharacteristic/Italic.js';
-import * as ASStyleCharacteristicOnOffOrMissing from './internal/StyleCharacteristic/OnOffOrMissing.js';
-import * as ASStyleCharacteristicOverlined from './internal/StyleCharacteristic/Overlined.js';
-import * as ASStyleCharacteristicPresentOrMissing from './internal/StyleCharacteristic/PresentOrMissing.js';
-import * as ASStyleCharacteristicStruckThrough from './internal/StyleCharacteristic/StruckThrough.js';
-import * as ASStyleCharacteristicUnderlined from './internal/StyleCharacteristic/Underlined.js';
+import * as AsColorBase from '../Color/Base.js';
+import * as ASCode from './Code.js';
+import * as ASSequence from './Sequence.js';
+import * as ASStyleCharacteristicBackgroundColor from './StyleCharacteristic/BackgroundColor.js';
+import * as ASStyleCharacteristicBlinking from './StyleCharacteristic/Blinking.js';
+import * as ASStyleCharacteristicBold from './StyleCharacteristic/Bold.js';
+import * as ASStyleCharacteristicColor from './StyleCharacteristic/Color.js';
+import * as ASStyleCharacteristicDim from './StyleCharacteristic/Dim.js';
+import * as ASStyleCharacteristicForegroundColor from './StyleCharacteristic/ForegroundColor.js';
+import * as ASStyleCharacteristicHidden from './StyleCharacteristic/Hidden.js';
+import * as ASStyleCharacteristicInversed from './StyleCharacteristic/Inversed.js';
+import * as ASStyleCharacteristicItalic from './StyleCharacteristic/Italic.js';
+import * as ASStyleCharacteristicOnOffOrMissing from './StyleCharacteristic/OnOffOrMissing.js';
+import * as ASStyleCharacteristicOverlined from './StyleCharacteristic/Overlined.js';
+import * as ASStyleCharacteristicPresentOrMissing from './StyleCharacteristic/PresentOrMissing.js';
+import * as ASStyleCharacteristicStruckThrough from './StyleCharacteristic/StruckThrough.js';
+import * as ASStyleCharacteristicUnderlined from './StyleCharacteristic/Underlined.js';
 
 /**
  * Module tag
@@ -235,9 +235,9 @@ export const toSequence = (self: Type): ASSequence.Type => {
  *
  * @category Destructors
  */
-export const toAnsiCode: MTypes.OneArgFunction<Type, ASAnsiCode.Type> = flow(
+export const toCode: MTypes.OneArgFunction<Type, ASCode.Type> = flow(
   toSequence,
-  ASAnsiCode.fromSequence,
+  ASCode.fromSequence,
 );
 
 /**

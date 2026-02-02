@@ -2,7 +2,7 @@
 
 import { MDataEquivalenceBasedEquality, MTypes } from '@parischap/effect-lib';
 import { Equivalence, Option, Predicate } from 'effect';
-import * as ASSequence from '../../Sequence.js';
+import * as ASSequence from '../Sequence.js';
 import * as ASStyleCharacteristicOnOffOrMissing from './OnOffOrMissing.js';
 
 /**

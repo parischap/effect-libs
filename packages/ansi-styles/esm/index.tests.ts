@@ -1,3 +1,5 @@
+export * as ASCode from './internal/Code.js';
+export * as ASSequence from './internal/Sequence.js';
 export * as ASStyleCharacteristicBackgroundColor from './internal/StyleCharacteristic/BackgroundColor.js';
 export * as ASStyleCharacteristicBlinking from './internal/StyleCharacteristic/Blinking.js';
 export * as ASStyleCharacteristicBold from './internal/StyleCharacteristic/Bold.js';
@@ -12,4 +14,5 @@ export * as ASStyleCharacteristicOverlined from './internal/StyleCharacteristic/
 export * as ASStyleCharacteristicPresentOrMissing from './internal/StyleCharacteristic/PresentOrMissing.js';
 export * as ASStyleCharacteristicStruckThrough from './internal/StyleCharacteristic/StruckThrough.js';
 export * as ASStyleCharacteristicUnderlined from './internal/StyleCharacteristic/Underlined.js';
+export * as ASStyleCharacteristics from './internal/StyleCharacteristics.js';
 export * as ASUnistyledText from './internal/UnistyledText.js';

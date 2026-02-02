@@ -8,13 +8,13 @@
     "@parischap/configs": "git+ssh://github.com/parischap/configs",
     "@effect/language-service": "0.64.1",
     "@types/node": "25.0.9",
-    "@typescript/native-preview": "7.0.0-dev.20260122.3",
+    "@typescript/native-preview": "7.0.0-dev.20260201.1",
     "prettier-plugin-jsdoc": "1.8.0",
     "prettier-plugin-organize-imports": "4.3.0",
     "@tsconfig/strictest": "2.0.8",
     "prettier": "3.7.4",
-    "oxlint": "1.41.0",
-    "oxlint-tsgolint": "0.11.1",
+    "oxlint": "1.42.0",
+    "oxlint-tsgolint": "0.11.4",
     "unrun": "0.2.24",
     "vitest": "4.0.17",
     "madge": "8.0.0",
@@ -25,8 +25,8 @@
     "@babel/plugin-transform-export-namespace-from": "7.27.1",
     "@babel/plugin-transform-modules-commonjs": "7.27.1",
     "@effect/cluster": "0.56.1",
-    "@effect/platform": "0.94.1",
-    "@effect/platform-node": "0.104.0",
+    "@effect/platform": "0.94.2",
+    "@effect/platform-node": "0.104.1",
     "@effect/rpc": "0.73.0",
     "@effect/sql": "0.49.0",
     "@effect/workflow": "0.16.0",
@@ -71,8 +71,8 @@
     "./tests": {
       "default": "./esm/index.tests.ts"
     },
-    "./ASAnsiCode": {
-      "default": "./esm/AnsiCode.ts"
+    "./ASCode": {
+      "default": "./esm/Code.ts"
     },
     "./ASContextStyler": {
       "default": "./esm/ContextStyler.ts"
@@ -111,6 +111,6 @@
   "module": "./esm/index.ts",
   "peerDependencies": {
     "@parischap/effect-lib": "^0.11.0",
-    "effect": "3.19.14"
+    "effect": "3.19.15"
   }
 }

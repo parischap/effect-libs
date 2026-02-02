@@ -6,7 +6,7 @@
 
 import { MDataEquivalenceBasedEquality, MTypes } from '@parischap/effect-lib';
 import { Boolean, Equivalence, Hash, Option } from 'effect';
-import * as ASSequence from '../../Sequence.js';
+import * as ASSequence from '../Sequence.js';
 import * as ASStyleCharacteristicPresentOrMissing from './PresentOrMissing.js';
 
 /**
@@ -99,7 +99,7 @@ export abstract class Type extends ASStyleCharacteristicPresentOrMissing.Type<bo
 
   /** Calculates the hash value of `this` */
   [Hash.symbol](): number {
-    return 0;
+    return Hash.cached(this, Hash.hash(this.value));
   }
 
   /** Function that implements the equivalence of `this` and `that` */

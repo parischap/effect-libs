@@ -4,3 +4,4 @@ dist/
 node_modules/
 vite.config.ts.timestamp-*.mjs
 pnpm-lock.yaml
+.DS_Store

@@ -1,5 +1,4 @@
-import { ASStyleCharacteristics } from '@parischap/ansi-styles';
-import { ASUnistyledText } from '@parischap/ansi-styles/tests';
+import { ASStyleCharacteristics, ASUnistyledText } from '@parischap/ansi-styles/tests';
 import * as TestUtils from '@parischap/configs/TestUtils';
 import { Option, pipe } from 'effect';
 import { describe, it } from 'vitest';
@@ -10,7 +9,7 @@ describe('UnistyledText', () => {
   const italicStyle = ASStyleCharacteristics.italic;
   const boldItalicStyle = pipe(
     ASStyleCharacteristics.bold,
-    ASStyleCharacteristics.mergeSelfFirst(ASStyleCharacteristics.italic),
+    ASStyleCharacteristics.mergeUnder(ASStyleCharacteristics.italic),
   );
 
   const simpleBoldText = ASUnistyledText.make({ text: simpleText, style: boldStyle });

@@ -2,7 +2,7 @@
 
 import { MDataBase, MDataEquivalenceBasedEquality, MFunction, MTypes } from '@parischap/effect-lib';
 import { Function, Option, pipe } from 'effect';
-import * as ASSequence from '../../Sequence.js';
+import * as ASSequence from '../Sequence.js';
 
 /**
  * Module tag

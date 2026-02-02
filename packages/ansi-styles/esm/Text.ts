@@ -26,7 +26,7 @@ import {
   flow,
   pipe,
 } from 'effect';
-import * as ASAnsiCode from './AnsiCode.js';
+import * as ASCode from './Code.js';
 import * as ASStyleCharacteristics from './StyleCharacteristics.js';
 import * as ASUnistyledText from './internal/UnistyledText.js';
 
@@ -228,7 +228,7 @@ export const toAnsiString: MTypes.OneArgFunction<Type, string> = flow(
 
           return pipe(
             toApply,
-            ASStyleCharacteristics.toAnsiCode,
+            ASStyleCharacteristics.toCode,
             MString.prepend(text),
             MString.append(uniStyled.text),
             Tuple.make,
@@ -237,7 +237,7 @@ export const toAnsiString: MTypes.OneArgFunction<Type, string> = flow(
         },
       ),
       Tuple.getFirst,
-      MString.append(ASAnsiCode.reset),
+      MString.append(ASCode.reset),
     ),
   }),
 );

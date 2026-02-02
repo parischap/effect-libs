@@ -12,7 +12,7 @@ import * as ASSequence from './Sequence.js';
 export type Type = string;
 
 /**
- * Builds an AnsiCode from a ASSequence.NonEmptyType
+ * Builds an Code from a ASSequence.NonEmptyType
  *
  * @category Constructors
  */
@@ -24,7 +24,7 @@ export const fromNonEmptySequence: MTypes.OneArgFunction<ASSequence.NonEmptyType
 );
 
 /**
- * Builds an AnsiCode from a ASSequence.Type
+ * Builds an Code from a ASSequence.Type
  *
  * @category Constructors
  */
@@ -35,147 +35,147 @@ export const fromSequence: MTypes.OneArgFunction<ASSequence.Type, string> = flow
 );
 
 /**
- * Empty AnsiCode instance
+ * Empty Code instance
  *
  * @category Instances
  */
 export const empty: Type = '';
 
 /**
- * Reset AnsiCode instance
+ * Reset Code instance
  *
  * @category Instances
  */
 export const reset: Type = fromNonEmptySequence(ASSequence.reset);
 
 /**
- * Bold AnsiCode instance
+ * Bold Code instance
  *
  * @category Instances
  */
 export const bold: Type = fromNonEmptySequence(ASSequence.bold);
 
 /**
- * Dim AnsiCode instance
+ * Dim Code instance
  *
  * @category Instances
  */
 export const dim: Type = fromNonEmptySequence(ASSequence.dim);
 
 /**
- * Italic AnsiCode instance
+ * Italic Code instance
  *
  * @category Instances
  */
 export const italic: Type = fromNonEmptySequence(ASSequence.italic);
 
 /**
- * Underline AnsiCode instance
+ * Underline Code instance
  *
  * @category Instances
  */
 export const underlined: Type = fromNonEmptySequence(ASSequence.underlined);
 
 /**
- * Blinking AnsiCode instance
+ * Blinking Code instance
  *
  * @category Instances
  */
 export const blinking: Type = fromNonEmptySequence(ASSequence.blinking);
 
 /**
- * Inversed AnsiCode instance
+ * Inversed Code instance
  *
  * @category Instances
  */
 export const inversed: Type = fromNonEmptySequence(ASSequence.inversed);
 
 /**
- * Hidden AnsiCode instance
+ * Hidden Code instance
  *
  * @category Instances
  */
 export const hidden: Type = fromNonEmptySequence(ASSequence.hidden);
 
 /**
- * Strikethrough AnsiCode instance
+ * Strikethrough Code instance
  *
  * @category Instances
  */
 export const struckThrough: Type = fromNonEmptySequence(ASSequence.struckThrough);
 
 /**
- * Not bold nor dim AnsiCode instance
+ * Not bold nor dim Code instance
  *
  * @category Instances
  */
 export const notBoldNotDim: Type = fromNonEmptySequence(ASSequence.notBoldNotDim);
 
 /**
- * Not italic AnsiCode instance
+ * Not italic Code instance
  *
  * @category Instances
  */
 export const notItalic: Type = fromNonEmptySequence(ASSequence.notItalic);
 
 /**
- * Not underlined AnsiCode instance
+ * Not underlined Code instance
  *
  * @category Instances
  */
 export const notUnderlined: Type = fromNonEmptySequence(ASSequence.notUnderlined);
 
 /**
- * Not blinking AnsiCode instance
+ * Not blinking Code instance
  *
  * @category Instances
  */
 export const notBlinking: Type = fromNonEmptySequence(ASSequence.notBlinking);
 
 /**
- * Not inversed AnsiCode instance
+ * Not inversed Code instance
  *
  * @category Instances
  */
 export const notInversed: Type = fromNonEmptySequence(ASSequence.notInversed);
 
 /**
- * Not hidden AnsiCode instance
+ * Not hidden Code instance
  *
  * @category Instances
  */
 export const notHidden: Type = fromNonEmptySequence(ASSequence.notHidden);
 
 /**
- * Not strikethrough AnsiCode instance
+ * Not strikethrough Code instance
  *
  * @category Instances
  */
 export const notStruckThrough: Type = fromNonEmptySequence(ASSequence.notStruckThrough);
 
 /**
- * Default foreground color AnsiCode instance
+ * Default foreground color Code instance
  *
  * @category Instances
  */
 export const defaultForegroundColor: Type = fromNonEmptySequence(ASSequence.defaultForegroundColor);
 
 /**
- * Default background color AnsiCode instance
+ * Default background color Code instance
  *
  * @category Instances
  */
 export const defaultBackgroundColor: Type = fromNonEmptySequence(ASSequence.defaultBackgroundColor);
 
 /**
- * Overlined AnsiCode instance
+ * Overlined Code instance
  *
  * @category Instances
  */
 export const overlined: Type = fromNonEmptySequence(ASSequence.overlined);
 
 /**
- * Not overlined AnsiCode instance
+ * Not overlined Code instance
  *
  * @category Instances
  */

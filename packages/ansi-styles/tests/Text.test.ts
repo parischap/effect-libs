@@ -1,5 +1,5 @@
 import {
-  ASAnsiCode,
+  ASCode,
   ASColorRgb,
   ASColorThreeBit,
   ASStyleCharacteristics,
@@ -69,7 +69,7 @@ describe('ASText', () => {
       });
 
       it('Bold red string', () => {
-        TestUtils.strictEqual(boldRedFoo.toString(), `\x1B[1;31mfoo${ASAnsiCode.reset}`);
+        TestUtils.strictEqual(boldRedFoo.toString(), `\x1B[1;31mfoo${ASCode.reset}`);
       });
     });
   });

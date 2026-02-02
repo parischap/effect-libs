@@ -1,4 +1,5 @@
-import { ASColorEightBit, ASColorThreeBit, ASStyleCharacteristics } from '@parischap/ansi-styles';
+import { ASColorEightBit, ASColorThreeBit } from '@parischap/ansi-styles';
+import { ASStyleCharacteristics } from '@parischap/ansi-styles/tests';
 import * as TestUtils from '@parischap/configs/TestUtils';
 import { Option, pipe } from 'effect';
 import { describe, it } from 'vitest';

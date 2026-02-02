@@ -3,7 +3,7 @@
 import { MDataEquivalenceBasedEquality, MTypes } from '@parischap/effect-lib';
 import { Function, Option, Predicate } from 'effect';
 import * as AsColorBase from '../../Color/Base.js';
-import * as ASSequence from '../../Sequence.js';
+import * as ASSequence from '../Sequence.js';
 import * as ASStyleCharacteristicColor from './Color.js';
 import * as ASStyleCharacteristicPresentOrMissing from './PresentOrMissing.js';
 /**

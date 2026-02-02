@@ -6,7 +6,7 @@
 
 import { MDataEquivalenceBasedEquality } from '@parischap/effect-lib';
 import { Array, Equal, Equivalence, Hash, Inspectable, Number, Pipeable } from 'effect';
-import type * as ASSequence from '../Sequence.js';
+import type * as ASSequence from '../internal/Sequence.js';
 
 /**
  * Module tag
