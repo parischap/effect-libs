@@ -103,7 +103,7 @@ export abstract class Type extends ASStyleCharacteristicPresentOrMissing.Type<bo
   }
 
   /** Function that implements the equivalence of `this` and `that` */
-  protected [MDataEquivalenceBasedEquality.isEquivalentToSymbol](this: this, that: this): boolean {
+  [MDataEquivalenceBasedEquality.isEquivalentToSymbol](this: this, that: this): boolean {
     return equivalence(this, that);
   }
 

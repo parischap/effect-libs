@@ -1,27 +1,21 @@
-import { ASStyle, ASStyleCharacteristics, ASText } from '@parischap/ansi-styles';
+import { ASStyle, ASText } from '@parischap/ansi-styles';
+import { ASStyleCharacteristics } from '@parischap/ansi-styles/tests';
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { pipe } from 'effect';
+import { Option, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('ASStyle', () => {
   const { red, bold } = ASStyle;
+
   const boldRed1 = pipe(red, ASStyle.mergeOver(bold));
   const boldRed2 = pipe(bold, ASStyle.mergeOver(red));
 
   describe('Tag, prototype and guards', () => {
     it('moduleTag', () => {
-      TestUtils.assertSome(TestUtils.moduleTagFromTestFilePath(__filename), ASStyle.moduleTag);
-    });
-
-    describe('Equal.equals', () => {
-      it('Matching', () => {
-        TestUtils.assertEquals(ASStyle.none, ASStyle.none);
-        TestUtils.assertEquals(boldRed1, boldRed2);
-      });
-
-      it('Non-matching', () => {
-        TestUtils.assertNotEquals(boldRed2, bold);
-      });
+      TestUtils.assertEquals(
+        Option.some(ASStyle.moduleTag),
+        TestUtils.moduleTagFromTestFilePath(import.meta.filename),
+      );
     });
 
     describe('.toString()', () => {
@@ -38,20 +32,7 @@ describe('ASStyle', () => {
         TestUtils.strictEqual(ASStyle.defaultColor.toString(), 'DefaultColor');
       });
       it('Default background color', () => {
-        TestUtils.strictEqual(ASStyle.Bg.defaultColor.toString(), 'InDefaultColor');
-      });
-    });
-
-    it('.pipe()', () => {
-      TestUtils.strictEqual(boldRed1.pipe(ASStyle.toString), 'BoldRed');
-    });
-
-    describe('has', () => {
-      it('Matching', () => {
-        TestUtils.assertTrue(ASStyle.has(boldRed2));
-      });
-      it('Non matching', () => {
-        TestUtils.assertFalse(ASStyle.has(new Date()));
+        TestUtils.strictEqual(ASStyle.bgDefaultColor.toString(), 'InDefaultColor');
       });
     });
   });
@@ -61,7 +42,7 @@ describe('ASStyle', () => {
       pipe(
         ASStyle.green,
         ASStyle.mergeOver(ASStyle.blinking),
-        ASStyle.mergeOver(ASStyle.Bright.black),
+        ASStyle.mergeOver(ASStyle.brightBlack),
       ).toString(),
       'BlinkingBrightBlack',
     );
@@ -72,7 +53,7 @@ describe('ASStyle', () => {
       pipe(
         ASStyle.green,
         ASStyle.mergeUnder(ASStyle.blinking),
-        ASStyle.mergeUnder(ASStyle.Bright.black),
+        ASStyle.mergeUnder(ASStyle.brightBlack),
       ).toString(),
       'BlinkingGreen',
     );

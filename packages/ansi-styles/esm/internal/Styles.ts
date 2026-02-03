@@ -5,7 +5,7 @@
 
 import { MTypes } from '@parischap/effect-lib';
 import { Array, flow } from 'effect';
-import * as ASStyle from './Style.js';
+import * as ASStyle from '../Style.js';
 
 /**
  * Type that represents an array of Style's.

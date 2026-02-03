@@ -71,7 +71,7 @@ Version 0.3.0 introduced many improvements and breaking changes. we apologize fo
 
 ## Usage
 
-Note that, throughout this document, the term `non-primitive value` refers to a value that is not a Javascript primitive. So it can represent javascript functions or non-null javascript objects (which of course include arrays).
+Note that, throughout this document, the term `non-primitive value` refers to a value that is not a JavaScript primitive. So it can represent javascript functions or non-null javascript objects (which of course include arrays).
 
 ### A) Using predefined `Option` instances
 
@@ -103,7 +103,7 @@ console.log(pipe(toPrint, stringifier, PPStringifiedValue.toAnsiString()));
 
 ![util-inspect-like-example](readme-assets/util-inspect-like.png?sanitize=true)
 
-In the previous example, we used the `darkModeUtilInspectLike` Option instance. As its name suggests, it pretty-prints values in a way very similar to the Javascript `util.inspect()` function using colors adapted to a dark-mode terminal (which is almost always the case). But if you don't need coloring, you can simply use the `utilInspectLike` Option instance instead. Do note how the Effect HashMap gets directly printed without any particular effort.
+In the previous example, we used the `darkModeUtilInspectLike` Option instance. As its name suggests, it pretty-prints values in a way very similar to the JavaScript `util.inspect()` function using colors adapted to a dark-mode terminal (which is almost always the case). But if you don't need coloring, you can simply use the `utilInspectLike` Option instance instead. Do note how the Effect HashMap gets directly printed without any particular effort.
 
 The remaining 4 predefined Option instances are all related to treeifying. For instance:
 
@@ -134,7 +134,7 @@ console.log(pipe(toPrint, stringifier, PPStringifiedValue.toAnsiString()));
 ![treeify-example](readme-assets/treeify.png?sanitize=true)
 
 Again, do note how an array and an Effect HashMap get directly treeified without any particular effort.
-As you have guessed, the `treeifyHideLeaves` Option instance does the same without coloring. And the treeify and darkModeTreeify Option instances also treeify without hiding the leaves (the `null` values in the previous example). Here's a simple example:
+As you have guessed, the `treeifyHideLeaves` Option instance does the same without coloring. And the `treeify` and `darkModeTreeify` Option instances also treeify but without hiding the leaves (the `null` values in the previous example). Here's a simple example:
 
 ```ts
 import { PPOption, PPStringifiedValue } from '@parischap/pretty-print';

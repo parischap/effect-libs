@@ -37,7 +37,7 @@ export class Type extends ASStyleCharacteristicColor.Type {
   ): string {
     return Option.match(value, {
       onNone: Function.constant('InDefaultColor'),
-      onSome: AsColorBase.toBackgroundId,
+      onSome: AsColorBase.backgroundId,
     });
   }
 
@@ -47,12 +47,12 @@ export class Type extends ASStyleCharacteristicColor.Type {
   ): ASSequence.NonEmptyType {
     return Option.match(value, {
       onNone: Function.constant(ASSequence.defaultBackgroundColor),
-      onSome: AsColorBase.toBackgroundSequence,
+      onSome: AsColorBase.backgroundSequence,
     });
   }
 
   /** Predicate that returns true if `that` has the same type marker as `this` */
-  protected [MDataEquivalenceBasedEquality.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
+  [MDataEquivalenceBasedEquality.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
     return Predicate.hasProperty(that, _TypeId);
   }
 

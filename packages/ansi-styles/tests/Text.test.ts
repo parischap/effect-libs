@@ -14,12 +14,12 @@ describe('ASText', () => {
   const notUnderlined = ASText.fromStyleAndElems(ASStyleCharacteristics.notUnderlined);
 
   const red = pipe(
-    ASColorThreeBit.Red,
+    ASColorThreeBit.red,
     ASStyleCharacteristics.fromColorAsForegroundColor,
     ASText.fromStyleAndElems,
   );
   const pink = pipe(
-    ASColorRgb.Pink,
+    ASColorRgb.pink,
     ASStyleCharacteristics.fromColorAsForegroundColor,
     ASText.fromStyleAndElems,
   );
@@ -64,7 +64,10 @@ describe('ASText', () => {
       });
 
       it('Bold red string', () => {
-        TestUtils.strictEqual(boldRedFoo.toString(), `\x1B[1;31mfoo${ASCode.reset}`);
+        TestUtils.strictEqual(
+          boldRedFoo.toString(),
+          `${ASCode.fromNonEmptySequence([1, 31])}foo${ASCode.reset}`,
+        );
       });
     });
   });
@@ -109,7 +112,9 @@ describe('ASText', () => {
 
     TestUtils.strictEqual(
       ASText.toAnsiString(text),
-      'foo \x1B[1;31mgoes \x1B[3mto \x1B[23;38;2;255;192;203mthe \x1B[22mbeach \x1B[1;2;31mto swim \x1B[22;1;4mwith bar\x1B[0m',
+      `foo ${ASCode.fromNonEmptySequence([1, 31])}goes ${ASCode.fromNonEmptySequence([3])}to \
+${ASCode.fromNonEmptySequence([23, 38, 2, 255, 192, 203])}the ${ASCode.fromNonEmptySequence([22])}beach \
+${ASCode.fromNonEmptySequence([1, 2, 31])}to swim ${ASCode.fromNonEmptySequence([22, 1, 4])}with bar${ASCode.reset}`,
     );
   });
 

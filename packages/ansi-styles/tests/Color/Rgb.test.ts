@@ -13,29 +13,23 @@ describe('ASColorRgb', () => {
     );
   });
 
-  it('toForegroundSequence', () => {
-    TestUtils.deepStrictEqual(
-      ASColorBase.toForegroundSequence(ASColorRgb.Green),
-      [38, 2, 0, 128, 0],
-    );
-    TestUtils.deepStrictEqual(ASColorBase.toForegroundSequence(anRgbColor), [38, 2, 127, 18, 12]);
+  it('foregroundSequence', () => {
+    TestUtils.deepStrictEqual(ASColorBase.foregroundSequence(ASColorRgb.green), [38, 2, 0, 128, 0]);
+    TestUtils.deepStrictEqual(ASColorBase.foregroundSequence(anRgbColor), [38, 2, 127, 18, 12]);
   });
 
-  it('toBackgroundSequence', () => {
-    TestUtils.deepStrictEqual(
-      ASColorBase.toBackgroundSequence(ASColorRgb.Green),
-      [48, 2, 0, 128, 0],
-    );
-    TestUtils.deepStrictEqual(ASColorBase.toBackgroundSequence(anRgbColor), [48, 2, 127, 18, 12]);
+  it('backgroundSequence', () => {
+    TestUtils.deepStrictEqual(ASColorBase.backgroundSequence(ASColorRgb.green), [48, 2, 0, 128, 0]);
+    TestUtils.deepStrictEqual(ASColorBase.backgroundSequence(anRgbColor), [48, 2, 127, 18, 12]);
   });
 
-  it('toForegroundId', () => {
-    TestUtils.deepStrictEqual(ASColorBase.toForegroundId(ASColorRgb.Green), 'RgbGreen');
-    TestUtils.deepStrictEqual(ASColorBase.toForegroundId(anRgbColor), 'Rgb127/18/12');
+  it('foregroundId', () => {
+    TestUtils.deepStrictEqual(ASColorBase.foregroundId(ASColorRgb.green), 'RgbGreen');
+    TestUtils.deepStrictEqual(ASColorBase.foregroundId(anRgbColor), 'Rgb127/18/12');
   });
 
-  it('toBackgroundId', () => {
-    TestUtils.deepStrictEqual(ASColorBase.toBackgroundId(ASColorRgb.Green), 'InRgbGreen');
-    TestUtils.deepStrictEqual(ASColorBase.toBackgroundId(anRgbColor), 'InRgb127/18/12');
+  it('backgroundId', () => {
+    TestUtils.deepStrictEqual(ASColorBase.backgroundId(ASColorRgb.green), 'InRgbGreen');
+    TestUtils.deepStrictEqual(ASColorBase.backgroundId(anRgbColor), 'InRgb127/18/12');
   });
 });

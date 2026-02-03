@@ -38,7 +38,7 @@ type toPresentSequenceSymbol = typeof toPresentSequenceSymbol;
  *
  * @category Models
  */
-export abstract class Type<out A> extends MDataEquivalenceBasedEquality.Type {
+export abstract class Type<out A> extends MDataEquivalenceBasedEquality.Class {
   /**
    * The value of the style characteristic:
    *
@@ -57,7 +57,7 @@ export abstract class Type<out A> extends MDataEquivalenceBasedEquality.Type {
   abstract [toPresentIdSymbol](presentValue: A): string;
 
   /** Returns the `id` of `this` */
-  protected [MDataBase.idSymbol](): string | (() => string) {
+  [MDataBase.idSymbol](): string | (() => string) {
     return function idSymbol(this: Type<A>) {
       return Option.match(this.value, {
         onNone: MFunction.constEmptyString,

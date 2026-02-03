@@ -14,7 +14,7 @@ describe('ASStyleCharacteristicForegroundColor', () => {
 
   it('.toString()', () => {
     TestUtils.assertEquals(
-      ASStyleCharacteristicForegroundColor.fromColor(ASColorRgb.Red).toString(),
+      ASStyleCharacteristicForegroundColor.fromColor(ASColorRgb.red).toString(),
       'RgbRed',
     );
     TestUtils.assertEquals(

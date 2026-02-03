@@ -38,12 +38,14 @@ export const moduleTag = '@parischap/ansi-styles/internal/StyleCharacteristics/'
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
+const _TypeIdHash = Hash.hash(_TypeId);
+
 /**
  * Type of a StyleCharacteristics
  *
  * @category Models
  */
-export class Type extends MDataEquivalenceBasedEquality.Type {
+export class Type extends MDataEquivalenceBasedEquality.Class {
   /** BoldState of this style */
   readonly bold: ASStyleCharacteristicBold.Type;
 
@@ -111,7 +113,7 @@ export class Type extends MDataEquivalenceBasedEquality.Type {
   }
 
   /** Returns the `id` of `this` */
-  protected [MDataBase.idSymbol](): string | (() => string) {
+  [MDataBase.idSymbol](): string | (() => string) {
     return function idSymbol(this: Type) {
       const result = `${this.bold.toString()}${this.dim.toString()}${this.italic.toString()}${this.underlined.toString()}\
 ${this.struckThrough.toString()}${this.overlined.toString()}${this.inversed.toString()}${this.hidden.toString()}\
@@ -135,17 +137,18 @@ ${this.blinking.toString()}${this.foregroundColor.toString()}${this.backgroundCo
       Hash.combine(Hash.hash(this.blinking)),
       Hash.combine(Hash.hash(this.foregroundColor)),
       Hash.combine(Hash.hash(this.backgroundColor)),
+      Hash.combine(_TypeIdHash),
       Hash.cached(this),
     );
   }
 
   /** Function that implements the equivalence of `this` and `that` */
-  protected [MDataEquivalenceBasedEquality.isEquivalentToSymbol](this: this, that: this): boolean {
+  [MDataEquivalenceBasedEquality.isEquivalentToSymbol](this: this, that: this): boolean {
     return equivalence(this, that);
   }
 
   /** Predicate that returns true if `that` has the same type marker as `this` */
-  protected [MDataEquivalenceBasedEquality.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
+  [MDataEquivalenceBasedEquality.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
     return Predicate.hasProperty(that, _TypeId);
   }
 

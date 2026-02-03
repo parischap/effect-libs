@@ -141,12 +141,7 @@
             "default": "generic"
           }
         ],
-        "@typescript-eslint/consistent-type-definitions": [
-          "error",
-          {
-            "default": "generic"
-          }
-        ],
+        "@typescript-eslint/consistent-type-definitions": "error",
         "@typescript-eslint/no-confusing-non-null-assertion": "error",
         "@typescript-eslint/no-confusing-void-expression": [
           "error",

@@ -69,11 +69,3 @@ export abstract class Class extends Pipeable.Class() implements Type {
       : id.call(this);
   }
 }
-
-/**
- * Same as Type but we export a prototype instead of a class. It can come in handy when the the
- * target object represents a function which cannot be modeled as a class
- *
- * @category Prototypes
- */
-export const Prototype: Pipeable.Pipeable & Inspectable.Inspectable = Class.prototype;

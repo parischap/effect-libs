@@ -126,16 +126,16 @@ describe('ASStyleCharacteristicPresentOrMissing', () => {
       );
     });
     it('ASStyleCharacteristicStruckThrough', () => {
-      (TestUtils.assertEquals(
+      TestUtils.assertEquals(
         ASStyleCharacteristicPresentOrMissing.toSequence(
           ASStyleCharacteristicStruckThrough.missing,
         ),
         ASSequence.empty,
-      ),
-        TestUtils.assertEquals(
-          ASStyleCharacteristicPresentOrMissing.toSequence(ASStyleCharacteristicStruckThrough.on),
-          ASSequence.struckThrough,
-        ));
+      );
+      TestUtils.assertEquals(
+        ASStyleCharacteristicPresentOrMissing.toSequence(ASStyleCharacteristicStruckThrough.on),
+        ASSequence.struckThrough,
+      );
       TestUtils.assertEquals(
         ASStyleCharacteristicPresentOrMissing.toSequence(ASStyleCharacteristicStruckThrough.off),
         ASSequence.notStruckThrough,
@@ -170,7 +170,7 @@ describe('ASStyleCharacteristicPresentOrMissing', () => {
       );
       TestUtils.assertEquals(
         ASStyleCharacteristicPresentOrMissing.toSequence(
-          ASStyleCharacteristicForegroundColor.fromColor(ASColorRgb.Red),
+          ASStyleCharacteristicForegroundColor.fromColor(ASColorRgb.red),
         ),
         [38, 2, 255, 0, 0],
       );
@@ -190,7 +190,7 @@ describe('ASStyleCharacteristicPresentOrMissing', () => {
       );
       TestUtils.assertEquals(
         ASStyleCharacteristicPresentOrMissing.toSequence(
-          ASStyleCharacteristicBackgroundColor.fromColor(ASColorRgb.Red),
+          ASStyleCharacteristicBackgroundColor.fromColor(ASColorRgb.red),
         ),
         [48, 2, 255, 0, 0],
       );

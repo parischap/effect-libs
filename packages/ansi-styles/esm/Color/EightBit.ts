@@ -1,8 +1,7 @@
 /** This module defines EightBit colors */
 
-import { MDataBase, MDataEquivalenceBasedEquality, MMatch, MTypes } from '@parischap/effect-lib';
+import { MDataEquivalenceBasedEquality, MMatch, MTypes } from '@parischap/effect-lib';
 import { Array, Equivalence, flow, Function, Hash, Predicate, Struct } from 'effect';
-import * as ASSequence from '../internal/Sequence.js';
 import * as ASColorBase from './Base.js';
 
 /**
@@ -628,27 +627,18 @@ export class Type extends ASColorBase.Type {
   /** Code of this color */
   readonly code: Code;
 
-  /** Gets the foreground sequence of `this` */
-  [ASColorBase.toForegroundSequenceSymbol](): ASSequence.NonEmptyType {
-    return Array.make(38, 5, this.code);
-  }
-
   /** Class constructor */
-  private constructor({ code }: MTypes.Data<Type>) {
-    super();
+  private constructor({ code }: { readonly code: Code }) {
+    super({
+      foregroundId: `EightBit${Code.toString(code)}`,
+      foregroundSequence: Array.make(38, 5, code),
+    });
     this.code = code;
   }
 
   /** Static constructor */
-  static make(params: MTypes.Data<Type>): Type {
+  static make(params: { readonly code: Code }): Type {
     return new Type(params);
-  }
-
-  /** Returns the `id` of `this` */
-  protected [MDataBase.idSymbol](): string | (() => string) {
-    return function idSymbol(this: Type) {
-      return `EightBit${Code.toString(this.code)}`;
-    };
   }
 
   /** Calculates the hash value of `this` */
@@ -657,12 +647,12 @@ export class Type extends ASColorBase.Type {
   }
 
   /** Function that implements the equivalence of `this` and `that` */
-  protected [MDataEquivalenceBasedEquality.isEquivalentToSymbol](this: this, that: this): boolean {
+  [MDataEquivalenceBasedEquality.isEquivalentToSymbol](this: this, that: this): boolean {
     return equivalence(this, that);
   }
 
   /** Predicate that returns true if `that` has the same type marker as `this` */
-  protected [MDataEquivalenceBasedEquality.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
+  [MDataEquivalenceBasedEquality.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
     return Predicate.hasProperty(that, _TypeId);
   }
 
@@ -684,7 +674,7 @@ export const equivalence: Equivalence.Equivalence<Type> = (self, that) => self.c
  *
  * @category Constructors
  */
-export const make = (params: MTypes.Data<Type>): Type => Type.make(params);
+export const make = (params: { readonly code: Code }): Type => Type.make(params);
 
 /**
  * Gets the `code` property of `self`
@@ -698,139 +688,139 @@ export const code: MTypes.OneArgFunction<Type, Code> = Struct.get('code');
  *
  * @category EightBit instances
  */
-export const Black: Type = make({ code: Code.Black });
+export const black: Type = make({ code: Code.Black });
 /**
  * Eightbit Maroon Color instance
  *
  * @category EightBit instances
  */
-export const Maroon: Type = make({ code: Code.Maroon });
+export const maroon: Type = make({ code: Code.Maroon });
 /**
  * Eightbit Green Color instance
  *
  * @category EightBit instances
  */
-export const Green: Type = make({ code: Code.Green });
+export const green: Type = make({ code: Code.Green });
 /**
  * Eightbit Olive Color instance
  *
  * @category EightBit instances
  */
-export const Olive: Type = make({ code: Code.Olive });
+export const olive: Type = make({ code: Code.Olive });
 /**
  * Eightbit Navy Color instance
  *
  * @category EightBit instances
  */
-export const Navy: Type = make({ code: Code.Navy });
+export const navy: Type = make({ code: Code.Navy });
 /**
  * Eightbit Purple_1 Color instance
  *
  * @category EightBit instances
  */
-export const Purple_1: Type = make({ code: Code.Purple_1 });
+export const purple_1: Type = make({ code: Code.Purple_1 });
 /**
  * Eightbit Teal Color instance
  *
  * @category EightBit instances
  */
-export const Teal: Type = make({ code: Code.Teal });
+export const teal: Type = make({ code: Code.Teal });
 /**
  * Eightbit Silver Color instance
  *
  * @category EightBit instances
  */
-export const Silver: Type = make({ code: Code.Silver });
+export const silver: Type = make({ code: Code.Silver });
 /**
  * Eightbit Grey Color instance
  *
  * @category EightBit instances
  */
-export const Grey: Type = make({ code: Code.Grey });
+export const grey: Type = make({ code: Code.Grey });
 /**
  * Eightbit Red Color instance
  *
  * @category EightBit instances
  */
-export const Red: Type = make({ code: Code.Red });
+export const red: Type = make({ code: Code.Red });
 /**
  * Eightbit Lime Color instance
  *
  * @category EightBit instances
  */
-export const Lime: Type = make({ code: Code.Lime });
+export const lime: Type = make({ code: Code.Lime });
 /**
  * Eightbit Yellow Color instance
  *
  * @category EightBit instances
  */
-export const Yellow: Type = make({ code: Code.Yellow });
+export const yellow: Type = make({ code: Code.Yellow });
 /**
  * Eightbit Blue Color instance
  *
  * @category EightBit instances
  */
-export const Blue: Type = make({ code: Code.Blue });
+export const blue: Type = make({ code: Code.Blue });
 /**
  * Eightbit Fuchsia Color instance
  *
  * @category EightBit instances
  */
-export const Fuchsia: Type = make({ code: Code.Fuchsia });
+export const fuchsia: Type = make({ code: Code.Fuchsia });
 /**
  * Eightbit Aqua Color instance
  *
  * @category EightBit instances
  */
-export const Aqua: Type = make({ code: Code.Aqua });
+export const aqua: Type = make({ code: Code.Aqua });
 /**
  * Eightbit White Color instance
  *
  * @category EightBit instances
  */
-export const White: Type = make({ code: Code.White });
+export const white: Type = make({ code: Code.White });
 /**
  * Eightbit Grey0 Color instance
  *
  * @category EightBit instances
  */
-export const Grey0: Type = make({ code: Code.Grey0 });
+export const grey0: Type = make({ code: Code.Grey0 });
 /**
  * Eightbit NavyBlue Color instance
  *
  * @category EightBit instances
  */
-export const NavyBlue: Type = make({ code: Code.NavyBlue });
+export const navyBlue: Type = make({ code: Code.NavyBlue });
 /**
  * Eightbit DarkBlue Color instance
  *
  * @category EightBit instances
  */
-export const DarkBlue: Type = make({ code: Code.DarkBlue });
+export const darkBlue: Type = make({ code: Code.DarkBlue });
 /**
  * Eightbit Blue3_1 Color instance
  *
  * @category EightBit instances
  */
-export const Blue3_1: Type = make({ code: Code.Blue3_1 });
+export const blue3_1: Type = make({ code: Code.Blue3_1 });
 /**
  * Eightbit Blue3_2 Color instance
  *
  * @category EightBit instances
  */
-export const Blue3_2: Type = make({ code: Code.Blue3_2 });
+export const blue3_2: Type = make({ code: Code.Blue3_2 });
 /**
  * Eightbit Blue1 Color instance
  *
  * @category EightBit instances
  */
-export const Blue1: Type = make({ code: Code.Blue1 });
+export const blue1: Type = make({ code: Code.Blue1 });
 /**
  * Eightbit DarkGreen Color instance
  *
  * @category EightBit instances
  */
-export const DarkGreen: Type = make({
+export const darkGreen: Type = make({
   code: Code.DarkGreen,
 });
 /**
@@ -838,7 +828,7 @@ export const DarkGreen: Type = make({
  *
  * @category EightBit instances
  */
-export const DeepSkyBlue4_1: Type = make({
+export const deepSkyBlue4_1: Type = make({
   code: Code.DeepSkyBlue4_1,
 });
 /**
@@ -846,7 +836,7 @@ export const DeepSkyBlue4_1: Type = make({
  *
  * @category EightBit instances
  */
-export const DeepSkyBlue4_2: Type = make({
+export const deepSkyBlue4_2: Type = make({
   code: Code.DeepSkyBlue4_2,
 });
 /**
@@ -854,7 +844,7 @@ export const DeepSkyBlue4_2: Type = make({
  *
  * @category EightBit instances
  */
-export const DeepSkyBlue4_3: Type = make({
+export const deepSkyBlue4_3: Type = make({
   code: Code.DeepSkyBlue4_3,
 });
 /**
@@ -862,7 +852,7 @@ export const DeepSkyBlue4_3: Type = make({
  *
  * @category EightBit instances
  */
-export const DodgerBlue3: Type = make({
+export const dodgerBlue3: Type = make({
   code: Code.DodgerBlue3,
 });
 /**
@@ -870,7 +860,7 @@ export const DodgerBlue3: Type = make({
  *
  * @category EightBit instances
  */
-export const DodgerBlue2: Type = make({
+export const dodgerBlue2: Type = make({
   code: Code.DodgerBlue2,
 });
 /**
@@ -878,13 +868,13 @@ export const DodgerBlue2: Type = make({
  *
  * @category EightBit instances
  */
-export const Green4: Type = make({ code: Code.Green4 });
+export const green4: Type = make({ code: Code.Green4 });
 /**
  * Eightbit SpringGreen4 Color instance
  *
  * @category EightBit instances
  */
-export const SpringGreen4: Type = make({
+export const springGreen4: Type = make({
   code: Code.SpringGreen4,
 });
 /**
@@ -892,7 +882,7 @@ export const SpringGreen4: Type = make({
  *
  * @category EightBit instances
  */
-export const Turquoise4: Type = make({
+export const turquoise4: Type = make({
   code: Code.Turquoise4,
 });
 /**
@@ -900,7 +890,7 @@ export const Turquoise4: Type = make({
  *
  * @category EightBit instances
  */
-export const DeepSkyBlue3_1: Type = make({
+export const deepSkyBlue3_1: Type = make({
   code: Code.DeepSkyBlue3_1,
 });
 /**
@@ -908,7 +898,7 @@ export const DeepSkyBlue3_1: Type = make({
  *
  * @category EightBit instances
  */
-export const DeepSkyBlue3_2: Type = make({
+export const deepSkyBlue3_2: Type = make({
   code: Code.DeepSkyBlue3_2,
 });
 /**
@@ -916,7 +906,7 @@ export const DeepSkyBlue3_2: Type = make({
  *
  * @category EightBit instances
  */
-export const DodgerBlue1: Type = make({
+export const dodgerBlue1: Type = make({
   code: Code.DodgerBlue1,
 });
 /**
@@ -924,13 +914,13 @@ export const DodgerBlue1: Type = make({
  *
  * @category EightBit instances
  */
-export const Green3_1: Type = make({ code: Code.Green3_1 });
+export const green3_1: Type = make({ code: Code.Green3_1 });
 /**
  * Eightbit SpringGreen3_1 Color instance
  *
  * @category EightBit instances
  */
-export const SpringGreen3_1: Type = make({
+export const springGreen3_1: Type = make({
   code: Code.SpringGreen3_1,
 });
 /**
@@ -938,13 +928,13 @@ export const SpringGreen3_1: Type = make({
  *
  * @category EightBit instances
  */
-export const DarkCyan: Type = make({ code: Code.DarkCyan });
+export const darkCyan: Type = make({ code: Code.DarkCyan });
 /**
  * Eightbit LightSeaGreen Color instance
  *
  * @category EightBit instances
  */
-export const LightSeaGreen: Type = make({
+export const lightSeaGreen: Type = make({
   code: Code.LightSeaGreen,
 });
 /**
@@ -952,7 +942,7 @@ export const LightSeaGreen: Type = make({
  *
  * @category EightBit instances
  */
-export const DeepSkyBlue2: Type = make({
+export const deepSkyBlue2: Type = make({
   code: Code.DeepSkyBlue2,
 });
 /**
@@ -960,7 +950,7 @@ export const DeepSkyBlue2: Type = make({
  *
  * @category EightBit instances
  */
-export const DeepSkyBlue1: Type = make({
+export const deepSkyBlue1: Type = make({
   code: Code.DeepSkyBlue1,
 });
 /**
@@ -968,13 +958,13 @@ export const DeepSkyBlue1: Type = make({
  *
  * @category EightBit instances
  */
-export const Green3_2: Type = make({ code: Code.Green3_2 });
+export const green3_2: Type = make({ code: Code.Green3_2 });
 /**
  * Eightbit SpringGreen3_2 Color instance
  *
  * @category EightBit instances
  */
-export const SpringGreen3_2: Type = make({
+export const springGreen3_2: Type = make({
   code: Code.SpringGreen3_2,
 });
 /**
@@ -982,7 +972,7 @@ export const SpringGreen3_2: Type = make({
  *
  * @category EightBit instances
  */
-export const SpringGreen2_1: Type = make({
+export const springGreen2_1: Type = make({
   code: Code.SpringGreen2_1,
 });
 /**
@@ -990,13 +980,13 @@ export const SpringGreen2_1: Type = make({
  *
  * @category EightBit instances
  */
-export const Cyan3: Type = make({ code: Code.Cyan3 });
+export const cyan3: Type = make({ code: Code.Cyan3 });
 /**
  * Eightbit DarkTurquoise Color instance
  *
  * @category EightBit instances
  */
-export const DarkTurquoise: Type = make({
+export const darkTurquoise: Type = make({
   code: Code.DarkTurquoise,
 });
 /**
@@ -1004,7 +994,7 @@ export const DarkTurquoise: Type = make({
  *
  * @category EightBit instances
  */
-export const Turquoise2: Type = make({
+export const turquoise2: Type = make({
   code: Code.Turquoise2,
 });
 /**
@@ -1012,13 +1002,13 @@ export const Turquoise2: Type = make({
  *
  * @category EightBit instances
  */
-export const Green1: Type = make({ code: Code.Green1 });
+export const green1: Type = make({ code: Code.Green1 });
 /**
  * Eightbit SpringGreen2_2 Color instance
  *
  * @category EightBit instances
  */
-export const SpringGreen2_2: Type = make({
+export const springGreen2_2: Type = make({
   code: Code.SpringGreen2_2,
 });
 /**
@@ -1026,7 +1016,7 @@ export const SpringGreen2_2: Type = make({
  *
  * @category EightBit instances
  */
-export const SpringGreen1: Type = make({
+export const springGreen1: Type = make({
   code: Code.SpringGreen1,
 });
 /**
@@ -1034,7 +1024,7 @@ export const SpringGreen1: Type = make({
  *
  * @category EightBit instances
  */
-export const MediumSpringGreen: Type = make({
+export const mediumSpringGreen: Type = make({
   code: Code.MediumSpringGreen,
 });
 /**
@@ -1042,19 +1032,19 @@ export const MediumSpringGreen: Type = make({
  *
  * @category EightBit instances
  */
-export const Cyan2: Type = make({ code: Code.Cyan2 });
+export const cyan2: Type = make({ code: Code.Cyan2 });
 /**
  * Eightbit Cyan1 Color instance
  *
  * @category EightBit instances
  */
-export const Cyan1: Type = make({ code: Code.Cyan1 });
+export const cyan1: Type = make({ code: Code.Cyan1 });
 /**
  * Eightbit DarkRed_1 Color instance
  *
  * @category EightBit instances
  */
-export const DarkRed_1: Type = make({
+export const darkRed_1: Type = make({
   code: Code.DarkRed_1,
 });
 /**
@@ -1062,7 +1052,7 @@ export const DarkRed_1: Type = make({
  *
  * @category EightBit instances
  */
-export const DeepPink4_1: Type = make({
+export const deepPink4_1: Type = make({
   code: Code.DeepPink4_1,
 });
 /**
@@ -1070,7 +1060,7 @@ export const DeepPink4_1: Type = make({
  *
  * @category EightBit instances
  */
-export const Purple4_1: Type = make({
+export const purple4_1: Type = make({
   code: Code.Purple4_1,
 });
 /**
@@ -1078,7 +1068,7 @@ export const Purple4_1: Type = make({
  *
  * @category EightBit instances
  */
-export const Purple4_2: Type = make({
+export const purple4_2: Type = make({
   code: Code.Purple4_2,
 });
 /**
@@ -1086,13 +1076,13 @@ export const Purple4_2: Type = make({
  *
  * @category EightBit instances
  */
-export const Purple3: Type = make({ code: Code.Purple3 });
+export const purple3: Type = make({ code: Code.Purple3 });
 /**
  * Eightbit BlueViolet Color instance
  *
  * @category EightBit instances
  */
-export const BlueViolet: Type = make({
+export const blueViolet: Type = make({
   code: Code.BlueViolet,
 });
 /**
@@ -1100,7 +1090,7 @@ export const BlueViolet: Type = make({
  *
  * @category EightBit instances
  */
-export const Orange4_1: Type = make({
+export const orange4_1: Type = make({
   code: Code.Orange4_1,
 });
 /**
@@ -1108,13 +1098,13 @@ export const Orange4_1: Type = make({
  *
  * @category EightBit instances
  */
-export const Grey37: Type = make({ code: Code.Grey37 });
+export const grey37: Type = make({ code: Code.Grey37 });
 /**
  * Eightbit MediumPurple4 Color instance
  *
  * @category EightBit instances
  */
-export const MediumPurple4: Type = make({
+export const mediumPurple4: Type = make({
   code: Code.MediumPurple4,
 });
 /**
@@ -1122,7 +1112,7 @@ export const MediumPurple4: Type = make({
  *
  * @category EightBit instances
  */
-export const SlateBlue3_1: Type = make({
+export const slateBlue3_1: Type = make({
   code: Code.SlateBlue3_1,
 });
 /**
@@ -1130,7 +1120,7 @@ export const SlateBlue3_1: Type = make({
  *
  * @category EightBit instances
  */
-export const SlateBlue3_2: Type = make({
+export const slateBlue3_2: Type = make({
   code: Code.SlateBlue3_2,
 });
 /**
@@ -1138,7 +1128,7 @@ export const SlateBlue3_2: Type = make({
  *
  * @category EightBit instances
  */
-export const RoyalBlue1: Type = make({
+export const royalBlue1: Type = make({
   code: Code.RoyalBlue1,
 });
 /**
@@ -1146,7 +1136,7 @@ export const RoyalBlue1: Type = make({
  *
  * @category EightBit instances
  */
-export const Chartreuse4: Type = make({
+export const chartreuse4: Type = make({
   code: Code.Chartreuse4,
 });
 /**
@@ -1154,7 +1144,7 @@ export const Chartreuse4: Type = make({
  *
  * @category EightBit instances
  */
-export const DarkSeaGreen4_1: Type = make({
+export const darkSeaGreen4_1: Type = make({
   code: Code.DarkSeaGreen4_1,
 });
 /**
@@ -1162,7 +1152,7 @@ export const DarkSeaGreen4_1: Type = make({
  *
  * @category EightBit instances
  */
-export const PaleTurquoise4: Type = make({
+export const paleTurquoise4: Type = make({
   code: Code.PaleTurquoise4,
 });
 /**
@@ -1170,7 +1160,7 @@ export const PaleTurquoise4: Type = make({
  *
  * @category EightBit instances
  */
-export const SteelBlue: Type = make({
+export const steelBlue: Type = make({
   code: Code.SteelBlue,
 });
 /**
@@ -1178,7 +1168,7 @@ export const SteelBlue: Type = make({
  *
  * @category EightBit instances
  */
-export const SteelBlue3: Type = make({
+export const steelBlue3: Type = make({
   code: Code.SteelBlue3,
 });
 /**
@@ -1186,7 +1176,7 @@ export const SteelBlue3: Type = make({
  *
  * @category EightBit instances
  */
-export const CornflowerBlue: Type = make({
+export const cornflowerBlue: Type = make({
   code: Code.CornflowerBlue,
 });
 /**
@@ -1194,7 +1184,7 @@ export const CornflowerBlue: Type = make({
  *
  * @category EightBit instances
  */
-export const Chartreuse3_1: Type = make({
+export const chartreuse3_1: Type = make({
   code: Code.Chartreuse3_1,
 });
 /**
@@ -1202,7 +1192,7 @@ export const Chartreuse3_1: Type = make({
  *
  * @category EightBit instances
  */
-export const DarkSeaGreen4_2: Type = make({
+export const darkSeaGreen4_2: Type = make({
   code: Code.DarkSeaGreen4_2,
 });
 /**
@@ -1210,7 +1200,7 @@ export const DarkSeaGreen4_2: Type = make({
  *
  * @category EightBit instances
  */
-export const CadetBlue_1: Type = make({
+export const cadetBlue_1: Type = make({
   code: Code.CadetBlue_1,
 });
 /**
@@ -1218,7 +1208,7 @@ export const CadetBlue_1: Type = make({
  *
  * @category EightBit instances
  */
-export const CadetBlue_2: Type = make({
+export const cadetBlue_2: Type = make({
   code: Code.CadetBlue_2,
 });
 /**
@@ -1226,13 +1216,13 @@ export const CadetBlue_2: Type = make({
  *
  * @category EightBit instances
  */
-export const SkyBlue3: Type = make({ code: Code.SkyBlue3 });
+export const skyBlue3: Type = make({ code: Code.SkyBlue3 });
 /**
  * Eightbit SteelBlue1_1 Color instance
  *
  * @category EightBit instances
  */
-export const SteelBlue1_1: Type = make({
+export const steelBlue1_1: Type = make({
   code: Code.SteelBlue1_1,
 });
 /**
@@ -1240,7 +1230,7 @@ export const SteelBlue1_1: Type = make({
  *
  * @category EightBit instances
  */
-export const Chartreuse3_2: Type = make({
+export const chartreuse3_2: Type = make({
   code: Code.Chartreuse3_2,
 });
 /**
@@ -1248,7 +1238,7 @@ export const Chartreuse3_2: Type = make({
  *
  * @category EightBit instances
  */
-export const PaleGreen3_1: Type = make({
+export const paleGreen3_1: Type = make({
   code: Code.PaleGreen3_1,
 });
 /**
@@ -1256,7 +1246,7 @@ export const PaleGreen3_1: Type = make({
  *
  * @category EightBit instances
  */
-export const SeaGreen3: Type = make({
+export const seaGreen3: Type = make({
   code: Code.SeaGreen3,
 });
 /**
@@ -1264,7 +1254,7 @@ export const SeaGreen3: Type = make({
  *
  * @category EightBit instances
  */
-export const Aquamarine3: Type = make({
+export const aquamarine3: Type = make({
   code: Code.Aquamarine3,
 });
 /**
@@ -1272,7 +1262,7 @@ export const Aquamarine3: Type = make({
  *
  * @category EightBit instances
  */
-export const MediumTurquoise: Type = make({
+export const mediumTurquoise: Type = make({
   code: Code.MediumTurquoise,
 });
 /**
@@ -1280,7 +1270,7 @@ export const MediumTurquoise: Type = make({
  *
  * @category EightBit instances
  */
-export const SteelBlue1_2: Type = make({
+export const steelBlue1_2: Type = make({
   code: Code.SteelBlue1_2,
 });
 /**
@@ -1288,7 +1278,7 @@ export const SteelBlue1_2: Type = make({
  *
  * @category EightBit instances
  */
-export const Chartreuse2_1: Type = make({
+export const chartreuse2_1: Type = make({
   code: Code.Chartreuse2_1,
 });
 /**
@@ -1296,7 +1286,7 @@ export const Chartreuse2_1: Type = make({
  *
  * @category EightBit instances
  */
-export const SeaGreen2: Type = make({
+export const seaGreen2: Type = make({
   code: Code.SeaGreen2,
 });
 /**
@@ -1304,7 +1294,7 @@ export const SeaGreen2: Type = make({
  *
  * @category EightBit instances
  */
-export const SeaGreen1_1: Type = make({
+export const seaGreen1_1: Type = make({
   code: Code.SeaGreen1_1,
 });
 /**
@@ -1312,7 +1302,7 @@ export const SeaGreen1_1: Type = make({
  *
  * @category EightBit instances
  */
-export const SeaGreen1_2: Type = make({
+export const seaGreen1_2: Type = make({
   code: Code.SeaGreen1_2,
 });
 /**
@@ -1320,7 +1310,7 @@ export const SeaGreen1_2: Type = make({
  *
  * @category EightBit instances
  */
-export const Aquamarine1_1: Type = make({
+export const aquamarine1_1: Type = make({
   code: Code.Aquamarine1_1,
 });
 /**
@@ -1328,7 +1318,7 @@ export const Aquamarine1_1: Type = make({
  *
  * @category EightBit instances
  */
-export const DarkSlateGray2: Type = make({
+export const darkSlateGray2: Type = make({
   code: Code.DarkSlateGray2,
 });
 /**
@@ -1336,7 +1326,7 @@ export const DarkSlateGray2: Type = make({
  *
  * @category EightBit instances
  */
-export const DarkRed_2: Type = make({
+export const darkRed_2: Type = make({
   code: Code.DarkRed_2,
 });
 /**
@@ -1344,7 +1334,7 @@ export const DarkRed_2: Type = make({
  *
  * @category EightBit instances
  */
-export const DeepPink4_2: Type = make({
+export const deepPink4_2: Type = make({
   code: Code.DeepPink4_2,
 });
 /**
@@ -1352,7 +1342,7 @@ export const DeepPink4_2: Type = make({
  *
  * @category EightBit instances
  */
-export const DarkMagenta_1: Type = make({
+export const darkMagenta_1: Type = make({
   code: Code.DarkMagenta_1,
 });
 /**
@@ -1360,7 +1350,7 @@ export const DarkMagenta_1: Type = make({
  *
  * @category EightBit instances
  */
-export const DarkMagenta_2: Type = make({
+export const darkMagenta_2: Type = make({
   code: Code.DarkMagenta_2,
 });
 /**
@@ -1368,7 +1358,7 @@ export const DarkMagenta_2: Type = make({
  *
  * @category EightBit instances
  */
-export const DarkViolet_1: Type = make({
+export const darkViolet_1: Type = make({
   code: Code.DarkViolet_1,
 });
 /**
@@ -1376,13 +1366,13 @@ export const DarkViolet_1: Type = make({
  *
  * @category EightBit instances
  */
-export const Purple_2: Type = make({ code: Code.Purple_2 });
+export const purple_2: Type = make({ code: Code.Purple_2 });
 /**
  * Eightbit Orange4_2 Color instance
  *
  * @category EightBit instances
  */
-export const Orange4_2: Type = make({
+export const orange4_2: Type = make({
   code: Code.Orange4_2,
 });
 /**
@@ -1390,7 +1380,7 @@ export const Orange4_2: Type = make({
  *
  * @category EightBit instances
  */
-export const LightPink4: Type = make({
+export const lightPink4: Type = make({
   code: Code.LightPink4,
 });
 /**
@@ -1398,13 +1388,13 @@ export const LightPink4: Type = make({
  *
  * @category EightBit instances
  */
-export const Plum4: Type = make({ code: Code.Plum4 });
+export const plum4: Type = make({ code: Code.Plum4 });
 /**
  * Eightbit MediumPurple3_1 Color instance
  *
  * @category EightBit instances
  */
-export const MediumPurple3_1: Type = make({
+export const mediumPurple3_1: Type = make({
   code: Code.MediumPurple3_1,
 });
 /**
@@ -1412,7 +1402,7 @@ export const MediumPurple3_1: Type = make({
  *
  * @category EightBit instances
  */
-export const MediumPurple3_2: Type = make({
+export const mediumPurple3_2: Type = make({
   code: Code.MediumPurple3_2,
 });
 /**
@@ -1420,7 +1410,7 @@ export const MediumPurple3_2: Type = make({
  *
  * @category EightBit instances
  */
-export const SlateBlue1: Type = make({
+export const slateBlue1: Type = make({
   code: Code.SlateBlue1,
 });
 /**
@@ -1428,7 +1418,7 @@ export const SlateBlue1: Type = make({
  *
  * @category EightBit instances
  */
-export const Yellow4_1: Type = make({
+export const yellow4_1: Type = make({
   code: Code.Yellow4_1,
 });
 /**
@@ -1436,19 +1426,19 @@ export const Yellow4_1: Type = make({
  *
  * @category EightBit instances
  */
-export const Wheat4: Type = make({ code: Code.Wheat4 });
+export const wheat4: Type = make({ code: Code.Wheat4 });
 /**
  * Eightbit Grey53 Color instance
  *
  * @category EightBit instances
  */
-export const Grey53: Type = make({ code: Code.Grey53 });
+export const grey53: Type = make({ code: Code.Grey53 });
 /**
  * Eightbit LightSlateGrey Color instance
  *
  * @category EightBit instances
  */
-export const LightSlateGrey: Type = make({
+export const lightSlateGrey: Type = make({
   code: Code.LightSlateGrey,
 });
 /**
@@ -1456,7 +1446,7 @@ export const LightSlateGrey: Type = make({
  *
  * @category EightBit instances
  */
-export const MediumPurple: Type = make({
+export const mediumPurple: Type = make({
   code: Code.MediumPurple,
 });
 /**
@@ -1464,7 +1454,7 @@ export const MediumPurple: Type = make({
  *
  * @category EightBit instances
  */
-export const LightSlateBlue: Type = make({
+export const lightSlateBlue: Type = make({
   code: Code.LightSlateBlue,
 });
 /**
@@ -1472,7 +1462,7 @@ export const LightSlateBlue: Type = make({
  *
  * @category EightBit instances
  */
-export const Yellow4_2: Type = make({
+export const yellow4_2: Type = make({
   code: Code.Yellow4_2,
 });
 /**
@@ -1480,7 +1470,7 @@ export const Yellow4_2: Type = make({
  *
  * @category EightBit instances
  */
-export const DarkOliveGreen3_1: Type = make({
+export const darkOliveGreen3_1: Type = make({
   code: Code.DarkOliveGreen3_1,
 });
 /**
@@ -1488,7 +1478,7 @@ export const DarkOliveGreen3_1: Type = make({
  *
  * @category EightBit instances
  */
-export const DarkSeaGreen: Type = make({
+export const darkSeaGreen: Type = make({
   code: Code.DarkSeaGreen,
 });
 /**
@@ -1496,7 +1486,7 @@ export const DarkSeaGreen: Type = make({
  *
  * @category EightBit instances
  */
-export const LightSkyBlue3_1: Type = make({
+export const lightSkyBlue3_1: Type = make({
   code: Code.LightSkyBlue3_1,
 });
 /**
@@ -1504,7 +1494,7 @@ export const LightSkyBlue3_1: Type = make({
  *
  * @category EightBit instances
  */
-export const LightSkyBlue3_2: Type = make({
+export const lightSkyBlue3_2: Type = make({
   code: Code.LightSkyBlue3_2,
 });
 /**
@@ -1512,13 +1502,13 @@ export const LightSkyBlue3_2: Type = make({
  *
  * @category EightBit instances
  */
-export const SkyBlue2: Type = make({ code: Code.SkyBlue2 });
+export const skyBlue2: Type = make({ code: Code.SkyBlue2 });
 /**
  * Eightbit Chartreuse2_2 Color instance
  *
  * @category EightBit instances
  */
-export const Chartreuse2_2: Type = make({
+export const chartreuse2_2: Type = make({
   code: Code.Chartreuse2_2,
 });
 /**
@@ -1526,7 +1516,7 @@ export const Chartreuse2_2: Type = make({
  *
  * @category EightBit instances
  */
-export const DarkOliveGreen3_2: Type = make({
+export const darkOliveGreen3_2: Type = make({
   code: Code.DarkOliveGreen3_2,
 });
 /**
@@ -1534,7 +1524,7 @@ export const DarkOliveGreen3_2: Type = make({
  *
  * @category EightBit instances
  */
-export const PaleGreen3_2: Type = make({
+export const paleGreen3_2: Type = make({
   code: Code.PaleGreen3_2,
 });
 /**
@@ -1542,7 +1532,7 @@ export const PaleGreen3_2: Type = make({
  *
  * @category EightBit instances
  */
-export const DarkSeaGreen3_1: Type = make({
+export const darkSeaGreen3_1: Type = make({
   code: Code.DarkSeaGreen3_1,
 });
 /**
@@ -1550,7 +1540,7 @@ export const DarkSeaGreen3_1: Type = make({
  *
  * @category EightBit instances
  */
-export const DarkSlateGray3: Type = make({
+export const darkSlateGray3: Type = make({
   code: Code.DarkSlateGray3,
 });
 /**
@@ -1558,13 +1548,13 @@ export const DarkSlateGray3: Type = make({
  *
  * @category EightBit instances
  */
-export const SkyBlue1: Type = make({ code: Code.SkyBlue1 });
+export const skyBlue1: Type = make({ code: Code.SkyBlue1 });
 /**
  * Eightbit Chartreuse1 Color instance
  *
  * @category EightBit instances
  */
-export const Chartreuse1: Type = make({
+export const chartreuse1: Type = make({
   code: Code.Chartreuse1,
 });
 /**
@@ -1572,7 +1562,7 @@ export const Chartreuse1: Type = make({
  *
  * @category EightBit instances
  */
-export const LightGreen_1: Type = make({
+export const lightGreen_1: Type = make({
   code: Code.LightGreen_1,
 });
 /**
@@ -1580,7 +1570,7 @@ export const LightGreen_1: Type = make({
  *
  * @category EightBit instances
  */
-export const LightGreen_2: Type = make({
+export const lightGreen_2: Type = make({
   code: Code.LightGreen_2,
 });
 /**
@@ -1588,7 +1578,7 @@ export const LightGreen_2: Type = make({
  *
  * @category EightBit instances
  */
-export const PaleGreen1_1: Type = make({
+export const paleGreen1_1: Type = make({
   code: Code.PaleGreen1_1,
 });
 /**
@@ -1596,7 +1586,7 @@ export const PaleGreen1_1: Type = make({
  *
  * @category EightBit instances
  */
-export const Aquamarine1_2: Type = make({
+export const aquamarine1_2: Type = make({
   code: Code.Aquamarine1_2,
 });
 /**
@@ -1604,7 +1594,7 @@ export const Aquamarine1_2: Type = make({
  *
  * @category EightBit instances
  */
-export const DarkSlateGray1: Type = make({
+export const darkSlateGray1: Type = make({
   code: Code.DarkSlateGray1,
 });
 /**
@@ -1612,13 +1602,13 @@ export const DarkSlateGray1: Type = make({
  *
  * @category EightBit instances
  */
-export const Red3_1: Type = make({ code: Code.Red3_1 });
+export const red3_1: Type = make({ code: Code.Red3_1 });
 /**
  * Eightbit DeepPink4_3 Color instance
  *
  * @category EightBit instances
  */
-export const DeepPink4_3: Type = make({
+export const deepPink4_3: Type = make({
   code: Code.DeepPink4_3,
 });
 /**
@@ -1626,7 +1616,7 @@ export const DeepPink4_3: Type = make({
  *
  * @category EightBit instances
  */
-export const MediumVioletRed: Type = make({
+export const mediumVioletRed: Type = make({
   code: Code.MediumVioletRed,
 });
 /**
@@ -1634,7 +1624,7 @@ export const MediumVioletRed: Type = make({
  *
  * @category EightBit instances
  */
-export const Magenta3_1: Type = make({
+export const magenta3_1: Type = make({
   code: Code.Magenta3_1,
 });
 /**
@@ -1642,7 +1632,7 @@ export const Magenta3_1: Type = make({
  *
  * @category EightBit instances
  */
-export const DarkViolet_2: Type = make({
+export const darkViolet_2: Type = make({
   code: Code.DarkViolet_2,
 });
 /**
@@ -1650,13 +1640,13 @@ export const DarkViolet_2: Type = make({
  *
  * @category EightBit instances
  */
-export const Purple_3: Type = make({ code: Code.Purple_3 });
+export const purple_3: Type = make({ code: Code.Purple_3 });
 /**
  * Eightbit DarkOrange3_1 Color instance
  *
  * @category EightBit instances
  */
-export const DarkOrange3_1: Type = make({
+export const darkOrange3_1: Type = make({
   code: Code.DarkOrange3_1,
 });
 /**
@@ -1664,7 +1654,7 @@ export const DarkOrange3_1: Type = make({
  *
  * @category EightBit instances
  */
-export const IndianRed_1: Type = make({
+export const indianRed_1: Type = make({
   code: Code.IndianRed_1,
 });
 /**
@@ -1672,7 +1662,7 @@ export const IndianRed_1: Type = make({
  *
  * @category EightBit instances
  */
-export const HotPink3_1: Type = make({
+export const hotPink3_1: Type = make({
   code: Code.HotPink3_1,
 });
 /**
@@ -1680,7 +1670,7 @@ export const HotPink3_1: Type = make({
  *
  * @category EightBit instances
  */
-export const MediumOrchid3: Type = make({
+export const mediumOrchid3: Type = make({
   code: Code.MediumOrchid3,
 });
 /**
@@ -1688,7 +1678,7 @@ export const MediumOrchid3: Type = make({
  *
  * @category EightBit instances
  */
-export const MediumOrchid: Type = make({
+export const mediumOrchid: Type = make({
   code: Code.MediumOrchid,
 });
 /**
@@ -1696,7 +1686,7 @@ export const MediumOrchid: Type = make({
  *
  * @category EightBit instances
  */
-export const MediumPurple2_1: Type = make({
+export const mediumPurple2_1: Type = make({
   code: Code.MediumPurple2_1,
 });
 /**
@@ -1704,7 +1694,7 @@ export const MediumPurple2_1: Type = make({
  *
  * @category EightBit instances
  */
-export const DarkGoldenRod: Type = make({
+export const darkGoldenRod: Type = make({
   code: Code.DarkGoldenRod,
 });
 /**
@@ -1712,7 +1702,7 @@ export const DarkGoldenRod: Type = make({
  *
  * @category EightBit instances
  */
-export const LightSalmon3_1: Type = make({
+export const lightSalmon3_1: Type = make({
   code: Code.LightSalmon3_1,
 });
 /**
@@ -1720,7 +1710,7 @@ export const LightSalmon3_1: Type = make({
  *
  * @category EightBit instances
  */
-export const RosyBrown: Type = make({
+export const rosyBrown: Type = make({
   code: Code.RosyBrown,
 });
 /**
@@ -1728,13 +1718,13 @@ export const RosyBrown: Type = make({
  *
  * @category EightBit instances
  */
-export const Grey63: Type = make({ code: Code.Grey63 });
+export const grey63: Type = make({ code: Code.Grey63 });
 /**
  * Eightbit MediumPurple2_2 Color instance
  *
  * @category EightBit instances
  */
-export const MediumPurple2_2: Type = make({
+export const mediumPurple2_2: Type = make({
   code: Code.MediumPurple2_2,
 });
 /**
@@ -1742,7 +1732,7 @@ export const MediumPurple2_2: Type = make({
  *
  * @category EightBit instances
  */
-export const MediumPurple1: Type = make({
+export const mediumPurple1: Type = make({
   code: Code.MediumPurple1,
 });
 /**
@@ -1750,13 +1740,13 @@ export const MediumPurple1: Type = make({
  *
  * @category EightBit instances
  */
-export const Gold3_1: Type = make({ code: Code.Gold3_1 });
+export const gold3_1: Type = make({ code: Code.Gold3_1 });
 /**
  * Eightbit DarkKhaki Color instance
  *
  * @category EightBit instances
  */
-export const DarkKhaki: Type = make({
+export const darkKhaki: Type = make({
   code: Code.DarkKhaki,
 });
 /**
@@ -1764,7 +1754,7 @@ export const DarkKhaki: Type = make({
  *
  * @category EightBit instances
  */
-export const NavajoWhite3: Type = make({
+export const navajoWhite3: Type = make({
   code: Code.NavajoWhite3,
 });
 /**
@@ -1772,13 +1762,13 @@ export const NavajoWhite3: Type = make({
  *
  * @category EightBit instances
  */
-export const Grey69: Type = make({ code: Code.Grey69 });
+export const grey69: Type = make({ code: Code.Grey69 });
 /**
  * Eightbit LightSteelBlue3 Color instance
  *
  * @category EightBit instances
  */
-export const LightSteelBlue3: Type = make({
+export const lightSteelBlue3: Type = make({
   code: Code.LightSteelBlue3,
 });
 /**
@@ -1786,7 +1776,7 @@ export const LightSteelBlue3: Type = make({
  *
  * @category EightBit instances
  */
-export const LightSteelBlue: Type = make({
+export const lightSteelBlue: Type = make({
   code: Code.LightSteelBlue,
 });
 /**
@@ -1794,7 +1784,7 @@ export const LightSteelBlue: Type = make({
  *
  * @category EightBit instances
  */
-export const Yellow3_1: Type = make({
+export const yellow3_1: Type = make({
   code: Code.Yellow3_1,
 });
 /**
@@ -1802,7 +1792,7 @@ export const Yellow3_1: Type = make({
  *
  * @category EightBit instances
  */
-export const DarkOliveGreen3_3: Type = make({
+export const darkOliveGreen3_3: Type = make({
   code: Code.DarkOliveGreen3_3,
 });
 /**
@@ -1810,7 +1800,7 @@ export const DarkOliveGreen3_3: Type = make({
  *
  * @category EightBit instances
  */
-export const DarkSeaGreen3_2: Type = make({
+export const darkSeaGreen3_2: Type = make({
   code: Code.DarkSeaGreen3_2,
 });
 /**
@@ -1818,7 +1808,7 @@ export const DarkSeaGreen3_2: Type = make({
  *
  * @category EightBit instances
  */
-export const DarkSeaGreen2_1: Type = make({
+export const darkSeaGreen2_1: Type = make({
   code: Code.DarkSeaGreen2_1,
 });
 /**
@@ -1826,7 +1816,7 @@ export const DarkSeaGreen2_1: Type = make({
  *
  * @category EightBit instances
  */
-export const LightCyan3: Type = make({
+export const lightCyan3: Type = make({
   code: Code.LightCyan3,
 });
 /**
@@ -1834,7 +1824,7 @@ export const LightCyan3: Type = make({
  *
  * @category EightBit instances
  */
-export const LightSkyBlue1: Type = make({
+export const lightSkyBlue1: Type = make({
   code: Code.LightSkyBlue1,
 });
 /**
@@ -1842,7 +1832,7 @@ export const LightSkyBlue1: Type = make({
  *
  * @category EightBit instances
  */
-export const GreenYellow: Type = make({
+export const greenYellow: Type = make({
   code: Code.GreenYellow,
 });
 /**
@@ -1850,7 +1840,7 @@ export const GreenYellow: Type = make({
  *
  * @category EightBit instances
  */
-export const DarkOliveGreen2: Type = make({
+export const darkOliveGreen2: Type = make({
   code: Code.DarkOliveGreen2,
 });
 /**
@@ -1858,7 +1848,7 @@ export const DarkOliveGreen2: Type = make({
  *
  * @category EightBit instances
  */
-export const PaleGreen1_2: Type = make({
+export const paleGreen1_2: Type = make({
   code: Code.PaleGreen1_2,
 });
 /**
@@ -1866,7 +1856,7 @@ export const PaleGreen1_2: Type = make({
  *
  * @category EightBit instances
  */
-export const DarkSeaGreen2_2: Type = make({
+export const darkSeaGreen2_2: Type = make({
   code: Code.DarkSeaGreen2_2,
 });
 /**
@@ -1874,7 +1864,7 @@ export const DarkSeaGreen2_2: Type = make({
  *
  * @category EightBit instances
  */
-export const DarkSeaGreen1_1: Type = make({
+export const darkSeaGreen1_1: Type = make({
   code: Code.DarkSeaGreen1_1,
 });
 /**
@@ -1882,7 +1872,7 @@ export const DarkSeaGreen1_1: Type = make({
  *
  * @category EightBit instances
  */
-export const PaleTurquoise1: Type = make({
+export const paleTurquoise1: Type = make({
   code: Code.PaleTurquoise1,
 });
 /**
@@ -1890,13 +1880,13 @@ export const PaleTurquoise1: Type = make({
  *
  * @category EightBit instances
  */
-export const Red3_2: Type = make({ code: Code.Red3_2 });
+export const red3_2: Type = make({ code: Code.Red3_2 });
 /**
  * Eightbit DeepPink3_1 Color instance
  *
  * @category EightBit instances
  */
-export const DeepPink3_1: Type = make({
+export const deepPink3_1: Type = make({
   code: Code.DeepPink3_1,
 });
 /**
@@ -1904,7 +1894,7 @@ export const DeepPink3_1: Type = make({
  *
  * @category EightBit instances
  */
-export const DeepPink3_2: Type = make({
+export const deepPink3_2: Type = make({
   code: Code.DeepPink3_2,
 });
 /**
@@ -1912,7 +1902,7 @@ export const DeepPink3_2: Type = make({
  *
  * @category EightBit instances
  */
-export const Magenta3_2: Type = make({
+export const magenta3_2: Type = make({
   code: Code.Magenta3_2,
 });
 /**
@@ -1920,7 +1910,7 @@ export const Magenta3_2: Type = make({
  *
  * @category EightBit instances
  */
-export const Magenta3_3: Type = make({
+export const magenta3_3: Type = make({
   code: Code.Magenta3_3,
 });
 /**
@@ -1928,7 +1918,7 @@ export const Magenta3_3: Type = make({
  *
  * @category EightBit instances
  */
-export const Magenta2_1: Type = make({
+export const magenta2_1: Type = make({
   code: Code.Magenta2_1,
 });
 /**
@@ -1936,7 +1926,7 @@ export const Magenta2_1: Type = make({
  *
  * @category EightBit instances
  */
-export const DarkOrange3_2: Type = make({
+export const darkOrange3_2: Type = make({
   code: Code.DarkOrange3_2,
 });
 /**
@@ -1944,7 +1934,7 @@ export const DarkOrange3_2: Type = make({
  *
  * @category EightBit instances
  */
-export const IndianRed_2: Type = make({
+export const indianRed_2: Type = make({
   code: Code.IndianRed_2,
 });
 /**
@@ -1952,7 +1942,7 @@ export const IndianRed_2: Type = make({
  *
  * @category EightBit instances
  */
-export const HotPink3_2: Type = make({
+export const hotPink3_2: Type = make({
   code: Code.HotPink3_2,
 });
 /**
@@ -1960,19 +1950,19 @@ export const HotPink3_2: Type = make({
  *
  * @category EightBit instances
  */
-export const HotPink2: Type = make({ code: Code.HotPink2 });
+export const hotPink2: Type = make({ code: Code.HotPink2 });
 /**
  * Eightbit Orchid Color instance
  *
  * @category EightBit instances
  */
-export const Orchid: Type = make({ code: Code.Orchid });
+export const orchid: Type = make({ code: Code.Orchid });
 /**
  * Eightbit MediumOrchid1_1 Color instance
  *
  * @category EightBit instances
  */
-export const MediumOrchid1_1: Type = make({
+export const mediumOrchid1_1: Type = make({
   code: Code.MediumOrchid1_1,
 });
 /**
@@ -1980,13 +1970,13 @@ export const MediumOrchid1_1: Type = make({
  *
  * @category EightBit instances
  */
-export const Orange3: Type = make({ code: Code.Orange3 });
+export const orange3: Type = make({ code: Code.Orange3 });
 /**
  * Eightbit LightSalmon3_2 Color instance
  *
  * @category EightBit instances
  */
-export const LightSalmon3_2: Type = make({
+export const lightSalmon3_2: Type = make({
   code: Code.LightSalmon3_2,
 });
 /**
@@ -1994,7 +1984,7 @@ export const LightSalmon3_2: Type = make({
  *
  * @category EightBit instances
  */
-export const LightPink3: Type = make({
+export const lightPink3: Type = make({
   code: Code.LightPink3,
 });
 /**
@@ -2002,31 +1992,31 @@ export const LightPink3: Type = make({
  *
  * @category EightBit instances
  */
-export const Pink3: Type = make({ code: Code.Pink3 });
+export const pink3: Type = make({ code: Code.Pink3 });
 /**
  * Eightbit Plum3 Color instance
  *
  * @category EightBit instances
  */
-export const Plum3: Type = make({ code: Code.Plum3 });
+export const plum3: Type = make({ code: Code.Plum3 });
 /**
  * Eightbit Violet Color instance
  *
  * @category EightBit instances
  */
-export const Violet: Type = make({ code: Code.Violet });
+export const violet: Type = make({ code: Code.Violet });
 /**
  * Eightbit Gold3_2 Color instance
  *
  * @category EightBit instances
  */
-export const Gold3_2: Type = make({ code: Code.Gold3_2 });
+export const gold3_2: Type = make({ code: Code.Gold3_2 });
 /**
  * Eightbit LightGoldenRod3 Color instance
  *
  * @category EightBit instances
  */
-export const LightGoldenRod3: Type = make({
+export const lightGoldenRod3: Type = make({
   code: Code.LightGoldenRod3,
 });
 /**
@@ -2034,13 +2024,13 @@ export const LightGoldenRod3: Type = make({
  *
  * @category EightBit instances
  */
-export const Tan: Type = make({ code: Code.Tan });
+export const tan: Type = make({ code: Code.Tan });
 /**
  * Eightbit MistyRose3 Color instance
  *
  * @category EightBit instances
  */
-export const MistyRose3: Type = make({
+export const mistyRose3: Type = make({
   code: Code.MistyRose3,
 });
 /**
@@ -2048,19 +2038,19 @@ export const MistyRose3: Type = make({
  *
  * @category EightBit instances
  */
-export const Thistle3: Type = make({ code: Code.Thistle3 });
+export const thistle3: Type = make({ code: Code.Thistle3 });
 /**
  * Eightbit Plum2 Color instance
  *
  * @category EightBit instances
  */
-export const Plum2: Type = make({ code: Code.Plum2 });
+export const plum2: Type = make({ code: Code.Plum2 });
 /**
  * Eightbit Yellow3_2 Color instance
  *
  * @category EightBit instances
  */
-export const Yellow3_2: Type = make({
+export const yellow3_2: Type = make({
   code: Code.Yellow3_2,
 });
 /**
@@ -2068,13 +2058,13 @@ export const Yellow3_2: Type = make({
  *
  * @category EightBit instances
  */
-export const Khaki3: Type = make({ code: Code.Khaki3 });
+export const khaki3: Type = make({ code: Code.Khaki3 });
 /**
  * Eightbit LightGoldenRod2_1 Color instance
  *
  * @category EightBit instances
  */
-export const LightGoldenRod2_1: Type = make({
+export const lightGoldenRod2_1: Type = make({
   code: Code.LightGoldenRod2_1,
 });
 /**
@@ -2082,7 +2072,7 @@ export const LightGoldenRod2_1: Type = make({
  *
  * @category EightBit instances
  */
-export const LightYellow3: Type = make({
+export const lightYellow3: Type = make({
   code: Code.LightYellow3,
 });
 /**
@@ -2090,13 +2080,13 @@ export const LightYellow3: Type = make({
  *
  * @category EightBit instances
  */
-export const Grey84: Type = make({ code: Code.Grey84 });
+export const grey84: Type = make({ code: Code.Grey84 });
 /**
  * Eightbit LightSteelBlue1 Color instance
  *
  * @category EightBit instances
  */
-export const LightSteelBlue1: Type = make({
+export const lightSteelBlue1: Type = make({
   code: Code.LightSteelBlue1,
 });
 /**
@@ -2104,13 +2094,13 @@ export const LightSteelBlue1: Type = make({
  *
  * @category EightBit instances
  */
-export const Yellow2: Type = make({ code: Code.Yellow2 });
+export const yellow2: Type = make({ code: Code.Yellow2 });
 /**
  * Eightbit DarkOliveGreen1_1 Color instance
  *
  * @category EightBit instances
  */
-export const DarkOliveGreen1_1: Type = make({
+export const darkOliveGreen1_1: Type = make({
   code: Code.DarkOliveGreen1_1,
 });
 /**
@@ -2118,7 +2108,7 @@ export const DarkOliveGreen1_1: Type = make({
  *
  * @category EightBit instances
  */
-export const DarkOliveGreen1_2: Type = make({
+export const darkOliveGreen1_2: Type = make({
   code: Code.DarkOliveGreen1_2,
 });
 /**
@@ -2126,7 +2116,7 @@ export const DarkOliveGreen1_2: Type = make({
  *
  * @category EightBit instances
  */
-export const DarkSeaGreen1_2: Type = make({
+export const darkSeaGreen1_2: Type = make({
   code: Code.DarkSeaGreen1_2,
 });
 /**
@@ -2134,7 +2124,7 @@ export const DarkSeaGreen1_2: Type = make({
  *
  * @category EightBit instances
  */
-export const HoneyDew2: Type = make({
+export const honeyDew2: Type = make({
   code: Code.HoneyDew2,
 });
 /**
@@ -2142,7 +2132,7 @@ export const HoneyDew2: Type = make({
  *
  * @category EightBit instances
  */
-export const LightCyan1: Type = make({
+export const lightCyan1: Type = make({
   code: Code.LightCyan1,
 });
 /**
@@ -2150,13 +2140,13 @@ export const LightCyan1: Type = make({
  *
  * @category EightBit instances
  */
-export const Red1: Type = make({ code: Code.Red1 });
+export const red1: Type = make({ code: Code.Red1 });
 /**
  * Eightbit DeepPink2 Color instance
  *
  * @category EightBit instances
  */
-export const DeepPink2: Type = make({
+export const deepPink2: Type = make({
   code: Code.DeepPink2,
 });
 /**
@@ -2164,7 +2154,7 @@ export const DeepPink2: Type = make({
  *
  * @category EightBit instances
  */
-export const DeepPink1_1: Type = make({
+export const deepPink1_1: Type = make({
   code: Code.DeepPink1_1,
 });
 /**
@@ -2172,7 +2162,7 @@ export const DeepPink1_1: Type = make({
  *
  * @category EightBit instances
  */
-export const DeepPink1_2: Type = make({
+export const deepPink1_2: Type = make({
   code: Code.DeepPink1_2,
 });
 /**
@@ -2180,7 +2170,7 @@ export const DeepPink1_2: Type = make({
  *
  * @category EightBit instances
  */
-export const Magenta2_2: Type = make({
+export const magenta2_2: Type = make({
   code: Code.Magenta2_2,
 });
 /**
@@ -2188,13 +2178,13 @@ export const Magenta2_2: Type = make({
  *
  * @category EightBit instances
  */
-export const Magenta1: Type = make({ code: Code.Magenta1 });
+export const magenta1: Type = make({ code: Code.Magenta1 });
 /**
  * Eightbit OrangeRed1 Color instance
  *
  * @category EightBit instances
  */
-export const OrangeRed1: Type = make({
+export const orangeRed1: Type = make({
   code: Code.OrangeRed1,
 });
 /**
@@ -2202,7 +2192,7 @@ export const OrangeRed1: Type = make({
  *
  * @category EightBit instances
  */
-export const IndianRed1_1: Type = make({
+export const indianRed1_1: Type = make({
   code: Code.IndianRed1_1,
 });
 /**
@@ -2210,7 +2200,7 @@ export const IndianRed1_1: Type = make({
  *
  * @category EightBit instances
  */
-export const IndianRed1_2: Type = make({
+export const indianRed1_2: Type = make({
   code: Code.IndianRed1_2,
 });
 /**
@@ -2218,7 +2208,7 @@ export const IndianRed1_2: Type = make({
  *
  * @category EightBit instances
  */
-export const HotPink_1: Type = make({
+export const hotPink_1: Type = make({
   code: Code.HotPink_1,
 });
 /**
@@ -2226,7 +2216,7 @@ export const HotPink_1: Type = make({
  *
  * @category EightBit instances
  */
-export const HotPink_2: Type = make({
+export const hotPink_2: Type = make({
   code: Code.HotPink_2,
 });
 /**
@@ -2234,7 +2224,7 @@ export const HotPink_2: Type = make({
  *
  * @category EightBit instances
  */
-export const MediumOrchid1_2: Type = make({
+export const mediumOrchid1_2: Type = make({
   code: Code.MediumOrchid1_2,
 });
 /**
@@ -2242,7 +2232,7 @@ export const MediumOrchid1_2: Type = make({
  *
  * @category EightBit instances
  */
-export const DarkOrange: Type = make({
+export const darkOrange: Type = make({
   code: Code.DarkOrange,
 });
 /**
@@ -2250,13 +2240,13 @@ export const DarkOrange: Type = make({
  *
  * @category EightBit instances
  */
-export const Salmon1: Type = make({ code: Code.Salmon1 });
+export const salmon1: Type = make({ code: Code.Salmon1 });
 /**
  * Eightbit LightCoral Color instance
  *
  * @category EightBit instances
  */
-export const LightCoral: Type = make({
+export const lightCoral: Type = make({
   code: Code.LightCoral,
 });
 /**
@@ -2264,7 +2254,7 @@ export const LightCoral: Type = make({
  *
  * @category EightBit instances
  */
-export const PaleVioletRed1: Type = make({
+export const paleVioletRed1: Type = make({
   code: Code.PaleVioletRed1,
 });
 /**
@@ -2272,25 +2262,25 @@ export const PaleVioletRed1: Type = make({
  *
  * @category EightBit instances
  */
-export const Orchid2: Type = make({ code: Code.Orchid2 });
+export const orchid2: Type = make({ code: Code.Orchid2 });
 /**
  * Eightbit Orchid1 Color instance
  *
  * @category EightBit instances
  */
-export const Orchid1: Type = make({ code: Code.Orchid1 });
+export const orchid1: Type = make({ code: Code.Orchid1 });
 /**
  * Eightbit Orange1 Color instance
  *
  * @category EightBit instances
  */
-export const Orange1: Type = make({ code: Code.Orange1 });
+export const orange1: Type = make({ code: Code.Orange1 });
 /**
  * Eightbit SandyBrown Color instance
  *
  * @category EightBit instances
  */
-export const SandyBrown: Type = make({
+export const sandyBrown: Type = make({
   code: Code.SandyBrown,
 });
 /**
@@ -2298,7 +2288,7 @@ export const SandyBrown: Type = make({
  *
  * @category EightBit instances
  */
-export const LightSalmon1: Type = make({
+export const lightSalmon1: Type = make({
   code: Code.LightSalmon1,
 });
 /**
@@ -2306,7 +2296,7 @@ export const LightSalmon1: Type = make({
  *
  * @category EightBit instances
  */
-export const LightPink1: Type = make({
+export const lightPink1: Type = make({
   code: Code.LightPink1,
 });
 /**
@@ -2314,25 +2304,25 @@ export const LightPink1: Type = make({
  *
  * @category EightBit instances
  */
-export const Pink1: Type = make({ code: Code.Pink1 });
+export const pink1: Type = make({ code: Code.Pink1 });
 /**
  * Eightbit Plum1 Color instance
  *
  * @category EightBit instances
  */
-export const Plum1: Type = make({ code: Code.Plum1 });
+export const plum1: Type = make({ code: Code.Plum1 });
 /**
  * Eightbit Gold1 Color instance
  *
  * @category EightBit instances
  */
-export const Gold1: Type = make({ code: Code.Gold1 });
+export const gold1: Type = make({ code: Code.Gold1 });
 /**
  * Eightbit LightGoldenRod2_2 Color instance
  *
  * @category EightBit instances
  */
-export const LightGoldenRod2_2: Type = make({
+export const lightGoldenRod2_2: Type = make({
   code: Code.LightGoldenRod2_2,
 });
 /**
@@ -2340,7 +2330,7 @@ export const LightGoldenRod2_2: Type = make({
  *
  * @category EightBit instances
  */
-export const LightGoldenRod2_3: Type = make({
+export const lightGoldenRod2_3: Type = make({
   code: Code.LightGoldenRod2_3,
 });
 /**
@@ -2348,7 +2338,7 @@ export const LightGoldenRod2_3: Type = make({
  *
  * @category EightBit instances
  */
-export const NavajoWhite1: Type = make({
+export const navajoWhite1: Type = make({
   code: Code.NavajoWhite1,
 });
 /**
@@ -2356,7 +2346,7 @@ export const NavajoWhite1: Type = make({
  *
  * @category EightBit instances
  */
-export const MistyRose1: Type = make({
+export const mistyRose1: Type = make({
   code: Code.MistyRose1,
 });
 /**
@@ -2364,19 +2354,19 @@ export const MistyRose1: Type = make({
  *
  * @category EightBit instances
  */
-export const Thistle1: Type = make({ code: Code.Thistle1 });
+export const thistle1: Type = make({ code: Code.Thistle1 });
 /**
  * Eightbit Yellow1 Color instance
  *
  * @category EightBit instances
  */
-export const Yellow1: Type = make({ code: Code.Yellow1 });
+export const yellow1: Type = make({ code: Code.Yellow1 });
 /**
  * Eightbit LightGoldenRod1 Color instance
  *
  * @category EightBit instances
  */
-export const LightGoldenRod1: Type = make({
+export const lightGoldenRod1: Type = make({
   code: Code.LightGoldenRod1,
 });
 /**
@@ -2384,19 +2374,19 @@ export const LightGoldenRod1: Type = make({
  *
  * @category EightBit instances
  */
-export const Khaki1: Type = make({ code: Code.Khaki1 });
+export const khaki1: Type = make({ code: Code.Khaki1 });
 /**
  * Eightbit Wheat1 Color instance
  *
  * @category EightBit instances
  */
-export const Wheat1: Type = make({ code: Code.Wheat1 });
+export const wheat1: Type = make({ code: Code.Wheat1 });
 /**
  * Eightbit Cornsilk1 Color instance
  *
  * @category EightBit instances
  */
-export const Cornsilk1: Type = make({
+export const cornsilk1: Type = make({
   code: Code.Cornsilk1,
 });
 /**
@@ -2404,148 +2394,148 @@ export const Cornsilk1: Type = make({
  *
  * @category EightBit instances
  */
-export const Grey100: Type = make({ code: Code.Grey100 });
+export const grey100: Type = make({ code: Code.Grey100 });
 /**
  * Eightbit Grey3 Color instance
  *
  * @category EightBit instances
  */
-export const Grey3: Type = make({ code: Code.Grey3 });
+export const grey3: Type = make({ code: Code.Grey3 });
 /**
  * Eightbit Grey7 Color instance
  *
  * @category EightBit instances
  */
-export const Grey7: Type = make({ code: Code.Grey7 });
+export const grey7: Type = make({ code: Code.Grey7 });
 /**
  * Eightbit Grey11 Color instance
  *
  * @category EightBit instances
  */
-export const Grey11: Type = make({ code: Code.Grey11 });
+export const grey11: Type = make({ code: Code.Grey11 });
 /**
  * Eightbit Grey15 Color instance
  *
  * @category EightBit instances
  */
-export const Grey15: Type = make({ code: Code.Grey15 });
+export const grey15: Type = make({ code: Code.Grey15 });
 /**
  * Eightbit Grey19 Color instance
  *
  * @category EightBit instances
  */
-export const Grey19: Type = make({ code: Code.Grey19 });
+export const grey19: Type = make({ code: Code.Grey19 });
 /**
  * Eightbit Grey23 Color instance
  *
  * @category EightBit instances
  */
-export const Grey23: Type = make({ code: Code.Grey23 });
+export const grey23: Type = make({ code: Code.Grey23 });
 /**
  * Eightbit Grey27 Color instance
  *
  * @category EightBit instances
  */
-export const Grey27: Type = make({ code: Code.Grey27 });
+export const grey27: Type = make({ code: Code.Grey27 });
 /**
  * Eightbit Grey30 Color instance
  *
  * @category EightBit instances
  */
-export const Grey30: Type = make({ code: Code.Grey30 });
+export const grey30: Type = make({ code: Code.Grey30 });
 /**
  * Eightbit Grey35 Color instance
  *
  * @category EightBit instances
  */
-export const Grey35: Type = make({ code: Code.Grey35 });
+export const grey35: Type = make({ code: Code.Grey35 });
 /**
  * Eightbit Grey39 Color instance
  *
  * @category EightBit instances
  */
-export const Grey39: Type = make({ code: Code.Grey39 });
+export const grey39: Type = make({ code: Code.Grey39 });
 /**
  * Eightbit Grey42 Color instance
  *
  * @category EightBit instances
  */
-export const Grey42: Type = make({ code: Code.Grey42 });
+export const grey42: Type = make({ code: Code.Grey42 });
 /**
  * Eightbit Grey46 Color instance
  *
  * @category EightBit instances
  */
-export const Grey46: Type = make({ code: Code.Grey46 });
+export const grey46: Type = make({ code: Code.Grey46 });
 /**
  * Eightbit Grey50 Color instance
  *
  * @category EightBit instances
  */
-export const Grey50: Type = make({ code: Code.Grey50 });
+export const grey50: Type = make({ code: Code.Grey50 });
 /**
  * Eightbit Grey54 Color instance
  *
  * @category EightBit instances
  */
-export const Grey54: Type = make({ code: Code.Grey54 });
+export const grey54: Type = make({ code: Code.Grey54 });
 /**
  * Eightbit Grey58 Color instance
  *
  * @category EightBit instances
  */
-export const Grey58: Type = make({ code: Code.Grey58 });
+export const grey58: Type = make({ code: Code.Grey58 });
 /**
  * Eightbit Grey62 Color instance
  *
  * @category EightBit instances
  */
-export const Grey62: Type = make({ code: Code.Grey62 });
+export const grey62: Type = make({ code: Code.Grey62 });
 /**
  * Eightbit Grey66 Color instance
  *
  * @category EightBit instances
  */
-export const Grey66: Type = make({ code: Code.Grey66 });
+export const grey66: Type = make({ code: Code.Grey66 });
 /**
  * Eightbit Grey70 Color instance
  *
  * @category EightBit instances
  */
-export const Grey70: Type = make({ code: Code.Grey70 });
+export const grey70: Type = make({ code: Code.Grey70 });
 /**
  * Eightbit Grey74 Color instance
  *
  * @category EightBit instances
  */
-export const Grey74: Type = make({ code: Code.Grey74 });
+export const grey74: Type = make({ code: Code.Grey74 });
 /**
  * Eightbit Grey78 Color instance
  *
  * @category EightBit instances
  */
-export const Grey78: Type = make({ code: Code.Grey78 });
+export const grey78: Type = make({ code: Code.Grey78 });
 /**
  * Eightbit Grey82 Color instance
  *
  * @category EightBit instances
  */
-export const Grey82: Type = make({ code: Code.Grey82 });
+export const grey82: Type = make({ code: Code.Grey82 });
 /**
  * Eightbit Grey85 Color instance
  *
  * @category EightBit instances
  */
-export const Grey85: Type = make({ code: Code.Grey85 });
+export const grey85: Type = make({ code: Code.Grey85 });
 /**
  * Eightbit Grey89 Color instance
  *
  * @category EightBit instances
  */
-export const Grey89: Type = make({ code: Code.Grey89 });
+export const grey89: Type = make({ code: Code.Grey89 });
 /**
  * Eightbit Grey93 Color instance
  *
  * @category EightBit instances
  */
-export const Grey93: Type = make({ code: Code.Grey93 });
+export const grey93: Type = make({ code: Code.Grey93 });

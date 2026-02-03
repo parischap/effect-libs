@@ -6,20 +6,10 @@
  * needs.
  */
 
-import { MData, MString, MTypes } from '@parischap/effect-lib';
-import {
-  Array,
-  Equal,
-  Equivalence,
-  Function,
-  Hash,
-  Inspectable,
-  pipe,
-  Pipeable,
-  Struct,
-} from 'effect';
+import { MDataBase, MString, MTypes } from '@parischap/effect-lib';
+import { Function, pipe, Struct } from 'effect';
 import * as ASStyle from './Style.js';
-import * as ASStyles from './Styles.js';
+import * as ASStyles from './internal/Styles.js';
 
 /**
  * Module tag
@@ -35,21 +25,15 @@ type _TypeId = typeof _TypeId;
  *
  * @category Models
  */
-export class Type
-  extends MData.Class({ id: moduleTag, uniqueSymbol: _TypeId })
-  implements Pipeable.Pipeable, Inspectable.Inspectable, Equal.Equal, Hash.Hash
-{
+export class Type extends MDataBase.Class {
   /** Array of styles contained by this Palette */
   readonly styles: ASStyles.Type;
 
-  /** Equivalence - Override default equivalence as this class contains objects */
-  override isEquivalentTo(this: this, that: this): boolean {
-    return Array.getEquivalence(ASStyle.equivalence)(this.styles, that.styles);
-  }
-
-  /** Returns a printable version of this */
-  override toString(this: this): string {
-    return pipe(this.styles, ASStyles.toString, MString.append('Palette'));
+  /** Returns the `id` of `this` */
+  [MDataBase.idSymbol](): string | (() => string) {
+    return function idSymbol(this: Type) {
+      return pipe(this.styles, ASStyles.toString, MString.append('Palette'));
+    };
   }
 
   /** Class constructor */
@@ -63,13 +47,6 @@ export class Type
     return new Type(params);
   }
 }
-
-/**
- * Equivalence
- *
- * @category Equivalences
- */
-export const equivalence: Equivalence.Equivalence<Type> = (self, that) => self.isEquivalentTo(that);
 
 /**
  * Constructor
@@ -127,14 +104,14 @@ export const allStandardOriginalColors: Type = make(
  */
 
 export const allBrightOriginalColors: Type = make(
-  ASStyle.Bright.black,
-  ASStyle.Bright.red,
-  ASStyle.Bright.green,
-  ASStyle.Bright.yellow,
-  ASStyle.Bright.blue,
-  ASStyle.Bright.magenta,
-  ASStyle.Bright.cyan,
-  ASStyle.Bright.white,
+  ASStyle.brightBlack,
+  ASStyle.brightRed,
+  ASStyle.brightGreen,
+  ASStyle.brightYellow,
+  ASStyle.brightBlue,
+  ASStyle.brightMagenta,
+  ASStyle.brightCyan,
+  ASStyle.brightWhite,
 );
 
 /**

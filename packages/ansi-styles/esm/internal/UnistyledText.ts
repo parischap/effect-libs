@@ -12,12 +12,14 @@ export const moduleTag = '@parischap/ansi-styles/internal/UnistyledText/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
+const _TypeIdHash = Hash.hash(_TypeId);
+
 /**
  * Interface that represents a Unistyled text
  *
  * @category Models
  */
-export class Type extends MDataEquivalenceBasedEquality.Type {
+export class Type extends MDataEquivalenceBasedEquality.Class {
   /** The text to be styled */
   readonly text: string;
 
@@ -37,22 +39,28 @@ export class Type extends MDataEquivalenceBasedEquality.Type {
   }
 
   /** Returns the `id` of `this` */
-  protected [MDataBase.idSymbol](): string | (() => string) {
+  [MDataBase.idSymbol](): string | (() => string) {
     return moduleTag;
   }
 
   /** Calculates the hash value of `this` */
   [Hash.symbol](): number {
-    return pipe(this.text, Hash.hash, Hash.combine(Hash.hash(this.style)), Hash.cached(this));
+    return pipe(
+      this.text,
+      Hash.hash,
+      Hash.combine(Hash.hash(this.style)),
+      Hash.combine(_TypeIdHash),
+      Hash.cached(this),
+    );
   }
 
   /** Function that implements the equivalence of `this` and `that` */
-  protected [MDataEquivalenceBasedEquality.isEquivalentToSymbol](this: this, that: this): boolean {
+  [MDataEquivalenceBasedEquality.isEquivalentToSymbol](this: this, that: this): boolean {
     return equivalence(this, that);
   }
 
   /** Predicate that returns true if `that` has the same type marker as `this` */
-  protected [MDataEquivalenceBasedEquality.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
+  [MDataEquivalenceBasedEquality.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
     return Predicate.hasProperty(that, _TypeId);
   }
 

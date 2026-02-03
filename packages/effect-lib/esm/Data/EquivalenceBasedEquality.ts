@@ -9,7 +9,7 @@
  * - for generic classes where the equivalence bears on fields not dependant on the generic type
  */
 
-import { Equal, Hash, Inspectable, Pipeable } from 'effect';
+import { Equal, Hash } from 'effect';
 import * as MDataBase from './Base.js';
 
 /**
@@ -83,11 +83,3 @@ export abstract class Class extends MDataBase.Class implements Type {
     return this[hasSameTypeMarkerAsSymbol](that) && this[isEquivalentToSymbol](that as this);
   }
 }
-
-/**
- * Same as Type but we export a prototype instead of a class. It can come in handy when the the
- * target object represents a function which cannot be modeled as a class
- *
- * @category Prototypes
- */
-export const Prototype: Pipeable.Pipeable & Inspectable.Inspectable & Equal.Equal = Class.prototype;

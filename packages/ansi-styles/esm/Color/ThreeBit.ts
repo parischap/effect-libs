@@ -1,8 +1,7 @@
 /** This module defines ThreeBit colors */
 
-import { MDataBase, MDataEquivalenceBasedEquality, MMatch, MTypes } from '@parischap/effect-lib';
+import { MDataEquivalenceBasedEquality, MMatch, MTypes } from '@parischap/effect-lib';
 import { Array, Equivalence, flow, Function, Hash, Predicate, Struct } from 'effect';
-import * as ASSequence from '../internal/Sequence.js';
 import * as ASColorBase from './Base.js';
 
 /**
@@ -69,28 +68,25 @@ export class Type extends ASColorBase.Type {
   /** Indicates whether the color is bright */
   readonly isBright: boolean;
 
-  /** Gets the foreground sequence of `this` */
-  [ASColorBase.toForegroundSequenceSymbol](): ASSequence.NonEmptyType {
-    return Array.of((this.isBright ? 90 : 30) + this.offset);
-  }
-
   /** Class constructor */
-  private constructor({ offset, isBright }: MTypes.Data<Type>) {
-    super();
+  private constructor({
+    offset,
+    isBright,
+  }: {
+    readonly offset: Offset;
+    readonly isBright: boolean;
+  }) {
+    super({
+      foregroundId: `${isBright ? 'Bright' : ''}${Offset.toString(offset)}`,
+      foregroundSequence: Array.of((isBright ? 90 : 30) + offset),
+    });
     this.offset = offset;
     this.isBright = isBright;
   }
 
   /** Static constructor */
-  static make(params: MTypes.Data<Type>): Type {
+  static make(params: { readonly offset: Offset; readonly isBright: boolean }): Type {
     return new Type(params);
-  }
-
-  /** Returns the `id` of `this` */
-  protected [MDataBase.idSymbol](): string | (() => string) {
-    return function idSymbol(this: Type) {
-      return (this.isBright ? 'Bright' : '') + Offset.toString(this.offset);
-    };
   }
 
   /** Calculates the hash value of `this` */
@@ -99,12 +95,12 @@ export class Type extends ASColorBase.Type {
   }
 
   /** Function that implements the equivalence of `this` and `that` */
-  protected [MDataEquivalenceBasedEquality.isEquivalentToSymbol](this: this, that: this): boolean {
+  [MDataEquivalenceBasedEquality.isEquivalentToSymbol](this: this, that: this): boolean {
     return equivalence(this, that);
   }
 
   /** Predicate that returns true if `that` has the same type marker as `this` */
-  protected [MDataEquivalenceBasedEquality.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
+  [MDataEquivalenceBasedEquality.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
     return Predicate.hasProperty(that, _TypeId);
   }
 
@@ -149,101 +145,100 @@ export const make = (offset: Offset): Type => Type.make({ offset, isBright: fals
  * @category Original instances
  */
 export const makeBright = (offset: Offset) => Type.make({ offset, isBright: true });
-
 /**
  * Original Black color instance
  *
  * @category Original instances
  */
-export const Black: Type = make(Offset.Black);
+export const black: Type = make(Offset.Black);
 /**
  * Original Red color instance
  *
  * @category Original instances
  */
-export const Red: Type = make(Offset.Red);
+export const red: Type = make(Offset.Red);
 /**
  * Original Green color instance
  *
  * @category Original instances
  */
-export const Green: Type = make(Offset.Green);
+export const green: Type = make(Offset.Green);
 /**
  * Original Yellow color instance
  *
  * @category Original instances
  */
-export const Yellow: Type = make(Offset.Yellow);
+export const yellow: Type = make(Offset.Yellow);
 /**
  * Original Blue color instance
  *
  * @category Original instances
  */
-export const Blue: Type = make(Offset.Blue);
+export const blue: Type = make(Offset.Blue);
 /**
  * Original Magenta color instance
  *
  * @category Original instances
  */
-export const Magenta: Type = make(Offset.Magenta);
+export const magenta: Type = make(Offset.Magenta);
 /**
  * Original Cyan color instance
  *
  * @category Original instances
  */
-export const Cyan: Type = make(Offset.Cyan);
+export const cyan: Type = make(Offset.Cyan);
 /**
  * Original White color instance
  *
  * @category Original instances
  */
-export const White: Type = make(Offset.White);
+export const white: Type = make(Offset.White);
 
 /**
  * Original Bright Black color instance
  *
  * @category Original instances
  */
-export const BrightBlack: Type = makeBright(Offset.Black);
+export const brightBlack: Type = makeBright(Offset.Black);
 /**
  * Original Bright Red color instance
  *
  * @category Original instances
  */
-export const BrightRed: Type = makeBright(Offset.Red);
+export const brightRed: Type = makeBright(Offset.Red);
 /**
  * Original Bright Green color instance
  *
  * @category Original instances
  */
-export const BrightGreen: Type = makeBright(Offset.Green);
+export const brightGreen: Type = makeBright(Offset.Green);
 /**
  * Original Bright Yellow color instance
  *
  * @category Original instances
  */
-export const BrightYellow: Type = makeBright(Offset.Yellow);
+export const brightYellow: Type = makeBright(Offset.Yellow);
 /**
  * Original Bright Blue color instance
  *
  * @category Original instances
  */
-export const BrightBlue: Type = makeBright(Offset.Blue);
+export const brightBlue: Type = makeBright(Offset.Blue);
 /**
  * Original Bright Magenta color instance
  *
  * @category Original instances
  */
-export const BrightMagenta: Type = makeBright(Offset.Magenta);
+export const brightMagenta: Type = makeBright(Offset.Magenta);
 /**
  * Original Bright Cyan color instance
  *
  * @category Original instances
  */
-export const BrightCyan: Type = makeBright(Offset.Cyan);
+export const brightCyan: Type = makeBright(Offset.Cyan);
 /**
  * Original Bright White color instance
  *
  * @category Original instances
  */
-export const BrightWhite: Type = makeBright(Offset.White);
+export const brightWhite: Type = makeBright(Offset.White);

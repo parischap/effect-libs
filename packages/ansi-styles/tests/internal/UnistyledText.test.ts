@@ -80,7 +80,7 @@ describe('UnistyledText', () => {
     it('applies multiple styles together', () => {
       TestUtils.strictEqual(
         ASUnistyledText.toAnsiString(simpleBoldItalicText),
-        '\x1B[1;3mHello\x1B[0m',
+        `${ASCode.fromNonEmptySequence([1, 3])}Hello${ASCode.reset}`,
       );
     });
   });

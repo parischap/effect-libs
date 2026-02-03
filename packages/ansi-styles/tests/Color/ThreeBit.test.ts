@@ -11,28 +11,25 @@ describe('ASColorThreeBit', () => {
     );
   });
 
-  it('toForegroundSequence', () => {
-    TestUtils.deepStrictEqual(ASColorBase.toForegroundSequence(ASColorThreeBit.Green), [32]);
-    TestUtils.deepStrictEqual(ASColorBase.toForegroundSequence(ASColorThreeBit.BrightGreen), [92]);
+  it('foregroundSequence', () => {
+    TestUtils.deepStrictEqual(ASColorBase.foregroundSequence(ASColorThreeBit.green), [32]);
+    TestUtils.deepStrictEqual(ASColorBase.foregroundSequence(ASColorThreeBit.brightGreen), [92]);
   });
 
-  it('toBackgroundSequence', () => {
-    TestUtils.deepStrictEqual(ASColorBase.toBackgroundSequence(ASColorThreeBit.Green), [42]);
-    TestUtils.deepStrictEqual(ASColorBase.toBackgroundSequence(ASColorThreeBit.BrightGreen), [102]);
+  it('backgroundSequence', () => {
+    TestUtils.deepStrictEqual(ASColorBase.backgroundSequence(ASColorThreeBit.green), [42]);
+    TestUtils.deepStrictEqual(ASColorBase.backgroundSequence(ASColorThreeBit.brightGreen), [102]);
   });
 
-  it('toForegroundId', () => {
-    TestUtils.deepStrictEqual(ASColorBase.toForegroundId(ASColorThreeBit.Green), 'Green');
+  it('foregroundId', () => {
+    TestUtils.deepStrictEqual(ASColorBase.foregroundId(ASColorThreeBit.green), 'Green');
+    TestUtils.deepStrictEqual(ASColorBase.foregroundId(ASColorThreeBit.brightGreen), 'BrightGreen');
+  });
+
+  it('backgroundId', () => {
+    TestUtils.deepStrictEqual(ASColorBase.backgroundId(ASColorThreeBit.green), 'InGreen');
     TestUtils.deepStrictEqual(
-      ASColorBase.toForegroundId(ASColorThreeBit.BrightGreen),
-      'BrightGreen',
-    );
-  });
-
-  it('toBackgroundId', () => {
-    TestUtils.deepStrictEqual(ASColorBase.toBackgroundId(ASColorThreeBit.Green), 'InGreen');
-    TestUtils.deepStrictEqual(
-      ASColorBase.toBackgroundId(ASColorThreeBit.BrightGreen),
+      ASColorBase.backgroundId(ASColorThreeBit.brightGreen),
       'InBrightGreen',
     );
   });

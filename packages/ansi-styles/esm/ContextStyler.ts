@@ -1,10 +1,18 @@
 /**
- * A ContextStyler is a type that allows you to format a string differently depending on the value
- * of a context object.
+ * This module implments a type that applies to a string or text a format that depends on a context
+ * object
  */
 
-import { MArray, MFunction, MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
-import { Equal, Equivalence, Hash, pipe, Pipeable, Predicate, String, Struct, Types } from 'effect';
+import {
+  MArray,
+  MDataEquivalenceBasedEquality,
+  MFunction,
+  MInspectable,
+  MPipeable,
+  MTypes,
+} from '@parischap/effect-lib';
+import { Equal, Hash, pipe, String, Struct } from 'effect';
+import * as ASStyles from './internal/Styles.js';
 import * as ASPalette from './Palette.js';
 import * as ASStyle from './Style.js';
 import type * as ASText from './Text.js';
@@ -97,31 +105,50 @@ export namespace IndexFromContext {
  *
  * @category Models
  */
-export interface Type<in C>
-  extends Action.Type<C>, Equal.Equal, MInspectable.Type, Pipeable.Pipeable {
+export class Type<in C> extends MDataEquivalenceBasedEquality.Class {
   /** Id of this ContextStyler instance. Useful for equality and debugging */
   readonly id: string;
 
-  /** @internal */
-  readonly [_TypeId]: {
-    readonly _C: Types.Contravariant<C>;
-  };
+  /** Array of styles contained by this ContextStyler */
+  readonly styles: ASStyles.Type;
+
+  /** Class constructor */
+  private constructor({ id, styles }: MTypes.Data<Type<unknown>>) {
+    super();
+    this.id = id;
+    this.styles = styles;
+  }
+
+  /** Static constructor */
+  static make(params: MTypes.Data<Type>): Type {
+    return new Type(params);
+  }
+
+  /** Returns the `id` of `this` */
+  [MDataBase.idSymbol](): string | (() => string) {
+    return _namespaceTag;
+  }
+
+  /** Calculates the hash value of `this` */
+  [Hash.symbol](): number {
+    return 0;
+  }
+
+  /** Function that implements the equivalence of `this` and `that` */
+  [MDataEquivalenceBasedEquality.isEquivalentToSymbol](this: this, that: this): boolean {
+    return equivalence(this, that);
+  }
+
+  /** Predicate that returns true if `that` has the same type marker as `this` */
+  [MDataEquivalenceBasedEquality.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
+    return Predicate.hasProperty(that, _TypeId);
+  }
+
+  /** Returns the TypeMarker of the class */
+  protected get [_TypeId](): _TypeId {
+    return _TypeId;
+  }
 }
-
-/**
- * Type guard
- *
- * @category Guards
- */
-export const has = (u: unknown): u is Type<unknown> => Predicate.hasProperty(u, _TypeId);
-
-/**
- * Equivalence
- *
- * @category Equivalences
- */
-export const equivalence: Equivalence.Equivalence<Type<unknown>> = (self, that) =>
-  that.id === self.id;
 
 /** Base */
 const _TypeIdHash = Hash.hash(_TypeId);
