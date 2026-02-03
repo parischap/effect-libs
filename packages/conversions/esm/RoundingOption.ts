@@ -6,13 +6,13 @@
 import {
   MBigDecimal,
   MBigInt,
-  MInspectable,
+  MDataBase,
+  MDataEquivalenceBasedEquality,
   MNumber,
-  MPipeable,
   MString,
   MTypes,
 } from '@parischap/effect-lib';
-import { BigDecimal, Equal, Equivalence, Hash, pipe, Pipeable, Predicate, Struct } from 'effect';
+import { BigDecimal, Equivalence, Hash, pipe, Predicate, Struct } from 'effect';
 import * as CVRoundingMode from './RoundingMode.js';
 
 /**
@@ -31,23 +31,54 @@ const _bigDecimal10 = BigDecimal.make(10n, 0);
  *
  * @category Models
  */
-export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable {
+export class Type extends MDataEquivalenceBasedEquality.Class {
   /** The precision at which to round the number. Must be a finite positive integer. */
   readonly precision: number;
 
   /** The rounding mode to use */
   readonly roundingMode: CVRoundingMode.Type;
 
-  /** @internal */
-  readonly [_TypeId]: _TypeId;
-}
+  /** Class constructor */
+  private constructor({ precision, roundingMode }: MTypes.Data<Type>) {
+    super();
+    this.precision = precision;
+    this.roundingMode = roundingMode;
+  }
 
-/**
- * Type guard
- *
- * @category Guards
- */
-export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
+  /** Static constructor */
+  static make(params: MTypes.Data<Type>): Type {
+    return new Type(params);
+  }
+
+  /** Returns the `id` of `this` */
+  [MDataBase.idSymbol](): string | (() => string) {
+    return function idSymbol(this: Type) {
+      {
+        return `${CVRoundingMode.getName(this.roundingMode)}RounderWith${MString.fromNumber(10)(this.precision)}Precision`;
+      }
+    };
+  }
+
+  /** Calculates the hash value of `this` */
+  [Hash.symbol](): number {
+    return 0;
+  }
+
+  /** Function that implements the equivalence of `this` and `that` */
+  [MDataEquivalenceBasedEquality.isEquivalentToSymbol](this: this, that: this): boolean {
+    return equivalence(this, that);
+  }
+
+  /** Predicate that returns true if `that` has the same type marker as `this` */
+  [MDataEquivalenceBasedEquality.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
+    return Predicate.hasProperty(that, _TypeId);
+  }
+
+  /** Returns the TypeMarker of the class */
+  protected get [_TypeId](): _TypeId {
+    return _TypeId;
+  }
+}
 
 /**
  * Equivalence
@@ -56,31 +87,6 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
  */
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
   self.precision === that.precision && self.roundingMode === that.roundingMode;
-
-/** Prototype */
-
-const _proto: MTypes.Proto<Type> = {
-  [_TypeId]: _TypeId,
-  [Equal.symbol](this: Type, that: unknown): boolean {
-    return has(that) && equivalence(this, that);
-  },
-  [Hash.symbol](this: Type) {
-    return pipe(
-      this.precision,
-      Hash.hash,
-      Hash.combine(Hash.hash(this.roundingMode)),
-      Hash.cached(this),
-    );
-  },
-  [MInspectable.IdSymbol](this: Type) {
-    return `${CVRoundingMode.getName(this.roundingMode)}RounderWith${MString.fromNumber(10)(this.precision)}Precision`;
-  },
-  ...MInspectable.BaseProto(moduleTag),
-  ...MPipeable.BaseProto,
-};
-
-/** Constructor */
-const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
 
 /**
  * Constructs a `CVRoundingOption` with the specified `precision` and `roundingMode`
@@ -93,7 +99,7 @@ export const make = ({
 }: {
   readonly precision?: number;
   readonly roundingMode?: CVRoundingMode.Type;
-} = {}): Type => _make({ precision, roundingMode });
+} = {}): Type => Type.make({ precision, roundingMode });
 
 /**
  * `CVRoundingOption` instance that uses the `HalfExpand` `CVRoundingMode` and `precision=2`. Can be
