@@ -70,6 +70,10 @@ We draw your attention to the [NO_COLOR](https://no-color.org/) standard: "Comma
 
 After reading this introduction, you may take a look at the [API](https://parischap.github.io/effect-libs/docs/ansi-styles) documentation.
 
+## Upgrading
+
+Version 0.3.0 introduced code clarification and a few breaking changes. We apologize for any inconvenience caused and appreciate your understanding.
+
 ## Usage
 
 ### 1) Basic usage
@@ -99,7 +103,7 @@ console.log(
 
 ![Basic usage example](readme-assets/basic-example.png?sanitize=true)
 
-As can be seen in the previous example, although `bold` and `dim` share the same reset code (22), using `dim` inside `bold` (or vice-versa) will work properly. This feature is not well handled by most ANSI styling packages.
+As can be seen in the previous example, although `bold` and `dim` share the same reset ANSI sequence (22), using `dim` inside `bold` (or vice versa) will work properly. This feature is not well handled by most ANSI styling packages.
 
 ### 2) List of available styles
 
@@ -157,20 +161,20 @@ The Style module contains the following predefined foreground three-bit colors:
 - white
 - yellow
 
-If your terminal takes them in charge, you can even use the bright version of each color by preceding it with the `Bright.` keyword:
+If your terminal takes them in charge, you can even use the bright version of each color by preceding it with the `bright` keyword:
 
-- Bright.black
-- Bright.Bright.blue
-- Bright.cyan
-- Bright.green
-- Bright.magenta
-- Bright.red
-- Bright.white
-- Bright.yellow
+- brightBlack
+- brightBlue
+- brightCyan
+- brightGreen
+- brightMagenta
+- brightRed
+- brightWhite
+- brightYellow
 
-If it's the background color that you want to change, precede the color with the `Bg.` keyword. For instance, `Bg.red` or `Bg.Bright.red`.
+If it's the background color that you want to change, use the `bg` prefix. For instance, `bgRed` or `bgBrightRed`.
 
-In some cases, you may need to revert to the default terminal color. In that case, use `defaultColor` or `Bg.defaultColor`
+In some cases, you may need to revert to the default terminal color. In that case, use `defaultColor` or `bgDefaultColor`
 
 Here is an example:
 
@@ -180,8 +184,8 @@ import { ASStyle } from '@parischap/ansi-styles';
 console.log(
   ASStyle.none(
     ASStyle.green('I am '),
-    ASStyle.Bright.green('in different shades '),
-    ASStyle.Bg.Bright.green('of green', ASStyle.Bg.defaultColor('.')),
+    ASStyle.brightGreen('in different shades '),
+    ASStyle.bgBrightGreen('of green', ASStyle.bgDefaultColor('.')),
   ),
 );
 ```
@@ -194,45 +198,48 @@ console.log(
 
 If your terminal takes them in charge, you can use 8-bit or RGB colors. To that extent, use the `ASStyle.color` and `ASStyle.Bg.color` combinators.
 
-The ASColor module defines 16 three-bit color instances (8 normal + 8 bright), 256 eight-bit color instances and 140 RGB color instances. All these instances can be found in the [API](https://parischap.github.io/effect-libs/ansi-styles/Color.ts.html) documentation. Furthermore, you can define more RGB colors with the `ASColor.Rgb.make` combinator.
+The ASColor module defines 16 three-bit color instances (8 normal + 8 bright), 256 eight-bit color instances and 140 RGB color instances. All these instances can be found in the [ThreeBit API](https://parischap.github.io/effect-libs/ansi-styles/Color/ThreeBit.html), [EightBit API](https://parischap.github.io/effect-libs/ansi-styles/Color/EightBit.html) and [Rgb API](https://parischap.github.io/effect-libs/ansi-styles/Color/Rgb.html). Furthermore, you can define more RGB colors with the `ASColorRgb.make` combinator.
 
 Here is an example:
 
 ```ts
-import { ASColor, ASStyle } from '@parischap/ansi-styles';
+import { ASColorRgb, ASStyle } from '@parischap/ansi-styles';
 
-console.log(ASStyle.color(ASColor.rgbCoral)('I am a coral string'));
+console.log(ASStyle.color(ASColorRgb.coral)('I am a coral string'));
 console.log(
-  ASStyle.color(ASColor.Rgb.make({ red: 176, green: 17, blue: 243 }))(
+  ASStyle.color(ASColorRgb.make({ red: 176, green: 17, blue: 243 }))(
     'I am a string colored with an RGB-user-defined color',
   ),
 );
 ```
 
-### 6) Using a ContextStyler
+### 6) Using an ASContextStyler
 
-A `ContextStyler` allows you to style a text differently according to a context object. There are two `ContextStyler` constructors:
+An `ASContextStyler` allows you to style a text differently according to a context object. There are two kinds of `ContextStyler`'s:
 
-- `fromPalette`: this constructor takes as parameters a `Palette` (see Palette.ts), i.e. an array of `n` (n>=2) Style's, and an `indexFromContext` function that is able to transform a Context object into an integer `i`. The Style that will be used is the one in the Palette at position i % n, where % is the modulo function.
-- `fromSingleStyle`: this constructor takes as parameter a single style that will always be used (i.e. the built instance will ignore the context object it receives). This is useful if a function expects a ContextStyler but needs not take care of the context in some situations.
-
-A `ContextStyler` is a curated `function` object that takes first a context value and then a string to display. Sometimes, you need to use a `ContextStyler` the other way round: you pass it first the string to display and then the context value. In that case, use the `withContextLast` method.
+- `ASContextStylerPalette`: this `ASContextStyler` requires a `ASPalette`, i.e. an array of `n` `ASStyle`'s, and an `indexFromContext` function whose role is to derive a numeric index from a Context object. When styling a text with a context that returns an index `i`, the used `ASStyle` is the one in the `ASPalette` at position i % n, where % is the modulo function.
+- `ASContextStylerConstant`: this `ASContextStyler` requires an `ASStyle` that is used in all contexts (i.e. the value of the context object is ignored). This is useful if a function expects an `ASContextStyler` but needs not take care of the context in some situations.
 
 Here is an example:
 
 ```ts
-import { ASContextStyler, ASPalette } from '@parischap/ansi-styles';
+import {
+  ASContextStylerBase,
+  ASContextStylerConstant,
+  ASContextStylerPalette,
+  ASPalette,
+} from '@parischap/ansi-styles';
 
 interface Value {
   readonly pos1: number;
   readonly otherStuff: string;
 }
 
-const red: ASContextStyler.Type<Value> = ASContextStyler.red();
+const red: ASContextStylerBase.Type<Value> = ASContextStylerConstant.red();
 
 const pos1 = (value: Value): number => value.pos1;
 
-const pos1BasedAllColorsFormatter = ASContextStyler.fromPalette({
+const pos1BasedAllColorsFormatter = ASContextStylerPalette.make({
   indexFromContext: pos1,
   palette: ASPalette.allStandardOriginalColors,
 });
@@ -241,15 +248,14 @@ const value1: Value = {
   pos1: 2,
   otherStuff: 'dummy',
 };
-const pos1BasedAllColorsFormatterInValue1Context = pos1BasedAllColorsFormatter(value1);
-const redInValue1Context = red(value1);
+const pos1BasedAllColorsFormatterInValue1Context = ASContextStylerBase.toStyle(
+  pos1BasedAllColorsFormatter,
+)(value1);
+const redInValue1Context = ASContextStylerBase.toStyle(red)(value1);
 
 /* Prints `foo` in red */
 console.log(redInValue1Context('foo'));
 
 /* Prints `foo` in green */
 console.log(pos1BasedAllColorsFormatterInValue1Context('foo'));
-
-/* Prints `foo` in green using parameters in reversed order */
-console.log(pos1BasedAllColorsFormatter.withContextLast('foo')(value1));
 ```
