@@ -10,7 +10,7 @@ describe('ASContextStylerConstant', () => {
     readonly otherStuff: string;
   }
 
-  const red: ASContextStylerBase.Type<Value> = ASContextStylerConstant.red;
+  const { red }: { readonly red: ASContextStylerBase.Type<Value> } = ASContextStylerConstant;
 
   const value1: Value = {
     pos1: 2,

@@ -235,7 +235,7 @@ interface Value {
   readonly otherStuff: string;
 }
 
-const red: ASContextStylerBase.Type<Value> = ASContextStylerConstant.red();
+const { red }: { readonly red: ASContextStylerBase.Type<Value> } = ASContextStylerConstant;
 
 const pos1 = (value: Value): number => value.pos1;
 
