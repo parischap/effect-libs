@@ -7,7 +7,6 @@
 import { MTypes } from '@parischap/effect-lib';
 import { Equivalence, pipe, Struct } from 'effect';
 import * as ASColorBase from './Color/Base.js';
-import * as ASColorThreeBit from './Color/ThreeBit.js';
 import * as ASStyleCharacteristics from './internal/StyleCharacteristics.js';
 import * as ASText from './Text.js';
 
@@ -272,111 +271,112 @@ export const color = (color: ASColorBase.Type): Type =>
  *
  * @category Original instances
  */
-export const black: Type = color(ASColorThreeBit.black);
+export const black: Type = _make({ style: ASStyleCharacteristics.black });
 
 /**
  * Original red color style instance
  *
  * @category Original instances
  */
-export const red: Type = color(ASColorThreeBit.red);
+export const red: Type = _make({ style: ASStyleCharacteristics.red });
 
 /**
  * Original green color style instance
  *
  * @category Original instances
  */
-export const green: Type = color(ASColorThreeBit.green);
+export const green: Type = _make({ style: ASStyleCharacteristics.green });
 
 /**
  * Original yellow color style instance
  *
  * @category Original instances
  */
-export const yellow: Type = color(ASColorThreeBit.yellow);
+export const yellow: Type = _make({ style: ASStyleCharacteristics.yellow });
 
 /**
  * Original blue color style instance
  *
  * @category Original instances
  */
-export const blue: Type = color(ASColorThreeBit.blue);
+export const blue: Type = _make({ style: ASStyleCharacteristics.blue });
 
 /**
  * Original magenta color style instance
  *
  * @category Original instances
  */
-export const magenta: Type = color(ASColorThreeBit.magenta);
+export const magenta: Type = _make({ style: ASStyleCharacteristics.magenta });
 
 /**
  * Original cyan color style instance
  *
  * @category Original instances
  */
-export const cyan: Type = color(ASColorThreeBit.cyan);
+export const cyan: Type = _make({ style: ASStyleCharacteristics.cyan });
 
 /**
  * Original white color style instance
  *
  * @category Original instances
  */
-export const white: Type = color(ASColorThreeBit.white);
+export const white: Type = _make({ style: ASStyleCharacteristics.white });
 /**
  * Original bright black color style instance
  *
  * @category Original instances
  */
-export const brightBlack: Type = color(ASColorThreeBit.brightBlack);
+export const brightBlack: Type = _make({ style: ASStyleCharacteristics.brightBlack });
 
 /**
  * Original bright red color style instance
  *
  * @category Original instances
  */
-export const brightRed: Type = color(ASColorThreeBit.brightRed);
+export const brightRed: Type = _make({ style: ASStyleCharacteristics.brightRed });
 
 /**
  * Original bright green color style instance
  *
  * @category Original instances
  */
-export const brightGreen: Type = color(ASColorThreeBit.brightGreen);
+export const brightGreen: Type = _make({ style: ASStyleCharacteristics.brightGreen });
 
 /**
  * Original bright yellow color style instance
  *
  * @category Original instances
  */
-export const brightYellow: Type = color(ASColorThreeBit.brightYellow);
+export const brightYellow: Type = _make({ style: ASStyleCharacteristics.brightYellow });
 
 /**
  * Original bright blue color style instance
  *
  * @category Original instances
  */
-export const brightBlue: Type = color(ASColorThreeBit.brightBlue);
+export const brightBlue: Type = _make({ style: ASStyleCharacteristics.brightBlue });
 
 /**
  * Original bright magenta color style instance
  *
  * @category Original instances
  */
-export const brightMagenta: Type = color(ASColorThreeBit.brightMagenta);
+export const brightMagenta: Type = _make({ style: ASStyleCharacteristics.brightMagenta });
 
 /**
  * Original bright cyan color style instance
  *
  * @category Original instances
  */
-export const brightCyan: Type = color(ASColorThreeBit.brightCyan);
+export const brightCyan: Type = _make({ style: ASStyleCharacteristics.brightCyan });
 
 /**
  * Original bright white color style instance
  *
  * @category Original instances
  */
-export const brightWhite: Type = color(ASColorThreeBit.brightWhite);
+export const brightWhite: Type = _make({ style: ASStyleCharacteristics.brightWhite });
+
 /**
  * Default background color Style instance
  *
@@ -399,109 +399,109 @@ export const bgColor = (color: ASColorBase.Type): Type =>
  *
  * @category Original instances
  */
-export const bgBlack: Type = bgColor(ASColorThreeBit.black);
+export const bgBlack: Type = _make({ style: ASStyleCharacteristics.bgBlack });
 
 /**
  * Original red color style instance
  *
  * @category Original instances
  */
-export const bgRed: Type = bgColor(ASColorThreeBit.red);
+export const bgRed: Type = _make({ style: ASStyleCharacteristics.bgRed });
 
 /**
  * Original green color style instance
  *
  * @category Original instances
  */
-export const bgGreen: Type = bgColor(ASColorThreeBit.green);
+export const bgGreen: Type = _make({ style: ASStyleCharacteristics.bgGreen });
 
 /**
  * Original yellow color style instance
  *
  * @category Original instances
  */
-export const bgYellow: Type = bgColor(ASColorThreeBit.yellow);
+export const bgYellow: Type = _make({ style: ASStyleCharacteristics.bgYellow });
 
 /**
  * Original blue color style instance
  *
  * @category Original instances
  */
-export const bgBlue: Type = bgColor(ASColorThreeBit.blue);
+export const bgBlue: Type = _make({ style: ASStyleCharacteristics.bgBlue });
 
 /**
  * Original magenta color style instance
  *
  * @category Original instances
  */
-export const bgMagenta: Type = bgColor(ASColorThreeBit.magenta);
+export const bgMagenta: Type = _make({ style: ASStyleCharacteristics.bgMagenta });
 
 /**
  * Original cyan color style instance
  *
  * @category Original instances
  */
-export const bgCyan: Type = bgColor(ASColorThreeBit.cyan);
+export const bgCyan: Type = _make({ style: ASStyleCharacteristics.bgCyan });
 
 /**
  * Original white color style instance
  *
  * @category Original instances
  */
-export const bgWhite: Type = bgColor(ASColorThreeBit.white);
+export const bgWhite: Type = _make({ style: ASStyleCharacteristics.bgWhite });
 
 /**
  * Original bright black color style instance
  *
  * @category Original instances
  */
-export const bgBrightBlack: Type = bgColor(ASColorThreeBit.brightBlack);
+export const bgBrightBlack: Type = _make({ style: ASStyleCharacteristics.bgBrightBlack });
 
 /**
  * Original bright red color style instance
  *
  * @category Original instances
  */
-export const bgBrightRed: Type = bgColor(ASColorThreeBit.brightRed);
+export const bgBrightRed: Type = _make({ style: ASStyleCharacteristics.bgBrightRed });
 
 /**
  * Original bright green color style instance
  *
  * @category Original instances
  */
-export const bgBrightGreen: Type = bgColor(ASColorThreeBit.brightGreen);
+export const bgBrightGreen: Type = _make({ style: ASStyleCharacteristics.bgBrightGreen });
 
 /**
  * Original bright yellow color style instance
  *
  * @category Original instances
  */
-export const bgBrightYellow: Type = bgColor(ASColorThreeBit.brightYellow);
+export const bgBrightYellow: Type = _make({ style: ASStyleCharacteristics.bgBrightYellow });
 
 /**
  * Original bright blue color style instance
  *
  * @category Original instances
  */
-export const bgBrightBlue: Type = bgColor(ASColorThreeBit.brightBlue);
+export const bgBrightBlue: Type = _make({ style: ASStyleCharacteristics.bgBrightBlue });
 
 /**
  * Original bright magenta color style instance
  *
  * @category Original instances
  */
-export const bgBrightMagenta: Type = bgColor(ASColorThreeBit.brightMagenta);
+export const bgBrightMagenta: Type = _make({ style: ASStyleCharacteristics.bgBrightMagenta });
 
 /**
  * Original bright cyan color style instance
  *
  * @category Original instances
  */
-export const bgBrightCyan: Type = bgColor(ASColorThreeBit.brightCyan);
+export const bgBrightCyan: Type = _make({ style: ASStyleCharacteristics.bgBrightCyan });
 
 /**
  * Original bright white color style instance
  *
  * @category Original instances
  */
-export const bgBrightWhite: Type = bgColor(ASColorThreeBit.brightWhite);
+export const bgBrightWhite: Type = _make({ style: ASStyleCharacteristics.bgBrightWhite });

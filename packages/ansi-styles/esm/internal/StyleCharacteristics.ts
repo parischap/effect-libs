@@ -12,6 +12,7 @@
 import { MDataBase, MDataEquivalenceBasedEquality, MStruct, MTypes } from '@parischap/effect-lib';
 import { Equivalence, flow, Hash, pipe, Predicate } from 'effect';
 import * as AsColorBase from '../Color/Base.js';
+import * as ASColorThreeBit from '../Color/ThreeBit.js';
 import * as ASCode from './Code.js';
 import * as ASSequence from './Sequence.js';
 import * as ASStyleCharacteristicBackgroundColor from './StyleCharacteristic/BackgroundColor.js';
@@ -435,7 +436,7 @@ export const defaults: Type = Type.make({
 });
 
 /**
- * Bold StyleCharacteristics
+ * Bold StyleCharacteristics instance
  *
  * @category Instances
  */
@@ -444,7 +445,7 @@ export const bold: Type = Type.make(
 );
 
 /**
- * NotBold StyleCharacteristics
+ * NotBold StyleCharacteristics instance
  *
  * @category Instances
  */
@@ -453,14 +454,14 @@ export const notBold: Type = Type.make(
 );
 
 /**
- * Dim StyleCharacteristics
+ * Dim StyleCharacteristics instance
  *
  * @category Instances
  */
 export const dim: Type = Type.make(pipe(none, MStruct.set({ dim: ASStyleCharacteristicDim.on })));
 
 /**
- * NotDim StyleCharacteristics
+ * NotDim StyleCharacteristics instance
  *
  * @category Instances
  */
@@ -469,7 +470,7 @@ export const notDim: Type = Type.make(
 );
 
 /**
- * Italic StyleCharacteristics
+ * Italic StyleCharacteristics instance
  *
  * @category Instances
  */
@@ -478,7 +479,7 @@ export const italic: Type = Type.make(
 );
 
 /**
- * NotItalic StyleCharacteristics
+ * NotItalic StyleCharacteristics instance
  *
  * @category Instances
  */
@@ -487,7 +488,7 @@ export const notItalic: Type = Type.make(
 );
 
 /**
- * Underlined StyleCharacteristics
+ * Underlined StyleCharacteristics instance
  *
  * @category Instances
  */
@@ -496,7 +497,7 @@ export const underlined: Type = Type.make(
 );
 
 /**
- * NotUnderlined StyleCharacteristics
+ * NotUnderlined StyleCharacteristics instance
  *
  * @category Instances
  */
@@ -505,7 +506,7 @@ export const notUnderlined: Type = Type.make(
 );
 
 /**
- * StruckThrough StyleCharacteristics
+ * StruckThrough StyleCharacteristics instance
  *
  * @category Instances
  */
@@ -514,7 +515,7 @@ export const struckThrough: Type = Type.make(
 );
 
 /**
- * NotStruckThrough StyleCharacteristics
+ * NotStruckThrough StyleCharacteristics instance
  *
  * @category Instances
  */
@@ -523,7 +524,7 @@ export const notStruckThrough: Type = Type.make(
 );
 
 /**
- * Overlined StyleCharacteristics
+ * Overlined StyleCharacteristics instance
  *
  * @category Instances
  */
@@ -532,7 +533,7 @@ export const overlined: Type = Type.make(
 );
 
 /**
- * NotOverlined StyleCharacteristics
+ * NotOverlined StyleCharacteristics instance
  *
  * @category Instances
  */
@@ -541,7 +542,7 @@ export const notOverlined: Type = Type.make(
 );
 
 /**
- * Inversed StyleCharacteristics
+ * Inversed StyleCharacteristics instance
  *
  * @category Instances
  */
@@ -550,7 +551,7 @@ export const inversed: Type = Type.make(
 );
 
 /**
- * NotInversed StyleCharacteristics
+ * NotInversed StyleCharacteristics instance
  *
  * @category Instances
  */
@@ -559,7 +560,7 @@ export const notInversed: Type = Type.make(
 );
 
 /**
- * Hidden StyleCharacteristics
+ * Hidden StyleCharacteristics instance
  *
  * @category Instances
  */
@@ -568,7 +569,7 @@ export const hidden: Type = Type.make(
 );
 
 /**
- * NotHidden StyleCharacteristics
+ * NotHidden StyleCharacteristics instance
  *
  * @category Instances
  */
@@ -577,7 +578,7 @@ export const notHidden: Type = Type.make(
 );
 
 /**
- * Blinking StyleCharacteristics
+ * Blinking StyleCharacteristics instance
  *
  * @category Instances
  */
@@ -586,7 +587,7 @@ export const blinking: Type = Type.make(
 );
 
 /**
- * NotBlinking StyleCharacteristics
+ * NotBlinking StyleCharacteristics instance
  *
  * @category Instances
  */
@@ -595,7 +596,7 @@ export const notBlinking: Type = Type.make(
 );
 
 /**
- * Default foreground color StyleCharacteristics
+ * Default foreground color StyleCharacteristics instance
  *
  * @category Instances
  */
@@ -617,7 +618,118 @@ export const fromColorAsForegroundColor = (color: AsColorBase.Type): Type =>
   );
 
 /**
- * Default foreground color StyleCharacteristics
+ * Original black color StyleCharacteristics instance
+ *
+ * @category Original instances
+ */
+export const black: Type = fromColorAsForegroundColor(ASColorThreeBit.black);
+
+/**
+ * Original red color StyleCharacteristics instance
+ *
+ * @category Original instances
+ */
+export const red: Type = fromColorAsForegroundColor(ASColorThreeBit.red);
+
+/**
+ * Original green color StyleCharacteristics instance
+ *
+ * @category Original instances
+ */
+export const green: Type = fromColorAsForegroundColor(ASColorThreeBit.green);
+
+/**
+ * Original yellow color StyleCharacteristics instance
+ *
+ * @category Original instances
+ */
+export const yellow: Type = fromColorAsForegroundColor(ASColorThreeBit.yellow);
+
+/**
+ * Original blue color StyleCharacteristics instance
+ *
+ * @category Original instances
+ */
+export const blue: Type = fromColorAsForegroundColor(ASColorThreeBit.blue);
+
+/**
+ * Original magenta color StyleCharacteristics instance
+ *
+ * @category Original instances
+ */
+export const magenta: Type = fromColorAsForegroundColor(ASColorThreeBit.magenta);
+
+/**
+ * Original cyan color StyleCharacteristics instance
+ *
+ * @category Original instances
+ */
+export const cyan: Type = fromColorAsForegroundColor(ASColorThreeBit.cyan);
+
+/**
+ * Original white color StyleCharacteristics instance
+ *
+ * @category Original instances
+ */
+export const white: Type = fromColorAsForegroundColor(ASColorThreeBit.white);
+/**
+ * Original bright black color StyleCharacteristics instance
+ *
+ * @category Original instances
+ */
+export const brightBlack: Type = fromColorAsForegroundColor(ASColorThreeBit.brightBlack);
+
+/**
+ * Original bright red color StyleCharacteristics instance
+ *
+ * @category Original instances
+ */
+export const brightRed: Type = fromColorAsForegroundColor(ASColorThreeBit.brightRed);
+
+/**
+ * Original bright green color StyleCharacteristics instance
+ *
+ * @category Original instances
+ */
+export const brightGreen: Type = fromColorAsForegroundColor(ASColorThreeBit.brightGreen);
+
+/**
+ * Original bright yellow color StyleCharacteristics instance
+ *
+ * @category Original instances
+ */
+export const brightYellow: Type = fromColorAsForegroundColor(ASColorThreeBit.brightYellow);
+
+/**
+ * Original bright blue color StyleCharacteristics instance
+ *
+ * @category Original instances
+ */
+export const brightBlue: Type = fromColorAsForegroundColor(ASColorThreeBit.brightBlue);
+
+/**
+ * Original bright magenta color StyleCharacteristics instance
+ *
+ * @category Original instances
+ */
+export const brightMagenta: Type = fromColorAsForegroundColor(ASColorThreeBit.brightMagenta);
+
+/**
+ * Original bright cyan color StyleCharacteristics instance
+ *
+ * @category Original instances
+ */
+export const brightCyan: Type = fromColorAsForegroundColor(ASColorThreeBit.brightCyan);
+
+/**
+ * Original bright white color StyleCharacteristics instance
+ *
+ * @category Original instances
+ */
+export const brightWhite: Type = fromColorAsForegroundColor(ASColorThreeBit.brightWhite);
+
+/**
+ * Default background color StyleCharacteristics
  *
  * @category Instances
  */
@@ -637,3 +749,115 @@ export const fromColorAsBackgroundColor = (color: AsColorBase.Type): Type =>
       MStruct.set({ backgroundColor: ASStyleCharacteristicBackgroundColor.fromColor(color) }),
     ),
   );
+
+/**
+ * Original black color StyleCharacteristics instance as background color
+ *
+ * @category Original instances
+ */
+export const bgBlack: Type = fromColorAsBackgroundColor(ASColorThreeBit.black);
+
+/**
+ * Original red color StyleCharacteristics instance as background color
+ *
+ * @category Original instances
+ */
+export const bgRed: Type = fromColorAsBackgroundColor(ASColorThreeBit.red);
+
+/**
+ * Original green color StyleCharacteristics instance as background color
+ *
+ * @category Original instances
+ */
+export const bgGreen: Type = fromColorAsBackgroundColor(ASColorThreeBit.green);
+
+/**
+ * Original yellow color StyleCharacteristics instance as background color
+ *
+ * @category Original instances
+ */
+export const bgYellow: Type = fromColorAsBackgroundColor(ASColorThreeBit.yellow);
+
+/**
+ * Original blue color StyleCharacteristics instance as background color
+ *
+ * @category Original instances
+ */
+export const bgBlue: Type = fromColorAsBackgroundColor(ASColorThreeBit.blue);
+
+/**
+ * Original magenta color StyleCharacteristics instance as background color
+ *
+ * @category Original instances
+ */
+export const bgMagenta: Type = fromColorAsBackgroundColor(ASColorThreeBit.magenta);
+
+/**
+ * Original cyan color StyleCharacteristics instance as background color
+ *
+ * @category Original instances
+ */
+export const bgCyan: Type = fromColorAsBackgroundColor(ASColorThreeBit.cyan);
+
+/**
+ * Original white color StyleCharacteristics instance as background color
+ *
+ * @category Original instances
+ */
+export const bgWhite: Type = fromColorAsBackgroundColor(ASColorThreeBit.white);
+
+/**
+ * Original bright black color StyleCharacteristics instance as background color
+ *
+ * @category Original instances
+ */
+export const bgBrightBlack: Type = fromColorAsBackgroundColor(ASColorThreeBit.brightBlack);
+
+/**
+ * Original bright red color StyleCharacteristics instance as background color
+ *
+ * @category Original instances
+ */
+export const bgBrightRed: Type = fromColorAsBackgroundColor(ASColorThreeBit.brightRed);
+
+/**
+ * Original bright green color StyleCharacteristics instance as background color
+ *
+ * @category Original instances
+ */
+export const bgBrightGreen: Type = fromColorAsBackgroundColor(ASColorThreeBit.brightGreen);
+
+/**
+ * Original bright yellow color StyleCharacteristics instance as background color
+ *
+ * @category Original instances
+ */
+export const bgBrightYellow: Type = fromColorAsBackgroundColor(ASColorThreeBit.brightYellow);
+
+/**
+ * Original bright blue color StyleCharacteristics instance as background color
+ *
+ * @category Original instances
+ */
+export const bgBrightBlue: Type = fromColorAsBackgroundColor(ASColorThreeBit.brightBlue);
+
+/**
+ * Original bright magenta color StyleCharacteristics instance as background color
+ *
+ * @category Original instances
+ */
+export const bgBrightMagenta: Type = fromColorAsBackgroundColor(ASColorThreeBit.brightMagenta);
+
+/**
+ * Original bright cyan color StyleCharacteristics instance as background color
+ *
+ * @category Original instances
+ */
+export const bgBrightCyan: Type = fromColorAsBackgroundColor(ASColorThreeBit.brightCyan);
+
+/**
+ * Original bright white color StyleCharacteristics instance as background color
+ *
+ * @category Original instances
+ */
+export const bgBrightWhite: Type = fromColorAsBackgroundColor(ASColorThreeBit.brightWhite);
