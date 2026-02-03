@@ -6,11 +6,10 @@
 import {
   MBigDecimal,
   MBigInt,
+  MDataBase,
   MFunction,
-  MInspectable,
   MMatch,
   MNumber,
-  MPipeable,
   MPredicate,
   MRegExpString,
   MString,
@@ -24,11 +23,9 @@ import {
   Either,
   flow,
   Function,
-  Inspectable,
   Number,
   Option,
   pipe,
-  Pipeable,
   Predicate,
   String,
   Struct,
@@ -400,7 +397,7 @@ export namespace ScientificNotation {
  *
  * @category Models
  */
-export interface Type extends Inspectable.Inspectable, Pipeable.Pipeable {
+export class Type extends MDataBase.Class {
   /**
    * Thousand separator. Use an empty string for no separator. Usually a string made of at most one
    * character different from `fractionalSeparator`. Will not throw otherwise but unexpected results
@@ -471,31 +468,52 @@ export interface Type extends Inspectable.Inspectable, Pipeable.Pipeable {
   /** Sign display options. See SignDisplay.ts */
   readonly signDisplay: SignDisplay;
 
-  /** @internal */
-  readonly [_TypeId]: _TypeId;
+  /** Class constructor */
+  private constructor({
+    thousandSeparator,
+    fractionalSeparator,
+    showNullIntegerPart,
+    minimumFractionalDigits,
+    maximumFractionalDigits,
+    eNotationChars,
+    scientificNotation,
+    roundingMode,
+    signDisplay,
+  }: MTypes.Data<Type>) {
+    super();
+    this.thousandSeparator = thousandSeparator;
+    this.fractionalSeparator = fractionalSeparator;
+    this.showNullIntegerPart = showNullIntegerPart;
+    this.minimumFractionalDigits = minimumFractionalDigits;
+    this.maximumFractionalDigits = maximumFractionalDigits;
+    this.eNotationChars = eNotationChars;
+    this.scientificNotation = scientificNotation;
+    this.roundingMode = roundingMode;
+    this.signDisplay = signDisplay;
+  }
+
+  /** Static constructor */
+  static make(params: MTypes.Data<Type>): Type {
+    return new Type(params);
+  }
+
+  /** Returns the `id` of `this` */
+  [MDataBase.idSymbol](): string | (() => string) {
+    return moduleTag;
+  }
+
+  /** Returns the TypeMarker of the class */
+  protected get [_TypeId](): _TypeId {
+    return _TypeId;
+  }
 }
-
-/**
- * Type guard
- *
- * @category Guards
- */
-export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
-
-/** Prototype */
-const _proto: MTypes.Proto<Type> = {
-  [_TypeId]: _TypeId,
-  ...MInspectable.BaseProto(moduleTag),
-  ...MPipeable.BaseProto,
-};
 
 /**
  * Constructor
  *
  * @category Constructors
  */
-export const make = (params: MTypes.Data<Type>): Type =>
-  MTypes.objectFromDataAndProto(_proto, params);
+export const make = (params: MTypes.Data<Type>): Type => Type.make(params);
 
 /**
  * Returns the `thousandSeparator` property of `self`
