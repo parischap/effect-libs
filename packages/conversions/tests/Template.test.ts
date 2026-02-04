@@ -1,43 +1,43 @@
-import * as TestUtils from "@parischap/configs/TestUtils";
+import * as TestUtils from '@parischap/configs/TestUtils';
 import {
   CVNumberBase10Format,
   CVReal,
   CVTemplate,
-  CVTemplatePlaceholder,
-  CVTemplateSeparator,
-} from "@parischap/conversions";
-import { MInputError, MTypes } from "@parischap/effect-lib";
-import { Either, pipe } from "effect";
-import { describe, it } from "vitest";
+  CVTemplatePartPlaceholder,
+  CVTemplatePartSeparator,
+} from '@parischap/conversions';
+import { MInputError, MTypes } from '@parischap/effect-lib';
+import { Either, pipe } from 'effect';
+import { describe, it } from 'vitest';
 
-describe("CVTemplate", () => {
+describe('CVTemplate', () => {
   const params = {
-    fillChar: "0",
+    fillChar: '0',
     numberBase10Format: pipe(CVNumberBase10Format.integer, CVNumberBase10Format.withoutSignDisplay),
   };
-  const placeholder = CVTemplatePlaceholder;
-  const sep = CVTemplateSeparator;
+  const placeholder = CVTemplatePartPlaceholder;
+  const sep = CVTemplatePartSeparator;
 
   const template = CVTemplate.make(
-    placeholder.fixedLengthToReal({ ...params, name: "dd", length: 2 }),
+    placeholder.fixedLengthToReal({ ...params, name: 'dd', length: 2 }),
     sep.slash,
-    placeholder.fixedLengthToReal({ ...params, name: "MM", length: 2 }),
+    placeholder.fixedLengthToReal({ ...params, name: 'MM', length: 2 }),
     sep.slash,
-    placeholder.fixedLengthToReal({ ...params, name: "yyyy", length: 4 }),
+    placeholder.fixedLengthToReal({ ...params, name: 'yyyy', length: 4 }),
     sep.space,
-    placeholder.real({ ...params, name: "MM" }),
+    placeholder.real({ ...params, name: 'MM' }),
   );
 
-  describe("Tag, prototype and guards", () => {
-    it("moduleTag", () => {
+  describe('Tag, prototype and guards', () => {
+    it('moduleTag', () => {
       TestUtils.assertSome(TestUtils.moduleTagFromTestFilePath(__filename), CVTemplate.moduleTag);
     });
 
-    it(".pipe()", () => {
+    it('.pipe()', () => {
       TestUtils.assertTrue(template.pipe(CVTemplate.has));
     });
 
-    it(".toString()", () => {
+    it('.toString()', () => {
       TestUtils.strictEqual(
         template.toString(),
         `#dd/#MM/#yyyy #MM
@@ -49,17 +49,17 @@ describe("CVTemplate", () => {
       );
     });
 
-    describe("has", () => {
-      it("Matching", () => {
+    describe('has', () => {
+      it('Matching', () => {
         TestUtils.assertTrue(CVTemplate.has(template));
       });
-      it("Non matching", () => {
+      it('Non matching', () => {
         TestUtils.assertFalse(CVTemplate.has(new Date()));
       });
     });
   });
 
-  describe("toParser", () => {
+  describe('toParser', () => {
     const parser = CVTemplate.toParser(template);
 
     TestUtils.assertTrueType(
@@ -79,40 +79,40 @@ describe("CVTemplate", () => {
       >(),
     );
 
-    it("Empty text", () => {
-      TestUtils.assertLeftMessage(parser(""), "Expected length of #dd to be: 2. Actual: 0");
+    it('Empty text', () => {
+      TestUtils.assertLeftMessage(parser(''), 'Expected length of #dd to be: 2. Actual: 0');
     });
 
-    it("Text too short", () => {
+    it('Text too short', () => {
       TestUtils.assertLeftMessage(
-        parser("25/12"),
+        parser('25/12'),
         "Expected remaining text for separator at position 4 to start with '/'. Actual: ''",
       );
     });
 
-    it("Wrong separator", () => {
+    it('Wrong separator', () => {
       TestUtils.assertLeftMessage(
-        parser("25|12"),
+        parser('25|12'),
         "Expected remaining text for separator at position 2 to start with '/'. Actual: '|12'",
       );
     });
 
-    it("Same placeholder receives different values", () => {
+    it('Same placeholder receives different values', () => {
       TestUtils.assertLeftMessage(
-        parser("25/12/2025 13"),
+        parser('25/12/2025 13'),
         "#MM is present more than once in template and receives differing values '12' and '13'",
       );
     });
 
-    it("Text too long", () => {
+    it('Text too long', () => {
       TestUtils.assertLeftMessage(
-        parser("25/12/2025 12is XMas"),
+        parser('25/12/2025 12is XMas'),
         "Expected text not consumed by template to be empty. Actual: 'is XMas'",
       );
     });
 
-    it("Matching text", () => {
-      TestUtils.assertRight(parser("05/12/2025 12"), {
+    it('Matching text', () => {
+      TestUtils.assertRight(parser('05/12/2025 12'), {
         dd: CVReal.unsafeFromNumber(5),
         MM: CVReal.unsafeFromNumber(12),
         yyyy: CVReal.unsafeFromNumber(2025),
@@ -120,7 +120,7 @@ describe("CVTemplate", () => {
     });
   });
 
-  describe("toFormatter", () => {
+  describe('toFormatter', () => {
     const formatter = CVTemplate.toFormatter(template);
 
     TestUtils.assertTrueType(
@@ -137,25 +137,25 @@ describe("CVTemplate", () => {
       >(),
     );
 
-    it("With correct values", () => {
+    it('With correct values', () => {
       TestUtils.assertRight(
         formatter({
           dd: CVReal.unsafeFromNumber(5),
           MM: CVReal.unsafeFromNumber(12),
           yyyy: CVReal.unsafeFromNumber(2025),
         }),
-        "05/12/2025 12",
+        '05/12/2025 12',
       );
     });
 
-    it("With incorrect values", () => {
+    it('With incorrect values', () => {
       TestUtils.assertLeftMessage(
         formatter({
           dd: CVReal.unsafeFromNumber(115),
           MM: CVReal.unsafeFromNumber(12),
           yyyy: CVReal.unsafeFromNumber(2025),
         }),
-        "Expected length of #dd to be: 2. Actual: 3",
+        'Expected length of #dd to be: 2. Actual: 3',
       );
     });
   });

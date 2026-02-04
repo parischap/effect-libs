@@ -46,6 +46,11 @@ export class Type extends MDataBase.Class {
   static make(params: MTypes.Data<Type>): Type {
     return new Type(params);
   }
+
+  /** Returns the TypeMarker of the class */
+  protected get [_TypeId](): _TypeId {
+    return _TypeId;
+  }
 }
 
 /**

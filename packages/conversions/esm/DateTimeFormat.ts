@@ -31,9 +31,9 @@ import * as CVDateTimeFormatContext from './DateTimeFormatContext.js';
 import * as CVReal from './Real.js';
 import * as CVTemplate from './Template.js';
 import * as CVTemplatePart from './TemplatePart.js';
+import * as CVTemplatePartPlaceholder from './TemplatePartPlaceholder.js';
 import * as CVTemplateParts from './TemplateParts.js';
-import * as CVTemplatePlaceholder from './TemplatePlaceholder.js';
-import * as CVTemplateSeparator from './TemplateSeparator.js';
+import * as CVTemplatePartSeparator from './TemplatePartSeparator.js';
 
 /**
  * Module tag
@@ -344,7 +344,7 @@ export const make = ({
 }): Type => {
   const getter = (
     name: CVDateTimeFormatContext.Token,
-  ): CVTemplatePlaceholder.Type<string, CVReal.Type> =>
+  ): CVTemplatePartPlaceholder.Type<string, CVReal.Type> =>
     pipe(
       context.tokenMap,
       HashMap.get(name),
@@ -359,7 +359,7 @@ export const make = ({
       flow(
         MMatch.make,
         MMatch.when(TemplatePart.isPlaceholder, flow(TemplatePart.Placeholder.name, getter)),
-        MMatch.when(TemplatePart.isSeparator, ({ value }) => CVTemplateSeparator.make(value)),
+        MMatch.when(TemplatePart.isSeparator, ({ value }) => CVTemplatePartSeparator.make(value)),
         MMatch.exhaustive,
       ),
     ),
@@ -433,7 +433,7 @@ export const toFormatter = (self: Type): Formatter.Type => {
         MMatch.when(
           CVTemplatePart.isPlaceholder,
           flow(
-            CVTemplatePlaceholder.name,
+            CVTemplatePartPlaceholder.name,
             MMatch.make,
             flow(
               MMatch.whenIs(

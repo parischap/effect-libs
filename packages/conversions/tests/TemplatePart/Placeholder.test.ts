@@ -1,38 +1,25 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { CVNumberBase10Format, CVReal, CVTemplatePlaceholder } from '@parischap/conversions';
+import { CVNumberBase10Format, CVReal, CVTemplatePartPlaceholder } from '@parischap/conversions';
 import { MRegExpString, MString } from '@parischap/effect-lib';
-import { Schema, Tuple } from 'effect';
+import { Option, Schema, Tuple } from 'effect';
 import { describe, it } from 'vitest';
 
-describe('CVTemplatePlaceholder', () => {
-  const threeChars = CVTemplatePlaceholder.fixedLength({ name: 'foo', length: 3 });
+describe('CVTemplatePartPlaceholder', () => {
+  const threeChars = CVTemplatePartPlaceholder.fixedLength({ name: 'foo', length: 3 });
 
   TestUtils.assertTrueType(
-    TestUtils.areEqualTypes<CVTemplatePlaceholder.ExtractName<typeof threeChars>, 'foo'>(),
+    TestUtils.areEqualTypes<CVTemplatePartPlaceholder.ExtractName<typeof threeChars>, 'foo'>(),
   );
   TestUtils.assertTrueType(
-    TestUtils.areEqualTypes<CVTemplatePlaceholder.ExtractType<typeof threeChars>, string>(),
+    TestUtils.areEqualTypes<CVTemplatePartPlaceholder.ExtractType<typeof threeChars>, string>(),
   );
 
-  describe('Tag, prototype and guards', () => {
+  describe('Tag, .toString()', () => {
     it('moduleTag', () => {
-      TestUtils.assertSome(
-        TestUtils.moduleTagFromTestFilePath(__filename),
-        CVTemplatePlaceholder.moduleTag,
+      TestUtils.assertEquals(
+        Option.some(CVTemplatePartPlaceholder.moduleTag),
+        TestUtils.moduleTagFromTestFilePath(import.meta.filename),
       );
-    });
-
-    it('.pipe()', () => {
-      TestUtils.assertTrue(threeChars.pipe(CVTemplatePlaceholder.has));
-    });
-
-    describe('has', () => {
-      it('Matching', () => {
-        TestUtils.assertTrue(CVTemplatePlaceholder.has(threeChars));
-      });
-      it('Non matching', () => {
-        TestUtils.assertFalse(CVTemplatePlaceholder.has(new Date()));
-      });
     });
   });
 
@@ -79,7 +66,7 @@ describe('CVTemplatePlaceholder', () => {
   });
 
   describe('paddedFixedLength', () => {
-    const placeholder = CVTemplatePlaceholder.paddedFixedLength({
+    const placeholder = CVTemplatePartPlaceholder.paddedFixedLength({
       name: 'foo',
       length: 3,
       fillChar: '0',
@@ -121,7 +108,7 @@ describe('CVTemplatePlaceholder', () => {
   });
 
   describe('fixedLengthToReal', () => {
-    const placeholder = CVTemplatePlaceholder.fixedLengthToReal({
+    const placeholder = CVTemplatePartPlaceholder.fixedLengthToReal({
       name: 'foo',
       length: 3,
       fillChar: ' ',
@@ -166,7 +153,7 @@ describe('CVTemplatePlaceholder', () => {
   });
 
   describe('real', () => {
-    const placeholder = CVTemplatePlaceholder.real({
+    const placeholder = CVTemplatePartPlaceholder.real({
       name: 'foo',
       numberBase10Format: CVNumberBase10Format.frenchStyleNumber,
     });
@@ -197,7 +184,7 @@ describe('CVTemplatePlaceholder', () => {
   });
 
   describe('mappedLiterals', () => {
-    const map = CVTemplatePlaceholder.mappedLiterals({
+    const map = CVTemplatePartPlaceholder.mappedLiterals({
       name: 'foo',
       keyValuePairs: [
         ['foo', 6],
@@ -236,7 +223,7 @@ describe('CVTemplatePlaceholder', () => {
   });
 
   describe('anythingBut', () => {
-    const noSpaceChars = CVTemplatePlaceholder.anythingBut({
+    const noSpaceChars = CVTemplatePartPlaceholder.anythingBut({
       name: 'foo',
       forbiddenChars: [MRegExpString.space],
     });
@@ -278,7 +265,7 @@ describe('CVTemplatePlaceholder', () => {
   });
 
   describe('toEnd', () => {
-    const toEnd = CVTemplatePlaceholder.toEnd('foo');
+    const toEnd = CVTemplatePartPlaceholder.toEnd('foo');
 
     it('.toString()', () => {
       TestUtils.strictEqual(toEnd.toString(), '#foo: a string');

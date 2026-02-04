@@ -27,8 +27,8 @@ import * as CVReal from './Real.js';
 import * as CVSemVer from './SemVer.js';
 import * as CVTemplate from './Template.js';
 import * as CVTemplatePart from './TemplatePart.js';
+import * as CVTemplatePartPlaceholder from './TemplatePartPlaceholder.js';
 import * as CVTemplateParts from './TemplateParts.js';
-import * as CVTemplatePlaceholder from './TemplatePlaceholder.js';
 
 /**
  * A `Schema` that transforms a string into a `CVEmail`
@@ -283,9 +283,10 @@ export const Template = <const PS extends CVTemplateParts.Type>(
   template: CVTemplate.Type<PS>,
 ): Schema.Schema<
   {
-    readonly [k in keyof PS as PS[k] extends CVTemplatePlaceholder.Any ?
-      CVTemplatePlaceholder.ExtractName<PS[k]>
-    : never]: PS[k] extends CVTemplatePlaceholder.Any ? CVTemplatePlaceholder.ExtractType<PS[k]>
+    readonly [k in keyof PS as PS[k] extends CVTemplatePartPlaceholder.Any ?
+      CVTemplatePartPlaceholder.ExtractName<PS[k]>
+    : never]: PS[k] extends CVTemplatePartPlaceholder.Any ?
+      CVTemplatePartPlaceholder.ExtractType<PS[k]>
     : never;
   },
   string
@@ -303,8 +304,8 @@ export const Template = <const PS extends CVTemplateParts.Type>(
           CVTemplatePart.isPlaceholder,
           flow(
             MTuple.makeBothBy({
-              toFirst: CVTemplatePlaceholder.name,
-              toSecond: CVTemplatePlaceholder.tSchemaInstance,
+              toFirst: CVTemplatePartPlaceholder.name,
+              toSecond: CVTemplatePartPlaceholder.tSchemaInstance,
             }),
             Option.some,
           ),

@@ -1,8 +1,8 @@
 /**
- * This module implements a `CVTemplatePlaceholder` type which is one of the constituents of
+ * This module implements a `CVTemplatePartPlaceholder` type which is one of the constituents of
  * `CVTemplate`'s (see Template.ts and TemplatePart.ts)
  *
- * Each `CVTemplatePlaceholder` defines a parser and a formatter:
+ * Each `CVTemplatePartPlaceholder` defines a parser and a formatter:
  *
  * - The parser takes a text, consumes a part of that text, optionnally converts the consumed part to
  *   a value of type T and, if successful, returns a `Right` of that value and of what has not been
@@ -13,9 +13,8 @@
  */
 
 import {
+  MDataBase,
   MInputError,
-  MInspectable,
-  MPipeable,
   MRegExp,
   MRegExpString,
   MString,
@@ -31,24 +30,21 @@ import {
   Function,
   HashMap,
   pipe,
-  Pipeable,
-  Predicate,
   Schema,
   String,
   Struct,
   Tuple,
-  Types,
 } from 'effect';
 
-import * as CVNumberBase10Format from './NumberBase10Format.js';
-import * as CVReal from './Real.js';
+import * as CVNumberBase10Format from '../NumberBase10Format.js';
+import * as CVReal from '../Real.js';
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/conversions/TemplatePlaceholder/';
+export const moduleTag = '@parischap/conversions/TemplatePart/Placeholder/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
@@ -87,73 +83,88 @@ export namespace Formatter {
 }
 
 /**
- * `CVTemplatePlaceholder` Type
+ * Type that represents a
  *
  * @category Models
  */
-export interface Type<out N extends string, in out T> extends MInspectable.Type, Pipeable.Pipeable {
-  /** Name of this TemplatePlaceholder */
+export class Type<out N extends string, in out T> extends MDataBase.Class {
+  /** Name of this TemplatePartPlaceholder */
   readonly name: N;
 
-  /** Label of this TemplatePlaceholder(usually the name prefixed with '#') */
+  /** Label of this TemplatePartPlaceholder(usually the name prefixed with '#') */
   readonly label: string;
 
-  /** Descriptor of this TemplatePlaceholder (used for debugging purposes) */
+  /** Descriptor of this TemplatePartPlaceholder (used for debugging purposes) */
   readonly description: string;
 
-  /** Parser of this TemplatePlaceholder */
+  /** Parser of this TemplatePartPlaceholder */
   readonly parser: Parser.Type<T>;
 
-  /** Formatter of this TemplatePlaceholder */
+  /** Formatter of this TemplatePartPlaceholder */
   readonly formatter: Formatter.Type<T>;
 
   /** Schema instance that represents type T */
   readonly tSchemaInstance: Schema.Schema<T, T>;
 
-  /** @internal */
-  readonly [_TypeId]: { readonly _N: Types.Covariant<N>; readonly _T: Types.Invariant<T> };
+  /** Returns the `id` of `this` */
+  [MDataBase.idSymbol](): string | (() => string) {
+    return function idSymbol(this: Type<N, T>) {
+      return getLabelledDescription(this);
+    };
+  }
+
+  /** Class constructor */
+  private constructor({
+    name,
+    label,
+    description,
+    parser,
+    formatter,
+    tSchemaInstance,
+  }: MTypes.Data<Type<N, T>>) {
+    super();
+    this.name = name;
+    this.label = label;
+    this.description = description;
+    this.parser = parser;
+    this.formatter = formatter;
+    this.tSchemaInstance = tSchemaInstance;
+  }
+
+  /** Static constructor */
+  static make<N extends string, T>(params: MTypes.Data<Type<N, T>>): Type<N, T> {
+    return new Type(params);
+  }
+
+  /** Returns the TypeMarker of the class */
+  protected get [_TypeId](): _TypeId {
+    return _TypeId;
+  }
 }
 
+const _make = <N extends string, T>(params: MTypes.Data<Type<N, T>>): Type<N, T> =>
+  Type.make(params);
+
 /**
- * Type that represents a `CVTemplatePlaceholder` from and to any type
+ * Type that represents a `CVTemplatePartPlaceholder` from and to any type
  *
  * @category Models
  */
 export interface Any extends Type<string, any> {}
 
 /**
- * Utility type that extracts the Name type of a `CVTemplatePlaceholder`
+ * Utility type that extracts the Name type of a `CVTemplatePartPlaceholder`
  *
  * @category Utility types
  */
 export type ExtractName<P extends Any> = P extends Type<infer N, infer _> ? N : never;
 
 /**
- * Utility type that extracts the output type of a `CVTemplatePlaceholder`
+ * Utility type that extracts the output type of a `CVTemplatePartPlaceholder`
  *
  * @category Utility types
  */
 export type ExtractType<P extends Any> = P extends Type<string, infer T> ? T : never;
-
-/**
- * Type guard
- *
- * @category Guards
- */
-export const has = (u: unknown): u is Type<string, unknown> => Predicate.hasProperty(u, _TypeId);
-
-/** Proto */
-const _proto: MTypes.Proto<Type<never, any>> = {
-  [_TypeId]: { _N: MTypes.covariantValue, _T: MTypes.invariantValue },
-  [MInspectable.IdSymbol]<N extends string, T>(this: Type<N, T>) {
-    return getLabelledDescription(this);
-  },
-  ...MInspectable.BaseProto(moduleTag),
-  ...MPipeable.BaseProto,
-};
-
-const _make = <const N extends string, T>(params: MTypes.Data<Type<N, T>>): Type<N, T> =>
-  MTypes.objectFromDataAndProto(_proto, params);
 
 /**
  * Constructor
@@ -290,8 +301,8 @@ export const modify: {
     });
 
 /**
- * Builds a `CVTemplatePlaceholder` instance that parses/formats exactly `length` characters from a
- * string. `length` must be a strictly positive integer.
+ * Builds a `CVTemplatePartPlaceholder` instance that parses/formats exactly `length` characters
+ * from a string. `length` must be a strictly positive integer.
  *
  * @category Constructors
  */
@@ -406,10 +417,10 @@ export const fixedLengthToReal = <const N extends string>(params: {
 };
 
 /**
- * Builds a `CVTemplatePlaceholder` whose parser reads from the text all the characters that it can
- * interpret as a number in the provided `numberBase10Format` and converts the consumed text into a
- * `CVReal`. The formatter takes a `CVReal` and converts it into a string according to the provided
- * `numberBase10Format`.
+ * Builds a `CVTemplatePartPlaceholder` whose parser reads from the text all the characters that it
+ * can interpret as a number in the provided `numberBase10Format` and converts the consumed text
+ * into a `CVReal`. The formatter takes a `CVReal` and converts it into a string according to the
+ * provided `numberBase10Format`.
  *
  * @category Constructors
  */
@@ -446,7 +457,7 @@ export const real = <const N extends string>({
 };
 
 /**
- * Builds a `CVTemplatePlaceholder` instance that works as a map:
+ * Builds a `CVTemplatePartPlaceholder` instance that works as a map:
  *
  * The parser expects one of the keys of `keyValuePairs` and will return the associated value. The
  * formatter expects one of the values of `keyValuePairs` and will return the associated key.
@@ -457,9 +468,9 @@ export const real = <const N extends string>({
  *
  * `schemaInstance` is a `Schema` instance that transforms a value of type T into a value of type T.
  * It is an optional parameter. You need only provide it if you intend to use a `CVTemplate` built
- * from this `CVTemplatePlaceholder` within the `Effect.Schema` module. In that case, you can build
- * such a `Schema` with the `Schema.declare` function (if you don't provide it, the `Schema` will
- * return an error)
+ * from this `CVTemplatePartPlaceholder` within the `Effect.Schema` module. In that case, you can
+ * build such a `Schema` with the `Schema.declare` function (if you don't provide it, the `Schema`
+ * will return an error)
  *
  * @category Constructors
  */
@@ -540,9 +551,9 @@ export const realMappedLiterals = <const N extends string>(params: {
 }): Type<N, CVReal.Type> => mappedLiterals({ ...params, schemaInstance: CVReal.SchemaFromSelf });
 
 /**
- * Builds a `CVTemplatePlaceholder` whose parser reads as much of the text as it can that fulfills
- * the passed regular expression. The formatter only accepts a string that matches the passed
- * regular expression and writes it into the text. `regExp` must start with the ^ character.
+ * Builds a `CVTemplatePartPlaceholder` whose parser reads as much of the text as it can that
+ * fulfills the passed regular expression. The formatter only accepts a string that matches the
+ * passed regular expression and writes it into the text. `regExp` must start with the ^ character.
  * Otherwise, the parser and formatter will not work properly.
  *
  * @category Constructors
@@ -598,8 +609,8 @@ export const fulfilling = <const N extends string>({
 };
 
 /**
- * This `CVTemplatePlaceholder` instance is a special case of the `fulfilling`
- * `CVTemplatePlaceholder` instance. The parser of this Placeholder reads from the text until it
+ * This `CVTemplatePartPlaceholder` instance is a special case of the `fulfilling`
+ * `CVTemplatePartPlaceholder` instance. The parser of this Placeholder reads from the text until it
  * meets one of the `forbiddenChars` passed as parameter (the result must be a non-empty string).
  * The formatter only accepts a non-empty string that does not contain any of the forbidden chars
  * and write it to the text. `forbiddenChars` should be an array of 1-character strings (will not
@@ -630,10 +641,10 @@ export const anythingBut = <const N extends string>({
 };
 
 /**
- * This `CVTemplatePlaceholder` instance is another special case of the `fulfilling`
- * `CVTemplatePlaceholder` instance. The parser of this `CVTemplatePlaceholder` reads all the
- * remaining text. The formatter accepts any string and writes it. This `CVTemplatePlaceholder`
- * should only be used as the last `CVTemplatePart` of a `CVTemplate`.
+ * This `CVTemplatePartPlaceholder` instance is another special case of the `fulfilling`
+ * `CVTemplatePartPlaceholder` instance. The parser of this `CVTemplatePartPlaceholder` reads all
+ * the remaining text. The formatter accepts any string and writes it. This
+ * `CVTemplatePartPlaceholder` should only be used as the last `CVTemplatePart` of a `CVTemplate`.
  *
  * @category Constructors
  */

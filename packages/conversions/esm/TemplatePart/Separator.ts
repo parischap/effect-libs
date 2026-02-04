@@ -1,52 +1,54 @@
 /**
- * This module implements a `CVTemplateSeparator` type which is one of the constituents of
+ * This module implements a `CVTemplatePartSeparator` type which is one of the constituents of
  * `CVTemplate`'s (see Template.ts and TemplatePart.ts)
  */
 
-import { MInputError, MInspectable, MPipeable, MString, MTypes } from '@parischap/effect-lib';
-
-import { Either, pipe, Pipeable, Predicate, Struct } from 'effect';
+import { MDataBase, MInputError, MString, MTypes } from '@parischap/effect-lib';
+import { Either, pipe, Struct } from 'effect';
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/conversions/TemplateSeparator/';
+export const moduleTag = '@parischap/conversions/TemplatePart/Separator/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
 /**
- * `CVTemplateSeparator` Type
+ * Type that represents a Separator
  *
  * @category Models
  */
-export interface Type extends MInspectable.Type, Pipeable.Pipeable {
+export class Type extends MDataBase.Class {
   /** The string representing this separator */
   readonly value: string;
 
-  /** @internal */
-  readonly [_TypeId]: _TypeId;
+  /** Returns the `id` of `this` */
+  [MDataBase.idSymbol](): string | (() => string) {
+    return function idSymbol(this: Type) {
+      return this.value;
+    };
+  }
+
+  /** Class constructor */
+  private constructor({ value }: MTypes.Data<Type>) {
+    super();
+    this.value = value;
+  }
+
+  /** Static constructor */
+  static make(params: MTypes.Data<Type>): Type {
+    return new Type(params);
+  }
+
+  /** Returns the TypeMarker of the class */
+  protected get [_TypeId](): _TypeId {
+    return _TypeId;
+  }
 }
 
-/**
- * Type guard
- *
- * @category Guards
- */
-export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
-
-/** Proto */
-const _proto: MTypes.Proto<Type> = {
-  [_TypeId]: _TypeId,
-  [MInspectable.IdSymbol](this: Type) {
-    return this.value;
-  },
-  ...MInspectable.BaseProto(moduleTag),
-  ...MPipeable.BaseProto,
-};
-
-const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
+const _make = (params: MTypes.Data<Type>): Type => Type.make(params);
 
 /**
  * Constructor
@@ -56,7 +58,7 @@ const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto
 export const make = (value: string): Type => _make({ value });
 
 /**
- * Builds a parser that implements this `CVTemplateSeparator`
+ * Builds a parser that implements this `CVTemplatePartSeparator`
  *
  * @category Destructors
  */

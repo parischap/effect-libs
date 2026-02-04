@@ -125,11 +125,11 @@
     "./CVTemplateParts": {
       "default": "./esm/TemplateParts.ts"
     },
-    "./CVTemplatePlaceholder": {
-      "default": "./esm/TemplatePlaceholder.ts"
+    "./CVTemplatePartPlaceholder": {
+      "default": "./esm/TemplatePartPlaceholder.ts"
     },
-    "./CVTemplateSeparator": {
-      "default": "./esm/TemplateSeparator.ts"
+    "./CVTemplatePartSeparator": {
+      "default": "./esm/TemplatePartSeparator.ts"
     }
   },
   "module": "./esm/index.ts",

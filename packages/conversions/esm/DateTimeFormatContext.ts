@@ -29,7 +29,7 @@ import {
 import * as CVDateTime from './DateTime.js';
 import * as CVNumberBase10Format from './NumberBase10Format.js';
 import * as CVReal from './Real.js';
-import * as CVTemplatePlaceholder from './TemplatePlaceholder.js';
+import * as CVTemplatePartPlaceholder from './TemplatePartPlaceholder.js';
 
 /**
  * Module tag
@@ -127,7 +127,7 @@ namespace TokenMap {
    */
   export interface Type extends HashMap.HashMap<
     Token,
-    CVTemplatePlaceholder.Type<string, CVReal.Type>
+    CVTemplatePartPlaceholder.Type<string, CVReal.Type>
   > {}
 }
 
@@ -235,16 +235,16 @@ export const fromNames = ({
   const params = { fillChar: '0', numberBase10Format: integer };
 
   const templatepartEntries: ReadonlyArray<
-    readonly [Token, CVTemplatePlaceholder.Type<string, CVReal.Type>]
+    readonly [Token, CVTemplatePartPlaceholder.Type<string, CVReal.Type>]
   > = [
-    ['y', CVTemplatePlaceholder.real({ ...params, name: 'year' })],
+    ['y', CVTemplatePartPlaceholder.real({ ...params, name: 'year' })],
     [
       'yy',
       pipe(
-        CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'year', length: 2 }),
-        CVTemplatePlaceholder.modify({
+        CVTemplatePartPlaceholder.fixedLengthToReal({ ...params, name: 'year', length: 2 }),
+        CVTemplatePartPlaceholder.modify({
           descriptorMapper: MString.append(' between 2000 and 2099 included'),
-          postParser: function (this: CVTemplatePlaceholder.Type<'year', CVReal.Type>, value) {
+          postParser: function (this: CVTemplatePartPlaceholder.Type<'year', CVReal.Type>, value) {
             return pipe(
               value,
               Number.sum(2000),
@@ -259,7 +259,10 @@ export const fromNames = ({
               Either.map(CVReal.unsafeFromNumber),
             );
           },
-          preFormatter: function (this: CVTemplatePlaceholder.Type<'year', CVReal.Type>, value) {
+          preFormatter: function (
+            this: CVTemplatePartPlaceholder.Type<'year', CVReal.Type>,
+            value,
+          ) {
             return pipe(
               value,
               MInputError.assertInRange({
@@ -276,15 +279,18 @@ export const fromNames = ({
         }),
       ),
     ],
-    ['yyyy', CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'year', length: 4 })],
-    ['R', CVTemplatePlaceholder.real({ ...params, name: 'isoYear' })],
+    ['yyyy', CVTemplatePartPlaceholder.fixedLengthToReal({ ...params, name: 'year', length: 4 })],
+    ['R', CVTemplatePartPlaceholder.real({ ...params, name: 'isoYear' })],
     [
       'RR',
       pipe(
-        CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'isoYear', length: 2 }),
-        CVTemplatePlaceholder.modify({
+        CVTemplatePartPlaceholder.fixedLengthToReal({ ...params, name: 'isoYear', length: 2 }),
+        CVTemplatePartPlaceholder.modify({
           descriptorMapper: MString.append(' between 2000 and 2099 included'),
-          postParser: function (this: CVTemplatePlaceholder.Type<'isoYear', CVReal.Type>, value) {
+          postParser: function (
+            this: CVTemplatePartPlaceholder.Type<'isoYear', CVReal.Type>,
+            value,
+          ) {
             return pipe(
               value,
               Number.sum(2000),
@@ -299,7 +305,10 @@ export const fromNames = ({
               Either.map(CVReal.unsafeFromNumber),
             );
           },
-          preFormatter: function (this: CVTemplatePlaceholder.Type<'isoYear', CVReal.Type>, value) {
+          preFormatter: function (
+            this: CVTemplatePartPlaceholder.Type<'isoYear', CVReal.Type>,
+            value,
+          ) {
             return pipe(
               value,
               MInputError.assertInRange({
@@ -316,12 +325,15 @@ export const fromNames = ({
         }),
       ),
     ],
-    ['RRRR', CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'isoYear', length: 4 })],
-    ['M', CVTemplatePlaceholder.real({ ...params, name: 'month' })],
-    ['MM', CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'month', length: 2 })],
+    [
+      'RRRR',
+      CVTemplatePartPlaceholder.fixedLengthToReal({ ...params, name: 'isoYear', length: 4 }),
+    ],
+    ['M', CVTemplatePartPlaceholder.real({ ...params, name: 'month' })],
+    ['MM', CVTemplatePartPlaceholder.fixedLengthToReal({ ...params, name: 'month', length: 2 })],
     [
       'MMM',
-      CVTemplatePlaceholder.realMappedLiterals({
+      CVTemplatePartPlaceholder.realMappedLiterals({
         name: 'month',
         keyValuePairs: pipe(
           shortMonthNames,
@@ -331,7 +343,7 @@ export const fromNames = ({
     ],
     [
       'MMMM',
-      CVTemplatePlaceholder.realMappedLiterals({
+      CVTemplatePartPlaceholder.realMappedLiterals({
         name: 'month',
         keyValuePairs: pipe(
           longMonthNames,
@@ -341,20 +353,23 @@ export const fromNames = ({
     ],
     [
       'I',
-      CVTemplatePlaceholder.real({
+      CVTemplatePartPlaceholder.real({
         name: 'isoWeek',
         numberBase10Format: CVNumberBase10Format.integer,
       }),
     ],
-    ['II', CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'isoWeek', length: 2 })],
-    ['d', CVTemplatePlaceholder.real({ ...params, name: 'monthDay' })],
-    ['dd', CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'monthDay', length: 2 })],
-    ['D', CVTemplatePlaceholder.real({ ...params, name: 'ordinalDay' })],
-    ['DDD', CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'ordinalDay', length: 3 })],
-    ['i', CVTemplatePlaceholder.real({ ...params, name: 'weekday' })],
+    ['II', CVTemplatePartPlaceholder.fixedLengthToReal({ ...params, name: 'isoWeek', length: 2 })],
+    ['d', CVTemplatePartPlaceholder.real({ ...params, name: 'monthDay' })],
+    ['dd', CVTemplatePartPlaceholder.fixedLengthToReal({ ...params, name: 'monthDay', length: 2 })],
+    ['D', CVTemplatePartPlaceholder.real({ ...params, name: 'ordinalDay' })],
+    [
+      'DDD',
+      CVTemplatePartPlaceholder.fixedLengthToReal({ ...params, name: 'ordinalDay', length: 3 }),
+    ],
+    ['i', CVTemplatePartPlaceholder.real({ ...params, name: 'weekday' })],
     [
       'iii',
-      CVTemplatePlaceholder.realMappedLiterals({
+      CVTemplatePartPlaceholder.realMappedLiterals({
         name: 'weekday',
         keyValuePairs: pipe(
           shortWeekdayNames,
@@ -364,7 +379,7 @@ export const fromNames = ({
     ],
     [
       'iiii',
-      CVTemplatePlaceholder.realMappedLiterals({
+      CVTemplatePartPlaceholder.realMappedLiterals({
         name: 'weekday',
         keyValuePairs: pipe(
           longWeekdayNames,
@@ -374,7 +389,7 @@ export const fromNames = ({
     ],
     [
       'a',
-      CVTemplatePlaceholder.realMappedLiterals({
+      CVTemplatePartPlaceholder.realMappedLiterals({
         name: 'meridiem',
         keyValuePairs: pipe(
           dayPeriodNames,
@@ -382,19 +397,22 @@ export const fromNames = ({
         ),
       }),
     ],
-    ['H', CVTemplatePlaceholder.real({ ...params, name: 'hour23' })],
-    ['HH', CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'hour23', length: 2 })],
-    ['K', CVTemplatePlaceholder.real({ ...params, name: 'hour11' })],
-    ['KK', CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'hour11', length: 2 })],
-    ['m', CVTemplatePlaceholder.real({ ...params, name: 'minute' })],
-    ['mm', CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'minute', length: 2 })],
-    ['s', CVTemplatePlaceholder.real({ ...params, name: 'second' })],
-    ['ss', CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'second', length: 2 })],
-    ['S', CVTemplatePlaceholder.real({ ...params, name: 'millisecond' })],
-    ['SSS', CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'millisecond', length: 3 })],
+    ['H', CVTemplatePartPlaceholder.real({ ...params, name: 'hour23' })],
+    ['HH', CVTemplatePartPlaceholder.fixedLengthToReal({ ...params, name: 'hour23', length: 2 })],
+    ['K', CVTemplatePartPlaceholder.real({ ...params, name: 'hour11' })],
+    ['KK', CVTemplatePartPlaceholder.fixedLengthToReal({ ...params, name: 'hour11', length: 2 })],
+    ['m', CVTemplatePartPlaceholder.real({ ...params, name: 'minute' })],
+    ['mm', CVTemplatePartPlaceholder.fixedLengthToReal({ ...params, name: 'minute', length: 2 })],
+    ['s', CVTemplatePartPlaceholder.real({ ...params, name: 'second' })],
+    ['ss', CVTemplatePartPlaceholder.fixedLengthToReal({ ...params, name: 'second', length: 2 })],
+    ['S', CVTemplatePartPlaceholder.real({ ...params, name: 'millisecond' })],
+    [
+      'SSS',
+      CVTemplatePartPlaceholder.fixedLengthToReal({ ...params, name: 'millisecond', length: 3 }),
+    ],
     [
       'zH',
-      CVTemplatePlaceholder.real({
+      CVTemplatePartPlaceholder.real({
         ...params,
         name: 'zoneHour',
         numberBase10Format: signedInteger,
@@ -402,17 +420,23 @@ export const fromNames = ({
     ],
     [
       'zHzH',
-      CVTemplatePlaceholder.fixedLengthToReal({
+      CVTemplatePartPlaceholder.fixedLengthToReal({
         ...params,
         name: 'zoneHour',
         length: 3,
         numberBase10Format: signedInteger,
       }),
     ],
-    ['zm', CVTemplatePlaceholder.real({ ...params, name: 'zoneMinute' })],
-    ['zmzm', CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'zoneMinute', length: 2 })],
-    ['zs', CVTemplatePlaceholder.real({ ...params, name: 'zoneSecond' })],
-    ['zszs', CVTemplatePlaceholder.fixedLengthToReal({ ...params, name: 'zoneSecond', length: 2 })],
+    ['zm', CVTemplatePartPlaceholder.real({ ...params, name: 'zoneMinute' })],
+    [
+      'zmzm',
+      CVTemplatePartPlaceholder.fixedLengthToReal({ ...params, name: 'zoneMinute', length: 2 }),
+    ],
+    ['zs', CVTemplatePartPlaceholder.real({ ...params, name: 'zoneSecond' })],
+    [
+      'zszs',
+      CVTemplatePartPlaceholder.fixedLengthToReal({ ...params, name: 'zoneSecond', length: 2 }),
+    ],
   ];
 
   return _make({
