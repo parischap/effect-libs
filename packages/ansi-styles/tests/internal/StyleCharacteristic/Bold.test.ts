@@ -1,4 +1,4 @@
-import { ASStyleCharacteristicBold } from '@parischap/ansi-styles/tests';
+import * as ASStyleCharacteristicBold from '@parischap/ansi-styles/ASStyleCharacteristicBold';
 import * as TestUtils from '@parischap/configs/TestUtils';
 import { Option } from 'effect';
 import { describe, it } from 'vitest';

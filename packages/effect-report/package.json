@@ -60,12 +60,6 @@
     "compile": "vite build"
   },
   "exports": {
-    ".": {
-      "default": "./esm/index.ts"
-    },
-    "./tests": {
-      "default": "./esm/index.tests.ts"
-    },
     "./RCause": {
       "default": "./esm/Cause.ts"
     },
@@ -74,6 +68,9 @@
     },
     "./RErrors": {
       "default": "./esm/Errors.ts"
+    },
+    ".": {
+      "default": "./esm/index.ts"
     },
     "./RLogger": {
       "default": "./esm/Logger.ts"

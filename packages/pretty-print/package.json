@@ -65,17 +65,14 @@
     "docgen": "docgen"
   },
   "exports": {
-    ".": {
-      "default": "./esm/index.ts"
-    },
-    "./tests": {
-      "default": "./esm/index.tests.ts"
-    },
     "./PPByPasser": {
       "default": "./esm/ByPasser.ts"
     },
     "./PPByPassers": {
       "default": "./esm/ByPassers.ts"
+    },
+    ".": {
+      "default": "./esm/index.ts"
     },
     "./PPMarkMap": {
       "default": "./esm/MarkMap.ts"

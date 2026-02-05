@@ -1,19 +1,17 @@
 import { ASColorRgb } from '@parischap/ansi-styles';
-import {
-  ASSequence,
-  ASStyleCharacteristicBackgroundColor,
-  ASStyleCharacteristicBlinking,
-  ASStyleCharacteristicBold,
-  ASStyleCharacteristicDim,
-  ASStyleCharacteristicForegroundColor,
-  ASStyleCharacteristicHidden,
-  ASStyleCharacteristicInversed,
-  ASStyleCharacteristicItalic,
-  ASStyleCharacteristicOverlined,
-  ASStyleCharacteristicPresentOrMissing,
-  ASStyleCharacteristicStruckThrough,
-  ASStyleCharacteristicUnderlined,
-} from '@parischap/ansi-styles/tests';
+import * as ASSequence from '@parischap/ansi-styles/ASSequence';
+import * as ASStyleCharacteristicBackgroundColor from '@parischap/ansi-styles/ASStyleCharacteristicBackgroundColor';
+import * as ASStyleCharacteristicBlinking from '@parischap/ansi-styles/ASStyleCharacteristicBlinking';
+import * as ASStyleCharacteristicBold from '@parischap/ansi-styles/ASStyleCharacteristicBold';
+import * as ASStyleCharacteristicDim from '@parischap/ansi-styles/ASStyleCharacteristicDim';
+import * as ASStyleCharacteristicForegroundColor from '@parischap/ansi-styles/ASStyleCharacteristicForegroundColor';
+import * as ASStyleCharacteristicHidden from '@parischap/ansi-styles/ASStyleCharacteristicHidden';
+import * as ASStyleCharacteristicInversed from '@parischap/ansi-styles/ASStyleCharacteristicInversed';
+import * as ASStyleCharacteristicItalic from '@parischap/ansi-styles/ASStyleCharacteristicItalic';
+import * as ASStyleCharacteristicOverlined from '@parischap/ansi-styles/ASStyleCharacteristicOverlined';
+import * as ASStyleCharacteristicPresentOrMissing from '@parischap/ansi-styles/ASStyleCharacteristicPresentOrMissing';
+import * as ASStyleCharacteristicStruckThrough from '@parischap/ansi-styles/ASStyleCharacteristicStruckThrough';
+import * as ASStyleCharacteristicUnderlined from '@parischap/ansi-styles/ASStyleCharacteristicUnderlined';
 import * as TestUtils from '@parischap/configs/TestUtils';
 import { Option } from 'effect';
 import { describe, it } from 'vitest';

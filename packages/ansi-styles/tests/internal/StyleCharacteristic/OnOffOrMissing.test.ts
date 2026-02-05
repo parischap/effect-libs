@@ -1,4 +1,4 @@
-import { ASStyleCharacteristicOnOffOrMissing } from '@parischap/ansi-styles/tests';
+import * as ASStyleCharacteristicOnOffOrMissing from '@parischap/ansi-styles/ASStyleCharacteristicOnOffOrMissing';
 import * as TestUtils from '@parischap/configs/TestUtils';
 import { Option } from 'effect';
 import { describe, it } from 'vitest';

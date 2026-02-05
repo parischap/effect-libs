@@ -1,4 +1,4 @@
-import { ASCode } from '@parischap/ansi-styles/tests';
+import * as ASCode from '@parischap/ansi-styles/ASCode';
 import * as TestUtils from '@parischap/configs/TestUtils';
 import { Array } from 'effect';
 import { describe, it } from 'vitest';

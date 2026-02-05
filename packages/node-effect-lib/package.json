@@ -54,14 +54,11 @@
     "compile": "vite build"
   },
   "exports": {
-    ".": {
-      "default": "./esm/index.ts"
-    },
-    "./tests": {
-      "default": "./esm/index.tests.ts"
-    },
     "./NFs": {
       "default": "./esm/Fs.ts"
+    },
+    ".": {
+      "default": "./esm/index.ts"
     },
     "./NPath": {
       "default": "./esm/Path.ts"

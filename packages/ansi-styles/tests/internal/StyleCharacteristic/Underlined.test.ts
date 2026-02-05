@@ -1,4 +1,4 @@
-import { ASStyleCharacteristicUnderlined } from '@parischap/ansi-styles/tests';
+import * as ASStyleCharacteristicUnderlined from '@parischap/ansi-styles/ASStyleCharacteristicUnderlined';
 import * as TestUtils from '@parischap/configs/TestUtils';
 import { Option } from 'effect';
 import { describe, it } from 'vitest';

@@ -1,4 +1,6 @@
-import { ASCode, ASStyleCharacteristics, ASUnistyledText } from '@parischap/ansi-styles/tests';
+import * as ASCode from '@parischap/ansi-styles/ASCode';
+import * as ASStyleCharacteristics from '@parischap/ansi-styles/ASStyleCharacteristics';
+import * as ASUnistyledText from '@parischap/ansi-styles/ASUnistyledText';
 import * as TestUtils from '@parischap/configs/TestUtils';
 import { Option, pipe } from 'effect';
 import { describe, it } from 'vitest';

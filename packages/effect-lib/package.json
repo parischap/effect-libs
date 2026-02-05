@@ -65,12 +65,6 @@
     "docgen": "docgen"
   },
   "exports": {
-    ".": {
-      "default": "./esm/index.ts"
-    },
-    "./tests": {
-      "default": "./esm/index.tests.ts"
-    },
     "./MArray": {
       "default": "./esm/Array.ts"
     },
@@ -94,6 +88,9 @@
     },
     "./MFunction": {
       "default": "./esm/Function.ts"
+    },
+    ".": {
+      "default": "./esm/index.ts"
     },
     "./MInputError": {
       "default": "./esm/InputError.ts"
@@ -142,6 +139,9 @@
     },
     "./MDataEquivalenceBasedEquality": {
       "default": "./esm/Data/EquivalenceBasedEquality.ts"
+    },
+    "./MCacheValueContainer": {
+      "default": "./esm/internal/CacheValueContainer.ts"
     },
     "./MTreeAll": {
       "default": "./esm/Tree/All.ts"

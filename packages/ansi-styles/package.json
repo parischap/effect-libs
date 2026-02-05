@@ -68,9 +68,6 @@
     ".": {
       "default": "./esm/index.ts"
     },
-    "./tests": {
-      "default": "./esm/index.tests.ts"
-    },
     "./ASPalette": {
       "default": "./esm/Palette.ts"
     },
@@ -100,6 +97,63 @@
     },
     "./ASContextStylerPalette": {
       "default": "./esm/ContextStyler/Palette.ts"
+    },
+    "./ASCode": {
+      "default": "./esm/internal/Code.ts"
+    },
+    "./ASSequence": {
+      "default": "./esm/internal/Sequence.ts"
+    },
+    "./ASStyleCharacteristics": {
+      "default": "./esm/internal/StyleCharacteristics.ts"
+    },
+    "./ASStyles": {
+      "default": "./esm/internal/Styles.ts"
+    },
+    "./ASUnistyledText": {
+      "default": "./esm/internal/UnistyledText.ts"
+    },
+    "./ASStyleCharacteristicBackgroundColor": {
+      "default": "./esm/internal/StyleCharacteristic/BackgroundColor.ts"
+    },
+    "./ASStyleCharacteristicBlinking": {
+      "default": "./esm/internal/StyleCharacteristic/Blinking.ts"
+    },
+    "./ASStyleCharacteristicBold": {
+      "default": "./esm/internal/StyleCharacteristic/Bold.ts"
+    },
+    "./ASStyleCharacteristicColor": {
+      "default": "./esm/internal/StyleCharacteristic/Color.ts"
+    },
+    "./ASStyleCharacteristicDim": {
+      "default": "./esm/internal/StyleCharacteristic/Dim.ts"
+    },
+    "./ASStyleCharacteristicForegroundColor": {
+      "default": "./esm/internal/StyleCharacteristic/ForegroundColor.ts"
+    },
+    "./ASStyleCharacteristicHidden": {
+      "default": "./esm/internal/StyleCharacteristic/Hidden.ts"
+    },
+    "./ASStyleCharacteristicInversed": {
+      "default": "./esm/internal/StyleCharacteristic/Inversed.ts"
+    },
+    "./ASStyleCharacteristicItalic": {
+      "default": "./esm/internal/StyleCharacteristic/Italic.ts"
+    },
+    "./ASStyleCharacteristicOnOffOrMissing": {
+      "default": "./esm/internal/StyleCharacteristic/OnOffOrMissing.ts"
+    },
+    "./ASStyleCharacteristicOverlined": {
+      "default": "./esm/internal/StyleCharacteristic/Overlined.ts"
+    },
+    "./ASStyleCharacteristicPresentOrMissing": {
+      "default": "./esm/internal/StyleCharacteristic/PresentOrMissing.ts"
+    },
+    "./ASStyleCharacteristicStruckThrough": {
+      "default": "./esm/internal/StyleCharacteristic/StruckThrough.ts"
+    },
+    "./ASStyleCharacteristicUnderlined": {
+      "default": "./esm/internal/StyleCharacteristic/Underlined.ts"
     }
   },
   "module": "./esm/index.ts",

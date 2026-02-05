@@ -1,5 +1,5 @@
 import { ASColorRgb } from '@parischap/ansi-styles';
-import { ASStyleCharacteristicForegroundColor } from '@parischap/ansi-styles/tests';
+import * as ASStyleCharacteristicForegroundColor from '@parischap/ansi-styles/ASStyleCharacteristicForegroundColor';
 import * as TestUtils from '@parischap/configs/TestUtils';
 import { Option } from 'effect';
 import { describe, it } from 'vitest';

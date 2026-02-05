@@ -59,14 +59,7 @@
     "watch-for-exports": "unrun node_modules/@parischap/configs/esm/bin/update-exports.ts -watch -activePackageOnly",
     "compile": "vite build"
   },
-  "exports": {
-    ".": {
-      "default": "./esm/index.ts"
-    },
-    "./tests": {
-      "default": "./esm/index.tests.ts"
-    }
-  },
+  "exports": {},
   "module": "./esm/index.ts",
   "dependencies": {
     "@parischap/effect-lib": "^0.11.0",

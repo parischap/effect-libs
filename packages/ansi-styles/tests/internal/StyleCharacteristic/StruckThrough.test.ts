@@ -1,4 +1,4 @@
-import { ASStyleCharacteristicStruckThrough } from '@parischap/ansi-styles/tests';
+import * as ASStyleCharacteristicStruckThrough from '@parischap/ansi-styles/ASStyleCharacteristicStruckThrough';
 import * as TestUtils from '@parischap/configs/TestUtils';
 import { Option } from 'effect';
 import { describe, it } from 'vitest';

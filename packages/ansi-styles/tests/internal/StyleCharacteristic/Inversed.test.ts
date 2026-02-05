@@ -1,4 +1,4 @@
-import { ASStyleCharacteristicInversed } from '@parischap/ansi-styles/tests';
+import * as ASStyleCharacteristicInversed from '@parischap/ansi-styles/ASStyleCharacteristicInversed';
 import * as TestUtils from '@parischap/configs/TestUtils';
 import { Option } from 'effect';
 import { describe, it } from 'vitest';
