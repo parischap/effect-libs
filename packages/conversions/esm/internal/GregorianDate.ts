@@ -1,5 +1,6 @@
 /**
- * This module implements a Gregorian date
+ * This module implements a Gregorian date, , i.e. a date for which the year, month and monthDay can
+ * be calculated.
  *
  * It is important to note that the Gregorian calendar is periodic with a 400-year period as far as
  * leap years are concerned. Leap years are those that can be divided by 4, except those that can be
@@ -7,126 +8,31 @@
  * But 2400 is a leap year.
  */
 
-import {
-  MArray,
-  MInputError,
-  MInspectable,
-  MPipeable,
-  MString,
-  MStruct,
-  MTypes,
-} from '@parischap/effect-lib';
-import {
-  Either,
-  Function,
-  Inspectable,
-  Number,
-  Option,
-  Pipeable,
-  Predicate,
-  Struct,
-  flow,
-  pipe,
-} from 'effect';
+import { MArray, MDataBase, MInputError, MString, MStruct, MTypes } from '@parischap/effect-lib';
+import { Either, Function, Number, Option, Predicate, Struct, flow, pipe } from 'effect';
+import * as CVNumberBase10Format from '../NumberBase10Format.js';
 import * as CVTemplate from '../Template.js';
+import * as CVTemplatePartPlaceholder from '../TemplatePart/Placeholder.js';
+import * as CVTemplatePartSeparator from '../TemplatePart/Separator.js';
+import {
+  COMMON_YEAR_MS,
+  DAY_MS,
+  FOUR_HUNDRED_YEARS_MS,
+  FOUR_YEARS_MS,
+  HUNDRED_YEARS_MS,
+  LEAP_YEAR_MS,
+  MAX_FULL_YEAR,
+  MIN_FULL_YEAR,
+} from './datetime.js';
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/conversions/internal/GregorianDate';
+export const moduleTag = '@parischap/conversions/internal/GregorianDate/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
-
-/**
- * Duration of a second in milliseconds
- *
- * @category Constants
- */
-export const SECOND_MS = 1000;
-
-/**
- * Duration of a minute in milliseconds
- *
- * @category Constants
- */
-export const MINUTE_MS = 60 * SECOND_MS;
-
-/**
- * Duration of an hour in milliseconds
- *
- * @category Constants
- */
-export const HOUR_MS = 60 * MINUTE_MS;
-
-/**
- * Duration of a day in milliseconds
- *
- * @category Constants
- */
-export const DAY_MS = 24 * HOUR_MS;
-
-/**
- * Duration of a week in milliseconds
- *
- * @category Constants
- */
-export const WEEK_MS = 7 * DAY_MS;
-
-/**
- * Duration of a normal year in milliseconds
- *
- * @category Constants
- */
-export const COMMON_YEAR_MS = 365 * DAY_MS;
-
-/**
- * Duration of a leap year in milliseconds
- *
- * @category Constants
- */
-export const LEAP_YEAR_MS = COMMON_YEAR_MS + DAY_MS;
-
-/**
- * Duration of a short iso year in milliseconds
- *
- * @category Constants
- */
-export const SHORT_YEAR_MS = 52 * WEEK_MS;
-
-/**
- * Duration of a long iso year in milliseconds
- *
- * @category Constants
- */
-export const LONG_YEAR_MS = SHORT_YEAR_MS + WEEK_MS;
-
-/**
- * Duration in milliseconds of a four-year period containing a leap year
- *
- * @category Constants
- */
-const FOUR_YEARS_MS = 3 * COMMON_YEAR_MS + LEAP_YEAR_MS;
-
-/**
- * Duration in milliseconds of a 100-year period that has a leap year every 4th year except the
- * 100th year
- *
- * @category Constants
- */
-const HUNDRED_YEARS_MS = 25 * FOUR_YEARS_MS - DAY_MS;
-
-/**
- * Duration in milliseconds of a 400-year period that has a leap year every 4th year except the
- * 100th year. But the 400th year is a leap year
- *
- * @category Constants
- */
-const FOUR_HUNDRED_YEARS_MS = 4 * HUNDRED_YEARS_MS + DAY_MS;
-
-/** Timestamp of 1/1/2001 00:00:00:000+0:00 */
-const YEAR_START_2001_MS = 978_307_200_000;
 
 /** Number of days in each month of a leap year */
 const LEAP_YEAR_DAYS_IN_MONTH = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
@@ -134,12 +40,39 @@ const LEAP_YEAR_DAYS_IN_MONTH = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 /** Number of days in each month of a leap year */
 const COMMON_YEAR_DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
+/** Timestamp of 1/1/2001 00:00:00:000+0:00 */
+const YEAR_START_2001_MS = 978_307_200_000;
+
+const _fixedLengthToReal = CVTemplatePartPlaceholder.fixedLengthToReal;
+const _sep = CVTemplatePartSeparator;
+const _integer = CVNumberBase10Format.integer;
+const _params = {
+  fillChar: '0',
+  numberBase10Format: _integer,
+};
+
+const _formatter = flow(
+  CVTemplate.toFormatter(
+    CVTemplate.make(
+      _fixedLengthToReal({ ..._params, name: 'year', length: 4 }),
+      _sep.hyphen,
+      _fixedLengthToReal({ ..._params, name: 'month', length: 2 }),
+      _sep.hyphen,
+      _fixedLengthToReal({ ..._params, name: 'monthDay', length: 2 }),
+    ),
+  ),
+  Either.getOrThrowWith(Function.identity),
+) as unknown as MTypes.OneArgFunction<
+  { readonly year: number; readonly month: number; readonly monthDay: number },
+  string
+>;
+
 /**
- * Type of a GregorianDate
+ * Type that represents a CVGregorianDate
  *
  * @category Models
  */
-export interface Type extends Inspectable.Inspectable, Pipeable.Pipeable {
+export class Type extends MDataBase.Class {
   /** Timestamp of any moment in the day represented by this GregorianDate */
   readonly timestamp: number;
 
@@ -161,32 +94,54 @@ export interface Type extends Inspectable.Inspectable, Pipeable.Pipeable {
   /** Position in the month of the day of this GregorianDate, range:[1, 31] */
   readonly monthDay: Option.Option<number>;
 
-  /** @internal */
-  readonly _daysInMonth: ReadonlyArray<number>;
-  readonly [_TypeId]: _TypeId;
+  /** Number on days in month `month` */
+  readonly daysInMonth: ReadonlyArray<number>;
+
+  /** Returns the `id` of `this` */
+  [MDataBase.idSymbol](): string | (() => string) {
+    return moduleTag;
+  }
+
+  /** Class constructor */
+  private constructor({
+    timestamp,
+    year,
+    yearIsLeap,
+    yearStartTimestamp,
+    ordinalDay,
+    month,
+    monthDay,
+    daysInMonth,
+  }: MTypes.Data<Type>) {
+    super();
+    this.timestamp = timestamp;
+    this.year = year;
+    this.yearIsLeap = yearIsLeap;
+    this.yearStartTimestamp = yearStartTimestamp;
+    this.ordinalDay = ordinalDay;
+    this.month = month;
+    this.monthDay = monthDay;
+    this.daysInMonth = daysInMonth;
+  }
+
+  /** Static constructor */
+  static make(params: MTypes.Data<Type>): Type {
+    return new Type(params);
+  }
+
+  /** Returns the TypeMarker of the class */
+  protected get [_TypeId](): _TypeId {
+    return _TypeId;
+  }
 }
 
-/**
- * Type guard
- *
- * @category Guards
- */
-export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
-
-/** Proto */
-const _proto: MTypes.Proto<Type> = {
-  [_TypeId]: _TypeId,
-  ...MInspectable.BaseProto(_namespaceTag),
-  ...MPipeable.BaseProto,
-};
-
 /** Constructor */
-const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
+const _make = (params: MTypes.Data<Type>): Type => Type.make(params);
 
-const _makeWithInternals = (params: Omit<MTypes.Data<Type>, '_daysInMonth'>): Type =>
+const _makeWithInternals = (params: Omit<MTypes.Data<Type>, 'daysInMonth'>): Type =>
   _make({
     ...params,
-    _daysInMonth: params.yearIsLeap ? LEAP_YEAR_DAYS_IN_MONTH : COMMON_YEAR_DAYS_IN_MONTH,
+    daysInMonth: params.yearIsLeap ? LEAP_YEAR_DAYS_IN_MONTH : COMMON_YEAR_DAYS_IN_MONTH,
   });
 
 /**
@@ -201,8 +156,8 @@ export const fromTimestamp = (timestamp: number): Type => {
    * (4xCOMMON_YEAR_MS + DAY_MS) and a final 4-year period that lasts FOUR_YEARS_MS - DAY_MS
    * (4xCOMMON_YEAR_MS).
    *
-   * The 100-year period [2301, 2400] lasts HUNDRED_YEARS_MS + DAY_MS. This period can be divided
-   * in 25 periods that last FOUR_YEARS_MS (4xCOMMON_YEAR_MS + DAY_MS).
+   * The 100-year period [2301, 2400] lasts HUNDRED_YEARS_MS + DAY_MS. This period can be divided in
+   * 25 periods that last FOUR_YEARS_MS (4xCOMMON_YEAR_MS + DAY_MS).
    */
 
   const offset2001 = timestamp - YEAR_START_2001_MS;
@@ -244,8 +199,8 @@ export const fromTimestamp = (timestamp: number): Type => {
 /**
  * If possible, returns a new GregorianDate having `year` set to `year` and the same `month` and
  * `monthDay` as `self`. Returns a left of an error otherwise. `year` must be an integer comprised
- * in the range [MIN_FULL_YEAR, MAX_FULL_YEAR]. If `self` represents a 29th of february, `year`
- * must be a leap year.
+ * in the range [MIN_FULL_YEAR, MAX_FULL_YEAR]. If `self` represents a 29th of february, `year` must
+ * be a leap year.
  *
  * @category Setters
  */
@@ -365,10 +320,9 @@ export const setMonth =
     });
 
 /**
- * If possible, returns a new GregorianDate having `monthDay` set to `monthDay` and the same
- * `year` and `month` as `self`. Returns a left of an error otherwise. `monthDay` must be an
- * integer greater than or equal to 1 and less than or equal to the number of days in the current
- * month.
+ * If possible, returns a new GregorianDate having `monthDay` set to `monthDay` and the same `year`
+ * and `month` as `self`. Returns a left of an error otherwise. `monthDay` must be an integer
+ * greater than or equal to 1 and less than or equal to the number of days in the current month.
  *
  * @category Setters
  */
@@ -529,8 +483,8 @@ export const getYearDurationInMs = (self: Type): number =>
 export const getYearDurationInDays = (self: Type): number => (self.yearIsLeap ? 366 : 365);
 
 /**
- * Returns the number of days from the start of the `year` property of `self` to the day before
- * the first day of month `month`
+ * Returns the number of days from the start of the `year` property of `self` to the day before the
+ * first day of month `month`
  *
  * @category Destructors
  */
@@ -547,23 +501,7 @@ export const getMonthOffset =
  * @category Destructors
  */
 export const getNumberOfDaysInMonth = (month: number): MTypes.OneArgFunction<Type, number> =>
-  flow(Struct.get('_daysInMonth'), MArray.unsafeGet(month - 1));
-
-const _formatter = flow(
-  CVTemplate.toFormatter(
-    CVTemplate.make(
-      _fixedLengthToReal({ ..._params, name: 'year', length: 4 }),
-      _sep.hyphen,
-      _fixedLengthToReal({ ..._params, name: 'month', length: 2 }),
-      _sep.hyphen,
-      _fixedLengthToReal({ ..._params, name: 'monthDay', length: 2 }),
-    ),
-  ),
-  Either.getOrThrowWith(Function.identity),
-) as MTypes.OneArgFunction<
-  { readonly year: number; readonly month: number; readonly monthDay: number },
-  string
->;
+  flow(Struct.get('daysInMonth'), MArray.unsafeGet(month - 1));
 
 /**
  * Returns the ISO representation of this Gregorian Date

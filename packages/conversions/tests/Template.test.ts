@@ -7,7 +7,7 @@ import {
   CVTemplatePartSeparator,
 } from '@parischap/conversions';
 import { MInputError, MTypes } from '@parischap/effect-lib';
-import { Either, pipe } from 'effect';
+import { Either, Option, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('CVTemplate', () => {
@@ -28,13 +28,12 @@ describe('CVTemplate', () => {
     placeholder.real({ ...params, name: 'MM' }),
   );
 
-  describe('Tag, prototype and guards', () => {
+  describe('Tag, .toString()', () => {
     it('moduleTag', () => {
-      TestUtils.assertSome(TestUtils.moduleTagFromTestFilePath(__filename), CVTemplate.moduleTag);
-    });
-
-    it('.pipe()', () => {
-      TestUtils.assertTrue(template.pipe(CVTemplate.has));
+      TestUtils.assertEquals(
+        Option.some(CVTemplate.moduleTag),
+        TestUtils.moduleTagFromTestFilePath(import.meta.filename),
+      );
     });
 
     it('.toString()', () => {
@@ -47,15 +46,6 @@ describe('CVTemplate', () => {
 #yyyy: 4-character string left-padded with '0' to unsigned integer.
 #MM: unsigned integer`,
       );
-    });
-
-    describe('has', () => {
-      it('Matching', () => {
-        TestUtils.assertTrue(CVTemplate.has(template));
-      });
-      it('Non matching', () => {
-        TestUtils.assertFalse(CVTemplate.has(new Date()));
-      });
     });
   });
 

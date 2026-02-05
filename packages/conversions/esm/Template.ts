@@ -44,34 +44,12 @@
  * date
  */
 
-import {
-  MArray,
-  MInputError,
-  MInspectable,
-  MPipeable,
-  MString,
-  MTuple,
-  MTypes,
-} from '@parischap/effect-lib';
-import {
-  Array,
-  Either,
-  Equal,
-  flow,
-  Function,
-  Option,
-  pipe,
-  Pipeable,
-  Predicate,
-  Record,
-  Struct,
-  Tuple,
-  Types,
-} from 'effect';
-import * as CVTemplatePart from './TemplatePart.js';
-import * as CVTemplatePartPlaceholder from './TemplatePartPlaceholder.js';
-import * as CVTemplateParts from './TemplateParts.js';
-import * as CVTemplatePartSeparator from './TemplatePartSeparator.js';
+import { MArray, MDataBase, MInputError, MString, MTuple, MTypes } from '@parischap/effect-lib';
+import { Array, Either, Equal, flow, Function, Option, pipe, Record, Struct, Tuple } from 'effect';
+import * as CVTemplateParts from './internal/TemplateParts.js';
+import * as CVTemplatePart from './TemplatePart/All.js';
+import * as CVTemplatePartPlaceholder from './TemplatePart/Placeholder.js';
+import * as CVTemplatePartSeparator from './TemplatePart/Separator.js';
 
 /**
  * Module tag
@@ -83,49 +61,44 @@ const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
 /**
- * `CVTemplate` Type
+ * Type that represents a CVTemplate
  *
  * @category Models
  */
-
-export interface Type<out PS extends CVTemplateParts.Type>
-  extends MInspectable.Type, Pipeable.Pipeable {
+export class Type<out PS extends CVTemplateParts.Type> extends MDataBase.Class {
   /** Array of the TemplatePart's composing this template */
   readonly templateParts: PS;
 
-  /** @internal */
-  readonly [_TypeId]: {
-    readonly _P: Types.Covariant<PS>;
-  };
+  /** Returns the `id` of `this` */
+  [MDataBase.idSymbol](): string | (() => string) {
+    return function idSymbol(this: Type<PS>) {
+      return pipe(
+        this.templateParts,
+        MTuple.makeBothBy({
+          toFirst: CVTemplateParts.getSyntheticDescription,
+          toSecond: CVTemplateParts.getPlaceholderDescription,
+        }),
+        Array.join('\n\n'),
+      );
+    };
+  }
+
+  /** Class constructor */
+  private constructor({ templateParts }: MTypes.Data<Type<PS>>) {
+    super();
+    this.templateParts = templateParts;
+  }
+
+  /** Static constructor */
+  static make<PS extends CVTemplateParts.Type>(params: MTypes.Data<Type<PS>>): Type<PS> {
+    return new Type(params);
+  }
+
+  /** Returns the TypeMarker of the class */
+  protected get [_TypeId](): _TypeId {
+    return _TypeId;
+  }
 }
-
-/**
- * Type guard
- *
- * @category Guards
- */
-export const has = (u: unknown): u is Type<ReadonlyArray<CVTemplatePart.Type<string, unknown>>> =>
-  Predicate.hasProperty(u, _TypeId);
-
-/** Prototype */
-const _proto: MTypes.Proto<Type<never>> = {
-  [_TypeId]: { _P: MTypes.covariantValue },
-  [MInspectable.IdSymbol](this: Type<CVTemplateParts.Type>) {
-    return pipe(
-      this.templateParts,
-      MTuple.makeBothBy({
-        toFirst: CVTemplateParts.getSyntheticDescription,
-        toSecond: CVTemplateParts.getPlaceholderDescription,
-      }),
-      Array.join('\n\n'),
-    );
-  },
-  ...MInspectable.BaseProto(moduleTag),
-  ...MPipeable.BaseProto,
-};
-
-const _make = <const PS extends CVTemplateParts.Type>(params: MTypes.Data<Type<PS>>): Type<PS> =>
-  MTypes.objectFromDataAndProto(_proto, params);
 
 /**
  * Constructor
@@ -133,7 +106,7 @@ const _make = <const PS extends CVTemplateParts.Type>(params: MTypes.Data<Type<P
  * @category Constructors
  */
 export const make = <const PS extends CVTemplateParts.Type>(...templateParts: PS): Type<PS> =>
-  _make({ templateParts });
+  Type.make({ templateParts });
 
 /**
  * Returns the `templateParts` property of `self`
