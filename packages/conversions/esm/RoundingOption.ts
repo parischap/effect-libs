@@ -6,7 +6,7 @@
 import {
   MBigDecimal,
   MBigInt,
-  MDataBase,
+  MData,
   MDataEquivalenceBasedEquality,
   MNumber,
   MString,
@@ -51,7 +51,7 @@ export class Type extends MDataEquivalenceBasedEquality.Class {
   }
 
   /** Returns the `id` of `this` */
-  [MDataBase.idSymbol](): string | (() => string) {
+  [MData.idSymbol](): string | (() => string) {
     return function idSymbol(this: Type) {
       {
         return `${CVRoundingMode.getName(this.roundingMode)}RounderWith${MString.fromNumber(10)(this.precision)}Precision`;

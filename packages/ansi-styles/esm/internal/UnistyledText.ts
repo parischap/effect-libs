@@ -3,7 +3,7 @@
  * same style)
  */
 
-import { MDataBase, MDataEquivalenceBasedEquality, MStruct, MTypes } from '@parischap/effect-lib';
+import { MData, MDataEquivalenceBasedEquality, MStruct, MTypes } from '@parischap/effect-lib';
 import { Array, Equivalence, Hash, Predicate, String, Struct, flow, pipe } from 'effect';
 import * as ASCode from './Code.js';
 import * as ASStyleCharacteristics from './StyleCharacteristics.js';
@@ -39,7 +39,7 @@ export class Type extends MDataEquivalenceBasedEquality.Class {
   }
 
   /** Returns the `id` of `this` */
-  [MDataBase.idSymbol](): string | (() => string) {
+  [MData.idSymbol](): string | (() => string) {
     return moduleTag;
   }
 

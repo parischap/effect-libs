@@ -44,7 +44,7 @@
  * date
  */
 
-import { MArray, MDataBase, MInputError, MString, MTuple, MTypes } from '@parischap/effect-lib';
+import { MArray, MData, MInputError, MString, MTuple, MTypes } from '@parischap/effect-lib';
 import { Array, Either, Equal, flow, Function, Option, pipe, Record, Struct, Tuple } from 'effect';
 import * as CVTemplateParts from './internal/TemplateParts.js';
 import * as CVTemplatePart from './TemplatePart/All.js';
@@ -65,12 +65,12 @@ type _TypeId = typeof _TypeId;
  *
  * @category Models
  */
-export class Type<out PS extends CVTemplateParts.Type> extends MDataBase.Class {
+export class Type<out PS extends CVTemplateParts.Type> extends MData.Class {
   /** Array of the TemplatePart's composing this template */
   readonly templateParts: PS;
 
   /** Returns the `id` of `this` */
-  [MDataBase.idSymbol](): string | (() => string) {
+  [MData.idSymbol](): string | (() => string) {
     return function idSymbol(this: Type<PS>) {
       return pipe(
         this.templateParts,

@@ -17,7 +17,7 @@ import {
 } from 'effect';
 import * as MArray from './Array.js';
 import * as MBigInt from './BigInt.js';
-import * as MDataEquivalenceBasedEquality from './Data/EquivalenceBasedEquality.js';
+import * as MDataEquivalenceBasedEquality from './Data/DataEquivalenceBasedEquality.js';
 import * as MData from './Data/index.js';
 import * as MFunction from './Function.js';
 import * as MMatch from './Match.js';

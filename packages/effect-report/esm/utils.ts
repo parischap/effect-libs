@@ -64,7 +64,7 @@ export const formatError = (
 ) => {
   // if there is no message, there might be other useful information in the object
   const message =
-    self.message === '' ?
+    self.message.length === 0 ?
       'Error object' + options.eol + options.stringify(self)
     : JsAnsi.highContrastBlack(self.message);
 

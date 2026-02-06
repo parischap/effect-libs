@@ -6,7 +6,7 @@
  * needs.
  */
 
-import { MDataBase, MString, MTypes } from '@parischap/effect-lib';
+import { MData, MString, MTypes } from '@parischap/effect-lib';
 import { Function, pipe, Struct } from 'effect';
 import * as ASStyle from './Style.js';
 import * as ASStyles from './internal/Styles.js';
@@ -25,12 +25,12 @@ type _TypeId = typeof _TypeId;
  *
  * @category Models
  */
-export class Type extends MDataBase.Class {
+export class Type extends MData.Class {
   /** Array of styles contained by this Palette */
   readonly styles: ASStyles.Type;
 
   /** Returns the `id` of `this` */
-  [MDataBase.idSymbol](): string | (() => string) {
+  [MData.idSymbol](): string | (() => string) {
     return function idSymbol(this: Type) {
       return pipe(this.styles, ASStyles.toString, MString.append('Palette'));
     };

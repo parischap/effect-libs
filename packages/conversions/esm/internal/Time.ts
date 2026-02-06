@@ -1,11 +1,12 @@
 /** This modulke implements the time part of a date */
 
-import { MInputError, MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
-import { Either, Function, Predicate, Struct, flow, pipe } from 'effect';
+import { MData, MInputError, MTypes } from '@parischap/effect-lib';
+import { Either, Function, Number, Struct, flow, pipe } from 'effect';
 import * as CVNumberBase10Format from '../NumberBase10Format.js';
 import * as CVTemplate from '../Template.js';
 import * as CVTemplatePartPlaceholder from '../TemplatePart/Placeholder.js';
 import * as CVTemplatePartSeparator from '../TemplatePart/Separator.js';
+import { HOUR_MS, MINUTE_MS, SECOND_MS } from '../dateTimeConstants.js';
 
 /**
  * Module tag
@@ -23,23 +24,93 @@ const _params = {
   fillChar: '0',
   numberBase10Format: _integer,
 };
+const _formatter = flow(
+  CVTemplate.toFormatter(
+    CVTemplate.make(
+      _fixedLengthToReal({ ..._params, name: 'hour23', length: 2 }),
+      _sep.colon,
+      _fixedLengthToReal({ ..._params, name: 'minute', length: 2 }),
+      _sep.colon,
+      _fixedLengthToReal({ ..._params, name: 'second', length: 2 }),
+      _sep.dot,
+      _fixedLengthToReal({ ..._params, name: 'millisecond', length: 3 }),
+    ),
+  ),
+  Either.getOrThrowWith(Function.identity),
+) as MTypes.OneArgFunction<
+  {
+    readonly hour23: number;
+    readonly minute: number;
+    readonly second: number;
+    readonly millisecond: number;
+  },
+  string
+>;
 
 /**
- * Type guard
+ * Type that represents a CVTime
  *
- * @category Guards
+ * @category Models
  */
-export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
+export class Type extends MData.Class {
+  /** This Time expressed in milliseconds, range:[0, DAY_MS[ */
+  readonly timestampOffset: number;
 
-/** Proto */
-const _proto: MTypes.Proto<Type> = {
-  [_TypeId]: _TypeId,
-  ...MInspectable.BaseProto(_namespaceTag),
-  ...MPipeable.BaseProto,
-};
+  /** Hour23 of this Time, range:[0, 23] */
+  readonly hour23: number;
 
-/** Constructor */
-const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
+  /** Hour11 of this Time, range:[0, 11] */
+  readonly hour11: number;
+
+  /** Meridiem of this Time, 0 for 'AM', 12 for 'PM' */
+  readonly meridiem: 0 | 12;
+
+  /** Minute of this Time, range:[0, 59] */
+  readonly minute: number;
+
+  /** Second of this Time, range:[0, 59] */
+  readonly second: number;
+
+  /** Millisecond of this Time, range:[0, 999] */
+  readonly millisecond: number;
+
+  /** Returns the `id` of `this` */
+  [MData.idSymbol](): string | (() => string) {
+    return moduleTag;
+  }
+
+  /** Class constructor */
+  private constructor({
+    timestampOffset,
+    hour23,
+    hour11,
+    meridiem,
+    minute,
+    second,
+    millisecond,
+  }: MTypes.Data<Type>) {
+    super();
+    this.timestampOffset = timestampOffset;
+    this.hour23 = hour23;
+    this.hour11 = hour11;
+    this.meridiem = meridiem;
+    this.minute = minute;
+    this.second = second;
+    this.millisecond = millisecond;
+  }
+
+  /** Static constructor */
+  static make(params: MTypes.Data<Type>): Type {
+    return new Type(params);
+  }
+
+  /** Returns the TypeMarker of the class */
+  protected get [_TypeId](): _TypeId {
+    return _TypeId;
+  }
+}
+
+const _make = (params: MTypes.Data<Type>): Type => Type.make(params);
 
 /**
  * Constructs the Time that corresponds to the passed `timestampOffset` which is the number of
@@ -93,13 +164,16 @@ export const setHour23 =
       );
 
       const isPast12 = validatedHour23 >= 12;
-      return _make({
-        ...self,
-        timestampOffset: self.timestampOffset + (validatedHour23 - self.hour23) * HOUR_MS,
-        hour23: validatedHour23,
-        hour11: isPast12 ? hour23 - 12 : hour23,
-        meridiem: isPast12 ? 12 : 0,
-      });
+      return pipe(
+        self,
+        Struct.evolve({
+          timestampOffset: Number.sum((validatedHour23 - self.hour23) * HOUR_MS),
+          hour23: Function.constant(validatedHour23),
+          hour11: Function.constant(isPast12 ? hour23 - 12 : hour23),
+          meridiem: Function.constant(isPast12 ? (12 as const) : (0 as const)),
+        }),
+        _make,
+      );
     });
 
 /**
@@ -125,12 +199,15 @@ export const setHour11 =
         }),
       );
       const validatedHour23 = self.meridiem + validatedHour11;
-      return _make({
-        ...self,
-        timestampOffset: self.timestampOffset + (validatedHour23 - self.hour23) * HOUR_MS,
-        hour23: validatedHour23,
-        hour11: validatedHour11,
-      });
+      return pipe(
+        self,
+        Struct.evolve({
+          timestampOffset: Number.sum((validatedHour23 - self.hour23) * HOUR_MS),
+          hour23: Function.constant(validatedHour23),
+          hour11: Function.constant(validatedHour11),
+        }),
+        _make,
+      );
     });
 
 /**
@@ -142,12 +219,15 @@ export const setMeridiem =
   (meridiem: 0 | 12) =>
   (self: Type): Type => {
     const validatedHour23 = self.hour11 + meridiem;
-    return _make({
-      ...self,
-      timestampOffset: self.timestampOffset + (validatedHour23 - self.hour23) * HOUR_MS,
-      hour23: validatedHour23,
-      meridiem,
-    });
+    return pipe(
+      self,
+      Struct.evolve({
+        timestampOffset: Number.sum((validatedHour23 - self.hour23) * HOUR_MS),
+        hour23: Function.constant(validatedHour23),
+        meridiem: Function.constant(meridiem),
+      }),
+      _make,
+    );
   };
 
 /**
@@ -173,11 +253,14 @@ export const setMinute =
         }),
       );
 
-      return _make({
-        ...self,
-        timestampOffset: self.timestampOffset + (validatedMinute - self.minute) * MINUTE_MS,
-        minute: validatedMinute,
-      });
+      return pipe(
+        self,
+        Struct.evolve({
+          timestampOffset: Number.sum((validatedMinute - self.minute) * MINUTE_MS),
+          minute: Function.constant(validatedMinute),
+        }),
+        _make,
+      );
     });
 
 /**
@@ -203,11 +286,14 @@ export const setSecond =
         }),
       );
 
-      return _make({
-        ...self,
-        timestampOffset: self.timestampOffset + (validatedSecond - self.second) * SECOND_MS,
-        second: validatedSecond,
-      });
+      return pipe(
+        self,
+        Struct.evolve({
+          timestampOffset: Number.sum((validatedSecond - self.second) * SECOND_MS),
+          second: Function.constant(validatedSecond),
+        }),
+        _make,
+      );
     });
 
 /**
@@ -233,11 +319,14 @@ export const setMillisecond =
         }),
       );
 
-      return _make({
-        ...self,
-        timestampOffset: self.timestampOffset + validatedMillisecond - self.millisecond,
-        millisecond: validatedMillisecond,
-      });
+      return pipe(
+        self,
+        Struct.evolve({
+          timestampOffset: Number.sum(validatedMillisecond - self.millisecond),
+          millisecond: Function.constant(validatedMillisecond),
+        }),
+        _make,
+      );
     });
 
 /**
@@ -287,29 +376,6 @@ export const second: MTypes.OneArgFunction<Type, number> = Struct.get('second');
  * @category Destructors
  */
 export const millisecond: MTypes.OneArgFunction<Type, number> = Struct.get('millisecond');
-
-const _formatter = flow(
-  CVTemplate.toFormatter(
-    CVTemplate.make(
-      _fixedLengthToReal({ ..._params, name: 'hour23', length: 2 }),
-      _sep.colon,
-      _fixedLengthToReal({ ..._params, name: 'minute', length: 2 }),
-      _sep.colon,
-      _fixedLengthToReal({ ..._params, name: 'second', length: 2 }),
-      _sep.dot,
-      _fixedLengthToReal({ ..._params, name: 'millisecond', length: 3 }),
-    ),
-  ),
-  Either.getOrThrowWith(Function.identity),
-) as MTypes.OneArgFunction<
-  {
-    readonly hour23: number;
-    readonly minute: number;
-    readonly second: number;
-    readonly millisecond: number;
-  },
-  string
->;
 
 /**
  * Returns the ISO representation of this Gregorian Date

@@ -9,26 +9,26 @@
  * same time, or just bold, or just dim).
  */
 
-import { MDataBase, MDataEquivalenceBasedEquality, MStruct, MTypes } from '@parischap/effect-lib';
+import { MData, MDataEquivalenceBasedEquality, MStruct, MTypes } from '@parischap/effect-lib';
 import { Equivalence, flow, Hash, pipe, Predicate } from 'effect';
-import * as AsColorBase from '../Color/Base.js';
-import * as ASColorThreeBit from '../Color/ThreeBit.js';
+import * as AsColor from '../Color/index.js';
+import * as ASThreeBitColor from '../Color/ThreeBitColor.js';
 import * as ASCode from './Code.js';
 import * as ASSequence from './Sequence.js';
-import * as ASStyleCharacteristicBackgroundColor from './StyleCharacteristic/BackgroundColor.js';
-import * as ASStyleCharacteristicBlinking from './StyleCharacteristic/Blinking.js';
-import * as ASStyleCharacteristicBold from './StyleCharacteristic/Bold.js';
-import * as ASStyleCharacteristicColor from './StyleCharacteristic/Color.js';
-import * as ASStyleCharacteristicDim from './StyleCharacteristic/Dim.js';
-import * as ASStyleCharacteristicForegroundColor from './StyleCharacteristic/ForegroundColor.js';
-import * as ASStyleCharacteristicHidden from './StyleCharacteristic/Hidden.js';
-import * as ASStyleCharacteristicInversed from './StyleCharacteristic/Inversed.js';
-import * as ASStyleCharacteristicItalic from './StyleCharacteristic/Italic.js';
-import * as ASStyleCharacteristicOnOffOrMissing from './StyleCharacteristic/OnOffOrMissing.js';
-import * as ASStyleCharacteristicOverlined from './StyleCharacteristic/Overlined.js';
-import * as ASStyleCharacteristicPresentOrMissing from './StyleCharacteristic/PresentOrMissing.js';
-import * as ASStyleCharacteristicStruckThrough from './StyleCharacteristic/StruckThrough.js';
-import * as ASStyleCharacteristicUnderlined from './StyleCharacteristic/Underlined.js';
+import * as ASBackgroundColorStyleCharacteristic from './style-characteristic/OptionalStyleCharacteristic/ColorOptionalStyleCharacteristic/BackgroundColorStyleCharacteristic.js';
+import * as ASForegroundColorStyleCharacteristic from './style-characteristic/OptionalStyleCharacteristic/ColorOptionalStyleCharacteristic/ForegroundColorStyleCharacteristic.js';
+import * as ASColorOptionalStyleCharacteristic from './style-characteristic/OptionalStyleCharacteristic/ColorOptionalStyleCharacteristic/index.js';
+import * as ASOptionalStyleCharacteristic from './style-characteristic/OptionalStyleCharacteristic/index.js';
+import * as ASBlinkingStyleCharacteristic from './style-characteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/BlinkingStyleCharacteristic.js';
+import * as ASBoldStyleCharacteristic from './style-characteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/BoldStyleCharacteristic.js';
+import * as ASDimStyleCharacteristic from './style-characteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/DimStyleCharacteristic.js';
+import * as ASHiddenStyleCharacteristic from './style-characteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/HiddenStyleCharacteristic.js';
+import * as ASOnOffOptionalStyleCharacteristic from './style-characteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/index.js';
+import * as ASInversedStyleCharacteristic from './style-characteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/InversedStyleCharacteristic.js';
+import * as ASItalicStyleCharacteristic from './style-characteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/ItalicStyleCharacteristic.js';
+import * as ASOverlinedStyleCharacteristic from './style-characteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/OverlinedStyleCharacteristic.js';
+import * as ASStruckThroughStyleCharacteristic from './style-characteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/StruckThroughStyleCharacteristic.js';
+import * as ASUnderlinedStyleCharacteristic from './style-characteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/UnderlinedStyleCharacteristic.js';
 
 /**
  * Module tag
@@ -48,64 +48,64 @@ const _TypeIdHash = Hash.hash(_TypeId);
  */
 export class Type extends MDataEquivalenceBasedEquality.Class {
   /** BoldState of this style */
-  readonly bold: ASStyleCharacteristicBold.Type;
+  readonly boldStyleCharacteristic: ASBoldStyleCharacteristic.Type;
 
   /** DimState of this style */
-  readonly dim: ASStyleCharacteristicDim.Type;
+  readonly dimStyleCharacteristic: ASDimStyleCharacteristic.Type;
 
   /** ItalicState of this style */
-  readonly italic: ASStyleCharacteristicItalic.Type;
+  readonly italicStyleCharacteristic: ASItalicStyleCharacteristic.Type;
 
   /** UnderlinedState of this style */
-  readonly underlined: ASStyleCharacteristicUnderlined.Type;
+  readonly underlinedStyleCharacteristic: ASUnderlinedStyleCharacteristic.Type;
 
   /** StruckThroughState of this style */
-  readonly struckThrough: ASStyleCharacteristicStruckThrough.Type;
+  readonly struckThroughStyleCharacteristic: ASStruckThroughStyleCharacteristic.Type;
 
   /** OverlinedState of this style */
-  readonly overlined: ASStyleCharacteristicOverlined.Type;
+  readonly overlinedStyleCharacteristic: ASOverlinedStyleCharacteristic.Type;
 
   /** InversedState of this style */
-  readonly inversed: ASStyleCharacteristicInversed.Type;
+  readonly inversedStyleCharacteristic: ASInversedStyleCharacteristic.Type;
 
   /** HiddenState of this style */
-  readonly hidden: ASStyleCharacteristicHidden.Type;
+  readonly hiddenStyleCharacteristic: ASHiddenStyleCharacteristic.Type;
 
   /** BlinkingState of this style */
-  readonly blinking: ASStyleCharacteristicBlinking.Type;
+  readonly blinkingStyleCharacteristic: ASBlinkingStyleCharacteristic.Type;
 
   /** Foreground color of this style. */
-  readonly foregroundColor: ASStyleCharacteristicForegroundColor.Type;
+  readonly foregroundColorStyleCharacteristic: ASForegroundColorStyleCharacteristic.Type;
 
   /** Background color of this style. */
-  readonly backgroundColor: ASStyleCharacteristicBackgroundColor.Type;
+  readonly backgroundColorStyleCharacteristic: ASBackgroundColorStyleCharacteristic.Type;
 
   /** Class constructor */
   private constructor({
-    bold,
-    dim,
-    italic,
-    underlined,
-    struckThrough,
-    overlined,
-    inversed,
-    hidden,
-    blinking,
-    foregroundColor,
-    backgroundColor,
+    boldStyleCharacteristic,
+    dimStyleCharacteristic,
+    italicStyleCharacteristic,
+    underlinedStyleCharacteristic,
+    struckThroughStyleCharacteristic,
+    overlinedStyleCharacteristic,
+    inversedStyleCharacteristic,
+    hiddenStyleCharacteristic,
+    blinkingStyleCharacteristic,
+    foregroundColorStyleCharacteristic,
+    backgroundColorStyleCharacteristic,
   }: MTypes.Data<Type>) {
     super();
-    this.bold = bold;
-    this.dim = dim;
-    this.italic = italic;
-    this.underlined = underlined;
-    this.struckThrough = struckThrough;
-    this.overlined = overlined;
-    this.inversed = inversed;
-    this.hidden = hidden;
-    this.blinking = blinking;
-    this.foregroundColor = foregroundColor;
-    this.backgroundColor = backgroundColor;
+    this.boldStyleCharacteristic = boldStyleCharacteristic;
+    this.dimStyleCharacteristic = dimStyleCharacteristic;
+    this.italicStyleCharacteristic = italicStyleCharacteristic;
+    this.underlinedStyleCharacteristic = underlinedStyleCharacteristic;
+    this.struckThroughStyleCharacteristic = struckThroughStyleCharacteristic;
+    this.overlinedStyleCharacteristic = overlinedStyleCharacteristic;
+    this.inversedStyleCharacteristic = inversedStyleCharacteristic;
+    this.hiddenStyleCharacteristic = hiddenStyleCharacteristic;
+    this.blinkingStyleCharacteristic = blinkingStyleCharacteristic;
+    this.foregroundColorStyleCharacteristic = foregroundColorStyleCharacteristic;
+    this.backgroundColorStyleCharacteristic = backgroundColorStyleCharacteristic;
   }
 
   /** Static constructor */
@@ -114,11 +114,14 @@ export class Type extends MDataEquivalenceBasedEquality.Class {
   }
 
   /** Returns the `id` of `this` */
-  [MDataBase.idSymbol](): string | (() => string) {
+  [MData.idSymbol](): string | (() => string) {
     return function idSymbol(this: Type) {
-      const result = `${this.bold.toString()}${this.dim.toString()}${this.italic.toString()}${this.underlined.toString()}\
-${this.struckThrough.toString()}${this.overlined.toString()}${this.inversed.toString()}${this.hidden.toString()}\
-${this.blinking.toString()}${this.foregroundColor.toString()}${this.backgroundColor.toString()}`;
+      const result = `${this.boldStyleCharacteristic.toString()}${this.dimStyleCharacteristic.toString()}\
+${this.italicStyleCharacteristic.toString()}${this.underlinedStyleCharacteristic.toString()}\
+${this.struckThroughStyleCharacteristic.toString()}${this.overlinedStyleCharacteristic.toString()}\
+${this.inversedStyleCharacteristic.toString()}${this.hiddenStyleCharacteristic.toString()}\
+${this.blinkingStyleCharacteristic.toString()}${this.foregroundColorStyleCharacteristic.toString()}\
+${this.backgroundColorStyleCharacteristic.toString()}`;
       return result.length === 0 ? 'NoStyle' : result;
     };
   }
@@ -126,18 +129,18 @@ ${this.blinking.toString()}${this.foregroundColor.toString()}${this.backgroundCo
   /** Calculates the hash value of `this` */
   [Hash.symbol](): number {
     return pipe(
-      this.bold,
+      this.boldStyleCharacteristic,
       Hash.hash,
-      Hash.combine(Hash.hash(this.dim)),
-      Hash.combine(Hash.hash(this.italic)),
-      Hash.combine(Hash.hash(this.underlined)),
-      Hash.combine(Hash.hash(this.struckThrough)),
-      Hash.combine(Hash.hash(this.overlined)),
-      Hash.combine(Hash.hash(this.inversed)),
-      Hash.combine(Hash.hash(this.hidden)),
-      Hash.combine(Hash.hash(this.blinking)),
-      Hash.combine(Hash.hash(this.foregroundColor)),
-      Hash.combine(Hash.hash(this.backgroundColor)),
+      Hash.combine(Hash.hash(this.dimStyleCharacteristic)),
+      Hash.combine(Hash.hash(this.italicStyleCharacteristic)),
+      Hash.combine(Hash.hash(this.underlinedStyleCharacteristic)),
+      Hash.combine(Hash.hash(this.struckThroughStyleCharacteristic)),
+      Hash.combine(Hash.hash(this.overlinedStyleCharacteristic)),
+      Hash.combine(Hash.hash(this.inversedStyleCharacteristic)),
+      Hash.combine(Hash.hash(this.hiddenStyleCharacteristic)),
+      Hash.combine(Hash.hash(this.blinkingStyleCharacteristic)),
+      Hash.combine(Hash.hash(this.foregroundColorStyleCharacteristic)),
+      Hash.combine(Hash.hash(this.backgroundColorStyleCharacteristic)),
       Hash.combine(_TypeIdHash),
       Hash.cached(this),
     );
@@ -164,49 +167,94 @@ ${this.blinking.toString()}${this.foregroundColor.toString()}${this.backgroundCo
  * @category Equivalences
  */
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
-  ASStyleCharacteristicOnOffOrMissing.equivalence(self.bold, that.bold)
-  && ASStyleCharacteristicOnOffOrMissing.equivalence(self.dim, that.dim)
-  && ASStyleCharacteristicOnOffOrMissing.equivalence(self.italic, that.italic)
-  && ASStyleCharacteristicOnOffOrMissing.equivalence(self.underlined, that.underlined)
-  && ASStyleCharacteristicOnOffOrMissing.equivalence(self.struckThrough, that.struckThrough)
-  && ASStyleCharacteristicOnOffOrMissing.equivalence(self.overlined, that.overlined)
-  && ASStyleCharacteristicOnOffOrMissing.equivalence(self.inversed, that.inversed)
-  && ASStyleCharacteristicOnOffOrMissing.equivalence(self.hidden, that.hidden)
-  && ASStyleCharacteristicOnOffOrMissing.equivalence(self.blinking, that.blinking)
-  && ASStyleCharacteristicColor.equivalence(self.foregroundColor, that.foregroundColor)
-  && ASStyleCharacteristicColor.equivalence(self.backgroundColor, that.backgroundColor);
+  ASOnOffOptionalStyleCharacteristic.equivalence(
+    self.boldStyleCharacteristic,
+    that.boldStyleCharacteristic,
+  )
+  && ASOnOffOptionalStyleCharacteristic.equivalence(
+    self.dimStyleCharacteristic,
+    that.dimStyleCharacteristic,
+  )
+  && ASOnOffOptionalStyleCharacteristic.equivalence(
+    self.italicStyleCharacteristic,
+    that.italicStyleCharacteristic,
+  )
+  && ASOnOffOptionalStyleCharacteristic.equivalence(
+    self.underlinedStyleCharacteristic,
+    that.underlinedStyleCharacteristic,
+  )
+  && ASOnOffOptionalStyleCharacteristic.equivalence(
+    self.struckThroughStyleCharacteristic,
+    that.struckThroughStyleCharacteristic,
+  )
+  && ASOnOffOptionalStyleCharacteristic.equivalence(
+    self.overlinedStyleCharacteristic,
+    that.overlinedStyleCharacteristic,
+  )
+  && ASOnOffOptionalStyleCharacteristic.equivalence(
+    self.inversedStyleCharacteristic,
+    that.inversedStyleCharacteristic,
+  )
+  && ASOnOffOptionalStyleCharacteristic.equivalence(
+    self.hiddenStyleCharacteristic,
+    that.hiddenStyleCharacteristic,
+  )
+  && ASOnOffOptionalStyleCharacteristic.equivalence(
+    self.blinkingStyleCharacteristic,
+    that.blinkingStyleCharacteristic,
+  )
+  && ASColorOptionalStyleCharacteristic.equivalence(
+    self.foregroundColorStyleCharacteristic,
+    that.foregroundColorStyleCharacteristic,
+  )
+  && ASColorOptionalStyleCharacteristic.equivalence(
+    self.backgroundColorStyleCharacteristic,
+    that.backgroundColorStyleCharacteristic,
+  );
 
 /**
- * Returns true if `self` has the bold style
+ * Returns true if `self` has the bold style characteristic
  *
  * @category Predicates
  */
 export const hasBold: Predicate.Predicate<Type> = (self) =>
-  ASStyleCharacteristicOnOffOrMissing.equivalence(self.bold, ASStyleCharacteristicBold.on);
+  ASOnOffOptionalStyleCharacteristic.equivalence(
+    self.boldStyleCharacteristic,
+    ASBoldStyleCharacteristic.on,
+  );
 
 /**
- * Returns true if `self` has the notBold state
+ * Returns true if `self` has the not the bold style characteristic
  *
  * @category Predicates
  */
 export const hasNotBold: Predicate.Predicate<Type> = (self) =>
-  ASStyleCharacteristicOnOffOrMissing.equivalence(self.bold, ASStyleCharacteristicBold.off);
+  ASOnOffOptionalStyleCharacteristic.equivalence(
+    self.boldStyleCharacteristic,
+    ASBoldStyleCharacteristic.off,
+  );
 
 /**
- * Returns true if `self` has the dim state
+ * Returns true if `self` has the dim style characteristic
  *
  * @category Predicates
  */
 export const hasDim: Predicate.Predicate<Type> = (self) =>
-  ASStyleCharacteristicOnOffOrMissing.equivalence(self.dim, ASStyleCharacteristicDim.on);
+  ASOnOffOptionalStyleCharacteristic.equivalence(
+    self.dimStyleCharacteristic,
+    ASDimStyleCharacteristic.on,
+  );
 
 /**
- * Returns true if `self` has the notDim state
+ * Returns true if `self` has the not the dim style characteristic
  *
  * @category Predicates
  */
 export const hasNotDim: Predicate.Predicate<Type> = (self) =>
-  ASStyleCharacteristicOnOffOrMissing.equivalence(self.dim, ASStyleCharacteristicDim.off);
+  ASOnOffOptionalStyleCharacteristic.equivalence(
+    self.dimStyleCharacteristic,
+    ASDimStyleCharacteristic.off,
+  );
 
 /**
  * Returns the id of `self`
@@ -224,27 +272,28 @@ export const toSequence = (self: Type): ASSequence.Type => {
   const _hasNotDim = hasNotDim(self);
   return [
     // Useless to send both notBold and notDim because they have the same value
-    ...(hasNotBold(self) && _hasNotDim ? ASStyleCharacteristicPresentOrMissing.toSequence(self.bold)
+    ...(hasNotBold(self) && _hasNotDim ?
+      ASOptionalStyleCharacteristic.toSequence(self.boldStyleCharacteristic)
       // Send notDim before bold otherwise bold will never take effect
     : _hasNotDim ?
       [
-        ...ASStyleCharacteristicPresentOrMissing.toSequence(self.dim),
-        ...ASStyleCharacteristicPresentOrMissing.toSequence(self.bold),
+        ...ASOptionalStyleCharacteristic.toSequence(self.dimStyleCharacteristic),
+        ...ASOptionalStyleCharacteristic.toSequence(self.boldStyleCharacteristic),
       ]
       // In case hasNotBold, send bold before dim otherwise dim will never take effect
     : [
-        ...ASStyleCharacteristicPresentOrMissing.toSequence(self.bold),
-        ...ASStyleCharacteristicPresentOrMissing.toSequence(self.dim),
+        ...ASOptionalStyleCharacteristic.toSequence(self.boldStyleCharacteristic),
+        ...ASOptionalStyleCharacteristic.toSequence(self.dimStyleCharacteristic),
       ]),
-    ...ASStyleCharacteristicPresentOrMissing.toSequence(self.italic),
-    ...ASStyleCharacteristicPresentOrMissing.toSequence(self.underlined),
-    ...ASStyleCharacteristicPresentOrMissing.toSequence(self.struckThrough),
-    ...ASStyleCharacteristicPresentOrMissing.toSequence(self.overlined),
-    ...ASStyleCharacteristicPresentOrMissing.toSequence(self.inversed),
-    ...ASStyleCharacteristicPresentOrMissing.toSequence(self.hidden),
-    ...ASStyleCharacteristicPresentOrMissing.toSequence(self.blinking),
-    ...ASStyleCharacteristicPresentOrMissing.toSequence(self.foregroundColor),
-    ...ASStyleCharacteristicPresentOrMissing.toSequence(self.backgroundColor),
+    ...ASOptionalStyleCharacteristic.toSequence(self.italicStyleCharacteristic),
+    ...ASOptionalStyleCharacteristic.toSequence(self.underlinedStyleCharacteristic),
+    ...ASOptionalStyleCharacteristic.toSequence(self.struckThroughStyleCharacteristic),
+    ...ASOptionalStyleCharacteristic.toSequence(self.overlinedStyleCharacteristic),
+    ...ASOptionalStyleCharacteristic.toSequence(self.inversedStyleCharacteristic),
+    ...ASOptionalStyleCharacteristic.toSequence(self.hiddenStyleCharacteristic),
+    ...ASOptionalStyleCharacteristic.toSequence(self.blinkingStyleCharacteristic),
+    ...ASOptionalStyleCharacteristic.toSequence(self.foregroundColorStyleCharacteristic),
+    ...ASOptionalStyleCharacteristic.toSequence(self.backgroundColorStyleCharacteristic),
   ];
 };
 
@@ -268,31 +317,49 @@ export const mergeUnder =
   (that: Type) =>
   (self: Type): Type =>
     Type.make({
-      bold: ASStyleCharacteristicPresentOrMissing.PresentOrElse(self.bold, that.bold),
-      dim: ASStyleCharacteristicPresentOrMissing.PresentOrElse(self.dim, that.dim),
-      italic: ASStyleCharacteristicPresentOrMissing.PresentOrElse(self.italic, that.italic),
-      underlined: ASStyleCharacteristicPresentOrMissing.PresentOrElse(
-        self.underlined,
-        that.underlined,
+      boldStyleCharacteristic: ASOptionalStyleCharacteristic.PresentOrElse(
+        self.boldStyleCharacteristic,
+        that.boldStyleCharacteristic,
       ),
-      struckThrough: ASStyleCharacteristicPresentOrMissing.PresentOrElse(
-        self.struckThrough,
-        that.struckThrough,
+      dimStyleCharacteristic: ASOptionalStyleCharacteristic.PresentOrElse(
+        self.dimStyleCharacteristic,
+        that.dimStyleCharacteristic,
       ),
-      overlined: ASStyleCharacteristicPresentOrMissing.PresentOrElse(
-        self.overlined,
-        that.overlined,
+      italicStyleCharacteristic: ASOptionalStyleCharacteristic.PresentOrElse(
+        self.italicStyleCharacteristic,
+        that.italicStyleCharacteristic,
       ),
-      inversed: ASStyleCharacteristicPresentOrMissing.PresentOrElse(self.inversed, that.inversed),
-      hidden: ASStyleCharacteristicPresentOrMissing.PresentOrElse(self.hidden, that.hidden),
-      blinking: ASStyleCharacteristicPresentOrMissing.PresentOrElse(self.blinking, that.blinking),
-      foregroundColor: ASStyleCharacteristicPresentOrMissing.PresentOrElse(
-        self.foregroundColor,
-        that.foregroundColor,
+      underlinedStyleCharacteristic: ASOptionalStyleCharacteristic.PresentOrElse(
+        self.underlinedStyleCharacteristic,
+        that.underlinedStyleCharacteristic,
       ),
-      backgroundColor: ASStyleCharacteristicPresentOrMissing.PresentOrElse(
-        self.backgroundColor,
-        that.backgroundColor,
+      struckThroughStyleCharacteristic: ASOptionalStyleCharacteristic.PresentOrElse(
+        self.struckThroughStyleCharacteristic,
+        that.struckThroughStyleCharacteristic,
+      ),
+      overlinedStyleCharacteristic: ASOptionalStyleCharacteristic.PresentOrElse(
+        self.overlinedStyleCharacteristic,
+        that.overlinedStyleCharacteristic,
+      ),
+      inversedStyleCharacteristic: ASOptionalStyleCharacteristic.PresentOrElse(
+        self.inversedStyleCharacteristic,
+        that.inversedStyleCharacteristic,
+      ),
+      hiddenStyleCharacteristic: ASOptionalStyleCharacteristic.PresentOrElse(
+        self.hiddenStyleCharacteristic,
+        that.hiddenStyleCharacteristic,
+      ),
+      blinkingStyleCharacteristic: ASOptionalStyleCharacteristic.PresentOrElse(
+        self.blinkingStyleCharacteristic,
+        that.blinkingStyleCharacteristic,
+      ),
+      foregroundColorStyleCharacteristic: ASOptionalStyleCharacteristic.PresentOrElse(
+        self.foregroundColorStyleCharacteristic,
+        that.foregroundColorStyleCharacteristic,
+      ),
+      backgroundColorStyleCharacteristic: ASOptionalStyleCharacteristic.PresentOrElse(
+        self.backgroundColorStyleCharacteristic,
+        that.backgroundColorStyleCharacteristic,
       ),
     });
 
@@ -316,60 +383,60 @@ export const difference =
   (that: Type) =>
   (self: Type): Type =>
     Type.make({
-      bold: ASStyleCharacteristicPresentOrMissing.orWhenEquals(
-        self.bold,
-        that.bold,
-        ASStyleCharacteristicBold.missing,
+      boldStyleCharacteristic: ASOptionalStyleCharacteristic.orWhenEquals(
+        self.boldStyleCharacteristic,
+        that.boldStyleCharacteristic,
+        ASBoldStyleCharacteristic.missing,
       ),
-      dim: ASStyleCharacteristicPresentOrMissing.orWhenEquals(
-        self.dim,
-        that.dim,
-        ASStyleCharacteristicDim.missing,
+      dimStyleCharacteristic: ASOptionalStyleCharacteristic.orWhenEquals(
+        self.dimStyleCharacteristic,
+        that.dimStyleCharacteristic,
+        ASDimStyleCharacteristic.missing,
       ),
-      italic: ASStyleCharacteristicPresentOrMissing.orWhenEquals(
-        self.italic,
-        that.italic,
-        ASStyleCharacteristicItalic.missing,
+      italicStyleCharacteristic: ASOptionalStyleCharacteristic.orWhenEquals(
+        self.italicStyleCharacteristic,
+        that.italicStyleCharacteristic,
+        ASItalicStyleCharacteristic.missing,
       ),
-      underlined: ASStyleCharacteristicPresentOrMissing.orWhenEquals(
-        self.underlined,
-        that.underlined,
-        ASStyleCharacteristicUnderlined.missing,
+      underlinedStyleCharacteristic: ASOptionalStyleCharacteristic.orWhenEquals(
+        self.underlinedStyleCharacteristic,
+        that.underlinedStyleCharacteristic,
+        ASUnderlinedStyleCharacteristic.missing,
       ),
-      struckThrough: ASStyleCharacteristicPresentOrMissing.orWhenEquals(
-        self.struckThrough,
-        that.struckThrough,
-        ASStyleCharacteristicStruckThrough.missing,
+      struckThroughStyleCharacteristic: ASOptionalStyleCharacteristic.orWhenEquals(
+        self.struckThroughStyleCharacteristic,
+        that.struckThroughStyleCharacteristic,
+        ASStruckThroughStyleCharacteristic.missing,
       ),
-      overlined: ASStyleCharacteristicPresentOrMissing.orWhenEquals(
-        self.overlined,
-        that.overlined,
-        ASStyleCharacteristicOverlined.missing,
+      overlinedStyleCharacteristic: ASOptionalStyleCharacteristic.orWhenEquals(
+        self.overlinedStyleCharacteristic,
+        that.overlinedStyleCharacteristic,
+        ASOverlinedStyleCharacteristic.missing,
       ),
-      inversed: ASStyleCharacteristicPresentOrMissing.orWhenEquals(
-        self.inversed,
-        that.inversed,
-        ASStyleCharacteristicInversed.missing,
+      inversedStyleCharacteristic: ASOptionalStyleCharacteristic.orWhenEquals(
+        self.inversedStyleCharacteristic,
+        that.inversedStyleCharacteristic,
+        ASInversedStyleCharacteristic.missing,
       ),
-      hidden: ASStyleCharacteristicPresentOrMissing.orWhenEquals(
-        self.hidden,
-        that.hidden,
-        ASStyleCharacteristicHidden.missing,
+      hiddenStyleCharacteristic: ASOptionalStyleCharacteristic.orWhenEquals(
+        self.hiddenStyleCharacteristic,
+        that.hiddenStyleCharacteristic,
+        ASHiddenStyleCharacteristic.missing,
       ),
-      blinking: ASStyleCharacteristicPresentOrMissing.orWhenEquals(
-        self.blinking,
-        that.blinking,
-        ASStyleCharacteristicBlinking.missing,
+      blinkingStyleCharacteristic: ASOptionalStyleCharacteristic.orWhenEquals(
+        self.blinkingStyleCharacteristic,
+        that.blinkingStyleCharacteristic,
+        ASBlinkingStyleCharacteristic.missing,
       ),
-      foregroundColor: ASStyleCharacteristicPresentOrMissing.orWhenEquals(
-        self.foregroundColor,
-        that.foregroundColor,
-        ASStyleCharacteristicForegroundColor.missing,
+      foregroundColorStyleCharacteristic: ASOptionalStyleCharacteristic.orWhenEquals(
+        self.foregroundColorStyleCharacteristic,
+        that.foregroundColorStyleCharacteristic,
+        ASForegroundColorStyleCharacteristic.missing,
       ),
-      backgroundColor: ASStyleCharacteristicPresentOrMissing.orWhenEquals(
-        self.backgroundColor,
-        that.backgroundColor,
-        ASStyleCharacteristicBackgroundColor.missing,
+      backgroundColorStyleCharacteristic: ASOptionalStyleCharacteristic.orWhenEquals(
+        self.backgroundColorStyleCharacteristic,
+        that.backgroundColorStyleCharacteristic,
+        ASBackgroundColorStyleCharacteristic.missing,
       ),
     });
 
@@ -390,9 +457,13 @@ export const substractContext =
     const target = pipe(self, difference(context));
     return (
       hasBold(self) && hasNotDim(target) ?
-        Type.make(pipe(target, MStruct.set({ bold: ASStyleCharacteristicBold.on })))
+        Type.make(
+          pipe(target, MStruct.set({ boldStyleCharacteristic: ASBoldStyleCharacteristic.on })),
+        )
       : hasDim(self) && hasNotBold(target) ?
-        Type.make(pipe(target, MStruct.set({ dim: ASStyleCharacteristicDim.on })))
+        Type.make(
+          pipe(target, MStruct.set({ dimStyleCharacteristic: ASDimStyleCharacteristic.on })),
+        )
       : target
     );
   };
@@ -403,17 +474,17 @@ export const substractContext =
  * @category Instances
  */
 export const none: Type = Type.make({
-  bold: ASStyleCharacteristicBold.missing,
-  dim: ASStyleCharacteristicDim.missing,
-  italic: ASStyleCharacteristicItalic.missing,
-  underlined: ASStyleCharacteristicUnderlined.missing,
-  struckThrough: ASStyleCharacteristicStruckThrough.missing,
-  overlined: ASStyleCharacteristicOverlined.missing,
-  inversed: ASStyleCharacteristicInversed.missing,
-  hidden: ASStyleCharacteristicHidden.missing,
-  blinking: ASStyleCharacteristicBlinking.missing,
-  foregroundColor: ASStyleCharacteristicForegroundColor.missing,
-  backgroundColor: ASStyleCharacteristicBackgroundColor.missing,
+  boldStyleCharacteristic: ASBoldStyleCharacteristic.missing,
+  dimStyleCharacteristic: ASDimStyleCharacteristic.missing,
+  italicStyleCharacteristic: ASItalicStyleCharacteristic.missing,
+  underlinedStyleCharacteristic: ASUnderlinedStyleCharacteristic.missing,
+  struckThroughStyleCharacteristic: ASStruckThroughStyleCharacteristic.missing,
+  overlinedStyleCharacteristic: ASOverlinedStyleCharacteristic.missing,
+  inversedStyleCharacteristic: ASInversedStyleCharacteristic.missing,
+  hiddenStyleCharacteristic: ASHiddenStyleCharacteristic.missing,
+  blinkingStyleCharacteristic: ASBlinkingStyleCharacteristic.missing,
+  foregroundColorStyleCharacteristic: ASForegroundColorStyleCharacteristic.missing,
+  backgroundColorStyleCharacteristic: ASBackgroundColorStyleCharacteristic.missing,
 });
 
 /**
@@ -422,17 +493,17 @@ export const none: Type = Type.make({
  * @category Instances
  */
 export const defaults: Type = Type.make({
-  bold: ASStyleCharacteristicBold.off,
-  dim: ASStyleCharacteristicDim.off,
-  italic: ASStyleCharacteristicItalic.off,
-  underlined: ASStyleCharacteristicUnderlined.off,
-  struckThrough: ASStyleCharacteristicStruckThrough.off,
-  overlined: ASStyleCharacteristicOverlined.off,
-  inversed: ASStyleCharacteristicInversed.off,
-  hidden: ASStyleCharacteristicHidden.off,
-  blinking: ASStyleCharacteristicBlinking.off,
-  foregroundColor: ASStyleCharacteristicForegroundColor.defaultColor,
-  backgroundColor: ASStyleCharacteristicBackgroundColor.defaultColor,
+  boldStyleCharacteristic: ASBoldStyleCharacteristic.off,
+  dimStyleCharacteristic: ASDimStyleCharacteristic.off,
+  italicStyleCharacteristic: ASItalicStyleCharacteristic.off,
+  underlinedStyleCharacteristic: ASUnderlinedStyleCharacteristic.off,
+  struckThroughStyleCharacteristic: ASStruckThroughStyleCharacteristic.off,
+  overlinedStyleCharacteristic: ASOverlinedStyleCharacteristic.off,
+  inversedStyleCharacteristic: ASInversedStyleCharacteristic.off,
+  hiddenStyleCharacteristic: ASHiddenStyleCharacteristic.off,
+  blinkingStyleCharacteristic: ASBlinkingStyleCharacteristic.off,
+  foregroundColorStyleCharacteristic: ASForegroundColorStyleCharacteristic.defaultColor,
+  backgroundColorStyleCharacteristic: ASBackgroundColorStyleCharacteristic.defaultColor,
 });
 
 /**
@@ -441,7 +512,7 @@ export const defaults: Type = Type.make({
  * @category Instances
  */
 export const bold: Type = Type.make(
-  pipe(none, MStruct.set({ bold: ASStyleCharacteristicBold.on })),
+  pipe(none, MStruct.set({ boldStyleCharacteristic: ASBoldStyleCharacteristic.on })),
 );
 
 /**
@@ -450,7 +521,7 @@ export const bold: Type = Type.make(
  * @category Instances
  */
 export const notBold: Type = Type.make(
-  pipe(none, MStruct.set({ bold: ASStyleCharacteristicBold.off })),
+  pipe(none, MStruct.set({ boldStyleCharacteristic: ASBoldStyleCharacteristic.off })),
 );
 
 /**
@@ -458,7 +529,9 @@ export const notBold: Type = Type.make(
  *
  * @category Instances
  */
-export const dim: Type = Type.make(pipe(none, MStruct.set({ dim: ASStyleCharacteristicDim.on })));
+export const dim: Type = Type.make(
+  pipe(none, MStruct.set({ dimStyleCharacteristic: ASDimStyleCharacteristic.on })),
+);
 
 /**
  * NotDim StyleCharacteristics instance
@@ -466,7 +539,7 @@ export const dim: Type = Type.make(pipe(none, MStruct.set({ dim: ASStyleCharacte
  * @category Instances
  */
 export const notDim: Type = Type.make(
-  pipe(none, MStruct.set({ dim: ASStyleCharacteristicDim.off })),
+  pipe(none, MStruct.set({ dimStyleCharacteristic: ASDimStyleCharacteristic.off })),
 );
 
 /**
@@ -475,7 +548,7 @@ export const notDim: Type = Type.make(
  * @category Instances
  */
 export const italic: Type = Type.make(
-  pipe(none, MStruct.set({ italic: ASStyleCharacteristicItalic.on })),
+  pipe(none, MStruct.set({ italicStyleCharacteristic: ASItalicStyleCharacteristic.on })),
 );
 
 /**
@@ -484,7 +557,7 @@ export const italic: Type = Type.make(
  * @category Instances
  */
 export const notItalic: Type = Type.make(
-  pipe(none, MStruct.set({ italic: ASStyleCharacteristicItalic.off })),
+  pipe(none, MStruct.set({ italicStyleCharacteristic: ASItalicStyleCharacteristic.off })),
 );
 
 /**
@@ -493,7 +566,7 @@ export const notItalic: Type = Type.make(
  * @category Instances
  */
 export const underlined: Type = Type.make(
-  pipe(none, MStruct.set({ underlined: ASStyleCharacteristicUnderlined.on })),
+  pipe(none, MStruct.set({ underlinedStyleCharacteristic: ASUnderlinedStyleCharacteristic.on })),
 );
 
 /**
@@ -502,7 +575,7 @@ export const underlined: Type = Type.make(
  * @category Instances
  */
 export const notUnderlined: Type = Type.make(
-  pipe(none, MStruct.set({ underlined: ASStyleCharacteristicUnderlined.off })),
+  pipe(none, MStruct.set({ underlinedStyleCharacteristic: ASUnderlinedStyleCharacteristic.off })),
 );
 
 /**
@@ -511,7 +584,10 @@ export const notUnderlined: Type = Type.make(
  * @category Instances
  */
 export const struckThrough: Type = Type.make(
-  pipe(none, MStruct.set({ struckThrough: ASStyleCharacteristicStruckThrough.on })),
+  pipe(
+    none,
+    MStruct.set({ struckThroughStyleCharacteristic: ASStruckThroughStyleCharacteristic.on }),
+  ),
 );
 
 /**
@@ -520,7 +596,10 @@ export const struckThrough: Type = Type.make(
  * @category Instances
  */
 export const notStruckThrough: Type = Type.make(
-  pipe(none, MStruct.set({ struckThrough: ASStyleCharacteristicStruckThrough.off })),
+  pipe(
+    none,
+    MStruct.set({ struckThroughStyleCharacteristic: ASStruckThroughStyleCharacteristic.off }),
+  ),
 );
 
 /**
@@ -529,7 +608,7 @@ export const notStruckThrough: Type = Type.make(
  * @category Instances
  */
 export const overlined: Type = Type.make(
-  pipe(none, MStruct.set({ overlined: ASStyleCharacteristicOverlined.on })),
+  pipe(none, MStruct.set({ overlinedStyleCharacteristic: ASOverlinedStyleCharacteristic.on })),
 );
 
 /**
@@ -538,7 +617,7 @@ export const overlined: Type = Type.make(
  * @category Instances
  */
 export const notOverlined: Type = Type.make(
-  pipe(none, MStruct.set({ overlined: ASStyleCharacteristicOverlined.off })),
+  pipe(none, MStruct.set({ overlinedStyleCharacteristic: ASOverlinedStyleCharacteristic.off })),
 );
 
 /**
@@ -547,7 +626,7 @@ export const notOverlined: Type = Type.make(
  * @category Instances
  */
 export const inversed: Type = Type.make(
-  pipe(none, MStruct.set({ inversed: ASStyleCharacteristicInversed.on })),
+  pipe(none, MStruct.set({ inversedStyleCharacteristic: ASInversedStyleCharacteristic.on })),
 );
 
 /**
@@ -556,7 +635,7 @@ export const inversed: Type = Type.make(
  * @category Instances
  */
 export const notInversed: Type = Type.make(
-  pipe(none, MStruct.set({ inversed: ASStyleCharacteristicInversed.off })),
+  pipe(none, MStruct.set({ inversedStyleCharacteristic: ASInversedStyleCharacteristic.off })),
 );
 
 /**
@@ -565,7 +644,7 @@ export const notInversed: Type = Type.make(
  * @category Instances
  */
 export const hidden: Type = Type.make(
-  pipe(none, MStruct.set({ hidden: ASStyleCharacteristicHidden.on })),
+  pipe(none, MStruct.set({ hiddenStyleCharacteristic: ASHiddenStyleCharacteristic.on })),
 );
 
 /**
@@ -574,7 +653,7 @@ export const hidden: Type = Type.make(
  * @category Instances
  */
 export const notHidden: Type = Type.make(
-  pipe(none, MStruct.set({ hidden: ASStyleCharacteristicHidden.off })),
+  pipe(none, MStruct.set({ hiddenStyleCharacteristic: ASHiddenStyleCharacteristic.off })),
 );
 
 /**
@@ -583,7 +662,7 @@ export const notHidden: Type = Type.make(
  * @category Instances
  */
 export const blinking: Type = Type.make(
-  pipe(none, MStruct.set({ blinking: ASStyleCharacteristicBlinking.on })),
+  pipe(none, MStruct.set({ blinkingStyleCharacteristic: ASBlinkingStyleCharacteristic.on })),
 );
 
 /**
@@ -592,7 +671,7 @@ export const blinking: Type = Type.make(
  * @category Instances
  */
 export const notBlinking: Type = Type.make(
-  pipe(none, MStruct.set({ blinking: ASStyleCharacteristicBlinking.off })),
+  pipe(none, MStruct.set({ blinkingStyleCharacteristic: ASBlinkingStyleCharacteristic.off })),
 );
 
 /**
@@ -601,7 +680,12 @@ export const notBlinking: Type = Type.make(
  * @category Instances
  */
 export const foregroundDefaultColor: Type = Type.make(
-  pipe(none, MStruct.set({ foregroundColor: ASStyleCharacteristicForegroundColor.defaultColor })),
+  pipe(
+    none,
+    MStruct.set({
+      foregroundColorStyleCharacteristic: ASForegroundColorStyleCharacteristic.defaultColor,
+    }),
+  ),
 );
 
 /**
@@ -609,11 +693,13 @@ export const foregroundDefaultColor: Type = Type.make(
  *
  * @category Constructors
  */
-export const fromColorAsForegroundColor = (color: AsColorBase.Type): Type =>
+export const fromColorAsForegroundColor = (color: AsColor.Type): Type =>
   Type.make(
     pipe(
       none,
-      MStruct.set({ foregroundColor: ASStyleCharacteristicForegroundColor.fromColor(color) }),
+      MStruct.set({
+        foregroundColorStyleCharacteristic: ASForegroundColorStyleCharacteristic.fromColor(color),
+      }),
     ),
   );
 
@@ -622,111 +708,111 @@ export const fromColorAsForegroundColor = (color: AsColorBase.Type): Type =>
  *
  * @category Original instances
  */
-export const black: Type = fromColorAsForegroundColor(ASColorThreeBit.black);
+export const black: Type = fromColorAsForegroundColor(ASThreeBitColor.black);
 
 /**
  * Original red color StyleCharacteristics instance
  *
  * @category Original instances
  */
-export const red: Type = fromColorAsForegroundColor(ASColorThreeBit.red);
+export const red: Type = fromColorAsForegroundColor(ASThreeBitColor.red);
 
 /**
  * Original green color StyleCharacteristics instance
  *
  * @category Original instances
  */
-export const green: Type = fromColorAsForegroundColor(ASColorThreeBit.green);
+export const green: Type = fromColorAsForegroundColor(ASThreeBitColor.green);
 
 /**
  * Original yellow color StyleCharacteristics instance
  *
  * @category Original instances
  */
-export const yellow: Type = fromColorAsForegroundColor(ASColorThreeBit.yellow);
+export const yellow: Type = fromColorAsForegroundColor(ASThreeBitColor.yellow);
 
 /**
  * Original blue color StyleCharacteristics instance
  *
  * @category Original instances
  */
-export const blue: Type = fromColorAsForegroundColor(ASColorThreeBit.blue);
+export const blue: Type = fromColorAsForegroundColor(ASThreeBitColor.blue);
 
 /**
  * Original magenta color StyleCharacteristics instance
  *
  * @category Original instances
  */
-export const magenta: Type = fromColorAsForegroundColor(ASColorThreeBit.magenta);
+export const magenta: Type = fromColorAsForegroundColor(ASThreeBitColor.magenta);
 
 /**
  * Original cyan color StyleCharacteristics instance
  *
  * @category Original instances
  */
-export const cyan: Type = fromColorAsForegroundColor(ASColorThreeBit.cyan);
+export const cyan: Type = fromColorAsForegroundColor(ASThreeBitColor.cyan);
 
 /**
  * Original white color StyleCharacteristics instance
  *
  * @category Original instances
  */
-export const white: Type = fromColorAsForegroundColor(ASColorThreeBit.white);
+export const white: Type = fromColorAsForegroundColor(ASThreeBitColor.white);
 /**
  * Original bright black color StyleCharacteristics instance
  *
  * @category Original instances
  */
-export const brightBlack: Type = fromColorAsForegroundColor(ASColorThreeBit.brightBlack);
+export const brightBlack: Type = fromColorAsForegroundColor(ASThreeBitColor.brightBlack);
 
 /**
  * Original bright red color StyleCharacteristics instance
  *
  * @category Original instances
  */
-export const brightRed: Type = fromColorAsForegroundColor(ASColorThreeBit.brightRed);
+export const brightRed: Type = fromColorAsForegroundColor(ASThreeBitColor.brightRed);
 
 /**
  * Original bright green color StyleCharacteristics instance
  *
  * @category Original instances
  */
-export const brightGreen: Type = fromColorAsForegroundColor(ASColorThreeBit.brightGreen);
+export const brightGreen: Type = fromColorAsForegroundColor(ASThreeBitColor.brightGreen);
 
 /**
  * Original bright yellow color StyleCharacteristics instance
  *
  * @category Original instances
  */
-export const brightYellow: Type = fromColorAsForegroundColor(ASColorThreeBit.brightYellow);
+export const brightYellow: Type = fromColorAsForegroundColor(ASThreeBitColor.brightYellow);
 
 /**
  * Original bright blue color StyleCharacteristics instance
  *
  * @category Original instances
  */
-export const brightBlue: Type = fromColorAsForegroundColor(ASColorThreeBit.brightBlue);
+export const brightBlue: Type = fromColorAsForegroundColor(ASThreeBitColor.brightBlue);
 
 /**
  * Original bright magenta color StyleCharacteristics instance
  *
  * @category Original instances
  */
-export const brightMagenta: Type = fromColorAsForegroundColor(ASColorThreeBit.brightMagenta);
+export const brightMagenta: Type = fromColorAsForegroundColor(ASThreeBitColor.brightMagenta);
 
 /**
  * Original bright cyan color StyleCharacteristics instance
  *
  * @category Original instances
  */
-export const brightCyan: Type = fromColorAsForegroundColor(ASColorThreeBit.brightCyan);
+export const brightCyan: Type = fromColorAsForegroundColor(ASThreeBitColor.brightCyan);
 
 /**
  * Original bright white color StyleCharacteristics instance
  *
  * @category Original instances
  */
-export const brightWhite: Type = fromColorAsForegroundColor(ASColorThreeBit.brightWhite);
+export const brightWhite: Type = fromColorAsForegroundColor(ASThreeBitColor.brightWhite);
 
 /**
  * Default background color StyleCharacteristics
@@ -734,7 +820,12 @@ export const brightWhite: Type = fromColorAsForegroundColor(ASColorThreeBit.brig
  * @category Instances
  */
 export const backgroundDefaultColor: Type = Type.make(
-  pipe(none, MStruct.set({ backgroundColor: ASStyleCharacteristicBackgroundColor.defaultColor })),
+  pipe(
+    none,
+    MStruct.set({
+      backgroundColorStyleCharacteristic: ASBackgroundColorStyleCharacteristic.defaultColor,
+    }),
+  ),
 );
 
 /**
@@ -742,11 +833,13 @@ export const backgroundDefaultColor: Type = Type.make(
  *
  * @category Constructors
  */
-export const fromColorAsBackgroundColor = (color: AsColorBase.Type): Type =>
+export const fromColorAsBackgroundColor = (color: AsColor.Type): Type =>
   Type.make(
     pipe(
       none,
-      MStruct.set({ backgroundColor: ASStyleCharacteristicBackgroundColor.fromColor(color) }),
+      MStruct.set({
+        backgroundColorStyleCharacteristic: ASBackgroundColorStyleCharacteristic.fromColor(color),
+      }),
     ),
   );
 
@@ -755,109 +848,109 @@ export const fromColorAsBackgroundColor = (color: AsColorBase.Type): Type =>
  *
  * @category Original instances
  */
-export const bgBlack: Type = fromColorAsBackgroundColor(ASColorThreeBit.black);
+export const bgBlack: Type = fromColorAsBackgroundColor(ASThreeBitColor.black);
 
 /**
  * Original red color StyleCharacteristics instance as background color
  *
  * @category Original instances
  */
-export const bgRed: Type = fromColorAsBackgroundColor(ASColorThreeBit.red);
+export const bgRed: Type = fromColorAsBackgroundColor(ASThreeBitColor.red);
 
 /**
  * Original green color StyleCharacteristics instance as background color
  *
  * @category Original instances
  */
-export const bgGreen: Type = fromColorAsBackgroundColor(ASColorThreeBit.green);
+export const bgGreen: Type = fromColorAsBackgroundColor(ASThreeBitColor.green);
 
 /**
  * Original yellow color StyleCharacteristics instance as background color
  *
  * @category Original instances
  */
-export const bgYellow: Type = fromColorAsBackgroundColor(ASColorThreeBit.yellow);
+export const bgYellow: Type = fromColorAsBackgroundColor(ASThreeBitColor.yellow);
 
 /**
  * Original blue color StyleCharacteristics instance as background color
  *
  * @category Original instances
  */
-export const bgBlue: Type = fromColorAsBackgroundColor(ASColorThreeBit.blue);
+export const bgBlue: Type = fromColorAsBackgroundColor(ASThreeBitColor.blue);
 
 /**
  * Original magenta color StyleCharacteristics instance as background color
  *
  * @category Original instances
  */
-export const bgMagenta: Type = fromColorAsBackgroundColor(ASColorThreeBit.magenta);
+export const bgMagenta: Type = fromColorAsBackgroundColor(ASThreeBitColor.magenta);
 
 /**
  * Original cyan color StyleCharacteristics instance as background color
  *
  * @category Original instances
  */
-export const bgCyan: Type = fromColorAsBackgroundColor(ASColorThreeBit.cyan);
+export const bgCyan: Type = fromColorAsBackgroundColor(ASThreeBitColor.cyan);
 
 /**
  * Original white color StyleCharacteristics instance as background color
  *
  * @category Original instances
  */
-export const bgWhite: Type = fromColorAsBackgroundColor(ASColorThreeBit.white);
+export const bgWhite: Type = fromColorAsBackgroundColor(ASThreeBitColor.white);
 
 /**
  * Original bright black color StyleCharacteristics instance as background color
  *
  * @category Original instances
  */
-export const bgBrightBlack: Type = fromColorAsBackgroundColor(ASColorThreeBit.brightBlack);
+export const bgBrightBlack: Type = fromColorAsBackgroundColor(ASThreeBitColor.brightBlack);
 
 /**
  * Original bright red color StyleCharacteristics instance as background color
  *
  * @category Original instances
  */
-export const bgBrightRed: Type = fromColorAsBackgroundColor(ASColorThreeBit.brightRed);
+export const bgBrightRed: Type = fromColorAsBackgroundColor(ASThreeBitColor.brightRed);
 
 /**
  * Original bright green color StyleCharacteristics instance as background color
  *
  * @category Original instances
  */
-export const bgBrightGreen: Type = fromColorAsBackgroundColor(ASColorThreeBit.brightGreen);
+export const bgBrightGreen: Type = fromColorAsBackgroundColor(ASThreeBitColor.brightGreen);
 
 /**
  * Original bright yellow color StyleCharacteristics instance as background color
  *
  * @category Original instances
  */
-export const bgBrightYellow: Type = fromColorAsBackgroundColor(ASColorThreeBit.brightYellow);
+export const bgBrightYellow: Type = fromColorAsBackgroundColor(ASThreeBitColor.brightYellow);
 
 /**
  * Original bright blue color StyleCharacteristics instance as background color
  *
  * @category Original instances
  */
-export const bgBrightBlue: Type = fromColorAsBackgroundColor(ASColorThreeBit.brightBlue);
+export const bgBrightBlue: Type = fromColorAsBackgroundColor(ASThreeBitColor.brightBlue);
 
 /**
  * Original bright magenta color StyleCharacteristics instance as background color
  *
  * @category Original instances
  */
-export const bgBrightMagenta: Type = fromColorAsBackgroundColor(ASColorThreeBit.brightMagenta);
+export const bgBrightMagenta: Type = fromColorAsBackgroundColor(ASThreeBitColor.brightMagenta);
 
 /**
  * Original bright cyan color StyleCharacteristics instance as background color
  *
  * @category Original instances
  */
-export const bgBrightCyan: Type = fromColorAsBackgroundColor(ASColorThreeBit.brightCyan);
+export const bgBrightCyan: Type = fromColorAsBackgroundColor(ASThreeBitColor.brightCyan);
 
 /**
  * Original bright white color StyleCharacteristics instance as background color
  *
  * @category Original instances
  */
-export const bgBrightWhite: Type = fromColorAsBackgroundColor(ASColorThreeBit.brightWhite);
+export const bgBrightWhite: Type = fromColorAsBackgroundColor(ASThreeBitColor.brightWhite);

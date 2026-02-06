@@ -8,15 +8,15 @@
     "@parischap/configs": "git+ssh://github.com/parischap/configs",
     "@effect/language-service": "0.64.1",
     "@types/node": "25.0.9",
-    "@typescript/native-preview": "7.0.0-dev.20260201.1",
+    "@typescript/native-preview": "7.0.0-dev.20260206.1",
     "prettier-plugin-jsdoc": "1.8.0",
     "prettier-plugin-organize-imports": "4.3.0",
     "@tsconfig/strictest": "2.0.8",
     "prettier": "3.7.4",
-    "oxlint": "1.42.0",
+    "oxlint": "1.43.0",
     "oxlint-tsgolint": "0.11.4",
     "unrun": "0.2.24",
-    "vitest": "4.0.17",
+    "vitest": "4.0.18",
     "madge": "8.0.0",
     "@effect/experimental": "0.58.0",
     "vite": "npm:rolldown-vite@7.3.0",
@@ -65,6 +65,12 @@
     "docgen": "docgen"
   },
   "exports": {
+    ".": {
+      "default": "./esm/index.ts"
+    },
+    "./CVAll": {
+      "default": "./esm/TemplatePart/All.ts"
+    },
     "./CVBigDecimal": {
       "default": "./esm/BigDecimal.ts"
     },
@@ -74,29 +80,38 @@
     "./CVDateTime": {
       "default": "./esm/DateTime.ts"
     },
+    "./CVDateTimeConstants": {
+      "default": "./esm/dateTimeConstants.ts"
+    },
     "./CVDateTimeFormat": {
       "default": "./esm/DateTimeFormat.ts"
     },
     "./CVDateTimeFormatContext": {
       "default": "./esm/DateTimeFormatContext.ts"
     },
-    "./CVDateTimeParts": {
-      "default": "./esm/DateTimeParts.ts"
-    },
     "./CVEmail": {
       "default": "./esm/Email.ts"
     },
-    "./CVIndexTests": {
-      "default": "./esm/index.tests.ts"
+    "./CVGregorianDate": {
+      "default": "./esm/internal/GregorianDate.ts"
     },
-    ".": {
-      "default": "./esm/index.ts"
+    "./CVInt": {
+      "default": "./esm/internal/Int.ts"
     },
     "./CVInteger": {
       "default": "./esm/Integer.ts"
     },
+    "./CVIsoDate": {
+      "default": "./esm/internal/IsoDate.ts"
+    },
     "./CVNumberBase10Format": {
       "default": "./esm/NumberBase10Format.ts"
+    },
+    "./CVPlaceholder": {
+      "default": "./esm/TemplatePart/Placeholder.ts"
+    },
+    "./CVPositive": {
+      "default": "./esm/internal/Positive.ts"
     },
     "./CVPositiveInteger": {
       "default": "./esm/PositiveInteger.ts"
@@ -119,23 +134,11 @@
     "./CVSemVer": {
       "default": "./esm/SemVer.ts"
     },
+    "./CVSeparator": {
+      "default": "./esm/TemplatePart/Separator.ts"
+    },
     "./CVTemplate": {
       "default": "./esm/Template.ts"
-    },
-    "./CVDatetime": {
-      "default": "./esm/internal/datetime.ts"
-    },
-    "./CVGregorianDate": {
-      "default": "./esm/internal/GregorianDate.ts"
-    },
-    "./CVInt": {
-      "default": "./esm/internal/Int.ts"
-    },
-    "./CVIsoDate": {
-      "default": "./esm/internal/IsoDate.ts"
-    },
-    "./CVPositive": {
-      "default": "./esm/internal/Positive.ts"
     },
     "./CVTemplateParts": {
       "default": "./esm/internal/TemplateParts.ts"
@@ -145,15 +148,6 @@
     },
     "./CVZoneOffsetParts": {
       "default": "./esm/internal/ZoneOffsetParts.ts"
-    },
-    "./CVTemplatePartAll": {
-      "default": "./esm/TemplatePart/All.ts"
-    },
-    "./CVTemplatePartPlaceholder": {
-      "default": "./esm/TemplatePart/Placeholder.ts"
-    },
-    "./CVTemplatePartSeparator": {
-      "default": "./esm/TemplatePart/Separator.ts"
     }
   },
   "module": "./esm/index.ts",

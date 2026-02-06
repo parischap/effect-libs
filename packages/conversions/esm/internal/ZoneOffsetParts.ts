@@ -6,7 +6,7 @@
  * second one to the string 'GMT+00:10', a positive 10-minute offset
  */
 
-import { MDataBase, MInputError, MNumber, MTypes } from '@parischap/effect-lib';
+import { MData, MInputError, MNumber, MTypes } from '@parischap/effect-lib';
 import { Either, Function, Struct, flow, pipe } from 'effect';
 import * as CVNumberBase10Format from '../NumberBase10Format.js';
 import * as CVTemplate from '../Template.js';
@@ -18,7 +18,7 @@ import * as CVTemplatePartSeparator from '../TemplatePart/Separator.js';
  *
  * @category Module markers
  */
-const moduleTag = '@parischap/conversions/internal/ZoneOffsetParts/';
+export const moduleTag = '@parischap/conversions/internal/ZoneOffsetParts/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
@@ -35,7 +35,7 @@ const _params = {
  *
  * @category Models
  */
-export class Type extends MDataBase.Class {
+export class Type extends MData.Class {
   /** Hour part, range: [-12,14] */
   readonly zoneHour: number;
 
@@ -46,7 +46,7 @@ export class Type extends MDataBase.Class {
   readonly zoneSecond: number;
 
   /** Returns the `id` of `this` */
-  [MDataBase.idSymbol](): string | (() => string) {
+  [MData.idSymbol](): string | (() => string) {
     return moduleTag;
   }
 

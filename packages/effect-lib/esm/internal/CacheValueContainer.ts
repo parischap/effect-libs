@@ -1,4 +1,4 @@
-import * as MDataBase from '../Data/Base.js';
+import * as MData from '../Data/index.js';
 import * as MTypes from '../types.js';
 
 export const moduleTag = '@parischap/effect-lib/internal/CacheValueContainer/';
@@ -10,7 +10,7 @@ type _TypeId = typeof _TypeId;
  *
  * @category Models
  */
-export class Type<out B> extends MDataBase.Class {
+export class Type<out B> extends MData.Class {
   /** The value calculated by the LookUp function */
   readonly value: B;
   /** The time at which the value was calculated */
@@ -29,7 +29,7 @@ export class Type<out B> extends MDataBase.Class {
   }
 
   /** Returns the `id` of `this` */
-  [MDataBase.idSymbol](): string | (() => string) {
+  [MData.idSymbol](): string | (() => string) {
     return moduleTag;
   }
 

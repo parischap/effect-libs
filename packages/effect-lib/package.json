@@ -8,15 +8,15 @@
     "@parischap/configs": "git+ssh://github.com/parischap/configs",
     "@effect/language-service": "0.64.1",
     "@types/node": "25.0.9",
-    "@typescript/native-preview": "7.0.0-dev.20260201.1",
+    "@typescript/native-preview": "7.0.0-dev.20260206.1",
     "prettier-plugin-jsdoc": "1.8.0",
     "prettier-plugin-organize-imports": "4.3.0",
     "@tsconfig/strictest": "2.0.8",
     "prettier": "3.7.4",
-    "oxlint": "1.42.0",
+    "oxlint": "1.43.0",
     "oxlint-tsgolint": "0.11.4",
     "unrun": "0.2.24",
-    "vitest": "4.0.17",
+    "vitest": "4.0.18",
     "madge": "8.0.0",
     "@effect/experimental": "0.58.0",
     "vite": "npm:rolldown-vite@7.3.0",
@@ -65,6 +65,9 @@
     "docgen": "docgen"
   },
   "exports": {
+    ".": {
+      "default": "./esm/index.ts"
+    },
     "./MArray": {
       "default": "./esm/Array.ts"
     },
@@ -77,8 +80,17 @@
     "./MCache": {
       "default": "./esm/Cache.ts"
     },
+    "./MCacheValueContainer": {
+      "default": "./esm/internal/CacheValueContainer.ts"
+    },
     "./MChunk": {
       "default": "./esm/Chunk.ts"
+    },
+    "./MData": {
+      "default": "./esm/Data/index.ts"
+    },
+    "./MDataEquivalenceBasedEquality": {
+      "default": "./esm/Data/DataEquivalenceBasedEquality.ts"
     },
     "./MEither": {
       "default": "./esm/Either.ts"
@@ -88,9 +100,6 @@
     },
     "./MFunction": {
       "default": "./esm/Function.ts"
-    },
-    ".": {
-      "default": "./esm/index.ts"
     },
     "./MInputError": {
       "default": "./esm/InputError.ts"
@@ -128,35 +137,26 @@
     "./MStruct": {
       "default": "./esm/Struct.ts"
     },
+    "./MTree": {
+      "default": "./esm/Tree/index.ts"
+    },
+    "./MTreeForest": {
+      "default": "./esm/Tree/TreeForest.ts"
+    },
+    "./MTreeLeaf": {
+      "default": "./esm/Tree/TreeLeaf.ts"
+    },
+    "./MTreeNode": {
+      "default": "./esm/Tree/TreeNode.ts"
+    },
+    "./MTreeNonLeaf": {
+      "default": "./esm/Tree/TreeNonLeaf.ts"
+    },
     "./MTuple": {
       "default": "./esm/Tuple.ts"
     },
     "./MTypes": {
       "default": "./esm/types.ts"
-    },
-    "./MDataBase": {
-      "default": "./esm/Data/Base.ts"
-    },
-    "./MDataEquivalenceBasedEquality": {
-      "default": "./esm/Data/EquivalenceBasedEquality.ts"
-    },
-    "./MCacheValueContainer": {
-      "default": "./esm/internal/CacheValueContainer.ts"
-    },
-    "./MTreeAll": {
-      "default": "./esm/Tree/All.ts"
-    },
-    "./MTreeForest": {
-      "default": "./esm/Tree/Forest.ts"
-    },
-    "./MTreeLeaf": {
-      "default": "./esm/Tree/Leaf.ts"
-    },
-    "./MTreeNode": {
-      "default": "./esm/Tree/Node.ts"
-    },
-    "./MTreeNonLeaf": {
-      "default": "./esm/Tree/NonLeaf.ts"
     }
   },
   "module": "./esm/index.ts",

@@ -8,7 +8,7 @@
  * But 2400 is a leap year.
  */
 
-import { MArray, MDataBase, MInputError, MString, MStruct, MTypes } from '@parischap/effect-lib';
+import { MArray, MData, MInputError, MString, MStruct, MTypes } from '@parischap/effect-lib';
 import { Either, Function, Number, Option, Predicate, Struct, flow, pipe } from 'effect';
 import * as CVNumberBase10Format from '../NumberBase10Format.js';
 import * as CVTemplate from '../Template.js';
@@ -23,7 +23,7 @@ import {
   LEAP_YEAR_MS,
   MAX_FULL_YEAR,
   MIN_FULL_YEAR,
-} from './datetime.js';
+} from '../dateTimeConstants.js';
 
 /**
  * Module tag
@@ -72,7 +72,7 @@ const _formatter = flow(
  *
  * @category Models
  */
-export class Type extends MDataBase.Class {
+export class Type extends MData.Class {
   /** Timestamp of any moment in the day represented by this GregorianDate */
   readonly timestamp: number;
 
@@ -98,7 +98,7 @@ export class Type extends MDataBase.Class {
   readonly daysInMonth: ReadonlyArray<number>;
 
   /** Returns the `id` of `this` */
-  [MDataBase.idSymbol](): string | (() => string) {
+  [MData.idSymbol](): string | (() => string) {
     return moduleTag;
   }
 

@@ -9,13 +9,8 @@
  * @category Models
  */
 
-import { MDataBase, MInputError, MNumber, MString, MStruct, MTypes } from '@parischap/effect-lib';
+import { MData, MInputError, MNumber, MString, MStruct, MTypes } from '@parischap/effect-lib';
 import { Either, Function, Number, Option, Predicate, Struct, flow, pipe } from 'effect';
-import * as CVNumberBase10Format from '../NumberBase10Format.js';
-import * as CVTemplate from '../Template.js';
-import * as CVTemplatePartPlaceholder from '../TemplatePart/Placeholder.js';
-import * as CVTemplatePartSeparator from '../TemplatePart/Separator.js';
-import type * as CVGregorianDate from './GregorianDate.js';
 import {
   DAY_MS,
   LONG_YEAR_MS,
@@ -23,22 +18,19 @@ import {
   MIN_FULL_YEAR,
   SHORT_YEAR_MS,
   WEEK_MS,
-} from './datetime.js';
-
-const _fixedLengthToReal = CVTemplatePartPlaceholder.fixedLengthToReal;
-const _sep = CVTemplatePartSeparator;
-const _integer = CVNumberBase10Format.integer;
-const _params = {
-  fillChar: '0',
-  numberBase10Format: _integer,
-};
+} from '../dateTimeConstants.js';
+import * as CVNumberBase10Format from '../NumberBase10Format.js';
+import * as CVTemplate from '../Template.js';
+import * as CVTemplatePartPlaceholder from '../TemplatePart/Placeholder.js';
+import * as CVTemplatePartSeparator from '../TemplatePart/Separator.js';
+import type * as CVGregorianDate from './GregorianDate.js';
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-const moduleTag = '@parischap/conversions/internal/IsoDate/';
+export const moduleTag = '@parischap/conversions/internal/IsoDate/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
@@ -104,12 +96,20 @@ const YEAR_START_2000_MS = 946_857_600_000;
  */
 const YEAR_START_2010_MS = 1_262_563_200_000;
 
+const _fixedLengthToReal = CVTemplatePartPlaceholder.fixedLengthToReal;
+const _sep = CVTemplatePartSeparator;
+const _integer = CVNumberBase10Format.integer;
+const _params = {
+  fillChar: '0',
+  numberBase10Format: _integer,
+};
+
 /**
  * Type that represents a CVIsoDate
  *
  * @category Models
  */
-export class Type extends MDataBase.Class {
+export class Type extends MData.Class {
   /** Timestamp of any moment of the day represented by this IsoDate */
   readonly timestamp: number;
 
@@ -129,7 +129,7 @@ export class Type extends MDataBase.Class {
   readonly weekday: Option.Option<number>;
 
   /** Returns the `id` of `this` */
-  [MDataBase.idSymbol](): string | (() => string) {
+  [MData.idSymbol](): string | (() => string) {
     return moduleTag;
   }
 

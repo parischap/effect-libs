@@ -18,7 +18,7 @@ export interface Type extends ReadonlyArray<number> {}
  *
  * @category Models
  */
-export interface NonEmptyType extends MTypes.ReadonlyOverOne<number> {}
+export interface OverOne extends MTypes.ReadonlyOverOne<number> {}
 
 /**
  * Empty Sequence instance
@@ -32,137 +32,137 @@ export const empty: Type = Array.empty();
  *
  * @category Instances
  */
-export const reset: NonEmptyType = [0];
+export const reset: OverOne = [0];
 
 /**
  * Bold Sequence instance
  *
  * @category Instances
  */
-export const bold: NonEmptyType = [1];
+export const bold: OverOne = [1];
 
 /**
  * Dim Sequence instance
  *
  * @category Instances
  */
-export const dim: NonEmptyType = [2];
+export const dim: OverOne = [2];
 
 /**
  * Italic Sequence instance
  *
  * @category Instances
  */
-export const italic: NonEmptyType = [3];
+export const italic: OverOne = [3];
 
 /**
  * Underline Sequence instance
  *
  * @category Instances
  */
-export const underlined: NonEmptyType = [4];
+export const underlined: OverOne = [4];
 
 /**
  * Blinking Sequence instance
  *
  * @category Instances
  */
-export const blinking: NonEmptyType = [5];
+export const blinking: OverOne = [5];
 
 /**
  * Inversed Sequence instance
  *
  * @category Instances
  */
-export const inversed: NonEmptyType = [7];
+export const inversed: OverOne = [7];
 
 /**
  * Hidden Sequence instance
  *
  * @category Instances
  */
-export const hidden: NonEmptyType = [8];
+export const hidden: OverOne = [8];
 
 /**
  * Strikethrough Sequence instance
  *
  * @category Instances
  */
-export const struckThrough: NonEmptyType = [9];
+export const struckThrough: OverOne = [9];
 
 /**
  * Not Bold nor Dim Sequence instance
  *
  * @category Instances
  */
-export const notBoldNotDim: NonEmptyType = [22];
+export const notBoldNotDim: OverOne = [22];
 
 /**
  * Not Italic Sequence instance
  *
  * @category Instances
  */
-export const notItalic: NonEmptyType = [23];
+export const notItalic: OverOne = [23];
 
 /**
  * Not Underline Sequence instance
  *
  * @category Instances
  */
-export const notUnderlined: NonEmptyType = [24];
+export const notUnderlined: OverOne = [24];
 
 /**
  * Not Blinking Sequence instance
  *
  * @category Instances
  */
-export const notBlinking: NonEmptyType = [25];
+export const notBlinking: OverOne = [25];
 
 /**
  * Not Inversed Sequence instance
  *
  * @category Instances
  */
-export const notInversed: NonEmptyType = [27];
+export const notInversed: OverOne = [27];
 
 /**
  * Not Hidden Sequence instance
  *
  * @category Instances
  */
-export const notHidden: NonEmptyType = [28];
+export const notHidden: OverOne = [28];
 
 /**
  * Not Strikethrough Sequence instance
  *
  * @category Instances
  */
-export const notStruckThrough: NonEmptyType = [29];
+export const notStruckThrough: OverOne = [29];
 
 /**
  * Default foreground color Sequence instance
  *
  * @category Instances
  */
-export const defaultForegroundColor: NonEmptyType = [39];
+export const defaultForegroundColor: OverOne = [39];
 
 /**
  * Default background color Sequence instance
  *
  * @category Instances
  */
-export const defaultBackgroundColor: NonEmptyType = [49];
+export const defaultBackgroundColor: OverOne = [49];
 
 /**
  * Overlined Sequence instance
  *
  * @category Instances
  */
-export const overlined: NonEmptyType = [53];
+export const overlined: OverOne = [53];
 
 /**
  * Not Overlined Sequence instance
  *
  * @category Instances
  */
-export const notOverlined: NonEmptyType = [55];
+export const notOverlined: OverOne = [55];

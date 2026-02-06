@@ -13,7 +13,7 @@
  */
 
 import {
-  MDataBase,
+  MData,
   MInputError,
   MRegExp,
   MRegExpString,
@@ -83,11 +83,11 @@ export namespace Formatter {
 }
 
 /**
- * Type that represents a
+ * Type that represents a CVTemplatePartPlaceholder
  *
  * @category Models
  */
-export class Type<out N extends string, in out T> extends MDataBase.Class {
+export class Type<out N extends string, in out T> extends MData.Class {
   /** Name of this TemplatePartPlaceholder */
   readonly name: N;
 
@@ -107,7 +107,7 @@ export class Type<out N extends string, in out T> extends MDataBase.Class {
   readonly tSchemaInstance: Schema.Schema<T, T>;
 
   /** Returns the `id` of `this` */
-  [MDataBase.idSymbol](): string | (() => string) {
+  [MData.idSymbol](): string | (() => string) {
     return function idSymbol(this: Type<N, T>) {
       return getLabelledDescription(this);
     };

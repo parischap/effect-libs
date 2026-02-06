@@ -198,16 +198,16 @@ console.log(
 
 If your terminal takes them in charge, you can use 8-bit or RGB colors. To that extent, use the `ASStyle.color` and `ASStyle.Bg.color` combinators.
 
-The ASColor module defines 16 three-bit color instances (8 normal + 8 bright), 256 eight-bit color instances and 140 RGB color instances. All these instances can be found in the [ThreeBit API](https://parischap.github.io/effect-libs/ansi-styles/Color/ThreeBit.html), [EightBit API](https://parischap.github.io/effect-libs/ansi-styles/Color/EightBit.html) and [Rgb API](https://parischap.github.io/effect-libs/ansi-styles/Color/Rgb.html). Furthermore, you can define more RGB colors with the `ASColorRgb.make` combinator.
+The ASColor module defines 16 three-bit color instances (8 normal + 8 bright), 256 eight-bit color instances and 140 RGB color instances. All these instances can be found in the [ThreeBit API](https://parischap.github.io/effect-libs/ansi-styles/Color/ThreeBit.html), [EightBit API](https://parischap.github.io/effect-libs/ansi-styles/Color/EightBit.html) and [Rgb API](https://parischap.github.io/effect-libs/ansi-styles/Color/Rgb.html). Furthermore, you can define more RGB colors with the `ASRgbColor.make` combinator.
 
 Here is an example:
 
 ```ts
-import { ASColorRgb, ASStyle } from '@parischap/ansi-styles';
+import { ASRgbColor, ASStyle } from '@parischap/ansi-styles';
 
-console.log(ASStyle.color(ASColorRgb.coral)('I am a coral string'));
+console.log(ASStyle.color(ASRgbColor.coral)('I am a coral string'));
 console.log(
-  ASStyle.color(ASColorRgb.make({ red: 176, green: 17, blue: 243 }))(
+  ASStyle.color(ASRgbColor.make({ red: 176, green: 17, blue: 243 }))(
     'I am a string colored with an RGB-user-defined color',
   ),
 );
@@ -217,16 +217,16 @@ console.log(
 
 An `ASContextStyler` allows you to style a text differently according to a context object. There are two kinds of `ContextStyler`'s:
 
-- `ASContextStylerPalette`: this `ASContextStyler` requires a `ASPalette`, i.e. an array of `n` `ASStyle`'s, and an `indexFromContext` function whose role is to derive a numeric index from a Context object. When styling a text with a context that returns an index `i`, the used `ASStyle` is the one in the `ASPalette` at position i % n, where % is the modulo function.
-- `ASContextStylerConstant`: this `ASContextStyler` requires an `ASStyle` that is used in all contexts (i.e. the value of the context object is ignored). This is useful if a function expects an `ASContextStyler` but needs not take care of the context in some situations.
+- `ASPaletteContextStyler`: this `ASContextStyler` requires a `ASPalette`, i.e. an array of `n` `ASStyle`'s, and an `indexFromContext` function whose role is to derive a numeric index from a Context object. When styling a text with a context that returns an index `i`, the used `ASStyle` is the one in the `ASPalette` at position i % n, where % is the modulo function.
+- `ASConstantContextStyler`: this `ASContextStyler` requires an `ASStyle` that is used in all contexts (i.e. the value of the context object is ignored). This is useful if a function expects an `ASContextStyler` but needs not take care of the context in some situations.
 
 Here is an example:
 
 ```ts
 import {
-  ASContextStylerBase,
-  ASContextStylerConstant,
-  ASContextStylerPalette,
+  ASContextStyler,
+  ASConstantContextStyler,
+  ASPaletteContextStyler,
   ASPalette,
 } from '@parischap/ansi-styles';
 
@@ -235,11 +235,11 @@ interface Value {
   readonly otherStuff: string;
 }
 
-const { red }: { readonly red: ASContextStylerBase.Type<Value> } = ASContextStylerConstant;
+const { red }: { readonly red: ASContextStyler.Type<Value> } = ASConstantContextStyler;
 
 const pos1 = (value: Value): number => value.pos1;
 
-const pos1BasedAllColorsFormatter = ASContextStylerPalette.make({
+const pos1BasedAllColorsFormatter = ASPaletteContextStyler.make({
   indexFromContext: pos1,
   palette: ASPalette.allStandardOriginalColors,
 });
@@ -248,10 +248,10 @@ const value1: Value = {
   pos1: 2,
   otherStuff: 'dummy',
 };
-const pos1BasedAllColorsFormatterInValue1Context = ASContextStylerBase.toStyle(
+const pos1BasedAllColorsFormatterInValue1Context = ASContextStyler.toStyle(
   pos1BasedAllColorsFormatter,
 )(value1);
-const redInValue1Context = ASContextStylerBase.toStyle(red)(value1);
+const redInValue1Context = ASContextStyler.toStyle(red)(value1);
 
 /* Prints `foo` in red */
 console.log(redInValue1Context('foo'));

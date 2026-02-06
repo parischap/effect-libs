@@ -6,7 +6,7 @@
 import {
   MBigDecimal,
   MBigInt,
-  MDataBase,
+  MData,
   MFunction,
   MMatch,
   MNumber,
@@ -397,7 +397,7 @@ export namespace ScientificNotation {
  *
  * @category Models
  */
-export class Type extends MDataBase.Class {
+export class Type extends MData.Class {
   /**
    * Thousand separator. Use an empty string for no separator. Usually a string made of at most one
    * character different from `fractionalSeparator`. Will not throw otherwise but unexpected results
@@ -498,7 +498,7 @@ export class Type extends MDataBase.Class {
   }
 
   /** Returns the `id` of `this` */
-  [MDataBase.idSymbol](): string | (() => string) {
+  [MData.idSymbol](): string | (() => string) {
     return moduleTag;
   }
 
@@ -603,7 +603,7 @@ export const toDescription = (self: Type): string => {
   } = self;
 
   const isInteger = maximumFractionalDigits <= 0;
-  const isUngrouped = thousandSeparator === '';
+  const isUngrouped = thousandSeparator.length === 0;
   return (
     pipe(
       signDisplay,

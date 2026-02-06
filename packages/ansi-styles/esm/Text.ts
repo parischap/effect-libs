@@ -5,7 +5,7 @@
 
 import {
   MArray,
-  MDataBase,
+  MData,
   MDataEquivalenceBasedEquality,
   MFunction,
   MMatch,
@@ -62,7 +62,7 @@ export class Type extends MDataEquivalenceBasedEquality.Class {
   }
 
   /** Returns the `id` of `this` */
-  [MDataBase.idSymbol](): string | (() => string) {
+  [MData.idSymbol](): string | (() => string) {
     return function idSymbol(this: Type) {
       return toAnsiString(this);
     };

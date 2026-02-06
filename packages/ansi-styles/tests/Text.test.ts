@@ -1,4 +1,4 @@
-import { ASColorRgb, ASColorThreeBit, ASText } from '@parischap/ansi-styles';
+import { ASRgbColor, ASText, ASThreeBitColor } from '@parischap/ansi-styles';
 import * as ASCode from '@parischap/ansi-styles/ASCode';
 import * as ASStyleCharacteristics from '@parischap/ansi-styles/ASStyleCharacteristics';
 import * as TestUtils from '@parischap/configs/TestUtils';
@@ -15,12 +15,12 @@ describe('ASText', () => {
   const notUnderlined = ASText.fromStyleAndElems(ASStyleCharacteristics.notUnderlined);
 
   const red = pipe(
-    ASColorThreeBit.red,
+    ASThreeBitColor.red,
     ASStyleCharacteristics.fromColorAsForegroundColor,
     ASText.fromStyleAndElems,
   );
   const pink = pipe(
-    ASColorRgb.pink,
+    ASRgbColor.pink,
     ASStyleCharacteristics.fromColorAsForegroundColor,
     ASText.fromStyleAndElems,
   );

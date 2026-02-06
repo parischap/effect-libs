@@ -5,7 +5,7 @@
  */
 
 import { Array, Option, Predicate, pipe } from 'effect';
-import * as MDataBase from './Data/Base.js';
+import * as MData from './Data/index.js';
 import * as MPredicate from './Predicate.js';
 import * as MTypes from './types.js';
 
@@ -23,7 +23,7 @@ type _TypeId = typeof _TypeId;
  *
  * @category Models
  */
-export class Type<out Input, out Output, out Rest extends Input> extends MDataBase.Class {
+export class Type<out Input, out Output, out Rest extends Input> extends MData.Class {
   /** The input to match */
   readonly input: Input;
   /** The output of the matcher when it has been found */
@@ -44,7 +44,7 @@ export class Type<out Input, out Output, out Rest extends Input> extends MDataBa
   }
 
   /** Returns the `id` of `this` */
-  [MDataBase.idSymbol](): string | (() => string) {
+  [MData.idSymbol](): string | (() => string) {
     return moduleTag;
   }
 

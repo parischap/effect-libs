@@ -7,7 +7,7 @@
  * (because it uses a MutableHashMap under the hood for the store implementation)
  */
 import { Array, Equal, MutableHashMap, MutableList, Option, Tuple, flow, pipe } from 'effect';
-import * as MDataBase from './Data/Base.js';
+import * as MData from './Data/index.js';
 import * as MCacheValueContainer from './internal/CacheValueContainer.js';
 import * as MNumber from './Number.js';
 import * as MTypes from './types.js';
@@ -49,7 +49,7 @@ export type LookUp<A, B> = ({
  *
  * @category Models
  */
-export class Type<in out A, in out B> extends MDataBase.Class {
+export class Type<in out A, in out B> extends MData.Class {
   /**
    * The lookup function cache associating values of type A to values of type B. A `None` B value
    * means the B value is currently under calculation. A circular flag will be sent if the value
@@ -94,7 +94,7 @@ export class Type<in out A, in out B> extends MDataBase.Class {
   }
 
   /** Returns the `id` of `this` */
-  [MDataBase.idSymbol](): string | (() => string) {
+  [MData.idSymbol](): string | (() => string) {
     return moduleTag;
   }
 

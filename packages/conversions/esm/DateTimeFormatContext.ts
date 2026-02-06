@@ -26,10 +26,10 @@ import {
   Struct,
   Tuple,
 } from 'effect';
-import * as CVDateTime from './DateTime.js';
+import { DAY_MS } from './dateTimeConstants.js';
 import * as CVNumberBase10Format from './NumberBase10Format.js';
 import * as CVReal from './Real.js';
-import * as CVTemplatePartPlaceholder from './TemplatePartPlaceholder.js';
+import * as CVTemplatePartPlaceholder from './TemplatePart/Placeholder.js';
 
 /**
  * Module tag
@@ -136,31 +136,31 @@ namespace TokenMap {
  *
  * @category Models
  */
-export type WeekDayNames = MTypes.Tuple<string, 7>;
+export interface WeekDayNames extends MTypes.Tuple<string, 7> {}
 
 /**
  * Type that represents the names of the twelve months of a year
  *
  * @category Models
  */
-export type MonthNames = MTypes.Tuple<string, 12>;
+export interface MonthNames extends MTypes.Tuple<string, 12> {}
 
 /**
  * Type that represents the names of the day periods, e.g. AM or PM
  *
  * @category Models
  */
-export type DayPeriodNames = MTypes.Tuple<string, 2>;
+export interface DayPeriodNames extends MTypes.Tuple<string, 2> {}
 
 const WEEKDAY_DATES = pipe(
   7,
-  Array.makeBy(flow(Number.multiply(CVDateTime.DAY_MS), Number.sum(4 * CVDateTime.DAY_MS))),
+  Array.makeBy(flow(Number.multiply(DAY_MS), Number.sum(4 * DAY_MS))),
   Array.map((timestamp) => new Date(timestamp)),
 );
 
 const MONTH_DATES = pipe(
   12,
-  Array.makeBy(Number.multiply(31 * CVDateTime.DAY_MS)),
+  Array.makeBy(Number.multiply(31 * DAY_MS)),
   Array.map((timestamp) => pipe(new Date(timestamp))),
 );
 

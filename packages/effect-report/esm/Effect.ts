@@ -64,7 +64,7 @@ export const presentAndShowErrors =
           }),
           (errorText) => {
             // Do not use Effect.log here because it has a special formatting
-            if (errorText.trim() === '') {
+            if (errorText.trim().length === 0) {
               console.log(ASStyle.green('SCRIPT EXITED SUCCESSFULLY'));
             } else {
               console.error(ASStyle.red('SCRIPT FAILED WITH FOLLOWING ERROR(S)'), eol + errorText);

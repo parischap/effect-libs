@@ -3,7 +3,7 @@
  * `CVTemplate`'s (see Template.ts and TemplatePart.ts)
  */
 
-import { MDataBase, MInputError, MString, MTypes } from '@parischap/effect-lib';
+import { MData, MInputError, MString, MTypes } from '@parischap/effect-lib';
 import { Either, pipe, Struct } from 'effect';
 
 /**
@@ -20,12 +20,12 @@ type _TypeId = typeof _TypeId;
  *
  * @category Models
  */
-export class Type extends MDataBase.Class {
+export class Type extends MData.Class {
   /** The string representing this separator */
   readonly value: string;
 
   /** Returns the `id` of `this` */
-  [MDataBase.idSymbol](): string | (() => string) {
+  [MData.idSymbol](): string | (() => string) {
     return function idSymbol(this: Type) {
       return this.value;
     };

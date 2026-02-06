@@ -6,7 +6,7 @@
 
 import { MTypes } from '@parischap/effect-lib';
 import { Equivalence, pipe, Struct } from 'effect';
-import * as ASColorBase from './Color/Base.js';
+import * as ASColor from './Color/index.js';
 import * as ASStyleCharacteristics from './internal/StyleCharacteristics.js';
 import * as ASText from './Text.js';
 
@@ -263,7 +263,7 @@ export const defaultColor: Type = _make({ style: ASStyleCharacteristics.foregrou
  *
  * @category Constructors
  */
-export const color = (color: ASColorBase.Type): Type =>
+export const color = (color: ASColor.Type): Type =>
   _make({ style: ASStyleCharacteristics.fromColorAsForegroundColor(color) });
 
 /**
@@ -391,7 +391,7 @@ export const bgDefaultColor: Type = _make({
  *
  * @category Constructors
  */
-export const bgColor = (color: ASColorBase.Type): Type =>
+export const bgColor = (color: ASColor.Type): Type =>
   _make({ style: ASStyleCharacteristics.fromColorAsBackgroundColor(color) });
 
 /**

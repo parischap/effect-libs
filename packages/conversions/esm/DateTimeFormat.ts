@@ -28,12 +28,12 @@ import {
 } from 'effect';
 import * as CVDateTime from './DateTime.js';
 import * as CVDateTimeFormatContext from './DateTimeFormatContext.js';
+import * as CVTemplateParts from './internal/TemplateParts.js';
 import * as CVReal from './Real.js';
 import * as CVTemplate from './Template.js';
-import * as CVTemplatePart from './TemplatePart.js';
-import * as CVTemplatePartPlaceholder from './TemplatePartPlaceholder.js';
-import * as CVTemplateParts from './TemplateParts.js';
-import * as CVTemplatePartSeparator from './TemplatePartSeparator.js';
+import * as CVTemplatePartALl from './TemplatePart/All.js';
+import * as CVTemplatePartPlaceholder from './TemplatePart/Placeholder.js';
+import * as CVTemplatePartSeparator from './TemplatePart/Separator.js';
 
 /**
  * Module tag
@@ -399,7 +399,7 @@ export const templateParts: MTypes.OneArgFunction<Type, TemplateParts.Type> =
 export const toParser = (self: Type): Parser.Type => {
   return flow(
     CVTemplate.toParser(self._template),
-    Either.flatMap((o) => CVDateTime.fromParts(o as CVDateTime.Parts.Type)),
+    Either.flatMap((o) => CVDateTime.fromParts(o as DateTimeParts)),
   );
 };
 
@@ -429,9 +429,9 @@ export const toFormatter = (self: Type): Formatter.Type => {
     Array.filterMap(
       flow(
         MMatch.make,
-        MMatch.when(CVTemplatePart.isSeparator, () => Option.none()),
+        MMatch.when(CVTemplatePartALl.isSeparator, () => Option.none()),
         MMatch.when(
-          CVTemplatePart.isPlaceholder,
+          CVTemplatePartALl.isPlaceholder,
           flow(
             CVTemplatePartPlaceholder.name,
             MMatch.make,
@@ -508,7 +508,7 @@ export const toFormatter = (self: Type): Formatter.Type => {
         ),
         MMatch.exhaustive,
       ) as MTypes.OneArgFunction<
-        CVTemplatePart.Type<string, CVReal.Type>,
+        CVTemplatePartALl.Type<string, CVReal.Type>,
         Option.Option<readonly [string, MTypes.OneArgFunction<CVDateTime.Type, number>]>
       >,
     ),

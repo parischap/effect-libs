@@ -14,42 +14,47 @@
  * object is zoneOffset-dependent, except `timestamp`. An important thing to note is that a
  * `CVDateTime` object with a timestamp `t` and a zoneOffset `zo` has exactly the same date parts
  * (`year`, `ordinalDay`, `month`, `monthDay`, `isoYear`...) as a `CVDateTime` object with
- * `timestamp = t+zox3600` and `zoneOffset = 0`. That's the reason for the _zonedTimestamp field
- * which is equal to `t+zox3600`. All calculations are performed UTC using _zonedTimestamp instead
- * of timestamp.
+ * `timestamp = t+zox3600` and `zoneOffset = 0`. That's the reason for the zonedTimestamp field
+ * which is equal to `t+zox3600`. All calculations are performed UTC using zonedTimestamp instead of
+ * timestamp.
  */
 
 import {
+  MData,
+  MDataEquivalenceBasedEquality,
   MFunction,
   MInputError,
-  MInspectable,
   MNumber,
-  MPipeable,
   MStruct,
   MTypes,
 } from '@parischap/effect-lib';
 import {
   DateTime,
   Either,
-  Equal,
   Equivalence,
+  flow,
   Function,
   Hash,
   Number,
   Option,
-  Pipeable,
+  pipe,
   Predicate,
   Struct,
-  flow,
-  pipe,
 } from 'effect';
 import {
   DAY_MS,
+  HOUR_MS,
   MAX_FULL_YEAR,
   MAX_TIMESTAMP,
   MIN_FULL_YEAR,
   MIN_TIMESTAMP,
-} from './internal/datetime.js';
+  MINUTE_MS,
+  SECOND_MS,
+} from './dateTimeConstants.js';
+import * as GregorianDate from './internal/GregorianDate.js';
+import * as IsoDate from './internal/IsoDate.js';
+import * as CVTime from './internal/Time.js';
+import * as ZoneOffsetParts from './internal/ZoneOffsetParts.js';
 
 /**
  * Module tag
@@ -96,11 +101,56 @@ export {
 export const LOCAL_TIME_ZONE_OFFSET = -(new Date().getTimezoneOffset() / 60);
 
 /**
- * Type of a DateTime
+ * Type that represents a DateTimeParts
  *
  * @category Models
  */
-export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable {
+export interface DateTimeParts {
+  /** The Gregorian year, range: [MIN_FULL_YEAR, MAX_FULL_YEAR] */
+  readonly year?: number;
+  /** Number of days elapsed since the start of year, range:[1, 366] */
+  readonly ordinalDay?: number;
+  /** Month in the current year, range:[1, 12] */
+  readonly month?: number;
+  /** Day in the current month, range:[1, 12] */
+  readonly monthDay?: number;
+  /** The iso year, range: [MIN_FULL_YEAR, MAX_FULL_YEAR] */
+  readonly isoYear?: number;
+  /** The iso week in the current iso year, range:[1, 53] */
+  readonly isoWeek?: number;
+  /** Week day in the current iso week, range:[1, 7], 1 is monday, 7 is sunday */
+  readonly weekday?: number;
+  /** Number of hours since the start of the current day, range:[0, 23] */
+  readonly hour23?: number;
+  /** Number of hours since the start of the current meridiem, range:[0, 11] */
+  readonly hour11?: number;
+  /** Meridiem offset of this DateTime in hours, 0 for 'AM', 12 for 'PM' */
+  readonly meridiem?: 0 | 12;
+  /** Number of minutes since the start of the current hour, range:[0, 59] */
+  readonly minute?: number;
+  /** Number of seconds, since sthe start of the current minute, range:[0, 59] */
+  readonly second?: number;
+  /** Number of milliseconds, since sthe start of the current second, range:[0, 999] */
+  readonly millisecond?: number;
+  /**
+   * Offset in hours between the time in the local zone and UTC time (e.g zoneOffset=1 for timezone
+   * +1:00). Not necessarily an integer, range: ]-13, 15[
+   */
+  readonly zoneOffset?: number;
+  /** Hour part of the zoneOffset. Should be an integer in the range: [-12, 14] */
+  readonly zoneHour?: number;
+  /** Minute part of the zoneOffset. Should be an integer in the range: [0, 59] */
+  readonly zoneMinute?: number;
+  /** Second part of the zoneOffset. Should be an integer in the range: [0, 59] */
+  readonly zoneSecond?: number;
+}
+
+/**
+ * Type that represents a CVDateTime
+ *
+ * @category Models
+ */
+export class Type extends MDataEquivalenceBasedEquality.Class {
   /** Timestamp of this DateTime (timezone-independent) */
   readonly timestamp: number;
 
@@ -111,7 +161,7 @@ export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable 
   readonly isoDate: Option.Option<IsoDate.Type>;
 
   /** Time of this DateTime, expressed in given timezone */
-  readonly time: Option.Option<Time.Type>;
+  readonly time: Option.Option<CVTime.Type>;
 
   /**
    * Offset in hours between the time of the zone for which all calculations of that DateTime object
@@ -123,17 +173,62 @@ export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable 
   /** ZoneOffset decomposed into its parts */
   readonly zoneOffsetParts: Option.Option<ZoneOffsetParts.Type>;
 
-  /** @internal */
-  readonly _zonedTimestamp: number;
-  readonly [_TypeId]: _TypeId;
+  /** Calculated field equal to timestamp + zoneOffsetx3600 */
+  readonly zonedTimestamp: number;
+
+  /** Returns the `id` of `this` */
+  [MData.idSymbol](): string | (() => string) {
+    return function idSymbol(this: Type) {
+      return getIsoString(this);
+    };
+  }
+
+  /** Class constructor */
+  private constructor({
+    timestamp,
+    gregorianDate,
+    isoDate,
+    time,
+    zoneOffset,
+    zoneOffsetParts,
+    zonedTimestamp,
+  }: MTypes.Data<Type>) {
+    super();
+    this.timestamp = timestamp;
+    this.gregorianDate = gregorianDate;
+    this.isoDate = isoDate;
+    this.time = time;
+    this.zoneOffset = zoneOffset;
+    this.zoneOffsetParts = zoneOffsetParts;
+    this.zonedTimestamp = zonedTimestamp;
+  }
+
+  /** Static constructor */
+  static make(params: MTypes.Data<Type>): Type {
+    return new Type(params);
+  }
+
+  /** Calculates the hash value of `this` */
+  [Hash.symbol](): number {
+    return 0;
+  }
+
+  /** Function that implements the equivalence of `this` and `that` */
+  [MDataEquivalenceBasedEquality.isEquivalentToSymbol](this: this, that: this): boolean {
+    return equivalence(this, that);
+  }
+
+  /** Predicate that returns true if `that` has the same type marker as `this` */
+  [MDataEquivalenceBasedEquality.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
+    return Predicate.hasProperty(that, _TypeId);
+  }
+  /** Returns the TypeMarker of the class */
+  protected get [_TypeId](): _TypeId {
+    return _TypeId;
+  }
 }
 
-/**
- * Type guard
- *
- * @category Guards
- */
-export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
+const _make = (params: MTypes.Data<Type>): Type => Type.make(params);
 
 /**
  * Equivalence
@@ -143,26 +238,6 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
   self.timestamp === that.timestamp;
 
-/** Proto */
-const _TypeIdHash = Hash.hash(_TypeId);
-const _proto: MTypes.Proto<Type> = {
-  [_TypeId]: _TypeId,
-  [Equal.symbol](this: Type, that: unknown): boolean {
-    return has(that) && equivalence(this, that);
-  },
-  [Hash.symbol](this: Type) {
-    return pipe(this.timestamp, Hash.hash, Hash.combine(_TypeIdHash), Hash.cached(this));
-  },
-  [MInspectable.IdSymbol](this: Type) {
-    return getIsoString(this);
-  },
-  ...MInspectable.BaseProto(moduleTag),
-  ...MPipeable.BaseProto,
-};
-
-/** Constructor */
-const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
-
 /**
  * Returns the ISO representation of this DateTime
  *
@@ -171,7 +246,7 @@ const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto
 export const getIsoString = (self: Type): string =>
   GregorianDate.getIsoString(_gregorianDate(self))
   + 'T'
-  + Time.getIsoString(_time(self))
+  + CVTime.getIsoString(_time(self))
   + ZoneOffsetParts.getIsoString(_zoneOffsetParts(self));
 
 const _uncalculated = {
@@ -183,15 +258,15 @@ const _uncalculated = {
 
 /**
  * Constructor that creates a DateTime from a timestamp and a zoneOffset for which no calculations
- * have been carried out yet. The `_zonedTimestamp` field is automatically calculated. Does not
- * check any input parameters
+ * have been carried out yet. The `zonedTimestamp` field is automatically calculated. Does not check
+ * any input parameters
  */
 const _uncalculatedFromTimestamp = (timestamp: number, zoneOffset: number): Type =>
   _make({
     ..._uncalculated,
     timestamp,
     zoneOffset,
-    _zonedTimestamp: timestamp + zoneOffset * HOUR_MS,
+    zonedTimestamp: timestamp + zoneOffset * HOUR_MS,
   });
 
 /**
@@ -204,7 +279,7 @@ const _uncalculatedFromZonedTimestamp = (zonedTimestamp: number, zoneOffset: num
     ..._uncalculated,
     timestamp: zonedTimestamp - zoneOffset * HOUR_MS,
     zoneOffset,
-    _zonedTimestamp: zonedTimestamp,
+    zonedTimestamp: zonedTimestamp,
   });
 
 /** Instance of an uncalculated DateTime that represents 1/1/1970 00:00:00:000+0:00 */
@@ -279,57 +354,6 @@ export const fromTimestampOrThrow: (
  */
 export const now = (): Type => _uncalculatedFromTimestamp(Date.now(), 0);
 
-/**
- * Namespace for the different parts of a date
- *
- * @category Models
- */
-export namespace Parts {
-  /**
-   * Type of a Parts
-   *
-   * @category Models
-   */
-  export interface Type {
-    /** The Gregorian year, range: [MIN_FULL_YEAR, MAX_FULL_YEAR] */
-    readonly year?: number;
-    /** Number of days elapsed since the start of year, range:[1, 366] */
-    readonly ordinalDay?: number;
-    /** Month in the current year, range:[1, 12] */
-    readonly month?: number;
-    /** Day in the current month, range:[1, 12] */
-    readonly monthDay?: number;
-    /** The iso year, range: [MIN_FULL_YEAR, MAX_FULL_YEAR] */
-    readonly isoYear?: number;
-    /** The iso week in the current iso year, range:[1, 53] */
-    readonly isoWeek?: number;
-    /** Week day in the current iso week, range:[1, 7], 1 is monday, 7 is sunday */
-    readonly weekday?: number;
-    /** Number of hours since the start of the current day, range:[0, 23] */
-    readonly hour23?: number;
-    /** Number of hours since the start of the current meridiem, range:[0, 11] */
-    readonly hour11?: number;
-    /** Meridiem offset of this DateTime in hours, 0 for 'AM', 12 for 'PM' */
-    readonly meridiem?: 0 | 12;
-    /** Number of minutes since the start of the current hour, range:[0, 59] */
-    readonly minute?: number;
-    /** Number of seconds, since sthe start of the current minute, range:[0, 59] */
-    readonly second?: number;
-    /** Number of milliseconds, since sthe start of the current second, range:[0, 999] */
-    readonly millisecond?: number;
-    /**
-     * Offset in hours between the time in the local zone and UTC time (e.g zoneOffset=1 for
-     * timezone +1:00). Not necessarily an integer, range: ]-13, 15[
-     */
-    readonly zoneOffset?: number;
-    /** Hour part of the zoneOffset. Should be an integer in the range: [-12, 14] */
-    readonly zoneHour?: number;
-    /** Minute part of the zoneOffset. Should be an integer in the range: [0, 59] */
-    readonly zoneMinute?: number;
-    /** Second part of the zoneOffset. Should be an integer in the range: [0, 59] */
-    readonly zoneSecond?: number;
-  }
-}
 /**
  * Tries to build a `CVDateTime` from the provided parts. Returns a `Right` if successful, a `Left`
  * otherwise.
@@ -426,7 +450,7 @@ export const fromParts = ({
   zoneHour,
   zoneMinute,
   zoneSecond,
-}: Parts.Type): Either.Either<Type, MInputError.Type> =>
+}: DateTimeParts): Either.Either<Type, MInputError.Type> =>
   Either.gen(function* () {
     const zonedOrigin = yield* Either.gen(function* () {
       if (
@@ -584,7 +608,7 @@ export const fromParts = ({
  *
  * @category Constructors
  */
-export const fromPartsOrThrow: (parts: Parts.Type) => Type = flow(
+export const fromPartsOrThrow: (parts: DateTimeParts) => Type = flow(
   fromParts,
   Either.getOrThrowWith(Function.identity),
 );
@@ -631,7 +655,7 @@ const _gregorianDate = (self: Type): GregorianDate.Type =>
   pipe(
     self.gregorianDate,
     Option.getOrElse(() => {
-      const result = GregorianDate.fromTimestamp(self._zonedTimestamp);
+      const result = GregorianDate.fromTimestamp(self.zonedTimestamp);
       (self as MTypes.WithMutable<Type, 'gregorianDate'>).gregorianDate = Option.some(result);
       return result;
     }),
@@ -685,7 +709,7 @@ const _isoDate = (self: Type): IsoDate.Type =>
       const result = pipe(
         self.gregorianDate,
         Option.map(IsoDate.fromGregorianDate),
-        Option.getOrElse(() => IsoDate.fromTimestamp(self._zonedTimestamp)),
+        Option.getOrElse(() => IsoDate.fromTimestamp(self.zonedTimestamp)),
       );
       (self as MTypes.WithMutable<Type, 'isoDate'>).isoDate = Option.some(result);
       return result;
@@ -714,11 +738,11 @@ export const getIsoWeek: MTypes.OneArgFunction<Type, number> = flow(_isoDate, Is
 export const getWeekday: MTypes.OneArgFunction<Type, number> = flow(_isoDate, IsoDate.getWeekday);
 
 /** Returns the time of `self` for the given time zone */
-const _time = (self: Type): Time.Type =>
+const _time = (self: Type): CVTime.Type =>
   pipe(
     self.time,
     Option.getOrElse(() => {
-      const result = pipe(self._zonedTimestamp, MNumber.intModulo(DAY_MS), Time.fromTimestamp);
+      const result = pipe(self.zonedTimestamp, MNumber.intModulo(DAY_MS), CVTime.fromTimestamp);
       (self as MTypes.WithMutable<Type, 'time'>).time = Option.some(result);
       return result as never;
     }),
@@ -729,42 +753,42 @@ const _time = (self: Type): Time.Type =>
  *
  * @category Getters
  */
-export const getHour23: MTypes.OneArgFunction<Type, number> = flow(_time, Time.hour23);
+export const getHour23: MTypes.OneArgFunction<Type, number> = flow(_time, CVTime.hour23);
 
 /**
  * Returns the hour11 of `self` for the given time zone
  *
  * @category Getters
  */
-export const getHour11: MTypes.OneArgFunction<Type, number> = flow(_time, Time.hour11);
+export const getHour11: MTypes.OneArgFunction<Type, number> = flow(_time, CVTime.hour11);
 
 /**
  * Returns the meridiem of `self` for the given time zone
  *
  * @category Getters
  */
-export const getMeridiem: MTypes.OneArgFunction<Type, 0 | 12> = flow(_time, Time.meridiem);
+export const getMeridiem: MTypes.OneArgFunction<Type, 0 | 12> = flow(_time, CVTime.meridiem);
 
 /**
  * Returns the minute of `self` for the given time zone
  *
  * @category Getters
  */
-export const getMinute: MTypes.OneArgFunction<Type, number> = flow(_time, Time.minute);
+export const getMinute: MTypes.OneArgFunction<Type, number> = flow(_time, CVTime.minute);
 
 /**
  * Returns the second of `self` for the given time zone
  *
  * @category Getters
  */
-export const getSecond: MTypes.OneArgFunction<Type, number> = flow(_time, Time.second);
+export const getSecond: MTypes.OneArgFunction<Type, number> = flow(_time, CVTime.second);
 
 /**
  * Returns the millisecond of `self` for the given time zone
  *
  * @category Getters
  */
-export const getMillisecond: MTypes.OneArgFunction<Type, number> = flow(_time, Time.millisecond);
+export const getMillisecond: MTypes.OneArgFunction<Type, number> = flow(_time, CVTime.millisecond);
 
 /** Returns the zoneOffsetParts of `self` */
 const _zoneOffsetParts = (self: Type): ZoneOffsetParts.Type =>
@@ -818,7 +842,7 @@ const _gregorianDateSetter = (self: Type): MTypes.OneArgFunction<GregorianDate.T
         timestamp: Number.sum(offset),
         gregorianDate: pipe(gregorianDate, Option.some, Function.constant),
         isoDate: Function.constant(Option.none()),
-        _zonedTimestamp: Number.sum(offset),
+        zonedTimestamp: Number.sum(offset),
       }),
       _make,
     );
@@ -835,14 +859,14 @@ const _isoDateSetter = (self: Type): MTypes.OneArgFunction<IsoDate.Type, Type> =
         timestamp: Number.sum(offset),
         gregorianDate: Function.constant(Option.none()),
         isoDate: pipe(isoDate, Option.some, Function.constant),
-        _zonedTimestamp: Number.sum(offset),
+        zonedTimestamp: Number.sum(offset),
       }),
       _make,
     );
   };
 };
 
-const _timeSetter = (self: Type): MTypes.OneArgFunction<Time.Type, Type> => {
+const _timeSetter = (self: Type): MTypes.OneArgFunction<CVTime.Type, Type> => {
   const selfTimestampOffset = _time(self).timestampOffset;
   return (time) => {
     const offset = time.timestampOffset - selfTimestampOffset;
@@ -851,7 +875,7 @@ const _timeSetter = (self: Type): MTypes.OneArgFunction<Time.Type, Type> => {
       MStruct.evolve({
         timestamp: Number.sum(offset),
         time: pipe(time, Option.some, Function.constant),
-        _zonedTimestamp: Number.sum(offset),
+        zonedTimestamp: Number.sum(offset),
       }),
       _make,
     );
@@ -1045,7 +1069,7 @@ export const setWeekdayOrThrow: MTypes.OneArgFunction<number, MTypes.OneArgFunct
 export const setHour23 =
   (hour23: number) =>
   (self: Type): Either.Either<Type, MInputError.Type> =>
-    pipe(self, _time, Time.setHour23(hour23), Either.map(_timeSetter(self)));
+    pipe(self, _time, CVTime.setHour23(hour23), Either.map(_timeSetter(self)));
 
 /**
  * Same as `setHour23` but returns directly a `CVDateTime` or throws in case of an error
@@ -1068,7 +1092,7 @@ export const setHour23OrThrow: MTypes.OneArgFunction<number, MTypes.OneArgFuncti
 export const setHour11 =
   (hour11: number) =>
   (self: Type): Either.Either<Type, MInputError.Type> =>
-    pipe(self, _time, Time.setHour11(hour11), Either.map(_timeSetter(self)));
+    pipe(self, _time, CVTime.setHour11(hour11), Either.map(_timeSetter(self)));
 
 /**
  * Same as `setHour11` but returns directly a `CVDateTime` or throws in case of an error
@@ -1089,7 +1113,7 @@ export const setHour11OrThrow: MTypes.OneArgFunction<number, MTypes.OneArgFuncti
 export const setMeridiem =
   (meridiem: 0 | 12) =>
   (self: Type): Type =>
-    pipe(self, _time, Time.setMeridiem(meridiem), _timeSetter(self));
+    pipe(self, _time, CVTime.setMeridiem(meridiem), _timeSetter(self));
 
 /**
  * If possible, returns a `Right` of a `CVDateTime` having minute `minute` and the same `year`,
@@ -1102,7 +1126,7 @@ export const setMeridiem =
 export const setMinute =
   (minute: number) =>
   (self: Type): Either.Either<Type, MInputError.Type> =>
-    pipe(self, _time, Time.setMinute(minute), Either.map(_timeSetter(self)));
+    pipe(self, _time, CVTime.setMinute(minute), Either.map(_timeSetter(self)));
 
 /**
  * Same as `setMinute` but returns directly a `CVDateTime` or throws in case of an error
@@ -1125,7 +1149,7 @@ export const setMinuteOrThrow: MTypes.OneArgFunction<number, MTypes.OneArgFuncti
 export const setSecond =
   (second: number) =>
   (self: Type): Either.Either<Type, MInputError.Type> =>
-    pipe(self, _time, Time.setSecond(second), Either.map(_timeSetter(self)));
+    pipe(self, _time, CVTime.setSecond(second), Either.map(_timeSetter(self)));
 
 /**
  * Same as `setSecond` but returns directly a `CVDateTime` or throws in case of an error
@@ -1148,7 +1172,7 @@ export const setSecondOrThrow: MTypes.OneArgFunction<number, MTypes.OneArgFuncti
 export const setMillisecond =
   (millisecond: number) =>
   (self: Type): Either.Either<Type, MInputError.Type> =>
-    pipe(self, _time, Time.setMillisecond(millisecond), Either.map(_timeSetter(self)));
+    pipe(self, _time, CVTime.setMillisecond(millisecond), Either.map(_timeSetter(self)));
 
 /**
  * Same as `setMillisecond` but returns directly a `CVDateTime` or throws in case of an error
@@ -1201,7 +1225,7 @@ const _setZoneOffset =
       const buildFromZoneOffset = (validatedZoneOffset: number) =>
         keepTimestamp ?
           _uncalculatedFromTimestamp(self.timestamp, validatedZoneOffset)
-        : _uncalculatedFromZonedTimestamp(self._zonedTimestamp, validatedZoneOffset);
+        : _uncalculatedFromZonedTimestamp(self.zonedTimestamp, validatedZoneOffset);
 
       if (MTypes.isPrimitive(zoneOffset)) {
         const validatedZoneOffset = yield* pipe(
