@@ -12,11 +12,11 @@ import * as ASSequence from './Sequence.js';
 export type Type = string;
 
 /**
- * Builds an Code from a ASSequence.NonEmptyType
+ * Builds an Code from a ASSequence.OverOne
  *
  * @category Constructors
  */
-export const fromNonEmptySequence: MTypes.OneArgFunction<ASSequence.NonEmptyType, string> = flow(
+export const fromNonEmptySequence: MTypes.OneArgFunction<ASSequence.OverOne, string> = flow(
   Array.map(MString.fromNumber(10)),
   Array.join(';'),
   MString.prepend('\x1B['),

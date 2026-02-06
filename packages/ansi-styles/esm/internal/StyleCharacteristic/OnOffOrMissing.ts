@@ -84,10 +84,10 @@ export abstract class Type extends ASStyleCharacteristicPresentOrMissing.Type<bo
   }
 
   /** Getter that returns the sequence corresponding to the active style characteristic */
-  abstract get [onSequenceGetterSymbol](): ASSequence.NonEmptyType;
+  abstract get [onSequenceGetterSymbol](): ASSequence.OverOne;
 
   /** Getter that returns the sequence corresponding to the inactive style characteristic */
-  abstract get [offSequenceGetterSymbol](): ASSequence.NonEmptyType;
+  abstract get [offSequenceGetterSymbol](): ASSequence.OverOne;
 
   /** Function that returns the sequence when the style characteristic is present */
   [ASStyleCharacteristicPresentOrMissing.toPresentSequenceSymbol](value: boolean) {

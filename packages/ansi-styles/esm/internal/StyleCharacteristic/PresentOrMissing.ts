@@ -67,7 +67,7 @@ export abstract class Type<out A> extends MDataEquivalenceBasedEquality.Class {
   }
 
   /** Function that returns the sequence when the style characteristic is present */
-  abstract [toPresentSequenceSymbol](presentValue: A): ASSequence.NonEmptyType;
+  abstract [toPresentSequenceSymbol](presentValue: A): ASSequence.OverOne;
 
   /** Returns the TypeMarker of the class */
   protected get [_TypeId](): _TypeId {

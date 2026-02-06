@@ -119,7 +119,7 @@ export class Type extends MDataEquivalenceBasedEquality.Class {
       const result = `${this.bold.toString()}${this.dim.toString()}${this.italic.toString()}${this.underlined.toString()}\
 ${this.struckThrough.toString()}${this.overlined.toString()}${this.inversed.toString()}${this.hidden.toString()}\
 ${this.blinking.toString()}${this.foregroundColor.toString()}${this.backgroundColor.toString()}`;
-      return result === '' ? 'NoStyle' : result;
+      return result.length === 0 ? 'NoStyle' : result;
     };
   }
 

@@ -44,7 +44,7 @@ export class Type extends ASStyleCharacteristicColor.Type {
   /** Function that returns the sequence when the style characteristic is present */
   [ASStyleCharacteristicPresentOrMissing.toPresentSequenceSymbol](
     value: Option.Option<AsColorBase.Type>,
-  ): ASSequence.NonEmptyType {
+  ): ASSequence.OverOne {
     return Option.match(value, {
       onNone: Function.constant(ASSequence.defaultBackgroundColor),
       onSome: AsColorBase.backgroundSequence,

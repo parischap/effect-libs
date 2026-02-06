@@ -41,12 +41,12 @@ export class Type extends ASStyleCharacteristicOnOffOrMissing.Type {
   }
 
   /** Getter that returns the sequence corresponding to the active style characteristic */
-  get [ASStyleCharacteristicOnOffOrMissing.onSequenceGetterSymbol](): ASSequence.NonEmptyType {
+  get [ASStyleCharacteristicOnOffOrMissing.onSequenceGetterSymbol](): ASSequence.OverOne {
     return ASSequence.underlined;
   }
 
   /** Getter that returns the sequence corresponding to the inactive style characteristic */
-  get [ASStyleCharacteristicOnOffOrMissing.offSequenceGetterSymbol](): ASSequence.NonEmptyType {
+  get [ASStyleCharacteristicOnOffOrMissing.offSequenceGetterSymbol](): ASSequence.OverOne {
     return ASSequence.notUnderlined;
   }
 

@@ -33,17 +33,17 @@ export abstract class Type
   readonly backgroundId: string;
 
   /** Sequence of this color used as foreground color */
-  readonly foregroundSequence: ASSequence.NonEmptyType;
+  readonly foregroundSequence: ASSequence.OverOne;
 
   /** Sequence of this color used as background color */
-  readonly backgroundSequence: ASSequence.NonEmptyType;
+  readonly backgroundSequence: ASSequence.OverOne;
 
   constructor({
     foregroundId,
     foregroundSequence,
   }: {
     readonly foregroundId: string;
-    readonly foregroundSequence: ASSequence.NonEmptyType;
+    readonly foregroundSequence: ASSequence.OverOne;
   }) {
     super();
     this.foregroundId = foregroundId;
@@ -84,14 +84,14 @@ export const backgroundId = (self: Type): string => self.backgroundId;
  *
  * @category Destructors
  */
-export const foregroundSequence = (self: Type): ASSequence.NonEmptyType => self.foregroundSequence;
+export const foregroundSequence = (self: Type): ASSequence.OverOne => self.foregroundSequence;
 
 /**
  * Gets the background sequence of `self`
  *
  * @category Destructors
  */
-export const backgroundSequence = (self: Type): ASSequence.NonEmptyType => self.backgroundSequence;
+export const backgroundSequence = (self: Type): ASSequence.OverOne => self.backgroundSequence;
 /**
  * Equivalence
  *

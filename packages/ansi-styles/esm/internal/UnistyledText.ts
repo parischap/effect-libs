@@ -154,7 +154,7 @@ export const toLength: MTypes.OneArgFunction<Type, number> = flow(
  * @category Destructors
  */
 export const toAnsiString = (self: Type): string => {
-  if (self.text === '') return '';
+  if (self.text.length === 0) return '';
   const startCode = ASStyleCharacteristics.toCode(self.style);
-  return startCode === '' ? self.text : startCode + self.text + ASCode.reset;
+  return startCode.length === 0 ? self.text : startCode + self.text + ASCode.reset;
 };
