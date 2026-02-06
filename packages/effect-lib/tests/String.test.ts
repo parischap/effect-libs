@@ -214,17 +214,17 @@ describe('MString', () => {
     });
   });
 
-  describe('takeLeftTo', () => {
+  describe('takeTo', () => {
     it('string in empty string', () => {
-      TestUtils.assertTrue(pipe('', MString.takeLeftTo('foo'), String.isEmpty));
+      TestUtils.assertTrue(pipe('', MString.takeTo('foo'), String.isEmpty));
     });
 
     it('RegExp in non-empty string', () => {
-      TestUtils.strictEqual(MString.takeLeftTo(/bar/)('the bar is foo'), 'the ');
+      TestUtils.strictEqual(MString.takeTo(/bar/)('the bar is foo'), 'the ');
     });
 
     it('string with regexp special characters in non-empty string', () => {
-      TestUtils.strictEqual(MString.takeLeftTo('.')('foo.bar.baz'), 'foo');
+      TestUtils.strictEqual(MString.takeTo('.')('foo.bar.baz'), 'foo');
     });
   });
 
@@ -238,13 +238,13 @@ describe('MString', () => {
     });
   });
 
-  describe('takeLeftBut', () => {
+  describe('takeBut', () => {
     it('Empty string', () => {
-      TestUtils.assertTrue(pipe('', MString.takeLeftBut(2), String.isEmpty));
+      TestUtils.assertTrue(pipe('', MString.takeBut(2), String.isEmpty));
     });
 
     it('Non-empty string', () => {
-      TestUtils.strictEqual(MString.takeLeftBut(3)('foo is'), 'foo');
+      TestUtils.strictEqual(MString.takeBut(3)('foo is'), 'foo');
     });
   });
 

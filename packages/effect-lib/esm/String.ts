@@ -17,8 +17,8 @@ import {
 } from 'effect';
 import * as MArray from './Array.js';
 import * as MBigInt from './BigInt.js';
-import * as MDataBase from './Data/Base.js';
 import * as MDataEquivalenceBasedEquality from './Data/EquivalenceBasedEquality.js';
+import * as MData from './Data/index.js';
 import * as MFunction from './Function.js';
 import * as MMatch from './Match.js';
 import * as MNumber from './Number.js';
@@ -73,7 +73,7 @@ export namespace SearchResult {
     }
 
     /** Returns the `id` of `this` */
-    [MDataBase.idSymbol](): string | (() => string) {
+    [MData.idSymbol](): string | (() => string) {
       return _namespaceTag;
     }
 
@@ -310,7 +310,7 @@ export const searchRight =
  *
  * @category Utils
  */
-export const takeLeftTo =
+export const takeTo =
   (regexp: RegExp | string): MTypes.StringTransformer =>
   (self) =>
     pipe(
@@ -340,24 +340,24 @@ export const takeRightFrom =
     );
 
 /**
- * Takes all characters from `self` except the `n` last characters
+ * Takes all characters from `self` except the `n` last characters. `n` should be positive
  *
  * @category Utils
  */
-export const takeLeftBut =
+export const takeBut =
   (n: number): MTypes.StringTransformer =>
   (self) =>
-    String.takeLeft(self, self.length - n);
+    self.slice(0, -n);
 
 /**
- * Takes all characters from `self` except the `n` first characters
+ * Takes all characters from `self` except the `n` first characters. `n` should be positive
  *
  * @category Utils
  */
 export const takeRightBut =
   (n: number): MTypes.StringTransformer =>
   (self) =>
-    String.takeRight(self, self.length - n);
+    self.slice(n);
 
 /**
  * Same as String.trimStart but the character to remove can be specified. `charToRemove` must be a
@@ -502,7 +502,7 @@ export const stripLeft =
  * @category Utils
  */
 export const stripRightOption = (s: string): MTypes.OneArgFunction<string, Option.Option<string>> =>
-  flow(Option.liftPredicate(String.endsWith(s)), Option.map(takeLeftBut(s.length)));
+  flow(Option.liftPredicate(String.endsWith(s)), Option.map(takeBut(s.length)));
 
 /**
  * If `self` ends with `s`, returns `self` stripped of `s`. Otherwise, returns `self`

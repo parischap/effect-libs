@@ -84,24 +84,24 @@ export const findAll =
     );
 
 /**
- * Takes all elements of self except the n last elements
+ * Takes all elements of self except the n last elements. `n` should be positive
  *
  * @category Utils
  */
 export const takeBut =
   (n: number) =>
   <A>(self: ReadonlyArray<A>): Array<A> =>
-    Array.take(self, self.length - n);
+    self.slice(0, -n);
 
 /**
- * Takes all elements of self except the n first elements
+ * Takes all elements of self except the n first elements. `n` should be positive
  *
  * @category Utils
  */
 export const takeRightBut =
   (n: number) =>
   <A>(self: ReadonlyArray<A>): Array<A> =>
-    Array.takeRight(self, self.length - n);
+    self.slice(n);
 
 /**
  * This function provides a safe way to read a value at a particular index from the end of a
