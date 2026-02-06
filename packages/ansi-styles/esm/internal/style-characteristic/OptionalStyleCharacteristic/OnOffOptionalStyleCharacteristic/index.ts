@@ -15,7 +15,7 @@ import * as ASOptionalStyleCharacteristic from '../index.js';
  * @category Module markers
  */
 export const moduleTag =
-  '@parischap/ansi-styles/internal/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/';
+  '@parischap/ansi-styles/internal/style-characteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
