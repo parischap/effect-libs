@@ -31,7 +31,7 @@ import {
   Struct,
   Tuple,
 } from 'effect';
-import * as CVReal from './Real.js';
+import * as CVReal from '../primitive/Real.js';
 import * as CVRoundingMode from './RoundingMode.js';
 import * as CVRoundingOption from './RoundingOption.js';
 
@@ -40,7 +40,7 @@ import * as CVRoundingOption from './RoundingOption.js';
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/conversions/NumberBase10Format/';
+export const moduleTag = '@parischap/conversions/formatting/NumberBase10Format/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 

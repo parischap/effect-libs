@@ -46,9 +46,9 @@
 
 import { MArray, MData, MInputError, MString, MTuple, MTypes } from '@parischap/effect-lib';
 import { Array, Either, Equal, flow, Function, Option, pipe, Record, Struct, Tuple } from 'effect';
-import * as CVTemplateParts from './internal/TemplateParts.js';
-import * as CVTemplatePart from './TemplatePart/All.js';
-import * as CVTemplatePartPlaceholder from './TemplatePart/Placeholder.js';
+import * as CVTemplatePart from './TemplatePart/index.js';
+import * as CVTemplateParts from './TemplatePart/index.js';
+import * as CVTemplatePartPlaceholder from './TemplatePart/Placeholder/index.js';
 import * as CVTemplatePartSeparator from './TemplatePart/Separator.js';
 
 /**

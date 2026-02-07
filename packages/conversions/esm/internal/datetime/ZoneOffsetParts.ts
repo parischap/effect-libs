@@ -8,17 +8,17 @@
 
 import { MData, MInputError, MNumber, MTypes } from '@parischap/effect-lib';
 import { Either, Function, Struct, flow, pipe } from 'effect';
-import * as CVNumberBase10Format from '../NumberBase10Format.js';
-import * as CVTemplate from '../Template.js';
-import * as CVTemplatePartPlaceholder from '../TemplatePart/Placeholder.js';
-import * as CVTemplatePartSeparator from '../TemplatePart/Separator.js';
+import * as CVNumberBase10Format from '../../formatting/NumberBase10Format.js';
+import * as CVTemplate from '../../formatting/Template.js';
+import * as CVTemplatePartPlaceholder from '../../formatting/TemplatePart/Placeholder/index.js';
+import * as CVTemplatePartSeparator from '../../formatting/TemplatePart/Separator.js';
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/conversions/internal/ZoneOffsetParts/';
+export const moduleTag = '@parischap/conversions/internal/datetime/ZoneOffsetParts/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 

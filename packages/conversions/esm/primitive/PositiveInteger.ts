@@ -6,19 +6,19 @@
  * concept.
  */
 
-import { MTypes } from "@parischap/effect-lib";
-import { BigDecimal, Brand, Either, flow, Function, Option, Schema } from "effect";
-import * as CVInteger from "./Integer.js";
-import * as CVPositive from "./internal/Positive.js";
-import type * as CVPositiveReal from "./PositiveReal.js";
-import * as CVReal from "./Real.js";
+import { MTypes } from '@parischap/effect-lib';
+import { BigDecimal, Brand, Either, flow, Function, Option, Schema } from 'effect';
+import * as CVInteger from './Integer.js';
+import * as CVPositive from './internal/Positive.js';
+import type * as CVPositiveReal from './PositiveReal.js';
+import * as CVReal from './Real.js';
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = "@parischap/conversions/PositiveInteger/";
+export const moduleTag = '@parischap/conversions/primitive/PositiveInteger/';
 
 /**
  * Brand constructor. Should not be used directly

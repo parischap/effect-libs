@@ -1,6 +1,6 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
 import {
-  CVTemplatePartAll,
+  CVTemplatePart,
   CVTemplatePartPlaceholder,
   CVTemplatePartSeparator,
 } from '@parischap/conversions';
@@ -12,21 +12,21 @@ describe('CVTemplatePart', () => {
 
   describe('isPlaceholder', () => {
     it('Not passing', () => {
-      TestUtils.assertFalse(CVTemplatePartAll.isPlaceholder(separator));
+      TestUtils.assertFalse(CVTemplatePart.isPlaceholder(separator));
     });
 
     it('Passing', () => {
-      TestUtils.assertTrue(CVTemplatePartAll.isPlaceholder(threeChars));
+      TestUtils.assertTrue(CVTemplatePart.isPlaceholder(threeChars));
     });
   });
 
   describe('isSeparator', () => {
     it('Not passing', () => {
-      TestUtils.assertFalse(CVTemplatePartAll.isSeparator(threeChars));
+      TestUtils.assertFalse(CVTemplatePart.isSeparator(threeChars));
     });
 
     it('Passing', () => {
-      TestUtils.assertTrue(CVTemplatePartAll.isSeparator(separator));
+      TestUtils.assertTrue(CVTemplatePart.isSeparator(separator));
     });
   });
 });

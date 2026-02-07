@@ -36,51 +36,19 @@ import {
   Tuple,
 } from 'effect';
 
-import * as CVNumberBase10Format from '../NumberBase10Format.js';
-import * as CVReal from '../Real.js';
+import * as CVReal from '../../../primitive/Real.js';
+import * as CVNumberBase10Format from '../../NumberBase10Format.js';
+import type * as CVPlaceholderFormatter from './PlaceholderFormatter.js';
+import type * as CVPlaceholderParser from './PlaceholderParser.js';
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/conversions/TemplatePart/Placeholder/';
+export const moduleTag = '@parischap/conversions/formatting/TemplatePart/Placeholder/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
-
-/**
- * Namespace of a Parser
- *
- * @category Models
- */
-export namespace Parser {
-  /**
-   * Type that describes a Parser
-   *
-   * @category Models
-   */
-  export interface Type<out T> extends MTypes.OneArgFunction<
-    string,
-    Either.Either<readonly [consumed: T, leftOver: string], MInputError.Type>
-  > {}
-}
-
-/**
- * Namespace of a Formatter
- *
- * @category Models
- */
-export namespace Formatter {
-  /**
-   * Type that describes a Formatter
-   *
-   * @category Models
-   */
-  export interface Type<in T> extends MTypes.OneArgFunction<
-    T,
-    Either.Either<string, MInputError.Type>
-  > {}
-}
 
 /**
  * Type that represents a CVTemplatePartPlaceholder
@@ -98,10 +66,10 @@ export class Type<out N extends string, in out T> extends MData.Class {
   readonly description: string;
 
   /** Parser of this TemplatePartPlaceholder */
-  readonly parser: Parser.Type<T>;
+  readonly parser: CVPlaceholderParser.Type<T>;
 
   /** Formatter of this TemplatePartPlaceholder */
-  readonly formatter: Formatter.Type<T>;
+  readonly formatter: CVPlaceholderFormatter.Type<T>;
 
   /** Schema instance that represents type T */
   readonly tSchemaInstance: Schema.Schema<T, T>;
@@ -205,7 +173,7 @@ export const description: <const N extends string, T>(self: Type<N, T>) => strin
  *
  * @category Destructors
  */
-export const parser: <const N extends string, T>(self: Type<N, T>) => Parser.Type<T> =
+export const parser: <const N extends string, T>(self: Type<N, T>) => CVPlaceholderParser.Type<T> =
   Struct.get('parser');
 
 /**
@@ -213,8 +181,9 @@ export const parser: <const N extends string, T>(self: Type<N, T>) => Parser.Typ
  *
  * @category Destructors
  */
-export const formatter: <const N extends string, T>(self: Type<N, T>) => Formatter.Type<T> =
-  Struct.get('formatter');
+export const formatter: <const N extends string, T>(
+  self: Type<N, T>,
+) => CVPlaceholderFormatter.Type<T> = Struct.get('formatter');
 
 /**
  * Returns the `tSchemaInstance` property of `self`

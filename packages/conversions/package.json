@@ -68,86 +68,92 @@
     ".": {
       "default": "./esm/index.ts"
     },
-    "./CVAll": {
-      "default": "./esm/TemplatePart/All.ts"
-    },
     "./CVBigDecimal": {
-      "default": "./esm/BigDecimal.ts"
+      "default": "./esm/primitive/BigDecimal.ts"
     },
     "./CVBigInt": {
-      "default": "./esm/BigInt.ts"
+      "default": "./esm/primitive/BigInt.ts"
     },
     "./CVDateTime": {
-      "default": "./esm/DateTime.ts"
+      "default": "./esm/DateTime/index.ts"
     },
     "./CVDateTimeConstants": {
-      "default": "./esm/dateTimeConstants.ts"
+      "default": "./esm/DateTime/dateTimeConstants.ts"
     },
     "./CVDateTimeFormat": {
-      "default": "./esm/DateTimeFormat.ts"
+      "default": "./esm/formatting/DateTimeFormat.ts"
     },
     "./CVDateTimeFormatContext": {
-      "default": "./esm/DateTimeFormatContext.ts"
+      "default": "./esm/formatting/DateTimeFormatContext.ts"
     },
     "./CVEmail": {
-      "default": "./esm/Email.ts"
+      "default": "./esm/primitive/Email.ts"
     },
     "./CVGregorianDate": {
-      "default": "./esm/internal/GregorianDate.ts"
+      "default": "./esm/internal/datetime/GregorianDate.ts"
     },
     "./CVInt": {
-      "default": "./esm/internal/Int.ts"
+      "default": "./esm/internal/primitive/Int.ts"
     },
     "./CVInteger": {
-      "default": "./esm/Integer.ts"
+      "default": "./esm/primitive/Integer.ts"
     },
     "./CVIsoDate": {
-      "default": "./esm/internal/IsoDate.ts"
+      "default": "./esm/internal/datetime/IsoDate.ts"
     },
     "./CVNumberBase10Format": {
-      "default": "./esm/NumberBase10Format.ts"
+      "default": "./esm/formatting/NumberBase10Format.ts"
     },
     "./CVPlaceholder": {
-      "default": "./esm/TemplatePart/Placeholder.ts"
+      "default": "./esm/formatting/TemplatePart/Placeholder/index.ts"
+    },
+    "./CVPlaceholderFormatter": {
+      "default": "./esm/formatting/TemplatePart/Placeholder/PlaceholderFormatter.ts"
+    },
+    "./CVPlaceholderParser": {
+      "default": "./esm/formatting/TemplatePart/Placeholder/PlaceholderParser.ts"
     },
     "./CVPositive": {
-      "default": "./esm/internal/Positive.ts"
+      "default": "./esm/internal/primitive/Positive.ts"
     },
     "./CVPositiveInteger": {
-      "default": "./esm/PositiveInteger.ts"
+      "default": "./esm/primitive/PositiveInteger.ts"
     },
     "./CVPositiveReal": {
-      "default": "./esm/PositiveReal.ts"
+      "default": "./esm/primitive/PositiveReal.ts"
     },
     "./CVReal": {
-      "default": "./esm/Real.ts"
+      "default": "./esm/primitive/Real.ts"
     },
     "./CVRoundingMode": {
-      "default": "./esm/RoundingMode.ts"
+      "default": "./esm/formatting/RoundingMode.ts"
     },
     "./CVRoundingOption": {
-      "default": "./esm/RoundingOption.ts"
+      "default": "./esm/formatting/RoundingOption.ts"
     },
     "./CVSchema": {
       "default": "./esm/Schema.ts"
     },
     "./CVSemVer": {
-      "default": "./esm/SemVer.ts"
+      "default": "./esm/primitive/SemVer.ts"
     },
     "./CVSeparator": {
-      "default": "./esm/TemplatePart/Separator.ts"
+      "default": "./esm/formatting/TemplatePart/Separator.ts"
     },
     "./CVTemplate": {
-      "default": "./esm/Template.ts"
+      "default": "./esm/formatting/Template.ts"
+    },
+    "./CVTemplatePart": {
+      "default": "./esm/formatting/TemplatePart/index.ts"
     },
     "./CVTemplateParts": {
-      "default": "./esm/internal/TemplateParts.ts"
+      "default": "./esm/internal/formatting/TemplateParts.ts"
     },
     "./CVTime": {
-      "default": "./esm/internal/Time.ts"
+      "default": "./esm/internal/datetime/Time.ts"
     },
     "./CVZoneOffsetParts": {
-      "default": "./esm/internal/ZoneOffsetParts.ts"
+      "default": "./esm/internal/datetime/ZoneOffsetParts.ts"
     }
   },
   "module": "./esm/index.ts",

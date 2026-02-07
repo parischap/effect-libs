@@ -1,18 +1,19 @@
 /**
- * A module that implements a `CVEmail` brand, i.e. a string that represents a valid email. See the
- * `Effect` documentation about Branding (https://effect.website/docs/code-style/branded-types/) if
- * you are not familiar with this concept.
+ * A module that implements a `CVSemVer` brand, i.e. a string that represents a valid semantic
+ * version. See the `Effect` documentation about Branding
+ * (https://effect.website/docs/code-style/branded-types/) if you are not familiar with this
+ * concept.
  */
 
-import { MString, MTypes } from "@parischap/effect-lib";
-import { Brand, Either, Option, Schema } from "effect";
+import { MString, MTypes } from '@parischap/effect-lib';
+import { Brand, Either, Option, Schema } from 'effect';
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = "@parischap/conversions/Email/";
+export const moduleTag = '@parischap/conversions/primitive/SemVer/';
 
 /**
  * Module TypeId
@@ -23,14 +24,14 @@ export const TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof TypeId;
 
 /**
- * Email type
+ * `CVSemVer` Type
  *
  * @category Models
  */
 export type Type = Brand.Branded<string, _TypeId>;
 
 /**
- * Constructs an Email without any verifications
+ * Constructs a `CVSemVer` without any verifications
  *
  * @category Constructors
  */
@@ -39,14 +40,15 @@ export const unsafeFromString = Brand.nominal<Type>();
 /**
  * Brand constructor. Should not be used directly
  *
- * @internal
+ * @ignore
  */
-export const constructor = Brand.refined<Type>(MString.isEmail, (s) =>
-  Brand.error(`'${s}' does not represent a email`),
+export const constructor = Brand.refined<Type>(MString.isSemVer, (s) =>
+  Brand.error(`'${s}' does not represent a semver`),
 );
 
 /**
- * Constructs an Option of an Email from a string.
+ * Tries to construct a `CVSemVer` from a string. Returns a `Some` if the conversion can be
+ * performed, a `None` otherwise
  *
  * @category Constructors
  */
@@ -56,7 +58,8 @@ export const fromStringOption: MTypes.OneArgFunction<
 > = constructor.option.bind(constructor);
 
 /**
- * Constructs an Either of an Email from a string.
+ * Tries to construct a `CVSemVer` from a string. Returns a `Right` if the conversion can be
+ * performed, a `Left` otherwise
  *
  * @category Constructors
  */
@@ -66,14 +69,14 @@ export const fromString: MTypes.OneArgFunction<
 > = constructor.either.bind(constructor);
 
 /**
- * Constructs an Email if possible. Throws otherwise.
+ * Constructs a `CVSemVer` if possible. Throws otherwise.
  *
  * @category Constructors
  */
 export const fromStringOrThrow: MTypes.OneArgFunction<string, Type> = constructor;
 
 /**
- * A Schema that transforms a string into a CVBrand.Email.Type
+ * A `Schema` that transforms a string into a `CVSemVer`
  *
  * @ignore
  */
@@ -82,7 +85,7 @@ export const SchemaFromString: Schema.Schema<Type, string> = Schema.String.pipe(
 );
 
 /**
- * A Schema that represents a CVBrand.Email.Type
+ * A `Schema` that represents a `CVSemVer`
  *
  * @ignore
  */

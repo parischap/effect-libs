@@ -18,11 +18,11 @@ import {
   MIN_FULL_YEAR,
   SHORT_YEAR_MS,
   WEEK_MS,
-} from '../dateTimeConstants.js';
-import * as CVNumberBase10Format from '../NumberBase10Format.js';
-import * as CVTemplate from '../Template.js';
-import * as CVTemplatePartPlaceholder from '../TemplatePart/Placeholder.js';
-import * as CVTemplatePartSeparator from '../TemplatePart/Separator.js';
+} from '../../DateTime/dateTimeConstants.js';
+import * as CVNumberBase10Format from '../../formatting/NumberBase10Format.js';
+import * as CVTemplate from '../../formatting/Template.js';
+import * as CVTemplatePartPlaceholder from '../../formatting/TemplatePart/Placeholder/index.js';
+import * as CVTemplatePartSeparator from '../../formatting/TemplatePart/Separator.js';
 import type * as CVGregorianDate from './GregorianDate.js';
 
 /**
@@ -30,7 +30,7 @@ import type * as CVGregorianDate from './GregorianDate.js';
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/conversions/internal/IsoDate/';
+export const moduleTag = '@parischap/conversions/internal/datetime/IsoDate/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 

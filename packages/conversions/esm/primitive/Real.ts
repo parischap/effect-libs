@@ -5,15 +5,15 @@
  * this concept.
  */
 
-import { MNumber, MString, MTypes } from "@parischap/effect-lib";
-import { BigDecimal, Brand, Either, flow, Option, Schema } from "effect";
+import { MNumber, MString, MTypes } from '@parischap/effect-lib';
+import { BigDecimal, Brand, Either, flow, Option, Schema } from 'effect';
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = "@parischap/conversions/Real/";
+export const moduleTag = '@parischap/conversions/primitive/Real/';
 
 /**
  * Module TypeId

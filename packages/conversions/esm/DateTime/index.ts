@@ -41,6 +41,10 @@ import {
   Predicate,
   Struct,
 } from 'effect';
+import * as GregorianDate from '../internal/datetime/GregorianDate.js';
+import * as IsoDate from '../internal/datetime/IsoDate.js';
+import * as CVTime from '../internal/datetime/Time.js';
+import * as ZoneOffsetParts from '../internal/datetime/ZoneOffsetParts.js';
 import {
   DAY_MS,
   HOUR_MS,
@@ -51,10 +55,6 @@ import {
   MINUTE_MS,
   SECOND_MS,
 } from './dateTimeConstants.js';
-import * as GregorianDate from './internal/GregorianDate.js';
-import * as IsoDate from './internal/IsoDate.js';
-import * as CVTime from './internal/Time.js';
-import * as ZoneOffsetParts from './internal/ZoneOffsetParts.js';
 
 /**
  * Module tag

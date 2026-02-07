@@ -15,7 +15,7 @@ const sep = CVTemplatePartSeparator;
 const template = CVTemplate.make(
   // Separator
   sep.make('Today is '),
-  // realMappedLiterals placeHolder
+  // realMappedLiterals placeholder
   placeholder.realMappedLiterals({
     name: 'weekday',
     keyValuePairs: [

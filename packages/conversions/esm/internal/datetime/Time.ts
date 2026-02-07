@@ -2,18 +2,18 @@
 
 import { MData, MInputError, MTypes } from '@parischap/effect-lib';
 import { Either, Function, Number, Struct, flow, pipe } from 'effect';
-import * as CVNumberBase10Format from '../NumberBase10Format.js';
-import * as CVTemplate from '../Template.js';
-import * as CVTemplatePartPlaceholder from '../TemplatePart/Placeholder.js';
-import * as CVTemplatePartSeparator from '../TemplatePart/Separator.js';
-import { HOUR_MS, MINUTE_MS, SECOND_MS } from '../dateTimeConstants.js';
+import { HOUR_MS, MINUTE_MS, SECOND_MS } from '../../DateTime/dateTimeConstants.js';
+import * as CVNumberBase10Format from '../../formatting/NumberBase10Format.js';
+import * as CVTemplate from '../../formatting/Template.js';
+import * as CVTemplatePartPlaceholder from '../../formatting/TemplatePart/Placeholder/index.js';
+import * as CVTemplatePartSeparator from '../../formatting/TemplatePart/Separator.js';
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/conversions/internal/Time/';
+export const moduleTag = '@parischap/conversions/internal/datetime/Time/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 

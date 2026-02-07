@@ -10,10 +10,6 @@
 
 import { MArray, MData, MInputError, MString, MStruct, MTypes } from '@parischap/effect-lib';
 import { Either, Function, Number, Option, Predicate, Struct, flow, pipe } from 'effect';
-import * as CVNumberBase10Format from '../NumberBase10Format.js';
-import * as CVTemplate from '../Template.js';
-import * as CVTemplatePartPlaceholder from '../TemplatePart/Placeholder.js';
-import * as CVTemplatePartSeparator from '../TemplatePart/Separator.js';
 import {
   COMMON_YEAR_MS,
   DAY_MS,
@@ -23,14 +19,18 @@ import {
   LEAP_YEAR_MS,
   MAX_FULL_YEAR,
   MIN_FULL_YEAR,
-} from '../dateTimeConstants.js';
+} from '../../DateTime/dateTimeConstants.js';
+import * as CVNumberBase10Format from '../../formatting/NumberBase10Format.js';
+import * as CVTemplate from '../../formatting/Template.js';
+import * as CVTemplatePartPlaceholder from '../../formatting/TemplatePart/Placeholder/index.js';
+import * as CVTemplatePartSeparator from '../../formatting/TemplatePart/Separator.js';
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/conversions/internal/GregorianDate/';
+export const moduleTag = '@parischap/conversions/internal/datetime/GregorianDate/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 

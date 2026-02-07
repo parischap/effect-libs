@@ -1,7 +1,7 @@
 /** This module implements an array of `CVTemplatePart`'s (see TemplatePart.ts) */
 import { MMatch, MTypes } from '@parischap/effect-lib';
 import { Array, flow, Function, Option } from 'effect';
-import * as CVTemplatePartAll from '../TemplatePart/All.js';
+import * as CVTemplatePart from '../TemplatePart/index.js';
 import * as CVTemplatePartPlaceholder from '../TemplatePart/Placeholder.js';
 import * as CVTemplatePartSeparator from '../TemplatePart/Separator.js';
 
@@ -10,7 +10,7 @@ import * as CVTemplatePartSeparator from '../TemplatePart/Separator.js';
  *
  * @category Models
  */
-export interface Type<T = any> extends ReadonlyArray<CVTemplatePartAll.Type<string, T>> {}
+export interface Type<T = any> extends ReadonlyArray<CVTemplatePart.Type<string, T>> {}
 
 /**
  * Shows a synthetic description of `self`, e.g.' #name is a #age-year-old #kind.'
@@ -21,8 +21,8 @@ export const getSyntheticDescription: MTypes.OneArgFunction<Type, string> = flow
   Array.map(
     flow(
       MMatch.make,
-      MMatch.when(CVTemplatePartAll.isPlaceholder, CVTemplatePartPlaceholder.label),
-      MMatch.when(CVTemplatePartAll.isSeparator, CVTemplatePartSeparator.value),
+      MMatch.when(CVTemplatePart.isPlaceholder, CVTemplatePartPlaceholder.label),
+      MMatch.when(CVTemplatePart.isSeparator, CVTemplatePartSeparator.value),
       MMatch.exhaustive,
     ),
   ),
@@ -40,10 +40,10 @@ export const getPlaceholderDescription: MTypes.OneArgFunction<Type, string> = fl
     flow(
       MMatch.make,
       MMatch.when(
-        CVTemplatePartAll.isPlaceholder,
+        CVTemplatePart.isPlaceholder,
         flow(CVTemplatePartPlaceholder.getLabelledDescription, Option.some),
       ),
-      MMatch.when(CVTemplatePartAll.isSeparator, Function.constant(Option.none())),
+      MMatch.when(CVTemplatePart.isSeparator, Function.constant(Option.none())),
       MMatch.exhaustive,
     ),
   ),
