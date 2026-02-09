@@ -16,10 +16,7 @@ const testArray1 = [5];
 const testArray2 = [5, 6];
 const testArray3 = [5, 6, 7];
 const testReadonlyArray = testArray2 as ReadonlyArray<number>;
-const testRecord = {
-  a: 'foo',
-  b: false,
-};
+
 const testOneArgFunction = Number.increment;
 const testFunction = (n: number, m?: number) => n + (m !== undefined ? m : 0);
 
@@ -544,42 +541,6 @@ describe('MTypes', () => {
 
     it('Non matching', () => {
       TestUtils.assertFalse(MTypes.isTypedArray(5));
-    });
-  });
-
-  describe('Category', () => {
-    describe('fromValue and predicates', () => {
-      it('Matching', () => {
-        TestUtils.assertTrue(MTypes.Category.isString(MTypes.Category.fromValue(testString)));
-        TestUtils.assertTrue(MTypes.Category.isNumber(MTypes.Category.fromValue(testNumber)));
-        TestUtils.assertTrue(MTypes.Category.isBigint(MTypes.Category.fromValue(testBigint)));
-        TestUtils.assertTrue(MTypes.Category.isBoolean(MTypes.Category.fromValue(testBoolean)));
-        TestUtils.assertTrue(MTypes.Category.isSymbol(MTypes.Category.fromValue(testSymbol)));
-        TestUtils.assertTrue(MTypes.Category.isUndefined(MTypes.Category.fromValue(undefined)));
-        TestUtils.assertTrue(MTypes.Category.isNull(MTypes.Category.fromValue(null)));
-        TestUtils.assertTrue(MTypes.Category.isFunction(MTypes.Category.fromValue(testFunction)));
-        TestUtils.assertTrue(MTypes.Category.isArray(MTypes.Category.fromValue(testArray2)));
-        TestUtils.assertTrue(MTypes.Category.isRecord(MTypes.Category.fromValue(testRecord)));
-        TestUtils.assertTrue(MTypes.Category.isPrimitive(MTypes.Category.fromValue(testString)));
-        TestUtils.assertTrue(MTypes.Category.isNonPrimitive(MTypes.Category.fromValue(testArray2)));
-      });
-
-      it('Non matching', () => {
-        TestUtils.assertFalse(MTypes.Category.isString(MTypes.Category.fromValue(testNumber)));
-        TestUtils.assertFalse(MTypes.Category.isNumber(MTypes.Category.fromValue(testString)));
-        TestUtils.assertFalse(MTypes.Category.isBigint(MTypes.Category.fromValue(testNumber)));
-        TestUtils.assertFalse(MTypes.Category.isBoolean(MTypes.Category.fromValue(testNumber)));
-        TestUtils.assertFalse(MTypes.Category.isSymbol(MTypes.Category.fromValue(testNumber)));
-        TestUtils.assertFalse(MTypes.Category.isUndefined(MTypes.Category.fromValue(testNumber)));
-        TestUtils.assertFalse(MTypes.Category.isNull(MTypes.Category.fromValue(testNumber)));
-        TestUtils.assertFalse(MTypes.Category.isFunction(MTypes.Category.fromValue(testNumber)));
-        TestUtils.assertFalse(MTypes.Category.isArray(MTypes.Category.fromValue(testNumber)));
-        TestUtils.assertFalse(MTypes.Category.isRecord(MTypes.Category.fromValue(testNumber)));
-        TestUtils.assertFalse(MTypes.Category.isPrimitive(MTypes.Category.fromValue(testArray2)));
-        TestUtils.assertFalse(
-          MTypes.Category.isNonPrimitive(MTypes.Category.fromValue(testNumber)),
-        );
-      });
     });
   });
 });

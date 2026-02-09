@@ -1,7 +1,7 @@
 /** Module that implements a TreeLeaf (see TreeAll for more details) */
 
 import * as MData from '../Data/index.js';
-import * as MTypes from '../types.js';
+import * as MTypes from '../types/index.js';
 import * as MTreeNode from './TreeNode.js';
 
 export const moduleTag = '@parischap/effect-lib/Tree/TreeLeaf/';

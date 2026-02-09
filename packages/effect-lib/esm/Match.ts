@@ -7,7 +7,7 @@
 import { Array, Option, Predicate, pipe } from 'effect';
 import * as MData from './Data/index.js';
 import * as MPredicate from './Predicate.js';
-import * as MTypes from './types.js';
+import * as MTypes from './types/index.js';
 
 /**
  * Module tag

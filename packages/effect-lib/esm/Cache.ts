@@ -10,7 +10,7 @@ import { Array, Equal, MutableHashMap, MutableList, Option, Tuple, flow, pipe } 
 import * as MData from './Data/index.js';
 import * as MCacheValueContainer from './internal/CacheValueContainer.js';
 import * as MNumber from './Number.js';
-import * as MTypes from './types.js';
+import * as MTypes from './types/index.js';
 
 /**
  * Module tag

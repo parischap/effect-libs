@@ -4,13 +4,6 @@ import { Array, Option, pipe, String } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('MString', () => {
-  it('moduleTag', () => {
-    TestUtils.assertEquals(
-      Option.some(MString.moduleTag),
-      TestUtils.moduleTagFromTestFilePath(import.meta.filename),
-    );
-  });
-
   describe('fromPrimitive', () => {
     it('null', () => {
       TestUtils.strictEqual(MString.fromPrimitive(null), 'null');

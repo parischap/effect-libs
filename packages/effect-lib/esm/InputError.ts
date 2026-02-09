@@ -2,8 +2,8 @@
 
 import { Data, Either, flow, Function, Number, Option, pipe, Predicate, String } from 'effect';
 import * as MPredicate from './Predicate.js';
-import * as MString from './String/index.js';
-import * as MTypes from './types.js';
+import * as MString from './string/index.js';
+import * as MTypes from './types/index.js';
 
 /**
  * Module tag

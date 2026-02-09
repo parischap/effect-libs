@@ -6,9 +6,9 @@
 import { Equivalence, Hash, Order, Predicate, Struct } from 'effect';
 import * as MDataEquivalenceBasedEquality from '../Data/DataEquivalenceBasedEquality.js';
 import * as MData from '../Data/index.js';
-import * as MTypes from '../types.js';
+import * as MTypes from '../types/index.js';
 
-export const moduleTag = '@parischap/effect-lib/String/StringSearchResult/';
+export const moduleTag = '@parischap/effect-lib/string/StringSearchResult/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 

@@ -1,7 +1,7 @@
 /** This module implements a type that defines the padding position for a string */
 import { flow, Function } from 'effect';
 import * as MMatch from '../Match.js';
-import * as MTypes from '../types.js';
+import * as MTypes from '../types/index.js';
 
 /**
  * Type of an MStringFillPosistion

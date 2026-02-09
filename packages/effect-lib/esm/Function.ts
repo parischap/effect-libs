@@ -1,7 +1,7 @@
 /** A simple extension to the Effect Function module */
 
 import { Function, Option, pipe } from 'effect';
-import * as MTypes from './types.js';
+import * as MTypes from './types/index.js';
 
 /**
  * Applies function f if condition is true

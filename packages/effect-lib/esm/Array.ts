@@ -16,7 +16,7 @@ import {
 } from 'effect';
 import * as MMatch from './Match.js';
 import * as MOption from './Option.js';
-import * as MTypes from './types.js';
+import * as MTypes from './types/index.js';
 /**
  * https://typescript-eslint.io/rules/no-unnecessary-type-parameters Returns true if the length of
  * `self` is `l`

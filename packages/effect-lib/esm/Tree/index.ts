@@ -14,7 +14,7 @@ import * as MArray from '../Array.js';
 import * as MMatch from '../Match.js';
 import * as MStruct from '../Struct.js';
 import * as MTuple from '../Tuple.js';
-import * as MTypes from '../types.js';
+import * as MTypes from '../types/index.js';
 import type * as MTreeForest from './TreeForest.js';
 import * as MTreeLeaf from './TreeLeaf.js';
 import * as MTreeNode from './TreeNode.js';

@@ -2,7 +2,7 @@
 
 import { Array, String as EString, Function, RegExp, pipe } from 'effect';
 import * as MArray from './Array.js';
-import type * as MTypes from './types.js';
+import type * as MTypes from './types/index.js';
 
 /**
  * Size of a group of digits

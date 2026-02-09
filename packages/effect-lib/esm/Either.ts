@@ -1,8 +1,8 @@
 /** A simple extension to the Effect Either module */
 
-import { Cause, Either, Function, Option, Predicate, Tuple, pipe } from "effect";
-import * as MTuple from "./Tuple.js";
-import * as MTypes from "./types.js";
+import { Cause, Either, Function, Option, Predicate, Tuple, pipe } from 'effect';
+import * as MTuple from './Tuple.js';
+import * as MTypes from './types/index.js';
 
 /**
  * Same as Effect.optionFromOptional but for Either's
@@ -16,9 +16,9 @@ export const optionFromOptional = <A, E>(
     self,
     Either.map(Option.some),
     Either.orElse((e) =>
-      e instanceof Cause.NoSuchElementException
-        ? Either.right(Option.none<A>())
-        : Either.left(e as Exclude<E, Cause.NoSuchElementException>),
+      e instanceof Cause.NoSuchElementException ?
+        Either.right(Option.none<A>())
+      : Either.left(e as Exclude<E, Cause.NoSuchElementException>),
     ),
   );
 
@@ -60,13 +60,13 @@ export const traversePair = <A, B, L>(
  * @category Utils
  */
 export const catchTag =
-  <K extends E extends { readonly _tag: string } ? E["_tag"] : never, E, E1>(
+  <K extends E extends { readonly _tag: string } ? E['_tag'] : never, E, E1>(
     k: K,
     f: (e: Extract<E, { readonly _tag: K }>) => E1,
   ) =>
   <A>(self: Either.Either<A, E>): Either.Either<A, E1 | Exclude<E, { _tag: K }>> =>
     Either.mapLeft(self, (e) =>
-      Predicate.isTagged(e, k)
-        ? f(e as Extract<E, { readonly _tag: K }>)
-        : (e as Exclude<E, { readonly _tag: K }>),
+      Predicate.isTagged(e, k) ?
+        f(e as Extract<E, { readonly _tag: K }>)
+      : (e as Exclude<E, { readonly _tag: K }>),
     );

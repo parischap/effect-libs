@@ -1,9 +1,9 @@
 /** A simple extension to the Effect Record module */
 
-import { flow, Function, Option, pipe, Predicate, Record } from "effect";
-import * as MFunction from "./Function.js";
-import * as MPredicate from "./Predicate.js";
-import * as MTypes from "./types.js";
+import { flow, Function, Option, pipe, Predicate, Record } from 'effect';
+import * as MFunction from './Function.js';
+import * as MPredicate from './Predicate.js';
+import * as MTypes from './types/index.js';
 
 /**
  * Unsafe get an element from a record. No checks, faster than the Effect version

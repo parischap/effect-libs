@@ -21,16 +21,9 @@ import * as MPredicate from '../Predicate.js';
 import * as MRegExp from '../RegExp.js';
 import * as MRegExpString from '../RegExpString.js';
 import * as MTuple from '../Tuple.js';
-import * as MTypes from '../types.js';
+import * as MTypes from '../types/index.js';
 import * as MStringFillPosition from './StringFillPosition.js';
 import * as MStringSearchResult from './StringSearchResult.js';
-
-/**
- * Module tag
- *
- * @category Models
- */
-export const moduleTag = '@parischap/effect-lib/String/';
 
 /**
  * Builds a string from a primitive value other than `null` and `undefined`. For numbers and

@@ -1,7 +1,7 @@
 /** A simple extension to the Effect BigInt module */
 
-import { Brand, Either, flow, Number, Option, pipe, Predicate, String } from "effect";
-import * as MTypes from "./types.js";
+import { Brand, Either, flow, Number, Option, pipe, Predicate, String } from 'effect';
+import * as MTypes from './types/index.js';
 
 /**
  * Constructs a bigint from a number. Will only throw if the number is NaN, Infinity or not an

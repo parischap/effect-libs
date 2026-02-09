@@ -1,8 +1,8 @@
 /** A simple extension to the Effect BigDecimal module */
 
-import { BigDecimal, Brand, Either, flow, Function, Option, pipe, Tuple } from "effect";
-import * as MBigInt from "./BigInt.js";
-import * as MTypes from "./types.js";
+import { BigDecimal, Brand, Either, flow, Function, Option, pipe, Tuple } from 'effect';
+import * as MBigInt from './BigInt.js';
+import * as MTypes from './types/index.js';
 
 const _tupledMake = Function.tupled<readonly [value: bigint, scale: number], BigDecimal.BigDecimal>(
   BigDecimal.make,

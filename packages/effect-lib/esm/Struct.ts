@@ -1,7 +1,7 @@
 /** A simple extension to the Effect Struct module */
 
 import { Function, Record, Struct, pipe } from 'effect';
-import * as MTypes from './types.js';
+import * as MTypes from './types/index.js';
 
 /**
  * Utility type that calculates the type of `{...first, ...second}` where `first` has type `First`

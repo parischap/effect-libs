@@ -1,7 +1,7 @@
 /** A simple extension to the Effect Predicate module */
 
 import { Effect, Predicate } from 'effect';
-import * as MTypes from './types.js';
+import * as MTypes from './types/index.js';
 
 /**
  * Effectful predicate that returns an effectful boolean
