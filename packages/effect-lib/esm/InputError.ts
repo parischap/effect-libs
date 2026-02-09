@@ -1,16 +1,16 @@
 /** A module that implements an error that occurs upon receiving an unexpected input */
 
-import { Data, Either, flow, Function, Number, Option, pipe, Predicate, String } from "effect";
-import * as MPredicate from "./Predicate.js";
-import * as MString from "./String.js";
-import * as MTypes from "./types.js";
+import { Data, Either, flow, Function, Number, Option, pipe, Predicate, String } from 'effect';
+import * as MPredicate from './Predicate.js';
+import * as MString from './String/index.js';
+import * as MTypes from './types.js';
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = "@parischap/effect-lib/InputError/";
+export const moduleTag = '@parischap/effect-lib/InputError/';
 
 /**
  * Type of an InputError
@@ -23,7 +23,7 @@ export class Type extends Data.TaggedError(moduleTag)<{
 
 const _nameLabel: MTypes.OneArgFunction<string | undefined, string> = flow(
   Option.liftPredicate(MTypes.isString),
-  Option.getOrElse(Function.constant("value")),
+  Option.getOrElse(Function.constant('value')),
 );
 /**
  * Builds an Input error that signals a wrong value
@@ -152,8 +152,8 @@ export const outOfBounds = ({
 }) =>
   new Type({
     message: `Expected ${_nameLabel(name)} to be between ${MString.fromNumber(10)(min + offset)}\
- (${minIncluded ? "included" : "excluded"}) and ${MString.fromNumber(10)(max + offset)}\
- (${maxIncluded ? "included" : "excluded"}). Actual: ${MString.fromNumber(10)(actual + offset)}`,
+ (${minIncluded ? 'included' : 'excluded'}) and ${MString.fromNumber(10)(max + offset)}\
+ (${maxIncluded ? 'included' : 'excluded'}). Actual: ${MString.fromNumber(10)(actual + offset)}`,
   });
 
 /**

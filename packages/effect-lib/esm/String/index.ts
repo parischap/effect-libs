@@ -2,11 +2,8 @@
 
 import {
   Array,
-  Equivalence,
   Function,
-  Hash,
   Option,
-  Order,
   Predicate,
   Record,
   String,
@@ -15,18 +12,18 @@ import {
   flow,
   pipe,
 } from 'effect';
-import * as MArray from './Array.js';
-import * as MBigInt from './BigInt.js';
-import * as MDataEquivalenceBasedEquality from './Data/DataEquivalenceBasedEquality.js';
-import * as MData from './Data/index.js';
-import * as MFunction from './Function.js';
-import * as MMatch from './Match.js';
-import * as MNumber from './Number.js';
-import * as MPredicate from './Predicate.js';
-import * as MRegExp from './RegExp.js';
-import * as MRegExpString from './RegExpString.js';
-import * as MTuple from './Tuple.js';
-import * as MTypes from './types.js';
+import * as MArray from '../Array.js';
+import * as MBigInt from '../BigInt.js';
+import * as MFunction from '../Function.js';
+import * as MMatch from '../Match.js';
+import * as MNumber from '../Number.js';
+import * as MPredicate from '../Predicate.js';
+import * as MRegExp from '../RegExp.js';
+import * as MRegExpString from '../RegExpString.js';
+import * as MTuple from '../Tuple.js';
+import * as MTypes from '../types.js';
+import * as MStringFillPosition from './StringFillPosition.js';
+import * as MStringSearchResult from './StringSearchResult.js';
 
 /**
  * Module tag
@@ -34,146 +31,6 @@ import * as MTypes from './types.js';
  * @category Models
  */
 export const moduleTag = '@parischap/effect-lib/String/';
-
-/**
- * This namespace implements a type that represents the result of the search of a string in another
- * string.
- *
- * @category Models
- */
-export namespace SearchResult {
-  const _namespaceTag = `${moduleTag}SearchResult/`;
-  const _TypeId: unique symbol = Symbol.for(_namespaceTag) as _TypeId;
-  type _TypeId = typeof _TypeId;
-
-  /**
-   * Type that represents a SearchResult
-   *
-   * @category Models
-   */
-  export class Type extends MDataEquivalenceBasedEquality.Class {
-    /** The index where the match was found in the target string */
-    readonly startIndex: number;
-    /** The index of the character following the match in the target string */
-    readonly endIndex: number;
-    /** The match */
-    readonly match: string;
-
-    /** Class constructor */
-    private constructor({ startIndex, endIndex, match }: MTypes.Data<Type>) {
-      super();
-      this.startIndex = startIndex;
-      this.endIndex = endIndex;
-      this.match = match;
-    }
-
-    /** Static constructor */
-    static make(params: MTypes.Data<Type>): Type {
-      return new Type(params);
-    }
-
-    /** Returns the `id` of `this` */
-    [MData.idSymbol](): string | (() => string) {
-      return _namespaceTag;
-    }
-
-    /** Calculates the hash value of `this` */
-    [Hash.symbol](): number {
-      return 0;
-    }
-
-    /** Function that implements the equivalence of `this` and `that` */
-    [MDataEquivalenceBasedEquality.isEquivalentToSymbol](this: this, that: this): boolean {
-      return equivalence(this, that);
-    }
-
-    /** Predicate that returns true if `that` has the same type marker as `this` */
-    [MDataEquivalenceBasedEquality.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
-      return Predicate.hasProperty(that, _TypeId);
-    }
-
-    /** Returns the TypeMarker of the class */
-    protected get [_TypeId](): _TypeId {
-      return _TypeId;
-    }
-  }
-
-  /**
-   * Equivalence that considers two SearchResult's to be equivalent when all their fields are equal
-   *
-   * @category Equivalences
-   */
-  export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
-    self.startIndex === that.startIndex
-    && self.endIndex === that.endIndex
-    && self.match === that.match;
-
-  /**
-   * Equivalence that considers two SearchResult's to be equivalent when they overlap
-   *
-   * @category Equivalences
-   */
-  export const areOverlapping: Equivalence.Equivalence<Type> = (self, that) =>
-    self.endIndex >= that.startIndex && self.startIndex <= that.endIndex;
-
-  /**
-   * Constructor
-   *
-   * @category Constructors
-   */
-  export const make = (params: MTypes.Data<Type>): Type => Type.make(params);
-
-  /**
-   * SearchResult Order based on the startIndex
-   *
-   * @category Ordering
-   */
-  export const byStartIndex: Order.Order<Type> = Order.mapInput(
-    Order.number,
-    (self: Type) => self.startIndex,
-  );
-
-  /**
-   * SearchResult Order based on the endIndex
-   *
-   * @category Ordering
-   */
-  export const byEndIndex: Order.Order<Type> = Order.mapInput(
-    Order.number,
-    (self: Type) => self.endIndex,
-  );
-
-  /**
-   * SearchResult Order that gives precedence to the first longest SearchResult.
-   *
-   * @category Ordering
-   */
-  export const byLongestFirst: Order.Order<Type> = Order.combine(
-    byStartIndex,
-    Order.reverse(byEndIndex),
-  );
-
-  /**
-   * Returns the `startIndex` property of `self`
-   *
-   * @category Destructors
-   */
-  export const startIndex: MTypes.OneArgFunction<Type, number> = Struct.get('startIndex');
-
-  /**
-   * Returns the `endIndex` property of `self`
-   *
-   * @category Destructors
-   */
-  export const endIndex: MTypes.OneArgFunction<Type, number> = Struct.get('endIndex');
-
-  /**
-   * Returns the `match` property of `self`
-   *
-   * @category Destructors
-   */
-  export const match: MTypes.OneArgFunction<Type, string> = Struct.get('match');
-}
 
 /**
  * Builds a string from a primitive value other than `null` and `undefined`. For numbers and
@@ -234,8 +91,8 @@ export const fromNumber =
   };
 
 /**
- * Searches for the first occurence of `regexp` in `self` and returns a SearchResult. You can
- * optionnally provide the index from which to start searching. 'g' flag needs not be set if you
+ * Searches for the first occurence of `regexp` in `self` and returns an MStringSearchResult. You
+ * can optionnally provide the index from which to start searching. 'g' flag needs not be set if you
  * pass a regular expression. As opposed to String.search, regexp special characters need not be
  * escaped when passing a string regexp
  *
@@ -243,12 +100,12 @@ export const fromNumber =
  */
 export const search =
   (regexp: RegExp | string, startIndex = 0) =>
-  (self: string): Option.Option<SearchResult.Type> => {
+  (self: string): Option.Option<MStringSearchResult.Type> => {
     if (MTypes.isString(regexp)) {
       const pos = self.indexOf(regexp, startIndex);
       if (pos === -1) return Option.none();
       return Option.some(
-        SearchResult.make({ startIndex: pos, endIndex: pos + regexp.length, match: regexp }),
+        MStringSearchResult.make({ startIndex: pos, endIndex: pos + regexp.length, match: regexp }),
       );
     }
     const target = self.slice(startIndex);
@@ -258,7 +115,11 @@ export const search =
     const offsetPos = startIndex + result.index;
     const [match] = result;
     return Option.some(
-      SearchResult.make({ startIndex: offsetPos, endIndex: offsetPos + match.length, match }),
+      MStringSearchResult.make({
+        startIndex: offsetPos,
+        endIndex: offsetPos + match.length,
+        match,
+      }),
     );
   };
 
@@ -270,7 +131,7 @@ export const search =
  */
 export const searchAll =
   (regexp: RegExp | string) =>
-  (self: string): Array<SearchResult.Type> =>
+  (self: string): Array<MStringSearchResult.Type> =>
     Array.unfold(0, (pos) =>
       pipe(
         self,
@@ -285,19 +146,19 @@ export const searchAll =
     );
 
 /**
- * Searches for the last occurence of `regexp` in `self` and returns a SearchResult. 'g' flag needs
- * not be set if you pass a regular expression.
+ * Searches for the last occurence of `regexp` in `self` and returns an MStringSearchResult. 'g'
+ * flag needs not be set if you pass a regular expression.
  *
  * @category Utils
  */
 export const searchRight =
   (regexp: RegExp | string) =>
-  (self: string): Option.Option<SearchResult.Type> => {
+  (self: string): Option.Option<MStringSearchResult.Type> => {
     if (MTypes.isString(regexp)) {
       const pos = self.lastIndexOf(regexp);
       if (pos === -1) return Option.none();
       return Option.some(
-        SearchResult.make({ startIndex: pos, endIndex: pos + regexp.length, match: regexp }),
+        MStringSearchResult.make({ startIndex: pos, endIndex: pos + regexp.length, match: regexp }),
       );
     }
     return pipe(self, searchAll(regexp), Array.last);
@@ -316,7 +177,7 @@ export const takeTo =
     pipe(
       self,
       search(regexp),
-      Option.map(SearchResult.startIndex),
+      Option.map(MStringSearchResult.startIndex),
       Option.getOrElse(() => self.length),
       MFunction.flipDual(String.takeLeft)(self),
     );
@@ -384,35 +245,6 @@ export const trimEnd = (charToRemove: string): MTypes.StringTransformer =>
   );
 
 /**
- * Enum that defines the padding position
- *
- * @category Models
- */
-export enum FillPosition {
-  Right = 0,
-  Left = 1,
-}
-
-/**
- * FillPosition namespace
- *
- * @category Models
- */
-export namespace FillPosition {
-  /**
-   * Builds the id of a FillPosition
-   *
-   * @category Destructors
-   */
-  export const toString: MTypes.OneArgFunction<FillPosition, string> = flow(
-    MMatch.make,
-    MMatch.whenIs(FillPosition.Right, Function.constant('right')),
-    MMatch.whenIs(FillPosition.Left, Function.constant('left')),
-    MMatch.exhaustive,
-  );
-}
-
-/**
  * Pads a string to the left or to the right (depending on `fillPosition`) with up to `length`
  * characters `fillChar`. `length` should be a positive integer. `fillChar` should be a
  * one-character string. Does nothing if the string to pad has more than `length` characters.
@@ -427,13 +259,13 @@ export const pad = ({
 }: {
   readonly length: number;
   readonly fillChar: string;
-  readonly fillPosition: FillPosition;
+  readonly fillPosition: MStringFillPosition.Type;
 }): MTypes.OneArgFunction<string> =>
   pipe(
     fillPosition,
     MMatch.make,
-    MMatch.whenIs(FillPosition.Left, () => String.padStart(length, fillChar)),
-    MMatch.whenIs(FillPosition.Right, () => String.padEnd(length, fillChar)),
+    MMatch.whenIs(MStringFillPosition.Type.Left, () => String.padStart(length, fillChar)),
+    MMatch.whenIs(MStringFillPosition.Type.Right, () => String.padEnd(length, fillChar)),
     MMatch.exhaustive,
   );
 
@@ -454,15 +286,15 @@ export const trim = ({
   disallowEmptyString,
 }: {
   readonly fillChar: string;
-  readonly fillPosition: FillPosition;
+  readonly fillPosition: MStringFillPosition.Type;
   readonly disallowEmptyString: boolean;
 }): MTypes.OneArgFunction<string, string> =>
   flow(
     pipe(
       fillPosition,
       MMatch.make,
-      MMatch.whenIs(FillPosition.Left, () => trimStart(fillChar)),
-      MMatch.whenIs(FillPosition.Right, () => trimEnd(fillChar)),
+      MMatch.whenIs(MStringFillPosition.Type.Left, () => trimStart(fillChar)),
+      MMatch.whenIs(MStringFillPosition.Type.Right, () => trimEnd(fillChar)),
       MMatch.exhaustive,
     ),
     MFunction.fIfTrue({

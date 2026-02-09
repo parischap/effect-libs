@@ -1,5 +1,5 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { MString } from '@parischap/effect-lib';
+import { MString, MStringFillPosition, MStringSearchResult } from '@parischap/effect-lib';
 import { Array, Option, pipe, String } from 'effect';
 import { describe, it } from 'vitest';
 
@@ -9,31 +9,6 @@ describe('MString', () => {
       Option.some(MString.moduleTag),
       TestUtils.moduleTagFromTestFilePath(import.meta.filename),
     );
-  });
-
-  describe('MString.SearchResult', () => {
-    const testSearchResult = MString.SearchResult.make({
-      startIndex: 3,
-      endIndex: 6,
-      match: 'foo',
-    });
-
-    it('byLongestFirst', () => {
-      TestUtils.strictEqual(
-        MString.SearchResult.byLongestFirst(
-          testSearchResult,
-          MString.SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }),
-        ),
-        -1,
-      );
-      TestUtils.strictEqual(
-        MString.SearchResult.byLongestFirst(
-          testSearchResult,
-          MString.SearchResult.make({ startIndex: 3, endIndex: 7, match: 'foo1' }),
-        ),
-        1,
-      );
-    });
   });
 
   describe('fromPrimitive', () => {
@@ -102,21 +77,21 @@ describe('MString', () => {
     it('string in string containing one occurence', () => {
       TestUtils.assertSome(
         MString.search('foo', 4)('the foo is bar'),
-        MString.SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }),
+        MStringSearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }),
       );
     });
 
     it('string in string containing two occurences with startIndex=4', () => {
       TestUtils.assertSome(
         MString.search('foo', 4)('the foo is foo'),
-        MString.SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }),
+        MStringSearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }),
       );
     });
 
     it('string in string containing two occurences with startIndex=5', () => {
       TestUtils.assertSome(
         MString.search('foo', 5)('the foo is foo'),
-        MString.SearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' }),
+        MStringSearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' }),
       );
     });
 
@@ -127,21 +102,21 @@ describe('MString', () => {
     it('RegExp in string containing one occurence', () => {
       TestUtils.assertSome(
         MString.search(/f.o/, 4)('the foo is bar'),
-        MString.SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }),
+        MStringSearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }),
       );
     });
 
     it('RegExp in string containing two occurences with startIndex=4', () => {
       TestUtils.assertSome(
         MString.search(/f.o/, 4)('the foo is foo'),
-        MString.SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }),
+        MStringSearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }),
       );
     });
 
     it('RegExp in string containing two occurences with startIndex=5', () => {
       TestUtils.assertSome(
         MString.search(/f.o/, 5)('the foo is foo'),
-        MString.SearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' }),
+        MStringSearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' }),
       );
     });
   });
@@ -155,8 +130,8 @@ describe('MString', () => {
       TestUtils.assertEquals(
         MString.searchAll('foo')('the foo is foo'),
         Array.make(
-          MString.SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }),
-          MString.SearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' }),
+          MStringSearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }),
+          MStringSearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' }),
         ),
       );
     });
@@ -169,8 +144,8 @@ describe('MString', () => {
       TestUtils.assertEquals(
         MString.searchAll(/f.o/)('the foo is fuo'),
         Array.make(
-          MString.SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }),
-          MString.SearchResult.make({ startIndex: 11, endIndex: 14, match: 'fuo' }),
+          MStringSearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }),
+          MStringSearchResult.make({ startIndex: 11, endIndex: 14, match: 'fuo' }),
         ),
       );
     });
@@ -184,14 +159,14 @@ describe('MString', () => {
     it('string in string containing one occurence', () => {
       TestUtils.assertSome(
         MString.searchRight('foo')('the bar is foo'),
-        MString.SearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' }),
+        MStringSearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' }),
       );
     });
 
     it('string in string containing two occurences', () => {
       TestUtils.assertSome(
         MString.searchRight('foo')('the foo is foo'),
-        MString.SearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' }),
+        MStringSearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' }),
       );
     });
 
@@ -202,14 +177,14 @@ describe('MString', () => {
     it('RegExp in string containing one occurence', () => {
       TestUtils.assertSome(
         MString.searchRight(/f.o/)('the foo is bar'),
-        MString.SearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }),
+        MStringSearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }),
       );
     });
 
     it('RegExp in string containing two occurences', () => {
       TestUtils.assertSome(
         MString.searchRight(/f.o/)('the foo is foo'),
-        MString.SearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' }),
+        MStringSearchResult.make({ startIndex: 11, endIndex: 14, match: 'foo' }),
       );
     });
   });
@@ -291,7 +266,7 @@ describe('MString', () => {
       TestUtils.strictEqual(
         pipe(
           'a',
-          MString.pad({ length: 3, fillChar: 'b', fillPosition: MString.FillPosition.Left }),
+          MString.pad({ length: 3, fillChar: 'b', fillPosition: MStringFillPosition.Type.Left }),
         ),
         'bba',
       );
@@ -301,7 +276,7 @@ describe('MString', () => {
       TestUtils.strictEqual(
         pipe(
           'aa',
-          MString.pad({ length: 3, fillChar: 'b', fillPosition: MString.FillPosition.Right }),
+          MString.pad({ length: 3, fillChar: 'b', fillPosition: MStringFillPosition.Type.Right }),
         ),
         'aab',
       );
@@ -311,7 +286,7 @@ describe('MString', () => {
       TestUtils.strictEqual(
         pipe(
           'abcd',
-          MString.pad({ length: 3, fillChar: 'b', fillPosition: MString.FillPosition.Right }),
+          MString.pad({ length: 3, fillChar: 'b', fillPosition: MStringFillPosition.Type.Right }),
         ),
         'abcd',
       );
@@ -325,7 +300,7 @@ describe('MString', () => {
           'bba',
           MString.trim({
             fillChar: 'b',
-            fillPosition: MString.FillPosition.Left,
+            fillPosition: MStringFillPosition.Type.Left,
             disallowEmptyString: false,
           }),
         ),
@@ -339,7 +314,7 @@ describe('MString', () => {
           'aab',
           MString.trim({
             fillChar: 'b',
-            fillPosition: MString.FillPosition.Right,
+            fillPosition: MStringFillPosition.Type.Right,
             disallowEmptyString: false,
           }),
         ),
@@ -353,7 +328,7 @@ describe('MString', () => {
           '000',
           MString.trim({
             fillChar: '0',
-            fillPosition: MString.FillPosition.Right,
+            fillPosition: MStringFillPosition.Type.Right,
             disallowEmptyString: false,
           }),
         ),
@@ -367,7 +342,7 @@ describe('MString', () => {
           '000',
           MString.trim({
             fillChar: '0',
-            fillPosition: MString.FillPosition.Left,
+            fillPosition: MStringFillPosition.Type.Left,
             disallowEmptyString: true,
           }),
         ),
