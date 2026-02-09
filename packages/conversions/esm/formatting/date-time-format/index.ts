@@ -5,6 +5,7 @@
  */
 
 import {
+  MData,
   MInputError,
   MInspectable,
   MMatch,
@@ -20,290 +21,76 @@ import {
   HashMap,
   Option,
   pipe,
-  Pipeable,
   Predicate,
   Record,
   Struct,
   Tuple,
 } from 'effect';
-import * as CVDateTime from './DateTime.js';
+import * as CVDateTime from '../../DateTime/index.js';
+import * as CVTemplateParts from '../../internal/formatting/TemplateParts.js';
+import * as CVReal from '../../primitive/Real.js';
+import * as CVTemplate from '../Template.js';
+import * as CVTemplatePart from '../TemplatePart/index.js';
+import * as CVTemplatePartPlaceholder from '../TemplatePart/Placeholder/index.js';
+import * as CVTemplatePartSeparator from '../TemplatePart/Separator.js';
 import * as CVDateTimeFormatContext from './DateTimeFormatContext.js';
-import * as CVTemplateParts from './internal/TemplateParts.js';
-import * as CVReal from './Real.js';
-import * as CVTemplate from './Template.js';
-import * as CVTemplatePart from './TemplatePart/index.js';
-import * as CVTemplatePartPlaceholder from './TemplatePart/Placeholder.js';
-import * as CVTemplatePartSeparator from './TemplatePart/Separator.js';
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/conversions/DateTimeFormat/';
+export const moduleTag = '@parischap/conversions/formatting/DateTimeFormat/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
 /**
- * Namespace for a TemplatePart
+ * Type that represents a CVDateTimeFormat
  *
  * @category Models
  */
-export namespace TemplatePart {
-  const _tag = moduleTag + 'TemplatePart/';
-  /**
-   * Type of a TemplatePart
-   *
-   * @category Models
-   */
-  export type Type = Placeholder.Type | Separator.Type;
-
-  /**
-   * Type guard
-   *
-   * @category Guards
-   */
-  export const isPlaceholder = (u: Type): u is Placeholder.Type => Placeholder.has(u);
-
-  /**
-   * Type guard
-   *
-   * @category Guards
-   */
-  export const isSeparator = (u: Type): u is Separator.Type => Separator.has(u);
-
-  /**
-   * Namespace for a TemplatePart that represents a part of a date time
-   *
-   * @category Models
-   */
-  export namespace Placeholder {
-    const _namespaceTag = _tag + 'Placeholder/';
-    const _TypeId: unique symbol = Symbol.for(_namespaceTag) as _TypeId;
-    type _TypeId = typeof _TypeId;
-
-    /**
-     * Type that represents a Placeholder
-     *
-     * @category Model
-     */
-    export interface Type extends MInspectable.Type, Pipeable.Pipeable {
-      /** Name of this Placeholder */
-      readonly name: CVDateTimeFormatContext.Token;
-
-      /** @internal */
-      readonly [_TypeId]: _TypeId;
-    }
-
-    /**
-     * Type guard
-     *
-     * @category Guards
-     */
-    export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
-
-    /** Prototype */
-    const _proto: MTypes.Proto<Type> = {
-      [_TypeId]: _TypeId,
-      [MInspectable.IdSymbol](this: Type) {
-        return this.name;
-      },
-      ...MInspectable.BaseProto(moduleTag),
-      ...MPipeable.BaseProto,
-    };
-
-    const _make = (params: MTypes.Data<Type>): Type =>
-      MTypes.objectFromDataAndProto(_proto, params);
-
-    /**
-     * Placeholder constructor
-     *
-     * @category Constructors
-     */
-    export const make = (name: CVDateTimeFormatContext.Token): Type => _make({ name });
-
-    /**
-     * Returns the `name` property of `self`
-     *
-     * @category Destructors
-     */
-    export const name: MTypes.OneArgFunction<Type, CVDateTimeFormatContext.Token> =
-      Struct.get('name');
-  }
-
-  /**
-   * Namespace for a TemplatePart that represents a Separator
-   *
-   * @category Models
-   */
-  export namespace Separator {
-    const _namespaceTag = _tag + 'Separator/';
-    const _TypeId: unique symbol = Symbol.for(_namespaceTag) as _TypeId;
-    type _TypeId = typeof _TypeId;
-
-    /**
-     * Type that represents a SeparatorTemplatePart
-     *
-     * @category Model
-     */
-    export interface Type extends MInspectable.Type, Pipeable.Pipeable {
-      /** The separator */
-      readonly value: string;
-
-      /** @internal */
-      readonly [_TypeId]: _TypeId;
-    }
-
-    /**
-     * Type guard
-     *
-     * @category Guards
-     */
-    export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
-
-    /** Prototype */
-    const _proto: MTypes.Proto<Type> = {
-      [_TypeId]: _TypeId,
-      [MInspectable.IdSymbol](this: Type) {
-        return this.value;
-      },
-      ...MInspectable.BaseProto(moduleTag),
-      ...MPipeable.BaseProto,
-    };
-
-    const _make = (params: MTypes.Data<Type>): Type =>
-      MTypes.objectFromDataAndProto(_proto, params);
-
-    /**
-     * Placeholder constructor
-     *
-     * @category Constructors
-     */
-    export const make = (value: string): Type => _make({ value });
-
-    /**
-     * Returns the `value` property of `self`
-     *
-     * @category Destructors
-     */
-    export const value: MTypes.OneArgFunction<Type, string> = Struct.get('value');
-
-    /**
-     * Slash Separator instance
-     *
-     * @category Instances
-     */
-    export const slash: Type = make('/');
-
-    /**
-     * Backslash Separator instance
-     *
-     * @category Instances
-     */
-    export const backslash: Type = make('\\');
-
-    /**
-     * Dot Separator instance
-     *
-     * @category Instances
-     */
-    export const dot: Type = make('.');
-
-    /**
-     * Hyphen Separator instance
-     *
-     * @category Instances
-     */
-    export const hyphen: Type = make('-');
-
-    /**
-     * Colon Separator instance
-     *
-     * @category Instances
-     */
-    export const colon: Type = make(':');
-
-    /**
-     * Comma Separator instance
-     *
-     * @category Instances
-     */
-    export const comma: Type = make(',');
-
-    /**
-     * Space Separator instance
-     *
-     * @category Instances
-     */
-    export const space: Type = make(' ');
-  }
-}
-
-/**
- * Namespace TemplateParts
- *
- * @category Models
- */
-export namespace TemplateParts {
-  /**
-   * Type of an array of TemplatePart's
-   *
-   * @category Models
-   */
-  export interface Type extends ReadonlyArray<TemplatePart.Type> {}
-}
-
-/**
- * Namespace of a DateTimeFormat Parser
- *
- * @category Models
- */
-export namespace Parser {
-  /**
-   * Type that describes a DateTimeFormat Parser
-   *
-   * @category Models
-   */
-  export interface Type extends MTypes.OneArgFunction<
-    string,
-    Either.Either<CVDateTime.Type, MInputError.Type>
-  > {}
-}
-
-/**
- * Namespace of a DateTimeFormat Formatter
- *
- * @category Models
- */
-export namespace Formatter {
-  /**
-   * Type that describes a DateTimeFormat Formatter
-   *
-   * @category Models
-   */
-  export interface Type extends MTypes.OneArgFunction<
-    CVDateTime.Type,
-    Either.Either<string, MInputError.Type>
-  > {}
-}
-
-/**
- * Type that represents a DateTimeFormat.
- *
- * @category Models
- */
-export interface Type extends MInspectable.Type, Pipeable.Pipeable {
+export class Type extends MData.Class {
   /** The CVDateTimeFormatContext of this DateTimeFormat */
   readonly context: CVDateTimeFormatContext.Type;
 
   /** The array of TemplatePart's contituting this DateTimeFormat */
-  readonly templateParts: TemplateParts.Type;
+  readonly templateParts: CVTemplateParts.Type;
 
-  /** @internal */
-  readonly _template: CVTemplate.Type<CVTemplateParts.Type<CVReal.Type>>;
+  // template built from `templateParts`
+  readonly template: CVTemplate.Type<CVTemplateParts.Type<CVReal.Type>>;
 
-  readonly [_TypeId]: _TypeId;
+  /** Returns the `id` of `this` */
+  [MData.idSymbol](): string | (() => string) {
+    return function idSymbol(this: Type) {
+      return '';
+    };
+  }
+
+  /** Class constructor */
+  private constructor({ context, templateParts, template }: MTypes.Data<Type>) {
+    super();
+    this.context = context;
+    this.templateParts = templateParts;
+    this.template = template;
+  }
+
+  /** Static constructor */
+  static make(params: MTypes.Data<Type>): Type {
+    return new Type(params);
+  }
+
+  /** Returns the TypeMarker of the class */
+  protected get [_TypeId](): _TypeId {
+    return _TypeId;
+  }
 }
+
+/**
+ * Constructor of a CVDateTimeFormat
+ *
+ * @category Constructors
+ */
+export const make = (params: MTypes.Data<Type>): Type => Type.make(params);
 
 /**
  * Type guard
@@ -369,7 +156,7 @@ export const make = ({
   return _make({
     context,
     templateParts: templateParts,
-    _template: template,
+    template: template,
   });
 };
 
@@ -396,9 +183,11 @@ export const templateParts: MTypes.OneArgFunction<Type, TemplateParts.Type> =
  * @category Parsing
  */
 
-export const toParser = (self: Type): Parser.Type => {
+export const toParser = (
+  self: Type,
+): MTypes.OneArgFunction<string, Either.Either<CVDateTime.Type, MInputError.Type>> => {
   return flow(
-    CVTemplate.toParser(self._template),
+    CVTemplate.toParser(self.template),
     Either.flatMap((o) => CVDateTime.fromParts(o as DateTimeParts)),
   );
 };
@@ -420,12 +209,14 @@ export const toThrowingParser: MTypes.OneArgFunction<
  * @category Formatting
  */
 
-export const toFormatter = (self: Type): Formatter.Type => {
+export const toFormatter = (
+  self: Type,
+): MTypes.OneArgFunction<CVDateTime.Type, Either.Either<string, MInputError.Type>> => {
   const toParts: Record.ReadonlyRecord<
     string,
     MTypes.OneArgFunction<CVDateTime.Type, number>
   > = pipe(
-    self._template.templateParts,
+    self.template.templateParts,
     Array.filterMap(
       flow(
         MMatch.make,
@@ -514,7 +305,7 @@ export const toFormatter = (self: Type): Formatter.Type => {
     ),
     Record.fromEntries,
   );
-  const formatter = CVTemplate.toFormatter(self._template);
+  const formatter = CVTemplate.toFormatter(self.template);
 
   return (d) => pipe(toParts, Record.map(Function.apply(d)), formatter);
 };

@@ -1,7 +1,8 @@
 /** This module defines ThreeBit colors */
 
-import { MDataEquivalenceBasedEquality, MMatch, MTypes } from '@parischap/effect-lib';
-import { Array, Equivalence, flow, Function, Hash, Predicate, Struct } from 'effect';
+import { MDataEquivalenceBasedEquality, MTypes } from '@parischap/effect-lib';
+import { Array, Equivalence, Hash, Predicate, Struct } from 'effect';
+import * as ASThreeBitColorOffset from '../internal/Color/ThreeBitColorOffset.js';
 import * as ASColor from './index.js';
 
 /**
@@ -14,56 +15,13 @@ const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
 /**
- * Possible three-bit color offsets
- *
- * @category Models
- */
-export enum Offset {
-  Black = 0,
-  Red = 1,
-  Green = 2,
-  Yellow = 3,
-  Blue = 4,
-  Magenta = 5,
-  Cyan = 6,
-  White = 7,
-}
-
-/**
- * Namespace for three-bit color offsets
- *
- * @category Models
- */
-export namespace Offset {
-  /**
-   * Builds the id of a color from its offset
-   *
-   * @category Destructors
-   */
-  export const toString: MTypes.OneArgFunction<Offset, string> = flow(
-    MMatch.make,
-    flow(
-      MMatch.whenIs(Offset.Black, Function.constant('Black')),
-      MMatch.whenIs(Offset.Red, Function.constant('Red')),
-      MMatch.whenIs(Offset.Green, Function.constant('Green')),
-      MMatch.whenIs(Offset.Yellow, Function.constant('Yellow')),
-      MMatch.whenIs(Offset.Blue, Function.constant('Blue')),
-      MMatch.whenIs(Offset.Magenta, Function.constant('Magenta')),
-      MMatch.whenIs(Offset.Cyan, Function.constant('Cyan')),
-      MMatch.whenIs(Offset.White, Function.constant('White')),
-    ),
-    MMatch.exhaustive,
-  );
-}
-
-/**
  * ASThreeBitColor Type
  *
  * @category Models
  */
 export class Type extends ASColor.Type {
   /** Offset of this color */
-  readonly offset: Offset;
+  readonly offset: ASThreeBitColorOffset.Type;
 
   /** Indicates whether the color is bright */
   readonly isBright: boolean;
@@ -73,11 +31,11 @@ export class Type extends ASColor.Type {
     offset,
     isBright,
   }: {
-    readonly offset: Offset;
+    readonly offset: ASThreeBitColorOffset.Type;
     readonly isBright: boolean;
   }) {
     super({
-      foregroundId: `${isBright ? 'Bright' : ''}${Offset.toString(offset)}`,
+      foregroundId: `${isBright ? 'Bright' : ''}${ASThreeBitColorOffset.toString(offset)}`,
       foregroundSequence: Array.of((isBright ? 90 : 30) + offset),
     });
     this.offset = offset;
@@ -85,7 +43,10 @@ export class Type extends ASColor.Type {
   }
 
   /** Static constructor */
-  static make(params: { readonly offset: Offset; readonly isBright: boolean }): Type {
+  static make(params: {
+    readonly offset: ASThreeBitColorOffset.Type;
+    readonly isBright: boolean;
+  }): Type {
     return new Type(params);
   }
 
@@ -123,7 +84,7 @@ export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
  *
  * @category Destructors
  */
-export const offset: MTypes.OneArgFunction<Type, Offset> = Struct.get('offset');
+export const offset: MTypes.OneArgFunction<Type, ASThreeBitColorOffset.Type> = Struct.get('offset');
 
 /**
  * Gets the `isBright` property of `self`
@@ -137,108 +98,110 @@ export const isBright: MTypes.OneArgFunction<Type, boolean> = Struct.get('isBrig
  *
  * @category Constructors
  */
-export const make = (offset: Offset): Type => Type.make({ offset, isBright: false });
+export const make = (offset: ASThreeBitColorOffset.Type): Type =>
+  Type.make({ offset, isBright: false });
 
 /**
  * Constructor of bright colors
  *
  * @category Original instances
  */
-export const makeBright = (offset: Offset) => Type.make({ offset, isBright: true });
+export const makeBright = (offset: ASThreeBitColorOffset.Type) =>
+  Type.make({ offset, isBright: true });
 /**
  * Original Black color instance
  *
  * @category Original instances
  */
-export const black: Type = make(Offset.Black);
+export const black: Type = make(ASThreeBitColorOffset.Type.Black);
 /**
  * Original Red color instance
  *
  * @category Original instances
  */
-export const red: Type = make(Offset.Red);
+export const red: Type = make(ASThreeBitColorOffset.Type.Red);
 /**
  * Original Green color instance
  *
  * @category Original instances
  */
-export const green: Type = make(Offset.Green);
+export const green: Type = make(ASThreeBitColorOffset.Type.Green);
 /**
  * Original Yellow color instance
  *
  * @category Original instances
  */
-export const yellow: Type = make(Offset.Yellow);
+export const yellow: Type = make(ASThreeBitColorOffset.Type.Yellow);
 /**
  * Original Blue color instance
  *
  * @category Original instances
  */
-export const blue: Type = make(Offset.Blue);
+export const blue: Type = make(ASThreeBitColorOffset.Type.Blue);
 /**
  * Original Magenta color instance
  *
  * @category Original instances
  */
-export const magenta: Type = make(Offset.Magenta);
+export const magenta: Type = make(ASThreeBitColorOffset.Type.Magenta);
 /**
  * Original Cyan color instance
  *
  * @category Original instances
  */
-export const cyan: Type = make(Offset.Cyan);
+export const cyan: Type = make(ASThreeBitColorOffset.Type.Cyan);
 /**
  * Original White color instance
  *
  * @category Original instances
  */
-export const white: Type = make(Offset.White);
+export const white: Type = make(ASThreeBitColorOffset.Type.White);
 
 /**
  * Original Bright Black color instance
  *
  * @category Original instances
  */
-export const brightBlack: Type = makeBright(Offset.Black);
+export const brightBlack: Type = makeBright(ASThreeBitColorOffset.Type.Black);
 /**
  * Original Bright Red color instance
  *
  * @category Original instances
  */
-export const brightRed: Type = makeBright(Offset.Red);
+export const brightRed: Type = makeBright(ASThreeBitColorOffset.Type.Red);
 /**
  * Original Bright Green color instance
  *
  * @category Original instances
  */
-export const brightGreen: Type = makeBright(Offset.Green);
+export const brightGreen: Type = makeBright(ASThreeBitColorOffset.Type.Green);
 /**
  * Original Bright Yellow color instance
  *
  * @category Original instances
  */
-export const brightYellow: Type = makeBright(Offset.Yellow);
+export const brightYellow: Type = makeBright(ASThreeBitColorOffset.Type.Yellow);
 /**
  * Original Bright Blue color instance
  *
  * @category Original instances
  */
-export const brightBlue: Type = makeBright(Offset.Blue);
+export const brightBlue: Type = makeBright(ASThreeBitColorOffset.Type.Blue);
 /**
  * Original Bright Magenta color instance
  *
  * @category Original instances
  */
-export const brightMagenta: Type = makeBright(Offset.Magenta);
+export const brightMagenta: Type = makeBright(ASThreeBitColorOffset.Type.Magenta);
 /**
  * Original Bright Cyan color instance
  *
  * @category Original instances
  */
-export const brightCyan: Type = makeBright(Offset.Cyan);
+export const brightCyan: Type = makeBright(ASThreeBitColorOffset.Type.Cyan);
 /**
  * Original Bright White color instance
  *
  * @category Original instances
  */
-export const brightWhite: Type = makeBright(Offset.White);
+export const brightWhite: Type = makeBright(ASThreeBitColorOffset.Type.White);

@@ -16,19 +16,19 @@ import {
   Record,
   Schema,
 } from 'effect';
-import * as CVDateTime from './DateTime.js';
+import * as CVDateTime from '../DateTime/index.js';
+import * as CVTemplateParts from '../internal/formatting/TemplateParts.js';
+import * as CVEmail from '../primitive/Email.js';
+import * as CVInteger from '../primitive/Integer.js';
+import * as CVPositiveInteger from '../primitive/PositiveInteger.js';
+import * as CVPositiveReal from '../primitive/PositiveReal.js';
+import * as CVReal from '../primitive/Real.js';
+import * as CVSemVer from '../primitive/SemVer.js';
 import * as CVDateTimeFormat from './DateTimeFormat.js';
-import * as CVEmail from './Email.js';
-import * as CVInteger from './Integer.js';
 import * as CVNumberBase10Format from './NumberBase10Format.js';
-import * as CVPositiveInteger from './PositiveInteger.js';
-import * as CVPositiveReal from './PositiveReal.js';
-import * as CVReal from './Real.js';
-import * as CVSemVer from './SemVer.js';
 import * as CVTemplate from './Template.js';
-import * as CVTemplatePart from './TemplatePart.js';
-import * as CVTemplatePartPlaceholder from './TemplatePartPlaceholder.js';
-import * as CVTemplateParts from './TemplateParts.js';
+import * as CVTemplatePart from './TemplatePart/index.js';
+import * as CVTemplatePartPlaceholder from './TemplatePart/Placeholder/index.js';
 
 /**
  * A `Schema` that transforms a string into a `CVEmail`

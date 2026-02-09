@@ -98,6 +98,9 @@
     "./ASEightBitColor": {
       "default": "./esm/Color/EightBitColor.ts"
     },
+    "./ASEightBitColorCode": {
+      "default": "./esm/internal/Color/EightBitColorCode.ts"
+    },
     "./ASForegroundColorStyleCharacteristic": {
       "default": "./esm/internal/style-characteristic/OptionalStyleCharacteristic/ColorOptionalStyleCharacteristic/ForegroundColorStyleCharacteristic.ts"
     },
@@ -148,6 +151,9 @@
     },
     "./ASThreeBitColor": {
       "default": "./esm/Color/ThreeBitColor.ts"
+    },
+    "./ASThreeBitColorOffset": {
+      "default": "./esm/internal/Color/ThreeBitColorOffset.ts"
     },
     "./ASUnderlinedStyleCharacteristic": {
       "default": "./esm/internal/style-characteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/UnderlinedStyleCharacteristic.ts"

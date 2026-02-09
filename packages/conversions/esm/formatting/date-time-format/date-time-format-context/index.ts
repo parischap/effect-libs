@@ -1,156 +1,29 @@
 /**
- * This module implements a `CVDateFormatContext` which is used when parsing or formatting dates
+ * This module implements a `CVDateTimeFormatContext` which is used when parsing or formatting dates
  * (see DateTimeFormat.ts) to provide the translations used by language specific tokens (e.g.
  * `MMMM`)
  */
 
-import {
-  MArray,
-  MInputError,
-  MInspectable,
-  MPipeable,
-  MPredicate,
-  MString,
-  MTypes,
-} from '@parischap/effect-lib';
-import {
-  Array,
-  Either,
-  flow,
-  HashMap,
-  Number,
-  Option,
-  pipe,
-  Pipeable,
-  Predicate,
-  Struct,
-  Tuple,
-} from 'effect';
-import { DAY_MS } from './dateTimeConstants.js';
-import * as CVNumberBase10Format from './NumberBase10Format.js';
-import * as CVReal from './Real.js';
-import * as CVTemplatePartPlaceholder from './TemplatePart/Placeholder.js';
+import { MArray, MData, MInputError, MPredicate, MString, MTypes } from '@parischap/effect-lib';
+import { Array, Either, flow, HashMap, Number, Option, pipe, Struct, Tuple } from 'effect';
+import { DAY_MS } from '../../../date-time/dateTimeConstants.js';
+import * as CVDateTimeFormatTokenMap from '../../../internal/formatting/date-time-format/date-time-format-context/DateTimeFormatTokenMap.js';
+import * as CVReal from '../../../primitive/Real.js';
+import * as CVNumberBase10Format from '../../number-base10-format/index.js';
+import * as CVDateTimeFormatPlaceholder from '../DateTimeFormatPart/DateTimeFormatPlaceholder.js';
+import * as CVDayPeriodNames from './DayPeriodNames.js';
+import * as CVMonthNames from './MonthNames.js';
+import * as CVWeekDayNames from './WeekDayNames.js';
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/conversions/DateTimeFormatTemplate/';
+export const moduleTag =
+  '@parischap/conversions/formatting/date-time-format/DateTimeFormatContext/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
-
-/**
- * Type that represents all the possible tokens that can be used to format a `CVDateTime`
- *
- * @category Models
- */
-export type Token =
-  /* Gregorian year (ex: 2005) */
-  | 'y'
-  /* Gregorian year on 2 digits left-padded with 0's corresponding to years 2000-2099 (ex: 05 for 2005) */
-  | 'yy'
-  /* Gregorian year on 4 digits left-padded with 0's (ex: 2005, 0965) */
-  | 'yyyy'
-  /* Iso year (ex: 2005) */
-  | 'R'
-  /* Iso year on 2 digits left-padded with 0's corresponding to years 2000-2099 (ex: 05 for 2005) */
-  | 'RR'
-  /* Iso year on 4 digits left-padded with 0's (ex: 2005, 0965)*/
-  | 'RRRR'
-  /* Month (ex: 6) */
-  | 'M'
-  /* Month on 2 digits left-padded with 0's (ex: 06) */
-  | 'MM'
-  /* Short month name (ex: Jun) */
-  | 'MMM'
-  /* Long month name (ex: June) */
-  | 'MMMM'
-  /* IsoWeek (ex: 6) */
-  | 'I'
-  /* IsoWeek (ex: 06) */
-  | 'II'
-  /* Day of month (ex: 5) */
-  | 'd'
-  /* Day of month on 2 digits left-padded with 0's (ex: 05) */
-  | 'dd'
-  /* Day of year (ex: 97) */
-  | 'D'
-  /* Day of year on 3 digits left-padded with 0's (ex: 097) */
-  | 'DDD'
-  /* Weekday (ex: 1 for monday, 7 for sunday) */
-  | 'i'
-  /* Short weekday name (ex: Mon) */
-  | 'iii'
-  /* Long weekday name (ex: Monday) */
-  | 'iiii'
-  /* Meridiem (ex: 'AM' for 0, 'PM' for 12) */
-  | 'a'
-  /* Hour in the range 0..23 (ex:5, 14) */
-  | 'H'
-  /* Hour on 2 digits in the range 0..23 left-padded with 0's (ex:05, 14) */
-  | 'HH'
-  /* Hour in the range 0..11 (ex:5, 2) */
-  | 'K'
-  /* Hour on 2 digits in the range 0..11 left-padded with 0's (ex:05, 02) */
-  | 'KK'
-  /* Minute (ex: 5) */
-  | 'm'
-  /* Minute on 2 digits left-padded with 0's (ex: 05) */
-  | 'mm'
-  /* Second (ex: 5) */
-  | 's'
-  /* Second on 2 digits left-padded with 0's (ex: 05) */
-  | 'ss'
-  /* Millisecond (ex: 5) */
-  | 'S'
-  /* Millisecond on 3 digits left-padded with 0's (ex: 005) */
-  | 'SSS'
-  /* Hour part of the timezone offset (ex: 5) */
-  | 'zH'
-  /* Hour part of the timezone offset on 2 digits left-padded with 0's (ex: 05) */
-  | 'zHzH'
-  /* Minute part of the timezone offset (ex: 5) */
-  | 'zm'
-  /* Minute part of the timezone offset on 2 digits left-padded with 0's (ex: 05) */
-  | 'zmzm'
-  /* Second part of the timezone offset (ex: 5) */
-  | 'zs'
-  /* Second part of the timezone offset on 2 digits left-padded with 0's (ex: 05) */
-  | 'zszs';
-
-namespace TokenMap {
-  /**
-   * Type that represents a map between a `Token` and the `CVPlaceholder` that implements it
-   *
-   * @category Models
-   */
-  export interface Type extends HashMap.HashMap<
-    Token,
-    CVTemplatePartPlaceholder.Type<string, CVReal.Type>
-  > {}
-}
-
-/**
- * Type that represents the names of the seven days of a week
- *
- * @category Models
- */
-export interface WeekDayNames extends MTypes.Tuple<string, 7> {}
-
-/**
- * Type that represents the names of the twelve months of a year
- *
- * @category Models
- */
-export interface MonthNames extends MTypes.Tuple<string, 12> {}
-
-/**
- * Type that represents the names of the day periods, e.g. AM or PM
- *
- * @category Models
- */
-export interface DayPeriodNames extends MTypes.Tuple<string, 2> {}
 
 const WEEKDAY_DATES = pipe(
   7,
@@ -161,43 +34,45 @@ const WEEKDAY_DATES = pipe(
 const MONTH_DATES = pipe(
   12,
   Array.makeBy(Number.multiply(31 * DAY_MS)),
-  Array.map((timestamp) => pipe(new Date(timestamp))),
+  Array.map((timestamp) => new Date(timestamp)),
 );
 
 /**
- * Type that represents a `CVDateTimeFormatContext`
+ * Type that represents a CVDateTimeFormatContext
  *
- * @category Model
+ * @category Models
  */
-export interface Type extends MInspectable.Type, Pipeable.Pipeable {
+export class Type extends MData.Class {
   /** Name : usually the locale this `CVDateTimeFormatContext` was built from. Or a country name */
   readonly name: string;
 
   /** TokenMap of this `CVDateTimeFormatContext` */
-  readonly tokenMap: TokenMap.Type;
+  readonly tokenMap: CVDateTimeFormatTokenMap.Type;
 
-  /** @internal */
-  readonly [_TypeId]: _TypeId;
+  /** Returns the `id` of `this` */
+  [MData.idSymbol](): string | (() => string) {
+    return function idSymbol(this: Type) {
+      return this.name;
+    };
+  }
+
+  /** Class constructor */
+  private constructor({ name, tokenMap }: MTypes.Data<Type>) {
+    super();
+    this.name = name;
+    this.tokenMap = tokenMap;
+  }
+
+  /** Static constructor */
+  static make(params: MTypes.Data<Type>): Type {
+    return new Type(params);
+  }
+
+  /** Returns the TypeMarker of the class */
+  protected get [_TypeId](): _TypeId {
+    return _TypeId;
+  }
 }
-
-/**
- * Type guard
- *
- * @category Guards
- */
-export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
-
-/** Prototype */
-const _proto: MTypes.Proto<Type> = {
-  [_TypeId]: _TypeId,
-  [MInspectable.IdSymbol](this: Type) {
-    return this.name;
-  },
-  ...MInspectable.BaseProto(moduleTag),
-  ...MPipeable.BaseProto,
-};
-
-const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
 
 /**
  * Constructs a `CVDateTimeFormatContext` from translations provided as strings
@@ -216,35 +91,38 @@ export const fromNames = ({
   readonly name: string;
 
   /** Array of the short weekday names */
-  readonly shortWeekdayNames: WeekDayNames;
+  readonly shortWeekdayNames: CVWeekDayNames.Type;
 
   /** Array of the long weekday names */
-  readonly longWeekdayNames: WeekDayNames;
+  readonly longWeekdayNames: CVWeekDayNames.Type;
 
   /** Array of the short month names */
-  readonly shortMonthNames: MonthNames;
+  readonly shortMonthNames: CVMonthNames.Type;
 
   /** Array of the long month names */
-  readonly longMonthNames: MonthNames;
+  readonly longMonthNames: CVMonthNames.Type;
 
   /** Array of the day period names ('AM', 'PM') */
-  readonly dayPeriodNames: DayPeriodNames;
+  readonly dayPeriodNames: CVDayPeriodNames.Type;
 }): Type => {
   const { integer } = CVNumberBase10Format;
   const signedInteger = pipe(integer, CVNumberBase10Format.withSignDisplay);
   const params = { fillChar: '0', numberBase10Format: integer };
 
   const templatepartEntries: ReadonlyArray<
-    readonly [Token, CVTemplatePartPlaceholder.Type<string, CVReal.Type>]
+    readonly [Token, CVDateTimeFormatPlaceholder.Type<string, CVReal.Type>]
   > = [
-    ['y', CVTemplatePartPlaceholder.real({ ...params, name: 'year' })],
+    ['y', CVDateTimeFormatPlaceholder.real({ ...params, name: 'year' })],
     [
       'yy',
       pipe(
-        CVTemplatePartPlaceholder.fixedLengthToReal({ ...params, name: 'year', length: 2 }),
-        CVTemplatePartPlaceholder.modify({
+        CVDateTimeFormatPlaceholder.fixedLengthToReal({ ...params, name: 'year', length: 2 }),
+        CVDateTimeFormatPlaceholder.modify({
           descriptorMapper: MString.append(' between 2000 and 2099 included'),
-          postParser: function (this: CVTemplatePartPlaceholder.Type<'year', CVReal.Type>, value) {
+          postParser: function (
+            this: CVDateTimeFormatPlaceholder.Type<'year', CVReal.Type>,
+            value,
+          ) {
             return pipe(
               value,
               Number.sum(2000),
@@ -260,7 +138,7 @@ export const fromNames = ({
             );
           },
           preFormatter: function (
-            this: CVTemplatePartPlaceholder.Type<'year', CVReal.Type>,
+            this: CVDateTimeFormatPlaceholder.Type<'year', CVReal.Type>,
             value,
           ) {
             return pipe(
@@ -279,16 +157,16 @@ export const fromNames = ({
         }),
       ),
     ],
-    ['yyyy', CVTemplatePartPlaceholder.fixedLengthToReal({ ...params, name: 'year', length: 4 })],
-    ['R', CVTemplatePartPlaceholder.real({ ...params, name: 'isoYear' })],
+    ['yyyy', CVDateTimeFormatPlaceholder.fixedLengthToReal({ ...params, name: 'year', length: 4 })],
+    ['R', CVDateTimeFormatPlaceholder.real({ ...params, name: 'isoYear' })],
     [
       'RR',
       pipe(
-        CVTemplatePartPlaceholder.fixedLengthToReal({ ...params, name: 'isoYear', length: 2 }),
-        CVTemplatePartPlaceholder.modify({
+        CVDateTimeFormatPlaceholder.fixedLengthToReal({ ...params, name: 'isoYear', length: 2 }),
+        CVDateTimeFormatPlaceholder.modify({
           descriptorMapper: MString.append(' between 2000 and 2099 included'),
           postParser: function (
-            this: CVTemplatePartPlaceholder.Type<'isoYear', CVReal.Type>,
+            this: CVDateTimeFormatPlaceholder.Type<'isoYear', CVReal.Type>,
             value,
           ) {
             return pipe(
@@ -306,7 +184,7 @@ export const fromNames = ({
             );
           },
           preFormatter: function (
-            this: CVTemplatePartPlaceholder.Type<'isoYear', CVReal.Type>,
+            this: CVDateTimeFormatPlaceholder.Type<'isoYear', CVReal.Type>,
             value,
           ) {
             return pipe(
@@ -327,13 +205,13 @@ export const fromNames = ({
     ],
     [
       'RRRR',
-      CVTemplatePartPlaceholder.fixedLengthToReal({ ...params, name: 'isoYear', length: 4 }),
+      CVDateTimeFormatPlaceholder.fixedLengthToReal({ ...params, name: 'isoYear', length: 4 }),
     ],
-    ['M', CVTemplatePartPlaceholder.real({ ...params, name: 'month' })],
-    ['MM', CVTemplatePartPlaceholder.fixedLengthToReal({ ...params, name: 'month', length: 2 })],
+    ['M', CVDateTimeFormatPlaceholder.real({ ...params, name: 'month' })],
+    ['MM', CVDateTimeFormatPlaceholder.fixedLengthToReal({ ...params, name: 'month', length: 2 })],
     [
       'MMM',
-      CVTemplatePartPlaceholder.realMappedLiterals({
+      CVDateTimeFormatPlaceholder.realMappedLiterals({
         name: 'month',
         keyValuePairs: pipe(
           shortMonthNames,
@@ -343,7 +221,7 @@ export const fromNames = ({
     ],
     [
       'MMMM',
-      CVTemplatePartPlaceholder.realMappedLiterals({
+      CVDateTimeFormatPlaceholder.realMappedLiterals({
         name: 'month',
         keyValuePairs: pipe(
           longMonthNames,
@@ -353,23 +231,29 @@ export const fromNames = ({
     ],
     [
       'I',
-      CVTemplatePartPlaceholder.real({
+      CVDateTimeFormatPlaceholder.real({
         name: 'isoWeek',
         numberBase10Format: CVNumberBase10Format.integer,
       }),
     ],
-    ['II', CVTemplatePartPlaceholder.fixedLengthToReal({ ...params, name: 'isoWeek', length: 2 })],
-    ['d', CVTemplatePartPlaceholder.real({ ...params, name: 'monthDay' })],
-    ['dd', CVTemplatePartPlaceholder.fixedLengthToReal({ ...params, name: 'monthDay', length: 2 })],
-    ['D', CVTemplatePartPlaceholder.real({ ...params, name: 'ordinalDay' })],
+    [
+      'II',
+      CVDateTimeFormatPlaceholder.fixedLengthToReal({ ...params, name: 'isoWeek', length: 2 }),
+    ],
+    ['d', CVDateTimeFormatPlaceholder.real({ ...params, name: 'monthDay' })],
+    [
+      'dd',
+      CVDateTimeFormatPlaceholder.fixedLengthToReal({ ...params, name: 'monthDay', length: 2 }),
+    ],
+    ['D', CVDateTimeFormatPlaceholder.real({ ...params, name: 'ordinalDay' })],
     [
       'DDD',
-      CVTemplatePartPlaceholder.fixedLengthToReal({ ...params, name: 'ordinalDay', length: 3 }),
+      CVDateTimeFormatPlaceholder.fixedLengthToReal({ ...params, name: 'ordinalDay', length: 3 }),
     ],
-    ['i', CVTemplatePartPlaceholder.real({ ...params, name: 'weekday' })],
+    ['i', CVDateTimeFormatPlaceholder.real({ ...params, name: 'weekday' })],
     [
       'iii',
-      CVTemplatePartPlaceholder.realMappedLiterals({
+      CVDateTimeFormatPlaceholder.realMappedLiterals({
         name: 'weekday',
         keyValuePairs: pipe(
           shortWeekdayNames,
@@ -379,7 +263,7 @@ export const fromNames = ({
     ],
     [
       'iiii',
-      CVTemplatePartPlaceholder.realMappedLiterals({
+      CVDateTimeFormatPlaceholder.realMappedLiterals({
         name: 'weekday',
         keyValuePairs: pipe(
           longWeekdayNames,
@@ -389,7 +273,7 @@ export const fromNames = ({
     ],
     [
       'a',
-      CVTemplatePartPlaceholder.realMappedLiterals({
+      CVDateTimeFormatPlaceholder.realMappedLiterals({
         name: 'meridiem',
         keyValuePairs: pipe(
           dayPeriodNames,
@@ -397,22 +281,22 @@ export const fromNames = ({
         ),
       }),
     ],
-    ['H', CVTemplatePartPlaceholder.real({ ...params, name: 'hour23' })],
-    ['HH', CVTemplatePartPlaceholder.fixedLengthToReal({ ...params, name: 'hour23', length: 2 })],
-    ['K', CVTemplatePartPlaceholder.real({ ...params, name: 'hour11' })],
-    ['KK', CVTemplatePartPlaceholder.fixedLengthToReal({ ...params, name: 'hour11', length: 2 })],
-    ['m', CVTemplatePartPlaceholder.real({ ...params, name: 'minute' })],
-    ['mm', CVTemplatePartPlaceholder.fixedLengthToReal({ ...params, name: 'minute', length: 2 })],
-    ['s', CVTemplatePartPlaceholder.real({ ...params, name: 'second' })],
-    ['ss', CVTemplatePartPlaceholder.fixedLengthToReal({ ...params, name: 'second', length: 2 })],
-    ['S', CVTemplatePartPlaceholder.real({ ...params, name: 'millisecond' })],
+    ['H', CVDateTimeFormatPlaceholder.real({ ...params, name: 'hour23' })],
+    ['HH', CVDateTimeFormatPlaceholder.fixedLengthToReal({ ...params, name: 'hour23', length: 2 })],
+    ['K', CVDateTimeFormatPlaceholder.real({ ...params, name: 'hour11' })],
+    ['KK', CVDateTimeFormatPlaceholder.fixedLengthToReal({ ...params, name: 'hour11', length: 2 })],
+    ['m', CVDateTimeFormatPlaceholder.real({ ...params, name: 'minute' })],
+    ['mm', CVDateTimeFormatPlaceholder.fixedLengthToReal({ ...params, name: 'minute', length: 2 })],
+    ['s', CVDateTimeFormatPlaceholder.real({ ...params, name: 'second' })],
+    ['ss', CVDateTimeFormatPlaceholder.fixedLengthToReal({ ...params, name: 'second', length: 2 })],
+    ['S', CVDateTimeFormatPlaceholder.real({ ...params, name: 'millisecond' })],
     [
       'SSS',
-      CVTemplatePartPlaceholder.fixedLengthToReal({ ...params, name: 'millisecond', length: 3 }),
+      CVDateTimeFormatPlaceholder.fixedLengthToReal({ ...params, name: 'millisecond', length: 3 }),
     ],
     [
       'zH',
-      CVTemplatePartPlaceholder.real({
+      CVDateTimeFormatPlaceholder.real({
         ...params,
         name: 'zoneHour',
         numberBase10Format: signedInteger,
@@ -420,22 +304,22 @@ export const fromNames = ({
     ],
     [
       'zHzH',
-      CVTemplatePartPlaceholder.fixedLengthToReal({
+      CVDateTimeFormatPlaceholder.fixedLengthToReal({
         ...params,
         name: 'zoneHour',
         length: 3,
         numberBase10Format: signedInteger,
       }),
     ],
-    ['zm', CVTemplatePartPlaceholder.real({ ...params, name: 'zoneMinute' })],
+    ['zm', CVDateTimeFormatPlaceholder.real({ ...params, name: 'zoneMinute' })],
     [
       'zmzm',
-      CVTemplatePartPlaceholder.fixedLengthToReal({ ...params, name: 'zoneMinute', length: 2 }),
+      CVDateTimeFormatPlaceholder.fixedLengthToReal({ ...params, name: 'zoneMinute', length: 2 }),
     ],
-    ['zs', CVTemplatePartPlaceholder.real({ ...params, name: 'zoneSecond' })],
+    ['zs', CVDateTimeFormatPlaceholder.real({ ...params, name: 'zoneSecond' })],
     [
       'zszs',
-      CVTemplatePartPlaceholder.fixedLengthToReal({ ...params, name: 'zoneSecond', length: 2 }),
+      CVDateTimeFormatPlaceholder.fixedLengthToReal({ ...params, name: 'zoneSecond', length: 2 }),
     ],
   ];
 

@@ -30,7 +30,7 @@ import * as CVTemplatePartSeparator from '../../formatting/TemplatePart/Separato
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/conversions/internal/datetime/GregorianDate/';
+export const moduleTag = '@parischap/conversions/internal/date-time/GregorianDate/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 

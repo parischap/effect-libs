@@ -75,22 +75,46 @@
       "default": "./esm/primitive/BigInt.ts"
     },
     "./CVDateTime": {
-      "default": "./esm/DateTime/index.ts"
+      "default": "./esm/date-time/index.ts"
     },
     "./CVDateTimeConstants": {
-      "default": "./esm/DateTime/dateTimeConstants.ts"
+      "default": "./esm/date-time/dateTimeConstants.ts"
     },
     "./CVDateTimeFormat": {
-      "default": "./esm/formatting/DateTimeFormat.ts"
+      "default": "./esm/formatting/date-time-format/index.ts"
     },
     "./CVDateTimeFormatContext": {
-      "default": "./esm/formatting/DateTimeFormatContext.ts"
+      "default": "./esm/formatting/date-time-format/date-time-format-context/index.ts"
+    },
+    "./CVDateTimeFormatPart": {
+      "default": "./esm/formatting/date-time-format/DateTimeFormatPart/index.ts"
+    },
+    "./CVDateTimeFormatParts": {
+      "default": "./esm/internal/formatting/date-time-format/DateTimeFormatParts.ts"
+    },
+    "./CVDateTimeFormatPlaceholder": {
+      "default": "./esm/formatting/date-time-format/DateTimeFormatPart/DateTimeFormatPlaceholder.ts"
+    },
+    "./CVDateTimeFormatSeparator": {
+      "default": "./esm/formatting/date-time-format/DateTimeFormatPart/DateTimeFormatSeparator.ts"
+    },
+    "./CVDateTimeFormatToken": {
+      "default": "./esm/formatting/date-time-format/DateTimeFormatToken.ts"
+    },
+    "./CVDateTimeFormatTokenMap": {
+      "default": "./esm/internal/formatting/date-time-format/date-time-format-context/DateTimeFormatTokenMap.ts"
+    },
+    "./CVDateTimeParts": {
+      "default": "./esm/date-time/DateTimeParts.ts"
+    },
+    "./CVDayPeriodNames": {
+      "default": "./esm/formatting/date-time-format/date-time-format-context/DayPeriodNames.ts"
     },
     "./CVEmail": {
       "default": "./esm/primitive/Email.ts"
     },
     "./CVGregorianDate": {
-      "default": "./esm/internal/datetime/GregorianDate.ts"
+      "default": "./esm/internal/date-time/GregorianDate.ts"
     },
     "./CVInt": {
       "default": "./esm/internal/primitive/Int.ts"
@@ -99,19 +123,28 @@
       "default": "./esm/primitive/Integer.ts"
     },
     "./CVIsoDate": {
-      "default": "./esm/internal/datetime/IsoDate.ts"
+      "default": "./esm/internal/date-time/IsoDate.ts"
+    },
+    "./CVMonthNames": {
+      "default": "./esm/formatting/date-time-format/date-time-format-context/MonthNames.ts"
     },
     "./CVNumberBase10Format": {
-      "default": "./esm/formatting/NumberBase10Format.ts"
+      "default": "./esm/formatting/number-base10-format/index.ts"
+    },
+    "./CVNumberBase10FormatRoundingMode": {
+      "default": "./esm/formatting/number-base10-format/NumberBase10FormatRoundingMode.ts"
+    },
+    "./CVNumberBase10FormatRoundingOption": {
+      "default": "./esm/formatting/number-base10-format/NumberBase10FormatRoundingOption.ts"
     },
     "./CVPlaceholder": {
-      "default": "./esm/formatting/TemplatePart/Placeholder/index.ts"
+      "default": "./esm/formatting/template/TemplatePart/Placeholder/index.ts"
     },
     "./CVPlaceholderFormatter": {
-      "default": "./esm/formatting/TemplatePart/Placeholder/PlaceholderFormatter.ts"
+      "default": "./esm/formatting/template/TemplatePart/Placeholder/PlaceholderFormatter.ts"
     },
     "./CVPlaceholderParser": {
-      "default": "./esm/formatting/TemplatePart/Placeholder/PlaceholderParser.ts"
+      "default": "./esm/formatting/template/TemplatePart/Placeholder/PlaceholderParser.ts"
     },
     "./CVPositive": {
       "default": "./esm/internal/primitive/Positive.ts"
@@ -125,35 +158,32 @@
     "./CVReal": {
       "default": "./esm/primitive/Real.ts"
     },
-    "./CVRoundingMode": {
-      "default": "./esm/formatting/RoundingMode.ts"
-    },
-    "./CVRoundingOption": {
-      "default": "./esm/formatting/RoundingOption.ts"
-    },
     "./CVSchema": {
-      "default": "./esm/Schema.ts"
+      "default": "./esm/formatting/Schema.ts"
     },
     "./CVSemVer": {
       "default": "./esm/primitive/SemVer.ts"
     },
     "./CVSeparator": {
-      "default": "./esm/formatting/TemplatePart/Separator.ts"
+      "default": "./esm/formatting/template/TemplatePart/Separator.ts"
     },
     "./CVTemplate": {
-      "default": "./esm/formatting/Template.ts"
+      "default": "./esm/formatting/template/index.ts"
     },
     "./CVTemplatePart": {
-      "default": "./esm/formatting/TemplatePart/index.ts"
+      "default": "./esm/formatting/template/TemplatePart/index.ts"
     },
     "./CVTemplateParts": {
-      "default": "./esm/internal/formatting/TemplateParts.ts"
+      "default": "./esm/internal/formatting/template/TemplateParts.ts"
     },
     "./CVTime": {
-      "default": "./esm/internal/datetime/Time.ts"
+      "default": "./esm/internal/date-time/Time.ts"
+    },
+    "./CVWeekDayNames": {
+      "default": "./esm/formatting/date-time-format/date-time-format-context/WeekDayNames.ts"
     },
     "./CVZoneOffsetParts": {
-      "default": "./esm/internal/datetime/ZoneOffsetParts.ts"
+      "default": "./esm/internal/date-time/ZoneOffsetParts.ts"
     }
   },
   "module": "./esm/index.ts",

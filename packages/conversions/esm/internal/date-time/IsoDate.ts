@@ -30,7 +30,7 @@ import type * as CVGregorianDate from './GregorianDate.js';
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/conversions/internal/datetime/IsoDate/';
+export const moduleTag = '@parischap/conversions/internal/date-time/IsoDate/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 

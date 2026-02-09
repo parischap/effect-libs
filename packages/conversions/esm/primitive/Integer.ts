@@ -7,7 +7,7 @@
 
 import { MTypes } from '@parischap/effect-lib';
 import { BigDecimal, Brand, Either, flow, Function, Option, Schema } from 'effect';
-import * as CVInt from './internal/Int.js';
+import * as CVInt from '../internal/primitive/Int.js';
 import * as CVReal from './Real.js';
 
 /**

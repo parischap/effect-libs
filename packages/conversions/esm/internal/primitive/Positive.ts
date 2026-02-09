@@ -1,12 +1,12 @@
-import { MString, MTypes } from "@parischap/effect-lib";
-import { Brand, Either, flow, Number, Option } from "effect";
+import { MString, MTypes } from '@parischap/effect-lib';
+import { Brand, Either, flow, Number, Option } from 'effect';
 
 /**
  * Module tag
  *
  * @internal
  */
-export const _moduleTag = "@parischap/conversions/Positive/";
+export const _moduleTag = '@parischap/conversions/internal/primitive/Positive/';
 
 /**
  * Module TypeId

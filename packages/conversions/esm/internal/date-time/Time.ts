@@ -13,7 +13,7 @@ import * as CVTemplatePartSeparator from '../../formatting/TemplatePart/Separato
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/conversions/internal/datetime/Time/';
+export const moduleTag = '@parischap/conversions/internal/date-time/Time/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 

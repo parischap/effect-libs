@@ -7,7 +7,7 @@
 
 import { MNumber, MTypes } from '@parischap/effect-lib';
 import { BigDecimal, Brand, Either, flow, Function, Option, Schema } from 'effect';
-import * as CVPositive from './internal/Positive.js';
+import * as CVPositive from '../internal/primitive/Positive.js';
 import type * as CVPositiveInteger from './PositiveInteger.js';
 import * as CVReal from './Real.js';
 
