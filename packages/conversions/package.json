@@ -131,20 +131,26 @@
     "./CVNumberBase10Format": {
       "default": "./esm/formatting/number-base10-format/index.ts"
     },
-    "./CVNumberBase10FormatRoundingMode": {
-      "default": "./esm/formatting/number-base10-format/NumberBase10FormatRoundingMode.ts"
+    "./CVNumberBase10FormatRoundingModeCorrecter": {
+      "default": "./esm/internal/formatting/number-base10-format/number-base10-format-rounding-option/NumberBase10FormatRoundingModeCorrecter.ts"
     },
-    "./CVNumberBase10FormatRoundingOption": {
-      "default": "./esm/formatting/number-base10-format/NumberBase10FormatRoundingOption.ts"
+    "./CVNumberBase10FormatScientificNotationOption": {
+      "default": "./esm/formatting/number-base10-format/number-base10-format-scientific-notation-option/index.ts"
     },
-    "./CVPlaceholder": {
-      "default": "./esm/formatting/template/TemplatePart/Placeholder/index.ts"
+    "./CVNumberBase10FormatSignDisplayFormatter": {
+      "default": "./esm/internal/formatting/number-base10-format/number-base10-format-sign-display-option/NumberBase10FormatSignDisplayFormatter.ts"
     },
-    "./CVPlaceholderFormatter": {
-      "default": "./esm/formatting/template/TemplatePart/Placeholder/PlaceholderFormatter.ts"
+    "./CVNumberBase10FormatSignDisplayOption": {
+      "default": "./esm/formatting/number-base10-format/number-base10-format-sign-display-option/index.ts"
     },
-    "./CVPlaceholderParser": {
-      "default": "./esm/formatting/template/TemplatePart/Placeholder/PlaceholderParser.ts"
+    "./CVNumberBase10FormatSignDisplayParser": {
+      "default": "./esm/internal/formatting/number-base10-format/number-base10-format-sign-display-option/NumberBase10FormatSignDisplayParser.ts"
+    },
+    "./CVNumberBase10FormatSignString": {
+      "default": "./esm/internal/formatting/number-base10-format/number-base10-format-sign-display-option/NumberBase10FormatSignString.ts"
+    },
+    "./CVNumberBase10FormatSignValue": {
+      "default": "./esm/internal/formatting/number-base10-format/number-base10-format-sign-display-option/NumberBase10FormatSignValue.ts"
     },
     "./CVPositive": {
       "default": "./esm/internal/primitive/Positive.ts"
@@ -158,20 +164,50 @@
     "./CVReal": {
       "default": "./esm/primitive/Real.ts"
     },
+    "./CVRounder": {
+      "default": "./esm/rounding/Rounder.ts"
+    },
+    "./CVRounderParams": {
+      "default": "./esm/rounding/RounderParams.ts"
+    },
+    "./CVRoundingOption": {
+      "default": "./esm/rounding/rounding-option/index.ts"
+    },
+    "./CVRoundingOptionCorrecter": {
+      "default": "./esm/internal/rounding/rounding-option/RoundingOptionCorrecter.ts"
+    },
     "./CVSchema": {
       "default": "./esm/formatting/Schema.ts"
     },
+    "./CVScientificNotationMantissaAdjuster": {
+      "default": "./esm/internal/formatting/number-base10-format/number-base10-format-scientific-notation-option/ScientificNotationMantissaAdjuster.ts"
+    },
+    "./CVScientificNotationMantissaChecker": {
+      "default": "./esm/internal/formatting/number-base10-format/number-base10-format-scientific-notation-option/ScientificNotationMantissaChecker.ts"
+    },
+    "./CVScientificNotationParser": {
+      "default": "./esm/internal/formatting/number-base10-format/number-base10-format-scientific-notation-option/ScientificNotationParser.ts"
+    },
     "./CVSemVer": {
       "default": "./esm/primitive/SemVer.ts"
-    },
-    "./CVSeparator": {
-      "default": "./esm/formatting/template/TemplatePart/Separator.ts"
     },
     "./CVTemplate": {
       "default": "./esm/formatting/template/index.ts"
     },
     "./CVTemplatePart": {
       "default": "./esm/formatting/template/TemplatePart/index.ts"
+    },
+    "./CVTemplatePartPlaceHolder": {
+      "default": "./esm/formatting/template/TemplatePart/template-part-place-holder/index.ts"
+    },
+    "./CVTemplatePartPlaceholderFormatter": {
+      "default": "./esm/internal/formatting/template/TemplatePart/template-part-place-holder/TemplatePartPlaceholderFormatter.ts"
+    },
+    "./CVTemplatePartPlaceholderParser": {
+      "default": "./esm/internal/formatting/template/TemplatePart/template-part-place-holder/TemplatePartPlaceholderParser.ts"
+    },
+    "./CVTemplatePartSeparator": {
+      "default": "./esm/formatting/template/TemplatePart/TemplatePartSeparator.ts"
     },
     "./CVTemplateParts": {
       "default": "./esm/internal/formatting/template/TemplateParts.ts"

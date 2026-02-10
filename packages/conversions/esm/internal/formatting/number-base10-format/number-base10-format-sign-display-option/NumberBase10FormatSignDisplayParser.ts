@@ -3,11 +3,11 @@
  * CVNumberBase10FormatSignValue
  */
 
-import { MTypes } from '@parischap/effect-lib';
-import { flow, Option, Predicate, String, Struct } from 'effect';
+import { MMatch, MPredicate, MTypes } from '@parischap/effect-lib';
+import { flow, Function, Option, Predicate, String, Struct } from 'effect';
+import * as CVNumberBase10FormatSignDisplay from '../../../../formatting/number-base10-format/number-base10-format-sign-display/index.js';
 import * as CVNumberBase10FormatSignString from './NumberBase10FormatSignString.js';
 import * as CVNumberBase10FormatSignValue from './NumberBase10FormatSignValue.js';
-
 /**
  * Type of a CVNumberBase10FormatSignDisplayParser
  *
@@ -54,3 +54,35 @@ export const hasNotPlusSign: Type = flow(
   Option.liftPredicate(Predicate.not(CVNumberBase10FormatSignString.isPlusSign)),
   Option.map(CVNumberBase10FormatSignValue.fromSignString),
 );
+
+/**
+ * Builds a `Parser` implementing `self`
+ *
+ * @category Constructors
+ */
+export const fromSignDiplay: MTypes.OneArgFunction<CVNumberBase10FormatSignDisplay.Type, Type> =
+  flow(
+    MMatch.make,
+    MMatch.whenIs(CVNumberBase10FormatSignDisplay.Type.Auto, Function.constant(hasNotPlusSign)),
+    MMatch.whenIs(CVNumberBase10FormatSignDisplay.Type.Always, Function.constant(hasASign)),
+    MMatch.whenIs(
+      CVNumberBase10FormatSignDisplay.Type.ExceptZero,
+      (): Type =>
+        flow(
+          MMatch.make,
+          MMatch.when(MPredicate.struct({ isZero: Function.identity }), hasNoSign),
+          MMatch.orElse(hasASign),
+        ),
+    ),
+    MMatch.whenIs(
+      CVNumberBase10FormatSignDisplay.Type.Negative,
+      (): Type =>
+        flow(
+          MMatch.make,
+          MMatch.when(MPredicate.struct({ isZero: Function.identity }), hasNoSign),
+          MMatch.orElse(hasNotPlusSign),
+        ),
+    ),
+    MMatch.whenIs(CVNumberBase10FormatSignDisplay.Type.Never, Function.constant(hasNoSign)),
+    MMatch.exhaustive,
+  );

@@ -18,11 +18,11 @@ import {
   MIN_FULL_YEAR,
   SHORT_YEAR_MS,
   WEEK_MS,
-} from '../../DateTime/dateTimeConstants.js';
-import * as CVNumberBase10Format from '../../formatting/NumberBase10Format.js';
-import * as CVTemplate from '../../formatting/Template.js';
-import * as CVTemplatePartPlaceholder from '../../formatting/TemplatePart/Placeholder/index.js';
-import * as CVTemplatePartSeparator from '../../formatting/TemplatePart/Separator.js';
+} from '../../date-time/dateTimeConstants.js';
+import * as CVNumberBase10Format from '../../formatting/number-base10-format/index.js';
+import * as CVTemplate from '../../formatting/template/index.js';
+import * as CVTemplatePartPlaceholder from '../../formatting/template/TemplatePart/Placeholder/index.js';
+import * as CVTemplatePartSeparator from '../../formatting/template/TemplatePart/Separator.js';
 import type * as CVGregorianDate from './GregorianDate.js';
 
 /**
