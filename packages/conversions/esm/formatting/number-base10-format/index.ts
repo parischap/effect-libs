@@ -29,9 +29,8 @@ import {
   Struct,
   Tuple,
 } from 'effect';
-import * as CVReal from '../primitive/Real.js';
-import * as CVRoundingMode from './RoundingMode.js';
-import * as CVRoundingOption from './RoundingOption.js';
+import * as CVReal from '../../primitive/Real.js';
+import * as CVRoundingOption from '../../rounding/rounding-option/index.js';
 
 /**
  * Module tag

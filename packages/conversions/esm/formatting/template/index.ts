@@ -46,10 +46,10 @@
 
 import { MArray, MData, MInputError, MString, MTuple, MTypes } from '@parischap/effect-lib';
 import { Array, Either, Equal, flow, Function, Option, pipe, Record, Struct, Tuple } from 'effect';
+import * as CVTemplatePartSeparatorParser from '../../internal/formatting/template/TemplatePart/template-part-separator/TemplatePartSeparatorParser.js';
+import * as CVTemplateParts from '../../internal/formatting/template/TemplateParts.js';
 import * as CVTemplatePart from './TemplatePart/index.js';
-import * as CVTemplateParts from './TemplatePart/index.js';
-import * as CVTemplatePartPlaceholder from './TemplatePart/Placeholder/index.js';
-import * as CVTemplatePartSeparator from './TemplatePart/Separator.js';
+import * as CVTemplatePartPlaceholder from './TemplatePart/template-part-placeholder/index.js';
 
 /**
  * Module tag
@@ -168,7 +168,7 @@ export const toParser =
                 }),
               );
             }
-            const parser = CVTemplatePartSeparator.toParser(templatePart);
+            const parser = CVTemplatePartSeparatorParser.fromSeparator(templatePart);
             const leftOver = yield* parser(pos + 1, remainingText);
             return Tuple.make(leftOver, result);
           }),

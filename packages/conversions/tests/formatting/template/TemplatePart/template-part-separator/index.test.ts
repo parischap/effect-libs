@@ -1,5 +1,6 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { CVTemplatePartSeparator } from '@parischap/conversions';
+import * as CVTemplatePartSeparator from '@parischap/conversions/CVTemplatePartSeparator';
+import * as CVTemplatePartSeparatorParser from '@parischap/conversions/CVTemplatePartSeparatorParser';
 import { Option } from 'effect';
 import { describe, it } from 'vitest';
 
@@ -20,7 +21,7 @@ describe('CVTemplatePartSeparator', () => {
   });
 
   describe('Parsing', () => {
-    const parser = CVTemplatePartSeparator.toParser(separator);
+    const parser = CVTemplatePartSeparatorParser.fromSeparator(separator);
     it('Not starting by value', () => {
       TestUtils.assertLeftMessage(
         parser(1, ''),

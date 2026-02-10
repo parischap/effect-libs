@@ -1,17 +1,18 @@
 /**
- * This module implements a `CVTemplatePartSeparator` type which is one of the constituents of
- * `CVTemplate`'s (see Template.ts and TemplatePart.ts)
+ * This module implements a `CVTemplatePartSeparator` which constitutes the mutable parts of a
+ * `CVTemplate` (see Template.ts and TemplatePart.ts)
  */
 
-import { MData, MInputError, MString, MTypes } from '@parischap/effect-lib';
-import { Either, pipe, Struct } from 'effect';
+import { MData, MTypes } from '@parischap/effect-lib';
+import { Struct } from 'effect';
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/conversions/TemplatePart/Separator/';
+export const moduleTag =
+  '@parischap/conversions/formatting/template/TemplatePart/TemplatePartPlaceHolder/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
@@ -56,26 +57,6 @@ const _make = (params: MTypes.Data<Type>): Type => Type.make(params);
  * @category Constructors
  */
 export const make = (value: string): Type => _make({ value });
-
-/**
- * Builds a parser that implements this `CVTemplatePartSeparator`
- *
- * @category Destructors
- */
-export const toParser =
-  (self: Type) =>
-  (pos: number, text: string): Either.Either<string, MInputError.Type> => {
-    const { value } = self;
-    const { length } = value;
-    return pipe(
-      text,
-      MInputError.assertStartsWith({
-        startString: value,
-        name: `remaining text for separator at position ${MString.fromNumber(10)(pos)}`,
-      }),
-      Either.map(MString.takeRightBut(length)),
-    );
-  };
 
 /**
  * Returns the `value` property of `self`

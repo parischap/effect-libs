@@ -1,6 +1,8 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { CVNumberBase10Format, CVReal, CVTemplatePartPlaceholder } from '@parischap/conversions';
-import { MRegExpString, MString } from '@parischap/effect-lib';
+import * as CVNumberBase10Format from '@parischap/conversions/CVNumberBase10Format';
+import * as CVReal from '@parischap/conversions/CVReal';
+import * as CVTemplatePartPlaceholder from '@parischap/conversions/CVTemplatePartPlaceholder';
+import { MRegExpString, MStringFillPosition } from '@parischap/effect-lib';
 import { Option, Schema, Tuple } from 'effect';
 import { describe, it } from 'vitest';
 
@@ -70,7 +72,7 @@ describe('CVTemplatePartPlaceholder', () => {
       name: 'foo',
       length: 3,
       fillChar: '0',
-      fillPosition: MString.FillPosition.Left,
+      fillPosition: MStringFillPosition.Type.Left,
       disallowEmptyString: true,
     });
     it('.toString()', () => {

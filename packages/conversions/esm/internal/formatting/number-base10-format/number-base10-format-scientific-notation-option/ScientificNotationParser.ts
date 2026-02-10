@@ -1,8 +1,8 @@
-/** This module implements a type that tries to parse the scientific notation part of a number */
+/** This module implements a type that tries to parse the scientific notation part from a string */
 
-import { MTypes } from '@parischap/effect-lib';
-import { Option } from 'effect/Schema';
-
+import { MMatch, MNumber, MTypes } from '@parischap/effect-lib';
+import { flow, Function, Option, String } from 'effect';
+import * as CVNumberBase10FormatScientificNotationOption from '../../../../formatting/number-base10-format/number-base10-format-scientific-notation-option/index.js';
 /**
  * Type of a CVScientificNotationParser
  *
@@ -21,17 +21,20 @@ const _stringToExponent = flow(
  *
  * @category Destructors
  */
-export const toParser: MTypes.OneArgFunction<ScientificNotation, Parser> = flow(
+export const fromScientificNotationOption: MTypes.OneArgFunction<
+  CVNumberBase10FormatScientificNotationOption.Type,
+  Type
+> = flow(
   MMatch.make,
-  MMatch.whenIs(ScientificNotation.None, () =>
+  MMatch.whenIs(CVNumberBase10FormatScientificNotationOption.Type.None, () =>
     flow(Option.liftPredicate(String.isEmpty), Option.as(0)),
   ),
   MMatch.whenIsOr(
-    ScientificNotation.Standard,
-    ScientificNotation.Normalized,
+    CVNumberBase10FormatScientificNotationOption.Type.Standard,
+    CVNumberBase10FormatScientificNotationOption.Type.Normalized,
     Function.constant(_stringToExponent),
   ),
-  MMatch.whenIs(ScientificNotation.Engineering, () =>
+  MMatch.whenIs(CVNumberBase10FormatScientificNotationOption.Type.Engineering, () =>
     flow(_stringToExponent, Option.filter(MNumber.isMultipleOf(3))),
   ),
   MMatch.exhaustive,

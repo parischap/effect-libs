@@ -4,7 +4,7 @@ import { MPredicate } from '@parischap/effect-lib';
 import { Predicate } from 'effect';
 
 /**
- * Type of a CVNumberBase10FormatSignString
+ * Type of a CVSignString
  *
  * @category Models
  */

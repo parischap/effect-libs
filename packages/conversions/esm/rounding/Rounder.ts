@@ -15,7 +15,9 @@ const _bigDecimal10 = BigDecimal.make(10n, 0);
  *
  * @category Models
  */
-export interface Type<N extends number | BigDecimal.BigDecimal> extends MTypes.OneArgFunction<N> {}
+export interface Type<
+  in out N extends number | BigDecimal.BigDecimal,
+> extends MTypes.OneArgFunction<N> {}
 
 /**
  * Constructor of a number rounder from a CVRounderParams

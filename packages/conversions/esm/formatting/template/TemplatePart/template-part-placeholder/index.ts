@@ -1,6 +1,6 @@
 /**
- * This module implements a `CVTemplatePartPlaceholder` type which is one of the constituents of
- * `CVTemplate`'s (see Template.ts and TemplatePart.ts)
+ * This module implements a `CVTemplatePartPlaceholder` which constitutes the mutable parts of a
+ * `CVTemplate` (see Template.ts and TemplatePart.ts)
  *
  * Each `CVTemplatePartPlaceholder` defines a parser and a formatter:
  *
@@ -18,6 +18,7 @@ import {
   MRegExp,
   MRegExpString,
   MString,
+  MStringFillPosition,
   MStruct,
   MTuple,
   MTypes,
@@ -36,17 +37,18 @@ import {
   Tuple,
 } from 'effect';
 
-import * as CVReal from '../../../primitive/Real.js';
-import * as CVNumberBase10Format from '../../NumberBase10Format.js';
-import type * as CVPlaceholderFormatter from './PlaceholderFormatter.js';
-import type * as CVPlaceholderParser from './PlaceholderParser.js';
+import * as CVReal from '../../../../primitive/Real.js';
+import * as CVNumberBase10Format from '../../../number-base10-format/index.js';
+import type * as CvTemplatePartPlaceholderFormatter from './TemplatePartPlaceholderFormatter.js';
+import type * as CvTemplatePartPlaceholderParser from './TemplatePartPlaceholderParser.js';
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/conversions/formatting/TemplatePart/Placeholder/';
+export const moduleTag =
+  '@parischap/conversions/formatting/template/TemplatePart/TemplatePartPlaceholder/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
@@ -66,10 +68,10 @@ export class Type<out N extends string, in out T> extends MData.Class {
   readonly description: string;
 
   /** Parser of this TemplatePartPlaceholder */
-  readonly parser: CVPlaceholderParser.Type<T>;
+  readonly parser: CvTemplatePartPlaceholderParser.Type<T>;
 
   /** Formatter of this TemplatePartPlaceholder */
-  readonly formatter: CVPlaceholderFormatter.Type<T>;
+  readonly formatter: CvTemplatePartPlaceholderFormatter.Type<T>;
 
   /** Schema instance that represents type T */
   readonly tSchemaInstance: Schema.Schema<T, T>;
@@ -173,8 +175,9 @@ export const description: <const N extends string, T>(self: Type<N, T>) => strin
  *
  * @category Destructors
  */
-export const parser: <const N extends string, T>(self: Type<N, T>) => CVPlaceholderParser.Type<T> =
-  Struct.get('parser');
+export const parser: <const N extends string, T>(
+  self: Type<N, T>,
+) => CvTemplatePartPlaceholderParser.Type<T> = Struct.get('parser');
 
 /**
  * Returns the `formatter` property of `self`
@@ -183,7 +186,7 @@ export const parser: <const N extends string, T>(self: Type<N, T>) => CVPlacehol
  */
 export const formatter: <const N extends string, T>(
   self: Type<N, T>,
-) => CVPlaceholderFormatter.Type<T> = Struct.get('formatter');
+) => CvTemplatePartPlaceholderFormatter.Type<T> = Struct.get('formatter');
 
 /**
  * Returns the `tSchemaInstance` property of `self`
@@ -315,7 +318,7 @@ export const paddedFixedLength = <const N extends string>(params: {
   readonly name: N;
   readonly length: number;
   readonly fillChar: string;
-  readonly fillPosition: MString.FillPosition;
+  readonly fillPosition: MStringFillPosition.Type;
   readonly disallowEmptyString: boolean;
 }): Type<N, string> => {
   const trimmer = flow(MString.trim(params), Either.right);
@@ -325,7 +328,7 @@ export const paddedFixedLength = <const N extends string>(params: {
     fixedLength(params),
     modify({
       descriptorMapper: MString.append(
-        ` ${MString.FillPosition.toString(params.fillPosition)}-padded with '${params.fillChar}'`,
+        ` ${MStringFillPosition.toString(params.fillPosition)}-padded with '${params.fillChar}'`,
       ),
       postParser: trimmer,
       preFormatter: padder,

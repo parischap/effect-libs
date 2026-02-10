@@ -146,11 +146,11 @@
     "./CVNumberBase10FormatSignDisplayParser": {
       "default": "./esm/internal/formatting/number-base10-format/number-base10-format-sign-display-option/NumberBase10FormatSignDisplayParser.ts"
     },
-    "./CVNumberBase10FormatSignString": {
-      "default": "./esm/internal/formatting/number-base10-format/number-base10-format-sign-display-option/NumberBase10FormatSignString.ts"
+    "./CVSignString": {
+      "default": "./esm/internal/formatting/number-base10-format/number-base10-format-sign-display-option/SignString.ts"
     },
-    "./CVNumberBase10FormatSignValue": {
-      "default": "./esm/internal/formatting/number-base10-format/number-base10-format-sign-display-option/NumberBase10FormatSignValue.ts"
+    "./CVSignValue": {
+      "default": "./esm/internal/formatting/number-base10-format/number-base10-format-sign-display-option/SignValue.ts"
     },
     "./CVPositive": {
       "default": "./esm/internal/primitive/Positive.ts"
@@ -197,17 +197,20 @@
     "./CVTemplatePart": {
       "default": "./esm/formatting/template/TemplatePart/index.ts"
     },
-    "./CVTemplatePartPlaceHolder": {
-      "default": "./esm/formatting/template/TemplatePart/template-part-place-holder/index.ts"
+    "./CVTemplatePartPlaceholder": {
+      "default": "./esm/formatting/template/TemplatePart/template-part-placeholder/index.ts"
     },
     "./CVTemplatePartPlaceholderFormatter": {
-      "default": "./esm/internal/formatting/template/TemplatePart/template-part-place-holder/TemplatePartPlaceholderFormatter.ts"
+      "default": "./esm/formatting/template/TemplatePart/template-part-placeholder/TemplatePartPlaceholderFormatter.ts"
     },
     "./CVTemplatePartPlaceholderParser": {
-      "default": "./esm/internal/formatting/template/TemplatePart/template-part-place-holder/TemplatePartPlaceholderParser.ts"
+      "default": "./esm/formatting/template/TemplatePart/template-part-placeholder/TemplatePartPlaceholderParser.ts"
     },
     "./CVTemplatePartSeparator": {
-      "default": "./esm/formatting/template/TemplatePart/TemplatePartSeparator.ts"
+      "default": "./esm/formatting/template/TemplatePart/template-part-separator/index.ts"
+    },
+    "./CVTemplatePartSeparatorParser": {
+      "default": "./esm/internal/formatting/template/TemplatePart/template-part-separator/TemplatePartSeparatorParser.ts"
     },
     "./CVTemplateParts": {
       "default": "./esm/internal/formatting/template/TemplateParts.ts"

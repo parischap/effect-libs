@@ -1,9 +1,9 @@
-/** This module implements a CVPlaceholderFormatter */
+/** This module implements a `CVTemplatePartPlaceholderFormatter`(see `CVTemplatePartPlaceholder`) */
 import type { MInputError, MTypes } from '@parischap/effect-lib';
 import type { Either } from 'effect';
 
 /**
- * Type that describes a CVPlaceholderFormatter
+ * Type that describes a `CVTemplatePartPlaceholderFormatter`
  *
  * @category Models
  */

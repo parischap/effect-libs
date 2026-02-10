@@ -1,13 +1,13 @@
 /**
- * This module implements `CVTemplatePart`'s which are the constituents of `CVTemplate`'s (see
+ * This module implements a `CVTemplatePart` which is the constituent of `CVTemplate` (see
  * Template.ts).
  *
  * There are two kinds of `CVTemplatePart`'s: `CVTemplatePartSeparator`'s (see
  * TemplatePartSeparator.ts) and `CVTemplatePartPlaceholder`'s (see TemplatePartPlaceholder.ts)
  */
 
-import * as CVTemplatePartPlaceholder from './Placeholder/index.js';
-import * as CVTemplatePartSeparator from './Separator.js';
+import * as CVTemplatePartPlaceholder from './template-part-placeholder/index.js';
+import * as CVTemplatePartSeparator from './template-part-separator/index.js';
 
 /**
  * Type of a TemplatePart
