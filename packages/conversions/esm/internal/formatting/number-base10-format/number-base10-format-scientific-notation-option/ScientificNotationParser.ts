@@ -4,7 +4,7 @@ import { MMatch, MNumber, MTypes } from '@parischap/effect-lib';
 import { flow, Function, Option, String } from 'effect';
 import * as CVNumberBase10FormatScientificNotationOption from '../../../../formatting/number-base10-format/number-base10-format-scientific-notation-option/index.js';
 /**
- * Type of a CVScientificNotationParser
+ * Type of a `CVScientificNotationParser`
  *
  * @category Models
  */
@@ -17,9 +17,9 @@ const _stringToExponent = flow(
 );
 
 /**
- * Builds a `Parser` implementing `self`
+ * Builds a `CVScientificNotationParser` implementing `self`
  *
- * @category Destructors
+ * @category Constructors
  */
 export const fromScientificNotationOption: MTypes.OneArgFunction<
   CVNumberBase10FormatScientificNotationOption.Type,

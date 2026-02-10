@@ -29,8 +29,18 @@ import {
   Struct,
   Tuple,
 } from 'effect';
+import * as CVScientificNotationMantissaAdjuster from '../../internal/formatting/number-base10-format/number-base10-format-scientific-notation-option/ScientificNotationMantissaAdjuster.js';
+import * as CVScientificNotationMantissaChecker from '../../internal/formatting/number-base10-format/number-base10-format-scientific-notation-option/ScientificNotationMantissaChecker.js';
+import * as CVScientificNotationParser from '../../internal/formatting/number-base10-format/number-base10-format-scientific-notation-option/ScientificNotationParser.js';
+import * as CVSignFormatter from '../../internal/formatting/number-base10-format/number-base10-format-sign-display-option/SignFormatter.js';
+import * as CVSignParser from '../../internal/formatting/number-base10-format/number-base10-format-sign-display-option/SignParser.js';
+import type * as CVSignString from '../../internal/formatting/number-base10-format/number-base10-format-sign-display-option/SignString.js';
 import * as CVReal from '../../primitive/Real.js';
+import * as CVRounder from '../../rounding/Rounder.js';
+import * as CVRounderParams from '../../rounding/RounderParams.js';
 import * as CVRoundingOption from '../../rounding/rounding-option/index.js';
+import * as CVNumberBase10FormatScientificNotationOption from './number-base10-format-scientific-notation-option/index.js';
+import * as CVNumberBase10FormatSignDisplayOption from './number-base10-format-sign-display-option/index.js';
 
 /**
  * Module tag
@@ -109,13 +119,13 @@ export class Type extends MData.Class {
   readonly eNotationChars: ReadonlyArray<string>;
 
   /** Scientific notation options. See ScientificNotation */
-  readonly scientificNotation: ScientificNotation;
+  readonly scientificNotationOption: CVNumberBase10FormatScientificNotationOption.Type;
 
   /** Rounding mode options. See RoundingMode.ts */
-  readonly roundingMode: CVRoundingMode.Type;
+  readonly roundingOption: CVRoundingOption.Type;
 
   /** Sign display options. See SignDisplay.ts */
-  readonly signDisplay: SignDisplay;
+  readonly signDisplayOption: CVNumberBase10FormatSignDisplayOption.Type;
 
   /** Class constructor */
   private constructor({
@@ -125,9 +135,9 @@ export class Type extends MData.Class {
     minimumFractionalDigits,
     maximumFractionalDigits,
     eNotationChars,
-    scientificNotation,
-    roundingMode,
-    signDisplay,
+    scientificNotationOption,
+    roundingOption,
+    signDisplayOption,
   }: MTypes.Data<Type>) {
     super();
     this.thousandSeparator = thousandSeparator;
@@ -136,9 +146,9 @@ export class Type extends MData.Class {
     this.minimumFractionalDigits = minimumFractionalDigits;
     this.maximumFractionalDigits = maximumFractionalDigits;
     this.eNotationChars = eNotationChars;
-    this.scientificNotation = scientificNotation;
-    this.roundingMode = roundingMode;
-    this.signDisplay = signDisplay;
+    this.scientificNotationOption = scientificNotationOption;
+    this.roundingOption = roundingOption;
+    this.signDisplayOption = signDisplayOption;
   }
 
   /** Static constructor */
@@ -218,23 +228,28 @@ export const eNotationChars: MTypes.OneArgFunction<Type, ReadonlyArray<string>> 
  *
  * @category Destructors
  */
-export const scientificNotation: MTypes.OneArgFunction<Type, ScientificNotation> =
-  Struct.get('scientificNotation');
+export const scientificNotationOption: MTypes.OneArgFunction<
+  Type,
+  CVNumberBase10FormatScientificNotationOption.Type
+> = Struct.get('scientificNotationOption');
 
 /**
  * Returns the `roundingMode` property of `self`
  *
  * @category Destructors
  */
-export const roundingMode: MTypes.OneArgFunction<Type, CVRoundingMode.Type> =
-  Struct.get('roundingMode');
+export const roundingOption: MTypes.OneArgFunction<Type, CVRoundingOption.Type> =
+  Struct.get('roundingOption');
 
 /**
  * Returns the `signDisplay` property of `self`
  *
  * @category Destructors
  */
-export const signDisplay: MTypes.OneArgFunction<Type, SignDisplay> = Struct.get('signDisplay');
+export const signDisplayOption: MTypes.OneArgFunction<
+  Type,
+  CVNumberBase10FormatSignDisplayOption.Type
+> = Struct.get('signDisplayOption');
 
 /**
  * Returns a short description of `self`, e.g. 'signed integer'
@@ -247,18 +262,24 @@ export const toDescription = (self: Type): string => {
     fractionalSeparator,
     minimumFractionalDigits,
     maximumFractionalDigits,
-    scientificNotation,
-    signDisplay,
+    scientificNotationOption,
+    signDisplayOption,
   } = self;
 
   const isInteger = maximumFractionalDigits <= 0;
   const isUngrouped = thousandSeparator.length === 0;
   return (
     pipe(
-      signDisplay,
+      signDisplayOption,
       MMatch.make,
-      MMatch.whenIs(SignDisplay.Always, Function.constant('signed ')),
-      MMatch.whenIs(SignDisplay.Never, Function.constant('unsigned ')),
+      MMatch.whenIs(
+        CVNumberBase10FormatSignDisplayOption.Type.Always,
+        Function.constant('signed '),
+      ),
+      MMatch.whenIs(
+        CVNumberBase10FormatSignDisplayOption.Type.Never,
+        Function.constant('unsigned '),
+      ),
       MMatch.orElse(Function.constant('potentially signed ')),
     )
     + (isUngrouped && isInteger ? ''
@@ -273,18 +294,24 @@ export const toDescription = (self: Type): string => {
       `${MString.fromNumber(10)(minimumFractionalDigits)}-decimal number`
     : 'number')
     + pipe(
-      scientificNotation,
+      scientificNotationOption,
       MMatch.make,
-      MMatch.whenIs(ScientificNotation.None, MFunction.constEmptyString),
       MMatch.whenIs(
-        ScientificNotation.Standard,
+        CVNumberBase10FormatScientificNotationOption.Type.None,
+        MFunction.constEmptyString,
+      ),
+      MMatch.whenIs(
+        CVNumberBase10FormatScientificNotationOption.Type.Standard,
         Function.constant(' in standard scientific notation'),
       ),
       MMatch.whenIs(
-        ScientificNotation.Normalized,
+        CVNumberBase10FormatScientificNotationOption.Type.Normalized,
         Function.constant(' in normalized scientific notation'),
       ),
-      MMatch.whenIs(ScientificNotation.Engineering, Function.constant(' in engineering notation')),
+      MMatch.whenIs(
+        CVNumberBase10FormatScientificNotationOption.Type.Engineering,
+        Function.constant(' in engineering notation'),
+      ),
       MMatch.exhaustive,
     )
   );
@@ -313,11 +340,15 @@ const _toBigDecimalExtractor = (
     ['signPart', 'fillChars', 'mantissaIntegerPart', 'mantissaFractionalPart', 'exponentPart'],
   );
 
-  const signParser = SignDisplay.toParser(self.signDisplay);
+  const signParser = CVSignParser.fromSignDiplayOption(self.signDisplayOption);
 
-  const exponentParser = ScientificNotation.toParser(self.scientificNotation);
+  const exponentParser = CVScientificNotationParser.fromScientificNotationOption(
+    self.scientificNotationOption,
+  );
 
-  const mantissaChecker = ScientificNotation.toMantissaChecker(self.scientificNotation);
+  const mantissaChecker = CVScientificNotationMantissaChecker.fromScientificNotationOption(
+    self.scientificNotationOption,
+  );
 
   const fillCharIsZero = fillChar === '0';
 
@@ -375,7 +406,7 @@ const _toBigDecimalExtractor = (
 
       const sign = yield* signParser({
         isZero: BigDecimal.isZero(checkedMantissa),
-        sign: signPart as SignDisplay.SignString,
+        sign: signPart as CVSignString.Type,
       });
 
       const exponent = yield* exponentParser(exponentPart);
@@ -588,13 +619,15 @@ export const toNumberFormatter = (
     : pipe(
         {
           precision: self.maximumFractionalDigits,
-          roundingMode: self.roundingMode,
+          roundingOption: self.roundingOption,
         },
-        CVRoundingOption.make,
-        CVRoundingOption.toBigDecimalRounder,
+        CVRounderParams.make,
+        CVRounder.bigDecimal,
       );
-  const signFormatter = SignDisplay.toFormatter(self.signDisplay);
-  const mantissaAdjuster = ScientificNotation.toMantissaAdjuster(self.scientificNotation);
+  const signFormatter = CVSignFormatter.fromSignDisplayOption(self.signDisplayOption);
+  const mantissaAdjuster = CVScientificNotationMantissaAdjuster.fromScientificNotationOption(
+    self.scientificNotationOption,
+  );
   const hasThousandSeparator = self.thousandSeparator !== '';
   const eNotationChar = pipe(
     self.eNotationChars,
@@ -733,7 +766,7 @@ export const withMinNDecimals =
  */
 export const withNoScientificNotation: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    scientificNotation: ScientificNotation.None,
+    scientificNotation: CVNumberBase10FormatScientificNotationOption.Type.None,
   }),
   make,
 );
@@ -745,7 +778,7 @@ export const withNoScientificNotation: MTypes.OneArgFunction<Type> = flow(
  */
 export const withStandardScientificNotation: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    scientificNotation: ScientificNotation.Standard,
+    scientificNotation: CVNumberBase10FormatScientificNotationOption.Type.Standard,
   }),
   make,
 );
@@ -757,7 +790,7 @@ export const withStandardScientificNotation: MTypes.OneArgFunction<Type> = flow(
  */
 export const withNormalizedScientificNotation: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    scientificNotation: ScientificNotation.Normalized,
+    scientificNotation: CVNumberBase10FormatScientificNotationOption.Type.Normalized,
   }),
   make,
 );
@@ -769,7 +802,7 @@ export const withNormalizedScientificNotation: MTypes.OneArgFunction<Type> = flo
  */
 export const withEngineeringScientificNotation: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    scientificNotation: ScientificNotation.Engineering,
+    scientificNotation: CVNumberBase10FormatScientificNotationOption.Type.Engineering,
   }),
   make,
 );
@@ -814,7 +847,7 @@ export const withFractionalSeparator = (fractionalSeparator: string): MTypes.One
  */
 export const withSignDisplayForNegative: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    signDisplay: SignDisplay.Auto,
+    signDisplay: CVNumberBase10FormatSignDisplayOption.Type.Auto,
   }),
   make,
 );
@@ -826,7 +859,7 @@ export const withSignDisplayForNegative: MTypes.OneArgFunction<Type> = flow(
  */
 export const withSignDisplay: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    signDisplay: SignDisplay.Always,
+    signDisplay: CVNumberBase10FormatSignDisplayOption.Type.Always,
   }),
   make,
 );
@@ -838,7 +871,7 @@ export const withSignDisplay: MTypes.OneArgFunction<Type> = flow(
  */
 export const withSignDisplayExceptZero: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    signDisplay: SignDisplay.ExceptZero,
+    signDisplay: CVNumberBase10FormatSignDisplayOption.Type.ExceptZero,
   }),
   make,
 );
@@ -850,7 +883,7 @@ export const withSignDisplayExceptZero: MTypes.OneArgFunction<Type> = flow(
  */
 export const withSignDisplayForNegativeExceptZero: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    signDisplay: SignDisplay.Negative,
+    signDisplay: CVNumberBase10FormatSignDisplayOption.Type.Negative,
   }),
   make,
 );
@@ -862,7 +895,7 @@ export const withSignDisplayForNegativeExceptZero: MTypes.OneArgFunction<Type> =
  */
 export const withoutSignDisplay: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    signDisplay: SignDisplay.Never,
+    signDisplay: CVNumberBase10FormatSignDisplayOption.Type.Never,
   }),
   make,
 );
@@ -874,7 +907,7 @@ export const withoutSignDisplay: MTypes.OneArgFunction<Type> = flow(
  */
 export const withCeilRoundingMode: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    roundingMode: CVRoundingMode.Type.Ceil,
+    roundingMode: CVRoundingOption.Type.Ceil,
   }),
   make,
 );
@@ -885,7 +918,7 @@ export const withCeilRoundingMode: MTypes.OneArgFunction<Type> = flow(
  */
 export const withFloorRoundingMode: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    roundingMode: CVRoundingMode.Type.Floor,
+    roundingMode: CVRoundingOption.Type.Floor,
   }),
   make,
 );
@@ -897,7 +930,7 @@ export const withFloorRoundingMode: MTypes.OneArgFunction<Type> = flow(
  */
 export const withExpandRoundingMode: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    roundingMode: CVRoundingMode.Type.Expand,
+    roundingMode: CVRoundingOption.Type.Expand,
   }),
   make,
 );
@@ -909,7 +942,7 @@ export const withExpandRoundingMode: MTypes.OneArgFunction<Type> = flow(
  */
 export const withTruncRoundingMode: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    roundingMode: CVRoundingMode.Type.Trunc,
+    roundingMode: CVRoundingOption.Type.Trunc,
   }),
   make,
 );
@@ -921,7 +954,7 @@ export const withTruncRoundingMode: MTypes.OneArgFunction<Type> = flow(
  */
 export const withHalfCeilRoundingMode: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    roundingMode: CVRoundingMode.Type.HalfCeil,
+    roundingMode: CVRoundingOption.Type.HalfCeil,
   }),
   make,
 );
@@ -933,7 +966,7 @@ export const withHalfCeilRoundingMode: MTypes.OneArgFunction<Type> = flow(
  */
 export const withHalfFloorRoundingMode: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    roundingMode: CVRoundingMode.Type.HalfFloor,
+    roundingMode: CVRoundingOption.Type.HalfFloor,
   }),
   make,
 );
@@ -945,7 +978,7 @@ export const withHalfFloorRoundingMode: MTypes.OneArgFunction<Type> = flow(
  */
 export const withHalfExpandRoundingMode: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    roundingMode: CVRoundingMode.Type.HalfExpand,
+    roundingMode: CVRoundingOption.Type.HalfExpand,
   }),
   make,
 );
@@ -957,7 +990,7 @@ export const withHalfExpandRoundingMode: MTypes.OneArgFunction<Type> = flow(
  */
 export const withHalfTruncRoundingMode: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    roundingMode: CVRoundingMode.Type.HalfTrunc,
+    roundingMode: CVRoundingOption.Type.HalfTrunc,
   }),
   make,
 );
@@ -969,7 +1002,7 @@ export const withHalfTruncRoundingMode: MTypes.OneArgFunction<Type> = flow(
  */
 export const withHalfEvenRoundingMode: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    roundingMode: CVRoundingMode.Type.HalfEven,
+    roundingMode: CVRoundingOption.Type.HalfEven,
   }),
   make,
 );
@@ -1012,9 +1045,9 @@ export const frenchStyleNumber: Type = make({
   minimumFractionalDigits: 0,
   maximumFractionalDigits: 3,
   eNotationChars: ['e', 'E'],
-  scientificNotation: ScientificNotation.None,
-  roundingMode: CVRoundingMode.Type.HalfExpand,
-  signDisplay: SignDisplay.Negative,
+  scientificNotationOption: CVNumberBase10FormatScientificNotationOption.Type.None,
+  roundingOption: CVRoundingOption.Type.HalfExpand,
+  signDisplayOption: CVNumberBase10FormatSignDisplayOption.Type.Negative,
 });
 
 /**

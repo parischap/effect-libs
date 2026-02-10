@@ -1,28 +1,39 @@
 /**
- * Type of a MantissaAdjuster
+ * This module implements a mantissa adjuster. It takes a number a,nd returns a mantissa and an
+ * optional exponent that respect the chosen sscientific notation
+ */
+import { MBigInt, MMatch, MNumber, MTypes } from '@parischap/effect-lib';
+import { BigDecimal, BigInt, flow, Option, Tuple } from 'effect';
+import * as CVNumberBase10FormatScientificNotationOption from '../../../../formatting/number-base10-format/number-base10-format-scientific-notation-option/index.js';
+
+/**
+ * Type of a `CVScientificNotationMantissaAdjuster`
  *
  * @category Models
  */
-export interface MantissaAdjuster extends MTypes.OneArgFunction<
+export interface Type extends MTypes.OneArgFunction<
   BigDecimal.BigDecimal,
   readonly [adjustedMantissa: BigDecimal.BigDecimal, exponent: Option.Option<number>]
 > {}
 
 /**
- * Builds a `Parser` implementing `self`
+ * Builds a `CVScientificNotationMantissaAdjuster` implementing `self`
  *
- * @category Destructors
+ * @category Constructors
  */
-export const toMantissaAdjuster: MTypes.OneArgFunction<ScientificNotation, MantissaAdjuster> = flow(
+export const fromScientificNotationOption: MTypes.OneArgFunction<
+  CVNumberBase10FormatScientificNotationOption.Type,
+  Type
+> = flow(
   MMatch.make,
   MMatch.whenIsOr(
-    ScientificNotation.None,
-    ScientificNotation.Standard,
-    (): MantissaAdjuster => flow(Tuple.make, Tuple.appendElement(Option.none())),
+    CVNumberBase10FormatScientificNotationOption.Type.None,
+    CVNumberBase10FormatScientificNotationOption.Type.Standard,
+    (): Type => flow(Tuple.make, Tuple.appendElement(Option.none())),
   ),
   MMatch.whenIs(
-    ScientificNotation.Normalized,
-    (): MantissaAdjuster => (b) => {
+    CVNumberBase10FormatScientificNotationOption.Type.Normalized,
+    (): Type => (b) => {
       if (BigDecimal.isZero(b)) return Tuple.make(b, Option.some(0));
       const { value } = b;
       const log10 = MBigInt.unsafeLog10(BigInt.abs(value));
@@ -31,8 +42,8 @@ export const toMantissaAdjuster: MTypes.OneArgFunction<ScientificNotation, Manti
     },
   ),
   MMatch.whenIs(
-    ScientificNotation.Engineering,
-    (): MantissaAdjuster => (b) => {
+    CVNumberBase10FormatScientificNotationOption.Type.Engineering,
+    (): Type => (b) => {
       if (BigDecimal.isZero(b)) return Tuple.make(b, Option.some(0));
       const { value } = b;
       const log10 = MBigInt.unsafeLog10(BigInt.abs(value)) - b.scale;
