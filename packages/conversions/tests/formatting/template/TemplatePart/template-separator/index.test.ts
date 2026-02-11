@@ -1,15 +1,15 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import * as CVTemplatePartSeparator from '@parischap/conversions/CVTemplatePartSeparator';
+import * as CVTemplateSeparator from '@parischap/conversions/CVTemplateSeparator';
 import { Option } from 'effect';
 import { describe, it } from 'vitest';
 
-describe('CVTemplatePartSeparator', () => {
-  const separator = CVTemplatePartSeparator.make('foo');
+describe('CVTemplateSeparator', () => {
+  const separator = CVTemplateSeparator.make('foo');
 
   describe('Tag, .toString()', () => {
     it('moduleTag', () => {
       TestUtils.assertEquals(
-        Option.some(CVTemplatePartSeparator.moduleTag),
+        Option.some(CVTemplateSeparator.moduleTag),
         TestUtils.moduleTagFromTestFilePath(import.meta.filename),
       );
     });

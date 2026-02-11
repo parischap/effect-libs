@@ -1,10 +1,10 @@
-/** This module implements a `CVTemplatePartPlaceholderParser` */
+/** This module implements a `CVTemplatePlaceholderParser` */
 
 import type { MInputError, MTypes } from '@parischap/effect-lib';
 import type { Either } from 'effect';
 
 /**
- * Type that describes a `CVTemplatePartPlaceholderParser`
+ * Type that describes a `CVTemplatePlaceholderParser`
  *
  * @category Models
  */

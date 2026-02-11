@@ -1,15 +1,15 @@
 import {
   CVNumberBase10Format,
   CVTemplate,
-  CVTemplatePartPlaceholder,
-  CVTemplatePartSeparator,
+  CVTemplatePlaceholder,
+  CVTemplateSeparator,
 } from '@parischap/conversions';
 import { MRegExpString } from '@parischap/effect-lib';
 import { pipe } from 'effect';
 
 // Let's define useful shortcuts
-const ph = CVTemplatePartPlaceholder;
-const sep = CVTemplatePartSeparator;
+const ph = CVTemplatePlaceholder;
+const sep = CVTemplateSeparator;
 
 // Let's define a template: "#name is a #age-year old #kind."
 const template = CVTemplate.make(

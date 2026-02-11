@@ -11,7 +11,7 @@
  * "Placeholder1 is a Placeholder2-year old Placeholder3".
  *
  * Placeholder1, Placeholder2 and Placeholder3 are the mutable parts of the template. They contain
- * valuable information. We call them `CVTemplatePartPlaceholder`'s.
+ * valuable information. We call them `CVTemplatePlaceholder`'s.
  *
  * " is a ", "-year old " and "." are the immutable parts of the template. We call them
  * `CVTemplateSeperator`'s.
@@ -46,10 +46,10 @@
 
 import { MArray, MData, MInputError, MString, MTuple, MTypes } from '@parischap/effect-lib';
 import { Array, Either, Equal, flow, Function, Option, pipe, Record, Struct, Tuple } from 'effect';
-import * as CVTemplatePartSeparatorParser from '../../internal/formatting/template/TemplatePart/template-part-separator/TemplatePartSeparatorParser.js';
+import * as CVTemplateSeparatorParser from '../../internal/formatting/template/TemplatePart/template-separator/TemplateSeparatorParser.js';
 import * as CVTemplateParts from '../../internal/formatting/template/TemplateParts.js';
 import * as CVTemplatePart from './TemplatePart/index.js';
-import * as CVTemplatePartPlaceholder from './TemplatePart/template-part-placeholder/index.js';
+import * as CVTemplatePlaceholder from './TemplatePart/template-placeholder/index.js';
 
 /**
  * Module tag
@@ -130,10 +130,9 @@ export const toParser =
     string,
     Either.Either<
       {
-        readonly [k in keyof PS as PS[k] extends CVTemplatePartPlaceholder.Any ?
-          CVTemplatePartPlaceholder.ExtractName<PS[k]>
-        : never]: PS[k] extends CVTemplatePartPlaceholder.Any ?
-          CVTemplatePartPlaceholder.ExtractType<PS[k]>
+        readonly [k in keyof PS as PS[k] extends CVTemplatePlaceholder.Any ?
+          CVTemplatePlaceholder.ExtractName<PS[k]>
+        : never]: PS[k] extends CVTemplatePlaceholder.Any ? CVTemplatePlaceholder.ExtractType<PS[k]>
         : never;
       },
       MInputError.Type
@@ -168,7 +167,7 @@ export const toParser =
                 }),
               );
             }
-            const parser = CVTemplatePartSeparatorParser.fromSeparator(templatePart);
+            const parser = CVTemplateSeparatorParser.fromSeparator(templatePart);
             const leftOver = yield* parser(pos + 1, remainingText);
             return Tuple.make(leftOver, result);
           }),
@@ -191,10 +190,9 @@ export const toThrowingParser: <const PS extends CVTemplateParts.Type>(
 ) => MTypes.OneArgFunction<
   string,
   {
-    readonly [k in keyof PS as PS[k] extends CVTemplatePartPlaceholder.Any ?
-      CVTemplatePartPlaceholder.ExtractName<PS[k]>
-    : never]: PS[k] extends CVTemplatePartPlaceholder.Any ?
-      CVTemplatePartPlaceholder.ExtractType<PS[k]>
+    readonly [k in keyof PS as PS[k] extends CVTemplatePlaceholder.Any ?
+      CVTemplatePlaceholder.ExtractName<PS[k]>
+    : never]: PS[k] extends CVTemplatePlaceholder.Any ? CVTemplatePlaceholder.ExtractType<PS[k]>
     : never;
   }
 > = flow(toParser, Function.compose(Either.getOrThrowWith(Function.identity))) as never;
@@ -209,10 +207,9 @@ export const toFormatter = <const PS extends CVTemplateParts.Type>(
   self: Type<PS>,
 ): MTypes.OneArgFunction<
   {
-    readonly [k in keyof PS as PS[k] extends CVTemplatePartPlaceholder.Any ?
-      CVTemplatePartPlaceholder.ExtractName<PS[k]>
-    : never]: PS[k] extends CVTemplatePartPlaceholder.Any ?
-      CVTemplatePartPlaceholder.ExtractType<PS[k]>
+    readonly [k in keyof PS as PS[k] extends CVTemplatePlaceholder.Any ?
+      CVTemplatePlaceholder.ExtractName<PS[k]>
+    : never]: PS[k] extends CVTemplatePlaceholder.Any ? CVTemplatePlaceholder.ExtractType<PS[k]>
     : never;
   },
   Either.Either<string, MInputError.Type>
@@ -247,10 +244,9 @@ export const toThrowingFormatter: <const PS extends CVTemplateParts.Type>(
   self: Type<PS>,
 ) => MTypes.OneArgFunction<
   {
-    readonly [k in keyof PS as PS[k] extends CVTemplatePartPlaceholder.Any ?
-      CVTemplatePartPlaceholder.ExtractName<PS[k]>
-    : never]: PS[k] extends CVTemplatePartPlaceholder.Any ?
-      CVTemplatePartPlaceholder.ExtractType<PS[k]>
+    readonly [k in keyof PS as PS[k] extends CVTemplatePlaceholder.Any ?
+      CVTemplatePlaceholder.ExtractName<PS[k]>
+    : never]: PS[k] extends CVTemplatePlaceholder.Any ? CVTemplatePlaceholder.ExtractType<PS[k]>
     : never;
   },
   string

@@ -1,6 +1,8 @@
 /**
- * This module implements a date-time placeholder that is one of the two possible kinds of a
- * CVDateTimeFormatPart
+ * This module implements a `CVDateTimeFormatPlaceholder`, which is one of the two constituents of a
+ * `CVDateTimeFormatPart`. To parse/format a `CVDateTime`, a `CVDateTimeFormatPlaceholder` is
+ * converted to a `CVTemplatePlaceholder` thanks to a `CVDateTimeFormatContext` which contains a
+ * mapping between the two based on the `CVDateTimeFormatToken` key
  */
 
 import { MData, MTypes } from '@parischap/effect-lib';
@@ -13,7 +15,7 @@ import * as CVDateTimeFormatToken from '../DateTimeFormatToken.js';
  * @category Module markers
  */
 export const moduleTag =
-  '@parischap/conversions/formatting/date-time-format/DateTimeFormatPart/DateTimeFormatPlaceholder';
+  '@parischap/conversions/formatting/date-time-format/DateTimeFormatPart/DateTimeFormatPlaceholder/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 

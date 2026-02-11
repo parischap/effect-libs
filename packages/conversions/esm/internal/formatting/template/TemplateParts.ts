@@ -2,8 +2,8 @@
 import { MMatch, MTypes } from '@parischap/effect-lib';
 import { Array, flow, Function, Option } from 'effect';
 import * as CVTemplatePart from '../../../formatting/template/TemplatePart/index.js';
-import * as CVTemplatePartPlaceholder from '../../../formatting/template/TemplatePart/template-part-placeholder/index.js';
-import * as CVTemplatePartSeparator from '../../../formatting/template/TemplatePart/template-part-separator/index.js';
+import * as CVTemplatePlaceholder from '../../../formatting/template/TemplatePart/template-placeholder/index.js';
+import * as CVTemplateSeparator from '../../../formatting/template/TemplatePart/template-separator/index.js';
 
 /**
  * `CVTemplateParts` Type
@@ -21,8 +21,8 @@ export const getSyntheticDescription: MTypes.OneArgFunction<Type, string> = flow
   Array.map(
     flow(
       MMatch.make,
-      MMatch.when(CVTemplatePart.isPlaceholder, CVTemplatePartPlaceholder.label),
-      MMatch.when(CVTemplatePart.isSeparator, CVTemplatePartSeparator.value),
+      MMatch.when(CVTemplatePart.isPlaceholder, CVTemplatePlaceholder.label),
+      MMatch.when(CVTemplatePart.isSeparator, CVTemplateSeparator.value),
       MMatch.exhaustive,
     ),
   ),
@@ -30,8 +30,8 @@ export const getSyntheticDescription: MTypes.OneArgFunction<Type, string> = flow
 );
 
 /**
- * Shows a description of the `CVTemplatePartPlaceholder`'s of `self` (see description of
- * `CVTemplatePartPlaceholder.getLabelledDescription`)
+ * Shows a description of the `CVTemplatePlaceholder`'s of `self` (see description of
+ * `CVTemplatePlaceholder.getLabelledDescription`)
  *
  * @category Destructors
  */
@@ -41,7 +41,7 @@ export const getPlaceholderDescription: MTypes.OneArgFunction<Type, string> = fl
       MMatch.make,
       MMatch.when(
         CVTemplatePart.isPlaceholder,
-        flow(CVTemplatePartPlaceholder.getLabelledDescription, Option.some),
+        flow(CVTemplatePlaceholder.getLabelledDescription, Option.some),
       ),
       MMatch.when(CVTemplatePart.isSeparator, Function.constant(Option.none())),
       MMatch.exhaustive,

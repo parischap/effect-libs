@@ -1,5 +1,5 @@
 /**
- * This module implements a `CVTemplatePartSeparator` which constitutes the mutable parts of a
+ * This module implements a `CVTemplateSeparator` which constitutes the mutable parts of a
  * `CVTemplate` (see Template.ts and TemplatePart.ts)
  */
 
@@ -12,7 +12,7 @@ import { Struct } from 'effect';
  * @category Module markers
  */
 export const moduleTag =
-  '@parischap/conversions/formatting/template/TemplatePart/template-part-separator/';
+  '@parischap/conversions/formatting/template/TemplatePart/template-separator/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 

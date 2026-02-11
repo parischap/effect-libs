@@ -1,160 +1,149 @@
-import * as TestUtils from "@parischap/configs/TestUtils";
-import { CVDateTime, CVDateTimeFormat, CVDateTimeFormatContext } from "@parischap/conversions";
-import { Either, pipe } from "effect";
-import { describe, it } from "vitest";
+import * as TestUtils from '@parischap/configs/TestUtils';
+import * as CVDateTime from '@parischap/conversions/CVDateTime';
+import * as CVDateTimeFormat from '@parischap/conversions/CVDateTimeFormat';
+import * as CVDateTimeFormatContext from '@parischap/conversions/CVDateTimeFormatContext';
+import * as CVDateTimeFormatPlaceholder from '@parischap/conversions/CVDateTimeFormatPlaceholder';
+import * as CVDateTimeFormatSeparator from '@parischap/conversions/CVDateTimeFormatSeparator';
+import { Either, Option, pipe } from 'effect';
+import { describe, it } from 'vitest';
 
-describe("CVDateTimeFormat", () => {
+describe('CVDateTimeFormat', () => {
   const enGBContext = CVDateTimeFormatContext.enGB;
 
-  const placeholder = CVDateTimeFormat.TemplatePart.Placeholder.make;
-  const sep = CVDateTimeFormat.TemplatePart.Separator;
+  const placeholder = CVDateTimeFormatPlaceholder.make;
+  const sep = CVDateTimeFormatSeparator;
   const isoFormat = CVDateTimeFormat.make({
     context: enGBContext,
-    templateParts: [
-      placeholder("yyyy"),
+    parts: [
+      placeholder('yyyy'),
       sep.hyphen,
-      placeholder("MM"),
+      placeholder('MM'),
       sep.hyphen,
-      placeholder("dd"),
-      sep.make("T"),
-      placeholder("HH"),
+      placeholder('dd'),
+      sep.make('T'),
+      placeholder('HH'),
       sep.colon,
-      placeholder("mm"),
+      placeholder('mm'),
       sep.colon,
-      placeholder("ss"),
+      placeholder('ss'),
       sep.comma,
-      placeholder("SSS"),
-      placeholder("zHzH"),
+      placeholder('SSS'),
+      placeholder('zHzH'),
       sep.colon,
-      placeholder("zmzm"),
+      placeholder('zmzm'),
     ],
   });
 
   const exhaustiveFormat = CVDateTimeFormat.make({
     context: enGBContext,
-    templateParts: [
-      placeholder("y"),
+    parts: [
+      placeholder('y'),
       sep.space,
-      placeholder("yy"),
-      placeholder("yyyy"),
-      placeholder("R"),
+      placeholder('yy'),
+      placeholder('yyyy'),
+      placeholder('R'),
       sep.space,
-      placeholder("RR"),
-      placeholder("RRRR"),
-      placeholder("M"),
+      placeholder('RR'),
+      placeholder('RRRR'),
+      placeholder('M'),
       sep.space,
-      placeholder("MM"),
-      placeholder("MMM"),
-      placeholder("MMMM"),
-      placeholder("I"),
+      placeholder('MM'),
+      placeholder('MMM'),
+      placeholder('MMMM'),
+      placeholder('I'),
       sep.space,
-      placeholder("II"),
-      placeholder("d"),
+      placeholder('II'),
+      placeholder('d'),
       sep.space,
-      placeholder("dd"),
-      placeholder("D"),
+      placeholder('dd'),
+      placeholder('D'),
       sep.space,
-      placeholder("DDD"),
-      placeholder("i"),
+      placeholder('DDD'),
+      placeholder('i'),
       sep.space,
-      placeholder("iii"),
-      placeholder("iiii"),
-      placeholder("a"),
-      placeholder("H"),
+      placeholder('iii'),
+      placeholder('iiii'),
+      placeholder('a'),
+      placeholder('H'),
       sep.space,
-      placeholder("HH"),
-      placeholder("K"),
+      placeholder('HH'),
+      placeholder('K'),
       sep.space,
-      placeholder("KK"),
-      placeholder("m"),
+      placeholder('KK'),
+      placeholder('m'),
       sep.space,
-      placeholder("mm"),
-      placeholder("s"),
+      placeholder('mm'),
+      placeholder('s'),
       sep.space,
-      placeholder("ss"),
-      placeholder("S"),
+      placeholder('ss'),
+      placeholder('S'),
       sep.space,
-      placeholder("SSS"),
-      placeholder("zH"),
+      placeholder('SSS'),
+      placeholder('zH'),
       sep.space,
-      placeholder("zHzH"),
-      placeholder("zm"),
+      placeholder('zHzH'),
+      placeholder('zm'),
       sep.space,
-      placeholder("zmzm"),
-      placeholder("zs"),
+      placeholder('zmzm'),
+      placeholder('zs'),
       sep.space,
-      placeholder("zszs"),
+      placeholder('zszs'),
     ],
   });
 
-  describe("Tag, prototype and guards", () => {
-    it("moduleTag", () => {
-      TestUtils.assertSome(
-        TestUtils.moduleTagFromTestFilePath(__filename),
-        CVDateTimeFormat.moduleTag,
-      );
-    });
+  describe('Tag, .toString()', () => {
+    TestUtils.assertEquals(
+      Option.some(CVDateTimeFormat.moduleTag),
+      TestUtils.moduleTagFromTestFilePath(import.meta.filename),
+    );
 
-    it(".toString()", () => {
+    it('.toString()', () => {
       TestUtils.strictEqual(
         isoFormat.toString(),
         "'yyyy-MM-ddTHH:mm:ss,SSSzHzH:zmzm' in 'en-GB' context",
       );
     });
-
-    it(".pipe()", () => {
-      TestUtils.assertTrue(isoFormat.pipe(CVDateTimeFormat.has));
-    });
-
-    describe("has", () => {
-      it("Matching", () => {
-        TestUtils.assertTrue(CVDateTimeFormat.has(isoFormat));
-      });
-      it("Non matching", () => {
-        TestUtils.assertFalse(CVDateTimeFormat.has(new Date()));
-      });
-    });
   });
 
-  describe("toParser", () => {
-    describe("iso Format", () => {
+  describe('toParser', () => {
+    describe('iso Format', () => {
       const parser = CVDateTimeFormat.toParser(isoFormat);
-      it("Non matching", () => {
+      it('Non matching', () => {
         TestUtils.assertLeftMessage(
-          parser("2025-13-01T22:54:12,543+00:00"),
+          parser('2025-13-01T22:54:12,543+00:00'),
           "Expected 'month' to be between 1 (included) and 12 (included). Actual: 13",
         );
       });
 
-      it("Matching", () => {
+      it('Matching', () => {
         TestUtils.assertRight(
-          pipe("2025-12-01T22:54:12,543-03:22", parser, Either.map(CVDateTime.timestamp)),
+          pipe('2025-12-01T22:54:12,543-03:22', parser, Either.map(CVDateTime.timestamp)),
           Date.UTC(2025, 11, 2, 2, 16, 12, 543),
         );
       });
     });
 
-    describe("Exhaustive Format", () => {
+    describe('Exhaustive Format', () => {
       const parser = CVDateTimeFormat.toParser(exhaustiveFormat);
-      it("Non matching", () => {
+      it('Non matching', () => {
         TestUtils.assertLeftMessage(
           parser(
-            "2025 2520252026 26202612 12DecDecember1 0130 30364 3641 MonMondayPM13 131 015 0553 53234 234+1 +0112 125 05",
+            '2025 2520252026 26202612 12DecDecember1 0130 30364 3641 MonMondayPM13 131 015 0553 53234 234+1 +0112 125 05',
           ),
           "Expected 'monthDay' to be: 29. Actual: 30",
         );
         TestUtils.assertLeftMessage(
           parser(
-            "2025 2520252026 26202612 12DecDecember1 0130 30364 3642 TueMondayPM13 131 015 0553 53234 234+1 +0112 125 05",
+            '2025 2520252026 26202612 12DecDecember1 0130 30364 3642 TueMondayPM13 131 015 0553 53234 234+1 +0112 125 05',
           ),
           "#weekday is present more than once in template and receives differing values '2' and '1'",
         );
       });
 
-      it("Matching", () => {
+      it('Matching', () => {
         TestUtils.assertRight(
           pipe(
-            "2025 2520252026 26202612 12DecDecember1 0130 30364 3642 TueTuesdayPM13 131 015 0553 53234 234+1 +0112 125 05",
+            '2025 2520252026 26202612 12DecDecember1 0130 30364 3642 TueTuesdayPM13 131 015 0553 53234 234+1 +0112 125 05',
             parser,
             Either.map(CVDateTime.timestamp),
           ),
@@ -164,39 +153,39 @@ describe("CVDateTimeFormat", () => {
     });
   });
 
-  describe("toFormatter", () => {
-    describe("iso Format", () => {
+  describe('toFormatter', () => {
+    describe('iso Format', () => {
       const formatter = CVDateTimeFormat.toFormatter(isoFormat);
-      it("Non matching", () => {
+      it('Non matching', () => {
         TestUtils.assertLeftMessage(
           formatter(CVDateTime.fromPartsOrThrow({ year: 10_024 })),
-          "Expected length of #year to be: 4. Actual: 5",
+          'Expected length of #year to be: 4. Actual: 5',
         );
       });
 
-      it("Matching", () => {
+      it('Matching', () => {
         TestUtils.assertRight(
           pipe(
             formatter(
               CVDateTime.fromPartsOrThrow({ year: 2025, month: 8, monthDay: 13, zoneMinute: 42 }),
             ),
           ),
-          "2025-08-13T00:00:00,000+00:42",
+          '2025-08-13T00:00:00,000+00:42',
         );
       });
     });
 
-    describe("Exhaustive Format", () => {
+    describe('Exhaustive Format', () => {
       const formatter = CVDateTimeFormat.toFormatter(exhaustiveFormat);
 
-      it("Non matching", () => {
+      it('Non matching', () => {
         TestUtils.assertLeftMessage(
           formatter(CVDateTime.fromPartsOrThrow({ year: 1925, month: 2, monthDay: 28 })),
-          "Expected #year to be between 2000 (included) and 2099 (included). Actual: 1925",
+          'Expected #year to be between 2000 (included) and 2099 (included). Actual: 1925',
         );
       });
 
-      it("Matching", () => {
+      it('Matching', () => {
         TestUtils.assertRight(
           pipe(
             formatter(
@@ -209,7 +198,7 @@ describe("CVDateTimeFormat", () => {
               }),
             ),
           ),
-          "2025 2520252025 2520252 02FebFebruary9 0928 2859 0595 FriFridayAM0 000 0054 540 000 000-5 -050 000 00",
+          '2025 2520252025 2520252 02FebFebruary9 0928 2859 0595 FriFridayAM0 000 0054 540 000 000-5 -050 000 00',
         );
       });
     });

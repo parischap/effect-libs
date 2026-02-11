@@ -21,8 +21,8 @@ import {
 } from '../../date-time/dateTimeConstants.js';
 import * as CVNumberBase10Format from '../../formatting/number-base10-format/index.js';
 import * as CVTemplate from '../../formatting/template/index.js';
-import * as CVTemplatePartPlaceholder from '../../formatting/template/TemplatePart/template-part-placeholder/index.js';
-import * as CVTemplatePartSeparator from '../../formatting/template/TemplatePart/template-part-separator/index.js';
+import * as CVTemplatePlaceholder from '../../formatting/template/TemplatePart/template-placeholder/index.js';
+import * as CVTemplateSeparator from '../../formatting/template/TemplatePart/template-separator/index.js';
 import type * as CVGregorianDate from './GregorianDate.js';
 
 /**
@@ -96,8 +96,8 @@ const YEAR_START_2000_MS = 946_857_600_000;
  */
 const YEAR_START_2010_MS = 1_262_563_200_000;
 
-const _fixedLengthToReal = CVTemplatePartPlaceholder.fixedLengthToReal;
-const _sep = CVTemplatePartSeparator;
+const _fixedLengthToReal = CVTemplatePlaceholder.fixedLengthToReal;
+const _sep = CVTemplateSeparator;
 const _integer = CVNumberBase10Format.integer;
 const _params = {
   fillChar: '0',

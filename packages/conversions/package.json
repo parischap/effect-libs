@@ -194,23 +194,23 @@
     "./CVTemplatePart": {
       "default": "./esm/formatting/template/TemplatePart/index.ts"
     },
-    "./CVTemplatePartPlaceholder": {
-      "default": "./esm/formatting/template/TemplatePart/template-part-placeholder/index.ts"
-    },
     "./CVTemplatePartPlaceholderFormatter": {
-      "default": "./esm/formatting/template/TemplatePart/template-part-placeholder/TemplatePartPlaceholderFormatter.ts"
+      "default": "./esm/formatting/template/TemplatePart/template-placeholder/TemplatePartPlaceholderFormatter.ts"
     },
     "./CVTemplatePartPlaceholderParser": {
-      "default": "./esm/formatting/template/TemplatePart/template-part-placeholder/TemplatePartPlaceholderParser.ts"
-    },
-    "./CVTemplatePartSeparator": {
-      "default": "./esm/formatting/template/TemplatePart/template-part-separator/index.ts"
-    },
-    "./CVTemplatePartSeparatorParser": {
-      "default": "./esm/internal/formatting/template/TemplatePart/template-part-separator/TemplatePartSeparatorParser.ts"
+      "default": "./esm/formatting/template/TemplatePart/template-placeholder/TemplatePartPlaceholderParser.ts"
     },
     "./CVTemplateParts": {
       "default": "./esm/internal/formatting/template/TemplateParts.ts"
+    },
+    "./CVTemplatePlaceholder": {
+      "default": "./esm/formatting/template/TemplatePart/template-placeholder/index.ts"
+    },
+    "./CVTemplateSeparator": {
+      "default": "./esm/formatting/template/TemplatePart/template-separator/index.ts"
+    },
+    "./CVTemplateSeparatorParser": {
+      "default": "./esm/internal/formatting/template/TemplatePart/template-separator/TemplateSeparatorParser.ts"
     },
     "./CVTime": {
       "default": "./esm/internal/date-time/Time.ts"

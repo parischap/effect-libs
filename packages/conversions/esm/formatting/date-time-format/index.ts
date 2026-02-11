@@ -4,43 +4,28 @@
  * https://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table).
  */
 
-import {
-  MData,
-  MInputError,
-  MInspectable,
-  MMatch,
-  MPipeable,
-  MString,
-  MTypes,
-} from '@parischap/effect-lib';
-import {
-  Array,
-  Either,
-  flow,
-  Function,
-  HashMap,
-  Option,
-  pipe,
-  Predicate,
-  Record,
-  Struct,
-  Tuple,
-} from 'effect';
-import * as CVDateTime from '../../DateTime/index.js';
-import * as CVTemplateParts from '../../internal/formatting/TemplateParts.js';
+import { MData, MInputError, MMatch, MString, MTypes } from '@parischap/effect-lib';
+import { Array, Either, flow, Function, HashMap, Option, pipe, Record, Tuple } from 'effect';
+import * as CVDateTimeParts from '../../date-time/DateTimeParts.js';
+import * as CVDateTime from '../../date-time/index.js';
+import * as CVDateTimeFormatParts from '../../internal/formatting/date-time-format/DateTimeFormatParts.js';
+import * as CVTemplateParts from '../../internal/formatting/template/TemplateParts.js';
 import * as CVReal from '../../primitive/Real.js';
-import * as CVTemplate from '../Template.js';
-import * as CVTemplatePart from '../TemplatePart/index.js';
-import * as CVTemplatePartPlaceholder from '../TemplatePart/Placeholder/index.js';
-import * as CVTemplatePartSeparator from '../TemplatePart/Separator.js';
-import * as CVDateTimeFormatContext from './DateTimeFormatContext.js';
+import * as CVTemplate from '../template/index.js';
+import * as CVTemplatePart from '../template/TemplatePart/index.js';
+import * as CVTemplatePlaceholder from '../template/TemplatePart/template-placeholder/index.js';
+import * as CVTemplateSeparator from '../template/TemplatePart/template-separator/index.js';
+import * as CVDateTimeFormatContext from './date-time-format-context/index.js';
+import * as CVDateTimeFormatPartPlaceholder from './DateTimeFormatPart/DateTimeFormatPlaceholder.js';
+import * as CVDateTimeFormatPart from './DateTimeFormatPart/index.js';
+import * as CVDateTimeFormatToken from './DateTimeFormatToken.js';
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/conversions/formatting/DateTimeFormat/';
+export const moduleTag = '@parischap/conversions/formatting/date-time-format/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
@@ -50,33 +35,73 @@ type _TypeId = typeof _TypeId;
  * @category Models
  */
 export class Type extends MData.Class {
-  /** The CVDateTimeFormatContext of this DateTimeFormat */
-  readonly context: CVDateTimeFormatContext.Type;
+  // Name of this CVDateTimeFormat
+  readonly name: string;
 
-  /** The array of TemplatePart's contituting this DateTimeFormat */
-  readonly templateParts: CVTemplateParts.Type;
-
-  // template built from `templateParts`
+  // Template that will be used tp format/parse `self`
   readonly template: CVTemplate.Type<CVTemplateParts.Type<CVReal.Type>>;
 
   /** Returns the `id` of `this` */
   [MData.idSymbol](): string | (() => string) {
     return function idSymbol(this: Type) {
-      return '';
+      return this.name;
     };
   }
 
   /** Class constructor */
-  private constructor({ context, templateParts, template }: MTypes.Data<Type>) {
+  private constructor({ name, template }: MTypes.Data<Type>) {
     super();
-    this.context = context;
-    this.templateParts = templateParts;
+    this.name = name;
     this.template = template;
   }
 
   /** Static constructor */
-  static make(params: MTypes.Data<Type>): Type {
-    return new Type(params);
+  static make({
+    context,
+    parts,
+  }: {
+    readonly context: CVDateTimeFormatContext.Type;
+    readonly parts: CVDateTimeFormatParts.Type;
+  }): Type {
+    const getter = (
+      name: CVDateTimeFormatToken.Type,
+    ): CVTemplatePlaceholder.Type<string, CVReal.Type> =>
+      pipe(
+        context.tokenMap,
+        HashMap.get(name),
+        Option.getOrThrowWith(
+          () => new Error(`Abnormal error: no TemplatePart was defined with name '${name}'`),
+        ),
+      );
+
+    const template: CVTemplate.Type<CVTemplateParts.Type<CVReal.Type>> = pipe(
+      parts,
+      Array.map(
+        flow(
+          MMatch.make,
+          MMatch.when(
+            CVDateTimeFormatPart.isPlaceholder,
+            flow(CVDateTimeFormatPartPlaceholder.name, getter),
+          ),
+          MMatch.when(CVDateTimeFormatPart.isSeparator, ({ value }) =>
+            CVTemplateSeparator.make(value),
+          ),
+          MMatch.exhaustive,
+        ),
+      ),
+      Function.tupled(CVTemplate.make),
+    );
+
+    return new Type({
+      name: pipe(
+        parts,
+        Array.map((p) => p.toString()),
+        Array.join(''),
+        MString.prepend("'"),
+        MString.append(`' in '${context.name}' context`),
+      ),
+      template: template,
+    });
   }
 
   /** Returns the TypeMarker of the class */
@@ -86,99 +111,19 @@ export class Type extends MData.Class {
 }
 
 /**
- * Constructor of a CVDateTimeFormat
+ * Builds a DateTimeFormat from a CVDateTimeFormatContext `context` and an array of
+ * CVDateTimeFormatPart's `parts`
  *
  * @category Constructors
  */
-export const make = (params: MTypes.Data<Type>): Type => Type.make(params);
-
-/**
- * Type guard
- *
- * @category Guards
- */
-export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
-
-/** Prototype */
-const _proto: MTypes.Proto<Type> = {
-  [_TypeId]: _TypeId,
-  [MInspectable.IdSymbol](this: Type) {
-    return pipe(
-      this.templateParts,
-      Array.map((p) => p.toString()),
-      Array.join(''),
-      MString.prepend("'"),
-      MString.append(`' in '${this.context.name}' context`),
-    );
-  },
-  ...MInspectable.BaseProto(moduleTag),
-  ...MPipeable.BaseProto,
-};
-
-const _make = (params: MTypes.Data<Type>): Type => MTypes.objectFromDataAndProto(_proto, params);
-
-/**
- * Builds a DateTimeFormat from a Context `context` and an array of TemplatePart's `templateParts`
- *
- * @category Constructors
- */
-export const make = ({
-  context,
-  templateParts,
-}: {
+export const make = (params: {
   readonly context: CVDateTimeFormatContext.Type;
-  readonly templateParts: ReadonlyArray<TemplatePart.Type>;
-}): Type => {
-  const getter = (
-    name: CVDateTimeFormatContext.Token,
-  ): CVTemplatePartPlaceholder.Type<string, CVReal.Type> =>
-    pipe(
-      context.tokenMap,
-      HashMap.get(name),
-      Option.getOrThrowWith(
-        () => new Error(`Abnormal error: no TemplatePart was defined with name '${name}'`),
-      ),
-    );
-
-  const template: CVTemplate.Type<CVTemplateParts.Type<CVReal.Type>> = pipe(
-    templateParts,
-    Array.map(
-      flow(
-        MMatch.make,
-        MMatch.when(TemplatePart.isPlaceholder, flow(TemplatePart.Placeholder.name, getter)),
-        MMatch.when(TemplatePart.isSeparator, ({ value }) => CVTemplatePartSeparator.make(value)),
-        MMatch.exhaustive,
-      ),
-    ),
-    Function.tupled(CVTemplate.make),
-  );
-
-  return _make({
-    context,
-    templateParts: templateParts,
-    template: template,
-  });
-};
+  readonly parts: CVDateTimeFormatParts.Type;
+}): Type => Type.make(params);
 
 /**
- * Returns the `context` property of `self`
- *
- * @category Destructors
- */
-export const context: MTypes.OneArgFunction<Type, CVDateTimeFormatContext.Type> =
-  Struct.get('context');
-
-/**
- * Returns the `templateParts` property of `self`
- *
- * @category Destructors
- */
-export const templateParts: MTypes.OneArgFunction<Type, TemplateParts.Type> =
-  Struct.get('templateParts');
-
-/**
- * Returns a function that parses a text into a DateTime according to 'self'. See DateTime.fromParts
- * for more information on default values and errors.
+ * Returns a function that parses a text into a CVDateTime according to 'self'. See
+ * CVDateTime.fromParts for more information on default values and errors.
  *
  * @category Parsing
  */
@@ -188,7 +133,7 @@ export const toParser = (
 ): MTypes.OneArgFunction<string, Either.Either<CVDateTime.Type, MInputError.Type>> => {
   return flow(
     CVTemplate.toParser(self.template),
-    Either.flatMap((o) => CVDateTime.fromParts(o as DateTimeParts)),
+    Either.flatMap((o) => CVDateTime.fromParts(o as CVDateTimeParts.Type)),
   );
 };
 
@@ -224,7 +169,7 @@ export const toFormatter = (
         MMatch.when(
           CVTemplatePart.isPlaceholder,
           flow(
-            CVTemplatePartPlaceholder.name,
+            CVTemplatePlaceholder.name,
             MMatch.make,
             flow(
               MMatch.whenIs(

@@ -1,13 +1,9 @@
+/** This module implements a type that represents an array of `CVDateTimeFormatPart` */
+import * as CVDateTimeFormatPart from '../../../formatting/date-time-format/DateTimeFormatPart/index.js';
+
 /**
- * Namespace TemplateParts
+ * Type of a CVDateTimeFormatParts
  *
  * @category Models
  */
-export namespace TemplateParts {
-  /**
-   * Type of an array of TemplatePart's
-   *
-   * @category Models
-   */
-  export interface Type extends ReadonlyArray<TemplatePart.Type> {}
-}
+export interface Type extends ReadonlyArray<CVDateTimeFormatPart.Type> {}

@@ -1,8 +1,10 @@
-import * as TestUtils from "@parischap/configs/TestUtils";
+import * as TestUtils from '@parischap/configs/TestUtils';
 import {
   CVDateTime,
   CVDateTimeFormat,
   CVDateTimeFormatContext,
+  CVDateTimeFormatPlaceholder,
+  CVDateTimeFormatSeparator,
   CVEmail,
   CVInteger,
   CVNumberBase10Format,
@@ -11,352 +13,352 @@ import {
   CVReal,
   CVSchema,
   CVSemVer,
-} from "@parischap/conversions";
-import { BigDecimal, DateTime, pipe, Schema } from "effect";
-import { describe, it } from "vitest";
+} from '@parischap/conversions';
+import { BigDecimal, DateTime, pipe, Schema } from 'effect';
+import { describe, it } from 'vitest';
 
-describe("CVSchema", () => {
-  describe("Email", () => {
-    const target = CVEmail.unsafeFromString("foo@bar.baz");
-    describe("Decoding", () => {
+describe('CVSchema', () => {
+  describe('Email', () => {
+    const target = CVEmail.unsafeFromString('foo@bar.baz');
+    describe('Decoding', () => {
       const decoder = Schema.decodeEither(CVSchema.Email);
-      it("Not passing", () => {
-        TestUtils.assertLeft(decoder("foo"));
+      it('Not passing', () => {
+        TestUtils.assertLeft(decoder('foo'));
       });
-      it("Passing", () => {
+      it('Passing', () => {
         TestUtils.assertRight(decoder(target), target);
       });
     });
 
-    describe("Encoding", () => {
+    describe('Encoding', () => {
       const encoder = Schema.encodeEither(CVSchema.Email);
 
-      it("Passing", () => {
+      it('Passing', () => {
         TestUtils.assertRight(encoder(target), target);
       });
     });
   });
 
-  describe("EmailFromSelf", () => {
-    const target = CVEmail.unsafeFromString("foo@bar.baz");
-    describe("Decoding", () => {
+  describe('EmailFromSelf', () => {
+    const target = CVEmail.unsafeFromString('foo@bar.baz');
+    describe('Decoding', () => {
       const decoder = Schema.decodeEither(CVSchema.EmailFromSelf);
-      it("Passing", () => {
+      it('Passing', () => {
         TestUtils.assertRight(decoder(target), target);
       });
     });
 
-    describe("Encoding", () => {
+    describe('Encoding', () => {
       const encoder = Schema.encodeEither(CVSchema.EmailFromSelf);
-      it("Passing", () => {
+      it('Passing', () => {
         TestUtils.assertRight(encoder(target), target);
       });
     });
   });
 
-  describe("SemVer", () => {
-    const target = CVSemVer.unsafeFromString("1.0.1");
-    describe("Decoding", () => {
+  describe('SemVer', () => {
+    const target = CVSemVer.unsafeFromString('1.0.1');
+    describe('Decoding', () => {
       const decoder = Schema.decodeEither(CVSchema.SemVer);
-      it("Not passing", () => {
-        TestUtils.assertLeft(decoder("foo"));
+      it('Not passing', () => {
+        TestUtils.assertLeft(decoder('foo'));
       });
-      it("Passing", () => {
+      it('Passing', () => {
         TestUtils.assertRight(decoder(target), target);
       });
     });
 
-    describe("Encoding", () => {
+    describe('Encoding', () => {
       const encoder = Schema.encodeEither(CVSchema.SemVer);
 
-      it("Passing", () => {
+      it('Passing', () => {
         TestUtils.assertRight(encoder(target), target);
       });
     });
   });
 
-  describe("SemVerFromSelf", () => {
-    const target = CVSemVer.unsafeFromString("1.0.1");
-    describe("Decoding", () => {
+  describe('SemVerFromSelf', () => {
+    const target = CVSemVer.unsafeFromString('1.0.1');
+    describe('Decoding', () => {
       const decoder = Schema.decodeEither(CVSchema.SemVerFromSelf);
-      it("Passing", () => {
+      it('Passing', () => {
         TestUtils.assertRight(decoder(target), target);
       });
     });
 
-    describe("Encoding", () => {
+    describe('Encoding', () => {
       const encoder = Schema.encodeEither(CVSchema.SemVerFromSelf);
-      it("Passing", () => {
+      it('Passing', () => {
         TestUtils.assertRight(encoder(target), target);
       });
     });
   });
 
-  describe("RealFromNumber", () => {
+  describe('RealFromNumber', () => {
     const target = CVReal.unsafeFromNumber(15.4);
-    describe("Decoding", () => {
+    describe('Decoding', () => {
       const decoder = Schema.decodeEither(CVSchema.RealFromNumber);
-      it("Not passing", () => {
+      it('Not passing', () => {
         TestUtils.assertLeft(decoder(Infinity));
       });
-      it("Passing", () => {
+      it('Passing', () => {
         TestUtils.assertRight(decoder(target), target);
       });
     });
 
-    describe("Encoding", () => {
+    describe('Encoding', () => {
       const encoder = Schema.encodeEither(CVSchema.RealFromNumber);
 
-      it("Passing", () => {
+      it('Passing', () => {
         TestUtils.assertRight(encoder(target), target);
       });
     });
   });
 
-  describe("RealFromSelf", () => {
+  describe('RealFromSelf', () => {
     const target = CVReal.unsafeFromNumber(15.4);
-    describe("Decoding", () => {
+    describe('Decoding', () => {
       const decoder = Schema.decodeEither(CVSchema.RealFromSelf);
-      it("Passing", () => {
+      it('Passing', () => {
         TestUtils.assertRight(decoder(target), target);
       });
     });
 
-    describe("Encoding", () => {
+    describe('Encoding', () => {
       const encoder = Schema.encodeEither(CVSchema.RealFromSelf);
-      it("Passing", () => {
+      it('Passing', () => {
         TestUtils.assertRight(encoder(target), target);
       });
     });
   });
 
-  describe("Real", () => {
+  describe('Real', () => {
     const schema = CVSchema.Real(CVNumberBase10Format.frenchStyleNumber);
     const target = CVReal.unsafeFromNumber(1024.56);
-    const targetAsString = "1 024,56";
-    describe("Decoding", () => {
+    const targetAsString = '1 024,56';
+    describe('Decoding', () => {
       const decoder = Schema.decodeEither(schema);
-      it("Not passing", () => {
-        TestUtils.assertLeft(decoder(""));
+      it('Not passing', () => {
+        TestUtils.assertLeft(decoder(''));
       });
-      it("Passing", () => {
+      it('Passing', () => {
         TestUtils.assertRight(decoder(targetAsString), target);
       });
     });
-    it("Encoding", () => {
+    it('Encoding', () => {
       const encoder = Schema.encodeEither(schema);
       TestUtils.assertRight(encoder(target), targetAsString);
     });
   });
 
-  describe("IntegerFromNumber", () => {
+  describe('IntegerFromNumber', () => {
     const target = CVInteger.unsafeFromNumber(15);
-    describe("Decoding", () => {
+    describe('Decoding', () => {
       const decoder = Schema.decodeEither(CVSchema.IntegerFromNumber);
-      it("Not passing", () => {
+      it('Not passing', () => {
         TestUtils.assertLeft(decoder(Infinity));
         TestUtils.assertLeft(decoder(15.4));
       });
-      it("Passing", () => {
+      it('Passing', () => {
         TestUtils.assertRight(decoder(target), target);
       });
     });
 
-    describe("Encoding", () => {
+    describe('Encoding', () => {
       const encoder = Schema.encodeEither(CVSchema.IntegerFromNumber);
 
-      it("Passing", () => {
+      it('Passing', () => {
         TestUtils.assertRight(encoder(target), target);
       });
     });
   });
 
-  describe("IntegerFromSelf", () => {
+  describe('IntegerFromSelf', () => {
     const target = CVInteger.unsafeFromNumber(15);
-    describe("Decoding", () => {
+    describe('Decoding', () => {
       const decoder = Schema.decodeEither(CVSchema.IntegerFromSelf);
-      it("Passing", () => {
+      it('Passing', () => {
         TestUtils.assertRight(decoder(target), target);
       });
     });
 
-    describe("Encoding", () => {
+    describe('Encoding', () => {
       const encoder = Schema.encodeEither(CVSchema.IntegerFromSelf);
-      it("Passing", () => {
+      it('Passing', () => {
         TestUtils.assertRight(encoder(target), target);
       });
     });
   });
 
-  describe("PositiveIntegerFromNumber", () => {
+  describe('PositiveIntegerFromNumber', () => {
     const target = CVPositiveInteger.unsafeFromNumber(15);
-    describe("Decoding", () => {
+    describe('Decoding', () => {
       const decoder = Schema.decodeEither(CVSchema.PositiveIntegerFromNumber);
-      it("Not passing", () => {
+      it('Not passing', () => {
         TestUtils.assertLeft(decoder(Infinity));
         TestUtils.assertLeft(decoder(15.4));
         TestUtils.assertLeft(decoder(-15));
       });
-      it("Passing", () => {
+      it('Passing', () => {
         TestUtils.assertRight(decoder(target), target);
       });
     });
 
-    describe("Encoding", () => {
+    describe('Encoding', () => {
       const encoder = Schema.encodeEither(CVSchema.PositiveIntegerFromNumber);
 
-      it("Passing", () => {
+      it('Passing', () => {
         TestUtils.assertRight(encoder(target), target);
       });
     });
   });
 
-  describe("PositiveIntegerFromSelf", () => {
+  describe('PositiveIntegerFromSelf', () => {
     const target = CVPositiveInteger.unsafeFromNumber(15);
-    describe("Decoding", () => {
+    describe('Decoding', () => {
       const decoder = Schema.decodeEither(CVSchema.PositiveIntegerFromSelf);
-      it("Passing", () => {
+      it('Passing', () => {
         TestUtils.assertRight(decoder(target), target);
       });
     });
 
-    describe("Encoding", () => {
+    describe('Encoding', () => {
       const encoder = Schema.encodeEither(CVSchema.PositiveIntegerFromSelf);
-      it("Passing", () => {
+      it('Passing', () => {
         TestUtils.assertRight(encoder(target), target);
       });
     });
   });
 
-  describe("PositiveRealFromNumber", () => {
+  describe('PositiveRealFromNumber', () => {
     const target = CVPositiveReal.unsafeFromNumber(15.4);
-    describe("Decoding", () => {
+    describe('Decoding', () => {
       const decoder = Schema.decodeEither(CVSchema.PositiveRealFromNumber);
-      it("Not passing", () => {
+      it('Not passing', () => {
         TestUtils.assertLeft(decoder(Infinity));
         TestUtils.assertLeft(decoder(-15.4));
       });
-      it("Passing", () => {
+      it('Passing', () => {
         TestUtils.assertRight(decoder(target), target);
       });
     });
 
-    describe("Encoding", () => {
+    describe('Encoding', () => {
       const encoder = Schema.encodeEither(CVSchema.PositiveRealFromNumber);
 
-      it("Passing", () => {
+      it('Passing', () => {
         TestUtils.assertRight(encoder(target), target);
       });
     });
   });
 
-  describe("PositiveRealFromSelf", () => {
+  describe('PositiveRealFromSelf', () => {
     const target = CVPositiveReal.unsafeFromNumber(15.4);
-    describe("Decoding", () => {
+    describe('Decoding', () => {
       const decoder = Schema.decodeEither(CVSchema.PositiveRealFromSelf);
-      it("Passing", () => {
+      it('Passing', () => {
         TestUtils.assertRight(decoder(target), target);
       });
     });
 
-    describe("Encoding", () => {
+    describe('Encoding', () => {
       const encoder = Schema.encodeEither(CVSchema.PositiveRealFromSelf);
-      it("Passing", () => {
+      it('Passing', () => {
         TestUtils.assertRight(encoder(target), target);
       });
     });
   });
 
-  describe("BigDecimal", () => {
+  describe('BigDecimal', () => {
     const schema = CVSchema.BigDecimal(CVNumberBase10Format.frenchStyleNumber);
     const target = BigDecimal.make(102_456n, 2);
-    const targetAsString = "1 024,56";
-    describe("Decoding", () => {
+    const targetAsString = '1 024,56';
+    describe('Decoding', () => {
       const decoder = Schema.decodeEither(schema);
-      it("Not passing", () => {
-        TestUtils.assertLeft(decoder(""));
+      it('Not passing', () => {
+        TestUtils.assertLeft(decoder(''));
       });
-      it("Passing", () => {
+      it('Passing', () => {
         TestUtils.assertRight(decoder(targetAsString), target);
       });
     });
-    it("Encoding", () => {
+    it('Encoding', () => {
       const encoder = Schema.encodeEither(schema);
       TestUtils.assertRight(encoder(target), targetAsString);
     });
   });
 
-  describe("DateTimeFromSelf", () => {
+  describe('DateTimeFromSelf', () => {
     const target = CVDateTime.fromTimestampOrThrow(0);
-    describe("Decoding", () => {
+    describe('Decoding', () => {
       const decoder = Schema.decodeEither(CVSchema.DateTimeFromSelf);
-      it("Passing", () => {
+      it('Passing', () => {
         TestUtils.assertRight(decoder(target), target);
       });
     });
 
-    describe("Encoding", () => {
+    describe('Encoding', () => {
       const encoder = Schema.encodeEither(CVSchema.DateTimeFromSelf);
-      it("Passing", () => {
+      it('Passing', () => {
         TestUtils.assertRight(encoder(target), target);
       });
     });
   });
 
-  describe("DateTimeFromDate", () => {
+  describe('DateTimeFromDate', () => {
     const target = CVDateTime.fromTimestampOrThrow(0);
     const targetAsDate = new Date(0);
-    describe("Decoding", () => {
+    describe('Decoding', () => {
       const decoder = Schema.decodeEither(CVSchema.DateFromDateTime);
-      it("Passing", () => {
+      it('Passing', () => {
         TestUtils.assertRight(decoder(target), targetAsDate);
       });
     });
 
-    describe("Encoding", () => {
+    describe('Encoding', () => {
       const encoder = Schema.encodeEither(CVSchema.DateFromDateTime);
-      it("Passing", () => {
+      it('Passing', () => {
         TestUtils.assertRight(encoder(targetAsDate), target);
       });
     });
   });
 
-  describe("DateTimeFromEffectDateTime", () => {
+  describe('DateTimeFromEffectDateTime', () => {
     const target = CVDateTime.fromTimestampOrThrow(1_756_128_920_881, 8);
     const targetAsEFfectDateTime = DateTime.unsafeMakeZoned(1_756_128_920_881, { timeZone: 8 });
-    describe("Decoding", () => {
+    describe('Decoding', () => {
       const decoder = Schema.decodeEither(CVSchema.DateTimeZonedFromDateTime);
-      it("Passing", () => {
+      it('Passing', () => {
         TestUtils.assertRight(decoder(target), targetAsEFfectDateTime);
       });
     });
 
-    describe("Encoding", () => {
+    describe('Encoding', () => {
       const encoder = Schema.encodeEither(CVSchema.DateTimeZonedFromDateTime);
-      it("Passing", () => {
+      it('Passing', () => {
         TestUtils.assertRight(encoder(targetAsEFfectDateTime), target);
       });
     });
   });
 
-  describe("DateTime", () => {
-    const placeholder = CVDateTimeFormat.TemplatePart.Placeholder.make;
-    const sep = CVDateTimeFormat.TemplatePart.Separator;
+  describe('DateTime', () => {
+    const placeholder = CVDateTimeFormatPlaceholder.make;
+    const sep = CVDateTimeFormatSeparator;
     const frenchDateFormat = CVDateTimeFormat.make({
-      context: CVDateTimeFormatContext.fromLocaleOrThrow("fr-FR"),
-      templateParts: [
-        placeholder("dd"),
+      context: CVDateTimeFormatContext.fromLocaleOrThrow('fr-FR'),
+      parts: [
+        placeholder('dd'),
         sep.slash,
-        placeholder("MM"),
+        placeholder('MM'),
         sep.slash,
-        placeholder("yyyy"),
+        placeholder('yyyy'),
         sep.space,
-        placeholder("HH"),
+        placeholder('HH'),
         sep.colon,
-        placeholder("mm"),
+        placeholder('mm'),
         sep.colon,
-        placeholder("ss"),
-        sep.make(" Local time"),
+        placeholder('ss'),
+        sep.make(' Local time'),
       ],
     });
     const schema = CVSchema.DateTime(frenchDateFormat);
@@ -370,25 +372,25 @@ describe("CVSchema", () => {
       second: 47,
     });
 
-    const targetAsString = "25/08/2025 10:24:47 Local time";
+    const targetAsString = '25/08/2025 10:24:47 Local time';
 
-    describe("Decoding", () => {
+    describe('Decoding', () => {
       const decoder = Schema.decodeEither(schema);
-      it("Not passing", () => {
-        TestUtils.assertLeft(decoder(""));
-        TestUtils.assertLeft(decoder("2025/12/14"));
+      it('Not passing', () => {
+        TestUtils.assertLeft(decoder(''));
+        TestUtils.assertLeft(decoder('2025/12/14'));
       });
-      it("Passing", () => {
+      it('Passing', () => {
         TestUtils.assertRight(decoder(targetAsString), target);
       });
     });
-    describe("Encoding", () => {
+    describe('Encoding', () => {
       const encoder = Schema.encodeEither(schema);
-      it("Passing", () => {
+      it('Passing', () => {
         TestUtils.assertRight(encoder(target), targetAsString);
       });
 
-      it("Not passing", () => {
+      it('Not passing', () => {
         TestUtils.assertLeft(
           pipe(
             new Date(12_025, 7, 25, 10, 24, 47).getTime(),

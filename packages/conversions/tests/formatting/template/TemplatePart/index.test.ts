@@ -1,12 +1,12 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as CVTemplatePart from '@parischap/conversions/CVTemplatePart';
-import * as CVTemplatePartPlaceholder from '@parischap/conversions/CVTemplatePartPlaceholder';
-import * as CVTemplatePartSeparator from '@parischap/conversions/CVTemplatePartSeparator';
+import * as CVTemplatePlaceholder from '@parischap/conversions/CVTemplatePlaceholder';
+import * as CVTemplateSeparator from '@parischap/conversions/CVTemplateSeparator';
 import { describe, it } from 'vitest';
 
 describe('CVTemplatePart', () => {
-  const separator = CVTemplatePartSeparator.make('foo');
-  const threeChars = CVTemplatePartPlaceholder.fixedLength({ name: 'foo', length: 3 });
+  const separator = CVTemplateSeparator.make('foo');
+  const threeChars = CVTemplatePlaceholder.fixedLength({ name: 'foo', length: 3 });
 
   describe('isPlaceholder', () => {
     it('Not passing', () => {

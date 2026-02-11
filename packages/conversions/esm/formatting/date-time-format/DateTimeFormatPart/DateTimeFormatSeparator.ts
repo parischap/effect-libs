@@ -1,6 +1,9 @@
 /**
- * This module implements a separator that is one of the two possible kinds of a
- * CVDateTimeFormatPart
+ * This module implements a `CVDateTimeFormatSeparator`, which is one of the two constituents of a
+ * `CVDateTimeFormatPart`. To parse/format a `CVDateTime`, a `CVDateTimeFormatSeparator` is
+ * converted to a `CVTemplateSeparator` with the same value. It is an aesthetic element that makes
+ * the date easier to read for a human (e.g. a slash). But it contains no information pertaining to
+ * the `CVDateTime` itself.
  */
 
 import { MData, MTypes } from '@parischap/effect-lib';
@@ -12,7 +15,7 @@ import { Struct } from 'effect';
  * @category Module markers
  */
 export const moduleTag =
-  '@parischap/conversions/formatting/date-time-format/DateTimeFormatPart/DateTimeFormatSeparator';
+  '@parischap/conversions/formatting/date-time-format/DateTimeFormatPart/DateTimeFormatSeparator/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 

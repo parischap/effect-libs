@@ -22,8 +22,8 @@ import {
 } from '../../date-time/dateTimeConstants.js';
 import * as CVNumberBase10Format from '../../formatting/number-base10-format/index.js';
 import * as CVTemplate from '../../formatting/template/index.js';
-import * as CVTemplatePartPlaceholder from '../../formatting/template/TemplatePart/template-part-placeholder/index.js';
-import * as CVTemplatePartSeparator from '../../formatting/template/TemplatePart/template-part-separator/index.js';
+import * as CVTemplatePlaceholder from '../../formatting/template/TemplatePart/template-placeholder/index.js';
+import * as CVTemplateSeparator from '../../formatting/template/TemplatePart/template-separator/index.js';
 
 /**
  * Module tag
@@ -43,8 +43,8 @@ const COMMON_YEAR_DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 3
 /** Timestamp of 1/1/2001 00:00:00:000+0:00 */
 const YEAR_START_2001_MS = 978_307_200_000;
 
-const _fixedLengthToReal = CVTemplatePartPlaceholder.fixedLengthToReal;
-const _sep = CVTemplatePartSeparator;
+const _fixedLengthToReal = CVTemplatePlaceholder.fixedLengthToReal;
+const _sep = CVTemplateSeparator;
 const _integer = CVNumberBase10Format.integer;
 const _params = {
   fillChar: '0',

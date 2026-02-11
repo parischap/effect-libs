@@ -1,6 +1,6 @@
 /**
- * This module implements a that represents all the possible tokens that can be used to format a
- * `CVDateTime`
+ * This module implements a type that represents all the possible tokens that can be used to format
+ * a `CVDateTime`
  */
 
 /**

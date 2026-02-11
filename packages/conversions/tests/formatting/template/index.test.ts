@@ -2,8 +2,8 @@ import * as TestUtils from '@parischap/configs/TestUtils';
 import * as CVNumberBase10Format from '@parischap/conversions/CVNumberBase10Format';
 import * as CVReal from '@parischap/conversions/CVReal';
 import * as CVTemplate from '@parischap/conversions/CVTemplate';
-import * as CVTemplatePartPlaceholder from '@parischap/conversions/CVTemplatePartPlaceholder';
-import * as CVTemplatePartSeparator from '@parischap/conversions/CVTemplatePartSeparator';
+import * as CVTemplatePlaceholder from '@parischap/conversions/CVTemplatePlaceholder';
+import * as CVTemplateSeparator from '@parischap/conversions/CVTemplateSeparator';
 import { MInputError, MTypes } from '@parischap/effect-lib';
 import { Either, Option, pipe } from 'effect';
 import { describe, it } from 'vitest';
@@ -13,8 +13,8 @@ describe('CVTemplate', () => {
     fillChar: '0',
     numberBase10Format: pipe(CVNumberBase10Format.integer, CVNumberBase10Format.withoutSignDisplay),
   };
-  const placeholder = CVTemplatePartPlaceholder;
-  const sep = CVTemplatePartSeparator;
+  const placeholder = CVTemplatePlaceholder;
+  const sep = CVTemplateSeparator;
 
   const template = CVTemplate.make(
     placeholder.fixedLengthToReal({ ...params, name: 'dd', length: 2 }),

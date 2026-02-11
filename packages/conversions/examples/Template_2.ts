@@ -2,13 +2,13 @@ import {
   CVNumberBase10Format,
   CVReal,
   CVTemplate,
-  CVTemplatePartPlaceholder,
-  CVTemplatePartSeparator,
+  CVTemplatePlaceholder,
+  CVTemplateSeparator,
 } from '@parischap/conversions';
 
 // Let's define useful shortcuts
-const placeholder = CVTemplatePartPlaceholder;
-const sep = CVTemplatePartSeparator;
+const placeholder = CVTemplatePlaceholder;
+const sep = CVTemplateSeparator;
 
 // Let's define a date template that will look like: 'Today is #weekday, day number #weekday of the week.'
 // Note that weekDay appears twice, once as a realMappedLiterals placeholder, once as a real placeholder.

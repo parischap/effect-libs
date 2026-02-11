@@ -1,3 +1,9 @@
+/**
+ * This module implements a `CVDateTimeFormatPart`, which can be either a
+ * `CVDateTimeFormatPlaceholder` or a `CVDateTimeFormatSeparator`. These `CVDateTimeFormatPart`'s
+ * are used to describe the string representation of a DateTime. They are converted to
+ * `CVTemplatePart`'s to parse and format a `CVDateTime`
+ */
 import * as CVDateTimeFormatPlaceholder from './DateTimeFormatPlaceholder.js';
 import * as CVDateTimeFormatSeparator from './DateTimeFormatSeparator.js';
 

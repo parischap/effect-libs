@@ -16,19 +16,19 @@ import {
   Record,
   Schema,
 } from 'effect';
-import * as CVDateTime from '../DateTime/index.js';
-import * as CVTemplateParts from '../internal/formatting/TemplateParts.js';
+import * as CVDateTime from '../date-time/index.js';
+import * as CVTemplateParts from '../internal/formatting/template/TemplateParts.js';
 import * as CVEmail from '../primitive/Email.js';
 import * as CVInteger from '../primitive/Integer.js';
 import * as CVPositiveInteger from '../primitive/PositiveInteger.js';
 import * as CVPositiveReal from '../primitive/PositiveReal.js';
 import * as CVReal from '../primitive/Real.js';
 import * as CVSemVer from '../primitive/SemVer.js';
-import * as CVDateTimeFormat from './DateTimeFormat.js';
-import * as CVNumberBase10Format from './NumberBase10Format.js';
-import * as CVTemplate from './Template.js';
-import * as CVTemplatePart from './TemplatePart/index.js';
-import * as CVTemplatePartPlaceholder from './TemplatePart/Placeholder/index.js';
+import * as CVDateTimeFormat from './date-time-format/index.js';
+import * as CVNumberBase10Format from './number-base10-format/index.js';
+import * as CVTemplate from './template/index.js';
+import * as CVTemplatePart from './template/TemplatePart/index.js';
+import * as CVTemplatePlaceholder from './template/TemplatePart/template-placeholder/index.js';
 
 /**
  * A `Schema` that transforms a string into a `CVEmail`
@@ -187,8 +187,8 @@ export {
  *
  * @category Schema instances
  */
-export const DateTimeFromSelf = Schema.declare((input: unknown): input is CVDateTime.Type =>
-  CVDateTime.has(input),
+export const DateTimeFromSelf = Schema.declare(
+  (input: unknown): input is CVDateTime.Type => input instanceof CVDateTime.Type,
 );
 
 /**
@@ -283,10 +283,9 @@ export const Template = <const PS extends CVTemplateParts.Type>(
   template: CVTemplate.Type<PS>,
 ): Schema.Schema<
   {
-    readonly [k in keyof PS as PS[k] extends CVTemplatePartPlaceholder.Any ?
-      CVTemplatePartPlaceholder.ExtractName<PS[k]>
-    : never]: PS[k] extends CVTemplatePartPlaceholder.Any ?
-      CVTemplatePartPlaceholder.ExtractType<PS[k]>
+    readonly [k in keyof PS as PS[k] extends CVTemplatePlaceholder.Any ?
+      CVTemplatePlaceholder.ExtractName<PS[k]>
+    : never]: PS[k] extends CVTemplatePlaceholder.Any ? CVTemplatePlaceholder.ExtractType<PS[k]>
     : never;
   },
   string
@@ -304,8 +303,8 @@ export const Template = <const PS extends CVTemplateParts.Type>(
           CVTemplatePart.isPlaceholder,
           flow(
             MTuple.makeBothBy({
-              toFirst: CVTemplatePartPlaceholder.name,
-              toSecond: CVTemplatePartPlaceholder.tSchemaInstance,
+              toFirst: CVTemplatePlaceholder.name,
+              toSecond: CVTemplatePlaceholder.tSchemaInstance,
             }),
             Option.some,
           ),

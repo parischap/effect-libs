@@ -10,8 +10,8 @@ import { MData, MInputError, MNumber, MTypes } from '@parischap/effect-lib';
 import { Either, Function, Struct, flow, pipe } from 'effect';
 import * as CVNumberBase10Format from '../../formatting/number-base10-format/index.js';
 import * as CVTemplate from '../../formatting/template/index.js';
-import * as CVTemplatePartPlaceholder from '../../formatting/template/TemplatePart/template-part-placeholder/index.js';
-import * as CVTemplatePartSeparator from '../../formatting/template/TemplatePart/template-part-separator/index.js';
+import * as CVTemplatePlaceholder from '../../formatting/template/TemplatePart/template-placeholder/index.js';
+import * as CVTemplateSeparator from '../../formatting/template/TemplatePart/template-separator/index.js';
 
 /**
  * Module tag
@@ -22,8 +22,8 @@ export const moduleTag = '@parischap/conversions/internal/date-time/ZoneOffsetPa
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
-const _fixedLengthToReal = CVTemplatePartPlaceholder.fixedLengthToReal;
-const _sep = CVTemplatePartSeparator;
+const _fixedLengthToReal = CVTemplatePlaceholder.fixedLengthToReal;
+const _sep = CVTemplateSeparator;
 const _integer = CVNumberBase10Format.integer;
 const _params = {
   fillChar: '0',

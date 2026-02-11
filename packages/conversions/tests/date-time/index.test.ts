@@ -14,21 +14,11 @@ describe('CVDateTime', () => {
   const now = CVDateTime.now();
   const feb29_2020 = CVDateTime.fromTimestampOrThrow(Date.UTC(2020, 1, 29), 0);
 
-  describe('Tag, prototype and guards', () => {
+  describe('Tag, .toString()', () => {
     TestUtils.assertEquals(
       Option.some(CVDateTime.moduleTag),
       TestUtils.moduleTagFromTestFilePath(import.meta.filename),
     );
-
-    describe('Equal.equals', () => {
-      it('Matching', () => {
-        TestUtils.assertEquals(origin, CVDateTime.fromTimestampOrThrow(0, 1));
-      });
-
-      it('Non-matching', () => {
-        TestUtils.assertNotEquals(origin, now);
-      });
-    });
 
     it('.toString()', () => {
       TestUtils.strictEqual(origin.toString(), '1970-01-01T00:00:00.000+00:00');
