@@ -48,7 +48,7 @@ import type * as CvTemplatePartPlaceholderParser from './TemplatePartPlaceholder
  * @category Module markers
  */
 export const moduleTag =
-  '@parischap/conversions/formatting/template/TemplatePart/TemplatePartPlaceholder/';
+  '@parischap/conversions/formatting/template/TemplatePart/template-part-placeholder/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 

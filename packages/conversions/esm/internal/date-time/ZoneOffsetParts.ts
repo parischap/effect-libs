@@ -10,8 +10,8 @@ import { MData, MInputError, MNumber, MTypes } from '@parischap/effect-lib';
 import { Either, Function, Struct, flow, pipe } from 'effect';
 import * as CVNumberBase10Format from '../../formatting/number-base10-format/index.js';
 import * as CVTemplate from '../../formatting/template/index.js';
-import * as CVTemplatePartPlaceholder from '../../formatting/template/TemplatePart/Placeholder/index.js';
-import * as CVTemplatePartSeparator from '../../formatting/template/TemplatePart/Separator.js';
+import * as CVTemplatePartPlaceholder from '../../formatting/template/TemplatePart/template-part-placeholder/index.js';
+import * as CVTemplatePartSeparator from '../../formatting/template/TemplatePart/template-part-separator/index.js';
 
 /**
  * Module tag

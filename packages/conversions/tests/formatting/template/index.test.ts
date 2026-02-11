@@ -1,11 +1,9 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import {
-  CVNumberBase10Format,
-  CVReal,
-  CVTemplate,
-  CVTemplatePartPlaceholder,
-  CVTemplatePartSeparator,
-} from '@parischap/conversions';
+import * as CVNumberBase10Format from '@parischap/conversions/CVNumberBase10Format';
+import * as CVReal from '@parischap/conversions/CVReal';
+import * as CVTemplate from '@parischap/conversions/CVTemplate';
+import * as CVTemplatePartPlaceholder from '@parischap/conversions/CVTemplatePartPlaceholder';
+import * as CVTemplatePartSeparator from '@parischap/conversions/CVTemplatePartSeparator';
 import { MInputError, MTypes } from '@parischap/effect-lib';
 import { Either, Option, pipe } from 'effect';
 import { describe, it } from 'vitest';

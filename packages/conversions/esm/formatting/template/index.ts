@@ -56,7 +56,7 @@ import * as CVTemplatePartPlaceholder from './TemplatePart/template-part-placeho
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/conversions/Template/';
+export const moduleTag = '@parischap/conversions/formatting/template/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 

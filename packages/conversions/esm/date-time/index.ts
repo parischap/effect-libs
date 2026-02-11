@@ -62,7 +62,7 @@ import {
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/conversions/DateTime/';
+export const moduleTag = '@parischap/conversions/date-time/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 

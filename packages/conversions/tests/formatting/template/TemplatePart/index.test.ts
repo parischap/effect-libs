@@ -1,9 +1,7 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import {
-  CVTemplatePart,
-  CVTemplatePartPlaceholder,
-  CVTemplatePartSeparator,
-} from '@parischap/conversions';
+import * as CVTemplatePart from '@parischap/conversions/CVTemplatePart';
+import * as CVTemplatePartPlaceholder from '@parischap/conversions/CVTemplatePartPlaceholder';
+import * as CVTemplatePartSeparator from '@parischap/conversions/CVTemplatePartSeparator';
 import { describe, it } from 'vitest';
 
 describe('CVTemplatePart', () => {

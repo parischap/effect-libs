@@ -268,7 +268,6 @@ export const toDescription = (self: Type): string => {
 
   const isInteger = maximumFractionalDigits <= 0;
   const isUngrouped = thousandSeparator.length === 0;
-  console.log(signDisplayOption);
   return (
     pipe(
       signDisplayOption,

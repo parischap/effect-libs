@@ -1,6 +1,6 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { CVDateTime } from '@parischap/conversions';
-import { DAY_MS, SHORT_YEAR_MS, WEEK_MS } from '@parischap/conversions/CVDatetimeConstants';
+import * as CVDateTime from '@parischap/conversions/CVDateTime';
+import { DAY_MS, SHORT_YEAR_MS, WEEK_MS } from '@parischap/conversions/CVDateTimeConstants';
 import { MArray } from '@parischap/effect-lib';
 import { Array, Either, flow, Number, Option, pipe, Tuple } from 'effect';
 import { describe, it } from 'vitest';

@@ -12,7 +12,7 @@ import { Struct } from 'effect';
  * @category Module markers
  */
 export const moduleTag =
-  '@parischap/conversions/formatting/template/TemplatePart/TemplatePartPlaceHolder/';
+  '@parischap/conversions/formatting/template/TemplatePart/template-part-separator/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
