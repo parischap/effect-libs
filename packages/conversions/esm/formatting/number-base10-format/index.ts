@@ -47,7 +47,7 @@ import * as CVNumberBase10FormatSignDisplayOption from './number-base10-format-s
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/conversions/formatting/NumberBase10Format/';
+export const moduleTag = '@parischap/conversions/formatting/number-base10-format/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
@@ -99,8 +99,8 @@ export class Type extends MData.Class {
    * Maximum number of digits forming the fractional part of a number. Must be an integer value
    * greater than or equal to `minimumFractionalDigits`. Can take the +Infinity value.
    *
-   * Formatting: the number will be rounded using the roundingMode to respect the condition (unless
-   * `maximumFractionalDigits` is `+Infinity`).
+   * Formatting: the number will be rounded using the roundingOption to respect the condition
+   * (unless `maximumFractionalDigits` is `+Infinity`).
    *
    * Parsing: will fail if the input string has too many fractional digits.
    */
@@ -109,7 +109,7 @@ export class Type extends MData.Class {
   /**
    * Possible characters to use to represent e-notation. Usually ['e','E']. Must be an array of
    * one-character strings. Will not throw otherwise but unexpected results will occur. Not used if
-   * `scientificNotation === None`
+   * `scientificNotationOption === None`
    *
    * Formatting: the string at index 0 is used
    *
@@ -118,13 +118,13 @@ export class Type extends MData.Class {
    */
   readonly eNotationChars: ReadonlyArray<string>;
 
-  /** Scientific notation options. See ScientificNotation */
+  /** Scientific notation options. See CVNumberBase10FormatScientificNotationOption */
   readonly scientificNotationOption: CVNumberBase10FormatScientificNotationOption.Type;
 
-  /** Rounding mode options. See RoundingMode.ts */
+  /** Rounding mode options. See CVRoundingOption.ts */
   readonly roundingOption: CVRoundingOption.Type;
 
-  /** Sign display options. See SignDisplay.ts */
+  /** Sign display options. See CVNumberBase10FormatSignDisplayOption.ts */
   readonly signDisplayOption: CVNumberBase10FormatSignDisplayOption.Type;
 
   /** Class constructor */
@@ -224,7 +224,7 @@ export const eNotationChars: MTypes.OneArgFunction<Type, ReadonlyArray<string>> 
 );
 
 /**
- * Returns the `scientificNotation` property of `self`
+ * Returns the `scientificNotationOption` property of `self`
  *
  * @category Destructors
  */
@@ -234,7 +234,7 @@ export const scientificNotationOption: MTypes.OneArgFunction<
 > = Struct.get('scientificNotationOption');
 
 /**
- * Returns the `roundingMode` property of `self`
+ * Returns the `roundingOption` property of `self`
  *
  * @category Destructors
  */
@@ -242,7 +242,7 @@ export const roundingOption: MTypes.OneArgFunction<Type, CVRoundingOption.Type> 
   Struct.get('roundingOption');
 
 /**
- * Returns the `signDisplay` property of `self`
+ * Returns the `signDisplayOption` property of `self`
  *
  * @category Destructors
  */
@@ -268,6 +268,7 @@ export const toDescription = (self: Type): string => {
 
   const isInteger = maximumFractionalDigits <= 0;
   const isUngrouped = thousandSeparator.length === 0;
+  console.log(signDisplayOption);
   return (
     pipe(
       signDisplayOption,
@@ -760,49 +761,49 @@ export const withMinNDecimals =
     );
 
 /**
- * Returns a copy of `self` with `scientificNotation` set to `None`
+ * Returns a copy of `self` with `scientificNotationOption` set to `None`
  *
  * @category Modifiers
  */
 export const withNoScientificNotation: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    scientificNotation: CVNumberBase10FormatScientificNotationOption.Type.None,
+    scientificNotationOption: CVNumberBase10FormatScientificNotationOption.Type.None,
   }),
   make,
 );
 
 /**
- * Returns a copy of `self` with `scientificNotation` set to `Standard`
+ * Returns a copy of `self` with `scientificNotationOption` set to `Standard`
  *
  * @category Modifiers
  */
 export const withStandardScientificNotation: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    scientificNotation: CVNumberBase10FormatScientificNotationOption.Type.Standard,
+    scientificNotationOption: CVNumberBase10FormatScientificNotationOption.Type.Standard,
   }),
   make,
 );
 
 /**
- * Returns a copy of `self` with `scientificNotation` set to `Normalized`
+ * Returns a copy of `self` with `scientificNotationOption` set to `Normalized`
  *
  * @category Modifiers
  */
 export const withNormalizedScientificNotation: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    scientificNotation: CVNumberBase10FormatScientificNotationOption.Type.Normalized,
+    scientificNotationOption: CVNumberBase10FormatScientificNotationOption.Type.Normalized,
   }),
   make,
 );
 
 /**
- * Returns a copy of `self` with `scientificNotation` set to `Engineering`
+ * Returns a copy of `self` with `scientificNotationOption` set to `Engineering`
  *
  * @category Modifiers
  */
 export const withEngineeringScientificNotation: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    scientificNotation: CVNumberBase10FormatScientificNotationOption.Type.Engineering,
+    scientificNotationOption: CVNumberBase10FormatScientificNotationOption.Type.Engineering,
   }),
   make,
 );
@@ -841,168 +842,168 @@ export const withFractionalSeparator = (fractionalSeparator: string): MTypes.One
   );
 
 /**
- * Returns a copy of `self` with `signDisplay` set to `Auto`
+ * Returns a copy of `self` with `signDisplayOption` set to `Auto`
  *
  * @category Modifiers
  */
 export const withSignDisplayForNegative: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    signDisplay: CVNumberBase10FormatSignDisplayOption.Type.Auto,
+    signDisplayOption: CVNumberBase10FormatSignDisplayOption.Type.Auto,
   }),
   make,
 );
 
 /**
- * Returns a copy of `self` with `signDisplay` set to `Always`
+ * Returns a copy of `self` with `signDisplayOption` set to `Always`
  *
  * @category Modifiers
  */
 export const withSignDisplay: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    signDisplay: CVNumberBase10FormatSignDisplayOption.Type.Always,
+    signDisplayOption: CVNumberBase10FormatSignDisplayOption.Type.Always,
   }),
   make,
 );
 
 /**
- * Returns a copy of `self` with `signDisplay` set to `ExceptZero`
+ * Returns a copy of `self` with `signDisplayOption` set to `ExceptZero`
  *
  * @category Modifiers
  */
 export const withSignDisplayExceptZero: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    signDisplay: CVNumberBase10FormatSignDisplayOption.Type.ExceptZero,
+    signDisplayOption: CVNumberBase10FormatSignDisplayOption.Type.ExceptZero,
   }),
   make,
 );
 
 /**
- * Returns a copy of `self` with `signDisplay` set to `Negative`
+ * Returns a copy of `self` with `signDisplayOption` set to `Negative`
  *
  * @category Modifiers
  */
 export const withSignDisplayForNegativeExceptZero: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    signDisplay: CVNumberBase10FormatSignDisplayOption.Type.Negative,
+    signDisplayOption: CVNumberBase10FormatSignDisplayOption.Type.Negative,
   }),
   make,
 );
 
 /**
- * Returns a copy of `self` with `signDisplay` set to `Never`
+ * Returns a copy of `self` with `signDisplayOption` set to `Never`
  *
  * @category Modifiers
  */
 export const withoutSignDisplay: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    signDisplay: CVNumberBase10FormatSignDisplayOption.Type.Never,
+    signDisplayOption: CVNumberBase10FormatSignDisplayOption.Type.Never,
   }),
   make,
 );
 
 /**
- * Returns a copy of `self` with `roundingMode` set to `Ceil`
+ * Returns a copy of `self` with `roundingOption` set to `Ceil`
  *
  * @category Modifiers
  */
-export const withCeilRoundingMode: MTypes.OneArgFunction<Type> = flow(
+export const withCeilRoundingOption: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    roundingMode: CVRoundingOption.Type.Ceil,
+    roundingOption: CVRoundingOption.Type.Ceil,
   }),
   make,
 );
 /**
- * Returns a copy of `self` with `roundingMode` set to `Floor`
+ * Returns a copy of `self` with `roundingOption` set to `Floor`
  *
  * @category Modifiers
  */
-export const withFloorRoundingMode: MTypes.OneArgFunction<Type> = flow(
+export const withFloorRoundingOption: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    roundingMode: CVRoundingOption.Type.Floor,
-  }),
-  make,
-);
-
-/**
- * Returns a copy of `self` with `roundingMode` set to `Expand`
- *
- * @category Modifiers
- */
-export const withExpandRoundingMode: MTypes.OneArgFunction<Type> = flow(
-  MStruct.append({
-    roundingMode: CVRoundingOption.Type.Expand,
+    roundingOption: CVRoundingOption.Type.Floor,
   }),
   make,
 );
 
 /**
- * Returns a copy of `self` with `roundingMode` set to `Trunc`
+ * Returns a copy of `self` with `roundingOption` set to `Expand`
  *
  * @category Modifiers
  */
-export const withTruncRoundingMode: MTypes.OneArgFunction<Type> = flow(
+export const withExpandRoundingOption: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    roundingMode: CVRoundingOption.Type.Trunc,
+    roundingOption: CVRoundingOption.Type.Expand,
   }),
   make,
 );
 
 /**
- * Returns a copy of `self` with `roundingMode` set to `HalfCeil`
+ * Returns a copy of `self` with `roundingOption` set to `Trunc`
  *
  * @category Modifiers
  */
-export const withHalfCeilRoundingMode: MTypes.OneArgFunction<Type> = flow(
+export const withTruncRoundingOption: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    roundingMode: CVRoundingOption.Type.HalfCeil,
+    roundingOption: CVRoundingOption.Type.Trunc,
   }),
   make,
 );
 
 /**
- * Returns a copy of `self` with `roundingMode` set to `HalfFloor`
+ * Returns a copy of `self` with `roundingOption` set to `HalfCeil`
  *
  * @category Modifiers
  */
-export const withHalfFloorRoundingMode: MTypes.OneArgFunction<Type> = flow(
+export const withHalfCeilRoundingOption: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    roundingMode: CVRoundingOption.Type.HalfFloor,
+    roundingOption: CVRoundingOption.Type.HalfCeil,
   }),
   make,
 );
 
 /**
- * Returns a copy of `self` with `roundingMode` set to `HalfExpand`
+ * Returns a copy of `self` with `roundingOption` set to `HalfFloor`
  *
  * @category Modifiers
  */
-export const withHalfExpandRoundingMode: MTypes.OneArgFunction<Type> = flow(
+export const withHalfFloorRoundingOption: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    roundingMode: CVRoundingOption.Type.HalfExpand,
+    roundingOption: CVRoundingOption.Type.HalfFloor,
   }),
   make,
 );
 
 /**
- * Returns a copy of `self` with `roundingMode` set to `HalfTrunc`
+ * Returns a copy of `self` with `roundingOption` set to `HalfExpand`
  *
  * @category Modifiers
  */
-export const withHalfTruncRoundingMode: MTypes.OneArgFunction<Type> = flow(
+export const withHalfExpandRoundingOption: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    roundingMode: CVRoundingOption.Type.HalfTrunc,
+    roundingOption: CVRoundingOption.Type.HalfExpand,
   }),
   make,
 );
 
 /**
- * Returns a copy of `self` with `roundingMode` set to `HalfEven`
+ * Returns a copy of `self` with `roundingOption` set to `HalfTrunc`
  *
  * @category Modifiers
  */
-export const withHalfEvenRoundingMode: MTypes.OneArgFunction<Type> = flow(
+export const withHalfTruncRoundingOption: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    roundingMode: CVRoundingOption.Type.HalfEven,
+    roundingOption: CVRoundingOption.Type.HalfTrunc,
+  }),
+  make,
+);
+
+/**
+ * Returns a copy of `self` with `roundingOption` set to `HalfEven`
+ *
+ * @category Modifiers
+ */
+export const withHalfEvenRoundingOption: MTypes.OneArgFunction<Type> = flow(
+  MStruct.append({
+    roundingOption: CVRoundingOption.Type.HalfEven,
   }),
   make,
 );
