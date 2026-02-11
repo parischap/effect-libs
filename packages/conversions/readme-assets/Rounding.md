@@ -1,28 +1,29 @@
+<!-- LTeX: language=en-US -->
 <div align="center">
 
-# CVRoundingOption
+# CVRounderParams
 
-A module to round numbers and [BigDecimal](https://effect.website/docs/data-types/bigdecimal/)'s with the same rounding options as those offered by the javascript INTL namespace: Ceil, Floor, Expand, Trunc, HalfCeil...
+A module to round numbers and [BigDecimal](https://effect.website/docs/data-types/bigdecimal/)'s with the same rounding options as those offered by the JavaScript INTL namespace: Ceil, Floor, Expand, Trunc, HalfCeil...
 
 </div>
 
 ## 1. Usage example
 
 ```ts
-import { CVRoundingMode, CVRoundingOption } from '@parischap/conversions';
+import { CVRounder, CVRounderParams, CVRoundingOption } from '@parischap/conversions';
 import { BigDecimal } from 'effect';
 
-// Here we define our rounding options:
+// Here we define the parameters of the rounder:
 // the result must have three fractional digits using the HalfEven rounding mode
-const roundingOption = CVRoundingOption.make({
+const rounderParams = CVRounderParams.make({
   precision: 3,
-  roundingMode: CVRoundingMode.Type.HalfEven,
+  roundingOption: CVRoundingOption.Type.HalfEven,
 });
 
-// Let's define a number rounder from our options. Type: (value:number) => number
-const numberRounder = CVRoundingOption.toNumberRounder(roundingOption);
-// Let's define a BigDecimal rounder from our options. Type: (value:BigDecimal) => BigDecimal
-const bigDecimalRounder = CVRoundingOption.toBigDecimalRounder(roundingOption);
+// Let's define a number rounder from our parameters. Type: (value:number) => number
+const numberRounder = CVRounder.number(rounderParams);
+// Let's define a BigDecimal rounder from our parameters. Type: (value:BigDecimal) => BigDecimal
+const bigDecimalRounder = CVRounder.bigDecimal(rounderParams);
 
 /** Positive numbers with even last significant digit */
 // Result: 12.457
@@ -69,73 +70,24 @@ console.log(numberRounder(-12.45));
 
 /** Diverse BigDecimal numbers */
 // Result: BigDecimal.make(12457n, 3)
-console.log(bigDecimalRounder(BigDecimal.make(124566n, 4)));
+console.log(bigDecimalRounder(BigDecimal.make(124_566n, 4)));
 
 // Result: BigDecimal.make(-12456n, 3)
-console.log(bigDecimalRounder(BigDecimal.make(-124565n, 4)));
+console.log(bigDecimalRounder(BigDecimal.make(-124_565n, 4)));
 
 // Result: BigDecimal.make(12450n, 3)
 console.log(bigDecimalRounder(BigDecimal.make(1245n, 2)));
 ```
 
-## 2. Available rounding modes
+## 3. CVRounderParams instances
 
-The available rounding modes are defined in module RoundingMode.ts:
-
-```ts
-export enum Type {
-  /** Round toward +∞. Positive values round up. Negative values round "more positive" */
-  Ceil = 0,
-  /** Round toward -∞. Positive values round down. Negative values round "more negative" */
-  Floor = 1,
-  /**
-   * Round away from 0. The magnitude of the value is always increased by rounding. Positive values
-   * round up. Negative values round "more negative"
-   */
-  Expand = 2,
-  /**
-   * Round toward 0. The magnitude of the value is always reduced by rounding. Positive values round
-   * down. Negative values round "less negative"
-   */
-  Trunc = 3,
-  /**
-   * Ties toward +∞. Values above the half-increment round like "ceil" (towards +∞), and below like
-   * "floor" (towards -∞). On the half-increment, values round like "ceil"
-   */
-  HalfCeil = 4,
-  /**
-   * Ties toward -∞. Values above the half-increment round like "ceil" (towards +∞), and below like
-   * "floor" (towards -∞). On the half-increment, values round like "floor"
-   */
-  HalfFloor = 5,
-  /**
-   * Ties away from 0. Values above the half-increment round like "expand" (away from zero), and
-   * below like "trunc" (towards 0). On the half-increment, values round like "expand"
-   */
-  HalfExpand = 6,
-  /**
-   * Ties toward 0. Values above the half-increment round like "expand" (away from zero), and below
-   * like "trunc" (towards 0). On the half-increment, values round like "trunc"
-   */
-  HalfTrunc = 7,
-  /**
-   * Ties towards the nearest even integer. Values above the half-increment round like "expand"
-   * (away from zero), and below like "trunc" (towards 0). On the half-increment values round
-   * towards the nearest even digit
-   */
-  HalfEven = 8,
-}
-```
-
-## 3. CVRoundingOption instances
-
-Instead of building your own `CVRoundingOption`, you can use the `halfExpand2` `CVRoundingOption` instance (`HalfExpand` rounding mode with a precision of two fractional digits). It will come in handy in accounting apps of most countries. For example:
+Instead of building your own `CVRounderParams`, you can use the `halfExpand2` `CVRounderParams` instance (`HalfExpand` rounding option with a precision of two fractional digits). It will come in handy in accounting apps of most countries. For example:
 
 ```ts
-import { CVRoundingOption } from '@parischap/conversions';
+import { CVRounder, CVRounderParams } from '@parischap/conversions';
 
 // Let's define a number rounder from halfExpand2. Type: (value:number) => number
-const numberRounder = CVRoundingOption.toNumberRounder(CVRoundingOption.halfExpand2);
+const numberRounder = CVRounder.number(CVRounderParams.halfExpand2);
 
 /** Positive number */
 // Result: 12.456
@@ -148,28 +100,28 @@ console.log(numberRounder(-12.457));
 
 ## 4. Debugging and equality
 
-`CVRoundingOption` objects implement `Effect` equivalence and equality based on equivalence and equality of the `precision` and `roundingMode` properties. They also implement a `.toString()` method. For instance:
+`CVRoundingOption` objects implement `Effect` equivalence and equality based on equivalence and equality of the `precision` and `roundingOption` properties. They also implement a `.toString()` method. For instance:
 
 ```ts
-import { CVRoundingMode, CVRoundingOption } from '@parischap/conversions';
+import { CVRounderParams, CVRoundingOption } from '@parischap/conversions';
 import { Equal } from 'effect';
 
 // Result: 'HalfExpandRounderWith2Precision'
-console.log(CVRoundingOption.halfExpand2);
+console.log(CVRounderParams.halfExpand2);
 
-const dummyOption1 = CVRoundingOption.make({
+const dummyOption1 = CVRounderParams.make({
   precision: 3,
-  roundingMode: CVRoundingMode.Type.HalfEven,
+  roundingOption: CVRoundingOption.Type.HalfEven,
 });
 
-const dummyOption2 = CVRoundingOption.make({
+const dummyOption2 = CVRounderParams.make({
   precision: 2,
-  roundingMode: CVRoundingMode.Type.HalfExpand,
+  roundingOption: CVRoundingOption.Type.HalfExpand,
 });
 
 // Result: false
-console.log(Equal.equals(CVRoundingOption.halfExpand2, dummyOption1));
+console.log(Equal.equals(CVRounderParams.halfExpand2, dummyOption1));
 
 // Result: true
-console.log(Equal.equals(CVRoundingOption.halfExpand2, dummyOption2));
+console.log(Equal.equals(CVRounderParams.halfExpand2, dummyOption2));
 ```

@@ -11,7 +11,6 @@ describe('CVDateTime', () => {
     pipe(Math.random(), Number.multiply(range), Math.floor);
 
   const origin = CVDateTime.fromTimestampOrThrow(0, 0);
-  const now = CVDateTime.now();
   const feb29_2020 = CVDateTime.fromTimestampOrThrow(Date.UTC(2020, 1, 29), 0);
 
   describe('Tag, .toString()', () => {

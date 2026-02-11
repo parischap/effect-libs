@@ -1,7 +1,7 @@
-import { CVRoundingOption } from "@parischap/conversions";
+import { CVRounder, CVRounderParams } from '@parischap/conversions';
 
 // Let's define a number rounder from halfExpand2. Type: (value:number) => number
-const numberRounder = CVRoundingOption.toNumberRounder(CVRoundingOption.halfExpand2);
+const numberRounder = CVRounder.number(CVRounderParams.halfExpand2);
 
 /** Positive number */
 // Result: 12.456

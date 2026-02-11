@@ -1,3 +1,4 @@
+<!-- LTeX: language=en-US -->
 <div align="center">
 
 # CVDateTimeFormatter
@@ -13,13 +14,15 @@ import {
   CVDateTime,
   CVDateTimeFormat,
   CVDateTimeFormatContext,
+  CVDateTimeFormatPlaceholder,
+  CVDateTimeFormatSeparator,
   CVSchema,
 } from '@parischap/conversions';
 import { DateTime, Either, flow, Schema } from 'effect';
 
 // Let's define useful shortcuts
-const placeholder = CVDateTimeFormat.TemplatePart.Placeholder.make;
-const sep = CVDateTimeFormat.TemplatePart.Separator;
+const placeholder = CVDateTimeFormatPlaceholder.make;
+const sep = CVDateTimeFormatSeparator;
 
 // Let's define a context
 const frenchContext = CVDateTimeFormatContext.fromLocaleOrThrow('fr-FR');
@@ -27,7 +30,7 @@ const frenchContext = CVDateTimeFormatContext.fromLocaleOrThrow('fr-FR');
 // Let's define a DateTimeFormat: iiii d MMMM yyyy
 const frenchFormat = CVDateTimeFormat.make({
   context: frenchContext,
-  templateParts: [
+  parts: [
     placeholder('iiii'),
     sep.space,
     placeholder('d'),
@@ -107,7 +110,7 @@ console.log(jsFormatter(new Date(0)));
 //     message: 'Expected length of #year to be: 4. Actual: 5',
 //     _tag: '@parischap/effect-lib/InputError/'
 //   }
-console.log(formatter(CVDateTime.fromPartsOrThrow({ year: 10024 })));
+console.log(formatter(CVDateTime.fromPartsOrThrow({ year: 10_024 })));
 
 // Using Schema
 const schema = CVSchema.DateTime(frenchFormat);
@@ -160,7 +163,7 @@ console.log(jsEncoder(new Date(0)));
 
 ## 2. Available tokens
 
-Many of the available [unicode tokens](https://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table) can be used to define `CVDateTimeFormat`'s. Here is a list of all currently available tokens:
+Many of the available [Unicode tokens](https://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table) can be used to define `CVDateTimeFormat`'s. Here is a list of all currently available tokens:
 
 ```ts
 export type Token =
@@ -242,25 +245,30 @@ export type Token =
 
 Some of the available tokens are language specific. For instance the `MMMM` token is expected to display `december` in English and `décembre` in French. For this reason, you need to build a `CVDateTimeFormatContext` before building a `CVDateTimeFormat`. You can build a `CVDateTimeFormatContext` in one of the three following ways:
 
-- you can use the provided `CVDateTimeFormatContext.enGB` instance (for Great Britain English language)
-- you can build a `CVDateTimeFormatContext` from the name of a locale, e.g. `const frenchContext = CVDateTimeFormatContext.fromLocaleOrThrow("fr-FR")`
-- if you have very specific needs or your locale is not available, you can build a `CVDateTimeFormatContext` by providing directly your translations to the `CVDateTimeFormatContext.fromNames` constructor.
+- You can use the provided `CVDateTimeFormatContext.enGB` instance (for Great Britain English language)
+- You can build a `CVDateTimeFormatContext` from the name of a locale, e.g. `const frenchContext = CVDateTimeFormatContext.fromLocaleOrThrow("fr-FR")`
+- If you have very specific needs or your locale is not available, you can build a `CVDateTimeFormatContext` by providing directly your translations to the `CVDateTimeFormatContext.fromNames` constructor.
 
 ## 4. Debugging
 
 `CVDateTimeFormat` objects implement a `.toString()` method which displays a synthetic description of the template followed by the description of each CVPlaceholder. For instance:
 
 ```ts
-import { CVDateTimeFormat, CVDateTimeFormatContext } from '@parischap/conversions';
+import {
+  CVDateTimeFormat,
+  CVDateTimeFormatContext,
+  CVDateTimeFormatPlaceholder,
+  CVDateTimeFormatSeparator,
+} from '@parischap/conversions';
 
 // Let's define useful shortcuts
-const placeholder = CVDateTimeFormat.TemplatePart.Placeholder.make;
-const sep = CVDateTimeFormat.TemplatePart.Separator;
+const placeholder = CVDateTimeFormatPlaceholder.make;
+const sep = CVDateTimeFormatSeparator;
 
 // Let's define a DateTimeFormat: iiii d MMMM yyyy
 const frenchFormat = CVDateTimeFormat.make({
   context: CVDateTimeFormatContext.enGB,
-  templateParts: [
+  parts: [
     placeholder('iiii'),
     sep.space,
     placeholder('d'),

@@ -1,8 +1,9 @@
+<!-- LTeX: language=en-US -->
 <div align="center">
 
 # CVNumberBase10Format
 
-A safe, easy-to-use number/BigDecimal parser/formatter with almost all the options offered by the javascript INTL namespace: choice of the thousand separator, of the fractional separator, of the minimum and maximum number of fractional digits, of the rounding mode, of the sign display mode, of whether to show or not the integer part when it's zero, of whether to use a scientific or engineering notation, of the character to use as exponent mark... It can also be used as a `Schema` instead of the `Effect.Schema.NumberFromString` transformer.
+A safe, easy-to-use number/BigDecimal parser/formatter with almost all the options offered by the JavaScript INTL namespace: choice of the thousand separator, of the fractional separator, of the minimum and maximum number of fractional digits, of the rounding mode, of the sign display mode, of whether to show or not the integer part when it's zero, of whether to use a scientific or engineering notation, of the character to use as exponent mark... It can also be used as a `Schema` instead of the `Effect.Schema.NumberFromString` transformer.
 
 </div>
 
@@ -145,14 +146,14 @@ export interface Type {
    */
   readonly eNotationChars: ReadonlyArray<string>;
 
-  /** Scientific notation options. See ScientificNotation */
-  readonly scientificNotation: ScientificNotation;
+  /** Scientific notation options. See CVNumberBase10FormatScientificNotationOption */
+  readonly scientificNotationOption: CVNumberBase10FormatScientificNotationOption.Type;
 
-  /** Rounding mode options. See RoundingMode.ts */
-  readonly roundingMode: CVRoundingMode.Type;
+  /** Rounding mode options. See CVRoundingOption.ts */
+  readonly roundingOption: CVRoundingOption.Type;
 
-  /** Sign display options. See SignDisplay.ts */
-  readonly signDisplay: SignDisplay;
+  /** Sign display options. See CVNumberBase10FormatSignDisplayOption.ts */
+  readonly signDisplayOption: CVNumberBase10FormatSignDisplayOption.Type;
 }
 ```
 

@@ -1,24 +1,23 @@
+<!-- LTeX: language=en-US -->
 <div align="center">
 
 # CVDateTime
 
-A very easy to use DateTime module that implements natively the Iso calendar (Iso year and Iso week). It is also faster than its `Effect` counterpart as it implements an internal state that's only used to speed up calculation times (but does not alter the result of functions; so `CVDateTime` functions can be viewed as pure from a user's perspective). It can therefore be useful in applications where time is of essence.
+A very easy to use DateTime module that implements natively the ISO calendar (ISO year and ISO week). It is also faster than its `Effect` counterpart as it implements an internal state that's only used to speed up calculation times (but does not alter the result of functions; so `CVDateTime` functions can be viewed as pure from a user's perspective). It can therefore be useful in applications where time is of essence.
 
 </div>
 
 ## 1. Introduction
 
-This package implements an immutable `CVDateTime` object: once created, the characteristics of a `CVDateTime` object will never change. However, the provided Setters functions allow you to get a copy of an existing `CVDateTime` object with just one charactreristic modified.
+This package implements an immutable `CVDateTime` object: once created, the characteristics of a `CVDateTime` object will never change. However, the provided Setters functions allow you to get a copy of an existing `CVDateTime` object with just one characteristic modified.
 
 Although immutable when considered from the outer world, `CVDateTime` objects do keep an internal state that is only used to improve performance (but does not alter results). `CVDateTime` functions can therefore be regarded as pure: they will always yield the same result whatever the state the object is in.
 
-Unlike the Javascript `Date` objects and the `Effect.DateTime` objects, `CVDateTime` objects handle both
-the Gregorian and Iso calendars. So you can easily get/set the iso year and iso week of a
-`CVDateTime` object.
+Unlike the JavaScript `Date` objects and the `Effect.DateTime` objects, `CVDateTime` objects handle both the Gregorian and ISO calendars. So you can easily get/set the ISO year and ISO week of a `CVDateTime` object.
 
-A `CVDateTime` object has a `zoneOffset` which is the difference in hours between the time in the local zone and UTC time (e.g zoneOffset=1 for timezone +1:00). All the data in a `CVDateTime` object is zoneOffset-dependent, except `timestamp`.
+A `CVDateTime` object has a `zoneOffset` which is the difference in hours between the time in the local zone and UTC time (e.g. `zoneOffset=1` for timezone +1:00). All the data in a `CVDateTime` object is zoneOffset-dependent, except `timestamp`.
 
-You cannot create a `CVDateTime` object from a string. If this is your need, use the `CVDateTimeFormat` module.
+You cannot create a `CVDateTime` object from a string. If you need to, use the `CVDateTimeFormat` module.
 
 ## 2. Usage example
 

@@ -39,8 +39,8 @@ import {
 
 import * as CVReal from '../../../../primitive/Real.js';
 import * as CVNumberBase10Format from '../../../number-base10-format/index.js';
-import type * as CvTemplatePlaceholderFormatter from './TemplatePlaceholderFormatter.js';
-import type * as CvTemplatePlaceholderParser from './TemplatePlaceholderParser.js';
+import type * as CVTemplatePlaceholderFormatter from './TemplatePlaceholderFormatter.js';
+import type * as CVTemplatePlaceholderParser from './TemplatePlaceholderParser.js';
 
 /**
  * Module tag
@@ -68,10 +68,10 @@ export class Type<out N extends string, in out T> extends MData.Class {
   readonly description: string;
 
   /** Parser of this TemplatePlaceholder */
-  readonly parser: CvTemplatePlaceholderParser.Type<T>;
+  readonly parser: CVTemplatePlaceholderParser.Type<T>;
 
   /** Formatter of this TemplatePlaceholder */
-  readonly formatter: CvTemplatePlaceholderFormatter.Type<T>;
+  readonly formatter: CVTemplatePlaceholderFormatter.Type<T>;
 
   /** Schema instance that represents type T */
   readonly tSchemaInstance: Schema.Schema<T, T>;
@@ -177,7 +177,7 @@ export const description: <const N extends string, T>(self: Type<N, T>) => strin
  */
 export const parser: <const N extends string, T>(
   self: Type<N, T>,
-) => CvTemplatePlaceholderParser.Type<T> = Struct.get('parser');
+) => CVTemplatePlaceholderParser.Type<T> = Struct.get('parser');
 
 /**
  * Returns the `formatter` property of `self`
@@ -186,7 +186,7 @@ export const parser: <const N extends string, T>(
  */
 export const formatter: <const N extends string, T>(
   self: Type<N, T>,
-) => CvTemplatePlaceholderFormatter.Type<T> = Struct.get('formatter');
+) => CVTemplatePlaceholderFormatter.Type<T> = Struct.get('formatter');
 
 /**
  * Returns the `tSchemaInstance` property of `self`

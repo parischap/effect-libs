@@ -3,24 +3,24 @@
  * structure. In such a text, there are immutable and mutable parts. Let's take the following two
  * texts as an example:
  *
- * - Text1 = "John is a 47-year old man."
- * - Text2 = "Jehnny is a 5-year old girl."
+ * - Text1 = "John is a 47-year-old man."
+ * - Text2 = "Jenny is a 5-year-old girl."
  *
  * These two texts obviously share the same structure which is the template:
  *
- * "Placeholder1 is a Placeholder2-year old Placeholder3".
+ * "Placeholder1 is a Placeholder2-year-old Placeholder3".
  *
  * Placeholder1, Placeholder2 and Placeholder3 are the mutable parts of the template. They contain
  * valuable information. We call them `CVTemplatePlaceholder`'s.
  *
- * " is a ", "-year old " and "." are the immutable parts of the template. We call them
+ * " is a ", "-year-old " and "." are the immutable parts of the template. We call them
  * `CVTemplateSeperator`'s.
  *
  * From a text with the above structure, we can extract the values of Placeholder1, Placeholder2,
  * and Placeholder3. In the present case:
  *
  * - For text1: { Placeholder1 : 'John', Placeholder2 : '47', Placeholder3 : 'man' }
- * - For text2: { Placeholder1 : 'Jehnny', Placeholder2 : '5', Placeholder3 : 'girl'}
+ * - For text2: { Placeholder1 : 'Jenny', Placeholder2 : '5', Placeholder3 : 'girl'}
  *
  * Extracting the values of placeholders from a text according to a template is called parsing. The
  * result of parsing is an object whose properties are named after the name of the placeholders they
@@ -32,7 +32,7 @@
  *
  * { Placeholder1 : 'Tom', Placeholder2 : '15', Placeholder3 : 'boy' }
  *
- * We will obtain the text: "Tom is a 15-year old boy."
+ * We will obtain the text: "Tom is a 15-year-old boy."
  *
  * Note that `Effect` does provide the `Schema.TemplateLiteralParser` API which partly addresses the
  * same problem. But there are some limitations to that API. For instance, template literal types

@@ -1,17 +1,17 @@
-import { CVRoundingMode, CVRoundingOption } from "@parischap/conversions";
-import { BigDecimal } from "effect";
+import { CVRounder, CVRounderParams, CVRoundingOption } from '@parischap/conversions';
+import { BigDecimal } from 'effect';
 
-// Here we define our rounding options:
+// Here we define the parameters of the rounder:
 // the result must have three fractional digits using the HalfEven rounding mode
-const roundingOption = CVRoundingOption.make({
+const rounderParams = CVRounderParams.make({
   precision: 3,
-  roundingMode: CVRoundingMode.Type.HalfEven,
+  roundingOption: CVRoundingOption.Type.HalfEven,
 });
 
-// Let's define a number rounder from our options. Type: (value:number) => number
-const numberRounder = CVRoundingOption.toNumberRounder(roundingOption);
-// Let's define a BigDecimal rounder from our options. Type: (value:BigDecimal) => BigDecimal
-const bigDecimalRounder = CVRoundingOption.toBigDecimalRounder(roundingOption);
+// Let's define a number rounder from our parameters. Type: (value:number) => number
+const numberRounder = CVRounder.number(rounderParams);
+// Let's define a BigDecimal rounder from our parameters. Type: (value:BigDecimal) => BigDecimal
+const bigDecimalRounder = CVRounder.bigDecimal(rounderParams);
 
 /** Positive numbers with even last significant digit */
 // Result: 12.457

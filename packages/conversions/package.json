@@ -194,17 +194,17 @@
     "./CVTemplatePart": {
       "default": "./esm/formatting/template/TemplatePart/index.ts"
     },
-    "./CVTemplatePartPlaceholderFormatter": {
-      "default": "./esm/formatting/template/TemplatePart/template-placeholder/TemplatePartPlaceholderFormatter.ts"
-    },
-    "./CVTemplatePartPlaceholderParser": {
-      "default": "./esm/formatting/template/TemplatePart/template-placeholder/TemplatePartPlaceholderParser.ts"
-    },
     "./CVTemplateParts": {
       "default": "./esm/internal/formatting/template/TemplateParts.ts"
     },
     "./CVTemplatePlaceholder": {
       "default": "./esm/formatting/template/TemplatePart/template-placeholder/index.ts"
+    },
+    "./CVTemplatePlaceholderFormatter": {
+      "default": "./esm/formatting/template/TemplatePart/template-placeholder/TemplatePlaceholderFormatter.ts"
+    },
+    "./CVTemplatePlaceholderParser": {
+      "default": "./esm/formatting/template/TemplatePart/template-placeholder/TemplatePlaceholderParser.ts"
     },
     "./CVTemplateSeparator": {
       "default": "./esm/formatting/template/TemplatePart/template-separator/index.ts"

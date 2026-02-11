@@ -1,8 +1,9 @@
+<!-- LTeX: language=en-US -->
 <div align="center">
 
 # CVTemplate
 
-An equivalent to the PHP sprintf and sscanf functions with real typing of the placeholders. Although `Effect.Schema` does offer the [`TemplateLiteralParser` API](https://effect.website/docs/schema/basic-usage/#templateliteralparser), the latter does not provide a solution to situations such as fixed length fields (potentially padded), numbers formatted otherwise than in the English format... This module can also be used as a `Schema`.
+An equivalent to the PHP `sprintf` and `sscanf` functions with real typing of the placeholders. Although `Effect.Schema` does offer the [`TemplateLiteralParser` API](https://effect.website/docs/schema/basic-usage/#templateliteralparser), the latter does not provide a solution to situations such as fixed length fields (potentially padded), numbers formatted otherwise than in the English format... This module can also be used as a `Schema`.
 
 </div>
 
@@ -143,21 +144,21 @@ console.log(
 
 A template is a model of a text that has always the same structure. In such a text, there are immutable and mutable parts. Let's take the following two texts as an example:
 
-- text1 = "John is a 47-year old man."
-- text2 = "Jehnny is a 5-year old girl."
+- text1 = "John is a 47-year-old man."
+- text2 = "Jenny is a 5-year-old girl."
 
 These two texts obviously share the same structure which is the template:
 
-Placeholder1 is a Placeholder2-year old Placeholder3.
+Placeholder1 is a Placeholder2-year-old Placeholder3.
 
 Placeholder1, Placeholder2 and Placeholder3 are the mutable parts of the template. We call them `CVTemplatePlaceholder`'s.
 
-" is a ", "-year old " and "." are the immutable parts of the template. We call them `CVTemplateSeperator`'s.
+" is a ", "-year-old " and "." are the immutable parts of the template. We call them `CVTemplateSeperator`'s.
 
 From a text with the above structure, we can extract the values of Placeholder1, Placeholder2, and Placeholder3. In the present case:
 
 - For text1: { Placeholder1 : 'John', Placeholder2 : '47', Placeholder3 : 'man' }
-- For text2: { Placeholder1 : 'Jehnny', Placeholder2 : '5', Placeholder3 : 'girl'}
+- For text2: { Placeholder1 : 'Jenny', Placeholder2 : '5', Placeholder3 : 'girl'}
 
 Extracting the values of placeholders from a text according to a template is called parsing. The result of parsing is an object whose properties are named after the name of the placeholders they represent.
 
@@ -165,20 +166,20 @@ Inversely, given a template and the values of the placeholders that compose it (
 
 { Placeholder1 : 'Tom', Placeholder2 : '15', Placeholder3 : 'boy' }
 
-we will obtain the text: "Tom is a 15-year old boy."
+we will obtain the text: "Tom is a 15-year-old boy."
 
 ## 3. CVTemplateSeparator's
 
 A `CVTemplateSeparator` represents the immutable part of a template. Upon parsing, we must check that it is present as is in the text. Upon formatting, it must be inserted as is into the text.
 
-To create a `CVTemplateSeparator`, you usually call the `CVTemplateSeparator.make` constructor. However, the TemplateSeparator.ts module exports a series of predefined `CVTemplateSeparator` instances, such as `CVTemplateSeparator.slash` and `CVTemplateSeparator.space`. You can find the list of all predefined `CVTemplateSeparator` instances in the [API](https://parischap.github.io/effect-libs/conversions/TemplatePart.ts).
+To create a `CVTemplateSeparator`, you usually call the `CVTemplateSeparator.make` constructor. However, the `CVTemplateSeparator.ts` module exports a series of predefined `CVTemplateSeparator` instances, such as `CVTemplateSeparator.slash` and `CVTemplateSeparator.space`. You can find the list of all predefined `CVTemplateSeparator` instances in the [API](https://parischap.github.io/effect-libs/conversions/TemplatePart.ts).
 
 ## 4. CVTemplatePlaceholder's
 
 A `CVTemplatePlaceholder` represents the mutable part of a template. Each `CVTemplatePlaceholder` defines a parser and a formatter:
 
-- the parser takes a text, consumes a part of that text, optionnally converts the consumed part to a value of type T and, if successful, returns a `Right` of that value and of what has not been consumed. In case of failure, it returns a `Left`.
-- the formatter takes a value of type T, converts it to a string (if T is not string), checks that the result is coherent and, if so, inserts that string into the text. Otherwise, it returns a `Left`.
+- The parser takes a text, consumes a part of that text, optionally converts the consumed part to a value of type T and, if successful, returns a `Right` of that value and of what has not been consumed. In case of failure, it returns a `Left`.
+- The formatter takes a value of type T, converts it to a string (if T is not string), checks that the result is coherent and, if so, inserts that string into the text. Otherwise, it returns a `Left`.
 
 There are several predefined Placeholder's:
 
@@ -192,7 +193,7 @@ There are several predefined Placeholder's:
 - `anythingBut`: this is a special case of the `fulfilling` `CVTemplatePlaceholder`. The parser reads from the text until it meets one of the `forbiddenChars` passed as parameter (the result must be a non-empty string). The formatter will only accept a non-empty string that does not contain any of the forbidden chars and write it to the text.
 - `toEnd`: this is another special case of the `fulfilling` `CVTemplatePlaceholder`. The parser reads all the remaining text. The formatter accepts any string and writes it. This `CVTemplatePlaceholder` should only be used as the last `CVTemplatePart` of a `CVTemplate`.
 
-Each `CVTemplatePlaceholder` must be given a name that will be used as the name of the property of the result object of parsing or of the input object of formatting. This name needs not be unique inside a CVTemplate. The same name can appear several times. However, even if there are several `CVTemplatePlaceholder`'s with the same name, there will be only one property with that name. When parsing, this implies that all `CVTemplatePlaceholder`'s with the same name must yield the same value. When formatting, this implies that the value needs only be provided once and will be shared by all `CVTemplatePlaceholder`'s with that name.
+Each `CVTemplatePlaceholder` must be given a name that will be used as the name of the property of the result object of parsing or of the input object of formatting. This name needs not be unique inside a `CVTemplate`. The same name can appear several times. However, even if there are several `CVTemplatePlaceholder`'s with the same name, there will be only one property with that name. When parsing, this implies that all `CVTemplatePlaceholder`'s with the same name must yield the same value. When formatting, this implies that the value needs only be provided once and will be shared by all `CVTemplatePlaceholder`'s with that name.
 
 If none of these `CVTemplatePlaceholder` instances suits you, you can define you own with the `make` constructor. You will find detailed explanations of the predefined `CVTemplatePlaceholder` instances and of the make constructor in the [API](https://parischap.github.io/effect-libs/conversions/TemplatePart.ts).
 

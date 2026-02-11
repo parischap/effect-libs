@@ -2,28 +2,30 @@ import {
   CVDateTime,
   CVDateTimeFormat,
   CVDateTimeFormatContext,
+  CVDateTimeFormatPlaceholder,
+  CVDateTimeFormatSeparator,
   CVSchema,
-} from "@parischap/conversions";
-import { DateTime, Either, flow, Schema } from "effect";
+} from '@parischap/conversions';
+import { DateTime, Either, flow, Schema } from 'effect';
 
 // Let's define useful shortcuts
-const placeholder = CVDateTimeFormat.TemplatePart.Placeholder.make;
-const sep = CVDateTimeFormat.TemplatePart.Separator;
+const placeholder = CVDateTimeFormatPlaceholder.make;
+const sep = CVDateTimeFormatSeparator;
 
 // Let's define a context
-const frenchContext = CVDateTimeFormatContext.fromLocaleOrThrow("fr-FR");
+const frenchContext = CVDateTimeFormatContext.fromLocaleOrThrow('fr-FR');
 
 // Let's define a DateTimeFormat: iiii d MMMM yyyy
 const frenchFormat = CVDateTimeFormat.make({
   context: frenchContext,
-  templateParts: [
-    placeholder("iiii"),
+  parts: [
+    placeholder('iiii'),
     sep.space,
-    placeholder("d"),
+    placeholder('d'),
     sep.space,
-    placeholder("MMMM"),
+    placeholder('MMMM'),
     sep.space,
-    placeholder("yyyy"),
+    placeholder('yyyy'),
   ],
 });
 
@@ -59,7 +61,7 @@ const jsFormatter = flow(CVDateTime.fromDate, CVDateTimeFormat.toThrowingFormatt
 //     _tag: '@parischap/effect-lib/InputError/'
 //   }
 // }
-console.log(parser("20201210"));
+console.log(parser('20201210'));
 
 // Result: {
 //   _id: 'Either',
@@ -69,16 +71,16 @@ console.log(parser("20201210"));
 //     _tag: '@parischap/effect-lib/InputError/'
 //   }
 // }
-console.log(parser("lundi 4 septembre 2025"));
+console.log(parser('lundi 4 septembre 2025'));
 
 // Result: { _id: 'Either', _tag: 'Right', right: '2025-09-04T00:00:00.000+02:00' }
-console.log(parser("jeudi 4 septembre 2025"));
+console.log(parser('jeudi 4 septembre 2025'));
 
 // Result: { _id: 'Either', _tag: 'Right', right: '2025-09-03T22:00:00.000Z' }
-console.log(effectParser("jeudi 4 septembre 2025"));
+console.log(effectParser('jeudi 4 septembre 2025'));
 
 // Result: '2025-09-03T22:00:00.000Z'
-console.log(jsParser("jeudi 4 septembre 2025"));
+console.log(jsParser('jeudi 4 septembre 2025'));
 
 // Result: { _id: 'Either', _tag: 'Right', right: 'jeudi 1 janvier 1970' }
 console.log(formatter(CVDateTime.fromTimestampOrThrow(0, 0)));
@@ -126,22 +128,22 @@ const jsDecoder = Schema.decodeEither(jsSchema);
 const jsEncoder = Schema.encodeEither(jsSchema);
 
 // Result: { _id: 'Either', _tag: 'Right', right: '2025-09-04T00:00:00.000+02:00' }
-console.log(decoder("jeudi 4 septembre 2025"));
+console.log(decoder('jeudi 4 septembre 2025'));
 
 // Error: Expected 'weekday' to be: 4. Actual: 1
-console.log(decoder("lundi 4 septembre 2025"));
+console.log(decoder('lundi 4 septembre 2025'));
 
 // Result: { _id: 'Either', _tag: 'Right', right: 'jeudi 1 janvier 1970' }
 console.log(encoder(CVDateTime.fromTimestampOrThrow(0, 0)));
 
 // Result: { _id: 'Either', _tag: 'Right', right: '2025-09-03T22:00:00.000Z' }
-console.log(effectDecoder("jeudi 4 septembre 2025"));
+console.log(effectDecoder('jeudi 4 septembre 2025'));
 
 // Result: { _id: 'Either', _tag: 'Right', right: 'jeudi 1 janvier 1970' }
 console.log(effectEncoder(DateTime.unsafeMakeZoned(0, { timeZone: 0 })));
 
 // Result: { _id: 'Either', _tag: 'Right', right: 2025-09-03T22:00:00.000Z }
-console.log(jsDecoder("jeudi 4 septembre 2025"));
+console.log(jsDecoder('jeudi 4 septembre 2025'));
 
 // Result: { _id: 'Either', _tag: 'Right', right: 'jeudi 1 janvier 1970' }
 console.log(jsEncoder(new Date(0)));
