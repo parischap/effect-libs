@@ -1,5 +1,5 @@
 /**
- * This module implements the options for pretty-printing.
+ * This module implements the pretty-printing options.
  *
  * With the make function, you can define your own instances if the provided ones don't suit your
  * needs.
@@ -601,8 +601,8 @@ export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable 
   readonly markMap: PPMarkMap.Type;
 
   /**
-   * Array of `ByPasser` instances (see ByPasser.ts): the first ByPasser that returns a `some` is
-   * used to display that value. If all ByPasser's return a `none`, the normal stringification
+   * Array of `PPByPasser` instances (see PPByPasser.ts): the first PPByPasser that returns a `some`
+   * is used to display that value. If all PPByPasser's return a `none`, the normal stringification
    * process is applied.
    */
   readonly byPassers: PPByPassers.Type;

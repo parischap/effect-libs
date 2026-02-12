@@ -59,7 +59,7 @@ describe('Value', () => {
     it('Enumerable property', () => {
       TestUtils.strictEqual(
         PPValue.fromNonPrimitiveValueAndKey({
-          nonPrimitiveContent: { a: 1, b: 'foo' },
+          nonPrimitive: { a: 1, b: 'foo' },
           key: 'a',
           depth: 1,
           protoDepth: 0,
@@ -83,7 +83,7 @@ describe('Value', () => {
     it('Non-enumerable property', () => {
       TestUtils.strictEqual(
         PPValue.fromNonPrimitiveValueAndKey({
-          nonPrimitiveContent: [1, 2],
+          nonPrimitive: [1, 2],
           key: 'length',
           depth: 1,
           protoDepth: 0,

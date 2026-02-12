@@ -8,7 +8,7 @@ describe('ValueBasedStyler', () => {
 
   const symbolicKey: unique symbol = Symbol.for('symbolicKey');
   const context = PPValue.fromNonPrimitiveValueAndKey({
-    nonPrimitiveContent: { [symbolicKey]: 3, b: 'foo' },
+    nonPrimitive: { [symbolicKey]: 3, b: 'foo' },
     key: symbolicKey,
     depth: 2,
     protoDepth: 0,

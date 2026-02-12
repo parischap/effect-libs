@@ -5,7 +5,7 @@ import { Array, Function, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('PropertyFilter', () => {
-  const {removeFunctions} = PPPropertyFilter;
+  const { removeFunctions } = PPPropertyFilter;
 
   const value1 = PPValue.fromTopValue({
     content: 1,
@@ -13,13 +13,13 @@ describe('PropertyFilter', () => {
   const value2 = PPValue.fromTopValue(Math.max);
 
   const value3 = PPValue.fromNonPrimitiveValueAndKey({
-    nonPrimitiveContent: [1, 2],
+    nonPrimitive: [1, 2],
     key: 'length',
     depth: 0,
     protoDepth: 0,
   });
   const value4 = PPValue.fromNonPrimitiveValueAndKey({
-    nonPrimitiveContent: { [Symbol.iterator]: 1, a: 2 },
+    nonPrimitive: { [Symbol.iterator]: 1, a: 2 },
     key: Symbol.iterator,
     depth: 0,
     protoDepth: 0,
@@ -28,7 +28,10 @@ describe('PropertyFilter', () => {
 
   describe('Tag, prototype and guards', () => {
     it('moduleTag', () => {
-      TestUtils.assertSome(TestUtils.moduleTagFromTestFilePath(__filename), PPPropertyFilter.moduleTag);
+      TestUtils.assertSome(
+        TestUtils.moduleTagFromTestFilePath(__filename),
+        PPPropertyFilter.moduleTag,
+      );
     });
 
     describe('Equal.equals', () => {
@@ -77,7 +80,10 @@ describe('PropertyFilter', () => {
   });
 
   it('removeNonEnumerables', () => {
-    TestUtils.deepStrictEqual(pipe(values, PPPropertyFilter.removeNonEnumerables), Array.of(value4));
+    TestUtils.deepStrictEqual(
+      pipe(values, PPPropertyFilter.removeNonEnumerables),
+      Array.of(value4),
+    );
   });
 
   it('removeEnumerables', () => {

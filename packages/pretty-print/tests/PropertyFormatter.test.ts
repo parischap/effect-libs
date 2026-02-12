@@ -73,7 +73,7 @@ describe('PropertyFormatter', () => {
       pipe(
         valueOnlyFormatter({
           value: PPValue.fromNonPrimitiveValueAndKey({
-            nonPrimitiveContent: { a: 1, b: 'foo' },
+            nonPrimitive: { a: 1, b: 'foo' },
             key: 'a',
             depth: 1,
             protoDepth: 0,
@@ -115,7 +115,7 @@ describe('PropertyFormatter', () => {
         pipe(
           keyAndValueFormatter({
             value: PPValue.fromNonPrimitiveValueAndKey({
-              nonPrimitiveContent: { a: 1, b: 'foo' },
+              nonPrimitive: { a: 1, b: 'foo' },
               key: 'a',
               depth: 1,
               protoDepth: 0,
@@ -138,7 +138,7 @@ describe('PropertyFormatter', () => {
         pipe(
           keyAndValueFormatter({
             value: PPValue.fromNonPrimitiveValueAndKey({
-              nonPrimitiveContent: { a: 1, b: 'foo' },
+              nonPrimitive: { a: 1, b: 'foo' },
               key: 'a',
               depth: 1,
               protoDepth: 2,
@@ -226,7 +226,7 @@ describe('PropertyFormatter', () => {
           pipe(
             treeifyFormatter({
               value: PPValue.fromNonPrimitiveValueAndKey({
-                nonPrimitiveContent: { a: 1, b: 'foo' },
+                nonPrimitive: { a: 1, b: 'foo' },
                 key: 'a',
                 depth: 1,
                 protoDepth: 0,
@@ -245,7 +245,7 @@ describe('PropertyFormatter', () => {
           pipe(
             treeifyFormatter({
               value: PPValue.fromNonPrimitiveValueAndKey({
-                nonPrimitiveContent: { a: 1, b: 'foo' },
+                nonPrimitive { a: 1, b: 'foo' },
                 key: 'a',
                 depth: 1,
                 protoDepth: 0,

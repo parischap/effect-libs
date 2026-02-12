@@ -1,5 +1,5 @@
 /**
- * This module implements a Type that builds a MarkShower (see MarkShower.ts) from an Option (see
+ * This module implements a Type that builds a PPMarkShower (see MarkShower.ts) from a PPOption (see
  * Option.ts) and a markName
  */
 

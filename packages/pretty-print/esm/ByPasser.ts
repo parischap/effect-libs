@@ -8,28 +8,16 @@
  */
 
 import {
+  MData,
+  MDataEquivalenceBasedEquality,
   MFunction,
-  MInspectable,
-  MPipeable,
   MRecord,
   MRegExp,
   MTypes,
 } from '@parischap/effect-lib';
 
-import { ASText } from '@parischap/ansi-styles';
-import {
-  Array,
-  Equal,
-  Equivalence,
-  flow,
-  Hash,
-  Option,
-  pipe,
-  Pipeable,
-  Predicate,
-  String,
-  Struct,
-} from 'effect';
+import { ASContextStyler, ASText } from '@parischap/ansi-styles';
+import { Array, Equivalence, flow, Hash, Option, pipe, Predicate, String, Struct } from 'effect';
 import * as PPMarkShowerConstructor from './MarkShowerConstructor.js';
 import type * as PPOption from './Option.js';
 import * as PPStringifiedValue from './StringifiedValue.js';
@@ -46,7 +34,7 @@ const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
 /**
- * Namespace of a ByPasser used as an action
+ * Namespace of a PPByPasser action
  *
  * @category Models
  */
@@ -75,24 +63,62 @@ export namespace Action {
 }
 
 /**
- * Type that represents a ByPasser.
+ * Type that represents a PPByPasser
  *
  * @category Models
  */
-export interface Type extends Action.Type, Equal.Equal, MInspectable.Type, Pipeable.Pipeable {
-  /** Id of this ByPasser instance. Useful for equality and debugging */
+export class Type extends MDataEquivalenceBasedEquality.Class {
+  /** Id of this PPByPasser instance. Useful for equality and debugging */
   readonly id: string;
 
-  /** @internal */
-  readonly [_TypeId]: _TypeId;
+  /** Action of this PPByPasser */
+  readonly action: Action.Type;
+
+  /** Returns the `id` of `this` */
+  [MData.idSymbol](): string | (() => string) {
+    return function idSymbol(this: Type) {
+      return this.id;
+    };
+  }
+
+  /** Class constructor */
+  private constructor({ id, action }: MTypes.Data<Type>) {
+    super();
+    this.id = id;
+    this.action = action;
+  }
+
+  /** Static constructor */
+  static make(params: MTypes.Data<Type>): Type {
+    return new Type(params);
+  }
+
+  /** Calculates the hash value of `this` */
+  [Hash.symbol](): number {
+    return 0;
+  }
+
+  /** Function that implements the equivalence of `this` and `that` */
+  [MDataEquivalenceBasedEquality.isEquivalentToSymbol](this: this, that: this): boolean {
+    return equivalence(this, that);
+  }
+
+  /** Predicate that returns true if `that` has the same type marker as `this` */
+  [MDataEquivalenceBasedEquality.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
+    return Predicate.hasProperty(that, _TypeId);
+  }
+  /** Returns the TypeMarker of the class */
+  protected get [_TypeId](): _TypeId {
+    return _TypeId;
+  }
 }
 
 /**
- * Type guard
+ * Constructor of a PPByPasser
  *
- * @category Guards
+ * @category Constructors
  */
-export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
+export const make = (params: MTypes.Data<Type>): Type => Type.make(params);
 
 /**
  * Equivalence
@@ -100,34 +126,6 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
  * @category Equivalences
  */
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
-
-/** Base */
-const _TypeIdHash = Hash.hash(_TypeId);
-const base: MTypes.Proto<Type> = {
-  [_TypeId]: _TypeId,
-  [Equal.symbol](this: Type, that: unknown): boolean {
-    return has(that) && equivalence(this, that);
-  },
-  [Hash.symbol](this: Type) {
-    return pipe(this.id, Hash.hash, Hash.combine(_TypeIdHash), Hash.cached(this));
-  },
-  [MInspectable.IdSymbol](this: Type) {
-    return this.id;
-  },
-  ...MInspectable.BaseProto(moduleTag),
-  ...MPipeable.BaseProto,
-};
-
-/**
- * Constructor
- *
- * @category Constructors
- */
-export const make = ({ id, action }: { readonly id: string; readonly action: Action.Type }): Type =>
-  Object.assign(MFunction.clone(action), {
-    id,
-    ...base,
-  });
 
 /**
  * Returns the `id` property of `self`
@@ -137,7 +135,7 @@ export const make = ({ id, action }: { readonly id: string; readonly action: Act
 export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
 
 /**
- * ByPasser instance that does not bypass any value
+ * PPByPasser instance that does not bypass any value
  *
  * @category Instances
  */
@@ -147,7 +145,7 @@ export const empty: Type = make({
 });
 
 /**
- * ByPasser instance that has the following behavior:
+ * PPByPasser instance that has the following behavior:
  *
  * - For any function: a some of the function name surrounded by the function delimiters and the
  *   message delimiters. If the function name is an empty string, `anonymous` is used instead.
@@ -177,9 +175,9 @@ export const functionToName: Type = make({
             MFunction.name,
             Option.liftPredicate(String.isNonEmpty),
             Option.getOrElse(() => 'anonymous'),
-            messageTextFormatter(value),
+            ASContextStyler.toStyle(messageTextFormatter)(value),
             ASText.surround(
-              functionNameStartDelimiterMarkShower(value),
+              ASContextStyler.toStyle(functionNameStartDelimiterMarkShower)(value),
               functionNameEndDelimiterMarkShower(value),
             ),
             ASText.surround(
@@ -194,7 +192,7 @@ export const functionToName: Type = make({
 });
 
 /**
- * ByPasser instance that has the following behavior:
+ * PPByPasser instance that has the following behavior:
  *
  * - For any non-primitive value which is not an iterable or a function : tries to call the toString
  *   method (only if it is different from Object.prototype.toString). Returns a `some` of the result

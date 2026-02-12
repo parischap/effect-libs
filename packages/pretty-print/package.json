@@ -69,7 +69,7 @@
       "default": "./esm/index.ts"
     },
     "./PPByPasser": {
-      "default": "./esm/ByPasser.ts"
+      "default": "./esm/PPByPasser.ts"
     },
     "./PPByPassers": {
       "default": "./esm/ByPassers.ts"

@@ -1,7 +1,7 @@
-/** This module implements a Type that represents an array of ByPasser's (see ByPasser.ts) */
+/** This module implements a Type that represents an array of PPByPasser's (see PPByPasser.ts) */
 
 import { Array, Function, pipe } from 'effect';
-import * as PPByPasser from './ByPasser.js';
+import * as PPByPasser from './PPByPasser.js';
 
 /**
  * Type of a ByPassers
@@ -11,9 +11,9 @@ import * as PPByPasser from './ByPasser.js';
 export interface Type extends ReadonlyArray<PPByPasser.Type> {}
 
 /**
- * Returns a ByPasser that is equivalent to `self`. The returned ByPasser executes successively each
- * ByPasser of `self` until it meets one that returns a `some`. If such a ByPasser exists, the
- * corresponding `some` is returned. Otherwise, it returns a `none`.
+ * Returns a PPByPasser that is equivalent to `self`. The returned PPByPasser executes successively
+ * each PPByPasser of `self` until it meets one that returns a `some`. If such a PPByPasser exists,
+ * the corresponding `some` is returned. Otherwise, it returns a `none`.
  *
  * @category Destructors
  */

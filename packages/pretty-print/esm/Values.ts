@@ -48,7 +48,7 @@ export const fromProperties =
                 Option.none()
               : Option.some(
                   PPValue.fromNonPrimitiveValueAndKey({
-                    nonPrimitiveContent,
+                    nonPrimitive: nonPrimitiveContent,
                     key,
                     depth,
                     protoDepth,

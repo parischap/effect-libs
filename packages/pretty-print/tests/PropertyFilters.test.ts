@@ -10,13 +10,13 @@ describe('PropertyFilters', () => {
   const value2 = PPValue.fromTopValue(Math.max);
 
   const value3 = PPValue.fromNonPrimitiveValueAndKey({
-    nonPrimitiveContent: [1, 2],
+    nonPrimitive: [1, 2],
     key: 'length',
     depth: 0,
     protoDepth: 0,
   });
   const value4 = PPValue.fromNonPrimitiveValueAndKey({
-    nonPrimitiveContent: { [Symbol.iterator]: 1, a: 2 },
+    nonPrimitive: { [Symbol.iterator]: 1, a: 2 },
     key: Symbol.iterator,
     depth: 0,
     protoDepth: 0,

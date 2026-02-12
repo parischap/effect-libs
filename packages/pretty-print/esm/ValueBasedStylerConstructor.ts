@@ -1,6 +1,6 @@
 /**
  * This module implements a Type that builds a ValueBasedStyler (see ValueBasedStyler.ts) from an
- * Option (see Option.ts) and a partName.
+ * PPOption (see Option.ts) and a partName.
  */
 
 import { MTypes } from '@parischap/effect-lib';

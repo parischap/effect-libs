@@ -229,19 +229,19 @@ export const withParentheses: PPOption.Type = PPOption.make({
 });
 ```
 
-Similarly to StyleMap's, you can define your own entries in the MarkMap instances you define. And then use these extra entries in the ByPasser's... that you define. Note that if you refer to a mark that is not present in the markMap, an unstyled empty string will be used to represent it.
+Similarly to StyleMap's, you can define your own entries in the MarkMap instances you define. And then use these extra entries in the PPByPasser's... that you define. Note that if you refer to a mark that is not present in the markMap, an unstyled empty string will be used to represent it.
 
 #### 3) Bypassing some values
 
 There are situations where you want to display a non-primitive value in a simplified manner. For instance, you may prefer
-printing a Date as a string rather than as an object with all its technical properties. This is what the byPassers property of an Option instance is for. This property contains an array of ByPasser's (see [ByPasser.ts](https://parischap.github.io/effect-libs/pretty-print/ByPasser.ts.html)) which are successively tried on the value to stringify. If any of the ByPasser's matches (returns a `some` of the representation of that non-primitive value), the value is by-passed by the returned representation. Otherwise, it will be stringified using the normal stringification process.
+printing a Date as a string rather than as an object with all its technical properties. This is what the byPassers property of an Option instance is for. This property contains an array of PPByPasser's (see [PPByPasser.ts](https://parischap.github.io/effect-libs/pretty-print/PPByPasser.ts.html)) which are successively tried on the value to stringify. If any of the PPByPasser's matches (returns a `some` of the representation of that non-primitive value), the value is by-passed by the returned representation. Otherwise, it will be stringified using the normal stringification process.
 
-The `utilInspectLike` Option instance makes use of the two pre-defined ByPasser instances:
+The `utilInspectLike` Option instance makes use of the two pre-defined PPByPasser instances:
 
-- the `functionToName` ByPasser instance replaces a function object by its function name preceded by the `MessageStartDelimiter` and `FunctionStartDelimiter` and followed by the `FunctionEndDelimiter` and `MessageEndDelimiter` as they are defined in the `markMap`.
-- the `objectToString` ByPasser instance will replace any non-primitive value which is not an iterable or a function by the result of calling its toString method provided it defines one different from Object.prototype.toString. This ByPasser for instance works well with Javascript Date objects (because they define a .toString method).
+- the `functionToName` PPByPasser instance replaces a function object by its function name preceded by the `MessageStartDelimiter` and `FunctionStartDelimiter` and followed by the `FunctionEndDelimiter` and `MessageEndDelimiter` as they are defined in the `markMap`.
+- the `objectToString` PPByPasser instance will replace any non-primitive value which is not an iterable or a function by the result of calling its toString method provided it defines one different from Object.prototype.toString. This PPByPasser for instance works well with Javascript Date objects (because they define a .toString method).
 
-You can use the make constructor to define your own ByPasser's if you need to. You can also define your own Option instance with fewer ByPasser's. For instance, this is how you would define an Option instance that displays functions as any other non-primitive value (for instance if you want to show some properties of the function object):
+You can use the make constructor to define your own PPByPasser's if you need to. You can also define your own Option instance with fewer PPByPasser's. For instance, this is how you would define an Option instance that displays functions as any other non-primitive value (for instance if you want to show some properties of the function object):
 
 ```ts
 import { PPByPasser, PPOption } from '@parischap/pretty-print';

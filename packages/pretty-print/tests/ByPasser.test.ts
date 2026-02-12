@@ -1,17 +1,17 @@
 import { ASStyle } from '@parischap/ansi-styles';
 import * as TestUtils from '@parischap/configs/TestUtils';
 import {
-    PPByPasser,
-    PPMarkShowerConstructor,
-    PPOption,
-    PPStringifiedValue,
-    PPValue,
-    PPValueBasedStylerConstructor,
+  PPByPasser,
+  PPMarkShowerConstructor,
+  PPOption,
+  PPStringifiedValue,
+  PPValue,
+  PPValueBasedStylerConstructor,
 } from '@parischap/pretty-print';
 import { Array, Option, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
-describe('ByPasser', () => {
+describe('PPByPasser', () => {
   const utilInspectLike = PPOption.darkModeUtilInspectLike;
   const valueBasedStylerConstructor = PPValueBasedStylerConstructor.fromOption(utilInspectLike);
   const markShowerConstructor = PPMarkShowerConstructor.fromOption(utilInspectLike);
@@ -20,7 +20,7 @@ describe('ByPasser', () => {
     markShowerConstructor,
   };
 
-  const {empty} = PPByPasser;
+  const { empty } = PPByPasser;
 
   describe('Tag, prototype and guards', () => {
     it('moduleTag', () => {

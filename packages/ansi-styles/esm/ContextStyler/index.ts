@@ -63,7 +63,7 @@ export abstract class Type<in C> extends MData.Class {
 export const id: MTypes.OneArgFunction<Type<never>, string> = Struct.get('id');
 
 /**
- * Gets the id of `self`
+ * Returns the style of `self` associated with Context `c`
  *
  * @category Destructors
  */
