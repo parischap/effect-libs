@@ -1,10 +1,11 @@
+<!-- LTeX: language=en-US -->
 <div align="center">
 
 # pretty-print
 
 An [`Effect`](https://effect.website/docs/introduction) library that produces the string representation of any value, in Node or the browser. Similar to util.inspect but with plenty of extra options: **treeifying, coloring, sorting, choosing what to display and how to display it...**. It supports natively Effect iterables like HashMap, HashSet,...
 
-Non-recursive, tested and documented, optimized for tree-shaking, 100% Typescript, 100% functional, 100% parametrizable.
+Non-recursive, tested and documented, optimized for tree-shaking, 100% Typescript, 100% functional, 100% configurable.
 
 Can also be used by non-Effect users.
 

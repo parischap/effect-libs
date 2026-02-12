@@ -1,8 +1,4 @@
-/**
- * Type that represents a value in its stringification context.
- *
- * This module provides several Order instances to sort Value's according to your needs
- */
+/** Type that represents a value in its stringification context. */
 import {
   MData,
   MDataEquivalenceBasedEquality,
@@ -50,7 +46,8 @@ export class Type<out V> extends MDataEquivalenceBasedEquality.Class {
    * containing an empty string. If it is the value of one of the properties of a non-primitive
    * value, `stringKey` is a one-element array containing the property key converted to a string. If
    * it is one of the values of an iterable non-primitive value (e.g. a Map), `stringKey` is the
-   * unstyled stringified key associated to the value.
+   * unstyled stringified key associated to the value (in a map, the key itself can be a
+   * non-primitive)
    */
   readonly stringKey: MTypes.OverOne<string>;
 

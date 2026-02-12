@@ -1,11 +1,15 @@
-/** Module that implements an Order on Value.All */
+/**
+ * Module that implements an Order on PPValue.Any
+ *
+ * You can define your own if the provided instances don't suit your needs
+ */
 
-import { MTypes } from '@parischap/effect-lib';
+import { MTypesCategory } from '@parischap/effect-lib';
 import { flow, Order } from 'effect';
-import * as PPValue from './Value.js';
+import * as PPValue from '../internal/Value.js';
 
 /**
- * Type of an Order on a Value.All
+ * Type of a PPValueOrder
  *
  * @category Models
  */
@@ -32,7 +36,7 @@ export const byOneLineStringKey: Type = Order.mapInput(Order.string, PPValue.one
  */
 export const byCallability: Type = Order.mapInput(
   Order.boolean,
-  flow(PPValue.contentType, MTypes.Category.isFunction),
+  flow(PPValue.contentType, MTypesCategory.isFunction),
 );
 
 /**

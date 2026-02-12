@@ -11,8 +11,8 @@ import {
   MTypes,
 } from '@parischap/effect-lib';
 import { Array, Either, flow, Number, Option, pipe, Predicate } from 'effect';
-import type * as PPOption from './Option.js';
-import * as PPStringifiedValue from './StringifiedValue.js';
+import * as PPStringifiedValue from '../StringifiedValue.js';
+import type * as PPStringifier from '../Stringifier.js';
 import * as PPValue from './Value.js';
 
 /**
@@ -109,7 +109,7 @@ export const fromValueIterable = (nonPrimitive: PPValue.NonPrimitive): Type =>
  * @category Constructors
  */
 export const fromKeyValueIterable =
-  (stringifier: PPOption.Stringifier.Type) =>
+  (stringifier: PPStringifier.Type) =>
   (nonPrimitive: PPValue.NonPrimitive): Type =>
     pipe(
       nonPrimitive.content,

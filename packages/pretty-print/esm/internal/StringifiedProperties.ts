@@ -1,23 +1,23 @@
 /**
- * Type that is an alias for an array of StringifiedValue's (see StringifiedValue.ts). It represents
- * the output of the stringification process of the properties of a non-primitive value.
+ * Type that is an alias for an array of PPStringifiedValue's (see StringifiedValue.ts). It
+ * represents the output of the stringification process of the properties of a non-primitive value.
  */
 
 import { ASText } from '@parischap/ansi-styles';
 import { MArray, MTypes } from '@parischap/effect-lib';
 import { Array, flow, Function, Number, Order } from 'effect';
-import * as PPStringifiedValue from './StringifiedValue.js';
+import * as PPStringifiedValue from '../StringifiedValue.js';
 
 /**
- * Type that represents a StringifiedValues
+ * Type that represents a PPStringifiedValues
  *
  * @category Models
  */
 export interface Type extends ReadonlyArray<PPStringifiedValue.Type> {}
 
 /**
- * Return a copy of `self` with a mark added at the end of each stringified property except the last
- * one
+ * Returns a copy of `self` with a mark added at the end of the last line of each stringified
+ * property except the last one
  *
  * @category Utils
  */
@@ -25,7 +25,7 @@ export const addMarkInBetween = (mark: ASText.Type): MTypes.OneArgFunction<Type>
   flow(MArray.modifyInit(PPStringifiedValue.appendToLastLine(mark)));
 
 /**
- * Return a copy of `self` with `property` added as a single-line StringifiedValue at the start
+ * Returns a copy of `self` with `property` added as a single-line StringifiedValue at the start
  *
  * @category Utils
  */
@@ -33,7 +33,7 @@ export const prependProperty = (property: ASText.Type): MTypes.OneArgFunction<Ty
   Array.prepend(PPStringifiedValue.fromText(property));
 
 /**
- * Return a copy of `self` with `property` added as a single-line StringifiedValue at the end
+ * Returns a copy of `self` with `property` added as a single-line StringifiedValue at the end
  *
  * @category Utils
  */
@@ -85,7 +85,8 @@ export const treeify = ({
   );
 
 /**
- * Returns the length of `self`
+ * Returns the length of `self`, i.e. the sum of the lengths of the PPStringifiedValues constituting
+ * `self`
  *
  * @category Destructors
  */

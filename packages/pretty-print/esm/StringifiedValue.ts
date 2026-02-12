@@ -8,10 +8,10 @@
 import { ASText } from '@parischap/ansi-styles';
 import { MArray, MTypes } from '@parischap/effect-lib';
 import { Array, Equivalence, flow, Function, Number, pipe, Predicate } from 'effect';
-import type * as PPStringifiedProperties from './StringifiedProperties.js';
+import type * as PPStringifiedProperties from './internal//StringifiedProperties.js';
 
 /**
- * Type that represents a StringifiedValue
+ * Type that represents a PPStringifiedValue
  *
  * @category Models
  */
@@ -39,7 +39,8 @@ export const fromText: MTypes.OneArgFunction<ASText.Type, Type> = Array.of;
 export const empty: Type = pipe(ASText.empty, fromText);
 
 /**
- * Builds a StringifiedValue from a StringifiedProperties
+ * Builds a `PPStringifiedValue` by flattening a `PPStringifiedProperties`. If the
+ * `PPStringifiedProperties` contains no elements, returns the empty instance
  *
  * @category Constructors
  */
@@ -47,7 +48,8 @@ export const fromStringifiedProperties: MTypes.OneArgFunction<PPStringifiedPrope
   Array.match({ onEmpty: Function.constant(empty), onNonEmpty: Array.flatten });
 
 /**
- * Returns a single-line version of `self`
+ * Returns a single-line version of `self`. All the lines are joined using rhe empty ASText instance
+ * as separator
  *
  * @category Utils
  */
@@ -59,6 +61,7 @@ export const toSingleLine: MTypes.OneArgFunction<Type> = flow(ASText.join(ASText
  * @category Predicates
  */
 export const isEmpty: Predicate.Predicate<Type> = MArray.match012({
+  // This case cannot happen
   onEmpty: Function.constTrue,
   onSingleton: ASText.isEmpty,
   onOverTwo: Function.constFalse,
@@ -119,7 +122,8 @@ export const prependToTailLines = (text: ASText.Type): MTypes.OneArgFunction<Typ
   MArray.modifyTail(ASText.prepend(text));
 
 /**
- * Returns the length of `self`
+ * Returns the length of `self`, i.e. the sum of the lengths of all the ASText instances
+ * constituting `self`
  *
  * @category Destructors
  */
@@ -137,7 +141,7 @@ export const toAnsiString = (sep = ASText.lineBreak): MTypes.OneArgFunction<Type
   flow(ASText.join(sep), ASText.toAnsiString);
 
 /**
- * Returns the stringq corresponding to `self` without any styling
+ * Returns the strings corresponding to `self` without any styling
  *
  * @category Destructors
  */
