@@ -34,6 +34,9 @@
  *
  * We will obtain the text: "Tom is a 15-year-old boy."
  *
+ * Once you have created a CVTemplate, you must feed it to a CVTemplateParser or
+ * CVTemplateFormatter.
+ *
  * Note that `Effect` does provide the `Schema.TemplateLiteralParser` API which partly addresses the
  * same problem. But there are some limitations to that API. For instance, template literal types
  * cannot represent a fixed-length string or a string composed only of capital letters... It is for
@@ -44,9 +47,8 @@
  * date
  */
 
-import { MArray, MData, MInputError, MString, MTuple, MTypes } from '@parischap/effect-lib';
-import { Array, Either, Equal, flow, Function, Option, pipe, Record, Struct, Tuple } from 'effect';
-import * as CVTemplateSeparatorParser from '../../internal/formatting/template/TemplatePart/template-separator/TemplateSeparatorParser.js';
+import { MArray, MData, MInputError, MString, MTypes } from '@parischap/effect-lib';
+import { Either, flow, Function, Option, pipe, Record, Struct } from 'effect';
 import * as CVTemplateParts from '../../internal/formatting/template/TemplateParts.js';
 import * as CVTemplatePart from './TemplatePart/index.js';
 import * as CVTemplatePlaceholder from './TemplatePart/template-placeholder/index.js';
@@ -65,33 +67,44 @@ type _TypeId = typeof _TypeId;
  *
  * @category Models
  */
-export class Type<out PS extends CVTemplateParts.Type> extends MData.Class {
+export class Type<out PlaceHolderTypes extends MTypes.NonPrimitive> extends MData.Class {
+  /** Synthetic description of self */
+  readonly syntheticDescription: string;
+
+  /** Placeholdr description of self */
+  readonly placeholderDescription: string;
+
   /** Array of the TemplatePart's composing this template */
-  readonly templateParts: PS;
+  readonly templateParts: CVTemplateParts.Type;
 
   /** Returns the `id` of `this` */
   [MData.idSymbol](): string | (() => string) {
-    return function idSymbol(this: Type<PS>) {
-      return pipe(
-        this.templateParts,
-        MTuple.makeBothBy({
-          toFirst: CVTemplateParts.getSyntheticDescription,
-          toSecond: CVTemplateParts.getPlaceholderDescription,
-        }),
-        Array.join('\n\n'),
-      );
+    return function idSymbol(this: Type<PlaceHolderTypes>) {
+      return `${this.syntheticDescription}\n\n${this.placeholderDescription}`;
     };
   }
 
   /** Class constructor */
-  private constructor({ templateParts }: MTypes.Data<Type<PS>>) {
+  private constructor({
+    syntheticDescription,
+    placeholderDescription,
+    templateParts,
+  }: MTypes.Data<Type<PlaceHolderTypes>>) {
     super();
+    this.syntheticDescription = syntheticDescription;
+    this.placeholderDescription = placeholderDescription;
     this.templateParts = templateParts;
   }
 
   /** Static constructor */
-  static make<PS extends CVTemplateParts.Type>(params: MTypes.Data<Type<PS>>): Type<PS> {
-    return new Type(params);
+  static make<PlaceHolderTypes extends MTypes.NonPrimitive>(
+    templateParts: CVTemplateParts.Type,
+  ): Type<PlaceHolderTypes> {
+    return new Type({
+      syntheticDescription: CVTemplateParts.getSyntheticDescription(templateParts),
+      placeholderDescription: CVTemplateParts.getPlaceholderDescription(templateParts),
+      templateParts,
+    });
   }
 
   /** Returns the TypeMarker of the class */
@@ -105,97 +118,18 @@ export class Type<out PS extends CVTemplateParts.Type> extends MData.Class {
  *
  * @category Constructors
  */
-export const make = <const PS extends CVTemplateParts.Type>(...templateParts: PS): Type<PS> =>
-  Type.make({ templateParts });
+export const make = <const PS extends CVTemplateParts.Type>(
+  ...templateParts: PS
+): Type<CVTemplateParts.ToPlaceHolderTypes<PS>> => Type.make(templateParts);
 
 /**
  * Returns the `templateParts` property of `self`
  *
  * @category Destructors
  */
-export const templateParts: <const PS extends CVTemplateParts.Type>(self: Type<PS>) => PS =
-  Struct.get('templateParts');
-
-/**
- * Returns a function that tries to parse a text into an object according to 'self'. The generated
- * parser returns a `Right` of an object upon success, a `Left` otherwise.
- *
- * @category Parsing
- */
-
-export const toParser =
-  <const PS extends CVTemplateParts.Type>(
-    self: Type<PS>,
-  ): MTypes.OneArgFunction<
-    string,
-    Either.Either<
-      {
-        readonly [k in keyof PS as PS[k] extends CVTemplatePlaceholder.Any ?
-          CVTemplatePlaceholder.ExtractName<PS[k]>
-        : never]: PS[k] extends CVTemplatePlaceholder.Any ? CVTemplatePlaceholder.ExtractType<PS[k]>
-        : never;
-      },
-      MInputError.Type
-    >
-  > =>
-  (text) =>
-    pipe(
-      self.templateParts as CVTemplateParts.Type<unknown>,
-      MArray.reduceUnlessLeft(
-        Tuple.make(text, Record.empty<string, unknown>()),
-        ([remainingText, result], templatePart, pos) =>
-          Either.gen(function* () {
-            if (CVTemplatePart.isPlaceholder(templatePart)) {
-              const [consumed, leftOver] = yield* templatePart.parser(remainingText);
-              const { name } = templatePart;
-              return yield* pipe(
-                result,
-                Record.get(name),
-                Option.match({
-                  onNone: () =>
-                    Either.right(Tuple.make(leftOver, Record.set(result, name, consumed))),
-                  onSome: flow(
-                    Either.liftPredicate(
-                      Equal.equals(consumed),
-                      (oldValue) =>
-                        new MInputError.Type({
-                          message: `${templatePart.label} is present more than once in template and receives differing values '${MString.fromUnknown(oldValue)}' and '${MString.fromUnknown(consumed)}'`,
-                        }),
-                    ),
-                    Either.andThen(Tuple.make(leftOver, result)),
-                  ),
-                }),
-              );
-            }
-            const parser = CVTemplateSeparatorParser.fromSeparator(templatePart);
-            const leftOver = yield* parser(pos + 1, remainingText);
-            return Tuple.make(leftOver, result);
-          }),
-      ),
-      Either.flatMap(([leftOver, result]) =>
-        Either.gen(function* () {
-          yield* pipe(leftOver, MInputError.assertEmpty({ name: 'text not consumed by template' }));
-          return result as never;
-        }),
-      ),
-    );
-/**
- * Same as `toParser` but the generated parser throws in case of failure
- *
- * @category Parsing
- */
-
-export const toThrowingParser: <const PS extends CVTemplateParts.Type>(
-  self: Type<PS>,
-) => MTypes.OneArgFunction<
-  string,
-  {
-    readonly [k in keyof PS as PS[k] extends CVTemplatePlaceholder.Any ?
-      CVTemplatePlaceholder.ExtractName<PS[k]>
-    : never]: PS[k] extends CVTemplatePlaceholder.Any ? CVTemplatePlaceholder.ExtractType<PS[k]>
-    : never;
-  }
-> = flow(toParser, Function.compose(Either.getOrThrowWith(Function.identity))) as never;
+export const templateParts: <PlaceHolderTypes extends MTypes.NonPrimitive>(
+  self: Type<PlaceHolderTypes>,
+) => CVTemplateParts.Type = Struct.get('templateParts');
 
 /**
  * Returns a function that tries to format an object into a string according to 'self'. The

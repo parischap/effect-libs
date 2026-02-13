@@ -10,7 +10,17 @@ import * as CVTemplateSeparator from '../../../formatting/template/TemplatePart/
  *
  * @category Models
  */
-export interface Type<T = any> extends ReadonlyArray<CVTemplatePart.Type<string, T>> {}
+export interface Type<in out T = any> extends ReadonlyArray<CVTemplatePart.Type<string, T>> {}
+
+export type ToPlaceHolderTypes<PS> =
+  PS extends Type ?
+    {
+      readonly [k in keyof PS as PS[k] extends CVTemplatePlaceholder.Any ?
+        CVTemplatePlaceholder.ExtractName<PS[k]>
+      : never]: PS[k] extends CVTemplatePlaceholder.Any ? CVTemplatePlaceholder.ExtractType<PS[k]>
+      : never;
+    }
+  : never;
 
 /**
  * Shows a synthetic description of `self`, e.g.' #name is a #age-year-old #kind.'
