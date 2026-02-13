@@ -324,7 +324,7 @@ const _fractionalPart = repeatBetween(0, Infinity)(digit);
  *   value: ['E', 'e']).
  * - `fillChar`: usually a one-character string but not mandatory (e.g. ' '). If not an empty string,
  *   zero or more fillChars are tolerated between the sign and the number (or at the start of the
- *   number if it is unsigned). Beware if you use a number as fillChar (e.g. you use '0' as
+ *   number if it is unsigned). Beware if you use a digit as fillChar (e.g. you use '0' as
  *   `fillChar` and try to parse '0000')
  *
  * @category Instances
