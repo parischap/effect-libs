@@ -25,6 +25,8 @@ export * as CVRoundingOption from './rounding/rounding-option/index.js';
 export * as CVSchema from './formatting/Schema.js';
 export * as CVSemVer from './primitive/SemVer.js';
 export * as CVTemplate from './formatting/template/index.js';
+export * as CVTemplateFormatter from './formatting/template/TemplateFormatter.js';
+export * as CVTemplateParser from './formatting/template/TemplateParser.js';
 export * as CVTemplatePart from './formatting/template/TemplatePart/index.js';
 export * as CVTemplatePlaceholder from './formatting/template/TemplatePart/template-placeholder/index.js';
 export * as CVTemplatePlaceholderFormatter from './formatting/template/TemplatePart/template-placeholder/TemplatePlaceholderFormatter.js';

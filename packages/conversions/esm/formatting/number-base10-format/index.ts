@@ -21,7 +21,6 @@ import {
   Either,
   flow,
   Function,
-  Number,
   Option,
   pipe,
   Predicate,
@@ -30,11 +29,7 @@ import {
   Tuple,
 } from 'effect';
 import * as CVScientificNotationMantissaAdjuster from '../../internal/formatting/number-base10-format/number-base10-format-scientific-notation-option/ScientificNotationMantissaAdjuster.js';
-import * as CVScientificNotationMantissaChecker from '../../internal/formatting/number-base10-format/number-base10-format-scientific-notation-option/ScientificNotationMantissaChecker.js';
-import * as CVScientificNotationParser from '../../internal/formatting/number-base10-format/number-base10-format-scientific-notation-option/ScientificNotationParser.js';
 import * as CVSignFormatter from '../../internal/formatting/number-base10-format/number-base10-format-sign-display-option/SignFormatter.js';
-import * as CVSignParser from '../../internal/formatting/number-base10-format/number-base10-format-sign-display-option/SignParser.js';
-import type * as CVSignString from '../../internal/formatting/number-base10-format/number-base10-format-sign-display-option/SignString.js';
 import * as CVReal from '../../primitive/Real.js';
 import * as CVRounder from '../../rounding/Rounder.js';
 import * as CVRounderParams from '../../rounding/RounderParams.js';
@@ -85,8 +80,28 @@ export class Type extends MData.Class {
   readonly showNullIntegerPart: boolean;
 
   /**
+   * Minimim number of characters forming the integer part of a number. Must be a positive integer
+   * (>=0). Will not throw otherwise but unexpected results might occur.
+   *
+   * Formatting: the integer part will be left-padded with `fillChar`'s if necessary to respect the
+   * condition. The padding takes place between the sign and the number (or to the left of the
+   * number if there is no sign)
+   *
+   * Parsing: the size of the padding must be equal to max(0, minimumIntegerPartLength -
+   * integerPartLength)
+   */
+  readonly minimumIntegerPartLength: number;
+
+  /**
+   * Character that can be used to left-pad a number. Must be a one-character string. Will not throw
+   * otherwise but unexpected results might occur.
+   */
+  readonly fillChar: string;
+
+  /**
    * Minimim number of digits forming the fractional part of a number. Must be a positive integer
-   * (>=0) less than or equal to `maximumFractionalDigits`.
+   * (>=0) less than or equal to `maximumFractionalDigits`. Will not throw otherwise but unexpected
+   * results might occur.
    *
    * Formatting: the string will be right-padded with `0`'s if necessary to respect the condition
    *
@@ -97,7 +112,8 @@ export class Type extends MData.Class {
 
   /**
    * Maximum number of digits forming the fractional part of a number. Must be an integer value
-   * greater than or equal to `minimumFractionalDigits`. Can take the +Infinity value.
+   * greater than or equal to `minimumFractionalDigits`. Will not throw otherwise but unexpected
+   * results might occur. Can take the +Infinity value. Use 0 for integers.
    *
    * Formatting: the number will be rounded using the roundingOption to respect the condition
    * (unless `maximumFractionalDigits` is `+Infinity`).
@@ -132,6 +148,8 @@ export class Type extends MData.Class {
     thousandSeparator,
     fractionalSeparator,
     showNullIntegerPart,
+    minimumIntegerPartLength,
+    fillChar,
     minimumFractionalDigits,
     maximumFractionalDigits,
     eNotationChars,
@@ -143,6 +161,8 @@ export class Type extends MData.Class {
     this.thousandSeparator = thousandSeparator;
     this.fractionalSeparator = fractionalSeparator;
     this.showNullIntegerPart = showNullIntegerPart;
+    this.minimumIntegerPartLength = minimumIntegerPartLength;
+    this.fillChar = fillChar;
     this.minimumFractionalDigits = minimumFractionalDigits;
     this.maximumFractionalDigits = maximumFractionalDigits;
     this.eNotationChars = eNotationChars;
@@ -197,6 +217,22 @@ export const fractionalSeparator: MTypes.OneArgFunction<Type, string> =
  */
 export const showNullIntegerPart: MTypes.OneArgFunction<Type, boolean> =
   Struct.get('showNullIntegerPart');
+
+/**
+ * Returns the `minimumIntegerPartLength`property of `self`
+ *
+ * @category Destructors
+ */
+export const minimumIntegerPartLength: MTypes.OneArgFunction<Type, number> = Struct.get(
+  'minimumIntegerPartLength',
+);
+
+/**
+ * Returns the `fillChar` property of `self`
+ *
+ * @category Destructors
+ */
+export const fillChar: MTypes.OneArgFunction<Type, string> = Struct.get('fillChar');
 
 /**
  * Returns the `minimumFractionalDigits` property of `self`
@@ -258,6 +294,8 @@ export const signDisplayOption: MTypes.OneArgFunction<
  */
 export const toDescription = (self: Type): string => {
   const {
+    minimumIntegerPartLength,
+    fillChar,
     thousandSeparator,
     fractionalSeparator,
     minimumFractionalDigits,
@@ -269,7 +307,8 @@ export const toDescription = (self: Type): string => {
   const isInteger = maximumFractionalDigits <= 0;
   const isUngrouped = thousandSeparator.length === 0;
   return (
-    pipe(
+    (minimumIntegerPartLength > 0 ? `${fillChar}-left-padded` : '')
+    + pipe(
       signDisplayOption,
       MMatch.make,
       MMatch.whenIs(
@@ -317,301 +356,19 @@ export const toDescription = (self: Type): string => {
   );
 };
 
-const _toBigDecimalExtractor = (
-  self: Type,
-  fillChar = '',
-): MTypes.OneArgFunction<
-  string,
-  Option.Option<[value: BigDecimal.BigDecimal, parsedText: string, sign: -1 | 1]>
-> => {
-  const removeThousandSeparator = MString.removeNCharsEveryMCharsFromRight({
-    m: MRegExpString.DIGIT_GROUP_SIZE,
-    n: self.thousandSeparator.length,
-  });
-
-  const getParts = MString.matchWithCapturingGroups(
-    pipe(
-      self,
-      MStruct.append({ fillChar }),
-      MRegExpString.base10Number,
-      MRegExpString.atStart,
-      RegExp,
-    ),
-    ['signPart', 'fillChars', 'mantissaIntegerPart', 'mantissaFractionalPart', 'exponentPart'],
-  );
-
-  const signParser = CVSignParser.fromSignDiplayOption(self.signDisplayOption);
-
-  const exponentParser = CVScientificNotationParser.fromScientificNotationOption(
-    self.scientificNotationOption,
-  );
-
-  const mantissaChecker = CVScientificNotationMantissaChecker.fromScientificNotationOption(
-    self.scientificNotationOption,
-  );
-
-  const fillCharIsZero = fillChar === '0';
-
-  return (text) =>
-    Option.gen(function* () {
-      const {
-        match,
-        groups: { signPart, fillChars, mantissaIntegerPart, mantissaFractionalPart, exponentPart },
-      } = yield* getParts(text);
-
-      const mantissaFractionalPartLength = yield* pipe(
-        mantissaFractionalPart,
-        String.length,
-        Option.liftPredicate(
-          Number.between({
-            minimum: self.minimumFractionalDigits,
-            maximum: self.maximumFractionalDigits,
-          }),
-        ),
-      );
-
-      const mantissa = yield* pipe(
-        mantissaIntegerPart,
-        Option.liftPredicate(String.isNonEmpty),
-        Option.match({
-          // No integer part
-          onNone: () =>
-            (
-              (!self.showNullIntegerPart && mantissaFractionalPartLength !== 0)
-              || (fillCharIsZero && fillChars.length > 0)
-            ) ?
-              Option.some(MBigDecimal.zero)
-            : Option.none(),
-          // With integer part
-          onSome: flow(
-            self.showNullIntegerPart || mantissaFractionalPartLength === 0 ?
-              Option.some
-            : Option.liftPredicate(Predicate.not(MPredicate.strictEquals('0'))),
-            Option.map(flow(removeThousandSeparator, MBigDecimal.fromPrimitiveOrThrow(0))),
-          ),
-        }),
-        Option.map(
-          BigDecimal.sum(
-            pipe(
-              mantissaFractionalPart,
-              Option.liftPredicate(String.isNonEmpty),
-              Option.map(MBigDecimal.fromPrimitiveOrThrow(mantissaFractionalPartLength)),
-              Option.getOrElse(Function.constant(MBigDecimal.zero)),
-            ),
-          ),
-        ),
-      );
-
-      const checkedMantissa = yield* mantissaChecker(mantissa);
-
-      const sign = yield* signParser({
-        isZero: BigDecimal.isZero(checkedMantissa),
-        sign: signPart as CVSignString.Type,
-      });
-
-      const exponent = yield* exponentParser(exponentPart);
-
-      return Tuple.make(
-        BigDecimal.make(checkedMantissa.value, checkedMantissa.scale - exponent),
-        match,
-        sign,
-      );
-    });
-};
-
 /**
- * Returns a function that tries to parse, from the start of a string `text`, a number respecting
- * the options represented by `self` and an optional `fillChar` parameter. If successful, that
- * function returns a `Some` containing `parsedText` (the part of `text` that could be analyzed as
- * representing a number) and `value` (`parsedText` converted to a BigDecimal value). Otherwise, it
- * returns a `None`. As `BigDecimal`'s provide no possibility to distinguish `-0n` and `0n`, parsing
- * '-0', '0', '+0' will yield the same result.
- *
- * `fillChar` is a character that may be used as filler between the sign and the number (or at the
- * start of the number if it is unsigned). It must be a one-character string (but no error is
- * triggered if it's not). You can use '0' as `fillChar` but you should not use any other digit
- * because the value of the number to parse would depend on the number of removed `fillChar`'s.
- *
- * @category Parsing
- */
-
-export const toBigDecimalExtractor: (
-  self: Type,
-  fillChar?: string,
-) => MTypes.OneArgFunction<string, Option.Option<MTypes.Pair<BigDecimal.BigDecimal, string>>> =
-  flow(
-    _toBigDecimalExtractor,
-    Function.compose(
-      Option.map(([value, parsedText, sign]) =>
-        Tuple.make(BigDecimal.multiply(value, BigDecimal.unsafeFromNumber(sign)), parsedText),
-      ),
-    ),
-  );
-
-/**
- * Same as `toBigDecimalExtractor` but the returned parser throws in case of failure
- *
- * @category Parsing
- */
-
-export const toThrowingBigDecimalExtractor =
-  (self: Type, fillChar?: string) =>
-  (text: string): MTypes.Pair<BigDecimal.BigDecimal, string> =>
-    pipe(
-      text,
-      toBigDecimalExtractor(self, fillChar),
-      Option.getOrThrowWith(
-        () => new Error(`A BigDecimal could not be parsed from the start of '${text}'`),
-      ),
-    );
-
-/**
- * Same as `toBigDecimalExtractor` but returns a `CVReal`. This is the most usual use case.
- * Furthermore, this function will return `-0` if your parse '-0' and `0` if you parse '0' or '+0'.
- *
- * @category Parsing
- */
-export const toRealExtractor: (
-  self: Type,
-  fillChar?: string,
-) => MTypes.OneArgFunction<string, Option.Option<MTypes.Pair<CVReal.Type, string>>> = flow(
-  _toBigDecimalExtractor,
-  Function.compose(
-    Option.flatMap(([value, parsedText, sign]) =>
-      pipe(
-        value,
-        CVReal.fromBigDecimalOption,
-        Option.map(
-          flow(
-            Number.multiply(sign) as unknown as MTypes.OneArgFunction<CVReal.Type>,
-            Tuple.make,
-            Tuple.appendElement(parsedText),
-          ),
-        ),
-      ),
-    ),
-  ),
-);
-
-/**
- * Same as `toRealExtractor` but the returned parser throws in case of failure
- *
- * @category Parsing
- */
-
-export const toThrowingRealExtractor =
-  (self: Type, fillChar?: string) =>
-  (text: string): MTypes.Pair<CVReal.Type, string> =>
-    pipe(
-      text,
-      toRealExtractor(self, fillChar),
-      Option.getOrThrowWith(
-        () => new Error(`A Real could not be parsed from the start of '${text}'`),
-      ),
-    );
-
-/**
- * Same as `toBigDecimalExtractor` but the whole of the input text must represent a number, not just
- * its start
- *
- * @category Parsing
- */
-export const toBigDecimalParser = (
-  self: Type,
-  fillChar?: string,
-): MTypes.OneArgFunction<string, Option.Option<BigDecimal.BigDecimal>> => {
-  const extractor = toBigDecimalExtractor(self, fillChar);
-  return (text) =>
-    pipe(
-      text,
-      extractor,
-      Option.flatMap(
-        flow(
-          Option.liftPredicate(
-            flow(Tuple.getSecond, String.length, MPredicate.strictEquals(text.length)),
-          ),
-          Option.map(Tuple.getFirst),
-        ),
-      ),
-    );
-};
-
-/**
- * Same as `toBigDecimalParser` but the returned parser throws in case of failure
- *
- * @category Parsing
- */
-
-export const toThrowingBigDecimalParser =
-  (self: Type, fillChar?: string) =>
-  (text: string): BigDecimal.BigDecimal =>
-    pipe(
-      text,
-      toBigDecimalParser(self, fillChar),
-      Option.getOrThrowWith(() => new Error(`A BigDecimal could not be parsed from '${text}'`)),
-    );
-
-/**
- * Same as `toRealExtractor` but the whole of the input text must represent a number, not just its
- * start
- *
- * @category Parsing
- */
-export const toRealParser = (
-  self: Type,
-  fillChar?: string,
-): MTypes.OneArgFunction<string, Option.Option<CVReal.Type>> => {
-  const extractor = toRealExtractor(self, fillChar);
-  return (text) =>
-    pipe(
-      text,
-      extractor,
-      Option.flatMap(
-        flow(
-          Option.liftPredicate(
-            flow(Tuple.getSecond, String.length, MPredicate.strictEquals(text.length)),
-          ),
-          Option.map(Tuple.getFirst),
-        ),
-      ),
-    );
-};
-
-/**
- * Same as `toRealParser` but the returned parser throws in case of failure
- *
- * @category Parsing
- */
-
-export const toThrowingRealParser =
-  (self: Type, fillChar?: string) =>
-  (text: string): CVReal.Type =>
-    pipe(
-      text,
-      toRealParser(self, fillChar),
-      Option.getOrThrowWith(() => new Error(`A Real could not be parsed from '${text}'`)),
-    );
-
-/**
- * Returns a function that tries to format a `number` respecting the options represented by
- * `self`and an optional parameter `fillChars`. If successful, that function returns a `Some` of the
- * formatted number. Otherwise, it returns a `None`. `number` can be of type number or `BigDecimal`
- * for better accuracy. There is a difference between number and `BigDecimal` (and bigint) regarding
- * the sign of 0. In Javascript, Object.is(0,-0) is false whereas Object.is(0n,-0n) is true. So if
- * the sign of zero is important to you, prefer passing a number to the function. `0` as a
- * BigDecimal will always be interpreted as a positive `0` as we have no means of knowing if it is
- * negative or positive.
- *
- * `fillChars` is a string whose first characters will be inserted between the sign and the number
- * (or at the start of the number if it is unsigned) so that the formatted number has at least the
- * same number of characters as fillChars (e.g. the result will be '-02' if you try to format the
- * value -2 with fillChars = '000')
+ * Returns a function that tries to format a `number` respecting the options represented by `self`.
+ * If successful, that function returns a `Some` of the formatted number. Otherwise, it returns a
+ * `None`. `number` can be of type number or `BigDecimal` for better accuracy. There is a difference
+ * between number and `BigDecimal` (and bigint) regarding the sign of 0. In Javascript,
+ * Object.is(0,-0) is false whereas Object.is(0n,-0n) is true. So if the sign of zero is important
+ * to you, prefer passing a number to the function. `0` as a BigDecimal will always be interpreted
+ * as a positive `0` as we have no means of knowing if it is negative or positive
  *
  * @category Formatting
  */
 export const toNumberFormatter = (
   self: Type,
-  fillChars = '',
 ): MTypes.OneArgFunction<BigDecimal.BigDecimal | CVReal.Type, string> => {
   const rounder =
     self.maximumFractionalDigits === Infinity ?
@@ -634,7 +391,8 @@ export const toNumberFormatter = (
     Array.get(0),
     Option.getOrElse(MFunction.constEmptyString),
   );
-  const takeNFirstCharsOfFillChars = MFunction.flipDual(String.takeLeft)(fillChars);
+
+  const padder = String.padStart(self.minimumIntegerPartLength, self.fillChar);
 
   return (number) => {
     const [sign, selfAsBigDecimal] =
@@ -694,17 +452,7 @@ export const toNumberFormatter = (
       Option.getOrElse(MFunction.constEmptyString),
     );
 
-    const numberString = integerPartString + fractionalPartString + exponentString;
-
-    const pad = pipe(
-      fillChars.length,
-      Number.subtract(signString.length),
-      Number.subtract(numberString.length),
-      Number.max(0),
-      takeNFirstCharsOfFillChars,
-    );
-
-    return signString + pad + numberString;
+    return `${signString}${padder(integerPartString)}${fractionalPartString}${exponentString}`;
   };
 };
 

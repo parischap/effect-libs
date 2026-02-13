@@ -1,25 +1,25 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as CVNumberBase10FormatScientificNotationOption from '@parischap/conversions/CVNumberBase10FormatScientificNotationOption';
-import * as CVScientificNotationMantissaChecker from '@parischap/conversions/CVScientificNotationMantissaChecker';
+import * as CVScientificNotationMantissaValidator from '@parischap/conversions/CVScientificNotationMantissaValidator';
 import { BigDecimal, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('toMantissaChecker', () => {
   describe('None', () => {
-    const checker = CVScientificNotationMantissaChecker.fromScientificNotationOption(
+    const checker = CVScientificNotationMantissaValidator.fromScientificNotationOption(
       CVNumberBase10FormatScientificNotationOption.Type.None,
     );
     TestUtils.assertSome(pipe(checker(BigDecimal.make(15n, 1))));
 
     it('Standard', () => {
-      const checker = CVScientificNotationMantissaChecker.fromScientificNotationOption(
+      const checker = CVScientificNotationMantissaValidator.fromScientificNotationOption(
         CVNumberBase10FormatScientificNotationOption.Type.Standard,
       );
       TestUtils.assertSome(pipe(checker(BigDecimal.make(0n, 1))));
     });
 
     describe('Normalized', () => {
-      const checker = CVScientificNotationMantissaChecker.fromScientificNotationOption(
+      const checker = CVScientificNotationMantissaValidator.fromScientificNotationOption(
         CVNumberBase10FormatScientificNotationOption.Type.Normalized,
       );
       it('Passing', () => {
@@ -31,7 +31,7 @@ describe('toMantissaChecker', () => {
     });
 
     describe('Engineering', () => {
-      const checker = CVScientificNotationMantissaChecker.fromScientificNotationOption(
+      const checker = CVScientificNotationMantissaValidator.fromScientificNotationOption(
         CVNumberBase10FormatScientificNotationOption.Type.Engineering,
       );
       it('Passing', () => {

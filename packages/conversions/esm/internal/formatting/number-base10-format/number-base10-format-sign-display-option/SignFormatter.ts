@@ -30,27 +30,27 @@ export const fromSignDisplayOption: MTypes.OneArgFunction<
     CVNumberBase10FormatSignDisplayOption.Type.Auto,
     (): Formatter =>
       ({ sign }) =>
-        sign === -1 ? '-' : '',
+        sign === -1n ? '-' : '',
   ),
   MMatch.whenIs(
     CVNumberBase10FormatSignDisplayOption.Type.Always,
     (): Formatter =>
       ({ sign }) =>
-        sign === -1 ? '-' : '+',
+        sign === -1n ? '-' : '+',
   ),
   MMatch.whenIs(
     CVNumberBase10FormatSignDisplayOption.Type.ExceptZero,
     (): Formatter =>
       ({ sign, isZero }) =>
         isZero ? ''
-        : sign === -1 ? '-'
+        : sign === -1n ? '-'
         : '+',
   ),
   MMatch.whenIs(
     CVNumberBase10FormatSignDisplayOption.Type.Negative,
     (): Formatter =>
       ({ sign, isZero }) =>
-        isZero || sign === 1 ? '' : '-',
+        isZero || sign === 1n ? '' : '-',
   ),
   MMatch.whenIs(
     CVNumberBase10FormatSignDisplayOption.Type.Never,

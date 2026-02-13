@@ -167,8 +167,8 @@
     "./CVScientificNotationMantissaAdjuster": {
       "default": "./esm/internal/formatting/number-base10-format/number-base10-format-scientific-notation-option/ScientificNotationMantissaAdjuster.ts"
     },
-    "./CVScientificNotationMantissaChecker": {
-      "default": "./esm/internal/formatting/number-base10-format/number-base10-format-scientific-notation-option/ScientificNotationMantissaChecker.ts"
+    "./CVScientificNotationMantissaValidator": {
+      "default": "./esm/internal/formatting/number-base10-format/number-base10-format-scientific-notation-option/ScientificNotationMantissaValidator.ts"
     },
     "./CVScientificNotationParser": {
       "default": "./esm/internal/formatting/number-base10-format/number-base10-format-scientific-notation-option/ScientificNotationParser.ts"
@@ -190,6 +190,12 @@
     },
     "./CVTemplate": {
       "default": "./esm/formatting/template/index.ts"
+    },
+    "./CVTemplateFormatter": {
+      "default": "./esm/formatting/template/TemplateFormatter.ts"
+    },
+    "./CVTemplateParser": {
+      "default": "./esm/formatting/template/TemplateParser.ts"
     },
     "./CVTemplatePart": {
       "default": "./esm/formatting/template/TemplatePart/index.ts"

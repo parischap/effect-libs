@@ -47,11 +47,9 @@
  * date
  */
 
-import { MArray, MData, MInputError, MString, MTypes } from '@parischap/effect-lib';
-import { Either, flow, Function, Option, pipe, Record, Struct } from 'effect';
+import { MData, MTypes } from '@parischap/effect-lib';
+import { Struct } from 'effect';
 import * as CVTemplateParts from '../../internal/formatting/template/TemplateParts.js';
-import * as CVTemplatePart from './TemplatePart/index.js';
-import * as CVTemplatePlaceholder from './TemplatePart/template-placeholder/index.js';
 
 /**
  * Module tag
@@ -67,7 +65,7 @@ type _TypeId = typeof _TypeId;
  *
  * @category Models
  */
-export class Type<out PlaceHolderTypes extends MTypes.NonPrimitive> extends MData.Class {
+export class Type<out PlaceholderTypes extends MTypes.NonPrimitive> extends MData.Class {
   /** Synthetic description of self */
   readonly syntheticDescription: string;
 
@@ -79,7 +77,7 @@ export class Type<out PlaceHolderTypes extends MTypes.NonPrimitive> extends MDat
 
   /** Returns the `id` of `this` */
   [MData.idSymbol](): string | (() => string) {
-    return function idSymbol(this: Type<PlaceHolderTypes>) {
+    return function idSymbol(this: Type<PlaceholderTypes>) {
       return `${this.syntheticDescription}\n\n${this.placeholderDescription}`;
     };
   }
@@ -89,7 +87,7 @@ export class Type<out PlaceHolderTypes extends MTypes.NonPrimitive> extends MDat
     syntheticDescription,
     placeholderDescription,
     templateParts,
-  }: MTypes.Data<Type<PlaceHolderTypes>>) {
+  }: MTypes.Data<Type<PlaceholderTypes>>) {
     super();
     this.syntheticDescription = syntheticDescription;
     this.placeholderDescription = placeholderDescription;
@@ -97,9 +95,9 @@ export class Type<out PlaceHolderTypes extends MTypes.NonPrimitive> extends MDat
   }
 
   /** Static constructor */
-  static make<PlaceHolderTypes extends MTypes.NonPrimitive>(
-    templateParts: CVTemplateParts.Type,
-  ): Type<PlaceHolderTypes> {
+  static make<const PS extends CVTemplateParts.Type>(
+    templateParts: PS,
+  ): Type<CVTemplateParts.ToPlaceHolderTypes<PS>> {
     return new Type({
       syntheticDescription: CVTemplateParts.getSyntheticDescription(templateParts),
       placeholderDescription: CVTemplateParts.getPlaceholderDescription(templateParts),
@@ -118,70 +116,14 @@ export class Type<out PlaceHolderTypes extends MTypes.NonPrimitive> extends MDat
  *
  * @category Constructors
  */
-export const make = <const PS extends CVTemplateParts.Type>(
-  ...templateParts: PS
-): Type<CVTemplateParts.ToPlaceHolderTypes<PS>> => Type.make(templateParts);
+export const make = <const PS extends CVTemplateParts.Type>(...templateParts: PS) =>
+  Type.make(templateParts);
 
 /**
  * Returns the `templateParts` property of `self`
  *
  * @category Destructors
  */
-export const templateParts: <PlaceHolderTypes extends MTypes.NonPrimitive>(
-  self: Type<PlaceHolderTypes>,
+export const templateParts: <PlaceholderTypes extends MTypes.NonPrimitive>(
+  self: Type<PlaceholderTypes>,
 ) => CVTemplateParts.Type = Struct.get('templateParts');
-
-/**
- * Returns a function that tries to format an object into a string according to 'self'. The
- * generated formatter returns a `Right` of a string upon success, a `Left` otherwise.
- *
- * @category Formatting
- */
-export const toFormatter = <const PS extends CVTemplateParts.Type>(
-  self: Type<PS>,
-): MTypes.OneArgFunction<
-  {
-    readonly [k in keyof PS as PS[k] extends CVTemplatePlaceholder.Any ?
-      CVTemplatePlaceholder.ExtractName<PS[k]>
-    : never]: PS[k] extends CVTemplatePlaceholder.Any ? CVTemplatePlaceholder.ExtractType<PS[k]>
-    : never;
-  },
-  Either.Either<string, MInputError.Type>
-> => {
-  return (record: Record.ReadonlyRecord<string, unknown>) =>
-    pipe(
-      self.templateParts,
-      MArray.reduceUnlessLeft('', (result, templatePart) => {
-        return CVTemplatePart.isSeparator(templatePart) ?
-            pipe(templatePart.value, MString.prepend(result), Either.right)
-          : pipe(
-              record,
-              Record.get(templatePart.name),
-              // This error should not happen due to typing
-              Option.getOrThrowWith(
-                () => new Error(`Abnormal error: no value passed for ${templatePart.label}`),
-              ),
-              templatePart.formatter.bind(templatePart),
-              Either.map(MString.prepend(result)),
-            );
-      }),
-    );
-};
-
-/**
- * Same as `toFormatter` but the generated formatter throws in case of failure
- *
- * @category Formatting
- */
-
-export const toThrowingFormatter: <const PS extends CVTemplateParts.Type>(
-  self: Type<PS>,
-) => MTypes.OneArgFunction<
-  {
-    readonly [k in keyof PS as PS[k] extends CVTemplatePlaceholder.Any ?
-      CVTemplatePlaceholder.ExtractName<PS[k]>
-    : never]: PS[k] extends CVTemplatePlaceholder.Any ? CVTemplatePlaceholder.ExtractType<PS[k]>
-    : never;
-  },
-  string
-> = flow(toFormatter, Function.compose(Either.getOrThrowWith(Function.identity))) as never;

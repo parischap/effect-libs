@@ -5,7 +5,7 @@ import { BigDecimal, flow, Option, Predicate } from 'effect';
 import * as CVNumberBase10FormatScientificNotationOption from '../../../../formatting/number-base10-format/number-base10-format-scientific-notation-option/index.js';
 
 /**
- * Type of a `CVScientificNotationMantissaChecker`
+ * Type of a `CVScientificNotationMantissaValidator`
  *
  * @category Models
  */
@@ -27,7 +27,7 @@ const zeroOrinOneToTenRange = zeroOrinRange(10);
 const zeroOrinOneToOneThousandRange = zeroOrinRange(1000);
 
 /**
- * Builds a `CVScientificNotationMantissaChecker` implementing `self`
+ * Builds a `CVScientificNotationMantissaValidator` implementing `self`
  *
  * @category Constructors
  */
