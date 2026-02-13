@@ -132,13 +132,13 @@
       "default": "./esm/RegExpString.ts"
     },
     "./MString": {
-      "default": "./esm/String/index.ts"
+      "default": "./esm/string/index.ts"
     },
     "./MStringFillPosition": {
-      "default": "./esm/String/StringFillPosition.ts"
+      "default": "./esm/string/StringFillPosition.ts"
     },
     "./MStringSearchResult": {
-      "default": "./esm/String/StringSearchResult.ts"
+      "default": "./esm/string/StringSearchResult.ts"
     },
     "./MStruct": {
       "default": "./esm/Struct.ts"

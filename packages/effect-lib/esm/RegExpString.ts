@@ -310,9 +310,9 @@ const _exponentPart = pipe(
 const _fractionalPart = repeatBetween(0, Infinity)(digit);
 
 /**
- * Returns a regular expression string representing a number in base 10 using `thousandSeparator` as
- * thousand separator, `fractionalSeparator` as fractional separator and `eNotationChars` as
- * possible characters for scientific notation.
+ * Returns a regular expression string representing a left-padded number in base 10 using
+ * `thousandSeparator` as thousand separator, `fractionalSeparator` as fractional separator and
+ * `eNotationChars` as possible characters for scientific notation.
  *
  * - `thousandSeparator`: Usually a string made of at most one character but not mandatory. Should be
  *   different from `fractionalSeparator`. Will not throw otherwise but unexpected results might

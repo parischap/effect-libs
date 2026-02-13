@@ -151,7 +151,7 @@ export const quotientAndRemainder =
   };
 
 /**
- * Predicate that returns true if two numbers are equal
+ * Predicate that returns true if two numbers are within a Number.EPSILON range
  *
  * @category Predicates
  */

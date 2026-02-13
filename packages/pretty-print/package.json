@@ -69,61 +69,82 @@
       "default": "./esm/index.ts"
     },
     "./PPByPasser": {
-      "default": "./esm/PPByPasser.ts"
+      "default": "./esm/parameters/ByPasser.ts"
+    },
+    "./PPByPasserAction": {
+      "default": "./esm/parameters/ByPasserAction.ts"
     },
     "./PPByPassers": {
-      "default": "./esm/ByPassers.ts"
+      "default": "./esm/internal/parameters/ByPassers.ts"
+    },
+    "./PPMark": {
+      "default": "./esm/parameters/Mark.ts"
     },
     "./PPMarkMap": {
-      "default": "./esm/MarkMap.ts"
+      "default": "./esm/parameters/MarkMap.ts"
     },
     "./PPMarkShower": {
-      "default": "./esm/MarkShower.ts"
+      "default": "./esm/internal/stringification/MarkShower.ts"
     },
-    "./PPMarkShowerConstructor": {
-      "default": "./esm/MarkShowerConstructor.ts"
+    "./PPMarks": {
+      "default": "./esm/internal/parameters/Marks.ts"
     },
     "./PPNonPrimitiveFormatter": {
-      "default": "./esm/NonPrimitiveFormatter.ts"
+      "default": "./esm/parameters/NonPrimitiveFormatter.ts"
     },
-    "./PPOption": {
-      "default": "./esm/Option.ts"
+    "./PPNonPrimitiveParameters": {
+      "default": "./esm/parameters/NonPrimitiveParameters.ts"
+    },
+    "./PPParameters": {
+      "default": "./esm/parameters/index.ts"
     },
     "./PPPrimitiveFormatter": {
-      "default": "./esm/PrimitiveFormatter.ts"
+      "default": "./esm/parameters/PrimitiveFormatter.ts"
     },
     "./PPPropertyFilter": {
-      "default": "./esm/PropertyFilter.ts"
+      "default": "./esm/parameters/PropertyFilter.ts"
     },
     "./PPPropertyFilters": {
-      "default": "./esm/PropertyFilters.ts"
+      "default": "./esm/parameters/PropertyFilters.ts"
     },
     "./PPPropertyFormatter": {
-      "default": "./esm/PropertyFormatter.ts"
+      "default": "./esm/parameters/PropertyFormatter.ts"
+    },
+    "./PPPropertyFormatterAction": {
+      "default": "./esm/parameters/PropertyFormatterAction.ts"
+    },
+    "./PPPropertyNumberDisplayOption": {
+      "default": "./esm/parameters/PropertyNumberDisplayOption.ts"
+    },
+    "./PPPropertySource": {
+      "default": "./esm/parameters/PropertySource.ts"
     },
     "./PPStringifiedProperties": {
-      "default": "./esm/StringifiedProperties.ts"
+      "default": "./esm/internal/stringification/StringifiedProperties.ts"
     },
     "./PPStringifiedValue": {
-      "default": "./esm/StringifiedValue.ts"
+      "default": "./esm/stringification/StringifiedValue.ts"
+    },
+    "./PPStringifier": {
+      "default": "./esm/stringification/Stringifier.ts"
     },
     "./PPStyleMap": {
-      "default": "./esm/StyleMap.ts"
+      "default": "./esm/parameters/StyleMap.ts"
+    },
+    "./PPStyles": {
+      "default": "./esm/internal/parameters/Styles.ts"
     },
     "./PPValue": {
-      "default": "./esm/Value.ts"
+      "default": "./esm/internal/stringification/Value.ts"
     },
     "./PPValueBasedStyler": {
-      "default": "./esm/ValueBasedStyler.ts"
-    },
-    "./PPValueBasedStylerConstructor": {
-      "default": "./esm/ValueBasedStylerConstructor.ts"
+      "default": "./esm/parameters/ValueBasedStyler.ts"
     },
     "./PPValueOrder": {
-      "default": "./esm/ValueOrder.ts"
+      "default": "./esm/parameters/ValueOrder.ts"
     },
     "./PPValues": {
-      "default": "./esm/Values.ts"
+      "default": "./esm/internal/stringification/Values.ts"
     }
   },
   "module": "./esm/index.ts",
