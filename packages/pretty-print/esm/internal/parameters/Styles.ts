@@ -4,9 +4,8 @@
  */
 
 import { ASConstantContextStyler } from '@parischap/ansi-styles';
-import { MTypes } from '@parischap/effect-lib';
-import { flow, HashMap, Option } from 'effect';
-import * as PPValueBasedStyler from './ValueBasedStyler.js';
+import { HashMap, Option } from 'effect';
+import type * as PPValueBasedStyler from '../../parameters/ValueBasedStyler.js';
 
 /**
  * Type of a PPStyles
@@ -22,8 +21,5 @@ export interface Type extends HashMap.HashMap<string, PPValueBasedStyler.Type> {
  *
  * @category Destructors
  */
-export const get = (partName: string): MTypes.OneArgFunction<Type, PPValueBasedStyler.Type> =>
-  flow(
-    HashMap.get(partName),
-    Option.getOrElse(() => ASConstantContextStyler.none),
-  );
+export const get = (self: Type, partName: string): PPValueBasedStyler.Type =>
+  Option.getOrElse(HashMap.get(self, partName), () => ASConstantContextStyler.none);

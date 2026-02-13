@@ -18,11 +18,10 @@ import {
 
 import { ASContextStyler, ASText } from '@parischap/ansi-styles';
 import { Array, Equivalence, flow, Hash, Option, pipe, Predicate, String, Struct } from 'effect';
-import * as PPMarkShowerConstructor from './MarkShowerConstructor.js';
-import type * as PPOption from './Option.js';
-import * as PPStringifiedValue from './StringifiedValue.js';
-import * as PPValue from './Value.js';
-import * as PPValueBasedStylerConstructor from './ValueBasedStylerConstructor.js';
+import * as PPValue from '../internal/stringification/Value.js';
+import * as PPStringifiedValue from '../stringification/StringifiedValue.js';
+import * as PPByPasserAction from './ByPasserAction.js';
+import * as PPStyleMap from './StyleMap.js';
 
 /**
  * Module tag
@@ -34,35 +33,6 @@ const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
 /**
- * Namespace of a PPByPasser action
- *
- * @category Models
- */
-export namespace Action {
-  /**
-   * Type of the action. The action takes as input a ValueBasedStylerConstructor (see
-   * ValueBasedStylerConstructor.ts), a MarkShowerConstructor (see Option.ts) and the Value being
-   * currently printed. If the action returns a value of type `Some<StringifiedValue.Type>`, this
-   * `StringifiedValue` will be used as is to represent the input value. If it returns a `none`, the
-   * normal stringification process will be applied.
-   *
-   * @category Models
-   */
-  export interface Type {
-    (
-      this: PPOption.Type,
-      {
-        valueBasedStylerConstructor,
-        markShowerConstructor,
-      }: {
-        readonly valueBasedStylerConstructor: PPValueBasedStylerConstructor.Type;
-        readonly markShowerConstructor: PPMarkShowerConstructor.Type;
-      },
-    ): MTypes.OneArgFunction<PPValue.Any, Option.Option<PPStringifiedValue.Type>>;
-  }
-}
-
-/**
  * Type that represents a PPByPasser
  *
  * @category Models
@@ -72,7 +42,7 @@ export class Type extends MDataEquivalenceBasedEquality.Class {
   readonly id: string;
 
   /** Action of this PPByPasser */
-  readonly action: Action.Type;
+  readonly action: PPByPasserAction.Type;
 
   /** Returns the `id` of `this` */
   [MData.idSymbol](): string | (() => string) {
@@ -135,6 +105,13 @@ export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.i
 export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
 
 /**
+ * Returns the `action` property of `self`
+ *
+ * @category Destructors
+ */
+export const action: MTypes.OneArgFunction<Type, PPByPasserAction.Type> = Struct.get('action');
+
+/**
  * PPByPasser instance that does not bypass any value
  *
  * @category Instances
@@ -155,8 +132,8 @@ export const empty: Type = make({
  */
 export const functionToName: Type = make({
   id: 'FunctionToName',
-  action: ({ valueBasedStylerConstructor, markShowerConstructor }) => {
-    const messageTextFormatter = valueBasedStylerConstructor('Message');
+  action: (styleMap) => {
+    const messageTextFormatter = PPStyleMap.get(styleMap, 'Message');
 
     const functionNameStartDelimiterMarkShower = markShowerConstructor(
       'FunctionNameStartDelimiter',

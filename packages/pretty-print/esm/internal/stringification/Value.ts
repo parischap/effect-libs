@@ -13,7 +13,7 @@ import { Array, Equivalence, Hash, pipe, Predicate, Struct } from 'effect';
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/pretty-print/Value/';
+export const moduleTag = '@parischap/pretty-print/internal/sytringification/Value/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 

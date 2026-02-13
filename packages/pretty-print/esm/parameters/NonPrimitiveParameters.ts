@@ -438,7 +438,7 @@ export namespace Initialized {
     readonly markShowerConstructor: PPMarkShowerConstructor.Type;
   }): MTypes.OneArgFunction<NonPrimitive.Type, Type> => {
     const { valueBasedStylerConstructor } = params;
-    const nonPrimitiveValueIdTextFormatter = valueBasedStylerConstructor('NonPrimitiveValueId');
+    const nonPrimitiveValueIdTextFormatter = valueBasedStylerConstructor('NonPrimitiveValueName');
     const nonPrimitiveValueIdSeparatorTextFormatter = valueBasedStylerConstructor(
       'NonPrimitiveValueIdSeparator',
     );

@@ -9,8 +9,8 @@ import { MData, MDataEquivalenceBasedEquality, MStruct, MTypes } from '@parischa
 import { Array, flow, HashMap, HashSet, Option, pipe, SortedMap, SortedSet, Struct } from 'effect';
 
 import { Equivalence, Hash, Predicate } from 'effect';
-import * as PPByPassers from '../internal/ByPassers.js';
-import * as PPValue from '../internal/Value.js';
+import * as PPByPassers from '../internal/parameters/ByPassers.js';
+import * as PPValue from '../internal/stringification/Value.js';
 import * as PPByPasser from './ByPasser.js';
 import * as PPMarkMap from './MarkMap.js';
 import * as PPNonPrimitiveFormatter from './NonPrimitiveFormatter.js';
@@ -18,7 +18,6 @@ import * as PPNonPrimitiveParameters from './NonPrimitiveParameters.js';
 import * as PPPrimitiveFormatter from './PrimitiveFormatter.js';
 import * as PPPropertyFormatter from './PropertyFormatter.js';
 import * as PPStyleMap from './StyleMap.js';
-import * as PPValueBasedStyler from './ValueBasedStyler.js';
 
 /**
  * Module tag
@@ -160,15 +159,6 @@ export const name: MTypes.OneArgFunction<Type, string> = Struct.get('name');
  * @category Destructors
  */
 export const styleMap: MTypes.OneArgFunction<Type, PPStyleMap.Type> = Struct.get('styleMap');
-
-/**
- * Returns the PPValueBasedStyler (see ValueBasedStyler.ts) associated with `partName` in the
- * styleMap property of `self`
- *
- * @category Destructors
- */
-export const toStyler = (partName: string): MTypes.OneArgFunction<Type, PPValueBasedStyler.Type> =>
-  flow(styleMap, PPStyleMap.get(partName));
 
 /**
  * `PPParameters` instance that pretty-prints a value in a way very similar to util.inspect.

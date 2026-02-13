@@ -6,7 +6,7 @@
 import { ASText } from '@parischap/ansi-styles';
 import { MArray, MTypes } from '@parischap/effect-lib';
 import { Array, flow, Function, Number, Order } from 'effect';
-import * as PPStringifiedValue from '../StringifiedValue.js';
+import * as PPStringifiedValue from '../../stringification/StringifiedValue.js';
 
 /**
  * Type that represents a PPStringifiedValues

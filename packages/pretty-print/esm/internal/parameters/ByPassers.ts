@@ -1,7 +1,7 @@
 /** This module implements a Type that represents an array of PPByPasser's (see PPByPasser.ts) */
 
 import { Array, Function, pipe } from 'effect';
-import * as PPByPasser from '../parameters/ByPasser.js';
+import * as PPByPasser from '../../parameters/ByPasser.js';
 
 /**
  * Type of a ByPassers

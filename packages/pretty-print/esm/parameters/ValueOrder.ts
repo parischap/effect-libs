@@ -6,7 +6,7 @@
 
 import { MTypesCategory } from '@parischap/effect-lib';
 import { flow, Order } from 'effect';
-import * as PPValue from '../internal/Value.js';
+import * as PPValue from '../internal/stringification/Value.js';
 
 /**
  * Type of a PPValueOrder

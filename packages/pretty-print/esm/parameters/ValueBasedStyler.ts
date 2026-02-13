@@ -6,7 +6,7 @@
  */
 
 import { ASContextStyler, ASPalette, ASPaletteContextStyler } from '@parischap/ansi-styles';
-import * as PPValue from '../internal/Value.js';
+import * as PPValue from '../internal/stringification/Value.js';
 
 /**
  * Type of a PPValueBasedStyler

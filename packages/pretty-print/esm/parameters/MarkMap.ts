@@ -5,100 +5,120 @@
  * needs.
  */
 
-import { MInspectable, MPipeable, MTypes } from '@parischap/effect-lib';
-import { Equal, Equivalence, Hash, HashMap, pipe, Pipeable, Predicate, Struct } from 'effect';
+import { MData, MDataEquivalenceBasedEquality, MTypes } from '@parischap/effect-lib';
+import { Equivalence, Hash, HashMap, Predicate, Struct } from 'effect';
+import * as PPMarks from '../internal/parameters/Marks.js';
+import * as PPMark from './Mark.js';
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/pretty-print/MarkMap/';
+export const moduleTag = '@parischap/pretty-print/parampeters/MarkMap/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
-namespace Mark {
-  export interface Type {
-    /** The text to be displayed for this mark */
-    readonly text: string;
-    /**
-     * The name of the part that this mark belongs to. It will be used to determine the style to
-     * apply (see StyleMap.ts).
-     */
-    readonly partName: string;
-  }
-}
-
-namespace Marks {
-  export interface Type extends HashMap.HashMap<string, Mark.Type> {}
-}
 
 /**
- * Interface that represents a MarkMap
+ * Type that represents a PPMarkMap
  *
  * @category Models
  */
-export interface Type extends Equal.Equal, MInspectable.Type, Pipeable.Pipeable {
-  /** Id of this MarkMap instance. Useful for equality and debugging. */
-  readonly id: string;
+export class Type extends MDataEquivalenceBasedEquality.Class {
+  /** Name of this MarkMap instance. Useful for equality and debugging. */
+  readonly name: string;
   /** Map of the different marks that appear in a value to stringify */
-  readonly marks: Marks.Type;
+  readonly marks: PPMarks.Type;
 
-  /** @internal */
-  readonly [_TypeId]: _TypeId;
+  /** Returns the `id` of `this` */
+  [MData.idSymbol](): string | (() => string) {
+    return function idSymbol(this: Type) {
+      return this.name;
+    };
+  }
+
+  /** Class constructor */
+  private constructor({ name, marks }: MTypes.Data<Type>) {
+    super();
+    this.name = name;
+    this.marks = marks;
+  }
+
+  /** Static constructor */
+  static make(params: MTypes.Data<Type>): Type {
+    return new Type(params);
+  }
+
+  /** Calculates the hash value of `this` */
+  [Hash.symbol](): number {
+    return 0;
+  }
+
+  /** Function that implements the equivalence of `this` and `that` */
+  [MDataEquivalenceBasedEquality.isEquivalentToSymbol](this: this, that: this): boolean {
+    return equivalence(this, that);
+  }
+
+  /** Predicate that returns true if `that` has the same type marker as `this` */
+  [MDataEquivalenceBasedEquality.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
+    return Predicate.hasProperty(that, _TypeId);
+  }
+  /** Returns the TypeMarker of the class */
+  protected get [_TypeId](): _TypeId {
+    return _TypeId;
+  }
 }
 
 /**
- * Type guard
+ * Constructor of a PPMarkMap
  *
- * @category Guards
+ * @category Constructors
  */
-export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
+export const make = (params: MTypes.Data<Type>): Type => Type.make(params);
 
 /**
  * Equivalence
  *
  * @category Equivalences
  */
-export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
-
-/** Prototype */
-const _TypeIdHash = Hash.hash(_TypeId);
-const _proto: MTypes.Proto<Type> = {
-  [_TypeId]: _TypeId,
-  [Equal.symbol](this: Type, that: unknown): boolean {
-    return has(that) && equivalence(this, that);
-  },
-  [Hash.symbol](this: Type) {
-    return pipe(this.id, Hash.hash, Hash.combine(_TypeIdHash), Hash.cached(this));
-  },
-  [MInspectable.IdSymbol](this: Type) {
-    return this.id;
-  },
-  ...MInspectable.BaseProto(moduleTag),
-  ...MPipeable.BaseProto,
-};
-
-/**
- * Constructor
- *
- * @category Constructors
- */
-export const make = (params: MTypes.Data<Type>): Type =>
-  MTypes.objectFromDataAndProto(_proto, params);
+export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.name === self.name;
 
 /**
  * Returns the `id` property of `self`
  *
  * @category Destructors
  */
-export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
+export const name: MTypes.OneArgFunction<Type, string> = Struct.get('name');
 
 /**
  * Returns the `marks` property of `self`
  *
  * @category Destructors
  */
-export const marks: MTypes.OneArgFunction<Type, Marks.Type> = Struct.get('marks');
+export const marks: MTypes.OneArgFunction<Type, PPMarks.Type> = Struct.get('marks');
+
+/**
+ * Creates a MarkShowerConstructor that will return a MarkShower from `markName` and `option`.
+ * Concretely, this markShower will display the text attached to markName in option.markMap using
+ * the reversed action of the ValueBasedContextStyler attached to markName in option.markMap
+ *
+ * @category Constructors
+ */
+//sA REVOIR
+export const get = (self: Type, name: string): Type => {
+  const markShowerMap = HashMap.map(self.marks, ({ text, partName }) =>
+    pipe(option.styleMap, PPStyleMap.get(partName), (contextStyler) =>
+      contextStyler.withContextLast(text),
+    ),
+  );
+
+  return (markName) =>
+    pipe(
+      markShowerMap,
+      HashMap.get(markName),
+      Option.getOrElse(() => PPMarkShower.empty),
+    );
+};
 
 /**
  * Default MarkMap instance
@@ -107,19 +127,19 @@ export const marks: MTypes.OneArgFunction<Type, Marks.Type> = Struct.get('marks'
  */
 
 export const utilInspectLike: Type = make({
-  id: 'UtilInspectLike',
+  name: 'UtilInspectLike',
   marks: HashMap.make(
-    ['FunctionNameStartDelimiter', { text: 'Function: ', partName: 'Message' }],
-    ['FunctionNameEndDelimiter', { text: '', partName: 'Message' }],
-    ['MessageStartDelimiter', { text: '[', partName: 'Message' }],
-    ['MessageEndDelimiter', { text: ']', partName: 'Message' }],
-    ['CircularObject', { text: 'Circular *', partName: 'Message' }],
-    ['CircularReferenceStartDelimiter', { text: '<Ref *', partName: 'Message' }],
-    ['CircularReferenceEndDelimiter', { text: '> ', partName: 'Message' }],
-    ['TabIndent', { text: '  ', partName: 'Indentation' }],
-    ['TreeIndentForFirstLineOfInitProps', { text: '├─ ', partName: 'Indentation' }],
-    ['TreeIndentForTailLinesOfInitProps', { text: '│  ', partName: 'Indentation' }],
-    ['TreeIndentForFirstLineOfLastProp', { text: '└─ ', partName: 'Indentation' }],
-    ['TreeIndentForTailLinesOfLastProp', { text: '   ', partName: 'Indentation' }],
+    ['FunctionNameStartDelimiter', PPMark.make({ text: 'Function: ', partName: 'Message' })],
+    ['FunctionNameEndDelimiter', PPMark.make({ text: '', partName: 'Message' })],
+    ['MessageStartDelimiter', PPMark.make({ text: '[', partName: 'Message' })],
+    ['MessageEndDelimiter', PPMark.make({ text: ']', partName: 'Message' })],
+    ['CircularObject', PPMark.make({ text: 'Circular *', partName: 'Message' })],
+    ['CircularReferenceStartDelimiter', PPMark.make({ text: '<Ref *', partName: 'Message' })],
+    ['CircularReferenceEndDelimiter', PPMark.make({ text: '> ', partName: 'Message' })],
+    ['TabIndent', PPMark.make({ text: '  ', partName: 'Indentation' })],
+    ['TreeIndentForFirstLineOfInitProps', PPMark.make({ text: '├─ ', partName: 'Indentation' })],
+    ['TreeIndentForTailLinesOfInitProps', PPMark.make({ text: '│  ', partName: 'Indentation' })],
+    ['TreeIndentForFirstLineOfLastProp', PPMark.make({ text: '└─ ', partName: 'Indentation' })],
+    ['TreeIndentForTailLinesOfLastProp', PPMark.make({ text: '   ', partName: 'Indentation' })],
   ),
 });

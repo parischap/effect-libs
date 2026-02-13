@@ -10,8 +10,8 @@
 
 import { ASConstantContextStyler, ASPalette, ASStyle } from '@parischap/ansi-styles';
 import { MData, MDataEquivalenceBasedEquality, MTypes } from '@parischap/effect-lib';
-import { Equivalence, flow, Hash, HashMap, pipe, Predicate, Struct } from 'effect';
-import * as PPStyles from './Styles.js';
+import { Equivalence, Hash, HashMap, pipe, Predicate, Struct } from 'effect';
+import * as PPStyles from '../internal/parameters/Styles.js';
 import * as PPValueBasedStyler from './ValueBasedStyler.js';
 
 /**
@@ -30,7 +30,7 @@ type _TypeId = typeof _TypeId;
  */
 export class Type extends MDataEquivalenceBasedEquality.Class {
   /** Id of this PPStyleMap instance. Useful for equality and debugging. */
-  readonly id: string;
+  readonly name: string;
 
   /** Map of Style's to be applied to the different parts of the value to stringify */
   readonly styles: PPStyles.Type;
@@ -38,14 +38,14 @@ export class Type extends MDataEquivalenceBasedEquality.Class {
   /** Returns the `id` of `this` */
   [MData.idSymbol](): string | (() => string) {
     return function idSymbol(this: Type) {
-      return this.id;
+      return this.name;
     };
   }
 
   /** Class constructor */
-  private constructor({ id, styles }: MTypes.Data<Type>) {
+  private constructor({ name, styles }: MTypes.Data<Type>) {
     super();
-    this.id = id;
+    this.name = name;
     this.styles = styles;
   }
 
@@ -86,21 +86,14 @@ export const make = (params: MTypes.Data<Type>): Type => Type.make(params);
  *
  * @category Equivalences
  */
-export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
+export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.name === self.name;
 
 /**
  * Returns the `id` property of `self`
  *
  * @category Destructors
  */
-export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
-
-/**
- * Returns the `styles` property of `self`
- *
- * @category Destructors
- */
-export const styles: MTypes.OneArgFunction<Type, PPStyles.Type> = Struct.get('styles');
+export const name: MTypes.OneArgFunction<Type, string> = Struct.get('name');
 
 /**
  * Returns the ValueBasedStyler associated with `partName` which identifies a part of a stringified
@@ -108,8 +101,8 @@ export const styles: MTypes.OneArgFunction<Type, PPStyles.Type> = Struct.get('st
  *
  * @category Destructors
  */
-export const get = (partName: string): MTypes.OneArgFunction<Type, PPValueBasedStyler.Type> =>
-  flow(styles, PPStyles.get(partName));
+export const get = (self: Type, partName: string): PPValueBasedStyler.Type =>
+  PPStyles.get(self.styles, partName);
 
 /**
  * StyleMap instance for ansi dark mode
@@ -117,7 +110,7 @@ export const get = (partName: string): MTypes.OneArgFunction<Type, PPValueBasedS
  * @category Instances
  */
 export const darkMode: Type = make({
-  id: 'DarkMode',
+  name: 'DarkMode',
   styles: HashMap.make(
     ['Message', ASConstantContextStyler.green],
     ['ToStringedObject', ASConstantContextStyler.yellow],
@@ -171,7 +164,7 @@ export const darkMode: Type = make({
       ),
     ],
     ['Indentation', ASConstantContextStyler.green],
-    ['NonPrimitiveValueId', ASConstantContextStyler.green],
+    ['NonPrimitiveValueName', ASConstantContextStyler.green],
     ['NonPrimitiveValueIdSeparator', ASConstantContextStyler.green],
     ['PropertyNumbers', ASConstantContextStyler.green],
     ['PropertyNumberSeparator', ASConstantContextStyler.green],
@@ -186,6 +179,6 @@ export const darkMode: Type = make({
  * @category Instances
  */
 export const none: Type = make({
-  id: 'None',
+  name: 'None',
   styles: HashMap.empty(),
 });

@@ -8,7 +8,7 @@
 import { ASText } from '@parischap/ansi-styles';
 import { MArray, MTypes } from '@parischap/effect-lib';
 import { Array, Equivalence, flow, Function, Number, pipe, Predicate } from 'effect';
-import type * as PPStringifiedProperties from './internal//StringifiedProperties.js';
+import type * as PPStringifiedProperties from '../internal/stringification/StringifiedProperties.js';
 
 /**
  * Type that represents a PPStringifiedValue

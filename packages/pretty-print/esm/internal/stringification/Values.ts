@@ -11,8 +11,8 @@ import {
   MTypes,
 } from '@parischap/effect-lib';
 import { Array, Either, flow, Number, Option, pipe, Predicate } from 'effect';
-import * as PPStringifiedValue from '../StringifiedValue.js';
-import type * as PPStringifier from '../Stringifier.js';
+import * as PPStringifiedValue from '../../stringification/StringifiedValue.js';
+import type * as PPStringifier from '../../stringification/Stringifier.js';
 import * as PPValue from './Value.js';
 
 /**

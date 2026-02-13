@@ -1,17 +1,86 @@
 /**
- * This module implements a Stringifier, i.e. a function that transforms an unknown to a
+ * This module implements a PPStringifier, i.e. an object that can transform an unknown to a
  * PPStringifiedValue
  */
 
-import { MTypes } from '@parischap/effect-lib';
+import { ASText } from '@parischap/ansi-styles';
+import { MData, MDataEquivalenceBasedEquality, MTypes } from '@parischap/effect-lib';
+import { Equivalence, Hash, HashMap, Predicate } from 'effect';
+import * as PPValue from '../internal/stringification/Value.js';
+import * as PPParameters from '../parameters/index.js';
 import * as PPStringifiedValue from './StringifiedValue.js';
 
 /**
- * Type of a PPStringifier
+ * Module tag
+ *
+ * @category Module markers
+ */
+export const moduleTag = '@parischap/pretty-print/PPStringifier/';
+const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
+type _TypeId = typeof _TypeId;
+
+/**
+ * Type that represents a PPStringifier
  *
  * @category Models
  */
-export interface Type extends MTypes.OneArgFunction<unknown, PPStringifiedValue.Type> {}
+export class Type extends MDataEquivalenceBasedEquality.Class {
+  readonly parameters: PPParameters.Type;
+  readonly markShowers: HashMap.HashMap<string, MTypes.OneArgFunction<PPValue.Any, ASText.Type>>;
+
+  /** Returns the `id` of `this` */
+  [MData.idSymbol](): string | (() => string) {
+    return function idSymbol(this: Type) {
+      return `${this.parameters.name}Stringifier`;
+    };
+  }
+
+  /** Class constructor */
+  private constructor({ parameters, markShowers }: MTypes.Data<Type>) {
+    super();
+    this.parameters = parameters;
+    this.markShowers = markShowers;
+  }
+
+  /** Static constructor */
+  static make(parameters: PPParameters.Type): Type {
+    return new Type({ parameters, markShowers: pipe(parameters.markMap, HashMap.map()) });
+  }
+
+  /** Calculates the hash value of `this` */
+  [Hash.symbol](): number {
+    return 0;
+  }
+
+  /** Function that implements the equivalence of `this` and `that` */
+  [MDataEquivalenceBasedEquality.isEquivalentToSymbol](this: this, that: this): boolean {
+    return equivalence(this, that);
+  }
+
+  /** Predicate that returns true if `that` has the same type marker as `this` */
+  [MDataEquivalenceBasedEquality.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
+    return Predicate.hasProperty(that, _TypeId);
+  }
+  /** Returns the TypeMarker of the class */
+  protected get [_TypeId](): _TypeId {
+    return _TypeId;
+  }
+}
+
+/**
+ * Constructor of a PPStringifier
+ *
+ * @category Constructors
+ */
+export const make = (params: MTypes.Data<Type>): Type => Type.make(params);
+
+/**
+ * Equivalence
+ *
+ * @category Equivalences
+ */
+export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
+  that.parameters === self.parameters;
 
 /**
  * Builds a Stringifier from an Option
@@ -19,7 +88,9 @@ export interface Type extends MTypes.OneArgFunction<unknown, PPStringifiedValue.
  * @category Destructors
  */
 
-export const toStringifier = (self: Type): Stringifier.Type => {
+export const toStringifier = (
+  self: Type,
+): MTypes.OneArgFunction<unknown, PPStringifiedValue.Type> => {
   const valueBasedStylerConstructor = PPValueBasedStylerConstructor.fromOption(self);
   const markShowerConstructor = PPMarkShowerConstructor.fromOption(self);
 
