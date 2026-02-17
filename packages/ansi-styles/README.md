@@ -60,7 +60,7 @@ import * as ASStyle from '@parischap/ansi-styles/ASStyle';
 console.log(ASStyle.red('foo'));
 ```
 
-In this documentation, we'll use the first option. But if you value tree-shaking, you should use the second unless you use a bundler that implements deep scope analysis as for instance rollup, vite, webpack 5+.
+In this documentation, we'll use the second option. You should do the same if you value tree-shaking.
 
 ## Note
 

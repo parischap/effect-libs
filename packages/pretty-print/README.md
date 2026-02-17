@@ -60,7 +60,7 @@ import * as PPOption from '@parischap/pretty-print/PPStringifiedValue';
 pipe(3, PPOption.toStringifier(PPOption.darkModeUtilInspectLike), console.log);
 ```
 
-In this documentation, we'll use the first option. But if you value tree-shaking, you should use the second unless you use a bundler that implements deep scope analysis as for instance rollup, vite, webpack 5+.
+In this documentation, we'll use the second option. You should do the same if you value tree-shaking.
 
 ## API
 
