@@ -16,6 +16,7 @@ export * as CVMonthNames from './formatting/date-time-format/date-time-format-co
 export * as CVNumberBase10Format from './formatting/number-base10-format/index.js';
 export * as CVNumberBase10FormatScientificNotationOption from './formatting/number-base10-format/number-base10-format-scientific-notation-option/index.js';
 export * as CVNumberBase10FormatSignDisplayOption from './formatting/number-base10-format/number-base10-format-sign-display-option/index.js';
+export * as CVNumberBase10Parser from './formatting/number-base10-format/NumberBase10Parser.js';
 export * as CVPositiveInteger from './primitive/PositiveInteger.js';
 export * as CVPositiveReal from './primitive/PositiveReal.js';
 export * as CVReal from './primitive/Real.js';

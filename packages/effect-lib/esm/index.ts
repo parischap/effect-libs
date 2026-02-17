@@ -6,7 +6,6 @@ export * as MChunk from './Chunk.js';
 export * as MData from './Data/index.js';
 export * as MDataEquivalenceBasedEquality from './Data/DataEquivalenceBasedEquality.js';
 export * as MEither from './Either.js';
-export * as MFs from './Fs.js';
 export * as MFunction from './Function.js';
 export * as MInputError from './InputError.js';
 export * as MJson from './Json.js';
