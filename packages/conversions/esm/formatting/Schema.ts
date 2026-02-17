@@ -3,72 +3,25 @@
  * formatting and parsing and implements new brands
  */
 
-import * as MMatch from '@parischap/effect-lib/MMatch'
-import * as MTuple from '@parischap/effect-lib/MTuple'
-import {flow, pipe} from 'effect'
-import * as Array from 'effect/Array'
-import * as BigDecimal from 'effect/BigDecimal'
-import * as DateTime from 'effect/DateTime'
-import * as Either from 'effect/Either'
-import * as Option from 'effect/Option'
-import * as ParseResult from 'effect/ParseResult'
-import * as Record from 'effect/Record'
-import * as Schema from 'effect/Schema'
+import * as MMatch from '@parischap/effect-lib/MMatch';
+import * as MTuple from '@parischap/effect-lib/MTuple';
+import { flow, pipe } from 'effect';
+import * as Array from 'effect/Array';
+import * as BigDecimal from 'effect/BigDecimal';
+import * as DateTime from 'effect/DateTime';
+import * as Either from 'effect/Either';
+import * as Option from 'effect/Option';
+import * as ParseResult from 'effect/ParseResult';
+import * as Record from 'effect/Record';
+import * as Schema from 'effect/Schema';
 import * as CVDateTime from '../date-time/index.js';
 import * as CVTemplateParts from '../internal/formatting/template/TemplateParts.js';
-import * as CVEmail from '../primitive/Email.js';
-import * as CVInteger from '../primitive/Integer.js';
-import * as CVPositiveInteger from '../primitive/PositiveInteger.js';
-import * as CVPositiveReal from '../primitive/PositiveReal.js';
 import * as CVReal from '../primitive/Real.js';
-import * as CVSemVer from '../primitive/SemVer.js';
 import * as CVDateTimeFormat from './date-time-format/index.js';
 import * as CVNumberBase10Format from './number-base10-format/index.js';
 import * as CVTemplate from './template/index.js';
 import * as CVTemplatePart from './template/TemplatePart/index.js';
 import * as CVTemplatePlaceholder from './template/TemplatePart/template-placeholder/index.js';
-
-/**
- * A `Schema` that transforms a string into a `CVEmail`
- *
- * @category Schema transformations
- */
-export const Email: Schema.Schema<CVEmail.Type, string> = CVEmail.SchemaFromString;
-
-/**
- * A `Schema` that represents a `CVEmail`
- *
- * @category Schema instances
- */
-export const EmailFromSelf: Schema.Schema<CVEmail.Type> = CVEmail.SchemaFromSelf;
-
-/**
- * A `Schema` that transforms a string into a `CVSemVer`
- *
- * @category Schema transformations
- */
-export const SemVer: Schema.Schema<CVSemVer.Type, string> = CVSemVer.SchemaFromString;
-
-/**
- * A `Schema` that represents a `CVSemVer`
- *
- * @category Schema instances
- */
-export const SemVerFromSelf: Schema.Schema<CVSemVer.Type> = CVSemVer.SchemaFromSelf;
-
-/**
- * A `Schema` that transforms a number into a `CVReal`
- *
- * @category Schema transformations
- */
-export const RealFromNumber: Schema.Schema<CVReal.Type, number> = CVReal.SchemaFromNumber;
-
-/**
- * A `Schema` that represents `CVReal`
- *
- * @category Schema instances
- */
-export const RealFromSelf: Schema.Schema<CVReal.Type> = CVReal.SchemaFromSelf;
 
 /**
  * A `Schema` that transforms a string into a `CVReal` according to the `format`. Read documentation
@@ -97,52 +50,6 @@ export const Real = (format: CVNumberBase10Format.Type): Schema.Schema<CVReal.Ty
     encode: flow(formatter, ParseResult.succeed),
   });
 };
-
-/**
- * A `Schema` that transforms a number into a `CVInteger`
- *
- * @category Schema transformations
- */
-export const IntegerFromNumber: Schema.Schema<CVInteger.Type, number> = CVInteger.SchemaFromNumber;
-
-/**
- * A `Schema` that represents a `CVInteger`
- *
- * @category Schema instances
- */
-export const IntegerFromSelf: Schema.Schema<CVInteger.Type> = CVInteger.SchemaFromSelf;
-
-/**
- * A `Schema` that transforms a number into a `CVPositiveInteger`
- *
- * @category Schema transformations
- */
-export const PositiveIntegerFromNumber: Schema.Schema<CVPositiveInteger.Type, number> =
-  CVPositiveInteger.SchemaFromNumber;
-
-/**
- * A `Schema` that represents a `CVPositiveInteger`
- *
- * @category Schema instances
- */
-export const PositiveIntegerFromSelf: Schema.Schema<CVPositiveInteger.Type> =
-  CVPositiveInteger.SchemaFromSelf;
-
-/**
- * A `Schema` that transforms a number into a `CVPositiveReal`
- *
- * @category Schema transformations
- */
-export const PositiveRealFromNumber: Schema.Schema<CVPositiveReal.Type, number> =
-  CVPositiveReal.SchemaFromNumber;
-
-/**
- * A `Schema` that represents a `CVPositiveReal`
- *
- * @category Schema instances
- */
-export const PositiveRealFromSelf: Schema.Schema<CVPositiveReal.Type> =
-  CVPositiveReal.SchemaFromSelf;
 
 const BigDecimalFromString = (
   format: CVNumberBase10Format.Type,

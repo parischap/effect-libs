@@ -1,6 +1,6 @@
 /**
- * This module implements a CVNumberBase10Parser, i.e. an object that can convert a string into a
- * number according to the CVNumberBase10Format that was used to construct it
+ * This module implements a CVNumberBase10Formatter, i.e. an object that can convert a number into a
+ * string according to the CVNumberBase10Format that was used to construct it
  */
 
 import * as MBigDecimal from '@parischap/effect-lib/MBigDecimal'
@@ -25,6 +25,14 @@ import * as CVSignParser from '../../internal/formatting/number-base10-format/nu
 import type * as CVSignString from '../../internal/formatting/number-base10-format/number-base10-format-sign-display-option/SignString.js';
 import * as CVReal from '../../primitive/Real.js';
 import * as CVNumberBase10Format from './index.js';
+import * as CVScientificNotationMantissaAdjuster from '../../internal/formatting/number-base10-format/number-base10-format-scientific-notation-option/ScientificNotationMantissaAdjuster.js';
+import * as CVSignFormatter from '../../internal/formatting/number-base10-format/number-base10-format-sign-display-option/SignFormatter.js';
+import * as CVReal from '../../primitive/Real.js';
+import * as CVRounder from '../../rounding/Rounder.js';
+import * as CVRounderParams from '../../rounding/RounderParams.js';
+import * as CVRoundingOption from '../../rounding/rounding-option/index.js';
+import * as CVNumberBase10FormatScientificNotationOption from './number-base10-format-scientific-notation-option/index.js';
+import * as CVNumberBase10FormatSignDisplayOption from './number-base10-format-sign-display-option/index.js';
 
 /**
  * Module tag
@@ -32,64 +40,30 @@ import * as CVNumberBase10Format from './index.js';
  * @category Module markers
  */
 export const moduleTag =
-  '@parischap/conversions/formatting/number-base10-format/NumberBase10Parser/';
+  '@parischap/conversions/formatting/number-base10-format/NumberBase10Formatter/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
 /**
- * Type that represents a CVNumberBase10Parser
+ * Type that represents a CVNumberBase10Formatter
  *
  * @category Models
  */
 export class Type extends MData.Class {
-  /** Description of this parser, e.g. 'signed integer parser' */
+  /** Description of this formatter, e.g. 'signed integer formatter' */
   readonly description: string;
-  /**
-   * Function that split a string that represents a number into the different numeric constituents
-   * of that number
-   */
-  readonly getParts: MTypes.OneArgFunction<
-    string,
-    Option.Option<{
-      match: string;
-      groups: {
-        exponentPart: string;
-        fillChars: string;
-        mantissaFractionalPart: string;
-        mantissaIntegerPart: string;
-        signPart: string;
-      };
-    }>
-  >;
-  /** Function that strips a string that represents a base-10 number of its thousand separators */
-  readonly removeThousandSeparator: MTypes.StringTransformer;
+  
+  readonly rounder:CVRounder.Type;
 
-  /** Function that parses a sign */
-  readonly signParser: CVSignParser.Type;
+  readonly signFormatter:CVSignFormatter.Type;
 
-  /** Function that parses an exponent */
-  readonly exponentParser: CVScientificNotationParser.Type;
+  readonly mantissaAdjuster:CVScientificNotationMantissaAdjuster.Type;
 
-  /**
-   * Function that checks the validity of the value of the mantissa regarding the scientific
-   * notation option
-   */
-  readonly scientificNotationMantissaValidator: CVScientificNotationMantissaValidator.Type;
+  readonly hasThousandSeparator:boolean;
 
-  /** Function that validates the mantissa regarding its length in characters */
-  readonly mantissaLengthValidator: MTypes.OneArgFunction<string, Option.Option<number>>;
+  readonly eNotationChar:string;
 
-  /** Function that validates the length of the integer part of the mantissa */
-  readonly mantissaIntegerPartLengthValidator: MTypes.OneArgFunction<
-    [number, number],
-    Option.Option<[number, number]>
-  >;
-
-  /** Flag that indicates whether the fillChar is 0 */
-  readonly fillCharIsZero: boolean;
-
-  /** Same as CVNumberBase10.showNullIntegerPart */
-  readonly showNullIntegerPart: boolean;
+  readonly padder:
 
   /** Returns the `id` of `this` */
   [MData.idSymbol](): string | (() => string) {
