@@ -3,29 +3,24 @@
  * formatted in a given style.
  */
 
-import {
-  MArray,
-  MData,
-  MDataEquivalenceBasedEquality,
-  MFunction,
-  MMatch,
-  MPredicate,
-  MString,
-  MTypes,
-} from '@parischap/effect-lib';
-import {
-  Array,
-  Equivalence,
-  Hash,
-  Number,
-  Option,
-  Predicate,
-  String,
-  Struct,
-  Tuple,
-  flow,
-  pipe,
-} from 'effect';
+import * as MArray from '@parischap/effect-lib/MArray'
+import * as MData from '@parischap/effect-lib/MData'
+import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality'
+import * as MFunction from '@parischap/effect-lib/MFunction'
+import * as MMatch from '@parischap/effect-lib/MMatch'
+import * as MPredicate from '@parischap/effect-lib/MPredicate'
+import * as MString from '@parischap/effect-lib/MString'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import {flow, pipe} from 'effect'
+import * as Array from 'effect/Array'
+import * as Equivalence from 'effect/Equivalence'
+import * as Hash from 'effect/Hash'
+import * as Number from 'effect/Number'
+import * as Option from 'effect/Option'
+import * as Predicate from 'effect/Predicate'
+import * as String from 'effect/String'
+import * as Struct from 'effect/Struct'
+import * as Tuple from 'effect/Tuple'
 import * as ASCode from './internal/Code.js';
 import * as ASStyleCharacteristics from './internal/StyleCharacteristics.js';
 import * as ASUnistyledText from './internal/UnistyledText.js';

@@ -1,7 +1,10 @@
-import { ASContextStyler, ASText } from '@parischap/ansi-styles';
+import * as ASContextStyler from '@parischap/ansi-styles/ASContextStyler'
+import * as ASText from '@parischap/ansi-styles/ASText'
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { PPStyleMap, PPValue } from '@parischap/pretty-print';
-import { Function, pipe } from 'effect';
+import * as PPStyleMap from '@parischap/pretty-print/PPStyleMap'
+import * as PPValue from '@parischap/pretty-print/PPValue'
+import {pipe} from 'effect'
+import * as Function from 'effect/Function'
 import { describe, it } from 'vitest';
 
 describe('StyleMap', () => {

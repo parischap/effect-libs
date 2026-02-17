@@ -1,6 +1,6 @@
 import * as ASBoldStyleCharacteristic from '@parischap/ansi-styles/ASBoldStyleCharacteristic';
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { Option } from 'effect';
+import * as Option from 'effect/Option'
 import { describe, it } from 'vitest';
 
 describe('ASBoldStyleCharacteristic', () => {

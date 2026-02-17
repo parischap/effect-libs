@@ -1,6 +1,7 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { MNumber } from '@parischap/effect-lib';
-import { BigDecimal, pipe } from 'effect';
+import * as MNumber from '@parischap/effect-lib/MNumber'
+import {pipe} from 'effect'
+import * as BigDecimal from 'effect/BigDecimal'
 import { describe, it } from 'vitest';
 
 const hugeBigInt = 10n ** 500n;

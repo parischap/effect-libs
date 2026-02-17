@@ -1,5 +1,6 @@
 /** This module implements a type that defines the padding position for a string */
-import { flow, Function } from 'effect';
+import {flow} from 'effect'
+import * as Function from 'effect/Function'
 import * as MMatch from '../Match.js';
 import * as MTypes from '../types/index.js';
 

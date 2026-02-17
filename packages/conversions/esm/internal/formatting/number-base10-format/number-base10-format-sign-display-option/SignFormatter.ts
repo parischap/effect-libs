@@ -1,7 +1,9 @@
 /** Module that implements a type that converts a CVSignValue into a CVSignString */
 
-import { MFunction, MMatch, MTypes } from '@parischap/effect-lib';
-import { flow } from 'effect';
+import * as MFunction from '@parischap/effect-lib/MFunction'
+import * as MMatch from '@parischap/effect-lib/MMatch'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import {flow} from 'effect'
 import * as CVNumberBase10FormatSignDisplayOption from '../../../../formatting/number-base10-format/number-base10-format-sign-display-option/index.js';
 import * as CVSignString from './SignString.js';
 import * as CVSignValue from './SignValue.js';

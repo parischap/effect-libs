@@ -1,7 +1,7 @@
 /** Module that implements a type that represents the possible strings used to represent a sign */
 
-import { MPredicate } from '@parischap/effect-lib';
-import { Predicate } from 'effect';
+import * as MPredicate from '@parischap/effect-lib/MPredicate'
+import * as Predicate from 'effect/Predicate'
 
 /**
  * Type of a CVSignString

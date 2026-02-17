@@ -4,8 +4,9 @@
  * You can define your own if the provided instances don't suit your needs
  */
 
-import { MTypesCategory } from '@parischap/effect-lib';
-import { flow, Order } from 'effect';
+import * as MTypesCategory from '@parischap/effect-lib/MTypesCategory'
+import {flow} from 'effect'
+import * as Order from 'effect/Order'
 import * as PPValue from '../internal/stringification/Value.js';
 
 /**

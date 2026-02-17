@@ -9,8 +9,19 @@
  * @category Models
  */
 
-import { MData, MInputError, MNumber, MString, MStruct, MTypes } from '@parischap/effect-lib';
-import { Either, Function, Number, Option, Predicate, Struct, flow, pipe } from 'effect';
+import * as MData from '@parischap/effect-lib/MData'
+import * as MInputError from '@parischap/effect-lib/MInputError'
+import * as MNumber from '@parischap/effect-lib/MNumber'
+import * as MString from '@parischap/effect-lib/MString'
+import * as MStruct from '@parischap/effect-lib/MStruct'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import {flow, pipe} from 'effect'
+import * as Either from 'effect/Either'
+import * as Function from 'effect/Function'
+import * as Number from 'effect/Number'
+import * as Option from 'effect/Option'
+import * as Predicate from 'effect/Predicate'
+import * as Struct from 'effect/Struct'
 import {
   DAY_MS,
   LONG_YEAR_MS,

@@ -6,18 +6,20 @@
  * needs.
  */
 
-import { MFunction, MInspectable, MPipeable, MPredicate, MTypes } from '@parischap/effect-lib';
-import {
-  Array,
-  Boolean,
-  Equal,
-  Equivalence,
-  Hash,
-  pipe,
-  Pipeable,
-  Predicate,
-  Struct,
-} from 'effect';
+import * as MFunction from '@parischap/effect-lib/MFunction'
+import * as MInspectable from '@parischap/effect-lib/MInspectable'
+import * as MPipeable from '@parischap/effect-lib/MPipeable'
+import * as MPredicate from '@parischap/effect-lib/MPredicate'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import {pipe} from 'effect'
+import * as Array from 'effect/Array'
+import * as Boolean from 'effect/Boolean'
+import * as Equal from 'effect/Equal'
+import * as Equivalence from 'effect/Equivalence'
+import * as Hash from 'effect/Hash'
+import * as Pipeable from 'effect/Pipeable'
+import * as Predicate from 'effect/Predicate'
+import * as Struct from 'effect/Struct'
 import * as PPValue from './Value.js';
 import type * as PPValues from './Values.js';
 

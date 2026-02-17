@@ -1,6 +1,11 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { MString, MStringFillPosition, MStringSearchResult } from '@parischap/effect-lib';
-import { Array, Option, pipe, String } from 'effect';
+import * as MString from '@parischap/effect-lib/MString'
+import * as MStringFillPosition from '@parischap/effect-lib/MStringFillPosition'
+import * as MStringSearchResult from '@parischap/effect-lib/MStringSearchResult'
+import {pipe} from 'effect'
+import * as Array from 'effect/Array'
+import * as Option from 'effect/Option'
+import * as String from 'effect/String'
 import { describe, it } from 'vitest';
 
 describe('MString', () => {

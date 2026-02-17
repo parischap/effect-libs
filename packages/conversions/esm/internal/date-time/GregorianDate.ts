@@ -8,8 +8,19 @@
  * But 2400 is a leap year.
  */
 
-import { MArray, MData, MInputError, MString, MStruct, MTypes } from '@parischap/effect-lib';
-import { Either, Function, Number, Option, Predicate, Struct, flow, pipe } from 'effect';
+import * as MArray from '@parischap/effect-lib/MArray'
+import * as MData from '@parischap/effect-lib/MData'
+import * as MInputError from '@parischap/effect-lib/MInputError'
+import * as MString from '@parischap/effect-lib/MString'
+import * as MStruct from '@parischap/effect-lib/MStruct'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import {flow, pipe} from 'effect'
+import * as Either from 'effect/Either'
+import * as Function from 'effect/Function'
+import * as Number from 'effect/Number'
+import * as Option from 'effect/Option'
+import * as Predicate from 'effect/Predicate'
+import * as Struct from 'effect/Struct'
 import {
   COMMON_YEAR_MS,
   DAY_MS,

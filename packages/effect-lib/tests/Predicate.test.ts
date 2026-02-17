@@ -1,6 +1,7 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { MPredicate } from '@parischap/effect-lib';
-import { pipe, Predicate } from 'effect';
+import * as MPredicate from '@parischap/effect-lib/MPredicate'
+import {pipe} from 'effect'
+import * as Predicate from 'effect/Predicate'
 import { describe, it } from 'vitest';
 
 /** Source */

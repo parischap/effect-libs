@@ -3,19 +3,17 @@
  * formatting and parsing and implements new brands
  */
 
-import { MMatch, MTuple } from '@parischap/effect-lib';
-import {
-  Array,
-  BigDecimal,
-  DateTime,
-  Either,
-  flow,
-  Option,
-  ParseResult,
-  pipe,
-  Record,
-  Schema,
-} from 'effect';
+import * as MMatch from '@parischap/effect-lib/MMatch'
+import * as MTuple from '@parischap/effect-lib/MTuple'
+import {flow, pipe} from 'effect'
+import * as Array from 'effect/Array'
+import * as BigDecimal from 'effect/BigDecimal'
+import * as DateTime from 'effect/DateTime'
+import * as Either from 'effect/Either'
+import * as Option from 'effect/Option'
+import * as ParseResult from 'effect/ParseResult'
+import * as Record from 'effect/Record'
+import * as Schema from 'effect/Schema'
 import * as CVDateTime from '../date-time/index.js';
 import * as CVTemplateParts from '../internal/formatting/template/TemplateParts.js';
 import * as CVEmail from '../primitive/Email.js';

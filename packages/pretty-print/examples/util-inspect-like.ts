@@ -1,5 +1,7 @@
-import { PPOption, PPStringifiedValue } from '@parischap/pretty-print';
-import { HashMap, pipe } from 'effect';
+import * as PPOption from '@parischap/pretty-print/PPOption'
+import * as PPStringifiedValue from '@parischap/pretty-print/PPStringifiedValue'
+import {pipe} from 'effect'
+import * as HashMap from 'effect/HashMap'
 
 const stringifier = PPOption.toStringifier(PPOption.darkModeUtilInspectLike);
 

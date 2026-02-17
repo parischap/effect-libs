@@ -7,17 +7,23 @@
  * needs.
  */
 
-import {
-  MData,
-  MDataEquivalenceBasedEquality,
-  MFunction,
-  MRecord,
-  MRegExp,
-  MTypes,
-} from '@parischap/effect-lib';
+import * as MData from '@parischap/effect-lib/MData'
+import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality'
+import * as MFunction from '@parischap/effect-lib/MFunction'
+import * as MRecord from '@parischap/effect-lib/MRecord'
+import * as MRegExp from '@parischap/effect-lib/MRegExp'
+import * as MTypes from '@parischap/effect-lib/MTypes'
 
-import { ASContextStyler, ASText } from '@parischap/ansi-styles';
-import { Array, Equivalence, flow, Hash, Option, pipe, Predicate, String, Struct } from 'effect';
+import * as ASContextStyler from '@parischap/ansi-styles/ASContextStyler'
+import * as ASText from '@parischap/ansi-styles/ASText'
+import {flow, pipe} from 'effect'
+import * as Array from 'effect/Array'
+import * as Equivalence from 'effect/Equivalence'
+import * as Hash from 'effect/Hash'
+import * as Option from 'effect/Option'
+import * as Predicate from 'effect/Predicate'
+import * as String from 'effect/String'
+import * as Struct from 'effect/Struct'
 import * as PPValue from '../internal/stringification/Value.js';
 import * as PPStringifiedValue from '../stringification/StringifiedValue.js';
 import * as PPByPasserAction from './ByPasserAction.js';

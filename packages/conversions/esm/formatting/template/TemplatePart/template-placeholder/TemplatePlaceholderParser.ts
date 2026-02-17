@@ -1,7 +1,8 @@
 /** This module implements a `CVTemplatePlaceholderParser` */
 
-import type { MInputError, MTypes } from '@parischap/effect-lib';
-import type { Either } from 'effect';
+import * as MInputError from '@parischap/effect-lib/MInputError'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import * as Either from 'effect/Either'
 
 /**
  * Type that describes a `CVTemplatePlaceholderParser`

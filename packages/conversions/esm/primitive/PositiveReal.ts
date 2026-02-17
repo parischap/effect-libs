@@ -5,8 +5,15 @@
  * not familiar with this concept.
  */
 
-import { MNumber, MTypes } from '@parischap/effect-lib';
-import { BigDecimal, Brand, Either, flow, Function, Option, Schema } from 'effect';
+import * as MNumber from '@parischap/effect-lib/MNumber'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import {flow} from 'effect'
+import * as BigDecimal from 'effect/BigDecimal'
+import * as Brand from 'effect/Brand'
+import * as Either from 'effect/Either'
+import * as Function from 'effect/Function'
+import * as Option from 'effect/Option'
+import * as Schema from 'effect/Schema'
 import * as CVPositive from '../internal/primitive/Positive.js';
 import type * as CVPositiveInteger from './PositiveInteger.js';
 import * as CVReal from './Real.js';

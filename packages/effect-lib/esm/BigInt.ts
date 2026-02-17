@@ -1,6 +1,12 @@
 /** A simple extension to the Effect BigInt module */
 
-import { Brand, Either, flow, Number, Option, pipe, Predicate, String } from 'effect';
+import {flow, pipe} from 'effect'
+import * as Brand from 'effect/Brand'
+import * as Either from 'effect/Either'
+import * as Number from 'effect/Number'
+import * as Option from 'effect/Option'
+import * as Predicate from 'effect/Predicate'
+import * as String from 'effect/String'
 import * as MTypes from './types/index.js';
 
 /**

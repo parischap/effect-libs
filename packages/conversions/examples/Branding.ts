@@ -1,4 +1,4 @@
-import { CVEmail } from "@parischap/conversions";
+import * as CVEmail from '@parischap/conversions/CVEmail'
 
 /** Let's try to create a CVEmail from a string that represents a valid email */
 // Result: { _id: 'Either', _tag: 'Right', right: 'foo@bar.baz' }

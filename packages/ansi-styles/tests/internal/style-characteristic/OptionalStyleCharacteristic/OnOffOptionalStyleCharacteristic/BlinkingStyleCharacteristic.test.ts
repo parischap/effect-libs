@@ -1,6 +1,6 @@
 import * as ASBlinkingStyleCharacteristic from '@parischap/ansi-styles/ASBlinkingStyleCharacteristic';
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { Option } from 'effect';
+import * as Option from 'effect/Option'
 import { describe, it } from 'vitest';
 
 describe('ASBlinkingStyleCharacteristic', () => {

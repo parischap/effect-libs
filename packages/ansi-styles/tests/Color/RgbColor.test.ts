@@ -1,6 +1,7 @@
-import { ASColor, ASRgbColor } from '@parischap/ansi-styles';
+import * as ASColor from '@parischap/ansi-styles/ASColor'
+import * as ASRgbColor from '@parischap/ansi-styles/ASRgbColor'
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { Option } from 'effect';
+import * as Option from 'effect/Option'
 import { describe, it } from 'vitest';
 
 describe('ASRgbColor', () => {

@@ -7,21 +7,23 @@
  * needs.
  */
 
-import { MFunction, MInspectable, MMatch, MPipeable, MString, MTypes } from '@parischap/effect-lib';
-import {
-  Either,
-  Equal,
-  Equivalence,
-  flow,
-  Function,
-  Hash,
-  Number,
-  pipe,
-  Pipeable,
-  Predicate,
-  String,
-  Struct,
-} from 'effect';
+import * as MFunction from '@parischap/effect-lib/MFunction'
+import * as MInspectable from '@parischap/effect-lib/MInspectable'
+import * as MMatch from '@parischap/effect-lib/MMatch'
+import * as MPipeable from '@parischap/effect-lib/MPipeable'
+import * as MString from '@parischap/effect-lib/MString'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import {flow, pipe} from 'effect'
+import * as Either from 'effect/Either'
+import * as Equal from 'effect/Equal'
+import * as Equivalence from 'effect/Equivalence'
+import * as Function from 'effect/Function'
+import * as Hash from 'effect/Hash'
+import * as Number from 'effect/Number'
+import * as Pipeable from 'effect/Pipeable'
+import * as Predicate from 'effect/Predicate'
+import * as String from 'effect/String'
+import * as Struct from 'effect/Struct'
 import type * as PPOption from './Option.js';
 import * as PPValue from './Value.js';
 

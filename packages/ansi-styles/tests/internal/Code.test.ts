@@ -1,6 +1,6 @@
 import * as ASCode from '@parischap/ansi-styles/ASCode';
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { Array } from 'effect';
+import * as Array from 'effect/Array'
 import { describe, it } from 'vitest';
 
 describe('ASCode', () => {

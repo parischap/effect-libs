@@ -1,6 +1,6 @@
 /** Very simple regular expression module */
 
-import { pipe } from 'effect';
+import {pipe} from 'effect'
 import * as MRegExpString from './RegExpString.js';
 
 /**

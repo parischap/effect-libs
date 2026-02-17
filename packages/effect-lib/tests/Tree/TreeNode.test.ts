@@ -1,6 +1,6 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { MTreeNode } from '@parischap/effect-lib';
-import { Option } from 'effect';
+import * as MTreeNode from '@parischap/effect-lib/MTreeNode'
+import * as Option from 'effect/Option'
 import { describe, it } from 'vitest';
 
 describe('MNode', () => {

@@ -1,7 +1,11 @@
-import { Error as PlatformError, Path as PlatformPath } from '@effect/platform';
-import { NodePath as PlatformNodePath } from '@effect/platform-node';
-import { MFs } from '@parischap/effect-lib';
-import { Context, Effect, Layer, flow, pipe } from 'effect';
+import * as PlatformError from '@effect/platform/Error'
+import * as PlatformPath from '@effect/platform/Path'
+import * as PlatformNodePath from '@effect/platform-node/NodePath'
+import * as MFs from '@parischap/effect-lib/MFs'
+import {flow, pipe} from 'effect'
+import * as Context from 'effect/Context'
+import * as Effect from 'effect/Effect'
+import * as Layer from 'effect/Layer'
 import { homedir } from 'node:os';
 
 const moduleTag = '@parischap/node-effect-lib/Path/';

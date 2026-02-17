@@ -1,6 +1,6 @@
 /** A module that implements an error that occurs when porting a function to Effect */
 
-import { Data } from "effect";
+import * as Data from 'effect/Data'
 
 /**
  * Module tag

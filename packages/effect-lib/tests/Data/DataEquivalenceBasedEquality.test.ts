@@ -1,6 +1,8 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { MData, MDataEquivalenceBasedEquality } from '@parischap/effect-lib';
-import { Hash, Predicate } from 'effect';
+import * as MData from '@parischap/effect-lib/MData'
+import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality'
+import * as Hash from 'effect/Hash'
+import * as Predicate from 'effect/Predicate'
 import { describe, it } from 'vitest';
 
 describe('MDataEquivalenceBasedEquality', () => {

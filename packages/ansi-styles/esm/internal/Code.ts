@@ -1,7 +1,11 @@
 /** This modules implements an ansi code that produces an ANSI style, e.g. `\x1b[1m` for bold */
 
-import { MFunction, MString, MTypes } from '@parischap/effect-lib';
-import { Array, flow, Option } from 'effect';
+import * as MFunction from '@parischap/effect-lib/MFunction'
+import * as MString from '@parischap/effect-lib/MString'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import {flow} from 'effect'
+import * as Array from 'effect/Array'
+import * as Option from 'effect/Option'
 import * as ASSequence from './Sequence.js';
 
 /**

@@ -1,7 +1,9 @@
-import { ASContextStyler, ASPalette, ASPaletteContextStyler } from '@parischap/ansi-styles';
+import * as ASContextStyler from '@parischap/ansi-styles/ASContextStyler'
+import * as ASPalette from '@parischap/ansi-styles/ASPalette'
+import * as ASPaletteContextStyler from '@parischap/ansi-styles/ASPaletteContextStyler'
 import * as ASStyleCharacteristics from '@parischap/ansi-styles/ASStyleCharacteristics';
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { Option } from 'effect';
+import * as Option from 'effect/Option'
 import { describe, it } from 'vitest';
 
 describe('ASContextStylerWheel', () => {

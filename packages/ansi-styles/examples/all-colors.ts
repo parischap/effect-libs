@@ -1,4 +1,5 @@
-import { ASRgbColor, ASStyle } from '@parischap/ansi-styles';
+import * as ASRgbColor from '@parischap/ansi-styles/ASRgbColor'
+import * as ASStyle from '@parischap/ansi-styles/ASStyle'
 
 console.log(ASStyle.color(ASRgbColor.coral)('I am a coral string'));
 console.log(

@@ -1,5 +1,5 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { PPValue } from '@parischap/pretty-print';
+import * as PPValue from '@parischap/pretty-print/PPValue'
 import { describe, it } from 'vitest';
 
 describe('Value', () => {

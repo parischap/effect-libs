@@ -1,17 +1,14 @@
 /** A simple extension to the Effect String module */
 
-import {
-  Array,
-  Function,
-  Option,
-  Predicate,
-  Record,
-  String,
-  Struct,
-  Tuple,
-  flow,
-  pipe,
-} from 'effect';
+import {flow, pipe} from 'effect'
+import * as Array from 'effect/Array'
+import * as Function from 'effect/Function'
+import * as Option from 'effect/Option'
+import * as Predicate from 'effect/Predicate'
+import * as Record from 'effect/Record'
+import * as String from 'effect/String'
+import * as Struct from 'effect/Struct'
+import * as Tuple from 'effect/Tuple'
 import * as MArray from '../Array.js';
 import * as MBigInt from '../BigInt.js';
 import * as MFunction from '../Function.js';

@@ -9,7 +9,14 @@
  * a Tree<A,B> or a TreeNonLeaf<A,B>
  */
 
-import { Array, Either, Equal, Equivalence, flow, Option, pipe, Struct, Tuple } from 'effect';
+import {flow, pipe} from 'effect'
+import * as Array from 'effect/Array'
+import * as Either from 'effect/Either'
+import * as Equal from 'effect/Equal'
+import * as Equivalence from 'effect/Equivalence'
+import * as Option from 'effect/Option'
+import * as Struct from 'effect/Struct'
+import * as Tuple from 'effect/Tuple'
 import * as MArray from '../Array.js';
 import * as MMatch from '../Match.js';
 import * as MStruct from '../Struct.js';

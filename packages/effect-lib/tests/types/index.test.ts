@@ -1,6 +1,6 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { MTypes } from '@parischap/effect-lib';
-import { Number } from 'effect';
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import * as Number from 'effect/Number'
 import { describe, it } from 'vitest';
 
 const unknown = null as unknown;

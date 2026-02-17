@@ -1,6 +1,7 @@
 /** A simple extension to the Effect Predicate module */
 
-import { Effect, Predicate } from 'effect';
+import * as Effect from 'effect/Effect'
+import * as Predicate from 'effect/Predicate'
 import * as MTypes from './types/index.js';
 
 /**

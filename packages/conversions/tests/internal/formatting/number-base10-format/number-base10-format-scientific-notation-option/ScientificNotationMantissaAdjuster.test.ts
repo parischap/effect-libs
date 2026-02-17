@@ -1,7 +1,8 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as CVNumberBase10FormatScientificNotationOption from '@parischap/conversions/CVNumberBase10FormatScientificNotationOption';
 import * as CVScientificNotationMantissaAdjuster from '@parischap/conversions/CVScientificNotationMantissaAdjuster';
-import { BigDecimal, Option } from 'effect';
+import * as BigDecimal from 'effect/BigDecimal'
+import * as Option from 'effect/Option'
 import { describe, it } from 'vitest';
 
 describe('toMantissaChecker', () => {

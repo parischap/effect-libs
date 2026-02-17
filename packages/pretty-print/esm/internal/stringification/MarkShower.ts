@@ -1,5 +1,6 @@
 /** This module implements a PPMarkShower */
-import { MData, MTypes } from '@parischap/effect-lib';
+import * as MData from '@parischap/effect-lib/MData'
+import * as MTypes from '@parischap/effect-lib/MTypes'
 
 /**
  * Module tag

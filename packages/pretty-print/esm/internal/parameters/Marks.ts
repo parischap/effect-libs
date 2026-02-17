@@ -3,7 +3,7 @@
  * marks
  */
 
-import { HashMap } from 'effect';
+import * as HashMap from 'effect/HashMap'
 import type * as PPMark from '../../parameters/Mark.js';
 
 /**

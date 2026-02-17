@@ -1,6 +1,7 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { CVReal } from '@parischap/conversions';
-import { BigDecimal, Option } from 'effect';
+import * as CVReal from '@parischap/conversions/CVReal'
+import * as BigDecimal from 'effect/BigDecimal'
+import * as Option from 'effect/Option'
 import { describe, it } from 'vitest';
 
 describe('CVReal', () => {

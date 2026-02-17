@@ -3,31 +3,26 @@
  * format/parse a base-10 number or `BigDecimal` and implements the formatting/parsing algortithms
  */
 
-import {
-  MBigDecimal,
-  MBigInt,
-  MData,
-  MFunction,
-  MMatch,
-  MPredicate,
-  MRegExpString,
-  MString,
-  MStruct,
-  MTypes,
-} from '@parischap/effect-lib';
-import {
-  Array,
-  BigDecimal,
-  Either,
-  flow,
-  Function,
-  Option,
-  pipe,
-  Predicate,
-  String,
-  Struct,
-  Tuple,
-} from 'effect';
+import * as MBigDecimal from '@parischap/effect-lib/MBigDecimal'
+import * as MBigInt from '@parischap/effect-lib/MBigInt'
+import * as MData from '@parischap/effect-lib/MData'
+import * as MFunction from '@parischap/effect-lib/MFunction'
+import * as MMatch from '@parischap/effect-lib/MMatch'
+import * as MPredicate from '@parischap/effect-lib/MPredicate'
+import * as MRegExpString from '@parischap/effect-lib/MRegExpString'
+import * as MString from '@parischap/effect-lib/MString'
+import * as MStruct from '@parischap/effect-lib/MStruct'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import {flow, pipe} from 'effect'
+import * as Array from 'effect/Array'
+import * as BigDecimal from 'effect/BigDecimal'
+import * as Either from 'effect/Either'
+import * as Function from 'effect/Function'
+import * as Option from 'effect/Option'
+import * as Predicate from 'effect/Predicate'
+import * as String from 'effect/String'
+import * as Struct from 'effect/Struct'
+import * as Tuple from 'effect/Tuple'
 import * as CVScientificNotationMantissaAdjuster from '../../internal/formatting/number-base10-format/number-base10-format-scientific-notation-option/ScientificNotationMantissaAdjuster.js';
 import * as CVSignFormatter from '../../internal/formatting/number-base10-format/number-base10-format-sign-display-option/SignFormatter.js';
 import * as CVReal from '../../primitive/Real.js';

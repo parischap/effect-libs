@@ -8,9 +8,18 @@
  * needs.
  */
 
-import { ASConstantContextStyler, ASPalette, ASStyle } from '@parischap/ansi-styles';
-import { MData, MDataEquivalenceBasedEquality, MTypes } from '@parischap/effect-lib';
-import { Equivalence, Hash, HashMap, pipe, Predicate, Struct } from 'effect';
+import * as ASConstantContextStyler from '@parischap/ansi-styles/ASConstantContextStyler'
+import * as ASPalette from '@parischap/ansi-styles/ASPalette'
+import * as ASStyle from '@parischap/ansi-styles/ASStyle'
+import * as MData from '@parischap/effect-lib/MData'
+import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import {pipe} from 'effect'
+import * as Equivalence from 'effect/Equivalence'
+import * as Hash from 'effect/Hash'
+import * as HashMap from 'effect/HashMap'
+import * as Predicate from 'effect/Predicate'
+import * as Struct from 'effect/Struct'
 import * as PPStyles from '../internal/parameters/Styles.js';
 import * as PPValueBasedStyler from './ValueBasedStyler.js';
 

@@ -1,6 +1,6 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { MPortError } from '@parischap/effect-lib';
-import { Option } from 'effect';
+import * as MPortError from '@parischap/effect-lib/MPortError'
+import * as Option from 'effect/Option'
 import { describe, it } from 'vitest';
 
 describe('MPortError', () => {

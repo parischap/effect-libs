@@ -1,7 +1,7 @@
-import { ASRgbColor } from '@parischap/ansi-styles';
+import * as ASRgbColor from '@parischap/ansi-styles/ASRgbColor'
 import * as ASBackgroundColorStyleCharacteristic from '@parischap/ansi-styles/ASBackgroundColorStyleCharacteristic';
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { Option } from 'effect';
+import * as Option from 'effect/Option'
 import { describe, it } from 'vitest';
 
 describe('ASBackgroundColorStyleCharacteristic', () => {

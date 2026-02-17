@@ -1,6 +1,6 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as MCacheValueContainer from '@parischap/effect-lib/MCacheValueContainer';
-import { Option } from 'effect';
+import * as Option from 'effect/Option'
 import { describe, it } from 'vitest';
 
 describe('MCacheValueContainer', () => {

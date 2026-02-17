@@ -3,8 +3,12 @@
  * the given `precision` and according to the passed `CVRoundingOption`
  */
 
-import { MBigDecimal, MBigInt, MNumber, MTypes } from '@parischap/effect-lib';
-import { BigDecimal, pipe } from 'effect';
+import * as MBigDecimal from '@parischap/effect-lib/MBigDecimal'
+import * as MBigInt from '@parischap/effect-lib/MBigInt'
+import * as MNumber from '@parischap/effect-lib/MNumber'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import {pipe} from 'effect'
+import * as BigDecimal from 'effect/BigDecimal'
 import * as CVRoundingOptionCorrecter from '../internal/rounding/rounding-option/RoundingOptionCorrecter.js';
 import * as CVRounderParams from './RounderParams.js';
 

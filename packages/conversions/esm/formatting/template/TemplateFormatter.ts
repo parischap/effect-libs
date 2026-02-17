@@ -4,8 +4,16 @@
  * don't want to build a `CVTemplate` beforehand, you can also construct a `CVTemplateFormatter`
  * directly from `CVTemplatePart`'s
  */
-import { MArray, MData, MInputError, MString, MTypes } from '@parischap/effect-lib';
-import { Either, flow, Function, Option, pipe, Record } from 'effect';
+import * as MArray from '@parischap/effect-lib/MArray'
+import * as MData from '@parischap/effect-lib/MData'
+import * as MInputError from '@parischap/effect-lib/MInputError'
+import * as MString from '@parischap/effect-lib/MString'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import {flow, pipe} from 'effect'
+import * as Either from 'effect/Either'
+import * as Function from 'effect/Function'
+import * as Option from 'effect/Option'
+import * as Record from 'effect/Record'
 import * as CVTemplateParts from '../../internal/formatting/template/TemplateParts.js';
 import * as CVTemplate from './index.js';
 import * as CVTemplatePart from './TemplatePart/index.js';

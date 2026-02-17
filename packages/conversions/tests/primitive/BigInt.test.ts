@@ -1,5 +1,8 @@
 import * as TestUtils from "@parischap/configs/TestUtils";
-import { CVBigInt, CVInteger, CVPositiveInteger, CVReal } from "@parischap/conversions";
+import * as CVBigInt from '@parischap/conversions/CVBigInt'
+import * as CVInteger from '@parischap/conversions/CVInteger'
+import * as CVPositiveInteger from '@parischap/conversions/CVPositiveInteger'
+import * as CVReal from '@parischap/conversions/CVReal'
 import { describe, it } from "vitest";
 
 describe("CVBigInt", () => {

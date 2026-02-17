@@ -1,5 +1,5 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { MTypesCategory } from '@parischap/effect-lib';
+import * as MTypesCategory from '@parischap/effect-lib/MTypesCategory'
 import { describe, it } from 'vitest';
 
 describe('MTypesCategory', () => {

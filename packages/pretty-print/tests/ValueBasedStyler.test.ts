@@ -1,6 +1,8 @@
-import { ASPalette, ASStyle } from '@parischap/ansi-styles';
+import * as ASPalette from '@parischap/ansi-styles/ASPalette'
+import * as ASStyle from '@parischap/ansi-styles/ASStyle'
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { PPValue, PPValueBasedStyler } from '@parischap/pretty-print';
+import * as PPValue from '@parischap/pretty-print/PPValue'
+import * as PPValueBasedStyler from '@parischap/pretty-print/PPValueBasedStyler'
 import { describe, it } from 'vitest';
 
 describe('ValueBasedStyler', () => {

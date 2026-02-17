@@ -3,7 +3,8 @@ import * as CVNumberBase10Format from '@parischap/conversions/CVNumberBase10Form
 import * as CVTemplate from '@parischap/conversions/CVTemplate';
 import * as CVTemplatePlaceholder from '@parischap/conversions/CVTemplatePlaceholder';
 import * as CVTemplateSeparator from '@parischap/conversions/CVTemplateSeparator';
-import { Option, pipe } from 'effect';
+import {pipe} from 'effect'
+import * as Option from 'effect/Option'
 import { describe, it } from 'vitest';
 
 describe('CVTemplate', () => {

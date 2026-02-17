@@ -12,30 +12,25 @@
  *   `Left`
  */
 
-import {
-  MData,
-  MInputError,
-  MRegExp,
-  MRegExpString,
-  MString,
-  MStringFillPosition,
-  MStruct,
-  MTuple,
-  MTypes,
-} from '@parischap/effect-lib';
+import * as MData from '@parischap/effect-lib/MData'
+import * as MInputError from '@parischap/effect-lib/MInputError'
+import * as MRegExp from '@parischap/effect-lib/MRegExp'
+import * as MRegExpString from '@parischap/effect-lib/MRegExpString'
+import * as MString from '@parischap/effect-lib/MString'
+import * as MStringFillPosition from '@parischap/effect-lib/MStringFillPosition'
+import * as MStruct from '@parischap/effect-lib/MStruct'
+import * as MTuple from '@parischap/effect-lib/MTuple'
+import * as MTypes from '@parischap/effect-lib/MTypes'
 
-import {
-  Array,
-  Either,
-  flow,
-  Function,
-  HashMap,
-  pipe,
-  Schema,
-  String,
-  Struct,
-  Tuple,
-} from 'effect';
+import {flow, pipe} from 'effect'
+import * as Array from 'effect/Array'
+import * as Either from 'effect/Either'
+import * as Function from 'effect/Function'
+import * as HashMap from 'effect/HashMap'
+import * as Schema from 'effect/Schema'
+import * as String from 'effect/String'
+import * as Struct from 'effect/Struct'
+import * as Tuple from 'effect/Tuple'
 
 import * as CVReal from '../../../../primitive/Real.js';
 import * as CVNumberBase10Format from '../../../number-base10-format/index.js';

@@ -1,5 +1,5 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { PPMarkMap } from '@parischap/pretty-print';
+import * as PPMarkMap from '@parischap/pretty-print/PPMarkMap'
 import { describe, it } from 'vitest';
 
 describe('MarkMap', () => {

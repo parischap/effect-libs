@@ -3,8 +3,17 @@
  * same style)
  */
 
-import { MData, MDataEquivalenceBasedEquality, MStruct, MTypes } from '@parischap/effect-lib';
-import { Array, Equivalence, Hash, Predicate, String, Struct, flow, pipe } from 'effect';
+import * as MData from '@parischap/effect-lib/MData'
+import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality'
+import * as MStruct from '@parischap/effect-lib/MStruct'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import {flow, pipe} from 'effect'
+import * as Array from 'effect/Array'
+import * as Equivalence from 'effect/Equivalence'
+import * as Hash from 'effect/Hash'
+import * as Predicate from 'effect/Predicate'
+import * as String from 'effect/String'
+import * as Struct from 'effect/Struct'
 import * as ASCode from './Code.js';
 import * as ASStyleCharacteristics from './StyleCharacteristics.js';
 

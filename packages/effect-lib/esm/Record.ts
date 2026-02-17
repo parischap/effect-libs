@@ -1,6 +1,10 @@
 /** A simple extension to the Effect Record module */
 
-import { flow, Function, Option, pipe, Predicate, Record } from 'effect';
+import {flow, pipe} from 'effect'
+import * as Function from 'effect/Function'
+import * as Option from 'effect/Option'
+import * as Predicate from 'effect/Predicate'
+import * as Record from 'effect/Record'
 import * as MFunction from './Function.js';
 import * as MPredicate from './Predicate.js';
 import * as MTypes from './types/index.js';

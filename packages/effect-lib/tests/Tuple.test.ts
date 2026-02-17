@@ -1,6 +1,9 @@
 import * as TestUtils from "@parischap/configs/TestUtils";
-import { MTuple } from "@parischap/effect-lib";
-import { Array, Number, pipe, Tuple } from "effect";
+import * as MTuple from '@parischap/effect-lib/MTuple'
+import {pipe} from 'effect'
+import * as Array from 'effect/Array'
+import * as Number from 'effect/Number'
+import * as Tuple from 'effect/Tuple'
 import { describe, it } from "vitest";
 
 describe("MTuple", () => {

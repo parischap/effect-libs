@@ -1,7 +1,9 @@
 /** Module that implements the Overlined style characteristic */
 
-import { MDataEquivalenceBasedEquality, MTypes } from '@parischap/effect-lib';
-import { Option, Predicate } from 'effect';
+import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import * as Option from 'effect/Option'
+import * as Predicate from 'effect/Predicate'
 import * as ASSequence from '../../../Sequence.js';
 import * as ASOnOffOptionalStyleCharacteristic from './index.js';
 

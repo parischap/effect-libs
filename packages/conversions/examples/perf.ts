@@ -1,5 +1,5 @@
-import { CVDateTime } from '@parischap/conversions';
-import { DateTime } from 'effect';
+import * as CVDateTime from '@parischap/conversions/CVDateTime'
+import * as DateTime from 'effect/DateTime'
 
 // Warming-up
 CVDateTime.fromParts({ year: 2025 });

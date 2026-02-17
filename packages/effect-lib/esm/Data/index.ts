@@ -11,7 +11,8 @@
  * will only be equal with the Equal.equals operator if they are the same object
  */
 
-import { Inspectable, Pipeable } from 'effect';
+import * as Inspectable from 'effect/Inspectable'
+import * as Pipeable from 'effect/Pipeable'
 
 /**
  * Module tag

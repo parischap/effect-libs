@@ -3,8 +3,9 @@
  * the Palette module (see Palette.ts)
  */
 
-import { MTypes } from '@parischap/effect-lib';
-import { Array, flow } from 'effect';
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import {flow} from 'effect'
+import * as Array from 'effect/Array'
 import * as ASStyle from '../Style.js';
 
 /**

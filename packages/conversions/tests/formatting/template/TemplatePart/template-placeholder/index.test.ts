@@ -2,8 +2,11 @@ import * as TestUtils from '@parischap/configs/TestUtils';
 import * as CVNumberBase10Format from '@parischap/conversions/CVNumberBase10Format';
 import * as CVReal from '@parischap/conversions/CVReal';
 import * as CVTemplatePlaceholder from '@parischap/conversions/CVTemplatePlaceholder';
-import { MRegExpString, MStringFillPosition } from '@parischap/effect-lib';
-import { Option, Schema, Tuple } from 'effect';
+import * as MRegExpString from '@parischap/effect-lib/MRegExpString'
+import * as MStringFillPosition from '@parischap/effect-lib/MStringFillPosition'
+import * as Option from 'effect/Option'
+import * as Schema from 'effect/Schema'
+import * as Tuple from 'effect/Tuple'
 import { describe, it } from 'vitest';
 
 describe('CVTemplatePlaceholder', () => {

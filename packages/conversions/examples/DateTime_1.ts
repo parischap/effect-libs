@@ -1,5 +1,5 @@
-import { CVDateTime } from "@parischap/conversions";
-import { pipe } from "effect";
+import * as CVDateTime from '@parischap/conversions/CVDateTime'
+import {pipe} from 'effect'
 
 /** You can create a CVDateTime from a timestamp and timeZoneOffset expressed in hours */
 // Result: '1970-01-01T05:15:00.000+05:15

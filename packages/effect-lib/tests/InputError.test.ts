@@ -1,6 +1,6 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { MInputError } from '@parischap/effect-lib';
-import { Option } from 'effect';
+import * as MInputError from '@parischap/effect-lib/MInputError'
+import * as Option from 'effect/Option'
 import { describe, it } from 'vitest';
 
 describe('MInputError', () => {

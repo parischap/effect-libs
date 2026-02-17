@@ -1,7 +1,9 @@
 /** This module defines the list of the rounding options (see Intl.NumberFormat) */
 
-import { MMatch, MTypes } from '@parischap/effect-lib';
-import { flow, Function } from 'effect';
+import * as MMatch from '@parischap/effect-lib/MMatch'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import {flow} from 'effect'
+import * as Function from 'effect/Function'
 
 /**
  * Type that represents the possible rounding modes

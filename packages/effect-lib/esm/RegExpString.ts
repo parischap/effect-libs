@@ -1,6 +1,10 @@
 /** Very simple regular expression string module */
 
-import { Array, String as EString, Function, RegExp, pipe } from 'effect';
+import {pipe} from 'effect'
+import * as Array from 'effect/Array'
+import * as EString from 'effect/String'
+import * as Function from 'effect/Function'
+import * as RegExp from 'effect/RegExp'
 import * as MArray from './Array.js';
 import type * as MTypes from './types/index.js';
 

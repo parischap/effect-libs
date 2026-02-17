@@ -3,7 +3,11 @@
  * string.
  */
 
-import { Equivalence, Hash, Order, Predicate, Struct } from 'effect';
+import * as Equivalence from 'effect/Equivalence'
+import * as Hash from 'effect/Hash'
+import * as Order from 'effect/Order'
+import * as Predicate from 'effect/Predicate'
+import * as Struct from 'effect/Struct'
 import * as MDataEquivalenceBasedEquality from '../Data/DataEquivalenceBasedEquality.js';
 import * as MData from '../Data/index.js';
 import * as MTypes from '../types/index.js';

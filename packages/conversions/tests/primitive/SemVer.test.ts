@@ -1,6 +1,6 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { CVSemVer } from '@parischap/conversions';
-import { Option } from 'effect';
+import * as CVSemVer from '@parischap/conversions/CVSemVer'
+import * as Option from 'effect/Option'
 import { describe, it } from 'vitest';
 
 describe('CVSemVer', () => {

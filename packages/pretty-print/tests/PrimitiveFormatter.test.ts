@@ -1,7 +1,9 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { MBigInt } from '@parischap/effect-lib';
-import { PPOption, PPPrimitiveFormatter, PPValue } from '@parischap/pretty-print';
-import { pipe } from 'effect';
+import * as MBigInt from '@parischap/effect-lib/MBigInt'
+import * as PPOption from '@parischap/pretty-print/PPOption'
+import * as PPPrimitiveFormatter from '@parischap/pretty-print/PPPrimitiveFormatter'
+import * as PPValue from '@parischap/pretty-print/PPValue'
+import {pipe} from 'effect'
 import { describe, it } from 'vitest';
 
 describe('PrimitiveFormatter', () => {

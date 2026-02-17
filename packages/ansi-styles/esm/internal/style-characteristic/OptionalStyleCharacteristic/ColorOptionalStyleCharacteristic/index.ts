@@ -4,8 +4,11 @@
  * default color
  */
 
-import { MDataEquivalenceBasedEquality, MTypes } from '@parischap/effect-lib';
-import { Equivalence, Hash, Option } from 'effect';
+import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import * as Equivalence from 'effect/Equivalence'
+import * as Hash from 'effect/Hash'
+import * as Option from 'effect/Option'
 import * as AsColor from '../../../../Color/index.js';
 import * as ASOptionalStyleCharacteristic from '../index.js';
 

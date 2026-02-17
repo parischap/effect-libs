@@ -4,7 +4,9 @@ import * as CVDateTimeFormat from '@parischap/conversions/CVDateTimeFormat';
 import * as CVDateTimeFormatContext from '@parischap/conversions/CVDateTimeFormatContext';
 import * as CVDateTimeFormatPlaceholder from '@parischap/conversions/CVDateTimeFormatPlaceholder';
 import * as CVDateTimeFormatSeparator from '@parischap/conversions/CVDateTimeFormatSeparator';
-import { Either, Option, pipe } from 'effect';
+import {pipe} from 'effect'
+import * as Either from 'effect/Either'
+import * as Option from 'effect/Option'
 import { describe, it } from 'vitest';
 
 describe('CVDateTimeFormat', () => {

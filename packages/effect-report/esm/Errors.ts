@@ -1,4 +1,5 @@
-import { Cause, Data } from "effect";
+import * as Cause from 'effect/Cause'
+import * as Data from 'effect/Data'
 
 // Data.TaggedError extends Error and may therefore have a stack trace
 // Data.TaggedError extends Error and therefore is Errorish

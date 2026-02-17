@@ -1,6 +1,6 @@
 /** Module that implements a type that represents the names of the twelve months of a year */
 
-import { MTypes } from '@parischap/effect-lib';
+import * as MTypes from '@parischap/effect-lib/MTypes'
 
 /**
  * Type of a CVMonthNames

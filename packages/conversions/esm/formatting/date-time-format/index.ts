@@ -4,8 +4,19 @@
  * https://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table).
  */
 
-import { MData, MInputError, MMatch, MString, MTypes } from '@parischap/effect-lib';
-import { Array, Either, flow, Function, HashMap, Option, pipe, Record, Tuple } from 'effect';
+import * as MData from '@parischap/effect-lib/MData'
+import * as MInputError from '@parischap/effect-lib/MInputError'
+import * as MMatch from '@parischap/effect-lib/MMatch'
+import * as MString from '@parischap/effect-lib/MString'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import {flow, pipe} from 'effect'
+import * as Array from 'effect/Array'
+import * as Either from 'effect/Either'
+import * as Function from 'effect/Function'
+import * as HashMap from 'effect/HashMap'
+import * as Option from 'effect/Option'
+import * as Record from 'effect/Record'
+import * as Tuple from 'effect/Tuple'
 import * as CVDateTimeParts from '../../date-time/DateTimeParts.js';
 import * as CVDateTime from '../../date-time/index.js';
 import * as CVDateTimeFormatParts from '../../internal/formatting/date-time-format/DateTimeFormatParts.js';

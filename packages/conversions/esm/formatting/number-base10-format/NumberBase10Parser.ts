@@ -3,27 +3,22 @@
  * number according to the CVNumberBase10Format that was used to construct it
  */
 
-import {
-  MBigDecimal,
-  MData,
-  MNumber,
-  MPredicate,
-  MRegExpString,
-  MString,
-  MTypes,
-} from '@parischap/effect-lib';
-import {
-  BigDecimal,
-  flow,
-  Function,
-  Number,
-  Option,
-  pipe,
-  Predicate,
-  String,
-  Struct,
-  Tuple,
-} from 'effect';
+import * as MBigDecimal from '@parischap/effect-lib/MBigDecimal'
+import * as MData from '@parischap/effect-lib/MData'
+import * as MNumber from '@parischap/effect-lib/MNumber'
+import * as MPredicate from '@parischap/effect-lib/MPredicate'
+import * as MRegExpString from '@parischap/effect-lib/MRegExpString'
+import * as MString from '@parischap/effect-lib/MString'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import {flow, pipe} from 'effect'
+import * as BigDecimal from 'effect/BigDecimal'
+import * as Function from 'effect/Function'
+import * as Number from 'effect/Number'
+import * as Option from 'effect/Option'
+import * as Predicate from 'effect/Predicate'
+import * as String from 'effect/String'
+import * as Struct from 'effect/Struct'
+import * as Tuple from 'effect/Tuple'
 import * as CVScientificNotationMantissaValidator from '../../internal/formatting/number-base10-format/number-base10-format-scientific-notation-option/ScientificNotationMantissaValidator.js';
 import * as CVScientificNotationParser from '../../internal/formatting/number-base10-format/number-base10-format-scientific-notation-option/ScientificNotationParser.js';
 import * as CVSignParser from '../../internal/formatting/number-base10-format/number-base10-format-sign-display-option/SignParser.js';

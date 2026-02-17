@@ -1,7 +1,9 @@
-import { ASStyle, ASText } from '@parischap/ansi-styles';
+import * as ASStyle from '@parischap/ansi-styles/ASStyle'
+import * as ASText from '@parischap/ansi-styles/ASText'
 import * as ASStyleCharacteristics from '@parischap/ansi-styles/ASStyleCharacteristics';
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { Option, pipe } from 'effect';
+import {pipe} from 'effect'
+import * as Option from 'effect/Option'
 import { describe, it } from 'vitest';
 
 describe('ASStyle', () => {

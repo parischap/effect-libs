@@ -4,8 +4,12 @@
  * you are not familiar with this concept.
  */
 
-import { MString, MTypes } from '@parischap/effect-lib';
-import { Brand, Either, Option, Schema } from 'effect';
+import * as MString from '@parischap/effect-lib/MString'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import * as Brand from 'effect/Brand'
+import * as Either from 'effect/Either'
+import * as Option from 'effect/Option'
+import * as Schema from 'effect/Schema'
 
 /**
  * Module tag

@@ -3,8 +3,8 @@
  * `\x1b[` and `m`, e.g. [1,31] for bold red)
  */
 
-import { MTypes } from '@parischap/effect-lib';
-import { Array } from 'effect';
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import * as Array from 'effect/Array'
 
 /**
  * Type of a ASSequence.Type

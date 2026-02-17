@@ -19,28 +19,23 @@
  * timestamp.
  */
 
-import {
-  MData,
-  MDataEquivalenceBasedEquality,
-  MFunction,
-  MInputError,
-  MNumber,
-  MStruct,
-  MTypes,
-} from '@parischap/effect-lib';
-import {
-  DateTime,
-  Either,
-  Equivalence,
-  flow,
-  Function,
-  Hash,
-  Number,
-  Option,
-  pipe,
-  Predicate,
-  Struct,
-} from 'effect';
+import * as MData from '@parischap/effect-lib/MData'
+import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality'
+import * as MFunction from '@parischap/effect-lib/MFunction'
+import * as MInputError from '@parischap/effect-lib/MInputError'
+import * as MNumber from '@parischap/effect-lib/MNumber'
+import * as MStruct from '@parischap/effect-lib/MStruct'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import {flow, pipe} from 'effect'
+import * as DateTime from 'effect/DateTime'
+import * as Either from 'effect/Either'
+import * as Equivalence from 'effect/Equivalence'
+import * as Function from 'effect/Function'
+import * as Hash from 'effect/Hash'
+import * as Number from 'effect/Number'
+import * as Option from 'effect/Option'
+import * as Predicate from 'effect/Predicate'
+import * as Struct from 'effect/Struct'
 import * as GregorianDate from '../internal/date-time/GregorianDate.js';
 import * as IsoDate from '../internal/date-time/IsoDate.js';
 import * as CVTime from '../internal/date-time/Time.js';

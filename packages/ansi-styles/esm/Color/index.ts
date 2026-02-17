@@ -4,8 +4,16 @@
  * You can use the RGB.make function to build more RGB colors
  */
 
-import { MData, MDataEquivalenceBasedEquality, MTypes } from '@parischap/effect-lib';
-import { Array, Equal, Equivalence, Hash, Inspectable, Number, Pipeable } from 'effect';
+import * as MData from '@parischap/effect-lib/MData'
+import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import * as Array from 'effect/Array'
+import * as Equal from 'effect/Equal'
+import * as Equivalence from 'effect/Equivalence'
+import * as Hash from 'effect/Hash'
+import * as Inspectable from 'effect/Inspectable'
+import * as Number from 'effect/Number'
+import * as Pipeable from 'effect/Pipeable'
 import type * as ASSequence from '../internal/Sequence.js';
 
 /**

@@ -1,7 +1,10 @@
 /** Module that implements an optional foreground color style characteristic */
 
-import { MDataEquivalenceBasedEquality, MTypes } from '@parischap/effect-lib';
-import { Function, Option, Predicate } from 'effect';
+import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import * as Function from 'effect/Function'
+import * as Option from 'effect/Option'
+import * as Predicate from 'effect/Predicate'
 import * as AsColor from '../../../../Color/index.js';
 import * as ASSequence from '../../../Sequence.js';
 import * as ASOptionalStyleCharacteristic from '../index.js';

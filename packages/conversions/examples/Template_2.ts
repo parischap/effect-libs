@@ -1,10 +1,8 @@
-import {
-  CVNumberBase10Format,
-  CVReal,
-  CVTemplate,
-  CVTemplatePlaceholder,
-  CVTemplateSeparator,
-} from '@parischap/conversions';
+import * as CVNumberBase10Format from '@parischap/conversions/CVNumberBase10Format'
+import * as CVReal from '@parischap/conversions/CVReal'
+import * as CVTemplate from '@parischap/conversions/CVTemplate'
+import * as CVTemplatePlaceholder from '@parischap/conversions/CVTemplatePlaceholder'
+import * as CVTemplateSeparator from '@parischap/conversions/CVTemplateSeparator'
 
 // Let's define useful shortcuts
 const placeholder = CVTemplatePlaceholder;

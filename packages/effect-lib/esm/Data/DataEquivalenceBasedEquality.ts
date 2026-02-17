@@ -9,7 +9,8 @@
  * - for generic classes where the equivalence bears on fields not dependant on the generic type
  */
 
-import { Equal, Hash } from 'effect';
+import * as Equal from 'effect/Equal'
+import * as Hash from 'effect/Hash'
 import * as MData from './index.js';
 
 /**

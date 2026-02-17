@@ -1,7 +1,7 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as CVRounderParams from '@parischap/conversions/CVRounderParams';
 import * as CVRoundingOption from '@parischap/conversions/CVRoundingOption';
-import { Option } from 'effect';
+import * as Option from 'effect/Option'
 import { describe, it } from 'vitest';
 
 describe('CVRounderParams', () => {

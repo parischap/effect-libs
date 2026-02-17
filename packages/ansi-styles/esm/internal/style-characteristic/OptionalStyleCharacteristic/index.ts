@@ -1,7 +1,12 @@
 /** Module that implements an optional style characteristic */
 
-import { MData, MDataEquivalenceBasedEquality, MFunction, MTypes } from '@parischap/effect-lib';
-import { Function, Option, pipe } from 'effect';
+import * as MData from '@parischap/effect-lib/MData'
+import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality'
+import * as MFunction from '@parischap/effect-lib/MFunction'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import {pipe} from 'effect'
+import * as Function from 'effect/Function'
+import * as Option from 'effect/Option'
 import * as ASSequence from '../../Sequence.js';
 
 /**

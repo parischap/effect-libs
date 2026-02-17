@@ -1,20 +1,21 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import {
-  CVDateTime,
-  CVDateTimeFormat,
-  CVDateTimeFormatContext,
-  CVDateTimeFormatPlaceholder,
-  CVDateTimeFormatSeparator,
-  CVEmail,
-  CVInteger,
-  CVNumberBase10Format,
-  CVPositiveInteger,
-  CVPositiveReal,
-  CVReal,
-  CVSchema,
-  CVSemVer,
-} from '@parischap/conversions';
-import { BigDecimal, DateTime, pipe, Schema } from 'effect';
+import * as CVDateTime from '@parischap/conversions/CVDateTime'
+import * as CVDateTimeFormat from '@parischap/conversions/CVDateTimeFormat'
+import * as CVDateTimeFormatContext from '@parischap/conversions/CVDateTimeFormatContext'
+import * as CVDateTimeFormatPlaceholder from '@parischap/conversions/CVDateTimeFormatPlaceholder'
+import * as CVDateTimeFormatSeparator from '@parischap/conversions/CVDateTimeFormatSeparator'
+import * as CVEmail from '@parischap/conversions/CVEmail'
+import * as CVInteger from '@parischap/conversions/CVInteger'
+import * as CVNumberBase10Format from '@parischap/conversions/CVNumberBase10Format'
+import * as CVPositiveInteger from '@parischap/conversions/CVPositiveInteger'
+import * as CVPositiveReal from '@parischap/conversions/CVPositiveReal'
+import * as CVReal from '@parischap/conversions/CVReal'
+import * as CVSchema from '@parischap/conversions/CVSchema'
+import * as CVSemVer from '@parischap/conversions/CVSemVer'
+import {pipe} from 'effect'
+import * as BigDecimal from 'effect/BigDecimal'
+import * as DateTime from 'effect/DateTime'
+import * as Schema from 'effect/Schema'
 import { describe, it } from 'vitest';
 
 describe('CVSchema', () => {

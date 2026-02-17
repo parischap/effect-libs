@@ -1,6 +1,8 @@
 import * as TestUtils from "@parischap/configs/TestUtils";
-import { MChunk, MPredicate } from "@parischap/effect-lib";
-import { Chunk, pipe } from "effect";
+import * as MChunk from '@parischap/effect-lib/MChunk'
+import * as MPredicate from '@parischap/effect-lib/MPredicate'
+import {pipe} from 'effect'
+import * as Chunk from 'effect/Chunk'
 import { describe, it } from "vitest";
 
 describe("MChunk", () => {

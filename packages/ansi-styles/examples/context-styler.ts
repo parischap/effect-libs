@@ -1,9 +1,7 @@
-import {
-  ASConstantContextStyler,
-  ASContextStyler,
-  ASPalette,
-  ASPaletteContextStyler,
-} from '@parischap/ansi-styles';
+import * as ASConstantContextStyler from '@parischap/ansi-styles/ASConstantContextStyler'
+import * as ASContextStyler from '@parischap/ansi-styles/ASContextStyler'
+import * as ASPalette from '@parischap/ansi-styles/ASPalette'
+import * as ASPaletteContextStyler from '@parischap/ansi-styles/ASPaletteContextStyler'
 
 interface Value {
   readonly pos1: number;

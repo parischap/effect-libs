@@ -1,6 +1,6 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { MStringSearchResult } from '@parischap/effect-lib';
-import { Option } from 'effect';
+import * as MStringSearchResult from '@parischap/effect-lib/MStringSearchResult'
+import * as Option from 'effect/Option'
 import { describe, it } from 'vitest';
 
 describe('MString.SearchResult', () => {

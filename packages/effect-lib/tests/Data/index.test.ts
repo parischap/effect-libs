@@ -1,6 +1,7 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { MData } from '@parischap/effect-lib';
-import { Equal, Option } from 'effect';
+import * as MData from '@parischap/effect-lib/MData'
+import * as Equal from 'effect/Equal'
+import * as Option from 'effect/Option'
 import { describe, it } from 'vitest';
 
 describe('MData', () => {

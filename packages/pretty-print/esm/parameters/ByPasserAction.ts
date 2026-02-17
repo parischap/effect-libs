@@ -5,8 +5,8 @@
  * value. If it returns a `none`, the normal stringification process is applied.
  */
 
-import { MTypes } from '@parischap/effect-lib';
-import { Option } from 'effect';
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import * as Option from 'effect/Option'
 import type * as PPValue from '../internal/stringification/Value.js';
 import type * as PPStringifiedValue from '../stringification/StringifiedValue.js';
 import type * as PPByPasser from './ByPasser.js';

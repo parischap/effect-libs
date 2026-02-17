@@ -1,6 +1,12 @@
 /** A simple extension to the Effect BigDecimal module */
 
-import { BigDecimal, Brand, Either, flow, Function, Option, pipe, Tuple } from 'effect';
+import {flow, pipe} from 'effect'
+import * as BigDecimal from 'effect/BigDecimal'
+import * as Brand from 'effect/Brand'
+import * as Either from 'effect/Either'
+import * as Function from 'effect/Function'
+import * as Option from 'effect/Option'
+import * as Tuple from 'effect/Tuple'
 import * as MBigInt from './BigInt.js';
 import * as MTypes from './types/index.js';
 

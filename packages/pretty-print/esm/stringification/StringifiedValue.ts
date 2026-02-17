@@ -5,9 +5,15 @@
  * may contain en empty text.
  */
 
-import { ASText } from '@parischap/ansi-styles';
-import { MArray, MTypes } from '@parischap/effect-lib';
-import { Array, Equivalence, flow, Function, Number, pipe, Predicate } from 'effect';
+import * as ASText from '@parischap/ansi-styles/ASText'
+import * as MArray from '@parischap/effect-lib/MArray'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import {flow, pipe} from 'effect'
+import * as Array from 'effect/Array'
+import * as Equivalence from 'effect/Equivalence'
+import * as Function from 'effect/Function'
+import * as Number from 'effect/Number'
+import * as Predicate from 'effect/Predicate'
 import type * as PPStringifiedProperties from '../internal/stringification/StringifiedProperties.js';
 
 /**

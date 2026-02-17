@@ -5,8 +5,11 @@ import * as CVTemplate from '@parischap/conversions/CVTemplate';
 import * as CVTemplateParser from '@parischap/conversions/CVTemplateParser';
 import * as CVTemplatePlaceholder from '@parischap/conversions/CVTemplatePlaceholder';
 import * as CVTemplateSeparator from '@parischap/conversions/CVTemplateSeparator';
-import { MInputError, MTypes } from '@parischap/effect-lib';
-import { Either, Option, pipe } from 'effect';
+import * as MInputError from '@parischap/effect-lib/MInputError'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import {pipe} from 'effect'
+import * as Either from 'effect/Either'
+import * as Option from 'effect/Option'
 import { describe, it } from 'vitest';
 
 describe('CVTemplateParser', () => {

@@ -1,7 +1,10 @@
 /** A simple extension to the `Effect.BigInt` module */
 
-import { MBigInt, MTypes } from "@parischap/effect-lib";
-import { Brand, Either, Option } from "effect";
+import * as MBigInt from '@parischap/effect-lib/MBigInt'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import * as Brand from 'effect/Brand'
+import * as Either from 'effect/Either'
+import * as Option from 'effect/Option'
 import * as CVInteger from "./Integer.js";
 import * as CVReal from "./Real.js";
 

@@ -6,8 +6,12 @@
  * needs.
  */
 
-import { MData, MString, MTypes } from '@parischap/effect-lib';
-import { Function, pipe, Struct } from 'effect';
+import * as MData from '@parischap/effect-lib/MData'
+import * as MString from '@parischap/effect-lib/MString'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import {pipe} from 'effect'
+import * as Function from 'effect/Function'
+import * as Struct from 'effect/Struct'
 import * as ASStyle from './Style.js';
 import * as ASStyles from './internal/Styles.js';
 

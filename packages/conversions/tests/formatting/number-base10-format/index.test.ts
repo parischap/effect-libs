@@ -1,8 +1,12 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as CVNumberBase10Format from '@parischap/conversions/CVNumberBase10Format';
 import * as CVReal from '@parischap/conversions/CVReal';
-import { MBigDecimal, MNumber } from '@parischap/effect-lib';
-import { BigDecimal, Option, pipe, Tuple } from 'effect';
+import * as MBigDecimal from '@parischap/effect-lib/MBigDecimal'
+import * as MNumber from '@parischap/effect-lib/MNumber'
+import {pipe} from 'effect'
+import * as BigDecimal from 'effect/BigDecimal'
+import * as Option from 'effect/Option'
+import * as Tuple from 'effect/Tuple'
 import { describe, it } from 'vitest';
 
 describe('CVNumberBase10Format', () => {

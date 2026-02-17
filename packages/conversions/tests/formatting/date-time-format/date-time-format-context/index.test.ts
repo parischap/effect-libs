@@ -1,6 +1,6 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as CVDateTimeFormatContext from '@parischap/conversions/CVDateTimeFormatContext';
-import { Option } from 'effect';
+import * as Option from 'effect/Option'
 import { describe, it } from 'vitest';
 
 describe('CVDateTimeFormatContext', () => {

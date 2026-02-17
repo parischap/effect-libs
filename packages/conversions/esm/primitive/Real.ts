@@ -5,8 +5,15 @@
  * this concept.
  */
 
-import { MNumber, MString, MTypes } from '@parischap/effect-lib';
-import { BigDecimal, Brand, Either, flow, Option, Schema } from 'effect';
+import * as MNumber from '@parischap/effect-lib/MNumber'
+import * as MString from '@parischap/effect-lib/MString'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import {flow} from 'effect'
+import * as BigDecimal from 'effect/BigDecimal'
+import * as Brand from 'effect/Brand'
+import * as Either from 'effect/Either'
+import * as Option from 'effect/Option'
+import * as Schema from 'effect/Schema'
 
 /**
  * Module tag

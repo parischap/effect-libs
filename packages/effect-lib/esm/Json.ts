@@ -1,6 +1,6 @@
 /** A port of JSON.stringify and JSON.parse in the effect world */
 
-import { Effect } from "effect";
+import * as Effect from 'effect/Effect'
 import * as MPortError from "./PortError.js";
 
 /**

@@ -3,7 +3,7 @@
  * `CVTemplatePlaceholder` that implements it
  */
 
-import { HashMap } from 'effect';
+import * as HashMap from 'effect/HashMap'
 import * as CVDateTimeFormatToken from '../../../../formatting/date-time-format/DateTimeFormatToken.js';
 import * as CVDateTimeFormatPlaceholder from '../../../../formatting/template/TemplatePart/template-placeholder/index.js';
 import * as CVReal from '../../../../primitive/Real.js';

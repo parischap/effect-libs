@@ -1,4 +1,4 @@
-import { ASRgbColor } from '@parischap/ansi-styles';
+import * as ASRgbColor from '@parischap/ansi-styles/ASRgbColor'
 import * as ASBackgroundColorStyleCharacteristic from '@parischap/ansi-styles/ASBackgroundColorStyleCharacteristic';
 import * as ASBlinkingStyleCharacteristic from '@parischap/ansi-styles/ASBlinkingStyleCharacteristic';
 import * as ASBoldStyleCharacteristic from '@parischap/ansi-styles/ASBoldStyleCharacteristic';
@@ -13,7 +13,7 @@ import * as ASSequence from '@parischap/ansi-styles/ASSequence';
 import * as ASStruckThroughStyleCharacteristic from '@parischap/ansi-styles/ASStruckThroughStyleCharacteristic';
 import * as ASUnderlinedStyleCharacteristic from '@parischap/ansi-styles/ASUnderlinedStyleCharacteristic';
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { Option } from 'effect';
+import * as Option from 'effect/Option'
 import { describe, it } from 'vitest';
 
 describe('ASOptionalStyleCharacteristic', () => {

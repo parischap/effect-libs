@@ -1,7 +1,9 @@
-import { ASEightBitColor, ASThreeBitColor } from '@parischap/ansi-styles';
+import * as ASEightBitColor from '@parischap/ansi-styles/ASEightBitColor'
+import * as ASThreeBitColor from '@parischap/ansi-styles/ASThreeBitColor'
 import * as ASStyleCharacteristics from '@parischap/ansi-styles/ASStyleCharacteristics';
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { Option, pipe } from 'effect';
+import {pipe} from 'effect'
+import * as Option from 'effect/Option'
 import { describe, it } from 'vitest';
 
 describe('ASStyleCharacteristics', () => {

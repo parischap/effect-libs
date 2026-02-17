@@ -1,6 +1,6 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { CVEmail } from '@parischap/conversions';
-import { Option } from 'effect';
+import * as CVEmail from '@parischap/conversions/CVEmail'
+import * as Option from 'effect/Option'
 import { describe, it } from 'vitest';
 
 describe('CVEmail', () => {

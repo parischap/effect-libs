@@ -47,8 +47,9 @@
  * date
  */
 
-import { MData, MTypes } from '@parischap/effect-lib';
-import { Struct } from 'effect';
+import * as MData from '@parischap/effect-lib/MData'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import * as Struct from 'effect/Struct'
 import * as CVTemplateParts from '../../internal/formatting/template/TemplateParts.js';
 
 /**

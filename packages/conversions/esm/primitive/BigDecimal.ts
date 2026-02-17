@@ -1,7 +1,7 @@
 /** A simple extension to the `Effect.BigDecimal` module */
 
-import { MTypes } from "@parischap/effect-lib";
-import { BigDecimal } from "effect";
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import * as BigDecimal from 'effect/BigDecimal'
 import * as CVReal from "./Real.js";
 
 /**

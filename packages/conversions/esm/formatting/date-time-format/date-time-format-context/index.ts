@@ -6,8 +6,20 @@
  * translated strings
  */
 
-import { MArray, MData, MInputError, MPredicate, MString, MTypes } from '@parischap/effect-lib';
-import { Array, Either, flow, HashMap, Number, Option, pipe, Struct, Tuple } from 'effect';
+import * as MArray from '@parischap/effect-lib/MArray'
+import * as MData from '@parischap/effect-lib/MData'
+import * as MInputError from '@parischap/effect-lib/MInputError'
+import * as MPredicate from '@parischap/effect-lib/MPredicate'
+import * as MString from '@parischap/effect-lib/MString'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import {flow, pipe} from 'effect'
+import * as Array from 'effect/Array'
+import * as Either from 'effect/Either'
+import * as HashMap from 'effect/HashMap'
+import * as Number from 'effect/Number'
+import * as Option from 'effect/Option'
+import * as Struct from 'effect/Struct'
+import * as Tuple from 'effect/Tuple'
 import { DAY_MS } from '../../../date-time/dateTimeConstants.js';
 import * as CVDateTimeFormatTokenMap from '../../../internal/formatting/date-time-format/date-time-format-context/DateTimeFormatTokenMap.js';
 import * as CVReal from '../../../primitive/Real.js';

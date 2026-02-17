@@ -1,6 +1,10 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { PPPropertyFilter, PPPropertyFilters, PPValue, PPValues } from '@parischap/pretty-print';
-import { Array, pipe } from 'effect';
+import * as PPPropertyFilter from '@parischap/pretty-print/PPPropertyFilter'
+import * as PPPropertyFilters from '@parischap/pretty-print/PPPropertyFilters'
+import * as PPValue from '@parischap/pretty-print/PPValue'
+import * as PPValues from '@parischap/pretty-print/PPValues'
+import {pipe} from 'effect'
+import * as Array from 'effect/Array'
 import { describe, it } from 'vitest';
 
 describe('PropertyFilters', () => {

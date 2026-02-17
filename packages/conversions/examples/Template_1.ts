@@ -1,13 +1,12 @@
-import {
-  CVNumberBase10Format,
-  CVReal,
-  CVSchema,
-  CVTemplate,
-  CVTemplatePlaceholder,
-  CVTemplateSeparator,
-} from '@parischap/conversions';
-import { MRegExpString } from '@parischap/effect-lib';
-import { pipe, Schema } from 'effect';
+import * as CVNumberBase10Format from '@parischap/conversions/CVNumberBase10Format'
+import * as CVReal from '@parischap/conversions/CVReal'
+import * as CVSchema from '@parischap/conversions/CVSchema'
+import * as CVTemplate from '@parischap/conversions/CVTemplate'
+import * as CVTemplatePlaceholder from '@parischap/conversions/CVTemplatePlaceholder'
+import * as CVTemplateSeparator from '@parischap/conversions/CVTemplateSeparator'
+import * as MRegExpString from '@parischap/effect-lib/MRegExpString'
+import {pipe} from 'effect'
+import * as Schema from 'effect/Schema'
 
 // Let's define useful shortcuts
 const ph = CVTemplatePlaceholder;

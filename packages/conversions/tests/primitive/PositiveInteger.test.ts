@@ -1,6 +1,10 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { CVInteger, CVPositiveInteger, CVPositiveReal, CVReal } from '@parischap/conversions';
-import { BigDecimal, Option } from 'effect';
+import * as CVInteger from '@parischap/conversions/CVInteger'
+import * as CVPositiveInteger from '@parischap/conversions/CVPositiveInteger'
+import * as CVPositiveReal from '@parischap/conversions/CVPositiveReal'
+import * as CVReal from '@parischap/conversions/CVReal'
+import * as BigDecimal from 'effect/BigDecimal'
+import * as Option from 'effect/Option'
 import { describe, it } from 'vitest';
 
 describe('CVPositiveInteger', () => {

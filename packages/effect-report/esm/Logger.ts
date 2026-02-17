@@ -1,5 +1,14 @@
-import { MString, MTypes } from '@parischap/effect-lib';
-import { Array, Effect, FiberId, List, LogLevel, Logger, Option, String, pipe } from 'effect';
+import * as MString from '@parischap/effect-lib/MString'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import {pipe} from 'effect'
+import * as Array from 'effect/Array'
+import * as Effect from 'effect/Effect'
+import * as FiberId from 'effect/FiberId'
+import * as List from 'effect/List'
+import * as LogLevel from 'effect/LogLevel'
+import * as Logger from 'effect/Logger'
+import * as Option from 'effect/Option'
+import * as String from 'effect/String'
 
 //const moduleTag = '@parischap/effect-lib/Logger/';
 

@@ -1,6 +1,12 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { MCache, MTypes } from '@parischap/effect-lib';
-import { Array, Option, Order, Record, Tuple, pipe } from 'effect';
+import * as MCache from '@parischap/effect-lib/MCache'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import {pipe} from 'effect'
+import * as Array from 'effect/Array'
+import * as Option from 'effect/Option'
+import * as Order from 'effect/Order'
+import * as Record from 'effect/Record'
+import * as Tuple from 'effect/Tuple'
 import { describe, it } from 'vitest';
 
 describe('MCache', () => {

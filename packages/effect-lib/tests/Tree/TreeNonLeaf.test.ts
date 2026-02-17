@@ -1,6 +1,6 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { MTreeNonLeaf } from '@parischap/effect-lib';
-import { Option } from 'effect';
+import * as MTreeNonLeaf from '@parischap/effect-lib/MTreeNonLeaf'
+import * as Option from 'effect/Option'
 import { describe, it } from 'vitest';
 
 describe('MTreeNonLeaf', () => {

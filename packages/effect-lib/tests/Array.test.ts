@@ -1,21 +1,20 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { MArray, MPredicate, MTuple } from '@parischap/effect-lib';
-import {
-  Array,
-  Either,
-  Number as ENumber,
-  Equal,
-  flow,
-  Function,
-  Hash,
-  Option,
-  Order,
-  pipe,
-  Predicate,
-  Record,
-  Struct,
-  Tuple,
-} from 'effect';
+import * as MArray from '@parischap/effect-lib/MArray'
+import * as MPredicate from '@parischap/effect-lib/MPredicate'
+import * as MTuple from '@parischap/effect-lib/MTuple'
+import {flow, pipe} from 'effect'
+import * as Array from 'effect/Array'
+import * as Either from 'effect/Either'
+import * as ENumber from 'effect/Number'
+import * as Equal from 'effect/Equal'
+import * as Function from 'effect/Function'
+import * as Hash from 'effect/Hash'
+import * as Option from 'effect/Option'
+import * as Order from 'effect/Order'
+import * as Predicate from 'effect/Predicate'
+import * as Record from 'effect/Record'
+import * as Struct from 'effect/Struct'
+import * as Tuple from 'effect/Tuple'
 import { describe, it } from 'vitest';
 
 describe('MArray', () => {

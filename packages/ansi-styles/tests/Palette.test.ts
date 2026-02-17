@@ -1,6 +1,7 @@
-import { ASPalette, ASStyle } from '@parischap/ansi-styles';
+import * as ASPalette from '@parischap/ansi-styles/ASPalette'
+import * as ASStyle from '@parischap/ansi-styles/ASStyle'
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { Option } from 'effect';
+import * as Option from 'effect/Option'
 import { describe, it } from 'vitest';
 
 describe('ASPalette', () => {

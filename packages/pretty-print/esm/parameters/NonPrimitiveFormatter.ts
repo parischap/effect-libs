@@ -9,29 +9,24 @@
  * needs.
  */
 
-import { ASText } from '@parischap/ansi-styles';
-import {
-  MFunction,
-  MInspectable,
-  MMatch,
-  MPipeable,
-  MString,
-  MTuple,
-  MTypes,
-} from '@parischap/effect-lib';
-import {
-  Array,
-  Equal,
-  Equivalence,
-  flow,
-  Function,
-  Hash,
-  Number,
-  pipe,
-  Pipeable,
-  Predicate,
-  Struct,
-} from 'effect';
+import * as ASText from '@parischap/ansi-styles/ASText'
+import * as MFunction from '@parischap/effect-lib/MFunction'
+import * as MInspectable from '@parischap/effect-lib/MInspectable'
+import * as MMatch from '@parischap/effect-lib/MMatch'
+import * as MPipeable from '@parischap/effect-lib/MPipeable'
+import * as MString from '@parischap/effect-lib/MString'
+import * as MTuple from '@parischap/effect-lib/MTuple'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import {flow, pipe} from 'effect'
+import * as Array from 'effect/Array'
+import * as Equal from 'effect/Equal'
+import * as Equivalence from 'effect/Equivalence'
+import * as Function from 'effect/Function'
+import * as Hash from 'effect/Hash'
+import * as Number from 'effect/Number'
+import * as Pipeable from 'effect/Pipeable'
+import * as Predicate from 'effect/Predicate'
+import * as Struct from 'effect/Struct'
 import * as PPMarkShowerConstructor from './MarkShowerConstructor.js';
 import type * as PPOption from './Option.js';
 import * as PPStringifiedProperties from './StringifiedProperties.js';

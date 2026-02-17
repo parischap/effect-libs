@@ -1,6 +1,7 @@
-import { ASStyle } from '@parischap/ansi-styles';
-import { MFs } from '@parischap/effect-lib';
-import { Effect, flow, pipe } from 'effect';
+import * as ASStyle from '@parischap/ansi-styles/ASStyle'
+import * as MFs from '@parischap/effect-lib/MFs'
+import {flow, pipe} from 'effect'
+import * as Effect from 'effect/Effect'
 import * as MCause from './Cause.js';
 import * as RErrors from './Errors.js';
 import * as RLogger from './Logger.js';

@@ -5,8 +5,14 @@
  * not familiar with this concept.
  */
 
-import { MTypes } from '@parischap/effect-lib';
-import { BigDecimal, Brand, Either, flow, Function, Option, Schema } from 'effect';
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import {flow} from 'effect'
+import * as BigDecimal from 'effect/BigDecimal'
+import * as Brand from 'effect/Brand'
+import * as Either from 'effect/Either'
+import * as Function from 'effect/Function'
+import * as Option from 'effect/Option'
+import * as Schema from 'effect/Schema'
 import * as CVInt from '../internal/primitive/Int.js';
 import * as CVReal from './Real.js';
 

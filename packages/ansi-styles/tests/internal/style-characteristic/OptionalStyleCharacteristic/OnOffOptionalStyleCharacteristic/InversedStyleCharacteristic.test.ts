@@ -1,6 +1,6 @@
 import * as ASInversedStyleCharacteristic from '@parischap/ansi-styles/ASInversedStyleCharacteristic';
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { Option } from 'effect';
+import * as Option from 'effect/Option'
 import { describe, it } from 'vitest';
 
 describe('ASInversedStyleCharacteristic', () => {

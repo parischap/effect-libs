@@ -2,8 +2,15 @@
  * This module implements a mantissa adjuster. It takes a number a,nd returns a mantissa and an
  * optional exponent that respect the chosen sscientific notation
  */
-import { MBigInt, MMatch, MNumber, MTypes } from '@parischap/effect-lib';
-import { BigDecimal, BigInt, flow, Option, Tuple } from 'effect';
+import * as MBigInt from '@parischap/effect-lib/MBigInt'
+import * as MMatch from '@parischap/effect-lib/MMatch'
+import * as MNumber from '@parischap/effect-lib/MNumber'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import {flow} from 'effect'
+import * as BigDecimal from 'effect/BigDecimal'
+import * as BigInt from 'effect/BigInt'
+import * as Option from 'effect/Option'
+import * as Tuple from 'effect/Tuple'
 import * as CVNumberBase10FormatScientificNotationOption from '../../../../formatting/number-base10-format/number-base10-format-scientific-notation-option/index.js';
 
 /**

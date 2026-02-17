@@ -1,9 +1,7 @@
-import {
-  CVDateTimeFormat,
-  CVDateTimeFormatContext,
-  CVDateTimeFormatPlaceholder,
-  CVDateTimeFormatSeparator,
-} from '@parischap/conversions';
+import * as CVDateTimeFormat from '@parischap/conversions/CVDateTimeFormat'
+import * as CVDateTimeFormatContext from '@parischap/conversions/CVDateTimeFormatContext'
+import * as CVDateTimeFormatPlaceholder from '@parischap/conversions/CVDateTimeFormatPlaceholder'
+import * as CVDateTimeFormatSeparator from '@parischap/conversions/CVDateTimeFormatSeparator'
 
 // Let's define useful shortcuts
 const placeholder = CVDateTimeFormatPlaceholder.make;

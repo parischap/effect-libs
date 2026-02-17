@@ -1,6 +1,6 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as CVTemplateSeparator from '@parischap/conversions/CVTemplateSeparator';
-import { Option } from 'effect';
+import * as Option from 'effect/Option'
 import { describe, it } from 'vitest';
 
 describe('CVTemplateSeparator', () => {

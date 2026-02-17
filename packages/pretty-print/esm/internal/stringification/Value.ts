@@ -1,12 +1,15 @@
 /** Type that represents a value in its stringification context. */
-import {
-  MData,
-  MDataEquivalenceBasedEquality,
-  MString,
-  MTypes,
-  MTypesCategory,
-} from '@parischap/effect-lib';
-import { Array, Equivalence, Hash, pipe, Predicate, Struct } from 'effect';
+import * as MData from '@parischap/effect-lib/MData'
+import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality'
+import * as MString from '@parischap/effect-lib/MString'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import * as MTypesCategory from '@parischap/effect-lib/MTypesCategory'
+import {pipe} from 'effect'
+import * as Array from 'effect/Array'
+import * as Equivalence from 'effect/Equivalence'
+import * as Hash from 'effect/Hash'
+import * as Predicate from 'effect/Predicate'
+import * as Struct from 'effect/Struct'
 
 /**
  * Module tag

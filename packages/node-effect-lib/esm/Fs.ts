@@ -1,27 +1,28 @@
 /** FIX GLOB */
-import { Error as PlatformError, FileSystem as PlatformFs } from '@effect/platform';
-import { NodeFileSystem as PlatformNodeFs } from '@effect/platform-node';
-import { MFs, MPredicate, MTuple, MTypes } from '@parischap/effect-lib';
+import * as PlatformError from '@effect/platform/Error'
+import * as PlatformFs from '@effect/platform/FileSystem'
+import * as PlatformNodeFs from '@effect/platform-node/NodeFileSystem'
+import * as MFs from '@parischap/effect-lib/MFs'
+import * as MPredicate from '@parischap/effect-lib/MPredicate'
+import * as MTuple from '@parischap/effect-lib/MTuple'
+import * as MTypes from '@parischap/effect-lib/MTypes'
 import * as NPath from './Path.js';
 
-import {
-  Array,
-  Cause,
-  Chunk,
-  Context,
-  Effect,
-  Either,
-  Layer,
-  Option,
-  Predicate,
-  Scope,
-  Sink,
-  Stream,
-  Struct,
-  Tuple,
-  flow,
-  pipe,
-} from 'effect';
+import {flow, pipe} from 'effect'
+import * as Array from 'effect/Array'
+import * as Cause from 'effect/Cause'
+import * as Chunk from 'effect/Chunk'
+import * as Context from 'effect/Context'
+import * as Effect from 'effect/Effect'
+import * as Either from 'effect/Either'
+import * as Layer from 'effect/Layer'
+import * as Option from 'effect/Option'
+import * as Predicate from 'effect/Predicate'
+import * as Scope from 'effect/Scope'
+import * as Sink from 'effect/Sink'
+import * as Stream from 'effect/Stream'
+import * as Struct from 'effect/Struct'
+import * as Tuple from 'effect/Tuple'
 
 import { Concurrency } from 'effect/Types';
 

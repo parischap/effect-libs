@@ -1,6 +1,8 @@
 /** This module implements a type that represents the possible categories of a JavaScript value */
 
-import { Array, Function, Predicate } from 'effect';
+import * as Array from 'effect/Array'
+import * as Function from 'effect/Function'
+import * as Predicate from 'effect/Predicate'
 
 /**
  * Type of a MTypeCategory

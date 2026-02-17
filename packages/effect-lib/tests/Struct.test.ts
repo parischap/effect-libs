@@ -1,6 +1,8 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { MStruct } from '@parischap/effect-lib';
-import { flow, Number, pipe, Struct } from 'effect';
+import * as MStruct from '@parischap/effect-lib/MStruct'
+import {flow, pipe} from 'effect'
+import * as Number from 'effect/Number'
+import * as Struct from 'effect/Struct'
 import { describe, it } from 'vitest';
 
 /** Append */

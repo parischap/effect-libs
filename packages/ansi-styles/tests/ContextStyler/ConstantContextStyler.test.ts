@@ -1,7 +1,8 @@
-import { ASConstantContextStyler, ASContextStyler } from '@parischap/ansi-styles';
+import * as ASConstantContextStyler from '@parischap/ansi-styles/ASConstantContextStyler'
+import * as ASContextStyler from '@parischap/ansi-styles/ASContextStyler'
 import * as ASStyleCharacteristics from '@parischap/ansi-styles/ASStyleCharacteristics';
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { Option } from 'effect';
+import * as Option from 'effect/Option'
 import { describe, it } from 'vitest';
 
 describe('ASConstantContextStyler', () => {

@@ -1,7 +1,12 @@
 /** This module implements a type that tries to parse the scientific notation part from a string */
 
-import { MMatch, MNumber, MTypes } from '@parischap/effect-lib';
-import { flow, Function, Option, String } from 'effect';
+import * as MMatch from '@parischap/effect-lib/MMatch'
+import * as MNumber from '@parischap/effect-lib/MNumber'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import {flow} from 'effect'
+import * as Function from 'effect/Function'
+import * as Option from 'effect/Option'
+import * as String from 'effect/String'
 import * as CVNumberBase10FormatScientificNotationOption from '../../../../formatting/number-base10-format/number-base10-format-scientific-notation-option/index.js';
 /**
  * Type of a `CVScientificNotationParser`

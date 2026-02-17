@@ -1,6 +1,10 @@
 /** This module implements an array of `CVTemplatePart`'s (see TemplatePart.ts) */
-import { MMatch, MTypes } from '@parischap/effect-lib';
-import { Array, flow, Function, Option } from 'effect';
+import * as MMatch from '@parischap/effect-lib/MMatch'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import {flow} from 'effect'
+import * as Array from 'effect/Array'
+import * as Function from 'effect/Function'
+import * as Option from 'effect/Option'
 import * as CVTemplatePart from '../../../formatting/template/TemplatePart/index.js';
 import * as CVTemplatePlaceholder from '../../../formatting/template/TemplatePart/template-placeholder/index.js';
 import * as CVTemplateSeparator from '../../../formatting/template/TemplatePart/template-separator/index.js';

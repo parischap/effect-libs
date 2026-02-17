@@ -133,6 +133,9 @@
     "./CVNumberBase10FormatSignDisplayOption": {
       "default": "./esm/formatting/number-base10-format/number-base10-format-sign-display-option/index.ts"
     },
+    "./CVNumberBase10Formatter": {
+      "default": "./esm/formatting/number-base10-format/NumberBase10Formatter.ts"
+    },
     "./CVNumberBase10Parser": {
       "default": "./esm/formatting/number-base10-format/NumberBase10Parser.ts"
     },

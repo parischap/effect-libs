@@ -1,5 +1,6 @@
-import { PPOption, PPStringifiedValue } from '@parischap/pretty-print';
-import { pipe } from 'effect';
+import * as PPOption from '@parischap/pretty-print/PPOption'
+import * as PPStringifiedValue from '@parischap/pretty-print/PPStringifiedValue'
+import {pipe} from 'effect'
 
 const stringifier = PPOption.toStringifier(PPOption.darkModeTreeify);
 

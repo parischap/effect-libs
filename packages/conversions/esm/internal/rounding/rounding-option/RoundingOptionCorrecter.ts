@@ -8,8 +8,11 @@
  * It returns the increment to apply to the last significand digit 0,-1 or 1
  */
 
-import { MMatch, MTypes } from '@parischap/effect-lib';
-import { flow, Function, Struct } from 'effect';
+import * as MMatch from '@parischap/effect-lib/MMatch'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import {flow} from 'effect'
+import * as Function from 'effect/Function'
+import * as Struct from 'effect/Struct'
 import * as CVRoundingOption from '../../../rounding/rounding-option/index.js';
 /**
  * Type of a CVRoundingOptionCorrecter

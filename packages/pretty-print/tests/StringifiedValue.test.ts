@@ -1,7 +1,8 @@
-import { ASText } from '@parischap/ansi-styles';
+import * as ASText from '@parischap/ansi-styles/ASText'
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { PPStringifiedValue } from '@parischap/pretty-print';
-import { Array, pipe } from 'effect';
+import * as PPStringifiedValue from '@parischap/pretty-print/PPStringifiedValue'
+import {pipe} from 'effect'
+import * as Array from 'effect/Array'
 import { describe, it } from 'vitest';
 
 describe('StringifiedValue', () => {

@@ -1,8 +1,9 @@
-import { AST, Schema } from "@effect/schema";
-import { MSchema } from "@parischap/effect-lib";
+import * as AST from '@effect/schema/AST'
+import * as Schema from '@effect/schema/Schema'
+import * as MSchema from '@parischap/effect-lib/MSchema'
 import * as RErrors from "./Errors.js";
 
-import { Effect } from "effect";
+import * as Effect from 'effect/Effect'
 
 export type CompiledParser<A, R> = (
   i: unknown,

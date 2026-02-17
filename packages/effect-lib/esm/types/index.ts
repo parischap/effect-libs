@@ -1,6 +1,9 @@
 /** A simple type module */
 
-import { Array, Option, pipe, Predicate } from 'effect';
+import {pipe} from 'effect'
+import * as Array from 'effect/Array'
+import * as Option from 'effect/Option'
+import * as Predicate from 'effect/Predicate'
 
 /**
  * Type that represents a non-null object as defined in javascript. It includes records (in their

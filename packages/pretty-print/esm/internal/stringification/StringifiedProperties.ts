@@ -3,9 +3,14 @@
  * represents the output of the stringification process of the properties of a non-primitive value.
  */
 
-import { ASText } from '@parischap/ansi-styles';
-import { MArray, MTypes } from '@parischap/effect-lib';
-import { Array, flow, Function, Number, Order } from 'effect';
+import * as ASText from '@parischap/ansi-styles/ASText'
+import * as MArray from '@parischap/effect-lib/MArray'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import {flow} from 'effect'
+import * as Array from 'effect/Array'
+import * as Function from 'effect/Function'
+import * as Number from 'effect/Number'
+import * as Order from 'effect/Order'
 import * as PPStringifiedValue from '../../stringification/StringifiedValue.js';
 
 /**

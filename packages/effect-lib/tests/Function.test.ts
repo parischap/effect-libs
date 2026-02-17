@@ -1,6 +1,8 @@
 import * as TestUtils from "@parischap/configs/TestUtils";
-import { MFunction } from "@parischap/effect-lib";
-import { Number, pipe, String } from "effect";
+import * as MFunction from '@parischap/effect-lib/MFunction'
+import {pipe} from 'effect'
+import * as Number from 'effect/Number'
+import * as String from 'effect/String'
 import { describe, it } from "vitest";
 
 describe("MFunction", () => {

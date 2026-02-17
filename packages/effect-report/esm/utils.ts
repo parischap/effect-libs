@@ -1,7 +1,12 @@
-import { MArray, MString, MTypes } from '@parischap/effect-lib';
+import * as MArray from '@parischap/effect-lib/MArray'
+import * as MString from '@parischap/effect-lib/MString'
+import * as MTypes from '@parischap/effect-lib/MTypes'
 
-import { JsAnsi, JsString } from '@parischap/js-lib';
-import { Array, String, pipe } from 'effect';
+import * as JsAnsi from '@parischap/js-lib/JsAnsi'
+import * as JsString from '@parischap/js-lib/JsString'
+import {pipe} from 'effect'
+import * as Array from 'effect/Array'
+import * as String from 'effect/String'
 
 const relative =
   (from: string, pathSep: string) =>

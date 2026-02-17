@@ -1,6 +1,14 @@
-import { JsAnsi } from "@parischap/ansi-styles";
-import { MArray, MFs, MString, MTypes } from "@parischap/effect-lib";
-import { Array, Cause, FiberId, Function, String, flow, pipe } from "effect";
+import * as JsAnsi from '@parischap/ansi-styles/JsAnsi'
+import * as MArray from '@parischap/effect-lib/MArray'
+import * as MFs from '@parischap/effect-lib/MFs'
+import * as MString from '@parischap/effect-lib/MString'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import {flow, pipe} from 'effect'
+import * as Array from 'effect/Array'
+import * as Cause from 'effect/Cause'
+import * as FiberId from 'effect/FiberId'
+import * as Function from 'effect/Function'
+import * as String from 'effect/String'
 import * as RErrors from "./Errors.js";
 import { formatError } from "./utils.js";
 

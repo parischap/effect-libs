@@ -1,7 +1,11 @@
 /** This module implements a type that checks the mantissa of a number */
 
-import { MMatch, MTypes } from '@parischap/effect-lib';
-import { BigDecimal, flow, Option, Predicate } from 'effect';
+import * as MMatch from '@parischap/effect-lib/MMatch'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import {flow} from 'effect'
+import * as BigDecimal from 'effect/BigDecimal'
+import * as Option from 'effect/Option'
+import * as Predicate from 'effect/Predicate'
 import * as CVNumberBase10FormatScientificNotationOption from '../../../../formatting/number-base10-format/number-base10-format-scientific-notation-option/index.js';
 
 /**

@@ -5,8 +5,10 @@
  * case of failure to report the position of the error
  */
 
-import { MInputError, MString } from '@parischap/effect-lib';
-import { Either, pipe } from 'effect';
+import * as MInputError from '@parischap/effect-lib/MInputError'
+import * as MString from '@parischap/effect-lib/MString'
+import {pipe} from 'effect'
+import * as Either from 'effect/Either'
 import * as CVTemplateSeparator from '../../../../../formatting/template/TemplatePart/template-separator/index.js';
 
 /**

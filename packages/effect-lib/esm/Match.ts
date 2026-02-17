@@ -4,7 +4,10 @@
  * simplifies its use.
  */
 
-import { Array, Option, Predicate, pipe } from 'effect';
+import {pipe} from 'effect'
+import * as Array from 'effect/Array'
+import * as Option from 'effect/Option'
+import * as Predicate from 'effect/Predicate'
 import * as MData from './Data/index.js';
 import * as MPredicate from './Predicate.js';
 import * as MTypes from './types/index.js';

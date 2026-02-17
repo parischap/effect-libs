@@ -6,7 +6,13 @@
  * Values of type A are compared using the Effect Equal.equals operator for caching purposes
  * (because it uses a MutableHashMap under the hood for the store implementation)
  */
-import { Array, Equal, MutableHashMap, MutableList, Option, Tuple, flow, pipe } from 'effect';
+import {flow, pipe} from 'effect'
+import * as Array from 'effect/Array'
+import * as Equal from 'effect/Equal'
+import * as MutableHashMap from 'effect/MutableHashMap'
+import * as MutableList from 'effect/MutableList'
+import * as Option from 'effect/Option'
+import * as Tuple from 'effect/Tuple'
 import * as MData from './Data/index.js';
 import * as MCacheValueContainer from './internal/CacheValueContainer.js';
 import * as MNumber from './Number.js';

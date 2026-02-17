@@ -2,7 +2,8 @@ import * as ASCode from '@parischap/ansi-styles/ASCode';
 import * as ASStyleCharacteristics from '@parischap/ansi-styles/ASStyleCharacteristics';
 import * as ASUnistyledText from '@parischap/ansi-styles/ASUnistyledText';
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { Option, pipe } from 'effect';
+import {pipe} from 'effect'
+import * as Option from 'effect/Option'
 import { describe, it } from 'vitest';
 
 describe('UnistyledText', () => {

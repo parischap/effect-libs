@@ -1,7 +1,13 @@
 /** This module implements a CVRounderParams, i.e. an object from which a CVRounder can be built */
 
-import { MData, MDataEquivalenceBasedEquality, MString, MTypes } from '@parischap/effect-lib';
-import { Equivalence, Hash, Predicate, Struct } from 'effect';
+import * as MData from '@parischap/effect-lib/MData'
+import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality'
+import * as MString from '@parischap/effect-lib/MString'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import * as Equivalence from 'effect/Equivalence'
+import * as Hash from 'effect/Hash'
+import * as Predicate from 'effect/Predicate'
+import * as Struct from 'effect/Struct'
 import * as CVRoundingOption from './rounding-option/index.js';
 
 /**

@@ -1,6 +1,6 @@
 /** A simple extension to the Effect Option module */
 
-import { Option } from "effect";
+import * as Option from 'effect/Option'
 
 /**
  * Type that synthesizes two different ways to represent an optional value. Useful to open a dev to

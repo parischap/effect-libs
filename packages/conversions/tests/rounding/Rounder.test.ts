@@ -2,7 +2,8 @@ import * as TestUtils from '@parischap/configs/TestUtils';
 import * as CVRounder from '@parischap/conversions/CVRounder';
 import * as CVRounderParams from '@parischap/conversions/CVRounderParams';
 import * as CVRoundingOption from '@parischap/conversions/CVRoundingOption';
-import { BigDecimal, pipe } from 'effect';
+import {pipe} from 'effect'
+import * as BigDecimal from 'effect/BigDecimal'
 import { describe, it } from 'vitest';
 
 describe('CVRounder', () => {

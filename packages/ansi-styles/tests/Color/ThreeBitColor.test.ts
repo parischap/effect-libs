@@ -1,6 +1,7 @@
-import { ASColor, ASThreeBitColor } from '@parischap/ansi-styles';
+import * as ASColor from '@parischap/ansi-styles/ASColor'
+import * as ASThreeBitColor from '@parischap/ansi-styles/ASThreeBitColor'
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { Option } from 'effect';
+import * as Option from 'effect/Option'
 import { describe, it } from 'vitest';
 
 describe('ASThreeBitColor', () => {

@@ -1,6 +1,6 @@
 /** Module that implements a TreeNode (see TreeAll for more details) */
 
-import { Struct } from 'effect';
+import * as Struct from 'effect/Struct'
 import * as MData from '../Data/index.js';
 import * as MTypes from '../types/index.js';
 

@@ -6,17 +6,21 @@
  * With the make function, you can define your own instances if the provided ones don't suit your
  * needs.
  */
-import { ASText } from '@parischap/ansi-styles';
-import {
-  MData,
-  MDataEquivalenceBasedEquality,
-  MString,
-  MStruct,
-  MTypes,
-} from '@parischap/effect-lib';
-import { flow, Function, Option, pipe, Struct, Tuple } from 'effect';
+import * as ASText from '@parischap/ansi-styles/ASText'
+import * as MData from '@parischap/effect-lib/MData'
+import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality'
+import * as MString from '@parischap/effect-lib/MString'
+import * as MStruct from '@parischap/effect-lib/MStruct'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import {flow, pipe} from 'effect'
+import * as Function from 'effect/Function'
+import * as Option from 'effect/Option'
+import * as Struct from 'effect/Struct'
+import * as Tuple from 'effect/Tuple'
 
-import { Equivalence, Hash, Predicate } from 'effect';
+import * as Equivalence from 'effect/Equivalence'
+import * as Hash from 'effect/Hash'
+import * as Predicate from 'effect/Predicate'
 import * as PPMarkShowerConstructor from '../internal/MarkShowerConstructor.js';
 import * as PPNonPrimitiveFormatter from './NonPrimitiveFormatter.js';
 import * as PPPropertyFilters from './PropertyFilters.js';

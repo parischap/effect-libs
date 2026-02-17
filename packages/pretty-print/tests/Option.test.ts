@@ -1,17 +1,21 @@
-import { ASStyle, ASText } from '@parischap/ansi-styles';
+import * as ASStyle from '@parischap/ansi-styles/ASStyle'
+import * as ASText from '@parischap/ansi-styles/ASText'
 import * as TestUtils from '@parischap/configs/TestUtils';
-import { MPredicate } from '@parischap/effect-lib';
-import {
-  PPByPasser,
-  PPMarkShowerConstructor,
-  PPOption,
-  PPPropertyFilter,
-  PPStringifiedValue,
-  PPValue,
-  PPValueBasedStylerConstructor,
-  PPValueOrder,
-} from '@parischap/pretty-print';
-import { Array, HashMap, HashSet, Option, pipe, Predicate } from 'effect';
+import * as MPredicate from '@parischap/effect-lib/MPredicate'
+import * as PPByPasser from '@parischap/pretty-print/PPByPasser'
+import * as PPMarkShowerConstructor from '@parischap/pretty-print/PPMarkShowerConstructor'
+import * as PPOption from '@parischap/pretty-print/PPOption'
+import * as PPPropertyFilter from '@parischap/pretty-print/PPPropertyFilter'
+import * as PPStringifiedValue from '@parischap/pretty-print/PPStringifiedValue'
+import * as PPValue from '@parischap/pretty-print/PPValue'
+import * as PPValueBasedStylerConstructor from '@parischap/pretty-print/PPValueBasedStylerConstructor'
+import * as PPValueOrder from '@parischap/pretty-print/PPValueOrder'
+import {pipe} from 'effect'
+import * as Array from 'effect/Array'
+import * as HashMap from 'effect/HashMap'
+import * as HashSet from 'effect/HashSet'
+import * as Option from 'effect/Option'
+import * as Predicate from 'effect/Predicate'
 import { describe, it } from 'vitest';
 
 describe('Option', () => {

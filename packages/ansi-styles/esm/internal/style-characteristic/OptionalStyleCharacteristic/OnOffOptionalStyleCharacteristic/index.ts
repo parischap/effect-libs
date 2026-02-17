@@ -4,8 +4,12 @@
  * `some(false)` represents an off characteristic
  */
 
-import { MDataEquivalenceBasedEquality, MTypes } from '@parischap/effect-lib';
-import { Boolean, Equivalence, Hash, Option } from 'effect';
+import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality'
+import * as MTypes from '@parischap/effect-lib/MTypes'
+import * as Boolean from 'effect/Boolean'
+import * as Equivalence from 'effect/Equivalence'
+import * as Hash from 'effect/Hash'
+import * as Option from 'effect/Option'
 import * as ASSequence from '../../../Sequence.js';
 import * as ASOptionalStyleCharacteristic from '../index.js';
 

@@ -1,19 +1,17 @@
 /** A simple extension to the Effect Array module */
 
-import {
-  Array,
-  Boolean,
-  Either,
-  Equal,
-  Equivalence,
-  Function,
-  Option,
-  Order,
-  Predicate,
-  Record,
-  Tuple,
-  pipe,
-} from 'effect';
+import {pipe} from 'effect'
+import * as Array from 'effect/Array'
+import * as Boolean from 'effect/Boolean'
+import * as Either from 'effect/Either'
+import * as Equal from 'effect/Equal'
+import * as Equivalence from 'effect/Equivalence'
+import * as Function from 'effect/Function'
+import * as Option from 'effect/Option'
+import * as Order from 'effect/Order'
+import * as Predicate from 'effect/Predicate'
+import * as Record from 'effect/Record'
+import * as Tuple from 'effect/Tuple'
 import * as MMatch from './Match.js';
 import * as MOption from './Option.js';
 import * as MTypes from './types/index.js';
