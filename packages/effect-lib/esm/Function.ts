@@ -1,8 +1,8 @@
 /** A simple extension to the Effect Function module */
 
-import {pipe} from 'effect'
-import * as Function from 'effect/Function'
-import * as Option from 'effect/Option'
+import { pipe } from 'effect';
+import * as Function from 'effect/Function';
+import * as Option from 'effect/Option';
 import * as MTypes from './types/index.js';
 
 /**
@@ -119,6 +119,13 @@ export const execute = <A>(self: Function.LazyArg<A>): A => self();
  * @category Utils
  */
 export const constEmptyString = Function.constant('' as const);
+
+/**
+ * Returns a lazy identity function
+ *
+ * @category Utils
+ */
+export const constIdentity = Function.constant(Function.identity);
 
 /**
  * Returns a copy of `self`
