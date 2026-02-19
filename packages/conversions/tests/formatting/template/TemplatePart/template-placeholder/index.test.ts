@@ -1,12 +1,11 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as CVNumberBase10Format from '@parischap/conversions/CVNumberBase10Format';
-import * as CVReal from '@parischap/conversions/CVReal';
 import * as CVTemplatePlaceholder from '@parischap/conversions/CVTemplatePlaceholder';
-import * as MRegExpString from '@parischap/effect-lib/MRegExpString'
-import * as MStringFillPosition from '@parischap/effect-lib/MStringFillPosition'
-import * as Option from 'effect/Option'
-import * as Schema from 'effect/Schema'
-import * as Tuple from 'effect/Tuple'
+import * as MRegExpString from '@parischap/effect-lib/MRegExpString';
+import * as MStringFillPosition from '@parischap/effect-lib/MStringFillPosition';
+import * as Option from 'effect/Option';
+import * as Schema from 'effect/Schema';
+import * as Tuple from 'effect/Tuple';
 import { describe, it } from 'vitest';
 
 describe('CVTemplatePlaceholder', () => {
@@ -76,7 +75,7 @@ describe('CVTemplatePlaceholder', () => {
       length: 3,
       fillChar: '0',
       fillPosition: MStringFillPosition.Type.Left,
-      disallowEmptyString: true,
+      allowEmptyString: false,
     });
     it('.toString()', () => {
       TestUtils.strictEqual(
@@ -112,11 +111,13 @@ describe('CVTemplatePlaceholder', () => {
     });
   });
 
-  describe('fixedLengthToReal', () => {
-    const placeholder = CVTemplatePlaceholder.fixedLengthToReal({
+  describe('fixedLengthToNumber', () => {
+    const placeholder = CVTemplatePlaceholder.fixedLengthToNumber({
       name: 'foo',
       length: 3,
       fillChar: ' ',
+      fillPosition: MStringFillPosition.Type.Left,
+      allowEmptyString: true,
       numberBase10Format: CVNumberBase10Format.integer,
     });
     it('.toString()', () => {
@@ -135,30 +136,27 @@ describe('CVTemplatePlaceholder', () => {
       });
 
       it('Passing', () => {
-        TestUtils.assertRight(
-          placeholder.parser('  15'),
-          Tuple.make(CVReal.unsafeFromNumber(1), '5'),
-        );
+        TestUtils.assertRight(placeholder.parser('  15'), Tuple.make(1, '5'));
       });
     });
 
     describe('Formatting', () => {
       it('Not passing: too long', () => {
         TestUtils.assertLeftMessage(
-          placeholder.formatter(CVReal.unsafeFromNumber(1154)),
+          placeholder.formatter(1154),
           'Expected length of #foo to be: 3. Actual: 4',
         );
       });
 
       it('Passing', () => {
-        TestUtils.assertRight(placeholder.formatter(CVReal.unsafeFromNumber(34)), ' 34');
-        TestUtils.assertRight(placeholder.formatter(CVReal.unsafeFromNumber(-4)), '- 4');
+        TestUtils.assertRight(placeholder.formatter(34), ' 34');
+        TestUtils.assertRight(placeholder.formatter(-4), ' -4');
       });
     });
   });
 
-  describe('real', () => {
-    const placeholder = CVTemplatePlaceholder.real({
+  describe('number', () => {
+    const placeholder = CVTemplatePlaceholder.number({
       name: 'foo',
       numberBase10Format: CVNumberBase10Format.frenchStyleNumber,
     });
@@ -178,13 +176,13 @@ describe('CVTemplatePlaceholder', () => {
       it('Passing', () => {
         TestUtils.assertRight(
           placeholder.parser('1 014,125 and foo'),
-          Tuple.make(CVReal.unsafeFromNumber(1014.125), ' and foo'),
+          Tuple.make(1014.125, ' and foo'),
         );
       });
     });
 
     it('Formatting', () => {
-      TestUtils.assertRight(placeholder.formatter(CVReal.unsafeFromNumber(1014.1256)), '1 014,126');
+      TestUtils.assertRight(placeholder.formatter(1014.1256), '1 014,126');
     });
   });
 

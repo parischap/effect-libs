@@ -261,11 +261,7 @@ export const pad = ({
 
 /**
  * Trims a string to the left or to the right (depending on `fillPosition`) from character
- * `fillChar`. If `allowEmptyString` is true and the result of trimming is an empty string, the
- * fillChar is returned instead of an empty string. This is useful, for instance, if you have
- * numbers padded with 0's and you prefer the result of unpadding a string containing only 0's to be
- * '0' rather than an empty string. `fillChar` should be a one-character string. `length` should be
- * a positive integer.
+ * `fillChar`. `fillChar` should be a one-character string. `length` should be a positive integer.
  *
  * @category Utils
  */
@@ -273,12 +269,10 @@ export const pad = ({
 export const trim = ({
   fillChar,
   fillPosition,
-  allowEmptyString,
 }: {
   readonly fillChar: string;
   readonly fillPosition: MStringFillPosition.Type;
-  readonly allowEmptyString: boolean;
-}): MTypes.OneArgFunction<string, string> =>
+}): MTypes.StringTransformer =>
   flow(
     pipe(
       fillPosition,
@@ -287,13 +281,6 @@ export const trim = ({
       MMatch.whenIs(MStringFillPosition.Type.Right, () => trimEnd(fillChar)),
       MMatch.exhaustive,
     ),
-    MFunction.fIfTrue({
-      condition: !allowEmptyString,
-      f: flow(
-        Option.liftPredicate(String.isNonEmpty),
-        Option.getOrElse(Function.constant(fillChar)),
-      ),
-    }),
   );
 
 /**
