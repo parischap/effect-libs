@@ -191,24 +191,28 @@ export const takeRightFrom =
     );
 
 /**
- * Takes all characters from `self` except the `n` last characters. `n` should be positive
+ * Takes all characters from `self` except the `n` last characters. If `n` is negative, the string
+ * is returned unchanged. If `n` is greater that the length of the string, an empty string is
+ * returned
  *
  * @category Utils
  */
 export const takeBut =
   (n: number): MTypes.StringTransformer =>
   (self) =>
-    self.slice(0, -n);
+    String.takeLeft(self.length - n)(self);
 
 /**
- * Takes all characters from `self` except the `n` first characters. `n` should be positive
+ * Takes all characters from `self` except the `n` first characters. If `n` is negative, the string
+ * is returned unchanged. If `n` is greater that the length of the string, an empty string is
+ * returned
  *
  * @category Utils
  */
 export const takeRightBut =
   (n: number): MTypes.StringTransformer =>
   (self) =>
-    self.slice(n);
+    String.takeRight(self.length - n)(self);
 
 /**
  * Same as String.trimStart but the character to remove can be specified. `charToRemove` must be a
@@ -450,15 +454,15 @@ export const matchWithCapturingGroups =
 
 /**
  * Splits `self` in two parts at position `n`. The length of the first string is `n` (characters `0`
- * to `n-1`). If `n` is strictly less than 0, it is taken equal to 0. If `n` is greater than the
- * length of `self`, it is taken equal to the length of self.
+ * to `n-1`). If `n` is negative, it is taken equal to 0. If it is longer than the length of `self`,
+ * it is taken equal to the length of `self`.
  *
  * @category Utils
  */
 export const splitAt =
   (n: number) =>
   (self: string): [left: string, right: string] =>
-    Tuple.make(self.slice(0, n), self.slice(n));
+    Tuple.make(String.takeLeft(n)(self), takeRightBut(n)(self));
 
 /**
  * Splits `self` in two parts at position `n` from the end of `self`. The length of the second

@@ -212,22 +212,30 @@ describe('MString', () => {
   });
 
   describe('takeBut', () => {
-    it('Empty string', () => {
-      TestUtils.assertTrue(pipe('', MString.takeBut(2), String.isEmpty));
+    it('Index within bounds', () => {
+      TestUtils.strictEqual(MString.takeBut(3)('foo is'), 'foo');
     });
 
-    it('Non-empty string', () => {
-      TestUtils.strictEqual(MString.takeBut(3)('foo is'), 'foo');
+    it('Negative index', () => {
+      TestUtils.strictEqual(MString.takeBut(-5)('foo is'), 'foo is');
+    });
+
+    it('Too big index', () => {
+      TestUtils.strictEqual(MString.takeBut(10)('foo is'), '');
     });
   });
 
   describe('takeRightBut', () => {
-    it('Empty string', () => {
-      TestUtils.assertTrue(pipe('', MString.takeRightBut(2), String.isEmpty));
+    it('Index within bounds', () => {
+      TestUtils.strictEqual(MString.takeRightBut(4)('foo is'), 'is');
     });
 
-    it('Non-empty string', () => {
-      TestUtils.strictEqual(MString.takeRightBut(4)('foo is'), 'is');
+    it('Negative index', () => {
+      TestUtils.strictEqual(MString.takeRightBut(-1)('foo is'), 'foo is');
+    });
+
+    it('Too big index', () => {
+      TestUtils.strictEqual(MString.takeRightBut(10)('foo is'), '');
     });
   });
 
@@ -299,7 +307,6 @@ describe('MString', () => {
           MString.trim({
             fillChar: 'b',
             fillPosition: MStringFillPosition.Type.Left,
-            allowEmptyString: true,
           }),
         ),
         'a',
@@ -313,38 +320,9 @@ describe('MString', () => {
           MString.trim({
             fillChar: 'b',
             fillPosition: MStringFillPosition.Type.Right,
-            allowEmptyString: true,
           }),
         ),
         'aa',
-      );
-    });
-
-    it('Trimming string containing only fillChars with allowEmptyString = false', () => {
-      TestUtils.strictEqual(
-        pipe(
-          '000',
-          MString.trim({
-            fillChar: '0',
-            fillPosition: MStringFillPosition.Type.Right,
-            allowEmptyString: true,
-          }),
-        ),
-        '',
-      );
-    });
-
-    it('Trimming string containing only fillChars with allowEmptyString = true', () => {
-      TestUtils.strictEqual(
-        pipe(
-          '000',
-          MString.trim({
-            fillChar: '0',
-            fillPosition: MStringFillPosition.Type.Left,
-            allowEmptyString: false,
-          }),
-        ),
-        '0',
       );
     });
   });
@@ -502,28 +480,39 @@ describe('MString', () => {
   });
 
   describe('splitAt', () => {
-    it('Empty string', () => {
-      TestUtils.deepStrictEqual(MString.splitAt(2)(''), ['', '']);
+    it('Split within bounds', () => {
+      TestUtils.deepStrictEqual(MString.splitAt(6)('beforeafter'), ['before', 'after']);
     });
 
-    it('Non-empty string', () => {
-      TestUtils.deepStrictEqual(MString.splitAt(6)('beforeafter'), ['before', 'after']);
+    it('Split before string start', () => {
+      TestUtils.deepStrictEqual(MString.splitAt(-5)('beforeafter'), ['', 'beforeafter']);
+    });
+
+    it('Split after string end', () => {
+      TestUtils.deepStrictEqual(MString.splitAt(15)('beforeafter'), ['beforeafter', '']);
     });
   });
 
   describe('splitAtFromRight', () => {
-    it('Empty string', () => {
-      TestUtils.deepStrictEqual(MString.splitAtFromRight(2)(''), ['', '']);
+    it('Split within bounds', () => {
+      TestUtils.deepStrictEqual(MString.splitAtFromRight(5)('beforeafter'), ['before', 'after']);
     });
 
-    it('Non-empty string', () => {
-      TestUtils.deepStrictEqual(MString.splitAtFromRight(5)('beforeafter'), ['before', 'after']);
+    it('Split before string start', () => {
+      TestUtils.deepStrictEqual(MString.splitAtFromRight(-5)('beforeafter'), ['beforeafter', '']);
+    });
+
+    it('Split after string end', () => {
+      TestUtils.deepStrictEqual(MString.splitAtFromRight(15)('beforeafter'), ['', 'beforeafter']);
     });
   });
 
   describe('splitEquallyRestAtStart', () => {
     it('Empty string', () =>
       TestUtils.deepStrictEqual(MString.splitEquallyRestAtStart(3)(''), ['']));
+
+    it('Short string', () =>
+      TestUtils.deepStrictEqual(MString.splitEquallyRestAtStart(3)('11'), ['11']));
 
     it('Non-empty string without rest', () =>
       TestUtils.deepStrictEqual(MString.splitEquallyRestAtStart(3)('foobarbaz'), [
