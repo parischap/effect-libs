@@ -1,9 +1,9 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import * as MRegExpString from '@parischap/effect-lib/MRegExpString'
-import * as MString from '@parischap/effect-lib/MString'
-import {flow, pipe} from 'effect'
-import * as Option from 'effect/Option'
-import * as Struct from 'effect/Struct'
+import * as MRegExpString from '@parischap/effect-lib/MRegExpString';
+import * as MString from '@parischap/effect-lib/MString';
+import { flow, pipe } from 'effect';
+import * as Option from 'effect/Option';
+import * as Struct from 'effect/Struct';
 import { describe, it } from 'vitest';
 
 describe('MRegExpString', () => {
@@ -96,13 +96,7 @@ describe('MRegExpString', () => {
       flow(
         MString.matchWithCapturingGroups(
           pipe(params, MRegExpString.base10Number, MRegExpString.makeLine, RegExp),
-          [
-            'signPart',
-            'fillChars',
-            'mantissaIntegerPart',
-            'mantissaFractionalPart',
-            'exponentPart',
-          ],
+          ['signPart', 'padding', 'mantissaIntegerPart', 'mantissaFractionalPart', 'exponentPart'],
         ),
         Option.map(Struct.get('groups')),
       );
@@ -117,7 +111,7 @@ describe('MRegExpString', () => {
       it('Simple number', () => {
         TestUtils.assertSome(getPartsWithNoSep('12'), {
           signPart: '',
-          fillChars: '',
+          padding: '',
           mantissaIntegerPart: '12',
           mantissaFractionalPart: '',
           exponentPart: '',
@@ -127,7 +121,7 @@ describe('MRegExpString', () => {
       it('Simple number starting with fillChar', () => {
         TestUtils.assertSome(getPartsWithNoSep('  12'), {
           signPart: '',
-          fillChars: '  ',
+          padding: '  ',
           mantissaIntegerPart: '12',
           mantissaFractionalPart: '',
           exponentPart: '',
@@ -137,7 +131,7 @@ describe('MRegExpString', () => {
       it('Complex number', () => {
         TestUtils.assertSome(getPartsWithNoSep('+  18320.45e-2'), {
           signPart: '+',
-          fillChars: '  ',
+          padding: '  ',
           mantissaIntegerPart: '18320',
           mantissaFractionalPart: '45',
           exponentPart: '-2',
@@ -161,7 +155,7 @@ describe('MRegExpString', () => {
       it('Simple number', () => {
         TestUtils.assertSome(getPartsWithSep('12 430'), {
           signPart: '',
-          fillChars: '',
+          padding: '',
           mantissaIntegerPart: '12 430',
           mantissaFractionalPart: '',
           exponentPart: '',
@@ -171,7 +165,7 @@ describe('MRegExpString', () => {
       it('Simple number starting with fillChar', () => {
         TestUtils.assertSome(getPartsWithSep('  12 430'), {
           signPart: '',
-          fillChars: '  ',
+          padding: '  ',
           mantissaIntegerPart: '12 430',
           mantissaFractionalPart: '',
           exponentPart: '',
@@ -181,7 +175,7 @@ describe('MRegExpString', () => {
       it('Complex number', () => {
         TestUtils.assertSome(getPartsWithSep('+  18 320.45^2'), {
           signPart: '+',
-          fillChars: '  ',
+          padding: '  ',
           mantissaIntegerPart: '18 320',
           mantissaFractionalPart: '45',
           exponentPart: '2',
@@ -205,7 +199,7 @@ describe('MRegExpString', () => {
       it('Simple number', () => {
         TestUtils.assertSome(getPartsWithNoFillChar('12'), {
           signPart: '',
-          fillChars: '',
+          padding: '',
           mantissaIntegerPart: '12',
           mantissaFractionalPart: '',
           exponentPart: '',
@@ -215,7 +209,7 @@ describe('MRegExpString', () => {
       it('Complex number', () => {
         TestUtils.assertSome(getPartsWithNoFillChar('+18 320.45e-2'), {
           signPart: '+',
-          fillChars: '',
+          padding: '',
           mantissaIntegerPart: '18 320',
           mantissaFractionalPart: '45',
           exponentPart: '-2',

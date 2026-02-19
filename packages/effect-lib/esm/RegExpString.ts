@@ -1,10 +1,10 @@
 /** Very simple regular expression string module */
 
-import {pipe} from 'effect'
-import * as Array from 'effect/Array'
-import * as EString from 'effect/String'
-import * as Function from 'effect/Function'
-import * as RegExp from 'effect/RegExp'
+import { pipe } from 'effect';
+import * as Array from 'effect/Array';
+import * as Function from 'effect/Function';
+import * as RegExp from 'effect/RegExp';
+import * as EString from 'effect/String';
 import * as MArray from './Array.js';
 import type * as MTypes from './types/index.js';
 
@@ -345,7 +345,7 @@ export const base10Number = ({
   readonly fillChar: string;
 }): string =>
   _signPart
-  + capture('fillChars')(fillChar.length === 0 ? '' : zeroOrMore(fillChar))
+  + capture('padding')(fillChar.length === 0 ? '' : zeroOrMore(fillChar))
   + pipe(thousandSeparator, unsignedBase10Int, optionalCapture('mantissaIntegerPart'))
   + pipe(
     fractionalSeparator,
