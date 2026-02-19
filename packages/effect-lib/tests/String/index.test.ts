@@ -1,11 +1,11 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import * as MString from '@parischap/effect-lib/MString'
-import * as MStringFillPosition from '@parischap/effect-lib/MStringFillPosition'
-import * as MStringSearchResult from '@parischap/effect-lib/MStringSearchResult'
-import {pipe} from 'effect'
-import * as Array from 'effect/Array'
-import * as Option from 'effect/Option'
-import * as String from 'effect/String'
+import * as MString from '@parischap/effect-lib/MString';
+import * as MStringFillPosition from '@parischap/effect-lib/MStringFillPosition';
+import * as MStringSearchResult from '@parischap/effect-lib/MStringSearchResult';
+import { pipe } from 'effect';
+import * as Array from 'effect/Array';
+import * as Option from 'effect/Option';
+import * as String from 'effect/String';
 import { describe, it } from 'vitest';
 
 describe('MString', () => {
@@ -299,7 +299,7 @@ describe('MString', () => {
           MString.trim({
             fillChar: 'b',
             fillPosition: MStringFillPosition.Type.Left,
-            disallowEmptyString: false,
+            allowEmptyString: true,
           }),
         ),
         'a',
@@ -313,35 +313,35 @@ describe('MString', () => {
           MString.trim({
             fillChar: 'b',
             fillPosition: MStringFillPosition.Type.Right,
-            disallowEmptyString: false,
+            allowEmptyString: true,
           }),
         ),
         'aa',
       );
     });
 
-    it('Trimming string containing only fillChars with disallowEmptyString = false', () => {
+    it('Trimming string containing only fillChars with allowEmptyString = false', () => {
       TestUtils.strictEqual(
         pipe(
           '000',
           MString.trim({
             fillChar: '0',
             fillPosition: MStringFillPosition.Type.Right,
-            disallowEmptyString: false,
+            allowEmptyString: true,
           }),
         ),
         '',
       );
     });
 
-    it('Trimming string containing only fillChars with disallowEmptyString = true', () => {
+    it('Trimming string containing only fillChars with allowEmptyString = true', () => {
       TestUtils.strictEqual(
         pipe(
           '000',
           MString.trim({
             fillChar: '0',
             fillPosition: MStringFillPosition.Type.Left,
-            disallowEmptyString: true,
+            allowEmptyString: false,
           }),
         ),
         '0',
