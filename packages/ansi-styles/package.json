@@ -65,31 +65,31 @@
       "default": "./esm/index.ts"
     },
     "./ASBackgroundColorStyleCharacteristic": {
-      "default": "./esm/internal/style-characteristic/OptionalStyleCharacteristic/ColorOptionalStyleCharacteristic/BackgroundColorStyleCharacteristic.ts"
+      "default": "./esm/internal/StyleCharacteristic/OptionalStyleCharacteristic/ColorOptionalStyleCharacteristic/BackgroundColorStyleCharacteristic.ts"
     },
     "./ASBlinkingStyleCharacteristic": {
-      "default": "./esm/internal/style-characteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/BlinkingStyleCharacteristic.ts"
+      "default": "./esm/internal/StyleCharacteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/BlinkingStyleCharacteristic.ts"
     },
     "./ASBoldStyleCharacteristic": {
-      "default": "./esm/internal/style-characteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/BoldStyleCharacteristic.ts"
+      "default": "./esm/internal/StyleCharacteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/BoldStyleCharacteristic.ts"
     },
     "./ASCode": {
       "default": "./esm/internal/Code.ts"
     },
     "./ASColor": {
-      "default": "./esm/Color/index.ts"
+      "default": "./esm/Color/Color.ts"
     },
     "./ASColorOptionalStyleCharacteristic": {
-      "default": "./esm/internal/style-characteristic/OptionalStyleCharacteristic/ColorOptionalStyleCharacteristic/index.ts"
+      "default": "./esm/internal/StyleCharacteristic/OptionalStyleCharacteristic/ColorOptionalStyleCharacteristic/ColorOptionalStyleCharacteristic.ts"
     },
     "./ASConstantContextStyler": {
       "default": "./esm/ContextStyler/ConstantContextStyler.ts"
     },
     "./ASContextStyler": {
-      "default": "./esm/ContextStyler/index.ts"
+      "default": "./esm/ContextStyler/ContextStyler.ts"
     },
     "./ASDimStyleCharacteristic": {
-      "default": "./esm/internal/style-characteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/DimStyleCharacteristic.ts"
+      "default": "./esm/internal/StyleCharacteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/DimStyleCharacteristic.ts"
     },
     "./ASEightBitColor": {
       "default": "./esm/Color/EightBitColor.ts"
@@ -98,25 +98,25 @@
       "default": "./esm/internal/Color/EightBitColorCode.ts"
     },
     "./ASForegroundColorStyleCharacteristic": {
-      "default": "./esm/internal/style-characteristic/OptionalStyleCharacteristic/ColorOptionalStyleCharacteristic/ForegroundColorStyleCharacteristic.ts"
+      "default": "./esm/internal/StyleCharacteristic/OptionalStyleCharacteristic/ColorOptionalStyleCharacteristic/ForegroundColorStyleCharacteristic.ts"
     },
     "./ASHiddenStyleCharacteristic": {
-      "default": "./esm/internal/style-characteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/HiddenStyleCharacteristic.ts"
+      "default": "./esm/internal/StyleCharacteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/HiddenStyleCharacteristic.ts"
     },
     "./ASInversedStyleCharacteristic": {
-      "default": "./esm/internal/style-characteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/InversedStyleCharacteristic.ts"
+      "default": "./esm/internal/StyleCharacteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/InversedStyleCharacteristic.ts"
     },
     "./ASItalicStyleCharacteristic": {
-      "default": "./esm/internal/style-characteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/ItalicStyleCharacteristic.ts"
+      "default": "./esm/internal/StyleCharacteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/ItalicStyleCharacteristic.ts"
     },
     "./ASOnOffOptionalStyleCharacteristic": {
-      "default": "./esm/internal/style-characteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/index.ts"
+      "default": "./esm/internal/StyleCharacteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic.ts"
     },
     "./ASOptionalStyleCharacteristic": {
-      "default": "./esm/internal/style-characteristic/OptionalStyleCharacteristic/index.ts"
+      "default": "./esm/internal/StyleCharacteristic/OptionalStyleCharacteristic/OptionalStyleCharacteristic.ts"
     },
     "./ASOverlinedStyleCharacteristic": {
-      "default": "./esm/internal/style-characteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/OverlinedStyleCharacteristic.ts"
+      "default": "./esm/internal/StyleCharacteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/OverlinedStyleCharacteristic.ts"
     },
     "./ASPalette": {
       "default": "./esm/Palette.ts"
@@ -131,7 +131,7 @@
       "default": "./esm/internal/Sequence.ts"
     },
     "./ASStruckThroughStyleCharacteristic": {
-      "default": "./esm/internal/style-characteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/StruckThroughStyleCharacteristic.ts"
+      "default": "./esm/internal/StyleCharacteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/StruckThroughStyleCharacteristic.ts"
     },
     "./ASStyle": {
       "default": "./esm/Style.ts"
@@ -152,7 +152,7 @@
       "default": "./esm/internal/Color/ThreeBitColorOffset.ts"
     },
     "./ASUnderlinedStyleCharacteristic": {
-      "default": "./esm/internal/style-characteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/UnderlinedStyleCharacteristic.ts"
+      "default": "./esm/internal/StyleCharacteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/UnderlinedStyleCharacteristic.ts"
     },
     "./ASUnistyledText": {
       "default": "./esm/internal/UnistyledText.ts"

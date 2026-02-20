@@ -9,32 +9,32 @@
  * same time, or just bold, or just dim).
  */
 
-import * as MData from '@parischap/effect-lib/MData'
-import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality'
-import * as MStruct from '@parischap/effect-lib/MStruct'
-import * as MTypes from '@parischap/effect-lib/MTypes'
-import {flow, pipe} from 'effect'
-import * as Equivalence from 'effect/Equivalence'
-import * as Hash from 'effect/Hash'
-import * as Predicate from 'effect/Predicate'
-import * as AsColor from '../Color/index.js';
+import * as MData from '@parischap/effect-lib/MData';
+import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality';
+import * as MStruct from '@parischap/effect-lib/MStruct';
+import * as MTypes from '@parischap/effect-lib/MTypes';
+import { flow, pipe } from 'effect';
+import * as Equivalence from 'effect/Equivalence';
+import * as Hash from 'effect/Hash';
+import * as Predicate from 'effect/Predicate';
+import * as AsColor from '../Color/Color.js';
 import * as ASThreeBitColor from '../Color/ThreeBitColor.js';
 import * as ASCode from './Code.js';
 import * as ASSequence from './Sequence.js';
-import * as ASBackgroundColorStyleCharacteristic from './style-characteristic/OptionalStyleCharacteristic/ColorOptionalStyleCharacteristic/BackgroundColorStyleCharacteristic.js';
-import * as ASForegroundColorStyleCharacteristic from './style-characteristic/OptionalStyleCharacteristic/ColorOptionalStyleCharacteristic/ForegroundColorStyleCharacteristic.js';
-import * as ASColorOptionalStyleCharacteristic from './style-characteristic/OptionalStyleCharacteristic/ColorOptionalStyleCharacteristic/index.js';
-import * as ASOptionalStyleCharacteristic from './style-characteristic/OptionalStyleCharacteristic/index.js';
-import * as ASBlinkingStyleCharacteristic from './style-characteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/BlinkingStyleCharacteristic.js';
-import * as ASBoldStyleCharacteristic from './style-characteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/BoldStyleCharacteristic.js';
-import * as ASDimStyleCharacteristic from './style-characteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/DimStyleCharacteristic.js';
-import * as ASHiddenStyleCharacteristic from './style-characteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/HiddenStyleCharacteristic.js';
-import * as ASOnOffOptionalStyleCharacteristic from './style-characteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/index.js';
-import * as ASInversedStyleCharacteristic from './style-characteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/InversedStyleCharacteristic.js';
-import * as ASItalicStyleCharacteristic from './style-characteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/ItalicStyleCharacteristic.js';
-import * as ASOverlinedStyleCharacteristic from './style-characteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/OverlinedStyleCharacteristic.js';
-import * as ASStruckThroughStyleCharacteristic from './style-characteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/StruckThroughStyleCharacteristic.js';
-import * as ASUnderlinedStyleCharacteristic from './style-characteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/UnderlinedStyleCharacteristic.js';
+import * as ASBackgroundColorStyleCharacteristic from './StyleCharacteristic/OptionalStyleCharacteristic/ColorOptionalStyleCharacteristic/BackgroundColorStyleCharacteristic.js';
+import * as ASColorOptionalStyleCharacteristic from './StyleCharacteristic/OptionalStyleCharacteristic/ColorOptionalStyleCharacteristic/ColorOptionalStyleCharacteristic.js';
+import * as ASForegroundColorStyleCharacteristic from './StyleCharacteristic/OptionalStyleCharacteristic/ColorOptionalStyleCharacteristic/ForegroundColorStyleCharacteristic.js';
+import * as ASBlinkingStyleCharacteristic from './StyleCharacteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/BlinkingStyleCharacteristic.js';
+import * as ASBoldStyleCharacteristic from './StyleCharacteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/BoldStyleCharacteristic.js';
+import * as ASDimStyleCharacteristic from './StyleCharacteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/DimStyleCharacteristic.js';
+import * as ASHiddenStyleCharacteristic from './StyleCharacteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/HiddenStyleCharacteristic.js';
+import * as ASInversedStyleCharacteristic from './StyleCharacteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/InversedStyleCharacteristic.js';
+import * as ASItalicStyleCharacteristic from './StyleCharacteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/ItalicStyleCharacteristic.js';
+import * as ASOnOffOptionalStyleCharacteristic from './StyleCharacteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic.js';
+import * as ASOverlinedStyleCharacteristic from './StyleCharacteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/OverlinedStyleCharacteristic.js';
+import * as ASStruckThroughStyleCharacteristic from './StyleCharacteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/StruckThroughStyleCharacteristic.js';
+import * as ASUnderlinedStyleCharacteristic from './StyleCharacteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/UnderlinedStyleCharacteristic.js';
+import * as ASOptionalStyleCharacteristic from './StyleCharacteristic/OptionalStyleCharacteristic/OptionalStyleCharacteristic.js';
 
 /**
  * Module tag

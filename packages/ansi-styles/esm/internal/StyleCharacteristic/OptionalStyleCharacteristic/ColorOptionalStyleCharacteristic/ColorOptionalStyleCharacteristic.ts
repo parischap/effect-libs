@@ -4,13 +4,13 @@
  * default color
  */
 
-import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality'
-import * as MTypes from '@parischap/effect-lib/MTypes'
-import * as Equivalence from 'effect/Equivalence'
-import * as Hash from 'effect/Hash'
-import * as Option from 'effect/Option'
-import * as AsColor from '../../../../Color/index.js';
-import * as ASOptionalStyleCharacteristic from '../index.js';
+import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality';
+import * as MTypes from '@parischap/effect-lib/MTypes';
+import * as Equivalence from 'effect/Equivalence';
+import * as Hash from 'effect/Hash';
+import * as Option from 'effect/Option';
+import * as AsColor from '../../../../Color/Color.js';
+import * as ASOptionalStyleCharacteristic from '../OptionalStyleCharacteristic.js';
 
 /**
  * Module tag
@@ -18,7 +18,7 @@ import * as ASOptionalStyleCharacteristic from '../index.js';
  * @category Module markers
  */
 export const moduleTag =
-  '@parischap/ansi-styles/internal/style-characteristic/OptionalStyleCharacteristic/ColorOptionalStyleCharacteristic/';
+  '@parischap/ansi-styles/internal/StyleCharacteristic/OptionalStyleCharacteristic/ColorOptionalStyleCharacteristic/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 

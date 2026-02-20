@@ -1,11 +1,11 @@
 /** Module that implements the Hidden style characteristic */
 
-import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality'
-import * as MTypes from '@parischap/effect-lib/MTypes'
-import * as Option from 'effect/Option'
-import * as Predicate from 'effect/Predicate'
+import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality';
+import * as MTypes from '@parischap/effect-lib/MTypes';
+import * as Option from 'effect/Option';
+import * as Predicate from 'effect/Predicate';
 import * as ASSequence from '../../../Sequence.js';
-import * as ASOnOffOptionalStyleCharacteristic from './index.js';
+import * as ASOnOffOptionalStyleCharacteristic from './OnOffOptionalStyleCharacteristic.js';
 
 /**
  * Module tag
@@ -13,7 +13,7 @@ import * as ASOnOffOptionalStyleCharacteristic from './index.js';
  * @category Module markers
  */
 export const moduleTag =
-  '@parischap/ansi-styles/internal/style-characteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/HiddenStyleCharacteristic/';
+  '@parischap/ansi-styles/internal/StyleCharacteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/HiddenStyleCharacteristic/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 

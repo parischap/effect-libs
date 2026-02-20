@@ -7,7 +7,7 @@
  */
 
 import * as ASStyle from '../Style.js';
-import * as ASContextStyler from './index.js';
+import * as ASContextStyler from './ContextStyler.js';
 
 /**
  * Module tag

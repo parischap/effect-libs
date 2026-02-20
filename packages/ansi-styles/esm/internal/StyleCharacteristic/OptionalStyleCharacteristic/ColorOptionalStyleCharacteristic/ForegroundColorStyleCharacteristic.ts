@@ -1,26 +1,26 @@
-/** Module that implements an optional background color style characteristic */
+/** Module that implements an optional foreground color style characteristic */
 
-import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality'
-import * as MTypes from '@parischap/effect-lib/MTypes'
-import * as Function from 'effect/Function'
-import * as Option from 'effect/Option'
-import * as Predicate from 'effect/Predicate'
-import * as AsColor from '../../../../Color/index.js';
+import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality';
+import * as MTypes from '@parischap/effect-lib/MTypes';
+import * as Function from 'effect/Function';
+import * as Option from 'effect/Option';
+import * as Predicate from 'effect/Predicate';
+import * as AsColor from '../../../../Color/Color.js';
 import * as ASSequence from '../../../Sequence.js';
-import * as ASOptionalStyleCharacteristic from '../index.js';
-import * as ASColorOptionalStyleCharacteristic from './index.js';
+import * as ASOptionalStyleCharacteristic from '../OptionalStyleCharacteristic.js';
+import * as ASColorOptionalStyleCharacteristic from './ColorOptionalStyleCharacteristic.js';
 /**
  * Module tag
  *
  * @category Module markers
  */
 export const moduleTag =
-  '@parischap/ansi-styles/internal/style-characteristic/OptionalStyleCharacteristic/ColorOptionalStyleCharacteristic/BackgroundColorStyleCharacteristic/';
+  '@parischap/ansi-styles/internal/StyleCharacteristic/OptionalStyleCharacteristic/ColorOptionalStyleCharacteristic/ForegroundColorStyleCharacteristic/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
 /**
- * Type that represents an ASBackgroundColorStyleCharacteristic
+ * Type that represents an ASForegroundColorStyleCharacteristic
  *
  * @category Models
  */
@@ -38,8 +38,8 @@ export class Type extends ASColorOptionalStyleCharacteristic.Type {
   /** Function that returns the id to show when the style characteristic is present */
   [ASOptionalStyleCharacteristic.toPresentIdSymbol](value: Option.Option<AsColor.Type>): string {
     return Option.match(value, {
-      onNone: Function.constant('InDefaultColor'),
-      onSome: AsColor.backgroundId,
+      onNone: Function.constant('DefaultColor'),
+      onSome: AsColor.foregroundId,
     });
   }
 
@@ -48,8 +48,8 @@ export class Type extends ASColorOptionalStyleCharacteristic.Type {
     value: Option.Option<AsColor.Type>,
   ): ASSequence.OverOne {
     return Option.match(value, {
-      onNone: Function.constant(ASSequence.defaultBackgroundColor),
-      onSome: AsColor.backgroundSequence,
+      onNone: Function.constant(ASSequence.defaultForegroundColor),
+      onSome: AsColor.foregroundSequence,
     });
   }
 
@@ -72,7 +72,7 @@ export class Type extends ASColorOptionalStyleCharacteristic.Type {
 export const missing: Type = Type.make({ value: Option.none() });
 
 /**
- * Default BackgroundColor instance
+ * Default ForegroundColor instance
  *
  * @category Instances
  */

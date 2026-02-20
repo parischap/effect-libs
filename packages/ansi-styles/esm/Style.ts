@@ -4,11 +4,11 @@
  * ASStyle.red('foo')` will create a text containing the string 'foo' styled in red.
  */
 
-import * as MTypes from '@parischap/effect-lib/MTypes'
-import {pipe} from 'effect'
-import * as Equivalence from 'effect/Equivalence'
-import * as Struct from 'effect/Struct'
-import * as ASColor from './Color/index.js';
+import * as MTypes from '@parischap/effect-lib/MTypes';
+import { pipe } from 'effect';
+import * as Equivalence from 'effect/Equivalence';
+import * as Struct from 'effect/Struct';
+import * as ASColor from './Color/Color.js';
 import * as ASStyleCharacteristics from './internal/StyleCharacteristics.js';
 import * as ASText from './Text.js';
 

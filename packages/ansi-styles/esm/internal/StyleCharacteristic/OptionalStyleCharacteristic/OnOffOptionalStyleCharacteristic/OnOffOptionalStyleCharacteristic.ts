@@ -4,14 +4,14 @@
  * `some(false)` represents an off characteristic
  */
 
-import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality'
-import * as MTypes from '@parischap/effect-lib/MTypes'
-import * as Boolean from 'effect/Boolean'
-import * as Equivalence from 'effect/Equivalence'
-import * as Hash from 'effect/Hash'
-import * as Option from 'effect/Option'
+import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality';
+import * as MTypes from '@parischap/effect-lib/MTypes';
+import * as Boolean from 'effect/Boolean';
+import * as Equivalence from 'effect/Equivalence';
+import * as Hash from 'effect/Hash';
+import * as Option from 'effect/Option';
 import * as ASSequence from '../../../Sequence.js';
-import * as ASOptionalStyleCharacteristic from '../index.js';
+import * as ASOptionalStyleCharacteristic from '../OptionalStyleCharacteristic.js';
 
 /**
  * Module tag
@@ -19,7 +19,7 @@ import * as ASOptionalStyleCharacteristic from '../index.js';
  * @category Module markers
  */
 export const moduleTag =
-  '@parischap/ansi-styles/internal/style-characteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/';
+  '@parischap/ansi-styles/internal/StyleCharacteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 

@@ -1,10 +1,15 @@
-export * as ASColor from './Color/index.js';
+export * as ASCode from './internal/Code.js';
+export * as ASColor from './Color/Color.js';
 export * as ASConstantContextStyler from './ContextStyler/ConstantContextStyler.js';
-export * as ASContextStyler from './ContextStyler/index.js';
+export * as ASContextStyler from './ContextStyler/ContextStyler.js';
 export * as ASEightBitColor from './Color/EightBitColor.js';
 export * as ASPalette from './Palette.js';
 export * as ASPaletteContextStyler from './ContextStyler/PaletteContextStyler.js';
 export * as ASRgbColor from './Color/RgbColor.js';
+export * as ASSequence from './internal/Sequence.js';
 export * as ASStyle from './Style.js';
+export * as ASStyleCharacteristics from './internal/StyleCharacteristics.js';
+export * as ASStyles from './internal/Styles.js';
 export * as ASText from './Text.js';
 export * as ASThreeBitColor from './Color/ThreeBitColor.js';
+export * as ASUnistyledText from './internal/UnistyledText.js';

@@ -1,14 +1,14 @@
 /** This module defines EightBit colors */
 
-import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality'
-import * as MTypes from '@parischap/effect-lib/MTypes'
-import * as Array from 'effect/Array'
-import * as Equivalence from 'effect/Equivalence'
-import * as Hash from 'effect/Hash'
-import * as Predicate from 'effect/Predicate'
-import * as Struct from 'effect/Struct'
+import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality';
+import * as MTypes from '@parischap/effect-lib/MTypes';
+import * as Array from 'effect/Array';
+import * as Equivalence from 'effect/Equivalence';
+import * as Hash from 'effect/Hash';
+import * as Predicate from 'effect/Predicate';
+import * as Struct from 'effect/Struct';
 import * as ASEightBitColorCode from '../internal/Color/EightBitColorCode.js';
-import * as ASColor from './index.js';
+import * as ASColor from './Color.js';
 
 /**
  * Module tag

@@ -4,15 +4,15 @@
  * You can use the RGB.make function to build more RGB colors
  */
 
-import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality'
-import * as MString from '@parischap/effect-lib/MString'
-import {pipe} from 'effect'
-import * as Array from 'effect/Array'
-import * as Equivalence from 'effect/Equivalence'
-import * as Hash from 'effect/Hash'
-import * as Number from 'effect/Number'
-import * as Predicate from 'effect/Predicate'
-import * as ASColor from './index.js';
+import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality';
+import * as MString from '@parischap/effect-lib/MString';
+import { pipe } from 'effect';
+import * as Array from 'effect/Array';
+import * as Equivalence from 'effect/Equivalence';
+import * as Hash from 'effect/Hash';
+import * as Number from 'effect/Number';
+import * as Predicate from 'effect/Predicate';
+import * as ASColor from './Color.js';
 
 /**
  * Module tag

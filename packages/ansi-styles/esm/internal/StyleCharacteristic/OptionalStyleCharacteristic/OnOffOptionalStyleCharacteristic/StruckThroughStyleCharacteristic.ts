@@ -1,11 +1,11 @@
-/** Module that implements the Bold style characteristic */
+/** Module that implements the StruckThrough style characteristic */
 
-import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality'
-import * as MTypes from '@parischap/effect-lib/MTypes'
-import * as Option from 'effect/Option'
-import * as Predicate from 'effect/Predicate'
+import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality';
+import * as MTypes from '@parischap/effect-lib/MTypes';
+import * as Option from 'effect/Option';
+import * as Predicate from 'effect/Predicate';
 import * as ASSequence from '../../../Sequence.js';
-import * as ASOnOffOptionalStyleCharacteristic from './index.js';
+import * as ASOnOffOptionalStyleCharacteristic from './OnOffOptionalStyleCharacteristic.js';
 
 /**
  * Module tag
@@ -13,12 +13,12 @@ import * as ASOnOffOptionalStyleCharacteristic from './index.js';
  * @category Module markers
  */
 export const moduleTag =
-  '@parischap/ansi-styles/internal/style-characteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/BoldStyleCharacteristic/';
+  '@parischap/ansi-styles/internal/StyleCharacteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/StruckThroughStyleCharacteristic/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
 /**
- * Type that represents an ASBoldStyleCharacteristic
+ * Type that represents an ASStruckThroughStyleCharacteristic
  *
  * @category Models
  */
@@ -35,22 +35,22 @@ export class Type extends ASOnOffOptionalStyleCharacteristic.Type {
 
   /** Getter that returns the id to show when the style characteristic is on */
   get [ASOnOffOptionalStyleCharacteristic.onIdGetterSymbol](): string {
-    return 'Bold';
+    return 'StruckThrough';
   }
 
   /** Getter that returns the id to show when the style characteristic is off */
   get [ASOnOffOptionalStyleCharacteristic.offIdGetterSymbol](): string {
-    return 'NotBold';
+    return 'NotStruckThrough';
   }
 
   /** Getter that returns the sequence corresponding to the active style characteristic */
   get [ASOnOffOptionalStyleCharacteristic.onSequenceGetterSymbol](): ASSequence.OverOne {
-    return ASSequence.bold;
+    return ASSequence.struckThrough;
   }
 
   /** Getter that returns the sequence corresponding to the inactive style characteristic */
   get [ASOnOffOptionalStyleCharacteristic.offSequenceGetterSymbol](): ASSequence.OverOne {
-    return ASSequence.notBoldNotDim;
+    return ASSequence.notStruckThrough;
   }
 
   /** Predicate that returns true if `that` has the same type marker as `this` */
@@ -65,21 +65,21 @@ export class Type extends ASOnOffOptionalStyleCharacteristic.Type {
 }
 
 /**
- * Missing Bold instance
+ * Missing StruckThrough instance
  *
  * @category Instances
  */
 export const missing = Type.make({ value: Option.none() });
 
 /**
- * On Bold instance
+ * On StruckThrough instance
  *
  * @category Instances
  */
 export const on = Type.make({ value: Option.some(true) });
 
 /**
- * Off Bold instance
+ * Off StruckThrough instance
  *
  * @category Instances
  */

@@ -1,12 +1,12 @@
 /** Module that implements an optional style characteristic */
 
-import * as MData from '@parischap/effect-lib/MData'
-import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality'
-import * as MFunction from '@parischap/effect-lib/MFunction'
-import * as MTypes from '@parischap/effect-lib/MTypes'
-import {pipe} from 'effect'
-import * as Function from 'effect/Function'
-import * as Option from 'effect/Option'
+import * as MData from '@parischap/effect-lib/MData';
+import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality';
+import * as MFunction from '@parischap/effect-lib/MFunction';
+import * as MTypes from '@parischap/effect-lib/MTypes';
+import { pipe } from 'effect';
+import * as Function from 'effect/Function';
+import * as Option from 'effect/Option';
 import * as ASSequence from '../../Sequence.js';
 
 /**
@@ -15,7 +15,7 @@ import * as ASSequence from '../../Sequence.js';
  * @category Module markers
  */
 export const moduleTag =
-  '@parischap/ansi-styles/internal/style-characteristic/OptionalStyleCharacteristic/';
+  '@parischap/ansi-styles/internal/StyleCharacteristic/OptionalStyleCharacteristic/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 

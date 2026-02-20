@@ -4,12 +4,12 @@
  * that is applied is the one at position index (modulo the number of styles in the ASPalette).
  */
 
-import * as MArray from '@parischap/effect-lib/MArray'
-import {pipe} from 'effect'
-import * as String from 'effect/String'
+import * as MArray from '@parischap/effect-lib/MArray';
+import { pipe } from 'effect';
+import * as String from 'effect/String';
 import * as ASPalette from '../Palette.js';
 import type * as ASStyle from '../Style.js';
-import * as ASContextStyler from './index.js';
+import * as ASContextStyler from './ContextStyler.js';
 
 /**
  * Module tag

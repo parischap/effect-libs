@@ -1,11 +1,11 @@
-/** Module that implements the Overlined style characteristic */
+/** Module that implements the Bold style characteristic */
 
-import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality'
-import * as MTypes from '@parischap/effect-lib/MTypes'
-import * as Option from 'effect/Option'
-import * as Predicate from 'effect/Predicate'
+import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality';
+import * as MTypes from '@parischap/effect-lib/MTypes';
+import * as Option from 'effect/Option';
+import * as Predicate from 'effect/Predicate';
 import * as ASSequence from '../../../Sequence.js';
-import * as ASOnOffOptionalStyleCharacteristic from './index.js';
+import * as ASOnOffOptionalStyleCharacteristic from './OnOffOptionalStyleCharacteristic.js';
 
 /**
  * Module tag
@@ -13,12 +13,12 @@ import * as ASOnOffOptionalStyleCharacteristic from './index.js';
  * @category Module markers
  */
 export const moduleTag =
-  '@parischap/ansi-styles/internal/style-characteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/OverlinedStyleCharacteristic/';
+  '@parischap/ansi-styles/internal/StyleCharacteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/BoldStyleCharacteristic/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
 /**
- * Type that represents an ASOverlinedStyleCharacteristic
+ * Type that represents an ASBoldStyleCharacteristic
  *
  * @category Models
  */
@@ -35,22 +35,22 @@ export class Type extends ASOnOffOptionalStyleCharacteristic.Type {
 
   /** Getter that returns the id to show when the style characteristic is on */
   get [ASOnOffOptionalStyleCharacteristic.onIdGetterSymbol](): string {
-    return 'Overlined';
+    return 'Bold';
   }
 
   /** Getter that returns the id to show when the style characteristic is off */
   get [ASOnOffOptionalStyleCharacteristic.offIdGetterSymbol](): string {
-    return 'NotOverlined';
+    return 'NotBold';
   }
 
   /** Getter that returns the sequence corresponding to the active style characteristic */
   get [ASOnOffOptionalStyleCharacteristic.onSequenceGetterSymbol](): ASSequence.OverOne {
-    return ASSequence.overlined;
+    return ASSequence.bold;
   }
 
   /** Getter that returns the sequence corresponding to the inactive style characteristic */
   get [ASOnOffOptionalStyleCharacteristic.offSequenceGetterSymbol](): ASSequence.OverOne {
-    return ASSequence.notOverlined;
+    return ASSequence.notBoldNotDim;
   }
 
   /** Predicate that returns true if `that` has the same type marker as `this` */
@@ -65,21 +65,21 @@ export class Type extends ASOnOffOptionalStyleCharacteristic.Type {
 }
 
 /**
- * Missing Overlined instance
+ * Missing Bold instance
  *
  * @category Instances
  */
 export const missing = Type.make({ value: Option.none() });
 
 /**
- * On Overlined instance
+ * On Bold instance
  *
  * @category Instances
  */
 export const on = Type.make({ value: Option.some(true) });
 
 /**
- * Off Overlined instance
+ * Off Bold instance
  *
  * @category Instances
  */
