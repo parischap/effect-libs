@@ -3,31 +3,16 @@
  * format/parse a base-10 number or `BigDecimal` and implements the formatting/parsing algortithms
  */
 
-import * as MBigDecimal from '@parischap/effect-lib/MBigDecimal'
-import * as MBigInt from '@parischap/effect-lib/MBigInt'
-import * as MData from '@parischap/effect-lib/MData'
-import * as MFunction from '@parischap/effect-lib/MFunction'
-import * as MMatch from '@parischap/effect-lib/MMatch'
-import * as MPredicate from '@parischap/effect-lib/MPredicate'
-import * as MRegExpString from '@parischap/effect-lib/MRegExpString'
-import * as MString from '@parischap/effect-lib/MString'
-import * as MStruct from '@parischap/effect-lib/MStruct'
-import * as MTypes from '@parischap/effect-lib/MTypes'
-import {flow, pipe} from 'effect'
-import * as Array from 'effect/Array'
-import * as BigDecimal from 'effect/BigDecimal'
-import * as Either from 'effect/Either'
-import * as Function from 'effect/Function'
-import * as Option from 'effect/Option'
-import * as Predicate from 'effect/Predicate'
-import * as String from 'effect/String'
-import * as Struct from 'effect/Struct'
-import * as Tuple from 'effect/Tuple'
-import * as CVScientificNotationMantissaAdjuster from '../../internal/formatting/number-base10-format/number-base10-format-scientific-notation-option/ScientificNotationMantissaAdjuster.js';
-import * as CVSignFormatter from '../../internal/formatting/number-base10-format/number-base10-format-sign-display-option/SignFormatter.js';
-import * as CVReal from '../../primitive/Real.js';
-import * as CVRounder from '../../rounding/Rounder.js';
-import * as CVRounderParams from '../../rounding/RounderParams.js';
+import { MPredicate } from '@parischap/effect-lib';
+import * as MData from '@parischap/effect-lib/MData';
+import * as MFunction from '@parischap/effect-lib/MFunction';
+import * as MMatch from '@parischap/effect-lib/MMatch';
+import * as MString from '@parischap/effect-lib/MString';
+import * as MStruct from '@parischap/effect-lib/MStruct';
+import * as MTypes from '@parischap/effect-lib/MTypes';
+import { flow, Number, Option, pipe, Predicate } from 'effect';
+import * as Function from 'effect/Function';
+import * as Struct from 'effect/Struct';
 import * as CVRoundingOption from '../../rounding/rounding-option/index.js';
 import * as CVNumberBase10FormatScientificNotationOption from './number-base10-format-scientific-notation-option/index.js';
 import * as CVNumberBase10FormatSignDisplayOption from './number-base10-format-sign-display-option/index.js';
@@ -75,23 +60,24 @@ export class Type extends MData.Class {
   readonly showNullIntegerPart: boolean;
 
   /**
-   * Minimim number of characters forming the integer part of a number. Must be a positive integer
-   * (>=0). Will not throw otherwise but unexpected results might occur.
+   * If `integerPartPadding` is a `none`, no padding is applied. Otherwise the string representation
+   * of the integer part of the mantissa will be padded with `fillChar`'s on the left of the
+   * mantissa (but after the sign if there is one) so that it is length characters long
+   * (thousandSeparator included).
    *
-   * Formatting: the integer part will be left-padded with `fillChar`'s if necessary to respect the
-   * condition. The padding takes place between the sign and the number (or to the left of the
-   * number if there is no sign)
+   * Formatting: `fillChar`'s are padded on the left of the mantissa (but after the sign if there is
+   * one) until the integer part occupies `length` characters. Conversion does not fail if the
+   * integer part of the mantissa occupies more than length characters (it is displayed as is
+   * without any padding).
    *
-   * Parsing: the size of the padding must be equal to max(0, minimumIntegerPartLength -
-   * integerPartLength)
+   * Parsing: conversion will fail if the string representation of the integer part of the mantissa
+   * does not occupy length characters. If it occupies length characters, any `fillChar` character
+   * present on the left of the mantissa (but after the sign if there is one) is removed
    */
-  readonly minimumIntegerPartLength: number;
-
-  /**
-   * Character that can be used to left-pad a number. Must be a one-character string. Will not throw
-   * otherwise but unexpected results might occur.
-   */
-  readonly fillChar: string;
+  readonly integerPartPadding: Option.Option<{
+    readonly length: number;
+    readonly fillChar: string;
+  }>;
 
   /**
    * Minimim number of digits forming the fractional part of a number. Must be a positive integer
@@ -132,7 +118,7 @@ export class Type extends MData.Class {
   /** Scientific notation options. See CVNumberBase10FormatScientificNotationOption */
   readonly scientificNotationOption: CVNumberBase10FormatScientificNotationOption.Type;
 
-  /** Rounding mode options. See CVRoundingOption.ts */
+  /** Rounding mode options used when formatting. See CVRoundingOption.ts */
   readonly roundingOption: CVRoundingOption.Type;
 
   /** Sign display options. See CVNumberBase10FormatSignDisplayOption.ts */
@@ -143,8 +129,7 @@ export class Type extends MData.Class {
     thousandSeparator,
     fractionalSeparator,
     showNullIntegerPart,
-    minimumIntegerPartLength,
-    fillChar,
+    integerPartPadding,
     minimumFractionalDigits,
     maximumFractionalDigits,
     eNotationChars,
@@ -156,8 +141,7 @@ export class Type extends MData.Class {
     this.thousandSeparator = thousandSeparator;
     this.fractionalSeparator = fractionalSeparator;
     this.showNullIntegerPart = showNullIntegerPart;
-    this.minimumIntegerPartLength = minimumIntegerPartLength;
-    this.fillChar = fillChar;
+    this.integerPartPadding = integerPartPadding;
     this.minimumFractionalDigits = minimumFractionalDigits;
     this.maximumFractionalDigits = maximumFractionalDigits;
     this.eNotationChars = eNotationChars;
@@ -181,6 +165,8 @@ export class Type extends MData.Class {
     return _TypeId;
   }
 }
+
+type IntegerPartPadding = Type['integerPartPadding'];
 
 /**
  * Constructor
@@ -214,20 +200,12 @@ export const showNullIntegerPart: MTypes.OneArgFunction<Type, boolean> =
   Struct.get('showNullIntegerPart');
 
 /**
- * Returns the `minimumIntegerPartLength`property of `self`
+ * Returns the `integerPartPadding`property of `self`
  *
  * @category Destructors
  */
-export const minimumIntegerPartLength: MTypes.OneArgFunction<Type, number> = Struct.get(
-  'minimumIntegerPartLength',
-);
-
-/**
- * Returns the `fillChar` property of `self`
- *
- * @category Destructors
- */
-export const fillChar: MTypes.OneArgFunction<Type, string> = Struct.get('fillChar');
+export const integerPartPadding: MTypes.OneArgFunction<Type, IntegerPartPadding> =
+  Struct.get('integerPartPadding');
 
 /**
  * Returns the `minimumFractionalDigits` property of `self`
@@ -283,14 +261,50 @@ export const signDisplayOption: MTypes.OneArgFunction<
 > = Struct.get('signDisplayOption');
 
 /**
+ * Returns a `some` of the length of `self` if `self` represents a fixed-length number format.
+ * Return a `none` otherwise
+ *
+ * @category Utils
+ */
+export const getFixedLength = (self: Type): Option.Option<number> =>
+  Option.gen(function* () {
+    const { length: integerPartLength } = yield* self.integerPartPadding;
+    const signLength = yield* pipe(
+      self.signDisplayOption,
+      MMatch.make,
+      MMatch.whenIs(CVNumberBase10FormatSignDisplayOption.Type.Always, () => Option.some(1)),
+      MMatch.whenIs(CVNumberBase10FormatSignDisplayOption.Type.Never, () => Option.some(0)),
+      MMatch.orElse(() => Option.none()),
+    );
+    const fractionalPartLength = yield* pipe(
+      self.minimumFractionalDigits,
+      Option.liftPredicate(MPredicate.strictEquals(self.maximumFractionalDigits)),
+      Option.map(
+        flow(
+          Option.liftPredicate(Predicate.not(MPredicate.strictEquals(0))),
+          Option.map(Number.sum(self.fractionalSeparator.length)),
+          Option.getOrElse(Function.constant(0)),
+        ),
+      ),
+    );
+
+    return yield* pipe(
+      self.scientificNotationOption,
+      Option.liftPredicate(
+        MPredicate.strictEquals(CVNumberBase10FormatScientificNotationOption.Type.None),
+      ),
+      Option.as(signLength + integerPartLength + fractionalPartLength),
+    );
+  });
+
+/**
  * Returns a short description of `self`, e.g. 'signed integer'
  *
  * @category Destructors
  */
 export const toDescription = (self: Type): string => {
   const {
-    minimumIntegerPartLength,
-    fillChar,
+    integerPartPadding,
     thousandSeparator,
     fractionalSeparator,
     minimumFractionalDigits,
@@ -302,7 +316,10 @@ export const toDescription = (self: Type): string => {
   const isInteger = maximumFractionalDigits <= 0;
   const isUngrouped = thousandSeparator.length === 0;
   return (
-    (minimumIntegerPartLength > 0 ? `${fillChar}-left-padded` : '')
+    Option.match(integerPartPadding, {
+      onNone: MFunction.constEmptyString,
+      onSome: flow(Struct.get('fillChar'), MString.append('-left-padded ')),
+    })
     + pipe(
       signDisplayOption,
       MMatch.make,
@@ -349,106 +366,6 @@ export const toDescription = (self: Type): string => {
       MMatch.exhaustive,
     )
   );
-};
-
-/**
- * Returns a function that tries to format a `number` respecting the options represented by `self`.
- * If successful, that function returns a `Some` of the formatted number. Otherwise, it returns a
- * `None`. `number` can be of type number or `BigDecimal` for better accuracy. There is a difference
- * between number and `BigDecimal` (and bigint) regarding the sign of 0. In Javascript,
- * Object.is(0,-0) is false whereas Object.is(0n,-0n) is true. So if the sign of zero is important
- * to you, prefer passing a number to the function. `0` as a BigDecimal will always be interpreted
- * as a positive `0` as we have no means of knowing if it is negative or positive
- *
- * @category Formatting
- */
-export const toNumberFormatter = (
-  self: Type,
-): MTypes.OneArgFunction<BigDecimal.BigDecimal | CVReal.Type, string> => {
-  const rounder =
-    self.maximumFractionalDigits === Infinity ?
-      Function.identity
-    : pipe(
-        {
-          precision: self.maximumFractionalDigits,
-          roundingOption: self.roundingOption,
-        },
-        CVRounderParams.make,
-        CVRounder.bigDecimal,
-      );
-  const signFormatter = CVSignFormatter.fromSignDisplayOption(self.signDisplayOption);
-  const mantissaAdjuster = CVScientificNotationMantissaAdjuster.fromScientificNotationOption(
-    self.scientificNotationOption,
-  );
-  const hasThousandSeparator = self.thousandSeparator !== '';
-  const eNotationChar = pipe(
-    self.eNotationChars,
-    Array.get(0),
-    Option.getOrElse(MFunction.constEmptyString),
-  );
-
-  const padder = String.padStart(self.minimumIntegerPartLength, self.fillChar);
-
-  return (number) => {
-    const [sign, selfAsBigDecimal] =
-      MTypes.isNumber(number) ?
-        Tuple.make(
-          number < 0 || Object.is(-0, number) ? (-1 as const) : (1 as const),
-          BigDecimal.unsafeFromNumber(number),
-        )
-      : Tuple.make(number.value < 0 ? (-1 as const) : (1 as const), number);
-
-    const [adjusted, exponent] = mantissaAdjuster(selfAsBigDecimal);
-    const absRounded = pipe(adjusted, rounder, BigDecimal.abs);
-    const [integerPart, fractionalPart] = pipe(
-      absRounded,
-      MBigDecimal.truncatedAndFollowingParts(),
-    );
-
-    const signString = signFormatter({ sign, isZero: BigDecimal.isZero(absRounded) });
-
-    const normalizedFractionalPart = BigDecimal.normalize(fractionalPart);
-
-    const fractionalPartString = pipe(
-      normalizedFractionalPart.value,
-      Option.liftPredicate(Predicate.not(MBigInt.isZero)),
-      Option.map(MString.fromNonNullablePrimitive),
-      Option.getOrElse(MFunction.constEmptyString),
-      String.padStart(normalizedFractionalPart.scale, '0'),
-      String.padEnd(self.minimumFractionalDigits, '0'),
-      Option.liftPredicate(String.isNonEmpty),
-      Option.map(MString.prepend(self.fractionalSeparator)),
-      Option.getOrElse(MFunction.constEmptyString),
-    );
-
-    const integerPartString = pipe(
-      integerPart.value.toString(),
-      MFunction.fIfTrue({
-        condition: hasThousandSeparator,
-        f: flow(
-          MString.splitEquallyRestAtStart(MRegExpString.DIGIT_GROUP_SIZE),
-          Array.intersperse(self.thousandSeparator),
-          Array.join(''),
-        ),
-      }),
-      Either.liftPredicate(
-        Predicate.not(MPredicate.strictEquals('0')),
-        MFunction.fIfTrue({
-          condition: !self.showNullIntegerPart && fractionalPartString.length > 0,
-          f: MFunction.constEmptyString,
-        }),
-      ),
-      Either.merge,
-    );
-
-    const exponentString = pipe(
-      exponent,
-      Option.map(flow(MString.fromNumber(10), MString.prepend(eNotationChar))),
-      Option.getOrElse(MFunction.constEmptyString),
-    );
-
-    return `${signString}${padder(integerPartString)}${fractionalPartString}${exponentString}`;
-  };
 };
 
 /**
@@ -774,6 +691,33 @@ export const withNullIntegerPartShowing: MTypes.OneArgFunction<Type> = flow(
   make,
 );
 
+const _charPadded =
+  (fillChar: string) =>
+  (length: number): MTypes.OneArgFunction<Type> =>
+    flow(
+      MStruct.append({
+        integerPartPadding: Option.some({ length, fillChar }),
+      }),
+      make,
+    );
+/**
+ * Returns a copy of `self` with `integerPartPadding` set to `n` and `fillChar` set to `0`
+ *
+ * @category Modifiers
+ */
+export const zeroPadded: MTypes.OneArgFunction<number, MTypes.OneArgFunction<Type>> = _charPadded(
+  '0',
+);
+
+/**
+ * Returns a copy of `self` with `integerPartPadding` set to `n` and `fillChar` set to ` `
+ *
+ * @category Modifiers
+ */
+export const spacePadded: MTypes.OneArgFunction<number, MTypes.OneArgFunction<Type>> = _charPadded(
+  ' ',
+);
+
 /**
  * `CVNumberBase10Format` instance that uses a comma as fractional separator, a space as thousand
  * separator and shows at most three fractional digits. Used in countries like France,
@@ -791,6 +735,7 @@ export const frenchStyleNumber: Type = make({
   scientificNotationOption: CVNumberBase10FormatScientificNotationOption.Type.None,
   roundingOption: CVRoundingOption.Type.HalfExpand,
   signDisplayOption: CVNumberBase10FormatSignDisplayOption.Type.Negative,
+  integerPartPadding: Option.none(),
 });
 
 /**
@@ -881,3 +826,38 @@ export const ukStyleInteger: Type = pipe(ukStyleNumber, withMaxNDecimals(0));
  * @category Instances
  */
 export const integer: Type = pipe(frenchStyleInteger, withoutThousandSeparator);
+
+/**
+ * 2-digit integer `CVNumberBase10Format` instance with no thousand separator
+ *
+ * @category Instances
+ */
+export const twoDigitInteger: Type = pipe(integer, zeroPadded(2), withSignDisplay);
+
+/**
+ * 4-digit integer `CVNumberBase10Format` instance with no thousand separator
+ *
+ * @category Instances
+ */
+export const fourDigitInteger: Type = pipe(integer, zeroPadded(4), withSignDisplay);
+
+/**
+ * Unsigned integer `CVNumberBase10Format` instance with no thousand separator
+ *
+ * @category Instances
+ */
+export const unsignedInteger: Type = pipe(integer, withoutSignDisplay);
+
+/**
+ * 2-digit unsigned integer `CVNumberBase10Format` instance with no thousand separator
+ *
+ * @category Instances
+ */
+export const twoDigitUnsignedInteger: Type = pipe(integer, zeroPadded(2), withoutSignDisplay);
+
+/**
+ * 4-digit unsigned integer `CVNumberBase10Format` instance with no thousand separator
+ *
+ * @category Instances
+ */
+export const fourDigitUnsignedInteger: Type = pipe(integer, zeroPadded(4), withoutSignDisplay);

@@ -12,7 +12,6 @@ An equivalent to the PHP `sprintf` and `sscanf` functions with real typing of th
 ```ts
 import {
   CVNumberBase10Format,
-  CVReal,
   CVSchema,
   CVTemplate,
   CVTemplatePlaceholder,
@@ -47,7 +46,7 @@ const template = CVTemplate.make(
 // Let's define a parser. See how the return type matches the names and types of the placeholders
 // Type: (value: string) => Either.Either<{
 //    readonly name: string;
-//    readonly age: CVReal.Type;
+//    readonly age: number;
 //    readonly kind: string;
 // }, MInputError.Type>
 const parser = CVTemplate.toParser(template);
@@ -55,7 +54,7 @@ const parser = CVTemplate.toParser(template);
 // Let's define a parser that throws for Effect users.
 // Type: (value: string) => {
 //    readonly name: string;
-//    readonly age: CVReal.Type;
+//    readonly age: number;
 //    readonly kind: string;
 // }
 const throwingParser = CVTemplate.toThrowingParser(template);
@@ -63,7 +62,7 @@ const throwingParser = CVTemplate.toThrowingParser(template);
 // Let's define a formatter.
 // Type: (value: {
 //    readonly name: string;
-//    readonly age: CVReal.Type;
+//    readonly age: number;
 //    readonly kind: string;
 //   }) => Either.Either<string, MInputError.Type>
 const formatter = CVTemplate.toFormatter(template);
@@ -71,7 +70,7 @@ const formatter = CVTemplate.toFormatter(template);
 // Let's define a formatter that throws for Effect users.
 // Type: (value: {
 //    readonly name: string;
-//    readonly age: CVReal.Type;
+//    readonly age: number;
 //    readonly kind: string;
 //   }) => string, MInputError.Type
 const throwingFormatter = CVTemplate.toThrowingFormatter(template);
@@ -96,7 +95,7 @@ console.log(throwingParser('John is a 47-year old man.'));
 console.log(
   formatter({
     name: 'Tom',
-    age: CVReal.unsafeFromNumber(15),
+    age: 15,
     kind: 'boy',
   }),
 );
@@ -105,7 +104,7 @@ console.log(
 console.log(
   throwingFormatter({
     name: 'Tom',
-    age: CVReal.unsafeFromNumber(15),
+    age: 15,
     kind: 'boy',
   }),
 );
@@ -115,14 +114,14 @@ const schema = CVSchema.Template(template);
 
 // Type:(i: string) => Either<{
 //     readonly name: string;
-//     readonly age: CVReal.Type;
+//     readonly age: number;
 //     readonly kind: string;
 // }, ParseError>
 const decoder = Schema.decodeEither(schema);
 
 // Type: (a: {
 //     readonly name: string;
-//     readonly age: CVReal.Type;
+//     readonly age: number;
 //     readonly kind: string;
 // }) => Either<string, ParseError>
 const encoder = Schema.encodeEither(schema);
@@ -134,7 +133,7 @@ console.log(decoder('John is a 47-year old man.'));
 console.log(
   encoder({
     name: 'Tom',
-    age: CVReal.unsafeFromNumber(15),
+    age: 15,
     kind: 'boy',
   }),
 );
@@ -185,10 +184,10 @@ There are several predefined Placeholder's:
 
 - `fixedLength`: this Placeholder always reads/writes the same number of characters from/into the text.
 - `paddedFixedLength`: same as `fixedLength` but the consumed text is trimmed off of a `fillChar` on the left or right and the written text is padded with a `fillChar` on the left or right.
-- `fixedLengthToReal`: same as `fixedLength` but the parser tries to convert the consumed text into a `CVReal` using the passed `CVNumberBase10Format`. The formatter takes a `CVReal` and tries to convert and write it as an n-character string. You can pass a `fillChar` that is trimmed off the consumed text upon parsing and padded to the written text upon formatting.
-- `real`: the parser of this Placeholder reads from the text all the characters that it can interpret as a number in the provided `CVNumberBase10Format` and converts the consumed text into a `CVReal`. The formatter takes a `CVReal` and converts it into a string according to the provided `CVNumberBase10Format`.
+- `fixedLengthToNumber`: same as `fixedLength` but the parser tries to convert the consumed text into a number using the passed `CVNumberBase10Format`. The formatter takes a number and tries to convert and write it as an n-character string. You can pass a `fillChar` that is trimmed off the consumed text upon parsing and padded to the written text upon formatting.
+- `number`: the parser of this Placeholder reads from the text all the characters that it can interpret as a number in the provided `CVNumberBase10Format` and converts the consumed text into a number. The formatter takes a number and converts it into a string according to the provided `CVNumberBase10Format`.
 - `mappedLiterals`: this Placeholder takes as input a map that must define a bijection between a list of strings and a list of values. The parser tries to read from the text one of the strings in the list. Upon success, it returns the corresponding value. The formatter takes a value and tries to find it in the list. Upon success, it writes the corresponding string into the text.
-- `realMappedLiterals`: same as `mappedLiterals` but values are assumed to be of type `CVReal` which is the most usual use case.
+- `realMappedLiterals`: same as `mappedLiterals` but values are assumed to be of type number which is the most usual use case.
 - `fulfilling`: the parser of this Placeholder reads as much of the text as it can that fulfills the passed regular expression. The formatter only accepts a string that matches the passed regular expression and writes it into the text.
 - `anythingBut`: this is a special case of the `fulfilling` `CVTemplatePlaceholder`. The parser reads from the text until it meets one of the `forbiddenChars` passed as parameter (the result must be a non-empty string). The formatter will only accept a non-empty string that does not contain any of the forbidden chars and write it to the text.
 - `toEnd`: this is another special case of the `fulfilling` `CVTemplatePlaceholder`. The parser reads all the remaining text. The formatter accepts any string and writes it. This `CVTemplatePlaceholder` should only be used as the last `CVTemplatePart` of a `CVTemplate`.
@@ -221,13 +220,13 @@ const template = CVTemplate.make(
   placeholder.realMappedLiterals({
     name: 'weekday',
     keyValuePairs: [
-      ['Monday', CVReal.unsafeFromNumber(1)],
-      ['Tuesday', CVReal.unsafeFromNumber(2)],
-      ['Wednesday', CVReal.unsafeFromNumber(3)],
-      ['Thursday', CVReal.unsafeFromNumber(4)],
-      ['Friday', CVReal.unsafeFromNumber(5)],
-      ['Saturday', CVReal.unsafeFromNumber(6)],
-      ['Sunday', CVReal.unsafeFromNumber(7)],
+      ['Monday', 1],
+      ['Tuesday', 2],
+      ['Wednesday', 3],
+      ['Thursday', 4],
+      ['Friday', 5],
+      ['Saturday', 6],
+      ['Sunday', 7],
     ],
   }),
   // Separator
@@ -243,13 +242,13 @@ const template = CVTemplate.make(
 
 // Let's define a parser. Note that there is only one `weekday` property
 // Type: (value: string) => Either.Either<{
-//    readonly weekday: CVReal.Type;
+//    readonly weekday: number;
 // }, MInputError.Type>>
 const parser = CVTemplate.toParser(template);
 
 // Let's define a formatter. Note that there is only one `weekday` property
 // Type: (value: {
-//   readonly weekday: CVReal.Type;
+//   readonly weekday: number;
 //   }) => Either.Either<string, MInputError.Type>
 const formatter = CVTemplate.toFormatter(template);
 
@@ -267,7 +266,7 @@ console.log(parser('Today is Tuesday, day number 2 of the week.'));
 console.log(parser('Today is Thursday, day number 2 of the week.'));
 
 // Result: { _id: 'Either', _tag: 'Right', right: 'Today is Saturday, day number 6 of the week.' }
-console.log(formatter({ weekday: CVReal.unsafeFromNumber(6) }));
+console.log(formatter({ weekday: 6 }));
 
 // Result: {
 //   _id: 'Either',
@@ -277,7 +276,7 @@ console.log(formatter({ weekday: CVReal.unsafeFromNumber(6) }));
 //     _tag: '@parischap/effect-lib/InputError/'
 //   }
 // }
-console.log(formatter({ weekday: CVReal.unsafeFromNumber(10) }));
+console.log(formatter({ weekday: 10 }));
 ```
 
 ## 6. Debugging

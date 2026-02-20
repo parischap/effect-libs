@@ -3,27 +3,27 @@
  * number according to the CVNumberBase10Format that was used to construct it
  */
 
-import * as MBigDecimal from '@parischap/effect-lib/MBigDecimal'
-import * as MData from '@parischap/effect-lib/MData'
-import * as MNumber from '@parischap/effect-lib/MNumber'
-import * as MPredicate from '@parischap/effect-lib/MPredicate'
-import * as MRegExpString from '@parischap/effect-lib/MRegExpString'
-import * as MString from '@parischap/effect-lib/MString'
-import * as MTypes from '@parischap/effect-lib/MTypes'
-import {flow, pipe} from 'effect'
-import * as BigDecimal from 'effect/BigDecimal'
-import * as Function from 'effect/Function'
-import * as Number from 'effect/Number'
-import * as Option from 'effect/Option'
-import * as Predicate from 'effect/Predicate'
-import * as String from 'effect/String'
-import * as Struct from 'effect/Struct'
-import * as Tuple from 'effect/Tuple'
+import { MFunction, MStruct } from '@parischap/effect-lib';
+import * as MBigDecimal from '@parischap/effect-lib/MBigDecimal';
+import * as MData from '@parischap/effect-lib/MData';
+import * as MNumber from '@parischap/effect-lib/MNumber';
+import * as MPredicate from '@parischap/effect-lib/MPredicate';
+import * as MRegExpString from '@parischap/effect-lib/MRegExpString';
+import * as MString from '@parischap/effect-lib/MString';
+import * as MTypes from '@parischap/effect-lib/MTypes';
+import { flow, pipe } from 'effect';
+import * as BigDecimal from 'effect/BigDecimal';
+import * as Function from 'effect/Function';
+import * as Number from 'effect/Number';
+import * as Option from 'effect/Option';
+import * as Predicate from 'effect/Predicate';
+import * as String from 'effect/String';
+import * as Struct from 'effect/Struct';
+import * as Tuple from 'effect/Tuple';
 import * as CVScientificNotationMantissaValidator from '../../internal/formatting/number-base10-format/number-base10-format-scientific-notation-option/ScientificNotationMantissaValidator.js';
 import * as CVScientificNotationParser from '../../internal/formatting/number-base10-format/number-base10-format-scientific-notation-option/ScientificNotationParser.js';
 import * as CVSignParser from '../../internal/formatting/number-base10-format/number-base10-format-sign-display-option/SignParser.js';
 import type * as CVSignString from '../../internal/formatting/number-base10-format/number-base10-format-sign-display-option/SignString.js';
-import * as CVReal from '../../primitive/Real.js';
 import * as CVNumberBase10Format from './index.js';
 
 /**
@@ -54,7 +54,7 @@ export class Type extends MData.Class {
       match: string;
       groups: {
         exponentPart: string;
-        fillChars: string;
+        padding: string;
         mantissaFractionalPart: string;
         mantissaIntegerPart: string;
         signPart: string;
@@ -76,16 +76,22 @@ export class Type extends MData.Class {
    */
   readonly scientificNotationMantissaValidator: CVScientificNotationMantissaValidator.Type;
 
-  /** Function that validates the mantissa regarding its length in characters */
-  readonly mantissaLengthValidator: MTypes.OneArgFunction<string, Option.Option<number>>;
+  /** Function that validates the length of the fractional part of the mantissa */
+  readonly mantissaFractionalPartLengthValidator: MTypes.OneArgFunction<
+    number,
+    Option.Option<number>
+  >;
 
-  /** Function that validates the length of the integer part of the mantissa */
-  readonly mantissaIntegerPartLengthValidator: MTypes.OneArgFunction<
+  /** Function that validates the length of the integer part (padding included) of the mantissa */
+  readonly mantissaIntegerPartAndPaddingLengthValidator: MTypes.OneArgFunction<
     [number, number],
     Option.Option<[number, number]>
   >;
 
-  /** Flag that indicates whether the fillChar is 0 */
+  /**
+   * `true` if the CVNumberBase10Format from which `self` is constructed has a padding and the
+   * `fillChar` of this padding is the digit `0`. `false` otherwise
+   */
   readonly fillCharIsZero: boolean;
 
   /** Same as CVNumberBase10.showNullIntegerPart */
@@ -104,8 +110,8 @@ export class Type extends MData.Class {
     signParser,
     exponentParser,
     scientificNotationMantissaValidator,
-    mantissaLengthValidator,
-    mantissaIntegerPartLengthValidator,
+    mantissaFractionalPartLengthValidator,
+    mantissaIntegerPartAndPaddingLengthValidator,
     fillCharIsZero,
     showNullIntegerPart,
   }: MTypes.Data<Type>) {
@@ -116,8 +122,9 @@ export class Type extends MData.Class {
     this.signParser = signParser;
     this.exponentParser = exponentParser;
     this.scientificNotationMantissaValidator = scientificNotationMantissaValidator;
-    this.mantissaLengthValidator = mantissaLengthValidator;
-    this.mantissaIntegerPartLengthValidator = mantissaIntegerPartLengthValidator;
+    this.mantissaFractionalPartLengthValidator = mantissaFractionalPartLengthValidator;
+    this.mantissaIntegerPartAndPaddingLengthValidator =
+      mantissaIntegerPartAndPaddingLengthValidator;
     this.fillCharIsZero = fillCharIsZero;
     this.showNullIntegerPart = showNullIntegerPart;
   }
@@ -127,8 +134,19 @@ export class Type extends MData.Class {
     return new Type({
       description: `${CVNumberBase10Format.toDescription(format)} parser`,
       getParts: MString.matchWithCapturingGroups(
-        pipe(format, MRegExpString.base10Number, MRegExpString.atStart, RegExp),
-        ['signPart', 'fillChars', 'mantissaIntegerPart', 'mantissaFractionalPart', 'exponentPart'],
+        pipe(
+          format,
+          MStruct.append({
+            fillChar: Option.match(format.integerPartPadding, {
+              onNone: MFunction.constEmptyString,
+              onSome: Struct.get('fillChar'),
+            }),
+          }),
+          MRegExpString.base10Number,
+          MRegExpString.atStart,
+          RegExp,
+        ),
+        ['signPart', 'padding', 'mantissaIntegerPart', 'mantissaFractionalPart', 'exponentPart'],
       ),
       removeThousandSeparator: MString.removeNCharsEveryMCharsFromRight({
         m: MRegExpString.DIGIT_GROUP_SIZE,
@@ -142,23 +160,21 @@ export class Type extends MData.Class {
         CVScientificNotationMantissaValidator.fromScientificNotationOption(
           format.scientificNotationOption,
         ),
-      mantissaLengthValidator: flow(
-        String.length,
-        Option.liftPredicate(
-          Number.between({
-            minimum: format.minimumFractionalDigits,
-            maximum: format.maximumFractionalDigits,
-          }),
-        ),
+      mantissaFractionalPartLengthValidator: Option.liftPredicate(
+        Number.between({
+          minimum: format.minimumFractionalDigits,
+          maximum: format.maximumFractionalDigits,
+        }),
       ),
-      mantissaIntegerPartLengthValidator: Option.liftPredicate(
-        flow(
-          Tuple.mapSecond(flow(Number.subtract(format.minimumIntegerPartLength), Number.min(0))),
-          Number.sumAll,
-          MPredicate.strictEquals(0),
-        ),
-      ),
-      fillCharIsZero: format.fillChar === '0',
+      mantissaIntegerPartAndPaddingLengthValidator: Option.match(format.integerPartPadding, {
+        onNone: () => Option.some,
+        onSome: ({ length }) =>
+          Option.liftPredicate(flow(Number.sumAll, MPredicate.strictEquals(length))),
+      }),
+      fillCharIsZero: Option.match(format.integerPartPadding, {
+        onNone: Function.constFalse,
+        onSome: ({ fillChar }) => fillChar === '0',
+      }),
       showNullIntegerPart: format.showNullIntegerPart,
     });
   }
@@ -177,6 +193,13 @@ export class Type extends MData.Class {
 export const fromFormat = (format: CVNumberBase10Format.Type) => Type.fromFormat(format);
 
 /**
+ * Returns the `description` property of `self`
+ *
+ * @category Destructors
+ */
+export const description: MTypes.OneArgFunction<Type, string> = Struct.get('description');
+
+/**
  * The sign is kept apart from the value because for numbers -0 is different from 0 which is not the
  * case for BigDecimal's. So if we multiply the value by the sign, we lose that informations
  */
@@ -188,29 +211,29 @@ const _bigDecimalExtractor =
     Option.gen(function* () {
       const {
         match,
-        groups: { signPart, fillChars, mantissaIntegerPart, mantissaFractionalPart, exponentPart },
+        groups: { signPart, padding, mantissaIntegerPart, mantissaFractionalPart, exponentPart },
       } = yield* self.getParts(input);
 
-      const mantissaFractionalPartLength =
-        yield* self.mantissaLengthValidator(mantissaFractionalPart);
+      const validatedMantissaFractionalPartLength =
+        yield* self.mantissaFractionalPartLengthValidator(mantissaFractionalPart.length);
 
-      const [validatedFillCharsLength, validatedMantissaIntegerPartLength] =
-        yield* self.mantissaIntegerPartLengthValidator(
-          Tuple.make(fillChars.length, mantissaIntegerPart.length),
+      const [validatedMantissaIntegerPartLength, validatedPaddingLength] =
+        yield* self.mantissaIntegerPartAndPaddingLengthValidator(
+          Tuple.make(mantissaIntegerPart.length, padding.length),
         );
 
-      const isInteger = mantissaFractionalPartLength === 0;
+      const isInteger = validatedMantissaFractionalPartLength === 0;
 
       const mantissa = yield* pipe(
         validatedMantissaIntegerPartLength,
-        Option.liftPredicate(Number.greaterThanOrEqualTo(0)),
+        Option.liftPredicate(Number.greaterThan(0)),
         Option.as(mantissaIntegerPart),
         Option.match({
           // No integer part
           onNone: () =>
             (
               (!self.showNullIntegerPart && !isInteger)
-              || (self.fillCharIsZero && validatedFillCharsLength > 0)
+              || (self.fillCharIsZero && validatedPaddingLength > 0)
             ) ?
               Option.some(MBigDecimal.zero)
             : Option.none(),
@@ -227,20 +250,17 @@ const _bigDecimalExtractor =
             pipe(
               mantissaFractionalPart,
               Option.liftPredicate(String.isNonEmpty),
-              Option.map(MBigDecimal.fromPrimitiveOrThrow(mantissaFractionalPartLength)),
+              Option.map(MBigDecimal.fromPrimitiveOrThrow(validatedMantissaFractionalPartLength)),
               Option.getOrElse(Function.constant(MBigDecimal.zero)),
             ),
           ),
         ),
       );
-
       const validatedMantissa = yield* self.scientificNotationMantissaValidator(mantissa);
-
       const sign = yield* self.signParser({
         isZero: BigDecimal.isZero(validatedMantissa),
         sign: signPart as CVSignString.Type,
       });
-
       const exponent = yield* self.exponentParser(exponentPart);
 
       return {
@@ -309,17 +329,17 @@ export const extractAsBigDecimalOrThrow = (
 };
 
 /**
- * Same as `extractAsBigDecimal` but returns a `CVReal`. This is the most usual use case.
- * Furthermore, this function will return `-0` if your parse '-0' and `0` if you parse '0' or '+0'.
+ * Same as `extractAsBigDecimal` but returns a number. This is the most usual use case. Furthermore,
+ * this function will return `-0` if your parse '-0' and `0` if you parse '0' or '+0'.
  *
  * @category Parsing
  */
 export const extractAsNumber: MTypes.OneArgFunction<
   Type,
-  MTypes.OneArgFunction<string, Option.Option<MTypes.Pair<CVReal.Type, string>>>
+  MTypes.OneArgFunction<string, Option.Option<MTypes.Pair<number, string>>>
 > = flow(
   _numberExtractor,
-  Function.compose(Option.map(({ value, match }) => Tuple.make(value as CVReal.Type, match))),
+  Function.compose(Option.map(({ value, match }) => Tuple.make(value, match))),
 );
 
 /**
@@ -330,7 +350,7 @@ export const extractAsNumber: MTypes.OneArgFunction<
 
 export const extractAsNumberOrThrow =
   (self: Type) =>
-  (text: string): MTypes.Pair<CVReal.Type, string> => {
+  (text: string): MTypes.Pair<number, string> => {
     const extractor = extractAsNumber(self);
     return pipe(
       text,
@@ -385,7 +405,7 @@ export const parseAsBigDecimalOrThrow =
  */
 export const parseAsNumber: MTypes.OneArgFunction<
   Type,
-  MTypes.OneArgFunction<string, Option.Option<CVReal.Type>>
+  MTypes.OneArgFunction<string, Option.Option<number>>
 > = flow(
   _numberExtractor,
   Function.compose(
@@ -404,7 +424,7 @@ export const parseAsNumber: MTypes.OneArgFunction<
 
 export const parseAsNumberOrThrow =
   (self: Type) =>
-  (text: string): CVReal.Type => {
+  (text: string): number => {
     const parser = parseAsNumber(self);
     return pipe(
       text,

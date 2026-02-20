@@ -3,14 +3,14 @@
  * PPStringifiedValue
  */
 
-import * as ASText from '@parischap/ansi-styles/ASText'
-import * as MData from '@parischap/effect-lib/MData'
-import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality'
-import * as MTypes from '@parischap/effect-lib/MTypes'
-import * as Equivalence from 'effect/Equivalence'
-import * as Hash from 'effect/Hash'
-import * as HashMap from 'effect/HashMap'
-import * as Predicate from 'effect/Predicate'
+import * as ASText from '@parischap/ansi-styles/ASText';
+import * as MData from '@parischap/effect-lib/MData';
+import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality';
+import * as MTypes from '@parischap/effect-lib/MTypes';
+import * as Equivalence from 'effect/Equivalence';
+import * as Hash from 'effect/Hash';
+import * as HashMap from 'effect/HashMap';
+import * as Predicate from 'effect/Predicate';
 import * as PPValue from '../internal/stringification/Value.js';
 import * as PPParameters from '../parameters/index.js';
 import * as PPStringifiedValue from './StringifiedValue.js';
@@ -245,7 +245,7 @@ export const toStringifier = (
             const sort: MTypes.OneArgFunction<PPValues.Type> = pipe(
               initializedNonPrimitiveOption.propertySortOrder,
               Option.map((order) => Array.sort(order)),
-              Option.getOrElse(() => Function.identity),
+              Option.getOrElse(MFunction.constIdentity),
             );
 
             const filteredAndSortedProperties = pipe(

@@ -6,23 +6,23 @@
  * translated strings
  */
 
-import * as MArray from '@parischap/effect-lib/MArray'
-import * as MData from '@parischap/effect-lib/MData'
-import * as MInputError from '@parischap/effect-lib/MInputError'
-import * as MPredicate from '@parischap/effect-lib/MPredicate'
-import * as MString from '@parischap/effect-lib/MString'
-import * as MTypes from '@parischap/effect-lib/MTypes'
-import {flow, pipe} from 'effect'
-import * as Array from 'effect/Array'
-import * as Either from 'effect/Either'
-import * as HashMap from 'effect/HashMap'
-import * as Number from 'effect/Number'
-import * as Option from 'effect/Option'
-import * as Struct from 'effect/Struct'
-import * as Tuple from 'effect/Tuple'
+import { MStringFillPosition } from '@parischap/effect-lib';
+import * as MArray from '@parischap/effect-lib/MArray';
+import * as MData from '@parischap/effect-lib/MData';
+import * as MInputError from '@parischap/effect-lib/MInputError';
+import * as MPredicate from '@parischap/effect-lib/MPredicate';
+import * as MString from '@parischap/effect-lib/MString';
+import * as MTypes from '@parischap/effect-lib/MTypes';
+import { flow, pipe } from 'effect';
+import * as Array from 'effect/Array';
+import * as Either from 'effect/Either';
+import * as HashMap from 'effect/HashMap';
+import * as Number from 'effect/Number';
+import * as Option from 'effect/Option';
+import * as Struct from 'effect/Struct';
+import * as Tuple from 'effect/Tuple';
 import { DAY_MS } from '../../../date-time/dateTimeConstants.js';
 import * as CVDateTimeFormatTokenMap from '../../../internal/formatting/date-time-format/date-time-format-context/DateTimeFormatTokenMap.js';
-import * as CVReal from '../../../primitive/Real.js';
 import * as CVNumberBase10Format from '../../number-base10-format/index.js';
 import * as CVTemplatePlaceholder from '../../template/TemplatePart/template-placeholder/index.js';
 import * as CVDateTimeFormatToken from '../DateTimeFormatToken.js';
@@ -89,9 +89,12 @@ export class Type extends MData.Class {
   }
 }
 
-const { integer: _integer } = CVNumberBase10Format;
-const _signedInteger = pipe(_integer, CVNumberBase10Format.withSignDisplay);
-const _params = { fillChar: '0', numberBase10Format: _integer };
+const _params = {
+  numberBase10Format: CVNumberBase10Format.unsignedInteger,
+  fillChar: '0',
+  fillPosition: MStringFillPosition.Type.Left,
+  allowEmptyString: false,
+};
 
 /**
  * Constructs a `CVDateTimeFormatContext` from translations provided as strings
@@ -125,16 +128,16 @@ export const fromNames = ({
   readonly dayPeriodNames: CVDayPeriodNames.Type;
 }): Type => {
   const tokenMapEntries: ReadonlyArray<
-    readonly [CVDateTimeFormatToken.Type, CVTemplatePlaceholder.Type<string, CVReal.Type>]
+    readonly [CVDateTimeFormatToken.Type, CVTemplatePlaceholder.Type<string, number>]
   > = [
-    ['y', CVTemplatePlaceholder.real({ ..._params, name: 'year' })],
+    ['y', CVTemplatePlaceholder.number({ ..._params, name: 'year' })],
     [
       'yy',
       pipe(
-        CVTemplatePlaceholder.fixedLengthToReal({ ..._params, name: 'year', length: 2 }),
+        CVTemplatePlaceholder.fixedLengthToNumber({ ..._params, name: 'year', length: 2 }),
         CVTemplatePlaceholder.modify({
           descriptorMapper: MString.append(' between 2000 and 2099 included'),
-          postParser: function (this: CVTemplatePlaceholder.Type<'year', CVReal.Type>, value) {
+          postParser: function (this: CVTemplatePlaceholder.Type<'year', number>, value) {
             return pipe(
               value,
               Number.sum(2000),
@@ -146,10 +149,9 @@ export const fromNames = ({
                 offset: -2000,
                 name: this.label,
               }),
-              Either.map(CVReal.unsafeFromNumber),
             );
           },
-          preFormatter: function (this: CVTemplatePlaceholder.Type<'year', CVReal.Type>, value) {
+          preFormatter: function (this: CVTemplatePlaceholder.Type<'year', number>, value) {
             return pipe(
               value,
               MInputError.assertInRange({
@@ -160,21 +162,21 @@ export const fromNames = ({
                 offset: 0,
                 name: this.label,
               }),
-              Either.map(flow(Number.subtract(2000), CVReal.unsafeFromNumber)),
+              Either.map(Number.subtract(2000)),
             );
           },
         }),
       ),
     ],
-    ['yyyy', CVTemplatePlaceholder.fixedLengthToReal({ ..._params, name: 'year', length: 4 })],
-    ['R', CVTemplatePlaceholder.real({ ..._params, name: 'isoYear' })],
+    ['yyyy', CVTemplatePlaceholder.fixedLengthToNumber({ ..._params, name: 'year', length: 4 })],
+    ['R', CVTemplatePlaceholder.number({ ..._params, name: 'isoYear' })],
     [
       'RR',
       pipe(
-        CVTemplatePlaceholder.fixedLengthToReal({ ..._params, name: 'isoYear', length: 2 }),
+        CVTemplatePlaceholder.fixedLengthToNumber({ ..._params, name: 'isoYear', length: 2 }),
         CVTemplatePlaceholder.modify({
           descriptorMapper: MString.append(' between 2000 and 2099 included'),
-          postParser: function (this: CVTemplatePlaceholder.Type<'isoYear', CVReal.Type>, value) {
+          postParser: function (this: CVTemplatePlaceholder.Type<'isoYear', number>, value) {
             return pipe(
               value,
               Number.sum(2000),
@@ -186,10 +188,9 @@ export const fromNames = ({
                 offset: -2000,
                 name: this.label,
               }),
-              Either.map(CVReal.unsafeFromNumber),
             );
           },
-          preFormatter: function (this: CVTemplatePlaceholder.Type<'isoYear', CVReal.Type>, value) {
+          preFormatter: function (this: CVTemplatePlaceholder.Type<'isoYear', number>, value) {
             return pipe(
               value,
               MInputError.assertInRange({
@@ -200,117 +201,123 @@ export const fromNames = ({
                 offset: 0,
                 name: this.label,
               }),
-              Either.map(flow(Number.subtract(2000), CVReal.unsafeFromNumber)),
+              Either.map(Number.subtract(2000)),
             );
           },
         }),
       ),
     ],
-    ['RRRR', CVTemplatePlaceholder.fixedLengthToReal({ ..._params, name: 'isoYear', length: 4 })],
-    ['M', CVTemplatePlaceholder.real({ ..._params, name: 'month' })],
-    ['MM', CVTemplatePlaceholder.fixedLengthToReal({ ..._params, name: 'month', length: 2 })],
+    ['RRRR', CVTemplatePlaceholder.fixedLengthToNumber({ ..._params, name: 'isoYear', length: 4 })],
+    ['M', CVTemplatePlaceholder.number({ ..._params, name: 'month' })],
+    ['MM', CVTemplatePlaceholder.fixedLengthToNumber({ ..._params, name: 'month', length: 2 })],
     [
       'MMM',
-      CVTemplatePlaceholder.realMappedLiterals({
+      CVTemplatePlaceholder.numberMappedLiterals({
         name: 'month',
         keyValuePairs: pipe(
           shortMonthNames,
-          Array.map((name, i) => Tuple.make(name, CVReal.unsafeFromNumber(i + 1))),
+          Array.map((name, i) => Tuple.make(name, i + 1)),
         ),
       }),
     ],
     [
       'MMMM',
-      CVTemplatePlaceholder.realMappedLiterals({
+      CVTemplatePlaceholder.numberMappedLiterals({
         name: 'month',
         keyValuePairs: pipe(
           longMonthNames,
-          Array.map((name, i) => Tuple.make(name, CVReal.unsafeFromNumber(i + 1))),
+          Array.map((name, i) => Tuple.make(name, i + 1)),
         ),
       }),
     ],
     [
       'I',
-      CVTemplatePlaceholder.real({
+      CVTemplatePlaceholder.number({
         name: 'isoWeek',
-        numberBase10Format: CVNumberBase10Format.integer,
+        numberBase10Format: CVNumberBase10Format.unsignedInteger,
       }),
     ],
-    ['II', CVTemplatePlaceholder.fixedLengthToReal({ ..._params, name: 'isoWeek', length: 2 })],
-    ['d', CVTemplatePlaceholder.real({ ..._params, name: 'monthDay' })],
-    ['dd', CVTemplatePlaceholder.fixedLengthToReal({ ..._params, name: 'monthDay', length: 2 })],
-    ['D', CVTemplatePlaceholder.real({ ..._params, name: 'ordinalDay' })],
-    ['DDD', CVTemplatePlaceholder.fixedLengthToReal({ ..._params, name: 'ordinalDay', length: 3 })],
-    ['i', CVTemplatePlaceholder.real({ ..._params, name: 'weekday' })],
+    ['II', CVTemplatePlaceholder.fixedLengthToNumber({ ..._params, name: 'isoWeek', length: 2 })],
+    ['d', CVTemplatePlaceholder.number({ ..._params, name: 'monthDay' })],
+    ['dd', CVTemplatePlaceholder.fixedLengthToNumber({ ..._params, name: 'monthDay', length: 2 })],
+    ['D', CVTemplatePlaceholder.number({ ..._params, name: 'ordinalDay' })],
+    [
+      'DDD',
+      CVTemplatePlaceholder.fixedLengthToNumber({ ..._params, name: 'ordinalDay', length: 3 }),
+    ],
+    ['i', CVTemplatePlaceholder.number({ ..._params, name: 'weekday' })],
     [
       'iii',
-      CVTemplatePlaceholder.realMappedLiterals({
+      CVTemplatePlaceholder.numberMappedLiterals({
         name: 'weekday',
         keyValuePairs: pipe(
           shortWeekdayNames,
-          Array.map((name, i) => Tuple.make(name, CVReal.unsafeFromNumber(i + 1))),
+          Array.map((name, i) => Tuple.make(name, i + 1)),
         ),
       }),
     ],
     [
       'iiii',
-      CVTemplatePlaceholder.realMappedLiterals({
+      CVTemplatePlaceholder.numberMappedLiterals({
         name: 'weekday',
         keyValuePairs: pipe(
           longWeekdayNames,
-          Array.map((name, i) => Tuple.make(name, CVReal.unsafeFromNumber(i + 1))),
+          Array.map((name, i) => Tuple.make(name, i + 1)),
         ),
       }),
     ],
     [
       'a',
-      CVTemplatePlaceholder.realMappedLiterals({
+      CVTemplatePlaceholder.numberMappedLiterals({
         name: 'meridiem',
         keyValuePairs: pipe(
           dayPeriodNames,
-          Array.map((name, i) => Tuple.make(name, CVReal.unsafeFromNumber(i * 12))),
+          Array.map((name, i) => Tuple.make(name, i * 12)),
         ),
       }),
     ],
-    ['H', CVTemplatePlaceholder.real({ ..._params, name: 'hour23' })],
-    ['HH', CVTemplatePlaceholder.fixedLengthToReal({ ..._params, name: 'hour23', length: 2 })],
-    ['K', CVTemplatePlaceholder.real({ ..._params, name: 'hour11' })],
-    ['KK', CVTemplatePlaceholder.fixedLengthToReal({ ..._params, name: 'hour11', length: 2 })],
-    ['m', CVTemplatePlaceholder.real({ ..._params, name: 'minute' })],
-    ['mm', CVTemplatePlaceholder.fixedLengthToReal({ ..._params, name: 'minute', length: 2 })],
-    ['s', CVTemplatePlaceholder.real({ ..._params, name: 'second' })],
-    ['ss', CVTemplatePlaceholder.fixedLengthToReal({ ..._params, name: 'second', length: 2 })],
-    ['S', CVTemplatePlaceholder.real({ ..._params, name: 'millisecond' })],
+    ['H', CVTemplatePlaceholder.number({ ..._params, name: 'hour23' })],
+    ['HH', CVTemplatePlaceholder.fixedLengthToNumber({ ..._params, name: 'hour23', length: 2 })],
+    ['K', CVTemplatePlaceholder.number({ ..._params, name: 'hour11' })],
+    ['KK', CVTemplatePlaceholder.fixedLengthToNumber({ ..._params, name: 'hour11', length: 2 })],
+    ['m', CVTemplatePlaceholder.number({ ..._params, name: 'minute' })],
+    ['mm', CVTemplatePlaceholder.fixedLengthToNumber({ ..._params, name: 'minute', length: 2 })],
+    ['s', CVTemplatePlaceholder.number({ ..._params, name: 'second' })],
+    ['ss', CVTemplatePlaceholder.fixedLengthToNumber({ ..._params, name: 'second', length: 2 })],
+    ['S', CVTemplatePlaceholder.number({ ..._params, name: 'millisecond' })],
     [
       'SSS',
-      CVTemplatePlaceholder.fixedLengthToReal({ ..._params, name: 'millisecond', length: 3 }),
+      CVTemplatePlaceholder.fixedLengthToNumber({ ..._params, name: 'millisecond', length: 3 }),
     ],
     [
       'zH',
-      CVTemplatePlaceholder.real({
+      CVTemplatePlaceholder.number({
         ..._params,
         name: 'zoneHour',
-        numberBase10Format: _signedInteger,
+        numberBase10Format: CVNumberBase10Format.integer,
       }),
     ],
     [
       'zHzH',
-      CVTemplatePlaceholder.fixedLengthToReal({
+      CVTemplatePlaceholder.fixedLengthToNumber({
         ..._params,
         name: 'zoneHour',
         length: 3,
-        numberBase10Format: _signedInteger,
+        numberBase10Format: pipe(
+          CVNumberBase10Format.integer,
+          CVNumberBase10Format.leftPaddedWithNZeros(2),
+        ),
       }),
     ],
-    ['zm', CVTemplatePlaceholder.real({ ..._params, name: 'zoneMinute' })],
+    ['zm', CVTemplatePlaceholder.number({ ..._params, name: 'zoneMinute' })],
     [
       'zmzm',
-      CVTemplatePlaceholder.fixedLengthToReal({ ..._params, name: 'zoneMinute', length: 2 }),
+      CVTemplatePlaceholder.fixedLengthToNumber({ ..._params, name: 'zoneMinute', length: 2 }),
     ],
-    ['zs', CVTemplatePlaceholder.real({ ..._params, name: 'zoneSecond' })],
+    ['zs', CVTemplatePlaceholder.number({ ..._params, name: 'zoneSecond' })],
     [
       'zszs',
-      CVTemplatePlaceholder.fixedLengthToReal({ ..._params, name: 'zoneSecond', length: 2 }),
+      CVTemplatePlaceholder.fixedLengthToNumber({ ..._params, name: 'zoneSecond', length: 2 }),
     ],
   ];
 

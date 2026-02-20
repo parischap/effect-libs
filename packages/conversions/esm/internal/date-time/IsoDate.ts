@@ -9,19 +9,20 @@
  * @category Models
  */
 
-import * as MData from '@parischap/effect-lib/MData'
-import * as MInputError from '@parischap/effect-lib/MInputError'
-import * as MNumber from '@parischap/effect-lib/MNumber'
-import * as MString from '@parischap/effect-lib/MString'
-import * as MStruct from '@parischap/effect-lib/MStruct'
-import * as MTypes from '@parischap/effect-lib/MTypes'
-import {flow, pipe} from 'effect'
-import * as Either from 'effect/Either'
-import * as Function from 'effect/Function'
-import * as Number from 'effect/Number'
-import * as Option from 'effect/Option'
-import * as Predicate from 'effect/Predicate'
-import * as Struct from 'effect/Struct'
+import { MStringFillPosition } from '@parischap/effect-lib';
+import * as MData from '@parischap/effect-lib/MData';
+import * as MInputError from '@parischap/effect-lib/MInputError';
+import * as MNumber from '@parischap/effect-lib/MNumber';
+import * as MString from '@parischap/effect-lib/MString';
+import * as MStruct from '@parischap/effect-lib/MStruct';
+import * as MTypes from '@parischap/effect-lib/MTypes';
+import { flow, pipe } from 'effect';
+import * as Either from 'effect/Either';
+import * as Function from 'effect/Function';
+import * as Number from 'effect/Number';
+import * as Option from 'effect/Option';
+import * as Predicate from 'effect/Predicate';
+import * as Struct from 'effect/Struct';
 import {
   DAY_MS,
   LONG_YEAR_MS,
@@ -31,7 +32,7 @@ import {
   WEEK_MS,
 } from '../../date-time/dateTimeConstants.js';
 import * as CVNumberBase10Format from '../../formatting/number-base10-format/index.js';
-import * as CVTemplate from '../../formatting/template/index.js';
+import * as CVTemplateFormatter from '../../formatting/template/TemplateFormatter.js';
 import * as CVTemplatePlaceholder from '../../formatting/template/TemplatePart/template-placeholder/index.js';
 import * as CVTemplateSeparator from '../../formatting/template/TemplatePart/template-separator/index.js';
 import type * as CVGregorianDate from './GregorianDate.js';
@@ -107,13 +108,25 @@ const YEAR_START_2000_MS = 946_857_600_000;
  */
 const YEAR_START_2010_MS = 1_262_563_200_000;
 
-const _fixedLengthToReal = CVTemplatePlaceholder.fixedLengthToReal;
 const _sep = CVTemplateSeparator;
-const _integer = CVNumberBase10Format.integer;
 const _params = {
   fillChar: '0',
-  numberBase10Format: _integer,
+  fillPosition: MStringFillPosition.Type.Left,
+  allowEmptyString: false,
+  numberBase10Format: CVNumberBase10Format.unsignedInteger,
 };
+
+const _formatter = pipe(
+  CVTemplateFormatter.fromTemplateParts(
+    CVTemplatePlaceholder.fixedLengthToNumber({ ..._params, name: 'year', length: 4 }),
+    _sep.make('-W'),
+    CVTemplatePlaceholder.fixedLengthToNumber({ ..._params, name: 'isoWeek', length: 2 }),
+    _sep.hyphen,
+    CVTemplatePlaceholder.fixedLengthToNumber({ ..._params, name: 'weekday', length: 2 }),
+  ),
+  CVTemplateFormatter.format,
+  Function.compose(Either.getOrThrowWith(Function.identity)),
+);
 
 /**
  * Type that represents a CVIsoDate
@@ -506,22 +519,6 @@ export const getMsDuration = (self: Type): number =>
  * @category Destructors
  */
 export const getLastIsoWeek = (self: Type): number => (self.yearIsLong ? 53 : 52);
-
-const _formatter = flow(
-  CVTemplate.toFormatter(
-    CVTemplate.make(
-      _fixedLengthToReal({ ..._params, name: 'year', length: 4 }),
-      _sep.make('-W'),
-      _fixedLengthToReal({ ..._params, name: 'isoWeek', length: 2 }),
-      _sep.hyphen,
-      _fixedLengthToReal({ ..._params, name: 'weekday', length: 2 }),
-    ),
-  ),
-  Either.getOrThrowWith(Function.identity),
-) as MTypes.OneArgFunction<
-  { readonly year: number; readonly isoWeek: number; readonly weekday: number },
-  string
->;
 
 /**
  * Returns the ISO representation of this Gregorian Date

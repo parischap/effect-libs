@@ -5,37 +5,36 @@
  * Each `CVTemplatePlaceholder` defines a parser and a formatter:
  *
  * - The parser takes a text, consumes a part of that text, optionnally converts the consumed part to
- *   a value of type T and, if successful, returns a `Right` of that value and of what has not been
- *   consumed. In case of failure, it returns a `Left`.
+ *   a value of type T and, if successful, returns a `right` of that value and of what has not been
+ *   consumed. In case of failure, it returns a `left`.
  * - The formatter takes a value of type T, converts it to a string (if T is not string), checks that
- *   the result is coherent and, if so, returns a `Right` of that string. Otherwise, it returns a
- *   `Left`
+ *   the result is coherent and, if so, returns a `right` of that string. Otherwise, it returns a
+ *   `left`
  */
 
-import * as MData from '@parischap/effect-lib/MData'
-import * as MInputError from '@parischap/effect-lib/MInputError'
-import * as MRegExp from '@parischap/effect-lib/MRegExp'
-import * as MRegExpString from '@parischap/effect-lib/MRegExpString'
-import * as MString from '@parischap/effect-lib/MString'
-import * as MStringFillPosition from '@parischap/effect-lib/MStringFillPosition'
-import * as MStruct from '@parischap/effect-lib/MStruct'
-import * as MTuple from '@parischap/effect-lib/MTuple'
-import * as MTypes from '@parischap/effect-lib/MTypes'
+import * as MData from '@parischap/effect-lib/MData';
+import * as MInputError from '@parischap/effect-lib/MInputError';
+import * as MRegExp from '@parischap/effect-lib/MRegExp';
+import * as MRegExpString from '@parischap/effect-lib/MRegExpString';
+import * as MString from '@parischap/effect-lib/MString';
+import * as MStringFillPosition from '@parischap/effect-lib/MStringFillPosition';
+import * as MStruct from '@parischap/effect-lib/MStruct';
+import * as MTuple from '@parischap/effect-lib/MTuple';
+import * as MTypes from '@parischap/effect-lib/MTypes';
 
-import {flow, pipe} from 'effect'
-import * as Array from 'effect/Array'
-import * as Either from 'effect/Either'
-import * as Function from 'effect/Function'
-import * as HashMap from 'effect/HashMap'
-import * as Schema from 'effect/Schema'
-import * as String from 'effect/String'
-import * as Struct from 'effect/Struct'
-import * as Tuple from 'effect/Tuple'
+import { flow, Option, pipe } from 'effect';
+import * as Array from 'effect/Array';
+import * as Either from 'effect/Either';
+import * as Function from 'effect/Function';
+import * as HashMap from 'effect/HashMap';
+import * as Schema from 'effect/Schema';
+import * as String from 'effect/String';
+import * as Struct from 'effect/Struct';
+import * as Tuple from 'effect/Tuple';
 
-import * as CVReal from '../../../../primitive/Real.js';
 import * as CVNumberBase10Format from '../../../number-base10-format/index.js';
-import type * as CVTemplatePlaceholderFormatter from './TemplatePlaceholderFormatter.js';
-import type * as CVTemplatePlaceholderParser from './TemplatePlaceholderParser.js';
+import * as CVNumberBase10Formatter from '../../../number-base10-format/NumberBase10Formatter.js';
+import * as CVNumberBase10Parser from '../../../number-base10-format/NumberBase10Parser.js';
 
 /**
  * Module tag
@@ -63,10 +62,13 @@ export class Type<out N extends string, in out T> extends MData.Class {
   readonly description: string;
 
   /** Parser of this TemplatePlaceholder */
-  readonly parser: CVTemplatePlaceholderParser.Type<T>;
+  readonly parser: MTypes.OneArgFunction<
+    string,
+    Either.Either<readonly [consumed: T, leftOver: string], MInputError.Type>
+  >;
 
   /** Formatter of this TemplatePlaceholder */
-  readonly formatter: CVTemplatePlaceholderFormatter.Type<T>;
+  readonly formatter: MTypes.OneArgFunction<T, Either.Either<string, MInputError.Type>>;
 
   /** Schema instance that represents type T */
   readonly tSchemaInstance: Schema.Schema<T, T>;
@@ -79,7 +81,7 @@ export class Type<out N extends string, in out T> extends MData.Class {
   }
 
   /** Class constructor */
-  private constructor({
+  protected constructor({
     name,
     label,
     description,
@@ -106,6 +108,8 @@ export class Type<out N extends string, in out T> extends MData.Class {
     return _TypeId;
   }
 }
+type TemplatePlaceholderFormatter<N extends string, T> = Type<N, T>['formatter'];
+type TemplatePlaceholderParser<N extends string, T> = Type<N, T>['parser'];
 
 const _make = <N extends string, T>(params: MTypes.Data<Type<N, T>>): Type<N, T> =>
   Type.make(params);
@@ -172,7 +176,7 @@ export const description: <const N extends string, T>(self: Type<N, T>) => strin
  */
 export const parser: <const N extends string, T>(
   self: Type<N, T>,
-) => CVTemplatePlaceholderParser.Type<T> = Struct.get('parser');
+) => TemplatePlaceholderParser<N, T> = Struct.get('parser');
 
 /**
  * Returns the `formatter` property of `self`
@@ -181,7 +185,7 @@ export const parser: <const N extends string, T>(
  */
 export const formatter: <const N extends string, T>(
   self: Type<N, T>,
-) => CVTemplatePlaceholderFormatter.Type<T> = Struct.get('formatter');
+) => TemplatePlaceholderFormatter<N, T> = Struct.get('formatter');
 
 /**
  * Returns the `tSchemaInstance` property of `self`
@@ -279,8 +283,8 @@ export const fixedLength = <const N extends string>({
 }: {
   readonly name: N;
   readonly length: number;
-}): Type<N, string> => {
-  return make({
+}): Type<N, string> =>
+  make({
     name,
     description: `${MString.fromNumber(10)(length)}-character string`,
     parser: function (this: Type<N, string>, text) {
@@ -299,13 +303,11 @@ export const fixedLength = <const N extends string>({
     },
     tSchemaInstance: Schema.String,
   });
-};
 
 /**
  * Same as `fixedLength` but the consumed text is trimmed off of a `fillChar` at `fillPosition` and
  * the written text is padded with a `fillChar` at `fillPosition`. `fillChar` should be a
- * one-character string. `length` must be a strictly positive integer. See the meaning of
- * `disallowEmptyString` in `MString.trim`
+ * one-character string. `length` should be a strictly positive integer
  *
  * @category Constructors
  */
@@ -314,114 +316,112 @@ export const paddedFixedLength = <const N extends string>(params: {
   readonly length: number;
   readonly fillChar: string;
   readonly fillPosition: MStringFillPosition.Type;
-  readonly disallowEmptyString: boolean;
-}): Type<N, string> => {
-  const trimmer = flow(MString.trim(params), Either.right);
-  const padder = flow(MString.pad(params), Either.right);
-
-  return pipe(
-    fixedLength(params),
+}): Type<N, string> =>
+  pipe(
+    params,
+    fixedLength,
     modify({
       descriptorMapper: MString.append(
         ` ${MStringFillPosition.toString(params.fillPosition)}-padded with '${params.fillChar}'`,
       ),
-      postParser: trimmer,
-      preFormatter: padder,
+      postParser: flow(MString.trim(params), Either.right),
+      preFormatter: flow(MString.pad(params), Either.right),
     }),
   );
-};
 
+const _flippedTakeRightBut = Function.flip(MString.takeRightBut);
 /**
- * Same as `fixedLength` but the parser tries to convert the consumed text into a `CVReal` using the
- * passed `CVNumberBase10Format`. The formatter takes a `CVReal` and tries to convert and write it
- * as an n-character string. If the number to parse/format is less than `length` characters,
- * `fillChar` is trimmed/padded between the sign and the number so that the length condition is
- * respected. `fillChar` must be a one-character string (but no error is triggered if you do not
- * respect that condition)
- *
- * @category Constructors
- */
-
-export const fixedLengthToReal = <const N extends string>(params: {
-  readonly name: N;
-  readonly length: number;
-  readonly fillChar: string;
-  readonly numberBase10Format: CVNumberBase10Format.Type;
-}): Type<N, CVReal.Type> => {
-  const { numberBase10Format, fillChar } = params;
-  const numberParser = function (this: Type<N, CVReal.Type>, input: string) {
-    return pipe(
-      input,
-      CVNumberBase10Format.toRealParser(numberBase10Format, fillChar),
-      Either.fromOption(
-        () =>
-          new MInputError.Type({
-            message: `${this.label}: value '${input}' cannot be converted to a(n) ${CVNumberBase10Format.toDescription(numberBase10Format)}`,
-          }),
-      ),
-    );
-  };
-
-  const numberFormatter = flow(
-    CVNumberBase10Format.toNumberFormatter(
-      numberBase10Format,
-      pipe(fillChar, String.repeat(params.length)),
-    ),
-    Either.right,
-  );
-
-  return pipe(
-    fixedLength(params),
-    modify({
-      descriptorMapper: MString.append(
-        ` left-padded with '${fillChar}' to ${CVNumberBase10Format.toDescription(numberBase10Format)}`,
-      ),
-      postParser: numberParser,
-      preFormatter: numberFormatter,
-      t1SchemaInstance: CVReal.SchemaFromSelf,
-    }),
-  );
-};
-
-/**
- * Builds a `CVTemplatePlaceholder` whose parser reads from the text all the characters that it can
- * interpret as a number in the provided `numberBase10Format` and converts the consumed text into a
- * `CVReal`. The formatter takes a `CVReal` and converts it into a string according to the provided
+ * `CVTemplatePlaceholder` instance that tries to parse/format a number according to the passed
  * `numberBase10Format`.
  *
+ * Parsing: if `numberBase10Format` represents a base-10 number format with a fixed length of `l`
+ * (see `CVTemplatePlaceholder.getFixedLength`), the parser first reads `l` characters from the text
+ * and tries to convert them to a number in the given format. Otherwise it reads from the text all
+ * the characters that it can interpret as a number in the provided `numberBase10Format` and
+ * converts the consumed text into a number.
+ *
+ * Formatting: the number is converted to a string according to `numberBase10Format`. If
+ * `numberBase10Format` represents a base-10 number format with a fixed length of `l`, the formatter
+ * will fail if the result of the conversion is not exactly `l`-characters long. Otherwise, the
+ * formatter never fails.
+ *
  * @category Constructors
  */
-export const real = <const N extends string>({
+export const number = <const N extends string>({
   name,
   numberBase10Format,
 }: {
   readonly name: N;
   readonly numberBase10Format: CVNumberBase10Format.Type;
-}): Type<N, CVReal.Type> => {
-  const numberParser = CVNumberBase10Format.toRealExtractor(numberBase10Format);
-  const numberFormatter = CVNumberBase10Format.toNumberFormatter(numberBase10Format);
-  const flippedTakeRightBut = Function.flip(MString.takeRightBut);
-
-  return make({
-    name,
-    description: CVNumberBase10Format.toDescription(numberBase10Format),
-    parser: function (this: Type<N, CVReal.Type>, text) {
-      return pipe(
-        text,
-        numberParser,
-        Either.fromOption(
-          () =>
-            new MInputError.Type({
-              message: `${this.label} contains '${text}' from the start of which a(n) ${CVNumberBase10Format.toDescription(numberBase10Format)} could not be extracted`,
-            }),
+}): Type<N, number> =>
+  pipe(
+    numberBase10Format,
+    CVNumberBase10Format.getFixedLength,
+    Option.match({
+      onNone: () =>
+        make({
+          name,
+          description: CVNumberBase10Format.toDescription(numberBase10Format),
+          parser: function (this: Type<N, number>, text) {
+            return pipe(
+              text,
+              pipe(
+                numberBase10Format,
+                CVNumberBase10Parser.fromFormat,
+                CVNumberBase10Parser.extractAsNumber,
+              ),
+              Either.fromOption(
+                () =>
+                  new MInputError.Type({
+                    message: `${this.label} contains '${text}' from the start of which a(n) ${CVNumberBase10Format.toDescription(numberBase10Format)} could not be extracted`,
+                  }),
+              ),
+              Either.map(Tuple.mapSecond(flow(String.length, _flippedTakeRightBut(text)))),
+            );
+          },
+          formatter: pipe(
+            numberBase10Format,
+            CVNumberBase10Formatter.fromFormat,
+            CVNumberBase10Formatter.format,
+            Function.compose(Either.right),
+          ),
+          tSchemaInstance: Schema.Number,
+        }),
+      onSome: (length) =>
+        pipe(
+          { name, length },
+          fixedLength,
+          modify({
+            descriptorMapper: MString.append(
+              ` to ${CVNumberBase10Format.toDescription(numberBase10Format)}`,
+            ),
+            postParser: function (this: Type<N, number>, input: string) {
+              return pipe(
+                input,
+                pipe(
+                  numberBase10Format,
+                  CVNumberBase10Parser.fromFormat,
+                  CVNumberBase10Parser.parseAsNumber,
+                ),
+                Either.fromOption(
+                  () =>
+                    new MInputError.Type({
+                      message: `${this.label}: value '${input}' cannot be converted to a(n) ${CVNumberBase10Format.toDescription(numberBase10Format)}`,
+                    }),
+                ),
+              );
+            },
+            preFormatter: pipe(
+              numberBase10Format,
+              CVNumberBase10Formatter.fromFormat,
+              CVNumberBase10Formatter.format,
+              Function.compose(Either.right),
+            ),
+            t1SchemaInstance: Schema.Number,
+          }),
         ),
-        Either.map(Tuple.mapSecond(flow(String.length, flippedTakeRightBut(text)))),
-      );
-    },
-    formatter: flow(numberFormatter, Either.right),
-    tSchemaInstance: CVReal.SchemaFromSelf,
-  });
-};
+    }),
+  );
 
 /**
  * Builds a `CVTemplatePlaceholder` instance that works as a map:
@@ -507,15 +507,14 @@ export const mappedLiterals = <const N extends string, T>({
 };
 
 /**
- * Same as `mappedLiterals` but `T` is assumed to be `CVReal` which should be the most usual use
- * case
+ * Same as `mappedLiterals` but `T` is assumed to be number which should be the most usual use case
  *
  * @category Constructors
  */
-export const realMappedLiterals = <const N extends string>(params: {
+export const numberMappedLiterals = <const N extends string>(params: {
   readonly name: N;
-  readonly keyValuePairs: ReadonlyArray<readonly [string, CVReal.Type]>;
-}): Type<N, CVReal.Type> => mappedLiterals({ ...params, schemaInstance: CVReal.SchemaFromSelf });
+  readonly keyValuePairs: ReadonlyArray<readonly [string, number]>;
+}): Type<N, number> => mappedLiterals({ ...params, schemaInstance: Schema.Number });
 
 /**
  * Builds a `CVTemplatePlaceholder` whose parser reads as much of the text as it can that fulfills

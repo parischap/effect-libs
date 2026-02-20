@@ -3,10 +3,9 @@
  * `CVTemplatePlaceholder` that implements it
  */
 
-import * as HashMap from 'effect/HashMap'
+import * as HashMap from 'effect/HashMap';
 import * as CVDateTimeFormatToken from '../../../../formatting/date-time-format/DateTimeFormatToken.js';
 import * as CVDateTimeFormatPlaceholder from '../../../../formatting/template/TemplatePart/template-placeholder/index.js';
-import * as CVReal from '../../../../primitive/Real.js';
 /**
  * Type of a CVDateTimeFormatTokenMap
  *
@@ -14,5 +13,5 @@ import * as CVReal from '../../../../primitive/Real.js';
  */
 export interface Type extends HashMap.HashMap<
   CVDateTimeFormatToken.Type,
-  CVDateTimeFormatPlaceholder.Type<string, CVReal.Type>
+  CVDateTimeFormatPlaceholder.Type<string, number>
 > {}

@@ -1,9 +1,8 @@
-import * as CVNumberBase10Format from '@parischap/conversions/CVNumberBase10Format'
-import * as CVTemplate from '@parischap/conversions/CVTemplate'
-import * as CVTemplatePlaceholder from '@parischap/conversions/CVTemplatePlaceholder'
-import * as CVTemplateSeparator from '@parischap/conversions/CVTemplateSeparator'
-import * as MRegExpString from '@parischap/effect-lib/MRegExpString'
-import {pipe} from 'effect'
+import * as CVNumberBase10Format from '@parischap/conversions/CVNumberBase10Format';
+import * as CVTemplate from '@parischap/conversions/CVTemplate';
+import * as CVTemplatePlaceholder from '@parischap/conversions/CVTemplatePlaceholder';
+import * as CVTemplateSeparator from '@parischap/conversions/CVTemplateSeparator';
+import * as MRegExpString from '@parischap/effect-lib/MRegExpString';
 
 // Let's define useful shortcuts
 const ph = CVTemplatePlaceholder;
@@ -16,9 +15,9 @@ const template = CVTemplate.make(
   // Immutable text
   sep.make(' is a '),
   // Field named 'age' that must represent an unsigned integer
-  ph.real({
+  ph.number({
     name: 'age',
-    numberBase10Format: pipe(CVNumberBase10Format.integer, CVNumberBase10Format.withoutSignDisplay),
+    numberBase10Format: CVNumberBase10Format.unsignedInteger,
   }),
   // Immutable text
   sep.make('-year old '),

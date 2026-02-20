@@ -8,19 +8,20 @@
  * But 2400 is a leap year.
  */
 
-import * as MArray from '@parischap/effect-lib/MArray'
-import * as MData from '@parischap/effect-lib/MData'
-import * as MInputError from '@parischap/effect-lib/MInputError'
-import * as MString from '@parischap/effect-lib/MString'
-import * as MStruct from '@parischap/effect-lib/MStruct'
-import * as MTypes from '@parischap/effect-lib/MTypes'
-import {flow, pipe} from 'effect'
-import * as Either from 'effect/Either'
-import * as Function from 'effect/Function'
-import * as Number from 'effect/Number'
-import * as Option from 'effect/Option'
-import * as Predicate from 'effect/Predicate'
-import * as Struct from 'effect/Struct'
+import { MStringFillPosition } from '@parischap/effect-lib';
+import * as MArray from '@parischap/effect-lib/MArray';
+import * as MData from '@parischap/effect-lib/MData';
+import * as MInputError from '@parischap/effect-lib/MInputError';
+import * as MString from '@parischap/effect-lib/MString';
+import * as MStruct from '@parischap/effect-lib/MStruct';
+import * as MTypes from '@parischap/effect-lib/MTypes';
+import { flow, pipe } from 'effect';
+import * as Either from 'effect/Either';
+import * as Function from 'effect/Function';
+import * as Number from 'effect/Number';
+import * as Option from 'effect/Option';
+import * as Predicate from 'effect/Predicate';
+import * as Struct from 'effect/Struct';
 import {
   COMMON_YEAR_MS,
   DAY_MS,
@@ -32,7 +33,7 @@ import {
   MIN_FULL_YEAR,
 } from '../../date-time/dateTimeConstants.js';
 import * as CVNumberBase10Format from '../../formatting/number-base10-format/index.js';
-import * as CVTemplate from '../../formatting/template/index.js';
+import * as CVTemplateFormatter from '../../formatting/template/TemplateFormatter.js';
 import * as CVTemplatePlaceholder from '../../formatting/template/TemplatePart/template-placeholder/index.js';
 import * as CVTemplateSeparator from '../../formatting/template/TemplatePart/template-separator/index.js';
 
@@ -54,29 +55,25 @@ const COMMON_YEAR_DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 3
 /** Timestamp of 1/1/2001 00:00:00:000+0:00 */
 const YEAR_START_2001_MS = 978_307_200_000;
 
-const _fixedLengthToReal = CVTemplatePlaceholder.fixedLengthToReal;
 const _sep = CVTemplateSeparator;
-const _integer = CVNumberBase10Format.integer;
 const _params = {
   fillChar: '0',
-  numberBase10Format: _integer,
+  fillPosition: MStringFillPosition.Type.Left,
+  allowEmptyString: false,
+  numberBase10Format: CVNumberBase10Format.unsignedInteger,
 };
 
-const _formatter = flow(
-  CVTemplate.toFormatter(
-    CVTemplate.make(
-      _fixedLengthToReal({ ..._params, name: 'year', length: 4 }),
-      _sep.hyphen,
-      _fixedLengthToReal({ ..._params, name: 'month', length: 2 }),
-      _sep.hyphen,
-      _fixedLengthToReal({ ..._params, name: 'monthDay', length: 2 }),
-    ),
+const _formatter = pipe(
+  CVTemplateFormatter.fromTemplateParts(
+    CVTemplatePlaceholder.fixedLengthToNumber({ ..._params, name: 'year', length: 4 }),
+    _sep.hyphen,
+    CVTemplatePlaceholder.fixedLengthToNumber({ ..._params, name: 'month', length: 2 }),
+    _sep.hyphen,
+    CVTemplatePlaceholder.fixedLengthToNumber({ ..._params, name: 'monthDay', length: 2 }),
   ),
-  Either.getOrThrowWith(Function.identity),
-) as unknown as MTypes.OneArgFunction<
-  { readonly year: number; readonly month: number; readonly monthDay: number },
-  string
->;
+  CVTemplateFormatter.format,
+  Function.compose(Either.getOrThrowWith(Function.identity)),
+);
 
 /**
  * Type that represents a CVGregorianDate

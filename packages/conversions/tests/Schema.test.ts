@@ -1,21 +1,20 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import * as CVDateTime from '@parischap/conversions/CVDateTime'
-import * as CVDateTimeFormat from '@parischap/conversions/CVDateTimeFormat'
-import * as CVDateTimeFormatContext from '@parischap/conversions/CVDateTimeFormatContext'
-import * as CVDateTimeFormatPlaceholder from '@parischap/conversions/CVDateTimeFormatPlaceholder'
-import * as CVDateTimeFormatSeparator from '@parischap/conversions/CVDateTimeFormatSeparator'
-import * as CVEmail from '@parischap/conversions/CVEmail'
-import * as CVInteger from '@parischap/conversions/CVInteger'
-import * as CVNumberBase10Format from '@parischap/conversions/CVNumberBase10Format'
-import * as CVPositiveInteger from '@parischap/conversions/CVPositiveInteger'
-import * as CVPositiveReal from '@parischap/conversions/CVPositiveReal'
-import * as CVReal from '@parischap/conversions/CVReal'
-import * as CVSchema from '@parischap/conversions/CVSchema'
-import * as CVSemVer from '@parischap/conversions/CVSemVer'
-import {pipe} from 'effect'
-import * as BigDecimal from 'effect/BigDecimal'
-import * as DateTime from 'effect/DateTime'
-import * as Schema from 'effect/Schema'
+import * as CVDateTime from '@parischap/conversions/CVDateTime';
+import * as CVDateTimeFormat from '@parischap/conversions/CVDateTimeFormat';
+import * as CVDateTimeFormatContext from '@parischap/conversions/CVDateTimeFormatContext';
+import * as CVDateTimeFormatPlaceholder from '@parischap/conversions/CVDateTimeFormatPlaceholder';
+import * as CVDateTimeFormatSeparator from '@parischap/conversions/CVDateTimeFormatSeparator';
+import * as CVEmail from '@parischap/conversions/CVEmail';
+import * as CVInteger from '@parischap/conversions/CVInteger';
+import * as CVNumberBase10Format from '@parischap/conversions/CVNumberBase10Format';
+import * as CVPositiveInteger from '@parischap/conversions/CVPositiveInteger';
+import * as CVPositiveReal from '@parischap/conversions/CVPositiveReal';
+import * as CVSchema from '@parischap/conversions/CVSchema';
+import * as CVSemVer from '@parischap/conversions/CVSemVer';
+import { pipe } from 'effect';
+import * as BigDecimal from 'effect/BigDecimal';
+import * as DateTime from 'effect/DateTime';
+import * as Schema from 'effect/Schema';
 import { describe, it } from 'vitest';
 
 describe('CVSchema', () => {
@@ -96,7 +95,7 @@ describe('CVSchema', () => {
   });
 
   describe('RealFromNumber', () => {
-    const target = CVReal.unsafeFromNumber(15.4);
+    const target = 15.4;
     describe('Decoding', () => {
       const decoder = Schema.decodeEither(CVSchema.RealFromNumber);
       it('Not passing', () => {
@@ -117,7 +116,7 @@ describe('CVSchema', () => {
   });
 
   describe('RealFromSelf', () => {
-    const target = CVReal.unsafeFromNumber(15.4);
+    const target = 15.4;
     describe('Decoding', () => {
       const decoder = Schema.decodeEither(CVSchema.RealFromSelf);
       it('Passing', () => {
@@ -135,7 +134,7 @@ describe('CVSchema', () => {
 
   describe('Real', () => {
     const schema = CVSchema.Real(CVNumberBase10Format.frenchStyleNumber);
-    const target = CVReal.unsafeFromNumber(1024.56);
+    const target = 1024.56;
     const targetAsString = '1 024,56';
     describe('Decoding', () => {
       const decoder = Schema.decodeEither(schema);

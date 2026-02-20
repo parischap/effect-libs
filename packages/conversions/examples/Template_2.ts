@@ -1,8 +1,7 @@
-import * as CVNumberBase10Format from '@parischap/conversions/CVNumberBase10Format'
-import * as CVReal from '@parischap/conversions/CVReal'
-import * as CVTemplate from '@parischap/conversions/CVTemplate'
-import * as CVTemplatePlaceholder from '@parischap/conversions/CVTemplatePlaceholder'
-import * as CVTemplateSeparator from '@parischap/conversions/CVTemplateSeparator'
+import * as CVNumberBase10Format from '@parischap/conversions/CVNumberBase10Format';
+import * as CVTemplate from '@parischap/conversions/CVTemplate';
+import * as CVTemplatePlaceholder from '@parischap/conversions/CVTemplatePlaceholder';
+import * as CVTemplateSeparator from '@parischap/conversions/CVTemplateSeparator';
 
 // Let's define useful shortcuts
 const placeholder = CVTemplatePlaceholder;
@@ -17,32 +16,32 @@ const template = CVTemplate.make(
   placeholder.realMappedLiterals({
     name: 'weekday',
     keyValuePairs: [
-      ['Monday', CVReal.unsafeFromNumber(1)],
-      ['Tuesday', CVReal.unsafeFromNumber(2)],
-      ['Wednesday', CVReal.unsafeFromNumber(3)],
-      ['Thursday', CVReal.unsafeFromNumber(4)],
-      ['Friday', CVReal.unsafeFromNumber(5)],
-      ['Saturday', CVReal.unsafeFromNumber(6)],
-      ['Sunday', CVReal.unsafeFromNumber(7)],
+      ['Monday', 1],
+      ['Tuesday', 2],
+      ['Wednesday', 3],
+      ['Thursday', 4],
+      ['Friday', 5],
+      ['Saturday', 6],
+      ['Sunday', 7],
     ],
   }),
   // Separator
   sep.make(', day number '),
-  // Field named 'weekday' that must represent an integer
-  placeholder.real({ name: 'weekday', numberBase10Format: CVNumberBase10Format.integer }),
+  // Field named 'weekday' that must represent an unsigned integer
+  placeholder.number({ name: 'weekday', numberBase10Format: CVNumberBase10Format.unsignedInteger }),
   // Separator
   sep.make(' of the week.'),
 );
 
 // Let's define a parser. Note that there is only one `weekday` property
 // Type: (value: string) => Either.Either<{
-//    readonly weekday: CVReal.Type;
+//    readonly weekday: number;
 // }, MInputError.Type>>
 const parser = CVTemplate.toParser(template);
 
 // Let's define a formatter. Note that there is only one `weekday` property
 // Type: (value: {
-//   readonly weekday: CVReal.Type;
+//   readonly weekday: number;
 //   }) => Either.Either<string, MInputError.Type>
 const formatter = CVTemplate.toFormatter(template);
 
@@ -60,7 +59,7 @@ console.log(parser('Today is Tuesday, day number 2 of the week.'));
 console.log(parser('Today is Thursday, day number 2 of the week.'));
 
 // Result: { _id: 'Either', _tag: 'Right', right: 'Today is Saturday, day number 6 of the week.' }
-console.log(formatter({ weekday: CVReal.unsafeFromNumber(6) }));
+console.log(formatter({ weekday: 6 }));
 
 // Result: {
 //   _id: 'Either',
@@ -70,4 +69,4 @@ console.log(formatter({ weekday: CVReal.unsafeFromNumber(6) }));
 //     _tag: '@parischap/effect-lib/InputError/'
 //   }
 // }
-console.log(formatter({ weekday: CVReal.unsafeFromNumber(10) }));
+console.log(formatter({ weekday: 10 }));

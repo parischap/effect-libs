@@ -1,127 +1,113 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as CVNumberBase10Format from '@parischap/conversions/CVNumberBase10Format';
-import * as CVReal from '@parischap/conversions/CVReal';
 import * as CVTemplate from '@parischap/conversions/CVTemplate';
+import * as CVTemplateFormatter from '@parischap/conversions/CVTemplateFormatter';
 import * as CVTemplatePlaceholder from '@parischap/conversions/CVTemplatePlaceholder';
 import * as CVTemplateSeparator from '@parischap/conversions/CVTemplateSeparator';
-import * as MInputError from '@parischap/effect-lib/MInputError'
-import * as MTypes from '@parischap/effect-lib/MTypes'
-import {pipe} from 'effect'
-import * as Either from 'effect/Either'
-import * as Option from 'effect/Option'
+import { MTypes } from '@parischap/effect-lib';
+import * as MInputError from '@parischap/effect-lib/MInputError';
+import * as Either from 'effect/Either';
+import * as Option from 'effect/Option';
 import { describe, it } from 'vitest';
 
-describe('CVTemplateParser', () => {
-  const params = {
-    fillChar: '0',
-    numberBase10Format: pipe(CVNumberBase10Format.integer, CVNumberBase10Format.withoutSignDisplay),
-  };
-  const placeholder = CVTemplatePlaceholder;
+describe('CVTemplateFormatter', () => {
   const sep = CVTemplateSeparator;
 
-  const template = CVTemplate.make(
-    placeholder.fixedLengthToReal({ ...params, name: 'dd', length: 2 }),
+  const templateParts = [
+    CVTemplatePlaceholder.number({
+      name: 'dd',
+      numberBase10Format: CVNumberBase10Format.twoDigitUnsignedInteger,
+    }),
     sep.slash,
-    placeholder.fixedLengthToReal({ ...params, name: 'MM', length: 2 }),
+    CVTemplatePlaceholder.number({
+      name: 'MM',
+      numberBase10Format: CVNumberBase10Format.twoDigitUnsignedInteger,
+    }),
     sep.slash,
-    placeholder.fixedLengthToReal({ ...params, name: 'yyyy', length: 4 }),
+    CVTemplatePlaceholder.number({
+      name: 'yyyy',
+      numberBase10Format: CVNumberBase10Format.fourDigitUnsignedInteger,
+    }),
     sep.space,
-    placeholder.real({ ...params, name: 'MM' }),
+    CVTemplatePlaceholder.number({
+      name: 'MM',
+      numberBase10Format: CVNumberBase10Format.unsignedInteger,
+    }),
+  ] as const;
+
+  const templateFormatter1 = CVTemplateFormatter.fromTemplate(CVTemplate.make(...templateParts));
+  const templateFormatter2 = CVTemplateFormatter.fromTemplateParts(...templateParts);
+
+  TestUtils.assertTrueType(
+    TestUtils.areEqualTypes<
+      typeof templateFormatter1,
+      CVTemplateFormatter.Type<{ readonly MM: number; readonly dd: number; readonly yyyy: number }>
+    >(),
+  );
+
+  TestUtils.assertTrueType(
+    TestUtils.areEqualTypes<
+      typeof templateFormatter2,
+      CVTemplateFormatter.Type<{ readonly MM: number; readonly dd: number; readonly yyyy: number }>
+    >(),
   );
 
   describe('Tag, .toString()', () => {
     it('moduleTag', () => {
       TestUtils.assertEquals(
-        Option.some(CVTemplate.moduleTag),
+        Option.some(CVTemplateFormatter.moduleTag),
         TestUtils.moduleTagFromTestFilePath(import.meta.filename),
       );
     });
 
     it('.toString()', () => {
       TestUtils.strictEqual(
-        template.toString(),
-        `#dd/#MM/#yyyy #MM
+        templateFormatter1.toString(),
+        `#dd/#MM/#yyyy #MM formatter
 
-#dd: 2-character string left-padded with '0' to unsigned integer.
-#MM: 2-character string left-padded with '0' to unsigned integer.
-#yyyy: 4-character string left-padded with '0' to unsigned integer.
+#dd: 2-character string to 0-left-padded unsigned integer.
+#MM: 2-character string to 0-left-padded unsigned integer.
+#yyyy: 4-character string to 0-left-padded unsigned integer.
+#MM: unsigned integer`,
+      );
+      TestUtils.strictEqual(
+        templateFormatter2.toString(),
+        `#dd/#MM/#yyyy #MM formatter
+
+#dd: 2-character string to 0-left-padded unsigned integer.
+#MM: 2-character string to 0-left-padded unsigned integer.
+#yyyy: 4-character string to 0-left-padded unsigned integer.
 #MM: unsigned integer`,
       );
     });
   });
 
-  describe('toParser', () => {
-    const parser = CVTemplate.toParser(template);
+  describe('format', () => {
+    const formatter1 = CVTemplateFormatter.format(templateFormatter1);
+    const formatter2 = CVTemplateFormatter.format(templateFormatter2);
 
     TestUtils.assertTrueType(
       TestUtils.areEqualTypes<
-        typeof parser,
+        typeof formatter1,
         MTypes.OneArgFunction<
-          string,
-          Either.Either<
-            {
-              readonly dd: CVReal.Type;
-              readonly MM: CVReal.Type;
-              readonly yyyy: CVReal.Type;
-            },
-            MInputError.Type
-          >
+          {
+            readonly dd: number;
+            readonly MM: number;
+            readonly yyyy: number;
+          },
+          Either.Either<string, MInputError.Type>
         >
       >(),
     );
 
-    it('Empty text', () => {
-      TestUtils.assertLeftMessage(parser(''), 'Expected length of #dd to be: 2. Actual: 0');
-    });
-
-    it('Text too short', () => {
-      TestUtils.assertLeftMessage(
-        parser('25/12'),
-        "Expected remaining text for separator at position 4 to start with '/'. Actual: ''",
-      );
-    });
-
-    it('Wrong separator', () => {
-      TestUtils.assertLeftMessage(
-        parser('25|12'),
-        "Expected remaining text for separator at position 2 to start with '/'. Actual: '|12'",
-      );
-    });
-
-    it('Same placeholder receives different values', () => {
-      TestUtils.assertLeftMessage(
-        parser('25/12/2025 13'),
-        "#MM is present more than once in template and receives differing values '12' and '13'",
-      );
-    });
-
-    it('Text too long', () => {
-      TestUtils.assertLeftMessage(
-        parser('25/12/2025 12is XMas'),
-        "Expected text not consumed by template to be empty. Actual: 'is XMas'",
-      );
-    });
-
-    it('Matching text', () => {
-      TestUtils.assertRight(parser('05/12/2025 12'), {
-        dd: CVReal.unsafeFromNumber(5),
-        MM: CVReal.unsafeFromNumber(12),
-        yyyy: CVReal.unsafeFromNumber(2025),
-      });
-    });
-  });
-
-  describe('toFormatter', () => {
-    const formatter = CVTemplate.toFormatter(template);
-
     TestUtils.assertTrueType(
       TestUtils.areEqualTypes<
-        typeof formatter,
+        typeof formatter2,
         MTypes.OneArgFunction<
           {
-            readonly dd: CVReal.Type;
-            readonly MM: CVReal.Type;
-            readonly yyyy: CVReal.Type;
+            readonly dd: number;
+            readonly MM: number;
+            readonly yyyy: number;
           },
           Either.Either<string, MInputError.Type>
         >
@@ -130,10 +116,18 @@ describe('CVTemplateParser', () => {
 
     it('With correct values', () => {
       TestUtils.assertRight(
-        formatter({
-          dd: CVReal.unsafeFromNumber(5),
-          MM: CVReal.unsafeFromNumber(12),
-          yyyy: CVReal.unsafeFromNumber(2025),
+        formatter1({
+          dd: 5,
+          MM: 12,
+          yyyy: 2025,
+        }),
+        '05/12/2025 12',
+      );
+      TestUtils.assertRight(
+        formatter2({
+          dd: 5,
+          MM: 12,
+          yyyy: 2025,
         }),
         '05/12/2025 12',
       );
@@ -141,10 +135,18 @@ describe('CVTemplateParser', () => {
 
     it('With incorrect values', () => {
       TestUtils.assertLeftMessage(
-        formatter({
-          dd: CVReal.unsafeFromNumber(115),
-          MM: CVReal.unsafeFromNumber(12),
-          yyyy: CVReal.unsafeFromNumber(2025),
+        formatter1({
+          dd: 115,
+          MM: 12,
+          yyyy: 2025,
+        }),
+        'Expected length of #dd to be: 2. Actual: 3',
+      );
+      TestUtils.assertLeftMessage(
+        formatter2({
+          dd: 115,
+          MM: 12,
+          yyyy: 2025,
         }),
         'Expected length of #dd to be: 2. Actual: 3',
       );

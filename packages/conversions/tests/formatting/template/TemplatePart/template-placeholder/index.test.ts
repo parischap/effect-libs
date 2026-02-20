@@ -75,7 +75,6 @@ describe('CVTemplatePlaceholder', () => {
       length: 3,
       fillChar: '0',
       fillPosition: MStringFillPosition.Type.Left,
-      allowEmptyString: false,
     });
     it('.toString()', () => {
       TestUtils.strictEqual(
@@ -111,78 +110,82 @@ describe('CVTemplatePlaceholder', () => {
     });
   });
 
-  describe('fixedLengthToNumber', () => {
-    const placeholder = CVTemplatePlaceholder.fixedLengthToNumber({
-      name: 'foo',
-      length: 3,
-      fillChar: ' ',
-      fillPosition: MStringFillPosition.Type.Left,
-      allowEmptyString: true,
-      numberBase10Format: CVNumberBase10Format.integer,
-    });
-    it('.toString()', () => {
-      TestUtils.strictEqual(
-        placeholder.toString(),
-        "#foo: 3-character string left-padded with ' ' to potentially signed integer",
-      );
-    });
-
-    describe('Parsing', () => {
-      it('Not passing', () => {
-        TestUtils.assertLeftMessage(
-          placeholder.parser(''),
-          'Expected length of #foo to be: 3. Actual: 0',
-        );
-      });
-
-      it('Passing', () => {
-        TestUtils.assertRight(placeholder.parser('  15'), Tuple.make(1, '5'));
-      });
-    });
-
-    describe('Formatting', () => {
-      it('Not passing: too long', () => {
-        TestUtils.assertLeftMessage(
-          placeholder.formatter(1154),
-          'Expected length of #foo to be: 3. Actual: 4',
-        );
-      });
-
-      it('Passing', () => {
-        TestUtils.assertRight(placeholder.formatter(34), ' 34');
-        TestUtils.assertRight(placeholder.formatter(-4), ' -4');
-      });
-    });
-  });
-
   describe('number', () => {
-    const placeholder = CVTemplatePlaceholder.number({
-      name: 'foo',
-      numberBase10Format: CVNumberBase10Format.frenchStyleNumber,
-    });
-    it('.toString()', () => {
-      TestUtils.strictEqual(placeholder.toString(), '#foo: potentially signed French-style number');
-    });
-
-    describe('Parsing', () => {
-      it('Not passing', () => {
-        TestUtils.assertLeftMessage(
-          placeholder.parser(''),
-          "#foo contains '' from the start of which a(n) potentially signed French-style number could not be extracted",
-        );
-        TestUtils.assertLeft(placeholder.parser('1 014,1254 and foo'));
+    describe('fixed-length format', () => {
+      const placeholder = CVTemplatePlaceholder.number({
+        name: 'foo',
+        numberBase10Format: CVNumberBase10Format.twoDigitInteger,
       });
-
-      it('Passing', () => {
-        TestUtils.assertRight(
-          placeholder.parser('1 014,125 and foo'),
-          Tuple.make(1014.125, ' and foo'),
+      it('.toString()', () => {
+        TestUtils.strictEqual(
+          placeholder.toString(),
+          '#foo: 3-character string to 0-left-padded signed integer',
         );
       });
+
+      describe('Parsing', () => {
+        it('Not passing', () => {
+          TestUtils.assertLeftMessage(
+            placeholder.parser('45'),
+            'Expected length of #foo to be: 3. Actual: 2',
+          );
+        });
+
+        it('Passing', () => {
+          TestUtils.assertRight(placeholder.parser('+1545'), Tuple.make(15, '45'));
+          TestUtils.assertRight(placeholder.parser('-1545'), Tuple.make(-15, '45'));
+          TestUtils.assertRight(placeholder.parser('+0045'), Tuple.make(0, '45'));
+        });
+      });
+
+      describe('Formatting', () => {
+        it('Not passing: too long', () => {
+          TestUtils.assertLeftMessage(
+            placeholder.formatter(1154),
+            'Expected length of #foo to be: 3. Actual: 5',
+          );
+        });
+
+        it('Passing', () => {
+          TestUtils.assertRight(placeholder.formatter(34), '+34');
+          TestUtils.assertRight(placeholder.formatter(-4), '-04');
+          TestUtils.assertRight(placeholder.formatter(-0), '-00');
+        });
+      });
     });
 
-    it('Formatting', () => {
-      TestUtils.assertRight(placeholder.formatter(1014.1256), '1 014,126');
+    describe('Not a fixed-length format', () => {
+      const placeholder = CVTemplatePlaceholder.number({
+        name: 'foo',
+        numberBase10Format: CVNumberBase10Format.frenchStyleNumber,
+      });
+      it('.toString()', () => {
+        TestUtils.strictEqual(
+          placeholder.toString(),
+          '#foo: potentially signed French-style number',
+        );
+      });
+
+      describe('Parsing', () => {
+        it('Not passing', () => {
+          TestUtils.assertLeftMessage(
+            placeholder.parser(''),
+            "#foo contains '' from the start of which a(n) potentially signed French-style number could not be extracted",
+          );
+          TestUtils.assertLeft(placeholder.parser('1 014,1254 and foo'));
+        });
+
+        it('Passing', () => {
+          TestUtils.assertRight(
+            placeholder.parser('1 014,125 and foo'),
+            Tuple.make(1014.125, ' and foo'),
+          );
+        });
+      });
+
+      it('Formatting', () => {
+        TestUtils.assertRight(placeholder.formatter(1014.1256), '1 014,126');
+      });
     });
   });
 

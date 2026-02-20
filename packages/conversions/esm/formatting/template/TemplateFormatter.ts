@@ -4,16 +4,16 @@
  * don't want to build a `CVTemplate` beforehand, you can also construct a `CVTemplateFormatter`
  * directly from `CVTemplatePart`'s
  */
-import * as MArray from '@parischap/effect-lib/MArray'
-import * as MData from '@parischap/effect-lib/MData'
-import * as MInputError from '@parischap/effect-lib/MInputError'
-import * as MString from '@parischap/effect-lib/MString'
-import * as MTypes from '@parischap/effect-lib/MTypes'
-import {flow, pipe} from 'effect'
-import * as Either from 'effect/Either'
-import * as Function from 'effect/Function'
-import * as Option from 'effect/Option'
-import * as Record from 'effect/Record'
+import * as MArray from '@parischap/effect-lib/MArray';
+import * as MData from '@parischap/effect-lib/MData';
+import * as MInputError from '@parischap/effect-lib/MInputError';
+import * as MString from '@parischap/effect-lib/MString';
+import * as MTypes from '@parischap/effect-lib/MTypes';
+import { flow, pipe } from 'effect';
+import * as Either from 'effect/Either';
+import * as Function from 'effect/Function';
+import * as Option from 'effect/Option';
+import * as Record from 'effect/Record';
 import * as CVTemplateParts from '../../internal/formatting/template/TemplateParts.js';
 import * as CVTemplate from './index.js';
 import * as CVTemplatePart from './TemplatePart/index.js';
@@ -75,7 +75,7 @@ export const fromTemplate = <PlaceholderTypes extends MTypes.NonPrimitive>(
   template: CVTemplate.Type<PlaceholderTypes>,
 ): Type<PlaceholderTypes> =>
   Type.make({
-    description: `${template.syntheticDescription} Formatter\n\n${template.placeholderDescription}`,
+    description: `${template.syntheticDescription} formatter\n\n${template.placeholderDescription}`,
     templateParts: template.templateParts,
   });
 
@@ -88,7 +88,7 @@ export const fromTemplateParts = <const PS extends CVTemplateParts.Type>(
   ...templateParts: PS
 ): Type<CVTemplateParts.ToPlaceHolderTypes<PS>> =>
   Type.make({
-    description: `${CVTemplateParts.getSyntheticDescription(templateParts)} Formatter\n\n${CVTemplateParts.getSyntheticDescription(templateParts)}`,
+    description: `${CVTemplateParts.getSyntheticDescription(templateParts)} formatter\n\n${CVTemplateParts.getPlaceholderDescription(templateParts)}`,
     templateParts,
   });
 

@@ -1,9 +1,9 @@
 /** Module that implements a type that converts a CVSignValue into a CVSignString */
 
-import * as MFunction from '@parischap/effect-lib/MFunction'
-import * as MMatch from '@parischap/effect-lib/MMatch'
-import * as MTypes from '@parischap/effect-lib/MTypes'
-import {flow} from 'effect'
+import * as MFunction from '@parischap/effect-lib/MFunction';
+import * as MMatch from '@parischap/effect-lib/MMatch';
+import * as MTypes from '@parischap/effect-lib/MTypes';
+import { flow } from 'effect';
 import * as CVNumberBase10FormatSignDisplayOption from '../../../../formatting/number-base10-format/number-base10-format-sign-display-option/index.js';
 import * as CVSignString from './SignString.js';
 import * as CVSignValue from './SignValue.js';
@@ -13,7 +13,7 @@ import * as CVSignValue from './SignValue.js';
  *
  * @category Models
  */
-export interface Formatter extends MTypes.OneArgFunction<
+export interface Type extends MTypes.OneArgFunction<
   { readonly sign: CVSignValue.Type; readonly isZero: boolean },
   CVSignString.Type
 > {}
@@ -25,24 +25,24 @@ export interface Formatter extends MTypes.OneArgFunction<
  */
 export const fromSignDisplayOption: MTypes.OneArgFunction<
   CVNumberBase10FormatSignDisplayOption.Type,
-  Formatter
+  Type
 > = flow(
   MMatch.make,
   MMatch.whenIs(
     CVNumberBase10FormatSignDisplayOption.Type.Auto,
-    (): Formatter =>
+    (): Type =>
       ({ sign }) =>
         sign === -1 ? '-' : '',
   ),
   MMatch.whenIs(
     CVNumberBase10FormatSignDisplayOption.Type.Always,
-    (): Formatter =>
+    (): Type =>
       ({ sign }) =>
         sign === -1 ? '-' : '+',
   ),
   MMatch.whenIs(
     CVNumberBase10FormatSignDisplayOption.Type.ExceptZero,
-    (): Formatter =>
+    (): Type =>
       ({ sign, isZero }) =>
         isZero ? ''
         : sign === -1 ? '-'
@@ -50,13 +50,13 @@ export const fromSignDisplayOption: MTypes.OneArgFunction<
   ),
   MMatch.whenIs(
     CVNumberBase10FormatSignDisplayOption.Type.Negative,
-    (): Formatter =>
+    (): Type =>
       ({ sign, isZero }) =>
         isZero || sign === 1 ? '' : '-',
   ),
   MMatch.whenIs(
     CVNumberBase10FormatSignDisplayOption.Type.Never,
-    (): Formatter => MFunction.constEmptyString,
+    (): Type => MFunction.constEmptyString,
   ),
   MMatch.exhaustive,
 );

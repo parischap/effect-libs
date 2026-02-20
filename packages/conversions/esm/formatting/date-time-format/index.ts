@@ -4,24 +4,23 @@
  * https://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table).
  */
 
-import * as MData from '@parischap/effect-lib/MData'
-import * as MInputError from '@parischap/effect-lib/MInputError'
-import * as MMatch from '@parischap/effect-lib/MMatch'
-import * as MString from '@parischap/effect-lib/MString'
-import * as MTypes from '@parischap/effect-lib/MTypes'
-import {flow, pipe} from 'effect'
-import * as Array from 'effect/Array'
-import * as Either from 'effect/Either'
-import * as Function from 'effect/Function'
-import * as HashMap from 'effect/HashMap'
-import * as Option from 'effect/Option'
-import * as Record from 'effect/Record'
-import * as Tuple from 'effect/Tuple'
+import * as MData from '@parischap/effect-lib/MData';
+import * as MInputError from '@parischap/effect-lib/MInputError';
+import * as MMatch from '@parischap/effect-lib/MMatch';
+import * as MString from '@parischap/effect-lib/MString';
+import * as MTypes from '@parischap/effect-lib/MTypes';
+import { flow, pipe } from 'effect';
+import * as Array from 'effect/Array';
+import * as Either from 'effect/Either';
+import * as Function from 'effect/Function';
+import * as HashMap from 'effect/HashMap';
+import * as Option from 'effect/Option';
+import * as Record from 'effect/Record';
+import * as Tuple from 'effect/Tuple';
 import * as CVDateTimeParts from '../../date-time/DateTimeParts.js';
 import * as CVDateTime from '../../date-time/index.js';
 import * as CVDateTimeFormatParts from '../../internal/formatting/date-time-format/DateTimeFormatParts.js';
 import * as CVTemplateParts from '../../internal/formatting/template/TemplateParts.js';
-import * as CVReal from '../../primitive/Real.js';
 import * as CVTemplate from '../template/index.js';
 import * as CVTemplatePart from '../template/TemplatePart/index.js';
 import * as CVTemplatePlaceholder from '../template/TemplatePart/template-placeholder/index.js';
@@ -50,7 +49,7 @@ export class Type extends MData.Class {
   readonly name: string;
 
   // Template that will be used tp format/parse `self`
-  readonly template: CVTemplate.Type<CVTemplateParts.Type<CVReal.Type>>;
+  readonly template: CVTemplate.Type<CVTemplateParts.Type<number>>;
 
   /** Returns the `id` of `this` */
   [MData.idSymbol](): string | (() => string) {
@@ -74,9 +73,7 @@ export class Type extends MData.Class {
     readonly context: CVDateTimeFormatContext.Type;
     readonly parts: CVDateTimeFormatParts.Type;
   }): Type {
-    const getter = (
-      name: CVDateTimeFormatToken.Type,
-    ): CVTemplatePlaceholder.Type<string, CVReal.Type> =>
+    const getter = (name: CVDateTimeFormatToken.Type): CVTemplatePlaceholder.Type<string, number> =>
       pipe(
         context.tokenMap,
         HashMap.get(name),
@@ -85,7 +82,7 @@ export class Type extends MData.Class {
         ),
       );
 
-    const template: CVTemplate.Type<CVTemplateParts.Type<CVReal.Type>> = pipe(
+    const template: CVTemplate.Type<CVTemplateParts.Type<number>> = pipe(
       parts,
       Array.map(
         flow(
@@ -255,7 +252,7 @@ export const toFormatter = (
         ),
         MMatch.exhaustive,
       ) as MTypes.OneArgFunction<
-        CVTemplatePart.Type<string, CVReal.Type>,
+        CVTemplatePart.Type<string, number>,
         Option.Option<readonly [string, MTypes.OneArgFunction<CVDateTime.Type, number>]>
       >,
     ),

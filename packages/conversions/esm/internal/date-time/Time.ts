@@ -1,16 +1,17 @@
 /** This modulke implements the time part of a date */
 
-import * as MData from '@parischap/effect-lib/MData'
-import * as MInputError from '@parischap/effect-lib/MInputError'
-import * as MTypes from '@parischap/effect-lib/MTypes'
-import {flow, pipe} from 'effect'
-import * as Either from 'effect/Either'
-import * as Function from 'effect/Function'
-import * as Number from 'effect/Number'
-import * as Struct from 'effect/Struct'
+import { MStringFillPosition } from '@parischap/effect-lib';
+import * as MData from '@parischap/effect-lib/MData';
+import * as MInputError from '@parischap/effect-lib/MInputError';
+import * as MTypes from '@parischap/effect-lib/MTypes';
+import { pipe } from 'effect';
+import * as Either from 'effect/Either';
+import * as Function from 'effect/Function';
+import * as Number from 'effect/Number';
+import * as Struct from 'effect/Struct';
 import { HOUR_MS, MINUTE_MS, SECOND_MS } from '../../date-time/dateTimeConstants.js';
 import * as CVNumberBase10Format from '../../formatting/number-base10-format/index.js';
-import * as CVTemplate from '../../formatting/template/index.js';
+import * as CVTemplateFormatter from '../../formatting/template/TemplateFormatter.js';
 import * as CVTemplatePlaceholder from '../../formatting/template/TemplatePart/template-placeholder/index.js';
 import * as CVTemplateSeparator from '../../formatting/template/TemplatePart/template-separator/index.js';
 
@@ -23,35 +24,27 @@ export const moduleTag = '@parischap/conversions/internal/date-time/Time/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
-const _fixedLengthToReal = CVTemplatePlaceholder.fixedLengthToReal;
 const _sep = CVTemplateSeparator;
-const _integer = CVNumberBase10Format.integer;
 const _params = {
   fillChar: '0',
-  numberBase10Format: _integer,
+  fillPosition: MStringFillPosition.Type.Left,
+  allowEmptyString: false,
+  numberBase10Format: CVNumberBase10Format.unsignedInteger,
 };
-const _formatter = flow(
-  CVTemplate.toFormatter(
-    CVTemplate.make(
-      _fixedLengthToReal({ ..._params, name: 'hour23', length: 2 }),
-      _sep.colon,
-      _fixedLengthToReal({ ..._params, name: 'minute', length: 2 }),
-      _sep.colon,
-      _fixedLengthToReal({ ..._params, name: 'second', length: 2 }),
-      _sep.dot,
-      _fixedLengthToReal({ ..._params, name: 'millisecond', length: 3 }),
-    ),
+
+const _formatter = pipe(
+  CVTemplateFormatter.fromTemplateParts(
+    CVTemplatePlaceholder.fixedLengthToNumber({ ..._params, name: 'hour23', length: 2 }),
+    _sep.colon,
+    CVTemplatePlaceholder.fixedLengthToNumber({ ..._params, name: 'minute', length: 2 }),
+    _sep.colon,
+    CVTemplatePlaceholder.fixedLengthToNumber({ ..._params, name: 'second', length: 2 }),
+    _sep.dot,
+    CVTemplatePlaceholder.fixedLengthToNumber({ ..._params, name: 'millisecond', length: 3 }),
   ),
-  Either.getOrThrowWith(Function.identity),
-) as MTypes.OneArgFunction<
-  {
-    readonly hour23: number;
-    readonly minute: number;
-    readonly second: number;
-    readonly millisecond: number;
-  },
-  string
->;
+  CVTemplateFormatter.format,
+  Function.compose(Either.getOrThrowWith(Function.identity)),
+);
 
 /**
  * Type that represents a CVTime

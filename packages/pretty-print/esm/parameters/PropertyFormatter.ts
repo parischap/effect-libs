@@ -7,21 +7,21 @@
  * needs.
  */
 
-import * as ASText from '@parischap/ansi-styles/ASText'
-import * as MFunction from '@parischap/effect-lib/MFunction'
-import * as MInspectable from '@parischap/effect-lib/MInspectable'
-import * as MPipeable from '@parischap/effect-lib/MPipeable'
-import * as MTypes from '@parischap/effect-lib/MTypes'
-import {flow, pipe} from 'effect'
-import * as Array from 'effect/Array'
-import * as Equal from 'effect/Equal'
-import * as Equivalence from 'effect/Equivalence'
-import * as Function from 'effect/Function'
-import * as Hash from 'effect/Hash'
-import * as Pipeable from 'effect/Pipeable'
-import * as Predicate from 'effect/Predicate'
-import * as String from 'effect/String'
-import * as Struct from 'effect/Struct'
+import * as ASText from '@parischap/ansi-styles/ASText';
+import * as MFunction from '@parischap/effect-lib/MFunction';
+import * as MInspectable from '@parischap/effect-lib/MInspectable';
+import * as MPipeable from '@parischap/effect-lib/MPipeable';
+import * as MTypes from '@parischap/effect-lib/MTypes';
+import { flow, pipe } from 'effect';
+import * as Array from 'effect/Array';
+import * as Equal from 'effect/Equal';
+import * as Equivalence from 'effect/Equivalence';
+import * as Function from 'effect/Function';
+import * as Hash from 'effect/Hash';
+import * as Pipeable from 'effect/Pipeable';
+import * as Predicate from 'effect/Predicate';
+import * as String from 'effect/String';
+import * as Struct from 'effect/Struct';
 import * as PPMarkShowerConstructor from './MarkShowerConstructor.js';
 import type * as PPOption from './Option.js';
 import * as PPStringifiedValue from './StringifiedValue.js';
@@ -160,7 +160,7 @@ export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
  */
 export const valueOnly: Type = make({
   id: 'ValueOnly',
-  action: () => () => Function.identity,
+  action: () => MFunction.constIdentity,
 });
 
 /* if onSameLine=false and isLeaf=false , the lines of the value are appended to the lines of the key and no keyValueSeparator is used. In all other cases, the last line of the key and the first line of the value are merged and separated by the keyValueSeparator. */
@@ -177,8 +177,8 @@ const _keyAndValueAction = ({
     const KeyValueSeparatorTextFormatter = valueBasedStylerConstructor('KeyValueSeparator');
 
     return ({ value, isLeaf }) => {
-      const {stringKey} = value;
-      const {protoDepth} = value;
+      const { stringKey } = value;
+      const { protoDepth } = value;
 
       if (MTypes.isSingleton(stringKey) && String.isEmpty(stringKey[0])) return Function.identity;
       const inContextPropertyKeyTextFormatter = propertyKeyTextFormatter(value);

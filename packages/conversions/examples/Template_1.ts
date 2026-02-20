@@ -1,12 +1,10 @@
-import * as CVNumberBase10Format from '@parischap/conversions/CVNumberBase10Format'
-import * as CVReal from '@parischap/conversions/CVReal'
-import * as CVSchema from '@parischap/conversions/CVSchema'
-import * as CVTemplate from '@parischap/conversions/CVTemplate'
-import * as CVTemplatePlaceholder from '@parischap/conversions/CVTemplatePlaceholder'
-import * as CVTemplateSeparator from '@parischap/conversions/CVTemplateSeparator'
-import * as MRegExpString from '@parischap/effect-lib/MRegExpString'
-import {pipe} from 'effect'
-import * as Schema from 'effect/Schema'
+import * as CVNumberBase10Format from '@parischap/conversions/CVNumberBase10Format';
+import * as CVSchema from '@parischap/conversions/CVSchema';
+import * as CVTemplate from '@parischap/conversions/CVTemplate';
+import * as CVTemplatePlaceholder from '@parischap/conversions/CVTemplatePlaceholder';
+import * as CVTemplateSeparator from '@parischap/conversions/CVTemplateSeparator';
+import * as MRegExpString from '@parischap/effect-lib/MRegExpString';
+import * as Schema from 'effect/Schema';
 
 // Let's define useful shortcuts
 const ph = CVTemplatePlaceholder;
@@ -19,9 +17,9 @@ const template = CVTemplate.make(
   // Immutable text
   sep.make(' is a '),
   // Field named 'age' that must represent an unsigned integer
-  ph.real({
+  ph.number({
     name: 'age',
-    numberBase10Format: pipe(CVNumberBase10Format.integer, CVNumberBase10Format.withoutSignDisplay),
+    numberBase10Format: CVNumberBase10Format.unsignedInteger,
   }),
   // Immutable text
   sep.make('-year old '),
@@ -34,7 +32,7 @@ const template = CVTemplate.make(
 // Let's define a parser. See how the return type matches the names and types of the placeholders
 // Type: (value: string) => Either.Either<{
 //    readonly name: string;
-//    readonly age: CVReal.Type;
+//    readonly age: number;
 //    readonly kind: string;
 // }, MInputError.Type>
 const parser = CVTemplate.toParser(template);
@@ -42,7 +40,7 @@ const parser = CVTemplate.toParser(template);
 // Let's define a parser that throws for Effect users.
 // Type: (value: string) => {
 //    readonly name: string;
-//    readonly age: CVReal.Type;
+//    readonly age: number;
 //    readonly kind: string;
 // }
 const throwingParser = CVTemplate.toThrowingParser(template);
@@ -50,7 +48,7 @@ const throwingParser = CVTemplate.toThrowingParser(template);
 // Let's define a formatter.
 // Type: (value: {
 //    readonly name: string;
-//    readonly age: CVReal.Type;
+//    readonly age: number;
 //    readonly kind: string;
 //   }) => Either.Either<string, MInputError.Type>
 const formatter = CVTemplate.toFormatter(template);
@@ -58,7 +56,7 @@ const formatter = CVTemplate.toFormatter(template);
 // Let's define a formatter that throws for Effect users.
 // Type: (value: {
 //    readonly name: string;
-//    readonly age: CVReal.Type;
+//    readonly age: number;
 //    readonly kind: string;
 //   }) => string, MInputError.Type
 const throwingFormatter = CVTemplate.toThrowingFormatter(template);
@@ -83,7 +81,7 @@ console.log(throwingParser('John is a 47-year old man.'));
 console.log(
   formatter({
     name: 'Tom',
-    age: CVReal.unsafeFromNumber(15),
+    age: 15,
     kind: 'boy',
   }),
 );
@@ -92,7 +90,7 @@ console.log(
 console.log(
   throwingFormatter({
     name: 'Tom',
-    age: CVReal.unsafeFromNumber(15),
+    age: 15,
     kind: 'boy',
   }),
 );
@@ -102,14 +100,14 @@ const schema = CVSchema.Template(template);
 
 // Type:(i: string) => Either<{
 //     readonly name: string;
-//     readonly age: CVReal.Type;
+//     readonly age: number;
 //     readonly kind: string;
 // }, ParseError>
 const decoder = Schema.decodeEither(schema);
 
 // Type: (a: {
 //     readonly name: string;
-//     readonly age: CVReal.Type;
+//     readonly age: number;
 //     readonly kind: string;
 // }) => Either<string, ParseError>
 const encoder = Schema.encodeEither(schema);
@@ -121,7 +119,7 @@ console.log(decoder('John is a 47-year old man.'));
 console.log(
   encoder({
     name: 'Tom',
-    age: CVReal.unsafeFromNumber(15),
+    age: 15,
     kind: 'boy',
   }),
 );

@@ -16,7 +16,6 @@ import * as Record from 'effect/Record';
 import * as Schema from 'effect/Schema';
 import * as CVDateTime from '../date-time/index.js';
 import * as CVTemplateParts from '../internal/formatting/template/TemplateParts.js';
-import * as CVReal from '../primitive/Real.js';
 import * as CVDateTimeFormat from './date-time-format/index.js';
 import * as CVNumberBase10Format from './number-base10-format/index.js';
 import * as CVTemplate from './template/index.js';
@@ -24,12 +23,12 @@ import * as CVTemplatePart from './template/TemplatePart/index.js';
 import * as CVTemplatePlaceholder from './template/TemplatePart/template-placeholder/index.js';
 
 /**
- * A `Schema` that transforms a string into a `CVReal` according to the `format`. Read documentation
+ * A `Schema` that transforms a string into a number according to the `format`. Read documentation
  * of module NumberBase10Format.ts for more details
  *
  * @category Schema transformations
  */
-export const Real = (format: CVNumberBase10Format.Type): Schema.Schema<CVReal.Type, string> => {
+export const Real = (format: CVNumberBase10Format.Type): Schema.Schema<number, string> => {
   const parser = CVNumberBase10Format.toRealParser(format);
   const formatter = CVNumberBase10Format.toNumberFormatter(format);
   return Schema.transformOrFail(Schema.String, RealFromSelf, {

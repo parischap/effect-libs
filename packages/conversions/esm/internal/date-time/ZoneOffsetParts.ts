@@ -6,16 +6,17 @@
  * second one to the string 'GMT+00:10', a positive 10-minute offset
  */
 
-import * as MData from '@parischap/effect-lib/MData'
-import * as MInputError from '@parischap/effect-lib/MInputError'
-import * as MNumber from '@parischap/effect-lib/MNumber'
-import * as MTypes from '@parischap/effect-lib/MTypes'
-import {flow, pipe} from 'effect'
-import * as Either from 'effect/Either'
-import * as Function from 'effect/Function'
-import * as Struct from 'effect/Struct'
+import { MStringFillPosition } from '@parischap/effect-lib';
+import * as MData from '@parischap/effect-lib/MData';
+import * as MInputError from '@parischap/effect-lib/MInputError';
+import * as MNumber from '@parischap/effect-lib/MNumber';
+import * as MTypes from '@parischap/effect-lib/MTypes';
+import { pipe } from 'effect';
+import * as Either from 'effect/Either';
+import * as Function from 'effect/Function';
+import * as Struct from 'effect/Struct';
 import * as CVNumberBase10Format from '../../formatting/number-base10-format/index.js';
-import * as CVTemplate from '../../formatting/template/index.js';
+import * as CVTemplateFormatter from '../../formatting/template/TemplateFormatter.js';
 import * as CVTemplatePlaceholder from '../../formatting/template/TemplatePart/template-placeholder/index.js';
 import * as CVTemplateSeparator from '../../formatting/template/TemplatePart/template-separator/index.js';
 
@@ -28,13 +29,27 @@ export const moduleTag = '@parischap/conversions/internal/date-time/ZoneOffsetPa
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
-const _fixedLengthToReal = CVTemplatePlaceholder.fixedLengthToReal;
 const _sep = CVTemplateSeparator;
-const _integer = CVNumberBase10Format.integer;
 const _params = {
   fillChar: '0',
-  numberBase10Format: _integer,
+  fillPosition: MStringFillPosition.Type.Left,
+  allowEmptyString: false,
+  numberBase10Format: CVNumberBase10Format.unsignedInteger,
 };
+const _formatter = pipe(
+  CVTemplateFormatter.fromTemplateParts(
+    CVTemplatePlaceholder.fixedLengthToNumber({
+      ..._params,
+      name: 'zoneHour',
+      length: 3,
+      numberBase10Format: pipe(_integer, CVNumberBase10Format.withSignDisplay),
+    }),
+    _sep.colon,
+    CVTemplatePlaceholder.fixedLengthToNumber({ ..._params, name: 'zoneMinute', length: 2 }),
+  ),
+  CVTemplateFormatter.format,
+  Function.compose(Either.getOrThrowWith(Function.identity)),
+);
 
 /**
  * Type that represents a CVZoneOffsetPart
@@ -170,22 +185,6 @@ export const zoneMinute: MTypes.OneArgFunction<Type, number> = Struct.get('zoneM
  * @category Destructors
  */
 export const zoneSecond: MTypes.OneArgFunction<Type, number> = Struct.get('zoneSecond');
-
-const _formatter = flow(
-  CVTemplate.toFormatter(
-    CVTemplate.make(
-      _fixedLengthToReal({
-        ..._params,
-        name: 'zoneHour',
-        length: 3,
-        numberBase10Format: pipe(_integer, CVNumberBase10Format.withSignDisplay),
-      }),
-      _sep.colon,
-      _fixedLengthToReal({ ..._params, name: 'zoneMinute', length: 2 }),
-    ),
-  ),
-  Either.getOrThrowWith(Function.identity),
-) as MTypes.OneArgFunction<{ readonly zoneHour: number; readonly zoneMinute: number }, string>;
 
 /**
  * Returns the ISO representation of this Gregorian Date

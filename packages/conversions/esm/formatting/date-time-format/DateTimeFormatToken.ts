@@ -69,9 +69,9 @@ export type Type =
   | 'S'
   /* Millisecond on 3 digits left-padded with 0's (ex: 005) */
   | 'SSS'
-  /* Hour part of the timezone offset (ex: 5) */
+  /* Hour part of the timezone offset (ex: 5, -6) */
   | 'zH'
-  /* Hour part of the timezone offset on 2 digits left-padded with 0's (ex: 05) */
+  /* Hour part of the timezone offset on 2 digits left-padded with 0's possibly prefixed by a minus sign (ex: 10, -05) */
   | 'zHzH'
   /* Minute part of the timezone offset (ex: 5) */
   | 'zm'
