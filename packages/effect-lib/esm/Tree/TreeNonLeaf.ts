@@ -1,7 +1,7 @@
 /** Module that implements a TreeNonLeaf (see TreeAll for more details) */
 
-import * as MData from '../Data/index.js';
-import * as MTypes from '../types/index.js';
+import * as MData from '../Data/Data.js';
+import * as MTypes from '../Types/types.js';
 import type * as MTreeForest from './TreeForest.js';
 import * as MTreeNode from './TreeNode.js';
 

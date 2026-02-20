@@ -1,8 +1,8 @@
 /** A simple extension to the Effect Predicate module */
 
-import * as Effect from 'effect/Effect'
-import * as Predicate from 'effect/Predicate'
-import * as MTypes from './types/index.js';
+import * as Effect from 'effect/Effect';
+import * as Predicate from 'effect/Predicate';
+import * as MTypes from './Types/types.js';
 
 /**
  * Effectful predicate that returns an effectful boolean

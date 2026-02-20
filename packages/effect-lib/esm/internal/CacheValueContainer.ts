@@ -1,5 +1,5 @@
-import * as MData from '../Data/index.js';
-import * as MTypes from '../types/index.js';
+import * as MData from '../Data/Data.js';
+import * as MTypes from '../Types/types.js';
 
 export const moduleTag = '@parischap/effect-lib/internal/CacheValueContainer/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;

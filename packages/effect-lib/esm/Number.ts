@@ -1,14 +1,14 @@
 /** A simple extension to the Effect Number module */
-import {flow, pipe} from 'effect'
-import * as BigDecimal from 'effect/BigDecimal'
-import * as BigInt from 'effect/BigInt'
-import * as Brand from 'effect/Brand'
-import * as Either from 'effect/Either'
-import * as Function from 'effect/Function'
-import * as Option from 'effect/Option'
-import * as Predicate from 'effect/Predicate'
+import { flow, pipe } from 'effect';
+import * as BigDecimal from 'effect/BigDecimal';
+import * as BigInt from 'effect/BigInt';
+import * as Brand from 'effect/Brand';
+import * as Either from 'effect/Either';
+import * as Function from 'effect/Function';
+import * as Option from 'effect/Option';
+import * as Predicate from 'effect/Predicate';
 import * as MBigInt from './BigInt.js';
-import * as MTypes from './types/index.js';
+import * as MTypes from './Types/types.js';
 
 /** Maximum safe integer in JavaScript (2^53 – 1) and minimum safe integer in JavaScript -(2^53 – 1) */
 export const { MAX_SAFE_INTEGER, MIN_SAFE_INTEGER } = Number;

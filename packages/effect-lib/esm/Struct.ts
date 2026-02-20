@@ -1,10 +1,10 @@
 /** A simple extension to the Effect Struct module */
 
-import {pipe} from 'effect'
-import * as Function from 'effect/Function'
-import * as Record from 'effect/Record'
-import * as Struct from 'effect/Struct'
-import * as MTypes from './types/index.js';
+import { pipe } from 'effect';
+import * as Function from 'effect/Function';
+import * as Record from 'effect/Record';
+import * as Struct from 'effect/Struct';
+import * as MTypes from './Types/types.js';
 
 /**
  * Utility type that calculates the type of `{...first, ...second}` where `first` has type `First`

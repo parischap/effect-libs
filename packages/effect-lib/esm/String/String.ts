@@ -18,7 +18,7 @@ import * as MPredicate from '../Predicate.js';
 import * as MRegExp from '../RegExp.js';
 import * as MRegExpString from '../RegExpString.js';
 import * as MTuple from '../Tuple.js';
-import * as MTypes from '../types/index.js';
+import * as MTypes from '../Types/types.js';
 import * as MStringFillPosition from './StringFillPosition.js';
 import * as MStringSearchResult from './StringSearchResult.js';
 

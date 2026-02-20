@@ -6,7 +6,7 @@ import * as Function from 'effect/Function';
 import * as RegExp from 'effect/RegExp';
 import * as EString from 'effect/String';
 import * as MArray from './Array.js';
-import type * as MTypes from './types/index.js';
+import type * as MTypes from './Types/types.js';
 
 /**
  * Size of a group of digits

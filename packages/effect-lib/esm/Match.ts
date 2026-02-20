@@ -4,13 +4,13 @@
  * simplifies its use.
  */
 
-import {pipe} from 'effect'
-import * as Array from 'effect/Array'
-import * as Option from 'effect/Option'
-import * as Predicate from 'effect/Predicate'
-import * as MData from './Data/index.js';
+import { pipe } from 'effect';
+import * as Array from 'effect/Array';
+import * as Option from 'effect/Option';
+import * as Predicate from 'effect/Predicate';
+import * as MData from './Data/Data.js';
 import * as MPredicate from './Predicate.js';
-import * as MTypes from './types/index.js';
+import * as MTypes from './Types/types.js';
 
 /**
  * Module tag

@@ -1,13 +1,13 @@
 /** A simple extension to the Effect BigInt module */
 
-import {flow, pipe} from 'effect'
-import * as Brand from 'effect/Brand'
-import * as Either from 'effect/Either'
-import * as Number from 'effect/Number'
-import * as Option from 'effect/Option'
-import * as Predicate from 'effect/Predicate'
-import * as String from 'effect/String'
-import * as MTypes from './types/index.js';
+import { flow, pipe } from 'effect';
+import * as Brand from 'effect/Brand';
+import * as Either from 'effect/Either';
+import * as Number from 'effect/Number';
+import * as Option from 'effect/Option';
+import * as Predicate from 'effect/Predicate';
+import * as String from 'effect/String';
+import * as MTypes from './Types/types.js';
 
 /**
  * Constructs a bigint from a number. Will only throw if the number is NaN, Infinity or not an

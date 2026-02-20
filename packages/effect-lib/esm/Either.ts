@@ -1,14 +1,14 @@
 /** A simple extension to the Effect Either module */
 
-import {pipe} from 'effect'
-import * as Cause from 'effect/Cause'
-import * as Either from 'effect/Either'
-import * as Function from 'effect/Function'
-import * as Option from 'effect/Option'
-import * as Predicate from 'effect/Predicate'
-import * as Tuple from 'effect/Tuple'
+import { pipe } from 'effect';
+import * as Cause from 'effect/Cause';
+import * as Either from 'effect/Either';
+import * as Function from 'effect/Function';
+import * as Option from 'effect/Option';
+import * as Predicate from 'effect/Predicate';
+import * as Tuple from 'effect/Tuple';
 import * as MTuple from './Tuple.js';
-import * as MTypes from './types/index.js';
+import * as MTypes from './Types/types.js';
 
 /**
  * Same as Effect.optionFromOptional but for Either's

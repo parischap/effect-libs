@@ -3,7 +3,7 @@
 import { pipe } from 'effect';
 import * as Function from 'effect/Function';
 import * as Option from 'effect/Option';
-import * as MTypes from './types/index.js';
+import * as MTypes from './Types/types.js';
 
 /**
  * Applies function f if condition is true

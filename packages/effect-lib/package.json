@@ -83,7 +83,7 @@
       "default": "./esm/Chunk.ts"
     },
     "./MData": {
-      "default": "./esm/Data/index.ts"
+      "default": "./esm/Data/Data.ts"
     },
     "./MDataEquivalenceBasedEquality": {
       "default": "./esm/Data/DataEquivalenceBasedEquality.ts"
@@ -125,19 +125,19 @@
       "default": "./esm/RegExpString.ts"
     },
     "./MString": {
-      "default": "./esm/string/index.ts"
+      "default": "./esm/String/String.ts"
     },
     "./MStringFillPosition": {
-      "default": "./esm/string/StringFillPosition.ts"
+      "default": "./esm/String/StringFillPosition.ts"
     },
     "./MStringSearchResult": {
-      "default": "./esm/string/StringSearchResult.ts"
+      "default": "./esm/String/StringSearchResult.ts"
     },
     "./MStruct": {
       "default": "./esm/Struct.ts"
     },
     "./MTree": {
-      "default": "./esm/Tree/index.ts"
+      "default": "./esm/Tree/Tree.ts"
     },
     "./MTreeForest": {
       "default": "./esm/Tree/TreeForest.ts"
@@ -155,10 +155,10 @@
       "default": "./esm/Tuple.ts"
     },
     "./MTypes": {
-      "default": "./esm/types/index.ts"
+      "default": "./esm/Types/types.ts"
     },
     "./MTypesCategory": {
-      "default": "./esm/types/TypesCategory.ts"
+      "default": "./esm/Types/TypesCategory.ts"
     }
   },
   "module": "./esm/index.ts",

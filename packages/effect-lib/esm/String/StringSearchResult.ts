@@ -3,16 +3,16 @@
  * string.
  */
 
-import * as Equivalence from 'effect/Equivalence'
-import * as Hash from 'effect/Hash'
-import * as Order from 'effect/Order'
-import * as Predicate from 'effect/Predicate'
-import * as Struct from 'effect/Struct'
+import * as Equivalence from 'effect/Equivalence';
+import * as Hash from 'effect/Hash';
+import * as Order from 'effect/Order';
+import * as Predicate from 'effect/Predicate';
+import * as Struct from 'effect/Struct';
+import * as MData from '../Data/Data.js';
 import * as MDataEquivalenceBasedEquality from '../Data/DataEquivalenceBasedEquality.js';
-import * as MData from '../Data/index.js';
-import * as MTypes from '../types/index.js';
+import * as MTypes from '../Types/types.js';
 
-export const moduleTag = '@parischap/effect-lib/string/StringSearchResult/';
+export const moduleTag = '@parischap/effect-lib/String/StringSearchResult/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 

@@ -1,20 +1,20 @@
 /** A simple extension to the Effect Array module */
 
-import {pipe} from 'effect'
-import * as Array from 'effect/Array'
-import * as Boolean from 'effect/Boolean'
-import * as Either from 'effect/Either'
-import * as Equal from 'effect/Equal'
-import * as Equivalence from 'effect/Equivalence'
-import * as Function from 'effect/Function'
-import * as Option from 'effect/Option'
-import * as Order from 'effect/Order'
-import * as Predicate from 'effect/Predicate'
-import * as Record from 'effect/Record'
-import * as Tuple from 'effect/Tuple'
+import { pipe } from 'effect';
+import * as Array from 'effect/Array';
+import * as Boolean from 'effect/Boolean';
+import * as Either from 'effect/Either';
+import * as Equal from 'effect/Equal';
+import * as Equivalence from 'effect/Equivalence';
+import * as Function from 'effect/Function';
+import * as Option from 'effect/Option';
+import * as Order from 'effect/Order';
+import * as Predicate from 'effect/Predicate';
+import * as Record from 'effect/Record';
+import * as Tuple from 'effect/Tuple';
 import * as MMatch from './Match.js';
 import * as MOption from './Option.js';
-import * as MTypes from './types/index.js';
+import * as MTypes from './Types/types.js';
 /**
  * https://typescript-eslint.io/rules/no-unnecessary-type-parameters Returns true if the length of
  * `self` is `l`

@@ -1,8 +1,8 @@
 /** Module that implements a TreeNode (see TreeAll for more details) */
 
-import * as Struct from 'effect/Struct'
-import * as MData from '../Data/index.js';
-import * as MTypes from '../types/index.js';
+import * as Struct from 'effect/Struct';
+import * as MData from '../Data/Data.js';
+import * as MTypes from '../Types/types.js';
 
 export const moduleTag = '@parischap/effect-lib/Tree/TreeNode/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
