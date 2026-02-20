@@ -1,13 +1,13 @@
-import * as CVDateTime from '@parischap/conversions/CVDateTime'
-import * as CVDateTimeFormat from '@parischap/conversions/CVDateTimeFormat'
-import * as CVDateTimeFormatContext from '@parischap/conversions/CVDateTimeFormatContext'
-import * as CVDateTimeFormatPlaceholder from '@parischap/conversions/CVDateTimeFormatPlaceholder'
-import * as CVDateTimeFormatSeparator from '@parischap/conversions/CVDateTimeFormatSeparator'
-import * as CVSchema from '@parischap/conversions/CVSchema'
-import {flow} from 'effect'
-import * as DateTime from 'effect/DateTime'
-import * as Either from 'effect/Either'
-import * as Schema from 'effect/Schema'
+import * as CVDateTime from '@parischap/conversions/CVDateTime';
+import * as CVDateTimeFormat from '@parischap/conversions/CVDateTimeFormat';
+import * as CVDateTimeFormatContext from '@parischap/conversions/CVDateTimeFormatContext';
+import * as CVDateTimeFormatPlaceholder from '@parischap/conversions/CVDateTimeFormatPlaceholder';
+import * as CVDateTimeFormatSeparator from '@parischap/conversions/CVDateTimeFormatSeparator';
+import * as CVSchema from '@parischap/conversions/CVSchema';
+import { flow } from 'effect';
+import * as DateTime from 'effect/DateTime/';
+import * as Either from 'effect/Either';
+import * as Schema from 'effect/Schema';
 
 // Let's define useful shortcuts
 const placeholder = CVDateTimeFormatPlaceholder.make;

@@ -14,13 +14,13 @@ import * as Option from 'effect/Option';
 import * as ParseResult from 'effect/ParseResult';
 import * as Record from 'effect/Record';
 import * as Schema from 'effect/Schema';
-import * as CVDateTime from '../date-time/index.js';
-import * as CVTemplateParts from '../internal/formatting/template/TemplateParts.js';
-import * as CVDateTimeFormat from './date-time-format/index.js';
-import * as CVNumberBase10Format from './number-base10-format/index.js';
-import * as CVTemplate from './template/index.js';
-import * as CVTemplatePart from './template/TemplatePart/index.js';
-import * as CVTemplatePlaceholder from './template/TemplatePart/template-placeholder/index.js';
+import * as CVDateTime from '../DateTime/DateTime.js';
+import * as CVTemplateParts from '../internal/Formatting/Template/TemplateParts.js';
+import * as CVDateTimeFormat from './DateTimeFormat/DateTimeFormat.js';
+import * as CVNumberBase10Format from './NumberBase10Format/NumberBase10Format.js';
+import * as CVTemplate from './Template/Template.js';
+import * as CVTemplatePart from './Template/TemplatePart/TemplatePart.js';
+import * as CVTemplatePlaceholder from './Template/TemplatePart/TemplatePlaceholder/TemplatePlaceholder.js';
 
 /**
  * A `Schema` that transforms a string into a number according to the `format`. Read documentation

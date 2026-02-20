@@ -65,139 +65,136 @@
       "default": "./esm/index.ts"
     },
     "./CVDateTime": {
-      "default": "./esm/date-time/index.ts"
+      "default": "./esm/DateTime/DateTime.ts"
     },
     "./CVDateTimeConstants": {
-      "default": "./esm/date-time/dateTimeConstants.ts"
+      "default": "./esm/DateTime/dateTimeConstants.ts"
     },
     "./CVDateTimeFormat": {
-      "default": "./esm/formatting/date-time-format/index.ts"
+      "default": "./esm/Formatting/DateTimeFormat/DateTimeFormat.ts"
     },
     "./CVDateTimeFormatContext": {
-      "default": "./esm/formatting/date-time-format/date-time-format-context/index.ts"
+      "default": "./esm/Formatting/DateTimeFormat/DateTimeFormatContext/DateTimeFormatContext.ts"
     },
     "./CVDateTimeFormatPart": {
-      "default": "./esm/formatting/date-time-format/DateTimeFormatPart/index.ts"
+      "default": "./esm/Formatting/DateTimeFormat/DateTimeFormatPart/DateTimeFormatPart.ts"
     },
     "./CVDateTimeFormatParts": {
-      "default": "./esm/internal/formatting/date-time-format/DateTimeFormatParts.ts"
+      "default": "./esm/internal/Formatting/DateTimeFormat/DateTimeFormatParts.ts"
     },
     "./CVDateTimeFormatPlaceholder": {
-      "default": "./esm/formatting/date-time-format/DateTimeFormatPart/DateTimeFormatPlaceholder.ts"
+      "default": "./esm/Formatting/DateTimeFormat/DateTimeFormatPart/DateTimeFormatPlaceholder.ts"
     },
     "./CVDateTimeFormatSeparator": {
-      "default": "./esm/formatting/date-time-format/DateTimeFormatPart/DateTimeFormatSeparator.ts"
+      "default": "./esm/Formatting/DateTimeFormat/DateTimeFormatPart/DateTimeFormatSeparator.ts"
     },
     "./CVDateTimeFormatToken": {
-      "default": "./esm/formatting/date-time-format/DateTimeFormatToken.ts"
+      "default": "./esm/Formatting/DateTimeFormat/DateTimeFormatToken.ts"
     },
     "./CVDateTimeFormatTokenMap": {
-      "default": "./esm/internal/formatting/date-time-format/date-time-format-context/DateTimeFormatTokenMap.ts"
+      "default": "./esm/internal/Formatting/DateTimeFormat/DateTimeFormatContext/DateTimeFormatTokenMap.ts"
+    },
+    "./CVDateTimePartName": {
+      "default": "./esm/internal/Formatting/DateTimeFormat/DateTimePartName.ts"
     },
     "./CVDateTimeParts": {
-      "default": "./esm/date-time/DateTimeParts.ts"
+      "default": "./esm/DateTime/DateTimeParts.ts"
     },
     "./CVDayPeriodNames": {
-      "default": "./esm/formatting/date-time-format/date-time-format-context/DayPeriodNames.ts"
+      "default": "./esm/Formatting/DateTimeFormat/DateTimeFormatContext/DayPeriodNames.ts"
     },
     "./CVGregorianDate": {
-      "default": "./esm/internal/date-time/GregorianDate.ts"
+      "default": "./esm/internal/DateTime/GregorianDate.ts"
     },
     "./CVIsoDate": {
-      "default": "./esm/internal/date-time/IsoDate.ts"
+      "default": "./esm/internal/DateTime/IsoDate.ts"
     },
     "./CVMonthNames": {
-      "default": "./esm/formatting/date-time-format/date-time-format-context/MonthNames.ts"
+      "default": "./esm/Formatting/DateTimeFormat/DateTimeFormatContext/MonthNames.ts"
     },
     "./CVNumberBase10Format": {
-      "default": "./esm/formatting/number-base10-format/index.ts"
+      "default": "./esm/Formatting/NumberBase10Format/NumberBase10Format.ts"
     },
     "./CVNumberBase10FormatScientificNotationOption": {
-      "default": "./esm/formatting/number-base10-format/number-base10-format-scientific-notation-option/index.ts"
+      "default": "./esm/Formatting/NumberBase10Format/NumberBase10FormatScientificNotationOption/NumberBase10FormatScientificNotationOption.ts"
     },
     "./CVNumberBase10FormatSignDisplayOption": {
-      "default": "./esm/formatting/number-base10-format/number-base10-format-sign-display-option/index.ts"
+      "default": "./esm/Formatting/NumberBase10Format/NumberBase10FormatSignDisplayOption/NumberBase10FormatSignDisplayOption.ts"
     },
     "./CVNumberBase10Formatter": {
-      "default": "./esm/formatting/number-base10-format/NumberBase10Formatter.ts"
+      "default": "./esm/Formatting/NumberBase10Format/NumberBase10Formatter.ts"
     },
     "./CVNumberBase10Parser": {
-      "default": "./esm/formatting/number-base10-format/NumberBase10Parser.ts"
+      "default": "./esm/Formatting/NumberBase10Format/NumberBase10Parser.ts"
     },
     "./CVRounder": {
-      "default": "./esm/rounding/Rounder.ts"
+      "default": "./esm/Rounding/Rounder.ts"
     },
     "./CVRounderParams": {
-      "default": "./esm/rounding/RounderParams.ts"
+      "default": "./esm/Rounding/RounderParams.ts"
     },
     "./CVRoundingOption": {
-      "default": "./esm/rounding/rounding-option/index.ts"
+      "default": "./esm/Rounding/RoundingOption/RoundingOption.ts"
     },
     "./CVRoundingOptionCorrecter": {
-      "default": "./esm/internal/rounding/rounding-option/RoundingOptionCorrecter.ts"
+      "default": "./esm/internal/Rounding/RoundingOption/RoundingOptionCorrecter.ts"
     },
     "./CVSchema": {
-      "default": "./esm/formatting/Schema.ts"
+      "default": "./esm/Formatting/Schema.ts"
     },
     "./CVScientificNotationMantissaAdjuster": {
-      "default": "./esm/internal/formatting/number-base10-format/number-base10-format-scientific-notation-option/ScientificNotationMantissaAdjuster.ts"
+      "default": "./esm/internal/Formatting/NumberBase10Format/NumberBase10FormatScientificNotationOption/ScientificNotationMantissaAdjuster.ts"
     },
     "./CVScientificNotationMantissaValidator": {
-      "default": "./esm/internal/formatting/number-base10-format/number-base10-format-scientific-notation-option/ScientificNotationMantissaValidator.ts"
+      "default": "./esm/internal/Formatting/NumberBase10Format/NumberBase10FormatScientificNotationOption/ScientificNotationMantissaValidator.ts"
     },
     "./CVScientificNotationParser": {
-      "default": "./esm/internal/formatting/number-base10-format/number-base10-format-scientific-notation-option/ScientificNotationParser.ts"
+      "default": "./esm/internal/Formatting/NumberBase10Format/NumberBase10FormatScientificNotationOption/ScientificNotationParser.ts"
     },
     "./CVSignFormatter": {
-      "default": "./esm/internal/formatting/number-base10-format/number-base10-format-sign-display-option/SignFormatter.ts"
+      "default": "./esm/internal/Formatting/NumberBase10Format/NumberBase10FormatSignDisplayOption/SignFormatter.ts"
     },
     "./CVSignParser": {
-      "default": "./esm/internal/formatting/number-base10-format/number-base10-format-sign-display-option/SignParser.ts"
+      "default": "./esm/internal/Formatting/NumberBase10Format/NumberBase10FormatSignDisplayOption/SignParser.ts"
     },
     "./CVSignString": {
-      "default": "./esm/internal/formatting/number-base10-format/number-base10-format-sign-display-option/SignString.ts"
+      "default": "./esm/internal/Formatting/NumberBase10Format/NumberBase10FormatSignDisplayOption/SignString.ts"
     },
     "./CVSignValue": {
-      "default": "./esm/internal/formatting/number-base10-format/number-base10-format-sign-display-option/SignValue.ts"
+      "default": "./esm/internal/Formatting/NumberBase10Format/NumberBase10FormatSignDisplayOption/SignValue.ts"
     },
     "./CVTemplate": {
-      "default": "./esm/formatting/template/index.ts"
+      "default": "./esm/Formatting/Template/Template.ts"
     },
     "./CVTemplateFormatter": {
-      "default": "./esm/formatting/template/TemplateFormatter.ts"
+      "default": "./esm/Formatting/Template/TemplateFormatter.ts"
     },
     "./CVTemplateParser": {
-      "default": "./esm/formatting/template/TemplateParser.ts"
+      "default": "./esm/Formatting/Template/TemplateParser.ts"
     },
     "./CVTemplatePart": {
-      "default": "./esm/formatting/template/TemplatePart/index.ts"
+      "default": "./esm/Formatting/Template/TemplatePart/TemplatePart.ts"
     },
     "./CVTemplateParts": {
-      "default": "./esm/internal/formatting/template/TemplateParts.ts"
+      "default": "./esm/internal/Formatting/Template/TemplateParts.ts"
     },
     "./CVTemplatePlaceholder": {
-      "default": "./esm/formatting/template/TemplatePart/template-placeholder/index.ts"
-    },
-    "./CVTemplatePlaceholderFormatter": {
-      "default": "./esm/formatting/template/TemplatePart/template-placeholder/TemplatePlaceholderFormatter.ts"
-    },
-    "./CVTemplatePlaceholderParser": {
-      "default": "./esm/formatting/template/TemplatePart/template-placeholder/TemplatePlaceholderParser.ts"
+      "default": "./esm/Formatting/Template/TemplatePart/TemplatePlaceholder/TemplatePlaceholder.ts"
     },
     "./CVTemplateSeparator": {
-      "default": "./esm/formatting/template/TemplatePart/template-separator/index.ts"
+      "default": "./esm/Formatting/Template/TemplatePart/TemplateSeparator/TemplateSeparator.ts"
     },
     "./CVTemplateSeparatorParser": {
-      "default": "./esm/internal/formatting/template/TemplatePart/template-separator/TemplateSeparatorParser.ts"
+      "default": "./esm/internal/Formatting/Template/TemplatePart/TemplateSeparator/TemplateSeparatorParser.ts"
     },
     "./CVTime": {
-      "default": "./esm/internal/date-time/Time.ts"
+      "default": "./esm/internal/DateTime/Time.ts"
     },
     "./CVWeekDayNames": {
-      "default": "./esm/formatting/date-time-format/date-time-format-context/WeekDayNames.ts"
+      "default": "./esm/Formatting/DateTimeFormat/DateTimeFormatContext/WeekDayNames.ts"
     },
     "./CVZoneOffsetParts": {
-      "default": "./esm/internal/date-time/ZoneOffsetParts.ts"
+      "default": "./esm/internal/DateTime/ZoneOffsetParts.ts"
     }
   },
   "module": "./esm/index.ts",

@@ -73,6 +73,9 @@
     "./PPByPassers": {
       "default": "./esm/internal/parameters/ByPassers.ts"
     },
+    "./PPIndex": {
+      "default": "./esm/parameters/index.ts"
+    },
     "./PPMark": {
       "default": "./esm/parameters/Mark.ts"
     },
@@ -90,9 +93,6 @@
     },
     "./PPNonPrimitiveParameters": {
       "default": "./esm/parameters/NonPrimitiveParameters.ts"
-    },
-    "./PPParameters": {
-      "default": "./esm/parameters/index.ts"
     },
     "./PPPrimitiveFormatter": {
       "default": "./esm/parameters/PrimitiveFormatter.ts"

@@ -14,16 +14,16 @@ import * as Either from 'effect/Either';
 import * as Function from 'effect/Function';
 import * as Option from 'effect/Option';
 import * as Record from 'effect/Record';
-import * as CVTemplateParts from '../../internal/formatting/template/TemplateParts.js';
-import * as CVTemplate from './index.js';
-import * as CVTemplatePart from './TemplatePart/index.js';
+import * as CVTemplateParts from '../../internal/Formatting/Template/TemplateParts.js';
+import * as CVTemplate from './Template.js';
+import * as CVTemplatePart from './TemplatePart/TemplatePart.js';
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/conversions/formatting/template/TemplateFormatter/';
+export const moduleTag = '@parischap/conversions/Formatting/Template/TemplateFormatter/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 

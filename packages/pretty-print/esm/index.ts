@@ -1,10 +1,10 @@
 export * as PPByPasser from './parameters/ByPasser.js';
 export * as PPByPasserAction from './parameters/ByPasserAction.js';
+export * as PPIndex from './parameters/index.js';
 export * as PPMark from './parameters/Mark.js';
 export * as PPMarkMap from './parameters/MarkMap.js';
 export * as PPNonPrimitiveFormatter from './parameters/NonPrimitiveFormatter.js';
 export * as PPNonPrimitiveParameters from './parameters/NonPrimitiveParameters.js';
-export * as PPParameters from './parameters/index.js';
 export * as PPPrimitiveFormatter from './parameters/PrimitiveFormatter.js';
 export * as PPPropertyFilter from './parameters/PropertyFilter.js';
 export * as PPPropertyFilters from './parameters/PropertyFilters.js';

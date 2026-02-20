@@ -13,7 +13,7 @@ import * as CVSchema from '@parischap/conversions/CVSchema';
 import * as CVSemVer from '@parischap/conversions/CVSemVer';
 import { pipe } from 'effect';
 import * as BigDecimal from 'effect/BigDecimal';
-import * as DateTime from 'effect/DateTime';
+import * as DateTime from 'effect/DateTime/';
 import * as Schema from 'effect/Schema';
 import { describe, it } from 'vitest';
 

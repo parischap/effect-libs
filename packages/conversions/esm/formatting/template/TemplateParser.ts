@@ -17,17 +17,17 @@ import * as Function from 'effect/Function';
 import * as Option from 'effect/Option';
 import * as Record from 'effect/Record';
 import * as Tuple from 'effect/Tuple';
-import * as CVTemplateSeparatorParser from '../../internal/formatting/template/TemplatePart/template-separator/TemplateSeparatorParser.js';
-import * as CVTemplateParts from '../../internal/formatting/template/TemplateParts.js';
-import * as CVTemplate from './index.js';
-import * as CVTemplatePart from './TemplatePart/index.js';
+import * as CVTemplateSeparatorParser from '../../internal/Formatting/Template/TemplatePart/TemplateSeparator/TemplateSeparatorParser.js';
+import * as CVTemplateParts from '../../internal/Formatting/Template/TemplateParts.js';
+import * as CVTemplate from './Template.js';
+import * as CVTemplatePart from './TemplatePart/TemplatePart.js';
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/conversions/formatting/template/TemplateParser/';
+export const moduleTag = '@parischap/conversions/Formatting/Template/TemplateParser/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 

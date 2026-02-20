@@ -1,21 +1,21 @@
 /** This module implements a CVRounderParams, i.e. an object from which a CVRounder can be built */
 
-import * as MData from '@parischap/effect-lib/MData'
-import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality'
-import * as MString from '@parischap/effect-lib/MString'
-import * as MTypes from '@parischap/effect-lib/MTypes'
-import * as Equivalence from 'effect/Equivalence'
-import * as Hash from 'effect/Hash'
-import * as Predicate from 'effect/Predicate'
-import * as Struct from 'effect/Struct'
-import * as CVRoundingOption from './rounding-option/index.js';
+import * as MData from '@parischap/effect-lib/MData';
+import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality';
+import * as MString from '@parischap/effect-lib/MString';
+import * as MTypes from '@parischap/effect-lib/MTypes';
+import * as Equivalence from 'effect/Equivalence';
+import * as Hash from 'effect/Hash';
+import * as Predicate from 'effect/Predicate';
+import * as Struct from 'effect/Struct';
+import * as CVRoundingOption from './RoundingOption/RoundingOption.js';
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/conversions/rounding/RounderParams/';
+export const moduleTag = '@parischap/conversions/Rounding/RounderParams/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
