@@ -5,30 +5,11 @@
  */
 
 import * as MData from '@parischap/effect-lib/MData';
-import * as MInputError from '@parischap/effect-lib/MInputError';
-import * as MMatch from '@parischap/effect-lib/MMatch';
-import * as MString from '@parischap/effect-lib/MString';
 import * as MTypes from '@parischap/effect-lib/MTypes';
-import { flow, pipe } from 'effect';
-import * as Array from 'effect/Array';
-import * as Either from 'effect/Either';
-import * as Function from 'effect/Function';
-import * as HashMap from 'effect/HashMap';
-import * as Option from 'effect/Option';
-import * as Record from 'effect/Record';
-import * as Tuple from 'effect/Tuple';
-import * as CVDateTime from '../../DateTime/DateTime.js';
-import * as CVDateTimeParts from '../../DateTime/DateTimeParts.js';
+import { Array, pipe } from 'effect';
 import * as CVDateTimeFormatParts from '../../internal/Formatting/DateTimeFormat/DateTimeFormatParts.js';
-import * as CVDateTimePartName from '../../internal/Formatting/DateTimeFormat/DateTimePartName.js';
-import * as CVTemplate from '../Template/Template.js';
-import * as CVTemplatePart from '../Template/TemplatePart/TemplatePart.js';
-import * as CVTemplatePlaceholder from '../Template/TemplatePart/TemplatePlaceholder/TemplatePlaceholder.js';
-import * as CVTemplateSeparator from '../Template/TemplatePart/TemplateSeparator/TemplateSeparator.js';
-import * as CVDateTimeFormatContext from './DateTimeFormatContext/DateTimeFormatContext.js';
-import * as CVDateTimeFormatPart from './DateTimeFormatPart/DateTimeFormatPart.js';
 import * as CVDateTimeFormatPartPlaceholder from './DateTimeFormatPart/DateTimeFormatPlaceholder.js';
-import * as CVDateTimeFormatToken from './DateTimeFormatToken.js';
+import * as CVDateTimeFormatPartSeparator from './DateTimeFormatPart/DateTimeFormatSeparator.js';
 
 /**
  * Module tag
@@ -48,8 +29,8 @@ export class Type extends MData.Class {
   // Name of this CVDateTimeFormat
   readonly name: string;
 
-  // Template that will be used tp format/parse `self`
-  readonly template: CVTemplate.Type<Record<CVDateTimePartName.Type, number>>;
+  /** The CVDateTimeFormatPart's that make up this CVDateTimeFormat */
+  readonly parts: CVDateTimeFormatParts.Type;
 
   /** Returns the `id` of `this` */
   [MData.idSymbol](): string | (() => string) {
@@ -59,58 +40,21 @@ export class Type extends MData.Class {
   }
 
   /** Class constructor */
-  private constructor({ name, template }: MTypes.Data<Type>) {
+  private constructor({ name, parts }: MTypes.Data<Type>) {
     super();
     this.name = name;
-    this.template = template;
+    this.parts = parts;
   }
 
   /** Static constructor */
-  static make({
-    context,
-    parts,
-  }: {
-    readonly context: CVDateTimeFormatContext.Type;
-    readonly parts: CVDateTimeFormatParts.Type;
-  }): Type {
-    const getter = (
-      name: CVDateTimeFormatToken.Type,
-    ): CVTemplatePlaceholder.Type<CVDateTimePartName.Type, number> =>
-      pipe(
-        context.tokenMap,
-        HashMap.get(name),
-        Option.getOrThrowWith(
-          () => new Error(`Abnormal error: no TemplatePart was defined with name '${name}'`),
-        ),
-      );
-
-    const template: CVTemplate.Type<Record<CVDateTimePartName.Type, number>> = pipe(
-      parts,
-      Array.map(
-        flow(
-          MMatch.make,
-          MMatch.when(
-            CVDateTimeFormatPart.isPlaceholder,
-            flow(CVDateTimeFormatPartPlaceholder.name, getter),
-          ),
-          MMatch.when(CVDateTimeFormatPart.isSeparator, ({ value }) =>
-            CVTemplateSeparator.make(value),
-          ),
-          MMatch.exhaustive,
-        ),
-      ),
-      Function.tupled(CVTemplate.make) as never,
-    );
-
+  static make(parts: CVDateTimeFormatParts.Type): Type {
     return new Type({
       name: pipe(
         parts,
         Array.map((p) => p.toString()),
         Array.join(''),
-        MString.prepend("'"),
-        MString.append(`' in '${context.name}' context`),
       ),
-      template: template,
+      parts,
     });
   }
 
@@ -121,157 +65,139 @@ export class Type extends MData.Class {
 }
 
 /**
- * Builds a DateTimeFormat from a CVDateTimeFormatContext `context` and an array of
- * CVDateTimeFormatPart's `parts`
+ * Constructor
  *
  * @category Constructors
  */
-export const make = (params: {
-  readonly context: CVDateTimeFormatContext.Type;
-  readonly parts: CVDateTimeFormatParts.Type;
-}): Type => Type.make(params);
+export const make = (...parts: CVDateTimeFormatParts.Type): Type => Type.make(parts);
 
-/**
- * Returns a function that parses a text into a CVDateTime according to 'self'. See
- * CVDateTime.fromParts for more information on default values and errors.
- *
- * @category Parsing
- */
+/** basicIso8601 CVDateTimeFormat instance */
+export const basicIso8601 = make(
+  CVDateTimeFormatPartPlaceholder.make('yyyy'),
+  CVDateTimeFormatPartPlaceholder.make('MM'),
+  CVDateTimeFormatPartPlaceholder.make('dd'),
+);
 
-export const toParser = (
-  self: Type,
-): MTypes.OneArgFunction<string, Either.Either<CVDateTime.Type, MInputError.Type>> => {
-  return flow(
-    CVTemplate.toParser(self.template),
-    Either.flatMap((o) => CVDateTime.fromParts(o as CVDateTimeParts.Type)),
-  );
-};
+/** iso8601 CVDateTimeFormat instance */
+export const iso8601 = make(
+  CVDateTimeFormatPartPlaceholder.make('yyyy'),
+  CVDateTimeFormatPartSeparator.hyphen,
+  CVDateTimeFormatPartPlaceholder.make('MM'),
+  CVDateTimeFormatPartSeparator.hyphen,
+  CVDateTimeFormatPartPlaceholder.make('dd'),
+);
 
-/**
- * Same as toParser but the returned parser returns directly a CVDateTime or throws in case of
- * failure
- *
- * @category Parsing
- */
-export const toThrowingParser: MTypes.OneArgFunction<
-  Type,
-  MTypes.OneArgFunction<string, CVDateTime.Type>
-> = flow(toParser, Function.compose(Either.getOrThrowWith(Function.identity)));
+/** usDate CVDateTimeFormat instance (e.g. 06/05/2005) */
+export const usDate = make(
+  CVDateTimeFormatPartPlaceholder.make('MM'),
+  CVDateTimeFormatPartSeparator.slash,
+  CVDateTimeFormatPartPlaceholder.make('dd'),
+  CVDateTimeFormatPartSeparator.slash,
+  CVDateTimeFormatPartPlaceholder.make('yyyy'),
+);
 
-/**
- * Returns a function that formats a DateTime according to 'self'.
- *
- * @category Formatting
- */
+/** euDate CVDateTimeFormat instance (e.g. 05/06/2005) */
+export const euDate = make(
+  CVDateTimeFormatPartPlaceholder.make('dd'),
+  CVDateTimeFormatPartSeparator.slash,
+  CVDateTimeFormatPartPlaceholder.make('MM'),
+  CVDateTimeFormatPartSeparator.slash,
+  CVDateTimeFormatPartPlaceholder.make('yyyy'),
+);
 
-export const toFormatter = (
-  self: Type,
-): MTypes.OneArgFunction<CVDateTime.Type, Either.Either<string, MInputError.Type>> => {
-  const toParts: Record.ReadonlyRecord<
-    string,
-    MTypes.OneArgFunction<CVDateTime.Type, number>
-  > = pipe(
-    self.template.templateParts,
-    Array.filterMap(
-      flow(
-        MMatch.make,
-        MMatch.when(CVTemplatePart.isSeparator, () => Option.none()),
-        MMatch.when(
-          CVTemplatePart.isPlaceholder,
-          flow(
-            CVTemplatePlaceholder.name,
-            MMatch.make,
-            flow(
-              MMatch.whenIs(
-                'year',
-                flow(Tuple.make, Tuple.appendElement(CVDateTime.getYear), Option.some),
-              ),
-              MMatch.whenIs(
-                'ordinalDay',
-                flow(Tuple.make, Tuple.appendElement(CVDateTime.getOrdinalDay), Option.some),
-              ),
-              MMatch.whenIs(
-                'month',
-                flow(Tuple.make, Tuple.appendElement(CVDateTime.getMonth), Option.some),
-              ),
-              MMatch.whenIs(
-                'monthDay',
-                flow(Tuple.make, Tuple.appendElement(CVDateTime.getMonthDay), Option.some),
-              ),
-              MMatch.whenIs(
-                'isoYear',
-                flow(Tuple.make, Tuple.appendElement(CVDateTime.getIsoYear), Option.some),
-              ),
-              MMatch.whenIs(
-                'isoWeek',
-                flow(Tuple.make, Tuple.appendElement(CVDateTime.getIsoWeek), Option.some),
-              ),
-              MMatch.whenIs(
-                'weekday',
-                flow(Tuple.make, Tuple.appendElement(CVDateTime.getWeekday), Option.some),
-              ),
-              MMatch.whenIs(
-                'hour23',
-                flow(Tuple.make, Tuple.appendElement(CVDateTime.getHour23), Option.some),
-              ),
-              MMatch.whenIs(
-                'hour11',
-                flow(Tuple.make, Tuple.appendElement(CVDateTime.getHour11), Option.some),
-              ),
-            ),
-            flow(
-              MMatch.whenIs(
-                'meridiem',
-                flow(Tuple.make, Tuple.appendElement(CVDateTime.getMeridiem), Option.some),
-              ),
-              MMatch.whenIs(
-                'minute',
-                flow(Tuple.make, Tuple.appendElement(CVDateTime.getMinute), Option.some),
-              ),
-              MMatch.whenIs(
-                'second',
-                flow(Tuple.make, Tuple.appendElement(CVDateTime.getSecond), Option.some),
-              ),
-              MMatch.whenIs(
-                'millisecond',
-                flow(Tuple.make, Tuple.appendElement(CVDateTime.getMillisecond), Option.some),
-              ),
-              MMatch.whenIs(
-                'zoneHour',
-                flow(Tuple.make, Tuple.appendElement(CVDateTime.getZoneHour), Option.some),
-              ),
-              MMatch.whenIs(
-                'zoneMinute',
-                flow(Tuple.make, Tuple.appendElement(CVDateTime.getZoneMinute), Option.some),
-              ),
-              MMatch.whenIs(
-                'zoneSecond',
-                flow(Tuple.make, Tuple.appendElement(CVDateTime.getZoneSecond), Option.some),
-              ),
-            ),
-            MMatch.orElse(() => Option.none()),
-          ),
-        ),
-        MMatch.exhaustive,
-      ) as MTypes.OneArgFunction<
-        CVTemplatePart.Type<string, number>,
-        Option.Option<readonly [string, MTypes.OneArgFunction<CVDateTime.Type, number>]>
-      >,
-    ),
-    Record.fromEntries,
-  );
-  const formatter = CVTemplate.toFormatter(self.template);
+/** euDotDate CVDateTimeFormat instance (e.g. 05.06.2005) */
+export const euDotDate = make(
+  CVDateTimeFormatPartPlaceholder.make('dd'),
+  CVDateTimeFormatPartSeparator.dot,
+  CVDateTimeFormatPartPlaceholder.make('MM'),
+  CVDateTimeFormatPartSeparator.dot,
+  CVDateTimeFormatPartPlaceholder.make('yyyy'),
+);
 
-  return (d) => pipe(toParts, Record.map(Function.apply(d)), formatter);
-};
+/** isoDateTime CVDateTimeFormat instance (e.g. 2005-06-05T14:05:05) */
+export const isoDateTime = make(
+  CVDateTimeFormatPartPlaceholder.make('yyyy'),
+  CVDateTimeFormatPartSeparator.hyphen,
+  CVDateTimeFormatPartPlaceholder.make('MM'),
+  CVDateTimeFormatPartSeparator.hyphen,
+  CVDateTimeFormatPartPlaceholder.make('dd'),
+  CVDateTimeFormatPartSeparator.make('T'),
+  CVDateTimeFormatPartPlaceholder.make('HH'),
+  CVDateTimeFormatPartSeparator.colon,
+  CVDateTimeFormatPartPlaceholder.make('mm'),
+  CVDateTimeFormatPartSeparator.colon,
+  CVDateTimeFormatPartPlaceholder.make('ss'),
+);
 
-/**
- * Same as toFormatter but the returned formatter returns directly a string or throws in case of
- * error
- *
- * @category Formatting
- */
-export const toThrowingFormatter: MTypes.OneArgFunction<
-  Type,
-  MTypes.OneArgFunction<CVDateTime.Type, string>
-> = flow(toFormatter, Function.compose(Either.getOrThrowWith(Function.identity)));
+/** isoDateTimeMs CVDateTimeFormat instance (e.g. 2005-06-05T14:05:05.007) */
+export const isoDateTimeMs = make(
+  CVDateTimeFormatPartPlaceholder.make('yyyy'),
+  CVDateTimeFormatPartSeparator.hyphen,
+  CVDateTimeFormatPartPlaceholder.make('MM'),
+  CVDateTimeFormatPartSeparator.hyphen,
+  CVDateTimeFormatPartPlaceholder.make('dd'),
+  CVDateTimeFormatPartSeparator.make('T'),
+  CVDateTimeFormatPartPlaceholder.make('HH'),
+  CVDateTimeFormatPartSeparator.colon,
+  CVDateTimeFormatPartPlaceholder.make('mm'),
+  CVDateTimeFormatPartSeparator.colon,
+  CVDateTimeFormatPartPlaceholder.make('ss'),
+  CVDateTimeFormatPartSeparator.dot,
+  CVDateTimeFormatPartPlaceholder.make('SSS'),
+);
+
+/** time24h CVDateTimeFormat instance (e.g. 14:05) */
+export const time24h = make(
+  CVDateTimeFormatPartPlaceholder.make('HH'),
+  CVDateTimeFormatPartSeparator.colon,
+  CVDateTimeFormatPartPlaceholder.make('mm'),
+);
+
+/** time24hWithSeconds CVDateTimeFormat instance (e.g. 14:05:05) */
+export const time24hWithSeconds = make(
+  CVDateTimeFormatPartPlaceholder.make('HH'),
+  CVDateTimeFormatPartSeparator.colon,
+  CVDateTimeFormatPartPlaceholder.make('mm'),
+  CVDateTimeFormatPartSeparator.colon,
+  CVDateTimeFormatPartPlaceholder.make('ss'),
+);
+
+/** time12h CVDateTimeFormat instance (e.g. 02:05 PM) */
+export const time12h = make(
+  CVDateTimeFormatPartPlaceholder.make('KK'),
+  CVDateTimeFormatPartSeparator.colon,
+  CVDateTimeFormatPartPlaceholder.make('mm'),
+  CVDateTimeFormatPartSeparator.space,
+  CVDateTimeFormatPartPlaceholder.make('a'),
+);
+
+/** time12hWithSeconds CVDateTimeFormat instance (e.g. 02:05:05 PM) */
+export const time12hWithSeconds = make(
+  CVDateTimeFormatPartPlaceholder.make('KK'),
+  CVDateTimeFormatPartSeparator.colon,
+  CVDateTimeFormatPartPlaceholder.make('mm'),
+  CVDateTimeFormatPartSeparator.colon,
+  CVDateTimeFormatPartPlaceholder.make('ss'),
+  CVDateTimeFormatPartSeparator.space,
+  CVDateTimeFormatPartPlaceholder.make('a'),
+);
+
+/** longDate CVDateTimeFormat instance (e.g. June 5, 2005) */
+export const longDate = make(
+  CVDateTimeFormatPartPlaceholder.make('MMMM'),
+  CVDateTimeFormatPartSeparator.space,
+  CVDateTimeFormatPartPlaceholder.make('d'),
+  CVDateTimeFormatPartSeparator.comma,
+  CVDateTimeFormatPartSeparator.space,
+  CVDateTimeFormatPartPlaceholder.make('yyyy'),
+);
+
+/** shortDate CVDateTimeFormat instance (e.g. Jun 5, 2005) */
+export const shortDate = make(
+  CVDateTimeFormatPartPlaceholder.make('MMM'),
+  CVDateTimeFormatPartSeparator.space,
+  CVDateTimeFormatPartPlaceholder.make('d'),
+  CVDateTimeFormatPartSeparator.comma,
+  CVDateTimeFormatPartSeparator.space,
+  CVDateTimeFormatPartPlaceholder.make('yyyy'),
+);

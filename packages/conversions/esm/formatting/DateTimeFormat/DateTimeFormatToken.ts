@@ -1,6 +1,7 @@
 /**
- * This module implements a type that represents all the possible tokens that can be used to format
- * a `CVDateTime`
+ * This module implements a type that represents unicode tokens (see
+ * https://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table) that can be used to
+ * format a `CVDateTime`
  */
 
 /**

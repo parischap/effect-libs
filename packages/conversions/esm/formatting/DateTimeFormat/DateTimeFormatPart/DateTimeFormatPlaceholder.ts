@@ -16,7 +16,7 @@ import * as CVDateTimeFormatToken from '../DateTimeFormatToken.js';
  * @category Module markers
  */
 export const moduleTag =
-  '@parischap/conversions/Formatting/DateTimeFormat/DateTime/FormatPart/DateTime/FormatPlaceholder/';
+  '@parischap/conversions/Formatting/DateTimeFormat/DateTimeFormatPart/DateTimeFormatPlaceholder/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 

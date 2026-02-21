@@ -14,7 +14,7 @@ import * as CVTemplateSeparator from '../../../Formatting/Template/TemplatePart/
  *
  * @category Models
  */
-export interface Type<in out T = any> extends ReadonlyArray<CVTemplatePart.Type<string, T>> {}
+export interface Type extends ReadonlyArray<CVTemplatePart.Type<string, any>> {}
 
 export type ToPlaceHolderTypes<PS> =
   PS extends Type ?
