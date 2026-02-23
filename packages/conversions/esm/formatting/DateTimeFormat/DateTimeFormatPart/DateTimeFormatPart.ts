@@ -45,18 +45,18 @@ export const isSeparator = (u: Type): u is CVDateTimeFormatSeparator.Type =>
 export const toTemplatePart = (
   context: CVDateTimeFormatContext.Type,
 ): MTypes.OneArgFunction<Type, CVTemplatePart.Type<string, any>> => {
-  const getter = (name: CVDateTimeFormatToken.Type): CVTemplatePlaceholder.Type<string, number> =>
+  const getter = (token: CVDateTimeFormatToken.Type): CVTemplatePlaceholder.Type<string, number> =>
     pipe(
       context.tokenMap,
-      HashMap.get(name),
+      HashMap.get(token),
       Option.getOrThrowWith(
-        () => new Error(`Abnormal error: no TemplatePart was defined with name '${name}'`),
+        () => new Error(`Abnormal error: no TemplatePart was defined for token '${token}'`),
       ),
     );
 
   return flow(
     MMatch.make,
-    MMatch.when(isPlaceholder, flow(CVDateTimeFormatPlaceholder.name, getter)),
+    MMatch.when(isPlaceholder, flow(CVDateTimeFormatPlaceholder.token, getter)),
     MMatch.when(isSeparator, ({ value }) => CVTemplateSeparator.make(value)),
     MMatch.exhaustive,
   );

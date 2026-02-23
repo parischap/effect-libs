@@ -27,19 +27,19 @@ type _TypeId = typeof _TypeId;
  */
 export class Type extends MData.Class {
   /** Name of this Placeholder */
-  readonly name: CVDateTimeFormatToken.Type;
+  readonly token: CVDateTimeFormatToken.Type;
 
   /** Returns the `id` of `this` */
   [MData.idSymbol](): string | (() => string) {
     return function idSymbol(this: Type) {
-      return this.name;
+      return this.token;
     };
   }
 
   /** Class constructor */
-  private constructor({ name }: MTypes.Data<Type>) {
+  private constructor({ token }: MTypes.Data<Type>) {
     super();
-    this.name = name;
+    this.token = token;
   }
 
   /** Static constructor */
@@ -58,11 +58,11 @@ export class Type extends MData.Class {
  *
  * @category Constructors
  */
-export const make = (name: CVDateTimeFormatToken.Type): Type => Type.make({ name });
+export const make = (token: CVDateTimeFormatToken.Type): Type => Type.make({ token });
 
 /**
- * Returns the `name` property of `self`
+ * Returns the `token` property of `self`
  *
  * @category Destructors
  */
-export const name: MTypes.OneArgFunction<Type, CVDateTimeFormatToken.Type> = Struct.get('name');
+export const token: MTypes.OneArgFunction<Type, CVDateTimeFormatToken.Type> = Struct.get('token');

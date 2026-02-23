@@ -95,7 +95,13 @@ export const make = (params: {
   readonly context: CVDateTimeFormatContext.Type;
 }): Type => Type.make(params);
 
+/**
+ * Returns the `parser` property of `self`
+ *
+ * @category Destructors
+ */
 export const parser: MTypes.OneArgFunction<Type, Parser> = Struct.get('parser');
+
 /**
  * Parses a text into a CVDateTime. See CVDateTime.fromParts for more information on default values
  * and errors.
@@ -106,8 +112,7 @@ export const parser: MTypes.OneArgFunction<Type, Parser> = Struct.get('parser');
 export const parse: MTypes.OneArgFunction<Type, Parser> = parser;
 
 /**
- * Same as toParser but the returned parser returns directly a CVDateTime or throws in case of
- * failure
+ * Same as parser but throws in case of failure
  *
  * @category Parsing
  */

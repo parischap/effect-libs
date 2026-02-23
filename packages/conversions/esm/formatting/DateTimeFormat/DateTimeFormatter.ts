@@ -3,11 +3,12 @@
  * a string according to the passed CVDateTimeFormat.
  */
 
+import { MMatch } from '@parischap/effect-lib';
 import * as MData from '@parischap/effect-lib/MData';
 import * as MInputError from '@parischap/effect-lib/MInputError';
 import * as MString from '@parischap/effect-lib/MString';
 import * as MTypes from '@parischap/effect-lib/MTypes';
-import { flow, Option, pipe, Struct, Tuple } from 'effect';
+import { Array, flow, Option, pipe, Struct, Tuple } from 'effect';
 import * as Either from 'effect/Either';
 import * as Function from 'effect/Function';
 import * as Record from 'effect/Record';
@@ -15,11 +16,13 @@ import * as CVDateTime from '../../DateTime/DateTime.js';
 import * as CVDateTimeFormatParts from '../../internal/Formatting/DateTimeFormat/DateTimeFormatParts.js';
 import * as CVDateTimePartName from '../../internal/Formatting/DateTimeFormat/DateTimePartName.js';
 import * as CVTemplateFormatter from '../Template/TemplateFormatter.js';
+import * as CVTemplatePart from '../Template/TemplatePart/TemplatePart.js';
+import * as CVTemplatePlaceholder from '../Template/TemplatePart/TemplatePlaceholder/TemplatePlaceholder.js';
 import * as CVDateTimeFormat from './DateTimeFormat.js';
 import * as CVDateTimeFormatContext from './DateTimeFormatContext/DateTimeFormatContext.js';
 
 /**
- * Module tag
+ * Module tags
  *
  * @category Module markers
  */
@@ -72,8 +75,14 @@ export class Type extends MData.Class {
         MTypes.Pair<CVDateTimePartName.Type, MTypes.OneArgFunction<CVDateTime.Type, number>>
       >
     > => flow(Tuple.make, Tuple.appendElement(f), Option.some);
+
+    const templateParts = pipe(
+      dateTimeFormat.parts,
+      CVDateTimeFormatParts.toTemplateParts(context),
+    );
+
     const toParts = pipe(
-      self.template.templateParts,
+      templateParts,
       Array.filterMap(
         flow(
           MMatch.make,
@@ -118,12 +127,16 @@ export class Type extends MData.Class {
         MString.prepend("'"),
         MString.append(`' parser in '${context.name}' context`),
       ),
-      formatter: pipe(
-        dateTimeFormat.parts,
-        CVDateTimeFormatParts.toTemplateParts(context),
-        Function.tupled(CVTemplateFormatter.fromTemplateParts),
-        CVTemplateFormatter.format,
-      ),
+      formatter: (d) =>
+        pipe(
+          toParts,
+          Record.map(Function.apply(d)),
+          pipe(
+            templateParts,
+            Function.tupled(CVTemplateFormatter.fromTemplateParts),
+            CVTemplateFormatter.format,
+          ),
+        ),
     });
   }
 
@@ -133,7 +146,7 @@ export class Type extends MData.Class {
   }
 }
 
-type TemplateFormatter = Type['formatter'];
+type Formatter = Type['formatter'];
 
 /**
  * Builds a CVDateTimeParser from a CVDateTimeFormat dateTimeFormat and a CVDateTimeFormatContext
@@ -146,28 +159,26 @@ export const make = (params: {
   readonly context: CVDateTimeFormatContext.Type;
 }): Type => Type.make(params);
 
-export const templateFormatter: MTypes.OneArgFunction<Type, TemplateFormatter> =
-  Struct.get('templateFormatter');
-
-export const toFormatter = (
-  self: Type,
-): MTypes.OneArgFunction<CVDateTime.Type, Either.Either<string, MInputError.Type>> => {
-  const formatter = pipe(
-    self.template,
-    CVTemplateFormatter.fromTemplate,
-    CVTemplateFormatter.format,
-  );
-
-  return (d) => pipe(toParts, Record.map(Function.apply(d)), formatter);
-};
+/**
+ * Returns the `formatter` property of `self`
+ *
+ * @category Destructors
+ */
+export const formatter: MTypes.OneArgFunction<Type, Formatter> = Struct.get('formatter');
 
 /**
- * Same as toFormatter but the returned formatter returns directly a string or throws in case of
- * error
+ * Formats a CVDateTime to a string
  *
  * @category Formatting
  */
-export const toThrowingFormatter: MTypes.OneArgFunction<
+export const format: MTypes.OneArgFunction<Type, Formatter> = Struct.get('formatter');
+
+/**
+ * Same as format but throws in case of failure
+ *
+ * @category Formatting
+ */
+export const formatOrThrow: MTypes.OneArgFunction<
   Type,
   MTypes.OneArgFunction<CVDateTime.Type, string>
-> = flow(toFormatter, Function.compose(Either.getOrThrowWith(Function.identity)));
+> = flow(format, Function.compose(Either.getOrThrowWith(Function.identity)));
