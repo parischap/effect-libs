@@ -10,7 +10,6 @@ import * as MTypes from '@parischap/effect-lib/MTypes';
 import { flow, pipe, Struct } from 'effect';
 import * as Either from 'effect/Either';
 import * as Function from 'effect/Function';
-import * as Record from 'effect/Record';
 import * as CVDateTime from '../../DateTime/DateTime.js';
 import * as CVDateTimeParts from '../../DateTime/DateTimeParts.js';
 import * as CVDateTimeFormatParts from '../../internal/Formatting/DateTimeFormat/DateTimeFormatParts.js';
@@ -36,11 +35,8 @@ export class Type extends MData.Class {
   // Name of this CVDateTimeParser
   readonly name: string;
 
-  // CVTemplateParser that will be used to parse a string into a CVDateTime
-  readonly templateParser: MTypes.OneArgFunction<
-    string,
-    Either.Either<Record<string, number>, MInputError.Type>
-  >;
+  // Function that will be used to parse a string into a CVDateTime
+  readonly parser: MTypes.OneArgFunction<string, Either.Either<CVDateTime.Type, MInputError.Type>>;
 
   /** Returns the `id` of `this` */
   [MData.idSymbol](): string | (() => string) {
@@ -50,10 +46,10 @@ export class Type extends MData.Class {
   }
 
   /** Class constructor */
-  private constructor({ name, templateParser }: MTypes.Data<Type>) {
+  private constructor({ name, parser }: MTypes.Data<Type>) {
     super();
     this.name = name;
-    this.templateParser = templateParser;
+    this.parser = parser;
   }
 
   /** Static constructor */
@@ -70,11 +66,12 @@ export class Type extends MData.Class {
         MString.prepend("'"),
         MString.append(`' parser in '${context.name}' context`),
       ),
-      templateParser: pipe(
+      parser: pipe(
         dateTimeFormat.parts,
         CVDateTimeFormatParts.toTemplateParts(context),
         Function.tupled(CVTemplateParser.fromTemplateParts),
         CVTemplateParser.parse,
+        Function.compose(Either.flatMap((o) => CVDateTime.fromParts(o as CVDateTimeParts.Type))),
       ),
     });
   }
@@ -85,7 +82,7 @@ export class Type extends MData.Class {
   }
 }
 
-type TemplateParser = Type['templateParser'];
+type Parser = Type['parser'];
 
 /**
  * Builds a CVDateTimeParser from a CVDateTimeFormat dateTimeFormat and a CVDateTimeFormatContext
@@ -98,8 +95,7 @@ export const make = (params: {
   readonly context: CVDateTimeFormatContext.Type;
 }): Type => Type.make(params);
 
-export const templateParser: MTypes.OneArgFunction<Type, TemplateParser> =
-  Struct.get('templateParser');
+export const parser: MTypes.OneArgFunction<Type, Parser> = Struct.get('parser');
 /**
  * Parses a text into a CVDateTime. See CVDateTime.fromParts for more information on default values
  * and errors.
@@ -107,13 +103,7 @@ export const templateParser: MTypes.OneArgFunction<Type, TemplateParser> =
  * @category Parsing
  */
 
-export const parse: MTypes.OneArgFunction<
-  Type,
-  MTypes.OneArgFunction<string, Either.Either<CVDateTime.Type, MInputError.Type>>
-> = flow(
-  templateParser,
-  Function.compose(Either.flatMap((o) => CVDateTime.fromParts(o as CVDateTimeParts.Type))),
-);
+export const parse: MTypes.OneArgFunction<Type, Parser> = parser;
 
 /**
  * Same as toParser but the returned parser returns directly a CVDateTime or throws in case of

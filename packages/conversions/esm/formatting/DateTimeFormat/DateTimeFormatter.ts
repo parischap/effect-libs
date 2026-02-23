@@ -7,12 +7,13 @@ import * as MData from '@parischap/effect-lib/MData';
 import * as MInputError from '@parischap/effect-lib/MInputError';
 import * as MString from '@parischap/effect-lib/MString';
 import * as MTypes from '@parischap/effect-lib/MTypes';
-import { flow, pipe, Struct } from 'effect';
+import { flow, Option, pipe, Struct, Tuple } from 'effect';
 import * as Either from 'effect/Either';
 import * as Function from 'effect/Function';
 import * as Record from 'effect/Record';
 import * as CVDateTime from '../../DateTime/DateTime.js';
 import * as CVDateTimeFormatParts from '../../internal/Formatting/DateTimeFormat/DateTimeFormatParts.js';
+import * as CVDateTimePartName from '../../internal/Formatting/DateTimeFormat/DateTimePartName.js';
 import * as CVTemplateFormatter from '../Template/TemplateFormatter.js';
 import * as CVDateTimeFormat from './DateTimeFormat.js';
 import * as CVDateTimeFormatContext from './DateTimeFormatContext/DateTimeFormatContext.js';
@@ -35,9 +36,9 @@ export class Type extends MData.Class {
   // Name of this CVDateTimeParser
   readonly name: string;
 
-  // CVTemplateFormatter that will be used to format a CVDateTime into a string
-  readonly templateFormatter: MTypes.OneArgFunction<
-    Record<string, number>,
+  // Function that will be used to format a CVDateTime into a string
+  readonly formatter: MTypes.OneArgFunction<
+    CVDateTime.Type,
     Either.Either<string, MInputError.Type>
   >;
 
@@ -49,10 +50,10 @@ export class Type extends MData.Class {
   }
 
   /** Class constructor */
-  private constructor({ name, templateFormatter }: MTypes.Data<Type>) {
+  private constructor({ name, formatter }: MTypes.Data<Type>) {
     super();
     this.name = name;
-    this.templateFormatter = templateFormatter;
+    this.formatter = formatter;
   }
 
   /** Static constructor */
@@ -63,13 +64,61 @@ export class Type extends MData.Class {
     readonly dateTimeFormat: CVDateTimeFormat.Type;
     readonly context: CVDateTimeFormatContext.Type;
   }): Type {
+    const DateTimePartReader = (
+      f: MTypes.OneArgFunction<CVDateTime.Type, number>,
+    ): MTypes.OneArgFunction<
+      CVDateTimePartName.Type,
+      Option.Option<
+        MTypes.Pair<CVDateTimePartName.Type, MTypes.OneArgFunction<CVDateTime.Type, number>>
+      >
+    > => flow(Tuple.make, Tuple.appendElement(f), Option.some);
+    const toParts = pipe(
+      self.template.templateParts,
+      Array.filterMap(
+        flow(
+          MMatch.make,
+          MMatch.when(CVTemplatePart.isSeparator, () => Option.none()),
+          MMatch.when(
+            CVTemplatePart.isPlaceholder,
+            flow(
+              CVTemplatePlaceholder.name,
+              MMatch.make,
+              flow(
+                MMatch.whenIs('year', DateTimePartReader(CVDateTime.getYear)),
+                MMatch.whenIs('ordinalDay', DateTimePartReader(CVDateTime.getOrdinalDay)),
+                MMatch.whenIs('month', DateTimePartReader(CVDateTime.getMonth)),
+                MMatch.whenIs('monthDay', DateTimePartReader(CVDateTime.getMonthDay)),
+                MMatch.whenIs('isoYear', DateTimePartReader(CVDateTime.getIsoYear)),
+                MMatch.whenIs('isoWeek', DateTimePartReader(CVDateTime.getIsoWeek)),
+                MMatch.whenIs('weekday', DateTimePartReader(CVDateTime.getWeekday)),
+                MMatch.whenIs('hour23', DateTimePartReader(CVDateTime.getHour23)),
+                MMatch.whenIs('hour11', DateTimePartReader(CVDateTime.getHour11)),
+              ),
+              flow(
+                MMatch.whenIs('meridiem', DateTimePartReader(CVDateTime.getMeridiem)),
+                MMatch.whenIs('minute', DateTimePartReader(CVDateTime.getMinute)),
+                MMatch.whenIs('second', DateTimePartReader(CVDateTime.getSecond)),
+                MMatch.whenIs('millisecond', DateTimePartReader(CVDateTime.getMillisecond)),
+                MMatch.whenIs('zoneHour', DateTimePartReader(CVDateTime.getZoneHour)),
+                MMatch.whenIs('zoneMinute', DateTimePartReader(CVDateTime.getZoneMinute)),
+                MMatch.whenIs('zoneSecond', DateTimePartReader(CVDateTime.getZoneSecond)),
+              ),
+              MMatch.orElse(() => Option.none()),
+            ),
+          ),
+          MMatch.exhaustive,
+        ),
+      ),
+      Record.fromEntries,
+    );
+
     return new Type({
       name: pipe(
         dateTimeFormat.name,
         MString.prepend("'"),
         MString.append(`' parser in '${context.name}' context`),
       ),
-      templateFormatter: pipe(
+      formatter: pipe(
         dateTimeFormat.parts,
         CVDateTimeFormatParts.toTemplateParts(context),
         Function.tupled(CVTemplateFormatter.fromTemplateParts),
@@ -84,7 +133,7 @@ export class Type extends MData.Class {
   }
 }
 
-type TemplateFormatter = Type['templateFormatter'];
+type TemplateFormatter = Type['formatter'];
 
 /**
  * Builds a CVDateTimeParser from a CVDateTimeFormat dateTimeFormat and a CVDateTimeFormatContext
@@ -103,53 +152,6 @@ export const templateFormatter: MTypes.OneArgFunction<Type, TemplateFormatter> =
 export const toFormatter = (
   self: Type,
 ): MTypes.OneArgFunction<CVDateTime.Type, Either.Either<string, MInputError.Type>> => {
-  const DateTimePartReader = (
-    f: MTypes.OneArgFunction<CVDateTime.Type, number>,
-  ): MTypes.OneArgFunction<
-    CVDateTimePartName.Type,
-    Option.Option<
-      MTypes.Pair<CVDateTimePartName.Type, MTypes.OneArgFunction<CVDateTime.Type, number>>
-    >
-  > => flow(Tuple.make, Tuple.appendElement(f), Option.some);
-  const toParts = pipe(
-    self.template.templateParts,
-    Array.filterMap(
-      flow(
-        MMatch.make,
-        MMatch.when(CVTemplatePart.isSeparator, () => Option.none()),
-        MMatch.when(
-          CVTemplatePart.isPlaceholder,
-          flow(
-            CVTemplatePlaceholder.name,
-            MMatch.make,
-            flow(
-              MMatch.whenIs('year', DateTimePartReader(CVDateTime.getYear)),
-              MMatch.whenIs('ordinalDay', DateTimePartReader(CVDateTime.getOrdinalDay)),
-              MMatch.whenIs('month', DateTimePartReader(CVDateTime.getMonth)),
-              MMatch.whenIs('monthDay', DateTimePartReader(CVDateTime.getMonthDay)),
-              MMatch.whenIs('isoYear', DateTimePartReader(CVDateTime.getIsoYear)),
-              MMatch.whenIs('isoWeek', DateTimePartReader(CVDateTime.getIsoWeek)),
-              MMatch.whenIs('weekday', DateTimePartReader(CVDateTime.getWeekday)),
-              MMatch.whenIs('hour23', DateTimePartReader(CVDateTime.getHour23)),
-              MMatch.whenIs('hour11', DateTimePartReader(CVDateTime.getHour11)),
-            ),
-            flow(
-              MMatch.whenIs('meridiem', DateTimePartReader(CVDateTime.getMeridiem)),
-              MMatch.whenIs('minute', DateTimePartReader(CVDateTime.getMinute)),
-              MMatch.whenIs('second', DateTimePartReader(CVDateTime.getSecond)),
-              MMatch.whenIs('millisecond', DateTimePartReader(CVDateTime.getMillisecond)),
-              MMatch.whenIs('zoneHour', DateTimePartReader(CVDateTime.getZoneHour)),
-              MMatch.whenIs('zoneMinute', DateTimePartReader(CVDateTime.getZoneMinute)),
-              MMatch.whenIs('zoneSecond', DateTimePartReader(CVDateTime.getZoneSecond)),
-            ),
-            MMatch.orElse(() => Option.none()),
-          ),
-        ),
-        MMatch.exhaustive,
-      ),
-    ),
-    Record.fromEntries,
-  );
   const formatter = pipe(
     self.template,
     CVTemplateFormatter.fromTemplate,
