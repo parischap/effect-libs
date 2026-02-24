@@ -119,7 +119,7 @@ describe('MRecord', () => {
   });
 
   describe('evolve', () => {
-    it('No No overlap', () => {
+    it('No overlap', () => {
       TestUtils.deepStrictEqual(MStruct.evolve({ c: Number.sum(1) })({ a: 0, b: 1 }), {
         a: 0,
         b: 1,

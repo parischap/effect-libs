@@ -81,10 +81,10 @@ export const fromNumber =
   };
 
 /**
- * Searches for the first occurence of `regexp` in `self` and returns an MStringSearchResult. You
- * can optionnally provide the index from which to start searching. 'g' flag needs not be set if you
- * pass a regular expression. As opposed to String.search, regexp special characters need not be
- * escaped when passing a string regexp
+ * Searches for the first occurrence of `regexp` in `self` and returns an MStringSearchResult. You
+ * can optionally provide the index from which to start searching. The 'g' flag does not need to be
+ * set if you pass a regular expression. As opposed to String.search, regexp special characters do
+ * not need to be escaped when passing a string regexp.
  *
  * @category Utils
  */
@@ -114,8 +114,8 @@ export const search =
   };
 
 /**
- * Searches for all occurences of `regexp` in `self` and returns an array of SearchResults. 'g' flag
- * needs not be set if you pass a regular expression.
+ * Searches for all occurrences of `regexp` in `self` and returns an array of SearchResults. The
+ * 'g' flag does not need to be set if you pass a regular expression.
  *
  * @category Utils
  */
@@ -136,8 +136,8 @@ export const searchAll =
     );
 
 /**
- * Searches for the last occurence of `regexp` in `self` and returns an MStringSearchResult. 'g'
- * flag needs not be set if you pass a regular expression.
+ * Searches for the last occurrence of `regexp` in `self` and returns an MStringSearchResult. The
+ * 'g' flag does not need to be set if you pass a regular expression.
  *
  * @category Utils
  */
@@ -555,7 +555,8 @@ export const hasLength =
     self.length === l;
 
 /**
- * Function that removes n chars every m chars starting from the right
+ * Removes `n` characters every `m` characters starting from the right of `self`. `m` and `n` must
+ * be positive integers.
  *
  * @category Utils
  */

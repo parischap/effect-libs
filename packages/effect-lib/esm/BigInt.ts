@@ -69,7 +69,7 @@ export const isZero: Predicate.Predicate<bigint> = (self) => self === 0n;
 export const isEven: Predicate.Predicate<bigint> = (self) => self % 2n === 0n;
 
 /**
- * Returns `true` if `self` is even
+ * Returns `true` if `self` is odd
  *
  * @category Predicates
  */

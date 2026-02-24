@@ -10,10 +10,12 @@ import * as Tuple from 'effect/Tuple'
 import { describe, it } from 'vitest';
 
 describe('MCache', () => {
-  TestUtils.assertEquals(
-    Option.some(MCache.moduleTag),
-    TestUtils.moduleTagFromTestFilePath(import.meta.filename),
-  );
+  it('moduleTag', () => {
+    TestUtils.assertEquals(
+      Option.some(MCache.moduleTag),
+      TestUtils.moduleTagFromTestFilePath(import.meta.filename),
+    );
+  });
 
   describe('Non-recursive cache with unbounded capacity and no TTL', () => {
     const testCache = MCache.make({

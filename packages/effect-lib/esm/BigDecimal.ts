@@ -15,7 +15,8 @@ const _tupledMake = Function.tupled<readonly [value: bigint, scale: number], Big
 );
 
 /**
- * Function that creates a Bigdecimal from a scale and a primitive representing a bigint
+ * Creates a BigDecimal from a scale and a primitive value convertible to a bigint. Returns a `left`
+ * if the conversion fails.
  *
  * @category Constructors
  */
@@ -31,8 +32,8 @@ export const fromPrimitive = (
   );
 
 /**
- * Function that creates an Option of a Bigdecimal from a scale and a primitive representing a
- * bigint
+ * Creates an Option of a BigDecimal from a scale and a primitive value convertible to a bigint.
+ * Returns `none` if the conversion fails.
  *
  * @category Constructors
  */
@@ -45,7 +46,8 @@ export const fromPrimitiveOption = (
   );
 
 /**
- * Function that creates a Bigdecimal from a scale and a string representing a bigint
+ * Creates a BigDecimal from a scale and a primitive value convertible to a bigint. Throws if the
+ * conversion fails.
  *
  * @category Constructors
  */
@@ -82,7 +84,7 @@ export const truncatedAndFollowingParts =
   (precision = 0) =>
   (
     self: BigDecimal.BigDecimal,
-  ): [truncatedPart: BigDecimal.BigDecimal, followingpart: BigDecimal.BigDecimal] => {
+  ): [truncatedPart: BigDecimal.BigDecimal, followingPart: BigDecimal.BigDecimal] => {
     const truncatedPart = pipe(self, trunc(precision));
     return Tuple.make(truncatedPart, BigDecimal.subtract(self, truncatedPart));
   };

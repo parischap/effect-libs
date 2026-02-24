@@ -83,14 +83,20 @@ describe('MNumber', () => {
     });
   });
 
-  it('opposite', () => {
-    TestUtils.strictEqual(MNumber.opposite(3), -3);
-    TestUtils.strictEqual(MNumber.opposite(-3), 3);
+  describe('opposite', () => {
+    it('Positive number', () => {
+      TestUtils.strictEqual(MNumber.opposite(3), -3);
+    });
+    it('Negative number', () => {
+      TestUtils.strictEqual(MNumber.opposite(-3), 3);
+    });
   });
 
   describe('unsafeFromString', () => {
-    it('Not passing', () => {
+    it('Non-numeric string', () => {
       TestUtils.doesNotThrow(() => MNumber.unsafeFromString('a'));
+    });
+    it('NaN string', () => {
       TestUtils.doesNotThrow(() => MNumber.unsafeFromString('NaN'));
     });
     it('Passing', () => {
@@ -98,16 +104,34 @@ describe('MNumber', () => {
     });
   });
 
-  it('intModulo', () => {
-    TestUtils.strictEqual(MNumber.intModulo(3)(5), 2);
-    TestUtils.strictEqual(MNumber.intModulo(5)(3), 3);
-    TestUtils.strictEqual(MNumber.intModulo(3)(-5), 1);
-    TestUtils.strictEqual(MNumber.intModulo(5)(-3), 2);
-    TestUtils.strictEqual(pipe(-3, MNumber.intModulo(3), Math.abs), 0);
-    TestUtils.strictEqual(MNumber.intModulo(-3)(5), 2);
-    TestUtils.strictEqual(MNumber.intModulo(-5)(3), 3);
-    TestUtils.strictEqual(MNumber.intModulo(-3)(-5), 1);
-    TestUtils.strictEqual(MNumber.intModulo(-5)(-3), 2);
+  describe('intModulo', () => {
+    it('Positive self, positive divisor: 5 mod 3', () => {
+      TestUtils.strictEqual(MNumber.intModulo(3)(5), 2);
+    });
+    it('Positive self, positive divisor: 3 mod 5', () => {
+      TestUtils.strictEqual(MNumber.intModulo(5)(3), 3);
+    });
+    it('Negative self, positive divisor: -5 mod 3', () => {
+      TestUtils.strictEqual(MNumber.intModulo(3)(-5), 1);
+    });
+    it('Negative self, positive divisor: -3 mod 5', () => {
+      TestUtils.strictEqual(MNumber.intModulo(5)(-3), 2);
+    });
+    it('Zero result', () => {
+      TestUtils.strictEqual(pipe(-3, MNumber.intModulo(3), Math.abs), 0);
+    });
+    it('Positive self, negative divisor: 5 mod -3', () => {
+      TestUtils.strictEqual(MNumber.intModulo(-3)(5), 2);
+    });
+    it('Positive self, negative divisor: 3 mod -5', () => {
+      TestUtils.strictEqual(MNumber.intModulo(-5)(3), 3);
+    });
+    it('Negative self, negative divisor: -5 mod -3', () => {
+      TestUtils.strictEqual(MNumber.intModulo(-3)(-5), 1);
+    });
+    it('Negative self, negative divisor: -3 mod -5', () => {
+      TestUtils.strictEqual(MNumber.intModulo(-5)(-3), 2);
+    });
   });
 
   describe('quotientAndRemainder', () => {
@@ -135,6 +159,48 @@ describe('MNumber', () => {
 
     it('Not passing', () => {
       TestUtils.assertFalse(pipe(0.4, MNumber.equals(0.1 + 0.2)));
+    });
+  });
+
+  describe('isFinite', () => {
+    it('Finite number', () => {
+      TestUtils.assertTrue(MNumber.isFinite(42));
+    });
+    it('Infinity', () => {
+      TestUtils.assertFalse(MNumber.isFinite(Infinity));
+    });
+    it('NaN', () => {
+      TestUtils.assertFalse(MNumber.isFinite(Number.NaN));
+    });
+  });
+
+  describe('isNotFinite', () => {
+    it('Infinity', () => {
+      TestUtils.assertTrue(MNumber.isNotFinite(Infinity));
+    });
+    it('NaN', () => {
+      TestUtils.assertTrue(MNumber.isNotFinite(Number.NaN));
+    });
+    it('Finite number', () => {
+      TestUtils.assertFalse(MNumber.isNotFinite(42));
+    });
+  });
+
+  describe('isInt', () => {
+    it('Integer', () => {
+      TestUtils.assertTrue(MNumber.isInt(5));
+    });
+    it('Non-integer', () => {
+      TestUtils.assertFalse(MNumber.isInt(5.5));
+    });
+  });
+
+  describe('isNotInt', () => {
+    it('Non-integer', () => {
+      TestUtils.assertTrue(MNumber.isNotInt(5.5));
+    });
+    it('Integer', () => {
+      TestUtils.assertFalse(MNumber.isNotInt(5));
     });
   });
 

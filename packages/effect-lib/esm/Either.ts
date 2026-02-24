@@ -5,7 +5,6 @@ import * as Cause from 'effect/Cause';
 import * as Either from 'effect/Either';
 import * as Function from 'effect/Function';
 import * as Option from 'effect/Option';
-import * as Predicate from 'effect/Predicate';
 import * as Tuple from 'effect/Tuple';
 import * as MTuple from './Tuple.js';
 import * as MTypes from './Types/types.js';
@@ -59,20 +58,3 @@ export const traversePair = <A, B, L>(
     Either.map(Tuple.mapBoth({ onFirst: Either.right, onSecond: Either.right })),
     Either.getOrElse(MTuple.makeBothBy({ toFirst: Either.left, toSecond: Either.left })),
   );
-
-/**
- * Recovers from the specified tagged error.
- *
- * @category Utils
- */
-export const catchTag =
-  <K extends E extends { readonly _tag: string } ? E['_tag'] : never, E, E1>(
-    k: K,
-    f: (e: Extract<E, { readonly _tag: K }>) => E1,
-  ) =>
-  <A>(self: Either.Either<A, E>): Either.Either<A, E1 | Exclude<E, { _tag: K }>> =>
-    Either.mapLeft(self, (e) =>
-      Predicate.isTagged(e, k) ?
-        f(e as Extract<E, { readonly _tag: K }>)
-      : (e as Exclude<E, { readonly _tag: K }>),
-    );

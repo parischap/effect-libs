@@ -37,12 +37,21 @@ describe("MFunction", () => {
     TestUtils.strictEqual(pipe(Math.max, MFunction.name), "max");
   });
 
-  it("once", () => {
-    let a = 0;
-    const complexFoo = () => a++;
-    const memoized = MFunction.once(complexFoo);
-    TestUtils.strictEqual(memoized(), 0);
-    TestUtils.strictEqual(memoized(), 0);
+  describe("once", () => {
+    it("Returns the computed value on the first call", () => {
+      let a = 0;
+      const complexFoo = () => a++;
+      const memoized = MFunction.once(complexFoo);
+      TestUtils.strictEqual(memoized(), 0);
+    });
+
+    it("Returns the cached value on subsequent calls", () => {
+      let a = 0;
+      const complexFoo = () => a++;
+      const memoized = MFunction.once(complexFoo);
+      memoized(); // prime the cache
+      TestUtils.strictEqual(memoized(), 0);
+    });
   });
 
   it("applyAsMethod", () => {
@@ -56,9 +65,23 @@ describe("MFunction", () => {
     );
   });
 
-  it("clone", () => {
-    const incCopy = MFunction.clone(Number.increment);
-    TestUtils.assertFalse(incCopy === Number.increment);
-    TestUtils.strictEqual(incCopy(1), 2);
+  describe("clone", () => {
+    it("Creates a distinct function reference", () => {
+      const incCopy = MFunction.clone(Number.increment);
+      TestUtils.assertFalse(incCopy === Number.increment);
+    });
+
+    it("Behaves identically to the original function", () => {
+      const incCopy = MFunction.clone(Number.increment);
+      TestUtils.strictEqual(incCopy(1), 2);
+    });
+  });
+
+  it("constEmptyString", () => {
+    TestUtils.strictEqual(MFunction.constEmptyString(), '');
+  });
+
+  it("constIdentity", () => {
+    TestUtils.strictEqual(MFunction.constIdentity()(5), 5);
   });
 });

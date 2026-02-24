@@ -10,9 +10,13 @@ describe('MBigDecimal', () => {
     it('Passing', () => {
       TestUtils.deepStrictEqual(fromPrimitiveOrThrow(10), BigDecimal.make(10n, 4));
     });
-    it('Not passing', () => {
+    it('Non-integer number', () => {
       TestUtils.throws(() => fromPrimitiveOrThrow(10.4));
+    });
+    it('Infinity', () => {
       TestUtils.throws(() => fromPrimitiveOrThrow(Infinity));
+    });
+    it('NaN', () => {
       TestUtils.throws(() => fromPrimitiveOrThrow(Number.NaN));
     });
   });
@@ -22,9 +26,13 @@ describe('MBigDecimal', () => {
     it('Passing', () => {
       TestUtils.assertSome(fromPrimitiveOption(10), BigDecimal.make(10n, 4));
     });
-    it('Not passing', () => {
+    it('Non-integer number', () => {
       TestUtils.assertNone(fromPrimitiveOption(10.4));
+    });
+    it('Negative Infinity', () => {
       TestUtils.assertNone(fromPrimitiveOption(-Infinity));
+    });
+    it('NaN', () => {
       TestUtils.assertNone(fromPrimitiveOption(Number.NaN));
     });
   });
@@ -34,10 +42,20 @@ describe('MBigDecimal', () => {
     it('Passing', () => {
       TestUtils.assertRight(fromPrimitive(10), BigDecimal.make(10n, 4));
     });
-    it('Not passing', () => {
+    it('Non-integer number', () => {
       TestUtils.assertLeft(fromPrimitive(10.4));
+    });
+    it('Infinity', () => {
       TestUtils.assertLeft(fromPrimitive(Infinity));
+    });
+    it('NaN', () => {
       TestUtils.assertLeft(fromPrimitive(Number.NaN));
+    });
+  });
+
+  describe('zero', () => {
+    it('Equals BigDecimal.make(0n, 0)', () => {
+      TestUtils.assertEquals(MBigDecimal.zero, BigDecimal.make(0n, 0));
     });
   });
 

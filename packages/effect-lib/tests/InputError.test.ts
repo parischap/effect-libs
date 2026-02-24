@@ -65,7 +65,7 @@ describe('MInputError', () => {
   });
 
   describe('assertInRange', () => {
-    it('Not passing', () => {
+    it('Offset shifts boundaries', () => {
       TestUtils.assertLeftMessage(
         MInputError.assertInRange({
           min: 3,
@@ -77,6 +77,9 @@ describe('MInputError', () => {
         })(3),
         "Expected 'age' to be between 4 (excluded) and 6 (excluded). Actual: 4",
       );
+    });
+
+    it('Value below minIncluded lower bound', () => {
       TestUtils.assertLeftMessage(
         MInputError.assertInRange({
           min: 3,
@@ -88,6 +91,9 @@ describe('MInputError', () => {
         })(2),
         "Expected 'age' to be between 3 (included) and 5 (excluded). Actual: 2",
       );
+    });
+
+    it('Value at maxExcluded upper bound', () => {
       TestUtils.assertLeftMessage(
         MInputError.assertInRange({
           min: 3,
@@ -99,6 +105,9 @@ describe('MInputError', () => {
         })(5),
         "Expected 'age' to be between 3 (excluded) and 5 (excluded). Actual: 5",
       );
+    });
+
+    it('Value above maxIncluded upper bound', () => {
       TestUtils.assertLeftMessage(
         MInputError.assertInRange({
           min: 3,
@@ -112,7 +121,7 @@ describe('MInputError', () => {
       );
     });
 
-    it('Passing', () => {
+    it('Value within exclusive range', () => {
       TestUtils.assertRight(
         MInputError.assertInRange({
           min: 3,
@@ -124,6 +133,9 @@ describe('MInputError', () => {
         })(4),
         4,
       );
+    });
+
+    it('Value at inclusive lower bound', () => {
       TestUtils.assertRight(
         MInputError.assertInRange({
           min: 3,
@@ -135,6 +147,9 @@ describe('MInputError', () => {
         })(3),
         3,
       );
+    });
+
+    it('Value at inclusive upper bound', () => {
       TestUtils.assertRight(
         MInputError.assertInRange({
           min: 3,

@@ -15,14 +15,23 @@ describe('MRegExpString', () => {
         RegExp,
       );
 
-      it('Matching', () => {
+      it('Single digit', () => {
         TestUtils.assertTrue(regExp.test('1'));
+      });
+
+      it('Multi-digit number', () => {
         TestUtils.assertTrue(regExp.test('18320'));
       });
 
-      it('Non-matching', () => {
+      it('Zero', () => {
         TestUtils.assertFalse(regExp.test('0'));
+      });
+
+      it('Number with space', () => {
         TestUtils.assertFalse(regExp.test('18 320'));
+      });
+
+      it('Leading zero', () => {
         TestUtils.assertFalse(regExp.test('018320'));
       });
     });
@@ -34,19 +43,43 @@ describe('MRegExpString', () => {
         RegExp,
       );
 
-      it('Matching', () => {
+      it('Single digit', () => {
         TestUtils.assertTrue(regExp.test('1'));
+      });
+
+      it('Three-digit number', () => {
         TestUtils.assertTrue(regExp.test('999'));
+      });
+
+      it('Number with space separator', () => {
         TestUtils.assertTrue(regExp.test('18 320'));
       });
 
-      it('Non-matching', () => {
+      it('Zero', () => {
         TestUtils.assertFalse(regExp.test('0'));
+      });
+
+      it('Number without space separator', () => {
         TestUtils.assertFalse(regExp.test('18320'));
+      });
+
+      it('Wrong grouping', () => {
         TestUtils.assertFalse(regExp.test('1 8320'));
+      });
+
+      it('Leading space', () => {
         TestUtils.assertFalse(regExp.test(' 18 320'));
+      });
+
+      it('Trailing space', () => {
         TestUtils.assertFalse(regExp.test('18 320 '));
+      });
+
+      it('Double space separator', () => {
         TestUtils.assertFalse(regExp.test('18  320'));
+      });
+
+      it('Leading zero', () => {
         TestUtils.assertFalse(regExp.test('018 320'));
       });
     });
@@ -56,15 +89,27 @@ describe('MRegExpString', () => {
     describe('No thousand separator', () => {
       const regExp = pipe(MRegExpString.unsignedBase10Int(''), MRegExpString.makeLine, RegExp);
 
-      it('Matching', () => {
+      it('Zero', () => {
         TestUtils.assertTrue(regExp.test('0'));
+      });
+
+      it('Single digit', () => {
         TestUtils.assertTrue(regExp.test('1'));
+      });
+
+      it('Multi-digit number', () => {
         TestUtils.assertTrue(regExp.test('18320'));
       });
 
-      it('Non-matching', () => {
+      it('Two zeros', () => {
         TestUtils.assertFalse(regExp.test('00'));
+      });
+
+      it('Number with space', () => {
         TestUtils.assertFalse(regExp.test('18 320'));
+      });
+
+      it('Leading zero', () => {
         TestUtils.assertFalse(regExp.test('018320'));
       });
     });
@@ -72,15 +117,27 @@ describe('MRegExpString', () => {
     describe('With dot thousand separator', () => {
       const regExp = pipe(MRegExpString.unsignedBase10Int('.'), MRegExpString.makeLine, RegExp);
 
-      it('Matching', () => {
+      it('Zero', () => {
         TestUtils.assertTrue(regExp.test('0'));
+      });
+
+      it('Single digit', () => {
         TestUtils.assertTrue(regExp.test('1'));
+      });
+
+      it('Three-digit number', () => {
         TestUtils.assertTrue(regExp.test('999'));
+      });
+
+      it('Number with dot separator', () => {
         TestUtils.assertTrue(regExp.test('18.320'));
       });
 
-      it('Non-matching', () => {
+      it('Number without dot separator', () => {
         TestUtils.assertFalse(regExp.test('18320'));
+      });
+
+      it('Wrong grouping', () => {
         TestUtils.assertFalse(regExp.test('1.8320'));
       });
     });
@@ -138,8 +195,11 @@ describe('MRegExpString', () => {
         });
       });
 
-      it('Not passing', () => {
+      it('Sign before padding', () => {
         TestUtils.assertNone(getPartsWithNoSep(' +18320.45e-2'));
+      });
+
+      it('Non-numeric character', () => {
         TestUtils.assertNone(getPartsWithNoSep('18A'));
       });
     });
@@ -182,8 +242,11 @@ describe('MRegExpString', () => {
         });
       });
 
-      it('Not passing', () => {
+      it('Sign before padding', () => {
         TestUtils.assertNone(getPartsWithSep(' +18 320.45^2'));
+      });
+
+      it('Non-numeric character', () => {
         TestUtils.assertNone(getPartsWithSep('18A'));
       });
     });
@@ -216,10 +279,19 @@ describe('MRegExpString', () => {
         });
       });
 
-      it('Not passing', () => {
+      it('Leading space before sign', () => {
         TestUtils.assertNone(getPartsWithNoFillChar(' +18 320.45e-2'));
+      });
+
+      it('Non-numeric character', () => {
         TestUtils.assertNone(getPartsWithNoFillChar('18A'));
+      });
+
+      it('Leading spaces without sign', () => {
         TestUtils.assertNone(getPartsWithNoFillChar('  12'));
+      });
+
+      it('Sign before spaces', () => {
         TestUtils.assertNone(getPartsWithNoFillChar('+  18 320.45e-2'));
       });
     });

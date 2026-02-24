@@ -62,7 +62,7 @@ describe('MArray', () => {
         'Empty array',
       );
     });
-    it('Empty array', () => {
+    it('Singleton', () => {
       TestUtils.strictEqual(
         pipe(
           Array.of(1),
@@ -75,7 +75,7 @@ describe('MArray', () => {
         'Singleton',
       );
     });
-    it('Empty array', () => {
+    it('Two or more elements', () => {
       TestUtils.strictEqual(
         pipe(
           Array.make(1, 2, 3),
@@ -242,7 +242,7 @@ describe('MArray', () => {
         ),
       );
     });
-    it('With indexes out of bounds', () => {
+    it('Non-empty array', () => {
       const foo: ReadonlyArray<readonly [string, number]> = [
         ['a', 1],
         ['b', 2],
@@ -272,9 +272,13 @@ describe('MArray', () => {
   });
 
   describe('unsafeGet', () => {
-    it('Not passing', () => {
+    it('Out-of-bounds index', () => {
       TestUtils.doesNotThrow(() => MArray.unsafeGet(3)([]));
+    });
+    it('NaN index', () => {
       TestUtils.doesNotThrow(() => MArray.unsafeGet(Number.NaN)([]));
+    });
+    it('Infinity index', () => {
       TestUtils.doesNotThrow(() => MArray.unsafeGet(Infinity)([]));
     });
     it('Passing', () => {
@@ -284,9 +288,13 @@ describe('MArray', () => {
 
   describe('unsafeGetter', () => {
     const unsafeGetter = MArray.unsafeGetter([1, 3, 2]);
-    it('Not passing', () => {
+    it('Out-of-bounds index', () => {
       TestUtils.doesNotThrow(() => unsafeGetter(3));
+    });
+    it('NaN index', () => {
       TestUtils.doesNotThrow(() => unsafeGetter(Number.NaN));
+    });
+    it('Infinity index', () => {
       TestUtils.doesNotThrow(() => unsafeGetter(Infinity));
     });
     it('Passing', () => {
@@ -392,19 +400,21 @@ describe('MArray', () => {
     });
   });
 
-  it('unfoldNonEmpty', () => {
-    TestUtils.deepStrictEqual(
-      pipe(
-        0,
-        MArray.unfoldNonEmpty(
-          MTuple.makeBothBy({
-            toFirst: Function.identity,
-            toSecond: flow(ENumber.increment, Option.liftPredicate(ENumber.lessThanOrEqualTo(3))),
-          }),
+  describe('unfoldNonEmpty', () => {
+    it('Without cycle', () => {
+      TestUtils.deepStrictEqual(
+        pipe(
+          0,
+          MArray.unfoldNonEmpty(
+            MTuple.makeBothBy({
+              toFirst: Function.identity,
+              toSecond: flow(ENumber.increment, Option.liftPredicate(ENumber.lessThanOrEqualTo(3))),
+            }),
+          ),
         ),
-      ),
-      [0, 1, 2, 3],
-    );
+        [0, 1, 2, 3],
+      );
+    });
   });
 
   describe('splitAtFromRight', () => {
@@ -423,6 +433,15 @@ describe('MArray', () => {
       TestUtils.deepStrictEqual(pipe(Array.make(1, 2, 3), MArray.splitAtFromRight(5)), [
         [],
         [1, 2, 3],
+      ]);
+    });
+  });
+
+  describe('splitNonEmptyAtFromRight', () => {
+    it('Non-empty array', () => {
+      TestUtils.deepStrictEqual(pipe(Array.make(1, 2, 3), MArray.splitNonEmptyAtFromRight(2)), [
+        [1],
+        [2, 3],
       ]);
     });
   });
@@ -582,7 +601,7 @@ describe('MArray', () => {
 
   describe('differenceSorted', () => {
     const substractSortedNumbers = MArray.differenceSorted(ENumber.Order);
-    it('Substract non-empty array from empty array', () => {
+    it('Subtract non-empty array from empty array', () => {
       TestUtils.assertTrue(
         pipe(
           Array.empty<number>(),
@@ -604,6 +623,12 @@ describe('MArray', () => {
         pipe(Array.make(1, 2, 4, 6, 6, 7, 8), substractSortedNumbers(Array.make(2, 6, 6, 10))),
         Array.make(1, 4, 7, 8),
       );
+    });
+  });
+
+  describe('pad', () => {
+    it('Array shorter than target length', () => {
+      TestUtils.deepStrictEqual(MArray.pad(3, 0)([1, 2]), [1, 2, 0]);
     });
   });
 });

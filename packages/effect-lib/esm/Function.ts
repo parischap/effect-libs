@@ -97,7 +97,7 @@ export const once = <A>(f: Function.LazyArg<A>): Function.LazyArg<A> => {
 };
 
 /**
- * Applies no-argument `self` to `o`
+ * Calls `self` with `o` as its `this` context
  *
  * @category Utils
  */

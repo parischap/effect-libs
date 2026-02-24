@@ -27,8 +27,8 @@ const _bigDecimalMaxSafeInteger = BigDecimal.make(_bigIntMaxSafeInteger, 0);
 export const unsafeFromBigInt: MTypes.OneArgFunction<bigint, number> = Number;
 
 /**
- * Builds a number from a BigInt. Returns a `some` if the BigInt is in the 64-bit range of a number.
- * Returns a `none` otherwise
+ * Builds a number from a BigInt. Returns a `some` if the BigInt is in the safe integer range
+ * ([`Number.MIN_SAFE_INTEGER`, `Number.MAX_SAFE_INTEGER`]). Returns a `none` otherwise.
  *
  * @category Constructors
  */
@@ -73,8 +73,8 @@ export const unsafeFromBigDecimal: MTypes.OneArgFunction<BigDecimal.BigDecimal, 
   BigDecimal.unsafeToNumber;
 
 /**
- * Builds a number from a BigDecimal. Returns a `some` if the BigDecimal is in the 64-bit range of a
- * number. Returns a `none` otherwise
+ * Builds a number from a BigDecimal. Returns a `some` if the BigDecimal is in the safe integer
+ * range ([`Number.MIN_SAFE_INTEGER`, `Number.MAX_SAFE_INTEGER`]). Returns a `none` otherwise.
  *
  * @category Constructors
  */

@@ -240,8 +240,11 @@ describe('MTypes', () => {
     if (MTypes.isNullable(nullOrNumber))
       TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof nullOrNumber, null>());
 
-    it('Matching', () => {
+    it('null', () => {
       TestUtils.assertTrue(MTypes.isNullable(null));
+    });
+
+    it('undefined', () => {
       TestUtils.assertTrue(MTypes.isNullable(undefined));
     });
 
@@ -272,13 +275,19 @@ describe('MTypes', () => {
     if (MTypes.isPrimitive(unknown))
       TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof unknown, MTypes.Primitive>());
 
-    it('Matching', () => {
+    it('Number', () => {
       TestUtils.assertTrue(MTypes.isPrimitive(testNumber));
+    });
+
+    it('Undefined', () => {
       TestUtils.assertTrue(MTypes.isPrimitive(undefined));
     });
 
-    it('Non matching', () => {
+    it('Array', () => {
       TestUtils.assertFalse(MTypes.isPrimitive(testArray2));
+    });
+
+    it('Function', () => {
       TestUtils.assertFalse(MTypes.isPrimitive(testOneArgFunction));
     });
   });
@@ -293,8 +302,11 @@ describe('MTypes', () => {
     if (MTypes.isNonPrimitive(unknown))
       TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof unknown, MTypes.NonPrimitive>());
 
-    it('Matching', () => {
+    it('Array', () => {
       TestUtils.assertTrue(MTypes.isNonPrimitive(testArray2));
+    });
+
+    it('Function', () => {
       TestUtils.assertTrue(MTypes.isNonPrimitive(testOneArgFunction));
     });
 
@@ -365,8 +377,11 @@ describe('MTypes', () => {
         TestUtils.areEqualTypes<typeof testArray2, MTypes.OverOne<number>>(),
       );
 
-    it('Matching', () => {
+    it('Singleton array', () => {
       TestUtils.assertTrue(MTypes.isOverOne(testArray1));
+    });
+
+    it('Two-element array', () => {
       TestUtils.assertTrue(MTypes.isOverOne(testArray2));
     });
 
@@ -381,8 +396,11 @@ describe('MTypes', () => {
         TestUtils.areEqualTypes<typeof testReadonlyArray, MTypes.ReadonlyOverOne<number>>(),
       );
 
-    it('Matching', () => {
+    it('Singleton array', () => {
       TestUtils.assertTrue(MTypes.isReadonlyOverOne(testArray1));
+    });
+
+    it('Two-element array', () => {
       TestUtils.assertTrue(MTypes.isReadonlyOverOne(testArray2));
     });
 
@@ -397,8 +415,11 @@ describe('MTypes', () => {
         TestUtils.areEqualTypes<typeof testArray2, MTypes.OverTwo<number>>(),
       );
 
-    it('Matching', () => {
+    it('Two-element array', () => {
       TestUtils.assertTrue(MTypes.isOverTwo(testArray2));
+    });
+
+    it('Three-element array', () => {
       TestUtils.assertTrue(MTypes.isOverTwo(testArray3));
     });
 
@@ -413,8 +434,11 @@ describe('MTypes', () => {
         TestUtils.areEqualTypes<typeof testReadonlyArray, MTypes.ReadonlyOverTwo<number>>(),
       );
 
-    it('Matching', () => {
+    it('Two-element array', () => {
       TestUtils.assertTrue(MTypes.isReadonlyOverTwo(testArray2));
+    });
+
+    it('Three-element array', () => {
       TestUtils.assertTrue(MTypes.isReadonlyOverTwo(testArray3));
     });
 
@@ -433,8 +457,11 @@ describe('MTypes', () => {
       TestUtils.assertTrue(MTypes.isSingleton(testArray1));
     });
 
-    it('Non matching', () => {
+    it('Empty array', () => {
       TestUtils.assertFalse(MTypes.isSingleton(testArray0));
+    });
+
+    it('Two-element array', () => {
       TestUtils.assertFalse(MTypes.isSingleton(testArray2));
     });
   });
@@ -449,8 +476,11 @@ describe('MTypes', () => {
       TestUtils.assertTrue(MTypes.isReadonlySingleton(testArray1));
     });
 
-    it('Non matching', () => {
+    it('Empty array', () => {
       TestUtils.assertFalse(MTypes.isReadonlySingleton(testArray0));
+    });
+
+    it('Two-element array', () => {
       TestUtils.assertFalse(MTypes.isReadonlySingleton(testArray2));
     });
   });
@@ -465,8 +495,11 @@ describe('MTypes', () => {
       TestUtils.assertTrue(MTypes.isPair(testArray2));
     });
 
-    it('Non matching', () => {
+    it('Singleton array', () => {
       TestUtils.assertFalse(MTypes.isPair(testArray1));
+    });
+
+    it('Three-element array', () => {
       TestUtils.assertFalse(MTypes.isPair(testArray3));
     });
   });
@@ -481,8 +514,11 @@ describe('MTypes', () => {
       TestUtils.assertTrue(MTypes.isReadonlyPair(testArray2));
     });
 
-    it('Non matching', () => {
+    it('Empty array', () => {
       TestUtils.assertFalse(MTypes.isReadonlyPair(testArray0));
+    });
+
+    it('Three-element array', () => {
       TestUtils.assertFalse(MTypes.isReadonlyPair(testArray3));
     });
   });
@@ -495,8 +531,11 @@ describe('MTypes', () => {
       TestUtils.assertTrue(MTypes.isIterable(testArray2));
     });
 
-    it('Non matching', () => {
+    it('Number', () => {
       TestUtils.assertFalse(MTypes.isIterable(testNumber));
+    });
+
+    it('String', () => {
       TestUtils.assertFalse(MTypes.isIterable(testString));
     });
   });

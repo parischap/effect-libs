@@ -16,8 +16,7 @@ import * as MMatch from './Match.js';
 import * as MOption from './Option.js';
 import * as MTypes from './Types/types.js';
 /**
- * https://typescript-eslint.io/rules/no-unnecessary-type-parameters Returns true if the length of
- * `self` is `l`
+ * Returns true if the length of `self` is `l`
  *
  * @category Predicates
  */
@@ -30,7 +29,7 @@ export const hasLength =
  * Returns true if the provided ReadonlyArray contains duplicates using the provided isEquivalent
  * function
  *
- * @category Utils
+ * @category Predicates
  */
 export const hasDuplicatesWith =
   <A>(isEquivalent: Equivalence.Equivalence<NoInfer<A>>) =>
@@ -40,7 +39,7 @@ export const hasDuplicatesWith =
 /**
  * Returns true if the provided ReadonlyArray contains duplicates
  *
- * @category Utils
+ * @category Predicates
  */
 export const hasDuplicates = hasDuplicatesWith(Equal.equivalence());
 
@@ -380,7 +379,7 @@ export const unfold =
   };
 
 /**
- * Same as `MArray.unfold` but f always returns an `A` and optionnaly an `S`. A cycle is detected if
+ * Same as `MArray.unfold` but f always returns an `A` and optionally an `S`. A cycle is detected if
  * the same seed `s` is sent a second time to function f (equivalence based on the `seedEquivalence`
  * equivalence if provided or on Equal.equals otherwise). In that case, `cycleSource` is a `some` of
  * the `a` generated the first time `s` was processed, hence giving the user a chance to modify it.

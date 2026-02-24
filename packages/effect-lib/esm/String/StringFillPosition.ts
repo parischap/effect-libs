@@ -5,7 +5,7 @@ import * as MMatch from '../Match.js';
 import * as MTypes from '../Types/types.js';
 
 /**
- * Type of an MStringFillPosistion
+ * Type of an MStringFillPosition
  *
  * @category Models
  */

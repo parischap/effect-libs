@@ -428,13 +428,19 @@ describe('MString', () => {
       TestUtils.assertSome(MString.match(/\d/)('Numbers between 1 and 9'), '1');
     });
 
-    it('With global flag', () => {
-      TestUtils.assertSome(numberGlobalMatcher('Numbers between 1 and 9'), '1');
+    it('Returns first match regardless of global flag', () => {
       TestUtils.assertSome(numberGlobalMatcher('Numbers between 1 and 9'), '1');
     });
 
-    it('Matching', () => {
+    it('Resets lastIndex before each call', () => {
+      TestUtils.assertSome(numberGlobalMatcher('Numbers between 1 and 9'), '1');
+    });
+
+    it('Matching without optional group', () => {
       TestUtils.assertSome(pipe('afooa', stringMatcher), 'afooa');
+    });
+
+    it('Matching with optional group', () => {
       TestUtils.assertSome(pipe('afoobara', stringMatcher), 'afoobara');
     });
 
@@ -591,15 +597,84 @@ describe('MString', () => {
   });
 
   describe('isDigit', () => {
-    it('Non matching', () => {
+    it('Empty string', () => {
       TestUtils.assertFalse(MString.isDigit(''));
+    });
+
+    it('Multi-character string', () => {
       TestUtils.assertFalse(MString.isDigit('1A'));
+    });
+
+    it('Non-digit character', () => {
       TestUtils.assertFalse(MString.isDigit('A'));
     });
-    it('Matching', () => {
+
+    it('Digit 1', () => {
       TestUtils.assertTrue(MString.isDigit('1'));
+    });
+
+    it('Digit 5', () => {
       TestUtils.assertTrue(MString.isDigit('5'));
+    });
+
+    it('Digit 9', () => {
       TestUtils.assertTrue(MString.isDigit('9'));
+    });
+  });
+
+  describe('fromNonNullablePrimitive', () => {
+    it('Number', () => {
+      TestUtils.strictEqual(MString.fromNonNullablePrimitive(5), '5');
+    });
+
+    it('Boolean', () => {
+      TestUtils.strictEqual(MString.fromNonNullablePrimitive(true), 'true');
+    });
+
+    it('BigInt', () => {
+      TestUtils.strictEqual(MString.fromNonNullablePrimitive(5n), '5');
+    });
+  });
+
+  describe('fromNumber', () => {
+    it('Base-10 number without scientific notation', () => {
+      TestUtils.strictEqual(MString.fromNumber(10)(1e-8), '0.00000001');
+    });
+
+    it('Non-base-10 radix', () => {
+      TestUtils.strictEqual(MString.fromNumber(16)(255), 'ff');
+    });
+  });
+
+  describe('append', () => {
+    it('Appends string to another string', () => {
+      TestUtils.strictEqual(pipe('foo', MString.append('bar')), 'foobar');
+    });
+  });
+
+  describe('prepend', () => {
+    it('Prepends string to another string', () => {
+      TestUtils.strictEqual(pipe('foo', MString.prepend('bar')), 'barfoo');
+    });
+  });
+
+  describe('isSemVer', () => {
+    it('Valid SemVer', () => {
+      TestUtils.assertTrue(MString.isSemVer('1.2.3'));
+    });
+
+    it('Invalid SemVer', () => {
+      TestUtils.assertFalse(MString.isSemVer('1.2'));
+    });
+  });
+
+  describe('isEmail', () => {
+    it('Valid email', () => {
+      TestUtils.assertTrue(MString.isEmail('user@example.com'));
+    });
+
+    it('Invalid email', () => {
+      TestUtils.assertFalse(MString.isEmail('not-an-email'));
     });
   });
 });
