@@ -1,7 +1,7 @@
 /**
- * This module implements a ASContextStyler (see ContextStyler/Base.ts) that contains an ASPalette
- * (an array of styles) and a function that transforms a Context object into an index. The style
- * that is applied is the one at position index (modulo the number of styles in the ASPalette).
+ * This module implements an ASContextStyler (see ContextStyler.ts) that contains an ASPalette (an
+ * array of styles) and a function that transforms a Context object into an index. The style that is
+ * applied is the one at position index (modulo the number of styles in the ASPalette).
  */
 
 import * as MArray from '@parischap/effect-lib/MArray';

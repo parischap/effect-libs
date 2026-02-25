@@ -1,5 +1,5 @@
 /**
- * This module implements a ASContextStyler (see ContextStyler/Base.ts) that returns the same style
+ * This module implements an ASContextStyler (see ContextStyler.ts) that returns the same style
  * whetever the context object c. Note that it is a optimized particular case of an
  * ASContextStylerWheel where the palette contains only one style and/or where the indexFromContext
  * function always returns the same number. However, the second case cannot be detected
