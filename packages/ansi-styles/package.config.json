@@ -4,7 +4,7 @@
     "@parischap/effect-lib": "^0.11.0"
   },
   "examples": ["basic-usage.ts", "cancelling-a-style.ts", "simple-colors.ts", "all-colors.ts"],
-  "environment": "Plain",
+  "environment": "Neutral",
   "buildMethod": "NoBundling",
   "isPublished": true,
   "hasDocGen": true,

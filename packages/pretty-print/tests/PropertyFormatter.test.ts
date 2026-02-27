@@ -1,9 +1,10 @@
 import { ASStyle, ASText } from '@parischap/ansi-styles';
 import * as TestUtils from '@parischap/configs/TestUtils';
 import {
+  PPIndex,
   PPMarkShowerConstructor,
   PPNonPrimitiveFormatter,
-  PPOption,
+  PPNonPrimitiveParameters,
   PPPropertyFormatter,
   PPStringifiedValue,
   PPValue,
@@ -13,10 +14,10 @@ import { Array, Function, pipe } from 'effect';
 import { describe, it } from 'vitest';
 
 describe('PropertyFormatter', () => {
-  const utilInspectLike = PPOption.darkModeUtilInspectLike;
+  const utilInspectLike = PPIndex.darkModeUtilInspectLike;
   const valueBasedStylerConstructor = PPValueBasedStylerConstructor.fromOption(utilInspectLike);
   const markShowerConstructor = PPMarkShowerConstructor.fromOption(utilInspectLike);
-  const nonPrimitiveOption = PPOption.NonPrimitive.maps('Foo');
+  const nonPrimitiveOption = PPNonPrimitiveParameters.maps('Foo');
   const constructors = {
     valueBasedStylerConstructor,
     markShowerConstructor,
@@ -25,7 +26,7 @@ describe('PropertyFormatter', () => {
 
   const stringified = pipe('1', ASText.fromString, PPStringifiedValue.fromText);
 
-  describe('Tag, prototype and guards', () => {
+  describe('Tag and equality', () => {
     it('moduleTag', () => {
       TestUtils.assertSome(
         TestUtils.moduleTagFromTestFilePath(__filename),
@@ -52,23 +53,10 @@ describe('PropertyFormatter', () => {
     it('.toString()', () => {
       TestUtils.strictEqual(valueOnly.toString(), `ValueOnly`);
     });
-
-    it('.pipe()', () => {
-      TestUtils.strictEqual(valueOnly.pipe(PPPropertyFormatter.id), 'ValueOnly');
-    });
-
-    describe('has', () => {
-      it('Matching', () => {
-        TestUtils.assertTrue(PPPropertyFormatter.has(valueOnly));
-      });
-      it('Non matching', () => {
-        TestUtils.assertFalse(PPPropertyFormatter.has(new Date()));
-      });
-    });
   });
 
   it('valueOnly', () => {
-    const valueOnlyFormatter = PPPropertyFormatter.valueOnly.call(nonPrimitiveOption, constructors);
+    const valueOnlyFormatter = PPPropertyFormatter.apply(PPPropertyFormatter.valueOnly)(nonPrimitiveOption)(constructors);
     TestUtils.strictEqual(
       pipe(
         valueOnlyFormatter({
@@ -88,17 +76,14 @@ describe('PropertyFormatter', () => {
   });
 
   describe('keyAndValue', () => {
-    const keyAndValueFormatter = PPPropertyFormatter.keyAndValue.call(
-      nonPrimitiveOption,
-      constructors,
-    );
-    const tabifiedKeyAndValueFormatter = PPPropertyFormatter.keyAndValue.call(
-      PPOption.NonPrimitive.make({
+    const keyAndValueFormatter = PPPropertyFormatter.apply(PPPropertyFormatter.keyAndValue)(nonPrimitiveOption)(constructors);
+    const tabifiedKeyAndValueFormatter = PPPropertyFormatter.apply(PPPropertyFormatter.keyAndValue)(
+      PPNonPrimitiveParameters.make({
         ...nonPrimitiveOption,
         nonPrimitiveFormatter: PPNonPrimitiveFormatter.tabify,
       }),
-      constructors,
-    );
+    )(constructors);
+
     it('With empty key', () => {
       TestUtils.strictEqual(
         pipe(
@@ -194,7 +179,7 @@ describe('PropertyFormatter', () => {
   });
 
   describe('treeify', () => {
-    const treeifyFormatter = PPPropertyFormatter.treeify.call(nonPrimitiveOption, constructors);
+    const treeifyFormatter = PPPropertyFormatter.apply(PPPropertyFormatter.treeify)(nonPrimitiveOption)(constructors);
 
     describe('With empty key', () => {
       it('isLeaf=false', () => {
@@ -245,7 +230,7 @@ describe('PropertyFormatter', () => {
           pipe(
             treeifyFormatter({
               value: PPValue.fromNonPrimitiveValueAndKey({
-                nonPrimitive { a: 1, b: 'foo' },
+                nonPrimitive: { a: 1, b: 'foo' },
                 key: 'a',
                 depth: 1,
                 protoDepth: 0,

@@ -7,20 +7,17 @@
  * needs.
  */
 
-import * as MFunction from '@parischap/effect-lib/MFunction'
-import * as MInspectable from '@parischap/effect-lib/MInspectable'
+import * as MData from '@parischap/effect-lib/MData'
+import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality'
 import * as MMatch from '@parischap/effect-lib/MMatch'
-import * as MPipeable from '@parischap/effect-lib/MPipeable'
 import * as MString from '@parischap/effect-lib/MString'
 import * as MTypes from '@parischap/effect-lib/MTypes'
 import {flow, pipe} from 'effect'
 import * as Either from 'effect/Either'
-import * as Equal from 'effect/Equal'
 import * as Equivalence from 'effect/Equivalence'
 import * as Function from 'effect/Function'
 import * as Hash from 'effect/Hash'
 import * as Number from 'effect/Number'
-import * as Pipeable from 'effect/Pipeable'
 import * as Predicate from 'effect/Predicate'
 import * as String from 'effect/String'
 import * as Struct from 'effect/Struct'
@@ -43,11 +40,11 @@ type _TypeId = typeof _TypeId;
  */
 export namespace Action {
   /**
-   * Type of the action of a PrimitiveFormatter. The action takes a Primitive value (see Value.ts)
-   * and returns an unstyled string representing that value.
+   * Type of the action of a PrimitiveFormatter. The action takes the current formatting option and a
+   * Primitive value (see Value.ts) and returns an unstyled string representing that value.
    */
   export interface Type {
-    (this: PPOption.Type, value: PPValue.Primitive): string;
+    (option: PPOption.Type, value: PPValue.Primitive): string;
   }
 }
 
@@ -56,20 +53,59 @@ export namespace Action {
  *
  * @category Models
  */
-export interface Type extends Action.Type, Equal.Equal, MInspectable.Type, Pipeable.Pipeable {
+export class Type extends MDataEquivalenceBasedEquality.Class {
   /** Id of this PrimitiveFormatter instance. Useful for equality and debugging */
   readonly id: string;
 
-  /** @internal */
-  readonly [_TypeId]: _TypeId;
+  /** Action of this PrimitiveFormatter */
+  readonly action: Action.Type;
+
+  /** Returns the `id` of `this` */
+  [MData.idSymbol](): string | (() => string) {
+    return function idSymbol(this: Type) {
+      return this.id;
+    };
+  }
+
+  /** Class constructor */
+  private constructor({ id, action }: MTypes.Data<Type>) {
+    super();
+    this.id = id;
+    this.action = action;
+  }
+
+  /** Static constructor */
+  static make(params: MTypes.Data<Type>): Type {
+    return new Type(params);
+  }
+
+  /** Calculates the hash value of `this` */
+  [Hash.symbol](): number {
+    return 0;
+  }
+
+  /** Function that implements the equivalence of `this` and `that` */
+  [MDataEquivalenceBasedEquality.isEquivalentToSymbol](this: this, that: this): boolean {
+    return equivalence(this, that);
+  }
+
+  /** Predicate that returns true if `that` has the same type marker as `this` */
+  [MDataEquivalenceBasedEquality.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
+    return Predicate.hasProperty(that, _TypeId);
+  }
+
+  /** Returns the TypeMarker of the class */
+  protected get [_TypeId](): _TypeId {
+    return _TypeId;
+  }
 }
 
 /**
- * Type guard
+ * Constructor
  *
- * @category Guards
+ * @category Constructors
  */
-export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
+export const make = (params: MTypes.Data<Type>): Type => Type.make(params);
 
 /**
  * Equivalence
@@ -78,43 +114,33 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
  */
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
 
-/** Base */
-const _TypeIdHash = Hash.hash(_TypeId);
-const base: MTypes.Proto<Type> = {
-  [_TypeId]: _TypeId,
-  [Equal.symbol](this: Type, that: unknown): boolean {
-    return has(that) && equivalence(this, that);
-  },
-  [Hash.symbol](this: Type) {
-    return pipe(this.id, Hash.hash, Hash.combine(_TypeIdHash), Hash.cached(this));
-  },
-  [MInspectable.IdSymbol](this: Type) {
-    return this.id;
-  },
-  ...MInspectable.BaseProto(moduleTag),
-  ...MPipeable.BaseProto,
-};
-
-/**
- * Constructor
- *
- * @category Constructors
- */
-export const make = ({ id, action }: { readonly id: string; readonly action: Action.Type }): Type =>
-  Object.assign(MFunction.clone(action), {
-    id,
-    ...base,
-  });
-
 /**
  * Returns the `id` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
 
 /**
- * PropertyFormatter contructor that builds an instance that works like util.inspect
+ * Returns the `action` property of `self`
+ *
+ * @category Getters
+ */
+export const action: MTypes.OneArgFunction<Type, Action.Type> = Struct.get('action');
+
+/**
+ * Returns a function that formats `value` as a string according to `self`'s action.
+ *
+ * @category Formatting
+ */
+export const format =
+  (self: Type) =>
+  (option: PPOption.Type) =>
+  (value: PPValue.Primitive): string =>
+    self.action(option, value);
+
+/**
+ * PrimitiveFormatter constructor that builds an instance that works like util.inspect
  *
  * @category Constructors
  */
@@ -131,30 +157,32 @@ export const utilInspectLikeMaker = (
 ): Type =>
   make({
     id,
-    action: flow(
-      PPValue.content,
-      MMatch.make,
-      MMatch.when(
-        MTypes.isString,
-        flow(
-          Either.liftPredicate(
-            flow(String.length, Number.greaterThan(maxStringLength)),
-            Function.identity,
+    action: (_option, value) =>
+      pipe(
+        value,
+        PPValue.content,
+        MMatch.make,
+        MMatch.when(
+          MTypes.isString,
+          flow(
+            Either.liftPredicate(
+              flow(String.length, Number.greaterThan(maxStringLength)),
+              Function.identity,
+            ),
+            Either.map(flow(String.takeLeft(maxStringLength), MString.append('...'))),
+            Either.merge,
+            MString.append("'"),
+            MString.prepend("'"),
           ),
-          Either.map(flow(String.takeLeft(maxStringLength), MString.append('...'))),
-          Either.merge,
-          MString.append("'"),
-          MString.prepend("'"),
         ),
+        MMatch.when(
+          MTypes.isNumber,
+          flow((n) => numberFormatter.format(n)),
+        ),
+        MMatch.when(
+          MTypes.isBigInt,
+          flow((n) => numberFormatter.format(n), MString.append('n')),
+        ),
+        MMatch.orElse(MString.fromPrimitive),
       ),
-      MMatch.when(
-        MTypes.isNumber,
-        flow((n) => numberFormatter.format(n)),
-      ),
-      MMatch.when(
-        MTypes.isBigInt,
-        flow((n) => numberFormatter.format(n), MString.append('n')),
-      ),
-      MMatch.orElse(MString.fromPrimitive),
-    ),
   });

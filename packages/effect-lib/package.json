@@ -1,6 +1,5 @@
 {
   "name": "@parischap/effect-lib",
-  "description": "An extension to the official Effect library",
   "type": "module",
   "author": "Jérôme MARTIN",
   "license": "MIT",
@@ -8,13 +7,13 @@
     "@parischap/configs": "git+ssh://github.com/parischap/configs",
     "@effect/language-service": "0.64.1",
     "@types/node": "25.0.9",
-    "@typescript/native-preview": "7.0.0-dev.20260217.1",
+    "@typescript/native-preview": "7.0.0-dev.20260225.1",
     "prettier-plugin-jsdoc": "1.8.0",
     "prettier-plugin-organize-imports": "4.3.0",
     "@tsconfig/strictest": "2.0.8",
     "prettier": "3.7.4",
-    "oxlint": "1.48.0",
-    "oxlint-tsgolint": "0.14.0",
+    "oxlint": "1.50.0",
+    "oxlint-tsgolint": "0.15.0",
     "unrun": "0.2.27",
     "vitest": "4.0.18",
     "madge": "8.0.0",
@@ -36,10 +35,10 @@
     "lint-fix": "oxlint --type-aware --fix",
     "format": "prettier .",
     "clean": "unrun node_modules/@parischap/configs/esm/bin/clean.ts -activePackageOnly",
-    "clean-config-files": "unrun node_modules/@parischap/configs/esm/bin/clean-config-files.ts -activePackageOnly",
+    "clean-unexpected-files": "unrun node_modules/@parischap/configs/esm/bin/clean-unexpected-files.ts -activePackageOnly",
     "generate-config-files": "unrun node_modules/@parischap/configs/esm/bin/generate-config-files.ts -activePackageOnly",
     "clean-all": "unrun node_modules/@parischap/configs/esm/bin/clean.ts",
-    "clean-all-config-files": "unrun node_modules/@parischap/configs/esm/bin/clean-config-files.ts",
+    "clean-all-config-files": "unrun node_modules/@parischap/configs/esm/bin/clean-unexpected-files.ts",
     "clean-all-node-modules": "unrun node_modules/@parischap/configs/esm/bin/clean-node-modules.ts",
     "clean-all-prod": "unrun node_modules/@parischap/configs/esm/bin/clean-prod.ts",
     "generate-all-config-files": "unrun node_modules/@parischap/configs/esm/bin/generate-config-files.ts",
@@ -51,36 +50,36 @@
     "circular": "madge --extensions ts --circular --no-color --no-spinner esm",
     "clean-node-modules": "unrun node_modules/@parischap/configs/esm/bin/clean-node-modules.ts -activePackageOnly",
     "clean-prod": "unrun node_modules/@parischap/configs/esm/bin/clean-prod.ts -activePackageOnly",
-    "examples": "",
     "tsconfig": "tsc --showConfig --project tsconfig.esm.json",
     "update-exports": "unrun node_modules/@parischap/configs/esm/bin/update-exports.ts -activePackageOnly",
     "watch-for-exports": "unrun node_modules/@parischap/configs/esm/bin/update-exports.ts -watch -activePackageOnly",
     "build-and-publish": "pnpm build && pnpm checks && pnpm publish-to-npm",
     "publish-to-npm": "cd dist && npm publish --access=public && cd ..",
-    "compile": "vite build",
+    "compile": "unrun node_modules/@parischap/configs/esm/bin/compile.ts -activePackageOnly",
     "docgen": "docgen"
   },
+  "description": "An extension to the official Effect library",
   "exports": {
     ".": {
-      "default": "./esm/index.ts"
+      "default": "./esm//index.ts"
     },
     "./MArray": {
-      "default": "./esm/Array.ts"
+      "default": "./esm//Array.ts"
     },
     "./MBigDecimal": {
-      "default": "./esm/BigDecimal.ts"
+      "default": "./esm//BigDecimal.ts"
     },
     "./MBigInt": {
-      "default": "./esm/BigInt.ts"
+      "default": "./esm//BigInt.ts"
     },
     "./MCache": {
-      "default": "./esm/Cache.ts"
+      "default": "./esm//Cache.ts"
     },
     "./MCacheValueContainer": {
       "default": "./esm/internal/CacheValueContainer.ts"
     },
     "./MChunk": {
-      "default": "./esm/Chunk.ts"
+      "default": "./esm//Chunk.ts"
     },
     "./MData": {
       "default": "./esm/Data/Data.ts"
@@ -89,40 +88,40 @@
       "default": "./esm/Data/DataEquivalenceBasedEquality.ts"
     },
     "./MEither": {
-      "default": "./esm/Either.ts"
+      "default": "./esm//Either.ts"
     },
     "./MFunction": {
-      "default": "./esm/Function.ts"
+      "default": "./esm//Function.ts"
     },
     "./MInputError": {
-      "default": "./esm/InputError.ts"
+      "default": "./esm//InputError.ts"
     },
     "./MJson": {
-      "default": "./esm/Json.ts"
+      "default": "./esm//Json.ts"
     },
     "./MMatch": {
-      "default": "./esm/Match.ts"
+      "default": "./esm//Match.ts"
     },
     "./MNumber": {
-      "default": "./esm/Number.ts"
+      "default": "./esm//Number.ts"
     },
     "./MOption": {
-      "default": "./esm/Option.ts"
+      "default": "./esm//Option.ts"
     },
     "./MPortError": {
-      "default": "./esm/PortError.ts"
+      "default": "./esm//PortError.ts"
     },
     "./MPredicate": {
-      "default": "./esm/Predicate.ts"
+      "default": "./esm//Predicate.ts"
     },
     "./MRecord": {
-      "default": "./esm/Record.ts"
+      "default": "./esm//Record.ts"
     },
     "./MRegExp": {
-      "default": "./esm/RegExp.ts"
+      "default": "./esm//RegExp.ts"
     },
     "./MRegExpString": {
-      "default": "./esm/RegExpString.ts"
+      "default": "./esm//RegExpString.ts"
     },
     "./MString": {
       "default": "./esm/String/String.ts"
@@ -134,7 +133,7 @@
       "default": "./esm/String/StringSearchResult.ts"
     },
     "./MStruct": {
-      "default": "./esm/Struct.ts"
+      "default": "./esm//Struct.ts"
     },
     "./MTree": {
       "default": "./esm/Tree/Tree.ts"
@@ -152,7 +151,7 @@
       "default": "./esm/Tree/TreeNonLeaf.ts"
     },
     "./MTuple": {
-      "default": "./esm/Tuple.ts"
+      "default": "./esm//Tuple.ts"
     },
     "./MTypes": {
       "default": "./esm/Types/types.ts"

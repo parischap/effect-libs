@@ -1,6 +1,5 @@
 {
   "name": "@parischap/ansi-styles",
-  "description": "A functional library to style your strings in terminals",
   "type": "module",
   "author": "Jérôme MARTIN",
   "license": "MIT",
@@ -8,13 +7,13 @@
     "@parischap/configs": "git+ssh://github.com/parischap/configs",
     "@effect/language-service": "0.64.1",
     "@types/node": "25.0.9",
-    "@typescript/native-preview": "7.0.0-dev.20260217.1",
+    "@typescript/native-preview": "7.0.0-dev.20260225.1",
     "prettier-plugin-jsdoc": "1.8.0",
     "prettier-plugin-organize-imports": "4.3.0",
     "@tsconfig/strictest": "2.0.8",
     "prettier": "3.7.4",
-    "oxlint": "1.48.0",
-    "oxlint-tsgolint": "0.14.0",
+    "oxlint": "1.50.0",
+    "oxlint-tsgolint": "0.15.0",
     "unrun": "0.2.27",
     "vitest": "4.0.18",
     "madge": "8.0.0",
@@ -36,10 +35,10 @@
     "lint-fix": "oxlint --type-aware --fix",
     "format": "prettier .",
     "clean": "unrun node_modules/@parischap/configs/esm/bin/clean.ts -activePackageOnly",
-    "clean-config-files": "unrun node_modules/@parischap/configs/esm/bin/clean-config-files.ts -activePackageOnly",
+    "clean-unexpected-files": "unrun node_modules/@parischap/configs/esm/bin/clean-unexpected-files.ts -activePackageOnly",
     "generate-config-files": "unrun node_modules/@parischap/configs/esm/bin/generate-config-files.ts -activePackageOnly",
     "clean-all": "unrun node_modules/@parischap/configs/esm/bin/clean.ts",
-    "clean-all-config-files": "unrun node_modules/@parischap/configs/esm/bin/clean-config-files.ts",
+    "clean-all-config-files": "unrun node_modules/@parischap/configs/esm/bin/clean-unexpected-files.ts",
     "clean-all-node-modules": "unrun node_modules/@parischap/configs/esm/bin/clean-node-modules.ts",
     "clean-all-prod": "unrun node_modules/@parischap/configs/esm/bin/clean-prod.ts",
     "generate-all-config-files": "unrun node_modules/@parischap/configs/esm/bin/generate-config-files.ts",
@@ -51,18 +50,19 @@
     "circular": "madge --extensions ts --circular --no-color --no-spinner esm",
     "clean-node-modules": "unrun node_modules/@parischap/configs/esm/bin/clean-node-modules.ts -activePackageOnly",
     "clean-prod": "unrun node_modules/@parischap/configs/esm/bin/clean-prod.ts -activePackageOnly",
-    "examples": "unrun examples/basic-usage.ts&&unrun examples/cancelling-a-style.ts&&unrun examples/simple-colors.ts&&unrun examples/all-colors.ts",
+    "examples": "unrun examples/basic-usage.ts && unrun examples/cancelling-a-style.ts && unrun examples/simple-colors.ts && unrun examples/all-colors.ts",
     "tsconfig": "tsc --showConfig --project tsconfig.esm.json",
     "update-exports": "unrun node_modules/@parischap/configs/esm/bin/update-exports.ts -activePackageOnly",
     "watch-for-exports": "unrun node_modules/@parischap/configs/esm/bin/update-exports.ts -watch -activePackageOnly",
     "build-and-publish": "pnpm build && pnpm checks && pnpm publish-to-npm",
     "publish-to-npm": "cd dist && npm publish --access=public && cd ..",
-    "compile": "vite build",
+    "compile": "unrun node_modules/@parischap/configs/esm/bin/compile.ts -activePackageOnly",
     "docgen": "docgen"
   },
+  "description": "A functional library to style your strings in terminals",
   "exports": {
     ".": {
-      "default": "./esm/index.ts"
+      "default": "./esm//index.ts"
     },
     "./ASBackgroundColorStyleCharacteristic": {
       "default": "./esm/internal/StyleCharacteristic/OptionalStyleCharacteristic/ColorOptionalStyleCharacteristic/BackgroundColorStyleCharacteristic.ts"
@@ -119,7 +119,7 @@
       "default": "./esm/internal/StyleCharacteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/OverlinedStyleCharacteristic.ts"
     },
     "./ASPalette": {
-      "default": "./esm/Palette.ts"
+      "default": "./esm//Palette.ts"
     },
     "./ASPaletteContextStyler": {
       "default": "./esm/ContextStyler/PaletteContextStyler.ts"
@@ -134,7 +134,7 @@
       "default": "./esm/internal/StyleCharacteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/StruckThroughStyleCharacteristic.ts"
     },
     "./ASStyle": {
-      "default": "./esm/Style.ts"
+      "default": "./esm//Style.ts"
     },
     "./ASStyleCharacteristics": {
       "default": "./esm/internal/StyleCharacteristics.ts"
@@ -143,7 +143,7 @@
       "default": "./esm/internal/Styles.ts"
     },
     "./ASText": {
-      "default": "./esm/Text.ts"
+      "default": "./esm//Text.ts"
     },
     "./ASThreeBitColor": {
       "default": "./esm/Color/ThreeBitColor.ts"

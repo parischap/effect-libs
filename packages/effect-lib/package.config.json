@@ -1,6 +1,6 @@
 {
   "description": "An extension to the official Effect library",
-  "environment": "Plain",
+  "environment": "Neutral",
   "buildMethod": "NoBundling",
   "isPublished": true,
   "hasDocGen": true,

@@ -54,7 +54,7 @@ describe("MFunction", () => {
     });
   });
 
-  it("applyAsMethod", () => {
+  it("applyAsThis", () => {
     TestUtils.strictEqual(pipe(Array.prototype.pop, MFunction.applyAsThis([1, 2])), 2);
   });
 

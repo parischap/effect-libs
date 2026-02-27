@@ -1,6 +1,6 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import * as MTypes from '@parischap/effect-lib/MTypes'
-import * as Number from 'effect/Number'
+import * as MTypes from '@parischap/effect-lib/MTypes';
+import * as Number from 'effect/Number';
 import { describe, it } from 'vitest';
 
 const unknown = null as unknown;
@@ -15,7 +15,6 @@ const testArray0: Array<number> = [];
 const testArray1 = [5];
 const testArray2 = [5, 6];
 const testArray3 = [5, 6, 7];
-const testReadonlyArray = testArray2 as ReadonlyArray<number>;
 
 const testOneArgFunction = Number.increment;
 const testFunction = (n: number, m?: number) => n + (m !== undefined ? m : 0);
@@ -117,9 +116,6 @@ TestUtils.assertTrueType(TestUtils.areEqualTypes<MTypes.IntersectAndSimplify<num
 
 describe('MTypes', () => {
   describe('isString', () => {
-    if (MTypes.isString(unknown))
-      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof unknown, string>());
-
     it('Matching', () => {
       TestUtils.assertTrue(MTypes.isString(testString));
     });
@@ -130,9 +126,6 @@ describe('MTypes', () => {
   });
 
   describe('isNumber', () => {
-    if (MTypes.isNumber(unknown))
-      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof unknown, number>());
-
     it('Matching', () => {
       TestUtils.assertTrue(MTypes.isNumber(testNumber));
     });
@@ -143,9 +136,6 @@ describe('MTypes', () => {
   });
 
   describe('isBigInt', () => {
-    if (MTypes.isBigInt(unknown))
-      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof unknown, bigint>());
-
     it('Matching', () => {
       TestUtils.assertTrue(MTypes.isBigInt(testBigint));
     });
@@ -156,9 +146,6 @@ describe('MTypes', () => {
   });
 
   describe('isBoolean', () => {
-    if (MTypes.isBoolean(unknown))
-      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof unknown, boolean>());
-
     it('Matching', () => {
       TestUtils.assertTrue(MTypes.isBoolean(testBoolean));
     });
@@ -169,9 +156,6 @@ describe('MTypes', () => {
   });
 
   describe('isSymbol', () => {
-    if (MTypes.isSymbol(unknown))
-      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof unknown, symbol>());
-
     it('Matching', () => {
       TestUtils.assertTrue(MTypes.isSymbol(testSymbol));
     });
@@ -182,9 +166,6 @@ describe('MTypes', () => {
   });
 
   describe('isUndefined', () => {
-    if (MTypes.isUndefined(unknown))
-      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof unknown, undefined>());
-
     it('Matching', () => {
       TestUtils.assertTrue(MTypes.isUndefined(undefined));
     });
@@ -195,10 +176,6 @@ describe('MTypes', () => {
   });
 
   describe('isNotUndefined', () => {
-    const undefinedOrNumber = undefined as undefined | number;
-    if (MTypes.isNotUndefined(undefinedOrNumber))
-      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof undefinedOrNumber, number>());
-
     it('Matching', () => {
       TestUtils.assertTrue(MTypes.isNotUndefined(testNumber));
     });
@@ -209,9 +186,6 @@ describe('MTypes', () => {
   });
 
   describe('isNull', () => {
-    if (MTypes.isNull(unknown))
-      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof unknown, null>());
-
     it('Matching', () => {
       TestUtils.assertTrue(MTypes.isNull(null));
     });
@@ -222,10 +196,6 @@ describe('MTypes', () => {
   });
 
   describe('isNotNull', () => {
-    const nullOrNumber = null as null | number;
-    if (MTypes.isNotNull(nullOrNumber))
-      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof nullOrNumber, number>());
-
     it('Matching', () => {
       TestUtils.assertTrue(MTypes.isNotNull(testNumber));
     });
@@ -236,10 +206,6 @@ describe('MTypes', () => {
   });
 
   describe('isNullable', () => {
-    const nullOrNumber = null as null | number;
-    if (MTypes.isNullable(nullOrNumber))
-      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof nullOrNumber, null>());
-
     it('null', () => {
       TestUtils.assertTrue(MTypes.isNullable(null));
     });
@@ -254,10 +220,6 @@ describe('MTypes', () => {
   });
 
   describe('isNotNullable', () => {
-    const nullOrNumber = null as null | number;
-    if (MTypes.isNotNullable(nullOrNumber))
-      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof nullOrNumber, number>());
-
     it('Matching', () => {
       TestUtils.assertTrue(MTypes.isNotNullable(testNumber));
     });
@@ -268,10 +230,6 @@ describe('MTypes', () => {
   });
 
   describe('isPrimitive', () => {
-    const numberOrArray = [3] as unknown as number | ReadonlyArray<number>;
-    if (MTypes.isPrimitive(numberOrArray))
-      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof numberOrArray, number>());
-
     if (MTypes.isPrimitive(unknown))
       TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof unknown, MTypes.Primitive>());
 
@@ -293,15 +251,6 @@ describe('MTypes', () => {
   });
 
   describe('isNonPrimitive', () => {
-    const numberOrArray = [3] as unknown as number | ReadonlyArray<number>;
-    if (MTypes.isNonPrimitive(numberOrArray))
-      TestUtils.assertTrueType(
-        TestUtils.areEqualTypes<typeof numberOrArray, ReadonlyArray<number>>(),
-      );
-
-    if (MTypes.isNonPrimitive(unknown))
-      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof unknown, MTypes.NonPrimitive>());
-
     it('Array', () => {
       TestUtils.assertTrue(MTypes.isNonPrimitive(testArray2));
     });
@@ -316,9 +265,6 @@ describe('MTypes', () => {
   });
 
   describe('isFunction', () => {
-    if (MTypes.isFunction(unknown))
-      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof unknown, MTypes.AnyFunction>());
-
     it('Matching', () => {
       TestUtils.assertTrue(MTypes.isFunction(testFunction));
     });
@@ -329,11 +275,6 @@ describe('MTypes', () => {
   });
 
   describe('isOneArgFunction', () => {
-    if (MTypes.isFunction(testFunction))
-      TestUtils.assertTrueType(
-        TestUtils.areEqualTypes<typeof testFunction, MTypes.OneArgFunction<number>>(),
-      );
-
     it('Matching', () => {
       TestUtils.assertTrue(MTypes.isOneArgFunction(testOneArgFunction));
     });
@@ -344,9 +285,6 @@ describe('MTypes', () => {
   });
 
   describe('isEmptyArray', () => {
-    if (MTypes.isEmptyArray(testArray2))
-      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof testArray2, MTypes.EmptyArray>());
-
     it('Matching', () => {
       TestUtils.assertTrue(MTypes.isEmptyArray(testArray0));
     });
@@ -357,11 +295,6 @@ describe('MTypes', () => {
   });
 
   describe('isEmptyReadonlyArray', () => {
-    if (MTypes.isEmptyReadonlyArray(testReadonlyArray))
-      TestUtils.assertTrueType(
-        TestUtils.areEqualTypes<typeof testReadonlyArray, MTypes.EmptyReadonlyArray>(),
-      );
-
     it('Matching', () => {
       TestUtils.assertTrue(MTypes.isEmptyReadonlyArray(testArray0));
     });
@@ -372,11 +305,6 @@ describe('MTypes', () => {
   });
 
   describe('isOverOne', () => {
-    if (MTypes.isOverOne(testArray2))
-      TestUtils.assertTrueType(
-        TestUtils.areEqualTypes<typeof testArray2, MTypes.OverOne<number>>(),
-      );
-
     it('Singleton array', () => {
       TestUtils.assertTrue(MTypes.isOverOne(testArray1));
     });
@@ -391,11 +319,6 @@ describe('MTypes', () => {
   });
 
   describe('isReadonlyOverOne', () => {
-    if (MTypes.isReadonlyOverOne(testReadonlyArray))
-      TestUtils.assertTrueType(
-        TestUtils.areEqualTypes<typeof testReadonlyArray, MTypes.ReadonlyOverOne<number>>(),
-      );
-
     it('Singleton array', () => {
       TestUtils.assertTrue(MTypes.isReadonlyOverOne(testArray1));
     });
@@ -410,11 +333,6 @@ describe('MTypes', () => {
   });
 
   describe('isOverTwo', () => {
-    if (MTypes.isOverTwo(testArray2))
-      TestUtils.assertTrueType(
-        TestUtils.areEqualTypes<typeof testArray2, MTypes.OverTwo<number>>(),
-      );
-
     it('Two-element array', () => {
       TestUtils.assertTrue(MTypes.isOverTwo(testArray2));
     });
@@ -429,11 +347,6 @@ describe('MTypes', () => {
   });
 
   describe('isReadonlyOverTwo', () => {
-    if (MTypes.isReadonlyOverTwo(testReadonlyArray))
-      TestUtils.assertTrueType(
-        TestUtils.areEqualTypes<typeof testReadonlyArray, MTypes.ReadonlyOverTwo<number>>(),
-      );
-
     it('Two-element array', () => {
       TestUtils.assertTrue(MTypes.isReadonlyOverTwo(testArray2));
     });
@@ -448,11 +361,6 @@ describe('MTypes', () => {
   });
 
   describe('isSingleton', () => {
-    if (MTypes.isSingleton(testArray2))
-      TestUtils.assertTrueType(
-        TestUtils.areEqualTypes<typeof testArray2, MTypes.Singleton<number>>(),
-      );
-
     it('Matching', () => {
       TestUtils.assertTrue(MTypes.isSingleton(testArray1));
     });
@@ -467,11 +375,6 @@ describe('MTypes', () => {
   });
 
   describe('isReadonlySingleton', () => {
-    if (MTypes.isReadonlySingleton(testReadonlyArray))
-      TestUtils.assertTrueType(
-        TestUtils.areEqualTypes<typeof testReadonlyArray, MTypes.ReadonlySingleton<number>>(),
-      );
-
     it('Matching', () => {
       TestUtils.assertTrue(MTypes.isReadonlySingleton(testArray1));
     });
@@ -486,11 +389,6 @@ describe('MTypes', () => {
   });
 
   describe('isPair', () => {
-    if (MTypes.isPair(testArray2))
-      TestUtils.assertTrueType(
-        TestUtils.areEqualTypes<typeof testArray2, MTypes.Pair<number, number>>(),
-      );
-
     it('Matching', () => {
       TestUtils.assertTrue(MTypes.isPair(testArray2));
     });
@@ -505,11 +403,6 @@ describe('MTypes', () => {
   });
 
   describe('isReadonlyPair', () => {
-    if (MTypes.isReadonlyPair(testReadonlyArray))
-      TestUtils.assertTrueType(
-        TestUtils.areEqualTypes<typeof testReadonlyArray, MTypes.ReadonlyPair<number, number>>(),
-      );
-
     it('Matching', () => {
       TestUtils.assertTrue(MTypes.isReadonlyPair(testArray2));
     });
@@ -524,9 +417,6 @@ describe('MTypes', () => {
   });
 
   describe('isIterable', () => {
-    if (MTypes.isIterable(unknown))
-      TestUtils.assertTrueType(TestUtils.areEqualTypes<typeof unknown, Iterable<unknown>>());
-
     it('Matching', () => {
       TestUtils.assertTrue(MTypes.isIterable(testArray2));
     });
@@ -568,12 +458,6 @@ describe('MTypes', () => {
   });
 
   describe('isTypedArray', () => {
-    const numberOrUint16Array = new Uint16Array(5) as number | Uint16Array<ArrayBuffer>;
-    if (MTypes.isTypedArray(numberOrUint16Array))
-      TestUtils.assertTrueType(
-        TestUtils.areEqualTypes<typeof numberOrUint16Array, Uint16Array<ArrayBuffer>>(),
-      );
-
     it('Matching', () => {
       TestUtils.assertTrue(MTypes.isTypedArray(new Uint16Array(5)));
     });

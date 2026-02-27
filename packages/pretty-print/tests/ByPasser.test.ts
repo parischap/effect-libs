@@ -1,8 +1,8 @@
 import * as ASStyle from '@parischap/ansi-styles/ASStyle'
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as PPByPasser from '@parischap/pretty-print/PPByPasser'
+import * as PPIndex from '@parischap/pretty-print/PPIndex'
 import * as PPMarkShowerConstructor from '@parischap/pretty-print/PPMarkShowerConstructor'
-import * as PPOption from '@parischap/pretty-print/PPOption'
 import * as PPStringifiedValue from '@parischap/pretty-print/PPStringifiedValue'
 import * as PPValue from '@parischap/pretty-print/PPValue'
 import * as PPValueBasedStylerConstructor from '@parischap/pretty-print/PPValueBasedStylerConstructor'
@@ -12,7 +12,7 @@ import * as Option from 'effect/Option'
 import { describe, it } from 'vitest';
 
 describe('PPByPasser', () => {
-  const utilInspectLike = PPOption.darkModeUtilInspectLike;
+  const utilInspectLike = PPIndex.darkModeUtilInspectLike;
   const valueBasedStylerConstructor = PPValueBasedStylerConstructor.fromOption(utilInspectLike);
   const markShowerConstructor = PPMarkShowerConstructor.fromOption(utilInspectLike);
   const constructors = {
@@ -22,7 +22,7 @@ describe('PPByPasser', () => {
 
   const { empty } = PPByPasser;
 
-  describe('Tag, prototype and guards', () => {
+  describe('Tag and equality', () => {
     it('moduleTag', () => {
       TestUtils.assertSome(TestUtils.moduleTagFromTestFilePath(__filename), PPByPasser.moduleTag);
     });
@@ -46,23 +46,10 @@ describe('PPByPasser', () => {
     it('.toString()', () => {
       TestUtils.strictEqual(empty.toString(), `Empty`);
     });
-
-    it('.pipe()', () => {
-      TestUtils.strictEqual(empty.pipe(PPByPasser.id), 'Empty');
-    });
-
-    describe('has', () => {
-      it('Matching', () => {
-        TestUtils.assertTrue(PPByPasser.has(empty));
-      });
-      it('Non matching', () => {
-        TestUtils.assertFalse(PPByPasser.has(new Date()));
-      });
-    });
   });
 
   describe('functionToName', () => {
-    const initializedFunctionToName = PPByPasser.functionToName.call(utilInspectLike, constructors);
+    const initializedFunctionToName = PPByPasser.functionToName.action(constructors);
     it('Applied to named function', () => {
       function foo(): string {
         return 'foo';
@@ -86,7 +73,7 @@ describe('PPByPasser', () => {
   });
 
   describe('objectToString', () => {
-    const initializedObjectToString = PPByPasser.objectToString.call(utilInspectLike, constructors);
+    const initializedObjectToString = PPByPasser.objectToString.action(constructors);
     it('Applied to primitive', () => {
       TestUtils.assertNone(pipe(3, PPValue.fromTopValue, initializedObjectToString));
     });

@@ -8,17 +8,15 @@
  */
 
 import * as ASText from '@parischap/ansi-styles/ASText';
+import * as MData from '@parischap/effect-lib/MData';
+import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality';
 import * as MFunction from '@parischap/effect-lib/MFunction';
-import * as MInspectable from '@parischap/effect-lib/MInspectable';
-import * as MPipeable from '@parischap/effect-lib/MPipeable';
 import * as MTypes from '@parischap/effect-lib/MTypes';
 import { flow, pipe } from 'effect';
 import * as Array from 'effect/Array';
-import * as Equal from 'effect/Equal';
 import * as Equivalence from 'effect/Equivalence';
 import * as Function from 'effect/Function';
 import * as Hash from 'effect/Hash';
-import * as Pipeable from 'effect/Pipeable';
 import * as Predicate from 'effect/Predicate';
 import * as String from 'effect/String';
 import * as Struct from 'effect/Struct';
@@ -70,15 +68,15 @@ export namespace Action {
   }
 
   /**
-   * Type of the action. The action takes as input a ValueBasedStylerConstructor (see
-   * ValueBasedStylerConstructor.ts), a MarkShowerConstructor (see MarkShowerConstructor.ts). Based
-   * on these two parameters, it must return an Initialized Action.
+   * Type of the action. The action takes as input the current non-primitive formatting option, a
+   * ValueBasedStylerConstructor (see ValueBasedStylerConstructor.ts), and a MarkShowerConstructor
+   * (see MarkShowerConstructor.ts). Based on these parameters, it must return an Initialized Action.
    *
    * @category Models
    */
   export interface Type {
     (
-      this: PPOption.NonPrimitive.Type,
+      option: PPOption.NonPrimitive.Type,
       {
         valueBasedStylerConstructor,
         markShowerConstructor,
@@ -95,20 +93,59 @@ export namespace Action {
  *
  * @category Models
  */
-export interface Type extends Action.Type, Equal.Equal, MInspectable.Type, Pipeable.Pipeable {
+export class Type extends MDataEquivalenceBasedEquality.Class {
   /** Id of this PropertyFormatter instance. Useful for equality and debugging */
   readonly id: string;
 
-  /** @internal */
-  readonly [_TypeId]: _TypeId;
+  /** Action of this PropertyFormatter */
+  readonly action: Action.Type;
+
+  /** Returns the `id` of `this` */
+  [MData.idSymbol](): string | (() => string) {
+    return function idSymbol(this: Type) {
+      return this.id;
+    };
+  }
+
+  /** Class constructor */
+  private constructor({ id, action }: MTypes.Data<Type>) {
+    super();
+    this.id = id;
+    this.action = action;
+  }
+
+  /** Static constructor */
+  static make(params: MTypes.Data<Type>): Type {
+    return new Type(params);
+  }
+
+  /** Calculates the hash value of `this` */
+  [Hash.symbol](): number {
+    return 0;
+  }
+
+  /** Function that implements the equivalence of `this` and `that` */
+  [MDataEquivalenceBasedEquality.isEquivalentToSymbol](this: this, that: this): boolean {
+    return equivalence(this, that);
+  }
+
+  /** Predicate that returns true if `that` has the same type marker as `this` */
+  [MDataEquivalenceBasedEquality.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
+    return Predicate.hasProperty(that, _TypeId);
+  }
+
+  /** Returns the TypeMarker of the class */
+  protected get [_TypeId](): _TypeId {
+    return _TypeId;
+  }
 }
 
 /**
- * Type guard
+ * Constructor
  *
- * @category Guards
+ * @category Constructors
  */
-export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
+export const make = (params: MTypes.Data<Type>): Type => Type.make(params);
 
 /**
  * PropertyFormatter equivalence
@@ -117,40 +154,36 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
  */
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
 
-/** Base */
-const _TypeIdHash = Hash.hash(_TypeId);
-const base: MTypes.Proto<Type> = {
-  [_TypeId]: _TypeId,
-  [Equal.symbol](this: Type, that: unknown): boolean {
-    return has(that) && equivalence(this, that);
-  },
-  [Hash.symbol](this: Type) {
-    return pipe(this.id, Hash.hash, Hash.combine(_TypeIdHash), Hash.cached(this));
-  },
-  [MInspectable.IdSymbol](this: Type) {
-    return this.id;
-  },
-  ...MInspectable.BaseProto(moduleTag),
-  ...MPipeable.BaseProto,
-};
-
-/**
- * Constructor
- *
- * @category Constructors
- */
-export const make = ({ id, action }: { readonly id: string; readonly action: Action.Type }): Type =>
-  Object.assign(MFunction.clone(action), {
-    id,
-    ...base,
-  });
-
 /**
  * Returns the `id` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
+
+/**
+ * Returns the `action` property of `self`
+ *
+ * @category Getters
+ */
+export const action: MTypes.OneArgFunction<Type, Action.Type> = Struct.get('action');
+
+/**
+ * Applies `self`'s action with the given non-primitive option and styling constructors.
+ *
+ * @category Formatting
+ */
+export const apply =
+  (self: Type) =>
+  (option: PPOption.NonPrimitive.Type) =>
+  ({
+    valueBasedStylerConstructor,
+    markShowerConstructor,
+  }: {
+    readonly valueBasedStylerConstructor: PPValueBasedStylerConstructor.Type;
+    readonly markShowerConstructor: PPMarkShowerConstructor.Type;
+  }): Action.Initialized.Type =>
+    self.action(option, { valueBasedStylerConstructor, markShowerConstructor });
 
 /**
  * PropertyFormatter instance that prints only the value of a property (similar to the usual way an
@@ -160,7 +193,7 @@ export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
  */
 export const valueOnly: Type = make({
   id: 'ValueOnly',
-  action: () => MFunction.constIdentity,
+  action: (_option, _constructors) => MFunction.constIdentity,
 });
 
 /* if onSameLine=false and isLeaf=false , the lines of the value are appended to the lines of the key and no keyValueSeparator is used. In all other cases, the last line of the key and the first line of the value are merged and separated by the keyValueSeparator. */
@@ -171,7 +204,7 @@ const _keyAndValueAction = ({
   readonly onSameLine: boolean;
   readonly dontShowLeafValue: boolean;
 }): Action.Type =>
-  function _keyAndValueAction(this, { valueBasedStylerConstructor }) {
+  (option, { valueBasedStylerConstructor }) => {
     const propertyKeyTextFormatter = valueBasedStylerConstructor('PropertyKey');
     const prototypeDelimitersTextFormatter = valueBasedStylerConstructor('PrototypeDelimiters');
     const KeyValueSeparatorTextFormatter = valueBasedStylerConstructor('KeyValueSeparator');
@@ -185,7 +218,7 @@ const _keyAndValueAction = ({
       const inContextPrototypeDelimitersTextFormatter = prototypeDelimitersTextFormatter(value);
 
       const keyValueSeparator = pipe(
-        this.keyValueSeparatorMark,
+        option.keyValueSeparatorMark,
         KeyValueSeparatorTextFormatter(value),
       );
 
@@ -197,14 +230,14 @@ const _keyAndValueAction = ({
           f: flow(
             PPStringifiedValue.prependToFirstLine(
               pipe(
-                this.prototypeStartDelimiterMark,
+                option.prototypeStartDelimiterMark,
                 inContextPrototypeDelimitersTextFormatter,
                 ASText.repeat(protoDepth),
               ),
             ),
             PPStringifiedValue.appendToLastLine(
               pipe(
-                this.prototypeEndDelimiterMark,
+                option.prototypeEndDelimiterMark,
                 inContextPrototypeDelimitersTextFormatter,
                 ASText.repeat(protoDepth),
               ),

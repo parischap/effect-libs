@@ -1,6 +1,6 @@
 /**
- * This module implements a `CVDateTimeFormatter`,i.e. an object that can convert a CVDateTime into
- * a string according to the passed CVDateTimeFormat.
+ * This module implements a `CVDateTimeFormatter`, i.e. an object that can convert a `CVDateTime`
+ * into a string according to the passed `CVDateTimeFormat` and `CVDateTimeFormatContext`.
  */
 
 import { MMatch } from '@parischap/effect-lib';
@@ -22,11 +22,11 @@ import * as CVDateTimeFormat from './DateTimeFormat.js';
 import * as CVDateTimeFormatContext from './DateTimeFormatContext/DateTimeFormatContext.js';
 
 /**
- * Module tags
+ * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/conversions/Formatting/DateTimeFormat/DateTimeFormatter';
+export const moduleTag = '@parischap/conversions/Formatting/DateTimeFormat/DateTimeFormatter/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
@@ -36,10 +36,10 @@ type _TypeId = typeof _TypeId;
  * @category Models
  */
 export class Type extends MData.Class {
-  // Name of this CVDateTimeParser
+  /** Name of this CVDateTimeFormatter */
   readonly name: string;
 
-  // Function that will be used to format a CVDateTime into a string
+  /** Function that will be used to format a CVDateTime into a string */
   readonly formatter: MTypes.OneArgFunction<
     CVDateTime.Type,
     Either.Either<string, MInputError.Type>
@@ -125,7 +125,7 @@ export class Type extends MData.Class {
       name: pipe(
         dateTimeFormat.name,
         MString.prepend("'"),
-        MString.append(`' parser in '${context.name}' context`),
+        MString.append(`' formatter in '${context.name}' context`),
       ),
       formatter: (d) =>
         pipe(
@@ -149,8 +149,7 @@ export class Type extends MData.Class {
 type Formatter = Type['formatter'];
 
 /**
- * Builds a CVDateTimeParser from a CVDateTimeFormat dateTimeFormat and a CVDateTimeFormatContext
- * `context`
+ * Builds a `CVDateTimeFormatter` from a `CVDateTimeFormat` and a `CVDateTimeFormatContext`.
  *
  * @category Constructors
  */
@@ -160,21 +159,28 @@ export const make = (params: {
 }): Type => Type.make(params);
 
 /**
- * Returns the `formatter` property of `self`
+ * Returns the `name` property of `self`.
  *
- * @category Destructors
+ * @category Getters
+ */
+export const name: MTypes.OneArgFunction<Type, string> = Struct.get('name');
+
+/**
+ * Returns the `formatter` property of `self`.
+ *
+ * @category Getters
  */
 export const formatter: MTypes.OneArgFunction<Type, Formatter> = Struct.get('formatter');
 
 /**
- * Formats a CVDateTime to a string
+ * Formats a `CVDateTime` into a string.
  *
  * @category Formatting
  */
 export const format: MTypes.OneArgFunction<Type, Formatter> = Struct.get('formatter');
 
 /**
- * Same as format but throws in case of failure
+ * Same as `format` but throws instead of returning a `Left` in case of failure.
  *
  * @category Formatting
  */

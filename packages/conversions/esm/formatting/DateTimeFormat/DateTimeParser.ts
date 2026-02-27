@@ -1,6 +1,6 @@
 /**
- * This module implements a `CVDateTimeParser`,i.e. an object that can convert a string into a
- * CVDateTime according to the passed CVDateTimeFormat.
+ * This module implements a `CVDateTimeParser`, i.e. an object that can convert a string into a
+ * `CVDateTime` according to the passed `CVDateTimeFormat` and `CVDateTimeFormatContext`.
  */
 
 import * as MData from '@parischap/effect-lib/MData';
@@ -22,7 +22,7 @@ import * as CVDateTimeFormatContext from './DateTimeFormatContext/DateTimeFormat
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/conversions/Formatting/DateTimeFormat/DateTimeParser';
+export const moduleTag = '@parischap/conversions/Formatting/DateTimeFormat/DateTimeParser/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
@@ -32,10 +32,10 @@ type _TypeId = typeof _TypeId;
  * @category Models
  */
 export class Type extends MData.Class {
-  // Name of this CVDateTimeParser
+  /** Name of this CVDateTimeParser */
   readonly name: string;
 
-  // Function that will be used to parse a string into a CVDateTime
+  /** Function that will be used to parse a string into a CVDateTime */
   readonly parser: MTypes.OneArgFunction<string, Either.Either<CVDateTime.Type, MInputError.Type>>;
 
   /** Returns the `id` of `this` */
@@ -85,8 +85,7 @@ export class Type extends MData.Class {
 type Parser = Type['parser'];
 
 /**
- * Builds a CVDateTimeParser from a CVDateTimeFormat dateTimeFormat and a CVDateTimeFormatContext
- * `context`
+ * Builds a `CVDateTimeParser` from a `CVDateTimeFormat` and a `CVDateTimeFormatContext`.
  *
  * @category Constructors
  */
@@ -96,23 +95,29 @@ export const make = (params: {
 }): Type => Type.make(params);
 
 /**
- * Returns the `parser` property of `self`
+ * Returns the `name` property of `self`.
  *
- * @category Destructors
+ * @category Getters
+ */
+export const name: MTypes.OneArgFunction<Type, string> = Struct.get('name');
+
+/**
+ * Returns the `parser` property of `self`.
+ *
+ * @category Getters
  */
 export const parser: MTypes.OneArgFunction<Type, Parser> = Struct.get('parser');
 
 /**
- * Parses a text into a CVDateTime. See CVDateTime.fromParts for more information on default values
- * and errors.
+ * Parses a text into a `CVDateTime`. See `CVDateTime.fromParts` for more information on default
+ * values and errors.
  *
  * @category Parsing
  */
-
 export const parse: MTypes.OneArgFunction<Type, Parser> = parser;
 
 /**
- * Same as parser but throws in case of failure
+ * Same as `parse` but throws instead of returning a `Left` in case of failure.
  *
  * @category Parsing
  */

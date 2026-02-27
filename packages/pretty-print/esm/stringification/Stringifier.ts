@@ -7,12 +7,17 @@ import * as ASText from '@parischap/ansi-styles/ASText';
 import * as MData from '@parischap/effect-lib/MData';
 import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality';
 import * as MTypes from '@parischap/effect-lib/MTypes';
+import {pipe} from 'effect';
 import * as Equivalence from 'effect/Equivalence';
 import * as Hash from 'effect/Hash';
 import * as HashMap from 'effect/HashMap';
 import * as Predicate from 'effect/Predicate';
 import * as PPValue from '../internal/stringification/Value.js';
 import * as PPParameters from '../parameters/index.js';
+import * as PPMarkShowerConstructor from '../parameters/MarkShowerConstructor.js';
+import * as PPPrimitiveFormatter from '../parameters/PrimitiveFormatter.js';
+import * as PPStyleMap from '../parameters/StyleMap.js';
+import * as PPValueBasedStylerConstructor from '../parameters/ValueBasedStylerConstructor.js';
 import * as PPStringifiedValue from './StringifiedValue.js';
 
 /**
@@ -49,7 +54,13 @@ export class Type extends MDataEquivalenceBasedEquality.Class {
 
   /** Static constructor */
   static make(parameters: PPParameters.Type): Type {
-    return new Type({ parameters, markShowers: pipe(parameters.markMap, HashMap.map()) });
+    return new Type({
+      parameters,
+      markShowers: HashMap.map(parameters.markMap.marks, (mark) => {
+        const styler = PPStyleMap.get(parameters.styleMap, mark.partName);
+        return (value: PPValue.Any): ASText.Type => styler(value)(mark.text);
+      }),
+    });
   }
 
   /** Calculates the hash value of `this` */
@@ -77,7 +88,7 @@ export class Type extends MDataEquivalenceBasedEquality.Class {
  *
  * @category Constructors
  */
-export const make = (params: MTypes.Data<Type>): Type => Type.make(params);
+export const make = (parameters: PPParameters.Type): Type => Type.make(parameters);
 
 /**
  * Equivalence
@@ -96,8 +107,8 @@ export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
 export const toStringifier = (
   self: Type,
 ): MTypes.OneArgFunction<unknown, PPStringifiedValue.Type> => {
-  const valueBasedStylerConstructor = PPValueBasedStylerConstructor.fromOption(self);
-  const markShowerConstructor = PPMarkShowerConstructor.fromOption(self);
+  const valueBasedStylerConstructor = PPValueBasedStylerConstructor.fromOption(self.parameters);
+  const markShowerConstructor = PPMarkShowerConstructor.fromOption(self.parameters);
 
   const constructors = { markShowerConstructor, valueBasedStylerConstructor };
 
@@ -114,10 +125,7 @@ export const toStringifier = (
   const messageStartDelimiterMarkShower = markShowerConstructor('MessageStartDelimiter');
   const messageEndDelimiterMarkShower = markShowerConstructor('MessageEndDelimiter');
 
-  const initializedByPasser = PPByPassers.toSyntheticByPasser(self.byPassers).call(
-    self,
-    constructors,
-  );
+  const initializedByPasser = PPByPassers.toSyntheticByPasser(self.parameters.byPassers)(constructors);
 
   const toInitializedNonPrimitiveOption = NonPrimitive.Initialized.fromNonPrimitive(constructors);
 
@@ -128,10 +136,13 @@ export const toStringifier = (
 
   const initializedNonPrimitiveOptionGetter = MCache.toGetter(initializedNonPrimitiveOptionCache);
   const initializedGeneralNonPrimitiveOption = initializedNonPrimitiveOptionGetter(
-    self.generalNonPrimitiveParameters,
+    self.parameters.generalNonPrimitiveParameters,
   );
 
-  const functionToNameByPasser = PPByPasser.functionToName.call(self, constructors);
+  const functionToNameByPasser = PPByPasser.functionToName.action.call(
+    self.parameters,
+    constructors,
+  );
 
   let lastCyclicalIndex = 1;
   const cyclicalMap = MutableHashMap.empty<PPValue.NonPrimitive, number>();
@@ -165,7 +176,7 @@ export const toStringifier = (
               ),
               Either.mapLeft(
                 flow(
-                  self.primitiveFormatter,
+                  PPPrimitiveFormatter.format(self.parameters.primitiveFormatter)(self.parameters),
                   primitiveValueTextFormatter(notByPassed),
                   PPStringifiedValue.fromText,
                 ),
@@ -174,7 +185,7 @@ export const toStringifier = (
 
             const initializedNonPrimitiveOption = pipe(
               unBypassedNonPrimitive,
-              self.specificNonPrimitiveParameters,
+              self.parameters.specificNonPrimitiveParameters,
               Option.map(initializedNonPrimitiveOptionGetter),
               Option.getOrElse(() => initializedGeneralNonPrimitiveOption),
             );
@@ -182,7 +193,7 @@ export const toStringifier = (
             const unBypassedNonPrimitiveUnderMaxDepth = yield* pipe(
               unBypassedNonPrimitive,
               Either.liftPredicate(
-                flow(PPValue.depth, Number.lessThan(self.maxDepth)),
+                flow(PPValue.depth, Number.lessThan(self.parameters.maxDepth)),
                 flow(
                   functionToNameByPasser,
                   Option.getOrElse(

@@ -16,6 +16,8 @@ import {
   CVDateTimeFormatContext,
   CVDateTimeFormatPlaceholder,
   CVDateTimeFormatSeparator,
+  CVDateTimeFormatter,
+  CVDateTimeParser,
   CVSchema,
 } from '@parischap/conversions';
 import { DateTime, Either, flow, Schema } from 'effect';
@@ -27,27 +29,33 @@ const sep = CVDateTimeFormatSeparator;
 // Let's define a context
 const frenchContext = CVDateTimeFormatContext.fromLocaleOrThrow('fr-FR');
 
-// Let's define a DateTimeFormat: iiii d MMMM yyyy
-const frenchFormat = CVDateTimeFormat.make({
+// Let's define a DateTimeFormat: iiii d MMMM yyyy (context-independent)
+const frenchFormat = CVDateTimeFormat.make(
+  placeholder('iiii'),
+  sep.space,
+  placeholder('d'),
+  sep.space,
+  placeholder('MMMM'),
+  sep.space,
+  placeholder('yyyy'),
+);
+
+// Let's define a parser (combines format + context)
+const frenchParser = CVDateTimeParser.make({ dateTimeFormat: frenchFormat, context: frenchContext });
+
+// Let's define a formatter (combines format + context)
+const frenchFormatter = CVDateTimeFormatter.make({
+  dateTimeFormat: frenchFormat,
   context: frenchContext,
-  parts: [
-    placeholder('iiii'),
-    sep.space,
-    placeholder('d'),
-    sep.space,
-    placeholder('MMMM'),
-    sep.space,
-    placeholder('yyyy'),
-  ],
 });
 
-// Let's define a parser
+// Let's define a parse function
 // Type: (dateString: string) => Either.Either<CVDateTime.Type, MInputError.Type>
-const parser = CVDateTimeFormat.toParser(frenchFormat);
+const parser = CVDateTimeParser.parse(frenchParser);
 
-// Let's define a formatter
+// Let's define a format function
 // Type: (date: CVDateTime.Type) => Either.Either<string, MInputError.Type>
-const formatter = CVDateTimeFormat.toFormatter(frenchFormat);
+const formatter = CVDateTimeFormatter.format(frenchFormatter);
 
 // Let's define a parser to Effect.DateTime for Effect users
 // Type: (dateString: string) => Either.Either<DateTime.Zoned, MInputError.Type>
@@ -57,13 +65,13 @@ const effectParser = flow(parser, Either.map(CVDateTime.toEffectDateTime));
 // Type: (date: DateTime.Zoned) => Either.Either<string, MInputError.Type>
 const effectFormatter = flow(CVDateTime.fromEffectDateTime, formatter);
 
-// Let's define a parser that returns a date or throws for non Effect users
+// Let's define a parser that returns a Date or throws for non Effect users
 // Type: (dateString: string) => Date
-const jsParser = flow(CVDateTimeFormat.toThrowingParser(frenchFormat), CVDateTime.toDate);
+const jsParser = flow(CVDateTimeParser.parseOrThrow(frenchParser), CVDateTime.toDate);
 
-// Let's define a formatter that takes a date and throws for non Effect users
+// Let's define a formatter that takes a Date and throws for non Effect users
 // Type: (date: Date) => string
-const jsFormatter = flow(CVDateTime.fromDate, CVDateTimeFormat.toThrowingFormatter(frenchFormat));
+const jsFormatter = flow(CVDateTime.fromDate, CVDateTimeFormatter.formatOrThrow(frenchFormatter));
 
 // Result: {
 //   _id: 'Either',
@@ -110,33 +118,34 @@ console.log(jsFormatter(new Date(0)));
 //     message: 'Expected length of #year to be: 4. Actual: 5',
 //     _tag: '@parischap/effect-lib/InputError/'
 //   }
+// }
 console.log(formatter(CVDateTime.fromPartsOrThrow({ year: 10_024 })));
 
 // Using Schema
-const schema = CVSchema.DateTime(frenchFormat);
+const schema = CVSchema.DateTime(frenchParser, frenchFormatter);
 
 // For Effect users
-const effectSchema = CVSchema.DateTimeZoned(frenchFormat);
+const effectSchema = CVSchema.DateTimeZoned(frenchParser, frenchFormatter);
 
 // For non Effect users
-const jsSchema = CVSchema.Date(frenchFormat);
+const jsSchema = CVSchema.Date(frenchParser, frenchFormatter);
 
-// Type: (value: string ) => Either.Either<CVDateTime.Type,ParseError>
+// Type: (value: string) => Either.Either<CVDateTime.Type, ParseError>
 const decoder = Schema.decodeEither(schema);
 
-// Type: (value: CVDateTime.Type ) => Either.Either<string,ParseError>
+// Type: (value: CVDateTime.Type) => Either.Either<string, ParseError>
 const encoder = Schema.encodeEither(schema);
 
-// Type: (value: string ) => Either.Either<DateTime.Zoned,ParseError>
+// Type: (value: string) => Either.Either<DateTime.Zoned, ParseError>
 const effectDecoder = Schema.decodeEither(effectSchema);
 
-// Type: (value: CVDateTime.Zoned ) => Either.Either<string,ParseError>
+// Type: (value: DateTime.Zoned) => Either.Either<string, ParseError>
 const effectEncoder = Schema.encodeEither(effectSchema);
 
-// Type: (value: string ) => Either.Either<Date,ParseError>
+// Type: (value: string) => Either.Either<Date, ParseError>
 const jsDecoder = Schema.decodeEither(jsSchema);
 
-// Type: (value: Date ) => Either.Either<string,ParseError>
+// Type: (value: Date) => Either.Either<string, ParseError>
 const jsEncoder = Schema.encodeEither(jsSchema);
 
 // Result: { _id: 'Either', _tag: 'Right', right: '2025-09-04T00:00:00.000+02:00' }
@@ -243,7 +252,7 @@ export type Token =
 
 ## 3. CVDateTimeFormatContext
 
-Some of the available tokens are language specific. For instance the `MMMM` token is expected to display `december` in English and `décembre` in French. For this reason, you need to build a `CVDateTimeFormatContext` before building a `CVDateTimeFormat`. You can build a `CVDateTimeFormatContext` in one of the three following ways:
+Some of the available tokens are language specific. For instance the `MMMM` token is expected to display `december` in English and `décembre` in French. For this reason, you need to build a `CVDateTimeFormatContext` and combine it with a `CVDateTimeFormat` when constructing a `CVDateTimeParser` or a `CVDateTimeFormatter`. You can build a `CVDateTimeFormatContext` in one of the three following ways:
 
 - You can use the provided `CVDateTimeFormatContext.enGB` instance (for Great Britain English language)
 - You can build a `CVDateTimeFormatContext` from the name of a locale, e.g. `const frenchContext = CVDateTimeFormatContext.fromLocaleOrThrow("fr-FR")`
@@ -251,7 +260,7 @@ Some of the available tokens are language specific. For instance the `MMMM` toke
 
 ## 4. Debugging
 
-`CVDateTimeFormat` objects implement a `.toString()` method which displays a synthetic description of the template followed by the description of each CVPlaceholder. For instance:
+`CVDateTimeFormat`, `CVDateTimeParser`, and `CVDateTimeFormatter` objects all implement a `.toString()` method. `CVDateTimeFormat.toString()` returns a concatenation of all its parts (e.g. `iiii d MMMM yyyy`). `CVDateTimeParser.toString()` and `CVDateTimeFormatter.toString()` return a description combining the format name and context (e.g. `'iiii d MMMM yyyy' parser in 'fr-FR' context`). For instance:
 
 ```ts
 import {
@@ -259,26 +268,41 @@ import {
   CVDateTimeFormatContext,
   CVDateTimeFormatPlaceholder,
   CVDateTimeFormatSeparator,
+  CVDateTimeFormatter,
+  CVDateTimeParser,
 } from '@parischap/conversions';
 
 // Let's define useful shortcuts
 const placeholder = CVDateTimeFormatPlaceholder.make;
 const sep = CVDateTimeFormatSeparator;
 
-// Let's define a DateTimeFormat: iiii d MMMM yyyy
-const frenchFormat = CVDateTimeFormat.make({
+// Let's define a DateTimeFormat: iiii d MMMM yyyy (context-independent)
+const frenchFormat = CVDateTimeFormat.make(
+  placeholder('iiii'),
+  sep.space,
+  placeholder('d'),
+  sep.space,
+  placeholder('MMMM'),
+  sep.space,
+  placeholder('yyyy'),
+);
+
+// Result: iiii d MMMM yyyy
+console.log(frenchFormat);
+
+const frenchParser = CVDateTimeParser.make({
+  dateTimeFormat: frenchFormat,
   context: CVDateTimeFormatContext.enGB,
-  parts: [
-    placeholder('iiii'),
-    sep.space,
-    placeholder('d'),
-    sep.space,
-    placeholder('MMMM'),
-    sep.space,
-    placeholder('yyyy'),
-  ],
 });
 
-// Result: "'iiii d MMMM yyyy' in 'en-GB' context"
-console.log(frenchFormat);
+// Result: 'iiii d MMMM yyyy' parser in 'en-GB' context
+console.log(frenchParser);
+
+const frenchFormatter = CVDateTimeFormatter.make({
+  dateTimeFormat: frenchFormat,
+  context: CVDateTimeFormatContext.enGB,
+});
+
+// Result: 'iiii d MMMM yyyy' formatter in 'en-GB' context
+console.log(frenchFormatter);
 ```

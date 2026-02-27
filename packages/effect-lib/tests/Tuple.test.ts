@@ -7,7 +7,7 @@ import * as Tuple from 'effect/Tuple'
 import { describe, it } from "vitest";
 
 describe("MTuple", () => {
-  describe("make", () => {
+  describe("fromSingleValue", () => {
     it("With Array.map", () => {
       TestUtils.deepStrictEqual(
         pipe(Array.make(1, 2), Array.map(MTuple.fromSingleValue)),

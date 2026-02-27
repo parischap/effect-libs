@@ -3,9 +3,11 @@ import * as CVDateTimeFormat from '@parischap/conversions/CVDateTimeFormat';
 import * as CVDateTimeFormatContext from '@parischap/conversions/CVDateTimeFormatContext';
 import * as CVDateTimeFormatPlaceholder from '@parischap/conversions/CVDateTimeFormatPlaceholder';
 import * as CVDateTimeFormatSeparator from '@parischap/conversions/CVDateTimeFormatSeparator';
+import * as CVDateTimeFormatter from '@parischap/conversions/CVDateTimeFormatter';
+import * as CVDateTimeParser from '@parischap/conversions/CVDateTimeParser';
 import * as CVSchema from '@parischap/conversions/CVSchema';
 import { flow } from 'effect';
-import * as DateTime from 'effect/DateTime/';
+import * as DateTime from 'effect/DateTime';
 import * as Either from 'effect/Either';
 import * as Schema from 'effect/Schema';
 
@@ -16,27 +18,36 @@ const sep = CVDateTimeFormatSeparator;
 // Let's define a context
 const frenchContext = CVDateTimeFormatContext.fromLocaleOrThrow('fr-FR');
 
-// Let's define a DateTimeFormat: iiii d MMMM yyyy
-const frenchFormat = CVDateTimeFormat.make({
+// Let's define a DateTimeFormat: iiii d MMMM yyyy (context-independent)
+const frenchFormat = CVDateTimeFormat.make(
+  placeholder('iiii'),
+  sep.space,
+  placeholder('d'),
+  sep.space,
+  placeholder('MMMM'),
+  sep.space,
+  placeholder('yyyy'),
+);
+
+// Let's define a parser (combines format + context)
+const frenchParser = CVDateTimeParser.make({
+  dateTimeFormat: frenchFormat,
   context: frenchContext,
-  parts: [
-    placeholder('iiii'),
-    sep.space,
-    placeholder('d'),
-    sep.space,
-    placeholder('MMMM'),
-    sep.space,
-    placeholder('yyyy'),
-  ],
 });
 
-// Let's define a parser
-// Type: (dateString: string) => Either.Either<CVDateTime.Type, MInputError.Type>
-const parser = CVDateTimeFormat.toParser(frenchFormat);
+// Let's define a formatter (combines format + context)
+const frenchFormatter = CVDateTimeFormatter.make({
+  dateTimeFormat: frenchFormat,
+  context: frenchContext,
+});
 
-// Let's define a formatter
+// Let's define a parse function
+// Type: (dateString: string) => Either.Either<CVDateTime.Type, MInputError.Type>
+const parser = CVDateTimeParser.parse(frenchParser);
+
+// Let's define a format function
 // Type: (date: CVDateTime.Type) => Either.Either<string, MInputError.Type>
-const formatter = CVDateTimeFormat.toFormatter(frenchFormat);
+const formatter = CVDateTimeFormatter.format(frenchFormatter);
 
 // Let's define a parser to Effect.DateTime for Effect users
 // Type: (dateString: string) => Either.Either<DateTime.Zoned, MInputError.Type>
@@ -46,13 +57,13 @@ const effectParser = flow(parser, Either.map(CVDateTime.toEffectDateTime));
 // Type: (date: DateTime.Zoned) => Either.Either<string, MInputError.Type>
 const effectFormatter = flow(CVDateTime.fromEffectDateTime, formatter);
 
-// Let's define a parser that returns a date or throws for non Effect users
+// Let's define a parser that returns a Date or throws for non Effect users
 // Type: (dateString: string) => Date
-const jsParser = flow(CVDateTimeFormat.toThrowingParser(frenchFormat), CVDateTime.toDate);
+const jsParser = flow(CVDateTimeParser.parseOrThrow(frenchParser), CVDateTime.toDate);
 
-// Let's define a formatter that takes a date and throws for non Effect users
+// Let's define a formatter that takes a Date and throws for non Effect users
 // Type: (date: Date) => string
-const jsFormatter = flow(CVDateTime.fromDate, CVDateTimeFormat.toThrowingFormatter(frenchFormat));
+const jsFormatter = flow(CVDateTime.fromDate, CVDateTimeFormatter.formatOrThrow(frenchFormatter));
 
 // Result: {
 //   _id: 'Either',
@@ -99,33 +110,34 @@ console.log(jsFormatter(new Date(0)));
 //     message: 'Expected length of #year to be: 4. Actual: 5',
 //     _tag: '@parischap/effect-lib/InputError/'
 //   }
+// }
 console.log(formatter(CVDateTime.fromPartsOrThrow({ year: 10_024 })));
 
 // Using Schema
-const schema = CVSchema.DateTime(frenchFormat);
+const schema = CVSchema.DateTime(frenchParser, frenchFormatter);
 
 // For Effect users
-const effectSchema = CVSchema.DateTimeZoned(frenchFormat);
+const effectSchema = CVSchema.DateTimeZoned(frenchParser, frenchFormatter);
 
 // For non Effect users
-const jsSchema = CVSchema.Date(frenchFormat);
+const jsSchema = CVSchema.Date(frenchParser, frenchFormatter);
 
-// Type: (value: string ) => Either.Either<CVDateTime.Type,ParseError>
+// Type: (value: string) => Either.Either<CVDateTime.Type, ParseError>
 const decoder = Schema.decodeEither(schema);
 
-// Type: (value: CVDateTime.Type ) => Either.Either<string,ParseError>
+// Type: (value: CVDateTime.Type) => Either.Either<string, ParseError>
 const encoder = Schema.encodeEither(schema);
 
-// Type: (value: string ) => Either.Either<DateTime.Zoned,ParseError>
+// Type: (value: string) => Either.Either<DateTime.Zoned, ParseError>
 const effectDecoder = Schema.decodeEither(effectSchema);
 
-// Type: (value: CVDateTime.Zoned ) => Either.Either<string,ParseError>
+// Type: (value: DateTime.Zoned) => Either.Either<string, ParseError>
 const effectEncoder = Schema.encodeEither(effectSchema);
 
-// Type: (value: string ) => Either.Either<Date,ParseError>
+// Type: (value: string) => Either.Either<Date, ParseError>
 const jsDecoder = Schema.decodeEither(jsSchema);
 
-// Type: (value: Date ) => Either.Either<string,ParseError>
+// Type: (value: Date) => Either.Either<string, ParseError>
 const jsEncoder = Schema.encodeEither(jsSchema);
 
 // Result: { _id: 'Either', _tag: 'Right', right: '2025-09-04T00:00:00.000+02:00' }

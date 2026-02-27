@@ -458,9 +458,13 @@ export namespace Initialized {
         syntheticPropertyFilter: (nonPrimitiveOption): PPPropertyFilter.Action.Type =>
           PPPropertyFilters.toSyntheticPropertyFilter(nonPrimitiveOption.propertyFilters),
         initializedPropertyFormatter: (nonPrimitiveOption) =>
-          nonPrimitiveOption.propertyFormatter(params),
+          PPPropertyFormatter.apply(nonPrimitiveOption.propertyFormatter)(nonPrimitiveOption)(
+            params,
+          ),
         initializedNonPrimitiveFormatter: (nonPrimitiveOption) =>
-          nonPrimitiveOption.nonPrimitiveFormatter(params),
+          PPNonPrimitiveFormatter.apply(nonPrimitiveOption.nonPrimitiveFormatter)(
+            nonPrimitiveOption,
+          )(params),
         toHeaderMarkShower: (nonPrimitiveOption): Type['toHeaderMarkShower'] => {
           const emptyText = Function.constant(ASText.empty);
 

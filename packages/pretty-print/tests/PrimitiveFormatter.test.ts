@@ -1,20 +1,20 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as MBigInt from '@parischap/effect-lib/MBigInt'
-import * as PPOption from '@parischap/pretty-print/PPOption'
+import * as PPIndex from '@parischap/pretty-print/PPIndex'
 import * as PPPrimitiveFormatter from '@parischap/pretty-print/PPPrimitiveFormatter'
 import * as PPValue from '@parischap/pretty-print/PPValue'
-import {pipe} from 'effect'
 import { describe, it } from 'vitest';
 
 describe('PrimitiveFormatter', () => {
-  const {utilInspectLike} = PPOption;
+  const { utilInspectLike } = PPIndex;
   const utilInspectLikeFormatter = PPPrimitiveFormatter.utilInspectLikeMaker();
   const utilInspectLikeFormatterWithOtherDefaults = PPPrimitiveFormatter.utilInspectLikeMaker({
     maxStringLength: 3,
     numberFormatter: new Intl.NumberFormat(),
     id: 'UtilInspectLikeWithOtherDefaults',
   });
-  describe('Tag, prototype and guards', () => {
+
+  describe('Tag and equality', () => {
     it('moduleTag', () => {
       TestUtils.assertSome(
         TestUtils.moduleTagFromTestFilePath(__filename),
@@ -38,117 +38,63 @@ describe('PrimitiveFormatter', () => {
     it('.toString()', () => {
       TestUtils.strictEqual(utilInspectLikeFormatter.toString(), `UtilInspectLike`);
     });
-
-    it('.pipe()', () => {
-      TestUtils.strictEqual(
-        utilInspectLikeFormatter.pipe(PPPrimitiveFormatter.id),
-        'UtilInspectLike',
-      );
-    });
-
-    describe('has', () => {
-      it('Matching', () => {
-        TestUtils.assertTrue(PPPrimitiveFormatter.has(utilInspectLikeFormatter));
-      });
-      it('Non matching', () => {
-        TestUtils.assertFalse(PPPrimitiveFormatter.has(new Date()));
-      });
-    });
   });
 
   describe('utilInspectLikeMaker', () => {
-    it('string under maxStringlength', () => {
+    const format = PPPrimitiveFormatter.format(utilInspectLikeFormatterWithOtherDefaults)(utilInspectLike);
+
+    it('string under maxStringLength', () => {
       TestUtils.strictEqual(
-        pipe(
-          utilInspectLikeFormatterWithOtherDefaults.call(
-            utilInspectLike,
-            PPValue.fromTopValue('foo'),
-          ),
-        ),
+        format(PPValue.fromTopValue('foo') as PPValue.Primitive),
         "'foo'",
       );
     });
 
-    it('string under maxStringlength', () => {
+    it('string over maxStringLength', () => {
       TestUtils.strictEqual(
-        pipe(
-          utilInspectLikeFormatterWithOtherDefaults.call(
-            utilInspectLike,
-            PPValue.fromTopValue('foobar'),
-          ),
-        ),
+        format(PPValue.fromTopValue('foobar') as PPValue.Primitive),
         "'foo...'",
       );
     });
 
     it('number', () => {
       TestUtils.strictEqual(
-        pipe(
-          utilInspectLikeFormatterWithOtherDefaults.call(
-            utilInspectLike,
-            PPValue.fromTopValue(255),
-          ),
-        ),
+        format(PPValue.fromTopValue(255) as PPValue.Primitive),
         '255',
       );
     });
 
     it('bigint', () => {
       TestUtils.strictEqual(
-        pipe(
-          utilInspectLikeFormatterWithOtherDefaults.call(
-            utilInspectLike,
-            PPValue.fromTopValue(MBigInt.fromPrimitiveOrThrow(5)),
-          ),
-        ),
+        format(PPValue.fromTopValue(MBigInt.fromPrimitiveOrThrow(5)) as PPValue.Primitive),
         '5n',
       );
     });
 
     it('boolean', () => {
       TestUtils.strictEqual(
-        pipe(
-          utilInspectLikeFormatterWithOtherDefaults.call(
-            utilInspectLike,
-            PPValue.fromTopValue(true),
-          ),
-        ),
+        format(PPValue.fromTopValue(true) as PPValue.Primitive),
         'true',
       );
     });
 
     it('symbol', () => {
       TestUtils.strictEqual(
-        pipe(
-          utilInspectLikeFormatterWithOtherDefaults.call(
-            utilInspectLike,
-            PPValue.fromTopValue(Symbol.for('foo')),
-          ),
-        ),
+        format(PPValue.fromTopValue(Symbol.for('foo')) as PPValue.Primitive),
         'Symbol(foo)',
       );
     });
 
     it('undefined', () => {
       TestUtils.strictEqual(
-        pipe(
-          utilInspectLikeFormatterWithOtherDefaults.call(
-            utilInspectLike,
-            PPValue.fromTopValue(undefined),
-          ),
-        ),
+        format(PPValue.fromTopValue(undefined) as PPValue.Primitive),
         'undefined',
       );
     });
 
     it('null', () => {
       TestUtils.strictEqual(
-        pipe(
-          utilInspectLikeFormatterWithOtherDefaults.call(
-            utilInspectLike,
-            PPValue.fromTopValue(null),
-          ),
-        ),
+        format(PPValue.fromTopValue(null) as PPValue.Primitive),
         'null',
       );
     });

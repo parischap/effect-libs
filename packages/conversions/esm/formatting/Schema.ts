@@ -16,7 +16,8 @@ import * as Record from 'effect/Record';
 import * as Schema from 'effect/Schema';
 import * as CVDateTime from '../DateTime/DateTime.js';
 import * as CVTemplateParts from '../internal/Formatting/Template/TemplateParts.js';
-import * as CVDateTimeFormat from './DateTimeFormat/DateTimeFormat.js';
+import * as CVDateTimeFormatter from './DateTimeFormat/DateTimeFormatter.js';
+import * as CVDateTimeParser from './DateTimeFormat/DateTimeParser.js';
 import * as CVNumberBase10Format from './NumberBase10Format/NumberBase10Format.js';
 import * as CVTemplate from './Template/Template.js';
 import * as CVTemplatePart from './Template/TemplatePart/TemplatePart.js';
@@ -126,22 +127,23 @@ export const DateTimeZonedFromDateTime: Schema.Schema<DateTime.Zoned, CVDateTime
   });
 
 const DateTimeFromString = (
-  format: CVDateTimeFormat.Type,
+  parser: CVDateTimeParser.Type,
+  formatter: CVDateTimeFormatter.Type,
 ): Schema.Schema<CVDateTime.Type, string> => {
-  const parser = CVDateTimeFormat.toParser(format);
-  const formatter = CVDateTimeFormat.toFormatter(format);
+  const parse = CVDateTimeParser.parse(parser);
+  const format = CVDateTimeFormatter.format(formatter);
   return Schema.transformOrFail(Schema.String, DateTimeFromSelf, {
     strict: true,
     decode: (input, _options, ast) =>
       pipe(
         input,
-        parser,
+        parse,
         Either.mapLeft((inputError) => new ParseResult.Type(ast, input, inputError.message)),
       ),
     encode: (input, _options, ast) =>
       pipe(
         input,
-        formatter,
+        format,
         Either.mapLeft((inputError) => new ParseResult.Type(ast, input, inputError.message)),
       ),
   });
@@ -149,8 +151,9 @@ const DateTimeFromString = (
 
 export {
   /**
-   * A `Schema` that transforms a string into a `CVDateTime` according to `format`. Read documentation
-   * of module DateTimeFormat.ts for more details
+   * A `Schema` that transforms a string into a `CVDateTime` according to the given `parser` and
+   * `formatter`. Read documentation of modules DateTimeParser.ts and DateTimeFormatter.ts for more
+   * details.
    *
    * @category Schema transformations
    */
@@ -158,24 +161,29 @@ export {
 };
 
 /**
- * A `Schema` that transforms a string into a Javascript `Date` according to `format`. Read
- * documentation of module DateTimeFormat.ts for more details
+ * A `Schema` that transforms a string into a Javascript `Date` according to the given `parser` and
+ * `formatter`. Read documentation of modules DateTimeParser.ts and DateTimeFormatter.ts for more
+ * details.
  *
  * @category Schema transformations
  */
-export const Date = (format: CVDateTimeFormat.Type): Schema.Schema<Date, string> =>
-  Schema.compose(DateTimeFromString(format), DateFromDateTime);
+export const Date = (
+  parser: CVDateTimeParser.Type,
+  formatter: CVDateTimeFormatter.Type,
+): Schema.Schema<Date, string> => Schema.compose(DateTimeFromString(parser, formatter), DateFromDateTime);
 
 /**
- * A `Schema` that transforms a string into an `Effect.DateTime.Zoned` according to `format`. Read
- * documentation of module DateTimeFormat.ts for more details
+ * A `Schema` that transforms a string into an `Effect.DateTime.Zoned` according to the given
+ * `parser` and `formatter`. Read documentation of modules DateTimeParser.ts and
+ * DateTimeFormatter.ts for more details.
  *
  * @category Schema transformations
  */
 export const DateTimeZoned = (
-  format: CVDateTimeFormat.Type,
+  parser: CVDateTimeParser.Type,
+  formatter: CVDateTimeFormatter.Type,
 ): Schema.Schema<DateTime.Zoned, string> =>
-  Schema.compose(DateTimeFromString(format), DateTimeZonedFromDateTime);
+  Schema.compose(DateTimeFromString(parser, formatter), DateTimeZonedFromDateTime);
 
 /**
  * A `Schema` that transforms a string into an object according to template. Read documentation of

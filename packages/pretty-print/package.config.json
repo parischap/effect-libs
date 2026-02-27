@@ -10,7 +10,7 @@
     "treeify-with-leaves.ts",
     "circularity-handling.ts"
   ],
-  "environment": "Plain",
+  "environment": "Neutral",
   "buildMethod": "NoBundling",
   "isPublished": true,
   "hasDocGen": true,

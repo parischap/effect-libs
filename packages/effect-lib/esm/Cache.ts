@@ -79,8 +79,9 @@ export class Type<in out A, in out B> extends MData.Class {
   readonly capacity: number;
 
   /**
-   * The lifespan of the values in the cache. If `Infinity` is passed, the values never expire. If
-   * `NaN` or a negative value is passed, the lifespan is set to 0
+   * The lifespan of the values in the cache in milliseconds. If `Infinity` is passed, the values
+   * never expire. If `NaN` or a negative value is passed, the lifespan is set to `0`. A lifespan
+   * of `0` means entries are considered expired on every subsequent lookup.
    */
   readonly lifeSpan: number;
 
@@ -113,7 +114,8 @@ export class Type<in out A, in out B> extends MData.Class {
 /**
  * Creates a new cache. The lookup function is used to populate the cache. If the capacity is
  * undefined, the cache is unbounded. If the lifespan is undefined, the values never expire. Keys
- * are compared using Equal.equals.
+ * are compared using Equal.equals. The second element of the tuple returned by the lookup function
+ * indicates whether the result should be stored in the cache.
  *
  * @category Constructors
  * @example

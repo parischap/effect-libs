@@ -10,21 +10,18 @@
  */
 
 import * as ASText from '@parischap/ansi-styles/ASText'
-import * as MFunction from '@parischap/effect-lib/MFunction'
-import * as MInspectable from '@parischap/effect-lib/MInspectable'
+import * as MData from '@parischap/effect-lib/MData'
+import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality'
 import * as MMatch from '@parischap/effect-lib/MMatch'
-import * as MPipeable from '@parischap/effect-lib/MPipeable'
 import * as MString from '@parischap/effect-lib/MString'
 import * as MTuple from '@parischap/effect-lib/MTuple'
 import * as MTypes from '@parischap/effect-lib/MTypes'
 import {flow, pipe} from 'effect'
 import * as Array from 'effect/Array'
-import * as Equal from 'effect/Equal'
 import * as Equivalence from 'effect/Equivalence'
 import * as Function from 'effect/Function'
 import * as Hash from 'effect/Hash'
 import * as Number from 'effect/Number'
-import * as Pipeable from 'effect/Pipeable'
 import * as Predicate from 'effect/Predicate'
 import * as Struct from 'effect/Struct'
 import * as PPMarkShowerConstructor from './MarkShowerConstructor.js';
@@ -74,13 +71,14 @@ export namespace Action {
   }
 
   /**
-   * Type of the action of a NonPrimitiveFormatter. The action takes as input a
-   * ValueBasedStylerConstructor (see ValueBasedStylerConstructor.ts), a MarkShowerConstructor (see
-   * MarkShowerConstructor.ts). Based on these parameters, it must return an Initialized Action.
+   * Type of the action of a NonPrimitiveFormatter. The action takes as input the current
+   * non-primitive formatting option, a ValueBasedStylerConstructor (see
+   * ValueBasedStylerConstructor.ts), and a MarkShowerConstructor (see MarkShowerConstructor.ts).
+   * Based on these parameters, it must return an Initialized Action.
    */
   export interface Type {
     (
-      this: PPOption.NonPrimitive.Type,
+      option: PPOption.NonPrimitive.Type,
       {
         valueBasedStylerConstructor,
         markShowerConstructor,
@@ -97,20 +95,59 @@ export namespace Action {
  *
  * @category Models
  */
-export interface Type extends Action.Type, Equal.Equal, MInspectable.Type, Pipeable.Pipeable {
+export class Type extends MDataEquivalenceBasedEquality.Class {
   /** Id of this NonPrimitiveFormatter instance. Useful for equality and debugging */
   readonly id: string;
 
-  /** @internal */
-  readonly [_TypeId]: _TypeId;
+  /** Action of this NonPrimitiveFormatter */
+  readonly action: Action.Type;
+
+  /** Returns the `id` of `this` */
+  [MData.idSymbol](): string | (() => string) {
+    return function idSymbol(this: Type) {
+      return this.id;
+    };
+  }
+
+  /** Class constructor */
+  private constructor({ id, action }: MTypes.Data<Type>) {
+    super();
+    this.id = id;
+    this.action = action;
+  }
+
+  /** Static constructor */
+  static make(params: MTypes.Data<Type>): Type {
+    return new Type(params);
+  }
+
+  /** Calculates the hash value of `this` */
+  [Hash.symbol](): number {
+    return 0;
+  }
+
+  /** Function that implements the equivalence of `this` and `that` */
+  [MDataEquivalenceBasedEquality.isEquivalentToSymbol](this: this, that: this): boolean {
+    return equivalence(this, that);
+  }
+
+  /** Predicate that returns true if `that` has the same type marker as `this` */
+  [MDataEquivalenceBasedEquality.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
+    return Predicate.hasProperty(that, _TypeId);
+  }
+
+  /** Returns the TypeMarker of the class */
+  protected get [_TypeId](): _TypeId {
+    return _TypeId;
+  }
 }
 
 /**
- * Type guard
+ * Constructor
  *
- * @category Guards
+ * @category Constructors
  */
-export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
+export const make = (params: MTypes.Data<Type>): Type => Type.make(params);
 
 /**
  * Equivalence
@@ -119,40 +156,36 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
  */
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
 
-/** Base */
-const _TypeIdHash = Hash.hash(_TypeId);
-const base: MTypes.Proto<Type> = {
-  [_TypeId]: _TypeId,
-  [Equal.symbol](this: Type, that: unknown): boolean {
-    return has(that) && equivalence(this, that);
-  },
-  [Hash.symbol](this: Type) {
-    return pipe(this.id, Hash.hash, Hash.combine(_TypeIdHash), Hash.cached(this));
-  },
-  [MInspectable.IdSymbol](this: Type) {
-    return this.id;
-  },
-  ...MInspectable.BaseProto(moduleTag),
-  ...MPipeable.BaseProto,
-};
-
-/**
- * Constructor
- *
- * @category Constructors
- */
-export const make = ({ id, action }: { readonly id: string; readonly action: Action.Type }): Type =>
-  Object.assign(MFunction.clone(action), {
-    id,
-    ...base,
-  });
-
 /**
  * Returns the `id` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
+
+/**
+ * Returns the `action` property of `self`
+ *
+ * @category Getters
+ */
+export const action: MTypes.OneArgFunction<Type, Action.Type> = Struct.get('action');
+
+/**
+ * Applies `self`'s action with the given non-primitive option and styling constructors.
+ *
+ * @category Formatting
+ */
+export const apply =
+  (self: Type) =>
+  (option: PPOption.NonPrimitive.Type) =>
+  ({
+    valueBasedStylerConstructor,
+    markShowerConstructor,
+  }: {
+    readonly valueBasedStylerConstructor: PPValueBasedStylerConstructor.Type;
+    readonly markShowerConstructor: PPMarkShowerConstructor.Type;
+  }): Action.Initialized.Type =>
+    self.action(option, { valueBasedStylerConstructor, markShowerConstructor });
 
 /**
  * NonPrimitiveFormatter instance that will always print non-primitive values on a single line
@@ -161,7 +194,7 @@ export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
  */
 export const singleLine: Type = make({
   id: 'SingleLine',
-  action: function (this, { valueBasedStylerConstructor }) {
+  action: (option, { valueBasedStylerConstructor }) => {
     const inBetweenPropertySeparatorTextFormatter = valueBasedStylerConstructor(
       'InBetweenPropertySeparator',
     );
@@ -171,7 +204,7 @@ export const singleLine: Type = make({
 
     return ({ value, header }) => {
       const inBetweenPropertySeparator = pipe(
-        this.singleLineInBetweenPropertySeparatorMark,
+        option.singleLineInBetweenPropertySeparatorMark,
         inBetweenPropertySeparatorTextFormatter(value),
       );
       const inContextNonPrimitiveValueDelimitersTextFormatter =
@@ -179,7 +212,7 @@ export const singleLine: Type = make({
 
       return Array.match({
         onEmpty: pipe(
-          this.multiLineStartDelimiterMark + this.multiLineEndDelimiterMark,
+          option.multiLineStartDelimiterMark + option.multiLineEndDelimiterMark,
           inContextNonPrimitiveValueDelimitersTextFormatter,
           ASText.prepend(header),
           PPStringifiedValue.fromText,
@@ -189,13 +222,13 @@ export const singleLine: Type = make({
           PPStringifiedProperties.addMarkInBetween(inBetweenPropertySeparator),
           PPStringifiedProperties.prependProperty(
             pipe(
-              this.singleLineStartDelimiterMark,
+              option.singleLineStartDelimiterMark,
               inContextNonPrimitiveValueDelimitersTextFormatter,
               ASText.prepend(header),
             ),
           ),
           PPStringifiedProperties.appendProperty(
-            inContextNonPrimitiveValueDelimitersTextFormatter(this.singleLineEndDelimiterMark),
+            inContextNonPrimitiveValueDelimitersTextFormatter(option.singleLineEndDelimiterMark),
           ),
           PPStringifiedValue.fromStringifiedProperties,
           PPStringifiedValue.toSingleLine,
@@ -213,7 +246,7 @@ export const singleLine: Type = make({
  */
 export const tabify: Type = make({
   id: 'Tabify',
-  action: function (this, { valueBasedStylerConstructor, markShowerConstructor }) {
+  action: (option, { valueBasedStylerConstructor, markShowerConstructor }) => {
     const inBetweenPropertySeparatorTextFormatter = valueBasedStylerConstructor(
       'InBetweenPropertySeparator',
     );
@@ -224,18 +257,18 @@ export const tabify: Type = make({
 
     return ({ value, header }) => {
       const inBetweenPropertySeparator = pipe(
-        this.multiLineInBetweenPropertySeparatorMark,
+        option.multiLineInBetweenPropertySeparatorMark,
         inBetweenPropertySeparatorTextFormatter(value),
       );
       const inContextNonPrimitiveValueDelimitersTextFormatter =
         nonPrimitiveValueDelimitersTextFormatter(value);
       const startDelimiterMarkAndHeader = pipe(
-        this.multiLineStartDelimiterMark,
+        option.multiLineStartDelimiterMark,
         inContextNonPrimitiveValueDelimitersTextFormatter,
         ASText.prepend(header),
       );
       const endDelimiterMark = inContextNonPrimitiveValueDelimitersTextFormatter(
-        this.multiLineEndDelimiterMark,
+        option.multiLineEndDelimiterMark,
       );
       const tab = tabIndentMarkShower(value);
       return flow(
@@ -256,7 +289,7 @@ export const tabify: Type = make({
  */
 export const treeify: Type = make({
   id: 'Treeify',
-  action: ({ markShowerConstructor }) => {
+  action: (_option, { markShowerConstructor }) => {
     const treeIndentForFirstLineOfInitPropsMarkShower = markShowerConstructor(
       'TreeIndentForFirstLineOfInitProps',
     );
@@ -292,9 +325,9 @@ export const treeify: Type = make({
 export const splitOnConstituentNumberMaker = (limit: number): Type =>
   make({
     id: pipe(limit, MString.fromNumber(10), MString.prepend('SplitWhenConstituentNumberExceeds')),
-    action: function (this, params) {
-      const initializedSingleLine = singleLine.call(this, params);
-      const initilizedTabify = tabify.call(this, params);
+    action: (option, params) => {
+      const initializedSingleLine = apply(singleLine)(option)(params);
+      const initilizedTabify = apply(tabify)(option)(params);
       return ({ value, header }) =>
         flow(
           MMatch.make,
@@ -316,14 +349,14 @@ export const splitOnConstituentNumberMaker = (limit: number): Type =>
 export const splitOnTotalLengthMaker = (limit: number): Type =>
   make({
     id: pipe(limit, MString.fromNumber(10), MString.prepend('SplitWhenTotalLengthExceeds')),
-    action: function (this, params) {
-      const initializedSingleLine = singleLine.call(this, params);
-      const initilizedTabify = tabify.call(this, params);
-      const inBetweenSepLength = this.singleLineInBetweenPropertySeparatorMark.length;
+    action: (option, params) => {
+      const initializedSingleLine = apply(singleLine)(option)(params);
+      const initilizedTabify = apply(tabify)(option)(params);
+      const inBetweenSepLength = option.singleLineInBetweenPropertySeparatorMark.length;
       const delimitersLength =
-        this.singleLineStartDelimiterMark.length + this.singleLineEndDelimiterMark.length;
+        option.singleLineStartDelimiterMark.length + option.singleLineEndDelimiterMark.length;
       const delimitersLengthWhenEmpty =
-        this.multiLineStartDelimiterMark.length + this.multiLineEndDelimiterMark.length;
+        option.multiLineStartDelimiterMark.length + option.multiLineEndDelimiterMark.length;
       return ({ value, header }) =>
         flow(
           MMatch.make,
@@ -361,9 +394,9 @@ export const splitOnTotalLengthMaker = (limit: number): Type =>
 export const splitOnLongestPropLengthMaker = (limit: number): Type =>
   make({
     id: pipe(limit, MString.fromNumber(10), MString.prepend('SplitWhenLongestPropLengthExceeds')),
-    action: function (this, params) {
-      const initializedSingleLine = singleLine.call(this, params);
-      const initilizedTabify = tabify.call(this, params);
+    action: (option, params) => {
+      const initializedSingleLine = apply(singleLine)(option)(params);
+      const initilizedTabify = apply(tabify)(option)(params);
       return ({ value, header }) =>
         flow(
           MMatch.make,

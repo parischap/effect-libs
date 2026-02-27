@@ -1,6 +1,5 @@
 {
   "name": "@parischap/effect-libs",
-  "description": "effect-libs is a set of open-source libraries to be used in complement to the effect library. Offers Date and number parsing/formatting, sscanf/sprintf templating, number rounding, object pretty-printing and ansi-colors for terminal printing",
   "type": "module",
   "author": "Jérôme MARTIN",
   "license": "MIT",
@@ -8,13 +7,13 @@
     "@parischap/configs": "git+ssh://github.com/parischap/configs",
     "@effect/language-service": "0.64.1",
     "@types/node": "25.0.9",
-    "@typescript/native-preview": "7.0.0-dev.20260217.1",
+    "@typescript/native-preview": "7.0.0-dev.20260225.1",
     "prettier-plugin-jsdoc": "1.8.0",
     "prettier-plugin-organize-imports": "4.3.0",
     "@tsconfig/strictest": "2.0.8",
     "prettier": "3.7.4",
-    "oxlint": "1.48.0",
-    "oxlint-tsgolint": "0.14.0",
+    "oxlint": "1.50.0",
+    "oxlint-tsgolint": "0.15.0",
     "unrun": "0.2.27",
     "vitest": "4.0.18"
   },
@@ -25,10 +24,10 @@
     "lint-fix": "oxlint --type-aware --fix",
     "format": "prettier .",
     "clean": "unrun node_modules/@parischap/configs/esm/bin/clean.ts -activePackageOnly",
-    "clean-config-files": "unrun node_modules/@parischap/configs/esm/bin/clean-config-files.ts -activePackageOnly",
+    "clean-unexpected-files": "unrun node_modules/@parischap/configs/esm/bin/clean-unexpected-files.ts -activePackageOnly",
     "generate-config-files": "unrun node_modules/@parischap/configs/esm/bin/generate-config-files.ts -activePackageOnly",
     "clean-all": "unrun node_modules/@parischap/configs/esm/bin/clean.ts",
-    "clean-all-config-files": "unrun node_modules/@parischap/configs/esm/bin/clean-config-files.ts",
+    "clean-all-config-files": "unrun node_modules/@parischap/configs/esm/bin/clean-unexpected-files.ts",
     "clean-all-node-modules": "unrun node_modules/@parischap/configs/esm/bin/clean-node-modules.ts",
     "clean-all-prod": "unrun node_modules/@parischap/configs/esm/bin/clean-prod.ts",
     "generate-all-config-files": "unrun node_modules/@parischap/configs/esm/bin/generate-config-files.ts",
@@ -42,5 +41,6 @@
     "checks-all": "pnpm -r -include-workspace-root=true checks",
     "format-all": "pnpm -r -include-workspace-root=true format",
     "prepare-docs": "pnpm -r --if-present -include-workspace-root=true --parallel --aggregate-output docgen && compile-docs"
-  }
+  },
+  "description": "effect-libs is a set of open-source libraries to be used in complement to the effect library. Offers Date and number parsing/formatting, sscanf/sprintf templating, number rounding, object pretty-printing and ansi-colors for terminal printing"
 }

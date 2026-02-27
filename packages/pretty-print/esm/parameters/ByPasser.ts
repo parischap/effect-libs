@@ -14,7 +14,6 @@ import * as MRecord from '@parischap/effect-lib/MRecord'
 import * as MRegExp from '@parischap/effect-lib/MRegExp'
 import * as MTypes from '@parischap/effect-lib/MTypes'
 
-import * as ASContextStyler from '@parischap/ansi-styles/ASContextStyler'
 import * as ASText from '@parischap/ansi-styles/ASText'
 import {flow, pipe} from 'effect'
 import * as Array from 'effect/Array'
@@ -27,7 +26,6 @@ import * as Struct from 'effect/Struct'
 import * as PPValue from '../internal/stringification/Value.js';
 import * as PPStringifiedValue from '../stringification/StringifiedValue.js';
 import * as PPByPasserAction from './ByPasserAction.js';
-import * as PPStyleMap from './StyleMap.js';
 
 /**
  * Module tag
@@ -138,8 +136,8 @@ export const empty: Type = make({
  */
 export const functionToName: Type = make({
   id: 'FunctionToName',
-  action: (styleMap) => {
-    const messageTextFormatter = PPStyleMap.get(styleMap, 'Message');
+  action: ({ valueBasedStylerConstructor, markShowerConstructor }) => {
+    const messageTextFormatter = valueBasedStylerConstructor('Message');
 
     const functionNameStartDelimiterMarkShower = markShowerConstructor(
       'FunctionNameStartDelimiter',
@@ -158,9 +156,9 @@ export const functionToName: Type = make({
             MFunction.name,
             Option.liftPredicate(String.isNonEmpty),
             Option.getOrElse(() => 'anonymous'),
-            ASContextStyler.toStyle(messageTextFormatter)(value),
+            messageTextFormatter(value),
             ASText.surround(
-              ASContextStyler.toStyle(functionNameStartDelimiterMarkShower)(value),
+              functionNameStartDelimiterMarkShower(value),
               functionNameEndDelimiterMarkShower(value),
             ),
             ASText.surround(

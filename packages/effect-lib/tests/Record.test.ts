@@ -7,7 +7,7 @@ import { describe, it } from 'vitest';
 
 describe('MRecord', () => {
   describe('unsafeGet', () => {
-    it('Not passing', () => {
+    it('Missing key does not throw', () => {
       TestUtils.doesNotThrow(() => pipe({ a: 1, b: true }, MRecord.unsafeGet('z')));
     });
     it('Passing', () => {

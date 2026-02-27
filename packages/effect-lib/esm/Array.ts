@@ -379,11 +379,11 @@ export const unfold =
   };
 
 /**
- * Same as `MArray.unfold` but f always returns an `A` and optionally an `S`. A cycle is detected if
- * the same seed `s` is sent a second time to function f (equivalence based on the `seedEquivalence`
- * equivalence if provided or on Equal.equals otherwise). In that case, `cycleSource` is a `some` of
- * the `a` generated the first time `s` was processed, hence giving the user a chance to modify it.
- * Otherwise, `cycleSource` is a `none`.
+ * Same as `MArray.unfold` but `f` always returns an `A` and optionally an `S`. A cycle is detected
+ * when the same seed `s` is seen a second time (compared using `seedEquivalence` if provided, or
+ * `Equal.equals` otherwise). When a cycle is detected, `cycleSource` is `some` of the `A` value
+ * generated the first time that seed was processed, allowing `f` to produce a different output and
+ * break the cycle. When no cycle is detected, `cycleSource` is `none`.
  *
  * @category Constructors
  */

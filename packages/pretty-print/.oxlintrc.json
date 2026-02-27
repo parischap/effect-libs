@@ -5,6 +5,7 @@
     "dist/**",
     ".tsbuildinfo/**",
     "node_modules/**",
+    ".claude/**",
     "packages/**",
     "vite.config.ts.timestamp-*.mjs",
     "pnpm-lock.yaml",
