@@ -34,7 +34,7 @@ const _formatter = pipe(
   CVTemplateFormatter.fromTemplateParts(
     CVTemplatePlaceholder.number({
       name: 'zoneHour',
-      numberBase10Format: CVNumberBase10Format.twoDigitInteger,
+      numberBase10Format: CVNumberBase10Format.twoDigitSignedInteger,
     }),
     _sep.colon,
     CVTemplatePlaceholder.number({

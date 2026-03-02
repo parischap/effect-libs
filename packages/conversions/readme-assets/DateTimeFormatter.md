@@ -10,17 +10,18 @@ A DateTime parser/formatter which supports many of the available [unicode tokens
 ## 1. Usage example
 
 ```ts
-import {
-  CVDateTime,
-  CVDateTimeFormat,
-  CVDateTimeFormatContext,
-  CVDateTimeFormatPlaceholder,
-  CVDateTimeFormatSeparator,
-  CVDateTimeFormatter,
-  CVDateTimeParser,
-  CVSchema,
-} from '@parischap/conversions';
-import { DateTime, Either, flow, Schema } from 'effect';
+import * as CVDateTime from '@parischap/conversions/CVDateTime';
+import * as CVDateTimeFormat from '@parischap/conversions/CVDateTimeFormat';
+import * as CVDateTimeFormatContext from '@parischap/conversions/CVDateTimeFormatContext';
+import * as CVDateTimeFormatPlaceholder from '@parischap/conversions/CVDateTimeFormatPlaceholder';
+import * as CVDateTimeFormatSeparator from '@parischap/conversions/CVDateTimeFormatSeparator';
+import * as CVDateTimeFormatter from '@parischap/conversions/CVDateTimeFormatter';
+import * as CVDateTimeParser from '@parischap/conversions/CVDateTimeParser';
+import * as CVSchema from '@parischap/conversions/CVSchema';
+import { flow } from 'effect';
+import * as DateTime from 'effect/DateTime';
+import * as Either from 'effect/Either';
+import * as Schema from 'effect/Schema';
 
 // Let's define useful shortcuts
 const placeholder = CVDateTimeFormatPlaceholder.make;
@@ -263,14 +264,12 @@ Some of the available tokens are language specific. For instance the `MMMM` toke
 `CVDateTimeFormat`, `CVDateTimeParser`, and `CVDateTimeFormatter` objects all implement a `.toString()` method. `CVDateTimeFormat.toString()` returns a concatenation of all its parts (e.g. `iiii d MMMM yyyy`). `CVDateTimeParser.toString()` and `CVDateTimeFormatter.toString()` return a description combining the format name and context (e.g. `'iiii d MMMM yyyy' parser in 'fr-FR' context`). For instance:
 
 ```ts
-import {
-  CVDateTimeFormat,
-  CVDateTimeFormatContext,
-  CVDateTimeFormatPlaceholder,
-  CVDateTimeFormatSeparator,
-  CVDateTimeFormatter,
-  CVDateTimeParser,
-} from '@parischap/conversions';
+import * as CVDateTimeFormat from '@parischap/conversions/CVDateTimeFormat';
+import * as CVDateTimeFormatContext from '@parischap/conversions/CVDateTimeFormatContext';
+import * as CVDateTimeFormatPlaceholder from '@parischap/conversions/CVDateTimeFormatPlaceholder';
+import * as CVDateTimeFormatSeparator from '@parischap/conversions/CVDateTimeFormatSeparator';
+import * as CVDateTimeFormatter from '@parischap/conversions/CVDateTimeFormatter';
+import * as CVDateTimeParser from '@parischap/conversions/CVDateTimeParser';
 
 // Let's define useful shortcuts
 const placeholder = CVDateTimeFormatPlaceholder.make;

@@ -14,7 +14,7 @@
  * valuable information. We call them `CVTemplatePlaceholder`'s.
  *
  * " is a ", "-year-old " and "." are the immutable parts of the template. We call them
- * `CVTemplateSeperator`'s.
+ * `CVTemplateSeparator`'s.
  *
  * From a text with the above structure, we can extract the values of Placeholder1, Placeholder2,
  * and Placeholder3. In the present case:
@@ -70,7 +70,7 @@ export class Type<out PlaceholderTypes extends MTypes.NonPrimitive> extends MDat
   /** Synthetic description of self */
   readonly syntheticDescription: string;
 
-  /** Placeholdr description of self */
+  /** Placeholder description of self */
   readonly placeholderDescription: string;
 
   /** Array of the TemplatePart's composing this template */

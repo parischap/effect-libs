@@ -4,136 +4,18 @@ import * as CVDateTimeFormat from '@parischap/conversions/CVDateTimeFormat';
 import * as CVDateTimeFormatContext from '@parischap/conversions/CVDateTimeFormatContext';
 import * as CVDateTimeFormatPlaceholder from '@parischap/conversions/CVDateTimeFormatPlaceholder';
 import * as CVDateTimeFormatSeparator from '@parischap/conversions/CVDateTimeFormatSeparator';
-import * as CVEmail from '@parischap/conversions/CVEmail';
-import * as CVInteger from '@parischap/conversions/CVInteger';
+import * as CVDateTimeFormatter from '@parischap/conversions/CVDateTimeFormatter';
+import * as CVDateTimeParser from '@parischap/conversions/CVDateTimeParser';
 import * as CVNumberBase10Format from '@parischap/conversions/CVNumberBase10Format';
-import * as CVPositiveInteger from '@parischap/conversions/CVPositiveInteger';
-import * as CVPositiveReal from '@parischap/conversions/CVPositiveReal';
 import * as CVSchema from '@parischap/conversions/CVSchema';
-import * as CVSemVer from '@parischap/conversions/CVSemVer';
-import { pipe } from 'effect';
 import * as BigDecimal from 'effect/BigDecimal';
-import * as DateTime from 'effect/DateTime/';
+import * as DateTime from 'effect/DateTime';
 import * as Schema from 'effect/Schema';
 import { describe, it } from 'vitest';
 
 describe('CVSchema', () => {
-  describe('Email', () => {
-    const target = CVEmail.unsafeFromString('foo@bar.baz');
-    describe('Decoding', () => {
-      const decoder = Schema.decodeEither(CVSchema.Email);
-      it('Not passing', () => {
-        TestUtils.assertLeft(decoder('foo'));
-      });
-      it('Passing', () => {
-        TestUtils.assertRight(decoder(target), target);
-      });
-    });
-
-    describe('Encoding', () => {
-      const encoder = Schema.encodeEither(CVSchema.Email);
-
-      it('Passing', () => {
-        TestUtils.assertRight(encoder(target), target);
-      });
-    });
-  });
-
-  describe('EmailFromSelf', () => {
-    const target = CVEmail.unsafeFromString('foo@bar.baz');
-    describe('Decoding', () => {
-      const decoder = Schema.decodeEither(CVSchema.EmailFromSelf);
-      it('Passing', () => {
-        TestUtils.assertRight(decoder(target), target);
-      });
-    });
-
-    describe('Encoding', () => {
-      const encoder = Schema.encodeEither(CVSchema.EmailFromSelf);
-      it('Passing', () => {
-        TestUtils.assertRight(encoder(target), target);
-      });
-    });
-  });
-
-  describe('SemVer', () => {
-    const target = CVSemVer.unsafeFromString('1.0.1');
-    describe('Decoding', () => {
-      const decoder = Schema.decodeEither(CVSchema.SemVer);
-      it('Not passing', () => {
-        TestUtils.assertLeft(decoder('foo'));
-      });
-      it('Passing', () => {
-        TestUtils.assertRight(decoder(target), target);
-      });
-    });
-
-    describe('Encoding', () => {
-      const encoder = Schema.encodeEither(CVSchema.SemVer);
-
-      it('Passing', () => {
-        TestUtils.assertRight(encoder(target), target);
-      });
-    });
-  });
-
-  describe('SemVerFromSelf', () => {
-    const target = CVSemVer.unsafeFromString('1.0.1');
-    describe('Decoding', () => {
-      const decoder = Schema.decodeEither(CVSchema.SemVerFromSelf);
-      it('Passing', () => {
-        TestUtils.assertRight(decoder(target), target);
-      });
-    });
-
-    describe('Encoding', () => {
-      const encoder = Schema.encodeEither(CVSchema.SemVerFromSelf);
-      it('Passing', () => {
-        TestUtils.assertRight(encoder(target), target);
-      });
-    });
-  });
-
-  describe('RealFromNumber', () => {
-    const target = 15.4;
-    describe('Decoding', () => {
-      const decoder = Schema.decodeEither(CVSchema.RealFromNumber);
-      it('Not passing', () => {
-        TestUtils.assertLeft(decoder(Infinity));
-      });
-      it('Passing', () => {
-        TestUtils.assertRight(decoder(target), target);
-      });
-    });
-
-    describe('Encoding', () => {
-      const encoder = Schema.encodeEither(CVSchema.RealFromNumber);
-
-      it('Passing', () => {
-        TestUtils.assertRight(encoder(target), target);
-      });
-    });
-  });
-
-  describe('RealFromSelf', () => {
-    const target = 15.4;
-    describe('Decoding', () => {
-      const decoder = Schema.decodeEither(CVSchema.RealFromSelf);
-      it('Passing', () => {
-        TestUtils.assertRight(decoder(target), target);
-      });
-    });
-
-    describe('Encoding', () => {
-      const encoder = Schema.encodeEither(CVSchema.RealFromSelf);
-      it('Passing', () => {
-        TestUtils.assertRight(encoder(target), target);
-      });
-    });
-  });
-
-  describe('Real', () => {
-    const schema = CVSchema.Real(CVNumberBase10Format.frenchStyleNumber);
+  describe('Number', () => {
+    const schema = CVSchema.Number(CVNumberBase10Format.frenchStyleNumber);
     const target = 1024.56;
     const targetAsString = '1 024,56';
     describe('Decoding', () => {
@@ -148,124 +30,6 @@ describe('CVSchema', () => {
     it('Encoding', () => {
       const encoder = Schema.encodeEither(schema);
       TestUtils.assertRight(encoder(target), targetAsString);
-    });
-  });
-
-  describe('IntegerFromNumber', () => {
-    const target = CVInteger.unsafeFromNumber(15);
-    describe('Decoding', () => {
-      const decoder = Schema.decodeEither(CVSchema.IntegerFromNumber);
-      it('Not passing', () => {
-        TestUtils.assertLeft(decoder(Infinity));
-        TestUtils.assertLeft(decoder(15.4));
-      });
-      it('Passing', () => {
-        TestUtils.assertRight(decoder(target), target);
-      });
-    });
-
-    describe('Encoding', () => {
-      const encoder = Schema.encodeEither(CVSchema.IntegerFromNumber);
-
-      it('Passing', () => {
-        TestUtils.assertRight(encoder(target), target);
-      });
-    });
-  });
-
-  describe('IntegerFromSelf', () => {
-    const target = CVInteger.unsafeFromNumber(15);
-    describe('Decoding', () => {
-      const decoder = Schema.decodeEither(CVSchema.IntegerFromSelf);
-      it('Passing', () => {
-        TestUtils.assertRight(decoder(target), target);
-      });
-    });
-
-    describe('Encoding', () => {
-      const encoder = Schema.encodeEither(CVSchema.IntegerFromSelf);
-      it('Passing', () => {
-        TestUtils.assertRight(encoder(target), target);
-      });
-    });
-  });
-
-  describe('PositiveIntegerFromNumber', () => {
-    const target = CVPositiveInteger.unsafeFromNumber(15);
-    describe('Decoding', () => {
-      const decoder = Schema.decodeEither(CVSchema.PositiveIntegerFromNumber);
-      it('Not passing', () => {
-        TestUtils.assertLeft(decoder(Infinity));
-        TestUtils.assertLeft(decoder(15.4));
-        TestUtils.assertLeft(decoder(-15));
-      });
-      it('Passing', () => {
-        TestUtils.assertRight(decoder(target), target);
-      });
-    });
-
-    describe('Encoding', () => {
-      const encoder = Schema.encodeEither(CVSchema.PositiveIntegerFromNumber);
-
-      it('Passing', () => {
-        TestUtils.assertRight(encoder(target), target);
-      });
-    });
-  });
-
-  describe('PositiveIntegerFromSelf', () => {
-    const target = CVPositiveInteger.unsafeFromNumber(15);
-    describe('Decoding', () => {
-      const decoder = Schema.decodeEither(CVSchema.PositiveIntegerFromSelf);
-      it('Passing', () => {
-        TestUtils.assertRight(decoder(target), target);
-      });
-    });
-
-    describe('Encoding', () => {
-      const encoder = Schema.encodeEither(CVSchema.PositiveIntegerFromSelf);
-      it('Passing', () => {
-        TestUtils.assertRight(encoder(target), target);
-      });
-    });
-  });
-
-  describe('PositiveRealFromNumber', () => {
-    const target = CVPositiveReal.unsafeFromNumber(15.4);
-    describe('Decoding', () => {
-      const decoder = Schema.decodeEither(CVSchema.PositiveRealFromNumber);
-      it('Not passing', () => {
-        TestUtils.assertLeft(decoder(Infinity));
-        TestUtils.assertLeft(decoder(-15.4));
-      });
-      it('Passing', () => {
-        TestUtils.assertRight(decoder(target), target);
-      });
-    });
-
-    describe('Encoding', () => {
-      const encoder = Schema.encodeEither(CVSchema.PositiveRealFromNumber);
-
-      it('Passing', () => {
-        TestUtils.assertRight(encoder(target), target);
-      });
-    });
-  });
-
-  describe('PositiveRealFromSelf', () => {
-    const target = CVPositiveReal.unsafeFromNumber(15.4);
-    describe('Decoding', () => {
-      const decoder = Schema.decodeEither(CVSchema.PositiveRealFromSelf);
-      it('Passing', () => {
-        TestUtils.assertRight(decoder(target), target);
-      });
-    });
-
-    describe('Encoding', () => {
-      const encoder = Schema.encodeEither(CVSchema.PositiveRealFromSelf);
-      it('Passing', () => {
-        TestUtils.assertRight(encoder(target), target);
-      });
     });
   });
 
@@ -305,7 +69,7 @@ describe('CVSchema', () => {
     });
   });
 
-  describe('DateTimeFromDate', () => {
+  describe('DateFromDateTime', () => {
     const target = CVDateTime.fromTimestampOrThrow(0);
     const targetAsDate = new Date(0);
     describe('Decoding', () => {
@@ -323,7 +87,7 @@ describe('CVSchema', () => {
     });
   });
 
-  describe('DateTimeFromEffectDateTime', () => {
+  describe('DateTimeZonedFromDateTime', () => {
     const target = CVDateTime.fromTimestampOrThrow(1_756_128_920_881, 8);
     const targetAsEFfectDateTime = DateTime.unsafeMakeZoned(1_756_128_920_881, { timeZone: 8 });
     describe('Decoding', () => {
@@ -344,24 +108,25 @@ describe('CVSchema', () => {
   describe('DateTime', () => {
     const placeholder = CVDateTimeFormatPlaceholder.make;
     const sep = CVDateTimeFormatSeparator;
-    const frenchDateFormat = CVDateTimeFormat.make({
-      context: CVDateTimeFormatContext.fromLocaleOrThrow('fr-FR'),
-      parts: [
-        placeholder('dd'),
-        sep.slash,
-        placeholder('MM'),
-        sep.slash,
-        placeholder('yyyy'),
-        sep.space,
-        placeholder('HH'),
-        sep.colon,
-        placeholder('mm'),
-        sep.colon,
-        placeholder('ss'),
-        sep.make(' Local time'),
-      ],
-    });
-    const schema = CVSchema.DateTime(frenchDateFormat);
+    const frenchContext = CVDateTimeFormatContext.fromLocaleOrThrow('fr-FR');
+    const frenchDateFormat = CVDateTimeFormat.make(
+      placeholder('dd'),
+      sep.slash,
+      placeholder('MM'),
+      sep.slash,
+      placeholder('yyyy'),
+      sep.space,
+      placeholder('HH'),
+      sep.colon,
+      placeholder('mm'),
+      sep.colon,
+      placeholder('ss'),
+      sep.make(' Local time'),
+    );
+    const schema = CVSchema.DateTime(
+      CVDateTimeParser.make({ dateTimeFormat: frenchDateFormat, context: frenchContext }),
+      CVDateTimeFormatter.make({ dateTimeFormat: frenchDateFormat, context: frenchContext }),
+    );
 
     const target = CVDateTime.fromPartsOrThrow({
       year: 2025,
@@ -392,11 +157,7 @@ describe('CVSchema', () => {
 
       it('Not passing', () => {
         TestUtils.assertLeft(
-          pipe(
-            new Date(12_025, 7, 25, 10, 24, 47).getTime(),
-            CVDateTime.fromTimestampOrThrow,
-            encoder,
-          ),
+          encoder(CVDateTime.fromTimestampOrThrow(new Date(12_025, 7, 25, 10, 24, 47).getTime())),
         );
       });
     });

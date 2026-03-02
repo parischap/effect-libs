@@ -54,7 +54,7 @@ export class Type extends MData.Class {
 }
 
 /**
- * Placeholder constructor
+ * Separator constructor
  *
  * @category Constructors
  */

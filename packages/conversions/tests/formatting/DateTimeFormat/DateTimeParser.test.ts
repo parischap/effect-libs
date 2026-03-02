@@ -183,7 +183,7 @@ describe('CVDateTimeParser', () => {
     });
 
     it('Non-matching: throws on invalid input', () => {
-      TestUtils.assertThrows(() => parseOrThrow('not-a-date'));
+      TestUtils.throws(() => parseOrThrow('not-a-date'));
     });
   });
 });

@@ -7,12 +7,13 @@ import {pipe} from 'effect'
 //   thousandSeparator: '',
 //   fractionalSeparator: '.',
 //   showNullIntegerPart: true,
+//   integerPartPadding: { _id: 'Option', _tag: 'None' },
 //   minimumFractionalDigits: 0,
 //   maximumFractionalDigits: 3,
 //   eNotationChars: [ 'e', 'E' ],
-//   scientificNotation: 0,
-//   roundingMode: 6,
-//   signDisplay: 3
+//   scientificNotationOption: 0,
+//   roundingOption: 6,
+//   signDisplayOption: 3
 //  }
 console.log(CVNumberBase10Format.ukStyleUngroupedNumber);
 

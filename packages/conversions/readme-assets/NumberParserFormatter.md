@@ -10,17 +10,19 @@ A safe, easy-to-use number/BigDecimal parser/formatter with almost all the optio
 ## 1. Usage example
 
 ```ts
-import { CVNumberBase10Format, CVSchema } from '@parischap/conversions';
-import { pipe, Schema } from 'effect';
+import * as CVNumberBase10Format from '@parischap/conversions/CVNumberBase10Format';
+import * as CVSchema from '@parischap/conversions/CVSchema';
+import { pipe } from 'effect';
+import * as Schema from 'effect/Schema';
 
 // Let's define some formats
-const ukStyleUngroupedNumber = CVNumberBase10Format.ukStyleUngroupedNumber;
+const { ukStyleUngroupedNumber } = CVNumberBase10Format;
 const ukStyleNumberWithEngineeringNotation = pipe(
   CVNumberBase10Format.ukStyleNumber,
   CVNumberBase10Format.withEngineeringScientificNotation,
 );
 
-const frenchStyleInteger = CVNumberBase10Format.frenchStyleInteger;
+const { frenchStyleInteger } = CVNumberBase10Format;
 
 // Let's define a formatter
 // Type: (value: BigDecimal | number) => string
@@ -103,7 +105,7 @@ export interface Type {
    *
    * - If `true`, numbers with a null integer part are displayed starting with `0`. Otherwise, they
    *   are displayed starting with `.` unless `maximumFractionalDigits===0`, in which case they are
-   *   displayed starting wiyh `0`.
+   *   displayed starting with `0`.
    *
    * Parsing
    *
@@ -111,6 +113,18 @@ export interface Type {
    * - If `false`, conversion will fail for numbers starting with `0.` (after an optional sign).
    */
   readonly showNullIntegerPart: boolean;
+
+  /**
+   * If `integerPartPadding` is a `none`, no padding is applied. Otherwise the string
+   * representation of the integer part of the mantissa will be padded with `fillChar`'s on the
+   * left so that it is `length` characters long (thousand separator included).
+   *
+   * Formatting: `fillChar`'s are padded until the integer part occupies `length` characters.
+   *
+   * Parsing: conversion will fail if the integer part does not occupy exactly `length` characters.
+   * Any leading `fillChar`'s are stripped.
+   */
+  readonly integerPartPadding: Option.Option<{ readonly length: number; readonly fillChar: string }>;
 
   /**
    * Minimim number of digits forming the fractional part of a number. Must be a positive integer
@@ -127,8 +141,8 @@ export interface Type {
    * Maximum number of digits forming the fractional part of a number. Must be an integer value
    * greater than or equal to `minimumFractionalDigits`. Can take the +Infinity value.
    *
-   * Formatting: the number will be rounded using the roundingMode to respect the condition (unless
-   * `maximumFractionalDigits` is `+Infinity`).
+   * Formatting: the number will be rounded using the roundingOption to respect the condition
+   * (unless `maximumFractionalDigits` is `+Infinity`).
    *
    * Parsing: will fail if the input string has too many fractional digits.
    */
@@ -137,7 +151,7 @@ export interface Type {
   /**
    * Possible characters to use to represent e-notation. Usually ['e','E']. Must be an array of
    * one-character strings. Will not throw otherwise but unexpected results will occur. Not used if
-   * `scientificNotation === None`
+   * `scientificNotationOption === None`
    *
    * Formatting: the string at index 0 is used
    *
@@ -149,7 +163,7 @@ export interface Type {
   /** Scientific notation options. See CVNumberBase10FormatScientificNotationOption */
   readonly scientificNotationOption: CVNumberBase10FormatScientificNotationOption.Type;
 
-  /** Rounding mode options. See CVRoundingOption.ts */
+  /** Rounding mode options used when formatting. See CVRoundingOption.ts */
   readonly roundingOption: CVRoundingOption.Type;
 
   /** Sign display options. See CVNumberBase10FormatSignDisplayOption.ts */
@@ -164,12 +178,13 @@ export const frenchStyleNumber = CVNumberBase10Format.make({
   thousandSeparator: ' ',
   fractionalSeparator: ',',
   showNullIntegerPart: true,
+  integerPartPadding: Option.none(),
   minimumFractionalDigits: 0,
   maximumFractionalDigits: 3,
   eNotationChars: ['e', 'E'],
-  scientificNotation: ScientificNotation.None,
-  roundingMode: CVRoundingMode.Type.HalfExpand,
-  signDisplay: SignDisplay.Negative,
+  scientificNotationOption: CVNumberBase10FormatScientificNotationOption.Type.None,
+  roundingOption: CVRoundingOption.Type.HalfExpand,
+  signDisplayOption: CVNumberBase10FormatSignDisplayOption.Type.Negative,
 });
 ```
 
@@ -181,7 +196,7 @@ The `.toString()` method will display the name of the object and all available p
 For instance:
 
 ```ts
-import { CVNumberBase10Format } from '@parischap/conversions';
+import * as CVNumberBase10Format from '@parischap/conversions/CVNumberBase10Format';
 import { pipe } from 'effect';
 
 // Result:
@@ -190,12 +205,13 @@ import { pipe } from 'effect';
 //   thousandSeparator: '',
 //   fractionalSeparator: '.',
 //   showNullIntegerPart: true,
+//   integerPartPadding: { _id: 'Option', _tag: 'None' },
 //   minimumFractionalDigits: 0,
 //   maximumFractionalDigits: 3,
 //   eNotationChars: [ 'e', 'E' ],
-//   scientificNotation: 0,
-//   roundingMode: 6,
-//   signDisplay: 3
+//   scientificNotationOption: 0,
+//   roundingOption: 6,
+//   signDisplayOption: 3
 //  }
 console.log(CVNumberBase10Format.ukStyleUngroupedNumber);
 

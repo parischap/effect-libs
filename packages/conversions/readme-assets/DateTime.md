@@ -22,7 +22,7 @@ You cannot create a `CVDateTime` object from a string. If you need to, use the `
 ## 2. Usage example
 
 ```ts
-import { CVDateTime } from '@parischap/conversions';
+import * as CVDateTime from '@parischap/conversions/CVDateTime';
 import { pipe } from 'effect';
 
 /** You can create a CVDateTime from a timestamp and timeZoneOffset expressed in hours */

@@ -20,7 +20,7 @@ const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
 /**
- * Type of a CVNumberRounder
+ * Type of a CVRounderParams
  *
  * @category Models
  */
@@ -83,7 +83,7 @@ export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
   self.precision === that.precision && self.roundingOption === that.roundingOption;
 
 /**
- * Constructs a `CVNumberRounder` with the specified `precision` and `roundingOption`
+ * Constructs a `CVRounderParams` with the specified `precision` and `roundingOption`
  *
  * @category Constructors
  */
@@ -96,8 +96,8 @@ export const make = ({
 } = {}): Type => Type.make({ precision, roundingOption });
 
 /**
- * `CVNumberRounder` instance that uses the `HalfExpand` `CVRoundingMode` and `precision=2`. Can be
- * used in accounting apps of most countries througout the world
+ * `CVRounderParams` instance that uses the `HalfExpand` `CVRoundingOption` and `precision=2`. Can
+ * be used in accounting apps of most countries throughout the world
  *
  * @category Instances
  */

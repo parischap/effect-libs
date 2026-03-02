@@ -173,13 +173,15 @@ describe('CVDateTimeFormatter', () => {
 
     it('Matching: returns a string directly', () => {
       TestUtils.strictEqual(
-        formatOrThrow(CVDateTime.fromPartsOrThrow({ year: 2025, month: 1, monthDay: 1 })),
+        formatOrThrow(
+          CVDateTime.fromPartsOrThrow({ year: 2025, month: 1, monthDay: 1, zoneHour: 0 }),
+        ),
         '2025-01-01T00:00:00,000+00:00',
       );
     });
 
     it('Non-matching: throws on invalid input', () => {
-      TestUtils.assertThrows(() => formatOrThrow(CVDateTime.fromPartsOrThrow({ year: 10_024 })));
+      TestUtils.throws(() => formatOrThrow(CVDateTime.fromPartsOrThrow({ year: 10_024 })));
     });
   });
 });

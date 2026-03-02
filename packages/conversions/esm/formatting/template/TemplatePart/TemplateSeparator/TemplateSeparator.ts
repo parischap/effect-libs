@@ -1,5 +1,5 @@
 /**
- * This module implements a `CVTemplateSeparator` which constitutes the mutable parts of a
+ * This module implements a `CVTemplateSeparator` which constitutes the immutable parts of a
  * `CVTemplate` (see Template.ts and TemplatePart.ts)
  */
 

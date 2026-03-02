@@ -92,7 +92,7 @@ export class Type extends MData.Class {
   readonly fractionalSeparatorPrepender: MTypes.StringTransformer;
 
   /**
-   * Function that adds intersperses the thousand separator in the inter part of the mantissa of a
+   * Function that intersperses the thousand separator in the integer part of the mantissa of a
    * number
    */
   readonly thousandSeparatorIntersperser: MTypes.OneArgFunction<Array<string>>;
@@ -176,7 +176,7 @@ export class Type extends MData.Class {
 }
 
 /**
- * Constructor of a CVNumberBase10Parser from a CVNumberBase10Format
+ * Constructor of a CVNumberBase10Formatter from a CVNumberBase10Format
  *
  * @category Constructors
  */

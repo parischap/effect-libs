@@ -248,7 +248,7 @@ const _uncalculatedOrigin = _uncalculatedFromTimestamp(0, 0);
  * If `zoneOffset` is omitted, the local time zone offset of the machine this code is running on is
  * used.
  *
- * `zoneOffset` can be expressed as as a number of hours. In this case, it must be strictly greater
+ * `zoneOffset` can be expressed as a number of hours. In this case, it must be strictly greater
  * to -13 and strictly less than 15.
  *
  * It can also be expressed as an object containing three components:
@@ -362,7 +362,7 @@ export const now = (): Type => _uncalculatedFromTimestamp(Date.now(), 0);
  * default values are determined as follows :
  *
  * - If all parameters are undefined, the local time zone offset of the machine this code is running
- *   on is used. ATTENTION: unlike the javaScript Date constructor, fromParts uses the current time
+ *   on is used. ATTENTION: unlike the JavaScript Date constructor, fromParts uses the current time
  *   zone offset, not the one that prevails at the given date (so, in Paris, in winter, the time
  *   zone offset for date 20250714 is -1 and not -2).
  * - If any of `zoneHour`, `zoneMinute`, `zoneSecond` is defined, the remaining undefined parameters
@@ -372,7 +372,7 @@ export const now = (): Type => _uncalculatedFromTimestamp(Date.now(), 0);
  * zoneSecond=0. The first corresponds to the string 'GMT-00:10', a negative 10-minute offset, the
  * second one to the string 'GMT+00:10', a positive 10-minute offset.
  *
- * `year`, `ordinalDay`, `month`, `monthDay`, `isoYear`, `isoWeek`, `weekDay`, `hour23`, `hour11`,
+ * `year`, `ordinalDay`, `month`, `monthDay`, `isoYear`, `isoWeek`, `weekday`, `hour23`, `hour11`,
  * `minute`, `second`, `millisecond`, `zoneHour`, `zoneMinute` and `zoneSecond` should be integers.
  * `zoneOffset` does not need to be an integer.
  *
@@ -773,7 +773,7 @@ export const getZoneMinute: MTypes.OneArgFunction<Type, number> = flow(
 );
 
 /**
- * Returns the minute part of the zoneOffset of `self`
+ * Returns the second part of the zoneOffset of `self`
  *
  * @category Getters
  */
@@ -1210,7 +1210,7 @@ const _setZoneOffset =
  * If `zoneOffset` is omitted, the local time zone offset of the machine this code is running on is
  * used.
  *
- * `zoneOffset` can be expressed as as a number of hours. In this case, it must be strictly greater
+ * `zoneOffset` can be expressed as a number of hours. In this case, it must be strictly greater
  * to -13 and strictly less than 15.
  *
  * It can also be expressed as an object containing three components:
@@ -1271,7 +1271,7 @@ export const setZoneOffsetKeepParts = (
   _setZoneOffset(false, zoneOffset);
 
 /**
- * Same as `setZoneOffsetKeepTimestamp` but returns directly a `CVDateTime` or throws in case of an
+ * Same as `setZoneOffsetKeepParts` but returns directly a `CVDateTime` or throws in case of an
  * error
  *
  * @category Setters

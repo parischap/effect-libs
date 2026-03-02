@@ -1,5 +1,5 @@
 /**
- * This module implements a `CVDateTimeFormatContext` which is used as a mapping betwwen a
+ * This module implements a `CVDateTimeFormatContext` which is used as a mapping between a
  * `CVDateTimeFormatPlaceHolder` and a `CVTemplatePlaceholder`. For each `CVDateTimeFormatToken`, it
  * contains a `CVDateTimeFormatPlaceHolder` which can format/parse that token. As some tokens are
  * language-dependent, e.g. weekday names, this module provides a constructor from locales, or from
@@ -430,14 +430,14 @@ export const fromNames = ({
       'zH',
       CVTemplatePlaceholder.number({
         name: 'zoneHour',
-        numberBase10Format: CVNumberBase10Format.integer,
+        numberBase10Format: CVNumberBase10Format.signedInteger,
       }),
     ],
     [
       'zHzH',
       CVTemplatePlaceholder.number({
         name: 'zoneHour',
-        numberBase10Format: CVNumberBase10Format.twoDigitInteger,
+        numberBase10Format: CVNumberBase10Format.twoDigitSignedInteger,
       }),
     ],
     [

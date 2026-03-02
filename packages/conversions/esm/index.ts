@@ -18,9 +18,9 @@ export * as CVNumberBase10FormatScientificNotationOption from './Formatting/Numb
 export * as CVNumberBase10FormatSignDisplayOption from './Formatting/NumberBase10Format/NumberBase10FormatSignDisplayOption/NumberBase10FormatSignDisplayOption.js';
 export * as CVNumberBase10Formatter from './Formatting/NumberBase10Format/NumberBase10Formatter.js';
 export * as CVNumberBase10Parser from './Formatting/NumberBase10Format/NumberBase10Parser.js';
-export * as CVRounder from './rounding/Rounder.js';
-export * as CVRounderParams from './rounding/RounderParams.js';
-export * as CVRoundingOption from './rounding/RoundingOption/RoundingOption.js';
+export * as CVRounder from './Rounding/Rounder.js';
+export * as CVRounderParams from './Rounding/RounderParams.js';
+export * as CVRoundingOption from './Rounding/RoundingOption/RoundingOption.js';
 export * as CVSchema from './Formatting/Schema.js';
 export * as CVTemplate from './Formatting/Template/Template.js';
 export * as CVTemplateFormatter from './Formatting/Template/TemplateFormatter.js';

@@ -10,15 +10,13 @@ An equivalent to the PHP `sprintf` and `sscanf` functions with real typing of th
 ## 1. Usage example
 
 ```ts
-import {
-  CVNumberBase10Format,
-  CVSchema,
-  CVTemplate,
-  CVTemplatePlaceholder,
-  CVTemplateSeparator,
-} from '@parischap/conversions';
-import { MRegExpString } from '@parischap/effect-lib';
-import { pipe, Schema } from 'effect';
+import * as CVNumberBase10Format from '@parischap/conversions/CVNumberBase10Format';
+import * as CVSchema from '@parischap/conversions/CVSchema';
+import * as CVTemplate from '@parischap/conversions/CVTemplate';
+import * as CVTemplatePlaceholder from '@parischap/conversions/CVTemplatePlaceholder';
+import * as CVTemplateSeparator from '@parischap/conversions/CVTemplateSeparator';
+import * as MRegExpString from '@parischap/effect-lib/MRegExpString';
+import * as Schema from 'effect/Schema';
 
 // Let's define useful shortcuts
 const ph = CVTemplatePlaceholder;
@@ -31,9 +29,9 @@ const template = CVTemplate.make(
   // Immutable text
   sep.make(' is a '),
   // Field named 'age' that must represent an unsigned integer
-  ph.real({
+  ph.number({
     name: 'age',
-    numberBase10Format: pipe(CVNumberBase10Format.integer, CVNumberBase10Format.withoutSignDisplay),
+    numberBase10Format: CVNumberBase10Format.unsignedInteger,
   }),
   // Immutable text
   sep.make('-year old '),
@@ -184,10 +182,9 @@ There are several predefined Placeholder's:
 
 - `fixedLength`: this Placeholder always reads/writes the same number of characters from/into the text.
 - `paddedFixedLength`: same as `fixedLength` but the consumed text is trimmed off of a `fillChar` on the left or right and the written text is padded with a `fillChar` on the left or right.
-- `fixedLengthToNumber`: same as `fixedLength` but the parser tries to convert the consumed text into a number using the passed `CVNumberBase10Format`. The formatter takes a number and tries to convert and write it as an n-character string. You can pass a `fillChar` that is trimmed off the consumed text upon parsing and padded to the written text upon formatting.
-- `number`: the parser of this Placeholder reads from the text all the characters that it can interpret as a number in the provided `CVNumberBase10Format` and converts the consumed text into a number. The formatter takes a number and converts it into a string according to the provided `CVNumberBase10Format`.
+- `number`: this Placeholder parses/formats a number according to the provided `CVNumberBase10Format`. If the format has a fixed length (i.e. the integer part is padded and the fractional digits are fixed), the parser reads exactly that many characters and tries to convert them. Otherwise it reads from the text all the characters that it can interpret as a number in the provided `CVNumberBase10Format`. The formatter converts the number to a string; if the format has a fixed length, it fails when the result does not have the expected length.
 - `mappedLiterals`: this Placeholder takes as input a map that must define a bijection between a list of strings and a list of values. The parser tries to read from the text one of the strings in the list. Upon success, it returns the corresponding value. The formatter takes a value and tries to find it in the list. Upon success, it writes the corresponding string into the text.
-- `realMappedLiterals`: same as `mappedLiterals` but values are assumed to be of type number which is the most usual use case.
+- `numberMappedLiterals`: same as `mappedLiterals` but values are assumed to be of type number which is the most usual use case.
 - `fulfilling`: the parser of this Placeholder reads as much of the text as it can that fulfills the passed regular expression. The formatter only accepts a string that matches the passed regular expression and writes it into the text.
 - `anythingBut`: this is a special case of the `fulfilling` `CVTemplatePlaceholder`. The parser reads from the text until it meets one of the `forbiddenChars` passed as parameter (the result must be a non-empty string). The formatter will only accept a non-empty string that does not contain any of the forbidden chars and write it to the text.
 - `toEnd`: this is another special case of the `fulfilling` `CVTemplatePlaceholder`. The parser reads all the remaining text. The formatter accepts any string and writes it. This `CVTemplatePlaceholder` should only be used as the last `CVTemplatePart` of a `CVTemplate`.
@@ -199,25 +196,22 @@ If none of these `CVTemplatePlaceholder` instances suits you, you can define you
 ## 5. A more complex example
 
 ```ts
-import {
-  CVNumberBase10Format,
-  CVReal,
-  CVTemplate,
-  CVTemplatePlaceholder,
-  CVTemplateSeparator,
-} from '@parischap/conversions';
+import * as CVNumberBase10Format from '@parischap/conversions/CVNumberBase10Format';
+import * as CVTemplate from '@parischap/conversions/CVTemplate';
+import * as CVTemplatePlaceholder from '@parischap/conversions/CVTemplatePlaceholder';
+import * as CVTemplateSeparator from '@parischap/conversions/CVTemplateSeparator';
 
 // Let's define useful shortcuts
 const placeholder = CVTemplatePlaceholder;
 const sep = CVTemplateSeparator;
 
 // Let's define a date template that will look like: 'Today is #weekday, day number #weekday of the week.'
-// Note that weekDay appears twice, once as a realMappedLiterals placeholder, once as a real placeholder.
+// Note that weekDay appears twice, once as a numberMappedLiterals placeholder, once as a number placeholder.
 const template = CVTemplate.make(
   // Separator
   sep.make('Today is '),
-  // realMappedLiterals placeholder
-  placeholder.realMappedLiterals({
+  // numberMappedLiterals placeholder
+  placeholder.numberMappedLiterals({
     name: 'weekday',
     keyValuePairs: [
       ['Monday', 1],
@@ -231,11 +225,8 @@ const template = CVTemplate.make(
   }),
   // Separator
   sep.make(', day number '),
-  // Field named 'weekday' that must represent an integer
-  placeholder.real({
-    name: 'weekday',
-    numberBase10Format: CVNumberBase10Format.integer,
-  }),
+  // Field named 'weekday' that must represent an unsigned integer
+  placeholder.number({ name: 'weekday', numberBase10Format: CVNumberBase10Format.unsignedInteger }),
   // Separator
   sep.make(' of the week.'),
 );
@@ -286,14 +277,11 @@ console.log(formatter({ weekday: 10 }));
 For instance:
 
 ```ts
-import {
-  CVNumberBase10Format,
-  CVTemplate,
-  CVTemplatePlaceholder,
-  CVTemplateSeparator,
-} from '@parischap/conversions';
-import { MRegExpString } from '@parischap/effect-lib';
-import { pipe } from 'effect';
+import * as CVNumberBase10Format from '@parischap/conversions/CVNumberBase10Format';
+import * as CVTemplate from '@parischap/conversions/CVTemplate';
+import * as CVTemplatePlaceholder from '@parischap/conversions/CVTemplatePlaceholder';
+import * as CVTemplateSeparator from '@parischap/conversions/CVTemplateSeparator';
+import * as MRegExpString from '@parischap/effect-lib/MRegExpString';
 
 // Let's define useful shortcuts
 const ph = CVTemplatePlaceholder;
@@ -306,9 +294,9 @@ const template = CVTemplate.make(
   // Immutable text
   sep.make(' is a '),
   // Field named 'age' that must represent an unsigned integer
-  ph.real({
+  ph.number({
     name: 'age',
-    numberBase10Format: pipe(CVNumberBase10Format.integer, CVNumberBase10Format.withoutSignDisplay),
+    numberBase10Format: CVNumberBase10Format.unsignedInteger,
   }),
   // Immutable text
   sep.make('-year old '),

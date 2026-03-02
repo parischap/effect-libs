@@ -1,6 +1,6 @@
 /**
  * This module implements a `CVNumberBase10Format` which describes the possible options to
- * format/parse a base-10 number or `BigDecimal` and implements the Formatting/parsing algortithms
+ * format/parse a base-10 number or `BigDecimal` and implements the Formatting/parsing algorithms
  */
 
 import { MPredicate } from '@parischap/effect-lib';
@@ -50,7 +50,7 @@ export class Type extends MData.Class {
    *
    * - If `true`, numbers with a null integer part are displayed starting with `0`. Otherwise, they
    *   are displayed starting with `.` unless `maximumFractionalDigits===0`, in which case they are
-   *   displayed starting wiyh `0`.
+   *   displayed starting with `0`.
    *
    * Parsing
    *
@@ -80,7 +80,7 @@ export class Type extends MData.Class {
   }>;
 
   /**
-   * Minimim number of digits forming the fractional part of a number. Must be a positive integer
+   * Minimum number of digits forming the fractional part of a number. Must be a positive integer
    * (>=0) less than or equal to `maximumFractionalDigits`. Will not throw otherwise but unexpected
    * results might occur.
    *
@@ -200,7 +200,7 @@ export const showNullIntegerPart: MTypes.OneArgFunction<Type, boolean> =
   Struct.get('showNullIntegerPart');
 
 /**
- * Returns the `integerPartPadding`property of `self`
+ * Returns the `integerPartPadding` property of `self`
  *
  * @category Destructors
  */
@@ -224,7 +224,7 @@ export const maximumFractionalDigits: MTypes.OneArgFunction<Type, number> =
   Struct.get('maximumFractionalDigits');
 
 /**
- * Returns the `eNotationChar` property of `self`
+ * Returns the `eNotationChars` property of `self`
  *
  * @category Destructors
  */
@@ -828,25 +828,32 @@ export const ukStyleInteger: Type = pipe(ukStyleNumber, withMaxNDecimals(0));
 export const integer: Type = pipe(frenchStyleInteger, withoutThousandSeparator);
 
 /**
- * 2-digit integer `CVNumberBase10Format` instance with no thousand separator
+ * signedInteger `CVNumberBase10Format` instance with no thousand separator
  *
  * @category Instances
  */
-export const twoDigitInteger: Type = pipe(integer, zeroPadded(2), withSignDisplay);
+export const signedInteger: Type = pipe(integer, withSignDisplay);
 
 /**
- * 3-digit integer `CVNumberBase10Format` instance with no thousand separator
+ * 2-digit signed integer `CVNumberBase10Format` instance with no thousand separator
  *
  * @category Instances
  */
-export const threeDigitInteger: Type = pipe(integer, zeroPadded(3), withSignDisplay);
+export const twoDigitSignedInteger: Type = pipe(signedInteger, zeroPadded(2));
 
 /**
- * 4-digit integer `CVNumberBase10Format` instance with no thousand separator
+ * 3-digit signed integer `CVNumberBase10Format` instance with no thousand separator
  *
  * @category Instances
  */
-export const fourDigitInteger: Type = pipe(integer, zeroPadded(4), withSignDisplay);
+export const threeDigitSignedInteger: Type = pipe(signedInteger, zeroPadded(3));
+
+/**
+ * 4-digit signed integer `CVNumberBase10Format` instance with no thousand separator
+ *
+ * @category Instances
+ */
+export const fourDigitSignedInteger: Type = pipe(signedInteger, zeroPadded(4));
 
 /**
  * Unsigned integer `CVNumberBase10Format` instance with no thousand separator
@@ -860,18 +867,18 @@ export const unsignedInteger: Type = pipe(integer, withoutSignDisplay);
  *
  * @category Instances
  */
-export const twoDigitUnsignedInteger: Type = pipe(integer, zeroPadded(2), withoutSignDisplay);
+export const twoDigitUnsignedInteger: Type = pipe(unsignedInteger, zeroPadded(2));
 
 /**
  * 3-digit unsigned integer `CVNumberBase10Format` instance with no thousand separator
  *
  * @category Instances
  */
-export const threeDigitUnsignedInteger: Type = pipe(integer, zeroPadded(3), withoutSignDisplay);
+export const threeDigitUnsignedInteger: Type = pipe(unsignedInteger, zeroPadded(3));
 
 /**
  * 4-digit unsigned integer `CVNumberBase10Format` instance with no thousand separator
  *
  * @category Instances
  */
-export const fourDigitUnsignedInteger: Type = pipe(integer, zeroPadded(4), withoutSignDisplay);
+export const fourDigitUnsignedInteger: Type = pipe(unsignedInteger, zeroPadded(4));

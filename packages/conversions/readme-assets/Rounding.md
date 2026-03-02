@@ -10,8 +10,10 @@ A module to round numbers and [BigDecimal](https://effect.website/docs/data-type
 ## 1. Usage example
 
 ```ts
-import { CVRounder, CVRounderParams, CVRoundingOption } from '@parischap/conversions';
-import { BigDecimal } from 'effect';
+import * as CVRounder from '@parischap/conversions/CVRounder';
+import * as CVRounderParams from '@parischap/conversions/CVRounderParams';
+import * as CVRoundingOption from '@parischap/conversions/CVRoundingOption';
+import * as BigDecimal from 'effect/BigDecimal';
 
 // Here we define the parameters of the rounder:
 // the result must have three fractional digits using the HalfEven rounding mode
@@ -84,7 +86,8 @@ console.log(bigDecimalRounder(BigDecimal.make(1245n, 2)));
 Instead of building your own `CVRounderParams`, you can use the `halfExpand2` `CVRounderParams` instance (`HalfExpand` rounding option with a precision of two fractional digits). It will come in handy in accounting apps of most countries. For example:
 
 ```ts
-import { CVRounder, CVRounderParams } from '@parischap/conversions';
+import * as CVRounder from '@parischap/conversions/CVRounder';
+import * as CVRounderParams from '@parischap/conversions/CVRounderParams';
 
 // Let's define a number rounder from halfExpand2. Type: (value:number) => number
 const numberRounder = CVRounder.number(CVRounderParams.halfExpand2);
@@ -103,8 +106,9 @@ console.log(numberRounder(-12.457));
 `CVRoundingOption` objects implement `Effect` equivalence and equality based on equivalence and equality of the `precision` and `roundingOption` properties. They also implement a `.toString()` method. For instance:
 
 ```ts
-import { CVRounderParams, CVRoundingOption } from '@parischap/conversions';
-import { Equal } from 'effect';
+import * as CVRounderParams from '@parischap/conversions/CVRounderParams';
+import * as CVRoundingOption from '@parischap/conversions/CVRoundingOption';
+import * as Equal from 'effect/Equal';
 
 // Result: 'HalfExpandRounderWith2Precision'
 console.log(CVRounderParams.halfExpand2);

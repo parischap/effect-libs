@@ -19,7 +19,11 @@ import * as CVTemplateParts from '../internal/Formatting/Template/TemplateParts.
 import * as CVDateTimeFormatter from './DateTimeFormat/DateTimeFormatter.js';
 import * as CVDateTimeParser from './DateTimeFormat/DateTimeParser.js';
 import * as CVNumberBase10Format from './NumberBase10Format/NumberBase10Format.js';
+import * as CVNumberBase10Formatter from './NumberBase10Format/NumberBase10Formatter.js';
+import * as CVNumberBase10Parser from './NumberBase10Format/NumberBase10Parser.js';
 import * as CVTemplate from './Template/Template.js';
+import * as CVTemplateFormatter from './Template/TemplateFormatter.js';
+import * as CVTemplateParser from './Template/TemplateParser.js';
 import * as CVTemplatePart from './Template/TemplatePart/TemplatePart.js';
 import * as CVTemplatePlaceholder from './Template/TemplatePart/TemplatePlaceholder/TemplatePlaceholder.js';
 
@@ -29,10 +33,14 @@ import * as CVTemplatePlaceholder from './Template/TemplatePart/TemplatePlacehol
  *
  * @category Schema transformations
  */
-export const Real = (format: CVNumberBase10Format.Type): Schema.Schema<number, string> => {
-  const parser = CVNumberBase10Format.toRealParser(format);
-  const formatter = CVNumberBase10Format.toNumberFormatter(format);
-  return Schema.transformOrFail(Schema.String, RealFromSelf, {
+export const Number = (format: CVNumberBase10Format.Type): Schema.Schema<number, string> => {
+  const parser = pipe(format, CVNumberBase10Parser.fromFormat, CVNumberBase10Parser.parseAsNumber);
+  const formatter = pipe(
+    format,
+    CVNumberBase10Formatter.fromFormat,
+    CVNumberBase10Formatter.format,
+  );
+  return Schema.transformOrFail(Schema.String, Schema.Number, {
     strict: true,
     decode: (input, _options, ast) =>
       pipe(
@@ -54,8 +62,16 @@ export const Real = (format: CVNumberBase10Format.Type): Schema.Schema<number, s
 const BigDecimalFromString = (
   format: CVNumberBase10Format.Type,
 ): Schema.Schema<BigDecimal.BigDecimal, string> => {
-  const parser = CVNumberBase10Format.toBigDecimalParser(format);
-  const formatter = CVNumberBase10Format.toNumberFormatter(format);
+  const parser = pipe(
+    format,
+    CVNumberBase10Parser.fromFormat,
+    CVNumberBase10Parser.parseAsBigDecimal,
+  );
+  const formatter = pipe(
+    format,
+    CVNumberBase10Formatter.fromFormat,
+    CVNumberBase10Formatter.format,
+  );
   return Schema.transformOrFail(Schema.String, Schema.BigDecimalFromSelf, {
     strict: true,
     decode: (input, _options, ast) =>
@@ -170,7 +186,8 @@ export {
 export const Date = (
   parser: CVDateTimeParser.Type,
   formatter: CVDateTimeFormatter.Type,
-): Schema.Schema<Date, string> => Schema.compose(DateTimeFromString(parser, formatter), DateFromDateTime);
+): Schema.Schema<Date, string> =>
+  Schema.compose(DateTimeFromString(parser, formatter), DateFromDateTime);
 
 /**
  * A `Schema` that transforms a string into an `Effect.DateTime.Zoned` according to the given
@@ -186,7 +203,7 @@ export const DateTimeZoned = (
   Schema.compose(DateTimeFromString(parser, formatter), DateTimeZonedFromDateTime);
 
 /**
- * A `Schema` that transforms a string into an object according to template. Read documentation of
+ * A `Schema` that transforms a string into an object according to `template`. Read documentation of
  * module Template.ts for more details
  *
  * @category Schema transformations
@@ -202,8 +219,8 @@ export const Template = <const PS extends CVTemplateParts.Type>(
   },
   string
 > => {
-  const parser = CVTemplate.toParser(template);
-  const formatter = CVTemplate.toFormatter(template);
+  const parser = pipe(template, CVTemplateParser.fromTemplate, CVTemplateParser.parse);
+  const formatter = pipe(template, CVTemplateFormatter.fromTemplate, CVTemplateFormatter.format);
 
   const schemaOutput = pipe(
     template.templateParts,

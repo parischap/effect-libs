@@ -67,7 +67,7 @@ export class Type<out PlaceholderTypes extends MTypes.NonPrimitive> extends MDat
 }
 
 /**
- * Constructor of a CVTemplateParser from a CVTemplate
+ * Constructor of a CVTemplateFormatter from a CVTemplate
  *
  * @category Constructors
  */
@@ -80,7 +80,7 @@ export const fromTemplate = <PlaceholderTypes extends MTypes.NonPrimitive>(
   });
 
 /**
- * Constructor of a CVTemplateParser directly from CVTemplateParts
+ * Constructor of a CVTemplateFormatter directly from CVTemplateParts
  *
  * @category Constructors
  */

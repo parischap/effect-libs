@@ -4,7 +4,7 @@
  *
  * Each `CVTemplatePlaceholder` defines a parser and a formatter:
  *
- * - The parser takes a text, consumes a part of that text, optionnally converts the consumed part to
+ * - The parser takes a text, consumes a part of that text, optionally converts the consumed part to
  *   a value of type T and, if successful, returns a `right` of that value and of what has not been
  *   consumed. In case of failure, it returns a `left`.
  * - The formatter takes a value of type T, converts it to a string (if T is not string), checks that

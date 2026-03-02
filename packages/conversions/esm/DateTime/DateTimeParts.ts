@@ -12,7 +12,7 @@ export interface Type {
   readonly ordinalDay?: number;
   /** Month in the current year, range:[1, 12] */
   readonly month?: number;
-  /** Day in the current month, range:[1, 12] */
+  /** Day in the current month, range:[1, 31] */
   readonly monthDay?: number;
   /** The iso year, range: [MIN_FULL_YEAR, MAX_FULL_YEAR] */
   readonly isoYear?: number;
@@ -28,9 +28,9 @@ export interface Type {
   readonly meridiem?: 0 | 12;
   /** Number of minutes since the start of the current hour, range:[0, 59] */
   readonly minute?: number;
-  /** Number of seconds, since sthe start of the current minute, range:[0, 59] */
+  /** Number of seconds, since the start of the current minute, range:[0, 59] */
   readonly second?: number;
-  /** Number of milliseconds, since sthe start of the current second, range:[0, 999] */
+  /** Number of milliseconds, since the start of the current second, range:[0, 999] */
   readonly millisecond?: number;
   /**
    * Offset in hours between the time in the local zone and UTC time (e.g zoneOffset=1 for timezone
