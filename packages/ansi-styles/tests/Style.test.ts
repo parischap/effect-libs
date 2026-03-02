@@ -61,6 +61,17 @@ describe('ASStyle', () => {
     );
   });
 
+  it('style getter', () => {
+    TestUtils.assertEquals(ASStyle.style(ASStyle.bold), ASStyleCharacteristics.bold);
+    TestUtils.assertEquals(ASStyle.style(boldRed1), ASStyleCharacteristics.mergeOver(ASStyleCharacteristics.bold)(ASStyleCharacteristics.red));
+  });
+
+  it('equivalence', () => {
+    TestUtils.assertTrue(ASStyle.equivalence(boldRed1, boldRed2));
+    TestUtils.assertFalse(ASStyle.equivalence(ASStyle.red, ASStyle.bold));
+    TestUtils.assertTrue(ASStyle.equivalence(ASStyle.none, ASStyle.none));
+  });
+
   it('Action', () => {
     TestUtils.assertEquals(
       bold('foo'),

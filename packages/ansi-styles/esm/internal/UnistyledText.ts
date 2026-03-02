@@ -1,5 +1,5 @@
 /**
- * This module implements a uniformly styled text (i.e. a text that is thorougly formatted with the
+ * This module implements a uniformly styled text (i.e. a text that is thoroughly formatted with the
  * same style)
  */
 
@@ -17,6 +17,11 @@ import * as Struct from 'effect/Struct'
 import * as ASCode from './Code.js';
 import * as ASStyleCharacteristics from './StyleCharacteristics.js';
 
+/**
+ * Module tag
+ *
+ * @category Module markers
+ */
 export const moduleTag = '@parischap/ansi-styles/internal/UnistyledText/';
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;

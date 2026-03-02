@@ -16,7 +16,7 @@ import * as ASSequence from './Sequence.js';
 export type Type = string;
 
 /**
- * Builds an Code from a ASSequence.OverOne
+ * Builds a Code from a ASSequence.OverOne
  *
  * @category Constructors
  */
@@ -28,7 +28,7 @@ export const fromNonEmptySequence: MTypes.OneArgFunction<ASSequence.OverOne, str
 );
 
 /**
- * Builds an Code from a ASSequence.Type
+ * Builds a Code from a ASSequence.Type
  *
  * @category Constructors
  */

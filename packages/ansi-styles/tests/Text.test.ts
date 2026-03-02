@@ -6,6 +6,7 @@ import * as ASStyleCharacteristics from '@parischap/ansi-styles/ASStyleCharacter
 import * as TestUtils from '@parischap/configs/TestUtils';
 import {flow, pipe} from 'effect'
 import * as Array from 'effect/Array'
+import * as Option from 'effect/Option'
 import { describe, it } from 'vitest';
 
 describe('ASText', () => {
@@ -36,7 +37,10 @@ describe('ASText', () => {
 
   describe('Tag, prototype and guards', () => {
     it('moduleTag', () => {
-      TestUtils.assertSome(TestUtils.moduleTagFromTestFilePath(__filename), ASText.moduleTag);
+      TestUtils.assertEquals(
+        Option.some(ASText.moduleTag),
+        TestUtils.moduleTagFromTestFilePath(import.meta.filename),
+      );
     });
 
     describe('haveSameText', () => {

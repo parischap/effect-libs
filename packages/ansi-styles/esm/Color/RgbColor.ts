@@ -1,7 +1,6 @@
 /**
- * This module defines an RGB color
- *
- * You can use the RGB.make function to build more RGB colors
+ * This module defines an RGB color. Use the `make` function to build custom RGB colors from red,
+ * green, and blue components (0-255).
  */
 
 import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality';
@@ -105,7 +104,7 @@ const makeShort = (foregroundId: string, red: number, green: number, blue: numbe
 /**
  * Constructor
  *
- * @category Construtors
+ * @category Constructors
  */
 export const make = ({
   red,

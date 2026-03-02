@@ -81,7 +81,7 @@ Version 0.3.0 introduced code clarification and a few breaking changes. We apolo
 Just import ASStyle and build simple styled strings in the following manner:
 
 ```ts
-import { ASStyle } from '@parischap/ansi-styles';
+import * as ASStyle from '@parischap/ansi-styles/ASStyle';
 
 console.log(
   ASStyle.red(
@@ -139,7 +139,7 @@ In some cases, you may need to cancel the effect of a style using one of the fol
 For instance:
 
 ```ts
-import { ASStyle } from '@parischap/ansi-styles';
+import * as ASStyle from '@parischap/ansi-styles/ASStyle';
 
 console.log(ASStyle.bold('I am ', ASStyle.notBold('not bold')));
 ```
@@ -179,7 +179,7 @@ In some cases, you may need to revert to the default terminal color. In that cas
 Here is an example:
 
 ```ts
-import { ASStyle } from '@parischap/ansi-styles';
+import * as ASStyle from '@parischap/ansi-styles/ASStyle';
 
 console.log(
   ASStyle.none(
@@ -196,15 +196,19 @@ console.log(
 
 ### 5) Using 8-bit and RGB colors
 
-If your terminal takes them in charge, you can use 8-bit or RGB colors. To that extent, use the `ASStyle.color` and `ASStyle.Bg.color` combinators.
+If your terminal takes them in charge, you can use 8-bit or RGB colors. To that extent, use the `ASStyle.color` and `ASStyle.bgColor` combinators.
 
 The ASColor module defines 16 three-bit color instances (8 normal + 8 bright), 256 eight-bit color instances and 140 RGB color instances. All these instances can be found in the [ThreeBit API](https://parischap.github.io/effect-libs/ansi-styles/Color/ThreeBit.html), [EightBit API](https://parischap.github.io/effect-libs/ansi-styles/Color/EightBit.html) and [Rgb API](https://parischap.github.io/effect-libs/ansi-styles/Color/Rgb.html). Furthermore, you can define more RGB colors with the `ASRgbColor.make` combinator.
 
 Here is an example:
 
 ```ts
-import { ASRgbColor, ASStyle } from '@parischap/ansi-styles';
+import * as ASEightBitColor from '@parischap/ansi-styles/ASEightBitColor';
+import * as ASRgbColor from '@parischap/ansi-styles/ASRgbColor';
+import * as ASStyle from '@parischap/ansi-styles/ASStyle';
 
+console.log(ASStyle.color(ASEightBitColor.cornflowerBlue)('I am a cornflower blue string'));
+console.log(ASStyle.bgColor(ASEightBitColor.darkOrange)('I am a string with a dark orange background'));
 console.log(ASStyle.color(ASRgbColor.coral)('I am a coral string'));
 console.log(
   ASStyle.color(ASRgbColor.make({ red: 176, green: 17, blue: 243 }))(
@@ -223,12 +227,10 @@ An `ASContextStyler` allows you to style a text differently according to a conte
 Here is an example:
 
 ```ts
-import {
-  ASContextStyler,
-  ASConstantContextStyler,
-  ASPaletteContextStyler,
-  ASPalette,
-} from '@parischap/ansi-styles';
+import * as ASConstantContextStyler from '@parischap/ansi-styles/ASConstantContextStyler';
+import * as ASContextStyler from '@parischap/ansi-styles/ASContextStyler';
+import * as ASPalette from '@parischap/ansi-styles/ASPalette';
+import * as ASPaletteContextStyler from '@parischap/ansi-styles/ASPaletteContextStyler';
 
 interface Value {
   readonly pos1: number;

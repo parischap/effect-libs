@@ -109,7 +109,7 @@ export const make = (offset: ASThreeBitColorOffset.Type): Type =>
 /**
  * Constructor of bright colors
  *
- * @category Original instances
+ * @category Constructors
  */
 export const makeBright = (offset: ASThreeBitColorOffset.Type) =>
   Type.make({ offset, isBright: true });

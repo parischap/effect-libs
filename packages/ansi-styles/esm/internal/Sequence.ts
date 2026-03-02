@@ -14,7 +14,7 @@ import * as Array from 'effect/Array'
 export interface Type extends ReadonlyArray<number> {}
 
 /**
- * Same as ASSequence.Type but must constain at least one number
+ * Same as ASSequence.Type but must contain at least one number
  *
  * @category Models
  */

@@ -6,7 +6,7 @@ import * as TestUtils from '@parischap/configs/TestUtils';
 import * as Option from 'effect/Option'
 import { describe, it } from 'vitest';
 
-describe('ASContextStylerWheel', () => {
+describe('ASPaletteContextStyler', () => {
   interface Value {
     readonly pos1: number;
     readonly otherStuff: string;

@@ -1,7 +1,6 @@
 /**
- * This module defines all available ANSI colors
- *
- * You can use the RGB.make function to build more RGB colors
+ * This module defines the abstract Color type, which is the base for all ANSI color kinds (ThreeBit,
+ * EightBit, and RGB)
  */
 
 import * as MData from '@parischap/effect-lib/MData'

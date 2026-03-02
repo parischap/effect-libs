@@ -4,7 +4,7 @@ import * as TestUtils from '@parischap/configs/TestUtils';
 import * as Option from 'effect/Option'
 import { describe, it } from 'vitest';
 
-describe('ASThreeBitColor', () => {
+describe('ASEightBitColor', () => {
   it('moduleTag', () => {
     TestUtils.assertEquals(
       Option.some(ASEightBitColor.moduleTag),
