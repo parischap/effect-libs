@@ -50,19 +50,19 @@
     "circular": "madge --extensions ts --circular --no-color --no-spinner esm",
     "clean-node-modules": "unrun node_modules/@parischap/configs/esm/bin/clean-node-modules.ts -activePackageOnly",
     "clean-prod": "unrun node_modules/@parischap/configs/esm/bin/clean-prod.ts -activePackageOnly",
-    "examples": "unrun examples/perf.ts&&unrun examples/RoundingOption_1.ts&&unrun examples/RoundingOption_2.ts&&unrun examples/RoundingOption_3.ts&&unrun examples/NumberBase10Format_1.ts&&unrun examples/NumberBase10Format_2.ts&&unrun examples/Template_1.ts&&unrun examples/Template_2.ts&&unrun examples/Template_3.ts&&unrun examples/DateTime_1.ts&&unrun examples/DateTimeFormat_1.ts&&unrun examples/DateTimeFormat_2.ts&&unrun examples/Branding.ts",
+    "examples": "unrun examples/perf.ts && unrun examples/RoundingOption_1.ts && unrun examples/RoundingOption_2.ts && unrun examples/RoundingOption_3.ts && unrun examples/NumberBase10Format_1.ts && unrun examples/NumberBase10Format_2.ts && unrun examples/Template_1.ts && unrun examples/Template_2.ts && unrun examples/Template_3.ts && unrun examples/DateTime_1.ts && unrun examples/DateTimeFormat_1.ts && unrun examples/DateTimeFormat_2.ts && unrun examples/Branding.ts",
     "tsconfig": "tsc --showConfig --project tsconfig.esm.json",
     "update-exports": "unrun node_modules/@parischap/configs/esm/bin/update-exports.ts -activePackageOnly",
     "watch-for-exports": "unrun node_modules/@parischap/configs/esm/bin/update-exports.ts -watch -activePackageOnly",
     "build-and-publish": "pnpm build && pnpm checks && pnpm publish-to-npm",
     "publish-to-npm": "cd dist && npm publish --access=public && cd ..",
-    "compile": "vite build",
+    "compile": "unrun node_modules/@parischap/configs/esm/bin/compile.ts -activePackageOnly",
     "docgen": "docgen"
   },
   "description": "A functional library to replace partially the native Intl API",
   "exports": {
     ".": {
-      "default": "./esm/index.ts"
+      "default": "./esm//index.ts"
     },
     "./CVDateTime": {
       "default": "./esm/DateTime/DateTime.ts"
