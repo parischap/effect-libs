@@ -46,10 +46,8 @@ export class Type extends MDataEquivalenceBasedEquality.Class {
   /** Returns the `id` of `this` */
   [MData.idSymbol](): string | (() => string) {
     return function idSymbol(this: Type) {
-      {
-        return `${CVRoundingOption.toString(this.roundingOption)}RounderWith\
+      return `${CVRoundingOption.toString(this.roundingOption)}RounderWith\
 ${MString.fromNumber(10)(this.precision)}Precision`;
-      }
     };
   }
 

@@ -577,7 +577,7 @@ export const fromLocale = (locale: string): Option.Option<Type> =>
       MArray.mapUnlessNone(flow(toShortParts, _extractMonth)),
     )) as unknown as CVMonthNames.Type;
 
-    const dayPeriodNames: CVDayPeriodNames.Type = ['am', 'pm'];
+    const dayPeriodNames: CVDayPeriodNames.Type = ['AM', 'PM'];
 
     return fromNames({
       name: locale,

@@ -63,7 +63,7 @@ export const hasNotPlusSign: Type = flow(
  *
  * @category Constructors
  */
-export const fromSignDiplayOption: MTypes.OneArgFunction<
+export const fromSignDisplayOption: MTypes.OneArgFunction<
   CVNumberBase10FormatSignDisplayOption.Type,
   Type
 > = flow(

@@ -1,5 +1,5 @@
 /**
- * This module implements a Gregorian date, , i.e. a date for which the year, month and monthDay can
+ * This module implements a Gregorian date, i.e. a date for which the year, month and monthDay can
  * be calculated.
  *
  * It is important to note that the Gregorian calendar is periodic with a 400-year period as far as

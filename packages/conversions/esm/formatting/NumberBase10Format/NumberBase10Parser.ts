@@ -151,7 +151,7 @@ export class Type extends MData.Class {
         m: MRegExpString.DIGIT_GROUP_SIZE,
         n: format.thousandSeparator.length,
       }),
-      signParser: CVSignParser.fromSignDiplayOption(format.signDisplayOption),
+      signParser: CVSignParser.fromSignDisplayOption(format.signDisplayOption),
       exponentParser: CVScientificNotationParser.fromScientificNotationOption(
         format.scientificNotationOption,
       ),

@@ -1,4 +1,4 @@
-/** This modulke implements the time part of a date */
+/** This module implements the time part of a date */
 
 import * as MData from '@parischap/effect-lib/MData';
 import * as MInputError from '@parischap/effect-lib/MInputError';
@@ -173,7 +173,7 @@ export const setHour23 =
         Struct.evolve({
           timestampOffset: Number.sum((validatedHour23 - self.hour23) * HOUR_MS),
           hour23: Function.constant(validatedHour23),
-          hour11: Function.constant(isPast12 ? hour23 - 12 : hour23),
+          hour11: Function.constant(isPast12 ? validatedHour23 - 12 : validatedHour23),
           meridiem: Function.constant(isPast12 ? (12 as const) : (0 as const)),
         }),
         _make,
@@ -215,7 +215,7 @@ export const setHour11 =
     });
 
 /**
- * Returns a copy of `self` with `meridiem` set to `merdiem`.
+ * Returns a copy of `self` with `meridiem` set to `meridiem`.
  *
  * @category Setters
  */
