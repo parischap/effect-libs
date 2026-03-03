@@ -457,7 +457,7 @@ export const difference =
  *
  * @category Utils
  */
-export const substractContext =
+export const subtractContext =
   (context: Type) =>
   (self: Type): Type => {
     const target = pipe(self, difference(context));

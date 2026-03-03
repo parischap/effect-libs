@@ -63,6 +63,9 @@ export class Type<in C> extends ASContextStyler.Type<C> {
     readonly indexFromContext: IndexFromContext.Type<C>;
   }) {
     super({
+      // Note: indexFromContext.name is empty for anonymous arrow functions (e.g. `(c) => c.depth`),
+      // which produces an id like 'Based...Styler'. Use a named function or function declaration
+      // to get a meaningful id (e.g. `function depth(c) { return c.depth; }`).
       id: `${String.capitalize(indexFromContext.name)}Based${ASPalette.toString(palette)}Styler`,
     });
     this.palette = palette;

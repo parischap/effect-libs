@@ -26,10 +26,10 @@
     "clean-config-files": "unrun node_modules/@parischap/configs/esm/bin/clean-config-files.ts -activePackageOnly",
     "generate-config-files": "unrun node_modules/@parischap/configs/esm/bin/generate-config-files.ts -activePackageOnly",
     "build-all": "pnpm --if-present -r build",
-    "lint-all": "pnpm -r -include-workspace-root=true lint",
-    "lint-fix-all": "pnpm -r -include-workspace-root=true lint-fix",
-    "checks-all": "pnpm -r -include-workspace-root=true checks",
-    "format-all": "pnpm -r -include-workspace-root=true format",
+    "lint-all": "pnpm -r --include-workspace-root lint",
+    "lint-fix-all": "pnpm -r --include-workspace-root lint-fix",
+    "checks-all": "pnpm -r --include-workspace-root checks",
+    "format-all": "pnpm -r --include-workspace-root format",
     "clean-all": "unrun node_modules/@parischap/configs/esm/bin/clean.ts",
     "clean-all-config-files": "unrun node_modules/@parischap/configs/esm/bin/clean-config-files.ts",
     "clean-all-node-modules": "unrun node_modules/@parischap/configs/esm/bin/clean-node-modules.ts",
@@ -38,7 +38,7 @@
     "update-all-exports": "unrun node_modules/@parischap/configs/esm/bin/update-exports.ts",
     "rewrite-all-imports": "unrun node_modules/@parischap/configs/esm/bin/rewrite-imports.ts",
     "checks": "pnpm lint",
-    "prepare-docs": "pnpm -r --if-present -include-workspace-root=true --parallel --aggregate-output docgen && compile-docs"
+    "prepare-docs": "pnpm -r --if-present --include-workspace-root --parallel --aggregate-output docgen && compile-docs"
   },
   "description": "effect-libs is a set of open-source libraries to be used in complement to the effect library. Offers Date and number parsing/formatting, sscanf/sprintf templating, number rounding, object pretty-printing and ansi-colors for terminal printing"
 }

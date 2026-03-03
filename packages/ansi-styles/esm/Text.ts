@@ -205,7 +205,7 @@ export const empty: Type = concat();
 export const lineBreak: Type = concat(`\n`);
 
 /**
- * Builds a Text from a string withoout applying any style
+ * Builds a Text from a string without applying any style
  *
  * @category Constructors
  */
@@ -226,7 +226,7 @@ export const toAnsiString: MTypes.OneArgFunction<Type, string> = flow(
       Array.reduce(
         Tuple.make('', ASStyleCharacteristics.defaults),
         ([text, context], uniStyled) => {
-          const toApply = pipe(uniStyled.style, ASStyleCharacteristics.substractContext(context));
+          const toApply = pipe(uniStyled.style, ASStyleCharacteristics.subtractContext(context));
 
           return pipe(
             toApply,

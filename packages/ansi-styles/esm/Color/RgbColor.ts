@@ -114,13 +114,17 @@ export const make = ({
   readonly red: number;
   readonly green: number;
   readonly blue: number;
-}): Type =>
-  makeShort(
-    `${MString.fromNumber(10)(red)}/${MString.fromNumber(10)(green)}/${MString.fromNumber(10)(blue)}`,
-    pipe(red, Number.round(0), Number.clamp({ minimum: 0, maximum: 255 })),
-    pipe(green, Number.round(0), Number.clamp({ minimum: 0, maximum: 255 })),
-    pipe(blue, Number.round(0), Number.clamp({ minimum: 0, maximum: 255 })),
+}): Type => {
+  const r = pipe(red, Number.round(0), Number.clamp({ minimum: 0, maximum: 255 }));
+  const g = pipe(green, Number.round(0), Number.clamp({ minimum: 0, maximum: 255 }));
+  const b = pipe(blue, Number.round(0), Number.clamp({ minimum: 0, maximum: 255 }));
+  return makeShort(
+    `${MString.fromNumber(10)(r)}/${MString.fromNumber(10)(g)}/${MString.fromNumber(10)(b)}`,
+    r,
+    g,
+    b,
   );
+};
 
 /**
  * RGB AliceBlue Color instance

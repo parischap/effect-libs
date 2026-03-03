@@ -35,10 +35,10 @@
     "clean-config-files": "unrun node_modules/@parischap/configs/esm/bin/clean-config-files.ts -activePackageOnly",
     "generate-config-files": "unrun node_modules/@parischap/configs/esm/bin/generate-config-files.ts -activePackageOnly",
     "build-all": "pnpm --if-present -r build",
-    "lint-all": "pnpm -r -include-workspace-root=true lint",
-    "lint-fix-all": "pnpm -r -include-workspace-root=true lint-fix",
-    "checks-all": "pnpm -r -include-workspace-root=true checks",
-    "format-all": "pnpm -r -include-workspace-root=true format",
+    "lint-all": "pnpm -r --include-workspace-root lint",
+    "lint-fix-all": "pnpm -r --include-workspace-root lint-fix",
+    "checks-all": "pnpm -r --include-workspace-root checks",
+    "format-all": "pnpm -r --include-workspace-root format",
     "clean-all": "unrun node_modules/@parischap/configs/esm/bin/clean.ts",
     "clean-all-config-files": "unrun node_modules/@parischap/configs/esm/bin/clean-config-files.ts",
     "clean-all-node-modules": "unrun node_modules/@parischap/configs/esm/bin/clean-node-modules.ts",
@@ -59,25 +59,25 @@
   "description": "A functional library to prettify Effect logging",
   "exports": {
     ".": {
-      "default": "./esm//index.ts"
+      "default": "./esm/index.ts"
     },
     "./RCause": {
-      "default": "./esm//Cause.ts"
+      "default": "./esm/Cause.ts"
     },
     "./REffect": {
-      "default": "./esm//Effect.ts"
+      "default": "./esm/Effect.ts"
     },
     "./RErrors": {
-      "default": "./esm//Errors.ts"
+      "default": "./esm/Errors.ts"
     },
     "./RLogger": {
-      "default": "./esm//Logger.ts"
+      "default": "./esm/Logger.ts"
     },
     "./RSchema": {
-      "default": "./esm//Schema.ts"
+      "default": "./esm/Schema.ts"
     },
     "./RUtils": {
-      "default": "./esm//utils.ts"
+      "default": "./esm/utils.ts"
     }
   },
   "module": "./esm/index.ts",

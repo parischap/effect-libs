@@ -29,10 +29,10 @@
     "clean-config-files": "unrun node_modules/@parischap/configs/esm/bin/clean-config-files.ts -activePackageOnly",
     "generate-config-files": "unrun node_modules/@parischap/configs/esm/bin/generate-config-files.ts -activePackageOnly",
     "build-all": "pnpm --if-present -r build",
-    "lint-all": "pnpm -r -include-workspace-root=true lint",
-    "lint-fix-all": "pnpm -r -include-workspace-root=true lint-fix",
-    "checks-all": "pnpm -r -include-workspace-root=true checks",
-    "format-all": "pnpm -r -include-workspace-root=true format",
+    "lint-all": "pnpm -r --include-workspace-root lint",
+    "lint-fix-all": "pnpm -r --include-workspace-root lint-fix",
+    "checks-all": "pnpm -r --include-workspace-root checks",
+    "format-all": "pnpm -r --include-workspace-root format",
     "clean-all": "unrun node_modules/@parischap/configs/esm/bin/clean.ts",
     "clean-all-config-files": "unrun node_modules/@parischap/configs/esm/bin/clean-config-files.ts",
     "clean-all-node-modules": "unrun node_modules/@parischap/configs/esm/bin/clean-node-modules.ts",
@@ -53,13 +53,13 @@
   "description": "A complement to the official @effect/platform library with add-ons for Node.js",
   "exports": {
     ".": {
-      "default": "./esm//index.ts"
+      "default": "./esm/index.ts"
     },
     "./NFs": {
-      "default": "./esm//Fs.ts"
+      "default": "./esm/Fs.ts"
     },
     "./NPath": {
-      "default": "./esm//Path.ts"
+      "default": "./esm/Path.ts"
     }
   },
   "module": "./esm/index.ts",
