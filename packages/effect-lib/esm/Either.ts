@@ -1,11 +1,13 @@
 /** A simple extension to the Effect Either module */
 
 import { pipe } from 'effect';
+
 import * as Cause from 'effect/Cause';
 import * as Either from 'effect/Either';
 import * as Function from 'effect/Function';
 import * as Option from 'effect/Option';
 import * as Tuple from 'effect/Tuple';
+
 import * as MTuple from './Tuple.js';
 import * as MTypes from './Types/types.js';
 
@@ -21,9 +23,9 @@ export const optionFromOptional = <A, E>(
     self,
     Either.map(Option.some),
     Either.orElse((e) =>
-      e instanceof Cause.NoSuchElementException ?
-        Either.right(Option.none<A>())
-      : Either.left(e as Exclude<E, Cause.NoSuchElementException>),
+      e instanceof Cause.NoSuchElementException
+        ? Either.right(Option.none<A>())
+        : Either.left(e as Exclude<E, Cause.NoSuchElementException>),
     ),
   );
 

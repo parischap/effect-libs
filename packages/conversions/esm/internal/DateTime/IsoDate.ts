@@ -9,19 +9,24 @@
  * @category Models
  */
 
+import type * as CVGregorianDate from './GregorianDate.js';
+
+import { flow, pipe } from 'effect';
+
 import * as MData from '@parischap/effect-lib/MData';
 import * as MInputError from '@parischap/effect-lib/MInputError';
 import * as MNumber from '@parischap/effect-lib/MNumber';
 import * as MString from '@parischap/effect-lib/MString';
 import * as MStruct from '@parischap/effect-lib/MStruct';
 import * as MTypes from '@parischap/effect-lib/MTypes';
-import { flow, pipe } from 'effect';
+
 import * as Either from 'effect/Either';
 import * as Function from 'effect/Function';
 import * as Number from 'effect/Number';
 import * as Option from 'effect/Option';
 import * as Predicate from 'effect/Predicate';
 import * as Struct from 'effect/Struct';
+
 import {
   DAY_MS,
   LONG_YEAR_MS,
@@ -34,7 +39,6 @@ import * as CVNumberBase10Format from '../../Formatting/NumberBase10Format/Numbe
 import * as CVTemplateFormatter from '../../Formatting/Template/TemplateFormatter.js';
 import * as CVTemplatePlaceholder from '../../Formatting/Template/TemplatePart/TemplatePlaceholder/TemplatePlaceholder.js';
 import * as CVTemplateSeparator from '../../Formatting/Template/TemplatePart/TemplateSeparator/TemplateSeparator.js';
-import type * as CVGregorianDate from './GregorianDate.js';
 
 /**
  * Module tag
@@ -204,9 +208,9 @@ export const fromTimestamp = (timestamp: number): Type => {
   // The second one-hundred year period is a week shorter because it has 17 long years instead of 18
   // Also the hundred-th year must be put in the first one-hundred year period because it is not long
   const q100Years =
-    r400Years < ONE_HUNDRED_YEARS_MS + SHORT_YEAR_MS ?
-      0
-    : Math.floor((r400Years + WEEK_MS) / ONE_HUNDRED_YEARS_MS);
+    r400Years < ONE_HUNDRED_YEARS_MS + SHORT_YEAR_MS
+      ? 0
+      : Math.floor((r400Years + WEEK_MS) / ONE_HUNDRED_YEARS_MS);
 
   const adjustedR400Years = r400Years - q100Years * NINETY_SIX_YEARS_MS + SHORT_YEAR_MS;
   const q28Years = Math.floor(adjustedR400Years / TWENTY_EIGHT_YEARS_MS);
@@ -226,21 +230,21 @@ export const fromTimestamp = (timestamp: number): Type => {
   return _make({
     timestamp,
     year:
-      2010
-      + q400Years * 400
-      + q100Years * 96
-      + q28Years * 28
-      + q11Years * 11
-      + q6Years * 6
-      + q1Year,
+      2010 +
+      q400Years * 400 +
+      q100Years * 96 +
+      q28Years * 28 +
+      q11Years * 11 +
+      q6Years * 6 +
+      q1Year,
     yearStartTimestamp:
-      YEAR_START_2010_MS
-      + q400Years * FOUR_HUNDRED_YEARS_MS
-      + q100Years * NINETY_SIX_YEARS_MS
-      + q28Years * TWENTY_EIGHT_YEARS_MS
-      + q11Years * ELEVEN_YEARS_MS
-      + q6Years * SIX_YEARS_MS
-      + q1Year * SHORT_YEAR_MS,
+      YEAR_START_2010_MS +
+      q400Years * FOUR_HUNDRED_YEARS_MS +
+      q100Years * NINETY_SIX_YEARS_MS +
+      q28Years * TWENTY_EIGHT_YEARS_MS +
+      q11Years * ELEVEN_YEARS_MS +
+      q6Years * SIX_YEARS_MS +
+      q1Year * SHORT_YEAR_MS,
     yearIsLong: (isFirstSixYearPeriod && q1Year === 5) || (!isFirstSixYearPeriod && q1Year === 4),
     isoWeek: Option.none(),
     weekday: Option.none(),
@@ -264,10 +268,10 @@ export const fromGregorianDate = (gregorianDate: CVGregorianDate.Type): Type => 
   if (ordinalDay <= minOrdinalDayIndex) {
     const year = gregorianDate.year - 1;
     const yearIsLong =
-      yearStartWeekday === 0
-      || (yearStartWeekday === 1
-        && !yearIsLeap
-        && ((year % 4 === 0 && year % 100 !== 0) || year % 400 === 0));
+      yearStartWeekday === 0 ||
+      (yearStartWeekday === 1 &&
+        !yearIsLeap &&
+        ((year % 4 === 0 && year % 100 !== 0) || year % 400 === 0));
     return _make({
       timestamp: gregorianDate.timestamp,
       year,
@@ -284,11 +288,10 @@ export const fromGregorianDate = (gregorianDate: CVGregorianDate.Type): Type => 
 
   if (ordinalDay > maxOrdinalDay) {
     const year = gregorianDate.year + 1;
-    const yearIsLong =
-      yearIsLeap ?
-        yearStartWeekday === 4
-      : yearStartWeekday === 5
-        || (yearStartWeekday === 4 && ((year % 4 === 0 && year % 100 !== 0) || year % 400 === 0));
+    const yearIsLong = yearIsLeap
+      ? yearStartWeekday === 4
+      : yearStartWeekday === 5 ||
+        (yearStartWeekday === 4 && ((year % 4 === 0 && year % 100 !== 0) || year % 400 === 0));
 
     return _make({
       timestamp: gregorianDate.timestamp,
@@ -350,13 +353,13 @@ export const setYear =
       const r11Years = adjustedR28Years - q11Years * 11;
 
       const yearStartTimestamp =
-        YEAR_START_2010_MS
-        + q400Years * FOUR_HUNDRED_YEARS_MS
-        + q100Years * NINETY_SIX_YEARS_MS
-        + q28Years * TWENTY_EIGHT_YEARS_MS
-        + q11Years * ELEVEN_YEARS_MS
-        + r11Years * SHORT_YEAR_MS
-        + (r11Years > 5 ? WEEK_MS : 0);
+        YEAR_START_2010_MS +
+        q400Years * FOUR_HUNDRED_YEARS_MS +
+        q100Years * NINETY_SIX_YEARS_MS +
+        q28Years * TWENTY_EIGHT_YEARS_MS +
+        q11Years * ELEVEN_YEARS_MS +
+        r11Years * SHORT_YEAR_MS +
+        (r11Years > 5 ? WEEK_MS : 0);
 
       return yield* pipe(
         _make({

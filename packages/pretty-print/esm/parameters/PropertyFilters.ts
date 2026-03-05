@@ -2,7 +2,8 @@
  * This module implements a Type that represents an array of PropertyFilter's (see
  * PropertyFilter.ts)
  */
-import * as Array from 'effect/Array'
+import * as Array from 'effect/Array';
+
 import * as PPPropertyFilter from './PropertyFilter.js';
 
 /**

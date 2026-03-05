@@ -1,14 +1,16 @@
-import * as ASStyle from '@parischap/ansi-styles/ASStyle'
+import { pipe } from 'effect';
+
+import * as ASStyle from '@parischap/ansi-styles/ASStyle';
 import * as TestUtils from '@parischap/configs/TestUtils';
-import * as PPByPasser from '@parischap/pretty-print/PPByPasser'
-import * as PPIndex from '@parischap/pretty-print/PPIndex'
-import * as PPMarkShowerConstructor from '@parischap/pretty-print/PPMarkShowerConstructor'
-import * as PPStringifiedValue from '@parischap/pretty-print/PPStringifiedValue'
-import * as PPValue from '@parischap/pretty-print/PPValue'
-import * as PPValueBasedStylerConstructor from '@parischap/pretty-print/PPValueBasedStylerConstructor'
-import {pipe} from 'effect'
-import * as Array from 'effect/Array'
-import * as Option from 'effect/Option'
+import * as PPByPasser from '@parischap/pretty-print/PPByPasser';
+import * as PPIndex from '@parischap/pretty-print/PPIndex';
+import * as PPMarkShowerConstructor from '@parischap/pretty-print/PPMarkShowerConstructor';
+import * as PPStringifiedValue from '@parischap/pretty-print/PPStringifiedValue';
+import * as PPValue from '@parischap/pretty-print/PPValue';
+import * as PPValueBasedStylerConstructor from '@parischap/pretty-print/PPValueBasedStylerConstructor';
+
+import * as Array from 'effect/Array';
+import * as Option from 'effect/Option';
 import { describe, it } from 'vitest';
 
 describe('PPByPasser', () => {

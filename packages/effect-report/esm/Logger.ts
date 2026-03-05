@@ -1,14 +1,16 @@
-import * as MString from '@parischap/effect-lib/MString'
-import * as MTypes from '@parischap/effect-lib/MTypes'
-import {pipe} from 'effect'
-import * as Array from 'effect/Array'
-import * as Effect from 'effect/Effect'
-import * as FiberId from 'effect/FiberId'
-import * as List from 'effect/List'
-import * as LogLevel from 'effect/LogLevel'
-import * as Logger from 'effect/Logger'
-import * as Option from 'effect/Option'
-import * as String from 'effect/String'
+import { pipe } from 'effect';
+
+import * as MString from '@parischap/effect-lib/MString';
+import * as MTypes from '@parischap/effect-lib/MTypes';
+
+import * as Array from 'effect/Array';
+import * as Effect from 'effect/Effect';
+import * as FiberId from 'effect/FiberId';
+import * as List from 'effect/List';
+import * as Logger from 'effect/Logger';
+import * as LogLevel from 'effect/LogLevel';
+import * as Option from 'effect/Option';
+import * as String from 'effect/String';
 
 //const moduleTag = '@parischap/effect-lib/Logger/';
 
@@ -74,17 +76,14 @@ export const live = ({
             Option.getOrElse(() => startTime),
           );
 
-          const strMessage =
-            isTitle ? message.title
-            : isString ? message
-            : stringify(message);
+          const strMessage = isTitle ? message.title : isString ? message : stringify(message);
 
           const isMultiLine = JsString.isMultiLine(strMessage);
 
           console.log(
             pipe(
-              (isMultiLine ? 'Multi-line message' : strMessage)
-                + ` (${FiberId.threadName(fiberId)})`,
+              (isMultiLine ? 'Multi-line message' : strMessage) +
+                ` (${FiberId.threadName(fiberId)})`,
               isTitle ? colorizeBySpanLevel(spanLevel) : JsAnsi.highContrastBlack,
               MString.prepend(
                 colorizeByLogLevel(logLevel)(`${date.getTime() - latestSpanCreationTime}ms `),

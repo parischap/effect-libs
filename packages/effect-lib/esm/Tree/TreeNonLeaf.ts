@@ -1,8 +1,9 @@
 /** Module that implements a TreeNonLeaf (see TreeAll for more details) */
 
+import type * as MTreeForest from './TreeForest.js';
+
 import * as MData from '../Data/Data.js';
 import * as MTypes from '../Types/types.js';
-import type * as MTreeForest from './TreeForest.js';
 import * as MTreeNode from './TreeNode.js';
 
 export const moduleTag = '@parischap/effect-lib/Tree/TreeNonLeaf/';

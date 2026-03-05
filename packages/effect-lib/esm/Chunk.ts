@@ -1,10 +1,11 @@
 /** A simple extension to the Effect Chunk module */
 
-import {pipe} from 'effect'
-import * as Boolean from 'effect/Boolean'
-import * as Chunk from 'effect/Chunk'
-import * as Option from 'effect/Option'
-import * as Predicate from 'effect/Predicate'
+import { pipe } from 'effect';
+
+import * as Boolean from 'effect/Boolean';
+import * as Chunk from 'effect/Chunk';
+import * as Option from 'effect/Option';
+import * as Predicate from 'effect/Predicate';
 
 /**
  * Returns true if the length of `self` is `l`

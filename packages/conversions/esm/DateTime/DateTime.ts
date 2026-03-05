@@ -19,28 +19,28 @@
  * timestamp.
  */
 
-import * as MData from '@parischap/effect-lib/MData';
-import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality';
-import * as MFunction from '@parischap/effect-lib/MFunction';
-import * as MInputError from '@parischap/effect-lib/MInputError';
-import * as MNumber from '@parischap/effect-lib/MNumber';
-import * as MStruct from '@parischap/effect-lib/MStruct';
-import * as MTypes from '@parischap/effect-lib/MTypes';
-import { flow, pipe } from 'effect';
-import * as DateTime from 'effect/DateTime';
-import * as Either from 'effect/Either';
-import * as Equivalence from 'effect/Equivalence';
-import * as Function from 'effect/Function';
-import * as Hash from 'effect/Hash';
-import * as Number from 'effect/Number';
-import * as Option from 'effect/Option';
-import * as Predicate from 'effect/Predicate';
-import * as Struct from 'effect/Struct';
-import * as GregorianDate from '../internal/DateTime/GregorianDate.js';
-import * as IsoDate from '../internal/DateTime/IsoDate.js';
-import * as CVTime from '../internal/DateTime/Time.js';
-import * as ZoneOffsetParts from '../internal/DateTime/ZoneOffsetParts.js';
-import type * as CVDateTimeParts from './DateTimeParts.js';
+import * as MData from  "@parischap/effect-lib/MData";
+import * as MDataEquivalenceBasedEquality from "@parischap/effect-lib/MDataEquivalenceBasedEquality";
+import * as MFunction from "@parischap/effect-lib/MFunction";
+import * as MInputError from "@parischap/effect-lib/MInputError";
+import * as MNumber from "@parischap/effect-lib/MNumber";
+import * as MStruct from "@parischap/effect-lib/MStruct";
+import * as MTypes from "@parischap/effect-lib/MTypes";
+import { flow, pipe } from "effect";
+import * as DateTime from "effect/DateTime";
+import * as Either from "effect/Either";
+import * as Equivalence from "effect/Equivalence";
+import * as Function from "effect/Function";
+import * as Hash from "effect/Hash";
+import * as Number from "effect/Number";
+import * as Option from "effect/Option";
+import * as Predicate from "effect/Predicate";
+import * as Struct from "effect/Struct";
+import * as GregorianDate from "../internal/DateTime/GregorianDate.js";
+import * as IsoDate from "../internal/DateTime/IsoDate.js";
+import * as CVTime from "../internal/DateTime/Time.js";
+import * as ZoneOffsetParts from "../internal/DateTime/ZoneOffsetParts.js";
+import type * as CVDateTimeParts from "./DateTimeParts.js";
 import {
   DAY_MS,
   HOUR_MS,
@@ -50,14 +50,14 @@ import {
   MIN_TIMESTAMP,
   MINUTE_MS,
   SECOND_MS,
-} from './dateTimeConstants.js';
+} from "./dateTimeConstants.js";
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/conversions/DateTime/';
+export const moduleTag = "@parischap/conversions/DateTime/";
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
@@ -195,10 +195,10 @@ export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
  * @category Destructors
  */
 export const getIsoString = (self: Type): string =>
-  GregorianDate.getIsoString(_gregorianDate(self))
-  + 'T'
-  + CVTime.getIsoString(_time(self))
-  + ZoneOffsetParts.getIsoString(_zoneOffsetParts(self));
+  GregorianDate.getIsoString(_gregorianDate(self)) +
+  "T" +
+  CVTime.getIsoString(_time(self)) +
+  ZoneOffsetParts.getIsoString(_zoneOffsetParts(self));
 
 const _uncalculated = {
   gregorianDate: Option.none(),
@@ -405,8 +405,8 @@ export const fromParts = ({
   Either.gen(function* () {
     const zonedOrigin = yield* Either.gen(function* () {
       if (
-        zoneOffset !== undefined
-        || (zoneHour === undefined && zoneMinute === undefined && zoneSecond === undefined)
+        zoneOffset !== undefined ||
+        (zoneHour === undefined && zoneMinute === undefined && zoneSecond === undefined)
       ) {
         const result = yield* pipe(_uncalculatedOrigin, setZoneOffsetKeepParts(zoneOffset));
 
@@ -599,7 +599,7 @@ export const toEffectDateTime = (self: Type): DateTime.Zoned =>
  *
  * @category Getters
  */
-export const timestamp: MTypes.OneArgFunction<Type, number> = Struct.get('timestamp');
+export const timestamp: MTypes.OneArgFunction<Type, number> = Struct.get("timestamp");
 
 /** Returns the `gregorianDate` of `self` for the given time zone */
 const _gregorianDate = (self: Type): GregorianDate.Type =>
@@ -607,7 +607,7 @@ const _gregorianDate = (self: Type): GregorianDate.Type =>
     self.gregorianDate,
     Option.getOrElse(() => {
       const result = GregorianDate.fromTimestamp(self.zonedTimestamp);
-      (self as MTypes.WithMutable<Type, 'gregorianDate'>).gregorianDate = Option.some(result);
+      (self as MTypes.WithMutable<Type, "gregorianDate">).gregorianDate = Option.some(result);
       return result;
     }),
   );
@@ -662,7 +662,7 @@ const _isoDate = (self: Type): IsoDate.Type =>
         Option.map(IsoDate.fromGregorianDate),
         Option.getOrElse(() => IsoDate.fromTimestamp(self.zonedTimestamp)),
       );
-      (self as MTypes.WithMutable<Type, 'isoDate'>).isoDate = Option.some(result);
+      (self as MTypes.WithMutable<Type, "isoDate">).isoDate = Option.some(result);
       return result;
     }),
   );
@@ -694,7 +694,7 @@ const _time = (self: Type): CVTime.Type =>
     self.time,
     Option.getOrElse(() => {
       const result = pipe(self.zonedTimestamp, MNumber.intModulo(DAY_MS), CVTime.fromTimestamp);
-      (self as MTypes.WithMutable<Type, 'time'>).time = Option.some(result);
+      (self as MTypes.WithMutable<Type, "time">).time = Option.some(result);
       return result as never;
     }),
   );
@@ -747,7 +747,7 @@ const _zoneOffsetParts = (self: Type): ZoneOffsetParts.Type =>
     self.zoneOffsetParts,
     Option.getOrElse(() => {
       const result = ZoneOffsetParts.fromZoneOffset(self.zoneOffset);
-      (self as MTypes.WithMutable<Type, 'zoneOffsetParts'>).zoneOffsetParts = Option.some(result);
+      (self as MTypes.WithMutable<Type, "zoneOffsetParts">).zoneOffsetParts = Option.some(result);
       return result;
     }),
   );
@@ -1153,7 +1153,7 @@ const _setTimestamp =
           minIncluded: true,
           maxIncluded: true,
           offset: 0,
-          name: 'timestamp',
+          name: "timestamp",
         }),
       );
 
@@ -1174,9 +1174,9 @@ const _setZoneOffset =
   (self: Type): Either.Either<Type, MInputError.Type> =>
     Either.gen(function* () {
       const buildFromZoneOffset = (validatedZoneOffset: number) =>
-        keepTimestamp ?
-          _uncalculatedFromTimestamp(self.timestamp, validatedZoneOffset)
-        : _uncalculatedFromZonedTimestamp(self.zonedTimestamp, validatedZoneOffset);
+        keepTimestamp
+          ? _uncalculatedFromTimestamp(self.timestamp, validatedZoneOffset)
+          : _uncalculatedFromZonedTimestamp(self.zonedTimestamp, validatedZoneOffset);
 
       if (MTypes.isPrimitive(zoneOffset)) {
         const validatedZoneOffset = yield* pipe(
@@ -1197,7 +1197,7 @@ const _setZoneOffset =
 
       const result = pipe(zoneOffsetParts, ZoneOffsetParts.toHour, buildFromZoneOffset);
 
-      (result as MTypes.WithMutable<Type, 'zoneOffsetParts'>).zoneOffsetParts =
+      (result as MTypes.WithMutable<Type, "zoneOffsetParts">).zoneOffsetParts =
         Option.some(zoneOffsetParts);
 
       return result;
@@ -1317,8 +1317,8 @@ export const isFirstMonthDay: Predicate.Predicate<Type> = (self) => getMonthDay(
  */
 
 export const isLastMonthDay: Predicate.Predicate<Type> = (self) =>
-  getMonthDay(self)
-  === pipe(self, _gregorianDate, GregorianDate.getNumberOfDaysInMonth(getMonth(self)));
+  getMonthDay(self) ===
+  pipe(self, _gregorianDate, GregorianDate.getNumberOfDaysInMonth(getMonth(self)));
 
 /**
  * Returns true if `self` is the first day of a year in the given timezone

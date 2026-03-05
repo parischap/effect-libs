@@ -1,9 +1,9 @@
 /** This module defines the list of the rounding options (see Intl.NumberFormat) */
 
-import * as MMatch from '@parischap/effect-lib/MMatch'
-import * as MTypes from '@parischap/effect-lib/MTypes'
-import {flow} from 'effect'
-import * as Function from 'effect/Function'
+import * as MMatch from "@parischap/effect-lib/MMatch";
+import * as MTypes from "@parischap/effect-lib/MTypes";
+import { flow } from "effect";
+import * as Function from "effect/Function";
 
 /**
  * Type that represents the possible rounding modes
@@ -61,15 +61,15 @@ export enum Type {
 export const toString: MTypes.OneArgFunction<Type, string> = flow(
   MMatch.make,
   flow(
-    MMatch.whenIs(Type.Ceil, Function.constant('Ceil')),
-    MMatch.whenIs(Type.Floor, Function.constant('Floor')),
-    MMatch.whenIs(Type.Expand, Function.constant('Expand')),
-    MMatch.whenIs(Type.Trunc, Function.constant('Trunc')),
-    MMatch.whenIs(Type.HalfCeil, Function.constant('HalfCeil')),
-    MMatch.whenIs(Type.HalfFloor, Function.constant('HalfFloor')),
-    MMatch.whenIs(Type.HalfExpand, Function.constant('HalfExpand')),
-    MMatch.whenIs(Type.HalfTrunc, Function.constant('HalfTrunc')),
-    MMatch.whenIs(Type.HalfEven, Function.constant('HalfEven')),
+    MMatch.whenIs(Type.Ceil, Function.constant("Ceil")),
+    MMatch.whenIs(Type.Floor, Function.constant("Floor")),
+    MMatch.whenIs(Type.Expand, Function.constant("Expand")),
+    MMatch.whenIs(Type.Trunc, Function.constant("Trunc")),
+    MMatch.whenIs(Type.HalfCeil, Function.constant("HalfCeil")),
+    MMatch.whenIs(Type.HalfFloor, Function.constant("HalfFloor")),
+    MMatch.whenIs(Type.HalfExpand, Function.constant("HalfExpand")),
+    MMatch.whenIs(Type.HalfTrunc, Function.constant("HalfTrunc")),
+    MMatch.whenIs(Type.HalfEven, Function.constant("HalfEven")),
   ),
   MMatch.exhaustive,
 );

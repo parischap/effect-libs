@@ -1,9 +1,10 @@
 /** A simple type module */
 
-import {pipe} from 'effect'
-import * as Array from 'effect/Array'
-import * as Option from 'effect/Option'
-import * as Predicate from 'effect/Predicate'
+import { pipe } from 'effect';
+
+import * as Array from 'effect/Array';
+import * as Option from 'effect/Option';
+import * as Predicate from 'effect/Predicate';
 
 /**
  * Type that represents a non-null object as defined in javascript. It includes records (in their
@@ -253,14 +254,14 @@ export type WithRequired<X, field extends string | symbol> = {
  *
  * @category Utility types
  */
-export type Tuple<T, N extends number> =
-  N extends N ?
-    number extends N ?
-      ReadonlyArray<T>
+export type Tuple<T, N extends number> = N extends N
+  ? number extends N
+    ? ReadonlyArray<T>
     : _TupleOf<T, N, readonly []>
   : never;
-type _TupleOf<T, N extends number, R extends ReadonlyArray<unknown>> =
-  R['length'] extends N ? R : _TupleOf<T, N, readonly [T, ...R]>;
+type _TupleOf<T, N extends number, R extends ReadonlyArray<unknown>> = R['length'] extends N
+  ? R
+  : _TupleOf<T, N, readonly [T, ...R]>;
 
 /**
  * Utility type that generates a range of numeric literal types
@@ -308,19 +309,16 @@ export type MapToTarget<T, Target> = {
  *
  * @category Utility types
  */
-export type ToKeyIntersection<T> =
-  [
-    {
-      readonly [K in keyof T]: (x: T[K]) => void;
-    },
-  ] extends (
-    [
-      {
-        readonly [K: number]: (x: infer I) => void;
-      },
-    ]
-  ) ?
-    I
+export type ToKeyIntersection<T> = [
+  {
+    readonly [K in keyof T]: (x: T[K]) => void;
+  },
+] extends [
+  {
+    readonly [K: number]: (x: infer I) => void;
+  },
+]
+  ? I
   : never;
 
 /**
@@ -331,10 +329,7 @@ export type ToKeyIntersection<T> =
  * @category Utility types
  */
 
-export type IntersectAndSimplify<T, U> =
-  [T] extends [U] ? T
-  : [U] extends [T] ? U
-  : T & U;
+export type IntersectAndSimplify<T, U> = [T] extends [U] ? T : [U] extends [T] ? U : T & U;
 
 /**
  * From `unknown` to `Array`. Not based on Array.isArray from a Typescript perspective because it is
@@ -344,9 +339,7 @@ export type IntersectAndSimplify<T, U> =
  */
 export const isArray = <T>(arg: T): arg is ArrayType<T> => Array.isArray(arg);
 type ArrayType<T> = Extract<
-  true extends T & false ? AnyArray
-  : T extends AnyReadonlyArray ? T
-  : Array<unknown>,
+  true extends T & false ? AnyArray : T extends AnyReadonlyArray ? T : Array<unknown>,
   T
 >;
 

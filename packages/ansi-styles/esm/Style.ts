@@ -4,20 +4,20 @@
  * ASStyle.red('foo')` will create a text containing the string 'foo' styled in red.
  */
 
-import * as MTypes from '@parischap/effect-lib/MTypes';
-import { pipe } from 'effect';
-import * as Equivalence from 'effect/Equivalence';
-import * as Struct from 'effect/Struct';
-import * as ASColor from './Color/Color.js';
-import * as ASStyleCharacteristics from './internal/StyleCharacteristics.js';
-import * as ASText from './Text.js';
+import * as MTypes from "@parischap/effect-lib/MTypes";
+import { pipe } from "effect";
+import * as Equivalence from "effect/Equivalence";
+import * as Struct from "effect/Struct";
+import * as ASColor from "./Color/Color.js";
+import * as ASStyleCharacteristics from "./internal/StyleCharacteristics.js";
+import * as ASText from "./Text.js";
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/ansi-styles/Style/';
+export const moduleTag = "@parischap/ansi-styles/Style/";
 const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
 type _TypeId = typeof _TypeId;
 
@@ -83,7 +83,7 @@ const _make = (params: MTypes.Data<Type>): Type =>
  *
  * @category Destructors
  */
-export const style: MTypes.OneArgFunction<Type, ASStyleCharacteristics.Type> = Struct.get('style');
+export const style: MTypes.OneArgFunction<Type, ASStyleCharacteristics.Type> = Struct.get("style");
 
 /**
  * Returns the id of `self`

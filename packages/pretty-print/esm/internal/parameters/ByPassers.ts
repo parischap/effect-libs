@@ -1,8 +1,10 @@
 /** This module implements a Type that represents an array of PPByPasser's (see PPByPasser.ts) */
 
-import {pipe} from 'effect'
-import * as Array from 'effect/Array'
-import * as Function from 'effect/Function'
+import { pipe } from 'effect';
+
+import * as Array from 'effect/Array';
+import * as Function from 'effect/Function';
+
 import * as PPByPasser from '../../parameters/ByPasser.js';
 import * as PPByPasserAction from '../../parameters/ByPasserAction.js';
 
@@ -20,11 +22,10 @@ export interface Type extends ReadonlyArray<PPByPasser.Type> {}
  *
  * @category Destructors
  */
-export const toSyntheticByPasser = (self: Type): PPByPasserAction.Type =>
+export const toSyntheticByPasser =
+  (self: Type): PPByPasserAction.Type =>
   (constructors) => {
-    const initializedByPassers = Array.map(self, (byPasser) =>
-      byPasser.action(constructors),
-    );
+    const initializedByPassers = Array.map(self, (byPasser) => byPasser.action(constructors));
 
     return (value) => pipe(initializedByPassers, Array.findFirst(Function.apply(value)));
   };

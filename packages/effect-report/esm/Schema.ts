@@ -1,9 +1,11 @@
-import * as AST from '@effect/schema/AST'
-import * as Schema from '@effect/schema/Schema'
-import * as MSchema from '@parischap/effect-lib/MSchema'
-import * as RErrors from "./Errors.js";
+import * as AST from '@effect/schema/AST';
+import * as Schema from '@effect/schema/Schema';
 
-import * as Effect from 'effect/Effect'
+import * as MSchema from '@parischap/effect-lib/MSchema';
+
+import * as Effect from 'effect/Effect';
+
+import * as RErrors from './Errors.js';
 
 export type CompiledParser<A, R> = (
   i: unknown,
@@ -21,15 +23,15 @@ export const makeCompiledParser = <A, I, R>({
   readonly tabChar: string;
 }): CompiledParser<A, R> => {
   const compiledParser = Schema.decodeUnknown(schema, {
-    errors: "all",
-    onExcessProperty: "error",
+    errors: 'all',
+    onExcessProperty: 'error',
   });
   return (i, overrideoptions) =>
     Effect.catchAll(
       compiledParser(i, overrideoptions),
       (e) =>
         new RErrors.General({
-          message: "Effect Schema parsing error" + eol + MSchema.prettyPrintError(e, eol, tabChar),
+          message: 'Effect Schema parsing error' + eol + MSchema.prettyPrintError(e, eol, tabChar),
         }),
     );
 };

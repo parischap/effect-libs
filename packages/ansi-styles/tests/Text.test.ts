@@ -1,12 +1,14 @@
-import * as ASRgbColor from '@parischap/ansi-styles/ASRgbColor'
-import * as ASText from '@parischap/ansi-styles/ASText'
-import * as ASThreeBitColor from '@parischap/ansi-styles/ASThreeBitColor'
+import { flow, pipe } from 'effect';
+
 import * as ASCode from '@parischap/ansi-styles/ASCode';
+import * as ASRgbColor from '@parischap/ansi-styles/ASRgbColor';
 import * as ASStyleCharacteristics from '@parischap/ansi-styles/ASStyleCharacteristics';
+import * as ASText from '@parischap/ansi-styles/ASText';
+import * as ASThreeBitColor from '@parischap/ansi-styles/ASThreeBitColor';
 import * as TestUtils from '@parischap/configs/TestUtils';
-import {flow, pipe} from 'effect'
-import * as Array from 'effect/Array'
-import * as Option from 'effect/Option'
+
+import * as Array from 'effect/Array';
+import * as Option from 'effect/Option';
 import { describe, it } from 'vitest';
 
 describe('ASText', () => {

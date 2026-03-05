@@ -8,6 +8,7 @@ import * as Hash from 'effect/Hash';
 import * as Order from 'effect/Order';
 import * as Predicate from 'effect/Predicate';
 import * as Struct from 'effect/Struct';
+
 import * as MData from '../Data/Data.js';
 import * as MDataEquivalenceBasedEquality from '../Data/DataEquivalenceBasedEquality.js';
 import * as MTypes from '../Types/types.js';
@@ -74,9 +75,9 @@ export class Type extends MDataEquivalenceBasedEquality.Class {
  * @category Equivalences
  */
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
-  self.startIndex === that.startIndex
-  && self.endIndex === that.endIndex
-  && self.match === that.match;
+  self.startIndex === that.startIndex &&
+  self.endIndex === that.endIndex &&
+  self.match === that.match;
 
 /**
  * Equivalence that considers two SearchResult's to be equivalent when they overlap

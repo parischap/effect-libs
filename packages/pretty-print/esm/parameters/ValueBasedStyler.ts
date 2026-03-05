@@ -5,9 +5,10 @@
  * You can define your own if the provided instances don't suit your needs
  */
 
-import * as ASContextStyler from '@parischap/ansi-styles/ASContextStyler'
-import * as ASPalette from '@parischap/ansi-styles/ASPalette'
-import * as ASPaletteContextStyler from '@parischap/ansi-styles/ASPaletteContextStyler'
+import * as ASContextStyler from '@parischap/ansi-styles/ASContextStyler';
+import * as ASPalette from '@parischap/ansi-styles/ASPalette';
+import * as ASPaletteContextStyler from '@parischap/ansi-styles/ASPaletteContextStyler';
+
 import * as PPValue from '../internal/stringification/Value.js';
 
 /**

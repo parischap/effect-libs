@@ -6,14 +6,17 @@
  * second one to the string 'GMT+00:10', a positive 10-minute offset
  */
 
+import { pipe } from 'effect';
+
 import * as MData from '@parischap/effect-lib/MData';
 import * as MInputError from '@parischap/effect-lib/MInputError';
 import * as MNumber from '@parischap/effect-lib/MNumber';
 import * as MTypes from '@parischap/effect-lib/MTypes';
-import { pipe } from 'effect';
+
 import * as Either from 'effect/Either';
 import * as Function from 'effect/Function';
 import * as Struct from 'effect/Struct';
+
 import * as CVNumberBase10Format from '../../Formatting/NumberBase10Format/NumberBase10Format.js';
 import * as CVTemplateFormatter from '../../Formatting/Template/TemplateFormatter.js';
 import * as CVTemplatePlaceholder from '../../Formatting/Template/TemplatePart/TemplatePlaceholder/TemplatePlaceholder.js';

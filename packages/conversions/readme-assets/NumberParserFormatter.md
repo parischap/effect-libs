@@ -124,7 +124,10 @@ export interface Type {
    * Parsing: conversion will fail if the integer part does not occupy exactly `length` characters.
    * Any leading `fillChar`'s are stripped.
    */
-  readonly integerPartPadding: Option.Option<{ readonly length: number; readonly fillChar: string }>;
+  readonly integerPartPadding: Option.Option<{
+    readonly length: number;
+    readonly fillChar: string;
+  }>;
 
   /**
    * Minimim number of digits forming the fractional part of a number. Must be a positive integer

@@ -1,11 +1,13 @@
+import { pipe } from 'effect';
+
 import * as TestUtils from '@parischap/configs/TestUtils';
-import * as MPredicate from '@parischap/effect-lib/MPredicate'
-import * as PPPropertyFilter from '@parischap/pretty-print/PPPropertyFilter'
-import * as PPValue from '@parischap/pretty-print/PPValue'
-import * as PPValues from '@parischap/pretty-print/PPValues'
-import {pipe} from 'effect'
-import * as Array from 'effect/Array'
-import * as Function from 'effect/Function'
+import * as MPredicate from '@parischap/effect-lib/MPredicate';
+import * as PPPropertyFilter from '@parischap/pretty-print/PPPropertyFilter';
+import * as PPValue from '@parischap/pretty-print/PPValue';
+import * as PPValues from '@parischap/pretty-print/PPValues';
+
+import * as Array from 'effect/Array';
+import * as Function from 'effect/Function';
 import { describe, it } from 'vitest';
 
 describe('PropertyFilter', () => {

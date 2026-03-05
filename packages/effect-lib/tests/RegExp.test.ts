@@ -1,5 +1,6 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as MRegExp from '@parischap/effect-lib/MRegExp';
+
 import { describe, it } from 'vitest';
 
 describe('MRegExp', () => {

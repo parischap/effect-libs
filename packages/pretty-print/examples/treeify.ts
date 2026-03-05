@@ -1,7 +1,9 @@
-import * as PPOption from '@parischap/pretty-print/PPOption'
-import * as PPStringifiedValue from '@parischap/pretty-print/PPStringifiedValue'
-import {pipe} from 'effect'
-import * as HashMap from 'effect/HashMap'
+import { pipe } from 'effect';
+
+import * as PPOption from '@parischap/pretty-print/PPOption';
+import * as PPStringifiedValue from '@parischap/pretty-print/PPStringifiedValue';
+
+import * as HashMap from 'effect/HashMap';
 
 const stringifier = PPOption.toStringifier(PPOption.darkModeTreeifyHideLeaves);
 

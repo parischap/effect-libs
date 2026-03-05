@@ -8,7 +8,8 @@
  * `styleMap` field (typically a `PPParameters` or a `PPStringifier`).
  */
 
-import * as MTypes from '@parischap/effect-lib/MTypes'
+import * as MTypes from '@parischap/effect-lib/MTypes';
+
 import * as PPStyleMap from './StyleMap.js';
 import * as PPValueBasedStyler from './ValueBasedStyler.js';
 
@@ -31,6 +32,7 @@ export type Type = MTypes.OneArgFunction<string, PPValueBasedStyler.Type>;
  *
  * @category Constructors
  */
-export const fromOption = (option: { readonly styleMap: PPStyleMap.Type }): Type =>
+export const fromOption =
+  (option: { readonly styleMap: PPStyleMap.Type }): Type =>
   (partName: string): PPValueBasedStyler.Type =>
     PPStyleMap.get(option.styleMap, partName);

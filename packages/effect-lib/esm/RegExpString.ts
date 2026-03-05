@@ -1,12 +1,15 @@
 /** Very simple regular expression string module */
 
+import type * as MTypes from './Types/types.js';
+
 import { pipe } from 'effect';
+
 import * as Array from 'effect/Array';
 import * as Function from 'effect/Function';
 import * as RegExp from 'effect/RegExp';
 import * as EString from 'effect/String';
+
 import * as MArray from './Array.js';
-import type * as MTypes from './Types/types.js';
 
 /**
  * Size of a group of digits
@@ -288,9 +291,9 @@ const _unsignedInt = either('0', nonZeroDigit + zeroOrMore(digit));
  * @category Instances
  */
 export const unsignedNonNullBase10Int = (thousandSeparator: string): string =>
-  thousandSeparator.length === 0 ?
-    _unsignedNonNullInt
-  : _unsignedNonNullIntTo999 + zeroOrMore(RegExp.escape(thousandSeparator) + _digitGroup);
+  thousandSeparator.length === 0
+    ? _unsignedNonNullInt
+    : _unsignedNonNullIntTo999 + zeroOrMore(RegExp.escape(thousandSeparator) + _digitGroup);
 
 /**
  * Returns a regular expression string representing an unsigned integer in base 10 using
@@ -344,16 +347,16 @@ export const base10Number = ({
   readonly eNotationChars: ReadonlyArray<string>;
   readonly fillChar: string;
 }): string =>
-  _signPart
-  + capture('padding')(fillChar.length === 0 ? '' : zeroOrMore(fillChar))
-  + pipe(thousandSeparator, unsignedBase10Int, optionalCapture('mantissaIntegerPart'))
-  + pipe(
+  _signPart +
+  capture('padding')(fillChar.length === 0 ? '' : zeroOrMore(fillChar)) +
+  pipe(thousandSeparator, unsignedBase10Int, optionalCapture('mantissaIntegerPart')) +
+  pipe(
     fractionalSeparator,
     RegExp.escape,
     EString.concat(capture('mantissaFractionalPart')(_fractionalPart)),
     optional,
-  )
-  + pipe(eNotationChars, Array.map(RegExp.escape), range, EString.concat(_exponentPart), optional);
+  ) +
+  pipe(eNotationChars, Array.map(RegExp.escape), range, EString.concat(_exponentPart), optional);
 
 /**
  * A regular expression string representing an integer in base 2.

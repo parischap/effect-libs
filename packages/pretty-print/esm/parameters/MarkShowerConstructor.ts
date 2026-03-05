@@ -8,11 +8,14 @@
  * `styleMap` and a `markMap` field (typically a `PPParameters`).
  */
 
-import * as ASText from '@parischap/ansi-styles/ASText'
-import * as MTypes from '@parischap/effect-lib/MTypes'
-import {pipe} from 'effect'
-import * as HashMap from 'effect/HashMap'
-import * as Option from 'effect/Option'
+import { pipe } from 'effect';
+
+import * as ASText from '@parischap/ansi-styles/ASText';
+import * as MTypes from '@parischap/effect-lib/MTypes';
+
+import * as HashMap from 'effect/HashMap';
+import * as Option from 'effect/Option';
+
 import * as PPValue from '../internal/stringification/Value.js';
 import * as PPMarkMap from './MarkMap.js';
 import * as PPStyleMap from './StyleMap.js';
@@ -49,5 +52,9 @@ export const fromOption = (option: {
     return (value: PPValue.Any): ASText.Type => styler(value)(mark.text);
   });
   return (markName: string): MTypes.OneArgFunction<PPValue.Any, ASText.Type> =>
-    pipe(markShowers, HashMap.get(markName), Option.getOrElse(() => emptyMarkShower));
+    pipe(
+      markShowers,
+      HashMap.get(markName),
+      Option.getOrElse(() => emptyMarkShower),
+    );
 };

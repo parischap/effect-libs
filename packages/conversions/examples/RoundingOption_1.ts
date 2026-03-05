@@ -1,7 +1,8 @@
-import * as CVRounder from '@parischap/conversions/CVRounder'
-import * as CVRounderParams from '@parischap/conversions/CVRounderParams'
-import * as CVRoundingOption from '@parischap/conversions/CVRoundingOption'
-import * as BigDecimal from 'effect/BigDecimal'
+import * as CVRounder from '@parischap/conversions/CVRounder';
+import * as CVRounderParams from '@parischap/conversions/CVRounderParams';
+import * as CVRoundingOption from '@parischap/conversions/CVRoundingOption';
+
+import * as BigDecimal from 'effect/BigDecimal';
 
 // Here we define the parameters of the rounder:
 // the result must have three fractional digits using the HalfEven rounding mode

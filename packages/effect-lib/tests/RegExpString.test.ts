@@ -1,7 +1,9 @@
+import { flow, pipe } from 'effect';
+
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as MRegExpString from '@parischap/effect-lib/MRegExpString';
 import * as MString from '@parischap/effect-lib/MString';
-import { flow, pipe } from 'effect';
+
 import * as Option from 'effect/Option';
 import * as Struct from 'effect/Struct';
 import { describe, it } from 'vitest';

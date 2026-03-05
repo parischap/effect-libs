@@ -1,7 +1,8 @@
 /** A port of JSON.stringify and JSON.parse in the effect world */
 
-import * as Effect from 'effect/Effect'
-import * as MPortError from "./PortError.js";
+import * as Effect from 'effect/Effect';
+
+import * as MPortError from './PortError.js';
 
 /**
  * Port of JSON.stringify
@@ -17,9 +18,9 @@ export const stringify = (
     catch: (e) =>
       new MPortError.Type({
         originalError: e,
-        originalFunctionName: "JSON.stringify",
-        moduleName: "json.ts",
-        libraryName: "effect-lib",
+        originalFunctionName: 'JSON.stringify',
+        moduleName: 'json.ts',
+        libraryName: 'effect-lib',
       }),
   });
 
@@ -34,8 +35,8 @@ export const parse = (text: string, reviver?: Parameters<typeof JSON.parse>[1]) 
     catch: (e) =>
       new MPortError.Type({
         originalError: e,
-        originalFunctionName: "JSON.parse",
-        moduleName: "json.ts",
-        libraryName: "effect-lib",
+        originalFunctionName: 'JSON.parse',
+        moduleName: 'json.ts',
+        libraryName: 'effect-lib',
       }),
   });

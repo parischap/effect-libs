@@ -1,30 +1,31 @@
+import * as PlatformNodeFs from '@effect/platform-node/NodeFileSystem';
 /** FIX GLOB */
-import * as PlatformError from '@effect/platform/Error'
-import * as PlatformFs from '@effect/platform/FileSystem'
-import * as PlatformNodeFs from '@effect/platform-node/NodeFileSystem'
-import * as MFs from '@parischap/effect-lib/MFs'
-import * as MPredicate from '@parischap/effect-lib/MPredicate'
-import * as MTuple from '@parischap/effect-lib/MTuple'
-import * as MTypes from '@parischap/effect-lib/MTypes'
-import * as NPath from './Path.js';
+import * as PlatformError from '@effect/platform/Error';
+import * as PlatformFs from '@effect/platform/FileSystem';
+import { flow, pipe } from 'effect';
 
-import {flow, pipe} from 'effect'
-import * as Array from 'effect/Array'
-import * as Cause from 'effect/Cause'
-import * as Chunk from 'effect/Chunk'
-import * as Context from 'effect/Context'
-import * as Effect from 'effect/Effect'
-import * as Either from 'effect/Either'
-import * as Layer from 'effect/Layer'
-import * as Option from 'effect/Option'
-import * as Predicate from 'effect/Predicate'
-import * as Scope from 'effect/Scope'
-import * as Sink from 'effect/Sink'
-import * as Stream from 'effect/Stream'
-import * as Struct from 'effect/Struct'
-import * as Tuple from 'effect/Tuple'
+import * as MFs from '@parischap/effect-lib/MFs';
+import * as MPredicate from '@parischap/effect-lib/MPredicate';
+import * as MTuple from '@parischap/effect-lib/MTuple';
+import * as MTypes from '@parischap/effect-lib/MTypes';
 
+import * as Array from 'effect/Array';
+import * as Cause from 'effect/Cause';
+import * as Chunk from 'effect/Chunk';
+import * as Context from 'effect/Context';
+import * as Effect from 'effect/Effect';
+import * as Either from 'effect/Either';
+import * as Layer from 'effect/Layer';
+import * as Option from 'effect/Option';
+import * as Predicate from 'effect/Predicate';
+import * as Scope from 'effect/Scope';
+import * as Sink from 'effect/Sink';
+import * as Stream from 'effect/Stream';
+import * as Struct from 'effect/Struct';
+import * as Tuple from 'effect/Tuple';
 import { Concurrency } from 'effect/Types';
+
+import * as NPath from './Path.js';
 
 const moduleTag = '@parischap/node-effect-lib/Fs/';
 
@@ -47,10 +48,12 @@ export const isFolderStat = (
  */
 export interface WithStat<out P extends MFs.Path | MFs.Name = MFs.Path | MFs.Name> {
   readonly target: P;
-  readonly stat: PlatformFs.File.Info
-    & (readonly [P] extends readonly [MFs.FileBrand] ? { readonly type: 'File' }
-    : readonly [P] extends readonly [MFs.FolderBrand] ? { readonly type: 'Directory' }
-    : { readonly type: 'File' | 'Directory' });
+  readonly stat: PlatformFs.File.Info &
+    (readonly [P] extends readonly [MFs.FileBrand]
+      ? { readonly type: 'File' }
+      : readonly [P] extends readonly [MFs.FolderBrand]
+        ? { readonly type: 'Directory' }
+        : { readonly type: 'File' | 'Directory' });
 }
 
 type ExpandedWithStat<P extends MFs.Path | MFs.Name> = P extends unknown ? WithStat<P> : never;
@@ -89,10 +92,12 @@ export interface ServiceInterface {
   readonly stat: <P extends MFs.Path>(
     path: P,
   ) => Effect.Effect<
-    PlatformFs.File.Info
-      & (readonly [P] extends readonly [MFs.Filepath] ? { readonly type: 'File' }
-      : readonly [P] extends readonly [MFs.Folderpath] ? { readonly type: 'Directory' }
-      : never),
+    PlatformFs.File.Info &
+      (readonly [P] extends readonly [MFs.Filepath]
+        ? { readonly type: 'File' }
+        : readonly [P] extends readonly [MFs.Folderpath]
+          ? { readonly type: 'Directory' }
+          : never),
     PlatformError.PlatformError
   >;
 

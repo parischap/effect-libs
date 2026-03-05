@@ -1,7 +1,9 @@
+import { pipe } from 'effect';
+
 import * as TestUtils from '@parischap/configs/TestUtils';
-import * as MBigDecimal from '@parischap/effect-lib/MBigDecimal'
-import {pipe} from 'effect'
-import * as BigDecimal from 'effect/BigDecimal'
+import * as MBigDecimal from '@parischap/effect-lib/MBigDecimal';
+
+import * as BigDecimal from 'effect/BigDecimal';
 import { describe, it } from 'vitest';
 
 describe('MBigDecimal', () => {

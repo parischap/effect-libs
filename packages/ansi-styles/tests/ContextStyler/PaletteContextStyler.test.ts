@@ -1,12 +1,12 @@
-import * as ASContextStyler from '@parischap/ansi-styles/ASContextStyler'
-import * as ASPalette from '@parischap/ansi-styles/ASPalette'
-import * as ASPaletteContextStyler from '@parischap/ansi-styles/ASPaletteContextStyler'
-import * as ASStyleCharacteristics from '@parischap/ansi-styles/ASStyleCharacteristics';
-import * as TestUtils from '@parischap/configs/TestUtils';
-import * as Option from 'effect/Option'
-import { describe, it } from 'vitest';
+import * as ASContextStyler from "@parischap/ansi-styles/ASContextStyler";
+import * as ASPalette from "@parischap/ansi-styles/ASPalette";
+import * as ASPaletteContextStyler from "@parischap/ansi-styles/ASPaletteContextStyler";
+import * as ASStyleCharacteristics from "@parischap/ansi-styles/ASStyleCharacteristics";
+import * as TestUtils from "@parischap/configs/TestUtils";
+import * as Option from "effect/Option";
+import { describe, it } from "vitest";
 
-describe('ASPaletteContextStyler', () => {
+describe("ASPaletteContextStyler", () => {
   interface Value {
     readonly pos1: number;
     readonly otherStuff: string;
@@ -21,12 +21,12 @@ describe('ASPaletteContextStyler', () => {
 
   const value1: Value = {
     pos1: 2,
-    otherStuff: 'dummy',
+    otherStuff: "dummy",
   };
 
   const value2: Value = {
     pos1: 9,
-    otherStuff: 'dummy',
+    otherStuff: "dummy",
   };
 
   const pos1BasedAllColorsFormatterInValue1Context = ASContextStyler.toStyle(
@@ -36,29 +36,29 @@ describe('ASPaletteContextStyler', () => {
     pos1BasedAllColorsFormatter,
   )(value2);
 
-  it('moduleTag', () => {
+  it("moduleTag", () => {
     TestUtils.assertEquals(
       Option.some(ASPaletteContextStyler.moduleTag),
       TestUtils.moduleTagFromTestFilePath(import.meta.filename),
     );
   });
 
-  it('.toString()', () => {
+  it(".toString()", () => {
     TestUtils.strictEqual(
       pos1BasedAllColorsFormatter.toString(),
-      'Pos1BasedBlack/Red/Green/Yellow/Blue/Magenta/Cyan/WhitePaletteStyler',
+      "Pos1BasedBlack/Red/Green/Yellow/Blue/Magenta/Cyan/WhitePaletteStyler",
     );
   });
 
-  describe('toStyle', () => {
-    it('Within bounds', () => {
+  describe("toStyle", () => {
+    it("Within bounds", () => {
       TestUtils.assertEquals(
         pos1BasedAllColorsFormatterInValue1Context.style,
         ASStyleCharacteristics.green,
       );
     });
 
-    it('Out of bounds', () => {
+    it("Out of bounds", () => {
       TestUtils.assertEquals(
         pos1BasedAllColorsFormatterInValue2Context.style,
         ASStyleCharacteristics.red,

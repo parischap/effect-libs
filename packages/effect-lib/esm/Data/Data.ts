@@ -11,8 +11,8 @@
  * will only be equal with the Equal.equals operator if they are the same object
  */
 
-import * as Inspectable from 'effect/Inspectable'
-import * as Pipeable from 'effect/Pipeable'
+import * as Inspectable from 'effect/Inspectable';
+import * as Pipeable from 'effect/Pipeable';
 
 /**
  * Module tag
@@ -34,8 +34,8 @@ type idSymbol = typeof idSymbol;
  *
  * @category Models
  */
-export type Type = Pipeable.Pipeable
-  & Inspectable.Inspectable & { [idSymbol](): string | (() => string) };
+export type Type = Pipeable.Pipeable &
+  Inspectable.Inspectable & { [idSymbol](): string | (() => string) };
 
 /**
  * Type of a DataBase
@@ -65,8 +65,8 @@ export abstract class Class extends Pipeable.Class() implements Type {
   /** Returns a printable version of this */
   override toString(): string {
     const id = this[idSymbol]();
-    return typeof id === 'string' ?
-        Inspectable.format(Object.assign({ _id: id }, this))
+    return typeof id === 'string'
+      ? Inspectable.format(Object.assign({ _id: id }, this))
       : id.call(this);
   }
 }

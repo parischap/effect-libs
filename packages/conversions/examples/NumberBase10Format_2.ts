@@ -1,5 +1,6 @@
-import * as CVNumberBase10Format from '@parischap/conversions/CVNumberBase10Format'
-import {pipe} from 'effect'
+import { pipe } from 'effect';
+
+import * as CVNumberBase10Format from '@parischap/conversions/CVNumberBase10Format';
 
 // Result:
 // {

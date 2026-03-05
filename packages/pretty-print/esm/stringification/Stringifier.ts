@@ -3,15 +3,18 @@
  * PPStringifiedValue
  */
 
+import { pipe } from 'effect';
+
 import * as ASText from '@parischap/ansi-styles/ASText';
 import * as MData from '@parischap/effect-lib/MData';
 import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality';
 import * as MTypes from '@parischap/effect-lib/MTypes';
-import {pipe} from 'effect';
+
 import * as Equivalence from 'effect/Equivalence';
 import * as Hash from 'effect/Hash';
 import * as HashMap from 'effect/HashMap';
 import * as Predicate from 'effect/Predicate';
+
 import * as PPValue from '../internal/stringification/Value.js';
 import * as PPParameters from '../parameters/index.js';
 import * as PPMarkShowerConstructor from '../parameters/MarkShowerConstructor.js';
@@ -125,7 +128,9 @@ export const toStringifier = (
   const messageStartDelimiterMarkShower = markShowerConstructor('MessageStartDelimiter');
   const messageEndDelimiterMarkShower = markShowerConstructor('MessageEndDelimiter');
 
-  const initializedByPasser = PPByPassers.toSyntheticByPasser(self.parameters.byPassers)(constructors);
+  const initializedByPasser = PPByPassers.toSyntheticByPasser(self.parameters.byPassers)(
+    constructors,
+  );
 
   const toInitializedNonPrimitiveOption = NonPrimitive.Initialized.fromNonPrimitive(constructors);
 

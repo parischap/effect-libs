@@ -7,10 +7,6 @@
     "noEmit": false,
     "emitDeclarationOnly": true
   },
-  "extends": [
-    "./tsconfig.base.json"
-  ],
-  "include": [
-    "esm/**/*.ts"
-  ]
+  "extends": ["./tsconfig.base.json"],
+  "include": ["esm/**/*.ts"]
 }

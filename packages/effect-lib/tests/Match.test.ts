@@ -1,12 +1,14 @@
+import { flow, pipe } from 'effect';
+
 import * as TestUtils from '@parischap/configs/TestUtils';
-import * as MMatch from '@parischap/effect-lib/MMatch'
-import * as MPredicate from '@parischap/effect-lib/MPredicate'
-import * as MTypes from '@parischap/effect-lib/MTypes'
-import {flow, pipe} from 'effect'
-import * as Array from 'effect/Array'
-import * as Function from 'effect/Function'
-import * as Number from 'effect/Number'
-import * as Option from 'effect/Option'
+import * as MMatch from '@parischap/effect-lib/MMatch';
+import * as MPredicate from '@parischap/effect-lib/MPredicate';
+import * as MTypes from '@parischap/effect-lib/MTypes';
+
+import * as Array from 'effect/Array';
+import * as Function from 'effect/Function';
+import * as Number from 'effect/Number';
+import * as Option from 'effect/Option';
 import { describe, it } from 'vitest';
 describe('MMatch', () => {
   it('moduleTag', () => {

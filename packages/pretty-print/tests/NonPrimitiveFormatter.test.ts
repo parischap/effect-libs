@@ -1,16 +1,18 @@
-import * as ASStyle from '@parischap/ansi-styles/ASStyle'
-import * as ASText from '@parischap/ansi-styles/ASText'
+import { pipe } from 'effect';
+
+import * as ASStyle from '@parischap/ansi-styles/ASStyle';
+import * as ASText from '@parischap/ansi-styles/ASText';
 import * as TestUtils from '@parischap/configs/TestUtils';
-import * as PPIndex from '@parischap/pretty-print/PPIndex'
-import * as PPMarkShowerConstructor from '@parischap/pretty-print/PPMarkShowerConstructor'
-import * as PPNonPrimitiveFormatter from '@parischap/pretty-print/PPNonPrimitiveFormatter'
-import * as PPNonPrimitiveParameters from '@parischap/pretty-print/PPNonPrimitiveParameters'
-import * as PPStringifiedValue from '@parischap/pretty-print/PPStringifiedValue'
-import * as PPValue from '@parischap/pretty-print/PPValue'
-import * as PPValueBasedStylerConstructor from '@parischap/pretty-print/PPValueBasedStylerConstructor'
-import {pipe} from 'effect'
-import * as Array from 'effect/Array'
-import * as Function from 'effect/Function'
+import * as PPIndex from '@parischap/pretty-print/PPIndex';
+import * as PPMarkShowerConstructor from '@parischap/pretty-print/PPMarkShowerConstructor';
+import * as PPNonPrimitiveFormatter from '@parischap/pretty-print/PPNonPrimitiveFormatter';
+import * as PPNonPrimitiveParameters from '@parischap/pretty-print/PPNonPrimitiveParameters';
+import * as PPStringifiedValue from '@parischap/pretty-print/PPStringifiedValue';
+import * as PPValue from '@parischap/pretty-print/PPValue';
+import * as PPValueBasedStylerConstructor from '@parischap/pretty-print/PPValueBasedStylerConstructor';
+
+import * as Array from 'effect/Array';
+import * as Function from 'effect/Function';
 import { describe, it } from 'vitest';
 
 describe('NonPrimitiveFormatter', () => {
@@ -122,7 +124,9 @@ describe('NonPrimitiveFormatter', () => {
       TestUtils.strictEqual(
         pipe(
           valueAndHeader,
-          PPNonPrimitiveFormatter.apply(PPNonPrimitiveFormatter.tabify)(nonPrimitiveOption)(constructors),
+          PPNonPrimitiveFormatter.apply(PPNonPrimitiveFormatter.tabify)(nonPrimitiveOption)(
+            constructors,
+          ),
           Function.apply(children),
           PPStringifiedValue.toAnsiString(),
         ),
@@ -134,7 +138,9 @@ describe('NonPrimitiveFormatter', () => {
       TestUtils.deepStrictEqual(
         pipe(
           valueAndHeader,
-          PPNonPrimitiveFormatter.apply(PPNonPrimitiveFormatter.tabify)(nonPrimitiveOption)(constructors),
+          PPNonPrimitiveFormatter.apply(PPNonPrimitiveFormatter.tabify)(nonPrimitiveOption)(
+            constructors,
+          ),
           Function.apply(Array.empty()),
           PPStringifiedValue.toUnstyledStrings,
         ),
@@ -148,7 +154,9 @@ describe('NonPrimitiveFormatter', () => {
       TestUtils.strictEqual(
         pipe(
           valueAndHeader,
-          PPNonPrimitiveFormatter.apply(PPNonPrimitiveFormatter.treeify)(nonPrimitiveOption)(constructors),
+          PPNonPrimitiveFormatter.apply(PPNonPrimitiveFormatter.treeify)(nonPrimitiveOption)(
+            constructors,
+          ),
           Function.apply(children),
           PPStringifiedValue.toAnsiString(),
         ),
@@ -159,7 +167,9 @@ describe('NonPrimitiveFormatter', () => {
       TestUtils.assertTrue(
         pipe(
           valueAndHeader,
-          PPNonPrimitiveFormatter.apply(PPNonPrimitiveFormatter.treeify)(nonPrimitiveOption)(constructors),
+          PPNonPrimitiveFormatter.apply(PPNonPrimitiveFormatter.treeify)(nonPrimitiveOption)(
+            constructors,
+          ),
           Function.apply(Array.empty()),
           PPStringifiedValue.isEmpty,
         ),
@@ -172,9 +182,9 @@ describe('NonPrimitiveFormatter', () => {
       TestUtils.strictEqual(
         pipe(
           valueAndHeader,
-          PPNonPrimitiveFormatter.apply(
-            PPNonPrimitiveFormatter.splitOnConstituentNumberMaker(2),
-          )(nonPrimitiveOption)(constructors),
+          PPNonPrimitiveFormatter.apply(PPNonPrimitiveFormatter.splitOnConstituentNumberMaker(2))(
+            nonPrimitiveOption,
+          )(constructors),
           Function.apply(children),
           PPStringifiedValue.toAnsiString(),
         ),
@@ -186,9 +196,9 @@ describe('NonPrimitiveFormatter', () => {
       TestUtils.strictEqual(
         pipe(
           valueAndHeader,
-          PPNonPrimitiveFormatter.apply(
-            PPNonPrimitiveFormatter.splitOnConstituentNumberMaker(1),
-          )(nonPrimitiveOption)(constructors),
+          PPNonPrimitiveFormatter.apply(PPNonPrimitiveFormatter.splitOnConstituentNumberMaker(1))(
+            nonPrimitiveOption,
+          )(constructors),
           Function.apply(children),
           PPStringifiedValue.toAnsiString(),
         ),
@@ -203,9 +213,9 @@ describe('NonPrimitiveFormatter', () => {
         TestUtils.strictEqual(
           pipe(
             valueAndHeader,
-            PPNonPrimitiveFormatter.apply(
-              PPNonPrimitiveFormatter.splitOnTotalLengthMaker(24),
-            )(nonPrimitiveOption)(constructors),
+            PPNonPrimitiveFormatter.apply(PPNonPrimitiveFormatter.splitOnTotalLengthMaker(24))(
+              nonPrimitiveOption,
+            )(constructors),
             Function.apply(children),
             PPStringifiedValue.toAnsiString(),
           ),
@@ -217,9 +227,9 @@ describe('NonPrimitiveFormatter', () => {
         TestUtils.strictEqual(
           pipe(
             valueAndHeader,
-            PPNonPrimitiveFormatter.apply(
-              PPNonPrimitiveFormatter.splitOnTotalLengthMaker(23),
-            )(nonPrimitiveOption)(constructors),
+            PPNonPrimitiveFormatter.apply(PPNonPrimitiveFormatter.splitOnTotalLengthMaker(23))(
+              nonPrimitiveOption,
+            )(constructors),
             Function.apply(children),
             PPStringifiedValue.toAnsiString(),
           ),
@@ -233,9 +243,9 @@ describe('NonPrimitiveFormatter', () => {
         TestUtils.deepStrictEqual(
           pipe(
             valueAndHeader,
-            PPNonPrimitiveFormatter.apply(
-              PPNonPrimitiveFormatter.splitOnTotalLengthMaker(9),
-            )(nonPrimitiveOption)(constructors),
+            PPNonPrimitiveFormatter.apply(PPNonPrimitiveFormatter.splitOnTotalLengthMaker(9))(
+              nonPrimitiveOption,
+            )(constructors),
             Function.apply(Array.empty()),
             PPStringifiedValue.toUnstyledStrings,
           ),
@@ -247,9 +257,9 @@ describe('NonPrimitiveFormatter', () => {
         TestUtils.deepStrictEqual(
           pipe(
             valueAndHeader,
-            PPNonPrimitiveFormatter.apply(
-              PPNonPrimitiveFormatter.splitOnTotalLengthMaker(8),
-            )(nonPrimitiveOption)(constructors),
+            PPNonPrimitiveFormatter.apply(PPNonPrimitiveFormatter.splitOnTotalLengthMaker(8))(
+              nonPrimitiveOption,
+            )(constructors),
             Function.apply(Array.empty()),
             PPStringifiedValue.toUnstyledStrings,
           ),
@@ -264,9 +274,9 @@ describe('NonPrimitiveFormatter', () => {
       TestUtils.strictEqual(
         pipe(
           valueAndHeader,
-          PPNonPrimitiveFormatter.apply(
-            PPNonPrimitiveFormatter.splitOnLongestPropLengthMaker(6),
-          )(nonPrimitiveOption)(constructors),
+          PPNonPrimitiveFormatter.apply(PPNonPrimitiveFormatter.splitOnLongestPropLengthMaker(6))(
+            nonPrimitiveOption,
+          )(constructors),
           Function.apply(children),
           PPStringifiedValue.toAnsiString(),
         ),
@@ -278,9 +288,9 @@ describe('NonPrimitiveFormatter', () => {
       TestUtils.strictEqual(
         pipe(
           valueAndHeader,
-          PPNonPrimitiveFormatter.apply(
-            PPNonPrimitiveFormatter.splitOnLongestPropLengthMaker(5),
-          )(nonPrimitiveOption)(constructors),
+          PPNonPrimitiveFormatter.apply(PPNonPrimitiveFormatter.splitOnLongestPropLengthMaker(5))(
+            nonPrimitiveOption,
+          )(constructors),
           Function.apply(children),
           PPStringifiedValue.toAnsiString(),
         ),

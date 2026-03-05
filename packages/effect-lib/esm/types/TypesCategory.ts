@@ -1,8 +1,8 @@
 /** This module implements a type that represents the possible categories of a JavaScript value */
 
-import * as Array from 'effect/Array'
-import * as Function from 'effect/Function'
-import * as Predicate from 'effect/Predicate'
+import * as Array from 'effect/Array';
+import * as Function from 'effect/Function';
+import * as Predicate from 'effect/Predicate';
 
 /**
  * Type of a MTypeCategory
@@ -52,11 +52,7 @@ export const fromValue = (u: unknown): Type => {
       return Type.Function;
     }
     case 'object': {
-      return (
-        u === null ? Type.Null
-        : Array.isArray(u) ? Type.Array
-        : Type.Record
-      );
+      return u === null ? Type.Null : Array.isArray(u) ? Type.Array : Type.Record;
     }
     default: {
       return Function.absurd(u as never);

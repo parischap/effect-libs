@@ -1,5 +1,6 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import * as MBigInt from '@parischap/effect-lib/MBigInt'
+import * as MBigInt from '@parischap/effect-lib/MBigInt';
+
 import { describe, it } from 'vitest';
 
 describe('MBigInt', () => {

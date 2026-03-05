@@ -1,6 +1,7 @@
 /** A module that implements an error that occurs upon receiving an unexpected input */
 
 import { flow, pipe } from 'effect';
+
 import * as Data from 'effect/Data';
 import * as Either from 'effect/Either';
 import * as Function from 'effect/Function';
@@ -8,6 +9,7 @@ import * as Number from 'effect/Number';
 import * as Option from 'effect/Option';
 import * as Predicate from 'effect/Predicate';
 import * as String from 'effect/String';
+
 import * as MPredicate from './Predicate.js';
 import * as MString from './String/String.js';
 import * as MTypes from './Types/types.js';

@@ -1,9 +1,11 @@
 /** A simple extension to the Effect Struct module */
 
 import { pipe } from 'effect';
+
 import * as Function from 'effect/Function';
 import * as Record from 'effect/Record';
 import * as Struct from 'effect/Struct';
+
 import * as MTypes from './Types/types.js';
 
 /**
@@ -11,13 +13,13 @@ import * as MTypes from './Types/types.js';
  * and `second` type `Second`
  */
 export type Append<First extends MTypes.NonPrimitive, Second extends MTypes.NonPrimitive> = {
-  readonly [k in keyof First | keyof Second]: k extends keyof Second ?
-    k extends keyof First ?
-      Extract<Second[k], undefined> extends never ?
-        Second[k]
-      : Exclude<Second[k], undefined> | First[k]
-    : Second[k]
-  : First[k];
+  readonly [k in keyof First | keyof Second]: k extends keyof Second
+    ? k extends keyof First
+      ? Extract<Second[k], undefined> extends never
+        ? Second[k]
+        : Exclude<Second[k], undefined> | First[k]
+      : Second[k]
+    : First[k];
 };
 
 /**
@@ -116,11 +118,11 @@ export const mutableEnrichWith =
 /* eslint-disable */
 // Copied from Struct.ts
 type Transformed<O, T> = unknown & {
-  [K in keyof O]: K extends keyof T ?
-    T[K] extends (...a: any) => any ?
-      ReturnType<T[K]>
-    : O[K]
-  : O[K];
+  [K in keyof O]: K extends keyof T
+    ? T[K] extends (...a: any) => any
+      ? ReturnType<T[K]>
+      : O[K]
+    : O[K];
 };
 type PartialTransform<O, T> = {
   [K in keyof T]: T[K] extends (a: O[K & keyof O]) => any ? T[K] : (a: O[K & keyof O]) => unknown;

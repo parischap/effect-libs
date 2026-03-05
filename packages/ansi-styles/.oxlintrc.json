@@ -13,23 +13,8 @@
   ],
   "overrides": [
     {
-      "files": [
-        "**/*.js",
-        "**/*.mjs",
-        "**/*.cjs",
-        "**/*.ts",
-        "**/*.mts",
-        "**/*.cts"
-      ],
-      "plugins": [
-        "eslint",
-        "typescript",
-        "unicorn",
-        "oxc",
-        "import",
-        "jsdoc",
-        "promise"
-      ],
+      "files": ["**/*.js", "**/*.mjs", "**/*.cjs", "**/*.ts", "**/*.mts", "**/*.cts"],
+      "plugins": ["eslint", "typescript", "unicorn", "oxc", "import", "jsdoc", "promise"],
       "rules": {
         "eqeqeq": "error",
         "func-names": [

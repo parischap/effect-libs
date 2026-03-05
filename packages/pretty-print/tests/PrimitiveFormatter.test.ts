@@ -1,8 +1,9 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import * as MBigInt from '@parischap/effect-lib/MBigInt'
-import * as PPIndex from '@parischap/pretty-print/PPIndex'
-import * as PPPrimitiveFormatter from '@parischap/pretty-print/PPPrimitiveFormatter'
-import * as PPValue from '@parischap/pretty-print/PPValue'
+import * as MBigInt from '@parischap/effect-lib/MBigInt';
+import * as PPIndex from '@parischap/pretty-print/PPIndex';
+import * as PPPrimitiveFormatter from '@parischap/pretty-print/PPPrimitiveFormatter';
+import * as PPValue from '@parischap/pretty-print/PPValue';
+
 import { describe, it } from 'vitest';
 
 describe('PrimitiveFormatter', () => {
@@ -24,7 +25,10 @@ describe('PrimitiveFormatter', () => {
 
     describe('Equal.equals', () => {
       it('Matching', () => {
-        TestUtils.assertEquals(utilInspectLikeFormatter, PPPrimitiveFormatter.utilInspectLikeMaker());
+        TestUtils.assertEquals(
+          utilInspectLikeFormatter,
+          PPPrimitiveFormatter.utilInspectLikeMaker(),
+        );
       });
 
       it('Non-matching', () => {
@@ -41,13 +45,12 @@ describe('PrimitiveFormatter', () => {
   });
 
   describe('utilInspectLikeMaker', () => {
-    const format = PPPrimitiveFormatter.format(utilInspectLikeFormatterWithOtherDefaults)(utilInspectLike);
+    const format = PPPrimitiveFormatter.format(utilInspectLikeFormatterWithOtherDefaults)(
+      utilInspectLike,
+    );
 
     it('string under maxStringLength', () => {
-      TestUtils.strictEqual(
-        format(PPValue.fromTopValue('foo') as PPValue.Primitive),
-        "'foo'",
-      );
+      TestUtils.strictEqual(format(PPValue.fromTopValue('foo') as PPValue.Primitive), "'foo'");
     });
 
     it('string over maxStringLength', () => {
@@ -58,10 +61,7 @@ describe('PrimitiveFormatter', () => {
     });
 
     it('number', () => {
-      TestUtils.strictEqual(
-        format(PPValue.fromTopValue(255) as PPValue.Primitive),
-        '255',
-      );
+      TestUtils.strictEqual(format(PPValue.fromTopValue(255) as PPValue.Primitive), '255');
     });
 
     it('bigint', () => {
@@ -72,10 +72,7 @@ describe('PrimitiveFormatter', () => {
     });
 
     it('boolean', () => {
-      TestUtils.strictEqual(
-        format(PPValue.fromTopValue(true) as PPValue.Primitive),
-        'true',
-      );
+      TestUtils.strictEqual(format(PPValue.fromTopValue(true) as PPValue.Primitive), 'true');
     });
 
     it('symbol', () => {
@@ -93,10 +90,7 @@ describe('PrimitiveFormatter', () => {
     });
 
     it('null', () => {
-      TestUtils.strictEqual(
-        format(PPValue.fromTopValue(null) as PPValue.Primitive),
-        'null',
-      );
+      TestUtils.strictEqual(format(PPValue.fromTopValue(null) as PPValue.Primitive), 'null');
     });
   });
 });

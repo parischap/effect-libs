@@ -1,6 +1,8 @@
+import { pipe } from 'effect';
+
 import * as CVNumberBase10Format from '@parischap/conversions/CVNumberBase10Format';
 import * as CVSchema from '@parischap/conversions/CVSchema';
-import { pipe } from 'effect';
+
 import * as Schema from 'effect/Schema';
 
 // Let's define some formats

@@ -7,21 +7,25 @@
  * needs.
  */
 
-import * as MData from '@parischap/effect-lib/MData'
-import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality'
-import * as MMatch from '@parischap/effect-lib/MMatch'
-import * as MString from '@parischap/effect-lib/MString'
-import * as MTypes from '@parischap/effect-lib/MTypes'
-import {flow, pipe} from 'effect'
-import * as Either from 'effect/Either'
-import * as Equivalence from 'effect/Equivalence'
-import * as Function from 'effect/Function'
-import * as Hash from 'effect/Hash'
-import * as Number from 'effect/Number'
-import * as Predicate from 'effect/Predicate'
-import * as String from 'effect/String'
-import * as Struct from 'effect/Struct'
 import type * as PPOption from './Option.js';
+
+import { flow, pipe } from 'effect';
+
+import * as MData from '@parischap/effect-lib/MData';
+import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality';
+import * as MMatch from '@parischap/effect-lib/MMatch';
+import * as MString from '@parischap/effect-lib/MString';
+import * as MTypes from '@parischap/effect-lib/MTypes';
+
+import * as Either from 'effect/Either';
+import * as Equivalence from 'effect/Equivalence';
+import * as Function from 'effect/Function';
+import * as Hash from 'effect/Hash';
+import * as Number from 'effect/Number';
+import * as Predicate from 'effect/Predicate';
+import * as String from 'effect/String';
+import * as Struct from 'effect/Struct';
+
 import * as PPValue from './Value.js';
 
 /**

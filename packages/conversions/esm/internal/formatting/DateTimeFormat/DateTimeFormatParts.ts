@@ -1,6 +1,8 @@
+import { Array } from 'effect';
+
 /** This module implements a type that represents an array of `CVDateTimeFormatPart` */
 import { MTypes } from '@parischap/effect-lib';
-import { Array } from 'effect';
+
 import * as CVDateTimeFormatContext from '../../../Formatting/DateTimeFormat/DateTimeFormatContext/DateTimeFormatContext.js';
 import * as CVDateTimeFormatPart from '../../../Formatting/DateTimeFormat/DateTimeFormatPart/DateTimeFormatPart.js';
 import * as CVTemplateParts from '../Template/TemplateParts.js';

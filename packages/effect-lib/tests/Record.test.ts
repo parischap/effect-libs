@@ -1,8 +1,10 @@
+import { pipe } from 'effect';
+
 import * as TestUtils from '@parischap/configs/TestUtils';
-import * as MRecord from '@parischap/effect-lib/MRecord'
-import * as MTypes from '@parischap/effect-lib/MTypes'
-import {pipe} from 'effect'
-import * as Option from 'effect/Option'
+import * as MRecord from '@parischap/effect-lib/MRecord';
+import * as MTypes from '@parischap/effect-lib/MTypes';
+
+import * as Option from 'effect/Option';
 import { describe, it } from 'vitest';
 
 describe('MRecord', () => {

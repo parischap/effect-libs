@@ -6,12 +6,14 @@
  * process is applied.
  */
 
-import * as MTypes from '@parischap/effect-lib/MTypes'
-import * as Option from 'effect/Option'
 import type * as PPValue from '../internal/stringification/Value.js';
 import type * as PPStringifiedValue from '../stringification/StringifiedValue.js';
 import type * as PPMarkShowerConstructor from './MarkShowerConstructor.js';
 import type * as PPValueBasedStylerConstructor from './ValueBasedStylerConstructor.js';
+
+import * as MTypes from '@parischap/effect-lib/MTypes';
+
+import * as Option from 'effect/Option';
 
 /**
  * Type of a PPByPasserAction

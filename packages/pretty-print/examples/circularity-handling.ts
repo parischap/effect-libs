@@ -1,6 +1,7 @@
-import * as PPOption from '@parischap/pretty-print/PPOption'
-import * as PPStringifiedValue from '@parischap/pretty-print/PPStringifiedValue'
-import {pipe} from 'effect'
+import { pipe } from 'effect';
+
+import * as PPOption from '@parischap/pretty-print/PPOption';
+import * as PPStringifiedValue from '@parischap/pretty-print/PPStringifiedValue';
 
 const stringifier = PPOption.toStringifier(
   PPOption.make({ ...PPOption.utilInspectLike, maxDepth: Infinity }),

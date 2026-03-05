@@ -1,6 +1,7 @@
 /** A simple extension to the Effect Array module */
 
 import { pipe } from 'effect';
+
 import * as Array from 'effect/Array';
 import * as Boolean from 'effect/Boolean';
 import * as Either from 'effect/Either';
@@ -12,6 +13,7 @@ import * as Order from 'effect/Order';
 import * as Predicate from 'effect/Predicate';
 import * as Record from 'effect/Record';
 import * as Tuple from 'effect/Tuple';
+
 import * as MMatch from './Match.js';
 import * as MOption from './Option.js';
 import * as MTypes from './Types/types.js';
@@ -515,19 +517,19 @@ export const mergeSorted =
           onSome: (selfValue) =>
             Option.match(thatValueOption, {
               onSome: (thatValue) =>
-                lessThanOrEqualTo(selfValue, thatValue) ?
-                  Option.some(
-                    Tuple.make(
-                      selfValue,
-                      Tuple.make(MOption.fromNextIteratorValue(selfIterator), thatValueOption),
+                lessThanOrEqualTo(selfValue, thatValue)
+                  ? Option.some(
+                      Tuple.make(
+                        selfValue,
+                        Tuple.make(MOption.fromNextIteratorValue(selfIterator), thatValueOption),
+                      ),
+                    )
+                  : Option.some(
+                      Tuple.make(
+                        thatValue,
+                        Tuple.make(selfValueOption, MOption.fromNextIteratorValue(thatIterator)),
+                      ),
                     ),
-                  )
-                : Option.some(
-                    Tuple.make(
-                      thatValue,
-                      Tuple.make(selfValueOption, MOption.fromNextIteratorValue(thatIterator)),
-                    ),
-                  ),
               onNone: () =>
                 Option.some(
                   Tuple.make(
@@ -575,29 +577,29 @@ export const differenceSorted =
           onSome: (selfValue) =>
             Option.match(thatValueOption, {
               onSome: (thatValue) =>
-                lessThan(selfValue, thatValue) ?
-                  Option.some(
-                    Tuple.make(
-                      Array.of(selfValue),
-                      Tuple.make(MOption.fromNextIteratorValue(selfIterator), thatValueOption),
-                    ),
-                  )
-                : Equal.equals(selfValue, thatValue) ?
-                  Option.some(
-                    Tuple.make(
-                      Array.empty(),
+                lessThan(selfValue, thatValue)
+                  ? Option.some(
                       Tuple.make(
-                        MOption.fromNextIteratorValue(selfIterator),
-                        MOption.fromNextIteratorValue(thatIterator),
+                        Array.of(selfValue),
+                        Tuple.make(MOption.fromNextIteratorValue(selfIterator), thatValueOption),
                       ),
-                    ),
-                  )
-                : Option.some(
-                    Tuple.make(
-                      Array.empty(),
-                      Tuple.make(selfValueOption, MOption.fromNextIteratorValue(thatIterator)),
-                    ),
-                  ),
+                    )
+                  : Equal.equals(selfValue, thatValue)
+                    ? Option.some(
+                        Tuple.make(
+                          Array.empty(),
+                          Tuple.make(
+                            MOption.fromNextIteratorValue(selfIterator),
+                            MOption.fromNextIteratorValue(thatIterator),
+                          ),
+                        ),
+                      )
+                    : Option.some(
+                        Tuple.make(
+                          Array.empty(),
+                          Tuple.make(selfValueOption, MOption.fromNextIteratorValue(thatIterator)),
+                        ),
+                      ),
               onNone: () =>
                 Option.some(
                   Tuple.make(

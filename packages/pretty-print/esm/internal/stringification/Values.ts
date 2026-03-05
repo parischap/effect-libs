@@ -1,21 +1,25 @@
 /** Type that is an alias for an array of Value's (see Value.ts). */
 
-import * as ASText from '@parischap/ansi-styles/ASText'
-import * as MArray from '@parischap/effect-lib/MArray'
-import * as MFunction from '@parischap/effect-lib/MFunction'
-import * as MPredicate from '@parischap/effect-lib/MPredicate'
-import * as MString from '@parischap/effect-lib/MString'
-import * as MStruct from '@parischap/effect-lib/MStruct'
-import * as MTuple from '@parischap/effect-lib/MTuple'
-import * as MTypes from '@parischap/effect-lib/MTypes'
-import {flow, pipe} from 'effect'
-import * as Array from 'effect/Array'
-import * as Either from 'effect/Either'
-import * as Number from 'effect/Number'
-import * as Option from 'effect/Option'
-import * as Predicate from 'effect/Predicate'
-import * as PPStringifiedValue from '../../stringification/StringifiedValue.js';
 import type * as PPStringifier from '../../stringification/Stringifier.js';
+
+import { flow, pipe } from 'effect';
+
+import * as ASText from '@parischap/ansi-styles/ASText';
+import * as MArray from '@parischap/effect-lib/MArray';
+import * as MFunction from '@parischap/effect-lib/MFunction';
+import * as MPredicate from '@parischap/effect-lib/MPredicate';
+import * as MString from '@parischap/effect-lib/MString';
+import * as MStruct from '@parischap/effect-lib/MStruct';
+import * as MTuple from '@parischap/effect-lib/MTuple';
+import * as MTypes from '@parischap/effect-lib/MTypes';
+
+import * as Array from 'effect/Array';
+import * as Either from 'effect/Either';
+import * as Number from 'effect/Number';
+import * as Option from 'effect/Option';
+import * as Predicate from 'effect/Predicate';
+
+import * as PPStringifiedValue from '../../stringification/StringifiedValue.js';
 import * as PPValue from './Value.js';
 
 /**
@@ -47,16 +51,16 @@ export const fromProperties =
 
             return Array.filterMap(ownKeys, (key) =>
               // The arguments and caller properties of the function prototype are deprecated, reading them causes an error
-              isFunctionProto && (key === 'arguments' || key === 'caller') ?
-                Option.none()
-              : Option.some(
-                  PPValue.fromNonPrimitiveValueAndKey({
-                    nonPrimitive: nonPrimitiveContent,
-                    key,
-                    depth,
-                    protoDepth,
-                  }),
-                ),
+              isFunctionProto && (key === 'arguments' || key === 'caller')
+                ? Option.none()
+                : Option.some(
+                    PPValue.fromNonPrimitiveValueAndKey({
+                      nonPrimitive: nonPrimitiveContent,
+                      key,
+                      depth,
+                      protoDepth,
+                    }),
+                  ),
             );
           },
           toSecond: flow(

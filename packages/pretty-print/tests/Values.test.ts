@@ -1,12 +1,15 @@
-import * as ASText from '@parischap/ansi-styles/ASText'
-import * as TestUtils from '@parischap/configs/TestUtils';
-import * as PPOption from '@parischap/pretty-print/PPOption'
-import * as PPValue from '@parischap/pretty-print/PPValue'
-import * as PPValues from '@parischap/pretty-print/PPValues'
-import {flow, pipe} from 'effect'
-import * as Array from 'effect/Array'
-import * as HashMap from 'effect/HashMap'
 import { inspect } from 'node:util';
+
+import { flow, pipe } from 'effect';
+
+import * as ASText from '@parischap/ansi-styles/ASText';
+import * as TestUtils from '@parischap/configs/TestUtils';
+import * as PPOption from '@parischap/pretty-print/PPOption';
+import * as PPValue from '@parischap/pretty-print/PPValue';
+import * as PPValues from '@parischap/pretty-print/PPValues';
+
+import * as Array from 'effect/Array';
+import * as HashMap from 'effect/HashMap';
 import { describe, it } from 'vitest';
 
 describe('Values', () => {

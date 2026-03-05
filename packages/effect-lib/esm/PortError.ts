@@ -1,13 +1,13 @@
 /** A module that implements an error that occurs when porting a function to Effect */
 
-import * as Data from 'effect/Data'
+import * as Data from 'effect/Data';
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = "@parischap/effect-lib/PortError/";
+export const moduleTag = '@parischap/effect-lib/PortError/';
 
 /**
  * Type of a Port Error

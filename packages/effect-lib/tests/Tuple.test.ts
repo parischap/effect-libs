@@ -1,14 +1,16 @@
-import * as TestUtils from "@parischap/configs/TestUtils";
-import * as MTuple from '@parischap/effect-lib/MTuple'
-import {pipe} from 'effect'
-import * as Array from 'effect/Array'
-import * as Number from 'effect/Number'
-import * as Tuple from 'effect/Tuple'
-import { describe, it } from "vitest";
+import { pipe } from 'effect';
 
-describe("MTuple", () => {
-  describe("fromSingleValue", () => {
-    it("With Array.map", () => {
+import * as TestUtils from '@parischap/configs/TestUtils';
+import * as MTuple from '@parischap/effect-lib/MTuple';
+
+import * as Array from 'effect/Array';
+import * as Number from 'effect/Number';
+import * as Tuple from 'effect/Tuple';
+import { describe, it } from 'vitest';
+
+describe('MTuple', () => {
+  describe('fromSingleValue', () => {
+    it('With Array.map', () => {
       TestUtils.deepStrictEqual(
         pipe(Array.make(1, 2), Array.map(MTuple.fromSingleValue)),
         Array.make(Tuple.make(1), Tuple.make(2)),
@@ -16,14 +18,14 @@ describe("MTuple", () => {
     });
   });
 
-  describe("makeBoth", () => {
-    it("From number", () => {
+  describe('makeBoth', () => {
+    it('From number', () => {
       TestUtils.deepStrictEqual(MTuple.makeBoth(1), Tuple.make(1, 1));
     });
   });
 
-  describe("makeBothBy", () => {
-    it("From number", () => {
+  describe('makeBothBy', () => {
+    it('From number', () => {
       TestUtils.deepStrictEqual(
         pipe(1, MTuple.makeBothBy({ toFirst: Number.sum(1), toSecond: Number.multiply(2) })),
         Tuple.make(2, 2),
@@ -31,14 +33,14 @@ describe("MTuple", () => {
     });
   });
 
-  describe("prepend", () => {
-    it("From number", () => {
+  describe('prepend', () => {
+    it('From number', () => {
       TestUtils.deepStrictEqual(pipe(1, Tuple.make, MTuple.prependElement(2)), Tuple.make(2, 1));
     });
   });
 
-  describe("firstTwo", () => {
-    it("From number tuple", () => {
+  describe('firstTwo', () => {
+    it('From number tuple', () => {
       TestUtils.deepStrictEqual(MTuple.firstTwo(Tuple.make(1, 2, 3)), Tuple.make(1, 2));
     });
   });

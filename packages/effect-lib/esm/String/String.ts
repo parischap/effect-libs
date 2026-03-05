@@ -1,6 +1,7 @@
 /** A simple extension to the Effect String module */
 
 import { flow, pipe } from 'effect';
+
 import * as Array from 'effect/Array';
 import * as Function from 'effect/Function';
 import * as Option from 'effect/Option';
@@ -9,6 +10,7 @@ import * as Record from 'effect/Record';
 import * as String from 'effect/String';
 import * as Struct from 'effect/Struct';
 import * as Tuple from 'effect/Tuple';
+
 import * as MArray from '../Array.js';
 import * as MBigInt from '../BigInt.js';
 import * as MFunction from '../Function.js';
@@ -66,8 +68,8 @@ export const fromNumber =
     const integerPart = Math.trunc(u);
     const decimalPart = Math.trunc((u - integerPart) * 1e16);
     return (
-      BigInt(integerPart).toString(10)
-      + pipe(
+      BigInt(integerPart).toString(10) +
+      pipe(
         decimalPart,
         MBigInt.fromPrimitiveOrThrow,
         (b) => b.toString(10),
@@ -434,8 +436,8 @@ export const matchWithCapturingGroups =
       Option.map((matchArray) => {
         const { groups } = matchArray;
         if (
-          groups === undefined
-          || pipe(capturingGroupNames, Array.difference(Object.keys(groups)), Array.isNonEmptyArray)
+          groups === undefined ||
+          pipe(capturingGroupNames, Array.difference(Object.keys(groups)), Array.isNonEmptyArray)
         )
           throw new Error(
             `'matchWithCapturingGroups' was called with regular expression '${regExp.source}' that does not contain expected named capturing groups '${capturingGroupNames.join("', '")}'`,
@@ -567,9 +569,9 @@ export const removeNCharsEveryMCharsFromRight = ({
   readonly m: number;
   readonly n: number;
 }): MTypes.StringTransformer =>
-  n === 0 ?
-    Function.identity
-  : flow(splitEquallyRestAtStart(m + n), Array.map(String.takeRight(m)), Array.join(''));
+  n === 0
+    ? Function.identity
+    : flow(splitEquallyRestAtStart(m + n), Array.map(String.takeRight(m)), Array.join(''));
 
 /**
  * Returns true if a string represents a digit. False otherwise

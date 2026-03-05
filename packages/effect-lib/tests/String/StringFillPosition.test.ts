@@ -1,5 +1,6 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as MStringFillPosition from '@parischap/effect-lib/MStringFillPosition';
+
 import { describe, it } from 'vitest';
 
 describe('MStringFillPosition', () => {

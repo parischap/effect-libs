@@ -1,13 +1,16 @@
 /** This module implements the time part of a date */
 
+import { pipe } from 'effect';
+
 import * as MData from '@parischap/effect-lib/MData';
 import * as MInputError from '@parischap/effect-lib/MInputError';
 import * as MTypes from '@parischap/effect-lib/MTypes';
-import { pipe } from 'effect';
+
 import * as Either from 'effect/Either';
 import * as Function from 'effect/Function';
 import * as Number from 'effect/Number';
 import * as Struct from 'effect/Struct';
+
 import { HOUR_MS, MINUTE_MS, SECOND_MS } from '../../DateTime/dateTimeConstants.js';
 import * as CVNumberBase10Format from '../../Formatting/NumberBase10Format/NumberBase10Format.js';
 import * as CVTemplateFormatter from '../../Formatting/Template/TemplateFormatter.js';

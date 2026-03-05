@@ -42,7 +42,10 @@ const frenchFormat = CVDateTimeFormat.make(
 );
 
 // Let's define a parser (combines format + context)
-const frenchParser = CVDateTimeParser.make({ dateTimeFormat: frenchFormat, context: frenchContext });
+const frenchParser = CVDateTimeParser.make({
+  dateTimeFormat: frenchFormat,
+  context: frenchContext,
+});
 
 // Let's define a formatter (combines format + context)
 const frenchFormatter = CVDateTimeFormatter.make({

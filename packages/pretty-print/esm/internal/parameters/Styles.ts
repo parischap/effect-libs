@@ -3,10 +3,12 @@
  * strings that identify a part of a stringified value
  */
 
-import * as ASConstantContextStyler from '@parischap/ansi-styles/ASConstantContextStyler'
-import * as HashMap from 'effect/HashMap'
-import * as Option from 'effect/Option'
 import type * as PPValueBasedStyler from '../../parameters/ValueBasedStyler.js';
+
+import * as ASConstantContextStyler from '@parischap/ansi-styles/ASConstantContextStyler';
+
+import * as HashMap from 'effect/HashMap';
+import * as Option from 'effect/Option';
 
 /**
  * Type of a PPStyles

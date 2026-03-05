@@ -1,8 +1,10 @@
 /** A simple extension to the Effect Function module */
 
 import { pipe } from 'effect';
+
 import * as Function from 'effect/Function';
 import * as Option from 'effect/Option';
+
 import * as MTypes from './Types/types.js';
 
 /**

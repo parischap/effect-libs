@@ -1,7 +1,7 @@
 /** This module implements a PPMark, which is a piece of text that appears in a stringified value */
 
-import * as MData from '@parischap/effect-lib/MData'
-import * as MTypes from '@parischap/effect-lib/MTypes'
+import * as MData from '@parischap/effect-lib/MData';
+import * as MTypes from '@parischap/effect-lib/MTypes';
 
 /**
  * Module tag

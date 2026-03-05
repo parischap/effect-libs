@@ -1,16 +1,18 @@
+import { flow, pipe } from 'effect';
+
 import * as TestUtils from '@parischap/configs/TestUtils';
-import * as MMatch from '@parischap/effect-lib/MMatch'
-import * as MString from '@parischap/effect-lib/MString'
-import * as MTree from '@parischap/effect-lib/MTree'
-import * as MTreeNode from '@parischap/effect-lib/MTreeNode'
-import * as MTuple from '@parischap/effect-lib/MTuple'
-import * as MTypes from '@parischap/effect-lib/MTypes'
-import {flow, pipe} from 'effect'
-import * as Array from 'effect/Array'
-import * as Either from 'effect/Either'
-import * as Function from 'effect/Function'
-import * as Option from 'effect/Option'
-import * as Record from 'effect/Record'
+import * as MMatch from '@parischap/effect-lib/MMatch';
+import * as MString from '@parischap/effect-lib/MString';
+import * as MTree from '@parischap/effect-lib/MTree';
+import * as MTreeNode from '@parischap/effect-lib/MTreeNode';
+import * as MTuple from '@parischap/effect-lib/MTuple';
+import * as MTypes from '@parischap/effect-lib/MTypes';
+
+import * as Array from 'effect/Array';
+import * as Either from 'effect/Either';
+import * as Function from 'effect/Function';
+import * as Option from 'effect/Option';
+import * as Record from 'effect/Record';
 import { describe, it } from 'vitest';
 
 describe('MTree', () => {

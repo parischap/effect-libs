@@ -1,3 +1,5 @@
+import { flow, pipe } from 'effect';
+
 /**
  * This module implements the pretty-printing parameters specific to non-primitive values. In a
  * `PPParameters`, there is a default `PPNonPrimitiveParameters` which is used for all non-primitive
@@ -6,21 +8,21 @@
  * With the make function, you can define your own instances if the provided ones don't suit your
  * needs.
  */
-import * as ASText from '@parischap/ansi-styles/ASText'
-import * as MData from '@parischap/effect-lib/MData'
-import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality'
-import * as MString from '@parischap/effect-lib/MString'
-import * as MStruct from '@parischap/effect-lib/MStruct'
-import * as MTypes from '@parischap/effect-lib/MTypes'
-import {flow, pipe} from 'effect'
-import * as Function from 'effect/Function'
-import * as Option from 'effect/Option'
-import * as Struct from 'effect/Struct'
-import * as Tuple from 'effect/Tuple'
+import * as ASText from '@parischap/ansi-styles/ASText';
+import * as MData from '@parischap/effect-lib/MData';
+import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality';
+import * as MString from '@parischap/effect-lib/MString';
+import * as MStruct from '@parischap/effect-lib/MStruct';
+import * as MTypes from '@parischap/effect-lib/MTypes';
 
-import * as Equivalence from 'effect/Equivalence'
-import * as Hash from 'effect/Hash'
-import * as Predicate from 'effect/Predicate'
+import * as Equivalence from 'effect/Equivalence';
+import * as Function from 'effect/Function';
+import * as Hash from 'effect/Hash';
+import * as Option from 'effect/Option';
+import * as Predicate from 'effect/Predicate';
+import * as Struct from 'effect/Struct';
+import * as Tuple from 'effect/Tuple';
+
 import * as PPMarkShowerConstructor from '../internal/MarkShowerConstructor.js';
 import * as PPNonPrimitiveFormatter from './NonPrimitiveFormatter.js';
 import * as PPPropertyFilters from './PropertyFilters.js';
@@ -478,9 +480,8 @@ export namespace Initialized {
             propertyNumberDisplayOption === PropertyNumberDisplayOption.AllAndActualIfDifferent;
           const { showId } = nonPrimitiveOption;
 
-          const [propertyNumberStartDelimiter, propertyNumberEndDelimiter] =
-            isNone ?
-              Tuple.make(emptyText, emptyText)
+          const [propertyNumberStartDelimiter, propertyNumberEndDelimiter] = isNone
+            ? Tuple.make(emptyText, emptyText)
             : Tuple.make(
                 propertyNumberDelimitersTextFormatter.withContextLast(
                   nonPrimitiveOption.propertyNumberStartDelimiterMark,
@@ -491,49 +492,48 @@ export namespace Initialized {
               );
 
           const propertyNumberSeparator =
-            isAllAndActual || isAllAndActualIfDifferent ?
-              propertyNumberSeparatorTextFormatter.withContextLast(
-                nonPrimitiveOption.propertyNumberSeparatorMark,
-              )
-            : emptyText;
+            isAllAndActual || isAllAndActualIfDifferent
+              ? propertyNumberSeparatorTextFormatter.withContextLast(
+                  nonPrimitiveOption.propertyNumberSeparatorMark,
+                )
+              : emptyText;
 
           const idSeparator =
-            showId || !isNone ?
-              nonPrimitiveValueIdSeparatorTextFormatter.withContextLast(
-                nonPrimitiveOption.idSeparatorMark,
-              )
-            : emptyText;
+            showId || !isNone
+              ? nonPrimitiveValueIdSeparatorTextFormatter.withContextLast(
+                  nonPrimitiveOption.idSeparatorMark,
+                )
+              : emptyText;
 
-          const id =
-            showId ?
-              nonPrimitiveValueIdTextFormatter.withContextLast(nonPrimitiveOption.id)
+          const id = showId
+            ? nonPrimitiveValueIdTextFormatter.withContextLast(nonPrimitiveOption.id)
             : emptyText;
 
           return ({ allPropertyNumber, actualPropertyNumber }) =>
             (value) => {
               const showAllAndActual =
-                isAllAndActual
-                || (isAllAndActualIfDifferent && allPropertyNumber !== actualPropertyNumber);
+                isAllAndActual ||
+                (isAllAndActualIfDifferent && allPropertyNumber !== actualPropertyNumber);
 
               const styledTotalPropertyNumber =
-                isAll || showAllAndActual ?
-                  pipe(
-                    allPropertyNumber,
-                    MString.fromNumber(10),
-                    PropertyNumbersTextFormatter.withContextLast,
-                    Function.apply(value),
-                  )
-                : ASText.empty;
+                isAll || showAllAndActual
+                  ? pipe(
+                      allPropertyNumber,
+                      MString.fromNumber(10),
+                      PropertyNumbersTextFormatter.withContextLast,
+                      Function.apply(value),
+                    )
+                  : ASText.empty;
 
               const styledActualPropertyNumber =
-                isActual || showAllAndActual ?
-                  pipe(
-                    actualPropertyNumber,
-                    MString.fromNumber(10),
-                    PropertyNumbersTextFormatter.withContextLast,
-                    Function.apply(value),
-                  )
-                : ASText.empty;
+                isActual || showAllAndActual
+                  ? pipe(
+                      actualPropertyNumber,
+                      MString.fromNumber(10),
+                      PropertyNumbersTextFormatter.withContextLast,
+                      Function.apply(value),
+                    )
+                  : ASText.empty;
 
               const [
                 inContextPropertyNumberStartDelimiter,
@@ -541,19 +541,19 @@ export namespace Initialized {
                 inContextPropertyNumberEndDelimiter,
                 inContextIdSeparator,
               ] =
-                isAllAndActualIfDifferent && allPropertyNumber === actualPropertyNumber ?
-                  [
-                    ASText.empty,
-                    ASText.empty,
-                    ASText.empty,
-                    showId ? idSeparator(value) : ASText.empty,
-                  ]
-                : [
-                    propertyNumberStartDelimiter(value),
-                    propertyNumberSeparator(value),
-                    propertyNumberEndDelimiter(value),
-                    idSeparator(value),
-                  ];
+                isAllAndActualIfDifferent && allPropertyNumber === actualPropertyNumber
+                  ? [
+                      ASText.empty,
+                      ASText.empty,
+                      ASText.empty,
+                      showId ? idSeparator(value) : ASText.empty,
+                    ]
+                  : [
+                      propertyNumberStartDelimiter(value),
+                      propertyNumberSeparator(value),
+                      propertyNumberEndDelimiter(value),
+                      idSeparator(value),
+                    ];
 
               return ASText.concat(
                 id(value),

@@ -1,12 +1,14 @@
+import { pipe } from 'effect';
+
 import * as TestUtils from '@parischap/configs/TestUtils';
-import * as MCache from '@parischap/effect-lib/MCache'
-import * as MTypes from '@parischap/effect-lib/MTypes'
-import {pipe} from 'effect'
-import * as Array from 'effect/Array'
-import * as Option from 'effect/Option'
-import * as Order from 'effect/Order'
-import * as Record from 'effect/Record'
-import * as Tuple from 'effect/Tuple'
+import * as MCache from '@parischap/effect-lib/MCache';
+import * as MTypes from '@parischap/effect-lib/MTypes';
+
+import * as Array from 'effect/Array';
+import * as Option from 'effect/Option';
+import * as Order from 'effect/Order';
+import * as Record from 'effect/Record';
+import * as Tuple from 'effect/Tuple';
 import { describe, it } from 'vitest';
 
 describe('MCache', () => {
@@ -147,17 +149,17 @@ describe('MCache', () => {
      */
     const testCache = MCache.make<RecursiveStructure, string>({
       lookUp: ({ key, memoized, isCircular }) =>
-        isCircular ?
-          Tuple.make('Circular', false)
-        : Tuple.make(
-            pipe(
-              key,
-              Record.reduce('', (acc, value) =>
-                MTypes.isString(value) ? acc + value : acc + memoized(value),
+        isCircular
+          ? Tuple.make('Circular', false)
+          : Tuple.make(
+              pipe(
+                key,
+                Record.reduce('', (acc, value) =>
+                  MTypes.isString(value) ? acc + value : acc + memoized(value),
+                ),
               ),
+              true,
             ),
-            true,
-          ),
       capacity: 2,
     });
 

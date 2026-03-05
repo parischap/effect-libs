@@ -4,6 +4,7 @@ import * as CVTemplate from '@parischap/conversions/CVTemplate';
 import * as CVTemplatePlaceholder from '@parischap/conversions/CVTemplatePlaceholder';
 import * as CVTemplateSeparator from '@parischap/conversions/CVTemplateSeparator';
 import * as MRegExpString from '@parischap/effect-lib/MRegExpString';
+
 import * as Schema from 'effect/Schema';
 
 // Let's define useful shortcuts

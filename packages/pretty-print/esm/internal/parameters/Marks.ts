@@ -3,8 +3,9 @@
  * marks
  */
 
-import * as HashMap from 'effect/HashMap'
 import type * as PPMark from '../../parameters/Mark.js';
+
+import * as HashMap from 'effect/HashMap';
 
 /**
  * Type of a PPStyles

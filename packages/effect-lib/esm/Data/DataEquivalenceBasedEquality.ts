@@ -11,6 +11,7 @@
 
 import * as Equal from 'effect/Equal';
 import * as Hash from 'effect/Hash';
+
 import * as MData from './Data.js';
 
 /**
@@ -47,8 +48,8 @@ type isEquivalentToSymbol = typeof isEquivalentToSymbol;
  *
  * @category Models
  */
-export type Type = MData.Type
-  & Equal.Equal & {
+export type Type = MData.Type &
+  Equal.Equal & {
     [isEquivalentToSymbol](this: Type, that: Type): boolean;
     [hasSameTypeMarkerAsSymbol](that: unknown): boolean;
   };

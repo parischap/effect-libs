@@ -1,9 +1,10 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import * as PPMarkMap from '@parischap/pretty-print/PPMarkMap'
+import * as PPMarkMap from '@parischap/pretty-print/PPMarkMap';
+
 import { describe, it } from 'vitest';
 
 describe('MarkMap', () => {
-  const {utilInspectLike} = PPMarkMap;
+  const { utilInspectLike } = PPMarkMap;
 
   describe('Tag, prototype and guards', () => {
     it('moduleTag', () => {

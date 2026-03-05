@@ -1,5 +1,5 @@
-import * as Cause from 'effect/Cause'
-import * as Data from 'effect/Data'
+import * as Cause from 'effect/Cause';
+import * as Data from 'effect/Data';
 
 // Data.TaggedError extends Error and may therefore have a stack trace
 // Data.TaggedError extends Error and therefore is Errorish
@@ -9,12 +9,12 @@ import * as Data from 'effect/Data'
  * This error is meant to be handled by a human being (no action triggered like a retry on HTTP
  * Error). The message must give sufficient context to help identify the origin the error
  */
-export class General extends Data.TaggedError("General")<{
+export class General extends Data.TaggedError('General')<{
   readonly message: string;
 }> {}
 
 /** This error is meant to be rethrown in an Effect.catchAllCause */
-export class WithOriginalCause extends Data.TaggedError("WithOriginalCause")<{
+export class WithOriginalCause extends Data.TaggedError('WithOriginalCause')<{
   readonly message: string;
   readonly originalCause: Cause.Cause<unknown>;
 }> {}
