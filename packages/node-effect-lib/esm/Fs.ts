@@ -48,12 +48,10 @@ export const isFolderStat = (
  */
 export interface WithStat<out P extends MFs.Path | MFs.Name = MFs.Path | MFs.Name> {
   readonly target: P;
-  readonly stat: PlatformFs.File.Info &
-    (readonly [P] extends readonly [MFs.FileBrand]
-      ? { readonly type: 'File' }
-      : readonly [P] extends readonly [MFs.FolderBrand]
-        ? { readonly type: 'Directory' }
-        : { readonly type: 'File' | 'Directory' });
+  readonly stat: PlatformFs.File.Info
+    & (readonly [P] extends readonly [MFs.FileBrand] ? { readonly type: 'File' }
+    : readonly [P] extends readonly [MFs.FolderBrand] ? { readonly type: 'Directory' }
+    : { readonly type: 'File' | 'Directory' });
 }
 
 type ExpandedWithStat<P extends MFs.Path | MFs.Name> = P extends unknown ? WithStat<P> : never;
@@ -92,12 +90,10 @@ export interface ServiceInterface {
   readonly stat: <P extends MFs.Path>(
     path: P,
   ) => Effect.Effect<
-    PlatformFs.File.Info &
-      (readonly [P] extends readonly [MFs.Filepath]
-        ? { readonly type: 'File' }
-        : readonly [P] extends readonly [MFs.Folderpath]
-          ? { readonly type: 'Directory' }
-          : never),
+    PlatformFs.File.Info
+      & (readonly [P] extends readonly [MFs.Filepath] ? { readonly type: 'File' }
+      : readonly [P] extends readonly [MFs.Folderpath] ? { readonly type: 'Directory' }
+      : never),
     PlatformError.PlatformError
   >;
 
@@ -129,11 +125,11 @@ export interface ServiceInterface {
 
   /**
    * Reads the contents of the directory at path and of all directories (including symlinks) below
-   * except these excluded by excludeDir. Returns an error if circularity is detected. If glob
-   * receives a relative path, excludeDir will receive a relative path as well. If glob receives an
+   * except these excluded by excludeDir. Returns an error if circularity is detected. If path
+   * receives a relative path, excludeDir will receive a relative path as well. If path receives an
    * absolute path, excludeDir will receive an absolute path as well.
    */
-  readonly glob: (params: {
+  readonly path: (params: {
     readonly path: MFs.Folderpath;
     readonly excludeDir: Predicate.Predicate<MFs.Folderpath>;
     readonly concurrencyOptions?: { readonly concurrency?: Concurrency };
@@ -369,7 +365,7 @@ export const layer = Layer.effect(
       realPath,
       readDirectory,
       readDirectoryWithStats,
-      glob: ({ concurrencyOptions, excludeDir, path }) =>
+      path: ({ concurrencyOptions, excludeDir, path }) =>
         Stream.paginateChunkEffect(
           Tuple.make(Array.of(path), Array.empty<MFs.Folderpath>()),
           ([nextSeeds, parents]) =>
@@ -388,7 +384,7 @@ export const layer = Layer.effect(
                       reason: 'BadResource',
                       pathOrDescriptor: path,
                       module: 'FileSystem',
-                      method: 'glob',
+                      method: 'path',
                       description: 'Circularity detected. Following paths are cycling',
                       //description: `Circularity detected. Following paths are cycling: ${Array.join(duplicates, ', ')}`
                     }),
