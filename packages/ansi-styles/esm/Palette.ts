@@ -6,12 +6,12 @@
  * needs.
  */
 
-import * as MData from '@parischap/effect-lib/MData'
-import * as MString from '@parischap/effect-lib/MString'
-import * as MTypes from '@parischap/effect-lib/MTypes'
-import {pipe} from 'effect'
-import * as Function from 'effect/Function'
-import * as Struct from 'effect/Struct'
+import * as MData from '@parischap/effect-lib/MData';
+import * as MString from '@parischap/effect-lib/MString';
+import * as MTypes from '@parischap/effect-lib/MTypes';
+import { pipe } from 'effect';
+import * as Function from 'effect/Function';
+import * as Struct from 'effect/Struct';
 import * as ASStyle from './Style.js';
 import * as ASStyles from './internal/Styles.js';
 
@@ -21,8 +21,8 @@ import * as ASStyles from './internal/Styles.js';
  * @category Module markers
  */
 export const moduleTag = '@parischap/ansi-styles/Palette/';
-const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
-type _TypeId = typeof _TypeId;
+const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+type TypeId = typeof TypeId;
 
 /**
  * Type that represents a Palette.
@@ -52,8 +52,8 @@ export class Type extends MData.Class {
   }
 
   /** Returns the TypeMarker of the class */
-  protected get [_TypeId](): _TypeId {
-    return _TypeId;
+  protected get [TypeId](): TypeId {
+    return TypeId;
   }
 }
 

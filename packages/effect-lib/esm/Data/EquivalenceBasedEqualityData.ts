@@ -1,8 +1,7 @@
 /**
- * Module that implements a class that derives from Data.Reference equality and implements the
- * Effect Equal.Equal interface. The class defines an abstract isEquivalentTo function that must
- * implement the the equivalence of two instances. This kind of equality can only be used in three
- * cases:
+ * Module that implements a class that derives from MData and implements the Effect Equal.Equal
+ * interface. The class defines an abstract isEquivalentTo function that must implement the the
+ * equivalence of two instances. This kind of equality can only be used in three cases:
  *
  * - for non generic classes
  * - for generic classes where the Equal.equals operator is uses es equivalence
@@ -20,8 +19,8 @@ import * as MData from './Data.js';
  * @category Module markers
  */
 export const moduleTag = '@parischap/effect-lib/Data/EquivalenceBasedEquality/';
-const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
-type _TypeId = typeof _TypeId;
+const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+type TypeId = typeof TypeId;
 
 /**
  * Symbol used to name the hasSameTypeMarkerAs function
@@ -44,18 +43,18 @@ export const isEquivalentToSymbol: unique symbol = Symbol.for(
 type isEquivalentToSymbol = typeof isEquivalentToSymbol;
 
 /**
- * Type of an MDataEquivalenceBasedEquality
+ * Type of an MEquivalenceBasedEqualityData
  *
  * @category Models
  */
-export type Type = MData.Type &
-  Equal.Equal & {
+export type Type = MData.Type
+  & Equal.Equal & {
     [isEquivalentToSymbol](this: Type, that: Type): boolean;
     [hasSameTypeMarkerAsSymbol](that: unknown): boolean;
   };
 
 /**
- * Type of a DataEquivalenceBasedEquality
+ * Type of a EquivalenceBasedEqualityData
  *
  * @category Models
  */

@@ -17,8 +17,8 @@ import * as ASContextStyler from './ContextStyler.js';
  * @category Module markers
  */
 export const moduleTag = '@parischap/ansi-styles/ContextStyler/PaletteContextStyler/';
-const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
-type _TypeId = typeof _TypeId;
+const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+type TypeId = typeof TypeId;
 
 /**
  * Namespace of a function that transforms a context into an index
@@ -49,7 +49,7 @@ export class Type<in C> extends ASContextStyler.Type<C> {
   readonly indexFromContext: IndexFromContext.Type<C>;
 
   /** Function that takes a context c and returns an ASStyle */
-  [ASContextStyler.toStyleSymbol](c: C): ASStyle.Type {
+  _toStyle(c: C): ASStyle.Type {
     const { styles } = this.palette;
     return pipe(styles, MArray.unsafeGet(this.indexFromContext(c) % styles.length));
   }
@@ -81,8 +81,8 @@ export class Type<in C> extends ASContextStyler.Type<C> {
   }
 
   /** Returns the TypeMarker of the class */
-  protected get [_TypeId](): _TypeId {
-    return _TypeId;
+  protected get [TypeId](): TypeId {
+    return TypeId;
   }
 }
 

@@ -1,6 +1,5 @@
 /** Module that implements the Bold style characteristic */
 
-import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality';
 import * as MTypes from '@parischap/effect-lib/MTypes';
 import * as Option from 'effect/Option';
 import * as Predicate from 'effect/Predicate';
@@ -14,8 +13,8 @@ import * as ASOnOffOptionalStyleCharacteristic from './OnOffOptionalStyleCharact
  */
 export const moduleTag =
   '@parischap/ansi-styles/internal/StyleCharacteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/BoldStyleCharacteristic/';
-const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
-type _TypeId = typeof _TypeId;
+const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+type TypeId = typeof TypeId;
 
 /**
  * Type that represents an ASBoldStyleCharacteristic
@@ -34,33 +33,33 @@ export class Type extends ASOnOffOptionalStyleCharacteristic.Type {
   }
 
   /** Getter that returns the id to show when the style characteristic is on */
-  get [ASOnOffOptionalStyleCharacteristic.onIdGetterSymbol](): string {
+  get _onIdGetter(): string {
     return 'Bold';
   }
 
   /** Getter that returns the id to show when the style characteristic is off */
-  get [ASOnOffOptionalStyleCharacteristic.offIdGetterSymbol](): string {
+  get _offIdGetter(): string {
     return 'NotBold';
   }
 
   /** Getter that returns the sequence corresponding to the active style characteristic */
-  get [ASOnOffOptionalStyleCharacteristic.onSequenceGetterSymbol](): ASSequence.OverOne {
+  get _onSequenceGetter(): ASSequence.OverOne {
     return ASSequence.bold;
   }
 
   /** Getter that returns the sequence corresponding to the inactive style characteristic */
-  get [ASOnOffOptionalStyleCharacteristic.offSequenceGetterSymbol](): ASSequence.OverOne {
+  get _offSequenceGetter(): ASSequence.OverOne {
     return ASSequence.notBoldNotDim;
   }
 
   /** Predicate that returns true if `that` has the same type marker as `this` */
-  [MDataEquivalenceBasedEquality.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
-    return Predicate.hasProperty(that, _TypeId);
+  [MEquivalenceBasedEqualityData.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
+    return Predicate.hasProperty(that, TypeId);
   }
 
   /** Returns the TypeMarker of the class */
-  protected get [_TypeId](): _TypeId {
-    return _TypeId;
+  protected get [TypeId](): TypeId {
+    return TypeId;
   }
 }
 

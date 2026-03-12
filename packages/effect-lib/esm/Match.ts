@@ -20,8 +20,8 @@ import * as MTypes from './Types/types.js';
  * @category Module markers
  */
 export const moduleTag = '@parischap/effect-lib/Match/';
-const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
-type _TypeId = typeof _TypeId;
+const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+type TypeId = typeof TypeId;
 
 /**
  * Type that represents a matcher
@@ -54,8 +54,8 @@ export class Type<out Input, out Output, out Rest extends Input> extends MData.C
   }
 
   /** Returns the TypeMarker of the class */
-  protected get [_TypeId](): _TypeId {
-    return _TypeId;
+  protected get [TypeId](): TypeId {
+    return TypeId;
   }
 }
 

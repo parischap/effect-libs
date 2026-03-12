@@ -1,12 +1,11 @@
 /** Module that implements a TreeLeaf (see TreeAll for more details) */
 
-import * as MData from '../Data/Data.js';
 import * as MTypes from '../Types/types.js';
 import * as MTreeNode from './TreeNode.js';
 
 export const moduleTag = '@parischap/effect-lib/Tree/TreeLeaf/';
-const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
-type _TypeId = typeof _TypeId;
+const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+type TypeId = typeof TypeId;
 /**
  * Typeof a Leaf node
  *
@@ -29,8 +28,8 @@ export class Type<out B> extends MTreeNode.Type<B> {
   }
 
   /** Returns the TypeMarker of the class */
-  protected get [_TypeId](): _TypeId {
-    return _TypeId;
+  protected get [TypeId](): TypeId {
+    return TypeId;
   }
 }
 

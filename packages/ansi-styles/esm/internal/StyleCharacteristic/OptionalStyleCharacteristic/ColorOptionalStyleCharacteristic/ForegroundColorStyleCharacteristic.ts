@@ -1,13 +1,11 @@
 /** Module that implements an optional foreground color style characteristic */
 
-import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality';
 import * as MTypes from '@parischap/effect-lib/MTypes';
 import * as Function from 'effect/Function';
 import * as Option from 'effect/Option';
 import * as Predicate from 'effect/Predicate';
 import * as AsColor from '../../../../Color/Color.js';
 import * as ASSequence from '../../../Sequence.js';
-import * as ASOptionalStyleCharacteristic from '../OptionalStyleCharacteristic.js';
 import * as ASColorOptionalStyleCharacteristic from './ColorOptionalStyleCharacteristic.js';
 /**
  * Module tag
@@ -16,8 +14,8 @@ import * as ASColorOptionalStyleCharacteristic from './ColorOptionalStyleCharact
  */
 export const moduleTag =
   '@parischap/ansi-styles/internal/StyleCharacteristic/OptionalStyleCharacteristic/ColorOptionalStyleCharacteristic/ForegroundColorStyleCharacteristic/';
-const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
-type _TypeId = typeof _TypeId;
+const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+type TypeId = typeof TypeId;
 
 /**
  * Type that represents an ASForegroundColorStyleCharacteristic
@@ -36,7 +34,7 @@ export class Type extends ASColorOptionalStyleCharacteristic.Type {
   }
 
   /** Function that returns the id to show when the style characteristic is present */
-  [ASOptionalStyleCharacteristic.toPresentIdSymbol](value: Option.Option<AsColor.Type>): string {
+  _toPresentId(value: Option.Option<AsColor.Type>): string {
     return Option.match(value, {
       onNone: Function.constant('DefaultColor'),
       onSome: AsColor.foregroundId,
@@ -44,9 +42,7 @@ export class Type extends ASColorOptionalStyleCharacteristic.Type {
   }
 
   /** Function that returns the sequence when the style characteristic is present */
-  [ASOptionalStyleCharacteristic.toPresentSequenceSymbol](
-    value: Option.Option<AsColor.Type>,
-  ): ASSequence.OverOne {
+  _toPresentSequence(value: Option.Option<AsColor.Type>): ASSequence.OverOne {
     return Option.match(value, {
       onNone: Function.constant(ASSequence.defaultForegroundColor),
       onSome: AsColor.foregroundSequence,
@@ -54,13 +50,13 @@ export class Type extends ASColorOptionalStyleCharacteristic.Type {
   }
 
   /** Predicate that returns true if `that` has the same type marker as `this` */
-  [MDataEquivalenceBasedEquality.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
-    return Predicate.hasProperty(that, _TypeId);
+  [MEquivalenceBasedEqualityData.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
+    return Predicate.hasProperty(that, TypeId);
   }
 
   /** Returns the TypeMarker of the class */
-  protected get [_TypeId](): _TypeId {
-    return _TypeId;
+  protected get [TypeId](): TypeId {
+    return TypeId;
   }
 }
 

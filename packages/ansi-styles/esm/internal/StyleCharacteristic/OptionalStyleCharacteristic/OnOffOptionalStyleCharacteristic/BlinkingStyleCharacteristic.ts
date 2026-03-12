@@ -1,6 +1,5 @@
 /** Module that implements the Blinking style characteristic */
 
-import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality';
 import * as MTypes from '@parischap/effect-lib/MTypes';
 import * as Equivalence from 'effect/Equivalence';
 import * as Option from 'effect/Option';
@@ -15,8 +14,8 @@ import * as ASOnOffOptionalStyleCharacteristic from './OnOffOptionalStyleCharact
  */
 export const moduleTag =
   '@parischap/ansi-styles/internal/StyleCharacteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/BlinkingStyleCharacteristic/';
-const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
-type _TypeId = typeof _TypeId;
+const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+type TypeId = typeof TypeId;
 
 /**
  * Type that represents an ASBlinkingStyleCharacteristic
@@ -35,33 +34,33 @@ export class Type extends ASOnOffOptionalStyleCharacteristic.Type {
   }
 
   /** Getter that returns the id to show when the style characteristic is on */
-  get [ASOnOffOptionalStyleCharacteristic.onIdGetterSymbol](): string {
+  get _onIdGetter(): string {
     return 'Blinking';
   }
 
   /** Getter that returns the id to show when the style characteristic is off */
-  get [ASOnOffOptionalStyleCharacteristic.offIdGetterSymbol](): string {
+  get _offIdGetter(): string {
     return 'NotBlinking';
   }
 
   /** Getter that returns the sequence corresponding to the active style characteristic */
-  get [ASOnOffOptionalStyleCharacteristic.onSequenceGetterSymbol](): ASSequence.OverOne {
+  get _onSequenceGetter(): ASSequence.OverOne {
     return ASSequence.blinking;
   }
 
   /** Getter that returns the sequence corresponding to the inactive style characteristic */
-  get [ASOnOffOptionalStyleCharacteristic.offSequenceGetterSymbol](): ASSequence.OverOne {
+  get _offSequenceGetter(): ASSequence.OverOne {
     return ASSequence.notBlinking;
   }
 
   /** Predicate that returns true if `that` has the same type marker as `this` */
-  [MDataEquivalenceBasedEquality.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
-    return Predicate.hasProperty(that, _TypeId);
+  [MEquivalenceBasedEqualityData.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
+    return Predicate.hasProperty(that, TypeId);
   }
 
   /** Returns the TypeMarker of the class */
-  protected get [_TypeId](): _TypeId {
-    return _TypeId;
+  protected get [TypeId](): TypeId {
+    return TypeId;
   }
 }
 
@@ -92,4 +91,4 @@ export const off = Type.make({ value: Option.some(false) });
  * @category Equivalences
  */
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
-  self[MDataEquivalenceBasedEquality.isEquivalentToSymbol](that);
+  self[MEquivalenceBasedEqualityData.isEquivalentToSymbol](that);

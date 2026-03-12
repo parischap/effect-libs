@@ -4,22 +4,22 @@
  * ASStyle.red('foo')` will create a text containing the string 'foo' styled in red.
  */
 
-import * as MTypes from "@parischap/effect-lib/MTypes";
-import { pipe } from "effect";
-import * as Equivalence from "effect/Equivalence";
-import * as Struct from "effect/Struct";
-import * as ASColor from "./Color/Color.js";
-import * as ASStyleCharacteristics from "./internal/StyleCharacteristics.js";
-import * as ASText from "./Text.js";
+import * as MTypes from '@parischap/effect-lib/MTypes';
+import { pipe } from 'effect';
+import * as Equivalence from 'effect/Equivalence';
+import * as Struct from 'effect/Struct';
+import * as ASColor from './Color/Color.js';
+import * as ASStyleCharacteristics from './internal/StyleCharacteristics.js';
+import * as ASText from './Text.js';
 
 /**
  * Module tag
  *
  * @category Module markers
  */
-export const moduleTag = "@parischap/ansi-styles/Style/";
-const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
-type _TypeId = typeof _TypeId;
+export const moduleTag = '@parischap/ansi-styles/Style/';
+const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+type TypeId = typeof TypeId;
 
 /**
  * Namespace of a Style used as an action
@@ -49,7 +49,7 @@ export interface Type extends Action.Type {
   readonly toString: () => string;
 
   /** @internal */
-  readonly [_TypeId]: _TypeId;
+  readonly [TypeId]: TypeId;
 }
 
 /**
@@ -62,7 +62,7 @@ export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
 
 /** Base */
 const base: MTypes.Proto<Type> = {
-  [_TypeId]: _TypeId,
+  [TypeId]: TypeId,
   toString(this: Type): string {
     return this.style.toString();
   },
@@ -83,7 +83,7 @@ const _make = (params: MTypes.Data<Type>): Type =>
  *
  * @category Destructors
  */
-export const style: MTypes.OneArgFunction<Type, ASStyleCharacteristics.Type> = Struct.get("style");
+export const style: MTypes.OneArgFunction<Type, ASStyleCharacteristics.Type> = Struct.get('style');
 
 /**
  * Returns the id of `self`

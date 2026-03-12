@@ -15,8 +15,8 @@ import * as ASContextStyler from './ContextStyler.js';
  * @category Module markers
  */
 export const moduleTag = '@parischap/ansi-styles/ContextStyler/ConstantContextStyler/';
-const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
-type _TypeId = typeof _TypeId;
+const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+type TypeId = typeof TypeId;
 
 /**
  * Type of an ASConstantContextStyler
@@ -28,7 +28,7 @@ export class Type extends ASContextStyler.Type<never> {
   readonly style: ASStyle.Type;
 
   /** Function that takes a context c and returns an ASStyle */
-  [ASContextStyler.toStyleSymbol](): ASStyle.Type {
+  _toStyle(): ASStyle.Type {
     return this.style;
   }
 
@@ -46,8 +46,8 @@ export class Type extends ASContextStyler.Type<never> {
   }
 
   /** Returns the TypeMarker of the class */
-  protected get [_TypeId](): _TypeId {
-    return _TypeId;
+  protected get [TypeId](): TypeId {
+    return TypeId;
   }
 }
 

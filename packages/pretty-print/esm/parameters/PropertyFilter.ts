@@ -33,8 +33,8 @@ import * as PPValue from './Value.js';
  * @category Module markers
  */
 export const moduleTag = '@parischap/pretty-print/PropertyFilter/';
-const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
-type _TypeId = typeof _TypeId;
+const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+type TypeId = typeof TypeId;
 
 /**
  * Namespace of a PropertyFilter used as an action
@@ -60,7 +60,7 @@ export interface Type extends Action.Type, Equal.Equal, MInspectable.Type, Pipea
   readonly id: string;
 
   /** @internal */
-  readonly [_TypeId]: _TypeId;
+  readonly [TypeId]: TypeId;
 }
 
 /**
@@ -68,7 +68,7 @@ export interface Type extends Action.Type, Equal.Equal, MInspectable.Type, Pipea
  *
  * @category Guards
  */
-export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
+export const has = (u: unknown): u is Type => Predicate.hasProperty(u, TypeId);
 
 /**
  * Equivalence
@@ -78,16 +78,16 @@ export const has = (u: unknown): u is Type => Predicate.hasProperty(u, _TypeId);
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.id === self.id;
 
 /** Base */
-const _TypeIdHash = Hash.hash(_TypeId);
+const _TypeIdHash = Hash.hash(TypeId);
 const base: MTypes.Proto<Type> = {
-  [_TypeId]: _TypeId,
+  [TypeId]: TypeId,
   [Equal.symbol](this: Type, that: unknown): boolean {
     return has(that) && equivalence(this, that);
   },
   [Hash.symbol](this: Type) {
     return pipe(this.id, Hash.hash, Hash.combine(_TypeIdHash), Hash.cached(this));
   },
-  [MInspectable.IdSymbol](this: Type) {
+  _Id(this: Type) {
     return this.id;
   },
   ...MInspectable.BaseProto(moduleTag),

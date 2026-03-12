@@ -24,8 +24,8 @@ import * as CVTemplatePart from './TemplatePart/TemplatePart.js';
  * @category Module markers
  */
 export const moduleTag = '@parischap/conversions/Formatting/Template/TemplateFormatter/';
-const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
-type _TypeId = typeof _TypeId;
+const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+type TypeId = typeof TypeId;
 
 /**
  * Type that represents a CVTemplateFormatter
@@ -61,8 +61,8 @@ export class Type<out PlaceholderTypes extends MTypes.NonPrimitive> extends MDat
   }
 
   /** Returns the TypeMarker of the class */
-  protected get [_TypeId](): _TypeId {
-    return _TypeId;
+  protected get [TypeId](): TypeId {
+    return TypeId;
   }
 }
 

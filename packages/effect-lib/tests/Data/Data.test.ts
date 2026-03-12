@@ -24,7 +24,7 @@ describe('MData', () => {
     }
 
     /** Returns the TypeMarker of the class */
-    protected get [FooUniqueSymbol](): FooUniqueSymbol {
+    protected get _FooUnique(): FooUniqueSymbol {
       return FooUniqueSymbol;
     }
   }
@@ -47,7 +47,7 @@ describe('MData', () => {
     }
 
     /** Returns the TypeMarker of the class */
-    protected get [BarUniqueSymbol](): BarUniqueSymbol {
+    protected get _BarUnique(): BarUniqueSymbol {
       return BarUniqueSymbol;
     }
   }

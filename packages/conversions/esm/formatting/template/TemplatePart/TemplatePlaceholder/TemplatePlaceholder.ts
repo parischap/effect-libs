@@ -4,8 +4,8 @@
  *
  * Each `CVTemplatePlaceholder` defines a parser and a formatter:
  *
- * - The parser takes a text, consumes a part of that text, optionally converts the consumed part to
- *   a value of type T and, if successful, returns a `right` of that value and of what has not been
+ * - The parser takes a text, consumes a part of that text, optionally converts the consumed part to a
+ *   value of type T and, if successful, returns a `right` of that value and of what has not been
  *   consumed. In case of failure, it returns a `left`.
  * - The formatter takes a value of type T, converts it to a string (if T is not string), checks that
  *   the result is coherent and, if so, returns a `right` of that string. Otherwise, it returns a
@@ -43,8 +43,8 @@ import * as CVNumberBase10Parser from '../../../NumberBase10Format/NumberBase10P
  */
 export const moduleTag =
   '@parischap/conversions/Formatting/Template/TemplatePart/TemplatePlaceholder/';
-const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
-type _TypeId = typeof _TypeId;
+const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+type TypeId = typeof TypeId;
 
 /**
  * Type that represents a CVTemplatePlaceholder
@@ -104,8 +104,8 @@ export class Type<out N extends string, in out T> extends MData.Class {
   }
 
   /** Returns the TypeMarker of the class */
-  protected get [_TypeId](): _TypeId {
-    return _TypeId;
+  protected get [TypeId](): TypeId {
+    return TypeId;
   }
 }
 type TemplatePlaceholderFormatter<N extends string, T> = Type<N, T>['formatter'];

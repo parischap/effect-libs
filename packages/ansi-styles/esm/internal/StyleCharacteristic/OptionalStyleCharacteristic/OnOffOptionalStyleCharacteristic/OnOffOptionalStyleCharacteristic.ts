@@ -4,7 +4,6 @@
  * `some(false)` represents an off characteristic
  */
 
-import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality';
 import * as MTypes from '@parischap/effect-lib/MTypes';
 import * as Boolean from 'effect/Boolean';
 import * as Equivalence from 'effect/Equivalence';
@@ -20,48 +19,8 @@ import * as ASOptionalStyleCharacteristic from '../OptionalStyleCharacteristic.j
  */
 export const moduleTag =
   '@parischap/ansi-styles/internal/StyleCharacteristic/OptionalStyleCharacteristic/OnOffOptionalStyleCharacteristic/';
-const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
-type _TypeId = typeof _TypeId;
-
-/**
- * Symbol used to name the onIdGetter
- *
- * @category Model symbols
- */
-export const onIdGetterSymbol: unique symbol = Symbol.for(
-  `${moduleTag}onIdGetter/`,
-) as onIdGetterSymbol;
-type onIdGetterSymbol = typeof onIdGetterSymbol;
-
-/**
- * Symbol used to name the offIdGetter function
- *
- * @category Model symbols
- */
-export const offIdGetterSymbol: unique symbol = Symbol.for(
-  `${moduleTag}offIdGetter/`,
-) as offIdGetterSymbol;
-type offIdGetterSymbol = typeof offIdGetterSymbol;
-
-/**
- * Symbol used to name the onSequenceGetter function
- *
- * @category Model symbols
- */
-export const onSequenceGetterSymbol: unique symbol = Symbol.for(
-  `${moduleTag}onSequenceGetter/`,
-) as onSequenceGetterSymbol;
-type onSequenceGetterSymbol = typeof onSequenceGetterSymbol;
-
-/**
- * Symbol used to name the offSequenceGetter function
- *
- * @category Model symbols
- */
-export const offSequenceGetterSymbol: unique symbol = Symbol.for(
-  `${moduleTag}offSequenceGetter/`,
-) as offSequenceGetterSymbol;
-type offSequenceGetterSymbol = typeof offSequenceGetterSymbol;
+const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+type TypeId = typeof TypeId;
 
 /**
  * Type that represents an ASOnOffOptionalStyleCharacteristic
@@ -75,30 +34,30 @@ export abstract class Type extends ASOptionalStyleCharacteristic.Type<boolean> {
   }
 
   /** Getter that returns the id to show when the style characteristic is on */
-  abstract get [onIdGetterSymbol](): string;
+  abstract get _onIdGetter(): string;
 
   /** Getter that returns the id to show when the style characteristic is off */
-  abstract get [offIdGetterSymbol](): string;
+  abstract get _offIdGetter(): string;
 
   /** Function that returns the id to show when the style characteristic is present */
-  [ASOptionalStyleCharacteristic.toPresentIdSymbol](value: boolean) {
+  _toPresentId(value: boolean) {
     return Boolean.match(value, {
-      onFalse: () => this[offIdGetterSymbol],
-      onTrue: () => this[onIdGetterSymbol],
+      onFalse: () => this._offIdGetter,
+      onTrue: () => this._onIdGetter,
     });
   }
 
   /** Getter that returns the sequence corresponding to the active style characteristic */
-  abstract get [onSequenceGetterSymbol](): ASSequence.OverOne;
+  abstract get _onSequenceGetter(): ASSequence.OverOne;
 
   /** Getter that returns the sequence corresponding to the inactive style characteristic */
-  abstract get [offSequenceGetterSymbol](): ASSequence.OverOne;
+  abstract get _offSequenceGetter(): ASSequence.OverOne;
 
   /** Function that returns the sequence when the style characteristic is present */
-  [ASOptionalStyleCharacteristic.toPresentSequenceSymbol](value: boolean) {
+  _toPresentSequence(value: boolean) {
     return Boolean.match(value, {
-      onFalse: () => this[offSequenceGetterSymbol],
-      onTrue: () => this[onSequenceGetterSymbol],
+      onFalse: () => this._offSequenceGetter,
+      onTrue: () => this._onSequenceGetter,
     });
   }
 
@@ -108,13 +67,13 @@ export abstract class Type extends ASOptionalStyleCharacteristic.Type<boolean> {
   }
 
   /** Function that implements the equivalence of `this` and `that` */
-  [MDataEquivalenceBasedEquality.isEquivalentToSymbol](this: this, that: this): boolean {
+  [MEquivalenceBasedEqualityData.isEquivalentToSymbol](this: this, that: this): boolean {
     return equivalence(this, that);
   }
 
   /** Returns the TypeMarker of the class */
-  protected get [_TypeId](): _TypeId {
-    return _TypeId;
+  protected get [TypeId](): TypeId {
+    return TypeId;
   }
 }
 

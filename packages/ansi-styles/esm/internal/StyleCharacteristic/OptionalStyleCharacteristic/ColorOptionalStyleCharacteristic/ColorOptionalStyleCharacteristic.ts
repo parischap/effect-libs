@@ -4,7 +4,6 @@
  * default color
  */
 
-import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality';
 import * as MTypes from '@parischap/effect-lib/MTypes';
 import * as Equivalence from 'effect/Equivalence';
 import * as Hash from 'effect/Hash';
@@ -19,8 +18,8 @@ import * as ASOptionalStyleCharacteristic from '../OptionalStyleCharacteristic.j
  */
 export const moduleTag =
   '@parischap/ansi-styles/internal/StyleCharacteristic/OptionalStyleCharacteristic/ColorOptionalStyleCharacteristic/';
-const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
-type _TypeId = typeof _TypeId;
+const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+type TypeId = typeof TypeId;
 
 /**
  * Type that represents an ASColorOptionalStyleCharacteristic
@@ -39,13 +38,13 @@ export abstract class Type extends ASOptionalStyleCharacteristic.Type<Option.Opt
   }
 
   /** Function that implements the equivalence of `this` and `that` */
-  [MDataEquivalenceBasedEquality.isEquivalentToSymbol](this: this, that: this): boolean {
+  [MEquivalenceBasedEqualityData.isEquivalentToSymbol](this: this, that: this): boolean {
     return equivalence(this, that);
   }
 
   /** Returns the TypeMarker of the class */
-  protected get [_TypeId](): _TypeId {
-    return _TypeId;
+  protected get [TypeId](): TypeId {
+    return TypeId;
   }
 }
 

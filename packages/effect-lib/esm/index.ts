@@ -6,7 +6,7 @@ export * as MBigInt from './BigInt.js';
 export * as MCache from './Cache.js';
 export * as MChunk from './Chunk.js';
 export * as MData from './Data/Data.js';
-export * as MDataEquivalenceBasedEquality from './Data/DataEquivalenceBasedEquality.js';
+export * as MEquivalenceBasedEqualityData from './Data/EquivalenceBasedEqualityData.js';
 export * as MEither from './Either.js';
 export * as MFunction from './Function.js';
 export * as MInputError from './InputError.js';

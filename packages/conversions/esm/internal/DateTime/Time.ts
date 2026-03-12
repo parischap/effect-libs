@@ -23,8 +23,8 @@ import * as CVTemplateSeparator from '../../Formatting/Template/TemplatePart/Tem
  * @category Module markers
  */
 export const moduleTag = '@parischap/conversions/internal/DateTime/Time/';
-const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
-type _TypeId = typeof _TypeId;
+const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+type TypeId = typeof TypeId;
 
 const _sep = CVTemplateSeparator;
 
@@ -112,8 +112,8 @@ export class Type extends MData.Class {
   }
 
   /** Returns the TypeMarker of the class */
-  protected get [_TypeId](): _TypeId {
-    return _TypeId;
+  protected get [TypeId](): TypeId {
+    return TypeId;
   }
 }
 

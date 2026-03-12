@@ -1,16 +1,15 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
-import * as MData from '@parischap/effect-lib/MData';
-import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality';
+import * as MEquivalenceBasedEqualityData from '@parischap/effect-lib/MEquivalenceBasedEqualityData';
 
 import * as Hash from 'effect/Hash';
 import * as Predicate from 'effect/Predicate';
 import { describe, it } from 'vitest';
 
-describe('MDataEquivalenceBasedEquality', () => {
+describe('MEquivalenceBasedEqualityData', () => {
   const FooUniqueSymbol: unique symbol = Symbol.for(`Foo`) as FooUniqueSymbol;
   type FooUniqueSymbol = typeof FooUniqueSymbol;
 
-  class Foo extends MDataEquivalenceBasedEquality.Class {
+  class Foo extends MEquivalenceBasedEqualityData.Class {
     readonly a: number;
     readonly b: boolean;
     constructor({ a, b }: { a: number; b: boolean }) {
@@ -20,7 +19,7 @@ describe('MDataEquivalenceBasedEquality', () => {
     }
 
     /** Returns the `id` of `this` */
-    [MData.idSymbol](this: this): string | (() => string) {
+    _id(this: this): string | (() => string) {
       return 'Foo';
     }
 
@@ -30,7 +29,7 @@ describe('MDataEquivalenceBasedEquality', () => {
     }
 
     /** Function that implements the equivalence of `this` and `that` */
-    [MDataEquivalenceBasedEquality.isEquivalentToSymbol](this: this, that: this): boolean {
+    [MEquivalenceBasedEqualityData.isEquivalentToSymbol](this: this, that: this): boolean {
       return this.a === that.a && this.b === that.b;
     }
 
@@ -39,12 +38,12 @@ describe('MDataEquivalenceBasedEquality', () => {
      * tempting to make it a type guard. But two instances of the same generic class that have the
      * same type marker do not necessaraly have the same type
      */
-    [MDataEquivalenceBasedEquality.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
+    [MEquivalenceBasedEqualityData.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
       return Predicate.hasProperty(that, FooUniqueSymbol);
     }
 
     /** Returns the TypeMarker of the class */
-    protected get [FooUniqueSymbol](): FooUniqueSymbol {
+    protected get _FooUnique(): FooUniqueSymbol {
       return FooUniqueSymbol;
     }
   }
@@ -52,7 +51,7 @@ describe('MDataEquivalenceBasedEquality', () => {
   const BarUniqueSymbol: unique symbol = Symbol.for(`Bar`) as BarUniqueSymbol;
   type BarUniqueSymbol = typeof BarUniqueSymbol;
 
-  class Bar extends MDataEquivalenceBasedEquality.Class {
+  class Bar extends MEquivalenceBasedEqualityData.Class {
     readonly a: number;
     readonly b: boolean;
     constructor({ a, b }: { a: number; b: boolean }) {
@@ -62,7 +61,7 @@ describe('MDataEquivalenceBasedEquality', () => {
     }
 
     /** Returns the `id` of `this` */
-    [MData.idSymbol](this: this): string | (() => string) {
+    _id(this: this): string | (() => string) {
       return 'Bar';
     }
 
@@ -72,17 +71,17 @@ describe('MDataEquivalenceBasedEquality', () => {
     }
 
     /** Function that implements the equivalence of `this` and `that` */
-    [MDataEquivalenceBasedEquality.isEquivalentToSymbol](this: this, that: this): boolean {
+    [MEquivalenceBasedEqualityData.isEquivalentToSymbol](this: this, that: this): boolean {
       return this.a === that.a && this.b === that.b;
     }
 
     /** Predicate that returns true if `that` has the same type marker as `this` */
-    [MDataEquivalenceBasedEquality.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
+    [MEquivalenceBasedEqualityData.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
       return Predicate.hasProperty(that, BarUniqueSymbol);
     }
 
     /** Returns the TypeMarker of the class */
-    protected get [BarUniqueSymbol](): BarUniqueSymbol {
+    protected get _BarUnique(): BarUniqueSymbol {
       return BarUniqueSymbol;
     }
   }

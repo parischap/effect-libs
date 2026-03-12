@@ -1,18 +1,17 @@
 /**
- * This module defines the abstract Color type, which is the base for all ANSI color kinds (ThreeBit,
- * EightBit, and RGB)
+ * This module defines the abstract Color type, which is the base for all ANSI color kinds
+ * (ThreeBit, EightBit, and RGB)
  */
 
-import * as MData from '@parischap/effect-lib/MData'
-import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality'
-import * as MTypes from '@parischap/effect-lib/MTypes'
-import * as Array from 'effect/Array'
-import * as Equal from 'effect/Equal'
-import * as Equivalence from 'effect/Equivalence'
-import * as Hash from 'effect/Hash'
-import * as Inspectable from 'effect/Inspectable'
-import * as Number from 'effect/Number'
-import * as Pipeable from 'effect/Pipeable'
+import * as MEquivalenceBasedEqualityData from '@parischap/effect-lib/MEquivalenceBasedEqualityData';
+import * as MTypes from '@parischap/effect-lib/MTypes';
+import * as Array from 'effect/Array';
+import * as Equal from 'effect/Equal';
+import * as Equivalence from 'effect/Equivalence';
+import * as Hash from 'effect/Hash';
+import * as Inspectable from 'effect/Inspectable';
+import * as Number from 'effect/Number';
+import * as Pipeable from 'effect/Pipeable';
 import type * as ASSequence from '../internal/Sequence.js';
 
 /**
@@ -21,8 +20,8 @@ import type * as ASSequence from '../internal/Sequence.js';
  * @category Module markers
  */
 export const moduleTag = '@parischap/ansi-styles/Color/';
-const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
-type _TypeId = typeof _TypeId;
+const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+type TypeId = typeof TypeId;
 
 /**
  * Color Type
@@ -30,7 +29,7 @@ type _TypeId = typeof _TypeId;
  * @category Models
  */
 export abstract class Type
-  extends MDataEquivalenceBasedEquality.Class
+  extends MEquivalenceBasedEqualityData.Class
   implements Pipeable.Pipeable, Inspectable.Inspectable, Equal.Equal, Hash.Hash
 {
   /** Id of the this color used as foreground color */
@@ -67,8 +66,8 @@ export abstract class Type
   }
 
   /** Returns the TypeMarker of the class */
-  protected get [_TypeId](): _TypeId {
-    return _TypeId;
+  protected get [TypeId](): TypeId {
+    return TypeId;
   }
 }
 
@@ -105,7 +104,7 @@ export const backgroundSequence = (self: Type): ASSequence.OverOne => self.backg
  * @category Equivalences
  */
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
-  self[MDataEquivalenceBasedEquality.isEquivalentToSymbol](that);
+  self[MEquivalenceBasedEqualityData.isEquivalentToSymbol](that);
 
 /**
  * Gets the id of `self`

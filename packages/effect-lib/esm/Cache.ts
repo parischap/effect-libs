@@ -26,8 +26,8 @@ import * as MTypes from './Types/types.js';
  * @category Module markers
  */
 export const moduleTag = '@parischap/effect-lib/Cache/';
-const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
-type _TypeId = typeof _TypeId;
+const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+type TypeId = typeof TypeId;
 
 /**
  * Type that represents the lookup function. In addition to the value of type A, the lookup function
@@ -82,8 +82,8 @@ export class Type<in out A, in out B> extends MData.Class {
 
   /**
    * The lifespan of the values in the cache in milliseconds. If `Infinity` is passed, the values
-   * never expire. If `NaN` or a negative value is passed, the lifespan is set to `0`. A lifespan
-   * of `0` means entries are considered expired on every subsequent lookup.
+   * never expire. If `NaN` or a negative value is passed, the lifespan is set to `0`. A lifespan of
+   * `0` means entries are considered expired on every subsequent lookup.
    */
   readonly lifeSpan: number;
 
@@ -108,8 +108,8 @@ export class Type<in out A, in out B> extends MData.Class {
   }
 
   /** Returns the TypeMarker of the class */
-  protected get [_TypeId](): _TypeId {
-    return _TypeId;
+  protected get [TypeId](): TypeId {
+    return TypeId;
   }
 }
 
@@ -220,8 +220,8 @@ export const get =
           onSome: (valueContainer) => {
             if (
               // if lifespan===0, we don't do the test because it could return false if the two values are stored in the same millisecond.
-              lifeSpan <= 0 ||
-              now - valueContainer.storeDate > lifeSpan
+              lifeSpan <= 0
+              || now - valueContainer.storeDate > lifeSpan
             ) {
               if (hasBoundedCapacity) {
                 let head = MutableList.pop(keyListInOrder);

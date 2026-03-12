@@ -36,8 +36,8 @@ import * as CVWeekDayNames from './WeekDayNames.js';
  * @category Module markers
  */
 export const moduleTag = '@parischap/conversions/Formatting/DateTimeFormat/DateTimeFormatContext/';
-const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
-type _TypeId = typeof _TypeId;
+const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+type TypeId = typeof TypeId;
 
 /**
  * Each element of this array will be sent to Intl.DateTimeFormat to retrieve the corresponding
@@ -93,8 +93,8 @@ export class Type extends MData.Class {
   }
 
   /** Returns the TypeMarker of the class */
-  protected get [_TypeId](): _TypeId {
-    return _TypeId;
+  protected get [TypeId](): TypeId {
+    return TypeId;
   }
 }
 

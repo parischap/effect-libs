@@ -36,8 +36,8 @@ import * as MTreeNonLeaf from './TreeNonLeaf.js';
  * @category Module markers
  */
 export const moduleTag = '@parischap/effect-lib/Tree/';
-const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
-type _TypeId = typeof _TypeId;
+const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+type TypeId = typeof TypeId;
 
 /**
  * Type of a Tree
@@ -72,11 +72,10 @@ export const getEquivalence = <A, B>(
 ): Equivalence.Equivalence<Type<A, B>> => {
   const forestEq = Array.getEquivalence(getEquivalence(aEquivalence, bEquivalence));
   return (self, that) =>
-    isLeaf(self) && isLeaf(that)
-      ? bEquivalence(self.value, that.value)
-      : isNonLeaf(self) && isNonLeaf(that)
-        ? aEquivalence(self.value, that.value) && forestEq(self.forest, that.forest)
-        : false;
+    isLeaf(self) && isLeaf(that) ? bEquivalence(self.value, that.value)
+    : isNonLeaf(self) && isNonLeaf(that) ?
+      aEquivalence(self.value, that.value) && forestEq(self.forest, that.forest)
+    : false;
 };
 
 /**
@@ -121,13 +120,13 @@ const _unfold =
             const [nextNode, nextSeedAndParents]: [Type<A, B>, Array<SeedAndParents>] = pipe(
               f(
                 currentSeed,
-                dontHandleCycles
-                  ? Option.none<A>()
-                  : pipe(
-                      parents,
-                      Array.findFirst(([parentSeed]) => seedEquivalence(parentSeed, currentSeed)),
-                      Option.map(flow(Tuple.getSecond, MTreeNode.value)),
-                    ),
+                dontHandleCycles ?
+                  Option.none<A>()
+                : pipe(
+                    parents,
+                    Array.findFirst(([parentSeed]) => seedEquivalence(parentSeed, currentSeed)),
+                    Option.map(flow(Tuple.getSecond, MTreeNode.value)),
+                  ),
               ),
               Either.mapBoth({
                 onLeft: flow(

@@ -11,8 +11,7 @@ import type * as PPOption from './Option.js';
 
 import { flow, pipe } from 'effect';
 
-import * as MData from '@parischap/effect-lib/MData';
-import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality';
+import * as MEquivalenceBasedEqualityData from '@parischap/effect-lib/MEquivalenceBasedEqualityData';
 import * as MMatch from '@parischap/effect-lib/MMatch';
 import * as MString from '@parischap/effect-lib/MString';
 import * as MTypes from '@parischap/effect-lib/MTypes';
@@ -34,8 +33,8 @@ import * as PPValue from './Value.js';
  * @category Module markers
  */
 export const moduleTag = '@parischap/pretty-print/PrimitiveFormatter/';
-const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
-type _TypeId = typeof _TypeId;
+const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+type TypeId = typeof TypeId;
 
 /**
  * Namespace of a PrimitiveFormatter used as an action
@@ -44,8 +43,8 @@ type _TypeId = typeof _TypeId;
  */
 export namespace Action {
   /**
-   * Type of the action of a PrimitiveFormatter. The action takes the current formatting option and a
-   * Primitive value (see Value.ts) and returns an unstyled string representing that value.
+   * Type of the action of a PrimitiveFormatter. The action takes the current formatting option and
+   * a Primitive value (see Value.ts) and returns an unstyled string representing that value.
    */
   export interface Type {
     (option: PPOption.Type, value: PPValue.Primitive): string;
@@ -57,7 +56,7 @@ export namespace Action {
  *
  * @category Models
  */
-export class Type extends MDataEquivalenceBasedEquality.Class {
+export class Type extends MEquivalenceBasedEqualityData.Class {
   /** Id of this PrimitiveFormatter instance. Useful for equality and debugging */
   readonly id: string;
 
@@ -89,18 +88,18 @@ export class Type extends MDataEquivalenceBasedEquality.Class {
   }
 
   /** Function that implements the equivalence of `this` and `that` */
-  [MDataEquivalenceBasedEquality.isEquivalentToSymbol](this: this, that: this): boolean {
+  [MEquivalenceBasedEqualityData.isEquivalentToSymbol](this: this, that: this): boolean {
     return equivalence(this, that);
   }
 
   /** Predicate that returns true if `that` has the same type marker as `this` */
-  [MDataEquivalenceBasedEquality.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
-    return Predicate.hasProperty(that, _TypeId);
+  [MEquivalenceBasedEqualityData.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
+    return Predicate.hasProperty(that, TypeId);
   }
 
   /** Returns the TypeMarker of the class */
-  protected get [_TypeId](): _TypeId {
-    return _TypeId;
+  protected get [TypeId](): TypeId {
+    return TypeId;
   }
 }
 

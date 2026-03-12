@@ -23,8 +23,8 @@ import * as CVNumberBase10FormatSignDisplayOption from './NumberBase10FormatSign
  * @category Module markers
  */
 export const moduleTag = '@parischap/conversions/Formatting/NumberBase10Format/';
-const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
-type _TypeId = typeof _TypeId;
+const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+type TypeId = typeof TypeId;
 
 /**
  * Type that represents a `CVNumberBase10Format`
@@ -161,8 +161,8 @@ export class Type extends MData.Class {
   }
 
   /** Returns the TypeMarker of the class */
-  protected get [_TypeId](): _TypeId {
-    return _TypeId;
+  protected get [TypeId](): TypeId {
+    return TypeId;
   }
 }
 

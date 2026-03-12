@@ -23,8 +23,8 @@ import * as CVDateTimeFormatPartSeparator from './DateTimeFormatPart/DateTimeFor
  * @category Module markers
  */
 export const moduleTag = '@parischap/conversions/Formatting/DateTimeFormat/';
-const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
-type _TypeId = typeof _TypeId;
+const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+type TypeId = typeof TypeId;
 
 /**
  * Type that represents a CVDateTimeFormat
@@ -65,8 +65,8 @@ export class Type extends MData.Class {
   }
 
   /** Returns the TypeMarker of the class */
-  protected get [_TypeId](): _TypeId {
-    return _TypeId;
+  protected get [TypeId](): TypeId {
+    return TypeId;
   }
 }
 
@@ -129,8 +129,8 @@ export const usDate = make(
 );
 
 /**
- * `CVDateTimeFormat` instance for the European date format with slashes (DD/MM/YYYY,
- * e.g. `05/06/2005`).
+ * `CVDateTimeFormat` instance for the European date format with slashes (DD/MM/YYYY, e.g.
+ * `05/06/2005`).
  *
  * @category Instances
  */
@@ -143,8 +143,8 @@ export const euDate = make(
 );
 
 /**
- * `CVDateTimeFormat` instance for the European date format with dots (DD.MM.YYYY,
- * e.g. `05.06.2005`).
+ * `CVDateTimeFormat` instance for the European date format with dots (DD.MM.YYYY, e.g.
+ * `05.06.2005`).
  *
  * @category Instances
  */
@@ -199,8 +199,7 @@ export const isoDateTimeMs = make(
 );
 
 /**
- * `CVDateTimeFormat` instance for the 24-hour time format without seconds (HH:mm,
- * e.g. `14:05`).
+ * `CVDateTimeFormat` instance for the 24-hour time format without seconds (HH:mm, e.g. `14:05`).
  *
  * @category Instances
  */
@@ -211,8 +210,7 @@ export const time24h = make(
 );
 
 /**
- * `CVDateTimeFormat` instance for the 24-hour time format with seconds (HH:mm:ss,
- * e.g. `14:05:05`).
+ * `CVDateTimeFormat` instance for the 24-hour time format with seconds (HH:mm:ss, e.g. `14:05:05`).
  *
  * @category Instances
  */
@@ -225,8 +223,8 @@ export const time24hWithSeconds = make(
 );
 
 /**
- * `CVDateTimeFormat` instance for the 12-hour time format without seconds (KK:mm a,
- * e.g. `02:05 PM`).
+ * `CVDateTimeFormat` instance for the 12-hour time format without seconds (KK:mm a, e.g. `02:05
+ * PM`).
  *
  * @category Instances
  */
@@ -239,8 +237,8 @@ export const time12h = make(
 );
 
 /**
- * `CVDateTimeFormat` instance for the 12-hour time format with seconds (KK:mm:ss a,
- * e.g. `02:05:05 PM`).
+ * `CVDateTimeFormat` instance for the 12-hour time format with seconds (KK:mm:ss a, e.g. `02:05:05
+ * PM`).
  *
  * @category Instances
  */
@@ -255,8 +253,8 @@ export const time12hWithSeconds = make(
 );
 
 /**
- * `CVDateTimeFormat` instance for a long date format (MMMM d, yyyy, e.g. `June 5, 2005`). The
- * month name is locale-dependent and requires an appropriate `CVDateTimeFormatContext`.
+ * `CVDateTimeFormat` instance for a long date format (MMMM d, yyyy, e.g. `June 5, 2005`). The month
+ * name is locale-dependent and requires an appropriate `CVDateTimeFormatContext`.
  *
  * @category Instances
  */
@@ -271,7 +269,8 @@ export const longDate = make(
 
 /**
  * `CVDateTimeFormat` instance for a short date format (MMM d, yyyy, e.g. `Jun 5, 2005`). The
- * abbreviated month name is locale-dependent and requires an appropriate `CVDateTimeFormatContext`.
+ * abbreviated month name is locale-dependent and requires an appropriate
+ * `CVDateTimeFormatContext`.
  *
  * @category Instances
  */

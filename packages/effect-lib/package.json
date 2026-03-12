@@ -30,8 +30,8 @@
     "./MData": {
       "default": "./esm/Data/Data.ts"
     },
-    "./MDataEquivalenceBasedEquality": {
-      "default": "./esm/Data/DataEquivalenceBasedEquality.ts"
+    "./MEquivalenceBasedEqualityData": {
+      "default": "./esm/Data/EquivalenceBasedEqualityData.ts"
     },
     "./MEither": {
       "default": "./esm/Either.ts"

@@ -9,8 +9,7 @@ import { flow, pipe } from 'effect';
  * needs.
  */
 import * as ASText from '@parischap/ansi-styles/ASText';
-import * as MData from '@parischap/effect-lib/MData';
-import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality';
+import * as MEquivalenceBasedEqualityData from '@parischap/effect-lib/MEquivalenceBasedEqualityData';
 import * as MString from '@parischap/effect-lib/MString';
 import * as MStruct from '@parischap/effect-lib/MStruct';
 import * as MTypes from '@parischap/effect-lib/MTypes';
@@ -37,15 +36,15 @@ import * as PPValueOrder from './ValueOrder.js';
  * @category Module markers
  */
 export const moduleTag = '@parischap/pretty-print/NonPrimitiveParameters/';
-const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
-type _TypeId = typeof _TypeId;
+const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+type TypeId = typeof TypeId;
 
 /**
  * Type that represents a PPNonPrimitiveParameters
  *
  * @category Models
  */
-export class Type extends MDataEquivalenceBasedEquality.Class {
+export class Type extends MEquivalenceBasedEqualityData.Class {
   /**
    * Id
    *
@@ -282,17 +281,17 @@ export class Type extends MDataEquivalenceBasedEquality.Class {
   }
 
   /** Function that implements the equivalence of `this` and `that` */
-  [MDataEquivalenceBasedEquality.isEquivalentToSymbol](this: this, that: this): boolean {
+  [MEquivalenceBasedEqualityData.isEquivalentToSymbol](this: this, that: this): boolean {
     return equivalence(this, that);
   }
 
   /** Predicate that returns true if `that` has the same type marker as `this` */
-  [MDataEquivalenceBasedEquality.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
-    return Predicate.hasProperty(that, _TypeId);
+  [MEquivalenceBasedEqualityData.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
+    return Predicate.hasProperty(that, TypeId);
   }
   /** Returns the TypeMarker of the class */
-  protected get [_TypeId](): _TypeId {
-    return _TypeId;
+  protected get [TypeId](): TypeId {
+    return TypeId;
   }
 }
 
@@ -480,8 +479,9 @@ export namespace Initialized {
             propertyNumberDisplayOption === PropertyNumberDisplayOption.AllAndActualIfDifferent;
           const { showId } = nonPrimitiveOption;
 
-          const [propertyNumberStartDelimiter, propertyNumberEndDelimiter] = isNone
-            ? Tuple.make(emptyText, emptyText)
+          const [propertyNumberStartDelimiter, propertyNumberEndDelimiter] =
+            isNone ?
+              Tuple.make(emptyText, emptyText)
             : Tuple.make(
                 propertyNumberDelimitersTextFormatter.withContextLast(
                   nonPrimitiveOption.propertyNumberStartDelimiterMark,
@@ -492,48 +492,49 @@ export namespace Initialized {
               );
 
           const propertyNumberSeparator =
-            isAllAndActual || isAllAndActualIfDifferent
-              ? propertyNumberSeparatorTextFormatter.withContextLast(
-                  nonPrimitiveOption.propertyNumberSeparatorMark,
-                )
-              : emptyText;
+            isAllAndActual || isAllAndActualIfDifferent ?
+              propertyNumberSeparatorTextFormatter.withContextLast(
+                nonPrimitiveOption.propertyNumberSeparatorMark,
+              )
+            : emptyText;
 
           const idSeparator =
-            showId || !isNone
-              ? nonPrimitiveValueIdSeparatorTextFormatter.withContextLast(
-                  nonPrimitiveOption.idSeparatorMark,
-                )
-              : emptyText;
+            showId || !isNone ?
+              nonPrimitiveValueIdSeparatorTextFormatter.withContextLast(
+                nonPrimitiveOption.idSeparatorMark,
+              )
+            : emptyText;
 
-          const id = showId
-            ? nonPrimitiveValueIdTextFormatter.withContextLast(nonPrimitiveOption.id)
+          const id =
+            showId ?
+              nonPrimitiveValueIdTextFormatter.withContextLast(nonPrimitiveOption.id)
             : emptyText;
 
           return ({ allPropertyNumber, actualPropertyNumber }) =>
             (value) => {
               const showAllAndActual =
-                isAllAndActual ||
-                (isAllAndActualIfDifferent && allPropertyNumber !== actualPropertyNumber);
+                isAllAndActual
+                || (isAllAndActualIfDifferent && allPropertyNumber !== actualPropertyNumber);
 
               const styledTotalPropertyNumber =
-                isAll || showAllAndActual
-                  ? pipe(
-                      allPropertyNumber,
-                      MString.fromNumber(10),
-                      PropertyNumbersTextFormatter.withContextLast,
-                      Function.apply(value),
-                    )
-                  : ASText.empty;
+                isAll || showAllAndActual ?
+                  pipe(
+                    allPropertyNumber,
+                    MString.fromNumber(10),
+                    PropertyNumbersTextFormatter.withContextLast,
+                    Function.apply(value),
+                  )
+                : ASText.empty;
 
               const styledActualPropertyNumber =
-                isActual || showAllAndActual
-                  ? pipe(
-                      actualPropertyNumber,
-                      MString.fromNumber(10),
-                      PropertyNumbersTextFormatter.withContextLast,
-                      Function.apply(value),
-                    )
-                  : ASText.empty;
+                isActual || showAllAndActual ?
+                  pipe(
+                    actualPropertyNumber,
+                    MString.fromNumber(10),
+                    PropertyNumbersTextFormatter.withContextLast,
+                    Function.apply(value),
+                  )
+                : ASText.empty;
 
               const [
                 inContextPropertyNumberStartDelimiter,
@@ -541,19 +542,19 @@ export namespace Initialized {
                 inContextPropertyNumberEndDelimiter,
                 inContextIdSeparator,
               ] =
-                isAllAndActualIfDifferent && allPropertyNumber === actualPropertyNumber
-                  ? [
-                      ASText.empty,
-                      ASText.empty,
-                      ASText.empty,
-                      showId ? idSeparator(value) : ASText.empty,
-                    ]
-                  : [
-                      propertyNumberStartDelimiter(value),
-                      propertyNumberSeparator(value),
-                      propertyNumberEndDelimiter(value),
-                      idSeparator(value),
-                    ];
+                isAllAndActualIfDifferent && allPropertyNumber === actualPropertyNumber ?
+                  [
+                    ASText.empty,
+                    ASText.empty,
+                    ASText.empty,
+                    showId ? idSeparator(value) : ASText.empty,
+                  ]
+                : [
+                    propertyNumberStartDelimiter(value),
+                    propertyNumberSeparator(value),
+                    propertyNumberEndDelimiter(value),
+                    idSeparator(value),
+                  ];
 
               return ASText.concat(
                 id(value),

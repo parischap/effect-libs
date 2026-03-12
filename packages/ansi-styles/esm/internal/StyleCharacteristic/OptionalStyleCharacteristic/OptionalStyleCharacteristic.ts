@@ -1,7 +1,6 @@
 /** Module that implements an optional style characteristic */
 
-import * as MData from '@parischap/effect-lib/MData';
-import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality';
+import * as MEquivalenceBasedEqualityData from '@parischap/effect-lib/MEquivalenceBasedEqualityData';
 import * as MFunction from '@parischap/effect-lib/MFunction';
 import * as MTypes from '@parischap/effect-lib/MTypes';
 import { pipe } from 'effect';
@@ -16,35 +15,15 @@ import * as ASSequence from '../../Sequence.js';
  */
 export const moduleTag =
   '@parischap/ansi-styles/internal/StyleCharacteristic/OptionalStyleCharacteristic/';
-const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
-type _TypeId = typeof _TypeId;
-
-/**
- * Symbol used to name the toPresentId function
- *
- * @category Model symbols
- */
-export const toPresentIdSymbol: unique symbol = Symbol.for(
-  `${moduleTag}toPresentId/`,
-) as toPresentIdSymbol;
-type toPresentIdSymbol = typeof toPresentIdSymbol;
-
-/**
- * Symbol used to name the toPresentSequence function
- *
- * @category Model symbols
- */
-export const toPresentSequenceSymbol: unique symbol = Symbol.for(
-  `${moduleTag}toPresentSequence/`,
-) as toPresentSequenceSymbol;
-type toPresentSequenceSymbol = typeof toPresentSequenceSymbol;
+const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+type TypeId = typeof TypeId;
 
 /**
  * Type that represents an ASOnOffOptionalStyleCharacteristic
  *
  * @category Models
  */
-export abstract class Type<out A> extends MDataEquivalenceBasedEquality.Class {
+export abstract class Type<out A> extends MEquivalenceBasedEqualityData.Class {
   /**
    * The value of the style characteristic:
    *
@@ -60,24 +39,24 @@ export abstract class Type<out A> extends MDataEquivalenceBasedEquality.Class {
   }
 
   /** Function that returns the id to show when the style characteristic is present */
-  abstract [toPresentIdSymbol](presentValue: A): string;
+  abstract _toPresentId(presentValue: A): string;
 
   /** Returns the `id` of `this` */
   [MData.idSymbol](): string | (() => string) {
     return function idSymbol(this: Type<A>) {
       return Option.match(this.value, {
         onNone: MFunction.constEmptyString,
-        onSome: (value) => this[toPresentIdSymbol](value),
+        onSome: (value) => this._toPresentId(value),
       });
     };
   }
 
   /** Function that returns the sequence when the style characteristic is present */
-  abstract [toPresentSequenceSymbol](presentValue: A): ASSequence.OverOne;
+  abstract _toPresentSequence(presentValue: A): ASSequence.OverOne;
 
   /** Returns the TypeMarker of the class */
-  protected get [_TypeId](): _TypeId {
-    return _TypeId;
+  protected get [TypeId](): TypeId {
+    return TypeId;
   }
 }
 
@@ -89,7 +68,7 @@ export abstract class Type<out A> extends MDataEquivalenceBasedEquality.Class {
 export const toSequence = <A>(self: Type<A>): ASSequence.Type =>
   Option.match(self.value, {
     onNone: Function.constant(ASSequence.empty),
-    onSome: (value) => self[toPresentSequenceSymbol](value),
+    onSome: (value) => self._toPresentSequence(value),
   });
 
 /**
@@ -106,4 +85,4 @@ export const PresentOrElse = <T extends Type<unknown>>(self: T, that: T): T =>
  * @category Utils
  */
 export const orWhenEquals = <T extends Type<unknown>>(self: T, that: T, whenEqual: T): T =>
-  self[MDataEquivalenceBasedEquality.isEquivalentToSymbol](that) ? whenEqual : self;
+  self[MEquivalenceBasedEqualityData.isEquivalentToSymbol](that) ? whenEqual : self;

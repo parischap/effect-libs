@@ -22,7 +22,8 @@ const testFunction = (n: number, m?: number) => n + (m !== undefined ? m : 0);
 
 interface TestInterface {
   readonly a: number;
-  readonly [testSymbol]: boolean;
+  readonly _test: boolean;
+  readonly $test: boolean;
   readonly b: string;
   readonly toString: () => string;
 }
@@ -68,7 +69,7 @@ TestUtils.assertTrueType(
     MTypes.MapToTarget<TestInterface, string>,
     {
       readonly a: string;
-      readonly [testSymbol]: string;
+      readonly _test: string;
       readonly b: string;
       readonly toString: string;
     }

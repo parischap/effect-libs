@@ -3,9 +3,9 @@
  * object
  */
 
-import * as MData from '@parischap/effect-lib/MData'
-import * as MTypes from '@parischap/effect-lib/MTypes'
-import * as Struct from 'effect/Struct'
+import * as MData from '@parischap/effect-lib/MData';
+import * as MTypes from '@parischap/effect-lib/MTypes';
+import * as Struct from 'effect/Struct';
 import type * as ASStyle from '../Style.js';
 
 /**
@@ -14,16 +14,8 @@ import type * as ASStyle from '../Style.js';
  * @category Module markers
  */
 export const moduleTag = '@parischap/ansi-styles/ContextStyler/';
-const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
-type _TypeId = typeof _TypeId;
-
-/**
- * Symbol used to name the toStyle function
- *
- * @category Model symbols
- */
-export const toStyleSymbol: unique symbol = Symbol.for(`${moduleTag}toStyle/`) as toStyleSymbol;
-type toStyleSymbol = typeof toStyleSymbol;
+const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+type TypeId = typeof TypeId;
 
 /**
  * Type that represents an ASContextStyler
@@ -35,7 +27,7 @@ export abstract class Type<in C> extends MData.Class {
   readonly id: string;
 
   /** Function that takes a context c and returns an ASStyle */
-  abstract [toStyleSymbol](c: C): ASStyle.Type;
+  abstract _toStyle(c: C): ASStyle.Type;
 
   /** Class constructor */
   protected constructor({ id }: MTypes.Data<Type<unknown>>) {
@@ -51,8 +43,8 @@ export abstract class Type<in C> extends MData.Class {
   }
 
   /** Returns the TypeMarker of the class */
-  protected get [_TypeId](): _TypeId {
-    return _TypeId;
+  protected get [TypeId](): TypeId {
+    return TypeId;
   }
 }
 
@@ -71,4 +63,4 @@ export const id: MTypes.OneArgFunction<Type<never>, string> = Struct.get('id');
 export const toStyle =
   <C>(self: Type<C>) =>
   (c: C): ASStyle.Type =>
-    self[toStyleSymbol](c);
+    self._toStyle(c);

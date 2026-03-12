@@ -42,8 +42,8 @@ import * as CVTemplateSeparator from '../../Formatting/Template/TemplatePart/Tem
  * @category Module markers
  */
 export const moduleTag = '@parischap/conversions/internal/DateTime/GregorianDate/';
-const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
-type _TypeId = typeof _TypeId;
+const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+type TypeId = typeof TypeId;
 
 /** Number of days in each month of a leap year */
 const LEAP_YEAR_DAYS_IN_MONTH = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
@@ -140,8 +140,8 @@ export class Type extends MData.Class {
   }
 
   /** Returns the TypeMarker of the class */
-  protected get [_TypeId](): _TypeId {
-    return _TypeId;
+  protected get [TypeId](): TypeId {
+    return TypeId;
   }
 }
 

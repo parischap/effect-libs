@@ -6,8 +6,8 @@ import * as MData from '../Data/Data.js';
 import * as MTypes from '../Types/types.js';
 
 export const moduleTag = '@parischap/effect-lib/Tree/TreeNode/';
-const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
-type _TypeId = typeof _TypeId;
+const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+type TypeId = typeof TypeId;
 
 /**
  * Typeof a Leaf node
@@ -25,8 +25,8 @@ export abstract class Type<out A> extends MData.Class {
   }
 
   /** Returns the TypeMarker of the class */
-  protected get [_TypeId](): _TypeId {
-    return _TypeId;
+  protected get [TypeId](): TypeId {
+    return TypeId;
   }
 }
 

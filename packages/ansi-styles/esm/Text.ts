@@ -6,8 +6,7 @@
 import { flow, pipe } from 'effect';
 
 import * as MArray from '@parischap/effect-lib/MArray';
-import * as MData from '@parischap/effect-lib/MData';
-import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality';
+import * as MEquivalenceBasedEqualityData from '@parischap/effect-lib/MEquivalenceBasedEqualityData';
 import * as MFunction from '@parischap/effect-lib/MFunction';
 import * as MMatch from '@parischap/effect-lib/MMatch';
 import * as MPredicate from '@parischap/effect-lib/MPredicate';
@@ -34,17 +33,17 @@ import * as ASUnistyledText from './internal/UnistyledText.js';
  * @category Module markers
  */
 export const moduleTag = '@parischap/ansi-styles/Text/';
-const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
-type _TypeId = typeof _TypeId;
+const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+type TypeId = typeof TypeId;
 
-const _TypeIdHash = Hash.hash(_TypeId);
+const _TypeIdHash = Hash.hash(TypeId);
 
 /**
  * Interface that represents a Text
  *
  * @category Models
  */
-export class Type extends MDataEquivalenceBasedEquality.Class {
+export class Type extends MEquivalenceBasedEqualityData.Class {
   /* The text as an array of UniStyled */
   readonly uniStyledTexts: ReadonlyArray<ASUnistyledText.Type>;
 
@@ -72,18 +71,18 @@ export class Type extends MDataEquivalenceBasedEquality.Class {
   }
 
   /** Function that implements the equivalence of `this` and `that` */
-  [MDataEquivalenceBasedEquality.isEquivalentToSymbol](this: this, that: this): boolean {
+  [MEquivalenceBasedEqualityData.isEquivalentToSymbol](this: this, that: this): boolean {
     return equivalence(this, that);
   }
 
   /** Predicate that returns true if `that` has the same type marker as `this` */
-  [MDataEquivalenceBasedEquality.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
-    return Predicate.hasProperty(that, _TypeId);
+  [MEquivalenceBasedEqualityData.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
+    return Predicate.hasProperty(that, TypeId);
   }
 
   /** Returns the TypeMarker of the class */
-  protected get [_TypeId](): _TypeId {
-    return _TypeId;
+  protected get [TypeId](): TypeId {
+    return TypeId;
   }
 }
 

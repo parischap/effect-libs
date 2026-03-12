@@ -6,8 +6,7 @@
 import { pipe } from 'effect';
 
 import * as ASText from '@parischap/ansi-styles/ASText';
-import * as MData from '@parischap/effect-lib/MData';
-import * as MDataEquivalenceBasedEquality from '@parischap/effect-lib/MDataEquivalenceBasedEquality';
+import * as MEquivalenceBasedEqualityData from '@parischap/effect-lib/MEquivalenceBasedEqualityData';
 import * as MTypes from '@parischap/effect-lib/MTypes';
 
 import * as Equivalence from 'effect/Equivalence';
@@ -29,15 +28,15 @@ import * as PPStringifiedValue from './StringifiedValue.js';
  * @category Module markers
  */
 export const moduleTag = '@parischap/pretty-print/PPStringifier/';
-const _TypeId: unique symbol = Symbol.for(moduleTag) as _TypeId;
-type _TypeId = typeof _TypeId;
+const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+type TypeId = typeof TypeId;
 
 /**
  * Type that represents a PPStringifier
  *
  * @category Models
  */
-export class Type extends MDataEquivalenceBasedEquality.Class {
+export class Type extends MEquivalenceBasedEqualityData.Class {
   readonly parameters: PPParameters.Type;
   readonly markShowers: HashMap.HashMap<string, MTypes.OneArgFunction<PPValue.Any, ASText.Type>>;
 
@@ -72,17 +71,17 @@ export class Type extends MDataEquivalenceBasedEquality.Class {
   }
 
   /** Function that implements the equivalence of `this` and `that` */
-  [MDataEquivalenceBasedEquality.isEquivalentToSymbol](this: this, that: this): boolean {
+  [MEquivalenceBasedEqualityData.isEquivalentToSymbol](this: this, that: this): boolean {
     return equivalence(this, that);
   }
 
   /** Predicate that returns true if `that` has the same type marker as `this` */
-  [MDataEquivalenceBasedEquality.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
-    return Predicate.hasProperty(that, _TypeId);
+  [MEquivalenceBasedEqualityData.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
+    return Predicate.hasProperty(that, TypeId);
   }
   /** Returns the TypeMarker of the class */
-  protected get [_TypeId](): _TypeId {
-    return _TypeId;
+  protected get [TypeId](): TypeId {
+    return TypeId;
   }
 }
 
