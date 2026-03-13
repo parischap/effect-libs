@@ -19,13 +19,10 @@
       "default": "./esm/BigInt.ts"
     },
     "./MCache": {
-      "default": "./esm/Cache/Cache.ts"
-    },
-    "./MCacheLookUp": {
-      "default": "./esm/Cache/CacheLookUp.ts"
+      "default": "./esm/Cache.ts"
     },
     "./MCacheValueContainer": {
-      "default": "./esm/internal/Cache/CacheValueContainer.ts"
+      "default": "./esm/internal/CacheValueContainer.ts"
     },
     "./MChunk": {
       "default": "./esm/Chunk.ts"
