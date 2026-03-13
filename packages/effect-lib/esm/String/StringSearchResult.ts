@@ -12,6 +12,11 @@ import * as MData from '../Data/Data.js';
 import * as MEquivalenceBasedEqualityData from '../Data/EquivalenceBasedEqualityData.js';
 import * as MTypes from '../Types/types.js';
 
+/**
+ * Module tag
+ *
+ * @category Module markers
+ */
 export const moduleTag = '@parischap/effect-lib/String/StringSearchResult/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
@@ -69,6 +74,13 @@ export class Type extends MEquivalenceBasedEqualityData.Class {
 }
 
 /**
+ * Constructor
+ *
+ * @category Constructors
+ */
+export const make = (params: MTypes.Data<Type>): Type => Type.make(params);
+
+/**
  * Equivalence that considers two SearchResult's to be equivalent when all their fields are equal
  *
  * @category Equivalences
@@ -85,13 +97,6 @@ export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
  */
 export const areOverlapping: Equivalence.Equivalence<Type> = (self, that) =>
   self.endIndex >= that.startIndex && self.startIndex <= that.endIndex;
-
-/**
- * Constructor
- *
- * @category Constructors
- */
-export const make = (params: MTypes.Data<Type>): Type => Type.make(params);
 
 /**
  * SearchResult Order based on the startIndex

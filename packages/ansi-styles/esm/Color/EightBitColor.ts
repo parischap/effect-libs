@@ -1,5 +1,6 @@
 /** This module defines EightBit colors */
 
+import { MEquivalenceBasedEqualityData } from '@parischap/effect-lib';
 import * as MTypes from '@parischap/effect-lib/MTypes';
 import * as Array from 'effect/Array';
 import * as Equivalence from 'effect/Equivalence';

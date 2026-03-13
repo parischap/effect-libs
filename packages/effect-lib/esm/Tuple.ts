@@ -1,4 +1,4 @@
-/** A simple extension to the Effect Tuple module */
+/** Extension to the Effect Tuple module providing additional constructors and manipulation utilities */
 
 import { pipe } from 'effect';
 

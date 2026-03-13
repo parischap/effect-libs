@@ -1,4 +1,4 @@
-/** A simple extension to the Effect BigDecimal module */
+/** Extension to the Effect BigDecimal module providing safe constructors from primitives and truncation utilities */
 
 import { flow, pipe } from 'effect';
 
@@ -12,7 +12,14 @@ import * as Tuple from 'effect/Tuple';
 import * as MBigInt from './BigInt.js';
 import * as MTypes from './Types/types.js';
 
-const _tupledMake = Function.tupled<readonly [value: bigint, scale: number], BigDecimal.BigDecimal>(
+/**
+ * Type on which this module's functions operate
+ *
+ * @category Models
+ */
+export type Type = BigDecimal.BigDecimal;
+
+const tupledMake = Function.tupled<readonly [value: bigint, scale: number], BigDecimal.BigDecimal>(
   BigDecimal.make,
 );
 
@@ -30,7 +37,7 @@ export const fromPrimitive = (
 > =>
   flow(
     MBigInt.fromPrimitive,
-    Either.map(flow(Tuple.make, Tuple.appendElement(scale), _tupledMake)),
+    Either.map(flow(Tuple.make, Tuple.appendElement(scale), tupledMake)),
   );
 
 /**
@@ -44,7 +51,7 @@ export const fromPrimitiveOption = (
 ): MTypes.OneArgFunction<string | number | boolean, Option.Option<BigDecimal.BigDecimal>> =>
   flow(
     MBigInt.fromPrimitiveOption,
-    Option.map(flow(Tuple.make, Tuple.appendElement(scale), _tupledMake)),
+    Option.map(flow(Tuple.make, Tuple.appendElement(scale), tupledMake)),
   );
 
 /**
@@ -56,14 +63,14 @@ export const fromPrimitiveOption = (
 export const fromPrimitiveOrThrow = (
   scale: number,
 ): MTypes.OneArgFunction<string | number | boolean, BigDecimal.BigDecimal> =>
-  flow(MBigInt.fromPrimitiveOrThrow, Tuple.make, Tuple.appendElement(scale), _tupledMake);
+  flow(MBigInt.fromPrimitiveOrThrow, Tuple.make, Tuple.appendElement(scale), tupledMake);
 
 /**
  * BigDecimal instance representing the 0 value
  *
  * @category Instances
  */
-export const zero: BigDecimal.BigDecimal = BigDecimal.make(0n, 0);
+export const zero: Type = BigDecimal.make(0n, 0);
 
 /**
  * Truncates a BigDecimal after `precision` decimal digits. `precision` must be a positive finite
@@ -71,7 +78,7 @@ export const zero: BigDecimal.BigDecimal = BigDecimal.make(0n, 0);
  *
  * @category Utils
  */
-export const trunc = (precision = 0): MTypes.OneArgFunction<BigDecimal.BigDecimal> =>
+export const trunc = (precision = 0): MTypes.OneArgFunction<Type> =>
   BigDecimal.scale(precision);
 
 /**
@@ -85,7 +92,7 @@ export const trunc = (precision = 0): MTypes.OneArgFunction<BigDecimal.BigDecima
 export const truncatedAndFollowingParts =
   (precision = 0) =>
   (
-    self: BigDecimal.BigDecimal,
+    self: Type,
   ): [truncatedPart: BigDecimal.BigDecimal, followingPart: BigDecimal.BigDecimal] => {
     const truncatedPart = pipe(self, trunc(precision));
     return Tuple.make(truncatedPart, BigDecimal.subtract(self, truncatedPart));

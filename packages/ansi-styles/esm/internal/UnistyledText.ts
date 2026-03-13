@@ -3,6 +3,7 @@
  * same style)
  */
 
+import { MData } from '@parischap/effect-lib';
 import * as MEquivalenceBasedEqualityData from '@parischap/effect-lib/MEquivalenceBasedEqualityData';
 import * as MStruct from '@parischap/effect-lib/MStruct';
 import * as MTypes from '@parischap/effect-lib/MTypes';

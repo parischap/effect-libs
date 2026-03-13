@@ -1,4 +1,4 @@
-/** A simple extension to the Effect Record module */
+/** Extension to the Effect Record module providing unsafe access and zero-parameter function invocation */
 
 import { flow, pipe } from 'effect';
 
@@ -12,20 +12,28 @@ import * as MPredicate from './Predicate.js';
 import * as MTypes from './Types/types.js';
 
 /**
- * Unsafe get an element from a record. No checks, faster than the Effect version
+ * Type on which this module's functions operate
+ *
+ * @category Models
+ */
+export interface Type<out A> extends Record.ReadonlyRecord<string, A> {}
+
+/**
+ * Returns the value at `key` in `self` without checking whether the key exists. Faster than the
+ * Effect version but may return `undefined` for missing keys.
  *
  * @category Utils
  */
 export const unsafeGet =
   (key: string) =>
-  <A>(self: Record.ReadonlyRecord<string, A>): A =>
+  <A>(self: Type<A>): A =>
     // @ts-expect-error getting record content unsafely
     self[key];
 
 /**
- * Tries to call method `functionName` on `self` with no parameters. Returns a `some` of the result
- * if such a function exists, is different from exception (if defined), and takes no parameter.
- * Returns a `none` otherwise
+ * Tries to invoke the zero-parameter method named `functionName` on `self`. Returns a `some` of the
+ * result if the method exists, takes no parameters, and is not the same function as `exception`
+ * (when provided). Returns a `none` otherwise.
  *
  * @category Utils
  */
@@ -56,8 +64,7 @@ export const tryZeroParamFunction =
     );
 
 /**
- * Same as `tryZeroParamStringFunction` but returns a `none` if the result of the function is not a
- * string
+ * Same as `tryZeroParamFunction` but additionally returns a `none` if the result is not a string
  *
  * @category Utils
  */

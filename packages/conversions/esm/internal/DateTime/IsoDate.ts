@@ -34,7 +34,7 @@ import {
   MIN_FULL_YEAR,
   SHORT_YEAR_MS,
   WEEK_MS,
-} from '../../DateTime/dateTimeConstants.js';
+} from '../../DateTime/date-time-constants.js';
 import * as CVNumberBase10Format from '../../Formatting/NumberBase10Format/NumberBase10Format.js';
 import * as CVTemplateFormatter from '../../Formatting/Template/TemplateFormatter.js';
 import * as CVTemplatePlaceholder from '../../Formatting/Template/TemplatePart/TemplatePlaceholder/TemplatePlaceholder.js';

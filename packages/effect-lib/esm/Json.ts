@@ -1,4 +1,4 @@
-/** A port of JSON.stringify and JSON.parse in the effect world */
+/** Effect-wrapped ports of `JSON.stringify` and `JSON.parse` that return `PortError` on failure */
 
 import * as Effect from 'effect/Effect';
 

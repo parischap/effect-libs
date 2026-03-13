@@ -1,4 +1,4 @@
-/** A simple extension to the Effect Array module */
+/** Extension to the Effect Array module providing additional array operations such as cycle-aware unfolding, sorted merging, and early-exit mapping */
 
 import { pipe } from 'effect';
 
@@ -17,37 +17,45 @@ import * as Tuple from 'effect/Tuple';
 import * as MMatch from './Match.js';
 import * as MOption from './Option.js';
 import * as MTypes from './Types/types.js';
+
 /**
- * Returns true if the length of `self` is `l`
+ * Type on which this module's functions operate
+ *
+ * @category Models
+ */
+export interface Type<out A> extends ReadonlyArray<A> {}
+
+/**
+ * Returns `true` if the length of `self` is `l`
  *
  * @category Predicates
  */
 export const hasLength =
   (l: number) =>
-  <A>(self: ReadonlyArray<A>): boolean =>
+  <A>(self: Type<A>): boolean =>
     self.length === l;
 
 /**
- * Returns true if the provided ReadonlyArray contains duplicates using the provided isEquivalent
- * function
+ * Returns `true` if the provided `ReadonlyArray` contains duplicates using the provided `isEquivalent`
+ * function.
  *
  * @category Predicates
  */
 export const hasDuplicatesWith =
   <A>(isEquivalent: Equivalence.Equivalence<NoInfer<A>>) =>
-  (self: ReadonlyArray<A>): boolean =>
+  (self: Type<A>): boolean =>
     pipe(self, Array.dedupeWith(isEquivalent), hasLength(self.length), Boolean.not);
 
 /**
- * Returns true if the provided ReadonlyArray contains duplicates
+ * Returns `true` if the provided `ReadonlyArray` contains duplicates using structural equality
  *
  * @category Predicates
  */
 export const hasDuplicates = hasDuplicatesWith(Equal.equivalence());
 
 /**
- * Matches the elements of an array, applying functions to cases of empty arrays, arrays containing
- * a single element, and arrays containing two or more elements.
+ * Pattern-matches an array by cardinality: applies `onEmpty` for empty arrays, `onSingleton` for
+ * arrays with exactly one element, and `onOverTwo` for arrays with two or more elements.
  *
  * @category Utils
  */
@@ -57,7 +65,7 @@ export const match012 =
     readonly onSingleton: (self: NoInfer<A>) => C;
     readonly onOverTwo: (self: MTypes.ReadonlyOverTwo<NoInfer<A>>) => D;
   }) =>
-  (self: ReadonlyArray<A>): B | C | D =>
+  (self: Type<A>): B | C | D =>
     pipe(
       self,
       MMatch.make,
@@ -67,7 +75,7 @@ export const match012 =
     );
 
 /**
- * Returns an array of the indexes of all elements of self matching the predicate
+ * Returns an array of the indexes of all elements of `self` that satisfy `predicate`
  *
  * @category Utils
  */
@@ -83,38 +91,38 @@ export const findAll =
     );
 
 /**
- * Takes all elements of self except the n last elements. `n` should be positive
+ * Returns all elements of `self` except the last `n` elements. `n` must be a positive integer
  *
  * @category Utils
  */
 export const takeBut =
   (n: number) =>
-  <A>(self: ReadonlyArray<A>): Array<A> =>
+  <A>(self: Type<A>): Array<A> =>
     self.slice(0, -n);
 
 /**
- * Takes all elements of self except the n first elements. `n` should be positive
+ * Returns all elements of `self` except the first `n` elements. `n` must be a positive integer
  *
  * @category Utils
  */
 export const takeRightBut =
   (n: number) =>
-  <A>(self: ReadonlyArray<A>): Array<A> =>
+  <A>(self: Type<A>): Array<A> =>
     self.slice(n);
 
 /**
- * This function provides a safe way to read a value at a particular index from the end of a
- * `ReadonlyArray`. Index `0` will return the last element of the array.
+ * Returns the element at position `index` from the end of `self`, wrapped in an `Option`. Index `0`
+ * returns the last element.
  *
  * @category Utils
  */
 export const getFromEnd =
   (index: number) =>
-  <A>(self: ReadonlyArray<A>): Option.Option<A> =>
+  <A>(self: Type<A>): Option.Option<A> =>
     Array.get(self, self.length - 1 - index);
 
 /**
- * This function returns the longest sub-array common to self and that starting at index 0
+ * Returns the longest common prefix between `self` and `that`, compared using `Equal.equals`
  *
  * @category Utils
  */
@@ -129,21 +137,21 @@ export const longestCommonSubArray =
     );
 
 /**
- * Extracts from an array the first item that matches the predicate. Returns the extracted item and
- * the remaining items.
+ * Extracts the first element of `self` that satisfies `predicate` (or `refinement`). Returns a pair
+ * of the extracted element (as an `Option`) and the remaining elements.
  *
  * @category Utils
  */
 export const extractFirst: {
   <A, B extends A>(
     refinement: (a: NoInfer<A>, i: number) => a is B,
-  ): (self: ReadonlyArray<A>) => MTypes.Pair<Option.Option<B>, Array<A>>;
+  ): (self: Type<A>) => MTypes.Pair<Option.Option<B>, Array<A>>;
   <A>(
     predicate: (a: NoInfer<A>, i: number) => boolean,
-  ): (self: ReadonlyArray<A>) => MTypes.Pair<Option.Option<A>, Array<A>>;
+  ): (self: Type<A>) => MTypes.Pair<Option.Option<A>, Array<A>>;
 } =
   <A>(predicate: (a: NoInfer<A>, i: number) => boolean) =>
-  (self: ReadonlyArray<A>): [match: Option.Option<A>, remaining: Array<A>] =>
+  (self: Type<A>): [match: Option.Option<A>, remaining: Array<A>] =>
     pipe(self, Array.splitWhere(predicate), ([beforeMatch, fromMatch]) =>
       Array.matchLeft(fromMatch, {
         onEmpty: () => Tuple.make(Option.none(), beforeMatch),
@@ -179,7 +187,7 @@ export const extractFirst: {
  *     ],
  *   );
  */
-export const ungroup = <A>(as: ReadonlyArray<ReadonlyArray<A>>): Array<[number, A]> =>
+export const ungroup = <A>(as: Type<Type<A>>): Array<[number, A]> =>
   pipe(
     as,
     Array.map((as, i) => Array.map(as, (a) => Tuple.make(i, a))),
@@ -224,7 +232,7 @@ export const groupByNum =
     readonly fKey: (a: NoInfer<A>) => number;
     readonly fValue: (a: NoInfer<A>) => B;
   }) =>
-  (self: ReadonlyArray<A>): ReadonlyArray<ReadonlyArray<B>> => {
+  (self: Type<A>): ReadonlyArray<ReadonlyArray<B>> => {
     const out = Array.makeBy(size, () => Array.empty<B>());
 
     for (const a of self) {
@@ -256,7 +264,7 @@ export const groupBy =
  */
 /*export const groupByInMap =
 	<A, B, C>(fKey: (a: A) => C, fValue: (a: A) => B) =>
-	(self: ReadonlyArray<A>): HashMap.HashMap<C, MTypes.OverOne<B>> => {
+	(self: Type<A>): HashMap.HashMap<C, MTypes.OverOne<B>> => {
 		return HashMap.mutate(HashMap.empty<C, MTypes.OverOne<B>>(), (map) => {
 			for (const a of self) {
 				const c = fKey(a);
@@ -276,39 +284,40 @@ export const groupBy =
 	};*/
 
 /**
- * Same as get but with flipped parameters
+ * Returns a function that retrieves the element at a given index from `self`, returning an `Option`
  *
  * @category Destructors
  */
 export const getter =
-  <A>(self: ReadonlyArray<A>): MTypes.OneArgFunction<number, Option.Option<A>> =>
+  <A>(self: Type<A>): MTypes.OneArgFunction<number, Option.Option<A>> =>
   (index) =>
     Array.get(self, index);
 
 /**
- * Unsafe gets an element from an array. No bounds check, faster than the Effect version
+ * Returns the element at `index` in `self` without bounds checking. Faster than the Effect version
+ * but may return `undefined` for out-of-bounds indexes
  *
  * @category Utils
  */
 export const unsafeGet =
   (index: number) =>
-  <A>(self: ReadonlyArray<A>): A =>
+  <A>(self: Type<A>): A =>
     // @ts-expect-error getting array content unsafely
     self[index];
 
 /**
- * Same as unsafeGet but with flipped parameters
+ * Returns a function that retrieves the element at a given index from `self` without bounds checking
  *
  * @category Destructors
  */
 export const unsafeGetter =
-  <A>(self: ReadonlyArray<A>): MTypes.OneArgFunction<number, A> =>
+  <A>(self: Type<A>): MTypes.OneArgFunction<number, A> =>
   (index) =>
     unsafeGet(index)(self);
 
 /**
- * Returns a copy of self with all elements but the last modified by a function f. Returns a copy of
- * self if it contains at most one element.
+ * Returns a copy of `self` with all elements except the last one transformed by `f`. Returns a copy
+ * of `self` unchanged if it contains at most one element.
  *
  * @category Utils
  */
@@ -318,8 +327,8 @@ export const modifyInit =
     Array.map(self, (elem, i) => (i < self.length - 1 ? f(elem, i) : elem));
 
 /**
- * Returns a copy of self with all elements but the first modified by a function f . Returns a copy
- * of self if it contains at most one element.
+ * Returns a copy of `self` with all elements except the first one transformed by `f`. Returns a
+ * copy of `self` unchanged if it contains at most one element.
  *
  * @category Utils
  */
@@ -329,8 +338,8 @@ export const modifyTail =
     Array.map(self, (elem, i) => (i > 0 ? f(elem, i) : elem));
 
 /**
- * Returns a copy of self with the last element modified by a function f. Returns a copy of self if
- * it contains no elements.
+ * Returns a copy of `self` with the last element transformed by `f`. Returns a copy of `self`
+ * unchanged if it is empty.
  *
  * @category Utils
  */
@@ -340,8 +349,8 @@ export const modifyLast =
     Array.modify(self, self.length - 1, f);
 
 /**
- * Returns a copy of self with the first element modified by a function f. Returns a copy of self if
- * it contains no elements.
+ * Returns a copy of `self` with the first element transformed by `f`. Returns a copy of `self`
+ * unchanged if it is empty.
  *
  * @category Utils
  */
@@ -409,19 +418,18 @@ export const unfoldNonEmpty =
   };
 
 /**
- * Splits `self` into two segments, with the last segment containing a maximum of `n` elements. The
- * value of `n` can be `0`.
+ * Splits `self` into two segments, with the second segment containing at most `n` elements. `n` can
+ * be `0`.
  *
  * @category Utils
  */
 export const splitAtFromRight =
   (n: number) =>
-  <A>(self: ReadonlyArray<A>): [beforeIndex: Array<A>, fromIndex: Array<A>] =>
+  <A>(self: Type<A>): [beforeIndex: Array<A>, fromIndex: Array<A>] =>
     Array.splitAt(self, Math.max(0, self.length - n));
 
 /**
- * Splits `self` into two segments, with the last segment containing a maximum of `n` elements. The
- * value of `n` must be `>=1`.
+ * Same as `splitAtFromRight` but guarantees the second segment is non-empty. `n` must be `>=1`.
  *
  * @category Utils
  */
@@ -431,23 +439,25 @@ export const splitNonEmptyAtFromRight =
     pipe(self, splitAtFromRight(n)) as never;
 
 /**
- * Mapping with early exit in case of failure (`none`)
+ * Maps each element of `self` using `f`, returning a `some` of the mapped array if all calls
+ * succeed. Returns a `none` as soon as `f` returns a `none` for any element.
  *
  * @category Destructors
  */
 export const mapUnlessNone =
   <A, B>(f: (a: A, i: number) => Option.Option<B>) =>
-  <S extends ReadonlyArray<A>>(self: S): Option.Option<Array.ReadonlyArray.With<S, B>> =>
+  <S extends Type<A>>(self: S): Option.Option<Array.ReadonlyArray.With<S, B>> =>
     pipe(self, Array.filterMapWhile(f), Option.liftPredicate(hasLength(self.length))) as never;
 
 /**
- * Mapping with early exit in case of failure (`left`)
+ * Maps each element of `self` using `f`, returning a `right` of the mapped array if all calls
+ * succeed. Returns the first `left` encountered.
  *
  * @category Destructors
  */
 export const mapUnlessLeft =
   <A, B, C>(f: (a: A, i: number) => Either.Either<B, C>) =>
-  <S extends ReadonlyArray<A>>(self: S): Either.Either<Array.ReadonlyArray.With<S, B>, C> =>
+  <S extends Type<A>>(self: S): Either.Either<Array.ReadonlyArray.With<S, B>, C> =>
     Either.gen(function* () {
       const { length } = self;
       const result = Array.allocate<B>(length);
@@ -458,7 +468,8 @@ export const mapUnlessLeft =
       return result as never;
     });
 /**
- * Reduce with early exit in case of failure (`none`)
+ * Reduces `self` using `f`, returning a `some` of the accumulated value if all steps succeed.
+ * Returns a `none` as soon as `f` returns `none`.
  *
  * @category Destructors
  */
@@ -476,7 +487,8 @@ export const reduceUnlessNone =
     });
 
 /**
- * Reduce with early exit in case of failure (`left`)
+ * Reduces `self` using `f`, returning a `right` of the accumulated value if all steps succeed.
+ * Returns the first `left` encountered.
  *
  * @category Destructors
  */
@@ -494,9 +506,9 @@ export const reduceUnlessLeft =
     });
 
 /**
- * Merges two sorted Iterables into a sorted array. Elements in `self` are assured to be before
- * equal elements in `that` in the resulting array. The sorting order `o` must also be the one that
- * was used to sort `self` and `that`
+ * Merges two sorted iterables into a single sorted array. The merge is stable: elements from `self`
+ * appear before equal elements from `that`. Both `self` and `that` must already be sorted according
+ * to order `o`.
  *
  * @category Utils
  */
@@ -555,8 +567,8 @@ export const mergeSorted =
   };
 
 /**
- * Removes all elements of `that` from `self`. The sorting order `o` must also be the one that was
- * used to sort `self` and `that`
+ * Returns the elements of `self` that are not present in `that`. Both `self` and `that` must
+ * already be sorted according to order `o`. Uses `Equal.equals` for element comparison.
  *
  * @category Utils
  */
@@ -617,11 +629,11 @@ export const differenceSorted =
   };
 
 /**
- * Same as Array.pad but returns a tuple
+ * Same as `Array.pad` but the return type is a fixed-size `Tuple` instead of a plain array
  *
  * @category Utils
  */
 export const pad = <A, T, N extends number>(
   n: N,
   fill: T,
-): MTypes.OneArgFunction<ReadonlyArray<A>, MTypes.Tuple<A | T, N>> => Array.pad(n, fill) as never;
+): MTypes.OneArgFunction<Type<A>, MTypes.Tuple<A | T, N>> => Array.pad(n, fill) as never;

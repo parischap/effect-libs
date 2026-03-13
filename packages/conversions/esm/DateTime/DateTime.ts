@@ -19,6 +19,7 @@
  * timestamp.
  */
 
+import { MData } from '@parischap/effect-lib';
 import * as MEquivalenceBasedEqualityData from '@parischap/effect-lib/MEquivalenceBasedEqualityData';
 import * as MFunction from '@parischap/effect-lib/MFunction';
 import * as MInputError from '@parischap/effect-lib/MInputError';
@@ -49,7 +50,7 @@ import {
   MIN_TIMESTAMP,
   MINUTE_MS,
   SECOND_MS,
-} from './dateTimeConstants.js';
+} from './date-time-constants.js';
 
 /**
  * Module tag

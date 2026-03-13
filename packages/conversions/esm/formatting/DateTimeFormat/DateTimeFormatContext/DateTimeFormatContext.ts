@@ -20,7 +20,7 @@ import * as Number from 'effect/Number';
 import * as Option from 'effect/Option';
 import * as Struct from 'effect/Struct';
 import * as Tuple from 'effect/Tuple';
-import { DAY_MS } from '../../../DateTime/dateTimeConstants.js';
+import { DAY_MS } from '../../../DateTime/date-time-constants.js';
 import * as CVDateTimeFormatTokenMap from '../../../internal/Formatting/DateTimeFormat/DateTimeFormatContext/DateTimeFormatTokenMap.js';
 import * as CVDateTimePartName from '../../../internal/Formatting/DateTimeFormat/DateTimePartName.js';
 import * as CVNumberBase10Format from '../../NumberBase10Format/NumberBase10Format.js';

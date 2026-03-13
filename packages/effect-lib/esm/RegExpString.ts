@@ -1,4 +1,4 @@
-/** Very simple regular expression string module */
+/** Module for composing regular expression patterns as strings. Provides quantifiers, anchors, lookaheads, character classes, and pre-built patterns for numbers, semver, and emails */
 
 import type * as MTypes from './Types/types.js';
 
@@ -126,7 +126,7 @@ export const atStart: MTypes.StringTransformer = (self) => `^${self}`;
 export const negativeLookAhead: MTypes.StringTransformer = (self) => `(?!${self})`;
 
 /**
- * Returns a new regular expression string where `self` will be used as ppositive lookahead
+ * Returns a new regular expression string where `self` will be used as positive lookahead
  *
  * @category Utils
  */
@@ -274,15 +274,15 @@ export const digit = backslashString + 'd';
 export const nonZeroDigit = '[1-9]';
 
 // A regular expression string representing a group of `DIGIT_GROUP_SIZE` digits.
-const _digitGroup: string = repeatBetween(DIGIT_GROUP_SIZE, DIGIT_GROUP_SIZE)(digit);
+const digitGroup: string = repeatBetween(DIGIT_GROUP_SIZE, DIGIT_GROUP_SIZE)(digit);
 // A regular expression representing an unsigned non-null integer in base 10 to (10^(n+1))-1 without thousand separator
-const _unsignedNonNullIntNPlusOneDigits = (n: number) => nonZeroDigit + repeatBetween(0, n)(digit);
+const unsignedNonNullIntNPlusOneDigits = (n: number) => nonZeroDigit + repeatBetween(0, n)(digit);
 // A regular expression representing an unsigned non-null integer in base 10 without thousand separator
-const _unsignedNonNullInt = _unsignedNonNullIntNPlusOneDigits(Infinity);
+const unsignedNonNullInt = unsignedNonNullIntNPlusOneDigits(Infinity);
 // A regular expression representing an unsigned non-null integer in base 10 to 999 without thousand separator
-const _unsignedNonNullIntTo999 = _unsignedNonNullIntNPlusOneDigits(2);
+const unsignedNonNullIntTo999 = unsignedNonNullIntNPlusOneDigits(2);
 // A regular expression representing an unsigned integer in base 10 without thousand separator
-const _unsignedInt = either('0', nonZeroDigit + zeroOrMore(digit));
+const unsignedInt = either('0', nonZeroDigit + zeroOrMore(digit));
 
 /**
  * Returns a regular expression string representing an unsigned non-null integer in base 10 using
@@ -292,8 +292,8 @@ const _unsignedInt = either('0', nonZeroDigit + zeroOrMore(digit));
  */
 export const unsignedNonNullBase10Int = (thousandSeparator: string): string =>
   thousandSeparator.length === 0
-    ? _unsignedNonNullInt
-    : _unsignedNonNullIntTo999 + zeroOrMore(RegExp.escape(thousandSeparator) + _digitGroup);
+    ? unsignedNonNullInt
+    : unsignedNonNullIntTo999 + zeroOrMore(RegExp.escape(thousandSeparator) + digitGroup);
 
 /**
  * Returns a regular expression string representing an unsigned integer in base 10 using
@@ -305,16 +305,16 @@ export const unsignedBase10Int = (thousandSeparator: string): string =>
   either('0', unsignedNonNullBase10Int(thousandSeparator));
 
 // Regular expression string representing a captured optional sign
-const _signPart = pipe(sign, capture('signPart'), optional);
+const signPart = pipe(sign, capture('signPart'), optional);
 // Regular expression string representing the captured exponent of a number
-const _exponentPart = pipe(
+const exponentPart = pipe(
   sign,
   optional,
   EString.concat(unsignedBase10Int('')),
   capture('exponentPart'),
 );
 // Regular expression string representing the captured fractional part of a floating-point number
-const _fractionalPart = repeatBetween(0, Infinity)(digit);
+const fractionalPart = repeatBetween(0, Infinity)(digit);
 
 /**
  * Returns a regular expression string representing a left-padded number in base 10 using
@@ -347,16 +347,16 @@ export const base10Number = ({
   readonly eNotationChars: ReadonlyArray<string>;
   readonly fillChar: string;
 }): string =>
-  _signPart +
+  signPart +
   capture('padding')(fillChar.length === 0 ? '' : zeroOrMore(fillChar)) +
   pipe(thousandSeparator, unsignedBase10Int, optionalCapture('mantissaIntegerPart')) +
   pipe(
     fractionalSeparator,
     RegExp.escape,
-    EString.concat(capture('mantissaFractionalPart')(_fractionalPart)),
+    EString.concat(capture('mantissaFractionalPart')(fractionalPart)),
     optional,
   ) +
-  pipe(eNotationChars, Array.map(RegExp.escape), range, EString.concat(_exponentPart), optional);
+  pipe(eNotationChars, Array.map(RegExp.escape), range, EString.concat(exponentPart), optional);
 
 /**
  * A regular expression string representing an integer in base 2.
@@ -448,7 +448,7 @@ export const lineBreak = either(CR + LF, CR, LF);
  *
  * @category Instances
  */
-export const semVer = `${_unsignedInt}${dot}${_unsignedInt}${dot}${_unsignedInt}`;
+export const semVer = `${unsignedInt}${dot}${unsignedInt}${dot}${unsignedInt}`;
 
 /**
  * A regular expression string representing an email - Imported from
@@ -456,7 +456,7 @@ export const semVer = `${_unsignedInt}${dot}${_unsignedInt}${dot}${_unsignedInt}
  *
  * @category Instances
  */
-const _emailNamePart = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+";
-const _emailNumberPart = '5[0-5]|[0-4]';
-const _lowerCaseLettersOrDigitsOrMinus = '[a-z0-9-]*';
-export const email = String.raw`(?:${_emailNamePart}(?:\.${_emailNamePart})*|"(?:[\u0001-\u0008\u000B\u000C\u000E-\u001F\u0021\u0023-\u005B\u005D-\u007F]|\\[\u0001-\u0009\u000B\u000C\u000E-\u007F])*")@(?:(?:${lowerCaseLetterOrDigit}(?:${_lowerCaseLettersOrDigitsOrMinus}${lowerCaseLetterOrDigit})?\.)+${lowerCaseLetterOrDigit}(?:${_lowerCaseLettersOrDigitsOrMinus}${lowerCaseLetterOrDigit})?|\[(?:(?:(?:2(?:${_emailNumberPart}${digit})|1${digit}${digit}|${nonZeroDigit}?${digit}))\.){3}(?:(?:2(?:${_emailNumberPart}${digit})|1${digit}${digit}|${nonZeroDigit}?${digit})|${_lowerCaseLettersOrDigitsOrMinus}${lowerCaseLetterOrDigit}:(?:[\u0001-\u0008\u000B\u000C\u000E-\u001F\u0021-\u005A\u0053-\u007F]|\\[\u0001-\u0009\u000B\u000C\u000E-\u007F])+)\])`;
+const emailNamePart = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+";
+const emailNumberPart = '5[0-5]|[0-4]';
+const lowerCaseLettersOrDigitsOrMinus = '[a-z0-9-]*';
+export const email = String.raw`(?:${emailNamePart}(?:\.${emailNamePart})*|"(?:[\u0001-\u0008\u000B\u000C\u000E-\u001F\u0021\u0023-\u005B\u005D-\u007F]|\\[\u0001-\u0009\u000B\u000C\u000E-\u007F])*")@(?:(?:${lowerCaseLetterOrDigit}(?:${lowerCaseLettersOrDigitsOrMinus}${lowerCaseLetterOrDigit})?\.)+${lowerCaseLetterOrDigit}(?:${lowerCaseLettersOrDigitsOrMinus}${lowerCaseLetterOrDigit})?|\[(?:(?:(?:2(?:${emailNumberPart}${digit})|1${digit}${digit}|${nonZeroDigit}?${digit}))\.){3}(?:(?:2(?:${emailNumberPart}${digit})|1${digit}${digit}|${nonZeroDigit}?${digit})|${lowerCaseLettersOrDigitsOrMinus}${lowerCaseLetterOrDigit}:(?:[\u0001-\u0008\u000B\u000C\u000E-\u001F\u0021-\u005A\u0053-\u007F]|\\[\u0001-\u0009\u000B\u000C\u000E-\u007F])+)\])`;

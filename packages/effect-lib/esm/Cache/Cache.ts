@@ -15,10 +15,11 @@ import * as MutableList from 'effect/MutableList';
 import * as Option from 'effect/Option';
 import * as Tuple from 'effect/Tuple';
 
-import * as MData from './Data/Data.js';
-import * as MCacheValueContainer from './internal/CacheValueContainer.js';
-import * as MNumber from './Number.js';
-import * as MTypes from './Types/types.js';
+import type * as MCacheLookUp from './CacheLookUp.js';
+import * as MData from '../Data/Data.js';
+import * as MCacheValueContainer from '../internal/Cache/CacheValueContainer.js';
+import * as MNumber from '../Number.js';
+import * as MTypes from '../Types/types.js';
 
 /**
  * Module tag
@@ -28,29 +29,6 @@ import * as MTypes from './Types/types.js';
 export const moduleTag = '@parischap/effect-lib/Cache/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
-
-/**
- * Type that represents the lookup function. In addition to the value of type A, the lookup function
- * receives a memoized version of itself if it needs to perform recursion. It also receives a flag
- * indicating whether circularity was detected. In that case, the memoized version of the function
- * is not passed as recursion should be stopped to avoid an infinite loop. The output of the
- * function must contain the result of applying the value of type A to the lookup function and a
- * boolean indicating whether the result should be stored in the cache. Note that when isCircular is
- * true, the result is not stored in the cache even if the result of the function indicates it
- * should.
- *
- * @category Models
- */
-export type LookUp<A, B> = ({
-  key,
-  memoized,
-  isCircular,
-}:
-  | { readonly key: A; readonly memoized: undefined; readonly isCircular: true }
-  | { readonly key: A; readonly memoized: (a: A) => B; readonly isCircular: false }) => MTypes.Pair<
-  B,
-  boolean
->;
 
 /**
  * Type that represents a Cache
@@ -72,7 +50,7 @@ export class Type<in out A, in out B> extends MData.Class {
   readonly keyListInOrder: MutableList.MutableList<A>;
 
   /** The lookup function used to populate the cache */
-  readonly lookUp: LookUp<A, B>;
+  readonly lookUp: MCacheLookUp.Type<A, B>;
 
   /**
    * The capicity of the cache. If `Infinity` is passed, the cache is unbounded. If `NaN` or a
@@ -153,7 +131,7 @@ export const make = <A, B>({
   capacity = Infinity,
   lifeSpan = Infinity,
 }: {
-  readonly lookUp: LookUp<A, B>;
+  readonly lookUp: MCacheLookUp.Type<A, B>;
   readonly capacity?: number;
   readonly lifeSpan?: number;
 }) =>
@@ -270,7 +248,7 @@ export const toGetter =
  *
  * @category Utils
  */
-export const keysInStore = <A, B>(self: Type<A, B>): Array<A> =>
+export const toKeys = <A, B>(self: Type<A, B>): Array<A> =>
   pipe(
     self.store,
     Array.fromIterable,

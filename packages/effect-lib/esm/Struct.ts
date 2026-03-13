@@ -1,4 +1,4 @@
-/** A simple extension to the Effect Struct module */
+/** Extension to the Effect Struct module providing type-safe struct merging, enrichment, and evolution */
 
 import { pipe } from 'effect';
 
@@ -10,7 +10,10 @@ import * as MTypes from './Types/types.js';
 
 /**
  * Utility type that calculates the type of `{...first, ...second}` where `first` has type `First`
- * and `second` type `Second`
+ * and `second` type `Second`. If `second` contains an optional field that also exists in `first`,
+ * the resulting type for that field is the union of both types.
+ *
+ * @category Utility types
  */
 export type Append<First extends MTypes.NonPrimitive, Second extends MTypes.NonPrimitive> = {
   readonly [k in keyof First | keyof Second]: k extends keyof Second

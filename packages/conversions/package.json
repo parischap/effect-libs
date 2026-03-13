@@ -13,7 +13,7 @@
       "default": "./esm/DateTime/DateTime.ts"
     },
     "./CVDateTimeConstants": {
-      "default": "./esm/DateTime/dateTimeConstants.ts"
+      "default": "./esm/DateTime/date-time-constants.ts"
     },
     "./CVDateTimeFormat": {
       "default": "./esm/Formatting/DateTimeFormat/DateTimeFormat.ts"

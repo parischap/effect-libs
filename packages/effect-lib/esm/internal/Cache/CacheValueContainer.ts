@@ -1,7 +1,7 @@
-import * as MData from '../Data/Data.js';
-import * as MTypes from '../Types/types.js';
+import * as MData from '../../Data/Data.js';
+import * as MTypes from '../../Types/types.js';
 
-export const moduleTag = '@parischap/effect-lib/internal/CacheValueContainer/';
+export const moduleTag = '@parischap/effect-lib/internal/Cache/CacheValueContainer/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
 

@@ -4,6 +4,7 @@
  * `some(false)` represents an off characteristic
  */
 
+import { MEquivalenceBasedEqualityData } from '@parischap/effect-lib';
 import * as MTypes from '@parischap/effect-lib/MTypes';
 import * as Boolean from 'effect/Boolean';
 import * as Equivalence from 'effect/Equivalence';

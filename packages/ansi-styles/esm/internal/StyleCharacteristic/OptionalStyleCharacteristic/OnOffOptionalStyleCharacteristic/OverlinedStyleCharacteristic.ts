@@ -1,5 +1,6 @@
 /** Module that implements the Overlined style characteristic */
 
+import { MEquivalenceBasedEqualityData } from '@parischap/effect-lib';
 import * as MTypes from '@parischap/effect-lib/MTypes';
 import * as Option from 'effect/Option';
 import * as Predicate from 'effect/Predicate';

@@ -1,4 +1,4 @@
-/** Very simple regular expression module */
+/** Module providing `RegExp` constructors and pre-built regular expression instances for common patterns */
 
 import { pipe } from 'effect';
 

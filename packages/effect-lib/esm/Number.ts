@@ -1,4 +1,4 @@
-/** A simple extension to the Effect Number module */
+/** Extension to the Effect Number module providing safe conversions from BigInt/BigDecimal, modular arithmetic, and numeric predicates */
 import { flow, pipe } from 'effect';
 
 import * as BigDecimal from 'effect/BigDecimal';
@@ -12,13 +12,24 @@ import * as Predicate from 'effect/Predicate';
 import * as MBigInt from './BigInt.js';
 import * as MTypes from './Types/types.js';
 
-/** Maximum safe integer in JavaScript (2^53 – 1) and minimum safe integer in JavaScript -(2^53 – 1) */
+/**
+ * Type on which this module's functions operate
+ *
+ * @category Models
+ */
+export type Type = number;
+
+/**
+ * Maximum safe integer in JavaScript (2^53 – 1) and minimum safe integer in JavaScript -(2^53 – 1)
+ *
+ * @category Constants
+ */
 export const { MAX_SAFE_INTEGER, MIN_SAFE_INTEGER } = Number;
 
-const _bigIntMinSafeInteger = MBigInt.fromPrimitiveOrThrow(MIN_SAFE_INTEGER);
-const _bigIntMaxSafeInteger = MBigInt.fromPrimitiveOrThrow(MAX_SAFE_INTEGER);
-const _bigDecimalMinSafeInteger = BigDecimal.make(_bigIntMinSafeInteger, 0);
-const _bigDecimalMaxSafeInteger = BigDecimal.make(_bigIntMaxSafeInteger, 0);
+const bigIntMinSafeInteger = MBigInt.fromPrimitiveOrThrow(MIN_SAFE_INTEGER);
+const bigIntMaxSafeInteger = MBigInt.fromPrimitiveOrThrow(MAX_SAFE_INTEGER);
+const bigDecimalMinSafeInteger = BigDecimal.make(bigIntMinSafeInteger, 0);
+const bigDecimalMaxSafeInteger = BigDecimal.make(bigIntMaxSafeInteger, 0);
 
 /**
  * Builds a number from a BigInt. No checks are carried out. If the number is too big or too small,
@@ -36,7 +47,7 @@ export const unsafeFromBigInt: MTypes.OneArgFunction<bigint, number> = Number;
  */
 export const fromBigIntOption: MTypes.OneArgFunction<bigint, Option.Option<number>> = flow(
   Option.liftPredicate(
-    BigInt.between({ minimum: _bigIntMinSafeInteger, maximum: _bigIntMaxSafeInteger }),
+    BigInt.between({ minimum: bigIntMinSafeInteger, maximum: bigIntMaxSafeInteger }),
   ),
   Option.map(unsafeFromBigInt),
 );
@@ -85,7 +96,7 @@ export const fromBigDecimalOption: MTypes.OneArgFunction<
   Option.Option<number>
 > = flow(
   Option.liftPredicate(
-    BigDecimal.between({ minimum: _bigDecimalMinSafeInteger, maximum: _bigDecimalMaxSafeInteger }),
+    BigDecimal.between({ minimum: bigDecimalMinSafeInteger, maximum: bigDecimalMaxSafeInteger }),
   ),
   Option.map(unsafeFromBigDecimal),
 );
@@ -117,11 +128,11 @@ export const fromBigDecimalOrThrow: MTypes.OneArgFunction<BigDecimal.BigDecimal,
 );
 
 /**
- * Returns the opposite of self
+ * Returns the additive inverse (negation) of `self`
  *
  * @category Utils
  */
-export const opposite = (self: number) => -self;
+export const opposite = (self: Type) => -self;
 
 /**
  * Constructs a number from a string. Return `NaN` if the string does not represent a number.
@@ -133,12 +144,13 @@ export const opposite = (self: number) => -self;
 export const unsafeFromString: MTypes.NumberFromString = (s) => +s;
 
 /**
- * This function always returns a positive integer even if `self` or `divisor` is negative. Use only
- * with finite integers.
+ * Computes the positive remainder of the integer division of `self` by `divisor`. Unlike the `%`
+ * operator, always returns a non-negative result even when `self` or `divisor` is negative. Use
+ * only with finite integers.
  *
  * @category Utils
  */
-export const intModulo = (divisor: number): MTypes.OneArgFunction<number> => {
+export const intModulo = (divisor: number): MTypes.OneArgFunction<Type> => {
   const absDivisor = Math.abs(divisor);
   return (self) => {
     const rest = self % divisor;
@@ -154,18 +166,19 @@ export const intModulo = (divisor: number): MTypes.OneArgFunction<number> => {
  */
 export const quotientAndRemainder =
   (divisor: number) =>
-  (self: number): [quotient: number, remainder: number] => {
+  (self: Type): [quotient: number, remainder: number] => {
     const quotient = Math.floor(self / divisor);
     return [quotient, self - quotient * divisor];
   };
 
 /**
- * Predicate that returns true if two numbers are within a Number.EPSILON range
+ * Returns `true` if `self` and `n` differ by less than `Number.EPSILON`. Useful for floating-point
+ * comparisons where exact equality is unreliable.
  *
  * @category Predicates
  */
 export const equals =
-  (n: number): Predicate.Predicate<number> =>
+  (n: number): Predicate.Predicate<Type> =>
   (self) =>
     Math.abs(self - n) < Number.EPSILON;
 
@@ -177,55 +190,56 @@ export const equals =
  */
 export const trunc =
   (precision = 0) =>
-  (self: number): number =>
+  (self: Type): number =>
     pipe(self, shift(precision), Math.trunc, shift(-precision));
 
 /**
- * Returns true if the provided number is NaN, Infinity, +Infinity or -Infinity
+ * Returns `true` if `self` is `NaN`, `Infinity` or `-Infinity`
  *
  * @category Predicates
  */
-export const isNotFinite: Predicate.Predicate<number> = Predicate.not(Number.isFinite);
+export const isNotFinite: Predicate.Predicate<Type> = Predicate.not(Number.isFinite);
 
 /**
- * Returns true if the provided number is not NaN, Infinity, +Infinity or -Infinity
+ * Returns `true` if `self` is a finite number (not `NaN`, `Infinity` or `-Infinity`)
  *
  * @category Predicates
  */
-export const { isFinite }: { readonly isFinite: Predicate.Predicate<number> } = Number;
+export const { isFinite }: { readonly isFinite: Predicate.Predicate<Type> } = Number;
 
 /**
- * Returns true if the provided number is an integer
+ * Returns `true` if `self` is an integer
  *
  * @category Predicates
  */
-export const isInt: Predicate.Predicate<number> = Number.isInteger;
+export const isInt: Predicate.Predicate<Type> = Number.isInteger;
 
 /**
- * Returns true if the provided number is not an integer
+ * Returns `true` if `self` is not an integer
  *
  * @category Predicates
  */
-export const isNotInt: Predicate.Predicate<number> = Predicate.not(Number.isInteger);
+export const isNotInt: Predicate.Predicate<Type> = Predicate.not(Number.isInteger);
 
 /**
- * Returns true if `self` is a multiple of `a`. Works even if `self` or `a` or both are negative
+ * Returns `true` if `self` is a multiple of `a`. Works correctly even when `self` or `a` or both
+ * are negative.
  *
  * @category Predicates
  */
-export const isMultipleOf: (a: number) => Predicate.Predicate<number> = (a) => (self) =>
+export const isMultipleOf: (a: number) => Predicate.Predicate<Type> = (a) => (self) =>
   self % a === 0;
 
 /**
- * Returns `self` multiplied by 10^n
+ * Returns `self` multiplied by `10^n`. Useful for decimal digit shifting operations.
  *
  * @category Utils
  */
-export const shift = (n: number) => (self: number) => self * 10 ** n;
+export const shift = (n: number) => (self: Type) => self * 10 ** n;
 
 /**
- * Returns the sign of `self`. Same as Math.sign but 0 and +0 are considered positive while -0 is
- * considered negative.
+ * Returns the sign of `n` as `1` or `-1`. Unlike `Math.sign`, this function treats `0` and `+0` as
+ * positive (returns `1`) while `-0` is treated as negative (returns `-1`).
  *
  * @category Utils
  */

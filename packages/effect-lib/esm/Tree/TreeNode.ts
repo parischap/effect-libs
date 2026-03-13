@@ -1,16 +1,21 @@
-/** Module that implements a TreeNode (see TreeAll for more details) */
+/** Module that implements the abstract base class for all tree nodes. A `TreeNode` holds a `value` and is extended by `TreeLeaf` and `TreeNonLeaf`. See the `Tree` module for the full API. */
 
 import * as Struct from 'effect/Struct';
 
 import * as MData from '../Data/Data.js';
 import * as MTypes from '../Types/types.js';
 
+/**
+ * Module tag
+ *
+ * @category Module markers
+ */
 export const moduleTag = '@parischap/effect-lib/Tree/TreeNode/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
 
 /**
- * Typeof a Leaf node
+ * Type of a TreeNode. Abstract base class holding a `value` of type `A`.
  *
  * @category Models
  */

@@ -1,4 +1,4 @@
-/** A module that implements an error that occurs upon receiving an unexpected input */
+/** Module providing a tagged error type for input validation failures, with constructors for common validation scenarios (wrong value, out of bounds, pattern mismatch, etc.) and corresponding assertion functions that return `Either` */
 
 import { flow, pipe } from 'effect';
 
@@ -30,7 +30,7 @@ export class Type extends Data.TaggedError(moduleTag)<{
   readonly message: string;
 }> {}
 
-const _nameLabel: MTypes.OneArgFunction<string | undefined, string> = flow(
+const nameLabel: MTypes.OneArgFunction<string | undefined, string> = flow(
   Option.liftPredicate(MTypes.isString),
   Option.getOrElse(Function.constant('value')),
 );
@@ -51,7 +51,7 @@ export const wrongValue = <T extends MTypes.NonNullablePrimitive>({
   const expectedString = MTypes.isString(expected) ? `'${expected}'` : expected.toString();
   const actualString = MTypes.isString(actual) ? `'${actual}'` : actual.toString();
   return new Type({
-    message: `Expected ${_nameLabel(name)} to be: ${expectedString}. Actual: ${actualString}`,
+    message: `Expected ${nameLabel(name)} to be: ${expectedString}. Actual: ${actualString}`,
   });
 };
 
@@ -84,7 +84,7 @@ export const missized = ({
   readonly name?: string;
 }) =>
   new Type({
-    message: `Expected length of ${_nameLabel(name)} to be: ${MString.fromNumber(10)(expected)}.\
+    message: `Expected length of ${nameLabel(name)} to be: ${MString.fromNumber(10)(expected)}.\
  Actual: ${MString.fromNumber(10)(actual)}`,
   });
 
@@ -118,7 +118,7 @@ export const oversized = ({
   readonly name?: string;
 }) =>
   new Type({
-    message: `Expected length of ${_nameLabel(name)} to be at most(included): ${MString.fromNumber(10)(expected)}.\
+    message: `Expected length of ${nameLabel(name)} to be at most(included): ${MString.fromNumber(10)(expected)}.\
  Actual: ${MString.fromNumber(10)(actual)}`,
   });
 
@@ -160,7 +160,7 @@ export const outOfBounds = ({
   readonly name?: string;
 }) =>
   new Type({
-    message: `Expected ${_nameLabel(name)} to be between ${MString.fromNumber(10)(min + offset)}\
+    message: `Expected ${nameLabel(name)} to be between ${MString.fromNumber(10)(min + offset)}\
  (${minIncluded ? 'included' : 'excluded'}) and ${MString.fromNumber(10)(max + offset)}\
  (${maxIncluded ? 'included' : 'excluded'}). Actual: ${MString.fromNumber(10)(actual + offset)}`,
   });
@@ -202,7 +202,7 @@ export const notStartingWith = ({
   readonly name?: string;
 }) =>
   new Type({
-    message: `Expected ${_nameLabel(name)} to start with '${startString}'. Actual: '${actual}'`,
+    message: `Expected ${nameLabel(name)} to start with '${startString}'. Actual: '${actual}'`,
   });
 
 /**
@@ -234,7 +234,7 @@ export const notMatching = ({
   readonly name?: string;
 }) =>
   new Type({
-    message: `Expected ${_nameLabel(name)} to be ${regExpDescriptor}. Actual: '${actual}'`,
+    message: `Expected ${nameLabel(name)} to be ${regExpDescriptor}. Actual: '${actual}'`,
   });
 
 /**
@@ -278,12 +278,12 @@ export const match =
  */
 export const notEmpty = ({ actual, name }: { readonly actual: string; readonly name?: string }) =>
   new Type({
-    message: `Expected ${_nameLabel(name)} to be empty. Actual: '${actual}'`,
+    message: `Expected ${nameLabel(name)} to be empty. Actual: '${actual}'`,
   });
 
 /**
- * Returns a `right` of `input` if `input` isnot the empty string. Otherwise, returns a `left` of an
- * InputError
+ * Returns a `right` of `input` if `input` is the empty string. Otherwise, returns a `left` of an
+ * `InputError`
  *
  * @category Constructors
  */

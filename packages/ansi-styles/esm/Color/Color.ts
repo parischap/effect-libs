@@ -3,6 +3,7 @@
  * (ThreeBit, EightBit, and RGB)
  */
 
+import { MData } from '@parischap/effect-lib';
 import * as MEquivalenceBasedEqualityData from '@parischap/effect-lib/MEquivalenceBasedEqualityData';
 import * as MTypes from '@parischap/effect-lib/MTypes';
 import * as Array from 'effect/Array';

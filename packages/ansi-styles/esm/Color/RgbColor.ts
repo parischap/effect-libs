@@ -3,6 +3,7 @@
  * green, and blue components (0-255).
  */
 
+import { MEquivalenceBasedEqualityData } from '@parischap/effect-lib';
 import * as MString from '@parischap/effect-lib/MString';
 import { pipe } from 'effect';
 import * as Array from 'effect/Array';

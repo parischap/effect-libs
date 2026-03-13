@@ -1,4 +1,4 @@
-/** A simple extension to the Effect BigInt module */
+/** Extension to the Effect BigInt module providing safe constructors from primitives and numeric predicates */
 
 import { flow, pipe } from 'effect';
 
@@ -12,8 +12,15 @@ import * as String from 'effect/String';
 import * as MTypes from './Types/types.js';
 
 /**
- * Constructs a bigint from a number. Will only throw if the number is NaN, Infinity or not an
- * integer.
+ * Type on which this module's functions operate
+ *
+ * @category Models
+ */
+export type Type = bigint;
+
+/**
+ * Constructs a `bigint` from a `string`, `number`, or `boolean`. Throws if the input is `NaN`,
+ * `Infinity`, not an integer, or a string that does not represent a valid integer.
  *
  * @category Constructors
  */
@@ -21,8 +28,7 @@ export const fromPrimitiveOrThrow: MTypes.OneArgFunction<string | number | boole
   BigInt;
 
 /**
- * Constructs an Option of a bigint from a number. Will only return a `none` if the number is NaN,
- * Infinity or not an integer.
+ * Same as `fromPrimitiveOrThrow` but returns a `none` instead of throwing on invalid input.
  *
  * @category Constructors
  */
@@ -32,8 +38,8 @@ export const fromPrimitiveOption: MTypes.OneArgFunction<
 > = Option.liftThrowable(fromPrimitiveOrThrow);
 
 /**
- * Constructs an Either of a bigint from a number. Will only return a `left` if the number is NaN,
- * Infinity or not an integer.
+ * Same as `fromPrimitiveOrThrow` but returns a `left` of `BrandErrors` instead of throwing on
+ * invalid input.
  *
  * @category Constructors
  */
@@ -47,50 +53,53 @@ export const fromPrimitive = (
  *
  * @category Predicates
  */
-export const isPositive: Predicate.Predicate<bigint> = (self) => self > 0n;
+export const isPositive: Predicate.Predicate<Type> = (self) => self > 0n;
 
 /**
  * Returns `true` if `self` is negative
  *
  * @category Predicates
  */
-export const isNegative: Predicate.Predicate<bigint> = (self) => self < 0n;
+export const isNegative: Predicate.Predicate<Type> = (self) => self < 0n;
 
 /**
  * Returns `true` if `self` is zero
  *
  * @category Predicates
  */
-export const isZero: Predicate.Predicate<bigint> = (self) => self === 0n;
+export const isZero: Predicate.Predicate<Type> = (self) => self === 0n;
 
 /**
  * Returns `true` if `self` is even
  *
  * @category Predicates
  */
-export const isEven: Predicate.Predicate<bigint> = (self) => self % 2n === 0n;
+export const isEven: Predicate.Predicate<Type> = (self) => self % 2n === 0n;
 
 /**
  * Returns `true` if `self` is odd
  *
  * @category Predicates
  */
-export const isOdd: Predicate.Predicate<bigint> = Predicate.not(isEven);
+export const isOdd: Predicate.Predicate<Type> = Predicate.not(isEven);
 
 /**
- * Calculates the base-10 log of a bigint
+ * Returns the number of digits of `self` minus one (i.e. the integer part of the base-10
+ * logarithm). Only valid for strictly positive bigints; behavior is undefined for zero or negative
+ * values.
  *
  * @category Destructors
  */
-export const unsafeLog10 = (self: bigint): number =>
+export const unsafeLog10 = (self: Type): number =>
   pipe(self.toString(), String.length, Number.decrement);
 
 /**
- * Calculates the base-10 log of a bigint
+ * Safe version of `unsafeLog10`: returns a `some` of the integer part of the base-10 logarithm for
+ * strictly positive bigints, or a `none` otherwise.
  *
  * @category Destructors
  */
-export const log10: MTypes.OneArgFunction<bigint, Option.Option<number>> = flow(
+export const log10: MTypes.OneArgFunction<Type, Option.Option<number>> = flow(
   Option.liftPredicate(isPositive),
   Option.map(unsafeLog10),
 );

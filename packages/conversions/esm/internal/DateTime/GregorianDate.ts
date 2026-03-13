@@ -30,7 +30,7 @@ import {
   LEAP_YEAR_MS,
   MAX_FULL_YEAR,
   MIN_FULL_YEAR,
-} from '../../DateTime/dateTimeConstants.js';
+} from '../../DateTime/date-time-constants.js';
 import * as CVNumberBase10Format from '../../Formatting/NumberBase10Format/NumberBase10Format.js';
 import * as CVTemplateFormatter from '../../Formatting/Template/TemplateFormatter.js';
 import * as CVTemplatePlaceholder from '../../Formatting/Template/TemplatePart/TemplatePlaceholder/TemplatePlaceholder.js';

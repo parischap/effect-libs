@@ -97,7 +97,7 @@ export const value: <A, B>(self: Type<A, B>) => A | B = Struct.get('value');
  * a `none`. The resulting array of nodes is ordered from the top of the tree and from left to
  * right.
  */
-const _unfold =
+const internalUnfold =
   <S, A, B>(
     f: (
       seed: S,
@@ -179,7 +179,7 @@ const _unfold =
 export const unfold = <S, A, B>(
   f: (seed: S, cycleSource: Option.Option<A>) => Either.Either<MTypes.Pair<A, ReadonlyArray<S>>, B>,
   seedEquivalence: Equivalence.Equivalence<S> = Equal.equals,
-): MTypes.OneArgFunction<S, Type<A, B>> => flow(_unfold(f, seedEquivalence), Array.headNonEmpty);
+): MTypes.OneArgFunction<S, Type<A, B>> => flow(internalUnfold(f, seedEquivalence), Array.headNonEmpty);
 
 /**
  * Non recursive function that builds a (possibly infinite) tree from a seed value and an unfold
@@ -207,7 +207,7 @@ export const unfoldAndFold = <A, B, S = A, C = B>({
   readonly seedEquivalence?: Equivalence.Equivalence<S>;
 }): MTypes.OneArgFunction<S, C> =>
   flow(
-    _unfold(unfold, seedEquivalence),
+    internalUnfold(unfold, seedEquivalence),
     Array.reverse,
     Array.map(
       flow(
@@ -311,7 +311,7 @@ export const map = <A, B, C, D>({
   return mapAccum({ accum: 0, fNonLeaf: internalFNonLeaf, fLeaf: internalFLeaf });
 };
 
-const _reduce =
+const internalReduce =
   (arrReduceFunction: typeof Array.reduce) =>
   <A, B, Z>({
     z,
@@ -341,14 +341,14 @@ const _reduce =
  *
  * @category Utils
  */
-export const reduce = _reduce(Array.reduce);
+export const reduce = internalReduce(Array.reduce);
 
 /**
  * Top-down reduction - Children are processed from right to left
  *
  * @category Utils
  */
-export const reduceRight = _reduce(Array.reduceRight);
+export const reduceRight = internalReduce(Array.reduceRight);
 
 /**
  * Returns a new tree in which the value of each node is replaced by the result of a function that

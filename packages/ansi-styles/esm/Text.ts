@@ -23,6 +23,7 @@ import * as String from 'effect/String';
 import * as Struct from 'effect/Struct';
 import * as Tuple from 'effect/Tuple';
 
+import { MData } from '@parischap/effect-lib';
 import * as ASCode from './internal/Code.js';
 import * as ASStyleCharacteristics from './internal/StyleCharacteristics.js';
 import * as ASUnistyledText from './internal/UnistyledText.js';

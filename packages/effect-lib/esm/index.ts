@@ -3,7 +3,8 @@
 export * as MArray from './Array.js';
 export * as MBigDecimal from './BigDecimal.js';
 export * as MBigInt from './BigInt.js';
-export * as MCache from './Cache.js';
+export * as MCache from './Cache/Cache.js';
+export * as MCacheLookUp from './Cache/CacheLookUp.js';
 export * as MChunk from './Chunk.js';
 export * as MData from './Data/Data.js';
 export * as MEquivalenceBasedEqualityData from './Data/EquivalenceBasedEqualityData.js';

@@ -1,4 +1,4 @@
-/** A simple extension to the Effect Function module */
+/** Extension to the Effect Function module providing utilities for function introspection, memoization, and manipulation */
 
 import { pipe } from 'effect';
 
@@ -8,7 +8,7 @@ import * as Option from 'effect/Option';
 import * as MTypes from './Types/types.js';
 
 /**
- * Applies function f if condition is true
+ * Applies `f` to the input value if `condition` is `true`. Returns the input unchanged otherwise.
  *
  * @category Utils
  */
@@ -24,9 +24,8 @@ export const fIfTrue =
     condition ? f(a) : a;
 
 /**
- * Flips a dual function by targetting the non-curried overload. If the dual function takes type
- * parameters, most of the time you need to pass them. For instance:
- * MFunction.flipDual(Array.get<string>)(targetValues)
+ * Converts a non-curried dual function into a curried version with the first parameter applied
+ * first. If the dual function takes type parameters, they usually need to be passed explicitly.
  *
  * @category Utils
  */
@@ -40,14 +39,14 @@ export const flipDual =
     self(first, ...b);
 
 /**
- * Returns the expected number of parameters of a function
+ * Returns the expected number of parameters of `f` (i.e., `f.length`)
  *
  * @category Utils
  */
 export const parameterNumber = (f: MTypes.AnyFunction): number => f.length;
 
 /**
- * Returns the name of a function
+ * Returns the name of `f` (i.e., `f.name`)
  *
  * @category Utils
  */
@@ -99,7 +98,7 @@ export const once = <A>(f: Function.LazyArg<A>): Function.LazyArg<A> => {
 };
 
 /**
- * Calls `self` with `o` as its `this` context
+ * Calls `self` using `o` as the `this` context
  *
  * @category Utils
  */
@@ -109,28 +108,29 @@ export const applyAsThis =
     self.call(o);
 
 /**
- * Calls `self` without any argument
+ * Invokes a lazy value, i.e. calls `self` with no arguments
  *
  * @category Utils
  */
 export const execute = <A>(self: Function.LazyArg<A>): A => self();
 
 /**
- * Returns a lazy empty string
+ * A constant function that always returns the empty string
  *
  * @category Utils
  */
 export const constEmptyString = Function.constant('' as const);
 
 /**
- * Returns a lazy identity function
+ * A constant function that always returns the identity function
  *
  * @category Utils
  */
 export const constIdentity = Function.constant(Function.identity);
 
 /**
- * Returns a copy of `self`
+ * Returns a copy of function `self` with the same behavior but a distinct identity. Useful when a
+ * function needs to be distinguished from the original by reference.
  *
  * @category Utils
  */

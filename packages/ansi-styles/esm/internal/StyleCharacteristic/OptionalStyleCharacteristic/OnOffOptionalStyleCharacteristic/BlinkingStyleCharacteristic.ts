@@ -1,5 +1,6 @@
 /** Module that implements the Blinking style characteristic */
 
+import { MEquivalenceBasedEqualityData } from '@parischap/effect-lib';
 import * as MTypes from '@parischap/effect-lib/MTypes';
 import * as Equivalence from 'effect/Equivalence';
 import * as Option from 'effect/Option';

@@ -1,4 +1,4 @@
-/** Module that implements a TreeForest<A,B>, i.e. an array of TreeAll<A,B> */
+/** Module that defines `TreeForest<A, B>`, a type alias for `ReadonlyArray<Tree.Type<A, B>>`, representing the children of a non-leaf tree node */
 import * as MTree from './Tree.js';
 /**
  * Type of a Forest

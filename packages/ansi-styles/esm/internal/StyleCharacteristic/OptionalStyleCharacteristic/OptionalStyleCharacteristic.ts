@@ -1,5 +1,6 @@
 /** Module that implements an optional style characteristic */
 
+import { MData } from '@parischap/effect-lib';
 import * as MEquivalenceBasedEqualityData from '@parischap/effect-lib/MEquivalenceBasedEqualityData';
 import * as MFunction from '@parischap/effect-lib/MFunction';
 import * as MTypes from '@parischap/effect-lib/MTypes';

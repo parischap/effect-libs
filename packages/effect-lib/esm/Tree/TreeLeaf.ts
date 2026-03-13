@@ -1,13 +1,19 @@
-/** Module that implements a TreeLeaf (see TreeAll for more details) */
+/** Module that implements a leaf node of a tree. A `TreeLeaf<B>` holds a value of type `B` and has no children. See the `Tree` module for the full API. */
 
+import * as MData from '../Data/Data.js';
 import * as MTypes from '../Types/types.js';
 import * as MTreeNode from './TreeNode.js';
 
+/**
+ * Module tag
+ *
+ * @category Module markers
+ */
 export const moduleTag = '@parischap/effect-lib/Tree/TreeLeaf/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
 /**
- * Typeof a Leaf node
+ * Type of a TreeLeaf. A leaf node holding a `value` of type `B` with no children.
  *
  * @category Models
  */

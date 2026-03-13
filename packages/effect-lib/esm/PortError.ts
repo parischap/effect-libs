@@ -1,4 +1,4 @@
-/** A module that implements an error that occurs when porting a function to Effect */
+/** Module providing a tagged error type for wrapping exceptions thrown by native JavaScript functions ported to the Effect world. Captures the original error along with contextual information (function name, module, library). */
 
 import * as Data from 'effect/Data';
 

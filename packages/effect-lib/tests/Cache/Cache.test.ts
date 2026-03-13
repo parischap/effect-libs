@@ -32,7 +32,7 @@ describe('MCache', () => {
       TestUtils.strictEqual(value2, 8);
       TestUtils.strictEqual(value3, 6);
       TestUtils.deepStrictEqual(
-        pipe(testCache, MCache.keysInStore, Array.sort(Order.number)),
+        pipe(testCache, MCache.toKeys, Array.sort(Order.number)),
         [3, 4],
       );
     });
@@ -51,14 +51,14 @@ describe('MCache', () => {
       TestUtils.strictEqual(value1, 6);
       TestUtils.strictEqual(value2, 8);
       TestUtils.strictEqual(value3, 6);
-      TestUtils.strictEqual(pipe(testCache, MCache.keysInStore, Array.length), 2);
+      TestUtils.strictEqual(pipe(testCache, MCache.toKeys, Array.length), 2);
       TestUtils.deepStrictEqual(Array.fromIterable(testCache.keyListInOrder), [4, 3]);
     });
 
     it("Get one more element but don't store it:8", () => {
       const value1 = pipe(testCache, MCache.get(8));
       TestUtils.strictEqual(value1, 16);
-      TestUtils.strictEqual(pipe(testCache, MCache.keysInStore, Array.length), 2);
+      TestUtils.strictEqual(pipe(testCache, MCache.toKeys, Array.length), 2);
       TestUtils.deepStrictEqual(Array.fromIterable(testCache.keyListInOrder), [4, 3]);
     });
 
@@ -71,7 +71,7 @@ describe('MCache', () => {
       TestUtils.strictEqual(value2, 12);
       TestUtils.strictEqual(value3, 10);
       TestUtils.strictEqual(value4, 14);
-      TestUtils.strictEqual(pipe(testCache, MCache.keysInStore, Array.length), 3);
+      TestUtils.strictEqual(pipe(testCache, MCache.toKeys, Array.length), 3);
       TestUtils.deepStrictEqual(Array.fromIterable(testCache.keyListInOrder), [7, 6, 5]);
     });
   });
@@ -97,7 +97,7 @@ describe('MCache', () => {
       TestUtils.strictEqual(value2, 9);
       TestUtils.strictEqual(value3, 12);
       TestUtils.strictEqual(value4, 15);
-      TestUtils.strictEqual(pipe(testCache, MCache.keysInStore, Array.length), 3);
+      TestUtils.strictEqual(pipe(testCache, MCache.toKeys, Array.length), 3);
       TestUtils.deepStrictEqual(Array.fromIterable(testCache.keyListInOrder), [6, 5, 4]);
     });
 
@@ -105,7 +105,7 @@ describe('MCache', () => {
       TestUtils.strictEqual(state, 4);
       const value1 = pipe(testCache, MCache.get(8));
       TestUtils.strictEqual(value1, 20);
-      TestUtils.strictEqual(pipe(testCache, MCache.keysInStore, Array.length), 3);
+      TestUtils.strictEqual(pipe(testCache, MCache.toKeys, Array.length), 3);
       TestUtils.deepStrictEqual(Array.fromIterable(testCache.keyListInOrder), [6, 5, 4]);
     });
 
@@ -113,7 +113,7 @@ describe('MCache', () => {
       TestUtils.strictEqual(state, 5);
       const value1 = pipe(testCache, MCache.get(5));
       TestUtils.strictEqual(value1, 15);
-      TestUtils.strictEqual(pipe(testCache, MCache.keysInStore, Array.length), 2);
+      TestUtils.strictEqual(pipe(testCache, MCache.toKeys, Array.length), 2);
       TestUtils.deepStrictEqual(Array.fromIterable(testCache.keyListInOrder), [5, 6]);
     });
 
@@ -124,7 +124,7 @@ describe('MCache', () => {
       const value2 = pipe(testCache, MCache.get(4));
       TestUtils.strictEqual(value1, 12);
       TestUtils.strictEqual(value2, 15);
-      TestUtils.strictEqual(pipe(testCache, MCache.keysInStore, Array.length), 3);
+      TestUtils.strictEqual(pipe(testCache, MCache.toKeys, Array.length), 3);
       TestUtils.deepStrictEqual(Array.fromIterable(testCache.keyListInOrder), [4, 3, 5]);
     });
 
@@ -132,7 +132,7 @@ describe('MCache', () => {
       TestUtils.strictEqual(state, 8);
       const value1 = pipe(testCache, MCache.get(4));
       TestUtils.strictEqual(value1, 16);
-      TestUtils.strictEqual(pipe(testCache, MCache.keysInStore, Array.length), 1);
+      TestUtils.strictEqual(pipe(testCache, MCache.toKeys, Array.length), 1);
       TestUtils.deepStrictEqual(Array.fromIterable(testCache.keyListInOrder), [4]);
     });
   });
@@ -172,7 +172,7 @@ describe('MCache', () => {
       const value1 = pipe(testCache, MCache.get(z3));
 
       TestUtils.strictEqual(value1, 'abcabcdabce');
-      const keysInStore = MCache.keysInStore(testCache);
+      const keysInStore = MCache.toKeys(testCache);
       TestUtils.assertTrue(keysInStore[0] === z3);
       TestUtils.assertTrue(keysInStore[1] === z2);
     });

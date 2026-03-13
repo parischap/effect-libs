@@ -11,7 +11,7 @@ import * as Function from 'effect/Function';
 import * as Number from 'effect/Number';
 import * as Struct from 'effect/Struct';
 
-import { HOUR_MS, MINUTE_MS, SECOND_MS } from '../../DateTime/dateTimeConstants.js';
+import { HOUR_MS, MINUTE_MS, SECOND_MS } from '../../DateTime/date-time-constants.js';
 import * as CVNumberBase10Format from '../../Formatting/NumberBase10Format/NumberBase10Format.js';
 import * as CVTemplateFormatter from '../../Formatting/Template/TemplateFormatter.js';
 import * as CVTemplatePlaceholder from '../../Formatting/Template/TemplatePart/TemplatePlaceholder/TemplatePlaceholder.js';

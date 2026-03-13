@@ -1,16 +1,22 @@
-/** Module that implements a TreeNonLeaf (see TreeAll for more details) */
+/** Module that implements a non-leaf node of a tree. A `TreeNonLeaf<A, B>` holds a value of type `A` and a forest (array of child trees). See the `Tree` module for the full API. */
 
 import type * as MTreeForest from './TreeForest.js';
 
+import * as MData from '../Data/Data.js';
 import * as MTypes from '../Types/types.js';
 import * as MTreeNode from './TreeNode.js';
 
+/**
+ * Module tag
+ *
+ * @category Module markers
+ */
 export const moduleTag = '@parischap/effect-lib/Tree/TreeNonLeaf/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
 
 /**
- * Typeof a NonLeaf
+ * Type of a TreeNonLeaf. An internal node holding a `value` of type `A` and a `forest` of children.
  *
  * @category Models
  */

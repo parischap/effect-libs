@@ -1,4 +1,4 @@
-/** This module implements a type that represents the possible categories of a JavaScript value */
+/** Module implementing an enum that classifies JavaScript values into their runtime category (String, Number, Bigint, Boolean, Symbol, Null, Undefined, Record, Array, Function) */
 
 import * as Array from 'effect/Array';
 import * as Function from 'effect/Function';

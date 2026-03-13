@@ -1,4 +1,8 @@
-/** A simple type module */
+/**
+ * Core type definitions and type guards for the JavaScript type hierarchy. Provides refined array
+ * types (`OverOne`, `Pair`, etc.), utility types (`Data`, `Proto`), and a comprehensive set of type
+ * guards
+ */
 
 import { pipe } from 'effect';
 
@@ -102,7 +106,7 @@ export type OverTwo<A> = [A, A, ...Array<A>];
  */
 export type ReadonlyOverTwo<A> = readonly [A, A, ...ReadonlyArray<A>];
 
-const _allTypedArrayConstructors = [
+const allTypedArrayConstructors = [
   Int8Array,
   Uint8Array,
   Uint8ClampedArray,
@@ -115,8 +119,8 @@ const _allTypedArrayConstructors = [
   BigInt64Array,
   BigUint64Array,
 ] as const;
-type _allTypedArrayConstructorsType = typeof _allTypedArrayConstructors;
-type toTypedArrayInstances<A extends _allTypedArrayConstructorsType> = {
+type allTypedArrayConstructorsType = typeof allTypedArrayConstructors;
+type toTypedArrayInstances<A extends allTypedArrayConstructorsType> = {
   readonly [key in keyof A]: InstanceType<A[key]>;
 };
 /**
@@ -124,7 +128,7 @@ type toTypedArrayInstances<A extends _allTypedArrayConstructorsType> = {
  *
  * @category Models
  */
-export type TypedArray = toTypedArrayInstances<_allTypedArrayConstructorsType>[number];
+export type TypedArray = toTypedArrayInstances<allTypedArrayConstructorsType>[number];
 
 /**
  * Type that represents a function
@@ -209,15 +213,13 @@ export interface NumberFromString extends OneArgFunction<string, number> {}
 export interface NumberToString extends OneArgFunction<number, string> {}
 
 /**
- * Utility type that removes all non-data and computed data from a type.
+ * Utility type that removes all non-data (Computed data does not need to be removed because it is
+ * marked private and is therefore not present in the class type).
  *
  * @category Utility types
  */
 export type Data<T extends NonPrimitive> = {
-  [k in keyof T as [k] extends (
-    [symbol | `_${string}` | 'toString' | 'toJSON' | 'pipe' | `$${string}`]
-  ) ?
-    never
+  [k in keyof T as [k] extends [symbol | `_$string}` | 'toString' | 'toJSON' | 'pipe'] ? never
   : k]: T[k];
 };
 
@@ -226,10 +228,7 @@ export type Data<T extends NonPrimitive> = {
  *
  * @category Utility types
  */
-export type Proto<T extends NonPrimitive> = {
-  [k in keyof T as [k] extends [symbol | `$${string}` | 'toString' | 'toJSON' | 'pipe'] ? k
-  : never]: T[k];
-};
+export type Proto<T extends NonPrimitive> = Omit<T, keyof Data<T>>;
 
 /**
  * Utility type that makes field `field` of target type `X` mutable
@@ -559,14 +558,14 @@ export const isIterable = (input: unknown): input is Iterable<unknown> =>
   Predicate.hasProperty(input, Symbol.iterator);
 
 /**
- * If `u` is a TypedArray, returns a `some` of its name (e.g. UInt8Array). Otherwise, returns a
- * `none`
+ * If `u` is a TypedArray, returns a `some` of its constructor name (e.g. `Uint8Array`). Otherwise,
+ * returns a `none`
  *
- * @category Information
+ * @category Utils
  */
 export const typedArrayName = (u: unknown): Option.Option<string> =>
   pipe(
-    _allTypedArrayConstructors,
+    allTypedArrayConstructors,
     Array.findFirst((constructor) => u instanceof constructor),
     Option.map(
       (constructor) =>

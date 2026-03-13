@@ -1,4 +1,4 @@
-/** A simple extension to the Effect String module */
+/** Extension to the Effect String module providing search, split, trim, strip, pad, and pattern-matching operations */
 
 import { flow, pipe } from 'effect';
 
@@ -23,6 +23,13 @@ import * as MTuple from '../Tuple.js';
 import * as MTypes from '../Types/types.js';
 import * as MStringFillPosition from './StringFillPosition.js';
 import * as MStringSearchResult from './StringSearchResult.js';
+
+/**
+ * Type on which this module's functions operate
+ *
+ * @category Models
+ */
+export type Type = string;
 
 /**
  * Builds a string from a primitive value other than `null` and `undefined`. For numbers and
@@ -92,7 +99,7 @@ export const fromNumber =
  */
 export const search =
   (regexp: RegExp | string, startIndex = 0) =>
-  (self: string): Option.Option<MStringSearchResult.Type> => {
+  (self: Type): Option.Option<MStringSearchResult.Type> => {
     if (MTypes.isString(regexp)) {
       const pos = self.indexOf(regexp, startIndex);
       if (pos === -1) return Option.none();
@@ -123,7 +130,7 @@ export const search =
  */
 export const searchAll =
   (regexp: RegExp | string) =>
-  (self: string): Array<MStringSearchResult.Type> =>
+  (self: Type): Array<MStringSearchResult.Type> =>
     Array.unfold(0, (pos) =>
       pipe(
         self,
@@ -145,7 +152,7 @@ export const searchAll =
  */
 export const searchRight =
   (regexp: RegExp | string) =>
-  (self: string): Option.Option<MStringSearchResult.Type> => {
+  (self: Type): Option.Option<MStringSearchResult.Type> => {
     if (MTypes.isString(regexp)) {
       const pos = self.lastIndexOf(regexp);
       if (pos === -1) return Option.none();
@@ -158,8 +165,8 @@ export const searchRight =
 
 /**
  * Looks from the left for the first substring of `self` that matches `regexp` and returns all
- * characters before that substring. If no occurence is found, returns `self`. 'g' flag has no
- * incidence if you pass a regular expression.
+ * characters before that substring. If no occurrence is found, returns `self`. The `g` flag has no
+ * effect if you pass a regular expression.
  *
  * @category Utils
  */
@@ -176,8 +183,8 @@ export const takeTo =
 
 /**
  * Looks from the right for the first substring of `self` that matches `regexp` and returns all
- * characters after that substring. If no occurence is found, returns `self`. 'g' flag needs not be
- * set if you pass a regular expression.
+ * characters after that substring. If no occurrence is found, returns `self`. The `g` flag does not
+ * need to be set if you pass a regular expression.
  *
  * @category Utils
  */
@@ -256,7 +263,7 @@ export const pad = ({
   readonly length: number;
   readonly fillChar: string;
   readonly fillPosition: MStringFillPosition.Type;
-}): MTypes.OneArgFunction<string> =>
+}): MTypes.OneArgFunction<Type> =>
   pipe(
     fillPosition,
     MMatch.make,
@@ -294,7 +301,7 @@ export const trim = ({
  *
  * @category Utils
  */
-export const stripLeftOption = (s: string): MTypes.OneArgFunction<string, Option.Option<string>> =>
+export const stripLeftOption = (s: string): MTypes.OneArgFunction<Type, Option.Option<string>> =>
   flow(Option.liftPredicate(String.startsWith(s)), Option.map(takeRightBut(s.length)));
 
 /**
@@ -316,7 +323,7 @@ export const stripLeft =
  *
  * @category Utils
  */
-export const stripRightOption = (s: string): MTypes.OneArgFunction<string, Option.Option<string>> =>
+export const stripRightOption = (s: string): MTypes.OneArgFunction<Type, Option.Option<string>> =>
   flow(Option.liftPredicate(String.endsWith(s)), Option.map(takeBut(s.length)));
 
 /**
@@ -334,7 +341,7 @@ export const stripRight =
     );
 
 /**
- * Returns the number of occurences of `regexp` in `self`
+ * Returns the number of non-overlapping occurrences of `regexp` in `self`
  *
  * @category Utils
  */
@@ -365,12 +372,11 @@ export const prepend =
     s + self;
 
 /**
- * Replaces the part of `self` between `startIndex` included and `endIndex` excluded by
- * `replacement`. If `startIndex` equals `endIndex`, `replacement` is inserted at `startIndex`. If
- * `startIndex` is strictly greater than `endIndex`, the part between `endIndex` and `startIndex`
- * will be present before and after the replacement. If `startIndex` is strictly less than 0, it is
- * taken equal to 0. Same for `endIndex`. If `startIndex` or strisctly superior to the length of
- * `self`, it is taken equal to the length of `self`. Same
+ * Replaces the part of `self` between `startIndex` (included) and `endIndex` (excluded) with
+ * `replacement`. If `startIndex` equals `endIndex`, `replacement` is inserted at that position. If
+ * `startIndex` is strictly greater than `endIndex`, the characters between `endIndex` and
+ * `startIndex` will appear both before and after the replacement. Negative indexes are clamped to
+ * `0`; indexes beyond the length of `self` are clamped to `self.length`.
  *
  * @category Utils
  */
@@ -389,7 +395,7 @@ export const replaceBetween =
  */
 export const match =
   (regExp: RegExp) =>
-  (self: string): Option.Option<string> => {
+  (self: Type): Option.Option<string> => {
     regExp.lastIndex = 0;
     return pipe(
       self,
@@ -406,7 +412,7 @@ export const match =
  *
  * @category Utils
  */
-export const matches = (regExp: RegExp): Predicate.Predicate<string> =>
+export const matches = (regExp: RegExp): Predicate.Predicate<Type> =>
   flow(match(regExp), Option.match({ onNone: Function.constFalse, onSome: Function.constTrue }));
 
 /**
@@ -418,7 +424,7 @@ export const matches = (regExp: RegExp): Predicate.Predicate<string> =>
 export const matchWithCapturingGroups =
   <const Names extends ReadonlyArray<string>>(regExp: RegExp, capturingGroupNames: Names) =>
   (
-    self: string,
+    self: Type,
   ): Option.Option<{
     match: string;
     groups: {
@@ -463,7 +469,7 @@ export const matchWithCapturingGroups =
  */
 export const splitAt =
   (n: number) =>
-  (self: string): [left: string, right: string] =>
+  (self: Type): [left: string, right: string] =>
     Tuple.make(String.takeLeft(n)(self), takeRightBut(n)(self));
 
 /**
@@ -475,7 +481,7 @@ export const splitAt =
  */
 export const splitAtFromRight =
   (n: number) =>
-  (self: string): [left: string, right: string] =>
+  (self: Type): [left: string, right: string] =>
     pipe(self, splitAt(self.length - n));
 
 /**
@@ -486,7 +492,7 @@ export const splitAtFromRight =
  */
 export const splitEquallyRestAtStart = (
   bitSize: number,
-): MTypes.OneArgFunction<string, Array<string>> =>
+): MTypes.OneArgFunction<Type, Array<string>> =>
   flow(
     MArray.unfoldNonEmpty(
       flow(
@@ -506,12 +512,12 @@ export const splitEquallyRestAtStart = (
  */
 export const splitEquallyRestAtEnd = (
   bitSize: number,
-): MTypes.OneArgFunction<string, MTypes.OverOne<string>> =>
+): MTypes.OneArgFunction<Type, MTypes.OverOne<string>> =>
   MArray.unfoldNonEmpty(
     flow(splitAt(bitSize), Tuple.mapSecond(Option.liftPredicate(String.isNonEmpty))),
   );
 
-const _tabifyLineBreak: RegExp = new RegExp(MRegExpString.lineBreak, 'g');
+const tabifyLineBreak: RegExp = new RegExp(MRegExpString.lineBreak, 'g');
 /**
  * Adds string `tabChar` `count` times at the beginning of each new line of `self`
  *
@@ -522,29 +528,29 @@ export const tabify =
   (self) => {
     const tab = tabChar.repeat(count);
     // replace resets RegExp.prototype.lastIndex after executing
-    return tab + self.replace(_tabifyLineBreak, '$&' + tab);
+    return tab + self.replace(tabifyLineBreak, '$&' + tab);
   };
 
 /**
- * Returns true if `self` contains at least an eol character
+ * Returns `true` if `self` contains at least one end-of-line character
  *
- * @category Utils
+ * @category Predicates
  */
-export const isMultiLine: Predicate.Predicate<string> = (self) => MRegExp.lineBreak.test(self);
+export const isMultiLine: Predicate.Predicate<Type> = (self) => MRegExp.lineBreak.test(self);
 
 /**
  * Returns true if `self` is a SemVer
  *
  * @category Predicates
  */
-export const isSemVer: Predicate.Predicate<string> = (self) => MRegExp.semVer.test(self);
+export const isSemVer: Predicate.Predicate<Type> = (self) => MRegExp.semVer.test(self);
 
 /**
  * Returns true if `self` is an email
  *
  * @category Predicates
  */
-export const isEmail: Predicate.Predicate<string> = (self) => MRegExp.email.test(self);
+export const isEmail: Predicate.Predicate<Type> = (self) => MRegExp.email.test(self);
 
 /**
  * Returns true if the length of `self` is `l`
@@ -552,7 +558,7 @@ export const isEmail: Predicate.Predicate<string> = (self) => MRegExp.email.test
  * @category Predicates
  */
 export const hasLength =
-  (l: number): Predicate.Predicate<string> =>
+  (l: number): Predicate.Predicate<Type> =>
   (self) =>
     self.length === l;
 
@@ -574,12 +580,13 @@ export const removeNCharsEveryMCharsFromRight = ({
     : flow(splitEquallyRestAtStart(m + n), Array.map(String.takeRight(m)), Array.join(''));
 
 /**
- * Returns true if a string represents a digit. False otherwise
+ * Returns `true` if `self` is a single ASCII digit character (`0`-`9`). Returns `false` for
+ * multi-character strings or non-digit characters.
  *
  * @category Predicates
  */
 
-export const isDigit: Predicate.Predicate<string> = (self) => {
+export const isDigit: Predicate.Predicate<Type> = (self) => {
   const code = self.codePointAt(0);
   if (code === undefined || self.length > 1) return false;
   return code >= 48 && code <= 57;

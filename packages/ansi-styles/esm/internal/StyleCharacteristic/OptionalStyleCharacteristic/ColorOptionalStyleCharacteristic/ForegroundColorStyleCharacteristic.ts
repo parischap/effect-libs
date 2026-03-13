@@ -1,5 +1,6 @@
 /** Module that implements an optional foreground color style characteristic */
 
+import { MEquivalenceBasedEqualityData } from '@parischap/effect-lib';
 import * as MTypes from '@parischap/effect-lib/MTypes';
 import * as Function from 'effect/Function';
 import * as Option from 'effect/Option';
