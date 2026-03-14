@@ -75,28 +75,28 @@ export abstract class Type
 /**
  * Gets the foreground id of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const foregroundId = (self: Type): string => self.foregroundId;
 
 /**
  * Gets the background id of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const backgroundId = (self: Type): string => self.backgroundId;
 
 /**
  * Gets the foreground sequence of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const foregroundSequence = (self: Type): ASSequence.OverOne => self.foregroundSequence;
 
 /**
  * Gets the background sequence of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const backgroundSequence = (self: Type): ASSequence.OverOne => self.backgroundSequence;
 /**

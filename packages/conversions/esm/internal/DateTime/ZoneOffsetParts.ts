@@ -167,20 +167,20 @@ export const fromParts = ({
 /**
  * Returns the `zoneHour` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const zoneHour: MTypes.OneArgFunction<Type, number> = Struct.get('zoneHour');
 
 /**
  * Returns the `zoneMinute` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const zoneMinute: MTypes.OneArgFunction<Type, number> = Struct.get('zoneMinute');
 /**
  * Returns the `zoneSecond` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const zoneSecond: MTypes.OneArgFunction<Type, number> = Struct.get('zoneSecond');
 

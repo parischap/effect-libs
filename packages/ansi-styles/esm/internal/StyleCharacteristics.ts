@@ -712,111 +712,111 @@ export const fromColorAsForegroundColor = (color: AsColor.Type): Type =>
 /**
  * Original black color StyleCharacteristics instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const black: Type = fromColorAsForegroundColor(ASThreeBitColor.black);
 
 /**
  * Original red color StyleCharacteristics instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const red: Type = fromColorAsForegroundColor(ASThreeBitColor.red);
 
 /**
  * Original green color StyleCharacteristics instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const green: Type = fromColorAsForegroundColor(ASThreeBitColor.green);
 
 /**
  * Original yellow color StyleCharacteristics instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const yellow: Type = fromColorAsForegroundColor(ASThreeBitColor.yellow);
 
 /**
  * Original blue color StyleCharacteristics instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const blue: Type = fromColorAsForegroundColor(ASThreeBitColor.blue);
 
 /**
  * Original magenta color StyleCharacteristics instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const magenta: Type = fromColorAsForegroundColor(ASThreeBitColor.magenta);
 
 /**
  * Original cyan color StyleCharacteristics instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const cyan: Type = fromColorAsForegroundColor(ASThreeBitColor.cyan);
 
 /**
  * Original white color StyleCharacteristics instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const white: Type = fromColorAsForegroundColor(ASThreeBitColor.white);
 /**
  * Original bright black color StyleCharacteristics instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const brightBlack: Type = fromColorAsForegroundColor(ASThreeBitColor.brightBlack);
 
 /**
  * Original bright red color StyleCharacteristics instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const brightRed: Type = fromColorAsForegroundColor(ASThreeBitColor.brightRed);
 
 /**
  * Original bright green color StyleCharacteristics instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const brightGreen: Type = fromColorAsForegroundColor(ASThreeBitColor.brightGreen);
 
 /**
  * Original bright yellow color StyleCharacteristics instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const brightYellow: Type = fromColorAsForegroundColor(ASThreeBitColor.brightYellow);
 
 /**
  * Original bright blue color StyleCharacteristics instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const brightBlue: Type = fromColorAsForegroundColor(ASThreeBitColor.brightBlue);
 
 /**
  * Original bright magenta color StyleCharacteristics instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const brightMagenta: Type = fromColorAsForegroundColor(ASThreeBitColor.brightMagenta);
 
 /**
  * Original bright cyan color StyleCharacteristics instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const brightCyan: Type = fromColorAsForegroundColor(ASThreeBitColor.brightCyan);
 
 /**
  * Original bright white color StyleCharacteristics instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const brightWhite: Type = fromColorAsForegroundColor(ASThreeBitColor.brightWhite);
 
@@ -852,111 +852,111 @@ export const fromColorAsBackgroundColor = (color: AsColor.Type): Type =>
 /**
  * Original black color StyleCharacteristics instance as background color
  *
- * @category Original instances
+ * @category Instances
  */
 export const bgBlack: Type = fromColorAsBackgroundColor(ASThreeBitColor.black);
 
 /**
  * Original red color StyleCharacteristics instance as background color
  *
- * @category Original instances
+ * @category Instances
  */
 export const bgRed: Type = fromColorAsBackgroundColor(ASThreeBitColor.red);
 
 /**
  * Original green color StyleCharacteristics instance as background color
  *
- * @category Original instances
+ * @category Instances
  */
 export const bgGreen: Type = fromColorAsBackgroundColor(ASThreeBitColor.green);
 
 /**
  * Original yellow color StyleCharacteristics instance as background color
  *
- * @category Original instances
+ * @category Instances
  */
 export const bgYellow: Type = fromColorAsBackgroundColor(ASThreeBitColor.yellow);
 
 /**
  * Original blue color StyleCharacteristics instance as background color
  *
- * @category Original instances
+ * @category Instances
  */
 export const bgBlue: Type = fromColorAsBackgroundColor(ASThreeBitColor.blue);
 
 /**
  * Original magenta color StyleCharacteristics instance as background color
  *
- * @category Original instances
+ * @category Instances
  */
 export const bgMagenta: Type = fromColorAsBackgroundColor(ASThreeBitColor.magenta);
 
 /**
  * Original cyan color StyleCharacteristics instance as background color
  *
- * @category Original instances
+ * @category Instances
  */
 export const bgCyan: Type = fromColorAsBackgroundColor(ASThreeBitColor.cyan);
 
 /**
  * Original white color StyleCharacteristics instance as background color
  *
- * @category Original instances
+ * @category Instances
  */
 export const bgWhite: Type = fromColorAsBackgroundColor(ASThreeBitColor.white);
 
 /**
  * Original bright black color StyleCharacteristics instance as background color
  *
- * @category Original instances
+ * @category Instances
  */
 export const bgBrightBlack: Type = fromColorAsBackgroundColor(ASThreeBitColor.brightBlack);
 
 /**
  * Original bright red color StyleCharacteristics instance as background color
  *
- * @category Original instances
+ * @category Instances
  */
 export const bgBrightRed: Type = fromColorAsBackgroundColor(ASThreeBitColor.brightRed);
 
 /**
  * Original bright green color StyleCharacteristics instance as background color
  *
- * @category Original instances
+ * @category Instances
  */
 export const bgBrightGreen: Type = fromColorAsBackgroundColor(ASThreeBitColor.brightGreen);
 
 /**
  * Original bright yellow color StyleCharacteristics instance as background color
  *
- * @category Original instances
+ * @category Instances
  */
 export const bgBrightYellow: Type = fromColorAsBackgroundColor(ASThreeBitColor.brightYellow);
 
 /**
  * Original bright blue color StyleCharacteristics instance as background color
  *
- * @category Original instances
+ * @category Instances
  */
 export const bgBrightBlue: Type = fromColorAsBackgroundColor(ASThreeBitColor.brightBlue);
 
 /**
  * Original bright magenta color StyleCharacteristics instance as background color
  *
- * @category Original instances
+ * @category Instances
  */
 export const bgBrightMagenta: Type = fromColorAsBackgroundColor(ASThreeBitColor.brightMagenta);
 
 /**
  * Original bright cyan color StyleCharacteristics instance as background color
  *
- * @category Original instances
+ * @category Instances
  */
 export const bgBrightCyan: Type = fromColorAsBackgroundColor(ASThreeBitColor.brightCyan);
 
 /**
  * Original bright white color StyleCharacteristics instance as background color
  *
- * @category Original instances
+ * @category Instances
  */
 export const bgBrightWhite: Type = fromColorAsBackgroundColor(ASThreeBitColor.brightWhite);

@@ -582,14 +582,14 @@ export const fromEffectDateTime = (date: DateTime.Zoned): Type =>
 /**
  * Builds a Javascript `Date` from a `CVDateTime`
  *
- * @category Conversions
+ * @category Utils
  */
 export const toDate = (self: Type): Date => new Date(timestamp(self));
 
 /**
  * Builds an `Effect.DateTime.Zoned` from a `CVDateTime`
  *
- * @category Conversions
+ * @category Utils
  */
 export const toEffectDateTime = (self: Type): DateTime.Zoned =>
   DateTime.unsafeMakeZoned(timestamp(self), { timeZone: self.zoneOffset });
@@ -615,7 +615,7 @@ const _gregorianDate = (self: Type): GregorianDate.Type =>
 /**
  * Returns the (Gregorian) year of `self` for the given time zone
  *
- * @category Getters
+ * @category Destructors
  */
 export const getYear: MTypes.OneArgFunction<Type, number> = flow(
   _gregorianDate,
@@ -625,7 +625,7 @@ export const getYear: MTypes.OneArgFunction<Type, number> = flow(
 /**
  * Returns the ordinalDay of `self` for the given time zone
  *
- * @category Getters
+ * @category Destructors
  */
 export const getOrdinalDay: MTypes.OneArgFunction<Type, number> = flow(
   _gregorianDate,
@@ -635,7 +635,7 @@ export const getOrdinalDay: MTypes.OneArgFunction<Type, number> = flow(
 /**
  * Returns the month of `self` for the given time zone
  *
- * @category Getters
+ * @category Destructors
  */
 export const getMonth: MTypes.OneArgFunction<Type, number> = flow(
   _gregorianDate,
@@ -645,7 +645,7 @@ export const getMonth: MTypes.OneArgFunction<Type, number> = flow(
 /**
  * Returns the monthDay of `self` for the given time zone
  *
- * @category Getters
+ * @category Destructors
  */
 export const getMonthDay: MTypes.OneArgFunction<Type, number> = flow(
   _gregorianDate,
@@ -670,21 +670,21 @@ const _isoDate = (self: Type): IsoDate.Type =>
 /**
  * Returns the isoYear of `self` for the given time zone
  *
- * @category Getters
+ * @category Destructors
  */
 export const getIsoYear: MTypes.OneArgFunction<Type, number> = flow(_isoDate, IsoDate.year);
 
 /**
  * Returns the isoWeek of `self` for the given time zone
  *
- * @category Getters
+ * @category Destructors
  */
 export const getIsoWeek: MTypes.OneArgFunction<Type, number> = flow(_isoDate, IsoDate.getIsoWeek);
 
 /**
  * Returns the weekday of `self` for the given time zone
  *
- * @category Getters
+ * @category Destructors
  */
 export const getWeekday: MTypes.OneArgFunction<Type, number> = flow(_isoDate, IsoDate.getWeekday);
 
@@ -702,42 +702,42 @@ const _time = (self: Type): CVTime.Type =>
 /**
  * Returns the hour23 of `self` for the given time zone
  *
- * @category Getters
+ * @category Destructors
  */
 export const getHour23: MTypes.OneArgFunction<Type, number> = flow(_time, CVTime.hour23);
 
 /**
  * Returns the hour11 of `self` for the given time zone
  *
- * @category Getters
+ * @category Destructors
  */
 export const getHour11: MTypes.OneArgFunction<Type, number> = flow(_time, CVTime.hour11);
 
 /**
  * Returns the meridiem of `self` for the given time zone
  *
- * @category Getters
+ * @category Destructors
  */
 export const getMeridiem: MTypes.OneArgFunction<Type, 0 | 12> = flow(_time, CVTime.meridiem);
 
 /**
  * Returns the minute of `self` for the given time zone
  *
- * @category Getters
+ * @category Destructors
  */
 export const getMinute: MTypes.OneArgFunction<Type, number> = flow(_time, CVTime.minute);
 
 /**
  * Returns the second of `self` for the given time zone
  *
- * @category Getters
+ * @category Destructors
  */
 export const getSecond: MTypes.OneArgFunction<Type, number> = flow(_time, CVTime.second);
 
 /**
  * Returns the millisecond of `self` for the given time zone
  *
- * @category Getters
+ * @category Destructors
  */
 export const getMillisecond: MTypes.OneArgFunction<Type, number> = flow(_time, CVTime.millisecond);
 
@@ -755,7 +755,7 @@ const _zoneOffsetParts = (self: Type): ZoneOffsetParts.Type =>
 /**
  * Returns the hour part of the zoneOffset of `self`
  *
- * @category Getters
+ * @category Destructors
  */
 export const getZoneHour: MTypes.OneArgFunction<Type, number> = flow(
   _zoneOffsetParts,
@@ -765,7 +765,7 @@ export const getZoneHour: MTypes.OneArgFunction<Type, number> = flow(
 /**
  * Returns the minute part of the zoneOffset of `self`
  *
- * @category Getters
+ * @category Destructors
  */
 export const getZoneMinute: MTypes.OneArgFunction<Type, number> = flow(
   _zoneOffsetParts,
@@ -775,7 +775,7 @@ export const getZoneMinute: MTypes.OneArgFunction<Type, number> = flow(
 /**
  * Returns the second part of the zoneOffset of `self`
  *
- * @category Getters
+ * @category Destructors
  */
 export const getZoneSecond: MTypes.OneArgFunction<Type, number> = flow(
   _zoneOffsetParts,

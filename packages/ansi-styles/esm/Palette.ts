@@ -75,7 +75,7 @@ export const toString = (self: Type): string => self.toString();
 /**
  * Gets the underlying styles of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const styles: MTypes.OneArgFunction<Type, ASStyles.Type> = Struct.get('styles');
 

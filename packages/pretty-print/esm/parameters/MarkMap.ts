@@ -93,14 +93,14 @@ export const equivalence: Equivalence.Equivalence<Type> = (self, that) => that.n
 /**
  * Returns the `id` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const name: MTypes.OneArgFunction<Type, string> = Struct.get('name');
 
 /**
  * Returns the `marks` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const marks: MTypes.OneArgFunction<Type, PPMarks.Type> = Struct.get('marks');
 

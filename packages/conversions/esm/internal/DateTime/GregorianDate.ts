@@ -406,14 +406,14 @@ export const setOrdinalDay =
 /**
  * Returns the `timestamp` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const timestamp: MTypes.OneArgFunction<Type, number> = Struct.get('timestamp');
 
 /**
  * Returns the `year` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const year: MTypes.OneArgFunction<Type, number> = Struct.get('year');
 
@@ -427,7 +427,7 @@ export const yearIsLeap: Predicate.Predicate<Type> = Struct.get('yearIsLeap');
 /**
  * Returns the `yearStartTimestamp` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const yearStartTimestamp: MTypes.OneArgFunction<Type, number> =
   Struct.get('yearStartTimestamp');
@@ -435,7 +435,7 @@ export const yearStartTimestamp: MTypes.OneArgFunction<Type, number> =
 /**
  * Returns the `ordinalDay` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const ordinalDay: MTypes.OneArgFunction<Type, number> = Struct.get('ordinalDay');
 

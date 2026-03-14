@@ -123,7 +123,7 @@ export const make = <const PS extends CVTemplateParts.Type>(...templateParts: PS
 /**
  * Returns the `templateParts` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const templateParts: <PlaceholderTypes extends MTypes.NonPrimitive>(
   self: Type<PlaceholderTypes>,

@@ -81,146 +81,146 @@ export const make = (params: { readonly code: ASEightBitColorCode.Type }): Type 
 /**
  * Gets the `code` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const code: MTypes.OneArgFunction<Type, ASEightBitColorCode.Type> = Struct.get('code');
 
 /**
  * Eightbit Black Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const black: Type = make({ code: ASEightBitColorCode.Type.Black });
 /**
  * Eightbit Maroon Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const maroon: Type = make({ code: ASEightBitColorCode.Type.Maroon });
 /**
  * Eightbit Green Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const green: Type = make({ code: ASEightBitColorCode.Type.Green });
 /**
  * Eightbit Olive Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const olive: Type = make({ code: ASEightBitColorCode.Type.Olive });
 /**
  * Eightbit Navy Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const navy: Type = make({ code: ASEightBitColorCode.Type.Navy });
 /**
  * Eightbit Purple_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const purple_1: Type = make({ code: ASEightBitColorCode.Type.Purple_1 });
 /**
  * Eightbit Teal Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const teal: Type = make({ code: ASEightBitColorCode.Type.Teal });
 /**
  * Eightbit Silver Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const silver: Type = make({ code: ASEightBitColorCode.Type.Silver });
 /**
  * Eightbit Grey Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const grey: Type = make({ code: ASEightBitColorCode.Type.Grey });
 /**
  * Eightbit Red Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const red: Type = make({ code: ASEightBitColorCode.Type.Red });
 /**
  * Eightbit Lime Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const lime: Type = make({ code: ASEightBitColorCode.Type.Lime });
 /**
  * Eightbit Yellow Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const yellow: Type = make({ code: ASEightBitColorCode.Type.Yellow });
 /**
  * Eightbit Blue Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const blue: Type = make({ code: ASEightBitColorCode.Type.Blue });
 /**
  * Eightbit Fuchsia Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const fuchsia: Type = make({ code: ASEightBitColorCode.Type.Fuchsia });
 /**
  * Eightbit Aqua Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const aqua: Type = make({ code: ASEightBitColorCode.Type.Aqua });
 /**
  * Eightbit White Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const white: Type = make({ code: ASEightBitColorCode.Type.White });
 /**
  * Eightbit Grey0 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const grey0: Type = make({ code: ASEightBitColorCode.Type.Grey0 });
 /**
  * Eightbit NavyBlue Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const navyBlue: Type = make({ code: ASEightBitColorCode.Type.NavyBlue });
 /**
  * Eightbit DarkBlue Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const darkBlue: Type = make({ code: ASEightBitColorCode.Type.DarkBlue });
 /**
  * Eightbit Blue3_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const blue3_1: Type = make({ code: ASEightBitColorCode.Type.Blue3_1 });
 /**
  * Eightbit Blue3_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const blue3_2: Type = make({ code: ASEightBitColorCode.Type.Blue3_2 });
 /**
  * Eightbit Blue1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const blue1: Type = make({ code: ASEightBitColorCode.Type.Blue1 });
 /**
  * Eightbit DarkGreen Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const darkGreen: Type = make({
   code: ASEightBitColorCode.Type.DarkGreen,
@@ -228,7 +228,7 @@ export const darkGreen: Type = make({
 /**
  * Eightbit DeepSkyBlue4_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const deepSkyBlue4_1: Type = make({
   code: ASEightBitColorCode.Type.DeepSkyBlue4_1,
@@ -236,7 +236,7 @@ export const deepSkyBlue4_1: Type = make({
 /**
  * Eightbit DeepSkyBlue4_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const deepSkyBlue4_2: Type = make({
   code: ASEightBitColorCode.Type.DeepSkyBlue4_2,
@@ -244,7 +244,7 @@ export const deepSkyBlue4_2: Type = make({
 /**
  * Eightbit DeepSkyBlue4_3 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const deepSkyBlue4_3: Type = make({
   code: ASEightBitColorCode.Type.DeepSkyBlue4_3,
@@ -252,7 +252,7 @@ export const deepSkyBlue4_3: Type = make({
 /**
  * Eightbit DodgerBlue3 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const dodgerBlue3: Type = make({
   code: ASEightBitColorCode.Type.DodgerBlue3,
@@ -260,7 +260,7 @@ export const dodgerBlue3: Type = make({
 /**
  * Eightbit DodgerBlue2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const dodgerBlue2: Type = make({
   code: ASEightBitColorCode.Type.DodgerBlue2,
@@ -268,13 +268,13 @@ export const dodgerBlue2: Type = make({
 /**
  * Eightbit Green4 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const green4: Type = make({ code: ASEightBitColorCode.Type.Green4 });
 /**
  * Eightbit SpringGreen4 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const springGreen4: Type = make({
   code: ASEightBitColorCode.Type.SpringGreen4,
@@ -282,7 +282,7 @@ export const springGreen4: Type = make({
 /**
  * Eightbit Turquoise4 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const turquoise4: Type = make({
   code: ASEightBitColorCode.Type.Turquoise4,
@@ -290,7 +290,7 @@ export const turquoise4: Type = make({
 /**
  * Eightbit DeepSkyBlue3_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const deepSkyBlue3_1: Type = make({
   code: ASEightBitColorCode.Type.DeepSkyBlue3_1,
@@ -298,7 +298,7 @@ export const deepSkyBlue3_1: Type = make({
 /**
  * Eightbit DeepSkyBlue3_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const deepSkyBlue3_2: Type = make({
   code: ASEightBitColorCode.Type.DeepSkyBlue3_2,
@@ -306,7 +306,7 @@ export const deepSkyBlue3_2: Type = make({
 /**
  * Eightbit DodgerBlue1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const dodgerBlue1: Type = make({
   code: ASEightBitColorCode.Type.DodgerBlue1,
@@ -314,13 +314,13 @@ export const dodgerBlue1: Type = make({
 /**
  * Eightbit Green3_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const green3_1: Type = make({ code: ASEightBitColorCode.Type.Green3_1 });
 /**
  * Eightbit SpringGreen3_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const springGreen3_1: Type = make({
   code: ASEightBitColorCode.Type.SpringGreen3_1,
@@ -328,13 +328,13 @@ export const springGreen3_1: Type = make({
 /**
  * Eightbit DarkCyan Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const darkCyan: Type = make({ code: ASEightBitColorCode.Type.DarkCyan });
 /**
  * Eightbit LightSeaGreen Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const lightSeaGreen: Type = make({
   code: ASEightBitColorCode.Type.LightSeaGreen,
@@ -342,7 +342,7 @@ export const lightSeaGreen: Type = make({
 /**
  * Eightbit DeepSkyBlue2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const deepSkyBlue2: Type = make({
   code: ASEightBitColorCode.Type.DeepSkyBlue2,
@@ -350,7 +350,7 @@ export const deepSkyBlue2: Type = make({
 /**
  * Eightbit DeepSkyBlue1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const deepSkyBlue1: Type = make({
   code: ASEightBitColorCode.Type.DeepSkyBlue1,
@@ -358,13 +358,13 @@ export const deepSkyBlue1: Type = make({
 /**
  * Eightbit Green3_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const green3_2: Type = make({ code: ASEightBitColorCode.Type.Green3_2 });
 /**
  * Eightbit SpringGreen3_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const springGreen3_2: Type = make({
   code: ASEightBitColorCode.Type.SpringGreen3_2,
@@ -372,7 +372,7 @@ export const springGreen3_2: Type = make({
 /**
  * Eightbit SpringGreen2_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const springGreen2_1: Type = make({
   code: ASEightBitColorCode.Type.SpringGreen2_1,
@@ -380,13 +380,13 @@ export const springGreen2_1: Type = make({
 /**
  * Eightbit Cyan3 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const cyan3: Type = make({ code: ASEightBitColorCode.Type.Cyan3 });
 /**
  * Eightbit DarkTurquoise Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const darkTurquoise: Type = make({
   code: ASEightBitColorCode.Type.DarkTurquoise,
@@ -394,7 +394,7 @@ export const darkTurquoise: Type = make({
 /**
  * Eightbit Turquoise2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const turquoise2: Type = make({
   code: ASEightBitColorCode.Type.Turquoise2,
@@ -402,13 +402,13 @@ export const turquoise2: Type = make({
 /**
  * Eightbit Green1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const green1: Type = make({ code: ASEightBitColorCode.Type.Green1 });
 /**
  * Eightbit SpringGreen2_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const springGreen2_2: Type = make({
   code: ASEightBitColorCode.Type.SpringGreen2_2,
@@ -416,7 +416,7 @@ export const springGreen2_2: Type = make({
 /**
  * Eightbit SpringGreen1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const springGreen1: Type = make({
   code: ASEightBitColorCode.Type.SpringGreen1,
@@ -424,7 +424,7 @@ export const springGreen1: Type = make({
 /**
  * Eightbit MediumSpringGreen Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const mediumSpringGreen: Type = make({
   code: ASEightBitColorCode.Type.MediumSpringGreen,
@@ -432,19 +432,19 @@ export const mediumSpringGreen: Type = make({
 /**
  * Eightbit Cyan2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const cyan2: Type = make({ code: ASEightBitColorCode.Type.Cyan2 });
 /**
  * Eightbit Cyan1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const cyan1: Type = make({ code: ASEightBitColorCode.Type.Cyan1 });
 /**
  * Eightbit DarkRed_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const darkRed_1: Type = make({
   code: ASEightBitColorCode.Type.DarkRed_1,
@@ -452,7 +452,7 @@ export const darkRed_1: Type = make({
 /**
  * Eightbit DeepPink4_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const deepPink4_1: Type = make({
   code: ASEightBitColorCode.Type.DeepPink4_1,
@@ -460,7 +460,7 @@ export const deepPink4_1: Type = make({
 /**
  * Eightbit Purple4_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const purple4_1: Type = make({
   code: ASEightBitColorCode.Type.Purple4_1,
@@ -468,7 +468,7 @@ export const purple4_1: Type = make({
 /**
  * Eightbit Purple4_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const purple4_2: Type = make({
   code: ASEightBitColorCode.Type.Purple4_2,
@@ -476,13 +476,13 @@ export const purple4_2: Type = make({
 /**
  * Eightbit Purple3 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const purple3: Type = make({ code: ASEightBitColorCode.Type.Purple3 });
 /**
  * Eightbit BlueViolet Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const blueViolet: Type = make({
   code: ASEightBitColorCode.Type.BlueViolet,
@@ -490,7 +490,7 @@ export const blueViolet: Type = make({
 /**
  * Eightbit Orange4_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const orange4_1: Type = make({
   code: ASEightBitColorCode.Type.Orange4_1,
@@ -498,13 +498,13 @@ export const orange4_1: Type = make({
 /**
  * Eightbit Grey37 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const grey37: Type = make({ code: ASEightBitColorCode.Type.Grey37 });
 /**
  * Eightbit MediumPurple4 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const mediumPurple4: Type = make({
   code: ASEightBitColorCode.Type.MediumPurple4,
@@ -512,7 +512,7 @@ export const mediumPurple4: Type = make({
 /**
  * Eightbit SlateBlue3_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const slateBlue3_1: Type = make({
   code: ASEightBitColorCode.Type.SlateBlue3_1,
@@ -520,7 +520,7 @@ export const slateBlue3_1: Type = make({
 /**
  * Eightbit SlateBlue3_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const slateBlue3_2: Type = make({
   code: ASEightBitColorCode.Type.SlateBlue3_2,
@@ -528,7 +528,7 @@ export const slateBlue3_2: Type = make({
 /**
  * Eightbit RoyalBlue1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const royalBlue1: Type = make({
   code: ASEightBitColorCode.Type.RoyalBlue1,
@@ -536,7 +536,7 @@ export const royalBlue1: Type = make({
 /**
  * Eightbit Chartreuse4 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const chartreuse4: Type = make({
   code: ASEightBitColorCode.Type.Chartreuse4,
@@ -544,7 +544,7 @@ export const chartreuse4: Type = make({
 /**
  * Eightbit DarkSeaGreen4_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const darkSeaGreen4_1: Type = make({
   code: ASEightBitColorCode.Type.DarkSeaGreen4_1,
@@ -552,7 +552,7 @@ export const darkSeaGreen4_1: Type = make({
 /**
  * Eightbit PaleTurquoise4 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const paleTurquoise4: Type = make({
   code: ASEightBitColorCode.Type.PaleTurquoise4,
@@ -560,7 +560,7 @@ export const paleTurquoise4: Type = make({
 /**
  * Eightbit SteelBlue Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const steelBlue: Type = make({
   code: ASEightBitColorCode.Type.SteelBlue,
@@ -568,7 +568,7 @@ export const steelBlue: Type = make({
 /**
  * Eightbit SteelBlue3 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const steelBlue3: Type = make({
   code: ASEightBitColorCode.Type.SteelBlue3,
@@ -576,7 +576,7 @@ export const steelBlue3: Type = make({
 /**
  * Eightbit CornflowerBlue Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const cornflowerBlue: Type = make({
   code: ASEightBitColorCode.Type.CornflowerBlue,
@@ -584,7 +584,7 @@ export const cornflowerBlue: Type = make({
 /**
  * Eightbit Chartreuse3_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const chartreuse3_1: Type = make({
   code: ASEightBitColorCode.Type.Chartreuse3_1,
@@ -592,7 +592,7 @@ export const chartreuse3_1: Type = make({
 /**
  * Eightbit DarkSeaGreen4_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const darkSeaGreen4_2: Type = make({
   code: ASEightBitColorCode.Type.DarkSeaGreen4_2,
@@ -600,7 +600,7 @@ export const darkSeaGreen4_2: Type = make({
 /**
  * Eightbit CadetBlue_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const cadetBlue_1: Type = make({
   code: ASEightBitColorCode.Type.CadetBlue_1,
@@ -608,7 +608,7 @@ export const cadetBlue_1: Type = make({
 /**
  * Eightbit CadetBlue_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const cadetBlue_2: Type = make({
   code: ASEightBitColorCode.Type.CadetBlue_2,
@@ -616,13 +616,13 @@ export const cadetBlue_2: Type = make({
 /**
  * Eightbit SkyBlue3 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const skyBlue3: Type = make({ code: ASEightBitColorCode.Type.SkyBlue3 });
 /**
  * Eightbit SteelBlue1_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const steelBlue1_1: Type = make({
   code: ASEightBitColorCode.Type.SteelBlue1_1,
@@ -630,7 +630,7 @@ export const steelBlue1_1: Type = make({
 /**
  * Eightbit Chartreuse3_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const chartreuse3_2: Type = make({
   code: ASEightBitColorCode.Type.Chartreuse3_2,
@@ -638,7 +638,7 @@ export const chartreuse3_2: Type = make({
 /**
  * Eightbit PaleGreen3_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const paleGreen3_1: Type = make({
   code: ASEightBitColorCode.Type.PaleGreen3_1,
@@ -646,7 +646,7 @@ export const paleGreen3_1: Type = make({
 /**
  * Eightbit SeaGreen3 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const seaGreen3: Type = make({
   code: ASEightBitColorCode.Type.SeaGreen3,
@@ -654,7 +654,7 @@ export const seaGreen3: Type = make({
 /**
  * Eightbit Aquamarine3 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const aquamarine3: Type = make({
   code: ASEightBitColorCode.Type.Aquamarine3,
@@ -662,7 +662,7 @@ export const aquamarine3: Type = make({
 /**
  * Eightbit MediumTurquoise Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const mediumTurquoise: Type = make({
   code: ASEightBitColorCode.Type.MediumTurquoise,
@@ -670,7 +670,7 @@ export const mediumTurquoise: Type = make({
 /**
  * Eightbit SteelBlue1_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const steelBlue1_2: Type = make({
   code: ASEightBitColorCode.Type.SteelBlue1_2,
@@ -678,7 +678,7 @@ export const steelBlue1_2: Type = make({
 /**
  * Eightbit Chartreuse2_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const chartreuse2_1: Type = make({
   code: ASEightBitColorCode.Type.Chartreuse2_1,
@@ -686,7 +686,7 @@ export const chartreuse2_1: Type = make({
 /**
  * Eightbit SeaGreen2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const seaGreen2: Type = make({
   code: ASEightBitColorCode.Type.SeaGreen2,
@@ -694,7 +694,7 @@ export const seaGreen2: Type = make({
 /**
  * Eightbit SeaGreen1_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const seaGreen1_1: Type = make({
   code: ASEightBitColorCode.Type.SeaGreen1_1,
@@ -702,7 +702,7 @@ export const seaGreen1_1: Type = make({
 /**
  * Eightbit SeaGreen1_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const seaGreen1_2: Type = make({
   code: ASEightBitColorCode.Type.SeaGreen1_2,
@@ -710,7 +710,7 @@ export const seaGreen1_2: Type = make({
 /**
  * Eightbit Aquamarine1_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const aquamarine1_1: Type = make({
   code: ASEightBitColorCode.Type.Aquamarine1_1,
@@ -718,7 +718,7 @@ export const aquamarine1_1: Type = make({
 /**
  * Eightbit DarkSlateGray2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const darkSlateGray2: Type = make({
   code: ASEightBitColorCode.Type.DarkSlateGray2,
@@ -726,7 +726,7 @@ export const darkSlateGray2: Type = make({
 /**
  * Eightbit DarkRed_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const darkRed_2: Type = make({
   code: ASEightBitColorCode.Type.DarkRed_2,
@@ -734,7 +734,7 @@ export const darkRed_2: Type = make({
 /**
  * Eightbit DeepPink4_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const deepPink4_2: Type = make({
   code: ASEightBitColorCode.Type.DeepPink4_2,
@@ -742,7 +742,7 @@ export const deepPink4_2: Type = make({
 /**
  * Eightbit DarkMagenta_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const darkMagenta_1: Type = make({
   code: ASEightBitColorCode.Type.DarkMagenta_1,
@@ -750,7 +750,7 @@ export const darkMagenta_1: Type = make({
 /**
  * Eightbit DarkMagenta_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const darkMagenta_2: Type = make({
   code: ASEightBitColorCode.Type.DarkMagenta_2,
@@ -758,7 +758,7 @@ export const darkMagenta_2: Type = make({
 /**
  * Eightbit DarkViolet_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const darkViolet_1: Type = make({
   code: ASEightBitColorCode.Type.DarkViolet_1,
@@ -766,13 +766,13 @@ export const darkViolet_1: Type = make({
 /**
  * Eightbit Purple_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const purple_2: Type = make({ code: ASEightBitColorCode.Type.Purple_2 });
 /**
  * Eightbit Orange4_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const orange4_2: Type = make({
   code: ASEightBitColorCode.Type.Orange4_2,
@@ -780,7 +780,7 @@ export const orange4_2: Type = make({
 /**
  * Eightbit LightPink4 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const lightPink4: Type = make({
   code: ASEightBitColorCode.Type.LightPink4,
@@ -788,13 +788,13 @@ export const lightPink4: Type = make({
 /**
  * Eightbit Plum4 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const plum4: Type = make({ code: ASEightBitColorCode.Type.Plum4 });
 /**
  * Eightbit MediumPurple3_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const mediumPurple3_1: Type = make({
   code: ASEightBitColorCode.Type.MediumPurple3_1,
@@ -802,7 +802,7 @@ export const mediumPurple3_1: Type = make({
 /**
  * Eightbit MediumPurple3_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const mediumPurple3_2: Type = make({
   code: ASEightBitColorCode.Type.MediumPurple3_2,
@@ -810,7 +810,7 @@ export const mediumPurple3_2: Type = make({
 /**
  * Eightbit SlateBlue1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const slateBlue1: Type = make({
   code: ASEightBitColorCode.Type.SlateBlue1,
@@ -818,7 +818,7 @@ export const slateBlue1: Type = make({
 /**
  * Eightbit Yellow4_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const yellow4_1: Type = make({
   code: ASEightBitColorCode.Type.Yellow4_1,
@@ -826,19 +826,19 @@ export const yellow4_1: Type = make({
 /**
  * Eightbit Wheat4 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const wheat4: Type = make({ code: ASEightBitColorCode.Type.Wheat4 });
 /**
  * Eightbit Grey53 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const grey53: Type = make({ code: ASEightBitColorCode.Type.Grey53 });
 /**
  * Eightbit LightSlateGrey Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const lightSlateGrey: Type = make({
   code: ASEightBitColorCode.Type.LightSlateGrey,
@@ -846,7 +846,7 @@ export const lightSlateGrey: Type = make({
 /**
  * Eightbit MediumPurple Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const mediumPurple: Type = make({
   code: ASEightBitColorCode.Type.MediumPurple,
@@ -854,7 +854,7 @@ export const mediumPurple: Type = make({
 /**
  * Eightbit LightSlateBlue Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const lightSlateBlue: Type = make({
   code: ASEightBitColorCode.Type.LightSlateBlue,
@@ -862,7 +862,7 @@ export const lightSlateBlue: Type = make({
 /**
  * Eightbit Yellow4_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const yellow4_2: Type = make({
   code: ASEightBitColorCode.Type.Yellow4_2,
@@ -870,7 +870,7 @@ export const yellow4_2: Type = make({
 /**
  * Eightbit DarkOliveGreen3_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const darkOliveGreen3_1: Type = make({
   code: ASEightBitColorCode.Type.DarkOliveGreen3_1,
@@ -878,7 +878,7 @@ export const darkOliveGreen3_1: Type = make({
 /**
  * Eightbit DarkSeaGreen Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const darkSeaGreen: Type = make({
   code: ASEightBitColorCode.Type.DarkSeaGreen,
@@ -886,7 +886,7 @@ export const darkSeaGreen: Type = make({
 /**
  * Eightbit LightSkyBlue3_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const lightSkyBlue3_1: Type = make({
   code: ASEightBitColorCode.Type.LightSkyBlue3_1,
@@ -894,7 +894,7 @@ export const lightSkyBlue3_1: Type = make({
 /**
  * Eightbit LightSkyBlue3_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const lightSkyBlue3_2: Type = make({
   code: ASEightBitColorCode.Type.LightSkyBlue3_2,
@@ -902,13 +902,13 @@ export const lightSkyBlue3_2: Type = make({
 /**
  * Eightbit SkyBlue2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const skyBlue2: Type = make({ code: ASEightBitColorCode.Type.SkyBlue2 });
 /**
  * Eightbit Chartreuse2_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const chartreuse2_2: Type = make({
   code: ASEightBitColorCode.Type.Chartreuse2_2,
@@ -916,7 +916,7 @@ export const chartreuse2_2: Type = make({
 /**
  * Eightbit DarkOliveGreen3_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const darkOliveGreen3_2: Type = make({
   code: ASEightBitColorCode.Type.DarkOliveGreen3_2,
@@ -924,7 +924,7 @@ export const darkOliveGreen3_2: Type = make({
 /**
  * Eightbit PaleGreen3_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const paleGreen3_2: Type = make({
   code: ASEightBitColorCode.Type.PaleGreen3_2,
@@ -932,7 +932,7 @@ export const paleGreen3_2: Type = make({
 /**
  * Eightbit DarkSeaGreen3_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const darkSeaGreen3_1: Type = make({
   code: ASEightBitColorCode.Type.DarkSeaGreen3_1,
@@ -940,7 +940,7 @@ export const darkSeaGreen3_1: Type = make({
 /**
  * Eightbit DarkSlateGray3 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const darkSlateGray3: Type = make({
   code: ASEightBitColorCode.Type.DarkSlateGray3,
@@ -948,13 +948,13 @@ export const darkSlateGray3: Type = make({
 /**
  * Eightbit SkyBlue1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const skyBlue1: Type = make({ code: ASEightBitColorCode.Type.SkyBlue1 });
 /**
  * Eightbit Chartreuse1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const chartreuse1: Type = make({
   code: ASEightBitColorCode.Type.Chartreuse1,
@@ -962,7 +962,7 @@ export const chartreuse1: Type = make({
 /**
  * Eightbit LightGreen_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const lightGreen_1: Type = make({
   code: ASEightBitColorCode.Type.LightGreen_1,
@@ -970,7 +970,7 @@ export const lightGreen_1: Type = make({
 /**
  * Eightbit LightGreen_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const lightGreen_2: Type = make({
   code: ASEightBitColorCode.Type.LightGreen_2,
@@ -978,7 +978,7 @@ export const lightGreen_2: Type = make({
 /**
  * Eightbit PaleGreen1_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const paleGreen1_1: Type = make({
   code: ASEightBitColorCode.Type.PaleGreen1_1,
@@ -986,7 +986,7 @@ export const paleGreen1_1: Type = make({
 /**
  * Eightbit Aquamarine1_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const aquamarine1_2: Type = make({
   code: ASEightBitColorCode.Type.Aquamarine1_2,
@@ -994,7 +994,7 @@ export const aquamarine1_2: Type = make({
 /**
  * Eightbit DarkSlateGray1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const darkSlateGray1: Type = make({
   code: ASEightBitColorCode.Type.DarkSlateGray1,
@@ -1002,13 +1002,13 @@ export const darkSlateGray1: Type = make({
 /**
  * Eightbit Red3_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const red3_1: Type = make({ code: ASEightBitColorCode.Type.Red3_1 });
 /**
  * Eightbit DeepPink4_3 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const deepPink4_3: Type = make({
   code: ASEightBitColorCode.Type.DeepPink4_3,
@@ -1016,7 +1016,7 @@ export const deepPink4_3: Type = make({
 /**
  * Eightbit MediumVioletRed Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const mediumVioletRed: Type = make({
   code: ASEightBitColorCode.Type.MediumVioletRed,
@@ -1024,7 +1024,7 @@ export const mediumVioletRed: Type = make({
 /**
  * Eightbit Magenta3_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const magenta3_1: Type = make({
   code: ASEightBitColorCode.Type.Magenta3_1,
@@ -1032,7 +1032,7 @@ export const magenta3_1: Type = make({
 /**
  * Eightbit DarkViolet_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const darkViolet_2: Type = make({
   code: ASEightBitColorCode.Type.DarkViolet_2,
@@ -1040,13 +1040,13 @@ export const darkViolet_2: Type = make({
 /**
  * Eightbit Purple_3 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const purple_3: Type = make({ code: ASEightBitColorCode.Type.Purple_3 });
 /**
  * Eightbit DarkOrange3_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const darkOrange3_1: Type = make({
   code: ASEightBitColorCode.Type.DarkOrange3_1,
@@ -1054,7 +1054,7 @@ export const darkOrange3_1: Type = make({
 /**
  * Eightbit IndianRed_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const indianRed_1: Type = make({
   code: ASEightBitColorCode.Type.IndianRed_1,
@@ -1062,7 +1062,7 @@ export const indianRed_1: Type = make({
 /**
  * Eightbit HotPink3_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const hotPink3_1: Type = make({
   code: ASEightBitColorCode.Type.HotPink3_1,
@@ -1070,7 +1070,7 @@ export const hotPink3_1: Type = make({
 /**
  * Eightbit MediumOrchid3 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const mediumOrchid3: Type = make({
   code: ASEightBitColorCode.Type.MediumOrchid3,
@@ -1078,7 +1078,7 @@ export const mediumOrchid3: Type = make({
 /**
  * Eightbit MediumOrchid Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const mediumOrchid: Type = make({
   code: ASEightBitColorCode.Type.MediumOrchid,
@@ -1086,7 +1086,7 @@ export const mediumOrchid: Type = make({
 /**
  * Eightbit MediumPurple2_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const mediumPurple2_1: Type = make({
   code: ASEightBitColorCode.Type.MediumPurple2_1,
@@ -1094,7 +1094,7 @@ export const mediumPurple2_1: Type = make({
 /**
  * Eightbit DarkGoldenRod Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const darkGoldenRod: Type = make({
   code: ASEightBitColorCode.Type.DarkGoldenRod,
@@ -1102,7 +1102,7 @@ export const darkGoldenRod: Type = make({
 /**
  * Eightbit LightSalmon3_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const lightSalmon3_1: Type = make({
   code: ASEightBitColorCode.Type.LightSalmon3_1,
@@ -1110,7 +1110,7 @@ export const lightSalmon3_1: Type = make({
 /**
  * Eightbit RosyBrown Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const rosyBrown: Type = make({
   code: ASEightBitColorCode.Type.RosyBrown,
@@ -1118,13 +1118,13 @@ export const rosyBrown: Type = make({
 /**
  * Eightbit Grey63 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const grey63: Type = make({ code: ASEightBitColorCode.Type.Grey63 });
 /**
  * Eightbit MediumPurple2_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const mediumPurple2_2: Type = make({
   code: ASEightBitColorCode.Type.MediumPurple2_2,
@@ -1132,7 +1132,7 @@ export const mediumPurple2_2: Type = make({
 /**
  * Eightbit MediumPurple1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const mediumPurple1: Type = make({
   code: ASEightBitColorCode.Type.MediumPurple1,
@@ -1140,13 +1140,13 @@ export const mediumPurple1: Type = make({
 /**
  * Eightbit Gold3_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const gold3_1: Type = make({ code: ASEightBitColorCode.Type.Gold3_1 });
 /**
  * Eightbit DarkKhaki Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const darkKhaki: Type = make({
   code: ASEightBitColorCode.Type.DarkKhaki,
@@ -1154,7 +1154,7 @@ export const darkKhaki: Type = make({
 /**
  * Eightbit NavajoWhite3 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const navajoWhite3: Type = make({
   code: ASEightBitColorCode.Type.NavajoWhite3,
@@ -1162,13 +1162,13 @@ export const navajoWhite3: Type = make({
 /**
  * Eightbit Grey69 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const grey69: Type = make({ code: ASEightBitColorCode.Type.Grey69 });
 /**
  * Eightbit LightSteelBlue3 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const lightSteelBlue3: Type = make({
   code: ASEightBitColorCode.Type.LightSteelBlue3,
@@ -1176,7 +1176,7 @@ export const lightSteelBlue3: Type = make({
 /**
  * Eightbit LightSteelBlue Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const lightSteelBlue: Type = make({
   code: ASEightBitColorCode.Type.LightSteelBlue,
@@ -1184,7 +1184,7 @@ export const lightSteelBlue: Type = make({
 /**
  * Eightbit Yellow3_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const yellow3_1: Type = make({
   code: ASEightBitColorCode.Type.Yellow3_1,
@@ -1192,7 +1192,7 @@ export const yellow3_1: Type = make({
 /**
  * Eightbit DarkOliveGreen3_3 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const darkOliveGreen3_3: Type = make({
   code: ASEightBitColorCode.Type.DarkOliveGreen3_3,
@@ -1200,7 +1200,7 @@ export const darkOliveGreen3_3: Type = make({
 /**
  * Eightbit DarkSeaGreen3_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const darkSeaGreen3_2: Type = make({
   code: ASEightBitColorCode.Type.DarkSeaGreen3_2,
@@ -1208,7 +1208,7 @@ export const darkSeaGreen3_2: Type = make({
 /**
  * Eightbit DarkSeaGreen2_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const darkSeaGreen2_1: Type = make({
   code: ASEightBitColorCode.Type.DarkSeaGreen2_1,
@@ -1216,7 +1216,7 @@ export const darkSeaGreen2_1: Type = make({
 /**
  * Eightbit LightCyan3 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const lightCyan3: Type = make({
   code: ASEightBitColorCode.Type.LightCyan3,
@@ -1224,7 +1224,7 @@ export const lightCyan3: Type = make({
 /**
  * Eightbit LightSkyBlue1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const lightSkyBlue1: Type = make({
   code: ASEightBitColorCode.Type.LightSkyBlue1,
@@ -1232,7 +1232,7 @@ export const lightSkyBlue1: Type = make({
 /**
  * Eightbit GreenYellow Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const greenYellow: Type = make({
   code: ASEightBitColorCode.Type.GreenYellow,
@@ -1240,7 +1240,7 @@ export const greenYellow: Type = make({
 /**
  * Eightbit DarkOliveGreen2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const darkOliveGreen2: Type = make({
   code: ASEightBitColorCode.Type.DarkOliveGreen2,
@@ -1248,7 +1248,7 @@ export const darkOliveGreen2: Type = make({
 /**
  * Eightbit PaleGreen1_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const paleGreen1_2: Type = make({
   code: ASEightBitColorCode.Type.PaleGreen1_2,
@@ -1256,7 +1256,7 @@ export const paleGreen1_2: Type = make({
 /**
  * Eightbit DarkSeaGreen2_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const darkSeaGreen2_2: Type = make({
   code: ASEightBitColorCode.Type.DarkSeaGreen2_2,
@@ -1264,7 +1264,7 @@ export const darkSeaGreen2_2: Type = make({
 /**
  * Eightbit DarkSeaGreen1_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const darkSeaGreen1_1: Type = make({
   code: ASEightBitColorCode.Type.DarkSeaGreen1_1,
@@ -1272,7 +1272,7 @@ export const darkSeaGreen1_1: Type = make({
 /**
  * Eightbit PaleTurquoise1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const paleTurquoise1: Type = make({
   code: ASEightBitColorCode.Type.PaleTurquoise1,
@@ -1280,13 +1280,13 @@ export const paleTurquoise1: Type = make({
 /**
  * Eightbit Red3_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const red3_2: Type = make({ code: ASEightBitColorCode.Type.Red3_2 });
 /**
  * Eightbit DeepPink3_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const deepPink3_1: Type = make({
   code: ASEightBitColorCode.Type.DeepPink3_1,
@@ -1294,7 +1294,7 @@ export const deepPink3_1: Type = make({
 /**
  * Eightbit DeepPink3_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const deepPink3_2: Type = make({
   code: ASEightBitColorCode.Type.DeepPink3_2,
@@ -1302,7 +1302,7 @@ export const deepPink3_2: Type = make({
 /**
  * Eightbit Magenta3_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const magenta3_2: Type = make({
   code: ASEightBitColorCode.Type.Magenta3_2,
@@ -1310,7 +1310,7 @@ export const magenta3_2: Type = make({
 /**
  * Eightbit Magenta3_3 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const magenta3_3: Type = make({
   code: ASEightBitColorCode.Type.Magenta3_3,
@@ -1318,7 +1318,7 @@ export const magenta3_3: Type = make({
 /**
  * Eightbit Magenta2_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const magenta2_1: Type = make({
   code: ASEightBitColorCode.Type.Magenta2_1,
@@ -1326,7 +1326,7 @@ export const magenta2_1: Type = make({
 /**
  * Eightbit DarkOrange3_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const darkOrange3_2: Type = make({
   code: ASEightBitColorCode.Type.DarkOrange3_2,
@@ -1334,7 +1334,7 @@ export const darkOrange3_2: Type = make({
 /**
  * Eightbit IndianRed_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const indianRed_2: Type = make({
   code: ASEightBitColorCode.Type.IndianRed_2,
@@ -1342,7 +1342,7 @@ export const indianRed_2: Type = make({
 /**
  * Eightbit HotPink3_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const hotPink3_2: Type = make({
   code: ASEightBitColorCode.Type.HotPink3_2,
@@ -1350,19 +1350,19 @@ export const hotPink3_2: Type = make({
 /**
  * Eightbit HotPink2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const hotPink2: Type = make({ code: ASEightBitColorCode.Type.HotPink2 });
 /**
  * Eightbit Orchid Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const orchid: Type = make({ code: ASEightBitColorCode.Type.Orchid });
 /**
  * Eightbit MediumOrchid1_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const mediumOrchid1_1: Type = make({
   code: ASEightBitColorCode.Type.MediumOrchid1_1,
@@ -1370,13 +1370,13 @@ export const mediumOrchid1_1: Type = make({
 /**
  * Eightbit Orange3 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const orange3: Type = make({ code: ASEightBitColorCode.Type.Orange3 });
 /**
  * Eightbit LightSalmon3_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const lightSalmon3_2: Type = make({
   code: ASEightBitColorCode.Type.LightSalmon3_2,
@@ -1384,7 +1384,7 @@ export const lightSalmon3_2: Type = make({
 /**
  * Eightbit LightPink3 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const lightPink3: Type = make({
   code: ASEightBitColorCode.Type.LightPink3,
@@ -1392,31 +1392,31 @@ export const lightPink3: Type = make({
 /**
  * Eightbit Pink3 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const pink3: Type = make({ code: ASEightBitColorCode.Type.Pink3 });
 /**
  * Eightbit Plum3 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const plum3: Type = make({ code: ASEightBitColorCode.Type.Plum3 });
 /**
  * Eightbit Violet Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const violet: Type = make({ code: ASEightBitColorCode.Type.Violet });
 /**
  * Eightbit Gold3_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const gold3_2: Type = make({ code: ASEightBitColorCode.Type.Gold3_2 });
 /**
  * Eightbit LightGoldenRod3 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const lightGoldenRod3: Type = make({
   code: ASEightBitColorCode.Type.LightGoldenRod3,
@@ -1424,13 +1424,13 @@ export const lightGoldenRod3: Type = make({
 /**
  * Eightbit Tan Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const tan: Type = make({ code: ASEightBitColorCode.Type.Tan });
 /**
  * Eightbit MistyRose3 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const mistyRose3: Type = make({
   code: ASEightBitColorCode.Type.MistyRose3,
@@ -1438,19 +1438,19 @@ export const mistyRose3: Type = make({
 /**
  * Eightbit Thistle3 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const thistle3: Type = make({ code: ASEightBitColorCode.Type.Thistle3 });
 /**
  * Eightbit Plum2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const plum2: Type = make({ code: ASEightBitColorCode.Type.Plum2 });
 /**
  * Eightbit Yellow3_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const yellow3_2: Type = make({
   code: ASEightBitColorCode.Type.Yellow3_2,
@@ -1458,13 +1458,13 @@ export const yellow3_2: Type = make({
 /**
  * Eightbit Khaki3 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const khaki3: Type = make({ code: ASEightBitColorCode.Type.Khaki3 });
 /**
  * Eightbit LightGoldenRod2_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const lightGoldenRod2_1: Type = make({
   code: ASEightBitColorCode.Type.LightGoldenRod2_1,
@@ -1472,7 +1472,7 @@ export const lightGoldenRod2_1: Type = make({
 /**
  * Eightbit LightYellow3 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const lightYellow3: Type = make({
   code: ASEightBitColorCode.Type.LightYellow3,
@@ -1480,13 +1480,13 @@ export const lightYellow3: Type = make({
 /**
  * Eightbit Grey84 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const grey84: Type = make({ code: ASEightBitColorCode.Type.Grey84 });
 /**
  * Eightbit LightSteelBlue1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const lightSteelBlue1: Type = make({
   code: ASEightBitColorCode.Type.LightSteelBlue1,
@@ -1494,13 +1494,13 @@ export const lightSteelBlue1: Type = make({
 /**
  * Eightbit Yellow2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const yellow2: Type = make({ code: ASEightBitColorCode.Type.Yellow2 });
 /**
  * Eightbit DarkOliveGreen1_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const darkOliveGreen1_1: Type = make({
   code: ASEightBitColorCode.Type.DarkOliveGreen1_1,
@@ -1508,7 +1508,7 @@ export const darkOliveGreen1_1: Type = make({
 /**
  * Eightbit DarkOliveGreen1_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const darkOliveGreen1_2: Type = make({
   code: ASEightBitColorCode.Type.DarkOliveGreen1_2,
@@ -1516,7 +1516,7 @@ export const darkOliveGreen1_2: Type = make({
 /**
  * Eightbit DarkSeaGreen1_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const darkSeaGreen1_2: Type = make({
   code: ASEightBitColorCode.Type.DarkSeaGreen1_2,
@@ -1524,7 +1524,7 @@ export const darkSeaGreen1_2: Type = make({
 /**
  * Eightbit HoneyDew2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const honeyDew2: Type = make({
   code: ASEightBitColorCode.Type.HoneyDew2,
@@ -1532,7 +1532,7 @@ export const honeyDew2: Type = make({
 /**
  * Eightbit LightCyan1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const lightCyan1: Type = make({
   code: ASEightBitColorCode.Type.LightCyan1,
@@ -1540,13 +1540,13 @@ export const lightCyan1: Type = make({
 /**
  * Eightbit Red1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const red1: Type = make({ code: ASEightBitColorCode.Type.Red1 });
 /**
  * Eightbit DeepPink2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const deepPink2: Type = make({
   code: ASEightBitColorCode.Type.DeepPink2,
@@ -1554,7 +1554,7 @@ export const deepPink2: Type = make({
 /**
  * Eightbit DeepPink1_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const deepPink1_1: Type = make({
   code: ASEightBitColorCode.Type.DeepPink1_1,
@@ -1562,7 +1562,7 @@ export const deepPink1_1: Type = make({
 /**
  * Eightbit DeepPink1_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const deepPink1_2: Type = make({
   code: ASEightBitColorCode.Type.DeepPink1_2,
@@ -1570,7 +1570,7 @@ export const deepPink1_2: Type = make({
 /**
  * Eightbit Magenta2_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const magenta2_2: Type = make({
   code: ASEightBitColorCode.Type.Magenta2_2,
@@ -1578,13 +1578,13 @@ export const magenta2_2: Type = make({
 /**
  * Eightbit Magenta1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const magenta1: Type = make({ code: ASEightBitColorCode.Type.Magenta1 });
 /**
  * Eightbit OrangeRed1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const orangeRed1: Type = make({
   code: ASEightBitColorCode.Type.OrangeRed1,
@@ -1592,7 +1592,7 @@ export const orangeRed1: Type = make({
 /**
  * Eightbit IndianRed1_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const indianRed1_1: Type = make({
   code: ASEightBitColorCode.Type.IndianRed1_1,
@@ -1600,7 +1600,7 @@ export const indianRed1_1: Type = make({
 /**
  * Eightbit IndianRed1_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const indianRed1_2: Type = make({
   code: ASEightBitColorCode.Type.IndianRed1_2,
@@ -1608,7 +1608,7 @@ export const indianRed1_2: Type = make({
 /**
  * Eightbit HotPink_1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const hotPink_1: Type = make({
   code: ASEightBitColorCode.Type.HotPink_1,
@@ -1616,7 +1616,7 @@ export const hotPink_1: Type = make({
 /**
  * Eightbit HotPink_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const hotPink_2: Type = make({
   code: ASEightBitColorCode.Type.HotPink_2,
@@ -1624,7 +1624,7 @@ export const hotPink_2: Type = make({
 /**
  * Eightbit MediumOrchid1_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const mediumOrchid1_2: Type = make({
   code: ASEightBitColorCode.Type.MediumOrchid1_2,
@@ -1632,7 +1632,7 @@ export const mediumOrchid1_2: Type = make({
 /**
  * Eightbit DarkOrange Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const darkOrange: Type = make({
   code: ASEightBitColorCode.Type.DarkOrange,
@@ -1640,13 +1640,13 @@ export const darkOrange: Type = make({
 /**
  * Eightbit Salmon1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const salmon1: Type = make({ code: ASEightBitColorCode.Type.Salmon1 });
 /**
  * Eightbit LightCoral Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const lightCoral: Type = make({
   code: ASEightBitColorCode.Type.LightCoral,
@@ -1654,7 +1654,7 @@ export const lightCoral: Type = make({
 /**
  * Eightbit PaleVioletRed1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const paleVioletRed1: Type = make({
   code: ASEightBitColorCode.Type.PaleVioletRed1,
@@ -1662,25 +1662,25 @@ export const paleVioletRed1: Type = make({
 /**
  * Eightbit Orchid2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const orchid2: Type = make({ code: ASEightBitColorCode.Type.Orchid2 });
 /**
  * Eightbit Orchid1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const orchid1: Type = make({ code: ASEightBitColorCode.Type.Orchid1 });
 /**
  * Eightbit Orange1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const orange1: Type = make({ code: ASEightBitColorCode.Type.Orange1 });
 /**
  * Eightbit SandyBrown Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const sandyBrown: Type = make({
   code: ASEightBitColorCode.Type.SandyBrown,
@@ -1688,7 +1688,7 @@ export const sandyBrown: Type = make({
 /**
  * Eightbit LightSalmon1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const lightSalmon1: Type = make({
   code: ASEightBitColorCode.Type.LightSalmon1,
@@ -1696,7 +1696,7 @@ export const lightSalmon1: Type = make({
 /**
  * Eightbit LightPink1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const lightPink1: Type = make({
   code: ASEightBitColorCode.Type.LightPink1,
@@ -1704,25 +1704,25 @@ export const lightPink1: Type = make({
 /**
  * Eightbit Pink1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const pink1: Type = make({ code: ASEightBitColorCode.Type.Pink1 });
 /**
  * Eightbit Plum1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const plum1: Type = make({ code: ASEightBitColorCode.Type.Plum1 });
 /**
  * Eightbit Gold1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const gold1: Type = make({ code: ASEightBitColorCode.Type.Gold1 });
 /**
  * Eightbit LightGoldenRod2_2 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const lightGoldenRod2_2: Type = make({
   code: ASEightBitColorCode.Type.LightGoldenRod2_2,
@@ -1730,7 +1730,7 @@ export const lightGoldenRod2_2: Type = make({
 /**
  * Eightbit LightGoldenRod2_3 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const lightGoldenRod2_3: Type = make({
   code: ASEightBitColorCode.Type.LightGoldenRod2_3,
@@ -1738,7 +1738,7 @@ export const lightGoldenRod2_3: Type = make({
 /**
  * Eightbit NavajoWhite1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const navajoWhite1: Type = make({
   code: ASEightBitColorCode.Type.NavajoWhite1,
@@ -1746,7 +1746,7 @@ export const navajoWhite1: Type = make({
 /**
  * Eightbit MistyRose1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const mistyRose1: Type = make({
   code: ASEightBitColorCode.Type.MistyRose1,
@@ -1754,19 +1754,19 @@ export const mistyRose1: Type = make({
 /**
  * Eightbit Thistle1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const thistle1: Type = make({ code: ASEightBitColorCode.Type.Thistle1 });
 /**
  * Eightbit Yellow1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const yellow1: Type = make({ code: ASEightBitColorCode.Type.Yellow1 });
 /**
  * Eightbit LightGoldenRod1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const lightGoldenRod1: Type = make({
   code: ASEightBitColorCode.Type.LightGoldenRod1,
@@ -1774,19 +1774,19 @@ export const lightGoldenRod1: Type = make({
 /**
  * Eightbit Khaki1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const khaki1: Type = make({ code: ASEightBitColorCode.Type.Khaki1 });
 /**
  * Eightbit Wheat1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const wheat1: Type = make({ code: ASEightBitColorCode.Type.Wheat1 });
 /**
  * Eightbit Cornsilk1 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const cornsilk1: Type = make({
   code: ASEightBitColorCode.Type.Cornsilk1,
@@ -1794,150 +1794,150 @@ export const cornsilk1: Type = make({
 /**
  * Eightbit Grey100 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const grey100: Type = make({ code: ASEightBitColorCode.Type.Grey100 });
 /**
  * Eightbit Grey3 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const grey3: Type = make({ code: ASEightBitColorCode.Type.Grey3 });
 /**
  * Eightbit Grey7 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const grey7: Type = make({ code: ASEightBitColorCode.Type.Grey7 });
 /**
  * Eightbit Grey11 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const grey11: Type = make({ code: ASEightBitColorCode.Type.Grey11 });
 /**
  * Eightbit Grey15 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const grey15: Type = make({ code: ASEightBitColorCode.Type.Grey15 });
 /**
  * Eightbit Grey19 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const grey19: Type = make({ code: ASEightBitColorCode.Type.Grey19 });
 /**
  * Eightbit Grey23 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const grey23: Type = make({ code: ASEightBitColorCode.Type.Grey23 });
 /**
  * Eightbit Grey27 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const grey27: Type = make({ code: ASEightBitColorCode.Type.Grey27 });
 /**
  * Eightbit Grey30 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const grey30: Type = make({ code: ASEightBitColorCode.Type.Grey30 });
 /**
  * Eightbit Grey35 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const grey35: Type = make({ code: ASEightBitColorCode.Type.Grey35 });
 /**
  * Eightbit Grey39 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const grey39: Type = make({ code: ASEightBitColorCode.Type.Grey39 });
 /**
  * Eightbit Grey42 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const grey42: Type = make({ code: ASEightBitColorCode.Type.Grey42 });
 /**
  * Eightbit Grey46 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const grey46: Type = make({ code: ASEightBitColorCode.Type.Grey46 });
 /**
  * Eightbit Grey50 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const grey50: Type = make({ code: ASEightBitColorCode.Type.Grey50 });
 /**
  * Eightbit Grey54 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const grey54: Type = make({ code: ASEightBitColorCode.Type.Grey54 });
 /**
  * Eightbit Grey58 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const grey58: Type = make({ code: ASEightBitColorCode.Type.Grey58 });
 /**
  * Eightbit Grey62 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const grey62: Type = make({ code: ASEightBitColorCode.Type.Grey62 });
 /**
  * Eightbit Grey66 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const grey66: Type = make({ code: ASEightBitColorCode.Type.Grey66 });
 /**
  * Eightbit Grey70 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const grey70: Type = make({ code: ASEightBitColorCode.Type.Grey70 });
 /**
  * Eightbit Grey74 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const grey74: Type = make({ code: ASEightBitColorCode.Type.Grey74 });
 /**
  * Eightbit Grey78 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const grey78: Type = make({ code: ASEightBitColorCode.Type.Grey78 });
 /**
  * Eightbit Grey82 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const grey82: Type = make({ code: ASEightBitColorCode.Type.Grey82 });
 /**
  * Eightbit Grey85 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const grey85: Type = make({ code: ASEightBitColorCode.Type.Grey85 });
 /**
  * Eightbit Grey89 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const grey89: Type = make({ code: ASEightBitColorCode.Type.Grey89 });
 /**
  * Eightbit Grey93 Color instance
  *
- * @category EightBit instances
+ * @category Instances
  */
 export const grey93: Type = make({ code: ASEightBitColorCode.Type.Grey93 });

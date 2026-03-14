@@ -81,7 +81,7 @@ export const getEquivalence = <A, B>(
 /**
  * Returns the `value` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const value: <A, B>(self: Type<A, B>) => A | B = Struct.get('value');
 

@@ -113,14 +113,14 @@ export const make = (params: MTypes.Data<Type>): Type => Type.make(params);
 /**
  * Gets the `text` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const text: MTypes.OneArgFunction<Type, string> = Struct.get('text');
 
 /**
  * Gets the `style` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const style: MTypes.OneArgFunction<Type, ASStyleCharacteristics.Type> = Struct.get('style');
 

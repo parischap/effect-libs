@@ -150,21 +150,21 @@ export const make: <const N extends string, T>(
 /**
  * Returns the `name` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const name: <const N extends string, T>(self: Type<N, T>) => N = Struct.get('name');
 
 /**
  * Returns the `label` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const label: <const N extends string, T>(self: Type<N, T>) => string = Struct.get('label');
 
 /**
  * Returns the `description` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const description: <const N extends string, T>(self: Type<N, T>) => string =
   Struct.get('description');
@@ -172,7 +172,7 @@ export const description: <const N extends string, T>(self: Type<N, T>) => strin
 /**
  * Returns the `parser` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const parser: <const N extends string, T>(
   self: Type<N, T>,
@@ -181,7 +181,7 @@ export const parser: <const N extends string, T>(
 /**
  * Returns the `formatter` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const formatter: <const N extends string, T>(
   self: Type<N, T>,
@@ -190,7 +190,7 @@ export const formatter: <const N extends string, T>(
 /**
  * Returns the `tSchemaInstance` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const tSchemaInstance: <const N extends string, T>(self: Type<N, T>) => Schema.Schema<T, T> =
   Struct.get('tSchemaInstance');

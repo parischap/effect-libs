@@ -108,7 +108,7 @@ export const make = ({ id, action }: { readonly id: string; readonly action: Act
 /**
  * Returns the `id` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
 

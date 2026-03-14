@@ -103,14 +103,14 @@ export const halfExpand2 = make({ precision: 2 });
 /**
  * Returns the `precision` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const precision: MTypes.OneArgFunction<Type, number> = Struct.get('precision');
 
 /**
  * Returns the `roundingOption` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const roundingOption: MTypes.OneArgFunction<Type, CVRoundingOption.Type> =
   Struct.get('roundingOption');

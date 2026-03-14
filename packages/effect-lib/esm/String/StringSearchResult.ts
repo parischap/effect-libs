@@ -131,20 +131,20 @@ export const byLongestFirst: Order.Order<Type> = Order.combine(
 /**
  * Returns the `startIndex` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const startIndex: MTypes.OneArgFunction<Type, number> = Struct.get('startIndex');
 
 /**
  * Returns the `endIndex` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const endIndex: MTypes.OneArgFunction<Type, number> = Struct.get('endIndex');
 
 /**
  * Returns the `match` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const match: MTypes.OneArgFunction<Type, string> = Struct.get('match');

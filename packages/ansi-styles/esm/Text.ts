@@ -108,7 +108,7 @@ export const haveSameText: Equivalence.Equivalence<Type> = (self, that) =>
 /**
  * Returns the `uniStyledTexts` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const uniStyledTexts: MTypes.OneArgFunction<
   Type,

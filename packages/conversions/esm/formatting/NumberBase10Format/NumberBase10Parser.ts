@@ -194,7 +194,7 @@ export const fromFormat = (format: CVNumberBase10Format.Type) => Type.fromFormat
 /**
  * Returns the `description` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const description: MTypes.OneArgFunction<Type, string> = Struct.get('description');
 

@@ -452,21 +452,21 @@ export const setWeekday =
 /**
  * Returns the `timestamp` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const timestamp: MTypes.OneArgFunction<Type, number> = Struct.get('timestamp');
 
 /**
  * Returns the `year` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const year: MTypes.OneArgFunction<Type, number> = Struct.get('year');
 
 /**
  * Returns the `yearStartTimestamp` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const yearStartTimestamp: MTypes.OneArgFunction<Type, number> =
   Struct.get('yearStartTimestamp');

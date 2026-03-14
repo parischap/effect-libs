@@ -63,6 +63,6 @@ export const make = (token: CVDateTimeFormatToken.Type): Type => Type.make({ tok
 /**
  * Returns the `token` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const token: MTypes.OneArgFunction<Type, CVDateTimeFormatToken.Type> = Struct.get('token');

@@ -178,7 +178,7 @@ export const make = (params: MTypes.Data<Type>): Type => Type.make(params);
 /**
  * Returns the `thousandSeparator` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const thousandSeparator: MTypes.OneArgFunction<Type, string> =
   Struct.get('thousandSeparator');
@@ -186,7 +186,7 @@ export const thousandSeparator: MTypes.OneArgFunction<Type, string> =
 /**
  * Returns the `fractionalSeparator` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const fractionalSeparator: MTypes.OneArgFunction<Type, string> =
   Struct.get('fractionalSeparator');
@@ -194,7 +194,7 @@ export const fractionalSeparator: MTypes.OneArgFunction<Type, string> =
 /**
  * Returns the `showNullIntegerPart` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const showNullIntegerPart: MTypes.OneArgFunction<Type, boolean> =
   Struct.get('showNullIntegerPart');
@@ -202,7 +202,7 @@ export const showNullIntegerPart: MTypes.OneArgFunction<Type, boolean> =
 /**
  * Returns the `integerPartPadding` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const integerPartPadding: MTypes.OneArgFunction<Type, IntegerPartPadding> =
   Struct.get('integerPartPadding');
@@ -210,7 +210,7 @@ export const integerPartPadding: MTypes.OneArgFunction<Type, IntegerPartPadding>
 /**
  * Returns the `minimumFractionalDigits` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const minimumFractionalDigits: MTypes.OneArgFunction<Type, number> =
   Struct.get('minimumFractionalDigits');
@@ -218,7 +218,7 @@ export const minimumFractionalDigits: MTypes.OneArgFunction<Type, number> =
 /**
  * Returns the `maximumFractionalDigits` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const maximumFractionalDigits: MTypes.OneArgFunction<Type, number> =
   Struct.get('maximumFractionalDigits');
@@ -226,7 +226,7 @@ export const maximumFractionalDigits: MTypes.OneArgFunction<Type, number> =
 /**
  * Returns the `eNotationChars` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const eNotationChars: MTypes.OneArgFunction<Type, ReadonlyArray<string>> = Struct.get(
   'eNotationChars',
@@ -235,7 +235,7 @@ export const eNotationChars: MTypes.OneArgFunction<Type, ReadonlyArray<string>> 
 /**
  * Returns the `scientificNotationOption` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const scientificNotationOption: MTypes.OneArgFunction<
   Type,
@@ -245,7 +245,7 @@ export const scientificNotationOption: MTypes.OneArgFunction<
 /**
  * Returns the `roundingOption` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const roundingOption: MTypes.OneArgFunction<Type, CVRoundingOption.Type> =
   Struct.get('roundingOption');
@@ -253,7 +253,7 @@ export const roundingOption: MTypes.OneArgFunction<Type, CVRoundingOption.Type> 
 /**
  * Returns the `signDisplayOption` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const signDisplayOption: MTypes.OneArgFunction<
   Type,

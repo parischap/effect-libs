@@ -339,48 +339,48 @@ export const setMillisecond =
 /**
  * Returns the `timestampOffset` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const timestampOffset: MTypes.OneArgFunction<Type, number> = Struct.get('timestampOffset');
 
 /**
  * Returns the `hour23` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const hour23: MTypes.OneArgFunction<Type, number> = Struct.get('hour23');
 /**
  * Returns the `hour11` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const hour11: MTypes.OneArgFunction<Type, number> = Struct.get('hour11');
 
 /**
  * Returns the `meridiem` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const meridiem: MTypes.OneArgFunction<Type, 0 | 12> = Struct.get('meridiem');
 
 /**
  * Returns the `minute` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const minute: MTypes.OneArgFunction<Type, number> = Struct.get('minute');
 
 /**
  * Returns the `second` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const second: MTypes.OneArgFunction<Type, number> = Struct.get('second');
 
 /**
  * Returns the `millisecond` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const millisecond: MTypes.OneArgFunction<Type, number> = Struct.get('millisecond');
 

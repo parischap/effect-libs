@@ -607,14 +607,14 @@ export const fromLocaleOrThrow = (locale: string): Type =>
 /**
  * Returns the `name` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const name: MTypes.OneArgFunction<Type, string> = Struct.get('name');
 
 /**
  * Returns the `tokenMap` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const tokenMap: MTypes.OneArgFunction<Type, CVDateTimeFormatTokenMap.Type> =
   Struct.get('tokenMap');

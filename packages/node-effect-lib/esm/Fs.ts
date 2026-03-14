@@ -32,11 +32,11 @@ const moduleTag = '@parischap/node-effect-lib/Fs/';
 const PlatformNodeFsService = PlatformFs.FileSystem;
 const PlatformNodeFsLive = PlatformNodeFs.layer;
 
-/** @category Type guards */
+/** @category Guards */
 export const isFileStat = (s: PlatformFs.File.Info): s is PlatformFs.File.Info & { type: 'File' } =>
   s.type === 'File';
 
-/** @category Type guards */
+/** @category Guards */
 export const isFolderStat = (
   s: PlatformFs.File.Info,
 ): s is PlatformFs.File.Info & { type: 'Directory' } => s.type === 'Directory';
@@ -69,19 +69,19 @@ const makeExpandedWithStat = <P extends MFs.Path | MFs.Name>(
   params: MTypes.Data<WithStat<P>>,
 ): ExpandedWithStat<P> => params as ExpandedWithStat<P>;
 
-/** @category Type guards */
+/** @category Guards */
 export const isFilenameWithStat = (p: WithStat<MFs.Name>): p is FilenameWithStat =>
   isFileStat(p.stat);
 
-/** @category Type guards */
+/** @category Guards */
 export const isFoldernameWithStat = (p: WithStat<MFs.Name>): p is FoldernameWithStat =>
   isFolderStat(p.stat);
 
-/** @category Type guards */
+/** @category Guards */
 export const isFilePathWithStat = (p: WithStat<MFs.Path>): p is FilepathWithStat =>
   isFileStat(p.stat);
 
-/** @category Type guards */
+/** @category Guards */
 export const isFolderPathWithStat = (p: WithStat<MFs.Path>): p is FolderpathWithStat =>
   isFolderStat(p.stat);
 

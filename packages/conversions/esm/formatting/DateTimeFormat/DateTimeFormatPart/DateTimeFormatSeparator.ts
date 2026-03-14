@@ -63,7 +63,7 @@ export const make = (value: string): Type => Type.make({ value });
 /**
  * Returns the `value` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const value: MTypes.OneArgFunction<Type, string> = Struct.get('value');
 

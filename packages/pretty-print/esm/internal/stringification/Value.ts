@@ -264,14 +264,14 @@ export const isFunction = (u: Any): u is Type<MTypes.AnyFunction> =>
 /**
  * Returns the `content` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const content: <V>(self: Type<V>) => V = Struct.get('content');
 
 /**
  * Returns the `contentType` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const contentType: MTypes.OneArgFunction<Any, MTypesCategory.Type> =
   Struct.get('contentType');
@@ -279,21 +279,21 @@ export const contentType: MTypes.OneArgFunction<Any, MTypesCategory.Type> =
 /**
  * Returns the `depth` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const depth: MTypes.OneArgFunction<Any, number> = Struct.get('depth');
 
 /**
  * Returns the `protoDepth` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const protoDepth: MTypes.OneArgFunction<Any, number> = Struct.get('protoDepth');
 
 /**
  * Returns the `stringKey` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const stringKey: MTypes.OneArgFunction<Any, MTypes.OverOne<string>> = Struct.get(
   'stringKey',
@@ -302,20 +302,20 @@ export const stringKey: MTypes.OneArgFunction<Any, MTypes.OverOne<string>> = Str
 /**
  * Returns the `oneLineStringKey` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const oneLineStringKey: MTypes.OneArgFunction<Any, string> = Struct.get('oneLineStringKey');
 
 /**
  * Returns the `hasSymbolicKey` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const hasSymbolicKey: MTypes.OneArgFunction<Any, boolean> = Struct.get('hasSymbolicKey');
 
 /**
  * Returns the `isEnumerable` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const isEnumerable: MTypes.OneArgFunction<Any, boolean> = Struct.get('isEnumerable');

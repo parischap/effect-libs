@@ -81,7 +81,7 @@ const _make = (params: MTypes.Data<Type>): Type =>
 /**
  * Gets the `style` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const style: MTypes.OneArgFunction<Type, ASStyleCharacteristics.Type> = Struct.get('style');
 
@@ -271,111 +271,111 @@ export const color = (color: ASColor.Type): Type =>
 /**
  * Original black color style instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const black: Type = _make({ style: ASStyleCharacteristics.black });
 
 /**
  * Original red color style instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const red: Type = _make({ style: ASStyleCharacteristics.red });
 
 /**
  * Original green color style instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const green: Type = _make({ style: ASStyleCharacteristics.green });
 
 /**
  * Original yellow color style instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const yellow: Type = _make({ style: ASStyleCharacteristics.yellow });
 
 /**
  * Original blue color style instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const blue: Type = _make({ style: ASStyleCharacteristics.blue });
 
 /**
  * Original magenta color style instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const magenta: Type = _make({ style: ASStyleCharacteristics.magenta });
 
 /**
  * Original cyan color style instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const cyan: Type = _make({ style: ASStyleCharacteristics.cyan });
 
 /**
  * Original white color style instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const white: Type = _make({ style: ASStyleCharacteristics.white });
 /**
  * Original bright black color style instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const brightBlack: Type = _make({ style: ASStyleCharacteristics.brightBlack });
 
 /**
  * Original bright red color style instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const brightRed: Type = _make({ style: ASStyleCharacteristics.brightRed });
 
 /**
  * Original bright green color style instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const brightGreen: Type = _make({ style: ASStyleCharacteristics.brightGreen });
 
 /**
  * Original bright yellow color style instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const brightYellow: Type = _make({ style: ASStyleCharacteristics.brightYellow });
 
 /**
  * Original bright blue color style instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const brightBlue: Type = _make({ style: ASStyleCharacteristics.brightBlue });
 
 /**
  * Original bright magenta color style instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const brightMagenta: Type = _make({ style: ASStyleCharacteristics.brightMagenta });
 
 /**
  * Original bright cyan color style instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const brightCyan: Type = _make({ style: ASStyleCharacteristics.brightCyan });
 
 /**
  * Original bright white color style instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const brightWhite: Type = _make({ style: ASStyleCharacteristics.brightWhite });
 
@@ -399,111 +399,111 @@ export const bgColor = (color: ASColor.Type): Type =>
 /**
  * Original black color style instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const bgBlack: Type = _make({ style: ASStyleCharacteristics.bgBlack });
 
 /**
  * Original red color style instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const bgRed: Type = _make({ style: ASStyleCharacteristics.bgRed });
 
 /**
  * Original green color style instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const bgGreen: Type = _make({ style: ASStyleCharacteristics.bgGreen });
 
 /**
  * Original yellow color style instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const bgYellow: Type = _make({ style: ASStyleCharacteristics.bgYellow });
 
 /**
  * Original blue color style instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const bgBlue: Type = _make({ style: ASStyleCharacteristics.bgBlue });
 
 /**
  * Original magenta color style instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const bgMagenta: Type = _make({ style: ASStyleCharacteristics.bgMagenta });
 
 /**
  * Original cyan color style instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const bgCyan: Type = _make({ style: ASStyleCharacteristics.bgCyan });
 
 /**
  * Original white color style instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const bgWhite: Type = _make({ style: ASStyleCharacteristics.bgWhite });
 
 /**
  * Original bright black color style instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const bgBrightBlack: Type = _make({ style: ASStyleCharacteristics.bgBrightBlack });
 
 /**
  * Original bright red color style instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const bgBrightRed: Type = _make({ style: ASStyleCharacteristics.bgBrightRed });
 
 /**
  * Original bright green color style instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const bgBrightGreen: Type = _make({ style: ASStyleCharacteristics.bgBrightGreen });
 
 /**
  * Original bright yellow color style instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const bgBrightYellow: Type = _make({ style: ASStyleCharacteristics.bgBrightYellow });
 
 /**
  * Original bright blue color style instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const bgBrightBlue: Type = _make({ style: ASStyleCharacteristics.bgBrightBlue });
 
 /**
  * Original bright magenta color style instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const bgBrightMagenta: Type = _make({ style: ASStyleCharacteristics.bgBrightMagenta });
 
 /**
  * Original bright cyan color style instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const bgBrightCyan: Type = _make({ style: ASStyleCharacteristics.bgBrightCyan });
 
 /**
  * Original bright white color style instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const bgBrightWhite: Type = _make({ style: ASStyleCharacteristics.bgBrightWhite });

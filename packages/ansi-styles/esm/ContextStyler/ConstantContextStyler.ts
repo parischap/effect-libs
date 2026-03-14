@@ -69,55 +69,55 @@ export const none: Type = make({ style: ASStyle.none });
 /**
  * Original black color instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const black: Type = make({ style: ASStyle.black });
 
 /**
  * Original red color instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const red: Type = make({ style: ASStyle.red });
 
 /**
  * Original green color instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const green: Type = make({ style: ASStyle.green });
 
 /**
  * Original yellow color instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const yellow: Type = make({ style: ASStyle.yellow });
 
 /**
  * Original blue color instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const blue: Type = make({ style: ASStyle.blue });
 
 /**
  * Original magenta color instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const magenta: Type = make({ style: ASStyle.magenta });
 
 /**
  * Original cyan color instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const cyan: Type = make({ style: ASStyle.cyan });
 
 /**
  * Original white color instance
  *
- * @category Original instances
+ * @category Instances
  */
 export const white: Type = make({ style: ASStyle.white });

@@ -31,7 +31,7 @@ import * as CVTemplatePlaceholder from './Template/TemplatePart/TemplatePlacehol
  * A `Schema` that transforms a string into a number according to the `format`. Read documentation
  * of module NumberBase10Format.ts for more details
  *
- * @category Schema transformations
+ * @category Utils
  */
 export const Number = (format: CVNumberBase10Format.Type): Schema.Schema<number, string> => {
   const parser = pipe(format, CVNumberBase10Parser.fromFormat, CVNumberBase10Parser.parseAsNumber);
@@ -98,7 +98,7 @@ export {
    * A `Schema` that transforms a string into a `BigDecimal` according to `format`. Read documentation
    * of module NumberBase10Format.ts for more details
    *
-   * @category Schema transformations
+   * @category Utils
    */
   BigDecimalFromString as BigDecimal,
 };
@@ -106,7 +106,7 @@ export {
 /**
  * A `Schema` that represents a `CVDateTime`
  *
- * @category Schema instances
+ * @category Instances
  */
 export const DateTimeFromSelf = Schema.declare(
   (input: unknown): input is CVDateTime.Type => input instanceof CVDateTime.Type,
@@ -117,7 +117,7 @@ export const DateTimeFromSelf = Schema.declare(
  * `CVDateTime` object is created with the default timeZoneOffset of the machine this code is
  * running on
  *
- * @category Schema transformations
+ * @category Utils
  */
 export const DateFromDateTime: Schema.Schema<Date, CVDateTime.Type> = Schema.transform(
   DateTimeFromSelf,
@@ -133,7 +133,7 @@ export const DateFromDateTime: Schema.Schema<Date, CVDateTime.Type> = Schema.tra
  * A `Schema` that transforms a `CVDateTime` into an `Effect.DateTime.Zoned`. Both objects share the
  * same time zone offset
  *
- * @category Schema transformations
+ * @category Utils
  */
 export const DateTimeZonedFromDateTime: Schema.Schema<DateTime.Zoned, CVDateTime.Type> =
   Schema.transform(DateTimeFromSelf, Schema.DateTimeZonedFromSelf, {
@@ -171,7 +171,7 @@ export {
    * `formatter`. Read documentation of modules DateTimeParser.ts and DateTimeFormatter.ts for more
    * details.
    *
-   * @category Schema transformations
+   * @category Utils
    */
   DateTimeFromString as DateTime,
 };
@@ -181,7 +181,7 @@ export {
  * `formatter`. Read documentation of modules DateTimeParser.ts and DateTimeFormatter.ts for more
  * details.
  *
- * @category Schema transformations
+ * @category Utils
  */
 export const Date = (
   parser: CVDateTimeParser.Type,
@@ -194,7 +194,7 @@ export const Date = (
  * `parser` and `formatter`. Read documentation of modules DateTimeParser.ts and
  * DateTimeFormatter.ts for more details.
  *
- * @category Schema transformations
+ * @category Utils
  */
 export const DateTimeZoned = (
   parser: CVDateTimeParser.Type,
@@ -206,7 +206,7 @@ export const DateTimeZoned = (
  * A `Schema` that transforms a string into an object according to `template`. Read documentation of
  * module Template.ts for more details
  *
- * @category Schema transformations
+ * @category Utils
  */
 export const Template = <const PS extends CVTemplateParts.Type>(
   template: CVTemplate.Type<PS>,

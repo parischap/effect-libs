@@ -38,6 +38,6 @@ export abstract class Type<out A> extends MData.Class {
 /**
  * Returns the `value` property of `self`
  *
- * @category Destructors
+ * @category Getters
  */
 export const value: <A>(self: Type<A>) => A = Struct.get('value');
