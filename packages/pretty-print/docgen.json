@@ -1,0 +1,13 @@
+{
+  "$schema": "node_modules/@effect/docgen/schema.json",
+  "srcDir": "esm",
+  "exclude": [
+    "esm/internal/**/*",
+    "esm/bin/**/*"
+  ],
+  "outDir": "docs",
+  "parseCompilerOptions": "tsconfig.docgen.json",
+  "examplesCompilerOptions": "tsconfig.docgen.json",
+  "enforceDescriptions": true,
+  "enforceVersion": false
+}

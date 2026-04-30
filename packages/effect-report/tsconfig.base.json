@@ -1,0 +1,38 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Effect-TS/tsgo/refs/heads/main/schema.json",
+  "_version": "20.1.0",
+  "compilerOptions": {
+    "moduleDetection": "force",
+    "composite": true,
+    "incremental": true,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "moduleResolution": "NodeNext",
+    "sourceMap": true,
+    "noEmitOnError": false,
+    "noErrorTruncation": true,
+    "target": "ESNext",
+    "module": "NodeNext",
+    "removeComments": false,
+    "stripInternal": true,
+    "lib": [
+      "ESNext"
+    ],
+    "types": [
+      "node"
+    ],
+    "noEmit": true,
+    "verbatimModuleSyntax": true,
+    "useUnknownInCatchVariables": true,
+    "plugins": [
+      {
+        "name": "@effect/language-service"
+      }
+    ]
+  },
+  "extends": [
+    "@tsconfig/strictest/tsconfig.json"
+  ]
+}

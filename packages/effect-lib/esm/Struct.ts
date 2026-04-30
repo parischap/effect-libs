@@ -1,0 +1,148 @@
+/**
+ * Extension to the Effect Struct module providing type-safe struct merging, enrichment, and
+ * evolution
+ */
+
+import { pipe } from 'effect';
+import * as Function from 'effect/Function';
+import * as Record from 'effect/Record';
+import * as Struct from 'effect/Struct';
+
+import type * as MTypes from './types/types.js';
+
+/**
+ * Utility type that calculates the type of `{...first, ...second}` where `first` has type `First`
+ * and `second` type `Second`. If `second` contains an optional field that also exists in `first`,
+ * the resulting type for that field is the union of both types.
+ *
+ * @category Utility types
+ */
+export type Append<First extends MTypes.NonPrimitive, Second extends MTypes.NonPrimitive> = {
+  readonly [k in keyof First | keyof Second]: k extends keyof Second
+    ? k extends keyof First
+      ? Extract<Second[k], undefined> extends never
+        ? Second[k]
+        : Exclude<Second[k], undefined> | First[k]
+      : Second[k]
+    : First[k];
+};
+
+/**
+ * Prepends `that` to `self`. Fields in `self` prevail. Use instead of the spread operator because
+ * it does not copy the prototype while returning that would make you believe it does.
+ *
+ * @category Utils
+ */
+export const prepend =
+  <O1 extends MTypes.NonPrimitive>(that: O1) =>
+  <O extends MTypes.NonPrimitive>(self: O): MTypes.Data<Append<O1, O>> => ({
+    ...that,
+    ...self,
+  });
+
+/**
+ * Appends `that` to `self`. Fields in `that` prevail. Use instead of the spread operator because it
+ * does not copy the prototype while returning that would make you believe it does.
+ *
+ * @category Utils
+ */
+export const append =
+  <O1 extends MTypes.NonPrimitive>(that: O1) =>
+  <O extends MTypes.NonPrimitive>(self: O): MTypes.Data<Append<O, O1>> => ({
+    ...self,
+    ...that,
+  });
+
+/**
+ * Same as append but only existing properties of `self` can be overriden.
+ *
+ * @category Utils
+ */
+export const set =
+  <O extends MTypes.NonPrimitive, O1 extends Partial<O>>(that: O1) =>
+  (self: O): MTypes.Data<Omit<O, keyof O1> & O1> => ({
+    ...self,
+    ...that,
+  });
+
+/**
+ * Same as set but mutates `self`. To use in extreme situations only
+ *
+ * @category Utils
+ */
+export const mutableSet =
+  <O extends MTypes.NonPrimitive, O1 extends Partial<O>>(that: O1) =>
+  (self: O): Omit<O, keyof O1> & O1 =>
+    Object.assign(self, that);
+
+/**
+ * Builds a one-key struct
+ *
+ * @category Constructors
+ */
+export const make =
+  <K extends string | symbol>(key: K) =>
+  <V>(value: V): { readonly [key in K]: V } =>
+    ({ [key]: value }) as never;
+
+/**
+ * Calculates a 'fields' struct whose values are based on functions taking `self` as argument and
+ * appends it to `self`.
+ *
+ * @category Utils
+ */
+
+export const enrichWith =
+  <
+    O extends MTypes.NonPrimitive,
+    O1 extends Record.ReadonlyRecord<string, MTypes.OneArgFunction<O, unknown>>,
+  >(
+    fields: O1,
+  ) =>
+  (self: O): MTypes.Data<Omit<O, keyof O1> & { readonly [key in keyof O1]: ReturnType<O1[key]> }> =>
+    pipe(fields, Record.map(Function.apply(self)), (newValues) => ({ ...self, ...newValues }));
+
+/**
+ * Same as enrichWith but mutates `self`. To use in extreme situations only
+ *
+ * @category Utils
+ */
+
+export const mutableEnrichWith =
+  <
+    O extends MTypes.NonPrimitive,
+    O1 extends Record.ReadonlyRecord<string, MTypes.OneArgFunction<O, unknown>>,
+  >(
+    fields: O1,
+  ) =>
+  (self: O): Omit<O, keyof O1> & { readonly [key in keyof O1]: ReturnType<O1[key]> } =>
+    Object.assign(self, Record.map(fields, Function.apply(self)));
+
+/* eslint-disable */
+// Copied from Struct.ts
+type Transformed<O, T> = unknown & {
+  [K in keyof O]: K extends keyof T
+    ? T[K] extends (...a: any) => any
+      ? ReturnType<T[K]>
+      : O[K]
+    : O[K];
+};
+type PartialTransform<O, T> = {
+  [K in keyof T]: T[K] extends (a: O[K & keyof O]) => any ? T[K] : (a: O[K & keyof O]) => unknown;
+};
+/* eslint-enable */
+
+/**
+ * Same as Struct.evolve but we remove from the return type any property borne by the prototype as
+ * it does not get copied. If property to evolve is not in target `obj`, it is ignored.
+ *
+ * @category Utils
+ */
+export const {
+  evolve,
+}: {
+  readonly evolve: {
+    <O, T>(t: PartialTransform<O, T>): (obj: O) => MTypes.Data<Transformed<O, T>>;
+    <O, T>(obj: O, t: PartialTransform<O, T>): MTypes.Data<Transformed<O, T>>;
+  };
+} = Struct;

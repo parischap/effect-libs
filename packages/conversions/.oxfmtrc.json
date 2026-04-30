@@ -1,0 +1,36 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "sortImports": {
+    "customGroups": [
+      {
+        "groupName": "effect-libs",
+        "elementNamePattern": [
+          "effect",
+          "effect/**",
+          "@effect/**"
+        ]
+      },
+      {
+        "groupName": "parischap",
+        "elementNamePattern": [
+          "@parischap/**"
+        ]
+      }
+    ],
+    "groups": [
+      "type-builtin",
+      "value-builtin",
+      "effect-libs",
+      "parischap",
+      "type-external",
+      "value-external",
+      "type-import",
+      "value-import",
+      "unknown"
+    ]
+  },
+  "jsdoc": {
+    "separateTagGroups": true
+  },
+  "singleQuote": true
+}

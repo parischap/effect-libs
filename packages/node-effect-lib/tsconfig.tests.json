@@ -1,0 +1,18 @@
+{
+  "extends": [
+    "./tsconfig.base.json"
+  ],
+  "include": [
+    "tests/**/*.ts"
+  ],
+  "references": [
+    {
+      "path": "tsconfig.esm.json"
+    }
+  ],
+  "compilerOptions": {
+    "declarationDir": "dist/dts/tests",
+    "outDir": "dist/tests",
+    "tsBuildInfoFile": ".tsbuildinfo/tests.tsbuildinfo"
+  }
+}

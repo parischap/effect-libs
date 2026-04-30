@@ -1,0 +1,14 @@
+{
+  "description": "A functional library to prettify Effect logging",
+  "peerDependencies": {
+    "@parischap/effect-lib": "^0.11.0",
+    "@parischap/ansi-styles": "^0.2.6"
+  },
+  "environment": "Node",
+  "buildMethod": "NoBundling",
+  "isPublished": false,
+  "hasDocGen": false,
+  "keywords": [],
+  "useEffectAsPeerDependency": true,
+  "packagePrefix": "R"
+}

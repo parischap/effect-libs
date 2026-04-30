@@ -1,0 +1,26 @@
+{
+  "extends": [
+    "./tsconfig.base.json"
+  ],
+  "exclude": [
+    "esm",
+    "examples",
+    "tests",
+    "node_modules",
+    "**/.DS_Store",
+    "**/.claude",
+    ".tsbuildinfo",
+    "vite.config.ts.timestamp-*.mjs",
+    "dist",
+    "docs/Modules"
+  ],
+  "compilerOptions": {
+    "declarationDir": "dist/dts/others",
+    "outDir": "dist/others",
+    "tsBuildInfoFile": ".tsbuildinfo/others.tsbuildinfo",
+    "isolatedModules": false,
+    "isolatedDeclarations": false,
+    "allowJs": true,
+    "checkJs": true
+  }
+}

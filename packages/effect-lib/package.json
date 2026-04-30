@@ -1,0 +1,149 @@
+{
+  "name": "@parischap/effect-lib",
+  "type": "module",
+  "author": "Jérôme MARTIN",
+  "license": "MIT",
+  "devDependencies": {
+    "@parischap/configs": "git+ssh://github.com/parischap/configs",
+    "@types/node": "25.6.0",
+    "@typescript/native-preview": "7.0.0-dev.20260427.1",
+    "@effect/tsgo": "0.5.1",
+    "@tsconfig/strictest": "2.0.8",
+    "oxfmt": "0.46.0",
+    "oxlint": "1.61.0",
+    "oxlint-tsgolint": "0.22.0",
+    "tsx": "4.21.0",
+    "vitest": "4.1.5",
+    "madge": "8.0.0",
+    "vite": "8.0.10",
+    "@effect/platform-node": "4.0.0-beta.57",
+    "@effect/docgen": "0.5.2"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "lint": "oxlint --type-aware --type-check --report-unused-disable-directives --disable-nested-config",
+    "lint-fix": "oxlint --type-aware --fix",
+    "fmt": "oxfmt",
+    "commands": "tsx node_modules/@parischap/configs/esm/bin/commands.ts",
+    "build-all": "pnpm --if-present -r build",
+    "lint-all": "pnpm -r --include-workspace-root lint",
+    "fmt-all": "pnpm -r --include-workspace-root fmt",
+    "lint-fix-all": "pnpm -r --include-workspace-root lint-fix",
+    "checks-all": "pnpm -r --include-workspace-root checks",
+    "prepare": "effect-tsgo patch",
+    "build": "pnpm clean-prod && pnpm compile && cd dist && pnpm i && cd ..",
+    "compile": "tsx node_modules/@parischap/configs/esm/bin/compile.ts -activePackageOnly",
+    "checks": "pnpm circular && pnpm lint && pnpm test",
+    "circular": "madge --extensions ts --circular --no-color --no-spinner esm",
+    "build-and-publish": "pnpm checks && pnpm build && pnpm publish-to-npm",
+    "publish-to-npm": "cd dist && npm publish --access=public && cd ..",
+    "docgen": "docgen"
+  },
+  "description": "An extension to the official Effect library",
+  "exports": {
+    ".": {
+      "default": "./esm/index.ts"
+    },
+    "./MArray": {
+      "default": "./esm/Array.ts"
+    },
+    "./MBigDecimal": {
+      "default": "./esm/BigDecimal.ts"
+    },
+    "./MBigInt": {
+      "default": "./esm/BigInt.ts"
+    },
+    "./MCache": {
+      "default": "./esm/Cache.ts"
+    },
+    "./MCacheValueContainer": {
+      "default": "./esm/internal/CacheValueContainer.ts"
+    },
+    "./MChunk": {
+      "default": "./esm/Chunk.ts"
+    },
+    "./MData": {
+      "default": "./esm/Data/Data.ts"
+    },
+    "./MEquivalenceBasedEqualityData": {
+      "default": "./esm/Data/EquivalenceBasedEqualityData.ts"
+    },
+    "./MFunction": {
+      "default": "./esm/Function.ts"
+    },
+    "./MInputError": {
+      "default": "./esm/InputError.ts"
+    },
+    "./MJson": {
+      "default": "./esm/Json.ts"
+    },
+    "./MMatch": {
+      "default": "./esm/Match.ts"
+    },
+    "./MNumber": {
+      "default": "./esm/Number.ts"
+    },
+    "./MOption": {
+      "default": "./esm/Option.ts"
+    },
+    "./MPortError": {
+      "default": "./esm/PortError.ts"
+    },
+    "./MPredicate": {
+      "default": "./esm/Predicate.ts"
+    },
+    "./MRecord": {
+      "default": "./esm/Record.ts"
+    },
+    "./MRegExp": {
+      "default": "./esm/RegExp.ts"
+    },
+    "./MRegExpString": {
+      "default": "./esm/RegExpString.ts"
+    },
+    "./MResult": {
+      "default": "./esm/Result.ts"
+    },
+    "./MString": {
+      "default": "./esm/String/String.ts"
+    },
+    "./MStringFillPosition": {
+      "default": "./esm/String/StringFillPosition.ts"
+    },
+    "./MStringSearchResult": {
+      "default": "./esm/String/StringSearchResult.ts"
+    },
+    "./MStruct": {
+      "default": "./esm/Struct.ts"
+    },
+    "./MTree": {
+      "default": "./esm/Tree/Tree.ts"
+    },
+    "./MTreeForest": {
+      "default": "./esm/Tree/TreeForest.ts"
+    },
+    "./MTreeLeaf": {
+      "default": "./esm/Tree/TreeLeaf.ts"
+    },
+    "./MTreeNode": {
+      "default": "./esm/Tree/TreeNode.ts"
+    },
+    "./MTreeNonLeaf": {
+      "default": "./esm/Tree/TreeNonLeaf.ts"
+    },
+    "./MTuple": {
+      "default": "./esm/Tuple.ts"
+    },
+    "./MTypes": {
+      "default": "./esm/types/types.ts"
+    },
+    "./MTypesCategory": {
+      "default": "./esm/types/TypesCategory.ts"
+    }
+  },
+  "homepage": "https://github.com/parischap/effect-libs/tree/master/packages/effect-lib",
+  "module": "esm/index.ts",
+  "peerDependencies": {
+    "effect": "4.0.0-beta.57"
+  }
+}

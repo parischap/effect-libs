@@ -1,0 +1,69 @@
+{
+  "name": "@parischap/effect-report",
+  "type": "module",
+  "author": "Jérôme MARTIN",
+  "license": "MIT",
+  "devDependencies": {
+    "@parischap/configs": "git+ssh://github.com/parischap/configs",
+    "@types/node": "25.6.0",
+    "@typescript/native-preview": "7.0.0-dev.20260427.1",
+    "@effect/tsgo": "0.5.1",
+    "@tsconfig/strictest": "2.0.8",
+    "oxfmt": "0.46.0",
+    "oxlint": "1.61.0",
+    "oxlint-tsgolint": "0.22.0",
+    "tsx": "4.21.0",
+    "vitest": "4.1.5",
+    "madge": "8.0.0",
+    "vite": "8.0.10",
+    "@effect/platform-node": "4.0.0-beta.57"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "lint": "oxlint --type-aware --type-check --report-unused-disable-directives --disable-nested-config",
+    "lint-fix": "oxlint --type-aware --fix",
+    "fmt": "oxfmt",
+    "commands": "tsx node_modules/@parischap/configs/esm/bin/commands.ts",
+    "build-all": "pnpm --if-present -r build",
+    "lint-all": "pnpm -r --include-workspace-root lint",
+    "fmt-all": "pnpm -r --include-workspace-root fmt",
+    "lint-fix-all": "pnpm -r --include-workspace-root lint-fix",
+    "checks-all": "pnpm -r --include-workspace-root checks",
+    "prepare": "effect-tsgo patch",
+    "build": "pnpm clean-prod && pnpm compile && cd dist && pnpm i && cd ..",
+    "compile": "tsx node_modules/@parischap/configs/esm/bin/compile.ts -activePackageOnly",
+    "checks": "pnpm circular && pnpm lint && pnpm test",
+    "circular": "madge --extensions ts --circular --no-color --no-spinner esm"
+  },
+  "description": "A functional library to prettify Effect logging",
+  "exports": {
+    ".": {
+      "default": "./esm/index.ts"
+    },
+    "./RCause": {
+      "default": "./esm/Cause.ts"
+    },
+    "./REffect": {
+      "default": "./esm/Effect.ts"
+    },
+    "./RErrors": {
+      "default": "./esm/Errors.ts"
+    },
+    "./RLogger": {
+      "default": "./esm/Logger.ts"
+    },
+    "./RSchema": {
+      "default": "./esm/Schema.ts"
+    },
+    "./RUtils": {
+      "default": "./esm/utils.ts"
+    }
+  },
+  "homepage": "https://github.com/parischap/effect-libs/tree/master/packages/effect-report",
+  "module": "esm/index.ts",
+  "peerDependencies": {
+    "@parischap/effect-lib": "^0.11.0",
+    "@parischap/ansi-styles": "^0.2.6",
+    "effect": "4.0.0-beta.57"
+  }
+}

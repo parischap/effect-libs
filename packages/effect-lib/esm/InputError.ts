@@ -1,0 +1,300 @@
+/**
+ * Module providing a tagged error type for input validation failures, with constructors for common
+ * validation scenarios (wrong value, out of bounds, pattern mismatch, etc.) and corresponding
+ * assertion functions that return `Result`
+ */
+
+import { flow, pipe } from 'effect';
+import * as Data from 'effect/Data';
+import * as Function from 'effect/Function';
+import * as Number from 'effect/Number';
+import * as Option from 'effect/Option';
+import * as Predicate from 'effect/Predicate';
+import * as Result from 'effect/Result';
+import * as String from 'effect/String';
+
+import * as MPredicate from './Predicate.js';
+import * as MString from './String/String.js';
+import * as MTypes from './types/types.js';
+
+/**
+ * Module tag
+ *
+ * @category Module markers
+ */
+export const moduleTag = '@parischap/effect-lib/InputError/';
+
+/**
+ * Type of an InputError
+ *
+ * @category Models
+ */
+export class Type extends Data.TaggedError(moduleTag)<{
+  readonly message: string;
+}> {}
+
+const nameLabel: MTypes.OneArgFunction<string | undefined, string> = flow(
+  Option.liftPredicate(MTypes.isString),
+  Option.getOrElse(Function.constant('value')),
+);
+/**
+ * Builds an Input error that signals a wrong value
+ *
+ * @category Constructors
+ */
+export const wrongValue = <T extends MTypes.NonNullablePrimitive>({
+  expected,
+  actual,
+  name,
+}: {
+  readonly expected: T;
+  readonly actual: T;
+  readonly name?: string;
+}) => {
+  const expectedString = MTypes.isString(expected) ? `'${expected}'` : expected.toString();
+  const actualString = MTypes.isString(actual) ? `'${actual}'` : actual.toString();
+  return new Type({
+    message: `Expected ${nameLabel(name)} to be: ${expectedString}. Actual: ${actualString}`,
+  });
+};
+
+/**
+ * Returns a success of `input` if `input` is equal to `expected`. Otherwise, returns a failure of
+ * an InputError
+ *
+ * @category Constructors
+ */
+export const assertValue = <T extends MTypes.NonNullablePrimitive>(params: {
+  readonly expected: NoInfer<T>;
+  readonly name?: string;
+}): MTypes.OneArgFunction<T, Result.Result<T, Type>> =>
+  Result.liftPredicate(MPredicate.strictEquals(params.expected), (actual) =>
+    wrongValue({ ...params, actual }),
+  );
+
+/**
+ * Builds an Input error that signals a missized ArrayLike
+ *
+ * @category Constructors
+ */
+export const missized = ({
+  expected,
+  actual,
+  name,
+}: {
+  readonly expected: number;
+  readonly actual: number;
+  readonly name?: string;
+}) =>
+  new Type({
+    message: `Expected length of ${nameLabel(name)} to be: ${MString.fromNumber(10)(expected)}.\
+ Actual: ${MString.fromNumber(10)(actual)}`,
+  });
+
+/**
+ * Returns a success of `input` if `input` has the expected length. Otherwise, returns a failure of
+ * an InputError
+ *
+ * @category Constructors
+ */
+export const assertLength = (params: {
+  readonly expected: number;
+  readonly name?: string;
+}): (<A extends ArrayLike<unknown> | string>(self: A) => Result.Result<A, Type>) =>
+  Result.liftPredicate(
+    (arrayLike) => arrayLike.length === params.expected,
+    (actual) => missized({ ...params, actual: actual.length }),
+  );
+
+/**
+ * Builds an Input error that signals an oversized ArrayLike
+ *
+ * @category Constructors
+ */
+export const oversized = ({
+  expected,
+  actual,
+  name,
+}: {
+  readonly expected: number;
+  readonly actual: number;
+  readonly name?: string;
+}) =>
+  new Type({
+    message: `Expected length of ${nameLabel(name)} to be at most(included): ${MString.fromNumber(10)(expected)}.\
+ Actual: ${MString.fromNumber(10)(actual)}`,
+  });
+
+/**
+ * Returns a success of `input` if the size of `input` is less than or equal to `expected`.
+ * Otherwise, returns a failure of an InputError
+ *
+ * @category Constructors
+ */
+export const assertMaxLength = (params: {
+  readonly expected: number;
+  readonly name?: string;
+}): (<A extends ArrayLike<unknown> | string>(self: A) => Result.Result<A, Type>) =>
+  Result.liftPredicate(
+    (arrayLike) => arrayLike.length <= params.expected,
+    (actual) => oversized({ ...params, actual: actual.length }),
+  );
+
+/**
+ * Builds an Input error that signals a value out of bounds
+ *
+ * @category Constructors
+ */
+export const outOfBounds = ({
+  min,
+  max,
+  minIncluded,
+  maxIncluded,
+  offset,
+  actual,
+  name,
+}: {
+  readonly min: number;
+  readonly max: number;
+  readonly minIncluded: boolean;
+  readonly maxIncluded: boolean;
+  readonly offset: number;
+  readonly actual: number;
+  readonly name?: string;
+}) =>
+  new Type({
+    message: `Expected ${nameLabel(name)} to be between ${MString.fromNumber(10)(min + offset)}\
+ (${minIncluded ? 'included' : 'excluded'}) and ${MString.fromNumber(10)(max + offset)}\
+ (${maxIncluded ? 'included' : 'excluded'}). Actual: ${MString.fromNumber(10)(actual + offset)}`,
+  });
+
+/**
+ * Returns a success of `input` if `input` in between `min` and `max` included. Otherwise, returns a
+ * failure of an InputError
+ *
+ * @category Constructors
+ */
+export const assertInRange = (params: {
+  readonly min: number;
+  readonly max: number;
+  readonly minIncluded: boolean;
+  readonly maxIncluded: boolean;
+  readonly offset: number;
+  readonly name?: string;
+}): MTypes.OneArgFunction<number, Result.Result<number, Type>> =>
+  Result.liftPredicate(
+    Predicate.and(
+      params.minIncluded
+        ? Number.isGreaterThanOrEqualTo(params.min)
+        : Number.isGreaterThan(params.min),
+      params.maxIncluded ? Number.isLessThanOrEqualTo(params.max) : Number.isLessThan(params.max),
+    ),
+    (actual) => outOfBounds({ ...params, actual }),
+  );
+
+/**
+ * Builds an Input error that signals a string not starting with `startString`
+ *
+ * @category Constructors
+ */
+export const notStartingWith = ({
+  startString,
+  actual,
+  name,
+}: {
+  readonly startString: string;
+  readonly actual: string;
+  readonly name?: string;
+}) =>
+  new Type({
+    message: `Expected ${nameLabel(name)} to start with '${startString}'. Actual: '${actual}'`,
+  });
+
+/**
+ * Returns a success of `input` if `input` starts with `startString`. Otherwise, returns a failure
+ * of an InputError
+ *
+ * @category Constructors
+ */
+export const assertStartsWith = (params: {
+  readonly startString: string;
+  readonly name?: string;
+}): MTypes.OneArgFunction<string, Result.Result<string, Type>> =>
+  Result.liftPredicate(String.startsWith(params.startString), (actual) =>
+    notStartingWith({ ...params, actual }),
+  );
+
+/**
+ * Builds an Input error that signals a string not matching `regExp`
+ *
+ * @category Constructors
+ */
+export const notMatching = ({
+  regExpDescriptor,
+  actual,
+  name,
+}: {
+  readonly regExpDescriptor: string;
+  readonly actual: string;
+  readonly name?: string;
+}) =>
+  new Type({
+    message: `Expected ${nameLabel(name)} to be ${regExpDescriptor}. Actual: '${actual}'`,
+  });
+
+/**
+ * Returns a success of `input` if `input` matches `regExp`. Otherwise, returns a failure of an
+ * InputError
+ *
+ * @category Constructors
+ */
+export const assertMatches = (params: {
+  readonly regExp: RegExp;
+  readonly regExpDescriptor: string;
+  readonly name?: string;
+}): MTypes.OneArgFunction<string, Result.Result<string, Type>> =>
+  Result.liftPredicate(MString.matches(params.regExp), (actual) =>
+    notMatching({ ...params, actual }),
+  );
+
+/**
+ * Returns a success of the match if `input` matches `regExp`. Otherwise, returns a failure of an
+ * InputError
+ *
+ * @category Constructors
+ */
+export const match =
+  (params: {
+    readonly regExp: RegExp;
+    readonly regExpDescriptor: string;
+    readonly name?: string;
+  }) =>
+  (self: string): Result.Result<string, Type> =>
+    pipe(
+      self,
+      MString.match(params.regExp),
+      Result.fromOption(() => notMatching({ ...params, actual: self })),
+    );
+
+/**
+ * Builds an Input error that signals a string that is not empty
+ *
+ * @category Constructors
+ */
+export const notEmpty = ({ actual, name }: { readonly actual: string; readonly name?: string }) =>
+  new Type({
+    message: `Expected ${nameLabel(name)} to be empty. Actual: '${actual}'`,
+  });
+
+/**
+ * Returns a success of `input` if `input` is the empty string. Otherwise, returns a failure of an
+ * `InputError`
+ *
+ * @category Constructors
+ */
+export const assertEmpty = (
+  params: {
+    readonly name?: string;
+  } = {},
+): MTypes.OneArgFunction<string, Result.Result<string, Type>> =>
+  Result.liftPredicate(String.isEmpty, (actual) => notEmpty({ ...params, actual }));

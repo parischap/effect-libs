@@ -1,0 +1,34 @@
+{
+  "name": "@parischap/effect-libs",
+  "type": "module",
+  "author": "Jérôme MARTIN",
+  "license": "MIT",
+  "devDependencies": {
+    "@parischap/configs": "git+ssh://github.com/parischap/configs",
+    "@types/node": "25.6.0",
+    "@typescript/native-preview": "7.0.0-dev.20260427.1",
+    "@effect/tsgo": "0.5.1",
+    "@tsconfig/strictest": "2.0.8",
+    "oxfmt": "0.46.0",
+    "oxlint": "1.61.0",
+    "oxlint-tsgolint": "0.22.0",
+    "tsx": "4.21.0",
+    "vitest": "4.1.5"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "lint": "oxlint --type-aware --type-check --report-unused-disable-directives --disable-nested-config",
+    "lint-fix": "oxlint --type-aware --fix",
+    "fmt": "oxfmt",
+    "commands": "tsx node_modules/@parischap/configs/esm/bin/commands.ts",
+    "build-all": "pnpm --if-present -r build",
+    "lint-all": "pnpm -r --include-workspace-root lint",
+    "fmt-all": "pnpm -r --include-workspace-root fmt",
+    "lint-fix-all": "pnpm -r --include-workspace-root lint-fix",
+    "checks-all": "pnpm -r --include-workspace-root checks",
+    "prepare": "effect-tsgo patch",
+    "checks": "pnpm lint",
+    "prepare-docs": "pnpm -r --if-present --include-workspace-root --parallel --aggregate-output docgen && compile-docs"
+  },
+  "description": "effect-libs is a set of open-source libraries to be used in complement to the effect library. Offers Date and number parsing/formatting, sscanf/sprintf templating, number rounding, object pretty-printing and ansi-colors for terminal printing"
+}

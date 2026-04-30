@@ -1,0 +1,114 @@
+{
+  "name": "@parischap/pretty-print",
+  "type": "module",
+  "author": "Jérôme MARTIN",
+  "license": "MIT",
+  "devDependencies": {
+    "@parischap/configs": "git+ssh://github.com/parischap/configs",
+    "@types/node": "25.6.0",
+    "@typescript/native-preview": "7.0.0-dev.20260427.1",
+    "@effect/tsgo": "0.5.1",
+    "@tsconfig/strictest": "2.0.8",
+    "oxfmt": "0.46.0",
+    "oxlint": "1.61.0",
+    "oxlint-tsgolint": "0.22.0",
+    "tsx": "4.21.0",
+    "vitest": "4.1.5",
+    "madge": "8.0.0",
+    "vite": "8.0.10",
+    "@effect/platform-node": "4.0.0-beta.57",
+    "@effect/docgen": "0.5.2"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "lint": "oxlint --type-aware --type-check --report-unused-disable-directives --disable-nested-config",
+    "lint-fix": "oxlint --type-aware --fix",
+    "fmt": "oxfmt",
+    "commands": "tsx node_modules/@parischap/configs/esm/bin/commands.ts",
+    "build-all": "pnpm --if-present -r build",
+    "lint-all": "pnpm -r --include-workspace-root lint",
+    "fmt-all": "pnpm -r --include-workspace-root fmt",
+    "lint-fix-all": "pnpm -r --include-workspace-root lint-fix",
+    "checks-all": "pnpm -r --include-workspace-root checks",
+    "prepare": "effect-tsgo patch",
+    "build": "pnpm clean-prod && pnpm compile && cd dist && pnpm i && cd ..",
+    "compile": "tsx node_modules/@parischap/configs/esm/bin/compile.ts -activePackageOnly",
+    "checks": "pnpm circular && pnpm lint && pnpm test",
+    "circular": "madge --extensions ts --circular --no-color --no-spinner esm",
+    "examples": "tsx examples/util-inspect-like.ts && tsx examples/treeify.ts && tsx examples/treeify-with-leaves.ts && tsx examples/circularity-handling.ts && tsx examples/with-date-and-regexp.ts && tsx examples/with-prototype-chain.ts && tsx examples/with-custom-style-map.ts && tsx examples/with-custom-primitive-formatter.ts && tsx examples/with-property-filter-and-sort.ts",
+    "build-and-publish": "pnpm checks && pnpm build && pnpm publish-to-npm",
+    "publish-to-npm": "cd dist && npm publish --access=public && cd ..",
+    "docgen": "docgen"
+  },
+  "description": "A functional library to pretty-print and treeify objects",
+  "exports": {
+    ".": {
+      "default": "./esm/index.ts"
+    },
+    "./PPByPasser": {
+      "default": "./esm/Parameters/ByPasser.ts"
+    },
+    "./PPNonPrimitiveFormatter": {
+      "default": "./esm/Parameters/NonPrimitiveFormatter.ts"
+    },
+    "./PPNonPrimitiveParameters": {
+      "default": "./esm/Parameters/NonPrimitiveParameters.ts"
+    },
+    "./PPParameters": {
+      "default": "./esm/Parameters/Parameters.ts"
+    },
+    "./PPPartName": {
+      "default": "./esm/Parameters/PartName.ts"
+    },
+    "./PPPrimitiveFormatter": {
+      "default": "./esm/Parameters/PrimitiveFormatter.ts"
+    },
+    "./PPPropertyFilter": {
+      "default": "./esm/Parameters/PropertyFilter.ts"
+    },
+    "./PPPropertyFormatter": {
+      "default": "./esm/Parameters/PropertyFormatter.ts"
+    },
+    "./PPPropertyNumberDisplayOption": {
+      "default": "./esm/Parameters/PropertyNumberDisplayOption.ts"
+    },
+    "./PPResolvedNonPrimitiveParameters": {
+      "default": "./esm/internal/Parameters/ResolvedNonPrimitiveParameters.ts"
+    },
+    "./PPStringifiedProperties": {
+      "default": "./esm/internal/stringification/StringifiedProperties.ts"
+    },
+    "./PPStringifiedValue": {
+      "default": "./esm/stringification/StringifiedValue.ts"
+    },
+    "./PPStringifier": {
+      "default": "./esm/stringification/Stringifier.ts"
+    },
+    "./PPStyle": {
+      "default": "./esm/Parameters/Style.ts"
+    },
+    "./PPStyleMap": {
+      "default": "./esm/Parameters/StyleMap.ts"
+    },
+    "./PPStyles": {
+      "default": "./esm/internal/Parameters/Styles.ts"
+    },
+    "./PPValue": {
+      "default": "./esm/internal/stringification/Value.ts"
+    },
+    "./PPValueOrder": {
+      "default": "./esm/Parameters/ValueOrder.ts"
+    },
+    "./PPValues": {
+      "default": "./esm/internal/stringification/Values.ts"
+    }
+  },
+  "homepage": "https://github.com/parischap/effect-libs/tree/master/packages/pretty-print",
+  "module": "esm/index.ts",
+  "peerDependencies": {
+    "@parischap/effect-lib": "^0.11.0",
+    "@parischap/ansi-styles": "^0.2.6",
+    "@parischap/conversions": "^0.8.0",
+    "effect": "4.0.0-beta.57"
+  }
+}

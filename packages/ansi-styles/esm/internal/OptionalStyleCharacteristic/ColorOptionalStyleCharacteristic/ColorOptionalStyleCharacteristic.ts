@@ -1,0 +1,63 @@
+/**
+ * Module that implements an optional foreground color style characteristic. A `none` represents a
+ * missing characteristic, a `some(some(color))` represents a color, a `some(none())` represents the
+ * default color
+ */
+
+import type * as Equivalence from 'effect/Equivalence';
+import * as Hash from 'effect/Hash';
+import * as Option from 'effect/Option';
+
+import * as MEquivalenceBasedEqualityData from '@parischap/effect-lib/MEquivalenceBasedEqualityData';
+import type * as MTypes from '@parischap/effect-lib/MTypes';
+
+import * as ASColor from '../../../Color/Color.js';
+import * as ASOptionalStyleCharacteristic from '../OptionalStyleCharacteristic.js';
+
+/**
+ * Module tag
+ *
+ * @category Module markers
+ */
+export const moduleTag =
+  '@parischap/ansi-styles/internal/OptionalStyleCharacteristic/ColorOptionalStyleCharacteristic/';
+const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+type TypeId = typeof TypeId;
+
+/**
+ * Type that represents an ASColorOptionalStyleCharacteristic
+ *
+ * @category Models
+ */
+export abstract class Type extends ASOptionalStyleCharacteristic.Type<Option.Option<ASColor.Type>> {
+  /** Class constructor */
+  protected constructor(params: MTypes.Data<Type>) {
+    super(params);
+  }
+
+  /** Calculates the hash value of `this` */
+  [Hash.symbol](): number {
+    return 0;
+  }
+
+  /** Function that implements the equivalence of `this` and `that` */
+  [MEquivalenceBasedEqualityData.isEquivalentToSymbol](this: this, that: this): boolean {
+    return equivalence(this, that);
+  }
+
+  /** Returns the TypeMarker of the class */
+  protected get [TypeId](): TypeId {
+    return TypeId;
+  }
+}
+
+const _equivalence: Equivalence.Equivalence<Option.Option<Option.Option<ASColor.Type>>> =
+  Option.makeEquivalence(Option.makeEquivalence(ASColor.equivalence));
+
+/**
+ * Equivalence
+ *
+ * @category Equivalences
+ */
+export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
+  _equivalence(self.value, that.value);
