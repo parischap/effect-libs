@@ -142,8 +142,6 @@ export interface ServiceInterface {
   /**
    * Reads the directory tree upward starting at path until either isTargetDir returns true or the
    * user's home directory is reached.
-   *
-   * @returns The matching path if found. Returns Cause.NoSuchElementError otherwise
    */
   readonly readDirectoriesUpwardWhile: <E, R>(params: {
     readonly path: MFs.Folderpath;
