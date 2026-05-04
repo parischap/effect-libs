@@ -1,6 +1,31 @@
 /**
- * Extension to the Effect Record module providing unsafe access and zero-parameter function
- * invocation
+ * Extension to the Effect Record module providing unsafe field access and helpers for invoking
+ * zero-argument methods reflectively.
+ *
+ * ## Mental model
+ *
+ * - **`Type<A>`** is `Record.ReadonlyRecord<string, A>`, i.e. a plain JavaScript object used as a
+ *   string-keyed map.
+ * - The reflective helpers ({@link tryZeroParamFunction}, {@link tryZeroParamStringFunction}) are
+ *   used by formatters like the `pretty-print` package to discover whether a value defines a
+ *   custom string representation (`toString`, `toJSON`, …).
+ *
+ * ## Common tasks
+ *
+ * - **Unchecked access**: {@link unsafeGet}
+ * - **Reflective invocation**: {@link tryZeroParamFunction}, {@link tryZeroParamStringFunction}
+ *
+ * ## Quickstart
+ *
+ * **Example** (Try invoking `toJSON` on a value)
+ *
+ * ```ts
+ * import * as MRecord from '@parischap/effect-lib/MRecord';
+ *
+ * const date = new Date('2024-01-01T00:00:00Z');
+ * console.log(MRecord.tryZeroParamFunction({ functionName: 'toJSON' })(date));
+ * // Some('2024-01-01T00:00:00.000Z')
+ * ```
  */
 
 import { flow, pipe } from 'effect';
@@ -14,15 +39,26 @@ import * as MPredicate from './Predicate.js';
 import * as MTypes from './types/types.js';
 
 /**
- * Type on which this module's functions operate
+ * Type on which this module's functions operate.
  *
  * @category Models
  */
 export interface Type<out A> extends Record.ReadonlyRecord<string, A> {}
 
 /**
- * Returns the value at `key` in `self` without checking whether the key exists. Faster than the
- * Effect version but may return `undefined` for missing keys.
+ * Returns the value at `key` in `self` without checking that the key exists.
+ *
+ * - Use only when the presence of `key` is guaranteed by construction.
+ * - Returns `undefined` (typed as `A`) when `key` is missing.
+ *
+ * **Example** (Unchecked access)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MRecord from '@parischap/effect-lib/MRecord';
+ *
+ * console.log(pipe({ a: 1, b: 2 }, MRecord.unsafeGet('a'))); // 1
+ * ```
  *
  * @category Utils
  */
@@ -33,9 +69,28 @@ export const unsafeGet =
     self[key];
 
 /**
- * Tries to invoke the zero-parameter method named `functionName` on `self`. Returns a `some` of the
- * result if the method exists, takes no parameters, and is not the same function as `exception`
- * (when provided). Returns a `none` otherwise.
+ * Tries to invoke the zero-argument method named `functionName` on `self`.
+ *
+ * - Returns `Option.some(result)` when `self[functionName]` is a function declaring zero parameters
+ *   and is not the same reference as `exception` (when `exception` is supplied).
+ * - Returns `Option.none` when the property is missing, not a function, declares one or more
+ *   parameters, or matches `exception`.
+ * - The `exception` parameter is useful to skip an inherited default (e.g. `Object.prototype.toString`
+ *   when probing for a custom `toString`).
+ *
+ * **Example** (Detect a custom `toString`)
+ *
+ * ```ts
+ * import * as MRecord from '@parischap/effect-lib/MRecord';
+ *
+ * const tryCustomToString = MRecord.tryZeroParamFunction({
+ *   functionName: 'toString',
+ *   exception: Object.prototype.toString,
+ * });
+ *
+ * console.log(tryCustomToString(new Date(0))); // Some('Thu Jan 01 1970 ...')
+ * console.log(tryCustomToString({ a: 1 })); // None
+ * ```
  *
  * @category Utils
  */
@@ -66,7 +121,20 @@ export const tryZeroParamFunction =
     );
 
 /**
- * Same as `tryZeroParamFunction` but additionally returns a `none` if the result is not a string
+ * Same as {@link tryZeroParamFunction} but additionally returns `Option.none` when the result is
+ * not a `string`.
+ *
+ * - Use when probing for a string-producing method (e.g. `toString`, `toJSON` returning a string).
+ *
+ * **Example** (Custom string-producing method)
+ *
+ * ```ts
+ * import * as MRecord from '@parischap/effect-lib/MRecord';
+ *
+ * const tryToJSON = MRecord.tryZeroParamStringFunction({ functionName: 'toJSON' });
+ * console.log(tryToJSON(new Date('2024-01-01T00:00:00Z')));
+ * // Some('2024-01-01T00:00:00.000Z')
+ * ```
  *
  * @category Utils
  */

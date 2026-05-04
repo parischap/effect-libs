@@ -1,11 +1,53 @@
-/** Effect-wrapped ports of `JSON.stringify` and `JSON.parse` that return `PortError` on failure */
+/**
+ * Effect-flavored ports of `JSON.stringify` and `JSON.parse` whose failure channel carries a
+ * `PortError` instead of a thrown exception.
+ *
+ * ## Mental model
+ *
+ * - **`stringify`** returns `Effect<string, PortError>`; the underlying `JSON.stringify` exception
+ *   is captured into a structured `PortError`.
+ * - **`parse`** returns `Effect<unknown, PortError>` likewise — the parsed value is intentionally
+ *   typed `unknown` so callers must validate it.
+ *
+ * ## Common tasks
+ *
+ * - **Serialize**: {@link stringify}
+ * - **Deserialize**: {@link parse}
+ *
+ * ## Quickstart
+ *
+ * **Example** (Serialize then deserialize)
+ *
+ * ```ts
+ * import { Effect } from 'effect';
+ * import * as MJson from '@parischap/effect-lib/MJson';
+ *
+ * const program = Effect.gen(function* () {
+ *   const json = yield* MJson.stringify({ name: 'Alice', age: 30 });
+ *   const back = yield* MJson.parse(json);
+ *   return back;
+ * });
+ * ```
+ */
 
 import * as Effect from 'effect/Effect';
 
 import * as MPortError from './PortError.js';
 
 /**
- * Port of JSON.stringify
+ * Effect-wrapped `JSON.stringify`. Returns the serialized string on success and a `PortError`
+ * carrying the original exception on failure (e.g. when `value` contains a circular reference or a
+ * `bigint`).
+ *
+ * **Example** (Serialize a value)
+ *
+ * ```ts
+ * import { Effect } from 'effect';
+ * import * as MJson from '@parischap/effect-lib/MJson';
+ *
+ * Effect.runPromise(MJson.stringify({ name: 'Alice', age: 30 })).then(console.log);
+ * // '{"name":"Alice","age":30}'
+ * ```
  *
  * @category Utils
  */
@@ -25,7 +67,20 @@ export const stringify = (
   });
 
 /**
- * Port of JSON.parse
+ * Effect-wrapped `JSON.parse`. Returns the parsed value (typed `unknown`) on success and a
+ * `PortError` carrying the original exception on failure.
+ *
+ * - Callers should validate the returned `unknown` against the expected schema before using it.
+ *
+ * **Example** (Parse a JSON string)
+ *
+ * ```ts
+ * import { Effect } from 'effect';
+ * import * as MJson from '@parischap/effect-lib/MJson';
+ *
+ * Effect.runPromise(MJson.parse('{"name":"Alice"}')).then(console.log);
+ * // { name: 'Alice' }
+ * ```
  *
  * @category Utils
  */

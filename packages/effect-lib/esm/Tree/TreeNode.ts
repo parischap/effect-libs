@@ -1,6 +1,9 @@
 /**
- * Module that implements the abstract base class for all tree nodes. A `TreeNode` holds a `value`
- * and is extended by `TreeLeaf` and `TreeNonLeaf`. See the `Tree` module for the full API.
+ * Abstract base class shared by every tree node — only here to factor out the `value` field and
+ * its getter.
+ *
+ * Most code interacts with the concrete subclasses {@link "./TreeLeaf.js" | `MTreeLeaf`} and
+ * {@link "./TreeNonLeaf.js" | `MTreeNonLeaf`} or with the {@link "./Tree.js" | `MTree`} union.
  */
 
 import * as Struct from 'effect/Struct';
@@ -10,7 +13,7 @@ import type * as MTypes from '../types/types.js';
 import * as MData from '../Data/Data.js';
 
 /**
- * Module tag
+ * Module tag.
  *
  * @category Module markers
  */
@@ -19,7 +22,8 @@ const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
 
 /**
- * Type of a TreeNode. Abstract base class holding a `value` of type `A`.
+ * Abstract base class holding a `value` of type `A`. Concrete subclasses are `MTreeLeaf.Type<A>`
+ * and `MTreeNonLeaf.Type<_, A>`.
  *
  * @category Models
  */
@@ -40,7 +44,7 @@ export abstract class Type<out A> extends MData.Class {
 }
 
 /**
- * Returns the `value` property of `self`
+ * Returns the `value` field of `self`. Works on both leaf and non-leaf nodes.
  *
  * @category Getters
  */

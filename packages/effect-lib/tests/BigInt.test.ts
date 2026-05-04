@@ -66,6 +66,10 @@ describe('MBigInt', () => {
       TestUtils.assertNone(MBigInt.log10(-3n));
     });
 
+    it('Zero', () => {
+      TestUtils.assertNone(MBigInt.log10(0n));
+    });
+
     it('Positive value', () => {
       TestUtils.assertSome(MBigInt.log10(1248n), 3);
     });

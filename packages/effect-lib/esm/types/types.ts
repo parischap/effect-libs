@@ -1,7 +1,35 @@
 /**
- * Core type definitions and type guards for the JavaScript type hierarchy. Provides refined array
- * types (`OverOne`, `Pair`, etc.), utility types (`Data`, `Proto`), and a comprehensive set of type
- * guards
+ * Foundational primitive / container types and the matching runtime guards used throughout
+ * `effect-lib`.
+ *
+ * ## Mental model
+ *
+ * - **Containers**: `Pair`, `Singleton`, `OverOne` (non-empty), `OverTwo` (≥ 2 elements), and their
+ *   readonly variants — typed views over `Array`/`ReadonlyArray` used by the rest of the package.
+ * - **Primitives**: `Primitive`, `NonNullablePrimitive`, `NonPrimitive`, `Unknown` — describe the
+ *   shape space of JavaScript values.
+ * - **Function shapes**: `AnyFunction`, `OneArgFunction`, `StringTransformer`, `NumberFromString`.
+ * - **Predicate / refinement shapes**: `AnyPredicate`, `AnyRefinement`, `RefinementFrom`.
+ * - **Type-level utilities**: `Data` strips inherited / pipeable / equality fields off an object
+ *   type to produce its plain-data view (used by class constructors); `Proto` is its complement;
+ *   `Tuple<T, N>` materializes a fixed-size tuple; `IntersectAndSimplify` and `ToKeyIntersection`
+ *   help build intersections in conditional types.
+ * - **Guards**: every `is*` function below is a TypeScript type guard.
+ *
+ * ## Common tasks
+ *
+ * - **Tuple / array shapes**: {@link Pair}, {@link Singleton}, {@link OverOne}, {@link OverTwo}
+ * - **Primitive shapes**: {@link Primitive}, {@link NonNullablePrimitive}, {@link NonPrimitive},
+ *   {@link Unknown}
+ * - **Type-level helpers**: {@link Data}, {@link Proto}, {@link Tuple}, {@link ReadonlyTuple},
+ *   {@link MapToTarget}, {@link IntersectAndSimplify}, {@link ToKeyIntersection},
+ *   {@link WithMutable}, {@link WithRequired}
+ * - **Runtime guards**: {@link isPrimitive}, {@link isNonPrimitive}, {@link isString},
+ *   {@link isNumber}, {@link isFunction}, {@link isArray}, {@link isOverOne},
+ *   {@link isReadonlyOverOne}, {@link isOverTwo}, {@link isReadonlyOverTwo},
+ *   {@link isReadonlySingleton}, {@link isTypedArray}, {@link isSet}, {@link isMap},
+ *   {@link isIterable}
+ * - **Inspect typed arrays**: {@link typedArrayName}
  */
 
 import { pipe } from 'effect';

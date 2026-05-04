@@ -1,12 +1,45 @@
 /**
- * Module that implements a Tree<A,B> where the value of a non-leaf node is of type A and the value
- * of a leaf node is of type B. A non-leaf node also contains a forest, i.e. an array of trees.
+ * Heterogeneous trees: each node is either a leaf carrying a value of type `B` or a non-leaf
+ * carrying a value of type `A` and a forest of child trees.
  *
- * A Tree may have no leaf nodes.
+ * ## Mental model
  *
- * A Tree may be composed of a single leaf node. If this situation does not correspond to your need,
- * you may work with the type TreeNonLeaf<A,B> instead. In all the provided functions, `self` can be
- * a Tree<A,B> or a TreeNonLeaf<A,B>
+ * - **`Type<A, B>`** is a discriminated union of {@link "./TreeLeaf.js" | `MTreeLeaf.Type<B>`}
+ *   and {@link "./TreeNonLeaf.js" | `MTreeNonLeaf.Type<A, B>`}.
+ * - A "tree" with a single leaf is just a leaf — perfectly valid. When the API must guarantee a
+ *   non-leaf root, take `MTreeNonLeaf.Type<A, B>` directly.
+ * - {@link unfold} and {@link unfoldAndFold} build trees iteratively from a seed plus an
+ *   `unfold` function returning either a leaf payload (`Result.fail`) or a non-leaf payload with
+ *   child seeds (`Result.succeed`). Cycle detection is opt-in via a seed `Equivalence`.
+ *
+ * ## Common tasks
+ *
+ * - **Discriminate**: {@link isLeaf}, {@link isNonLeaf}
+ * - **Build**: {@link unfold}, {@link unfoldAndFold}
+ * - **Read values**: {@link value}
+ * - **Compare**: {@link makeEquivalence}
+ * - **Fold**: {@link fold}, {@link reduce}, {@link reduceRight}, {@link unfoldAndFold}
+ * - **Map / extend**: {@link map}, {@link mapAccum}, {@link extendDown}, {@link extendUp}
+ *
+ * ## Quickstart
+ *
+ * **Example** (Build a tree from a seed and sum its leaves)
+ *
+ * ```ts
+ * import { Result, pipe } from 'effect';
+ * import * as MTree from '@parischap/effect-lib/Tree/Tree';
+ *
+ * const buildAndSum = pipe(
+ *   3,
+ *   MTree.unfoldAndFold({
+ *     unfold: (n: number) =>
+ *       n <= 0 ? Result.fail(0) : Result.succeed(['node' as const, [n - 1, n - 1]] as const),
+ *     foldNonLeaf: (_value, children) => children.reduce((a, b) => a + b, 1),
+ *     foldLeaf: (n) => n,
+ *   }),
+ * );
+ * console.log(buildAndSum); // count of non-leaf nodes
+ * ```
  */
 
 import { flow, pipe } from 'effect';
@@ -46,14 +79,18 @@ type TypeId = typeof TypeId;
 export type Type<A, B> = MTreeLeaf.Type<B> | MTreeNonLeaf.Type<A, B>;
 
 /**
- * Type guard
+ * Tests whether `u` is a leaf node.
+ *
+ * - Acts as a type guard narrowing the input to `MTreeLeaf.Type<B>`.
  *
  * @category Guards
  */
 export const isLeaf = <A, B>(u: Type<A, B>): u is MTreeLeaf.Type<B> => u instanceof MTreeLeaf.Type;
 
 /**
- * Type guard
+ * Tests whether `u` is a non-leaf node.
+ *
+ * - Acts as a type guard narrowing the input to `MTreeNonLeaf.Type<A, B>`.
  *
  * @category Guards
  */
@@ -61,7 +98,31 @@ export const isNonLeaf = <A, B>(u: Type<A, B>): u is MTreeNonLeaf.Type<A, B> =>
   u instanceof MTreeNonLeaf.Type;
 
 /**
- * Returns an equivalence based on an equivalence of the subtypes
+ * Returns an equivalence on `Type<A, B>` derived from an equivalence on `A` (non-leaf values) and
+ * one on `B` (leaf values).
+ *
+ * - Two trees are equivalent iff they have the same shape and corresponding values match under the
+ *   supplied equivalences.
+ *
+ * **Example**
+ *
+ * ```ts
+ * import { Equivalence } from 'effect';
+ * import * as MTree from '@parischap/effect-lib/Tree/Tree';
+ * import * as MTreeLeaf from '@parischap/effect-lib/Tree/TreeLeaf';
+ * import * as MTreeNonLeaf from '@parischap/effect-lib/Tree/TreeNonLeaf';
+ *
+ * const eq = MTree.makeEquivalence(Equivalence.string, Equivalence.number);
+ * const tree1 = MTreeNonLeaf.make({
+ *   value: 'root',
+ *   forest: [MTreeLeaf.make(1), MTreeLeaf.make(2)],
+ * });
+ * const tree2 = MTreeNonLeaf.make({
+ *   value: 'root',
+ *   forest: [MTreeLeaf.make(1), MTreeLeaf.make(2)],
+ * });
+ * console.log(eq(tree1, tree2)); // true
+ * ```
  *
  * @category Equivalences
  */
@@ -79,7 +140,8 @@ export const makeEquivalence = <A, B>(
 };
 
 /**
- * Returns the `value` property of `self`
+ * Returns the `value` field of `self`. Result type is `A | B` because `self` may be a leaf
+ * (carrying `B`) or a non-leaf (carrying `A`).
  *
  * @category Getters
  */
@@ -170,16 +232,27 @@ const internalUnfold =
   };
 
 /**
- * Non recursive function that builds a (possibly infinite) tree from a seed value and an unfold
- * function. The unfold function takes a seed and returns either a failure of a value of type B from
- * which a leaf is created or a success of a value of type A and an array of new seeds (possibly
- * empty). A non leaf is created from this value of type A and from the result of calling the unfold
- * function on each value of the array of new seeds. Cycle detection is enabled by passing a
- * `seedEquivalence`. When enabled, a cycle is detected if the same seed `s` is sent a second time
- * to `f` (compared using `seedEquivalence`). In that case, `cycleSource` is a `some` of the `A`
- * generated the first time `s` was processed, giving the user a chance to modify it. Otherwise,
- * `cycleSource` is a `none`. When `seedEquivalence` is omitted, no cycle detection is performed and
- * `f` does not receive a `cycleSource` parameter.
+ * Builds a tree by repeatedly applying an unfold function to seeds.
+ *
+ * - Non-recursive; uses a queue to process all nodes.
+ * - The unfold function returns either a leaf value (Failure) or a non-leaf value with child seeds (Success).
+ * - Optionally detects cycles using an equivalence on seeds.
+ * - When a cycle is detected, `cycleSource` is passed as `some` to allow modification.
+ *
+ * **Example** (Build tree from seed)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as Result from 'effect/Result';
+ * import * as MTree from '@parischap/effect-lib/Tree/Tree';
+ *
+ * const tree = MTree.unfold<number, string, number>(
+ *   (n) =>
+ *     n === 0
+ *       ? Result.fail('leaf')
+ *       : Result.succeed(['node', [n - 1]]),
+ * )(3);
+ * ```
  *
  * @category Constructors
  */
@@ -202,15 +275,26 @@ export const unfold: {
   flow(internalUnfold(f, seedEquivalence), Array.headNonEmpty);
 
 /**
- * Non recursive function that builds a (possibly infinite) tree from a seed value and an unfold
- * function (see unfold), then applies a function `foldNonLeaf` to the value of each non-leaf node
- * and the result of recursively folding its children, and `foldLeaf` to each leaf value (see `fold`
- * below). Cycle detection is enabled by passing a `seedEquivalence`. When enabled, a cycle is
- * detected if the same seed `s` is sent a second time to `unfold` (compared using
- * `seedEquivalence`). In that case, `cycleSource` is a `some` of the value of the non-leaf that was
- * created from that seed, giving the user a chance to modify it. Otherwise, `cycleSource` is a
- * `none`. When `seedEquivalence` is omitted, no cycle detection is performed and `unfold` does not
- * receive a `cycleSource` parameter.
+ * Builds a tree and simultaneously folds it in bottom-up order.
+ *
+ * - Combines tree construction and folding for efficiency.
+ * - Leaf nodes are folded using `foldLeaf`; non-leaf nodes using `foldNonLeaf` with accumulated children.
+ * - Returns the final folded value (bottom-up aggregation).
+ * - Optionally detects cycles using seed equivalence.
+ *
+ * **Example** (Build and fold tree)
+ *
+ * ```ts
+ * import * as Result from 'effect/Result';
+ * import * as MTree from '@parischap/effect-lib/Tree/Tree';
+ *
+ * const result = MTree.unfoldAndFold({
+ *   unfold: (n) =>
+ *     n === 0 ? Result.fail(1) : Result.succeed(['parent', [n - 1]]),
+ *   foldLeaf: (val) => val,
+ *   foldNonLeaf: (val, children) => val.length + children[0],
+ * })(2);
+ * ```
  *
  * @category Constructors
  */
@@ -274,13 +358,30 @@ export const unfoldAndFold: {
   );
 
 /**
- * Folds a tree into a "summary" value in bottom-up order with.
+ * Folds a tree into a summary value in bottom-up order.
  *
- * For each Leaf in the tree, applies `fLeaf`. For each NonLeaf in the tree, applies `fNonLeaf` to
- * the `value` property and the result of applying `fNonLeaf` or `fLeaf` to each node in the
- * `forest` property.
+ * - Processes leaves first, then combines results upward.
+ * - Use to aggregate or transform tree data recursively.
+ * - `foldLeaf` handles terminal nodes; `foldNonLeaf` combines parent values with folded children.
+ * - Each function receives a `level` parameter for depth-aware logic.
  *
- * This is also known as the catamorphism on trees.
+ * **Example** (Fold tree to sum)
+ *
+ * ```ts
+ * import * as MTree from '@parischap/effect-lib/Tree/Tree';
+ * import * as MTreeLeaf from '@parischap/effect-lib/Tree/TreeLeaf';
+ * import * as MTreeNonLeaf from '@parischap/effect-lib/Tree/TreeNonLeaf';
+ *
+ * const tree = MTreeNonLeaf.make({
+ *   value: 10,
+ *   forest: [MTreeLeaf.make(5), MTreeLeaf.make(3)],
+ * });
+ * const sum = MTree.fold({
+ *   foldLeaf: (n) => n,
+ *   foldNonLeaf: (n, children) => n + children.reduce((a, b) => a + b, 0),
+ * })(tree);
+ * console.log(sum); // 18
+ * ```
  *
  * @category Utils
  */
@@ -302,7 +403,30 @@ export const fold = <A, B, C>({
 };
 
 /**
- * Maps a tree with an accumulator
+ * Maps a tree with an accumulator in a top-down pass.
+ *
+ * - Use to transform both structure and values while threading state through the tree.
+ * - Leaf and non-leaf nodes processed separately with separate folding functions.
+ * - Level parameter indicates depth (0 at root).
+ * - Accumulator is passed down through the tree traversal.
+ *
+ * **Example** (Map with accumulator)
+ *
+ * ```ts
+ * import * as MTree from '@parischap/effect-lib/Tree/Tree';
+ * import * as MTreeLeaf from '@parischap/effect-lib/Tree/TreeLeaf';
+ * import * as MTreeNonLeaf from '@parischap/effect-lib/Tree/TreeNonLeaf';
+ *
+ * const tree = MTreeNonLeaf.make({
+ *   value: 'root',
+ *   forest: [MTreeLeaf.make(1), MTreeLeaf.make(2)],
+ * });
+ * const result = MTree.mapAccum({
+ *   accum: 0,
+ *   fNonLeaf: (s, val) => [s + 1, val.toUpperCase()],
+ *   fLeaf: (s, val) => val * 10,
+ * })(tree);
+ * ```
  *
  * @category Utils
  */
@@ -332,7 +456,29 @@ export const mapAccum = <S, A, B, C, D>({
 };
 
 /**
- * Maps a tree
+ * Maps a tree, transforming both leaf and non-leaf values.
+ *
+ * - Use to apply transformations to all node values.
+ * - Non-leaf values transformed via `fNonLeaf`; leaf values via `fLeaf`.
+ * - Both functions receive the node's level (0 at root) for depth-aware logic.
+ * - Returns a new tree with transformed values (structure unchanged).
+ *
+ * **Example** (Map tree values)
+ *
+ * ```ts
+ * import * as MTree from '@parischap/effect-lib/Tree/Tree';
+ * import * as MTreeLeaf from '@parischap/effect-lib/Tree/TreeLeaf';
+ * import * as MTreeNonLeaf from '@parischap/effect-lib/Tree/TreeNonLeaf';
+ *
+ * const tree = MTreeNonLeaf.make({
+ *   value: 'node',
+ *   forest: [MTreeLeaf.make(5), MTreeLeaf.make(3)],
+ * });
+ * const mapped = MTree.map({
+ *   fNonLeaf: (val) => val.toUpperCase(),
+ *   fLeaf: (num) => num * 2,
+ * })(tree);
+ * ```
  *
  * @category Utils
  */
@@ -375,23 +521,91 @@ const internalReduce =
   };
 
 /**
- * Top-down reduction -Children are processed from left to right
+ * Reduces a tree to a summary value, processing children left to right.
+ *
+ * - Top-down traversal accumulating a result value.
+ * - Functions applied in order: non-leaf first, then each child in left-to-right order.
+ * - Each function receives the accumulator, node value, and depth level.
+ * - Use for aggregating properties or collecting information from the tree.
+ *
+ * **Example** (Reduce tree)
+ *
+ * ```ts
+ * import * as MTree from '@parischap/effect-lib/Tree/Tree';
+ * import * as MTreeLeaf from '@parischap/effect-lib/Tree/TreeLeaf';
+ * import * as MTreeNonLeaf from '@parischap/effect-lib/Tree/TreeNonLeaf';
+ *
+ * const tree = MTreeNonLeaf.make({
+ *   value: 1,
+ *   forest: [MTreeLeaf.make(2), MTreeLeaf.make(3)],
+ * });
+ * const sum = MTree.reduce({
+ *   z: 0,
+ *   fNonLeaf: (acc, val) => acc + val,
+ *   fLeaf: (acc, val) => acc + val,
+ * })(tree);
+ * console.log(sum); // 6
+ * ```
  *
  * @category Utils
  */
 export const reduce = internalReduce(Array.reduce);
 
 /**
- * Top-down reduction -Children are processed from right to left
+ * Reduces a tree to a summary value, processing children right to left.
+ *
+ * - Top-down traversal accumulating a result value.
+ * - Functions applied in order: non-leaf first, then each child in right-to-left order.
+ * - Each function receives the accumulator, node value, and depth level.
+ * - Similar to {@link reduce} but with reversed child processing order.
+ *
+ * **Example** (Reduce tree right-to-left)
+ *
+ * ```ts
+ * import * as MTree from '@parischap/effect-lib/Tree/Tree';
+ * import * as MTreeLeaf from '@parischap/effect-lib/Tree/TreeLeaf';
+ * import * as MTreeNonLeaf from '@parischap/effect-lib/Tree/TreeNonLeaf';
+ *
+ * const tree = MTreeNonLeaf.make({
+ *   value: 'A',
+ *   forest: [MTreeLeaf.make('B'), MTreeLeaf.make('C')],
+ * });
+ * const result = MTree.reduceRight({
+ *   z: '',
+ *   fNonLeaf: (acc, val) => acc + val,
+ *   fLeaf: (acc, val) => acc + val,
+ * })(tree);
+ * console.log(result); // "ACB"
+ * ```
  *
  * @category Utils
  */
 export const reduceRight = internalReduce(Array.reduceRight);
 
 /**
- * Returns a new tree in which the value of each node is replaced by the result of a function that
- * takes the node as parameter in top-down order. More powerful than map which takes only the value
- * of the node as parameter
+ * Extends a tree in top-down order, transforming each node to a new value.
+ *
+ * - More powerful than {@link map}—receives the entire node (not just its value).
+ * - Processes tree top-down: root first, then children level-by-level.
+ * - Functions receive the node itself and its level for context-aware transformation.
+ * - Use when transformation depends on position in tree or sibling relationships.
+ *
+ * **Example** (Extend down: tag by level)
+ *
+ * ```ts
+ * import * as MTree from '@parischap/effect-lib/Tree/Tree';
+ * import * as MTreeLeaf from '@parischap/effect-lib/Tree/TreeLeaf';
+ * import * as MTreeNonLeaf from '@parischap/effect-lib/Tree/TreeNonLeaf';
+ *
+ * const tree = MTreeNonLeaf.make({
+ *   value: 'root',
+ *   forest: [MTreeLeaf.make('leaf')],
+ * });
+ * const extended = MTree.extendDown({
+ *   fNonLeaf: (node, level) => `${node.value}@${level}`,
+ *   fLeaf: (leaf, level) => `${leaf.value}@${level}`,
+ * })(tree);
+ * ```
  *
  * @category Utils
  */
@@ -418,9 +632,30 @@ export const extendDown = <A, B, C, D>({
 };
 
 /**
- * Returns a new tree in which the value of each node is replaced by the result of a function that
- * takes the node as parameter in bottom-up order. More powerful than map which takes only the value
- * of the node as parameter
+ * Extends a tree in bottom-up order, transforming each node to a new value.
+ *
+ * - More powerful than {@link map}—receives the entire node (not just its value).
+ * - Processes tree bottom-up: leaves first, then non-leaves up to root.
+ * - Children are processed before their parent.
+ * - Functions receive the node itself and its level for context-aware transformation.
+ * - Use when transformation depends on processing children first.
+ *
+ * **Example** (Extend up: aggregate child count)
+ *
+ * ```ts
+ * import * as MTree from '@parischap/effect-lib/Tree/Tree';
+ * import * as MTreeLeaf from '@parischap/effect-lib/Tree/TreeLeaf';
+ * import * as MTreeNonLeaf from '@parischap/effect-lib/Tree/TreeNonLeaf';
+ *
+ * const tree = MTreeNonLeaf.make({
+ *   value: 'root',
+ *   forest: [MTreeLeaf.make('a'), MTreeLeaf.make('b')],
+ * });
+ * const extended = MTree.extendUp({
+ *   fNonLeaf: (node, level) => node.forest.length,
+ *   fLeaf: (leaf, level) => 0,
+ * })(tree);
+ * ```
  *
  * @category Utils
  */

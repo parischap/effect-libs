@@ -1,6 +1,23 @@
 /**
- * This module implements a type that represents the result of the search of a string in another
- * string.
+ * Result type of the search operations exposed by {@link "./String.js" | `MString`}: a substring
+ * match together with the half-open `[startIndex, endIndex)` range it covers.
+ *
+ * ## Mental model
+ *
+ * - **`Type`** is an `Equal`-aware value object built on
+ *   {@link "../Data/EquivalenceBasedEqualityData.js" | `MEquivalenceBasedEqualityData.Class`}.
+ * - Two results are equal iff their `startIndex`, `endIndex` and `match` all coincide.
+ * - The {@link areOverlapping} `Equivalence` is **not** an equality — two matches may overlap
+ *   without being equal.
+ * - Three orderings are provided: by start, by end, and a "longest first" ordering useful when
+ *   resolving overlapping matches.
+ *
+ * ## Common tasks
+ *
+ * - **Construct**: {@link make}
+ * - **Compare**: {@link equivalence}, {@link areOverlapping}
+ * - **Order**: {@link byStartIndex}, {@link byEndIndex}, {@link byLongestFirst}
+ * - **Field access**: {@link startIndex}, {@link endIndex}, {@link match}
  */
 
 import type * as Equivalence from 'effect/Equivalence';
@@ -15,7 +32,7 @@ import * as MData from '../Data/Data.js';
 import * as MEquivalenceBasedEqualityData from '../Data/EquivalenceBasedEqualityData.js';
 
 /**
- * Module tag
+ * Module tag.
  *
  * @category Module markers
  */
@@ -24,7 +41,7 @@ const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
 
 /**
- * Type that represents a SearchResult
+ * Type of a search result: the matched substring and its `[startIndex, endIndex)` range.
  *
  * @category Models
  */
@@ -76,14 +93,15 @@ export class Type extends MEquivalenceBasedEqualityData.Class {
 }
 
 /**
- * Constructor
+ * Builds a search result.
  *
  * @category Constructors
  */
 export const make = (params: MTypes.Data<Type>): Type => Type.make(params);
 
 /**
- * Equivalence that considers two SearchResult's to be equivalent when all their fields are equal
+ * `Equivalence` that holds when two results share `startIndex`, `endIndex` and `match`. This is
+ * the equivalence used by `Equal.equals` on instances.
  *
  * @category Equivalences
  */
@@ -93,7 +111,8 @@ export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
   self.match === that.match;
 
 /**
- * Equivalence that considers two SearchResult's to be equivalent when they overlap
+ * `Equivalence` that holds when two results' ranges overlap (touching at a single index counts as
+ * overlapping). Not an equality; use {@link equivalence} for that.
  *
  * @category Equivalences
  */
@@ -101,7 +120,7 @@ export const areOverlapping: Equivalence.Equivalence<Type> = (self, that) =>
   self.endIndex >= that.startIndex && self.startIndex <= that.endIndex;
 
 /**
- * SearchResult Order based on the startIndex
+ * Ordering on `startIndex` (ascending).
  *
  * @category Ordering
  */
@@ -111,7 +130,7 @@ export const byStartIndex: Order.Order<Type> = Order.mapInput(
 );
 
 /**
- * SearchResult Order based on the endIndex
+ * Ordering on `endIndex` (ascending).
  *
  * @category Ordering
  */
@@ -121,7 +140,9 @@ export const byEndIndex: Order.Order<Type> = Order.mapInput(
 );
 
 /**
- * SearchResult Order that gives precedence to the first longest SearchResult.
+ * Ordering that places the longest match first when two results share the same `startIndex`.
+ *
+ * - Use to disambiguate overlapping matches in favor of the most specific one.
  *
  * @category Ordering
  */
@@ -131,21 +152,21 @@ export const byLongestFirst: Order.Order<Type> = Order.combine(
 );
 
 /**
- * Returns the `startIndex` property of `self`
+ * Returns the `startIndex` field of `self`.
  *
  * @category Getters
  */
 export const startIndex: MTypes.OneArgFunction<Type, number> = Struct.get('startIndex');
 
 /**
- * Returns the `endIndex` property of `self`
+ * Returns the `endIndex` field of `self`.
  *
  * @category Getters
  */
 export const endIndex: MTypes.OneArgFunction<Type, number> = Struct.get('endIndex');
 
 /**
- * Returns the `match` property of `self`
+ * Returns the `match` field of `self`.
  *
  * @category Getters
  */

@@ -1,6 +1,45 @@
 /**
- * Extension to the Effect Array module providing additional array operations such as cycle-aware
- * unfolding, sorted merging, and early-exit mapping
+ * Extensions to the Effect Array module providing predicates, indexed search, cardinality matching,
+ * indexed (un)grouping, sorted-iterator merging/difference, and cycle-aware unfolding.
+ *
+ * ## Mental model
+ *
+ * - **`Type<A>`** is just `ReadonlyArray<A>`; functions never mutate the input.
+ * - All functions are **curried, data-last** — call as `MArray.fn(arg)(self)` or `pipe(self,
+ *   MArray.fn(arg))`. They are not data-first/data-last dual.
+ * - Equality-based functions (e.g. {@link hasDuplicates}, {@link longestCommonSubArray},
+ *   {@link differenceSorted}) compare with `Equal.equals`. The `*With` variants take an explicit
+ *   `Equivalence`.
+ *
+ * ## Common tasks
+ *
+ * - **Predicates**: {@link hasLength}, {@link hasDuplicates}, {@link hasDuplicatesWith}
+ * - **Search**: {@link findAll}, {@link extractFirst}, {@link getFromEnd},
+ *   {@link longestCommonSubArray}
+ * - **Pattern match**: {@link match012}
+ * - **Unsafe access**: {@link unsafeGet}, {@link unsafeGetter}
+ * - **Modify by position**: {@link modifyHead}, {@link modifyInit}, {@link modifyTail},
+ *   {@link modifyLast}
+ * - **Group / ungroup**: {@link ungroup}, {@link groupByNum}, {@link groupBy}
+ * - **Split**: {@link splitAtFromRight}, {@link splitNonEmptyAtFromRight}
+ * - **Map / reduce with short-circuit**: {@link mapUnlessNone}, {@link mapUnlessLeft},
+ *   {@link reduceUnlessNone}, {@link reduceUnlessLeft}
+ * - **Sorted operations**: {@link mergeSorted}, {@link differenceSorted}
+ * - **Construct**: {@link unfold}, {@link unfoldNonEmpty}, {@link pad}
+ * - **Format**: {@link removeEmptyAndJoin}
+ *
+ * ## Quickstart
+ *
+ * **Example** (Common predicates and indexed search)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MArray from '@parischap/effect-lib/MArray';
+ * import * as MPredicate from '@parischap/effect-lib/MPredicate';
+ *
+ * console.log(MArray.hasDuplicates([1, 2, 2, 3])); // true
+ * console.log(pipe([1, 2, 3, 2], MArray.findAll(MPredicate.strictEquals(2)))); // [1, 3]
+ * ```
  */
 
 import { pipe } from 'effect';
@@ -22,14 +61,27 @@ import * as MOption from './Option.js';
 import * as MTypes from './types/types.js';
 
 /**
- * Type on which this module's functions operate
+ * Type on which this module's functions operate.
  *
  * @category Models
  */
 export interface Type<out A> extends ReadonlyArray<A> {}
 
 /**
- * Returns `true` if the length of `self` is `l`
+ * Returns `true` if the length of `self` is exactly `l`.
+ *
+ * - Use to assert that an array has a specific number of elements.
+ * - Length comparison is `===`.
+ *
+ * **Example** (Length check)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MArray from '@parischap/effect-lib/MArray';
+ *
+ * console.log(pipe([1, 2, 3], MArray.hasLength(3))); // true
+ * console.log(pipe([1, 2, 3], MArray.hasLength(2))); // false
+ * ```
  *
  * @category Predicates
  */
@@ -39,10 +91,26 @@ export const hasLength =
     self.length === l;
 
 /**
- * Returns `true` if the provided `ReadonlyArray` contains duplicates using the provided
- * `isEquivalent` function.
+ * Returns `true` if `self` contains at least one duplicate, comparing elements with the supplied
+ * `Equivalence`.
+ *
+ * - Use when default equality is not adequate (e.g. comparing objects by a single field).
+ * - Returns `false` for arrays with all-distinct elements.
+ *
+ * **Example** (Detecting duplicates with a custom equivalence)
+ *
+ * ```ts
+ * import { Equivalence, pipe } from 'effect';
+ * import * as MArray from '@parischap/effect-lib/MArray';
+ *
+ * const byId = Equivalence.mapInput(Equivalence.number, (o: { readonly id: number }) => o.id);
+ * console.log(pipe([{ id: 1 }, { id: 1 }], MArray.hasDuplicatesWith(byId))); // true
+ * console.log(pipe([{ id: 1 }, { id: 2 }], MArray.hasDuplicatesWith(byId))); // false
+ * ```
  *
  * @category Predicates
+ *
+ * @see {@link hasDuplicates} — variant using `Equal.equals`
  */
 export const hasDuplicatesWith =
   <A>(isEquivalent: Equivalence.Equivalence<NoInfer<A>>) =>
@@ -50,15 +118,50 @@ export const hasDuplicatesWith =
     pipe(self, Array.dedupeWith(isEquivalent), hasLength(self.length), Boolean.not);
 
 /**
- * Returns `true` if the provided `ReadonlyArray` contains duplicates using Equal.equals
+ * Returns `true` if `self` contains at least one duplicate, comparing elements with `Equal.equals`.
+ *
+ * - Use to validate uniqueness with default equality.
+ * - Comparison uses Effect's `Equal.equals` (structural equality for `Equal`-aware types, otherwise
+ *   `===`).
+ *
+ * **Example** (Detecting duplicates)
+ *
+ * ```ts
+ * import * as MArray from '@parischap/effect-lib/MArray';
+ *
+ * console.log(MArray.hasDuplicates([1, 2, 2, 3])); // true
+ * console.log(MArray.hasDuplicates([1, 2, 3])); // false
+ * ```
  *
  * @category Predicates
+ *
+ * @see {@link hasDuplicatesWith} — variant taking a custom `Equivalence`
  */
 export const hasDuplicates = hasDuplicatesWith(Equal.asEquivalence());
 
 /**
- * Pattern-matches an array by cardinality: applies `onEmpty` for empty arrays, `onSingleton` for
- * arrays with exactly one element, and `onOverTwo` for arrays with two or more elements.
+ * Pattern-matches `self` by cardinality: empty, singleton, or two-or-more.
+ *
+ * - Use to branch type-safely on array size.
+ * - `onSingleton` receives the single element directly.
+ * - `onOverTwo` receives `self` typed as `MTypes.ReadonlyOverTwo<A>` (two-or-more).
+ *
+ * **Example** (Cardinality match)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MArray from '@parischap/effect-lib/MArray';
+ *
+ * const describe = MArray.match012({
+ *   onEmpty: () => 'empty',
+ *   onSingleton: (x: number) => `one: ${x}`,
+ *   onOverTwo: (xs) => `many: ${xs.length}`,
+ * });
+ *
+ * console.log(pipe([], describe)); // 'empty'
+ * console.log(pipe([1], describe)); // 'one: 1'
+ * console.log(pipe([1, 2, 3], describe)); // 'many: 3'
+ * ```
  *
  * @category Utils
  */
@@ -78,7 +181,21 @@ export const match012 =
     );
 
 /**
- * Returns an array of the indexes of all elements of `self` that satisfy `predicate`
+ * Returns the indexes of all elements of `self` satisfying `predicate`, in ascending order.
+ *
+ * - Use to locate every position matching a condition.
+ * - Returns an empty array when no element matches.
+ *
+ * **Example** (Indexes of matching elements)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MArray from '@parischap/effect-lib/MArray';
+ * import * as MPredicate from '@parischap/effect-lib/MPredicate';
+ *
+ * console.log(pipe([1, 3, 2, 4], MArray.findAll(MPredicate.strictEquals(3)))); // [1]
+ * console.log(pipe([1, 3, 2, 4, 3], MArray.findAll(MPredicate.strictEquals(3)))); // [1, 4]
+ * ```
  *
  * @category Utils
  */
@@ -94,9 +211,25 @@ export const findAll =
     );
 
 /**
- * Returns all elements of `self` except the last `n` elements. `n` must be a positive integer
+ * Returns all elements of `self` except the last `n`.
+ *
+ * - Use to drop a suffix of fixed size.
+ * - When `n >= self.length`, returns an empty array.
+ * - `n` should be a non-negative integer.
+ *
+ * **Example** (Drop trailing elements)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MArray from '@parischap/effect-lib/MArray';
+ *
+ * console.log(pipe([1, 2, 3, 4], MArray.takeBut(2))); // [1, 2]
+ * console.log(pipe([1, 2, 3], MArray.takeBut(5))); // []
+ * ```
  *
  * @category Utils
+ *
+ * @see {@link takeRightBut} — symmetric variant dropping the leading elements
  */
 export const takeBut =
   (n: number) =>
@@ -104,9 +237,25 @@ export const takeBut =
     self.slice(0, -n);
 
 /**
- * Returns all elements of `self` except the first `n` elements. `n` must be a positive integer
+ * Returns all elements of `self` except the first `n`.
+ *
+ * - Use to drop a prefix of fixed size.
+ * - When `n >= self.length`, returns an empty array.
+ * - `n` should be a non-negative integer.
+ *
+ * **Example** (Drop leading elements)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MArray from '@parischap/effect-lib/MArray';
+ *
+ * console.log(pipe([1, 2, 3, 4], MArray.takeRightBut(2))); // [3, 4]
+ * console.log(pipe([1, 2, 3], MArray.takeRightBut(5))); // []
+ * ```
  *
  * @category Utils
+ *
+ * @see {@link takeBut} — symmetric variant dropping the trailing elements
  */
 export const takeRightBut =
   (n: number) =>
@@ -114,8 +263,22 @@ export const takeRightBut =
     self.slice(n);
 
 /**
- * Returns the element at position `index` from the end of `self`, wrapped in an `Option`. Index `0`
- * returns the last element.
+ * Returns the element at position `index` counted from the end of `self` as an `Option`.
+ *
+ * - Use to access from the tail of an array.
+ * - `index` is zero-based: `0` is the last element.
+ * - Returns `Option.none` when `index` is out of bounds.
+ *
+ * **Example** (Indexed access from the end)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MArray from '@parischap/effect-lib/MArray';
+ *
+ * console.log(pipe([1, 2, 3], MArray.getFromEnd(0))); // Some(3)
+ * console.log(pipe([1, 2, 3], MArray.getFromEnd(1))); // Some(2)
+ * console.log(pipe([1, 2, 3], MArray.getFromEnd(3))); // None
+ * ```
  *
  * @category Utils
  */
@@ -125,7 +288,20 @@ export const getFromEnd =
     Array.get(self, self.length - 1 - index);
 
 /**
- * Returns the longest common prefix between `self` and `that`, compared using `Equal.equals`
+ * Returns the longest common prefix of `self` and `that`, comparing elements with `Equal.equals`.
+ *
+ * - Use to find the leading elements two arrays agree on.
+ * - Returns an empty array when the first elements already differ.
+ *
+ * **Example** (Longest common prefix)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MArray from '@parischap/effect-lib/MArray';
+ *
+ * console.log(pipe([1, 2, 4], MArray.longestCommonSubArray([1, 2, 3]))); // [1, 2]
+ * console.log(pipe([0, 1], MArray.longestCommonSubArray([1, 2]))); // []
+ * ```
  *
  * @category Utils
  */
@@ -140,8 +316,27 @@ export const longestCommonSubArray =
     );
 
 /**
- * Extracts the first element of `self` that satisfies `predicate` (or `refinement`). Returns a pair
- * of the extracted element (as an `Option`) and the remaining elements.
+ * Extracts the first element of `self` matching `predicate` (or `refinement`) and returns a pair of
+ * the extracted element (as an `Option`) and the remaining elements in their original order.
+ *
+ * - Use to find and remove the first matching element in a single pass.
+ * - When no element matches, returns `[Option.none(), self]`.
+ * - Acts as a refinement-aware destructor: the extracted element is narrowed when a refinement is
+ *   supplied.
+ *
+ * **Example** (Extract first matching element)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MArray from '@parischap/effect-lib/MArray';
+ *
+ * const [match, rest] = pipe(
+ *   [1, 3, 2, 4],
+ *   MArray.extractFirst((n) => n > 2),
+ * );
+ * console.log(match); // Some(3)
+ * console.log(rest); // [1, 2, 4]
+ * ```
  *
  * @category Utils
  */
@@ -164,19 +359,29 @@ export const extractFirst: {
     );
 
 /**
- * Flattens an array of arrays adding an index that will allow to reverse this operation with
- * groupByNum
+ * Flattens a two-dimensional array, tagging each element with the index of its source row.
+ *
+ * - Use as the inverse companion to {@link groupByNum}: `groupByNum` undoes `ungroup` when
+ *   `fKey`/`fValue` extract the row index and the original element respectively.
+ * - Order is preserved: rows are visited in order, and each row is flattened left to right.
+ *
+ * **Example** (Tagged flatten)
+ *
+ * ```ts
+ * import * as MArray from '@parischap/effect-lib/MArray';
+ *
+ * console.log(
+ *   MArray.ungroup([
+ *     [1, 2, 3],
+ *     [4, 5],
+ *   ]),
+ * );
+ * // [[0, 1], [0, 2], [0, 3], [1, 4], [1, 5]]
+ * ```
  *
  * @category Utils
  *
- * @example
- *   import { MArray } from '@parischap/effect-lib';
- *   import { pipe } from 'effect';
- *
- *   assert.deepStrictEqual(
- *   pipe([[1, 2, 3], [3, 4, 5]], MArray.ungroup),
- *   [[0, 1], [0, 2], [0, 3], [1, 3], [1, 4], [1, 5]],
- *   );
+ * @see {@link groupByNum} — reverses {@link ungroup}
  */
 export const ungroup = <A>(as: Type<Type<A>>): Array<[number, A]> =>
   pipe(
@@ -186,33 +391,34 @@ export const ungroup = <A>(as: Type<Type<A>>): Array<[number, A]> =>
   );
 
 /**
- * The elements of self are mapped by a fValue function and grouped by a fKey function. Size is the
- * size of the output array. If fKey returns a negative index or an index superior or equal to size,
- * the corresponding value is ignored. There may be holes in the output array. Can be used to
- * reverse the ungroup function.
+ * Maps the elements of `self` with `fValue` and groups the results by the numeric index returned by
+ * `fKey`. The output is an array of length `size`. Elements whose key is negative or `>= size` are
+ * dropped; rows for which no element maps are left as empty arrays.
+ *
+ * - Use to bucket elements into a fixed number of slots.
+ * - Together with {@link ungroup} provides a round-trip: `groupByNum` reverses `ungroup`.
+ *
+ * **Example** (Bucketing by row index)
+ *
+ * ```ts
+ * import { Tuple, pipe } from 'effect';
+ * import * as MArray from '@parischap/effect-lib/MArray';
+ *
+ * const input = [
+ *   [0, 'a'],
+ *   [0, 'b'],
+ *   [1, 'c'],
+ *   [1, 'd'],
+ * ] as ReadonlyArray<[number, string]>;
+ * console.log(
+ *   pipe(input, MArray.groupByNum({ size: 2, fKey: Tuple.get(0), fValue: Tuple.get(1) })),
+ * );
+ * // [['a', 'b'], ['c', 'd']]
+ * ```
  *
  * @category Utils
  *
- * @example
- *   import { MArray } from '@parischap/effect-lib';
- *   import { pipe, Tuple } from 'effect';
- *
- *   const foo: ReadonlyArray<readonly [number, number]> = [
- *     [0, 1],
- *     [0, 2],
- *     [0, 3],
- *     [1, 1],
- *     [1, 2],
- *     [1, 3],
- *   ];
- *
- *   assert.deepStrictEqual(
- *     pipe(foo, MArray.groupByNum({ size: 2, fKey: Tuple.get(0), fValue: Tuple.get(1) })),
- *     [
- *       [1, 2, 3],
- *       [1, 2, 3],
- *     ],
- *   );
+ * @see {@link ungroup} — companion that produces `[index, value]` pairs
  */
 export const groupByNum =
   <A, B>({
@@ -235,7 +441,28 @@ export const groupByNum =
   };
 
 /**
- * Same as Array.groupBy but with a value projection function
+ * Like `Array.groupBy` but applies `fValue` to each element before collecting it into its bucket.
+ *
+ * - Use to group and project in a single pass.
+ * - Each bucket is guaranteed non-empty (typed `MTypes.OverOne<B>`).
+ *
+ * **Example** (Group with projection)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MArray from '@parischap/effect-lib/MArray';
+ *
+ * const data = [
+ *   { type: 'a', value: 1 },
+ *   { type: 'a', value: 2 },
+ *   { type: 'b', value: 3 },
+ * ] as const;
+ *
+ * console.log(
+ *   pipe(data, MArray.groupBy({ fKey: (item) => item.type, fValue: (item) => item.value })),
+ * );
+ * // { a: [1, 2], b: [3] }
+ * ```
  *
  * @category Utils
  */
@@ -276,7 +503,22 @@ export const groupBy =
 	};*/
 
 /**
- * Returns a function that retrieves the element at a given index from `self`, returning an `Option`
+ * Returns a function that retrieves the element at a given index from `self`, wrapped in an
+ * `Option`.
+ *
+ * - Use to precompute a getter once when the same array will be queried many times.
+ * - The returned function is curried for the index and returns `Option.none` for out-of-bounds
+ *   accesses.
+ *
+ * **Example** (Reusable safe getter)
+ *
+ * ```ts
+ * import * as MArray from '@parischap/effect-lib/MArray';
+ *
+ * const get = MArray.getter([1, 2, 3]);
+ * console.log(get(0)); // Some(1)
+ * console.log(get(5)); // None
+ * ```
  *
  * @category Destructors
  */
@@ -286,10 +528,24 @@ export const getter =
     Array.get(self, index);
 
 /**
- * Returns the element at `index` in `self` without bounds checking. Faster than the Effect version
- * but may return `undefined` for out-of-bounds indexes
+ * Returns the element of `self` at `index` without bounds checking.
+ *
+ * - Use only when bounds are guaranteed by construction; otherwise prefer `Array.get`.
+ * - Returns `undefined` (typed as `A`) for out-of-bounds indexes.
+ *
+ * **Example** (Unchecked access)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MArray from '@parischap/effect-lib/MArray';
+ *
+ * console.log(pipe([1, 2, 3], MArray.unsafeGet(0))); // 1
+ * console.log(pipe([1, 2, 3], MArray.unsafeGet(10))); // undefined
+ * ```
  *
  * @category Utils
+ *
+ * @see {@link getter} — safe alternative returning `Option`
  */
 export const unsafeGet =
   (index: number) =>
@@ -298,10 +554,24 @@ export const unsafeGet =
     self[index];
 
 /**
- * Returns a function that retrieves the element at a given index from `self` without bounds
- * checking
+ * Returns a function that retrieves the element of `self` at a given index without bounds checking.
+ *
+ * - Use to precompute an unchecked getter when the same array will be queried many times under a
+ *   bounds invariant.
+ * - May return `undefined` (typed as `A`) for out-of-bounds indexes.
+ *
+ * **Example** (Reusable unsafe getter)
+ *
+ * ```ts
+ * import * as MArray from '@parischap/effect-lib/MArray';
+ *
+ * const get = MArray.unsafeGetter([1, 2, 3]);
+ * console.log(get(1)); // 2
+ * ```
  *
  * @category Destructors
+ *
+ * @see {@link getter} — safe alternative returning `Option`
  */
 export const unsafeGetter =
   <A>(self: Type<A>): MTypes.OneArgFunction<number, A> =>
@@ -309,17 +579,41 @@ export const unsafeGetter =
     unsafeGet(index)(self);
 
 /**
- * Utility type that changes the type of all the elements of an array or tuple
+ * Utility type that replaces the type of every element of an array or tuple with `A`.
  *
  * @category Utility types
  */
 export type With<S extends MTypes.AnyReadonlyArray, A> = { [k in keyof S]: A };
 
 /**
- * Returns a copy of `self` with all elements except the last one transformed by `f`. Returns a copy
- * of `self` unchanged if `self` contains at most one element.
+ * Returns a copy of `self` with every element except the last transformed by `f`.
+ *
+ * - Use to apply a transformation to all elements but the trailing one.
+ * - Returns `self` unchanged when it has zero or one elements.
+ *
+ * **Example** (Modify all but the last)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MArray from '@parischap/effect-lib/MArray';
+ *
+ * console.log(
+ *   pipe(
+ *     [1, 2, 3, 4],
+ *     MArray.modifyInit((x) => x * 2),
+ *   ),
+ * ); // [2, 4, 6, 4]
+ * console.log(
+ *   pipe(
+ *     [5],
+ *     MArray.modifyInit((x) => x * 2),
+ *   ),
+ * ); // [5]
+ * ```
  *
  * @category Utils
+ *
+ * @see {@link modifyTail} — symmetric variant keeping the head fixed
  */
 export const modifyInit =
   <S extends MTypes.AnyReadonlyArray, B>(f: (a: Array.ReadonlyArray.Infer<S>, i: number) => B) =>
@@ -329,10 +623,34 @@ export const modifyInit =
   };
 
 /**
- * Returns a copy of `self` with all elements except the first one transformed by `f`. Returns a
- * copy of `self` unchanged if it contains at most one element.
+ * Returns a copy of `self` with every element except the first transformed by `f`.
+ *
+ * - Use to apply a transformation to all elements but the leading one.
+ * - Returns `self` unchanged when it has zero or one elements.
+ *
+ * **Example** (Modify all but the first)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MArray from '@parischap/effect-lib/MArray';
+ *
+ * console.log(
+ *   pipe(
+ *     [1, 2, 3, 4],
+ *     MArray.modifyTail((x) => x * 2),
+ *   ),
+ * ); // [1, 4, 6, 8]
+ * console.log(
+ *   pipe(
+ *     [5],
+ *     MArray.modifyTail((x) => x * 2),
+ *   ),
+ * ); // [5]
+ * ```
  *
  * @category Utils
+ *
+ * @see {@link modifyInit} — symmetric variant keeping the last element fixed
  */
 export const modifyTail =
   <S extends MTypes.AnyReadonlyArray, B>(f: (a: Array.ReadonlyArray.Infer<S>, i: number) => B) =>
@@ -340,10 +658,34 @@ export const modifyTail =
     Array.map(self, (elem, i) => (i > 0 ? f(elem, i) : elem)) as never;
 
 /**
- * Returns a copy of `self` with the last element transformed by `f`. Returns a copy of `self`
- * unchanged if `self` is empty.
+ * Returns a copy of `self` with the last element transformed by `f`.
+ *
+ * - Use to update only the trailing element.
+ * - Returns an empty copy when `self` is empty.
+ *
+ * **Example** (Modify last element)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MArray from '@parischap/effect-lib/MArray';
+ *
+ * console.log(
+ *   pipe(
+ *     [1, 2, 3],
+ *     MArray.modifyLast((x) => x * 2),
+ *   ),
+ * ); // [1, 2, 6]
+ * console.log(
+ *   pipe(
+ *     [],
+ *     MArray.modifyLast((x) => x * 2),
+ *   ),
+ * ); // []
+ * ```
  *
  * @category Utils
+ *
+ * @see {@link modifyHead} — symmetric variant updating the first element
  */
 export const modifyLast =
   <S extends MTypes.AnyReadonlyArray, B>(f: (a: Array.ReadonlyArray.Infer<S>) => B) =>
@@ -353,10 +695,34 @@ export const modifyLast =
   };
 
 /**
- * Returns a copy of `self` with the first element transformed by `f`. Returns a copy of `self`
- * unchanged if it is empty.
+ * Returns a copy of `self` with the first element transformed by `f`.
+ *
+ * - Use to update only the leading element.
+ * - Returns an empty copy when `self` is empty.
+ *
+ * **Example** (Modify first element)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MArray from '@parischap/effect-lib/MArray';
+ *
+ * console.log(
+ *   pipe(
+ *     [1, 2, 3],
+ *     MArray.modifyHead((x) => x * 2),
+ *   ),
+ * ); // [2, 2, 3]
+ * console.log(
+ *   pipe(
+ *     [],
+ *     MArray.modifyHead((x) => x * 2),
+ *   ),
+ * ); // []
+ * ```
  *
  * @category Utils
+ *
+ * @see {@link modifyLast } — symmetric variant updating the last element
  */
 export const modifyHead =
   <S extends MTypes.AnyReadonlyArray, B>(f: (a: Array.ReadonlyArray.Infer<S>) => B) =>
@@ -364,12 +730,26 @@ export const modifyHead =
     Array.map(self, (elem, i) => (i === 0 ? f(elem) : elem)) as never;
 
 /**
- * Same as `Array.unfold` but curried and with optional cycle detection. Cycle detection is enabled
- * by passing a `seedEquivalence`. When enabled, a cycle is detected if the same seed `s` is sent a
- * second time to `f` (compared using `seedEquivalence`). In that case, `cycleSource` is a `some`
- * of the `A` generated the first time `s` was processed, giving the user a chance to modify it.
- * Otherwise, `cycleSource` is a `none`. When `seedEquivalence` is omitted, no cycle detection is
- * performed and `f` does not receive a `cycleSource` parameter.
+ * Curried version of `Array.unfold` with optional cycle detection.
+ *
+ * - Without `seedEquivalence`, behaves like a curried `Array.unfold`: keep generating until `f`
+ *   returns `Option.none`.
+ * - With `seedEquivalence`, every seed is recorded; if the same seed reappears, `cycleSource` is a
+ *   `some` of the `A` produced the first time that seed was processed, allowing the caller to break
+ *   the cycle.
+ *
+ * **Example** (Unfold without cycle detection)
+ *
+ * ```ts
+ * import { Option, pipe } from 'effect';
+ * import * as MArray from '@parischap/effect-lib/MArray';
+ *
+ * const result = pipe(
+ *   0,
+ *   MArray.unfold((n) => (n < 3 ? Option.some([n, n + 1] as const) : Option.none())),
+ * );
+ * console.log(result); // [0, 1, 2]
+ * ```
  *
  * @category Constructors
  */
@@ -385,8 +765,7 @@ export const unfold: {
     seedEquivalence?: Equivalence.Equivalence<S>,
   ) =>
   (s: S): Array<A> => {
-    if (seedEquivalence === undefined)
-      return Array.unfold(s, (s) => f(s, Option.none()));
+    if (seedEquivalence === undefined) return Array.unfold(s, (s) => f(s, Option.none()));
     const knownAsAndBs = Array.empty<[S, A]>();
     const internalF = (s: S): Option.Option<MTypes.Pair<A, S>> => {
       const knownB = pipe(
@@ -402,14 +781,28 @@ export const unfold: {
   };
 
 /**
- * Same as `MArray.unfold` but `f` always returns an `A` and optionally an `S`. Cycle detection is
- * enabled by passing a `seedEquivalence`. When enabled, a cycle is detected if the same seed `s`
- * is sent a second time to `f` (compared using `seedEquivalence`). In that case, `cycleSource` is
- * a `some` of the `A` generated the first time `s` was processed, giving the user a chance to
- * modify it. Otherwise, `cycleSource` is a `none`. When `seedEquivalence` is omitted, no cycle
- * detection is performed and `f` does not receive a `cycleSource` parameter.
+ * Variant of {@link unfold} where each step always produces an `A` and optionally a next seed `S`,
+ * guaranteeing a non-empty result.
+ *
+ * - Use when at least one element must be produced.
+ * - Cycle detection works the same way as in {@link unfold}.
+ *
+ * **Example** (Unfold a non-empty array)
+ *
+ * ```ts
+ * import { Option, pipe } from 'effect';
+ * import * as MArray from '@parischap/effect-lib/MArray';
+ *
+ * const result = pipe(
+ *   0,
+ *   MArray.unfoldNonEmpty((n) => [n, n < 2 ? Option.some(n + 1) : Option.none()] as const),
+ * );
+ * console.log(result); // [0, 1, 2]
+ * ```
  *
  * @category Constructors
+ *
+ * @see {@link unfold} — variant returning a possibly empty array
  */
 export const unfoldNonEmpty: {
   <S, A>(f: (s: S) => MTypes.Pair<A, Option.Option<S>>): (s: S) => MTypes.OverOne<A>;
@@ -427,9 +820,7 @@ export const unfoldNonEmpty: {
       s,
       Option.some,
       seedEquivalence === undefined
-        ? unfold((sOption: Option.Option<S>) =>
-            Option.map(sOption, (s) => f(s, Option.none())),
-          )
+        ? unfold((sOption: Option.Option<S>) => Option.map(sOption, (s) => f(s, Option.none())))
         : unfold(
             (sOption: Option.Option<S>, cycleSource: Option.Option<A>) =>
               Option.map(sOption, (s) => f(s, cycleSource)),
@@ -438,8 +829,21 @@ export const unfoldNonEmpty: {
     ) as unknown as MTypes.OverOne<A>;
 
 /**
- * Splits `self` into two segments, with the second segment containing at most `n` elements. `n` can
- * be `0`.
+ * Splits `self` into two segments, the second containing at most the last `n` elements.
+ *
+ * - Use to take a fixed-size suffix while keeping the rest.
+ * - When `n >= self.length`, the first segment is empty.
+ * - `n` must be a non-negative integer; `0` puts everything in the first segment.
+ *
+ * **Example** (Split from the right)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MArray from '@parischap/effect-lib/MArray';
+ *
+ * console.log(pipe([1, 2, 3, 4, 5], MArray.splitAtFromRight(2))); // [[1, 2, 3], [4, 5]]
+ * console.log(pipe([1, 2, 3], MArray.splitAtFromRight(0))); // [[1, 2, 3], []]
+ * ```
  *
  * @category Utils
  */
@@ -449,7 +853,20 @@ export const splitAtFromRight =
     Array.splitAt(self, Math.max(0, self.length - n));
 
 /**
- * Same as `splitAtFromRight` but guarantees the second segment is non-empty. `n` must be `>=1`.
+ * Variant of {@link splitAtFromRight} for non-empty arrays where the second segment is guaranteed
+ * non-empty.
+ *
+ * - `n` must be `>= 1`.
+ * - Returns the second segment typed as `MTypes.OverOne<A>`.
+ *
+ * **Example** (Non-empty split from the right)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MArray from '@parischap/effect-lib/MArray';
+ *
+ * console.log(pipe([1, 2, 3, 4] as const, MArray.splitNonEmptyAtFromRight(2))); // [[1, 2], [3, 4]]
+ * ```
  *
  * @category Utils
  */
@@ -459,10 +876,27 @@ export const splitNonEmptyAtFromRight =
     pipe(self, splitAtFromRight(n)) as never;
 
 /**
- * Maps each element of `self` using `f`, returning a `some` of the mapped array if all calls
- * succeed. Returns a `none` as soon as `f` returns a `none` for any element.
+ * Maps every element of `self` with `f`, returning `Option.some` of the mapped array if every call
+ * succeeds, or `Option.none` as soon as one call returns `Option.none`.
+ *
+ * - Use when every element must be mappable for the operation to make sense.
+ * - Short-circuits on the first `Option.none` returned by `f`.
+ *
+ * **Example** (Map with possible failure)
+ *
+ * ```ts
+ * import { Option, pipe } from 'effect';
+ * import * as MArray from '@parischap/effect-lib/MArray';
+ *
+ * const safeDiv = (x: number) => (x !== 0 ? Option.some(10 / x) : Option.none());
+ *
+ * console.log(pipe([2, 5], MArray.mapUnlessNone(safeDiv))); // Some([5, 2])
+ * console.log(pipe([2, 0, 5], MArray.mapUnlessNone(safeDiv))); // None
+ * ```
  *
  * @category Destructors
+ *
+ * @see {@link mapUnlessLeft} — variant carrying an explicit error
  */
 export const mapUnlessNone =
   <S extends MTypes.AnyReadonlyArray, B>(
@@ -479,10 +913,30 @@ export const mapUnlessNone =
   };
 
 /**
- * Maps each element of `self` using `f`, returning a success of the mapped array if all calls
- * succeed. Returns the first failure encountered.
+ * Maps every element of `self` with `f`, returning `Result.success` of the mapped array if every
+ * call succeeds, or the first failure encountered.
+ *
+ * - Use when each step can produce a typed error.
+ * - Short-circuits on the first failure returned by `f`.
+ *
+ * **Example** (Map with error handling)
+ *
+ * ```ts
+ * import { Result, pipe } from 'effect';
+ * import * as MArray from '@parischap/effect-lib/MArray';
+ *
+ * const parseIntSafe = (s: string) => {
+ *   const n = parseInt(s);
+ *   return Number.isNaN(n) ? Result.fail(`Invalid number: ${s}`) : Result.succeed(n);
+ * };
+ *
+ * console.log(pipe(['1', '2', '3'], MArray.mapUnlessLeft(parseIntSafe))); // Success([1, 2, 3])
+ * console.log(pipe(['1', 'x', '3'], MArray.mapUnlessLeft(parseIntSafe))); // Failure('Invalid number: x')
+ * ```
  *
  * @category Destructors
+ *
+ * @see {@link mapUnlessNone} — variant using `Option`
  */
 export const mapUnlessLeft =
   <S extends MTypes.AnyReadonlyArray, B, C>(
@@ -498,11 +952,29 @@ export const mapUnlessLeft =
       }
       return result as never;
     });
+
 /**
- * Reduces `self` using `f`, returning a `some` of the accumulated value if all steps succeed.
- * Returns a `none` as soon as `f` returns `none`.
+ * Reduces `self` with `f`, returning `Option.some` of the final accumulator if every step succeeds,
+ * or `Option.none` as soon as one step returns `Option.none`.
+ *
+ * - Use when reducing with a step that may fail without context.
+ * - Short-circuits on the first `Option.none`.
+ *
+ * **Example** (Reduce with possible failure)
+ *
+ * ```ts
+ * import { Option, pipe } from 'effect';
+ * import * as MArray from '@parischap/effect-lib/MArray';
+ *
+ * const safeAdd = (acc: number, x: number) => (x >= 0 ? Option.some(acc + x) : Option.none());
+ *
+ * console.log(pipe([1, 2, 3], MArray.reduceUnlessNone(0, safeAdd))); // Some(6)
+ * console.log(pipe([1, -1, 3], MArray.reduceUnlessNone(0, safeAdd))); // None
+ * ```
  *
  * @category Destructors
+ *
+ * @see {@link reduceUnlessLeft} — variant carrying an explicit error
  */
 export const reduceUnlessNone =
   <B, A>(b: B, f: (b: B, a: A, i: number) => Option.Option<B>) =>
@@ -518,10 +990,30 @@ export const reduceUnlessNone =
     });
 
 /**
- * Reduces `self` using `f`, returning a success of the accumulated value if all steps succeed.
- * Returns the first failure encountered.
+ * Reduces `self` with `f`, returning `Result.success` of the final accumulator if every step
+ * succeeds, or the first failure encountered.
+ *
+ * - Use when reducing with a step that can produce a typed error.
+ * - Short-circuits on the first failure.
+ *
+ * **Example** (Reduce with error handling)
+ *
+ * ```ts
+ * import { Result, pipe } from 'effect';
+ * import * as MArray from '@parischap/effect-lib/MArray';
+ *
+ * const safeSum = (acc: number, x: string) => {
+ *   const n = parseInt(x);
+ *   return Number.isNaN(n) ? Result.fail(`Invalid: ${x}`) : Result.succeed(acc + n);
+ * };
+ *
+ * console.log(pipe(['1', '2', '3'], MArray.reduceUnlessLeft(0, safeSum))); // Success(6)
+ * console.log(pipe(['1', 'x', '3'], MArray.reduceUnlessLeft(0, safeSum))); // Failure('Invalid: x')
+ * ```
  *
  * @category Destructors
+ *
+ * @see {@link reduceUnlessNone} — variant using `Option`
  */
 export const reduceUnlessLeft =
   <B, A, C>(b: B, f: (b: B, a: A, i: number) => Result.Result<B, C>) =>
@@ -537,9 +1029,19 @@ export const reduceUnlessLeft =
     });
 
 /**
- * Merges two sorted iterables into a single sorted array. The merge is stable: elements from `self`
- * appear before equal elements from `that`. Both `self` and `that` must already be sorted according
- * to order `o`.
+ * Stably merges two iterables already sorted according to `o`.
+ *
+ * - Both inputs must already be sorted by `o`.
+ * - The merge is stable: equal elements from `self` precede equal elements from `that`.
+ *
+ * **Example** (Merge sorted iterables)
+ *
+ * ```ts
+ * import { Order, pipe } from 'effect';
+ * import * as MArray from '@parischap/effect-lib/MArray';
+ *
+ * console.log(pipe([1, 3, 5], MArray.mergeSorted(Order.number)([2, 4, 6]))); // [1, 2, 3, 4, 5, 6]
+ * ```
  *
  * @category Utils
  */
@@ -598,8 +1100,20 @@ export const mergeSorted =
   };
 
 /**
- * Returns the elements of `self` that are not present in `that`. Both `self` and `that` must
- * already be sorted according to order `o`. Uses `Equal.equals` for element comparison.
+ * Returns the elements of `self` not present in `that`. Both iterables must already be sorted
+ * according to `o`. Element equality is `Equal.equals`.
+ *
+ * - Use to compute a sorted set difference in a single linear pass.
+ * - Both inputs must be sorted; otherwise the result is undefined.
+ *
+ * **Example** (Sorted difference)
+ *
+ * ```ts
+ * import { Order, pipe } from 'effect';
+ * import * as MArray from '@parischap/effect-lib/MArray';
+ *
+ * console.log(pipe([1, 2, 3, 4, 5], MArray.differenceSorted(Order.number)([2, 4]))); // [1, 3, 5]
+ * ```
  *
  * @category Utils
  */
@@ -660,7 +1174,20 @@ export const differenceSorted =
   };
 
 /**
- * Same as `Array.pad` but the return type is a fixed-size `Tuple` instead of a plain array
+ * Same as `Array.pad` but the result is typed as a fixed-size `Tuple` of length `N` instead of a
+ * plain array.
+ *
+ * - Use when the resulting length is part of the type and downstream code relies on it.
+ * - Pads with `fill` when shorter than `n`; truncates when longer.
+ *
+ * **Example** (Padding to a fixed length)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MArray from '@parischap/effect-lib/MArray';
+ *
+ * console.log(pipe([1, 2, 3], MArray.pad(5, 0))); // [1, 2, 3, 0, 0]
+ * ```
  *
  * @category Utils
  */
@@ -670,9 +1197,20 @@ export const pad = <A, T, N extends number>(
 ): MTypes.OneArgFunction<Type<A>, MTypes.Tuple<A | T, N>> => Array.pad(n, fill) as never;
 
 /**
- * Removes empty string parts from `self` and joins the remaining strings using `sep`. Useful when
- * parts of the array come from an external source and might be empty strings that must not add an
- * extra separator
+ * Joins the strings of `self` with `sep`, ignoring empty strings so they do not introduce extra
+ * separators.
+ *
+ * - Use when assembling fragments coming from heterogeneous sources where some may be empty.
+ * - The output never contains two consecutive `sep`'s nor a leading/trailing `sep`.
+ *
+ * **Example** (Joining without empty fragments)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MArray from '@parischap/effect-lib/MArray';
+ *
+ * console.log(pipe(['a', '', 'b', '', 'c'], MArray.removeEmptyAndJoin(', '))); // 'a, b, c'
+ * ```
  *
  * @category Utils
  */

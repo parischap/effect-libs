@@ -1,6 +1,35 @@
 /**
- * Module implementing an enum that classifies JavaScript values into their runtime category
- * (String, Number, Bigint, Boolean, Symbol, Null, Undefined, Record, Array, Function)
+ * Enum classifying JavaScript values into ten runtime categories, plus a {@link fromValue}
+ * constructor and per-category predicates.
+ *
+ * ## Mental model
+ *
+ * - **`Type`** has 10 cases: `String`, `Number`, `Bigint`, `Boolean`, `Symbol`, `Null`,
+ *   `Undefined`, `Record`, `Array`, `Function`.
+ * - `Record` is the computer-science meaning (a string-keyed object), **not** the TypeScript
+ *   `Record<K, V>` utility — arrays and functions get their own categories despite being objects
+ *   at the JS level.
+ * - {@link fromValue} normalizes any JavaScript value to one of these categories;
+ *   {@link isPrimitive} / {@link isNonPrimitive} group the categories accordingly.
+ *
+ * ## Common tasks
+ *
+ * - **Classify a value**: {@link fromValue}
+ * - **Group test**: {@link isPrimitive}, {@link isNonPrimitive}
+ * - **Per-category test**: {@link isString}, {@link isNumber}, {@link isBigint},
+ *   {@link isBoolean}, {@link isSymbol}, {@link isNull}, {@link isUndefined},
+ *   {@link isFunction}, {@link isArray}, {@link isRecord}
+ *
+ * ## Quickstart
+ *
+ * **Example** (Classify and dispatch on category)
+ *
+ * ```ts
+ * import * as MTypesCategory from '@parischap/effect-lib/types/TypesCategory';
+ *
+ * console.log(MTypesCategory.fromValue('hi') === MTypesCategory.Type.String); // true
+ * console.log(MTypesCategory.isNonPrimitive(MTypesCategory.fromValue([1, 2]))); // true
+ * ```
  */
 
 import * as Array from 'effect/Array';
@@ -8,7 +37,7 @@ import * as Function from 'effect/Function';
 import * as Predicate from 'effect/Predicate';
 
 /**
- * Type of a MTypeCategory
+ * Enum of JavaScript runtime categories.
  *
  * @category Models
  */
@@ -27,7 +56,11 @@ export enum Type {
 }
 
 /**
- * Constructor
+ * Builds the category of `u`.
+ *
+ * - Returns the matching {@link Type} variant for any JavaScript value.
+ * - `null` and arrays each get their own category, even though `typeof` reports them as
+ *   `'object'`.
  *
  * @category Constructors
  */

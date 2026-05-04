@@ -1,7 +1,38 @@
 /**
- * Extension to the Effect Number module providing safe conversions from BigInt/BigDecimal, modular
- * arithmetic, and numeric predicates
+ * Extension to the Effect Number module providing safe conversions from `bigint` and `BigDecimal`,
+ * positive integer modulo, decimal shifting and truncation, and a few numeric predicates.
+ *
+ * ## Mental model
+ *
+ * - **`Type`** is just `number`.
+ * - Conversions come in `unsafe*` (lossy: too-large or non-finite values become `±Infinity` or
+ *   `NaN`) and `*Option` (validating, returning `Option`) flavors.
+ * - Use {@link intModulo} when you need a positive modulo (the JavaScript `%` operator is
+ *   sign-preserving).
+ *
+ * ## Common tasks
+ *
+ * - **Convert from `bigint`**: {@link unsafeFromBigInt}, {@link fromBigIntOption}
+ * - **Convert from `BigDecimal`**: {@link unsafeFromBigDecimal}, {@link fromBigDecimalOption}
+ * - **Convert from `string`**: {@link unsafeFromString}
+ * - **Arithmetic**: {@link opposite}, {@link intModulo}, {@link quotientAndRemainder},
+ *   {@link shift}, {@link trunc}
+ * - **Predicates**: {@link equals}, {@link isMultipleOf}
+ * - **Sign**: {@link sign2}
+ * - **Constants**: {@link MAX_SAFE_INTEGER}, {@link MIN_SAFE_INTEGER}
+ *
+ * ## Quickstart
+ *
+ * **Example** (Safe conversion and positive modulo)
+ *
+ * ```ts
+ * import * as MNumber from '@parischap/effect-lib/MNumber';
+ *
+ * console.log(MNumber.fromBigIntOption(123n)); // Some(123)
+ * console.log(MNumber.intModulo(3)(-7)); // 2 (vs. -7 % 3 === -1)
+ * ```
  */
+
 import { flow, pipe } from 'effect';
 import * as BigDecimal from 'effect/BigDecimal';
 import * as BigInt from 'effect/BigInt';
@@ -11,14 +42,14 @@ import type * as Predicate from 'effect/Predicate';
 import type * as MTypes from './types/types.js';
 
 /**
- * Type on which this module's functions operate
+ * Type on which this module's functions operate.
  *
  * @category Models
  */
 export type Type = number;
 
 /**
- * Maximum safe integer (2^53 – 1) and minimum safe integer -(2^53 – 1) in JavaScript
+ * `Number.MAX_SAFE_INTEGER` (2^53 − 1) and `Number.MIN_SAFE_INTEGER` (−(2^53 − 1)).
  *
  * @category Constants
  */
@@ -30,16 +61,40 @@ const bigDecimalMinSafeInteger = BigDecimal.make(bigIntMinSafeInteger, 0);
 const bigDecimalMaxSafeInteger = BigDecimal.make(bigIntMaxSafeInteger, 0);
 
 /**
- * Builds a number from a BigInt. No checks are carried out. If the number is too big or too small,
- * it is turned into +Infinity or -Infinity
+ * Builds a `number` from a `bigint` without range checks. Values outside the safe-integer range
+ * are coerced to `±Infinity`.
+ *
+ * - Use only when the input is statically known to fit in a JavaScript `number`.
+ *
+ * **Example** (Lossy conversion)
+ *
+ * ```ts
+ * import * as MNumber from '@parischap/effect-lib/MNumber';
+ *
+ * console.log(MNumber.unsafeFromBigInt(42n)); // 42
+ * console.log(MNumber.unsafeFromBigInt(2n ** 100n)); // Infinity
+ * ```
+ *
+ * @see {@link fromBigIntOption} — safe variant
  *
  * @category Constructors
  */
 export const unsafeFromBigInt: MTypes.OneArgFunction<bigint, number> = Number;
 
 /**
- * Builds a number from a BigInt. Returns a `some` if the BigInt is in the safe integer range
- * ([`Number.MIN_SAFE_INTEGER`, `Number.MAX_SAFE_INTEGER`]). Returns a `none` otherwise.
+ * Builds a `number` from a `bigint`, returning `Option.some` when the input lies in
+ * `[Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER]` and `Option.none` otherwise.
+ *
+ * **Example** (Safe conversion)
+ *
+ * ```ts
+ * import * as MNumber from '@parischap/effect-lib/MNumber';
+ *
+ * console.log(MNumber.fromBigIntOption(42n)); // Some(42)
+ * console.log(MNumber.fromBigIntOption(2n ** 100n)); // None
+ * ```
+ *
+ * @see {@link unsafeFromBigInt} — unchecked variant
  *
  * @category Constructors
  */
@@ -51,8 +106,10 @@ export const fromBigIntOption: MTypes.OneArgFunction<bigint, Option.Option<numbe
 );
 
 /**
- * Builds a number from a BigDecimal. No checks are carried out. If the number is too big or too
- * small, it is turned into +Infinity or -Infinity
+ * Builds a `number` from a `BigDecimal` without range checks. Values outside the safe-integer
+ * range are coerced to `±Infinity`.
+ *
+ * @see {@link fromBigDecimalOption} — safe variant
  *
  * @category Constructors
  */
@@ -60,8 +117,10 @@ export const unsafeFromBigDecimal: MTypes.OneArgFunction<BigDecimal.BigDecimal, 
   BigDecimal.toNumberUnsafe;
 
 /**
- * Builds a number from a BigDecimal. Returns a `some` if the BigDecimal is in the safe integer
- * range ([`Number.MIN_SAFE_INTEGER`, `Number.MAX_SAFE_INTEGER`]). Returns a `none` otherwise.
+ * Builds a `number` from a `BigDecimal`, returning `Option.some` when the input lies in
+ * `[Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER]` and `Option.none` otherwise.
+ *
+ * @see {@link unsafeFromBigDecimal} — unchecked variant
  *
  * @category Constructors
  */
@@ -76,25 +135,54 @@ export const fromBigDecimalOption: MTypes.OneArgFunction<
 );
 
 /**
- * Returns the additive inverse (negation) of `self`
+ * Returns the additive inverse of `self` (i.e. `-self`).
+ *
+ * **Example** (Negation)
+ *
+ * ```ts
+ * import * as MNumber from '@parischap/effect-lib/MNumber';
+ *
+ * console.log(MNumber.opposite(3)); // -3
+ * console.log(MNumber.opposite(-3)); // 3
+ * ```
  *
  * @category Utils
  */
 export const opposite = (self: Type) => -self;
 
 /**
- * Constructs a number from a string. Return `NaN` if the string does not represent a number.
- * Returns Infinity if the string is 'Infinity' or '+Infinity' and -Infinity if the string is '-
- * Infinity'
+ * Builds a `number` from a `string`. Returns `NaN` when the string is not a valid numeric literal.
+ *
+ * - `'Infinity'` / `'+Infinity'` produce `Infinity`; `'-Infinity'` produces `-Infinity`.
+ *
+ * **Example** (String to number)
+ *
+ * ```ts
+ * import * as MNumber from '@parischap/effect-lib/MNumber';
+ *
+ * console.log(MNumber.unsafeFromString('42')); // 42
+ * console.log(MNumber.unsafeFromString('abc')); // NaN
+ * ```
  *
  * @category Constructors
  */
 export const unsafeFromString: MTypes.NumberFromString = (s) => +s;
 
 /**
- * Computes the positive remainder of the integer division of `self` by `divisor`. Unlike the `%`
- * operator, always returns a non-negative result even when `self` or `divisor` is negative. Use
- * only with finite integers.
+ * Returns the non-negative remainder of the integer division of `self` by `divisor`.
+ *
+ * - Use when a positive remainder is needed (the built-in `%` preserves the sign of `self`).
+ * - Both inputs must be finite integers; otherwise the result is meaningless.
+ *
+ * **Example** (Positive integer modulo)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MNumber from '@parischap/effect-lib/MNumber';
+ *
+ * console.log(pipe(-7, MNumber.intModulo(3))); // 2
+ * console.log(pipe(7, MNumber.intModulo(3))); // 1
+ * ```
  *
  * @category Utils
  */
@@ -107,8 +195,20 @@ export const intModulo = (divisor: number): MTypes.OneArgFunction<Type> => {
 };
 
 /**
- * Returns the `quotient` and `remainder` of the division of `self` by `divisor`. `remainder` always
- * has the sign of `divisor`. Use only with finite integers
+ * Returns `[quotient, remainder]` for the Euclidean division of `self` by `divisor`. The remainder
+ * carries the sign of `divisor`.
+ *
+ * - Both inputs must be finite integers; otherwise the result is meaningless.
+ *
+ * **Example** (Quotient and remainder)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MNumber from '@parischap/effect-lib/MNumber';
+ *
+ * console.log(pipe(7, MNumber.quotientAndRemainder(3))); // [2, 1]
+ * console.log(pipe(-7, MNumber.quotientAndRemainder(3))); // [-3, 2]
+ * ```
  *
  * @category Destructors
  */
@@ -120,8 +220,20 @@ export const quotientAndRemainder =
   };
 
 /**
- * Returns `true` if `self` and `n` differ by less than `Number.EPSILON`. Useful for floating-point
- * comparisons where exact equality is unreliable.
+ * Returns `true` when `self` and `n` differ by less than `Number.EPSILON`.
+ *
+ * - Use to compare floating-point numbers where exact `===` is unreliable.
+ * - This is an absolute, not relative, tolerance — it is not appropriate for very large
+ *   magnitudes.
+ *
+ * **Example** (Floating-point equality)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MNumber from '@parischap/effect-lib/MNumber';
+ *
+ * console.log(pipe(0.1 + 0.2, MNumber.equals(0.3))); // true
+ * ```
  *
  * @category Predicates
  */
@@ -131,8 +243,20 @@ export const equals =
     Math.abs(self - n) < Number.EPSILON;
 
 /**
- * Truncates a number after `precision` decimal digits. `precision` must be a positive finite
- * integer. If not provided, `precision` is taken equal to 0.
+ * Truncates `self` to `precision` decimal digits.
+ *
+ * - `precision` must be a non-negative finite integer; defaults to `0`.
+ * - Rounds towards zero.
+ *
+ * **Example** (Truncation)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MNumber from '@parischap/effect-lib/MNumber';
+ *
+ * console.log(pipe(3.14159, MNumber.trunc(2))); // 3.14
+ * console.log(pipe(3.7, MNumber.trunc())); // 3
+ * ```
  *
  * @category Utils
  */
@@ -142,8 +266,19 @@ export const trunc =
     pipe(self, shift(precision), Math.trunc, shift(-precision));
 
 /**
- * Returns `true` if `self` is a multiple of `a`. Works correctly even when `self` or `a` or both
- * are negative.
+ * Returns `true` when `self` is a multiple of `a`.
+ *
+ * - Works for any signs of `self` and `a`.
+ *
+ * **Example** (Multiplicity check)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MNumber from '@parischap/effect-lib/MNumber';
+ *
+ * console.log(pipe(10, MNumber.isMultipleOf(2))); // true
+ * console.log(pipe(-9, MNumber.isMultipleOf(3))); // true
+ * ```
  *
  * @category Predicates
  */
@@ -151,15 +286,40 @@ export const isMultipleOf: (a: number) => Predicate.Predicate<Type> = (a) => (se
   self % a === 0;
 
 /**
- * Returns `self` multiplied by `10^n`. Useful for decimal digit shifting operations.
+ * Multiplies `self` by `10^n` (i.e. shifts the decimal point by `n` positions).
+ *
+ * - Use as the building block of decimal-aware truncation/rounding.
+ *
+ * **Example** (Decimal shift)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MNumber from '@parischap/effect-lib/MNumber';
+ *
+ * console.log(pipe(1.5, MNumber.shift(2))); // 150
+ * console.log(pipe(150, MNumber.shift(-2))); // 1.5
+ * ```
  *
  * @category Utils
  */
 export const shift = (n: number) => (self: Type) => self * 10 ** n;
 
 /**
- * Returns the sign of `n` as `1` or `-1`. Unlike `Math.sign`, this function treats `0` and `+0` as
- * positive (returns `1`) while `-0` is treated as negative (returns `-1`).
+ * Returns the sign of `n` as either `1` or `-1`. Treats `+0` (and the unsigned literal `0`) as
+ * positive and `-0` as negative.
+ *
+ * - Differs from `Math.sign`, which returns `0`/`-0` for those inputs.
+ *
+ * **Example** (Sign with `±0` distinction)
+ *
+ * ```ts
+ * import * as MNumber from '@parischap/effect-lib/MNumber';
+ *
+ * console.log(MNumber.sign2(3)); // 1
+ * console.log(MNumber.sign2(-3)); // -1
+ * console.log(MNumber.sign2(0)); // 1
+ * console.log(MNumber.sign2(-0)); // -1
+ * ```
  *
  * @category Utils
  */

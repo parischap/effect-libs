@@ -1,6 +1,40 @@
 /**
- * Extension to the Effect Struct module providing type-safe struct merging, enrichment, and
- * evolution
+ * Extension to the Effect Struct module providing prototype-safe struct merging, field overriding,
+ * one-key construction, derived-field enrichment, and a refined `evolve`.
+ *
+ * ## Mental model
+ *
+ * - This module operates on plain JavaScript objects (`MTypes.NonPrimitive`) treated as records of
+ *   fields.
+ * - Compared to the spread operator, the helpers here intentionally **do not copy the prototype**:
+ *   the result is always a fresh `Data`-shaped object. This makes the loss of prototype explicit
+ *   instead of hidden behind syntax sugar.
+ * - Mutating variants ({@link mutableSet}, {@link mutableEnrichWith}) write in place and should be
+ *   reserved for hot paths where allocation cost is unacceptable.
+ *
+ * ## Common tasks
+ *
+ * - **Merge / append**: {@link prepend}, {@link append}
+ * - **Override existing fields**: {@link set}, {@link mutableSet}
+ * - **Construct**: {@link make}
+ * - **Add derived fields**: {@link enrichWith}, {@link mutableEnrichWith}
+ * - **Transform fields**: {@link evolve}
+ *
+ * ## Quickstart
+ *
+ * **Example** (Append a field then derive another from `self`)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MStruct from '@parischap/effect-lib/MStruct';
+ *
+ * const built = pipe(
+ *   { firstName: 'Ada' } as const,
+ *   MStruct.append({ lastName: 'Lovelace' } as const),
+ *   MStruct.enrichWith({ fullName: ({ firstName, lastName }) => `${firstName} ${lastName}` }),
+ * );
+ * console.log(built); // { firstName: 'Ada', lastName: 'Lovelace', fullName: 'Ada Lovelace' }
+ * ```
  */
 
 import { pipe } from 'effect';
@@ -11,9 +45,11 @@ import * as Struct from 'effect/Struct';
 import type * as MTypes from './types/types.js';
 
 /**
- * Utility type that calculates the type of `{...first, ...second}` where `first` has type `First`
- * and `second` type `Second`. If `second` contains an optional field that also exists in `first`,
- * the resulting type for that field is the union of both types.
+ * Utility type computing the result of `{ ...first, ...second }`.
+ *
+ * - When a field exists in both `First` and `Second`, the resulting type follows JavaScript's
+ *   spread semantics: `Second`'s value wins, except when it is optional, in which case the result
+ *   is the union of `Second[k]` (without `undefined`) and `First[k]`.
  *
  * @category Utility types
  */
@@ -28,8 +64,23 @@ export type Append<First extends MTypes.NonPrimitive, Second extends MTypes.NonP
 };
 
 /**
- * Prepends `that` to `self`. Fields in `self` prevail. Use instead of the spread operator because
- * it does not copy the prototype while returning that would make you believe it does.
+ * Builds `{ ...that, ...self }` — fields in `self` override fields in `that`.
+ *
+ * - Use instead of the spread operator when you want to make explicit that the prototype of the
+ *   left-hand side is dropped.
+ *
+ * **Example** (Self overrides defaults)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MStruct from '@parischap/effect-lib/MStruct';
+ *
+ * const defaults = { theme: 'light', font: 'serif' } as const;
+ * console.log(pipe({ font: 'mono' } as const, MStruct.prepend(defaults)));
+ * // { theme: 'light', font: 'mono' }
+ * ```
+ *
+ * @see {@link append} — symmetric variant where the new fields override
  *
  * @category Utils
  */
@@ -41,8 +92,22 @@ export const prepend =
   });
 
 /**
- * Appends `that` to `self`. Fields in `that` prevail. Use instead of the spread operator because it
- * does not copy the prototype while returning that would make you believe it does.
+ * Builds `{ ...self, ...that }` — fields in `that` override fields in `self`.
+ *
+ * - Use instead of the spread operator when you want to make explicit that the prototype of the
+ *   left-hand side is dropped.
+ *
+ * **Example** (New fields override)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MStruct from '@parischap/effect-lib/MStruct';
+ *
+ * console.log(pipe({ a: 1, b: 2 } as const, MStruct.append({ b: 3, c: 4 } as const)));
+ * // { a: 1, b: 3, c: 4 }
+ * ```
+ *
+ * @see {@link prepend} — symmetric variant where existing fields win
  *
  * @category Utils
  */
@@ -54,7 +119,21 @@ export const append =
   });
 
 /**
- * Same as append but only existing properties of `self` can be overriden.
+ * Like {@link append} but `that` may only override fields that already exist in `self`. New keys
+ * are rejected at the type level.
+ *
+ * **Example** (Override only declared fields)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MStruct from '@parischap/effect-lib/MStruct';
+ *
+ * type User = { readonly name: string; readonly age: number };
+ * const user: User = { name: 'Ada', age: 30 };
+ * console.log(pipe(user, MStruct.set({ age: 31 }))); // { name: 'Ada', age: 31 }
+ * ```
+ *
+ * @see {@link mutableSet} — in-place variant
  *
  * @category Utils
  */
@@ -66,7 +145,9 @@ export const set =
   });
 
 /**
- * Same as set but mutates `self`. To use in extreme situations only
+ * Same as {@link set} but writes the new fields into `self` in place using `Object.assign`.
+ *
+ * - Use only when allocation cost matters and `self` is not shared.
  *
  * @category Utils
  */
@@ -76,7 +157,16 @@ export const mutableSet =
     Object.assign(self, that);
 
 /**
- * Builds a one-key struct
+ * Builds a single-field struct `{ [key]: value }`.
+ *
+ * **Example** (Single-key constructor)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MStruct from '@parischap/effect-lib/MStruct';
+ *
+ * console.log(pipe(42, MStruct.make('answer'))); // { answer: 42 }
+ * ```
  *
  * @category Constructors
  */
@@ -86,8 +176,31 @@ export const make =
     ({ [key]: value }) as never;
 
 /**
- * Calculates a 'fields' struct whose values are based on functions taking `self` as argument and
- * appends it to `self`.
+ * Computes a record of new fields where each value is `f(self)` for the corresponding key, then
+ * appends them to `self`.
+ *
+ * - Use when several derived fields all depend on the same source struct.
+ * - Existing fields with the same key are overwritten.
+ *
+ * **Example** (Adding derived fields)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MStruct from '@parischap/effect-lib/MStruct';
+ *
+ * console.log(
+ *   pipe(
+ *     { firstName: 'Ada', lastName: 'Lovelace' } as const,
+ *     MStruct.enrichWith({
+ *       fullName: ({ firstName, lastName }) => `${firstName} ${lastName}`,
+ *       initials: ({ firstName, lastName }) => `${firstName[0]}.${lastName[0]}.`,
+ *     }),
+ *   ),
+ * );
+ * // { firstName: 'Ada', lastName: 'Lovelace', fullName: 'Ada Lovelace', initials: 'A.L.' }
+ * ```
+ *
+ * @see {@link mutableEnrichWith} — in-place variant
  *
  * @category Utils
  */
@@ -103,7 +216,9 @@ export const enrichWith =
     pipe(fields, Record.map(Function.apply(self)), (newValues) => ({ ...self, ...newValues }));
 
 /**
- * Same as enrichWith but mutates `self`. To use in extreme situations only
+ * Same as {@link enrichWith} but writes the new fields into `self` in place using `Object.assign`.
+ *
+ * - Use only when allocation cost matters and `self` is not shared.
  *
  * @category Utils
  */
@@ -133,8 +248,23 @@ type PartialTransform<O, T> = {
 /* eslint-enable */
 
 /**
- * Same as Struct.evolve but we remove from the return type any property borne by the prototype as
- * it does not get copied. If property to evolve is not in target `obj`, it is ignored.
+ * Same as `Struct.evolve` but the return type drops any property carried by the prototype, since
+ * those are not copied by spreading. Transformations whose key is missing in `self` are ignored.
+ *
+ * **Example** (Evolving selected fields)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MStruct from '@parischap/effect-lib/MStruct';
+ *
+ * console.log(
+ *   pipe(
+ *     { firstName: 'ada', lastName: 'lovelace' } as const,
+ *     MStruct.evolve({ firstName: (s) => s.toUpperCase() }),
+ *   ),
+ * );
+ * // { firstName: 'ADA', lastName: 'lovelace' }
+ * ```
  *
  * @category Utils
  */

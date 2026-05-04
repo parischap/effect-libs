@@ -1,20 +1,51 @@
 /**
- * Module providing a tagged error type for wrapping exceptions thrown by native JavaScript
- * functions ported to the Effect world. Captures the original error along with contextual
- * information (function name, module, library).
+ * Tagged error type used to capture exceptions thrown by native JavaScript functions when those
+ * functions are ported to the Effect world (e.g. `JSON.parse`, `JSON.stringify`).
+ *
+ * ## Mental model
+ *
+ * - **`Type`** is a `Data.TaggedError` that wraps a thrown value (`originalError`) together with
+ *   context describing where the throw came from (`originalFunctionName`, `moduleName`,
+ *   `libraryName`).
+ * - Use this error in `Effect.try` (or equivalent) `catch` handlers to keep the original
+ *   exception inspectable while moving error handling out of the throw/catch axis.
+ *
+ * ## Quickstart
+ *
+ * **Example** (Wrap a throwing native API)
+ *
+ * ```ts
+ * import { Effect } from 'effect';
+ * import * as MPortError from '@parischap/effect-lib/MPortError';
+ *
+ * const safeJSONParse = (s: string) =>
+ *   Effect.try({
+ *     try: () => JSON.parse(s),
+ *     catch: (e) =>
+ *       new MPortError.Type({
+ *         originalError: e,
+ *         originalFunctionName: 'JSON.parse',
+ *         moduleName: 'my-module.ts',
+ *         libraryName: 'my-app',
+ *       }),
+ *   });
+ * ```
+ *
+ * @see {@link Type} — the tagged error
  */
 
 import * as Data from 'effect/Data';
 
 /**
- * Module tag
+ * Module tag.
  *
  * @category Module markers
  */
 export const moduleTag = '@parischap/effect-lib/PortError/';
 
 /**
- * Type of a Port Error
+ * Tagged error wrapping an exception thrown by a native function call. Carries the original
+ * thrown value plus contextual identifiers to help locate the source.
  *
  * @category Models
  */

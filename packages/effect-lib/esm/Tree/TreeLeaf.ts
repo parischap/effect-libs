@@ -1,6 +1,18 @@
 /**
- * Module that implements a leaf node of a tree. A `TreeLeaf<B>` holds a value of type `B` and has
- * no children. See the `Tree` module for the full API.
+ * Leaf node of a tree: a value of type `B` with no children. Companion of
+ * {@link "./TreeNonLeaf.js" | `MTreeNonLeaf`}; both are unioned into
+ * {@link "./Tree.js" | `MTree.Type`}.
+ *
+ * ## Quickstart
+ *
+ * **Example** (Create a leaf)
+ *
+ * ```ts
+ * import * as MTreeLeaf from '@parischap/effect-lib/Tree/TreeLeaf';
+ *
+ * const leaf = MTreeLeaf.make(42);
+ * console.log(leaf.value); // 42
+ * ```
  */
 
 import type * as MTypes from '../types/types.js';
@@ -9,7 +21,7 @@ import * as MData from '../Data/Data.js';
 import * as MTreeNode from './TreeNode.js';
 
 /**
- * Module tag
+ * Module tag.
  *
  * @category Module markers
  */
@@ -17,7 +29,7 @@ export const moduleTag = '@parischap/effect-lib/Tree/TreeLeaf/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
 /**
- * Type of a TreeLeaf. A leaf node holding a `value` of type `B` with no children.
+ * Leaf node holding a `value` of type `B`. Has no children.
  *
  * @category Models
  */
@@ -44,7 +56,15 @@ export class Type<out B> extends MTreeNode.Type<B> {
 }
 
 /**
- * Constructor
+ * Builds a leaf node carrying `value`.
+ *
+ * **Example**
+ *
+ * ```ts
+ * import * as MTreeLeaf from '@parischap/effect-lib/Tree/TreeLeaf';
+ *
+ * console.log(MTreeLeaf.make(42).value); // 42
+ * ```
  *
  * @category Constructors
  */

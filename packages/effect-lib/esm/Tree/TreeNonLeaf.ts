@@ -1,6 +1,23 @@
 /**
- * Module that implements a non-leaf node of a tree. A `TreeNonLeaf<A, B>` holds a value of type `A`
- * and a forest (array of child trees). See the `Tree` module for the full API.
+ * Internal (branching) node of a tree: a value of type `A` paired with a `forest` of child trees.
+ * Companion of {@link "./TreeLeaf.js" | `MTreeLeaf`}; both are unioned into
+ * {@link "./Tree.js" | `MTree.Type`}.
+ *
+ * ## Quickstart
+ *
+ * **Example** (Build a branch with two leaves)
+ *
+ * ```ts
+ * import * as MTreeLeaf from '@parischap/effect-lib/Tree/TreeLeaf';
+ * import * as MTreeNonLeaf from '@parischap/effect-lib/Tree/TreeNonLeaf';
+ *
+ * const branch = MTreeNonLeaf.make({
+ *   value: 'root',
+ *   forest: [MTreeLeaf.make('a'), MTreeLeaf.make('b')],
+ * });
+ * console.log(branch.value); // 'root'
+ * console.log(branch.forest.length); // 2
+ * ```
  */
 
 import type * as MTypes from '../types/types.js';
@@ -10,7 +27,7 @@ import * as MData from '../Data/Data.js';
 import * as MTreeNode from './TreeNode.js';
 
 /**
- * Module tag
+ * Module tag.
  *
  * @category Module markers
  */
@@ -19,7 +36,8 @@ const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
 
 /**
- * Type of a TreeNonLeaf. An internal node holding a `value` of type `A` and a `forest` of children.
+ * Internal node holding a `value` of type `A` and a `forest` of children of type
+ * `MTreeForest.Type<A, B>`.
  *
  * @category Models
  */
@@ -50,7 +68,7 @@ export class Type<out A, out B> extends MTreeNode.Type<A> {
 }
 
 /**
- * Constructor
+ * Builds a non-leaf node from `value` and `forest`.
  *
  * @category Constructors
  */

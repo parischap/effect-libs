@@ -1,7 +1,40 @@
 /**
- * Module providing a tagged error type for input validation failures, with constructors for common
- * validation scenarios (wrong value, out of bounds, pattern mismatch, etc.) and corresponding
- * assertion functions that return `Result`
+ * Tagged error type for input-validation failures, paired with constructors that build the error
+ * message and assertion helpers that lift those constructors into `Result`-returning predicates.
+ *
+ * ## Mental model
+ *
+ * - **`Type`** is a `Data.TaggedError` whose only field is a human-readable `message`.
+ * - For each validation scenario this module exports two functions:
+ *   - a **constructor** (e.g. {@link wrongValue}, {@link missized}) that builds an `InputError`
+ *     with a pre-formatted message;
+ *   - an **assertion** (e.g. {@link assertValue}, {@link assertLength}) that returns a curried
+ *     predicate `(input) => Result.Result<input, Type>` using that constructor on failure.
+ * - All `name`-bearing inputs default the prefix of the message to `"value"` when omitted.
+ *
+ * ## Common tasks
+ *
+ * - **Validate equality**: {@link assertValue} (and constructor {@link wrongValue})
+ * - **Validate length**: {@link assertLength}, {@link assertMaxLength} (constructors {@link missized},
+ *   {@link oversized})
+ * - **Validate range**: {@link assertInRange} (constructor {@link outOfBounds})
+ * - **Validate strings**: {@link assertStartsWith}, {@link assertMatches}, {@link match},
+ *   {@link assertEmpty} (constructors {@link notStartingWith}, {@link notMatching}, {@link notEmpty})
+ *
+ * ## Quickstart
+ *
+ * **Example** (Validate a value)
+ *
+ * ```ts
+ * import { Result, pipe } from 'effect';
+ * import * as MInputError from '@parischap/effect-lib/MInputError';
+ *
+ * console.log(pipe('admin', MInputError.assertValue({ expected: 'admin', name: 'role' })));
+ * // Success('admin')
+ *
+ * console.log(pipe('user', MInputError.assertValue({ expected: 'admin', name: 'role' })));
+ * // Failure(InputError("Expected role to be: 'admin'. Actual: 'user'"))
+ * ```
  */
 
 import { flow, pipe } from 'effect';
@@ -18,14 +51,14 @@ import * as MString from './String/String.js';
 import * as MTypes from './types/types.js';
 
 /**
- * Module tag
+ * Module tag.
  *
  * @category Module markers
  */
 export const moduleTag = '@parischap/effect-lib/InputError/';
 
 /**
- * Type of an InputError
+ * Tagged error returned by every assertion in this module.
  *
  * @category Models
  */
@@ -37,8 +70,24 @@ const nameLabel: MTypes.OneArgFunction<string | undefined, string> = flow(
   Option.liftPredicate(MTypes.isString),
   Option.getOrElse(Function.constant('value')),
 );
+
 /**
- * Builds an Input error that signals a wrong value
+ * Builds an `InputError` for a value that did not match the expected one.
+ *
+ * - String operands are quoted with single quotes in the message; other primitives are stringified
+ *   with `toString`.
+ * - `name` defaults to `"value"` when omitted.
+ *
+ * **Example** (Manual error construction)
+ *
+ * ```ts
+ * import * as MInputError from '@parischap/effect-lib/MInputError';
+ *
+ * console.log(MInputError.wrongValue({ expected: 'admin', actual: 'user', name: 'role' }).message);
+ * // "Expected role to be: 'admin'. Actual: 'user'"
+ * ```
+ *
+ * @see {@link assertValue} — assertion-style counterpart
  *
  * @category Constructors
  */
@@ -59,10 +108,24 @@ export const wrongValue = <T extends MTypes.NonNullablePrimitive>({
 };
 
 /**
- * Returns a success of `input` if `input` is equal to `expected`. Otherwise, returns a failure of
- * an InputError
+ * Asserts that `input === expected` (using strict equality).
  *
- * @category Constructors
+ * - Returns `Result.success(input)` when the equality holds, otherwise `Result.failure` with a
+ *   {@link wrongValue} error.
+ *
+ * **Example** (Equality check)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MInputError from '@parischap/effect-lib/MInputError';
+ *
+ * const isAdmin = MInputError.assertValue({ expected: 'admin', name: 'role' });
+ *
+ * console.log(pipe('admin', isAdmin)); // Success('admin')
+ * console.log(pipe('user', isAdmin)); // Failure(InputError(...))
+ * ```
+ *
+ * @category Utils
  */
 export const assertValue = <T extends MTypes.NonNullablePrimitive>(params: {
   readonly expected: NoInfer<T>;
@@ -73,7 +136,9 @@ export const assertValue = <T extends MTypes.NonNullablePrimitive>(params: {
   );
 
 /**
- * Builds an Input error that signals a missized ArrayLike
+ * Builds an `InputError` for an array-like value whose length differs from the expected one.
+ *
+ * @see {@link assertLength} — assertion-style counterpart
  *
  * @category Constructors
  */
@@ -92,10 +157,22 @@ export const missized = ({
   });
 
 /**
- * Returns a success of `input` if `input` has the expected length. Otherwise, returns a failure of
- * an InputError
+ * Asserts that `input.length === expected`.
  *
- * @category Constructors
+ * - Works with any `ArrayLike<unknown>` or `string`.
+ * - Returns a {@link missized} error on failure.
+ *
+ * **Example** (Length check)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MInputError from '@parischap/effect-lib/MInputError';
+ *
+ * console.log(pipe('abc', MInputError.assertLength({ expected: 3 }))); // Success('abc')
+ * console.log(pipe('abcd', MInputError.assertLength({ expected: 3 }))); // Failure(InputError(...))
+ * ```
+ *
+ * @category Utils
  */
 export const assertLength = (params: {
   readonly expected: number;
@@ -107,7 +184,9 @@ export const assertLength = (params: {
   );
 
 /**
- * Builds an Input error that signals an oversized ArrayLike
+ * Builds an `InputError` for an array-like value whose length exceeds the expected upper bound.
+ *
+ * @see {@link assertMaxLength} — assertion-style counterpart
  *
  * @category Constructors
  */
@@ -126,10 +205,23 @@ export const oversized = ({
   });
 
 /**
- * Returns a success of `input` if the size of `input` is less than or equal to `expected`.
- * Otherwise, returns a failure of an InputError
+ * Asserts that `input.length <= expected`.
  *
- * @category Constructors
+ * - Works with any `ArrayLike<unknown>` or `string`.
+ * - Returns an {@link oversized} error on failure.
+ *
+ * **Example** (Maximum length check)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MInputError from '@parischap/effect-lib/MInputError';
+ *
+ * const within10 = MInputError.assertMaxLength({ expected: 10 });
+ * console.log(pipe('hello', within10)); // Success('hello')
+ * console.log(pipe('hello world!', within10)); // Failure(InputError(...))
+ * ```
+ *
+ * @category Utils
  */
 export const assertMaxLength = (params: {
   readonly expected: number;
@@ -141,7 +233,13 @@ export const assertMaxLength = (params: {
   );
 
 /**
- * Builds an Input error that signals a value out of bounds
+ * Builds an `InputError` for a numeric value that fell outside `[min, max]`.
+ *
+ * - `minIncluded` / `maxIncluded` control whether the corresponding bound is inclusive.
+ * - `offset` is added to `min`, `max` and `actual` only when formatting the message — it is purely
+ *   cosmetic and lets callers report bounds in a different unit (e.g. 1-based indexing).
+ *
+ * @see {@link assertInRange} — assertion-style counterpart
  *
  * @category Constructors
  */
@@ -169,10 +267,30 @@ export const outOfBounds = ({
   });
 
 /**
- * Returns a success of `input` if `input` in between `min` and `max` included. Otherwise, returns a
- * failure of an InputError
+ * Asserts that `input` lies in the interval `[min, max]`, with each bound inclusive or exclusive
+ * according to `minIncluded` / `maxIncluded`.
  *
- * @category Constructors
+ * - Returns an {@link outOfBounds} error on failure.
+ *
+ * **Example** (Range check)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MInputError from '@parischap/effect-lib/MInputError';
+ *
+ * const isPercentage = MInputError.assertInRange({
+ *   min: 0,
+ *   max: 100,
+ *   minIncluded: true,
+ *   maxIncluded: true,
+ *   offset: 0,
+ *   name: 'percentage',
+ * });
+ * console.log(pipe(50, isPercentage)); // Success(50)
+ * console.log(pipe(150, isPercentage)); // Failure(InputError(...))
+ * ```
+ *
+ * @category Utils
  */
 export const assertInRange = (params: {
   readonly min: number;
@@ -193,7 +311,9 @@ export const assertInRange = (params: {
   );
 
 /**
- * Builds an Input error that signals a string not starting with `startString`
+ * Builds an `InputError` for a string that does not start with `startString`.
+ *
+ * @see {@link assertStartsWith} — assertion-style counterpart
  *
  * @category Constructors
  */
@@ -211,10 +331,21 @@ export const notStartingWith = ({
   });
 
 /**
- * Returns a success of `input` if `input` starts with `startString`. Otherwise, returns a failure
- * of an InputError
+ * Asserts that `input` starts with `startString`.
  *
- * @category Constructors
+ * - Returns a {@link notStartingWith} error on failure.
+ *
+ * **Example** (Prefix check)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MInputError from '@parischap/effect-lib/MInputError';
+ *
+ * console.log(pipe('hello world', MInputError.assertStartsWith({ startString: 'hello' })));
+ * // Success('hello world')
+ * ```
+ *
+ * @category Utils
  */
 export const assertStartsWith = (params: {
   readonly startString: string;
@@ -225,7 +356,12 @@ export const assertStartsWith = (params: {
   );
 
 /**
- * Builds an Input error that signals a string not matching `regExp`
+ * Builds an `InputError` for a string that does not match a given regular expression.
+ *
+ * - `regExpDescriptor` is the human-readable description used in the error message (e.g.
+ *   `"a valid email"`).
+ *
+ * @see {@link assertMatches} — assertion-style counterpart
  *
  * @category Constructors
  */
@@ -243,10 +379,25 @@ export const notMatching = ({
   });
 
 /**
- * Returns a success of `input` if `input` matches `regExp`. Otherwise, returns a failure of an
- * InputError
+ * Asserts that `input` matches `regExp`.
  *
- * @category Constructors
+ * - Returns the matched input on success, a {@link notMatching} error on failure.
+ *
+ * **Example** (Regex check)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MInputError from '@parischap/effect-lib/MInputError';
+ *
+ * console.log(
+ *   pipe('hello', MInputError.assertMatches({ regExp: /^[a-z]+$/, regExpDescriptor: 'lowercase letters' })),
+ * );
+ * // Success('hello')
+ * ```
+ *
+ * @see {@link match} — variant returning the matched substring
+ *
+ * @category Utils
  */
 export const assertMatches = (params: {
   readonly regExp: RegExp;
@@ -258,10 +409,27 @@ export const assertMatches = (params: {
   );
 
 /**
- * Returns a success of the match if `input` matches `regExp`. Otherwise, returns a failure of an
- * InputError
+ * Returns the substring of `input` matching `regExp`. Returns a {@link notMatching} error when
+ * `input` does not match.
  *
- * @category Constructors
+ * - Differs from {@link assertMatches} in that the success value is the **matched substring**, not
+ *   the whole input.
+ *
+ * **Example** (Extract first match)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MInputError from '@parischap/effect-lib/MInputError';
+ *
+ * console.log(
+ *   pipe('abc123', MInputError.match({ regExp: /\d+/, regExpDescriptor: 'digits' })),
+ * );
+ * // Success('123')
+ * ```
+ *
+ * @see {@link assertMatches} — variant preserving the original input on success
+ *
+ * @category Utils
  */
 export const match =
   (params: {
@@ -277,7 +445,9 @@ export const match =
     );
 
 /**
- * Builds an Input error that signals a string that is not empty
+ * Builds an `InputError` for a string that should have been empty.
+ *
+ * @see {@link assertEmpty} — assertion-style counterpart
  *
  * @category Constructors
  */
@@ -287,10 +457,21 @@ export const notEmpty = ({ actual, name }: { readonly actual: string; readonly n
   });
 
 /**
- * Returns a success of `input` if `input` is the empty string. Otherwise, returns a failure of an
- * `InputError`
+ * Asserts that `input` is the empty string.
  *
- * @category Constructors
+ * - Returns a {@link notEmpty} error on failure.
+ *
+ * **Example** (Empty check)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MInputError from '@parischap/effect-lib/MInputError';
+ *
+ * console.log(pipe('', MInputError.assertEmpty())); // Success('')
+ * console.log(pipe('x', MInputError.assertEmpty())); // Failure(InputError(...))
+ * ```
+ *
+ * @category Utils
  */
 export const assertEmpty = (
   params: {

@@ -1,3 +1,4 @@
+/** Internal module used by the Cache.ts module */
 import type * as MTypes from '../types/types.js';
 
 import * as MData from '../Data/Data.js';
@@ -9,7 +10,7 @@ type TypeId = typeof TypeId;
 /**
  * Interface that represents a ValueContainer
  *
- * @category Models
+ * @internal
  */
 export class Type<out B> extends MData.Class {
   /** The value calculated by the LookUp function */
@@ -43,6 +44,6 @@ export class Type<out B> extends MData.Class {
 /**
  * Constructor
  *
- * @category Constructors
+ * @internal
  */
 export const make = <B>(params: MTypes.Data<Type<B>>): Type<B> => Type.make(params);

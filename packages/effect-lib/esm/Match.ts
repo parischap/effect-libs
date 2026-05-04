@@ -1,7 +1,44 @@
 /**
- * Simple matcher that can only match against predicates and refinements. Fast and simple but
- * sufficient for most use cases. As the matcher is so simple, it needs no compilation which really
- * simplifies its use.
+ * Compilation-free pattern matcher that branches on predicates and refinements.
+ *
+ * ## Mental model
+ *
+ * - **`Type<Input, Output, Rest>`** is a matcher in progress.
+ *   - `Input` is the original value being matched.
+ *   - `Output` is the union of result types contributed so far.
+ *   - `Rest` is the part of `Input` that no previous refinement has eliminated.
+ * - Each `when`/`whenIs`/`whenOr`/`whenAnd`/`tryFunction` short-circuits on success: as soon as a
+ *   case produces an output, every subsequent case is skipped.
+ * - Terminate with {@link exhaustive} (compile-time check that `Rest` is `never`) or
+ *   {@link orElse} (runtime fallback).
+ *
+ * ## Common tasks
+ *
+ * - **Create**: {@link make}
+ * - **Add cases**: {@link when}, {@link whenIs}, {@link whenIsOr}, {@link tryFunction}
+ * - **Combine cases**: {@link whenOr}, {@link whenAnd}
+ * - **Terminate**: {@link exhaustive}, {@link orElse}, {@link unsafeWhen}
+ *
+ * ## Quickstart
+ *
+ * **Example** (Sign of a number)
+ *
+ * ```ts
+ * import { Number, pipe } from 'effect';
+ * import * as MMatch from '@parischap/effect-lib/MMatch';
+ *
+ * const sign = (n: number) =>
+ *   pipe(
+ *     n,
+ *     MMatch.make,
+ *     MMatch.when(Number.isLessThan(0), () => 'negative'),
+ *     MMatch.when(Number.isGreaterThan(0), () => 'positive'),
+ *     MMatch.orElse(() => 'zero'),
+ *   );
+ *
+ * console.log(sign(5)); // 'positive'
+ * console.log(sign(0)); // 'zero'
+ * ```
  */
 
 import { pipe } from 'effect';
@@ -60,7 +97,20 @@ export class Type<out Input, out Output, out Rest extends Input> extends MData.C
 }
 
 /**
- * Builds a new matcher
+ * Builds a new matcher.
+ *
+ * - Use to start building a matcher for a value.
+ * - The returned matcher has no cases yet.
+ * - Chain with `when`, `whenIs`, etc. to add cases.
+ *
+ * **Example** (Create matcher)
+ *
+ * ```ts
+ * import * as MMatch from '@parischap/effect-lib/MMatch';
+ *
+ * const m = MMatch.make(5);
+ * console.log(m.input); // 5
+ * ```
  *
  * @category Constructors
  */
@@ -71,26 +121,31 @@ export const make = <Input>(input: Input): Type<Input, never, Input> =>
  * Matches against a refinement or a predicate. Returns a copy of `self` if `self` already has an
  * output. Otherwise, applies the predicate/refinement to `self.input`. Returns a copy of `self` if
  * the predicate returns `false`. Otherwise, returns a copy of `self` with the output set to
- * `f(self.input)`. From a type perspective, the Rest is only `refined` if the predicate is a
- * refinement.
+ * `f(self.input)`.
+ *
+ * - Use to add a case to the matcher.
+ * - If a previous case matched, this case is skipped.
+ * - Use with refinements for type narrowing.
+ * - Use with predicates for boolean checks.
+ *
+ * **Example** (Add matching case)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MMatch from '@parischap/effect-lib/MMatch';
+ * import * as Number from 'effect/Number';
+ *
+ * const result = pipe(
+ *   5,
+ *   MMatch.make,
+ *   MMatch.when(Number.isLessThan(0), () => 'negative'),
+ *   MMatch.when(Number.isGreaterThan(0), () => 'positive'),
+ *   MMatch.orElse(() => 'zero'),
+ * );
+ * console.log(result); // "positive"
+ * ```
  *
  * @category Utils
- *
- * @example
- *   import { MMatch, MTypes } from '@parischap/effect-lib';
- *   import { pipe } from 'effect';
- *
- *   const handlePrimitive = (value: MTypes.Primitive) => value;
- *   const handleNonPrimitive = (value: MTypes.NonPrimitive) => value;
- *
- *   export const testMatcher = (value: MTypes.Unknown) =>
- *     pipe(
- *       value,
- *       MMatch.make,
- *       MMatch.when(MTypes.isPrimitive, handlePrimitive),
- *       MMatch.when(MTypes.isNonPrimitive, handleNonPrimitive),
- *       MMatch.exhaustive,
- *     );
  */
 
 export const when: {
@@ -122,34 +177,36 @@ export const when: {
     }) as never;
 
 /**
- * Matches against a primitive value sparing you the need to define a type guard. Returns a copy of
- * `self` if `self` already has an output. Otherwise, `self.input` is compared to the provided value
- * using strict equality. Returns a copy of `self` if the two values are not equal. Otherwise,
- * returns a copy of self with the output set to the result of `f(self.input)`. From a type
- * perspective, the Rest will only be 'refined` if it`s a finite type like an Enum (but not `number`
- * or `string`)
+ * Matches against a primitive value using strict equality. Returns a copy of `self` if `self`
+ * already has an output. Otherwise, `self.input` is compared to the provided value using strict
+ * equality. Returns a copy of `self` if the two values are not equal. Otherwise, returns a copy of
+ * `self` with the output set to the result of `f(self.input)`.
+ *
+ * - Use when matching against specific literal values.
+ * - Comparison uses strict equality (`===`).
+ * - Useful for enum matching or constant comparisons.
+ *
+ * **Example** (Match against value)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MMatch from '@parischap/effect-lib/MMatch';
+ *
+ * enum Status {
+ *   A = 'a',
+ *   B = 'b',
+ * }
+ * const describe = (s: Status) =>
+ *   pipe(
+ *     s,
+ *     MMatch.make,
+ *     MMatch.whenIs(Status.A, () => 'A status'),
+ *     MMatch.orElse(() => 'other'),
+ *   );
+ * console.log(describe(Status.A)); // "A status"
+ * ```
  *
  * @category Utils
- *
- * @example
- *   import { MMatch } from '@parischap/effect-lib';
- *   import { pipe, Function } from 'effect';
- *
- *   enum TestEnum {
- *     A = `a`,
- *     B = `b`,
- *     C = `c`,
- *   }
- *
- *   export const testMatcher = (value: TestEnum) =>
- *     pipe(
- *       value,
- *       MMatch.make,
- *       MMatch.whenIs(TestEnum.A, Function.constant(`a`)),
- *       MMatch.whenIs(TestEnum.B, Function.constant(`b`)),
- *       MMatch.whenIs(TestEnum.C, Function.constant(`c`)),
- *       MMatch.exhaustive,
- *     );
  */
 export const whenIs =
   <Input extends MTypes.Primitive, Rest extends Input, const A extends Rest, Output1>(
@@ -169,28 +226,38 @@ export const whenIs =
     });
 
 /**
- * Same as whenIs but you can pass several values to match against.
+ * Matches against multiple primitive values using strict equality. Returns a copy of `self` if
+ * `self` already has an output. Otherwise, `self.input` is compared to each provided value using
+ * strict equality. Returns a copy of `self` if no values match. Otherwise, returns a copy of `self`
+ * with the output set to the result of `f(self.input)`.
+ *
+ * - Use when matching against multiple literal values with the same handler.
+ * - All values are compared using strict equality (`===`).
+ * - Efficient alternative to chaining multiple `whenIs` calls.
+ *
+ * **Example** (Match against multiple values)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MMatch from '@parischap/effect-lib/MMatch';
+ *
+ * enum Status {
+ *   A = 'a',
+ *   B = 'b',
+ *   C = 'c',
+ * }
+ * const describe = (s: Status) =>
+ *   pipe(
+ *     s,
+ *     MMatch.make,
+ *     MMatch.whenIs(Status.A, () => 'A'),
+ *     MMatch.whenIsOr(Status.B, Status.C, () => 'B or C'),
+ *     MMatch.exhaustive,
+ *   );
+ * console.log(describe(Status.B)); // "B or C"
+ * ```
  *
  * @category Utils
- *
- * @example
- *   import { MMatch } from '@parischap/effect-lib';
- *   import { pipe, Function } from 'effect';
- *
- *   enum TestEnum {
- *     A = `a`,
- *     B = `b`,
- *     C = `c`,
- *   }
- *
- *   export const testMatcher = (value: TestEnum) =>
- *     pipe(
- *       value,
- *       MMatch.make,
- *       MMatch.whenIs(TestEnum.A, Function.constant(`a`)),
- *       MMatch.whenIsOr(TestEnum.B, TestEnum.C, Function.constant(`b`)),
- *       MMatch.exhaustive,
- *     );
  */
 export const whenIsOr =
   <
@@ -227,24 +294,31 @@ export const whenIsOr =
     });
 
 /**
- * Returns a copy of `self` if `self` already has an output. Otherwise, tries `f` on `self.input`
- * and matches if `f` returns a `some` whose value becomes the output of the matcher. Returns a copy
- * of `self` if `f` returns a `none`. From a type perspective, the `Rest` will not be refined.
+ * Tries applying a function that returns an Option. Matches if the function returns a `some`.
+ * Returns a copy of `self` if `self` already has an output. Otherwise, applies `f` to `self.input`.
+ * If `f` returns `some`, sets the output. If `f` returns `none`, tries the next case.
+ *
+ * - Use when matching using optional computations.
+ * - Useful for extracting values from containers like arrays.
+ * - The match succeeds only when `f` returns `Option.some`.
+ *
+ * **Example** (Match with optional function)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import { Array } from 'effect';
+ * import * as MMatch from '@parischap/effect-lib/MMatch';
+ *
+ * const result = pipe(
+ *   [1, 2, 3],
+ *   MMatch.make,
+ *   MMatch.tryFunction(Array.get(1)),
+ *   MMatch.orElse(() => 0),
+ * );
+ * console.log(result); // 2
+ * ```
  *
  * @category Utils
- *
- * @example
- *   import { MMatch } from '@parischap/effect-lib';
- *   import { pipe, Array } from 'effect';
- *
- *   export const testMatcher = (value: ReadonlyArray<number>) =>
- *     pipe(
- *       value,
- *       MMatch.make,
- *       MMatch.tryFunction(Array.get(1)),
- *       MMatch.tryFunction(Array.get(5)),
- *       MMatch.orElse(() => 0),
- *     );
  */
 export const tryFunction =
   <Input, Rest extends Input, Output1>(f: (value: NoInfer<Rest>) => Option.Option<Output1>) =>
@@ -255,9 +329,33 @@ export const tryFunction =
     });
 
 /**
- * Same as when but several predicates can be provided. The match occurs if one of the predicate
- * returns `true`. From a type perspective, the `Rest` will only be refined if all predicates are
- * refinements.
+ * Matches using multiple predicates. The match occurs if one of the predicates returns `true`.
+ * Returns a copy of `self` if `self` already has an output. Otherwise, applies all predicates to
+ * `self.input` and returns a copy with the output set to `f(self.input)` if any predicate matches.
+ *
+ * - Use when multiple unrelated conditions trigger the same handler.
+ * - Efficient alternative to chaining multiple `when` calls with OR logic.
+ * - All predicates are evaluated (non-short-circuit).
+ *
+ * **Example** (Match with multiple predicates)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MMatch from '@parischap/effect-lib/MMatch';
+ * import * as Number from 'effect/Number';
+ *
+ * const result = pipe(
+ *   5,
+ *   MMatch.make,
+ *   MMatch.whenOr(
+ *     Number.isLessThan(0),
+ *     Number.isGreaterThan(10),
+ *     () => 'out of range',
+ *   ),
+ *   MMatch.orElse(() => 'in range'),
+ * );
+ * console.log(result); // "in range"
+ * ```
  *
  * @category Utils
  */
@@ -290,9 +388,34 @@ export const whenOr =
     });
 
 /**
- * Same as when but several predicates can be provided. The match occurs if all the predicates
- * return `true`. From a type perspective, the `Rest` will only be refined if all predicates are
- * refinements.
+ * Matches using multiple predicates where all must be satisfied. The match occurs if all predicates
+ * return `true`. Returns a copy of `self` if `self` already has an output. Otherwise, applies all
+ * predicates to `self.input` and returns a copy with the output set to `f(self.input)` if all
+ * match.
+ *
+ * - Use when multiple conditions must all be true to trigger the same handler.
+ * - Efficient alternative to chaining multiple `when` calls with AND logic.
+ * - All predicates are evaluated.
+ *
+ * **Example** (Match with all predicates required)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MMatch from '@parischap/effect-lib/MMatch';
+ * import * as Number from 'effect/Number';
+ *
+ * const result = pipe(
+ *   5,
+ *   MMatch.make,
+ *   MMatch.whenAnd(
+ *     Number.isGreaterThan(0),
+ *     Number.isLessThan(10),
+ *     () => 'in range',
+ *   ),
+ *   MMatch.orElse(() => 'out of range'),
+ * );
+ * console.log(result); // "in range"
+ * ```
  *
  * @category Utils
  */
@@ -332,8 +455,28 @@ export const whenAnd =
     });
 
 /**
- * Returns `self.output` if `self` already has an output. Otherwise, returns the result of f applied
- * to `self.input`.
+ * Provides a default value if no match has occurred. Returns the output if there is one, otherwise
+ * returns `f(self.input)`.
+ *
+ * - Use to handle the case where no previous predicates matched.
+ * - Receives the original input value.
+ * - Guaranteed to produce a result (exhaustive).
+ *
+ * **Example** (Provide default value)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MMatch from '@parischap/effect-lib/MMatch';
+ * import * as Number from 'effect/Number';
+ *
+ * const result = pipe(
+ *   5,
+ *   MMatch.make,
+ *   MMatch.when(Number.isLessThan(0), () => 'negative'),
+ *   MMatch.orElse(() => 'non-negative'),
+ * );
+ * console.log(result); // "non-negative"
+ * ```
  *
  * @category Utils
  */
@@ -343,25 +486,48 @@ export const orElse =
     Option.getOrElse(self.output, () => f(self.input as unknown as Rest));
 
 /**
- * Same as orElse but we pass a predicate (useless from a javascript perspective) to tell the
- * compiler what `Rest` should be. Useful when we know better than Typescript.
+ * Terminates the matcher with `f` applied to the input, **without evaluating the runtime
+ * predicate**. The supplied `refinement` is only used at the type level to narrow the input handed
+ * to `f`.
+ *
+ * - Use to remove a final type-level case the matcher can't otherwise prove (e.g. the last branch
+ *   of a discriminated union after every other variant has been matched).
+ * - When a previous case already produced an output, that output is returned and `f` is not
+ *   called.
+ * - Unsafe: if the runtime value does not actually satisfy `refinement`, `f` is still invoked,
+ *   silently producing a value typed as if narrowing succeeded.
+ *
+ * **Example** (Closing a discriminated union)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MMatch from '@parischap/effect-lib/MMatch';
+ *
+ * type Shape =
+ *   | { readonly _tag: 'Circle'; readonly r: number }
+ *   | { readonly _tag: 'Square'; readonly s: number };
+ *
+ * const area = (shape: Shape) =>
+ *   pipe(
+ *     shape,
+ *     MMatch.make,
+ *     MMatch.when(
+ *       (s): s is Extract<Shape, { readonly _tag: 'Circle' }> => s._tag === 'Circle',
+ *       (c) => Math.PI * c.r * c.r,
+ *     ),
+ *     MMatch.unsafeWhen(
+ *       (s): s is Extract<Shape, { readonly _tag: 'Square' }> => s._tag === 'Square',
+ *       (s) => s.s * s.s,
+ *     ),
+ *   );
+ *
+ * console.log(area({ _tag: 'Circle', r: 1 })); // 3.141592653589793
+ * console.log(area({ _tag: 'Square', s: 2 })); // 4
+ * ```
+ *
+ * @see {@link exhaustive} — safe terminator when `Rest` is statically `never`
  *
  * @category Utils
- *
- * @example
- *   import { MMatch, MTypes } from '@parischap/effect-lib';
- *   import { pipe } from 'effect';
- *
- *   const handlePrimitive = (value: MTypes.Primitive) => value;
- *   const handleNonPrimitive = (value: MTypes.NonPrimitive) => value;
- *
- *   export const testMatcher = (value: MTypes.Unknown) =>
- *     pipe(
- *       value,
- *       MMatch.make,
- *       MMatch.when(MTypes.isNonPrimitive, handleNonPrimitive),
- *       MMatch.unsafeWhen(MTypes.isPrimitive, handlePrimitive),
- *     );
  */
 export const unsafeWhen =
   <Input, Rest extends Input, Refined extends Rest, Output1>(
@@ -372,25 +538,37 @@ export const unsafeWhen =
     Option.getOrElse(self.output, () => f(self.input as never));
 
 /**
- * Returns the output of the matcher and shows a type error if `Rest` is not `never`
+ * Returns the output of the matcher if all cases are covered. Shows a type error if `Rest` is not
+ * `never`, meaning there are still uncovered input cases.
+ *
+ * - Use only when you have covered all possible input cases.
+ * - Throws if no case matched.
+ * - TypeScript ensures exhaustiveness through the `Rest` type parameter.
+ * - Prefer `orElse` for non-exhaustive patterns.
+ *
+ * **Example** (Exhaustive match)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MMatch from '@parischap/effect-lib/MMatch';
+ * import * as Number from 'effect/Number';
+ *
+ * enum Status {
+ *   Active = 'a',
+ *   Inactive = 'i',
+ * }
+ * const describe = (s: Status) =>
+ *   pipe(
+ *     s,
+ *     MMatch.make,
+ *     MMatch.whenIs(Status.Active, () => 'Active'),
+ *     MMatch.whenIs(Status.Inactive, () => 'Inactive'),
+ *     MMatch.exhaustive,
+ *   );
+ * console.log(describe(Status.Active)); // "Active"
+ * ```
  *
  * @category Utils
- *
- * @example
- *   import { MMatch, MTypes } from '@parischap/effect-lib';
- *   import { pipe } from 'effect';
- *
- *   const handlePrimitive = (value: MTypes.Primitive) => value;
- *   const handleNonPrimitive = (value: MTypes.NonPrimitive) => value;
- *
- *   export const testMatcher = (value: MTypes.Unknown) =>
- *     pipe(
- *       value,
- *       MMatch.make,
- *       MMatch.when(MTypes.isPrimitive, handlePrimitive),
- *       MMatch.when(MTypes.isNonPrimitive, handleNonPrimitive),
- *       MMatch.exhaustive,
- *     );
  */
 export const exhaustive = <Input, Output>(self: Type<Input, Output, never>): Output =>
   (self.output as Option.Some<Output>).value;

@@ -1,48 +1,98 @@
+/**
+ * Composable regular-expression patterns expressed as plain strings.
+ *
+ * ## Mental model
+ *
+ * - Patterns are produced as `string`'s and combined as `string`'s. The final pattern is fed to
+ *   the `RegExp` constructor by callers (or by helpers in {@link "./RegExp.js" | MRegExp}).
+ * - Combinators ({@link zeroOrMore}, {@link oneOrMore}, {@link either}, …) wrap their argument in
+ *   a non-capturing group `(?:…)` so they remain composable without affecting capture indices.
+ * - Pre-built instances cover the common building blocks (digits, sign, separators, line breaks)
+ *   and a few full patterns ({@link semVer}, {@link email}, {@link base10Number}).
+ *
+ * ## Common tasks
+ *
+ * - **Quantifiers**: {@link zeroOrMore}, {@link oneOrMore}, {@link repeatBetween}, {@link optional}
+ * - **Composition**: {@link either}, {@link anyCharIn}, {@link charNotIn}
+ * - **Anchors / lookarounds**: {@link makeLine}, {@link atStart}, {@link atEnd},
+ *   {@link positiveLookAhead}, {@link negativeLookAhead}
+ * - **Capturing**: {@link capture}, {@link optionalCapture}
+ * - **Numbers**: {@link unsignedBase10Int}, {@link unsignedNonNullBase10Int}, {@link base10Number},
+ *   {@link binaryInt}, {@link octalInt}, {@link hexaInt}
+ * - **Pre-built**: {@link semVer}, {@link email}, {@link lineBreak}, {@link universalPathSep}
+ *
+ * ## Quickstart
+ *
+ * **Example** (Compose a pattern)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MRegExpString from '@parischap/effect-lib/MRegExpString';
+ *
+ * const pattern = pipe(MRegExpString.digit, MRegExpString.oneOrMore, MRegExpString.makeLine);
+ * console.log(new RegExp(pattern).test('12345')); // true
+ * console.log(new RegExp(pattern).test('12a45')); // false
+ * ```
+ */
+
 import { Array, Function, pipe, String, RegExp } from 'effect';
 
-/**
- * Module for composing regular expression patterns as strings. Provides quantifiers, anchors,
- * lookaheads, character classes, and pre-built patterns for numbers, semver, and emails import {
- * pipe } from 'effect'; import * as Array from 'effect/Array'; import * as Function from
- * 'effect/Function'; import * as RegExp from 'effect/RegExp'; import * as String from
- * 'effect/String';
- */
 import type * as MTypes from './types/types.js';
 
 import * as MArray from './Array.js';
 
 /**
- * Size of a group of digits
+ * Size of a group of digits separated by a thousand separator (e.g. `1,234,567`).
  *
  * @category Constants
  */
 export const DIGIT_GROUP_SIZE = 3;
 
 /**
- * Creates a string representing a regular expression from a regular expression
+ * Returns the source of `regExp` as a `string`.
  *
  * @category Constructors
  */
 export const fromRegExp = (regExp: RegExp): string => regExp.source;
 
 /**
- * Returns a new regular expression string where `self` may appear 0 or more times
+ * Wraps `self` so it may appear zero or more times, using a non-capturing group.
+ *
+ * **Example**
+ *
+ * ```ts
+ * import * as MRegExpString from '@parischap/effect-lib/MRegExpString';
+ *
+ * console.log(MRegExpString.zeroOrMore('a')); // '(?:a)*'
+ * ```
  *
  * @category Utils
  */
 export const zeroOrMore = (self: string): string => `(?:${self})*`;
 
 /**
- * Returns a new regular expression string where `self` may appear 1 or more times
+ * Wraps `self` so it may appear one or more times, using a non-capturing group.
  *
  * @category Utils
  */
 export const oneOrMore: MTypes.StringTransformer = (self) => `(?:${self})+`;
 
 /**
- * Returns a new regular expression string where `self` may appear between `low` and `high` times.
- * `low` must be a positive integer inferior or equal to `high`. `high` must be a strictly positive
- * integer that may receive the `+Infinity` value.
+ * Wraps `self` so it may appear between `low` and `high` times.
+ *
+ * - `low` must be a non-negative integer with `low <= high`.
+ * - `high` must be a strictly positive integer or `+Infinity`; `+Infinity` is rendered as an
+ *   open-ended quantifier `{low,}`.
+ *
+ * **Example**
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MRegExpString from '@parischap/effect-lib/MRegExpString';
+ *
+ * console.log(pipe('a', MRegExpString.repeatBetween(2, 4))); // '(?:a){2,4}'
+ * console.log(pipe('a', MRegExpString.repeatBetween(2, Infinity))); // '(?:a){2,}'
+ * ```
  *
  * @category Utils
  */
@@ -52,15 +102,26 @@ export const repeatBetween =
     `(?:${self}){${low.toString()},${high === Infinity ? '' : high.toString()}}`;
 
 /**
- * Returns a new regular expression string where `self` is optional
+ * Wraps `self` so it is optional, using a non-capturing group.
  *
  * @category Utils
  */
 export const optional: MTypes.StringTransformer = (self) => `(?:${self})?`;
 
 /**
- * Returns a regular expression string that will match one of the provided regular expression
- * strings
+ * Returns a pattern matching any one of `args` (alternation).
+ *
+ * - Empty strings in `args` are dropped.
+ * - For a single non-empty argument, returns it verbatim (no group is added).
+ * - For two or more, joins with `|` inside a non-capturing group.
+ *
+ * **Example**
+ *
+ * ```ts
+ * import * as MRegExpString from '@parischap/effect-lib/MRegExpString';
+ *
+ * console.log(MRegExpString.either('foo', 'bar', 'baz')); // '(?:foo|bar|baz)'
+ * ```
  *
  * @category Utils
  */
@@ -76,7 +137,19 @@ export const either = (...args: ReadonlyArray<string>): string =>
   );
 
 /**
- * Returns a regular expression string that will match one of the provided characters
+ * Returns a pattern matching any one of the supplied characters as a character class.
+ *
+ * - For an empty input returns the empty string.
+ * - For a single argument returns it verbatim (no class is added).
+ * - For two or more, builds `[abc…]`.
+ *
+ * **Example**
+ *
+ * ```ts
+ * import * as MRegExpString from '@parischap/effect-lib/MRegExpString';
+ *
+ * console.log(MRegExpString.anyCharIn(['a', 'b', 'c'])); // '[abc]'
+ * ```
  *
  * @category Utils
  */
@@ -91,49 +164,59 @@ export const anyCharIn = (args: ReadonlyArray<string>): string =>
   );
 
 /**
- * Returns a regular expression string that will match none of the provided characters
+ * Returns a pattern matching any character not in the supplied set, as a negated character class
+ * `[^abc…]`.
  *
  * @category Utils
  */
 export const charNotIn = (args: MTypes.ReadonlyOverOne<string>): string => `[^${args.join('')}]`;
 
 /**
- * Returns a new regular expression string where `self` must fill a whole line
+ * Wraps `self` between `^` and `$` so it must span an entire line.
  *
  * @category Utils
  */
 export const makeLine: MTypes.StringTransformer = (self) => `^${self}$`;
 
 /**
- * Returns a new regular expression string where `self` must be at the end of a line
+ * Anchors `self` to the end of a line by appending `$`.
  *
  * @category Utils
  */
 export const atEnd: MTypes.StringTransformer = (self) => `${self}$`;
 
 /**
- * Returns a new regular expression string where `self` must be at the start of a line
+ * Anchors `self` to the start of a line by prepending `^`.
  *
  * @category Utils
  */
 export const atStart: MTypes.StringTransformer = (self) => `^${self}`;
 
 /**
- * Returns a new regular expression string where `self` will be used as negative lookahead
+ * Wraps `self` in a negative lookahead `(?!…)`.
  *
  * @category Utils
  */
 export const negativeLookAhead: MTypes.StringTransformer = (self) => `(?!${self})`;
 
 /**
- * Returns a new regular expression string where `self` will be used as positive lookahead
+ * Wraps `self` in a positive lookahead `(?=…)`.
  *
  * @category Utils
  */
 export const positiveLookAhead: MTypes.StringTransformer = (self) => `(?=${self})`;
 
 /**
- * Returns a new regular expression string where `self` will be captured with name `name`
+ * Wraps `self` in a named capture group `(?<name>…)`.
+ *
+ * **Example**
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MRegExpString from '@parischap/effect-lib/MRegExpString';
+ *
+ * console.log(pipe(MRegExpString.digit, MRegExpString.capture('d'))); // '(?<d>\\d)'
+ * ```
  *
  * @category Utils
  */
@@ -143,7 +226,8 @@ export const capture =
     `(?<${name}>${self})`;
 
 /**
- * Returns a new regular expression string where `self` is made optional and captured
+ * Combines {@link capture} and {@link optional}: wraps `self` in a named capture group followed by
+ * `?`.
  *
  * @category Utils
  */
@@ -253,7 +337,7 @@ export const tab = backslashString + 't';
 export const space = backslashString + 's';
 
 /**
- * A regular expression string representing a space
+ * A regular expression string representing a non-space character.
  *
  * @category Instances
  */
@@ -415,7 +499,7 @@ export const lowerCaseLetter = '[a-z]';
 export const upperCaseLetter = '[A-Z]';
 
 /**
- * A regular expression string representing a lowercase letter
+ * A regular expression string representing a lowercase letter or a digit.
  *
  * @category Instances
  */

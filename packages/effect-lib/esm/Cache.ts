@@ -1,10 +1,51 @@
 /**
- * This module implements a mutable cache with an optional capacity and an optional time-to-live for
- * the result of a function called lookup function that takes values of type A and returns values of
- * type B. The lookup function may be recursive. The cache capacity may temporarily be exceeded if
- * the lookup function is recursive (because the cache is also used to determine circularity).
- * Values of type A are compared using the Effect Equal.equals operator for caching purposes
- * (because it uses a MutableHashMap under the hood for the store implementation)
+ * Mutable cache with optional bounded capacity and optional time-to-live built around a user-supplied
+ * lookup function. The lookup function may be recursive, in which case the cache is also used to
+ * detect circularity.
+ *
+ * ## Mental model
+ *
+ * - **`Type<A, B>`** is a mutable store mapping keys of type `A` to values of type `B`, populated
+ *   on demand by `lookUp`.
+ * - Keys are compared with `Equal.equals` (the underlying store is a `MutableHashMap`).
+ * - Eviction is FIFO: when capacity is exceeded the oldest insertion is evicted first.
+ * - When `lifeSpan` elapses for an entry, the next read triggers a fresh lookup; entries inserted
+ *   before the expired one are also evicted in the process to keep insertion order consistent with
+ *   age.
+ *
+ * ## Common tasks
+ *
+ * - **Construct**: {@link make}
+ * - **Read**: {@link get}, {@link toGetter}
+ * - **Inspect**: {@link toKeys}
+ *
+ * ## Gotchas
+ *
+ * - The cache is **mutable** — `get` mutates the underlying store. Sharing a cache across fibers
+ *   without external coordination is unsafe.
+ * - When the lookup function is recursive, capacity may be temporarily exceeded: every key in the
+ *   recursion chain is reserved (with an empty entry) before a result is produced, so a chain of
+ *   `n` recursive calls reserves `n` entries even past `capacity`. Excess entries are reclaimed
+ *   once the recursion unwinds.
+ * - When `isCircular` is `true`, the value returned by `lookUp` is **never** stored, regardless of
+ *   the second tuple element.
+ *
+ * ## Quickstart
+ *
+ * **Example** (Basic cache usage)
+ *
+ * ```ts
+ * import { Tuple, pipe } from 'effect';
+ * import * as MCache from '@parischap/effect-lib/MCache';
+ *
+ * const cache = MCache.make({
+ *   lookUp: ({ key }: { readonly key: number }) => Tuple.make(key * 2, true),
+ * });
+ *
+ * console.log(pipe(cache, MCache.get(5))); // 10
+ * ```
+ *
+ * @see {@link make} — create a new cache
  */
 import { flow, pipe } from 'effect';
 import * as Array from 'effect/Array';
@@ -21,7 +62,7 @@ import * as MData from './Data/Data.js';
 import * as MCacheValueContainer from './internal/CacheValueContainer.js';
 
 /**
- * Module tag
+ * Module tag.
  *
  * @category Module markers
  */
@@ -30,14 +71,14 @@ const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
 
 /**
- * Type that represents the lookup function of a Cache. In addition to the value of type A, the
- * lookup function receives a memoized version of itself if it needs to perform recursion. It also
- * receives a flag indicating whether circularity was detected. In that case, the memoized version
- * of the function is not passed as recursion should be stopped to avoid an infinite loop. The
- * output of the function must contain the result of applying the value of type A to the lookup
- * function and a boolean indicating whether the result should be stored in the cache. Note that
- * when isCircular is true, the result is not stored in the cache even if the result of the function
- * indicates it should.
+ * Type of the lookup function passed to {@link make}. The lookup receives a record carrying the
+ * `key` to look up, an `isCircular` flag, and a `memoized` callback that re-enters the cache
+ * recursively when `isCircular` is `false`.
+ *
+ * - The function returns a `[result, storeInCache]` tuple. `storeInCache` only acts as a hint:
+ *   when `isCircular` is `true`, the value is never stored regardless of `storeInCache`.
+ * - Use the `memoized` parameter inside the lookup body to recurse through the cache instead of
+ *   calling the lookup directly; this enables circularity detection.
  *
  * @category Models
  */
@@ -48,41 +89,40 @@ export interface LookUp<A, B> extends MTypes.OneArgFunction<
 > {}
 
 /**
- * Type that represents a Cache
+ * Type of a cache.
  *
  * @category Models
  */
 export class Type<in out A, in out B> extends MData.Class {
   /**
-   * The lookup function cache associating values of type A to values of type B. A `None` B value
-   * means the B value is currently under calculation. A circular flag is returned if the value
-   * needs to be retreived while it is being calculated.
+   * The underlying store. A key mapped to `Option.none` means a lookup is currently in progress
+   * (used to detect circular recursion).
    */
   readonly store: MutableHashMap.MutableHashMap<A, Option.Option<MCacheValueContainer.Type<B>>>;
 
   /**
-   * A list used to track the order in which values of type A were inserted in the store so as to
-   * remove the oldest keys first in case the cache has bounded capacity
+   * The order in which keys were inserted, used to evict the oldest first when the cache reaches
+   * its capacity.
    */
   readonly keyListInOrder: MutableList.MutableList<A>;
 
-  /** The lookup function used to populate the cache */
+  /** The lookup function used to populate the cache. */
   readonly lookUp: LookUp<A, B>;
 
   /**
-   * The capicity of the cache. If `Infinity` is passed, the cache is unbounded. If `NaN` or a
-   * negative value is passed, capacity is set to 0
+   * The capacity of the cache. `Infinity` means unbounded; `NaN` or a negative value is normalized
+   * to `0`.
    */
   readonly capacity: number;
 
   /**
-   * The lifespan of the values in the cache in milliseconds. If `Infinity` is passed, the values
-   * never expire. If `NaN` or a negative value is passed, the lifespan is set to `0`. A lifespan of
-   * `0` means entries are considered expired on every subsequent lookup.
+   * The lifespan of cached values, in milliseconds. `Infinity` means values never expire; `NaN` or
+   * a negative value is normalized to `0`. A `0` lifespan means every subsequent lookup considers
+   * the entry expired.
    */
   readonly lifeSpan: number;
 
-  /** Class constructor */
+  /** Class constructor. */
   private constructor(params: MTypes.Data<Type<A, B>>) {
     super();
     this.store = params.store;
@@ -92,57 +132,43 @@ export class Type<in out A, in out B> extends MData.Class {
     this.lifeSpan = params.lifeSpan;
   }
 
-  /** Static constructor */
+  /** Static constructor. */
   static make<A, B>(params: MTypes.Data<Type<A, B>>): Type<A, B> {
     return new Type(params);
   }
 
-  /** Returns the `id` of `this` */
+  /** Returns the `id` of `this`. */
   [MData.idSymbol](): string | (() => string) {
     return moduleTag;
   }
 
-  /** Returns the TypeMarker of the class */
+  /** Returns the TypeMarker of the class. */
   protected get [TypeId](): TypeId {
     return TypeId;
   }
 }
 
 /**
- * Creates a new cache. The lookup function is used to populate the cache. If the capacity is
- * undefined, the cache is unbounded. If the lifespan is undefined, the values never expire. Keys
- * are compared using Equal.equals. The second element of the tuple returned by the lookup function
- * indicates whether the result should be stored in the cache.
+ * Builds a new cache backed by `lookUp`.
+ *
+ * - Use to wrap an expensive function in a cache. Keys are compared with `Equal.equals`.
+ * - `capacity` defaults to `Infinity` (unbounded).
+ * - `lifeSpan` defaults to `Infinity` (entries never expire).
+ *
+ * **Example** (Bounded cache with TTL)
+ *
+ * ```ts
+ * import { Tuple } from 'effect';
+ * import * as MCache from '@parischap/effect-lib/MCache';
+ *
+ * const cache = MCache.make({
+ *   lookUp: ({ key }: { readonly key: number }) => Tuple.make(key * 2, true),
+ *   capacity: 100,
+ *   lifeSpan: 60_000, // 1 minute
+ * });
+ * ```
  *
  * @category Constructors
- *
- * @example
- *   import { MCache, MTypes } from '@parischap/effect-lib';
- *   import { Record, Tuple, pipe } from 'effect';
- *
- *   export const nonRecursiveCache = MCache.make({
- *     lookUp: ({ key }: { readonly key: number }) => Tuple.make(key * 2, true),
- *   });
- *
- *   interface RecursiveStructure {
- *     [key: string]: string | RecursiveStructure;
- *   }
- *
- *   export const recursiveCache = MCache.make<RecursiveStructure, string>({
- *     lookUp: ({ key, memoized, isCircular }) =>
- *       isCircular
- *         ? Tuple.make(`Circular`, false)
- *         : Tuple.make(
- *             pipe(
- *               key,
- *               Record.reduce('', (acc, value) =>
- *                 MTypes.isString(value) ? acc + value : acc + memoized(value),
- *               ),
- *             ),
- *             true,
- *           ),
- *     capacity: 2,
- *   });
  */
 export const make = <A, B>({
   lookUp,
@@ -162,21 +188,31 @@ export const make = <A, B>({
   });
 
 /**
- * Gets a value from the cache. If the value is not in the cache (value comparison is based on
- * Equal.equals), the lookup function is called to populate the cache. If it is in the cache but is
- * too old,the lookup function is called to refresh it.
+ * Reads the value associated with `a` from `self`. Triggers a lookup when the key is missing or
+ * its entry has expired.
+ *
+ * - Keys are compared with `Equal.equals`.
+ * - When the lookup is already in progress for `a` (recursive call), `lookUp` is invoked with
+ *   `isCircular: true` and the returned value is not stored.
+ * - On expiration of an entry, every entry inserted before it is evicted as well to keep the
+ *   FIFO insertion order in sync with element age.
+ *
+ * **Example** (Reading from the cache)
+ *
+ * ```ts
+ * import { Tuple, pipe } from 'effect';
+ * import * as MCache from '@parischap/effect-lib/MCache';
+ *
+ * const cache = MCache.make({
+ *   lookUp: ({ key }: { readonly key: number }) => Tuple.make(key * 2, true),
+ * });
+ *
+ * console.log(pipe(cache, MCache.get(5))); // 10
+ * ```
+ *
+ * @see {@link toGetter} — return a reusable getter bound to a cache
  *
  * @category Utils
- *
- * @example
- *   import { MCache } from '@parischap/effect-lib';
- *   import { Tuple } from 'effect';
- *
- *   const testCache = MCache.make({
- *     lookUp: ({ key }: { readonly key: number }) => Tuple.make(key * 2, true),
- *   });
- *
- *   assert.deepStrictEqual(MCache.get(3)(testCache), 6);
  */
 export const get =
   <A>(a: A) =>
@@ -253,7 +289,26 @@ export const get =
   };
 
 /**
- * Returns a function that gets a value from the `self`
+ * Returns a getter bound to `self`, suitable for point-free lookups.
+ *
+ * - Use when the same cache will be queried by many call sites and you want to capture it once.
+ * - Equivalent to `(a) => MCache.get(a)(self)`.
+ *
+ * **Example** (Reusable getter)
+ *
+ * ```ts
+ * import { Tuple } from 'effect';
+ * import * as MCache from '@parischap/effect-lib/MCache';
+ *
+ * const cache = MCache.make({
+ *   lookUp: ({ key }: { readonly key: number }) => Tuple.make(key * 2, true),
+ * });
+ * const lookup = MCache.toGetter(cache);
+ *
+ * console.log(lookup(5)); // 10
+ * ```
+ *
+ * @see {@link get} — single-shot read
  *
  * @category Utils
  */
@@ -263,7 +318,26 @@ export const toGetter =
     pipe(self, get(a));
 
 /**
- * Returns an array of the keys whose value is currently stored in the cache
+ * Returns the keys whose value is currently present in the cache.
+ *
+ * - Keys whose lookup is in progress (i.e. mapped to `Option.none`) are excluded.
+ * - The order of the returned array reflects the iteration order of the underlying
+ *   `MutableHashMap`, which is implementation-defined.
+ *
+ * **Example** (Listing cached keys)
+ *
+ * ```ts
+ * import { Tuple, pipe } from 'effect';
+ * import * as MCache from '@parischap/effect-lib/MCache';
+ *
+ * const cache = MCache.make({
+ *   lookUp: ({ key }: { readonly key: number }) => Tuple.make(key * 2, true),
+ * });
+ *
+ * pipe(cache, MCache.get(1));
+ * pipe(cache, MCache.get(2));
+ * console.log(MCache.toKeys(cache)); // [1, 2]
+ * ```
  *
  * @category Utils
  */
