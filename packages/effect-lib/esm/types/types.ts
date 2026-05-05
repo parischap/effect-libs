@@ -1,6 +1,5 @@
 /**
- * Foundational primitive / container types and the matching runtime guards used throughout
- * `effect-lib`.
+ * Foundational primitive / container types used throughout `effect-lib`.
  *
  * ## Mental model
  *
@@ -14,7 +13,8 @@
  *   type to produce its plain-data view (used by class constructors); `Proto` is its complement;
  *   `Tuple<T, N>` materializes a fixed-size tuple; `IntersectAndSimplify` and `ToKeyIntersection`
  *   help build intersections in conditional types.
- * - **Guards**: every `is*` function below is a TypeScript type guard.
+ *
+ * Runtime guards for these shapes live in `MPredicate`.
  *
  * ## Common tasks
  *
@@ -24,20 +24,11 @@
  * - **Type-level helpers**: {@link Data}, {@link Proto}, {@link Tuple}, {@link ReadonlyTuple},
  *   {@link MapToTarget}, {@link IntersectAndSimplify}, {@link ToKeyIntersection},
  *   {@link WithMutable}, {@link WithRequired}
- * - **Runtime guards**: {@link isPrimitive}, {@link isNonPrimitive}, {@link isString},
- *   {@link isNumber}, {@link isFunction}, {@link isArray}, {@link isOverOne},
- *   {@link isReadonlyOverOne}, {@link isOverTwo}, {@link isReadonlyOverTwo},
- *   {@link isReadonlySingleton}, {@link isTypedArray}, {@link isSet}, {@link isMap},
- *   {@link isIterable}
- * - **Inspect typed arrays**: {@link typedArrayName}
  */
 
-import { pipe } from 'effect';
-import * as Array from 'effect/Array';
 import type * as Equal from 'effect/Equal';
 import type * as Hash from 'effect/Hash';
-import * as Option from 'effect/Option';
-import * as Predicate from 'effect/Predicate';
+import type * as Predicate from 'effect/Predicate';
 
 /**
  * Type that represents a non-null object as defined in javascript. It includes records (in their
@@ -134,30 +125,6 @@ export type OverTwo<A> = [A, A, ...Array<A>];
  * @category Models
  */
 export type ReadonlyOverTwo<A> = readonly [A, A, ...ReadonlyArray<A>];
-
-const allTypedArrayConstructors = [
-  Int8Array,
-  Uint8Array,
-  Uint8ClampedArray,
-  Int16Array,
-  Uint16Array,
-  Int32Array,
-  Uint32Array,
-  Float32Array,
-  Float64Array,
-  BigInt64Array,
-  BigUint64Array,
-] as const;
-type allTypedArrayConstructorsType = typeof allTypedArrayConstructors;
-type toTypedArrayInstances<A extends allTypedArrayConstructorsType> = {
-  readonly [key in keyof A]: InstanceType<A[key]>;
-};
-/**
- * Type that represents all typed arrays
- *
- * @category Models
- */
-export type TypedArray = toTypedArrayInstances<allTypedArrayConstructorsType>[number];
 
 /**
  * Type that represents a function
@@ -372,280 +339,3 @@ export type ToKeyIntersection<T> = [
  */
 
 export type IntersectAndSimplify<T, U> = [T] extends [U] ? T : [U] extends [T] ? U : T & U;
-
-/**
- * From `unknown` to `Array`. Not based on Array.isArray from a Typescript perspective because it is
- * bugged. See https://github.com/microsoft/TypeScript/issues/17002
- *
- * @category Guards
- */
-export const isArray = <T>(arg: T): arg is ArrayType<T> => Array.isArray(arg);
-type ArrayType<T> = Extract<
-  true extends T & false ? AnyArray : T extends AnyReadonlyArray ? T : Array<unknown>,
-  T
->;
-
-/**
- * From `unknown` to `Date`
- *
- * @category Guards
- */
-export const isDate = (input: unknown): input is Date => input instanceof Date;
-
-/**
- * From `unknown` to `string`
- *
- * @category Guards
- */
-export const isString = (input: unknown): input is string => typeof input === 'string';
-
-/**
- * From `unknown` to `number`
- *
- * @category Guards
- */
-export const isNumber = (input: unknown): input is number => typeof input === 'number';
-
-/**
- * From `unknown` to `bigint`
- *
- * @category Guards
- */
-export const isBigInt = (input: unknown): input is bigint => typeof input === 'bigint';
-
-/**
- * From `unknown` to `boolean`
- *
- * @category Guards
- */
-export const isBoolean = (input: unknown): input is boolean => typeof input === 'boolean';
-
-/**
- * From `unknown` to `symbol`
- *
- * @category Guards
- */
-export const isSymbol = (input: unknown): input is symbol => typeof input === 'symbol';
-
-/**
- * From `unknown` to `undefined`
- *
- * @category Guards
- */
-export const isUndefined = (input: unknown): input is undefined => input === undefined;
-
-/**
- * From a type `T` to the same type `T` without `undefined`
- *
- * @category Guards
- */
-export const isNotUndefined = <A>(input: A): input is Exclude<A, undefined> => input !== undefined;
-
-/**
- * From `unknown` to `null`
- *
- * @category Guards
- */
-export const isNull = (input: unknown): input is null => input === null;
-
-/**
- * From a type `T` to the same type `T` without `null`
- *
- * @category Guards
- */
-export const isNotNull = <A>(input: A): input is Exclude<A, null> => input !== null;
-
-/**
- * From a type `T` to `null` or `undefined` depending on what is in T
- *
- * @category Guards
- */
-export const isNullable = <A>(input: A): input is Extract<A, null | undefined> =>
-  input === null || input === undefined;
-
-/**
- * From a type `T` to the same type `T` without `null` and `undefined`
- *
- * @category Guards
- */
-export const isNotNullable = <A>(input: A): input is NonNullable<A> =>
-  input !== null && input !== undefined;
-
-/**
- * From `unknown` to `NonPrimitive`
- *
- * @category Guards
- */
-// The `& NonPrimitive` part is useful in case A is `unknown`. A JavaScript object only has string and symbolic keys. So this needs not be checked.
-export const isNonPrimitive = <A>(input: A): input is Exclude<A, Primitive> & NonPrimitive =>
-  input !== null && (typeof input === 'object' || typeof input === 'function');
-
-/**
- * From `unknown` to `Primitive`
- *
- * @category Guards
- */
-// The `& Primitive` part is useful in case A is `unknown`
-export const isPrimitive = <A>(input: A): input is Exclude<A, NonPrimitive> & Primitive =>
-  !isNonPrimitive(input);
-
-/**
- * From `unknown` to `AnyFunction`
- *
- * @category Guards
- */
-export const isFunction = (u: unknown): u is AnyFunction => typeof u === 'function';
-
-/**
- * From a function with an unknown number of arguments to a function with a single argument
- *
- * @category Guards
- */
-export const isOneArgFunction = <A, R>(
-  f: (a: A, ...args: ReadonlyArray<any>) => R,
-): f is (a: A) => R => f.length === 1;
-
-/**
- * From a function with an unknown number of arguments to a function with a two arguments
- *
- * @category Guards
- */
-export const isTwoArgFunction = <A, B, R>(
-  f: (a: A, b: B, ...args: ReadonlyArray<any>) => R,
-): f is (a: A, b: B) => R => f.length === 2;
-
-/**
- * From `Array<A>` to `EmptyArray`
- *
- * @category Guards
- */
-export const isEmptyArray = <A>(u: Array<A>): u is EmptyArray => u.length === 0;
-
-/**
- * From `ReadonlyArray<A>` to `EmptyReadonlyArray`
- *
- * @category Guards
- */
-export const isEmptyReadonlyArray = <A>(u: ReadonlyArray<A>): u is EmptyReadonlyArray =>
-  u.length === 0;
-
-/**
- * From `Array<A>` to `OverOne<A>`
- *
- * @category Guards
- */
-export const isOverOne = <A>(u: Array<A>): u is OverOne<A> => u.length > 0;
-
-/**
- * From `ReadonlyArray<A>` to `ReadonlyOverOne<A>`
- *
- * @category Guards
- */
-export const isReadonlyOverOne = <A>(u: ReadonlyArray<A>): u is ReadonlyOverOne<A> => u.length > 0;
-
-/**
- * From `Array<A>` to `OverTwo<A>`
- *
- * @category Guards
- */
-export const isOverTwo = <A>(u: Array<A>): u is OverTwo<A> => u.length >= 2;
-
-/**
- * From `ReadonlyArray<A>` to `ReadonlyOverTwo<A>`
- *
- * @category Guards
- */
-export const isReadonlyOverTwo = <A>(u: ReadonlyArray<A>): u is ReadonlyOverTwo<A> => u.length >= 2;
-
-/**
- * From `Array<A>` to `Singleton<A>`
- *
- * @category Guards
- */
-export const isSingleton = <A>(u: Array<A>): u is Singleton<A> => u.length === 1;
-
-/**
- * From `ReadonlyArray<A>` to `ReadonlySingleton<A>`
- *
- * @category Guards
- */
-export const isReadonlySingleton = <A>(u: ReadonlyArray<A>): u is ReadonlySingleton<A> =>
-  u.length === 1;
-
-/**
- * From `Array<A>` to `Pair<A,A>`
- *
- * @category Guards
- */
-export const isPair = <A>(u: Array<A>): u is Pair<A, A> => u.length === 2;
-
-/**
- * From `ReadonlyArray<A>` to `ReadonlPair<A>`
- *
- * @category Guards
- */
-export const isReadonlyPair = <A>(u: ReadonlyArray<A>): u is ReadonlyPair<A, A> => u.length === 2;
-
-/**
- * From `unknown` to `Iterable<unknown>`. DOES NOT WORK FOR string which is the only primitive type
- * to be iterable
- *
- * @category Guards
- */
-export const isIterable = <V>(input: V): input is V & Iterable<unknown> =>
-  Predicate.hasProperty(input, Symbol.iterator);
-
-/**
- * If `u` is a TypedArray, returns a `some` of its constructor name (e.g. `Uint8Array`). Otherwise,
- * returns a `none`
- *
- * @category Utils
- */
-export const typedArrayName = (u: unknown): Option.Option<string> =>
-  pipe(
-    allTypedArrayConstructors,
-    Array.findFirst((constructor) => u instanceof constructor),
-    Option.map(
-      (constructor) =>
-        (constructor as unknown as { readonly [Symbol.species]: { readonly name: string } })[
-          Symbol.species
-        ].name,
-    ),
-  );
-
-/**
- * From `unknown` to `TypedArray`
- *
- * @category Guards
- */
-export const isTypedArray = <A>(input: A): input is Extract<A, TypedArray> =>
-  pipe(input, typedArrayName, Option.isSome);
-
-/**
- * From `unknown` to `Set`
- *
- * @category Guards
- */
-export const isSet = (input: unknown): input is Set<unknown> => input instanceof Set;
-
-/**
- * From `unknown` to `Map`
- *
- * @category Guards
- */
-export const isMap = (input: unknown): input is Map<unknown, unknown> => input instanceof Map;
-
-/**
- * From `unknown` to `WeakSet`
- *
- * @category Guards
- */
-export const isWeakSet = (input: unknown): input is WeakSet<any> => input instanceof WeakSet;
-
-/**
- * From `unknown` to `WeakMap`
- *
- * @category Guards
- */
-export const isWeakMap = (input: unknown): input is WeakMap<any, unknown> =>
-  input instanceof WeakMap;

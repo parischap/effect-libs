@@ -6,20 +6,22 @@
  *
  * - **`Type`** is a `Data.TaggedError` whose only field is a human-readable `message`.
  * - For each validation scenario this module exports two functions:
- *   - a **constructor** (e.g. {@link wrongValue}, {@link missized}) that builds an `InputError`
- *     with a pre-formatted message;
- *   - an **assertion** (e.g. {@link assertValue}, {@link assertLength}) that returns a curried
+ *
+ *   - A **constructor** (e.g. {@link wrongValue}, {@link missized}) that builds an `InputError` with a
+ *     pre-formatted message;
+ *   - An **assertion** (e.g. {@link assertValue}, {@link assertLength}) that returns a curried
  *     predicate `(input) => Result.Result<input, Type>` using that constructor on failure.
  * - All `name`-bearing inputs default the prefix of the message to `"value"` when omitted.
  *
  * ## Common tasks
  *
  * - **Validate equality**: {@link assertValue} (and constructor {@link wrongValue})
- * - **Validate length**: {@link assertLength}, {@link assertMaxLength} (constructors {@link missized},
- *   {@link oversized})
+ * - **Validate length**: {@link assertLength}, {@link assertMaxLength} (constructors
+ *   {@link missized}, {@link oversized})
  * - **Validate range**: {@link assertInRange} (constructor {@link outOfBounds})
  * - **Validate strings**: {@link assertStartsWith}, {@link assertMatches}, {@link match},
- *   {@link assertEmpty} (constructors {@link notStartingWith}, {@link notMatching}, {@link notEmpty})
+ *   {@link assertEmpty} (constructors {@link notStartingWith}, {@link notMatching},
+ *   {@link notEmpty})
  *
  * ## Quickstart
  *
@@ -46,9 +48,10 @@ import * as Predicate from 'effect/Predicate';
 import * as Result from 'effect/Result';
 import * as String from 'effect/String';
 
+import type * as MTypes from './types/types.js';
+
 import * as MPredicate from './Predicate.js';
 import * as MString from './String/String.js';
-import * as MTypes from './types/types.js';
 
 /**
  * Module tag.
@@ -67,7 +70,7 @@ export class Type extends Data.TaggedError(moduleTag)<{
 }> {}
 
 const nameLabel: MTypes.OneArgFunction<string | undefined, string> = flow(
-  Option.liftPredicate(MTypes.isString),
+  Option.liftPredicate(Predicate.isString),
   Option.getOrElse(Function.constant('value')),
 );
 
@@ -83,13 +86,15 @@ const nameLabel: MTypes.OneArgFunction<string | undefined, string> = flow(
  * ```ts
  * import * as MInputError from '@parischap/effect-lib/MInputError';
  *
- * console.log(MInputError.wrongValue({ expected: 'admin', actual: 'user', name: 'role' }).message);
+ * console.log(
+ *   MInputError.wrongValue({ expected: 'admin', actual: 'user', name: 'role' }).message,
+ * );
  * // "Expected role to be: 'admin'. Actual: 'user'"
  * ```
  *
- * @see {@link assertValue} — assertion-style counterpart
- *
  * @category Constructors
+ *
+ * @see {@link assertValue} — assertion-style counterpart
  */
 export const wrongValue = <T extends MTypes.NonNullablePrimitive>({
   expected,
@@ -100,8 +105,8 @@ export const wrongValue = <T extends MTypes.NonNullablePrimitive>({
   readonly actual: T;
   readonly name?: string;
 }) => {
-  const expectedString = MTypes.isString(expected) ? `'${expected}'` : expected.toString();
-  const actualString = MTypes.isString(actual) ? `'${actual}'` : actual.toString();
+  const expectedString = Predicate.isString(expected) ? `'${expected}'` : expected.toString();
+  const actualString = Predicate.isString(actual) ? `'${actual}'` : actual.toString();
   return new Type({
     message: `Expected ${nameLabel(name)} to be: ${expectedString}. Actual: ${actualString}`,
   });
@@ -138,9 +143,9 @@ export const assertValue = <T extends MTypes.NonNullablePrimitive>(params: {
 /**
  * Builds an `InputError` for an array-like value whose length differs from the expected one.
  *
- * @see {@link assertLength} — assertion-style counterpart
- *
  * @category Constructors
+ *
+ * @see {@link assertLength} — assertion-style counterpart
  */
 export const missized = ({
   expected,
@@ -186,9 +191,9 @@ export const assertLength = (params: {
 /**
  * Builds an `InputError` for an array-like value whose length exceeds the expected upper bound.
  *
- * @see {@link assertMaxLength} — assertion-style counterpart
- *
  * @category Constructors
+ *
+ * @see {@link assertMaxLength} — assertion-style counterpart
  */
 export const oversized = ({
   expected,
@@ -239,9 +244,9 @@ export const assertMaxLength = (params: {
  * - `offset` is added to `min`, `max` and `actual` only when formatting the message — it is purely
  *   cosmetic and lets callers report bounds in a different unit (e.g. 1-based indexing).
  *
- * @see {@link assertInRange} — assertion-style counterpart
- *
  * @category Constructors
+ *
+ * @see {@link assertInRange} — assertion-style counterpart
  */
 export const outOfBounds = ({
   min,
@@ -313,9 +318,9 @@ export const assertInRange = (params: {
 /**
  * Builds an `InputError` for a string that does not start with `startString`.
  *
- * @see {@link assertStartsWith} — assertion-style counterpart
- *
  * @category Constructors
+ *
+ * @see {@link assertStartsWith} — assertion-style counterpart
  */
 export const notStartingWith = ({
   startString,
@@ -358,12 +363,12 @@ export const assertStartsWith = (params: {
 /**
  * Builds an `InputError` for a string that does not match a given regular expression.
  *
- * - `regExpDescriptor` is the human-readable description used in the error message (e.g.
- *   `"a valid email"`).
- *
- * @see {@link assertMatches} — assertion-style counterpart
+ * - `regExpDescriptor` is the human-readable description used in the error message (e.g. `"a valid
+ *   email"`).
  *
  * @category Constructors
+ *
+ * @see {@link assertMatches} — assertion-style counterpart
  */
 export const notMatching = ({
   regExpDescriptor,
@@ -390,14 +395,17 @@ export const notMatching = ({
  * import * as MInputError from '@parischap/effect-lib/MInputError';
  *
  * console.log(
- *   pipe('hello', MInputError.assertMatches({ regExp: /^[a-z]+$/, regExpDescriptor: 'lowercase letters' })),
+ *   pipe(
+ *     'hello',
+ *     MInputError.assertMatches({ regExp: /^[a-z]+$/, regExpDescriptor: 'lowercase letters' }),
+ *   ),
  * );
  * // Success('hello')
  * ```
  *
- * @see {@link match} — variant returning the matched substring
- *
  * @category Utils
+ *
+ * @see {@link match} — variant returning the matched substring
  */
 export const assertMatches = (params: {
   readonly regExp: RegExp;
@@ -427,9 +435,9 @@ export const assertMatches = (params: {
  * // Success('123')
  * ```
  *
- * @see {@link assertMatches} — variant preserving the original input on success
- *
  * @category Utils
+ *
+ * @see {@link assertMatches} — variant preserving the original input on success
  */
 export const match =
   (params: {
@@ -447,9 +455,9 @@ export const match =
 /**
  * Builds an `InputError` for a string that should have been empty.
  *
- * @see {@link assertEmpty} — assertion-style counterpart
- *
  * @category Constructors
+ *
+ * @see {@link assertEmpty} — assertion-style counterpart
  */
 export const notEmpty = ({ actual, name }: { readonly actual: string; readonly name?: string }) =>
   new Type({

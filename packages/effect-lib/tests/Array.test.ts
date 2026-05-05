@@ -16,7 +16,6 @@ import * as TestUtils from '@parischap/configs/TestUtils';
 import * as MArray from '@parischap/effect-lib/MArray';
 import * as MPredicate from '@parischap/effect-lib/MPredicate';
 import * as MTuple from '@parischap/effect-lib/MTuple';
-import * as MTypes from '@parischap/effect-lib/MTypes';
 
 import { describe, it } from 'vitest';
 
@@ -96,11 +95,7 @@ describe('MArray', () => {
   describe('findAll', () => {
     it('Empty array', () => {
       TestUtils.assertTrue(
-        pipe(
-          Array.empty<number>(),
-          MArray.findAll(MPredicate.strictEquals(3)),
-          MTypes.isEmptyArray,
-        ),
+        pipe(Array.empty<number>(), MArray.findAll(MPredicate.strictEquals(3)), Array.isArrayEmpty),
       );
     });
     it('Non empty array', () => {
@@ -113,7 +108,7 @@ describe('MArray', () => {
 
   describe('takeBut', () => {
     it('Empty array', () => {
-      TestUtils.assertTrue(pipe(Array.empty<number>(), MArray.takeBut(2), MTypes.isEmptyArray));
+      TestUtils.assertTrue(pipe(Array.empty<number>(), MArray.takeBut(2), Array.isArrayEmpty));
     });
     it('Non empty array', () => {
       TestUtils.deepStrictEqual(
@@ -125,9 +120,7 @@ describe('MArray', () => {
 
   describe('takeRightBut', () => {
     it('Empty array', () => {
-      TestUtils.assertTrue(
-        pipe(Array.empty<number>(), MArray.takeRightBut(2), MTypes.isEmptyArray),
-      );
+      TestUtils.assertTrue(pipe(Array.empty<number>(), MArray.takeRightBut(2), Array.isArrayEmpty));
     });
     it('Non empty array', () => {
       TestUtils.deepStrictEqual(
@@ -152,7 +145,7 @@ describe('MArray', () => {
         pipe(
           Array.empty<number>(),
           MArray.longestCommonSubArray(Array.make(1, 2, 3)),
-          MTypes.isEmptyArray,
+          Array.isArrayEmpty,
         ),
       );
     });
@@ -182,7 +175,7 @@ describe('MArray', () => {
   describe('ungroup', () => {
     it('Empty array', () => {
       TestUtils.strictEqual(
-        pipe(Array.empty<ReadonlyArray<number>>(), MArray.ungroup, MTypes.isEmptyArray),
+        pipe(Array.empty<ReadonlyArray<number>>(), MArray.ungroup, Array.isArrayEmpty),
         true,
       );
     });
@@ -607,7 +600,7 @@ describe('MArray', () => {
 
     it('Empty arrays', () => {
       TestUtils.assertTrue(
-        pipe(Array.empty<A>(), mergeSortedAs(Array.empty<A>()), MTypes.isEmptyArray),
+        pipe(Array.empty<A>(), mergeSortedAs(Array.empty<A>()), Array.isArrayEmpty),
       );
     });
 
@@ -663,7 +656,7 @@ describe('MArray', () => {
         pipe(
           Array.empty<number>(),
           substractSortedNumbers(Array.make(1, 2, 3)),
-          MTypes.isEmptyArray,
+          Array.isArrayEmpty,
         ),
       );
     });

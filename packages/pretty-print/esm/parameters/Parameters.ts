@@ -23,7 +23,7 @@ import * as MMatch from '@parischap/effect-lib/MMatch';
 import * as MRecord from '@parischap/effect-lib/MRecord';
 import * as MString from '@parischap/effect-lib/MString';
 import * as MStruct from '@parischap/effect-lib/MStruct';
-import * as MTypes from '@parischap/effect-lib/MTypes';
+import type * as MTypes from '@parischap/effect-lib/MTypes';
 
 import * as PPNonPrimitiveParameters from './NonPrimitiveParameters.js';
 import * as PPPrimitiveFormatter from './PrimitiveFormatter.js';
@@ -251,7 +251,7 @@ export const utilInspectLike: Type = make({
       nonPrimitive,
       MMatch.make,
       MMatch.when(
-        MTypes.isFunction,
+        (u): u is MTypes.AnyFunction => Predicate.isFunction(u),
         flow(
           MFunction.name,
           Option.liftPredicate(String.isNonEmpty),
@@ -264,13 +264,13 @@ export const utilInspectLike: Type = make({
           MRecord.tryZeroParamFunction({ functionName: 'toJSON' }),
           Option.filter(Predicate.hasProperty('_id')),
           Option.map(Struct.get('_id')),
-          Option.filter(MTypes.isString),
+          Option.filter(Predicate.isString),
         ),
       ),
       MMatch.orElse((u): string => {
         const ctorName: unknown = (u as { readonly constructor?: { readonly name?: unknown } })
           .constructor?.name;
-        return MTypes.isString(ctorName) && ctorName !== '' ? ctorName : 'Object';
+        return Predicate.isString(ctorName) && ctorName !== '' ? ctorName : 'Object';
       }),
     ),
   openingTagMark: '[',
@@ -326,8 +326,7 @@ export const treeify: Type = pipe(
 );
 
 /**
- * `PPParameters` instance that renders a value as a tree with colors adapted to dark-mode
- * terminals
+ * `PPParameters` instance that renders a value as a tree with colors adapted to dark-mode terminals
  *
  * @category Instances
  */

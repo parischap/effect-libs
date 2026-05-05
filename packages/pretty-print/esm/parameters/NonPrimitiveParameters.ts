@@ -10,6 +10,7 @@
  * **partial override** layer. Use the `make` function to define your own.
  */
 
+import * as Array from 'effect/Array';
 import type * as Equivalence from 'effect/Equivalence';
 import * as Function from 'effect/Function';
 import * as Hash from 'effect/Hash';
@@ -19,7 +20,7 @@ import * as Struct from 'effect/Struct';
 
 import * as MData from '@parischap/effect-lib/MData';
 import * as MEquivalenceBasedEqualityData from '@parischap/effect-lib/MEquivalenceBasedEqualityData';
-import * as MTypes from '@parischap/effect-lib/MTypes';
+import type * as MTypes from '@parischap/effect-lib/MTypes';
 
 import type * as PPPropertyFilter from './PropertyFilter.js';
 import type * as PPValueOrder from './ValueOrder.js';
@@ -219,7 +220,7 @@ export const isApplicableTo: MTypes.OneArgFunction<
  */
 export const utilInspectLikeFunction: Type = make({
   id: 'UtilInspectLikeFunction',
-  isApplicableTo: MTypes.isFunction,
+  isApplicableTo: Predicate.isFunction,
   byPasser: PPByPasser.allWithName,
 });
 
@@ -234,7 +235,7 @@ export const utilInspectLikeFunction: Type = make({
  */
 export const utilInspectLikeIterable: Type = make({
   id: 'UtilInspectLikeIterable',
-  isApplicableTo: MTypes.isIterable,
+  isApplicableTo: Predicate.isIterable,
   showName: true,
   propertyFormatter: PPPropertyFormatter.utilInspectLikeIterable,
   propertyNumberDisplayOption: PPPropertyNumberDisplayOption.Type.All,
@@ -259,7 +260,7 @@ export const utilInspectLikeIterable: Type = make({
  */
 export const utilInspectLikeArray: Type = make({
   id: 'UtilInspectLikeArray',
-  isApplicableTo: MTypes.isArray,
+  isApplicableTo: Array.isArray,
   nonPrimitiveFormatter: PPNonPrimitiveFormatter.utilInspectLikeArray,
   showName: false,
   propertyFormatter: PPPropertyFormatter.utilInspectLikeArrayAndRecord,

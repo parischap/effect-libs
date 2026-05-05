@@ -110,8 +110,6 @@ const CVDateTimeFromSelf: Schema.Codec<CVDateTime.Type> = Schema.declare(
   (input: unknown): input is CVDateTime.Type => input instanceof CVDateTime.Type,
 );
 
-type CVDateTimeFromSelf = typeof CVDateTimeFromSelf;
-
 export {
   /**
    * A `Schema` that represents a `CVDateTime`

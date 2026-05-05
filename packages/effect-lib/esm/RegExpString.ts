@@ -3,12 +3,12 @@
  *
  * ## Mental model
  *
- * - Patterns are produced as `string`'s and combined as `string`'s. The final pattern is fed to
- *   the `RegExp` constructor by callers (or by helpers in {@link "./RegExp.js" | MRegExp}).
- * - Combinators ({@link zeroOrMore}, {@link oneOrMore}, {@link either}, …) wrap their argument in
- *   a non-capturing group `(?:…)` so they remain composable without affecting capture indices.
- * - Pre-built instances cover the common building blocks (digits, sign, separators, line breaks)
- *   and a few full patterns ({@link semVer}, {@link email}, {@link base10Number}).
+ * - Patterns are produced as `string`'s and combined as `string`'s. The final pattern is fed to the
+ *   `RegExp` constructor by callers (or by helpers in {@link "./RegExp.js" | MRegExp}).
+ * - Combinators ({@link zeroOrMore}, {@link oneOrMore}, {@link either}, …) wrap their argument in a
+ *   non-capturing group `(?:…)` so they remain composable without affecting capture indices.
+ * - Pre-built instances cover the common building blocks (digits, sign, separators, line breaks) and
+ *   a few full patterns ({@link semVer}, {@link email}, {@link base10Number}).
  *
  * ## Common tasks
  *
@@ -35,7 +35,11 @@
  * ```
  */
 
-import { Array, Function, pipe, String, RegExp } from 'effect';
+import { pipe } from 'effect';
+import * as Array from 'effect/Array';
+import * as Function from 'effect/Function';
+import * as RegExp from 'effect/RegExp';
+import * as String from 'effect/String';
 
 import type * as MTypes from './types/types.js';
 

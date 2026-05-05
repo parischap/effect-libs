@@ -124,9 +124,9 @@ export const trunc = (precision = 0): MTypes.OneArgFunction<Type> => BigDecimal.
  * // truncated ≡ 3.14, following ≡ 0.00159
  * ```
  *
- * @see {@link trunc} — return only the truncated part
- *
  * @category Destructors
+ *
+ * @see {@link trunc} — return only the truncated part
  */
 
 export const truncatedAndFollowingParts =

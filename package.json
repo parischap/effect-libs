@@ -16,16 +16,17 @@
     "vitest": "4.1.5"
   },
   "scripts": {
-    "test": "vitest run",
+    "test-all": "vitest run",
     "lint": "oxlint --type-aware --type-check --report-unused-disable-directives --disable-nested-config",
     "lint-fix": "oxlint --type-aware --fix",
-    "fmt": "oxfmt",
+    "fmt": "oxfmt --disable-nested-config --list-different",
     "commands": "tsx node_modules/@parischap/configs/esm/bin/commands.ts",
     "build-all": "pnpm --if-present -r build",
-    "lint-all": "pnpm -r --include-workspace-root lint",
-    "fmt-all": "pnpm -r --include-workspace-root fmt",
-    "lint-fix-all": "pnpm -r --include-workspace-root lint-fix",
-    "checks-all": "pnpm -r --include-workspace-root checks",
+    "lint-all": "pnpm --filter \"./**\" run  lint",
+    "fmt-all": "pnpm --filter \"./**\" run  fmt",
+    "lint-fix-all": "pnpm --filter \"./**\" run  lint-fix",
+    "checks-all": "pnpm --filter \"./**\" run  checks",
+    "docgen-all": "pnpm --filter \"./packages/*\" run  docgen",
     "prepare": "effect-tsgo patch",
     "checks": "pnpm lint",
     "prepare-docs": "pnpm -r --if-present --include-workspace-root --parallel --aggregate-output docgen && compile-docs"

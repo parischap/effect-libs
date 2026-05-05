@@ -20,7 +20,7 @@ import * as MFunction from '@parischap/effect-lib/MFunction';
 import * as MPredicate from '@parischap/effect-lib/MPredicate';
 import * as MRegExpString from '@parischap/effect-lib/MRegExpString';
 import * as MString from '@parischap/effect-lib/MString';
-import * as MTypes from '@parischap/effect-lib/MTypes';
+import type * as MTypes from '@parischap/effect-lib/MTypes';
 
 import * as CVScientificNotationMantissaAdjuster from '../../internal/formatting/NumberBase10Format/NumberBase10FormatScientificNotationOption/ScientificNotationMantissaAdjuster.js';
 import * as CVSignFormatter from '../../internal/formatting/NumberBase10Format/NumberBase10FormatSignDisplayOption/SignFormatter.js';
@@ -103,7 +103,7 @@ export class Type extends MData.Class {
     const { showNullIntegerPart } = numberFormat;
 
     this.format = (number) => {
-      const [sign, thisAsBigDecimal] = MTypes.isNumber(number)
+      const [sign, thisAsBigDecimal] = Predicate.isNumber(number)
         ? Tuple.make(
             number < 0 || Object.is(-0, number) ? (-1 as const) : (1 as const),
             BigDecimal.fromNumberUnsafe(number),

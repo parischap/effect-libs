@@ -1,3 +1,10 @@
+/**
+ * This module implements a `CVTemplateFormatter`, i.e. an object that is capable of converting a a
+ * record of values to a string according to the `CVTemplate` that was used to construct it. If you
+ * don't want to build a `CVTemplate` beforehand, you can also construct a `CVTemplateFormatter`
+ * directly from `CVTemplatePart`'s
+ */
+
 import { pipe } from 'effect';
 import * as Function from 'effect/Function';
 import * as Option from 'effect/Option';
@@ -5,12 +12,6 @@ import * as Record from 'effect/Record';
 import * as Result from 'effect/Result';
 import * as Struct from 'effect/Struct';
 
-/**
- * This module implements a `CVTemplateFormatter`, i.e. an object that is capable of converting a a
- * record of values to a string according to the `CVTemplate` that was used to construct it. If you
- * don't want to build a `CVTemplate` beforehand, you can also construct a `CVTemplateFormatter`
- * directly from `CVTemplatePart`'s
- */
 import * as MArray from '@parischap/effect-lib/MArray';
 import * as MData from '@parischap/effect-lib/MData';
 import type * as MInputError from '@parischap/effect-lib/MInputError';

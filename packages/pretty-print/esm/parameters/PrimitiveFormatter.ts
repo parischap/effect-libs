@@ -20,7 +20,7 @@ import * as MData from '@parischap/effect-lib/MData';
 import * as MEquivalenceBasedEqualityData from '@parischap/effect-lib/MEquivalenceBasedEqualityData';
 import * as MMatch from '@parischap/effect-lib/MMatch';
 import * as MString from '@parischap/effect-lib/MString';
-import * as MTypes from '@parischap/effect-lib/MTypes';
+import type * as MTypes from '@parischap/effect-lib/MTypes';
 
 import * as PPValue from '../internal/stringification/Value.js';
 
@@ -146,7 +146,7 @@ export const utilInspectLikeMaker = ({
         PPValue.content,
         MMatch.make,
         MMatch.when(
-          MTypes.isString,
+          Predicate.isString,
           flow(
             Result.liftPredicate(
               flow(String.length, Number.isGreaterThan(maxStringLength)),
@@ -159,11 +159,11 @@ export const utilInspectLikeMaker = ({
           ),
         ),
         MMatch.when(
-          MTypes.isNumber,
+          Predicate.isNumber,
           flow((n) => numberFormatter(n)),
         ),
         MMatch.when(
-          MTypes.isBigInt,
+          Predicate.isBigInt,
           flow((n) => bigintFormatter(n), MString.append('n')),
         ),
         MMatch.orElse(MString.fromPrimitive),

@@ -6,8 +6,8 @@
  *
  * - **`Chunk.Chunk<A>`** is an immutable, persistent sequence of elements of type `A`.
  * - All functions return new chunks; chunks are never mutated.
- * - Functions are **curried, data-last** — call as `MChunk.fn(arg)(chunk)` or
- *   `pipe(chunk, MChunk.fn(arg))`. They are not data-first/data-last dual.
+ * - Functions are **curried, data-last** — call as `MChunk.fn(arg)(chunk)` or `pipe(chunk,
+ *   MChunk.fn(arg))`. They are not data-first/data-last dual.
  *
  * ## Common tasks
  *
@@ -139,9 +139,9 @@ export const findAll =
  * console.log(pipe(chunk, MChunk.takeBut(2))); // Chunk(1, 2, 3)
  * ```
  *
- * @see {@link takeRightBut} — symmetric variant dropping the leading elements
- *
  * @category Utils
+ *
+ * @see {@link takeRightBut} — symmetric variant dropping the leading elements
  */
 export const takeBut =
   (n: number) =>
@@ -165,9 +165,9 @@ export const takeBut =
  * console.log(pipe(chunk, MChunk.takeRightBut(2))); // Chunk(3, 4, 5)
  * ```
  *
- * @see {@link takeBut} — symmetric variant dropping the trailing elements
- *
  * @category Utils
+ *
+ * @see {@link takeBut} — symmetric variant dropping the trailing elements
  */
 export const takeRightBut =
   (n: number) =>

@@ -23,7 +23,7 @@ import * as MData from '@parischap/effect-lib/MData';
 import * as MEquivalenceBasedEqualityData from '@parischap/effect-lib/MEquivalenceBasedEqualityData';
 import * as MMatch from '@parischap/effect-lib/MMatch';
 import * as MRecord from '@parischap/effect-lib/MRecord';
-import * as MTypes from '@parischap/effect-lib/MTypes';
+import type * as MTypes from '@parischap/effect-lib/MTypes';
 
 import type * as PPResolvedNonPrimitiveParameters from '../internal/Parameters/ResolvedNonPrimitiveParameters.js';
 import type * as PPParameters from './Parameters.js';
@@ -218,7 +218,7 @@ export const dateAndRegExp: Type = make({
     Struct.get('nonPrimitive'),
     PPValue.content,
     MMatch.make,
-    MMatch.when(MTypes.isDate, (d) => Option.some(d.toISOString())),
+    MMatch.when(Predicate.isDate, (d) => Option.some(d.toISOString())),
     MMatch.when(
       (u): u is RegExp => u instanceof RegExp,
       (r) => Option.some(r.toString()),

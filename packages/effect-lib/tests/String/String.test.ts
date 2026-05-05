@@ -7,7 +7,6 @@ import * as TestUtils from '@parischap/configs/TestUtils';
 import * as MString from '@parischap/effect-lib/MString';
 import * as MStringFillPosition from '@parischap/effect-lib/MStringFillPosition';
 import * as MStringSearchResult from '@parischap/effect-lib/MStringSearchResult';
-import * as MTypes from '@parischap/effect-lib/MTypes';
 
 import { describe, it } from 'vitest';
 
@@ -124,7 +123,7 @@ describe('MString', () => {
 
   describe('searchAll', () => {
     it('string in empty string', () => {
-      TestUtils.assertTrue(pipe('', MString.searchAll('foo'), MTypes.isEmptyArray));
+      TestUtils.assertTrue(pipe('', MString.searchAll('foo'), Array.isArrayEmpty));
     });
 
     it('string in string containing two occurences', () => {
@@ -138,7 +137,7 @@ describe('MString', () => {
     });
 
     it('RegExp in empty string', () => {
-      TestUtils.assertTrue(pipe('', MString.searchAll(/f.o/), MTypes.isEmptyArray));
+      TestUtils.assertTrue(pipe('', MString.searchAll(/f.o/), Array.isArrayEmpty));
     });
 
     it('RegExp in string containing two occurences', () => {

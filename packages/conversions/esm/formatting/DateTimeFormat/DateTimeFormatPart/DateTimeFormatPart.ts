@@ -1,13 +1,14 @@
-import { flow, pipe } from 'effect';
-import * as HashMap from 'effect/HashMap';
-import * as Option from 'effect/Option';
-
 /**
  * This module implements a `CVDateTimeFormatPart`, which can be either a
  * `CVDateTimeFormatPlaceholder` or a `CVDateTimeFormatSeparator`. These `CVDateTimeFormatPart`'s
  * are used to describe the string representation of a DateTime. They are converted to
  * `CVTemplatePart`'s to parse and format a `CVDateTime`
  */
+
+import { flow, pipe } from 'effect';
+import * as HashMap from 'effect/HashMap';
+import * as Option from 'effect/Option';
+
 import * as MMatch from '@parischap/effect-lib/MMatch';
 import type * as MTypes from '@parischap/effect-lib/MTypes';
 

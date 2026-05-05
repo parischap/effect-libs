@@ -4,13 +4,14 @@
  * ## Mental model
  *
  * - **`Type<Input, Output, Rest>`** is a matcher in progress.
+ *
  *   - `Input` is the original value being matched.
  *   - `Output` is the union of result types contributed so far.
  *   - `Rest` is the part of `Input` that no previous refinement has eliminated.
  * - Each `when`/`whenIs`/`whenOr`/`whenAnd`/`tryFunction` short-circuits on success: as soon as a
  *   case produces an output, every subsequent case is skipped.
- * - Terminate with {@link exhaustive} (compile-time check that `Rest` is `never`) or
- *   {@link orElse} (runtime fallback).
+ * - Terminate with {@link exhaustive} (compile-time check that `Rest` is `never`) or {@link orElse}
+ *   (runtime fallback).
  *
  * ## Common tasks
  *
@@ -347,11 +348,7 @@ export const tryFunction =
  * const result = pipe(
  *   5,
  *   MMatch.make,
- *   MMatch.whenOr(
- *     Number.isLessThan(0),
- *     Number.isGreaterThan(10),
- *     () => 'out of range',
- *   ),
+ *   MMatch.whenOr(Number.isLessThan(0), Number.isGreaterThan(10), () => 'out of range'),
  *   MMatch.orElse(() => 'in range'),
  * );
  * console.log(result); // "in range"
@@ -407,11 +404,7 @@ export const whenOr =
  * const result = pipe(
  *   5,
  *   MMatch.make,
- *   MMatch.whenAnd(
- *     Number.isGreaterThan(0),
- *     Number.isLessThan(10),
- *     () => 'in range',
- *   ),
+ *   MMatch.whenAnd(Number.isGreaterThan(0), Number.isLessThan(10), () => 'in range'),
  *   MMatch.orElse(() => 'out of range'),
  * );
  * console.log(result); // "in range"
@@ -490,10 +483,9 @@ export const orElse =
  * predicate**. The supplied `refinement` is only used at the type level to narrow the input handed
  * to `f`.
  *
- * - Use to remove a final type-level case the matcher can't otherwise prove (e.g. the last branch
- *   of a discriminated union after every other variant has been matched).
- * - When a previous case already produced an output, that output is returned and `f` is not
- *   called.
+ * - Use to remove a final type-level case the matcher can't otherwise prove (e.g. the last branch of
+ *   a discriminated union after every other variant has been matched).
+ * - When a previous case already produced an output, that output is returned and `f` is not called.
  * - Unsafe: if the runtime value does not actually satisfy `refinement`, `f` is still invoked,
  *   silently producing a value typed as if narrowing succeeded.
  *
@@ -525,9 +517,9 @@ export const orElse =
  * console.log(area({ _tag: 'Square', s: 2 })); // 4
  * ```
  *
- * @see {@link exhaustive} — safe terminator when `Rest` is statically `never`
- *
  * @category Utils
+ *
+ * @see {@link exhaustive} — safe terminator when `Rest` is statically `never`
  */
 export const unsafeWhen =
   <Input, Rest extends Input, Refined extends Rest, Output1>(

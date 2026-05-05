@@ -7,7 +7,7 @@ import * as Option from 'effect/Option';
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as MMatch from '@parischap/effect-lib/MMatch';
 import * as MPredicate from '@parischap/effect-lib/MPredicate';
-import * as MTypes from '@parischap/effect-lib/MTypes';
+import type * as MTypes from '@parischap/effect-lib/MTypes';
 
 import { describe, it } from 'vitest';
 describe('MMatch', () => {
@@ -241,11 +241,11 @@ describe('MMatch', () => {
           Array.of(0) as unknown,
           MMatch.make,
           MMatch.when(
-            MTypes.isPrimitive,
+            MPredicate.isPrimitive,
             flow(Function.satisfies<MTypes.Primitive>(), Function.constant('a')),
           ),
           MMatch.unsafeWhen(
-            MTypes.isNonPrimitive,
+            MPredicate.isNonPrimitive,
             flow(Function.satisfies<MTypes.NonPrimitive>(), Function.constant('c')),
           ),
         ),

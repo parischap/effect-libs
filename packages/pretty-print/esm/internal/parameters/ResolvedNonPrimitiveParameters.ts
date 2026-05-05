@@ -10,7 +10,7 @@ import * as Array from 'effect/Array';
 import * as Option from 'effect/Option';
 import * as Struct from 'effect/Struct';
 
-import { MData } from '@parischap/effect-lib';
+import * as MData from '@parischap/effect-lib/MData';
 import * as MStruct from '@parischap/effect-lib/MStruct';
 import type * as MTypes from '@parischap/effect-lib/MTypes';
 
@@ -147,10 +147,9 @@ export const fromApplicableNonPrimitiveParameters = ({
 };
 
 /**
- * Default value for each optional field of `Type`. Used by
- * `fromApplicableNonPrimitiveParameters` as the seed of the reduction so that the merged result is
- * fully populated even when no entry sets a given field. Mimics Node.js's `util.inspect` for plain
- * records.
+ * Default value for each optional field of `Type`. Used by `fromApplicableNonPrimitiveParameters`
+ * as the seed of the reduction so that the merged result is fully populated even when no entry sets
+ * a given field. Mimics Node.js's `util.inspect` for plain records.
  *
  * @category Instances
  */

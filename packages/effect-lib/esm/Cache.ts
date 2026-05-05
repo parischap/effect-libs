@@ -1,12 +1,12 @@
 /**
- * Mutable cache with optional bounded capacity and optional time-to-live built around a user-supplied
- * lookup function. The lookup function may be recursive, in which case the cache is also used to
- * detect circularity.
+ * Mutable cache with optional bounded capacity and optional time-to-live built around a
+ * user-supplied lookup function. The lookup function may be recursive, in which case the cache is
+ * also used to detect circularity.
  *
  * ## Mental model
  *
- * - **`Type<A, B>`** is a mutable store mapping keys of type `A` to values of type `B`, populated
- *   on demand by `lookUp`.
+ * - **`Type<A, B>`** is a mutable store mapping keys of type `A` to values of type `B`, populated on
+ *   demand by `lookUp`.
  * - Keys are compared with `Equal.equals` (the underlying store is a `MutableHashMap`).
  * - Eviction is FIFO: when capacity is exceeded the oldest insertion is evicted first.
  * - When `lifeSpan` elapses for an entry, the next read triggers a fresh lookup; entries inserted
@@ -75,8 +75,8 @@ type TypeId = typeof TypeId;
  * `key` to look up, an `isCircular` flag, and a `memoized` callback that re-enters the cache
  * recursively when `isCircular` is `false`.
  *
- * - The function returns a `[result, storeInCache]` tuple. `storeInCache` only acts as a hint:
- *   when `isCircular` is `true`, the value is never stored regardless of `storeInCache`.
+ * - The function returns a `[result, storeInCache]` tuple. `storeInCache` only acts as a hint: when
+ *   `isCircular` is `true`, the value is never stored regardless of `storeInCache`.
  * - Use the `memoized` parameter inside the lookup body to recurse through the cache instead of
  *   calling the lookup directly; this enables circularity detection.
  *
@@ -188,14 +188,14 @@ export const make = <A, B>({
   });
 
 /**
- * Reads the value associated with `a` from `self`. Triggers a lookup when the key is missing or
- * its entry has expired.
+ * Reads the value associated with `a` from `self`. Triggers a lookup when the key is missing or its
+ * entry has expired.
  *
  * - Keys are compared with `Equal.equals`.
  * - When the lookup is already in progress for `a` (recursive call), `lookUp` is invoked with
  *   `isCircular: true` and the returned value is not stored.
- * - On expiration of an entry, every entry inserted before it is evicted as well to keep the
- *   FIFO insertion order in sync with element age.
+ * - On expiration of an entry, every entry inserted before it is evicted as well to keep the FIFO
+ *   insertion order in sync with element age.
  *
  * **Example** (Reading from the cache)
  *
@@ -210,9 +210,9 @@ export const make = <A, B>({
  * console.log(pipe(cache, MCache.get(5))); // 10
  * ```
  *
- * @see {@link toGetter} — return a reusable getter bound to a cache
- *
  * @category Utils
+ *
+ * @see {@link toGetter} — return a reusable getter bound to a cache
  */
 export const get =
   <A>(a: A) =>
@@ -308,9 +308,9 @@ export const get =
  * console.log(lookup(5)); // 10
  * ```
  *
- * @see {@link get} — single-shot read
- *
  * @category Utils
+ *
+ * @see {@link get} — single-shot read
  */
 export const toGetter =
   <A, B>(self: Type<A, B>): MTypes.OneArgFunction<A, B> =>
@@ -321,8 +321,8 @@ export const toGetter =
  * Returns the keys whose value is currently present in the cache.
  *
  * - Keys whose lookup is in progress (i.e. mapped to `Option.none`) are excluded.
- * - The order of the returned array reflects the iteration order of the underlying
- *   `MutableHashMap`, which is implementation-defined.
+ * - The order of the returned array reflects the iteration order of the underlying `MutableHashMap`,
+ *   which is implementation-defined.
  *
  * **Example** (Listing cached keys)
  *

@@ -4,13 +4,13 @@
  *
  * ## Mental model
  *
- * - **`Type<A, B>`** is a discriminated union of {@link "./TreeLeaf.js" | `MTreeLeaf.Type<B>`}
- *   and {@link "./TreeNonLeaf.js" | `MTreeNonLeaf.Type<A, B>`}.
+ * - **`Type<A, B>`** is a discriminated union of {@link "./TreeLeaf.js" | `MTreeLeaf.Type<B>`} and
+ *   {@link "./TreeNonLeaf.js" | `MTreeNonLeaf.Type<A, B>`}.
  * - A "tree" with a single leaf is just a leaf — perfectly valid. When the API must guarantee a
  *   non-leaf root, take `MTreeNonLeaf.Type<A, B>` directly.
- * - {@link unfold} and {@link unfoldAndFold} build trees iteratively from a seed plus an
- *   `unfold` function returning either a leaf payload (`Result.fail`) or a non-leaf payload with
- *   child seeds (`Result.succeed`). Cycle detection is opt-in via a seed `Equivalence`.
+ * - {@link unfold} and {@link unfoldAndFold} build trees iteratively from a seed plus an `unfold`
+ *   function returning either a leaf payload (`Result.fail`) or a non-leaf payload with child seeds
+ *   (`Result.succeed`). Cycle detection is opt-in via a seed `Equivalence`.
  *
  * ## Common tasks
  *
@@ -51,13 +51,14 @@ import * as Result from 'effect/Result';
 import * as Struct from 'effect/Struct';
 import * as Tuple from 'effect/Tuple';
 
+import type * as MTypes from '../types/types.js';
 import type * as MTreeForest from './TreeForest.js';
 
 import * as MArray from '../Array.js';
 import * as MMatch from '../Match.js';
+import * as MPredicate from '../Predicate.js';
 import * as MStruct from '../Struct.js';
 import * as MTuple from '../Tuple.js';
-import * as MTypes from '../types/types.js';
 import * as MTreeLeaf from './TreeLeaf.js';
 import * as MTreeNode from './TreeNode.js';
 import * as MTreeNonLeaf from './TreeNonLeaf.js';
@@ -221,7 +222,7 @@ const internalUnfold =
               Function.identity,
               flow(
                 Array.flatten<MTypes.OverOne<ReadonlyArray<SeedAndParents>>>,
-                Option.liftPredicate(MTypes.isOverOne),
+                Option.liftPredicate(MPredicate.isOverOne),
               ),
             ),
           ),
@@ -235,7 +236,8 @@ const internalUnfold =
  * Builds a tree by repeatedly applying an unfold function to seeds.
  *
  * - Non-recursive; uses a queue to process all nodes.
- * - The unfold function returns either a leaf value (Failure) or a non-leaf value with child seeds (Success).
+ * - The unfold function returns either a leaf value (Failure) or a non-leaf value with child seeds
+ *   (Success).
  * - Optionally detects cycles using an equivalence on seeds.
  * - When a cycle is detected, `cycleSource` is passed as `some` to allow modification.
  *
@@ -246,11 +248,8 @@ const internalUnfold =
  * import * as Result from 'effect/Result';
  * import * as MTree from '@parischap/effect-lib/Tree/Tree';
  *
- * const tree = MTree.unfold<number, string, number>(
- *   (n) =>
- *     n === 0
- *       ? Result.fail('leaf')
- *       : Result.succeed(['node', [n - 1]]),
+ * const tree = MTree.unfold<number, string, number>((n) =>
+ *   n === 0 ? Result.fail('leaf') : Result.succeed(['node', [n - 1]]),
  * )(3);
  * ```
  *
@@ -278,7 +277,8 @@ export const unfold: {
  * Builds a tree and simultaneously folds it in bottom-up order.
  *
  * - Combines tree construction and folding for efficiency.
- * - Leaf nodes are folded using `foldLeaf`; non-leaf nodes using `foldNonLeaf` with accumulated children.
+ * - Leaf nodes are folded using `foldLeaf`; non-leaf nodes using `foldNonLeaf` with accumulated
+ *   children.
  * - Returns the final folded value (bottom-up aggregation).
  * - Optionally detects cycles using seed equivalence.
  *
@@ -289,8 +289,7 @@ export const unfold: {
  * import * as MTree from '@parischap/effect-lib/Tree/Tree';
  *
  * const result = MTree.unfoldAndFold({
- *   unfold: (n) =>
- *     n === 0 ? Result.fail(1) : Result.succeed(['parent', [n - 1]]),
+ *   unfold: (n) => (n === 0 ? Result.fail(1) : Result.succeed(['parent', [n - 1]])),
  *   foldLeaf: (val) => val,
  *   foldNonLeaf: (val, children) => val.length + children[0],
  * })(2);

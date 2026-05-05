@@ -9,11 +9,12 @@ import * as Tuple from 'effect/Tuple';
 
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as MMatch from '@parischap/effect-lib/MMatch';
+import * as MPredicate from '@parischap/effect-lib/MPredicate';
 import * as MString from '@parischap/effect-lib/MString';
 import * as MTree from '@parischap/effect-lib/MTree';
 import * as MTreeNode from '@parischap/effect-lib/MTreeNode';
 import * as MTuple from '@parischap/effect-lib/MTuple';
-import * as MTypes from '@parischap/effect-lib/MTypes';
+import type * as MTypes from '@parischap/effect-lib/MTypes';
 
 import { describe, it } from 'vitest';
 
@@ -34,7 +35,7 @@ describe('MTree', () => {
         pipe(
           seed,
           MMatch.make,
-          MMatch.when(MTypes.isPrimitive, flow(MString.fromPrimitive, Result.fail)),
+          MMatch.when(MPredicate.isPrimitive, flow(MString.fromPrimitive, Result.fail)),
           MMatch.orElse(
             flow(
               MTuple.replicate(2),
@@ -42,7 +43,7 @@ describe('MTree', () => {
                 Tuple.make(
                   flow(
                     MMatch.make,
-                    MMatch.when(MTypes.isArray, Function.constant('Array' as const)),
+                    MMatch.when(Array.isArray, Function.constant('Array' as const)),
                     MMatch.orElse(Function.constant('Record' as const)),
                   ),
                   Record.values,

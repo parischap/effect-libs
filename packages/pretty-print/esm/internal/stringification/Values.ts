@@ -22,7 +22,7 @@ import * as MPredicate from '@parischap/effect-lib/MPredicate';
 import * as MString from '@parischap/effect-lib/MString';
 import * as MStruct from '@parischap/effect-lib/MStruct';
 import * as MTuple from '@parischap/effect-lib/MTuple';
-import * as MTypes from '@parischap/effect-lib/MTypes';
+import type * as MTypes from '@parischap/effect-lib/MTypes';
 
 import * as PPStringifiedValue from '../../stringification/StringifiedValue.js';
 import * as PPValue from './Value.js';
@@ -64,7 +64,7 @@ export const fromNonPrimitiveKeysAndValues = ({
         Option.liftPredicate(
           MPredicate.struct({
             protoDepth: Number.isLessThan(maxPrototypeDepth),
-            content: MTypes.isNonPrimitive,
+            content: MPredicate.isNonPrimitive,
           }),
         ),
         Option.map(
@@ -136,7 +136,7 @@ export const fromNonPrimitiveIterable = ({
 
   return pipe(
     nonPrimitive.content,
-    Option.liftPredicate(MTypes.isIterable),
+    Option.liftPredicate(Predicate.isIterable),
     Option.map(
       flow(
         Array.fromIterable,
@@ -144,7 +144,7 @@ export const fromNonPrimitiveIterable = ({
           pipe(
             containedValue,
             Result.liftPredicate(
-              (u): u is [unknown, unknown] => MTypes.isArray(u) && MTypes.isPair(u),
+              (u): u is [unknown, unknown] => Array.isArray(u) && MPredicate.isPair(u),
               Function.identity,
             ),
             Result.mapBoth({
@@ -152,7 +152,7 @@ export const fromNonPrimitiveIterable = ({
                 Tuple.evolve(
                   Tuple.make(
                     flow(
-                      Result.liftPredicate(MTypes.isString, stringifier),
+                      Result.liftPredicate(Predicate.isString, stringifier),
                       Result.map(flow(ASText.fromString, PPStringifiedValue.fromText)),
                       Result.merge,
                       PPStringifiedValue.toUnstyledStrings,

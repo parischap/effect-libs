@@ -14,7 +14,8 @@ import * as Predicate from 'effect/Predicate';
 
 import * as ASText from '@parischap/ansi-styles/ASText';
 import * as MArray from '@parischap/effect-lib/MArray';
-import * as MTypes from '@parischap/effect-lib/MTypes';
+import * as MPredicate from '@parischap/effect-lib/MPredicate';
+import type * as MTypes from '@parischap/effect-lib/MTypes';
 
 import type * as PPStringifiedProperties from '../internal/stringification/StringifiedProperties.js';
 
@@ -92,7 +93,7 @@ export const toSingleLine: MTypes.OneArgFunction<Type> = flow(toText, fromText);
  * @category Predicates
  */
 export const isEmpty: Predicate.Predicate<Type> = (self) =>
-  MTypes.isSingleton(self) && ASText.isEmpty(self[0]);
+  MPredicate.isSingleton(self) && ASText.isEmpty(self[0]);
 
 /**
  * Returns `true` if `self` is not empty.

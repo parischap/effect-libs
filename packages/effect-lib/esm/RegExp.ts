@@ -73,8 +73,8 @@ export const universalPathSep: RegExp = new RegExp(MRegExpString.universalPathSe
 export const semVer: RegExp = pipe(MRegExpString.semVer, MRegExpString.makeLine, RegExp);
 
 /**
- * A `RegExp` matching an entire e-mail address. Uses {@link MRegExpString.email} anchored to a
- * full line.
+ * A `RegExp` matching an entire e-mail address. Uses {@link MRegExpString.email} anchored to a full
+ * line.
  *
  * @category Instances
  */

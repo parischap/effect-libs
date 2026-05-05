@@ -35,7 +35,8 @@ import * as MEquivalenceBasedEqualityData from '@parischap/effect-lib/MEquivalen
 import * as MFunction from '@parischap/effect-lib/MFunction';
 import * as MInputError from '@parischap/effect-lib/MInputError';
 import * as MNumber from '@parischap/effect-lib/MNumber';
-import * as MTypes from '@parischap/effect-lib/MTypes';
+import * as MPredicate from '@parischap/effect-lib/MPredicate';
+import type * as MTypes from '@parischap/effect-lib/MTypes';
 
 import type * as CVDateTimeParts from './DateTimeParts.js';
 
@@ -310,7 +311,7 @@ export class Type extends MEquivalenceBasedEqualityData.Class {
           ? Type.uncalculatedFromTimestamp(self.timestamp, validatedZoneOffset)
           : Type.uncalculatedFromZonedTimestamp(self.zonedTimestamp, validatedZoneOffset);
 
-      if (MTypes.isPrimitive(zoneOffset)) {
+      if (MPredicate.isPrimitive(zoneOffset)) {
         const validatedZoneOffset = yield* pipe(
           zoneOffset,
           MInputError.assertInRange({

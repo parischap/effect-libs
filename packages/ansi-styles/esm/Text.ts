@@ -18,7 +18,7 @@ import * as MFunction from '@parischap/effect-lib/MFunction';
 import * as MMatch from '@parischap/effect-lib/MMatch';
 import * as MPredicate from '@parischap/effect-lib/MPredicate';
 import * as MString from '@parischap/effect-lib/MString';
-import * as MTypes from '@parischap/effect-lib/MTypes';
+import type * as MTypes from '@parischap/effect-lib/MTypes';
 
 import * as ASCode from './internal/Code.js';
 import * as ASStyleCharacteristics from './internal/StyleCharacteristics.js';
@@ -41,7 +41,7 @@ const TypeIdHash = Hash.hash(TypeId);
  * @category Models
  */
 export class Type extends MEquivalenceBasedEqualityData.Class {
-  /* The text as an array of UniStyled */
+  /** The text as an array of UniStyled */
   readonly uniStyledTexts: ReadonlyArray<ASUnistyledText.Type>;
 
   /** Class constructor */
@@ -154,7 +154,7 @@ export const fromStyleAndElems =
           flow(
             MMatch.make,
             MMatch.when(
-              MTypes.isString,
+              Predicate.isString,
               flow(
                 Result.liftPredicate(String.isNonEmpty, MFunction.constFailVoid),
                 Result.map((text) => pipe({ text, style }, ASUnistyledText.make, Array.of)),

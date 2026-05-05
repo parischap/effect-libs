@@ -7,8 +7,8 @@
  * - **`Type<A>`** is `Record.ReadonlyRecord<string, A>`, i.e. a plain JavaScript object used as a
  *   string-keyed map.
  * - The reflective helpers ({@link tryZeroParamFunction}, {@link tryZeroParamStringFunction}) are
- *   used by formatters like the `pretty-print` package to discover whether a value defines a
- *   custom string representation (`toString`, `toJSON`, …).
+ *   used by formatters like the `pretty-print` package to discover whether a value defines a custom
+ *   string representation (`toString`, `toJSON`, …).
  *
  * ## Common tasks
  *
@@ -34,9 +34,10 @@ import * as Option from 'effect/Option';
 import * as Predicate from 'effect/Predicate';
 import type * as Record from 'effect/Record';
 
+import type * as MTypes from './types/types.js';
+
 import * as MFunction from './Function.js';
 import * as MPredicate from './Predicate.js';
-import * as MTypes from './types/types.js';
 
 /**
  * Type on which this module's functions operate.
@@ -75,8 +76,8 @@ export const unsafeGet =
  *   and is not the same reference as `exception` (when `exception` is supplied).
  * - Returns `Option.none` when the property is missing, not a function, declares one or more
  *   parameters, or matches `exception`.
- * - The `exception` parameter is useful to skip an inherited default (e.g. `Object.prototype.toString`
- *   when probing for a custom `toString`).
+ * - The `exception` parameter is useful to skip an inherited default (e.g.
+ *   `Object.prototype.toString` when probing for a custom `toString`).
  *
  * **Example** (Detect a custom `toString`)
  *
@@ -105,12 +106,12 @@ export const tryZeroParamFunction =
   (self: MTypes.NonPrimitive): Option.Option<unknown> =>
     pipe(
       self[functionName],
-      Option.liftPredicate(MTypes.isFunction),
+      Option.liftPredicate((u): u is MTypes.AnyFunction => Predicate.isFunction(u)),
       Option.filter(
         Predicate.and(
           pipe(
             exception,
-            Option.liftPredicate(MTypes.isNotUndefined),
+            Option.liftPredicate(Predicate.isNotUndefined),
             Option.map(flow(MPredicate.strictEquals, Predicate.not)),
             Option.getOrElse(() => Function.constTrue),
           ),
@@ -142,4 +143,4 @@ export const tryZeroParamStringFunction = (params: {
   readonly functionName: string | symbol;
   readonly exception?: MTypes.AnyFunction;
 }): MTypes.OneArgFunction<MTypes.NonPrimitive, Option.Option<string>> =>
-  flow(tryZeroParamFunction(params), Option.filter(MTypes.isString));
+  flow(tryZeroParamFunction(params), Option.filter(Predicate.isString));

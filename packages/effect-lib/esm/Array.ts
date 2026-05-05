@@ -55,10 +55,12 @@ import * as Record from 'effect/Record';
 import * as Result from 'effect/Result';
 import * as Tuple from 'effect/Tuple';
 
+import type * as MTypes from './types/types.js';
+
 import * as MFunction from './Function.js';
 import * as MMatch from './Match.js';
 import * as MOption from './Option.js';
-import * as MTypes from './types/types.js';
+import * as MPredicate from './Predicate.js';
 
 /**
  * Type on which this module's functions operate.
@@ -175,8 +177,10 @@ export const match012 =
     pipe(
       self,
       MMatch.make,
-      MMatch.when(MTypes.isReadonlyOverTwo<A>, (overTwo) => options.onOverTwo(overTwo)),
-      MMatch.when(MTypes.isReadonlySingleton<A>, (singleton) => options.onSingleton(singleton[0])),
+      MMatch.when(MPredicate.isReadonlyOverTwo<A>, (overTwo) => options.onOverTwo(overTwo)),
+      MMatch.when(MPredicate.isReadonlySingleton<A>, (singleton) =>
+        options.onSingleton(singleton[0]),
+      ),
       MMatch.orElse(options.onEmpty),
     );
 

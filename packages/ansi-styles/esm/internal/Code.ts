@@ -5,8 +5,9 @@ import * as Array from 'effect/Array';
 import * as Option from 'effect/Option';
 
 import * as MFunction from '@parischap/effect-lib/MFunction';
+import * as MPredicate from '@parischap/effect-lib/MPredicate';
 import * as MString from '@parischap/effect-lib/MString';
-import * as MTypes from '@parischap/effect-lib/MTypes';
+import type * as MTypes from '@parischap/effect-lib/MTypes';
 
 import * as ASSequence from './Sequence.js';
 
@@ -35,7 +36,7 @@ export const fromNonEmptySequence: MTypes.OneArgFunction<ASSequence.OverOne, str
  * @category Constructors
  */
 export const fromSequence: MTypes.OneArgFunction<ASSequence.Type, string> = flow(
-  Option.liftPredicate(MTypes.isReadonlyOverOne),
+  Option.liftPredicate(MPredicate.isReadonlyOverOne),
   Option.map(fromNonEmptySequence),
   Option.getOrElse(MFunction.constEmptyString),
 );

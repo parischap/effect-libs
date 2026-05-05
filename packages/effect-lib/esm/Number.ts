@@ -5,8 +5,8 @@
  * ## Mental model
  *
  * - **`Type`** is just `number`.
- * - Conversions come in `unsafe*` (lossy: too-large or non-finite values become `±Infinity` or
- *   `NaN`) and `*Option` (validating, returning `Option`) flavors.
+ * - Conversions come in `unsafe*` (lossy: too-large or non-finite values become `±Infinity` or `NaN`)
+ *   and `*Option` (validating, returning `Option`) flavors.
  * - Use {@link intModulo} when you need a positive modulo (the JavaScript `%` operator is
  *   sign-preserving).
  *
@@ -15,8 +15,8 @@
  * - **Convert from `bigint`**: {@link unsafeFromBigInt}, {@link fromBigIntOption}
  * - **Convert from `BigDecimal`**: {@link unsafeFromBigDecimal}, {@link fromBigDecimalOption}
  * - **Convert from `string`**: {@link unsafeFromString}
- * - **Arithmetic**: {@link opposite}, {@link intModulo}, {@link quotientAndRemainder},
- *   {@link shift}, {@link trunc}
+ * - **Arithmetic**: {@link opposite}, {@link intModulo}, {@link quotientAndRemainder}, {@link shift},
+ *   {@link trunc}
  * - **Predicates**: {@link equals}, {@link isMultipleOf}
  * - **Sign**: {@link sign2}
  * - **Constants**: {@link MAX_SAFE_INTEGER}, {@link MIN_SAFE_INTEGER}
@@ -61,8 +61,8 @@ const bigDecimalMinSafeInteger = BigDecimal.make(bigIntMinSafeInteger, 0);
 const bigDecimalMaxSafeInteger = BigDecimal.make(bigIntMaxSafeInteger, 0);
 
 /**
- * Builds a `number` from a `bigint` without range checks. Values outside the safe-integer range
- * are coerced to `±Infinity`.
+ * Builds a `number` from a `bigint` without range checks. Values outside the safe-integer range are
+ * coerced to `±Infinity`.
  *
  * - Use only when the input is statically known to fit in a JavaScript `number`.
  *
@@ -75,9 +75,9 @@ const bigDecimalMaxSafeInteger = BigDecimal.make(bigIntMaxSafeInteger, 0);
  * console.log(MNumber.unsafeFromBigInt(2n ** 100n)); // Infinity
  * ```
  *
- * @see {@link fromBigIntOption} — safe variant
- *
  * @category Constructors
+ *
+ * @see {@link fromBigIntOption} — safe variant
  */
 export const unsafeFromBigInt: MTypes.OneArgFunction<bigint, number> = Number;
 
@@ -94,9 +94,9 @@ export const unsafeFromBigInt: MTypes.OneArgFunction<bigint, number> = Number;
  * console.log(MNumber.fromBigIntOption(2n ** 100n)); // None
  * ```
  *
- * @see {@link unsafeFromBigInt} — unchecked variant
- *
  * @category Constructors
+ *
+ * @see {@link unsafeFromBigInt} — unchecked variant
  */
 export const fromBigIntOption: MTypes.OneArgFunction<bigint, Option.Option<number>> = flow(
   Option.liftPredicate(
@@ -106,12 +106,12 @@ export const fromBigIntOption: MTypes.OneArgFunction<bigint, Option.Option<numbe
 );
 
 /**
- * Builds a `number` from a `BigDecimal` without range checks. Values outside the safe-integer
- * range are coerced to `±Infinity`.
- *
- * @see {@link fromBigDecimalOption} — safe variant
+ * Builds a `number` from a `BigDecimal` without range checks. Values outside the safe-integer range
+ * are coerced to `±Infinity`.
  *
  * @category Constructors
+ *
+ * @see {@link fromBigDecimalOption} — safe variant
  */
 export const unsafeFromBigDecimal: MTypes.OneArgFunction<BigDecimal.BigDecimal, number> =
   BigDecimal.toNumberUnsafe;
@@ -120,9 +120,9 @@ export const unsafeFromBigDecimal: MTypes.OneArgFunction<BigDecimal.BigDecimal, 
  * Builds a `number` from a `BigDecimal`, returning `Option.some` when the input lies in
  * `[Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER]` and `Option.none` otherwise.
  *
- * @see {@link unsafeFromBigDecimal} — unchecked variant
- *
  * @category Constructors
+ *
+ * @see {@link unsafeFromBigDecimal} — unchecked variant
  */
 export const fromBigDecimalOption: MTypes.OneArgFunction<
   BigDecimal.BigDecimal,
@@ -223,8 +223,7 @@ export const quotientAndRemainder =
  * Returns `true` when `self` and `n` differ by less than `Number.EPSILON`.
  *
  * - Use to compare floating-point numbers where exact `===` is unreliable.
- * - This is an absolute, not relative, tolerance — it is not appropriate for very large
- *   magnitudes.
+ * - This is an absolute, not relative, tolerance — it is not appropriate for very large magnitudes.
  *
  * **Example** (Floating-point equality)
  *

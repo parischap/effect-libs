@@ -1,9 +1,9 @@
 import { pipe } from 'effect';
 import * as Option from 'effect/Option';
+import * as Predicate from 'effect/Predicate';
 
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as MRecord from '@parischap/effect-lib/MRecord';
-import * as MTypes from '@parischap/effect-lib/MTypes';
 
 import { describe, it } from 'vitest';
 
@@ -38,7 +38,7 @@ describe('MRecord', () => {
           MRecord.tryZeroParamFunction({
             functionName: 'getDay',
           }),
-          Option.filter(MTypes.isNumber),
+          Option.filter(Predicate.isNumber),
         ),
         4,
       );

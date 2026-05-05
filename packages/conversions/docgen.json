@@ -3,11 +3,13 @@
   "srcDir": "esm",
   "exclude": [
     "esm/internal/**/*",
-    "esm/bin/**/*"
+    "esm/bin/**/*",
+    "esm/index.ts"
   ],
   "outDir": "docs",
   "parseCompilerOptions": "tsconfig.docgen.json",
   "examplesCompilerOptions": "tsconfig.docgen.json",
   "enforceDescriptions": true,
+  "enforceExamples": false,
   "enforceVersion": false
 }

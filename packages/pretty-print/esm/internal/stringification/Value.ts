@@ -15,7 +15,7 @@ import * as Struct from 'effect/Struct';
 import * as MData from '@parischap/effect-lib/MData';
 import * as MEquivalenceBasedEqualityData from '@parischap/effect-lib/MEquivalenceBasedEqualityData';
 import * as MString from '@parischap/effect-lib/MString';
-import * as MTypes from '@parischap/effect-lib/MTypes';
+import type * as MTypes from '@parischap/effect-lib/MTypes';
 import * as MTypesCategory from '@parischap/effect-lib/MTypesCategory';
 
 /**
@@ -164,7 +164,7 @@ export class Type<out V> extends MEquivalenceBasedEqualityData.Class {
       hasGeneratedKey: false,
       stringKey: Array.of(oneLineStringKey),
       oneLineStringKey,
-      hasSymbolicKey: MTypes.isSymbol(key),
+      hasSymbolicKey: Predicate.isSymbol(key),
       isEnumerable: Object.prototype.propertyIsEnumerable.call(nonPrimitive, key),
     });
   }

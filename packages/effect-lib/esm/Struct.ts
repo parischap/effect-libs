@@ -47,9 +47,9 @@ import type * as MTypes from './types/types.js';
 /**
  * Utility type computing the result of `{ ...first, ...second }`.
  *
- * - When a field exists in both `First` and `Second`, the resulting type follows JavaScript's
- *   spread semantics: `Second`'s value wins, except when it is optional, in which case the result
- *   is the union of `Second[k]` (without `undefined`) and `First[k]`.
+ * - When a field exists in both `First` and `Second`, the resulting type follows JavaScript's spread
+ *   semantics: `Second`'s value wins, except when it is optional, in which case the result is the
+ *   union of `Second[k]` (without `undefined`) and `First[k]`.
  *
  * @category Utility types
  */
@@ -80,9 +80,9 @@ export type Append<First extends MTypes.NonPrimitive, Second extends MTypes.NonP
  * // { theme: 'light', font: 'mono' }
  * ```
  *
- * @see {@link append} — symmetric variant where the new fields override
- *
  * @category Utils
+ *
+ * @see {@link append} — symmetric variant where the new fields override
  */
 export const prepend =
   <O1 extends MTypes.NonPrimitive>(that: O1) =>
@@ -107,9 +107,9 @@ export const prepend =
  * // { a: 1, b: 3, c: 4 }
  * ```
  *
- * @see {@link prepend} — symmetric variant where existing fields win
- *
  * @category Utils
+ *
+ * @see {@link prepend} — symmetric variant where existing fields win
  */
 export const append =
   <O1 extends MTypes.NonPrimitive>(that: O1) =>
@@ -133,9 +133,9 @@ export const append =
  * console.log(pipe(user, MStruct.set({ age: 31 }))); // { name: 'Ada', age: 31 }
  * ```
  *
- * @see {@link mutableSet} — in-place variant
- *
  * @category Utils
+ *
+ * @see {@link mutableSet} — in-place variant
  */
 export const set =
   <O extends MTypes.NonPrimitive, O1 extends Partial<O>>(that: O1) =>
@@ -200,9 +200,9 @@ export const make =
  * // { firstName: 'Ada', lastName: 'Lovelace', fullName: 'Ada Lovelace', initials: 'A.L.' }
  * ```
  *
- * @see {@link mutableEnrichWith} — in-place variant
- *
  * @category Utils
+ *
+ * @see {@link mutableEnrichWith} — in-place variant
  */
 
 export const enrichWith =

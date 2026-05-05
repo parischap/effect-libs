@@ -380,7 +380,7 @@ export const layer = Layer.effect(
               const newParents = yield* pipe(
                 realNextSeeds,
                 Result.liftPredicate(
-                  flow(Array.intersection(parents), MTypes.isOverOne),
+                  flow(Array.intersection(parents), MPredicate.isOverOne),
                   () =>
                     new PlatformError.SystemError({
                       reason: 'BadResource',
@@ -420,7 +420,7 @@ export const layer = Layer.effect(
                           Result.liftPredicate(Predicate.not(excludeDir), MFunction.constFailVoid),
                         ),
                       ),
-                      Option.liftPredicate(MTypes.isOverOne),
+                      Option.liftPredicate(MPredicate.isOverOne),
                       Option.map(flow(MTuple.of, Tuple.appendElement(newParents))),
                     ),
                   ),

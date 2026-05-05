@@ -31,7 +31,7 @@ import * as MRegExp from '@parischap/effect-lib/MRegExp';
 import * as MString from '@parischap/effect-lib/MString';
 import * as MStruct from '@parischap/effect-lib/MStruct';
 import * as MTree from '@parischap/effect-lib/MTree';
-import * as MTypes from '@parischap/effect-lib/MTypes';
+import type * as MTypes from '@parischap/effect-lib/MTypes';
 
 import type * as PPParameters from '../Parameters/Parameters.js';
 import type * as PPPartName from '../Parameters/PartName.js';
@@ -321,7 +321,7 @@ export class Type extends MEquivalenceBasedEqualityData.Class {
             const stringified =
               applicableNonPrimitiveParameters.maxPrototypeDepth > 0 ||
               (applicableNonPrimitiveParameters.extractIterableElements &&
-                MTypes.isIterable(seed.content))
+                Predicate.isIterable(seed.content))
                 ? pipe(
                     children,
                     Array.map(

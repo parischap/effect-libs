@@ -4,8 +4,8 @@
  *
  * ## Mental model
  *
- * - **`Result.Result<A, E>`** is a synchronous, retry-free `Either`-like sum type with success
- *   `A` and failure `E`.
+ * - **`Result.Result<A, E>`** is a synchronous, retry-free `Either`-like sum type with success `A`
+ *   and failure `E`.
  * - This module focuses on small bridges: collapse a missing-element failure into an `Option`,
  *   flatten nested `Result`'s, and lift into `Effect`.
  *

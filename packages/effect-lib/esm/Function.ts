@@ -33,7 +33,12 @@
  *   readonly [(n: number) => number],
  *   ReadonlyArray<number>
  * >(Array.map);
- * console.log(pipe([1, 2, 3], curriedMap((n) => n * 2))); // [2, 4, 6]
+ * console.log(
+ *   pipe(
+ *     [1, 2, 3],
+ *     curriedMap((n) => n * 2),
+ *   ),
+ * ); // [2, 4, 6]
  * console.log(MFunction.parameterNumber((a: number, b: number) => a + b)); // 2
  * ```
  */
@@ -46,8 +51,7 @@ import * as Result from 'effect/Result';
 import type * as MTypes from './types/types.js';
 
 /**
- * Applies `f` to the input value when `condition` is `true`; returns the input unchanged
- * otherwise.
+ * Applies `f` to the input value when `condition` is `true`; returns the input unchanged otherwise.
  *
  * - Use to gate a transformation by a flag without breaking the pipeline.
  * - `condition` is captured at construction time and re-read on every call (it does not get
@@ -81,11 +85,12 @@ export const fIfTrue =
 
 /**
  * Converts an n-ary, data-first function into its curried, data-first equivalent. The first
- * argument becomes the outer parameter; the remaining arguments are taken by the returned function.
+ * argument becomes the outer parameter; the remaining arguments are taken by the returned
+ * function.
  *
  * - Use to feed a built-in `Array.map`-style API into a `pipe` chain.
- * - The TypeScript inference engine cannot recover generic type parameters from a curried wrapper,
- *   so generic `self`'s usually require explicit type arguments at the call site.
+ * - The TypeScript inference engine cannot recover generic type parameters from a curried wrapper, so
+ *   generic `self`'s usually require explicit type arguments at the call site.
  *
  * **Example** (Curry `Array.map`)
  *
@@ -98,7 +103,12 @@ export const fIfTrue =
  *   readonly [(n: number) => number],
  *   ReadonlyArray<number>
  * >(Array.map);
- * console.log(pipe([1, 2, 3], curriedMap((n) => n * 2))); // [2, 4, 6]
+ * console.log(
+ *   pipe(
+ *     [1, 2, 3],
+ *     curriedMap((n) => n * 2),
+ *   ),
+ * ); // [2, 4, 6]
  * ```
  *
  * @category Utils
@@ -153,8 +163,8 @@ export const name = (f: MTypes.AnyFunction): string => f.name;
  * Memoizes a zero-argument function so that `f` runs at most once and subsequent calls return the
  * cached result.
  *
- * - Use to defer the cost of building a constant until the first time it is actually needed,
- *   provided that constant is read more than once.
+ * - Use to defer the cost of building a constant until the first time it is actually needed, provided
+ *   that constant is read more than once.
  * - The wrapper holds mutable state internally; create one wrapper per cache slot.
  *
  * **Example** (Lazy initialization)

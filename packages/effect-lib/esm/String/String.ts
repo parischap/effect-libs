@@ -1,13 +1,13 @@
 /**
  * Extension to the Effect String module: stringification of unknown / primitive values, indexed
- * search, custom-character trimming, padding, splitting (including bit-aligned chunking),
- * indented multi-line formatting, and lightweight string predicates (SemVer, e-mail, digit, …).
+ * search, custom-character trimming, padding, splitting (including bit-aligned chunking), indented
+ * multi-line formatting, and lightweight string predicates (SemVer, e-mail, digit, …).
  *
  * ## Mental model
  *
  * - All functions are pure, data-last, and treat strings as immutable values.
- * - Search helpers ({@link search}, {@link searchAll}, {@link searchRight}) accept either a
- *   literal `string` (no escaping needed) or a `RegExp`. They return positions through
+ * - Search helpers ({@link search}, {@link searchAll}, {@link searchRight}) accept either a literal
+ *   `string` (no escaping needed) or a `RegExp`. They return positions through
  *   {@link "./StringSearchResult.js" | `MStringSearchResult`}.
  * - Both regex-based searches and {@link match} / {@link matches} reset `lastIndex` before use, so
  *   passing a `RegExp` literal with the `g` flag is safe but global matches are not iterated; only
@@ -19,9 +19,8 @@
  *   {@link fromNumber}
  * - **Search**: {@link search}, {@link searchAll}, {@link searchRight}, {@link count}
  * - **Slice**: {@link takeBut}, {@link takeRightBut}, {@link takeTo}, {@link takeRightFrom}
- * - **Trim / strip / pad**: {@link trimStart}, {@link trimEnd}, {@link trim},
- *   {@link stripLeft}, {@link stripLeftOption}, {@link stripRight}, {@link stripRightOption},
- *   {@link pad}
+ * - **Trim / strip / pad**: {@link trimStart}, {@link trimEnd}, {@link trim}, {@link stripLeft},
+ *   {@link stripLeftOption}, {@link stripRight}, {@link stripRightOption}, {@link pad}
  * - **Combine**: {@link append}, {@link appendIfNotEmpty}, {@link prepend},
  *   {@link prependIfNotEmpty}, {@link surroundIfNotEmpty}, {@link replaceBetween}
  * - **Match**: {@link match}, {@link matches}, {@link matchWithCapturingGroups}
@@ -59,11 +58,13 @@ import * as BigInt from 'effect/BigInt';
 import * as Function from 'effect/Function';
 import * as Number from 'effect/Number';
 import * as Option from 'effect/Option';
-import type * as Predicate from 'effect/Predicate';
+import * as Predicate from 'effect/Predicate';
 import * as Record from 'effect/Record';
 import * as String from 'effect/String';
 import * as Struct from 'effect/Struct';
 import * as Tuple from 'effect/Tuple';
+
+import type * as MTypes from '../types/types.js';
 
 import * as MArray from '../Array.js';
 import * as MFunction from '../Function.js';
@@ -72,7 +73,6 @@ import * as MPredicate from '../Predicate.js';
 import * as MRegExp from '../RegExp.js';
 import * as MRegExpString from '../RegExpString.js';
 import * as MTuple from '../Tuple.js';
-import * as MTypes from '../types/types.js';
 import * as MStringFillPosition from './StringFillPosition.js';
 import * as MStringSearchResult from './StringSearchResult.js';
 
@@ -103,7 +103,7 @@ export type Type = string;
  * @category Constructors
  */
 export const fromNonNullablePrimitive = (u: MTypes.NonNullablePrimitive): string =>
-  MTypes.isNumber(u) ? fromNumber(10)(u) : u.toString();
+  Predicate.isNumber(u) ? fromNumber(10)(u) : u.toString();
 
 /**
  * Builds a string from a primitive value, handling `null` and `undefined`.
@@ -127,7 +127,7 @@ export const fromNonNullablePrimitive = (u: MTypes.NonNullablePrimitive): string
  */
 export const fromPrimitive: MTypes.OneArgFunction<MTypes.Primitive, string> = flow(
   MMatch.make,
-  MMatch.when(MTypes.isNotNullable, fromNonNullablePrimitive),
+  MMatch.when(Predicate.isNotNullish, fromNonNullablePrimitive),
   MMatch.orElse((s) => (s === undefined ? 'undefined' : 'null')),
 );
 
@@ -151,7 +151,7 @@ export const fromPrimitive: MTypes.OneArgFunction<MTypes.Primitive, string> = fl
  * @category Constructors
  */
 export const fromUnknown = (u: unknown): string =>
-  MTypes.isPrimitive(u) ? fromPrimitive(u) : JSON.stringify(u, null, 2);
+  MPredicate.isPrimitive(u) ? fromPrimitive(u) : JSON.stringify(u, null, 2);
 
 /**
  * Converts a number to a string using a specified radix.
@@ -220,10 +220,7 @@ export const fromNumber =
  * import * as MString from '@parischap/effect-lib/String/String';
  *
  * const text = 'The quick brown fox';
- * const result = pipe(
- *   text,
- *   MString.search('quick')
- * );
+ * const result = pipe(text, MString.search('quick'));
  * console.log(Option.isSome(result)); // true
  * if (Option.isSome(result)) {
  *   console.log(result.value.match); // "quick"
@@ -235,7 +232,7 @@ export const fromNumber =
 export const search =
   (regexp: RegExp | string, startIndex = 0) =>
   (self: Type): Option.Option<MStringSearchResult.Type> => {
-    if (MTypes.isString(regexp)) {
+    if (Predicate.isString(regexp)) {
       const pos = self.indexOf(regexp, startIndex);
       if (pos === -1) return Option.none();
       return Option.some(
@@ -245,7 +242,7 @@ export const search =
     const target = self.slice(startIndex);
     regexp.lastIndex = 0;
     const result = regexp.exec(target);
-    if (MTypes.isNull(result)) return Option.none();
+    if (Predicate.isNull(result)) return Option.none();
     const offsetPos = startIndex + result.index;
     const [match] = result;
     return Option.some(
@@ -325,7 +322,7 @@ export const searchAll =
 export const searchRight =
   (regexp: RegExp | string) =>
   (self: Type): Option.Option<MStringSearchResult.Type> => {
-    if (MTypes.isString(regexp)) {
+    if (Predicate.isString(regexp)) {
       const pos = self.lastIndexOf(regexp);
       if (pos === -1) return Option.none();
       return Option.some(
@@ -972,7 +969,7 @@ export const matchWithCapturingGroups =
         const { groups } = matchArray;
         if (
           groups === undefined ||
-          pipe(capturingGroupNames, Array.difference(Object.keys(groups)), MTypes.isOverOne)
+          pipe(capturingGroupNames, Array.difference(Object.keys(groups)), MPredicate.isOverOne)
         )
           throw new Error(
             `'matchWithCapturingGroups' was called with regular expression '${regExp.source}' that does not contain expected named capturing groups '${capturingGroupNames.join("', '")}'`,

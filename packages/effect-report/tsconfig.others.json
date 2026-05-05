@@ -12,7 +12,7 @@
     ".tsbuildinfo",
     "vite.config.ts.timestamp-*.mjs",
     "dist",
-    "docs/Modules"
+    "docs/modules"
   ],
   "compilerOptions": {
     "declarationDir": "dist/dts/others",
