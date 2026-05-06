@@ -1,9 +1,6 @@
 {
   "extends": [
-    "tsconfig.base.json",
-    {
-      "dotPrefixed": true
-    }
+    "./tsconfig.base.json"
   ],
   "include": [
     "esm/**/*.ts"
