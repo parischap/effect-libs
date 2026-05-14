@@ -8,7 +8,6 @@
     "tests",
     "node_modules",
     "**/.DS_Store",
-    "**/.claude",
     "_site",
     ".git"
   ],

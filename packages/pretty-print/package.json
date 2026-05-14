@@ -3,22 +3,8 @@
   "type": "module",
   "author": "Jérôme MARTIN",
   "license": "MIT",
-  "devDependencies": {
-    "@parischap/configs": "git+ssh://github.com/parischap/configs",
-    "@types/node": "25.6.0",
-    "@typescript/native-preview": "7.0.0-dev.20260427.1",
-    "@effect/tsgo": "0.5.1",
-    "@tsconfig/strictest": "2.0.8",
-    "oxfmt": "0.46.0",
-    "oxlint": "1.61.0",
-    "oxlint-tsgolint": "0.22.0",
-    "tsx": "4.21.0",
-    "vitest": "4.1.5",
-    "madge": "8.0.0",
-    "vite": "8.0.10",
-    "@effect/platform-node": "4.0.0-beta.57",
-    "@effect/docgen": "0.5.2"
-  },
+  "description": "A functional library to pretty-print and treeify objects",
+  "homepage": "https://github.com/parischap/effect-libs/tree/master/packages/pretty-print",
   "scripts": {
     "test-all": "vitest run",
     "lint": "oxlint --type-aware --type-check --report-unused-disable-directives --disable-nested-config",
@@ -41,7 +27,21 @@
     "publish-to-npm": "cd dist && npm publish --access=public && cd ..",
     "docgen": "docgen"
   },
-  "description": "A functional library to pretty-print and treeify objects",
+  "devDependencies": {
+    "@parischap/configs": "git+ssh://github.com/parischap/configs",
+    "vitest": "4.1.5",
+    "@types/node": "25.6.0",
+    "@typescript/native-preview": "7.0.0-dev.20260427.1",
+    "@effect/tsgo": "0.5.1",
+    "@tsconfig/strictest": "2.0.8",
+    "oxfmt": "0.46.0",
+    "oxlint": "1.61.0",
+    "oxlint-tsgolint": "0.22.0",
+    "tsx": "4.21.0",
+    "madge": "8.0.0",
+    "vite": "8.0.10",
+    "@effect/docgen": "0.5.2"
+  },
   "exports": {
     ".": {
       "default": "./esm/index.ts"
@@ -104,8 +104,6 @@
       "default": "./esm/internal/stringification/Values.ts"
     }
   },
-  "homepage": "https://github.com/parischap/effect-libs/tree/master/packages/pretty-print",
-  "module": "esm/index.ts",
   "peerDependencies": {
     "@parischap/effect-lib": "^0.11.0",
     "@parischap/ansi-styles": "^0.2.6",

@@ -2,7 +2,6 @@
   "ignorePatterns": [
     "/node_modules/",
     ".DS_Store",
-    ".claude/",
     "/.tsbuildinfo/",
     "/vite.config.ts.timestamp-*.mjs",
     "/dist/",
