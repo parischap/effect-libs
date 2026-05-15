@@ -11,6 +11,8 @@
     "outDir": "dist/esm",
     "tsBuildInfoFile": ".tsbuildinfo/esm.tsbuildinfo",
     "noEmit": false,
-    "emitDeclarationOnly": true
+    "emitDeclarationOnly": true,
+    "declarationMap": true,
+    "sourceRoot": ""
   }
 }

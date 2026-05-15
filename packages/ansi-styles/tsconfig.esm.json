@@ -12,6 +12,8 @@
     "tsBuildInfoFile": ".tsbuildinfo/esm.tsbuildinfo",
     "noEmit": false,
     "emitDeclarationOnly": true,
+    "declarationMap": true,
+    "sourceRoot": "",
     "types": []
   }
 }
