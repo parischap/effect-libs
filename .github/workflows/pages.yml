@@ -45,4 +45,5 @@ jobs:
         uses: actions/deploy-pages@v4
 name: Pages
 on:
+  workflow_dispatch:
 permissions:

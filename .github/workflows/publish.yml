@@ -66,6 +66,7 @@ jobs:
         run: pnpm build-and-publish
 name: publish
 on:
+  workflow_dispatch:
   release:
     types:
       - created
