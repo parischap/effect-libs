@@ -20,6 +20,7 @@
   "environment": "Neutral",
   "buildMethod": "NoBundling",
   "version": "1.0.0",
+  "publish": true,
   "hasDocGen": true,
   "keywords": [
     "number",

@@ -23,10 +23,12 @@
     "checks": "pnpm circular && pnpm lint && pnpm test-all",
     "circular": "madge --extensions ts --circular --no-color --no-spinner esm",
     "examples": "tsx examples/util-inspect-like.ts && tsx examples/treeify.ts && tsx examples/treeify-with-leaves.ts && tsx examples/circularity-handling.ts && tsx examples/with-date-and-regexp.ts && tsx examples/with-prototype-chain.ts && tsx examples/with-custom-style-map.ts && tsx examples/with-custom-primitive-formatter.ts && tsx examples/with-property-filter-and-sort.ts",
+    "build-and-publish": "pnpm checks && pnpm build && pnpm publish-to-npm",
+    "publish-to-npm": "cd dist && npm publish --access=public && cd ..",
     "docgen": "docgen"
   },
   "devDependencies": {
-    "@parischap/configs": "git+ssh://github.com/parischap/configs",
+    "@parischap/configs": "0.1.0",
     "vitest": "4.1.5",
     "@types/node": "25.6.0",
     "@typescript/native-preview": "7.0.0-dev.20260427.1",
@@ -103,9 +105,9 @@
     }
   },
   "peerDependencies": {
-    "@parischap/effect-lib": "*",
-    "@parischap/ansi-styles": "*",
-    "@parischap/conversions": "*",
+    "@parischap/effect-lib": "0.12.0",
+    "@parischap/ansi-styles": "1.0.0",
+    "@parischap/conversions": "1.0.0",
     "effect": "4.0.0-beta.57"
   }
 }

@@ -1,5 +1,7 @@
 {
   "description": "A complement to the official @effect/platform library with add-ons for Node.js",
+  "version": "0.1.0",
+  "publish": false,
   "peerDependencies": {
     "@parischap/effect-lib": "*"
   },

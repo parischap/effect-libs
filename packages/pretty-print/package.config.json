@@ -19,6 +19,7 @@
   "environment": "Neutral",
   "buildMethod": "NoBundling",
   "version": "1.0.0",
+  "publish": false,
   "hasDocGen": true,
   "keywords": [
     "inspect",

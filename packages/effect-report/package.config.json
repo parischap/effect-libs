@@ -1,5 +1,7 @@
 {
   "description": "A functional library to prettify Effect logging",
+  "version": "0.1.0",
+  "publish": false,
   "peerDependencies": {
     "@parischap/effect-lib": "*",
     "@parischap/ansi-styles": "*"

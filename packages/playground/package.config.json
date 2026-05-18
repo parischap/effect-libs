@@ -1,5 +1,7 @@
 {
   "description": "An Effect playground",
+  "version": "0.1.0",
+  "publish": false,
   "dependencies": {
     "@parischap/effect-lib": "*"
   },
