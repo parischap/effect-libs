@@ -22,8 +22,6 @@
     "compile": "tsx node_modules/@parischap/configs/esm/bin/compile.ts -activePackageOnly",
     "checks": "pnpm circular && pnpm lint && pnpm test-all",
     "circular": "madge --extensions ts --circular --no-color --no-spinner esm",
-    "build-and-publish": "pnpm checks && pnpm build && pnpm publish-to-npm",
-    "publish-to-npm": "cd dist && npm publish --access=public && cd ..",
     "docgen": "docgen"
   },
   "devDependencies": {

@@ -61,8 +61,8 @@
     }
   },
   "peerDependencies": {
-    "@parischap/effect-lib": "^0.11.0",
-    "@parischap/ansi-styles": "^0.2.6",
+    "@parischap/effect-lib": "*",
+    "@parischap/ansi-styles": "*",
     "effect": "4.0.0-beta.57"
   }
 }

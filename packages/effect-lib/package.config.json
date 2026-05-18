@@ -2,7 +2,7 @@
   "description": "An extension to the official Effect library",
   "environment": "Neutral",
   "buildMethod": "NoBundling",
-  "isPublished": true,
+  "version": "0.12.0",
   "hasDocGen": true,
   "keywords": [],
   "useEffectAsPeerDependency": true,

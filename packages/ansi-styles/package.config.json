@@ -1,12 +1,12 @@
 {
   "description": "A functional library to style your strings in terminals",
   "peerDependencies": {
-    "@parischap/effect-lib": "^0.11.0"
+    "@parischap/effect-lib": "*"
   },
   "examples": ["basic-usage.ts", "cancelling-a-style.ts", "simple-colors.ts", "all-colors.ts"],
   "environment": "Neutral",
   "buildMethod": "NoBundling",
-  "isPublished": true,
+  "version": "1.0.0",
   "hasDocGen": true,
   "keywords": [
     "terminal",

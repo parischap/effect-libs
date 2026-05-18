@@ -23,8 +23,6 @@
     "checks": "pnpm circular && pnpm lint && pnpm test-all",
     "circular": "madge --extensions ts --circular --no-color --no-spinner esm",
     "examples": "tsx examples/basic-usage.ts && tsx examples/cancelling-a-style.ts && tsx examples/simple-colors.ts && tsx examples/all-colors.ts",
-    "build-and-publish": "pnpm checks && pnpm build && pnpm publish-to-npm",
-    "publish-to-npm": "cd dist && npm publish --access=public && cd ..",
     "docgen": "docgen"
   },
   "devDependencies": {
@@ -135,7 +133,7 @@
     }
   },
   "peerDependencies": {
-    "@parischap/effect-lib": "^0.11.0",
+    "@parischap/effect-lib": "*",
     "effect": "4.0.0-beta.57"
   }
 }

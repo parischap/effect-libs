@@ -49,7 +49,7 @@
     }
   },
   "peerDependencies": {
-    "@parischap/effect-lib": "^0.11.0",
+    "@parischap/effect-lib": "*",
     "effect": "4.0.0-beta.57",
     "@effect/platform-node": "4.0.0-beta.57"
   }

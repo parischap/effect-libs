@@ -7,7 +7,7 @@ A collection of open-source libraries that complement the [Effect](https://effec
 
 Tested and documented, optimized for tree-shaking, 100% TypeScript, 100% functional.
 
-Although developed in `Effect` for `Effect` users, every package can also be used by non-`Effect` users.
+Although developed in `Effect` for `Effect` users, it can be used by non-`Effect` users.
 
 </div>
 
