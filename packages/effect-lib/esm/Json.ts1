@@ -4,8 +4,8 @@
  *
  * ## Mental model
  *
- * - **`stringify`** returns `Effect<string, PortError>`; the underlying `JSON.stringify` exception
- *   is captured into a structured `PortError`.
+ * - **`stringify`** returns `Effect<string, PortError>`; the underlying `JSON.stringify` exception is
+ *   captured into a structured `PortError`.
  * - **`parse`** returns `Effect<unknown, PortError>` likewise — the parsed value is intentionally
  *   typed `unknown` so callers must validate it.
  *
@@ -56,6 +56,7 @@ export const stringify = (
   replacer?: (this: unknown, key: string, value: unknown) => unknown,
 ) =>
   Effect.try({
+    // @ts-expect-error Nobody's perfect
     try: () => JSON.stringify(value, replacer),
     catch: (e) =>
       new MPortError.Type({

@@ -7,8 +7,8 @@
  * - **`Type`** is a `Data.TaggedError` that wraps a thrown value (`originalError`) together with
  *   context describing where the throw came from (`originalFunctionName`, `moduleName`,
  *   `libraryName`).
- * - Use this error in `Effect.try` (or equivalent) `catch` handlers to keep the original
- *   exception inspectable while moving error handling out of the throw/catch axis.
+ * - Use this error in `Effect.try` (or equivalent) `catch` handlers to keep the original exception
+ *   inspectable while moving error handling out of the throw/catch axis.
  *
  * ## Quickstart
  *
@@ -44,8 +44,8 @@ import * as Data from 'effect/Data';
 export const moduleTag = '@parischap/effect-lib/PortError/';
 
 /**
- * Tagged error wrapping an exception thrown by a native function call. Carries the original
- * thrown value plus contextual identifiers to help locate the source.
+ * Tagged error wrapping an exception thrown by a native function call. Carries the original thrown
+ * value plus contextual identifiers to help locate the source.
  *
  * @category Models
  */

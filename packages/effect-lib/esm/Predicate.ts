@@ -155,7 +155,8 @@ export type PredicatesToCoverages<T extends PredicateArray> = {
 };
 
 /**
- * Type utility mapping an array/record of values to an array/record of predicates over those values.
+ * Type utility mapping an array/record of values to an array/record of predicates over those
+ * values.
  *
  * @category Utility types
  */
@@ -180,7 +181,10 @@ export type SourcesToPredicates<T extends MTypes.NonPrimitive> = {
  *
  * type Person = { readonly name: string; readonly age: number | string };
  *
- * const hasNumericAge = MPredicate.struct<Person, { readonly age: (n: unknown) => n is number }>({
+ * const hasNumericAge = MPredicate.struct<
+ *   Person,
+ *   { readonly age: (n: unknown) => n is number }
+ * >({
  *   age: (n): n is number => typeof n === 'number',
  * });
  *
@@ -252,9 +256,9 @@ export const strictEquals: <B, A extends B>(that: A) => Predicate.Predicate<B> =
  * console.log(MPredicate.isNonPrimitive(42)); // false
  * ```
  *
- * @see {@link isPrimitive} — the complementary guard
- *
  * @category Guards
+ *
+ * @see {@link isPrimitive} — the complementary guard
  */
 // The `& NonPrimitive` part is useful in case A is `unknown`. A JavaScript object only has string and symbolic keys. So this needs not be checked.
 export const isNonPrimitive = <A>(
@@ -280,9 +284,9 @@ export const isNonPrimitive = <A>(
  * console.log(MPredicate.isPrimitive([1, 2])); // false
  * ```
  *
- * @see {@link isNonPrimitive} — the complementary guard
- *
  * @category Guards
+ *
+ * @see {@link isNonPrimitive} — the complementary guard
  */
 // The `& Primitive` part is useful in case A is `unknown`
 export const isPrimitive = <A>(
@@ -304,9 +308,9 @@ export const isPrimitive = <A>(
  * console.log(MPredicate.isOneArgFunction((a: number, b: number) => a + b)); // false
  * ```
  *
- * @see {@link isTwoArgFunction} — guard for binary callbacks
- *
  * @category Guards
+ *
+ * @see {@link isTwoArgFunction} — guard for binary callbacks
  */
 export const isOneArgFunction = <A, R>(
   f: (a: A, ...args: ReadonlyArray<any>) => R,
@@ -326,9 +330,9 @@ export const isOneArgFunction = <A, R>(
  * console.log(MPredicate.isTwoArgFunction((n: number) => n + 1)); // false
  * ```
  *
- * @see {@link isOneArgFunction} — guard for unary callbacks
- *
  * @category Guards
+ *
+ * @see {@link isOneArgFunction} — guard for unary callbacks
  */
 export const isTwoArgFunction = <A, B, R>(
   f: (a: A, b: B, ...args: ReadonlyArray<any>) => R,
@@ -348,9 +352,9 @@ export const isTwoArgFunction = <A, B, R>(
  * console.log(MPredicate.isSingleton([5, 6])); // false
  * ```
  *
- * @see {@link isReadonlySingleton} — readonly variant
- *
  * @category Guards
+ *
+ * @see {@link isReadonlySingleton} — readonly variant
  */
 export const isSingleton = <A>(u: Array<A>): u is MTypes.Singleton<A> => u.length === 1;
 
@@ -359,9 +363,9 @@ export const isSingleton = <A>(u: Array<A>): u is MTypes.Singleton<A> => u.lengt
  *
  * - Acts as a type guard checking `u.length === 1`.
  *
- * @see {@link isSingleton} — mutable variant
- *
  * @category Guards
+ *
+ * @see {@link isSingleton} — mutable variant
  */
 export const isReadonlySingleton = <A>(u: ReadonlyArray<A>): u is MTypes.ReadonlySingleton<A> =>
   u.length === 1;
@@ -380,9 +384,9 @@ export const isReadonlySingleton = <A>(u: ReadonlyArray<A>): u is MTypes.Readonl
  * console.log(MPredicate.isPair([5])); // false
  * ```
  *
- * @see {@link isReadonlyPair} — readonly variant
- *
  * @category Guards
+ *
+ * @see {@link isReadonlyPair} — readonly variant
  */
 export const isPair = <A>(u: Array<A>): u is MTypes.Pair<A, A> => u.length === 2;
 
@@ -391,9 +395,9 @@ export const isPair = <A>(u: Array<A>): u is MTypes.Pair<A, A> => u.length === 2
  *
  * - Acts as a type guard checking `u.length === 2`.
  *
- * @see {@link isPair} — mutable variant
- *
  * @category Guards
+ *
+ * @see {@link isPair} — mutable variant
  */
 export const isReadonlyPair = <A>(u: ReadonlyArray<A>): u is MTypes.ReadonlyPair<A, A> =>
   u.length === 2;
@@ -412,9 +416,9 @@ export const isReadonlyPair = <A>(u: ReadonlyArray<A>): u is MTypes.ReadonlyPair
  * console.log(MPredicate.isOverOne([])); // false
  * ```
  *
- * @see {@link isReadonlyOverOne} — readonly variant
- *
  * @category Guards
+ *
+ * @see {@link isReadonlyOverOne} — readonly variant
  */
 export const isOverOne = <A>(u: Array<A>): u is MTypes.OverOne<A> => u.length > 0;
 
@@ -423,9 +427,9 @@ export const isOverOne = <A>(u: Array<A>): u is MTypes.OverOne<A> => u.length > 
  *
  * - Acts as a type guard checking `u.length > 0`.
  *
- * @see {@link isOverOne} — mutable variant
- *
  * @category Guards
+ *
+ * @see {@link isOverOne} — mutable variant
  */
 export const isReadonlyOverOne = <A>(u: ReadonlyArray<A>): u is MTypes.ReadonlyOverOne<A> =>
   u.length > 0;
@@ -444,9 +448,9 @@ export const isReadonlyOverOne = <A>(u: ReadonlyArray<A>): u is MTypes.ReadonlyO
  * console.log(MPredicate.isOverTwo([5])); // false
  * ```
  *
- * @see {@link isReadonlyOverTwo} — readonly variant
- *
  * @category Guards
+ *
+ * @see {@link isReadonlyOverTwo} — readonly variant
  */
 export const isOverTwo = <A>(u: Array<A>): u is MTypes.OverTwo<A> => u.length >= 2;
 
@@ -456,9 +460,9 @@ export const isOverTwo = <A>(u: Array<A>): u is MTypes.OverTwo<A> => u.length >=
  *
  * - Acts as a type guard checking `u.length >= 2`.
  *
- * @see {@link isOverTwo} — mutable variant
- *
  * @category Guards
+ *
+ * @see {@link isOverTwo} — mutable variant
  */
 export const isReadonlyOverTwo = <A>(u: ReadonlyArray<A>): u is MTypes.ReadonlyOverTwo<A> =>
   u.length >= 2;

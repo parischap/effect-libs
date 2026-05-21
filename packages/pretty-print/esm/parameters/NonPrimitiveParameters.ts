@@ -4,7 +4,8 @@
  * `PPNonPrimitiveParameters`. When stringifying a non-primitive value, **every** entry whose
  * `isApplicableTo` predicate matches is selected and the matching ones are merged together (lower-
  * index entries override higher-index ones); fields not specified by any of the merged entries fall
- * back to the record-like defaults exposed by `PPResolvedNonPrimitiveParameters.utilInspectLikeRecord`.
+ * back to the record-like defaults exposed by
+ * `PPResolvedNonPrimitiveParameters.utilInspectLikeRecord`.
  *
  * Apart from `id` and `isApplicableTo`, every field is optional: an instance therefore acts as a
  * **partial override** layer. Use the `make` function to define your own.

@@ -67,8 +67,5 @@ jobs:
 name: publish
 on:
   workflow_dispatch:
-  release:
-    types:
-      - created
 permissions:
   id-token: write

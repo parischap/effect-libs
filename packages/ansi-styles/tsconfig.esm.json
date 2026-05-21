@@ -12,8 +12,7 @@
     "tsBuildInfoFile": ".tsbuildinfo/esm.tsbuildinfo",
     "noEmit": false,
     "emitDeclarationOnly": true,
-    "declarationMap": true,
-    "sourceRoot": "https://raw.githubusercontent.com/parischap/effect-libs/0.1.0/packages/ansi-styles/esm/",
+    "stripInternal": false,
     "types": []
   }
 }

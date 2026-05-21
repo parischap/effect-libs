@@ -5,13 +5,14 @@
  *
  * - **`Class`** extends {@link "./Data.js" | `MData.Class`} and implements `Equal.Equal`.
  * - Subclasses provide three pieces of behavior:
+ *
  *   - `[isEquivalentToSymbol]` — the semantic equivalence between two same-type instances.
- *   - `[hasSameTypeMarkerAsSymbol]` — a runtime check that two values share the same type marker.
- *     Used as a guard before calling `[isEquivalentToSymbol]`. It is intentionally not declared
- *     as a TypeScript type guard because two instances of the same generic class may share a
- *     marker yet have different type parameters.
- *   - `[Hash.symbol]` — a hash consistent with the equivalence; return `0` to disable hashing
- *     when the equivalence is cheaper than computing a hash.
+ *   - `[hasSameTypeMarkerAsSymbol]` — a runtime check that two values share the same type marker. Used
+ *     as a guard before calling `[isEquivalentToSymbol]`. It is intentionally not declared as a
+ *     TypeScript type guard because two instances of the same generic class may share a marker yet
+ *     have different type parameters.
+ *   - `[Hash.symbol]` — a hash consistent with the equivalence; return `0` to disable hashing when the
+ *     equivalence is cheaper than computing a hash.
  *
  * ## Quickstart
  *
@@ -23,15 +24,21 @@
  * import * as MEquivalenceBasedEqualityData from '@parischap/effect-lib/Data/EquivalenceBasedEqualityData';
  *
  * class UserId extends MEquivalenceBasedEqualityData.Class {
- *   constructor(readonly value: number) { super(); }
- *   [MData.idSymbol]() { return '@example/UserId/'; }
+ *   constructor(readonly value: number) {
+ *     super();
+ *   }
+ *   [MData.idSymbol]() {
+ *     return '@example/UserId/';
+ *   }
  *   [MEquivalenceBasedEqualityData.hasSameTypeMarkerAsSymbol](that: unknown) {
  *     return that instanceof UserId;
  *   }
  *   [MEquivalenceBasedEqualityData.isEquivalentToSymbol](that: this) {
  *     return this.value === that.value;
  *   }
- *   [Hash.symbol]() { return Hash.number(this.value); }
+ *   [Hash.symbol]() {
+ *     return Hash.number(this.value);
+ *   }
  * }
  *
  * console.log(Equal.equals(new UserId(1), new UserId(1))); // true

@@ -5,7 +5,8 @@
  * vary with the depth, runtime type, or key type of the value being rendered.
  *
  * Three palette-based constructors are provided: `makeDepthIndexed`, `makeTypeIndexed`, and
- * `makeKeyTypeIndexed`. Use any constructor of `ASContextStyler` to define more specialized styles.
+ * `makeKeyTypeIndexed`. Use any constructor of `ASContextStyler` to define more specialized
+ * styles.
  */
 
 import * as ASContextStyler from '@parischap/ansi-styles/ASContextStyler';
@@ -36,9 +37,9 @@ export const makeDepthIndexed = (palette: ASPalette.Type): Type =>
   });
 
 /**
- * Constructor of a palette-based type-indexed `PPStyle` that picks a color from `palette` using
- * the runtime type of the value's content (string, number, bigint, boolean, symbol, null,
- * undefined). Useful for primitive-value coloring.
+ * Constructor of a palette-based type-indexed `PPStyle` that picks a color from `palette` using the
+ * runtime type of the value's content (string, number, bigint, boolean, symbol, null, undefined).
+ * Useful for primitive-value coloring.
  *
  * @category Constructors
  */
@@ -52,9 +53,9 @@ export const makeTypeIndexed = (palette: ASPalette.Type): Type =>
   });
 
 /**
- * Constructor of a palette-based key-type-indexed `PPStyle` that picks index `0` from `palette`
- * for properties whose key is a string and index `1` for properties whose key is a symbol. Useful
- * for property-key coloring.
+ * Constructor of a palette-based key-type-indexed `PPStyle` that picks index `0` from `palette` for
+ * properties whose key is a string and index `1` for properties whose key is a symbol. Useful for
+ * property-key coloring.
  *
  * @category Constructors
  */

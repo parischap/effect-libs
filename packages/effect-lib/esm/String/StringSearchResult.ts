@@ -7,8 +7,8 @@
  * - **`Type`** is an `Equal`-aware value object built on
  *   {@link "../Data/EquivalenceBasedEqualityData.js" | `MEquivalenceBasedEqualityData.Class`}.
  * - Two results are equal iff their `startIndex`, `endIndex` and `match` all coincide.
- * - The {@link areOverlapping} `Equivalence` is **not** an equality — two matches may overlap
- *   without being equal.
+ * - The {@link areOverlapping} `Equivalence` is **not** an equality — two matches may overlap without
+ *   being equal.
  * - Three orderings are provided: by start, by end, and a "longest first" ordering useful when
  *   resolving overlapping matches.
  *
@@ -100,8 +100,8 @@ export class Type extends MEquivalenceBasedEqualityData.Class {
 export const make = (params: MTypes.Data<Type>): Type => Type.make(params);
 
 /**
- * `Equivalence` that holds when two results share `startIndex`, `endIndex` and `match`. This is
- * the equivalence used by `Equal.equals` on instances.
+ * `Equivalence` that holds when two results share `startIndex`, `endIndex` and `match`. This is the
+ * equivalence used by `Equal.equals` on instances.
  *
  * @category Equivalences
  */

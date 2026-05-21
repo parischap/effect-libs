@@ -35,9 +35,9 @@ import type * as MTypes from './types/types.js';
  *
  * - Prefer this over `Tuple.make` inside callbacks of variadic-aware iterators (`Array.map`,
  *   `Array.filter`, …): those iterators pass extra arguments (the index, the source) and
- *   `Tuple.make`, being variadic, would silently include them. For example,
- *   `pipe([1, 2, 3], Array.map(Tuple.make))` yields `[[1, 0], [2, 1], [3, 2]]` rather than the
- *   probably-intended `[[1], [2], [3]]`.
+ *   `Tuple.make`, being variadic, would silently include them. For example, `pipe([1, 2, 3],
+ *   Array.map(Tuple.make))` yields `[[1, 0], [2, 1], [3, 2]]` rather than the probably-intended
+ *   `[[1], [2], [3]]`.
  *
  * **Example** (Single-element tuple)
  *

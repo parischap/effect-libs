@@ -7,17 +7,18 @@
   "homepage": "https://github.com/parischap/effect-libs",
   "scripts": {
     "test-all": "vitest run",
-    "lint": "oxlint --type-aware --type-check --report-unused-disable-directives --disable-nested-config",
-    "lint-fix": "oxlint --type-aware --fix",
+    "lint": "oxlint --type-check --report-unused-disable-directives --disable-nested-config",
+    "lint-fix": "oxlint --fix",
     "fmt": "oxfmt --disable-nested-config --list-different",
     "commands": "tsx node_modules/@parischap/configs/esm/bin/commands.ts",
+    "prepare-go": "effect-tsgo patch",
     "build-all": "pnpm --if-present -r build",
     "lint-all": "pnpm --filter \"./**\" run  lint",
     "fmt-all": "pnpm --filter \"./**\" run  fmt",
     "lint-fix-all": "pnpm --filter \"./**\" run  lint-fix",
     "checks-all": "pnpm --filter \"./**\" run  checks",
     "docgen-all": "pnpm --filter \"./packages/*\" run  docgen",
-    "prepare": "effect-tsgo patch",
+    "prepare-go-all": "pnpm --filter \"./packages/*\" run  prepare-go",
     "checks": "pnpm lint"
   },
   "devDependencies": {

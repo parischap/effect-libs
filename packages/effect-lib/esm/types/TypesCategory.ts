@@ -4,21 +4,21 @@
  *
  * ## Mental model
  *
- * - **`Type`** has 10 cases: `String`, `Number`, `Bigint`, `Boolean`, `Symbol`, `Null`,
- *   `Undefined`, `Record`, `Array`, `Function`.
+ * - **`Type`** has 10 cases: `String`, `Number`, `Bigint`, `Boolean`, `Symbol`, `Null`, `Undefined`,
+ *   `Record`, `Array`, `Function`.
  * - `Record` is the computer-science meaning (a string-keyed object), **not** the TypeScript
- *   `Record<K, V>` utility — arrays and functions get their own categories despite being objects
- *   at the JS level.
- * - {@link fromValue} normalizes any JavaScript value to one of these categories;
- *   {@link isPrimitive} / {@link isNonPrimitive} group the categories accordingly.
+ *   `Record<K, V>` utility — arrays and functions get their own categories despite being objects at
+ *   the JS level.
+ * - {@link fromValue} normalizes any JavaScript value to one of these categories; {@link isPrimitive}
+ *   / {@link isNonPrimitive} group the categories accordingly.
  *
  * ## Common tasks
  *
  * - **Classify a value**: {@link fromValue}
  * - **Group test**: {@link isPrimitive}, {@link isNonPrimitive}
- * - **Per-category test**: {@link isString}, {@link isNumber}, {@link isBigint},
- *   {@link isBoolean}, {@link isSymbol}, {@link isNull}, {@link isUndefined},
- *   {@link isFunction}, {@link isArray}, {@link isRecord}
+ * - **Per-category test**: {@link isString}, {@link isNumber}, {@link isBigint}, {@link isBoolean},
+ *   {@link isSymbol}, {@link isNull}, {@link isUndefined}, {@link isFunction}, {@link isArray},
+ *   {@link isRecord}
  *
  * ## Quickstart
  *
@@ -59,8 +59,7 @@ export enum Type {
  * Builds the category of `u`.
  *
  * - Returns the matching {@link Type} variant for any JavaScript value.
- * - `null` and arrays each get their own category, even though `typeof` reports them as
- *   `'object'`.
+ * - `null` and arrays each get their own category, even though `typeof` reports them as `'object'`.
  *
  * @category Constructors
  */

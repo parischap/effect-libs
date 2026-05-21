@@ -1,6 +1,6 @@
 /**
- * Abstract base class shared by every tree node — only here to factor out the `value` field and
- * its getter.
+ * Abstract base class shared by every tree node — only here to factor out the `value` field and its
+ * getter.
  *
  * Most code interacts with the concrete subclasses {@link "./TreeLeaf.js" | `MTreeLeaf`} and
  * {@link "./TreeNonLeaf.js" | `MTreeNonLeaf`} or with the {@link "./Tree.js" | `MTree`} union.

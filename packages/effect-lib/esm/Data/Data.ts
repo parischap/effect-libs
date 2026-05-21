@@ -23,7 +23,10 @@
  * import * as MData from '@parischap/effect-lib/MData';
  *
  * class Point extends MData.Class {
- *   constructor(readonly x: number, readonly y: number) {
+ *   constructor(
+ *     readonly x: number,
+ *     readonly y: number,
+ *   ) {
  *     super();
  *   }
  *   [MData.idSymbol]() {
@@ -50,8 +53,8 @@ export const moduleTag = '@parischap/effect-lib/Data/';
 /**
  * Symbol naming the `id` method that subclasses implement.
  *
- * - When the method returns a string, `toString` and `toJSON` use it as the `_id` key alongside
- *   the own enumerable properties of the instance.
+ * - When the method returns a string, `toString` and `toJSON` use it as the `_id` key alongside the
+ *   own enumerable properties of the instance.
  * - When the method returns a function, `toString` and `toJSON` return whatever that function
  *   produces, bound to `this`.
  *
@@ -75,8 +78,8 @@ export type Type = Pipeable.Pipeable &
  */
 export abstract class Class extends Pipeable.Class implements Type {
   /**
-   * Returns the `id` of `this`. A string identifier is used as the `_id` field of the JSON view;
-   * a function produces a fully custom representation when invoked with `this` bound.
+   * Returns the `id` of `this`. A string identifier is used as the `_id` field of the JSON view; a
+   * function produces a fully custom representation when invoked with `this` bound.
    */
   abstract [idSymbol](): string | (() => string);
 

@@ -9,8 +9,8 @@
  *   shape space of JavaScript values.
  * - **Function shapes**: `AnyFunction`, `OneArgFunction`, `StringTransformer`, `NumberFromString`.
  * - **Predicate / refinement shapes**: `AnyPredicate`, `AnyRefinement`, `RefinementFrom`.
- * - **Type-level utilities**: `Data` strips inherited / pipeable / equality fields off an object
- *   type to produce its plain-data view (used by class constructors); `Proto` is its complement;
+ * - **Type-level utilities**: `Data` strips inherited / pipeable / equality fields off an object type
+ *   to produce its plain-data view (used by class constructors); `Proto` is its complement;
  *   `Tuple<T, N>` materializes a fixed-size tuple; `IntersectAndSimplify` and `ToKeyIntersection`
  *   help build intersections in conditional types.
  *
