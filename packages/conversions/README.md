@@ -18,7 +18,7 @@ Can also come in handy to non-Effect users.
 - [Package size and tree-shaking](#package-size-and-tree-shaking)
 - [How to import?](#how-to-import)
 - [API](#api)
-- [Upgrading](#upgrading)
+- [Changelog](#changelog)
 - [In this package](#in-this-package)
 - [Branding](#branding)
   - [Introduction](#1-introduction)
@@ -105,13 +105,22 @@ In this documentation, we'll use the second option. You should do the same if yo
 
 After reading this introduction, you may take a look at the [API](https://parischap.github.io/effect-libs/docs/conversions) documentation.
 
-## Upgrading
+## Changelog
 
-Version 0.4.0 updated to Effect 4.0.0-beta.35. The main breaking changes are:
+### v1.0.0 — Effect v4
 
-- `Schema.decodeEither` and `Schema.encodeEither` have been renamed to `Schema.decodeExit` and `Schema.encodeExit`
-- `DateTime.unsafeMakeZoned` has been renamed to `DateTime.makeZonedUnsafe`
-- `BigDecimal.unsafeDivide` has been renamed to `BigDecimal.divideUnsafe`
+> **Ported to Effect v4** (`effect@4.0.0-beta`).
+
+- **Module reorganization:** formatting modules are now grouped under `formatting/` (number, datetime, template); rounding modules under `rounding/`. This produces cleaner barrel imports and better tree-shaking.
+- **`CVRounder` and `CVRounderParams`** are now distinct top-level modules (previously part of `CVRoundingOption`).
+- **`CVDateTimeFormatter` and `CVDateTimeParser`** are now separate modules, decoupled from `CVDateTimeFormat`.
+- **`CVNumberBase10Formatter` and `CVNumberBase10Parser`** are now separate modules, decoupled from `CVNumberBase10Format`.
+- **`CVNumberBase10FormatScientificNotationOption` and `CVNumberBase10FormatSignDisplayOption`** are now separate modules, making the number format API fully compositional.
+- Removed built-in branding modules (`CVEmail`, `CVSemVer`, `CVInteger`, `CVPositiveInteger`, `CVReal`, `CVPositiveReal`) and numeric type helpers (`CVBigDecimal`, `CVBigInt`)
+
+### v0.1.0 — Sep 2025 (Effect 3.17.13)
+
+First public release. Includes: rounding (`CVRounder`, `CVRounderParams`, `CVRoundingOption`), number formatting and parsing (`CVNumberBase10Format`), templating (`CVTemplate`, `CVTemplatePlaceholder`, `CVTemplateSeparator`, `CVTemplatePart`), datetime (`CVDateTime`), datetime formatting and parsing (`CVDateTimeFormat`, `CVDateTimeFormatContext`), schemas (`CVSchema`), and branding (`CVEmail`, `CVSemVer`, `CVInteger`, `CVPositiveInteger`, `CVReal`, `CVPositiveReal`).
 
 ## In this package
 

@@ -302,13 +302,13 @@ For an array (which is also iterable), both `utilInspectLikeArray` and `utilInsp
 
 The following pre-built instances are available in `PPNonPrimitiveParameters`:
 
-| Instance                  | Applies to        | Notes                                                              |
-| ------------------------- | ----------------- | ------------------------------------------------------------------ |
-| `utilInspectLikeFunction` | functions         | shows `[Function: name]`                                           |
-| `utilInspectLikeArray`    | arrays            | shows `[ 1, 2, 3 ]`                                                |
-| `utilInspectLikeIterable` | iterables         | shows `Map(2) { 'a' => 1, 'b' => 2 }`; caps at 100 elements        |
-| `treeify`                 | any non-primitive | tree rendering, shows leaf values                                  |
-| `treeifyHideLeaves`       | any non-primitive | tree rendering, hides leaf values                                  |
+| Instance                  | Applies to        | Notes                                                       |
+| ------------------------- | ----------------- | ----------------------------------------------------------- |
+| `utilInspectLikeFunction` | functions         | shows `[Function: name]`                                    |
+| `utilInspectLikeArray`    | arrays            | shows `[ 1, 2, 3 ]`                                         |
+| `utilInspectLikeIterable` | iterables         | shows `Map(2) { 'a' => 1, 'b' => 2 }`; caps at 100 elements |
+| `treeify`                 | any non-primitive | tree rendering, shows leaf values                           |
+| `treeifyHideLeaves`       | any non-primitive | tree rendering, hides leaf values                           |
 
 `PPNonPrimitiveParameters.make` accepts all the fields of `PPNonPrimitiveParameters.Type`. Apart from `id` and `isApplicableTo`, every field is optional: any unset field is filled in by the merge defaults described above. You can spread an existing instance and override only the fields you need. The most important fields are described below.
 
@@ -393,7 +393,7 @@ A `PPPropertyFormatter.Type` instance that combines the stringified key with the
 
 - `valueOnly` — ignores the key entirely (used for arrays where auto-generated numeric keys add no information).
 - `utilInspectLikeArrayAndRecord` — separates key and value with `: ` on the same line (e.g. `a: 1`). The merge default.
-- `utilInspectLikeIterable` — separates key and value with ` => ` (e.g. `'key' => 1`).
+- `utilInspectLikeIterable` — separates key and value with `=>` (e.g. `'key' => 1`).
 - `usualTreeify` — for both leaf and non-leaf properties: appends the value lines after the key lines with no separator (tree layout).
 - `usualTreeifyHideLeaves` — for leaf properties: shows only the key; for non-leaf properties: same as `usualTreeify`.
 
@@ -505,13 +505,23 @@ console.log(pipe(toPrint, stringify, PPStringifiedValue.toAnsiString()));
 
 ```ts
 class Animal {
-  constructor(public readonly species: string, public readonly legs: number) {}
+  constructor(
+    public readonly species: string,
+    public readonly legs: number,
+  ) {}
 }
 class Dog extends Animal {
-  constructor(public readonly name: string) { super('dog', 4); }
+  constructor(public readonly name: string) {
+    super('dog', 4);
+  }
 }
 class WorkingDog extends Dog {
-  constructor(name: string, public readonly job: string) { super(name); }
+  constructor(
+    name: string,
+    public readonly job: string,
+  ) {
+    super(name);
+  }
 }
 ```
 
@@ -572,3 +582,39 @@ const recordWithFilterAndSort = PPNonPrimitiveParameters.make({
 <img alt="with-property-filter-and-sort-example" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPCFET0NUWVBFIHN2ZyBQVUJMSUMgIi0vL1czQy8vRFREIFNWRyAxLjAvL0VOIiAiaHR0cDovL3d3dy53My5vcmcvVFIvMjAwMS9SRUMtU1ZHLTIwMDEwOTA0L0RURC9zdmcxMC5kdGQiPgo8c3ZnIHdpZHRoPSIzMzUuMDAiIGhlaWdodD0iMTE1LjgzIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMzM1LjAwIiBoZWlnaHQ9IjExNS44MyIgZmlsbD0iIzE3MTcxNyIgeD0iMC4wMHB4IiB5PSIwLjAwcHgiLz4KPGcgZm9udC1mYW1pbHk9InVpLW1vbm9zcGFjZSwgU0ZNb25vLVJlZ3VsYXIsIE1lbmxvLCBDb25zb2xhcywgbW9ub3NwYWNlIiBmb250LXNpemU9IjE0LjAwcHgiIGZpbGw9IiNjNGM0YzQiIGNsaXAtcGF0aD0idXJsKCN0ZXJtaW5hbE1hc2spIj4KPHRleHQgeD0iMzAuMDBweCIgeT0iMzQuMDBweCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHRzcGFuIHhtbDpzcGFjZT0icHJlc2VydmUiIGZpbGw9IiNENzRFNkYiPns8L3RzcGFuPjwvdGV4dD48dGV4dCB4PSIzMC4wMHB4IiB5PSI0OC4wMHB4IiB4bWw6c3BhY2U9InByZXNlcnZlIj48dHNwYW4geG1sOnNwYWNlPSJwcmVzZXJ2ZSIgZmlsbD0iIzMxQkI3MSI+ICA8L3RzcGFuPjx0c3BhbiB4bWw6c3BhY2U9InByZXNlcnZlIiBmaWxsPSIjRDc0RTZGIj5hbHBoYTwvdHNwYW4+PHRzcGFuIHhtbDpzcGFjZT0icHJlc2VydmUiIGZpbGw9IiNDNUM4QzYiPjogPC90c3Bhbj48dHNwYW4geG1sOnNwYWNlPSJwcmVzZXJ2ZSIgZmlsbD0iIzMxQkI3MSI+JmFwb3M7Zmlyc3QgYWZ0ZXIgc29ydGluZyZhcG9zOzwvdHNwYW4+PHRzcGFuIHhtbDpzcGFjZT0icHJlc2VydmUiIGZpbGw9IiNDNUM4QzYiPiw8L3RzcGFuPjwvdGV4dD48dGV4dCB4PSIzMC4wMHB4IiB5PSI2Mi4wMHB4IiB4bWw6c3BhY2U9InByZXNlcnZlIj48dHNwYW4geG1sOnNwYWNlPSJwcmVzZXJ2ZSIgZmlsbD0iIzMxQkI3MSI+ICA8L3RzcGFuPjx0c3BhbiB4bWw6c3BhY2U9InByZXNlcnZlIiBmaWxsPSIjRDc0RTZGIj5iZXRhPC90c3Bhbj48dHNwYW4geG1sOnNwYWNlPSJwcmVzZXJ2ZSIgZmlsbD0iI0M1QzhDNiI+OiA8L3RzcGFuPjx0c3BhbiB4bWw6c3BhY2U9InByZXNlcnZlIiBmaWxsPSIjRDNFNTYxIj50cnVlPC90c3Bhbj48dHNwYW4geG1sOnNwYWNlPSJwcmVzZXJ2ZSIgZmlsbD0iI0M1QzhDNiI+LDwvdHNwYW4+PC90ZXh0Pjx0ZXh0IHg9IjMwLjAwcHgiIHk9Ijc2LjAwcHgiIHhtbDpzcGFjZT0icHJlc2VydmUiPjx0c3BhbiB4bWw6c3BhY2U9InByZXNlcnZlIiBmaWxsPSIjMzFCQjcxIj4gIDwvdHNwYW4+PHRzcGFuIHhtbDpzcGFjZT0icHJlc2VydmUiIGZpbGw9IiNENzRFNkYiPm1pZGRsZTwvdHNwYW4+PHRzcGFuIHhtbDpzcGFjZT0icHJlc2VydmUiIGZpbGw9IiNDNUM4QzYiPjogPC90c3Bhbj48dHNwYW4geG1sOnNwYWNlPSJwcmVzZXJ2ZSIgZmlsbD0iI0QzRTU2MSI+NDI8L3RzcGFuPjx0c3BhbiB4bWw6c3BhY2U9InByZXNlcnZlIiBmaWxsPSIjQzVDOEM2Ij4sPC90c3Bhbj48L3RleHQ+PHRleHQgeD0iMzAuMDBweCIgeT0iOTAuMDBweCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHRzcGFuIHhtbDpzcGFjZT0icHJlc2VydmUiIGZpbGw9IiMzMUJCNzEiPiAgPC90c3Bhbj48dHNwYW4geG1sOnNwYWNlPSJwcmVzZXJ2ZSIgZmlsbD0iI0Q3NEU2RiI+emV0YTwvdHNwYW4+PHRzcGFuIHhtbDpzcGFjZT0icHJlc2VydmUiIGZpbGw9IiNDNUM4QzYiPjogPC90c3Bhbj48dHNwYW4geG1sOnNwYWNlPSJwcmVzZXJ2ZSIgZmlsbD0iIzMxQkI3MSI+JmFwb3M7bGFzdCBpbiB1bnNvcnRlZCBvcmRlciZhcG9zOzwvdHNwYW4+PC90ZXh0Pjx0ZXh0IHg9IjMwLjAwcHgiIHk9IjEwNC4wMHB4IiB4bWw6c3BhY2U9InByZXNlcnZlIj48dHNwYW4geG1sOnNwYWNlPSJwcmVzZXJ2ZSIgZmlsbD0iI0Q3NEU2RiI+fTwvdHNwYW4+PHRzcGFuIHhtbDpzcGFjZT0icHJlc2VydmUiLz48L3RleHQ+CjwvZz4KPC9zdmc+Cg==" example-name="with-property-filter-and-sort" />
 
 See [`examples/with-property-filter-and-sort.ts`](examples/with-property-filter-and-sort.ts) for the full configuration.
+
+## Changelog
+
+### v1.0.0 — Effect v4
+
+> **Ported to Effect v4** (`effect@4.0.0-beta`). Complete API redesign — not backward-compatible with v0.3.x.
+
+The central entry point is now `PPStringifier`, built from a `PPParameters` instance. Six pre-built `PPParameters` instances ship out of the box (`utilInspectLike`, `darkModeUtilInspectLike`, `treeify`, `darkModeTreeify`, `treeifyHideLeaves`, `darkModeTreeifyHideLeaves`). The full styling, bypassing, filtering, and formatting pipeline is individually accessible and replaceable.
+
+Compared with v0.3.x:
+
+- **`PPStyleMap`** replaces `StyleMap` and `ValueBasedStyler*`. Styles are now `ASContextStyler`-based, enabling depth-, type-, and key-indexed coloring from a single abstraction.
+- **`PPNonPrimitiveParameters`** replaces the old `RecordFormatter`/`NonPrimitiveFormatter` split. Multiple parameter sets can match a single value simultaneously and are merged automatically, with lower-index entries winning.
+- **`PPByPasser`** API cleaned up (`empty`, `toStringable`, `allWithName`, `dateAndRegExp`, `merge`). Dates and regular expressions are now bypassed by default in the merge fallback.
+- **`PPPrimitiveFormatter`** replaces `PrimitiveFormatter`. Quote character, max string length, and number/bigint formatters are all configurable.
+- **`PPStringifiedValue`** gained `toUnstyledStrings` alongside `toAnsiString`.
+- Effect iterables (`HashMap`, `HashSet`, …) are natively supported in the pre-built parameter instances without any extra configuration.
+- Circular references are tagged and displayed identically to `util.inspect` (`<Ref *N>` / `[Circular *N]`).
+- Added `PPPartName`, `PPValueOrder`, `PPPropertyNumberDisplayOption` for fine-grained control over property ordering and display.
+
+### v0.3.0 — Mar 2025 (Effect 3.13.6)
+
+Significant refactor — not backward-compatible with v0.2.x. The monolithic `Options` + `RecordFormatter` model was broken apart into composable pieces:
+
+- Introduced `StyleMap` (declarative color/style configuration), `NonPrimitiveFormatter`, `PrimitiveFormatter`, `ByPassers`, `ValueBasedStyler`, and `ValueBasedStylerConstructor`.
+- Added `StringifiedProperties` and `Values` for finer-grained control over how property lists are assembled and rendered.
+- Added `MarkMap`, `MarkShower`, and `MarkShowerConstructor` for configurable bracket and separator markup.
+- Output is comparable in appearance to v0.2.x, but the configuration API is substantially more expressive.
+
+### v0.1.0 — Sep 2024
+
+First stable public release. Usable `Options` + `stringify` model with `ByPasser`, `PropertyFilter`, `PropertyFormatter`, `ValueOrder`, `FormattedString`, `ColorSet`, `ColorWheel`, `RecordMarks`, and `IndentMode`.
+
+### v0.0.2 — Sep 2024
+
+First public release (alpha)
