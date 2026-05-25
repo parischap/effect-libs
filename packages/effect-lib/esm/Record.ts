@@ -4,7 +4,7 @@
  *
  * ## Mental model
  *
- * - **`Type<A>`** is `Record.ReadonlyRecord<string, A>`, i.e. a plain JavaScript object used as a
+ * - **`Type<K,A>`** is `Record.ReadonlyRecord<K, A>`, i.e. a plain JavaScript object used as a
  *   string-keyed map.
  * - The reflective helpers ({@link tryZeroParamFunction}, {@link tryZeroParamStringFunction}) are
  *   used by formatters like the `pretty-print` package to discover whether a value defines a custom
@@ -44,7 +44,7 @@ import * as MPredicate from './Predicate.js';
  *
  * @category Models
  */
-export interface Type<out A> extends Record.ReadonlyRecord<string, A> {}
+export type Type<K extends string | symbol, A> = Record.ReadonlyRecord<K, A>;
 
 /**
  * Returns the value at `key` in `self` without checking that the key exists.
@@ -64,9 +64,8 @@ export interface Type<out A> extends Record.ReadonlyRecord<string, A> {}
  * @category Utils
  */
 export const unsafeGet =
-  (key: string) =>
-  <A>(self: Type<A>): A =>
-    // @ts-expect-error getting record content unsafely
+  <K extends string | symbol>(key: NoInfer<K>) =>
+  <A>(self: Type<K, A>): A =>
     self[key];
 
 /**
@@ -103,9 +102,9 @@ export const tryZeroParamFunction =
     readonly functionName: string | symbol;
     readonly exception?: MTypes.AnyFunction;
   }) =>
-  (self: MTypes.NonPrimitive): Option.Option<unknown> =>
+  <K extends string | symbol>(self: Type<K, unknown>): Option.Option<unknown> =>
     pipe(
-      self[functionName],
+      (self as Type<string | symbol, unknown>)[functionName],
       Option.liftPredicate((u): u is MTypes.AnyFunction => Predicate.isFunction(u)),
       Option.filter(
         Predicate.and(

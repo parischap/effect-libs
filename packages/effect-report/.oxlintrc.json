@@ -1,6 +1,8 @@
 {
   "options": {
-    "typeAware": true
+    "typeAware": true,
+    "reportUnusedDisableDirectives": "error",
+    "typeCheck": true
   },
   "ignorePatterns": [
     "/node_modules/",

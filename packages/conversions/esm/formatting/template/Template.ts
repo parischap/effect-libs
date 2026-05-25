@@ -68,7 +68,7 @@ type TypeId = typeof TypeId;
  *
  * @category Models
  */
-export class Type<out PlaceholderTypes extends MTypes.NonPrimitive> extends MData.Class {
+export class Type<out PlaceholderTypes extends MTypes.Object> extends MData.Class {
   /** Synthetic description of self */
   readonly syntheticDescription: string;
 
@@ -127,6 +127,6 @@ export const make = <const PS extends CVTemplateParts.Type>(...templateParts: PS
  *
  * @category Getters
  */
-export const templateParts: <PlaceholderTypes extends MTypes.NonPrimitive>(
+export const templateParts: <PlaceholderTypes extends MTypes.Object>(
   self: Type<PlaceholderTypes>,
 ) => CVTemplateParts.Type = Struct.get('templateParts');

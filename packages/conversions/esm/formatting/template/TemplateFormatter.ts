@@ -37,7 +37,7 @@ type TypeId = typeof TypeId;
  *
  * @category Models
  */
-export class Type<in PlaceholderTypes extends MTypes.NonPrimitive> extends MData.Class {
+export class Type<in PlaceholderTypes extends MTypes.Object> extends MData.Class {
   /** Description of this CVTemplateFormatter */
   readonly description: string;
 
@@ -73,7 +73,7 @@ export class Type<in PlaceholderTypes extends MTypes.NonPrimitive> extends MData
     readonly placeholderDescription: string;
     readonly templateParts: CVTemplateParts.Type;
   }): Type<any> {
-    const format = (record: MTypes.NonPrimitive) =>
+    const format = (record: MTypes.Object) =>
       pipe(
         templateParts,
         MArray.reduceUnlessLeft('', (result, templatePart) =>
@@ -100,7 +100,7 @@ export class Type<in PlaceholderTypes extends MTypes.NonPrimitive> extends MData
   }
 
   /** Constructor of a CVTemplateFormatter from a CVTemplate */
-  static fromTemplate<PlaceholderTypes extends MTypes.NonPrimitive>(
+  static fromTemplate<PlaceholderTypes extends MTypes.Object>(
     this: void,
     template: CVTemplate.Type<PlaceholderTypes>,
   ): Type<PlaceholderTypes> {
@@ -148,7 +148,7 @@ export const { fromTemplateParts } = Type;
  *
  * @category Getters
  */
-export const format: <PlaceholderTypes extends MTypes.NonPrimitive>(
+export const format: <PlaceholderTypes extends MTypes.Object>(
   self: Type<PlaceholderTypes>,
 ) => Type<PlaceholderTypes>['format'] = Struct.get('format');
 
@@ -157,7 +157,7 @@ export const format: <PlaceholderTypes extends MTypes.NonPrimitive>(
  *
  * @category Getters
  */
-export const formatOrThrow: <PlaceholderTypes extends MTypes.NonPrimitive>(
+export const formatOrThrow: <PlaceholderTypes extends MTypes.Object>(
   self: Type<PlaceholderTypes>,
 ) => Type<PlaceholderTypes>['formatOrThrow'] = Struct.get('formatOrThrow');
 

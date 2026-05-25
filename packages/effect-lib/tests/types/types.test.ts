@@ -7,6 +7,22 @@ import { describe, it } from 'vitest';
 
 const testSymbol: unique symbol = Symbol.for('testSymbol');
 
+/** Object */
+TestUtils.assertTrueType(TestUtils.doesNotSatisfy<1, MTypes.Object>());
+TestUtils.assertTrueType(TestUtils.doesNotSatisfy<null, MTypes.Object>());
+TestUtils.assertTrueType(TestUtils.doesNotSatisfy<undefined, MTypes.Object>());
+TestUtils.assertTrueType(TestUtils.doesNotSatisfy<() => 1, MTypes.Object>());
+TestUtils.assertTrueType(TestUtils.doesNotSatisfy<[1], MTypes.Object>());
+TestUtils.assertTrueType(TestUtils.satisfies<{ a: 1 }, MTypes.Object>());
+
+/** NonPrimitive */
+TestUtils.assertTrueType(TestUtils.doesNotSatisfy<1, MTypes.NonPrimitive>());
+TestUtils.assertTrueType(TestUtils.doesNotSatisfy<null, MTypes.NonPrimitive>());
+TestUtils.assertTrueType(TestUtils.doesNotSatisfy<undefined, MTypes.NonPrimitive>());
+TestUtils.assertTrueType(TestUtils.satisfies<() => 1, MTypes.NonPrimitive>());
+TestUtils.assertTrueType(TestUtils.satisfies<[1], MTypes.NonPrimitive>());
+TestUtils.assertTrueType(TestUtils.satisfies<{ a: 1 }, MTypes.NonPrimitive>());
+
 interface TestInterface {
   readonly a: number;
   readonly b: string;
@@ -15,9 +31,6 @@ interface TestInterface {
   [testSymbol](): string;
   [Equal.symbol](): boolean;
 }
-
-//type TestTuple = readonly [number, boolean, string];
-//type TestOneArgFunction = typeof Number.increment;
 
 /** Tuple */
 TestUtils.assertTrueType(

@@ -17,9 +17,9 @@
     "with-property-filter-and-sort.ts"
   ],
   "environment": "Neutral",
-  "buildMethod": "NoBundling",
+  "buildMethod": "InternalAndNpmBundling",
   "version": "1.0.0",
-  "publish": false,
+  "publishToNpm": false,
   "hasDocGen": true,
   "keywords": [
     "inspect",

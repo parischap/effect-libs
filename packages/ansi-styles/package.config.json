@@ -5,9 +5,9 @@
   },
   "examples": ["basic-usage.ts", "cancelling-a-style.ts", "simple-colors.ts", "all-colors.ts"],
   "environment": "Neutral",
-  "buildMethod": "NoBundling",
+  "buildMethod": "InternalAndNpmBundling",
   "version": "1.0.0",
-  "publish": true,
+  "publishToNpm": true,
   "hasDocGen": true,
   "keywords": [
     "terminal",

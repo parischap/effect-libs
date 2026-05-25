@@ -7,9 +7,9 @@
   "homepage": "https://github.com/parischap/effect-libs/tree/master/packages/node-effect-lib",
   "scripts": {
     "test-all": "vitest run",
-    "lint": "oxlint --type-check --report-unused-disable-directives --disable-nested-config",
-    "lint-fix": "oxlint --fix",
-    "fmt": "oxfmt --disable-nested-config --list-different",
+    "lint": "oxlint --disable-nested-config",
+    "lint-fix": "oxlint --fix --disable-nested-config",
+    "fmt": "oxfmt --disable-nested-config",
     "commands": "tsx node_modules/@parischap/configs/esm/bin/commands.ts",
     "prepare-go": "effect-tsgo patch",
     "build-all": "pnpm --if-present -r build",
@@ -42,9 +42,6 @@
   "exports": {
     ".": {
       "default": "./esm/index.ts"
-    },
-    "./N": {
-      "default": "./esm/.DS_Store"
     },
     "./NFs": {
       "default": "./esm/Fs.ts"

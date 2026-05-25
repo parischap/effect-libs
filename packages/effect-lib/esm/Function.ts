@@ -225,8 +225,8 @@ export const once = <A>(f: Function.LazyArg<A>): Function.LazyArg<A> => {
  * @category Utils
  */
 export const applyAsThis =
-  (o: MTypes.NonPrimitive) =>
-  <A>(self: Function.LazyArg<A>): A =>
+  <O extends MTypes.NonPrimitive>(o: NoInfer<O>) =>
+  <A>(self: (this: O) => A): A =>
     self.call(o);
 
 /**
@@ -297,4 +297,4 @@ export const clone = <This, Args extends ReadonlyArray<unknown>, R>(
  *
  * @category Constants
  */
-export const proto = Object.getPrototypeOf(Math.max) as MTypes.NonPrimitive;
+export const proto = globalThis.Function.prototype;

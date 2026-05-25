@@ -244,9 +244,8 @@ describe('MMatch', () => {
             MPredicate.isPrimitive,
             flow(Function.satisfies<MTypes.Primitive>(), Function.constant('a')),
           ),
-          MMatch.unsafeWhen(
-            MPredicate.isNonPrimitive,
-            flow(Function.satisfies<MTypes.NonPrimitive>(), Function.constant('c')),
+          MMatch.unsafeWhen(MPredicate.isNonPrimitive, (nonPrimitive) =>
+            pipe(nonPrimitive, Function.satisfies<MTypes.NonPrimitive>(), Function.constant('c')),
           ),
         ),
         'c',

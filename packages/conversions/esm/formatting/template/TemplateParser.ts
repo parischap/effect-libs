@@ -40,7 +40,7 @@ type TypeId = typeof TypeId;
  *
  * @category Models
  */
-export class Type<out PlaceholderTypes extends MTypes.NonPrimitive> extends MData.Class {
+export class Type<out PlaceholderTypes extends MTypes.Object> extends MData.Class {
   /** Description of this CVTemplateParser */
   readonly description: string;
 
@@ -127,7 +127,7 @@ export class Type<out PlaceholderTypes extends MTypes.NonPrimitive> extends MDat
   }
 
   /** Constructor of a CVTemplateParser from a template */
-  static fromTemplate<PlaceholderTypes extends MTypes.NonPrimitive>(
+  static fromTemplate<PlaceholderTypes extends MTypes.Object>(
     template: CVTemplate.Type<PlaceholderTypes>,
   ): Type<PlaceholderTypes> {
     return Type.make({
@@ -173,7 +173,7 @@ export const fromTemplateParts = Type.fromTemplateParts.bind(Type);
  *
  * @category Parsing
  */
-export const parse: <PlaceholderTypes extends MTypes.NonPrimitive>(
+export const parse: <PlaceholderTypes extends MTypes.Object>(
   self: Type<PlaceholderTypes>,
 ) => Type<PlaceholderTypes>['parse'] = Struct.get('parse');
 
@@ -182,6 +182,6 @@ export const parse: <PlaceholderTypes extends MTypes.NonPrimitive>(
  *
  * @category Parsing
  */
-export const parseOrThrow: <PlaceholderTypes extends MTypes.NonPrimitive>(
+export const parseOrThrow: <PlaceholderTypes extends MTypes.Object>(
   self: Type<PlaceholderTypes>,
 ) => Type<PlaceholderTypes>['parseOrThrow'] = Struct.get('parseOrThrow');

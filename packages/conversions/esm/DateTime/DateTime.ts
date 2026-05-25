@@ -303,13 +303,12 @@ export class Type extends MEquivalenceBasedEqualityData.Class {
           readonly zoneSecond: number;
         } = LOCAL_TIME_ZONE_OFFSET,
   ): Result.Result<Type, MInputError.Type> {
-    /* oxlint-disable-next-line typescript-eslint(no-this-alias */
-    const self = this;
+    const { timestamp, zonedTimestamp } = this;
     return Result.gen(function* () {
       const buildFromZoneOffset = (validatedZoneOffset: number) =>
         keepTimestamp
-          ? Type.uncalculatedFromTimestamp(self.timestamp, validatedZoneOffset)
-          : Type.uncalculatedFromZonedTimestamp(self.zonedTimestamp, validatedZoneOffset);
+          ? Type.uncalculatedFromTimestamp(timestamp, validatedZoneOffset)
+          : Type.uncalculatedFromZonedTimestamp(zonedTimestamp, validatedZoneOffset);
 
       if (MPredicate.isPrimitive(zoneOffset)) {
         const validatedZoneOffset = yield* pipe(

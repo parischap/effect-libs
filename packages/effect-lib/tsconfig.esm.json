@@ -11,6 +11,7 @@
     "outDir": "dist/esm",
     "tsBuildInfoFile": ".tsbuildinfo/esm.tsbuildinfo",
     "noEmit": false,
+    "target": "es2020",
     "emitDeclarationOnly": true,
     "stripInternal": false,
     "types": []

@@ -31,9 +31,19 @@ import type * as Hash from 'effect/Hash';
 import type * as Predicate from 'effect/Predicate';
 
 /**
- * Type that represents a non-null object as defined in javascript. It includes records (in their
- * usual computer science meaning), class instances, arrays, and functions but not null or
- * undefined.
+ * Type that represents a real object, not an array, not a function, not null
+ *
+ * @category Models
+ */
+export interface Object {
+  [x: PropertyKey]: unknown;
+}
+
+/**
+ * Type that represents anything but a JavaScript primitive. It includes records (in their usual
+ * computer science meaning), class instances, arrays, and functions but not null or undefined.
+ * Equivalent to the Effect ObjectKeyword type. Should be defined as an alias to the `object` but
+ * doing so does not work as well.
  *
  * @category Models
  */

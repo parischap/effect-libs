@@ -221,7 +221,7 @@ export const DateTimeZonedFromString = (
  *
  * @category Utils
  */
-export const Template = <PlaceholderTypes extends MTypes.NonPrimitive>(
+export const Template = <PlaceholderTypes extends MTypes.Object>(
   template: CVTemplate.Type<PlaceholderTypes>,
 ): Schema.Codec<PlaceholderTypes, string> => {
   const parseFunction = pipe(template, CVTemplateParser.fromTemplate, CVTemplateParser.parse);

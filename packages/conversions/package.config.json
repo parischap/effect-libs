@@ -18,9 +18,9 @@
     "DateTimeFormat_2.ts"
   ],
   "environment": "Neutral",
-  "buildMethod": "NoBundling",
+  "buildMethod": "InternalAndNpmBundling",
   "version": "1.0.0",
-  "publish": true,
+  "publishToNpm": true,
   "hasDocGen": true,
   "keywords": [
     "number",

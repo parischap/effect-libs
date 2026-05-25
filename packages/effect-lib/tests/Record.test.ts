@@ -9,11 +9,8 @@ import { describe, it } from 'vitest';
 
 describe('MRecord', () => {
   describe('unsafeGet', () => {
-    it('Missing key does not throw', () => {
-      TestUtils.doesNotThrow(() => pipe({ a: 1, b: true }, MRecord.unsafeGet('z')));
-    });
     it('Passing', () => {
-      TestUtils.strictEqual(pipe({ a: 1, b: true }, MRecord.unsafeGet('a')), 1);
+      TestUtils.strictEqual(pipe({ a: 1, b: 2 }, MRecord.unsafeGet('a')), 1);
     });
   });
 

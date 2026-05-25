@@ -1,12 +1,12 @@
 {
   "description": "An Effect playground",
   "version": "0.1.0",
-  "publish": false,
+  "publishToNpm": false,
   "dependencies": {
     "@parischap/effect-lib": "*"
   },
   "environment": "Node",
-  "buildMethod": "NoBundling",
+  "buildMethod": "None",
   "hasDocGen": false,
   "keywords": [],
   "useEffectAsPeerDependency": false
