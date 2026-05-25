@@ -13,6 +13,7 @@ const myFormatter = PPPrimitiveFormatter.utilInspectLikeMaker({
   maxStringLength: 30,
   quoteChar: '"',
   // Numbers are formatted with two decimals and thousand separators
+  /* oxlint-disable-next-line typescript-eslint/unbound-method */
   numberFormatter: new Intl.NumberFormat('en-US', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,

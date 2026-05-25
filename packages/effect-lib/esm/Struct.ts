@@ -56,7 +56,8 @@ import type * as MTypes from './types/types.js';
 export type Append<First extends MTypes.NonPrimitive, Second extends MTypes.NonPrimitive> = {
   readonly [k in keyof First | keyof Second]: k extends keyof Second
     ? k extends keyof First
-      ? Extract<Second[k], undefined> extends never
+      ? // Is Second[k] not optional
+        Extract<Second[k], undefined> extends never
         ? Second[k]
         : Exclude<Second[k], undefined> | First[k]
       : Second[k]
@@ -213,7 +214,10 @@ export const enrichWith =
     fields: O1,
   ) =>
   (self: O): MTypes.Data<Omit<O, keyof O1> & { readonly [key in keyof O1]: ReturnType<O1[key]> }> =>
-    pipe(fields, Record.map(Function.apply(self)), (newValues) => ({ ...self, ...newValues }));
+    pipe(fields, Record.map(Function.apply(self)), (newValues) => ({
+      ...self,
+      ...newValues,
+    }));
 
 /**
  * Same as {@link enrichWith} but writes the new fields into `self` in place using `Object.assign`.

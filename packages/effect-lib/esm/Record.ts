@@ -140,8 +140,8 @@ export const tryZeroParamFunction =
  *
  * @category Utils
  */
-export const tryZeroParamStringFunction = (params: {
-  readonly functionName: string | symbol;
+export const tryZeroParamStringFunction = <K extends string | symbol>(params: {
+  readonly functionName: K;
   readonly exception?: MTypes.AnyFunction;
-}): MTypes.OneArgFunction<MTypes.NonPrimitive, Option.Option<string>> =>
+}): ((self: Type<K, unknown>) => Option.Option<string>) =>
   flow(tryZeroParamFunction(params), Option.filter(Predicate.isString));

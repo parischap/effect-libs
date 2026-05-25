@@ -42,14 +42,14 @@ export interface Object {
 /**
  * Type that represents anything but a JavaScript primitive. It includes records (in their usual
  * computer science meaning), class instances, arrays, and functions but not null or undefined.
- * Equivalent to the Effect ObjectKeyword type. Should be defined as an alias to the `object` but
- * doing so does not work as well.
+ * Equivalent to the Effect ObjectKeyword type. Should be defined as an alias to the `object` type
+ * but the object type cannot be indexed so this definition is better
  *
  * @category Models
  */
 export interface NonPrimitive {
-  // DO NOT REPLACE any by unknown: a simple object wouldn't be assignable to a NonPrimitive
-  readonly [key: string | symbol]: any;
+  // DO NOT REPLACE any by unknown: in that case, arrays and functions are excluded.
+  readonly [key: PropertyKey]: any;
 }
 
 /**

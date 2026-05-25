@@ -2,7 +2,7 @@ import * as Option from 'effect/Option';
 
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as MString from '@parischap/effect-lib/MString';
-import * as MTypes from '@parischap/effect-lib/MTypes';
+import type * as MTypes from '@parischap/effect-lib/MTypes';
 import * as PPPrimitiveFormatter from '@parischap/pretty-print/PPPrimitiveFormatter';
 import * as PPValue from '@parischap/pretty-print/PPValue';
 
