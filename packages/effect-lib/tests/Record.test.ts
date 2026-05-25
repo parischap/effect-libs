@@ -18,7 +18,7 @@ describe('MRecord', () => {
     it('Object with default prototype', () => {
       TestUtils.assertNone(
         pipe(
-          { a: 5 },
+          { a: 5 } as MRecord.Type<string | symbol, number>,
           MRecord.tryZeroParamFunction({
             functionName: 'toString',
             /* oxlint-disable-next-line @typescript-eslint/unbound-method */

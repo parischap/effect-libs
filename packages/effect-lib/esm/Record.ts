@@ -1,6 +1,8 @@
 /**
  * Extension to the Effect Record module providing unsafe field access and helpers for invoking
- * zero-argument methods reflectively.
+ * zero-argument methods reflectively. Although it's possible to build a record whose key is a
+ * literal type, e.g. 'a' | 'b', this possibility should never be used: if you know what the keys
+ * are, use the Struct type instead.
  *
  * ## Mental model
  *
@@ -95,16 +97,16 @@ export const unsafeGet =
  * @category Utils
  */
 export const tryZeroParamFunction =
-  ({
+  <K extends string | symbol>({
     functionName,
     exception,
   }: {
-    readonly functionName: string | symbol;
+    readonly functionName: NoInfer<K>;
     readonly exception?: MTypes.AnyFunction;
   }) =>
-  <K extends string | symbol>(self: Type<K, unknown>): Option.Option<unknown> =>
+  (self: Type<K, unknown>): Option.Option<unknown> =>
     pipe(
-      (self as Type<string | symbol, unknown>)[functionName],
+      self[functionName],
       Option.liftPredicate((u): u is MTypes.AnyFunction => Predicate.isFunction(u)),
       Option.filter(
         Predicate.and(
