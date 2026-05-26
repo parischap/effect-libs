@@ -251,7 +251,7 @@ export const Template = <PlaceholderTypes extends MTypes.Object>(
     ),
     Record.fromEntries,
     Schema.Struct,
-  ) as Schema.Codec<PlaceholderTypes>;
+  ) as unknown as Schema.Codec<PlaceholderTypes>;
 
   return Schema.String.pipe(
     Schema.decodeTo(
