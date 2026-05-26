@@ -12,7 +12,6 @@
  *
  * - **Bridge with nullables**: {@link OptionOrNullable}, {@link fromOptionOrNullable}
  * - **Bridge with iterators**: {@link fromNextIteratorValue}
- * - **Bridge with Effect**: {@link asEffect}
  *
  * ## Quickstart
  *
@@ -27,8 +26,6 @@
  * ```
  */
 
-import type * as Cause from 'effect/Cause';
-import type * as Effect from 'effect/Effect';
 import * as Option from 'effect/Option';
 
 /**
@@ -95,25 +92,3 @@ export const fromNextIteratorValue = <A>(iterator: Iterator<A>): Option.Option<A
   const next = iterator.next();
   return next.done === false ? Option.some(next.value) : Option.none();
 };
-
-/**
- * Lifts `self` into `Effect`, failing with `NoSuchElementError` when `self` is `Option.none`.
- *
- * **Example** (Use an `Option` inside an `Effect` workflow)
- *
- * ```ts
- * import { Effect, Option } from 'effect';
- * import * as MOption from '@parischap/effect-lib/MOption';
- *
- * const program = Effect.gen(function* () {
- *   const value = yield* MOption.asEffect(Option.some(42));
- *   return value * 2;
- * });
- *
- * Effect.runPromise(program).then(console.log); // 84
- * ```
- *
- * @category Utils
- */
-export const asEffect = <A>(self: Type<A>): Effect.Effect<A, Cause.NoSuchElementError> =>
-  self.asEffect();

@@ -1,9 +1,0 @@
-remote_theme: mikearnaldi/just-the-docs
-
-# Enable or disable the site search
-search_enabled: true
-
-# Aux links for the upper right navigation
-aux_links:
-'@parischap/ansi-styles on GitHub':
-  - 'https://github.com/parischap/effect-libs/tree/master/packages/ansi-styles'

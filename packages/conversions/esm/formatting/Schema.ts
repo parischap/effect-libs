@@ -17,7 +17,6 @@ import * as SchemaTransformation from 'effect/SchemaTransformation';
 import * as Tuple from 'effect/Tuple';
 
 import * as MMatch from '@parischap/effect-lib/MMatch';
-import * as MResult from '@parischap/effect-lib/MResult';
 import * as MTuple from '@parischap/effect-lib/MTuple';
 import type * as MTypes from '@parischap/effect-lib/MTypes';
 
@@ -62,7 +61,7 @@ export const FiniteFromString = (
             s,
             parseFunction,
             Result.fromOption(() => new SchemaIssue.InvalidValue(Option.some(s))),
-            MResult.asEffect,
+            Effect.fromResult,
           ),
         encode: flow(formatFunction, Effect.succeed),
       }),
@@ -98,7 +97,7 @@ export const BigDecimalFromString = (
             s,
             parseFunction,
             Result.fromOption(() => new SchemaIssue.InvalidValue(Option.some(s))),
-            MResult.asEffect,
+            Effect.fromResult,
           ),
         encode: flow(formatFunction, Effect.succeed),
       }),
@@ -175,14 +174,14 @@ export const CVDateTimeFromString = (
             s,
             parseFunction,
             Result.mapError(() => new SchemaIssue.InvalidValue(Option.some(s))),
-            MResult.asEffect,
+            Effect.fromResult,
           ),
         encode: (d) =>
           pipe(
             d,
             formatFunction,
             Result.mapError(() => new SchemaIssue.InvalidValue(Option.some(d))),
-            MResult.asEffect,
+            Effect.fromResult,
           ),
       }),
     ),
@@ -263,14 +262,14 @@ export const Template = <PlaceholderTypes extends MTypes.Object>(
             s,
             parseFunction,
             Result.mapError(() => new SchemaIssue.InvalidValue(Option.some(s))),
-            MResult.asEffect,
+            Effect.fromResult,
           ),
         encode: (d) =>
           pipe(
             d,
             formatFunction,
             Result.mapError(() => new SchemaIssue.InvalidValue(Option.some(d))),
-            MResult.asEffect,
+            Effect.fromResult,
           ),
       }),
     ),

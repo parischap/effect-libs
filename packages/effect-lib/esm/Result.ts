@@ -13,7 +13,6 @@
  *
  * - **Handle missing elements**: {@link optionFromOptional}
  * - **Collapse nesting**: {@link flatten}
- * - **Lift into `Effect`**: {@link asEffect}
  *
  * ## Quickstart
  *
@@ -31,7 +30,6 @@
 
 import { pipe } from 'effect';
 import * as Cause from 'effect/Cause';
-import type * as Effect from 'effect/Effect';
 import * as Function from 'effect/Function';
 import * as Option from 'effect/Option';
 import * as Result from 'effect/Result';
@@ -86,24 +84,3 @@ export const optionFromOptional = <A, E>(
 export const flatten: <R, L1, L2>(self: Type<Type<R, L1>, L2>) => Type<R, L1 | L2> = Result.flatMap(
   Function.identity,
 );
-
-/**
- * Lifts `self` into `Effect`, preserving the failure channel.
- *
- * **Example** (Use a `Result` inside an `Effect` workflow)
- *
- * ```ts
- * import { Effect, Result } from 'effect';
- * import * as MResult from '@parischap/effect-lib/MResult';
- *
- * const program = Effect.gen(function* () {
- *   const value = yield* MResult.asEffect(Result.succeed(42));
- *   return value * 2;
- * });
- *
- * Effect.runPromise(program).then(console.log); // 84
- * ```
- *
- * @category Utils
- */
-export const asEffect = <A, E>(self: Type<A, E>): Effect.Effect<A, E> => self.asEffect();
