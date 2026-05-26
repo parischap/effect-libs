@@ -23,7 +23,7 @@ describe('CVSchema', () => {
     describe('Decoding', () => {
       const decoder = Schema.decodeExit(schema);
       it('Not passing', () => {
-        TestUtils.assertFailureExit(decoder(''));
+        TestUtils.assertFailedExit(decoder(''));
       });
       it('Passing', () => {
         TestUtils.assertSuccessExit(decoder(targetAsString), target);
@@ -42,7 +42,7 @@ describe('CVSchema', () => {
     describe('Decoding', () => {
       const decoder = Schema.decodeExit(schema);
       it('Not passing', () => {
-        TestUtils.assertFailureExit(decoder(''));
+        TestUtils.assertFailedExit(decoder(''));
       });
       it('Passing', () => {
         TestUtils.assertSuccessExit(decoder(targetAsString), target);
@@ -144,8 +144,8 @@ describe('CVSchema', () => {
     describe('Decoding', () => {
       const decoder = Schema.decodeExit(schema);
       it('Not passing', () => {
-        TestUtils.assertFailureExit(decoder(''));
-        TestUtils.assertFailureExit(decoder('2025/12/14'));
+        TestUtils.assertFailedExit(decoder(''));
+        TestUtils.assertFailedExit(decoder('2025/12/14'));
       });
       it('Passing', () => {
         TestUtils.assertSuccessExit(decoder(targetAsString), target);
@@ -158,7 +158,7 @@ describe('CVSchema', () => {
       });
 
       it('Not passing', () => {
-        TestUtils.assertFailureExit(
+        TestUtils.assertFailedExit(
           encoder(CVDateTime.fromTimestampOrThrow(new Date(12_025, 7, 25, 10, 24, 47).getTime())),
         );
       });
