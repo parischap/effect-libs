@@ -148,7 +148,7 @@ export class Type<out V> extends MEquivalenceBasedEqualityData.Class {
     depth,
     protoDepth,
   }: {
-    readonly nonPrimitive: MTypes.NonPrimitive;
+    readonly nonPrimitive: MTypes.ReadonlyNonPrimitive;
     readonly key: string | symbol;
     readonly depth: number;
     readonly protoDepth: number;
@@ -230,6 +230,13 @@ export interface Primitive extends Type<MTypes.Primitive> {}
 export interface NonPrimitive extends Type<MTypes.NonPrimitive> {}
 
 /**
+ * Same as `NonPrimitive` but readonly
+ *
+ * @category Models
+ */
+export interface ReadonlyNonPrimitive extends Type<MTypes.ReadonlyNonPrimitive> {}
+
+/**
  * Type that represents a function in its stringification context
  *
  * @category Models
@@ -264,7 +271,7 @@ export const fromTopValue = <V>(content: V): Type<V> => Type.fromTopValue(conten
  * @category Constructors
  */
 export const fromNonPrimitiveValueAndKey = (params: {
-  readonly nonPrimitive: MTypes.NonPrimitive;
+  readonly nonPrimitive: MTypes.ReadonlyNonPrimitive;
   readonly key: string | symbol;
   readonly depth: number;
   readonly protoDepth: number;

@@ -122,7 +122,7 @@ export const fromApplicableNonPrimitiveParameters = ({
   nonPrimitive,
   nonPrimitiveParametersArray,
 }: {
-  nonPrimitive: MTypes.NonPrimitive;
+  nonPrimitive: MTypes.ReadonlyNonPrimitive;
   nonPrimitiveParametersArray: MTypes.OverOne<PPNonPrimitiveParameters.Type>;
 }): Type => {
   const applicable = pipe(

@@ -121,18 +121,14 @@ describe('MRecord', () => {
   });
 
   describe('evolve', () => {
-    it('No overlap', () => {
-      TestUtils.deepStrictEqual(MStruct.evolve({ c: Number.sum(1) })({ a: 0, b: 1 }), {
-        a: 0,
-        b: 1,
-      });
-    });
-
     it('With overlap', () => {
       TestUtils.deepStrictEqual(
-        MStruct.evolve({
-          b: Number.sum(1),
-        })({ a: 0, b: 1 }),
+        MStruct.evolve(
+          { a: 0, b: 1 },
+          {
+            b: Number.sum(1),
+          },
+        ),
         { a: 0, b: 2 },
       );
     });

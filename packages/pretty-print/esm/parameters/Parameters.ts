@@ -77,7 +77,7 @@ export class Type extends MEquivalenceBasedEqualityData.Class {
    * `value.constructor.name`. This transparently covers `Map`, `Set`, `WeakMap`, `WeakSet`, all
    * typed arrays, and user-defined classes.
    */
-  readonly name: (nonPrimitive: MTypes.NonPrimitive) => string;
+  readonly name: (nonPrimitive: MTypes.ReadonlyNonPrimitive) => string;
 
   /**
    * Maximum number of nested non-primitive values that will be opened. A value of 0 or less means

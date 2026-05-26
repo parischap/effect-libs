@@ -3,10 +3,13 @@
  *
  * ## Mental model
  *
- * - **Containers**: `Pair`, `Singleton`, `OverOne` (non-empty), `OverTwo` (≥ 2 elements), and their
- *   readonly variants — typed views over `Array`/`ReadonlyArray` used by the rest of the package.
- * - **Primitives**: `Primitive`, `NonNullablePrimitive`, `NonPrimitive`, `Unknown` — describe the
- *   shape space of JavaScript values.
+ * - **Containers**: `NonPrimitive`, `Object`, `Pair`, `Singleton`, `OverOne` (non-empty), `OverTwo`
+ *   (≥ 2 elements), and their readonly variants — typed views over `Array`/`ReadonlyArray` used by
+ *   the rest of the package.
+ * - **Primitives**: `Primitive`, `NonNullablePrimitive`, `Unknown` — describe the shape space of
+ *   JavaScript values.
+ * - **All values type union**: `Unknown` — same as `unknown` but defined as a type union, allows
+ *   pattern matching.
  * - **Function shapes**: `AnyFunction`, `OneArgFunction`, `StringTransformer`, `NumberFromString`.
  * - **Predicate / refinement shapes**: `AnyPredicate`, `AnyRefinement`, `RefinementFrom`.
  * - **Type-level utilities**: `Data` strips inherited / pipeable / equality fields off an object type
@@ -31,12 +34,23 @@ import type * as Hash from 'effect/Hash';
 import type * as Predicate from 'effect/Predicate';
 
 /**
- * Type that represents a real object, not an array, not a function, not null
+ * Type that represents a real object, not an array, not a function, not null. However, this type
+ * does not represent a class instance. So prefer using NonPrimitive when class instances are
+ * important (even though this type includes functions and arrays which may not be desirable)
  *
  * @category Models
  */
 export interface Object {
   [x: PropertyKey]: unknown;
+}
+
+/**
+ * Same as Object but readonly
+ *
+ * @category Models
+ */
+export interface ReadonlyObject {
+  readonly [x: PropertyKey]: unknown;
 }
 
 /**
@@ -48,6 +62,16 @@ export interface Object {
  * @category Models
  */
 export interface NonPrimitive {
+  // DO NOT REPLACE any by unknown: in that case, arrays and functions are excluded.
+  [key: PropertyKey]: any;
+}
+
+/**
+ * Same as NonPrimitive but readonly
+ *
+ * @category Models
+ */
+export interface ReadonlyNonPrimitive {
   // DO NOT REPLACE any by unknown: in that case, arrays and functions are excluded.
   readonly [key: PropertyKey]: any;
 }
@@ -175,6 +199,13 @@ export type Primitive = NonNullablePrimitive | null | undefined;
  * @category Models
  */
 export type Unknown = Primitive | NonPrimitive;
+
+/**
+ * Same as `Unknown` but readonly
+ *
+ * @category Models
+ */
+export type ReadonlyUnknown = Primitive | ReadonlyNonPrimitive;
 
 /**
  * Type that represents any predicate or refinement

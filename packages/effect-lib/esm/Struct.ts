@@ -4,8 +4,8 @@
  *
  * ## Mental model
  *
- * - This module operates on plain JavaScript objects (`MTypes.NonPrimitive`) treated as records of
- *   fields.
+ * - This module must be used for objects whose property names are known. When only the property types
+ *   are known, use `MRecord`.
  * - Compared to the spread operator, the helpers here intentionally **do not copy the prototype**:
  *   the result is always a fresh `Data`-shaped object. This makes the loss of prototype explicit
  *   instead of hidden behind syntax sugar.
@@ -45,6 +45,14 @@ import * as Struct from 'effect/Struct';
 import type * as MTypes from './types/types.js';
 
 /**
+ * Type of a struct. Ideally, we would have chosen MTypes.Object. But it does not cover class
+ * instances on which we want this module to operate
+ *
+ * @category Models
+ */
+export type Type = MTypes.NonPrimitive;
+
+/**
  * Utility type computing the result of `{ ...first, ...second }`.
  *
  * - When a field exists in both `First` and `Second`, the resulting type follows JavaScript's spread
@@ -53,7 +61,7 @@ import type * as MTypes from './types/types.js';
  *
  * @category Utility types
  */
-export type Append<First extends MTypes.NonPrimitive, Second extends MTypes.NonPrimitive> = {
+export type Append<First extends Type, Second extends Type> = {
   readonly [k in keyof First | keyof Second]: k extends keyof Second
     ? k extends keyof First
       ? // Is Second[k] not optional
@@ -69,6 +77,7 @@ export type Append<First extends MTypes.NonPrimitive, Second extends MTypes.NonP
  *
  * - Use instead of the spread operator when you want to make explicit that the prototype of the
  *   left-hand side is dropped.
+ * - Same as Effect's Struct.assign but handles optional values more cleanly.
  *
  * **Example** (Self overrides defaults)
  *
@@ -86,8 +95,8 @@ export type Append<First extends MTypes.NonPrimitive, Second extends MTypes.NonP
  * @see {@link append} — symmetric variant where the new fields override
  */
 export const prepend =
-  <O1 extends MTypes.NonPrimitive>(that: O1) =>
-  <O extends MTypes.NonPrimitive>(self: O): MTypes.Data<Append<O1, O>> => ({
+  <O1 extends Type>(that: O1) =>
+  <O extends Type>(self: O): MTypes.Data<Append<O1, O>> => ({
     ...that,
     ...self,
   });
@@ -97,6 +106,7 @@ export const prepend =
  *
  * - Use instead of the spread operator when you want to make explicit that the prototype of the
  *   left-hand side is dropped.
+ * - Same as Effect's Struct.assign but handles optional values more cleanly.
  *
  * **Example** (New fields override)
  *
@@ -113,8 +123,8 @@ export const prepend =
  * @see {@link prepend} — symmetric variant where existing fields win
  */
 export const append =
-  <O1 extends MTypes.NonPrimitive>(that: O1) =>
-  <O extends MTypes.NonPrimitive>(self: O): MTypes.Data<Append<O, O1>> => ({
+  <O1 extends Type>(that: O1) =>
+  <O extends Type>(self: O): MTypes.Data<Append<O, O1>> => ({
     ...self,
     ...that,
   });
@@ -139,7 +149,7 @@ export const append =
  * @see {@link mutableSet} — in-place variant
  */
 export const set =
-  <O extends MTypes.NonPrimitive, O1 extends Partial<O>>(that: O1) =>
+  <O extends Type, O1 extends Partial<O>>(that: O1) =>
   (self: O): MTypes.Data<Omit<O, keyof O1> & O1> => ({
     ...self,
     ...that,
@@ -153,7 +163,7 @@ export const set =
  * @category Utils
  */
 export const mutableSet =
-  <O extends MTypes.NonPrimitive, O1 extends Partial<O>>(that: O1) =>
+  <O extends Type, O1 extends Partial<O>>(that: O1) =>
   (self: O): Omit<O, keyof O1> & O1 =>
     Object.assign(self, that);
 
@@ -172,7 +182,7 @@ export const mutableSet =
  * @category Constructors
  */
 export const make =
-  <K extends string | symbol>(key: K) =>
+  <K extends PropertyKey>(key: K) =>
   <V>(value: V): { readonly [key in K]: V } =>
     ({ [key]: value }) as never;
 
@@ -208,8 +218,10 @@ export const make =
 
 export const enrichWith =
   <
-    O extends MTypes.NonPrimitive,
-    O1 extends Record.ReadonlyRecord<string, MTypes.OneArgFunction<O, unknown>>,
+    O extends Type,
+    O1 extends {
+      [x: PropertyKey]: MTypes.OneArgFunction<O, unknown>;
+    },
   >(
     fields: O1,
   ) =>
@@ -230,26 +242,20 @@ export const enrichWith =
 export const mutableEnrichWith =
   <
     O extends MTypes.NonPrimitive,
-    O1 extends Record.ReadonlyRecord<string, MTypes.OneArgFunction<O, unknown>>,
+    O1 extends {
+      [x: PropertyKey]: MTypes.OneArgFunction<O, unknown>;
+    },
   >(
     fields: O1,
   ) =>
   (self: O): Omit<O, keyof O1> & { readonly [key in keyof O1]: ReturnType<O1[key]> } =>
     Object.assign(self, Record.map(fields, Function.apply(self)));
 
-/* eslint-disable */
-// Copied from Struct.ts
-type Transformed<O, T> = unknown & {
-  [K in keyof O]: K extends keyof T
-    ? T[K] extends (...a: any) => any
-      ? ReturnType<T[K]>
-      : O[K]
-    : O[K];
-};
-type PartialTransform<O, T> = {
-  [K in keyof T]: T[K] extends (a: O[K & keyof O]) => any ? T[K] : (a: O[K & keyof O]) => unknown;
-};
-/* eslint-enable */
+type Evolver<S extends Type> = { readonly [K in keyof S]?: (a: S[K]) => unknown };
+
+type Evolved<S extends Type, E extends Evolver<S>> = Struct.Simplify<{
+  [K in keyof S]: K extends keyof E ? (E[K] extends (...a: any) => infer R ? R : S[K]) : S[K];
+}>;
 
 /**
  * Same as `Struct.evolve` but the return type drops any property carried by the prototype, since
@@ -276,7 +282,7 @@ export const {
   evolve,
 }: {
   readonly evolve: {
-    <O, T>(t: PartialTransform<O, T>): (obj: O) => MTypes.Data<Transformed<O, T>>;
-    <O, T>(obj: O, t: PartialTransform<O, T>): MTypes.Data<Transformed<O, T>>;
+    <S extends Type, E extends Evolver<S>>(e: E): (self: S) => MTypes.Data<Evolved<S, E>>;
+    <S extends Type, E extends Evolver<S>>(self: S, e: E): MTypes.Data<Evolved<S, E>>;
   };
 } = Struct;

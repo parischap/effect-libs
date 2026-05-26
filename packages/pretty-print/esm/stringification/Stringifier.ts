@@ -98,7 +98,7 @@ export class Type extends MEquivalenceBasedEqualityData.Class {
 
       interface NonLeaf {
         /** The non-primitive seed from which this non-leaf was created */
-        readonly seed: PPValue.NonPrimitive;
+        readonly seed: PPValue.ReadonlyNonPrimitive;
         /**
          * The merged, fully-resolved `NonPrimitiveParameters` fields applicable to `seed` (see
          * `PPResolvedNonPrimitiveParameters.fromApplicableNonPrimitiveParameters`)

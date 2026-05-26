@@ -77,7 +77,7 @@ export class Type extends MEquivalenceBasedEqualityData.Class {
    */
   readonly action: MTypes.OneArgFunction<
     {
-      readonly nonPrimitive: PPValue.NonPrimitive;
+      readonly nonPrimitive: PPValue.ReadonlyNonPrimitive;
       readonly parameters: PPParameters.Type;
       readonly applicableNonPrimitiveParameters: PPResolvedNonPrimitiveParameters.Type;
       readonly header: Function.LazyArg<ASText.Type>;

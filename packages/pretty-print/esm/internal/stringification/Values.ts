@@ -48,7 +48,7 @@ export const fromNonPrimitiveKeysAndValues = ({
   nonPrimitive,
   maxPrototypeDepth,
 }: {
-  readonly nonPrimitive: PPValue.NonPrimitive;
+  readonly nonPrimitive: PPValue.ReadonlyNonPrimitive;
   readonly maxPrototypeDepth: number;
 }): Type => {
   const depth = nonPrimitive.depth + 1;
@@ -129,7 +129,7 @@ export const fromNonPrimitiveIterable = ({
   nonPrimitive,
   stringifier,
 }: {
-  readonly nonPrimitive: PPValue.NonPrimitive;
+  readonly nonPrimitive: PPValue.ReadonlyNonPrimitive;
   readonly stringifier: MTypes.OneArgFunction<unknown, PPStringifiedValue.Type>;
 }): Type => {
   const depth = nonPrimitive.depth + 1;

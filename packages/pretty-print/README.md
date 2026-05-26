@@ -314,7 +314,7 @@ The following pre-built instances are available in `PPNonPrimitiveParameters`:
 
 ##### `isApplicableTo`
 
-A predicate `(value: MTypes.NonPrimitive) => boolean` that determines whether this instance handles a given non-primitive value.
+A predicate `(value: MTypes.ReadonlyNonPrimitive) => boolean` that determines whether this instance handles a given non-primitive value.
 
 ##### `byPasser`
 

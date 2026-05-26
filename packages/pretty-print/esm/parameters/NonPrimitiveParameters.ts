@@ -56,7 +56,7 @@ export class Type extends MEquivalenceBasedEqualityData.Class {
    * Predicate that returns `true` if `this` `PPNonPrimitiveParameters` is applicable to
    * `nonPrimitive`.
    */
-  readonly isApplicableTo!: Predicate.Predicate<MTypes.NonPrimitive>;
+  readonly isApplicableTo!: Predicate.Predicate<MTypes.ReadonlyNonPrimitive>;
 
   /**
    * When `true`, the value's name (computed by `PPParameters.name`) is shown in the header before
@@ -210,7 +210,7 @@ export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
  */
 export const isApplicableTo: MTypes.OneArgFunction<
   Type,
-  Predicate.Predicate<MTypes.NonPrimitive>
+  Predicate.Predicate<MTypes.ReadonlyNonPrimitive>
 > = Struct.get('isApplicableTo');
 
 /**

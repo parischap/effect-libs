@@ -7,12 +7,22 @@ import { describe, it } from 'vitest';
 
 const testSymbol: unique symbol = Symbol.for('testSymbol');
 
+class TestClass {
+  readonly n: number;
+  constructor(n: number) {
+    this.n = n;
+  }
+}
+
+const testInstance = new TestClass(4);
+
 /** Object */
 TestUtils.assertTrueType(TestUtils.doesNotSatisfy<1, MTypes.Object>());
 TestUtils.assertTrueType(TestUtils.doesNotSatisfy<null, MTypes.Object>());
 TestUtils.assertTrueType(TestUtils.doesNotSatisfy<undefined, MTypes.Object>());
 TestUtils.assertTrueType(TestUtils.doesNotSatisfy<() => 1, MTypes.Object>());
 TestUtils.assertTrueType(TestUtils.doesNotSatisfy<[1], MTypes.Object>());
+TestUtils.assertTrueType(TestUtils.doesNotSatisfy<typeof testInstance, MTypes.Object>());
 TestUtils.assertTrueType(TestUtils.satisfies<{ a: 1 }, MTypes.Object>());
 
 /** NonPrimitive */
@@ -21,6 +31,7 @@ TestUtils.assertTrueType(TestUtils.doesNotSatisfy<null, MTypes.NonPrimitive>());
 TestUtils.assertTrueType(TestUtils.doesNotSatisfy<undefined, MTypes.NonPrimitive>());
 TestUtils.assertTrueType(TestUtils.satisfies<() => 1, MTypes.NonPrimitive>());
 TestUtils.assertTrueType(TestUtils.satisfies<[1], MTypes.NonPrimitive>());
+TestUtils.assertTrueType(TestUtils.satisfies<typeof testInstance, MTypes.NonPrimitive>());
 TestUtils.assertTrueType(TestUtils.satisfies<{ a: 1 }, MTypes.NonPrimitive>());
 
 interface TestInterface {

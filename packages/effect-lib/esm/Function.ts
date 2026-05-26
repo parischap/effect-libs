@@ -225,7 +225,7 @@ export const once = <A>(f: Function.LazyArg<A>): Function.LazyArg<A> => {
  * @category Utils
  */
 export const applyAsThis =
-  <O extends MTypes.NonPrimitive>(o: NoInfer<O>) =>
+  <O extends MTypes.ReadonlyNonPrimitive>(o: NoInfer<O>) =>
   <A>(self: (this: O) => A): A =>
     self.call(o);
 
