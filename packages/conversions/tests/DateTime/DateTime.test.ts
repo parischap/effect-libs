@@ -275,7 +275,7 @@ describe('CVDateTime', () => {
     });
 
     it('From date with hour23 and zoneOffset', () => {
-      const either = CVDateTime.fromParts({
+      const result = CVDateTime.fromParts({
         year: 2024,
         ordinalDay: 61,
         hour23: 17,
@@ -285,8 +285,8 @@ describe('CVDateTime', () => {
         zoneOffset: 1,
       });
 
-      TestUtils.assertSuccess(either);
-      const testDate = either.success;
+      TestUtils.assertSuccess(result);
+      const testDate = result.success;
       TestUtils.strictEqual(CVDateTime.timestamp(testDate), Date.UTC(2024, 2, 1, 16, 43, 27, 654));
       // @ts-expect-error Accessing private member for test purposes
       TestUtils.assertSome(testDate.gregorianDate);
@@ -404,7 +404,7 @@ describe('CVDateTime', () => {
     });
 
     it('From isodate', () => {
-      const either = CVDateTime.fromParts({
+      const result = CVDateTime.fromParts({
         isoYear: 2027,
         isoWeek: 52,
         weekday: 6,
@@ -416,8 +416,8 @@ describe('CVDateTime', () => {
         zoneOffset: 0,
       });
 
-      TestUtils.assertSuccess(either);
-      const testDate = either.success;
+      TestUtils.assertSuccess(result);
+      const testDate = result.success;
       TestUtils.strictEqual(CVDateTime.timestamp(testDate), Date.UTC(2028, 0, 1, 17, 43, 27, 654));
       // @ts-expect-error Accessing private member for test purposes
       TestUtils.assertNone(testDate.gregorianDate);
@@ -429,13 +429,13 @@ describe('CVDateTime', () => {
 
     describe('Default values', () => {
       it('Only year is set', () => {
-        const either = CVDateTime.fromParts({
+        const result = CVDateTime.fromParts({
           year: 2025,
           zoneOffset: 0,
         });
 
-        TestUtils.assertSuccess(either);
-        const testDate = either.success;
+        TestUtils.assertSuccess(result);
+        const testDate = result.success;
         TestUtils.strictEqual(CVDateTime.timestamp(testDate), Date.UTC(2025, 0, 1));
         // @ts-expect-error Accessing private member for test purposes
         TestUtils.assertSome(testDate.gregorianDate);
@@ -515,14 +515,14 @@ describe('CVDateTime', () => {
         );
       });
       it('A day is set and isoYear is passed', () => {
-        const either = CVDateTime.fromParts({
+        const result = CVDateTime.fromParts({
           year: 2024,
           ordinalDay: 365,
           isoYear: 2025,
           zoneOffset: 0,
         });
-        TestUtils.assertSuccess(either);
-        const testDate = either.success;
+        TestUtils.assertSuccess(result);
+        const testDate = result.success;
         TestUtils.strictEqual(CVDateTime.timestamp(testDate), Date.UTC(2024, 11, 30));
         // @ts-expect-error Accessing private member for test purposes
         TestUtils.assertSome(testDate.gregorianDate);
@@ -533,15 +533,15 @@ describe('CVDateTime', () => {
       });
 
       it('An isoDay is set and year is passed', () => {
-        const either = CVDateTime.fromParts({
+        const result = CVDateTime.fromParts({
           year: 2025,
           isoYear: 2025,
           isoWeek: 3,
           weekday: 4,
           zoneOffset: 0,
         });
-        TestUtils.assertSuccess(either);
-        const testDate = either.success;
+        TestUtils.assertSuccess(result);
+        const testDate = result.success;
         TestUtils.strictEqual(CVDateTime.timestamp(testDate), Date.UTC(2025, 0, 16));
         // @ts-expect-error Accessing private member for test purposes
         TestUtils.assertSome(testDate.gregorianDate);
