@@ -3,22 +3,15 @@
 # Table of Contents
 
 - [General](#general)
-- [Project structure](#project-structure)
-- [Coding style](#coding-style)
-- [Module structure (esm modules only)](#module-structure-esm-modules-only)
-  - [Exported type](#exported-type)
-    - [Classes (preferred case)](#classes-preferred-case)
-    - [Other types (exceptional)](#other-types-exceptional)
-  - [Order of elements](#order-of-elements)
-- [Reviewing the codebase](#reviewing-the-codebase)
-- [Naming conventions](#naming-conventions)
-  - [Module names](#module-names)
-  - [Documentation](#documentation)
-  - [Testing](#testing)
-- [Generating code](#generating-code)
-  - [Functional programming style](#functional-programming-style)
-  - [Effect ecosystem](#effect-ecosystem)
-- [Tooling](#tooling)
+- [Documenting](#documenting)
+  - [JSDoc comments](#jsdoc-comments)
+    - [Module-level JSDoc](#module-level-jsdoc)
+    - [Function-level JSDoc](#function-level-jsdoc)
+      - [Bullet point patterns](#bullet-point-patterns)
+      - [Type guards](#type-guards)
+      - [Example block format](#example-block-format)
+    - [Property- and field-level JSDoc](#property--and-field-level-jsdoc)
+    
 
 # General
 
@@ -30,7 +23,7 @@ Repo of libraries complementing the Effect ecosystem. Packages `effect-report`, 
 
 Modules in this repo are published to NPM and need to receive more thorough documentation (except modules in `esm/internal`: can be documented normally)
 
-## Module-level JSDoc
+### Module-level JSDoc
 
 Brief description, "Mental model" section, "Common tasks" (linked list), "Gotchas", "Quickstart" + example, `@see`.
 
@@ -74,7 +67,7 @@ Brief description, "Mental model" section, "Common tasks" (linked list), "Gotcha
  */
 ````
 
-## Function-level JSDoc
+### Function-level JSDoc
 
 - Exported: one-line imperative summary, bullet points (use cases, guarantees, edge cases), **Example**, `@see`, `@category`.
 - Non-exported: brief description, no tag.
@@ -107,14 +100,14 @@ export const get: {
 };
 ````
 
-### Bullet point patterns
+#### Bullet point patterns
 
 - **Use cases**: "Use when...", "Useful for...", "Use if..."
 - **Guarantees**: "Always returns...", "Never throws...", "Acts as a type guard..."
 - **Behavior notes**: "The index is floored...", "Delegates to...", "If the input is already..."
 - **Related variants**: "Prefer {@link otherFn} when..." or "Use the `*NonEmpty` variants..."
 
-### Type guards
+#### Type guards
 
 Include "Acts as a type guard narrowing..." + type narrowed to.
 
@@ -137,7 +130,7 @@ Include "Acts as a type guard narrowing..." + type narrowed to.
 export const isArray: ...
 ````
 
-### Example block format
+#### Example block format
 
 - **Example** (concise description)
 - Always: `import`, usage, output as comment.
@@ -157,6 +150,6 @@ export const isArray: ...
  */
 ````
 
-## Property- and field-level JSDoc
+### Property- and field-level JSDoc
 
 Properties/fields/methods (exported or not) → short description, no tag.
