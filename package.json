@@ -1,36 +1,23 @@
 {
   "name": "@parischap/effect-libs",
-  "type": "module",
-  "author": "Jérôme MARTIN",
-  "license": "MIT",
   "description": "effect-libs is a set of open-source libraries to be used in complement to the effect library. Extends some Effect modules (`Array`, `Chunk`, `Option`, `Either`, `String`, ...). Adds extra-functionalities such as date and number parsing/formatting, sscanf/sprintf templating, number rounding, object pretty-printing, colored terminal printing, a simple yet very efficient matcher and a tree with cycle detection",
   "homepage": "https://github.com/parischap/effect-libs",
+  "license": "MIT",
+  "author": "Jérôme MARTIN",
+  "type": "module",
   "scripts": {
     "test-all": "vitest run",
-    "lint": "oxlint --disable-nested-config",
-    "lint-fix": "oxlint --fix --disable-nested-config",
-    "fmt": "oxfmt --disable-nested-config",
-    "commands": "tsx node_modules/@parischap/configs/esm/bin/commands.ts",
-    "prepare-go": "effect-tsgo patch",
-    "build-all": "pnpm --if-present -r build",
-    "lint-all": "pnpm --filter \"./**\" run  lint",
-    "fmt-all": "pnpm --filter \"./**\" run  fmt",
-    "lint-fix-all": "pnpm --filter \"./**\" run  lint-fix",
-    "checks-all": "pnpm --filter \"./**\" run  checks",
-    "docgen-all": "pnpm --filter \"./packages/*\" run  docgen",
-    "prepare-go-all": "pnpm --filter \"./packages/*\" run  prepare-go",
-    "checks": "pnpm lint"
+    "lint": "oxlint -disable-nested-config",
+    "fmt": "oxfmt -disable-nested-config && oxlint --fix -disable-nested-config",
+    "lint-all": "pnpm lint && pnpm --filter \"./packages/*\" run  lint-all",
+    "fmt-all": "pnpm fmt && pnpm --filter \"./packages/*\" run  fmt-all",
+    "check-all": "pnpm check && pnpm --filter \"./packages/*\" run  check-all",
+    "configs": "pnpm -w configs",
+    "check": "pnpm lint",
+    "docgen-all": "pnpm --filter \"./packages/*\" run  docgen-all"
   },
-  "devDependencies": {
-    "@parischap/configs": "0.1.0",
-    "vitest": "4.1.7",
-    "@types/node": "25.9.1",
-    "@typescript/native-preview": "7.0.0-dev.20260526.1",
-    "@effect/tsgo": "0.11.1",
-    "@tsconfig/strictest": "2.0.8",
-    "oxfmt": "0.52.0",
-    "oxlint": "1.67.0",
-    "oxlint-tsgolint": "0.23.0",
-    "tsx": "4.21.0"
+  "@parischap/configs": {
+    "description": "effect-libs is a set of open-source libraries to be used in complement to the effect library. Extends some Effect modules (`Array`, `Chunk`, `Option`, `Either`, `String`, ...). Adds extra-functionalities such as date and number parsing/formatting, sscanf/sprintf templating, number rounding, object pretty-printing, colored terminal printing, a simple yet very efficient matcher and a tree with cycle detection",
+    "version": "0.1.0"
   }
 }

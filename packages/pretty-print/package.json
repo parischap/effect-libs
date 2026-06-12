@@ -7,72 +7,94 @@
   "homepage": "https://github.com/parischap/effect-libs/tree/master/packages/pretty-print",
   "scripts": {
     "test-all": "vitest run",
-    "lint": "oxlint --disable-nested-config",
-    "lint-fix": "oxlint --fix --disable-nested-config",
-    "fmt": "oxfmt --disable-nested-config",
-    "commands": "tsx node_modules/@parischap/configs/esm/bin/commands.ts",
-    "prepare-go": "effect-tsgo patch",
-    "build-all": "pnpm --if-present -r build",
-    "lint-all": "pnpm --filter \"./**\" run  lint",
-    "fmt-all": "pnpm --filter \"./**\" run  fmt",
-    "lint-fix-all": "pnpm --filter \"./**\" run  lint-fix",
-    "checks-all": "pnpm --filter \"./**\" run  checks",
-    "docgen-all": "pnpm --filter \"./packages/*\" run  docgen",
-    "prepare-go-all": "pnpm --filter \"./packages/*\" run  prepare-go",
-    "checks": "pnpm circular && pnpm lint && pnpm test-all",
+    "lint": "oxlint -disable-nested-config",
+    "fmt": "oxfmt -disable-nested-config && oxlint --fix -disable-nested-config",
+    "lint-all": "pnpm lint && pnpm --filter \"./packages/*\" run  lint-all",
+    "fmt-all": "pnpm fmt && pnpm --filter \"./packages/*\" run  fmt-all",
+    "check-all": "pnpm check && pnpm --filter \"./packages/*\" run  check-all",
+    "configs": "pnpm -w configs",
     "circular": "madge --extensions ts --circular --no-color --no-spinner esm",
+    "check": "pnpm circular && pnpm lint && pnpm test-all",
     "examples": "tsx examples/util-inspect-like.ts && tsx examples/treeify.ts && tsx examples/treeify-with-leaves.ts && tsx examples/circularity-handling.ts && tsx examples/with-date-and-regexp.ts && tsx examples/with-prototype-chain.ts && tsx examples/with-custom-style-map.ts && tsx examples/with-custom-primitive-formatter.ts && tsx examples/with-property-filter-and-sort.ts",
-    "publish-to-npm": "cd dist && npm publish --access=public && cd ..",
-    "docgen": "docgen"
+    "publish-to-npm": "cd dist && npm publish --access=public",
+    "docgen": "docgen",
+    "docgen-all": "docgen"
   },
-  "devDependencies": {
-    "@parischap/configs": "0.1.0",
-    "vitest": "4.1.7",
-    "@types/node": "25.9.1",
-    "@typescript/native-preview": "7.0.0-dev.20260526.1",
-    "@effect/tsgo": "0.11.1",
-    "@tsconfig/strictest": "2.0.8",
-    "oxfmt": "0.52.0",
-    "oxlint": "1.67.0",
-    "oxlint-tsgolint": "0.23.0",
-    "tsx": "4.21.0",
-    "madge": "8.0.0",
-    "vite": "8.0.14",
-    "@effect/docgen": "0.5.2"
+  "@parischap/configs": {
+    "description": "A functional library to pretty-print and treeify objects",
+    "version": "1.0.0",
+    "buildMethod": "InternalAndNpmBundling",
+    "publishToNpm": true,
+    "dependencies": {},
+    "environment": "Neutral",
+    "examples": [
+      "util-inspect-like.ts",
+      "treeify.ts",
+      "treeify-with-leaves.ts",
+      "circularity-handling.ts",
+      "with-date-and-regexp.ts",
+      "with-prototype-chain.ts",
+      "with-custom-style-map.ts",
+      "with-custom-primitive-formatter.ts",
+      "with-property-filter-and-sort.ts"
+    ],
+    "keywords": [
+      "inspect",
+      "util.inspect",
+      "object",
+      "stringify",
+      "pretty",
+      "tree",
+      "treeify",
+      "print",
+      "console",
+      "visualize",
+      "debug",
+      "typescript",
+      "effect"
+    ],
+    "packagePrefix": "PP",
+    "peerDependencies": {
+      "effect": "*",
+      "@parischap/effect-lib": "*",
+      "@parischap/ansi-styles": "*",
+      "@parischap/conversions": "*"
+    },
+    "scripts": {}
   },
   "exports": {
     ".": {
       "default": "./esm/index.ts"
     },
     "./PPByPasser": {
-      "default": "./esm/Parameters/ByPasser.ts"
+      "default": "./esm/parameters/ByPasser.ts"
     },
     "./PPNonPrimitiveFormatter": {
-      "default": "./esm/Parameters/NonPrimitiveFormatter.ts"
+      "default": "./esm/parameters/NonPrimitiveFormatter.ts"
     },
     "./PPNonPrimitiveParameters": {
-      "default": "./esm/Parameters/NonPrimitiveParameters.ts"
+      "default": "./esm/parameters/NonPrimitiveParameters.ts"
     },
     "./PPParameters": {
-      "default": "./esm/Parameters/Parameters.ts"
+      "default": "./esm/parameters/Parameters.ts"
     },
     "./PPPartName": {
-      "default": "./esm/Parameters/PartName.ts"
+      "default": "./esm/parameters/PartName.ts"
     },
     "./PPPrimitiveFormatter": {
-      "default": "./esm/Parameters/PrimitiveFormatter.ts"
+      "default": "./esm/parameters/PrimitiveFormatter.ts"
     },
     "./PPPropertyFilter": {
-      "default": "./esm/Parameters/PropertyFilter.ts"
+      "default": "./esm/parameters/PropertyFilter.ts"
     },
     "./PPPropertyFormatter": {
-      "default": "./esm/Parameters/PropertyFormatter.ts"
+      "default": "./esm/parameters/PropertyFormatter.ts"
     },
     "./PPPropertyNumberDisplayOption": {
-      "default": "./esm/Parameters/PropertyNumberDisplayOption.ts"
+      "default": "./esm/parameters/PropertyNumberDisplayOption.ts"
     },
     "./PPResolvedNonPrimitiveParameters": {
-      "default": "./esm/internal/Parameters/ResolvedNonPrimitiveParameters.ts"
+      "default": "./esm/internal/parameters/ResolvedNonPrimitiveParameters.ts"
     },
     "./PPStringifiedProperties": {
       "default": "./esm/internal/stringification/StringifiedProperties.ts"
@@ -84,28 +106,29 @@
       "default": "./esm/stringification/Stringifier.ts"
     },
     "./PPStyle": {
-      "default": "./esm/Parameters/Style.ts"
+      "default": "./esm/parameters/Style.ts"
     },
     "./PPStyleMap": {
-      "default": "./esm/Parameters/StyleMap.ts"
+      "default": "./esm/parameters/StyleMap.ts"
     },
     "./PPStyles": {
-      "default": "./esm/internal/Parameters/Styles.ts"
+      "default": "./esm/internal/parameters/Styles.ts"
     },
     "./PPValue": {
       "default": "./esm/internal/stringification/Value.ts"
     },
     "./PPValueOrder": {
-      "default": "./esm/Parameters/ValueOrder.ts"
+      "default": "./esm/parameters/ValueOrder.ts"
     },
     "./PPValues": {
       "default": "./esm/internal/stringification/Values.ts"
     }
   },
+  "dependencies": {},
   "peerDependencies": {
-    "@parischap/effect-lib": "0.12.0",
-    "@parischap/ansi-styles": "1.0.0",
-    "@parischap/conversions": "1.0.0",
-    "effect": "4.0.0-beta.70"
+    "effect": "*",
+    "@parischap/effect-lib": "workspace:*",
+    "@parischap/ansi-styles": "workspace:*",
+    "@parischap/conversions": "workspace:*"
   }
 }

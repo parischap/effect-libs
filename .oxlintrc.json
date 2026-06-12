@@ -1,14 +1,17 @@
 {
   "options": {
-    "typeAware": true,
     "reportUnusedDisableDirectives": "error",
-    "typeCheck": true
+    "typeCheck": true,
+    "typeAware": true
   },
   "ignorePatterns": [
     "/node_modules/",
     ".DS_Store",
     "/_site/",
-    "/.git/"
+    "/.git/",
+    "/.git",
+    "/.gitmodules",
+    "/packages/"
   ],
   "overrides": [
     {

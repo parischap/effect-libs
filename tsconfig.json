@@ -9,7 +9,10 @@
     "node_modules",
     "**/.DS_Store",
     "_site",
-    ".git"
+    ".git",
+    ".git",
+    ".gitmodules",
+    "packages"
   ],
   "compilerOptions": {
     "declarationDir": "dist/dts/others",
