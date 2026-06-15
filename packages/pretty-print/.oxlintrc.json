@@ -11,6 +11,7 @@
     "/vite.config.ts.timestamp-*.mjs",
     "/dist/",
     "docs/modules/",
+    "/_release-assets/",
     "/packages/"
   ],
   "overrides": [

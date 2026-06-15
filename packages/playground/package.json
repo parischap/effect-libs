@@ -15,14 +15,18 @@
     "configs": "pnpm -w configs",
     "circular": "madge --extensions ts --circular --no-color --no-spinner esm",
     "check": "pnpm circular && pnpm lint && pnpm test-all",
+    "publish-to-npm-all": "pnpm publish-to-npm",
+    "docgen-all": "pnpm docgen",
+    "zip-release-assets-all": "pnpm docgen",
     "docgen": "echo \"No doc generation for 'playground'\"",
-    "docgen-all": "echo \"No doc generation for 'playground'\""
+    "publish-to-npm": "echo \"Nothing to publish to npm for 'playground'\"",
+    "zip-release-assets": "echo \"Nothing to zip for 'playground'\""
   },
   "@parischap/configs": {
     "description": "An Effect playground",
     "version": "0.1.0",
     "buildMethod": "None",
-    "publishToNpm": false,
+    "publishTarget": "None",
     "dependencies": {
       "@parischap/effect-lib": "*"
     },

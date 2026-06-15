@@ -15,15 +15,18 @@
     "configs": "pnpm -w configs",
     "circular": "madge --extensions ts --circular --no-color --no-spinner esm",
     "check": "pnpm circular && pnpm lint && pnpm test-all",
-    "publish-to-npm": "cd dist && npm publish --access=public",
+    "publish-to-npm-all": "pnpm publish-to-npm",
+    "docgen-all": "pnpm docgen",
+    "zip-release-assets-all": "pnpm docgen",
     "docgen": "docgen",
-    "docgen-all": "docgen"
+    "publish-to-npm": "pnpm publish dist --provenance",
+    "zip-release-assets": "mkdir -p _release-assets && zip -r _release-assets/effect-lib-maps.zip dist -i '*.map'"
   },
   "@parischap/configs": {
     "description": "An extension to the official Effect library",
     "version": "0.12.0",
     "buildMethod": "InternalAndNpmBundling",
-    "publishToNpm": true,
+    "publishTarget": "ToNpmAndGithub",
     "dependencies": {},
     "environment": "Neutral",
     "examples": [],

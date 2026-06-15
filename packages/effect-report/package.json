@@ -15,14 +15,18 @@
     "configs": "pnpm -w configs",
     "circular": "madge --extensions ts --circular --no-color --no-spinner esm",
     "check": "pnpm circular && pnpm lint && pnpm test-all",
+    "publish-to-npm-all": "pnpm publish-to-npm",
+    "docgen-all": "pnpm docgen",
+    "zip-release-assets-all": "pnpm docgen",
     "docgen": "echo \"No doc generation for 'effect-report'\"",
-    "docgen-all": "echo \"No doc generation for 'effect-report'\""
+    "publish-to-npm": "echo \"Nothing to publish to npm for 'effect-report'\"",
+    "zip-release-assets": "echo \"Nothing to zip for 'effect-report'\""
   },
   "@parischap/configs": {
     "description": "A functional library to prettify Effect logging",
     "version": "0.1.0",
     "buildMethod": "None",
-    "publishToNpm": false,
+    "publishTarget": "None",
     "dependencies": {},
     "environment": "Node",
     "examples": [],

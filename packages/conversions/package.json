@@ -15,16 +15,19 @@
     "configs": "pnpm -w configs",
     "circular": "madge --extensions ts --circular --no-color --no-spinner esm",
     "check": "pnpm circular && pnpm lint && pnpm test-all",
+    "publish-to-npm-all": "pnpm publish-to-npm",
+    "docgen-all": "pnpm docgen",
+    "zip-release-assets-all": "pnpm docgen",
     "examples": "tsx examples/perf.ts && tsx examples/RoundingOption_1.ts && tsx examples/RoundingOption_2.ts && tsx examples/RoundingOption_3.ts && tsx examples/NumberBase10Format_1.ts && tsx examples/NumberBase10Format_2.ts && tsx examples/Template_1.ts && tsx examples/Template_2.ts && tsx examples/Template_3.ts && tsx examples/DateTime_1.ts && tsx examples/DateTimeFormat_1.ts && tsx examples/DateTimeFormat_2.ts",
-    "publish-to-npm": "cd dist && npm publish --access=public",
     "docgen": "docgen",
-    "docgen-all": "docgen"
+    "publish-to-npm": "pnpm publish dist --provenance",
+    "zip-release-assets": "mkdir -p _release-assets && zip -r _release-assets/conversions-maps.zip dist -i '*.map'"
   },
   "@parischap/configs": {
     "description": "A functional library to replace partially the native Intl API",
     "version": "1.0.0",
     "buildMethod": "InternalAndNpmBundling",
-    "publishToNpm": true,
+    "publishTarget": "ToNpmAndGithub",
     "dependencies": {},
     "environment": "Neutral",
     "examples": [
