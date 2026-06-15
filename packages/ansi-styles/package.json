@@ -7,8 +7,8 @@
   "homepage": "https://github.com/parischap/effect-libs/tree/master/packages/ansi-styles",
   "scripts": {
     "test-all": "vitest run",
-    "lint": "oxlint -disable-nested-config",
-    "fmt": "oxfmt -disable-nested-config && oxlint --fix -disable-nested-config",
+    "lint": "oxlint --disable-nested-config",
+    "fmt": "oxfmt --disable-nested-config && oxlint --fix -disable-nested-config",
     "lint-all": "pnpm lint && pnpm --filter \"./packages/*\" run  lint-all",
     "fmt-all": "pnpm fmt && pnpm --filter \"./packages/*\" run  fmt-all",
     "check-all": "pnpm check && pnpm --filter \"./packages/*\" run  check-all",

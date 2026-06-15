@@ -7,8 +7,8 @@
   "homepage": "https://github.com/parischap/effect-libs/tree/master/packages/pretty-print",
   "scripts": {
     "test-all": "vitest run",
-    "lint": "oxlint -disable-nested-config",
-    "fmt": "oxfmt -disable-nested-config && oxlint --fix -disable-nested-config",
+    "lint": "oxlint --disable-nested-config",
+    "fmt": "oxfmt --disable-nested-config && oxlint --fix -disable-nested-config",
     "lint-all": "pnpm lint && pnpm --filter \"./packages/*\" run  lint-all",
     "fmt-all": "pnpm fmt && pnpm --filter \"./packages/*\" run  fmt-all",
     "check-all": "pnpm check && pnpm --filter \"./packages/*\" run  check-all",
@@ -70,34 +70,34 @@
       "default": "./esm/index.ts"
     },
     "./PPByPasser": {
-      "default": "./esm/parameters/ByPasser.ts"
+      "default": "./esm/Parameters/ByPasser.ts"
     },
     "./PPNonPrimitiveFormatter": {
-      "default": "./esm/parameters/NonPrimitiveFormatter.ts"
+      "default": "./esm/Parameters/NonPrimitiveFormatter.ts"
     },
     "./PPNonPrimitiveParameters": {
-      "default": "./esm/parameters/NonPrimitiveParameters.ts"
+      "default": "./esm/Parameters/NonPrimitiveParameters.ts"
     },
     "./PPParameters": {
-      "default": "./esm/parameters/Parameters.ts"
+      "default": "./esm/Parameters/Parameters.ts"
     },
     "./PPPartName": {
-      "default": "./esm/parameters/PartName.ts"
+      "default": "./esm/Parameters/PartName.ts"
     },
     "./PPPrimitiveFormatter": {
-      "default": "./esm/parameters/PrimitiveFormatter.ts"
+      "default": "./esm/Parameters/PrimitiveFormatter.ts"
     },
     "./PPPropertyFilter": {
-      "default": "./esm/parameters/PropertyFilter.ts"
+      "default": "./esm/Parameters/PropertyFilter.ts"
     },
     "./PPPropertyFormatter": {
-      "default": "./esm/parameters/PropertyFormatter.ts"
+      "default": "./esm/Parameters/PropertyFormatter.ts"
     },
     "./PPPropertyNumberDisplayOption": {
-      "default": "./esm/parameters/PropertyNumberDisplayOption.ts"
+      "default": "./esm/Parameters/PropertyNumberDisplayOption.ts"
     },
     "./PPResolvedNonPrimitiveParameters": {
-      "default": "./esm/internal/parameters/ResolvedNonPrimitiveParameters.ts"
+      "default": "./esm/internal/Parameters/ResolvedNonPrimitiveParameters.ts"
     },
     "./PPStringifiedProperties": {
       "default": "./esm/internal/stringification/StringifiedProperties.ts"
@@ -109,19 +109,19 @@
       "default": "./esm/stringification/Stringifier.ts"
     },
     "./PPStyle": {
-      "default": "./esm/parameters/Style.ts"
+      "default": "./esm/Parameters/Style.ts"
     },
     "./PPStyleMap": {
-      "default": "./esm/parameters/StyleMap.ts"
+      "default": "./esm/Parameters/StyleMap.ts"
     },
     "./PPStyles": {
-      "default": "./esm/internal/parameters/Styles.ts"
+      "default": "./esm/internal/Parameters/Styles.ts"
     },
     "./PPValue": {
       "default": "./esm/internal/stringification/Value.ts"
     },
     "./PPValueOrder": {
-      "default": "./esm/parameters/ValueOrder.ts"
+      "default": "./esm/Parameters/ValueOrder.ts"
     },
     "./PPValues": {
       "default": "./esm/internal/stringification/Values.ts"

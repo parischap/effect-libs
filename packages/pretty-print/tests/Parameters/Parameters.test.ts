@@ -8,6 +8,7 @@ import { describe, it } from 'vitest';
 
 describe('PPParameters', () => {
   it('moduleTag', () => {
+    console.log(TestUtils.moduleTagFromTestFilePath(import.meta.filename));
     TestUtils.assertEquals(
       Option.some(PPParameters.moduleTag),
       TestUtils.moduleTagFromTestFilePath(import.meta.filename),
