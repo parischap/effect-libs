@@ -1,10 +1,42 @@
 {
   "name": "@parischap/effect-lib",
+  "type": "module",
+  "author": "Jérôme MARTIN",
+  "license": "MIT",
   "description": "An extension to the official Effect library",
   "homepage": "https://github.com/parischap/effect-libs/tree/master/packages/effect-lib",
-  "license": "MIT",
-  "author": "Jérôme MARTIN",
-  "type": "module",
+  "scripts": {
+    "test-all": "vitest run",
+    "lint": "oxlint --disable-nested-config",
+    "fmt": "oxfmt --disable-nested-config && oxlint --fix -disable-nested-config",
+    "lint-all": "pnpm lint && pnpm --filter \"./packages/*\" run  lint-all",
+    "fmt-all": "pnpm fmt && pnpm --filter \"./packages/*\" run  fmt-all",
+    "check-all": "pnpm check && pnpm --filter \"./packages/*\" run  check-all",
+    "configs": "pnpm -w configs",
+    "circular": "madge --extensions ts --circular --no-color --no-spinner esm",
+    "check": "pnpm circular && pnpm lint && pnpm test-all",
+    "publish-to-npm-all": "pnpm publish-to-npm",
+    "docgen-all": "pnpm docgen",
+    "zip-release-assets-all": "pnpm zip-release-assets",
+    "docgen": "docgen",
+    "publish-to-npm": "pnpm publish dist --provenance --no-git-checks --access public",
+    "zip-release-assets": "mkdir -p _release-assets && zip -r _release-assets/effect-lib-maps.zip dist -i '*.map'"
+  },
+  "@parischap/configs": {
+    "description": "An extension to the official Effect library",
+    "version": "0.14.0",
+    "buildMethod": "InternalAndNpmBundling",
+    "publishTarget": "ToNpmAndGithub",
+    "dependencies": {},
+    "environment": "Neutral",
+    "examples": [],
+    "keywords": [],
+    "packagePrefix": "M",
+    "peerDependencies": {
+      "effect": "*"
+    },
+    "scripts": {}
+  },
   "exports": {
     ".": {
       "default": "./esm/index.ts"
@@ -103,40 +135,8 @@
       "default": "./esm/types/TypesCategory.ts"
     }
   },
-  "scripts": {
-    "test-all": "vitest run",
-    "lint": "oxlint --disable-nested-config",
-    "fmt": "oxfmt --disable-nested-config && oxlint --fix -disable-nested-config",
-    "lint-all": "pnpm lint && pnpm --filter \"./packages/*\" run  lint-all",
-    "fmt-all": "pnpm fmt && pnpm --filter \"./packages/*\" run  fmt-all",
-    "check-all": "pnpm check && pnpm --filter \"./packages/*\" run  check-all",
-    "configs": "pnpm -w configs",
-    "circular": "madge --extensions ts --circular --no-color --no-spinner esm",
-    "check": "pnpm circular && pnpm lint && pnpm test-all",
-    "publish-to-npm-all": "pnpm publish-to-npm",
-    "docgen-all": "pnpm docgen",
-    "zip-release-assets-all": "pnpm zip-release-assets",
-    "docgen": "docgen",
-    "publish-to-npm": "pnpm publish dist --provenance --no-git-checks --access public",
-    "zip-release-assets": "mkdir -p _release-assets && zip -r _release-assets/effect-lib-maps.zip dist -i '*.map'"
-  },
   "dependencies": {},
   "peerDependencies": {
     "effect": "*"
-  },
-  "@parischap/configs": {
-    "description": "An extension to the official Effect library",
-    "version": "0.14.0",
-    "buildMethod": "InternalAndNpmBundling",
-    "publishTarget": "ToNpmAndGithub",
-    "dependencies": {},
-    "environment": "Neutral",
-    "examples": [],
-    "keywords": [],
-    "packagePrefix": "M",
-    "peerDependencies": {
-      "effect": "*"
-    },
-    "scripts": {}
   }
 }
