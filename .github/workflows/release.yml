@@ -47,9 +47,12 @@ jobs:
             exit 1
           fi
           
+      - name: Set npm auth token
+        env:
+          NPM_PUBLISH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+        run: npm config set //registry.npmjs.org/:_authToken "${NPM_PUBLISH_TOKEN}"
       - name: Build and publish
         working-directory: packages/effect-libs
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          pnpm_config_//registry.npmjs.org/:_authToken: ${{ secrets.NPM_PUBLISH_TOKEN }}
         run: TAG="${{ github.event.release.tag_name }}" && pnpm configs build all && pnpm publish-to-npm-all && pnpm zip-release-assets-all &&gh release upload "$TAG" **/_release-assets/*.zip
