@@ -19,7 +19,7 @@
     "docgen-all": "pnpm docgen",
     "zip-release-assets-all": "pnpm docgen",
     "docgen": "docgen",
-    "publish-to-npm": "pnpm publish dist --provenance",
+    "publish-to-npm": "pnpm publish dist --provenance --no-git-checks",
     "zip-release-assets": "mkdir -p _release-assets && zip -r _release-assets/effect-lib-maps.zip dist -i '*.map'"
   },
   "@parischap/configs": {

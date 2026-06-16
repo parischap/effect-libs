@@ -20,7 +20,7 @@
     "zip-release-assets-all": "pnpm docgen",
     "examples": "tsx examples/util-inspect-like.ts && tsx examples/treeify.ts && tsx examples/treeify-with-leaves.ts && tsx examples/circularity-handling.ts && tsx examples/with-date-and-regexp.ts && tsx examples/with-prototype-chain.ts && tsx examples/with-custom-style-map.ts && tsx examples/with-custom-primitive-formatter.ts && tsx examples/with-property-filter-and-sort.ts",
     "docgen": "docgen",
-    "publish-to-npm": "pnpm publish dist --provenance",
+    "publish-to-npm": "pnpm publish dist --provenance --no-git-checks",
     "zip-release-assets": "mkdir -p _release-assets && zip -r _release-assets/pretty-print-maps.zip dist -i '*.map'"
   },
   "@parischap/configs": {

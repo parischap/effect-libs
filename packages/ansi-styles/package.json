@@ -20,7 +20,7 @@
     "zip-release-assets-all": "pnpm docgen",
     "examples": "tsx examples/basic-usage.ts && tsx examples/cancelling-a-style.ts && tsx examples/simple-colors.ts && tsx examples/all-colors.ts",
     "docgen": "docgen",
-    "publish-to-npm": "pnpm publish dist --provenance",
+    "publish-to-npm": "pnpm publish dist --provenance --no-git-checks",
     "zip-release-assets": "mkdir -p _release-assets && zip -r _release-assets/ansi-styles-maps.zip dist -i '*.map'"
   },
   "@parischap/configs": {
