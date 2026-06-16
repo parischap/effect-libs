@@ -1,10 +1,70 @@
 {
   "name": "@parischap/ansi-styles",
+  "type": "module",
+  "author": "Jérôme MARTIN",
+  "license": "MIT",
   "description": "A functional library to style your strings in terminals",
   "homepage": "https://github.com/parischap/effect-libs/tree/master/packages/ansi-styles",
-  "license": "MIT",
-  "author": "Jérôme MARTIN",
-  "type": "module",
+  "scripts": {
+    "test-all": "vitest run",
+    "lint": "oxlint --disable-nested-config",
+    "fmt": "oxfmt --disable-nested-config && oxlint --fix -disable-nested-config",
+    "lint-all": "pnpm lint && pnpm --filter \"./packages/*\" run  lint-all",
+    "fmt-all": "pnpm fmt && pnpm --filter \"./packages/*\" run  fmt-all",
+    "check-all": "pnpm check && pnpm --filter \"./packages/*\" run  check-all",
+    "configs": "pnpm -w configs",
+    "circular": "madge --extensions ts --circular --no-color --no-spinner esm",
+    "check": "pnpm circular && pnpm lint && pnpm test-all",
+    "publish-to-npm-all": "pnpm publish-to-npm",
+    "docgen-all": "pnpm docgen",
+    "zip-release-assets-all": "pnpm zip-release-assets",
+    "examples": "tsx examples/basic-usage.ts && tsx examples/cancelling-a-style.ts && tsx examples/simple-colors.ts && tsx examples/all-colors.ts",
+    "docgen": "docgen",
+    "publish-to-npm": "pnpm publish dist --provenance --no-git-checks --access public",
+    "zip-release-assets": "mkdir -p _release-assets && zip -r _release-assets/ansi-styles-maps.zip dist -i '*.map'"
+  },
+  "@parischap/configs": {
+    "description": "A functional library to style your strings in terminals",
+    "version": "1.0.2",
+    "buildMethod": "InternalAndNpmBundling",
+    "publishTarget": "ToNpmAndGithub",
+    "dependencies": {},
+    "environment": "Neutral",
+    "examples": [
+      "basic-usage.ts",
+      "cancelling-a-style.ts",
+      "simple-colors.ts",
+      "all-colors.ts"
+    ],
+    "keywords": [
+      "terminal",
+      "color",
+      "colour",
+      "colors",
+      "formatting",
+      "cli",
+      "console",
+      "string",
+      "ansi",
+      "style",
+      "styles",
+      "tty",
+      "formatting",
+      "rgb256",
+      "shell",
+      "xterm",
+      "log",
+      "logging",
+      "command-line",
+      "text"
+    ],
+    "packagePrefix": "AS",
+    "peerDependencies": {
+      "effect": "*",
+      "@parischap/effect-lib": "*"
+    },
+    "scripts": {}
+  },
   "exports": {
     ".": {
       "default": "./esm/index.ts"
@@ -97,69 +157,9 @@
       "default": "./esm/internal/UnistyledText.ts"
     }
   },
-  "scripts": {
-    "test-all": "vitest run",
-    "lint": "oxlint --disable-nested-config",
-    "fmt": "oxfmt --disable-nested-config && oxlint --fix -disable-nested-config",
-    "lint-all": "pnpm lint && pnpm --filter \"./packages/*\" run  lint-all",
-    "fmt-all": "pnpm fmt && pnpm --filter \"./packages/*\" run  fmt-all",
-    "check-all": "pnpm check && pnpm --filter \"./packages/*\" run  check-all",
-    "configs": "pnpm -w configs",
-    "circular": "madge --extensions ts --circular --no-color --no-spinner esm",
-    "check": "pnpm circular && pnpm lint && pnpm test-all",
-    "publish-to-npm-all": "pnpm publish-to-npm",
-    "docgen-all": "pnpm docgen",
-    "zip-release-assets-all": "pnpm zip-release-assets",
-    "examples": "tsx examples/basic-usage.ts && tsx examples/cancelling-a-style.ts && tsx examples/simple-colors.ts && tsx examples/all-colors.ts",
-    "docgen": "docgen",
-    "publish-to-npm": "pnpm publish dist --provenance --no-git-checks --access public",
-    "zip-release-assets": "mkdir -p _release-assets && zip -r _release-assets/ansi-styles-maps.zip dist -i '*.map'"
-  },
   "dependencies": {},
   "peerDependencies": {
-    "@parischap/effect-lib": "workspace:*",
-    "effect": "*"
-  },
-  "@parischap/configs": {
-    "description": "A functional library to style your strings in terminals",
-    "version": "1.0.2",
-    "buildMethod": "InternalAndNpmBundling",
-    "publishTarget": "ToNpmAndGithub",
-    "dependencies": {},
-    "environment": "Neutral",
-    "examples": [
-      "basic-usage.ts",
-      "cancelling-a-style.ts",
-      "simple-colors.ts",
-      "all-colors.ts"
-    ],
-    "keywords": [
-      "terminal",
-      "color",
-      "colour",
-      "colors",
-      "formatting",
-      "cli",
-      "console",
-      "string",
-      "ansi",
-      "style",
-      "styles",
-      "tty",
-      "formatting",
-      "rgb256",
-      "shell",
-      "xterm",
-      "log",
-      "logging",
-      "command-line",
-      "text"
-    ],
-    "packagePrefix": "AS",
-    "peerDependencies": {
-      "effect": "*",
-      "@parischap/effect-lib": "*"
-    },
-    "scripts": {}
+    "effect": "*",
+    "@parischap/effect-lib": "workspace:*"
   }
 }

@@ -16,6 +16,8 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    env:
+      TAG: ${{ github.event.release.tag_name }}
     steps:
       - name: Checkout mytsdevs workspace
         uses: actions/checkout@v6.0.2
@@ -41,7 +43,6 @@ jobs:
           registry-url: https://registry.npmjs.org/
       - name: Check release tag matches package.json version
         run: |
-          TAG="${{ github.event.release.tag_name }}"
           if [ "$TAG" != "0.1.0" ]; then
             echo "Release tag '$TAG' does not match package.json version '0.1.0'"
             exit 1
@@ -52,4 +53,4 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
-        run: TAG="${{ github.event.release.tag_name }}" && pnpm configs build all && pnpm publish-to-npm-all && pnpm zip-release-assets-all && gh release upload "$TAG" **/_release-assets/*.zip
+        run: pnpm configs build all && pnpm publish-to-npm-all && pnpm zip-release-assets-all && send-release-attachments
