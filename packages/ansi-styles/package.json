@@ -25,7 +25,7 @@
   },
   "@parischap/configs": {
     "description": "A functional library to style your strings in terminals",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "buildMethod": "InternalAndNpmBundling",
     "publishTarget": "ToNpmAndGithub",
     "dependencies": {},

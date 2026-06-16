@@ -53,4 +53,4 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
-        run: pnpm configs build all && pnpm publish-to-npm-all && pnpm zip-release-assets-all && send-release-attachments
+        run: pnpm configs build all && pnpm zip-release-assets-all && send-release-attachments && pnpm publish-to-npm-all
