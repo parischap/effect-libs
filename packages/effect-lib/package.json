@@ -19,12 +19,12 @@
     "docgen-all": "pnpm docgen",
     "zip-release-assets-all": "pnpm docgen",
     "docgen": "docgen",
-    "publish-to-npm": "pnpm publish dist --provenance --no-git-checks",
+    "publish-to-npm": "pnpm publish dist --provenance --no-git-checks --access public",
     "zip-release-assets": "mkdir -p _release-assets && zip -r _release-assets/effect-lib-maps.zip dist -i '*.map'"
   },
   "@parischap/configs": {
     "description": "An extension to the official Effect library",
-    "version": "0.12.0",
+    "version": "0.13.0",
     "buildMethod": "InternalAndNpmBundling",
     "publishTarget": "ToNpmAndGithub",
     "dependencies": {},

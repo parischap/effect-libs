@@ -20,7 +20,7 @@
     "zip-release-assets-all": "pnpm docgen",
     "examples": "tsx examples/perf.ts && tsx examples/RoundingOption_1.ts && tsx examples/RoundingOption_2.ts && tsx examples/RoundingOption_3.ts && tsx examples/NumberBase10Format_1.ts && tsx examples/NumberBase10Format_2.ts && tsx examples/Template_1.ts && tsx examples/Template_2.ts && tsx examples/Template_3.ts && tsx examples/DateTime_1.ts && tsx examples/DateTimeFormat_1.ts && tsx examples/DateTimeFormat_2.ts",
     "docgen": "docgen",
-    "publish-to-npm": "pnpm publish dist --provenance --no-git-checks",
+    "publish-to-npm": "pnpm publish dist --provenance --no-git-checks --access public",
     "zip-release-assets": "mkdir -p _release-assets && zip -r _release-assets/conversions-maps.zip dist -i '*.map'"
   },
   "@parischap/configs": {
