@@ -39,7 +39,6 @@ jobs:
           node-version: latest
           cache: pnpm
           registry-url: https://registry.npmjs.org/
-          scope: '@parischap'
       - name: Check release tag matches package.json version
         run: |
           TAG="${{ github.event.release.tag_name }}"

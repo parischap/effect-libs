@@ -1,70 +1,10 @@
 {
   "name": "@parischap/pretty-print",
-  "type": "module",
-  "author": "Jérôme MARTIN",
-  "license": "MIT",
   "description": "A functional library to pretty-print and treeify objects",
   "homepage": "https://github.com/parischap/effect-libs/tree/master/packages/pretty-print",
-  "scripts": {
-    "test-all": "vitest run",
-    "lint": "oxlint --disable-nested-config",
-    "fmt": "oxfmt --disable-nested-config && oxlint --fix -disable-nested-config",
-    "lint-all": "pnpm lint && pnpm --filter \"./packages/*\" run  lint-all",
-    "fmt-all": "pnpm fmt && pnpm --filter \"./packages/*\" run  fmt-all",
-    "check-all": "pnpm check && pnpm --filter \"./packages/*\" run  check-all",
-    "configs": "pnpm -w configs",
-    "circular": "madge --extensions ts --circular --no-color --no-spinner esm",
-    "check": "pnpm circular && pnpm lint && pnpm test-all",
-    "publish-to-npm-all": "pnpm publish-to-npm",
-    "docgen-all": "pnpm docgen",
-    "zip-release-assets-all": "pnpm docgen",
-    "examples": "tsx examples/util-inspect-like.ts && tsx examples/treeify.ts && tsx examples/treeify-with-leaves.ts && tsx examples/circularity-handling.ts && tsx examples/with-date-and-regexp.ts && tsx examples/with-prototype-chain.ts && tsx examples/with-custom-style-map.ts && tsx examples/with-custom-primitive-formatter.ts && tsx examples/with-property-filter-and-sort.ts",
-    "docgen": "docgen",
-    "publish-to-npm": "pnpm publish dist --provenance --no-git-checks --access public",
-    "zip-release-assets": "mkdir -p _release-assets && zip -r _release-assets/pretty-print-maps.zip dist -i '*.map'"
-  },
-  "@parischap/configs": {
-    "description": "A functional library to pretty-print and treeify objects",
-    "version": "1.0.0",
-    "buildMethod": "InternalAndNpmBundling",
-    "publishTarget": "ToNpmAndGithub",
-    "dependencies": {},
-    "environment": "Neutral",
-    "examples": [
-      "util-inspect-like.ts",
-      "treeify.ts",
-      "treeify-with-leaves.ts",
-      "circularity-handling.ts",
-      "with-date-and-regexp.ts",
-      "with-prototype-chain.ts",
-      "with-custom-style-map.ts",
-      "with-custom-primitive-formatter.ts",
-      "with-property-filter-and-sort.ts"
-    ],
-    "keywords": [
-      "inspect",
-      "util.inspect",
-      "object",
-      "stringify",
-      "pretty",
-      "tree",
-      "treeify",
-      "print",
-      "console",
-      "visualize",
-      "debug",
-      "typescript",
-      "effect"
-    ],
-    "packagePrefix": "PP",
-    "peerDependencies": {
-      "effect": "*",
-      "@parischap/effect-lib": "*",
-      "@parischap/ansi-styles": "*",
-      "@parischap/conversions": "*"
-    },
-    "scripts": {}
-  },
+  "license": "MIT",
+  "author": "Jérôme MARTIN",
+  "type": "module",
   "exports": {
     ".": {
       "default": "./esm/index.ts"
@@ -127,11 +67,71 @@
       "default": "./esm/internal/stringification/Values.ts"
     }
   },
+  "scripts": {
+    "test-all": "vitest run",
+    "lint": "oxlint --disable-nested-config",
+    "fmt": "oxfmt --disable-nested-config && oxlint --fix -disable-nested-config",
+    "lint-all": "pnpm lint && pnpm --filter \"./packages/*\" run  lint-all",
+    "fmt-all": "pnpm fmt && pnpm --filter \"./packages/*\" run  fmt-all",
+    "check-all": "pnpm check && pnpm --filter \"./packages/*\" run  check-all",
+    "configs": "pnpm -w configs",
+    "circular": "madge --extensions ts --circular --no-color --no-spinner esm",
+    "check": "pnpm circular && pnpm lint && pnpm test-all",
+    "publish-to-npm-all": "pnpm publish-to-npm",
+    "docgen-all": "pnpm docgen",
+    "zip-release-assets-all": "pnpm zip-release-assets",
+    "examples": "tsx examples/util-inspect-like.ts && tsx examples/treeify.ts && tsx examples/treeify-with-leaves.ts && tsx examples/circularity-handling.ts && tsx examples/with-date-and-regexp.ts && tsx examples/with-prototype-chain.ts && tsx examples/with-custom-style-map.ts && tsx examples/with-custom-primitive-formatter.ts && tsx examples/with-property-filter-and-sort.ts",
+    "docgen": "docgen",
+    "publish-to-npm": "pnpm publish dist --provenance --no-git-checks --access public",
+    "zip-release-assets": "mkdir -p _release-assets && zip -r _release-assets/pretty-print-maps.zip dist -i '*.map'"
+  },
   "dependencies": {},
   "peerDependencies": {
-    "effect": "*",
-    "@parischap/effect-lib": "workspace:*",
     "@parischap/ansi-styles": "workspace:*",
-    "@parischap/conversions": "workspace:*"
+    "@parischap/conversions": "workspace:*",
+    "@parischap/effect-lib": "workspace:*",
+    "effect": "*"
+  },
+  "@parischap/configs": {
+    "description": "A functional library to pretty-print and treeify objects",
+    "version": "1.0.1",
+    "buildMethod": "InternalAndNpmBundling",
+    "publishTarget": "ToNpmAndGithub",
+    "dependencies": {},
+    "environment": "Neutral",
+    "examples": [
+      "util-inspect-like.ts",
+      "treeify.ts",
+      "treeify-with-leaves.ts",
+      "circularity-handling.ts",
+      "with-date-and-regexp.ts",
+      "with-prototype-chain.ts",
+      "with-custom-style-map.ts",
+      "with-custom-primitive-formatter.ts",
+      "with-property-filter-and-sort.ts"
+    ],
+    "keywords": [
+      "inspect",
+      "util.inspect",
+      "object",
+      "stringify",
+      "pretty",
+      "tree",
+      "treeify",
+      "print",
+      "console",
+      "visualize",
+      "debug",
+      "typescript",
+      "effect"
+    ],
+    "packagePrefix": "PP",
+    "peerDependencies": {
+      "effect": "*",
+      "@parischap/effect-lib": "*",
+      "@parischap/ansi-styles": "*",
+      "@parischap/conversions": "*"
+    },
+    "scripts": {}
   }
 }

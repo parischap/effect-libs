@@ -17,7 +17,7 @@
     "check": "pnpm circular && pnpm lint && pnpm test-all",
     "publish-to-npm-all": "pnpm publish-to-npm",
     "docgen-all": "pnpm docgen",
-    "zip-release-assets-all": "pnpm docgen",
+    "zip-release-assets-all": "pnpm zip-release-assets",
     "docgen": "echo \"No doc generation for 'node-effect-lib'\"",
     "publish-to-npm": "echo \"Nothing to publish to npm for 'node-effect-lib'\"",
     "zip-release-assets": "echo \"Nothing to zip for 'node-effect-lib'\""
