@@ -3,7 +3,6 @@
 name: Pages
 on:
   workflow_dispatch:
-permissions:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
