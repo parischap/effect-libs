@@ -9,15 +9,13 @@
     "test-all": "vitest run",
     "lint": "oxlint --disable-nested-config",
     "fmt": "oxfmt --disable-nested-config && oxlint --fix -disable-nested-config",
+    "configs": "pnpm -w configs",
+    "check": "pnpm lint",
     "lint-all": "pnpm lint && pnpm --filter \"./packages/*\" run  lint-all",
     "fmt-all": "pnpm fmt && pnpm --filter \"./packages/*\" run  fmt-all",
     "check-all": "pnpm check && pnpm --filter \"./packages/*\" run  check-all",
-    "configs": "pnpm -w configs",
-    "check": "pnpm lint",
-    "publish-to-npm-all": "pnpm --filter \"./packages/*\" run  publish-to-npm-all",
-    "docgen-all": "pnpm --filter \"./packages/*\" run  docgen-all",
-    "zip-release-assets-all": "pnpm --filter \"./packages/*\" run  zip-release-assets",
-    "send-release-attachments": "gh release upload \"$TAG\" packages/*/_release-assets/*.zip"
+    "release-all": "pnpm --filter \"./packages/*\" run  release-all",
+    "docgen-all": "pnpm --filter \"./packages/*\" run  docgen-all"
   },
   "@parischap/configs": {
     "description": "effect-libs is a set of open-source libraries to be used in complement to the effect library. Extends some Effect modules (`Array`, `Chunk`, `Option`, `Either`, `String`, ...). Adds extra-functionalities such as date and number parsing/formatting, sscanf/sprintf templating, number rounding, object pretty-printing, colored terminal printing, a simple yet very efficient matcher and a tree with cycle detection",

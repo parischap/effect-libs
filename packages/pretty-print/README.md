@@ -11,6 +11,22 @@ Can also be used by non-Effect users.
 
 </div>
 
+## Table of Contents
+
+- [Donate](#donate)
+- [Installation](#installation)
+- [Package size and tree-shaking](#package-size-and-tree-shaking)
+- [How to import?](#how-to-import)
+- [API](#api)
+- [Changelog](#changelog)
+- [In this package](#in-this-package)
+- [Overview](#overview)
+- [Usage](#usage)
+  - [A) Using the six pre-built PPParameters instances](#a-using-the-six-pre-built-ppparameters-instances)
+  - [B) Circular-reference handling](#b-circular-reference-handling)
+  - [C) Building your own PPParameters](#c-building-your-own-ppparameters)
+  - [D) Worked examples](#d-worked-examples)
+
 ## Donate
 
 [Any donations would be much appreciated](https://ko-fi.com/parischap) 😄
@@ -41,9 +57,9 @@ Depending on the package manager you use, run one of the following commands in y
 
 ## Package size and tree-shaking
 
-This library is optimized for tree-shaking. [Bundlephobia](https://bundlephobia.com/package/@parischap/pretty-print) announces a size of roughly 7 KB once minified and gzipped — a significant portion of which will be eliminated by your bundler.
+This package has an important size: it contains comments, maps, ECMAScript and commonjs files... All this will simplify your developer's experience. And when your app goes to production, all unnecessary stuff will be removed as this package has been highly optimized for tree-shaking.
 
-## How to import
+## How to import?
 
 This library supports named imports from the barrel:
 
@@ -64,6 +80,53 @@ The examples in this document use the namespace-import style.
 ## API
 
 After reading this introduction you may consult the full [API documentation](https://parischap.github.io/effect-libs/docs/pretty-print).
+
+## Changelog
+
+### v1.0.0 — Effect v4
+
+> **Ported to Effect v4** (`effect@4.0.0-beta`). Complete API redesign — not backward-compatible with v0.3.x.
+
+The central entry point is now `PPStringifier`, built from a `PPParameters` instance. Six pre-built `PPParameters` instances ship out of the box (`utilInspectLike`, `darkModeUtilInspectLike`, `treeify`, `darkModeTreeify`, `treeifyHideLeaves`, `darkModeTreeifyHideLeaves`). The full styling, bypassing, filtering, and formatting pipeline is individually accessible and replaceable.
+
+Compared with v0.3.x:
+
+- **`PPStyleMap`** replaces `StyleMap` and `ValueBasedStyler*`. Styles are now `ASContextStyler`-based, enabling depth-, type-, and key-indexed coloring from a single abstraction.
+- **`PPNonPrimitiveParameters`** replaces the old `RecordFormatter`/`NonPrimitiveFormatter` split. Multiple parameter sets can match a single value simultaneously and are merged automatically, with lower-index entries winning.
+- **`PPByPasser`** API cleaned up (`empty`, `toStringable`, `allWithName`, `dateAndRegExp`, `merge`). Dates and regular expressions are now bypassed by default in the merge fallback.
+- **`PPPrimitiveFormatter`** replaces `PrimitiveFormatter`. Quote character, max string length, and number/bigint formatters are all configurable.
+- **`PPStringifiedValue`** gained `toUnstyledStrings` alongside `toAnsiString`.
+- Effect iterables (`HashMap`, `HashSet`, …) are natively supported in the pre-built parameter instances without any extra configuration.
+- Circular references are tagged and displayed identically to `util.inspect` (`<Ref *N>` / `[Circular *N]`).
+- Added `PPPartName`, `PPValueOrder`, `PPPropertyNumberDisplayOption` for fine-grained control over property ordering and display.
+
+### v0.3.0 — Mar 2025 (Effect 3.13.6)
+
+Significant refactor — not backward-compatible with v0.2.x. The monolithic `Options` + `RecordFormatter` model was broken apart into composable pieces:
+
+- Introduced `StyleMap` (declarative color/style configuration), `NonPrimitiveFormatter`, `PrimitiveFormatter`, `ByPassers`, `ValueBasedStyler`, and `ValueBasedStylerConstructor`.
+- Added `StringifiedProperties` and `Values` for finer-grained control over how property lists are assembled and rendered.
+- Added `MarkMap`, `MarkShower`, and `MarkShowerConstructor` for configurable bracket and separator markup.
+- Output is comparable in appearance to v0.2.x, but the configuration API is substantially more expressive.
+
+### v0.1.0 — Sep 2024
+
+First stable public release. Usable `Options` + `stringify` model with `ByPasser`, `PropertyFilter`, `PropertyFormatter`, `ValueOrder`, `FormattedString`, `ColorSet`, `ColorWheel`, `RecordMarks`, and `IndentMode`.
+
+### v0.0.2 — Sep 2024
+
+First public release (alpha)
+
+## In this package
+
+This package contains:
+
+- **`PPStringifier`**: the main entry point. Built from a `PPParameters` instance, it exposes a `stringify` function that converts any JavaScript value to a `PPStringifiedValue.Type` (a non-empty array of styled text lines, one per output line).
+- **Six pre-built `PPParameters` instances**: `utilInspectLike` and `darkModeUtilInspectLike` (output resembling Node.js's `util.inspect`, with optional ANSI colors); `treeify` and `darkModeTreeify` (renders as an indented tree showing leaf values); `treeifyHideLeaves` and `darkModeTreeifyHideLeaves` (tree rendering, skipping leaf values to reveal only the structure's shape).
+- **`PPStyleMap`** and **`PPStyle`**: the color and style configuration layer. Supports depth-indexed, type-indexed, and key-type-indexed coloring via `ASContextStyler`.
+- **`PPPrimitiveFormatter`**: controls how primitive values are rendered (quote character, max string length, number/bigint formatters).
+- **`PPNonPrimitiveParameters`** and related modules: controls how objects, arrays, functions, and iterables are rendered, including bypassing, filtering, sorting, formatting and bracket style.
+- **`PPStringifiedValue`**: converts the output to an ANSI-escaped string (`toAnsiString`) or to plain text lines (`toUnstyledStrings`).
 
 ## Overview
 
@@ -582,39 +645,3 @@ const recordWithFilterAndSort = PPNonPrimitiveParameters.make({
 <img alt="with-property-filter-and-sort-example" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPCFET0NUWVBFIHN2ZyBQVUJMSUMgIi0vL1czQy8vRFREIFNWRyAxLjAvL0VOIiAiaHR0cDovL3d3dy53My5vcmcvVFIvMjAwMS9SRUMtU1ZHLTIwMDEwOTA0L0RURC9zdmcxMC5kdGQiPgo8c3ZnIHdpZHRoPSIzMzUuMDAiIGhlaWdodD0iMTE1LjgzIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMzM1LjAwIiBoZWlnaHQ9IjExNS44MyIgZmlsbD0iIzE3MTcxNyIgeD0iMC4wMHB4IiB5PSIwLjAwcHgiLz4KPGcgZm9udC1mYW1pbHk9InVpLW1vbm9zcGFjZSwgU0ZNb25vLVJlZ3VsYXIsIE1lbmxvLCBDb25zb2xhcywgbW9ub3NwYWNlIiBmb250LXNpemU9IjE0LjAwcHgiIGZpbGw9IiNjNGM0YzQiIGNsaXAtcGF0aD0idXJsKCN0ZXJtaW5hbE1hc2spIj4KPHRleHQgeD0iMzAuMDBweCIgeT0iMzQuMDBweCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHRzcGFuIHhtbDpzcGFjZT0icHJlc2VydmUiIGZpbGw9IiNENzRFNkYiPns8L3RzcGFuPjwvdGV4dD48dGV4dCB4PSIzMC4wMHB4IiB5PSI0OC4wMHB4IiB4bWw6c3BhY2U9InByZXNlcnZlIj48dHNwYW4geG1sOnNwYWNlPSJwcmVzZXJ2ZSIgZmlsbD0iIzMxQkI3MSI+ICA8L3RzcGFuPjx0c3BhbiB4bWw6c3BhY2U9InByZXNlcnZlIiBmaWxsPSIjRDc0RTZGIj5hbHBoYTwvdHNwYW4+PHRzcGFuIHhtbDpzcGFjZT0icHJlc2VydmUiIGZpbGw9IiNDNUM4QzYiPjogPC90c3Bhbj48dHNwYW4geG1sOnNwYWNlPSJwcmVzZXJ2ZSIgZmlsbD0iIzMxQkI3MSI+JmFwb3M7Zmlyc3QgYWZ0ZXIgc29ydGluZyZhcG9zOzwvdHNwYW4+PHRzcGFuIHhtbDpzcGFjZT0icHJlc2VydmUiIGZpbGw9IiNDNUM4QzYiPiw8L3RzcGFuPjwvdGV4dD48dGV4dCB4PSIzMC4wMHB4IiB5PSI2Mi4wMHB4IiB4bWw6c3BhY2U9InByZXNlcnZlIj48dHNwYW4geG1sOnNwYWNlPSJwcmVzZXJ2ZSIgZmlsbD0iIzMxQkI3MSI+ICA8L3RzcGFuPjx0c3BhbiB4bWw6c3BhY2U9InByZXNlcnZlIiBmaWxsPSIjRDc0RTZGIj5iZXRhPC90c3Bhbj48dHNwYW4geG1sOnNwYWNlPSJwcmVzZXJ2ZSIgZmlsbD0iI0M1QzhDNiI+OiA8L3RzcGFuPjx0c3BhbiB4bWw6c3BhY2U9InByZXNlcnZlIiBmaWxsPSIjRDNFNTYxIj50cnVlPC90c3Bhbj48dHNwYW4geG1sOnNwYWNlPSJwcmVzZXJ2ZSIgZmlsbD0iI0M1QzhDNiI+LDwvdHNwYW4+PC90ZXh0Pjx0ZXh0IHg9IjMwLjAwcHgiIHk9Ijc2LjAwcHgiIHhtbDpzcGFjZT0icHJlc2VydmUiPjx0c3BhbiB4bWw6c3BhY2U9InByZXNlcnZlIiBmaWxsPSIjMzFCQjcxIj4gIDwvdHNwYW4+PHRzcGFuIHhtbDpzcGFjZT0icHJlc2VydmUiIGZpbGw9IiNENzRFNkYiPm1pZGRsZTwvdHNwYW4+PHRzcGFuIHhtbDpzcGFjZT0icHJlc2VydmUiIGZpbGw9IiNDNUM4QzYiPjogPC90c3Bhbj48dHNwYW4geG1sOnNwYWNlPSJwcmVzZXJ2ZSIgZmlsbD0iI0QzRTU2MSI+NDI8L3RzcGFuPjx0c3BhbiB4bWw6c3BhY2U9InByZXNlcnZlIiBmaWxsPSIjQzVDOEM2Ij4sPC90c3Bhbj48L3RleHQ+PHRleHQgeD0iMzAuMDBweCIgeT0iOTAuMDBweCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHRzcGFuIHhtbDpzcGFjZT0icHJlc2VydmUiIGZpbGw9IiMzMUJCNzEiPiAgPC90c3Bhbj48dHNwYW4geG1sOnNwYWNlPSJwcmVzZXJ2ZSIgZmlsbD0iI0Q3NEU2RiI+emV0YTwvdHNwYW4+PHRzcGFuIHhtbDpzcGFjZT0icHJlc2VydmUiIGZpbGw9IiNDNUM4QzYiPjogPC90c3Bhbj48dHNwYW4geG1sOnNwYWNlPSJwcmVzZXJ2ZSIgZmlsbD0iIzMxQkI3MSI+JmFwb3M7bGFzdCBpbiB1bnNvcnRlZCBvcmRlciZhcG9zOzwvdHNwYW4+PC90ZXh0Pjx0ZXh0IHg9IjMwLjAwcHgiIHk9IjEwNC4wMHB4IiB4bWw6c3BhY2U9InByZXNlcnZlIj48dHNwYW4geG1sOnNwYWNlPSJwcmVzZXJ2ZSIgZmlsbD0iI0Q3NEU2RiI+fTwvdHNwYW4+PHRzcGFuIHhtbDpzcGFjZT0icHJlc2VydmUiLz48L3RleHQ+CjwvZz4KPC9zdmc+Cg==" example-name="with-property-filter-and-sort" />
 
 See [`examples/with-property-filter-and-sort.ts`](examples/with-property-filter-and-sort.ts) for the full configuration.
-
-## Changelog
-
-### v1.0.0 — Effect v4
-
-> **Ported to Effect v4** (`effect@4.0.0-beta`). Complete API redesign — not backward-compatible with v0.3.x.
-
-The central entry point is now `PPStringifier`, built from a `PPParameters` instance. Six pre-built `PPParameters` instances ship out of the box (`utilInspectLike`, `darkModeUtilInspectLike`, `treeify`, `darkModeTreeify`, `treeifyHideLeaves`, `darkModeTreeifyHideLeaves`). The full styling, bypassing, filtering, and formatting pipeline is individually accessible and replaceable.
-
-Compared with v0.3.x:
-
-- **`PPStyleMap`** replaces `StyleMap` and `ValueBasedStyler*`. Styles are now `ASContextStyler`-based, enabling depth-, type-, and key-indexed coloring from a single abstraction.
-- **`PPNonPrimitiveParameters`** replaces the old `RecordFormatter`/`NonPrimitiveFormatter` split. Multiple parameter sets can match a single value simultaneously and are merged automatically, with lower-index entries winning.
-- **`PPByPasser`** API cleaned up (`empty`, `toStringable`, `allWithName`, `dateAndRegExp`, `merge`). Dates and regular expressions are now bypassed by default in the merge fallback.
-- **`PPPrimitiveFormatter`** replaces `PrimitiveFormatter`. Quote character, max string length, and number/bigint formatters are all configurable.
-- **`PPStringifiedValue`** gained `toUnstyledStrings` alongside `toAnsiString`.
-- Effect iterables (`HashMap`, `HashSet`, …) are natively supported in the pre-built parameter instances without any extra configuration.
-- Circular references are tagged and displayed identically to `util.inspect` (`<Ref *N>` / `[Circular *N]`).
-- Added `PPPartName`, `PPValueOrder`, `PPPropertyNumberDisplayOption` for fine-grained control over property ordering and display.
-
-### v0.3.0 — Mar 2025 (Effect 3.13.6)
-
-Significant refactor — not backward-compatible with v0.2.x. The monolithic `Options` + `RecordFormatter` model was broken apart into composable pieces:
-
-- Introduced `StyleMap` (declarative color/style configuration), `NonPrimitiveFormatter`, `PrimitiveFormatter`, `ByPassers`, `ValueBasedStyler`, and `ValueBasedStylerConstructor`.
-- Added `StringifiedProperties` and `Values` for finer-grained control over how property lists are assembled and rendered.
-- Added `MarkMap`, `MarkShower`, and `MarkShowerConstructor` for configurable bracket and separator markup.
-- Output is comparable in appearance to v0.2.x, but the configuration API is substantially more expressive.
-
-### v0.1.0 — Sep 2024
-
-First stable public release. Usable `Options` + `stringify` model with `ByPasser`, `PropertyFilter`, `PropertyFormatter`, `ValueOrder`, `FormattedString`, `ColorSet`, `ColorWheel`, `RecordMarks`, and `IndentMode`.
-
-### v0.0.2 — Sep 2024
-
-First public release (alpha)

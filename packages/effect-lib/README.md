@@ -1,41 +1,77 @@
 <!-- LTeX: language=en-US -->
+<div align="center">
 
-## EFFECT-LIB
+# effect-lib
 
-A collection of utility modules that extend the official [Effect](https://effect.website/) library.
+A collection of utility modules that extend the official [`Effect`](https://effect.website/) library.
 
-All exports follow the `M`-prefix naming convention (e.g., `MArray`, `MMatch`, `MTree`) to avoid name collisions with the Effect modules they extend.
+All exports follow the `M`-prefix naming convention (e.g., `MArray`, `MMatch`, `MTree`) to avoid name collisions with the `Effect` modules they extend.
 
-## Modules
+Tested and documented, optimized for tree-shaking, 100% TypeScript, 100% functional.
 
-| Module                            | Description                                                                                                                                                                                                                                                  |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **MArray**                        | Extensions to `effect/Array`: additional predicates, fold/unfold operations with cycle detection, padding, grouping, and more                                                                                                                                |
-| **MBigDecimal**                   | Conversions and utilities for `effect/BigDecimal`, including safe/unsafe construction from primitive values                                                                                                                                                  |
-| **MBigInt**                       | Conversions, arithmetic predicates, and logarithm for `effect/BigInt`                                                                                                                                                                                        |
-| **MCache**                        | A time-limited, capacity-bounded LRU cache built on `effect/Cache` with a `lifeSpan` (TTL in milliseconds)                                                                                                                                                   |
-| **MChunk**                        | Extensions to `effect/Chunk`: duplicate detection, `findAll`, `takeBut`, and `takeRightBut`                                                                                                                                                                  |
-| **MData**                         | A base class providing default `Inspectable` and `Pipeable` behavior for Effect data types                                                                                                                                                                   |
-| **MEquivalenceBasedEqualityData** | A base class that derives `Equal.Equal` from an abstract `isEquivalentTo` method                                                                                                                                                                             |
-| **MEither**                       | Extensions to `effect/Either`: flattening, optional extraction, and pair traversal                                                                                                                                                                           |
-| **MFunction**                     | Extensions to `effect/Function`: memoization with `once`, `applyAsThis`, cloning, and constant helpers                                                                                                                                                       |
-| **MInputError**                   | A tagged error for user-facing validation failures, with `assertInRange` and similar guards                                                                                                                                                                  |
-| **MJson**                         | Effect-wrapped `JSON.stringify` and `JSON.parse` that fail on circular references or invalid input                                                                                                                                                           |
-| **MMatch**                        | A lightweight, type-safe pattern-matcher that replaces `Effect.Match` for simple use cases. Supports predicate matching, refinement matching with exhaustiveness checking, `whenOr`, `whenAnd`, and `tryFunction`                                            |
-| **MNumber**                       | Extensions to `effect/Number`: safe conversions from `BigInt` and `BigDecimal`, integer predicates, modulo, and `fromString`                                                                                                                                 |
-| **MOption**                       | Extensions to `effect/Option`: construction from nullable-or-option values, and iterator unwrapping                                                                                                                                                          |
-| **MPortError**                    | A tagged error for wrapping failures that arise when porting non-Effect functions into the Effect world                                                                                                                                                      |
-| **MPredicate**                    | Extensions to `effect/Predicate`: type-level utilities (`Source`, `Target`, `Coverage`, mapping types), a `struct` combinator, and runtime guards for primitives, non-primitives, function arity, and sized arrays (`isSingleton`, `isPair`, `isOverOne`, …) |
-| **MRecord**                       | Extensions to `effect/Record`: type-safe `unsafeGet`, `modify`, and `modifyAll`                                                                                                                                                                              |
-| **MRegExp**                       | Ready-to-use `RegExp` instances (SemVer, email, line breaks) and `fromRegExpString`                                                                                                                                                                          |
-| **MRegExpString**                 | Building blocks for composing regular-expression strings (unsigned integers, signed integers, identifiers, separators, etc.)                                                                                                                                 |
-| **MString**                       | Extensions to `effect/String`: search with automatic `lastIndex` reset, padding with fill-position support, `removeNCharsEveryMChars`, SemVer/email predicates, and more                                                                                     |
-| **MStringFillPosition**           | A small enum-like module for fill positions (`left` / `right`) used by `MString` padding functions                                                                                                                                                           |
-| **MStringSearchResult**           | A value-object representing a regex match result, with `Equivalence`, `Order`, and `Hash` instances                                                                                                                                                          |
-| **MStruct**                       | Extensions to `effect/Struct`: an `evolve` variant that only requires keys present in the patch object                                                                                                                                                       |
-| **MTree**                         | A recursive tree/forest data structure with `fold`, `map`, `reduce`, and a cycle-safe `unfold`. Composed of `MTreeLeaf`, `MTreeNode`, `MTreeNonLeaf`, and `MTreeForest` sub-modules                                                                          |
-| **MTuple**                        | Extensions to `effect/Tuple`: `of`, `replicate`, and `prependElement`                                                                                                                                                                                        |
-| **MTypes**                        | Foundational primitive / container types and type-level utilities (`Object`, `NonPrimitive`, `Pair`, `Singleton`, `OverOne`, `OverTwo`, `Data`, `Tuple`, …). Runtime guards live in `MPredicate`                                                             |
+</div>
+
+## Table of Contents
+
+- [Donate](#donate)
+- [Installation](#installation)
+- [Package size and tree-shaking](#package-size-and-tree-shaking)
+- [How to import?](#how-to-import)
+- [API](#api)
+- [Changelog](#changelog)
+- [In this package](#in-this-package)
+
+## Donate
+
+[Any donations would be much appreciated](https://ko-fi.com/parischap) 😄
+
+Please, star my repo if you think it's useful!
+
+## Installation
+
+Depending on the package manager you use, run one of the following commands in your terminal:
+
+- **Using npm:**
+
+  ```sh
+  npm install effect @parischap/effect-lib
+  ```
+
+- **Using pnpm:**
+
+  ```sh
+  pnpm add effect @parischap/effect-lib
+  ```
+
+- **Using yarn:**
+  ```sh
+  yarn add effect @parischap/effect-lib
+  ```
+
+## Package size and tree-shaking
+
+This package has an important size: it contains comments, maps, ECMAScript and commonjs files... All this will simplify your developer's experience. And when your app goes to production, all unnecessary stuff will be removed as this package has been highly optimized for tree-shaking.
+
+## How to import?
+
+This library supports named imports:
+
+```ts
+import { MArray, MMatch } from '@parischap/effect-lib';
+```
+
+and namespace imports (recommended when tree-shaking matters):
+
+```ts
+import * as MArray from '@parischap/effect-lib/MArray';
+import * as MMatch from '@parischap/effect-lib/MMatch';
+```
+
+In this documentation, we'll use the second option. You should do the same if you value tree-shaking.
+
+## API
+
+If you need to, take a look at the [API](https://parischap.github.io/effect-libs/docs/effect-lib).
 
 ## Changelog
 
@@ -81,12 +117,35 @@ All exports follow the `M`-prefix naming convention (e.g., `MArray`, `MMatch`, `
 
 First public release. Targets Effect 3.5.6 with `@effect/schema 0.68.26` as a separate peer dependency. Provides extensions to: `Array`, `Cache`, `Chunk`, `Either`, `Function`, `Json`, `Match`, `Number`, `Option`, `Predicate`, `Record`, `String`, `Struct`, `Tuple`.
 
-## Donate
+## In this package
 
-[Any donations would be much appreciated](https://ko-fi.com/parischap) 😄
+This package contains the following modules, all prefixed with `M` to avoid name collisions with the official `Effect` modules they extend:
 
-Please, star my repo if you think it's useful!
-
-## Documentation
-
-If you need to, take a look at the [API](https://parischap.github.io/effect-libs/docs/effect-lib).
+| Module                            | Description                                                                                                                                                                                                                                                  |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **MArray**                        | Extensions to `effect/Array`: additional predicates, fold/unfold operations with cycle detection, padding, grouping, and more                                                                                                                                |
+| **MBigDecimal**                   | Conversions and utilities for `effect/BigDecimal`, including safe/unsafe construction from primitive values                                                                                                                                                  |
+| **MBigInt**                       | Conversions, arithmetic predicates, and logarithm for `effect/BigInt`                                                                                                                                                                                        |
+| **MCache**                        | A time-limited, capacity-bounded LRU cache built on `effect/Cache` with a `lifeSpan` (TTL in milliseconds)                                                                                                                                                   |
+| **MChunk**                        | Extensions to `effect/Chunk`: duplicate detection, `findAll`, `takeBut`, and `takeRightBut`                                                                                                                                                                  |
+| **MData**                         | A base class providing default `Inspectable` and `Pipeable` behavior for Effect data types                                                                                                                                                                   |
+| **MEquivalenceBasedEqualityData** | A base class that derives `Equal.Equal` from an abstract `isEquivalentTo` method                                                                                                                                                                             |
+| **MEither**                       | Extensions to `effect/Either`: flattening, optional extraction, and pair traversal                                                                                                                                                                           |
+| **MFunction**                     | Extensions to `effect/Function`: memoization with `once`, `applyAsThis`, cloning, and constant helpers                                                                                                                                                       |
+| **MInputError**                   | A tagged error for user-facing validation failures, with `assertInRange` and similar guards                                                                                                                                                                  |
+| **MJson**                         | Effect-wrapped `JSON.stringify` and `JSON.parse` that fail on circular references or invalid input                                                                                                                                                           |
+| **MMatch**                        | A lightweight, type-safe pattern-matcher that replaces `Effect.Match` for simple use cases. Supports predicate matching, refinement matching with exhaustiveness checking, `whenOr`, `whenAnd`, and `tryFunction`                                            |
+| **MNumber**                       | Extensions to `effect/Number`: safe conversions from `BigInt` and `BigDecimal`, integer predicates, modulo, and `fromString`                                                                                                                                 |
+| **MOption**                       | Extensions to `effect/Option`: construction from nullable-or-option values, and iterator unwrapping                                                                                                                                                          |
+| **MPortError**                    | A tagged error for wrapping failures that arise when porting non-Effect functions into the Effect world                                                                                                                                                      |
+| **MPredicate**                    | Extensions to `effect/Predicate`: type-level utilities (`Source`, `Target`, `Coverage`, mapping types), a `struct` combinator, and runtime guards for primitives, non-primitives, function arity, and sized arrays (`isSingleton`, `isPair`, `isOverOne`, …) |
+| **MRecord**                       | Extensions to `effect/Record`: type-safe `unsafeGet`, `modify`, and `modifyAll`                                                                                                                                                                              |
+| **MRegExp**                       | Ready-to-use `RegExp` instances (SemVer, email, line breaks) and `fromRegExpString`                                                                                                                                                                          |
+| **MRegExpString**                 | Building blocks for composing regular-expression strings (unsigned integers, signed integers, identifiers, separators, etc.)                                                                                                                                 |
+| **MString**                       | Extensions to `effect/String`: search with automatic `lastIndex` reset, padding with fill-position support, `removeNCharsEveryMChars`, SemVer/email predicates, and more                                                                                     |
+| **MStringFillPosition**           | A small enum-like module for fill positions (`left` / `right`) used by `MString` padding functions                                                                                                                                                           |
+| **MStringSearchResult**           | A value-object representing a regex match result, with `Equivalence`, `Order`, and `Hash` instances                                                                                                                                                          |
+| **MStruct**                       | Extensions to `effect/Struct`: an `evolve` variant that only requires keys present in the patch object                                                                                                                                                       |
+| **MTree**                         | A recursive tree/forest data structure with `fold`, `map`, `reduce`, and a cycle-safe `unfold`. Composed of `MTreeLeaf`, `MTreeNode`, `MTreeNonLeaf`, and `MTreeForest` sub-modules                                                                          |
+| **MTuple**                        | Extensions to `effect/Tuple`: `of`, `replicate`, and `prependElement`                                                                                                                                                                                        |
+| **MTypes**                        | Foundational primitive / container types and type-level utilities (`Object`, `NonPrimitive`, `Pair`, `Singleton`, `OverOne`, `OverTwo`, `Data`, `Tuple`, …). Runtime guards live in `MPredicate`                                                             |

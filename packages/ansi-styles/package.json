@@ -9,25 +9,27 @@
     "test-all": "vitest run",
     "lint": "oxlint --disable-nested-config",
     "fmt": "oxfmt --disable-nested-config && oxlint --fix -disable-nested-config",
-    "lint-all": "pnpm lint && pnpm --filter \"./packages/*\" run  lint-all",
-    "fmt-all": "pnpm fmt && pnpm --filter \"./packages/*\" run  fmt-all",
-    "check-all": "pnpm check && pnpm --filter \"./packages/*\" run  check-all",
     "configs": "pnpm -w configs",
     "circular": "madge --extensions ts --circular --no-color --no-spinner esm",
     "check": "pnpm circular && pnpm lint && pnpm test-all",
-    "publish-to-npm-all": "pnpm publish-to-npm",
-    "docgen-all": "pnpm docgen",
-    "zip-release-assets-all": "pnpm zip-release-assets",
+    "lint-all": "pnpm lint",
+    "fmt-all": "pnpm fmt",
+    "check-all": "pnpm check",
     "examples": "tsx examples/basic-usage.ts && tsx examples/cancelling-a-style.ts && tsx examples/simple-colors.ts && tsx examples/all-colors.ts",
     "docgen": "docgen",
-    "publish-to-npm": "pnpm publish dist --provenance --no-git-checks --access public",
-    "zip-release-assets": "mkdir -p _release-assets && zip -r _release-assets/ansi-styles-maps.zip dist -i '*.map'"
+    "release": "pnpm publish dist --provenance --no-git-checks --access public",
+    "docgen-all": "pnpm docgen",
+    "release-all": "pnpm release"
   },
   "@parischap/configs": {
     "description": "A functional library to style your strings in terminals",
-    "version": "1.0.5",
-    "buildMethod": "InternalAndNpmBundling",
-    "publishTarget": "ToNpmAndGithub",
+    "version": "1.0.6",
+    "build": {
+      "bundling": "InternalAndNpmBundling",
+      "publishTarget": "Npm",
+      "generateMaps": true,
+      "addPureAnnotations": true
+    },
     "dependencies": {},
     "environment": "Neutral",
     "examples": [

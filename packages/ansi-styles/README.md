@@ -11,24 +11,24 @@ Can also be used by non-Effect users.
 
 </div>
 
-## Changelog
+## Table of Contents
 
-### v1.0.0 — Effect v4
-
-> **Ported to Effect v4** (`effect@4.0.0-beta`)
-
-- Updated all internal Effect API calls to their Effect v4 equivalents.
-- **`ASColor` reorganized** into a `Color/` sub-folder; `ThreeBitColor`, `EightBitColor`, and `RgbColor` are now individually importable modules, improving tree-shaking significantly.
-- Removed low-level internal modules that were previously leaking into the public API (`AnsiString`, `StyleCharacteristics`, `Styles`). Their functionality is fully absorbed into `ASStyle` and `ASText`.
-
-### v0.2.0 — Mar 2025 (Effect 3.13.6)
-
-- Updated to Effect 3.13.6 and `@parischap/effect-lib` 0.5.0.
-- Minor API fixes and tree-shaking improvements (`"sideEffects": false`).
-
-### v0.1.0 — Mar 2025
-
-First public release. Provides: `ASStyle` (with three-bit, eight-bit, and RGB color constructors; all predefined named colors; `notXxx` style cancellers), `ASText` (styled-text manipulation — concatenation, join, surround, repeat; conversion to ANSI string, unstyled string, and character length), `ASContextStyler` (context-dependent styling with `makePaletteBased` and `makeConstant` constructors), `ASPalette` (named color-palette collections), and `ASColor` (pre-built color instances for all three color spaces).
+- [Donate](#donate)
+- [Installation](#installation)
+- [Package size and tree-shaking](#package-size-and-tree-shaking)
+- [How to import?](#how-to-import)
+- [API](#api)
+- [Changelog](#changelog)
+- [In this package](#in-this-package)
+- [Note](#note)
+- [Usage](#usage)
+  - [1) Basic usage](#1-basic-usage)
+  - [2) List of available styles](#2-list-of-available-styles)
+  - [3) Cancelling a style](#3-cancelling-a-style)
+  - [4) List of predefined three-bit colors](#4-list-of-predefined-three-bit-colors)
+  - [5) Using 8-bit and RGB colors](#5-using-8-bit-and-rgb-colors)
+  - [6) Working with the Text type](#6-working-with-the-text-type)
+  - [7) Using a ContextStyler](#7-using-a-contextstyler)
 
 ## Donate
 
@@ -59,7 +59,7 @@ Depending on the package manager you use, run one of the following commands in y
 
 ## Package size and tree-shaking
 
-This is a modern library optimized for tree-shaking. Don't put too much focus on package size: a good part of it will go away at bundling. To give you an idea of how this library will impact the size of your project, [Bundlephobia](https://bundlephobia.com/package/@parischap/ansi-styles) announces a size of 16kB once minified and gzipped.
+This package has an important size: it contains comments, maps, ECMAScript and commonjs files... All this will simplify your developer's experience. And when your app goes to production, all unnecessary stuff will be removed as this package has been highly optimized for tree-shaking.
 
 ## How to import?
 
@@ -81,13 +81,42 @@ console.log(ASStyle.red('foo'));
 
 In this documentation, we'll use the second option. You should do the same if you value tree-shaking.
 
-## Note
-
-We draw your attention to the [NO_COLOR](https://no-color.org/) standard: "Command-line software which adds ANSI color to its output by default should check for a NO_COLOR environment variable that, when present and not an empty string (regardless of its value), prevents the addition of ANSI color."
-
 ## API
 
 After reading this introduction, you may take a look at the [API](https://parischap.github.io/effect-libs/docs/ansi-styles) documentation.
+
+## Changelog
+
+### v1.0.0 — Effect v4
+
+> **Ported to Effect v4** (`effect@4.0.0-beta`)
+
+- Updated all internal Effect API calls to their Effect v4 equivalents.
+- **`ASColor` reorganized** into a `Color/` sub-folder; `ThreeBitColor`, `EightBitColor`, and `RgbColor` are now individually importable modules, improving tree-shaking significantly.
+- Removed low-level internal modules that were previously leaking into the public API (`AnsiString`, `StyleCharacteristics`, `Styles`). Their functionality is fully absorbed into `ASStyle` and `ASText`.
+
+### v0.2.0 — Mar 2025 (Effect 3.13.6)
+
+- Updated to Effect 3.13.6 and `@parischap/effect-lib` 0.5.0.
+- Minor API fixes and tree-shaking improvements (`"sideEffects": false`).
+
+### v0.1.0 — Mar 2025
+
+First public release. Provides: `ASStyle` (with three-bit, eight-bit, and RGB color constructors; all predefined named colors; `notXxx` style cancellers), `ASText` (styled-text manipulation — concatenation, join, surround, repeat; conversion to ANSI string, unstyled string, and character length), `ASContextStyler` (context-dependent styling with `makePaletteBased` and `makeConstant` constructors), `ASPalette` (named color-palette collections), and `ASColor` (pre-built color instances for all three color spaces).
+
+## In this package
+
+This package contains:
+
+- **`ASStyle`**: the central module. Call any style (a color or a text modifier) as a function on strings to produce a styled `ASText`. Styles compose without conflict — applying `dim` inside `bold` restores the right ANSI state on exit even though they share the same reset code (22).
+- **`ASText`**: a type representing styled text as a sequence of segments. Supports concatenation, joining, surrounding, and repeating, and converts to an ANSI-escaped string or an unstyled string.
+- **`ASContextStyler`**: a context-dependent styler that derives a style from a context value. Two constructors: `makeConstant` (same style regardless of context) and `makePaletteBased` (cycles through a palette indexed by a function of the context). Useful for depth-indexed or type-indexed coloring.
+- **`ASPalette`**: pre-built named color-palette collections for use with `ASContextStyler`.
+- **`ASColor`** (`ASThreeBitColor`, `ASEightBitColor`, `ASRgbColor`): pre-built color instances for all three color spaces (8 + 8 bright three-bit colors, 256 eight-bit colors, 140 named RGB colors), plus an `ASRgbColor.make` constructor for fully custom RGB colors.
+
+## Note
+
+We draw your attention to the [NO_COLOR](https://no-color.org/) standard: "Command-line software which adds ANSI color to its output by default should check for a NO_COLOR environment variable that, when present and not an empty string (regardless of its value), prevents the addition of ANSI color."
 
 ## Usage
 
