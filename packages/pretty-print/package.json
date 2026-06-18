@@ -23,7 +23,7 @@
   },
   "@parischap/configs": {
     "description": "A functional library to pretty-print and treeify objects",
-    "version": "6",
+    "version": "1.0.7",
     "build": {
       "bundling": "InternalAndNpmBundling",
       "publishTarget": "Npm",

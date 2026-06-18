@@ -22,7 +22,7 @@
   },
   "@parischap/configs": {
     "description": "An extension to the official Effect library",
-    "version": "0.19.0",
+    "version": "0.20.0",
     "build": {
       "bundling": "InternalAndNpmBundling",
       "publishTarget": "Npm",

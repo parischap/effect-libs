@@ -23,7 +23,7 @@
   },
   "@parischap/configs": {
     "description": "A functional library to replace partially the native Intl API",
-    "version": "1.0.6",
+    "version": "1.0.7",
     "build": {
       "bundling": "InternalAndNpmBundling",
       "publishTarget": "Npm",
