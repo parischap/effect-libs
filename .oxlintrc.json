@@ -11,6 +11,7 @@
     "/.git/",
     "/.git",
     "/.gitmodules",
+    "/docs/",
     "/packages/"
   ],
   "overrides": [

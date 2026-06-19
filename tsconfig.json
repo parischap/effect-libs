@@ -12,6 +12,7 @@
     ".git",
     ".git",
     ".gitmodules",
+    "docs",
     "packages"
   ],
   "compilerOptions": {

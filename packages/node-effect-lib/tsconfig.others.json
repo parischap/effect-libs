@@ -11,7 +11,7 @@
     ".tsbuildinfo",
     "vite.config.ts.timestamp-*.mjs",
     "dist",
-    "docs/modules",
+    "docs",
     "_release-assets",
     "packages"
   ],
