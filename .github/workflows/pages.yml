@@ -44,38 +44,43 @@ jobs:
       - name: Build documentation
         working-directory: packages/effect-libs
         run: pnpm docgen-all && pnpm configs concat-docs
+      - name: Build Jekyll site
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: packages/effect-libs/docs
+          destination: packages/effect-libs/_site
       - name: Setup docs branch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if git clone --depth=1 --branch=docs "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" netlify-site 2>/dev/null; then
+          if git clone --depth=1 --branch=docs "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" packages/effect-libs/netlify-site 2>/dev/null; then
             echo "Checked out existing docs branch"
           else
-            mkdir netlify-site
-            git -C netlify-site init
-            git -C netlify-site remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-            git -C netlify-site checkout --orphan docs
+            mkdir -p packages/effect-libs/netlify-site
+            git -C packages/effect-libs/netlify-site init
+            git -C packages/effect-libs/netlify-site remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+            git -C packages/effect-libs/netlify-site checkout --orphan docs
             echo "Created new orphan docs branch"
           fi
           
       - name: Refresh version subfolder
         run: |
-          rm -rf netlify-site/${{ github.event.inputs.release_tag }}
-          mkdir -p netlify-site/${{ github.event.inputs.release_tag }}
-          cp -r packages/effect-libs/docs/. netlify-site/${{ github.event.inputs.release_tag }}/
+          rm -rf packages/effect-libs/netlify-site/${{ github.event.inputs.release_tag }}
+          mkdir -p packages/effect-libs/netlify-site/${{ github.event.inputs.release_tag }}
+          cp -r packages/effect-libs/_site/. packages/effect-libs/netlify-site/${{ github.event.inputs.release_tag }}/
           
       - name: Deploy to Netlify
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
         run: |
-          npx netlify-cli deploy --prod --dir=netlify-site
+          cd packages/effect-libs/netlify-site && npx netlify-cli deploy --prod --dir=.
           
       - name: Commit and push docs branch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          cd netlify-site
+          cd packages/effect-libs/netlify-site
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add .
