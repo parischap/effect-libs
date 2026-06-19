@@ -17,8 +17,8 @@
     "check-all": "pnpm check",
     "examples": "tsx examples/util-inspect-like.ts && tsx examples/treeify.ts && tsx examples/treeify-with-leaves.ts && tsx examples/circularity-handling.ts && tsx examples/with-date-and-regexp.ts && tsx examples/with-prototype-chain.ts && tsx examples/with-custom-style-map.ts && tsx examples/with-custom-primitive-formatter.ts && tsx examples/with-property-filter-and-sort.ts",
     "docgen": "docgen",
-    "release": "pnpm publish dist --provenance --no-git-checks --access public",
     "docgen-all": "pnpm docgen",
+    "release": "pnpm publish dist --provenance --no-git-checks --access public",
     "release-all": "pnpm release"
   },
   "@parischap/configs": {
@@ -30,6 +30,7 @@
       "generateMaps": true,
       "addPureAnnotations": true
     },
+    "docScope": "skipInternal",
     "dependencies": {},
     "environment": "Neutral",
     "examples": [

@@ -22,6 +22,7 @@
     "description": "A complement to the official @effect/platform library with add-ons for Node.js",
     "version": "0.1.0",
     "build": "None",
+    "docScope": "None",
     "dependencies": {},
     "environment": "Node",
     "examples": [],

@@ -16,8 +16,8 @@
     "fmt-all": "pnpm fmt",
     "check-all": "pnpm check",
     "docgen": "docgen",
-    "release": "pnpm publish dist --provenance --no-git-checks --access public",
     "docgen-all": "pnpm docgen",
+    "release": "pnpm publish dist --provenance --no-git-checks --access public",
     "release-all": "pnpm release"
   },
   "@parischap/configs": {
@@ -29,6 +29,7 @@
       "generateMaps": true,
       "addPureAnnotations": true
     },
+    "docScope": "skipInternal",
     "dependencies": {},
     "environment": "Neutral",
     "examples": [],

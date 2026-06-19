@@ -3,14 +3,21 @@
 name: Pages
 on:
   workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Release tag to generate documentation for (e.g. v1.2.3)
+        required: true
+        type: string
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.inputs.release_tag }}
   cancel-in-progress: true
 jobs:
-  build:
-    name: Build
+  build-and-deploy:
+    name: Build and deploy
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
+    permissions:
+      contents: write
     steps:
       - name: Checkout mytsdevs workspace
         uses: actions/checkout@v6.0.2
@@ -18,10 +25,10 @@ jobs:
           repository: parischap/mytsdevs
           token: ${{ secrets.MYTSDEVS_PAT }}
           submodules: recursive
-      - name: Update package to triggering commit
+      - name: Pin package to ref
         run: |
-          git -C packages/effect-libs fetch origin
-          git -C packages/effect-libs checkout ${{ github.sha }}
+          git -C packages/effect-libs fetch origin --tags
+          git -C packages/effect-libs checkout ${{ github.event.inputs.release_tag }}
           
       - name: Setup pnpm
         uses: pnpm/action-setup@v6.0.8
@@ -37,25 +44,41 @@ jobs:
       - name: Build documentation
         working-directory: packages/effect-libs
         run: pnpm docgen-all && pnpm configs concat-docs
-      - name: Build pages Jekyll
-        uses: actions/jekyll-build-pages@v1
-        with:
-          source: packages/effect-libs/docs
-          destination: _site
-      - name: Upload pages artifact
-        uses: actions/upload-pages-artifact@v5
-  deploy:
-    name: Deploy
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    needs: build
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v5
+      - name: Setup docs branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if git clone --depth=1 --branch=docs "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" netlify-site 2>/dev/null; then
+            echo "Checked out existing docs branch"
+          else
+            mkdir netlify-site
+            git -C netlify-site init
+            git -C netlify-site remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+            git -C netlify-site checkout --orphan docs
+            echo "Created new orphan docs branch"
+          fi
+          
+      - name: Refresh version subfolder
+        run: |
+          rm -rf netlify-site/${{ github.event.inputs.release_tag }}
+          mkdir -p netlify-site/${{ github.event.inputs.release_tag }}
+          cp -r packages/effect-libs/docs/. netlify-site/${{ github.event.inputs.release_tag }}/
+          
+      - name: Deploy to Netlify
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          npx netlify-cli deploy --prod --dir=netlify-site
+          
+      - name: Commit and push docs branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd netlify-site
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git diff --cached --quiet || git commit -m "docs: add version ${{ github.event.inputs.release_tag }}"
+          git push -u origin docs
+          

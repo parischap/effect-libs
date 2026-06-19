@@ -22,6 +22,7 @@
     "description": "A functional library to prettify Effect logging",
     "version": "0.1.0",
     "build": "None",
+    "docScope": "None",
     "dependencies": {},
     "environment": "Node",
     "examples": [],

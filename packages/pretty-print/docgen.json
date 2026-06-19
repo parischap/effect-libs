@@ -2,9 +2,9 @@
   "$schema": "node_modules/@effect/docgen/schema.json",
   "srcDir": "esm",
   "exclude": [
-    "esm/internal/**/*",
     "esm/bin/**/*",
-    "esm/index.ts"
+    "esm/index.ts",
+    "esm/internal/**/*"
   ],
   "outDir": "docs",
   "parseCompilerOptions": "tsconfig.docgen.json",
