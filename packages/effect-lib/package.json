@@ -17,18 +17,12 @@
     "check-all": "pnpm check",
     "docgen": "docgen",
     "docgen-all": "pnpm docgen",
-    "release": "pnpm publish dist --provenance --no-git-checks --access public",
-    "release-all": "pnpm release"
+    "release-all": "echo \"Nothing to release for 'effect-lib'\""
   },
   "@parischap/configs": {
     "description": "An extension to the official Effect library",
     "version": "0.20.0",
-    "build": {
-      "bundling": "InternalAndNpmBundling",
-      "generateMaps": true,
-      "addPureAnnotations": true,
-      "generateCjs": true
-    },
+    "build": "None",
     "publishTarget": "Npm",
     "docScope": "skipInternal",
     "dependencies": {},

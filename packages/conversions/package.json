@@ -18,18 +18,12 @@
     "examples": "tsx examples/perf.ts && tsx examples/RoundingOption_1.ts && tsx examples/RoundingOption_2.ts && tsx examples/RoundingOption_3.ts && tsx examples/NumberBase10Format_1.ts && tsx examples/NumberBase10Format_2.ts && tsx examples/Template_1.ts && tsx examples/Template_2.ts && tsx examples/Template_3.ts && tsx examples/DateTime_1.ts && tsx examples/DateTimeFormat_1.ts && tsx examples/DateTimeFormat_2.ts",
     "docgen": "docgen",
     "docgen-all": "pnpm docgen",
-    "release": "pnpm publish dist --provenance --no-git-checks --access public",
-    "release-all": "pnpm release"
+    "release-all": "echo \"Nothing to release for 'conversions'\""
   },
   "@parischap/configs": {
     "description": "A functional library to replace partially the native Intl API",
     "version": "1.0.7",
-    "build": {
-      "bundling": "InternalAndNpmBundling",
-      "generateMaps": true,
-      "addPureAnnotations": true,
-      "generateCjs": true
-    },
+    "build": "None",
     "publishTarget": "Npm",
     "docScope": "skipInternal",
     "dependencies": {},

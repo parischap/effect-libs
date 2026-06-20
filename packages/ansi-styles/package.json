@@ -18,18 +18,12 @@
     "examples": "tsx examples/basic-usage.ts && tsx examples/cancelling-a-style.ts && tsx examples/simple-colors.ts && tsx examples/all-colors.ts",
     "docgen": "docgen",
     "docgen-all": "pnpm docgen",
-    "release": "pnpm publish dist --provenance --no-git-checks --access public",
-    "release-all": "pnpm release"
+    "release-all": "echo \"Nothing to release for 'ansi-styles'\""
   },
   "@parischap/configs": {
     "description": "A functional library to style your strings in terminals",
     "version": "1.0.7",
-    "build": {
-      "bundling": "InternalAndNpmBundling",
-      "generateMaps": true,
-      "addPureAnnotations": true,
-      "generateCjs": true
-    },
+    "build": "None",
     "publishTarget": "Npm",
     "docScope": "skipInternal",
     "dependencies": {},
