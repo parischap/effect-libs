@@ -71,7 +71,7 @@ In this documentation, we'll use the second option. You should do the same if yo
 
 ## API
 
-If you need to, take a look at the [API](https://parischap.github.io/effect-libs/docs/effect-lib).
+If you need to, take a look at the [API](https://effect-libs-docs.netlify.app/0.1.0/docs/effect-lib).
 
 ## Changelog
 

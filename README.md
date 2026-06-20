@@ -115,10 +115,10 @@ Every published package ships:
 
 Browse the full API at <https://parischap.github.io/effect-libs/>, or jump directly to a package:
 
-- [effect-lib](https://parischap.github.io/effect-libs/docs/effect-lib)
-- [ansi-styles](https://parischap.github.io/effect-libs/docs/ansi-styles)
-- [conversions](https://parischap.github.io/effect-libs/docs/conversions)
-- [pretty-print](https://parischap.github.io/effect-libs/docs/pretty-print)
+- [effect-lib](https://effect-libs-docs.netlify.app/0.1.0/docs/effect-lib)
+- [ansi-styles](https://effect-libs-docs.netlify.app/0.1.0/docs/ansi-styles)
+- [conversions](https://effect-libs-docs.netlify.app/0.1.0/docs/conversions)
+- [pretty-print](https://effect-libs-docs.netlify.app/0.1.0/docs/pretty-print)
 
 ## License
 

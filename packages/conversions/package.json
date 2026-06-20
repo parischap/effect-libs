@@ -1,73 +1,10 @@
 {
   "name": "@parischap/conversions",
-  "type": "module",
-  "author": "Jérôme MARTIN",
-  "license": "MIT",
   "description": "A functional library to replace partially the native Intl API",
   "homepage": "https://github.com/parischap/effect-libs/tree/master/packages/conversions",
-  "scripts": {
-    "test-all": "vitest run",
-    "lint": "oxlint --disable-nested-config",
-    "fmt": "oxfmt --disable-nested-config && oxlint --fix -disable-nested-config",
-    "configs": "pnpm -w configs",
-    "circular": "madge --extensions ts --circular --no-color --no-spinner esm",
-    "check": "pnpm circular && pnpm lint && pnpm test-all",
-    "lint-all": "pnpm lint",
-    "fmt-all": "pnpm fmt",
-    "check-all": "pnpm check",
-    "examples": "tsx examples/perf.ts && tsx examples/RoundingOption_1.ts && tsx examples/RoundingOption_2.ts && tsx examples/RoundingOption_3.ts && tsx examples/NumberBase10Format_1.ts && tsx examples/NumberBase10Format_2.ts && tsx examples/Template_1.ts && tsx examples/Template_2.ts && tsx examples/Template_3.ts && tsx examples/DateTime_1.ts && tsx examples/DateTimeFormat_1.ts && tsx examples/DateTimeFormat_2.ts",
-    "docgen": "docgen",
-    "docgen-all": "pnpm docgen",
-    "release-all": "echo \"Nothing to release for 'conversions'\""
-  },
-  "@parischap/configs": {
-    "description": "A functional library to replace partially the native Intl API",
-    "version": "1.0.7",
-    "build": "None",
-    "publishTarget": "Npm",
-    "docScope": "skipInternal",
-    "dependencies": {},
-    "environment": "Neutral",
-    "examples": [
-      "perf.ts",
-      "RoundingOption_1.ts",
-      "RoundingOption_2.ts",
-      "RoundingOption_3.ts",
-      "NumberBase10Format_1.ts",
-      "NumberBase10Format_2.ts",
-      "Template_1.ts",
-      "Template_2.ts",
-      "Template_3.ts",
-      "DateTime_1.ts",
-      "DateTimeFormat_1.ts",
-      "DateTimeFormat_2.ts"
-    ],
-    "keywords": [
-      "number",
-      "date",
-      "format",
-      "parse",
-      "formatting",
-      "parsing",
-      "rounding",
-      "templating",
-      "conversion",
-      "sscanf",
-      "sprintf",
-      "text",
-      "n2t",
-      "num2text",
-      "convert",
-      "typescript",
-      "effect"
-    ],
-    "packagePrefix": "CV",
-    "peerDependencies": {
-      "effect": "*",
-      "@parischap/effect-lib": "*"
-    },
-    "scripts": {}
-  },
+  "license": "MIT",
+  "author": "Jérôme MARTIN",
+  "type": "module",
   "exports": {
     ".": {
       "default": "./esm/index.ts"
@@ -211,9 +148,77 @@
       "default": "./esm/internal/DateTime/ZoneOffsetParts.ts"
     }
   },
+  "scripts": {
+    "test-all": "vitest run",
+    "lint": "oxlint --disable-nested-config",
+    "fmt": "oxfmt --disable-nested-config && oxlint --fix -disable-nested-config",
+    "configs": "pnpm -w configs",
+    "circular": "madge --extensions ts --circular --no-color --no-spinner esm",
+    "check": "pnpm circular && pnpm lint && pnpm test-all",
+    "lint-all": "pnpm lint",
+    "fmt-all": "pnpm fmt",
+    "check-all": "pnpm check",
+    "examples": "tsx examples/perf.ts && tsx examples/RoundingOption_1.ts && tsx examples/RoundingOption_2.ts && tsx examples/RoundingOption_3.ts && tsx examples/NumberBase10Format_1.ts && tsx examples/NumberBase10Format_2.ts && tsx examples/Template_1.ts && tsx examples/Template_2.ts && tsx examples/Template_3.ts && tsx examples/DateTime_1.ts && tsx examples/DateTimeFormat_1.ts && tsx examples/DateTimeFormat_2.ts",
+    "docgen": "docgen",
+    "docgen-all": "pnpm docgen",
+    "release-all": "echo \"Nothing to release for 'conversions'\""
+  },
   "dependencies": {},
   "peerDependencies": {
-    "effect": "*",
-    "@parischap/effect-lib": "workspace:*"
+    "@parischap/effect-lib": "workspace:*",
+    "effect": "*"
+  },
+  "@parischap/configs": {
+    "description": "A functional library to replace partially the native Intl API",
+    "version": "1.0.8",
+    "build": {
+      "bundling": "InternalAndNpmBundling",
+      "generateMaps": true,
+      "addPureAnnotations": true,
+      "generateCjs": true
+    },
+    "publishTarget": "Npm",
+    "docScope": "skipInternal",
+    "dependencies": {},
+    "environment": "Neutral",
+    "examples": [
+      "perf.ts",
+      "RoundingOption_1.ts",
+      "RoundingOption_2.ts",
+      "RoundingOption_3.ts",
+      "NumberBase10Format_1.ts",
+      "NumberBase10Format_2.ts",
+      "Template_1.ts",
+      "Template_2.ts",
+      "Template_3.ts",
+      "DateTime_1.ts",
+      "DateTimeFormat_1.ts",
+      "DateTimeFormat_2.ts"
+    ],
+    "keywords": [
+      "number",
+      "date",
+      "format",
+      "parse",
+      "formatting",
+      "parsing",
+      "rounding",
+      "templating",
+      "conversion",
+      "sscanf",
+      "sprintf",
+      "text",
+      "n2t",
+      "num2text",
+      "convert",
+      "typescript",
+      "effect"
+    ],
+    "packagePrefix": "CV",
+    "peerDependencies": {
+      "effect": "*",
+      "@parischap/effect-lib": "*"
+    },
+    "scripts": {}
   }
 }

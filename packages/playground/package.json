@@ -1,10 +1,15 @@
 {
   "name": "@parischap/playground",
-  "type": "module",
-  "author": "Jérôme MARTIN",
-  "license": "MIT",
   "description": "An Effect playground",
   "homepage": "https://github.com/parischap/effect-libs/tree/master/packages/playground",
+  "license": "MIT",
+  "author": "Jérôme MARTIN",
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./esm/index.ts"
+    }
+  },
   "scripts": {
     "test-all": "vitest run",
     "lint": "oxlint --disable-nested-config",
@@ -18,6 +23,10 @@
     "docgen-all": "echo \"No doc generation for 'playground'\"",
     "release-all": "echo \"Nothing to release for 'playground'\""
   },
+  "dependencies": {
+    "@parischap/effect-lib": "workspace:*"
+  },
+  "peerDependencies": {},
   "@parischap/configs": {
     "description": "An Effect playground",
     "version": "0.1.0",
@@ -32,14 +41,5 @@
     "keywords": [],
     "peerDependencies": {},
     "scripts": {}
-  },
-  "exports": {
-    ".": {
-      "default": "./esm/index.ts"
-    }
-  },
-  "dependencies": {
-    "@parischap/effect-lib": "workspace:*"
-  },
-  "peerDependencies": {}
+  }
 }

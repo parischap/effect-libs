@@ -1,10 +1,10 @@
 {
   "name": "@parischap/effect-libs",
-  "type": "module",
-  "author": "Jérôme MARTIN",
-  "license": "MIT",
   "description": "effect-libs is a set of open-source libraries to be used in complement to the effect library. Extends some Effect modules (`Array`, `Chunk`, `Option`, `Either`, `String`, ...). Adds extra-functionalities such as date and number parsing/formatting, sscanf/sprintf templating, number rounding, object pretty-printing, colored terminal printing, a simple yet very efficient matcher and a tree with cycle detection",
   "homepage": "https://github.com/parischap/effect-libs",
+  "license": "MIT",
+  "author": "Jérôme MARTIN",
+  "type": "module",
   "scripts": {
     "test-all": "vitest run",
     "lint": "oxlint --disable-nested-config",
@@ -19,6 +19,6 @@
   },
   "@parischap/configs": {
     "description": "effect-libs is a set of open-source libraries to be used in complement to the effect library. Extends some Effect modules (`Array`, `Chunk`, `Option`, `Either`, `String`, ...). Adds extra-functionalities such as date and number parsing/formatting, sscanf/sprintf templating, number rounding, object pretty-printing, colored terminal printing, a simple yet very efficient matcher and a tree with cycle detection",
-    "version": "0.1.0"
+    "version": "0.1.1"
   }
 }

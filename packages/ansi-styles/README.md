@@ -83,7 +83,7 @@ In this documentation, we'll use the second option. You should do the same if yo
 
 ## API
 
-After reading this introduction, you may take a look at the [API](https://parischap.github.io/effect-libs/docs/ansi-styles) documentation.
+After reading this introduction, you may take a look at the [API](https://effect-libs-docs.netlify.app/0.1.0/docs/ansi-styles) documentation.
 
 ## Changelog
 
@@ -242,7 +242,7 @@ console.log(
 
 If your terminal takes them in charge, you can use 8-bit or RGB colors. To that extent, use the `ASStyle.color` and `ASStyle.bgColor` constructors.
 
-The ASColor module defines 16 three-bit color instances (8 normal + 8 bright), 256 eight-bit color instances and 140 RGB color instances. All these instances can be found in the [ThreeBitColor API](https://parischap.github.io/effect-libs/docs/ansi-styles/Color/ThreeBitColor), [EightBitColor API](https://parischap.github.io/effect-libs/docs/ansi-styles/Color/EightBitColor) and [RgbColor API](https://parischap.github.io/effect-libs/docs/ansi-styles/Color/RgbColor). Furthermore, you can define more RGB colors with the `ASRgbColor.make` constructor.
+The ASColor module defines 16 three-bit color instances (8 normal + 8 bright), 256 eight-bit color instances and 140 RGB color instances. All these instances can be found in the [ThreeBitColor API](https://effect-libs-docs.netlify.app/0.1.0/docs/ansi-styles/Color/ThreeBitColor), [EightBitColor API](https://effect-libs-docs.netlify.app/0.1.0/docs/ansi-styles/Color/EightBitColor) and [RgbColor API](https://effect-libs-docs.netlify.app/0.1.0/docs/ansi-styles/Color/RgbColor). Furthermore, you can define more RGB colors with the `ASRgbColor.make` constructor.
 
 Here is an example:
 

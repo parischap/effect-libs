@@ -33,6 +33,8 @@ Can also be used by non-Effect users.
 
 Please star the repo if you find it useful!
 
+<!-- example-name="test" --><svg xmlns="http://www.w3.org/2000/svg" width="200" height="60"><rect width="200" height="60" fill="#171717" rx="4"/><text x="20" y="35" font-family="monospace" font-size="14" fill="#22c55e">Hello from SVG</text></svg><!-- /example-name -->
+
 ## Installation
 
 Depending on the package manager you use, run one of the following commands in your terminal:
@@ -79,7 +81,7 @@ The examples in this document use the namespace-import style.
 
 ## API
 
-After reading this introduction you may consult the full [API documentation](https://parischap.github.io/effect-libs/docs/pretty-print).
+After reading this introduction you may consult the full [API documentation](https://effect-libs-docs.netlify.app/0.1.0/docs/pretty-print).
 
 ## Changelog
 

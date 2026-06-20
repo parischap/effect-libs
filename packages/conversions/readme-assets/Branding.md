@@ -17,7 +17,7 @@ In this package you will find the following [`Brand`'s](https://effect.website/d
 - `CVInteger`: same as `CVReal` but the number must be an integer. Can be used to represent a floor in a lift, a signed quantity...
 - `CVPositiveInteger`: same as `CVInteger` but the number must be positive. Can be used to represent an age, a quantity,...
 
-You will also find all the functions to convert from one brand to another. Do not hesitate to take a look at the [API](https://parischap.github.io/effect-libs/docs/conversions) to learn more about what this module offers in terms of branding.
+You will also find all the functions to convert from one brand to another. Do not hesitate to take a look at the [API](https://effect-libs-docs.netlify.app/0.1.0/docs/conversions) to learn more about what this module offers in terms of branding.
 
 ## 2. Usage example
 
