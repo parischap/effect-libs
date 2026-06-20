@@ -1,40 +1,10 @@
 {
   "name": "@parischap/effect-report",
-  "type": "module",
-  "author": "Jérôme MARTIN",
-  "license": "MIT",
   "description": "A functional library to prettify Effect logging",
   "homepage": "https://github.com/parischap/effect-libs/tree/master/packages/effect-report",
-  "scripts": {
-    "test-all": "vitest run",
-    "lint": "oxlint --disable-nested-config",
-    "fmt": "oxfmt --disable-nested-config && oxlint --fix -disable-nested-config",
-    "configs": "pnpm -w configs",
-    "circular": "madge --extensions ts --circular --no-color --no-spinner esm",
-    "check": "pnpm circular && pnpm lint && pnpm test-all",
-    "lint-all": "pnpm lint",
-    "fmt-all": "pnpm fmt",
-    "check-all": "pnpm check",
-    "docgen-all": "echo \"No doc generation for 'effect-report'\"",
-    "release-all": "echo \"Nothing to release for 'effect-report'\""
-  },
-  "@parischap/configs": {
-    "description": "A functional library to prettify Effect logging",
-    "version": "0.1.0",
-    "build": "None",
-    "docScope": "None",
-    "dependencies": {},
-    "environment": "Node",
-    "examples": [],
-    "keywords": [],
-    "packagePrefix": "R",
-    "peerDependencies": {
-      "effect": "*",
-      "@parischap/effect-lib": "*",
-      "@parischap/ansi-styles": "*"
-    },
-    "scripts": {}
-  },
+  "license": "MIT",
+  "author": "Jérôme MARTIN",
+  "type": "module",
   "exports": {
     ".": {
       "default": "./esm/index.ts"
@@ -58,10 +28,41 @@
       "default": "./esm/utils.ts"
     }
   },
+  "scripts": {
+    "test-all": "vitest run",
+    "lint": "oxlint --disable-nested-config",
+    "fmt": "oxfmt --disable-nested-config && oxlint --fix -disable-nested-config",
+    "configs": "pnpm -w configs",
+    "circular": "madge --extensions ts --circular --no-color --no-spinner esm",
+    "check": "pnpm circular && pnpm lint && pnpm test-all",
+    "lint-all": "pnpm lint",
+    "fmt-all": "pnpm fmt",
+    "check-all": "pnpm check",
+    "docgen-all": "echo \"No doc generation for 'effect-report'\"",
+    "release-all": "echo \"Nothing to release for 'effect-report'\""
+  },
   "dependencies": {},
   "peerDependencies": {
-    "effect": "*",
+    "@parischap/ansi-styles": "workspace:*",
     "@parischap/effect-lib": "workspace:*",
-    "@parischap/ansi-styles": "workspace:*"
+    "effect": "*"
+  },
+  "@parischap/configs": {
+    "description": "A functional library to prettify Effect logging",
+    "version": "0.1.0",
+    "build": "None",
+    "publishTarget": "None",
+    "docScope": "None",
+    "dependencies": {},
+    "environment": "Node",
+    "examples": [],
+    "keywords": [],
+    "packagePrefix": "R",
+    "peerDependencies": {
+      "effect": "*",
+      "@parischap/effect-lib": "*",
+      "@parischap/ansi-styles": "*"
+    },
+    "scripts": {}
   }
 }

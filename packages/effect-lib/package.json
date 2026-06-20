@@ -1,45 +1,10 @@
 {
   "name": "@parischap/effect-lib",
-  "type": "module",
-  "author": "Jérôme MARTIN",
-  "license": "MIT",
   "description": "An extension to the official Effect library",
   "homepage": "https://github.com/parischap/effect-libs/tree/master/packages/effect-lib",
-  "scripts": {
-    "test-all": "vitest run",
-    "lint": "oxlint --disable-nested-config",
-    "fmt": "oxfmt --disable-nested-config && oxlint --fix -disable-nested-config",
-    "configs": "pnpm -w configs",
-    "circular": "madge --extensions ts --circular --no-color --no-spinner esm",
-    "check": "pnpm circular && pnpm lint && pnpm test-all",
-    "lint-all": "pnpm lint",
-    "fmt-all": "pnpm fmt",
-    "check-all": "pnpm check",
-    "docgen": "docgen",
-    "docgen-all": "pnpm docgen",
-    "release": "pnpm publish dist --provenance --no-git-checks --access public",
-    "release-all": "pnpm release"
-  },
-  "@parischap/configs": {
-    "description": "An extension to the official Effect library",
-    "version": "0.20.0",
-    "build": {
-      "bundling": "InternalAndNpmBundling",
-      "publishTarget": "Npm",
-      "generateMaps": true,
-      "addPureAnnotations": true
-    },
-    "docScope": "skipInternal",
-    "dependencies": {},
-    "environment": "Neutral",
-    "examples": [],
-    "keywords": [],
-    "packagePrefix": "M",
-    "peerDependencies": {
-      "effect": "*"
-    },
-    "scripts": {}
-  },
+  "license": "MIT",
+  "author": "Jérôme MARTIN",
+  "type": "module",
   "exports": {
     ".": {
       "default": "./esm/index.ts"
@@ -138,8 +103,44 @@
       "default": "./esm/types/TypesCategory.ts"
     }
   },
+  "scripts": {
+    "test-all": "vitest run",
+    "lint": "oxlint --disable-nested-config",
+    "fmt": "oxfmt --disable-nested-config && oxlint --fix -disable-nested-config",
+    "configs": "pnpm -w configs",
+    "circular": "madge --extensions ts --circular --no-color --no-spinner esm",
+    "check": "pnpm circular && pnpm lint && pnpm test-all",
+    "lint-all": "pnpm lint",
+    "fmt-all": "pnpm fmt",
+    "check-all": "pnpm check",
+    "docgen": "docgen",
+    "docgen-all": "pnpm docgen",
+    "release": "pnpm publish dist --provenance --no-git-checks --access public",
+    "release-all": "pnpm release"
+  },
   "dependencies": {},
   "peerDependencies": {
     "effect": "*"
+  },
+  "@parischap/configs": {
+    "description": "An extension to the official Effect library",
+    "version": "0.20.0",
+    "build": {
+      "bundling": "InternalAndNpmBundling",
+      "generateMaps": true,
+      "addPureAnnotations": true,
+      "generateCjs": true
+    },
+    "publishTarget": "Npm",
+    "docScope": "skipInternal",
+    "dependencies": {},
+    "environment": "Neutral",
+    "examples": [],
+    "keywords": [],
+    "packagePrefix": "M",
+    "peerDependencies": {
+      "effect": "*"
+    },
+    "scripts": {}
   }
 }

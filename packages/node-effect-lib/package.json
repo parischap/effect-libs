@@ -1,10 +1,21 @@
 {
   "name": "@parischap/node-effect-lib",
-  "type": "module",
-  "author": "Jérôme MARTIN",
-  "license": "MIT",
   "description": "A complement to the official @effect/platform library with add-ons for Node.js",
   "homepage": "https://github.com/parischap/effect-libs/tree/master/packages/node-effect-lib",
+  "license": "MIT",
+  "author": "Jérôme MARTIN",
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./esm/index.ts"
+    },
+    "./NFs": {
+      "default": "./esm/Fs.ts"
+    },
+    "./NPath": {
+      "default": "./esm/Path.ts"
+    }
+  },
   "scripts": {
     "test-all": "vitest run",
     "lint": "oxlint --disable-nested-config",
@@ -18,10 +29,17 @@
     "docgen-all": "echo \"No doc generation for 'node-effect-lib'\"",
     "release-all": "echo \"Nothing to release for 'node-effect-lib'\""
   },
+  "dependencies": {},
+  "peerDependencies": {
+    "@effect/platform-node": "*",
+    "@parischap/effect-lib": "workspace:*",
+    "effect": "*"
+  },
   "@parischap/configs": {
     "description": "A complement to the official @effect/platform library with add-ons for Node.js",
     "version": "0.1.0",
     "build": "None",
+    "publishTarget": "None",
     "docScope": "None",
     "dependencies": {},
     "environment": "Node",
@@ -34,22 +52,5 @@
       "@parischap/effect-lib": "*"
     },
     "scripts": {}
-  },
-  "exports": {
-    ".": {
-      "default": "./esm/index.ts"
-    },
-    "./NFs": {
-      "default": "./esm/Fs.ts"
-    },
-    "./NPath": {
-      "default": "./esm/Path.ts"
-    }
-  },
-  "dependencies": {},
-  "peerDependencies": {
-    "effect": "*",
-    "@effect/platform-node": "*",
-    "@parischap/effect-lib": "workspace:*"
   }
 }

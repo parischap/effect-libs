@@ -1,73 +1,10 @@
 {
   "name": "@parischap/ansi-styles",
-  "type": "module",
-  "author": "Jérôme MARTIN",
-  "license": "MIT",
   "description": "A functional library to style your strings in terminals",
   "homepage": "https://github.com/parischap/effect-libs/tree/master/packages/ansi-styles",
-  "scripts": {
-    "test-all": "vitest run",
-    "lint": "oxlint --disable-nested-config",
-    "fmt": "oxfmt --disable-nested-config && oxlint --fix -disable-nested-config",
-    "configs": "pnpm -w configs",
-    "circular": "madge --extensions ts --circular --no-color --no-spinner esm",
-    "check": "pnpm circular && pnpm lint && pnpm test-all",
-    "lint-all": "pnpm lint",
-    "fmt-all": "pnpm fmt",
-    "check-all": "pnpm check",
-    "examples": "tsx examples/basic-usage.ts && tsx examples/cancelling-a-style.ts && tsx examples/simple-colors.ts && tsx examples/all-colors.ts",
-    "docgen": "docgen",
-    "docgen-all": "pnpm docgen",
-    "release": "pnpm publish dist --provenance --no-git-checks --access public",
-    "release-all": "pnpm release"
-  },
-  "@parischap/configs": {
-    "description": "A functional library to style your strings in terminals",
-    "version": "1.0.7",
-    "build": {
-      "bundling": "InternalAndNpmBundling",
-      "publishTarget": "Npm",
-      "generateMaps": true,
-      "addPureAnnotations": true
-    },
-    "docScope": "skipInternal",
-    "dependencies": {},
-    "environment": "Neutral",
-    "examples": [
-      "basic-usage.ts",
-      "cancelling-a-style.ts",
-      "simple-colors.ts",
-      "all-colors.ts"
-    ],
-    "keywords": [
-      "terminal",
-      "color",
-      "colour",
-      "colors",
-      "formatting",
-      "cli",
-      "console",
-      "string",
-      "ansi",
-      "style",
-      "styles",
-      "tty",
-      "formatting",
-      "rgb256",
-      "shell",
-      "xterm",
-      "log",
-      "logging",
-      "command-line",
-      "text"
-    ],
-    "packagePrefix": "AS",
-    "peerDependencies": {
-      "effect": "*",
-      "@parischap/effect-lib": "*"
-    },
-    "scripts": {}
-  },
+  "license": "MIT",
+  "author": "Jérôme MARTIN",
+  "type": "module",
   "exports": {
     ".": {
       "default": "./esm/index.ts"
@@ -160,9 +97,73 @@
       "default": "./esm/internal/UnistyledText.ts"
     }
   },
+  "scripts": {
+    "test-all": "vitest run",
+    "lint": "oxlint --disable-nested-config",
+    "fmt": "oxfmt --disable-nested-config && oxlint --fix -disable-nested-config",
+    "configs": "pnpm -w configs",
+    "circular": "madge --extensions ts --circular --no-color --no-spinner esm",
+    "check": "pnpm circular && pnpm lint && pnpm test-all",
+    "lint-all": "pnpm lint",
+    "fmt-all": "pnpm fmt",
+    "check-all": "pnpm check",
+    "examples": "tsx examples/basic-usage.ts && tsx examples/cancelling-a-style.ts && tsx examples/simple-colors.ts && tsx examples/all-colors.ts",
+    "docgen": "docgen",
+    "docgen-all": "pnpm docgen",
+    "release": "pnpm publish dist --provenance --no-git-checks --access public",
+    "release-all": "pnpm release"
+  },
   "dependencies": {},
   "peerDependencies": {
-    "effect": "*",
-    "@parischap/effect-lib": "workspace:*"
+    "@parischap/effect-lib": "workspace:*",
+    "effect": "*"
+  },
+  "@parischap/configs": {
+    "description": "A functional library to style your strings in terminals",
+    "version": "1.0.7",
+    "build": {
+      "bundling": "InternalAndNpmBundling",
+      "generateMaps": true,
+      "addPureAnnotations": true,
+      "generateCjs": true
+    },
+    "publishTarget": "Npm",
+    "docScope": "skipInternal",
+    "dependencies": {},
+    "environment": "Neutral",
+    "examples": [
+      "basic-usage.ts",
+      "cancelling-a-style.ts",
+      "simple-colors.ts",
+      "all-colors.ts"
+    ],
+    "keywords": [
+      "terminal",
+      "color",
+      "colour",
+      "colors",
+      "formatting",
+      "cli",
+      "console",
+      "string",
+      "ansi",
+      "style",
+      "styles",
+      "tty",
+      "formatting",
+      "rgb256",
+      "shell",
+      "xterm",
+      "log",
+      "logging",
+      "command-line",
+      "text"
+    ],
+    "packagePrefix": "AS",
+    "peerDependencies": {
+      "effect": "*",
+      "@parischap/effect-lib": "*"
+    },
+    "scripts": {}
   }
 }
