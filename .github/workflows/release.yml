@@ -42,9 +42,13 @@ jobs:
           cache: pnpm
           registry-url: https://registry.npmjs.org/
       - name: Check release tag matches package.json version
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           if [ "$TAG" != "0.1.0" ]; then
             echo "Release tag '$TAG' does not match package.json version '0.1.0'"
+            gh release delete "$TAG" --yes
+            git push --delete origin "$TAG"
             exit 1
           fi
           
