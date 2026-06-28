@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="130" height="60" font-family="ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace" font-size="14">
+<rect width="130" height="60" fill="#282c34" />
+<text x="10" y="24" xml:space="preserve"><tspan fill="#abb2bf" font-weight="bold">I am </tspan><tspan fill="#abb2bf">not bold</tspan></text>
+</svg>

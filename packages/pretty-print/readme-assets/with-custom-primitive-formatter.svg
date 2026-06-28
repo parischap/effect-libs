@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="424" height="177" font-family="ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace" font-size="14">
+<rect width="424" height="177" fill="#282c34" />
+<text x="10" y="24" xml:space="preserve"><tspan fill="rgb(224, 85, 97)">{</tspan></text>
+<text x="10" y="43.599999999999994" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">  </tspan><tspan fill="rgb(224, 85, 97)">price</tspan><tspan fill="rgb(215, 218, 224)">: </tspan><tspan fill="rgb(209, 143, 82)">1,234,567.89</tspan><tspan fill="rgb(215, 218, 224)">,</tspan></text>
+<text x="10" y="63.199999999999996" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">  </tspan><tspan fill="rgb(224, 85, 97)">count</tspan><tspan fill="rgb(215, 218, 224)">: </tspan><tspan fill="rgb(209, 143, 82)">42.00</tspan><tspan fill="rgb(215, 218, 224)">,</tspan></text>
+<text x="10" y="82.8" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">  </tspan><tspan fill="rgb(224, 85, 97)">ratio</tspan><tspan fill="rgb(215, 218, 224)">: </tspan><tspan fill="rgb(209, 143, 82)">0.10</tspan><tspan fill="rgb(215, 218, 224)">,</tspan></text>
+<text x="10" y="102.39999999999999" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">  </tspan><tspan fill="rgb(224, 85, 97)">description</tspan><tspan fill="rgb(215, 218, 224)">: </tspan><tspan fill="rgb(140, 194, 101)">"A very long description tha..."</tspan><tspan fill="rgb(215, 218, 224)">,</tspan></text>
+<text x="10" y="121.99999999999999" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">  </tspan><tspan fill="rgb(224, 85, 97)">identifier</tspan><tspan fill="rgb(215, 218, 224)">: </tspan><tspan fill="rgb(209, 143, 82)">1234567890123456789n</tspan></text>
+<text x="10" y="141.6" xml:space="preserve"><tspan fill="rgb(224, 85, 97)">}</tspan></text>
+</svg>

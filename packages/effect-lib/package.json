@@ -1,6 +1,6 @@
 {
   "name": "@parischap/effect-lib",
-  "description": "An extension to the official Effect library",
+  "description": "Collection of utility modules extending the official Effect library: simple yet efficient pattern matching, cycle-safe tree module, mutable caching with optional bounded capacity and optional time-to-live, and diverse useful stuff",
   "homepage": "https://github.com/parischap/effect-libs/tree/master/packages/effect-lib",
   "license": "MIT",
   "author": "Jérôme MARTIN",
@@ -115,27 +115,36 @@
     "check-all": "pnpm check",
     "docgen": "docgen",
     "docgen-all": "pnpm docgen",
-    "release-all": "echo \"Nothing to release for 'effect-lib'\""
+    "release": "pnpm publish dist --provenance --no-git-checks --access public",
+    "release-all": "pnpm release"
   },
   "dependencies": {},
+  "devDependencies": {},
   "peerDependencies": {
     "effect": "*"
   },
   "@parischap/configs": {
-    "description": "An extension to the official Effect library",
+    "description": "Collection of utility modules extending the official Effect library: simple yet efficient pattern matching, cycle-safe tree module, mutable caching with optional bounded capacity and optional time-to-live, and diverse useful stuff",
+    "moreDetails": "All exports follow the `M`-prefix naming convention to avoid name collisions with other libraries;\n\nPlatform-independent, well tested and documented, optimized for tree-shaking, 100% Typescript, 100% functional.\n\nCan also be used by non-`Effect` users.",
     "version": "0.21.0",
+    "keywords": [
+      "effect",
+      "typescript",
+      "functional-programming"
+    ],
     "build": {
       "bundling": "InternalAndNpmBundling",
       "generateMaps": true,
       "addPureAnnotations": true,
-      "generateCjs": true
+      "generateCjs": true,
+      "minify": true
     },
     "publishTarget": "Npm",
     "docScope": "skipInternal",
     "dependencies": {},
+    "devDependencies": {},
     "environment": "Neutral",
     "examples": [],
-    "keywords": [],
     "packagePrefix": "M",
     "peerDependencies": {
       "effect": "*"

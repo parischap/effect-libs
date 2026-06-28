@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="354" font-family="ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace" font-size="14">
+<rect width="180" height="354" fill="#282c34" />
+<text x="10" y="24" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">├─ </tspan><tspan fill="rgb(224, 85, 97)">A</tspan></text>
+<text x="10" y="43.599999999999994" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">│  ├─ </tspan><tspan fill="rgb(224, 85, 97)">A1</tspan></text>
+<text x="10" y="63.199999999999996" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">│  │  ├─ </tspan><tspan fill="rgb(224, 85, 97)">A11</tspan></text>
+<text x="10" y="82.8" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">│  │  ├─ </tspan><tspan fill="rgb(224, 85, 97)">A12</tspan></text>
+<text x="10" y="102.39999999999999" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">│  │  │  ├─ </tspan><tspan fill="rgb(224, 85, 97)">0</tspan></text>
+<text x="10" y="121.99999999999999" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">│  │  │  │  ├─ </tspan><tspan fill="rgb(224, 85, 97)">A121</tspan></text>
+<text x="10" y="141.6" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">│  │  │  │  ├─ </tspan><tspan fill="rgb(224, 85, 97)">A122</tspan></text>
+<text x="10" y="161.2" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">│  │  │  │  └─ </tspan><tspan fill="rgb(224, 85, 97)">A123</tspan></text>
+<text x="10" y="180.79999999999998" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">│  │  │  └─ </tspan><tspan fill="rgb(224, 85, 97)">1</tspan></text>
+<text x="10" y="200.39999999999998" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">│  │  │     └─ </tspan><tspan fill="rgb(224, 85, 97)">A124</tspan></text>
+<text x="10" y="219.99999999999997" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">│  │  └─ </tspan><tspan fill="rgb(224, 85, 97)">A13</tspan></text>
+<text x="10" y="239.59999999999997" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">│  ├─ </tspan><tspan fill="rgb(224, 85, 97)">A2</tspan></text>
+<text x="10" y="259.2" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">│  └─ </tspan><tspan fill="rgb(224, 85, 97)">A3</tspan></text>
+<text x="10" y="278.79999999999995" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">└─ </tspan><tspan fill="rgb(224, 85, 97)">B</tspan></text>
+<text x="10" y="298.4" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">   ├─ </tspan><tspan fill="rgb(224, 85, 97)">B2</tspan></text>
+<text x="10" y="317.99999999999994" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">   └─ </tspan><tspan fill="rgb(224, 85, 97)">B1</tspan></text>
+</svg>

@@ -8,9 +8,7 @@
     "/node_modules/",
     ".DS_Store",
     "/_site/",
-    "/.git/",
     "/.git",
-    "/.gitmodules",
     "/docs/",
     "/packages/"
   ],
@@ -24,6 +22,9 @@
         "**/*.mts",
         "**/*.cts"
       ],
+      "env": {
+        "node": true
+      },
       "plugins": [
         "eslint",
         "typescript",

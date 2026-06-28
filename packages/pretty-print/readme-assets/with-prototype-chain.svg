@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="348" height="216" font-family="ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace" font-size="14">
+<rect width="348" height="216" fill="#282c34" />
+<text x="10" y="24" xml:space="preserve"><tspan fill="rgb(224, 85, 97)">{</tspan></text>
+<text x="10" y="43.599999999999994" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">  </tspan><tspan fill="rgb(224, 85, 97)">species</tspan><tspan fill="rgb(215, 218, 224)">: </tspan><tspan fill="rgb(140, 194, 101)">'dog'</tspan><tspan fill="rgb(215, 218, 224)">,</tspan></text>
+<text x="10" y="63.199999999999996" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">  </tspan><tspan fill="rgb(224, 85, 97)">legs</tspan><tspan fill="rgb(215, 218, 224)">: </tspan><tspan fill="rgb(209, 143, 82)">4</tspan><tspan fill="rgb(215, 218, 224)">,</tspan></text>
+<text x="10" y="82.8" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">  </tspan><tspan fill="rgb(224, 85, 97)">name</tspan><tspan fill="rgb(215, 218, 224)">: </tspan><tspan fill="rgb(140, 194, 101)">'Rex'</tspan><tspan fill="rgb(215, 218, 224)">,</tspan></text>
+<text x="10" y="102.39999999999999" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">  </tspan><tspan fill="rgb(224, 85, 97)">job</tspan><tspan fill="rgb(215, 218, 224)">: </tspan><tspan fill="rgb(140, 194, 101)">'guide'</tspan><tspan fill="rgb(215, 218, 224)">,</tspan></text>
+<text x="10" y="121.99999999999999" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">  </tspan><tspan fill="rgb(224, 85, 97)">constructor</tspan><tspan fill="rgb(140, 194, 101)">@</tspan><tspan fill="rgb(215, 218, 224)">: </tspan><tspan fill="rgb(209, 143, 82)">[Function: WorkingDog]</tspan><tspan fill="rgb(215, 218, 224)">,</tspan></text>
+<text x="10" y="141.6" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">  </tspan><tspan fill="rgb(224, 85, 97)">constructor</tspan><tspan fill="rgb(140, 194, 101)">@@</tspan><tspan fill="rgb(215, 218, 224)">: </tspan><tspan fill="rgb(209, 143, 82)">[Function: Dog]</tspan><tspan fill="rgb(215, 218, 224)">,</tspan></text>
+<text x="10" y="161.2" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">  </tspan><tspan fill="rgb(224, 85, 97)">constructor</tspan><tspan fill="rgb(140, 194, 101)">@@@</tspan><tspan fill="rgb(215, 218, 224)">: </tspan><tspan fill="rgb(209, 143, 82)">[Function: Animal]</tspan></text>
+<text x="10" y="180.79999999999998" xml:space="preserve"><tspan fill="rgb(224, 85, 97)">}</tspan></text>
+</svg>

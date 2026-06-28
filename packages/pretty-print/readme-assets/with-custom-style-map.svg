@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="314" height="177" font-family="ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace" font-size="14">
+<rect width="314" height="177" fill="#282c34" />
+<text x="10" y="24" xml:space="preserve"><tspan fill="rgb(193, 98, 222)">{</tspan></text>
+<text x="10" y="43.599999999999994" xml:space="preserve"><tspan fill="#abb2bf">  </tspan><tspan fill="rgb(215, 218, 224)">name: </tspan><tspan fill="rgb(140, 194, 101)">'parischap'</tspan><tspan fill="rgb(215, 218, 224)">,</tspan></text>
+<text x="10" y="63.199999999999996" xml:space="preserve"><tspan fill="#abb2bf">  </tspan><tspan fill="rgb(215, 218, 224)">age: </tspan><tspan fill="rgb(240, 164, 93)">30</tspan><tspan fill="rgb(215, 218, 224)">,</tspan></text>
+<text x="10" y="82.8" xml:space="preserve"><tspan fill="#abb2bf">  </tspan><tspan fill="rgb(215, 218, 224)">active: </tspan><tspan fill="rgb(76, 209, 224)">true</tspan><tspan fill="rgb(215, 218, 224)">,</tspan></text>
+<text x="10" y="102.39999999999999" xml:space="preserve"><tspan fill="#abb2bf">  </tspan><tspan fill="rgb(215, 218, 224)">tags: </tspan><tspan fill="rgb(66, 179, 194)">[ </tspan><tspan fill="rgb(140, 194, 101)">'effect'</tspan><tspan fill="rgb(215, 218, 224)">, </tspan><tspan fill="rgb(140, 194, 101)">'typescript'</tspan><tspan fill="rgb(66, 179, 194)"> ]</tspan><tspan fill="rgb(215, 218, 224)">,</tspan></text>
+<text x="10" y="121.99999999999999" xml:space="preserve"><tspan fill="#abb2bf">  </tspan><tspan fill="rgb(215, 218, 224)">nested: </tspan><tspan fill="rgb(66, 179, 194)">{ </tspan><tspan fill="rgb(215, 218, 224)">inner: </tspan><tspan fill="#abb2bf">[Object]</tspan><tspan fill="rgb(66, 179, 194)"> }</tspan></text>
+<text x="10" y="141.6" xml:space="preserve"><tspan fill="rgb(193, 98, 222)">}</tspan></text>
+</svg>

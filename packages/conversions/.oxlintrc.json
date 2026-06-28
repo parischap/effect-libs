@@ -24,6 +24,9 @@
         "**/*.mts",
         "**/*.cts"
       ],
+      "env": {
+        "node": true
+      },
       "plugins": [
         "eslint",
         "typescript",
@@ -198,6 +201,14 @@
         "typescript/restrict-plus-operands": "error",
         "typescript/strict-boolean-expressions": "error",
         "typescript/switch-exhaustiveness-check": "error"
+      }
+    },
+    {
+      "files": [
+        "esm/**/*.ts"
+      ],
+      "env": {
+        "node": false
       }
     }
   ],

@@ -3,6 +3,7 @@
   "srcDir": "esm",
   "exclude": [
     "esm/bin/**/*",
+    "esm/dts/**/*",
     "esm/index.ts",
     "esm/internal/**/*"
   ],

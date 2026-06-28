@@ -20,14 +20,16 @@
   },
   "@parischap/configs": {
     "description": "A complement to the official @effect/platform library with add-ons for Node.js",
+    "moreDetails": "",
     "version": "0.1.0",
+    "keywords": [],
     "build": "None",
     "publishTarget": "None",
     "docScope": "None",
     "dependencies": {},
+    "devDependencies": {},
     "environment": "Node",
     "examples": [],
-    "keywords": [],
     "packagePrefix": "N",
     "peerDependencies": {
       "effect": "*",
@@ -48,6 +50,7 @@
     }
   },
   "dependencies": {},
+  "devDependencies": {},
   "peerDependencies": {
     "effect": "*",
     "@effect/platform-node": "*",

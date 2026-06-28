@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="306" height="60" font-family="ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace" font-size="14">
+<rect width="306" height="60" fill="#282c34" />
+<rect x="220" y="10" width="67.2" height="19.599999999999998" fill="rgb(0, 255, 0)" />
+<text x="10" y="24" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">I am </tspan><tspan fill="rgb(165, 224, 117)">in different shades </tspan><tspan fill="#abb2bf">of green</tspan><tspan fill="#abb2bf">.</tspan></text>
+</svg>

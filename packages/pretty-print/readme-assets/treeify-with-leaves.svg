@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="197" height="256" font-family="ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace" font-size="14">
+<rect width="197" height="256" fill="#282c34" />
+<text x="10" y="24" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">├─ </tspan><tspan fill="rgb(224, 85, 97)">Vegetal</tspan></text>
+<text x="10" y="43.599999999999994" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">│  ├─ </tspan><tspan fill="rgb(224, 85, 97)">Trees</tspan></text>
+<text x="10" y="63.199999999999996" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">│  │  ├─ </tspan><tspan fill="rgb(224, 85, 97)">Oaks</tspan><tspan fill="rgb(215, 218, 224)">: </tspan><tspan fill="rgb(209, 143, 82)">8</tspan></text>
+<text x="10" y="82.8" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">│  │  └─ </tspan><tspan fill="rgb(224, 85, 97)">BirchTree</tspan><tspan fill="rgb(215, 218, 224)">: </tspan><tspan fill="rgb(209, 143, 82)">3</tspan></text>
+<text x="10" y="102.39999999999999" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">│  └─ </tspan><tspan fill="rgb(224, 85, 97)">Fruit</tspan></text>
+<text x="10" y="121.99999999999999" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">│     ├─ </tspan><tspan fill="rgb(224, 85, 97)">Apples</tspan><tspan fill="rgb(215, 218, 224)">: </tspan><tspan fill="rgb(209, 143, 82)">8</tspan></text>
+<text x="10" y="141.6" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">│     └─ </tspan><tspan fill="rgb(224, 85, 97)">Lemons</tspan><tspan fill="rgb(215, 218, 224)">: </tspan><tspan fill="rgb(209, 143, 82)">5</tspan></text>
+<text x="10" y="161.2" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">└─ </tspan><tspan fill="rgb(224, 85, 97)">Animal</tspan></text>
+<text x="10" y="180.79999999999998" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">   └─ </tspan><tspan fill="rgb(224, 85, 97)">Mammals</tspan></text>
+<text x="10" y="200.39999999999998" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">      ├─ </tspan><tspan fill="rgb(224, 85, 97)">Dogs</tspan><tspan fill="rgb(215, 218, 224)">: </tspan><tspan fill="rgb(209, 143, 82)">3</tspan></text>
+<text x="10" y="219.99999999999997" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">      └─ </tspan><tspan fill="rgb(224, 85, 97)">Cats</tspan><tspan fill="rgb(215, 218, 224)">: </tspan><tspan fill="rgb(209, 143, 82)">2</tspan></text>
+</svg>

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="550" height="118" font-family="ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace" font-size="14">
+<rect width="550" height="118" fill="#282c34" />
+<text x="10" y="24" xml:space="preserve"><tspan fill="#abb2bf">&lt;Ref *1&gt; {</tspan></text>
+<text x="10" y="43.599999999999994" xml:space="preserve"><tspan fill="#abb2bf">  a: [ [Circular *1] ],</tspan></text>
+<text x="10" y="63.199999999999996" xml:space="preserve"><tspan fill="#abb2bf">  b: &lt;Ref *2&gt; { inner: [Circular *2], circular: [Circular *1] }</tspan></text>
+<text x="10" y="82.8" xml:space="preserve"><tspan fill="#abb2bf">}</tspan></text>
+</svg>

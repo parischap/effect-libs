@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="407" height="158" font-family="ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace" font-size="14">
+<rect width="407" height="158" fill="#282c34" />
+<text x="10" y="24" xml:space="preserve"><tspan fill="rgb(224, 85, 97)">{</tspan></text>
+<text x="10" y="43.599999999999994" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">  </tspan><tspan fill="rgb(224, 85, 97)">createdAt</tspan><tspan fill="rgb(215, 218, 224)">: </tspan><tspan fill="rgb(209, 143, 82)">1970-01-01T00:00:00.000Z</tspan><tspan fill="rgb(215, 218, 224)">,</tspan></text>
+<text x="10" y="63.199999999999996" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">  </tspan><tspan fill="rgb(224, 85, 97)">updatedAt</tspan><tspan fill="rgb(215, 218, 224)">: </tspan><tspan fill="rgb(209, 143, 82)">2026-04-30T10:00:00.000Z</tspan><tspan fill="rgb(215, 218, 224)">,</tspan></text>
+<text x="10" y="82.8" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">  </tspan><tspan fill="rgb(224, 85, 97)">emailPattern</tspan><tspan fill="rgb(215, 218, 224)">: </tspan><tspan fill="rgb(209, 143, 82)">/^[\w.+-]+@[\w-]+\.[\w.-]+$/i</tspan><tspan fill="rgb(215, 218, 224)">,</tspan></text>
+<text x="10" y="102.39999999999999" xml:space="preserve"><tspan fill="rgb(140, 194, 101)">  </tspan><tspan fill="rgb(224, 85, 97)">ids</tspan><tspan fill="rgb(215, 218, 224)">: </tspan><tspan fill="rgb(140, 194, 101)">[ </tspan><tspan fill="rgb(209, 143, 82)">/^abc/</tspan><tspan fill="rgb(215, 218, 224)">, </tspan><tspan fill="rgb(209, 143, 82)">/xyz$/g</tspan><tspan fill="rgb(140, 194, 101)"> ]</tspan></text>
+<text x="10" y="121.99999999999999" xml:space="preserve"><tspan fill="rgb(224, 85, 97)">}</tspan></text>
+</svg>

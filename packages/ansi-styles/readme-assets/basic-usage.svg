@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="776" height="60" font-family="ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace" font-size="14">
+<rect width="776" height="60" fill="#282c34" />
+<text x="10" y="24" xml:space="preserve"><tspan fill="rgb(224, 85, 97)">ansi-styles is an </tspan><tspan fill="rgb(224, 85, 97)" font-weight="bold">Effect library </tspan><tspan fill="rgb(193, 98, 222)" font-weight="bold" opacity="0.5">for terminal output styling with </tspan><tspan fill="rgb(209, 143, 82)" font-weight="bold">ANSI </tspan><tspan fill="rgb(193, 98, 222)" font-weight="bold">colors </tspan><tspan fill="rgb(224, 85, 97)">and formats.</tspan></text>
+</svg>

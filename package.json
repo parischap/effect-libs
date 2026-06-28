@@ -1,6 +1,6 @@
 {
   "name": "@parischap/effect-libs",
-  "description": "effect-libs is a set of open-source libraries to be used in complement to the effect library. Extends some Effect modules (`Array`, `Chunk`, `Option`, `Either`, `String`, ...). Adds extra-functionalities such as date and number parsing/formatting, sscanf/sprintf templating, number rounding, object pretty-printing, colored terminal printing, a simple yet very efficient matcher and a tree with cycle detection",
+  "description": "Set of open-source Effect libraries offering date and number parsing/formatting, sscanf/sprintf templating, number rounding, object pretty-printing, colored terminal printing, simple yet efficient pattern matching and a cycle-safe tree module",
   "homepage": "https://github.com/parischap/effect-libs",
   "license": "MIT",
   "author": "Jérôme MARTIN",
@@ -15,10 +15,15 @@
     "fmt-all": "pnpm fmt && pnpm --filter \"./packages/*\" run  fmt-all",
     "check-all": "pnpm check && pnpm --filter \"./packages/*\" run  check-all",
     "release-all": "pnpm --filter \"./packages/*\" run  release-all",
-    "docgen-all": "pnpm --filter \"./packages/*\" run  docgen-all"
+    "docgen-all": "pnpm --filter \"./packages/*\" run  docgen-all",
+    "update-github-about": "tsx node_modules/@parischap/configs/esm/bin/update-github-about.ts"
   },
   "@parischap/configs": {
-    "description": "effect-libs is a set of open-source libraries to be used in complement to the effect library. Extends some Effect modules (`Array`, `Chunk`, `Option`, `Either`, `String`, ...). Adds extra-functionalities such as date and number parsing/formatting, sscanf/sprintf templating, number rounding, object pretty-printing, colored terminal printing, a simple yet very efficient matcher and a tree with cycle detection",
-    "version": "0.1.1"
+    "description": "Set of open-source Effect libraries offering date and number parsing/formatting, sscanf/sprintf templating, number rounding, object pretty-printing, colored terminal printing, simple yet efficient pattern matching and a cycle-safe tree module",
+    "moreDetails": "Platform-independent, well tested and documented, optimized for tree-shaking, 100% Typescript, 100% functional.\n\nCan also be used by non-`Effect` users.",
+    "version": "0.1.1",
+    "keywords": [
+      "effect-ts"
+    ]
   }
 }
