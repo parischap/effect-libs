@@ -16,7 +16,7 @@
     "check-all": "pnpm check && pnpm --filter \"./packages/*\" run  check-all",
     "release-all": "pnpm --filter \"./packages/*\" run  release-all",
     "docgen-all": "pnpm --filter \"./packages/*\" run  docgen-all",
-    "update-github-about": "pnpm -w update-github-about,"
+    "update-github-about": "pnpm -w update-github-about"
   },
   "@parischap/configs": {
     "description": "Set of open-source Effect libraries offering date and number parsing/formatting, sscanf/sprintf templating, number rounding, object pretty-printing, colored terminal printing, simple yet efficient pattern matching and a cycle-safe tree module",
