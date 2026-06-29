@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: Release tag to generate documentation for (e.g. v1.2.3)
+        description: Release tag to generate documentation for (e.g. 1.2.3)
         required: true
         type: string
 concurrency:
