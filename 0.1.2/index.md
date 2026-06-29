@@ -5,7 +5,7 @@ title: "Packages"
 permalink: /
 nav_order: 1
 has_children: true
-has_toc: false
+has_toc: true
 ---
 
 **effect-libs 0.1.2**
