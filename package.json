@@ -1,10 +1,10 @@
 {
   "name": "@parischap/effect-libs",
+  "type": "module",
+  "author": "Jérôme MARTIN",
+  "license": "MIT",
   "description": "Set of open-source Effect libraries offering date and number parsing/formatting, sscanf/sprintf templating, number rounding, object pretty-printing, colored terminal printing, simple yet efficient pattern matching and a cycle-safe tree module",
   "homepage": "https://github.com/parischap/effect-libs",
-  "license": "MIT",
-  "author": "Jérôme MARTIN",
-  "type": "module",
   "scripts": {
     "test-all": "vitest run",
     "lint": "oxlint --disable-nested-config",

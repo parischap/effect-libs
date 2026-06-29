@@ -12,7 +12,6 @@ on:
         required: true
         type: string
 permissions:
-  administration: write
   contents: read
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -48,5 +47,5 @@ jobs:
       - name: Update GitHub About
         working-directory: packages/effect-libs
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.MYTSDEVS_PAT }}
         run: pnpm update-github-about

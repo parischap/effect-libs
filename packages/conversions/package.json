@@ -1,10 +1,83 @@
 {
   "name": "@parischap/conversions",
+  "type": "module",
+  "author": "Jérôme MARTIN",
+  "license": "MIT",
   "description": "An Effect replacement to the native JavaScript Intl API: date and number parsing/formatting, sscanf/sprintf templating, number rounding",
   "homepage": "https://github.com/parischap/effect-libs/tree/master/packages/conversions",
-  "license": "MIT",
-  "author": "Jérôme MARTIN",
-  "type": "module",
+  "scripts": {
+    "test-all": "vitest run",
+    "lint": "oxlint --disable-nested-config",
+    "fmt": "oxfmt --disable-nested-config && oxlint --fix -disable-nested-config",
+    "configs": "pnpm -w configs",
+    "circular": "madge --extensions ts --circular --no-color --no-spinner esm",
+    "check": "pnpm circular && pnpm lint && pnpm test-all",
+    "lint-all": "pnpm lint",
+    "fmt-all": "pnpm fmt",
+    "check-all": "pnpm check",
+    "examples": "tsx examples/perf.ts && tsx examples/RoundingOption_1.ts && tsx examples/RoundingOption_2.ts && tsx examples/RoundingOption_3.ts && tsx examples/NumberBase10Format_1.ts && tsx examples/NumberBase10Format_2.ts && tsx examples/Template_1.ts && tsx examples/Template_2.ts && tsx examples/Template_3.ts && tsx examples/DateTime_1.ts && tsx examples/DateTimeFormat_1.ts && tsx examples/DateTimeFormat_2.ts",
+    "docgen": "docgen",
+    "docgen-all": "pnpm docgen",
+    "release": "pnpm publish dist --provenance --no-git-checks --access public",
+    "release-all": "pnpm release"
+  },
+  "@parischap/configs": {
+    "description": "An Effect replacement to the native JavaScript Intl API: date and number parsing/formatting, sscanf/sprintf templating, number rounding",
+    "moreDetails": "All exports follow the `CV`-prefix naming convention to avoid name collisions with other libraries;\n\nPlatform-independent, well tested and documented, optimized for tree-shaking, 100% Typescript, 100% functional.\n\nCan also be used by non-`Effect` users.",
+    "version": "1.0.8",
+    "keywords": [
+      "number",
+      "date",
+      "format",
+      "parse",
+      "formatting",
+      "parsing",
+      "rounding",
+      "templating",
+      "conversion",
+      "sscanf",
+      "sprintf",
+      "text",
+      "n2t",
+      "num2text",
+      "convert",
+      "effect",
+      "typescript",
+      "functional-programming"
+    ],
+    "build": {
+      "bundling": "InternalAndNpmBundling",
+      "generateMaps": true,
+      "addPureAnnotations": true,
+      "generateCjs": true,
+      "minify": true
+    },
+    "publishTarget": "Npm",
+    "docScope": "skipInternal",
+    "dependencies": {},
+    "devDependencies": {},
+    "environment": "Neutral",
+    "examples": [
+      "perf.ts",
+      "RoundingOption_1.ts",
+      "RoundingOption_2.ts",
+      "RoundingOption_3.ts",
+      "NumberBase10Format_1.ts",
+      "NumberBase10Format_2.ts",
+      "Template_1.ts",
+      "Template_2.ts",
+      "Template_3.ts",
+      "DateTime_1.ts",
+      "DateTimeFormat_1.ts",
+      "DateTimeFormat_2.ts"
+    ],
+    "packagePrefix": "CV",
+    "peerDependencies": {
+      "effect": "*",
+      "@parischap/effect-lib": "*"
+    },
+    "scripts": {}
+  },
   "exports": {
     ".": {
       "default": "./esm/index.ts"
@@ -148,83 +221,10 @@
       "default": "./esm/internal/DateTime/ZoneOffsetParts.ts"
     }
   },
-  "scripts": {
-    "test-all": "vitest run",
-    "lint": "oxlint --disable-nested-config",
-    "fmt": "oxfmt --disable-nested-config && oxlint --fix -disable-nested-config",
-    "configs": "pnpm -w configs",
-    "circular": "madge --extensions ts --circular --no-color --no-spinner esm",
-    "check": "pnpm circular && pnpm lint && pnpm test-all",
-    "lint-all": "pnpm lint",
-    "fmt-all": "pnpm fmt",
-    "check-all": "pnpm check",
-    "examples": "tsx examples/perf.ts && tsx examples/RoundingOption_1.ts && tsx examples/RoundingOption_2.ts && tsx examples/RoundingOption_3.ts && tsx examples/NumberBase10Format_1.ts && tsx examples/NumberBase10Format_2.ts && tsx examples/Template_1.ts && tsx examples/Template_2.ts && tsx examples/Template_3.ts && tsx examples/DateTime_1.ts && tsx examples/DateTimeFormat_1.ts && tsx examples/DateTimeFormat_2.ts",
-    "docgen": "docgen",
-    "docgen-all": "pnpm docgen",
-    "release": "pnpm publish dist --provenance --no-git-checks --access public",
-    "release-all": "pnpm release"
-  },
   "dependencies": {},
   "devDependencies": {},
   "peerDependencies": {
-    "@parischap/effect-lib": "workspace:*",
-    "effect": "*"
-  },
-  "@parischap/configs": {
-    "description": "An Effect replacement to the native JavaScript Intl API: date and number parsing/formatting, sscanf/sprintf templating, number rounding",
-    "moreDetails": "All exports follow the `CV`-prefix naming convention to avoid name collisions with other libraries;\n\nPlatform-independent, well tested and documented, optimized for tree-shaking, 100% Typescript, 100% functional.\n\nCan also be used by non-`Effect` users.",
-    "version": "1.0.8",
-    "keywords": [
-      "number",
-      "date",
-      "format",
-      "parse",
-      "formatting",
-      "parsing",
-      "rounding",
-      "templating",
-      "conversion",
-      "sscanf",
-      "sprintf",
-      "text",
-      "n2t",
-      "num2text",
-      "convert",
-      "effect",
-      "typescript",
-      "functional-programming"
-    ],
-    "build": {
-      "bundling": "InternalAndNpmBundling",
-      "generateMaps": true,
-      "addPureAnnotations": true,
-      "generateCjs": true,
-      "minify": true
-    },
-    "publishTarget": "Npm",
-    "docScope": "skipInternal",
-    "dependencies": {},
-    "devDependencies": {},
-    "environment": "Neutral",
-    "examples": [
-      "perf.ts",
-      "RoundingOption_1.ts",
-      "RoundingOption_2.ts",
-      "RoundingOption_3.ts",
-      "NumberBase10Format_1.ts",
-      "NumberBase10Format_2.ts",
-      "Template_1.ts",
-      "Template_2.ts",
-      "Template_3.ts",
-      "DateTime_1.ts",
-      "DateTimeFormat_1.ts",
-      "DateTimeFormat_2.ts"
-    ],
-    "packagePrefix": "CV",
-    "peerDependencies": {
-      "effect": "*",
-      "@parischap/effect-lib": "*"
-    },
-    "scripts": {}
+    "effect": "*",
+    "@parischap/effect-lib": "workspace:*"
   }
 }
