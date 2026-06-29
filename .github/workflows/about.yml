@@ -2,15 +2,10 @@
 
 name: About
 on:
-  release:
-    types:
-      - published
+  push:
+    branches:
+      - main
   workflow_dispatch:
-    inputs:
-      release_tag:
-        description: Release tag to sync About from (e.g. v1.2.3)
-        required: true
-        type: string
 permissions:
   contents: read
 concurrency:
@@ -28,11 +23,6 @@ jobs:
           repository: parischap/mytsdevs
           token: ${{ secrets.MYTSDEVS_PAT }}
           submodules: recursive
-      - name: Pin package to ref
-        run: |
-          git -C packages/effect-libs fetch origin --tags
-          git -C packages/effect-libs checkout ${{ github.event.inputs.release_tag || github.event.release.tag_name }}
-          
       - name: Setup pnpm
         uses: pnpm/action-setup@v6.0.8
         with:

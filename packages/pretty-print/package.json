@@ -24,7 +24,7 @@
   "@parischap/configs": {
     "description": "An Effect library that produces the string representation of any JavaScript value. Similar to `util.inspect` but with extensive configurability: treeifying, coloring, sorting, filtering, choosing what to display and how to display it... Handles all Effect iterables such as `HashMap` and `HashSet` natively.",
     "moreDetails": "All exports follow the `PP`-prefix naming convention to avoid name collisions with other libraries;\n\nPlatform-independent, well tested and documented, optimized for tree-shaking, 100% Typescript, 100% functional.\n\nCan also be used by non-`Effect` users.",
-    "version": "1.0.8",
+    "version": "1.0.9",
     "keywords": [
       "inspect",
       "util.inspect",
