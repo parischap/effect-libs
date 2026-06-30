@@ -542,13 +542,17 @@ See [`examples/with-property-filter-and-sort.ts`](examples/with-property-filter-
 
 # Changelog
 
-## v1.0.0 — Effect v4
+## 1.0.1 → 1.0.10
 
-> **Ported to Effect v4** (`effect@4.0.0-beta`). Complete API redesign — not backward-compatible with v0.3.x.
+Improved documentation.
+
+## 1.0.0 — Effect v4
+
+> **Ported to Effect v4** (`effect@4.0.0-beta`). Complete API redesign — not backward-compatible with 0.3.x.
 
 The central entry point is now `PPStringifier`, built from a `PPParameters` instance. Six pre-built `PPParameters` instances ship out of the box (`utilInspectLike`, `darkModeUtilInspectLike`, `treeify`, `darkModeTreeify`, `treeifyHideLeaves`, `darkModeTreeifyHideLeaves`). The full styling, bypassing, filtering, and formatting pipeline is individually accessible and replaceable.
 
-Compared with v0.3.x:
+Compared with 0.3.x:
 
 - **`PPStyleMap`** replaces `StyleMap` and `ValueBasedStyler*`. Styles are now `ASContextStyler`-based, enabling depth-, type-, and key-indexed coloring from a single abstraction.
 - **`PPNonPrimitiveParameters`** replaces the old `RecordFormatter`/`NonPrimitiveFormatter` split. Multiple parameter sets can match a single value simultaneously and are merged automatically, with lower-index entries winning.
@@ -559,19 +563,19 @@ Compared with v0.3.x:
 - Circular references are tagged and displayed identically to `util.inspect` (`<Ref *N>` / `[Circular *N]`).
 - Added `PPPartName`, `PPValueOrder`, `PPPropertyNumberDisplayOption` for fine-grained control over property ordering and display.
 
-## v0.3.0 — Mar 2025 (Effect 3.13.6)
+## 0.3.0 – Mar 2025 (Effect 3.13.6)
 
-Significant refactor — not backward-compatible with v0.2.x. The monolithic `Options` + `RecordFormatter` model was broken apart into composable pieces:
+Significant refactor — not backward-compatible with 0.2.x. The monolithic `Options` + `RecordFormatter` model was broken apart into composable pieces:
 
 - Introduced `StyleMap` (declarative color/style configuration), `NonPrimitiveFormatter`, `PrimitiveFormatter`, `ByPassers`, `ValueBasedStyler`, and `ValueBasedStylerConstructor`.
 - Added `StringifiedProperties` and `Values` for finer-grained control over how property lists are assembled and rendered.
 - Added `MarkMap`, `MarkShower`, and `MarkShowerConstructor` for configurable bracket and separator markup.
-- Output is comparable in appearance to v0.2.x, but the configuration API is substantially more expressive.
+- Output is comparable in appearance to 0.2.x, but the configuration API is substantially more expressive.
 
-## v0.1.0 — Sep 2024
+## 0.1.0 – Sep 2024
 
 First stable public release. Usable `Options` + `stringify` model with `ByPasser`, `PropertyFilter`, `PropertyFormatter`, `ValueOrder`, `FormattedString`, `ColorSet`, `ColorWheel`, `RecordMarks`, and `IndentMode`.
 
-## v0.0.2 — Sep 2024
+## 0.0.2 – Sep 2024
 
 First public release (alpha)

@@ -253,7 +253,11 @@ console.log(pos1BasedAllColorsFormatterInValue1Context('foo'));
 
 # Changelog
 
-## v1.0.0 — Effect v4
+## 1.0.1 → 1.0.10
+
+Improved documentation.
+
+## 1.0.0 — Effect v4
 
 > **Ported to Effect v4** (`effect@4.0.0-beta`)
 
@@ -261,11 +265,11 @@ console.log(pos1BasedAllColorsFormatterInValue1Context('foo'));
 - **`ASColor` reorganized** into a `Color/` sub-folder; `ThreeBitColor`, `EightBitColor`, and `RgbColor` are now individually importable modules, improving tree-shaking significantly.
 - Removed low-level internal modules that were previously leaking into the public API (`AnsiString`, `StyleCharacteristics`, `Styles`). Their functionality is fully absorbed into `ASStyle` and `ASText`.
 
-## v0.2.0 — Mar 2025 (Effect 3.13.6)
+## 0.2.0 — Mar 2025 (Effect 3.13.6)
 
 - Updated to Effect 3.13.6 and `@parischap/effect-lib` 0.5.0.
 - Minor API fixes and tree-shaking improvements (`"sideEffects": false`).
 
-## v0.1.0 — Mar 2025
+## 0.1.0 — Mar 2025
 
 First public release. Provides: `ASStyle` (with three-bit, eight-bit, and RGB color constructors; all predefined named colors; `notXxx` style cancellers), `ASText` (styled-text manipulation — concatenation, join, surround, repeat; conversion to ANSI string, unstyled string, and character length), `ASContextStyler` (context-dependent styling with `makePaletteBased` and `makeConstant` constructors), `ASPalette` (named color-palette collections), and `ASColor` (pre-built color instances for all three color spaces).

@@ -40,9 +40,13 @@ This package contains the following modules, all prefixed with `M` to avoid name
 
 # Changelog
 
-## v0.12.0 — Effect v4
+## 0.13.0 → 23.0
 
-> **Ported to Effect v4** (`effect@4.0.0-beta`). The most significant update since the library's inception ()`MEither` renamed to `MResult`).
+Improved documentation.
+
+## 0.12.0 — Effect v4
+
+> **Ported to Effect v4** (`effect@4.0.0-beta`). The most significant update since the library's inception ()`MEither` renamed to `MResult`.
 
 - Substantially expanded JSDoc comments across all modules with inline runnable examples.
 - Fixed a bug in `MBigInt.log10` (incorrectly rejected `0`).
@@ -54,16 +58,16 @@ This package contains the following modules, all prefixed with `M` to avoid name
 - **Renamed:** `BadArgumentError` → `MInputError`.
 - **Removed:** `MBrand`, `MFs`, `MScopeOnce`, `MStream` — available natively in Effect v4 or retired as experimental.
 
-## v0.6.0 → v0.11.0 — Sep 2025 (Effect 3.17.13)
+## 0.6.0 → 0.11.0 – Sep 2025 (Effect 3.17.13)
 
 - Six patch releases focusing on tree-shaking optimizations and bundler compatibility (`"sideEffects": false`).
 
-## v0.5.0 — Mar 2025 (Effect 3.13.6)
+## 0.5.0 – Mar 2025 (Effect 3.13.6)
 
 - Updated to Effect 3.13.6 (dropped the `@effect/typeclass` peer dependency — no longer needed).
 - Added **`MRegExpString`**: composable building blocks for constructing regular-expression strings (unsigned integers, signed integers, identifiers, separators, …).
 
-## v0.4.0 — Oct 2024 (Effect 3.9.1)
+## 0.4.0 – Oct 2024 (Effect 3.9.1)
 
 - Updated to Effect 3.9.1 and `@effect/typeclass` 0.28.1.
 - **Dual CJS + ESM output**: the package now ships both formats so it works with CommonJS and ESM consumers without any extra bundler configuration.
@@ -72,12 +76,12 @@ This package contains the following modules, all prefixed with `M` to avoid name
 - Introduced `Inspectable` and `Pipeable` as explicit base-class modules (later unified into `MData`).
 - Dropped `@parischap/js-lib` dependency entirely.
 
-## v0.1.0 — Sep 2024 (Effect 3.8.x)
+## 0.1.0 – Sep 2024 (Effect 3.8.x)
 
 - Updated to Effect 3.8, which absorbed `@effect/schema` into the main `effect` package. The `MSchema` wrapper was removed accordingly; use `effect/Schema` directly.
 - Added `SearchResult` (later renamed `MStringSearchResult`).
 - Removed experimental and platform-specific modules with low adoption: `MEffect`, `MLimitedNumber`, `MScopeOnce`, `MStream`, `MFs`.
 
-## v0.0.2 — Jul 2024
+## 0.0.2 – Jul 2024
 
 First public release. Targets Effect 3.5.6 with `@effect/schema 0.68.26` as a separate peer dependency. Provides extensions to: `Array`, `Cache`, `Chunk`, `Either`, `Function`, `Json`, `Match`, `Number`, `Option`, `Predicate`, `Record`, `String`, `Struct`, `Tuple`.

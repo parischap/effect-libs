@@ -1336,7 +1336,11 @@ console.log(frenchFormatter);
 
 # Changelog
 
-## v1.0.0 — Effect v4
+## 1.0.1 → 1.0.10
+
+Improved documentation.
+
+## 1.0.0 — Effect v4
 
 > **Ported to Effect v4** (`effect@4.0.0-beta`).
 
@@ -1347,6 +1351,6 @@ console.log(frenchFormatter);
 - **`CVNumberBase10FormatScientificNotationOption` and `CVNumberBase10FormatSignDisplayOption`** are now separate modules, making the number format API fully compositional.
 - Removed built-in branding modules (`CVEmail`, `CVSemVer`, `CVInteger`, `CVPositiveInteger`, `CVReal`, `CVPositiveReal`) and numeric type helpers (`CVBigDecimal`, `CVBigInt`)
 
-## v0.1.0 — Sep 2025 (Effect 3.17.13)
+## 0.1.0 — Sep 2025 (Effect 3.17.13)
 
 First public release. Includes: rounding (`CVRounder`, `CVRounderParams`, `CVRoundingOption`), number formatting and parsing (`CVNumberBase10Format`), templating (`CVTemplate`, `CVTemplatePlaceholder`, `CVTemplateSeparator`, `CVTemplatePart`), datetime (`CVDateTime`), datetime formatting and parsing (`CVDateTimeFormat`, `CVDateTimeFormatContext`), schemas (`CVSchema`), and branding (`CVEmail`, `CVSemVer`, `CVInteger`, `CVPositiveInteger`, `CVReal`, `CVPositiveReal`).
