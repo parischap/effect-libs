@@ -78,7 +78,8 @@
       "effect": "*",
       "@parischap/effect-lib": "*"
     },
-    "scripts": {}
+    "scripts": {},
+    "prodMiscellaneous": {}
   },
   "exports": {
     ".": {

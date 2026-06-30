@@ -36,7 +36,8 @@
       "@parischap/effect-lib": "*",
       "@parischap/ansi-styles": "*"
     },
-    "scripts": {}
+    "scripts": {},
+    "prodMiscellaneous": {}
   },
   "exports": {
     ".": {

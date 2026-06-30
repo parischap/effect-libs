@@ -69,7 +69,8 @@
       "@parischap/ansi-styles": "*",
       "@parischap/conversions": "*"
     },
-    "scripts": {}
+    "scripts": {},
+    "prodMiscellaneous": {}
   },
   "exports": {
     ".": {

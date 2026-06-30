@@ -33,7 +33,8 @@
     "environment": "Node",
     "examples": [],
     "peerDependencies": {},
-    "scripts": {}
+    "scripts": {},
+    "prodMiscellaneous": {}
   },
   "exports": {
     ".": {

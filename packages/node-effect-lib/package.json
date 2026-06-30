@@ -36,7 +36,8 @@
       "@effect/platform-node": "*",
       "@parischap/effect-lib": "*"
     },
-    "scripts": {}
+    "scripts": {},
+    "prodMiscellaneous": {}
   },
   "exports": {
     ".": {
