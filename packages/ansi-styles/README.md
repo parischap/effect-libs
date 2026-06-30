@@ -3,7 +3,7 @@
 <!-- LTeX: language=en-US -->
 # ansi-styles
 
-An Effect library for ANSI terminal output styling
+An Effect library for ANSI terminal output styling.
 All exports follow the `AS`-prefix naming convention to avoid name collisions with other libraries;
 
 Platform-independent, well tested and documented, optimized for tree-shaking, 100% Typescript, 100% functional.

@@ -3,7 +3,7 @@
 <!-- LTeX: language=en-US -->
 # conversions
 
-An Effect replacement to the native JavaScript Intl API: date and number parsing/formatting, sscanf/sprintf templating, number rounding
+An Effect replacement to the native JavaScript Intl API: date and number parsing/formatting, sscanf/sprintf templating, number rounding.
 All exports follow the `CV`-prefix naming convention to avoid name collisions with other libraries;
 
 Platform-independent, well tested and documented, optimized for tree-shaking, 100% Typescript, 100% functional.

@@ -3,7 +3,7 @@
 <!-- LTeX: language=en-US -->
 # effect-lib
 
-Collection of utility modules extending the official Effect library: simple yet efficient pattern matching, cycle-safe tree module, mutable caching with optional bounded capacity and optional time-to-live, and diverse useful stuff
+Collection of utility modules extending the official Effect library: simple yet efficient pattern matching, cycle-safe tree module, mutable caching with optional bounded capacity and optional time-to-live, and diverse useful stuff.
 All exports follow the `M`-prefix naming convention to avoid name collisions with other libraries;
 
 Platform-independent, well tested and documented, optimized for tree-shaking, 100% Typescript, 100% functional.
