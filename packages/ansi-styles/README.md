@@ -10,7 +10,7 @@ Platform-independent, well tested and documented, optimized for tree-shaking, 10
 
 Can also be used by non-`Effect` users.
 
-# [&rarr; API](https://effect-libs-docs.netlify.app/0.1.2/docs/ansi-styles)
+# [&rarr; API](https://effect-libs-docs.netlify.app/0.1.3/docs/ansi-styles)
 
 # [&rarr; GETTING STARTED](readme-assets/index.md)
 

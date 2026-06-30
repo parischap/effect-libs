@@ -21,7 +21,7 @@
   "@parischap/configs": {
     "description": "Set of open-source Effect libraries offering date and number parsing/formatting, sscanf/sprintf templating, number rounding, object pretty-printing, colored terminal printing, simple yet efficient pattern matching and a cycle-safe tree module.",
     "moreDetails": "Platform-independent, well tested and documented, optimized for tree-shaking, 100% Typescript, 100% functional.\n\nCan also be used by non-`Effect` users.",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "keywords": [
       "effect-ts"
     ]

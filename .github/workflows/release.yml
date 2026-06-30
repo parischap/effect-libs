@@ -45,8 +45,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if [ "$TAG" != "0.1.2" ]; then
-            echo "Release tag '$TAG' does not match package.json version '0.1.2'"
+          if [ "$TAG" != "0.1.3" ]; then
+            echo "Release tag '$TAG' does not match package.json version '0.1.3'"
             gh release delete "$TAG" --yes
             git push --delete origin "$TAG"
             exit 1
