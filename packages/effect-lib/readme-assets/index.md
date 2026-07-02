@@ -3,6 +3,13 @@
 # Table of Contents
 
 - [In this package](#in-this-package)
+- [Usage](#usage)
+  - [MCache](#mcache)
+  - [MEquivalenceBasedEqualityData](#mequivalencebasedequalitydata)
+  - [MMatch](#mmatch)
+  - [MOption](#moption)
+  - [MString](#mstring)
+  - [MTree](#mtree)
 - [Changelog](#changelog)
 
 # In this package
@@ -37,6 +44,130 @@ This package contains the following modules, all prefixed with `M` to avoid name
 | **MTree**                         | A recursive tree/forest data structure with `fold`, `map`, `reduce`, and a cycle-safe `unfold`. Composed of `MTreeLeaf`, `MTreeNode`, `MTreeNonLeaf`, and `MTreeForest` sub-modules                                                                          |
 | **MTuple**                        | Extensions to `effect/Tuple`: `of`, `replicate`, and `prependElement`                                                                                                                                                                                        |
 | **MTypes**                        | Foundational primitive / container types and type-level utilities (`Object`, `NonPrimitive`, `Pair`, `Singleton`, `OverOne`, `OverTwo`, `Data`, `Tuple`, …). Runtime guards live in `MPredicate`                                                             |
+
+# Usage
+
+This package groups many small, independent extension modules. Rather than walking through all of them, this section shows a runnable example for a representative subset — the rest follow the same data-last, `pipe`-friendly style and are documented individually via JSDoc.
+
+## MCache
+
+A mutable, optionally bounded and TTL-limited cache built around a user-supplied lookup function. Keys are compared with `Equal.equals`; the lookup can be recursive, in which case the cache also detects circularity.
+
+```ts
+import { Tuple, pipe } from 'effect';
+import * as MCache from '@parischap/effect-lib/MCache';
+
+const cache = MCache.make({
+  lookUp: ({ key }: { readonly key: number }) => Tuple.make(key * 2, true),
+  capacity: 100,
+  lifeSpan: 60_000, // 1 minute
+});
+
+// Result: 10
+console.log(pipe(cache, MCache.get(5)));
+```
+
+## MEquivalenceBasedEqualityData
+
+A base class for value objects that derive `Equal.Equal` from a user-defined equivalence instead of structural equality. Subclasses implement a same-type-marker guard, the equivalence itself, and a consistent hash.
+
+```ts
+import { Equal, Hash } from 'effect';
+import * as MData from '@parischap/effect-lib/MData';
+import * as MEquivalenceBasedEqualityData from '@parischap/effect-lib/MEquivalenceBasedEqualityData';
+
+class UserId extends MEquivalenceBasedEqualityData.Class {
+  constructor(readonly value: number) {
+    super();
+  }
+  [MData.idSymbol]() {
+    return '@example/UserId/';
+  }
+  [MEquivalenceBasedEqualityData.hasSameTypeMarkerAsSymbol](that: unknown) {
+    return that instanceof UserId;
+  }
+  [MEquivalenceBasedEqualityData.isEquivalentToSymbol](that: this) {
+    return this.value === that.value;
+  }
+  [Hash.symbol]() {
+    return Hash.number(this.value);
+  }
+}
+
+// Result: true
+console.log(Equal.equals(new UserId(1), new UserId(1)));
+
+// Result: false
+console.log(Equal.equals(new UserId(1), new UserId(2)));
+```
+
+## MMatch
+
+A lightweight, type-safe pattern-matcher that replaces `Effect.Match` for simple use cases: predicate matching, refinement matching with exhaustiveness checking, `whenOr`, `whenAnd`, and `tryFunction`.
+
+```ts
+import { pipe } from 'effect';
+import * as MMatch from '@parischap/effect-lib/MMatch';
+import * as Number from 'effect/Number';
+
+const sign = (n: number) =>
+  pipe(
+    n,
+    MMatch.make,
+    MMatch.when(Number.isLessThan(0), () => 'negative'),
+    MMatch.when(Number.isGreaterThan(0), () => 'positive'),
+    MMatch.orElse(() => 'zero'),
+  );
+
+// Result: 'positive'
+console.log(sign(5));
+
+// Result: 'zero'
+console.log(sign(0));
+```
+
+## MString
+
+Extensions to `effect/String`: indexed search, custom-character trimming, padding, splitting (including bit-aligned chunking), indented multi-line formatting, and lightweight predicates (SemVer, e-mail, digit, …).
+
+```ts
+import { Option, pipe } from 'effect';
+import * as MString from '@parischap/effect-lib/MString';
+import * as MStringFillPosition from '@parischap/effect-lib/MStringFillPosition';
+
+const found = pipe('hello world', MString.search('world'));
+// Result: Some(6)
+console.log(Option.map(found, (r) => r.startIndex));
+
+// Result: '00042'
+console.log(
+  pipe(
+    '42',
+    MString.pad({ length: 5, fillChar: '0', fillPosition: MStringFillPosition.Type.Left }),
+  ),
+);
+```
+
+## MTree
+
+A recursive tree/forest data structure with `fold`, `map`, `reduce`, and a cycle-safe `unfold`. Each node is either a leaf carrying a value of type `B` or a non-leaf carrying a value of type `A` plus a forest of child trees.
+
+```ts
+import { Result, pipe } from 'effect';
+import * as MTree from '@parischap/effect-lib/MTree';
+
+const buildAndSum = pipe(
+  3,
+  MTree.unfoldAndFold({
+    unfold: (n: number) =>
+      n <= 0 ? Result.fail(0) : Result.succeed(['node' as const, [n - 1, n - 1]] as const),
+    foldNonLeaf: (_value, children) => children.reduce((a, b) => a + b, 1),
+    foldLeaf: (n) => n,
+  }),
+);
+// Result: count of non-leaf nodes in the built tree
+console.log(buildAndSum);
+```
 
 # Changelog
 

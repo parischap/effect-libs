@@ -22,7 +22,7 @@ This package contains:
 - **`PPNonPrimitiveParameters`** and related modules: controls how objects, arrays, functions, and iterables are rendered, including bypassing, filtering, sorting, formatting and bracket style.
 - **`PPStringifiedValue`**: converts the output to an ANSI-escaped string (`toAnsiString`) or to plain text lines (`toUnstyledStrings`).
 
-# Overview
+# Usage
 
 > Throughout this document, **non-primitive value** means any JavaScript value that is not a primitive — in other words, a function or a non-null object (arrays included).
 
@@ -33,8 +33,6 @@ stringify: (value: unknown) => PPStringifiedValue.Type
 ```
 
 `PPStringifiedValue.Type` is a non-empty array of `ASText.Type` (one entry per output line). It can be rendered to a terminal string with `PPStringifiedValue.toAnsiString()` or to plain strings with `PPStringifiedValue.toUnstyledStrings`.
-
-# Usage
 
 ## A) Using the six pre-built `PPParameters` instances
 

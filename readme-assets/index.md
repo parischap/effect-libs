@@ -1,12 +1,5 @@
 <!-- LTeX: language=en-US -->
 
-# Table of contents
-
-- [Packages](#packages)
-- [Dependency graph](#dependency-graph)
-- [Naming conventions](#naming-conventions)
-- [License](#license)
-
 # Packages
 
 This monorepo publishes the four libraries listed below. Each is its own npm package with its own version, README, examples and `docgen` documentation.
@@ -86,7 +79,3 @@ Every published package exposes its modules under a fixed prefix to avoid collis
 | `PP`   | `@parischap/pretty-print` |
 
 Throughout the documentation, an instance of a module's `Type` is referred to with its prefix in smart quotes — e.g. a `PPStringifier`, several `CVRounder`'s.
-
-# License
-
-MIT © Jérôme MARTIN ([@parischap](https://github.com/parischap))

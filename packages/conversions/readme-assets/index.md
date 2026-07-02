@@ -3,34 +3,35 @@
 # Table of Contents
 
 - [In this package](#in-this-package)
-- [Branding](#branding)
-  - [Introduction](#1-introduction)
-  - [Usage example](#2-usage-example)
-- [Rounding](#rounding)
-  - [Usage example](#1-usage-example)
-  - [`CVRounderParams` instances](#3-cvrounderparams-instances)
-  - [Debugging and equality](#4-debugging-and-equality)
-- [Number parser / formatter](#number-parser--formatter)
-  - [Usage example](#1-usage-example-1)
-  - [`CVNumberBase10Format` instances](#2-cvnumberbase10format-instances)
-  - [`CVNumberBase10Format` instance modifiers](#3-cvnumberbase10format-instance-modifiers)
-  - [`CVNumberBase10Format` in more details](#4-cvnumberbase10format-in-more-details)
-  - [Debugging and equality](#5-debugging-and-equality)
-- [Templating](#templating)
-  - [Usage example](#1-usage-example-2)
-  - [Definitions](#2-definitions)
-  - [`CVTemplateSeparator`'s](#3-cvtemplateseparators)
-  - [`CVTemplatePlaceholder`'s](#4-cvtemplateplaceholders)
-  - [A more complex example](#5-a-more-complex-example)
-  - [Debugging](#6-debugging)
-- [DateTime](#datetime)
-  - [Introduction](#1-introduction-1)
-  - [Usage example](#2-usage-example-1)
-- [DateTime formatter](#datetime-formatter)
-  - [Usage example](#1-usage-example-3)
-  - [Available tokens](#2-available-tokens)
-  - [`CVDateTimeFormatContext`](#3-cvdatetimeformatcontext)
-  - [Debugging](#4-debugging)
+- [Usage](#usage)
+  - [Branding](#branding)
+    - [Introduction](#1-introduction)
+    - [Usage example](#2-usage-example)
+  - [Rounding](#rounding)
+    - [Usage example](#1-usage-example)
+    - [`CVRounderParams` instances](#3-cvrounderparams-instances)
+    - [Debugging and equality](#4-debugging-and-equality)
+  - [Number parser / formatter](#number-parser--formatter)
+    - [Usage example](#1-usage-example-1)
+    - [`CVNumberBase10Format` instances](#2-cvnumberbase10format-instances)
+    - [`CVNumberBase10Format` instance modifiers](#3-cvnumberbase10format-instance-modifiers)
+    - [`CVNumberBase10Format` in more details](#4-cvnumberbase10format-in-more-details)
+    - [Debugging and equality](#5-debugging-and-equality)
+  - [Templating](#templating)
+    - [Usage example](#1-usage-example-2)
+    - [Definitions](#2-definitions)
+    - [`CVTemplateSeparator`'s](#3-cvtemplateseparators)
+    - [`CVTemplatePlaceholder`'s](#4-cvtemplateplaceholders)
+    - [A more complex example](#5-a-more-complex-example)
+    - [Debugging](#6-debugging)
+  - [DateTime](#datetime)
+    - [Introduction](#1-introduction-1)
+    - [Usage example](#2-usage-example-1)
+  - [DateTime formatter](#datetime-formatter)
+    - [Usage example](#1-usage-example-3)
+    - [Available tokens](#2-available-tokens)
+    - [`CVDateTimeFormatContext`](#3-cvdatetimeformatcontext)
+    - [Debugging](#4-debugging)
 - [Changelog](#changelog)
 
 # In this package
@@ -46,11 +47,13 @@ This package contains:
 
 Most functions of this package return a `Result` or an `Option` to signify the possibility of an error. However, if you are not an `Effect` user and do not care to learn more about it, you can simply use the `OrThrow` variant of the function. For instance, use `CVDateTime.setWeekdayOrThrow` instead of `CVDateTime.setWeekday`. As its name suggests, it will throw in case of failure.
 
-# Branding
+# Usage
+
+## Branding
 
 A few brands which come in handy in many projects such as email, semantic versioning, integer numbers, positive integer numbers, real numbers and positive real numbers. All these brands are also defined as `Schema`'s. Please read the [`Effect` documentation about Branding](https://effect.website/docs/code-style/branded-types/) if you are not familiar with this concept.
 
-## 1. Introduction
+### 1. Introduction
 
 In this package you will find the following [`Brand`'s](https://effect.website/docs/code-style/branded-types/):
 
@@ -63,7 +66,7 @@ In this package you will find the following [`Brand`'s](https://effect.website/d
 
 You will also find all the functions to convert from one brand to another. Do not hesitate to take a look at the [API](https://effect-libs-docs.netlify.app/0.1.0/docs/conversions) to learn more about what this module offers in terms of branding.
 
-## 2. Usage example
+### 2. Usage example
 
 ```ts
 import { CVEmail } from '@parischap/conversions';
@@ -91,11 +94,11 @@ console.log(CVEmail.fromString('foo'));
 console.log(CVEmail.unsafeFromString('foo'));
 ```
 
-# Rounding
+## Rounding
 
 A module to round numbers and [BigDecimal](https://effect.website/docs/data-types/bigdecimal/)'s with the same rounding options as those offered by the JavaScript INTL namespace: Ceil, Floor, Expand, Trunc, HalfCeil...
 
-## 1. Usage example
+### 1. Usage example
 
 ```ts
 import * as CVRounder from '@parischap/conversions/CVRounder';
@@ -169,7 +172,7 @@ console.log(bigDecimalRounder(BigDecimal.make(-124_565n, 4)));
 console.log(bigDecimalRounder(BigDecimal.make(1245n, 2)));
 ```
 
-## 3. `CVRounderParams` instances
+### 3. `CVRounderParams` instances
 
 Instead of building your own `CVRounderParams`, you can use the `halfExpand2` `CVRounderParams` instance (`HalfExpand` rounding option with a precision of two fractional digits). It will come in handy in accounting apps of most countries. For example:
 
@@ -189,7 +192,7 @@ console.log(numberRounder(12.46));
 console.log(numberRounder(-12.457));
 ```
 
-## 4. Debugging and equality
+### 4. Debugging and equality
 
 `CVRoundingOption` objects implement `Effect` equivalence and equality based on equivalence and equality of the `precision` and `roundingOption` properties. They also implement a `.toString()` method. For instance:
 
@@ -218,11 +221,11 @@ console.log(Equal.equals(CVRounderParams.halfExpand2, dummyOption1));
 console.log(Equal.equals(CVRounderParams.halfExpand2, dummyOption2));
 ```
 
-# Number parser / formatter
+## Number parser / formatter
 
 A safe, easy-to-use number/BigDecimal parser/formatter with almost all the options offered by the JavaScript INTL namespace: choice of the thousand separator, of the fractional separator, of the minimum and maximum number of fractional digits, of the rounding mode, of the sign display mode, of whether to show or not the integer part when it's zero, of whether to use a scientific or engineering notation, of the character to use as exponent mark... It can also be used as a `Schema` instead of the `Effect.Schema.NumberFromString` transformer.
 
-## 1. Usage example
+### 1. Usage example
 
 ```ts
 import { pipe } from 'effect';
@@ -298,19 +301,19 @@ console.log(frenchStyleDecoder('1 024,56'));
 console.log(frenchStyleEncoder(1024.56));
 ```
 
-## 2. `CVNumberBase10Format` instances
+### 2. `CVNumberBase10Format` instances
 
 In the previous example, we used the `ukStyleNumber`, `ukStyleUngroupedNumber` and `frenchStyleInteger` `CVNumberBase10Format` instances.
 
 You will find in the [API](https://parischap.github.io/effect-libs/conversions/NumberBase10Format.ts) the list of all pre-defined instances.
 
-## 3. `CVNumberBase10Format` instance modifiers
+### 3. `CVNumberBase10Format` instance modifiers
 
 Sometimes, you will need to bring some small modifications to a pre-defined `CVNumberBase10Format` instance. For instance, in the previous example, we defined the `ukStyleNumberWithEngineeringNotation` instance by using the `withEngineeringScientificNotation` modifier on the `ukStyleNumber` pre-defined instance.
 
 There are quite a few such modifiers whose list you will find in the [API](https://parischap.github.io/effect-libs/conversions/NumberBase10Format.ts).
 
-## 4. `CVNumberBase10Format` in more details
+### 4. `CVNumberBase10Format` in more details
 
 If you have very specific needs, you can define your own CVNumberBase10Format instance that must comply with the following interface:
 
@@ -420,7 +423,7 @@ export const frenchStyleNumber = CVNumberBase10Format.make({
 });
 ```
 
-## 5. Debugging and equality
+### 5. Debugging and equality
 
 `CVNumberBase10Format` objects implement a `.toString()` method and a `toDescription` destructor.
 The `.toString()` method will display the name of the object and all available properties. The `toDescription` destructor will produce a short summary of the format.
@@ -458,11 +461,11 @@ console.log(
 );
 ```
 
-# Templating
+## Templating
 
 An equivalent to the PHP `sprintf` and `sscanf` functions with real typing of the placeholders. Although `Effect.Schema` does offer the [`TemplateLiteralParser` API](https://effect.website/docs/schema/basic-usage/#templateliteralparser), the latter does not provide a solution to situations such as fixed length fields (potentially padded), numbers formatted otherwise than in the English format... This module can also be used as a `Schema`.
 
-## 1. Usage example
+### 1. Usage example
 
 ```ts
 import * as CVNumberBase10Format from '@parischap/conversions/CVNumberBase10Format';
@@ -601,7 +604,7 @@ console.log(
 );
 ```
 
-## 2. Definitions
+### 2. Definitions
 
 A template is a model of a text that has always the same structure. In such a text, there are immutable and mutable parts. Let's take the following two texts as an example:
 
@@ -629,13 +632,13 @@ Inversely, given a template and the values of the placeholders that compose it (
 
 we will obtain the text: "Tom is a 15-year-old boy."
 
-## 3. `CVTemplateSeparator`'s
+### 3. `CVTemplateSeparator`'s
 
 A `CVTemplateSeparator` represents the immutable part of a template. Upon parsing, we must check that it is present as is in the text. Upon formatting, it must be inserted as is into the text.
 
 To create a `CVTemplateSeparator`, you usually call the `CVTemplateSeparator.make` constructor. However, the `CVTemplateSeparator.ts` module exports a series of predefined `CVTemplateSeparator` instances, such as `CVTemplateSeparator.slash` and `CVTemplateSeparator.space`. You can find the list of all predefined `CVTemplateSeparator` instances in the [API](https://parischap.github.io/effect-libs/conversions/TemplatePart.ts).
 
-## 4. `CVTemplatePlaceholder`'s
+### 4. `CVTemplatePlaceholder`'s
 
 A `CVTemplatePlaceholder` represents the mutable part of a template. Each `CVTemplatePlaceholder` defines a parser and a formatter:
 
@@ -657,7 +660,7 @@ Each `CVTemplatePlaceholder` must be given a name that will be used as the name 
 
 If none of these `CVTemplatePlaceholder` instances suits you, you can define you own with the `make` constructor. You will find detailed explanations of the predefined `CVTemplatePlaceholder` instances and of the make constructor in the [API](https://parischap.github.io/effect-libs/conversions/TemplatePart.ts).
 
-## 5. A more complex example
+### 5. A more complex example
 
 ```ts
 import * as CVNumberBase10Format from '@parischap/conversions/CVNumberBase10Format';
@@ -742,7 +745,7 @@ console.log(format({ weekday: 6 }));
 console.log(format({ weekday: 10 }));
 ```
 
-## 6. Debugging
+### 6. Debugging
 
 `CVTemplate` objects implement a `.toString()` method that displays a synthetic description of the template followed by the description of each contained `CVTemplatePlaceholder`.
 
@@ -787,11 +790,11 @@ const template = CVTemplate.make(
 console.log(template);
 ```
 
-# DateTime
+## DateTime
 
 A very easy to use DateTime module that implements natively the ISO calendar (ISO year and ISO week). It is also faster than its `Effect` counterpart as it implements an internal state that's only used to speed up calculation times (but does not alter the result of functions; so `CVDateTime` functions can be viewed as pure from a user's perspective). It can therefore be useful in applications where time is of essence.
 
-## 1. Introduction
+### 1. Introduction
 
 This package implements an immutable `CVDateTime` object: once created, the characteristics of a `CVDateTime` object will never change. However, the provided Setters functions allow you to get a copy of an existing `CVDateTime` object with just one characteristic modified.
 
@@ -803,7 +806,7 @@ A `CVDateTime` object has a `zoneOffset` which is the difference in hours betwee
 
 You cannot create a `CVDateTime` object from a string. If you need to, use the `CVDateTimeFormat` module.
 
-## 2. Usage example
+### 2. Usage example
 
 ```ts
 import * as CVDateTime from '@parischap/conversions/CVDateTime';
@@ -1028,11 +1031,11 @@ console.log(CVDateTime.isLastMonthDay(aDate));
 console.log(CVDateTime.isFirstMonthDay(aDate));
 ```
 
-# DateTime formatter
+## DateTime formatter
 
 A DateTime parser/formatter which supports many of the available [Unicode tokens](https://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table). It can also be used as a `Schema` instead of the `Effect.Schema.Date` transformer.
 
-## 1. Usage example
+### 1. Usage example
 
 ```ts
 import * as CVDateTime from '@parischap/conversions/CVDateTime';
@@ -1199,7 +1202,7 @@ console.log(jsDecoder('jeudi 4 septembre 2025'));
 console.log(jsEncoder(new Date(0)));
 ```
 
-## 2. Available tokens
+### 2. Available tokens
 
 Many of the available [Unicode tokens](https://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table) can be used to define `CVDateTimeFormat`'s. Here is a list of all currently available tokens:
 
@@ -1279,7 +1282,7 @@ export type Token =
   | 'zszs';
 ```
 
-## 3. `CVDateTimeFormatContext`
+### 3. `CVDateTimeFormatContext`
 
 Some of the available tokens are language specific. For instance the `MMMM` token is expected to display `december` in English and `décembre` in French. For this reason, you need to build a `CVDateTimeFormatContext` and combine it with a `CVDateTimeFormat` when constructing a `CVDateTimeParser` or a `CVDateTimeFormatter`. You can build a `CVDateTimeFormatContext` in one of the three following ways:
 
@@ -1287,7 +1290,7 @@ Some of the available tokens are language specific. For instance the `MMMM` toke
 - You can build a `CVDateTimeFormatContext` from the name of a locale, e.g. `const frenchContext = CVDateTimeFormatContext.fromLocaleOrThrow("fr-FR")`
 - If you have very specific needs or your locale is not available, you can build a `CVDateTimeFormatContext` by providing directly your translations to the `CVDateTimeFormatContext.fromNames` constructor.
 
-## 4. Debugging
+### 4. Debugging
 
 `CVDateTimeFormat`, `CVDateTimeParser`, and `CVDateTimeFormatter` objects all implement a `.toString()` method. `CVDateTimeFormat.toString()` returns a concatenation of all its parts (e.g. `iiii d MMMM yyyy`). `CVDateTimeParser.toString()` and `CVDateTimeFormatter.toString()` return a description combining the format name and context (e.g. `'iiii d MMMM yyyy' parser in 'fr-FR' context`). For instance:
 
@@ -1336,11 +1339,11 @@ console.log(frenchFormatter);
 
 # Changelog
 
-## 1.0.1 → 1.0.10
+### 1.0.1 → 1.0.10
 
 Improved documentation.
 
-## 1.0.0 — Effect v4
+### 1.0.0 — Effect v4
 
 > **Ported to Effect v4** (`effect@4.0.0-beta`).
 
@@ -1351,6 +1354,6 @@ Improved documentation.
 - **`CVNumberBase10FormatScientificNotationOption` and `CVNumberBase10FormatSignDisplayOption`** are now separate modules, making the number format API fully compositional.
 - Removed built-in branding modules (`CVEmail`, `CVSemVer`, `CVInteger`, `CVPositiveInteger`, `CVReal`, `CVPositiveReal`) and numeric type helpers (`CVBigDecimal`, `CVBigInt`)
 
-## 0.1.0 — Sep 2025 (Effect 3.17.13)
+### 0.1.0 — Sep 2025 (Effect 3.17.13)
 
 First public release. Includes: rounding (`CVRounder`, `CVRounderParams`, `CVRoundingOption`), number formatting and parsing (`CVNumberBase10Format`), templating (`CVTemplate`, `CVTemplatePlaceholder`, `CVTemplateSeparator`, `CVTemplatePart`), datetime (`CVDateTime`), datetime formatting and parsing (`CVDateTimeFormat`, `CVDateTimeFormatContext`), schemas (`CVSchema`), and branding (`CVEmail`, `CVSemVer`, `CVInteger`, `CVPositiveInteger`, `CVReal`, `CVPositiveReal`).

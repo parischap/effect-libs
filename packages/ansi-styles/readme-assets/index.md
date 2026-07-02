@@ -3,7 +3,6 @@
 # Table of Contents
 
 - [In this package](#in-this-package)
-- [Note](#note)
 - [Usage](#usage)
   - [1) Basic usage](#1-basic-usage)
   - [2) List of available styles](#2-list-of-available-styles)
@@ -24,11 +23,9 @@ This package contains:
 - **`ASPalette`**: pre-built named color-palette collections for use with `ASContextStyler`.
 - **`ASColor`** (`ASThreeBitColor`, `ASEightBitColor`, `ASRgbColor`): pre-built color instances for all three color spaces (8 + 8 bright three-bit colors, 256 eight-bit colors, 140 named RGB colors), plus an `ASRgbColor.make` constructor for fully custom RGB colors.
 
-# Note
+# Usage
 
 We draw your attention to the [NO_COLOR](https://no-color.org/) standard: "Command-line software which adds ANSI color to its output by default should check for a NO_COLOR environment variable that, when present and not an empty string (regardless of its value), prevents the addition of ANSI color."
-
-# Usage
 
 ## 1) Basic usage
 
