@@ -1,12 +1,12 @@
 /**
- * Extension to the Effect Tuple module providing safe single-element construction, element
+ * Extension to the `effect/Tuple` module providing safe single-element construction, element
  * replication, and prefix prepending.
  *
  * ## Mental model
  *
  * - **Tuples** are fixed-length arrays whose element types are tracked individually by TypeScript.
  * - This module focuses on a small set of constructors and editing helpers; combine them with
- *   Effect's `Tuple` for the rest.
+ *   `effect/Tuple` for the rest.
  *
  * ## Common tasks
  *

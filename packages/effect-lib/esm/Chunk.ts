@@ -1,13 +1,12 @@
 /**
- * Extension to the Effect Chunk module providing length and duplicate predicates, indexed search,
+ * Extension to the `effect/Chunk` module providing length and duplicate predicates, indexed search,
  * and slicing operations.
  *
  * ## Mental model
  *
  * - **`Chunk.Chunk<A>`** is an immutable, persistent sequence of elements of type `A`.
  * - All functions return new chunks; chunks are never mutated.
- * - Functions are **curried, data-last** — call as `MChunk.fn(arg)(chunk)` or `pipe(chunk,
- *   MChunk.fn(arg))`. They are not data-first/data-last dual.
+ * - Functions are **curried, data-last** — call as `pipe(chunk, MChunk.fn(arg))`.
  *
  * ## Common tasks
  *
@@ -73,7 +72,7 @@ export const hasLength =
  * Returns `true` if `self` contains at least one duplicate, using `Equal.equals` for comparison.
  *
  * - Use to validate uniqueness constraints.
- * - Comparison uses Effect's `Equal.equals` (structural equality for `Equal`-aware types, otherwise
+ * - Comparison uses `effect/Equal.equals` (structural equality for `Equal`-aware types, otherwise
  *   `===`).
  * - Returns `false` for empty chunks.
  *

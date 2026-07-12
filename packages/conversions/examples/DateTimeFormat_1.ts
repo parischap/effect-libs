@@ -50,19 +50,19 @@ const parser = CVDateTimeParser.parse(frenchParser);
 // Type: (date: CVDateTime.Type) => Result.Result<string, MInputError.Type>
 const formatter = CVDateTimeFormatter.format(frenchFormatter);
 
-// Let's define a parser to Effect.DateTime for Effect users
+// Let's define a parser to effect/DateTime for `effect` users
 // Type: (dateString: string) => Result.Result<DateTime.Zoned, MInputError.Type>
 const effectParser = flow(parser, Result.map(CVDateTime.toEffectDateTime));
 
-// Let's define a formatter from Effect.DateTime for Effect users
+// Let's define a formatter from effect/DateTime for `effect` users
 // Type: (date: DateTime.Zoned) => Result.Result<string, MInputError.Type>
 const effectFormatter = flow(CVDateTime.fromEffectDateTime, formatter);
 
-// Let's define a parser that returns a Date or throws for non Effect users
+// Let's define a parser that returns a Date or throws for non-`effect` users
 // Type: (dateString: string) => Date
 const jsParser = flow(CVDateTimeParser.parseOrThrow(frenchParser), CVDateTime.toDate);
 
-// Let's define a formatter that takes a Date and throws for non Effect users
+// Let's define a formatter that takes a Date and throws for non-`effect` users
 // Type: (date: Date) => string
 const jsFormatter = flow(CVDateTime.fromDate, CVDateTimeFormatter.formatOrThrow(frenchFormatter));
 
@@ -117,10 +117,10 @@ console.log(formatter(CVDateTime.fromPartsOrThrow({ year: 10_024 })));
 // Using Schema
 const schema = CVSchema.CVDateTimeFromString(frenchParser, frenchFormatter);
 
-// For Effect users
+// For `effect` users
 const effectSchema = CVSchema.DateTimeZonedFromString(frenchParser, frenchFormatter);
 
-// For non Effect users
+// For non-`effect` users
 const jsSchema = CVSchema.DateFromString(frenchParser, frenchFormatter);
 
 // Type: (value: string) => Exit.Exit<CVDateTime.Type, ParseError>

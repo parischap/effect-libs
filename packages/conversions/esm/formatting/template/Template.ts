@@ -37,7 +37,7 @@
  * Once you have created a CVTemplate, you must feed it to a CVTemplateParser or
  * CVTemplateFormatter.
  *
- * Note that `Effect` does provide the `Schema.TemplateLiteralParser` API which partly addresses the
+ * Note that `effect` does provide the `Schema.TemplateLiteralParser` API which partly addresses the
  * same problem. But there are some limitations to that API. For instance, template literal types
  * cannot represent a fixed-length string or a string composed only of capital letters... It is for
  * instance impossible to represent a date in the form YYYYMMDD with the

@@ -4,9 +4,6 @@
 
 - [In this package](#in-this-package)
 - [Usage](#usage)
-  - [Branding](#branding)
-    - [Introduction](#1-introduction)
-    - [Usage example](#2-usage-example)
   - [Rounding](#rounding)
     - [Usage example](#1-usage-example)
     - [`CVRounderParams` instances](#3-cvrounderparams-instances)
@@ -25,8 +22,8 @@
     - [A more complex example](#5-a-more-complex-example)
     - [Debugging](#6-debugging)
   - [DateTime](#datetime)
-    - [Introduction](#1-introduction-1)
-    - [Usage example](#2-usage-example-1)
+    - [Introduction](#1-introduction)
+    - [Usage example](#2-usage-example)
   - [DateTime formatter](#datetime-formatter)
     - [Usage example](#1-usage-example-3)
     - [Available tokens](#2-available-tokens)
@@ -39,60 +36,14 @@
 This package contains:
 
 - A [module to round numbers and BigDecimal's](#rounding) with the same rounding options as those offered by the JavaScript INTL API: Ceil, Floor, Expand, Trunc, HalfCeil...
-- A safe, easy-to-use [number/BigDecimal parser/formatter](#number-parser--formatter) with almost all the options offered by the JavaScript INTL API: choice of the thousand separator, of the fractional separator, of the minimum and maximum number of fractional digits, of the rounding option, of the sign display mode, of whether to show or not the integer part when it's zero, of whether to use a scientific or engineering notation, of the character to use as exponent mark... It can also be used as a `Schema` instead of the `Effect.Schema.NumberFromString` transformer.
-- An equivalent to the PHP [sprintf and sscanf functions](#templating) with real typing of the placeholders. Although `Effect.Schema` does offer the [`TemplateLiteralParser` API](https://effect.website/docs/schema/basic-usage/#templateliteralparser), the latter does not provide a solution to situations such as fixed length fields (potentially padded), numbers formatted otherwise than in the English format... This module can also be used as a `Schema`.
-- A very easy to use [DateTime module](#datetime) that implements natively the ISO calendar (ISO year and ISO week). It is also faster than its `Effect` counterpart as it implements an internal state that's only used to speed up calculation times (but does not alter the result of functions; so `CVDateTime` functions can be viewed as pure from a user's perspective). It can therefore be useful in applications where time is of essence.
-- A [DateTime parser/formatter](#datetime-formatter) which supports many of the available [Unicode tokens](https://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table). It can also be used as a `Schema` instead of the `Effect.Schema.Date` transformer.
-- A few [brands](#branding) which come in handy in many projects such as email, semantic versioning, integer numbers, positive integer numbers, real numbers and positive real numbers. All these brands are also defined as `Schema`'s. Please read the [`Effect` documentation about Branding](https://effect.website/docs/code-style/branded-types/) if you are not familiar with this concept
+- A safe, easy-to-use [number/BigDecimal parser/formatter](#number-parser--formatter) with almost all the options offered by the JavaScript INTL API: choice of the thousand separator, of the fractional separator, of the minimum and maximum number of fractional digits, of the rounding option, of the sign display mode, of whether to show or not the integer part when it's zero, of whether to use a scientific or engineering notation, of the character to use as exponent mark... It can also be used as a `Schema` instead of the `effect/Schema.NumberFromString` transformer.
+- An equivalent to the PHP [sprintf and sscanf functions](#templating) with real typing of the placeholders. Although `effect/Schema` does offer the [`TemplateLiteralParser` API](https://effect.website/docs/schema/basic-usage/#templateliteralparser), the latter does not provide a solution to situations such as fixed length fields (potentially padded), numbers formatted otherwise than in the English format... This module can also be used as a `Schema`.
+- A very easy to use [DateTime module](#datetime) that implements natively the ISO calendar (ISO year and ISO week). It is also faster than its `effect` counterpart as it implements an internal state that's only used to speed up calculation times (but does not alter the result of functions; so `CVDateTime` functions can be viewed as pure from a user's perspective). It can therefore be useful in applications where time is of essence.
+- A [DateTime parser/formatter](#datetime-formatter) which supports many of the available [Unicode tokens](https://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table). It can also be used as a `Schema` instead of the `effect/Schema.Date` transformer.
 
-Most functions of this package return a `Result` or an `Option` to signify the possibility of an error. However, if you are not an `Effect` user and do not care to learn more about it, you can simply use the `OrThrow` variant of the function. For instance, use `CVDateTime.setWeekdayOrThrow` instead of `CVDateTime.setWeekday`. As its name suggests, it will throw in case of failure.
+Most functions of this package return a `Result` or an `Option` to signify the possibility of an error. However, if you are not an `effect` user and do not care to learn more about it, you can simply use the `OrThrow` variant of the function. For instance, use `CVDateTime.setWeekdayOrThrow` instead of `CVDateTime.setWeekday`. As its name suggests, it will throw in case of failure.
 
 # Usage
-
-## Branding
-
-A few brands which come in handy in many projects such as email, semantic versioning, integer numbers, positive integer numbers, real numbers and positive real numbers. All these brands are also defined as `Schema`'s. Please read the [`Effect` documentation about Branding](https://effect.website/docs/code-style/branded-types/) if you are not familiar with this concept.
-
-### 1. Introduction
-
-In this package you will find the following [`Brand`'s](https://effect.website/docs/code-style/branded-types/):
-
-- `CVEmail`: represents a valid email string
-- `CVSemVer`: represents a valid semantic versioning string
-- number: represents a valid floating-point number (+Infinity, Infinity, -Infinity, NaN not allowed). Can be used to represent a temperature, a height from sea-level,...
-- `CVPositiveReal`: same as number but the number must be positive. Can be used to represent a price, a speed, ...
-- `CVInteger`: same as number but the number must be an integer. Can be used to represent a floor in a lift, a signed quantity, ...
-- `CVPositiveInteger`: same as `CVInteger` but the number must be positive. Can be used to represent an age, a quantity, ...
-
-You will also find all the functions to convert from one brand to another. Do not hesitate to take a look at the [API](https://effect-libs-docs.netlify.app/0.1.0/docs/conversions) to learn more about what this module offers in terms of branding.
-
-### 2. Usage example
-
-```ts
-import { CVEmail } from '@parischap/conversions';
-
-/** Let's try to create a CVEmail from a string that represents a valid email */
-// Result: { _id: 'Result', _tag: 'Success', success: 'foo@bar.baz' }
-console.log(CVEmail.fromString('foo@bar.baz'));
-
-/** Let's try to create a CVEmail from a string that does not represents a valid email */
-// Result: {
-//   _id: 'Result',
-//   _tag: 'Failure',
-//   failure: [ { message: "'foo' does not represent a email", meta: undefined } ]
-// }
-console.log(CVEmail.fromString('foo'));
-
-/**
- * Thanks to Typescript type-checking, whenever we use a variable of type CVEmail, we know for sure
- * it represents a valid email. Unless we force a string that does not represent an email into a
- * CVEmail. But the name of the function makes it clear that we are in danger zone and should know
- * what we are doing.
- */
-
-// Result: 'foo'
-console.log(CVEmail.unsafeFromString('foo'));
-```
 
 ## Rounding
 
@@ -194,7 +145,7 @@ console.log(numberRounder(-12.457));
 
 ### 4. Debugging and equality
 
-`CVRoundingOption` objects implement `Effect` equivalence and equality based on equivalence and equality of the `precision` and `roundingOption` properties. They also implement a `.toString()` method. For instance:
+`CVRoundingOption` objects implement `effect` equivalence and equality based on equivalence and equality of the `precision` and `roundingOption` properties. They also implement a `.toString()` method. For instance:
 
 ```ts
 import * as CVRounderParams from '@parischap/conversions/CVRounderParams';
@@ -223,7 +174,7 @@ console.log(Equal.equals(CVRounderParams.halfExpand2, dummyOption2));
 
 ## Number parser / formatter
 
-A safe, easy-to-use number/BigDecimal parser/formatter with almost all the options offered by the JavaScript INTL namespace: choice of the thousand separator, of the fractional separator, of the minimum and maximum number of fractional digits, of the rounding mode, of the sign display mode, of whether to show or not the integer part when it's zero, of whether to use a scientific or engineering notation, of the character to use as exponent mark... It can also be used as a `Schema` instead of the `Effect.Schema.NumberFromString` transformer.
+A safe, easy-to-use number/BigDecimal parser/formatter with almost all the options offered by the JavaScript INTL namespace: choice of the thousand separator, of the fractional separator, of the minimum and maximum number of fractional digits, of the rounding mode, of the sign display mode, of whether to show or not the integer part when it's zero, of whether to use a scientific or engineering notation, of the character to use as exponent mark... It can also be used as a `Schema` instead of the `effect/Schema.NumberFromString` transformer.
 
 ### 1. Usage example
 
@@ -262,7 +213,7 @@ const ungroupedUkStyleParser = pipe(
   CVNumberBase10Parser.parseAsNumber,
 );
 
-// Let's define a parser that throws for non Effect users
+// Let's define a parser that throws for non-`effect` users
 // Type: (value: string ) => number
 const throwingParser = pipe(
   ukStyleUngroupedNumber,
@@ -463,7 +414,7 @@ console.log(
 
 ## Templating
 
-An equivalent to the PHP `sprintf` and `sscanf` functions with real typing of the placeholders. Although `Effect.Schema` does offer the [`TemplateLiteralParser` API](https://effect.website/docs/schema/basic-usage/#templateliteralparser), the latter does not provide a solution to situations such as fixed length fields (potentially padded), numbers formatted otherwise than in the English format... This module can also be used as a `Schema`.
+An equivalent to the PHP `sprintf` and `sscanf` functions with real typing of the placeholders. Although `effect/Schema` does offer the [`TemplateLiteralParser` API](https://effect.website/docs/schema/basic-usage/#templateliteralparser), the latter does not provide a solution to situations such as fixed length fields (potentially padded), numbers formatted otherwise than in the English format... This module can also be used as a `Schema`.
 
 ### 1. Usage example
 
@@ -513,7 +464,7 @@ const parser = CVTemplateParser.fromTemplate(template);
 // }, MInputError.Type>
 const parse = CVTemplateParser.parse(parser);
 
-// Let's define a parse function that throws for non Effect users.
+// Let's define a parse function that throws for non-`effect` users.
 // Type: (value: string) => {
 //    readonly name: string;
 //    readonly age: number;
@@ -532,7 +483,7 @@ const formatter = CVTemplateFormatter.fromTemplate(template);
 //   }) => Result.Result<string, MInputError.Type>
 const format = CVTemplateFormatter.format(formatter);
 
-// Let's define a formatter that throws for Effect users.
+// Let's define a formatter that throws for `effect` users.
 // Type: (value: {
 //    readonly name: string;
 //    readonly age: number;
@@ -792,7 +743,7 @@ console.log(template);
 
 ## DateTime
 
-A very easy to use DateTime module that implements natively the ISO calendar (ISO year and ISO week). It is also faster than its `Effect` counterpart as it implements an internal state that's only used to speed up calculation times (but does not alter the result of functions; so `CVDateTime` functions can be viewed as pure from a user's perspective). It can therefore be useful in applications where time is of essence.
+A very easy to use DateTime module that implements natively the ISO calendar (ISO year and ISO week). It is also faster than its `effect` counterpart as it implements an internal state that's only used to speed up calculation times (but does not alter the result of functions; so `CVDateTime` functions can be viewed as pure from a user's perspective). It can therefore be useful in applications where time is of essence.
 
 ### 1. Introduction
 
@@ -800,7 +751,7 @@ This package implements an immutable `CVDateTime` object: once created, the char
 
 Although immutable when considered from the outer world, `CVDateTime` objects do keep an internal state that is only used to improve performance (but does not alter results). `CVDateTime` functions can therefore be regarded as pure: they will always yield the same result whatever the state the object is in.
 
-Unlike the JavaScript `Date` objects and the `Effect.DateTime` objects, `CVDateTime` objects handle both the Gregorian and ISO calendars. So you can easily get/set the ISO year and ISO week of a `CVDateTime` object.
+Unlike the JavaScript `Date` objects and the `effect/DateTime` objects, `CVDateTime` objects handle both the Gregorian and ISO calendars. So you can easily get/set the ISO year and ISO week of a `CVDateTime` object.
 
 A `CVDateTime` object has a `zoneOffset` which is the difference in hours between the time in the local zone and UTC time (e.g. `zoneOffset=1` for timezone +1:00). All the data in a `CVDateTime` object is zoneOffset-dependent, except `timestamp`.
 
@@ -1033,7 +984,7 @@ console.log(CVDateTime.isFirstMonthDay(aDate));
 
 ## DateTime formatter
 
-A DateTime parser/formatter which supports many of the available [Unicode tokens](https://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table). It can also be used as a `Schema` instead of the `Effect.Schema.Date` transformer.
+A DateTime parser/formatter which supports many of the available [Unicode tokens](https://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table). It can also be used as a `Schema` instead of the `effect/Schema.Date` transformer.
 
 ### 1. Usage example
 
@@ -1089,19 +1040,19 @@ const parser = CVDateTimeParser.parse(frenchParser);
 // Type: (date: CVDateTime.Type) => Result.Result<string, MInputError.Type>
 const formatter = CVDateTimeFormatter.format(frenchFormatter);
 
-// Let's define a parser to Effect.DateTime for Effect users
+// Let's define a parser to effect/DateTime for `effect` users
 // Type: (dateString: string) => Result.Result<DateTime.Zoned, MInputError.Type>
 const effectParser = flow(parser, Result.map(CVDateTime.toEffectDateTime));
 
-// Let's define a formatter from Effect.DateTime for Effect users
+// Let's define a formatter from effect/DateTime for `effect` users
 // Type: (date: DateTime.Zoned) => Result.Result<string, MInputError.Type>
 const effectFormatter = flow(CVDateTime.fromEffectDateTime, formatter);
 
-// Let's define a parser that returns a Date or throws for non Effect users
+// Let's define a parser that returns a Date or throws for non-`effect` users
 // Type: (dateString: string) => Date
 const jsParser = flow(CVDateTimeParser.parseOrThrow(frenchParser), CVDateTime.toDate);
 
-// Let's define a formatter that takes a Date and throws for non Effect users
+// Let's define a formatter that takes a Date and throws for non-`effect` users
 // Type: (date: Date) => string
 const jsFormatter = flow(CVDateTime.fromDate, CVDateTimeFormatter.formatOrThrow(frenchFormatter));
 
@@ -1156,10 +1107,10 @@ console.log(formatter(CVDateTime.fromPartsOrThrow({ year: 10_024 })));
 // Using Schema
 const schema = CVSchema.CVDateTimeFromString(frenchParser, frenchFormatter);
 
-// For Effect users
+// For `effect` users
 const effectSchema = CVSchema.DateTimeZonedFromString(frenchParser, frenchFormatter);
 
-// For non Effect users
+// For non-`effect` users
 const jsSchema = CVSchema.DateFromString(frenchParser, frenchFormatter);
 
 // Type: (value: string) => Exit.Exit<CVDateTime.Type, ParseError>
@@ -1343,9 +1294,9 @@ console.log(frenchFormatter);
 
 Improved documentation.
 
-### 1.0.0 — Effect v4
+### 1.0.0 — effect v4
 
-> **Ported to Effect v4** (`effect@4.0.0-beta`).
+> **Ported to effect v4** (`effect@4.0.0-beta`).
 
 - **Module reorganization:** formatting modules are now grouped under `formatting/` (number, datetime, template); rounding modules under `rounding/`. This produces cleaner barrel imports and better tree-shaking.
 - **`CVRounder` and `CVRounderParams`** are now distinct top-level modules (previously part of `CVRoundingOption`).
@@ -1354,6 +1305,6 @@ Improved documentation.
 - **`CVNumberBase10FormatScientificNotationOption` and `CVNumberBase10FormatSignDisplayOption`** are now separate modules, making the number format API fully compositional.
 - Removed built-in branding modules (`CVEmail`, `CVSemVer`, `CVInteger`, `CVPositiveInteger`, `CVReal`, `CVPositiveReal`) and numeric type helpers (`CVBigDecimal`, `CVBigInt`)
 
-### 0.1.0 — Sep 2025 (Effect 3.17.13)
+### 0.1.0 — Sep 2025 (effect 3.17.13)
 
 First public release. Includes: rounding (`CVRounder`, `CVRounderParams`, `CVRoundingOption`), number formatting and parsing (`CVNumberBase10Format`), templating (`CVTemplate`, `CVTemplatePlaceholder`, `CVTemplateSeparator`, `CVTemplatePart`), datetime (`CVDateTime`), datetime formatting and parsing (`CVDateTimeFormat`, `CVDateTimeFormatContext`), schemas (`CVSchema`), and branding (`CVEmail`, `CVSemVer`, `CVInteger`, `CVPositiveInteger`, `CVReal`, `CVPositiveReal`).

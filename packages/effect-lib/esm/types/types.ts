@@ -56,8 +56,8 @@ export interface ReadonlyObject {
 /**
  * Type that represents anything but a JavaScript primitive. It includes records (in their usual
  * computer science meaning), class instances, arrays, and functions but not null or undefined.
- * Equivalent to the Effect ObjectKeyword type. Should be defined as an alias to the `object` type
- * but the object type cannot be indexed so this definition is better
+ * Equivalent to the `effect/Schema.ObjectKeyword` type. Should be defined as an alias to the
+ * `object` type but the object type cannot be indexed so this definition is better
  *
  * @category Models
  */

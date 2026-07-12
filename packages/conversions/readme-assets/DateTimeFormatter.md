@@ -2,7 +2,7 @@
 
 # CVDateTimeFormatter
 
-A DateTime parser/formatter which supports many of the available [unicode tokens](https://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table). It can also be used as a `Schema` instead of the `Effect.Schema.Date` transformer.
+A DateTime parser/formatter which supports many of the available [unicode tokens](https://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table). It can also be used as a `Schema` instead of the `effect/Schema.Date` transformer.
 
 </div>
 
@@ -46,22 +46,22 @@ const parser = CVDateTimeFormat.toParser(frenchFormat);
 // Type: (date: CVDateTime.Type) => Either.Either<string, MInputError.Type>
 const formatter = CVDateTimeFormat.toFormatter(frenchFormat);
 
-// Let's define a parser to Effect.DateTime for Effect users
+// Let's define a parser to effect/DateTime for `effect` users
 // Type: (dateString: string) => Either.Either<DateTime.Zoned, MInputError.Type>
 const effectParser = flow(parser, Either.map(CVDateTime.toEffectDateTime));
 
-// Let's define a formatter from Effect.DateTime for Effect users
+// Let's define a formatter from effect/DateTime for `effect` users
 // Type: (date: DateTime.Zoned) => Either.Either<string, MInputError.Type>
 const effectFormatter = flow(CVDateTime.fromEffectDateTime, formatter);
 
-// Let's define a parser that returns a date or throws for non Effect users
+// Let's define a parser that returns a date or throws for non-`effect` users
 // Type: (dateString: string) => Date
 const jsParser = flow(
 	CVDateTimeFormat.toThrowingParser(frenchFormat),
 	CVDateTime.toDate,
 );
 
-// Let's define a formatter that takes a date and throws for non Effect users
+// Let's define a formatter that takes a date and throws for non-`effect` users
 // Type: (date: Date) => string
 const jsFormatter = flow(
 	CVDateTime.fromDate,
@@ -118,10 +118,10 @@ console.log(formatter(CVDateTime.fromPartsOrThrow({ year: 10024 })));
 // Using Schema
 const schema = CVSchema.DateTime(frenchFormat);
 
-// For Effect users
+// For `effect` users
 const effectSchema = CVSchema.DateTimeZoned(frenchFormat);
 
-// For non Effect users
+// For non-`effect` users
 const jsSchema = CVSchema.Date(frenchFormat);
 
 // Type: (value: string ) => Either.Either<CVDateTime.Type,ParseError>

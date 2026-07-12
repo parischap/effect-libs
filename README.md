@@ -3,10 +3,10 @@
 <!-- LTeX: language=en-US -->
 # effect-libs
 
-Set of open-source Effect libraries offering date and number parsing/formatting, sscanf/sprintf templating, number rounding, object pretty-printing, colored terminal printing, simple yet efficient pattern matching and a cycle-safe tree module.
+Set of open-source `effect` libraries offering date and number parsing/formatting, sscanf/sprintf templating, number rounding, object pretty-printing, colored terminal printing, simple yet efficient pattern matching and a cycle-safe tree module.
 Platform-independent, well tested and documented, optimized for tree-shaking, 100% Typescript, 100% functional.
 
-Can also be used by non-`Effect` users.
+Can also be used by non-`effect` users.
 
 # [&rarr; API](https://effect-libs-docs.netlify.app/0.1.3)
 

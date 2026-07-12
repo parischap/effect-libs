@@ -1,6 +1,6 @@
 /**
- * Extension to the Effect Struct module providing prototype-safe struct merging, field overriding,
- * one-key construction, derived-field enrichment, and a refined `evolve`.
+ * Extension to the `effect/Struct` module providing prototype-safe struct merging, field
+ * overriding, one-key construction, derived-field enrichment, and a refined `evolve`.
  *
  * ## Mental model
  *
@@ -77,7 +77,7 @@ export type Append<First extends Type, Second extends Type> = {
  *
  * - Use instead of the spread operator when you want to make explicit that the prototype of the
  *   left-hand side is dropped.
- * - Same as Effect's Struct.assign but handles optional values more cleanly.
+ * - Same as `effect/Struct.assign` but handles optional values more cleanly.
  *
  * **Example** (Self overrides defaults)
  *
@@ -106,7 +106,7 @@ export const prepend =
  *
  * - Use instead of the spread operator when you want to make explicit that the prototype of the
  *   left-hand side is dropped.
- * - Same as Effect's Struct.assign but handles optional values more cleanly.
+ * - Same as `effect/Struct.assign` but handles optional values more cleanly.
  *
  * **Example** (New fields override)
  *

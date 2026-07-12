@@ -1,12 +1,11 @@
 /**
- * Extensions to the Effect Array module providing predicates, indexed search, cardinality matching,
- * indexed (un)grouping, sorted-iterator merging/difference, and cycle-aware unfolding.
+ * Extensions to the `effect/Array` module providing predicates, indexed search, cardinality
+ * matching, indexed (un)grouping, sorted-iterator merging/difference, and cycle-aware unfolding.
  *
  * ## Mental model
  *
  * - **`Type<A>`** is just `ReadonlyArray<A>`; functions never mutate the input.
- * - All functions are **curried, data-last** — call as `MArray.fn(arg)(self)` or `pipe(self,
- *   MArray.fn(arg))`. They are not data-first/data-last dual.
+ * - All functions are **curried, data-last** — call as `pipe(self, MArray.fn(arg))`.
  * - Equality-based functions (e.g. {@link hasDuplicates}, {@link longestCommonSubArray},
  *   {@link differenceSorted}) compare with `Equal.equals`. The `*With` variants take an explicit
  *   `Equivalence`.
@@ -123,7 +122,7 @@ export const hasDuplicatesWith =
  * Returns `true` if `self` contains at least one duplicate, comparing elements with `Equal.equals`.
  *
  * - Use to validate uniqueness with default equality.
- * - Comparison uses Effect's `Equal.equals` (structural equality for `Equal`-aware types, otherwise
+ * - Comparison uses `effect/Equal.equals` (structural equality for `Equal`-aware types, otherwise
  *   `===`).
  *
  * **Example** (Detecting duplicates)

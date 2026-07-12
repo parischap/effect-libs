@@ -150,7 +150,7 @@ console.log(numberRounder(-12.457));
 
 ## 4. Debugging and equality
 
-`CVRoundingOption` objects implement `Effect` equivalence and equality based on equivalence and equality of the `precision` and `roundingMode` properties. They also implement a `.toString()` method. For instance:
+`CVRoundingOption` objects implement `effect` equivalence and equality based on equivalence and equality of the `precision` and `roundingMode` properties. They also implement a `.toString()` method. For instance:
 
 ```ts
 import { CVRoundingMode, CVRoundingOption } from "@parischap/conversions";

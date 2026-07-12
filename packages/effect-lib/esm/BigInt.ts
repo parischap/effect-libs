@@ -1,5 +1,5 @@
 /**
- * Extension to the Effect BigInt module providing safe constructors from primitives, parity
+ * Extension to the `effect/BigInt` module providing safe constructors from primitives, parity
  * predicates, and a base-10 logarithm.
  *
  * ## Mental model

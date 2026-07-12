@@ -254,17 +254,17 @@ console.log(pos1BasedAllColorsFormatterInValue1Context('foo'));
 
 Improved documentation.
 
-## 1.0.0 — Effect v4
+## 1.0.0 — `effect` v4
 
-> **Ported to Effect v4** (`effect@4.0.0-beta`)
+> **Ported to `effect` v4** (`effect@4.0.0-beta`)
 
-- Updated all internal Effect API calls to their Effect v4 equivalents.
+- Updated all internal `effect` API calls to their `effect` v4 equivalents.
 - **`ASColor` reorganized** into a `Color/` sub-folder; `ThreeBitColor`, `EightBitColor`, and `RgbColor` are now individually importable modules, improving tree-shaking significantly.
 - Removed low-level internal modules that were previously leaking into the public API (`AnsiString`, `StyleCharacteristics`, `Styles`). Their functionality is fully absorbed into `ASStyle` and `ASText`.
 
-## 0.2.0 — Mar 2025 (Effect 3.13.6)
+## 0.2.0 — Mar 2025 (`effect` 3.13.6)
 
-- Updated to Effect 3.13.6 and `@parischap/effect-lib` 0.5.0.
+- Updated to `effect` 3.13.6 and `@parischap/effect-lib` 0.5.0.
 - Minor API fixes and tree-shaking improvements (`"sideEffects": false`).
 
 ## 0.1.0 — Mar 2025

@@ -73,7 +73,7 @@ export class Type extends MEquivalenceBasedEqualityData.Class {
    *   `true` (e.g. the `Map` in `Map(2) { 'a' => 1, 'b' => 2 }`).
    *
    * The default implementation returns `'Function: <name>'` (or `'Function: (anonymous)'`) for
-   * functions, then tries Effect's `toJSON()._id` convention, then falls back to
+   * functions, then tries `effect`'s `toJSON()._id` convention, then falls back to
    * `value.constructor.name`. This transparently covers `Map`, `Set`, `WeakMap`, `WeakSet`, all
    * typed arrays, and user-defined classes.
    */

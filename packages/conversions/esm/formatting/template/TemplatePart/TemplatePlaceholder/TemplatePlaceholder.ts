@@ -433,11 +433,11 @@ export const number = <const N extends string>({
  *
  * `keyValuePairs` should define a bijection (each key and each value must be present only once). It
  * is best if the type of the values defines a toString method. Value equality is checked with The
- * Effect Equal.equals function.
+ * effect Equal.equals function.
  *
  * `schemaInstance` is a `Schema` instance that transforms a value of type T into a value of type T.
  * It is an optional parameter. You need only provide it if you intend to use a `CVTemplate` built
- * from this `CVTemplatePlaceholder` within the `Effect.Schema` module. In that case, you can build
+ * from this `CVTemplatePlaceholder` within the `effect/Schema` module. In that case, you can build
  * such a `Schema` with the `Schema.declare` function (if you don't provide it, the `Schema` will
  * return an error)
  *

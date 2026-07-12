@@ -1,6 +1,7 @@
 /**
- * Extension to the Effect Number module providing safe conversions from `bigint` and `BigDecimal`,
- * positive integer modulo, decimal shifting and truncation, and a few numeric predicates.
+ * Extension to the `effect/Number` module providing safe conversions from `bigint` and
+ * `BigDecimal`, positive integer modulo, decimal shifting and truncation, and a few numeric
+ * predicates.
  *
  * ## Mental model
  *

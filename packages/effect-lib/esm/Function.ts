@@ -1,5 +1,5 @@
 /**
- * Extension to the Effect Function module providing function introspection, lazy memoization,
+ * Extension to the `effect/Function` module providing function introspection, lazy memoization,
  * conditional application, and function-identity helpers.
  *
  * ## Mental model

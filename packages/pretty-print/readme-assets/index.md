@@ -70,7 +70,7 @@ console.log(pipe(toPrint, stringify, PPStringifiedValue.toAnsiString()));
 
 ![`util-inspect-like.svg`: image is not available](util-inspect-like.svg)
 
-Note how the Effect `HashMap` is pretty-printed without any extra configuration. By default `maxDepth` is `2`, so deeply nested values are replaced by a tag such as `[Object]`.
+Note how the `effect/HashMap` is pretty-printed without any extra configuration. By default `maxDepth` is `2`, so deeply nested values are replaced by a tag such as `[Object]`.
 
 ### `treeify` / `darkModeTreeify`
 
@@ -136,7 +136,7 @@ console.log(pipe(toPrint, stringify, PPStringifiedValue.toAnsiString()));
 
 ![`treeify.svg`: image is not available](treeify.svg)
 
-Note how the array and the Effect `HashMap` are treeified transparently.
+Note how the array and the `effect/HashMap` are treeified transparently.
 
 ## B) Circular-reference handling
 
@@ -375,7 +375,7 @@ Use `PPNonPrimitiveFormatter.make` for fully custom assembly.
 
 #### `showName` and `propertyNumberDisplayOption`
 
-`showName: true` prepends the value's type name to the header (e.g. `Map` in `Map(2) { 'a' => 1, 'b' => 2 }`). The name itself is derived by the `name` function of `PPParameters.Type` from the raw value: it returns `'Function: <name>'` for functions, then tries Effect's `toJSON()._id` convention, then falls back to `value.constructor.name` (which transparently covers `Map`, `Set`, `WeakMap`, `WeakSet`, all typed arrays and user-defined classes).
+`showName: true` prepends the value's type name to the header (e.g. `Map` in `Map(2) { 'a' => 1, 'b' => 2 }`). The name itself is derived by the `name` function of `PPParameters.Type` from the raw value: it returns `'Function: <name>'` for functions, then tries `effect`'s `toJSON()._id` convention, then falls back to `value.constructor.name` (which transparently covers `Map`, `Set`, `WeakMap`, `WeakSet`, all typed arrays and user-defined classes).
 
 `propertyNumberDisplayOption` controls whether and how property counts appear in the header. Property counts are wrapped in `propertyNumberOpeningMark` / `propertyNumberClosingMark`. Options:
 
@@ -544,9 +544,9 @@ See [`examples/with-property-filter-and-sort.ts`](examples/with-property-filter-
 
 Improved documentation.
 
-## 1.0.0 — Effect v4
+## 1.0.0 — effect v4
 
-> **Ported to Effect v4** (`effect@4.0.0-beta`). Complete API redesign — not backward-compatible with 0.3.x.
+> **Ported to effect v4** (`effect@4.0.0-beta`). Complete API redesign — not backward-compatible with 0.3.x.
 
 The central entry point is now `PPStringifier`, built from a `PPParameters` instance. Six pre-built `PPParameters` instances ship out of the box (`utilInspectLike`, `darkModeUtilInspectLike`, `treeify`, `darkModeTreeify`, `treeifyHideLeaves`, `darkModeTreeifyHideLeaves`). The full styling, bypassing, filtering, and formatting pipeline is individually accessible and replaceable.
 
@@ -557,11 +557,11 @@ Compared with 0.3.x:
 - **`PPByPasser`** API cleaned up (`empty`, `toStringable`, `allWithName`, `dateAndRegExp`, `merge`). Dates and regular expressions are now bypassed by default in the merge fallback.
 - **`PPPrimitiveFormatter`** replaces `PrimitiveFormatter`. Quote character, max string length, and number/bigint formatters are all configurable.
 - **`PPStringifiedValue`** gained `toUnstyledStrings` alongside `toAnsiString`.
-- Effect iterables (`HashMap`, `HashSet`, …) are natively supported in the pre-built parameter instances without any extra configuration.
+- effect iterables (`HashMap`, `HashSet`, …) are natively supported in the pre-built parameter instances without any extra configuration.
 - Circular references are tagged and displayed identically to `util.inspect` (`<Ref *N>` / `[Circular *N]`).
 - Added `PPPartName`, `PPValueOrder`, `PPPropertyNumberDisplayOption` for fine-grained control over property ordering and display.
 
-## 0.3.0 – Mar 2025 (Effect 3.13.6)
+## 0.3.0 – Mar 2025 (effect 3.13.6)
 
 Significant refactor — not backward-compatible with 0.2.x. The monolithic `Options` + `RecordFormatter` model was broken apart into composable pieces:
 

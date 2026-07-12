@@ -1,5 +1,5 @@
 /**
- * Extension to the Effect Record module providing unsafe field access and helpers for invoking
+ * Extension to the `effect/Record` module providing unsafe field access and helpers for invoking
  * zero-argument methods reflectively. Although it's possible to build a record whose key is a
  * literal type, e.g. 'a' | 'b', this possibility should never be used: if you know what the keys
  * are, use the Struct type instead.

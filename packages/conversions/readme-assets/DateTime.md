@@ -2,7 +2,7 @@
 
 # CVDateTime
 
-A very easy to use DateTime module that implements natively the Iso calendar (Iso year and Iso week). It is also faster than its `Effect` counterpart as it implements an internal state that's only used to speed up calculation times (but does not alter the result of functions; so `CVDateTime` functions can be viewed as pure from a user's perspective). It can therefore be useful in applications where time is of essence.
+A very easy to use DateTime module that implements natively the Iso calendar (Iso year and Iso week). It is also faster than its `effect` counterpart as it implements an internal state that's only used to speed up calculation times (but does not alter the result of functions; so `CVDateTime` functions can be viewed as pure from a user's perspective). It can therefore be useful in applications where time is of essence.
 
 </div>
 
@@ -12,7 +12,7 @@ This package implements an immutable `CVDateTime` object: once created, the char
 
 Although immutable when considered from the outer world, `CVDateTime` objects do keep an internal state that is only used to improve performance (but does not alter results). `CVDateTime` functions can therefore be regarded as pure: they will always yield the same result whatever the state the object is in.
 
-Unlike the Javascript `Date` objects and the `Effect.DateTime` objects, `CVDateTime` objects handle both
+Unlike the Javascript `Date` objects and the `effect/DateTime` objects, `CVDateTime` objects handle both
 the Gregorian and Iso calendars. So you can easily get/set the iso year and iso week of a
 `CVDateTime` object.
 

@@ -1,5 +1,5 @@
 /**
- * An extension to the `Effect.Schema` module that adds Schema instances for number and date
+ * An extension to the `effect/Schema` module that adds Schema instances for number and date
  * formatting and parsing and implements new brands
  */
 
@@ -136,7 +136,7 @@ export const DateFromCVDateTime: Schema.Codec<Date, CVDateTime.Type> = CVDateTim
 );
 
 /**
- * A `Schema` that transforms a `CVDateTime` into an `Effect.DateTime.Zoned`. Both objects share the
+ * A `Schema` that transforms a `CVDateTime` into an `effect/DateTime.Zoned`. Both objects share the
  * same time zone offset
  *
  * @category Utils
@@ -202,7 +202,7 @@ export const DateFromString = (
   CVDateTimeFromString(parser, formatter).pipe(Schema.decodeTo(DateFromCVDateTime));
 
 /**
- * A `Schema` that transforms a string into an `Effect.DateTime.Zoned` according to the given
+ * A `Schema` that transforms a string into an `effect/DateTime.Zoned` according to the given
  * `parser` and `formatter`. Read documentation of modules DateTimeParser.ts and
  * DateTimeFormatter.ts for more details.
  *

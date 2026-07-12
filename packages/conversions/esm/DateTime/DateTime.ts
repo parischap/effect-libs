@@ -5,7 +5,7 @@
  * always yield the same result whatever the state the object is in. The state is only used to
  * improve performance but does not alter the results.
  *
- * Unlike the JavaScript `Date` objects and the Effect `DateTime` objects, `CVDateTime` objects
+ * Unlike the JavaScript `Date` objects and the `effect/DateTime` objects, `CVDateTime` objects
  * handle both the Gregorian and Iso calendars. So you can easily get/set the iso year and iso week
  * of a `CVDateTime` object.
  *
@@ -889,7 +889,7 @@ export const fromPartsOrThrow: (parts: CVDateTimeParts.Type) => Type = flow(
 export const fromDate = (date: Date): Type => fromTimestampOrThrow(date.getTime());
 
 /**
- * Builds a `CVDateTime` from an `Effect.DateTime.Zoned`
+ * Builds a `CVDateTime` from an `effect/DateTime.Zoned`
  *
  * @category Constructors
  */
@@ -904,7 +904,7 @@ export const fromEffectDateTime = (date: DateTime.Zoned): Type =>
 export const toDate = (self: Type): Date => new Date(timestamp(self));
 
 /**
- * Builds an `Effect.DateTime.Zoned` from a `CVDateTime`
+ * Builds an `effect/DateTime.Zoned` from a `CVDateTime`
  *
  * @category Utils
  */

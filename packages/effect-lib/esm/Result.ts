@@ -1,13 +1,12 @@
 /**
- * Extension to the Effect Result module providing optional-error recovery, flattening, and lifting
- * into `Effect`.
+ * Extension to the `effect/Result` module providing optional-error recovery and flattening.
  *
  * ## Mental model
  *
  * - **`Result.Result<A, E>`** is a synchronous, retry-free `Either`-like sum type with success `A`
  *   and failure `E`.
  * - This module focuses on small bridges: collapse a missing-element failure into an `Option`,
- *   flatten nested `Result`'s, and lift into `Effect`.
+ *   flatten nested `Result`'s.
  *
  * ## Common tasks
  *

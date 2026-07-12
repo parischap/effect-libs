@@ -1,5 +1,5 @@
 /**
- * Extension to the Effect String module: stringification of unknown / primitive values, indexed
+ * Extension to the `effect/String` module: stringification of unknown / primitive values, indexed
  * search, custom-character trimming, padding, splitting (including bit-aligned chunking), indented
  * multi-line formatting, and lightweight string predicates (SemVer, e-mail, digit, …).
  *
@@ -75,6 +75,17 @@ import * as MRegExpString from '../RegExpString.js';
 import * as MTuple from '../Tuple.js';
 import * as MStringFillPosition from './StringFillPosition.js';
 import * as MStringSearchResult from './StringSearchResult.js';
+
+export const f = (x: number) =>
+  Option.map(Option.liftPredicate(x, Number.isGreaterThanOrEqualTo(4)), Number.multiply(2));
+
+export const f1 = (x: number) =>
+  pipe(x, Option.liftPredicate(Number.isGreaterThanOrEqualTo(4)), Option.map(Number.multiply(2)));
+
+export const f3 = flow(
+  Option.liftPredicate(Number.isGreaterThanOrEqualTo(4)),
+  Option.map(Number.multiply(2)),
+);
 
 /**
  * Type on which this module's functions operate

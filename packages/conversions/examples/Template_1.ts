@@ -43,7 +43,7 @@ const parser = CVTemplateParser.fromTemplate(template);
 // }, MInputError.Type>
 const parse = CVTemplateParser.parse(parser);
 
-// Let's define a parse function that throws for non Effect users.
+// Let's define a parse function that throws for non-`effect` users.
 // Type: (value: string) => {
 //    readonly name: string;
 //    readonly age: number;
@@ -62,7 +62,7 @@ const formatter = CVTemplateFormatter.fromTemplate(template);
 //   }) => Result.Result<string, MInputError.Type>
 const format = CVTemplateFormatter.format(formatter);
 
-// Let's define a formatter that throws for Effect users.
+// Let's define a formatter that throws for `effect` users.
 // Type: (value: {
 //    readonly name: string;
 //    readonly age: number;

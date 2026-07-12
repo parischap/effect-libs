@@ -1,5 +1,5 @@
 /**
- * Extension to the Effect Predicate module providing type-level utilities for predicates and
+ * Extension to the `effect/Predicate` module providing type-level utilities for predicates and
  * refinements, an enhanced struct predicate, a strict-equality predicate constructor, and runtime
  * guards for the container/primitive shapes defined in `MTypes`.
  *

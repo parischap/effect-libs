@@ -31,7 +31,7 @@ const ungroupedUkStyleParser = pipe(
   CVNumberBase10Parser.parseAsNumber,
 );
 
-// Let's define a parser that throws for non Effect users
+// Let's define a parser that throws for non-`effect` users
 // Type: (value: string ) => number
 const throwingParser = pipe(
   ukStyleUngroupedNumber,

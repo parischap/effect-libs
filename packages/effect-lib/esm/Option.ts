@@ -1,12 +1,12 @@
 /**
- * Extension to the Effect Option module providing interoperability with nullable values, JavaScript
- * iterators, and `Effect`.
+ * Extension to the `effect/Option` module providing interoperability with nullable values and
+ * JavaScript iterators.
  *
  * ## Mental model
  *
  * - **`Option.Option<A>`** is a sum of `Some<A>` and `None`.
- * - This module focuses on bridging `Option` with non-Effect-aware shapes (nullable values, raw
- *   iterators) and lifting it into `Effect`.
+ * - This module focuses on bridging `Option` with non-`effect`-aware shapes (nullable values and raw
+ *   iterators).
  *
  * ## Common tasks
  *

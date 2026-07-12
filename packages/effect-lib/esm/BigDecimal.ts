@@ -1,5 +1,5 @@
 /**
- * Extension to the Effect BigDecimal module providing safe constructors from primitives and
+ * Extension to the `effect/BigDecimal` module providing safe constructors from primitives and
  * truncation utilities.
  *
  * ## Mental model

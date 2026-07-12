@@ -4,7 +4,7 @@
  * ## Mental model
  *
  * - **`Class`** extends `Pipeable.Class` and implements `Inspectable.Inspectable`. It is the
- *   recommended root class for value objects in Effect-based packages.
+ *   recommended root class for value objects in `effect`-based packages.
  * - Subclasses must implement `[idSymbol]`, returning either a string identifier (used as `_id` in
  *   the JSON view) or a function producing a fully custom string representation.
  * - `Class` does **not** implement `Equal.Equal`; for value-based equality, extend

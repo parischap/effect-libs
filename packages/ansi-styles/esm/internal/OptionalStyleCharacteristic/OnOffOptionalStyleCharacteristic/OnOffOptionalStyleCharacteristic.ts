@@ -90,5 +90,5 @@ const _equivalence: Equivalence.Equivalence<Option.Option<boolean>> = Option.mak
  *
  * @category Equivalences
  */
-export const equivalence = <T extends Type>(self: T, that: T) =>
+export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
   _equivalence(self.value, that.value);

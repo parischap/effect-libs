@@ -2,7 +2,7 @@
 
 # CVNumberBase10Format
 
-A safe, easy-to-use number/BigDecimal parser/formatter with almost all the options offered by the javascript INTL namespace: choice of the thousand separator, of the fractional separator, of the minimum and maximum number of fractional digits, of the rounding mode, of the sign display mode, of whether to show or not the integer part when it's zero, of whether to use a scientific or engineering notation, of the character to use as exponent mark... It can also be used as a `Schema` instead of the `Effect.Schema.NumberFromString` transformer.
+A safe, easy-to-use number/BigDecimal parser/formatter with almost all the options offered by the javascript INTL namespace: choice of the thousand separator, of the fractional separator, of the minimum and maximum number of fractional digits, of the rounding mode, of the sign display mode, of whether to show or not the integer part when it's zero, of whether to use a scientific or engineering notation, of the character to use as exponent mark... It can also be used as a `Schema` instead of the `effect/Schema.NumberFromString` transformer.
 
 </div>
 
@@ -32,7 +32,7 @@ const ungroupedUkStyleParser = CVNumberBase10Format.toRealParser(
 	ukStyleUngroupedNumber,
 );
 
-// Let's define a parser that throws for non Effect users
+// Let's define a parser that throws for non-`effect` users
 // Type: (value: string ) => CVReal.Type
 const throwingParser = CVNumberBase10Format.toThrowingRealParser(
 	ukStyleUngroupedNumber,

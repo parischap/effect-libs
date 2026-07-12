@@ -2,25 +2,25 @@
 
 # Packages
 
-This monorepo publishes the four libraries listed below. Each is its own npm package with its own version, README, examples and `docgen` documentation.
+This monorepo publishes the four libraries listed below. Each is its own `npm` package with its own version, README, examples and `docgen` documentation.
 
-| Package                                                                                               | Prefix | Description                                                                                                                                                                                                                                                                 |
-| ----------------------------------------------------------------------------------------------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`@parischap/effect-lib`](https://github.com/parischap/effect-libs/tree/main/packages/effect-lib)     | `M`    | Extensions to the official `Effect` library: extra utilities for `Array`, `Option`, `Either`, `String`, `Match`, `Tree`, plus a few new modules of our own.                                                                                                                 |
-| [`@parischap/ansi-styles`](https://github.com/parischap/effect-libs/tree/main/packages/ansi-styles)   | `AS`   | Functional terminal styling with ANSI colors and formats. Honors the [`NO_COLOR`](https://no-color.org/) standard.                                                                                                                                                          |
-| [`@parischap/conversions`](https://github.com/parischap/effect-libs/tree/main/packages/conversions)   | `CV`   | A partial, safer, bidirectional rewrite of the native `Intl` API: number/`BigDecimal` rounding, number and `DateTime` parsing/formatting, `sprintf`/`sscanf` templating, and a few handy `Brand`'s (email, SemVer, integers, real numbers). All also exposed as `Schema`'s. |
-| [`@parischap/pretty-print`](https://github.com/parischap/effect-libs/tree/main/packages/pretty-print) | `PP`   | A non-recursive, fully configurable rewrite of `util.inspect` for Node.js or the browser. Supports treeifying, coloring, sorting, filtering and Effect iterables (`HashMap`, `HashSet`, …) out of the box.                                                                  |
+| Package                                                                                               | Prefix | Description                                                                                                                                                                                                                                                                                                                      |
+| ----------------------------------------------------------------------------------------------------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`@parischap/effect-lib`](https://github.com/parischap/effect-libs/tree/main/packages/effect-lib)     | `M`    | Extension to the official `effect` package: extra utilities for `Array`, `BigDecimal`, `BigInt`, `Chunk`, `Number`, `Option`, `Result`, `String`, `Struct` plus a simpler pattern-matching module `Match`, a `Cache` with capacity and TTL that can be used out of an Effect, a regular expression builder, a cycle-safe `Tree`. |
+| [`@parischap/ansi-styles`](https://github.com/parischap/effect-libs/tree/main/packages/ansi-styles)   | `AS`   | Functional terminal styling with ANSI colors and formats.                                                                                                                                                                                                                                                                        |
+| [`@parischap/conversions`](https://github.com/parischap/effect-libs/tree/main/packages/conversions)   | `CV`   | A partial, safer, bidirectional rewrite of the native `Intl` API: number/`BigDecimal` rounding, number and `DateTime` parsing/formatting, `sprintf`/`sscanf` templating. All also exposed as `Schema`'s.                                                                                                                         |
+| [`@parischap/pretty-print`](https://github.com/parischap/effect-libs/tree/main/packages/pretty-print) | `PP`   | A non-recursive, fully configurable rewrite of `util.inspect` for Node.js or the browser. Supports treeifying, coloring, sorting, filtering and `effect` iterables (`HashMap`, `HashSet`, …) out of the box.                                                                                                                     |
 
-## `@parischap/effect-lib` — extensions to `Effect`
+## `@parischap/effect-lib` — extensions to `effect`
 
-The base library used by every other package in this monorepo. Each module follows the `M`-prefix convention (e.g. `MArray`, `MOption`, `MMatch`) so it can be imported alongside its `Effect` counterpart without name collisions. Highlights:
+The base library used by every other package in this monorepo. Each module follows the `M`-prefix convention (e.g. `MArray`, `MOption`, `MMatch`) so it can be imported alongside its `effect` counterpart without name collisions. Highlights:
 
 - **`MMatch`** — a lightweight, type-safe pattern-matcher with exhaustiveness checking, predicate matching, `whenOr`, `whenAnd` and `tryFunction`.
 - **`MTree`** — a recursive tree/forest data structure with `fold`, `map`, `reduce` and a cycle-safe `unfold`.
 - **`MCache`** — a time-limited, capacity-bounded LRU cache built on `effect/Cache` with a configurable `lifeSpan`.
 - **`MTypes`** / **`MPredicate`** — foundational primitive and container types and runtime guards (`isSingleton`, `isPair`, `isOverOne`, …).
-- Extensions to most core `Effect` modules: `MArray`, `MBigDecimal`, `MBigInt`, `MChunk`, `MEither`, `MFunction`, `MJson`, `MNumber`, `MOption`, `MRecord`, `MRegExp`, `MString`, `MStruct`, `MTuple`.
-- Tagged errors (`MInputError`, `MPortError`) for validation and porting non-`Effect` code.
+- Extensions to some core `effect` modules: `MArray`, `MBigDecimal`, `MBigInt`, `MChunk`, `MResult`, `MFunction`, `MNumber`, `MOption`, `MRecord`, `MRegExp`, `MString`, `MStruct`, `MTuple`.
+- Tagged errors (`MInputError`, `MPortError`) for validation and porting non-`effect` code.
 
 ## `@parischap/ansi-styles` — terminal styling
 
@@ -32,7 +32,7 @@ Build styled terminal output by composing small, immutable `ASStyle` values. Sty
 
 ## `@parischap/conversions` — `Intl` replacement
 
-A bidirectional, machine-independent set of utilities for working with numbers and dates. Most operations return a `Result` or `Option`; an `OrThrow` variant is provided for non-`Effect` users. Contains:
+A bidirectional, machine-independent set of utilities for working with numbers and dates. Most operations return a `Result` or `Option`; an `OrThrow` variant is provided for non-`effect` users. Contains:
 
 - A **rounder** for `number` and `BigDecimal` with the same modes as `Intl` (Ceil, Floor, Expand, Trunc, HalfCeil, …).
 - A **number parser/formatter** with full control over thousand and fractional separators, fractional-digit bounds, sign display, scientific/engineering notation and exponent mark. Also usable as a `Schema`.
@@ -49,7 +49,7 @@ A non-recursive stringifier for arbitrary JavaScript values. Built around a sing
 - `treeify` / `darkModeTreeify` — renders a value as an indented tree, with or without colors.
 - `treeifyHideLeaves` / `darkModeTreeifyHideLeaves` — same as above but skips leaf values, useful to display a structure's shape.
 
-For everything else (custom property filters, sort orders, primitive formatters, byPassers, depth limits, circularity handling, custom style maps, …) every aspect of the output is overridable through the `PPParameters` API. Effect iterables such as `HashMap` and `HashSet` are supported natively.
+For everything else (custom property filters, sort orders, primitive formatters, byPassers, depth limits, circularity handling, custom style maps, …) every aspect of the output is overridable through the `PPParameters` API. `effect` iterables such as `HashMap` and `HashSet` are supported natively.
 
 # Dependency graph
 
@@ -69,7 +69,7 @@ Concretely:
 
 # Naming conventions
 
-Every published package exposes its modules under a fixed prefix to avoid collisions with `Effect` and with each other:
+Every published package exposes its modules under a fixed prefix to avoid collisions with `effect` and with each other:
 
 | Prefix | Package                   |
 | ------ | ------------------------- |

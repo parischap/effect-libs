@@ -3,7 +3,7 @@
  * value. A `PPValueOrder` can be used as the `propertySortOrder` field of a
  * `PPNonPrimitiveParameters` so that properties are sorted before being formatted. Several
  * pre-built orderings are provided (by prototypal depth, by key, by callability, by key type, by
- * enumerability, by source). They can be combined with `Order.combine` from the Effect library if a
+ * enumerability, by source). They can be combined with `Order.combine` from the `effect` library if a
  * multi-criteria order is needed.
  */
 

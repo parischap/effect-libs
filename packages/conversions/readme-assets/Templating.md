@@ -2,7 +2,7 @@
 
 # CVTemplate
 
-An equivalent to the PHP sprintf and sscanf functions with real typing of the placeholders. Although `Effect.Schema` does offer the [`TemplateLiteralParser` API](https://effect.website/docs/schema/basic-usage/#templateliteralparser), the latter does not provide a solution to situations such as fixed length fields (potentially padded), numbers formatted otherwise than in the English format... This module can also be used as a `Schema`.
+An equivalent to the PHP sprintf and sscanf functions with real typing of the placeholders. Although `effect/Schema` does offer the [`TemplateLiteralParser` API](https://effect.website/docs/schema/basic-usage/#templateliteralparser), the latter does not provide a solution to situations such as fixed length fields (potentially padded), numbers formatted otherwise than in the English format... This module can also be used as a `Schema`.
 
 </div>
 
@@ -55,7 +55,7 @@ const template = CVTemplate.make(
 // }, MInputError.Type>
 const parser = CVTemplate.toParser(template);
 
-// Let's define a parser that throws for Effect users.
+// Let's define a parser that throws for `effect` users.
 // Type: (value: string) => {
 //    readonly name: string;
 //    readonly age: CVReal.Type;
@@ -71,7 +71,7 @@ const throwingParser = CVTemplate.toThrowingParser(template);
 //   }) => Either.Either<string, MInputError.Type>
 const formatter = CVTemplate.toFormatter(template);
 
-// Let's define a formatter that throws for Effect users.
+// Let's define a formatter that throws for `effect` users.
 // Type: (value: {
 //    readonly name: string;
 //    readonly age: CVReal.Type;

@@ -1,6 +1,6 @@
 /**
  * Tagged error type used to capture exceptions thrown by native JavaScript functions when those
- * functions are ported to the Effect world (e.g. `JSON.parse`, `JSON.stringify`).
+ * functions are ported to the `effect` world (e.g. `JSON.parse`, `JSON.stringify`).
  *
  * ## Mental model
  *
