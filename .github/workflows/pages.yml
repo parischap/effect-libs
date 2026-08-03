@@ -23,17 +23,12 @@ jobs:
         uses: actions/checkout@v6.0.2
         with:
           repository: parischap/mytsdevs
+          ref: effect-libs-${{ github.event.inputs.release_tag }}
           token: ${{ secrets.MYTSDEVS_PAT }}
           submodules: recursive
-      - name: Pin package to ref
-        run: |
-          git -C packages/effect-libs fetch origin --tags
-          git -C packages/effect-libs checkout ${{ github.event.inputs.release_tag }}
-          
       - name: Setup pnpm
         uses: pnpm/action-setup@v6.0.8
         with:
-          version: 11.18.0
           run_install: true
       - name: Install Node.js
         uses: actions/setup-node@v6.4.0

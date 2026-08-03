@@ -21,10 +21,14 @@ jobs:
           repository: parischap/mytsdevs
           token: ${{ secrets.MYTSDEVS_PAT }}
           submodules: recursive
+      - name: Checkout effect-libs at pushed commit
+        run: |
+          git -C packages/effect-libs fetch origin --tags
+          git -C packages/effect-libs checkout ${{ github.sha }}
+          
       - name: Setup pnpm
         uses: pnpm/action-setup@v6.0.8
         with:
-          version: 11.18.0
           run_install: true
       - name: Install Node.js
         uses: actions/setup-node@v6.4.0
