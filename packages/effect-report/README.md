@@ -3,7 +3,7 @@
 <!-- LTeX: language=en-US -->
 # effect-report
 
-A functional library to prettify Effect logging
+A functional library to prettify effect logging
 
 
 # [&rarr; GETTING STARTED](readme-assets/index.md)
@@ -13,3 +13,7 @@ A functional library to prettify Effect logging
 [Any donations would be much appreciated](https://ko-fi.com/parischap) 😄
 
 Please star the repo if you find it useful!
+
+# &rarr; LICENSE
+
+MIT © Jérôme MARTIN ([@parischap](https://github.com/parischap))

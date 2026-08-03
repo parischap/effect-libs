@@ -13,3 +13,7 @@ An Effect playground
 [Any donations would be much appreciated](https://ko-fi.com/parischap) 😄
 
 Please star the repo if you find it useful!
+
+# &rarr; LICENSE
+
+MIT © Jérôme MARTIN ([@parischap](https://github.com/parischap))

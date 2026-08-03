@@ -13,3 +13,7 @@ A complement to the official @effect/platform library with add-ons for Node.js
 [Any donations would be much appreciated](https://ko-fi.com/parischap) 😄
 
 Please star the repo if you find it useful!
+
+# &rarr; LICENSE
+
+MIT © Jérôme MARTIN ([@parischap](https://github.com/parischap))

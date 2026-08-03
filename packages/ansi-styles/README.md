@@ -3,22 +3,17 @@
 <!-- LTeX: language=en-US -->
 # ansi-styles
 
-An Effect library for ANSI terminal output styling.
+An effect library for ANSI terminal output styling.
 All exports follow the `AS`-prefix naming convention to avoid name collisions with other libraries;
 
 Platform-independent, well tested and documented, optimized for tree-shaking, 100% Typescript, 100% functional.
 
-Can also be used by non-`Effect` users.
+Can also be used by non-effect users.
 
 # [&rarr; API](https://effect-libs-docs.netlify.app/0.1.3/docs/ansi-styles)
 
 # [&rarr; GETTING STARTED](readme-assets/index.md)
 
-# &rarr; DONATE
-
-[Any donations would be much appreciated](https://ko-fi.com/parischap) 😄
-
-Please star the repo if you find it useful!
 
 # &rarr; INSTALLING
 
@@ -57,3 +52,12 @@ and namespace imports from individual modules (recommended when tree-shaking mat
 ```ts
 import * as ASColor from '@parischap/pretty-print/ASColor';
 ```
+# &rarr; DONATE
+
+[Any donations would be much appreciated](https://ko-fi.com/parischap) 😄
+
+Please star the repo if you find it useful!
+
+# &rarr; LICENSE
+
+MIT © Jérôme MARTIN ([@parischap](https://github.com/parischap))

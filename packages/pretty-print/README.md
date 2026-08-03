@@ -3,22 +3,17 @@
 <!-- LTeX: language=en-US -->
 # pretty-print
 
-An Effect library that produces the string representation of any JavaScript value. Similar to `util.inspect` but with extensive configurability: treeifying, coloring, sorting, filtering, choosing what to display and how to display it... Handles all Effect iterables such as `HashMap` and `HashSet` natively.
+An effect library that produces the string representation of any JavaScript value. Similar to `util.inspect` but with extensive configurability: treeifying, coloring, sorting, filtering, choosing what to display and how to display it... Handles all effect iterables such as `HashMap` and `HashSet` natively.
 All exports follow the `PP`-prefix naming convention to avoid name collisions with other libraries;
 
 Platform-independent, well tested and documented, optimized for tree-shaking, 100% Typescript, 100% functional.
 
-Can also be used by non-`Effect` users.
+Can also be used by non-`effect` users.
 
 # [&rarr; API](https://effect-libs-docs.netlify.app/0.1.3/docs/pretty-print)
 
 # [&rarr; GETTING STARTED](readme-assets/index.md)
 
-# &rarr; DONATE
-
-[Any donations would be much appreciated](https://ko-fi.com/parischap) 😄
-
-Please star the repo if you find it useful!
 
 # &rarr; INSTALLING
 
@@ -57,3 +52,12 @@ and namespace imports from individual modules (recommended when tree-shaking mat
 ```ts
 import * as PPByPasser from '@parischap/pretty-print/PPByPasser';
 ```
+# &rarr; DONATE
+
+[Any donations would be much appreciated](https://ko-fi.com/parischap) 😄
+
+Please star the repo if you find it useful!
+
+# &rarr; LICENSE
+
+MIT © Jérôme MARTIN ([@parischap](https://github.com/parischap))
