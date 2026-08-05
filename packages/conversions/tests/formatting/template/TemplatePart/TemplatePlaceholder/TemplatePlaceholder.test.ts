@@ -148,6 +148,10 @@ describe('CVTemplatePlaceholder', () => {
           );
         });
 
+        it('Not passing: non-finite number', () => {
+          TestUtils.assertFailure(placeholder.formatter(NaN));
+        });
+
         it('Passing', () => {
           TestUtils.assertSuccess(placeholder.formatter(34), '+34');
           TestUtils.assertSuccess(placeholder.formatter(-4), '-04');
@@ -185,8 +189,14 @@ describe('CVTemplatePlaceholder', () => {
         });
       });
 
-      it('Formatting', () => {
-        TestUtils.assertSuccess(placeholder.formatter(1014.1256), '1 014,126');
+      describe('Formatting', () => {
+        it('Not passing: non-finite number', () => {
+          TestUtils.assertFailure(placeholder.formatter(NaN));
+        });
+
+        it('Passing', () => {
+          TestUtils.assertSuccess(placeholder.formatter(1014.1256), '1 014,126');
+        });
       });
     });
   });

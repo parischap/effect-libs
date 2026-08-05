@@ -122,7 +122,7 @@ export class Type<out PlaceholderTypes extends MTypes.Object> extends MData.Clas
     return new Type({
       description: `${syntheticDescription} parser\n\n${placeholderDescription}`,
       parse,
-      parseOrThrow: Function.compose(parse, Result.getOrThrowWith(Function.identity)),
+      parseOrThrow: flow(parse, Result.getOrThrowWith(Function.identity)),
     });
   }
 

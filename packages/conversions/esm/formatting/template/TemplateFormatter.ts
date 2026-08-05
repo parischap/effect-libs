@@ -5,7 +5,7 @@
  * directly from `CVTemplatePart`'s
  */
 
-import { pipe } from 'effect';
+import { pipe,flow } from 'effect';
 import * as Function from 'effect/Function';
 import * as Option from 'effect/Option';
 import * as Record from 'effect/Record';
@@ -95,7 +95,7 @@ export class Type<in PlaceholderTypes extends MTypes.Object> extends MData.Class
     return new Type({
       description: `${syntheticDescription} formatter\n\n${placeholderDescription}`,
       format,
-      formatOrThrow: Function.compose(format, Result.getOrThrowWith(Function.identity)),
+      formatOrThrow: flow(format, Result.getOrThrowWith(Function.identity)),
     });
   }
 

@@ -16,11 +16,19 @@ const ukStyleNumberWithEngineeringNotation = pipe(
 const { frenchStyleInteger } = CVNumberBase10Format;
 
 // Let's define a formatter
-// Type: (value: BigDecimal | number) => string
+// Type: (value: BigDecimal | number) => Option.Option<string>
 const ukStyleWithEngineeringNotationFormatter = pipe(
   ukStyleNumberWithEngineeringNotation,
   CVNumberBase10Formatter.fromFormat,
   CVNumberBase10Formatter.format,
+);
+
+// Let's define a formatter that throws for non-`effect` users
+// Type: (value: BigDecimal | number) => string
+const throwingFormatter = pipe(
+  ukStyleNumberWithEngineeringNotation,
+  CVNumberBase10Formatter.fromFormat,
+  CVNumberBase10Formatter.formatOrThrow,
 );
 
 // Let's define a parser
@@ -39,8 +47,14 @@ const throwingParser = pipe(
   CVNumberBase10Parser.parseAsNumberOrThrow,
 );
 
-// Result: '10.341e3'
+// Result: { _id: 'Option', _tag: 'Some', value: '10.341e3' }
 console.log(ukStyleWithEngineeringNotationFormatter(10_340.548));
+
+// Result: { _id: 'Option', _tag: 'None' }
+console.log(ukStyleWithEngineeringNotationFormatter(Infinity));
+
+// Result: '10.341e3'
+console.log(throwingFormatter(10_340.548));
 
 // result: { _id: 'Option', _tag: 'Some', value: 10340.548 }
 console.log(ungroupedUkStyleParser('10340.548'));

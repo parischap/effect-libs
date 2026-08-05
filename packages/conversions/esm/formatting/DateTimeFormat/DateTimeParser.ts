@@ -3,7 +3,7 @@
  * `CVDateTime` according to the passed `CVDateTimeFormat` and `CVDateTimeFormatContext`.
  */
 
-import { pipe } from 'effect';
+import { pipe , flow} from 'effect';
 import * as Function from 'effect/Function';
 import * as Result from 'effect/Result';
 import * as Struct from 'effect/Struct';
@@ -82,7 +82,7 @@ export class Type extends MData.Class {
         MString.append(`' parser in '${context.name}' context`),
       ),
       parse,
-      parseOrThrow: Function.compose(parse, Result.getOrThrowWith(Function.identity)),
+      parseOrThrow: flow(parse, Result.getOrThrowWith(Function.identity)),
     });
   }
 

@@ -49,14 +49,18 @@ export class Type extends MData.Class {
   /**
    * Function that formats a `number` respecting the options represented by the CVNumberBase10Format
    * from which `this` was constructed. If successful, that function returns a `some` of the
-   * formatted number. Otherwise, it returns a `none`. `number` can be of type number or
-   * `BigDecimal` for better accuracy. There is a difference between number and `BigDecimal` (and
-   * bigint) regarding the sign of 0. In Javascript, Object.is(0,-0) is false whereas Object.is(0n,-
-   * 0n) is true. So if the sign of zero is important to you, prefer passing a number to the
-   * function. `0` as a BigDecimal will always be interpreted as a positive `0` as we have no means
-   * of knowing if it is negative or positive
+   * formatted number. Otherwise, it returns a `none` (it will return a `none` only if `number` is
+   * not a finite number, i.e. `NaN` or `Infinity`). `number` can be of type number or `BigDecimal`
+   * for better accuracy. There is a difference between number and `BigDecimal` (and bigint)
+   * regarding the sign of 0. In Javascript, Object.is(0,-0) is false whereas Object.is(0n,- 0n) is
+   * true. So if the sign of zero is important to you, prefer passing a number to the function. `0`
+   * as a BigDecimal will always be interpreted as a positive `0` as we have no means of knowing if
+   * it is negative or positive
    */
-  readonly format: MTypes.OneArgFunction<BigDecimal.BigDecimal | number, string>;
+  readonly format: MTypes.OneArgFunction<BigDecimal.BigDecimal | number, Option.Option<string>>;
+
+  /** Same as `format` but throws instead of returning a `none` in case of failure */
+  readonly formatOrThrow: MTypes.OneArgFunction<BigDecimal.BigDecimal | number, string>;
 
   /** Returns the `id` of `this` */
   [MData.idSymbol](): string | (() => string) {
@@ -101,66 +105,77 @@ export class Type extends MData.Class {
     const fractionalSeparatorPrepender = MString.prepend(numberFormat.fractionalSeparator);
     const thousandSeparatorIntersperser = Array.intersperse(numberFormat.thousandSeparator);
     const { showNullIntegerPart } = numberFormat;
+    this.format = (number) =>
+      Option.gen(function* () {
+        const [sign, thisAsBigDecimal] = Predicate.isNumber(number)
+          ? yield* pipe(
+              number,
+              Option.liftPredicate(Number.isFinite),
+              Option.map((finite) =>
+                Tuple.make(
+                  finite < 0 || Object.is(-0, finite) ? (-1 as const) : (1 as const),
+                  BigDecimal.fromNumberUnsafe(finite),
+                ),
+              ),
+            )
+          : Tuple.make(number.value < 0 ? (-1 as const) : (1 as const), number);
 
-    this.format = (number) => {
-      const [sign, thisAsBigDecimal] = Predicate.isNumber(number)
-        ? Tuple.make(
-            number < 0 || Object.is(-0, number) ? (-1 as const) : (1 as const),
-            BigDecimal.fromNumberUnsafe(number),
-          )
-        : Tuple.make(number.value < 0 ? (-1 as const) : (1 as const), number);
+        const [adjusted, exponent] = mantissaAdjuster(thisAsBigDecimal);
+        const absRounded = pipe(adjusted, rounder, BigDecimal.abs);
+        const [integerPart, fractionalPart] = pipe(
+          absRounded,
+          MBigDecimal.truncatedAndFollowingParts(),
+        );
 
-      const [adjusted, exponent] = mantissaAdjuster(thisAsBigDecimal);
-      const absRounded = pipe(adjusted, rounder, BigDecimal.abs);
-      const [integerPart, fractionalPart] = pipe(
-        absRounded,
-        MBigDecimal.truncatedAndFollowingParts(),
-      );
+        const signString = signFormatter({ sign, isZero: BigDecimal.isZero(absRounded) });
 
-      const signString = signFormatter({ sign, isZero: BigDecimal.isZero(absRounded) });
+        const normalizedFractionalPart = BigDecimal.normalize(fractionalPart);
 
-      const normalizedFractionalPart = BigDecimal.normalize(fractionalPart);
+        const fractionalPartString = pipe(
+          normalizedFractionalPart.value,
+          Option.liftPredicate(Predicate.not(MPredicate.strictEquals(0n))),
+          Option.map(MString.fromNonNullablePrimitive),
+          Option.getOrElse(MFunction.constEmptyString),
+          String.padStart(normalizedFractionalPart.scale, '0'),
+          fractionalPartPadder,
+          Option.liftPredicate(String.isNonEmpty),
+          Option.map(fractionalSeparatorPrepender),
+          Option.getOrElse(MFunction.constEmptyString),
+        );
 
-      const fractionalPartString = pipe(
-        normalizedFractionalPart.value,
-        Option.liftPredicate(Predicate.not(MPredicate.strictEquals(0n))),
-        Option.map(MString.fromNonNullablePrimitive),
-        Option.getOrElse(MFunction.constEmptyString),
-        String.padStart(normalizedFractionalPart.scale, '0'),
-        fractionalPartPadder,
-        Option.liftPredicate(String.isNonEmpty),
-        Option.map(fractionalSeparatorPrepender),
-        Option.getOrElse(MFunction.constEmptyString),
-      );
-
-      const integerPartString = pipe(
-        integerPart.value.toString(),
-        MFunction.fIfTrue({
-          condition: hasThousandSeparator,
-          f: flow(
-            MString.splitEquallyRestAtStart(MRegExpString.DIGIT_GROUP_SIZE),
-            thousandSeparatorIntersperser,
-            Array.join(''),
-          ),
-        }),
-        Result.liftPredicate(
-          Predicate.not(MPredicate.strictEquals('0')),
+        const integerPartString = pipe(
+          integerPart.value.toString(),
           MFunction.fIfTrue({
-            condition: !showNullIntegerPart && fractionalPartString.length > 0,
-            f: MFunction.constEmptyString,
+            condition: hasThousandSeparator,
+            f: flow(
+              MString.splitEquallyRestAtStart(MRegExpString.DIGIT_GROUP_SIZE),
+              thousandSeparatorIntersperser,
+              Array.join(''),
+            ),
           }),
-        ),
-        Result.merge,
-      );
+          Result.liftPredicate(
+            Predicate.not(MPredicate.strictEquals('0')),
+            MFunction.fIfTrue({
+              condition: !showNullIntegerPart && fractionalPartString.length > 0,
+              f: MFunction.constEmptyString,
+            }),
+          ),
+          Result.merge,
+        );
 
-      const exponentString = pipe(
-        exponent,
-        Option.map(flow(MString.fromNumber(10), MString.prepend(eNotationChar))),
-        Option.getOrElse(MFunction.constEmptyString),
-      );
+        const exponentString = pipe(
+          exponent,
+          Option.map(flow(MString.fromNumber(10), MString.prepend(eNotationChar))),
+          Option.getOrElse(MFunction.constEmptyString),
+        );
 
-      return `${signString}${integerPartPadder(integerPartString)}${fractionalPartString}${exponentString}`;
-    };
+        return `${signString}${integerPartPadder(integerPartString)}${fractionalPartString}${exponentString}`;
+      });
+
+    this.formatOrThrow = flow(
+      this.format,
+      Option.getOrThrowWith(() => new Error('Only finite numbers can be formatted')),
+    );
   }
 
   /** Returns the TypeMarker of the class */
@@ -189,3 +204,11 @@ export const description: MTypes.OneArgFunction<Type, string> = Struct.get('desc
  * @category Getters
  */
 export const format: MTypes.OneArgFunction<Type, Type['format']> = Struct.get('format');
+
+/**
+ * Returns the `formatOrThrow` property of `self`.
+ *
+ * @category Getters
+ */
+export const formatOrThrow: MTypes.OneArgFunction<Type, Type['formatOrThrow']> =
+  Struct.get('formatOrThrow');

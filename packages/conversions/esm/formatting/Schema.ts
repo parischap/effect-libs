@@ -63,7 +63,13 @@ export const FiniteFromString = (
             Result.fromOption(() => new SchemaIssue.InvalidValue(Option.some(s))),
             Effect.fromResult,
           ),
-        encode: flow(formatFunction, Effect.succeed),
+        encode: (s) =>
+          pipe(
+            s,
+            formatFunction,
+            Result.fromOption(() => new SchemaIssue.InvalidValue(Option.some(s))),
+            Effect.fromResult,
+          ),
       }),
     ),
   );
@@ -86,7 +92,7 @@ export const BigDecimalFromString = (
   const formatFunction = pipe(
     format,
     CVNumberBase10Formatter.fromFormat,
-    CVNumberBase10Formatter.format,
+    CVNumberBase10Formatter.formatOrThrow,
   );
   return Schema.String.pipe(
     Schema.decodeTo(
@@ -273,5 +279,5 @@ export const Template = <PlaceholderTypes extends MTypes.Object>(
           ),
       }),
     ),
-  ) as never;
+  );
 };

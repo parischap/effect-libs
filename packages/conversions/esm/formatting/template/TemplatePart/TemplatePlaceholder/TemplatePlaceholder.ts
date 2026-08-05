@@ -340,8 +340,8 @@ const _flippedTakeRightBut = Function.flip(MString.takeRightBut);
  *
  * Formatting: the number is converted to a string according to `numberBase10Format`. If
  * `numberBase10Format` represents a base-10 number format with a fixed length of `l`, the formatter
- * will fail if the result of the conversion is not exactly `l`-characters long. Otherwise, the
- * formatter never fails.
+ * will fail if the result of the conversion is not exactly `l`-characters long. The formatter also
+ * fails if the passed number is not a finite number.
  *
  * @category Constructors
  */
@@ -351,15 +351,22 @@ export const number = <const N extends string>({
 }: {
   readonly name: N;
   readonly numberBase10Format: CVNumberBase10Format.Type;
-}): Type<N, number> =>
-  pipe(
+}): Type<N, number> => {
+  const description = CVNumberBase10Format.toDescription(numberBase10Format);
+  const numberFormatter = pipe(
+    numberBase10Format,
+    CVNumberBase10Formatter.fromFormat,
+    CVNumberBase10Formatter.format,
+  );
+
+  return pipe(
     numberBase10Format,
     CVNumberBase10Format.getFixedLength,
     Option.match({
       onNone: () =>
         make({
           name,
-          description: CVNumberBase10Format.toDescription(numberBase10Format),
+          description,
           parser: function (this: Type<N, number>, text) {
             return pipe(
               text,
@@ -371,7 +378,7 @@ export const number = <const N extends string>({
               Result.fromOption(
                 () =>
                   new MInputError.Type({
-                    message: `${this.label} contains '${text}' from the start of which a(n) ${CVNumberBase10Format.toDescription(numberBase10Format)} could not be extracted`,
+                    message: `${this.label} contains '${text}' from the start of which a(n) ${description} could not be extracted`,
                   }),
               ),
               Result.map(
@@ -381,12 +388,18 @@ export const number = <const N extends string>({
               ),
             );
           },
-          formatter: pipe(
-            numberBase10Format,
-            CVNumberBase10Formatter.fromFormat,
-            CVNumberBase10Formatter.format,
-            Function.compose(Result.succeed),
-          ),
+          formatter: function (this: Type<N, number>, value) {
+            return pipe(
+              value,
+              numberFormatter,
+              Result.fromOption(
+                () =>
+                  new MInputError.Type({
+                    message: `${this.label}: value '${value}' cannot be converted to a(n) ${description}`,
+                  }),
+              ),
+            );
+          },
           tSchemaInstance: Schema.Number,
         }),
       onSome: (length) =>
@@ -394,9 +407,7 @@ export const number = <const N extends string>({
           { name, length },
           fixedLength,
           modify({
-            descriptorMapper: MString.append(
-              ` to ${CVNumberBase10Format.toDescription(numberBase10Format)}`,
-            ),
+            descriptorMapper: MString.append(` to ${description}`),
             postParser: function (this: Type<N, number>, input: string) {
               return pipe(
                 input,
@@ -408,22 +419,29 @@ export const number = <const N extends string>({
                 Result.fromOption(
                   () =>
                     new MInputError.Type({
-                      message: `${this.label}: value '${input}' cannot be converted to a(n) ${CVNumberBase10Format.toDescription(numberBase10Format)}`,
+                      message: `${this.label}: value '${input}' cannot be converted to a(n) ${description}`,
                     }),
                 ),
               );
             },
-            preFormatter: pipe(
-              numberBase10Format,
-              CVNumberBase10Formatter.fromFormat,
-              CVNumberBase10Formatter.format,
-              Function.compose(Result.succeed),
-            ),
+            preFormatter: function (this: Type<N, number>, value) {
+              return pipe(
+                value,
+                numberFormatter,
+                Result.fromOption(
+                  () =>
+                    new MInputError.Type({
+                      message: `${this.label}: value '${value}' cannot be converted to a(n) ${description}`,
+                    }),
+                ),
+              );
+            },
             t1SchemaInstance: Schema.Number,
           }),
         ),
     }),
   );
+};
 
 /**
  * Builds a `CVTemplatePlaceholder` instance that works as a map:

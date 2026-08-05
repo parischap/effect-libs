@@ -148,7 +148,7 @@ export class Type extends MData.Class {
         MString.append(`' formatter in '${context.name}' context`),
       ),
       format,
-      formatOrThrow: Function.compose(format, Result.getOrThrowWith(Function.identity)),
+      formatOrThrow: flow(format, Result.getOrThrowWith(Function.identity)),
     });
   }
 

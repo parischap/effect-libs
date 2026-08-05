@@ -198,11 +198,19 @@ const ukStyleNumberWithEngineeringNotation = pipe(
 const { frenchStyleInteger } = CVNumberBase10Format;
 
 // Let's define a formatter
-// Type: (value: BigDecimal | number) => string
+// Type: (value: BigDecimal | number) => Option.Option<string>
 const ukStyleWithEngineeringNotationFormatter = pipe(
   ukStyleNumberWithEngineeringNotation,
   CVNumberBase10Formatter.fromFormat,
   CVNumberBase10Formatter.format,
+);
+
+// Let's define a formatter that throws for non-`effect` users
+// Type: (value: BigDecimal | number) => string
+const throwingFormatter = pipe(
+  ukStyleNumberWithEngineeringNotation,
+  CVNumberBase10Formatter.fromFormat,
+  CVNumberBase10Formatter.formatOrThrow,
 );
 
 // Let's define a parser
@@ -221,8 +229,14 @@ const throwingParser = pipe(
   CVNumberBase10Parser.parseAsNumberOrThrow,
 );
 
-// Result: '10.341e3'
+// Result: { _id: 'Option', _tag: 'Some', value: '10.341e3' }
 console.log(ukStyleWithEngineeringNotationFormatter(10_340.548));
+
+// Result: { _id: 'Option', _tag: 'None' }
+console.log(ukStyleWithEngineeringNotationFormatter(Infinity));
+
+// Result: '10.341e3'
+console.log(throwingFormatter(10_340.548));
 
 // result: { _id: 'Option', _tag: 'Some', value: 10340.548 }
 console.log(ungroupedUkStyleParser('10340.548'));
@@ -600,7 +614,7 @@ There are several predefined Placeholder's:
 
 - `fixedLength`: this Placeholder always reads/writes the same number of characters from/into the text.
 - `paddedFixedLength`: same as `fixedLength` but the consumed text is trimmed off of a `fillChar` on the left or right and the written text is padded with a `fillChar` on the left or right.
-- `number`: this Placeholder parses/formats a number according to the provided `CVNumberBase10Format`. If the format has a fixed length (i.e. the integer part is padded and the fractional digits are fixed), the parser reads exactly that many characters and tries to convert them. Otherwise it reads from the text all the characters that it can interpret as a number in the provided `CVNumberBase10Format`. The formatter converts the number to a string; if the format has a fixed length, it fails when the result does not have the expected length.
+- `number`: this Placeholder parses/formats a number according to the provided `CVNumberBase10Format`. If the format has a fixed length (i.e. the integer part is padded and the fractional digits are fixed), the parser reads exactly that many characters and tries to convert them. Otherwise it reads from the text all the characters that it can interpret as a number in the provided `CVNumberBase10Format`. The formatter converts the number to a string; it fails if the number is not finite or, when the format has a fixed length, if the result does not have the expected length.
 - `mappedLiterals`: this Placeholder takes as input a map that must define a bijection between a list of strings and a list of values. The parser tries to read from the text one of the strings in the list. Upon success, it returns the corresponding value. The formatter takes a value and tries to find it in the list. Upon success, it writes the corresponding string into the text.
 - `numberMappedLiterals`: same as `mappedLiterals` but values are assumed to be of type number which is the most usual use case.
 - `fulfilling`: the parser of this Placeholder reads as much of the text as it can that fulfills the passed regular expression. The formatter only accepts a string that matches the passed regular expression and writes it into the text.
@@ -1289,6 +1303,13 @@ console.log(frenchFormatter);
 ```
 
 # Changelog
+
+### 1.1.0 — breaking change
+
+> **`CVNumberBase10Formatter.format` now returns an `Option.Option<string>`** instead of a bare
+> `string`: it returns a `none` when the passed number is not finite (`NaN` or `Infinity`) instead
+> of throwing or producing an incoherent result. A new `formatOrThrow` function was added for
+> non-`effect` users who prefer a throwing API.
 
 ### 1.0.1 → 1.0.10
 

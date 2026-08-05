@@ -66,8 +66,39 @@ export class Type extends MData.Class {
    */
   private extractAsBigDecimal: Option.Option<Type['_extractAsBigDecimal']>;
 
+  get _extractAsBigDecimal(): MTypes.OneArgFunction<
+    string,
+    Option.Option<MTypes.Pair<BigDecimal.BigDecimal, string>>
+  > {
+    return Option.getOrElse(this.extractAsBigDecimal, () =>
+      flow(
+        this.bigDecimalExtractor,
+        Option.map(({ value, match, sign }) =>
+          Tuple.make(BigDecimal.multiply(value, BigDecimal.fromNumberUnsafe(sign)), match),
+        ),
+      ),
+    );
+  }
+
   /** Same as `extractAsBigDecimal` but throws in case of failure */
   private extractAsBigDecimalOrThrow: Option.Option<Type['_extractAsBigDecimalOrThrow']>;
+
+  get _extractAsBigDecimalOrThrow(): MTypes.OneArgFunction<
+    string,
+    MTypes.Pair<BigDecimal.BigDecimal, string>
+  > {
+    return Option.getOrElse(
+      this.extractAsBigDecimalOrThrow,
+      () => (text) =>
+        pipe(
+          text,
+          this._extractAsBigDecimal,
+          Option.getOrThrowWith(
+            () => new Error(`A BigDecimal could not be parsed from the start of '${text}'`),
+          ),
+        ),
+    );
+  }
 
   /**
    * Same as `extractAsBigDecimal` but returns a number. This is the most usual use case.
@@ -76,8 +107,34 @@ export class Type extends MData.Class {
    */
   private extractAsNumber: Option.Option<Type['_extractAsNumber']>;
 
+  get _extractAsNumber(): MTypes.OneArgFunction<
+    string,
+    Option.Option<MTypes.Pair<number, string>>
+  > {
+    return Option.getOrElse(this.extractAsNumber, () =>
+      flow(
+        this.numberExtractor,
+        Option.map(({ value, match }) => Tuple.make(value, match)),
+      ),
+    );
+  }
+
   /** Same as `extractAsNumber` but throws in case of failure */
   private extractAsNumberOrThrow: Option.Option<Type['_extractAsNumberOrThrow']>;
+
+  get _extractAsNumberOrThrow(): MTypes.OneArgFunction<string, MTypes.Pair<number, string>> {
+    return Option.getOrElse(
+      this.extractAsNumberOrThrow,
+      () => (text) =>
+        pipe(
+          text,
+          this._extractAsNumber,
+          Option.getOrThrowWith(
+            () => new Error(`A number could not be parsed from the start of '${text}'`),
+          ),
+        ),
+    );
+  }
 
   /**
    * Same as `extractAsBigDecimal` but the whole of the input text must represent a number, not just
@@ -85,8 +142,32 @@ export class Type extends MData.Class {
    */
   private parseAsBigDecimal: Option.Option<Type['_parseAsBigDecimal']>;
 
+  get _parseAsBigDecimal(): MTypes.OneArgFunction<string, Option.Option<BigDecimal.BigDecimal>> {
+    return Option.getOrElse(this.parseAsBigDecimal, () =>
+      flow(
+        this.bigDecimalExtractor,
+        flow(
+          Option.filter(({ match, input }) => match.length === input.length),
+          Option.map(Struct.get('value')),
+        ),
+      ),
+    );
+  }
+
   /** Same as `parseAsBigDecimal` but the returned parser throws in case of failure */
   private parseAsBigDecimalOrThrow: Option.Option<Type['_parseAsBigDecimalOrThrow']>;
+
+  get _parseAsBigDecimalOrThrow(): MTypes.OneArgFunction<string, BigDecimal.BigDecimal> {
+    return Option.getOrElse(
+      this.parseAsBigDecimalOrThrow,
+      () => (text) =>
+        pipe(
+          text,
+          this._parseAsBigDecimal,
+          Option.getOrThrowWith(() => new Error(`A BigDecimal could not be parsed from '${text}'`)),
+        ),
+    );
+  }
 
   /**
    * Same as `extractAsNumber` but the whole of the input text must represent a number, not just its
@@ -94,8 +175,32 @@ export class Type extends MData.Class {
    */
   private parseAsNumber: Option.Option<Type['_parseAsNumber']>;
 
+  get _parseAsNumber(): MTypes.OneArgFunction<string, Option.Option<number>> {
+    return Option.getOrElse(this.parseAsNumber, () =>
+      flow(
+        this.numberExtractor,
+        flow(
+          Option.filter(({ match, input }) => match.length === input.length),
+          Option.map(Struct.get('value')),
+        ),
+      ),
+    );
+  }
+
   /** Same as `parseAsNumber` but throws in case of failure */
   private parseAsNumberOrThrow: Option.Option<Type['_parseAsNumberOrThrow']>;
+
+  get _parseAsNumberOrThrow(): MTypes.OneArgFunction<string, number> {
+    return Option.getOrElse(
+      this.parseAsNumberOrThrow,
+      () => (text) =>
+        pipe(
+          text,
+          this._parseAsNumber,
+          Option.getOrThrowWith(() => new Error(`A number could not be parsed from '${text}'`)),
+        ),
+    );
+  }
 
   /** Returns the `id` of `this` */
   [MData.idSymbol](): string | (() => string) {
@@ -231,7 +336,7 @@ export class Type extends MData.Class {
         };
       });
 
-    this.numberExtractor = Function.compose(
+    this.numberExtractor = flow(
       this.bigDecimalExtractor,
       Option.flatMap(({ value, match, sign, input }) =>
         Option.gen(function* () {
@@ -254,111 +359,6 @@ export class Type extends MData.Class {
   /** Returns the TypeMarker of the class */
   protected get [TypeId](): TypeId {
     return TypeId;
-  }
-
-  get _extractAsBigDecimal(): MTypes.OneArgFunction<
-    string,
-    Option.Option<MTypes.Pair<BigDecimal.BigDecimal, string>>
-  > {
-    return Option.getOrElse(this.extractAsBigDecimal, () =>
-      Function.compose(
-        this.bigDecimalExtractor,
-        Option.map(({ value, match, sign }) =>
-          Tuple.make(BigDecimal.multiply(value, BigDecimal.fromNumberUnsafe(sign)), match),
-        ),
-      ),
-    );
-  }
-
-  get _extractAsBigDecimalOrThrow(): MTypes.OneArgFunction<
-    string,
-    MTypes.Pair<BigDecimal.BigDecimal, string>
-  > {
-    return Option.getOrElse(
-      this.extractAsBigDecimalOrThrow,
-      () => (text: string) =>
-        pipe(
-          text,
-          this._extractAsBigDecimal,
-          Option.getOrThrowWith(
-            () => new Error(`A BigDecimal could not be parsed from the start of '${text}'`),
-          ),
-        ),
-    );
-  }
-
-  get _extractAsNumber(): MTypes.OneArgFunction<
-    string,
-    Option.Option<MTypes.Pair<number, string>>
-  > {
-    return Option.getOrElse(this.extractAsNumber, () =>
-      Function.compose(
-        this.numberExtractor,
-        Option.map(({ value, match }) => Tuple.make(value, match)),
-      ),
-    );
-  }
-
-  get _extractAsNumberOrThrow(): MTypes.OneArgFunction<string, MTypes.Pair<number, string>> {
-    return Option.getOrElse(
-      this.extractAsNumberOrThrow,
-      () => (text: string) =>
-        pipe(
-          text,
-          this._extractAsNumber,
-          Option.getOrThrowWith(
-            () => new Error(`A Real could not be parsed from the start of '${text}'`),
-          ),
-        ),
-    );
-  }
-
-  get _parseAsBigDecimal(): MTypes.OneArgFunction<string, Option.Option<BigDecimal.BigDecimal>> {
-    return Option.getOrElse(this.parseAsBigDecimal, () =>
-      Function.compose(
-        this.bigDecimalExtractor,
-        flow(
-          Option.filter(({ match, input }) => match.length === input.length),
-          Option.map(Struct.get('value')),
-        ),
-      ),
-    );
-  }
-
-  get _parseAsBigDecimalOrThrow(): MTypes.OneArgFunction<string, BigDecimal.BigDecimal> {
-    return Option.getOrElse(
-      this.parseAsBigDecimalOrThrow,
-      () => (text: string) =>
-        pipe(
-          text,
-          this._parseAsBigDecimal,
-          Option.getOrThrowWith(() => new Error(`A BigDecimal could not be parsed from '${text}'`)),
-        ),
-    );
-  }
-
-  get _parseAsNumber(): MTypes.OneArgFunction<string, Option.Option<number>> {
-    return Option.getOrElse(this.parseAsNumber, () =>
-      Function.compose(
-        this.numberExtractor,
-        flow(
-          Option.filter(({ match, input }) => match.length === input.length),
-          Option.map(Struct.get('value')),
-        ),
-      ),
-    );
-  }
-
-  get _parseAsNumberOrThrow(): MTypes.OneArgFunction<string, number> {
-    return Option.getOrElse(
-      this.parseAsNumberOrThrow,
-      () => (text: string) =>
-        pipe(
-          text,
-          this._parseAsNumber,
-          Option.getOrThrowWith(() => new Error(`A Real could not be parsed from '${text}'`)),
-        ),
-    );
   }
 }
 
