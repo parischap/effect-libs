@@ -40,28 +40,22 @@ export const fromScientificNotationOption: MTypes.OneArgFunction<
     CVNumberBase10FormatScientificNotationOption.Type.Standard,
     (): Type => flow(Tuple.make, Tuple.appendElement(Option.none())),
   ),
-  MMatch.whenIs(
-    CVNumberBase10FormatScientificNotationOption.Type.Normalized,
-    (): Type => (b) => {
-      if (BigDecimal.isZero(b)) return Tuple.make(b, Option.some(0));
-      const { value } = b;
-      const log10 = MBigInt.unsafeLog10(BigInt.abs(value));
+  MMatch.whenIs(CVNumberBase10FormatScientificNotationOption.Type.Normalized, (): Type => (b) => {
+    if (BigDecimal.isZero(b)) return Tuple.make(b, Option.some(0));
+    const { value } = b;
+    const log10 = MBigInt.unsafeLog10(BigInt.abs(value));
 
-      return Tuple.make(BigDecimal.make(value, log10), Option.some(log10 - b.scale));
-    },
-  ),
-  MMatch.whenIs(
-    CVNumberBase10FormatScientificNotationOption.Type.Engineering,
-    (): Type => (b) => {
-      if (BigDecimal.isZero(b)) return Tuple.make(b, Option.some(0));
-      const { value } = b;
-      const log10 = MBigInt.unsafeLog10(BigInt.abs(value)) - b.scale;
-      const correctedLog10 = log10 - MNumber.intModulo(3)(log10);
-      return Tuple.make(
-        BigDecimal.make(value, correctedLog10 + b.scale),
-        Option.some(correctedLog10),
-      );
-    },
-  ),
+    return Tuple.make(BigDecimal.make(value, log10), Option.some(log10 - b.scale));
+  }),
+  MMatch.whenIs(CVNumberBase10FormatScientificNotationOption.Type.Engineering, (): Type => (b) => {
+    if (BigDecimal.isZero(b)) return Tuple.make(b, Option.some(0));
+    const { value } = b;
+    const log10 = MBigInt.unsafeLog10(BigInt.abs(value)) - b.scale;
+    const correctedLog10 = log10 - MNumber.intModulo(3)(log10);
+    return Tuple.make(
+      BigDecimal.make(value, correctedLog10 + b.scale),
+      Option.some(correctedLog10),
+    );
+  }),
   MMatch.exhaustive,
 );

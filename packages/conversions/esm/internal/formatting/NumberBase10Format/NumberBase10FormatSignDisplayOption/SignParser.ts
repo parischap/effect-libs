@@ -72,23 +72,19 @@ export const fromSignDisplayOption: MTypes.OneArgFunction<
   MMatch.make,
   MMatch.whenIs(CVNumberBase10FormatSignDisplayOption.Type.Auto, Function.constant(hasNotPlusSign)),
   MMatch.whenIs(CVNumberBase10FormatSignDisplayOption.Type.Always, Function.constant(hasASign)),
-  MMatch.whenIs(
-    CVNumberBase10FormatSignDisplayOption.Type.ExceptZero,
-    (): Type =>
-      flow(
-        MMatch.make,
-        MMatch.when(MPredicate.struct({ isZero: Function.identity }), hasNoSign),
-        MMatch.orElse(hasASign),
-      ),
+  MMatch.whenIs(CVNumberBase10FormatSignDisplayOption.Type.ExceptZero, (): Type =>
+    flow(
+      MMatch.make,
+      MMatch.when(MPredicate.struct({ isZero: Function.identity }), hasNoSign),
+      MMatch.orElse(hasASign),
+    ),
   ),
-  MMatch.whenIs(
-    CVNumberBase10FormatSignDisplayOption.Type.Negative,
-    (): Type =>
-      flow(
-        MMatch.make,
-        MMatch.when(MPredicate.struct({ isZero: Function.identity }), hasNoSign),
-        MMatch.orElse(hasNotPlusSign),
-      ),
+  MMatch.whenIs(CVNumberBase10FormatSignDisplayOption.Type.Negative, (): Type =>
+    flow(
+      MMatch.make,
+      MMatch.when(MPredicate.struct({ isZero: Function.identity }), hasNoSign),
+      MMatch.orElse(hasNotPlusSign),
+    ),
   ),
   MMatch.whenIs(CVNumberBase10FormatSignDisplayOption.Type.Never, Function.constant(hasNoSign)),
   MMatch.exhaustive,

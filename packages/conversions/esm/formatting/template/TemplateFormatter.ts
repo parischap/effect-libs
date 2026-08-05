@@ -5,7 +5,7 @@
  * directly from `CVTemplatePart`'s
  */
 
-import { pipe,flow } from 'effect';
+import { pipe, flow } from 'effect';
 import * as Function from 'effect/Function';
 import * as Option from 'effect/Option';
 import * as Record from 'effect/Record';

@@ -3,7 +3,7 @@
  * `CVDateTime` according to the passed `CVDateTimeFormat` and `CVDateTimeFormatContext`.
  */
 
-import { pipe , flow} from 'effect';
+import { pipe, flow } from 'effect';
 import * as Function from 'effect/Function';
 import * as Result from 'effect/Result';
 import * as Struct from 'effect/Struct';

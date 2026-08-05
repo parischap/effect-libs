@@ -76,17 +76,6 @@ import * as MTuple from '../Tuple.js';
 import * as MStringFillPosition from './StringFillPosition.js';
 import * as MStringSearchResult from './StringSearchResult.js';
 
-export const f = (x: number) =>
-  Option.map(Option.liftPredicate(x, Number.isGreaterThanOrEqualTo(4)), Number.multiply(2));
-
-export const f1 = (x: number) =>
-  pipe(x, Option.liftPredicate(Number.isGreaterThanOrEqualTo(4)), Option.map(Number.multiply(2)));
-
-export const f3 = flow(
-  Option.liftPredicate(Number.isGreaterThanOrEqualTo(4)),
-  Option.map(Number.multiply(2)),
-);
-
 /**
  * Type on which this module's functions operate
  *
