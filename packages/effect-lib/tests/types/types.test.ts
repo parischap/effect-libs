@@ -1,4 +1,4 @@
-import * as Equal from 'effect/Equal';
+import type * as Equal from 'effect/Equal';
 
 import * as TestUtils from '@parischap/configs/TestUtils';
 import type * as MTypes from '@parischap/effect-lib/MTypes';

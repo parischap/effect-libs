@@ -47,7 +47,7 @@
  */
 
 import * as Equal from 'effect/Equal';
-import * as Hash from 'effect/Hash';
+import type * as Hash from 'effect/Hash';
 
 import * as MData from './Data.js';
 
