@@ -27,7 +27,9 @@ jobs:
           top=parischap/mytsdevs
           topTag=effect-libs-$TAG
           
-          existing=$(gh api "repos/$top/git/ref/tags/$topTag" --jq .object.sha 2>/dev/null || true)
+          if ! existing=$(gh api "repos/$top/git/ref/tags/$topTag" --jq .object.sha 2>/dev/null); then
+            existing=""
+          fi
           
           if [ -n "$existing" ]; then
             pin=$(gh api "repos/$top/contents/packages/effect-libs?ref=$existing" --jq .sha)
