@@ -149,7 +149,7 @@ describe('CVTemplatePlaceholder', () => {
         });
 
         it('Not passing: non-finite number', () => {
-          TestUtils.assertFailure(placeholder.formatter(NaN));
+          TestUtils.assertFailure(placeholder.formatter(Number.NaN));
         });
 
         it('Passing', () => {
@@ -191,7 +191,7 @@ describe('CVTemplatePlaceholder', () => {
 
       describe('Formatting', () => {
         it('Not passing: non-finite number', () => {
-          TestUtils.assertFailure(placeholder.formatter(NaN));
+          TestUtils.assertFailure(placeholder.formatter(Number.NaN));
         });
 
         it('Passing', () => {

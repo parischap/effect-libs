@@ -57,7 +57,7 @@ describe('PPNonPrimitiveParameters', () => {
       TestUtils.assertFalse(
         PPNonPrimitiveParameters.utilInspectLikeFunction.isApplicableTo({
           a: 1,
-        } as unknown as MTypes.AnyFunction),
+        }),
       );
     });
 

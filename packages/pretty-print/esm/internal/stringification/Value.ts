@@ -202,7 +202,7 @@ export class Type<out V> extends MEquivalenceBasedEqualityData.Class {
 
   /** Function that implements the equivalence of `this` and `that` */
   [MEquivalenceBasedEqualityData.isEquivalentToSymbol](this: this, that: this): boolean {
-    return equivalence(this as Any, that as Any);
+    return equivalence(this, that);
   }
 
   /** Predicate that returns true if `that` has the same type marker as `this` */

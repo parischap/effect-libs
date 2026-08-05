@@ -31,7 +31,7 @@ describe('PPValues', () => {
       const [firstValue] = values;
       TestUtils.assertDefined(firstValue);
       TestUtils.strictEqual(PPValue.oneLineStringKey(firstValue), 'a');
-      TestUtils.strictEqual(PPValue.content(firstValue as PPValue.Type<unknown>), 1);
+      TestUtils.strictEqual(PPValue.content(firstValue), 1);
     });
 
     it('Returns own + prototype properties at maxPrototypeDepth=2', () => {

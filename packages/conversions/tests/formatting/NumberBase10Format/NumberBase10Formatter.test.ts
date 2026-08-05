@@ -59,7 +59,7 @@ describe('CVNumberBase10Formatter', () => {
       });
 
       it('Non-finite number', () => {
-        TestUtils.assertNone(formatter(NaN));
+        TestUtils.assertNone(formatter(Number.NaN));
         TestUtils.assertNone(formatter(Infinity));
         TestUtils.assertNone(formatter(-Infinity));
       });
@@ -176,7 +176,7 @@ describe('CVNumberBase10Formatter', () => {
     });
 
     it('Non-finite number: throws', () => {
-      TestUtils.throws(() => formatOrThrow(NaN));
+      TestUtils.throws(() => formatOrThrow(Number.NaN));
       TestUtils.throws(() => formatOrThrow(Infinity));
     });
   });
