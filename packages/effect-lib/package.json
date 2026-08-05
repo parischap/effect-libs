@@ -23,7 +23,7 @@
   "@parischap/configs": {
     "description": "Collection of utility modules extending the official effect library: simple yet efficient pattern matching, cycle-safe tree module, mutable caching with optional bounded capacity and optional time-to-live, and diverse useful stuff.",
     "moreDetails": "All exports follow the `M`-prefix naming convention to avoid name collisions with other libraries;\n\nPlatform-independent, well tested and documented, optimized for tree-shaking, 100% Typescript, 100% functional.\n\nCan also be used by non-effect users.",
-    "version": "0.23.0",
+    "version": "0.25.0",
     "keywords": [
       "pattern",
       "matching",

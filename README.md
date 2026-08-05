@@ -8,7 +8,7 @@ Platform-independent, well tested and documented, optimized for tree-shaking, 10
 
 Can also be used by non-effect users.
 
-# [&rarr; API](https://effect-libs-docs.netlify.app/0.1.3)
+# [&rarr; API](https://effect-libs-docs.netlify.app/0.2.0)
 
 # [&rarr; GETTING STARTED](readme-assets/index.md)
 
