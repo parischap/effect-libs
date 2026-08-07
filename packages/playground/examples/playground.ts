@@ -1,35 +1,24 @@
-import { createServer } from 'node:http';
+import type { Fiber } from 'effect';
+import { Effect, Duration, Console } from 'effect';
 
-import * as NodeHttpServer from '@effect/platform-node/NodeHttpServer';
-import * as NodeRuntime from '@effect/platform-node/NodeRuntime';
-import * as HttpApi from '@effect/platform/HttpApi';
-import * as HttpApiBuilder from '@effect/platform/HttpApiBuilder';
-import * as HttpApiEndpoint from '@effect/platform/HttpApiEndpoint';
-import * as HttpApiGroup from '@effect/platform/HttpApiGroup';
-import * as Effect from 'effect/Effect';
-import * as Layer from 'effect/Layer';
-import * as Schema from 'effect/Schema';
+// The Effect we want to run asynchronously
+const show = (text: string, waitInSecs: number): Effect.Effect<void, Error> =>
+  text === ''
+    ? Effect.fail(new Error('Bad argument'))
+    : Effect.gen(function* () {
+        // Waits `waitInSecs` seconds
+        yield* Effect.sleep(Duration.seconds(waitInSecs));
+        // Shows `text`
+        yield* Console.log(text);
+      });
 
-// Define our API with one group named "Greetings" and one endpoint called "hello-world"
-const MyApi = HttpApi.make('MyApi').add(
-  HttpApiGroup.make('Greetings').add(
-    HttpApiEndpoint.get('hello-world')`/`.addSuccess(Schema.String),
-  ),
-);
+const program = Effect.gen(function* () {
+  // fiber1 is a handle to a fiber that executes our first show Effect
+  const fiber1: Fiber.Fiber<number, Error> = yield* Effect.forkChild(show('Hello', 3));
+  // fiber2 is a handle to a fiber that executes our second show Effect
+  const fiber2: Fiber.Fiber<number, Error> = yield* Effect.forkChild(show('Bye', 5));
+  // Wait 10 seconds
+  yield* Effect.sleep(Duration.seconds(10));
+});
 
-// Implement the "Greetings" group
-const GreetingsLive = HttpApiBuilder.group(MyApi, 'Greetings', (handlers) =>
-  handlers.handle('hello-world', () => Effect.succeed('Hello, World!')),
-);
-
-// Provide the implementation for the API
-const MyApiLive = HttpApiBuilder.api(MyApi).pipe(Layer.provide(GreetingsLive));
-
-// Set up the server using NodeHttpServer on port 3000
-const ServerLive = HttpApiBuilder.serve().pipe(
-  Layer.provide(MyApiLive),
-  Layer.provide(NodeHttpServer.layer(createServer, { port: 3000 })),
-);
-
-// Launch the server
-Layer.launch(ServerLive).pipe(NodeRuntime.runMain);
+const result = Effect.runPromiseExit(program);

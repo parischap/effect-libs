@@ -15,6 +15,7 @@
     "lint-all": "pnpm lint",
     "fmt-all": "pnpm fmt",
     "check-all": "pnpm check",
+    "examples": "tsx examples/playground.ts",
     "docgen-all": "echo \"No doc generation for 'playground'\"",
     "release-all": "echo \"Nothing to release for 'playground'\""
   },
@@ -27,11 +28,14 @@
     "publishTarget": "None",
     "docScope": "None",
     "dependencies": {
-      "@parischap/effect-lib": "*"
+      "@parischap/effect-lib": "*",
+      "effect": "*"
     },
     "devDependencies": {},
     "environment": "Node",
-    "examples": [],
+    "examples": [
+      "playground.ts"
+    ],
     "peerDependencies": {},
     "scripts": {},
     "prodMiscellaneous": {}
@@ -42,7 +46,8 @@
     }
   },
   "dependencies": {
-    "@parischap/effect-lib": "workspace:*"
+    "@parischap/effect-lib": "workspace:*",
+    "effect": "*"
   },
   "devDependencies": {},
   "peerDependencies": {}
