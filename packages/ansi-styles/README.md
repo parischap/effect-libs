@@ -44,13 +44,13 @@ This library exports EcmaScript and CommonJS modules.
 It offers named imports from the barrel:
 
 ```ts
-import { ASColor } from '@parischap/pretty-print';
+import { ASColor } from '@parischap/ansi-styles';
 ```
 
 and namespace imports from individual modules (recommended when tree-shaking matters):
 
 ```ts
-import * as ASColor from '@parischap/pretty-print/ASColor';
+import * as ASColor from '@parischap/ansi-styles/ASColor';
 ```
 # &rarr; DONATE
 

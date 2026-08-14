@@ -44,13 +44,13 @@ This library exports EcmaScript and CommonJS modules.
 It offers named imports from the barrel:
 
 ```ts
-import { CVDateTime } from '@parischap/pretty-print';
+import { CVDateTime } from '@parischap/conversions';
 ```
 
 and namespace imports from individual modules (recommended when tree-shaking matters):
 
 ```ts
-import * as CVDateTime from '@parischap/pretty-print/CVDateTime';
+import * as CVDateTime from '@parischap/conversions/CVDateTime';
 ```
 # &rarr; DONATE
 

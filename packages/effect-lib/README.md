@@ -44,13 +44,13 @@ This library exports EcmaScript and CommonJS modules.
 It offers named imports from the barrel:
 
 ```ts
-import { MArray } from '@parischap/pretty-print';
+import { MArray } from '@parischap/effect-lib';
 ```
 
 and namespace imports from individual modules (recommended when tree-shaking matters):
 
 ```ts
-import * as MArray from '@parischap/pretty-print/MArray';
+import * as MArray from '@parischap/effect-lib/MArray';
 ```
 # &rarr; DONATE
 
