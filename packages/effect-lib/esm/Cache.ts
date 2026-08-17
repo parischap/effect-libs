@@ -1,7 +1,8 @@
 /**
  * Mutable cache with optional bounded capacity and optional time-to-live built around a
  * user-supplied lookup function. The lookup function may be recursive, in which case the cache is
- * also used to detect circularity.
+ * also used to detect circularity. To be used only in a non-concurrent environment: will not work
+ * to cache `Effect` computations.
  *
  * ## Mental model
  *

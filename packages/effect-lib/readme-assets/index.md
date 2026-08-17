@@ -21,7 +21,7 @@ This package contains the following modules, all prefixed with `M` to avoid name
 | **MArray**                        | Extensions to `effect/Array`: additional predicates, fold/unfold operations with cycle detection, padding, grouping, and more                                                                                                                                |
 | **MBigDecimal**                   | Conversions and utilities for `effect/BigDecimal`, including safe/unsafe construction from primitive values                                                                                                                                                  |
 | **MBigInt**                       | Conversions, arithmetic predicates, and logarithm for `effect/BigInt`                                                                                                                                                                                        |
-| **MCache**                        | A time-limited, capacity-bounded LRU cache with a `lifeSpan` (TTL in milliseconds)                                                                                                                                                                           |
+| **MCache**                        | A time-limited, capacity-bounded LRU cache with a `lifeSpan` (TTL in milliseconds). To be used only in a non-concurrent environment: will not work to cache `Effect` computations.                                                                           |
 | **MChunk**                        | Extensions to `effect/Chunk`: duplicate detection, `findAll`, `takeBut`, and `takeRightBut`                                                                                                                                                                  |
 | **MData**                         | A base class providing default `Inspectable` and `Pipeable` behavior for `effect` data types                                                                                                                                                                 |
 | **MEquivalenceBasedEqualityData** | A base class that derives `Equal.Equal` from an abstract `isEquivalentTo` method                                                                                                                                                                             |
@@ -50,7 +50,7 @@ This package groups many small, independent extension modules. Rather than walki
 
 ## MCache
 
-A mutable, optionally bounded and TTL-limited cache built around a user-supplied lookup function. Keys are compared with `Equal.equals`; the lookup can be recursive, in which case the cache also detects circularity.
+A mutable, optionally bounded and TTL-limited cache built around a user-supplied lookup function. Keys are compared with `Equal.equals`; the lookup can be recursive, in which case the cache also detects circularity. To be used only in a non-concurrent environment: will not work to cache `Effect` computations.
 
 ```ts
 import { Tuple, pipe } from 'effect';
