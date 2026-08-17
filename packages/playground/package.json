@@ -29,7 +29,8 @@
     "docScope": "None",
     "dependencies": {
       "@parischap/effect-lib": "*",
-      "effect": "*"
+      "effect": "*",
+      "@effect/platform-node": "*"
     },
     "devDependencies": {},
     "environment": "Node",
@@ -47,7 +48,8 @@
   },
   "dependencies": {
     "@parischap/effect-lib": "workspace:*",
-    "effect": "*"
+    "effect": "*",
+    "@effect/platform-node": "*"
   },
   "devDependencies": {},
   "peerDependencies": {}
