@@ -31,6 +31,13 @@ import { pipe } from 'effect';
 import * as MRegExpString from './RegExpString.js';
 
 /**
+ * Type on which this module's functions operate.
+ *
+ * @category Models
+ */
+export type Type = RegExp;
+
+/**
  * Builds a `RegExp` from a pattern string, optionally with `flags`.
  *
  * **Example** (Build a regex with the `i` flag)
@@ -47,7 +54,7 @@ import * as MRegExpString from './RegExpString.js';
  */
 export const fromRegExpString =
   (flags?: string) =>
-  (s: string): RegExp =>
+  (s: string): Type =>
     new RegExp(s, flags);
 
 /**
@@ -55,14 +62,14 @@ export const fromRegExpString =
  *
  * @category Instances
  */
-export const lineBreak: RegExp = new RegExp(MRegExpString.lineBreak);
+export const lineBreak: Type = new RegExp(MRegExpString.lineBreak);
 
 /**
  * A `RegExp` matching a path separator on any platform (`/` or `\`).
  *
  * @category Instances
  */
-export const universalPathSep: RegExp = new RegExp(MRegExpString.universalPathSep);
+export const universalPathSep: Type = new RegExp(MRegExpString.universalPathSep);
 
 /**
  * A `RegExp` matching an entire SemVer string of the form `X.Y.Z`. Uses {@link MRegExpString.semVer}
@@ -70,7 +77,7 @@ export const universalPathSep: RegExp = new RegExp(MRegExpString.universalPathSe
  *
  * @category Instances
  */
-export const semVer: RegExp = pipe(MRegExpString.semVer, MRegExpString.makeLine, RegExp);
+export const semVer: Type = pipe(MRegExpString.semVer, MRegExpString.makeLine, RegExp);
 
 /**
  * A `RegExp` matching an entire e-mail address. Uses {@link MRegExpString.email} anchored to a full
@@ -78,4 +85,4 @@ export const semVer: RegExp = pipe(MRegExpString.semVer, MRegExpString.makeLine,
  *
  * @category Instances
  */
-export const email: RegExp = pipe(MRegExpString.email, MRegExpString.makeLine, RegExp);
+export const email: Type = pipe(MRegExpString.email, MRegExpString.makeLine, RegExp);
