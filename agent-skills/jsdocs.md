@@ -1,6 +1,6 @@
 <!-- LTeX: language=en-US -->
 
-Modules in this repo are published to `npm` and need to receive more thorough JSDocs (except modules in `esm/internal` that can be documented normally)
+Modules in this repo are published to NPM and need to receive more thorough JSDocs (except modules in `esm/internal` that can be documented normally)
 
 # Module-level JSDoc
 
