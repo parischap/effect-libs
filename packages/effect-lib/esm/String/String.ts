@@ -97,7 +97,7 @@ export type Type = string;
  *
  * console.log(MString.fromNonNullablePrimitive(42)); // "42"
  * console.log(MString.fromNonNullablePrimitive(true)); // "true"
- * console.log(MString.fromNonNullablePrimitive(3.14n)); // "3.14"
+ * console.log(MString.fromNonNullablePrimitive(314n)); // "314"
  * ```
  *
  * @category Constructors
@@ -288,7 +288,9 @@ export const searchAll =
           flow(
             MTuple.replicate(2),
             Tuple.evolve(
-              Tuple.make(Function.identity, (searchResult) => Struct.get(searchResult, 'endIndex')),
+              Tuple.make(Function.identity<MStringSearchResult.Type>, (searchResult) =>
+                Struct.get(searchResult, 'endIndex'),
+              ),
             ),
           ),
         ),
@@ -1067,7 +1069,9 @@ export const splitEquallyRestAtStart = (
       flow(
         splitAtFromRight(bitSize),
         Tuple.renameIndices(['1', '0']),
-        Tuple.evolve(Tuple.make(Function.identity, Option.liftPredicate(String.isNonEmpty))),
+        Tuple.evolve(
+          Tuple.make(Function.identity<string>, Option.liftPredicate(String.isNonEmpty)),
+        ),
       ),
     ),
     Array.reverse,
@@ -1100,7 +1104,7 @@ export const splitEquallyRestAtEnd = (
   MArray.unfoldNonEmpty(
     flow(
       splitAt(bitSize),
-      Tuple.evolve(Tuple.make(Function.identity, Option.liftPredicate(String.isNonEmpty))),
+      Tuple.evolve(Tuple.make(Function.identity<string>, Option.liftPredicate(String.isNonEmpty))),
     ),
   );
 

@@ -249,18 +249,20 @@ export interface NumberFromString extends OneArgFunction<string, number> {}
  * @category Utility types
  */
 export type Data<T extends NonPrimitive, Optionals extends string = never> = {
-  [k in keyof T as [k] extends [
-    | symbol
-    | `_${string}`
-    | 'toString'
-    | 'toJSON'
-    | 'pipe'
-    | typeof Equal.symbol
-    | typeof Hash.symbol
-    | Optionals,
-  ]
-    ? never
-    : k]: T[k];
+  [
+    k in keyof T as [k] extends [
+      | symbol
+      | `_${string}`
+      | 'toString'
+      | 'toJSON'
+      | 'pipe'
+      | typeof Equal.symbol
+      | typeof Hash.symbol
+      | Optionals,
+    ]
+      ? never
+      : k
+  ]: T[k];
 } & { [k in keyof T as [k] extends [Optionals] ? k : never]?: T[k] };
 
 /**

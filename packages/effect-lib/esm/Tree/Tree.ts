@@ -219,7 +219,7 @@ const internalUnfold =
           Array.unzip,
           Tuple.evolve(
             Tuple.make(
-              Function.identity,
+              Function.identity<MTypes.OverOne<Type<A, B>>>,
               flow(
                 Array.flatten<MTypes.OverOne<ReadonlyArray<SeedAndParents>>>,
                 Option.liftPredicate(MPredicate.isOverOne),
@@ -258,14 +258,14 @@ const internalUnfold =
 
 export const unfold: {
   <S, A, B>(
-    f: (seed: S) => Result.Result<MTypes.Pair<A, ReadonlyArray<S>>, B>,
+    f: (seed: NoInfer<S>) => Result.Result<MTypes.Pair<A, ReadonlyArray<NoInfer<S>>>, B>,
   ): MTypes.OneArgFunction<S, Type<A, B>>;
   <S, A, B>(
     f: (
-      seed: S,
+      seed: NoInfer<S>,
       cycleSource: Option.Option<NoInfer<A>>,
-    ) => Result.Result<MTypes.Pair<A, ReadonlyArray<S>>, B>,
-    seedEquivalence: Equivalence.Equivalence<S>,
+    ) => Result.Result<MTypes.Pair<A, ReadonlyArray<NoInfer<S>>>, B>,
+    seedEquivalence: Equivalence.Equivalence<NoInfer<S>>,
   ): MTypes.OneArgFunction<S, Type<A, B>>;
 } = <S, A, B>(
   f: (seed: S, cycleSource: Option.Option<A>) => Result.Result<MTypes.Pair<A, ReadonlyArray<S>>, B>,
@@ -301,15 +301,17 @@ export const unfold: {
 export const unfoldAndFold: {
   <A, B, S = A, C = B>(opts: {
     readonly unfold: (
-      seed: S,
+      seed: NoInfer<S>,
       cycleSource: Option.Option<NoInfer<A>>,
-    ) => Result.Result<MTypes.Pair<A, ReadonlyArray<S>>, B>;
+    ) => Result.Result<MTypes.Pair<A, ReadonlyArray<NoInfer<S>>>, B>;
     readonly foldNonLeaf: (value: A, children: ReadonlyArray<C>) => C;
     readonly foldLeaf: (value: B) => C;
-    readonly seedEquivalence: Equivalence.Equivalence<S>;
+    readonly seedEquivalence: Equivalence.Equivalence<NoInfer<S>>;
   }): MTypes.OneArgFunction<S, C>;
   <A, B, S = A, C = B>(opts: {
-    readonly unfold: (seed: S) => Result.Result<MTypes.Pair<A, ReadonlyArray<S>>, B>;
+    readonly unfold: (
+      seed: NoInfer<S>,
+    ) => Result.Result<MTypes.Pair<A, ReadonlyArray<NoInfer<S>>>, B>;
     readonly foldNonLeaf: (value: A, children: ReadonlyArray<C>) => C;
     readonly foldLeaf: (value: B) => C;
   }): MTypes.OneArgFunction<S, C>;
