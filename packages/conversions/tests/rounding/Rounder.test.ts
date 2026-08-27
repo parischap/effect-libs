@@ -7,7 +7,7 @@ import * as CVRounderParams from '@parischap/conversions/CVRounderParams';
 import * as CVRoundingOption from '@parischap/conversions/CVRoundingOption';
 import * as MNumber from '@parischap/effect-lib/MNumber';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('CVRounder', () => {
   const rounderParams = CVRounderParams.make({
@@ -18,10 +18,10 @@ describe('CVRounder', () => {
   describe('number', () => {
     const rounder = CVRounder.number(rounderParams);
     it('Even number', () => {
-      TestUtils.assertTrue(pipe(0.4566, rounder, MNumber.equals(0.457)));
+      assert.isTrue(pipe(0.4566, rounder, MNumber.equals(0.457)));
     });
     it('Odd number', () => {
-      TestUtils.assertTrue(pipe(-0.4564, rounder, MNumber.equals(-0.456)));
+      assert.isTrue(pipe(-0.4564, rounder, MNumber.equals(-0.456)));
     });
   });
 

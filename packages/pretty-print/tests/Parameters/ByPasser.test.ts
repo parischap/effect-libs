@@ -7,7 +7,7 @@ import * as PPParameters from '@parischap/pretty-print/PPParameters';
 import * as PPResolvedNonPrimitiveParameters from '@parischap/pretty-print/PPResolvedNonPrimitiveParameters';
 import * as PPValue from '@parischap/pretty-print/PPValue';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('PPByPasser', () => {
   it('moduleTag', () => {
@@ -31,11 +31,11 @@ describe('PPByPasser', () => {
   });
 
   it('.toString()', () => {
-    TestUtils.strictEqual(PPByPasser.empty.toString(), 'Empty');
+    assert.strictEqual(PPByPasser.empty.toString(), 'Empty');
   });
 
   it('.pipe()', () => {
-    TestUtils.strictEqual(PPByPasser.empty.pipe(PPByPasser.id), 'Empty');
+    assert.strictEqual(PPByPasser.empty.pipe(PPByPasser.id), 'Empty');
   });
 
   // The bypassers under test do not consume `applicableNonPrimitiveParameters`, so any resolved

@@ -8,7 +8,7 @@ import * as CVNumberBase10Format from '@parischap/conversions/CVNumberBase10Form
 import * as CVNumberBase10Parser from '@parischap/conversions/CVNumberBase10Parser';
 import * as MBigDecimal from '@parischap/effect-lib/MBigDecimal';
 
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from '@effect/vitest';
 
 describe('CVNumberBase10Parser', () => {
   const { frenchStyleNumber } = CVNumberBase10Format;

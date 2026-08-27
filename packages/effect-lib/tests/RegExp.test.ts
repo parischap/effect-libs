@@ -1,50 +1,49 @@
-import * as TestUtils from '@parischap/configs/TestUtils';
 import * as MRegExp from '@parischap/effect-lib/MRegExp';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('MRegExp', () => {
   describe('fromRegExpString', () => {
     it('Without flags', () => {
-      TestUtils.deepStrictEqual(MRegExp.fromRegExpString()('foo'), /foo/);
+      assert.deepStrictEqual(MRegExp.fromRegExpString()('foo'), /foo/);
     });
 
     it('With flags', () => {
-      TestUtils.deepStrictEqual(MRegExp.fromRegExpString('gi')('foo'), /foo/gi);
+      assert.deepStrictEqual(MRegExp.fromRegExpString('gi')('foo'), /foo/gi);
     });
   });
 
   describe('lineBreak', () => {
     it('Windows line break', () => {
-      TestUtils.assertTrue(MRegExp.lineBreak.test('foo\r\nbar'));
+      assert.isTrue(MRegExp.lineBreak.test('foo\r\nbar'));
     });
 
     it('Unix line break', () => {
-      TestUtils.assertTrue(MRegExp.lineBreak.test('foo\nbar'));
+      assert.isTrue(MRegExp.lineBreak.test('foo\nbar'));
     });
 
     it('No line break', () => {
-      TestUtils.assertFalse(MRegExp.lineBreak.test('foobar'));
+      assert.isFalse(MRegExp.lineBreak.test('foobar'));
     });
   });
 
   describe('semVer', () => {
     it('Valid SemVer', () => {
-      TestUtils.assertTrue(MRegExp.semVer.test('1.2.3'));
+      assert.isTrue(MRegExp.semVer.test('1.2.3'));
     });
 
     it('Invalid SemVer', () => {
-      TestUtils.assertFalse(MRegExp.semVer.test('1.2'));
+      assert.isFalse(MRegExp.semVer.test('1.2'));
     });
   });
 
   describe('email', () => {
     it('Valid email', () => {
-      TestUtils.assertTrue(MRegExp.email.test('user@example.com'));
+      assert.isTrue(MRegExp.email.test('user@example.com'));
     });
 
     it('Invalid email', () => {
-      TestUtils.assertFalse(MRegExp.email.test('not-an-email'));
+      assert.isFalse(MRegExp.email.test('not-an-email'));
     });
   });
 });

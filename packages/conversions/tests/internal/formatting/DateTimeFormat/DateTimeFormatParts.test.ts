@@ -4,7 +4,7 @@ import * as CVDateTimeFormatParts from '@parischap/conversions/CVDateTimeFormatP
 import * as CVDateTimeFormatPlaceholder from '@parischap/conversions/CVDateTimeFormatPlaceholder';
 import * as CVDateTimeFormatSeparator from '@parischap/conversions/CVDateTimeFormatSeparator';
 
-import { describe, it } from 'vitest';
+import { describe, it } from '@effect/vitest';
 
 describe('CVDateTimeFormatParts', () => {
   describe('toTemplateParts', () => {

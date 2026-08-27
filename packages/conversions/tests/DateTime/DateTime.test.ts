@@ -10,7 +10,7 @@ import * as CVDateTime from '@parischap/conversions/CVDateTime';
 import { DAY_MS, SHORT_YEAR_MS, WEEK_MS } from '@parischap/conversions/CVDateTimeConstants';
 import * as MArray from '@parischap/effect-lib/MArray';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('CVDateTime', () => {
   /** Produces a random integer between 0 included and range excluded */
@@ -27,8 +27,8 @@ describe('CVDateTime', () => {
     );
 
     it('.toString()', () => {
-      TestUtils.strictEqual(origin.toString(), '1970-01-01T00:00:00.000+00:00');
-      TestUtils.strictEqual(
+      assert.strictEqual(origin.toString(), '1970-01-01T00:00:00.000+00:00');
+      assert.strictEqual(
         CVDateTime.fromTimestampOrThrow(1_749_823_231_774, -3.765).toString(),
         '2025-06-13T10:14:37.774-03:45',
       );
@@ -287,7 +287,7 @@ describe('CVDateTime', () => {
 
       TestUtils.assertSuccess(result);
       const testDate = result.success;
-      TestUtils.strictEqual(CVDateTime.timestamp(testDate), Date.UTC(2024, 2, 1, 16, 43, 27, 654));
+      assert.strictEqual(CVDateTime.timestamp(testDate), Date.UTC(2024, 2, 1, 16, 43, 27, 654));
       // @ts-expect-error Accessing private member for test purposes
       TestUtils.assertSome(testDate.gregorianDate);
       // @ts-expect-error Accessing private member for test purposes
@@ -418,7 +418,7 @@ describe('CVDateTime', () => {
 
       TestUtils.assertSuccess(result);
       const testDate = result.success;
-      TestUtils.strictEqual(CVDateTime.timestamp(testDate), Date.UTC(2028, 0, 1, 17, 43, 27, 654));
+      assert.strictEqual(CVDateTime.timestamp(testDate), Date.UTC(2028, 0, 1, 17, 43, 27, 654));
       // @ts-expect-error Accessing private member for test purposes
       TestUtils.assertNone(testDate.gregorianDate);
       // @ts-expect-error Accessing private member for test purposes
@@ -436,7 +436,7 @@ describe('CVDateTime', () => {
 
         TestUtils.assertSuccess(result);
         const testDate = result.success;
-        TestUtils.strictEqual(CVDateTime.timestamp(testDate), Date.UTC(2025, 0, 1));
+        assert.strictEqual(CVDateTime.timestamp(testDate), Date.UTC(2025, 0, 1));
         // @ts-expect-error Accessing private member for test purposes
         TestUtils.assertSome(testDate.gregorianDate);
         // @ts-expect-error Accessing private member for test purposes
@@ -523,7 +523,7 @@ describe('CVDateTime', () => {
         });
         TestUtils.assertSuccess(result);
         const testDate = result.success;
-        TestUtils.strictEqual(CVDateTime.timestamp(testDate), Date.UTC(2024, 11, 30));
+        assert.strictEqual(CVDateTime.timestamp(testDate), Date.UTC(2024, 11, 30));
         // @ts-expect-error Accessing private member for test purposes
         TestUtils.assertSome(testDate.gregorianDate);
         // @ts-expect-error Accessing private member for test purposes
@@ -542,7 +542,7 @@ describe('CVDateTime', () => {
         });
         TestUtils.assertSuccess(result);
         const testDate = result.success;
-        TestUtils.strictEqual(CVDateTime.timestamp(testDate), Date.UTC(2025, 0, 16));
+        assert.strictEqual(CVDateTime.timestamp(testDate), Date.UTC(2025, 0, 16));
         // @ts-expect-error Accessing private member for test purposes
         TestUtils.assertSome(testDate.gregorianDate);
         // @ts-expect-error Accessing private member for test purposes
@@ -886,7 +886,7 @@ describe('CVDateTime', () => {
       // @ts-expect-error Accessing private member for test purposes
       TestUtils.assertNone(testDate.time);
 
-      TestUtils.strictEqual(CVDateTime.getYear(testDate), 2025);
+      assert.strictEqual(CVDateTime.getYear(testDate), 2025);
       // @ts-expect-error Accessing private member for test purposes
       TestUtils.assertSome(testDate.gregorianDate);
       // @ts-expect-error Accessing private member for test purposes
@@ -894,7 +894,7 @@ describe('CVDateTime', () => {
       // @ts-expect-error Accessing private member for test purposes
       TestUtils.assertNone(testDate.time);
 
-      TestUtils.strictEqual(CVDateTime.getMonth(testDate), 6);
+      assert.strictEqual(CVDateTime.getMonth(testDate), 6);
       // @ts-expect-error Accessing private member for test purposes
       TestUtils.assertSome(testDate.gregorianDate);
       // @ts-expect-error Accessing private member for test purposes
@@ -902,8 +902,8 @@ describe('CVDateTime', () => {
       // @ts-expect-error Accessing private member for test purposes
       TestUtils.assertNone(testDate.time);
 
-      TestUtils.strictEqual(CVDateTime.getMonthDay(testDate), 23);
-      TestUtils.strictEqual(CVDateTime.getHour23(testDate), 9);
+      assert.strictEqual(CVDateTime.getMonthDay(testDate), 23);
+      assert.strictEqual(CVDateTime.getHour23(testDate), 9);
       // @ts-expect-error Accessing private member for test purposes
       TestUtils.assertSome(testDate.gregorianDate);
       // @ts-expect-error Accessing private member for test purposes
@@ -911,14 +911,14 @@ describe('CVDateTime', () => {
       // @ts-expect-error Accessing private member for test purposes
       TestUtils.assertSome(testDate.time);
 
-      TestUtils.strictEqual(CVDateTime.getMinute(testDate), 14);
-      TestUtils.strictEqual(CVDateTime.getSecond(testDate), 40);
-      TestUtils.strictEqual(CVDateTime.getMillisecond(testDate), 496);
+      assert.strictEqual(CVDateTime.getMinute(testDate), 14);
+      assert.strictEqual(CVDateTime.getSecond(testDate), 40);
+      assert.strictEqual(CVDateTime.getMillisecond(testDate), 496);
     });
 
     it('Get seconds then monthDay', () => {
       const testDate = CVDateTime.fromTimestampOrThrow(1_750_670_080_496, 0);
-      TestUtils.strictEqual(CVDateTime.getSecond(testDate), 40);
+      assert.strictEqual(CVDateTime.getSecond(testDate), 40);
       // @ts-expect-error Accessing private member for test purposes
       TestUtils.assertNone(testDate.gregorianDate);
       // @ts-expect-error Accessing private member for test purposes
@@ -926,7 +926,7 @@ describe('CVDateTime', () => {
       // @ts-expect-error Accessing private member for test purposes
       TestUtils.assertSome(testDate.time);
 
-      TestUtils.strictEqual(CVDateTime.getMonthDay(testDate), 23);
+      assert.strictEqual(CVDateTime.getMonthDay(testDate), 23);
       // @ts-expect-error Accessing private member for test purposes
       TestUtils.assertSome(testDate.gregorianDate);
       // @ts-expect-error Accessing private member for test purposes
@@ -934,7 +934,7 @@ describe('CVDateTime', () => {
       // @ts-expect-error Accessing private member for test purposes
       TestUtils.assertSome(testDate.time);
 
-      TestUtils.strictEqual(CVDateTime.getHour23(testDate), 9);
+      assert.strictEqual(CVDateTime.getHour23(testDate), 9);
       // @ts-expect-error Accessing private member for test purposes
       TestUtils.assertSome(testDate.gregorianDate);
       // @ts-expect-error Accessing private member for test purposes
@@ -945,7 +945,7 @@ describe('CVDateTime', () => {
 
     it('Get isoYear, isoWeek, weekday and milliseconds', () => {
       const testDate = CVDateTime.fromTimestampOrThrow(1_750_670_080_496, 0);
-      TestUtils.strictEqual(CVDateTime.getIsoYear(testDate), 2025);
+      assert.strictEqual(CVDateTime.getIsoYear(testDate), 2025);
       // @ts-expect-error Accessing private member for test purposes
       TestUtils.assertNone(testDate.gregorianDate);
       // @ts-expect-error Accessing private member for test purposes
@@ -953,7 +953,7 @@ describe('CVDateTime', () => {
       // @ts-expect-error Accessing private member for test purposes
       TestUtils.assertNone(testDate.time);
 
-      TestUtils.strictEqual(CVDateTime.getIsoWeek(testDate), 26);
+      assert.strictEqual(CVDateTime.getIsoWeek(testDate), 26);
       // @ts-expect-error Accessing private member for test purposes
       TestUtils.assertNone(testDate.gregorianDate);
       // @ts-expect-error Accessing private member for test purposes
@@ -961,8 +961,8 @@ describe('CVDateTime', () => {
       // @ts-expect-error Accessing private member for test purposes
       TestUtils.assertNone(testDate.time);
 
-      TestUtils.strictEqual(CVDateTime.getWeekday(testDate), 1);
-      TestUtils.strictEqual(CVDateTime.getMillisecond(testDate), 496);
+      assert.strictEqual(CVDateTime.getWeekday(testDate), 1);
+      assert.strictEqual(CVDateTime.getMillisecond(testDate), 496);
       // @ts-expect-error Accessing private member for test purposes
       TestUtils.assertNone(testDate.gregorianDate);
       // @ts-expect-error Accessing private member for test purposes
@@ -973,7 +973,7 @@ describe('CVDateTime', () => {
 
     it('Get minutes, isoYear, weekday, year and monthDay', () => {
       const testDate = CVDateTime.fromTimestampOrThrow(1_750_670_080_496, 0);
-      TestUtils.strictEqual(CVDateTime.getMinute(testDate), 14);
+      assert.strictEqual(CVDateTime.getMinute(testDate), 14);
       // @ts-expect-error Accessing private member for test purposes
       TestUtils.assertNone(testDate.gregorianDate);
       // @ts-expect-error Accessing private member for test purposes
@@ -981,7 +981,7 @@ describe('CVDateTime', () => {
       // @ts-expect-error Accessing private member for test purposes
       TestUtils.assertSome(testDate.time);
 
-      TestUtils.strictEqual(CVDateTime.getIsoYear(testDate), 2025);
+      assert.strictEqual(CVDateTime.getIsoYear(testDate), 2025);
       // @ts-expect-error Accessing private member for test purposes
       TestUtils.assertNone(testDate.gregorianDate);
       // @ts-expect-error Accessing private member for test purposes
@@ -989,7 +989,7 @@ describe('CVDateTime', () => {
       // @ts-expect-error Accessing private member for test purposes
       TestUtils.assertSome(testDate.time);
 
-      TestUtils.strictEqual(CVDateTime.getWeekday(testDate), 1);
+      assert.strictEqual(CVDateTime.getWeekday(testDate), 1);
       // @ts-expect-error Accessing private member for test purposes
       TestUtils.assertNone(testDate.gregorianDate);
       // @ts-expect-error Accessing private member for test purposes
@@ -997,7 +997,7 @@ describe('CVDateTime', () => {
       // @ts-expect-error Accessing private member for test purposes
       TestUtils.assertSome(testDate.time);
 
-      TestUtils.strictEqual(CVDateTime.getYear(testDate), 2025);
+      assert.strictEqual(CVDateTime.getYear(testDate), 2025);
       // @ts-expect-error Accessing private member for test purposes
       TestUtils.assertSome(testDate.gregorianDate);
       // @ts-expect-error Accessing private member for test purposes
@@ -1005,7 +1005,7 @@ describe('CVDateTime', () => {
       // @ts-expect-error Accessing private member for test purposes
       TestUtils.assertSome(testDate.time);
 
-      TestUtils.strictEqual(CVDateTime.getMonthDay(testDate), 23);
+      assert.strictEqual(CVDateTime.getMonthDay(testDate), 23);
       // @ts-expect-error Accessing private member for test purposes
       TestUtils.assertSome(testDate.gregorianDate);
       // @ts-expect-error Accessing private member for test purposes
@@ -1023,10 +1023,10 @@ describe('CVDateTime', () => {
             monthDay: 3,
             zoneOffset: 0,
           });
-          TestUtils.strictEqual(CVDateTime.getYear(testDate), 2022);
-          TestUtils.strictEqual(CVDateTime.getIsoYear(testDate), 2022);
-          TestUtils.strictEqual(CVDateTime.getIsoWeek(testDate), 1);
-          TestUtils.strictEqual(CVDateTime.getWeekday(testDate), 1);
+          assert.strictEqual(CVDateTime.getYear(testDate), 2022);
+          assert.strictEqual(CVDateTime.getIsoYear(testDate), 2022);
+          assert.strictEqual(CVDateTime.getIsoWeek(testDate), 1);
+          assert.strictEqual(CVDateTime.getWeekday(testDate), 1);
         });
 
         it('End of year', () => {
@@ -1036,10 +1036,10 @@ describe('CVDateTime', () => {
             monthDay: 28,
             zoneOffset: 0,
           });
-          TestUtils.strictEqual(CVDateTime.getYear(testDate), 2025);
-          TestUtils.strictEqual(CVDateTime.getIsoYear(testDate), 2025);
-          TestUtils.strictEqual(CVDateTime.getIsoWeek(testDate), 52);
-          TestUtils.strictEqual(CVDateTime.getWeekday(testDate), 7);
+          assert.strictEqual(CVDateTime.getYear(testDate), 2025);
+          assert.strictEqual(CVDateTime.getIsoYear(testDate), 2025);
+          assert.strictEqual(CVDateTime.getIsoWeek(testDate), 52);
+          assert.strictEqual(CVDateTime.getWeekday(testDate), 7);
         });
       });
 
@@ -1050,10 +1050,10 @@ describe('CVDateTime', () => {
           monthDay: 2,
           zoneOffset: 0,
         });
-        TestUtils.strictEqual(CVDateTime.getYear(testDate), 2022);
-        TestUtils.strictEqual(CVDateTime.getIsoYear(testDate), 2021);
-        TestUtils.strictEqual(CVDateTime.getIsoWeek(testDate), 52);
-        TestUtils.strictEqual(CVDateTime.getWeekday(testDate), 7);
+        assert.strictEqual(CVDateTime.getYear(testDate), 2022);
+        assert.strictEqual(CVDateTime.getIsoYear(testDate), 2021);
+        assert.strictEqual(CVDateTime.getIsoWeek(testDate), 52);
+        assert.strictEqual(CVDateTime.getWeekday(testDate), 7);
       });
 
       it('isoYear is year + 1', () => {
@@ -1063,10 +1063,10 @@ describe('CVDateTime', () => {
           monthDay: 29,
           zoneOffset: 0,
         });
-        TestUtils.strictEqual(CVDateTime.getYear(testDate), 2025);
-        TestUtils.strictEqual(CVDateTime.getIsoYear(testDate), 2026);
-        TestUtils.strictEqual(CVDateTime.getIsoWeek(testDate), 1);
-        TestUtils.strictEqual(CVDateTime.getWeekday(testDate), 1);
+        assert.strictEqual(CVDateTime.getYear(testDate), 2025);
+        assert.strictEqual(CVDateTime.getIsoYear(testDate), 2026);
+        assert.strictEqual(CVDateTime.getIsoWeek(testDate), 1);
+        assert.strictEqual(CVDateTime.getWeekday(testDate), 1);
       });
     });
   });
@@ -1159,7 +1159,7 @@ describe('CVDateTime', () => {
         pipe(testDate, CVDateTime.setHour11(4), Result.map(CVDateTime.timestamp)),
         Date.UTC(2024, 5, 23, 15, 43, 27, 654),
       );
-      TestUtils.strictEqual(
+      assert.strictEqual(
         pipe(testDate, CVDateTime.setMeridiem(0), CVDateTime.timestamp),
         Date.UTC(2024, 5, 23, 4, 43, 27, 654),
       );
@@ -1388,13 +1388,13 @@ describe('CVDateTime', () => {
     });
 
     it('Not passing', () => {
-      TestUtils.assertFalse(pipe(CVDateTime.isFirstMonthDay(feb29_2020)));
+      assert.isFalse(pipe(CVDateTime.isFirstMonthDay(feb29_2020)));
     });
   });
 
   describe('isLastMonthDay', () => {
     it('Passing', () => {
-      TestUtils.assertTrue(CVDateTime.isLastMonthDay(feb29_2020));
+      assert.isTrue(CVDateTime.isLastMonthDay(feb29_2020));
     });
 
     it('Not passing', () => {
@@ -1418,7 +1418,7 @@ describe('CVDateTime', () => {
     });
 
     it('Not passing', () => {
-      TestUtils.assertFalse(pipe(CVDateTime.isFirstYearDay(feb29_2020)));
+      assert.isFalse(pipe(CVDateTime.isFirstYearDay(feb29_2020)));
     });
   });
 
@@ -1431,7 +1431,7 @@ describe('CVDateTime', () => {
     });
 
     it('Not passing', () => {
-      TestUtils.assertFalse(pipe(CVDateTime.isLastYearDay(feb29_2020)));
+      assert.isFalse(pipe(CVDateTime.isLastYearDay(feb29_2020)));
     });
   });
 
@@ -1444,7 +1444,7 @@ describe('CVDateTime', () => {
     });
 
     it('Not passing', () => {
-      TestUtils.assertFalse(pipe(CVDateTime.isFirstIsoYearDay(feb29_2020)));
+      assert.isFalse(pipe(CVDateTime.isFirstIsoYearDay(feb29_2020)));
     });
   });
 
@@ -1457,12 +1457,12 @@ describe('CVDateTime', () => {
     });
 
     it('Not passing', () => {
-      TestUtils.assertFalse(pipe(CVDateTime.isLastIsoYearDay(feb29_2020)));
+      assert.isFalse(pipe(CVDateTime.isLastIsoYearDay(feb29_2020)));
     });
   });
 
   it('toFirstMonthDay', () => {
-    TestUtils.strictEqual(
+    assert.strictEqual(
       pipe(feb29_2020, CVDateTime.toFirstMonthDay, CVDateTime.timestamp),
       Date.UTC(2020, 1, 1),
     );
@@ -1476,35 +1476,35 @@ describe('CVDateTime', () => {
   });
 
   it('toFirstYearDay', () => {
-    TestUtils.strictEqual(
+    assert.strictEqual(
       pipe(feb29_2020, CVDateTime.toFirstYearDay, CVDateTime.timestamp),
       Date.UTC(2020, 0, 1),
     );
   });
 
   it('toLastYearDay', () => {
-    TestUtils.strictEqual(
+    assert.strictEqual(
       pipe(feb29_2020, CVDateTime.toLastYearDay, CVDateTime.timestamp),
       Date.UTC(2020, 11, 31),
     );
   });
 
   it('toFirstIsoYearDay', () => {
-    TestUtils.strictEqual(
+    assert.strictEqual(
       pipe(feb29_2020, CVDateTime.toFirstIsoYearDay, CVDateTime.timestamp),
       Date.UTC(2019, 11, 30),
     );
   });
 
   it('toLastIsoYearWeek', () => {
-    TestUtils.strictEqual(
+    assert.strictEqual(
       pipe(feb29_2020, CVDateTime.toLastIsoYearWeek, CVDateTime.timestamp),
       Date.UTC(2021, 0, 2),
     );
   });
 
   it('toLastIsoYearDay', () => {
-    TestUtils.strictEqual(
+    assert.strictEqual(
       pipe(feb29_2020, CVDateTime.toLastIsoYearDay, CVDateTime.timestamp),
       Date.UTC(2021, 0, 3),
     );

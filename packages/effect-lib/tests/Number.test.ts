@@ -4,7 +4,7 @@ import * as BigDecimal from 'effect/BigDecimal';
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as MNumber from '@parischap/effect-lib/MNumber';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 const hugeBigInt = 10n ** 500n;
 const hugeBigDecimal = BigDecimal.make(hugeBigInt, 0);
@@ -18,7 +18,7 @@ describe('MNumber', () => {
       TestUtils.doesNotThrow(() => MNumber.unsafeFromBigDecimal(hugeBigDecimal));
     });
     it('Passing', () => {
-      TestUtils.strictEqual(MNumber.unsafeFromBigDecimal(bigDecimal), number);
+      assert.strictEqual(MNumber.unsafeFromBigDecimal(bigDecimal), number);
     });
   });
 
@@ -36,7 +36,7 @@ describe('MNumber', () => {
       TestUtils.doesNotThrow(() => MNumber.unsafeFromBigInt(hugeBigInt));
     });
     it('Passing', () => {
-      TestUtils.strictEqual(MNumber.unsafeFromBigInt(bigint), number);
+      assert.strictEqual(MNumber.unsafeFromBigInt(bigint), number);
     });
   });
 
@@ -51,10 +51,10 @@ describe('MNumber', () => {
 
   describe('opposite', () => {
     it('Positive number', () => {
-      TestUtils.strictEqual(MNumber.opposite(3), -3);
+      assert.strictEqual(MNumber.opposite(3), -3);
     });
     it('Negative number', () => {
-      TestUtils.strictEqual(MNumber.opposite(-3), 3);
+      assert.strictEqual(MNumber.opposite(-3), 3);
     });
   });
 
@@ -66,129 +66,129 @@ describe('MNumber', () => {
       TestUtils.doesNotThrow(() => MNumber.unsafeFromString('NaN'));
     });
     it('Passing', () => {
-      TestUtils.strictEqual(MNumber.unsafeFromString('31'), 31);
+      assert.strictEqual(MNumber.unsafeFromString('31'), 31);
     });
   });
 
   describe('intModulo', () => {
     it('Positive self, positive divisor: 5 mod 3', () => {
-      TestUtils.strictEqual(MNumber.intModulo(3)(5), 2);
+      assert.strictEqual(MNumber.intModulo(3)(5), 2);
     });
     it('Positive self, positive divisor: 3 mod 5', () => {
-      TestUtils.strictEqual(MNumber.intModulo(5)(3), 3);
+      assert.strictEqual(MNumber.intModulo(5)(3), 3);
     });
     it('Negative self, positive divisor: -5 mod 3', () => {
-      TestUtils.strictEqual(MNumber.intModulo(3)(-5), 1);
+      assert.strictEqual(MNumber.intModulo(3)(-5), 1);
     });
     it('Negative self, positive divisor: -3 mod 5', () => {
-      TestUtils.strictEqual(MNumber.intModulo(5)(-3), 2);
+      assert.strictEqual(MNumber.intModulo(5)(-3), 2);
     });
     it('Zero result', () => {
-      TestUtils.strictEqual(pipe(-3, MNumber.intModulo(3), Math.abs), 0);
+      assert.strictEqual(pipe(-3, MNumber.intModulo(3), Math.abs), 0);
     });
     it('Positive self, negative divisor: 5 mod -3', () => {
-      TestUtils.strictEqual(MNumber.intModulo(-3)(5), 2);
+      assert.strictEqual(MNumber.intModulo(-3)(5), 2);
     });
     it('Positive self, negative divisor: 3 mod -5', () => {
-      TestUtils.strictEqual(MNumber.intModulo(-5)(3), 3);
+      assert.strictEqual(MNumber.intModulo(-5)(3), 3);
     });
     it('Negative self, negative divisor: -5 mod -3', () => {
-      TestUtils.strictEqual(MNumber.intModulo(-3)(-5), 1);
+      assert.strictEqual(MNumber.intModulo(-3)(-5), 1);
     });
     it('Negative self, negative divisor: -3 mod -5', () => {
-      TestUtils.strictEqual(MNumber.intModulo(-5)(-3), 2);
+      assert.strictEqual(MNumber.intModulo(-5)(-3), 2);
     });
   });
 
   describe('quotientAndRemainder', () => {
     it('Positive dividend, positive divisor', () => {
-      TestUtils.deepStrictEqual(pipe(27, MNumber.quotientAndRemainder(5)), [5, 2]);
+      assert.deepStrictEqual(pipe(27, MNumber.quotientAndRemainder(5)), [5, 2]);
     });
 
     it('Negative dividend, positive divisor', () => {
-      TestUtils.deepStrictEqual(pipe(-27, MNumber.quotientAndRemainder(5)), [-6, 3]);
+      assert.deepStrictEqual(pipe(-27, MNumber.quotientAndRemainder(5)), [-6, 3]);
     });
 
     it('Positive dividend, negative divisor', () => {
-      TestUtils.deepStrictEqual(pipe(27, MNumber.quotientAndRemainder(-5)), [-6, -3]);
+      assert.deepStrictEqual(pipe(27, MNumber.quotientAndRemainder(-5)), [-6, -3]);
     });
 
     it('Negative dividend, negative divisor', () => {
-      TestUtils.deepStrictEqual(pipe(-27, MNumber.quotientAndRemainder(-5)), [5, -2]);
+      assert.deepStrictEqual(pipe(-27, MNumber.quotientAndRemainder(-5)), [5, -2]);
     });
   });
 
   describe('equals', () => {
     it('Passing', () => {
-      TestUtils.assertTrue(pipe(0.3, MNumber.equals(0.1 + 0.2)));
+      assert.isTrue(pipe(0.3, MNumber.equals(0.1 + 0.2)));
     });
 
     it('Not passing', () => {
-      TestUtils.assertFalse(pipe(0.4, MNumber.equals(0.1 + 0.2)));
+      assert.isFalse(pipe(0.4, MNumber.equals(0.1 + 0.2)));
     });
   });
 
   describe('trunc', () => {
     it('Number that does not need to be truncated', () => {
-      TestUtils.assertTrue(pipe(54.5, MNumber.trunc(2), MNumber.equals(54.5)));
+      assert.isTrue(pipe(54.5, MNumber.trunc(2), MNumber.equals(54.5)));
     });
 
     it('Positive number, first following digit < 5', () => {
-      TestUtils.assertTrue(pipe(0.544, MNumber.trunc(2), MNumber.equals(0.54)));
+      assert.isTrue(pipe(0.544, MNumber.trunc(2), MNumber.equals(0.54)));
     });
 
     it('Positive number, first following digit >= 5', () => {
-      TestUtils.assertTrue(pipe(0.545, MNumber.trunc(2), MNumber.equals(0.54)));
+      assert.isTrue(pipe(0.545, MNumber.trunc(2), MNumber.equals(0.54)));
     });
 
     it('Negative number, first following digit < 5', () => {
-      TestUtils.assertTrue(pipe(-0.544, MNumber.trunc(2), MNumber.equals(-0.54)));
+      assert.isTrue(pipe(-0.544, MNumber.trunc(2), MNumber.equals(-0.54)));
     });
 
     it('Negative number, first following digit >= 5', () => {
-      TestUtils.assertTrue(pipe(-0.545, MNumber.trunc(2), MNumber.equals(-0.54)));
+      assert.isTrue(pipe(-0.545, MNumber.trunc(2), MNumber.equals(-0.54)));
     });
   });
 
   describe('isMultipleOf', () => {
     it('Passing', () => {
-      TestUtils.assertTrue(pipe(27, MNumber.isMultipleOf(3)));
+      assert.isTrue(pipe(27, MNumber.isMultipleOf(3)));
     });
 
     it('Not passing', () => {
-      TestUtils.assertFalse(pipe(26, MNumber.isMultipleOf(3)));
+      assert.isFalse(pipe(26, MNumber.isMultipleOf(3)));
     });
   });
 
   describe('shift', () => {
     it('Positive shift', () => {
-      TestUtils.strictEqual(pipe(5.04, MNumber.shift(2)), 504);
+      assert.strictEqual(pipe(5.04, MNumber.shift(2)), 504);
     });
 
     it('Negative shift', () => {
-      TestUtils.strictEqual(pipe(504, MNumber.shift(-2)), 5.04);
+      assert.strictEqual(pipe(504, MNumber.shift(-2)), 5.04);
     });
   });
 
   describe('sign2', () => {
     it('Strictly positive value', () => {
-      TestUtils.strictEqual(MNumber.sign2(5), 1);
+      assert.strictEqual(MNumber.sign2(5), 1);
     });
 
     it('+0', () => {
-      TestUtils.strictEqual(MNumber.sign2(0), 1);
+      assert.strictEqual(MNumber.sign2(0), 1);
     });
 
     it('0', () => {
-      TestUtils.strictEqual(MNumber.sign2(0), 1);
+      assert.strictEqual(MNumber.sign2(0), 1);
     });
 
     it('-0', () => {
-      TestUtils.strictEqual(MNumber.sign2(-0), -1);
+      assert.strictEqual(MNumber.sign2(-0), -1);
     });
 
     it('Strictly negative value', () => {
-      TestUtils.strictEqual(MNumber.sign2(-5), -1);
+      assert.strictEqual(MNumber.sign2(-5), -1);
     });
   });
 });

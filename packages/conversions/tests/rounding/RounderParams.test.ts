@@ -4,7 +4,7 @@ import * as TestUtils from '@parischap/configs/TestUtils';
 import * as CVRounderParams from '@parischap/conversions/CVRounderParams';
 import * as CVRoundingOption from '@parischap/conversions/CVRoundingOption';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('CVRounderParams', () => {
   const rounderParams = CVRounderParams.make({
@@ -20,7 +20,7 @@ describe('CVRounderParams', () => {
     });
 
     it('.toString()', () => {
-      TestUtils.strictEqual(rounderParams.toString(), 'HalfEvenRounderWith3Precision');
+      assert.strictEqual(rounderParams.toString(), 'HalfEvenRounderWith3Precision');
     });
   });
 });

@@ -10,7 +10,7 @@ import * as CVDateTimeFormatPlaceholder from '@parischap/conversions/CVDateTimeF
 import * as CVDateTimeFormatSeparator from '@parischap/conversions/CVDateTimeFormatSeparator';
 import * as CVDateTimeParser from '@parischap/conversions/CVDateTimeParser';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('CVDateTimeParser', () => {
   const placeholder = CVDateTimeFormatPlaceholder.make;
@@ -105,7 +105,7 @@ describe('CVDateTimeParser', () => {
     });
 
     it('.toString()', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         isoParser.toString(),
         "'yyyy-MM-ddTHH:mm:ss,SSSzHzH:zmzm' parser in 'en-GB' context",
       );
@@ -114,7 +114,7 @@ describe('CVDateTimeParser', () => {
 
   describe('name', () => {
     it('returns the parser name', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         CVDateTimeParser.name(isoParser),
         "'yyyy-MM-ddTHH:mm:ss,SSSzHzH:zmzm' parser in 'en-GB' context",
       );
@@ -178,7 +178,7 @@ describe('CVDateTimeParser', () => {
     const parseOrThrow = CVDateTimeParser.parseOrThrow(isoParser);
 
     it('Matching: returns a CVDateTime directly', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         CVDateTime.timestamp(parseOrThrow('2025-06-15T10:30:00,000+00:00')),
         Date.UTC(2025, 5, 15, 10, 30, 0, 0),
       );

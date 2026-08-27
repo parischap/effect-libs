@@ -9,7 +9,7 @@ import * as MMatch from '@parischap/effect-lib/MMatch';
 import * as MPredicate from '@parischap/effect-lib/MPredicate';
 import type * as MTypes from '@parischap/effect-lib/MTypes';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 describe('MMatch', () => {
   it('moduleTag', () => {
     TestUtils.assertEquals(
@@ -20,7 +20,7 @@ describe('MMatch', () => {
 
   describe('Predicate matching', () => {
     it('when', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         pipe(
           5,
           MMatch.make,
@@ -33,7 +33,7 @@ describe('MMatch', () => {
     });
 
     it('whenIs', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         pipe(
           5,
           MMatch.make,
@@ -46,7 +46,7 @@ describe('MMatch', () => {
     });
 
     it('orElse', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         pipe(
           4,
           MMatch.make,
@@ -59,7 +59,7 @@ describe('MMatch', () => {
     });
 
     it('whenOr', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         pipe(
           5,
           MMatch.make,
@@ -76,7 +76,7 @@ describe('MMatch', () => {
     });
 
     it('whenAnd', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         pipe(
           5,
           MMatch.make,
@@ -89,7 +89,7 @@ describe('MMatch', () => {
     });
 
     it('tryFunction', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         pipe(
           [3, 4],
           MMatch.make,
@@ -113,7 +113,7 @@ describe('MMatch', () => {
     const isC = (value: TestEnum): value is TestEnum.C => value === TestEnum.C;
 
     it('when and exhaustive', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         pipe(
           TestEnum.B,
           MMatch.make,
@@ -127,7 +127,7 @@ describe('MMatch', () => {
     });
 
     it('whenIs and exhaustive passing', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         pipe(
           TestEnum.B,
           MMatch.make,
@@ -141,7 +141,7 @@ describe('MMatch', () => {
     });
 
     it('whenIs and exhaustive not passing', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         pipe(
           TestEnum.B,
           MMatch.make,
@@ -155,7 +155,7 @@ describe('MMatch', () => {
     });
 
     it('whenIsOr and exhaustive passing', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         pipe(
           TestEnum.B,
           MMatch.make,
@@ -172,7 +172,7 @@ describe('MMatch', () => {
     });
 
     it('whenIsOr and exhaustive not passing', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         pipe(
           TestEnum.B,
           MMatch.make,
@@ -189,7 +189,7 @@ describe('MMatch', () => {
     });
 
     it('orElse', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         pipe(
           TestEnum.B,
           MMatch.make,
@@ -202,7 +202,7 @@ describe('MMatch', () => {
     });
 
     it('whenOr and exhaustive passing', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         pipe(
           TestEnum.B,
           MMatch.make,
@@ -219,7 +219,7 @@ describe('MMatch', () => {
     });
 
     it('whenOr and exhaustive not passing', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         pipe(
           TestEnum.B,
           MMatch.make,
@@ -236,7 +236,7 @@ describe('MMatch', () => {
     });
 
     it('unsafeWhen', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         pipe(
           Array.of(0) as unknown,
           MMatch.make,

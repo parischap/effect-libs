@@ -7,7 +7,7 @@ import * as MPredicate from '@parischap/effect-lib/MPredicate';
 import * as PPPropertyFilter from '@parischap/pretty-print/PPPropertyFilter';
 import * as PPValue from '@parischap/pretty-print/PPValue';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('PPPropertyFilter', () => {
   it('moduleTag', () => {
@@ -34,11 +34,11 @@ describe('PPPropertyFilter', () => {
   });
 
   it('.toString()', () => {
-    TestUtils.strictEqual(PPPropertyFilter.removeFunctions.toString(), 'RemoveFunctions');
+    assert.strictEqual(PPPropertyFilter.removeFunctions.toString(), 'RemoveFunctions');
   });
 
   it('.pipe()', () => {
-    TestUtils.strictEqual(
+    assert.strictEqual(
       PPPropertyFilter.removeFunctions.pipe(PPPropertyFilter.id),
       'RemoveFunctions',
     );
@@ -68,53 +68,53 @@ describe('PPPropertyFilter', () => {
   const values = Array.make(fnValue, objValue, nonEnumerableValue, symbolicValue, stringValue);
 
   it('none keeps everything', () => {
-    TestUtils.deepStrictEqual(PPPropertyFilter.action(PPPropertyFilter.none)(values), values);
+    assert.deepStrictEqual(PPPropertyFilter.action(PPPropertyFilter.none)(values), values);
   });
 
   it('removeNonFunctions keeps only functions', () => {
-    TestUtils.deepStrictEqual(
+    assert.deepStrictEqual(
       PPPropertyFilter.action(PPPropertyFilter.removeNonFunctions)(values),
       Array.of(fnValue),
     );
   });
 
   it('removeFunctions removes functions', () => {
-    TestUtils.deepStrictEqual(
+    assert.deepStrictEqual(
       PPPropertyFilter.action(PPPropertyFilter.removeFunctions)(values),
       Array.make(objValue, nonEnumerableValue, symbolicValue, stringValue),
     );
   });
 
   it('removeNonEnumerables keeps only enumerable properties', () => {
-    TestUtils.deepStrictEqual(
+    assert.deepStrictEqual(
       PPPropertyFilter.action(PPPropertyFilter.removeNonEnumerables)(values),
       Array.make(symbolicValue, stringValue),
     );
   });
 
   it('removeEnumerables keeps only non-enumerable properties', () => {
-    TestUtils.deepStrictEqual(
+    assert.deepStrictEqual(
       PPPropertyFilter.action(PPPropertyFilter.removeEnumerables)(values),
       Array.make(fnValue, objValue, nonEnumerableValue),
     );
   });
 
   it('removeStringKeys keeps only symbolic keys', () => {
-    TestUtils.deepStrictEqual(
+    assert.deepStrictEqual(
       PPPropertyFilter.action(PPPropertyFilter.removeStringKeys)(values),
       Array.of(symbolicValue),
     );
   });
 
   it('removeSymbolicKeys keeps only string keys', () => {
-    TestUtils.deepStrictEqual(
+    assert.deepStrictEqual(
       PPPropertyFilter.action(PPPropertyFilter.removeSymbolicKeys)(values),
       Array.make(fnValue, objValue, nonEnumerableValue, stringValue),
     );
   });
 
   it('removeNotFulfillingKeyPredicateMaker keeps only matching string keys', () => {
-    TestUtils.deepStrictEqual(
+    assert.deepStrictEqual(
       PPPropertyFilter.action(
         PPPropertyFilter.removeNotFulfillingKeyPredicateMaker({
           id: 'OnlyA',
@@ -131,7 +131,7 @@ describe('PPPropertyFilter', () => {
         id: 'NoFunctionsNoSymbols',
         filters: [PPPropertyFilter.removeFunctions, PPPropertyFilter.removeSymbolicKeys],
       });
-      TestUtils.deepStrictEqual(
+      assert.deepStrictEqual(
         PPPropertyFilter.action(merged)(values),
         Array.make(objValue, nonEnumerableValue, stringValue),
       );

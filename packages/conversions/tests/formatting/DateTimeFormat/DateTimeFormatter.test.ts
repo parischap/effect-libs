@@ -8,7 +8,7 @@ import * as CVDateTimeFormatPlaceholder from '@parischap/conversions/CVDateTimeF
 import * as CVDateTimeFormatSeparator from '@parischap/conversions/CVDateTimeFormatSeparator';
 import * as CVDateTimeFormatter from '@parischap/conversions/CVDateTimeFormatter';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('CVDateTimeFormatter', () => {
   const placeholder = CVDateTimeFormatPlaceholder.make;
@@ -106,7 +106,7 @@ describe('CVDateTimeFormatter', () => {
     });
 
     it('.toString()', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         isoFormatter.toString(),
         "'yyyy-MM-ddTHH:mm:ss,SSSzHzH:zmzm' formatter in 'en-GB' context",
       );
@@ -115,7 +115,7 @@ describe('CVDateTimeFormatter', () => {
 
   describe('name', () => {
     it('returns the formatter name', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         CVDateTimeFormatter.name(isoFormatter),
         "'yyyy-MM-ddTHH:mm:ss,SSSzHzH:zmzm' formatter in 'en-GB' context",
       );
@@ -174,7 +174,7 @@ describe('CVDateTimeFormatter', () => {
     const formatOrThrow = CVDateTimeFormatter.formatOrThrow(isoFormatter);
 
     it('Matching: returns a string directly', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         formatOrThrow(
           CVDateTime.fromPartsOrThrow({ year: 2025, month: 1, monthDay: 1, zoneHour: 0 }),
         ),

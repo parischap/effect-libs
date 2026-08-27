@@ -7,7 +7,7 @@ import * as TestUtils from '@parischap/configs/TestUtils';
 import * as PPStyleMap from '@parischap/pretty-print/PPStyleMap';
 import * as PPValue from '@parischap/pretty-print/PPValue';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('PPStyleMap', () => {
   it('moduleTag', () => {
@@ -31,11 +31,11 @@ describe('PPStyleMap', () => {
   });
 
   it('.toString()', () => {
-    TestUtils.strictEqual(PPStyleMap.none.toString(), 'None');
+    assert.strictEqual(PPStyleMap.none.toString(), 'None');
   });
 
   it('.pipe()', () => {
-    TestUtils.strictEqual(PPStyleMap.none.pipe(PPStyleMap.id), 'None');
+    assert.strictEqual(PPStyleMap.none.pipe(PPStyleMap.id), 'None');
   });
 
   describe('get', () => {
@@ -44,7 +44,7 @@ describe('PPStyleMap', () => {
       const context = PPValue.fromTopValue({ a: 1 });
       const styled = ASContextStyler.style(styler)(context)('hello');
       const unstyled = ASText.toUnstyledString(styled);
-      TestUtils.strictEqual(unstyled, 'hello');
+      assert.strictEqual(unstyled, 'hello');
     });
 
     it('Returns the identity styler for a missing part name in none', () => {
@@ -52,7 +52,7 @@ describe('PPStyleMap', () => {
       const styled = ASContextStyler.style(PPStyleMap.get('ByPassed')(PPStyleMap.none))(context)(
         'hello',
       );
-      TestUtils.strictEqual(ASText.toAnsiString(styled), 'hello');
+      assert.strictEqual(ASText.toAnsiString(styled), 'hello');
     });
   });
 });

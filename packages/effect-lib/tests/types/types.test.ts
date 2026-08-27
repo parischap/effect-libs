@@ -3,7 +3,7 @@ import type * as Equal from 'effect/Equal';
 import * as TestUtils from '@parischap/configs/TestUtils';
 import type * as MTypes from '@parischap/effect-lib/MTypes';
 
-import { describe, it } from 'vitest';
+import { describe, it } from '@effect/vitest';
 
 const testSymbol: unique symbol = Symbol.for('testSymbol');
 

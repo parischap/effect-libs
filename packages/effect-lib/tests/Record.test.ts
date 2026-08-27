@@ -5,12 +5,12 @@ import * as Predicate from 'effect/Predicate';
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as MRecord from '@parischap/effect-lib/MRecord';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('MRecord', () => {
   describe('unsafeGet', () => {
     it('Passing', () => {
-      TestUtils.strictEqual(pipe({ a: 1, b: 2 }, MRecord.unsafeGet('a')), 1);
+      assert.strictEqual(pipe({ a: 1, b: 2 }, MRecord.unsafeGet('a')), 1);
     });
   });
 

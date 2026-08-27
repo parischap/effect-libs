@@ -1,7 +1,7 @@
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as CVSignValue from '@parischap/conversions/CVSignValue';
 
-import { describe, it } from 'vitest';
+import { describe, it } from '@effect/vitest';
 
 describe('CVSignValue', () => {
   describe('fromSignString', () => {

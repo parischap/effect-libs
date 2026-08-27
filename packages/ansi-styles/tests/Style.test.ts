@@ -7,7 +7,7 @@ import * as ASText from '@parischap/ansi-styles/ASText';
 import * as ASThreeBitColor from '@parischap/ansi-styles/ASThreeBitColor';
 import * as TestUtils from '@parischap/configs/TestUtils';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('ASStyle', () => {
   const { red, bold } = ASStyle;
@@ -25,25 +25,25 @@ describe('ASStyle', () => {
 
     describe('.toString()', () => {
       it('red before bold', () => {
-        TestUtils.strictEqual(boldRed1.toString(), 'BoldRed');
+        assert.strictEqual(boldRed1.toString(), 'BoldRed');
       });
       it('bold before red', () => {
-        TestUtils.strictEqual(boldRed2.toString(), 'BoldRed');
+        assert.strictEqual(boldRed2.toString(), 'BoldRed');
       });
       it('Other than color', () => {
-        TestUtils.strictEqual(ASStyle.struckThrough.toString(), 'StruckThrough');
+        assert.strictEqual(ASStyle.struckThrough.toString(), 'StruckThrough');
       });
       it('Default foreground color', () => {
-        TestUtils.strictEqual(ASStyle.defaultColor.toString(), 'DefaultColor');
+        assert.strictEqual(ASStyle.defaultColor.toString(), 'DefaultColor');
       });
       it('Default background color', () => {
-        TestUtils.strictEqual(ASStyle.bgDefaultColor.toString(), 'InDefaultColor');
+        assert.strictEqual(ASStyle.bgDefaultColor.toString(), 'InDefaultColor');
       });
     });
   });
 
   it('mergeOver', () => {
-    TestUtils.strictEqual(
+    assert.strictEqual(
       pipe(
         ASStyle.green,
         ASStyle.mergeOver(ASStyle.blinking),
@@ -54,7 +54,7 @@ describe('ASStyle', () => {
   });
 
   it('mergeUnder', () => {
-    TestUtils.strictEqual(
+    assert.strictEqual(
       pipe(
         ASStyle.green,
         ASStyle.mergeUnder(ASStyle.blinking),
@@ -73,9 +73,9 @@ describe('ASStyle', () => {
   });
 
   it('equivalence', () => {
-    TestUtils.assertTrue(ASStyle.equivalence(boldRed1, boldRed2));
-    TestUtils.assertFalse(ASStyle.equivalence(ASStyle.red, ASStyle.bold));
-    TestUtils.assertTrue(ASStyle.equivalence(ASStyle.none, ASStyle.none));
+    assert.isTrue(ASStyle.equivalence(boldRed1, boldRed2));
+    assert.isFalse(ASStyle.equivalence(ASStyle.red, ASStyle.bold));
+    assert.isTrue(ASStyle.equivalence(ASStyle.none, ASStyle.none));
   });
 
   it('Action', () => {
@@ -86,18 +86,18 @@ describe('ASStyle', () => {
   });
 
   it('toString on none', () => {
-    TestUtils.strictEqual(ASStyle.none.toString(), 'NoStyle');
+    assert.strictEqual(ASStyle.none.toString(), 'NoStyle');
   });
 
   it('color constructor', () => {
     const greenStyle = ASStyle.color(ASThreeBitColor.green);
-    TestUtils.strictEqual(greenStyle.toString(), 'Green');
-    TestUtils.assertTrue(ASText.isNotEmpty(greenStyle('foo')));
+    assert.strictEqual(greenStyle.toString(), 'Green');
+    assert.isTrue(ASText.isNotEmpty(greenStyle('foo')));
   });
 
   it('bgColor constructor', () => {
     const bgGreenStyle = ASStyle.bgColor(ASThreeBitColor.green);
-    TestUtils.strictEqual(bgGreenStyle.toString(), 'InGreen');
-    TestUtils.assertTrue(ASText.isNotEmpty(bgGreenStyle('foo')));
+    assert.strictEqual(bgGreenStyle.toString(), 'InGreen');
+    assert.isTrue(ASText.isNotEmpty(bgGreenStyle('foo')));
   });
 });

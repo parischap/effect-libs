@@ -2,7 +2,7 @@ import * as TestUtils from '@parischap/configs/TestUtils';
 import * as CVNumberBase10FormatScientificNotationOption from '@parischap/conversions/CVNumberBase10FormatScientificNotationOption';
 import * as CVScientificNotationParser from '@parischap/conversions/CVScientificNotationParser';
 
-import { describe, it } from 'vitest';
+import { describe, it } from '@effect/vitest';
 
 describe('toParser', () => {
   describe('None', () => {

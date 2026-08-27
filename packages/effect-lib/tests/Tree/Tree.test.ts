@@ -16,7 +16,7 @@ import * as MTreeNode from '@parischap/effect-lib/MTreeNode';
 import * as MTuple from '@parischap/effect-lib/MTuple';
 import type * as MTypes from '@parischap/effect-lib/MTypes';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('MTree', () => {
   /**
@@ -99,7 +99,7 @@ describe('MTree', () => {
   });
 
   it('unfoldAndFold', () => {
-    TestUtils.strictEqual(
+    assert.strictEqual(
       pipe(
         nonCyclicalObject1,
         MTree.unfoldAndFold({
@@ -115,21 +115,18 @@ describe('MTree', () => {
 
   describe('fold', () => {
     it('Non-cyclical value 1', () => {
-      TestUtils.strictEqual(
-        pipe(testTree1, MTree.fold({ foldNonLeaf, foldLeaf })),
-        foldedTestTree1,
-      );
+      assert.strictEqual(pipe(testTree1, MTree.fold({ foldNonLeaf, foldLeaf })), foldedTestTree1);
     });
 
     it('Non-cyclical value 2', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         pipe(testTree2, MTree.fold({ foldNonLeaf, foldLeaf })),
         '{ [{ { s1, s2 }, s3 }, [s4]], [{ { [s5] }, s6 }, s7, { { s1, s2 }, s3 }] }',
       );
     });
 
     it('Cyclical value', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         pipe(testTree3, MTree.fold({ foldNonLeaf, foldLeaf })),
         '{ [{ { s1, s2 }, s3 }, [s4]], [{ { [s5, Cyclical Array] }, s6 }, s7] }',
       );
@@ -137,7 +134,7 @@ describe('MTree', () => {
   });
 
   it('mapAccum', () => {
-    TestUtils.strictEqual(
+    assert.strictEqual(
       pipe(
         testTree1,
         MTree.mapAccum({
@@ -152,7 +149,7 @@ describe('MTree', () => {
   });
 
   it('map', () => {
-    TestUtils.strictEqual(
+    assert.strictEqual(
       pipe(
         testTree1,
         MTree.map({
@@ -166,7 +163,7 @@ describe('MTree', () => {
   });
 
   it('reduce', () => {
-    TestUtils.strictEqual(
+    assert.strictEqual(
       pipe(
         testTree1,
         MTree.reduce({
@@ -180,7 +177,7 @@ describe('MTree', () => {
   });
 
   it('reduceRight', () => {
-    TestUtils.strictEqual(
+    assert.strictEqual(
       pipe(
         testTree1,
         MTree.reduceRight({
@@ -194,7 +191,7 @@ describe('MTree', () => {
   });
 
   it('extendDown', () => {
-    TestUtils.strictEqual(
+    assert.strictEqual(
       pipe(
         testTree1,
         MTree.extendDown({
@@ -208,7 +205,7 @@ describe('MTree', () => {
   });
 
   it('extendUp', () => {
-    TestUtils.strictEqual(
+    assert.strictEqual(
       pipe(
         testTree1,
         MTree.extendUp({

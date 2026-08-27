@@ -4,7 +4,7 @@ import * as BigDecimal from 'effect/BigDecimal';
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as MBigDecimal from '@parischap/effect-lib/MBigDecimal';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('MBigDecimal', () => {
   describe('fromPrimitiveOption', () => {
@@ -69,28 +69,28 @@ describe('MBigDecimal', () => {
   describe('truncatedAndFollowingParts', () => {
     const truncatedAndFollowingParts = MBigDecimal.truncatedAndFollowingParts(1);
     it('Positive number, first fractional digit < 5', () => {
-      TestUtils.deepStrictEqual(truncatedAndFollowingParts(BigDecimal.make(544n, 2)), [
+      assert.deepStrictEqual(truncatedAndFollowingParts(BigDecimal.make(544n, 2)), [
         BigDecimal.make(54n, 1),
         BigDecimal.make(4n, 2),
       ]);
     });
 
     it('Positive number, first fractional digit >= 5', () => {
-      TestUtils.deepStrictEqual(truncatedAndFollowingParts(BigDecimal.make(545n, 2)), [
+      assert.deepStrictEqual(truncatedAndFollowingParts(BigDecimal.make(545n, 2)), [
         BigDecimal.make(54n, 1),
         BigDecimal.make(5n, 2),
       ]);
     });
 
     it('Negative number, first fractional digit < 5', () => {
-      TestUtils.deepStrictEqual(truncatedAndFollowingParts(BigDecimal.make(-544n, 2)), [
+      assert.deepStrictEqual(truncatedAndFollowingParts(BigDecimal.make(-544n, 2)), [
         BigDecimal.make(-54n, 1),
         BigDecimal.make(-4n, 2),
       ]);
     });
 
     it('Negative number, first fractional digit >= 5', () => {
-      TestUtils.deepStrictEqual(truncatedAndFollowingParts(BigDecimal.make(-545n, 2)), [
+      assert.deepStrictEqual(truncatedAndFollowingParts(BigDecimal.make(-545n, 2)), [
         BigDecimal.make(-54n, 1),
         BigDecimal.make(-5n, 2),
       ]);

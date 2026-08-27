@@ -4,7 +4,7 @@ import * as ASColor from '@parischap/ansi-styles/ASColor';
 import * as ASThreeBitColor from '@parischap/ansi-styles/ASThreeBitColor';
 import * as TestUtils from '@parischap/configs/TestUtils';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('ASColor', () => {
   it('moduleTag', () => {
@@ -16,15 +16,15 @@ describe('ASColor', () => {
 
   describe('equivalence', () => {
     it('Same color', () => {
-      TestUtils.assertTrue(ASColor.equivalence(ASThreeBitColor.green, ASThreeBitColor.green));
+      assert.isTrue(ASColor.equivalence(ASThreeBitColor.green, ASThreeBitColor.green));
     });
     it('Different color', () => {
-      TestUtils.assertFalse(ASColor.equivalence(ASThreeBitColor.green, ASThreeBitColor.red));
+      assert.isFalse(ASColor.equivalence(ASThreeBitColor.green, ASThreeBitColor.red));
     });
   });
 
   it('toString', () => {
-    TestUtils.strictEqual(ASColor.toString(ASThreeBitColor.green), 'Green');
-    TestUtils.strictEqual(ASColor.toString(ASThreeBitColor.brightRed), 'BrightRed');
+    assert.strictEqual(ASColor.toString(ASThreeBitColor.green), 'Green');
+    assert.strictEqual(ASColor.toString(ASThreeBitColor.brightRed), 'BrightRed');
   });
 });

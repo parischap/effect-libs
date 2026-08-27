@@ -3,7 +3,7 @@ import * as Option from 'effect/Option';
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as CVDateTimeFormatPlaceholder from '@parischap/conversions/CVDateTimeFormatPlaceholder';
 
-import { describe, it } from 'vitest';
+import { describe, it } from '@effect/vitest';
 
 describe('CVDateTimeFormatPlaceholder', () => {
   it('moduleTag', () => {

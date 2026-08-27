@@ -4,7 +4,7 @@ import * as ASText from '@parischap/ansi-styles/ASText';
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as PPStringifiedValue from '@parischap/pretty-print/PPStringifiedValue';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('PPStringifiedValue', () => {
   const twoLines: PPStringifiedValue.Type = Array.make(
@@ -14,7 +14,7 @@ describe('PPStringifiedValue', () => {
 
   describe('equivalence', () => {
     it('Matching', () => {
-      TestUtils.assertTrue(
+      assert.isTrue(
         PPStringifiedValue.equivalence(
           twoLines,
           Array.make(ASText.fromString('foo'), ASText.fromString('bar')),
@@ -23,17 +23,17 @@ describe('PPStringifiedValue', () => {
     });
 
     it('Non-matching', () => {
-      TestUtils.assertFalse(PPStringifiedValue.equivalence(twoLines, PPStringifiedValue.empty));
+      assert.isFalse(PPStringifiedValue.equivalence(twoLines, PPStringifiedValue.empty));
     });
   });
 
   describe('isEmpty', () => {
     it('True for empty', () => {
-      TestUtils.assertTrue(PPStringifiedValue.isEmpty(PPStringifiedValue.empty));
+      assert.isTrue(PPStringifiedValue.isEmpty(PPStringifiedValue.empty));
     });
 
     it('False for non-empty', () => {
-      TestUtils.assertFalse(PPStringifiedValue.isEmpty(twoLines));
+      assert.isFalse(PPStringifiedValue.isEmpty(twoLines));
     });
   });
 
@@ -46,25 +46,25 @@ describe('PPStringifiedValue', () => {
 
   describe('toLength', () => {
     it('Empty gives 0', () => {
-      TestUtils.strictEqual(PPStringifiedValue.toLength(PPStringifiedValue.empty), 0);
+      assert.strictEqual(PPStringifiedValue.toLength(PPStringifiedValue.empty), 0);
     });
 
     it('Sums lengths across lines', () => {
-      TestUtils.strictEqual(PPStringifiedValue.toLength(twoLines), 6);
+      assert.strictEqual(PPStringifiedValue.toLength(twoLines), 6);
     });
   });
 
   it('toAnsiString joins lines with a line break', () => {
-    TestUtils.strictEqual(PPStringifiedValue.toAnsiString()(twoLines), 'foo\nbar');
+    assert.strictEqual(PPStringifiedValue.toAnsiString()(twoLines), 'foo\nbar');
   });
 
   it('toUnstyledStrings returns an array of plain strings', () => {
-    TestUtils.deepStrictEqual(PPStringifiedValue.toUnstyledStrings(twoLines), ['foo', 'bar']);
+    assert.deepStrictEqual(PPStringifiedValue.toUnstyledStrings(twoLines), ['foo', 'bar']);
   });
 
   describe('concat', () => {
     it('Appends lines from that to self', () => {
-      TestUtils.deepStrictEqual(
+      assert.deepStrictEqual(
         PPStringifiedValue.toUnstyledStrings(
           PPStringifiedValue.concat(PPStringifiedValue.fromText(ASText.fromString('baz')))(
             twoLines,
@@ -77,7 +77,7 @@ describe('PPStringifiedValue', () => {
 
   describe('prependToFirstLine', () => {
     it('Prepends text only to the first line', () => {
-      TestUtils.deepStrictEqual(
+      assert.deepStrictEqual(
         PPStringifiedValue.toUnstyledStrings(
           PPStringifiedValue.prependToFirstLine(ASText.fromString('> '))(twoLines),
         ),
@@ -88,7 +88,7 @@ describe('PPStringifiedValue', () => {
 
   describe('appendToLastLine', () => {
     it('Appends text only to the last line', () => {
-      TestUtils.deepStrictEqual(
+      assert.deepStrictEqual(
         PPStringifiedValue.toUnstyledStrings(
           PPStringifiedValue.appendToLastLine(ASText.fromString('!'))(twoLines),
         ),
@@ -99,7 +99,7 @@ describe('PPStringifiedValue', () => {
 
   describe('prependToAllLines', () => {
     it('Prepends text to every line', () => {
-      TestUtils.deepStrictEqual(
+      assert.deepStrictEqual(
         PPStringifiedValue.toUnstyledStrings(
           PPStringifiedValue.prependToAllLines(ASText.fromString('  '))(twoLines),
         ),

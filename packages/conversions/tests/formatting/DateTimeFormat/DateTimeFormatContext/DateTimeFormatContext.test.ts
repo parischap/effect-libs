@@ -3,7 +3,7 @@ import * as Option from 'effect/Option';
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as CVDateTimeFormatContext from '@parischap/conversions/CVDateTimeFormatContext';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('CVDateTimeFormatContext', () => {
   const enGBContext = CVDateTimeFormatContext.enGB;
@@ -17,7 +17,7 @@ describe('CVDateTimeFormatContext', () => {
     });
 
     it('.toString()', () => {
-      TestUtils.strictEqual(enGBContext.toString(), 'en-GB');
+      assert.strictEqual(enGBContext.toString(), 'en-GB');
     });
   });
 

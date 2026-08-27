@@ -9,7 +9,7 @@ import * as CVTemplatePlaceholder from '@parischap/conversions/CVTemplatePlaceho
 import * as CVTemplateSeparator from '@parischap/conversions/CVTemplateSeparator';
 import type * as MInputError from '@parischap/effect-lib/MInputError';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('CVTemplateParser', () => {
   const sep = CVTemplateSeparator;
@@ -62,7 +62,7 @@ describe('CVTemplateParser', () => {
     });
 
     it('.toString()', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         templateParser1.toString(),
         `#dd/#MM/#yyyy #MM parser
 
@@ -71,7 +71,7 @@ describe('CVTemplateParser', () => {
 #yyyy: 4-character string to 0-left-padded unsigned integer.
 #MM: unsigned integer`,
       );
-      TestUtils.strictEqual(
+      assert.strictEqual(
         templateParser2.toString(),
         `#dd/#MM/#yyyy #MM parser
 

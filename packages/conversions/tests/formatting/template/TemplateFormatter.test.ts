@@ -10,7 +10,7 @@ import * as CVTemplateSeparator from '@parischap/conversions/CVTemplateSeparator
 import type * as MInputError from '@parischap/effect-lib/MInputError';
 import type * as MTypes from '@parischap/effect-lib/MTypes';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('CVTemplateFormatter', () => {
   const sep = CVTemplateSeparator;
@@ -63,7 +63,7 @@ describe('CVTemplateFormatter', () => {
     });
 
     it('.toString()', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         templateFormatter1.toString(),
         `#dd/#MM/#yyyy #MM formatter
 
@@ -72,7 +72,7 @@ describe('CVTemplateFormatter', () => {
 #yyyy: 4-character string to 0-left-padded unsigned integer.
 #MM: unsigned integer`,
       );
-      TestUtils.strictEqual(
+      assert.strictEqual(
         templateFormatter2.toString(),
         `#dd/#MM/#yyyy #MM formatter
 

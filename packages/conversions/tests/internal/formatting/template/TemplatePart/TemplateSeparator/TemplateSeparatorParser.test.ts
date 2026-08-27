@@ -2,7 +2,7 @@ import * as TestUtils from '@parischap/configs/TestUtils';
 import * as CVTemplateSeparator from '@parischap/conversions/CVTemplateSeparator';
 import * as CVTemplateSeparatorParser from '@parischap/conversions/CVTemplateSeparatorParser';
 
-import { describe, it } from 'vitest';
+import { describe, it } from '@effect/vitest';
 
 describe('CVTemplateSeparatorParser', () => {
   const separator = CVTemplateSeparator.make('foo');

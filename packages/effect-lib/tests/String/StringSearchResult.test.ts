@@ -3,7 +3,7 @@ import * as Option from 'effect/Option';
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as MStringSearchResult from '@parischap/effect-lib/MStringSearchResult';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('MString.SearchResult', () => {
   const testSearchResult = MStringSearchResult.make({
@@ -20,14 +20,14 @@ describe('MString.SearchResult', () => {
   });
 
   it('byLongestFirst', () => {
-    TestUtils.strictEqual(
+    assert.strictEqual(
       MStringSearchResult.byLongestFirst(
         testSearchResult,
         MStringSearchResult.make({ startIndex: 4, endIndex: 7, match: 'foo' }),
       ),
       -1,
     );
-    TestUtils.strictEqual(
+    assert.strictEqual(
       MStringSearchResult.byLongestFirst(
         testSearchResult,
         MStringSearchResult.make({ startIndex: 3, endIndex: 7, match: 'foo1' }),

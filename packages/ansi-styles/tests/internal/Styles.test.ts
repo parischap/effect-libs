@@ -2,21 +2,20 @@ import { pipe } from 'effect';
 
 import * as ASStyle from '@parischap/ansi-styles/ASStyle';
 import * as ASStyles from '@parischap/ansi-styles/ASStyles';
-import * as TestUtils from '@parischap/configs/TestUtils';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('ASStyles', () => {
   const blackRed: ASStyles.Type = [ASStyle.black, ASStyle.red];
   const greenBlue: ASStyles.Type = [ASStyle.green, ASStyle.blue];
 
   it('toString', () => {
-    TestUtils.strictEqual(ASStyles.toString(blackRed), 'Black/Red');
+    assert.strictEqual(ASStyles.toString(blackRed), 'Black/Red');
   });
 
   it('append', () => {
     const combined = pipe(blackRed, ASStyles.append(greenBlue));
-    TestUtils.strictEqual(combined.length, 4);
-    TestUtils.strictEqual(ASStyles.toString(combined), 'Black/Red/Green/Blue');
+    assert.strictEqual(combined.length, 4);
+    assert.strictEqual(ASStyles.toString(combined), 'Black/Red/Green/Blue');
   });
 });

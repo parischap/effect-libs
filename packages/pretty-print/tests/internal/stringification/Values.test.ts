@@ -3,12 +3,11 @@ import * as Option from 'effect/Option';
 import * as Order from 'effect/Order';
 
 import * as ASText from '@parischap/ansi-styles/ASText';
-import * as TestUtils from '@parischap/configs/TestUtils';
 import * as PPStringifiedValue from '@parischap/pretty-print/PPStringifiedValue';
 import * as PPValue from '@parischap/pretty-print/PPValue';
 import * as PPValues from '@parischap/pretty-print/PPValues';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('PPValues', () => {
   describe('fromNonPrimitiveKeysAndValues', () => {
@@ -18,7 +17,7 @@ describe('PPValues', () => {
         nonPrimitive,
         maxPrototypeDepth: 0,
       });
-      TestUtils.strictEqual(values.length, 0);
+      assert.strictEqual(values.length, 0);
     });
 
     it('Returns own properties at maxPrototypeDepth=1', () => {
@@ -27,11 +26,11 @@ describe('PPValues', () => {
         nonPrimitive,
         maxPrototypeDepth: 1,
       });
-      TestUtils.strictEqual(values.length, 2);
+      assert.strictEqual(values.length, 2);
       const [firstValue] = values;
-      TestUtils.assertDefined(firstValue);
-      TestUtils.strictEqual(PPValue.oneLineStringKey(firstValue), 'a');
-      TestUtils.strictEqual(PPValue.content(firstValue), 1);
+      assert.isDefined(firstValue);
+      assert.strictEqual(PPValue.oneLineStringKey(firstValue), 'a');
+      assert.strictEqual(PPValue.content(firstValue), 1);
     });
 
     it('Returns own + prototype properties at maxPrototypeDepth=2', () => {
@@ -43,8 +42,8 @@ describe('PPValues', () => {
         maxPrototypeDepth: 2,
       });
       const keys = new Set(values.map(PPValue.oneLineStringKey));
-      TestUtils.assertTrue(keys.has('ownField'));
-      TestUtils.assertTrue(keys.has('protoField'));
+      assert.isTrue(keys.has('ownField'));
+      assert.isTrue(keys.has('protoField'));
     });
 
     it('Sets protoDepth=0 for own properties', () => {
@@ -54,8 +53,8 @@ describe('PPValues', () => {
         maxPrototypeDepth: 1,
       });
       const [firstValue] = values;
-      TestUtils.assertDefined(firstValue);
-      TestUtils.strictEqual(PPValue.protoDepth(firstValue), 0);
+      assert.isDefined(firstValue);
+      assert.strictEqual(PPValue.protoDepth(firstValue), 0);
     });
 
     it('Sets protoDepth=1 for first-prototype properties', () => {
@@ -67,8 +66,8 @@ describe('PPValues', () => {
         maxPrototypeDepth: 2,
       });
       const inherited = values.find((v) => PPValue.oneLineStringKey(v) === 'inherited');
-      TestUtils.assertDefined(inherited);
-      TestUtils.strictEqual(PPValue.protoDepth(inherited), 1);
+      assert.isDefined(inherited);
+      assert.strictEqual(PPValue.protoDepth(inherited), 1);
     });
   });
 
@@ -81,13 +80,13 @@ describe('PPValues', () => {
       it('Returns a value for each element with an auto-generated key', () => {
         const nonPrimitive = PPValue.fromTopValue([10, 20, 30]);
         const values = PPValues.fromNonPrimitiveIterable({ nonPrimitive, stringifier });
-        TestUtils.strictEqual(values.length, 3);
+        assert.strictEqual(values.length, 3);
         const [firstValue] = values;
-        TestUtils.assertDefined(firstValue);
-        TestUtils.strictEqual(PPValue.oneLineStringKey(firstValue), '0');
-        TestUtils.strictEqual(PPValue.content(firstValue), 10);
-        TestUtils.assertTrue(PPValue.hasGeneratedKey(firstValue));
-        TestUtils.assertTrue(PPValue.isFromIterator(firstValue));
+        assert.isDefined(firstValue);
+        assert.strictEqual(PPValue.oneLineStringKey(firstValue), '0');
+        assert.strictEqual(PPValue.content(firstValue), 10);
+        assert.isTrue(PPValue.hasGeneratedKey(firstValue));
+        assert.isTrue(PPValue.isFromIterator(firstValue));
       });
     });
 
@@ -100,20 +99,20 @@ describe('PPValues', () => {
           ]),
         );
         const values = PPValues.fromNonPrimitiveIterable({ nonPrimitive, stringifier });
-        TestUtils.strictEqual(values.length, 2);
-        TestUtils.assertTrue(
+        assert.strictEqual(values.length, 2);
+        assert.isTrue(
           values.some((v) => PPValue.oneLineStringKey(v) === 'a' && PPValue.content(v) === 1),
         );
         const [firstValue] = values;
-        TestUtils.assertDefined(firstValue);
-        TestUtils.assertFalse(PPValue.hasGeneratedKey(firstValue));
+        assert.isDefined(firstValue);
+        assert.isFalse(PPValue.hasGeneratedKey(firstValue));
       });
     });
 
     it('Returns empty array for a non-iterable', () => {
       const nonPrimitive = PPValue.fromTopValue({ a: 1 });
       const values = PPValues.fromNonPrimitiveIterable({ nonPrimitive, stringifier });
-      TestUtils.deepStrictEqual(values, []);
+      assert.deepStrictEqual(values, []);
     });
   });
 
@@ -133,7 +132,7 @@ describe('PPValues', () => {
     const values: PPValues.Type = [a, b];
 
     it('With Order.none returns values unchanged', () => {
-      TestUtils.deepStrictEqual(pipe(values, PPValues.sort(Option.none())), values);
+      assert.deepStrictEqual(pipe(values, PPValues.sort(Option.none())), values);
     });
 
     it('With an Order sorts the values', () => {
@@ -141,10 +140,10 @@ describe('PPValues', () => {
         Order.String(PPValue.oneLineStringKey(x), PPValue.oneLineStringKey(y));
       const sorted = pipe(values, PPValues.sort(Option.some(byKey)));
       const [firstValue, secondValue] = sorted;
-      TestUtils.assertDefined(firstValue);
-      TestUtils.assertDefined(secondValue);
-      TestUtils.strictEqual(PPValue.oneLineStringKey(firstValue), 'a');
-      TestUtils.strictEqual(PPValue.oneLineStringKey(secondValue), 'b');
+      assert.isDefined(firstValue);
+      assert.isDefined(secondValue);
+      assert.strictEqual(PPValue.oneLineStringKey(firstValue), 'a');
+      assert.strictEqual(PPValue.oneLineStringKey(secondValue), 'b');
     });
   });
 });

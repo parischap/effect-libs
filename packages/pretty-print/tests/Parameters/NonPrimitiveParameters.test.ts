@@ -4,7 +4,7 @@ import * as TestUtils from '@parischap/configs/TestUtils';
 import type * as MTypes from '@parischap/effect-lib/MTypes';
 import * as PPNonPrimitiveParameters from '@parischap/pretty-print/PPNonPrimitiveParameters';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('PPNonPrimitiveParameters', () => {
   it('moduleTag', () => {
@@ -31,14 +31,14 @@ describe('PPNonPrimitiveParameters', () => {
   });
 
   it('.toString()', () => {
-    TestUtils.strictEqual(
+    assert.strictEqual(
       PPNonPrimitiveParameters.utilInspectLikeFunction.toString(),
       'UtilInspectLikeFunction',
     );
   });
 
   it('.pipe()', () => {
-    TestUtils.strictEqual(
+    assert.strictEqual(
       PPNonPrimitiveParameters.utilInspectLikeFunction.pipe(PPNonPrimitiveParameters.id),
       'UtilInspectLikeFunction',
     );
@@ -46,7 +46,7 @@ describe('PPNonPrimitiveParameters', () => {
 
   describe('isApplicableTo', () => {
     it('utilInspectLikeFunction applies to functions', () => {
-      TestUtils.assertTrue(
+      assert.isTrue(
         PPNonPrimitiveParameters.utilInspectLikeFunction.isApplicableTo(
           () => 42 as unknown as MTypes.AnyFunction,
         ),
@@ -54,7 +54,7 @@ describe('PPNonPrimitiveParameters', () => {
     });
 
     it('utilInspectLikeFunction does not apply to plain objects', () => {
-      TestUtils.assertFalse(
+      assert.isFalse(
         PPNonPrimitiveParameters.utilInspectLikeFunction.isApplicableTo({
           a: 1,
         }),
@@ -62,7 +62,7 @@ describe('PPNonPrimitiveParameters', () => {
     });
 
     it('utilInspectLikeArray applies to arrays', () => {
-      TestUtils.assertTrue(PPNonPrimitiveParameters.utilInspectLikeArray.isApplicableTo([1, 2, 3]));
+      assert.isTrue(PPNonPrimitiveParameters.utilInspectLikeArray.isApplicableTo([1, 2, 3]));
     });
   });
 });

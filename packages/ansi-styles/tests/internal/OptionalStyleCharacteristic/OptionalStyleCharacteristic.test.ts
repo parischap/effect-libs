@@ -16,7 +16,7 @@ import * as ASStruckThroughStyleCharacteristic from '@parischap/ansi-styles/ASSt
 import * as ASUnderlinedStyleCharacteristic from '@parischap/ansi-styles/ASUnderlinedStyleCharacteristic';
 import * as TestUtils from '@parischap/configs/TestUtils';
 
-import { describe, it } from 'vitest';
+import { describe, it } from '@effect/vitest';
 
 describe('ASOptionalStyleCharacteristic', () => {
   it('moduleTag', () => {

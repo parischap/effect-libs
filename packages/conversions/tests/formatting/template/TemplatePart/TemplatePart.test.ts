@@ -1,9 +1,8 @@
-import * as TestUtils from '@parischap/configs/TestUtils';
 import * as CVTemplatePart from '@parischap/conversions/CVTemplatePart';
 import * as CVTemplatePlaceholder from '@parischap/conversions/CVTemplatePlaceholder';
 import * as CVTemplateSeparator from '@parischap/conversions/CVTemplateSeparator';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('CVTemplatePart', () => {
   const separator = CVTemplateSeparator.make('foo');
@@ -11,21 +10,21 @@ describe('CVTemplatePart', () => {
 
   describe('isPlaceholder', () => {
     it('Not passing', () => {
-      TestUtils.assertFalse(CVTemplatePart.isPlaceholder(separator));
+      assert.isFalse(CVTemplatePart.isPlaceholder(separator));
     });
 
     it('Passing', () => {
-      TestUtils.assertTrue(CVTemplatePart.isPlaceholder(threeChars));
+      assert.isTrue(CVTemplatePart.isPlaceholder(threeChars));
     });
   });
 
   describe('isSeparator', () => {
     it('Not passing', () => {
-      TestUtils.assertFalse(CVTemplatePart.isSeparator(threeChars));
+      assert.isFalse(CVTemplatePart.isSeparator(threeChars));
     });
 
     it('Passing', () => {
-      TestUtils.assertTrue(CVTemplatePart.isSeparator(separator));
+      assert.isTrue(CVTemplatePart.isSeparator(separator));
     });
   });
 });

@@ -4,7 +4,7 @@ import * as ASBackgroundColorStyleCharacteristic from '@parischap/ansi-styles/AS
 import * as ASRgbColor from '@parischap/ansi-styles/ASRgbColor';
 import * as TestUtils from '@parischap/configs/TestUtils';
 
-import { describe, it } from 'vitest';
+import { describe, it } from '@effect/vitest';
 
 describe('ASBackgroundColorStyleCharacteristic', () => {
   it('moduleTag', () => {

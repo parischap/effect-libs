@@ -5,28 +5,28 @@ import * as TestUtils from '@parischap/configs/TestUtils';
 import * as MChunk from '@parischap/effect-lib/MChunk';
 import * as MPredicate from '@parischap/effect-lib/MPredicate';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('MChunk', () => {
   describe('hasLength', () => {
     it('Simple chunk', () => {
-      TestUtils.assertTrue(pipe(Chunk.make(1, 2, 3), MChunk.hasLength(3)));
+      assert.isTrue(pipe(Chunk.make(1, 2, 3), MChunk.hasLength(3)));
     });
   });
 
   describe('hasDuplicates', () => {
     it('With no duplicates', () => {
-      TestUtils.assertFalse(pipe(Chunk.make(1, 2, 3), MChunk.hasDuplicates));
+      assert.isFalse(pipe(Chunk.make(1, 2, 3), MChunk.hasDuplicates));
     });
 
     it('With duplicates', () => {
-      TestUtils.assertTrue(pipe(Chunk.make(1, 2, 3, 2), MChunk.hasDuplicates));
+      assert.isTrue(pipe(Chunk.make(1, 2, 3, 2), MChunk.hasDuplicates));
     });
   });
 
   describe('findAll', () => {
     it('Empty chunk', () => {
-      TestUtils.assertTrue(
+      assert.isTrue(
         pipe(Chunk.empty<number>(), MChunk.findAll(MPredicate.strictEquals(3)), Chunk.isEmpty),
       );
     });
@@ -40,7 +40,7 @@ describe('MChunk', () => {
 
   describe('takeBut', () => {
     it('Empty chunk', () => {
-      TestUtils.assertTrue(pipe(Chunk.empty<number>(), MChunk.takeBut(2), Chunk.isEmpty));
+      assert.isTrue(pipe(Chunk.empty<number>(), MChunk.takeBut(2), Chunk.isEmpty));
     });
     it('Non empty chunk', () => {
       TestUtils.assertEquals(
@@ -52,7 +52,7 @@ describe('MChunk', () => {
 
   describe('takeRightBut', () => {
     it('Empty chunk', () => {
-      TestUtils.assertTrue(pipe(Chunk.empty<number>(), MChunk.takeRightBut(2), Chunk.isEmpty));
+      assert.isTrue(pipe(Chunk.empty<number>(), MChunk.takeRightBut(2), Chunk.isEmpty));
     });
     it('Non empty chunk', () => {
       TestUtils.assertEquals(

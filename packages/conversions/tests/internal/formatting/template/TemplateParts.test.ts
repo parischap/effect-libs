@@ -3,7 +3,7 @@ import * as CVTemplateParts from '@parischap/conversions/CVTemplateParts';
 import * as CVTemplatePlaceholder from '@parischap/conversions/CVTemplatePlaceholder';
 import * as CVTemplateSeparator from '@parischap/conversions/CVTemplateSeparator';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('CVTemplateParts', () => {
   const namePlaceholder = CVTemplatePlaceholder.fixedLength({ name: 'name', length: 10 });
@@ -29,8 +29,8 @@ describe('CVTemplateParts', () => {
 
     it('Parts with placeholders and separators', () => {
       const result = CVTemplateParts.getPlaceholderDescription(parts);
-      TestUtils.assertTrue(result.includes('name'));
-      TestUtils.assertTrue(result.includes('age'));
+      assert.isTrue(result.includes('name'));
+      assert.isTrue(result.includes('age'));
     });
   });
 });

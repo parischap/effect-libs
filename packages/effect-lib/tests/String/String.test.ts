@@ -8,58 +8,58 @@ import * as MString from '@parischap/effect-lib/MString';
 import * as MStringFillPosition from '@parischap/effect-lib/MStringFillPosition';
 import * as MStringSearchResult from '@parischap/effect-lib/MStringSearchResult';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('MString', () => {
   describe('fromPrimitive', () => {
     it('null', () => {
-      TestUtils.strictEqual(MString.fromPrimitive(null), 'null');
+      assert.strictEqual(MString.fromPrimitive(null), 'null');
     });
 
     it('undefined', () => {
-      TestUtils.strictEqual(MString.fromPrimitive(undefined), 'undefined');
+      assert.strictEqual(MString.fromPrimitive(undefined), 'undefined');
     });
 
     it('Finite integer', () => {
-      TestUtils.strictEqual(MString.fromPrimitive(5), '5');
+      assert.strictEqual(MString.fromPrimitive(5), '5');
     });
 
     it('Infinity', () => {
-      TestUtils.strictEqual(MString.fromPrimitive(Infinity), 'Infinity');
+      assert.strictEqual(MString.fromPrimitive(Infinity), 'Infinity');
     });
 
     it('+Infinity', () => {
-      TestUtils.strictEqual(MString.fromPrimitive(Infinity), 'Infinity');
+      assert.strictEqual(MString.fromPrimitive(Infinity), 'Infinity');
     });
 
     it('-Infinity', () => {
-      TestUtils.strictEqual(MString.fromPrimitive(-Infinity), '-Infinity');
+      assert.strictEqual(MString.fromPrimitive(-Infinity), '-Infinity');
     });
 
     it('NaN', () => {
-      TestUtils.strictEqual(MString.fromPrimitive(Number.NaN), 'NaN');
+      assert.strictEqual(MString.fromPrimitive(Number.NaN), 'NaN');
     });
 
     it('Irrational number', () => {
-      TestUtils.strictEqual(MString.fromPrimitive(16 / 3), '5.333333333333333');
+      assert.strictEqual(MString.fromPrimitive(16 / 3), '5.333333333333333');
     });
 
     it('Very small number', () => {
-      TestUtils.strictEqual(MString.fromPrimitive(1e-8), '0.00000001');
+      assert.strictEqual(MString.fromPrimitive(1e-8), '0.00000001');
     });
 
     it('Very large integer', () => {
-      TestUtils.strictEqual(MString.fromPrimitive(1e22), '10000000000000000000000');
+      assert.strictEqual(MString.fromPrimitive(1e22), '10000000000000000000000');
     });
   });
 
   describe('fromUnknown', () => {
     it('Primitive value', () => {
-      TestUtils.strictEqual(MString.fromUnknown(null), 'null');
+      assert.strictEqual(MString.fromUnknown(null), 'null');
     });
 
     it('Non-primitive value', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         MString.fromUnknown({ a: 1, b: true }),
         `{
   "a": 1,
@@ -123,7 +123,7 @@ describe('MString', () => {
 
   describe('searchAll', () => {
     it('string in empty string', () => {
-      TestUtils.assertTrue(pipe('', MString.searchAll('foo'), Array.isArrayEmpty));
+      assert.isTrue(pipe('', MString.searchAll('foo'), Array.isArrayEmpty));
     });
 
     it('string in string containing two occurences', () => {
@@ -137,7 +137,7 @@ describe('MString', () => {
     });
 
     it('RegExp in empty string', () => {
-      TestUtils.assertTrue(pipe('', MString.searchAll(/f.o/), Array.isArrayEmpty));
+      assert.isTrue(pipe('', MString.searchAll(/f.o/), Array.isArrayEmpty));
     });
 
     it('RegExp in string containing two occurences', () => {
@@ -191,87 +191,87 @@ describe('MString', () => {
 
   describe('takeTo', () => {
     it('string in empty string', () => {
-      TestUtils.assertTrue(pipe('', MString.takeTo('foo'), String.isEmpty));
+      assert.isTrue(pipe('', MString.takeTo('foo'), String.isEmpty));
     });
 
     it('RegExp in non-empty string', () => {
-      TestUtils.strictEqual(MString.takeTo(/bar/)('the bar is foo'), 'the ');
+      assert.strictEqual(MString.takeTo(/bar/)('the bar is foo'), 'the ');
     });
 
     it('string with regexp special characters in non-empty string', () => {
-      TestUtils.strictEqual(MString.takeTo('.')('foo.bar.baz'), 'foo');
+      assert.strictEqual(MString.takeTo('.')('foo.bar.baz'), 'foo');
     });
   });
 
   describe('takeRightFrom', () => {
     it('string in empty string', () => {
-      TestUtils.assertTrue(pipe('', MString.takeRightFrom('is'), String.isEmpty));
+      assert.isTrue(pipe('', MString.takeRightFrom('is'), String.isEmpty));
     });
 
     it('RegExp in non-empty string', () => {
-      TestUtils.strictEqual(MString.takeRightFrom(/is/)('the bar is foo'), ' foo');
+      assert.strictEqual(MString.takeRightFrom(/is/)('the bar is foo'), ' foo');
     });
   });
 
   describe('takeBut', () => {
     it('Index within bounds', () => {
-      TestUtils.strictEqual(MString.takeBut(3)('foo is'), 'foo');
+      assert.strictEqual(MString.takeBut(3)('foo is'), 'foo');
     });
 
     it('Negative index', () => {
-      TestUtils.strictEqual(MString.takeBut(-5)('foo is'), 'foo is');
+      assert.strictEqual(MString.takeBut(-5)('foo is'), 'foo is');
     });
 
     it('Too big index', () => {
-      TestUtils.strictEqual(MString.takeBut(10)('foo is'), '');
+      assert.strictEqual(MString.takeBut(10)('foo is'), '');
     });
   });
 
   describe('takeRightBut', () => {
     it('Index within bounds', () => {
-      TestUtils.strictEqual(MString.takeRightBut(4)('foo is'), 'is');
+      assert.strictEqual(MString.takeRightBut(4)('foo is'), 'is');
     });
 
     it('Negative index', () => {
-      TestUtils.strictEqual(MString.takeRightBut(-1)('foo is'), 'foo is');
+      assert.strictEqual(MString.takeRightBut(-1)('foo is'), 'foo is');
     });
 
     it('Too big index', () => {
-      TestUtils.strictEqual(MString.takeRightBut(10)('foo is'), '');
+      assert.strictEqual(MString.takeRightBut(10)('foo is'), '');
     });
   });
 
   describe('trimStart', () => {
     it('Empty string', () => {
-      TestUtils.assertTrue(pipe('', MString.trimStart('0'), String.isEmpty));
+      assert.isTrue(pipe('', MString.trimStart('0'), String.isEmpty));
     });
 
     it('Non-empty string with the character to remove not at the start', () => {
-      TestUtils.strictEqual(MString.trimStart('0')('12034000'), '12034000');
+      assert.strictEqual(MString.trimStart('0')('12034000'), '12034000');
     });
 
     it('Non-empty string with the character to remove at the start', () => {
-      TestUtils.strictEqual(MString.trimStart('0')('0012034000'), '12034000');
+      assert.strictEqual(MString.trimStart('0')('0012034000'), '12034000');
     });
   });
 
   describe('trimEnd', () => {
     it('Empty string', () => {
-      TestUtils.assertTrue(pipe('', MString.trimEnd('0'), String.isEmpty));
+      assert.isTrue(pipe('', MString.trimEnd('0'), String.isEmpty));
     });
 
     it('Non-empty string with the character to remove not at the end', () => {
-      TestUtils.strictEqual(MString.trimEnd('0')('00012034'), '00012034');
+      assert.strictEqual(MString.trimEnd('0')('00012034'), '00012034');
     });
 
     it('Non-empty string with the character to remove at the end', () => {
-      TestUtils.strictEqual(MString.trimEnd('0')('0001203400'), '00012034');
+      assert.strictEqual(MString.trimEnd('0')('0001203400'), '00012034');
     });
   });
 
   describe('pad', () => {
     it('Left padding', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         pipe(
           'a',
           MString.pad({ length: 3, fillChar: 'b', fillPosition: MStringFillPosition.Type.Left }),
@@ -281,7 +281,7 @@ describe('MString', () => {
     });
 
     it('Right padding less than length characters', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         pipe(
           'aa',
           MString.pad({ length: 3, fillChar: 'b', fillPosition: MStringFillPosition.Type.Right }),
@@ -291,7 +291,7 @@ describe('MString', () => {
     });
 
     it('Right padding strictly more than length characters', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         pipe(
           'abcd',
           MString.pad({ length: 3, fillChar: 'b', fillPosition: MStringFillPosition.Type.Right }),
@@ -303,7 +303,7 @@ describe('MString', () => {
 
   describe('trim', () => {
     it('Left trimming', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         pipe(
           'bba',
           MString.trim({
@@ -316,7 +316,7 @@ describe('MString', () => {
     });
 
     it('Right trimming', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         pipe(
           'aab',
           MString.trim({
@@ -345,15 +345,15 @@ describe('MString', () => {
 
   describe('stripLeft', () => {
     it('Empty string', () => {
-      TestUtils.assertTrue(pipe('', MString.stripLeft('foo'), String.isEmpty));
+      assert.isTrue(pipe('', MString.stripLeft('foo'), String.isEmpty));
     });
 
     it('Non-empty string with matching start', () => {
-      TestUtils.strictEqual(MString.stripLeft('foo ')('foo is'), 'is');
+      assert.strictEqual(MString.stripLeft('foo ')('foo is'), 'is');
     });
 
     it('Non-empty string with non matching start', () => {
-      TestUtils.strictEqual(MString.stripLeft('foo ')('bar is'), 'bar is');
+      assert.strictEqual(MString.stripLeft('foo ')('bar is'), 'bar is');
     });
   });
 
@@ -373,49 +373,49 @@ describe('MString', () => {
 
   describe('stripRight', () => {
     it('Empty string', () => {
-      TestUtils.assertTrue(pipe('', MString.stripRight('foo'), String.isEmpty));
+      assert.isTrue(pipe('', MString.stripRight('foo'), String.isEmpty));
     });
 
     it('Non-empty string with matching end', () => {
-      TestUtils.strictEqual(MString.stripRight(' foo')('foo is foo'), 'foo is');
+      assert.strictEqual(MString.stripRight(' foo')('foo is foo'), 'foo is');
     });
 
     it('Non-empty string with non matching end', () => {
-      TestUtils.strictEqual(MString.stripRight(' foo')('foo is bar'), 'foo is bar');
+      assert.strictEqual(MString.stripRight(' foo')('foo is bar'), 'foo is bar');
     });
   });
 
   describe('count', () => {
     it('string in empty string', () => {
-      TestUtils.strictEqual(MString.count('foo')(''), 0);
+      assert.strictEqual(MString.count('foo')(''), 0);
     });
 
     it('RegExp in non-empty string', () => {
-      TestUtils.strictEqual(MString.count(/f.o/)('foo is fuo'), 2);
+      assert.strictEqual(MString.count(/f.o/)('foo is fuo'), 2);
     });
   });
 
   describe('replaceBetween', () => {
     it('Empty string', () => {
-      TestUtils.strictEqual(MString.replaceBetween('foo', 5, 2)(''), 'foo');
+      assert.strictEqual(MString.replaceBetween('foo', 5, 2)(''), 'foo');
     });
 
     it('Replacement in non-empty string', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         MString.replaceBetween('himself', 8, 11)('foo saw bar and baz'),
         'foo saw himself and baz',
       );
     });
 
     it('Insertion in non-empty string', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         MString.replaceBetween('bar and ', 8, 8)('foo saw baz'),
         'foo saw bar and baz',
       );
     });
 
     it('Replacement in non-empty string with unorthodox arguments', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         MString.replaceBetween('baz. baz', 8, 3)('foo saw bar'),
         'foo saw baz. baz saw bar',
       );
@@ -454,11 +454,11 @@ describe('MString', () => {
   describe('matches', () => {
     const containsDigit = MString.matches(/\d/);
     it('Matching', () => {
-      TestUtils.assertTrue(containsDigit('a9b'));
+      assert.isTrue(containsDigit('a9b'));
     });
 
     it('Non matching', () => {
-      TestUtils.assertFalse(containsDigit('a'));
+      assert.isFalse(containsDigit('a'));
     });
   });
 
@@ -489,48 +489,47 @@ describe('MString', () => {
 
   describe('splitAt', () => {
     it('Split within bounds', () => {
-      TestUtils.deepStrictEqual(MString.splitAt(6)('beforeafter'), ['before', 'after']);
+      assert.deepStrictEqual(MString.splitAt(6)('beforeafter'), ['before', 'after']);
     });
 
     it('Split before string start', () => {
-      TestUtils.deepStrictEqual(MString.splitAt(-5)('beforeafter'), ['', 'beforeafter']);
+      assert.deepStrictEqual(MString.splitAt(-5)('beforeafter'), ['', 'beforeafter']);
     });
 
     it('Split after string end', () => {
-      TestUtils.deepStrictEqual(MString.splitAt(15)('beforeafter'), ['beforeafter', '']);
+      assert.deepStrictEqual(MString.splitAt(15)('beforeafter'), ['beforeafter', '']);
     });
   });
 
   describe('splitAtFromRight', () => {
     it('Split within bounds', () => {
-      TestUtils.deepStrictEqual(MString.splitAtFromRight(5)('beforeafter'), ['before', 'after']);
+      assert.deepStrictEqual(MString.splitAtFromRight(5)('beforeafter'), ['before', 'after']);
     });
 
     it('Split before string start', () => {
-      TestUtils.deepStrictEqual(MString.splitAtFromRight(-5)('beforeafter'), ['beforeafter', '']);
+      assert.deepStrictEqual(MString.splitAtFromRight(-5)('beforeafter'), ['beforeafter', '']);
     });
 
     it('Split after string end', () => {
-      TestUtils.deepStrictEqual(MString.splitAtFromRight(15)('beforeafter'), ['', 'beforeafter']);
+      assert.deepStrictEqual(MString.splitAtFromRight(15)('beforeafter'), ['', 'beforeafter']);
     });
   });
 
   describe('splitEquallyRestAtStart', () => {
-    it('Empty string', () =>
-      TestUtils.deepStrictEqual(MString.splitEquallyRestAtStart(3)(''), ['']));
+    it('Empty string', () => assert.deepStrictEqual(MString.splitEquallyRestAtStart(3)(''), ['']));
 
     it('Short string', () =>
-      TestUtils.deepStrictEqual(MString.splitEquallyRestAtStart(3)('11'), ['11']));
+      assert.deepStrictEqual(MString.splitEquallyRestAtStart(3)('11'), ['11']));
 
     it('Non-empty string without rest', () =>
-      TestUtils.deepStrictEqual(MString.splitEquallyRestAtStart(3)('foobarbaz'), [
+      assert.deepStrictEqual(MString.splitEquallyRestAtStart(3)('foobarbaz'), [
         'foo',
         'bar',
         'baz',
       ]));
 
     it('Non-empty string with rest', () =>
-      TestUtils.deepStrictEqual(MString.splitEquallyRestAtStart(3)('afoobarbaz'), [
+      assert.deepStrictEqual(MString.splitEquallyRestAtStart(3)('afoobarbaz'), [
         'a',
         'foo',
         'bar',
@@ -539,17 +538,13 @@ describe('MString', () => {
   });
 
   describe('splitEquallyRestAtEnd', () => {
-    it('Empty string', () => TestUtils.deepStrictEqual(MString.splitEquallyRestAtEnd(3)(''), ['']));
+    it('Empty string', () => assert.deepStrictEqual(MString.splitEquallyRestAtEnd(3)(''), ['']));
 
     it('Non-empty string without rest', () =>
-      TestUtils.deepStrictEqual(MString.splitEquallyRestAtEnd(3)('foobarbaz'), [
-        'foo',
-        'bar',
-        'baz',
-      ]));
+      assert.deepStrictEqual(MString.splitEquallyRestAtEnd(3)('foobarbaz'), ['foo', 'bar', 'baz']));
 
     it('Non-empty string with rest', () =>
-      TestUtils.deepStrictEqual(MString.splitEquallyRestAtEnd(3)('foobarbaza'), [
+      assert.deepStrictEqual(MString.splitEquallyRestAtEnd(3)('foobarbaza'), [
         'foo',
         'bar',
         'baz',
@@ -560,39 +555,39 @@ describe('MString', () => {
   describe('tabify', () => {
     const simpleTabify = MString.tabify('aa', 3);
     it('Empty string', () => {
-      TestUtils.strictEqual(simpleTabify(''), 'aaaaaa');
+      assert.strictEqual(simpleTabify(''), 'aaaaaa');
     });
     it('One-line string', () => {
-      TestUtils.strictEqual(simpleTabify('foo'), 'aaaaaafoo');
+      assert.strictEqual(simpleTabify('foo'), 'aaaaaafoo');
     });
     it('Two-line string', () => {
-      TestUtils.strictEqual(simpleTabify('foo\r\nfoo1'), 'aaaaaafoo\r\naaaaaafoo1');
+      assert.strictEqual(simpleTabify('foo\r\nfoo1'), 'aaaaaafoo\r\naaaaaafoo1');
     });
   });
 
   describe('isMultiLine', () => {
     it('Matching - Windows', () => {
-      TestUtils.assertTrue(MString.isMultiLine('foo\r\nbar'));
+      assert.isTrue(MString.isMultiLine('foo\r\nbar'));
     });
     it('Matching - Mac Os before X', () => {
-      TestUtils.assertTrue(MString.isMultiLine('foo\rbar'));
+      assert.isTrue(MString.isMultiLine('foo\rbar'));
     });
     it('Matching - UNIX, Mac Os X', () => {
-      TestUtils.assertTrue(MString.isMultiLine('foo\nbar'));
+      assert.isTrue(MString.isMultiLine('foo\nbar'));
     });
     it('Not matching - foo', () => {
-      TestUtils.assertFalse(MString.isMultiLine('foo'));
+      assert.isFalse(MString.isMultiLine('foo'));
     });
   });
 
   describe('hasLength', () => {
     it('Simple string', () => {
-      TestUtils.assertTrue(MString.hasLength(3)('foo'));
+      assert.isTrue(MString.hasLength(3)('foo'));
     });
   });
 
   it('removeNCharsEveryMCharsFromRight', () => {
-    TestUtils.strictEqual(
+    assert.strictEqual(
       MString.removeNCharsEveryMCharsFromRight({ n: 2, m: 3 })('1aafooaabaraabaz'),
       '1foobarbaz',
     );
@@ -600,96 +595,96 @@ describe('MString', () => {
 
   describe('isDigit', () => {
     it('Empty string', () => {
-      TestUtils.assertFalse(MString.isDigit(''));
+      assert.isFalse(MString.isDigit(''));
     });
 
     it('Multi-character string', () => {
-      TestUtils.assertFalse(MString.isDigit('1A'));
+      assert.isFalse(MString.isDigit('1A'));
     });
 
     it('Non-digit character', () => {
-      TestUtils.assertFalse(MString.isDigit('A'));
+      assert.isFalse(MString.isDigit('A'));
     });
 
     it('Digit 1', () => {
-      TestUtils.assertTrue(MString.isDigit('1'));
+      assert.isTrue(MString.isDigit('1'));
     });
 
     it('Digit 5', () => {
-      TestUtils.assertTrue(MString.isDigit('5'));
+      assert.isTrue(MString.isDigit('5'));
     });
 
     it('Digit 9', () => {
-      TestUtils.assertTrue(MString.isDigit('9'));
+      assert.isTrue(MString.isDigit('9'));
     });
   });
 
   describe('fromNonNullablePrimitive', () => {
     it('Number', () => {
-      TestUtils.strictEqual(MString.fromNonNullablePrimitive(5), '5');
+      assert.strictEqual(MString.fromNonNullablePrimitive(5), '5');
     });
 
     it('Boolean', () => {
-      TestUtils.strictEqual(MString.fromNonNullablePrimitive(true), 'true');
+      assert.strictEqual(MString.fromNonNullablePrimitive(true), 'true');
     });
 
     it('BigInt', () => {
-      TestUtils.strictEqual(MString.fromNonNullablePrimitive(5n), '5');
+      assert.strictEqual(MString.fromNonNullablePrimitive(5n), '5');
     });
   });
 
   describe('fromNumber', () => {
     it('Base-10 number without scientific notation', () => {
-      TestUtils.strictEqual(MString.fromNumber(10)(1e-8), '0.00000001');
+      assert.strictEqual(MString.fromNumber(10)(1e-8), '0.00000001');
     });
 
     it('Non-base-10 radix', () => {
-      TestUtils.strictEqual(MString.fromNumber(16)(255), 'ff');
+      assert.strictEqual(MString.fromNumber(16)(255), 'ff');
     });
   });
 
   describe('append', () => {
     it('Appends string to another string', () => {
-      TestUtils.strictEqual(pipe('foo', MString.append('bar')), 'foobar');
+      assert.strictEqual(pipe('foo', MString.append('bar')), 'foobar');
     });
   });
 
   describe('appendIfNotEmpty', () => {
     it('Appends string to a non-empty string', () => {
-      TestUtils.strictEqual(pipe('foo', MString.appendIfNotEmpty('bar')), 'foobar');
+      assert.strictEqual(pipe('foo', MString.appendIfNotEmpty('bar')), 'foobar');
     });
 
     it('Returns empty string when self is empty', () => {
-      TestUtils.assertTrue(pipe('', MString.appendIfNotEmpty('bar'), String.isEmpty));
+      assert.isTrue(pipe('', MString.appendIfNotEmpty('bar'), String.isEmpty));
     });
   });
 
   describe('prepend', () => {
     it('Prepends string to another string', () => {
-      TestUtils.strictEqual(pipe('foo', MString.prepend('bar')), 'barfoo');
+      assert.strictEqual(pipe('foo', MString.prepend('bar')), 'barfoo');
     });
   });
 
   describe('prependIfNotEmpty', () => {
     it('Prepends string to a non-empty string', () => {
-      TestUtils.strictEqual(pipe('foo', MString.prependIfNotEmpty('bar')), 'barfoo');
+      assert.strictEqual(pipe('foo', MString.prependIfNotEmpty('bar')), 'barfoo');
     });
 
     it('Returns empty string when self is empty', () => {
-      TestUtils.assertTrue(pipe('', MString.prependIfNotEmpty('bar'), String.isEmpty));
+      assert.isTrue(pipe('', MString.prependIfNotEmpty('bar'), String.isEmpty));
     });
   });
 
   describe('surroundIfNotEmpty', () => {
     it('Surrounds a non-empty string with prefix and suffix', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         pipe('foo', MString.surroundIfNotEmpty({ prefix: '[', suffix: ']' })),
         '[foo]',
       );
     });
 
     it('Returns empty string when self is empty', () => {
-      TestUtils.assertTrue(
+      assert.isTrue(
         pipe('', MString.surroundIfNotEmpty({ prefix: '[', suffix: ']' }), String.isEmpty),
       );
     });
@@ -697,21 +692,21 @@ describe('MString', () => {
 
   describe('isSemVer', () => {
     it('Valid SemVer', () => {
-      TestUtils.assertTrue(MString.isSemVer('1.2.3'));
+      assert.isTrue(MString.isSemVer('1.2.3'));
     });
 
     it('Invalid SemVer', () => {
-      TestUtils.assertFalse(MString.isSemVer('1.2'));
+      assert.isFalse(MString.isSemVer('1.2'));
     });
   });
 
   describe('isEmail', () => {
     it('Valid email', () => {
-      TestUtils.assertTrue(MString.isEmail('user@example.com'));
+      assert.isTrue(MString.isEmail('user@example.com'));
     });
 
     it('Invalid email', () => {
-      TestUtils.assertFalse(MString.isEmail('not-an-email'));
+      assert.isFalse(MString.isEmail('not-an-email'));
     });
   });
 });

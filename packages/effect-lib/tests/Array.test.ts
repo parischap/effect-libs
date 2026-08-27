@@ -17,42 +17,38 @@ import * as MArray from '@parischap/effect-lib/MArray';
 import * as MPredicate from '@parischap/effect-lib/MPredicate';
 import * as MTuple from '@parischap/effect-lib/MTuple';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('MArray', () => {
   describe('hasLength', () => {
     it('Simple Array', () => {
-      TestUtils.assertTrue(pipe(Array.make(1, 2, 3), MArray.hasLength(3)));
+      assert.isTrue(pipe(Array.make(1, 2, 3), MArray.hasLength(3)));
     });
   });
 
   describe('hasDuplicatesWith', () => {
     it('With no duplicates', () => {
-      TestUtils.assertFalse(
-        pipe(Array.make(1, 2, 3), MArray.hasDuplicatesWith(Number.Equivalence)),
-      );
+      assert.isFalse(pipe(Array.make(1, 2, 3), MArray.hasDuplicatesWith(Number.Equivalence)));
     });
 
     it('With duplicates', () => {
-      TestUtils.assertTrue(
-        pipe(Array.make(1, 2, 3, 2), MArray.hasDuplicatesWith(Number.Equivalence)),
-      );
+      assert.isTrue(pipe(Array.make(1, 2, 3, 2), MArray.hasDuplicatesWith(Number.Equivalence)));
     });
   });
 
   describe('hasDuplicates', () => {
     it('With no duplicates', () => {
-      TestUtils.assertFalse(pipe(Array.make(1, 2, 3), MArray.hasDuplicates));
+      assert.isFalse(pipe(Array.make(1, 2, 3), MArray.hasDuplicates));
     });
 
     it('With duplicates', () => {
-      TestUtils.assertTrue(pipe(Array.make(1, 2, 3, 2), MArray.hasDuplicates));
+      assert.isTrue(pipe(Array.make(1, 2, 3, 2), MArray.hasDuplicates));
     });
   });
 
   describe('match012', () => {
     it('Empty array', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         pipe(
           Array.empty<number>(),
           MArray.match012({
@@ -65,7 +61,7 @@ describe('MArray', () => {
       );
     });
     it('Singleton', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         pipe(
           Array.of(1),
           MArray.match012({
@@ -78,7 +74,7 @@ describe('MArray', () => {
       );
     });
     it('Two or more elements', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         pipe(
           Array.make(1, 2, 3),
           MArray.match012({
@@ -94,12 +90,12 @@ describe('MArray', () => {
 
   describe('findAll', () => {
     it('Empty array', () => {
-      TestUtils.assertTrue(
+      assert.isTrue(
         pipe(Array.empty<number>(), MArray.findAll(MPredicate.strictEquals(3)), Array.isArrayEmpty),
       );
     });
     it('Non empty array', () => {
-      TestUtils.deepStrictEqual(
+      assert.deepStrictEqual(
         pipe(Array.make(3, 2, 5, 3, 8, 3), MArray.findAll(MPredicate.strictEquals(3))),
         [0, 3, 5],
       );
@@ -108,22 +104,19 @@ describe('MArray', () => {
 
   describe('takeBut', () => {
     it('Empty array', () => {
-      TestUtils.assertTrue(pipe(Array.empty<number>(), MArray.takeBut(2), Array.isArrayEmpty));
+      assert.isTrue(pipe(Array.empty<number>(), MArray.takeBut(2), Array.isArrayEmpty));
     });
     it('Non empty array', () => {
-      TestUtils.deepStrictEqual(
-        pipe(Array.make(3, 2, 5, 3, 8, 3), MArray.takeBut(2)),
-        [3, 2, 5, 3],
-      );
+      assert.deepStrictEqual(pipe(Array.make(3, 2, 5, 3, 8, 3), MArray.takeBut(2)), [3, 2, 5, 3]);
     });
   });
 
   describe('takeRightBut', () => {
     it('Empty array', () => {
-      TestUtils.assertTrue(pipe(Array.empty<number>(), MArray.takeRightBut(2), Array.isArrayEmpty));
+      assert.isTrue(pipe(Array.empty<number>(), MArray.takeRightBut(2), Array.isArrayEmpty));
     });
     it('Non empty array', () => {
-      TestUtils.deepStrictEqual(
+      assert.deepStrictEqual(
         pipe(Array.make(3, 2, 5, 3, 8, 3), MArray.takeRightBut(2)),
         [5, 3, 8, 3],
       );
@@ -141,7 +134,7 @@ describe('MArray', () => {
 
   describe('longestCommonSubArray', () => {
     it('Empty array', () => {
-      TestUtils.assertTrue(
+      assert.isTrue(
         pipe(
           Array.empty<number>(),
           MArray.longestCommonSubArray(Array.make(1, 2, 3)),
@@ -150,7 +143,7 @@ describe('MArray', () => {
       );
     });
     it('Non empty array', () => {
-      TestUtils.deepStrictEqual(
+      assert.deepStrictEqual(
         pipe(Array.make(1, 2, 3, 4, 5), MArray.longestCommonSubArray(Array.make(1, 2, 3))),
         [1, 2, 3],
       );
@@ -174,13 +167,13 @@ describe('MArray', () => {
 
   describe('ungroup', () => {
     it('Empty array', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         pipe(Array.empty<ReadonlyArray<number>>(), MArray.ungroup, Array.isArrayEmpty),
         true,
       );
     });
     it('Non empty array', () => {
-      TestUtils.deepStrictEqual(
+      assert.deepStrictEqual(
         pipe(
           [
             [1, 2, 3],
@@ -210,7 +203,7 @@ describe('MArray', () => {
         [1, 2],
         [1, 3],
       ];
-      TestUtils.deepStrictEqual(
+      assert.deepStrictEqual(
         pipe(foo, MArray.groupByNum({ size: 2, fKey: Tuple.get(0), fValue: Tuple.get(1) })),
         [
           [1, 2, 3],
@@ -227,7 +220,7 @@ describe('MArray', () => {
         [2, 2],
         [2, 3],
       ];
-      TestUtils.deepStrictEqual(
+      assert.deepStrictEqual(
         pipe(foo, MArray.groupByNum({ size: 2, fKey: Tuple.get(0), fValue: Tuple.get(1) })),
         [[1, 2, 3], []],
       );
@@ -236,7 +229,7 @@ describe('MArray', () => {
 
   describe('groupBy', () => {
     it('Empty array', () => {
-      TestUtils.assertTrue(
+      assert.isTrue(
         pipe(
           Array.empty<readonly [string, number]>(),
           MArray.groupBy({ fKey: Tuple.get(0), fValue: Tuple.get(1) }),
@@ -253,7 +246,7 @@ describe('MArray', () => {
         ['a', 2],
         ['b', 3],
       ];
-      TestUtils.deepStrictEqual(
+      assert.deepStrictEqual(
         pipe(foo, MArray.groupBy({ fKey: Tuple.get(0), fValue: Tuple.get(1) })),
         {
           a: [1, 3, 2],
@@ -284,7 +277,7 @@ describe('MArray', () => {
       TestUtils.doesNotThrow(() => MArray.unsafeGet(Infinity)([]));
     });
     it('Passing', () => {
-      TestUtils.strictEqual(MArray.unsafeGet(0)([2, 1]), 2);
+      assert.strictEqual(MArray.unsafeGet(0)([2, 1]), 2);
     });
   });
 
@@ -300,19 +293,19 @@ describe('MArray', () => {
       TestUtils.doesNotThrow(() => unsafeGetter(Infinity));
     });
     it('Passing', () => {
-      TestUtils.strictEqual(unsafeGetter(1), 3);
+      assert.strictEqual(unsafeGetter(1), 3);
     });
   });
 
   describe('modifyInit', () => {
     it('Empty array', () => {
-      TestUtils.deepStrictEqual(pipe(Array.empty<number>(), MArray.modifyInit(Number.sum(1))), []);
+      assert.deepStrictEqual(pipe(Array.empty<number>(), MArray.modifyInit(Number.sum(1))), []);
     });
     it('One element', () => {
-      TestUtils.deepStrictEqual(pipe(Array.of(1), MArray.modifyInit(Number.sum(1))), [1]);
+      assert.deepStrictEqual(pipe(Array.of(1), MArray.modifyInit(Number.sum(1))), [1]);
     });
     it('More than one element', () => {
-      TestUtils.deepStrictEqual(
+      assert.deepStrictEqual(
         pipe(Array.make(1, 2, 3), MArray.modifyInit(Number.sum(1))),
         [2, 3, 3],
       );
@@ -321,14 +314,14 @@ describe('MArray', () => {
 
   describe('modifyTail', () => {
     it('Empty array', () => {
-      TestUtils.deepStrictEqual(pipe(Array.empty<number>(), MArray.modifyTail(Number.sum(1))), []);
+      assert.deepStrictEqual(pipe(Array.empty<number>(), MArray.modifyTail(Number.sum(1))), []);
     });
     it('One element', () => {
-      TestUtils.deepStrictEqual(pipe(Array.of(1), MArray.modifyTail(Number.sum(1))), [1]);
+      assert.deepStrictEqual(pipe(Array.of(1), MArray.modifyTail(Number.sum(1))), [1]);
     });
 
     it('More than one element', () => {
-      TestUtils.deepStrictEqual(
+      assert.deepStrictEqual(
         pipe(Array.make(1, 2, 3), MArray.modifyTail(Number.sum(1))),
         [1, 3, 4],
       );
@@ -337,14 +330,14 @@ describe('MArray', () => {
 
   describe('modifyHead', () => {
     it('Empty array', () => {
-      TestUtils.deepStrictEqual(pipe(Array.empty<number>(), MArray.modifyHead(Number.sum(1))), []);
+      assert.deepStrictEqual(pipe(Array.empty<number>(), MArray.modifyHead(Number.sum(1))), []);
     });
     it('One element', () => {
-      TestUtils.deepStrictEqual(pipe(Array.of(1), MArray.modifyHead(Number.sum(1))), [2]);
+      assert.deepStrictEqual(pipe(Array.of(1), MArray.modifyHead(Number.sum(1))), [2]);
     });
 
     it('More than one element', () => {
-      TestUtils.deepStrictEqual(
+      assert.deepStrictEqual(
         pipe(Array.make(1, 2, 3), MArray.modifyHead(Number.sum(1))),
         [2, 2, 3],
       );
@@ -353,13 +346,13 @@ describe('MArray', () => {
 
   describe('modifyLast', () => {
     it('Empty array', () => {
-      TestUtils.deepStrictEqual(pipe(Array.empty<number>(), MArray.modifyLast(Number.sum(1))), []);
+      assert.deepStrictEqual(pipe(Array.empty<number>(), MArray.modifyLast(Number.sum(1))), []);
     });
     it('One element', () => {
-      TestUtils.deepStrictEqual(pipe(Array.of(1), MArray.modifyLast(Number.sum(1))), [2]);
+      assert.deepStrictEqual(pipe(Array.of(1), MArray.modifyLast(Number.sum(1))), [2]);
     });
     it('More than one element', () => {
-      TestUtils.deepStrictEqual(
+      assert.deepStrictEqual(
         pipe(Array.make(1, 2, 3), MArray.modifyLast(Number.sum(1))),
         [1, 2, 4],
       );
@@ -368,7 +361,7 @@ describe('MArray', () => {
 
   describe('unfold', () => {
     it('Without cycle', () => {
-      TestUtils.deepStrictEqual(
+      assert.deepStrictEqual(
         pipe(
           0,
           MArray.unfold<number, number>(
@@ -391,7 +384,7 @@ describe('MArray', () => {
         Option.map(Number.increment),
         Option.getOrElse(() => 0),
       );
-      TestUtils.deepStrictEqual(
+      assert.deepStrictEqual(
         pipe(
           0,
           MArray.unfold<number, number>(
@@ -416,7 +409,7 @@ describe('MArray', () => {
 
   describe('unfoldNonEmpty', () => {
     it('Without cycle', () => {
-      TestUtils.deepStrictEqual(
+      assert.deepStrictEqual(
         pipe(
           0,
           MArray.unfoldNonEmpty<number, number>(
@@ -436,7 +429,7 @@ describe('MArray', () => {
     });
 
     it('With cycle', () => {
-      TestUtils.deepStrictEqual(
+      assert.deepStrictEqual(
         pipe(
           0,
           MArray.unfoldNonEmpty<number, number>(
@@ -455,18 +448,15 @@ describe('MArray', () => {
 
   describe('splitAtFromRight', () => {
     it('Empty array', () => {
-      TestUtils.deepStrictEqual(pipe(Array.empty(), MArray.splitAtFromRight(3)), [[], []]);
+      assert.deepStrictEqual(pipe(Array.empty(), MArray.splitAtFromRight(3)), [[], []]);
     });
 
     it('Any array with n within bounds', () => {
-      TestUtils.deepStrictEqual(pipe(Array.make(1, 2, 3), MArray.splitAtFromRight(2)), [
-        [1],
-        [2, 3],
-      ]);
+      assert.deepStrictEqual(pipe(Array.make(1, 2, 3), MArray.splitAtFromRight(2)), [[1], [2, 3]]);
     });
 
     it('Any array with n beyond bounds', () => {
-      TestUtils.deepStrictEqual(pipe(Array.make(1, 2, 3), MArray.splitAtFromRight(5)), [
+      assert.deepStrictEqual(pipe(Array.make(1, 2, 3), MArray.splitAtFromRight(5)), [
         [],
         [1, 2, 3],
       ]);
@@ -475,7 +465,7 @@ describe('MArray', () => {
 
   describe('splitNonEmptyAtFromRight', () => {
     it('Non-empty array', () => {
-      TestUtils.deepStrictEqual(pipe(Array.make(1, 2, 3), MArray.splitNonEmptyAtFromRight(2)), [
+      assert.deepStrictEqual(pipe(Array.make(1, 2, 3), MArray.splitNonEmptyAtFromRight(2)), [
         [1],
         [2, 3],
       ]);
@@ -484,15 +474,15 @@ describe('MArray', () => {
 
   describe('removeEmptyAndJoin', () => {
     it('With all non-empty parts', () => {
-      TestUtils.strictEqual(pipe(['a', 'b', 'c'], MArray.removeEmptyAndJoin(',')), 'a,b,c');
+      assert.strictEqual(pipe(['a', 'b', 'c'], MArray.removeEmptyAndJoin(',')), 'a,b,c');
     });
 
     it('Filters out empty parts', () => {
-      TestUtils.strictEqual(pipe(['a', '', 'b', ''], MArray.removeEmptyAndJoin('-')), 'a-b');
+      assert.strictEqual(pipe(['a', '', 'b', ''], MArray.removeEmptyAndJoin('-')), 'a-b');
     });
 
     it('Works with generic iterables', () => {
-      TestUtils.strictEqual(pipe(new Set(['x', '', 'y']), MArray.removeEmptyAndJoin('|')), 'x|y');
+      assert.strictEqual(pipe(new Set(['x', '', 'y']), MArray.removeEmptyAndJoin('|')), 'x|y');
     });
   });
 
@@ -599,9 +589,7 @@ describe('MArray', () => {
     const mergeSortedAs = MArray.mergeSorted(byKey);
 
     it('Empty arrays', () => {
-      TestUtils.assertTrue(
-        pipe(Array.empty<A>(), mergeSortedAs(Array.empty<A>()), Array.isArrayEmpty),
-      );
+      assert.isTrue(pipe(Array.empty<A>(), mergeSortedAs(Array.empty<A>()), Array.isArrayEmpty));
     });
 
     it('that finishes first', () => {
@@ -652,7 +640,7 @@ describe('MArray', () => {
   describe('differenceSorted', () => {
     const substractSortedNumbers = MArray.differenceSorted(Number.Order);
     it('Subtract non-empty array from empty array', () => {
-      TestUtils.assertTrue(
+      assert.isTrue(
         pipe(
           Array.empty<number>(),
           substractSortedNumbers(Array.make(1, 2, 3)),
@@ -662,14 +650,14 @@ describe('MArray', () => {
     });
 
     it('that finishes first', () => {
-      TestUtils.deepStrictEqual(
+      assert.deepStrictEqual(
         pipe(Array.make(1, 2, 4, 6, 6, 6, 7, 8), substractSortedNumbers(Array.make(2, 6, 6))),
         Array.make(1, 4, 6, 7, 8),
       );
     });
 
     it('self finishes first', () => {
-      TestUtils.deepStrictEqual(
+      assert.deepStrictEqual(
         pipe(Array.make(1, 2, 4, 6, 6, 7, 8), substractSortedNumbers(Array.make(2, 6, 6, 10))),
         Array.make(1, 4, 7, 8),
       );
@@ -678,7 +666,7 @@ describe('MArray', () => {
 
   describe('pad', () => {
     it('Array shorter than target length', () => {
-      TestUtils.deepStrictEqual(MArray.pad(3, 0)([1, 2]), [1, 2, 0]);
+      assert.deepStrictEqual(MArray.pad(3, 0)([1, 2]), [1, 2, 0]);
     });
   });
 });

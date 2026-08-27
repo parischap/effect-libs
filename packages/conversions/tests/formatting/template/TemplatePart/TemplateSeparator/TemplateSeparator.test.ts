@@ -3,7 +3,7 @@ import * as Option from 'effect/Option';
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as CVTemplateSeparator from '@parischap/conversions/CVTemplateSeparator';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('CVTemplateSeparator', () => {
   const separator = CVTemplateSeparator.make('foo');
@@ -17,7 +17,7 @@ describe('CVTemplateSeparator', () => {
     });
 
     it('.toString()', () => {
-      TestUtils.strictEqual(separator.toString(), 'foo');
+      assert.strictEqual(separator.toString(), 'foo');
     });
   });
 });

@@ -13,7 +13,7 @@ import * as CVDateTimeParser from '@parischap/conversions/CVDateTimeParser';
 import * as CVNumberBase10Format from '@parischap/conversions/CVNumberBase10Format';
 import * as CVSchema from '@parischap/conversions/CVSchema';
 
-import { describe, it } from 'vitest';
+import { describe, it } from '@effect/vitest';
 
 describe('CVSchema', () => {
   describe('FiniteFromString', () => {

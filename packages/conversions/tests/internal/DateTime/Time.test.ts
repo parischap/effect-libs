@@ -4,7 +4,7 @@ import * as TestUtils from '@parischap/configs/TestUtils';
 //import {} from '@parischap/conversions';
 import * as CVTime from '@parischap/conversions/CVTime';
 
-import { it } from 'vitest';
+import { it } from '@effect/vitest';
 
 it('moduleTag', () => {
   TestUtils.assertEquals(

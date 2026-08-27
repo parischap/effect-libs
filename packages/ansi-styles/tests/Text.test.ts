@@ -9,7 +9,7 @@ import * as ASText from '@parischap/ansi-styles/ASText';
 import * as ASThreeBitColor from '@parischap/ansi-styles/ASThreeBitColor';
 import * as TestUtils from '@parischap/configs/TestUtils';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('ASText', () => {
   const none = ASText.concat;
@@ -47,10 +47,10 @@ describe('ASText', () => {
 
     describe('haveSameText', () => {
       it('Matching', () => {
-        TestUtils.assertTrue(ASText.haveSameText(boldRedFoo, ASText.fromString('foo')));
+        assert.isTrue(ASText.haveSameText(boldRedFoo, ASText.fromString('foo')));
       });
       it('Non matching', () => {
-        TestUtils.assertFalse(ASText.haveSameText(boldRedFoo, boldRed('bar')));
+        assert.isFalse(ASText.haveSameText(boldRedFoo, boldRed('bar')));
       });
     });
 
@@ -66,15 +66,15 @@ describe('ASText', () => {
 
     describe('.toString()', () => {
       it('Empty', () => {
-        TestUtils.strictEqual(ASText.empty.toString(), '');
+        assert.strictEqual(ASText.empty.toString(), '');
       });
 
       it('Simple string with no style', () => {
-        TestUtils.strictEqual(none('foo').toString(), 'foo');
+        assert.strictEqual(none('foo').toString(), 'foo');
       });
 
       it('Bold red string', () => {
-        TestUtils.strictEqual(
+        assert.strictEqual(
           boldRedFoo.toString(),
           `${ASCode.fromNonEmptySequence([1, 31])}foo${ASCode.reset}`,
         );
@@ -83,28 +83,25 @@ describe('ASText', () => {
   });
 
   it('length', () => {
-    TestUtils.strictEqual(ASText.toLength(dim(pink('foo'), red('bar'))), 6);
+    assert.strictEqual(ASText.toLength(dim(pink('foo'), red('bar'))), 6);
   });
 
   it('concat', () => {
-    TestUtils.strictEqual(
-      ASText.toUnstyledString(ASText.concat(foo, bar, boldRedFoo)),
-      'foobarfoo',
-    );
+    assert.strictEqual(ASText.toUnstyledString(ASText.concat(foo, bar, boldRedFoo)), 'foobarfoo');
   });
 
   describe('empty, isEmpty', () => {
     it('Matching', () => {
-      TestUtils.assertTrue(ASText.isEmpty(ASText.empty));
+      assert.isTrue(ASText.isEmpty(ASText.empty));
     });
     it('Non matching', () => {
-      TestUtils.assertFalse(ASText.isEmpty(boldRedFoo));
+      assert.isFalse(ASText.isEmpty(boldRedFoo));
     });
   });
 
   it('fromStyleAndElems', () => {
     const weird = bold('foo', 'bar', italic('foo'), italic('bar'), '', 'baz');
-    TestUtils.strictEqual(pipe(weird, ASText.uniStyledTexts, Array.length), 3);
+    assert.strictEqual(pipe(weird, ASText.uniStyledTexts, Array.length), 3);
     TestUtils.assertEquals(weird, bold('foobar', italic('foobar'), 'baz'));
   });
 
@@ -120,7 +117,7 @@ describe('ASText', () => {
       ),
     );
 
-    TestUtils.strictEqual(
+    assert.strictEqual(
       ASText.toAnsiString(text),
       `foo ${ASCode.fromNonEmptySequence([1, 31])}goes ${ASCode.fromNonEmptySequence([3])}to \
 ${ASCode.fromNonEmptySequence([23, 38, 2, 255, 192, 203])}the ${ASCode.fromNonEmptySequence([22])}beach \
@@ -129,66 +126,57 @@ ${ASCode.fromNonEmptySequence([1, 2, 31])}to swim ${ASCode.fromNonEmptySequence(
   });
 
   it('toUnstyledString', () => {
-    TestUtils.strictEqual(ASText.toUnstyledString(dim(pink('foo'), red('bar'))), 'foobar');
+    assert.strictEqual(ASText.toUnstyledString(dim(pink('foo'), red('bar'))), 'foobar');
   });
 
   it('append', () => {
-    TestUtils.strictEqual(ASText.toUnstyledString(foo.pipe(ASText.append(bar))), 'foobar');
+    assert.strictEqual(ASText.toUnstyledString(foo.pipe(ASText.append(bar))), 'foobar');
   });
 
   it('prepend', () => {
-    TestUtils.strictEqual(ASText.toUnstyledString(bar.pipe(ASText.prepend(foo))), 'foobar');
+    assert.strictEqual(ASText.toUnstyledString(bar.pipe(ASText.prepend(foo))), 'foobar');
   });
 
   it('appendIfNotEmpty', () => {
-    TestUtils.strictEqual(
-      ASText.toUnstyledString(foo.pipe(ASText.appendIfNotEmpty(bar))),
-      'foobar',
-    );
-    TestUtils.strictEqual(
+    assert.strictEqual(ASText.toUnstyledString(foo.pipe(ASText.appendIfNotEmpty(bar))), 'foobar');
+    assert.strictEqual(
       ASText.toUnstyledString(ASText.empty.pipe(ASText.appendIfNotEmpty(bar))),
       '',
     );
   });
 
   it('prependIfNotEmpty', () => {
-    TestUtils.strictEqual(
-      ASText.toUnstyledString(bar.pipe(ASText.prependIfNotEmpty(foo))),
-      'foobar',
-    );
-    TestUtils.strictEqual(
+    assert.strictEqual(ASText.toUnstyledString(bar.pipe(ASText.prependIfNotEmpty(foo))), 'foobar');
+    assert.strictEqual(
       ASText.toUnstyledString(ASText.empty.pipe(ASText.prependIfNotEmpty(foo))),
       '',
     );
   });
 
   it('surround', () => {
-    TestUtils.strictEqual(
-      ASText.toUnstyledString(bar.pipe(ASText.surround(foo, foo))),
-      'foobarfoo',
-    );
+    assert.strictEqual(ASText.toUnstyledString(bar.pipe(ASText.surround(foo, foo))), 'foobarfoo');
   });
 
   it('surroundIfNotEmpty', () => {
-    TestUtils.strictEqual(
+    assert.strictEqual(
       ASText.toUnstyledString(bar.pipe(ASText.surroundIfNotEmpty(foo, baz))),
       'foobarbaz',
     );
-    TestUtils.strictEqual(
+    assert.strictEqual(
       ASText.toUnstyledString(ASText.empty.pipe(ASText.surroundIfNotEmpty(foo, baz))),
       '',
     );
   });
 
   it('join', () => {
-    TestUtils.strictEqual(
+    assert.strictEqual(
       pipe(Array.make(foo, bar, foo), ASText.join(baz), ASText.toUnstyledString),
       'foobazbarbazfoo',
     );
   });
 
   it('removeEmptyAndJoin', () => {
-    TestUtils.strictEqual(
+    assert.strictEqual(
       pipe(
         Array.make(foo, ASText.empty, bar, ASText.empty, foo),
         ASText.removeEmptyAndJoin(baz),
@@ -199,29 +187,29 @@ ${ASCode.fromNonEmptySequence([1, 2, 31])}to swim ${ASCode.fromNonEmptySequence(
   });
 
   it('repeat', () => {
-    TestUtils.strictEqual(ASText.toUnstyledString(bar.pipe(ASText.repeat(3))), 'barbarbar');
+    assert.strictEqual(ASText.toUnstyledString(bar.pipe(ASText.repeat(3))), 'barbarbar');
   });
 
   describe('isNotEmpty', () => {
     it('Matching', () => {
-      TestUtils.assertTrue(ASText.isNotEmpty(boldRedFoo));
+      assert.isTrue(ASText.isNotEmpty(boldRedFoo));
     });
     it('Non matching', () => {
-      TestUtils.assertFalse(ASText.isNotEmpty(ASText.empty));
+      assert.isFalse(ASText.isNotEmpty(ASText.empty));
     });
   });
 
   it('lineBreak', () => {
-    TestUtils.strictEqual(ASText.toUnstyledString(ASText.lineBreak), '\n');
-    TestUtils.assertTrue(ASText.isNotEmpty(ASText.lineBreak));
+    assert.strictEqual(ASText.toUnstyledString(ASText.lineBreak), '\n');
+    assert.isTrue(ASText.isNotEmpty(ASText.lineBreak));
   });
 
   describe('equivalence', () => {
     it('Matching', () => {
-      TestUtils.assertTrue(ASText.equivalence(boldRedFoo, pipe('foo', boldRed)));
+      assert.isTrue(ASText.equivalence(boldRedFoo, pipe('foo', boldRed)));
     });
     it('Non matching', () => {
-      TestUtils.assertFalse(ASText.equivalence(boldRedFoo, foo));
+      assert.isFalse(ASText.equivalence(boldRedFoo, foo));
     });
   });
 });

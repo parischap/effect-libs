@@ -3,7 +3,7 @@ import * as Option from 'effect/Option';
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as MPortError from '@parischap/effect-lib/MPortError';
 
-import { describe, it } from 'vitest';
+import { describe, it } from '@effect/vitest';
 
 describe('MPortError', () => {
   it('moduleTag', () => {

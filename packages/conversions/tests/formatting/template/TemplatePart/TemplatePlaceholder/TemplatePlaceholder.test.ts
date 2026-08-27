@@ -8,7 +8,7 @@ import * as CVTemplatePlaceholder from '@parischap/conversions/CVTemplatePlaceho
 import * as MRegExpString from '@parischap/effect-lib/MRegExpString';
 import * as MStringFillPosition from '@parischap/effect-lib/MStringFillPosition';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('CVTemplatePlaceholder', () => {
   const threeChars = CVTemplatePlaceholder.fixedLength({ name: 'foo', length: 3 });
@@ -31,7 +31,7 @@ describe('CVTemplatePlaceholder', () => {
 
   describe('fixedLength', () => {
     it('.toString()', () => {
-      TestUtils.strictEqual(threeChars.toString(), '#foo: 3-character string');
+      assert.strictEqual(threeChars.toString(), '#foo: 3-character string');
     });
 
     describe('Parsing', () => {
@@ -79,10 +79,7 @@ describe('CVTemplatePlaceholder', () => {
       fillPosition: MStringFillPosition.Type.Left,
     });
     it('.toString()', () => {
-      TestUtils.strictEqual(
-        placeholder.toString(),
-        "#foo: 3-character string left-padded with '0'",
-      );
+      assert.strictEqual(placeholder.toString(), "#foo: 3-character string left-padded with '0'");
     });
 
     describe('Parsing', () => {
@@ -119,7 +116,7 @@ describe('CVTemplatePlaceholder', () => {
         numberBase10Format: CVNumberBase10Format.twoDigitSignedInteger,
       });
       it('.toString()', () => {
-        TestUtils.strictEqual(
+        assert.strictEqual(
           placeholder.toString(),
           '#foo: 3-character string to 0-left-padded signed integer',
         );
@@ -166,10 +163,7 @@ describe('CVTemplatePlaceholder', () => {
         numberBase10Format: CVNumberBase10Format.frenchStyleNumber,
       });
       it('.toString()', () => {
-        TestUtils.strictEqual(
-          placeholder.toString(),
-          '#foo: potentially signed French-style number',
-        );
+        assert.strictEqual(placeholder.toString(), '#foo: potentially signed French-style number');
       });
 
       describe('Parsing', () => {
@@ -212,7 +206,7 @@ describe('CVTemplatePlaceholder', () => {
     });
 
     it('.toString()', () => {
-      TestUtils.strictEqual(map.toString(), '#foo: from [foo, bazbar] to [6, 12]');
+      assert.strictEqual(map.toString(), '#foo: from [foo, bazbar] to [6, 12]');
     });
 
     describe('Parsing', () => {
@@ -250,7 +244,7 @@ describe('CVTemplatePlaceholder', () => {
     });
 
     it('.toString()', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         noSpaceChars.toString(),
         String.raw`#foo: a non-empty string containing non of the following characters: ['\s']`,
       );
@@ -289,7 +283,7 @@ describe('CVTemplatePlaceholder', () => {
     const toEnd = CVTemplatePlaceholder.toEnd('foo');
 
     it('.toString()', () => {
-      TestUtils.strictEqual(toEnd.toString(), '#foo: a string');
+      assert.strictEqual(toEnd.toString(), '#foo: a string');
     });
 
     it('Parsing', () => {

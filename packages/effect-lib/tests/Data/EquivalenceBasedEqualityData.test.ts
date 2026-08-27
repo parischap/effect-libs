@@ -6,7 +6,7 @@ import * as TestUtils from '@parischap/configs/TestUtils';
 import * as MData from '@parischap/effect-lib/MData';
 import * as MEquivalenceBasedEqualityData from '@parischap/effect-lib/MEquivalenceBasedEqualityData';
 
-import { describe, it } from 'vitest';
+import { describe, it } from '@effect/vitest';
 
 describe('MEquivalenceBasedEqualityData', () => {
   const _FooUniqueSymbol: unique symbol = Symbol.for(`Foo`) as _FooUniqueSymbol;

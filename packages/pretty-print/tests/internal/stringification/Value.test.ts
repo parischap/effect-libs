@@ -3,7 +3,7 @@ import * as Option from 'effect/Option';
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as PPValue from '@parischap/pretty-print/PPValue';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('PPValue', () => {
   it('moduleTag', () => {
@@ -24,28 +24,28 @@ describe('PPValue', () => {
   });
 
   it('.pipe()', () => {
-    TestUtils.strictEqual(PPValue.fromTopValue(42).pipe(PPValue.content), 42);
+    assert.strictEqual(PPValue.fromTopValue(42).pipe(PPValue.content), 42);
   });
 
   describe('fromTopValue', () => {
     it('Sets depth to 0', () => {
-      TestUtils.strictEqual(PPValue.depth(PPValue.fromTopValue(3)), 0);
+      assert.strictEqual(PPValue.depth(PPValue.fromTopValue(3)), 0);
     });
 
     it('Sets protoDepth to 0', () => {
-      TestUtils.strictEqual(PPValue.protoDepth(PPValue.fromTopValue(3)), 0);
+      assert.strictEqual(PPValue.protoDepth(PPValue.fromTopValue(3)), 0);
     });
 
     it('Sets isFromIterator to false', () => {
-      TestUtils.assertFalse(PPValue.isFromIterator(PPValue.fromTopValue(3)));
+      assert.isFalse(PPValue.isFromIterator(PPValue.fromTopValue(3)));
     });
 
     it('Sets hasGeneratedKey to false', () => {
-      TestUtils.assertFalse(PPValue.hasGeneratedKey(PPValue.fromTopValue(3)));
+      assert.isFalse(PPValue.hasGeneratedKey(PPValue.fromTopValue(3)));
     });
 
     it('Sets stringKey to empty string', () => {
-      TestUtils.deepStrictEqual(PPValue.stringKey(PPValue.fromTopValue(3)), ['']);
+      assert.deepStrictEqual(PPValue.stringKey(PPValue.fromTopValue(3)), ['']);
     });
   });
 
@@ -58,11 +58,11 @@ describe('PPValue', () => {
     });
 
     it('Sets content to the property value', () => {
-      TestUtils.strictEqual(PPValue.content(enumProp), 1);
+      assert.strictEqual(PPValue.content(enumProp), 1);
     });
 
     it('Sets isEnumerable for enumerable properties', () => {
-      TestUtils.assertTrue(PPValue.isEnumerable(enumProp));
+      assert.isTrue(PPValue.isEnumerable(enumProp));
     });
 
     it('Sets isEnumerable to false for non-enumerable properties', () => {
@@ -72,7 +72,7 @@ describe('PPValue', () => {
         depth: 1,
         protoDepth: 0,
       });
-      TestUtils.assertFalse(PPValue.isEnumerable(nonEnum));
+      assert.isFalse(PPValue.isEnumerable(nonEnum));
     });
 
     it('Sets hasSymbolicKey for symbolic keys', () => {
@@ -83,15 +83,15 @@ describe('PPValue', () => {
         depth: 1,
         protoDepth: 0,
       });
-      TestUtils.assertTrue(PPValue.hasSymbolicKey(symProp));
+      assert.isTrue(PPValue.hasSymbolicKey(symProp));
     });
 
     it('Sets hasSymbolicKey to false for string keys', () => {
-      TestUtils.assertFalse(PPValue.hasSymbolicKey(enumProp));
+      assert.isFalse(PPValue.hasSymbolicKey(enumProp));
     });
 
     it('Sets isFromIterator to false', () => {
-      TestUtils.assertFalse(PPValue.isFromIterator(enumProp));
+      assert.isFalse(PPValue.isFromIterator(enumProp));
     });
   });
 
@@ -104,49 +104,49 @@ describe('PPValue', () => {
     });
 
     it('Sets content correctly', () => {
-      TestUtils.strictEqual(PPValue.content(iterProp), 'foo');
+      assert.strictEqual(PPValue.content(iterProp), 'foo');
     });
 
     it('Sets isFromIterator to true', () => {
-      TestUtils.assertTrue(PPValue.isFromIterator(iterProp));
+      assert.isTrue(PPValue.isFromIterator(iterProp));
     });
 
     it('Sets stringKey correctly', () => {
-      TestUtils.deepStrictEqual(PPValue.stringKey(iterProp), ['key1', 'key2']);
+      assert.deepStrictEqual(PPValue.stringKey(iterProp), ['key1', 'key2']);
     });
 
     it('Joins multi-line keys for oneLineStringKey', () => {
-      TestUtils.strictEqual(PPValue.oneLineStringKey(iterProp), 'key1key2');
+      assert.strictEqual(PPValue.oneLineStringKey(iterProp), 'key1key2');
     });
 
     it('Sets depth correctly', () => {
-      TestUtils.strictEqual(PPValue.depth(iterProp), 2);
+      assert.strictEqual(PPValue.depth(iterProp), 2);
     });
 
     it('Sets protoDepth to 0', () => {
-      TestUtils.strictEqual(PPValue.protoDepth(iterProp), 0);
+      assert.strictEqual(PPValue.protoDepth(iterProp), 0);
     });
 
     it('Sets isEnumerable to true', () => {
-      TestUtils.assertTrue(PPValue.isEnumerable(iterProp));
+      assert.isTrue(PPValue.isEnumerable(iterProp));
     });
   });
 
   describe('isPrimitive / isNonPrimitive', () => {
     it('isPrimitive for a number', () => {
-      TestUtils.assertTrue(PPValue.isPrimitive(PPValue.fromTopValue(42)));
+      assert.isTrue(PPValue.isPrimitive(PPValue.fromTopValue(42)));
     });
 
     it('isPrimitive for null', () => {
-      TestUtils.assertTrue(PPValue.isPrimitive(PPValue.fromTopValue(null)));
+      assert.isTrue(PPValue.isPrimitive(PPValue.fromTopValue(null)));
     });
 
     it('isNonPrimitive for an object', () => {
-      TestUtils.assertTrue(PPValue.isNonPrimitive(PPValue.fromTopValue({ a: 1 })));
+      assert.isTrue(PPValue.isNonPrimitive(PPValue.fromTopValue({ a: 1 })));
     });
 
     it('isNonPrimitive for an array', () => {
-      TestUtils.assertTrue(PPValue.isNonPrimitive(PPValue.fromTopValue([1, 2])));
+      assert.isTrue(PPValue.isNonPrimitive(PPValue.fromTopValue([1, 2])));
     });
   });
 });

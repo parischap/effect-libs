@@ -6,7 +6,7 @@ import * as ASStyleCharacteristics from '@parischap/ansi-styles/ASStyleCharacter
 import * as ASUnistyledText from '@parischap/ansi-styles/ASUnistyledText';
 import * as TestUtils from '@parischap/configs/TestUtils';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('UnistyledText', () => {
   const simpleText = 'Hello';
@@ -30,8 +30,8 @@ describe('UnistyledText', () => {
   describe('concat', () => {
     it('concatenates single element', () => {
       const result = ASUnistyledText.concat([simpleBoldText]);
-      TestUtils.strictEqual(ASUnistyledText.text(result), simpleText);
-      TestUtils.deepStrictEqual(ASUnistyledText.style(result), boldStyle);
+      assert.strictEqual(ASUnistyledText.text(result), simpleText);
+      assert.deepStrictEqual(ASUnistyledText.style(result), boldStyle);
     });
 
     it('concatenates multiple elements and takes first style', () => {
@@ -39,8 +39,8 @@ describe('UnistyledText', () => {
       const text2 = ASUnistyledText.make({ text: ' World', style: italicStyle });
 
       const result = ASUnistyledText.concat([text1, text2]);
-      TestUtils.strictEqual(ASUnistyledText.text(result), 'Hello World');
-      TestUtils.deepStrictEqual(ASUnistyledText.style(result), boldStyle);
+      assert.strictEqual(ASUnistyledText.text(result), 'Hello World');
+      assert.deepStrictEqual(ASUnistyledText.style(result), boldStyle);
     });
 
     it('concatenates multiple elements with empty strings', () => {
@@ -49,18 +49,18 @@ describe('UnistyledText', () => {
       const text3 = ASUnistyledText.make({ text: 'World', style: boldStyle });
 
       const result = ASUnistyledText.concat([text1, text2, text3]);
-      TestUtils.strictEqual(ASUnistyledText.text(result), 'HelloWorld');
+      assert.strictEqual(ASUnistyledText.text(result), 'HelloWorld');
     });
   });
 
   describe('toLength', () => {
     it('returns correct length for simple text', () => {
-      TestUtils.strictEqual(ASUnistyledText.toLength(simpleBoldText), 5);
+      assert.strictEqual(ASUnistyledText.toLength(simpleBoldText), 5);
     });
 
     it('returns 0 for empty text', () => {
       const text = ASUnistyledText.make({ text: '', style: boldStyle });
-      TestUtils.strictEqual(ASUnistyledText.toLength(text), 0);
+      assert.strictEqual(ASUnistyledText.toLength(text), 0);
     });
   });
 
@@ -74,16 +74,16 @@ describe('UnistyledText', () => {
 
     it('returns plain text when style is none', () => {
       const text = ASUnistyledText.make({ text: 'Hello', style: ASStyleCharacteristics.none });
-      TestUtils.strictEqual(ASUnistyledText.toAnsiString(text), 'Hello');
+      assert.strictEqual(ASUnistyledText.toAnsiString(text), 'Hello');
     });
 
     it('does not wraps empty text with ANSI codes when style is present', () => {
       const text = ASUnistyledText.make({ text: '', style: boldStyle });
-      TestUtils.strictEqual(ASUnistyledText.toAnsiString(text), '');
+      assert.strictEqual(ASUnistyledText.toAnsiString(text), '');
     });
 
     it('applies multiple styles together', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         ASUnistyledText.toAnsiString(simpleBoldItalicText),
         `${ASCode.fromNonEmptySequence([1, 3])}Hello${ASCode.reset}`,
       );
@@ -96,13 +96,13 @@ describe('UnistyledText', () => {
         simpleBoldText,
         ASUnistyledText.applyStyleUnder(ASStyleCharacteristics.notBold),
       );
-      TestUtils.strictEqual(ASUnistyledText.text(result), simpleText);
+      assert.strictEqual(ASUnistyledText.text(result), simpleText);
       // Bold should take precedence as it's already in the text
-      TestUtils.deepStrictEqual(ASUnistyledText.style(result), boldStyle);
+      assert.deepStrictEqual(ASUnistyledText.style(result), boldStyle);
     });
 
     it('applies empty style under existing style', () => {
-      TestUtils.deepStrictEqual(
+      assert.deepStrictEqual(
         pipe(
           simpleBoldText,
           ASUnistyledText.applyStyleUnder(ASStyleCharacteristics.none),
@@ -115,7 +115,7 @@ describe('UnistyledText', () => {
     it('applies style under none style', () => {
       const text = ASUnistyledText.make({ text: simpleText, style: ASStyleCharacteristics.none });
       const result = pipe(text, ASUnistyledText.applyStyleUnder(boldStyle));
-      TestUtils.deepStrictEqual(ASUnistyledText.style(result), boldStyle);
+      assert.deepStrictEqual(ASUnistyledText.style(result), boldStyle);
     });
   });
 });

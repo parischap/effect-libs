@@ -2,7 +2,7 @@ import * as TestUtils from '@parischap/configs/TestUtils';
 import * as CVNumberBase10FormatSignDisplayOption from '@parischap/conversions/CVNumberBase10FormatSignDisplayOption';
 import * as CVSignParser from '@parischap/conversions/CVSignParser';
 
-import { describe, it } from 'vitest';
+import { describe, it } from '@effect/vitest';
 
 describe('CVSignParser', () => {
   describe('Auto', () => {

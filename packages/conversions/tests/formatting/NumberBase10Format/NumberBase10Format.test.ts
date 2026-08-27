@@ -4,7 +4,7 @@ import * as Option from 'effect/Option';
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as CVNumberBase10Format from '@parischap/conversions/CVNumberBase10Format';
 
-import { describe, it } from 'vitest';
+import { describe, it } from '@effect/vitest';
 
 describe('CVNumberBase10Format', () => {
   const { frenchStyleNumber } = CVNumberBase10Format;

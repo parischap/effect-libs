@@ -3,7 +3,7 @@ import * as Option from 'effect/Option';
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as MOption from '@parischap/effect-lib/MOption';
 
-import { describe, it } from 'vitest';
+import { describe, it } from '@effect/vitest';
 
 describe('MOption', () => {
   describe('fromOptionOrNullable', () => {

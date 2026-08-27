@@ -5,7 +5,7 @@ import * as TestUtils from '@parischap/configs/TestUtils';
 import * as CVNumberBase10FormatScientificNotationOption from '@parischap/conversions/CVNumberBase10FormatScientificNotationOption';
 import * as CVScientificNotationMantissaValidator from '@parischap/conversions/CVScientificNotationMantissaValidator';
 
-import { describe, it } from 'vitest';
+import { describe, it } from '@effect/vitest';
 
 describe('ScientificNotationMantissaValidator', () => {
   describe('None', () => {

@@ -5,7 +5,7 @@ import * as ASPalette from '@parischap/ansi-styles/ASPalette';
 import * as ASStyleCharacteristics from '@parischap/ansi-styles/ASStyleCharacteristics';
 import * as TestUtils from '@parischap/configs/TestUtils';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('ASContextStyler', () => {
   interface Value {
@@ -34,7 +34,7 @@ describe('ASContextStyler', () => {
     const { red }: { readonly red: ASContextStyler.Type<Value> } = ASContextStyler;
 
     it('.toString()', () => {
-      TestUtils.strictEqual(red.toString(), 'RedStyler');
+      assert.strictEqual(red.toString(), 'RedStyler');
     });
 
     it('toStyle', () => {
@@ -58,7 +58,7 @@ describe('ASContextStyler', () => {
     )(value2);
 
     it('.toString()', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         pos1BasedAllColorsFormatter.toString(),
         'Pos1BasedBlack/Red/Green/Yellow/Blue/Magenta/Cyan/WhitePaletteStyler',
       );

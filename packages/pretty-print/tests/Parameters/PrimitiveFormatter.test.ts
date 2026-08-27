@@ -6,7 +6,7 @@ import type * as MTypes from '@parischap/effect-lib/MTypes';
 import * as PPPrimitiveFormatter from '@parischap/pretty-print/PPPrimitiveFormatter';
 import * as PPValue from '@parischap/pretty-print/PPValue';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('PPPrimitiveFormatter', () => {
   it('moduleTag', () => {
@@ -45,7 +45,7 @@ describe('PPPrimitiveFormatter', () => {
   });
 
   it('.toString()', () => {
-    TestUtils.strictEqual(PPPrimitiveFormatter.utilInspectLike.toString(), 'UtilInspectLike');
+    assert.strictEqual(PPPrimitiveFormatter.utilInspectLike.toString(), 'UtilInspectLike');
   });
 
   describe('utilInspectLike', () => {
@@ -55,42 +55,42 @@ describe('PPPrimitiveFormatter', () => {
       );
 
     it('string under maxStringLength', () => {
-      TestUtils.strictEqual(format('foo'), "'foo'");
+      assert.strictEqual(format('foo'), "'foo'");
     });
 
     it('string truncated at maxStringLength', () => {
       const longString = 'a'.repeat(10_001);
       const result = format(longString);
-      TestUtils.assertTrue(result.endsWith("...'"));
-      TestUtils.assertTrue(result.startsWith("'"));
+      assert.isTrue(result.endsWith("...'"));
+      assert.isTrue(result.startsWith("'"));
     });
 
     it('number', () => {
-      TestUtils.strictEqual(format(42), '42');
+      assert.strictEqual(format(42), '42');
     });
 
     it('bigint', () => {
-      TestUtils.strictEqual(format(5n), '5n');
+      assert.strictEqual(format(5n), '5n');
     });
 
     it('boolean true', () => {
-      TestUtils.strictEqual(format(true), 'true');
+      assert.strictEqual(format(true), 'true');
     });
 
     it('boolean false', () => {
-      TestUtils.strictEqual(format(false), 'false');
+      assert.strictEqual(format(false), 'false');
     });
 
     it('symbol', () => {
-      TestUtils.strictEqual(format(Symbol.for('foo')), 'Symbol(foo)');
+      assert.strictEqual(format(Symbol.for('foo')), 'Symbol(foo)');
     });
 
     it('undefined', () => {
-      TestUtils.strictEqual(format(undefined), 'undefined');
+      assert.strictEqual(format(undefined), 'undefined');
     });
 
     it('null', () => {
-      TestUtils.strictEqual(format(null), 'null');
+      assert.strictEqual(format(null), 'null');
     });
   });
 
@@ -106,11 +106,11 @@ describe('PPPrimitiveFormatter', () => {
       PPPrimitiveFormatter.action(shortFormatter)(PPValue.fromTopValue(value));
 
     it('string under maxStringLength', () => {
-      TestUtils.strictEqual(format('foo'), "'foo'");
+      assert.strictEqual(format('foo'), "'foo'");
     });
 
     it('string over maxStringLength', () => {
-      TestUtils.strictEqual(format('foobar1'), "'foo...'");
+      assert.strictEqual(format('foobar1'), "'foo...'");
     });
   });
 });

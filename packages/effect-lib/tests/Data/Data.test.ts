@@ -4,7 +4,7 @@ import * as Option from 'effect/Option';
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as MData from '@parischap/effect-lib/MData';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('MData', () => {
   const _FooUniqueSymbol: unique symbol = Symbol.for(`Foo`) as _FooUniqueSymbol;
@@ -50,7 +50,7 @@ describe('MData', () => {
   });
 
   it('pipe()', () => {
-    TestUtils.assertFalse(foo1.pipe(Equal.equals(foo2)));
+    assert.isFalse(foo1.pipe(Equal.equals(foo2)));
   });
 
   describe('Equal.equals', () => {

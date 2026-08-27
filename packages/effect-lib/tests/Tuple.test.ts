@@ -3,15 +3,14 @@ import * as Array from 'effect/Array';
 import * as Number from 'effect/Number';
 import * as Tuple from 'effect/Tuple';
 
-import * as TestUtils from '@parischap/configs/TestUtils';
 import * as MTuple from '@parischap/effect-lib/MTuple';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('MTuple', () => {
   describe('of', () => {
     it('With Array.map', () => {
-      TestUtils.deepStrictEqual(
+      assert.deepStrictEqual(
         pipe(Array.make(1, 2), Array.map(MTuple.of)),
         Array.make(Tuple.make(1), Tuple.make(2)),
       );
@@ -20,13 +19,13 @@ describe('MTuple', () => {
 
   describe('replicate', () => {
     it('From number', () => {
-      TestUtils.deepStrictEqual(pipe(1, MTuple.replicate(2)), Tuple.make(1, 1));
+      assert.deepStrictEqual(pipe(1, MTuple.replicate(2)), Tuple.make(1, 1));
     });
   });
 
   describe('replicate + evolve pattern', () => {
     it('From number', () => {
-      TestUtils.deepStrictEqual(
+      assert.deepStrictEqual(
         pipe(1, MTuple.replicate(2), Tuple.evolve(Tuple.make(Number.sum(1), Number.multiply(2)))),
         Tuple.make(2, 2),
       );
@@ -35,7 +34,7 @@ describe('MTuple', () => {
 
   describe('prepend', () => {
     it('From number', () => {
-      TestUtils.deepStrictEqual(pipe(1, Tuple.make, MTuple.prependElement(2)), Tuple.make(2, 1));
+      assert.deepStrictEqual(pipe(1, Tuple.make, MTuple.prependElement(2)), Tuple.make(2, 1));
     });
   });
 });

@@ -9,7 +9,7 @@ import * as PPResolvedNonPrimitiveParameters from '@parischap/pretty-print/PPRes
 import * as PPStringifiedValue from '@parischap/pretty-print/PPStringifiedValue';
 import * as PPValue from '@parischap/pretty-print/PPValue';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('PPNonPrimitiveFormatter', () => {
   it('moduleTag', () => {
@@ -36,7 +36,7 @@ describe('PPNonPrimitiveFormatter', () => {
   });
 
   it('.toString()', () => {
-    TestUtils.strictEqual(
+    assert.strictEqual(
       PPNonPrimitiveFormatter.utilInspectLikeRecord.toString(),
       'SplitWhenTotalLengthExceeds80With/,/{/}/ /  /Marks',
     );
@@ -53,7 +53,7 @@ describe('PPNonPrimitiveFormatter', () => {
 
   describe('utilInspectLikeRecord', () => {
     it('With properties (single-line under limit)', () => {
-      TestUtils.deepStrictEqual(
+      assert.deepStrictEqual(
         PPNonPrimitiveFormatter.action(PPNonPrimitiveFormatter.utilInspectLikeRecord)({
           nonPrimitive,
           header,
@@ -66,7 +66,7 @@ describe('PPNonPrimitiveFormatter', () => {
     });
 
     it('With no properties', () => {
-      TestUtils.deepStrictEqual(
+      assert.deepStrictEqual(
         PPStringifiedValue.toUnstyledStrings(
           PPNonPrimitiveFormatter.action(PPNonPrimitiveFormatter.utilInspectLikeRecord)({
             nonPrimitive,
@@ -83,7 +83,7 @@ describe('PPNonPrimitiveFormatter', () => {
 
   describe('usualTreeify', () => {
     it('With properties', () => {
-      TestUtils.deepStrictEqual(
+      assert.deepStrictEqual(
         PPStringifiedValue.toUnstyledStrings(
           PPNonPrimitiveFormatter.action(PPNonPrimitiveFormatter.usualTreeify)({
             nonPrimitive,
@@ -98,7 +98,7 @@ describe('PPNonPrimitiveFormatter', () => {
     });
 
     it('With no properties', () => {
-      TestUtils.assertTrue(
+      assert.isTrue(
         PPStringifiedValue.isEmpty(
           PPNonPrimitiveFormatter.action(PPNonPrimitiveFormatter.usualTreeify)({
             nonPrimitive,

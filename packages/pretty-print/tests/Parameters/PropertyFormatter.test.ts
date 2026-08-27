@@ -7,7 +7,7 @@ import * as PPPropertyFormatter from '@parischap/pretty-print/PPPropertyFormatte
 import * as PPStringifiedValue from '@parischap/pretty-print/PPStringifiedValue';
 import * as PPValue from '@parischap/pretty-print/PPValue';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('PPPropertyFormatter', () => {
   it('moduleTag', () => {
@@ -31,11 +31,11 @@ describe('PPPropertyFormatter', () => {
   });
 
   it('.toString()', () => {
-    TestUtils.strictEqual(PPPropertyFormatter.valueOnly.toString(), 'ValueOnly');
+    assert.strictEqual(PPPropertyFormatter.valueOnly.toString(), 'ValueOnly');
   });
 
   it('.pipe()', () => {
-    TestUtils.strictEqual(PPPropertyFormatter.valueOnly.pipe(PPPropertyFormatter.id), 'ValueOnly');
+    assert.strictEqual(PPPropertyFormatter.valueOnly.pipe(PPPropertyFormatter.id), 'ValueOnly');
   });
 
   const stringifiedValue = PPStringifiedValue.fromText(ASText.fromString('1'));
@@ -43,7 +43,7 @@ describe('PPPropertyFormatter', () => {
 
   describe('valueOnly', () => {
     it('Returns the value unchanged regardless of key', () => {
-      TestUtils.deepStrictEqual(
+      assert.deepStrictEqual(
         PPPropertyFormatter.action(PPPropertyFormatter.valueOnly)({
           property: PPValue.fromNonPrimitiveValueAndKey({
             nonPrimitive: { a: 1 },
@@ -63,7 +63,7 @@ describe('PPPropertyFormatter', () => {
 
   describe('utilInspectLikeArrayAndRecord', () => {
     it('With empty key (top-level value)', () => {
-      TestUtils.deepStrictEqual(
+      assert.deepStrictEqual(
         PPPropertyFormatter.action(PPPropertyFormatter.utilInspectLikeArrayAndRecord)({
           property: PPValue.fromTopValue(1),
           stringifiedPropValue: stringifiedValue,
@@ -76,7 +76,7 @@ describe('PPPropertyFormatter', () => {
     });
 
     it('With string key at protoDepth 0', () => {
-      TestUtils.deepStrictEqual(
+      assert.deepStrictEqual(
         PPStringifiedValue.toUnstyledStrings(
           PPPropertyFormatter.action(PPPropertyFormatter.utilInspectLikeArrayAndRecord)({
             property: PPValue.fromNonPrimitiveValueAndKey({
@@ -96,7 +96,7 @@ describe('PPPropertyFormatter', () => {
     });
 
     it('hideKey suppresses the key display', () => {
-      TestUtils.deepStrictEqual(
+      assert.deepStrictEqual(
         PPPropertyFormatter.action(PPPropertyFormatter.utilInspectLikeArrayAndRecord)({
           property: PPValue.fromNonPrimitiveValueAndKey({
             nonPrimitive: { a: 1 },
@@ -123,7 +123,7 @@ describe('PPPropertyFormatter', () => {
     });
 
     it('Non-leaf: key on its own line, value on the next', () => {
-      TestUtils.deepStrictEqual(
+      assert.deepStrictEqual(
         PPStringifiedValue.toUnstyledStrings(
           PPPropertyFormatter.action(PPPropertyFormatter.usualTreeify)({
             property,
@@ -138,7 +138,7 @@ describe('PPPropertyFormatter', () => {
     });
 
     it('Leaf: key and value on the same line, separated by ": "', () => {
-      TestUtils.deepStrictEqual(
+      assert.deepStrictEqual(
         PPStringifiedValue.toUnstyledStrings(
           PPPropertyFormatter.action(PPPropertyFormatter.usualTreeify)({
             property,

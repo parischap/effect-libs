@@ -6,7 +6,7 @@ import * as TestUtils from '@parischap/configs/TestUtils';
 import * as CVNumberBase10Format from '@parischap/conversions/CVNumberBase10Format';
 import * as CVNumberBase10Formatter from '@parischap/conversions/CVNumberBase10Formatter';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('CVNumberBase10Formatter', () => {
   const { frenchStyleNumber } = CVNumberBase10Format;
@@ -172,7 +172,7 @@ describe('CVNumberBase10Formatter', () => {
     );
 
     it('Finite number', () => {
-      TestUtils.strictEqual(formatOrThrow(1528.65), '1 528,65');
+      assert.strictEqual(formatOrThrow(1528.65), '1 528,65');
     });
 
     it('Non-finite number: throws', () => {

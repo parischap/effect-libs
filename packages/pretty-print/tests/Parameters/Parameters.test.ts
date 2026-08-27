@@ -4,7 +4,7 @@ import * as TestUtils from '@parischap/configs/TestUtils';
 import * as PPParameters from '@parischap/pretty-print/PPParameters';
 import * as PPStyleMap from '@parischap/pretty-print/PPStyleMap';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('PPParameters', () => {
   it('moduleTag', () => {
@@ -26,13 +26,10 @@ describe('PPParameters', () => {
   });
 
   it('.toString()', () => {
-    TestUtils.strictEqual(PPParameters.utilInspectLike.toString(), 'UtilInspectLike');
+    assert.strictEqual(PPParameters.utilInspectLike.toString(), 'UtilInspectLike');
   });
 
   it('.pipe()', () => {
-    TestUtils.strictEqual(
-      PPParameters.utilInspectLike.pipe(PPParameters.styleMap),
-      PPStyleMap.none,
-    );
+    assert.strictEqual(PPParameters.utilInspectLike.pipe(PPParameters.styleMap), PPStyleMap.none);
   });
 });

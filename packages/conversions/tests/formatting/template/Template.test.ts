@@ -6,7 +6,7 @@ import * as CVTemplate from '@parischap/conversions/CVTemplate';
 import * as CVTemplatePlaceholder from '@parischap/conversions/CVTemplatePlaceholder';
 import * as CVTemplateSeparator from '@parischap/conversions/CVTemplateSeparator';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('CVTemplate', () => {
   const sep = CVTemplateSeparator;
@@ -49,7 +49,7 @@ describe('CVTemplate', () => {
     });
 
     it('.toString()', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         template.toString(),
         `#dd/#MM/#yyyy #MM
 

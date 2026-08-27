@@ -3,7 +3,7 @@ import * as Option from 'effect/Option';
 import * as ASStruckThroughStyleCharacteristic from '@parischap/ansi-styles/ASStruckThroughStyleCharacteristic';
 import * as TestUtils from '@parischap/configs/TestUtils';
 
-import { describe, it } from 'vitest';
+import { describe, it } from '@effect/vitest';
 
 describe('ASStruckThroughStyleCharacteristic', () => {
   it('moduleTag', () => {

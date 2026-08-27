@@ -6,7 +6,7 @@ import * as ASStyleCharacteristics from '@parischap/ansi-styles/ASStyleCharacter
 import * as ASThreeBitColor from '@parischap/ansi-styles/ASThreeBitColor';
 import * as TestUtils from '@parischap/configs/TestUtils';
 
-import { describe, it } from 'vitest';
+import { assert, describe, it } from '@effect/vitest';
 
 describe('ASStyleCharacteristics', () => {
   const boldItalic = pipe(
@@ -47,52 +47,52 @@ describe('ASStyleCharacteristics', () => {
   });
 
   it('hasBold', () => {
-    TestUtils.assertTrue(ASStyleCharacteristics.hasBold(boldItalic));
-    TestUtils.assertFalse(ASStyleCharacteristics.hasBold(ASStyleCharacteristics.none));
-    TestUtils.assertFalse(ASStyleCharacteristics.hasBold(notBoldNotDimRed));
+    assert.isTrue(ASStyleCharacteristics.hasBold(boldItalic));
+    assert.isFalse(ASStyleCharacteristics.hasBold(ASStyleCharacteristics.none));
+    assert.isFalse(ASStyleCharacteristics.hasBold(notBoldNotDimRed));
   });
 
   it('hasNotBold', () => {
-    TestUtils.assertTrue(ASStyleCharacteristics.hasNotBold(notBoldNotDimRed));
-    TestUtils.assertFalse(ASStyleCharacteristics.hasNotBold(boldItalic));
-    TestUtils.assertFalse(ASStyleCharacteristics.hasNotBold(ASStyleCharacteristics.none));
+    assert.isTrue(ASStyleCharacteristics.hasNotBold(notBoldNotDimRed));
+    assert.isFalse(ASStyleCharacteristics.hasNotBold(boldItalic));
+    assert.isFalse(ASStyleCharacteristics.hasNotBold(ASStyleCharacteristics.none));
   });
 
   it('hasDim', () => {
-    TestUtils.assertTrue(ASStyleCharacteristics.hasDim(notBoldDimRed));
-    TestUtils.assertFalse(ASStyleCharacteristics.hasDim(ASStyleCharacteristics.none));
-    TestUtils.assertFalse(ASStyleCharacteristics.hasDim(notBoldNotDimRed));
+    assert.isTrue(ASStyleCharacteristics.hasDim(notBoldDimRed));
+    assert.isFalse(ASStyleCharacteristics.hasDim(ASStyleCharacteristics.none));
+    assert.isFalse(ASStyleCharacteristics.hasDim(notBoldNotDimRed));
   });
 
   it('hasNotDim', () => {
-    TestUtils.assertTrue(ASStyleCharacteristics.hasNotDim(notBoldNotDimRed));
-    TestUtils.assertFalse(ASStyleCharacteristics.hasNotDim(boldItalic));
-    TestUtils.assertFalse(ASStyleCharacteristics.hasNotDim(ASStyleCharacteristics.none));
+    assert.isTrue(ASStyleCharacteristics.hasNotDim(notBoldNotDimRed));
+    assert.isFalse(ASStyleCharacteristics.hasNotDim(boldItalic));
+    assert.isFalse(ASStyleCharacteristics.hasNotDim(ASStyleCharacteristics.none));
   });
 
   describe('toSequence', () => {
     it('none', () => {
-      TestUtils.deepStrictEqual(ASStyleCharacteristics.toSequence(ASStyleCharacteristics.none), []);
+      assert.deepStrictEqual(ASStyleCharacteristics.toSequence(ASStyleCharacteristics.none), []);
     });
 
     it('bold italic', () => {
-      TestUtils.deepStrictEqual(ASStyleCharacteristics.toSequence(boldItalic), [1, 3]);
+      assert.deepStrictEqual(ASStyleCharacteristics.toSequence(boldItalic), [1, 3]);
     });
 
     it('Not bold not dim red', () => {
-      TestUtils.deepStrictEqual(ASStyleCharacteristics.toSequence(notBoldNotDimRed), [22, 31]);
+      assert.deepStrictEqual(ASStyleCharacteristics.toSequence(notBoldNotDimRed), [22, 31]);
     });
 
     it('Bold not dim red', () => {
-      TestUtils.deepStrictEqual(ASStyleCharacteristics.toSequence(boldNotDimRed), [22, 1, 31]);
+      assert.deepStrictEqual(ASStyleCharacteristics.toSequence(boldNotDimRed), [22, 1, 31]);
     });
 
     it('Not bold dim red', () => {
-      TestUtils.deepStrictEqual(ASStyleCharacteristics.toSequence(notBoldDimRed), [22, 2, 31]);
+      assert.deepStrictEqual(ASStyleCharacteristics.toSequence(notBoldDimRed), [22, 2, 31]);
     });
 
     it('Bold default background color', () => {
-      TestUtils.deepStrictEqual(
+      assert.deepStrictEqual(
         pipe(
           ASStyleCharacteristics.bold,
           ASStyleCharacteristics.mergeOver(ASStyleCharacteristics.backgroundDefaultColor),
@@ -104,7 +104,7 @@ describe('ASStyleCharacteristics', () => {
   });
 
   it('mergeUnder', () => {
-    TestUtils.strictEqual(
+    assert.strictEqual(
       pipe(
         notBoldDimRed,
         ASStyleCharacteristics.mergeUnder(boldItalic),
@@ -115,7 +115,7 @@ describe('ASStyleCharacteristics', () => {
   });
 
   it('mergeOver', () => {
-    TestUtils.strictEqual(
+    assert.strictEqual(
       pipe(
         notBoldDimRed,
         ASStyleCharacteristics.mergeOver(boldItalic),
@@ -127,7 +127,7 @@ describe('ASStyleCharacteristics', () => {
 
   describe('difference', () => {
     it('None with none', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         pipe(
           ASStyleCharacteristics.none,
           ASStyleCharacteristics.difference(ASStyleCharacteristics.none),
@@ -138,7 +138,7 @@ describe('ASStyleCharacteristics', () => {
     });
 
     it('Complex case 1', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         pipe(
           boldItalicBrightGreenInBlue,
           ASStyleCharacteristics.difference(boldNotDimRed),
@@ -149,7 +149,7 @@ describe('ASStyleCharacteristics', () => {
     });
 
     it('Complex case 2', () => {
-      TestUtils.strictEqual(
+      assert.strictEqual(
         pipe(
           notBoldNotDimRed,
           ASStyleCharacteristics.difference(boldNotDimRed),
@@ -161,7 +161,7 @@ describe('ASStyleCharacteristics', () => {
   });
 
   it('substractContext', () => {
-    TestUtils.strictEqual(
+    assert.strictEqual(
       pipe(
         ASStyleCharacteristics.bold,
         ASStyleCharacteristics.mergeUnder(ASStyleCharacteristics.notDim),
