@@ -9,6 +9,7 @@ export * as MData from './Data/Data.js';
 export * as MEquivalenceBasedEqualityData from './Data/EquivalenceBasedEqualityData.js';
 export * as MFunction from './Function.js';
 export * as MInputError from './InputError.js';
+export * as MIterable from './Iterable.js';
 export * as MMatch from './Match.js';
 export * as MNumber from './Number.js';
 export * as MOption from './Option.js';

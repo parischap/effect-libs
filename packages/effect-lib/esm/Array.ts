@@ -201,6 +201,8 @@ export const match012 =
  * ```
  *
  * @category Utils
+ *
+ * @see `MIterable.findAll` — lazy counterpart
  */
 
 export const findAll =
@@ -237,7 +239,7 @@ export const findAll =
 export const takeBut =
   (n: number) =>
   <A>(self: Type<A>): Array<A> =>
-    self.slice(0, -n);
+    n === 0 ? self.slice() : self.slice(0, -n);
 
 /**
  * Returns all elements of `self` except the first `n`.
@@ -259,6 +261,7 @@ export const takeBut =
  * @category Utils
  *
  * @see {@link takeBut} — symmetric variant dropping the trailing elements
+ * @see `MIterable.takeRightBut` — lazy counterpart
  */
 export const takeRightBut =
   (n: number) =>
@@ -307,6 +310,8 @@ export const getFromEnd =
  * ```
  *
  * @category Utils
+ *
+ * @see `MIterable.longestCommonSubArray` — lazy counterpart
  */
 export const longestCommonSubArray =
   <A>(that: Iterable<A>) =>
@@ -385,6 +390,7 @@ export const extractFirst: {
  * @category Utils
  *
  * @see {@link groupByNum} — reverses {@link ungroup}
+ * @see `MIterable.ungroup` — lazy counterpart
  */
 export const ungroup = <A>(as: Type<Type<A>>): Array<[number, A]> =>
   pipe(
@@ -654,6 +660,7 @@ export const modifyInit =
  * @category Utils
  *
  * @see {@link modifyInit} — symmetric variant keeping the last element fixed
+ * @see `MIterable.modifyTail` — lazy counterpart
  */
 export const modifyTail =
   <S extends MTypes.AnyReadonlyArray, B>(f: (a: Array.ReadonlyArray.Infer<S>, i: number) => B) =>
@@ -725,7 +732,8 @@ export const modifyLast =
  *
  * @category Utils
  *
- * @see {@link modifyLast } — symmetric variant updating the last element
+ * @see {@link modifyLast} — symmetric variant updating the last element
+ * @see `MIterable.modifyHead` — lazy counterpart
  */
 export const modifyHead =
   <S extends MTypes.AnyReadonlyArray, B>(f: (a: Array.ReadonlyArray.Infer<S>) => B) =>
@@ -755,6 +763,8 @@ export const modifyHead =
  * ```
  *
  * @category Constructors
+ *
+ * @see `MIterable.unfold` — lazy counterpart
  */
 export const unfold: {
   <S, A>(f: (s: S) => Option.Option<MTypes.Pair<A, S>>): (s: S) => Array<A>;
@@ -1047,6 +1057,8 @@ export const reduceUnlessLeft =
  * ```
  *
  * @category Utils
+ *
+ * @see `MIterable.mergeSorted` — lazy counterpart
  */
 export const mergeSorted =
   <A>(o: Order.Order<A>) =>
@@ -1119,6 +1131,8 @@ export const mergeSorted =
  * ```
  *
  * @category Utils
+ *
+ * @see `MIterable.differenceSorted` — lazy counterpart
  */
 export const differenceSorted =
   <A>(o: Order.Order<A>) =>
