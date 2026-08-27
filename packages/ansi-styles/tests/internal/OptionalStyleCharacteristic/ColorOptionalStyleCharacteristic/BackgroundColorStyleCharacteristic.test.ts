@@ -1,10 +1,10 @@
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
 import * as Option from 'effect/Option';
 
 import * as ASBackgroundColorStyleCharacteristic from '@parischap/ansi-styles/ASBackgroundColorStyleCharacteristic';
 import * as ASRgbColor from '@parischap/ansi-styles/ASRgbColor';
 import * as TestUtils from '@parischap/configs/TestUtils';
-
-import { describe, it } from '@effect/vitest';
 
 describe('ASBackgroundColorStyleCharacteristic', () => {
   it('moduleTag', () => {

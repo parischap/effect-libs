@@ -1,3 +1,6 @@
+import * as assert from '@effect/vitest/assert';
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
 import * as Option from 'effect/Option';
 import * as Schema from 'effect/Schema';
 import * as Tuple from 'effect/Tuple';
@@ -7,8 +10,6 @@ import * as CVNumberBase10Format from '@parischap/conversions/CVNumberBase10Form
 import * as CVTemplatePlaceholder from '@parischap/conversions/CVTemplatePlaceholder';
 import * as MRegExpString from '@parischap/effect-lib/MRegExpString';
 import * as MStringFillPosition from '@parischap/effect-lib/MStringFillPosition';
-
-import { assert, describe, it } from '@effect/vitest';
 
 describe('CVTemplatePlaceholder', () => {
   const threeChars = CVTemplatePlaceholder.fixedLength({ name: 'foo', length: 3 });

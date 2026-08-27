@@ -1,11 +1,12 @@
+import * as assert from '@effect/vitest/assert';
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
 import { pipe } from 'effect';
 import * as Array from 'effect/Array';
 import * as Number from 'effect/Number';
 import * as Tuple from 'effect/Tuple';
 
 import * as MTuple from '@parischap/effect-lib/MTuple';
-
-import { assert, describe, it } from '@effect/vitest';
 
 describe('MTuple', () => {
   describe('of', () => {

@@ -1,3 +1,5 @@
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
 import * as Option from 'effect/Option';
 
 import * as ASBackgroundColorStyleCharacteristic from '@parischap/ansi-styles/ASBackgroundColorStyleCharacteristic';
@@ -15,8 +17,6 @@ import * as ASSequence from '@parischap/ansi-styles/ASSequence';
 import * as ASStruckThroughStyleCharacteristic from '@parischap/ansi-styles/ASStruckThroughStyleCharacteristic';
 import * as ASUnderlinedStyleCharacteristic from '@parischap/ansi-styles/ASUnderlinedStyleCharacteristic';
 import * as TestUtils from '@parischap/configs/TestUtils';
-
-import { describe, it } from '@effect/vitest';
 
 describe('ASOptionalStyleCharacteristic', () => {
   it('moduleTag', () => {

@@ -1,11 +1,11 @@
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
 import * as Cause from 'effect/Cause';
 import * as Option from 'effect/Option';
 import * as Result from 'effect/Result';
 
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as MResult from '@parischap/effect-lib/MResult';
-
-import { describe, it } from '@effect/vitest';
 
 describe('MResult', () => {
   describe('optionFromOptional', () => {

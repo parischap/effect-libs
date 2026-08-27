@@ -1,11 +1,12 @@
+import * as assert from '@effect/vitest/assert';
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
 import * as Option from 'effect/Option';
 
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as CVDateTimeFormat from '@parischap/conversions/CVDateTimeFormat';
 import * as CVDateTimeFormatPlaceholder from '@parischap/conversions/CVDateTimeFormatPlaceholder';
 import * as CVDateTimeFormatSeparator from '@parischap/conversions/CVDateTimeFormatSeparator';
-
-import { assert, describe, it } from '@effect/vitest';
 
 describe('CVDateTimeFormat', () => {
   const placeholder = CVDateTimeFormatPlaceholder.make;

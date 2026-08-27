@@ -1,3 +1,6 @@
+import * as assert from '@effect/vitest/assert';
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
 import { flow, pipe } from 'effect';
 import * as Array from 'effect/Array';
 import * as Equal from 'effect/Equal';
@@ -16,8 +19,6 @@ import * as TestUtils from '@parischap/configs/TestUtils';
 import * as MArray from '@parischap/effect-lib/MArray';
 import * as MPredicate from '@parischap/effect-lib/MPredicate';
 import * as MTuple from '@parischap/effect-lib/MTuple';
-
-import { assert, describe, it } from '@effect/vitest';
 
 describe('MArray', () => {
   describe('hasLength', () => {
@@ -108,6 +109,12 @@ describe('MArray', () => {
     });
     it('Non empty array', () => {
       assert.deepStrictEqual(pipe(Array.make(3, 2, 5, 3, 8, 3), MArray.takeBut(2)), [3, 2, 5, 3]);
+    });
+    it('n = 0', () => {
+      assert.deepStrictEqual(
+        pipe(Array.make(3, 2, 5, 3, 8, 3), MArray.takeBut(0)),
+        [3, 2, 5, 3, 8, 3],
+      );
     });
   });
 
@@ -367,7 +374,7 @@ describe('MArray', () => {
           MArray.unfold<number, number>(
             flow(
               MTuple.replicate(2),
-              Tuple.evolve(Tuple.make(Function.identity, Number.increment)),
+              Tuple.evolve(Tuple.make(Function.identity<number>, Number.increment)),
               Option.liftPredicate(
                 Predicate.Tuple([Number.isLessThanOrEqualTo(3), Function.constTrue]),
               ),
@@ -395,7 +402,7 @@ describe('MArray', () => {
                   pipe(
                     b,
                     MTuple.replicate(2),
-                    Tuple.evolve(Tuple.make(Function.identity, cyclical)),
+                    Tuple.evolve(Tuple.make(Function.identity<number>, cyclical)),
                     Option.some,
                   ),
               }),
@@ -417,7 +424,7 @@ describe('MArray', () => {
               MTuple.replicate(2),
               Tuple.evolve(
                 Tuple.make(
-                  Function.identity,
+                  Function.identity<number>,
                   flow(Number.increment, Option.liftPredicate(Number.isLessThanOrEqualTo(3))),
                 ),
               ),

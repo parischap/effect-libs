@@ -1,10 +1,11 @@
+import * as assert from '@effect/vitest/assert';
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
 import * as Array from 'effect/Array';
 
 import * as ASText from '@parischap/ansi-styles/ASText';
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as PPStringifiedValue from '@parischap/pretty-print/PPStringifiedValue';
-
-import { assert, describe, it } from '@effect/vitest';
 
 describe('PPStringifiedValue', () => {
   const twoLines: PPStringifiedValue.Type = Array.make(

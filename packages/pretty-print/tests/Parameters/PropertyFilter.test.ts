@@ -1,3 +1,6 @@
+import * as assert from '@effect/vitest/assert';
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
 import * as Array from 'effect/Array';
 import * as Function from 'effect/Function';
 import * as Option from 'effect/Option';
@@ -6,8 +9,6 @@ import * as TestUtils from '@parischap/configs/TestUtils';
 import * as MPredicate from '@parischap/effect-lib/MPredicate';
 import * as PPPropertyFilter from '@parischap/pretty-print/PPPropertyFilter';
 import * as PPValue from '@parischap/pretty-print/PPValue';
-
-import { assert, describe, it } from '@effect/vitest';
 
 describe('PPPropertyFilter', () => {
   it('moduleTag', () => {

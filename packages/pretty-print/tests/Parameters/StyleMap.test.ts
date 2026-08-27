@@ -1,3 +1,6 @@
+import * as assert from '@effect/vitest/assert';
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
 import * as HashMap from 'effect/HashMap';
 import * as Option from 'effect/Option';
 
@@ -6,8 +9,6 @@ import * as ASText from '@parischap/ansi-styles/ASText';
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as PPStyleMap from '@parischap/pretty-print/PPStyleMap';
 import * as PPValue from '@parischap/pretty-print/PPValue';
-
-import { assert, describe, it } from '@effect/vitest';
 
 describe('PPStyleMap', () => {
   it('moduleTag', () => {

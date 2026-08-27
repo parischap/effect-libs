@@ -1,6 +1,8 @@
-import * as ASSequence from '@parischap/ansi-styles/ASSequence';
+import * as assert from '@effect/vitest/assert';
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
 
-import { assert, describe, it } from '@effect/vitest';
+import * as ASSequence from '@parischap/ansi-styles/ASSequence';
 
 describe('ASSequence', () => {
   it('empty', () => {

@@ -1,8 +1,10 @@
+import * as assert from '@effect/vitest/assert';
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
+
 import * as CVTemplatePart from '@parischap/conversions/CVTemplatePart';
 import * as CVTemplatePlaceholder from '@parischap/conversions/CVTemplatePlaceholder';
 import * as CVTemplateSeparator from '@parischap/conversions/CVTemplateSeparator';
-
-import { assert, describe, it } from '@effect/vitest';
 
 describe('CVTemplatePart', () => {
   const separator = CVTemplateSeparator.make('foo');

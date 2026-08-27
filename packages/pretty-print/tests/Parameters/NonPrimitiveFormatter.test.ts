@@ -1,3 +1,6 @@
+import * as assert from '@effect/vitest/assert';
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
 import * as Array from 'effect/Array';
 import * as Option from 'effect/Option';
 
@@ -8,8 +11,6 @@ import * as PPParameters from '@parischap/pretty-print/PPParameters';
 import * as PPResolvedNonPrimitiveParameters from '@parischap/pretty-print/PPResolvedNonPrimitiveParameters';
 import * as PPStringifiedValue from '@parischap/pretty-print/PPStringifiedValue';
 import * as PPValue from '@parischap/pretty-print/PPValue';
-
-import { assert, describe, it } from '@effect/vitest';
 
 describe('PPNonPrimitiveFormatter', () => {
   it('moduleTag', () => {

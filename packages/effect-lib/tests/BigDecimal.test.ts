@@ -1,10 +1,11 @@
+import * as assert from '@effect/vitest/assert';
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
 import { pipe } from 'effect';
 import * as BigDecimal from 'effect/BigDecimal';
 
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as MBigDecimal from '@parischap/effect-lib/MBigDecimal';
-
-import { assert, describe, it } from '@effect/vitest';
 
 describe('MBigDecimal', () => {
   describe('fromPrimitiveOption', () => {

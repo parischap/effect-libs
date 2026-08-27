@@ -1,11 +1,11 @@
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
 import { pipe } from 'effect';
 import * as BigDecimal from 'effect/BigDecimal';
 
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as CVNumberBase10FormatScientificNotationOption from '@parischap/conversions/CVNumberBase10FormatScientificNotationOption';
 import * as CVScientificNotationMantissaValidator from '@parischap/conversions/CVScientificNotationMantissaValidator';
-
-import { describe, it } from '@effect/vitest';
 
 describe('ScientificNotationMantissaValidator', () => {
   describe('None', () => {

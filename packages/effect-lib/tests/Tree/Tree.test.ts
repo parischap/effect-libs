@@ -1,3 +1,6 @@
+import * as assert from '@effect/vitest/assert';
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
 import { flow, pipe } from 'effect';
 import * as Array from 'effect/Array';
 import * as Equal from 'effect/Equal';
@@ -16,8 +19,6 @@ import * as MTreeNode from '@parischap/effect-lib/MTreeNode';
 import * as MTuple from '@parischap/effect-lib/MTuple';
 import type * as MTypes from '@parischap/effect-lib/MTypes';
 
-import { assert, describe, it } from '@effect/vitest';
-
 describe('MTree', () => {
   /**
    * Function used to unfold an unknown seed value with Tree.unfold. If the seed is a primitive
@@ -27,13 +28,16 @@ describe('MTree', () => {
    * detected, the function returns a leaf node with 'Cyclical Array' or 'Cyclical Record. This
    * function creates a Tree.Type<string, string>
    */
-  const unfoldObject = (seed: MTypes.Unknown, cycleSource: Option.Option<'Array' | 'Record'>) =>
+  const unfoldObject = (
+    seed: unknown,
+    cycleSource: Option.Option<'Array' | 'Record'>,
+  ): Result.Result<never, string> | Result.Result<['Array' | 'Record', Array<unknown>]> =>
     pipe(
       cycleSource,
       Option.map(flow(MString.prepend('Cyclical '), Result.fail)),
       Option.getOrElse(
         pipe(
-          seed,
+          seed as MTypes.Unknown,
           MMatch.make,
           MMatch.when(MPredicate.isPrimitive, flow(MString.fromPrimitive, Result.fail)),
           MMatch.orElse(
@@ -84,9 +88,9 @@ describe('MTree', () => {
   /* oxlint-disable-next-line typescript-eslint/no-unsafe-call, typescript/no-unsafe-member-access */ /*  @ts-expect-error  this is a test */
   cyclicalObject.b[0].a.a.push(cyclicalObject.b);
 
-  const testTree1 = pipe(nonCyclicalObject1, MTree.unfold(unfoldObject, Equal.equals));
-  const testTree2 = pipe(nonCyclicalObject2, MTree.unfold(unfoldObject, Equal.equals));
-  const testTree3 = pipe(cyclicalObject, MTree.unfold(unfoldObject, Equal.equals));
+  const testTree1 = pipe(nonCyclicalObject1 as unknown, MTree.unfold(unfoldObject, Equal.equals));
+  const testTree2 = pipe(nonCyclicalObject2 as unknown, MTree.unfold(unfoldObject, Equal.equals));
+  const testTree3 = pipe(cyclicalObject as unknown, MTree.unfold(unfoldObject, Equal.equals));
 
   const foldedTestTree1 = '{ [{ { s1, s2 }, s3 }, [s4]], [{ { [s5] }, s6 }, s7] }';
   const mappedTestTree1 = '[{ [[s1@, s2@], s3@], { s4@ } }, { [[{ s5@ }], s6@], s7@ }]';
@@ -101,7 +105,7 @@ describe('MTree', () => {
   it('unfoldAndFold', () => {
     assert.strictEqual(
       pipe(
-        nonCyclicalObject1,
+        nonCyclicalObject1 as unknown,
         MTree.unfoldAndFold({
           unfold: unfoldObject,
           foldNonLeaf,

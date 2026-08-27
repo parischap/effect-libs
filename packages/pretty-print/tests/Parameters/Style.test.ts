@@ -1,11 +1,12 @@
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
+
 import * as ASContextStyler from '@parischap/ansi-styles/ASContextStyler';
 import * as ASPalette from '@parischap/ansi-styles/ASPalette';
 import * as ASStyle from '@parischap/ansi-styles/ASStyle';
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as PPStyle from '@parischap/pretty-print/PPStyle';
 import * as PPValue from '@parischap/pretty-print/PPValue';
-
-import { describe, it } from '@effect/vitest';
 
 describe('PPStyle', () => {
   // A palette with 4 colours indexed 0-3

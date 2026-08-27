@@ -1,11 +1,12 @@
+import * as assert from '@effect/vitest/assert';
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
 import { pipe } from 'effect';
 import * as Option from 'effect/Option';
 
 import * as ASPalette from '@parischap/ansi-styles/ASPalette';
 import * as ASStyle from '@parischap/ansi-styles/ASStyle';
 import * as TestUtils from '@parischap/configs/TestUtils';
-
-import { assert, describe, it } from '@effect/vitest';
 
 describe('ASPalette', () => {
   const blackRed = ASPalette.make(ASStyle.black, ASStyle.red);

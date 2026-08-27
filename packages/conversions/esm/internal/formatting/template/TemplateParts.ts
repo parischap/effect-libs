@@ -20,11 +20,11 @@ export interface Type extends ReadonlyArray<CVTemplatePart.Type<string, any>> {}
 
 export type ToPlaceHolderTypes<PS> = PS extends Type
   ? {
-      readonly [k in keyof PS as PS[k] extends CVTemplatePlaceholder.Any
-        ? CVTemplatePlaceholder.ExtractName<PS[k]>
-        : never]: PS[k] extends CVTemplatePlaceholder.Any
-        ? CVTemplatePlaceholder.ExtractType<PS[k]>
-        : never;
+      readonly [
+        k in keyof PS as PS[k] extends CVTemplatePlaceholder.Any
+          ? CVTemplatePlaceholder.ExtractName<PS[k]>
+          : never
+      ]: PS[k] extends CVTemplatePlaceholder.Any ? CVTemplatePlaceholder.ExtractType<PS[k]> : never;
     }
   : never;
 

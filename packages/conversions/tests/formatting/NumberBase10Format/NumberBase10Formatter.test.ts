@@ -1,3 +1,6 @@
+import * as assert from '@effect/vitest/assert';
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
 import { pipe } from 'effect';
 import * as BigDecimal from 'effect/BigDecimal';
 import * as Option from 'effect/Option';
@@ -5,8 +8,6 @@ import * as Option from 'effect/Option';
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as CVNumberBase10Format from '@parischap/conversions/CVNumberBase10Format';
 import * as CVNumberBase10Formatter from '@parischap/conversions/CVNumberBase10Formatter';
-
-import { assert, describe, it } from '@effect/vitest';
 
 describe('CVNumberBase10Formatter', () => {
   const { frenchStyleNumber } = CVNumberBase10Format;

@@ -1,8 +1,9 @@
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
+
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as CVTemplateSeparator from '@parischap/conversions/CVTemplateSeparator';
 import * as CVTemplateSeparatorParser from '@parischap/conversions/CVTemplateSeparatorParser';
-
-import { describe, it } from '@effect/vitest';
 
 describe('CVTemplateSeparatorParser', () => {
   const separator = CVTemplateSeparator.make('foo');

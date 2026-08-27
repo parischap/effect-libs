@@ -1,8 +1,9 @@
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
+
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as CVNumberBase10FormatScientificNotationOption from '@parischap/conversions/CVNumberBase10FormatScientificNotationOption';
 import * as CVScientificNotationParser from '@parischap/conversions/CVScientificNotationParser';
-
-import { describe, it } from '@effect/vitest';
 
 describe('toParser', () => {
   describe('None', () => {

@@ -1,3 +1,6 @@
+import * as assert from '@effect/vitest/assert';
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
 import { flow, pipe } from 'effect';
 import * as Array from 'effect/Array';
 import * as Number from 'effect/Number';
@@ -9,8 +12,6 @@ import * as TestUtils from '@parischap/configs/TestUtils';
 import * as CVDateTime from '@parischap/conversions/CVDateTime';
 import { DAY_MS, SHORT_YEAR_MS, WEEK_MS } from '@parischap/conversions/CVDateTimeConstants';
 import * as MArray from '@parischap/effect-lib/MArray';
-
-import { assert, describe, it } from '@effect/vitest';
 
 describe('CVDateTime', () => {
   /** Produces a random integer between 0 included and range excluded */

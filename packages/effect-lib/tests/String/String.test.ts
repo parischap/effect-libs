@@ -1,3 +1,6 @@
+import * as assert from '@effect/vitest/assert';
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
 import { pipe } from 'effect';
 import * as Array from 'effect/Array';
 import type * as Option from 'effect/Option';
@@ -7,8 +10,6 @@ import * as TestUtils from '@parischap/configs/TestUtils';
 import * as MString from '@parischap/effect-lib/MString';
 import * as MStringFillPosition from '@parischap/effect-lib/MStringFillPosition';
 import * as MStringSearchResult from '@parischap/effect-lib/MStringSearchResult';
-
-import { assert, describe, it } from '@effect/vitest';
 
 describe('MString', () => {
   describe('fromPrimitive', () => {

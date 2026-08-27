@@ -1,9 +1,9 @@
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
 import * as Option from 'effect/Option';
 
 import * as ASOverlinedStyleCharacteristic from '@parischap/ansi-styles/ASOverlinedStyleCharacteristic';
 import * as TestUtils from '@parischap/configs/TestUtils';
-
-import { describe, it } from '@effect/vitest';
 
 describe('ASOverlinedStyleCharacteristic', () => {
   it('moduleTag', () => {

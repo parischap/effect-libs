@@ -1,3 +1,6 @@
+import * as assert from '@effect/vitest/assert';
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
 import { flow, pipe } from 'effect';
 import * as Array from 'effect/Array';
 import * as Function from 'effect/Function';
@@ -8,8 +11,6 @@ import * as TestUtils from '@parischap/configs/TestUtils';
 import * as MMatch from '@parischap/effect-lib/MMatch';
 import * as MPredicate from '@parischap/effect-lib/MPredicate';
 import type * as MTypes from '@parischap/effect-lib/MTypes';
-
-import { assert, describe, it } from '@effect/vitest';
 describe('MMatch', () => {
   it('moduleTag', () => {
     TestUtils.assertEquals(

@@ -1,3 +1,5 @@
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
 import * as Hash from 'effect/Hash';
 import * as Option from 'effect/Option';
 import * as Predicate from 'effect/Predicate';
@@ -5,8 +7,6 @@ import * as Predicate from 'effect/Predicate';
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as MData from '@parischap/effect-lib/MData';
 import * as MEquivalenceBasedEqualityData from '@parischap/effect-lib/MEquivalenceBasedEqualityData';
-
-import { describe, it } from '@effect/vitest';
 
 describe('MEquivalenceBasedEqualityData', () => {
   const _FooUniqueSymbol: unique symbol = Symbol.for(`Foo`) as _FooUniqueSymbol;

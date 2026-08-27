@@ -1,11 +1,12 @@
+import * as assert from '@effect/vitest/assert';
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
 import { pipe } from 'effect';
 import * as Option from 'effect/Option';
 import * as Predicate from 'effect/Predicate';
 
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as MRecord from '@parischap/effect-lib/MRecord';
-
-import { assert, describe, it } from '@effect/vitest';
 
 describe('MRecord', () => {
   describe('unsafeGet', () => {

@@ -1,7 +1,9 @@
+import * as assert from '@effect/vitest/assert';
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
+
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as MBigInt from '@parischap/effect-lib/MBigInt';
-
-import { assert, describe, it } from '@effect/vitest';
 
 describe('MBigInt', () => {
   describe('fromPrimitiveOrThrow', () => {

@@ -1,9 +1,9 @@
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
 import * as Option from 'effect/Option';
 
 import * as ASItalicStyleCharacteristic from '@parischap/ansi-styles/ASItalicStyleCharacteristic';
 import * as TestUtils from '@parischap/configs/TestUtils';
-
-import { describe, it } from '@effect/vitest';
 
 describe('ASItalicStyleCharacteristic', () => {
   it('moduleTag', () => {

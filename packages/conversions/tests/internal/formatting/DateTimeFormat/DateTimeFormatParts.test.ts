@@ -1,10 +1,11 @@
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
+
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as CVDateTimeFormatContext from '@parischap/conversions/CVDateTimeFormatContext';
 import * as CVDateTimeFormatParts from '@parischap/conversions/CVDateTimeFormatParts';
 import * as CVDateTimeFormatPlaceholder from '@parischap/conversions/CVDateTimeFormatPlaceholder';
 import * as CVDateTimeFormatSeparator from '@parischap/conversions/CVDateTimeFormatSeparator';
-
-import { describe, it } from '@effect/vitest';
 
 describe('CVDateTimeFormatParts', () => {
   describe('toTemplateParts', () => {

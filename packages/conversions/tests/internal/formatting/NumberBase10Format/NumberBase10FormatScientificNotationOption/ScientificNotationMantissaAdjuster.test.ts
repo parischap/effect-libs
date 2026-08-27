@@ -1,11 +1,11 @@
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
 import * as BigDecimal from 'effect/BigDecimal';
 import * as Option from 'effect/Option';
 
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as CVNumberBase10FormatScientificNotationOption from '@parischap/conversions/CVNumberBase10FormatScientificNotationOption';
 import * as CVScientificNotationMantissaAdjuster from '@parischap/conversions/CVScientificNotationMantissaAdjuster';
-
-import { describe, it } from '@effect/vitest';
 
 describe('toMantissaChecker', () => {
   const aBigNumber = BigDecimal.make(15_654_543_234n, 2);

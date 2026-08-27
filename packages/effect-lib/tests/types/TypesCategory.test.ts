@@ -1,6 +1,8 @@
-import * as MTypesCategory from '@parischap/effect-lib/MTypesCategory';
+import * as assert from '@effect/vitest/assert';
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
 
-import { assert, describe, it } from '@effect/vitest';
+import * as MTypesCategory from '@parischap/effect-lib/MTypesCategory';
 
 describe('MTypesCategory', () => {
   const testString = 'foo';

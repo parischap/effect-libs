@@ -1,3 +1,6 @@
+import * as assert from '@effect/vitest/assert';
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
 import { pipe } from 'effect';
 import * as Option from 'effect/Option';
 import * as Order from 'effect/Order';
@@ -6,8 +9,6 @@ import * as ASText from '@parischap/ansi-styles/ASText';
 import * as PPStringifiedValue from '@parischap/pretty-print/PPStringifiedValue';
 import * as PPValue from '@parischap/pretty-print/PPValue';
 import * as PPValues from '@parischap/pretty-print/PPValues';
-
-import { assert, describe, it } from '@effect/vitest';
 
 describe('PPValues', () => {
   describe('fromNonPrimitiveKeysAndValues', () => {

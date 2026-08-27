@@ -1,3 +1,6 @@
+import * as assert from '@effect/vitest/assert';
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
 import * as Option from 'effect/Option';
 
 import * as TestUtils from '@parischap/configs/TestUtils';
@@ -5,8 +8,6 @@ import * as CVNumberBase10Format from '@parischap/conversions/CVNumberBase10Form
 import * as CVTemplate from '@parischap/conversions/CVTemplate';
 import * as CVTemplatePlaceholder from '@parischap/conversions/CVTemplatePlaceholder';
 import * as CVTemplateSeparator from '@parischap/conversions/CVTemplateSeparator';
-
-import { assert, describe, it } from '@effect/vitest';
 
 describe('CVTemplate', () => {
   const sep = CVTemplateSeparator;

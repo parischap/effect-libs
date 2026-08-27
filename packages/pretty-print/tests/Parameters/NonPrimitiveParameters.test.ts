@@ -1,10 +1,11 @@
+import * as assert from '@effect/vitest/assert';
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
 import * as Option from 'effect/Option';
 
 import * as TestUtils from '@parischap/configs/TestUtils';
 import type * as MTypes from '@parischap/effect-lib/MTypes';
 import * as PPNonPrimitiveParameters from '@parischap/pretty-print/PPNonPrimitiveParameters';
-
-import { assert, describe, it } from '@effect/vitest';
 
 describe('PPNonPrimitiveParameters', () => {
   it('moduleTag', () => {

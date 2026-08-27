@@ -1,3 +1,6 @@
+import * as assert from '@effect/vitest/assert';
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
 import * as Option from 'effect/Option';
 
 import * as TestUtils from '@parischap/configs/TestUtils';
@@ -5,8 +8,6 @@ import * as MString from '@parischap/effect-lib/MString';
 import type * as MTypes from '@parischap/effect-lib/MTypes';
 import * as PPPrimitiveFormatter from '@parischap/pretty-print/PPPrimitiveFormatter';
 import * as PPValue from '@parischap/pretty-print/PPValue';
-
-import { assert, describe, it } from '@effect/vitest';
 
 describe('PPPrimitiveFormatter', () => {
   it('moduleTag', () => {

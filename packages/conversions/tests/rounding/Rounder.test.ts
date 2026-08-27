@@ -1,3 +1,6 @@
+import * as assert from '@effect/vitest/assert';
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
 import { pipe } from 'effect';
 import * as BigDecimal from 'effect/BigDecimal';
 
@@ -6,8 +9,6 @@ import * as CVRounder from '@parischap/conversions/CVRounder';
 import * as CVRounderParams from '@parischap/conversions/CVRounderParams';
 import * as CVRoundingOption from '@parischap/conversions/CVRoundingOption';
 import * as MNumber from '@parischap/effect-lib/MNumber';
-
-import { assert, describe, it } from '@effect/vitest';
 
 describe('CVRounder', () => {
   const rounderParams = CVRounderParams.make({

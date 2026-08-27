@@ -1,11 +1,12 @@
+import * as assert from '@effect/vitest/assert';
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
 import { pipe } from 'effect';
 import * as Equal from 'effect/Equal';
 import * as Option from 'effect/Option';
 
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as MCacheValueContainer from '@parischap/effect-lib/MCacheValueContainer';
-
-import { assert, describe, it } from '@effect/vitest';
 
 describe('MCacheValueContainer', () => {
   describe('Tag', () => {

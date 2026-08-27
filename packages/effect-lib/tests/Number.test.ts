@@ -1,10 +1,11 @@
+import * as assert from '@effect/vitest/assert';
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
 import { pipe } from 'effect';
 import * as BigDecimal from 'effect/BigDecimal';
 
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as MNumber from '@parischap/effect-lib/MNumber';
-
-import { assert, describe, it } from '@effect/vitest';
 
 const hugeBigInt = 10n ** 500n;
 const hugeBigDecimal = BigDecimal.make(hugeBigInt, 0);

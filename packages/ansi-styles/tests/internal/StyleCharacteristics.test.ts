@@ -1,3 +1,6 @@
+import * as assert from '@effect/vitest/assert';
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
 import { pipe } from 'effect';
 import * as Option from 'effect/Option';
 
@@ -5,8 +8,6 @@ import * as ASEightBitColor from '@parischap/ansi-styles/ASEightBitColor';
 import * as ASStyleCharacteristics from '@parischap/ansi-styles/ASStyleCharacteristics';
 import * as ASThreeBitColor from '@parischap/ansi-styles/ASThreeBitColor';
 import * as TestUtils from '@parischap/configs/TestUtils';
-
-import { assert, describe, it } from '@effect/vitest';
 
 describe('ASStyleCharacteristics', () => {
   const boldItalic = pipe(

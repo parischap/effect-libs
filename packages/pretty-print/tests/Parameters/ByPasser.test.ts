@@ -1,3 +1,6 @@
+import * as assert from '@effect/vitest/assert';
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
 import * as Function from 'effect/Function';
 import * as Option from 'effect/Option';
 
@@ -6,8 +9,6 @@ import * as PPByPasser from '@parischap/pretty-print/PPByPasser';
 import * as PPParameters from '@parischap/pretty-print/PPParameters';
 import * as PPResolvedNonPrimitiveParameters from '@parischap/pretty-print/PPResolvedNonPrimitiveParameters';
 import * as PPValue from '@parischap/pretty-print/PPValue';
-
-import { assert, describe, it } from '@effect/vitest';
 
 describe('PPByPasser', () => {
   it('moduleTag', () => {

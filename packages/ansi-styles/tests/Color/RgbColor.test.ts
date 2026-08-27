@@ -1,10 +1,11 @@
+import * as assert from '@effect/vitest/assert';
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
 import * as Option from 'effect/Option';
 
 import * as ASColor from '@parischap/ansi-styles/ASColor';
 import * as ASRgbColor from '@parischap/ansi-styles/ASRgbColor';
 import * as TestUtils from '@parischap/configs/TestUtils';
-
-import { assert, describe, it } from '@effect/vitest';
 
 describe('ASRgbColor', () => {
   const anRgbColor = ASRgbColor.make({ red: 127, green: 18, blue: 12 });

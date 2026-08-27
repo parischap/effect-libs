@@ -1,10 +1,11 @@
+import * as assert from '@effect/vitest/assert';
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
 import { pipe } from 'effect';
 import * as Number from 'effect/Number';
 import * as String from 'effect/String';
 
 import * as MFunction from '@parischap/effect-lib/MFunction';
-
-import { assert, describe, it } from '@effect/vitest';
 
 describe('MFunction', () => {
   describe('fIfTrue', () => {

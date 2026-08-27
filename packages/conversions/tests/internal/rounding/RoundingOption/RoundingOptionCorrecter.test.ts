@@ -1,8 +1,9 @@
+import * as describe from '@effect/vitest/describe';
+import * as it from '@effect/vitest/it';
+
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as CVRoundingOption from '@parischap/conversions/CVRoundingOption';
 import * as CVRoundingOptionCorrecter from '@parischap/conversions/CVRoundingOptionCorrecter';
-
-import { describe, it } from '@effect/vitest';
 
 describe('CVRoundingOptionCorrecter', () => {
   describe('fromRoundingOption', () => {
