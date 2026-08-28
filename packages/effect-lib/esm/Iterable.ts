@@ -1,5 +1,5 @@
 /**
- * Lazy `Iterable`-returning counterparts of select `MArray` functions: predicates, indexed search,
+ * Lazy Iterable-returning counterparts of select `MArray` functions: predicates, indexed search,
  * indexed (un)grouping, sorted-iterator merging/difference, and cycle-aware unfolding.
  *
  * ## Mental model
@@ -23,8 +23,8 @@
  *
  * ## Gotchas
  *
- * - An `Iterable` returned by any function here can only be consumed once per source `Iterable` if
- *   that source is itself single-pass (e.g. a generator); re-iterating the result then re-reads the
+ * - An Iterable returned by any function here can only be consumed once per source Iterable if that
+ *   source is itself single-pass (e.g. a generator); re-iterating the result then re-reads the
  *   source from where it left off, not from the start. Sourcing from an `Array` (multi-pass) avoids
  *   this.
  *
