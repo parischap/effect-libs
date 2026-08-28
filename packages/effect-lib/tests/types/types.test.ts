@@ -1,5 +1,4 @@
-import * as describe from '@effect/vitest/describe';
-import * as it from '@effect/vitest/it';
+import { describe, it } from '@effect/vitest';
 import type * as Equal from 'effect/Equal';
 
 import * as TestUtils from '@parischap/configs/TestUtils';

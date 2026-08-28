@@ -1,4 +1,4 @@
-import * as it from '@effect/vitest/it';
+import { it } from '@effect/vitest';
 import * as Option from 'effect/Option';
 
 import * as TestUtils from '@parischap/configs/TestUtils';

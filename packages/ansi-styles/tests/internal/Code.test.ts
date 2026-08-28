@@ -1,6 +1,4 @@
-import * as assert from '@effect/vitest/assert';
-import * as describe from '@effect/vitest/describe';
-import * as it from '@effect/vitest/it';
+import { assert, describe, it } from '@effect/vitest';
 import * as Array from 'effect/Array';
 
 import * as ASCode from '@parischap/ansi-styles/ASCode';

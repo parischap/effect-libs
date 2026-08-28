@@ -1,5 +1,4 @@
-import * as describe from '@effect/vitest/describe';
-import * as it from '@effect/vitest/it';
+import { describe, it } from '@effect/vitest';
 import * as Option from 'effect/Option';
 
 import * as ASColorOptionalStyleCharacteristic from '@parischap/ansi-styles/ASColorOptionalStyleCharacteristic';

@@ -1,5 +1,4 @@
-import * as describe from '@effect/vitest/describe';
-import * as it from '@effect/vitest/it';
+import { describe, it } from '@effect/vitest';
 
 import * as ASContextStyler from '@parischap/ansi-styles/ASContextStyler';
 import * as ASPalette from '@parischap/ansi-styles/ASPalette';

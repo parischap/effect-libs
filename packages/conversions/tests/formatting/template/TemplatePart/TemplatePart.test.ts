@@ -1,6 +1,4 @@
-import * as assert from '@effect/vitest/assert';
-import * as describe from '@effect/vitest/describe';
-import * as it from '@effect/vitest/it';
+import { assert, describe, it } from '@effect/vitest';
 
 import * as CVTemplatePart from '@parischap/conversions/CVTemplatePart';
 import * as CVTemplatePlaceholder from '@parischap/conversions/CVTemplatePlaceholder';

@@ -1,6 +1,4 @@
-import * as describe from '@effect/vitest/describe';
-import * as expect from '@effect/vitest/expect';
-import * as it from '@effect/vitest/it';
+import { describe, expect, it } from '@effect/vitest';
 import { pipe } from 'effect';
 import * as BigDecimal from 'effect/BigDecimal';
 import * as Option from 'effect/Option';

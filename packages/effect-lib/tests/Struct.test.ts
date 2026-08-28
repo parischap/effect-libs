@@ -1,6 +1,4 @@
-import * as assert from '@effect/vitest/assert';
-import * as describe from '@effect/vitest/describe';
-import * as it from '@effect/vitest/it';
+import { assert, describe, it } from '@effect/vitest';
 import { flow, pipe } from 'effect';
 import * as Number from 'effect/Number';
 import * as Struct from 'effect/Struct';
