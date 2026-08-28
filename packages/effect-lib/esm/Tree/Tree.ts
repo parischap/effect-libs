@@ -51,16 +51,16 @@ import * as Result from 'effect/Result';
 import * as Struct from 'effect/Struct';
 import * as Tuple from 'effect/Tuple';
 
+import type * as MTreeForest from '../internal/TreeForest.js';
 import type * as MTypes from '../types/types.js';
-import type * as MTreeForest from './TreeForest.js';
 
 import * as MArray from '../Array.js';
+import * as MTreeNode from '../internal/TreeNode.js';
 import * as MMatch from '../Match.js';
 import * as MPredicate from '../Predicate.js';
 import * as MStruct from '../Struct.js';
 import * as MTuple from '../Tuple.js';
 import * as MTreeLeaf from './TreeLeaf.js';
-import * as MTreeNode from './TreeNode.js';
 import * as MTreeNonLeaf from './TreeNonLeaf.js';
 
 /**

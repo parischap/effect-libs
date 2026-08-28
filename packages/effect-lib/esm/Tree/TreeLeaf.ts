@@ -18,7 +18,7 @@
 import type * as MTypes from '../types/types.js';
 
 import * as MData from '../Data/Data.js';
-import * as MTreeNode from './TreeNode.js';
+import * as MTreeNode from '../internal/TreeNode.js';
 
 /**
  * Module tag.

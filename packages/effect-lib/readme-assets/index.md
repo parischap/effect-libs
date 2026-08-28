@@ -27,7 +27,7 @@ This package contains the following modules, all prefixed with `M` to avoid name
 | **MEquivalenceBasedEqualityData** | A base class that derives `Equal.Equal` from an abstract `isEquivalentTo` method                                                                                                                                                                             |
 | **MFunction**                     | Extensions to `effect/Function`: memoization with `once`, `applyAsThis`, cloning, and constant helpers                                                                                                                                                       |
 | **MInputError**                   | A tagged error for user-facing validation failures, with `assertInRange` and similar guards                                                                                                                                                                  |
-| **MIterable**                     | Lazy `Iterable`-returning counterparts of select `MArray` functions (`findAll`, `takeRightBut`, `longestCommonSubArray`, `ungroup`, `modifyHead`, `modifyTail`, `unfold`, `mergeSorted`, `differenceSorted`): nothing is computed until the result is iterated |
+| **MIterable**                     | Lazy Iterable-returning counterparts of select `MArray` functions (`findAll`, `takeRightBut`, `longestCommonSubArray`, `ungroup`, `modifyHead`, `modifyTail`, `unfold`, `mergeSorted`, `differenceSorted`): nothing is computed until the result is iterated |
 | **MMatch**                        | A lightweight, type-safe pattern-matcher that replaces `effect/Match` for simple use cases. Supports predicate matching, refinement matching with exhaustiveness checking, `whenOr`, `whenAnd`, and `tryFunction`                                            |
 | **MNumber**                       | Extensions to `effect/Number`: safe conversions from `BigInt` and `BigDecimal`, integer predicates, modulo, and `fromString`                                                                                                                                 |
 | **MOption**                       | Extensions to `effect/Option`: construction from nullable-or-option values, and iterator unwrapping                                                                                                                                                          |
@@ -173,11 +173,12 @@ console.log(buildAndSum);
 
 ## 0.26.0
 
-- **New module:** `MIterable` — lazy `Iterable`-returning counterparts of `MArray`'s `findAll`,
+- **New module:** `MIterable` — lazy Iterable-returning counterparts of `MArray`'s `findAll`,
   `takeRightBut`, `longestCommonSubArray`, `ungroup`, `modifyHead`, `modifyTail`, `unfold`,
   `mergeSorted`, and `differenceSorted`; nothing is computed until the result is iterated.
 - Fixed a bug in `MArray.takeBut` (`takeBut(0)` returned an empty array instead of a copy of the
   input).
+- **Demoted** `MTreeNode` and `MTreeForest` to `esm/internal/`
 
 ## 0.13.0 → 23.0
 

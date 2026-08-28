@@ -20,11 +20,11 @@
  * ```
  */
 
+import type * as MTreeForest from '../internal/TreeForest.js';
 import type * as MTypes from '../types/types.js';
-import type * as MTreeForest from './TreeForest.js';
 
 import * as MData from '../Data/Data.js';
-import * as MTreeNode from './TreeNode.js';
+import * as MTreeNode from '../internal/TreeNode.js';
 
 /**
  * Module tag.

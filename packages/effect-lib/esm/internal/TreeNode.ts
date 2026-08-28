@@ -2,8 +2,9 @@
  * Abstract base class shared by every tree node — only here to factor out the `value` field and its
  * getter.
  *
- * Most code interacts with the concrete subclasses {@link "./TreeLeaf.js" | `MTreeLeaf`} and
- * {@link "./TreeNonLeaf.js" | `MTreeNonLeaf`} or with the {@link "./Tree.js" | `MTree`} union.
+ * Most code interacts with the concrete subclasses {@link "../Tree/TreeLeaf.js" | `MTreeLeaf`} and
+ * {@link "../Tree/TreeNonLeaf.js" | `MTreeNonLeaf`} or with the {@link "../Tree/Tree.js" | `MTree`}
+ * union.
  */
 
 import * as Struct from 'effect/Struct';
@@ -17,7 +18,7 @@ import * as MData from '../Data/Data.js';
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/effect-lib/Tree/TreeNode/';
+export const moduleTag = '@parischap/effect-lib/internal/TreeNode/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
 
