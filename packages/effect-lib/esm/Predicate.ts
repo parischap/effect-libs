@@ -59,7 +59,7 @@ import type * as MTypes from './types/types.js';
  *
  * @category Models
  */
-export interface EffectPredicate<in Z, out E, out R> {
+export interface PredicateEffect<in Z, out E, out R> {
   (x: Z): Effect.Effect<boolean, E, R>;
 }
 
