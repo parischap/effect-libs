@@ -256,7 +256,7 @@ export const strictEquals: <B, A extends B>(that: A) => Predicate.Predicate<B> =
  * console.log(MPredicate.isNonPrimitive(42)); // false
  * ```
  *
- * @category Guards
+ * @category Instances
  *
  * @see {@link isPrimitive} — the complementary guard
  */
@@ -284,7 +284,7 @@ export const isNonPrimitive = <A>(
  * console.log(MPredicate.isPrimitive([1, 2])); // false
  * ```
  *
- * @category Guards
+ * @category Instances
  *
  * @see {@link isNonPrimitive} — the complementary guard
  */
@@ -308,7 +308,7 @@ export const isPrimitive = <A>(
  * console.log(MPredicate.isOneArgFunction((a: number, b: number) => a + b)); // false
  * ```
  *
- * @category Guards
+ * @category Instances
  *
  * @see {@link isTwoArgFunction} — guard for binary callbacks
  */
@@ -330,7 +330,7 @@ export const isOneArgFunction = <A, R>(
  * console.log(MPredicate.isTwoArgFunction((n: number) => n + 1)); // false
  * ```
  *
- * @category Guards
+ * @category Instances
  *
  * @see {@link isOneArgFunction} — guard for unary callbacks
  */
@@ -352,7 +352,7 @@ export const isTwoArgFunction = <A, B, R>(
  * console.log(MPredicate.isSingleton([5, 6])); // false
  * ```
  *
- * @category Guards
+ * @category Instances
  *
  * @see {@link isReadonlySingleton} — readonly variant
  */
@@ -363,7 +363,7 @@ export const isSingleton = <A>(u: Array<A>): u is MTypes.Singleton<A> => u.lengt
  *
  * - Acts as a type guard checking `u.length === 1`.
  *
- * @category Guards
+ * @category Instances
  *
  * @see {@link isSingleton} — mutable variant
  */
@@ -384,7 +384,7 @@ export const isReadonlySingleton = <A>(u: ReadonlyArray<A>): u is MTypes.Readonl
  * console.log(MPredicate.isPair([5])); // false
  * ```
  *
- * @category Guards
+ * @category Instances
  *
  * @see {@link isReadonlyPair} — readonly variant
  */
@@ -395,7 +395,7 @@ export const isPair = <A>(u: Array<A>): u is MTypes.Pair<A, A> => u.length === 2
  *
  * - Acts as a type guard checking `u.length === 2`.
  *
- * @category Guards
+ * @category Instances
  *
  * @see {@link isPair} — mutable variant
  */
@@ -416,7 +416,7 @@ export const isReadonlyPair = <A>(u: ReadonlyArray<A>): u is MTypes.ReadonlyPair
  * console.log(MPredicate.isOverOne([])); // false
  * ```
  *
- * @category Guards
+ * @category Instances
  *
  * @see {@link isReadonlyOverOne} — readonly variant
  */
@@ -427,7 +427,7 @@ export const isOverOne = <A>(u: Array<A>): u is MTypes.OverOne<A> => u.length > 
  *
  * - Acts as a type guard checking `u.length > 0`.
  *
- * @category Guards
+ * @category Instances
  *
  * @see {@link isOverOne} — mutable variant
  */
@@ -448,7 +448,7 @@ export const isReadonlyOverOne = <A>(u: ReadonlyArray<A>): u is MTypes.ReadonlyO
  * console.log(MPredicate.isOverTwo([5])); // false
  * ```
  *
- * @category Guards
+ * @category Instances
  *
  * @see {@link isReadonlyOverTwo} — readonly variant
  */
@@ -460,7 +460,7 @@ export const isOverTwo = <A>(u: Array<A>): u is MTypes.OverTwo<A> => u.length >=
  *
  * - Acts as a type guard checking `u.length >= 2`.
  *
- * @category Guards
+ * @category Instances
  *
  * @see {@link isOverTwo} — mutable variant
  */
