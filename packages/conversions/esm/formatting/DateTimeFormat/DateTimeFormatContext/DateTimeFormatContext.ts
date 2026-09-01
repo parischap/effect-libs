@@ -84,15 +84,10 @@ export class Type extends MData.Class {
   }
 
   /** Class constructor */
-  private constructor({ name, tokenMap }: MTypes.Data<Type>) {
+  constructor({ name, tokenMap }: MTypes.Data<Type>) {
     super();
     this.name = name;
     this.tokenMap = tokenMap;
-  }
-
-  /** Static constructor */
-  static make(params: MTypes.Data<Type>): Type {
-    return new Type(params);
   }
 
   /** Returns the TypeMarker of the class */
@@ -473,7 +468,7 @@ export const fromNames = ({
     ],
   ];
 
-  return Type.make({
+  return new Type({
     name,
     tokenMap: HashMap.make(...tokenMapEntries),
   });

@@ -39,6 +39,8 @@ import * as Tuple from 'effect/Tuple';
 import type * as MTypes from './types/types.js';
 
 import * as MBigInt from './BigInt.js';
+import type * as MNumberBase10Format from './NumberBase10Format.js';
+import * as internalRoundingOptionCorrecter from './internal/RoundingOptionCorrecter.js';
 
 /**
  * Type on which this module's functions operate.
@@ -46,6 +48,54 @@ import * as MBigInt from './BigInt.js';
  * @category Models
  */
 export type Type = BigDecimal.BigDecimal;
+
+/**
+ * Type that represents the possible rounding modes (see `Intl.NumberFormat`)
+ *
+ * @category Models
+ */
+export enum RoundingOption {
+  /** Round toward +∞. Positive values round up. Negative values round "more positive" */
+  Ceil = 0,
+  /** Round toward -∞. Positive values round down. Negative values round "more negative" */
+  Floor = 1,
+  /**
+   * Round away from 0. The magnitude of the value is always increased by rounding. Positive values
+   * round up. Negative values round "more negative"
+   */
+  Expand = 2,
+  /**
+   * Round toward 0. The magnitude of the value is always reduced by rounding. Positive values round
+   * down. Negative values round "less negative"
+   */
+  Trunc = 3,
+  /**
+   * Ties toward +∞. Values above the half-increment round like "ceil" (towards +∞), and below like
+   * "floor" (towards -∞). On the half-increment, values round like "ceil"
+   */
+  HalfCeil = 4,
+  /**
+   * Ties toward -∞. Values above the half-increment round like "ceil" (towards +∞), and below like
+   * "floor" (towards -∞). On the half-increment, values round like "floor"
+   */
+  HalfFloor = 5,
+  /**
+   * Ties away from 0. Values above the half-increment round like "expand" (away from zero), and
+   * below like "trunc" (towards 0). On the half-increment, values round like "expand"
+   */
+  HalfExpand = 6,
+  /**
+   * Ties toward 0. Values above the half-increment round like "expand" (away from zero), and below
+   * like "trunc" (towards 0). On the half-increment, values round like "trunc"
+   */
+  HalfTrunc = 7,
+  /**
+   * Ties towards the nearest even integer. Values above the half-increment round like "expand"
+   * (away from zero), and below like "trunc" (towards 0). On the half-increment values round
+   * towards the nearest even digit
+   */
+  HalfEven = 8,
+}
 
 const tupledMake = Function.tupled<readonly [value: bigint, scale: number], BigDecimal.BigDecimal>(
   BigDecimal.make,
@@ -135,3 +185,151 @@ export const truncatedAndFollowingParts =
     const truncatedPart = pipe(self, trunc(precision));
     return Tuple.make(truncatedPart, BigDecimal.subtract(self, truncatedPart));
   };
+
+const bigDecimal10 = BigDecimal.make(10n, 0);
+
+/**
+ * Returns a function that rounds a `BigDecimal` to `precision` decimal digits according to
+ * `option`.
+ *
+ * - Use a precomputed rounder when the same `precision`/`option` pair will be applied many times.
+ *
+ * **Example** (Round to two decimal digits, half away from zero)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as BigDecimal from 'effect/BigDecimal';
+ * import * as MBigDecimal from '@parischap/effect-lib/MBigDecimal';
+ *
+ * const round = MBigDecimal.round(2, MBigDecimal.RoundingOption.HalfExpand);
+ * console.log(pipe(BigDecimal.make(124_566n, 4), round)); // BigDecimal(12457n, 2) i.e. 124.57
+ * ```
+ *
+ * @category Utils
+ */
+export const round = (precision: number, option: RoundingOption): MTypes.OneArgFunction<Type> => {
+  const shiftValue = BigDecimal.make(1n, -precision);
+  const shift = BigDecimal.multiply(shiftValue);
+  const unshift = BigDecimal.divideUnsafe(shiftValue);
+  const correcter = internalRoundingOptionCorrecter.fromRoundingOption(option);
+
+  return (self) => {
+    const shiftedSelf = shift(self);
+    const truncatedShiftedSelf = pipe(shiftedSelf, trunc());
+    const firstFollowingDigit = pipe(
+      shiftedSelf,
+      BigDecimal.subtract(truncatedShiftedSelf),
+      BigDecimal.multiply(bigDecimal10),
+      trunc(),
+      BigDecimal.toNumberUnsafe,
+    );
+    return pipe(
+      truncatedShiftedSelf,
+      BigDecimal.sum(
+        pipe(
+          { firstFollowingDigit, isEven: MBigInt.isEven(truncatedShiftedSelf.value) },
+          correcter,
+          BigDecimal.fromNumberUnsafe,
+        ),
+      ),
+      unshift,
+    );
+  };
+};
+
+/**
+ * Returns a function that tries to extract, from the start of a string, a `BigDecimal` respecting
+ * `format`. If successful, returns a `some` of a `[value, match]` pair where `match` is the part of
+ * the string that could be analyzed as representing a number. Otherwise, returns a `none`.
+ *
+ * - Use a precomputed extractor when the same `format` will be applied many times.
+ *
+ * **Example** (Extract a `BigDecimal` from the start of a string)
+ *
+ * ```ts
+ * import * as MBigDecimal from '@parischap/effect-lib/MBigDecimal';
+ * import * as MNumberBase10Format from '@parischap/effect-lib/MNumberBase10Format';
+ *
+ * const extract = MBigDecimal.extractFromString(MNumberBase10Format.frenchStyleNumber);
+ * console.log(extract('-45,50Dummy')); // Some([BigDecimal(-4550n, 2), '-45,50'])
+ * ```
+ *
+ * @category Constructors
+ */
+export const extractFromString = (
+  format: MNumberBase10Format.Type,
+): MTypes.OneArgFunction<string, Option.Option<[value: Type, match: string]>> => {
+  const bigDecimalExtractor = format._bigDecimalExtractor;
+  return flow(
+    bigDecimalExtractor,
+    Option.map(({ value, match, sign }) =>
+      Tuple.make(BigDecimal.multiply(value, BigDecimal.fromNumberUnsafe(sign)), match),
+    ),
+  );
+};
+
+/**
+ * Same as `extractFromString` but throws in case of failure
+ *
+ * @category Constructors
+ */
+export const extractFromStringOrThrow = (
+  format: MNumberBase10Format.Type,
+): MTypes.OneArgFunction<string, [value: Type, match: string]> => {
+  const extractor = extractFromString(format);
+  return (text) =>
+    pipe(
+      text,
+      extractor,
+      Option.getOrThrowWith(
+        () => new Error(`A BigDecimal could not be parsed from the start of '${text}'`),
+      ),
+    );
+};
+
+/**
+ * Returns a function that tries to convert a whole string into a `BigDecimal` respecting `format`.
+ * Unlike `extractFromString`, the whole of the input string must represent a number.
+ *
+ * - Use a precomputed parser when the same `format` will be applied many times.
+ *
+ * **Example** (Parse a `BigDecimal` from a whole string)
+ *
+ * ```ts
+ * import * as MBigDecimal from '@parischap/effect-lib/MBigDecimal';
+ * import * as MNumberBase10Format from '@parischap/effect-lib/MNumberBase10Format';
+ *
+ * const parse = MBigDecimal.parseFromString(MNumberBase10Format.frenchStyleNumber);
+ * console.log(parse('-45,50')); // Some(BigDecimal(-4550n, 2))
+ * console.log(parse('-45,50Dummy')); // None
+ * ```
+ *
+ * @category Constructors
+ */
+export const parseFromString = (
+  format: MNumberBase10Format.Type,
+): MTypes.OneArgFunction<string, Option.Option<Type>> => {
+  const bigDecimalExtractor = format._bigDecimalExtractor;
+  return flow(
+    bigDecimalExtractor,
+    Option.filter(({ match, input }) => match.length === input.length),
+    Option.map(({ value, sign }) => BigDecimal.multiply(value, BigDecimal.fromNumberUnsafe(sign))),
+  );
+};
+
+/**
+ * Same as `parseFromString` but throws in case of failure
+ *
+ * @category Constructors
+ */
+export const parseFromStringOrThrow = (
+  format: MNumberBase10Format.Type,
+): MTypes.OneArgFunction<string, Type> => {
+  const parser = parseFromString(format);
+  return (text) =>
+    pipe(
+      text,
+      parser,
+      Option.getOrThrowWith(() => new Error(`A BigDecimal could not be parsed from '${text}'`)),
+    );
+};

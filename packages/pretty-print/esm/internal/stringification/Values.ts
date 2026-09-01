@@ -75,7 +75,7 @@ export const fromNonPrimitiveKeysAndValues = ({
                 ({ protoDepth, content }) => {
                   // Record.map will not return all keys
                   const ownKeys = Reflect.ownKeys(content);
-                  const isFunctionProto = content === MFunction.proto;
+                  const isFunctionProto = content === MFunction.Function.prototype;
 
                   return Array.filterMap(ownKeys, (key) =>
                     // The arguments and caller properties of the function prototype are deprecated, reading them causes an error

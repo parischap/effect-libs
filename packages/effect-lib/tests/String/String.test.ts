@@ -5,9 +5,13 @@ import type * as Option from 'effect/Option';
 import * as String from 'effect/String';
 
 import * as TestUtils from '@parischap/configs/TestUtils';
+import * as MNumberBase10Format from '@parischap/effect-lib/MNumberBase10Format';
 import * as MString from '@parischap/effect-lib/MString';
 import * as MStringFillPosition from '@parischap/effect-lib/MStringFillPosition';
 import * as MStringSearchResult from '@parischap/effect-lib/MStringSearchResult';
+import * as MTemplate from '@parischap/effect-lib/MTemplate';
+import * as MTemplatePlaceholder from '@parischap/effect-lib/MTemplatePlaceholder';
+import * as MTemplateSeparator from '@parischap/effect-lib/MTemplateSeparator';
 
 describe('MString', () => {
   describe('fromPrimitive', () => {
@@ -706,6 +710,112 @@ describe('MString', () => {
 
     it('Invalid email', () => {
       assert.isFalse(MString.isEmail('not-an-email'));
+    });
+  });
+
+  describe('parseFromNumber', () => {
+    const parseFromNumber = MString.parseFromNumber(MNumberBase10Format.frenchStyleNumber);
+    it('Finite number', () => {
+      TestUtils.assertSome(parseFromNumber(1528.65), '1 528,65');
+    });
+
+    it('Non-finite number', () => {
+      TestUtils.assertNone(parseFromNumber(Number.NaN));
+    });
+  });
+
+  describe('parseFromNumberOrThrow', () => {
+    const parseFromNumberOrThrow = MString.parseFromNumberOrThrow(
+      MNumberBase10Format.frenchStyleNumber,
+    );
+    it('Finite number', () => {
+      assert.strictEqual(parseFromNumberOrThrow(1528.65), '1 528,65');
+    });
+
+    it('Non-finite number: throws', () => {
+      TestUtils.throws(() => parseFromNumberOrThrow(Number.NaN));
+    });
+  });
+
+  describe('templateFormat and templateParse', () => {
+    const sep = MTemplateSeparator;
+
+    const template = MTemplate.make(
+      MTemplatePlaceholder.number({
+        name: 'dd',
+        numberBase10Format: MNumberBase10Format.twoDigitUnsignedInteger,
+      }),
+      sep.slash,
+      MTemplatePlaceholder.number({
+        name: 'MM',
+        numberBase10Format: MNumberBase10Format.twoDigitUnsignedInteger,
+      }),
+      sep.slash,
+      MTemplatePlaceholder.number({
+        name: 'yyyy',
+        numberBase10Format: MNumberBase10Format.fourDigitUnsignedInteger,
+      }),
+    );
+
+    describe('templateFormat', () => {
+      const format = MString.templateFormat(template);
+      it('With correct values', () => {
+        TestUtils.assertSuccess(format({ dd: 5, MM: 12, yyyy: 2025 }), '05/12/2025');
+      });
+
+      it('With incorrect values', () => {
+        TestUtils.assertFailureMessage(
+          format({ dd: 115, MM: 12, yyyy: 2025 }),
+          'Expected length of #dd to be: 2. Actual: 3',
+        );
+      });
+    });
+
+    describe('templateFormatOrThrow', () => {
+      const formatOrThrow = MString.templateFormatOrThrow(template);
+      it('With correct values', () => {
+        assert.strictEqual(formatOrThrow({ dd: 5, MM: 12, yyyy: 2025 }), '05/12/2025');
+      });
+
+      it('With incorrect values: throws', () => {
+        TestUtils.throws(() => formatOrThrow({ dd: 115, MM: 12, yyyy: 2025 }));
+      });
+    });
+
+    describe('templateParse', () => {
+      const parse = MString.templateParse(template);
+      it('Empty text', () => {
+        TestUtils.assertFailureMessage(parse(''), 'Expected length of #dd to be: 2. Actual: 0');
+      });
+
+      it('Wrong separator', () => {
+        TestUtils.assertFailureMessage(
+          parse('25|12/2025'),
+          "Expected remaining text for separator at position 2 to start with '/'. Actual: '|12/2025'",
+        );
+      });
+
+      it('Text too long', () => {
+        TestUtils.assertFailureMessage(
+          parse('25/12/2025isXMas'),
+          "Expected text not consumed by template to be empty. Actual: 'isXMas'",
+        );
+      });
+
+      it('Matching text', () => {
+        TestUtils.assertSuccess(parse('05/12/2025'), { dd: 5, MM: 12, yyyy: 2025 });
+      });
+    });
+
+    describe('templateParseOrThrow', () => {
+      const parseOrThrow = MString.templateParseOrThrow(template);
+      it('Matching text', () => {
+        assert.deepStrictEqual(parseOrThrow('05/12/2025'), { dd: 5, MM: 12, yyyy: 2025 });
+      });
+
+      it('Non-matching text: throws', () => {
+        TestUtils.throws(() => parseOrThrow(''));
+      });
     });
   });
 });

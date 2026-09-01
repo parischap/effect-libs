@@ -54,26 +54,32 @@
 
 import { flow, pipe } from 'effect';
 import * as Array from 'effect/Array';
-import * as BigInt from 'effect/BigInt';
+import type * as BigDecimal from 'effect/BigDecimal';
+import * as Equal from 'effect/Equal';
 import * as Function from 'effect/Function';
-import * as Number from 'effect/Number';
 import * as Option from 'effect/Option';
 import * as Predicate from 'effect/Predicate';
 import * as Record from 'effect/Record';
+import * as Result from 'effect/Result';
 import * as String from 'effect/String';
 import * as Struct from 'effect/Struct';
 import * as Tuple from 'effect/Tuple';
 
 import type * as MTypes from '../types/types.js';
+import type * as MStringFillPosition from './StringFillPosition.js';
 
 import * as MArray from '../Array.js';
 import * as MFunction from '../Function.js';
-import * as MMatch from '../Match.js';
-import * as MPredicate from '../Predicate.js';
+import * as MInputError from '../InputError.js';
+import * as internal from '../internal/String.js';
+import * as internalNumberBase10Formatter from '../internal/NumberBase10Format/NumberBase10Formatter.js';
+import * as internalTemplateSeparatorParser from '../internal/Template/TemplateSeparatorParser.js';
 import * as MRegExp from '../RegExp.js';
 import * as MRegExpString from '../RegExpString.js';
 import * as MTuple from '../Tuple.js';
-import * as MStringFillPosition from './StringFillPosition.js';
+import type * as MNumberBase10Format from '../NumberBase10Format.js';
+import type * as MTemplate from '../Template.js';
+import * as MTemplatePart from '../TemplatePart/TemplatePart.js';
 import * as MStringSearchResult from './StringSearchResult.js';
 
 /**
@@ -102,8 +108,8 @@ export type Type = string;
  *
  * @category Constructors
  */
-export const fromNonNullablePrimitive = (u: MTypes.NonNullablePrimitive): string =>
-  Predicate.isNumber(u) ? fromNumber(10)(u) : u.toString();
+export const fromNonNullablePrimitive: MTypes.OneArgFunction<MTypes.NonNullablePrimitive, string> =
+  internal.fromNonNullablePrimitive;
 
 /**
  * Builds a string from a primitive value, handling `null` and `undefined`.
@@ -125,11 +131,8 @@ export const fromNonNullablePrimitive = (u: MTypes.NonNullablePrimitive): string
  *
  * @category Constructors
  */
-export const fromPrimitive: MTypes.OneArgFunction<MTypes.Primitive, string> = flow(
-  MMatch.make,
-  MMatch.when(Predicate.isNotNullish, fromNonNullablePrimitive),
-  MMatch.orElse((s) => (s === undefined ? 'undefined' : 'null')),
-);
+export const fromPrimitive: MTypes.OneArgFunction<MTypes.Primitive, string> =
+  internal.fromPrimitive;
 
 /**
  * Builds a string from an unknown value.
@@ -150,8 +153,7 @@ export const fromPrimitive: MTypes.OneArgFunction<MTypes.Primitive, string> = fl
  *
  * @category Constructors
  */
-export const fromUnknown = (u: unknown): string =>
-  MPredicate.isPrimitive(u) ? fromPrimitive(u) : JSON.stringify(u, null, 2);
+export const fromUnknown: MTypes.OneArgFunction<unknown, string> = internal.fromUnknown;
 
 /**
  * Converts a number to a string using a specified radix.
@@ -176,32 +178,178 @@ export const fromUnknown = (u: unknown): string =>
  *
  * @category Constructors
  */
-export const fromNumber =
-  (radix: number): MTypes.OneArgFunction<number | bigint, string> =>
-  (u) => {
-    // If this condition is not respected, Javascript will use an exponent in the converted string
-    if (
-      typeof u === 'bigint' ||
-      radix !== 10 ||
-      (u >= 1e-6 && u < 1e21) ||
-      !Number.Number.isFinite(u)
-    )
-      return u.toString(radix);
-    const integerPart = Math.trunc(u);
-    const decimalPart = BigInt.BigInt(Math.trunc((u - integerPart) * 1e16));
-    return (
-      BigInt.BigInt(integerPart).toString(10) +
-      pipe(
-        decimalPart,
-        (b) => b.toString(10),
-        String.padStart(16, '0'),
-        trimEnd('0'),
-        Option.liftPredicate(String.isNonEmpty),
-        Option.map(prepend('.')),
-        Option.getOrElse(MFunction.constEmptyString),
-      )
+export const fromNumber: (radix: number) => MTypes.OneArgFunction<number | bigint, string> =
+  internal.fromNumber;
+
+/**
+ * Returns a function that formats a `number` or `BigDecimal` according to `format`, returning
+ * `Option.none` only when the input is not a finite number (`NaN` or `Infinity`).
+ *
+ * - Use a precomputed formatter when the same `format` will be applied many times.
+ *
+ * **Example** (Format with a `MNumberBase10Format`)
+ *
+ * ```ts
+ * import * as MNumberBase10Format from '@parischap/effect-lib/MNumberBase10Format';
+ * import * as MString from '@parischap/effect-lib/String/String';
+ *
+ * const format = MString.parseFromNumber(MNumberBase10Format.frenchStyleNumber);
+ * console.log(format(1234.5)); // Some("1 234,5")
+ * ```
+ *
+ * @category Constructors
+ */
+export const parseFromNumber = (
+  format: MNumberBase10Format.Type,
+): MTypes.OneArgFunction<BigDecimal.BigDecimal | number, Option.Option<string>> =>
+  internalNumberBase10Formatter.format(internalNumberBase10Formatter.fromFormat(format));
+
+/**
+ * Same as `parseFromNumber` but throws instead of returning a `none` in case of failure
+ *
+ * @category Constructors
+ */
+export const parseFromNumberOrThrow = (
+  format: MNumberBase10Format.Type,
+): MTypes.OneArgFunction<BigDecimal.BigDecimal | number, string> =>
+  internalNumberBase10Formatter.formatOrThrow(internalNumberBase10Formatter.fromFormat(format));
+
+/**
+ * Returns a function that formats a record of placeholder values into a string according to
+ * `template`.
+ *
+ * - Use a precomputed formatter when the same `template` will be applied many times.
+ *
+ * **Example** (Format a record according to a `MTemplate`)
+ *
+ * ```ts
+ * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MTemplate from '@parischap/effect-lib/MTemplate';
+ * import * as MTemplatePart from '@parischap/effect-lib/TemplatePart/TemplatePart';
+ * import * as MTemplatePlaceholder from '@parischap/effect-lib/TemplatePart/TemplatePlaceholder';
+ * import * as MTemplateSeparator from '@parischap/effect-lib/TemplatePart/TemplateSeparator';
+ *
+ * const template = MTemplate.make(
+ *   MTemplatePlaceholder.toEnd('name'),
+ *   MTemplateSeparator.make(' is here'),
+ * );
+ * console.log(MString.templateFormat(template)({ name: 'Tom' })); // Success('Tom is here')
+ * ```
+ *
+ * @category Constructors
+ */
+export const templateFormat = <PlaceholderTypes extends MTypes.Object>(
+  template: MTemplate.Type<PlaceholderTypes>,
+): MTypes.OneArgFunction<PlaceholderTypes, Result.Result<string, MInputError.Type>> => {
+  const { templateParts } = template;
+  return (record) =>
+    pipe(
+      templateParts,
+      MArray.reduceUnlessLeft('', (result, templatePart) =>
+        MTemplatePart.isSeparator(templatePart)
+          ? pipe(templatePart.value, prepend(result), Result.succeed)
+          : pipe(
+              record,
+              Record.get(templatePart.name),
+              Option.getOrThrowWith(
+                () => new Error(`Abnormal error: no value passed for ${templatePart.label}`),
+              ),
+              templatePart.formatter.bind(templatePart),
+              Result.map(prepend(result)),
+            ),
+      ),
     );
-  };
+};
+
+/**
+ * Same as `templateFormat` but throws in case of failure
+ *
+ * @category Constructors
+ */
+export const templateFormatOrThrow = <PlaceholderTypes extends MTypes.Object>(
+  template: MTemplate.Type<PlaceholderTypes>,
+): MTypes.OneArgFunction<PlaceholderTypes, string> =>
+  flow(templateFormat(template), Result.getOrThrowWith(Function.identity));
+
+/**
+ * Returns a function that tries to parse a string into a record of placeholder values according
+ * to `template`.
+ *
+ * - Use a precomputed parser when the same `template` will be applied many times.
+ *
+ * **Example** (Parse a string according to a `MTemplate`)
+ *
+ * ```ts
+ * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MTemplate from '@parischap/effect-lib/MTemplate';
+ * import * as MTemplatePlaceholder from '@parischap/effect-lib/TemplatePart/TemplatePlaceholder';
+ * import * as MTemplateSeparator from '@parischap/effect-lib/TemplatePart/TemplateSeparator';
+ *
+ * const template = MTemplate.make(
+ *   MTemplatePlaceholder.toEnd('name'),
+ *   MTemplateSeparator.make(' is here'),
+ * );
+ * console.log(MString.templateParse(template)('Tom is here')); // Success({ name: 'Tom' })
+ * ```
+ *
+ * @category Constructors
+ */
+export const templateParse = <PlaceholderTypes extends MTypes.Object>(
+  template: MTemplate.Type<PlaceholderTypes>,
+): MTypes.OneArgFunction<string, Result.Result<PlaceholderTypes, MInputError.Type>> => {
+  const { templateParts } = template;
+  return (text) =>
+    pipe(
+      templateParts,
+      MArray.reduceUnlessLeft(
+        Tuple.make(text, Record.empty<string, unknown>()),
+        ([remainingText, result], templatePart: MTemplatePart.Type<string, unknown>, pos) =>
+          Result.gen(function* () {
+            if (MTemplatePart.isPlaceholder(templatePart)) {
+              const [consumed, leftOver] = yield* templatePart.parser(remainingText);
+              const { name } = templatePart;
+              return yield* pipe(
+                result,
+                Record.get(name),
+                Option.match({
+                  onNone: () =>
+                    Result.succeed(Tuple.make(leftOver, Record.set(result, name, consumed))),
+                  onSome: flow(
+                    Result.liftPredicate(
+                      Equal.equals(consumed),
+                      (oldValue) =>
+                        new MInputError.Type({
+                          message: `${templatePart.label} is present more than once in template and receives differing values '${fromUnknown(oldValue)}' and '${fromUnknown(consumed)}'`,
+                        }),
+                    ),
+                    Result.andThen(Tuple.make(leftOver, result)),
+                  ),
+                }),
+              );
+            }
+            const parser = internalTemplateSeparatorParser.fromSeparator(templatePart);
+            const leftOver = yield* parser(pos + 1, remainingText);
+            return Tuple.make(leftOver, result);
+          }),
+      ),
+      Result.flatMap(([leftOver, result]) =>
+        Result.gen(function* () {
+          yield* pipe(leftOver, MInputError.assertEmpty({ name: 'text not consumed by template' }));
+          return result as PlaceholderTypes;
+        }),
+      ),
+    );
+};
+
+/**
+ * Same as `templateParse` but throws in case of failure
+ *
+ * @category Constructors
+ */
+export const templateParseOrThrow = <PlaceholderTypes extends MTypes.Object>(
+  template: MTemplate.Type<PlaceholderTypes>,
+): MTypes.OneArgFunction<string, PlaceholderTypes> =>
+  flow(templateParse(template), Result.getOrThrowWith(Function.identity));
 
 /**
  * Searches for the first occurrence of a pattern in the string.
@@ -441,10 +589,7 @@ export const takeBut =
  *
  * @category Utils
  */
-export const takeRightBut =
-  (n: number): MTypes.StringTransformer =>
-  (self) =>
-    String.takeRight(self.length - n)(self);
+export const takeRightBut: (n: number) => MTypes.StringTransformer = internal.takeRightBut;
 
 /**
  * Removes characters from the start of the string.
@@ -465,8 +610,7 @@ export const takeRightBut =
  *
  * @category Utils
  */
-export const trimStart = (charToRemove: string): MTypes.StringTransformer =>
-  flow(Array.dropWhile(MPredicate.strictEquals(charToRemove)), Array.join(''));
+export const trimStart: (charToRemove: string) => MTypes.StringTransformer = internal.trimStart;
 
 /**
  * Removes characters from the end of the string.
@@ -487,14 +631,7 @@ export const trimStart = (charToRemove: string): MTypes.StringTransformer =>
  *
  * @category Utils
  */
-export const trimEnd = (charToRemove: string): MTypes.StringTransformer =>
-  flow(
-    Array.fromIterable,
-    Array.reverse,
-    Array.dropWhile(MPredicate.strictEquals(charToRemove)),
-    Array.reverse,
-    Array.join(''),
-  );
+export const trimEnd: (charToRemove: string) => MTypes.StringTransformer = internal.trimEnd;
 
 /**
  * Pads a string to a specific length with a fill character.
@@ -522,22 +659,11 @@ export const trimEnd = (charToRemove: string): MTypes.StringTransformer =>
  * @category Utils
  */
 
-export const pad = ({
-  length,
-  fillChar,
-  fillPosition,
-}: {
+export const pad: (params: {
   readonly length: number;
   readonly fillChar: string;
   readonly fillPosition: MStringFillPosition.Type;
-}): MTypes.OneArgFunction<Type> =>
-  pipe(
-    fillPosition,
-    MMatch.make,
-    MMatch.whenIs(MStringFillPosition.Type.Left, () => String.padStart(length, fillChar)),
-    MMatch.whenIs(MStringFillPosition.Type.Right, () => String.padEnd(length, fillChar)),
-    MMatch.exhaustive,
-  );
+}) => MTypes.OneArgFunction<Type> = internal.pad;
 
 /**
  * Removes padding characters from left or right of a string.
@@ -564,22 +690,10 @@ export const pad = ({
  * @category Utils
  */
 
-export const trim = ({
-  fillChar,
-  fillPosition,
-}: {
+export const trim: (params: {
   readonly fillChar: string;
   readonly fillPosition: MStringFillPosition.Type;
-}): MTypes.StringTransformer =>
-  flow(
-    pipe(
-      fillPosition,
-      MMatch.make,
-      MMatch.whenIs(MStringFillPosition.Type.Left, () => trimStart(fillChar)),
-      MMatch.whenIs(MStringFillPosition.Type.Right, () => trimEnd(fillChar)),
-      MMatch.exhaustive,
-    ),
-  );
+}) => MTypes.StringTransformer = internal.trim;
 
 /**
  * Optionally removes a prefix from the start of the string.
@@ -731,10 +845,7 @@ export const count =
  *
  * @category Utils
  */
-export const append =
-  (s: string): MTypes.StringTransformer =>
-  (self) =>
-    `${self}${s}`;
+export const append: (s: string) => MTypes.StringTransformer = internal.append;
 
 /**
  * Appends a string only if the original string is non-empty.
@@ -779,10 +890,7 @@ export const appendIfNotEmpty =
  *
  * @category Utils
  */
-export const prepend =
-  (s: string): MTypes.StringTransformer =>
-  (self) =>
-    `${s}${self}`;
+export const prepend: (s: string) => MTypes.StringTransformer = internal.prepend;
 
 /**
  * Prepends a string only if the original string is non-empty.
@@ -888,17 +996,8 @@ export const replaceBetween =
  *
  * @category Utils
  */
-export const match =
-  (regExp: RegExp) =>
-  (self: Type): Option.Option<string> => {
-    regExp.lastIndex = 0;
-    return pipe(
-      self,
-      RegExp.prototype.exec.bind(regExp),
-      Option.fromNullOr,
-      Option.map(MArray.unsafeGet(0)),
-    );
-  };
+export const match: (regExp: RegExp) => MTypes.OneArgFunction<Type, Option.Option<string>> =
+  internal.match;
 
 /**
  * Tests whether the string matches a regex pattern.
@@ -920,8 +1019,7 @@ export const match =
  *
  * @category Predicates
  */
-export const matches = (regExp: RegExp): Predicate.Predicate<Type> =>
-  flow(match(regExp), Option.match({ onNone: Function.constFalse, onSome: Function.constTrue }));
+export const matches: (regExp: RegExp) => Predicate.Predicate<Type> = internal.matches;
 
 /**
  * Matches a regex pattern and extracts named capturing groups.
@@ -949,44 +1047,7 @@ export const matches = (regExp: RegExp): Predicate.Predicate<Type> =>
  *
  * @category Destructors
  */
-export const matchWithCapturingGroups =
-  <const Names extends ReadonlyArray<string>>(regExp: RegExp, capturingGroupNames: Names) =>
-  (
-    self: Type,
-  ): Option.Option<{
-    match: string;
-    groups: {
-      [k in keyof Names as [k] extends [number] ? Names[k] : never]: string;
-    };
-  }> => {
-    if (regExp.global)
-      throw new Error(
-        `'matchWithCapturingGroups' was called with global regular expression '${regExp.source}'`,
-      );
-    return pipe(
-      self,
-      String.match(regExp),
-      // RegExpExecArray extends from Array<string>. But this is a Typescript bug. When there are optional capturing groups, there can be some undefined elements. So let's make javascript and Typescript coherent.
-      Option.map((matchArray) => {
-        const { groups } = matchArray;
-        if (
-          groups === undefined ||
-          pipe(capturingGroupNames, Array.difference(Object.keys(groups)), MPredicate.isOverOne)
-        )
-          throw new Error(
-            `'matchWithCapturingGroups' was called with regular expression '${regExp.source}' that does not contain expected named capturing groups '${capturingGroupNames.join("', '")}'`,
-          );
-        return {
-          match: matchArray[0],
-          // Optional capturing groups can return an undefined value
-          groups: pipe(
-            groups,
-            Record.map(flow(Option.fromUndefinedOr, Option.getOrElse(MFunction.constEmptyString))),
-          ),
-        } as never;
-      }),
-    );
-  };
+export const { matchWithCapturingGroups } = internal;
 
 /**
  * Splits string at a specific position into two parts.
@@ -1009,10 +1070,8 @@ export const matchWithCapturingGroups =
  *
  * @category Utils
  */
-export const splitAt =
-  (n: number) =>
-  (self: Type): [left: string, right: string] =>
-    Tuple.make(String.takeLeft(n)(self), takeRightBut(n)(self));
+export const splitAt: (n: number) => MTypes.OneArgFunction<Type, [left: string, right: string]> =
+  internal.splitAt;
 
 /**
  * Splits string at a position measured from the end.
@@ -1035,10 +1094,9 @@ export const splitAt =
  *
  * @category Utils
  */
-export const splitAtFromRight =
-  (n: number) =>
-  (self: Type): [left: string, right: string] =>
-    pipe(self, splitAt(self.length - n));
+export const splitAtFromRight: (
+  n: number,
+) => MTypes.OneArgFunction<Type, [left: string, right: string]> = internal.splitAtFromRight;
 
 /**
  * Splits string into equal chunks with remainder at start.
@@ -1061,21 +1119,9 @@ export const splitAtFromRight =
  *
  * @category Utils
  */
-export const splitEquallyRestAtStart = (
+export const splitEquallyRestAtStart: (
   bitSize: number,
-): MTypes.OneArgFunction<Type, Array<string>> =>
-  flow(
-    MArray.unfoldNonEmpty(
-      flow(
-        splitAtFromRight(bitSize),
-        Tuple.renameIndices(['1', '0']),
-        Tuple.evolve(
-          Tuple.make(Function.identity<string>, Option.liftPredicate(String.isNonEmpty)),
-        ),
-      ),
-    ),
-    Array.reverse,
-  );
+) => MTypes.OneArgFunction<Type, Array<string>> = internal.splitEquallyRestAtStart;
 
 /**
  * Splits string into equal chunks with remainder at end.
@@ -1222,10 +1268,7 @@ export const isEmail: Predicate.Predicate<Type> = (self) => MRegExp.email.test(s
  *
  * @category Predicates
  */
-export const hasLength =
-  (l: number): Predicate.Predicate<Type> =>
-  (self) =>
-    self.length === l;
+export const hasLength: (l: number) => Predicate.Predicate<Type> = internal.hasLength;
 
 /**
  * Removes `n` characters from every `m`-character chunk from the right.
@@ -1251,16 +1294,10 @@ export const hasLength =
  *
  * @category Utils
  */
-export const removeNCharsEveryMCharsFromRight = ({
-  m,
-  n,
-}: {
+export const removeNCharsEveryMCharsFromRight: (params: {
   readonly m: number;
   readonly n: number;
-}): MTypes.StringTransformer =>
-  n === 0
-    ? Function.identity
-    : flow(splitEquallyRestAtStart(m + n), Array.map(String.takeRight(m)), Array.join(''));
+}) => MTypes.StringTransformer = internal.removeNCharsEveryMCharsFromRight;
 
 /**
  * Tests whether the string is a single ASCII digit character (`0`–`9`).

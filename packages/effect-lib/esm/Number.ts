@@ -39,8 +39,13 @@ import * as BigDecimal from 'effect/BigDecimal';
 import * as BigInt from 'effect/BigInt';
 import * as Option from 'effect/Option';
 import type * as Predicate from 'effect/Predicate';
+import * as Tuple from 'effect/Tuple';
 
 import type * as MTypes from './types/types.js';
+
+import type * as MBigDecimal from './BigDecimal.js';
+import type * as MNumberBase10Format from './NumberBase10Format.js';
+import * as internalRoundingOptionCorrecter from './internal/RoundingOptionCorrecter.js';
 
 /**
  * Type on which this module's functions operate.
@@ -305,6 +310,44 @@ export const isMultipleOf: (a: number) => Predicate.Predicate<Type> = (a) => (se
 export const shift = (n: number) => (self: Type) => self * 10 ** n;
 
 /**
+ * Returns a function that rounds `self` to `precision` decimal digits according to `option`.
+ *
+ * - Use a precomputed rounder when the same `precision`/`option` pair will be applied many times.
+ *
+ * **Example** (Round to three decimal digits, half to even)
+ *
+ * ```ts
+ * import { pipe } from 'effect';
+ * import * as MBigDecimal from '@parischap/effect-lib/MBigDecimal';
+ * import * as MNumber from '@parischap/effect-lib/MNumber';
+ *
+ * const round = MNumber.round(3, MBigDecimal.RoundingOption.HalfEven);
+ * console.log(pipe(12.4565, round)); // 12.456
+ * ```
+ *
+ * @category Utils
+ */
+export const round = (
+  precision: number,
+  option: MBigDecimal.RoundingOption,
+): MTypes.OneArgFunction<Type> => {
+  const shiftMultiplicand = pipe(1, shift(precision));
+  const unshiftMultiplicand = 1 / shiftMultiplicand;
+  const correcter = internalRoundingOptionCorrecter.fromRoundingOption(option);
+
+  return (self) => {
+    const shiftedSelf = shiftMultiplicand * self;
+    const truncatedShiftedSelf = Math.trunc(shiftedSelf);
+    const firstFollowingDigit = Math.trunc((shiftedSelf - truncatedShiftedSelf) * 10);
+    return (
+      unshiftMultiplicand *
+      (truncatedShiftedSelf +
+        correcter({ firstFollowingDigit, isEven: truncatedShiftedSelf % 2 === 0 }))
+    );
+  };
+};
+
+/**
  * Returns the sign of `n` as either `1` or `-1`. Treats `+0` (and the unsigned literal `0`) as
  * positive and `-0` as negative.
  *
@@ -324,3 +367,122 @@ export const shift = (n: number) => (self: Type) => self * 10 ** n;
  * @category Utils
  */
 export const sign2 = (n: number) => (Object.is(n, -0) || n < 0 ? -1 : 1);
+
+/*
+ * Combines `format`'s `_bigDecimalExtractor` with a `number` conversion, keeping the sign of the
+ * mantissa apart so `-0` can be told apart from `0` (`BigDecimal` cannot make that distinction)
+ */
+const toNumberExtractor = (
+  format: MNumberBase10Format.Type,
+): MTypes.OneArgFunction<
+  string,
+  Option.Option<{ readonly value: number; readonly match: string; readonly input: string }>
+> => {
+  const bigDecimalExtractor = format._bigDecimalExtractor;
+  return flow(
+    bigDecimalExtractor,
+    Option.flatMap(({ value, match, sign, input }) =>
+      pipe(
+        value,
+        fromBigDecimalOption,
+        Option.map((n) => ({ value: sign * n, match, input })),
+      ),
+    ),
+  );
+};
+
+/**
+ * Returns a function that tries to extract, from the start of a string, a `number` respecting
+ * `format`. If successful, returns a `some` of a `[value, match]` pair where `match` is the part of
+ * the string that could be analyzed as representing a number. Otherwise, returns a `none`. Unlike
+ * `BigDecimal`, `number` distinguishes `-0` from `0`.
+ *
+ * - Use a precomputed extractor when the same `format` will be applied many times.
+ *
+ * **Example** (Extract a `number` from the start of a string)
+ *
+ * ```ts
+ * import * as MNumber from '@parischap/effect-lib/MNumber';
+ * import * as MNumberBase10Format from '@parischap/effect-lib/MNumberBase10Format';
+ *
+ * const extract = MNumber.extractFromString(MNumberBase10Format.frenchStyleNumber);
+ * console.log(extract('-45,50Dummy')); // Some([-45.5, '-45,50'])
+ * ```
+ *
+ * @category Constructors
+ */
+export const extractFromString = (
+  format: MNumberBase10Format.Type,
+): MTypes.OneArgFunction<string, Option.Option<[value: number, match: string]>> => {
+  const numberExtractor = toNumberExtractor(format);
+  return flow(
+    numberExtractor,
+    Option.map(({ value, match }) => Tuple.make(value, match)),
+  );
+};
+
+/**
+ * Same as `extractFromString` but throws in case of failure
+ *
+ * @category Constructors
+ */
+export const extractFromStringOrThrow = (
+  format: MNumberBase10Format.Type,
+): MTypes.OneArgFunction<string, [value: number, match: string]> => {
+  const extractor = extractFromString(format);
+  return (text) =>
+    pipe(
+      text,
+      extractor,
+      Option.getOrThrowWith(
+        () => new Error(`A number could not be parsed from the start of '${text}'`),
+      ),
+    );
+};
+
+/**
+ * Returns a function that tries to convert a whole string into a `number` respecting `format`.
+ * Unlike `extractFromString`, the whole of the input string must represent a number.
+ *
+ * - Use a precomputed parser when the same `format` will be applied many times.
+ *
+ * **Example** (Parse a `number` from a whole string)
+ *
+ * ```ts
+ * import * as MNumber from '@parischap/effect-lib/MNumber';
+ * import * as MNumberBase10Format from '@parischap/effect-lib/MNumberBase10Format';
+ *
+ * const parse = MNumber.parseFromString(MNumberBase10Format.frenchStyleNumber);
+ * console.log(parse('-45,50')); // Some(-45.5)
+ * console.log(parse('-45,50Dummy')); // None
+ * ```
+ *
+ * @category Constructors
+ */
+export const parseFromString = (
+  format: MNumberBase10Format.Type,
+): MTypes.OneArgFunction<string, Option.Option<number>> => {
+  const numberExtractor = toNumberExtractor(format);
+  return flow(
+    numberExtractor,
+    Option.filter(({ match, input }) => match.length === input.length),
+    Option.map(({ value }) => value),
+  );
+};
+
+/**
+ * Same as `parseFromString` but throws in case of failure
+ *
+ * @category Constructors
+ */
+export const parseFromStringOrThrow = (
+  format: MNumberBase10Format.Type,
+): MTypes.OneArgFunction<string, number> => {
+  const parser = parseFromString(format);
+  return (text) =>
+    pipe(
+      text,
+      parser,
+      Option.getOrThrowWith(() => new Error(`A number could not be parsed from '${text}'`)),
+    );
+};

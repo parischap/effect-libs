@@ -1,9 +1,12 @@
 import { assert, describe, it } from '@effect/vitest';
 import { pipe } from 'effect';
 import * as BigDecimal from 'effect/BigDecimal';
+import * as Tuple from 'effect/Tuple';
 
 import * as TestUtils from '@parischap/configs/TestUtils';
+import * as MBigDecimal from '@parischap/effect-lib/MBigDecimal';
 import * as MNumber from '@parischap/effect-lib/MNumber';
+import * as MNumberBase10Format from '@parischap/effect-lib/MNumberBase10Format';
 
 const hugeBigInt = 10n ** 500n;
 const hugeBigDecimal = BigDecimal.make(hugeBigInt, 0);
@@ -188,6 +191,68 @@ describe('MNumber', () => {
 
     it('Strictly negative value', () => {
       assert.strictEqual(MNumber.sign2(-5), -1);
+    });
+  });
+
+  describe('round', () => {
+    const round = MNumber.round(3, MBigDecimal.RoundingOption.HalfEven);
+    it('Even number', () => {
+      assert.isTrue(pipe(0.4566, round, MNumber.equals(0.457)));
+    });
+    it('Odd number', () => {
+      assert.isTrue(pipe(-0.4564, round, MNumber.equals(-0.456)));
+    });
+  });
+
+  describe('extractFromString', () => {
+    const extractFromString = MNumber.extractFromString(MNumberBase10Format.frenchStyleNumber);
+
+    it('passing', () => {
+      TestUtils.assertSome(extractFromString('0,45Dummy'), Tuple.make(0.45, '0,45'));
+    });
+
+    it('Not passing', () => {
+      TestUtils.assertNone(extractFromString('Dummy'));
+    });
+  });
+
+  describe('extractFromStringOrThrow', () => {
+    const extractFromStringOrThrow = MNumber.extractFromStringOrThrow(
+      MNumberBase10Format.frenchStyleNumber,
+    );
+
+    it('passing', () => {
+      TestUtils.assertEquals(extractFromStringOrThrow('0,45Dummy'), Tuple.make(0.45, '0,45'));
+    });
+
+    it('Not passing', () => {
+      TestUtils.throws(() => extractFromStringOrThrow('Dummy'));
+    });
+  });
+
+  describe('parseFromString', () => {
+    const parseFromString = MNumber.parseFromString(MNumberBase10Format.frenchStyleNumber);
+
+    it('passing', () => {
+      TestUtils.assertSome(parseFromString('45,50'), 45.5);
+    });
+
+    it('Not passing (extra characters)', () => {
+      TestUtils.assertNone(parseFromString('45,50Dummy'));
+    });
+  });
+
+  describe('parseFromStringOrThrow', () => {
+    const parseFromStringOrThrow = MNumber.parseFromStringOrThrow(
+      MNumberBase10Format.frenchStyleNumber,
+    );
+
+    it('passing', () => {
+      TestUtils.assertEquals(parseFromStringOrThrow('45,50'), 45.5);
+    });
+
+    it('Not passing', () => {
+      TestUtils.throws(() => parseFromStringOrThrow('45,50Dummy'));
     });
   });
 });

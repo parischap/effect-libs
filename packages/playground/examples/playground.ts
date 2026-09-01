@@ -1,5 +1,5 @@
 import type { Fiber } from 'effect';
-import { Effect, Duration, Console } from 'effect';
+import { Effect, Duration, Console, Predicate } from 'effect';
 
 // The Effect we want to run asynchronously
 const show = (text: string, waitInSecs: number): Effect.Effect<void, Error> =>
@@ -22,3 +22,5 @@ const program = Effect.gen(function* () {
 });
 
 const result = Effect.runPromiseExit(program);
+
+const a = Predicate.hasProperty

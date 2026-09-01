@@ -6,7 +6,7 @@
 import type * as HashMap from 'effect/HashMap';
 
 import type * as CVDateTimeFormatToken from '../../../../formatting/DateTimeFormat/DateTimeFormatToken.js';
-import type * as CVDateTimeFormatPlaceholder from '../../../../formatting/template/TemplatePart/TemplatePlaceholder/TemplatePlaceholder.js';
+import type * as CVTemplatePlaceholder from '../../../../formatting/template/TemplatePart/TemplatePlaceholder/TemplatePlaceholder.js';
 import type * as CVDateTimePartName from '../DateTimePartName.js';
 /**
  * Type of a CVDateTimeFormatTokenMap
@@ -15,5 +15,5 @@ import type * as CVDateTimePartName from '../DateTimePartName.js';
  */
 export interface Type extends HashMap.HashMap<
   CVDateTimeFormatToken.Type,
-  CVDateTimeFormatPlaceholder.Type<CVDateTimePartName.Type, number>
+  CVTemplatePlaceholder.Type<CVDateTimePartName.Type, number>
 > {}

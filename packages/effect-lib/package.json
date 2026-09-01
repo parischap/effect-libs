@@ -3,7 +3,7 @@
   "type": "module",
   "author": "Jérôme MARTIN",
   "license": "MIT",
-  "description": "Collection of utility modules extending the official effect library: simple yet efficient pattern matching, cycle-safe tree module, mutable caching with optional bounded capacity and optional time-to-live, and diverse useful stuff.",
+  "description": "Collection of utility modules extending the official effect library: simple yet efficient pattern matching, cycle-safe tree module, mutable caching with optional bounded capacity and optional time-to-live, number and BigDecimal rounding, number and DateTime parsing/formatting, sprintf/sscanf templating, and diverse useful stuff.",
   "homepage": "https://github.com/parischap/effect-libs/tree/master/packages/effect-lib",
   "scripts": {
     "test-all": "vitest run",
@@ -15,19 +15,32 @@
     "lint-all": "pnpm lint",
     "fmt-all": "pnpm fmt",
     "check-all": "pnpm check",
+    "examples": "tsx examples/perf.ts && tsx examples/Rounding_1.ts && tsx examples/Rounding_2.ts && tsx examples/Rounding_3.ts && tsx examples/NumberBase10Format_1.ts && tsx examples/NumberBase10Format_2.ts && tsx examples/Template_1.ts && tsx examples/Template_2.ts && tsx examples/Template_3.ts && tsx examples/DateTime_1.ts && tsx examples/DateTimeFormat_1.ts && tsx examples/DateTimeFormat_2.ts",
     "docgen": "docgen",
     "docgen-all": "pnpm docgen",
     "release": "pnpm publish dist --provenance --no-git-checks --access public",
     "release-all": "pnpm release"
   },
   "@parischap/configs": {
-    "description": "Collection of utility modules extending the official effect library: simple yet efficient pattern matching, cycle-safe tree module, mutable caching with optional bounded capacity and optional time-to-live, and diverse useful stuff.",
+    "description": "Collection of utility modules extending the official effect library: simple yet efficient pattern matching, cycle-safe tree module, mutable caching with optional bounded capacity and optional time-to-live, number and BigDecimal rounding, number and DateTime parsing/formatting, sprintf/sscanf templating, and diverse useful stuff.",
     "moreDetails": "All exports follow the `M`-prefix naming convention to avoid name collisions with other libraries;\n\nPlatform-independent, well tested and documented, optimized for tree-shaking, 100% Typescript, 100% functional.\n\nCan also be used by non-effect users.",
     "version": "0.25.0",
     "keywords": [
       "pattern",
       "matching",
       "tree",
+      "number",
+      "date",
+      "format",
+      "parse",
+      "formatting",
+      "parsing",
+      "rounding",
+      "templating",
+      "conversion",
+      "sscanf",
+      "sprintf",
+      "text",
       "effect",
       "typescript",
       "functional-programming"
@@ -44,7 +57,20 @@
     "dependencies": {},
     "devDependencies": {},
     "environment": "Neutral",
-    "examples": [],
+    "examples": [
+      "perf.ts",
+      "Rounding_1.ts",
+      "Rounding_2.ts",
+      "Rounding_3.ts",
+      "NumberBase10Format_1.ts",
+      "NumberBase10Format_2.ts",
+      "Template_1.ts",
+      "Template_2.ts",
+      "Template_3.ts",
+      "DateTime_1.ts",
+      "DateTimeFormat_1.ts",
+      "DateTimeFormat_2.ts"
+    ],
     "packagePrefix": "M",
     "peerDependencies": {
       "effect": "*"
@@ -77,14 +103,32 @@
     "./MData": {
       "default": "./esm/Data/Data.ts"
     },
+    "./MDateTime": {
+      "default": "./esm/DateTime.ts"
+    },
+    "./MDateTimeConstants": {
+      "default": "./esm/internal/DateTime/date-time-constants.ts"
+    },
+    "./MDateTimeContext": {
+      "default": "./esm/DateTimeContext.ts"
+    },
+    "./MDateTimeFormat": {
+      "default": "./esm/DateTimeFormat.ts"
+    },
     "./MEquivalenceBasedEqualityData": {
       "default": "./esm/Data/EquivalenceBasedEqualityData.ts"
     },
     "./MFunction": {
       "default": "./esm/Function.ts"
     },
+    "./MGregorianDate": {
+      "default": "./esm/internal/DateTime/GregorianDate.ts"
+    },
     "./MInputError": {
       "default": "./esm/InputError.ts"
+    },
+    "./MIsoDate": {
+      "default": "./esm/internal/DateTime/IsoDate.ts"
     },
     "./MIterable": {
       "default": "./esm/Iterable.ts"
@@ -94,6 +138,12 @@
     },
     "./MNumber": {
       "default": "./esm/Number.ts"
+    },
+    "./MNumberBase10Format": {
+      "default": "./esm/NumberBase10Format.ts"
+    },
+    "./MNumberBase10Formatter": {
+      "default": "./esm/internal/NumberBase10Format/NumberBase10Formatter.ts"
     },
     "./MOption": {
       "default": "./esm/Option.ts"
@@ -116,6 +166,33 @@
     "./MResult": {
       "default": "./esm/Result.ts"
     },
+    "./MRoundingOptionCorrecter": {
+      "default": "./esm/internal/RoundingOptionCorrecter.ts"
+    },
+    "./MSchema": {
+      "default": "./esm/Schema.ts"
+    },
+    "./MScientificNotationMantissaAdjuster": {
+      "default": "./esm/internal/NumberBase10Format/ScientificNotationMantissaAdjuster.ts"
+    },
+    "./MScientificNotationMantissaValidator": {
+      "default": "./esm/internal/NumberBase10Format/ScientificNotationMantissaValidator.ts"
+    },
+    "./MScientificNotationParser": {
+      "default": "./esm/internal/NumberBase10Format/ScientificNotationParser.ts"
+    },
+    "./MSignFormatter": {
+      "default": "./esm/internal/NumberBase10Format/SignFormatter.ts"
+    },
+    "./MSignParser": {
+      "default": "./esm/internal/NumberBase10Format/SignParser.ts"
+    },
+    "./MSignString": {
+      "default": "./esm/internal/NumberBase10Format/SignString.ts"
+    },
+    "./MSignValue": {
+      "default": "./esm/internal/NumberBase10Format/SignValue.ts"
+    },
     "./MString": {
       "default": "./esm/String/String.ts"
     },
@@ -127,6 +204,27 @@
     },
     "./MStruct": {
       "default": "./esm/Struct.ts"
+    },
+    "./MTemplate": {
+      "default": "./esm/Template.ts"
+    },
+    "./MTemplatePart": {
+      "default": "./esm/TemplatePart/TemplatePart.ts"
+    },
+    "./MTemplateParts": {
+      "default": "./esm/internal/Template/TemplateParts.ts"
+    },
+    "./MTemplatePlaceholder": {
+      "default": "./esm/TemplatePart/TemplatePlaceholder.ts"
+    },
+    "./MTemplateSeparator": {
+      "default": "./esm/TemplatePart/TemplateSeparator.ts"
+    },
+    "./MTemplateSeparatorParser": {
+      "default": "./esm/internal/Template/TemplateSeparatorParser.ts"
+    },
+    "./MTime": {
+      "default": "./esm/internal/DateTime/Time.ts"
     },
     "./MTree": {
       "default": "./esm/Tree/Tree.ts"
@@ -151,6 +249,9 @@
     },
     "./MTypesCategory": {
       "default": "./esm/types/TypesCategory.ts"
+    },
+    "./MZoneOffsetParts": {
+      "default": "./esm/internal/DateTime/ZoneOffsetParts.ts"
     }
   },
   "dependencies": {},

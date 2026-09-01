@@ -66,8 +66,7 @@
     "peerDependencies": {
       "effect": "*",
       "@parischap/effect-lib": "*",
-      "@parischap/ansi-styles": "*",
-      "@parischap/conversions": "*"
+      "@parischap/ansi-styles": "*"
     },
     "scripts": {},
     "prodMiscellaneous": {}
@@ -139,7 +138,6 @@
   "peerDependencies": {
     "effect": "*",
     "@parischap/effect-lib": "workspace:*",
-    "@parischap/ansi-styles": "workspace:*",
-    "@parischap/conversions": "workspace:*"
+    "@parischap/ansi-styles": "workspace:*"
   }
 }

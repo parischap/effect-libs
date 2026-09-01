@@ -2,13 +2,14 @@
 
 # Packages
 
-This monorepo publishes the four libraries listed below. Each is its own NPM package with its own version, README, examples and `docgen` documentation.
+This monorepo publishes the three libraries listed below. Each is its own NPM package with its own version, README, examples and `docgen` documentation.
+
+`@parischap/conversions` is archived: its contents moved into `@parischap/effect-lib` (see below). It is kept on disk, unmodified, only to publish a final deprecation notice.
 
 | Package                                                                                               | Prefix | Description                                                                                                                                                                                                                                                                                                                                                                        |
 | ----------------------------------------------------------------------------------------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`@parischap/effect-lib`](https://github.com/parischap/effect-libs/tree/main/packages/effect-lib)     | `M`    | Extension to the official `effect` package: extra utilities for `Array`, `BigDecimal`, `BigInt`, `Chunk`, `Number`, `Option`, `Result`, `String`, `Struct` plus a simpler pattern-matching module `Match`, a `Cache` with capacity and TTL, simpler than `effect/Cache `but not to be used to cache computations of `Effect`'s, a regular expression builder, a cycle-safe `Tree`. |
+| [`@parischap/effect-lib`](https://github.com/parischap/effect-libs/tree/main/packages/effect-lib)     | `M`    | Extension to the official `effect` package: extra utilities for `Array`, `BigDecimal`, `BigInt`, `Chunk`, `Number`, `Option`, `Result`, `String`, `Struct` plus a simpler pattern-matching module `Match`, a `Cache` with capacity and TTL, simpler than `effect/Cache `but not to be used to cache computations of `Effect`'s, a regular expression builder, a cycle-safe `Tree`, number/`BigDecimal` rounding and parsing/formatting, `DateTime` parsing/formatting with native Iso calendar support, and `sprintf`/`sscanf` templating. |
 | [`@parischap/ansi-styles`](https://github.com/parischap/effect-libs/tree/main/packages/ansi-styles)   | `AS`   | Functional terminal styling with ANSI colors and formats.                                                                                                                                                                                                                                                                                                                          |
-| [`@parischap/conversions`](https://github.com/parischap/effect-libs/tree/main/packages/conversions)   | `CV`   | A partial, safer, bidirectional rewrite of the native `Intl` API: number and `BigDecimal` rounding, number and `DateTime` parsing/formatting, `sprintf`/`sscanf` templating. All also exposed as `Schema`'s. Also exports a functional DateTime object that implements natively the Iso calendar (faster than its `effect` counterpart)                                            |
 | [`@parischap/pretty-print`](https://github.com/parischap/effect-libs/tree/main/packages/pretty-print) | `PP`   | A non-recursive, fully configurable rewrite of `util.inspect` for Node.js or the browser. Supports treeifying, coloring, sorting, filtering and `effect` iterables (`HashMap`, `HashSet`, …) out of the box.                                                                                                                                                                       |
 
 ## `@parischap/effect-lib` — extensions to `effect`
@@ -21,6 +22,7 @@ The base library used by every other package in this monorepo. Each module follo
 - **`MTypes`** / **`MPredicate`** — foundational primitive and container types and runtime guards (`isSingleton`, `isPair`, `isOverOne`, …).
 - Extensions to some core `effect` modules: `MArray`, `MBigDecimal`, `MBigInt`, `MChunk`, `MResult`, `MFunction`, `MIterable`, `MNumber`, `MOption`, `MRecord`, `MRegExp`, `MString`, `MStruct`, `MTuple`.
 - Tagged errors (`MInputError`, `MPortError`) for validation and porting non-`effect` code.
+- A partial, safer, bidirectional rewrite of the native `Intl` API: `MNumber.round`/`MBigDecimal.round`, a `MNumberBase10Format`-driven number/`BigDecimal` parser/formatter (`MNumber`/`MBigDecimal`/`MString` constructors), `MDateTime` parsing/formatting (`MDateTime.format`/`parse` combining a `MDateTimeFormat` and a `MDateTimeContext`), and `sprintf`/`sscanf`-style templating (`MTemplate`, `MString.templateFormat`/`templateParse`). All also exposed as `MSchema` codecs. `MDateTime` implements natively the Iso calendar (faster than its `effect` counterpart).
 
 ## `@parischap/ansi-styles` — terminal styling
 
@@ -29,17 +31,6 @@ Build styled terminal output by composing small, immutable `ASStyle` values. Sty
 - The 8 standard ANSI colors plus their bright variants, the 256-color palette, and full RGB.
 - Format modifiers (bold, dim, italic, underline, …).
 - An `ASText` type that carries styled segments and can be measured, sliced and concatenated without losing styling.
-
-## `@parischap/conversions` — `Intl` replacement
-
-A bidirectional, machine-independent set of utilities for working with numbers and dates. Most operations return a `Result` or `Option`; an `OrThrow` variant is provided for non-`effect` users. Contains:
-
-- A **rounder** for `number` and `BigDecimal` with the same modes as `Intl` (Ceil, Floor, Expand, Trunc, HalfCeil, …).
-- A **number parser/formatter** with full control over thousand and fractional separators, fractional-digit bounds, sign display, scientific/engineering notation and exponent mark. Also usable as a `Schema`.
-- A **`DateTime` module** with native ISO calendar support (ISO year, ISO week) and an internal cache that makes recurring computations fast.
-- A **`DateTime` parser/formatter** that supports a large subset of [Unicode date tokens](https://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table). Also usable as a `Schema`.
-- A **templating** module (`sprintf`/`sscanf`-equivalent) with real placeholder typing — handles fixed-length fields, padded numbers and locale-aware number formatting that `Schema.TemplateLiteralParser` does not. Also usable as a `Schema`.
-- Ready-to-use **brands**: `CVEmail`, `CVSemVer`, `CVPositiveReal`, `CVInteger`, `CVPositiveInteger`, … each also exposed as a `Schema`.
 
 ## `@parischap/pretty-print` — configurable `util.inspect`
 
@@ -54,9 +45,9 @@ For everything else (custom property filters, sort orders, primitive formatters,
 # Dependency graph
 
 ```
-                          effect-lib  ←  conversions
-                              ↑                ↑
-                              └── ansi-styles  ┘
+                          effect-lib
+                              ↑
+                              └── ansi-styles
                                       ↑
                                       └── pretty-print
 ```
@@ -64,8 +55,8 @@ For everything else (custom property filters, sort orders, primitive formatters,
 Concretely:
 
 - `effect-lib` has no peer dependency in this repo.
-- `ansi-styles` and `conversions` peer-depend on `effect-lib`.
-- `pretty-print` peer-depends on `effect-lib`, `ansi-styles` and `conversions`.
+- `ansi-styles` peer-depends on `effect-lib`.
+- `pretty-print` peer-depends on `effect-lib` and `ansi-styles`.
 
 # Naming conventions
 
@@ -73,9 +64,8 @@ Every published package exposes its modules under a fixed prefix to avoid collis
 
 | Prefix | Package                   |
 | ------ | ------------------------- |
-| `M`    | `@parischap/effect-lib`   |
 | `AS`   | `@parischap/ansi-styles`  |
-| `CV`   | `@parischap/conversions`  |
+| `M`    | `@parischap/effect-lib`   |
 | `PP`   | `@parischap/pretty-print` |
 
-Throughout the documentation, an instance of a module's `Type` is referred to with its prefix in smart quotes — e.g. a `PPStringifier`, several `CVRounder`'s.
+Throughout the documentation, an instance of a module's `Type` is referred to with its prefix in smart quotes — e.g. a `PPStringifier`, several `MTemplatePlaceholder`'s.
