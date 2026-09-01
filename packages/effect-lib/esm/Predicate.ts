@@ -37,7 +37,7 @@
  *
  * // struct refinement
  * type Animal = { readonly name: string; readonly age: number | string };
- * const isAdult = MPredicate.struct<Animal, { readonly age: (n: unknown) => n is number }>({
+ * const isAdult = MPredicate.Struct<Animal, { readonly age: (n: unknown) => n is number }>({
  *   age: (n): n is number => typeof n === 'number' && n >= 18,
  * });
  * ```
@@ -165,7 +165,7 @@ export type SourcesToPredicates<T extends MTypes.NonPrimitive> = {
 };
 
 /**
- * Enhanced version of `Predicate.struct` that supports IDE field completion, allows passing only a
+ * Enhanced version of `Predicate.Struct` that supports IDE field completion, allows passing only a
  * subset of the struct fields, and correctly infers a `Refinement` (instead of a plain `Predicate`)
  * even when only some fields use refinements.
  *
@@ -181,7 +181,7 @@ export type SourcesToPredicates<T extends MTypes.NonPrimitive> = {
  *
  * type Person = { readonly name: string; readonly age: number | string };
  *
- * const hasNumericAge = MPredicate.struct<
+ * const hasNumericAge = MPredicate.Struct<
  *   Person,
  *   { readonly age: (n: unknown) => n is number }
  * >({
@@ -197,7 +197,7 @@ export type SourcesToPredicates<T extends MTypes.NonPrimitive> = {
  *
  * @category Constructors
  */
-export const struct = <
+export const Struct = <
   O extends MTypes.NonPrimitive,
   F extends Partial<SourcesToPredicates<MTypes.Data<O>>>,
 >(

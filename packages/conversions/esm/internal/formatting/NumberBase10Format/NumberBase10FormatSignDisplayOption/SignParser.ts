@@ -75,14 +75,14 @@ export const fromSignDisplayOption: MTypes.OneArgFunction<
   MMatch.whenIs(CVNumberBase10FormatSignDisplayOption.Type.ExceptZero, (): Type =>
     flow(
       MMatch.make,
-      MMatch.when(MPredicate.struct({ isZero: Function.identity }), hasNoSign),
+      MMatch.when(MPredicate.Struct({ isZero: Function.identity }), hasNoSign),
       MMatch.orElse(hasASign),
     ),
   ),
   MMatch.whenIs(CVNumberBase10FormatSignDisplayOption.Type.Negative, (): Type =>
     flow(
       MMatch.make,
-      MMatch.when(MPredicate.struct({ isZero: Function.identity }), hasNoSign),
+      MMatch.when(MPredicate.Struct({ isZero: Function.identity }), hasNoSign),
       MMatch.orElse(hasNotPlusSign),
     ),
   ),

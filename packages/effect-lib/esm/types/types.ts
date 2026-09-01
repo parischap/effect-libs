@@ -35,8 +35,8 @@ import type * as Predicate from 'effect/Predicate';
 
 /**
  * Type that represents a real object, not an array, not a function, not null. However, this type
- * does not represent a class instance. So prefer using NonPrimitive when class instances are
- * important (even though this type includes functions and arrays which may not be desirable)
+ * does not represent a class instance. So prefer using `NonPrimitive` when class instances are
+ * important (but `NonPrimitive` includes functions and arrays which may not be desirable)
  *
  * @category Models
  */

@@ -62,7 +62,7 @@ export const fromNonPrimitiveKeysAndValues = ({
     MArray.unfold<Seed, Type>(
       flow(
         Option.liftPredicate(
-          MPredicate.struct({
+          MPredicate.Struct({
             protoDepth: Number.isLessThan(maxPrototypeDepth),
             content: MPredicate.isNonPrimitive,
           }),
@@ -109,7 +109,7 @@ export const fromNonPrimitiveKeysAndValues = ({
     Array.flatten,
     // Removes __proto__ properties if there are some because we have already read that property with getPrototypeOf
     Array.filter(
-      MPredicate.struct({
+      MPredicate.Struct({
         oneLineStringKey: Predicate.not(MPredicate.strictEquals('__proto__')),
       }),
     ),

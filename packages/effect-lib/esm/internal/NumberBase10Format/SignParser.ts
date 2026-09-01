@@ -1,8 +1,8 @@
 /**
  * Module that implements a type that tries to convert a SignString into a SignValue.
  *
- * `MNumberBase10Format` is imported type-only: `MNumberBase10Format._bigDecimalExtractor` uses
- * this module, so this module must not depend on `MNumberBase10Format` as a value.
+ * `MNumberBase10Format` is imported type-only: `MNumberBase10Format._bigDecimalExtractor` uses this
+ * module, so this module must not depend on `MNumberBase10Format` as a value.
  */
 
 import { flow } from 'effect';
@@ -12,12 +12,12 @@ import * as Predicate from 'effect/Predicate';
 import * as String from 'effect/String';
 import * as Struct from 'effect/Struct';
 
+import type * as MNumberBase10Format from '../../NumberBase10Format.js';
+import type * as MTypes from '../../types/types.js';
+
 import * as MArray from '../../Array.js';
 import * as MMatch from '../../Match.js';
 import * as MPredicate from '../../Predicate.js';
-import type * as MTypes from '../../types/types.js';
-
-import type * as MNumberBase10Format from '../../NumberBase10Format.js';
 import * as SignString from './SignString.js';
 import * as SignValue from './SignValue.js';
 
@@ -32,8 +32,8 @@ export interface Type extends MTypes.OneArgFunction<
 > {}
 
 /**
- * SignDisplayParser instance that succeeds in parsing a SignString if a sign is present (i.e.
- * empty string not allowed)
+ * SignDisplayParser instance that succeeds in parsing a SignString if a sign is present (i.e. empty
+ * string not allowed)
  *
  * @category Instances
  */
@@ -69,13 +69,13 @@ export const hasNotPlusSign: Type = flow(
 
 const exceptZeroParser: Type = flow(
   MMatch.make,
-  MMatch.when(MPredicate.struct({ isZero: Function.identity }), hasNoSign),
+  MMatch.when(MPredicate.Struct({ isZero: Function.identity }), hasNoSign),
   MMatch.orElse(hasASign),
 );
 
 const negativeParser: Type = flow(
   MMatch.make,
-  MMatch.when(MPredicate.struct({ isZero: Function.identity }), hasNoSign),
+  MMatch.when(MPredicate.Struct({ isZero: Function.identity }), hasNoSign),
   MMatch.orElse(hasNotPlusSign),
 );
 

@@ -218,6 +218,6 @@ export const removeNotFulfillingKeyPredicateMaker = ({
   make({
     id,
     action: Array.filter(
-      MPredicate.struct({ oneLineStringKey: predicate, hasSymbolicKey: Boolean.not }),
+      MPredicate.Struct({ oneLineStringKey: predicate, hasSymbolicKey: Boolean.not }),
     ),
   });

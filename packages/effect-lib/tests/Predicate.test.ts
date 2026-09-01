@@ -96,14 +96,14 @@ describe('MPredicate', () => {
   describe('struct', () => {
     it('Type error expected', () => {
       /* @ts-expect-error c not present in object */
-      assert.isFalse(pipe({ a: 0, b: 1 }, MPredicate.struct({ c: Predicate.isNumber })));
+      assert.isFalse(pipe({ a: 0, b: 1 }, MPredicate.Struct({ c: Predicate.isNumber })));
     });
 
     it('Passing', () => {
       assert.isTrue(
         pipe(
           { a: 0, b: 1, c: 2 },
-          MPredicate.struct({ b: Predicate.isNumber, c: Predicate.isNumber }),
+          MPredicate.Struct({ b: Predicate.isNumber, c: Predicate.isNumber }),
         ),
       );
     });
@@ -112,7 +112,7 @@ describe('MPredicate', () => {
       assert.isFalse(
         pipe(
           { a: 0, b: 1, c: 2 },
-          MPredicate.struct({ b: Predicate.isNumber, c: Predicate.isString }),
+          MPredicate.Struct({ b: Predicate.isNumber, c: Predicate.isString }),
         ),
       );
     });
