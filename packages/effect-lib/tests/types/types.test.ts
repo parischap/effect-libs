@@ -42,15 +42,6 @@ interface TestInterface {
   [Equal.symbol](): boolean;
 }
 
-/** Tuple */
-TestUtils.assertTrueType(
-  TestUtils.areEqualTypes<
-    MTypes.Tuple<string, 2 | 3>,
-    [string, string] | [string, string, string]
-  >(),
-);
-TestUtils.assertTrueType(TestUtils.areEqualTypes<MTypes.Tuple<string, number>, Array<string>>());
-
 /** ReadonlyTuple */
 TestUtils.assertTrueType(
   TestUtils.areEqualTypes<

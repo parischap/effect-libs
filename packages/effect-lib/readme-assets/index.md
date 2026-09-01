@@ -254,7 +254,8 @@ console.log(buildAndSum);
 
 ## 0.26.0
 
-- Renamed `MPredicate.struct` to `MPredicate.Struct`
+- Removed `MTypes.Tuple` (alias to `Types.TupleOf`).
+- Renamed `MPredicate.struct` to `MPredicate.Struct` (`Predicate.struct` has been renamed `Predicate.Struct`)
 - **Absorbed the `@parischap/conversions` package.** `conversions`; its rounding, number-formatting, templating, and date-time
   functionality moved here, re-prefixed `CV` → `M` and reshaped to fit as extensions of existing
   modules instead of a separate package:

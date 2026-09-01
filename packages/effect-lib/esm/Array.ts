@@ -41,6 +41,7 @@
  * ```
  */
 
+import type { Types } from 'effect';
 import { pipe } from 'effect';
 import * as Array from 'effect/Array';
 import * as Boolean from 'effect/Boolean';
@@ -1211,7 +1212,7 @@ export const differenceSorted =
 export const pad = <A, T, N extends number>(
   n: N,
   fill: T,
-): MTypes.OneArgFunction<Type<A>, MTypes.Tuple<A | T, N>> => Array.pad(n, fill) as never;
+): MTypes.OneArgFunction<Type<A>, Types.TupleOf<N, A | T>> => Array.pad(n, fill) as never;
 
 /**
  * Joins the strings of `self` with `sep`, ignoring empty strings so they do not introduce extra

@@ -28,7 +28,7 @@
 import * as Array from 'effect/Array';
 import * as Tuple from 'effect/Tuple';
 
-import type * as MTypes from './types/types.js';
+import type { Types } from 'effect';
 
 /**
  * Builds a single-element tuple `[a]`.
@@ -70,7 +70,7 @@ export const of = <A>(a: A): [A] => Tuple.make(a);
  */
 export const replicate =
   <N extends number>(n: N) =>
-  <A>(a: A): MTypes.Tuple<A, N> =>
+  <A>(a: A): Types.TupleOf<N, A> =>
     Array.replicate(a, n) as never;
 
 /**
