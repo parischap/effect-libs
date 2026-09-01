@@ -188,7 +188,7 @@ export const name = (f: MTypes.AnyFunction): string => f.name;
 
 export const once = <A>(f: Function.LazyArg<A>): Function.LazyArg<A> => {
   let store = Option.none<A>();
-  const cached: Function.LazyArg<A> = () =>
+  return () =>
     pipe(
       store,
       Option.match({
@@ -201,7 +201,6 @@ export const once = <A>(f: Function.LazyArg<A>): Function.LazyArg<A> => {
         onSome: Function.identity,
       }),
     );
-  return cached;
 };
 
 /**
@@ -291,10 +290,11 @@ export const clone = <This, Args extends ReadonlyArray<unknown>, R>(
   };
 
 /**
- * The `Function.prototype` object, captured via the prototype of a built-in function.
+ * The original function object
  *
  * - Useful as a reference when checking whether an object inherits from `Function.prototype`.
  *
  * @category Constants
  */
-export const proto = globalThis.Function.prototype;
+const _Function = globalThis.Function;
+export { _Function as Function };
