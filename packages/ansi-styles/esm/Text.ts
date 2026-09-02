@@ -223,7 +223,10 @@ export const toAnsiString: MTypes.OneArgFunction<Type, string> = flow(
     onOverTwo: flow(
       Array.map(ASUnistyledText.applyStyleUnder(ASStyleCharacteristics.defaults)),
       Array.reduce(
-        Tuple.make('', ASStyleCharacteristics.defaults),
+        Tuple.make('', ASStyleCharacteristics.defaults) as readonly [
+          string,
+          ASStyleCharacteristics.Type,
+        ],
         ([text, context], uniStyled) => {
           const toApply = pipe(uniStyled.style, ASStyleCharacteristics.subtractContext(context));
 
