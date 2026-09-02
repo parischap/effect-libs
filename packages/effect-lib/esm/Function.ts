@@ -289,12 +289,14 @@ export const clone = <This, Args extends ReadonlyArray<unknown>, R>(
     return self.call(this, ...args);
   };
 
-/**
- * The original function object
- *
- * - Useful as a reference when checking whether an object inherits from `Function.prototype`.
- *
- * @category Constants
- */
 const _Function = globalThis.Function;
-export { _Function as Function };
+export {
+  /**
+   * The original function object
+   *
+   * - Useful as a reference when checking whether an object inherits from `Function.prototype`.
+   *
+   * @category Constants
+   */
+  _Function as Function,
+};

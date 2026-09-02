@@ -27,8 +27,7 @@
 
 import * as Array from 'effect/Array';
 import * as Tuple from 'effect/Tuple';
-
-import type { Types } from 'effect';
+import type * as Types from 'effect/Types';
 
 /**
  * Builds a single-element tuple `[a]`.

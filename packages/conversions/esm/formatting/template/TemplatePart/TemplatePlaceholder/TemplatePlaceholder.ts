@@ -252,7 +252,12 @@ export const modify: {
         return Result.flatMap(
           self.parser.call(this, text),
           flow(
-            Tuple.evolve(Tuple.make((t) => postParser.call(this, t), Result.succeed)),
+            Tuple.evolve(
+              Tuple.make(
+                (t: T): Result.Result<T1, MInputError.Type> => postParser.call(this, t),
+                Result.succeed<string>,
+              ),
+            ),
             Result.all,
           ),
         );
@@ -284,15 +289,12 @@ export const fixedLength = <const N extends string>({
     name,
     description: `${MString.fromNumber(10)(length)}-character string`,
     parser: function (this: Type<N, string>, text) {
+      const assertLength: (self: string) => Result.Result<string, MInputError.Type> =
+        MInputError.assertLength({ expected: length, name: this.label });
       return pipe(
         text,
         MString.splitAt(length),
-        Tuple.evolve(
-          Tuple.make(
-            MInputError.assertLength({ expected: length, name: this.label }),
-            Result.succeed,
-          ),
-        ),
+        Tuple.evolve(Tuple.make(assertLength, Result.succeed<string>)),
         Result.all,
       );
     },
@@ -364,7 +366,7 @@ export const number = <const N extends string>({
     CVNumberBase10Format.getFixedLength,
     Option.match({
       onNone: () =>
-        make({
+        make<N, number>({
           name,
           description,
           parser: function (this: Type<N, number>, text) {
@@ -383,7 +385,10 @@ export const number = <const N extends string>({
               ),
               Result.map(
                 Tuple.evolve(
-                  Tuple.make(Function.identity, flow(String.length, _flippedTakeRightBut(text))),
+                  Tuple.make(
+                    Function.identity<number>,
+                    flow(String.length, _flippedTakeRightBut(text)),
+                  ),
                 ),
               ),
             );
@@ -406,7 +411,7 @@ export const number = <const N extends string>({
         pipe(
           { name, length },
           fixedLength,
-          modify({
+          modify<string, number>({
             descriptorMapper: MString.append(` to ${description}`),
             postParser: function (this: Type<N, number>, input: string) {
               return pipe(
@@ -586,7 +591,7 @@ export const fulfilling = <const N extends string>({
           flow(
             MTuple.replicate(2),
             Tuple.evolve(
-              Tuple.make(Function.identity, flow(String.length, flippedTakeRightBut(text))),
+              Tuple.make(Function.identity<string>, flow(String.length, flippedTakeRightBut(text))),
             ),
           ),
         ),

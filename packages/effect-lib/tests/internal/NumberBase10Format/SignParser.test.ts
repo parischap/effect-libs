@@ -22,9 +22,7 @@ describe('MSignParser', () => {
   });
 
   describe('Always', () => {
-    const parser = MSignParser.fromSignDisplayOption(
-      MNumberBase10Format.SignDisplayOption.Always,
-    );
+    const parser = MSignParser.fromSignDisplayOption(MNumberBase10Format.SignDisplayOption.Always);
     it('No sign', () => {
       TestUtils.assertNone(parser({ isZero: false, sign: '' }));
       TestUtils.assertNone(parser({ isZero: true, sign: '' }));

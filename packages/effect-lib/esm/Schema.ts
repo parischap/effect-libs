@@ -15,17 +15,17 @@ import * as SchemaIssue from 'effect/SchemaIssue';
 import * as SchemaTransformation from 'effect/SchemaTransformation';
 import * as Tuple from 'effect/Tuple';
 
+import type * as MDateTimeContext from './DateTimeContext.js';
+import type * as MDateTimeFormat from './DateTimeFormat.js';
+import type * as MNumberBase10Format from './NumberBase10Format.js';
+import type * as MTemplate from './Template.js';
 import type * as MTypes from './types/types.js';
 
 import * as MBigDecimal from './BigDecimal.js';
 import * as MDateTime from './DateTime.js';
-import type * as MDateTimeContext from './DateTimeContext.js';
-import type * as MDateTimeFormat from './DateTimeFormat.js';
 import * as MMatch from './Match.js';
 import * as MNumber from './Number.js';
-import type * as MNumberBase10Format from './NumberBase10Format.js';
 import * as MString from './String/String.js';
-import type * as MTemplate from './Template.js';
 import * as MTemplatePart from './TemplatePart/TemplatePart.js';
 import * as MTemplatePlaceholder from './TemplatePart/TemplatePlaceholder.js';
 import * as MTuple from './Tuple.js';
@@ -65,8 +65,8 @@ export const FiniteFromString = (
 };
 
 /**
- * A `Schema` that transforms a string into a `BigDecimal` according to `format`. Read
- * documentation of module `NumberBase10Format.ts` for more details
+ * A `Schema` that transforms a string into a `BigDecimal` according to `format`. Read documentation
+ * of module `NumberBase10Format.ts` for more details
  *
  * @category Utils
  */
@@ -106,9 +106,8 @@ export {
 };
 
 /**
- * A `Schema` that transforms a `MDateTime` into a Javascript `Date`. Upon encoding, the
- * `MDateTime` object is created with the default timeZoneOffset of the machine this code is
- * running on
+ * A `Schema` that transforms a `MDateTime` into a Javascript `Date`. Upon encoding, the `MDateTime`
+ * object is created with the default timeZoneOffset of the machine this code is running on
  *
  * @category Utils
  */
@@ -203,8 +202,8 @@ export const DateTimeZonedFromString = (
   );
 
 /**
- * A `Schema` that transforms a string into an object according to `template`. Read documentation
- * of module `Template.ts` for more details
+ * A `Schema` that transforms a string into an object according to `template`. Read documentation of
+ * module `Template.ts` for more details
  *
  * @category Utils
  */

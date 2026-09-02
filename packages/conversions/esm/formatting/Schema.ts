@@ -8,7 +8,6 @@ import * as Array from 'effect/Array';
 import type * as BigDecimal from 'effect/BigDecimal';
 import type * as DateTime from 'effect/DateTime';
 import * as Effect from 'effect/Effect';
-import * as Option from 'effect/Option';
 import * as Record from 'effect/Record';
 import * as Result from 'effect/Result';
 import * as Schema from 'effect/Schema';
@@ -60,14 +59,14 @@ export const FiniteFromString = (
           pipe(
             s,
             parseFunction,
-            Result.fromOption(() => new SchemaIssue.InvalidValue(Option.some(s))),
+            Result.fromOption(() => new SchemaIssue.InvalidValue(undefined, s)),
             Effect.fromResult,
           ),
         encode: (s) =>
           pipe(
             s,
             formatFunction,
-            Result.fromOption(() => new SchemaIssue.InvalidValue(Option.some(s))),
+            Result.fromOption(() => new SchemaIssue.InvalidValue(undefined, s)),
             Effect.fromResult,
           ),
       }),
@@ -102,7 +101,7 @@ export const BigDecimalFromString = (
           pipe(
             s,
             parseFunction,
-            Result.fromOption(() => new SchemaIssue.InvalidValue(Option.some(s))),
+            Result.fromOption(() => new SchemaIssue.InvalidValue(undefined, s)),
             Effect.fromResult,
           ),
         encode: flow(formatFunction, Effect.succeed),
@@ -179,14 +178,14 @@ export const CVDateTimeFromString = (
           pipe(
             s,
             parseFunction,
-            Result.mapError(() => new SchemaIssue.InvalidValue(Option.some(s))),
+            Result.mapError(() => new SchemaIssue.InvalidValue(undefined, s)),
             Effect.fromResult,
           ),
         encode: (d) =>
           pipe(
             d,
             formatFunction,
-            Result.mapError(() => new SchemaIssue.InvalidValue(Option.some(d))),
+            Result.mapError(() => new SchemaIssue.InvalidValue(undefined, d)),
             Effect.fromResult,
           ),
       }),
@@ -267,14 +266,14 @@ export const Template = <PlaceholderTypes extends MTypes.Object>(
           pipe(
             s,
             parseFunction,
-            Result.mapError(() => new SchemaIssue.InvalidValue(Option.some(s))),
+            Result.mapError(() => new SchemaIssue.InvalidValue(undefined, s)),
             Effect.fromResult,
           ),
         encode: (d) =>
           pipe(
             d,
             formatFunction,
-            Result.mapError(() => new SchemaIssue.InvalidValue(Option.some(d))),
+            Result.mapError(() => new SchemaIssue.InvalidValue(undefined, d)),
             Effect.fromResult,
           ),
       }),

@@ -65,21 +65,21 @@ import * as String from 'effect/String';
 import * as Struct from 'effect/Struct';
 import * as Tuple from 'effect/Tuple';
 
+import type * as MNumberBase10Format from '../NumberBase10Format.js';
+import type * as MTemplate from '../Template.js';
 import type * as MTypes from '../types/types.js';
 import type * as MStringFillPosition from './StringFillPosition.js';
 
 import * as MArray from '../Array.js';
 import * as MFunction from '../Function.js';
 import * as MInputError from '../InputError.js';
-import * as internal from '../internal/String.js';
 import * as internalNumberBase10Formatter from '../internal/NumberBase10Format/NumberBase10Formatter.js';
+import * as internal from '../internal/String.js';
 import * as internalTemplateSeparatorParser from '../internal/Template/TemplateSeparatorParser.js';
 import * as MRegExp from '../RegExp.js';
 import * as MRegExpString from '../RegExpString.js';
-import * as MTuple from '../Tuple.js';
-import type * as MNumberBase10Format from '../NumberBase10Format.js';
-import type * as MTemplate from '../Template.js';
 import * as MTemplatePart from '../TemplatePart/TemplatePart.js';
+import * as MTuple from '../Tuple.js';
 import * as MStringSearchResult from './StringSearchResult.js';
 
 /**
@@ -272,8 +272,8 @@ export const templateFormatOrThrow = <PlaceholderTypes extends MTypes.Object>(
   flow(templateFormat(template), Result.getOrThrowWith(Function.identity));
 
 /**
- * Returns a function that tries to parse a string into a record of placeholder values according
- * to `template`.
+ * Returns a function that tries to parse a string into a record of placeholder values according to
+ * `template`.
  *
  * - Use a precomputed parser when the same `template` will be applied many times.
  *

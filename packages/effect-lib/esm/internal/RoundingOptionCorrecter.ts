@@ -12,10 +12,10 @@
  * without creating a circular import.
  */
 
+import type * as MBigDecimal from '../BigDecimal.js';
 import type * as MTypes from '../types/types.js';
 
 import * as MArray from '../Array.js';
-import type * as MBigDecimal from '../BigDecimal.js';
 
 /**
  * Type of a RoundingOptionCorrecter
@@ -40,27 +40,27 @@ const correcters: MTypes.OneArgFunction<number, Type> = MArray.unsafeGetter([
   /* Expand */ ({ firstFollowingDigit }) => Math.sign(firstFollowingDigit) as -1 | 0 | 1,
   /* Trunc */ () => 0,
   /* HalfCeil */ ({ firstFollowingDigit }) =>
-    firstFollowingDigit >= 5 ? 1
-    : firstFollowingDigit < -5 ? -1
-    : 0,
+    firstFollowingDigit >= 5 ? 1 : firstFollowingDigit < -5 ? -1 : 0,
   /* HalfFloor */ ({ firstFollowingDigit }) =>
-    firstFollowingDigit > 5 ? 1
-    : firstFollowingDigit <= -5 ? -1
-    : 0,
+    firstFollowingDigit > 5 ? 1 : firstFollowingDigit <= -5 ? -1 : 0,
   /* HalfExpand */ ({ firstFollowingDigit }) =>
-    firstFollowingDigit >= 5 ? 1
-    : firstFollowingDigit <= -5 ? -1
-    : 0,
+    firstFollowingDigit >= 5 ? 1 : firstFollowingDigit <= -5 ? -1 : 0,
   /* HalfTrunc */ ({ firstFollowingDigit }) =>
-    firstFollowingDigit > 5 ? 1
-    : firstFollowingDigit < -5 ? -1
-    : 0,
+    firstFollowingDigit > 5 ? 1 : firstFollowingDigit < -5 ? -1 : 0,
   /* HalfEven */ ({ firstFollowingDigit, isEven }) =>
-    firstFollowingDigit > 5 ? 1
-    : firstFollowingDigit < -5 ? -1
-    : firstFollowingDigit === 5 ? (isEven ? 0 : 1)
-    : firstFollowingDigit === -5 ? (isEven ? 0 : -1)
-    : 0,
+    firstFollowingDigit > 5
+      ? 1
+      : firstFollowingDigit < -5
+        ? -1
+        : firstFollowingDigit === 5
+          ? isEven
+            ? 0
+            : 1
+          : firstFollowingDigit === -5
+            ? isEven
+              ? 0
+              : -1
+            : 0,
 ] as const);
 
 /**

@@ -41,7 +41,6 @@
  * ```
  */
 
-import type { Types } from 'effect';
 import { pipe } from 'effect';
 import * as Array from 'effect/Array';
 import * as Boolean from 'effect/Boolean';
@@ -54,6 +53,7 @@ import type * as Predicate from 'effect/Predicate';
 import * as Record from 'effect/Record';
 import * as Result from 'effect/Result';
 import * as Tuple from 'effect/Tuple';
+import type * as Types from 'effect/Types';
 
 import type * as MTypes from './types/types.js';
 

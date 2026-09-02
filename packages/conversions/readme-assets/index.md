@@ -1,5 +1,9 @@
 <!-- LTeX: language=en-US -->
 
+<p style="color:red;font-weight:bold;">
+⚠ This package is archived. Its content has moved to <code>@parischap/effect-lib</code>.
+</p>
+
 # Table of Contents
 
 - [In this package](#in-this-package)
@@ -1304,18 +1308,25 @@ console.log(frenchFormatter);
 
 # Changelog
 
-### 1.1.0 — breaking change
+## 1.2.0 — archived
+
+> **This package is archived.** Its entire content (rounding, number parsing/formatting,
+> templating, `DateTime`, `DateTime` formatting/parsing, schemas) has moved to
+> `@parischap/effect-lib`, re-prefixed `CV` → `M`. Install and import from
+> `@parischap/effect-lib` instead. No further releases of this package are planned.
+
+## 1.1.0 — breaking change
 
 > **`CVNumberBase10Formatter.format` now returns an `Option.Option<string>`** instead of a bare
 > `string`: it returns a `none` when the passed number is not finite (`NaN` or `Infinity`) instead
 > of throwing or producing an incoherent result. A new `formatOrThrow` function was added for
 > non-`effect` users who prefer a throwing API.
 
-### 1.0.1 → 1.0.10
+## 1.0.1 → 1.0.10
 
 Improved documentation.
 
-### 1.0.0 — effect v4
+## 1.0.0 — effect v4
 
 > **Ported to effect v4** (`effect@4.0.0-beta`).
 
@@ -1326,6 +1337,6 @@ Improved documentation.
 - **`CVNumberBase10FormatScientificNotationOption` and `CVNumberBase10FormatSignDisplayOption`** are now separate modules, making the number format API fully compositional.
 - Removed built-in branding modules (`CVEmail`, `CVSemVer`, `CVInteger`, `CVPositiveInteger`, `CVReal`, `CVPositiveReal`) and numeric type helpers (`CVBigDecimal`, `CVBigInt`)
 
-### 0.1.0 — Sep 2025 (effect 3.17.13)
+## 0.1.0 — Sep 2025 (effect 3.17.13)
 
 First public release. Includes: rounding (`CVRounder`, `CVRounderParams`, `CVRoundingOption`), number formatting and parsing (`CVNumberBase10Format`), templating (`CVTemplate`, `CVTemplatePlaceholder`, `CVTemplateSeparator`, `CVTemplatePart`), datetime (`CVDateTime`), datetime formatting and parsing (`CVDateTimeFormat`, `CVDateTimeFormatContext`), schemas (`CVSchema`), and branding (`CVEmail`, `CVSemVer`, `CVInteger`, `CVPositiveInteger`, `CVReal`, `CVPositiveReal`).

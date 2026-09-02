@@ -2,13 +2,12 @@
 
 import { flow } from 'effect';
 
-import * as MFunction from '../../Function.js';
-import * as MMatch from '../../Match.js';
 import type * as MTypes from '../../types/types.js';
-
 import type * as SignString from './SignString.js';
 import type * as SignValue from './SignValue.js';
 
+import * as MFunction from '../../Function.js';
+import * as MMatch from '../../Match.js';
 import * as MNumberBase10Format from '../../NumberBase10Format.js';
 
 /**

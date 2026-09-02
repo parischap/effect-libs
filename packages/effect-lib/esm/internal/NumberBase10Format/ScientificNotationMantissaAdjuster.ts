@@ -9,11 +9,11 @@ import * as BigInt from 'effect/BigInt';
 import * as Option from 'effect/Option';
 import * as Tuple from 'effect/Tuple';
 
+import type * as MTypes from '../../types/types.js';
+
 import * as MBigInt from '../../BigInt.js';
 import * as MMatch from '../../Match.js';
 import * as MNumber from '../../Number.js';
-import type * as MTypes from '../../types/types.js';
-
 import * as MNumberBase10Format from '../../NumberBase10Format.js';
 
 /**

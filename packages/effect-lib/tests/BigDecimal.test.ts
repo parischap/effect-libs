@@ -146,10 +146,7 @@ describe('MBigDecimal', () => {
       });
 
       it('Signed mantissa with no fractional part', () => {
-        TestUtils.assertSome(
-          extractFromString('-45'),
-          Tuple.make(BigDecimal.make(-45n, 0), '-45'),
-        );
+        TestUtils.assertSome(extractFromString('-45'), Tuple.make(BigDecimal.make(-45n, 0), '-45'));
       });
 
       it('Signed mantissa', () => {

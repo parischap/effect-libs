@@ -4,10 +4,10 @@ import { flow } from 'effect';
 import * as Array from 'effect/Array';
 import * as Result from 'effect/Result';
 
-import * as MFunction from '../../Function.js';
-import * as MMatch from '../../Match.js';
 import type * as MTypes from '../../types/types.js';
 
+import * as MFunction from '../../Function.js';
+import * as MMatch from '../../Match.js';
 import * as MTemplatePart from '../../TemplatePart/TemplatePart.js';
 import * as MTemplatePlaceholder from '../../TemplatePart/TemplatePlaceholder.js';
 import * as MTemplateSeparator from '../../TemplatePart/TemplateSeparator.js';

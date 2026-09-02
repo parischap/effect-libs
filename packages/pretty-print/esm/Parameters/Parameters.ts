@@ -16,11 +16,11 @@ import * as Predicate from 'effect/Predicate';
 import * as String from 'effect/String';
 import * as Struct from 'effect/Struct';
 
-import { MPredicate } from '@parischap/effect-lib';
 import * as MData from '@parischap/effect-lib/MData';
 import * as MEquivalenceBasedEqualityData from '@parischap/effect-lib/MEquivalenceBasedEqualityData';
 import * as MFunction from '@parischap/effect-lib/MFunction';
 import * as MMatch from '@parischap/effect-lib/MMatch';
+import * as MPredicate from '@parischap/effect-lib/MPredicate';
 import * as MRecord from '@parischap/effect-lib/MRecord';
 import * as MString from '@parischap/effect-lib/MString';
 import * as MStruct from '@parischap/effect-lib/MStruct';

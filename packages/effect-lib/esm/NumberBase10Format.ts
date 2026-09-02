@@ -13,20 +13,20 @@ import * as Predicate from 'effect/Predicate';
 import * as Struct from 'effect/Struct';
 import * as Tuple from 'effect/Tuple';
 
+import type * as internalSignString from './internal/NumberBase10Format/SignString.js';
 import type * as MTypes from './types/types.js';
 
 import * as MBigDecimal from './BigDecimal.js';
 import * as MData from './Data/Data.js';
 import * as MFunction from './Function.js';
+import * as internalScientificNotationMantissaValidator from './internal/NumberBase10Format/ScientificNotationMantissaValidator.js';
+import * as internalScientificNotationParser from './internal/NumberBase10Format/ScientificNotationParser.js';
+import * as internalSignParser from './internal/NumberBase10Format/SignParser.js';
+import * as internal from './internal/String.js';
 import * as MMatch from './Match.js';
 import * as MPredicate from './Predicate.js';
 import * as MRegExpString from './RegExpString.js';
 import * as MStruct from './Struct.js';
-import * as internal from './internal/String.js';
-import * as internalScientificNotationMantissaValidator from './internal/NumberBase10Format/ScientificNotationMantissaValidator.js';
-import * as internalScientificNotationParser from './internal/NumberBase10Format/ScientificNotationParser.js';
-import type * as internalSignString from './internal/NumberBase10Format/SignString.js';
-import * as internalSignParser from './internal/NumberBase10Format/SignParser.js';
 
 /**
  * Module tag
@@ -236,10 +236,9 @@ export class Type extends MData.Class {
    * Cache for `_bigDecimalExtractor`. Mutable only to memoize a value derived from `this`; never
    * used to hold external state.
    */
-  private _cachedBigDecimalExtractor: MTypes.OneArgFunction<
-    string,
-    Option.Option<BigDecimalExtraction>
-  > | undefined;
+  private _cachedBigDecimalExtractor:
+    | MTypes.OneArgFunction<string, Option.Option<BigDecimalExtraction>>
+    | undefined;
 
   /**
    * Function that tries to extract, from the start of a string, a `BigDecimal` respecting the
@@ -1053,9 +1052,9 @@ export const ukStyleNumber: Type = pipe(
 );
 
 /**
- * `MNumberBase10Format` instance that uses a dot as fractional separator, no thousand separator
- * and shows at most three fractional digits. Used in countries like the UK, the US, English-
- * speaking Canada, Australia, Thaïland, Bosnia...
+ * `MNumberBase10Format` instance that uses a dot as fractional separator, no thousand separator and
+ * shows at most three fractional digits. Used in countries like the UK, the US, English- speaking
+ * Canada, Australia, Thaïland, Bosnia...
  *
  * @category Instances
  */

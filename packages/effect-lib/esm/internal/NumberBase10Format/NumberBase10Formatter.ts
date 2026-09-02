@@ -1,6 +1,6 @@
 /**
- * This module implements a `NumberBase10Formatter`, i.e. an object that can convert a number into
- * a string according to the `MNumberBase10Format` that was used to construct it.
+ * This module implements a `NumberBase10Formatter`, i.e. an object that can convert a number into a
+ * string according to the `MNumberBase10Format` that was used to construct it.
  */
 
 import { flow, pipe } from 'effect';
@@ -14,15 +14,15 @@ import * as String from 'effect/String';
 import * as Struct from 'effect/Struct';
 import * as Tuple from 'effect/Tuple';
 
+import type * as MTypes from '../../types/types.js';
+
 import * as MBigDecimal from '../../BigDecimal.js';
 import * as MData from '../../Data/Data.js';
 import * as MFunction from '../../Function.js';
+import * as MNumberBase10Format from '../../NumberBase10Format.js';
 import * as MPredicate from '../../Predicate.js';
 import * as MRegExpString from '../../RegExpString.js';
 import * as internal from '../String.js';
-import type * as MTypes from '../../types/types.js';
-
-import * as MNumberBase10Format from '../../NumberBase10Format.js';
 import * as ScientificNotationMantissaAdjuster from './ScientificNotationMantissaAdjuster.js';
 import * as SignFormatter from './SignFormatter.js';
 
@@ -45,10 +45,10 @@ export class Type extends MData.Class {
   readonly description: string;
   /**
    * Function that formats a `number` respecting the options represented by the
-   * `MNumberBase10Format` from which `this` was constructed. If successful, that function returns
-   * a `some` of the formatted number. Otherwise, it returns a `none` (it will return a `none` only
-   * if `number` is not a finite number, i.e. `NaN` or `Infinity`). `number` can be of type number
-   * or `BigDecimal` for better accuracy. There is a difference between number and `BigDecimal` (and
+   * `MNumberBase10Format` from which `this` was constructed. If successful, that function returns a
+   * `some` of the formatted number. Otherwise, it returns a `none` (it will return a `none` only if
+   * `number` is not a finite number, i.e. `NaN` or `Infinity`). `number` can be of type number or
+   * `BigDecimal` for better accuracy. There is a difference between number and `BigDecimal` (and
    * bigint) regarding the sign of 0. In Javascript, Object.is(0,-0) is false whereas Object.is(0n,-
    * 0n) is true. So if the sign of zero is important to you, prefer passing a number to the
    * function. `0` as a BigDecimal will always be interpreted as a positive `0` as we have no means

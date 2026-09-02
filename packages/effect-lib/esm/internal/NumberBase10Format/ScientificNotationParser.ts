@@ -1,8 +1,8 @@
 /**
  * Module that implements a type that tries to parse the scientific notation part from a string.
  *
- * `MNumberBase10Format` is imported type-only: `MNumberBase10Format._bigDecimalExtractor` uses
- * this module, so this module must not depend on `MNumberBase10Format` as a value.
+ * `MNumberBase10Format` is imported type-only: `MNumberBase10Format._bigDecimalExtractor` uses this
+ * module, so this module must not depend on `MNumberBase10Format` as a value.
  */
 
 import { flow } from 'effect';
@@ -10,11 +10,11 @@ import * as Function from 'effect/Function';
 import * as Option from 'effect/Option';
 import * as String from 'effect/String';
 
-import * as MArray from '../../Array.js';
-import * as MNumber from '../../Number.js';
+import type * as MNumberBase10Format from '../../NumberBase10Format.js';
 import type * as MTypes from '../../types/types.js';
 
-import type * as MNumberBase10Format from '../../NumberBase10Format.js';
+import * as MArray from '../../Array.js';
+import * as MNumber from '../../Number.js';
 
 /**
  * Type of a `ScientificNotationParser`

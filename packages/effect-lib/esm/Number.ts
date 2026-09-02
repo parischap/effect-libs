@@ -41,10 +41,10 @@ import * as Option from 'effect/Option';
 import type * as Predicate from 'effect/Predicate';
 import * as Tuple from 'effect/Tuple';
 
-import type * as MTypes from './types/types.js';
-
 import type * as MBigDecimal from './BigDecimal.js';
 import type * as MNumberBase10Format from './NumberBase10Format.js';
+import type * as MTypes from './types/types.js';
+
 import * as internalRoundingOptionCorrecter from './internal/RoundingOptionCorrecter.js';
 
 /**

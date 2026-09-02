@@ -13,10 +13,9 @@
  * local zone and UTC time (e.g. `zoneOffset=1` for timezone +1:00). All the data in a `MDateTime`
  * object is zoneOffset-dependent, except `timestamp`. An important thing to note is that a
  * `MDateTime` object with a timestamp `t` and a zoneOffset `zo` has exactly the same date parts
- * (`year`, `ordinalDay`, `month`, `monthDay`, `isoYear`...) as a `MDateTime` object with
- * `timestamp = t+zox3600` and `zoneOffset = 0`. That's the reason for the zonedTimestamp field
- * which is equal to `t+zox3600`. All calculations are performed UTC using zonedTimestamp instead of
- * timestamp.
+ * (`year`, `ordinalDay`, `month`, `monthDay`, `isoYear`...) as a `MDateTime` object with `timestamp
+ * = t+zox3600` and `zoneOffset = 0`. That's the reason for the zonedTimestamp field which is equal
+ * to `t+zox3600`. All calculations are performed UTC using zonedTimestamp instead of timestamp.
  */
 
 import { flow, pipe } from 'effect';
@@ -32,28 +31,15 @@ import * as Record from 'effect/Record';
 import * as Result from 'effect/Result';
 import * as Struct from 'effect/Struct';
 
+import type * as MDateTimeContext from './DateTimeContext.js';
+import type * as MDateTimeFormat from './DateTimeFormat.js';
 import type * as MTypes from './types/types.js';
 
 import * as MArray from './Array.js';
 import * as MData from './Data/Data.js';
-import type * as MDateTimeContext from './DateTimeContext.js';
-import type * as MDateTimeFormat from './DateTimeFormat.js';
 import * as MEquivalenceBasedEqualityData from './Data/EquivalenceBasedEqualityData.js';
 import * as MFunction from './Function.js';
 import * as MInputError from './InputError.js';
-import * as MMatch from './Match.js';
-import * as MNumber from './Number.js';
-import * as MPredicate from './Predicate.js';
-import * as MString from './String/String.js';
-import * as MTemplate from './Template.js';
-import * as MTemplatePart from './TemplatePart/TemplatePart.js';
-import * as MTemplatePlaceholder from './TemplatePart/TemplatePlaceholder.js';
-import * as MTemplateSeparator from './TemplatePart/TemplateSeparator.js';
-
-import * as GregorianDate from './internal/DateTime/GregorianDate.js';
-import * as IsoDate from './internal/DateTime/IsoDate.js';
-import * as Time from './internal/DateTime/Time.js';
-import * as ZoneOffsetParts from './internal/DateTime/ZoneOffsetParts.js';
 import {
   DAY_MS,
   HOUR_MS,
@@ -64,6 +50,18 @@ import {
   MINUTE_MS,
   SECOND_MS,
 } from './internal/DateTime/date-time-constants.js';
+import * as GregorianDate from './internal/DateTime/GregorianDate.js';
+import * as IsoDate from './internal/DateTime/IsoDate.js';
+import * as Time from './internal/DateTime/Time.js';
+import * as ZoneOffsetParts from './internal/DateTime/ZoneOffsetParts.js';
+import * as MMatch from './Match.js';
+import * as MNumber from './Number.js';
+import * as MPredicate from './Predicate.js';
+import * as MString from './String/String.js';
+import * as MTemplate from './Template.js';
+import * as MTemplatePart from './TemplatePart/TemplatePart.js';
+import * as MTemplatePlaceholder from './TemplatePart/TemplatePlaceholder.js';
+import * as MTemplateSeparator from './TemplatePart/TemplateSeparator.js';
 
 /**
  * Module tag
@@ -1008,10 +1006,7 @@ export const zoneOffsetParts: MTypes.OneArgFunction<Type, ZoneOffsetParts.Type> 
  *
  * @category Destructors
  */
-export const getYear: MTypes.OneArgFunction<Type, number> = flow(
-  gregorianDate,
-  GregorianDate.year,
-);
+export const getYear: MTypes.OneArgFunction<Type, number> = flow(gregorianDate, GregorianDate.year);
 
 /**
  * Returns the ordinalDay of `self` for the given time zone
@@ -1221,9 +1216,9 @@ export const setMonthOrThrow: MTypes.OneArgFunction<number, MTypes.OneArgFunctio
 );
 
 /**
- * If possible, returns a `Success` of a `MDateTime` having monthDay `monthDay` and the same
- * `year`, `month`, `hour23`, `minute`, `second`, `millisecond` and `zoneOffset` as `self`. Returns
- * a `Failure` of an error otherwise. `monthDay` must be an integer greater than or equal to 1 and
+ * If possible, returns a `Success` of a `MDateTime` having monthDay `monthDay` and the same `year`,
+ * `month`, `hour23`, `minute`, `second`, `millisecond` and `zoneOffset` as `self`. Returns a
+ * `Failure` of an error otherwise. `monthDay` must be an integer greater than or equal to 1 and
  * less than or equal to the number of days in the current month.
  *
  * @category Setters
@@ -1516,8 +1511,7 @@ export const setZoneOffsetKeepParts =
     self._setZoneOffset(false, zoneOffset);
 
 /**
- * Same as `setZoneOffsetKeepParts` but returns directly a `MDateTime` or throws in case of an
- * error
+ * Same as `setZoneOffsetKeepParts` but returns directly a `MDateTime` or throws in case of an error
  *
  * @category Setters
  */
@@ -1537,10 +1531,7 @@ export const setZoneOffsetKeepPartsOrThrow: MTypes.OneArgFunction<
  *
  * @category Predicates
  */
-export const yearIsLeap: Predicate.Predicate<Type> = flow(
-  gregorianDate,
-  GregorianDate.yearIsLeap,
-);
+export const yearIsLeap: Predicate.Predicate<Type> = flow(gregorianDate, GregorianDate.yearIsLeap);
 
 /**
  * Returns true if the isoYear of `self` for the given time zone is a long year. Returns false
@@ -1886,9 +1877,9 @@ const toTemplateParts = (
   pipe(
     dateTimeFormat,
     Array.map((part) =>
-      Predicate.isString(part) ?
-        MTemplateSeparator.make(part)
-      : MArray.unsafeGet(part)(dateTimeContext.tokenMap),
+      Predicate.isString(part)
+        ? MTemplateSeparator.make(part)
+        : MArray.unsafeGet(part)(dateTimeContext.tokenMap),
     ),
   );
 
@@ -1903,8 +1894,8 @@ const dateTimePartReader =
  * Returns a function that tries to format `self` into a string according to `dateTimeFormat` and
  * `dateTimeContext`.
  *
- * - Use a precomputed formatter when the same `dateTimeFormat`/`dateTimeContext` pair will be
- *   applied many times.
+ * - Use a precomputed formatter when the same `dateTimeFormat`/`dateTimeContext` pair will be applied
+ *   many times.
  *
  * **Example** (Format a `MDateTime` as an ISO date)
  *
@@ -1966,7 +1957,11 @@ export const format = (
     Record.fromEntries,
   );
 
-  const templateFormat = pipe(templateParts, Function.tupled(MTemplate.make), MString.templateFormat);
+  const templateFormat = pipe(
+    templateParts,
+    Function.tupled(MTemplate.make),
+    MString.templateFormat,
+  );
 
   return (self) => pipe(toParts, Record.map(Function.apply(self)), templateFormat);
 };
@@ -2011,7 +2006,10 @@ export const parse = (
   const templateParts = toTemplateParts(dateTimeFormat, dateTimeContext);
   const templateParse = pipe(templateParts, Function.tupled(MTemplate.make), MString.templateParse);
 
-  return flow(templateParse, Result.flatMap((parts) => fromParts(parts as Parts)));
+  return flow(
+    templateParse,
+    Result.flatMap((parts) => fromParts(parts as Parts)),
+  );
 };
 
 /**

@@ -12,17 +12,17 @@ import * as Result from 'effect/Result';
 import * as Struct from 'effect/Struct';
 import * as Tuple from 'effect/Tuple';
 
+import type * as MDateTime from './DateTime.js';
 import type * as MTypes from './types/types.js';
 
 import * as MArray from './Array.js';
 import * as MData from './Data/Data.js';
-import type * as MDateTime from './DateTime.js';
 import * as MInputError from './InputError.js';
+import { DAY_MS } from './internal/DateTime/date-time-constants.js';
 import * as MNumberBase10Format from './NumberBase10Format.js';
 import * as MPredicate from './Predicate.js';
 import * as MString from './String/String.js';
 import * as MTemplatePlaceholder from './TemplatePart/TemplatePlaceholder.js';
-import { DAY_MS } from './internal/DateTime/date-time-constants.js';
 
 /**
  * Module tag
@@ -41,13 +41,14 @@ type TypeId = typeof TypeId;
 export type PartName = keyof MDateTime.Parts;
 
 /**
- * Array of the `MTemplatePlaceholder`'s that can format/parse each `MDateTimeFormat.Token`,
- * indexed by that token's numeric value
+ * Array of the `MTemplatePlaceholder`'s that can format/parse each `MDateTimeFormat.Token`, indexed
+ * by that token's numeric value
  *
  * @category Models
  */
-export interface TemplatePlaceholders
-  extends ReadonlyArray<MTemplatePlaceholder.Type<PartName, number>> {}
+export interface TemplatePlaceholders extends ReadonlyArray<
+  MTemplatePlaceholder.Type<PartName, number>
+> {}
 
 /**
  * Array of the names of the seven days of a week
@@ -443,8 +444,8 @@ const extractWeekday = extractType('weekday');
 const extractMonth = extractType('month');
 
 /**
- * Tries to build a `MDateTimeContext` from locale `locale`. Returns a `Some` if successful.
- * Returns a `None` otherwise (non-existent or unavailable locale,...),
+ * Tries to build a `MDateTimeContext` from locale `locale`. Returns a `Some` if successful. Returns
+ * a `None` otherwise (non-existent or unavailable locale,...),
  *
  * @category Constructors
  */

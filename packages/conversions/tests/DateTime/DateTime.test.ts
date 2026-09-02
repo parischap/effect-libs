@@ -149,7 +149,7 @@ describe('CVDateTime', () => {
     const YEAR_START_1771_MS = -6_279_897_600_000;
     const FOUR_HUNDRED_YEARS_MS = 12_622_780_800_000;
     const [actualVector, expectedVector] = pipe(
-      Tuple.make(1771, YEAR_START_1771_MS),
+      Tuple.make(1771, YEAR_START_1771_MS) as readonly [number, number],
       MArray.unfoldNonEmpty(([baseYear, baseYearStartTimestamp]) => {
         const offset = intRandom(8) - 4;
         const year = baseYear + offset * 400;

@@ -22,19 +22,19 @@ Depending on the package manager you use, run one of the following commands in y
 - **npm:**
 
   ```sh
-  npm install effect @parischap/effect-lib @parischap/ansi-styles @parischap/conversions @parischap/pretty-print
+  npm install effect @parischap/effect-lib @parischap/ansi-styles @parischap/pretty-print
   ```
 
 - **pnpm:**
 
   ```sh
-  pnpm add effect @parischap/effect-lib @parischap/ansi-styles @parischap/conversions @parischap/pretty-print
+  pnpm add effect @parischap/effect-lib @parischap/ansi-styles @parischap/pretty-print
   ```
 
 - **yarn:**
 
   ```sh
-  yarn add effect @parischap/effect-lib @parischap/ansi-styles @parischap/conversions @parischap/pretty-print
+  yarn add effect @parischap/effect-lib @parischap/ansi-styles @parischap/pretty-print
   ```
 
 # &rarr; IMPORTING (WITH OPTIMIZED TREE-SHAKING)

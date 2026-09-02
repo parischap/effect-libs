@@ -278,11 +278,7 @@ type Evolved<S extends Type, E extends Evolver<S>> = Struct.Simplify<{
  *
  * @category Utils
  */
-export const {
-  evolve,
-}: {
-  readonly evolve: {
-    <S extends Type, E extends Evolver<S>>(e: E): (self: S) => MTypes.Data<Evolved<S, E>>;
-    <S extends Type, E extends Evolver<S>>(self: S, e: E): MTypes.Data<Evolved<S, E>>;
-  };
-} = Struct;
+export const evolve: {
+  <S extends Type, E extends Evolver<S>>(e: E): (self: S) => MTypes.Data<Evolved<S, E>>;
+  <S extends Type, E extends Evolver<S>>(self: S, e: E): MTypes.Data<Evolved<S, E>>;
+} = Struct.evolve;

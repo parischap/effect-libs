@@ -53,43 +53,19 @@ describe('MDateTimeFormat', () => {
     });
 
     it('iso8601', () => {
-      assert.deepStrictEqual(MDateTimeFormat.iso8601, [
-        Token.yyyy,
-        '-',
-        Token.MM,
-        '-',
-        Token.dd,
-      ]);
+      assert.deepStrictEqual(MDateTimeFormat.iso8601, [Token.yyyy, '-', Token.MM, '-', Token.dd]);
     });
 
     it('usDate', () => {
-      assert.deepStrictEqual(MDateTimeFormat.usDate, [
-        Token.MM,
-        '/',
-        Token.dd,
-        '/',
-        Token.yyyy,
-      ]);
+      assert.deepStrictEqual(MDateTimeFormat.usDate, [Token.MM, '/', Token.dd, '/', Token.yyyy]);
     });
 
     it('euDate', () => {
-      assert.deepStrictEqual(MDateTimeFormat.euDate, [
-        Token.dd,
-        '/',
-        Token.MM,
-        '/',
-        Token.yyyy,
-      ]);
+      assert.deepStrictEqual(MDateTimeFormat.euDate, [Token.dd, '/', Token.MM, '/', Token.yyyy]);
     });
 
     it('euDotDate', () => {
-      assert.deepStrictEqual(MDateTimeFormat.euDotDate, [
-        Token.dd,
-        '.',
-        Token.MM,
-        '.',
-        Token.yyyy,
-      ]);
+      assert.deepStrictEqual(MDateTimeFormat.euDotDate, [Token.dd, '.', Token.MM, '.', Token.yyyy]);
     });
 
     it('time24h', () => {

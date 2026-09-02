@@ -73,13 +73,11 @@ console.log(MDateTime.fromParts({ year: 2025, month: 2, monthDay: 29, zoneOffset
 //     _tag: '@parischap/effect-lib/InputError/'
 //   }
 // }
-console.log(
-  MDateTime.fromParts({ year: 2025, month: 2, monthDay: 28, isoWeek: 5, zoneOffset: 0 }),
-);
+console.log(MDateTime.fromParts({ year: 2025, month: 2, monthDay: 28, isoWeek: 5, zoneOffset: 0 }));
 
 /**
- * Once a MDateTime is created, you can get any MDateTime.Parts from it ising the provided
- * getters. Here are a few examples (you can see the whole list of getters in the API).
+ * Once a MDateTime is created, you can get any MDateTime.Parts from it ising the provided getters.
+ * Here are a few examples (you can see the whole list of getters in the API).
  */
 
 const aDate = MDateTime.fromPartsOrThrow({ year: 1970, month: 8, monthDay: 31, zoneOffset: 0 });

@@ -27,15 +27,15 @@ import type * as MTypes from '../types/types.js';
 
 import * as MData from '../Data/Data.js';
 import * as MInputError from '../InputError.js';
+import * as internalNumberBase10Formatter from '../internal/NumberBase10Format/NumberBase10Formatter.js';
+import * as internal from '../internal/String.js';
 import * as MNumber from '../Number.js';
 import * as MNumberBase10Format from '../NumberBase10Format.js';
 import * as MRegExp from '../RegExp.js';
 import * as MRegExpString from '../RegExpString.js';
+import * as MStringFillPosition from '../String/StringFillPosition.js';
 import * as MStruct from '../Struct.js';
 import * as MTuple from '../Tuple.js';
-import * as internal from '../internal/String.js';
-import * as internalNumberBase10Formatter from '../internal/NumberBase10Format/NumberBase10Formatter.js';
-import * as MStringFillPosition from '../String/StringFillPosition.js';
 
 /**
  * Module tag
@@ -606,12 +606,12 @@ export const fulfilling = <const N extends string>({
 };
 
 /**
- * This `MTemplatePlaceholder` instance is a special case of the `fulfilling`
- * `MTemplatePlaceholder` instance. The parser of this Placeholder reads from the text until it
- * meets one of the `forbiddenChars` passed as parameter (the result must be a non-empty string).
- * The formatter only accepts a non-empty string that does not contain any of the forbidden chars
- * and write it to the text. `forbiddenChars` should be an array of 1-character strings (will not
- * throw otherwise but strange behaviors can be expected)
+ * This `MTemplatePlaceholder` instance is a special case of the `fulfilling` `MTemplatePlaceholder`
+ * instance. The parser of this Placeholder reads from the text until it meets one of the
+ * `forbiddenChars` passed as parameter (the result must be a non-empty string). The formatter only
+ * accepts a non-empty string that does not contain any of the forbidden chars and write it to the
+ * text. `forbiddenChars` should be an array of 1-character strings (will not throw otherwise but
+ * strange behaviors can be expected)
  *
  * @category Constructors
  */

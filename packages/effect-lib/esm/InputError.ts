@@ -50,8 +50,8 @@ import * as String from 'effect/String';
 
 import type * as MTypes from './types/types.js';
 
-import * as MPredicate from './Predicate.js';
 import * as internal from './internal/String.js';
+import * as MPredicate from './Predicate.js';
 
 /**
  * Module tag.

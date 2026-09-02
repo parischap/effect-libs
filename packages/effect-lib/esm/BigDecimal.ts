@@ -36,10 +36,10 @@ import * as Function from 'effect/Function';
 import * as Option from 'effect/Option';
 import * as Tuple from 'effect/Tuple';
 
+import type * as MNumberBase10Format from './NumberBase10Format.js';
 import type * as MTypes from './types/types.js';
 
 import * as MBigInt from './BigInt.js';
-import type * as MNumberBase10Format from './NumberBase10Format.js';
 import * as internalRoundingOptionCorrecter from './internal/RoundingOptionCorrecter.js';
 
 /**

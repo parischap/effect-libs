@@ -214,15 +214,7 @@ export const time12h: Type = make(Token.KK, ':', Token.mm, ' ', Token.a);
  *
  * @category Instances
  */
-export const time12hWithSeconds: Type = make(
-  Token.KK,
-  ':',
-  Token.mm,
-  ':',
-  Token.ss,
-  ' ',
-  Token.a,
-);
+export const time12hWithSeconds: Type = make(Token.KK, ':', Token.mm, ':', Token.ss, ' ', Token.a);
 
 /**
  * `MDateTimeFormat` instance for a long date format (MMMM d, yyyy, e.g. `June 5, 2005`). The month

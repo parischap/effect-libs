@@ -1,18 +1,18 @@
 /**
  * Module that implements a type that checks the mantissa of a number.
  *
- * `MNumberBase10Format` is imported type-only: `MNumberBase10Format._bigDecimalExtractor` uses
- * this module, so this module must not depend on `MNumberBase10Format` as a value.
+ * `MNumberBase10Format` is imported type-only: `MNumberBase10Format._bigDecimalExtractor` uses this
+ * module, so this module must not depend on `MNumberBase10Format` as a value.
  */
 
 import * as BigDecimal from 'effect/BigDecimal';
 import * as Option from 'effect/Option';
 import * as Predicate from 'effect/Predicate';
 
-import * as MArray from '../../Array.js';
+import type * as MNumberBase10Format from '../../NumberBase10Format.js';
 import type * as MTypes from '../../types/types.js';
 
-import type * as MNumberBase10Format from '../../NumberBase10Format.js';
+import * as MArray from '../../Array.js';
 
 /**
  * Type of a `ScientificNotationMantissaValidator`

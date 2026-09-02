@@ -18,6 +18,7 @@ import * as Result from 'effect/Result';
 import * as Struct from 'effect/Struct';
 
 import type * as MTypes from '../../types/types.js';
+import type * as GregorianDate from './GregorianDate.js';
 
 import * as MData from '../../Data/Data.js';
 import * as MInputError from '../../InputError.js';
@@ -28,9 +29,6 @@ import * as MStruct from '../../Struct.js';
 import * as MTemplate from '../../Template.js';
 import * as MTemplatePlaceholder from '../../TemplatePart/TemplatePlaceholder.js';
 import * as MTemplateSeparator from '../../TemplatePart/TemplateSeparator.js';
-
-import type * as GregorianDate from './GregorianDate.js';
-
 import {
   DAY_MS,
   LONG_YEAR_MS,
