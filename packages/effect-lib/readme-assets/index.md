@@ -256,9 +256,11 @@ console.log(buildAndSum);
 
 - Removed `MTypes.Tuple` (alias to `Types.TupleOf`).
 - Renamed `MPredicate.struct` to `MPredicate.Struct` (`Predicate.struct` has been renamed `Predicate.Struct`)
-- **Absorbed the `@parischap/conversions` package.** `conversions`; its rounding, number-formatting, templating, and date-time
-  functionality moved here, re-prefixed `CV` → `M` and reshaped to fit as extensions of existing
-  modules instead of a separate package:
+- **New:** `MPredicate.isFunction` — guards `unknown` down to a function of any arity.
+- **New:** `MPredicate.isNoArgFunction` — arity guard for nullary callbacks, alongside the existing
+  `isOneArgFunction` and `isTwoArgFunction`.
+- **Absorbed the `@parischap/conversions` package.**; its rounding, number-formatting, templating, and date-time
+  functionality moved here, re-prefixed `CV` → `M` and reshaped to fit as extensions of existing modules instead of a separate package:
   - **New modules:** `MDateTime`, `MDateTimeContext`, `MDateTimeFormat`, `MNumberBase10Format`,
     `MSchema`, `MTemplate`, `MTemplatePart`, `MTemplatePlaceholder`, `MTemplateSeparator`.
   - **`MNumber.round` / `MBigDecimal.round`** replace the former `CVRounder`/`CVRounderParams`

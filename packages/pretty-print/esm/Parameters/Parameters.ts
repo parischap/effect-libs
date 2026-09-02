@@ -16,6 +16,7 @@ import * as Predicate from 'effect/Predicate';
 import * as String from 'effect/String';
 import * as Struct from 'effect/Struct';
 
+import { MPredicate } from '@parischap/effect-lib';
 import * as MData from '@parischap/effect-lib/MData';
 import * as MEquivalenceBasedEqualityData from '@parischap/effect-lib/MEquivalenceBasedEqualityData';
 import * as MFunction from '@parischap/effect-lib/MFunction';
@@ -251,7 +252,7 @@ export const utilInspectLike: Type = make({
       nonPrimitive,
       MMatch.make,
       MMatch.when(
-        (u): u is MTypes.AnyFunction => Predicate.isFunction(u),
+        MPredicate.isFunction,
         flow(
           MFunction.name,
           Option.liftPredicate(String.isNonEmpty),
