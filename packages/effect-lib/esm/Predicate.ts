@@ -19,7 +19,8 @@
  * - **Lift records**: {@link PredicatesToSources}, {@link PredicatesToTargets},
  *   {@link PredicatesToCoverages}, {@link SourcesToPredicates}
  * - **Primitive split**: {@link isPrimitive}, {@link isNonPrimitive}
- * - **Function arity**: {@link isOneArgFunction}, {@link isTwoArgFunction}
+ * - **Function shape**: {@link isFunction}
+ * - **Function arity**: {@link isNoArgFunction}, {@link isOneArgFunction}, {@link isTwoArgFunction}
  * - **Tuple shapes**: {@link isSingleton}, {@link isReadonlySingleton}, {@link isPair},
  *   {@link isReadonlyPair}, {@link isOverOne}, {@link isReadonlyOverOne}, {@link isOverTwo},
  *   {@link isReadonlyOverTwo}
@@ -234,8 +235,9 @@ export const Struct = <
  *
  * @category Constructors
  */
-export const strictEquals: <B, A extends B>(that: A) => Predicate.Predicate<B> = (that) => (self) =>
-  self === that;
+export const strictEquals: <B, A extends B = B>(that: A) => Predicate.Predicate<B> =
+  (that) => (self) =>
+    self === that;
 
 /**
  * Refines an `unknown` value to a JavaScript non-primitive (record, class instance, array, or
@@ -294,6 +296,49 @@ export const isPrimitive = <A>(
 ): input is Exclude<A, MTypes.NonPrimitive> & MTypes.Primitive => !isNonPrimitive(input);
 
 /**
+ * Refines an `unknown` value to a function of any arity.
+ *
+ * - Acts as a type guard checking `typeof input === 'function'`.
+ * - Use when narrowing `unknown` data before applying an arity guard such as
+ *   {@link isOneArgFunction}.
+ *
+ * **Example** (Guarding a function)
+ *
+ * ```ts
+ * import * as MPredicate from '@parischap/effect-lib/MPredicate';
+ *
+ * console.log(MPredicate.isFunction(() => 1)); // true
+ * console.log(MPredicate.isFunction(1)); // false
+ * ```
+ *
+ * @category Instances
+ */
+export const isFunction = (input: unknown): input is MTypes.AnyFunction =>
+  typeof input === 'function';
+
+/**
+ * Refines a function with an unknown number of arguments to one that takes no argument.
+ *
+ * - Acts as a type guard checking `f.length === 0`.
+ * - Useful when working with overloaded callbacks where arity matters.
+ *
+ * **Example** (Detecting a nullary callback)
+ *
+ * ```ts
+ * import * as MPredicate from '@parischap/effect-lib/MPredicate';
+ *
+ * console.log(MPredicate.isNoArgFunction(() => 1)); // true
+ * console.log(MPredicate.isNoArgFunction((n: number) => n + 1)); // false
+ * ```
+ *
+ * @category Instances
+ *
+ * @see {@link isOneArgFunction} — guard for unary callbacks
+ */
+export const isNoArgFunction = <R>(f: (...args: ReadonlyArray<any>) => R): f is () => R =>
+  f.length === 0;
+
+/**
  * Refines a function with an unknown number of arguments to one that takes exactly one argument.
  *
  * - Acts as a type guard checking `f.length === 1`.
@@ -310,6 +355,7 @@ export const isPrimitive = <A>(
  *
  * @category Instances
  *
+ * @see {@link isNoArgFunction} — guard for nullary callbacks
  * @see {@link isTwoArgFunction} — guard for binary callbacks
  */
 export const isOneArgFunction = <A, R>(

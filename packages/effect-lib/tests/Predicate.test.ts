@@ -163,6 +163,26 @@ describe('MPredicate', () => {
     });
   });
 
+  describe('isFunction', () => {
+    it('Matching', () => {
+      assert.isTrue(MPredicate.isFunction(testOneArgFunction));
+    });
+
+    it('Non matching', () => {
+      assert.isFalse(MPredicate.isFunction(testNumber));
+    });
+  });
+
+  describe('isNoArgFunction', () => {
+    it('Matching', () => {
+      assert.isTrue(MPredicate.isNoArgFunction(() => 1));
+    });
+
+    it('Non matching', () => {
+      assert.isFalse(MPredicate.isNoArgFunction(testOneArgFunction));
+    });
+  });
+
   describe('isOneArgFunction', () => {
     it('Matching', () => {
       assert.isTrue(MPredicate.isOneArgFunction(testOneArgFunction));
