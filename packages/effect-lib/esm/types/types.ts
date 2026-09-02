@@ -161,7 +161,8 @@ export type OverTwo<A> = [A, A, ...Array<A>];
 export type ReadonlyOverTwo<A> = readonly [A, A, ...ReadonlyArray<A>];
 
 /**
- * Type that represents a function
+ * Type that represents a function. Don't use `Function`. For instance, value of type `Function`
+ * cannot be passed to `MPredicate.isOneArgFunction`
  *
  * @category Models
  */
