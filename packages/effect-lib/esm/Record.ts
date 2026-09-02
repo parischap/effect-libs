@@ -104,23 +104,18 @@ export const tryZeroParamFunction =
     readonly functionName: NoInfer<K>;
     readonly exception?: MTypes.AnyFunction;
   }) =>
-  (self: Type<K, unknown>): Option.Option<unknown> =>
-    pipe(
+  (self: Type<K, unknown>): Option.Option<unknown> => {
+    const isNotException: Predicate.Predicate<MTypes.AnyFunction> =
+      exception === undefined
+        ? Function.constTrue
+        : Predicate.not(MPredicate.strictEquals(exception));
+    return pipe(
       self[functionName],
-      Option.liftPredicate((u): u is MTypes.AnyFunction => Predicate.isFunction(u)),
-      Option.filter(
-        Predicate.and(
-          pipe(
-            exception,
-            Option.liftPredicate(Predicate.isNotUndefined),
-            Option.map(flow(MPredicate.strictEquals, Predicate.not)),
-            Option.getOrElse(() => Function.constTrue),
-          ),
-          flow(MFunction.parameterNumber, MPredicate.strictEquals(0)),
-        ),
-      ),
+      Option.liftPredicate(MPredicate.isFunction),
+      Option.filter(Predicate.and(isNotException, MPredicate.isNoArgFunction<unknown>)),
       Option.map(MFunction.applyAsThis(self)),
     );
+  };
 
 /**
  * Same as {@link tryZeroParamFunction} but additionally returns `Option.none` when the result is
