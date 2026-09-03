@@ -11,7 +11,7 @@
  * - **All values type union**: `Unknown` — same as `unknown` but defined as a type union, allows
  *   pattern matching.
  * - **Function shapes**: `AnyFunction`, `OneArgFunction`, `StringTransformer`, `NumberFromString`.
- * - **Predicate / refinement shapes**: `AnyPredicate`, `AnyRefinement`, `RefinementFrom`.
+ * - **Predicate / refinement shapes**: `AnyPredicate`, `AnyRefinement`.
  * - **Type-level utilities**: `Data` strips inherited / pipeable / equality fields off an object type
  *   to produce its plain-data view (used by class constructors); `Proto` is its complement;
  *   `IntersectAndSimplify` and `ToKeyIntersection` help build intersections in conditional types.
@@ -34,10 +34,12 @@ import type * as Predicate from 'effect/Predicate';
 
 /**
  * Type that represents a real object, not an array, not a function, not null. However, this type
- * does not represent a class instance. So prefer using `NonPrimitive` when class instances are
- * important (but `NonPrimitive` includes functions and arrays which may not be desirable)
+ * does not represent a class instance. Introduced because `Predicate.isObject` refines to this type
+ * but never intoduces it. And to pinpoint differences with `NonPrimitive`.
  *
  * @category Models
+ *
+ * @see {@link NonPrimitive} — Includes class instances but also functions and arrays.
  */
 export interface Object {
   [x: PropertyKey]: unknown;
@@ -55,8 +57,8 @@ export interface ReadonlyObject {
 /**
  * Type that represents anything but a JavaScript primitive. It includes records (in their usual
  * computer science meaning), class instances, arrays, and functions but not null or undefined.
- * Equivalent to the `effect/Schema.ObjectKeyword` type. Should be defined as an alias to the
- * `object` type but the object type cannot be indexed so this definition is better
+ * Roughly equivalent to the native `object` type (which is called `ObjectKeyword` in `effect`) but
+ * the object type cannot be indexed so this definition is better
  *
  * @category Models
  */
@@ -88,20 +90,6 @@ export interface AnyArray extends Array<any> {}
  * @category Models
  */
 export interface AnyReadonlyArray extends ReadonlyArray<any> {}
-
-/**
- * Type that represents an empty array or tuple
- *
- * @category Models
- */
-export type EmptyArray = [];
-
-/**
- * Type that represents an empty array or tuple
- *
- * @category Models
- */
-export type EmptyReadonlyArray = readonly [];
 
 /**
  * Type that represents a tuple or array with one element
@@ -220,13 +208,6 @@ export type AnyPredicate = Predicate.Predicate.Any;
  * @category Models
  */
 export type AnyRefinement = Predicate.Refinement.Any;
-
-/**
- * Type that represents any refinement from a given type
- *
- * @category Models
- */
-export type RefinementFrom<Source> = Predicate.Refinement<Source, any>;
 
 /**
  * Type of a string transformer, i.e. a function that transforms a string into another one

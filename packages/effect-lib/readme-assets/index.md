@@ -275,7 +275,7 @@ console.log(buildAndSum);
 - **Moved** `MBigDecimal.RoundingOption` to `MNumberBase10Format.RoundingOption`, alongside
   `ScientificNotationOption` and `SignDisplayOption`. `MBigDecimal.round` and `MNumber.round` take
   a `MNumberBase10Format.RoundingOption` now.
-  - **Removed** `MNumber.MAX_SAFE_INTEGER`, `MNumber.MAX_SAFE_INTEGER`, `MNumber.trunc`, `MBigDecimal.fromPrimitive`, `MBigDecimal.trunc`.
+  - **Removed** `MNumber.MAX_SAFE_INTEGER`, `MNumber.MAX_SAFE_INTEGER`, `MNumber.trunc`, `MBigDecimal.fromPrimitive`, `MBigDecimal.trunc`, `MTypes.EmptyArray`, `MTypes.EmptyReadonlyArray`, `MTypes.RefinementFrom`.
 - **Renamed** `MBigDecimal.truncatedAndFollowingParts` to `MBigDecimal.roundedAndRest`
 
 ## 0.26.0

@@ -4,7 +4,6 @@
  * weekday names, this module provides a constructor from locales, or from translated strings
  */
 
-import type { Types } from 'effect';
 import { flow, pipe } from 'effect';
 import * as Array from 'effect/Array';
 import * as Number from 'effect/Number';
@@ -12,6 +11,7 @@ import * as Option from 'effect/Option';
 import * as Result from 'effect/Result';
 import * as Struct from 'effect/Struct';
 import * as Tuple from 'effect/Tuple';
+import * as Types from 'effect/Types';
 
 import type * as MDateTime from './DateTime.js';
 import type * as MTypes from './types/types.js';
