@@ -272,6 +272,10 @@ console.log(buildAndSum);
   - `MBigInt.fromPrimitiveOption` → `fromPrimitive`
   - `MNumber.fromBigDecimalOption` → `fromBigDecimal`
   - `MNumber.fromBigIntOption` → `fromBigInt`
+- **Moved** `MBigDecimal.RoundingOption` to `MNumberBase10Format.RoundingOption`, alongside
+  `ScientificNotationOption` and `SignDisplayOption`. `MBigDecimal.round` and `MNumber.round` take
+  a `MNumberBase10Format.RoundingOption` now.
+  - **Removed** `MNumber.MAX_SAFE_INTEGER`, `MNumber.MAX_SAFE_INTEGER`.
 
 ## 0.26.0
 

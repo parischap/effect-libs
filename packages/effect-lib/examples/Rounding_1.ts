@@ -2,12 +2,13 @@ import * as BigDecimal from 'effect/BigDecimal';
 
 import * as MBigDecimal from '@parischap/effect-lib/MBigDecimal';
 import * as MNumber from '@parischap/effect-lib/MNumber';
+import * as MNumberBase10Format from '@parischap/effect-lib/MNumberBase10Format';
 
 // Let's define a number rounder: the result must have three fractional digits using the HalfEven
 // rounding mode
-const numberRounder = MNumber.round(3, MBigDecimal.RoundingOption.HalfEven);
+const numberRounder = MNumber.round(3, MNumberBase10Format.RoundingOption.HalfEven);
 // Let's define a BigDecimal rounder with the same parameters
-const bigDecimalRounder = MBigDecimal.round(3, MBigDecimal.RoundingOption.HalfEven);
+const bigDecimalRounder = MBigDecimal.round(3, MNumberBase10Format.RoundingOption.HalfEven);
 
 /** Positive numbers with even last significant digit */
 // Result: 12.457

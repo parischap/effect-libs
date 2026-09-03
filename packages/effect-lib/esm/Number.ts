@@ -41,7 +41,6 @@ import * as Option from 'effect/Option';
 import type * as Predicate from 'effect/Predicate';
 import * as Tuple from 'effect/Tuple';
 
-import type * as MBigDecimal from './BigDecimal.js';
 import type * as MNumberBase10Format from './NumberBase10Format.js';
 import type * as MTypes from './types/types.js';
 
@@ -54,12 +53,8 @@ import * as internalRoundingOptionCorrecter from './internal/RoundingOptionCorre
  */
 export type Type = number;
 
-/**
- * `Number.MAX_SAFE_INTEGER` (2^53 − 1) and `Number.MIN_SAFE_INTEGER` (−(2^53 − 1)).
- *
- * @category Constants
- */
-export const { MAX_SAFE_INTEGER, MIN_SAFE_INTEGER } = Number;
+/** `Number.MAX_SAFE_INTEGER` (2^53 − 1) and `Number.MIN_SAFE_INTEGER` (−(2^53 − 1)). */
+const { MAX_SAFE_INTEGER, MIN_SAFE_INTEGER } = Number;
 
 const bigIntMinSafeInteger = BigInt.BigInt(MIN_SAFE_INTEGER);
 const bigIntMaxSafeInteger = BigInt.BigInt(MAX_SAFE_INTEGER);
@@ -318,10 +313,10 @@ export const shift = (n: number) => (self: Type) => self * 10 ** n;
  *
  * ```ts
  * import { pipe } from 'effect';
- * import * as MBigDecimal from '@parischap/effect-lib/MBigDecimal';
  * import * as MNumber from '@parischap/effect-lib/MNumber';
+ * import * as MNumberBase10Format from '@parischap/effect-lib/MNumberBase10Format';
  *
- * const round = MNumber.round(3, MBigDecimal.RoundingOption.HalfEven);
+ * const round = MNumber.round(3, MNumberBase10Format.RoundingOption.HalfEven);
  * console.log(pipe(12.4565, round)); // 12.456
  * ```
  *
@@ -329,7 +324,7 @@ export const shift = (n: number) => (self: Type) => self * 10 ** n;
  */
 export const round = (
   precision: number,
-  option: MBigDecimal.RoundingOption,
+  option: MNumberBase10Format.RoundingOption,
 ): MTypes.OneArgFunction<Type> => {
   const shiftMultiplicand = pipe(1, shift(precision));
   const unshiftMultiplicand = 1 / shiftMultiplicand;

@@ -1,14 +1,14 @@
 import { describe, it } from '@effect/vitest';
 
 import * as TestUtils from '@parischap/configs/TestUtils';
-import * as MBigDecimal from '@parischap/effect-lib/MBigDecimal';
+import * as MNumberBase10Format from '@parischap/effect-lib/MNumberBase10Format';
 import * as MRoundingOptionCorrecter from '@parischap/effect-lib/MRoundingOptionCorrecter';
 
 describe('MRoundingOptionCorrecter', () => {
   describe('fromRoundingOption', () => {
     describe('Ceil', () => {
       const correcter = MRoundingOptionCorrecter.fromRoundingOption(
-        MBigDecimal.RoundingOption.Ceil,
+        MNumberBase10Format.RoundingOption.Ceil,
       );
       it('Positive first following digit', () => {
         TestUtils.assertEquals(correcter({ firstFollowingDigit: 3, isEven: true }), 1);
@@ -23,7 +23,7 @@ describe('MRoundingOptionCorrecter', () => {
 
     describe('Floor', () => {
       const correcter = MRoundingOptionCorrecter.fromRoundingOption(
-        MBigDecimal.RoundingOption.Floor,
+        MNumberBase10Format.RoundingOption.Floor,
       );
       it('Positive first following digit', () => {
         TestUtils.assertEquals(correcter({ firstFollowingDigit: 3, isEven: true }), 0);
@@ -38,7 +38,7 @@ describe('MRoundingOptionCorrecter', () => {
 
     describe('Expand', () => {
       const correcter = MRoundingOptionCorrecter.fromRoundingOption(
-        MBigDecimal.RoundingOption.Expand,
+        MNumberBase10Format.RoundingOption.Expand,
       );
       it('Positive first following digit', () => {
         TestUtils.assertEquals(correcter({ firstFollowingDigit: 3, isEven: true }), 1);
@@ -53,7 +53,7 @@ describe('MRoundingOptionCorrecter', () => {
 
     describe('Trunc', () => {
       const correcter = MRoundingOptionCorrecter.fromRoundingOption(
-        MBigDecimal.RoundingOption.Trunc,
+        MNumberBase10Format.RoundingOption.Trunc,
       );
       it('Any digit', () => {
         TestUtils.assertEquals(correcter({ firstFollowingDigit: 7, isEven: true }), 0);
@@ -63,7 +63,7 @@ describe('MRoundingOptionCorrecter', () => {
 
     describe('HalfCeil', () => {
       const correcter = MRoundingOptionCorrecter.fromRoundingOption(
-        MBigDecimal.RoundingOption.HalfCeil,
+        MNumberBase10Format.RoundingOption.HalfCeil,
       );
       it('Above half', () => {
         TestUtils.assertEquals(correcter({ firstFollowingDigit: 7, isEven: true }), 1);
@@ -84,7 +84,7 @@ describe('MRoundingOptionCorrecter', () => {
 
     describe('HalfFloor', () => {
       const correcter = MRoundingOptionCorrecter.fromRoundingOption(
-        MBigDecimal.RoundingOption.HalfFloor,
+        MNumberBase10Format.RoundingOption.HalfFloor,
       );
       it('Above half', () => {
         TestUtils.assertEquals(correcter({ firstFollowingDigit: 7, isEven: true }), 1);
@@ -105,7 +105,7 @@ describe('MRoundingOptionCorrecter', () => {
 
     describe('HalfExpand', () => {
       const correcter = MRoundingOptionCorrecter.fromRoundingOption(
-        MBigDecimal.RoundingOption.HalfExpand,
+        MNumberBase10Format.RoundingOption.HalfExpand,
       );
       it('Above half', () => {
         TestUtils.assertEquals(correcter({ firstFollowingDigit: 7, isEven: true }), 1);
@@ -126,7 +126,7 @@ describe('MRoundingOptionCorrecter', () => {
 
     describe('HalfTrunc', () => {
       const correcter = MRoundingOptionCorrecter.fromRoundingOption(
-        MBigDecimal.RoundingOption.HalfTrunc,
+        MNumberBase10Format.RoundingOption.HalfTrunc,
       );
       it('Above half', () => {
         TestUtils.assertEquals(correcter({ firstFollowingDigit: 7, isEven: true }), 1);
@@ -147,7 +147,7 @@ describe('MRoundingOptionCorrecter', () => {
 
     describe('HalfEven', () => {
       const correcter = MRoundingOptionCorrecter.fromRoundingOption(
-        MBigDecimal.RoundingOption.HalfEven,
+        MNumberBase10Format.RoundingOption.HalfEven,
       );
       it('Above half', () => {
         TestUtils.assertEquals(correcter({ firstFollowingDigit: 7, isEven: true }), 1);

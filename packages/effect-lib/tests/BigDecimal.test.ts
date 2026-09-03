@@ -99,7 +99,7 @@ describe('MBigDecimal', () => {
   });
 
   describe('round', () => {
-    const round = MBigDecimal.round(3, MBigDecimal.RoundingOption.HalfEven);
+    const round = MBigDecimal.round(3, MNumberBase10Format.RoundingOption.HalfEven);
     it('Even number', () => {
       TestUtils.assertEquals(round(BigDecimal.make(4566n, 4)), BigDecimal.make(457n, 3));
     });

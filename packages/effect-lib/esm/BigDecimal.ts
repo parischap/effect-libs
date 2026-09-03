@@ -49,54 +49,6 @@ import * as internalRoundingOptionCorrecter from './internal/RoundingOptionCorre
  */
 export type Type = BigDecimal.BigDecimal;
 
-/**
- * Type that represents the possible rounding modes (see `Intl.NumberFormat`)
- *
- * @category Models
- */
-export enum RoundingOption {
-  /** Round toward +∞. Positive values round up. Negative values round "more positive" */
-  Ceil = 0,
-  /** Round toward -∞. Positive values round down. Negative values round "more negative" */
-  Floor = 1,
-  /**
-   * Round away from 0. The magnitude of the value is always increased by rounding. Positive values
-   * round up. Negative values round "more negative"
-   */
-  Expand = 2,
-  /**
-   * Round toward 0. The magnitude of the value is always reduced by rounding. Positive values round
-   * down. Negative values round "less negative"
-   */
-  Trunc = 3,
-  /**
-   * Ties toward +∞. Values above the half-increment round like "ceil" (towards +∞), and below like
-   * "floor" (towards -∞). On the half-increment, values round like "ceil"
-   */
-  HalfCeil = 4,
-  /**
-   * Ties toward -∞. Values above the half-increment round like "ceil" (towards +∞), and below like
-   * "floor" (towards -∞). On the half-increment, values round like "floor"
-   */
-  HalfFloor = 5,
-  /**
-   * Ties away from 0. Values above the half-increment round like "expand" (away from zero), and
-   * below like "trunc" (towards 0). On the half-increment, values round like "expand"
-   */
-  HalfExpand = 6,
-  /**
-   * Ties toward 0. Values above the half-increment round like "expand" (away from zero), and below
-   * like "trunc" (towards 0). On the half-increment, values round like "trunc"
-   */
-  HalfTrunc = 7,
-  /**
-   * Ties towards the nearest even integer. Values above the half-increment round like "expand"
-   * (away from zero), and below like "trunc" (towards 0). On the half-increment values round
-   * towards the nearest even digit
-   */
-  HalfEven = 8,
-}
-
 const tupledMake = Function.tupled<readonly [value: bigint, scale: number], BigDecimal.BigDecimal>(
   BigDecimal.make,
 );
@@ -200,14 +152,18 @@ const bigDecimal10 = BigDecimal.make(10n, 0);
  * import { pipe } from 'effect';
  * import * as BigDecimal from 'effect/BigDecimal';
  * import * as MBigDecimal from '@parischap/effect-lib/MBigDecimal';
+ * import * as MNumberBase10Format from '@parischap/effect-lib/MNumberBase10Format';
  *
- * const round = MBigDecimal.round(2, MBigDecimal.RoundingOption.HalfExpand);
+ * const round = MBigDecimal.round(2, MNumberBase10Format.RoundingOption.HalfExpand);
  * console.log(pipe(BigDecimal.make(124_566n, 4), round)); // BigDecimal(12457n, 2) i.e. 124.57
  * ```
  *
  * @category Utils
  */
-export const round = (precision: number, option: RoundingOption): MTypes.OneArgFunction<Type> => {
+export const round = (
+  precision: number,
+  option: MNumberBase10Format.RoundingOption,
+): MTypes.OneArgFunction<Type> => {
   const shiftValue = BigDecimal.make(1n, -precision);
   const shift = BigDecimal.multiply(shiftValue);
   const unshift = BigDecimal.divideUnsafe(shiftValue);

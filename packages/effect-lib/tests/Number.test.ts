@@ -4,7 +4,6 @@ import * as BigDecimal from 'effect/BigDecimal';
 import * as Tuple from 'effect/Tuple';
 
 import * as TestUtils from '@parischap/configs/TestUtils';
-import * as MBigDecimal from '@parischap/effect-lib/MBigDecimal';
 import * as MNumber from '@parischap/effect-lib/MNumber';
 import * as MNumberBase10Format from '@parischap/effect-lib/MNumberBase10Format';
 
@@ -195,7 +194,7 @@ describe('MNumber', () => {
   });
 
   describe('round', () => {
-    const round = MNumber.round(3, MBigDecimal.RoundingOption.HalfEven);
+    const round = MNumber.round(3, MNumberBase10Format.RoundingOption.HalfEven);
     it('Even number', () => {
       assert.isTrue(pipe(0.4566, round, MNumber.equals(0.457)));
     });

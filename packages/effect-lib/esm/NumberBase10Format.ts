@@ -38,6 +38,54 @@ const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
 
 /**
+ * Type that represents the possible rounding modes (see `Intl.NumberFormat`)
+ *
+ * @category Models
+ */
+export enum RoundingOption {
+  /** Round toward +∞. Positive values round up. Negative values round "more positive" */
+  Ceil = 0,
+  /** Round toward -∞. Positive values round down. Negative values round "more negative" */
+  Floor = 1,
+  /**
+   * Round away from 0. The magnitude of the value is always increased by rounding. Positive values
+   * round up. Negative values round "more negative"
+   */
+  Expand = 2,
+  /**
+   * Round toward 0. The magnitude of the value is always reduced by rounding. Positive values round
+   * down. Negative values round "less negative"
+   */
+  Trunc = 3,
+  /**
+   * Ties toward +∞. Values above the half-increment round like "ceil" (towards +∞), and below like
+   * "floor" (towards -∞). On the half-increment, values round like "ceil"
+   */
+  HalfCeil = 4,
+  /**
+   * Ties toward -∞. Values above the half-increment round like "ceil" (towards +∞), and below like
+   * "floor" (towards -∞). On the half-increment, values round like "floor"
+   */
+  HalfFloor = 5,
+  /**
+   * Ties away from 0. Values above the half-increment round like "expand" (away from zero), and
+   * below like "trunc" (towards 0). On the half-increment, values round like "expand"
+   */
+  HalfExpand = 6,
+  /**
+   * Ties toward 0. Values above the half-increment round like "expand" (away from zero), and below
+   * like "trunc" (towards 0). On the half-increment, values round like "trunc"
+   */
+  HalfTrunc = 7,
+  /**
+   * Ties towards the nearest even integer. Values above the half-increment round like "expand"
+   * (away from zero), and below like "trunc" (towards 0). On the half-increment values round
+   * towards the nearest even digit
+   */
+  HalfEven = 8,
+}
+
+/**
  * Type that represents the possible scientific notation options
  *
  * @category Models
@@ -226,8 +274,8 @@ export class Type extends MData.Class {
   /** Scientific notation options. See `ScientificNotationOption` */
   readonly scientificNotationOption: ScientificNotationOption;
 
-  /** Rounding mode options used when formatting. See `MBigDecimal.RoundingOption` */
-  readonly roundingOption: MBigDecimal.RoundingOption;
+  /** Rounding mode options used when formatting. See `RoundingOption` */
+  readonly roundingOption: RoundingOption;
 
   /** Sign display options. See `SignDisplayOption` */
   readonly signDisplayOption: SignDisplayOption;
@@ -505,7 +553,7 @@ export const scientificNotationOption: MTypes.OneArgFunction<Type, ScientificNot
  *
  * @category Getters
  */
-export const roundingOption: MTypes.OneArgFunction<Type, MBigDecimal.RoundingOption> =
+export const roundingOption: MTypes.OneArgFunction<Type, RoundingOption> =
   Struct.get('roundingOption');
 
 /**
@@ -815,7 +863,7 @@ export const withoutSignDisplay: MTypes.OneArgFunction<Type> = flow(
  */
 export const withCeilRoundingOption: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    roundingOption: MBigDecimal.RoundingOption.Ceil,
+    roundingOption: RoundingOption.Ceil,
   }),
   make,
 );
@@ -826,7 +874,7 @@ export const withCeilRoundingOption: MTypes.OneArgFunction<Type> = flow(
  */
 export const withFloorRoundingOption: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    roundingOption: MBigDecimal.RoundingOption.Floor,
+    roundingOption: RoundingOption.Floor,
   }),
   make,
 );
@@ -838,7 +886,7 @@ export const withFloorRoundingOption: MTypes.OneArgFunction<Type> = flow(
  */
 export const withExpandRoundingOption: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    roundingOption: MBigDecimal.RoundingOption.Expand,
+    roundingOption: RoundingOption.Expand,
   }),
   make,
 );
@@ -850,7 +898,7 @@ export const withExpandRoundingOption: MTypes.OneArgFunction<Type> = flow(
  */
 export const withTruncRoundingOption: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    roundingOption: MBigDecimal.RoundingOption.Trunc,
+    roundingOption: RoundingOption.Trunc,
   }),
   make,
 );
@@ -862,7 +910,7 @@ export const withTruncRoundingOption: MTypes.OneArgFunction<Type> = flow(
  */
 export const withHalfCeilRoundingOption: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    roundingOption: MBigDecimal.RoundingOption.HalfCeil,
+    roundingOption: RoundingOption.HalfCeil,
   }),
   make,
 );
@@ -874,7 +922,7 @@ export const withHalfCeilRoundingOption: MTypes.OneArgFunction<Type> = flow(
  */
 export const withHalfFloorRoundingOption: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    roundingOption: MBigDecimal.RoundingOption.HalfFloor,
+    roundingOption: RoundingOption.HalfFloor,
   }),
   make,
 );
@@ -886,7 +934,7 @@ export const withHalfFloorRoundingOption: MTypes.OneArgFunction<Type> = flow(
  */
 export const withHalfExpandRoundingOption: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    roundingOption: MBigDecimal.RoundingOption.HalfExpand,
+    roundingOption: RoundingOption.HalfExpand,
   }),
   make,
 );
@@ -898,7 +946,7 @@ export const withHalfExpandRoundingOption: MTypes.OneArgFunction<Type> = flow(
  */
 export const withHalfTruncRoundingOption: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    roundingOption: MBigDecimal.RoundingOption.HalfTrunc,
+    roundingOption: RoundingOption.HalfTrunc,
   }),
   make,
 );
@@ -910,7 +958,7 @@ export const withHalfTruncRoundingOption: MTypes.OneArgFunction<Type> = flow(
  */
 export const withHalfEvenRoundingOption: MTypes.OneArgFunction<Type> = flow(
   MStruct.append({
-    roundingOption: MBigDecimal.RoundingOption.HalfEven,
+    roundingOption: RoundingOption.HalfEven,
   }),
   make,
 );
@@ -981,7 +1029,7 @@ export const frenchStyleNumber: Type = make({
   maximumFractionalDigits: 3,
   eNotationChars: ['e', 'E'],
   scientificNotationOption: ScientificNotationOption.None,
-  roundingOption: MBigDecimal.RoundingOption.HalfExpand,
+  roundingOption: RoundingOption.HalfExpand,
   signDisplayOption: SignDisplayOption.Negative,
   integerPartPadding: Option.none(),
 });
