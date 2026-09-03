@@ -90,11 +90,46 @@ import * as MStringSearchResult from './StringSearchResult.js';
 export type Type = string;
 
 /**
+ * Converts a number to a string using a specified radix:
+ *
+ * - `.` as fractional separator.
+ * - No thousand separator.
+ * - Never in scientific notation
+ * - With at most 16 fractional digits
+ *
+ * Uses .toString() method:
+ *
+ * - For bigints
+ * - For numbers in [1e-6, 1e21[ range or NaN or +/-Infinity
+ * - When radix !== 10
+ *
+ * Uses specific algorithm for base-10 numbers out of [1e-6, 1e21[ range.
+ *
+ * **Example** (Convert to string with radix)
+ *
+ * ```ts
+ * import * as MString from '@parischap/effect-lib/String/String';
+ *
+ * const toBase10 = MString.fromNumber(10);
+ * console.log(toBase10(255)); // "255"
+ * console.log(toBase10(1e-10)); // "0.0000000001"
+ *
+ * const toBase16 = MString.fromNumber(16);
+ * console.log(toBase16(255)); // "ff"
+ * ```
+ *
+ * @category Constructors
+ */
+export const fromNumber: (radix: number) => MTypes.OneArgFunction<number | bigint, string> =
+  internal.fromNumber;
+
+/**
  * Builds a string from a primitive value other than `null` and `undefined`.
  *
- * - Numbers and BigInts are converted using base-10 (not scientific notation).
+ * - Numbers and BigInts are converted using fromNumber.
  * - Other primitives use their `.toString()` method.
- * - Returns string representation suitable for display or further processing.
+ *
+ * Returns string representation suitable for display or further processing.
  *
  * **Example** (Convert non-nullable primitive)
  *
@@ -116,7 +151,6 @@ export const fromNonNullablePrimitive: MTypes.OneArgFunction<MTypes.NonNullableP
  *
  * - `null` converts to `"null"` and `undefined` to `"undefined"`.
  * - Non-nullable primitives delegated to {@link fromNonNullablePrimitive}.
- * - Numbers and BigInts use base-10 conversion (no scientific notation).
  *
  * **Example** (Convert nullable primitive)
  *
@@ -139,7 +173,8 @@ export const fromPrimitive: MTypes.OneArgFunction<MTypes.Primitive, string> =
  *
  * - Primitives delegated to {@link fromPrimitive}.
  * - Objects serialized via `JSON.stringify` with 2-space indentation.
- * - Use for debugging or logging arbitrary values.
+ *
+ * Use for debugging or logging arbitrary values.
  *
  * **Example** (Convert unknown value)
  *
@@ -154,32 +189,6 @@ export const fromPrimitive: MTypes.OneArgFunction<MTypes.Primitive, string> =
  * @category Constructors
  */
 export const fromUnknown: MTypes.OneArgFunction<unknown, string> = internal.fromUnknown;
-
-/**
- * Converts a number to a string using a specified radix.
- *
- * - Radix 10 with non-scientific numbers uses the special fixed-point conversion.
- * - Other radixes and BigInt use native `.toString(radix)`.
- * - Decimal parts preserved for floating-point numbers.
- * - Handles very large and very small numbers without scientific notation.
- *
- * **Example** (Convert to string with radix)
- *
- * ```ts
- * import * as MString from '@parischap/effect-lib/String/String';
- *
- * const toBase10 = MString.fromNumber(10);
- * console.log(toBase10(255)); // "255"
- * console.log(toBase10(1e-10)); // "0.0000000001"
- *
- * const toBase16 = MString.fromNumber(16);
- * console.log(toBase16(255)); // "ff"
- * ```
- *
- * @category Constructors
- */
-export const fromNumber: (radix: number) => MTypes.OneArgFunction<number | bigint, string> =
-  internal.fromNumber;
 
 /**
  * Returns a function that formats a `number` or `BigDecimal` according to `format`, returning
