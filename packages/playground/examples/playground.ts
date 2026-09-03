@@ -1,3 +1,4 @@
+import { Types } from 'effect';
 import * as Console from 'effect/Console';
 import * as Duration from 'effect/Duration';
 import * as Effect from 'effect/Effect';
@@ -26,4 +27,4 @@ const program = Effect.gen(function* () {
 
 const result = Effect.runPromiseExit(program);
 
-const a = Predicate.hasProperty;
+const a = Types.;

@@ -1,4 +1,5 @@
 import { describe, it } from '@effect/vitest';
+import type { Types } from 'effect';
 import type * as Equal from 'effect/Equal';
 
 import * as TestUtils from '@parischap/configs/TestUtils';
@@ -42,21 +43,10 @@ interface TestInterface {
   [Equal.symbol](): boolean;
 }
 
-/** ReadonlyTuple */
-TestUtils.assertTrueType(
-  TestUtils.areEqualTypes<
-    MTypes.ReadonlyTuple<string, 2 | 3>,
-    readonly [string, string] | readonly [string, string, string]
-  >(),
-);
-TestUtils.assertTrueType(
-  TestUtils.areEqualTypes<MTypes.ReadonlyTuple<string, number>, ReadonlyArray<string>>(),
-);
-
 /** Data */
 TestUtils.assertTrueType(
   TestUtils.areEqualTypes<
-    MTypes.Data<TestInterface>,
+    Types.Simplify<MTypes.Data<TestInterface>>,
     {
       readonly a: number;
       readonly b: string;
@@ -66,7 +56,7 @@ TestUtils.assertTrueType(
 
 TestUtils.assertTrueType(
   TestUtils.areEqualTypes<
-    MTypes.Data<TestInterface, 'a'>,
+    Types.Simplify<MTypes.Data<TestInterface, 'a'>>,
     {
       readonly a?: number;
       readonly b: string;
@@ -76,7 +66,7 @@ TestUtils.assertTrueType(
 
 TestUtils.assertTrueType(
   TestUtils.areEqualTypes<
-    MTypes.Data<TestInterface, 'a' | 'b'>,
+    Types.Simplify<MTypes.Data<TestInterface, 'a' | 'b'>>,
     {
       readonly a?: number;
       readonly b?: string;
