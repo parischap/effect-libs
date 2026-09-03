@@ -45,8 +45,10 @@ import type * as MTypes from './types/types.js';
 export type Type = bigint;
 
 /**
- * Builds a `bigint` from a `string`, `number`, or `boolean`. Throws when the input cannot be
- * converted (e.g. `NaN`, non-integer numbers, malformed strings).
+ * Builds a `bigint` from a `string`, `number`, or `boolean`. Number values must be integers (throws
+ * otherwise). Boolean value `true` becomes `1n`, and `false` becomes `0n`. String values must
+ * represent valid integer literals, cannot be an empty string and cannot have leading and trailing
+ * whitespaces (throws otherwise). However, string values can be prefixed with `0b`, `0o`, or `0x`.
  *
  * - Use when an exception on invalid input is acceptable (e.g. trusted constants).
  * - For untrusted input, prefer {@link fromPrimitive}.
@@ -64,8 +66,16 @@ export type Type = bigint;
  *
  * @see {@link fromPrimitive} — non-throwing variant
  */
-export const fromPrimitiveOrThrow: MTypes.OneArgFunction<string | number | boolean, bigint> =
-  BigInt.BigInt;
+export const fromPrimitiveOrThrow: MTypes.OneArgFunction<string | number | boolean, bigint> = flow(
+  Option.liftPredicate((u) => {
+    if (typeof u !== 'string') return true;
+    const l = u.length;
+    if (l === 0) return false;
+    return u.trim().length === l;
+  }),
+  Option.map(BigInt.BigInt),
+  Option.getOrThrow,
+);
 
 /**
  * Same as {@link fromPrimitiveOrThrow} but returns `Option.none` instead of throwing on invalid

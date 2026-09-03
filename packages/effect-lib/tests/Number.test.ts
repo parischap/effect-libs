@@ -129,28 +129,6 @@ describe('MNumber', () => {
     });
   });
 
-  describe('trunc', () => {
-    it('Number that does not need to be truncated', () => {
-      assert.isTrue(pipe(54.5, MNumber.trunc(2), MNumber.equals(54.5)));
-    });
-
-    it('Positive number, first following digit < 5', () => {
-      assert.isTrue(pipe(0.544, MNumber.trunc(2), MNumber.equals(0.54)));
-    });
-
-    it('Positive number, first following digit >= 5', () => {
-      assert.isTrue(pipe(0.545, MNumber.trunc(2), MNumber.equals(0.54)));
-    });
-
-    it('Negative number, first following digit < 5', () => {
-      assert.isTrue(pipe(-0.544, MNumber.trunc(2), MNumber.equals(-0.54)));
-    });
-
-    it('Negative number, first following digit >= 5', () => {
-      assert.isTrue(pipe(-0.545, MNumber.trunc(2), MNumber.equals(-0.54)));
-    });
-  });
-
   describe('isMultipleOf', () => {
     it('Passing', () => {
       assert.isTrue(pipe(27, MNumber.isMultipleOf(3)));
@@ -204,7 +182,9 @@ describe('MNumber', () => {
   });
 
   describe('fromFormatAndStringStart', () => {
-    const fromFormatAndStringStart = MNumber.fromFormatAndStringStart(MNumberBase10Format.frenchStyleNumber);
+    const fromFormatAndStringStart = MNumber.fromFormatAndStringStart(
+      MNumberBase10Format.frenchStyleNumber,
+    );
 
     it('passing', () => {
       TestUtils.assertSome(fromFormatAndStringStart('0,45Dummy'), Tuple.make(0.45, '0,45'));
@@ -221,7 +201,10 @@ describe('MNumber', () => {
     );
 
     it('passing', () => {
-      TestUtils.assertEquals(fromFormatAndStringStartOrThrow('0,45Dummy'), Tuple.make(0.45, '0,45'));
+      TestUtils.assertEquals(
+        fromFormatAndStringStartOrThrow('0,45Dummy'),
+        Tuple.make(0.45, '0,45'),
+      );
     });
 
     it('Not passing', () => {

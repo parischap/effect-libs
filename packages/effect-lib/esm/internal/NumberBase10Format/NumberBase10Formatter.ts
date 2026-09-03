@@ -114,7 +114,7 @@ export class Type extends MData.Class {
         const absRounded = pipe(adjusted, rounder, BigDecimal.abs);
         const [integerPart, fractionalPart] = pipe(
           absRounded,
-          MBigDecimal.truncatedAndFollowingParts(),
+          MBigDecimal.roundedAndRest(0, MNumberBase10Format.RoundingOption.Trunc),
         );
 
         const signString = signFormatter({ sign, isZero: BigDecimal.isZero(absRounded) });

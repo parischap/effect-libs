@@ -8,90 +8,37 @@ import * as MBigDecimal from '@parischap/effect-lib/MBigDecimal';
 import * as MNumberBase10Format from '@parischap/effect-lib/MNumberBase10Format';
 
 describe('MBigDecimal', () => {
-  describe('fromPrimitive', () => {
-    const fromPrimitive = MBigDecimal.fromPrimitive(4);
-    it('Passing', () => {
-      TestUtils.assertSome(fromPrimitive(10), BigDecimal.make(10n, 4));
-    });
-    it('Non-integer number', () => {
-      TestUtils.assertNone(fromPrimitive(10.4));
-    });
-    it('Negative Infinity', () => {
-      TestUtils.assertNone(fromPrimitive(-Infinity));
-    });
-    it('NaN', () => {
-      TestUtils.assertNone(fromPrimitive(Number.NaN));
-    });
-  });
-
   describe('zero', () => {
     it('Equals BigDecimal.make(0n, 0)', () => {
       TestUtils.assertEquals(MBigDecimal.zero, BigDecimal.make(0n, 0));
     });
   });
 
-  describe('trunc', () => {
-    it('Number that does not need to be truncated', () => {
-      TestUtils.assertEquals(
-        pipe(BigDecimal.make(545n, 1), MBigDecimal.trunc(2)),
-        BigDecimal.make(545n, 1),
-      );
-    });
-
+  describe('roundedAndRest', () => {
+    const roundedAndRest = MBigDecimal.roundedAndRest(1, MNumberBase10Format.RoundingOption.Trunc);
     it('Positive number, first fractional digit < 5', () => {
-      TestUtils.assertEquals(
-        pipe(BigDecimal.make(544n, 3), MBigDecimal.trunc(2)),
-        BigDecimal.make(54n, 2),
-      );
-    });
-
-    it('Positive number, first fractional digit >= 5', () => {
-      TestUtils.assertEquals(
-        pipe(BigDecimal.make(545n, 3), MBigDecimal.trunc(2)),
-        BigDecimal.make(54n, 2),
-      );
-    });
-
-    it('Negative number, first fractional digit < 5', () => {
-      TestUtils.assertEquals(
-        pipe(BigDecimal.make(-544n, 3), MBigDecimal.trunc(2)),
-        BigDecimal.make(-54n, 2),
-      );
-    });
-
-    it('Negative number, first fractional digit >= 5', () => {
-      TestUtils.assertEquals(
-        pipe(BigDecimal.make(-545n, 3), MBigDecimal.trunc(2)),
-        BigDecimal.make(-54n, 2),
-      );
-    });
-  });
-
-  describe('truncatedAndFollowingParts', () => {
-    const truncatedAndFollowingParts = MBigDecimal.truncatedAndFollowingParts(1);
-    it('Positive number, first fractional digit < 5', () => {
-      assert.deepStrictEqual(truncatedAndFollowingParts(BigDecimal.make(544n, 2)), [
+      assert.deepStrictEqual(roundedAndRest(BigDecimal.make(544n, 2)), [
         BigDecimal.make(54n, 1),
         BigDecimal.make(4n, 2),
       ]);
     });
 
     it('Positive number, first fractional digit >= 5', () => {
-      assert.deepStrictEqual(truncatedAndFollowingParts(BigDecimal.make(545n, 2)), [
+      assert.deepStrictEqual(roundedAndRest(BigDecimal.make(545n, 2)), [
         BigDecimal.make(54n, 1),
         BigDecimal.make(5n, 2),
       ]);
     });
 
     it('Negative number, first fractional digit < 5', () => {
-      assert.deepStrictEqual(truncatedAndFollowingParts(BigDecimal.make(-544n, 2)), [
+      assert.deepStrictEqual(roundedAndRest(BigDecimal.make(-544n, 2)), [
         BigDecimal.make(-54n, 1),
         BigDecimal.make(-4n, 2),
       ]);
     });
 
     it('Negative number, first fractional digit >= 5', () => {
-      assert.deepStrictEqual(truncatedAndFollowingParts(BigDecimal.make(-545n, 2)), [
+      assert.deepStrictEqual(roundedAndRest(BigDecimal.make(-545n, 2)), [
         BigDecimal.make(-54n, 1),
         BigDecimal.make(-5n, 2),
       ]);
@@ -146,7 +93,10 @@ describe('MBigDecimal', () => {
       });
 
       it('Signed mantissa with no fractional part', () => {
-        TestUtils.assertSome(fromFormatAndStringStart('-45'), Tuple.make(BigDecimal.make(-45n, 0), '-45'));
+        TestUtils.assertSome(
+          fromFormatAndStringStart('-45'),
+          Tuple.make(BigDecimal.make(-45n, 0), '-45'),
+        );
       });
 
       it('Signed mantissa', () => {
@@ -184,7 +134,10 @@ describe('MBigDecimal', () => {
       });
 
       it('Zero', () => {
-        TestUtils.assertSome(fromFormatAndStringStart('0Dummy'), Tuple.make(BigDecimal.make(0n, 0), '0'));
+        TestUtils.assertSome(
+          fromFormatAndStringStart('0Dummy'),
+          Tuple.make(BigDecimal.make(0n, 0), '0'),
+        );
       });
 
       it('A number respecting all conditions', () => {
@@ -206,7 +159,10 @@ describe('MBigDecimal', () => {
         });
 
         it('Null value', () => {
-          TestUtils.assertSome(fromFormatAndStringStart('0Dummy'), Tuple.make(MBigDecimal.zero, '0'));
+          TestUtils.assertSome(
+            fromFormatAndStringStart('0Dummy'),
+            Tuple.make(MBigDecimal.zero, '0'),
+          );
         });
 
         it('Non-null value with implicit 0', () => {
@@ -224,7 +180,10 @@ describe('MBigDecimal', () => {
         });
 
         it('Null value', () => {
-          TestUtils.assertSome(fromFormatAndStringStart('0Dummy'), Tuple.make(MBigDecimal.zero, '0'));
+          TestUtils.assertSome(
+            fromFormatAndStringStart('0Dummy'),
+            Tuple.make(MBigDecimal.zero, '0'),
+          );
         });
 
         it('Non-null value with implicit 0', () => {
@@ -443,7 +402,9 @@ describe('MBigDecimal', () => {
   });
 
   describe('fromFormatAndString', () => {
-    const fromFormatAndString = MBigDecimal.fromFormatAndString(MNumberBase10Format.frenchStyleNumber);
+    const fromFormatAndString = MBigDecimal.fromFormatAndString(
+      MNumberBase10Format.frenchStyleNumber,
+    );
 
     it('passing', () => {
       TestUtils.assertSome(fromFormatAndString('45,50'), BigDecimal.make(4550n, 2));

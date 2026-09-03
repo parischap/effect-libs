@@ -16,8 +16,7 @@
  * - **Convert from `bigint`**: {@link unsafeFromBigInt}, {@link fromBigInt}
  * - **Convert from `BigDecimal`**: {@link unsafeFromBigDecimal}, {@link fromBigDecimal}
  * - **Convert from `string`**: {@link unsafeFromString}
- * - **Arithmetic**: {@link opposite}, {@link intModulo}, {@link quotientAndRemainder}, {@link shift},
- *   {@link trunc}
+ * - **Arithmetic**: {@link opposite}, {@link intModulo}, {@link quotientAndRemainder}, {@link shift}
  * - **Predicates**: {@link equals}, {@link isMultipleOf}
  * - **Sign**: {@link sign2}
  * - **Constants**: {@link MAX_SAFE_INTEGER}, {@link MIN_SAFE_INTEGER}
@@ -53,13 +52,8 @@ import * as internalRoundingOptionCorrecter from './internal/RoundingOptionCorre
  */
 export type Type = number;
 
-/** `Number.MAX_SAFE_INTEGER` (2^53 − 1) and `Number.MIN_SAFE_INTEGER` (−(2^53 − 1)). */
-const { MAX_SAFE_INTEGER, MIN_SAFE_INTEGER } = Number;
-
-const bigIntMinSafeInteger = BigInt.BigInt(MIN_SAFE_INTEGER);
-const bigIntMaxSafeInteger = BigInt.BigInt(MAX_SAFE_INTEGER);
-const bigDecimalMinSafeInteger = BigDecimal.make(bigIntMinSafeInteger, 0);
-const bigDecimalMaxSafeInteger = BigDecimal.make(bigIntMaxSafeInteger, 0);
+const bigDecimalMinSafeInteger = BigDecimal.make(BigInt.BigInt(Number.MIN_SAFE_INTEGER), 0);
+const bigDecimalMaxSafeInteger = BigDecimal.make(BigInt.BigInt(Number.MAX_SAFE_INTEGER), 0);
 
 /**
  * Builds a `number` from a `bigint` without range checks. Values outside the safe-integer range are
@@ -99,12 +93,7 @@ export const unsafeFromBigInt: MTypes.OneArgFunction<bigint, number> = Number;
  *
  * @see {@link unsafeFromBigInt} — unchecked variant
  */
-export const fromBigInt: MTypes.OneArgFunction<bigint, Option.Option<number>> = flow(
-  Option.liftPredicate(
-    BigInt.between({ minimum: bigIntMinSafeInteger, maximum: bigIntMaxSafeInteger }),
-  ),
-  Option.map(unsafeFromBigInt),
-);
+export const fromBigInt: MTypes.OneArgFunction<bigint, Option.Option<number>> = BigInt.toNumber;
 
 /**
  * Builds a `number` from a `BigDecimal` without range checks. Values outside the safe-integer range
@@ -241,29 +230,6 @@ export const equals =
   (n: number): Predicate.Predicate<Type> =>
   (self) =>
     Math.abs(self - n) < Number.EPSILON;
-
-/**
- * Truncates `self` to `precision` decimal digits.
- *
- * - `precision` must be a non-negative finite integer; defaults to `0`.
- * - Rounds towards zero.
- *
- * **Example** (Truncation)
- *
- * ```ts
- * import { pipe } from 'effect';
- * import * as MNumber from '@parischap/effect-lib/MNumber';
- *
- * console.log(pipe(3.14159, MNumber.trunc(2))); // 3.14
- * console.log(pipe(3.7, MNumber.trunc())); // 3
- * ```
- *
- * @category Utils
- */
-export const trunc =
-  (precision = 0) =>
-  (self: Type): number =>
-    pipe(self, shift(precision), Math.trunc, shift(-precision));
 
 /**
  * Returns `true` when `self` is a multiple of `a`.

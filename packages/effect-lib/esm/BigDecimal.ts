@@ -1,38 +1,35 @@
 /**
- * Extension to the `effect/BigDecimal` module providing safe constructors from primitives and
- * truncation utilities.
+ * Extension to the `effect/BigDecimal` module providing rounding and formatting utilities.
  *
  * ## Mental model
  *
  * - **`BigDecimal`** is an arbitrary-precision decimal: a `bigint` value paired with a `scale` (the
  *   number of decimal digits).
- * - This module focuses on safely building `BigDecimal`'s from JavaScript primitives and on
- *   truncating their fractional part.
+ * - This module focuses on rounding their fractional part and formatting to string.
  *
  * ## Common tasks
  *
- * - **Construct**: {@link fromPrimitive}
  * - **Instances**: {@link zero}
- * - **Truncate**: {@link trunc}, {@link truncatedAndFollowingParts}
+ * - **Rounding**: {@link round}, {@link roundedAndRest}
  *
  * ## Quickstart
  *
- * **Example** (Construction and truncation)
+ * **Example** rounding
  *
  * ```ts
- * import { Option, pipe } from 'effect';
+ * import { BigDecimal, Option, pipe } from 'effect';
  * import * as MBigDecimal from '@parischap/effect-lib/MBigDecimal';
  *
- * const bd = pipe('3.14', MBigDecimal.fromPrimitive(2), Option.getOrThrow);
- * console.log(pipe(bd, MBigDecimal.trunc(1))); // BigDecimal(31, 1) i.e. 3.1
+ * const bd = pipe('3.14', BigDecimal.fromNumber, Option.getOrThrow);
+ * const truncater = MBigDecimal.round(1, MNumberBase10Format.RoundingOption.Trunc);
+ * console.log(truncater(bd)); // BigDecimal(31, 1) i.e. 3.1
  * ```
  *
- * @see {@link trunc} — truncate decimal digits
+ * @see {@link round} — truncate decimal digits
  */
 
 import { flow, pipe } from 'effect';
 import * as BigDecimal from 'effect/BigDecimal';
-import * as Function from 'effect/Function';
 import * as Option from 'effect/Option';
 import * as Tuple from 'effect/Tuple';
 
@@ -49,36 +46,6 @@ import * as internalRoundingOptionCorrecter from './internal/RoundingOptionCorre
  */
 export type Type = BigDecimal.BigDecimal;
 
-const tupledMake = Function.tupled<readonly [value: bigint, scale: number], BigDecimal.BigDecimal>(
-  BigDecimal.make,
-);
-
-/**
- * Builds a `BigDecimal` from a `string`, `number` or `boolean` paired with `scale`. Returns
- * `Option.none` when the primitive cannot be converted to a `bigint`.
- *
- * - Use to build a `BigDecimal` from untrusted input without risking an exception.
- * - `scale` is the number of decimal digits attached to the resulting value.
- *
- * **Example** (Safe construction)
- *
- * ```ts
- * import * as MBigDecimal from '@parischap/effect-lib/MBigDecimal';
- *
- * console.log(MBigDecimal.fromPrimitive(2)('3.14')); // Some(BigDecimal(314, 2))
- * console.log(MBigDecimal.fromPrimitive(2)('abc')); // None
- * ```
- *
- * @category Constructors
- */
-export const fromPrimitive = (
-  scale: number,
-): MTypes.OneArgFunction<string | number | boolean, Option.Option<BigDecimal.BigDecimal>> =>
-  flow(
-    MBigInt.fromPrimitive,
-    Option.map(flow(Tuple.make, Tuple.appendElement(scale), tupledMake)),
-  );
-
 /**
  * `BigDecimal` instance representing `0`.
  *
@@ -87,29 +54,8 @@ export const fromPrimitive = (
 export const zero: Type = BigDecimal.make(0n, 0);
 
 /**
- * Truncates a `BigDecimal` after `precision` decimal digits.
- *
- * - Use to drop fractional digits beyond a given precision.
- * - Rounds towards zero.
- * - `precision` must be a non-negative finite integer; defaults to `0`.
- *
- * **Example** (Truncate to a given precision)
- *
- * ```ts
- * import { Option, pipe } from 'effect';
- * import * as MBigDecimal from '@parischap/effect-lib/MBigDecimal';
- *
- * const bd = pipe('3.14159', MBigDecimal.fromPrimitive(5), Option.getOrThrow);
- * console.log(pipe(bd, MBigDecimal.trunc(2))); // BigDecimal(314, 2) i.e. 3.14
- * ```
- *
- * @category Utils
- */
-export const trunc = (precision = 0): MTypes.OneArgFunction<Type> => BigDecimal.scale(precision);
-
-/**
- * Splits `self` into `[truncatedPart, followingPart]` where `truncatedPart` is `self` truncated
- * after `precision` decimal digits and `followingPart` is `self - truncatedPart`.
+ * Splits `self` into `[roundedPart, followingPart]` where `truncatedPart` is `self` truncated after
+ * `precision` decimal digits and `followingPart` is `self - truncatedPart`.
  *
  * - Use when both the truncated value and its remainder are needed (e.g. when building digit-by-digit
  *   formatters).
@@ -118,27 +64,29 @@ export const trunc = (precision = 0): MTypes.OneArgFunction<Type> => BigDecimal.
  * **Example** (Separating truncated and remainder parts)
  *
  * ```ts
- * import { Option, pipe } from 'effect';
+ * import { BigDecimal, Option, pipe } from 'effect';
  * import * as MBigDecimal from '@parischap/effect-lib/MBigDecimal';
  *
- * const bd = pipe('3.14159', MBigDecimal.fromPrimitive(5), Option.getOrThrow);
- * const [truncated, following] = pipe(bd, MBigDecimal.truncatedAndFollowingParts(2));
- * // truncated ≡ 3.14, following ≡ 0.00159
+ * const bd = pipe('3.1459', BigDecimal.fromNumber, Option.getOrThrow);
+ * const [rounded, rest] = pipe(
+ *   bd,
+ *   MBigDecimal.roundedAndRest(2, MNumberBase10Format.RoundingOption.Trunc),
+ * );
+ * // rounded ≡ 3.14, rest ≡ 0.00159
  * ```
  *
  * @category Destructors
- *
- * @see {@link trunc} — return only the truncated part
  */
 
-export const truncatedAndFollowingParts =
-  (precision = 0) =>
-  (self: Type): [truncatedPart: BigDecimal.BigDecimal, followingPart: BigDecimal.BigDecimal] => {
-    const truncatedPart = pipe(self, trunc(precision));
-    return Tuple.make(truncatedPart, BigDecimal.subtract(self, truncatedPart));
+export const roundedAndRest =
+  (precision: number, option: MNumberBase10Format.RoundingOption) =>
+  (self: Type): [rounded: BigDecimal.BigDecimal, rest: BigDecimal.BigDecimal] => {
+    const rounded = pipe(self, round(precision, option));
+    return Tuple.make(rounded, BigDecimal.subtract(self, rounded));
   };
 
 const bigDecimal10 = BigDecimal.make(10n, 0);
+const trunc = (precision = 0): MTypes.OneArgFunction<Type> => BigDecimal.scale(precision);
 
 /**
  * Returns a function that rounds a `BigDecimal` to `precision` decimal digits according to
@@ -168,7 +116,6 @@ export const round = (
   const shift = BigDecimal.multiply(shiftValue);
   const unshift = BigDecimal.divideUnsafe(shiftValue);
   const correcter = internalRoundingOptionCorrecter.fromRoundingOption(option);
-
   return (self) => {
     const shiftedSelf = shift(self);
     const truncatedShiftedSelf = pipe(shiftedSelf, trunc());
