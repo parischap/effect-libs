@@ -4,6 +4,7 @@
  * weekday names, this module provides a constructor from locales, or from translated strings
  */
 
+import type { Types } from 'effect';
 import { flow, pipe } from 'effect';
 import * as Array from 'effect/Array';
 import * as Number from 'effect/Number';
@@ -55,21 +56,21 @@ export interface TemplatePlaceholders extends ReadonlyArray<
  *
  * @category Models
  */
-export interface WeekDayNames extends MTypes.ReadonlyTuple<string, 7> {}
+export interface WeekDayNames extends Readonly<Types.TupleOf<7, string>> {}
 
 /**
  * Array of the names of the twelve months of a year
  *
  * @category Models
  */
-export interface MonthNames extends MTypes.ReadonlyTuple<string, 12> {}
+export interface MonthNames extends Readonly<Types.TupleOf<12, string>> {}
 
 /**
  * Array of the names of the two periods in a day, e.g. AM or PM
  *
  * @category Models
  */
-export interface DayPeriodNames extends MTypes.ReadonlyTuple<string, 2> {}
+export interface DayPeriodNames extends Readonly<Types.TupleOf<2, string>> {}
 
 /**
  * Each element of this array will be sent to Intl.DateTimeFormat to retrieve the corresponding

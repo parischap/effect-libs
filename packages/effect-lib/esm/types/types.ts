@@ -14,8 +14,7 @@
  * - **Predicate / refinement shapes**: `AnyPredicate`, `AnyRefinement`, `RefinementFrom`.
  * - **Type-level utilities**: `Data` strips inherited / pipeable / equality fields off an object type
  *   to produce its plain-data view (used by class constructors); `Proto` is its complement;
- *   `Tuple<T, N>` materializes a fixed-size tuple; `IntersectAndSimplify` and `ToKeyIntersection`
- *   help build intersections in conditional types.
+ *   `IntersectAndSimplify` and `ToKeyIntersection` help build intersections in conditional types.
  *
  * Runtime guards for these shapes live in `MPredicate`.
  *
@@ -24,9 +23,9 @@
  * - **Tuple / array shapes**: {@link Pair}, {@link Singleton}, {@link OverOne}, {@link OverTwo}
  * - **Primitive shapes**: {@link Primitive}, {@link NonNullablePrimitive}, {@link NonPrimitive},
  *   {@link Unknown}
- * - **Type-level helpers**: {@link Data}, {@link Proto}, {@link Tuple}, {@link ReadonlyTuple},
- *   {@link MapToTarget}, {@link IntersectAndSimplify}, {@link ToKeyIntersection},
- *   {@link WithMutable}, {@link WithRequired}
+ * - **Type-level helpers**: {@link Data}, {@link Proto}, {@link MapToTarget},
+ *   {@link IntersectAndSimplify}, {@link ToKeyIntersection}, {@link WithMutable},
+ *   {@link WithRequired}
  */
 
 import type * as Equal from 'effect/Equal';
@@ -296,44 +295,6 @@ export type WithRequired<X, field extends string | symbol> = {
 };
 
 /**
- * Utility type that generates a tuple of `N` `T`'s
- *
- * @category Utility types
- */
-export type Tuple<T, N extends number> = N extends N
-  ? number extends N
-    ? Array<T>
-    : _TupleOf<T, N, []>
-  : never;
-type _TupleOf<T, N extends number, R extends Array<unknown>> = R['length'] extends N
-  ? R
-  : _TupleOf<T, N, [T, ...R]>;
-
-/**
- * Utility type that generates a readonly tuple of `N` `T`'s
- *
- * @category Utility types
- */
-export type ReadonlyTuple<T, N extends number> = Readonly<Tuple<T, N>>;
-
-/**
- * Utility type that generates a range of numeric literal types
- *
- * @category Utility types
- */
-/*export type IntRange<F extends number, T extends number> = Exclude<Enumerate<T>, Enumerate<F>>;
-type Enumerate<N extends number, Acc extends Array<number> = []> =
-  [Acc['length']] extends [N] ? Acc[number] : Enumerate<N, [...Acc, Acc['length']]>;*/
-
-/**
- * Utility type that extracts all elements of a tuple but the first
- *
- * @category Utility types
- */
-/*export type ReadonlyTail<T> =
-  [T] extends [[any, ...infer R]] ? { [key in keyof R]: R[key] } : never;*/
-
-/**
  * Utility type that changes the types of all keys of a tuple, array, struct or record to Target
  *
  * @category Utility types
@@ -343,22 +304,8 @@ export type MapToTarget<T, Target> = {
 };
 
 /**
- * Utility type that changes the type of the unique parameter of `F` to `A` if `F` is a Refinement
- * or a OneArgFunction. Returns `F` otherwise
- *
- * @category Utility types
- */
-/*export type SetArgTypeTo<F, A> =
-  [F] extends [Predicate.Refinement<infer _, infer R>] ?
-    [R] extends [A] ?
-      Predicate.Refinement<A, R>
-    : F
-  : [F] extends [OneArgFunction<infer _, infer R>] ? OneArgFunction<A, R>
-  : F;*/
-
-/**
- * Utility type that creates an intersection of the types all keys of a type. Meant to be used with
- * Tuples even though not set as a constraint
+ * Utility type that creates an intersection of the types of all keys of a type. Meant to be used
+ * with Tuples even though not set as a constraint
  *
  * @category Utility types
  */
