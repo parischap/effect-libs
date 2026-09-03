@@ -24,12 +24,12 @@ describe('MNumber', () => {
     });
   });
 
-  describe('fromBigDecimalOption', () => {
+  describe('fromBigDecimal', () => {
     it('Not passing: too big', () => {
-      TestUtils.assertNone(MNumber.fromBigDecimalOption(hugeBigDecimal));
+      TestUtils.assertNone(MNumber.fromBigDecimal(hugeBigDecimal));
     });
     it('Passing', () => {
-      TestUtils.assertSome(MNumber.fromBigDecimalOption(bigDecimal), number);
+      TestUtils.assertSome(MNumber.fromBigDecimal(bigDecimal), number);
     });
   });
 
@@ -42,12 +42,12 @@ describe('MNumber', () => {
     });
   });
 
-  describe('fromBigIntOption', () => {
+  describe('fromBigInt', () => {
     it('Not passing: too big', () => {
-      TestUtils.assertNone(MNumber.fromBigIntOption(hugeBigInt));
+      TestUtils.assertNone(MNumber.fromBigInt(hugeBigInt));
     });
     it('Passing', () => {
-      TestUtils.assertSome(MNumber.fromBigIntOption(bigint), number);
+      TestUtils.assertSome(MNumber.fromBigInt(bigint), number);
     });
   });
 
@@ -204,55 +204,55 @@ describe('MNumber', () => {
     });
   });
 
-  describe('extractFromString', () => {
-    const extractFromString = MNumber.extractFromString(MNumberBase10Format.frenchStyleNumber);
+  describe('fromFormatAndStringStart', () => {
+    const fromFormatAndStringStart = MNumber.fromFormatAndStringStart(MNumberBase10Format.frenchStyleNumber);
 
     it('passing', () => {
-      TestUtils.assertSome(extractFromString('0,45Dummy'), Tuple.make(0.45, '0,45'));
+      TestUtils.assertSome(fromFormatAndStringStart('0,45Dummy'), Tuple.make(0.45, '0,45'));
     });
 
     it('Not passing', () => {
-      TestUtils.assertNone(extractFromString('Dummy'));
+      TestUtils.assertNone(fromFormatAndStringStart('Dummy'));
     });
   });
 
-  describe('extractFromStringOrThrow', () => {
-    const extractFromStringOrThrow = MNumber.extractFromStringOrThrow(
+  describe('fromFormatAndStringStartOrThrow', () => {
+    const fromFormatAndStringStartOrThrow = MNumber.fromFormatAndStringStartOrThrow(
       MNumberBase10Format.frenchStyleNumber,
     );
 
     it('passing', () => {
-      TestUtils.assertEquals(extractFromStringOrThrow('0,45Dummy'), Tuple.make(0.45, '0,45'));
+      TestUtils.assertEquals(fromFormatAndStringStartOrThrow('0,45Dummy'), Tuple.make(0.45, '0,45'));
     });
 
     it('Not passing', () => {
-      TestUtils.throws(() => extractFromStringOrThrow('Dummy'));
+      TestUtils.throws(() => fromFormatAndStringStartOrThrow('Dummy'));
     });
   });
 
-  describe('parseFromString', () => {
-    const parseFromString = MNumber.parseFromString(MNumberBase10Format.frenchStyleNumber);
+  describe('fromFormatAndString', () => {
+    const fromFormatAndString = MNumber.fromFormatAndString(MNumberBase10Format.frenchStyleNumber);
 
     it('passing', () => {
-      TestUtils.assertSome(parseFromString('45,50'), 45.5);
+      TestUtils.assertSome(fromFormatAndString('45,50'), 45.5);
     });
 
     it('Not passing (extra characters)', () => {
-      TestUtils.assertNone(parseFromString('45,50Dummy'));
+      TestUtils.assertNone(fromFormatAndString('45,50Dummy'));
     });
   });
 
-  describe('parseFromStringOrThrow', () => {
-    const parseFromStringOrThrow = MNumber.parseFromStringOrThrow(
+  describe('fromFormatAndStringOrThrow', () => {
+    const fromFormatAndStringOrThrow = MNumber.fromFormatAndStringOrThrow(
       MNumberBase10Format.frenchStyleNumber,
     );
 
     it('passing', () => {
-      TestUtils.assertEquals(parseFromStringOrThrow('45,50'), 45.5);
+      TestUtils.assertEquals(fromFormatAndStringOrThrow('45,50'), 45.5);
     });
 
     it('Not passing', () => {
-      TestUtils.throws(() => parseFromStringOrThrow('45,50Dummy'));
+      TestUtils.throws(() => fromFormatAndStringOrThrow('45,50Dummy'));
     });
   });
 });

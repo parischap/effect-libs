@@ -13,8 +13,8 @@
  *
  * ## Common tasks
  *
- * - **Convert from `bigint`**: {@link unsafeFromBigInt}, {@link fromBigIntOption}
- * - **Convert from `BigDecimal`**: {@link unsafeFromBigDecimal}, {@link fromBigDecimalOption}
+ * - **Convert from `bigint`**: {@link unsafeFromBigInt}, {@link fromBigInt}
+ * - **Convert from `BigDecimal`**: {@link unsafeFromBigDecimal}, {@link fromBigDecimal}
  * - **Convert from `string`**: {@link unsafeFromString}
  * - **Arithmetic**: {@link opposite}, {@link intModulo}, {@link quotientAndRemainder}, {@link shift},
  *   {@link trunc}
@@ -29,7 +29,7 @@
  * ```ts
  * import * as MNumber from '@parischap/effect-lib/MNumber';
  *
- * console.log(MNumber.fromBigIntOption(123n)); // Some(123)
+ * console.log(MNumber.fromBigInt(123n)); // Some(123)
  * console.log(MNumber.intModulo(3)(-7)); // 2 (vs. -7 % 3 === -1)
  * ```
  */
@@ -83,7 +83,7 @@ const bigDecimalMaxSafeInteger = BigDecimal.make(bigIntMaxSafeInteger, 0);
  *
  * @category Constructors
  *
- * @see {@link fromBigIntOption} — safe variant
+ * @see {@link fromBigInt} — safe variant
  */
 export const unsafeFromBigInt: MTypes.OneArgFunction<bigint, number> = Number;
 
@@ -96,15 +96,15 @@ export const unsafeFromBigInt: MTypes.OneArgFunction<bigint, number> = Number;
  * ```ts
  * import * as MNumber from '@parischap/effect-lib/MNumber';
  *
- * console.log(MNumber.fromBigIntOption(42n)); // Some(42)
- * console.log(MNumber.fromBigIntOption(2n ** 100n)); // None
+ * console.log(MNumber.fromBigInt(42n)); // Some(42)
+ * console.log(MNumber.fromBigInt(2n ** 100n)); // None
  * ```
  *
  * @category Constructors
  *
  * @see {@link unsafeFromBigInt} — unchecked variant
  */
-export const fromBigIntOption: MTypes.OneArgFunction<bigint, Option.Option<number>> = flow(
+export const fromBigInt: MTypes.OneArgFunction<bigint, Option.Option<number>> = flow(
   Option.liftPredicate(
     BigInt.between({ minimum: bigIntMinSafeInteger, maximum: bigIntMaxSafeInteger }),
   ),
@@ -117,7 +117,7 @@ export const fromBigIntOption: MTypes.OneArgFunction<bigint, Option.Option<numbe
  *
  * @category Constructors
  *
- * @see {@link fromBigDecimalOption} — safe variant
+ * @see {@link fromBigDecimal} — safe variant
  */
 export const unsafeFromBigDecimal: MTypes.OneArgFunction<BigDecimal.BigDecimal, number> =
   BigDecimal.toNumberUnsafe;
@@ -130,7 +130,7 @@ export const unsafeFromBigDecimal: MTypes.OneArgFunction<BigDecimal.BigDecimal, 
  *
  * @see {@link unsafeFromBigDecimal} — unchecked variant
  */
-export const fromBigDecimalOption: MTypes.OneArgFunction<
+export const fromBigDecimal: MTypes.OneArgFunction<
   BigDecimal.BigDecimal,
   Option.Option<number>
 > = flow(
@@ -384,7 +384,7 @@ const toNumberExtractor = (
     Option.flatMap(({ value, match, sign, input }) =>
       pipe(
         value,
-        fromBigDecimalOption,
+        fromBigDecimal,
         Option.map((n) => ({ value: sign * n, match, input })),
       ),
     ),
@@ -405,13 +405,13 @@ const toNumberExtractor = (
  * import * as MNumber from '@parischap/effect-lib/MNumber';
  * import * as MNumberBase10Format from '@parischap/effect-lib/MNumberBase10Format';
  *
- * const extract = MNumber.extractFromString(MNumberBase10Format.frenchStyleNumber);
+ * const extract = MNumber.fromFormatAndStringStart(MNumberBase10Format.frenchStyleNumber);
  * console.log(extract('-45,50Dummy')); // Some([-45.5, '-45,50'])
  * ```
  *
  * @category Constructors
  */
-export const extractFromString = (
+export const fromFormatAndStringStart = (
   format: MNumberBase10Format.Type,
 ): MTypes.OneArgFunction<string, Option.Option<[value: number, match: string]>> => {
   const numberExtractor = toNumberExtractor(format);
@@ -422,14 +422,14 @@ export const extractFromString = (
 };
 
 /**
- * Same as `extractFromString` but throws in case of failure
+ * Same as `fromFormatAndStringStart` but throws in case of failure
  *
  * @category Constructors
  */
-export const extractFromStringOrThrow = (
+export const fromFormatAndStringStartOrThrow = (
   format: MNumberBase10Format.Type,
 ): MTypes.OneArgFunction<string, [value: number, match: string]> => {
-  const extractor = extractFromString(format);
+  const extractor = fromFormatAndStringStart(format);
   return (text) =>
     pipe(
       text,
@@ -442,7 +442,7 @@ export const extractFromStringOrThrow = (
 
 /**
  * Returns a function that tries to convert a whole string into a `number` respecting `format`.
- * Unlike `extractFromString`, the whole of the input string must represent a number.
+ * Unlike `fromFormatAndStringStart`, the whole of the input string must represent a number.
  *
  * - Use a precomputed parser when the same `format` will be applied many times.
  *
@@ -452,14 +452,14 @@ export const extractFromStringOrThrow = (
  * import * as MNumber from '@parischap/effect-lib/MNumber';
  * import * as MNumberBase10Format from '@parischap/effect-lib/MNumberBase10Format';
  *
- * const parse = MNumber.parseFromString(MNumberBase10Format.frenchStyleNumber);
+ * const parse = MNumber.fromFormatAndString(MNumberBase10Format.frenchStyleNumber);
  * console.log(parse('-45,50')); // Some(-45.5)
  * console.log(parse('-45,50Dummy')); // None
  * ```
  *
  * @category Constructors
  */
-export const parseFromString = (
+export const fromFormatAndString = (
   format: MNumberBase10Format.Type,
 ): MTypes.OneArgFunction<string, Option.Option<number>> => {
   const numberExtractor = toNumberExtractor(format);
@@ -471,14 +471,14 @@ export const parseFromString = (
 };
 
 /**
- * Same as `parseFromString` but throws in case of failure
+ * Same as `fromFormatAndString` but throws in case of failure
  *
  * @category Constructors
  */
-export const parseFromStringOrThrow = (
+export const fromFormatAndStringOrThrow = (
   format: MNumberBase10Format.Type,
 ): MTypes.OneArgFunction<string, number> => {
-  const parser = parseFromString(format);
+  const parser = fromFormatAndString(format);
   return (text) =>
     pipe(
       text,

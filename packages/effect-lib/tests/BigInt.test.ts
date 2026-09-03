@@ -19,18 +19,18 @@ describe('MBigInt', () => {
     });
   });
 
-  describe('fromPrimitiveOption', () => {
+  describe('fromPrimitive', () => {
     it('Passing', () => {
-      TestUtils.assertSome(MBigInt.fromPrimitiveOption(10), 10n);
+      TestUtils.assertSome(MBigInt.fromPrimitive(10), 10n);
     });
     it('Non-integer number', () => {
-      TestUtils.assertNone(MBigInt.fromPrimitiveOption(10.4));
+      TestUtils.assertNone(MBigInt.fromPrimitive(10.4));
     });
     it('Negative Infinity', () => {
-      TestUtils.assertNone(MBigInt.fromPrimitiveOption(-Infinity));
+      TestUtils.assertNone(MBigInt.fromPrimitive(-Infinity));
     });
     it('NaN', () => {
-      TestUtils.assertNone(MBigInt.fromPrimitiveOption(Number.NaN));
+      TestUtils.assertNone(MBigInt.fromPrimitive(Number.NaN));
     });
   });
 

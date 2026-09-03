@@ -713,27 +713,27 @@ describe('MString', () => {
     });
   });
 
-  describe('parseFromNumber', () => {
-    const parseFromNumber = MString.parseFromNumber(MNumberBase10Format.frenchStyleNumber);
+  describe('fromFormatAndNumber', () => {
+    const fromFormatAndNumber = MString.fromFormatAndNumber(MNumberBase10Format.frenchStyleNumber);
     it('Finite number', () => {
-      TestUtils.assertSome(parseFromNumber(1528.65), '1 528,65');
+      TestUtils.assertSome(fromFormatAndNumber(1528.65), '1 528,65');
     });
 
     it('Non-finite number', () => {
-      TestUtils.assertNone(parseFromNumber(Number.NaN));
+      TestUtils.assertNone(fromFormatAndNumber(Number.NaN));
     });
   });
 
-  describe('parseFromNumberOrThrow', () => {
-    const parseFromNumberOrThrow = MString.parseFromNumberOrThrow(
+  describe('fromFormatAndNumberOrThrow', () => {
+    const fromFormatAndNumberOrThrow = MString.fromFormatAndNumberOrThrow(
       MNumberBase10Format.frenchStyleNumber,
     );
     it('Finite number', () => {
-      assert.strictEqual(parseFromNumberOrThrow(1528.65), '1 528,65');
+      assert.strictEqual(fromFormatAndNumberOrThrow(1528.65), '1 528,65');
     });
 
     it('Non-finite number: throws', () => {
-      TestUtils.throws(() => parseFromNumberOrThrow(Number.NaN));
+      TestUtils.throws(() => fromFormatAndNumberOrThrow(Number.NaN));
     });
   });
 

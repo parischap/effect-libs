@@ -193,23 +193,23 @@ export const fromNumber: (radix: number) => MTypes.OneArgFunction<number | bigin
  * import * as MNumberBase10Format from '@parischap/effect-lib/MNumberBase10Format';
  * import * as MString from '@parischap/effect-lib/String/String';
  *
- * const format = MString.parseFromNumber(MNumberBase10Format.frenchStyleNumber);
+ * const format = MString.fromFormatAndNumber(MNumberBase10Format.frenchStyleNumber);
  * console.log(format(1234.5)); // Some("1 234,5")
  * ```
  *
  * @category Constructors
  */
-export const parseFromNumber = (
+export const fromFormatAndNumber = (
   format: MNumberBase10Format.Type,
 ): MTypes.OneArgFunction<BigDecimal.BigDecimal | number, Option.Option<string>> =>
   internalNumberBase10Formatter.format(internalNumberBase10Formatter.fromFormat(format));
 
 /**
- * Same as `parseFromNumber` but throws instead of returning a `none` in case of failure
+ * Same as `fromFormatAndNumber` but throws instead of returning a `none` in case of failure
  *
  * @category Constructors
  */
-export const parseFromNumberOrThrow = (
+export const fromFormatAndNumberOrThrow = (
   format: MNumberBase10Format.Type,
 ): MTypes.OneArgFunction<BigDecimal.BigDecimal | number, string> =>
   internalNumberBase10Formatter.formatOrThrow(internalNumberBase10Formatter.fromFormat(format));

@@ -11,7 +11,7 @@
  *
  * ## Common tasks
  *
- * - **Construct**: {@link fromPrimitiveOption}
+ * - **Construct**: {@link fromPrimitive}
  * - **Instances**: {@link zero}
  * - **Truncate**: {@link trunc}, {@link truncatedAndFollowingParts}
  *
@@ -23,7 +23,7 @@
  * import { Option, pipe } from 'effect';
  * import * as MBigDecimal from '@parischap/effect-lib/MBigDecimal';
  *
- * const bd = pipe('3.14', MBigDecimal.fromPrimitiveOption(2), Option.getOrThrow);
+ * const bd = pipe('3.14', MBigDecimal.fromPrimitive(2), Option.getOrThrow);
  * console.log(pipe(bd, MBigDecimal.trunc(1))); // BigDecimal(31, 1) i.e. 3.1
  * ```
  *
@@ -113,17 +113,17 @@ const tupledMake = Function.tupled<readonly [value: bigint, scale: number], BigD
  * ```ts
  * import * as MBigDecimal from '@parischap/effect-lib/MBigDecimal';
  *
- * console.log(MBigDecimal.fromPrimitiveOption(2)('3.14')); // Some(BigDecimal(314, 2))
- * console.log(MBigDecimal.fromPrimitiveOption(2)('abc')); // None
+ * console.log(MBigDecimal.fromPrimitive(2)('3.14')); // Some(BigDecimal(314, 2))
+ * console.log(MBigDecimal.fromPrimitive(2)('abc')); // None
  * ```
  *
  * @category Constructors
  */
-export const fromPrimitiveOption = (
+export const fromPrimitive = (
   scale: number,
 ): MTypes.OneArgFunction<string | number | boolean, Option.Option<BigDecimal.BigDecimal>> =>
   flow(
-    MBigInt.fromPrimitiveOption,
+    MBigInt.fromPrimitive,
     Option.map(flow(Tuple.make, Tuple.appendElement(scale), tupledMake)),
   );
 
@@ -147,7 +147,7 @@ export const zero: Type = BigDecimal.make(0n, 0);
  * import { Option, pipe } from 'effect';
  * import * as MBigDecimal from '@parischap/effect-lib/MBigDecimal';
  *
- * const bd = pipe('3.14159', MBigDecimal.fromPrimitiveOption(5), Option.getOrThrow);
+ * const bd = pipe('3.14159', MBigDecimal.fromPrimitive(5), Option.getOrThrow);
  * console.log(pipe(bd, MBigDecimal.trunc(2))); // BigDecimal(314, 2) i.e. 3.14
  * ```
  *
@@ -169,7 +169,7 @@ export const trunc = (precision = 0): MTypes.OneArgFunction<Type> => BigDecimal.
  * import { Option, pipe } from 'effect';
  * import * as MBigDecimal from '@parischap/effect-lib/MBigDecimal';
  *
- * const bd = pipe('3.14159', MBigDecimal.fromPrimitiveOption(5), Option.getOrThrow);
+ * const bd = pipe('3.14159', MBigDecimal.fromPrimitive(5), Option.getOrThrow);
  * const [truncated, following] = pipe(bd, MBigDecimal.truncatedAndFollowingParts(2));
  * // truncated ≡ 3.14, following ≡ 0.00159
  * ```
@@ -250,13 +250,13 @@ export const round = (precision: number, option: RoundingOption): MTypes.OneArgF
  * import * as MBigDecimal from '@parischap/effect-lib/MBigDecimal';
  * import * as MNumberBase10Format from '@parischap/effect-lib/MNumberBase10Format';
  *
- * const extract = MBigDecimal.extractFromString(MNumberBase10Format.frenchStyleNumber);
+ * const extract = MBigDecimal.fromFormatAndStringStart(MNumberBase10Format.frenchStyleNumber);
  * console.log(extract('-45,50Dummy')); // Some([BigDecimal(-4550n, 2), '-45,50'])
  * ```
  *
  * @category Constructors
  */
-export const extractFromString = (
+export const fromFormatAndStringStart = (
   format: MNumberBase10Format.Type,
 ): MTypes.OneArgFunction<string, Option.Option<[value: Type, match: string]>> => {
   const bigDecimalExtractor = format._bigDecimalExtractor;
@@ -269,14 +269,14 @@ export const extractFromString = (
 };
 
 /**
- * Same as `extractFromString` but throws in case of failure
+ * Same as `fromFormatAndStringStart` but throws in case of failure
  *
  * @category Constructors
  */
-export const extractFromStringOrThrow = (
+export const fromFormatAndStringStartOrThrow = (
   format: MNumberBase10Format.Type,
 ): MTypes.OneArgFunction<string, [value: Type, match: string]> => {
-  const extractor = extractFromString(format);
+  const extractor = fromFormatAndStringStart(format);
   return (text) =>
     pipe(
       text,
@@ -289,7 +289,7 @@ export const extractFromStringOrThrow = (
 
 /**
  * Returns a function that tries to convert a whole string into a `BigDecimal` respecting `format`.
- * Unlike `extractFromString`, the whole of the input string must represent a number.
+ * Unlike `fromFormatAndStringStart`, the whole of the input string must represent a number.
  *
  * - Use a precomputed parser when the same `format` will be applied many times.
  *
@@ -299,14 +299,14 @@ export const extractFromStringOrThrow = (
  * import * as MBigDecimal from '@parischap/effect-lib/MBigDecimal';
  * import * as MNumberBase10Format from '@parischap/effect-lib/MNumberBase10Format';
  *
- * const parse = MBigDecimal.parseFromString(MNumberBase10Format.frenchStyleNumber);
+ * const parse = MBigDecimal.fromFormatAndString(MNumberBase10Format.frenchStyleNumber);
  * console.log(parse('-45,50')); // Some(BigDecimal(-4550n, 2))
  * console.log(parse('-45,50Dummy')); // None
  * ```
  *
  * @category Constructors
  */
-export const parseFromString = (
+export const fromFormatAndString = (
   format: MNumberBase10Format.Type,
 ): MTypes.OneArgFunction<string, Option.Option<Type>> => {
   const bigDecimalExtractor = format._bigDecimalExtractor;
@@ -318,14 +318,14 @@ export const parseFromString = (
 };
 
 /**
- * Same as `parseFromString` but throws in case of failure
+ * Same as `fromFormatAndString` but throws in case of failure
  *
  * @category Constructors
  */
-export const parseFromStringOrThrow = (
+export const fromFormatAndStringOrThrow = (
   format: MNumberBase10Format.Type,
 ): MTypes.OneArgFunction<string, Type> => {
-  const parser = parseFromString(format);
+  const parser = fromFormatAndString(format);
   return (text) =>
     pipe(
       text,

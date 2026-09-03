@@ -39,8 +39,8 @@ import * as MTuple from './Tuple.js';
 export const FiniteFromString = (
   format: MNumberBase10Format.Type,
 ): Schema.Codec<number, string> => {
-  const parseFunction = MNumber.parseFromString(format);
-  const formatFunction = MString.parseFromNumber(format);
+  const parseFunction = MNumber.fromFormatAndString(format);
+  const formatFunction = MString.fromFormatAndNumber(format);
   return Schema.String.pipe(
     Schema.decodeTo(
       Schema.Finite,
@@ -73,8 +73,8 @@ export const FiniteFromString = (
 export const BigDecimalFromString = (
   format: MNumberBase10Format.Type,
 ): Schema.Codec<BigDecimal.BigDecimal, string> => {
-  const parseFunction = MBigDecimal.parseFromString(format);
-  const formatFunction = MString.parseFromNumberOrThrow(format);
+  const parseFunction = MBigDecimal.fromFormatAndString(format);
+  const formatFunction = MString.fromFormatAndNumberOrThrow(format);
   return Schema.String.pipe(
     Schema.decodeTo(
       Schema.BigDecimal,

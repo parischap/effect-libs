@@ -17,21 +17,21 @@ const { frenchStyleInteger } = MNumberBase10Format;
 
 // Let's define a formatter
 // Type: (value: BigDecimal | number) => Option.Option<string>
-const ukStyleWithEngineeringNotationFormatter = MString.parseFromNumber(
+const ukStyleWithEngineeringNotationFormatter = MString.fromFormatAndNumber(
   ukStyleNumberWithEngineeringNotation,
 );
 
 // Let's define a formatter that throws for non-`effect` users
 // Type: (value: BigDecimal | number) => string
-const throwingFormatter = MString.parseFromNumberOrThrow(ukStyleNumberWithEngineeringNotation);
+const throwingFormatter = MString.fromFormatAndNumberOrThrow(ukStyleNumberWithEngineeringNotation);
 
 // Let's define a parser
 // Type: (value: string ) => Option.Option<number>
-const ungroupedUkStyleParser = MNumber.parseFromString(ukStyleUngroupedNumber);
+const ungroupedUkStyleParser = MNumber.fromFormatAndString(ukStyleUngroupedNumber);
 
 // Let's define a parser that throws for non-`effect` users
 // Type: (value: string ) => number
-const throwingParser = MNumber.parseFromStringOrThrow(ukStyleUngroupedNumber);
+const throwingParser = MNumber.fromFormatAndStringOrThrow(ukStyleUngroupedNumber);
 
 // Result: { _id: 'Option', _tag: 'Some', value: '10.341e3' }
 console.log(ukStyleWithEngineeringNotationFormatter(10_340.548));

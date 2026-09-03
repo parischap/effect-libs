@@ -371,7 +371,7 @@ export const number = <const N extends string>({
           parser: function (this: Type<N, number>, text) {
             return pipe(
               text,
-              MNumber.extractFromString(numberBase10Format),
+              MNumber.fromFormatAndStringStart(numberBase10Format),
               Result.fromOption(
                 () =>
                   new MInputError.Type({
@@ -411,7 +411,7 @@ export const number = <const N extends string>({
             postParser: function (this: Type<N, number>, input: string) {
               return pipe(
                 input,
-                MNumber.parseFromString(numberBase10Format),
+                MNumber.fromFormatAndString(numberBase10Format),
                 Result.fromOption(
                   () =>
                     new MInputError.Type({

@@ -8,19 +8,19 @@ import * as MBigDecimal from '@parischap/effect-lib/MBigDecimal';
 import * as MNumberBase10Format from '@parischap/effect-lib/MNumberBase10Format';
 
 describe('MBigDecimal', () => {
-  describe('fromPrimitiveOption', () => {
-    const fromPrimitiveOption = MBigDecimal.fromPrimitiveOption(4);
+  describe('fromPrimitive', () => {
+    const fromPrimitive = MBigDecimal.fromPrimitive(4);
     it('Passing', () => {
-      TestUtils.assertSome(fromPrimitiveOption(10), BigDecimal.make(10n, 4));
+      TestUtils.assertSome(fromPrimitive(10), BigDecimal.make(10n, 4));
     });
     it('Non-integer number', () => {
-      TestUtils.assertNone(fromPrimitiveOption(10.4));
+      TestUtils.assertNone(fromPrimitive(10.4));
     });
     it('Negative Infinity', () => {
-      TestUtils.assertNone(fromPrimitiveOption(-Infinity));
+      TestUtils.assertNone(fromPrimitive(-Infinity));
     });
     it('NaN', () => {
-      TestUtils.assertNone(fromPrimitiveOption(Number.NaN));
+      TestUtils.assertNone(fromPrimitive(Number.NaN));
     });
   });
 
@@ -108,57 +108,57 @@ describe('MBigDecimal', () => {
     });
   });
 
-  describe('extractFromString', () => {
+  describe('fromFormatAndStringStart', () => {
     const { frenchStyleNumber } = MNumberBase10Format;
 
     describe('General test', () => {
-      const extractFromString = MBigDecimal.extractFromString(frenchStyleNumber);
+      const fromFormatAndStringStart = MBigDecimal.fromFormatAndStringStart(frenchStyleNumber);
 
       it('String not starting by number', () => {
-        TestUtils.assertNone(extractFromString('Dummy'));
+        TestUtils.assertNone(fromFormatAndStringStart('Dummy'));
       });
 
       it('Only a sign', () => {
-        TestUtils.assertNone(extractFromString('- Dummy'));
+        TestUtils.assertNone(fromFormatAndStringStart('- Dummy'));
       });
 
       it('Negative zero', () => {
-        TestUtils.assertNone(extractFromString('-0Dummy'));
+        TestUtils.assertNone(fromFormatAndStringStart('-0Dummy'));
       });
 
       it('Unexpected fillChar', () => {
-        TestUtils.assertNone(extractFromString('- 5Dummy'));
-        TestUtils.assertNone(extractFromString(' 5Dummy'));
+        TestUtils.assertNone(fromFormatAndStringStart('- 5Dummy'));
+        TestUtils.assertNone(fromFormatAndStringStart(' 5Dummy'));
       });
 
       it('Unsigned mantissa with no integer part', () => {
         TestUtils.assertSome(
-          extractFromString('0,45Dummy'),
+          fromFormatAndStringStart('0,45Dummy'),
           Tuple.make(BigDecimal.make(45n, 2), '0,45'),
         );
       });
 
       it('Signed mantissa with no integer part', () => {
         TestUtils.assertSome(
-          extractFromString('-0,45Dummy'),
+          fromFormatAndStringStart('-0,45Dummy'),
           Tuple.make(BigDecimal.make(-45n, 2), '-0,45'),
         );
       });
 
       it('Signed mantissa with no fractional part', () => {
-        TestUtils.assertSome(extractFromString('-45'), Tuple.make(BigDecimal.make(-45n, 0), '-45'));
+        TestUtils.assertSome(fromFormatAndStringStart('-45'), Tuple.make(BigDecimal.make(-45n, 0), '-45'));
       });
 
       it('Signed mantissa', () => {
         TestUtils.assertSome(
-          extractFromString('-45,45'),
+          fromFormatAndStringStart('-45,45'),
           Tuple.make(BigDecimal.make(-4545n, 2), '-45,45'),
         );
       });
 
       it('Fractional part of mantissa starting with zeros', () => {
         TestUtils.assertSome(
-          extractFromString('-45,00'),
+          fromFormatAndStringStart('-45,00'),
           Tuple.make(BigDecimal.make(-45n, 0), '-45,00'),
         );
       });
@@ -166,30 +166,30 @@ describe('MBigDecimal', () => {
 
     describe('Allow scientific notation', () => {
       //Use withEngineeringScientificNotation to make sure that ScientificNotation.toParser is called properly
-      const extractFromString = MBigDecimal.extractFromString(
+      const fromFormatAndStringStart = MBigDecimal.fromFormatAndStringStart(
         pipe(frenchStyleNumber, MNumberBase10Format.withEngineeringScientificNotation),
       );
 
       it('Only an exponent', () => {
-        TestUtils.assertNone(extractFromString('e12Dummy'));
+        TestUtils.assertNone(fromFormatAndStringStart('e12Dummy'));
       });
 
       it('An exponent that is not a multiple of 3', () => {
-        TestUtils.assertNone(extractFromString('512,45e13Dummy'));
+        TestUtils.assertNone(fromFormatAndStringStart('512,45e13Dummy'));
       });
 
       it('A mantissa out of range', () => {
-        TestUtils.assertNone(extractFromString('1 512,45e12Dummy'));
-        TestUtils.assertNone(extractFromString('0,45Dummy'));
+        TestUtils.assertNone(fromFormatAndStringStart('1 512,45e12Dummy'));
+        TestUtils.assertNone(fromFormatAndStringStart('0,45Dummy'));
       });
 
       it('Zero', () => {
-        TestUtils.assertSome(extractFromString('0Dummy'), Tuple.make(BigDecimal.make(0n, 0), '0'));
+        TestUtils.assertSome(fromFormatAndStringStart('0Dummy'), Tuple.make(BigDecimal.make(0n, 0), '0'));
       });
 
       it('A number respecting all conditions', () => {
         TestUtils.assertSome(
-          extractFromString('512,45e12Dummy'),
+          fromFormatAndStringStart('512,45e12Dummy'),
           Tuple.make(BigDecimal.make(51_245n, -10), '512,45e12'),
         );
       });
@@ -197,39 +197,39 @@ describe('MBigDecimal', () => {
 
     describe('ShowNullInteger part tests', () => {
       describe('True', () => {
-        const extractFromString = MBigDecimal.extractFromString(frenchStyleNumber);
+        const fromFormatAndStringStart = MBigDecimal.fromFormatAndStringStart(frenchStyleNumber);
         it('Non-null value with explicit 0', () => {
           TestUtils.assertSome(
-            extractFromString('-0,45Dummy'),
+            fromFormatAndStringStart('-0,45Dummy'),
             Tuple.make(BigDecimal.make(-45n, 2), '-0,45'),
           );
         });
 
         it('Null value', () => {
-          TestUtils.assertSome(extractFromString('0Dummy'), Tuple.make(MBigDecimal.zero, '0'));
+          TestUtils.assertSome(fromFormatAndStringStart('0Dummy'), Tuple.make(MBigDecimal.zero, '0'));
         });
 
         it('Non-null value with implicit 0', () => {
-          TestUtils.assertNone(extractFromString('-,45Dummy'));
+          TestUtils.assertNone(fromFormatAndStringStart('-,45Dummy'));
         });
       });
 
       describe('False', () => {
-        const extractFromString = MBigDecimal.extractFromString(
+        const fromFormatAndStringStart = MBigDecimal.fromFormatAndStringStart(
           pipe(frenchStyleNumber, MNumberBase10Format.withNullIntegerPartNotShowing),
         );
 
         it('Non-null value with explicit 0', () => {
-          TestUtils.assertNone(extractFromString('-0,45Dummy'));
+          TestUtils.assertNone(fromFormatAndStringStart('-0,45Dummy'));
         });
 
         it('Null value', () => {
-          TestUtils.assertSome(extractFromString('0Dummy'), Tuple.make(MBigDecimal.zero, '0'));
+          TestUtils.assertSome(fromFormatAndStringStart('0Dummy'), Tuple.make(MBigDecimal.zero, '0'));
         });
 
         it('Non-null value with implicit 0', () => {
           TestUtils.assertSome(
-            extractFromString('-,45Dummy'),
+            fromFormatAndStringStart('-,45Dummy'),
             Tuple.make(BigDecimal.make(-45n, 2), '-,45'),
           );
         });
@@ -238,21 +238,21 @@ describe('MBigDecimal', () => {
 
     describe('minimumFractionalDigits tests', () => {
       describe('Two decimals', () => {
-        const extractFromString = MBigDecimal.extractFromString(
+        const fromFormatAndStringStart = MBigDecimal.fromFormatAndStringStart(
           pipe(frenchStyleNumber, MNumberBase10Format.withNDecimals(2)),
         );
 
         it('No decimal', () => {
-          TestUtils.assertNone(extractFromString('8Dummy'));
+          TestUtils.assertNone(fromFormatAndStringStart('8Dummy'));
         });
 
         it('One decimal', () => {
-          TestUtils.assertNone(extractFromString('8,1Dummy'));
+          TestUtils.assertNone(fromFormatAndStringStart('8,1Dummy'));
         });
 
         it('Two decimals', () => {
           TestUtils.assertSome(
-            extractFromString('8,10Dummy'),
+            fromFormatAndStringStart('8,10Dummy'),
             Tuple.make(BigDecimal.make(81n, 1), '8,10'),
           );
         });
@@ -261,35 +261,35 @@ describe('MBigDecimal', () => {
 
     describe('maximumFractionalDigits tests', () => {
       describe('Three decimals', () => {
-        const extractFromString = MBigDecimal.extractFromString(frenchStyleNumber);
+        const fromFormatAndStringStart = MBigDecimal.fromFormatAndStringStart(frenchStyleNumber);
 
         it('No decimal', () => {
           TestUtils.assertSome(
-            extractFromString('8Dummy'),
+            fromFormatAndStringStart('8Dummy'),
             Tuple.make(BigDecimal.make(8n, 0), '8'),
           );
         });
 
         it('Three decimals', () => {
           TestUtils.assertSome(
-            extractFromString('8,100Dummy'),
+            fromFormatAndStringStart('8,100Dummy'),
             Tuple.make(BigDecimal.make(81n, 1), '8,100'),
           );
         });
 
         it('Four decimals', () => {
-          TestUtils.assertNone(extractFromString('0,1234Dummy'));
+          TestUtils.assertNone(fromFormatAndStringStart('0,1234Dummy'));
         });
       });
 
       describe('Unbounded', () => {
-        const extractFromString = MBigDecimal.extractFromString(
+        const fromFormatAndStringStart = MBigDecimal.fromFormatAndStringStart(
           pipe(frenchStyleNumber, MNumberBase10Format.withMaxNDecimals(Infinity)),
         );
 
         it('Four decimals', () => {
           TestUtils.assertSome(
-            extractFromString('0,1234Dummy'),
+            fromFormatAndStringStart('0,1234Dummy'),
             Tuple.make(BigDecimal.make(1234n, 4), '0,1234'),
           );
         });
@@ -297,7 +297,7 @@ describe('MBigDecimal', () => {
     });
 
     describe('With 0 as fillChar', () => {
-      const extractFromString = MBigDecimal.extractFromString(
+      const fromFormatAndStringStart = MBigDecimal.fromFormatAndStringStart(
         pipe(
           frenchStyleNumber,
           MNumberBase10Format.zeroPadded(2),
@@ -306,60 +306,60 @@ describe('MBigDecimal', () => {
       );
 
       it('String not starting by number', () => {
-        TestUtils.assertNone(extractFromString('Dummy'));
+        TestUtils.assertNone(fromFormatAndStringStart('Dummy'));
       });
 
       it('Only a sign', () => {
-        TestUtils.assertNone(extractFromString('-Dummy'));
+        TestUtils.assertNone(fromFormatAndStringStart('-Dummy'));
       });
 
       it('Negative zero', () => {
-        TestUtils.assertNone(extractFromString('-0Dummy'));
+        TestUtils.assertNone(fromFormatAndStringStart('-0Dummy'));
       });
 
       it('Single negative number', () => {
-        TestUtils.assertNone(extractFromString('-5Dummy'));
+        TestUtils.assertNone(fromFormatAndStringStart('-5Dummy'));
       });
 
       it('Single positive number', () => {
-        TestUtils.assertNone(extractFromString('5Dummy'));
+        TestUtils.assertNone(fromFormatAndStringStart('5Dummy'));
       });
 
       it('Too big positive value', () => {
-        TestUtils.assertNone(extractFromString('150,45Dummy'));
+        TestUtils.assertNone(fromFormatAndStringStart('150,45Dummy'));
       });
 
       it('Negative double zero', () => {
         TestUtils.assertSome(
-          extractFromString('-00Dummy'),
+          fromFormatAndStringStart('-00Dummy'),
           Tuple.make(BigDecimal.make(0n, 0), '-00'),
         );
       });
 
       it('Negative value', () => {
         TestUtils.assertSome(
-          extractFromString('-05Dummy'),
+          fromFormatAndStringStart('-05Dummy'),
           Tuple.make(BigDecimal.make(-5n, 0), '-05'),
         );
       });
 
       it('Positive value', () => {
         TestUtils.assertSome(
-          extractFromString('05Dummy'),
+          fromFormatAndStringStart('05Dummy'),
           Tuple.make(BigDecimal.make(5n, 0), '05'),
         );
       });
 
       it('Real value', () => {
         TestUtils.assertSome(
-          extractFromString('05,35Dummy'),
+          fromFormatAndStringStart('05,35Dummy'),
           Tuple.make(BigDecimal.make(535n, 2), '05,35'),
         );
       });
     });
 
     describe('With space as fillChar', () => {
-      const extractFromString = MBigDecimal.extractFromString(
+      const fromFormatAndStringStart = MBigDecimal.fromFormatAndStringStart(
         pipe(
           frenchStyleNumber,
           MNumberBase10Format.spacePadded(2),
@@ -368,107 +368,107 @@ describe('MBigDecimal', () => {
       );
 
       it('String not starting by number', () => {
-        TestUtils.assertNone(extractFromString('Dummy'));
+        TestUtils.assertNone(fromFormatAndStringStart('Dummy'));
       });
 
       it('Only a sign', () => {
-        TestUtils.assertNone(extractFromString('-Dummy'));
+        TestUtils.assertNone(fromFormatAndStringStart('-Dummy'));
       });
 
       it('Negative zero', () => {
-        TestUtils.assertNone(extractFromString('- Dummy'));
+        TestUtils.assertNone(fromFormatAndStringStart('- Dummy'));
       });
 
       it('Single negative number', () => {
-        TestUtils.assertNone(extractFromString('-5Dummy'));
+        TestUtils.assertNone(fromFormatAndStringStart('-5Dummy'));
       });
 
       it('Single positive number', () => {
-        TestUtils.assertNone(extractFromString('5Dummy'));
+        TestUtils.assertNone(fromFormatAndStringStart('5Dummy'));
       });
 
       it('Two spaces', () => {
-        TestUtils.assertNone(extractFromString('  Dummy'));
+        TestUtils.assertNone(fromFormatAndStringStart('  Dummy'));
       });
 
       it('Too big negative value', () => {
-        TestUtils.assertNone(extractFromString('-150,45Dummy'));
+        TestUtils.assertNone(fromFormatAndStringStart('-150,45Dummy'));
       });
 
       it('Negative zero', () => {
         TestUtils.assertSome(
-          extractFromString('- 0Dummy'),
+          fromFormatAndStringStart('- 0Dummy'),
           Tuple.make(BigDecimal.make(0n, 0), '- 0'),
         );
       });
 
       it('Negative value', () => {
         TestUtils.assertSome(
-          extractFromString('-15Dummy'),
+          fromFormatAndStringStart('-15Dummy'),
           Tuple.make(BigDecimal.make(-15n, 0), '-15'),
         );
       });
 
       it('Positive value', () => {
         TestUtils.assertSome(
-          extractFromString(' 5Dummy'),
+          fromFormatAndStringStart(' 5Dummy'),
           Tuple.make(BigDecimal.make(5n, 0), ' 5'),
         );
       });
 
       it('Real value', () => {
         TestUtils.assertSome(
-          extractFromString(' 5,35Dummy'),
+          fromFormatAndStringStart(' 5,35Dummy'),
           Tuple.make(BigDecimal.make(535n, 2), ' 5,35'),
         );
       });
     });
   });
 
-  describe('extractFromStringOrThrow', () => {
-    const extractFromStringOrThrow = MBigDecimal.extractFromStringOrThrow(
+  describe('fromFormatAndStringStartOrThrow', () => {
+    const fromFormatAndStringStartOrThrow = MBigDecimal.fromFormatAndStringStartOrThrow(
       MNumberBase10Format.frenchStyleNumber,
     );
 
     it('passing', () => {
       TestUtils.assertEquals(
-        extractFromStringOrThrow('0,45Dummy'),
+        fromFormatAndStringStartOrThrow('0,45Dummy'),
         Tuple.make(BigDecimal.make(45n, 2), '0,45'),
       );
     });
 
     it('Not passing', () => {
-      TestUtils.throws(() => extractFromStringOrThrow('Dummy'));
+      TestUtils.throws(() => fromFormatAndStringStartOrThrow('Dummy'));
     });
   });
 
-  describe('parseFromString', () => {
-    const parseFromString = MBigDecimal.parseFromString(MNumberBase10Format.frenchStyleNumber);
+  describe('fromFormatAndString', () => {
+    const fromFormatAndString = MBigDecimal.fromFormatAndString(MNumberBase10Format.frenchStyleNumber);
 
     it('passing', () => {
-      TestUtils.assertSome(parseFromString('45,50'), BigDecimal.make(4550n, 2));
+      TestUtils.assertSome(fromFormatAndString('45,50'), BigDecimal.make(4550n, 2));
     });
 
     it('Not passing (extra characters)', () => {
-      TestUtils.assertNone(parseFromString('45,50Dummy'));
+      TestUtils.assertNone(fromFormatAndString('45,50Dummy'));
     });
 
     it('Negative value keeps its sign', () => {
-      TestUtils.assertSome(parseFromString('-45,50'), BigDecimal.make(-4550n, 2));
+      TestUtils.assertSome(fromFormatAndString('-45,50'), BigDecimal.make(-4550n, 2));
     });
   });
 
-  describe('parseFromStringOrThrow', () => {
-    const parseFromStringOrThrow = MBigDecimal.parseFromStringOrThrow(
+  describe('fromFormatAndStringOrThrow', () => {
+    const fromFormatAndStringOrThrow = MBigDecimal.fromFormatAndStringOrThrow(
       MNumberBase10Format.frenchStyleNumber,
     );
 
     it('passing', () => {
-      TestUtils.assertEquals(parseFromStringOrThrow('45,50'), BigDecimal.make(4550n, 2));
+      TestUtils.assertEquals(fromFormatAndStringOrThrow('45,50'), BigDecimal.make(4550n, 2));
     });
 
     it('Not passing', () => {
-      TestUtils.throws(() => parseFromStringOrThrow('45,50Dummy'));
+      TestUtils.throws(() => fromFormatAndStringOrThrow('45,50Dummy'));
     });
   });
 });

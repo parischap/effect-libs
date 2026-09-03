@@ -35,7 +35,7 @@ This package contains the following modules, all prefixed with `M` to avoid name
 | **MInputError**                   | A tagged error for user-facing validation failures, with `assertInRange` and similar guards                                                                                                                                                                  |
 | **MIterable**                     | Lazy Iterable-returning counterparts of select `MArray` functions (`findAll`, `takeRightBut`, `longestCommonSubArray`, `ungroup`, `modifyHead`, `modifyTail`, `unfold`, `mergeSorted`, `differenceSorted`): nothing is computed until the result is iterated |
 | **MMatch**                        | A lightweight, type-safe pattern-matcher that replaces `effect/Match` for simple use cases. Supports predicate matching, refinement matching with exhaustiveness checking, `whenOr`, `whenAnd`, and `tryFunction`                                            |
-| **MNumber**                       | Extensions to `effect/Number`: safe conversions from `BigInt` and `BigDecimal`, integer predicates, modulo, `fromString`, rounding (`round`), and safe parsing according to a `MNumberBase10Format` (`parseFromString`, `extractFromString`)                 |
+| **MNumber**                       | Extensions to `effect/Number`: safe conversions from `BigInt` and `BigDecimal`, integer predicates, modulo, `fromString`, rounding (`round`), and safe parsing according to a `MNumberBase10Format` (`fromFormatAndString`, `fromFormatAndStringStart`)      |
 | **MNumberBase10Format**           | A composable description of how to parse/format a base-10 number or `BigDecimal`: thousand/fractional separators, padding, rounding, sign display, scientific notation. Usable directly or through `MString`/`MSchema`                                       |
 | **MOption**                       | Extensions to `effect/Option`: construction from nullable-or-option values, and iterator unwrapping                                                                                                                                                          |
 | **MPortError**                    | A tagged error for wrapping failures that arise when porting non-`effect` functions into the `effect` world                                                                                                                                                  |
@@ -169,10 +169,10 @@ import * as MString from '@parischap/effect-lib/MString';
 const format = MNumberBase10Format.frenchStyleNumber;
 
 // Result: Some('1 024,56')
-console.log(MString.parseFromNumber(format)(1024.56));
+console.log(MString.fromFormatAndNumber(format)(1024.56));
 
 // Result: Some(1024.56)
-console.log(MNumber.parseFromString(format)('1 024,56'));
+console.log(MNumber.fromFormatAndString(format)('1 024,56'));
 ```
 
 ## MString
@@ -251,6 +251,27 @@ console.log(buildAndSum);
 ```
 
 # Changelog
+
+## 0.27.0
+
+- **Renamed** the format-driven `MNumberBase10Format` constructors/parsers, so their names read in
+  value-then-source order and no longer clash with the safe/throwing `*OrThrow` naming convention:
+  - `MBigDecimal.extractFromString` → `fromFormatAndStringStart`
+  - `MBigDecimal.extractFromStringOrThrow` → `fromFormatAndStringStartOrThrow`
+  - `MBigDecimal.parseFromString` → `fromFormatAndString`
+  - `MBigDecimal.parseFromStringOrThrow` → `fromFormatAndStringOrThrow`
+  - `MNumber.extractFromString` → `fromFormatAndStringStart`
+  - `MNumber.extractFromStringOrThrow` → `fromFormatAndStringStartOrThrow`
+  - `MNumber.parseFromString` → `fromFormatAndString`
+  - `MNumber.parseFromStringOrThrow` → `fromFormatAndStringOrThrow`
+  - `MString.parseFromNumber` → `fromFormatAndNumber`
+  - `MString.parseFromNumberOrThrow` → `fromFormatAndNumberOrThrow`
+- **Renamed** the safe constructors bearing a now-inconsistent `*Option` suffix to their plain base
+  name:
+  - `MBigDecimal.fromPrimitiveOption` → `fromPrimitive`
+  - `MBigInt.fromPrimitiveOption` → `fromPrimitive`
+  - `MNumber.fromBigDecimalOption` → `fromBigDecimal`
+  - `MNumber.fromBigIntOption` → `fromBigInt`
 
 ## 0.26.0
 

@@ -10,7 +10,7 @@
  *
  * ## Common tasks
  *
- * - **Construct**: {@link fromPrimitiveOrThrow}, {@link fromPrimitiveOption}
+ * - **Construct**: {@link fromPrimitiveOrThrow}, {@link fromPrimitive}
  * - **Predicates**: {@link isEven}, {@link isOdd}
  * - **Destructors**: {@link log10}, {@link unsafeLog10}
  *
@@ -21,8 +21,8 @@
  * ```ts
  * import * as MBigInt from '@parischap/effect-lib/MBigInt';
  *
- * console.log(MBigInt.fromPrimitiveOption('123')); // Some(123n)
- * console.log(MBigInt.fromPrimitiveOption('abc')); // None
+ * console.log(MBigInt.fromPrimitive('123')); // Some(123n)
+ * console.log(MBigInt.fromPrimitive('abc')); // None
  * console.log(MBigInt.isEven(4n)); // true
  * console.log(MBigInt.log10(100n)); // Some(2)
  * ```
@@ -49,7 +49,7 @@ export type Type = bigint;
  * converted (e.g. `NaN`, non-integer numbers, malformed strings).
  *
  * - Use when an exception on invalid input is acceptable (e.g. trusted constants).
- * - For untrusted input, prefer {@link fromPrimitiveOption}.
+ * - For untrusted input, prefer {@link fromPrimitive}.
  *
  * **Example** (Throwing constructor)
  *
@@ -62,7 +62,7 @@ export type Type = bigint;
  *
  * @category Constructors
  *
- * @see {@link fromPrimitiveOption} — non-throwing variant
+ * @see {@link fromPrimitive} — non-throwing variant
  */
 export const fromPrimitiveOrThrow: MTypes.OneArgFunction<string | number | boolean, bigint> =
   BigInt.BigInt;
@@ -78,13 +78,13 @@ export const fromPrimitiveOrThrow: MTypes.OneArgFunction<string | number | boole
  * ```ts
  * import * as MBigInt from '@parischap/effect-lib/MBigInt';
  *
- * console.log(MBigInt.fromPrimitiveOption('123')); // Some(123n)
- * console.log(MBigInt.fromPrimitiveOption('abc')); // None
+ * console.log(MBigInt.fromPrimitive('123')); // Some(123n)
+ * console.log(MBigInt.fromPrimitive('abc')); // None
  * ```
  *
  * @category Constructors
  */
-export const fromPrimitiveOption: MTypes.OneArgFunction<
+export const fromPrimitive: MTypes.OneArgFunction<
   string | number | boolean,
   Option.Option<bigint>
 > = Option.liftThrowable(fromPrimitiveOrThrow);
