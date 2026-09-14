@@ -26,7 +26,7 @@ This package contains the following modules, all prefixed with `M` to avoid name
 | **MBigInt**                       | Conversions, arithmetic predicates, and logarithm for `effect/BigInt`                                                                                                                                                                                        |
 | **MCache**                        | A time-limited, capacity-bounded LRU cache with a `lifeSpan` (TTL in milliseconds). To be used only in a non-concurrent environment: will not work to cache `Effect` computations.                                                                           |
 | **MChunk**                        | Extensions to `effect/Chunk`: duplicate detection, `findAll`, `takeBut`, and `takeRightBut`                                                                                                                                                                  |
-| **MData**                         | A base class providing default `Inspectable` and `Pipeable` behavior for `effect` data types                                                                                                                                                                 |
+| **MData**                         | A base class providing default `Inspectable` and `Pipeable` behavior for `effect` data types, honoring the `Redactable` protocol when a subclass implements it                                                                                               |
 | **MDateTime**                     | An immutable date-time object natively handling both the Gregorian and ISO calendars (ISO year/week getters and setters), with an internal cache for performance. Exposes `format`/`parse` combining a `MDateTimeFormat` and a `MDateTimeContext`            |
 | **MDateTimeContext**              | Locale data (month/weekday/day-period names) paired with the `MTemplatePlaceholder`'s that resolve each `MDateTimeFormat.Token`. Build from a locale name or from explicit translations                                                                      |
 | **MDateTimeFormat**               | A context-independent date-time format: an array of separators (plain strings) and `Token`'s (Unicode date-field symbols such as `yyyy`, `MMMM`, `HH`)                                                                                                       |
@@ -254,6 +254,9 @@ console.log(buildAndSum);
 
 ## 0.27.0
 
+- **`MData.Class`** now honors the `Redactable` protocol: if a subclass also implements
+  `Redactable.Redactable`, `toJSON`, `toString`, and the Node.js inspection hook return
+  `Redactable.getRedacted(this)` instead of the normal `_id` + properties view.
 - **Renamed** the format-driven `MNumberBase10Format` constructors/parsers, so their names read in
   value-then-source order and no longer clash with the safe/throwing `*OrThrow` naming convention:
   - `MBigDecimal.extractFromString` → `fromFormatAndStringStart`

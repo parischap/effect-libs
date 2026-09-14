@@ -9,11 +9,15 @@
  *   the JSON view) or a function producing a fully custom string representation.
  * - `Class` does **not** implement `Equal.Equal`; for value-based equality, extend
  *   {@link "./EquivalenceBasedEqualityData.js" | `MEquivalenceBasedEqualityData.Class`} instead.
+ * - If a subclass also implements `Redactable.Redactable`, `toJSON`, `toString`, and the Node.js
+ *   inspection hook all return `Redactable.getRedacted(this)` instead of the normal `_id` + properties
+ *   view, so `[idSymbol]` is never called on redacted instances.
  *
  * ## Common tasks
  *
  * - **Define a value object**: extend {@link Class} and implement {@link idSymbol}
  * - **Customize printing**: return a function from `[idSymbol]`
+ * - **Protect sensitive fields from logs/JSON**: also implement `Redactable.Redactable`
  *
  * ## Quickstart
  *
@@ -39,6 +43,7 @@
  * ```
  */
 
+import { pipe, Redactable } from 'effect';
 import * as Formatter from 'effect/Formatter';
 import * as Inspectable from 'effect/Inspectable';
 import * as Pipeable from 'effect/Pipeable';
@@ -83,10 +88,15 @@ export abstract class Class extends Pipeable.Class implements Type {
    */
   abstract [idSymbol](): string | (() => string);
 
-  /** Returns the JSON view of `this`. */
+  /** Returns the JSON view of `this`, or its redacted representation if `this` implements `Redactable` */
   toJSON(): unknown {
-    const id = this[idSymbol]();
-    return typeof id === 'string' ? Object.assign({ _id: id }, this) : id.call(this);
+    try {
+      if (Redactable.isRedactable(this)) return Redactable.getRedacted(this);
+      const id = this[idSymbol]();
+      return typeof id === 'string' ? Object.assign({ _id: id }, this) : id.call(this);
+    } catch {
+      return '[toJSON threw]';
+    }
   }
 
   /** Hooks into Node.js `util.inspect`. */
@@ -94,8 +104,9 @@ export abstract class Class extends Pipeable.Class implements Type {
     return this.toJSON();
   }
 
-  /** Returns the printable representation of `this`. */
+  /** Returns the printable representation of `this`, or its redacted representation if `this` implements `Redactable` */
   override toString(): string {
+    if (Redactable.isRedactable(this)) return pipe(this, Redactable.getRedacted, Formatter.format);
     const id = this[idSymbol]();
     return typeof id === 'string'
       ? Formatter.format(Object.assign({ _id: id }, this))

@@ -1,6 +1,7 @@
 import { assert, describe, it } from '@effect/vitest';
 import * as Equal from 'effect/Equal';
 import * as Option from 'effect/Option';
+import * as Redactable from 'effect/Redactable';
 
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as MData from '@parischap/effect-lib/MData';
@@ -60,6 +61,38 @@ describe('MData', () => {
     it('Not matching', () => {
       TestUtils.assertNotEquals(foo1, foo2);
       TestUtils.assertNotEquals(foo1, foo3);
+    });
+  });
+
+  describe('Redactable', () => {
+    class SecretFoo extends MData.Class implements Redactable.Redactable {
+      readonly a: number;
+      readonly secret: string;
+      constructor({ a, secret }: { a: number; secret: string }) {
+        super();
+        this.a = a;
+        this.secret = secret;
+      }
+
+      /** Returns the `id` of `this` */
+      [MData.idSymbol](): string | (() => string) {
+        return 'SecretFoo';
+      }
+
+      /** Returns the redacted representation of `this` */
+      [Redactable.symbolRedactable](): unknown {
+        return { _id: 'SecretFoo', a: this.a, secret: '<redacted>' };
+      }
+    }
+
+    const secretFoo = new SecretFoo({ a: 5, secret: 'shh' });
+
+    it('toJSON() returns the redacted representation instead of the raw fields', () => {
+      TestUtils.assertEquals(secretFoo.toJSON(), { _id: 'SecretFoo', a: 5, secret: '<redacted>' });
+    });
+
+    it("toString() does not leak the secret field's raw value", () => {
+      assert.isFalse(secretFoo.toString().includes('shh'));
     });
   });
 });
