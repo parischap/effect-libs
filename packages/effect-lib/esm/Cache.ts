@@ -1,8 +1,9 @@
 /**
  * Mutable cache with optional bounded capacity and optional time-to-live built around a
- * user-supplied lookup function. The lookup function may be recursive, in which case the cache is
- * also used to detect circularity. To be used only in a non-concurrent environment: will not work
- * to cache `Effect` computations.
+ * user-supplied lookup function. The lookup function may be recursive, in which case the cache will
+ * detect circularity. If you use this Cache with a lookup function that returns an `Effect`, it's
+ * the `Effect` itself that gets cached, not its result (this is seldom what you want to do). In
+ * that case prefer using Cache module from effect package.
  *
  * ## Mental model
  *

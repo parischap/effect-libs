@@ -18,7 +18,7 @@ The base library used by every other package in this monorepo. Each module follo
 
 - **`MMatch`** — a lightweight, type-safe pattern-matcher with exhaustiveness checking, predicate matching, `whenOr`, `whenAnd` and `tryFunction`.
 - **`MTree`** — a recursive tree/forest data structure with `fold`, `map`, `reduce` and a cycle-safe `unfold`.
-- **`MCache`** — a time-limited, capacity-bounded LRU cache built on `effect/Cache` with a configurable `lifeSpan`. To be used only in a non-concurrent environment: will not work to cache `Effect` computations.
+- **`MCache`** — a time-limited, capacity-bounded LRU cache with a configurable `lifeSpan`. Cannot be used with an effectful lookup function.
 - **`MTypes`** / **`MPredicate`** — foundational primitive and container types and runtime guards (`isSingleton`, `isPair`, `isOverOne`, …).
 - Extensions to some core `effect` modules: `MArray`, `MBigDecimal`, `MBigInt`, `MChunk`, `MResult`, `MFunction`, `MIterable`, `MNumber`, `MOption`, `MRecord`, `MRegExp`, `MString`, `MStruct`, `MTuple`.
 - Tagged errors (`MInputError`, `MPortError`) for validation and porting non-`effect` code.
