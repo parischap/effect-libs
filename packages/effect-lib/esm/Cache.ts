@@ -23,8 +23,6 @@
  *
  * ## Gotchas
  *
- * - The cache is **mutable** — `get` mutates the underlying store. Sharing a cache across fibers
- *   without external coordination is unsafe.
  * - When the lookup function is recursive, capacity may be temporarily exceeded: every key in the
  *   recursion chain is reserved (with an empty entry) before a result is produced, so a chain of
  *   `n` recursive calls reserves `n` entries even past `capacity`. Excess entries are reclaimed
@@ -227,37 +225,49 @@ export const get =
       store,
       MutableHashMap.get(a),
       Option.match({
+        // a is not yet in the cache
         onNone: () => {
+          // Put a in the cache, indicating it's under calculation
           MutableHashMap.set(store, a, Option.none());
+          // Calculate lookup(a)
           const [result, storeInCache] = self.lookUp({
             key: a,
             memoized: (a) => get(a)(self),
             isCircular: false,
           });
           if (storeInCache) {
+            // Put the result of the calculation in the cache (it's no longer under calculation)
             MutableHashMap.set(
               store,
               a,
               Option.some(MCacheValueContainer.make({ value: result, storeDate: now })),
             );
+            // If cache has bounded capacity
             if (hasBoundedCapacity) {
+              // Add `a` to the end of keyListInOrder
               MutableList.append(keyListInOrder, a);
+              // If capacity superseded remove first elem in keyListInOrder (oldest) from keyListInOrder and cache. We don't need to take away more than one elem because list grows at most of one elem
               if (keyListInOrder.length > capacity) {
                 MutableHashMap.remove(store, MutableList.take(keyListInOrder));
               }
             }
+            // If the result is not to be stored, let's remove the key indicating it's under calculation
           } else MutableHashMap.remove(store, a);
           return result;
         },
+        // a is in the cache
         onSome: Option.match({
+          // lookup(a) is currently being calculated
           onNone: () =>
             pipe({ key: a, memoized: undefined, isCircular: true }, self.lookUp, Tuple.get(0)),
+          // lookup(a) is not currently being calculated
           onSome: (valueContainer) => {
             if (
-              // if lifespan===0, we don't do the test because it could return false if the two values are stored in the same millisecond.
+              // If lifespan===0, we don't do the test and consider the key has expired because `now - valueContainer.storeDate` could be 0 if the two are in the same millisecond.
               lifeSpan <= 0 ||
               now - valueContainer.storeDate > lifeSpan
             ) {
+              // lookup(a) has expired. I can at least withdraw from the start of keyListInOrder all the values before a (a included). I also remove them from tha cache of course but not the value corresponding to a because it will be replaced immediately
               if (hasBoundedCapacity) {
                 let head = MutableList.take(keyListInOrder);
                 while (!Equal.equals(a, head)) {
