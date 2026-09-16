@@ -11,7 +11,7 @@ import * as Option from 'effect/Option';
 import * as Result from 'effect/Result';
 import * as Struct from 'effect/Struct';
 import * as Tuple from 'effect/Tuple';
-import * as Types from 'effect/Types';
+import type * as Types from 'effect/Types';
 
 import type * as MDateTime from './DateTime.js';
 import type * as MTypes from './types/types.js';

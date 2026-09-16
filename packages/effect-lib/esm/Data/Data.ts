@@ -10,8 +10,8 @@
  * - `Class` does **not** implement `Equal.Equal`; for value-based equality, extend
  *   {@link "./EquivalenceBasedEqualityData.js" | `MEquivalenceBasedEqualityData.Class`} instead.
  * - If a subclass also implements `Redactable.Redactable`, `toJSON`, `toString`, and the Node.js
- *   inspection hook all return `Redactable.getRedacted(this)` instead of the normal `_id` + properties
- *   view, so `[idSymbol]` is never called on redacted instances.
+ *   inspection hook all return `Redactable.getRedacted(this)` instead of the normal `_id` +
+ *   properties view, so `[idSymbol]` is never called on redacted instances.
  *
  * ## Common tasks
  *
@@ -43,10 +43,11 @@
  * ```
  */
 
-import { pipe, Redactable } from 'effect';
+import { pipe } from 'effect';
 import * as Formatter from 'effect/Formatter';
 import * as Inspectable from 'effect/Inspectable';
 import * as Pipeable from 'effect/Pipeable';
+import * as Redactable from 'effect/Redactable';
 
 /**
  * Module tag.
@@ -88,7 +89,10 @@ export abstract class Class extends Pipeable.Class implements Type {
    */
   abstract [idSymbol](): string | (() => string);
 
-  /** Returns the JSON view of `this`, or its redacted representation if `this` implements `Redactable` */
+  /**
+   * Returns the JSON view of `this`, or its redacted representation if `this` implements
+   * `Redactable`
+   */
   toJSON(): unknown {
     try {
       if (Redactable.isRedactable(this)) return Redactable.getRedacted(this);
@@ -104,7 +108,10 @@ export abstract class Class extends Pipeable.Class implements Type {
     return this.toJSON();
   }
 
-  /** Returns the printable representation of `this`, or its redacted representation if `this` implements `Redactable` */
+  /**
+   * Returns the printable representation of `this`, or its redacted representation if `this`
+   * implements `Redactable`
+   */
   override toString(): string {
     if (Redactable.isRedactable(this)) return pipe(this, Redactable.getRedacted, Formatter.format);
     const id = this[idSymbol]();

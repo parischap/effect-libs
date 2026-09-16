@@ -1,6 +1,6 @@
 import { describe, it } from '@effect/vitest';
 import type * as Equal from 'effect/Equal';
-import * as Types from 'effect/Types';
+import type * as Types from 'effect/Types';
 
 import * as TestUtils from '@parischap/configs/TestUtils';
 import type * as MTypes from '@parischap/effect-lib/MTypes';
