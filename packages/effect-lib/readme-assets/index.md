@@ -56,24 +56,33 @@ This package contains the following modules, all prefixed with `M` to avoid name
 
 # Usage
 
-This package groups many small, independent extension modules. Rather than walking through all of them, this section shows a runnable example for a representative subset — the rest follow the same data-last, `pipe`-friendly style and are documented individually via JSDoc.
+This package groups many small, independent extension modules. Rather than walking through all of them, this section shows a runnable example for a representative subset — look at the API for exhaustive documentation and examples.
 
 ## MCache
 
-A mutable, optionally bounded and TTL-limited cache built around a user-supplied lookup function. Keys are compared with `Equal.equals`; the lookup can be recursive, in which case the cache also detects circularity. To be used only in a non-concurrent environment: will not work to cache `Effect` computations.
+A mutable, optionally bounded and TTL-limited FIFO cache built around a user-supplied lookup function. Keys are compared with `Equal.equals`; the lookup can be recursive, in which case the cache also detects circularity. If the lookup function returns an `Effect`, it's the `Effect` that gets cached, not it's result (seldom what you want). In that case, you probably want to use the `Cache.ts` module of the official `effect` package.
 
 ```ts
 import { Tuple, pipe } from 'effect';
 import * as MCache from '@parischap/effect-lib/MCache';
 
-const cache = MCache.make({
-  lookUp: ({ key }: { readonly key: number }) => Tuple.make(key * 2, true),
-  capacity: 100,
-  lifeSpan: 60_000, // 1 minute
+interface Node {
+  readonly id: string;
+  next?: Node;
+}
+
+const a: Node = { id: 'a' };
+const b: Node = { id: 'b', next: a };
+a.next = b; // introduces a genuine cycle: a -> b -> a
+
+const pathCache = MCache.make<Node, string>({
+  lookUp: ({ key, memoized, isCircular }) =>
+    isCircular
+      ? Tuple.make('…', false) // the loop closes here: stop recursing, don't cache this value
+      : Tuple.make(key.next === undefined ? key.id : `${key.id}->${memoized(key.next)}`, true),
 });
 
-// Result: 10
-console.log(pipe(cache, MCache.get(5)));
+console.log(pipe(pathCache, MCache.get(a))); // 'a->b->…'
 ```
 
 ## MDateTime
