@@ -27,7 +27,8 @@
     "useUnknownInCatchVariables": true,
     "plugins": [
       {
-        "name": "@effect/language-service"
+        "name": "@effect/language-service",
+        "diagnostics": false
       }
     ]
   },
