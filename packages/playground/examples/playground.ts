@@ -1,12 +1,13 @@
 import { NodeRuntime } from '@effect/platform-node';
-import { Effect } from 'effect';
-import { DevTools } from 'effect/unstable/devtools';
+import { Deferred, Effect } from 'effect';
 
-const program = Effect.log('Hello!').pipe(
-  Effect.delay(2000),
-  Effect.withSpan('Hi', { attributes: { foo: 'bar' } }),
-  Effect.forever,
-);
-const DevToolsLive = DevTools.layer();
+const program = Effect.gen(function* () {
+  yield* Effect.die('boom');
+  const deferred = yield* Deferred.make<number>();
+  const success = yield* Deferred.succeed(deferred, 4);
+  const value = yield* Deferred.await(deferred);
+  console.log(value);
+  console.log(success);
+});
 
-program.pipe(Effect.provide(DevToolsLive), NodeRuntime.runMain);
+NodeRuntime.runMain(program);
