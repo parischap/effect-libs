@@ -405,8 +405,8 @@ console.log(buildAndSum);
     sign of negative values (the former `CVNumberBase10Parser.parseAsBigDecimal` silently
     dropped it).
   - **`MString.templateFormat` / `templateParse`** (and their `OrThrow` variants) replace
-    `CVTemplateFormatter`/`CVTemplateParser`; both now take a `MTemplate` directly (the
-    `fromTemplateParts` shortcut was dropped — build a `MTemplate` first).
+    `CVTemplateFormatter`/`CVTemplateParser`; both now take an `MTemplate` directly (the
+    `fromTemplateParts` shortcut was dropped — build an `MTemplate` first).
   - **`MDateTimeFormat.Token`** is now a dense integer enum instead of a string union, so a
     `MDateTimeFormat` is a plain `ReadonlyArray<string | Token>` (strings are separators, no
     `MTemplateSeparator`/`MDateTimeFormatPlaceholder` wrapping needed). `MDateTime.format` /

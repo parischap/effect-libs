@@ -452,7 +452,7 @@ export const number = <const N extends string>({
  * effect Equal.equals function.
  *
  * `schemaInstance` is a `Schema` instance that transforms a value of type T into a value of type T.
- * It is an optional parameter. You need only provide it if you intend to use a `MTemplate` built
+ * It is an optional parameter. You need only provide it if you intend to use an `MTemplate` built
  * from this `MTemplatePlaceholder` within the `effect/Schema` module. In that case, you can build
  * such a `Schema` with the `Schema.declare` function (if you don't provide it, the `Schema` will
  * return an error)
@@ -644,7 +644,7 @@ export const anythingBut = <const N extends string>({
  * This `MTemplatePlaceholder` instance is another special case of the `fulfilling`
  * `MTemplatePlaceholder` instance. The parser of this `MTemplatePlaceholder` reads all the
  * remaining text. The formatter accepts any string and writes it. This `MTemplatePlaceholder`
- * should only be used as the last `MTemplatePart` of a `MTemplate`.
+ * should only be used as the last `MTemplatePart` of an `MTemplate`.
  *
  * @category Constructors
  */

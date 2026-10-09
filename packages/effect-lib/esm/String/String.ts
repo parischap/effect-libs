@@ -229,7 +229,7 @@ export const fromFormatAndNumberOrThrow = (
  *
  * - Use a precomputed formatter when the same `template` will be applied many times.
  *
- * **Example** (Format a record according to a `MTemplate`)
+ * **Example** (Format a record according to an `MTemplate`)
  *
  * ```ts
  * import * as MString from '@parischap/effect-lib/MString';
@@ -286,7 +286,7 @@ export const templateFormatOrThrow = <PlaceholderTypes extends MTypes.Object>(
  *
  * - Use a precomputed parser when the same `template` will be applied many times.
  *
- * **Example** (Parse a string according to a `MTemplate`)
+ * **Example** (Parse a string according to an `MTemplate`)
  *
  * ```ts
  * import * as MString from '@parischap/effect-lib/MString';

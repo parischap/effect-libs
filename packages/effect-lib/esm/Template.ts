@@ -1,5 +1,5 @@
 /**
- * This module implements a `MTemplate` which is a model of a text that has always the same
+ * This module implements an `MTemplate` which is a model of a text that has always the same
  * structure. In such a text, there are immutable and mutable parts. Let's take the following two
  * texts as an example:
  *
@@ -34,7 +34,7 @@
  *
  * We will obtain the text: "Tom is a 15-year-old boy."
  *
- * Once you have created a `MTemplate`, you must feed it to `MString.templateFormat` or
+ * Once you have created an `MTemplate`, you must feed it to `MString.templateFormat` or
  * `MString.templateParse`.
  *
  * Note that `effect` does provide the `Schema.TemplateLiteralParser` API which partly addresses the
