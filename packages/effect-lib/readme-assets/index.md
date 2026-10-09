@@ -351,12 +351,16 @@ console.log(buildAndSum);
 
 # Changelog
 
-## 0.27.0
+## 0.28.0
 
+- Reflected effect API change: `Schema.transformOrFail` → `Schema.transformEffect`.
 - **Added** `MSchemaData`: like `MEquivalenceBasedEqualityData` but built on `Schema.Class`, so that instances can be decoded, encoded and generated with `Arbitrary`.
 - **`MData.Class`** now honors the `Redactable` protocol: if a subclass also implements
   `Redactable.Redactable`, `toJSON`, `toString`, and the Node.js inspection hook return
   `Redactable.getRedacted(this)` instead of the normal `_id` + properties view.
+
+## 0.27.0
+
 - **Renamed** the format-driven `MNumberBase10Format` constructors/parsers, so their names read in
   value-then-source order and no longer clash with the safe/throwing `*OrThrow` naming convention:
   - `MBigDecimal.extractFromString` → `fromFormatAndStringStart`
