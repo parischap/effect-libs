@@ -1,8 +1,15 @@
 {
+  "include": [
+    "esm/**/*.ts"
+  ],
   "extends": [
     "./tsconfig.base.json"
   ],
-  "include": [
-    "esm/**/*.ts"
-  ]
+  "compilerOptions": {
+    "composite": false,
+    "noUnusedParameters": false,
+    "noUnusedLocals": false,
+    "module": "preserve",
+    "moduleResolution": "bundler"
+  }
 }
