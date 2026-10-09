@@ -44,7 +44,7 @@ export const FiniteFromString = (
   return Schema.String.pipe(
     Schema.decodeTo(
       Schema.Finite,
-      SchemaTransformation.transformOrFail({
+      SchemaTransformation.transformEffect({
         decode: (s) =>
           pipe(
             s,
@@ -78,7 +78,7 @@ export const BigDecimalFromString = (
   return Schema.String.pipe(
     Schema.decodeTo(
       Schema.BigDecimal,
-      SchemaTransformation.transformOrFail({
+      SchemaTransformation.transformEffect({
         decode: (s) =>
           pipe(
             s,
@@ -153,7 +153,7 @@ export const DateTimeFromString = (
   return Schema.String.pipe(
     Schema.decodeTo(
       DateTimeFromSelf,
-      SchemaTransformation.transformOrFail({
+      SchemaTransformation.transformEffect({
         decode: (s) =>
           pipe(
             s,
@@ -239,7 +239,7 @@ export const Template = <PlaceholderTypes extends MTypes.Object>(
   return Schema.String.pipe(
     Schema.decodeTo(
       schemaOutput,
-      SchemaTransformation.transformOrFail({
+      SchemaTransformation.transformEffect({
         decode: (s) =>
           pipe(
             s,
