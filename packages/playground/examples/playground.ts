@@ -1,13 +1,17 @@
-import { NodeRuntime } from '@effect/platform-node';
-import { Deferred, Effect } from 'effect';
+import { Schema } from 'effect';
 
-const program = Effect.gen(function* () {
-  yield* Effect.die('boom');
-  const deferred = yield* Deferred.make<number>();
-  const success = yield* Deferred.succeed(deferred, 4);
-  const value = yield* Deferred.await(deferred);
-  console.log(value);
-  console.log(success);
-});
+const Person1 = Schema.Struct({
+  id: Schema.Finite,
+  displayName: Schema.String,
+}).pipe(Schema.overrideToEquivalence(() => (self, that) => self.id === that.id));
 
-NodeRuntime.runMain(program);
+const p3 = Person1.make({ id: 1, displayName: 'J' });
+const p4 = Person1.make({ id: 1, displayName: 'A' });
+
+class Person extends Schema.Class<Person>('Person')(Person1) {}
+
+const p1 = new Person({ id: 1, displayName: 'J' });
+const p2 = new Person({ id: 1, displayName: 'A' });
+
+const equivalence = Schema.toEquivalence(Person);
+console.log(equivalence(p1, p3));

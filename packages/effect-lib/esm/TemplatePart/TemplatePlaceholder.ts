@@ -400,6 +400,7 @@ export const number = <const N extends string>({
               ),
             );
           },
+          /* oxlint-disable-next-line effecttsgo/schema-number*/
           tSchemaInstance: Schema.Number,
         }),
       onSome: (length) =>
@@ -432,6 +433,7 @@ export const number = <const N extends string>({
                 ),
               );
             },
+            /* oxlint-disable-next-line effecttsgo/schema-number*/
             t1SchemaInstance: Schema.Number,
           }),
         ),
@@ -543,6 +545,7 @@ export const mappedLiterals = <const N extends string, T>({
 export const numberMappedLiterals = <const N extends string>(params: {
   readonly name: N;
   readonly keyValuePairs: ReadonlyArray<readonly [string, number]>;
+  /* oxlint-disable-next-line effecttsgo/schema-number*/
 }): Type<N, number> => mappedLiterals({ ...params, schemaInstance: Schema.Number });
 
 /**

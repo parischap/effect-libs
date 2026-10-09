@@ -201,6 +201,7 @@ describe('MTemplatePlaceholder', () => {
         ['foo', 6],
         ['bazbar', 12],
       ],
+      /* oxlint-disable-next-line effecttsgo/schema-number*/
       schemaInstance: Schema.Number,
     });
 

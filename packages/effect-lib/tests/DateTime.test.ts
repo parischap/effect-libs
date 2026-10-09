@@ -1389,7 +1389,7 @@ describe('MDateTime', () => {
     });
 
     it('Not passing', () => {
-      assert.isFalse(pipe(MDateTime.isFirstMonthDay(feb29_2020)));
+      assert.isFalse(MDateTime.isFirstMonthDay(feb29_2020));
     });
   });
 
@@ -1419,7 +1419,7 @@ describe('MDateTime', () => {
     });
 
     it('Not passing', () => {
-      assert.isFalse(pipe(MDateTime.isFirstYearDay(feb29_2020)));
+      assert.isFalse(MDateTime.isFirstYearDay(feb29_2020));
     });
   });
 
@@ -1432,7 +1432,7 @@ describe('MDateTime', () => {
     });
 
     it('Not passing', () => {
-      assert.isFalse(pipe(MDateTime.isLastYearDay(feb29_2020)));
+      assert.isFalse(MDateTime.isLastYearDay(feb29_2020));
     });
   });
 
@@ -1445,7 +1445,7 @@ describe('MDateTime', () => {
     });
 
     it('Not passing', () => {
-      assert.isFalse(pipe(MDateTime.isFirstIsoYearDay(feb29_2020)));
+      assert.isFalse(MDateTime.isFirstIsoYearDay(feb29_2020));
     });
   });
 
@@ -1458,7 +1458,7 @@ describe('MDateTime', () => {
     });
 
     it('Not passing', () => {
-      assert.isFalse(pipe(MDateTime.isLastIsoYearDay(feb29_2020)));
+      assert.isFalse(MDateTime.isLastIsoYearDay(feb29_2020));
     });
   });
 
