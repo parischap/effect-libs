@@ -7,7 +7,6 @@ import * as PPStyleMap from '@parischap/pretty-print/PPStyleMap';
 
 describe('PPParameters', () => {
   it('moduleTag', () => {
-    console.log(TestUtils.moduleTagFromTestFilePath(import.meta.filename));
     TestUtils.assertEquals(
       Option.some(PPParameters.moduleTag),
       TestUtils.moduleTagFromTestFilePath(import.meta.filename),
