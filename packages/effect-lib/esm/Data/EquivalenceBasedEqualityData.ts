@@ -19,25 +19,32 @@
  * **Example** (Equality by a single field)
  *
  * ```ts
- * import { Equal, Hash } from 'effect';
+ * import { Equal, Hash, Predicate } from 'effect';
  * import * as MData from '@parischap/effect-lib/MData';
  * import * as MEquivalenceBasedEqualityData from '@parischap/effect-lib/Data/EquivalenceBasedEqualityData';
+ *
+ * const moduleTag = '@example/UserId/';
+ * const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+ * type TypeId = typeof TypeId;
  *
  * class UserId extends MEquivalenceBasedEqualityData.Class {
  *   constructor(readonly value: number) {
  *     super();
  *   }
  *   [MData.idSymbol]() {
- *     return '@example/UserId/';
+ *     return moduleTag;
  *   }
  *   [MEquivalenceBasedEqualityData.hasSameTypeMarkerAsSymbol](that: unknown) {
- *     return that instanceof UserId;
+ *     return Predicate.hasProperty(that, TypeId);
  *   }
  *   [MEquivalenceBasedEqualityData.isEquivalentToSymbol](that: this) {
  *     return this.value === that.value;
  *   }
  *   [Hash.symbol]() {
  *     return Hash.number(this.value);
+ *   }
+ *   protected get [TypeId](): TypeId {
+ *     return TypeId;
  *   }
  * }
  *

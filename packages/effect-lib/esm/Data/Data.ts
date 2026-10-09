@@ -69,13 +69,30 @@ export const moduleTag = '@parischap/effect-lib/Data/';
 export const idSymbol: unique symbol = Symbol.for(`${moduleTag}id/`) as idSymbol;
 type idSymbol = typeof idSymbol;
 
+export type idSymbolResult = string | (() => string);
+
+export const toJSON = (u: { [idSymbol](): idSymbolResult }): unknown => {
+  try {
+    if (Redactable.isRedactable(u)) return Redactable.getRedacted(u);
+    const id = u[idSymbol]();
+    return typeof id === 'string' ? Object.assign({ _id: id }, u) : id.call(u);
+  } catch {
+    return '[toJSON threw]';
+  }
+};
+
+export const toString = (u: { [idSymbol](): idSymbolResult }): string => {
+  if (Redactable.isRedactable(u)) return pipe(u, Redactable.getRedacted, Formatter.format);
+  const id = u[idSymbol]();
+  return typeof id === 'string' ? Formatter.format(Object.assign({ _id: id }, u)) : id.call(u);
+};
+
 /**
  * Type of objects produced by this module.
  *
  * @category Models
  */
-export type Type = Pipeable.Pipeable &
-  Inspectable.Inspectable & { [idSymbol](): string | (() => string) };
+export type Type = Pipeable.Pipeable & Inspectable.Inspectable & { [idSymbol](): idSymbolResult };
 
 /**
  * Abstract base class providing `Pipeable` and `Inspectable` for value objects.
@@ -87,25 +104,19 @@ export abstract class Class extends Pipeable.Class implements Type {
    * Returns the `id` of `this`. A string identifier is used as the `_id` field of the JSON view; a
    * function produces a fully custom representation when invoked with `this` bound.
    */
-  abstract [idSymbol](): string | (() => string);
+  abstract [idSymbol](): idSymbolResult;
 
   /**
    * Returns the JSON view of `this`, or its redacted representation if `this` implements
    * `Redactable`
    */
   toJSON(): unknown {
-    try {
-      if (Redactable.isRedactable(this)) return Redactable.getRedacted(this);
-      const id = this[idSymbol]();
-      return typeof id === 'string' ? Object.assign({ _id: id }, this) : id.call(this);
-    } catch {
-      return '[toJSON threw]';
-    }
+    return toJSON(this);
   }
 
   /** Hooks into Node.js `util.inspect`. */
   [Inspectable.NodeInspectSymbol](): unknown {
-    return this.toJSON();
+    return toJSON(this);
   }
 
   /**
@@ -113,10 +124,6 @@ export abstract class Class extends Pipeable.Class implements Type {
    * implements `Redactable`
    */
   override toString(): string {
-    if (Redactable.isRedactable(this)) return pipe(this, Redactable.getRedacted, Formatter.format);
-    const id = this[idSymbol]();
-    return typeof id === 'string'
-      ? Formatter.format(Object.assign({ _id: id }, this))
-      : id.call(this);
+    return toString(this);
   }
 }

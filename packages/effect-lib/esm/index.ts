@@ -24,6 +24,7 @@ export * as MRegExp from './RegExp.js';
 export * as MRegExpString from './RegExpString.js';
 export * as MResult from './Result.js';
 export * as MSchema from './Schema.js';
+export * as MSchemaData from './Data/SchemaData.js';
 export * as MString from './String/String.js';
 export * as MStringFillPosition from './String/StringFillPosition.js';
 export * as MStringSearchResult from './String/StringSearchResult.js';

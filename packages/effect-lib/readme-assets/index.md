@@ -10,6 +10,7 @@
   - [MMatch](#mmatch)
   - [MNumberBase10Format](#mnumberbase10format)
   - [MOption](#moption)
+  - [MSchemaData](#mschemadata)
   - [MString](#mstring)
   - [MTemplate](#mtemplate)
   - [MTree](#mtree)
@@ -30,7 +31,7 @@ This package contains the following modules, all prefixed with `M` to avoid name
 | **MDateTime**                     | An immutable date-time object natively handling both the Gregorian and ISO calendars (ISO year/week getters and setters), with an internal cache for performance. Exposes `format`/`parse` combining a `MDateTimeFormat` and a `MDateTimeContext`            |
 | **MDateTimeContext**              | Locale data (month/weekday/day-period names) paired with the `MTemplatePlaceholder`'s that resolve each `MDateTimeFormat.Token`. Build from a locale name or from explicit translations                                                                      |
 | **MDateTimeFormat**               | A context-independent date-time format: an array of separators (plain strings) and `Token`'s (Unicode date-field symbols such as `yyyy`, `MMMM`, `HH`)                                                                                                       |
-| **MEquivalenceBasedEqualityData** | A base class that derives `Equal.Equal` from an abstract `isEquivalentTo` method                                                                                                                                                                             |
+| **MEquivalenceBasedEqualityData** | A base class that derives `Equal.Equal` from user-defined `isEquivalentToSymbol` and `hasSameTypeMarkerAsSymbol` methods                                                                                                                                     |
 | **MFunction**                     | Extensions to `effect/Function`: memoization with `once`, `applyAsThis`, cloning, and constant helpers                                                                                                                                                       |
 | **MInputError**                   | A tagged error for user-facing validation failures, with `assertInRange` and similar guards                                                                                                                                                                  |
 | **MIterable**                     | Lazy Iterable-returning counterparts of select `MArray` functions (`findAll`, `takeRightBut`, `longestCommonSubArray`, `ungroup`, `modifyHead`, `modifyTail`, `unfold`, `mergeSorted`, `differenceSorted`): nothing is computed until the result is iterated |
@@ -45,6 +46,7 @@ This package contains the following modules, all prefixed with `M` to avoid name
 | **MRegExpString**                 | Building blocks for composing regular-expression strings (unsigned integers, signed integers, identifiers, separators, etc.)                                                                                                                                 |
 | **MResult**                       | Extensions to `effect/Result`: flattening and optional extraction                                                                                                                                                                                            |
 | **MSchema**                       | Extension to `effect/Schema`: codecs for numbers/`BigDecimal`'s (`MNumberBase10Format`-driven), `MDateTime` (from a `Date`, an `effect/DateTime.Zoned`, or a string via `MDateTimeFormat`/`MDateTimeContext`), and `MTemplate`-driven object codecs          |
+| **MSchemaData**                   | A base class for value objects built on `Schema.Class` that derives `Equal.Equal` from a user-defined equivalence. Instances can be decoded, encoded and generated for property-based testing (`Arbitrary`)                                                  |
 | **MString**                       | Extensions to `effect/String`: search with automatic `lastIndex` reset, padding with fill-position support, `removeNCharsEveryMChars`, SemVer/email predicates, number parsing/formatting via `MNumberBase10Format`, and templating via `MTemplate`          |
 | **MStringFillPosition**           | A small enum-like module for fill positions (`left` / `right`) used by `MString` padding functions                                                                                                                                                           |
 | **MStringSearchResult**           | A value-object representing a regex match result, with `Equivalence`, `Order`, and `Hash` instances                                                                                                                                                          |
@@ -109,28 +111,35 @@ console.log(MDateTime.format(format, MDateTimeContext.enGB)(MDateTime.fromTimest
 
 ## MEquivalenceBasedEqualityData
 
-A base class for value objects that derive `Equal.Equal` from a user-defined equivalence instead of structural equality. Subclasses implement a same-type-marker guard, the equivalence itself, and a consistent hash.
+A base class for value objects that derive `Equal.Equal` from a user-defined equivalence instead of structural equality. Subclasses implement a same-type-marker guard (a `TypeId` symbol checked with `Predicate.hasProperty`, never `instanceof`), the equivalence itself, and a consistent hash.
 
 ```ts
-import { Equal, Hash } from 'effect';
+import { Equal, Hash, Predicate } from 'effect';
 import * as MData from '@parischap/effect-lib/MData';
 import * as MEquivalenceBasedEqualityData from '@parischap/effect-lib/MEquivalenceBasedEqualityData';
+
+const moduleTag = '@example/UserId/';
+const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+type TypeId = typeof TypeId;
 
 class UserId extends MEquivalenceBasedEqualityData.Class {
   constructor(readonly value: number) {
     super();
   }
   [MData.idSymbol]() {
-    return '@example/UserId/';
+    return moduleTag;
   }
   [MEquivalenceBasedEqualityData.hasSameTypeMarkerAsSymbol](that: unknown) {
-    return that instanceof UserId;
+    return Predicate.hasProperty(that, TypeId);
   }
   [MEquivalenceBasedEqualityData.isEquivalentToSymbol](that: this) {
     return this.value === that.value;
   }
   [Hash.symbol]() {
     return Hash.number(this.value);
+  }
+  protected get [TypeId](): TypeId {
+    return TypeId;
   }
 }
 
@@ -182,6 +191,87 @@ console.log(MString.fromFormatAndNumber(format)(1024.56));
 
 // Result: Some(1024.56)
 console.log(MNumber.fromFormatAndString(format)('1 024,56'));
+```
+
+## MOption
+
+Extensions to `effect/Option`: normalization of `Option`/nullable inputs and iterator unwrapping.
+
+```ts
+import { Option } from 'effect';
+import * as MOption from '@parischap/effect-lib/MOption';
+
+// Result: None
+console.log(MOption.fromOptionOrNullable(null));
+
+// Result: Some(42)
+console.log(MOption.fromOptionOrNullable(42));
+
+// Result: Some(7)
+console.log(MOption.fromOptionOrNullable(Option.some(7)));
+
+const iterator = [1][Symbol.iterator]();
+
+// Result: Some(1)
+console.log(MOption.fromNextIteratorValue(iterator));
+
+// Result: None
+console.log(MOption.fromNextIteratorValue(iterator));
+```
+
+## MSchemaData
+
+Same as `MEquivalenceBasedEqualityData`, but built on `Schema.Class`: the fields are `Schema`'s, so a subclass can be decoded and encoded, and `Arbitrary.schema` can generate instances of it for property-based testing. Subclasses are defined with `Class.extend` and, as for `MEquivalenceBasedEqualityData`, implement a same-type-marker guard, the equivalence itself, and a consistent hash.
+
+```ts
+import type { Equivalence } from 'effect';
+import { Arbitrary, Effect, Equal, Hash, Predicate, Schema } from 'effect';
+import * as MData from '@parischap/effect-lib/MData';
+import * as MEquivalenceBasedEqualityData from '@parischap/effect-lib/MEquivalenceBasedEqualityData';
+import * as MSchemaData from '@parischap/effect-lib/MSchemaData';
+
+const moduleTag = '@parischap/my-app/Person/';
+const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
+type TypeId = typeof TypeId;
+
+class Type extends MSchemaData.Class.extend<Type>(moduleTag)({
+  id: Schema.Finite,
+  name: Schema.String,
+}) {
+  [MData.idSymbol](): MData.idSymbolResult {
+    return moduleTag;
+  }
+
+  [Hash.symbol](): number {
+    return 0;
+  }
+
+  [MEquivalenceBasedEqualityData.isEquivalentToSymbol](this: this, that: this): boolean {
+    return equivalence(this, that);
+  }
+
+  [MEquivalenceBasedEqualityData.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
+    return Predicate.hasProperty(that, TypeId);
+  }
+
+  protected get [TypeId](): TypeId {
+    return TypeId;
+  }
+}
+
+// Two persons are equivalent if they have the same id
+const equivalence: Equivalence.Equivalence<Type> = (self, that) => self.id === that.id;
+
+const person = Schema.decodeUnknownSync(Type)({ id: 1, name: 'Alice' });
+
+// Result: true
+console.log(Equal.equals(person, new Type({ id: 1, name: 'Bob' })));
+
+// Result: { id: 1, name: 'Alice' }
+console.log(Schema.encodeSync(Type)(person));
+
+// Result: 10 random persons
+console.log(await Effect.runPromise(Arbitrary.sampleEffect(Arbitrary.schema(Type), { count: 10 })));
 ```
 
 ## MString
@@ -263,6 +353,7 @@ console.log(buildAndSum);
 
 ## 0.27.0
 
+- **Added** `MSchemaData`: like `MEquivalenceBasedEqualityData` but built on `Schema.Class`, so that instances can be decoded, encoded and generated with `Arbitrary`.
 - **`MData.Class`** now honors the `Redactable` protocol: if a subclass also implements
   `Redactable.Redactable`, `toJSON`, `toString`, and the Node.js inspection hook return
   `Redactable.getRedacted(this)` instead of the normal `_id` + properties view.
