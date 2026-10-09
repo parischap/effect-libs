@@ -37,7 +37,7 @@
  * ```ts
  * import { Option, pipe } from 'effect';
  * import * as MString from '@parischap/effect-lib/MString';
- * import * as MStringFillPosition from '@parischap/effect-lib/String/StringFillPosition';
+ * import * as MStringFillPosition from '@parischap/effect-lib/MStringFillPosition';
  *
  * const found = pipe('hello world', MString.search('world'));
  * console.log(Option.map(found, (r) => r.startIndex)); // Some(6)
@@ -108,7 +108,7 @@ export type Type = string;
  * **Example** (Convert to string with radix)
  *
  * ```ts
- * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MString from '@parischap/effect-lib/MString';
  *
  * const toBase10 = MString.fromNumber(10);
  * console.log(toBase10(255)); // "255"
@@ -134,7 +134,7 @@ export const fromNumber: (radix: number) => MTypes.OneArgFunction<number | bigin
  * **Example** (Convert non-nullable primitive)
  *
  * ```ts
- * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MString from '@parischap/effect-lib/MString';
  *
  * console.log(MString.fromNonNullablePrimitive(42)); // "42"
  * console.log(MString.fromNonNullablePrimitive(true)); // "true"
@@ -155,7 +155,7 @@ export const fromNonNullablePrimitive: MTypes.OneArgFunction<MTypes.NonNullableP
  * **Example** (Convert nullable primitive)
  *
  * ```ts
- * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MString from '@parischap/effect-lib/MString';
  *
  * console.log(MString.fromPrimitive(null)); // "null"
  * console.log(MString.fromPrimitive(undefined)); // "undefined"
@@ -179,7 +179,7 @@ export const fromPrimitive: MTypes.OneArgFunction<MTypes.Primitive, string> =
  * **Example** (Convert unknown value)
  *
  * ```ts
- * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MString from '@parischap/effect-lib/MString';
  *
  * console.log(MString.fromUnknown(42)); // "42"
  * console.log(MString.fromUnknown({ x: 1 }));
@@ -200,7 +200,7 @@ export const fromUnknown: MTypes.OneArgFunction<unknown, string> = internal.from
  *
  * ```ts
  * import * as MNumberBase10Format from '@parischap/effect-lib/MNumberBase10Format';
- * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MString from '@parischap/effect-lib/MString';
  *
  * const format = MString.fromFormatAndNumber(MNumberBase10Format.frenchStyleNumber);
  * console.log(format(1234.5)); // Some("1 234,5")
@@ -232,11 +232,11 @@ export const fromFormatAndNumberOrThrow = (
  * **Example** (Format a record according to a `MTemplate`)
  *
  * ```ts
- * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MString from '@parischap/effect-lib/MString';
  * import * as MTemplate from '@parischap/effect-lib/MTemplate';
- * import * as MTemplatePart from '@parischap/effect-lib/TemplatePart/TemplatePart';
- * import * as MTemplatePlaceholder from '@parischap/effect-lib/TemplatePart/TemplatePlaceholder';
- * import * as MTemplateSeparator from '@parischap/effect-lib/TemplatePart/TemplateSeparator';
+ * import * as MTemplatePart from '@parischap/effect-lib/MTemplatePart';
+ * import * as MTemplatePlaceholder from '@parischap/effect-lib/MTemplatePlaceholder';
+ * import * as MTemplateSeparator from '@parischap/effect-lib/MTemplateSeparator';
  *
  * const template = MTemplate.make(
  *   MTemplatePlaceholder.toEnd('name'),
@@ -289,10 +289,10 @@ export const templateFormatOrThrow = <PlaceholderTypes extends MTypes.Object>(
  * **Example** (Parse a string according to a `MTemplate`)
  *
  * ```ts
- * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MString from '@parischap/effect-lib/MString';
  * import * as MTemplate from '@parischap/effect-lib/MTemplate';
- * import * as MTemplatePlaceholder from '@parischap/effect-lib/TemplatePart/TemplatePlaceholder';
- * import * as MTemplateSeparator from '@parischap/effect-lib/TemplatePart/TemplateSeparator';
+ * import * as MTemplatePlaceholder from '@parischap/effect-lib/MTemplatePlaceholder';
+ * import * as MTemplateSeparator from '@parischap/effect-lib/MTemplateSeparator';
  *
  * const template = MTemplate.make(
  *   MTemplatePlaceholder.toEnd('name'),
@@ -374,7 +374,7 @@ export const templateParseOrThrow = <PlaceholderTypes extends MTypes.Object>(
  * ```ts
  * import { pipe } from 'effect';
  * import * as Option from 'effect/Option';
- * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MString from '@parischap/effect-lib/MString';
  *
  * const text = 'The quick brown fox';
  * const result = pipe(text, MString.search('quick'));
@@ -424,12 +424,12 @@ export const search =
  *
  * ```ts
  * import { pipe } from 'effect';
- * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MString from '@parischap/effect-lib/MString';
  *
  * const text = 'apple apple apple';
  * const matches = pipe(text, MString.searchAll('apple'));
  * console.log(matches.length); // 3
- * console.log(matches[0].match); // "apple"
+ * console.log(matches[0]!.match); // "apple"
  * ```
  *
  * @category Utils
@@ -467,7 +467,7 @@ export const searchAll =
  * ```ts
  * import { pipe } from 'effect';
  * import * as Option from 'effect/Option';
- * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MString from '@parischap/effect-lib/MString';
  *
  * const text = 'one two one three';
  * const result = pipe(text, MString.searchRight('one'));
@@ -503,7 +503,7 @@ export const searchRight =
  *
  * ```ts
  * import { pipe } from 'effect';
- * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MString from '@parischap/effect-lib/MString';
  *
  * const text = 'hello@world.com';
  * const result = pipe(text, MString.takeTo('@'));
@@ -535,7 +535,7 @@ export const takeTo =
  *
  * ```ts
  * import { pipe } from 'effect';
- * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MString from '@parischap/effect-lib/MString';
  *
  * const text = 'hello@world.com';
  * const result = pipe(text, MString.takeRightFrom('@'));
@@ -566,7 +566,7 @@ export const takeRightFrom =
  * **Example** (Take all but last n characters)
  *
  * ```ts
- * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MString from '@parischap/effect-lib/MString';
  *
  * console.log(MString.takeBut(3)('hello')); // "he"
  * console.log(MString.takeBut(-1)('hello')); // "hello"
@@ -590,7 +590,7 @@ export const takeBut =
  * **Example** (Take all but first n characters)
  *
  * ```ts
- * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MString from '@parischap/effect-lib/MString';
  *
  * console.log(MString.takeRightBut(3)('hello')); // "lo"
  * console.log(MString.takeRightBut(-1)('hello')); // "hello"
@@ -611,7 +611,7 @@ export const takeRightBut: (n: number) => MTypes.StringTransformer = internal.ta
  * **Example** (Trim start character)
  *
  * ```ts
- * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MString from '@parischap/effect-lib/MString';
  *
  * const result = MString.trimStart('*')('***hello***');
  * console.log(result); // "hello***"
@@ -632,7 +632,7 @@ export const trimStart: (charToRemove: string) => MTypes.StringTransformer = int
  * **Example** (Trim end character)
  *
  * ```ts
- * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MString from '@parischap/effect-lib/MString';
  *
  * const result = MString.trimEnd('!')('hello!!!');
  * console.log(result); // "hello"
@@ -654,8 +654,8 @@ export const trimEnd: (charToRemove: string) => MTypes.StringTransformer = inter
  * **Example** (Pad string)
  *
  * ```ts
- * import * as MString from '@parischap/effect-lib/String/String';
- * import * as MStringFillPosition from '@parischap/effect-lib/String/StringFillPosition';
+ * import * as MString from '@parischap/effect-lib/MString';
+ * import * as MStringFillPosition from '@parischap/effect-lib/MStringFillPosition';
  *
  * const padLeft = MString.pad({
  *   length: 10,
@@ -686,8 +686,8 @@ export const pad: (params: {
  * **Example** (Trim padding)
  *
  * ```ts
- * import * as MString from '@parischap/effect-lib/String/String';
- * import * as MStringFillPosition from '@parischap/effect-lib/String/StringFillPosition';
+ * import * as MString from '@parischap/effect-lib/MString';
+ * import * as MStringFillPosition from '@parischap/effect-lib/MStringFillPosition';
  *
  * const trimRight = MString.trim({
  *   fillChar: '.',
@@ -717,7 +717,7 @@ export const trim: (params: {
  * ```ts
  * import { pipe } from 'effect';
  * import * as Option from 'effect/Option';
- * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MString from '@parischap/effect-lib/MString';
  *
  * const result = pipe('file.txt', MString.stripLeftOption('file'));
  * console.log(Option.isSome(result)); // true
@@ -740,7 +740,7 @@ export const stripLeftOption = (s: string): MTypes.OneArgFunction<Type, Option.O
  * **Example** (Strip prefix)
  *
  * ```ts
- * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MString from '@parischap/effect-lib/MString';
  *
  * console.log(MString.stripLeft('http://')('http://example.com')); // "example.com"
  * console.log(MString.stripLeft('https://')('http://example.com')); // "http://example.com"
@@ -770,7 +770,7 @@ export const stripLeft =
  * ```ts
  * import { pipe } from 'effect';
  * import * as Option from 'effect/Option';
- * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MString from '@parischap/effect-lib/MString';
  *
  * const result = pipe('file.txt', MString.stripRightOption('.txt'));
  * console.log(Option.isSome(result)); // true
@@ -793,7 +793,7 @@ export const stripRightOption = (s: string): MTypes.OneArgFunction<Type, Option.
  * **Example** (Strip suffix)
  *
  * ```ts
- * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MString from '@parischap/effect-lib/MString';
  *
  * console.log(MString.stripRight('.txt')('readme.txt')); // "readme"
  * console.log(MString.stripRight('.md')('readme.txt')); // "readme.txt"
@@ -821,7 +821,7 @@ export const stripRight =
  * **Example** (Count occurrences)
  *
  * ```ts
- * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MString from '@parischap/effect-lib/MString';
  *
  * console.log(MString.count('o')('hello world')); // 2
  * console.log(MString.count(/[aeiou]/g)('hello world')); // 3
@@ -846,7 +846,7 @@ export const count =
  * **Example** (Append string)
  *
  * ```ts
- * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MString from '@parischap/effect-lib/MString';
  *
  * console.log(MString.append('.txt')('readme')); // "readme.txt"
  * console.log(MString.append('!')('hello')); // "hello!"
@@ -867,7 +867,7 @@ export const append: (s: string) => MTypes.StringTransformer = internal.append;
  * **Example** (Append if not empty)
  *
  * ```ts
- * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MString from '@parischap/effect-lib/MString';
  *
  * console.log(MString.appendIfNotEmpty('!')('hello')); // "hello!"
  * console.log(MString.appendIfNotEmpty('!')('')); // ""
@@ -891,7 +891,7 @@ export const appendIfNotEmpty =
  * **Example** (Prepend string)
  *
  * ```ts
- * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MString from '@parischap/effect-lib/MString';
  *
  * console.log(MString.prepend('http://')('example.com')); // "http://example.com"
  * console.log(MString.prepend('Hello ')('World')); // "Hello World"
@@ -912,7 +912,7 @@ export const prepend: (s: string) => MTypes.StringTransformer = internal.prepend
  * **Example** (Prepend if not empty)
  *
  * ```ts
- * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MString from '@parischap/effect-lib/MString';
  *
  * console.log(MString.prependIfNotEmpty('>>> ')('log message')); // ">>> log message"
  * console.log(MString.prependIfNotEmpty('>>> ')('')); // ""
@@ -936,7 +936,7 @@ export const prependIfNotEmpty =
  * **Example** (Surround if not empty)
  *
  * ```ts
- * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MString from '@parischap/effect-lib/MString';
  *
  * const quoted = MString.surroundIfNotEmpty({
  *   prefix: '"',
@@ -971,7 +971,7 @@ export const surroundIfNotEmpty =
  * **Example** (Replace between indexes)
  *
  * ```ts
- * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MString from '@parischap/effect-lib/MString';
  *
  * console.log(MString.replaceBetween('***', 5, 10)('hello world')); // "hello*** world"
  * console.log(MString.replaceBetween('X', 3, 3)('abc')); // "abcX"
@@ -1020,7 +1020,7 @@ export const match: (regExp: RegExp) => MTypes.OneArgFunction<Type, Option.Optio
  * **Example** (Test pattern match)
  *
  * ```ts
- * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MString from '@parischap/effect-lib/MString';
  *
  * console.log(MString.matches(/^[A-Z]/)('Hello')); // true
  * console.log(MString.matches(/^[a-z]/)('Hello')); // false
@@ -1070,7 +1070,7 @@ export const { matchWithCapturingGroups } = internal;
  * **Example** (Split at position)
  *
  * ```ts
- * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MString from '@parischap/effect-lib/MString';
  *
  * const [left, right] = MString.splitAt(5)('hello world');
  * console.log(left); // "hello"
@@ -1094,7 +1094,7 @@ export const splitAt: (n: number) => MTypes.OneArgFunction<Type, [left: string, 
  * **Example** (Split at position from right)
  *
  * ```ts
- * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MString from '@parischap/effect-lib/MString';
  *
  * const [left, right] = MString.splitAtFromRight(5)('hello world');
  * console.log(left); // "hello "
@@ -1120,7 +1120,7 @@ export const splitAtFromRight: (
  * **Example** (Split equally with remainder first)
  *
  * ```ts
- * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MString from '@parischap/effect-lib/MString';
  *
  * const result = MString.splitEquallyRestAtStart(3)('abcdefgh');
  * console.log(result); // ["ab", "cde", "fgh"] or similar
@@ -1145,7 +1145,7 @@ export const splitEquallyRestAtStart: (
  * **Example** (Split equally with remainder last)
  *
  * ```ts
- * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MString from '@parischap/effect-lib/MString';
  *
  * const result = MString.splitEquallyRestAtEnd(3)('abcdefgh');
  * console.log(result); // ["abc", "def", "gh"]
@@ -1177,7 +1177,7 @@ const tabifyLineBreak: RegExp = new RegExp(MRegExpString.lineBreak, 'g');
  * **Example** (Add indentation)
  *
  * ```ts
- * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MString from '@parischap/effect-lib/MString';
  *
  * const result = MString.tabify('  ', 1)('line1\nline2\nline3');
  * console.log(result);
@@ -1205,7 +1205,7 @@ export const tabify =
  * **Example** (Test for multiple lines)
  *
  * ```ts
- * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MString from '@parischap/effect-lib/MString';
  *
  * console.log(MString.isMultiLine('hello')); // false
  * console.log(MString.isMultiLine('hello\nworld')); // true
@@ -1226,7 +1226,7 @@ export const isMultiLine: Predicate.Predicate<Type> = (self) => MRegExp.lineBrea
  * **Example** (Test semantic version)
  *
  * ```ts
- * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MString from '@parischap/effect-lib/MString';
  *
  * console.log(MString.isSemVer('1.0.0')); // true
  * console.log(MString.isSemVer('1.0.0-alpha')); // true
@@ -1248,7 +1248,7 @@ export const isSemVer: Predicate.Predicate<Type> = (self) => MRegExp.semVer.test
  * **Example** (Test email)
  *
  * ```ts
- * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MString from '@parischap/effect-lib/MString';
  *
  * console.log(MString.isEmail('user@example.com')); // true
  * console.log(MString.isEmail('invalid.email')); // false
@@ -1268,7 +1268,7 @@ export const isEmail: Predicate.Predicate<Type> = (self) => MRegExp.email.test(s
  * **Example** (Test length)
  *
  * ```ts
- * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MString from '@parischap/effect-lib/MString';
  *
  * const isLengthFive = MString.hasLength(5);
  * console.log(isLengthFive('hello')); // true
@@ -1292,7 +1292,7 @@ export const hasLength: (l: number) => Predicate.Predicate<Type> = internal.hasL
  * **Example** (Remove characters at intervals)
  *
  * ```ts
- * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MString from '@parischap/effect-lib/MString';
  *
  * const removeHyphens = MString.removeNCharsEveryMCharsFromRight({
  *   m: 3,
@@ -1319,7 +1319,7 @@ export const removeNCharsEveryMCharsFromRight: (params: {
  * **Example** (Test digit character)
  *
  * ```ts
- * import * as MString from '@parischap/effect-lib/String/String';
+ * import * as MString from '@parischap/effect-lib/MString';
  *
  * console.log(MString.isDigit('5')); // true
  * console.log(MString.isDigit('0')); // true

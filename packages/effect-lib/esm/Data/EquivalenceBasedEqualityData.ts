@@ -21,7 +21,7 @@
  * ```ts
  * import { Equal, Hash, Predicate } from 'effect';
  * import * as MData from '@parischap/effect-lib/MData';
- * import * as MEquivalenceBasedEqualityData from '@parischap/effect-lib/Data/EquivalenceBasedEqualityData';
+ * import * as MEquivalenceBasedEqualityData from '@parischap/effect-lib/MEquivalenceBasedEqualityData';
  *
  * const moduleTag = '@example/UserId/';
  * const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;

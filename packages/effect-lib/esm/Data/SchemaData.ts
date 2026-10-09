@@ -88,9 +88,10 @@
  * @see {@link "./Data.js" | `MData`} — base class without equality
  */
 
-import { Inspectable, Schema } from 'effect';
 import * as Equal from 'effect/Equal';
 import type * as Hash from 'effect/Hash';
+import * as Inspectable from 'effect/Inspectable';
+import * as Schema from 'effect/Schema';
 
 import * as MData from './Data.js';
 import * as MEquivalenceBasedEqualityData from './EquivalenceBasedEqualityData.js';

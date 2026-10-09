@@ -25,20 +25,12 @@
  * **Example** (Curry a dual function and inspect it)
  *
  * ```ts
- * import { Array, pipe } from 'effect';
+ * import { Array, pipe, String } from 'effect';
+ *
  * import * as MFunction from '@parischap/effect-lib/MFunction';
  *
- * const curriedMap = MFunction.flipDual<
- *   ReadonlyArray<number>,
- *   readonly [(n: number) => number],
- *   ReadonlyArray<number>
- * >(Array.map);
- * console.log(
- *   pipe(
- *     [1, 2, 3],
- *     curriedMap((n) => n * 2),
- *   ),
- * ); // [2, 4, 6]
+ * const curriedTakeLeft = MFunction.flipDual(String.takeLeft);
+ * console.log(pipe(2, curriedTakeLeft('foo'))); // 'fo'
  * console.log(MFunction.parameterNumber((a: number, b: number) => a + b)); // 2
  * ```
  */
@@ -64,10 +56,10 @@ import type * as MTypes from './types/types.js';
  * import * as MFunction from '@parischap/effect-lib/MFunction';
  *
  * const doubleIfFlag = (flag: boolean) =>
- *   MFunction.fIfTrue({ condition: flag, f: (n: number) => n * 2 });
+ *   pipe(5, MFunction.fIfTrue({ condition: flag, f: (n: number) => n * 2 }));
  *
- * console.log(pipe(5, doubleIfFlag(true))); // 10
- * console.log(pipe(5, doubleIfFlag(false))); // 5
+ * console.log(doubleIfFlag(true)); // 10
+ * console.log(doubleIfFlag(false)); // 5
  * ```
  *
  * @category Utils
@@ -95,20 +87,12 @@ export const fIfTrue =
  * **Example** (Curry `Array.map`)
  *
  * ```ts
- * import { Array, pipe } from 'effect';
+ * import { Array, pipe, String } from 'effect';
+ *
  * import * as MFunction from '@parischap/effect-lib/MFunction';
  *
- * const curriedMap = MFunction.flipDual<
- *   ReadonlyArray<number>,
- *   readonly [(n: number) => number],
- *   ReadonlyArray<number>
- * >(Array.map);
- * console.log(
- *   pipe(
- *     [1, 2, 3],
- *     curriedMap((n) => n * 2),
- *   ),
- * ); // [2, 4, 6]
+ * const curriedTakeLeft = MFunction.flipDual(String.takeLeft);
+ * console.log(pipe(2, curriedTakeLeft('foo'))); // 'fo'
  * ```
  *
  * @category Utils

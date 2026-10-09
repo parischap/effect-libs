@@ -312,7 +312,7 @@ export const unfold: {
  * import { Order, pipe } from 'effect';
  * import * as MIterable from '@parischap/effect-lib/MIterable';
  *
- * console.log([...pipe([1, 3, 5], MIterable.mergeSorted(Order.number)([2, 4, 6]))]); // [1, 2, 3, 4, 5, 6]
+ * console.log([...pipe([1, 3, 5], MIterable.mergeSorted(Order.Number)([2, 4, 6]))]); // [1, 2, 3, 4, 5, 6]
  * ```
  *
  * @category Utils
@@ -386,7 +386,7 @@ export const mergeSorted =
  * import { Order, pipe } from 'effect';
  * import * as MIterable from '@parischap/effect-lib/MIterable';
  *
- * console.log([...pipe([1, 2, 3, 4, 5], MIterable.differenceSorted(Order.number)([2, 4]))]); // [1, 3, 5]
+ * console.log([...pipe([1, 2, 3, 4, 5], MIterable.differenceSorted(Order.Number)([2, 4]))]); // [1, 3, 5]
  * ```
  *
  * @category Utils

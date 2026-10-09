@@ -24,7 +24,7 @@
  * ```ts
  * import * as MRecord from '@parischap/effect-lib/MRecord';
  *
- * const date = new Date('2024-01-01T00:00:00Z');
+ * const date = new Date('2024-01-01T00:00:00Z') as any as Record<string | symbol, unknown>;
  * console.log(MRecord.tryZeroParamFunction({ functionName: 'toJSON' })(date));
  * // Some('2024-01-01T00:00:00.000Z')
  * ```
@@ -90,7 +90,7 @@ export const unsafeGet =
  *   exception: Object.prototype.toString,
  * });
  *
- * console.log(tryCustomToString(new Date(0))); // Some('Thu Jan 01 1970 ...')
+ * console.log(tryCustomToString(new Date(0) as any as Record<string | symbol, unknown>)); // Some('Thu Jan 01 1970 ...')
  * console.log(tryCustomToString({ a: 1 })); // None
  * ```
  *

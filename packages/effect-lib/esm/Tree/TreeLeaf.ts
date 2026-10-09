@@ -8,7 +8,7 @@
  * **Example** (Create a leaf)
  *
  * ```ts
- * import * as MTreeLeaf from '@parischap/effect-lib/Tree/TreeLeaf';
+ * import * as MTreeLeaf from '@parischap/effect-lib/MTreeLeaf';
  *
  * const leaf = MTreeLeaf.make(42);
  * console.log(leaf.value); // 42
@@ -61,7 +61,7 @@ export class Type<out B> extends MTreeNode.Type<B> {
  * **Example**
  *
  * ```ts
- * import * as MTreeLeaf from '@parischap/effect-lib/Tree/TreeLeaf';
+ * import * as MTreeLeaf from '@parischap/effect-lib/MTreeLeaf';
  *
  * console.log(MTreeLeaf.make(42).value); // 42
  * ```

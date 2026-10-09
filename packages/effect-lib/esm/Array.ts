@@ -105,7 +105,7 @@ export const hasLength =
  * import { Equivalence, pipe } from 'effect';
  * import * as MArray from '@parischap/effect-lib/MArray';
  *
- * const byId = Equivalence.mapInput(Equivalence.number, (o: { readonly id: number }) => o.id);
+ * const byId = Equivalence.mapInput(Equivalence.Number, (o: { readonly id: number }) => o.id);
  * console.log(pipe([{ id: 1 }, { id: 1 }], MArray.hasDuplicatesWith(byId))); // true
  * console.log(pipe([{ id: 1 }, { id: 2 }], MArray.hasDuplicatesWith(byId))); // false
  * ```
@@ -154,7 +154,7 @@ export const hasDuplicates = hasDuplicatesWith(Equal.asEquivalence());
  * import { pipe } from 'effect';
  * import * as MArray from '@parischap/effect-lib/MArray';
  *
- * const describe = MArray.match012({
+ * const describe = MArray.match012<number, string, string, string>({
  *   onEmpty: () => 'empty',
  *   onSingleton: (x: number) => `one: ${x}`,
  *   onOverTwo: (xs) => `many: ${xs.length}`,
@@ -1054,7 +1054,7 @@ export const reduceUnlessLeft =
  * import { Order, pipe } from 'effect';
  * import * as MArray from '@parischap/effect-lib/MArray';
  *
- * console.log(pipe([1, 3, 5], MArray.mergeSorted(Order.number)([2, 4, 6]))); // [1, 2, 3, 4, 5, 6]
+ * console.log(pipe([1, 3, 5], MArray.mergeSorted(Order.Number)([2, 4, 6]))); // [1, 2, 3, 4, 5, 6]
  * ```
  *
  * @category Utils
@@ -1128,7 +1128,7 @@ export const mergeSorted =
  * import { Order, pipe } from 'effect';
  * import * as MArray from '@parischap/effect-lib/MArray';
  *
- * console.log(pipe([1, 2, 3, 4, 5], MArray.differenceSorted(Order.number)([2, 4]))); // [1, 3, 5]
+ * console.log(pipe([1, 2, 3, 4, 5], MArray.differenceSorted(Order.Number)([2, 4]))); // [1, 3, 5]
  * ```
  *
  * @category Utils

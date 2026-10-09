@@ -27,7 +27,7 @@
  *
  * ```ts
  * import { Result, pipe } from 'effect';
- * import * as MTree from '@parischap/effect-lib/Tree/Tree';
+ * import * as MTree from '@parischap/effect-lib/MTree';
  *
  * const buildAndSum = pipe(
  *   3,
@@ -109,11 +109,11 @@ export const isNonLeaf = <A, B>(u: Type<A, B>): u is MTreeNonLeaf.Type<A, B> =>
  *
  * ```ts
  * import { Equivalence } from 'effect';
- * import * as MTree from '@parischap/effect-lib/Tree/Tree';
- * import * as MTreeLeaf from '@parischap/effect-lib/Tree/TreeLeaf';
- * import * as MTreeNonLeaf from '@parischap/effect-lib/Tree/TreeNonLeaf';
+ * import * as MTree from '@parischap/effect-lib/MTree';
+ * import * as MTreeLeaf from '@parischap/effect-lib/MTreeLeaf';
+ * import * as MTreeNonLeaf from '@parischap/effect-lib/MTreeNonLeaf';
  *
- * const eq = MTree.makeEquivalence(Equivalence.string, Equivalence.number);
+ * const eq = MTree.makeEquivalence(Equivalence.String, Equivalence.Number);
  * const tree1 = MTreeNonLeaf.make({
  *   value: 'root',
  *   forest: [MTreeLeaf.make(1), MTreeLeaf.make(2)],
@@ -246,11 +246,12 @@ const internalUnfold =
  * ```ts
  * import { pipe } from 'effect';
  * import * as Result from 'effect/Result';
- * import * as MTree from '@parischap/effect-lib/Tree/Tree';
+ * import * as MTree from '@parischap/effect-lib/MTree';
  *
- * const tree = MTree.unfold<number, string, number>((n) =>
- *   n === 0 ? Result.fail('leaf') : Result.succeed(['node', [n - 1]]),
- * )(3);
+ * const tree = pipe(
+ *   3,
+ *   MTree.unfold((n) => (n === 0 ? Result.fail('leaf') : Result.succeed(['node', [n - 1]]))),
+ * );
  * ```
  *
  * @category Constructors
@@ -285,14 +286,18 @@ export const unfold: {
  * **Example** (Build and fold tree)
  *
  * ```ts
+ * import { Number, pipe } from 'effect';
  * import * as Result from 'effect/Result';
- * import * as MTree from '@parischap/effect-lib/Tree/Tree';
+ * import * as MTree from '@parischap/effect-lib/MTree';
  *
- * const result = MTree.unfoldAndFold({
- *   unfold: (n) => (n === 0 ? Result.fail(1) : Result.succeed(['parent', [n - 1]])),
- *   foldLeaf: (val) => val,
- *   foldNonLeaf: (val, children) => val.length + children[0],
- * })(2);
+ * const result = pipe(
+ *   2,
+ *   MTree.unfoldAndFold({
+ *     unfold: (n) => (n === 0 ? Result.fail(1) : Result.succeed(['parent', [n - 1]])),
+ *     foldLeaf: (val) => val,
+ *     foldNonLeaf: (val, children) => val.length + +Number.sumAll(children),
+ *   }),
+ * );
  * ```
  *
  * @category Constructors
@@ -369,18 +374,22 @@ export const unfoldAndFold: {
  * **Example** (Fold tree to sum)
  *
  * ```ts
- * import * as MTree from '@parischap/effect-lib/Tree/Tree';
- * import * as MTreeLeaf from '@parischap/effect-lib/Tree/TreeLeaf';
- * import * as MTreeNonLeaf from '@parischap/effect-lib/Tree/TreeNonLeaf';
+ * import * as MTree from '@parischap/effect-lib/MTree';
+ * import * as MTreeLeaf from '@parischap/effect-lib/MTreeLeaf';
+ * import * as MTreeNonLeaf from '@parischap/effect-lib/MTreeNonLeaf';
+ * import { pipe } from 'effect';
  *
  * const tree = MTreeNonLeaf.make({
  *   value: 10,
  *   forest: [MTreeLeaf.make(5), MTreeLeaf.make(3)],
  * });
- * const sum = MTree.fold({
- *   foldLeaf: (n) => n,
- *   foldNonLeaf: (n, children) => n + children.reduce((a, b) => a + b, 0),
- * })(tree);
+ * const sum = pipe(
+ *   tree,
+ *   MTree.fold({
+ *     foldLeaf: (n) => n,
+ *     foldNonLeaf: (n, children) => n + children.reduce((a, b) => a + b, 0),
+ *   }),
+ * );
  * console.log(sum); // 18
  * ```
  *
@@ -414,19 +423,24 @@ export const fold = <A, B, C>({
  * **Example** (Map with accumulator)
  *
  * ```ts
- * import * as MTree from '@parischap/effect-lib/Tree/Tree';
- * import * as MTreeLeaf from '@parischap/effect-lib/Tree/TreeLeaf';
- * import * as MTreeNonLeaf from '@parischap/effect-lib/Tree/TreeNonLeaf';
+ * import { pipe } from 'effect';
+ *
+ * import * as MTree from '@parischap/effect-lib/MTree';
+ * import * as MTreeLeaf from '@parischap/effect-lib/MTreeLeaf';
+ * import * as MTreeNonLeaf from '@parischap/effect-lib/MTreeNonLeaf';
  *
  * const tree = MTreeNonLeaf.make({
  *   value: 'root',
  *   forest: [MTreeLeaf.make(1), MTreeLeaf.make(2)],
  * });
- * const result = MTree.mapAccum({
- *   accum: 0,
- *   fNonLeaf: (s, val) => [s + 1, val.toUpperCase()],
- *   fLeaf: (s, val) => val * 10,
- * })(tree);
+ * const result = pipe(
+ *   tree,
+ *   MTree.mapAccum({
+ *     accum: 0,
+ *     fNonLeaf: (s, val) => [s + 1, val.toUpperCase()],
+ *     fLeaf: (s, val) => val * 10,
+ *   }),
+ * );
  * ```
  *
  * @category Utils
@@ -467,18 +481,23 @@ export const mapAccum = <S, A, B, C, D>({
  * **Example** (Map tree values)
  *
  * ```ts
- * import * as MTree from '@parischap/effect-lib/Tree/Tree';
- * import * as MTreeLeaf from '@parischap/effect-lib/Tree/TreeLeaf';
- * import * as MTreeNonLeaf from '@parischap/effect-lib/Tree/TreeNonLeaf';
+ * import { pipe } from 'effect';
+ *
+ * import * as MTree from '@parischap/effect-lib/MTree';
+ * import * as MTreeLeaf from '@parischap/effect-lib/MTreeLeaf';
+ * import * as MTreeNonLeaf from '@parischap/effect-lib/MTreeNonLeaf';
  *
  * const tree = MTreeNonLeaf.make({
  *   value: 'node',
  *   forest: [MTreeLeaf.make(5), MTreeLeaf.make(3)],
  * });
- * const mapped = MTree.map({
- *   fNonLeaf: (val) => val.toUpperCase(),
- *   fLeaf: (num) => num * 2,
- * })(tree);
+ * const mapped = pipe(
+ *   tree,
+ *   MTree.map({
+ *     fNonLeaf: (val) => val.toUpperCase(),
+ *     fLeaf: (num) => num * 2,
+ *   }),
+ * );
  * ```
  *
  * @category Utils
@@ -532,19 +551,23 @@ const internalReduce =
  * **Example** (Reduce tree)
  *
  * ```ts
- * import * as MTree from '@parischap/effect-lib/Tree/Tree';
- * import * as MTreeLeaf from '@parischap/effect-lib/Tree/TreeLeaf';
- * import * as MTreeNonLeaf from '@parischap/effect-lib/Tree/TreeNonLeaf';
+ * import * as MTree from '@parischap/effect-lib/MTree';
+ * import * as MTreeLeaf from '@parischap/effect-lib/MTreeLeaf';
+ * import * as MTreeNonLeaf from '@parischap/effect-lib/MTreeNonLeaf';
+ * import { pipe } from 'effect';
  *
  * const tree = MTreeNonLeaf.make({
  *   value: 1,
  *   forest: [MTreeLeaf.make(2), MTreeLeaf.make(3)],
  * });
- * const sum = MTree.reduce({
- *   z: 0,
- *   fNonLeaf: (acc, val) => acc + val,
- *   fLeaf: (acc, val) => acc + val,
- * })(tree);
+ * const sum = pipe(
+ *   tree,
+ *   MTree.reduce({
+ *     z: 0,
+ *     fNonLeaf: (acc, val) => acc + val,
+ *     fLeaf: (acc, val) => acc + val,
+ *   }),
+ * );
  * console.log(sum); // 6
  * ```
  *
@@ -563,9 +586,9 @@ export const reduce = internalReduce(Array.reduce);
  * **Example** (Reduce tree right-to-left)
  *
  * ```ts
- * import * as MTree from '@parischap/effect-lib/Tree/Tree';
- * import * as MTreeLeaf from '@parischap/effect-lib/Tree/TreeLeaf';
- * import * as MTreeNonLeaf from '@parischap/effect-lib/Tree/TreeNonLeaf';
+ * import * as MTree from '@parischap/effect-lib/MTree';
+ * import * as MTreeLeaf from '@parischap/effect-lib/MTreeLeaf';
+ * import * as MTreeNonLeaf from '@parischap/effect-lib/MTreeNonLeaf';
  *
  * const tree = MTreeNonLeaf.make({
  *   value: 'A',
@@ -594,18 +617,22 @@ export const reduceRight = internalReduce(Array.reduceRight);
  * **Example** (Extend down: tag by level)
  *
  * ```ts
- * import * as MTree from '@parischap/effect-lib/Tree/Tree';
- * import * as MTreeLeaf from '@parischap/effect-lib/Tree/TreeLeaf';
- * import * as MTreeNonLeaf from '@parischap/effect-lib/Tree/TreeNonLeaf';
+ * import * as MTree from '@parischap/effect-lib/MTree';
+ * import * as MTreeLeaf from '@parischap/effect-lib/MTreeLeaf';
+ * import * as MTreeNonLeaf from '@parischap/effect-lib/MTreeNonLeaf';
+ * import { pipe } from 'effect';
  *
  * const tree = MTreeNonLeaf.make({
  *   value: 'root',
  *   forest: [MTreeLeaf.make('leaf')],
  * });
- * const extended = MTree.extendDown({
- *   fNonLeaf: (node, level) => `${node.value}@${level}`,
- *   fLeaf: (leaf, level) => `${leaf.value}@${level}`,
- * })(tree);
+ * const extended = pipe(
+ *   tree,
+ *   MTree.extendDown({
+ *     fNonLeaf: (node, level) => `${node.value}@${level}`,
+ *     fLeaf: (leaf, level) => `${leaf.value}@${level}`,
+ *   }),
+ * );
  * ```
  *
  * @category Utils
@@ -644,18 +671,22 @@ export const extendDown = <A, B, C, D>({
  * **Example** (Extend up: aggregate child count)
  *
  * ```ts
- * import * as MTree from '@parischap/effect-lib/Tree/Tree';
- * import * as MTreeLeaf from '@parischap/effect-lib/Tree/TreeLeaf';
- * import * as MTreeNonLeaf from '@parischap/effect-lib/Tree/TreeNonLeaf';
+ * import * as MTree from '@parischap/effect-lib/MTree';
+ * import * as MTreeLeaf from '@parischap/effect-lib/MTreeLeaf';
+ * import * as MTreeNonLeaf from '@parischap/effect-lib/MTreeNonLeaf';
+ * import { pipe } from 'effect';
  *
  * const tree = MTreeNonLeaf.make({
- *   value: 'root',
- *   forest: [MTreeLeaf.make('a'), MTreeLeaf.make('b')],
+ *   value: 0,
+ *   forest: [MTreeLeaf.make(1), MTreeLeaf.make(2)],
  * });
- * const extended = MTree.extendUp({
- *   fNonLeaf: (node, level) => node.forest.length,
- *   fLeaf: (leaf, level) => 0,
- * })(tree);
+ * const extended = pipe(
+ *   tree,
+ *   MTree.extendUp({
+ *     fNonLeaf: (node) => node.value + 1,
+ *     fLeaf: (leaf) => leaf.value + 1,
+ *   }),
+ * );
  * ```
  *
  * @category Utils

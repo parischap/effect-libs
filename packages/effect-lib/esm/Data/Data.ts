@@ -69,23 +69,12 @@ export const moduleTag = '@parischap/effect-lib/Data/';
 export const idSymbol: unique symbol = Symbol.for(`${moduleTag}id/`) as idSymbol;
 type idSymbol = typeof idSymbol;
 
+/**
+ * Result type of the [idSymbol] function
+ *
+ * @category Models
+ */
 export type idSymbolResult = string | (() => string);
-
-export const toJSON = (u: { [idSymbol](): idSymbolResult }): unknown => {
-  try {
-    if (Redactable.isRedactable(u)) return Redactable.getRedacted(u);
-    const id = u[idSymbol]();
-    return typeof id === 'string' ? Object.assign({ _id: id }, u) : id.call(u);
-  } catch {
-    return '[toJSON threw]';
-  }
-};
-
-export const toString = (u: { [idSymbol](): idSymbolResult }): string => {
-  if (Redactable.isRedactable(u)) return pipe(u, Redactable.getRedacted, Formatter.format);
-  const id = u[idSymbol]();
-  return typeof id === 'string' ? Formatter.format(Object.assign({ _id: id }, u)) : id.call(u);
-};
 
 /**
  * Type of objects produced by this module.
@@ -127,3 +116,31 @@ export abstract class Class extends Pipeable.Class implements Type {
     return toString(this);
   }
 }
+
+/**
+ * Returns a JSON representation of `self`
+ *
+ * @category Destructors
+ */
+export const toJSON = (self: { [idSymbol](): idSymbolResult }): unknown => {
+  try {
+    if (Redactable.isRedactable(self)) return Redactable.getRedacted(self);
+    const id = self[idSymbol]();
+    return typeof id === 'string' ? Object.assign({ _id: id }, self) : id.call(self);
+  } catch {
+    return '[toJSON threw]';
+  }
+};
+
+/**
+ * Returns a string representation of `self`
+ *
+ * @category Destructors
+ */
+export const toString = (self: { [idSymbol](): idSymbolResult }): string => {
+  if (Redactable.isRedactable(self)) return pipe(self, Redactable.getRedacted, Formatter.format);
+  const id = self[idSymbol]();
+  return typeof id === 'string'
+    ? Formatter.format(Object.assign({ _id: id }, self))
+    : id.call(self);
+};

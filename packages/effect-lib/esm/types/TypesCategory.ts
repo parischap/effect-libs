@@ -25,7 +25,7 @@
  * **Example** (Classify and dispatch on category)
  *
  * ```ts
- * import * as MTypesCategory from '@parischap/effect-lib/types/TypesCategory';
+ * import * as MTypesCategory from '@parischap/effect-lib/MTypesCategory';
  *
  * console.log(MTypesCategory.fromValue('hi') === MTypesCategory.Type.String); // true
  * console.log(MTypesCategory.isNonPrimitive(MTypesCategory.fromValue([1, 2]))); // true

@@ -15,7 +15,7 @@
  * ```ts
  * import { pipe } from 'effect';
  * import * as MString from '@parischap/effect-lib/MString';
- * import * as MStringFillPosition from '@parischap/effect-lib/String/StringFillPosition';
+ * import * as MStringFillPosition from '@parischap/effect-lib/MStringFillPosition';
  *
  * console.log(
  *   pipe(
@@ -49,7 +49,7 @@ export enum Type {
  * **Example**
  *
  * ```ts
- * import * as MStringFillPosition from '@parischap/effect-lib/String/StringFillPosition';
+ * import * as MStringFillPosition from '@parischap/effect-lib/MStringFillPosition';
  *
  * console.log(MStringFillPosition.toString(MStringFillPosition.Type.Left)); // 'left'
  * ```

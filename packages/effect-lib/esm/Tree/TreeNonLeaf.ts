@@ -8,8 +8,8 @@
  * **Example** (Build a branch with two leaves)
  *
  * ```ts
- * import * as MTreeLeaf from '@parischap/effect-lib/Tree/TreeLeaf';
- * import * as MTreeNonLeaf from '@parischap/effect-lib/Tree/TreeNonLeaf';
+ * import * as MTreeLeaf from '@parischap/effect-lib/MTreeLeaf';
+ * import * as MTreeNonLeaf from '@parischap/effect-lib/MTreeNonLeaf';
  *
  * const branch = MTreeNonLeaf.make({
  *   value: 'root',

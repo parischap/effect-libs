@@ -19,8 +19,9 @@
  * ```ts
  * import { BigDecimal, Option, pipe } from 'effect';
  * import * as MBigDecimal from '@parischap/effect-lib/MBigDecimal';
+ * import { MNumberBase10Format } from '../../esm/index.js';
  *
- * const bd = pipe('3.14', BigDecimal.fromNumber, Option.getOrThrow);
+ * const bd = pipe(3.14, BigDecimal.fromNumber, Option.getOrThrow);
  * const truncater = MBigDecimal.round(1, MNumberBase10Format.RoundingOption.Trunc);
  * console.log(truncater(bd)); // BigDecimal(31, 1) i.e. 3.1
  * ```
@@ -66,8 +67,9 @@ export const zero: Type = BigDecimal.make(0n, 0);
  * ```ts
  * import { BigDecimal, Option, pipe } from 'effect';
  * import * as MBigDecimal from '@parischap/effect-lib/MBigDecimal';
+ * import { MNumberBase10Format } from '../../esm/index.js';
  *
- * const bd = pipe('3.1459', BigDecimal.fromNumber, Option.getOrThrow);
+ * const bd = pipe(3.1459, BigDecimal.fromNumber, Option.getOrThrow);
  * const [rounded, rest] = pipe(
  *   bd,
  *   MBigDecimal.roundedAndRest(2, MNumberBase10Format.RoundingOption.Trunc),

@@ -543,7 +543,6 @@ export const unsafeWhen =
  * ```ts
  * import { pipe } from 'effect';
  * import * as MMatch from '@parischap/effect-lib/MMatch';
- * import * as Number from 'effect/Number';
  *
  * enum Status {
  *   Active = 'a',
