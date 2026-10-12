@@ -5,7 +5,7 @@
  * ## Mental model
  *
  * - **`Type`** is an `Equal`-aware value object built on
- *   {@link "../Data/EquivalenceBasedEqualityData.js" | `MEquivalenceBasedEqualityData.Class`}.
+ *   {@link "../Data/EquivalenceBasedEqualityData.js" | `MEqData.Class`}.
  * - Two results are equal iff their `startIndex`, `endIndex` and `match` all coincide.
  * - The {@link areOverlapping} `Equivalence` is **not** an equality — two matches may overlap without
  *   being equal.
@@ -29,7 +29,7 @@ import * as Struct from 'effect/Struct';
 import type * as MTypes from '../types/types.js';
 
 import * as MData from '../Data/Data.js';
-import * as MEquivalenceBasedEqualityData from '../Data/EquivalenceBasedEqualityData.js';
+import * as MEqData from '../Data/EqData.js';
 
 /**
  * Module tag.
@@ -45,7 +45,7 @@ type TypeId = typeof TypeId;
  *
  * @category Models
  */
-export class Type extends MEquivalenceBasedEqualityData.Class {
+export class Type extends MEqData.Class {
   /** The index where the match was found in the target string */
   readonly startIndex: number;
   /** The index of the character following the match in the target string */
@@ -77,12 +77,12 @@ export class Type extends MEquivalenceBasedEqualityData.Class {
   }
 
   /** Function that implements the equivalence of `this` and `that` */
-  [MEquivalenceBasedEqualityData.isEquivalentToSymbol](this: this, that: this): boolean {
+  [MEqData.isEquivalentToSymbol](this: this, that: this): boolean {
     return equivalence(this, that);
   }
 
   /** Predicate that returns true if `that` has the same type marker as `this` */
-  [MEquivalenceBasedEqualityData.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
+  [MEqData.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
     return Predicate.hasProperty(that, TypeId);
   }
 

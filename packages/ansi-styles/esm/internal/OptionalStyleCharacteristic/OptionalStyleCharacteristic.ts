@@ -5,7 +5,7 @@ import * as Function from 'effect/Function';
 import * as Option from 'effect/Option';
 
 import * as MData from '@parischap/effect-lib/MData';
-import * as MEquivalenceBasedEqualityData from '@parischap/effect-lib/MEquivalenceBasedEqualityData';
+import * as MEqData from '@parischap/effect-lib/MEqData';
 import * as MFunction from '@parischap/effect-lib/MFunction';
 import type * as MTypes from '@parischap/effect-lib/MTypes';
 
@@ -25,7 +25,7 @@ type TypeId = typeof TypeId;
  *
  * @category Models
  */
-export abstract class Type<out A> extends MEquivalenceBasedEqualityData.Class {
+export abstract class Type<out A> extends MEqData.Class {
   /**
    * The value of the style characteristic:
    *
@@ -87,4 +87,4 @@ export const PresentOrElse = <T extends Type<unknown>>(self: T, that: T): T =>
  * @category Utils
  */
 export const orWhenEquals = <T extends Type<unknown>>(self: T, that: T, whenEqual: T): T =>
-  self[MEquivalenceBasedEqualityData.isEquivalentToSymbol](that) ? whenEqual : self;
+  self[MEqData.isEquivalentToSymbol](that) ? whenEqual : self;

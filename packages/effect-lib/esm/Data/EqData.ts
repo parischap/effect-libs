@@ -21,23 +21,23 @@
  * ```ts
  * import { Equal, Hash, Predicate } from 'effect';
  * import * as MData from '@parischap/effect-lib/MData';
- * import * as MEquivalenceBasedEqualityData from '@parischap/effect-lib/MEquivalenceBasedEqualityData';
+ * import * as MEqData from '@parischap/effect-lib/MEqData';
  *
  * const moduleTag = '@example/UserId/';
  * const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
  * type TypeId = typeof TypeId;
  *
- * class UserId extends MEquivalenceBasedEqualityData.Class {
+ * class UserId extends MEqData.Class {
  *   constructor(readonly value: number) {
  *     super();
  *   }
  *   [MData.idSymbol]() {
  *     return moduleTag;
  *   }
- *   [MEquivalenceBasedEqualityData.hasSameTypeMarkerAsSymbol](that: unknown) {
+ *   [MEqData.hasSameTypeMarkerAsSymbol](that: unknown) {
  *     return Predicate.hasProperty(that, TypeId);
  *   }
- *   [MEquivalenceBasedEqualityData.isEquivalentToSymbol](that: this) {
+ *   [MEqData.isEquivalentToSymbol](that: this) {
  *     return this.value === that.value;
  *   }
  *   [Hash.symbol]() {

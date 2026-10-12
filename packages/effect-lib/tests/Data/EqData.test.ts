@@ -5,13 +5,13 @@ import * as Predicate from 'effect/Predicate';
 
 import * as TestUtils from '@parischap/configs/TestUtils';
 import * as MData from '@parischap/effect-lib/MData';
-import * as MEquivalenceBasedEqualityData from '@parischap/effect-lib/MEquivalenceBasedEqualityData';
+import * as MEqData from '@parischap/effect-lib/MEqData';
 
-describe('MEquivalenceBasedEqualityData', () => {
+describe('MEqData', () => {
   const _FooUniqueSymbol: unique symbol = Symbol.for(`Foo`) as _FooUniqueSymbol;
   type _FooUniqueSymbol = typeof _FooUniqueSymbol;
 
-  class Foo extends MEquivalenceBasedEqualityData.Class {
+  class Foo extends MEqData.Class {
     readonly a: number;
     readonly b: boolean;
     constructor({ a, b }: { a: number; b: boolean }) {
@@ -31,7 +31,7 @@ describe('MEquivalenceBasedEqualityData', () => {
     }
 
     /** Function that implements the equivalence of `this` and `that` */
-    [MEquivalenceBasedEqualityData.isEquivalentToSymbol](this: this, that: this): boolean {
+    [MEqData.isEquivalentToSymbol](this: this, that: this): boolean {
       return this.a === that.a;
     }
 
@@ -40,7 +40,7 @@ describe('MEquivalenceBasedEqualityData', () => {
      * tempting to make it a type guard. But two instances of the same generic class that have the
      * same type marker do not necessaraly have the same type
      */
-    [MEquivalenceBasedEqualityData.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
+    [MEqData.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
       return Predicate.hasProperty(that, _FooUniqueSymbol);
     }
 
@@ -56,7 +56,7 @@ describe('MEquivalenceBasedEqualityData', () => {
 
   it('moduleTag', () => {
     TestUtils.assertEquals(
-      Option.some(MEquivalenceBasedEqualityData.moduleTag),
+      Option.some(MEqData.moduleTag),
       TestUtils.moduleTagFromTestFilePath(import.meta.filename),
     );
   });

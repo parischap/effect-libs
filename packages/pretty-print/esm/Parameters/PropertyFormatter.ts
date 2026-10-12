@@ -18,7 +18,7 @@ import * as Struct from 'effect/Struct';
 import * as ASContextStyler from '@parischap/ansi-styles/ASContextStyler';
 import * as ASText from '@parischap/ansi-styles/ASText';
 import * as MData from '@parischap/effect-lib/MData';
-import * as MEquivalenceBasedEqualityData from '@parischap/effect-lib/MEquivalenceBasedEqualityData';
+import * as MEqData from '@parischap/effect-lib/MEqData';
 import * as MFunction from '@parischap/effect-lib/MFunction';
 import type * as MTypes from '@parischap/effect-lib/MTypes';
 
@@ -49,7 +49,7 @@ const defaultParams = {
  *
  * @category Models
  */
-export class Type extends MEquivalenceBasedEqualityData.Class {
+export class Type extends MEqData.Class {
   /** Id of this PPPropertyFormatter instance. Useful for equality and debugging */
   readonly id: string;
   /**
@@ -101,12 +101,12 @@ export class Type extends MEquivalenceBasedEqualityData.Class {
   }
 
   /** Function that implements the equivalence of `this` and `that` */
-  [MEquivalenceBasedEqualityData.isEquivalentToSymbol](this: this, that: this): boolean {
+  [MEqData.isEquivalentToSymbol](this: this, that: this): boolean {
     return equivalence(this, that);
   }
 
   /** Predicate that returns true if `that` has the same type marker as `this` */
-  [MEquivalenceBasedEqualityData.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
+  [MEqData.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
     return Predicate.hasProperty(that, TypeId);
   }
 

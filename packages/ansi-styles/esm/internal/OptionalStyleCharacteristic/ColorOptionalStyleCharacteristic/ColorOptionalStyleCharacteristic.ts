@@ -8,7 +8,7 @@ import type * as Equivalence from 'effect/Equivalence';
 import * as Hash from 'effect/Hash';
 import * as Option from 'effect/Option';
 
-import * as MEquivalenceBasedEqualityData from '@parischap/effect-lib/MEquivalenceBasedEqualityData';
+import * as MEqData from '@parischap/effect-lib/MEqData';
 import type * as MTypes from '@parischap/effect-lib/MTypes';
 
 import * as ASColor from '../../../Color/Color.js';
@@ -41,7 +41,7 @@ export abstract class Type extends ASOptionalStyleCharacteristic.Type<Option.Opt
   }
 
   /** Function that implements the equivalence of `this` and `that` */
-  [MEquivalenceBasedEqualityData.isEquivalentToSymbol](this: this, that: this): boolean {
+  [MEqData.isEquivalentToSymbol](this: this, that: this): boolean {
     return equivalence(this, that);
   }
 

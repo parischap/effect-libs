@@ -3,8 +3,7 @@
  *
  * ## Mental model
  *
- * - **`Class`** is
- *   {@link "./EquivalenceBasedEqualityData.js" | `MEquivalenceBasedEqualityData.Class`} built on
+ * - **`Class`** is {@link "./EquivalenceBasedEqualityData.js" | `MEqData.Class`} built on
  *   `Schema.Class` instead of {@link "./Data.js" | `MData.Class`}. Like it, it implements
  *   `Inspectable.Inspectable`, `Pipeable.Pipeable` and `Equal.Equal`, and its subclasses provide
  *   `[MData.idSymbol]`, `[isEquivalentToSymbol]`, `[hasSameTypeMarkerAsSymbol]` and
@@ -36,7 +35,7 @@
  * ```ts
  * import type { Equivalence } from 'effect';
  * import { Arbitrary, Effect, Equal, Hash, Predicate, Schema } from 'effect';
- * import { MData, MEquivalenceBasedEqualityData, MSchemaData } from '@parischap/effect-lib';
+ * import { MData, MEqData, MSchemaData } from '@parischap/effect-lib';
  *
  * const moduleTag = '@parischap/my-app/Person/';
  * const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
@@ -54,11 +53,11 @@
  *     return 0;
  *   }
  *
- *   [MEquivalenceBasedEqualityData.isEquivalentToSymbol](this: this, that: this): boolean {
+ *   [MEqData.isEquivalentToSymbol](this: this, that: this): boolean {
  *     return equivalence(this, that);
  *   }
  *
- *   [MEquivalenceBasedEqualityData.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
+ *   [MEqData.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
  *     return Predicate.hasProperty(that, TypeId);
  *   }
  *
@@ -84,7 +83,7 @@
  * console.log(result._tag); // 'Passed'
  * ```
  *
- * @see {@link "./EquivalenceBasedEqualityData.js" | `MEquivalenceBasedEqualityData`} — same without `Schema`
+ * @see {@link "./EquivalenceBasedEqualityData.js" | `MEqData`} — same without `Schema`
  * @see {@link "./Data.js" | `MData`} — base class without equality
  */
 
@@ -94,7 +93,7 @@ import * as Inspectable from 'effect/Inspectable';
 import * as Schema from 'effect/Schema';
 
 import * as MData from './Data.js';
-import * as MEquivalenceBasedEqualityData from './EquivalenceBasedEqualityData.js';
+import * as MEqData from './EqData.js';
 
 /**
  * Module tag.
@@ -142,14 +141,14 @@ export abstract class Class extends Schema.Class<Class>(moduleTag)({}) {
    * Implements the equivalence between `this` and `that`. Called only after
    * `[hasSameTypeMarkerAsSymbol]` confirmed that both share the same type marker.
    */
-  abstract [MEquivalenceBasedEqualityData.isEquivalentToSymbol](this: this, that: this): boolean;
+  abstract [MEqData.isEquivalentToSymbol](this: this, that: this): boolean;
 
   /**
    * Returns `true` when `that` has the same type marker as `this`. Not declared as a TypeScript
    * type guard because two instances of the same generic class may share a marker yet differ in
    * their type parameters.
    */
-  abstract [MEquivalenceBasedEqualityData.hasSameTypeMarkerAsSymbol](that: unknown): boolean;
+  abstract [MEqData.hasSameTypeMarkerAsSymbol](that: unknown): boolean;
 
   /**
    * Returns the hash of `this`. Return `0` to disable hashing when computing a real hash would be
@@ -160,8 +159,8 @@ export abstract class Class extends Schema.Class<Class>(moduleTag)({}) {
   /** Implements `Equal.Equal` by combining the same-type-marker guard and the equivalence. */
   [Equal.symbol](this: this, that: Equal.Equal): boolean {
     return (
-      this[MEquivalenceBasedEqualityData.hasSameTypeMarkerAsSymbol](that) &&
-      this[MEquivalenceBasedEqualityData.isEquivalentToSymbol](that as this)
+      this[MEqData.hasSameTypeMarkerAsSymbol](that) &&
+      this[MEqData.isEquivalentToSymbol](that as this)
     );
   }
 }

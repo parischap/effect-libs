@@ -12,7 +12,7 @@ import * as Number from 'effect/Number';
 import type * as Pipeable from 'effect/Pipeable';
 
 import * as MData from '@parischap/effect-lib/MData';
-import * as MEquivalenceBasedEqualityData from '@parischap/effect-lib/MEquivalenceBasedEqualityData';
+import * as MEqData from '@parischap/effect-lib/MEqData';
 import type * as MTypes from '@parischap/effect-lib/MTypes';
 
 import type * as ASSequence from '../internal/Sequence.js';
@@ -32,7 +32,7 @@ type TypeId = typeof TypeId;
  * @category Models
  */
 export abstract class Type
-  extends MEquivalenceBasedEqualityData.Class
+  extends MEqData.Class
   implements Pipeable.Pipeable, Inspectable.Inspectable, Equal.Equal, Hash.Hash
 {
   /** Id of this color used as foreground color */
@@ -107,7 +107,7 @@ export const backgroundSequence = (self: Type): ASSequence.OverOne => self.backg
  * @category Equivalences
  */
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
-  self[MEquivalenceBasedEqualityData.isEquivalentToSymbol](that);
+  self[MEqData.isEquivalentToSymbol](that);
 
 /**
  * Gets the id of `self`

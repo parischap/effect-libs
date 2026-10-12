@@ -8,7 +8,7 @@
  * - Subclasses must implement `[idSymbol]`, returning either a string identifier (used as `_id` in
  *   the JSON view) or a function producing a fully custom string representation.
  * - `Class` does **not** implement `Equal.Equal`; for value-based equality, extend
- *   {@link "./EquivalenceBasedEqualityData.js" | `MEquivalenceBasedEqualityData.Class`} instead.
+ *   {@link "./EquivalenceBasedEqualityData.js" | `MEqData.Class`} instead.
  * - If a subclass also implements `Redactable.Redactable`, `toJSON`, `toString`, and the Node.js
  *   inspection hook all return `Redactable.getRedacted(this)` instead of the normal `_id` +
  *   properties view, so `[idSymbol]` is never called on redacted instances.

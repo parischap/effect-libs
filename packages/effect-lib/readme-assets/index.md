@@ -6,7 +6,7 @@
 - [Usage](#usage)
   - [MCache](#mcache)
   - [MDateTime](#mdatetime)
-  - [MEquivalenceBasedEqualityData](#mequivalencebasedequalitydata)
+  - [MEqData](#mequivalencebasedequalitydata)
   - [MMatch](#mmatch)
   - [MNumberBase10Format](#mnumberbase10format)
   - [MOption](#moption)
@@ -20,41 +20,41 @@
 
 This package contains the following modules, all prefixed with `M` to avoid name collisions with the official `effect` modules they extend:
 
-| Module                            | Description                                                                                                                                                                                                                                                  |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **MArray**                        | Extensions to `effect/Array`: additional predicates, fold/unfold operations with cycle detection, padding, grouping, and more                                                                                                                                |
-| **MBigDecimal**                   | Conversions and utilities for `effect/BigDecimal`, including safe/unsafe construction from primitive values                                                                                                                                                  |
-| **MBigInt**                       | Conversions, arithmetic predicates, and logarithm for `effect/BigInt`                                                                                                                                                                                        |
-| **MCache**                        | A time-limited, capacity-bounded FIFO cache with a `lifeSpan` (TTL in milliseconds). Cannot be used with an effectful lookup function.                                                                                                                       |
-| **MChunk**                        | Extensions to `effect/Chunk`: duplicate detection, `findAll`, `takeBut`, and `takeRightBut`                                                                                                                                                                  |
-| **MData**                         | A base class providing default `Inspectable` and `Pipeable` behavior for `effect` data types, honoring the `Redactable` protocol when a subclass implements it                                                                                               |
-| **MDateTime**                     | An immutable date-time object natively handling both the Gregorian and ISO calendars (ISO year/week getters and setters), with an internal cache for performance. Exposes `format`/`parse` combining a `MDateTimeFormat` and a `MDateTimeContext`            |
-| **MDateTimeContext**              | Locale data (month/weekday/day-period names) paired with the `MTemplatePlaceholder`'s that resolve each `MDateTimeFormat.Token`. Build from a locale name or from explicit translations                                                                      |
-| **MDateTimeFormat**               | A context-independent date-time format: an array of separators (plain strings) and `Token`'s (Unicode date-field symbols such as `yyyy`, `MMMM`, `HH`)                                                                                                       |
-| **MEquivalenceBasedEqualityData** | A base class that derives `Equal.Equal` from user-defined `isEquivalentToSymbol` and `hasSameTypeMarkerAsSymbol` methods                                                                                                                                     |
-| **MFunction**                     | Extensions to `effect/Function`: memoization with `once`, `applyAsThis`, cloning, and constant helpers                                                                                                                                                       |
-| **MInputError**                   | A tagged error for user-facing validation failures, with `assertInRange` and similar guards                                                                                                                                                                  |
-| **MIterable**                     | Lazy Iterable-returning counterparts of select `MArray` functions (`findAll`, `takeRightBut`, `longestCommonSubArray`, `ungroup`, `modifyHead`, `modifyTail`, `unfold`, `mergeSorted`, `differenceSorted`): nothing is computed until the result is iterated |
-| **MMatch**                        | A lightweight, type-safe pattern-matcher that replaces `effect/Match` for simple use cases. Supports predicate matching, refinement matching with exhaustiveness checking, `whenOr`, `whenAnd`, and `tryFunction`                                            |
-| **MNumber**                       | Extensions to `effect/Number`: safe conversions from `BigInt` and `BigDecimal`, integer predicates, modulo, `fromString`, rounding (`round`), and safe parsing according to a `MNumberBase10Format` (`fromFormatAndString`, `fromFormatAndStringStart`)      |
-| **MNumberBase10Format**           | A composable description of how to parse/format a base-10 number or `BigDecimal`: thousand/fractional separators, padding, rounding, sign display, scientific notation. Usable directly or through `MString`/`MSchema`                                       |
-| **MOption**                       | Extensions to `effect/Option`: construction from nullable-or-option values, and iterator unwrapping                                                                                                                                                          |
-| **MPortError**                    | A tagged error for wrapping failures that arise when porting non-`effect` functions into the `effect` world                                                                                                                                                  |
-| **MPredicate**                    | Extensions to `effect/Predicate`: type-level utilities (`Source`, `Target`, `Coverage`, mapping types), a `struct` combinator, and runtime guards for primitives, non-primitives, function arity, and sized arrays (`isSingleton`, `isPair`, `isOverOne`, …) |
-| **MRecord**                       | Extensions to `effect/Record`: type-safe `unsafeGet`, `modify`, and `modifyAll`                                                                                                                                                                              |
-| **MRegExp**                       | Ready-to-use `RegExp` instances (SemVer, email, line breaks) and `fromRegExpString`                                                                                                                                                                          |
-| **MRegExpString**                 | Building blocks for composing regular-expression strings (unsigned integers, signed integers, identifiers, separators, etc.)                                                                                                                                 |
-| **MResult**                       | Extensions to `effect/Result`: flattening and optional extraction                                                                                                                                                                                            |
-| **MSchema**                       | Extension to `effect/Schema`: codecs for numbers/`BigDecimal`'s (`MNumberBase10Format`-driven), `MDateTime` (from a `Date`, an `effect/DateTime.Zoned`, or a string via `MDateTimeFormat`/`MDateTimeContext`), and `MTemplate`-driven object codecs          |
-| **MSchemaData**                   | A base class for value objects built on `Schema.Class` that derives `Equal.Equal` from a user-defined equivalence. Instances can be decoded, encoded and generated for property-based testing (`Arbitrary`)                                                  |
-| **MString**                       | Extensions to `effect/String`: search with automatic `lastIndex` reset, padding with fill-position support, `removeNCharsEveryMChars`, SemVer/email predicates, number parsing/formatting via `MNumberBase10Format`, and templating via `MTemplate`          |
-| **MStringFillPosition**           | A small enum-like module for fill positions (`left` / `right`) used by `MString` padding functions                                                                                                                                                           |
-| **MStringSearchResult**           | A value-object representing a regex match result, with `Equivalence`, `Order`, and `Hash` instances                                                                                                                                                          |
-| **MStruct**                       | Extensions to `effect/Struct`: an `evolve` variant that only requires keys present in the patch object                                                                                                                                                       |
-| **MTemplate**                     | A `sprintf`/`sscanf`-like model of a text with a fixed structure — immutable `MTemplateSeparator`'s and typed, named `MTemplatePlaceholder`'s. Parsed/formatted through `MString.templateParse`/`templateFormat` or `MSchema.Template`                       |
-| **MTree**                         | A recursive tree/forest data structure with `fold`, `map`, `reduce`, and a cycle-safe `unfold`. Composed of `MTreeLeaf`, `MTreeNode`, `MTreeNonLeaf`, and `MTreeForest` sub-modules                                                                          |
-| **MTuple**                        | Extensions to `effect/Tuple`: `of`, `replicate`, and `prependElement`                                                                                                                                                                                        |
-| **MTypes**                        | Foundational primitive / container types and type-level utilities (`Object`, `NonPrimitive`, `Pair`, `Singleton`, `OverOne`, `OverTwo`, `Data`, `Tuple`, …). Runtime guards live in `MPredicate`                                                             |
+| Module                  | Description                                                                                                                                                                                                                                                  |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **MArray**              | Extensions to `effect/Array`: additional predicates, fold/unfold operations with cycle detection, padding, grouping, and more                                                                                                                                |
+| **MBigDecimal**         | Conversions and utilities for `effect/BigDecimal`, including safe/unsafe construction from primitive values                                                                                                                                                  |
+| **MBigInt**             | Conversions, arithmetic predicates, and logarithm for `effect/BigInt`                                                                                                                                                                                        |
+| **MCache**              | A time-limited, capacity-bounded FIFO cache with a `lifeSpan` (TTL in milliseconds). Cannot be used with an effectful lookup function.                                                                                                                       |
+| **MChunk**              | Extensions to `effect/Chunk`: duplicate detection, `findAll`, `takeBut`, and `takeRightBut`                                                                                                                                                                  |
+| **MData**               | A base class providing default `Inspectable` and `Pipeable` behavior for `effect` data types, honoring the `Redactable` protocol when a subclass implements it                                                                                               |
+| **MDateTime**           | An immutable date-time object natively handling both the Gregorian and ISO calendars (ISO year/week getters and setters), with an internal cache for performance. Exposes `format`/`parse` combining a `MDateTimeFormat` and a `MDateTimeContext`            |
+| **MDateTimeContext**    | Locale data (month/weekday/day-period names) paired with the `MTemplatePlaceholder`'s that resolve each `MDateTimeFormat.Token`. Build from a locale name or from explicit translations                                                                      |
+| **MDateTimeFormat**     | A context-independent date-time format: an array of separators (plain strings) and `Token`'s (Unicode date-field symbols such as `yyyy`, `MMMM`, `HH`)                                                                                                       |
+| **MEqData**             | A base class that derives `Equal.Equal` from user-defined `isEquivalentToSymbol` and `hasSameTypeMarkerAsSymbol` methods                                                                                                                                     |
+| **MFunction**           | Extensions to `effect/Function`: memoization with `once`, `applyAsThis`, cloning, and constant helpers                                                                                                                                                       |
+| **MInputError**         | A tagged error for user-facing validation failures, with `assertInRange` and similar guards                                                                                                                                                                  |
+| **MIterable**           | Lazy Iterable-returning counterparts of select `MArray` functions (`findAll`, `takeRightBut`, `longestCommonSubArray`, `ungroup`, `modifyHead`, `modifyTail`, `unfold`, `mergeSorted`, `differenceSorted`): nothing is computed until the result is iterated |
+| **MMatch**              | A lightweight, type-safe pattern-matcher that replaces `effect/Match` for simple use cases. Supports predicate matching, refinement matching with exhaustiveness checking, `whenOr`, `whenAnd`, and `tryFunction`                                            |
+| **MNumber**             | Extensions to `effect/Number`: safe conversions from `BigInt` and `BigDecimal`, integer predicates, modulo, `fromString`, rounding (`round`), and safe parsing according to a `MNumberBase10Format` (`fromFormatAndString`, `fromFormatAndStringStart`)      |
+| **MNumberBase10Format** | A composable description of how to parse/format a base-10 number or `BigDecimal`: thousand/fractional separators, padding, rounding, sign display, scientific notation. Usable directly or through `MString`/`MSchema`                                       |
+| **MOption**             | Extensions to `effect/Option`: construction from nullable-or-option values, and iterator unwrapping                                                                                                                                                          |
+| **MPortError**          | A tagged error for wrapping failures that arise when porting non-`effect` functions into the `effect` world                                                                                                                                                  |
+| **MPredicate**          | Extensions to `effect/Predicate`: type-level utilities (`Source`, `Target`, `Coverage`, mapping types), a `struct` combinator, and runtime guards for primitives, non-primitives, function arity, and sized arrays (`isSingleton`, `isPair`, `isOverOne`, …) |
+| **MRecord**             | Extensions to `effect/Record`: type-safe `unsafeGet`, `modify`, and `modifyAll`                                                                                                                                                                              |
+| **MRegExp**             | Ready-to-use `RegExp` instances (SemVer, email, line breaks) and `fromRegExpString`                                                                                                                                                                          |
+| **MRegExpString**       | Building blocks for composing regular-expression strings (unsigned integers, signed integers, identifiers, separators, etc.)                                                                                                                                 |
+| **MResult**             | Extensions to `effect/Result`: flattening and optional extraction                                                                                                                                                                                            |
+| **MSchema**             | Extension to `effect/Schema`: codecs for numbers/`BigDecimal`'s (`MNumberBase10Format`-driven), `MDateTime` (from a `Date`, an `effect/DateTime.Zoned`, or a string via `MDateTimeFormat`/`MDateTimeContext`), and `MTemplate`-driven object codecs          |
+| **MSchemaData**         | A base class for value objects built on `Schema.Class` that derives `Equal.Equal` from a user-defined equivalence. Instances can be decoded, encoded and generated for property-based testing (`Arbitrary`)                                                  |
+| **MString**             | Extensions to `effect/String`: search with automatic `lastIndex` reset, padding with fill-position support, `removeNCharsEveryMChars`, SemVer/email predicates, number parsing/formatting via `MNumberBase10Format`, and templating via `MTemplate`          |
+| **MStringFillPosition** | A small enum-like module for fill positions (`left` / `right`) used by `MString` padding functions                                                                                                                                                           |
+| **MStringSearchResult** | A value-object representing a regex match result, with `Equivalence`, `Order`, and `Hash` instances                                                                                                                                                          |
+| **MStruct**             | Extensions to `effect/Struct`: an `evolve` variant that only requires keys present in the patch object                                                                                                                                                       |
+| **MTemplate**           | A `sprintf`/`sscanf`-like model of a text with a fixed structure — immutable `MTemplateSeparator`'s and typed, named `MTemplatePlaceholder`'s. Parsed/formatted through `MString.templateParse`/`templateFormat` or `MSchema.Template`                       |
+| **MTree**               | A recursive tree/forest data structure with `fold`, `map`, `reduce`, and a cycle-safe `unfold`. Composed of `MTreeLeaf`, `MTreeNode`, `MTreeNonLeaf`, and `MTreeForest` sub-modules                                                                          |
+| **MTuple**              | Extensions to `effect/Tuple`: `of`, `replicate`, and `prependElement`                                                                                                                                                                                        |
+| **MTypes**              | Foundational primitive / container types and type-level utilities (`Object`, `NonPrimitive`, `Pair`, `Singleton`, `OverOne`, `OverTwo`, `Data`, `Tuple`, …). Runtime guards live in `MPredicate`                                                             |
 
 # Usage
 
@@ -66,6 +66,7 @@ A mutable, optionally bounded and TTL-limited FIFO cache built around a user-sup
 
 ```ts
 import { Tuple, pipe } from 'effect';
+
 import * as MCache from '@parischap/effect-lib/MCache';
 
 interface Node {
@@ -109,30 +110,31 @@ console.log(parse('Thursday 4 September 2025'));
 console.log(MDateTime.format(format, MDateTimeContext.enGB)(MDateTime.fromTimestampOrThrow(0, 0)));
 ```
 
-## MEquivalenceBasedEqualityData
+## MEqData
 
 A base class for value objects that derive `Equal.Equal` from a user-defined equivalence instead of structural equality. Subclasses implement a same-type-marker guard (a `TypeId` symbol checked with `Predicate.hasProperty`, never `instanceof`), the equivalence itself, and a consistent hash.
 
 ```ts
 import { Equal, Hash, Predicate } from 'effect';
+
 import * as MData from '@parischap/effect-lib/MData';
-import * as MEquivalenceBasedEqualityData from '@parischap/effect-lib/MEquivalenceBasedEqualityData';
+import * as MEqData from '@parischap/effect-lib/MEqData';
 
 const moduleTag = '@example/UserId/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
 
-class UserId extends MEquivalenceBasedEqualityData.Class {
+class UserId extends MEqData.Class {
   constructor(readonly value: number) {
     super();
   }
   [MData.idSymbol]() {
     return moduleTag;
   }
-  [MEquivalenceBasedEqualityData.hasSameTypeMarkerAsSymbol](that: unknown) {
+  [MEqData.hasSameTypeMarkerAsSymbol](that: unknown) {
     return Predicate.hasProperty(that, TypeId);
   }
-  [MEquivalenceBasedEqualityData.isEquivalentToSymbol](that: this) {
+  [MEqData.isEquivalentToSymbol](that: this) {
     return this.value === that.value;
   }
   [Hash.symbol]() {
@@ -156,8 +158,9 @@ A lightweight, type-safe pattern-matcher that replaces `effect/Match` for simple
 
 ```ts
 import { pipe } from 'effect';
-import * as MMatch from '@parischap/effect-lib/MMatch';
 import * as Number from 'effect/Number';
+
+import * as MMatch from '@parischap/effect-lib/MMatch';
 
 const sign = (n: number) =>
   pipe(
@@ -199,6 +202,7 @@ Extensions to `effect/Option`: normalization of `Option`/nullable inputs and ite
 
 ```ts
 import { Option } from 'effect';
+
 import * as MOption from '@parischap/effect-lib/MOption';
 
 // Result: None
@@ -221,13 +225,14 @@ console.log(MOption.fromNextIteratorValue(iterator));
 
 ## MSchemaData
 
-Same as `MEquivalenceBasedEqualityData`, but built on `Schema.Class`: the fields are `Schema`'s, so a subclass can be decoded and encoded, and `Arbitrary.schema` can generate instances of it for property-based testing. Subclasses are defined with `Class.extend` and, as for `MEquivalenceBasedEqualityData`, implement a same-type-marker guard, the equivalence itself, and a consistent hash.
+Same as `MEqData`, but built on `Schema.Class`: the fields are `Schema`'s, so a subclass can be decoded and encoded, and `Arbitrary.schema` can generate instances of it for property-based testing. Subclasses are defined with `Class.extend` and, as for `MEqData`, implement a same-type-marker guard, the equivalence itself, and a consistent hash.
 
 ```ts
 import type { Equivalence } from 'effect';
 import { Arbitrary, Effect, Equal, Hash, Predicate, Schema } from 'effect';
+
 import * as MData from '@parischap/effect-lib/MData';
-import * as MEquivalenceBasedEqualityData from '@parischap/effect-lib/MEquivalenceBasedEqualityData';
+import * as MEqData from '@parischap/effect-lib/MEqData';
 import * as MSchemaData from '@parischap/effect-lib/MSchemaData';
 
 const moduleTag = '@parischap/my-app/Person/';
@@ -246,11 +251,11 @@ class Type extends MSchemaData.Class.extend<Type>(moduleTag)({
     return 0;
   }
 
-  [MEquivalenceBasedEqualityData.isEquivalentToSymbol](this: this, that: this): boolean {
+  [MEqData.isEquivalentToSymbol](this: this, that: this): boolean {
     return equivalence(this, that);
   }
 
-  [MEquivalenceBasedEqualityData.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
+  [MEqData.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
     return Predicate.hasProperty(that, TypeId);
   }
 
@@ -280,6 +285,7 @@ Extensions to `effect/String`: indexed search, custom-character trimming, paddin
 
 ```ts
 import { Option, pipe } from 'effect';
+
 import * as MString from '@parischap/effect-lib/MString';
 import * as MStringFillPosition from '@parischap/effect-lib/MStringFillPosition';
 
@@ -334,6 +340,7 @@ A recursive tree/forest data structure with `fold`, `map`, `reduce`, and a cycle
 
 ```ts
 import { Result, pipe } from 'effect';
+
 import * as MTree from '@parischap/effect-lib/MTree';
 
 const buildAndSum = pipe(
@@ -351,10 +358,14 @@ console.log(buildAndSum);
 
 # Changelog
 
+## 0.29.0
+
+- Replaced `MEquivalenceBasedEqualityData` by `MEqData`.
+
 ## 0.28.0
 
 - Reflected effect API change: `Schema.transformOrFail` → `Schema.transformEffect`.
-- **Added** `MSchemaData`: like `MEquivalenceBasedEqualityData` but built on `Schema.Class`, so that instances can be decoded, encoded and generated with `Arbitrary`.
+- **Added** `MSchemaData`: like `MEqData` but built on `Schema.Class`, so that instances can be decoded, encoded and generated with `Arbitrary`.
 - **`MData.Class`** now honors the `Redactable` protocol: if a subclass also implements
   `Redactable.Redactable`, `toJSON`, `toString`, and the Node.js inspection hook return
   `Redactable.getRedacted(this)` instead of the normal `_id` + properties view.
@@ -432,11 +443,11 @@ Improved documentation.
 
 - Substantially expanded JSDoc comments across all modules with inline runnable examples.
 - Fixed a bug in `MBigInt.log10` (incorrectly rejected `0`).
-- **New modules:** `MBigDecimal`, `MBigInt`, `MData`, `MEquivalenceBasedEqualityData`, `MStringFillPosition`, `MStringSearchResult`, `MTypesCategory`.
+- **New modules:** `MBigDecimal`, `MBigInt`, `MData`, `MEqData`, `MStringFillPosition`, `MStringSearchResult`, `MTypesCategory`.
 - **`MPredicate` promoted.** All runtime type-guards previously living in `MTypes` have been moved to `MPredicate` (to match `effect`'s organization). `MTypes` is now purely type-level utilities.
 - **`MString` reorganized** into a `String/` sub-folder; `MStringFillPosition` and `MStringSearchResult` are now separate importable modules for better tree-shaking.
 - **`MTree` expanded** into a `Tree/` sub-folder: `MTree`, `MTreeLeaf`, `MTreeNode`, `MTreeNonLeaf`, `MTreeForest`.
-- **`MData` replaces `Inspectable`/`Pipeable`** as the single base class that all `effect` data types in this library extend. `MEquivalenceBasedEqualityData` extends `MData` with structural equality via an abstract `isEquivalentTo` method.
+- **`MData` replaces `Inspectable`/`Pipeable`** as the single base class that all `effect` data types in this library extend. `MEqData` extends `MData` with structural equality via an abstract `isEquivalentTo` method.
 - **Renamed:** `BadArgumentError` → `MInputError`.
 - **Removed:** `MBrand`, `MFs`, `MScopeOnce`, `MStream` — available natively in `effect` v4 or retired as experimental.
 

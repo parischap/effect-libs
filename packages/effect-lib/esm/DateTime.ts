@@ -37,7 +37,7 @@ import type * as MTypes from './types/types.js';
 
 import * as MArray from './Array.js';
 import * as MData from './Data/Data.js';
-import * as MEquivalenceBasedEqualityData from './Data/EquivalenceBasedEqualityData.js';
+import * as MEqData from './Data/EqData.js';
 import * as MFunction from './Function.js';
 import * as MInputError from './InputError.js';
 import {
@@ -164,7 +164,7 @@ const uncalculated = {
  *
  * @category Models
  */
-export class Type extends MEquivalenceBasedEqualityData.Class {
+export class Type extends MEqData.Class {
   /** Timestamp of this DateTime (timezone-independent) */
   readonly timestamp: number;
 
@@ -746,12 +746,12 @@ export class Type extends MEquivalenceBasedEqualityData.Class {
   }
 
   /** Function that implements the equivalence of `this` and `that` */
-  [MEquivalenceBasedEqualityData.isEquivalentToSymbol](this: this, that: this): boolean {
+  [MEqData.isEquivalentToSymbol](this: this, that: this): boolean {
     return equivalence(this, that);
   }
 
   /** Predicate that returns true if `that` has the same type marker as `this` */
-  [MEquivalenceBasedEqualityData.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
+  [MEqData.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
     return Predicate.hasProperty(that, TypeId);
   }
   /** Returns the TypeMarker of the class */

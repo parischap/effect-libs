@@ -9,7 +9,7 @@ export * as MData from './Data/Data.js';
 export * as MDateTime from './DateTime.js';
 export * as MDateTimeContext from './DateTimeContext.js';
 export * as MDateTimeFormat from './DateTimeFormat.js';
-export * as MEquivalenceBasedEqualityData from './Data/EquivalenceBasedEqualityData.js';
+export * as MEqData from './Data/EqData.js';
 export * as MFunction from './Function.js';
 export * as MInputError from './InputError.js';
 export * as MIterable from './Iterable.js';

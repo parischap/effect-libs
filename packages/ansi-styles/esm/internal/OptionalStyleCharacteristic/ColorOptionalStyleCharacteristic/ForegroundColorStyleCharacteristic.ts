@@ -4,7 +4,7 @@ import * as Function from 'effect/Function';
 import * as Option from 'effect/Option';
 import * as Predicate from 'effect/Predicate';
 
-import * as MEquivalenceBasedEqualityData from '@parischap/effect-lib/MEquivalenceBasedEqualityData';
+import * as MEqData from '@parischap/effect-lib/MEqData';
 import type * as MTypes from '@parischap/effect-lib/MTypes';
 
 import * as ASColor from '../../../Color/Color.js';
@@ -53,7 +53,7 @@ export class Type extends ASColorOptionalStyleCharacteristic.Type {
   }
 
   /** Predicate that returns true if `that` has the same type marker as `this` */
-  [MEquivalenceBasedEqualityData.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
+  [MEqData.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
     return Predicate.hasProperty(that, TypeId);
   }
 

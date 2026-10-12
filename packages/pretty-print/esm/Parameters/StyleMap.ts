@@ -18,7 +18,7 @@ import * as ASContextStyler from '@parischap/ansi-styles/ASContextStyler';
 import * as ASPalette from '@parischap/ansi-styles/ASPalette';
 import * as ASStyle from '@parischap/ansi-styles/ASStyle';
 import * as MData from '@parischap/effect-lib/MData';
-import * as MEquivalenceBasedEqualityData from '@parischap/effect-lib/MEquivalenceBasedEqualityData';
+import * as MEqData from '@parischap/effect-lib/MEqData';
 import type * as MTypes from '@parischap/effect-lib/MTypes';
 
 import type * as PPPartName from './PartName.js';
@@ -40,7 +40,7 @@ type TypeId = typeof TypeId;
  *
  * @category Models
  */
-export class Type extends MEquivalenceBasedEqualityData.Class {
+export class Type extends MEqData.Class {
   /** Id of this PPStyleMap instance. Useful for equality and debugging. */
   readonly id: string;
 
@@ -72,12 +72,12 @@ export class Type extends MEquivalenceBasedEqualityData.Class {
   }
 
   /** Function that implements the equivalence of `this` and `that` */
-  [MEquivalenceBasedEqualityData.isEquivalentToSymbol](this: this, that: this): boolean {
+  [MEqData.isEquivalentToSymbol](this: this, that: this): boolean {
     return equivalence(this, that);
   }
 
   /** Predicate that returns true if `that` has the same type marker as `this` */
-  [MEquivalenceBasedEqualityData.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
+  [MEqData.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
     return Predicate.hasProperty(that, TypeId);
   }
   /** Returns the TypeMarker of the class */

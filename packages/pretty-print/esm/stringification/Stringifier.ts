@@ -23,7 +23,7 @@ import type * as ASStyle from '@parischap/ansi-styles/ASStyle';
 import * as ASText from '@parischap/ansi-styles/ASText';
 import * as MArray from '@parischap/effect-lib/MArray';
 import * as MData from '@parischap/effect-lib/MData';
-import * as MEquivalenceBasedEqualityData from '@parischap/effect-lib/MEquivalenceBasedEqualityData';
+import * as MEqData from '@parischap/effect-lib/MEqData';
 import * as MFunction from '@parischap/effect-lib/MFunction';
 import * as MMatch from '@parischap/effect-lib/MMatch';
 import * as MPredicate from '@parischap/effect-lib/MPredicate';
@@ -62,7 +62,7 @@ type TypeId = typeof TypeId;
  *
  * @category Models
  */
-export class Type extends MEquivalenceBasedEqualityData.Class {
+export class Type extends MEqData.Class {
   /** Id of `this` `PPStringifier`. Derived from the `id` of the `PPParameters` used to build it */
   readonly id: string;
 
@@ -370,12 +370,12 @@ export class Type extends MEquivalenceBasedEqualityData.Class {
   }
 
   /** Function that implements the equivalence of `this` and `that` */
-  [MEquivalenceBasedEqualityData.isEquivalentToSymbol](this: this, that: this): boolean {
+  [MEqData.isEquivalentToSymbol](this: this, that: this): boolean {
     return equivalence(this, that);
   }
 
   /** Predicate that returns true if `that` has the same type marker as `this` */
-  [MEquivalenceBasedEqualityData.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
+  [MEqData.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
     return Predicate.hasProperty(that, TypeId);
   }
   /** Returns the TypeMarker of the class */
