@@ -63,7 +63,7 @@ import * as MData from './Data.js';
  *
  * @category Module markers
  */
-export const moduleTag = '@parischap/effect-lib/Data/EquivalenceBasedEqualityData/';
+export const moduleTag = '@parischap/effect-lib/Data/EqData/';
 const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
 type TypeId = typeof TypeId;
 

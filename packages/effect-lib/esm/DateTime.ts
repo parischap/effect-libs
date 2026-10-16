@@ -26,6 +26,7 @@ import * as Function from 'effect/Function';
 import * as Hash from 'effect/Hash';
 import * as Number from 'effect/Number';
 import * as Option from 'effect/Option';
+import * as Order from 'effect/Order';
 import * as Predicate from 'effect/Predicate';
 import * as Record from 'effect/Record';
 import * as Result from 'effect/Result';
@@ -768,8 +769,42 @@ export class Type extends MEqData.Class {
 export const equivalence: Equivalence.Equivalence<Type> = (self, that) =>
   self.timestamp === that.timestamp;
 
+const _Order: Order.Order<Type> = Order.mapInput(Order.Number, (self: Type) => self.timestamp);
+
+export {
+  /**
+   * Order on `timestamp` (ascending)
+   *
+   * - Ignores `zoneOffset`: two `MDateTime`'s that represent the same instant in different time zones
+   *   are equal for this `Order`.
+   * - Use to sort or compare `MDateTime`'s, or to build filters with `MSchema.isBetweenDateTime`...
+   *
+   * **Example** (Comparing two `MDateTime`'s)
+   *
+   * ```ts
+   * import * as MDateTime from '@parischap/effect-lib/MDateTime';
+   *
+   * const earlier = MDateTime.fromTimestampOrThrow(0, 2);
+   * const later = MDateTime.fromTimestampOrThrow(1000, 0);
+   *
+   * // -1
+   * console.log(MDateTime.Order(earlier, later));
+   * // 0: same instant, different time zones
+   * console.log(MDateTime.Order(MDateTime.fromTimestampOrThrow(0, 5), earlier));
+   * ```
+   *
+   * @category Ordering
+   */
+  _Order as Order,
+};
+
 /**
- * Returns the ISO representation of this DateTime
+ * Returns the ISO 8601 representation of this DateTime
+ *
+ * - The year is written with 4 digits if it is in [0, 9999]. Otherwise, the expanded representation
+ *   is used: a sign followed by 6 digits (e.g. `+275760-09-13T00:00:00.000+00:00`), as
+ *   `Date.prototype.toISOString` does.
+ * - Never throws: all the years supported by `MDateTime` can be represented.
  *
  * @category Destructors
  */

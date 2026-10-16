@@ -58,26 +58,33 @@ const YEAR_START_2001_MS = 978_307_200_000;
 
 const sep = MTemplateSeparator;
 
-const formatter = pipe(
-  MTemplate.make(
-    MTemplatePlaceholder.number({
-      name: 'year',
-      numberBase10Format: MNumberBase10Format.fourDigitUnsignedInteger,
-    }),
-    sep.hyphen,
-    MTemplatePlaceholder.number({
-      name: 'month',
-      numberBase10Format: MNumberBase10Format.twoDigitUnsignedInteger,
-    }),
-    sep.hyphen,
-    MTemplatePlaceholder.number({
-      name: 'monthDay',
-      numberBase10Format: MNumberBase10Format.twoDigitUnsignedInteger,
-    }),
-  ),
-  MString.templateFormat,
-  Function.compose(Result.getOrThrowWith(Function.identity)),
-);
+const makeFormatter = (yearFormat: MNumberBase10Format.Type) =>
+  pipe(
+    MTemplate.make(
+      MTemplatePlaceholder.number({
+        name: 'year',
+        numberBase10Format: yearFormat,
+      }),
+      sep.hyphen,
+      MTemplatePlaceholder.number({
+        name: 'month',
+        numberBase10Format: MNumberBase10Format.twoDigitUnsignedInteger,
+      }),
+      sep.hyphen,
+      MTemplatePlaceholder.number({
+        name: 'monthDay',
+        numberBase10Format: MNumberBase10Format.twoDigitUnsignedInteger,
+      }),
+    ),
+    MString.templateFormat,
+    Function.compose(Result.getOrThrowWith(Function.identity)),
+  );
+
+/** Formatter of the years in [0, 9999]: 4 digits */
+const formatter = makeFormatter(MNumberBase10Format.fourDigitUnsignedInteger);
+
+/** Formatter of the other years: expanded representation, a sign and 6 digits (e.g. +275760) */
+const expandedFormatter = makeFormatter(MNumberBase10Format.sixDigitSignedInteger);
 
 /**
  * Type that represents a GregorianDate
@@ -515,11 +522,18 @@ export const getNumberOfDaysInMonth = (month: number): MTypes.OneArgFunction<Typ
   flow(Struct.get('daysInMonth'), MArray.unsafeGet(month - 1));
 
 /**
- * Returns the ISO representation of this Gregorian Date
+ * Returns the ISO 8601 representation of this Gregorian Date
+ *
+ * - The year is written with 4 digits if it is in [0, 9999].
+ * - Otherwise, the expanded representation is used: a sign followed by 6 digits (e.g. `+275760`,
+ *   `-000001`), as `Date.prototype.toISOString` does.
  *
  * @category Destructors
  */
 export const getIsoString: MTypes.OneArgFunction<Type, string> = flow(
   MStruct.enrichWith({ month: getMonth, monthDay: getMonthDay }),
-  formatter,
+  (self) =>
+    (Number.between({ minimum: 0, maximum: 9999 })(self.year) ? formatter : expandedFormatter)(
+      self,
+    ),
 );

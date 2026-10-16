@@ -1152,6 +1152,13 @@ export const threeDigitSignedInteger: Type = pipe(signedInteger, zeroPadded(3));
 export const fourDigitSignedInteger: Type = pipe(signedInteger, zeroPadded(4));
 
 /**
+ * 6-digit signed integer `MNumberBase10Format` instance with no thousand separator
+ *
+ * @category Instances
+ */
+export const sixDigitSignedInteger: Type = pipe(signedInteger, zeroPadded(6));
+
+/**
  * Unsigned integer `MNumberBase10Format` instance with no thousand separator
  *
  * @category Instances

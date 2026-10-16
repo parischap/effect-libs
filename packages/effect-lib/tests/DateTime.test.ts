@@ -36,6 +36,52 @@ describe('MDateTime', () => {
     });
   });
 
+  describe('getIsoString: expanded years', () => {
+    it('Years in [0, 9999]: 4 digits', () => {
+      assert.strictEqual(
+        MDateTime.getIsoString(MDateTime.fromPartsOrThrow({ year: 0, zoneOffset: 0 })),
+        '0000-01-01T00:00:00.000+00:00',
+      );
+      assert.strictEqual(
+        MDateTime.getIsoString(
+          MDateTime.fromPartsOrThrow({
+            year: 9999,
+            month: 12,
+            monthDay: 31,
+            hour23: 23,
+            minute: 59,
+            second: 59,
+            millisecond: 999,
+            zoneOffset: 0,
+          }),
+        ),
+        '9999-12-31T23:59:59.999+00:00',
+      );
+    });
+
+    it('Other years: sign and 6 digits (as Date.prototype.toISOString)', () => {
+      assert.strictEqual(
+        MDateTime.getIsoString(MDateTime.fromPartsOrThrow({ year: 10_000, zoneOffset: 0 })),
+        '+010000-01-01T00:00:00.000+00:00',
+      );
+      assert.strictEqual(
+        MDateTime.getIsoString(MDateTime.fromPartsOrThrow({ year: -1, zoneOffset: 0 })),
+        '-000001-01-01T00:00:00.000+00:00',
+      );
+    });
+
+    it('Extreme timestamps do not throw', () => {
+      assert.strictEqual(
+        MDateTime.getIsoString(MDateTime.fromTimestampOrThrow(-8_640_000_000_000_000, 0)),
+        '-271821-04-20T00:00:00.000+00:00',
+      );
+      assert.strictEqual(
+        MDateTime.getIsoString(MDateTime.fromTimestampOrThrow(8_640_000_000_000_000, 0)),
+        '+275760-09-13T00:00:00.000+00:00',
+      );
+    });
+  });
+
   it('fromTimestamp, year, yearIsLeap, month, monthDay, ordinalDay', () => {
     const [actualVector, expectedVector] = pipe(
       Array.range(1771, 2170),
@@ -1377,6 +1423,23 @@ describe('MDateTime', () => {
         ),
         '2024-03-01T07:00:00.000-08:00',
       );
+    });
+  });
+
+  describe('Order', () => {
+    const earlier = MDateTime.fromTimestampOrThrow(0, 2);
+    const later = MDateTime.fromTimestampOrThrow(1000, 0);
+
+    it('Lesser', () => {
+      assert.strictEqual(MDateTime.Order(earlier, later), -1);
+    });
+
+    it('Greater', () => {
+      assert.strictEqual(MDateTime.Order(later, earlier), 1);
+    });
+
+    it('Same timestamp, different zone offsets: equal', () => {
+      assert.strictEqual(MDateTime.Order(earlier, MDateTime.fromTimestampOrThrow(0, 5)), 0);
     });
   });
 

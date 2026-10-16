@@ -1,17 +1,23 @@
 import * as Schema from 'effect/Schema';
 
-const Person1 = Schema.Struct({
-  id: Schema.Finite,
-  displayName: Schema.String,
-}).pipe(Schema.overrideToEquivalence(() => (self, that) => self.id === that.id));
+import * as MDateTimeContext from '@parischap/effect-lib/MDateTimeContext';
+import * as MDateTimeFormat from '@parischap/effect-lib/MDateTimeFormat';
+import * as MSchema from '@parischap/effect-lib/MSchema';
 
-const p3 = Person1.make({ id: 1, displayName: 'J' });
-const p4 = Person1.make({ id: 1, displayName: 'A' });
+class A extends Schema.Class<A>('A')({ a: Schema.String, b: Schema.String }) {}
 
-class Person extends Schema.Class<Person>('Person')(Person1) {}
+const a = A.make({ a: 'a', b: 'b' });
+const iso = Schema.toIso(A);
 
-const p1 = new Person({ id: 1, displayName: 'J' });
-const p2 = new Person({ id: 1, displayName: 'A' });
+const get = iso.get(a);
+const set = iso.set({ a: 'a', b: 'c' });
 
-const equivalence = Schema.toEquivalence(Person);
-console.log(equivalence(p1, p3));
+console.log(get);
+console.log(set);
+
+const Toto = Schema.Struct({
+  a: Schema.NumberFromString,
+  b: MSchema.DateTimeFromString(MDateTimeFormat.euDotDate, MDateTimeContext.enGB),
+});
+
+console.log(JSON.stringify(Schema.toJsonSchemaDocument(Toto), null, 2));
