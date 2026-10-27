@@ -172,7 +172,7 @@ export const fromPrimitive: MTypes.OneArgFunction<MTypes.Primitive, string> =
  * Builds a string from an unknown value.
  *
  * - Primitives delegated to {@link fromPrimitive}.
- * - Objects serialized via `JSON.stringify` with 2-space indentation.
+ * - Objects serialized via `Fomratter.format` with 2-space indentation.
  *
  * Use for debugging or logging arbitrary values.
  *

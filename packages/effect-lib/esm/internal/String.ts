@@ -4,7 +4,7 @@
  * circular imports: those modules must not import public `MString`.
  */
 
-import { flow, pipe } from 'effect';
+import { flow, Formatter, pipe } from 'effect';
 import * as Array from 'effect/Array';
 import * as BigInt from 'effect/BigInt';
 import * as Function from 'effect/Function';
@@ -87,7 +87,7 @@ export const fromPrimitive: MTypes.OneArgFunction<MTypes.Primitive, string> = fl
  * @category Constructors
  */
 export const fromUnknown = (u: unknown): string =>
-  MPredicate.isPrimitive(u) ? fromPrimitive(u) : JSON.stringify(u, null, 2);
+  MPredicate.isPrimitive(u) ? fromPrimitive(u) : Formatter.format(u, { space: 2 });
 
 /**
  * Removes characters from the start of the string
