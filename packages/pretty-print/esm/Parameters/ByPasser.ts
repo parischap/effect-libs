@@ -25,10 +25,10 @@ import * as MMatch from '@parischap/effect-lib/MMatch';
 import * as MRecord from '@parischap/effect-lib/MRecord';
 import type * as MTypes from '@parischap/effect-lib/MTypes';
 
-import type * as PPResolvedNonPrimitiveParameters from '../internal/Parameters/ResolvedNonPrimitiveParameters.js';
+import type * as InternalPPResolvedNonPrimitiveParameters from '../internal/Parameters/ResolvedNonPrimitiveParameters.js';
 import type * as PPParameters from './Parameters.js';
 
-import * as PPValue from '../internal/stringification/Value.js';
+import * as InternalPPValue from '../internal/stringification/Value.js';
 
 /**
  * Module tag
@@ -62,9 +62,9 @@ export class Type extends MEqData.Class {
 
   readonly action: MTypes.OneArgFunction<
     {
-      readonly nonPrimitive: PPValue.ReadonlyNonPrimitive;
+      readonly nonPrimitive: InternalPPValue.ReadonlyNonPrimitive;
       readonly parameters: PPParameters.Type;
-      readonly applicableNonPrimitiveParameters: PPResolvedNonPrimitiveParameters.Type;
+      readonly applicableNonPrimitiveParameters: InternalPPResolvedNonPrimitiveParameters.Type;
     },
     Option.Option<string>
   >;
@@ -175,7 +175,7 @@ export const toStringable: Type = make({
   id: 'ToStringable',
   action: flow(
     Struct.get('nonPrimitive'),
-    PPValue.content,
+    InternalPPValue.content,
     MRecord.tryZeroParamStringFunction({
       functionName: 'toString',
       /* oxlint-disable-next-line typescript/unbound-method */
@@ -216,7 +216,7 @@ export const dateAndRegExp: Type = make({
   id: 'DateAndRegExp',
   action: flow(
     Struct.get('nonPrimitive'),
-    PPValue.content,
+    InternalPPValue.content,
     MMatch.make,
     MMatch.when(Predicate.isDate, (d) => Option.some(d.toISOString())),
     MMatch.when(

@@ -458,9 +458,7 @@ export const DateTimeZonedFromString = (
  * );
  *
  * // { name: 'Jon', age: 24, kind: 'dog' }
- * console.log(
- *   Schema.decodeUnknownSync(MSchema.Template(template))('Jon is a 24-year old dog.'),
- * );
+ * console.log(Schema.decodeSync(MSchema.Template(template))('Jon is a 24-year old dog.'));
  * ```
  *
  * @category Utils

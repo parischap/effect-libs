@@ -61,7 +61,7 @@ import * as Tuple from 'effect/Tuple';
 import type * as MTypes from './types/types.js';
 
 import * as MData from './Data/Data.js';
-import * as MCacheValueContainer from './internal/CacheValueContainer.js';
+import * as InternalMCacheValueContainer from './internal/CacheValueContainer.js';
 
 /**
  * Module tag.
@@ -114,7 +114,7 @@ export class Type<in out A, in out B> extends MData.Class {
    * The underlying store. A key mapped to `Option.none` means a lookup is currently in progress
    * (used to detect circular recursion).
    */
-  readonly store: MutableHashMap.MutableHashMap<A, Option.Option<MCacheValueContainer.Type<B>>>;
+  readonly store: MutableHashMap.MutableHashMap<A, Option.Option<InternalMCacheValueContainer.Type<B>>>;
 
   /**
    * The order in which keys were inserted, used to evict the oldest first when the cache reaches
@@ -256,7 +256,7 @@ export const get =
             MutableHashMap.set(
               store,
               a,
-              Option.some(MCacheValueContainer.make({ value: result, storeDate: now })),
+              Option.some(InternalMCacheValueContainer.make({ value: result, storeDate: now })),
             );
             // If cache has bounded capacity
             if (hasBoundedCapacity) {
@@ -303,7 +303,7 @@ export const get =
                 MutableHashMap.set(
                   store,
                   a,
-                  Option.some(MCacheValueContainer.make({ value: result, storeDate: now })),
+                  Option.some(InternalMCacheValueContainer.make({ value: result, storeDate: now })),
                 );
                 if (hasBoundedCapacity) MutableList.append(keyListInOrder, a);
               } else MutableHashMap.remove(store, a);

@@ -12,14 +12,14 @@
 import * as ASContextStyler from '@parischap/ansi-styles/ASContextStyler';
 import type * as ASPalette from '@parischap/ansi-styles/ASPalette';
 
-import * as PPValue from '../internal/stringification/Value.js';
+import * as InternalPPValue from '../internal/stringification/Value.js';
 
 /**
  * Type of a `PPStyle`
  *
  * @category Models
  */
-export type Type = ASContextStyler.Type<PPValue.Any>;
+export type Type = ASContextStyler.Type<InternalPPValue.Any>;
 
 /**
  * Constructor of a palette-based depth-indexed `PPStyle` that picks a color from `palette` using
@@ -30,8 +30,8 @@ export type Type = ASContextStyler.Type<PPValue.Any>;
 export const makeDepthIndexed = (palette: ASPalette.Type): Type =>
   ASContextStyler.makePaletteBased({
     // Use named function so the name gets printed by the toString function
-    indexFromContext: function valueDepth(value: PPValue.Any) {
-      return PPValue.depth(value);
+    indexFromContext: function valueDepth(value: InternalPPValue.Any) {
+      return InternalPPValue.depth(value);
     },
     palette,
   });
@@ -46,7 +46,7 @@ export const makeDepthIndexed = (palette: ASPalette.Type): Type =>
 export const makeTypeIndexed = (palette: ASPalette.Type): Type =>
   ASContextStyler.makePaletteBased({
     // Use named function so the name gets printed by the toString function
-    indexFromContext: function valueType(value: PPValue.Any) {
+    indexFromContext: function valueType(value: InternalPPValue.Any) {
       return value.contentType;
     },
     palette,
@@ -62,7 +62,7 @@ export const makeTypeIndexed = (palette: ASPalette.Type): Type =>
 export const makeKeyTypeIndexed = (palette: ASPalette.Type): Type =>
   ASContextStyler.makePaletteBased({
     // Use named function so the name gets printed by the toString function
-    indexFromContext: function keyType(value: PPValue.Any) {
+    indexFromContext: function keyType(value: InternalPPValue.Any) {
       // `1` for symbolic key, `0` for string key
       return +value.hasSymbolicKey;
     },

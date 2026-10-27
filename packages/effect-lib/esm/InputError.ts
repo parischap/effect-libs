@@ -50,7 +50,7 @@ import * as String from 'effect/String';
 
 import type * as MTypes from './types/types.js';
 
-import * as internal from './internal/String.js';
+import * as InternalMString from './internal/String.js';
 import * as MPredicate from './Predicate.js';
 
 /**
@@ -157,8 +157,8 @@ export const missized = ({
   readonly name?: string;
 }) =>
   new Type({
-    message: `Expected length of ${nameLabel(name)} to be: ${internal.fromNumber(10)(expected)}.\
- Actual: ${internal.fromNumber(10)(actual)}`,
+    message: `Expected length of ${nameLabel(name)} to be: ${InternalMString.fromNumber(10)(expected)}.\
+ Actual: ${InternalMString.fromNumber(10)(actual)}`,
   });
 
 /**
@@ -205,8 +205,8 @@ export const oversized = ({
   readonly name?: string;
 }) =>
   new Type({
-    message: `Expected length of ${nameLabel(name)} to be at most(included): ${internal.fromNumber(10)(expected)}.\
- Actual: ${internal.fromNumber(10)(actual)}`,
+    message: `Expected length of ${nameLabel(name)} to be at most(included): ${InternalMString.fromNumber(10)(expected)}.\
+ Actual: ${InternalMString.fromNumber(10)(actual)}`,
   });
 
 /**
@@ -266,9 +266,9 @@ export const outOfBounds = ({
   readonly name?: string;
 }) =>
   new Type({
-    message: `Expected ${nameLabel(name)} to be between ${internal.fromNumber(10)(min + offset)}\
- (${minIncluded ? 'included' : 'excluded'}) and ${internal.fromNumber(10)(max + offset)}\
- (${maxIncluded ? 'included' : 'excluded'}). Actual: ${internal.fromNumber(10)(actual + offset)}`,
+    message: `Expected ${nameLabel(name)} to be between ${InternalMString.fromNumber(10)(min + offset)}\
+ (${minIncluded ? 'included' : 'excluded'}) and ${InternalMString.fromNumber(10)(max + offset)}\
+ (${maxIncluded ? 'included' : 'excluded'}). Actual: ${InternalMString.fromNumber(10)(actual + offset)}`,
   });
 
 /**
@@ -412,7 +412,7 @@ export const assertMatches = (params: {
   readonly regExpDescriptor: string;
   readonly name?: string;
 }): MTypes.OneArgFunction<string, Result.Result<string, Type>> =>
-  Result.liftPredicate(internal.matches(params.regExp), (actual) =>
+  Result.liftPredicate(InternalMString.matches(params.regExp), (actual) =>
     notMatching({ ...params, actual }),
   );
 
@@ -448,7 +448,7 @@ export const match =
   (self: string): Result.Result<string, Type> =>
     pipe(
       self,
-      internal.match(params.regExp),
+      InternalMString.match(params.regExp),
       Result.fromOption(() => notMatching({ ...params, actual: self })),
     );
 

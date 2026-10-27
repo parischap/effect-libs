@@ -38,7 +38,7 @@ import type * as MNumberBase10Format from './NumberBase10Format.js';
 import type * as MTypes from './types/types.js';
 
 import * as MBigInt from './BigInt.js';
-import * as internalRoundingOptionCorrecter from './internal/RoundingOptionCorrecter.js';
+import * as InternalMRoundingOptionCorrecter from './internal/RoundingOptionCorrecter.js';
 
 /**
  * Type on which this module's functions operate.
@@ -117,7 +117,7 @@ export const round = (
   const shiftValue = BigDecimal.make(1n, -precision);
   const shift = BigDecimal.multiply(shiftValue);
   const unshift = BigDecimal.divideUnsafe(shiftValue);
-  const correcter = internalRoundingOptionCorrecter.fromRoundingOption(option);
+  const correcter = InternalMRoundingOptionCorrecter.fromRoundingOption(option);
   return (self) => {
     const shiftedSelf = shift(self);
     const truncatedShiftedSelf = pipe(shiftedSelf, trunc());

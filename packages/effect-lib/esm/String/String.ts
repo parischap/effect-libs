@@ -73,9 +73,9 @@ import type * as MStringFillPosition from './StringFillPosition.js';
 import * as MArray from '../Array.js';
 import * as MFunction from '../Function.js';
 import * as MInputError from '../InputError.js';
-import * as internalNumberBase10Formatter from '../internal/NumberBase10Format/NumberBase10Formatter.js';
-import * as internal from '../internal/String.js';
-import * as internalTemplateSeparatorParser from '../internal/Template/TemplateSeparatorParser.js';
+import * as InternalMNumberBase10Formatter from '../internal/NumberBase10Format/NumberBase10Formatter.js';
+import * as InternalMString from '../internal/String.js';
+import * as InternalMTemplateSeparatorParser from '../internal/Template/TemplateSeparatorParser.js';
 import * as MRegExp from '../RegExp.js';
 import * as MRegExpString from '../RegExpString.js';
 import * as MTemplatePart from '../TemplatePart/TemplatePart.js';
@@ -121,7 +121,7 @@ export type Type = string;
  * @category Constructors
  */
 export const fromNumber: (radix: number) => MTypes.OneArgFunction<number | bigint, string> =
-  internal.fromNumber;
+  InternalMString.fromNumber;
 
 /**
  * Builds a string from a primitive value other than `null` and `undefined`.
@@ -144,7 +144,7 @@ export const fromNumber: (radix: number) => MTypes.OneArgFunction<number | bigin
  * @category Constructors
  */
 export const fromNonNullablePrimitive: MTypes.OneArgFunction<MTypes.NonNullablePrimitive, string> =
-  internal.fromNonNullablePrimitive;
+  InternalMString.fromNonNullablePrimitive;
 
 /**
  * Builds a string from a primitive value, handling `null` and `undefined`.
@@ -166,7 +166,7 @@ export const fromNonNullablePrimitive: MTypes.OneArgFunction<MTypes.NonNullableP
  * @category Constructors
  */
 export const fromPrimitive: MTypes.OneArgFunction<MTypes.Primitive, string> =
-  internal.fromPrimitive;
+  InternalMString.fromPrimitive;
 
 /**
  * Builds a string from an unknown value.
@@ -188,7 +188,7 @@ export const fromPrimitive: MTypes.OneArgFunction<MTypes.Primitive, string> =
  *
  * @category Constructors
  */
-export const fromUnknown: MTypes.OneArgFunction<unknown, string> = internal.fromUnknown;
+export const fromUnknown: MTypes.OneArgFunction<unknown, string> = InternalMString.fromUnknown;
 
 /**
  * Returns a function that formats a `number` or `BigDecimal` according to `format`, returning
@@ -211,7 +211,7 @@ export const fromUnknown: MTypes.OneArgFunction<unknown, string> = internal.from
 export const fromFormatAndNumber = (
   format: MNumberBase10Format.Type,
 ): MTypes.OneArgFunction<BigDecimal.BigDecimal | number, Option.Option<string>> =>
-  internalNumberBase10Formatter.format(internalNumberBase10Formatter.fromFormat(format));
+  InternalMNumberBase10Formatter.format(InternalMNumberBase10Formatter.fromFormat(format));
 
 /**
  * Same as `fromFormatAndNumber` but throws instead of returning a `none` in case of failure
@@ -221,7 +221,7 @@ export const fromFormatAndNumber = (
 export const fromFormatAndNumberOrThrow = (
   format: MNumberBase10Format.Type,
 ): MTypes.OneArgFunction<BigDecimal.BigDecimal | number, string> =>
-  internalNumberBase10Formatter.formatOrThrow(internalNumberBase10Formatter.fromFormat(format));
+  InternalMNumberBase10Formatter.formatOrThrow(InternalMNumberBase10Formatter.fromFormat(format));
 
 /**
  * Returns a function that formats a record of placeholder values into a string according to
@@ -336,7 +336,7 @@ export const templateParse = <PlaceholderTypes extends MTypes.Object>(
                 }),
               );
             }
-            const parser = internalTemplateSeparatorParser.fromSeparator(templatePart);
+            const parser = InternalMTemplateSeparatorParser.fromSeparator(templatePart);
             const leftOver = yield* parser(pos + 1, remainingText);
             return Tuple.make(leftOver, result);
           }),
@@ -598,7 +598,7 @@ export const takeBut =
  *
  * @category Utils
  */
-export const takeRightBut: (n: number) => MTypes.StringTransformer = internal.takeRightBut;
+export const takeRightBut: (n: number) => MTypes.StringTransformer = InternalMString.takeRightBut;
 
 /**
  * Removes characters from the start of the string.
@@ -619,7 +619,8 @@ export const takeRightBut: (n: number) => MTypes.StringTransformer = internal.ta
  *
  * @category Utils
  */
-export const trimStart: (charToRemove: string) => MTypes.StringTransformer = internal.trimStart;
+export const trimStart: (charToRemove: string) => MTypes.StringTransformer =
+  InternalMString.trimStart;
 
 /**
  * Removes characters from the end of the string.
@@ -640,7 +641,7 @@ export const trimStart: (charToRemove: string) => MTypes.StringTransformer = int
  *
  * @category Utils
  */
-export const trimEnd: (charToRemove: string) => MTypes.StringTransformer = internal.trimEnd;
+export const trimEnd: (charToRemove: string) => MTypes.StringTransformer = InternalMString.trimEnd;
 
 /**
  * Pads a string to a specific length with a fill character.
@@ -672,7 +673,7 @@ export const pad: (params: {
   readonly length: number;
   readonly fillChar: string;
   readonly fillPosition: MStringFillPosition.Type;
-}) => MTypes.OneArgFunction<Type> = internal.pad;
+}) => MTypes.OneArgFunction<Type> = InternalMString.pad;
 
 /**
  * Removes padding characters from left or right of a string.
@@ -702,7 +703,7 @@ export const pad: (params: {
 export const trim: (params: {
   readonly fillChar: string;
   readonly fillPosition: MStringFillPosition.Type;
-}) => MTypes.StringTransformer = internal.trim;
+}) => MTypes.StringTransformer = InternalMString.trim;
 
 /**
  * Optionally removes a prefix from the start of the string.
@@ -854,7 +855,7 @@ export const count =
  *
  * @category Utils
  */
-export const append: (s: string) => MTypes.StringTransformer = internal.append;
+export const append: (s: string) => MTypes.StringTransformer = InternalMString.append;
 
 /**
  * Appends a string only if the original string is non-empty.
@@ -899,7 +900,7 @@ export const appendIfNotEmpty =
  *
  * @category Utils
  */
-export const prepend: (s: string) => MTypes.StringTransformer = internal.prepend;
+export const prepend: (s: string) => MTypes.StringTransformer = InternalMString.prepend;
 
 /**
  * Prepends a string only if the original string is non-empty.
@@ -1006,7 +1007,7 @@ export const replaceBetween =
  * @category Utils
  */
 export const match: (regExp: RegExp) => MTypes.OneArgFunction<Type, Option.Option<string>> =
-  internal.match;
+  InternalMString.match;
 
 /**
  * Tests whether the string matches a regex pattern.
@@ -1028,7 +1029,7 @@ export const match: (regExp: RegExp) => MTypes.OneArgFunction<Type, Option.Optio
  *
  * @category Predicates
  */
-export const matches: (regExp: RegExp) => Predicate.Predicate<Type> = internal.matches;
+export const matches: (regExp: RegExp) => Predicate.Predicate<Type> = InternalMString.matches;
 
 /**
  * Matches a regex pattern and extracts named capturing groups.
@@ -1056,7 +1057,7 @@ export const matches: (regExp: RegExp) => Predicate.Predicate<Type> = internal.m
  *
  * @category Destructors
  */
-export const { matchWithCapturingGroups } = internal;
+export const { matchWithCapturingGroups } = InternalMString;
 
 /**
  * Splits string at a specific position into two parts.
@@ -1080,7 +1081,7 @@ export const { matchWithCapturingGroups } = internal;
  * @category Utils
  */
 export const splitAt: (n: number) => MTypes.OneArgFunction<Type, [left: string, right: string]> =
-  internal.splitAt;
+  InternalMString.splitAt;
 
 /**
  * Splits string at a position measured from the end.
@@ -1105,7 +1106,7 @@ export const splitAt: (n: number) => MTypes.OneArgFunction<Type, [left: string, 
  */
 export const splitAtFromRight: (
   n: number,
-) => MTypes.OneArgFunction<Type, [left: string, right: string]> = internal.splitAtFromRight;
+) => MTypes.OneArgFunction<Type, [left: string, right: string]> = InternalMString.splitAtFromRight;
 
 /**
  * Splits string into equal chunks with remainder at start.
@@ -1130,7 +1131,7 @@ export const splitAtFromRight: (
  */
 export const splitEquallyRestAtStart: (
   bitSize: number,
-) => MTypes.OneArgFunction<Type, Array<string>> = internal.splitEquallyRestAtStart;
+) => MTypes.OneArgFunction<Type, Array<string>> = InternalMString.splitEquallyRestAtStart;
 
 /**
  * Splits string into equal chunks with remainder at end.
@@ -1277,7 +1278,7 @@ export const isEmail: Predicate.Predicate<Type> = (self) => MRegExp.email.test(s
  *
  * @category Predicates
  */
-export const hasLength: (l: number) => Predicate.Predicate<Type> = internal.hasLength;
+export const hasLength: (l: number) => Predicate.Predicate<Type> = InternalMString.hasLength;
 
 /**
  * Removes `n` characters from every `m`-character chunk from the right.
@@ -1306,7 +1307,7 @@ export const hasLength: (l: number) => Predicate.Predicate<Type> = internal.hasL
 export const removeNCharsEveryMCharsFromRight: (params: {
   readonly m: number;
   readonly n: number;
-}) => MTypes.StringTransformer = internal.removeNCharsEveryMCharsFromRight;
+}) => MTypes.StringTransformer = InternalMString.removeNCharsEveryMCharsFromRight;
 
 /**
  * Tests whether the string is a single ASCII digit character (`0`–`9`).

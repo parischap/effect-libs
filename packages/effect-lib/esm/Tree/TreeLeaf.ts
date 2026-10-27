@@ -18,7 +18,7 @@
 import type * as MTypes from '../types/types.js';
 
 import * as MData from '../Data/Data.js';
-import * as MTreeNode from '../internal/TreeNode.js';
+import * as InternalMTreeNode from '../internal/TreeNode.js';
 
 /**
  * Module tag.
@@ -33,7 +33,7 @@ type TypeId = typeof TypeId;
  *
  * @category Models
  */
-export class Type<out B> extends MTreeNode.Type<B> {
+export class Type<out B> extends InternalMTreeNode.Type<B> {
   /** Class constructor */
   private constructor({ value }: MTypes.Data<Type<B>>) {
     super({ value });

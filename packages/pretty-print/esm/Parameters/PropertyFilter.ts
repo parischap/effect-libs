@@ -19,9 +19,9 @@ import * as MEqData from '@parischap/effect-lib/MEqData';
 import * as MPredicate from '@parischap/effect-lib/MPredicate';
 import type * as MTypes from '@parischap/effect-lib/MTypes';
 
-import type * as PPValues from '../internal/stringification/Values.js';
+import type * as InternalPPValues from '../internal/stringification/Values.js';
 
-import * as PPValue from '../internal/stringification/Value.js';
+import * as InternalPPValue from '../internal/stringification/Value.js';
 
 /**
  * Module tag
@@ -41,7 +41,7 @@ export class Type extends MEqData.Class {
   /** Id of this PropertyFilter instance. Useful for equality and debugging */
   readonly id: string;
   /** Action of this PropertyFilter instance */
-  readonly action: MTypes.OneArgFunction<PPValues.Type>;
+  readonly action: MTypes.OneArgFunction<InternalPPValues.Type>;
 
   /** Returns the `id` of `this` */
   [MData.idSymbol](): string | (() => string) {
@@ -145,7 +145,7 @@ export const none: Type = make({
  */
 export const removeNonFunctions: Type = make({
   id: 'RemoveNonFunctions',
-  action: Array.filter(PPValue.isAnyFunction),
+  action: Array.filter(InternalPPValue.isAnyFunction),
 });
 
 /**
@@ -156,7 +156,7 @@ export const removeNonFunctions: Type = make({
  */
 export const removeFunctions: Type = make({
   id: 'RemoveFunctions',
-  action: Array.filter(Predicate.not(PPValue.isAnyFunction)),
+  action: Array.filter(Predicate.not(InternalPPValue.isAnyFunction)),
 });
 
 /**
@@ -166,7 +166,7 @@ export const removeFunctions: Type = make({
  */
 export const removeNonEnumerables: Type = make({
   id: 'RemoveNonEnumerables',
-  action: Array.filter(PPValue.isEnumerable),
+  action: Array.filter(InternalPPValue.isEnumerable),
 });
 
 /**
@@ -176,7 +176,7 @@ export const removeNonEnumerables: Type = make({
  */
 export const removeEnumerables: Type = make({
   id: 'RemoveEnumerables',
-  action: Array.filter(Predicate.not(PPValue.isEnumerable)),
+  action: Array.filter(Predicate.not(InternalPPValue.isEnumerable)),
 });
 
 /**
@@ -186,7 +186,7 @@ export const removeEnumerables: Type = make({
  */
 export const removeStringKeys: Type = make({
   id: 'RemoveStringKeys',
-  action: Array.filter(PPValue.hasSymbolicKey),
+  action: Array.filter(InternalPPValue.hasSymbolicKey),
 });
 
 /**
@@ -196,7 +196,7 @@ export const removeStringKeys: Type = make({
  */
 export const removeSymbolicKeys: Type = make({
   id: 'RemoveSymbolicKeys',
-  action: Array.filter(Predicate.not(PPValue.hasSymbolicKey)),
+  action: Array.filter(Predicate.not(InternalPPValue.hasSymbolicKey)),
 });
 
 /**

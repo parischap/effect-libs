@@ -27,12 +27,12 @@ import * as MString from '@parischap/effect-lib/MString';
 import * as MTuple from '@parischap/effect-lib/MTuple';
 import type * as MTypes from '@parischap/effect-lib/MTypes';
 
-import type * as PPResolvedNonPrimitiveParameters from '../internal/Parameters/ResolvedNonPrimitiveParameters.js';
-import type * as PPValue from '../internal/stringification/Value.js';
+import type * as InternalPPResolvedNonPrimitiveParameters from '../internal/Parameters/ResolvedNonPrimitiveParameters.js';
+import type * as InternalPPValue from '../internal/stringification/Value.js';
 import type * as PPParameters from './Parameters.js';
 import type * as PPPartName from './PartName.js';
 
-import * as PPStringifiedProperties from '../internal/stringification/StringifiedProperties.js';
+import * as InternalPPStringifiedProperties from '../internal/stringification/StringifiedProperties.js';
 import * as PPStringifiedValue from '../stringification/StringifiedValue.js';
 import * as PPStyleMap from './StyleMap.js';
 
@@ -77,11 +77,11 @@ export class Type extends MEqData.Class {
    */
   readonly action: MTypes.OneArgFunction<
     {
-      readonly nonPrimitive: PPValue.ReadonlyNonPrimitive;
+      readonly nonPrimitive: InternalPPValue.ReadonlyNonPrimitive;
       readonly parameters: PPParameters.Type;
-      readonly applicableNonPrimitiveParameters: PPResolvedNonPrimitiveParameters.Type;
+      readonly applicableNonPrimitiveParameters: InternalPPResolvedNonPrimitiveParameters.Type;
       readonly header: Function.LazyArg<ASText.Type>;
-      readonly stringifiedProperties: PPStringifiedProperties.Type;
+      readonly stringifiedProperties: InternalPPStringifiedProperties.Type;
     },
     PPStringifiedValue.Type
   >;
@@ -267,10 +267,10 @@ ${nonPrimitiveValueClosingMark}/${tabMark}/Mark`,
 
       return pipe(
         stringifiedProperties,
-        PPStringifiedProperties.addMarkInBetween(inBetweenPropertySeparator),
-        PPStringifiedProperties.tabify(tab),
-        PPStringifiedProperties.prependProperty(nonPrimitiveValueOpening),
-        PPStringifiedProperties.appendProperty(nonPrimitiveValueClosing),
+        InternalPPStringifiedProperties.addMarkInBetween(inBetweenPropertySeparator),
+        InternalPPStringifiedProperties.tabify(tab),
+        InternalPPStringifiedProperties.prependProperty(nonPrimitiveValueOpening),
+        InternalPPStringifiedProperties.appendProperty(nonPrimitiveValueClosing),
         PPStringifiedValue.fromFlattenedStringifiedProperties,
       );
     },
@@ -312,7 +312,7 @@ ${treeIndentForFirstLineOfLastPropMark}/${treeIndentForTailLinesOfLastPropMark}/
 
       return pipe(
         stringifiedProperties,
-        PPStringifiedProperties.treeify({
+        InternalPPStringifiedProperties.treeify({
           treeIndentForFirstLineOfInitProps: indentationStyler(
             treeIndentForFirstLineOfInitPropsMark,
           ),
@@ -459,7 +459,10 @@ ${nonPrimitiveValueClosingMark}/${singleLineSpacingMark}/${tabMark}/Marks`),
             MTuple.replicate(2),
             Tuple.evolve(
               Tuple.make(
-                flow(PPStringifiedProperties.toLength, Number.sum(ASText.toLength(header()))),
+                flow(
+                  InternalPPStringifiedProperties.toLength,
+                  Number.sum(ASText.toLength(header())),
+                ),
                 Array.match({
                   onEmpty: Function.constant(marksLengthWhenEmpty),
                   onNonEmpty: flow(

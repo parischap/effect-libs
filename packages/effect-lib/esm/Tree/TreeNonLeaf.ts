@@ -20,11 +20,11 @@
  * ```
  */
 
-import type * as MTreeForest from '../internal/TreeForest.js';
+import type * as InternalMTreeForest from '../internal/TreeForest.js';
 import type * as MTypes from '../types/types.js';
 
 import * as MData from '../Data/Data.js';
-import * as MTreeNode from '../internal/TreeNode.js';
+import * as InternalMTreeNode from '../internal/TreeNode.js';
 
 /**
  * Module tag.
@@ -41,9 +41,9 @@ type TypeId = typeof TypeId;
  *
  * @category Models
  */
-export class Type<out A, out B> extends MTreeNode.Type<A> {
+export class Type<out A, out B> extends InternalMTreeNode.Type<A> {
   /** The children of a NonLeaf */
-  readonly forest: MTreeForest.Type<A, B>;
+  readonly forest: InternalMTreeForest.Type<A, B>;
 
   /** Class constructor */
   private constructor({ value, forest }: MTypes.Data<Type<A, B>>) {

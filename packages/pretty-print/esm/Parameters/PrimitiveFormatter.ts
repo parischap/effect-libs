@@ -22,7 +22,7 @@ import * as MMatch from '@parischap/effect-lib/MMatch';
 import * as MString from '@parischap/effect-lib/MString';
 import type * as MTypes from '@parischap/effect-lib/MTypes';
 
-import * as PPValue from '../internal/stringification/Value.js';
+import * as InternalPPValue from '../internal/stringification/Value.js';
 
 /**
  * Module tag
@@ -46,7 +46,7 @@ export class Type extends MEqData.Class {
    * Action of `this` `PPPrimitiveFormatter`. Takes a `PPValue.Primitive` and returns its string
    * representation (e.g. `'hello'` for a string, `42` for a number, `42n` for a bigint)
    */
-  readonly action: MTypes.OneArgFunction<PPValue.Primitive, string>;
+  readonly action: MTypes.OneArgFunction<InternalPPValue.Primitive, string>;
 
   /** Returns the `id` of `this` */
   [MData.idSymbol](): string | (() => string) {
@@ -143,7 +143,7 @@ export const utilInspectLikeMaker = ({
     action: (value) =>
       pipe(
         value,
-        PPValue.content,
+        InternalPPValue.content,
         MMatch.make,
         MMatch.when(
           Predicate.isString,

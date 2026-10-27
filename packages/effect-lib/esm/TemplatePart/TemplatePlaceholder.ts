@@ -4,9 +4,9 @@
  *
  * Each `MTemplatePlaceholder` defines a parser and a formatter:
  *
- * - The parser takes a text, consumes a part of that text, optionally converts the consumed part to a
- *   value of type T and, if successful, returns a `success` of that value and of what has not been
- *   consumed. In case of failure, it returns a `failure`.
+ * - The parser takes a text, consumes a part of that text, converts the consumed part to a value of
+ *   type T (if T is not string) and, if successful, returns a `success` of that value and of what
+ *   has not been consumed. In case of failure, it returns a `failure`.
  * - The formatter takes a value of type T, converts it to a string (if T is not string), checks that
  *   the result is coherent and, if so, returns a `success` of that string. Otherwise, it returns a
  *   `failure`
@@ -27,8 +27,8 @@ import type * as MTypes from '../types/types.js';
 
 import * as MData from '../Data/Data.js';
 import * as MInputError from '../InputError.js';
-import * as internalNumberBase10Formatter from '../internal/NumberBase10Format/NumberBase10Formatter.js';
-import * as internal from '../internal/String.js';
+import * as InternalMNumberBase10Formatter from '../internal/NumberBase10Format/NumberBase10Formatter.js';
+import * as InternalMString from '../internal/String.js';
 import * as MNumber from '../Number.js';
 import * as MNumberBase10Format from '../NumberBase10Format.js';
 import * as MRegExp from '../RegExp.js';
@@ -81,7 +81,7 @@ export class Type<out N extends string, in out T> extends MData.Class {
   }
 
   /** Class constructor */
-  protected constructor({
+  constructor({
     name,
     label,
     description,
@@ -98,11 +98,6 @@ export class Type<out N extends string, in out T> extends MData.Class {
     this.tSchemaInstance = tSchemaInstance;
   }
 
-  /** Static constructor */
-  static make<N extends string, T>(params: MTypes.Data<Type<N, T>>): Type<N, T> {
-    return new Type(params);
-  }
-
   /** Returns the TypeMarker of the class */
   protected get [TypeId](): TypeId {
     return TypeId;
@@ -112,7 +107,7 @@ type TemplatePlaceholderFormatter<N extends string, T> = Type<N, T>['formatter']
 type TemplatePlaceholderParser<N extends string, T> = Type<N, T>['parser'];
 
 const _make = <N extends string, T>(params: MTypes.Data<Type<N, T>>): Type<N, T> =>
-  Type.make(params);
+  new Type(params);
 
 /**
  * Type that represents a `MTemplatePlaceholder` from and to any type
@@ -143,7 +138,7 @@ export type ExtractType<P extends Any> = P extends Type<string, infer T> ? T : n
 export const make: <const N extends string, T>(
   params: Omit<MTypes.Data<Type<N, T>>, 'label'>,
 ) => Type<N, T> = flow(
-  MStruct.enrichWith({ label: ({ name }) => internal.prepend('#')(name) }),
+  MStruct.enrichWith({ label: ({ name }) => InternalMString.prepend('#')(name) }),
   _make,
 );
 
@@ -286,13 +281,13 @@ export const fixedLength = <const N extends string>({
 }): Type<N, string> =>
   make({
     name,
-    description: `${internal.fromNumber(10)(length)}-character string`,
+    description: `${InternalMString.fromNumber(10)(length)}-character string`,
     parser: function (this: Type<N, string>, text) {
       const assertLength: (self: string) => Result.Result<string, MInputError.Type> =
         MInputError.assertLength({ expected: length, name: this.label });
       return pipe(
         text,
-        internal.splitAt(length),
+        InternalMString.splitAt(length),
         Tuple.evolve(Tuple.make(assertLength, Result.succeed<string>)),
         Result.all,
       );
@@ -320,15 +315,15 @@ export const paddedFixedLength = <const N extends string>(params: {
     params,
     fixedLength,
     modify({
-      descriptorMapper: internal.append(
+      descriptorMapper: InternalMString.append(
         ` ${MStringFillPosition.toString(params.fillPosition)}-padded with '${params.fillChar}'`,
       ),
-      postParser: flow(internal.trim(params), Result.succeed),
-      preFormatter: flow(internal.pad(params), Result.succeed),
+      postParser: flow(InternalMString.trim(params), Result.succeed),
+      preFormatter: flow(InternalMString.pad(params), Result.succeed),
     }),
   );
 
-const _flippedTakeRightBut = Function.flip(internal.takeRightBut);
+const _flippedTakeRightBut = Function.flip(InternalMString.takeRightBut);
 /**
  * `MTemplatePlaceholder` instance that tries to parse/format a number according to the passed
  * `numberBase10Format`.
@@ -356,8 +351,8 @@ export const number = <const N extends string>({
   const description = MNumberBase10Format.toDescription(numberBase10Format);
   const numberFormatter = pipe(
     numberBase10Format,
-    internalNumberBase10Formatter.fromFormat,
-    internalNumberBase10Formatter.format,
+    InternalMNumberBase10Formatter.fromFormat,
+    InternalMNumberBase10Formatter.format,
   );
 
   return pipe(
@@ -408,7 +403,7 @@ export const number = <const N extends string>({
           { name, length },
           fixedLength,
           modify({
-            descriptorMapper: internal.append(` to ${description}`),
+            descriptorMapper: InternalMString.append(` to ${description}`),
             postParser: function (this: Type<N, number>, input: string) {
               return pipe(
                 input,
@@ -442,13 +437,13 @@ export const number = <const N extends string>({
 };
 
 /**
- * Builds a `MTemplatePlaceholder` instance that works as a map:
+ * Builds an `MTemplatePlaceholder` instance that works as a map:
  *
  * The parser expects one of the keys of `keyValuePairs` and will return the associated value. The
  * formatter expects one of the values of `keyValuePairs` and will return the associated key.
  *
  * `keyValuePairs` should define a bijection (each key and each value must be present only once). It
- * is best if the type of the values defines a toString method. Value equality is checked with The
+ * is best if the type of the values defines a toString method. Value equality is checked with the
  * effect Equal.equals function.
  *
  * `schemaInstance` is a `Schema` instance that transforms a value of type T into a value of type T.
@@ -472,15 +467,15 @@ export const mappedLiterals = <const N extends string, T>({
     keyValuePairs,
     Array.map(Tuple.get(0)),
     Array.join(', '),
-    internal.prepend('['),
-    internal.append(']'),
+    InternalMString.prepend('['),
+    InternalMString.append(']'),
   );
   const values = pipe(
     keyValuePairs,
-    Array.map(flow(Tuple.get(1), internal.fromUnknown)),
+    Array.map(flow(Tuple.get(1), InternalMString.fromUnknown)),
     Array.join(', '),
-    internal.prepend('['),
-    internal.append(']'),
+    InternalMString.prepend('['),
+    InternalMString.append(']'),
   );
   const valueNameMap = pipe(
     keyValuePairs,
@@ -489,7 +484,7 @@ export const mappedLiterals = <const N extends string, T>({
   );
 
   const isTheStartOf = Function.flip(String.startsWith);
-  const flippedTakeRightBut = Function.flip(internal.takeRightBut);
+  const flippedTakeRightBut = Function.flip(InternalMString.takeRightBut);
 
   return make({
     name,
@@ -528,7 +523,7 @@ export const mappedLiterals = <const N extends string, T>({
         Result.fromOption(
           () =>
             new MInputError.Type({
-              message: `${this.label}: expected one of ${values}. Actual: ${internal.fromUnknown(value)}`,
+              message: `${this.label}: expected one of ${values}. Actual: ${InternalMString.fromUnknown(value)}`,
             }),
         ),
       );
@@ -565,7 +560,7 @@ export const fulfilling = <const N extends string>({
   readonly regExp: RegExp;
   readonly regExpDescriptor: string;
 }): Type<N, string> => {
-  const flippedTakeRightBut = Function.flip(internal.takeRightBut);
+  const flippedTakeRightBut = Function.flip(InternalMString.takeRightBut);
 
   const match = (label: string) =>
     MInputError.match({
@@ -596,7 +591,7 @@ export const fulfilling = <const N extends string>({
         text,
         match(this.label),
         Result.filterOrFail(
-          internal.hasLength(text.length),
+          InternalMString.hasLength(text.length),
           () =>
             new MInputError.Type({
               message: `${this.label}: expected ${regExpDescriptor}. Actual: '${text}'`,

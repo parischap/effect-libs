@@ -12,27 +12,30 @@ import * as Order from 'effect/Order';
 
 import * as MTypesCategory from '@parischap/effect-lib/MTypesCategory';
 
-import * as PPValue from '../internal/stringification/Value.js';
+import * as InternalPPValue from '../internal/stringification/Value.js';
 
 /**
  * Type of a PPValueOrder
  *
  * @category Models
  */
-export interface Type extends Order.Order<PPValue.Any> {}
+export interface Type extends Order.Order<InternalPPValue.Any> {}
 /**
  * Order instance based on the `protoDepth` property, lowest depth first
  *
  * @category Ordering
  */
-export const byProtoDepth: Type = Order.mapInput(Order.Number, PPValue.protoDepth);
+export const byProtoDepth: Type = Order.mapInput(Order.Number, InternalPPValue.protoDepth);
 
 /**
  * Order instance based on the `oneLineStringKey` property
  *
  * @category Ordering
  */
-export const byOneLineStringKey: Type = Order.mapInput(Order.String, PPValue.oneLineStringKey);
+export const byOneLineStringKey: Type = Order.mapInput(
+  Order.String,
+  InternalPPValue.oneLineStringKey,
+);
 
 /**
  * Order instance based on the callability of the `content` property (non functions first, then
@@ -42,7 +45,7 @@ export const byOneLineStringKey: Type = Order.mapInput(Order.String, PPValue.one
  */
 export const byCallability: Type = Order.mapInput(
   Order.Boolean,
-  flow(PPValue.contentType, MTypesCategory.isFunction),
+  flow(InternalPPValue.contentType, MTypesCategory.isFunction),
 );
 
 /**
@@ -51,7 +54,10 @@ export const byCallability: Type = Order.mapInput(
  *
  * @category Ordering
  */
-export const byKeyType: Type = Order.mapInput(Order.flip(Order.Boolean), PPValue.hasSymbolicKey);
+export const byKeyType: Type = Order.mapInput(
+  Order.flip(Order.Boolean),
+  InternalPPValue.hasSymbolicKey,
+);
 
 /**
  * Order instance based on the enumerability of the property to which the value belongs (non-
@@ -59,7 +65,7 @@ export const byKeyType: Type = Order.mapInput(Order.flip(Order.Boolean), PPValue
  *
  * @category Ordering
  */
-export const byEnumerability: Type = Order.mapInput(Order.Boolean, PPValue.isEnumerable);
+export const byEnumerability: Type = Order.mapInput(Order.Boolean, InternalPPValue.isEnumerable);
 
 /**
  * Order instance based on the source of the property (first from iterating on the non primitive
@@ -69,6 +75,6 @@ export const byEnumerability: Type = Order.mapInput(Order.Boolean, PPValue.isEnu
  */
 export const bySource: Type = pipe(
   Order.Boolean,
-  Order.mapInput(PPValue.isFromIterator),
+  Order.mapInput(InternalPPValue.isFromIterator),
   Order.flip,
 );

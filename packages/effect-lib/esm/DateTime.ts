@@ -51,10 +51,10 @@ import {
   MINUTE_MS,
   SECOND_MS,
 } from './internal/DateTime/date-time-constants.js';
-import * as GregorianDate from './internal/DateTime/GregorianDate.js';
-import * as IsoDate from './internal/DateTime/IsoDate.js';
-import * as Time from './internal/DateTime/Time.js';
-import * as ZoneOffsetParts from './internal/DateTime/ZoneOffsetParts.js';
+import * as InternalMGregorianDate from './internal/DateTime/GregorianDate.js';
+import * as InternalMIsoDate from './internal/DateTime/IsoDate.js';
+import * as InternalMTime from './internal/DateTime/Time.js';
+import * as InternalMZoneOffsetParts from './internal/DateTime/ZoneOffsetParts.js';
 import * as MMatch from './Match.js';
 import * as MNumber from './Number.js';
 import * as MPredicate from './Predicate.js';
@@ -170,13 +170,13 @@ export class Type extends MEqData.Class {
   readonly timestamp: number;
 
   /** GregorianDate of this DateTime, expressed in given timezone */
-  private gregorianDate: Option.Option<GregorianDate.Type>;
+  private gregorianDate: Option.Option<InternalMGregorianDate.Type>;
 
   /** IsoDate of this DateTime, expressed in given timezone */
-  private isoDate: Option.Option<IsoDate.Type>;
+  private isoDate: Option.Option<InternalMIsoDate.Type>;
 
   /** Time of this DateTime, expressed in given timezone */
-  private time: Option.Option<Time.Type>;
+  private time: Option.Option<InternalMTime.Type>;
 
   /**
    * Offset in hours between the time of the zone for which all calculations of that DateTime object
@@ -186,7 +186,7 @@ export class Type extends MEqData.Class {
   readonly zoneOffset: number;
 
   /** ZoneOffset decomposed into its parts */
-  private zoneOffsetParts: Option.Option<ZoneOffsetParts.Type>;
+  private zoneOffsetParts: Option.Option<InternalMZoneOffsetParts.Type>;
 
   /** Calculated field equal to timestamp + zoneOffsetx3600 */
   readonly zonedTimestamp: number;
@@ -195,11 +195,11 @@ export class Type extends MEqData.Class {
    * Returns the `gregorianDate` of `this` for the given time zone -Calculates it if necessary and
    * stores it for future use
    */
-  get _gregorianDate(): GregorianDate.Type {
+  get _gregorianDate(): InternalMGregorianDate.Type {
     return pipe(
       this.gregorianDate,
       Option.getOrElse(() => {
-        const result = GregorianDate.fromTimestamp(this.zonedTimestamp);
+        const result = InternalMGregorianDate.fromTimestamp(this.zonedTimestamp);
         this.gregorianDate = Option.some(result);
         return result;
       }),
@@ -210,14 +210,14 @@ export class Type extends MEqData.Class {
    * Returns the `isoDate` of `this` for the given time zone -Calculates it if necessary and stores
    * it for future use
    */
-  get _isoDate(): IsoDate.Type {
+  get _isoDate(): InternalMIsoDate.Type {
     return pipe(
       this.isoDate,
       Option.getOrElse(() => {
         const result = pipe(
           this.gregorianDate,
-          Option.map(IsoDate.fromGregorianDate),
-          Option.getOrElse(() => IsoDate.fromTimestamp(this.zonedTimestamp)),
+          Option.map(InternalMIsoDate.fromGregorianDate),
+          Option.getOrElse(() => InternalMIsoDate.fromTimestamp(this.zonedTimestamp)),
         );
         this.isoDate = Option.some(result);
         return result;
@@ -229,11 +229,15 @@ export class Type extends MEqData.Class {
    * Returns the `time` of `this` for the given time zone -Calculates it if necessary and stores it
    * for future use
    */
-  get _time(): Time.Type {
+  get _time(): InternalMTime.Type {
     return pipe(
       this.time,
       Option.getOrElse(() => {
-        const result = pipe(this.zonedTimestamp, MNumber.intModulo(DAY_MS), Time.fromTimestamp);
+        const result = pipe(
+          this.zonedTimestamp,
+          MNumber.intModulo(DAY_MS),
+          InternalMTime.fromTimestamp,
+        );
         this.time = Option.some(result);
         return result;
       }),
@@ -244,11 +248,11 @@ export class Type extends MEqData.Class {
    * Returns the `zoneOffsetParts` of `self` -Calculates it if necessary and stores it for future
    * use
    */
-  get _zoneOffsetParts(): ZoneOffsetParts.Type {
+  get _zoneOffsetParts(): InternalMZoneOffsetParts.Type {
     return pipe(
       this.zoneOffsetParts,
       Option.getOrElse(() => {
-        const result = ZoneOffsetParts.fromZoneOffset(this.zoneOffset);
+        const result = InternalMZoneOffsetParts.fromZoneOffset(this.zoneOffset);
         this.zoneOffsetParts = Option.some(result);
         return result;
       }),
@@ -273,11 +277,11 @@ export class Type extends MEqData.Class {
     zonedTimestamp,
   }: {
     readonly timestamp: number;
-    readonly _gregorianDate: Option.Option<GregorianDate.Type>;
-    readonly _isoDate: Option.Option<IsoDate.Type>;
-    readonly _time: Option.Option<Time.Type>;
+    readonly _gregorianDate: Option.Option<InternalMGregorianDate.Type>;
+    readonly _isoDate: Option.Option<InternalMIsoDate.Type>;
+    readonly _time: Option.Option<InternalMTime.Type>;
     readonly zoneOffset: number;
-    readonly _zoneOffsetParts: Option.Option<ZoneOffsetParts.Type>;
+    readonly _zoneOffsetParts: Option.Option<InternalMZoneOffsetParts.Type>;
     readonly zonedTimestamp: number;
   }) {
     super();
@@ -379,9 +383,9 @@ export class Type extends MEqData.Class {
         return buildFromZoneOffset(validatedZoneOffset);
       }
 
-      const zoneOffsetParts = yield* ZoneOffsetParts.fromParts(zoneOffset);
+      const zoneOffsetParts = yield* InternalMZoneOffsetParts.fromParts(zoneOffset);
 
-      const result = pipe(zoneOffsetParts, ZoneOffsetParts.toHour, buildFromZoneOffset);
+      const result = pipe(zoneOffsetParts, InternalMZoneOffsetParts.toHour, buildFromZoneOffset);
 
       result.zoneOffsetParts = Option.some(zoneOffsetParts);
 
@@ -697,7 +701,7 @@ export class Type extends MEqData.Class {
   }
 
   /** Returns a copy of `this` with `_gregorianDate` set to `gregorianDate` */
-  _setGregorianDate(gregorianDate: GregorianDate.Type): Type {
+  _setGregorianDate(gregorianDate: InternalMGregorianDate.Type): Type {
     const selfTimestamp = this._gregorianDate.timestamp;
     const offset = gregorianDate.timestamp - selfTimestamp;
     return new Type({
@@ -712,7 +716,7 @@ export class Type extends MEqData.Class {
   }
 
   /** Returns a copy of this with `isoDate` set to `isoDate` */
-  _setIsoDate(isoDate: IsoDate.Type): Type {
+  _setIsoDate(isoDate: InternalMIsoDate.Type): Type {
     const selfTimestamp = this._isoDate.timestamp;
     const offset = isoDate.timestamp - selfTimestamp;
     return new Type({
@@ -727,7 +731,7 @@ export class Type extends MEqData.Class {
   }
 
   /** Returns a copy of this with `time` set to `time` */
-  _setTime(time: Time.Type): Type {
+  _setTime(time: InternalMTime.Type): Type {
     const selfTimestampOffset = this._time.timestampOffset;
     const offset = time.timestampOffset - selfTimestampOffset;
     return new Type({
@@ -809,10 +813,10 @@ export {
  * @category Destructors
  */
 export const getIsoString = (self: Type): string =>
-  GregorianDate.getIsoString(self._gregorianDate) +
+  InternalMGregorianDate.getIsoString(self._gregorianDate) +
   'T' +
-  Time.getIsoString(self._time) +
-  ZoneOffsetParts.getIsoString(self._zoneOffsetParts);
+  InternalMTime.getIsoString(self._time) +
+  InternalMZoneOffsetParts.getIsoString(self._zoneOffsetParts);
 
 /**
  * Tries to build a `MDateTime` from `timestamp`, the number of milliseconds since 1/1/1970
@@ -1011,7 +1015,7 @@ export const timestamp: MTypes.OneArgFunction<Type, number> = Struct.get('timest
  *
  * @category Getters
  */
-export const gregorianDate: MTypes.OneArgFunction<Type, GregorianDate.Type> =
+export const gregorianDate: MTypes.OneArgFunction<Type, InternalMGregorianDate.Type> =
   Struct.get('_gregorianDate');
 
 /**
@@ -1019,21 +1023,21 @@ export const gregorianDate: MTypes.OneArgFunction<Type, GregorianDate.Type> =
  *
  * @category Getters
  */
-export const isoDate: MTypes.OneArgFunction<Type, IsoDate.Type> = Struct.get('_isoDate');
+export const isoDate: MTypes.OneArgFunction<Type, InternalMIsoDate.Type> = Struct.get('_isoDate');
 
 /**
  * Returns the `time` property of `self`
  *
  * @category Getters
  */
-export const time: MTypes.OneArgFunction<Type, Time.Type> = Struct.get('_time');
+export const time: MTypes.OneArgFunction<Type, InternalMTime.Type> = Struct.get('_time');
 
 /**
  * Returns the `zoneOffsetParts` property of `self`
  *
  * @category Getters
  */
-export const zoneOffsetParts: MTypes.OneArgFunction<Type, ZoneOffsetParts.Type> =
+export const zoneOffsetParts: MTypes.OneArgFunction<Type, InternalMZoneOffsetParts.Type> =
   Struct.get('_zoneOffsetParts');
 
 /**
@@ -1041,7 +1045,10 @@ export const zoneOffsetParts: MTypes.OneArgFunction<Type, ZoneOffsetParts.Type> 
  *
  * @category Destructors
  */
-export const getYear: MTypes.OneArgFunction<Type, number> = flow(gregorianDate, GregorianDate.year);
+export const getYear: MTypes.OneArgFunction<Type, number> = flow(
+  gregorianDate,
+  InternalMGregorianDate.year,
+);
 
 /**
  * Returns the ordinalDay of `self` for the given time zone
@@ -1050,7 +1057,7 @@ export const getYear: MTypes.OneArgFunction<Type, number> = flow(gregorianDate, 
  */
 export const getOrdinalDay: MTypes.OneArgFunction<Type, number> = flow(
   gregorianDate,
-  GregorianDate.ordinalDay,
+  InternalMGregorianDate.ordinalDay,
 );
 
 /**
@@ -1060,7 +1067,7 @@ export const getOrdinalDay: MTypes.OneArgFunction<Type, number> = flow(
  */
 export const getMonth: MTypes.OneArgFunction<Type, number> = flow(
   gregorianDate,
-  GregorianDate.getMonth,
+  InternalMGregorianDate.getMonth,
 );
 
 /**
@@ -1070,7 +1077,7 @@ export const getMonth: MTypes.OneArgFunction<Type, number> = flow(
  */
 export const getMonthDay: MTypes.OneArgFunction<Type, number> = flow(
   gregorianDate,
-  GregorianDate.getMonthDay,
+  InternalMGregorianDate.getMonthDay,
 );
 
 /**
@@ -1078,63 +1085,72 @@ export const getMonthDay: MTypes.OneArgFunction<Type, number> = flow(
  *
  * @category Destructors
  */
-export const getIsoYear: MTypes.OneArgFunction<Type, number> = flow(isoDate, IsoDate.year);
+export const getIsoYear: MTypes.OneArgFunction<Type, number> = flow(isoDate, InternalMIsoDate.year);
 
 /**
  * Returns the isoWeek of `self` for the given time zone
  *
  * @category Destructors
  */
-export const getIsoWeek: MTypes.OneArgFunction<Type, number> = flow(isoDate, IsoDate.getIsoWeek);
+export const getIsoWeek: MTypes.OneArgFunction<Type, number> = flow(
+  isoDate,
+  InternalMIsoDate.getIsoWeek,
+);
 
 /**
  * Returns the weekday of `self` for the given time zone
  *
  * @category Destructors
  */
-export const getWeekday: MTypes.OneArgFunction<Type, number> = flow(isoDate, IsoDate.getWeekday);
+export const getWeekday: MTypes.OneArgFunction<Type, number> = flow(
+  isoDate,
+  InternalMIsoDate.getWeekday,
+);
 
 /**
  * Returns the hour23 of `self` for the given time zone
  *
  * @category Destructors
  */
-export const getHour23: MTypes.OneArgFunction<Type, number> = flow(time, Time.hour23);
+export const getHour23: MTypes.OneArgFunction<Type, number> = flow(time, InternalMTime.hour23);
 
 /**
  * Returns the hour11 of `self` for the given time zone
  *
  * @category Destructors
  */
-export const getHour11: MTypes.OneArgFunction<Type, number> = flow(time, Time.hour11);
+export const getHour11: MTypes.OneArgFunction<Type, number> = flow(time, InternalMTime.hour11);
 
 /**
  * Returns the meridiem of `self` for the given time zone
  *
  * @category Destructors
  */
-export const getMeridiem: MTypes.OneArgFunction<Type, 0 | 12> = flow(time, Time.meridiem);
+export const getMeridiem: MTypes.OneArgFunction<Type, 0 | 12> = flow(time, InternalMTime.meridiem);
 
 /**
  * Returns the minute of `self` for the given time zone
  *
  * @category Destructors
  */
-export const getMinute: MTypes.OneArgFunction<Type, number> = flow(time, Time.minute);
+export const getMinute: MTypes.OneArgFunction<Type, number> = flow(time, InternalMTime.minute);
 
 /**
  * Returns the second of `self` for the given time zone
  *
  * @category Destructors
  */
-export const getSecond: MTypes.OneArgFunction<Type, number> = flow(time, Time.second);
+export const getSecond: MTypes.OneArgFunction<Type, number> = flow(time, InternalMTime.second);
 
 /**
  * Returns the millisecond of `self` for the given time zone
  *
  * @category Destructors
  */
-export const getMillisecond: MTypes.OneArgFunction<Type, number> = flow(time, Time.millisecond);
+export const getMillisecond: MTypes.OneArgFunction<Type, number> = flow(
+  time,
+  InternalMTime.millisecond,
+);
 
 /**
  * Returns the hour part of the zoneOffset of `self`
@@ -1143,7 +1159,7 @@ export const getMillisecond: MTypes.OneArgFunction<Type, number> = flow(time, Ti
  */
 export const getZoneHour: MTypes.OneArgFunction<Type, number> = flow(
   zoneOffsetParts,
-  ZoneOffsetParts.zoneHour,
+  InternalMZoneOffsetParts.zoneHour,
 );
 
 /**
@@ -1153,7 +1169,7 @@ export const getZoneHour: MTypes.OneArgFunction<Type, number> = flow(
  */
 export const getZoneMinute: MTypes.OneArgFunction<Type, number> = flow(
   zoneOffsetParts,
-  ZoneOffsetParts.zoneMinute,
+  InternalMZoneOffsetParts.zoneMinute,
 );
 
 /**
@@ -1163,7 +1179,7 @@ export const getZoneMinute: MTypes.OneArgFunction<Type, number> = flow(
  */
 export const getZoneSecond: MTypes.OneArgFunction<Type, number> = flow(
   zoneOffsetParts,
-  ZoneOffsetParts.zoneSecond,
+  InternalMZoneOffsetParts.zoneSecond,
 );
 
 /**
@@ -1180,7 +1196,7 @@ export const setYear =
     pipe(
       self,
       gregorianDate,
-      GregorianDate.setYear(year),
+      InternalMGregorianDate.setYear(year),
       Result.map(self._setGregorianDate.bind(self)),
     );
 
@@ -1208,7 +1224,7 @@ export const setOrdinalDay =
     pipe(
       self,
       gregorianDate,
-      GregorianDate.setOrdinalDay(ordinalDay),
+      InternalMGregorianDate.setOrdinalDay(ordinalDay),
       Result.map(self._setGregorianDate.bind(self)),
     );
 
@@ -1236,7 +1252,7 @@ export const setMonth =
     pipe(
       self,
       gregorianDate,
-      GregorianDate.setMonth(month),
+      InternalMGregorianDate.setMonth(month),
       Result.map(self._setGregorianDate.bind(self)),
     );
 
@@ -1264,7 +1280,7 @@ export const setMonthDay =
     pipe(
       self,
       gregorianDate,
-      GregorianDate.setMonthDay(monthDay),
+      InternalMGregorianDate.setMonthDay(monthDay),
       Result.map(self._setGregorianDate.bind(self)),
     );
 
@@ -1289,7 +1305,7 @@ export const setMonthDayOrThrow: MTypes.OneArgFunction<number, MTypes.OneArgFunc
 export const setIsoYear =
   (isoYear: number) =>
   (self: Type): Result.Result<Type, MInputError.Type> =>
-    pipe(self, isoDate, IsoDate.setYear(isoYear), Result.map(self._setIsoDate.bind(self)));
+    pipe(self, isoDate, InternalMIsoDate.setYear(isoYear), Result.map(self._setIsoDate.bind(self)));
 
 /**
  * Same as `setIsoYear` but returns directly a `MDateTime` or throws in case of an error
@@ -1312,7 +1328,12 @@ export const setIsoYearOrThrow: MTypes.OneArgFunction<number, MTypes.OneArgFunct
 export const setIsoWeek =
   (isoWeek: number) =>
   (self: Type): Result.Result<Type, MInputError.Type> =>
-    pipe(self, isoDate, IsoDate.setIsoWeek(isoWeek), Result.map(self._setIsoDate.bind(self)));
+    pipe(
+      self,
+      isoDate,
+      InternalMIsoDate.setIsoWeek(isoWeek),
+      Result.map(self._setIsoDate.bind(self)),
+    );
 
 /**
  * Same as `setIsoWeek` but returns directly a `MDateTime` or throws in case of an error
@@ -1335,7 +1356,12 @@ export const setIsoWeekOrThrow: MTypes.OneArgFunction<number, MTypes.OneArgFunct
 export const setWeekday =
   (weekday: number) =>
   (self: Type): Result.Result<Type, MInputError.Type> =>
-    pipe(self, isoDate, IsoDate.setWeekday(weekday), Result.map(self._setIsoDate.bind(self)));
+    pipe(
+      self,
+      isoDate,
+      InternalMIsoDate.setWeekday(weekday),
+      Result.map(self._setIsoDate.bind(self)),
+    );
 
 /**
  * Same as `setWeekday` but returns directly a `MDateTime` or throws in case of an error
@@ -1358,7 +1384,7 @@ export const setWeekdayOrThrow: MTypes.OneArgFunction<number, MTypes.OneArgFunct
 export const setHour23 =
   (hour23: number) =>
   (self: Type): Result.Result<Type, MInputError.Type> =>
-    pipe(self, time, Time.setHour23(hour23), Result.map(self._setTime.bind(self)));
+    pipe(self, time, InternalMTime.setHour23(hour23), Result.map(self._setTime.bind(self)));
 
 /**
  * Same as `setHour23` but returns directly a `MDateTime` or throws in case of an error
@@ -1381,7 +1407,7 @@ export const setHour23OrThrow: MTypes.OneArgFunction<number, MTypes.OneArgFuncti
 export const setHour11 =
   (hour11: number) =>
   (self: Type): Result.Result<Type, MInputError.Type> =>
-    pipe(self, time, Time.setHour11(hour11), Result.map(self._setTime.bind(self)));
+    pipe(self, time, InternalMTime.setHour11(hour11), Result.map(self._setTime.bind(self)));
 
 /**
  * Same as `setHour11` but returns directly a `MDateTime` or throws in case of an error
@@ -1402,7 +1428,7 @@ export const setHour11OrThrow: MTypes.OneArgFunction<number, MTypes.OneArgFuncti
 export const setMeridiem =
   (meridiem: 0 | 12) =>
   (self: Type): Type =>
-    pipe(self, time, Time.setMeridiem(meridiem), self._setTime.bind(self));
+    pipe(self, time, InternalMTime.setMeridiem(meridiem), self._setTime.bind(self));
 
 /**
  * If possible, returns a `Success` of a `MDateTime` having minute `minute` and the same `year`,
@@ -1415,7 +1441,7 @@ export const setMeridiem =
 export const setMinute =
   (minute: number) =>
   (self: Type): Result.Result<Type, MInputError.Type> =>
-    pipe(self, time, Time.setMinute(minute), Result.map(self._setTime.bind(self)));
+    pipe(self, time, InternalMTime.setMinute(minute), Result.map(self._setTime.bind(self)));
 
 /**
  * Same as `setMinute` but returns directly a `MDateTime` or throws in case of an error
@@ -1438,7 +1464,7 @@ export const setMinuteOrThrow: MTypes.OneArgFunction<number, MTypes.OneArgFuncti
 export const setSecond =
   (second: number) =>
   (self: Type): Result.Result<Type, MInputError.Type> =>
-    pipe(self, time, Time.setSecond(second), Result.map(self._setTime.bind(self)));
+    pipe(self, time, InternalMTime.setSecond(second), Result.map(self._setTime.bind(self)));
 
 /**
  * Same as `setSecond` but returns directly a `MDateTime` or throws in case of an error
@@ -1461,7 +1487,12 @@ export const setSecondOrThrow: MTypes.OneArgFunction<number, MTypes.OneArgFuncti
 export const setMillisecond =
   (millisecond: number) =>
   (self: Type): Result.Result<Type, MInputError.Type> =>
-    pipe(self, time, Time.setMillisecond(millisecond), Result.map(self._setTime.bind(self)));
+    pipe(
+      self,
+      time,
+      InternalMTime.setMillisecond(millisecond),
+      Result.map(self._setTime.bind(self)),
+    );
 
 /**
  * Same as `setMillisecond` but returns directly a `MDateTime` or throws in case of an error
@@ -1566,7 +1597,10 @@ export const setZoneOffsetKeepPartsOrThrow: MTypes.OneArgFunction<
  *
  * @category Predicates
  */
-export const yearIsLeap: Predicate.Predicate<Type> = flow(gregorianDate, GregorianDate.yearIsLeap);
+export const yearIsLeap: Predicate.Predicate<Type> = flow(
+  gregorianDate,
+  InternalMGregorianDate.yearIsLeap,
+);
 
 /**
  * Returns true if the isoYear of `self` for the given time zone is a long year. Returns false
@@ -1574,7 +1608,7 @@ export const yearIsLeap: Predicate.Predicate<Type> = flow(gregorianDate, Gregori
  *
  * @category Predicates
  */
-export const isoYearIsLong: Predicate.Predicate<Type> = flow(isoDate, IsoDate.yearIsLong);
+export const isoYearIsLong: Predicate.Predicate<Type> = flow(isoDate, InternalMIsoDate.yearIsLong);
 
 /**
  * Returns true if `self` is the first day of a month in the given timezone
@@ -1592,7 +1626,7 @@ export const isFirstMonthDay: Predicate.Predicate<Type> = (self) => getMonthDay(
 
 export const isLastMonthDay: Predicate.Predicate<Type> = (self) =>
   getMonthDay(self) ===
-  pipe(self, gregorianDate, GregorianDate.getNumberOfDaysInMonth(getMonth(self)));
+  pipe(self, gregorianDate, InternalMGregorianDate.getNumberOfDaysInMonth(getMonth(self)));
 
 /**
  * Returns true if `self` is the first day of a year in the given timezone
@@ -1609,7 +1643,7 @@ export const isFirstYearDay: Predicate.Predicate<Type> = (self) => getOrdinalDay
  */
 
 export const isLastYearDay: Predicate.Predicate<Type> = (self) =>
-  getOrdinalDay(self) === pipe(self, gregorianDate, GregorianDate.getYearDurationInDays);
+  getOrdinalDay(self) === pipe(self, gregorianDate, InternalMGregorianDate.getYearDurationInDays);
 
 /**
  * Returns true if `self` is the first day of an iso year in the given timezone
@@ -1626,7 +1660,8 @@ export const isFirstIsoYearDay: Predicate.Predicate<Type> = (self) =>
  * @category Predicates
  */
 export const isLastIsoYearDay: Predicate.Predicate<Type> = (self) =>
-  getIsoWeek(self) === pipe(self, isoDate, IsoDate.getLastIsoWeek) && getWeekday(self) === 7;
+  getIsoWeek(self) === pipe(self, isoDate, InternalMIsoDate.getLastIsoWeek) &&
+  getWeekday(self) === 7;
 
 /**
  * Returns a copy of `self` where `monthDay` is set to the first day of the current month. All time
@@ -1644,7 +1679,7 @@ export const toFirstMonthDay: MTypes.OneArgFunction<Type> = setMonthDayOrThrow(1
  */
 export const toLastMonthDay = (self: Type): Type =>
   setMonthDayOrThrow(
-    pipe(self, gregorianDate, GregorianDate.getNumberOfDaysInMonth(getMonth(self))),
+    pipe(self, gregorianDate, InternalMGregorianDate.getNumberOfDaysInMonth(getMonth(self))),
   )(self);
 
 /**
@@ -1662,7 +1697,9 @@ export const toFirstYearDay = (self: Type): Type => setOrdinalDayOrThrow(1)(self
  * @category Offsetters
  */
 export const toLastYearDay = (self: Type): Type =>
-  setOrdinalDayOrThrow(pipe(self, gregorianDate, GregorianDate.getYearDurationInDays))(self);
+  setOrdinalDayOrThrow(pipe(self, gregorianDate, InternalMGregorianDate.getYearDurationInDays))(
+    self,
+  );
 
 /**
  * Returns a copy of `self` where `isoWeek` and `weekday` are set to 1. All time parts (`hour23`,
@@ -1683,7 +1720,7 @@ export const toFirstIsoYearDay: MTypes.OneArgFunction<Type> = flow(
  * @category Offsetters
  */
 export const toLastIsoYearWeek = (self: Type): Type =>
-  pipe(self, setIsoWeekOrThrow(pipe(self, isoDate, IsoDate.getLastIsoWeek)));
+  pipe(self, setIsoWeekOrThrow(pipe(self, isoDate, InternalMIsoDate.getLastIsoWeek)));
 
 /**
  * Returns a copy of `self` where `isoWeek` is set to the last week of the current iso year and

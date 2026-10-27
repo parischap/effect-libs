@@ -17,7 +17,7 @@ import * as MArray from '@parischap/effect-lib/MArray';
 import * as MPredicate from '@parischap/effect-lib/MPredicate';
 import type * as MTypes from '@parischap/effect-lib/MTypes';
 
-import type * as PPStringifiedProperties from '../internal/stringification/StringifiedProperties.js';
+import type * as InternalPPStringifiedProperties from '../internal/stringification/StringifiedProperties.js';
 
 /**
  * Type that represents a PPStringifiedValue
@@ -63,7 +63,7 @@ export const empty: Type = fromText(ASText.empty);
  * @category Constructors
  */
 export const fromJoinedStringifiedProperties: MTypes.OneArgFunction<
-  PPStringifiedProperties.Type,
+  InternalPPStringifiedProperties.Type,
   Type
 > = Array.match({ onEmpty: Function.constant(empty), onNonEmpty: Array.map(toText) });
 
@@ -75,7 +75,7 @@ export const fromJoinedStringifiedProperties: MTypes.OneArgFunction<
  * @category Constructors
  */
 export const fromFlattenedStringifiedProperties: MTypes.OneArgFunction<
-  PPStringifiedProperties.Type,
+  InternalPPStringifiedProperties.Type,
   Type
 > = Array.match({ onEmpty: Function.constant(empty), onNonEmpty: Array.flatten });
 

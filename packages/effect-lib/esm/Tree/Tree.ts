@@ -51,11 +51,11 @@ import * as Result from 'effect/Result';
 import * as Struct from 'effect/Struct';
 import * as Tuple from 'effect/Tuple';
 
-import type * as MTreeForest from '../internal/TreeForest.js';
+import type * as InternalMTreeForest from '../internal/TreeForest.js';
 import type * as MTypes from '../types/types.js';
 
 import * as MArray from '../Array.js';
-import * as MTreeNode from '../internal/TreeNode.js';
+import * as InternalMTreeNode from '../internal/TreeNode.js';
 import * as MMatch from '../Match.js';
 import * as MPredicate from '../Predicate.js';
 import * as MStruct from '../Struct.js';
@@ -187,7 +187,7 @@ const internalUnfold =
                   : pipe(
                       parents,
                       Array.findFirst(([parentSeed]) => seedEquivalence(parentSeed, currentSeed)),
-                      Option.map(flow(Tuple.get(1), MTreeNode.value)),
+                      Option.map(flow(Tuple.get(1), InternalMTreeNode.value)),
                     ),
               ),
               Result.mapBoth({
@@ -351,7 +351,7 @@ export const unfoldAndFold: {
             value: (node) =>
               foldNonLeaf(
                 node.value,
-                Array.map(node.forest as unknown as MTreeForest.Type<C, C>, value),
+                Array.map(node.forest as unknown as InternalMTreeForest.Type<C, C>, value),
               ),
             // Allow garbage collection
             forest: () => Array.empty(),

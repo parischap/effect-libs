@@ -43,7 +43,7 @@ import * as Tuple from 'effect/Tuple';
 import type * as MNumberBase10Format from './NumberBase10Format.js';
 import type * as MTypes from './types/types.js';
 
-import * as internalRoundingOptionCorrecter from './internal/RoundingOptionCorrecter.js';
+import * as InternalMRoundingOptionCorrecter from './internal/RoundingOptionCorrecter.js';
 
 /**
  * Type on which this module's functions operate.
@@ -294,7 +294,7 @@ export const round = (
 ): MTypes.OneArgFunction<Type> => {
   const shiftMultiplicand = pipe(1, shift(precision));
   const unshiftMultiplicand = 1 / shiftMultiplicand;
-  const correcter = internalRoundingOptionCorrecter.fromRoundingOption(option);
+  const correcter = InternalMRoundingOptionCorrecter.fromRoundingOption(option);
 
   return (self) => {
     const shiftedSelf = shiftMultiplicand * self;

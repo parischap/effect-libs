@@ -23,7 +23,7 @@ import type * as MTypes from '@parischap/effect-lib/MTypes';
 
 import type * as PPPartName from './PartName.js';
 
-import * as PPStyles from '../internal/Parameters/Styles.js';
+import * as InternalPPStyles from '../internal/Parameters/Styles.js';
 import * as PPStyle from './Style.js';
 
 /**
@@ -45,7 +45,7 @@ export class Type extends MEqData.Class {
   readonly id: string;
 
   /** Map of Style's to be applied to the different parts of the value to stringify */
-  readonly styles: PPStyles.Type;
+  readonly styles: InternalPPStyles.Type;
 
   /** Returns the `id` of `this` */
   [MData.idSymbol](): string | (() => string) {
@@ -112,7 +112,7 @@ export const id: MTypes.OneArgFunction<Type, string> = Struct.get('id');
  *
  * @category Getters
  */
-export const styles: MTypes.OneArgFunction<Type, PPStyles.Type> = Struct.get('styles');
+export const styles: MTypes.OneArgFunction<Type, InternalPPStyles.Type> = Struct.get('styles');
 
 /**
  * Returns the Style associated with `partName` which identifies a part of a stringified value.
@@ -121,7 +121,7 @@ export const styles: MTypes.OneArgFunction<Type, PPStyles.Type> = Struct.get('st
  * @category Destructors
  */
 export const get = (partName: PPPartName.Type): MTypes.OneArgFunction<Type, PPStyle.Type> =>
-  flow(styles, PPStyles.get(partName));
+  flow(styles, InternalPPStyles.get(partName));
 
 /**
  * StyleMap instance for ansi dark mode

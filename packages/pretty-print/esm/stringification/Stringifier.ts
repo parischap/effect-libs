@@ -36,9 +36,9 @@ import type * as MTypes from '@parischap/effect-lib/MTypes';
 import type * as PPParameters from '../Parameters/Parameters.js';
 import type * as PPPartName from '../Parameters/PartName.js';
 
-import * as PPResolvedNonPrimitiveParameters from '../internal/Parameters/ResolvedNonPrimitiveParameters.js';
-import * as PPValue from '../internal/stringification/Value.js';
-import * as PPValues from '../internal/stringification/Values.js';
+import * as InternalPPResolvedNonPrimitiveParameters from '../internal/Parameters/ResolvedNonPrimitiveParameters.js';
+import * as InternalPPValue from '../internal/stringification/Value.js';
+import * as InternalPPValues from '../internal/stringification/Values.js';
 import * as PPByPasser from '../Parameters/ByPasser.js';
 import * as PPNonPrimitiveFormatter from '../Parameters/NonPrimitiveFormatter.js';
 import * as PPPrimitiveFormatter from '../Parameters/PrimitiveFormatter.js';
@@ -98,12 +98,12 @@ export class Type extends MEqData.Class {
 
       interface NonLeaf {
         /** The non-primitive seed from which this non-leaf was created */
-        readonly seed: PPValue.ReadonlyNonPrimitive;
+        readonly seed: InternalPPValue.ReadonlyNonPrimitive;
         /**
          * The merged, fully-resolved `NonPrimitiveParameters` fields applicable to `seed` (see
          * `PPResolvedNonPrimitiveParameters.fromApplicableNonPrimitiveParameters`)
          */
-        readonly applicableNonPrimitiveParameters: PPResolvedNonPrimitiveParameters.Type;
+        readonly applicableNonPrimitiveParameters: InternalPPResolvedNonPrimitiveParameters.Type;
         /** The number of direct and indirect properties of `seed` before filtering and deduping */
         readonly allPropertyNumber: number;
         /**
@@ -120,23 +120,28 @@ export class Type extends MEqData.Class {
 
       interface Leaf {
         /** The seed from which this leaf was created */
-        readonly seed: PPValue.Any;
+        readonly seed: InternalPPValue.Any;
         /** The representation of the seed */
         readonly stringified: PPStringifiedValue.Type;
       }
 
       const internalStringify: Type['stringify'] = flow(
-        PPValue.fromTopValue as MTypes.OneArgFunction<unknown, PPValue.Any>,
-        MTree.unfoldAndFold<NonLeaf, Leaf, PPValue.Any, Leaf & { readonly isLeaf: boolean }>({
+        InternalPPValue.fromTopValue as MTypes.OneArgFunction<unknown, InternalPPValue.Any>,
+        MTree.unfoldAndFold<
+          NonLeaf,
+          Leaf,
+          InternalPPValue.Any,
+          Leaf & { readonly isLeaf: boolean }
+        >({
           unfold: (seed, cycleSource) =>
             Result.mapError(
               Result.gen(function* () {
                 // Stringify the value if it's a primitive
                 const nonPrimitive = yield* pipe(
-                  seed as PPValue.Primitive | PPValue.NonPrimitive,
+                  seed as InternalPPValue.Primitive | InternalPPValue.NonPrimitive,
                   MMatch.make,
                   MMatch.when(
-                    PPValue.isPrimitive,
+                    InternalPPValue.isPrimitive,
                     flow(
                       PPPrimitiveFormatter.action(parameters.primitiveFormatter),
                       primitiveValueContextStyler(seed),
@@ -149,7 +154,7 @@ export class Type extends MEqData.Class {
 
                 // Merge every PPNonPrimitiveParameters applicable to this non-primitive value
                 const applicableNonPrimitiveParameters =
-                  PPResolvedNonPrimitiveParameters.fromApplicableNonPrimitiveParameters({
+                  InternalPPResolvedNonPrimitiveParameters.fromApplicableNonPrimitiveParameters({
                     nonPrimitive: nonPrimitive.content,
                     nonPrimitiveParametersArray,
                   });
@@ -172,9 +177,9 @@ export class Type extends MEqData.Class {
                 // Stringify this non-primitive value if it lies beyond parameters.maxDepth
                 const unBypassedNonPrimitiveUnderMaxDepth = yield* Result.liftPredicate(
                   unByPassed,
-                  flow(PPValue.depth, Number.isLessThan(parameters.maxDepth)),
+                  flow(InternalPPValue.depth, Number.isLessThan(parameters.maxDepth)),
                   flow(
-                    PPValue.content,
+                    InternalPPValue.content,
                     parameters.name,
                     MString.prepend(parameters.openingTagMark),
                     MString.append(parameters.closingTagMark),
@@ -209,12 +214,12 @@ export class Type extends MEqData.Class {
                 );
 
                 const properties = Array.appendAll(
-                  PPValues.fromNonPrimitiveKeysAndValues({
+                  InternalPPValues.fromNonPrimitiveKeysAndValues({
                     nonPrimitive: unCyclicalUnBypassedNonPrimitiveUnderMaxDepth,
                     maxPrototypeDepth: applicableNonPrimitiveParameters.maxPrototypeDepth,
                   }),
                   applicableNonPrimitiveParameters.extractIterableElements
-                    ? PPValues.fromNonPrimitiveIterable({
+                    ? InternalPPValues.fromNonPrimitiveIterable({
                         nonPrimitive: unCyclicalUnBypassedNonPrimitiveUnderMaxDepth,
                         stringifier: internalStringify,
                       })
@@ -224,7 +229,7 @@ export class Type extends MEqData.Class {
                 const filteredAndSortedProperties = pipe(
                   properties,
                   PPPropertyFilter.action(applicableNonPrimitiveParameters.propertyFilter),
-                  PPValues.sort(applicableNonPrimitiveParameters.propertySortOrder),
+                  InternalPPValues.sort(applicableNonPrimitiveParameters.propertySortOrder),
                   MFunction.fIfTrue({
                     condition: applicableNonPrimitiveParameters.dedupeProperties,
                     f: Array.dedupeWith(
@@ -236,7 +241,7 @@ export class Type extends MEqData.Class {
 
                 const hideAutoGeneratedKeys =
                   applicableNonPrimitiveParameters.hideAutoGeneratedKeys &&
-                  Array.every(filteredAndSortedProperties, PPValue.hasGeneratedKey);
+                  Array.every(filteredAndSortedProperties, InternalPPValue.hasGeneratedKey);
 
                 return Tuple.make(
                   {
@@ -356,7 +361,7 @@ export class Type extends MEqData.Class {
             };
           },
           foldLeaf: MStruct.enrichWith({ isLeaf: Function.constTrue }),
-          seedEquivalence: PPValue.equivalence,
+          seedEquivalence: InternalPPValue.equivalence,
         }),
         Struct.get('stringified'),
       );

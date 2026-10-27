@@ -13,16 +13,16 @@ import * as Predicate from 'effect/Predicate';
 import * as Struct from 'effect/Struct';
 import * as Tuple from 'effect/Tuple';
 
-import type * as internalSignString from './internal/NumberBase10Format/SignString.js';
+import type * as InternalMSignString from './internal/NumberBase10Format/SignString.js';
 import type * as MTypes from './types/types.js';
 
 import * as MBigDecimal from './BigDecimal.js';
 import * as MData from './Data/Data.js';
 import * as MFunction from './Function.js';
-import * as internalScientificNotationMantissaValidator from './internal/NumberBase10Format/ScientificNotationMantissaValidator.js';
-import * as internalScientificNotationParser from './internal/NumberBase10Format/ScientificNotationParser.js';
-import * as internalSignParser from './internal/NumberBase10Format/SignParser.js';
-import * as internal from './internal/String.js';
+import * as InternalMScientificNotationMantissaValidator from './internal/NumberBase10Format/ScientificNotationMantissaValidator.js';
+import * as InternalMScientificNotationParser from './internal/NumberBase10Format/ScientificNotationParser.js';
+import * as InternalMSignParser from './internal/NumberBase10Format/SignParser.js';
+import * as InternalMString from './internal/String.js';
 import * as MMatch from './Match.js';
 import * as MPredicate from './Predicate.js';
 import * as MRegExpString from './RegExpString.js';
@@ -312,7 +312,7 @@ export class Type extends MData.Class {
       showNullIntegerPart,
     } = this;
 
-    const getParts = internal.matchWithCapturingGroups(
+    const getParts = InternalMString.matchWithCapturingGroups(
       pipe(
         {
           thousandSeparator,
@@ -329,15 +329,15 @@ export class Type extends MData.Class {
       ),
       ['signPart', 'padding', 'mantissaIntegerPart', 'mantissaFractionalPart', 'exponentPart'],
     );
-    const removeThousandSeparator = internal.removeNCharsEveryMCharsFromRight({
+    const removeThousandSeparator = InternalMString.removeNCharsEveryMCharsFromRight({
       m: MRegExpString.DIGIT_GROUP_SIZE,
       n: thousandSeparator.length,
     });
-    const signParser = internalSignParser.fromSignDisplayOption(signDisplayOption);
+    const signParser = InternalMSignParser.fromSignDisplayOption(signDisplayOption);
     const exponentParser =
-      internalScientificNotationParser.fromScientificNotationOption(scientificNotationOption);
+      InternalMScientificNotationParser.fromScientificNotationOption(scientificNotationOption);
     const scientificNotationMantissaValidator =
-      internalScientificNotationMantissaValidator.fromScientificNotationOption(
+      InternalMScientificNotationMantissaValidator.fromScientificNotationOption(
         scientificNotationOption,
       );
     const mantissaFractionalPartLengthValidator = Option.liftPredicate(
@@ -415,7 +415,7 @@ export class Type extends MData.Class {
         const validatedMantissa = yield* scientificNotationMantissaValidator(mantissa);
         const sign = yield* signParser({
           isZero: BigDecimal.isZero(validatedMantissa),
-          sign: signPart as internalSignString.Type,
+          sign: signPart as InternalMSignString.Type,
         });
         const exponent = yield* exponentParser(exponentPart);
 
@@ -620,7 +620,7 @@ export const toDescription = (self: Type): string => {
   return (
     Option.match(integerPartPadding, {
       onNone: MFunction.constEmptyString,
-      onSome: flow(Struct.get('fillChar'), internal.append('-left-padded ')),
+      onSome: flow(Struct.get('fillChar'), InternalMString.append('-left-padded ')),
     }) +
     pipe(
       signDisplayOption,
@@ -641,7 +641,7 @@ export const toDescription = (self: Type): string => {
     (isInteger
       ? 'integer'
       : minimumFractionalDigits === maximumFractionalDigits
-        ? `${internal.fromNumber(10)(minimumFractionalDigits)}-decimal number`
+        ? `${InternalMString.fromNumber(10)(minimumFractionalDigits)}-decimal number`
         : 'number') +
     pipe(
       scientificNotationOption,

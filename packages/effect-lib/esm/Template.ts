@@ -52,7 +52,7 @@ import * as Struct from 'effect/Struct';
 import type * as MTypes from './types/types.js';
 
 import * as MData from './Data/Data.js';
-import * as internalTemplateParts from './internal/Template/TemplateParts.js';
+import * as InternalMTemplateParts from './internal/Template/TemplateParts.js';
 
 /**
  * Module tag
@@ -76,7 +76,7 @@ export class Type<out PlaceholderTypes extends MTypes.Object> extends MData.Clas
   readonly placeholderDescription: string;
 
   /** Array of the TemplatePart's composing this template */
-  readonly templateParts: internalTemplateParts.Type;
+  readonly templateParts: InternalMTemplateParts.Type;
 
   /** Returns the `id` of `this` */
   [MData.idSymbol](): string | (() => string) {
@@ -98,12 +98,12 @@ export class Type<out PlaceholderTypes extends MTypes.Object> extends MData.Clas
   }
 
   /** Static constructor */
-  static make<const PS extends internalTemplateParts.Type>(
+  static make<const PS extends InternalMTemplateParts.Type>(
     templateParts: PS,
-  ): Type<internalTemplateParts.ToPlaceHolderTypes<PS>> {
+  ): Type<InternalMTemplateParts.ToPlaceHolderTypes<PS>> {
     return new Type({
-      syntheticDescription: internalTemplateParts.getSyntheticDescription(templateParts),
-      placeholderDescription: internalTemplateParts.getPlaceholderDescription(templateParts),
+      syntheticDescription: InternalMTemplateParts.getSyntheticDescription(templateParts),
+      placeholderDescription: InternalMTemplateParts.getPlaceholderDescription(templateParts),
       templateParts,
     });
   }
@@ -119,7 +119,7 @@ export class Type<out PlaceholderTypes extends MTypes.Object> extends MData.Clas
  *
  * @category Constructors
  */
-export const make = <const PS extends internalTemplateParts.Type>(...templateParts: PS) =>
+export const make = <const PS extends InternalMTemplateParts.Type>(...templateParts: PS) =>
   Type.make(templateParts);
 
 /**
@@ -129,4 +129,4 @@ export const make = <const PS extends internalTemplateParts.Type>(...templatePar
  */
 export const templateParts: <PlaceholderTypes extends MTypes.Object>(
   self: Type<PlaceholderTypes>,
-) => internalTemplateParts.Type = Struct.get('templateParts');
+) => InternalMTemplateParts.Type = Struct.get('templateParts');

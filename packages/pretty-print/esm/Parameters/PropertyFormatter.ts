@@ -22,7 +22,7 @@ import * as MEqData from '@parischap/effect-lib/MEqData';
 import * as MFunction from '@parischap/effect-lib/MFunction';
 import type * as MTypes from '@parischap/effect-lib/MTypes';
 
-import type * as PPValue from '../internal/stringification/Value.js';
+import type * as InternalPPValue from '../internal/stringification/Value.js';
 import type * as PPParameters from './Parameters.js';
 import type * as PPPartName from './PartName.js';
 
@@ -74,7 +74,7 @@ export class Type extends MEqData.Class {
     hideKey,
     parameters,
   }: {
-    readonly property: PPValue.Any;
+    readonly property: InternalPPValue.Any;
     readonly stringifiedPropValue: PPStringifiedValue.Type;
     readonly isLeaf: boolean;
     readonly hideKey: boolean;
