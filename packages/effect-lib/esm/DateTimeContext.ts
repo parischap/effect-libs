@@ -171,7 +171,7 @@ export const fromNames = ({
         numberBase10Format: MNumberBase10Format.twoDigitUnsignedInteger,
       }),
       MTemplatePlaceholder.modify({
-        descriptorMapper: MString.append(' between 2000 and 2099 included'),
+        descriptionMapper: MString.append(' between 2000 and 2099 included'),
         postParser: function (this: MTemplatePlaceholder.Type<'year', number>, value) {
           return pipe(
             value,
@@ -216,7 +216,7 @@ export const fromNames = ({
         numberBase10Format: MNumberBase10Format.twoDigitUnsignedInteger,
       }),
       MTemplatePlaceholder.modify({
-        descriptorMapper: MString.append(' between 2000 and 2099 included'),
+        descriptionMapper: MString.append(' between 2000 and 2099 included'),
         postParser: function (this: MTemplatePlaceholder.Type<'isoYear', number>, value) {
           return pipe(
             value,

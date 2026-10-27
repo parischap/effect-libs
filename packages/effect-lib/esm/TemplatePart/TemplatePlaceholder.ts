@@ -207,33 +207,33 @@ export const getLabelledDescription = (self: Any): string => `${self.label}: ${s
  */
 export const modify: {
   <T>({
-    descriptorMapper,
+    descriptionMapper,
     postParser,
     preFormatter,
   }: {
-    readonly descriptorMapper: MTypes.OneArgFunction<string>;
+    readonly descriptionMapper: MTypes.OneArgFunction<string>;
     readonly postParser: MTypes.OneArgFunction<T, Result.Result<T, MInputError.Type>>;
     readonly preFormatter: MTypes.OneArgFunction<T, Result.Result<T, MInputError.Type>>;
   }): <const N extends string>(self: Type<N, T>) => Type<N, T>;
   <T, T1>({
-    descriptorMapper,
+    descriptionMapper,
     postParser,
     preFormatter,
     t1SchemaInstance,
   }: {
-    readonly descriptorMapper: MTypes.OneArgFunction<string>;
+    readonly descriptionMapper: MTypes.OneArgFunction<string>;
     readonly postParser: MTypes.OneArgFunction<T, Result.Result<T1, MInputError.Type>>;
     readonly preFormatter: MTypes.OneArgFunction<T1, Result.Result<T, MInputError.Type>>;
     readonly t1SchemaInstance: Schema.Codec<T1, T1>;
   }): <const N extends string>(self: Type<N, T>) => Type<N, T1>;
 } =
   <T, T1>({
-    descriptorMapper,
+    descriptionMapper,
     postParser,
     preFormatter,
     t1SchemaInstance,
   }: {
-    readonly descriptorMapper: MTypes.OneArgFunction<string>;
+    readonly descriptionMapper: MTypes.OneArgFunction<string>;
     readonly postParser: MTypes.OneArgFunction<T, Result.Result<T1, MInputError.Type>>;
     readonly preFormatter: MTypes.OneArgFunction<T1, Result.Result<T, MInputError.Type>>;
     readonly t1SchemaInstance?: Schema.Codec<T1, T1>;
@@ -241,7 +241,7 @@ export const modify: {
   <const N extends string>(self: Type<N, T>): Type<N, T1> =>
     make({
       name: self.name,
-      description: descriptorMapper(self.description),
+      description: descriptionMapper(self.description),
       parser: function (this: Type<N, T1>, text) {
         return Result.flatMap(
           self.parser.call(this, text),
@@ -315,7 +315,7 @@ export const paddedFixedLength = <const N extends string>(params: {
     params,
     fixedLength,
     modify({
-      descriptorMapper: InternalMString.append(
+      descriptionMapper: InternalMString.append(
         ` ${MStringFillPosition.toString(params.fillPosition)}-padded with '${params.fillChar}'`,
       ),
       postParser: flow(InternalMString.trim(params), Result.succeed),
@@ -403,7 +403,7 @@ export const number = <const N extends string>({
           { name, length },
           fixedLength,
           modify({
-            descriptorMapper: InternalMString.append(` to ${description}`),
+            descriptionMapper: InternalMString.append(` to ${description}`),
             postParser: function (this: Type<N, number>, input: string) {
               return pipe(
                 input,
