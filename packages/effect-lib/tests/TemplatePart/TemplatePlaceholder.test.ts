@@ -196,30 +196,30 @@ describe('MTemplatePlaceholder', () => {
 
   describe('mappedLiterals', () => {
     const map = MTemplatePlaceholder.mappedLiterals({
-      name: 'foo',
+      name: 'months',
       keyValuePairs: [
-        ['foo', 6],
-        ['bazbar', 12],
+        ['june', 6],
+        ['december', 12],
       ],
       /* oxlint-disable-next-line effecttsgo/schema-number*/
       schemaInstance: Schema.Number,
     });
 
     it('.toString()', () => {
-      assert.strictEqual(map.toString(), '#foo: from [foo, bazbar] to [6, 12]');
+      assert.strictEqual(map.toString(), '#months: from [june, december] to [6, 12]');
     });
 
     describe('Parsing', () => {
       it('Not starting by value', () => {
         TestUtils.assertFailureMessage(
           map.parser(''),
-          "Expected remaining text for #foo to start with one of [foo, bazbar]. Actual: ''",
+          "Expected remaining text for #months to start with one of [june, december]. Actual: ''",
         );
-        TestUtils.assertFailure(map.parser('baz is away'));
+        TestUtils.assertFailure(map.parser('march is away'));
       });
 
       it('Passing', () => {
-        TestUtils.assertSuccess(map.parser('bazbar is away'), Tuple.make(12, ' is away'));
+        TestUtils.assertSuccess(map.parser('december is away'), Tuple.make(12, ' is away'));
       });
     });
 
@@ -227,12 +227,12 @@ describe('MTemplatePlaceholder', () => {
       it('Not passing', () => {
         TestUtils.assertFailureMessage(
           map.formatter(4),
-          '#foo: expected one of [6, 12]. Actual: 4',
+          '#months: expected one of [6, 12]. Actual: 4',
         );
       });
 
       it('Passing', () => {
-        TestUtils.assertSuccess(map.formatter(6), 'foo');
+        TestUtils.assertSuccess(map.formatter(6), 'june');
       });
     });
   });
