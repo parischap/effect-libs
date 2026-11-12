@@ -8,6 +8,7 @@
     "tests",
     "node_modules",
     "**/.DS_Store",
+    "esm/internal/generated",
     ".tsbuildinfo",
     "vite.config.ts.timestamp-*.mjs",
     "dist",

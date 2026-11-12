@@ -4,9 +4,10 @@
  * circular imports: those modules must not import public `MString`.
  */
 
-import { flow, Formatter, pipe } from 'effect';
+import { flow, pipe } from 'effect';
 import * as Array from 'effect/Array';
 import * as BigInt from 'effect/BigInt';
+import * as Formatter from 'effect/Formatter';
 import * as Function from 'effect/Function';
 import * as Number from 'effect/Number';
 import * as Option from 'effect/Option';

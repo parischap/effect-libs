@@ -109,7 +109,9 @@ type TypeId = typeof TypeId;
  *
  * @category Models
  */
-export abstract class Class extends Schema.Class<Class>(moduleTag)({}) {
+export abstract class Class extends Schema.Class<Class, { readonly brand: unique symbol }>(
+  moduleTag,
+)({}) {
   /**
    * Returns the `id` of `this`. A string identifier is used as the `_id` field of the JSON view; a
    * function produces a fully custom representation when invoked with `this` bound.

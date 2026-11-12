@@ -114,7 +114,10 @@ export class Type<in out A, in out B> extends MData.Class {
    * The underlying store. A key mapped to `Option.none` means a lookup is currently in progress
    * (used to detect circular recursion).
    */
-  readonly store: MutableHashMap.MutableHashMap<A, Option.Option<InternalMCacheValueContainer.Type<B>>>;
+  readonly store: MutableHashMap.MutableHashMap<
+    A,
+    Option.Option<InternalMCacheValueContainer.Type<B>>
+  >;
 
   /**
    * The order in which keys were inserted, used to evict the oldest first when the cache reaches
