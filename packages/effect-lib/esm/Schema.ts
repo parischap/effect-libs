@@ -10,7 +10,7 @@
  *   for parsing and for formatting.
  * - {@link DateTime} is the `Schema` of a `MDateTime`. Its encoded side is an object `{ timestamp,
  *   zoneOffset }`, so that a `MDateTime` can be serialized (JSON...) and generated for
- *   property-based testing (`Arbitrary`), e.g. when it is a field of a `MSchemaData` class.
+ *   property-based testing (`Arbitrary`), e.g. when it is a field of a `Model.Class`.
  * - The **filters** (`isBetweenDateTime`...) check that a `MDateTime` is ordered with respect to
  *   given bounds. They are built with the `Schema.makeIs*` functions from {@link MDateTime.Order}.
  * - When a transformation fails, the issue carries a message that explains why.

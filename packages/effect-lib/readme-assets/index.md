@@ -10,7 +10,6 @@
   - [MMatch](#mmatch)
   - [MNumberBase10Format](#mnumberbase10format)
   - [MOption](#moption)
-  - [MSchemaData](#mschemadata)
   - [MString](#mstring)
   - [MTemplate](#mtemplate)
   - [MTree](#mtree)
@@ -46,7 +45,6 @@ This package contains the following modules, all prefixed with `M` to avoid name
 | **MRegExpString**       | Building blocks for composing regular-expression strings (unsigned integers, signed integers, identifiers, separators, etc.)                                                                                                                                                                                                                                                                                                      |
 | **MResult**             | Extensions to `effect/Result`: flattening and optional extraction                                                                                                                                                                                                                                                                                                                                                                 |
 | **MSchema**             | Extension to `effect/Schema`: codecs for numbers/`BigDecimal`'s (`MNumberBase10Format`-driven), `MDateTime` (from a `Date`, an `effect/DateTime.Zoned`, or a string via `MDateTimeFormat`/`MDateTimeContext`), and `MTemplate`-driven object codecs. The `MDateTime` `Schema` can be serialized and generated with `Arbitrary`, and comes with comparison filters (`isBetweenDateTime`, …). Codec failures report a clear message |
-| **MSchemaData**         | A base class for value objects built on `Schema.Class` that derives `Equal.Equal` from a user-defined equivalence. Instances can be decoded, encoded and generated for property-based testing (`Arbitrary`)                                                                                                                                                                                                                       |
 | **MString**             | Extensions to `effect/String`: search with automatic `lastIndex` reset, padding with fill-position support, `removeNCharsEveryMChars`, SemVer/email predicates, number parsing/formatting via `MNumberBase10Format`, and templating via `MTemplate`                                                                                                                                                                               |
 | **MStringFillPosition** | A small enum-like module for fill positions (`left` / `right`) used by `MString` padding functions                                                                                                                                                                                                                                                                                                                                |
 | **MStringSearchResult** | A value-object representing a regex match result, with `Equivalence`, `Order`, and `Hash` instances                                                                                                                                                                                                                                                                                                                               |
@@ -223,62 +221,6 @@ console.log(MOption.fromNextIteratorValue(iterator));
 console.log(MOption.fromNextIteratorValue(iterator));
 ```
 
-## MSchemaData
-
-Same as `MEqData`, but built on `Schema.Class`: the fields are `Schema`'s, so a subclass can be decoded and encoded, and `Arbitrary.schema` can generate instances of it for property-based testing. Subclasses are defined with `Class.extend` and, as for `MEqData`, implement a same-type-marker guard, the equivalence itself, and a consistent hash.
-
-```ts
-import type { Equivalence } from 'effect';
-import { Arbitrary, Effect, Equal, Hash, Predicate, Schema } from 'effect';
-
-import * as MData from '@parischap/effect-lib/MData';
-import * as MEqData from '@parischap/effect-lib/MEqData';
-import * as MSchemaData from '@parischap/effect-lib/MSchemaData';
-
-const moduleTag = '@parischap/my-app/Person/';
-const TypeId: unique symbol = Symbol.for(moduleTag) as TypeId;
-type TypeId = typeof TypeId;
-
-class Type extends MSchemaData.Class.extend<Type>(moduleTag)({
-  id: Schema.Finite,
-  name: Schema.String,
-}) {
-  [MData.idSymbol](): MData.idSymbolResult {
-    return moduleTag;
-  }
-
-  [Hash.symbol](): number {
-    return 0;
-  }
-
-  [MEqData.isEquivalentToSymbol](this: this, that: this): boolean {
-    return equivalence(this, that);
-  }
-
-  [MEqData.hasSameTypeMarkerAsSymbol](that: unknown): boolean {
-    return Predicate.hasProperty(that, TypeId);
-  }
-
-  protected get [TypeId](): TypeId {
-    return TypeId;
-  }
-}
-
-// Two persons are equivalent if they have the same id
-const equivalence: Equivalence.Equivalence<Type> = (self, that) => self.id === that.id;
-
-const person = Schema.decodeUnknownSync(Type)({ id: 1, name: 'Alice' });
-
-// Result: true
-console.log(Equal.equals(person, new Type({ id: 1, name: 'Bob' })));
-
-// Result: { id: 1, name: 'Alice' }
-console.log(Schema.encodeSync(Type)(person));
-
-// Result: 10 random persons
-console.log(await Effect.runPromise(Arbitrary.sampleEffect(Arbitrary.schema(Type), { count: 10 })));
-```
-
 ## MString
 
 Extensions to `effect/String`: indexed search, custom-character trimming, padding, splitting (including bit-aligned chunking), indented multi-line formatting, lightweight predicates (SemVer, e-mail, digit, …), number parsing/formatting via `MNumberBase10Format`, and templating via `MTemplate`.
@@ -357,6 +299,10 @@ console.log(buildAndSum);
 ```
 
 # Changelog
+
+## 0.30.0
+
+- **Removed** `MSchemaData`.
 
 ## 0.29.0
 

@@ -172,9 +172,6 @@
     "./MSchema": {
       "default": "./esm/Schema.ts"
     },
-    "./MSchemaData": {
-      "default": "./esm/Data/SchemaData.ts"
-    },
     "./MScientificNotationMantissaAdjuster": {
       "default": "./esm/internal/NumberBase10Format/ScientificNotationMantissaAdjuster.ts"
     },
