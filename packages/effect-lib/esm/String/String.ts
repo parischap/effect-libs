@@ -1192,7 +1192,7 @@ export const tabify =
   (self) => {
     const tab = tabChar.repeat(count);
     // replace resets RegExp.prototype.lastIndex after executing
-    return tab + self.replace(tabifyLineBreak, '$&' + tab);
+    return tab + self.replaceAll(tabifyLineBreak, '$&' + tab);
   };
 
 /**
