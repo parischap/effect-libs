@@ -1,10 +1,15 @@
 {
   "name": "@parischap/playground",
-  "type": "module",
-  "author": "Jérôme MARTIN",
-  "license": "MIT",
   "description": "An Effect playground",
   "homepage": "https://github.com/parischap/effect-libs/tree/master/packages/playground",
+  "license": "MIT",
+  "author": "Jérôme MARTIN",
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./esm/index.ts"
+    }
+  },
   "scripts": {
     "test-all": "vitest run",
     "lint": "oxlint --disable-nested-config",
@@ -19,6 +24,15 @@
     "docgen-all": "echo \"No doc generation for 'playground'\"",
     "release-all": "echo \"Nothing to release for 'playground'\""
   },
+  "dependencies": {
+    "@effect/platform-node": "*",
+    "@effect/sql-pg": "*",
+    "@effect/sql-pglite": "*",
+    "@parischap/effect-lib": "workspace:*",
+    "effect": "*"
+  },
+  "devDependencies": {},
+  "peerDependencies": {},
   "@parischap/configs": {
     "description": "An Effect playground",
     "moreDetails": "",
@@ -42,19 +56,5 @@
     "peerDependencies": {},
     "scripts": {},
     "prodMiscellaneous": {}
-  },
-  "exports": {
-    ".": {
-      "default": "./esm/index.ts"
-    }
-  },
-  "dependencies": {
-    "@parischap/effect-lib": "workspace:*",
-    "effect": "*",
-    "@effect/platform-node": "*",
-    "@effect/sql-pg": "*",
-    "@effect/sql-pglite": "*"
-  },
-  "devDependencies": {},
-  "peerDependencies": {}
+  }
 }
