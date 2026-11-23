@@ -1,35 +1,33 @@
-/*class A extends Schema.Class<A>('A')({ a: Schema.String, b: Schema.String }) {}
+import { NodeRuntime } from '@effect/platform-node';
+import { Console, Effect } from 'effect';
 
-const a = A.make({ a: 'a', b: 'b' });
-const iso = Schema.toIso(A);
+import * as Db from './internal/services/Db.js';
+import * as DbMigration from './internal/services/DbMigration.js';
+import * as DevTools from './internal/services/DevTools.js';
+import * as LoggingAndTracing from './internal/services/LoggingAndTracing.js';
+import * as ProgConfig from './internal/services/ProgConfig.js';
+import * as SchemaCompilation from './internal/services/SchemaCompilation.js';
 
-const get = iso.get(a);
-const set = iso.set({ a: 'a', b: 'c' });
+// Url of the entry point
+const entryURL = new URL(import.meta.url);
 
-console.log(get);
-console.log(set);*/
+// Simulate a program
+const program = Effect.gen(function* () {
+  yield* Console.log('Start');
+  yield* Console.log('End');
+});
 
-import { Schema } from 'effect';
+const runnable = Effect.provide(program, [
+  Db.live,
+  DbMigration.live,
+  SchemaCompilation.live(entryURL),
+  DevTools.live,
+  LoggingAndTracing.live,
+  ProgConfig.live,
+]);
 
-import * as MNumberBase10Format from '@parischap/effect-lib/MNumberBase10Format';
-import * as MRegExpString from '@parischap/effect-lib/MRegExpString';
-import * as MSchema from '@parischap/effect-lib/MSchema';
-import * as MTemplate from '@parischap/effect-lib/MTemplate';
-import * as MTemplatePlaceholder from '@parischap/effect-lib/MTemplatePlaceholder';
-import * as MTemplateSeparator from '@parischap/effect-lib/MTemplateSeparator';
+/*const runnable
+  Effect.provide(ProgConfig.live),*/
 
-const ph = MTemplatePlaceholder;
-const sep = MTemplateSeparator;
+NodeRuntime.runMain(runnable);
 
-// "#name is a #age-year old #kind."
-const template = MTemplate.make(
-  ph.anythingBut({ name: 'name', forbiddenChars: [MRegExpString.space] }),
-  sep.make(' is a '),
-  ph.number({ name: 'age', numberBase10Format: MNumberBase10Format.unsignedInteger }),
-  sep.make('-year old '),
-  ph.anythingBut({ name: 'kind', forbiddenChars: ['.'] }),
-  sep.dot,
-);
-const a = MSchema.Template(template);
-// { name: 'Jon', age: 24, kind: 'dog' }
-console.log(Schema.decodeSync(MSchema.Template(template))('Jon is a 24-year old dog.'));

@@ -30,7 +30,9 @@
     "dependencies": {
       "@parischap/effect-lib": "*",
       "effect": "*",
-      "@effect/platform-node": "*"
+      "@effect/platform-node": "*",
+      "@effect/sql-pg": "*",
+      "@effect/sql-pglite": "*"
     },
     "devDependencies": {},
     "environment": "Node",
@@ -49,7 +51,9 @@
   "dependencies": {
     "@parischap/effect-lib": "workspace:*",
     "effect": "*",
-    "@effect/platform-node": "*"
+    "@effect/platform-node": "*",
+    "@effect/sql-pg": "*",
+    "@effect/sql-pglite": "*"
   },
   "devDependencies": {},
   "peerDependencies": {}
