@@ -9,17 +9,24 @@ import * as Constants from './Constants.js';
  * @category Services
  */
 export const Service = Config.all({
-  /**
-   * If true, the program uses the production environment (we may want to test the prod environment
-   * with unbundled code)
-   */
-  isProd: Config.Boolean('IS_PROD').pipe(Config.withDefault(false)),
   /** Maximal number of `Fiber`'s allowed to run concurrently in one operation */
   maxConcurrencyNumber: Config.Finite('MAX_CONCURRENCY_NUMBER').pipe(Config.withDefault(10)),
   /** Minimum log level, under which `Effect.log*` is a no-op */
   minLogLevel: Config.LogLevel('MIN_LOG_LEVEL').pipe(Config.withDefault('Info')),
-  /** Whether to activate tracing */
-  activateTraces: Config.Boolean('ACTIVATE_TRACES').pipe(Config.withDefault(false)),
+  /**
+   * Logging uses a mixture of effect logging and tracing:
+   *
+   * - `DefaultTracing`: Default effect tracer. In dev, you can use DevTools vscode extension to view
+   *   traces, which contain logs as events.
+   * - 'ConsoleLogging', 'TxtLogging', 'JsonLogging': a custom tracer is setup that logs trace starts,
+   *   trace ends and trace events. Depending on the value, it logs to the console, to a txt or to a
+   *   JSON file.
+   * - 'None': Tracing and logging are deactivated.
+   */
+  loggingMode: Config.Literals(
+    ['None', 'ConsoleLogging', 'TxtLogging', 'JsonLogging', 'DefaultTracing'],
+    'LOGGING_MODE',
+  ).pipe(Config.withDefault('DefaultTracing')),
 
   // Only if the program uses a `pg` database
   /** Host */
@@ -88,7 +95,6 @@ export const live = Layer.provide(layer, [NodeFileSystem.layer, Constants.Servic
  */
 export const test = ConfigProvider.layer(
   ConfigProvider.fromUnknown({
-    isProd: false,
     maxConcurrencyNumber: 10,
     minLogLevel: 'Info',
     activateTraces: false,

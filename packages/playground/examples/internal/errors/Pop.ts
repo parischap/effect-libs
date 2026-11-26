@@ -1,6 +1,4 @@
-import { type Config, Data, Effect } from 'effect';
-
-import * as ProgConfig from '../services/ProgConfig.js';
+import { Data } from 'effect';
 
 /**
  * Module tag.
@@ -19,18 +17,3 @@ export class Type extends Data.TaggedError(moduleTag)<{
   readonly originalError: unknown;
   readonly message: string;
 }> {}
-
-export const make = Effect.fn('Pop.make')(
-  // Use `Effect.fn.Return` to specify return type (accepts same type params as `Effect.Effect`).
-  function* ({
-    originalError,
-    message,
-  }: {
-    readonly originalError: unknown;
-    readonly message: string;
-  }): Effect.fn.Return<Type, Config.ConfigError> {
-    const { isProd } = yield* ProgConfig.Service;
-
-    return new Type({ originalError, message });
-  },
-);

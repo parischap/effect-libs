@@ -23,8 +23,10 @@ export class Service extends Context.Service<
     readonly progName: string;
     /** Path to the configuration file */
     readonly settingsPath: string;
-    /** Path to the log file in prod environment */
-    readonly prodLogFilePath: string;
+    /** Path to the txt log file */
+    readonly txtLogFilePath: string;
+    /** Path to the JSON log file */
+    readonly jsonLogFilePath: string;
     /** Path to the compiled `Schema`'s, expressed relatively to the entry module */
     readonly compiledSchemasRelativePath: string;
   }
@@ -42,7 +44,8 @@ export class Service extends Context.Service<
       return {
         progName,
         settingsPath: join(configPath, 'settings.env'),
-        prodLogFilePath: join(statePath, 'logs.json'),
+        txtLogFilePath: join(statePath, 'logs.txt'),
+        jsonLogFilePath: join(statePath, 'logs.json'),
         compiledSchemasRelativePath: './schema-aot.js',
       };
     }),
@@ -57,6 +60,8 @@ export class Service extends Context.Service<
     // Not used in tests
     compiledSchemasRelativePath: '',
     // Not used in tests
-    prodLogFilePath: '',
+    txtLogFilePath: '',
+    // Not used in tests
+    jsonLogFilePath: '',
   });
 }

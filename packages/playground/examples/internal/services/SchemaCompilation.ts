@@ -2,7 +2,6 @@ import { NodePath } from '@effect/platform-node';
 import { Effect, pipe, Path, Layer } from 'effect';
 
 import * as Constants from './Constants.js';
-import * as ProgConfig from './ProgConfig.js';
 
 /**
  * Layer that loads precompiled `Schema`'s in prod and enables `Schema` JIT compilation in dev
@@ -13,7 +12,6 @@ export const layer = (entryModuleUrl: URL) =>
   Layer.effectDiscard(
     Effect.gen(function* () {
       const { fromFileUrl, join, relative } = yield* Path.Path;
-      const { isProd } = yield* ProgConfig.Service;
       const { compiledSchemasRelativePath } = yield* Constants.Service;
       const entryModulePath = yield* fromFileUrl(entryModuleUrl);
       const currentModulePath = yield* fromFileUrl(new URL(entryModuleUrl));
